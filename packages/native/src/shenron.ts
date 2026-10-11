@@ -12,6 +12,7 @@ export {
   shenronAbiVersion,
   shenronVersion,
   shenronBuildInfo,
+  shenronReXenoverse3Map,
   shenronJobCount,
   lastError as shenronLastError,
   shenronRun,
@@ -42,6 +43,7 @@ export {
   type ShenronMemory,
   type ShenronMemoryAdd,
   type ShenronMemorySearch,
+  type Xenoverse3PrototypeMap,
 } from "./engine";
 export { ShenronLibraryMismatch, type MismatchReason } from "./compat";
 export type { CapturedResult as ShenronCapturedResult } from "./engine";

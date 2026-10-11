@@ -19,7 +19,9 @@
 /// - 4: adds the local chat models (`shenron_llama_provision_job`, `shenron_llama_progress`,
 ///   `shenron_llama_router_start`, `shenron_llama_router_stop`, `shenron_llama_daemon`) over
 ///   Aphrody's `aphrody-llama-server`. Every revision-3 symbol is unchanged.
-pub const ABI_VERSION: u32 = 4;
+/// - 5: adds `shenron_re_xenoverse3_map`, the source-attributed Shenron RE prototype map.
+///   Every revision-4 symbol is unchanged.
+pub const ABI_VERSION: u32 = 5;
 
 /// Status codes set by the boundary: `JobOutcome.status`, and the `code` of a captured result
 /// when the call fails before the command runs. A wrapped command may return any exit code.
@@ -297,4 +299,6 @@ ffi_table! {
     /// Run the model supervisor daemon with a JSON array of arguments; returns its exit code.
     /// Blocks until the daemon exits (a process re-executed as the daemon launcher).
     [4] fn shenron_llama_daemon(args_json: cstr) -> i32;
+    /// Original AGE 1000 prototype map as owned JSON with official source URLs and schematic caveat.
+    [5] fn shenron_re_xenoverse3_map() -> owned_str;
 }

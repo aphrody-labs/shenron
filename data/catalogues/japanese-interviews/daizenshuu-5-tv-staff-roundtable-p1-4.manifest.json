@@ -1,0 +1,49 @@
+{
+  "interviewTitle": "アニメ ドラゴンボール メインスタッフ座談会 第2回",
+  "method": "目視転記、日本語原文。OCR、ネット、外部文章による補完なし。話者名を紙面に明示しない箇所は転記に付加しない。",
+  "publication": "Dragon Ball Daizenshuu 5: TV Animation Part 2, Shenlong Times insert (1995)",
+  "limits": [
+    "Sidecar dédié au dialogue et aux titres de la table ronde sur les folios pertinents. Textes biographiques, illustrations et décorations exclus.",
+    "La transcription est visuelle; la prétention au verbatim complet dépend de la revue des scans originaux."
+  ],
+  "status": "visible-dialogue-transcribed-review-needed",
+  "schemaVersion": 1,
+  "records": [
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-5-tv-staff-roundtable-p1-4.jsonl#L1",
+      "page": 1,
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 5 - TV Animation Part 2 (COMPLETE)\\Shenlong Times\\1.png",
+      "imageBytes": 2590467,
+      "imageSha256": "a163e3ef9a92cbc16ae4070a5295b33d10bb1ed1961788e7b22fabea80fdd271",
+      "completeness": "Texte visible pertinent transcrit; images et appels décoratifs exclus."
+    },
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-5-tv-staff-roundtable-p1-4.jsonl#L2",
+      "page": 2,
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 5 - TV Animation Part 2 (COMPLETE)\\Shenlong Times\\2.png",
+      "imageBytes": 1738387,
+      "imageSha256": "c0215ac083e771f45d620ae76709e4a818d8d920b8575e7f59cd66b02e67ffe8",
+      "completeness": "Texte visible pertinent transcrit; images et appels décoratifs exclus."
+    },
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-5-tv-staff-roundtable-p1-4.jsonl#L3",
+      "page": 3,
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 5 - TV Animation Part 2 (COMPLETE)\\Shenlong Times\\3.png",
+      "imageBytes": 1339440,
+      "imageSha256": "88c8253c974026cbb3e1c6e44f57924a7a049671056b828c81033ce5db39011e",
+      "completeness": "Texte visible pertinent transcrit; images et appels décoratifs exclus."
+    }
+  ],
+  "excludedPages": [
+    {
+      "page": 4,
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 5 - TV Animation Part 2 (COMPLETE)\\Shenlong Times\\4-5.png",
+      "imageBytes": 3757797,
+      "imageSha256": "7c4c88723d1cc3cdd737dfa1ebcda3f59b168800eee96d4a6c8bbb7ef03ebb4e",
+      "reason": "P.4 est un article distinct de Toriyama, ちかごろのワシ."
+    }
+  ],
+  "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-5-tv-staff-roundtable-p1-4.jsonl",
+  "transcriptBytes": 6025,
+  "transcriptSha256": "0b13da4b2a3ab89c9e6a90a528e80066f2d7a5cd83224dd496358b069b1b12b0"
+}

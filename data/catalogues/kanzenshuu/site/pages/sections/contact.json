@@ -1,0 +1,26 @@
+{
+  "section": "contact",
+  "scope": "Public Kanzenshuu WordPress pages in this route section; metadata only, private source bodies referenced by rawPath.",
+  "records": [
+    {
+      "id": 71452,
+      "type": "pages",
+      "slug": "contact",
+      "title": "Contact",
+      "date": "2022-03-28T22:31:42",
+      "modified": "2025-03-09T16:04:54",
+      "url": "https://www.kanzenshuu.com/contact/",
+      "excerpt": "",
+      "categories": [],
+      "tags": [],
+      "parent": 0,
+      "section": "contact",
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2022.json",
+      "categoryTerms": [],
+      "tagTerms": []
+    }
+  ]
+}

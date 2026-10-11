@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 1980; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "monthly-starlog-1980-11-akira-toriyama-interview",
+      "title": "Akira Toriyama Interview",
+      "summary": "Entretien de jeunesse centré sur le parcours et le travail de Toriyama avant Dragon Ball. Il décrit son passage par un emploi de graphiste après le lycée, puis son choix de tenter le manga à 23 ans. Après plusieurs refus, la critique de son éditeur Kazuhiko Torishima le pousse à recommencer; il situe l'apparition de son trait plus relâché dans une recherche de rapidité. Il explique aussi que le docteur Senbei était au départ au centre du projet Dr. Slump et qu'Aralé, conçue comme robot d'un épisode, est devenue le personnage principal sur le conseil de l'éditeur. Toriyama dit ne pas avoir de plan de longue durée pour Dr. Slump et apprécier la liberté du gag manga, où même le décor peut participer aux gags.",
+      "keyInformation": [
+        "Toriyama raconte avoir commencé à dessiner des mangas à 23 ans, après environ trois ans dans une entreprise de design.",
+        "Il attribue l'évolution de son dessin à des traits tracés plus vite et avec moins de raideur.",
+        "Aralé devait initialement être un robot secondaire pour une histoire; l'éditeur a proposé d'en faire le personnage principal.",
+        "Il se disait alors sans confiance particulière au lancement d'une série et s'attendait à ce que Dr. Slump puisse s'arrêter après une dizaine de semaines.",
+        "Il présente la liberté du gag manga comme un avantage créatif et se méfie d'une carte trop précise de Penguin Village, qui limiterait les possibilités futures."
+      ],
+      "source": {
+        "publication": "Monthly Starlog, 1980 no. 11",
+        "pages": "86–89",
+        "date": "1980-10-01",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/monthly-starlog-1980-11-akira-toriyama-interview/",
+        "questionAnswerCount": 73,
+        "formatNote": "Le HTML acquis contient 77 blocs question et 75 blocs réponse; les 73 paires recensées dans la fiche ne couvrent pas toute la structure balisée, qui doit être collationnée avec les pages imprimées.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/monthly-starlog-1980-11-akira-toriyama-interview.html"
+      },
+      "dragonBallRelevance": "Contexte biographique et méthode de création antérieurs à Dragon Ball; informations sur Dr. Slump et Torishima utiles pour comprendre la genèse de l'auteur.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "pafu-september-1980-mangaka-whos-who-akira-toriyama",
+      "title": "Pafu , September 1980",
+      "summary": "Ce portrait en questions-réponses présente Toriyama à 25 ans, après son premier succès avec Dr. Slump. Il parle de son ancien emploi de designer, de ses goûts, de ses habitudes et de sa personnalité avec une autodérision constante; ses réponses dessinent un jeune auteur encore installé dans la campagne d’Aichi, attaché à la liberté et réticent aux contraintes.",
+      "keyInformation": [
+        "Avant le manga, Toriyama travaille comme designer publicitaire puis quitte son emploi; il cite Osamu Tezuka et Astro Boy parmi ses premières influences, tout en disant ne pas en identifier consciemment une en particulier",
+        "Il évoque son goût pour les dinosaures, les animaux, le modélisme et les films, ainsi que son peu d’intérêt pour les livres; plusieurs réponses sont des plaisanteries ou des jeux de mots"
+      ],
+      "source": {
+        "publication": "Mangaka Who’s Who – Akira Toriyama Pafu, September 1980 (pp. 240-241)",
+        "pages": "240-241",
+        "date": "1980-08-27",
+        "url": "https://www.kanzenshuu.com/translations/pafu-september-1980-mangaka-whos-who-akira-toriyama/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/pafu-september-1980-mangaka-whos-who-akira-toriyama/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/pafu-september-1980-mangaka-whos-who-akira-toriyama.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 29,
+        "questionBlockCount": 29,
+        "answerBlockCount": 29,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of the Akira Toriyama Q&A from the September 1980 issue of 'Pafu' in Japan",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Indirecte : témoignage biographique sur les débuts et les préférences de l’auteur, avant Dragon Ball.",
+      "formatNote": "Q/R de portrait personnel, largement humoristique.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    }
+  ]
+}

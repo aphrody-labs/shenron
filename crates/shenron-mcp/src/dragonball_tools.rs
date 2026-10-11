@@ -1198,11 +1198,17 @@ async fn a2a_rpc(method: &str, params: Value) -> Result<Value, String> {
     let reply: Value =
         response.json().await.map_err(|_| "Shenron A2A returned invalid JSON".to_owned())?;
     if let Some(error) = reply.get("error") {
-        return Err(format!(
-            "Shenron A2A {}: {}",
-            error.get("code").cloned().unwrap_or(Value::Null),
-            error.get("message").and_then(Value::as_str).unwrap_or("")
-        ));
+        let code = error.get("code").cloned().unwrap_or(Value::Null);
+        let message = error.get("message").and_then(Value::as_str).unwrap_or("");
+        let detail = error.get("data").map(|value| match value {
+            Value::String(text) => text.clone(),
+            value => value.to_string(),
+        });
+        let diagnostic = detail
+            .filter(|text| !text.is_empty() && text != "null")
+            .map(|text| format!("{message} ({text})"))
+            .unwrap_or_else(|| message.to_owned());
+        return Err(format!("Shenron A2A {code}: {diagnostic}"));
     }
     Ok(reply.get("result").cloned().unwrap_or(Value::Null))
 }

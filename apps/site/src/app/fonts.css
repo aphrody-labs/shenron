@@ -8,6 +8,10 @@
   --font-jp: "Noto Sans JP", "Noto Sans JP Fallback", sans-serif;
 }
 
+html[lang="ja"] {
+  --font-sans: var(--font-jp);
+}
+
 
 @font-face {
   font-family: "Google Sans Flex Fallback";

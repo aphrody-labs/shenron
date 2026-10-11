@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-08",
+  "method": "Manual visual inspection of the original local Japanese scan, with enlarged column crops; no OCR, network, translation, or completion by inference.",
+  "records": [
+    {
+      "id": "print-dragonbook-movies-kageyama-60-61",
+      "title": "DragonBook Movies",
+      "pages": [
+        60,
+        61
+      ],
+      "participants": [
+        "Hironobu Kageyama / 影山ヒロノブ"
+      ],
+      "sectionTitle": "MUSIC FIGHTER SPECIAL INTERVIEW",
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\DragonBook\\DragonBook Movies\\61-60.jpg",
+      "imageBytes": 256252,
+      "imageSha256": "3dd194e6e1dc777a9052875c2765e576e083096badcd7466527d04082a320457",
+      "transcriptPath": "data/catalogues/japanese-interviews/dragonbook-movies-kageyama-60-61.jsonl#L1",
+      "transcriptRow": 1,
+      "completeness": "Partial: interview headings and the three BEST 3 song titles transcribed; question and answer text on pp.60-61 omitted because the low-resolution blurred scan does not permit reliable continuous reading. Photo captions, intro copy, and song descriptions omitted."
+    }
+  ]
+}

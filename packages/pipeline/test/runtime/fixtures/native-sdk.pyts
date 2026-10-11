@@ -1,0 +1,9 @@
+// SPDX-License-Identifier: Apache-2.0
+import { openAphrodyPython } from "../../../src/runtime/python.ts";
+export async function normalize(source: string) {
+  await using sdk = await openAphrodyPython({ sourceRoots: [source] });
+  return {
+    pid: sdk.info().pid,
+    value: await sdk.invoke("aphrody.command_guard", "normalize_command", ["PyJS café🐍\u0000"]),
+  };
+}

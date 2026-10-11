@@ -1,0 +1,48 @@
+{
+  "publication": "30th Anniversary ドラゴンボール超史集",
+  "interviewee": "近藤裕",
+  "interviewTitle": "DRAGON BALL EDITORS INTERVIEW #2",
+  "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-kondo-editor-interview-2-54-55.jsonl",
+  "transcriptSha256": "532046095be2c1b091961849f700abd60f6d921bf20046c1255b614590820910",
+  "transcriptBytes": 9339,
+  "sourcePdfSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
+  "status": "working-draft-needs-visual-review",
+  "method": "Offline manual transcription from local PDF rendered with PyMuPDF at 8x; editorial headings, profile caption, pull quote and credit labeled separately.",
+  "updatedAt": "2026-10-08",
+  "schemaVersion": 1,
+  "records": [
+    {
+      "printedPages": [
+        54
+      ],
+      "pdfPageIndices": [
+        54
+      ],
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+      "imageBytes": 100224986,
+      "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
+      "completeness": "All visible interview body transcribed in a working draft; independent visual proofread pending."
+    },
+    {
+      "printedPages": [
+        55
+      ],
+      "pdfPageIndices": [
+        55
+      ],
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+      "imageBytes": 100224986,
+      "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
+      "completeness": "All visible interview body transcribed in a working draft; page-break continuation and one short quoted passage explicitly marked; independent visual proofread pending."
+    }
+  ],
+  "limits": [
+    "No OCR or network used; pages rendered locally at 8x and visually inspected.",
+    "The interview body is presented as Kondo speaking; editorial headings, the large pull quote, profile caption, and illustration credit are separately labeled.",
+    "The opening of page 55 visibly continues a sentence from the page break; the preceding words are not on the supplied pages.",
+    "The quotation in the final media-mix paragraph on page 55 was rechecked directly against the scan; the visible text reads 「このキャラはこうしたら？」「この話は、もっとアッサリしてみたら？」とか、アニメや玩具に関しての意見をくださいました。",
+    "This remains a working draft pending independent glyph-by-glyph proofreading."
+  ],
+  "pdfPageIndexBase": 0,
+  "pdfPageIndexConvention": "Zero-based PyMuPDF page indices; PDF page numbers shown in markdown are one-based."
+}

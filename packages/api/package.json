@@ -1,6 +1,6 @@
 {
   "name": "@shenron/api",
-  "version": "0.4.0",
+  "version": "1.4.4",
   "private": true,
   "type": "module",
   "sideEffects": false,
@@ -12,6 +12,7 @@
     "./next": "./src/next.ts",
     "./chat": "./src/chat/index.ts",
     "./host": "./src/host/index.ts",
+    "./desktop-link": "./src/desktop-link.ts",
     "./plugin": "./src/plugin/index.ts",
     "./openapi.json": "./openapi/public.json"
   },
@@ -20,7 +21,7 @@
     "test": "bun test --path-ignore-patterns='**/*.live.test.ts'",
     "openapi": "bun scripts/openapi.ts",
     "openapi:check": "bun scripts/openapi.ts --check",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "bun check --noEmit --project tsconfig.json"
   },
   "dependencies": {
     "@aphrody/http": "catalog:",
@@ -34,7 +35,7 @@
     "zod": "catalog:"
   },
   "engines": {
-    "bun": ">=1.4.2"
+    "bun": ">=1.4.3"
   },
   "shenron": {
     "runtime": {
@@ -45,6 +46,7 @@
       "./next": "server",
       "./chat": "bun",
       "./host": "bun",
+      "./desktop-link": "server",
       "./plugin": "server",
       "./openapi.json": "json"
     }

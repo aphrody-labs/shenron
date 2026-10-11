@@ -270,21 +270,28 @@ mod tests {
     fn cancellation_from_another_thread_interrupts_async_and_blocking_work() {
         for blocking in [false, true] {
             let id = create();
+            let (started, wait_for_start) = std::sync::mpsc::channel();
             let worker = std::thread::spawn(move || {
-                let started = Instant::now();
-                let json = run(id, "test", |job| {
+                run(id, "test", |job| {
                     if blocking {
-                        job.blocking(|| std::thread::sleep(Duration::from_secs(30)))
+                        job.blocking(move || {
+                            started.send(()).unwrap();
+                            std::thread::sleep(Duration::from_secs(30));
+                        })
                     } else {
-                        job.block_on(|| tokio::time::sleep(Duration::from_secs(30)))
-                            .ok_or(JobError::Cancelled)
+                        job.block_on(|| async {
+                            started.send(()).unwrap();
+                            tokio::time::sleep(Duration::from_secs(30)).await;
+                        })
+                        .ok_or(JobError::Cancelled)
                     }
-                });
-                (json, started.elapsed())
+                })
             });
-            std::thread::sleep(Duration::from_millis(50));
+            wait_for_start.recv_timeout(Duration::from_secs(10)).expect("job work must start");
+            let cancelled_at = Instant::now();
             assert!(cancel(id));
-            let (json, elapsed) = worker.join().unwrap();
+            let json = worker.join().unwrap();
+            let elapsed = cancelled_at.elapsed();
             assert_eq!(parse(&json)["status"], Status::Cancelled.code());
             assert!(elapsed < Duration::from_secs(5), "cancelled after {elapsed:?}");
             assert!(!registry().contains_key(&id));
@@ -294,15 +301,23 @@ mod tests {
     #[test]
     fn releasing_a_running_job_cancels_it() {
         let id = create();
+        let (started, wait_for_start) = std::sync::mpsc::channel();
         let worker = std::thread::spawn(move || {
             run(id, "test", |job| {
-                job.block_on(|| tokio::time::sleep(Duration::from_secs(30)))
-                    .ok_or(JobError::Cancelled)
+                job.block_on(|| async {
+                    started.send(()).unwrap();
+                    tokio::time::sleep(Duration::from_secs(30)).await;
+                })
+                .ok_or(JobError::Cancelled)
             })
         });
-        std::thread::sleep(Duration::from_millis(50));
+        wait_for_start.recv_timeout(Duration::from_secs(10)).expect("job work must start");
+        assert!(registry().get(&id).is_some_and(|entry| entry.running));
+        let released_at = Instant::now();
         assert!(release(id));
         assert_eq!(parse(&worker.join().unwrap())["status"], Status::Cancelled.code());
+        assert!(released_at.elapsed() < Duration::from_secs(5));
+        assert!(!registry().contains_key(&id));
     }
 
     #[test]

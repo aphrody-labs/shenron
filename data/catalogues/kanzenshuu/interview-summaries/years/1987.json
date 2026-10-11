@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 1987; contenus de forum exclus.",
+  "reviewNote": "Q&A avec répondant(s) identifié(s); contenu de forum exclu.",
+  "records": [
+    {
+      "id": "adventure-special-toriyama-qa",
+      "title": "Dragon Ball: Adventure Special (18 November 1987)",
+      "summary": "Toriyama répond à un long questionnaire mêlant l’univers de Dragon Ball, sa carrière et des questions générales. Il explique plusieurs choix simples de conception — comme les sept Dragon Ball, l’absence de nez de Kuririn ou la coupe de Bulma — tout en laissant ouvertes certaines questions et en traitant d’autres avec humour.",
+      "keyInformation": [
+        "Le nombre de Dragon Ball est choisi pour se distinguer d’un précédent littéraire; le nom Bulma vient des bloomers",
+        "Toriyama dit avoir imaginé que Kuririn respire par la peau et que Pu’er, diplômé de son école de métamorphose, peut changer de forme librement"
+      ],
+      "source": {
+        "publication": "Is That So?! The Dragon Balls Dragon Ball: Adventure Special (pp. 138-140)",
+        "pages": "138-140",
+        "date": "1987-11-18",
+        "url": "https://www.kanzenshuu.com/translations/adventure-special-toriyama-qa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/adventure-special-toriyama-qa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/adventure-special-toriyama-qa.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 64,
+        "questionBlockCount": 64,
+        "answerBlockCount": 64,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of the Akira Toriyama Q&A column from Dragon Ball's original 1987 guide book, the \"Adventure Special\"",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : réponses de l’auteur sur les personnages, le monde et les choix de conception du manga.",
+      "formatNote": "Questionnaire thématique très vaste, à réponses courtes et parfois volontairement fantaisistes.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    }
+  ]
+}

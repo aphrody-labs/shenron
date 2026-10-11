@@ -9,7 +9,16 @@ minimumReleaseAge = 259200
 # Owner-published Aphrody packages are pinned exactly and released in step with this repository;
 # security fixes (next, nodemailer, undici) track upstream in real time.
 minimumReleaseAgeExcludes = [
+  "@aphrody/bun",
+  "@aphrody/bun-types",
   "@aphrody/agent-browser",
+  "@aphrody/bun-runtime",
+  "@aphrody/bun-runtime-darwin-aarch64",
+  "@aphrody/bun-runtime-linux-aarch64",
+  "@aphrody/bun-runtime-linux-x64",
+  "@aphrody/bun-runtime-windows-x64",
+  "@aphrody/bun-plugin-tailwind",
+  "@aphrody/m3-tailwind",
   "@aphrody/web-test",
   "@aphrody/ag-ui",
   "@aphrody/api",
@@ -24,6 +33,7 @@ minimumReleaseAgeExcludes = [
   "@aphrody/m3-theme",
   "@aphrody/m3-tokens",
   "@aphrody/mcp-ui",
+  "@aphrody/next-bun",
   "@aphrody/messaging",
   "@aphrody/paths",
   "@aphrody/plugin-opener",
@@ -32,6 +42,7 @@ minimumReleaseAgeExcludes = [
   "@aphrody/update",
   "next",
   "@next/env",
+  "@next/third-parties",
   "@next/swc-linux-x64-gnu",
   "@next/swc-linux-x64-musl",
   "@next/swc-win32-x64-msvc",

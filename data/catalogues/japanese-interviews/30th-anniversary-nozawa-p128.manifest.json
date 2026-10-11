@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "status": "manual-visual-transcription-review-needed",
+  "publication": "30th Anniversary ドラゴンボール超史集",
+  "interviewTitle": "# DRAGON BALL ANIMATION SPECIAL INTERVIEW  ## 30年間、悟空たちを演じ続けるということ  まるで悟空その人と対峙しているかのよう……言葉の端々にパワーがみなぎる野沢雅子さんに、30年の想いのたけを語って頂いた。",
+  "interviewee": "野沢雅子",
+  "method": "目視転記。手元のPDFを高解像度でレンダリングして確認。OCR・ネットワーク不使用。",
+  "records": [
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-nozawa-p128.jsonl#L1",
+      "printedPages": [
+        128,
+        129
+      ],
+      "pdfPageIndices": [
+        129,
+        130
+      ],
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+      "imageBytes": 100224986,
+      "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
+      "transcriptBytes": 4831,
+      "transcriptSha256": "753dbb9b7cfda62ac3c74681b306dbb47205ec92082fd1e2971749f9e6b2b511",
+      "completeness": "INCOMPLETE EXCERPT. Adjacent folio confirms interview continuation; this sidecar contains only a partial transcription, with explicit untranscribed columns/passages. Do not treat as complete."
+    }
+  ],
+  "limits": [
+    "ページ番号は印刷フォリオとPDFインデックスを別々に記録。",
+    "写真プロフィール、作品画像内の文字、装飾用の大見出し以外の誌面注記は本文転記に含めていない。",
+    "読み切れない文字は「�」で示し、文章の欠落・ページ外の続きは補わない。",
+    "研究用の目視ドラフト。文字単位の独立校閲は未実施。",
+    "Les folios adjacents 125 (PDF 126) / 129 (PDF 130) continuent respectivement l’interview de Morishita / Nozawa. Leur contenu n’est ajouté que partiellement ; les colonnes et passages non transcrits sont explicitement signalés."
+  ],
+  "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-nozawa-p128.jsonl",
+  "transcriptBytes": 4831,
+  "transcriptSha256": "753dbb9b7cfda62ac3c74681b306dbb47205ec92082fd1e2971749f9e6b2b511"
+}

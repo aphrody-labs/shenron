@@ -1,0 +1,588 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2015; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "weekly-shonen-jump-2015-issue-15-momoiro-clover-z-interview",
+      "title": "Momoiro Clover Z Interview",
+      "summary": "Momoiro Clover Z raconte son doublage des anges dans Resurrection F. Les membres découvrent la difficulté de jouer le fantastique et de rire sur commande avec des images fixes.",
+      "keyInformation": [
+        "Ariyasu et Sasaki veulent faire enrager Freeza dans la scène.",
+        "Momota trouve le rire angélique difficile; Takagi devait jouer un rôle énergique.",
+        "Elles enregistrent avant animation complète et imaginent les mouvements."
+      ],
+      "source": {
+        "publication": "Weekly Shōnen Jump, 2015 #15 (p. 20)",
+        "date": "09 March 2015",
+        "participants": [
+          "Momoka Ariyasu",
+          "Ayaka Sasaki",
+          "Kanako Momota",
+          "Shiori Tamai",
+          "Reni Takagi"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/weekly-shonen-jump-2015-issue-15-momoiro-clover-z-interview/",
+        "questionAnswerCount": 2,
+        "detectedQuestionBlocks": 2,
+        "detectedAnswerBlocks": 1,
+        "formatNote": "Blocs réponse locaux=1 vs index=2. Comptage Q/R distinct (2/1); vérifier structure imbriquée ou question omise.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/weekly-shonen-jump-2015-issue-15-momoiro-clover-z-interview.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "entermix-may-2015-momoiro-clover-z-interview",
+      "title": "Momoiro Clover Z Interview",
+      "summary": "Momoiro Clover Z parle de la chanson thème, des personnages préférés et du doublage des anges. Les membres espèrent que la chanson rappellera Dragon Ball Z à plusieurs générations; leurs réponses sur les pouvoirs sont ludiques.",
+      "keyInformation": [
+        "Le Z du nom du groupe faisait référence à Dragon Ball.",
+        "Leurs choix de personnages sont des préférences personnelles.",
+        "Elles imaginent téléportation, guérison, météo et télékinésie.",
+        "Le rire angélique sur images non animées leur a semblé difficile."
+      ],
+      "source": {
+        "publication": "Entermix, May 2015 (pp. 76-77)",
+        "date": "20 March 2015",
+        "participants": [
+          "Momoka Ariyasu",
+          "Ayaka Sasaki",
+          "Kanako Momota",
+          "Shiori Tamai",
+          "Reni Takagi"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/entermix-may-2015-momoiro-clover-z-interview/",
+        "questionAnswerCount": 6,
+        "detectedQuestionBlocks": 6,
+        "detectedAnswerBlocks": 6,
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/entermix-may-2015-momoiro-clover-z-interview.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "v-jump-may-2015-momoiro-clover-z",
+      "title": "Momoiro Clover Z Interview",
+      "summary": "Échange humoristique où le groupe imagine des usages du ki: téléportation, météo, guérison, télékinésie et fusion avec un mur pour fuir dans les rêves de Takagi. Le dialogue joue sur les pouvoirs déjà vus dans Dragon Ball.",
+      "keyInformation": [
+        "Ariyasu choisit la téléportation, Sasaki la météo, Momota la guérison et Tamai la télékinésie.",
+        "Takagi imagine se fondre dans un mur pour fuir un ennemi rêvé.",
+        "Plaisanteries promotionnelles, pas ajouts canoniques."
+      ],
+      "source": {
+        "publication": "V-Jump, May 2015 (p. 9)",
+        "date": "20 March 2015",
+        "participants": [
+          "Momoka Ariyasu",
+          "Ayaka Sasaki",
+          "Kanako Momota",
+          "Shiori Tamai",
+          "Reni Takagi"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/v-jump-may-2015-momoiro-clover-z/",
+        "questionAnswerCount": 11,
+        "detectedQuestionBlocks": 11,
+        "detectedAnswerBlocks": 10,
+        "formatNote": "Blocs réponse locaux=10 vs index=11. Comptage Q/R distinct (11/10); vérifier structure imbriquée ou question omise.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-may-2015-momoiro-clover-z.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "flying-postman-press-april-2015-norihiro-hayashida",
+      "title": "Norihiro Hayashida Interview",
+      "summary": "Le producteur Hayashida raconte la décision de produire un film après le succès de Battle of Gods. Selon lui, la chanson F de Maximum the Hormone inspire à Toriyama le retour de Freeza. Il loue le scénario, les combats de Yamamuro et la musique de Sumitomo; c'est son premier long métrage comme producteur.",
+      "keyInformation": [
+        "Après le succès du film précédent, l'équipe demande à Toriyama un nouveau scénario.",
+        "Hayashida attribue à F l'idée du retour de Freeza.",
+        "Il apprécie le dialogue, les gestes martiaux et la musique.",
+        "Propos du producteur, non de l'auteur."
+      ],
+      "source": {
+        "publication": "Flying Postman Press, April 2015 (p. 4)",
+        "date": "20 March 2015",
+        "participants": [
+          "Norihiro Hayashida"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/flying-postman-press-april-2015-norihiro-hayashida/",
+        "questionAnswerCount": 4,
+        "detectedQuestionBlocks": 4,
+        "detectedAnswerBlocks": 4,
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/flying-postman-press-april-2015-norihiro-hayashida.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "flying-postman-press-april-2015-ryusei-nakao",
+      "title": "Ryūsei Nakao Interview",
+      "summary": "Nakao accueille le retour de Freeza comme un hommage aux fans. Il évoque l'allure aristocratique du personnage, son complexe envers son père et le défi de préserver sa voix en jouant Golden Freeza. Les plaisanteries de puissance sont des gags d'acteur.",
+      "keyInformation": [
+        "Nakao attribue le retour au soutien des fans.",
+        "Il associe le parler raffiné de Freeza à un aristocrate et voit son père comme une source de complexe.",
+        "Il préserve la voix reconnaissable du personnage; les scènes rapides compliquaient le doublage.",
+        "Son estimation de puissance est une plaisanterie."
+      ],
+      "source": {
+        "publication": "Flying Postman Press, April 2015 (p. 2)",
+        "date": "20 March 2015",
+        "participants": [
+          "Ryūsei Nakao"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/flying-postman-press-april-2015-ryusei-nakao/",
+        "questionAnswerCount": 7,
+        "detectedQuestionBlocks": 7,
+        "detectedAnswerBlocks": 7,
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/flying-postman-press-april-2015-ryusei-nakao.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "entermix-may-2015-ryusei-nakao-interview",
+      "title": "Ryūsei Nakao Interview",
+      "summary": "Nakao se réjouit de retrouver Freeza et joue sa forme dorée comme une malveillance plus achevée. Il commente les combats rapides et son expérience avec Nozawa; témoignage d'acteur.",
+      "keyInformation": [
+        "Il associe le F du titre aux fans.",
+        "Il accentue le côté maléfique sans changer l'essence du personnage.",
+        "Les combats obligeaient à vérifier les mouvements en studio.",
+        "Ses remarques de puissance ne sont pas des faits narratifs."
+      ],
+      "source": {
+        "publication": "Entermix, May 2015 (p. 78)",
+        "date": "20 March 2015",
+        "participants": [
+          "Ryūsei Nakao"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/entermix-may-2015-ryusei-nakao-interview/",
+        "questionAnswerCount": 5,
+        "detectedQuestionBlocks": 5,
+        "detectedAnswerBlocks": 5,
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/entermix-may-2015-ryusei-nakao-interview.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "v-jump-june-2015-ryusei-nakao-interview",
+      "title": "Ryūsei Nakao Interview",
+      "summary": "Après la sortie du film, Nakao détaille son jeu de Golden Freeza et les combats rapides. Il trouve inédit que Freeza soit intimidé par Beerus, apprécie l'échange avec Tagoma et la présence de Jaco.",
+      "keyInformation": [
+        "Nakao jouait Freeza plus maléfique; les mouvements rapides étaient revus sur pause.",
+        "Il apprécie de voir Freeza nerveux face à Beerus.",
+        "Il signale les scènes avec Tagoma et Jaco; appréciations d'acteur."
+      ],
+      "source": {
+        "publication": "V-Jump, June 2015 (pp. 332-333)",
+        "date": "21 April 2015",
+        "participants": [
+          "Ryūsei Nakao"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/v-jump-june-2015-ryusei-nakao-interview/",
+        "questionAnswerCount": 11,
+        "detectedQuestionBlocks": 11,
+        "detectedAnswerBlocks": 10,
+        "formatNote": "Blocs réponse locaux=10 vs index=11. Comptage Q/R distinct (11/10); vérifier structure imbriquée ou question omise.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-june-2015-ryusei-nakao-interview.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "v-jump-may-2015-naho-ooishi-toyotaro",
+      "title": "Double Dragon Talk 2!!! (Naho Ooishi × Toyotarō)",
+      "summary": "Dans cet entretien de V-Jump consacré à Resurrection “F”, Naho Ōishi et Toyotarō commentent le film avant sa sortie. Ils voient Freeza comme sa figure centrale : son statut de souverain charismatique, les mille soldats qui lui restent et la menace de son retour contrastent avec l’aspect comique de son entrée en forme dorée. Toyotarō le considère comme un grand antagoniste de l’époque présente, entre Cell associé au futur et Boo au passé; Ōishi souligne que Freeza n’avait encore jamais entraîné son corps. Les deux apprécient la place de Vegeta et son costume gris foncé. Toyotarō retient le combat collectif contre l’armée, où chaque guerrier Z peut montrer son style; Ōishi mentionne l’affrontement et la transformation de Goku et Vegeta ainsi qu’un échange entre Beerus et Bulma. La page Kanzenshuu contient aussi un court extrait dessiné par Toyotarō sur les soldats entassés dans leur vaisseau, distinct de l’entretien.",
+      "keyInformation": [
+        "Ōishi et Toyotarō ont vu Resurrection “F” avant sa sortie et identifient Freeza comme un attrait majeur.",
+        "Ils soulignent le charisme de souverain de Freeza, son armée de mille soldats et la menace de son retour; son entrée dorée les amuse.",
+        "Toyotarō le situe comme grand antagoniste de l’époque présente; Ōishi insiste sur son premier entraînement.",
+        "Ils apprécient le rôle de Vegeta et son costume de combat gris foncé.",
+        "Toyotarō met en avant le combat des guerriers Z contre l’armée; Ōishi cite Goku et Vegeta, puis Beerus et Bulma.",
+        "Un court extrait manga séparé de Toyotarō accompagne la page."
+      ],
+      "source": {
+        "publication": "V-Jump, numéro de mai 2015",
+        "date": "2015-03-20",
+        "participants": [
+          "Naho Ōishi",
+          "Toyotarō"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/v-jump-may-2015-naho-ooishi-toyotaro/",
+        "questionAnswerCount": 2,
+        "detectedQuestionBlocks": 5,
+        "detectedAnswerBlocks": 5,
+        "formatNote": "La mise en page compte cinq blocs avec introduction, transition et encart; l’échange proprement dit comporte deux questions principales.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-may-2015-naho-ooishi-toyotaro.html"
+      },
+      "dragonBallRelevance": "Directe : deux auteurs commentent les personnages, combats et choix de Resurrection “F”.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-ball-super-cast-comments-masako-nozawa",
+      "title": "Dragon Ball Super Cast Comments",
+      "kind": "qa",
+      "summary": "Nozawa dit retrouver naturellement Goku, Gohan et Goten, qu’elle interprète aussi dans jeux et films. Elle apprécie le calme des premiers épisodes et l’ambiance du studio, et attend le développement de Beerus, Whis et des nouveaux personnages.",
+      "keyInformation": [
+        "Retour des trois rôles",
+        "début calme",
+        "Beerus et Whis approfondis en série."
+      ],
+      "source": {
+        "date": "04 July 2015",
+        "publication": "Dragon Ball Super  Cast Comments",
+        "pages": null,
+        "bibliographicYears": [
+          2015
+        ],
+        "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-masako-nozawa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-masako-nozawa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-super-cast-comments-masako-nozawa.html",
+        "participants": [
+          "Masako Nozawa"
+        ],
+        "questionAnswerCount": 4,
+        "questionBlockCount": 4,
+        "answerBlockCount": 4,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of comments from Masako Nozawa leading up to the debut of the 'Dragon Ball Super' TV series in July 2015",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Témoignage de la voix historique sur Super.",
+      "archivalKind": "authorial-comment",
+      "formatNote": "Entretien de promotion en questions-réponses avec le ou les comédiens identifiés."
+    },
+    {
+      "id": "dragon-ball-super-cast-comments-ryo-horikawa",
+      "title": "Dragon Ball Super Cast Comments",
+      "kind": "qa",
+      "summary": "Horikawa se réjouit de retrouver Vegeta et de suivre son évolution après Boo et sa relation avec Bulma. Il décrit une équipe soudée et une intrigue imprévisible guidée par Toriyama.",
+      "keyInformation": [
+        "Vegeta évolue après Boo",
+        "équipe réunie",
+        "suite imprévisible."
+      ],
+      "source": {
+        "date": "04 July 2015",
+        "publication": "Dragon Ball Super  Cast Comments",
+        "pages": null,
+        "bibliographicYears": [
+          2015
+        ],
+        "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-ryo-horikawa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-ryo-horikawa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-super-cast-comments-ryo-horikawa.html",
+        "participants": [
+          "Ryō Horikawa"
+        ],
+        "questionAnswerCount": 5,
+        "questionBlockCount": 5,
+        "answerBlockCount": 5,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of comments from Ryō Horikawa leading up to the debut of the 'Dragon Ball Super' TV series in July 2015",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Témoignage de l’interprète de Vegeta.",
+      "archivalKind": "authorial-comment",
+      "formatNote": "Entretien de promotion en questions-réponses avec le ou les comédiens identifiés."
+    },
+    {
+      "id": "dragon-ball-super-cast-comments-toshio-furukawa",
+      "title": "Dragon Ball Super Cast Comments",
+      "kind": "qa",
+      "summary": "Furukawa considère Piccolo comme son personnage préféré et veut lui consacrer toute son énergie. Il apprécie de retrouver l’équipe vocale et souhaite que la franchise se transmette aux générations futures.",
+      "keyInformation": [
+        "Attachement personnel à Piccolo",
+        "cohésion du casting",
+        "transmission intergénérationnelle."
+      ],
+      "source": {
+        "date": "05 July 2015",
+        "publication": "Dragon Ball Super  Cast Comments",
+        "pages": null,
+        "bibliographicYears": [
+          2015
+        ],
+        "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-toshio-furukawa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-toshio-furukawa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-super-cast-comments-toshio-furukawa.html",
+        "participants": [
+          "Toshio Furukawa"
+        ],
+        "questionAnswerCount": 5,
+        "questionBlockCount": 5,
+        "answerBlockCount": 5,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of comments from Toshio Furukawa leading up to the debut of the 'Dragon Ball Super' TV series in July 2015",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Témoignage de l’interprète de Piccolo.",
+      "archivalKind": "authorial-comment",
+      "formatNote": "Entretien de promotion en questions-réponses avec le ou les comédiens identifiés."
+    },
+    {
+      "id": "dragon-ball-super-cast-comments-takeshi-kusao",
+      "title": "Dragon Ball Super Cast Comments",
+      "kind": "qa",
+      "summary": "Kusao est surpris et heureux du retour de la série et espère un Trunks plus présent après son passage bref dans Resurrection “F”. Il veut garder l’identité du personnage tout en renouvelant sa relation avec Goten pour le nouveau public.",
+      "keyInformation": [
+        "Trunks pourrait être plus présent",
+        "équilibre entre continuité d’interprétation et relation renouvelée à Goten."
+      ],
+      "source": {
+        "date": "05 July 2015",
+        "publication": "Dragon Ball Super  Cast Comments",
+        "pages": null,
+        "bibliographicYears": [
+          2015
+        ],
+        "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-takeshi-kusao/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-takeshi-kusao/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-super-cast-comments-takeshi-kusao.html",
+        "participants": [
+          "Takeshi Kusao"
+        ],
+        "questionAnswerCount": 5,
+        "questionBlockCount": 5,
+        "answerBlockCount": 5,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of comments from Takeshi Kusao leading up to the debut of the 'Dragon Ball Super' TV series in July 2015",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Témoignage de la voix de Trunks.",
+      "archivalKind": "authorial-comment",
+      "formatNote": "Entretien de promotion en questions-réponses avec le ou les comédiens identifiés."
+    },
+    {
+      "id": "dragon-ball-super-cast-comments-kozo-shioya-unsho-ishizuka",
+      "title": "Dragon Ball Super Cast Comments",
+      "kind": "qa",
+      "summary": "Shioya et Ishizuka s’amusent du retour de Boo et Satan et de la facilité avec laquelle Beerus bat Boo. Ils souhaitent que les deux aient des moments utiles, décrivent leur relation comme un vieux couple comique et comparent les studios d’enregistrement.",
+      "keyInformation": [
+        "Boo peu sollicité en combat au début",
+        "duo comique Boo-Satan",
+        "nouveau studio plus lumineux."
+      ],
+      "source": {
+        "date": "22 August 2015",
+        "publication": "Dragon Ball Super  Cast Comments",
+        "pages": null,
+        "bibliographicYears": [
+          2015
+        ],
+        "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-kozo-shioya-unsho-ishizuka/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-kozo-shioya-unsho-ishizuka/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-super-cast-comments-kozo-shioya-unsho-ishizuka.html",
+        "participants": [
+          "Kōzō Shioya",
+          "Unshō Ishizuka"
+        ],
+        "questionAnswerCount": 4,
+        "questionBlockCount": 4,
+        "answerBlockCount": 4,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of comments from Kōzō Shioya (Buu) Unshō Ishizuka (Mr. Satan) in conjunction with the 'Dragon Ball Super' TV series",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Témoignage croisé des voix de Boo et Satan.",
+      "formatNote": "Entretien de promotion en questions-réponses avec le ou les comédiens identifiés.",
+      "archivalKind": "authorial-comment"
+    },
+    {
+      "id": "volume-f-akira-toriyama-script-comments",
+      "title": "Dragon Ball: Volume “F”",
+      "kind": "qa",
+      "summary": "Toriyama explique que son « scénario » publié est plutôt un mémo indiquant le déroulement et les dialogues. Il estime que le créateur original peut manier librement l’univers et les voix ; des encadrés précisent que Goku obtient l’entraînement de Whis par la nourriture, Vegeta le rejoint par rivalité, Beerus a déjà vaincu Freezer et l’animation renforce les combats.",
+      "keyInformation": [
+        "Mémo de travail devenu publication",
+        "Goku convainc Whis par la nourriture",
+        "Beerus a déjà battu Freezer",
+        "l’animation étend les combats."
+      ],
+      "source": {
+        "date": "18 April 2015",
+        "publication": "Dragon Ball: Volume “F”",
+        "pages": null,
+        "bibliographicYears": [
+          2015
+        ],
+        "url": "https://www.kanzenshuu.com/translations/volume-f-akira-toriyama-script-comments/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/volume-f-akira-toriyama-script-comments/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/volume-f-akira-toriyama-script-comments.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 10,
+        "questionBlockCount": 10,
+        "answerBlockCount": 10,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of script-related comments from Akira Toriyama in the 'Revival of F' Japanese bonus theatrical book, 'Volume F'",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Source riche sur le scénario et la production.",
+      "formatNote": "Q&A éditorial avec questions directes à Toriyama sur son scénario et sa mise en œuvre à l’écran.",
+      "archivalKind": "authorial-comment"
+    },
+    {
+      "id": "site-post-44427-podcast-episode-0385",
+      "title": "Podcast Episode #0385 — Joey Weiser",
+      "kind": "audio-interview",
+      "summary": "Le synopsis présente une interview de Joey Weiser, illustrateur professionnel et fan de longue date à l’origine du projet « Daily Dragon Ball ». L’échange s’intéresse à ce que la pratique d’un projet quotidien apprend sur le style graphique et l’éthique de travail d’Akira Toriyama. Le billet ne transcrit pas l’entretien audio.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0385; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2015/07/21/podcast-episode-0385/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2015-07-21",
+        "participants": [
+          "Joey Weiser"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2015.json",
+        "audioUrl": "http://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0385.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-44427-podcast-episode-0385.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Daily Dragon Ball",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-44427-podcast-episode-0385.mp3",
+      "audioTranscriptAvailable": false
+    },
+    {
+      "id": "site-post-44944-podcast-episode-0387-chris-sabat-segment",
+      "kind": "audio-interview",
+      "title": "Podcast Episode #0387 — bref segment avec Chris Sabat",
+      "summary": "Le descriptif de l’épisode présente une discussion des animateurs sur le doublage anglais de Dragon Ball Z: Resurrection F, mise en regard de leur travail sur Kai et Battle of Gods. Il annonce également une brève intervention de Chris Sabat apportant un éclairage sur le casting vocal et le script. Le billet ne reproduit pas cette intervention; aucune précision supplémentaire sur ses propos n’est disponible sans transcription.",
+      "keyInformation": [
+        "Sujet annoncé : doublage anglais de Resurrection F, comparé à Kai et Battle of Gods.",
+        "Chris Sabat intervient brièvement au sujet du casting vocal et du script.",
+        "Aucune transcription ni fichier audio n’a été trouvé dans les sources locales vérifiées; les détails non reproduits ne sont pas inventés."
+      ],
+      "source": {
+        "publication": "Kanzenshuu Podcast, épisode #0387",
+        "url": "https://www.kanzenshuu.com/2015/08/11/podcast-episode-0387/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2015.json",
+        "date": "2015-08-11",
+        "participants": [
+          "Chris Sabat",
+          "VegettoEX",
+          "Meri",
+          "Hujio"
+        ],
+        "audioTranscriptAvailable": false,
+        "audioDownloaded": false,
+        "formatNote": "Bref segment audio annoncé dans un épisode de podcast; transcription et fichier audio non disponibles dans les sources locales vérifiées.",
+        "forumContent": false
+      },
+      "formatNote": "Segment audio bref, sans transcription disponible.",
+      "dragonBallRelevance": "Directe : doublage anglais, casting et script d’une production Dragon Ball.",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-40439-bunka-tsushin-hidenobu-muramatsu-yasushi-suto-excerpt",
+      "kind": "external-interview-excerpt",
+      "title": "Hidenobu Muramatsu et Yasushi Sutō — extrait d’interview sur Revival of ‘F’",
+      "summary": "Kanzenshuu résume une interview publiée par Bunka Tsūshin dans le numéro de mars 2015 de Cultural News Journal avec Hidenobu Muramatsu, responsable des ventes cinéma et du box-office chez Toei, et Yasushi Sutō, responsable de la planification et de la production. L’article rapporte leur objectif d’exploitation pour Revival of ‘F’ et traduit une déclaration de Muramatsu : début février, les préventes progressaient de 30 % par rapport au même stade pour Battle of Gods, et Toei visait cette fois 4 milliards de yens, contre 3 milliards pour le film précédent. Kanzenshuu indique également que le film devait sortir sur 640 à 650 écrans japonais, contre 312 pour Battle of Gods.",
+      "keyInformation": [
+        "Hidenobu Muramatsu est cité pour l’objectif de recettes de 4 milliards de yens; le billet compare ce montant à l’objectif de 3 milliards de yens de Battle of Gods.",
+        "La déclaration attribuée à Muramatsu indique qu’au début de février 2015, les préventes étaient en hausse de 30 % par rapport au même moment avant Battle of Gods.",
+        "Kanzenshuu rapporte une sortie prévue sur 640 à 650 écrans au Japon, contre 312 pour Battle of Gods.",
+        "Il s’agit d’un extrait et d’un résumé d’une interview imprimée externe, pas d’une transcription complète; les projections sont celles annoncées à l’époque."
+      ],
+      "source": {
+        "publication": "Bunka Tsūshin, Cultural News Journal, March 2015 issue",
+        "url": "https://www.kanzenshuu.com/2015/03/05/revival-of-f-aims-to-surpass-battle-of-gods-at-the-box-office/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2015.json",
+        "date": "2015-03-05",
+        "participants": [
+          "Hidenobu Muramatsu",
+          "Yasushi Sutō"
+        ],
+        "participantRoles": {
+          "Hidenobu Muramatsu": "Responsable des ventes cinéma et du box-office chez Toei",
+          "Yasushi Sutō": "Responsable de la planification et de la production chez Toei"
+        },
+        "formatNote": "Interview publiée dans une revue imprimée externe; Kanzenshuu en donne un résumé et traduit une déclaration de Muramatsu, sans reproduire l’échange complet.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : objectifs de distribution et d’exploitation de Dragon Ball Z: Revival of ‘F’ rapportés par des responsables de Toei.",
+      "status": "summary-written-external-interview-not-fully-transcribed",
+      "forumContent": false
+    },
+    {
+      "id": "v-jump-2015-akio-iyoku-kozo-morishita-film-titles",
+      "title": "Akio Iyoku et Kōzō Morishita — entretien V-Jump sur les films Dragon Ball",
+      "summary": "Dans cet entretien en ligne de V-Jump, Akio Iyoku interroge le producteur Kōzō Morishita sur la conception des films Dragon Ball de cette période. Morishita explique que les titres et l’histoire étaient élaborés en parallèle avec l’éditeur Kondō; cette simultanéité rendait le processus de décision difficile. Kanzenshuu cite et résume ce passage dans une page ultérieure, sans reproduire l’entretien complet.",
+      "keyInformation": [
+        "Morishita rapporte que le sous-titre et le contenu narratif des films étaient réfléchis en même temps.",
+        "L’éditeur Kondō participait à ces échanges de conception.",
+        "Morishita décrit cette façon de travailler comme difficile.",
+        "La page Kanzenshuu fournit un extrait/résumé, pas une transcription intégrale de l’entretien V-Jump."
+      ],
+      "source": {
+        "publication": "V-Jump, entretien en ligne; Akio Iyoku interviewe le producteur Kōzō Morishita",
+        "date": "24 May 2015 (archive de la page; date originale de publication non établie)",
+        "participants": [
+          "Akio Iyoku",
+          "Kōzō Morishita",
+          "Kondō (éditeur, mentionné)"
+        ],
+        "originalSource": "http://vjump.shueisha.co.jp/victory/vt23/wp-main-pre23.html",
+        "archivedSource": "https://web.archive.org/web/20150524012258/http://vjump.shueisha.co.jp:80/victory/vt23/wp-main-pre23.html",
+        "kanzenshuuPage": "https://www.kanzenshuu.com/faqs/dbz-movies-fit-the-story/",
+        "kanzenshuuPageId": 75192,
+        "questionAnswerCount": null,
+        "formatNote": "Entretien en ligne externe; Kanzenshuu en rapporte un passage, sans transcription complète. La capture Wayback est datée du 24 mai 2015, ce qui n’établit pas nécessairement la date de publication originale.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2024.json"
+      },
+      "dragonBallRelevance": "Directe: témoignage d’un producteur sur la conception des films Dragon Ball.",
+      "status": "summary-based-on-kanzenshuu-excerpt-source-not-fully-collated",
+      "forumContent": false
+    }
+  ]
+}

@@ -30,7 +30,7 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
         allowPrivateNetwork: true,
       });
       page = await TestPage.create({ cdpUrl: engine.endpoint, baseURL: server.url.href });
-      await page.raw._send("Emulation.setDeviceMetricsOverride", {
+      await page.raw.cdp("Emulation.setDeviceMetricsOverride", {
         width: 390,
         height: 844,
         deviceScaleFactor: 1,

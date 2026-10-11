@@ -139,6 +139,14 @@ export const AI_ENV = Object.freeze({
       { name: "APHRODY_LOCAL_MODEL_URL", form: "origin" },
     ],
   },
+  chatApiKey: {
+    canonical: "APHRODY_AI_CHAT_API_KEY",
+    aliases: [
+      { name: "APHRODY_AI_CHAT_TOKEN" },
+      { name: "VLLM_API_KEY" },
+      { name: "SHENRON_OPENAI_API_KEY" },
+    ],
+  },
   visionModel: {
     canonical: "APHRODY_AI_VISION_MODEL",
     aliases: [{ name: "APHRODY_SHENRON_VISION_MODEL" }],
@@ -503,6 +511,8 @@ export interface DirectChatEndpoint {
   model: string;
   /** Variable the base URL was read from. */
   source: string;
+  /** Private upstream credential; never forwarded from an incoming gateway request. */
+  apiKey?: string;
 }
 
 /**
@@ -517,8 +527,15 @@ export function resolveDirectChat(env: EnvSource): Resolved<DirectChatEndpoint |
   if (!base.ok) return base;
   const issues: EnvIssue[] = [];
   const model = modelId(env, AI_ENV.chatModel, DIRECT_CHAT_MODEL_ID, issues);
+  const key = readAiEnv(env, AI_ENV.chatApiKey);
+  if (key && /[\r\n\0]/.test(key.value)) {
+    issues.push({ name: key.name, problem: "invalid", hint: "must be a single-line credential" });
+  }
   if (issues.length > 0) return { ok: false, issues };
-  return { ok: true, value: { baseUrl: base.value, model, source: hit.name } };
+  return {
+    ok: true,
+    value: { baseUrl: base.value, model, source: hit.name, ...(key ? { apiKey: key.value } : {}) },
+  };
 }
 
 /** Vision model id sent to `aphrody-ai-http` (`APHRODY_AI_VISION_MODEL` or alias, else the default). */
@@ -540,6 +557,8 @@ export interface AiConfig {
   embedSpace: EmbeddingSpace;
   rerank: RerankEndpoint | null;
   chatModel: AphrodyChatModelId;
+  /** Explicit direct provider, independent of the embedding/RAG compute transport. */
+  directChat?: DirectChatEndpoint | null;
   visionModel: string;
   ragBackend: "aphrody" | "local";
   timeouts: AiTimeouts;
@@ -602,15 +621,20 @@ export function resolveAiConfig(
   const rerank = resolveRerank(env);
   if (!rerank.ok) issues.push(...rerank.issues);
 
+  const direct = resolveDirectChat(env);
+  if (!direct.ok) issues.push(...direct.issues);
   if (!compute) {
     const reason = `requires ${httpNames}`;
-    disabled.push({ capability: "chat", reason });
+    if (!direct.ok || !direct.value) disabled.push({ capability: "chat", reason });
     disabled.push({ capability: "ocr", reason });
     disabled.push({ capability: "rag", reason });
   }
 
   // ── model ids ──
-  const chatModel = modelId(env, AI_ENV.chatModel, DEFAULT_CHAT_MODEL, issues);
+  const chatModel =
+    direct.ok && direct.value
+      ? direct.value.model
+      : modelId(env, AI_ENV.chatModel, DEFAULT_CHAT_MODEL, issues);
   const visionModel = modelId(env, AI_ENV.visionModel, DEFAULT_VISION_MODEL, issues);
 
   // ── timeouts ──
@@ -639,6 +663,7 @@ export function resolveAiConfig(
       embedSpace: space.value,
       rerank: rerank.value,
       chatModel,
+      directChat: direct.ok ? direct.value : null,
       visionModel,
       // Exact match, like the historical `process.env.RAG_BACKEND === "aphrody"`.
       ragBackend: env.RAG_BACKEND === "aphrody" ? "aphrody" : "local",

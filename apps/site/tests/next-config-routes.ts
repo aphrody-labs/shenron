@@ -11,7 +11,7 @@ import { getPathMatch } from "next/dist/shared/lib/router/utils/path-match";
 import { prepareDestination } from "next/dist/shared/lib/router/utils/prepare-destination";
 import config from "../next.config";
 
-const nextConfig = config("phase-test");
+const nextConfig = await config("phase-test", {});
 
 interface Rule {
   source: string;

@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2003; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "son-goku-densetsu-toriyama-x-nakatsuru",
+      "title": "Akira Toriyama × Katsuyoshi Nakatsuru",
+      "summary": "Cet entretien réunit Toriyama et Katsuyoshi Nakatsuru, animateur et character designer lié à Dragon Ball Z et GT. Toriyama raconte que la stylisation anguleuse de l'anime lui a servi de modèle pour rendre ses combats plus rapides et simplifier les ombres. Il explique que le titre Dragon Ball Z devait signifier la fin de la série — Z étant la dernière lettre — et qu'il acceptait surtout la demande de l'équipe animée de rafraîchir le titre. Il revient sur des choix de conception ajustés pendant la sérialisation, par exemple une armure saiyenne d'abord imaginée rigide puis rendue plus souple pour permettre aux personnages de lever le bras. Il dit avoir aimé le spécial Bardock, qui l'a ému et l'a amené à intégrer Bardock au manga; il précise également qu'il avait transmis à l'équipe animée certaines règles non écrites de son monde, comme le faible nombre de visages saiyans distincts. Il rappelle enfin que Dragon Ball devait ses thèmes martiaux aux films de Bruce Lee et Jackie Chan, et que ses chapitres hebdomadaires étaient souvent dessinés sous une forte pression de délai.",
+      "keyInformation": [
+        "Nakatsuru avait déjà animé des épisodes du début de Dragon Ball, dont les premières apparitions d'Oolong et du Kamehameha de Kame-sennin; l'entretien distingue son travail de key animation de l'interpolation.",
+        "Toriyama dit que le trait anguleux et les aplats inspirés par l'animation l'ont aidé à donner de la vitesse aux combats et à accélérer son travail sur le manga.",
+        "Il explique que le Z de Dragon Ball Z faisait référence à la dernière lettre de l'alphabet et à son souhait de finir le manga; il n'attribue pas le titre à une boisson énergisante. L'équipe de l'anime souhaitait quant à elle donner un nouvel élan à la série télévisée.",
+        "Il décrit l'armure saiyenne comme un design évolutif : initialement rigide, elle a été représentée plus souple quand il a constaté qu'une matière dure empêcherait le mouvement du bras.",
+        "Toriyama dit avoir choisi le résultat du Tenkaichi Budokai à rebours des cartes de lecteurs qui prédisaient la victoire de Goku, et se souvient d'un Goku volontairement conçu comme personnage principal peu remarquable avant les ajustements éditoriaux.",
+        "Il dit ne pas avoir de modèle humain pour Goku; Bruce Lee influençait plutôt l'expression de son visage dans les scènes de combat.",
+        "Il explique que le spécial TV Bardock l'a ému et qu'il a ensuite intégré Bardock au manga; il avait aussi formulé pour les animateurs des idées de continuité comme le faible nombre de types de visages saiyans.",
+        "À propos d'une nouvelle série animée, il préférait ajouter des histoires inédites situées dans le passé plutôt que prolonger l'histoire principale après sa conclusion; dans cet entretien, GT est traité comme le prolongement animé déjà existant.",
+        "Il dit que l'inspiration martiale de Dragon Ball vient de Bruce Lee et Jackie Chan : il a revu Enter the Dragon de nombreuses fois et regardé Drunken Master plus de deux cents fois selon son souvenir.",
+        "Il décrit un rythme hebdomadaire très court : il gardait parfois ses storyboards jusqu'à deux jours avant remise, les dessinait en quelques heures et finissait le chapitre en environ un jour et demi.",
+        "Il dit avoir relu le manga entier pour les nouvelles couvertures Kanzenban et avoir été surpris par son énergie et le plaisir de lecture."
+      ],
+      "source": {
+        "publication": "TV Anime Guide: Dragon Ball Z Son Goku Densetsu",
+        "pages": "90–102",
+        "date": "2003-10-03",
+        "participants": [
+          "Akira Toriyama",
+          "Katsuyoshi Nakatsuru"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/son-goku-densetsu-toriyama-x-nakatsuru/",
+        "questionAnswerCount": 31,
+        "formatNote": "Le HTML acquis contient 32 blocs question et 31 blocs réponse; le compte résumé correspond aux 31 paires complètes, tandis que l'index compte les 32 questions balisées.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/son-goku-densetsu-toriyama-x-nakatsuru.html"
+      },
+      "dragonBallRelevance": "Directe : origines, titre DBZ, dessin, continuité éditoriale entre manga et anime, personnages, Bardock, inspirations et méthode de sérialisation.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-ball-landmark-dragon-ball-toriyama",
+      "title": "Akira Toriyama On the Road",
+      "summary": "Dans ce retour biographique, Toriyama parle de ses goûts d'enfant, de ses débuts professionnels et de la transition entre Dr. Slump et Dragon Ball. Il raconte que la fin de Dr. Slump l'a conduit à chercher un autre format, moins dépendant de la résolution d'un gag à chaque chapitre; il a préparé Dragon Ball après un récit court d'arts martiaux inspiré de son goût pour les films de kung-fu. Il dit avoir choisi Jump après avoir manqué le délai d'un concours chez Shōnen Magazine et parce que ses concours revenaient plus souvent. Il évoque aussi ses longues nuits pendant Dr. Slump, ses influences visuelles de jeunesse et son plaisir durable à dessiner plutôt qu'à planifier une grande saga.",
+      "keyInformation": [
+        "Toriyama dit qu'enfant il aimait dessiner ce qu'il voulait posséder ou voir, et cite Popeye et les films d'animation Disney parmi ses influences précoces.",
+        "Après son emploi dans une entreprise de design, il a commencé par tenter un concours de Shōnen Magazine, mais a raté la date limite; il a alors choisi Jump, dont les concours étaient plus fréquents.",
+        "Il se souvient que Dr. Slump était difficile à sérialiser parce qu'il fallait conclure une histoire comique chaque semaine; il a développé Dragon Ball à partir d'un récit court de kung-fu et du souhait de faire un manga feuilletonnant.",
+        "Il décrit une période de surmenage extrême pendant Dr. Slump, dont une nuit record de six jours avec seulement une vingtaine de minutes de sommeil; il dit que ce régime s'était largement atténué pendant Dragon Ball.",
+        "Il dit qu'il regardait beaucoup de films d'arts martiaux, notamment Enter the Dragon et Drunken Master; ses estimations du nombre de visionnages varient d'un entretien à l'autre et doivent être conservées comme souvenirs approximatifs plutôt que comme compte exact.",
+        "Il raconte avoir utilisé sa fonction de président du conseil des élèves pour faire programmer un film de monstres, un souvenir qui témoigne de son intérêt pour les films de kaijū dès l'enfance."
+      ],
+      "source": {
+        "publication": "Kanzenban Official Guide: Dragon Ball Landmark",
+        "pages": "146–157",
+        "date": "2003-12-19",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-landmark-dragon-ball-toriyama/",
+        "questionAnswerCount": null,
+        "formatNote": "Entretien thématique organisé sous forme de titres et réponses, sans balisage standard des questions.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-landmark-dragon-ball-toriyama.html"
+      },
+      "dragonBallRelevance": "Contexte direct de la transition Dr. Slump–Dragon Ball et de la genèse éditoriale; biographie générale pour le reste.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-box-z1-staff-cast-qa",
+      "title": "Dragon Ball Z DVD Box – Dragon Box Z Volume 1",
+      "summary": "Ce questionnaire réunit les principaux membres de l’équipe et les comédiens de Dragon Ball Z autour de sept questions sur leur travail. Il aborde ce qu’ils ont aimé et trouvé difficile, les personnages ou scènes marquants, les changements personnels associés à la série et les vœux qu’ils feraient dans cet univers.",
+      "keyInformation": [
+        "Les questions couvrent le quotidien de production, les souvenirs, les personnages favoris et les souhaits des participants",
+        "Le dossier recueille des réponses distinctes de membres du personnel et de comédiens, sans les réduire à une histoire unique"
+      ],
+      "source": {
+        "publication": "\"Z\" Staff and Cast Q&A Dragon Ball Z DVD Box: Dragon Box Z Volume 1 — Dragon Book (pp. 108-111)",
+        "pages": "108-111",
+        "date": "2003-03-19",
+        "url": "https://www.kanzenshuu.com/translations/dragon-box-z1-staff-cast-qa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-box-z1-staff-cast-qa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-box-z1-staff-cast-qa.html",
+        "participants": [
+          "Akihiko Yamaguchi",
+          "Matsuji Kishimoto",
+          "Daisuke Nishio",
+          "Takao Koyama",
+          "Katsuyoshi Nakatsuru",
+          "Minoru Maeda",
+          "Kazuya Hisada",
+          "Tadayoshi Yamamuro",
+          "Shunsuke Kikuchi",
+          "Takashi Tokushige",
+          "Hiromi Tsuru",
+          "Masako Nozawa",
+          "Hiroshi Masuoka",
+          "Tōru Furuya",
+          "Hirotaka Suzuoki",
+          "Mayumi Tanaka",
+          "Ryō Horikawa",
+          "Toshio Furukawa",
+          "Jōji Yanami",
+          "Ryūsei Nakao"
+        ],
+        "questionAnswerCount": 7,
+        "questionBlockCount": 2,
+        "answerBlockCount": 20,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "",
+        "respondentCount": 20,
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignages sur la production et l’interprétation de Dragon Ball Z.",
+      "formatNote": "Questionnaire collectif à sept questions, réponses attribuées à de nombreux intervenants.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "dragon-ball-landmark-toriyama-qa",
+      "title": "Kanzenban Official Guide: Dragon Ball Landmark",
+      "summary": "Toriyama répond à des questions sur sa personnalité, ses goûts et sa méthode de travail, puis à des questions sur les personnages. Il révèle que Lunch finit peut-être par rejoindre Tenshinhan, imagine l’avenir de plusieurs personnages et recommande aux aspirants mangaka de s’intéresser à autre chose qu’aux seuls mangas.",
+      "keyInformation": [
+        "Il dit avoir consciemment fait évoluer les coiffures de Bulma selon les étapes de l’histoire et imagine que Lunch retrouve Tenshinhan",
+        "Il recommande aux jeunes auteurs d’élargir leurs connaissances et préfère les amphibiens parmi les animaux"
+      ],
+      "source": {
+        "publication": "Surprise Project!! We Suddenly Asked Him in the Middle of Dinner! Kanzenban Official Guide: Dragon Ball Landmark (pp. 156-157)",
+        "pages": "156-157",
+        "date": "2003-12-19",
+        "url": "https://www.kanzenshuu.com/translations/dragon-ball-landmark-toriyama-qa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-landmark-toriyama-qa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-landmark-toriyama-qa.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 10,
+        "questionBlockCount": 10,
+        "answerBlockCount": 10,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of Akira Toriyama's short Q&A about his personality in \"Dragon Ball: Landmark\".",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : informations et opinions de Toriyama sur Dragon Ball et son métier.",
+      "formatNote": "Questionnaire mêlant questions personnelles, fiction et métier.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "site-page-51125-shonen-jump-dragon-power-akira-toriyama",
+      "title": "Akira Toriyama — Dragon Power! / Ask Akira Toriyama",
+      "kind": "interview",
+      "summary": "Cet entretien de Shonen Jump présente les inspirations et choix de création d’Akira Toriyama. Après une introduction retraçant son passage de Dr. Slump à Dragon Ball, les questions portent sur les arts martiaux, les pouvoirs, les personnages et les idées qui ont façonné le manga. Kanzenshuu reproduit l’article d’entretien dans son archive de presse.",
+      "keyInformation": [
+        "L’article présente Dragon Ball comme le passage de Toriyama d’un manga comique à une aventure inspirée du kung-fu et des arts martiaux.",
+        "Les questions abordent la création des personnages, les techniques et les influences de Toriyama.",
+        "Le contenu est un entretien avec l’auteur, et non un texte éditorial uniquement consacré à sa biographie."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-january-2003-interview-dragon-power-ask-akira-toriyama/",
+        "publication": "Shonen Jump, janvier 2003, « Dragon Power! / Ask Akira Toriyama »",
+        "publicationDate": "2003-01",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "kanzenshuuPageId": 51125,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "transcriptAvailable": true,
+        "forumContent": false,
+        "format": "Entretien imprimé en questions-réponses",
+        "scopeNote": "Article entier transcrit dans la page d’archive Kanzenshuu."
+      },
+      "dragonBallRelevance": "Directe : création de Dragon Ball, inspirations et choix de conception de Toriyama.",
+      "status": "summary-written-site-archive-source-not-collated",
+      "forumContent": false,
+      "formatNote": "Entretien long; le texte éditorial d’introduction précède les questions."
+    },
+    {
+      "id": "site-page-51151-shonen-jump-kidz-questionz-akira-toriyama",
+      "title": "Akira Toriyama — KidZ QuestionZ au lancement de Shonen Jump à New York",
+      "kind": "qa",
+      "summary": "À la suite du compte rendu du lancement américain de Shonen Jump, une section distincte restitue les questions posées à Akira Toriyama par de jeunes lecteurs. Les réponses sont présentées comme un Q&A d’événement, séparé de l’autre entretien Toriyama–Yasutoko publié dans le même numéro.",
+      "keyInformation": [
+        "Le Q&A est associé au lancement de Shonen Jump à New York et à la rencontre avec Toriyama.",
+        "Les questions viennent de jeunes lecteurs; le format diffère de l’entretien de Takeshi Yasutoko dans le même numéro.",
+        "Le texte constitue une séquence de réponses directes de Toriyama, et non une simple mention de la séance publique."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-march-2003-nyc-launch-kidz-questionz-for-akira-toriyama/",
+        "publication": "Shonen Jump, mars 2003, « NYC Launch / KidZ QuestionZ for Akira Toriyama »",
+        "publicationDate": "2003-03",
+        "participants": [
+          "Akira Toriyama",
+          "Jeunes lecteurs de Shonen Jump"
+        ],
+        "kanzenshuuPageId": 51151,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "transcriptAvailable": true,
+        "forumContent": false,
+        "format": "Q&A imprimé d’événement",
+        "scopeNote": "La page reproduit la section Q&A; elle ne doit pas être fusionnée avec l’entretien Yasutoko du même numéro."
+      },
+      "dragonBallRelevance": "Directe : réponses de Toriyama aux lecteurs lors du lancement américain de Shonen Jump.",
+      "status": "summary-written-site-archive-source-not-collated",
+      "forumContent": false,
+      "formatNote": "Q&A imprimé, distinct de la rencontre avec Takeshi Yasutoko."
+    },
+    {
+      "id": "site-page-51159-shonen-jump-toriyama-yasutoko",
+      "title": "Akira Toriyama et Takeshi Yasutoko — entretien face-à-face",
+      "kind": "interview",
+      "summary": "Dans cet entretien de Shonen Jump, le champion de patinage en ligne Takeshi Yasutoko questionne Akira Toriyama lors d’une rencontre à New York. Les échanges portent sur les ressemblances entre Toriyama et certains de ses personnages, sa manière de développer personnages et histoires pendant la sérialisation, et son travail de créateur. L’article décrit la rencontre et reproduit directement les dialogues.",
+      "keyInformation": [
+        "Yasutoko dit que Senbei Norimaki lui rappelle Toriyama; l’auteur répond qu’on lui fait souvent cette remarque, y compris au sujet du maître des tortues.",
+        "Toriyama explique qu’il ne s’est pas consciemment représenté dans ces personnages, mais que dessiner des personnages proches de soi lui paraît naturel.",
+        "Il décrit le développement des personnages comme un processus discuté au fil des réunions mensuelles et de la sérialisation."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-march-2003-interview-toriyama-vs-tasutoko/",
+        "publication": "Shonen Jump, mars 2003, « Interview — Toriyama vs Yasutoko »",
+        "publicationDate": "2003-03",
+        "participants": [
+          "Akira Toriyama",
+          "Takeshi Yasutoko"
+        ],
+        "kanzenshuuPageId": 51159,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "transcriptAvailable": true,
+        "forumContent": false,
+        "format": "Entretien imprimé en dialogue",
+        "scopeNote": "Le corps de la page reproduit les échanges; le numéro contient aussi un Q&A différent avec des lecteurs."
+      },
+      "dragonBallRelevance": "Directe : témoignage de Toriyama sur ses personnages et sa méthode de création.",
+      "status": "summary-written-site-archive-source-not-collated",
+      "forumContent": false,
+      "formatNote": "Entretien face-à-face, distinct du Q&A des jeunes lecteurs dans le même numéro."
+    },
+    {
+      "id": "site-page-53780-anime-insider-qt-on-gt-funimation-staff-qa",
+      "title": "Équipe FUNimation — Q&A sur Dragon Ball GT",
+      "kind": "qa",
+      "summary": "Ce Q&A d’Anime Insider apporte les réponses de quatre membres de l’équipe américaine de Dragon Ball GT : le réalisateur Chris Bevins, le superviseur de scénario Jeremy Carlisle, le scénariste et voix d’Eric Vale, et le comédien Mike McFarland. Interrogés sur les choix de diffusion et des éléments de la série, Bevins explique que FUNimation a commencé par les épisodes où l’action démarre avec Baby, avant de prévoir de revenir aux épisodes initiaux; les réponses distinguent aussi les appellations japonaises et celles du doublage. L’article précise que ces propos documentent uniquement l’adaptation anglaise et ne font pas autorité sur la production japonaise ni sur le canon de GT.",
+      "keyInformation": [
+        "Les questions proviennent de lecteurs et sont adressées à l’équipe du doublage américain de FUNimation.",
+        "Chris Bevins explique que les 16 premiers épisodes ont été écartés du premier passage américain pour commencer par les épisodes d’action autour de Baby; il indique qu’ils devaient ensuite être produits pour DVD.",
+        "Bevins, Carlisle, Vale et McFarland répondent à des questions sur la série et sa localisation; leurs propos décrivent la version FUNimation, pas la production japonaise.",
+        "La page Kanzenshuu signale que l’article source contient des erreurs factuelles et les corrige en notes éditoriales; les réponses doivent donc rester attribuées à ces intervenants."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/press-archive/anime-insider-december-2003-feature-the-qt-on-gt/",
+        "publication": "Anime Insider, décembre 2003, « The QT on GT »",
+        "publicationDate": "2003-12",
+        "participants": [
+          "Chris Bevins",
+          "Jeremy Carlisle",
+          "Eric Vale",
+          "Mike McFarland"
+        ],
+        "kanzenshuuPageId": 53780,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2017.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "transcriptAvailable": true,
+        "format": "Q&A imprimé avec quatre membres de l’équipe FUNimation",
+        "forumContent": false,
+        "scopeNote": "Le contenu porte sur l’adaptation/doublage américain; l’éditeur Kanzenshuu précise que les propos ne décrivent pas la production japonaise."
+      },
+      "dragonBallRelevance": "Directe, mais limitée à l’adaptation américaine de Dragon Ball GT et à l’équipe FUNimation.",
+      "status": "summary-written-site-archive-source-not-collated",
+      "forumContent": false,
+      "formatNote": "Q&A transcrit dans le corps de la page; conserver les notes éditoriales de portée."
+    }
+  ]
+}

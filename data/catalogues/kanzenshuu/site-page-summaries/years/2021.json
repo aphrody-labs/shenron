@@ -1,0 +1,1401 @@
+{
+  "year": 2021,
+  "scope": "Pages publiques Kanzenshuu; synthèses françaises basées sur les corps HTML acquis localement; contenu de forum exclu.",
+  "records": [
+    {
+      "id": 70358,
+      "type": "page",
+      "slug": "dbh-11th-anniversary-congratulatory-comments",
+      "title": "Dragon Ball Heroes 11th Anniversary Congratulatory Comments",
+      "url": "https://www.kanzenshuu.com/translations/dbh-11th-anniversary-congratulatory-comments/",
+      "publishedAt": "2021-12-16T11:02:43",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "commentaire anniversaire",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Dragon Ball Heroes 11th Anniversary Congratulatory Comments"
+      ],
+      "summary": "Pour le 11e anniversaire de Dragon Ball Heroes, des auteurs et membres de l’équipe adressent leurs félicitations dans une vidéo. Toyotarō et Yoshitaka Nagayama évoquent leur lien avec la franchise et son univers de jeux de cartes.",
+      "keyInformation": [
+        "Page publiée le 2021-12-16."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — commentaire anniversaire; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 70282,
+      "type": "page",
+      "slug": "db-dbz-daizenshuu-5-disc-set-shigeru-miyashita-comment",
+      "title": "Dragon Ball & Dragon Ball Z Daizenshuu (5-Disc Set): Shigeru Miyashita Comment",
+      "url": "https://www.kanzenshuu.com/translations/db-dbz-daizenshuu-5-disc-set-shigeru-miyashita-comment/",
+      "publishedAt": "2021-11-30T15:36:59",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "commentaire de production",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Dragon Ball & Dragon Ball Z Daizenshuu (5-Disc Set): Shigeru Miyashita Comment"
+      ],
+      "summary": "Le superviseur musical Shigeru Miyashita revient sur sa collaboration de longue date avec Shunsuke Kikuchi chez Toei et sur la sélection de ses compositions pour Dragon Ball et Dr. Slump.",
+      "keyInformation": [
+        "Page publiée le 2021-11-30."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — commentaire de production; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 70277,
+      "type": "page",
+      "slug": "db-dbz-daizenshuu-5-disc-set-shunsuke-kikuchi-comment",
+      "title": "Dragon Ball & Dragon Ball Z Daizenshuu (5-Disc Set): Shunsuke Kikuchi Comment",
+      "url": "https://www.kanzenshuu.com/translations/db-dbz-daizenshuu-5-disc-set-shunsuke-kikuchi-comment/",
+      "publishedAt": "2021-11-30T15:04:32",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "commentaire de production",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Dragon Ball & Dragon Ball Z Daizenshuu (5-Disc Set): Shunsuke Kikuchi Comment"
+      ],
+      "summary": "Le compositeur Shunsuke Kikuchi raconte comment il a abordé la musique de Dragon Ball après Dr. Slump, en cherchant un ton léger et distinctif pour l’univers de la série.",
+      "keyInformation": [
+        "Page publiée le 2021-11-30."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — commentaire de production; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 70270,
+      "type": "page",
+      "slug": "db-dbz-daizenshuu-5-disc-set-kozo-morishita-comment",
+      "title": "Dragon Ball & Dragon Ball Z Daizenshuu (5-Disc Set): Kōzō Morishita Comment",
+      "url": "https://www.kanzenshuu.com/translations/db-dbz-daizenshuu-5-disc-set-kozo-morishita-comment/",
+      "publishedAt": "2021-11-30T14:35:56",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "commentaire de production",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Dragon Ball & Dragon Ball Z Daizenshuu (5-Disc Set): Kōzō Morishita Comment"
+      ],
+      "summary": "Le producteur Kōzō Morishita évoque son arrivée sur Dragon Ball puis Dragon Ball Z, le rythme serré entre le manga et l’anime et les choix de production de la série.",
+      "keyInformation": [
+        "Page publiée le 2021-11-30."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — commentaire de production; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 70264,
+      "type": "page",
+      "slug": "db-dbz-daizenshuu-5-disc-set-yu-hayakawa-comment",
+      "title": "Dragon Ball & Dragon Ball Z Daizenshuu (5-Disc Set): Yū Hayakawa Comment",
+      "url": "https://www.kanzenshuu.com/translations/db-dbz-daizenshuu-5-disc-set-yu-hayakawa-comment/",
+      "publishedAt": "2021-11-30T13:18:00",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "commentaire de production",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Dragon Ball & Dragon Ball Z Daizenshuu (5-Disc Set): Yū Hayakawa Comment"
+      ],
+      "summary": "Yū Hayakawa présente la compilation musicale en rappelant la popularité de Dragon Ball et le rôle de la musique de Shunsuke Kikuchi dans l’adaptation animée.",
+      "keyInformation": [
+        "Page publiée le 2021-11-30."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — commentaire de production; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 69946,
+      "type": "page",
+      "slug": "vjump-february-2021-we-ask-toyotaro-sensei",
+      "title": "V-Jump (February 2021) – “We ask Toyotarō-sensei!”",
+      "url": "https://www.kanzenshuu.com/translations/vjump-february-2021-we-ask-toyotaro-sensei/",
+      "publishedAt": "2021-09-27T09:31:40",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "entretien",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "V-Jump (February 2021) – “We ask Toyotarō-sensei!”"
+      ],
+      "summary": "Dans cet entretien de V-Jump publié à la fin de l’arc du Prisonnier de la Patrouille Galactique, Toyotarō parle de la création de cette histoire inédite, de ses personnages et des choix de dessin et de narration.",
+      "keyInformation": [
+        "Page publiée le 2021-09-27."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — entretien; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 69923,
+      "type": "page",
+      "slug": "dbz-ongakushu-vol-2-hiruta-seiichi-comment",
+      "title": "Dragon Ball Z: Ongakushū Vol. 2 – Hiruta Sei’ichi Comment",
+      "url": "https://www.kanzenshuu.com/translations/dbz-ongakushu-vol-2-hiruta-seiichi-comment/",
+      "publishedAt": "2021-09-21T14:00:13",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "commentaire de production",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Dragon Ball Z: Ongakushū Vol. 2 – Hiruta Sei’ichi Comment"
+      ],
+      "summary": "Le producteur Seiichi Hiruta raconte une séance de travail avec Shunsuke Kikuchi et le réalisateur Mitsuo Hashimoto autour de la musique de Dragon Ball Z, dans le contexte de la préparation des albums Ongakushū.",
+      "keyInformation": [
+        "Page publiée le 2021-09-21."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — commentaire de production; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 69873,
+      "type": "page",
+      "slug": "dbz-ongakushu-vol-1-kozo-morishita-comment",
+      "title": "Dragon Ball Z: Ongakushū Vol. 1 – Kōzō Morishita Comment",
+      "url": "https://www.kanzenshuu.com/translations/dbz-ongakushu-vol-1-kozo-morishita-comment/",
+      "publishedAt": "2021-09-09T12:35:12",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "commentaire de production",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Dragon Ball Z: Ongakushū Vol. 1 – Kōzō Morishita Comment"
+      ],
+      "summary": "Le producteur Kōzō Morishita revient sur le succès télévisé de Dragon Ball et sur la place de la musique de Kikuchi dans la série, alors que l’anime entrait dans sa septième année et que les films se multipliaient.",
+      "keyInformation": [
+        "Page publiée le 2021-09-09."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — commentaire de production; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 66438,
+      "type": "page",
+      "slug": "eps-109",
+      "title": "Dragon Ball Super Episode 109",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-109/",
+      "publishedAt": "2021-08-31T16:15:48",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Au Tournoi du Pouvoir, Jiren entre enfin en action et écrase les combattants par la seule libération de son ki. Goku le défie, mais ni le Super Saiyan Blue ni le Kaiō-Ken x20 ne l’entament; il tente alors le Genki-Dama.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 66344,
+      "type": "page",
+      "slug": "eps-108",
+      "title": "Dragon Ball Super Episode 108",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-108/",
+      "publishedAt": "2021-08-31T15:17:17",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Freezer et Frost s’allient en apparence contre Gohan et Piccolo, mais leurs intentions se croisent et la situation tourne à la trahison au cours du combat.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 66338,
+      "type": "page",
+      "slug": "eps-107",
+      "title": "Dragon Ball Super Episode 107",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-107/",
+      "publishedAt": "2021-08-31T15:16:27",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Freezer met son plan à exécution au Tournoi du Pouvoir et tend un piège à ses adversaires, poursuivant son propre objectif derrière son alliance de circonstance.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 66332,
+      "type": "page",
+      "slug": "eps-106",
+      "title": "Dragon Ball Super Episode 106",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-106/",
+      "publishedAt": "2021-08-31T15:16:00",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Gohan et Piccolo affrontent un adversaire invisible dont les attaques les prennent par surprise; ils doivent repérer sa position pour pouvoir riposter.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 66325,
+      "type": "page",
+      "slug": "eps-105",
+      "title": "Dragon Ball Super Episode 105",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-105/",
+      "publishedAt": "2021-08-31T14:15:32",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Maître Roshi combat plusieurs adversaires du Tournoi du Pouvoir et mobilise toute son expérience, au prix d’un effort qui met sa vie en danger.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 66320,
+      "type": "page",
+      "slug": "eps-104",
+      "title": "Dragon Ball Super Episode 104",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-104/",
+      "publishedAt": "2021-08-31T14:14:40",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Goku et Hit unissent leurs forces contre Dyspo, dont la vitesse menace de les éliminer; ils coordonnent leurs attaques pour le neutraliser.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 66316,
+      "type": "page",
+      "slug": "eps-103",
+      "title": "Dragon Ball Super Episode 103",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-103/",
+      "publishedAt": "2021-08-31T14:14:00",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Gohan affronte Obuni de l’Univers 10 et comprend, au fil du combat, la place que sa famille occupe dans son esprit; il remporte l’affrontement et élimine son adversaire.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 66309,
+      "type": "page",
+      "slug": "eps-102",
+      "title": "Dragon Ball Super Episode 102",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-102/",
+      "publishedAt": "2021-08-31T14:12:54",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Les guerrières de l’Univers 2 combattent en invoquant le pouvoir de l’amour et se transforment en combattantes spectaculaires face aux membres de l’Univers 7.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 66272,
+      "type": "page",
+      "slug": "eps-101",
+      "title": "Dragon Ball Super Episode 101",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-101/",
+      "publishedAt": "2021-08-31T14:11:04",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Les Pride Troopers de l’Univers 11 passent à l’attaque et mettent les guerriers de l’Univers 7 sous pression dans l’arène du Tournoi du Pouvoir.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 66197,
+      "type": "page",
+      "slug": "eps-100",
+      "title": "Dragon Ball Super Episode 100",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-100/",
+      "publishedAt": "2021-08-31T13:52:49",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Kale perd le contrôle de sa puissance et déchaîne une force destructrice dans l’arène; les autres combattants doivent faire face à cette berserker.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64875,
+      "type": "page",
+      "slug": "eps-098",
+      "title": "Dragon Ball Super Episode 098",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-098/",
+      "publishedAt": "2021-08-31T13:51:47",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Le Tournoi du Pouvoir commence et les combattants de l’Univers 7 doivent survivre aux attaques coordonnées des autres univers dans l’arène.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64869,
+      "type": "page",
+      "slug": "eps-097",
+      "title": "Dragon Ball Super Episode 097",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-097/",
+      "publishedAt": "2021-08-31T13:51:14",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Le Tournoi du Pouvoir s’ouvre dans le Monde du Néant; les équipes des différents univers passent à l’affrontement, avec l’effacement des univers perdants en jeu.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64866,
+      "type": "page",
+      "slug": "eps-096",
+      "title": "Dragon Ball Super Episode 096",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-096/",
+      "publishedAt": "2021-08-31T13:50:44",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Les équipes arrivent dans le Monde du Néant pour le tournoi décisif. Les dieux et les combattants prennent place tandis que l’enjeu de la compétition est rappelé.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64819,
+      "type": "page",
+      "slug": "eps-095",
+      "title": "Dragon Ball Super Episode 095",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-095/",
+      "publishedAt": "2021-08-31T13:49:24",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Freezer déchaîne sa cruauté dans l’arène et s’en prend aux combattants des autres univers, révélant le danger que représente son retour dans l’équipe de l’Univers 7.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64814,
+      "type": "page",
+      "slug": "eps-094",
+      "title": "Dragon Ball Super Episode 094",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-094/",
+      "publishedAt": "2021-08-31T13:27:12",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Goku retrouve Freezer en enfer et lui propose de rejoindre l’équipe de l’Univers 7. Des assassins tentent d’empêcher leur départ, mettant à l’épreuve l’accord entre les deux ennemis.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64810,
+      "type": "page",
+      "slug": "eps-093",
+      "title": "Dragon Ball Super Episode 093",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-093/",
+      "publishedAt": "2021-08-31T13:26:10",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Goku se rend auprès de Freezer pour lui proposer la dixième place de l’équipe de l’Univers 7 au Tournoi du Pouvoir.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64806,
+      "type": "page",
+      "slug": "eps-092",
+      "title": "Dragon Ball Super Episode 092",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-092/",
+      "publishedAt": "2021-08-31T13:25:05",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "L’équipe de l’Univers 7 n’est toujours pas au complet : Buu s’est endormi et ne peut participer. Goku et ses compagnons cherchent une solution urgente pour trouver un dixième combattant.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64802,
+      "type": "page",
+      "slug": "eps-091",
+      "title": "Dragon Ball Super Episode 091",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-091/",
+      "publishedAt": "2021-08-31T13:24:26",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Les univers rassemblent leurs meilleurs combattants et préparent leurs équipes pour le Tournoi du Pouvoir, tandis que les enjeux de survie rendent la compétition imminente.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64723,
+      "type": "page",
+      "slug": "eps-090",
+      "title": "Dragon Ball Super Episode 090",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-090/",
+      "publishedAt": "2021-08-31T12:17:11",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Goku affronte Gohan pour mesurer ses progrès avant le tournoi. Leur combat d’entraînement permet à Gohan de retrouver son instinct de combattant.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64720,
+      "type": "page",
+      "slug": "eps-089",
+      "title": "Dragon Ball Super Episode 089",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-089/",
+      "publishedAt": "2021-08-31T12:16:48",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Tenshinhan et ses élèves sont confrontés à une femme mystérieuse et à un incident lié à son dojo; l’épisode suit l’enquête et le combat qui en découle.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64715,
+      "type": "page",
+      "slug": "eps-088",
+      "title": "Dragon Ball Super Episode 088",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-088/",
+      "publishedAt": "2021-08-31T12:15:58",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Gohan reprend son entraînement avec Piccolo afin de retrouver son niveau de combattant. Le maître et l’élève poussent leur préparation jusqu’à un affrontement intense.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64707,
+      "type": "page",
+      "slug": "eps-087",
+      "title": "Dragon Ball Super Episode 087",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-087/",
+      "publishedAt": "2021-08-31T11:52:00",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Goku et C-17 s’allient pour protéger une réserve d’animaux contre des braconniers extraterrestres, ce qui permet à Goku de tester la puissance de l’androïde.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64703,
+      "type": "page",
+      "slug": "eps-086",
+      "title": "Dragon Ball Super Episode 086",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-086/",
+      "publishedAt": "2021-08-31T11:51:59",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Goku rend visite à C-17 et échange pour la première fois des coups avec lui afin d’évaluer sa force avant de l’inviter dans l’équipe du tournoi.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64686,
+      "type": "page",
+      "slug": "eps-085",
+      "title": "Dragon Ball Super Episode 085",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-085/",
+      "publishedAt": "2021-08-31T11:51:17",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Les dieux et les combattants des différents univers réagissent à l’annonce du Tournoi du Pouvoir et commencent à préparer leurs stratégies respectives.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64679,
+      "type": "page",
+      "slug": "eps-084",
+      "title": "Dragon Ball Super Episode 084",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-084/",
+      "publishedAt": "2021-08-31T11:48:40",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Goku recrute Krilin et C-18 pour l’équipe de l’Univers 7; le couple accepte après que Goku a expliqué l’enjeu du tournoi.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64671,
+      "type": "page",
+      "slug": "eps-083",
+      "title": "Dragon Ball Super Episode 083",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-083/",
+      "publishedAt": "2021-08-31T11:48:11",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Goku et ses alliés choisissent les dix combattants qui représenteront l’Univers 7 au Tournoi du Pouvoir et commencent à réunir leur équipe.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64633,
+      "type": "page",
+      "slug": "eps-082",
+      "title": "Dragon Ball Super Episode 082",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-082/",
+      "publishedAt": "2021-08-31T02:09:07",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Toppo, guerrier de la justice de l’Univers 11, interrompt le combat entre Goku et Bergamo et reproche à Goku de mettre les univers en péril.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64627,
+      "type": "page",
+      "slug": "eps-081",
+      "title": "Dragon Ball Super Episode 081",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-081/",
+      "publishedAt": "2021-08-31T02:08:43",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Bergamo de l’Univers 9 affronte Goku dans un match d’exhibition; sa capacité à grandir en absorbant les coups transforme le duel en démonstration devant les Zen’ō.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64616,
+      "type": "page",
+      "slug": "eps-080",
+      "title": "Dragon Ball Super Episode 080",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-080/",
+      "publishedAt": "2021-08-31T02:06:39",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Gohan affronte Basil de l’Univers 9 dans un match d’exhibition. Le combat réveille sa volonté de se battre et montre les progrès accomplis depuis son retrait de l’entraînement.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64609,
+      "type": "page",
+      "slug": "eps-079",
+      "title": "Dragon Ball Super Episode 079",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-079/",
+      "publishedAt": "2021-08-31T02:06:11",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Basil de l’Univers 9 affronte Majin Boo lors du match d’exhibition précédant le Tournoi du Pouvoir; Boo encaisse ses attaques et finit par prendre l’avantage.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64593,
+      "type": "page",
+      "slug": "eps-078",
+      "title": "Dragon Ball Super Episode 078",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-078/",
+      "publishedAt": "2021-08-31T02:04:28",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Les Zen’ō annoncent un tournoi dont les univers perdants seront effacés. Les guerriers de l’Univers 7 comprennent la gravité de l’épreuve après le premier match d’exhibition.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 64576,
+      "type": "page",
+      "slug": "eps-077",
+      "title": "Dragon Ball Super Episode 077",
+      "url": "https://www.kanzenshuu.com/episode/super/eps-077/",
+      "publishedAt": "2021-08-31T02:03:28",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’épisode",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "Goku rappelle au Zen’ō sa promesse d’organiser un grand tournoi entre univers. L’idée devient le Tournoi du Pouvoir, avec des conséquences extrêmes pour les perdants.",
+      "keyInformation": [
+        "Page publiée le 2021-08-31."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 69626,
+      "type": "page",
+      "slug": "the-dragon-ball-z-american-debut-date",
+      "title": "The Dragon Ball Z American Debut Date",
+      "url": "https://www.kanzenshuu.com/features/the-dragon-ball-z-american-debut-date/",
+      "publishedAt": "2021-08-30T13:40:59",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "article de référence",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "The Dragon Ball Z American Debut Date"
+      ],
+      "summary": "Cette enquête compare les listings, archives et documents promotionnels relatifs au premier passage de Dragon Ball Z à la télévision américaine. Elle explique pourquoi la date souvent reprise du 13 septembre 1996 ne suffit pas à établir une réponse simple.",
+      "keyInformation": [
+        "Page publiée le 2021-08-30."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — article de référence; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 69480,
+      "type": "page",
+      "slug": "new-spacetime-war",
+      "title": "Big Bang Mission: New Spacetime War arc",
+      "url": "https://www.kanzenshuu.com/episode/sdbh-promo/new-spacetime-war/",
+      "publishedAt": "2021-08-10T10:54:52",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "guide d’arc",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Anime"
+      ],
+      "summary": "La fiche répertorie les épisodes 33 à 40 de Super Dragon Ball Heroes: New Spacetime War, leurs dates de diffusion en ligne, titres et crédits de production. Elle suit le lancement de la guerre dans le nouvel espace-temps et l’apparition du guerrier en noir.",
+      "keyInformation": [
+        "Page publiée le 2021-08-10."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — guide d’arc; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 69301,
+      "type": "page",
+      "slug": "newsweek-august-14-1995-holy-akira-its-aeon-flux",
+      "title": "Newsweek (August 14, 1995): “Holy Akira! It’s Aeon Flux”",
+      "url": "https://www.kanzenshuu.com/press-archive/newsweek-august-14-1995-holy-akira-its-aeon-flux/",
+      "publishedAt": "2021-06-22T14:11:18",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "archive de presse",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Presse"
+      ],
+      "summary": "L’article de Newsweek du 14 août 1995 décrit la diffusion croissante de l’animation japonaise dans la culture populaire américaine et relie cette vogue à des artistes et à l’esthétique d’œuvres comme Aeon Flux.",
+      "keyInformation": [
+        "Page publiée le 2021-06-22."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — archive de presse; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 69280,
+      "type": "page",
+      "slug": "internal-correspondence-april-1995-industry-news-dragonball-debuts-in-september",
+      "title": "Internal Correspondence (April 1995): “Industry News – Dragonball Debuts in September”",
+      "url": "https://www.kanzenshuu.com/press-archive/internal-correspondence-april-1995-industry-news-dragonball-debuts-in-september/",
+      "publishedAt": "2021-06-08T09:35:12",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "archive de presse",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Presse"
+      ],
+      "summary": "Cette correspondance professionnelle d’avril 1995 annonce l’arrivée prochaine de Dragon Ball en anglais aux États-Unis et évoque les ventes internationales de l’œuvre ainsi que les contrats de diffusion et de produits dérivés.",
+      "keyInformation": [
+        "Page publiée le 2021-06-08."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — archive de presse; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    },
+    {
+      "id": 68981,
+      "type": "page",
+      "slug": "unite-tokyo-dragon-ball-video-game-development-interview-part-2",
+      "title": "Unite Tokyo: Dragon Ball Video Game Development Interview Part 2",
+      "url": "https://www.kanzenshuu.com/translations/unite-tokyo-dragon-ball-video-game-development-interview-part-2/",
+      "publishedAt": "2021-03-12T09:51:44",
+      "categories": [],
+      "tags": [],
+      "classifications": [
+        "page publique",
+        "entretien",
+        "contenu non-forum"
+      ],
+      "topics": [
+        "Unite Tokyo: Dragon Ball Video Game Development Interview Part 2"
+      ],
+      "summary": "Dans cette deuxième partie de la conférence Unite Tokyo, des professionnels racontent le développement d’un jeu Dragon Ball et le rejet sévère d’un projet déjà coûteux par un dirigeant éditorial. L’échange porte sur les difficultés de collaboration entre éditeurs et studios de jeux.",
+      "keyInformation": [
+        "Page publiée le 2021-03-12."
+      ],
+      "editorialRelevance": "Page Kanzenshuu — entretien; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2021.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "protected": false,
+        "forumExcerptExcluded": false
+      }
+    }
+  ]
+}

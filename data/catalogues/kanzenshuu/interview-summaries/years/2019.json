@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2019; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "dragon-ball-official-site-dbs-vol-11-toyotaro-workspace-interview",
+      "title": "Toyotarō Workspace Interview",
+      "summary": "Toyotarō décrit la préparation de l'arc du Prisonnier de la Patrouille Galactique avec Toriyama et la conception de Merus, Moro et des Yardrats. Il détaille les choix visuels, le travail de sculpture des cornes de Moro, l'utilisation conjointe de designs de Yardrats et son processus au bureau. Il crédite les idées de Toriyama pour certains secrets narratifs, sans les dévoiler.",
+      "keyInformation": [
+        "Toyotarō dit que les rencontres avec Toriyama ont permis de lancer l'arc; certains secrets venaient d'idées propres à l'auteur.",
+        "Merus combine allure rétro et beauté juvénile; Moro devait être immédiatement un ennemi impitoyable, inspiré par l'imagerie du bouc et du faucheur.",
+        "Les cornes complexes de Moro étaient difficiles à dessiner; Toyotarō a sculpté une référence 3D.",
+        "Il inclut deux conceptions de Yardrats pour préserver variété et légèreté, plutôt que transformer tout le monde en guerrier.",
+        "Il garde les volumes du manga à portée de main, collectionne des figurines et rédige l'histoire avant le storyboard.",
+        "Ses propos portent sur la production du manga et le volume 11."
+      ],
+      "source": {
+        "publication": "Dragon Ball Official Site",
+        "date": "03 December 2019",
+        "participants": [
+          "Toyotarō"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-official-site-dbs-vol-11-toyotaro-workspace-interview/",
+        "questionAnswerCount": 4,
+        "detectedQuestionBlocks": 4,
+        "detectedAnswerBlocks": 8,
+        "formatNote": "Blocs réponse locaux=8 vs index=4. Comptage Q/R distinct (4/8); vérifier structure imbriquée ou question omise.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-official-site-dbs-vol-11-toyotaro-workspace-interview.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "unite-tokyo-dragon-ball-video-game-development-interview-part-1",
+      "title": "Table ronde sur les jeux Dragon Ball — première partie",
+      "summary": "Cette première partie de la session Unite Tokyo 2019 revient sur la relation historique entre Dragon Ball et Bandai. Kazuhiko Torishima explique qu'un éditeur a refusé la première proposition de jeu de Bandai lorsqu'il a appris que la société voulait aussi retirer son parrainage de l'anime : l'accès privilégié aux produits dérivés venait du rôle de sponsor, et la série avait besoin de ce soutien. Bandai a finalement renouvelé le parrainage et produit Dragon Ball: Daimaō Fukkatsu. Daisuke Uchiyama, ancien producteur de jeux et membre de la direction de Bandai Namco, et Shin Unozawa, ancien dirigeant et producteur d'animation, décrivent ensuite la collaboration avec Shueisha, Toei et les détenteurs de licence. Les participants critiquent les « mythes de l'interdit » qui conduisent les équipes à respecter des règles dont elles ont oublié le sens, ainsi que les décisions trop dispersées. Ils défendent une compréhension réelle de l'œuvre et une responsabilité éditoriale claire comme conditions de bonnes adaptations.",
+      "keyInformation": [
+        "La conférence, tenue à Unite Tokyo le 26 septembre 2019, réunit l'ancien rédacteur de Jump Kazuhiko Torishima, Daisuke Uchiyama et Shin Unozawa; le journaliste et organisateur Shin'ichi Taira anime la séance.",
+        "Torishima raconte qu'à l'époque de Dr. Slump, Epoch était sponsor de l'anime. Lorsque Bandai lui a proposé un premier jeu Dragon Ball mais que l'agence lui a appris que Bandai voulait interrompre son parrainage, il a refusé le projet : selon lui, seuls les sponsors bénéficiaient des droits de merchandising et l'anime avait besoin de leur soutien.",
+        "Après ce refus, Bandai a renouvelé son parrainage une semaine plus tard et a ensuite produit Dragon Ball: Daimaō Fukkatsu. Torishima explique ainsi l'origine pratique du lien entre le financement des programmes et les droits de produits dérivés.",
+        "Uchiyama retrace son arrivée chez Bandai en 1994 et son premier poste d'assistant sur Dragon Ball Z: Super Butōden 3; il dit avoir ensuite produit des jeux Dragon Ball pour un public international.",
+        "Les participants rappellent qu'à l'époque les relations entre maisons d'édition et studios reposaient souvent sur des pratiques orales plutôt que sur des contrats formels, et que les studios pouvaient passer par Toei sans consulter l'éditeur du manga.",
+        "Ils critiquent les « mythes de l'interdit » — règles de projet répétées sans qu'on sache qui les a établies — qui peuvent se transformer en obstacles à l'adaptation; ils estiment que les règles persistent parfois alors que les personnes et les circonstances ont changé.",
+        "Torishima dit qu'un éditeur ne doit pas simplement transmettre chaque avis extérieur à l'auteur : il doit rassembler les informations, éviter les malentendus et comprendre suffisamment la manière de travailler de l'auteur pour décider ce qui lui est transmis.",
+        "La première partie oppose une coopération fondée sur la connaissance du manga à une production conduite par des suppositions de licence ou par les habitudes de l'entreprise. Les intervenants présentent leur propos comme un retour d'expérience professionnel, pas comme une chronique exhaustive de l'histoire juridique des jeux."
+      ],
+      "source": {
+        "publication": "ITmedia Business Online, Unite Tokyo 2019 — partie 1",
+        "pages": "Article Web, sans pagination",
+        "date": "2019-12-04 (publication de l'article; session tenue le 2019-09-26)",
+        "url": "https://www.kanzenshuu.com/translations/unite-tokyo-dragon-ball-video-game-development-interview-part-1/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/unite-tokyo-dragon-ball-video-game-development-interview-part-1/",
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/unite-tokyo-dragon-ball-video-game-development-interview-part-1.html",
+        "participants": [
+          "Kazuhiko Torishima",
+          "Daisuke Uchiyama",
+          "Shin Unozawa",
+          "Shin'ichi Taira"
+        ],
+        "formatNote": "Compte rendu web en plusieurs parties de la table ronde/conférence Unite Tokyo du 26 septembre 2019; les dates des articles, souvenirs et estimations sont attribués aux participants.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : histoire du parrainage de l'anime et des adaptations en jeu vidéo, et principes de collaboration entre Bandai, Toei, Shueisha et les équipes créatives.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "unite-tokyo-dragon-ball-video-game-development-interview-part-2",
+      "title": "Table ronde sur le jeu PlayStation 2 Dragon Ball Z — deuxième partie",
+      "summary": "La deuxième partie détaille le projet de jeu Dragon Ball Z pour PlayStation 2 qui fut brutalement rejeté par Torishima après qu'une somme importante avait déjà été dépensée. Daisuke Uchiyama explique que Bandai s'était tourné vers Dragon Ball parce que le manga et l'anime étaient terminés au Japon mais que la franchise restait populaire à l'étranger; l'équipe avait choisi Dimps pour son expérience de jeu de combat. Torishima jugeait que le projet n'avait pas suffisamment étudié le manga et les personnages et que l'éditeur Shueisha n'avait pas été consulté, ce qui revenait, du point de vue de l'éditeur, à proposer un produit pirate. Après la suspension, l'équipe a repris le projet, présenté ses choix à Toei et à Shueisha et obtenu leur approbation. Les participants relient le lancement au calendrier du manga en édition Kanzenban et rapportent que Torishima avait conseillé de produire au moins 500 000 exemplaires après des précommandes de 180 000; les ventes japonaises ont atteint environ 550 000 unités, puis le jeu s'est épuisé. Torishima raconte également avoir suspendu la publication des cartes Dragon Ball lorsque leur conception manquait de profondeur et avoir poussé Bandai à concevoir un vrai jeu de cartes avec une dimension arcade. La table ronde rapporte enfin les réflexions autour de la remastérisation et du remontage de l'anime en Dragon Ball Kai. Ces chiffres et souvenirs sont les récits des participants tels que rapportés par ITmedia.",
+      "keyInformation": [
+        "Uchiyama situe le projet en 2003, après la fin de la sérialisation du manga et de la diffusion de Dragon Ball Z et GT au Japon. Bandai pensait alors pouvoir commercialiser les personnages déjà connus, tandis que l'équipe cherchait aussi une franchise qui pourrait se vendre à l'étranger.",
+        "Bandai avait choisi Dimps pour son expérience des jeux de combat acquise notamment avec des développeurs issus de Street Fighter et Fatal Fury; le budget prévu était de plusieurs centaines de millions de yens.",
+        "Torishima raconte avoir examiné la proposition, découvert que l'équipe n'avait pas suffisamment lu l'œuvre ni travaillé la construction des personnages et appris qu'elle n'avait pas consulté Shueisha. Il considère cette omission comme inacceptable pour une adaptation officielle, qu'il compare à la production d'un article pirate.",
+        "Le projet a été suspendu après la réaction sévère de Torishima. Après avoir réétudié Dragon Ball et retravaillé le jeu, l'équipe a présenté le résultat à Toei et à l'éditorial de Jump et a obtenu une approbation que les participants décrivent comme rapide.",
+        "Uchiyama dit que le jeu est sorti sur PlayStation 2 en février 2003 et sur GameCube en novembre. Il rapporte que 180 000 exemplaires avaient été commandés en prévente; Torishima aurait exigé une production minimale de 500 000 et le jeu aurait écoulé environ 550 000 unités au Japon, en se retrouvant en rupture de stock.",
+        "La sortie a finalement été calée pendant la période commerciale des fêtes et a bénéficié du contexte où Shueisha publiait les volumes Kanzenban de Dragon Ball; les participants présentent ce calendrier comme l'un des facteurs de la réussite.",
+        "Torishima décrit un cycle de baisse de qualité dans le jeu de cartes Dragon Ball Data Carddass face à Yu-Gi-Oh : le système se comprenait facilement mais manquait de profondeur et de stratégie. Il dit avoir suspendu toutes les sorties jusqu'à ce que Bandai propose une meilleure conception et avoir suggéré d'utiliser les possibilités de connexion entre cartes et bornes d'arcade.",
+        "La conférence évoque aussi la proposition de remonter Dragon Ball Z en supprimant les épisodes de remplissage et en restaurant l'image pour la télévision HD, qui a donné naissance à Dragon Ball Kai; l'article rapporte cette origine comme une suggestion de producteur à Toei et Shueisha.",
+        "Torishima justifie sa sévérité en disant qu'il se place du point de vue des enfants qui achètent les produits; il considère que les clients sont encore plus exigeants que lui et se voit comme le relais de leurs attentes."
+      ],
+      "source": {
+        "publication": "ITmedia Business Online, Unite Tokyo 2019 — partie 2",
+        "pages": "Article Web, sans pagination",
+        "date": "2019-12-05 (publication de l'article; la conférence revient notamment sur le jeu de 2003)",
+        "url": "https://www.kanzenshuu.com/translations/unite-tokyo-dragon-ball-video-game-development-interview-part-2/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/unite-tokyo-dragon-ball-video-game-development-interview-part-2/",
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/unite-tokyo-dragon-ball-video-game-development-interview-part-2.html",
+        "participants": [
+          "Kazuhiko Torishima",
+          "Daisuke Uchiyama",
+          "Shin Unozawa",
+          "Shin'ichi Taira"
+        ],
+        "formatNote": "Compte rendu web en plusieurs parties de la table ronde/conférence Unite Tokyo du 26 septembre 2019; les dates des articles, souvenirs et estimations sont attribués aux participants.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : retour d'expérience sur le jeu Dragon Ball Z de 2003, les relations éditoriales, les ventes, les cartes et la création de Dragon Ball Kai.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "unite-tokyo-dragon-ball-video-game-development-interview-part-3",
+      "title": "Table ronde sur l'adaptation des mangas en jeux et en anime — troisième partie",
+      "summary": "La dernière partie rapporte les réponses des quatre intervenants après la conférence, centrées sur ce qu'une adaptation doit préserver et apporter. Torishima insiste sur le fait que le caractère des personnages doit rester fidèle à l'œuvre; selon lui, une série animée qui valide soigneusement les personnages et l'univers avec l'auteur peut rester une adaptation fidèle même si certains détails diffèrent. Pour lui, le jeu se distingue des autres produits dérivés parce qu'il raconte une histoire et permet au joueur de devenir Goku ou Vegeta, d'agir et de choisir son aventure. Uchiyama ajoute que les jeux doivent offrir aux jeunes joueurs plusieurs façons d'explorer le monde. Les participants définissent aussi l'éditeur comme une combinaison de gestionnaire, de directeur créatif et de producteur à long terme : organiser les conditions du travail, juger ce qui fonctionne et prévoir les besoins de l'auteur plusieurs années plus tard, tout en préservant ses capacités. Ils défendent enfin des relations de production suivies entre éditeur original, studio et producteur plutôt qu'une validation formelle limitée au produit terminé.",
+      "keyInformation": [
+        "Torishima considère la fidélité aux personnages comme centrale : pour une adaptation, les personnages et le monde doivent être examinés avec l'auteur au départ; si cette base est respectée, de petites différences n'empêchent pas de rester fidèle au manga.",
+        "Il explique que le jeu vidéo se distingue des autres produits dérivés parce qu'il propose une histoire et permet au joueur d'incarner un personnage comme Goku ou Vegeta, avec une capacité d'action absente d'un simple visionnage.",
+        "Uchiyama décrit le jeu comme une expérience combinant mouvement, histoire, dialogues, sons et interaction; il souhaite offrir aux enfants des choix et des possibilités de jeu variés, comme partir à l'aventure sur Namek.",
+        "Uchiyama estime que les adaptations doivent être conçues comme des œuvres en partenariat avec l'éditeur d'origine, au même titre que l'anime, et pas seulement comme des marchandises validées une fois le produit terminé.",
+        "Torishima définit trois facettes du métier d'éditeur : gestionnaire qui organise les conditions de travail et les échéances, directeur qui juge les œuvres et cherche à les améliorer, et producteur qui anticipe le développement de l'auteur sur trois à cinq ans et l'associe aux bons collaborateurs.",
+        "Pour Torishima, être producteur consiste à conserver une perspective longue et à empêcher qu'un auteur perde ses qualités; l'éditeur combine ces rôles au lieu de se limiter à faire circuler des consignes entre services.",
+        "Uchiyama dit que les évolutions de la collaboration avec Torishima ont aussi changé son propre travail de producteur et qu'il voit les jeux de l'époque comme ayant progressé lorsqu'ils étaient traités sérieusement comme des adaptations.",
+        "Le fil conducteur de la conférence est la responsabilité conjointe de l'éditeur, du studio et du producteur envers l'œuvre et son public; il s'agit de la philosophie professionnelle des participants, non d'une règle contractuelle universelle."
+      ],
+      "source": {
+        "publication": "ITmedia Business Online, Unite Tokyo 2019 — partie 3",
+        "pages": "Article Web, sans pagination",
+        "date": "2019-12-06 (publication de l'article; conférence tenue le 2019-09-26)",
+        "url": "https://www.kanzenshuu.com/translations/unite-tokyo-dragon-ball-video-game-development-interview-part-3/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/unite-tokyo-dragon-ball-video-game-development-interview-part-3/",
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/unite-tokyo-dragon-ball-video-game-development-interview-part-3.html",
+        "participants": [
+          "Kazuhiko Torishima",
+          "Daisuke Uchiyama",
+          "Shin Unozawa",
+          "Shin'ichi Taira"
+        ],
+        "formatNote": "Compte rendu web en plusieurs parties de la table ronde/conférence Unite Tokyo du 26 septembre 2019; les dates des articles, souvenirs et estimations sont attribués aux participants.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : présente les principes des responsables de production pour adapter Dragon Ball en anime ou en jeu vidéo et préserver les personnages et l'univers.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "tv-animation-comics-evil-dragon-arc-volume-3-katsuyoshi-nakatsuru-interview",
+      "title": "TV Animation Comics: Evil Dragon Arc Volume 3 — interview signalée de Katsuyoshi Nakatsuru",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu indique que le volume 3 des TV Animation Comics consacré à l’arc des Dragons maléfiques, paru le 4 décembre 2019, comprend une interview de Katsuyoshi Nakatsuru. Elle ne donne ni sujet, ni extrait, ni longueur, ni détails sur les questions. Cette notice signale donc une interview identifiée par la source, avec confiance faible quant à son contenu et sans lui attribuer de propos.",
+      "keyInformation": [
+        "Répondant nommé par la page : Katsuyoshi Nakatsuru.",
+        "Support : TV Animation Comics, arc des Dragons maléfiques, volume 3; date de sortie indiquée : 4 décembre 2019.",
+        "Aucun contenu, extrait, sujet ou nombre de pages n’est décrit par la page locale."
+      ],
+      "source": {
+        "publication": "TV Animation Comics: Evil Dragon Arc Volume 3",
+        "date": "2019-12-04",
+        "url": "https://www.kanzenshuu.com/manga/tv-comics/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 9393,
+        "sourcePageTitle": "TV Animation Comics",
+        "sourcePageUrl": "https://www.kanzenshuu.com/manga/tv-comics/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2019
+        ],
+        "participants": [
+          "Katsuyoshi Nakatsuru"
+        ],
+        "format": "interview signalée",
+        "contentDescription": null,
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Notice bibliographique d’un entretien signalé dans un volume consacré à l’arc des Dragons maléfiques; la page n’en expose pas le contenu.",
+      "formatNote": "Candidate de confiance faible : la page répertorie l’interview et le répondant, sans transcription ni description substantielle.",
+      "status": "identified-low-confidence-content-unavailable",
+      "forumContent": false
+    }
+  ]
+}

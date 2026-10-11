@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 1997; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "dragon-ball-gt-perfect-file-2-masako-nozawa-long-interview",
+      "title": "Masako Nozawa Long Interview",
+      "summary": "Masako Nozawa revient sur les douze années où elle a interprété Goku, Gohan et Goten. Elle décrit une relation personnelle forte avec le personnage et raconte que la fin de la série télévisée lui a paru plutôt comme une séparation temporaire. Elle se rappelle que Toriyama a choisi sa voix pour Goku après audition à l'aveugle, et évoque le travail sur les différentes voix de Gohan et Goten. Elle explique que les acteurs partageaient une relation assez proche pour s'appeler parfois par les noms de leurs personnages. Son interprétation de la scène finale, où Goku part avec Shenron, est qu'il va s'entraîner auprès des dieux; cette lecture appartient à Nozawa et ne constitue pas une déclaration de Toriyama ni une explication officielle du scénario.",
+      "keyInformation": [
+        "Nozawa dit avoir interprété Goku, Gohan et Goten pendant douze ans et considère comme une fierté de ne pas avoir été remplacée durant cette période.",
+        "Elle rapporte que Toriyama a écouté les auditions sans connaître les noms des interprètes avant de la choisir pour Goku; elle dit avoir appris cette anecdote plus tard par l'équipe.",
+        "Elle explique qu'elle a construit des voix différentes pour Gohan et Goten et évoque le choix de garder Takeshi Kusao pour le jeune Trunks, afin d'éviter une rupture si le personnage grandissait.",
+        "Elle dit que l'équipe se retrouvait chaque semaine pendant des années et que les comédiens finissaient parfois par s'interpeller par les noms de leurs rôles.",
+        "Son sentiment que Goku ne meurt pas à la fin de GT mais part auprès de Shenron puis continue à s'entraîner est son interprétation de comédienne; ce n'est pas attribué à Toriyama ni présenté comme une information canonique confirmée."
+      ],
+      "source": {
+        "publication": "Dragon Ball GT: Perfect File Vol. 2",
+        "pages": "82–86",
+        "date": "1997-12-17",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-gt-perfect-file-2-masako-nozawa-long-interview/",
+        "questionAnswerCount": 20,
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-gt-perfect-file-2-masako-nozawa-long-interview.html"
+      },
+      "dragonBallRelevance": "Production et interprétation vocale de Dragon Ball GT; témoignage de comédienne, distinct d'une source d'auteur sur le récit.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    }
+  ]
+}

@@ -61,4 +61,43 @@ impl MsgFile {
 
         Ok(Self { entries })
     }
+
+    /// Helper to construct a synthetic MSG binary buffer for testing.
+    pub fn create_mock(lines: &[&str]) -> Vec<u8> {
+        let mut buffer = Vec::new();
+        buffer.extend_from_slice(MSG_MAGIC);
+        buffer.extend_from_slice(&1u32.to_le_bytes()); // version
+        buffer.extend_from_slice(&(lines.len() as u32).to_le_bytes()); // count
+        buffer.extend_from_slice(&16u32.to_le_bytes()); // offset = 16
+
+        for line in lines {
+            buffer.extend_from_slice(line.as_bytes());
+            buffer.push(0); // null terminator
+        }
+
+        buffer
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_msg_mock() {
+        let mock = MsgFile::create_mock(&["Kamehameha", "Super Saiyan", "Spirit Bomb"]);
+        let parsed = MsgFile::parse(&mock).expect("Should parse MSG mock cleanly");
+
+        assert_eq!(parsed.entries.len(), 3);
+        assert_eq!(parsed.entries[0].lines[0], "Kamehameha");
+        assert_eq!(parsed.entries[1].lines[0], "Super Saiyan");
+        assert_eq!(parsed.entries[2].lines[0], "Spirit Bomb");
+    }
+
+    #[test]
+    fn test_invalid_magic() {
+        let mut mock = MsgFile::create_mock(&["test"]);
+        mock[0] = b'?';
+        assert!(MsgFile::parse(&mock).is_err());
+    }
 }

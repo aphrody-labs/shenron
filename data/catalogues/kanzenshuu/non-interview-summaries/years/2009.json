@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Entrées éditoriales Kanzenshuu hors interviews publiées en 2009, issues du périmètre bibliographique 2006–2015 ; traductions non reproduites ; forums exclus.",
+  "records": [
+    {
+      "id": "jsat-manga-akira-toriyama-naho-ooishi-introduction",
+      "title": "Akira Toriyama & Naho Ooishi Introductions V-Jump, May 2009 (Insert Booklet; p. 1) Anthology Introduction 21 March 2009 Akira Toriyama, Naho Ooishi Dragon Ball (Manga)",
+      "kind": "authorial-comment",
+      "summary": "Toriyama loue la connaissance de Dragon Ball, le dessin et la composition de Naho Ooishi, qui adapte Heya! Son Goku and Friends Return!! en manga à sa place. Il plaisante sur ses propres oublis et dit que cette publication pourrait être la seule occasion de voir du nouveau Dragon Ball dessiné par lui. Ooishi exprime son bonheur de dessiner une œuvre aimée depuis l’enfance et remercie Toriyama pour ses conseils sur les storyboards.",
+      "keyInformation": [
+        "Toriyama relit et conseille les storyboards de Ooishi",
+        "celle-ci adapte l’anime en manga",
+        "les deux auteurs valorisent leur collaboration."
+      ],
+      "source": {
+        "date": "21 March 2009",
+        "publication": "Dragon Ball: Heya! Son Goku and Friends Return!! — First Part",
+        "pages": null,
+        "bibliographicYears": [
+          2009
+        ],
+        "url": "https://www.kanzenshuu.com/translations/jsat-manga-akira-toriyama-naho-ooishi-introduction/"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Source sur le passage de relais à Naho Ooishi et le soutien de Toriyama."
+    }
+  ]
+}

@@ -42,6 +42,9 @@ test-results/
 *.key
 *.p12
 *.pfx
+/deploy/docker/env/
+/deploy/docker/tls/
+/deploy/connectors/local/
 /data/home/
 /data/source-acquisition/
 /apps/bot/data/*.db
@@ -83,6 +86,7 @@ __pycache__/
 *.heapsnapshot
 *.cpuprofile
 *.tgz
+!/vendor/next-fork/*.tgz
 graphify-out/
 
 # Isolated Next dev build used by the Aphrody Web integration pipeline.
@@ -90,3 +94,5 @@ apps/site/.next-qualification/
 
 /packages/pipeline/data/
 test-teacher.ts
+/data/rag/
+/data/catalogues/.cache-dragonballcn/

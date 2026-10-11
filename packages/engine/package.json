@@ -1,0 +1,40 @@
+{
+  "name": "@shenron/engine",
+  "version": "1.4.4",
+  "private": true,
+  "description": "Unified full-stack Shenron game engine, GPU backend, WebGPU/WASM pipeline, vector canvas, and deterministic combat core.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./gpu": "./src/gpu.ts",
+    "./game": "./src/game.ts",
+    "./canvas": "./src/canvas.ts",
+    "./render": "./src/render.ts",
+    "./wasm": "./src/wasm.ts",
+    "./unified_canvas": "./src/unified_canvas.ts",
+    "./types": "./src/types.ts"
+  },
+  "scripts": {
+    "lint": "oxlint src test",
+    "test": "bun test",
+    "typecheck": "bun check --noEmit --project tsconfig.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "typescript": "catalog:"
+  },
+  "shenron": {
+    "runtime": {
+      ".": "pure",
+      "./gpu": "pure",
+      "./game": "pure",
+      "./canvas": "pure",
+      "./render": "pure",
+      "./wasm": "pure",
+      "./unified_canvas": "pure",
+      "./types": "pure"
+    }
+  }
+}

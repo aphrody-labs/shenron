@@ -1,0 +1,4097 @@
+{
+  "source": "https://comic.dragonballcn.com",
+  "releve_le": "2026-09-15T13:11:03.258Z",
+  "avertissement": "Relevé bibliographique uniquement (éditions, tomes, ISBN, dates, index des planches). Aucune planche n'est téléchargée : le site les protège par un 403 délibéré et il s'agit d'une œuvre Shueisha/Toriyama qu'il redistribue sans licence.",
+  "totaux": {
+    "collections": 12,
+    "ouvrages": 476,
+    "planches": 0,
+    "avec_isbn": 87
+  },
+  "collections": [
+    {
+      "slug": "dragonball_jp_original",
+      "titre": "Dragon Ball — édition japonaise originale",
+      "titre_site": "龙珠日文原版(42卷全)(1985",
+      "url": "https://comic.dragonballcn.com/dragonball_jp_original.htm",
+      "ouvrages": [
+        {
+          "did": "0-1-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-0",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/01.gif",
+          "titre_tome": "ドラゴンボール(01)",
+          "premiere_edition": "1985/09/15",
+          "isbn": "4-08-851687-7",
+          "magazine": "43050-06",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(01)",
+            "初版 1985/09/15",
+            "ISBN 4-08-851687-7",
+            "雜誌 43050-06",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻一 孫悟空と仲間たち"
+          ]
+        },
+        {
+          "did": "0-1-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-1",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/02.gif",
+          "titre_tome": "ドラゴンボール(02)",
+          "premiere_edition": "1986/01/15",
+          "isbn": "4-08-851832-2",
+          "magazine": "43050-41",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(02)",
+            "初版 1986/01/15",
+            "ISBN 4-08-851832-2",
+            "雜誌 43050-41",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻二 ドラゴンボール",
+            "危機一髪"
+          ]
+        },
+        {
+          "did": "0-1-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-2",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/03.gif",
+          "titre_tome": "ドラゴンボール(03)",
+          "premiere_edition": "1986/06/15",
+          "isbn": "4-08-851833-0",
+          "magazine": "43050-91",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(03)",
+            "初版 1986/06/15",
+            "ISBN 4-08-851833-0",
+            "雜誌 43050-91",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻三 天下一武道会はじまる!!"
+          ]
+        },
+        {
+          "did": "0-1-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-3",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/04.gif",
+          "titre_tome": "ドラゴンボール(04)",
+          "premiere_edition": "1986/10/15",
+          "isbn": "4-08-851834-9",
+          "magazine": "43051-28",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(04)",
+            "初版 1986/10/15",
+            "ISBN 4-08-851834-9",
+            "雜誌 43051-28",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻四 大決勝戦"
+          ]
+        },
+        {
+          "did": "0-1-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-4",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/05.gif",
+          "titre_tome": "ドラゴンボール(05)",
+          "premiere_edition": "1987/01/15",
+          "isbn": "4-08-851835-7",
+          "magazine": "43051-60",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(05)",
+            "初版 1987/01/15",
+            "ISBN 4-08-851835-7",
+            "雜誌 43051-60",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻五 マッスルタワーの恐怖"
+          ]
+        },
+        {
+          "did": "0-1-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-5",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/06.gif",
+          "titre_tome": "ドラゴンボール(06)",
+          "premiere_edition": "1987/03/15",
+          "isbn": "4-08-851836-5",
+          "magazine": "43051-82",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(06)",
+            "初版 1987/03/15",
+            "ISBN 4-08-851836-5",
+            "雜誌 43051-82",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻六 ブルマの大失敗!!"
+          ]
+        },
+        {
+          "did": "0-1-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-6",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/07.gif",
+          "titre_tome": "ドラゴンボール(07)",
+          "premiere_edition": "1987/05/15",
+          "isbn": "4-08-851837-3",
+          "magazine": "43052-04",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(07)",
+            "初版 1987/05/15",
+            "ISBN 4-08-851837-3",
+            "雜誌 43052-04",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻七 追跡!!ブルー将軍"
+          ]
+        },
+        {
+          "did": "0-1-7",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-7",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/08.gif",
+          "titre_tome": "ドラゴンボール(08)",
+          "premiere_edition": "1987/07/15",
+          "isbn": "4-08-851838-1",
+          "magazine": "43052-25",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(08)",
+            "初版 1987/07/15",
+            "ISBN 4-08-851838-1",
+            "雜誌 43052-25",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻八 孫悟空突撃"
+          ]
+        },
+        {
+          "did": "0-1-8",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-8",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/09.gif",
+          "titre_tome": "ドラゴンボール(09)",
+          "premiere_edition": "1987/09/15",
+          "isbn": "4-08-851839-X",
+          "magazine": "43052-48",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(09)",
+            "初版 1987/09/15",
+            "ISBN 4-08-851839-X",
+            "雜誌 43052-48",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻九 こまったときの占いババ"
+          ]
+        },
+        {
+          "did": "0-1-9",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-9",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/10.gif",
+          "titre_tome": "ドラゴンボール(10)",
+          "premiere_edition": "1987/11/15",
+          "isbn": "4-08-851840-3",
+          "magazine": "43052-72",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(10)",
+            "初版 1987/11/15",
+            "ISBN 4-08-851840-3",
+            "雜誌 43052-72",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻十 第22回天下一武道会"
+          ]
+        },
+        {
+          "did": "0-1-10",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-10",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/11.gif",
+          "titre_tome": "ドラゴンボール(11)",
+          "premiere_edition": "1988/02/15",
+          "isbn": "4-08-851608-7",
+          "magazine": "43053-10",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(11)",
+            "初版 1988/02/15",
+            "ISBN 4-08-851608-7",
+            "雜誌 43053-10",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻十一 天下一のスーパーバトル!!"
+          ]
+        },
+        {
+          "did": "0-1-11",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-11",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/12.gif",
+          "titre_tome": "ドラゴンボール(12)",
+          "premiere_edition": "1988/04/15",
+          "isbn": "4-08-851609-5",
+          "magazine": "43053-37",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(12)",
+            "初版 1988/04/15",
+            "ISBN 4-08-851609-5",
+            "雜誌 43053-37",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻十二 ピッコロ大魔王の恐怖!"
+          ]
+        },
+        {
+          "did": "0-1-12",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-12",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/13.gif",
+          "titre_tome": "ドラゴンボール(13)",
+          "premiere_edition": "1988/06/15",
+          "isbn": "4-08-851610-9",
+          "magazine": "43053-65",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(13)",
+            "初版 1988/06/15",
+            "ISBN 4-08-851610-9",
+            "雜誌 43053-65",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻十三 孫悟空の逆襲!?"
+          ]
+        },
+        {
+          "did": "0-1-13",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-13",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/14.gif",
+          "titre_tome": "ドラゴンボール(14)",
+          "premiere_edition": "1988/08/15",
+          "isbn": "4-08-851611-7",
+          "magazine": "43053-93",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(14)",
+            "初版 1988/08/15",
+            "ISBN 4-08-851611-7",
+            "雜誌 43053-93",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻十四 さらなる飛躍"
+          ]
+        },
+        {
+          "did": "0-1-14",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-14",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/15.gif",
+          "titre_tome": "ドラゴンボール(15)",
+          "premiere_edition": "1988/12/11",
+          "isbn": "4-08-851612-5",
+          "magazine": "43054-50",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(15)",
+            "初版 1988/12/11",
+            "ISBN 4-08-851612-5",
+            "雜誌 43054-50",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻十五 群雄割拠!"
+          ]
+        },
+        {
+          "did": "0-1-15",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-15",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/16.gif",
+          "titre_tome": "ドラゴンボール(16)",
+          "premiere_edition": "1989/02/15",
+          "isbn": "4-08-851613-3",
+          "magazine": "43054-80",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(16)",
+            "初版 1989/02/15",
+            "ISBN 4-08-851613-3",
+            "雜誌 43054-80",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻十六 龍虎相討つ!"
+          ]
+        },
+        {
+          "did": "0-1-16",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-16",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/17.gif",
+          "titre_tome": "ドラゴンボール(17)",
+          "premiere_edition": "1989/05/15",
+          "isbn": "4-08-851614-1",
+          "magazine": "43035-27",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(17)",
+            "初版 1989/05/15",
+            "ISBN 4-08-851614-1",
+            "雜誌 43035-27",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻十七 かつてない恐怖"
+          ]
+        },
+        {
+          "did": "0-1-17",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-17",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/18.gif",
+          "titre_tome": "ドラゴンボール(18)",
+          "premiere_edition": "1989/07/15",
+          "isbn": "4-08-851615-X",
+          "magazine": "43035-60",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(18)",
+            "初版 1989/07/15",
+            "ISBN 4-08-851615-X",
+            "雜誌 43035-60",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻十八 孫悟飯とピッコロ大魔王"
+          ]
+        },
+        {
+          "did": "0-1-18",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-18",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/19.gif",
+          "titre_tome": "ドラゴンボール(19)",
+          "premiere_edition": "1989/11/15",
+          "isbn": "4-08-851616-8",
+          "magazine": "43036-21",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(19)",
+            "初版 1989/11/15",
+            "ISBN 4-08-851616-8",
+            "雜誌 43036-21",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻十九 いそげ!孫悟空"
+          ]
+        },
+        {
+          "did": "0-1-19",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-19",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/20.gif",
+          "titre_tome": "ドラゴンボール(20)",
+          "premiere_edition": "1990/01/15",
+          "isbn": "4-08-851617-6",
+          "magazine": "42994-75(*)",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(20)",
+            "初版 1990/01/15",
+            "ISBN 4-08-851617-6",
+            "雜誌 42994-75(*)",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻二十 天下分け目の超決戦!!"
+          ]
+        },
+        {
+          "did": "0-1-20",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-20",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/21.gif",
+          "titre_tome": "ドラゴンボール(21)",
+          "premiere_edition": "1990/04/15",
+          "isbn": "4-08-851618-4",
+          "magazine": "43036-94",
+          "prix": "370円(本体359円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(21)",
+            "初版 1990/04/15",
+            "ISBN 4-08-851618-4",
+            "雜誌 43036-94",
+            "定価 370円(本体359円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻二十一 めざせ!ナメックの星"
+          ]
+        },
+        {
+          "did": "0-1-21",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-21",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/22.gif",
+          "titre_tome": "ドラゴンボール(22)",
+          "premiere_edition": "1990/07/15",
+          "isbn": "4-08-851619-2",
+          "magazine": "43037-39",
+          "prix": "390円(本体379円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(22)",
+            "初版 1990/07/15",
+            "ISBN 4-08-851619-2",
+            "雜誌 43037-39",
+            "定価 390円(本体379円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻二十二 ナメック星人の抵抗"
+          ]
+        },
+        {
+          "did": "0-1-22",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-22",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/23.gif",
+          "titre_tome": "ドラゴンボール(23)",
+          "premiere_edition": "1990/10/15",
+          "isbn": "4-08-851620-6",
+          "magazine": "43037-83",
+          "prix": "390円(本体379円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(23)",
+            "初版 1990/10/15",
+            "ISBN 4-08-851620-6",
+            "雜誌 43037-83",
+            "定価 390円(本体379円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻二十三 恐怖のギニュー特戦隊"
+          ]
+        },
+        {
+          "did": "0-1-23",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-23",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/24.gif",
+          "titre_tome": "ドラゴンボール(24)",
+          "premiere_edition": "1991/01/15",
+          "isbn": "4-08-851414-9",
+          "magazine": "43038-29",
+          "prix": "390円(本体379円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(24)",
+            "初版 1991/01/15",
+            "ISBN 4-08-851414-9",
+            "雜誌 43038-29",
+            "定価 390円(本体379円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻二十四 悟空か!?ギニューか!?"
+          ]
+        },
+        {
+          "did": "0-1-24",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-24",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/25.gif",
+          "titre_tome": "ドラゴンボール(25)",
+          "premiere_edition": "1991/03/15",
+          "isbn": "4-08-851415-7",
+          "magazine": "43038-58",
+          "prix": "390円(本体379円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(25)",
+            "初版 1991/03/15",
+            "ISBN 4-08-851415-7",
+            "雜誌 43038-58",
+            "定価 390円(本体379円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻二十五 フリーザ超変身!!"
+          ]
+        },
+        {
+          "did": "0-1-25",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-25",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/26.gif",
+          "titre_tome": "ドラゴンボール(26)",
+          "premiere_edition": "1991/06/15",
+          "isbn": "4-08-851416-5",
+          "magazine": "43039-01",
+          "prix": "390円(本体379円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(26)",
+            "初版 1991/06/15",
+            "ISBN 4-08-851416-5",
+            "雜誌 43039-01",
+            "定価 390円(本体379円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻二十六 孫悟空…復活!!"
+          ]
+        },
+        {
+          "did": "0-1-26",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-26",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/27.gif",
+          "titre_tome": "ドラゴンボール(27)",
+          "premiere_edition": "1991/08/12",
+          "isbn": "4-08-851417-3",
+          "magazine": "43039-29",
+          "prix": "390円(本体379円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(27)",
+            "初版 1991/08/12",
+            "ISBN 4-08-851417-3",
+            "雜誌 43039-29",
+            "定価 390円(本体379円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻二十七 伝説の超サイヤ人"
+          ]
+        },
+        {
+          "did": "0-1-27",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-27",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/28.gif",
+          "titre_tome": "ドラゴンボール(28)",
+          "premiere_edition": "1991/11/15",
+          "isbn": "4-08-851418-1",
+          "magazine": "43039-71",
+          "prix": "390円(本体379円)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(28)",
+            "初版 1991/11/15",
+            "ISBN 4-08-851418-1",
+            "雜誌 43039-71",
+            "定価 390円(本体379円)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻二十八 未来から来た少年"
+          ]
+        },
+        {
+          "did": "0-1-28",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-28",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/29.gif",
+          "titre_tome": "ドラゴンボール(29)",
+          "premiere_edition": "1992/03/15",
+          "isbn": "4-08-851419-X",
+          "magazine": "42994-84(*)",
+          "prix": "本体390円(*)",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(29)",
+            "初版 1992/03/15",
+            "ISBN 4-08-851419-X",
+            "雜誌 42994-84(*)",
+            "定価 本体390円(*)",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻二十九 悟空、敗れる!"
+          ]
+        },
+        {
+          "did": "0-1-29",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-29",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/30.gif",
+          "titre_tome": "ドラゴンボール(30)",
+          "premiere_edition": "1992/06/15",
+          "isbn": "4-08-851420-3",
+          "magazine": "42994-85",
+          "prix": "390円",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(30)",
+            "初版 1992/06/15",
+            "ISBN 4-08-851420-3",
+            "雜誌 42994-85",
+            "定価 390円",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻三十 邪悪な予感"
+          ]
+        },
+        {
+          "did": "0-1-30",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-30",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/31.gif",
+          "titre_tome": "ドラゴンボール(31)",
+          "premiere_edition": "1992/08/09",
+          "isbn": "4-08-851686-9",
+          "magazine": "42994-86",
+          "prix": "390円",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(31)",
+            "初版 1992/08/09",
+            "ISBN 4-08-851686-9",
+            "雜誌 42994-86",
+            "定価 390円",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻三十一 忍びよるセル"
+          ]
+        },
+        {
+          "did": "0-1-31",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-31",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/32.gif",
+          "titre_tome": "ドラゴンボール(32)",
+          "premiere_edition": "1992/10/07",
+          "isbn": "4-08-851687-7",
+          "magazine": "42994-87",
+          "prix": "390円",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(32)",
+            "初版 1992/10/07",
+            "ISBN 4-08-851687-7",
+            "雜誌 42994-87",
+            "定価 390円",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻三十二 セルの完全体 完成!!"
+          ]
+        },
+        {
+          "did": "0-1-32",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-32",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/33.gif",
+          "titre_tome": "ドラゴンボール(33)",
+          "premiere_edition": "1992/12/31",
+          "isbn": "4-08-851688-5",
+          "magazine": "42994-88",
+          "prix": "390円",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(33)",
+            "初版 1992/12/31",
+            "ISBN 4-08-851688-5",
+            "雜誌 42994-88",
+            "定価 390円",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻三十三 セルゲーム始まる"
+          ]
+        },
+        {
+          "did": "0-1-33",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-33",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/34.gif",
+          "titre_tome": "ドラゴンボール(34)",
+          "premiere_edition": "1993/06/09",
+          "isbn": "4-08-851689-3",
+          "magazine": "42994-88",
+          "prix": "390円",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(34)",
+            "初版 1993/06/09",
+            "ISBN 4-08-851689-3",
+            "雜誌 42994-88",
+            "定価 390円",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻三十四 悟空を超えた戦士"
+          ]
+        },
+        {
+          "did": "0-1-34",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-34",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/35.gif",
+          "titre_tome": "ドラゴンボール(35)",
+          "premiere_edition": "1993/09/08",
+          "isbn": "4-08-851700-8",
+          "magazine": "42994-90",
+          "prix": "390円",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(35)",
+            "初版 1993/09/08",
+            "ISBN 4-08-851700-8",
+            "雜誌 42994-90",
+            "定価 390円",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻三十五 さようなら戦士たち"
+          ]
+        },
+        {
+          "did": "0-1-35",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-35",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/36.gif",
+          "titre_tome": "ドラゴンボール(36)",
+          "premiere_edition": "1993/11/09",
+          "isbn": "4-08-851495-5",
+          "magazine": "42994-91",
+          "prix": "390円",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(36)",
+            "初版 1993/11/09",
+            "ISBN 4-08-851495-5",
+            "雜誌 42994-91",
+            "定価 390円",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻三十六 ニューヒーロー誕生!!"
+          ]
+        },
+        {
+          "did": "0-1-36",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-36",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/37.gif",
+          "titre_tome": "ドラゴンボール(37)",
+          "premiere_edition": "1994/04/09",
+          "isbn": "4-08-851496-3",
+          "magazine": "42994-92",
+          "prix": "390円",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(37)",
+            "初版 1994/04/09",
+            "ISBN 4-08-851496-3",
+            "雜誌 42994-92",
+            "定価 390円",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻三十七 動き始めた作戦"
+          ]
+        },
+        {
+          "did": "0-1-37",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-37",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/38.gif",
+          "titre_tome": "ドラゴンボール(38)",
+          "premiere_edition": "1994/08/09",
+          "isbn": "4-08-851497-1",
+          "magazine": "42994-93",
+          "prix": "390円",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(38)",
+            "初版 1994/08/09",
+            "ISBN 4-08-851497-1",
+            "雜誌 42994-93",
+            "定価 390円",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻三十八 宿命の対決 孫悟空対ベジータ"
+          ]
+        },
+        {
+          "did": "0-1-38",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-38",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/39.gif",
+          "titre_tome": "ドラゴンボール(39)",
+          "premiere_edition": "1994/12/07",
+          "isbn": "4-08-851498-X",
+          "magazine": "42994-94",
+          "prix": "390円",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(39)",
+            "初版 1994/12/07",
+            "ISBN 4-08-851498-X",
+            "雜誌 42994-94",
+            "定価 390円",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻三十九 さらば誇り高き戦士"
+          ]
+        },
+        {
+          "did": "0-1-39",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-39",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/40.gif",
+          "titre_tome": "ドラゴンボール(40)",
+          "premiere_edition": "1995/03/08",
+          "isbn": "4-08-851499-8",
+          "magazine": "42994-95",
+          "prix": "390円",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(40)",
+            "初版 1995/03/08",
+            "ISBN 4-08-851499-8",
+            "雜誌 42994-95",
+            "定価 390円",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻四十 地球軍、最後の秘密兵器!!"
+          ]
+        },
+        {
+          "did": "0-1-40",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-40",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/41.gif",
+          "titre_tome": "ドラゴンボール(41)",
+          "premiere_edition": "1995/06/07",
+          "isbn": "4-08-851500-5",
+          "magazine": "42994-96",
+          "prix": "390円",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(41)",
+            "初版 1995/06/07",
+            "ISBN 4-08-851500-5",
+            "雜誌 42994-96",
+            "定価 390円",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻四十一 がんばれ超ゴテンクスくん"
+          ]
+        },
+        {
+          "did": "0-1-41",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-1-41",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_jp_or/42.gif",
+          "titre_tome": "ドラゴンボール(42)",
+          "premiere_edition": "1995/08/09",
+          "isbn": "4-08-851090-9",
+          "magazine": "42994-97",
+          "prix": "390円",
+          "editeur": "集英社 / JC",
+          "lignes": [
+            "ドラゴンボール(42)",
+            "初版 1995/08/09",
+            "ISBN 4-08-851090-9",
+            "雜誌 42994-97",
+            "定価 390円",
+            "出版 集英社 / JC",
+            "ジャンプ.コミックス",
+            "JUMP COMICS",
+            "巻四十二 バイバイ ドラゴンワールド"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dragonball_jp_kanzenban",
+      "titre": "Dragon Ball — kanzenban japonaise",
+      "titre_site": "ドラゴンボール完全版(日文原版34卷全)",
+      "url": "https://comic.dragonballcn.com/dragonball_jp_kanzenban.htm",
+      "ouvrages": [
+        {
+          "did": "0-0-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-0",
+          "libelle": "[2002-12-09] ISBN 4-08-873444-0",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/01.gif"
+        },
+        {
+          "did": "0-0-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-1",
+          "libelle": "[2002-12-09] ISBN 4-08-873445-9",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/02.gif"
+        },
+        {
+          "did": "0-0-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-2",
+          "libelle": "[2003-01-02] ISBN 4-08-873446-7",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/03.gif"
+        },
+        {
+          "did": "0-0-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-3",
+          "libelle": "[2003-01-02] ISBN 4-08-873447-5",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/04.gif"
+        },
+        {
+          "did": "0-0-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-4",
+          "libelle": "[2003-02-09] ISBN 4-08-873448-3",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/05.gif"
+        },
+        {
+          "did": "0-0-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-5",
+          "libelle": "[2003-02-09] ISBN 4-08-873449-1",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/06.gif"
+        },
+        {
+          "did": "0-0-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-6",
+          "libelle": "[2003-03-09] ISBN 4-08-873450-5",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/07.gif"
+        },
+        {
+          "did": "0-0-7",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-7",
+          "libelle": "[2003-03-09] ISBN 4-08-873451-3",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/08.gif"
+        },
+        {
+          "did": "0-0-8",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-8",
+          "libelle": "[2003-04-09] ISBN 4-08-873452-1",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/09.gif"
+        },
+        {
+          "did": "0-0-9",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-9",
+          "libelle": "[2003-04-09] ISBN 4-08-873453-X",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/10.gif"
+        },
+        {
+          "did": "0-0-10",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-10",
+          "libelle": "[2003-05-06] ISBN 4-08-873454-8",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/11.gif"
+        },
+        {
+          "did": "0-0-11",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-11",
+          "libelle": "[2003-05-06] ISBN 4-08-873455-6",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/12.gif"
+        },
+        {
+          "did": "0-0-12",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-12",
+          "libelle": "[2003-06-09] ISBN 4-08-873456-4",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/13.gif"
+        },
+        {
+          "did": "0-0-13",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-13",
+          "libelle": "[2003-06-09] ISBN 4-08-873457-2",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/14.gif"
+        },
+        {
+          "did": "0-0-14",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-14",
+          "libelle": "[2003-07-09] ISBN 4-08-873458-0",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/15.gif"
+        },
+        {
+          "did": "0-0-15",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-15",
+          "libelle": "[2003-07-09] ISBN 4-08-873459-9",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/16.gif"
+        },
+        {
+          "did": "0-0-16",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-16",
+          "libelle": "[2003-08-09] ISBN 4-08-873460-2",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/17.gif"
+        },
+        {
+          "did": "0-0-17",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-17",
+          "libelle": "[2003-08-09] ISBN 4-08-873461-0",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/18.gif"
+        },
+        {
+          "did": "0-0-18",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-18",
+          "libelle": "[2003-09-09] ISBN 4-08-873462-9",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/19.gif"
+        },
+        {
+          "did": "0-0-19",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-19",
+          "libelle": "[2003-09-09] ISBN 4-08-873463-7",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/20.gif"
+        },
+        {
+          "did": "0-0-20",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-20",
+          "libelle": "[2003-10-08] ISBN 4-08-873464-5",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/21.gif"
+        },
+        {
+          "did": "0-0-21",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-21",
+          "libelle": "[2003-10-08] ISBN 4-08-873465-3",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/22.gif"
+        },
+        {
+          "did": "0-0-22",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-22",
+          "libelle": "[2003-11-09] ISBN 4-08-873466-1",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/23.gif"
+        },
+        {
+          "did": "0-0-23",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-23",
+          "libelle": "[2003-11-09] ISBN 4-08-873467-X",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/24.gif"
+        },
+        {
+          "did": "0-0-24",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-24",
+          "libelle": "[2003-12-09] ISBN 4-08-873468-8",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/25.gif"
+        },
+        {
+          "did": "0-0-25",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-25",
+          "libelle": "[2003-12-09] ISBN 4-08-873469-6",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/26.gif"
+        },
+        {
+          "did": "0-0-26",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-26",
+          "libelle": "[2004-01-10] ISBN 4-08-873470-X",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/27.gif"
+        },
+        {
+          "did": "0-0-27",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-27",
+          "libelle": "[2004-01-10] ISBN 4-08-873471-8",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/28.gif"
+        },
+        {
+          "did": "0-0-28",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-28",
+          "libelle": "[2004-02-09] ISBN 4-08-873472-6",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/29.gif"
+        },
+        {
+          "did": "0-0-29",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-29",
+          "libelle": "[2004-02-09] ISBN 4-08-873473-4",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/30.gif"
+        },
+        {
+          "did": "0-0-30",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-30",
+          "libelle": "[2004-03-09] ISBN 4-08-873474-2",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/31.gif"
+        },
+        {
+          "did": "0-0-31",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-31",
+          "libelle": "[2004-03-09] ISBN 4-08-873475-0",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/32.gif"
+        },
+        {
+          "did": "0-0-32",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-32",
+          "libelle": "[2004-04-07] ISBN 4-08-873476-9",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/33.gif"
+        },
+        {
+          "did": "0-0-33",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-0-33",
+          "libelle": "[2004-04-07] ISBN 4-08-873477-7",
+          "couverture": "./assets/covers/dragonballcn/db_jp_co/34.gif"
+        }
+      ]
+    },
+    {
+      "slug": "dragonball_full_color",
+      "titre": "Dragon Ball — Full Color (édition numérique)",
+      "titre_site": "ドラゴンボール フルカラー デジタル版 龙珠全彩版电子版",
+      "url": "https://comic.dragonballcn.com/dragonball_full_color.htm",
+      "ouvrages": [
+        {
+          "did": "0-10-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-1",
+          "libelle": "卷1 孫悟空修業編1",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s01.jpg"
+        },
+        {
+          "did": "0-10-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-2",
+          "libelle": "卷2 孙悟空修行篇2",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s02.jpg"
+        },
+        {
+          "did": "0-10-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-3",
+          "libelle": "卷3 孙悟空修行篇3",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s03.jpg"
+        },
+        {
+          "did": "0-10-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-4",
+          "libelle": "卷4 孙悟空修行篇4",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s04.jpg"
+        },
+        {
+          "did": "0-10-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-5",
+          "libelle": "卷5 レッドリボン軍編1",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s05.jpg"
+        },
+        {
+          "did": "0-10-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-6",
+          "libelle": "卷6 红缎带军篇2",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s06.jpg"
+        },
+        {
+          "did": "0-10-7",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-7",
+          "libelle": "卷7 红缎带军篇3",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s07.jpg"
+        },
+        {
+          "did": "0-10-8",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-8",
+          "libelle": "卷8 红缎带军篇4",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s08.jpg"
+        },
+        {
+          "did": "0-10-9",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-9",
+          "libelle": "卷9 红缎带军篇5",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s09.jpg"
+        },
+        {
+          "did": "0-10-10",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-10",
+          "libelle": "卷10 ピッコロ大魔王編1",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s10.jpg"
+        },
+        {
+          "did": "0-10-11",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-11",
+          "libelle": "卷11 短笛大魔王篇2",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s11.jpg"
+        },
+        {
+          "did": "0-10-12",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-12",
+          "libelle": "卷12 短笛大魔王篇3",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s12.jpg"
+        },
+        {
+          "did": "0-10-13",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-13",
+          "libelle": "卷13 短笛大魔王篇4",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s13.jpg"
+        },
+        {
+          "did": "0-10-14",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-14",
+          "libelle": "卷14 短笛大魔王篇5",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s14.jpg"
+        },
+        {
+          "did": "0-10-15",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-15",
+          "libelle": "卷15 短笛大魔王篇6",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s15.jpg"
+        },
+        {
+          "did": "0-10-16",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-16",
+          "libelle": "卷16 短笛大魔王篇7",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s16.jpg"
+        },
+        {
+          "did": "0-10-17",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-17",
+          "libelle": "卷17 サイヤ人編1",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s17.jpg"
+        },
+        {
+          "did": "0-10-18",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-18",
+          "libelle": "卷18 赛亚人篇2",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s18.jpg"
+        },
+        {
+          "did": "0-10-19",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-19",
+          "libelle": "卷19 赛亚人篇3",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s19.jpg"
+        },
+        {
+          "did": "0-10-20",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-20",
+          "libelle": "卷20 赛亚人篇4",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s20.jpg"
+        },
+        {
+          "did": "0-10-21",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-21",
+          "libelle": "卷21 フリーザ編1",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s21.jpg"
+        },
+        {
+          "did": "0-10-22",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-22",
+          "libelle": "卷22 弗利萨篇2",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s22.jpg"
+        },
+        {
+          "did": "0-10-23",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-23",
+          "libelle": "卷23 弗利萨篇3",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s23.jpg"
+        },
+        {
+          "did": "0-10-24",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-24",
+          "libelle": "卷24 弗利萨篇4",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s24.jpg"
+        },
+        {
+          "did": "0-10-25",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-25",
+          "libelle": "卷25 弗利萨篇5",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s25.jpg"
+        },
+        {
+          "did": "0-10-26",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-26",
+          "libelle": "卷26 弗利萨篇6",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s26.jpg"
+        },
+        {
+          "did": "0-10-27",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-27",
+          "libelle": "卷27 弗利萨篇7",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s27.jpg"
+        },
+        {
+          "did": "0-10-28",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-28",
+          "libelle": "卷28 人造人間 セル編1",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s28.jpg"
+        },
+        {
+          "did": "0-10-29",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-29",
+          "libelle": "卷29 人造人 沙鲁篇2",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s29.jpg"
+        },
+        {
+          "did": "0-10-30",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-30",
+          "libelle": "卷30 人造人 沙鲁篇3",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s30.jpg"
+        },
+        {
+          "did": "0-10-31",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-31",
+          "libelle": "卷31 人造人 沙鲁篇4",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s31.jpg"
+        },
+        {
+          "did": "0-10-32",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-32",
+          "libelle": "卷32 人造人 沙鲁篇5",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s32.jpg"
+        },
+        {
+          "did": "0-10-33",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-33",
+          "libelle": "卷33 人造人 沙鲁篇6",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s33.jpg"
+        },
+        {
+          "did": "0-10-34",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-34",
+          "libelle": "卷34 人造人 沙鲁篇7",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s34.jpg"
+        },
+        {
+          "did": "0-10-35",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-35",
+          "libelle": "卷35 人造人 沙鲁篇8",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s35.jpg"
+        },
+        {
+          "did": "0-10-36",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-36",
+          "libelle": "卷36 魔人ブウ編1",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s36.jpg"
+        },
+        {
+          "did": "0-10-37",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-37",
+          "libelle": "卷37 魔人布欧篇2",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s37.jpg"
+        },
+        {
+          "did": "0-10-38",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-38",
+          "libelle": "卷38 魔人布欧篇3",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s38.jpg"
+        },
+        {
+          "did": "0-10-39",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-39",
+          "libelle": "卷39 魔人布欧篇4",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s39.jpg"
+        },
+        {
+          "did": "0-10-40",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-40",
+          "libelle": "卷40 魔人布欧篇5",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s40.jpg"
+        },
+        {
+          "did": "0-10-41",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-41",
+          "libelle": "卷41 魔人布欧篇6",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s41.jpg"
+        },
+        {
+          "did": "0-10-42",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-42",
+          "libelle": "卷42 魔人布欧篇7",
+          "couverture": "./assets/covers/dragonballcn/db_full_color/s42.jpg"
+        }
+      ]
+    },
+    {
+      "slug": "dragonball_zh_cn",
+      "titre": "Dragon Ball — chinois simplifié (continent)",
+      "titre_site": "龙珠大陆简体中文版(43卷全)",
+      "url": "https://comic.dragonballcn.com/dragonball_zh_cn.htm",
+      "ouvrages": [
+        {
+          "did": "0-3-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-0",
+          "libelle": "卷一 · 小悟空和他的伙伴们",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/01.jpg"
+        },
+        {
+          "did": "0-3-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-1",
+          "libelle": "卷二 · 龙珠千钧一发",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/02.jpg"
+        },
+        {
+          "did": "0-3-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-2",
+          "libelle": "卷三 · 竞争对手前来拜访",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/03.jpg"
+        },
+        {
+          "did": "0-3-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-3",
+          "libelle": "卷四 · 大决战",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/04.jpg"
+        },
+        {
+          "did": "0-3-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-4",
+          "libelle": "卷五 · 恐怖的玛斯尔塔",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/05.jpg"
+        },
+        {
+          "did": "0-3-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-5",
+          "libelle": "卷六 · 布尔玛的大失败",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/06.jpg"
+        },
+        {
+          "did": "0-3-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-6",
+          "libelle": "卷七 · 追踪蓝将军",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/07.jpg"
+        },
+        {
+          "did": "0-3-7",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-7",
+          "libelle": "卷八 · 小悟空的突击",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/08.jpg"
+        },
+        {
+          "did": "0-3-8",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-8",
+          "libelle": "卷九 · 水晶婆婆",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/09.jpg"
+        },
+        {
+          "did": "0-3-9",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-9",
+          "libelle": "卷十 第22回天下第一武道会",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/10.jpg"
+        },
+        {
+          "did": "0-3-10",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-10",
+          "libelle": "卷十一 天下第一武道会上的超级战斗",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/11.jpg"
+        },
+        {
+          "did": "0-3-11",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-11",
+          "libelle": "卷十二 · 恐怖短笛大魔王",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/12.jpg"
+        },
+        {
+          "did": "0-3-12",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-12",
+          "libelle": "卷十三 · 小悟空的反击",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/13.jpg"
+        },
+        {
+          "did": "0-3-13",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-13",
+          "libelle": "卷十四 · 新的飞跃",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/14.jpg"
+        },
+        {
+          "did": "0-3-14",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-14",
+          "libelle": "卷十五 · 群雄割据",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/15.jpg"
+        },
+        {
+          "did": "0-3-15",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-15",
+          "libelle": "卷十六 · 龙虎争斗",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/16.jpg"
+        },
+        {
+          "did": "0-3-16",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-16",
+          "libelle": "卷十七 · 惊人的恐怖",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/17.jpg"
+        },
+        {
+          "did": "0-3-17",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-17",
+          "libelle": "卷十八 · 孙悟饭与短笛大魔王",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/18.jpg"
+        },
+        {
+          "did": "0-3-18",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-18",
+          "libelle": "卷十九 · 快来呀，孙悟空",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/19.jpg"
+        },
+        {
+          "did": "0-3-19",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-19",
+          "libelle": "卷二十 · 保卫地球的超级决战",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/20.jpg"
+        },
+        {
+          "did": "0-3-20",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-20",
+          "libelle": "卷二十一 · 目标，那美克星",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/21.jpg"
+        },
+        {
+          "did": "0-3-21",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-21",
+          "libelle": "卷二十二 · 那美克星人的抵抗",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/22.jpg"
+        },
+        {
+          "did": "0-3-22",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-22",
+          "libelle": "卷二十三 · 恐怖的基纽特种部队",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/23.jpg"
+        },
+        {
+          "did": "0-3-23",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-23",
+          "libelle": "卷二十四 · 真假孙悟空",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/24.jpg"
+        },
+        {
+          "did": "0-3-24",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-24",
+          "libelle": "卷二十五 · 弗利萨超级变身",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/25.jpg"
+        },
+        {
+          "did": "0-3-25",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-25",
+          "libelle": "卷二十六 · 孙悟空…复活",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/26.jpg"
+        },
+        {
+          "did": "0-3-26",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-26",
+          "libelle": "卷二十七 · 传说中的超级赛亚人",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/27.jpg"
+        },
+        {
+          "did": "0-3-27",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-27",
+          "libelle": "卷二十八 · 来自未来的少年",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/28.jpg"
+        },
+        {
+          "did": "0-3-28",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-28",
+          "libelle": "卷二十九 · 悟空败北",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/29.jpg"
+        },
+        {
+          "did": "0-3-29",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-29",
+          "libelle": "卷三十 · 邪恶的预感",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/30.jpg"
+        },
+        {
+          "did": "0-3-30",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-30",
+          "libelle": "卷三十一 · 沙鲁悄悄逼近",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/31.jpg"
+        },
+        {
+          "did": "0-3-31",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-31",
+          "libelle": "卷三十二 · 沙鲁最终形态",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/32.jpg"
+        },
+        {
+          "did": "0-3-32",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-32",
+          "libelle": "卷三十三 · 沙鲁游戏",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/33.jpg"
+        },
+        {
+          "did": "0-3-33",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-33",
+          "libelle": "卷三十四 · 超越悟空的战士",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/34.jpg"
+        },
+        {
+          "did": "0-3-34",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-34",
+          "libelle": "卷三十五 · 再见了，战士们",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/35.jpg"
+        },
+        {
+          "did": "0-3-35",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-35",
+          "libelle": "卷三十六 · 新英雄诞生",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/36.jpg"
+        },
+        {
+          "did": "0-3-36",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-36",
+          "libelle": "卷三十七 · 开始作战",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/37.jpg"
+        },
+        {
+          "did": "0-3-37",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-37",
+          "libelle": "卷三十八 · 被发现的邪恶之心",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/38.jpg"
+        },
+        {
+          "did": "0-3-38",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-38",
+          "libelle": "卷三十九 · 再见了，高傲的战士",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/39.jpg"
+        },
+        {
+          "did": "0-3-39",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-39",
+          "libelle": "卷四十 地球军最后的秘密武器",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/40.jpg"
+        },
+        {
+          "did": "0-3-40",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-40",
+          "libelle": "卷四十一 · 加油，超级悟天克斯",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/41.jpg"
+        },
+        {
+          "did": "0-3-41",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-41",
+          "libelle": "卷四十二 · 天下无敌的合体",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/42.jpg"
+        },
+        {
+          "did": "0-3-42",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-3-42",
+          "libelle": "卷四十三 以全宇宙为赌注的决斗",
+          "couverture": "./assets/covers/dragonballcn/db_zh_cn/43.jpg"
+        }
+      ]
+    },
+    {
+      "slug": "dragonball_zh_tw",
+      "titre": "Dragon Ball — chinois traditionnel (Taïwan, Tong Li)",
+      "titre_site": "七龙珠台湾繁体中文版(臺灣東立出版社)(42卷全)",
+      "url": "https://comic.dragonballcn.com/dragonball_zh_tw.htm",
+      "ouvrages": [
+        {
+          "did": "0-2-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-0",
+          "libelle": "[1992-11-20] 卷一 · 孫悟空與同伴們",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/01.jpg"
+        },
+        {
+          "did": "0-2-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-1",
+          "libelle": "[1992-11-20] 卷二 · 龍珠千鈞一髮",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/02.jpg"
+        },
+        {
+          "did": "0-2-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-2",
+          "libelle": "[1992-11-20] 卷三 · 天下第一武道會開鑼",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/03.jpg"
+        },
+        {
+          "did": "0-2-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-3",
+          "libelle": "[1992-11-20] 卷四 · 大決戰！",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/04.jpg"
+        },
+        {
+          "did": "0-2-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-4",
+          "libelle": "[1992-11-30] 卷五 · 馬斯魯塔的恐佈",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/05.jpg"
+        },
+        {
+          "did": "0-2-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-5",
+          "libelle": "[1992-11-30] 卷六 · 布馬的大失敗！！",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/06.jpg"
+        },
+        {
+          "did": "0-2-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-6",
+          "libelle": "[1992-12-15] 卷七 · 追踪！！布魯將軍",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/07.jpg"
+        },
+        {
+          "did": "0-2-7",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-7",
+          "libelle": "[1992-12-15] 卷八 · 孫悟空突擊",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/08.jpg"
+        },
+        {
+          "did": "0-2-8",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-8",
+          "libelle": "[1992-12-15] 卷九 · 煩惱時的卜卦婆婆",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/09.jpg"
+        },
+        {
+          "did": "0-2-9",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-9",
+          "libelle": "[1992-12-15] 卷十 第22回天下第一武道會",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/10.jpg"
+        },
+        {
+          "did": "0-2-10",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-10",
+          "libelle": "[1992-12-15] 卷十一 · 天下第一超級戰鬥！",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/11.jpg"
+        },
+        {
+          "did": "0-2-11",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-11",
+          "libelle": "[1992-12-15] 卷十二 · 比克大魔王的恐怖！",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/12.jpg"
+        },
+        {
+          "did": "0-2-12",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-12",
+          "libelle": "[1992-12-30] 卷十三 · 孫悟空的反擊",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/13.jpg"
+        },
+        {
+          "did": "0-2-13",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-13",
+          "libelle": "[1992-12-30] 卷十四 · 更高的飛躍",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/14.jpg"
+        },
+        {
+          "did": "0-2-14",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-14",
+          "libelle": "[1992-12-30] 卷十五 · 群雄割據！",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/15.jpg"
+        },
+        {
+          "did": "0-2-15",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-15",
+          "libelle": "[1992-12-30] 卷十六 · 龍虎相爭！",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/16.jpg"
+        },
+        {
+          "did": "0-2-16",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-16",
+          "libelle": "[1992-12-30] 卷十七 · 前所未有的恐怖",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/17.jpg"
+        },
+        {
+          "did": "0-2-17",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-17",
+          "libelle": "[1992-12-30] 卷十八 · 孫悟飯與比克大魔王",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/18.jpg"
+        },
+        {
+          "did": "0-2-18",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-18",
+          "libelle": "[1993-01-30] 卷十九 · 快！孫悟空",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/19.jpg"
+        },
+        {
+          "did": "0-2-19",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-19",
+          "libelle": "[1993-01-30] 卷二十 · 最後勝負的超級決戰",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/20.jpg"
+        },
+        {
+          "did": "0-2-20",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-20",
+          "libelle": "[1993-01-30]卷二十一 · 目標！那美克星",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/21.jpg"
+        },
+        {
+          "did": "0-2-21",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-21",
+          "libelle": "[1993-01-30]卷二十二 · 那美克星人的抵抗",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/22.jpg"
+        },
+        {
+          "did": "0-2-22",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-22",
+          "libelle": "[1993-01-30]卷二十三 · 恐怖的勇士特戰隊",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/23.jpg"
+        },
+        {
+          "did": "0-2-23",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-23",
+          "libelle": "[1993-01-30]卷二十四 · 悟空？奇紐？",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/24.jpg"
+        },
+        {
+          "did": "0-2-24",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-24",
+          "libelle": "[1993-01-30]卷二十五 · 弗力札超級變身",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/25.jpg"
+        },
+        {
+          "did": "0-2-25",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-25",
+          "libelle": "[1993-02-20]卷二十六 · 孫悟空……復活！",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/26.jpg"
+        },
+        {
+          "did": "0-2-26",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-26",
+          "libelle": "[1993-02-20]卷二十七 · 傳説中的超級賽亞人",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/27.jpg"
+        },
+        {
+          "did": "0-2-27",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-27",
+          "libelle": "[1993-02-20]卷二十八 · 來自未來的少年",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/28.jpg"
+        },
+        {
+          "did": "0-2-28",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-28",
+          "libelle": "[1993-02-20]卷二十九 · 悟空，敗北！",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/29.jpg"
+        },
+        {
+          "did": "0-2-29",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-29",
+          "libelle": "[1993-02-20]卷三十 · 邪惡的預感",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/30.jpg"
+        },
+        {
+          "did": "0-2-30",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-30",
+          "libelle": "[1993-02-20]卷三十一 · 暗中接近的塞魯",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/31.jpg"
+        },
+        {
+          "did": "0-2-31",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-31",
+          "libelle": "[1993-02-20]卷三十二 · 塞魯的完全體 完成",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/32.jpg"
+        },
+        {
+          "did": "0-2-32",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-32",
+          "libelle": "[1993-02-20]卷三十三 · 塞魯遊戲開始",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/33.jpg"
+        },
+        {
+          "did": "0-2-33",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-33",
+          "libelle": "[1993-06-25]卷三十四 · 超越悟空的戰士",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/34.jpg"
+        },
+        {
+          "did": "0-2-34",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-34",
+          "libelle": "[1993-09-25]卷三十五 · 再見，戰士們",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/35.jpg"
+        },
+        {
+          "did": "0-2-35",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-35",
+          "libelle": "[1993-11-30]卷三十六 · 新英雄誕生！！",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/36.jpg"
+        },
+        {
+          "did": "0-2-36",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-36",
+          "libelle": "[1994-05-18]卷三十七 · 開始行動大作戰",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/37.jpg"
+        },
+        {
+          "did": "0-2-37",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-37",
+          "libelle": "[1994-08-01]卷三十八 · 宿命的對決 · 孫悟空對達爾",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/38.jpg"
+        },
+        {
+          "did": "0-2-38",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-38",
+          "libelle": "[1995-02-05]卷三十九 · 再見！高傲的戰士",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/39.jpg"
+        },
+        {
+          "did": "0-2-39",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-39",
+          "libelle": "[1995-05-01]卷四十 地球軍， · 最後的秘密兵器！",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/40.jpg"
+        },
+        {
+          "did": "0-2-40",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-40",
+          "libelle": "[1995-08-14]卷四十一 · 加油！超級悟天克斯",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/41.jpg"
+        },
+        {
+          "did": "0-2-41",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-2-41",
+          "libelle": "[1995-11-20]卷四十二 · 再見了！七龍珠世界",
+          "couverture": "./assets/covers/dragonballcn/db_zh_tw/42.jpg"
+        }
+      ]
+    },
+    {
+      "slug": "dragonball_zh_hk_ultimate",
+      "titre": "Dragon Ball — kanzenban chinoise (Hong Kong)",
+      "titre_site": "龙珠完全版(香港中文版34卷全)文化传信",
+      "url": "https://comic.dragonballcn.com/dragonball_zh_hk_ultimate.htm",
+      "ouvrages": [
+        {
+          "did": "0-6-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-0",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB01.jpg"
+        },
+        {
+          "did": "0-6-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-1",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB02.jpg"
+        },
+        {
+          "did": "0-6-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-2",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB03.jpg",
+          "lignes": [
+            "[2004-09-07] 03 | ISBN 962-8861-58-1"
+          ],
+          "titre_tome": "03 | ISBN 962-8861-58-1",
+          "isbn": "962-8861-58-1",
+          "premiere_edition": "2004/09/07"
+        },
+        {
+          "did": "0-6-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-3",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB04.jpg",
+          "lignes": [
+            "[2004-09-07] 04 | ISBN 962-8861-59-X"
+          ],
+          "titre_tome": "04 | ISBN 962-8861-59-X",
+          "isbn": "962-8861-59-X",
+          "premiere_edition": "2004/09/07"
+        },
+        {
+          "did": "0-6-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-4",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB05.jpg",
+          "lignes": [
+            "[2004-09-27] 05 | ISBN 962-8861-80-8"
+          ],
+          "titre_tome": "05 | ISBN 962-8861-80-8",
+          "isbn": "962-8861-80-8",
+          "premiere_edition": "2004/09/27"
+        },
+        {
+          "did": "0-6-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-5",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB06.jpg",
+          "lignes": [
+            "[2004-09-30] 06 | ISBN 962-8861-81-6"
+          ],
+          "titre_tome": "06 | ISBN 962-8861-81-6",
+          "isbn": "962-8861-81-6",
+          "premiere_edition": "2004/09/30"
+        },
+        {
+          "did": "0-6-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-6",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB07.jpg",
+          "lignes": [
+            "[2004-10-13] 07 | ISBN 962-8881-11-6"
+          ],
+          "titre_tome": "07 | ISBN 962-8881-11-6",
+          "isbn": "962-8881-11-6",
+          "premiere_edition": "2004/10/13"
+        },
+        {
+          "did": "0-6-7",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-7",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB08.jpg",
+          "lignes": [
+            "[2004-10-13] 08 | ISBN 962-8881-12-4"
+          ],
+          "titre_tome": "08 | ISBN 962-8881-12-4",
+          "isbn": "962-8881-12-4",
+          "premiere_edition": "2004/10/13"
+        },
+        {
+          "did": "0-6-8",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-8",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB09.jpg",
+          "lignes": [
+            "[2004-11-16] 09 | ISBN 962-8881-13-2"
+          ],
+          "titre_tome": "09 | ISBN 962-8881-13-2",
+          "isbn": "962-8881-13-2",
+          "premiere_edition": "2004/11/16"
+        },
+        {
+          "did": "0-6-9",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-9",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB10.jpg",
+          "lignes": [
+            "[2004-11-16] 10 | ISBN 962-8881-14-0"
+          ],
+          "titre_tome": "10 | ISBN 962-8881-14-0",
+          "isbn": "962-8881-14-0",
+          "premiere_edition": "2004/11/16"
+        },
+        {
+          "did": "0-6-10",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-10",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB11.jpg",
+          "lignes": [
+            "[2004-12-21] 11 | ISBN 962-8881-15-9"
+          ],
+          "titre_tome": "11 | ISBN 962-8881-15-9",
+          "isbn": "962-8881-15-9",
+          "premiere_edition": "2004/12/21"
+        },
+        {
+          "did": "0-6-11",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-11",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB12.jpg",
+          "lignes": [
+            "[2004-12-21] 12 | ISBN 962-8881-16-7"
+          ],
+          "titre_tome": "12 | ISBN 962-8881-16-7",
+          "isbn": "962-8881-16-7",
+          "premiere_edition": "2004/12/21"
+        },
+        {
+          "did": "0-6-12",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-12",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB13.jpg",
+          "lignes": [
+            "[2005-01-04] 13 | ISBN 962-8881-73-6"
+          ],
+          "titre_tome": "13 | ISBN 962-8881-73-6",
+          "isbn": "962-8881-73-6",
+          "premiere_edition": "2005/01/04"
+        },
+        {
+          "did": "0-6-13",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-13",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB14.jpg",
+          "lignes": [
+            "[2005-01-04] 14 | ISBN 962-8881-74-4"
+          ],
+          "titre_tome": "14 | ISBN 962-8881-74-4",
+          "isbn": "962-8881-74-4",
+          "premiere_edition": "2005/01/04"
+        },
+        {
+          "did": "0-6-14",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-14",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB15.jpg",
+          "lignes": [
+            "[2005-01-24] 15 | ISBN 962-8881-85-X"
+          ],
+          "titre_tome": "15 | ISBN 962-8881-85-X",
+          "isbn": "962-8881-85-X",
+          "premiere_edition": "2005/01/24"
+        },
+        {
+          "did": "0-6-15",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-15",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB16.jpg",
+          "lignes": [
+            "[2005-01-24] 16 | ISBN 962-8881-86-8"
+          ],
+          "titre_tome": "16 | ISBN 962-8881-86-8",
+          "isbn": "962-8881-86-8",
+          "premiere_edition": "2005/01/24"
+        },
+        {
+          "did": "0-6-16",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-16",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB17.jpg",
+          "lignes": [
+            "[2005-02-02] 17 | ISBN 962-8881-95-7"
+          ],
+          "titre_tome": "17 | ISBN 962-8881-95-7",
+          "isbn": "962-8881-95-7",
+          "premiere_edition": "2005/02/02"
+        },
+        {
+          "did": "0-6-17",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-17",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB18.jpg",
+          "lignes": [
+            "[2005-02-02] 18 | ISBN 962-8881-96-5"
+          ],
+          "titre_tome": "18 | ISBN 962-8881-96-5",
+          "isbn": "962-8881-96-5",
+          "premiere_edition": "2005/02/02"
+        },
+        {
+          "did": "0-6-18",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-18",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB19.jpg",
+          "lignes": [
+            "[2005-02-28] 19 | ISBN 962-8895-05-2"
+          ],
+          "titre_tome": "19 | ISBN 962-8895-05-2",
+          "isbn": "962-8895-05-2",
+          "premiere_edition": "2005/02/28"
+        },
+        {
+          "did": "0-6-19",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-19",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB20.jpg",
+          "lignes": [
+            "[2005-02-28] 20 | ISBN 962-8895-06-0"
+          ],
+          "titre_tome": "20 | ISBN 962-8895-06-0",
+          "isbn": "962-8895-06-0",
+          "premiere_edition": "2005/02/28"
+        },
+        {
+          "did": "0-6-20",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-20",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB21.jpg",
+          "lignes": [
+            "[2005-03-11] 21 | ISBN 962-8895-17-6"
+          ],
+          "titre_tome": "21 | ISBN 962-8895-17-6",
+          "isbn": "962-8895-17-6",
+          "premiere_edition": "2005/03/11"
+        },
+        {
+          "did": "0-6-21",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-21",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB22.jpg",
+          "lignes": [
+            "[2005-03-11] 22 | ISBN 962-8895-18-4"
+          ],
+          "titre_tome": "22 | ISBN 962-8895-18-4",
+          "isbn": "962-8895-18-4",
+          "premiere_edition": "2005/03/11"
+        },
+        {
+          "did": "0-6-22",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-22",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB23.jpg",
+          "lignes": [
+            "[2005-04-04] 23 | ISBN 962-8881-10-8"
+          ],
+          "titre_tome": "23 | ISBN 962-8881-10-8",
+          "isbn": "962-8881-10-8",
+          "premiere_edition": "2005/04/04"
+        },
+        {
+          "did": "0-6-23",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-23",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB24.jpg",
+          "lignes": [
+            "[2005-04-04] 24 | ISBN 962-8861-75-1"
+          ],
+          "titre_tome": "24 | ISBN 962-8861-75-1",
+          "isbn": "962-8861-75-1",
+          "premiere_edition": "2005/04/04"
+        },
+        {
+          "did": "0-6-24",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-24",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB25.jpg",
+          "lignes": [
+            "[2005-04-12] 25 | ISBN 962-8895-44-3"
+          ],
+          "titre_tome": "25 | ISBN 962-8895-44-3",
+          "isbn": "962-8895-44-3",
+          "premiere_edition": "2005/04/12"
+        },
+        {
+          "did": "0-6-25",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-25",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB26.jpg",
+          "lignes": [
+            "[2005-04-14] 26 | ISBN 962-8895-45-1"
+          ],
+          "titre_tome": "26 | ISBN 962-8895-45-1",
+          "isbn": "962-8895-45-1",
+          "premiere_edition": "2005/04/14"
+        },
+        {
+          "did": "0-6-26",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-26",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB27.jpg",
+          "lignes": [
+            "[2005-05-18] 27 | ISBN 962-8895-58-3"
+          ],
+          "titre_tome": "27 | ISBN 962-8895-58-3",
+          "isbn": "962-8895-58-3",
+          "premiere_edition": "2005/05/18"
+        },
+        {
+          "did": "0-6-27",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-27",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB28.jpg",
+          "lignes": [
+            "[2005-05-18] 28 | ISBN 962-8895-59-1"
+          ],
+          "titre_tome": "28 | ISBN 962-8895-59-1",
+          "isbn": "962-8895-59-1",
+          "premiere_edition": "2005/05/18"
+        },
+        {
+          "did": "0-6-28",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-28",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB29.jpg",
+          "lignes": [
+            "[2005-06-02] 29 | ISBN 962-8895-80-X"
+          ],
+          "titre_tome": "29 | ISBN 962-8895-80-X",
+          "isbn": "962-8895-80-X",
+          "premiere_edition": "2005/06/02"
+        },
+        {
+          "did": "0-6-29",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-29",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB30.jpg",
+          "lignes": [
+            "[2005-06-02] 30 | ISBN 962-8895-81-8"
+          ],
+          "titre_tome": "30 | ISBN 962-8895-81-8",
+          "isbn": "962-8895-81-8",
+          "premiere_edition": "2005/06/02"
+        },
+        {
+          "did": "0-6-30",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-30",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB31.jpg",
+          "lignes": [
+            "[2005-07-11] 31 | ISBN 962-8895-90-7"
+          ],
+          "titre_tome": "31 | ISBN 962-8895-90-7",
+          "isbn": "962-8895-90-7",
+          "premiere_edition": "2005/07/11"
+        },
+        {
+          "did": "0-6-31",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-31",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB32.jpg",
+          "lignes": [
+            "[2005-07-11] 32 | ISBN 962-8895-91-5"
+          ],
+          "titre_tome": "32 | ISBN 962-8895-91-5",
+          "isbn": "962-8895-91-5",
+          "premiere_edition": "2005/07/11"
+        },
+        {
+          "did": "0-6-32",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-32",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB33.jpg"
+        },
+        {
+          "did": "0-6-33",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-6-33",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/db_zh_hk_ult/DB34.jpg"
+        }
+      ]
+    },
+    {
+      "slug": "dragonball_anime_z",
+      "titre": "Dragon Ball Z — anime comics TV",
+      "titre_site": "ドラゴンボールZ TV版アニメコミック 龙珠Z TV动画版漫画",
+      "url": "https://comic.dragonballcn.com/dragonball_anime_z.htm",
+      "ouvrages": [
+        {
+          "did": "0-13-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-1",
+          "libelle": "サイヤ人編 巻一",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s01.jpg"
+        },
+        {
+          "did": "0-13-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-2",
+          "libelle": "赛亚人篇2",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s02.jpg"
+        },
+        {
+          "did": "0-13-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-3",
+          "libelle": "赛亚人篇3",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s03.jpg"
+        },
+        {
+          "did": "0-13-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-4",
+          "libelle": "赛亚人篇4",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s04.jpg"
+        },
+        {
+          "did": "0-13-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-5",
+          "libelle": "赛亚人篇5",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s05.jpg"
+        },
+        {
+          "did": "0-13-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-6",
+          "libelle": "超サイヤ人 ギニュー特戦隊編 巻一",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s06.jpg"
+        },
+        {
+          "did": "0-13-7",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-7",
+          "libelle": "超级赛亚人 基纽特战队篇2",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s07.jpg"
+        },
+        {
+          "did": "0-13-8",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-8",
+          "libelle": "超级赛亚人 基纽特战队篇3",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s08.jpg"
+        },
+        {
+          "did": "0-13-9",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-9",
+          "libelle": "超级赛亚人 基纽特战队篇4",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s09.jpg"
+        },
+        {
+          "did": "0-13-10",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-10",
+          "libelle": "超级赛亚人 基纽特战队篇5（试读版）",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s10.jpg"
+        },
+        {
+          "did": "0-13-11",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-11",
+          "libelle": "超级赛亚人 基纽特战队篇6（试读版）",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s11.jpg"
+        },
+        {
+          "did": "0-13-12",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-12",
+          "libelle": "超サイヤ人 フリーザ編 巻一 · （试读版）",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s12.jpg"
+        },
+        {
+          "did": "0-13-13",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-13",
+          "libelle": "超级赛亚人 弗利萨篇2 · （试读版）",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s13.jpg"
+        },
+        {
+          "did": "0-13-14",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-14",
+          "libelle": "超级赛亚人 弗利萨篇3 · （试读版）",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s14.jpg"
+        },
+        {
+          "did": "0-13-15",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-15",
+          "libelle": "超级赛亚人 弗利萨篇4 · （试读版）",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s15.jpg"
+        },
+        {
+          "did": "0-13-16",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-16",
+          "libelle": "人造人間編 巻一",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s16.jpg"
+        },
+        {
+          "did": "0-13-17",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-17",
+          "libelle": "人造人篇2",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s17.jpg"
+        },
+        {
+          "did": "0-13-18",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-18",
+          "libelle": "人造人篇3",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s18.jpg"
+        },
+        {
+          "did": "0-13-19",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-19",
+          "libelle": "人造人篇4",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s19.jpg"
+        },
+        {
+          "did": "0-13-20",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-20",
+          "libelle": "人造人篇5（试读版）",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s20.jpg"
+        },
+        {
+          "did": "0-13-21",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-21",
+          "libelle": "セルゲーム編 巻一",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s21.jpg"
+        },
+        {
+          "did": "0-13-22",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-22",
+          "libelle": "沙鲁游戏篇2",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s22.jpg"
+        },
+        {
+          "did": "0-13-23",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-23",
+          "libelle": "沙鲁游戏篇3",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s23.jpg"
+        },
+        {
+          "did": "0-13-24",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-24",
+          "libelle": "沙鲁游戏篇4",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s24.jpg"
+        },
+        {
+          "did": "0-13-25",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-25",
+          "libelle": "沙鲁游戏篇5",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s25.jpg"
+        },
+        {
+          "did": "0-13-26",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-26",
+          "libelle": "あの世一武道会編 巻一",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s26.jpg"
+        },
+        {
+          "did": "0-13-27",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-27",
+          "libelle": "另一个世界的第一武道会篇2",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s27.jpg"
+        },
+        {
+          "did": "0-13-28",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-28",
+          "libelle": "魔人ブウ復活編 巻一",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s28.jpg"
+        },
+        {
+          "did": "0-13-29",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-29",
+          "libelle": "魔人布欧复活篇2",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s29.jpg"
+        },
+        {
+          "did": "0-13-30",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-30",
+          "libelle": "魔人布欧复活篇3",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s30.jpg"
+        },
+        {
+          "did": "0-13-31",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-31",
+          "libelle": "魔人布欧复活篇4",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s31.jpg"
+        },
+        {
+          "did": "0-13-32",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-32",
+          "libelle": "魔人布欧复活篇5",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s32.jpg"
+        },
+        {
+          "did": "0-13-33",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-33",
+          "libelle": "魔人布欧复活篇6",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s33.jpg"
+        },
+        {
+          "did": "0-13-34",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-34",
+          "libelle": "魔人ブウ激闘編 巻一",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s34.jpg"
+        },
+        {
+          "did": "0-13-35",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-35",
+          "libelle": "魔人布欧激斗篇2",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s35.jpg"
+        },
+        {
+          "did": "0-13-36",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-36",
+          "libelle": "魔人布欧激斗篇3（试读版）",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s36.jpg"
+        },
+        {
+          "did": "0-13-37",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-37",
+          "libelle": "魔人布欧激斗篇4",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s37.jpg"
+        },
+        {
+          "did": "0-13-38",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-38",
+          "libelle": "魔人布欧激斗篇5",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s38.jpg"
+        },
+        {
+          "did": "0-13-39",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-13-39",
+          "libelle": "魔人布欧激斗篇6",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/z/s39.jpg"
+        }
+      ]
+    },
+    {
+      "slug": "dragonball_anime_movie",
+      "titre": "Dragon Ball — anime comics films",
+      "titre_site": "ドラゴンボールアニメコミック 龙珠动画版漫画 剧场版/TV",
+      "url": "https://comic.dragonballcn.com/dragonball_anime_movie.htm",
+      "ouvrages": [
+        {
+          "did": "0-12-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-1",
+          "libelle": "[1995|2017] 1 神龍の伝説",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/01.TV01.gif"
+        },
+        {
+          "did": "0-12-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-2",
+          "libelle": "[1995|2017] 2 魔神城のねむり姫",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/02.TV02.gif"
+        },
+        {
+          "did": "0-12-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-3",
+          "libelle": "[1995|2017] 3 摩訶不思議大冒険",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/03.TV03.gif"
+        },
+        {
+          "did": "0-12-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-4",
+          "libelle": "[1996|2017] 4 最強への道",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/04.TV04.gif"
+        },
+        {
+          "did": "0-12-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-5",
+          "libelle": "[1994|2017] 1 オラの悟飯をかえせッ!!",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/05.Z01.gif"
+        },
+        {
+          "did": "0-12-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-6",
+          "libelle": "[1994|2017] 2 この世で一番強いヤツ",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/06.Z02.gif"
+        },
+        {
+          "did": "0-12-7",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-7",
+          "libelle": "[1994|2017] 3 地球まるごと超決戦",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/07.Z03.gif"
+        },
+        {
+          "did": "0-12-8",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-8",
+          "libelle": "[1994|2017] 4 超サイヤ人だ孫悟空",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/08.Z04.gif"
+        },
+        {
+          "did": "0-12-9",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-9",
+          "libelle": "[1992|2017] 5 とびっきりの最強対最強",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/09.Z05.gif"
+        },
+        {
+          "did": "0-12-10",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-10",
+          "libelle": "[1992|2017] 6 激突!!100億パワーの戦士たち",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/10.Z06.gif"
+        },
+        {
+          "did": "0-12-11",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-11",
+          "libelle": "[1993|2017] 7 極限バトル!! 三大超サイヤ人",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/11.Z07.gif"
+        },
+        {
+          "did": "0-12-12",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-12",
+          "libelle": "[1993|2017] 8 燃えつきろ!! 熱戦・烈戦・超激戦",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/12.Z08.gif"
+        },
+        {
+          "did": "0-12-13",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-13",
+          "libelle": "[1993|2017] 9 銀河ギリギリ!! ぶっちぎりの凄い奴",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/13.Z09.gif"
+        },
+        {
+          "did": "0-12-14",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-14",
+          "libelle": "[1994|2017] 10 危険なふたり！ 超戦士はねむれない",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/14.Z10.gif"
+        },
+        {
+          "did": "0-12-15",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-15",
+          "libelle": "[1994|2017] 11 超戦士撃破!! 勝つのはオレだ",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/15.Z11.gif"
+        },
+        {
+          "did": "0-12-16",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-16",
+          "libelle": "[1994|2017] 12 復活のフュージョン!! 悟空とベジータ",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/16.Z12.gif"
+        },
+        {
+          "did": "0-12-17",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-17",
+          "libelle": "[1995|2017] 13 龍拳爆発!! 悟空がやらねば誰がやる",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/17.Z13.gif"
+        },
+        {
+          "did": "0-12-18",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-18",
+          "libelle": "[1993|2017] Z-TVSP1 たったひとりの最終決戦〜フリーザに挑んだZ戦士孫悟空の父〜",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/18.ZSP01.gif"
+        },
+        {
+          "did": "0-12-19",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-19",
+          "libelle": "[1993|2017] Z-TVSP2 絶望への反抗!! 残された超戦士・悟飯とトランクス",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/19.ZSP02.gif"
+        },
+        {
+          "did": "0-12-20",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-12-20",
+          "libelle": "[1997.7|2017] GT-TVSP 悟空外伝! 勇気の証しは四星球",
+          "couverture": "./assets/covers/dragonballcn/anime_comic/moive/20.GTSP.gif"
+        }
+      ]
+    },
+    {
+      "slug": "arale_cn",
+      "titre": "Dr Slump — édition chinoise",
+      "titre_site": "阿拉蕾中文版(18卷全)",
+      "url": "https://comic.dragonballcn.com/arale_cn.htm",
+      "ouvrages": [
+        {
+          "did": "1-2-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-2-0",
+          "libelle": "第一卷 · 小云诞生！！",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_cn/01.jpg"
+        },
+        {
+          "did": "1-2-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-2-1",
+          "libelle": "第二卷 · 冲锋的小云",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_cn/02.jpg"
+        },
+        {
+          "did": "1-2-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-2-2",
+          "libelle": "第三卷 · 地球SOS！",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_cn/03.jpg"
+        },
+        {
+          "did": "1-2-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-2-3",
+          "libelle": "第四卷 · 快乐的千平",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_cn/04.jpg"
+        },
+        {
+          "did": "1-2-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-2-4",
+          "libelle": "第五卷 · 怪物之夜",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_cn/05.jpg"
+        },
+        {
+          "did": "1-2-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-2-5",
+          "libelle": "第六卷 · 马斯特博士的野心！",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_cn/06.jpg"
+        },
+        {
+          "did": "1-2-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-2-6",
+          "libelle": "第七卷 · 我的卫生纸",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_cn/07.jpg"
+        },
+        {
+          "did": "1-2-7",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-2-7",
+          "libelle": "第八卷 · 天神杯大赛车",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_cn/08.jpg"
+        },
+        {
+          "did": "1-2-8",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-2-8",
+          "libelle": "第九卷 · 疯狂蜜月",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_cn/09.jpg"
+        },
+        {
+          "did": "1-2-9",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-2-9",
+          "libelle": "第十卷 · 摘氏一家来了",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_cn/10.jpg"
+        },
+        {
+          "did": "1-2-10",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-2-10",
+          "libelle": "第十一卷 · 小吉·小吉",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_cn/11.jpg"
+        },
+        {
+          "did": "1-2-11",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-2-11",
+          "libelle": "第十二卷 · GO!GO!尼克真星球",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_cn/12.jpg"
+        },
+        {
+          "did": "1-2-12",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-2-12",
+          "libelle": "第十三卷 · 机械人小宝宝",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_cn/13.jpg"
+        },
+        {
+          "did": "1-2-13",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-2-13",
+          "libelle": "第十四卷 · 无敌牛奶糖7号",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_cn/14.jpg"
+        },
+        {
+          "did": "1-2-14",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-2-14",
+          "libelle": "第十五卷 · 太平的诞生",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_cn/15.jpg"
+        },
+        {
+          "did": "1-2-15",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-2-15",
+          "libelle": "第十六卷 谁是世界第一的比赛大会",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_cn/16.jpg"
+        },
+        {
+          "did": "1-2-16",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-2-16",
+          "libelle": "第十七卷 · 天神大反击",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_cn/17.jpg"
+        },
+        {
+          "did": "1-2-17",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-2-17",
+          "libelle": "第十八卷 · 机械大发明的完结篇",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_cn/18.jpg"
+        }
+      ]
+    },
+    {
+      "slug": "arale_jp_lib",
+      "titre": "Dr Slump — bunko japonais",
+      "titre_site": "阿拉蕾日文文库版(9卷全)",
+      "url": "https://comic.dragonballcn.com/arale_jp_lib.htm",
+      "ouvrages": [
+        {
+          "did": "1-1-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-1-0",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_jp_lib/01.gif",
+          "titre_tome": "Dr.スランプ(1)",
+          "premiere_edition": "1995/07/23",
+          "isbn": "4-08-617051-5",
+          "prix": "600円(本体583円)",
+          "editeur": "集英社文庫",
+          "lignes": [
+            "Dr.スランプ(1)",
+            "初版 1995/07/23",
+            "ISBN 4-08-617051-5",
+            "9784086170512",
+            "定価 600円(本体583円)",
+            "頁数 383P 16cm",
+            "出版 集英社文庫",
+            "&copy; A.Toriyama 1995"
+          ]
+        },
+        {
+          "did": "1-1-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-1-1",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_jp_lib/02.gif",
+          "titre_tome": "Dr.スランプ(2)",
+          "premiere_edition": "1995/07/23",
+          "isbn": "4-08-617052-3",
+          "prix": "600円(本体583円)",
+          "editeur": "集英社文庫",
+          "lignes": [
+            "Dr.スランプ(2)",
+            "初版 1995/07/23",
+            "ISBN 4-08-617052-3",
+            "9784086170529",
+            "定価 600円(本体583円)",
+            "頁数 381P 16cm",
+            "出版 集英社文庫",
+            "&copy; A.Toriyama 1995"
+          ]
+        },
+        {
+          "did": "1-1-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-1-2",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_jp_lib/03.gif",
+          "titre_tome": "Dr.スランプ(3)",
+          "premiere_edition": "1995/10/23",
+          "isbn": "4-08-617053-1",
+          "prix": "640円(本体621円)",
+          "editeur": "集英社文庫",
+          "lignes": [
+            "Dr.スランプ(3)",
+            "初版 1995/10/23",
+            "ISBN 4-08-617053-1",
+            "9784086170536",
+            "定価 640円(本体621円)",
+            "頁数 387P 16cm",
+            "出版 集英社文庫",
+            "&copy; A.Toriyama 1995"
+          ]
+        },
+        {
+          "did": "1-1-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-1-3",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_jp_lib/04.gif",
+          "titre_tome": "Dr.スランプ(4)",
+          "premiere_edition": "1995/10/23",
+          "isbn": "4-08-617054-X",
+          "prix": "640円(本体621円)",
+          "editeur": "集英社文庫",
+          "lignes": [
+            "Dr.スランプ(4)",
+            "初版 1995/10/23",
+            "ISBN 4-08-617054-X",
+            "9784086170543",
+            "定価 640円(本体621円)",
+            "頁数 381P 16cm",
+            "出版 集英社文庫",
+            "&copy; A.Toriyama 1995"
+          ]
+        },
+        {
+          "did": "1-1-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-1-4",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_jp_lib/05.gif",
+          "titre_tome": "Dr.スランプ(5)",
+          "premiere_edition": "1996/01/23",
+          "isbn": "4-08-617055-8",
+          "prix": "640円(本体621円)",
+          "editeur": "集英社文庫",
+          "lignes": [
+            "Dr.スランプ(5)",
+            "初版 1996/01/23",
+            "ISBN 4-08-617055-8",
+            "9784086170550",
+            "定価 640円(本体621円)",
+            "頁数 383P 16cm",
+            "出版 集英社文庫",
+            "&copy; A.Toriyama 1996"
+          ]
+        },
+        {
+          "did": "1-1-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-1-5",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_jp_lib/06.gif",
+          "titre_tome": "Dr.スランプ(6)",
+          "premiere_edition": "1996/01/23",
+          "isbn": "4-08-617056-6",
+          "prix": "640円(本体621円)",
+          "editeur": "集英社文庫",
+          "lignes": [
+            "Dr.スランプ(6)",
+            "初版 1996/01/23",
+            "ISBN 4-08-617056-6",
+            "9784086170567",
+            "定価 640円(本体621円)",
+            "頁数 385P 16cm",
+            "出版 集英社文庫",
+            "&copy; A.Toriyama 1996"
+          ]
+        },
+        {
+          "did": "1-1-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-1-6",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_jp_lib/07.gif",
+          "titre_tome": "Dr.スランプ(7)",
+          "premiere_edition": "1996/04/23",
+          "isbn": "4-08-617057-4",
+          "prix": "640円(本体621円)",
+          "editeur": "集英社文庫",
+          "lignes": [
+            "Dr.スランプ(7)",
+            "初版 1996/04/23",
+            "ISBN 4-08-617057-4",
+            "9784086170574",
+            "定価 640円(本体621円)",
+            "頁数 393P 16cm",
+            "出版 集英社文庫",
+            "&copy; A.Toriyama 1996"
+          ]
+        },
+        {
+          "did": "1-1-7",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-1-7",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_jp_lib/08.gif",
+          "titre_tome": "Dr.スランプ(8)",
+          "premiere_edition": "1996/04/23",
+          "isbn": "4-08-617058-2",
+          "prix": "640円(本体621円)",
+          "editeur": "集英社文庫",
+          "lignes": [
+            "Dr.スランプ(8)",
+            "初版 1996/04/23",
+            "ISBN 4-08-617058-2",
+            "9784086170581",
+            "定価 640円(本体621円)",
+            "頁数 386P 16cm",
+            "出版 集英社文庫",
+            "&copy; A.Toriyama 1996"
+          ]
+        },
+        {
+          "did": "1-1-8",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-1-8",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_jp_lib/09.gif",
+          "titre_tome": "Dr.スランプ(9)",
+          "premiere_edition": "1987/04/23",
+          "isbn": "4-08-617059-0",
+          "prix": "640円(本体621円)",
+          "editeur": "集英社文庫",
+          "lignes": [
+            "Dr.スランプ(9)",
+            "初版 1987/04/23",
+            "ISBN 4-08-617059-0",
+            "9784086170598",
+            "定価 640円(本体621円)",
+            "頁数 389P 16cm",
+            "出版 集英社文庫",
+            "&copy; A.Toriyama 1996"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "arale_zh_hk",
+      "titre": "Dr Slump — édition hongkongaise",
+      "titre_site": "I.Q.博士(香港中文版18卷全)天下出版",
+      "url": "https://comic.dragonballcn.com/arale_zh_hk.htm",
+      "ouvrages": [
+        {
+          "did": "1-6-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-6-0",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_hk/01.gif"
+        },
+        {
+          "did": "1-6-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-6-1",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_hk/02.gif"
+        },
+        {
+          "did": "1-6-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-6-2",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_hk/03.gif",
+          "lignes": [
+            "[1993-08-05] 03 地球SOS",
+            "ISBN ?"
+          ],
+          "titre_tome": "03 地球SOS",
+          "premiere_edition": "1993/08/05"
+        },
+        {
+          "did": "1-6-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-6-3",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_hk/04.gif",
+          "lignes": [
+            "[1993-08-20] 04 快乐的千平",
+            "ISBN 962-585-004-X(X=10)"
+          ],
+          "titre_tome": "04 快乐的千平",
+          "isbn": "962-585-004-X",
+          "premiere_edition": "1993/08/20"
+        },
+        {
+          "did": "1-6-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-6-4",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_hk/05.gif",
+          "lignes": [
+            "[1993-09-05] 05 怪物之夜",
+            "ISBN 962-585-005-8"
+          ],
+          "titre_tome": "05 怪物之夜",
+          "isbn": "962-585-005-8",
+          "premiere_edition": "1993/09/05"
+        },
+        {
+          "did": "1-6-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-6-5",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_hk/06.gif",
+          "lignes": [
+            "[1993-09-20]06马斯特博士的野心",
+            "ISBN 962-585-006-6"
+          ],
+          "titre_tome": "06马斯特博士的野心",
+          "isbn": "962-585-006-6",
+          "premiere_edition": "1993/09/20"
+        },
+        {
+          "did": "1-6-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-6-6",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_hk/07.gif",
+          "lignes": [
+            "[1993-10-05] 07 我的卫生纸",
+            "ISBN ?"
+          ],
+          "titre_tome": "07 我的卫生纸",
+          "premiere_edition": "1993/10/05"
+        },
+        {
+          "did": "1-6-7",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-6-7",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_hk/08.gif",
+          "lignes": [
+            "[1993-10-20] 08 天神杯大赛车",
+            "ISBN ?"
+          ],
+          "titre_tome": "08 天神杯大赛车",
+          "premiere_edition": "1993/10/20"
+        },
+        {
+          "did": "1-6-8",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-6-8",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_hk/09.gif",
+          "lignes": [
+            "[1993-11-05] 09 疯狂蜜月",
+            "ISBN ?"
+          ],
+          "titre_tome": "09 疯狂蜜月",
+          "premiere_edition": "1993/11/05"
+        },
+        {
+          "did": "1-6-9",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-6-9",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_hk/10.gif",
+          "lignes": [
+            "[1993-11-20] 10 摘氏一家来了",
+            "ISBN 962-585-010-4"
+          ],
+          "titre_tome": "10 摘氏一家来了",
+          "isbn": "962-585-010-4",
+          "premiere_edition": "1993/11/20"
+        },
+        {
+          "did": "1-6-10",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-6-10",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_hk/11.gif",
+          "lignes": [
+            "[1993-12-05] 11 小吉·小吉",
+            "ISBN 962-585-011-2"
+          ],
+          "titre_tome": "11 小吉·小吉",
+          "isbn": "962-585-011-2",
+          "premiere_edition": "1993/12/05"
+        },
+        {
+          "did": "1-6-11",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-6-11",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_hk/12.gif",
+          "lignes": [
+            "[1993-12-20] 12 GO！GO！",
+            "尼克真星球 ISBN ?"
+          ],
+          "titre_tome": "12 GO！GO！",
+          "premiere_edition": "1993/12/20"
+        },
+        {
+          "did": "1-6-12",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-6-12",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_hk/13.gif",
+          "lignes": [
+            "[1994-01-05] 13 机器人小宝宝",
+            "ISBN ?"
+          ],
+          "titre_tome": "13 机器人小宝宝",
+          "premiere_edition": "1994/01/05"
+        },
+        {
+          "did": "1-6-13",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-6-13",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_hk/14.gif",
+          "lignes": [
+            "[1994-01-20] 14 无敌牛奶糖7号",
+            "ISBN 962-585-014-7"
+          ],
+          "titre_tome": "14 无敌牛奶糖7号",
+          "isbn": "962-585-014-7",
+          "premiere_edition": "1994/01/20"
+        },
+        {
+          "did": "1-6-14",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-6-14",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_hk/15.gif",
+          "lignes": [
+            "[1994-02-05] 15 太平的诞生",
+            "ISBN ?"
+          ],
+          "titre_tome": "15 太平的诞生",
+          "premiere_edition": "1994/02/05"
+        },
+        {
+          "did": "1-6-15",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-6-15",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_hk/16.gif",
+          "lignes": [
+            "[1994-02-20] 16 谁是世界第一",
+            "的比赛大会 ISBN ?"
+          ],
+          "titre_tome": "16 谁是世界第一",
+          "premiere_edition": "1994/02/20"
+        },
+        {
+          "did": "1-6-16",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-6-16",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_hk/17.gif",
+          "lignes": [
+            "[1994-03-05] 17 天神大反击",
+            "ISBN ?"
+          ],
+          "titre_tome": "17 天神大反击",
+          "premiere_edition": "1994/03/05"
+        },
+        {
+          "did": "1-6-17",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-6-17",
+          "libelle": "",
+          "couverture": "./assets/covers/dragonballcn/arale_zh_hk/18.gif",
+          "lignes": [
+            "[1994-03-19] 18 机械大发明",
+            "的完结篇 ISBN ?"
+          ],
+          "titre_tome": "18 机械大发明",
+          "premiere_edition": "1994/03/19"
+        }
+      ]
+    },
+    {
+      "slug": "divers",
+      "titre": "Databooks, artbooks et hors-séries",
+      "titre_site": null,
+      "url": "https://comic.dragonballcn.com/",
+      "ouvrages": [
+        {
+          "did": "0-11-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-11-0",
+          "libelle": "总集篇01",
+          "couverture": null
+        },
+        {
+          "did": "0-5-34-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-34-1",
+          "libelle": "大全集1",
+          "couverture": null
+        },
+        {
+          "did": "0-5-34-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-34-2",
+          "libelle": "大全集2",
+          "couverture": null
+        },
+        {
+          "did": "0-5-34-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-34-3",
+          "libelle": "大全集3",
+          "couverture": null
+        },
+        {
+          "did": "0-5-34-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-34-4",
+          "libelle": "大全集4",
+          "couverture": null
+        },
+        {
+          "did": "0-5-34-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-34-5",
+          "libelle": "大全集5",
+          "couverture": null
+        },
+        {
+          "did": "0-5-34-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-34-6",
+          "libelle": "大全集6",
+          "couverture": null
+        },
+        {
+          "did": "0-5-34-7",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-34-7",
+          "libelle": "大全集7",
+          "couverture": null
+        },
+        {
+          "did": "0-5-34-8",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-34-8",
+          "libelle": "大全集卡片1",
+          "couverture": null
+        },
+        {
+          "did": "1-0-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-0-6",
+          "libelle": "40周年各路漫画家新绘封面",
+          "couverture": null
+        },
+        {
+          "did": "0-14-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-14-1",
+          "libelle": "GT 邪恶龙篇01",
+          "couverture": null
+        },
+        {
+          "did": "0-14-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-14-2",
+          "libelle": "邪恶龙篇02",
+          "couverture": null
+        },
+        {
+          "did": "0-14-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-14-3",
+          "libelle": "邪恶龙篇03",
+          "couverture": null
+        },
+        {
+          "did": "0-5-1-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-1-3",
+          "libelle": "大全集1 鸟山明的超会见（港版）",
+          "couverture": null
+        },
+        {
+          "did": "0-5-13",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-13",
+          "libelle": "DRAGONBALL冒险SPECIAL",
+          "couverture": null
+        },
+        {
+          "did": "0-5-14",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-14",
+          "libelle": "神龙通信1-5",
+          "couverture": null
+        },
+        {
+          "did": "0-5-15",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-15",
+          "libelle": "大全集 2 (STORY GUIDE)",
+          "couverture": null
+        },
+        {
+          "did": "0-5-25",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-25",
+          "libelle": "大全集 3 (TV ANIMATION PART 1)",
+          "couverture": null
+        },
+        {
+          "did": "0-5-17",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-17",
+          "libelle": "大全集 4 (WORLD GUIDE) (126P)",
+          "couverture": null
+        },
+        {
+          "did": "0-5-26",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-26",
+          "libelle": "大全集 5 (TV ANIMATION PART 2)",
+          "couverture": null
+        },
+        {
+          "did": "0-5-19",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-19",
+          "libelle": "大全集 6 (MOVIES & TV SPECIALS)",
+          "couverture": null
+        },
+        {
+          "did": "0-5-30",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-30",
+          "libelle": "大全集 补卷 (TV ANIMATION PART 3) (92P)",
+          "couverture": null
+        },
+        {
+          "did": "0-5-21",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-21",
+          "libelle": "龙珠Z\tBurst Limit设定资料集",
+          "couverture": null
+        },
+        {
+          "did": "0-5-22",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-22",
+          "libelle": "龙珠Raging Blast 2 超级赛亚人灭绝计划 设定资料",
+          "couverture": null
+        },
+        {
+          "did": "0-5-23",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-23",
+          "libelle": "龙珠动画草图 Sketches",
+          "couverture": null
+        },
+        {
+          "did": "0-5-24",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-24",
+          "libelle": "龙珠动画故事板 Storyboard",
+          "couverture": null
+        },
+        {
+          "did": "0-5-0-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-0-2",
+          "libelle": "神龙通信2",
+          "couverture": null
+        },
+        {
+          "did": "0-5-31",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-31",
+          "libelle": "新剧场 神与神 场刊",
+          "couverture": null
+        },
+        {
+          "did": "0-4-1-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-1-0",
+          "libelle": "2008新动画《归来》官方漫画版 40P",
+          "couverture": null
+        },
+        {
+          "did": "0-5-12",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-12",
+          "libelle": "新短篇动画人物角色设定图 59P",
+          "couverture": null
+        },
+        {
+          "did": "0-5-0-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-0-1",
+          "libelle": "神龙通信1",
+          "couverture": null
+        },
+        {
+          "did": "0-5-8",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-8",
+          "libelle": "七龍珠GT完全手冊 1",
+          "couverture": null
+        },
+        {
+          "did": "0-5-9",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-9",
+          "libelle": "龙珠Z单卷DVD内封 (日)",
+          "couverture": null
+        },
+        {
+          "did": "0-5-10",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-10",
+          "libelle": "龙珠通信,完全版内附 (日)",
+          "couverture": null
+        },
+        {
+          "did": "0-5-27",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-27",
+          "libelle": "东立七龙珠 全彩剧场版 书后特辑",
+          "couverture": null
+        },
+        {
+          "did": "0-5-28",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-28",
+          "libelle": "Dragonball LANDMARK 完全版公式手册 港版",
+          "couverture": null
+        },
+        {
+          "did": "0-5-29",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-29",
+          "libelle": "Dragonball FOREVER 完全版公式手册 港版",
+          "couverture": null
+        },
+        {
+          "did": "0-9-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-9-0",
+          "libelle": "龍珠完全版01",
+          "couverture": null
+        },
+        {
+          "did": "0-9-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-9-1",
+          "libelle": "龍珠完全版02",
+          "couverture": null
+        },
+        {
+          "did": "0-9-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-9-2",
+          "libelle": "龍珠完全版03",
+          "couverture": null
+        },
+        {
+          "did": "0-4-2-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-2-3",
+          "libelle": "星空",
+          "couverture": null
+        },
+        {
+          "did": "0-4-2-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-2-2",
+          "libelle": "诞生",
+          "couverture": null
+        },
+        {
+          "did": "0-4-7",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-7",
+          "libelle": "番外篇超极限之战",
+          "couverture": null
+        },
+        {
+          "did": "0-4-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-6",
+          "libelle": "孙悟空VS卡卡西 1.狭路相逢",
+          "couverture": null
+        },
+        {
+          "did": "0-5-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-4",
+          "libelle": "DRAGONBALL冒险SPECIAL",
+          "couverture": null
+        },
+        {
+          "did": "0-5-0-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-0-0",
+          "libelle": "神龙通信７",
+          "couverture": null
+        },
+        {
+          "did": "0-5-1-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-1-0",
+          "libelle": "大全集１99P",
+          "couverture": null
+        },
+        {
+          "did": "0-5-1-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-1-1",
+          "libelle": "法文全",
+          "couverture": null
+        },
+        {
+          "did": "0-5-1-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-1-2",
+          "libelle": "西班牙文25P",
+          "couverture": null
+        },
+        {
+          "did": "0-5-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-2",
+          "libelle": "大全集６",
+          "couverture": null
+        },
+        {
+          "did": "0-5-3-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-3-2",
+          "libelle": "大全集７(日文大图)",
+          "couverture": null
+        },
+        {
+          "did": "0-5-3-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-3-1",
+          "libelle": "法文(缺页)",
+          "couverture": null
+        },
+        {
+          "did": "0-5-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-5",
+          "libelle": "GT Perfect File 1 Complete",
+          "couverture": null
+        },
+        {
+          "did": "0-5-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-6",
+          "libelle": "Dragon Ball Z: The Anime Adventure Game",
+          "couverture": null
+        },
+        {
+          "did": "0-5-7",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-7",
+          "libelle": "Dragon Ball Z Book 2: The Frieza Saga",
+          "couverture": null
+        },
+        {
+          "did": "0-5-11",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-11",
+          "libelle": "華泰FC攻略042 龍球神龍之謎 完全攻略本",
+          "couverture": null
+        },
+        {
+          "did": "0-10-0-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-0-0",
+          "libelle": "Full Color サイヤ人編 (赛亚人篇)",
+          "couverture": null
+        },
+        {
+          "did": "0-10-0-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-10-0-1",
+          "libelle": "フルカラー フリーザ編 (弗利萨篇)",
+          "couverture": null
+        },
+        {
+          "did": "0-5-33-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-33-0",
+          "libelle": "超画集",
+          "couverture": null
+        },
+        {
+          "did": "0-5-32-0-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-32-0-2",
+          "libelle": "超全集4 ～超事典～",
+          "couverture": null
+        },
+        {
+          "did": "0-5-32-0-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-32-0-0",
+          "libelle": "超全集1 ～STORY & WORLD GUIDE～ (漫画)",
+          "couverture": null
+        },
+        {
+          "did": "0-5-32-0-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-5-32-0-1",
+          "libelle": "超全集3 ANIMATION GUIDE PART2 (GT&剧场)",
+          "couverture": null
+        },
+        {
+          "did": "1-0-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-0-4",
+          "libelle": "龙珠负(被放逐的命运之子)",
+          "couverture": null
+        },
+        {
+          "did": "1-0-3-0-11",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-0-3-0-11",
+          "libelle": "银河巡警加克 +1话 最终话",
+          "couverture": null
+        },
+        {
+          "did": "1-0-3-0-8",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-0-3-0-8",
+          "libelle": "银河巡警加克 第8话",
+          "couverture": null
+        },
+        {
+          "did": "1-0-3-0-9",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-0-3-0-9",
+          "libelle": "第9话",
+          "couverture": null
+        },
+        {
+          "did": "1-0-3-0-10",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-0-3-0-10",
+          "libelle": "第10话",
+          "couverture": null
+        },
+        {
+          "did": "1-0-3-0-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-0-3-0-5",
+          "libelle": "银河巡警加克 第5话",
+          "couverture": null
+        },
+        {
+          "did": "1-0-3-0-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-0-3-0-6",
+          "libelle": "第6话",
+          "couverture": null
+        },
+        {
+          "did": "1-0-3-0-7",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-0-3-0-7",
+          "libelle": "第7话",
+          "couverture": null
+        },
+        {
+          "did": "1-0-3-0-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-0-3-0-1",
+          "libelle": "银河巡警加克 第1话",
+          "couverture": null
+        },
+        {
+          "did": "1-0-3-0-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-0-3-0-2",
+          "libelle": "第2话",
+          "couverture": null
+        },
+        {
+          "did": "1-0-3-0-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-0-3-0-3",
+          "libelle": "第3话",
+          "couverture": null
+        },
+        {
+          "did": "1-0-3-0-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-0-3-0-4",
+          "libelle": "第4话",
+          "couverture": null
+        },
+        {
+          "did": "1-0-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-0-2",
+          "libelle": "阿拉蕾2007特别篇：阿芭蕾",
+          "couverture": null
+        },
+        {
+          "did": "1-0-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-0-1",
+          "libelle": "新年企划：CROSS EPOCH 鸟山×尾田",
+          "couverture": null
+        },
+        {
+          "did": "1-0-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-0-0",
+          "libelle": "『超这里龟』秋本治×鸟山明",
+          "couverture": null
+        },
+        {
+          "did": "1-0-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-0-5",
+          "libelle": "30周年纪念本全书",
+          "couverture": null
+        },
+        {
+          "did": "0-4-17",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-17",
+          "libelle": "龙珠SD 剧场神与神 特别篇",
+          "couverture": null
+        },
+        {
+          "did": "0-4-12",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-12",
+          "libelle": "龙珠EOB(巴达克之章) Vol.1-3",
+          "couverture": null
+        },
+        {
+          "did": "0-4-18",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-18",
+          "libelle": "龙珠SD Vol.1-4 英文版",
+          "couverture": null
+        },
+        {
+          "did": "0-4-20",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-20",
+          "libelle": "龙珠SD DB篇 Vol.1-10 汉化版",
+          "couverture": null
+        },
+        {
+          "did": "0-4-19",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-19",
+          "libelle": "龙珠SD DB篇 Vol.1-10 英文",
+          "couverture": null
+        },
+        {
+          "did": "0-4-8",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-8",
+          "libelle": "龙珠超次元乱战 31-33话 P746",
+          "couverture": null
+        },
+        {
+          "did": "0-4-16",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-16",
+          "libelle": "龙珠超次元乱战 21-30话",
+          "couverture": null
+        },
+        {
+          "did": "0-4-15",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-15",
+          "libelle": "龙珠超次元乱战 11-20话",
+          "couverture": null
+        },
+        {
+          "did": "0-4-14",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-14",
+          "libelle": "龙珠超次元乱战 1-10话",
+          "couverture": null
+        },
+        {
+          "did": "0-4-13",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-13",
+          "libelle": "次元特别篇 (大多非原作者所画) P765",
+          "couverture": null
+        },
+        {
+          "did": "0-4-9",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-9",
+          "libelle": "DBM 迷你漫画 46P",
+          "couverture": null
+        },
+        {
+          "did": "0-4-21-9",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-21-9",
+          "libelle": "卷9 (封面图)",
+          "couverture": null
+        },
+        {
+          "did": "0-4-21-8",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-21-8",
+          "libelle": "卷8 超级赛亚人3特兰克斯出发(部分日文)",
+          "couverture": null
+        },
+        {
+          "did": "0-4-21-7",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-21-7",
+          "libelle": "卷7 孙悟天VS超五星龙",
+          "couverture": null
+        },
+        {
+          "did": "0-4-21-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-21-6",
+          "libelle": "卷6 超越界限的修行",
+          "couverture": null
+        },
+        {
+          "did": "0-4-21-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-21-5",
+          "libelle": "卷5 奇迹的融合",
+          "couverture": null
+        },
+        {
+          "did": "0-4-21-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-21-4",
+          "libelle": "卷4 孙悟空的去向",
+          "couverture": null
+        },
+        {
+          "did": "0-4-21-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-21-3",
+          "libelle": "卷3 超越最强",
+          "couverture": null
+        },
+        {
+          "did": "0-4-21-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-21-2",
+          "libelle": "卷2 恐怖的艾泽",
+          "couverture": null
+        },
+        {
+          "did": "0-4-21-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-21-1",
+          "libelle": "卷1 未来之后",
+          "couverture": null
+        },
+        {
+          "did": "0-4-5-9",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-5-9",
+          "libelle": "龙珠AF_4的续集草稿",
+          "couverture": null
+        },
+        {
+          "did": "0-4-5-8",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-5-8",
+          "libelle": "龙珠AF_4 第七个超战士",
+          "couverture": null
+        },
+        {
+          "did": "0-4-5-7",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-5-7",
+          "libelle": "龙珠AF_3 莱拉的失算 129-201",
+          "couverture": null
+        },
+        {
+          "did": "0-4-5-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-5-6",
+          "libelle": "龙珠AF_2 又一个世界 65-127",
+          "couverture": null
+        },
+        {
+          "did": "0-4-5-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-5-4",
+          "libelle": "龙珠AF_1 未来的战士们 01-64",
+          "couverture": null
+        },
+        {
+          "did": "0-4-5-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-5-5",
+          "libelle": "DragonBall AF 龙珠AF ssj5",
+          "couverture": null
+        },
+        {
+          "did": "0-4-5-10",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-5-10",
+          "libelle": "龙珠AF 原定最终章",
+          "couverture": null
+        },
+        {
+          "did": "0-4-5-11",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-5-11",
+          "libelle": "第零章序幕",
+          "couverture": null
+        },
+        {
+          "did": "0-4-5-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-5-0",
+          "libelle": "龙珠AF(1-79P)",
+          "couverture": null
+        },
+        {
+          "did": "0-4-10",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-10",
+          "libelle": "龙珠ZERO 001-011",
+          "couverture": null
+        },
+        {
+          "did": "0-4-2-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-2-1",
+          "libelle": "1.诞生",
+          "couverture": null
+        },
+        {
+          "did": "0-4-0-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-0-1",
+          "libelle": "龙珠GT漫画版(第一卷)",
+          "couverture": null
+        },
+        {
+          "did": "0-4-4-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=0-4-4-1",
+          "libelle": "龙珠零界迦太篇(第一卷)",
+          "couverture": null
+        },
+        {
+          "did": "1-8-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-8-0",
+          "libelle": "ニトロちゃんの誕生日の巻",
+          "couverture": null
+        },
+        {
+          "did": "1-8-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-8-1",
+          "libelle": "怪盗ほよよ団２…の巻",
+          "couverture": null
+        },
+        {
+          "did": "1-8-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-8-2",
+          "libelle": "愛の雪だるま物語……の巻",
+          "couverture": null
+        },
+        {
+          "did": "1-8-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-8-3",
+          "libelle": "さよならバイチャ…の巻",
+          "couverture": null
+        },
+        {
+          "did": "1-7-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-7-0",
+          "libelle": "台版怪博士與機器娃娃&lt;第一卷&gt;",
+          "couverture": null
+        },
+        {
+          "did": "1-3-10",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-3-10",
+          "libelle": "鸟山明HETAPPI漫画教室",
+          "couverture": null
+        },
+        {
+          "did": "1-3-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-3-0",
+          "libelle": "日文",
+          "couverture": null
+        },
+        {
+          "did": "1-3-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-3-1",
+          "libelle": "香港",
+          "couverture": null
+        },
+        {
+          "did": "1-3-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-3-2",
+          "libelle": "新加坡",
+          "couverture": null
+        },
+        {
+          "did": "1-3-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-3-3",
+          "libelle": "日文",
+          "couverture": null
+        },
+        {
+          "did": "1-3-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-3-4",
+          "libelle": "香港中文版",
+          "couverture": null
+        },
+        {
+          "did": "1-3-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-3-5",
+          "libelle": "日文",
+          "couverture": null
+        },
+        {
+          "did": "1-3-6",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-3-6",
+          "libelle": "台湾",
+          "couverture": null
+        },
+        {
+          "did": "1-3-7",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-3-7",
+          "libelle": "香港",
+          "couverture": null
+        },
+        {
+          "did": "1-3-8",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-3-8",
+          "libelle": "日文",
+          "couverture": null
+        },
+        {
+          "did": "1-3-9",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-3-9",
+          "libelle": "香港猫魔人",
+          "couverture": null
+        },
+        {
+          "did": "1-4-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-4-0",
+          "libelle": "日文",
+          "couverture": null
+        },
+        {
+          "did": "1-4-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-4-1",
+          "libelle": "香港中文版",
+          "couverture": null
+        },
+        {
+          "did": "1-4-2",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-4-2",
+          "libelle": "日文",
+          "couverture": null
+        },
+        {
+          "did": "1-4-3",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-4-3",
+          "libelle": "香港中文版",
+          "couverture": null
+        },
+        {
+          "did": "1-4-4",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-4-4",
+          "libelle": "日文",
+          "couverture": null
+        },
+        {
+          "did": "1-4-5",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-4-5",
+          "libelle": "香港中文版",
+          "couverture": null
+        },
+        {
+          "did": "1-5-0",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-5-0",
+          "libelle": "鸟山明 the World",
+          "couverture": null
+        },
+        {
+          "did": "1-5-1",
+          "url": "https://comic.dragonballcn.com/list/gain_1.php?did=1-5-1",
+          "libelle": "鸟山明的世界",
+          "couverture": null
+        }
+      ]
+    }
+  ]
+}

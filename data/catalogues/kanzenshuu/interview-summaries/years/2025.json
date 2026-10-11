@@ -1,0 +1,415 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2025; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "mantanweb-daima-akiyo-iyoku-1",
+      "title": "Akio Iyoku — genèse et objectifs de Dragon Ball Daima",
+      "summary": "Dans ce grand entretien de MANTANWEB, le producteur exécutif Akio Iyoku raconte comment un projet de nouveau film ou de nouvelle série a commencé à se discuter pendant la production de Super Hero, environ six ans avant Daima. L'équipe comptait d'abord développer le projet sans trop solliciter Toriyama, puis celui-ci s'est impliqué de plus en plus et a fini par prendre en charge presque tout; ses questions sur le Monde des Démons et les nouveaux personnages ont densifié l'univers. Iyoku dit que la série était déjà en production avant la finalisation complète du scénario, après de nombreuses discussions. Le public visé incluait les adultes qui avaient grandi avec GT et leurs enfants; le projet voulait retrouver une aventure de Goku enfant, mais Iyoku précise que l'équipe ne savait pas au départ qu'elle transformerait les personnages en enfants et attribue cette idée à Toriyama. Il rapporte que l'histoire se déroule juste après l'arc de Majin Boo et que Toriyama avait déjà en tête plusieurs liens avec le manga, dont les origines des Kaiōshin, des Nameks et de Boo. Iyoku décrit l'équilibre recherché entre l'identité familière de Dragon Ball et de nouveaux éléments, l'ambition d'une diffusion mondiale simultanée en streaming, et ses attentes élevées pour le combat final. Ces informations sont les propos du producteur et ne sont pas à attribuer à Toriyama, sauf quand Iyoku rapporte expressément une décision ou une idée de ce dernier.",
+      "keyInformation": [
+        "Iyoku situe les premières discussions de Daima environ six ans plus tôt, pendant la production de Super Hero, au moment où l'équipe envisageait un nouveau film ou une série. Elle voulait d'abord construire le projet elle-même et consulter Toriyama sans lui confier toute la charge.",
+        "Selon Iyoku, Toriyama s'est progressivement beaucoup plus investi que prévu; ses questions sur le Monde des Démons et les nouveaux personnages ont consolidé le monde de Daima, jusqu'à ce qu'il prenne en charge presque tout le projet.",
+        "Iyoku dit que le développement de la série a duré plus longtemps que celui d'un film et que l'équipe a fait de nombreux allers-retours sur l'histoire; la production animée avait commencé avant que le scénario soit entièrement finalisé.",
+        "L'objectif était de proposer une série regardable par des parents et leurs enfants. Iyoku visait notamment les adultes alors trentenaires ou plus qui avaient connu GT enfants; il décrit GT comme un point de départ de ton et d'aventure puisque Goku y redevenait enfant et partait en voyage.",
+        "Iyoku précise que l'équipe ne savait pas initialement qu'elle rajeunirait les personnages; il attribue cette idée à Toriyama. Il estimait qu'un Goku enfant, à la fois mignon et cool, pouvait toucher un public plus large et donner à l'action une fraîcheur différente de Super.",
+        "La série voulait être accessible à de nouveaux spectateurs et rappeler les fondements de Dragon Ball — quête des Dragon Balls et affrontement d'adversaires puissants — sans la rendre enfantine ni sacrifier les qualités des personnages, de l'histoire et de l'image.",
+        "Iyoku situe Daima immédiatement après la fin de l'arc Majin Boo et attribue la gestion de l'histoire à Toriyama. Il rapporte que la série devait révéler notamment les origines des Kaiōshin, des Nameks et de Majin Boo, ainsi que des liens avec le manga que Toriyama avait déjà en tête.",
+        "Iyoku dit que la découverte de l'origine des êtres aux oreilles pointues dans le Monde des Démons l'a surpris; il estime que Toriyama gardait déjà ces connexions en tête et adaptait son point de vue selon la série, plutôt que d'inventer tout arbitrairement.",
+        "Le producteur décrit l'équilibre recherché entre les caractéristiques attendues de Dragon Ball et de nouveaux défis : trop répéter les mêmes éléments lasserait le public, mais des changements trop grands risqueraient de rompre les attentes fondamentales.",
+        "Iyoku présente la diffusion mondiale au même moment, avec une priorité au streaming, comme une première pour toute une série Dragon Ball diffusée du début à la fin en simulcast. Il veut observer les réactions différentes selon les pays et régions et dit que d'autres développements de la franchise sont en préparation, sans les détailler.",
+        "Au moment de l'article, Iyoku promet un combat final dépassant les attentes et recommande de revoir la série depuis le début; il annonce que certaines révélations seront prévisibles, d'autres inattendues et certaines surprenantes. Il s'agit de son appréciation promotionnelle de la série."
+      ],
+      "source": {
+        "publication": "MANTANWEB",
+        "pages": "Entretien-reportage Web, sans pagination; aucune numérotation de questions dans la transcription",
+        "date": "2025-02-11",
+        "participants": [
+          "Akio Iyoku"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/mantanweb-daima-akiyo-iyoku-1/",
+        "questionAnswerCount": 0,
+        "formatNote": "Long article avec intertitres et réponses de Iyoku insérées dans un récit journalistique, sans balisage Q/R. Les affirmations sur la conception et la diffusion sont celles d'Akio Iyoku, producteur exécutif; seules les idées qu'il attribue explicitement à Toriyama sont indirectement rapportées comme telles.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/mantanweb-daima-akiyo-iyoku-1.html"
+      },
+      "dragonBallRelevance": "Directe : témoignage du producteur exécutif sur le développement, les objectifs de public, la place temporelle et la diffusion de Daima; les propos de Iyoku sont séparés de ceux qu'il rapporte de Toriyama.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-ball-super-manga-vol-24-toyotaro-afterword",
+      "title": "Toyotarō — postface du volume 24 de Dragon Ball Super",
+      "summary": "Dans la postface du volume 24, Toyotarō explique l'origine du récit spécial sur Saiyaman X qu'il a dessiné pour clore l'arc Super Hero. Toriyama lui avait remis un texte sur l'origine du personnage et lui avait dit qu'il pouvait l'utiliser ou non dans les chapitres. Toyotarō ne voulait pas laisser l'idée de côté, mais le nombre de chapitres prévus pour le prélude était déjà limité à trois; il a donc dessiné ces épisodes après leur conversion en histoire de Saiyaman X et a abandonné l'autre récit. Comme il tenait toujours à le dessiner pour achever l'arc, il a pu le publier sous la forme d'un one-shot dans le volume. Il distingue ainsi la matière initialement écrite par Toriyama de son expansion et de sa réalisation en manga, et remercie les lecteurs en déclarant l'arc Super Hero véritablement terminé.",
+      "keyInformation": [
+        "Toriyama avait confié à Toyotarō un texte racontant l'origine de Saiyaman X et lui avait laissé le choix de l'intégrer ou non dans les chapitres publiés.",
+        "Toyotarō voulait adapter le texte, mais trois chapitres de prélude à l'arc avaient déjà été décidés; il a donc abandonné provisoirement cette histoire et dessiné les trois chapitres qui étaient devenus ceux de Saiyaman X.",
+        "Toyotarō tenait à dessiner le récit inédit pour donner une véritable conclusion à l'arc Super Hero; il a pu le réaliser et le publier comme histoire en un chapitre dans le volume 24.",
+        "La postface distingue le texte source fourni par Toriyama de son développement et de sa réalisation graphique par Toyotarō. Toyotarō remercie les lecteurs et considère l'arc achevé avec ce one-shot."
+      ],
+      "source": {
+        "publication": "Dragon Ball Super, volume 24 (manga)",
+        "pages": "Postface, pagination non indiquée dans la transcription Kanzenshuu",
+        "date": "2025-04-04",
+        "participants": [
+          "Toyotarō"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-24-toyotaro-afterword/",
+        "questionAnswerCount": 0,
+        "formatNote": "Postface autobiographique, et non entretien question-réponse. L'index Kanzenshuu classe cette entrée parmi les interviews; les propos concernent la genèse éditoriale d'un one-shot et la répartition du travail entre Toriyama et Toyotarō.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-manga-vol-24-toyotaro-afterword.html"
+      },
+      "dragonBallRelevance": "Directe : documente l'origine d'un récit de Dragon Ball Super et le partage des rôles entre le texte initial de Toriyama et son adaptation en manga par Toyotarō.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-78283-podcast-episode-0518",
+      "title": "Podcast Episode #0518 — Rocco (Mega64)",
+      "kind": "audio-interview",
+      "summary": "Mike interviewe Rocco de Mega64 à propos de sa découverte de Dragon Ball, de sa collection de figurines et des sketches live-action de Dragon Ball Z produits par Mega64. Le billet ne reproduit pas l’échange audio.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0518; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/03/23/podcast-episode-0518/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2025-03-23",
+        "participants": [
+          "Rocco (Mega64)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0518.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-78283-podcast-episode-0518.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Dragon Ball fandom and live-action sketches",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-78283-podcast-episode-0518.mp3",
+      "audioTranscriptAvailable": false
+    },
+    {
+      "id": "site-post-78299-podcast-episode-0519",
+      "title": "Podcast Episode #0519 — Brandon Bovia",
+      "kind": "audio-interview",
+      "summary": "Mike interviewe Brandon Bovia, lettreur de l’édition anglaise du manga Dragon Ball Super chez Viz. Le synopsis indique que l’échange porte sur le rôle du lettreur, les différences entre publication simultanée et volumes reliés, et le travail nécessaire pour adapter les chapitres en anglais. Le billet ne fournit pas de transcription.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0519; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/04/06/podcast-episode-0519/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2025-04-06",
+        "participants": [
+          "Brandon Bovia"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0519.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-78299-podcast-episode-0519.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Manga lettering",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-78299-podcast-episode-0519.mp3",
+      "audioTranscriptAvailable": false
+    },
+    {
+      "id": "site-post-78507-toyotaro-dragon-ball-legends-7th-anniversary-illustration-qa",
+      "title": "Toyotarō — illustration de collaboration Dragon Ball Legends pour le 7e anniversaire",
+      "kind": "written-interview",
+      "summary": "Dans cette Q&A de cinq questions reproduite intégralement par Kanzenshuu, Toyotarō explique la composition de son illustration de Goku Ultra Instinct et Vegeta Super Saiyan Blue Evolution réalisée pour le 7e anniversaire de Dragon Ball Legends. Il voulait une pose énergique où les deux personnages affrontent le spectateur; le Tournoi du Pouvoir et Jiren lui sont venus à l’esprit, sans qu’il ait imaginé un ennemi précis. Il détaille l’alignement vertical des poings, la profondeur, l’évitement de la symétrie et la différenciation des expressions. Pour Vegeta, dont cette transformation n’existe pas dans le manga, il a veillé à la coiffure et à l’expression afin que les spectateurs de l’anime ne ressentent pas de décalage. Il conclut en se disant honoré que l’illustration accompagne le 7e anniversaire du jeu.",
+      "keyInformation": [
+        "La source officielle comporte cinq questions et leurs réponses, toutes reproduites dans le billet Kanzenshuu.",
+        "Toyotarō a conçu Goku et Vegeta combattant côte à côte, tournés vers le spectateur, pour donner de l’impact à l’image.",
+        "Il n’avait pas choisi d’adversaire précis; le Tournoi du Pouvoir et Jiren lui sont venus à l’esprit. Il a voulu que les vêtements abîmés suggèrent un combat prolongé.",
+        "Il a travaillé l’alignement vertical des poings, leur profondeur et des poses non symétriques.",
+        "Il a différencié les expressions des transformations et a particulièrement étudié les cheveux et l’expression de Vegeta, car Super Saiyan Blue Evolution n’existe pas dans le manga.",
+        "Toyotarō se dit honoré que l’illustration soit utilisée à l’occasion du 7e anniversaire de Dragon Ball Legends."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/06/20/translation-update-special-project-toyotaro-drew-it-image-90/",
+        "publication": "Dragon Ball Official Site — 「とよたろうが描いてみた」特別編!!レジェンズ7周年コラボイラストについて聞いてみた!!",
+        "publicationDate": "2025-05-24",
+        "participants": [
+          "Toyotarō"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "sourcePageUrl": "https://dragon-ball-official.com/news/01_3414.html",
+        "questionAnswerCount": 5,
+        "transcriptAvailable": true,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Entretien écrit — cinq questions-réponses complètes",
+        "scopeNote": "La traduction intégrale des cinq échanges est reproduite dans le corps du billet Kanzenshuu."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Témoignage direct de Toyotarō sur la conception d’une illustration de Goku et Vegeta pour Dragon Ball Legends."
+    },
+    {
+      "id": "site-post-78442-podcast-episode-0522",
+      "title": "Podcast Kanzenshuu #0522 — David Evelyn",
+      "kind": "audio-interview",
+      "summary": "Mike reçoit David Evelyn, traducteur de l’édition anglaise de Dr. Mashirito’s Ultimate Manga Techniques publiée par Viz. Le synopsis annonce une conversation sur les anecdotes et les enseignements du livre, ainsi que sur d’autres récits de l’invité. Le billet ne transcrit pas l’échange et l’audio n’est pas acquis localement.",
+      "keyInformation": [
+        "David Evelyn est présenté comme le traducteur de l’édition anglaise du livre chez Viz.",
+        "Le synopsis annonce une discussion sur les anecdotes et enseignements du livre, sans détailler les réponses.",
+        "Notice fondée sur le synopsis local; audio non acquis et transcription indisponible."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/05/18/podcast-episode-0522/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2025-05-18",
+        "participants": [
+          "David Evelyn"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "audioDownloaded": false,
+        "audioTranscriptAvailable": false,
+        "transcriptAvailable": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Résumé limité au synopsis local; audio non acquis et transcription indisponible."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Directe mais éditoriale : entretien avec le traducteur anglais d’un ouvrage sur Torishima et Toriyama."
+    },
+    {
+      "id": "site-post-78462-podcast-episode-0523",
+      "title": "Podcast Kanzenshuu #0523 — Zénpai",
+      "kind": "audio-interview",
+      "summary": "Mike retrouve Zénpai, présenté comme le traducteur officiel d’une nouvelle publication manga Dragon Ball en portugais. Le synopsis annonce une discussion sur la genèse du projet, son avancement, les réactions du public et l’intérêt d’une édition portugaise pour la communauté internationale. Le billet ne transcrit pas l’échange et l’audio n’est pas acquis localement.",
+      "keyInformation": [
+        "Zénpai est présenté comme le traducteur officiel d’une nouvelle parution manga Dragon Ball en portugais.",
+        "Les thèmes annoncés sont la genèse du projet, son avancement, l’accueil reçu et ses apports pour la communauté internationale.",
+        "Notice fondée sur le synopsis local; audio non acquis et transcription indisponible."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/06/01/podcast-episode-0523/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2025-06-01",
+        "participants": [
+          "Zénpai"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "audioDownloaded": false,
+        "audioTranscriptAvailable": false,
+        "transcriptAvailable": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Résumé limité au synopsis local; audio non acquis et transcription indisponible."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Directe : expérience de traduction et de publication d’un manga Dragon Ball au Portugal."
+    },
+    {
+      "id": "site-post-78490-podcast-episode-0524",
+      "title": "Podcast Kanzenshuu #0524 — Randy de We Gotta Podcast",
+      "kind": "audio-interview",
+      "summary": "Mike retrouve Randy de We Gotta Podcast, dont l’émission vient de dépasser cent épisodes. Le synopsis annonce une conversation sur la naissance de leur équipe et sur ce qui lui permet de poursuivre le podcast. Il ne détaille pas davantage l’échange; l’audio n’est pas acquis localement et le billet ne fournit pas de transcription.",
+      "keyInformation": [
+        "La conversation a lieu à l’occasion du dépassement des cent épisodes de We Gotta Podcast.",
+        "Le synopsis annonce des thèmes sur la formation de l’équipe et la continuité de son projet.",
+        "Échange entre podcasteurs, non témoignage direct de la production Dragon Ball; audio non acquis et transcription absente."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/06/15/podcast-episode-0524/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2025-06-15",
+        "participants": [
+          "Randy (We Gotta Podcast)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "audioDownloaded": false,
+        "audioTranscriptAvailable": false,
+        "transcriptAvailable": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Résumé limité au synopsis local; audio non acquis et transcription indisponible."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Indirecte : échange avec l’animateur d’un podcast de fans, centré sur son émission."
+    },
+    {
+      "id": "site-post-78532-podcast-episode-0525",
+      "title": "Podcast Kanzenshuu #0525 — Q&A en direct avec la communauté",
+      "kind": "audio-interview",
+      "summary": "Mike anime une séance en direct avec plusieurs invités pour la communauté Patreon de Kanzenshuu. Selon le synopsis, le groupe répond aux questions sur l’histoire des éditions manga, les jeux vidéo et d’autres sujets Dragon Ball. Le billet ne nomme pas les invités. L’audio n’est pas acquis localement et aucune transcription n’est fournie.",
+      "keyInformation": [
+        "Direct spécial avec un panel d’invités et la communauté Patreon de Kanzenshuu.",
+        "Le panel répond aux questions sur l’histoire des parutions manga, les jeux vidéo et d’autres sujets Dragon Ball.",
+        "Les invités ne sont pas identifiés dans le synopsis; audio non acquis et transcription indisponible."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/06/30/podcast-episode-0525/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2025-06-30",
+        "participants": [
+          "Mike (Kanzenshuu)",
+          "invités du panel non identifiés dans le synopsis"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "audioDownloaded": false,
+        "audioTranscriptAvailable": false,
+        "transcriptAvailable": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Résumé limité au synopsis local; audio non acquis et transcription indisponible."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Directe : séance Q&A communautaire sur l’histoire des éditions manga et les jeux Dragon Ball."
+    },
+    {
+      "id": "site-post-79015-podcast-episode-0533",
+      "title": "Podcast Kanzenshuu #0533 — JP de The Space Above Us",
+      "kind": "audio-conversation",
+      "summary": "Mike échange avec JP de The Space Above Us pour une nouvelle discussion sur l’espace. Le synopsis part d’un passage de remplissage de l’épisode 50 de Dragon Ball Z, où Goku répare son vaisseau et corrige sa route à partir des coordonnées de Dr. Brief, puis interroge la plausibilité de cette situation. Cas frontière : conversation d’analyse avec un invité, pas entretien avec un créateur ou professionnel de la franchise. Le billet ne transcrit pas l’échange et l’audio n’est pas acquis localement.",
+      "keyInformation": [
+        "Conversation avec JP autour de questions spatiales soulevées par Dragon Ball Z.",
+        "Le synopsis cite la réparation du vaisseau de Goku et la correction de trajectoire à partir des coordonnées de Dr. Brief, épisode 50.",
+        "Cas frontière : analyse invitée, non témoignage d’un professionnel de Dragon Ball; audio non acquis et transcription indisponible."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/12/28/podcast-episode-0533/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2025-12-28",
+        "participants": [
+          "JP (The Space Above Us)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "audioDownloaded": false,
+        "audioTranscriptAvailable": false,
+        "transcriptAvailable": false,
+        "forumContent": false,
+        "format": "Podcast audio — conversation analytique avec un invité",
+        "scopeNote": "Résumé limité au synopsis local; audio non acquis et transcription indisponible."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Directe pour l’analyse d’un épisode de Dragon Ball Z, mais indirecte pour la production; aucun témoignage de créateur ou membre du personnel n’est annoncé."
+    },
+    {
+      "year": 2025,
+      "id": "site-post-78414-podcast-episode-0521",
+      "title": "Podcast Kanzenshuu #0521 — Von et Made in Asia 2025",
+      "kind": "audio-interview",
+      "summary": "Mike s’entretient avec Von, contributeur de Kanzenshuu, au sujet de Made in Asia 2025, où Katsuyoshi Nakatsuru et Chikashi Kubota figuraient parmi les invités. Le synopsis promet des anecdotes de coulisses sur la production, des réponses à des questions de fans et une discussion sur l’artwork; il ne dit pas que Nakatsuru ou Kubota sont eux-mêmes interviewés dans l’épisode. Le billet ne transcrit pas la conversation; l’audio est lié mais non acquis localement.",
+      "keyInformation": [
+        "Mike parle avec Von de la convention Made in Asia de mars 2025.",
+        "Katsuyoshi Nakatsuru et Chikashi Kubota étaient présents; le synopsis annonce des anecdotes de production et une discussion sur l’artwork, sans prétendre qu’ils sont les interlocuteurs de l’épisode.",
+        "Synopsis seulement; audio lié, non acquis localement et non transcrit."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/05/04/podcast-episode-0521/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2025-05-04",
+        "participants": [
+          "Von (contributeur Kanzenshuu)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0521.mp3",
+        "audioDownloaded": false,
+        "audioTranscriptAvailable": false,
+        "transcriptAvailable": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien avec un contributeur Kanzenshuu",
+        "scopeNote": "Le synopsis documente une conversation de Kanzenshuu avec son contributeur Von à propos d’une convention et de ses invités; il ne documente pas un entretien direct avec Nakatsuru ou Kubota. Audio non acquis et transcription indisponible."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Compte rendu d’événement lié à la production Dragon Ball par un contributeur Kanzenshuu; les créateurs mentionnés ne sont pas annoncés comme interlocuteurs."
+    },
+    {
+      "year": 2025,
+      "id": "site-post-78551-podcast-episode-0526",
+      "title": "Podcast Kanzenshuu #0526 — Von et Japan Expo 2025",
+      "kind": "audio-interview",
+      "summary": "Mike s’entretient avec Von, contributeur de Kanzenshuu, à propos de Japan Expo 2025 à Paris. Le synopsis indique que Kazuhiko Torishima, Katsuyoshi Nakatsuru et Toyotarō figuraient parmi les invités et annonce des récits et anecdotes issus de l’événement; il ne les présente pas comme interlocuteurs de l’épisode. Le billet ne reproduit pas la conversation; l’audio est lié mais non acquis localement.",
+      "keyInformation": [
+        "La conversation porte sur Japan Expo 2025 et le compte rendu de Von.",
+        "Torishima, Nakatsuru et Toyotarō figuraient parmi les invités; le synopsis ne les désigne pas comme participants à l’épisode.",
+        "Synopsis seulement; audio lié, non acquis localement et non transcrit."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/07/14/podcast-episode-0526/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2025-07-14",
+        "participants": [
+          "Von (contributeur Kanzenshuu)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0526.mp3",
+        "audioDownloaded": false,
+        "audioTranscriptAvailable": false,
+        "transcriptAvailable": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien avec un contributeur Kanzenshuu",
+        "scopeNote": "Conversation avec le contributeur Von au sujet de l’événement; les créateurs cités ne sont pas présentés comme interviewés dans cet épisode. Audio non acquis et transcription indisponible."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Compte rendu d’un événement Dragon Ball avec la participation annoncée de collaborateurs et créateurs; pas de témoignage direct établi dans le synopsis."
+    },
+    {
+      "year": 2025,
+      "id": "site-post-78987-podcast-episode-0532",
+      "title": "Podcast Kanzenshuu #0532 — Von et Manga Barcelona 2025",
+      "kind": "audio-interview",
+      "summary": "Mike s’entretient avec Von, contributeur de Kanzenshuu, au sujet de Manga Barcelona 2025, où Takashi Matsuyama, second assistant d’Akira Toriyama, figurait parmi les invités. Le synopsis annonce des anecdotes de l’événement et un possible détail de production inédit; il ne dit pas que Matsuyama est interviewé dans l’épisode. Le billet ne transcrit pas la conversation; l’audio est lié mais non acquis localement.",
+      "keyInformation": [
+        "Mike parle avec Von de Manga Barcelona 2025.",
+        "Takashi Matsuyama, second assistant de Toriyama, était invité; un détail de production est évoqué comme possible, sans entretien direct de Matsuyama établi par le synopsis.",
+        "Synopsis seulement; audio lié, non acquis localement et non transcrit."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/12/16/podcast-episode-0532/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2025-12-16",
+        "participants": [
+          "Von (contributeur Kanzenshuu)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0532.mp3",
+        "audioDownloaded": false,
+        "audioTranscriptAvailable": false,
+        "transcriptAvailable": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien avec un contributeur Kanzenshuu",
+        "scopeNote": "Conversation avec le contributeur Von au sujet de l’événement; Matsuyama est mentionné comme invité, mais le synopsis ne le présente pas comme interlocuteur. Audio non acquis et transcription indisponible."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Compte rendu d’événement avec la présence d’un collaborateur de Toriyama; le synopsis ne permet pas de rapporter un témoignage direct de Matsuyama."
+    }
+  ]
+}

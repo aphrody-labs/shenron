@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "publication": "30th Anniversary ドラゴンボール超史集",
+  "interviewee": "野沢雅子",
+  "interviewTitle": "30年間、悟空たちを演じ続けるということ",
+  "status": "partial",
+  "method": "Transcription manuelle après inspection visuelle du rendu PNG local en haute résolution. Aucun OCR ni réseau.",
+  "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-nozawa-p129-visual.jsonl",
+  "records": [
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-nozawa-p129-visual.jsonl#L1",
+      "printedPages": [
+        129
+      ],
+      "pdfPageIndices": [
+        130
+      ],
+      "completeness": "Texte du corps visible sur le folio 129 transcrit; le début de page reprend une phrase commencée sur le folio 128 et est indiqué comme tronqué."
+    },
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-nozawa-p128.jsonl#L1",
+      "printedPages": [
+        128
+      ],
+      "pdfPageIndices": [
+        129
+      ],
+      "completeness": "Le sidecar antérieur ne contient qu'une transcription partielle; il reste distinct et n'est pas remplacé par le présent fichier."
+    }
+  ],
+  "coverage": {
+    "requestedPrintedPages": [
+      128,
+      129
+    ],
+    "coveredByThisSidecar": [
+      129
+    ],
+    "combinedStatus": "PARTIAL: page 129 transcrite d'après rendu visuel; page 128 reste représentée par un sidecar partiel antérieur.",
+    "limits": [
+      "L'ouverture du texte de la page 129 commence au fragment visible «のテープ»; le segment précédent est sur la page 128.",
+      "Les titres décoratifs et la légende de la photo de profil ne sont pas inclus dans le corps de l'entretien.",
+      "La page 128 n'a pas été retranscrite ici afin d'éviter de dupliquer ou de présenter son ancien texte partiel comme complet."
+    ]
+  },
+  "source": {
+    "pdfPath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+    "pdfSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
+    "renderPath": "C:\\Users\\omara\\AppData\\Local\\Temp\\shenron-30th-pages\\page-130.png",
+    "renderBytes": 1259845,
+    "renderSha256": "4f72b1c0d5b273e852ea6e5538a93a8efdcff4005a0b898fe588a58b1613495"
+  },
+  "verification": {
+    "transcriptBytes": 4754,
+    "transcriptSha256": "addf2c7b76ad66a6d5b64eb205a9d7db238e34fc66f8bfbc46221bd823c41a3f",
+    "independentSecondTranscriber": false
+  }
+}

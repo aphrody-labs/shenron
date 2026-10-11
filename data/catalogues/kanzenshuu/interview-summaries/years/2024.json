@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2024; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "chunichi-shimbun-article-hisashi-tanaka",
+      "title": "Hisashi Tanaka — souvenirs du premier assistant de Toriyama",
+      "summary": "Dans un portrait nécrologique de Chunichi Shimbun, Hisashi Tanaka revient sur les deux années où il fut le premier assistant d'Akira Toriyama. Employé d'entreprise tout en tentant de devenir mangaka, il fut impressionné par Dr. Slump, puis postula lorsque Jump annonça que Toriyama cherchait un assistant près de Nagoya. Il fut embauché après avoir envoyé deux dessins d'essai. Il commençait le travail le matin avant l'échéance, une fois le crayonné de Toriyama terminé; ils discutaient de musique, de manga, de l'actualité et de leurs loisirs tandis que Toriyama continuait à dessiner sans ralentir. Ils finissaient le soir et expédiaient les planches vers Tokyo par avion depuis l'aéroport de Nagoya. Tanaka dit ne jamais avoir été réprimandé et décrit Toriyama, malgré le succès de Dragon Ball et Dragon Quest, comme un aîné bienveillant qui conversait volontiers avec lui.",
+      "keyInformation": [
+        "Tanaka travaillait en entreprise tout en visant une carrière de mangaka quand Dr. Slump l'a frappé par la qualité de ses expressions et mouvements; il pensait auparavant qu'il fallait déménager à Tokyo pour travailler dans le manga.",
+        "Quelques semaines après avoir découvert que Toriyama cherchait un assistant autour de Nagoya, Tanaka a postulé et a été engagé après l'envoi de deux dessins d'essai.",
+        "L'assistance commençait le matin avant la date limite, après que Toriyama avait terminé le crayonné; les deux hommes discutaient de musique, de bandes dessinées, de l'actualité et de leurs loisirs tandis que Toriyama continuait à travailler sans arrêter sa main.",
+        "Ils terminaient généralement le soir et envoyaient les manuscrits à Tokyo par avion au départ de l'aéroport de Nagoya. Tanaka situe son emploi auprès de Toriyama à environ deux ans et dit n'avoir jamais été réprimandé.",
+        "Tanaka décrit Toriyama comme un grand frère de quatre ans son aîné, chaleureux et souriant, qui restait disponible pour bavarder malgré le succès mondial de Dragon Ball et celui de Dragon Quest, dont Toriyama dessinait les personnages.",
+        "Le texte est un portrait journalistique à l'occasion du décès de Toriyama; les citations et anecdotes sont les souvenirs de Tanaka rapportés par Chunichi Shimbun, non une interview directe de Toriyama."
+      ],
+      "source": {
+        "publication": "Chunichi Shimbun",
+        "pages": "Article Web, sans pagination",
+        "date": "2024-03-09",
+        "participants": [
+          "Hisashi Tanaka"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/chunichi-shimbun-article-hisashi-tanaka/",
+        "questionAnswerCount": 1,
+        "formatNote": "Profil journalistique narratif, pas un entretien formel question-réponse. L'index compte un bloc-question/réponse mais le texte archivé présente un récit et des citations; les souvenirs sont attribués à l'assistant Hisashi Tanaka et rapportés par le journaliste Hiroshi Ōyama.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/chunichi-shimbun-article-hisashi-tanaka.html"
+      },
+      "dragonBallRelevance": "Directe : témoignage de première main d'un assistant sur le rythme de travail, l'atelier de Nagoya et le caractère de Toriyama pendant les débuts de Dragon Ball; les faits sont rapportés par un journaliste.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "chunichi-shimbun-article-takashi-matsuyama",
+      "title": "Takashi Matsuyama — souvenirs de l'assistant de Dragon Ball",
+      "summary": "Dans un second portrait de Chunichi Shimbun, l'ancien assistant Takashi Matsuyama décrit sa relation professionnelle et personnelle avec Toriyama. Spécialiste du modélisme militaire, il partageait ce loisir avec le mangaka, qui l'a recruté spontanément en lui proposant de l'aider sur la série; Matsuyama a quitté son emploi en agence de design dès le lendemain et s'est installé près de chez lui. Il travaillait à l'atelier en soirée et repartait le lendemain, tandis que les deux hommes écoutaient des émissions enregistrées à la radio et jouaient aux jeux vidéo pendant les pauses. Matsuyama dit que Toriyama restait modeste dans ses rapports humains mais défendait avec ténacité ses créations face à ses éditeurs. Il admirait aussi la force des envies de dessin de Toriyama et son professionnalisme. Le texte rapporte qu'à l'occasion de son remariage, Toriyama accepta d'être son témoin et lui annonça qu'il allait subir une opération pour une tumeur au cerveau; la nouvelle du décès de Toriyama le surprit avant qu'il ait pu lui rendre visite. Matsuyama décrit sa période auprès de lui comme un rêve accompli et dit avoir tout appris de son maître.",
+      "keyInformation": [
+        "Matsuyama était un passionné de maquettes militaires, intérêt qu'il partageait avec Toriyama; celui-ci lui a proposé sans préavis de l'aider sur la série et Matsuyama a quitté son emploi dans une agence de design le jour suivant.",
+        "Il s'est installé près de la maison de Toriyama, arrivait à l'atelier le soir et repartait le jour suivant. Ils écoutaient des émissions enregistrées à la radio et jouaient aux jeux vidéo pendant les pauses dans une atmosphère qu'il décrit comme libre et domestique.",
+        "Matsuyama décrit Toriyama comme sans arrogance, mais très compétitif et inflexible dès qu'il s'agissait de ses créations; il affrontait fermement ses éditeurs et travaillait avec fierté.",
+        "Il rapporte que Toriyama disait avoir dessiné enfant tout ce qu'il désirait, notamment des animaux de compagnie, et dit y avoir perçu l'intensité de son imagination; il admirait son professionnalisme et estime avoir tout appris de lui.",
+        "Après le remariage de Matsuyama, Toriyama a accepté d'être son témoin. À cette occasion, il lui a annoncé qu'il devait subir l'année suivante une opération pour une tumeur au cerveau; il minimisait la gravité de la situation tout en se plaignant de la difficulté à arrêter de fumer.",
+        "Matsuyama comptait rendre visite à Toriyama à sa sortie de l'hôpital, mais a appris son décès auparavant; le texte rapporte son choc et son sentiment d'avoir vécu un rêve en travaillant avec lui.",
+        "L'article est un portrait journalistique fondé sur les souvenirs de Matsuyama, non une interview de Toriyama. Les détails médicaux et personnels sont rapportés dans ce contexte nécrologique et ne doivent pas être transformés en déclaration publique de Toriyama."
+      ],
+      "source": {
+        "publication": "Chunichi Shimbun",
+        "pages": "Article Web, sans pagination",
+        "date": "2024-03-09",
+        "participants": [
+          "Takashi Matsuyama"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/chunichi-shimbun-article-takashi-matsuyama/",
+        "questionAnswerCount": 1,
+        "formatNote": "Profil journalistique narratif, pas un entretien formel question-réponse. L'index compte un bloc, mais le texte archivé est un article avec citations; propos rapportés par le journaliste Atsushi Okamura au nom de Matsuyama.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/chunichi-shimbun-article-takashi-matsuyama.html"
+      },
+      "dragonBallRelevance": "Directe : témoignage d'un assistant de Dragon Ball sur le recrutement, le travail en atelier, les relations avec les éditeurs et le tempérament créatif de Toriyama.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-ball-official-site-march-2024-toyotaro-interview",
+      "title": "Toyotarō — illustration Ultra Instinct et conclusion de l'arc Super Hero",
+      "summary": "Toyotarō parle d'abord de son illustration d'Ultra Instinct « Omen » créée pour une opération autour du jeu Dragon Ball Legends. Il a utilisé une peinture au pinceau plutôt qu'une couleur d'animation pour donner de la profondeur, choisi une pose qu'il jugeait solennelle et finalement fait flotter Goku, dont les pieds touchaient le sol dans le premier brouillon. Il aime l'encrage analogique et la dernière touche de lueur bleue. À propos du chapitre opposant Goku Ultra Instinct à Gohan Beast, il invite à observer les différences de style de combat et de pensée au-delà d'une comparaison de puissance. Il détaille ensuite la construction des chapitres de l'arc Super Hero : les chapitres 88 à 90 formaient un prologue qu'il voulait dessiner et que Toriyama a révisé; les chapitres 91 à 100 adaptent l'histoire du film; les chapitres 101 à 103 reposent sur un scénario demandé à Toriyama. Toyotarō dit n'avoir modifié que certains dialogues et moments de l'histoire, et remercie Toriyama de lui avoir permis de dessiner l'arc jusqu'à sa conclusion.",
+      "keyInformation": [
+        "Toyotarō dit jouer peu à Dragon Ball Legends faute de temps mais vouloir y consacrer davantage de temps.",
+        "Pour son illustration d'Ultra Instinct « Omen », il a choisi une peinture au pinceau plutôt qu'une mise en couleur de type animation afin d'accentuer la profondeur et a peint l'aura en accord avec la sensation qu'il associait à cette forme.",
+        "Il cherchait une pose inédite et solennelle. Partie d'une idée évoquant le début d'un Kamehameha, la pose a été modifiée : Goku flotte au lieu de toucher le sol, ce qui lui donne selon Toyotarō un caractère plus mystérieux et solennel.",
+        "Toyotarō préfère généralement l'encrage et les finitions; il aime le geste analogique de tremper la plume dans l'encre et affirme vouloir continuer à dessiner à la main. La dernière lueur bleue lui semble faire aboutir l'illustration.",
+        "Pour le combat entre Goku Ultra Instinct et Gohan Beast, il suggère de regarder les différences de style de combat et de manière de penser, plutôt que de se limiter à déterminer qui est le plus fort.",
+        "Toyotarō décrit les chapitres 88 à 90 comme un prologue qu'il souhaitait réaliser et qu'il a dessiné après révision de Toriyama; les chapitres 91 à 100 reprennent l'essentiel du film, et les chapitres 101 à 103 adaptent un scénario qu'il avait demandé à Toriyama d'écrire.",
+        "Il dit avoir retouché quelques dialogues et étapes de l'histoire de l'épilogue, mais que le contenu correspond pour l'essentiel à la vision de Toriyama. Il exprime sa gratitude d'avoir pu dessiner l'arc jusqu'à sa conclusion et invite à comparer la sensation du manga à celle du film."
+      ],
+      "source": {
+        "publication": "Dragon Ball Official Site",
+        "pages": "Article Web, sans pagination; entretien de six questions",
+        "date": "2024-03-21",
+        "participants": [
+          "Toyotarō"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-official-site-march-2024-toyotaro-interview/",
+        "questionAnswerCount": 6,
+        "formatNote": "Six questions-réponses; les réponses sur les chapitres 101 à 103 distinguent explicitement le scénario de Toriyama et les ajustements de Toyotarō.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-official-site-march-2024-toyotaro-interview.html"
+      },
+      "dragonBallRelevance": "Directe : explications de Toyotarō sur la création d'une illustration Dragon Ball et sur le partage des rôles avec Toriyama dans l'adaptation manga de Super Hero.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-75334-akai-victory-uchida-super-dragon-ball-divers-interview",
+      "title": "Akai et Victory Uchida — entretien vidéo sur Super Dragon Ball Divers",
+      "kind": "video-interview-excerpt",
+      "summary": "Le billet Kanzenshuu consacré à l’annonce de Super Dragon Ball Divers rapporte un passage d’un entretien vidéo où le producteur Akai répond à Victory Uchida, éditeur de V-Jump. La seule réponse résumée concerne l’étude d’un mode permettant de jouer avec l’ancien parc de cartes Dragon Ball Heroes; les cartes distribuées par la nouvelle borne resteront propres à Super Divers. Le post ne transcrit pas l’entretien complet.",
+      "keyInformation": [
+        "Le producteur Akai est interrogé par Victory Uchida dans une vidéo liée à l’annonce de Super Dragon Ball Divers.",
+        "Selon le billet, l’équipe étudie un mode Dragon Ball Heroes qui permettrait d’utiliser l’ancien parc de cartes.",
+        "Les cartes remises par la nouvelle borne seront des cartes Super Divers.",
+        "Kanzenshuu ne reproduit qu’un résumé d’une réponse; l’échange complet n’est pas transcrit dans le billet."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2024/05/09/dragon-ball-super-divers-announced/",
+        "publication": "Dragon Ball Official Site — entretien vidéo Akai / Victory Uchida",
+        "publicationDate": "2024-05-09",
+        "participants": [
+          "Akai (producteur Bandai Namco)",
+          "Victory Uchida (éditeur de V-Jump)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2024.json",
+        "mediaUrl": "https://www.youtube-nocookie.com/embed/V_SmC0cRzu0",
+        "sourcePageUrl": "https://dragon-ball-official.com/movie/01_2632.html",
+        "transcriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Entretien vidéo externe — réponse paraphrasée dans le billet",
+        "scopeNote": "Le billet résume une réponse et ne transcrit pas l’entretien. La notice n’attribue pas d’autres propos aux participants."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Informations de lancement sur le jeu d’arcade Super Dragon Ball Divers et la compatibilité envisagée avec les cartes Heroes."
+    },
+    {
+      "id": "kaze-video-kazuhiko-torishima-battle-of-gods-interview-excerpt",
+      "title": "Kazuhiko Torishima — extrait vidéo d’entretien associé à la sortie française de Dragon Ball Kai",
+      "summary": "Dans le passage vidéo cité par Kanzenshuu, Kazuhiko Torishima raconte une discussion avec Bandai alors que les revenus diminuaient. Après lui avoir demandé ce qui pourrait aider l’entreprise, Bandai évoque une nouvelle série animée. Toriyama ne souhaitait pas écrire une nouvelle histoire; Torishima indique qu’une conclusion a ensuite été trouvée avec Bandai. Kanzenshuu ne fournit qu’un extrait résumé et horodaté, pas une transcription complète. L’année 2024 correspond à la publication du billet Kanzenshuu qui cite la vidéo; l’année de l’entretien lui-même n’est pas établie.",
+      "keyInformation": [
+        "Torishima replace l’échange dans une période où les revenus de Bandai étaient en baisse.",
+        "Bandai lui demande quelles mesures pourraient soutenir l’entreprise, puis évoque une nouvelle série animée Dragon Ball.",
+        "Torishima dit que Toriyama ne voulait pas écrire de nouvelle histoire et qu’ils ont fini par trouver une solution avec Bandai.",
+        "Kanzenshuu renvoie à un passage de la vidéo à 6 min 27 s et en résume le contenu; aucune transcription intégrale n’est donnée.",
+        "Date de l’entretien inconnue. 2024 est uniquement l’année de publication du billet Kanzenshuu."
+      ],
+      "source": {
+        "publication": "Entretien vidéo YouTube réalisé en lien avec la sortie française de Dragon Ball Kai chez Kazé; série et date de production non précisées dans le billet",
+        "date": null,
+        "interviewYear": null,
+        "kanzenshuuCitationYear": 2024,
+        "participants": [
+          "Kazuhiko Torishima",
+          "intervieweur non identifié dans le passage cité"
+        ],
+        "originalSource": "https://www.youtube.com/watch?v=Jd0ocHDfYgg&t=387s",
+        "kanzenshuuPage": "https://www.kanzenshuu.com/rumor/toriyama-battle-of-gods-evolution/",
+        "kanzenshuuPageId": 75060,
+        "questionAnswerCount": null,
+        "formatNote": "Extrait/résumé d’une interview vidéo externe, horodaté à 6:27. Date de l’entretien inconnue; 2024 désigne seulement l’année du billet Kanzenshuu.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2024.json"
+      },
+      "dragonBallRelevance": "Directe: témoignage de l’ancien éditeur de Dragon Ball sur les discussions ayant précédé le projet Battle of Gods.",
+      "status": "summary-based-on-kanzenshuu-video-excerpt-source-date-unknown",
+      "forumContent": false
+    },
+    {
+      "year": 2024,
+      "id": "site-post-76839-podcast-episode-0515",
+      "title": "Podcast Kanzenshuu #0515 — JP de The Space Above Us",
+      "kind": "audio-conversation",
+      "summary": "Mike invite JP du podcast The Space Above Us à examiner les représentations de l’espace dans Dragon Ball : plausibilité des voyages, communications intergalactiques et téléportation. Cas frontière retenu pour cohérence avec l’épisode #0533 : conversation d’analyse avec un invité, sans entretien annoncé avec un créateur ou professionnel de Dragon Ball. Le billet ne fournit que le synopsis; l’audio n’est pas acquis localement et n’est pas transcrit.",
+      "keyInformation": [
+        "Le synopsis décrit une conversation entre Mike et JP (The Space Above Us) sur les voyages spatiaux, les communications intergalactiques et la téléportation dans Dragon Ball.",
+        "Cas frontière : le synopsis seul ne documente aucun entretien de professionnel ou créateur de Dragon Ball.",
+        "Audio lié dans le billet, non acquis localement; aucune transcription disponible."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2024/11/11/podcast-episode-0515/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2024-11-11",
+        "participants": [
+          "JP (The Space Above Us)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2024.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0515.mp3",
+        "audioDownloaded": false,
+        "audioTranscriptAvailable": false,
+        "transcriptAvailable": false,
+        "forumContent": false,
+        "format": "Podcast audio — conversation analytique avec un invité (cas frontière)",
+        "scopeNote": "Cas frontière ajouté pour cohérence avec #0533 : conversation analytique d’un invité, pas témoignage d’un créateur ou professionnel; résumé limité au synopsis local; audio non acquis et transcription indisponible."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Analyse d’éléments de Dragon Ball, sans témoignage de créateur ou professionnel de la franchise."
+    }
+  ]
+}

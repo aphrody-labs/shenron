@@ -219,6 +219,8 @@ function formatCliError(result: CliResult): string {
 export interface AphrodyCrawlOptions {
   baseUrl?: string;
   token?: string;
+  /** HTTP proxy for this Aphrody Web API client only; defaults to the scoped user setting. */
+  httpProxy?: string;
   fetcher?: typeof fetch;
 }
 
@@ -263,7 +265,18 @@ export class AphrodyWebClient {
     this.token =
       options.token ?? process.env.APHRODY_WEB_API_TOKEN ?? process.env.APHRODY_BXC_API_TOKEN ?? "";
     if (!this.token.trim()) throw new Error("Aphrody Web token is not configured");
-    this.fetcher = options.fetcher ?? fetch;
+    const httpProxy = options.httpProxy ?? process.env.APHRODY_WEB_HTTP_PROXY?.trim();
+    this.fetcher =
+      options.fetcher ??
+      (((input, init) => {
+        const requestInit = httpProxy
+          ? { ...init, proxy: { url: httpProxy, respectNoProxy: false } }
+          : init;
+        return (fetch as unknown as (input: unknown, init?: unknown) => Promise<Response>)(
+          input,
+          requestInit,
+        );
+      }) as typeof fetch);
     this.apiPrefix =
       this.baseUrl.protocol === "http:" &&
       this.baseUrl.port === "3007" &&

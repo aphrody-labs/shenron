@@ -2,7 +2,7 @@
 import { afterEach, expect, test } from "bun:test";
 import { mkdtemp, writeFile, rm, symlink, mkdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import { auditCatalog, digest, verifySource, type SourceManifest } from "./source-coverage";
 import { ingestSource, type IngestionPorts } from "./source-ingestion";
 import {
@@ -159,8 +159,8 @@ test("actual files, hashes, exact pagination and review are required", async () 
 });
 test("symlink outside private corpus cannot be ingested", async () => {
   const { root, source } = await fixture();
-  await symlink(join(root, "page.jpg"), join(root, "link.jpg"));
-  source.pages[0]!.asset = "../" + root.split("/").at(-1) + "/link.jpg";
+  await symlink(join(root, "page.jpg"), join(root, "link.jpg"), "file");
+  source.pages[0]!.asset = "../" + basename(root) + "/link.jpg";
   expect((await verifySource(source, root)).ready).toBe(true);
   source.pages[0]!.asset = "../../etc/passwd";
   expect((await verifySource(source, root)).issues).toContain("asset:1");

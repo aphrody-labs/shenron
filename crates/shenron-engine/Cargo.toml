@@ -1,0 +1,68 @@
+# SPDX-License-Identifier: Apache-2.0
+[package]
+name = "shenron-engine"
+description = "Unified production-grade full-Rust game engine, GPU backend, 2D/3D renderer, vector canvas, and WASM bindings."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[lints]
+workspace = true
+
+[features]
+default = ["vello"]
+vello = ["dep:vello"]
+wasm = ["dep:wasm-bindgen", "dep:serde-wasm-bindgen", "dep:js-sys", "dep:web-sys"]
+
+[dependencies]
+# Math, memory and core
+glam = { version = "0.30", features = ["bytemuck", "serde"] }
+bytemuck = { version = "1.25", features = ["derive"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+log = { workspace = true }
+parking_lot = { workspace = true }
+rayon = { workspace = true }
+bytes = { workspace = true }
+sha2 = { workspace = true }
+shenron-re = { path = "../shenron-re", version = "1.4.4" }
+
+# GPU & Graphics
+wgpu = { workspace = true }
+vello = { workspace = true, optional = true }
+
+image = { workspace = true }
+
+# WASM optional/conditional
+wasm-bindgen = { workspace = true, optional = true }
+serde-wasm-bindgen = { workspace = true, optional = true }
+js-sys = { workspace = true, optional = true }
+web-sys = { workspace = true, optional = true, features = [
+    "Window", "Document", "HtmlCanvasElement", "CanvasRenderingContext2d",
+    "GpuAdapter", "GpuDevice", "GpuQueue", "GpuCanvasContext"
+] }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+memmap2 = { workspace = true }
+pollster = { workspace = true }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = { workspace = true }
+serde-wasm-bindgen = { workspace = true }
+js-sys = { workspace = true }
+web-sys = { workspace = true, features = [
+    "Window", "Document", "HtmlCanvasElement", "CanvasRenderingContext2d",
+    "GpuAdapter", "GpuDevice", "GpuQueue", "GpuCanvasContext"
+] }
+
+[dev-dependencies]
+pollster = { workspace = true }
+serde_json = { workspace = true }

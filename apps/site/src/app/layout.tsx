@@ -195,6 +195,7 @@ export default async function RootLayout({
         {/* Robots et agents IA : la carte du site pour les LLM et le serveur MCP. Rien de
             visible ; les mêmes liens partent en en-tête HTTP `Link` (next.config.ts). */}
         <link rel="alternate" type="text/plain" title="llms.txt" href="/llms.txt" />
+        <link rel="describedby" type="text/plain" href="/llms.txt" />
         <link rel="service-desc" type="application/json" href="/.well-known/mcp.json" />
         {/* Thème de design global surchargeant les tokens `--dbz-*` (voir globals.css). */}
         {themeCss && (
@@ -262,9 +263,9 @@ export default async function RootLayout({
           <SiteShell>
             <PageTransition>{children}</PageTransition>
           </SiteShell>
+          <DiscordInviteFAB />
+          <ReportButton />
         </LocaleProvider>
-        <DiscordInviteFAB />
-        <ReportButton />
         {/* L'assistant flottant est retiré des pages publiques (2026-09-12).
 				    C'était un bouton rond à anneau dégradé, halo flou, survol qui
 				    grossit de 10 % et un emoji pour visage — tout ce que DESIGN.md

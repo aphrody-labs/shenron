@@ -130,7 +130,7 @@ jobs:
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-nextest,cargo-deny
-      - uses: oven-sh/setup-bun@v2
+      - uses: ./.github/actions/setup-bun
 
       - name: Fetch (Cargo.lock)
         run: cargo fetch --locked

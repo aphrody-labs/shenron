@@ -1,6 +1,6 @@
 {
   "name": "@shenron/media",
-  "version": "0.4.0",
+  "version": "1.4.4",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
@@ -11,7 +11,7 @@
     "./sha256": "./src/sha256.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "bun check --noEmit --project tsconfig.json",
     "test": "bun test",
     "lint": "oxlint -c ../../.oxlintrc.json src"
   },
@@ -23,7 +23,7 @@
     "typescript": "catalog:"
   },
   "engines": {
-    "bun": ">=1.4.2"
+    "bun": ">=1.4.3"
   },
   "shenron": {
     "runtime": {

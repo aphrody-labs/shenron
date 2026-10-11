@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "status": "partial-visible-page-transcription-pending-independent-review",
+  "publication": "30th Anniversary ドラゴンボール超史集",
+  "interviewTitle": "フィギュア原型師インタビュー（見出しは目次より）",
+  "intervieweesAsPrinted": [
+    "中澤",
+    "山下",
+    "VAROQ",
+    "阪田"
+  ],
+  "method": "Independent manual visual transcription of the local PDF rendered at 4x, followed by a second visual pass over enlarged crops. No OCR and no network.",
+  "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-creator-interview-197.jsonl",
+  "records": [
+    {
+      "pdfPageIndices": [
+        197
+      ],
+      "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-creator-interview-197.jsonl#L1",
+      "completeness": "Only visible interview material and display quotations from printed p.197 are transcribed. Printed p.196 is missing from the supplied PDF, so the interview opening is unavailable; the first visible question begins with the fragment いといった. The final VAROQ line on p.197 also ends at そういうのを. No missing wording has been reconstructed.",
+      "printedPages": [
+        197
+      ],
+      "excludedElements": [
+        "Product figure captions and non-quotation profile copy are excluded. Four display quotes are transcribed in a separate section without attributing a speaker where the page does not print one."
+      ],
+      "unresolvedGlyphs": [
+        "In the 山下 response on p.197, the single glyph between クマ and 牛魔王 is marked � because the local scan does not support a confident reading."
+      ]
+    }
+  ],
+  "coverage": {
+    "tableOfContentsPrintedPage": 196,
+    "missingPrintedPages": [
+      196
+    ],
+    "visiblePrintedPagesTranscribed": [
+      197
+    ],
+    "completeness": "The local PDF omits printed p.196: PDF page 196 shows printed folio 195; the next scanned page is PDF page 197 with printed folio 197. The interview therefore remains truncated at its beginning.",
+    "limits": [
+      "The title フィギュア原型師インタビュー is transcribed from the contents page; it is not visible on p.197.",
+      "Names are limited to forms printed on p.197; no uncertain given names are expanded.",
+      "One glyph remains marked �; the opening question fragment and final cut-off are not completed."
+    ]
+  },
+  "source": {
+    "pdfPath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+    "pdfSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
+    "renders": [
+      {
+        "pdfPageIndex": 197,
+        "sha256": "02b922c54486a1dcf1d6991f44f3984af8c7c48c69acb7776ab7821603346798",
+        "bytes": 2898737,
+        "path": "C:\\Users\\omara\\AppData\\Local\\Temp\\shenron-30th-hi-197-4x.png",
+        "printedPage": 197
+      }
+    ]
+  },
+  "verification": {
+    "transcriptBytes": 4300,
+    "transcriptSha256": "bddc2a1d3d8e97b3995cccbd40ca65d68d6c7de6425c4ece1c337d7cd186ca93",
+    "jsonlRecords": 1,
+    "sameTranscriberSecondPass": true,
+    "independentSecondTranscriber": false
+  }
+}

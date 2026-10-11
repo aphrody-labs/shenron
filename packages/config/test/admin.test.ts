@@ -21,3 +21,11 @@ test("unknown paths and malformed destinations are refused", () => {
   expect(() => adminUrl({}, "//other.example")).toThrow();
   expect(() => adminUrl({}, "/admin\\evil")).toThrow();
 });
+
+test("the bot auth origin never becomes the administration host", () => {
+  const env = { BETTER_AUTH_URL: "https://bot.example" };
+  expect(adminUrl(env)).toBe("https://dragonballfr.com/admin/dashboard");
+  expect(adminUrl({ ...env, SHENRON_PUBLIC_SITE_URL: "https://site.example" })).toBe(
+    "https://site.example/admin/dashboard",
+  );
+});

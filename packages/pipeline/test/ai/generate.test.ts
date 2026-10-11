@@ -182,7 +182,9 @@ describe("generateGroundedAnswer", () => {
     const a = await semanticCacheScope("gemini-web/flash", "ctx");
     expect(a).toMatch(/^[0-9a-f]{24}$/);
     expect(await semanticCacheScope("gemini-web/flash", "ctx")).toBe(a);
-    expect(await semanticCacheScope("gemini-web/flash", "ctx", "3")).not.toBe(a);
+    expect(await semanticCacheScope("gemini-web/flash", "ctx", `${PROMPT_VERSION}-next`)).not.toBe(
+      a,
+    );
     expect(await semanticCacheScope("gemini-web/pro", "ctx")).not.toBe(a);
     expect(await semanticCacheScope("gemini-web/flash", "ctx2")).not.toBe(a);
   });

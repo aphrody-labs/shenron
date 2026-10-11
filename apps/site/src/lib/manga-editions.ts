@@ -51,6 +51,16 @@ export function decodeEdition(code: string): { langue: Langue; colorisation: Col
   return { langue, colorisation };
 }
 
+/**
+ * Colorisation demandée par `?edition=` : les liens publiés écrivent `couleur`,
+ * le lecteur unifié `color` ; les deux désignent la même édition.
+ */
+export function colorisationDemandee(raw: string | null | undefined): Colorisation | null {
+  if (raw === "couleur" || raw === "color") return "couleur";
+  if (raw === "nb") return "nb";
+  return null;
+}
+
 /** La série réservée à l'édition Full Color française (forum scan-db, 520 chapitres). */
 export const SERIE_COULEUR = "DBFC";
 

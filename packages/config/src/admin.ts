@@ -32,7 +32,10 @@ export const ADMIN_ROUTES: Readonly<Record<string, string>> = {
 };
 
 export function adminUrl(env: PublicUrlEnv = {}, path = "/admin/dashboard"): string {
-  const origin = new URL(resolveSiteUrl(env));
+  // `BETTER_AUTH_URL` names the auth origin of the calling process: on the bot it is the
+  // bot host, which has no `/admin` page (its `/` then redirected to a 404). The
+  // administration always lives on the public site.
+  const origin = new URL(resolveSiteUrl({ ...env, BETTER_AUTH_URL: undefined }));
   if (!["http:", "https:"].includes(origin.protocol) || origin.username || origin.password)
     throw new Error("Administration requires an HTTP(S) origin without credentials");
   if (!/^\/admin(?:[/-]|$)/.test(path) || path.includes("\\"))

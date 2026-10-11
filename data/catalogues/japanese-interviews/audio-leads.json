@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-08",
+  "scope": "Local Kanzenshuu podcast recordings with possible Japanese Dragon Ball voice actor interview audio; audio language and exact speech not yet verified.",
+  "records": [
+    {
+      "sourceId": "kanzenshuu-0460-toru-furuya",
+      "localAudioPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-63548-podcast-episode-0460.mp3",
+      "localFileBytes": 44307305,
+      "catalogueEpisode": "#0460",
+      "participant": "Tōru Furuya / 古谷徹",
+      "role": "voice actor",
+      "possibleInterviewSegment": {
+        "start": "00:02:48",
+        "end": "00:11:42",
+        "languageStatus": "unknown"
+      },
+      "segmentSource": "data/source-acquisition/kanzenshuu/site/posts/2018.json",
+      "transcriptStatus": "not-transcribed; recording has no embedded language metadata and must be listened to",
+      "offlineSttAvailable": false,
+      "durationSeconds": 3671.934,
+      "audioMetadata": "mono, 44.1 kHz, approx. 96.5 kb/s; no language tag"
+    },
+    {
+      "sourceId": "kanzenshuu-0455-nycc-nozawa",
+      "localAudioPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-63236-podcast-episode-0455-nycc-interview-compilation.mp3",
+      "localFileBytes": 51424625,
+      "catalogueEpisode": "#0455",
+      "participants": [
+        "Masako Nozawa / 野沢雅子",
+        "multiple other guests"
+      ],
+      "possibleInterviewSegments": [
+        {
+          "start": "00:07:22",
+          "end": "00:09:00",
+          "participant": "Masako Nozawa",
+          "type": "meeting at NYCC, not identified as a formal interview"
+        },
+        {
+          "start": "00:09:00",
+          "end": "00:10:34",
+          "participant": "Masako Nozawa",
+          "type": "meeting at NYCC, not identified as a formal interview"
+        }
+      ],
+      "segmentSource": "local Kanzenshuu post metadata; see catalogue crosswalk",
+      "transcriptStatus": "not-transcribed; source metadata describes two meetings, not a formal interview; language unverified",
+      "offlineSttAvailable": false,
+      "durationSeconds": 4265.027,
+      "audioMetadata": "mono, 44.1 kHz, approx. 96.5 kb/s; no language tag"
+    }
+  ]
+}

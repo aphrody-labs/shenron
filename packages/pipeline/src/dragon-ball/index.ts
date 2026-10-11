@@ -20,7 +20,10 @@ export {
   auditDatasetCoverage,
 } from "./source-coverage";
 export { loadDatasetInventory, resolveDatasetEditorialFreeze } from "./dataset-inventory";
-export { approvedTrainingDatasetCatalogSchema, createApprovedTrainingDatasetPort } from "./training-dataset";
+export {
+  approvedTrainingDatasetCatalogSchema,
+  createApprovedTrainingDatasetPort,
+} from "./training-dataset";
 export {
   DragonBallAutomation,
   AutomationBlocked,

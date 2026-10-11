@@ -7,7 +7,7 @@
  * propriétaire. La suite traverse le vrai `getCurrentUser` et la vraie route ;
  * seuls la base, Better Auth, le CRUD wiki et le journal sont simulés.
  */
-import { beforeEach, describe, expect, mock, test } from "bun:test";
+import { afterAll, beforeEach, describe, expect, mock, test } from "bun:test";
 import { NextRequest } from "next/server";
 
 const OWNER_ROW = {
@@ -27,9 +27,27 @@ const revisions: Array<{ action: string; actor: unknown }> = [];
 
 mock.module("server-only", () => ({}));
 mock.module("@shenron/auth/next", () => ({ requestHeaders: async () => headers }));
-mock.module("@/lib/auth", () => ({
-  auth: { api: { getSession: async () => discordSession } },
-}));
+const previousHost = process.env.SHENRON_HOST_URL;
+const authHost = Bun.serve({
+  hostname: "127.0.0.1",
+  port: 0,
+  fetch: () =>
+    Response.json(
+      discordSession
+        ? {
+            sessionUserId: discordSession.user.id,
+            discordId: OWNER_ROW.discordId,
+            user: OWNER_ROW,
+          }
+        : null,
+    ),
+});
+process.env.SHENRON_HOST_URL = `http://127.0.0.1:${authHost.port}`;
+afterAll(async () => {
+  await authHost.stop(true);
+  if (previousHost === undefined) delete process.env.SHENRON_HOST_URL;
+  else process.env.SHENRON_HOST_URL = previousHost;
+});
 mock.module("@/lib/env", () => ({ env: { OWNER_ID: "owner-discord", OAUTH_ALLOWED_USERS: [] } }));
 mock.module("@/lib/admin-token", () => ({
   ADMIN_COOKIE: "dbfr_admin",

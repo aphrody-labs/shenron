@@ -16,8 +16,16 @@ import { emittedKoharuWasm, ensureKoharuWasm } from "./koharu-wasm.ts";
 import { artifactStore, artifactPath } from "./site-artifact-paths.ts";
 
 const releaseArgs = process.argv.slice(2);
-if (releaseArgs.length && (releaseArgs.length !== 2 || releaseArgs[0] !== "--release-dir")) {
-  throw new Error("usage: build-site-external.ts [--release-dir RELATIVE_DIRECTORY]");
+if (
+  releaseArgs.length &&
+  (releaseArgs.length % 2 !== 0 ||
+    releaseArgs.some(
+      (arg, index) => index % 2 === 0 && !["--release-dir", "--systemd-dir"].includes(arg),
+    ))
+) {
+  throw new Error(
+    "usage: build-site-external.ts [--release-dir RELATIVE_DIRECTORY] [--systemd-dir DIRECTORY]",
+  );
 }
 
 const repo = join(import.meta.dir, "..", "..");

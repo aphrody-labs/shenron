@@ -84,9 +84,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // The bot keeps per-session conversation history while its retrieval and
-    // inference are delegated to Aphrody. Stateless calls can bypass it.
-    if (usesAphrodyRag() && !session) {
+    if (usesAphrodyRag()) {
       const result = await chatAphrodyRag(q, persona, { context, lang, entity, sourceId });
       return NextResponse.json(result, { headers: { "Cache-Control": "private, no-store" } });
     }
@@ -118,6 +116,109 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Upstream timeout" }, { status: 504 });
     }
     console.error("[NEXT CHAT] RAG chat unavailable:", err);
+    return NextResponse.json({ error: "RAG chat unavailable" }, { status: 503 });
+  }
+}
+
+export async function POST(req: NextRequest) {
+  const rate = await chatRateLimit.consume(clientIp(req));
+  if (rate.limited) {
+    return NextResponse.json(
+      { error: "Trop de questions d'affilée. Réessaie dans une minute." },
+      { status: 429, headers: { "Retry-After": String(rate.retryAfter) } },
+    );
+  }
+
+  let body: Record<string, unknown> = {};
+  try {
+    body = (await req.json()) as Record<string, unknown>;
+  } catch {
+    body = {};
+  }
+
+  let q = "";
+  if (typeof body.q === "string") {
+    q = body.q.trim();
+  } else if (typeof body.prompt === "string") {
+    q = body.prompt.trim();
+  } else if (Array.isArray(body.messages)) {
+    const lastUser = [...body.messages]
+      .reverse()
+      .find(
+        (m: unknown) =>
+          typeof m === "object" && m !== null && (m as { role?: string }).role === "user",
+      );
+    if (lastUser && typeof (lastUser as { content?: string }).content === "string") {
+      q = (lastUser as { content: string }).content.trim();
+    }
+  }
+
+  const persona = typeof body.persona === "string" ? body.persona.slice(0, BORNES.persona) : "whis";
+  const context = typeof body.context === "string" ? body.context.slice(0, BORNES.context) : "";
+  const session =
+    typeof body.session === "string"
+      ? body.session.slice(0, BORNES.session)
+      : typeof body.sessionId === "string"
+        ? body.sessionId.slice(0, BORNES.session)
+        : "";
+  const lang = typeof body.lang === "string" ? body.lang.slice(0, BORNES.lang) : "";
+  const entity =
+    typeof body.entity === "string"
+      ? body.entity.slice(0, BORNES.entity)
+      : typeof body.entityFilter === "string"
+        ? body.entityFilter.slice(0, BORNES.entity)
+        : "";
+  const sourceId = typeof body.sourceId === "string" ? body.sourceId.slice(0, BORNES.sourceId) : "";
+
+  if (!q) {
+    return NextResponse.json({ error: "Missing query or prompt in request body" }, { status: 400 });
+  }
+  if (q.length > BORNES.q) {
+    return NextResponse.json({ error: "query too long" }, { status: 400 });
+  }
+
+  try {
+    if (usesAphrodyRag()) {
+      const result = await chatAphrodyRag(q, persona, { context, lang, entity, sourceId });
+      return NextResponse.json(
+        {
+          answer: result.answer,
+          hits: result.hits,
+          mode: result.mode,
+          role: "assistant",
+          content: result.answer,
+        },
+        { headers: { "Cache-Control": "private, no-store" } },
+      );
+    }
+    let botUrl =
+      `${API_URL}/api/public/rag/chat?q=${encodeURIComponent(q)}&persona=${encodeURIComponent(persona)}` +
+      `&context=${encodeURIComponent(context)}${session ? `&session=${encodeURIComponent(session)}` : ""}`;
+    if (lang) botUrl += `&lang=${encodeURIComponent(lang)}`;
+    if (entity) botUrl += `&entity=${encodeURIComponent(entity)}`;
+    if (sourceId) botUrl += `&sourceId=${encodeURIComponent(sourceId)}`;
+
+    const res = await fetch(botUrl, {
+      method: "GET",
+      cache: "no-store",
+      signal: AbortSignal.any([req.signal, AbortSignal.timeout(30_000)]),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Bot API returned HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    return NextResponse.json({
+      ...data,
+      role: "assistant",
+      content: data.answer || "",
+    });
+  } catch (err) {
+    if (err instanceof DOMException && (err.name === "TimeoutError" || err.name === "AbortError")) {
+      return NextResponse.json({ error: "Upstream timeout" }, { status: 504 });
+    }
+    console.error("[NEXT CHAT POST] RAG chat unavailable:", err);
     return NextResponse.json({ error: "RAG chat unavailable" }, { status: 503 });
   }
 }

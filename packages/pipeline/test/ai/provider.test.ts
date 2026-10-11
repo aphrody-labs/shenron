@@ -64,7 +64,7 @@ describe("createShenronProvider", () => {
     expect(() => provider.languageModel("chat")).toThrow();
   });
 
-  test("createOpenAICompatibleChat stays ready for APH-3 (not wired)", () => {
+  test("createOpenAICompatibleChat exposes the native SDK model", () => {
     const model = createOpenAICompatibleChat({
       baseUrl: loopbackBase(18800, "/v1"),
       token: TOKEN,
@@ -72,5 +72,20 @@ describe("createShenronProvider", () => {
     });
     expect(model.specificationVersion).toBe("v4");
     expect(model.modelId).toBe("m");
+  });
+
+  test("direct configured chat replaces only chat and keeps the compute embedding space", () => {
+    const cfg = config({
+      APHRODY_AI_CHAT_BASE_URL: loopbackBase(18800, "/v1").href,
+      APHRODY_AI_CHAT_MODEL: "gemma4-e2b-bnb-4bit",
+      APHRODY_AI_CHAT_API_KEY: TOKEN,
+      APHRODY_AI_HTTP_URL: BASE.origin,
+      APHRODY_AI_HTTP_TOKEN: TOKEN,
+    });
+    const compute = createAphrodyCompute(cfg.compute ?? { baseUrl: BASE, token: TOKEN });
+    const provider = createShenronProvider(cfg, { compute });
+    expect(provider.languageModel("chat").modelId).toBe("gemma4-e2b-bnb-4bit");
+    expect(provider.languageModel("chat-flash-lite").modelId).toBe("gemini-web/flash-lite");
+    expect(provider.embeddingModel("e5-query").provider).toBe("aphrody.shenron");
   });
 });

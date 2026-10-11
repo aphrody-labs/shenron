@@ -1,79 +1,85 @@
-# Calcul RAG et LLM — hôte de calcul, bases et tunnels
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
-Le RAG et le LLM de production ne tournent pas sur le vps : le bot et le site appellent
-`aphrody-ai-http` (`/api/v1/shenron/*`), servi par l'**hôte de calcul** (le poste WSL du
-mainteneur, GPU RTX 4070), joint par un tunnel SSH inverse.
+# Calcul RAG et LLM — hôtes, propriétaires et qualification
 
-```
-vps (bot, site) ──127.0.0.1:8789──▶ tunnel inverse ──▶ WSL : aphrody-ai-http :8789
-                                                         ├─ aphrody-shenron-embed :8085 (e5 multilingue)
-                                                         ├─ llama.cpp géré (Qwen3-4B + adaptateur shenron-chat-v2)
-                                                         └─ PostgreSQL 16 + pgvector :54322 (schéma aphrody_ai)
-dbfr : PostgreSQL 18 (shenron_site) et Redis, joints par `shenron-data-tunnel` depuis WSL.
-```
+Répartition demandée le 9 octobre 2026 : poste propriétaire pour le développement
+léger Bun/Python, PC Windows d’Omar pour le GPU dédié, VPS pour les builds, la
+collecte et les caches, DBFR pour la production. Aucun build lourd ni calcul GPU
+ne tourne sur le poste propriétaire. Les adresses et allocations effectives
+viennent du catalogue Infra et de ses fichiers privés.
 
-## Unités (WSL, `systemctl --user`)
+## Inférence native et vLLM
 
-| Unité                         | Rôle                                                                                                                                                                                                                                              |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `aphrody-ai-http`             | API Shenron du calcul (`aphrody-mcp http --bind 127.0.0.1:8789`), `EnvironmentFile=~/.aphrody/private/shenron/ai-http.env`.                                                                                                                       |
-| `aphrody-shenron-embed`       | Embeddings e5 (`aphrody-embed serve`, port 8085).                                                                                                                                                                                                 |
-| `aphrody-compute-vps-tunnel`  | `ssh -R 127.0.0.1:8789:127.0.0.1:8789 vps`, relancé en continu ; connexion propre (`-oControlMaster=no -oControlPath=none`) : accrochée à la connexion maîtresse du poste, elle se terminait aussitôt et systemd la relançait toutes les 5 s.     |
-| `shenron-data-tunnel`         | Accès privé à PostgreSQL (15433) et Redis (16379) de dbfr.                                                                                                                                                                                        |
-| `shenron-rag-sync` (minuteur) | Rafraîchit le corpus éditorial depuis PostgreSQL (`rag-sync-aphrody.ts --toutes --appliquer`) ; son drop-in fixe `SHENRON_FFI_LIB` (la bibliothèque native refuse un chemin implicite), à reconstruire en release après un changement de version. |
+Shenron consomme les capacités Aphrody. `resolveDirectChat` dans
+`@shenron/pipeline/ai/config` résout le serveur explicitement choisi par Infra.
+`createShenronProvider` expose ce serveur comme modèle AI SDK `chat`, y compris
+la génération et les flux. `createOpenAiChat` conserve les consommateurs site/bot
+existants. Les deux chemins envoient la clé amont `APHRODY_AI_CHAT_API_KEY`.
 
-Le cluster `16/rag` (PostgreSQL 16, port 54322, démarrage automatique) porte la base du RAG :
-rôle `aphrody_ai_http`, schéma `aphrody_ai` (`aphrody_rag_documents`, `aphrody_shenron_vectors`
-en `vector(384)` avec index HNSW). Le rôle doit avoir `search_path = aphrody_ai, public` : les
-requêtes du service ne qualifient pas leurs tables.
+- `APHRODY_AI_CHAT_BASE_URL` : URL OpenAI-compatible en HTTP de boucle locale,
+  terminée par `/v1`. Infra doit maintenir le tunnel authentifié vers Omar.
+- `APHRODY_AI_CHAT_MODEL` : identifiant réellement annoncé par `/v1/models`.
+- `APHRODY_AI_CHAT_API_KEY` : clé du modèle dans un store privé ; aucune valeur
+  n’entre dans le dépôt, les rapports ou les arguments d’une commande.
+- `APHRODY_SHENRON_INFERENCE=http` : le bot utilise ce transport explicitement
+  au lieu de charger une bibliothèque GPU dans son conteneur de production.
 
-## Côté vps
+Le serveur autonome relaie les routes OpenAI avec la séparation entre clé amont
+et jeton de la passerelle. Une réponse d’erreur ou une capacité absente du modèle
+reste visible ; le relais n’invente ni Responses, ni compaction, ni entraînement.
+Les réponses personnalisées et les sessions ne deviennent pas un cache partagé.
 
-Le bot lit `/etc/rose-griffon/shenron-bot.env` puis `/etc/aphrody/shenron-compute-client.env`
-(URL et jeton du calcul). Deux réglages sont nécessaires pour le LLM :
+`shenron-chat-v2` désigne Qwen3-4B-Instruct-2507 et son adaptateur Shenron, comme
+le fixe `@shenron/config/chat-model`. Le Gemma 4 quantifié de la flotte Aphrody
+est un candidat distinct. Sa seule disponibilité ne remplace pas le modèle
+entraîné ni ne prouve une amélioration du RAG.
 
-- `APHRODY_SHENRON_INFERENCE=http` : sans lui, le bot charge une bibliothèque d'inférence
-  native absente du vps et répond par la réplique de repli.
-- `APHRODY_AI_CHAT_MODEL=qwen3-4b-instruct-2507-q4km` : le défaut `gemini-web/flash` exige une
-  session Gemini Web côté calcul.
+## RAG, PostgreSQL et agent home
 
-`APHRODY_AI_HTTP_TOKEN` doit être identique des deux côtés (WSL : `ai-http.env`). Un 401 du
-bot sur `/api/v1/shenron/rag/*` signale un jeton désaligné ; ne jamais l'afficher.
+La configuration du chat ne change pas la recherche : `RAG_BACKEND=aphrody`
+conserve la passerelle privée `/api/v1/shenron/rag/*`, l’espace E5 multilingue
+384 dimensions, le reclassement et les contrôles de citations. PostgreSQL DBFR
+reste la source éditoriale. Aucune réplication de cookies, de comptes fournisseurs
+ou d’historiques bruts n’est impliquée.
 
-## Reconstruire la base du RAG
+L’agent home `dbfr` et la persona `SOUL.md`/`IDENTITY.md` restent dans leurs stores
+privés, avec le contrat d’isolation décrit dans [agent-home-bun.md](agent-home-bun.md).
+Les capacités RAG, OCR, embeddings et vision conservent leur propriétaire même
+si le chat direct fonctionne sans passerelle de calcul.
 
-La base vient d'un dump complet du cluster Supabase local (`~/aphrody/.portable/dumps/`).
+Préparer et qualifier le corpus sur l’hôte déclaré, avec la connexion PostgreSQL
+et la passerelle RAG réellement configurées :
 
 ```sh
-sudo pg_createcluster 16 rag --port 54322            # puis listen_addresses = '127.0.0.1'
-bun scripts/ops/extract-rag-schema.ts <dump.sql> <rag.sql>
-sudo -u postgres psql -p 54322 < <role.sql>          # lignes CREATE/ALTER ROLE aphrody_ai_http du dump
-sudo -u postgres psql -p 54322 -v ON_ERROR_STOP=1 < <rag.sql>   # passer le fichier par stdin
-sudo -u postgres psql -p 54322 -c "ALTER ROLE aphrody_ai_http SET search_path = aphrody_ai, public"
-systemctl --user restart aphrody-ai-http             # le pool garde l'ancien search_path sinon
+bun run --filter @shenron/pipeline rag:prepare
+bun run --filter @shenron/pipeline rag:test
 ```
 
-Contrôle : `GET /api/v1/shenron/health` annonce `rag: true` ; `rag/stats` donne environ
-254 000 documents et autant de vecteurs. `rag:build` ne tourne jamais au premier plan ni sur le
-bot de production.
+Le garde `requireLiveRag` refuse un preload incomplet, périmé ou des sources
+éditoriales non validées. Un HTTP 200 ou un nombre de chunks ne ferme pas cette
+qualification. Les captures de [Aphrody Web](dragon-ball-web.md) restent des
+sources collectées ; leur ingestion ne les transforme pas en affirmations canoniques.
 
-## Contrôle de la chaîne
+## Entraînement et promotion
 
-`bun scripts/ops/compute-doctor.ts` (`--local` sans le vps) vérifie les unités, le cluster, les liens d'unités
-morts, la santé et les statistiques du calcul, les bases de dbfr, le tunnel inverse, l'alignement du jeton
-(empreintes seulement) et la recherche RAG de production. À lancer après tout redémarrage de WSL ou
-changement d'Aphrody : un lien d'unité mort a déjà coupé le RAG pendant des heures sans alerte.
+`scripts/ops/train-shenron-chat-loop.ts` génère et évalue des rollouts. Cette
+boucle historique ne lance pas encore l’entraînement malgré son ancien intitulé.
+Le véritable entraîneur est `aphrody_train.lora` dans Aphrody, avec jeu gold
+intouché, recontrôle anti-fuite, poids finis et export GGUF vérifié. Les jobs
+sur le GPU d’Omar doivent détenir un bail exclusif et suspendre l’allocation
+vLLM avant de charger le modèle de train ; ils ne concurrencent pas l’inférence.
 
-## Sondes
+Une nouvelle LoRA utilise un nouveau dossier privé. La promotion exige une
+évaluation indépendante face à la version active et le passage des seuils du
+propriétaire train. Aucun job ni changement de modèle de production n’est
+justifié par le seul passage de tests de transport.
 
-`scripts/ops/release.ts` sonde `https://bot.dragonballfr.com/api/public/rag/search?q=Kid Buu` :
-un statut autre que 200 ou zéro résultat (`index_unavailable`) fait échouer la release.
+## Réception source du 9 octobre 2026
 
-## dbfr
-
-PostgreSQL 18 (`shenron_site`, sauvegarde quotidienne `shenron-pg-backup` vers
-`/var/backups/shenron-pg`, 14 dumps) et Redis (`maxmemory 4gb`, politique `noeviction`,
-instantané RDB). Rien d'autre n'y tourne.
+Les tests de transport natif exercent un vrai serveur HTTP Bun éphémère, la clé
+amont, la génération et les événements SSE. Cela qualifie le raccordement produit,
+pas encore un modèle vLLM réel, un training GPU, le preload courant ni l’activation
+DBFR. Ces quatre réceptions sont séparées et doivent avoir leurs propres preuves.
 
 ## Fidélité du chat RAG
 
@@ -124,35 +130,3 @@ ja, dont 6 entités hors corpus, dans `packages/pipeline/test/ai/fixtures/eval/r
 écrit `var/reports/rag-faithfulness-<label>-<date>.json` : citations valides (source ∈ hits),
 références inventées (« épisode 142 »), refus correct, faux refus, mots attendus, fiches collectées
 dans le top 3, latence.
-
-## Inférence : adaptateur LoRA et GPU
-
-- **Adaptateur** : `APHRODY_SHENRON_CHAT_LORA` est appliqué. Preuves : `llama-server` est lancé
-  avec `--lora …/shenron-chat-v2/adapter.gguf --lora-init-without-apply`, puis le superviseur
-  Aphrody l'active (`GET /lora-adapters` sur le port du serveur renvoie `scale: 1.0`) ; sur un
-  serveur éphémère, les mêmes prompts (température 0, graine fixe) donnent des textes différents
-  à `scale: 0` et `scale: 1` (14 réponses sur 20 de l'évaluation). Effet mesuré : style plus bref
-  et plus proche des passages ; refus et citations inchangés (ils sont contrôlés dans le code).
-- **GPU** : le `llama-server` installé (`~/.local/bin`, b11312, GNU 11.4) est une compilation
-  CPU seule (`--list-devices` : aucun appareil) ; `--fit on` n'avait donc rien à décharger
-  (7 tokens/s, GPU à 422 MiB). Réglage : compilation CUDA (sm_89, statique) de la même version
-  dans `~/.aphrody/bin/llama-cuda/llama-server`, déclarée par `APHRODY_LLAMA_BIN` dans
-  `ai-http.env` (sauvegarde `ai-http.env.before-p2d`, droits 0600). Après redémarrage de
-  `aphrody-ai-http` : 5,8 Go de VRAM, 90 à 110 tokens/s, réponse du chat en 1 à 3 s au lieu de
-  20 à 30 s.
-
-```sh
-# recompiler (WSL, cuda dans /usr/local/cuda, nice : charge élevée pendant 20 min)
-git clone --depth 1 --branch b11312 https://github.com/ggml-org/llama.cpp.git && cd llama.cpp
-PATH=/usr/local/cuda/bin:$PATH cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DGGML_CUDA=ON \
-  -DCMAKE_CUDA_ARCHITECTURES=89 -DBUILD_SHARED_LIBS=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF \
-  -DLLAMA_BUILD_EXAMPLES=OFF && nice -n 19 cmake --build build --target llama-server -j 4
-```
-
-Contrôle : `~/.aphrody/bin/llama-cuda/llama-server --list-devices` liste `CUDA0`, et
-`nvidia-smi` montre le modèle en mémoire après la première requête de chat. Le service exige
-le nom de fichier `llama-server` (`APHRODY_LLAMA_BIN`).
-
-À savoir : l'unité `aphrody-compute-vps-tunnel` sort aussitôt avec le code 0 (la connexion
-partagée `ControlMaster` de `~/.ssh/config` porte déjà la redirection) et systemd la relance
-toutes les 5 s ; la redirection tient, mais le compteur de redémarrage grimpe.

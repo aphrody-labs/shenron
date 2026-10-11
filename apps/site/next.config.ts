@@ -1,84 +1,13 @@
-import { existsSync, readFileSync } from "node:fs";
-import { createRequire } from "node:module";
-import path from "node:path";
+import { withBun } from "@aphrody/next-bun";
 import type { NextConfig } from "next";
-import { PHASE_PRODUCTION_SERVER } from "next/constants";
 import { ownImageRemotePatterns, resolveApiUrl, resolveSiteUrl } from "@shenron/config/public-urls";
 import { sitePublicRedirects } from "@shenron/images/resolve";
-import { readBuiltClientConfig } from "./src/lib/build-frozen-config";
 import { PUBLIC_ROUTE_RENAMES, nextApiRewrites, nextRedirectsOf } from "./src/lib/legacy-routes";
-
-// next-intl : son plugin ne fait, pour cette configuration, que poser l'alias
-// `next-intl/config` ; il chargeait en plus `@swc/core` (addon natif de 30 Mio) et
-// `@parcel/watcher` dans chaque processus qui lit la config. L'alias est posé ici.
-// À revérifier à chaque montée de next-intl (var/reports/turbopack-swc-bun-2026-10-05.md).
-const nextIntlRequest = "./src/i18n/request.ts";
-
-const monorepoRoot = path.resolve(__dirname, "../..");
-const prosemirrorTransform = path.resolve(__dirname, "node_modules/prosemirror-transform");
-/**
- * Published `@aphrody/m3-*` packages export their TypeScript sources under `import`, and those
- * sources import siblings as `./x.js` (TS NodeNext style) while only `x.ts`/`x.tsx` ship:
- * Turbopack cannot resolve them (`m3-motion@3.3.4`, `m3-theme`, `m3-tokens`). Each export
- * whose source has a built twin in `dist/` is aliased to it. Drop an entry once its package
- * ships resolvable sources or exports `import` → `dist`.
- */
-const DIST_ALIASED = ["@aphrody/m3-motion", "@aphrody/m3-theme", "@aphrody/m3-tokens"];
-
-function distAliases(): Record<string, string> {
-  // Resolved from @shenron/ui and from the m3 packages that depend on them (m3-motion is only
-  // a transitive dependency).
-  const fromUi = createRequire(path.join(monorepoRoot, "packages/ui/package.json"));
-  const resolvers = [fromUi];
-  for (const parent of ["@aphrody/m3-ai", "@aphrody/m3-primitives"]) {
-    try {
-      resolvers.push(createRequire(fromUi.resolve(parent)));
-    } catch {
-      // not installed
-    }
-  }
-  const resolve = (name: string): string | null => {
-    for (const r of resolvers) {
-      try {
-        return r.resolve(name);
-      } catch {
-        // next resolver
-      }
-    }
-    return null;
-  };
-  const aliases: Record<string, string> = {};
-  for (const name of DIST_ALIASED) {
-    const entry = resolve(name);
-    if (!entry) continue;
-    const marker = `${path.sep}node_modules${path.sep}${name.replace("/", path.sep)}${path.sep}`;
-    const at = entry.lastIndexOf(marker);
-    if (at === -1) continue;
-    const root = entry.slice(0, at + marker.length);
-    const manifest = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8")) as {
-      exports?: Record<string, string | Record<string, string>>;
-    };
-    for (const [key, target] of Object.entries(manifest.exports ?? {})) {
-      const source = typeof target === "string" ? target : target.import;
-      const match = source?.match(/^\.\/src\/(.+)\.tsx?$/);
-      if (!match) continue;
-      const dist = path.join(root, "dist", `${match[1]}.js`);
-      if (!existsSync(dist)) continue;
-      const request = key === "." ? name : `${name}/${key.slice(2)}`;
-      aliases[request] = path.relative(__dirname, dist).split(path.sep).join("/");
-    }
-  }
-  return aliases;
-}
 
 const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL?.trim().replace(/\/+$/, "");
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  // TypeScript 7 is checked by the workspace gate (`bun run type-check`).
-  // Next 16's embedded CLI resolver misreads the Bun workspace tsc path as a
-  // git package (`@C:/.../tsc.js`) during production builds.
-  typescript: { ignoreBuildErrors: true },
   // Native SDK loading is deferred to the Bun host, outside Next's server bundle.
   serverExternalPackages: ["@aphrody/bun"],
   // Repli documenté pour les VPS contraints : Webpack sans minification évite
@@ -86,11 +15,6 @@ const nextConfig: NextConfig = {
   // uniquement par la pipeline locale de secours et ne change pas les builds
   // Turbopack habituels.
   webpack(config, { dev }) {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      "prosemirror-transform": prosemirrorTransform,
-      "next-intl/config": path.resolve(__dirname, nextIntlRequest),
-    };
     if (!dev && process.env.SHENRON_BUILD_LOW_MEMORY === "1") {
       config.optimization.minimize = false;
     }
@@ -140,7 +64,6 @@ const nextConfig: NextConfig = {
   ...(process.env.NEXT_OUTPUT === "standalone"
     ? {
         output: "standalone" as const,
-        outputFileTracingRoot: monorepoRoot,
         // Dynamic fs access in shared packages must never drag the repository (sources, tests,
         // databases, corpora) into the server. Globs are relative to apps/site.
         outputFileTracingExcludes: {
@@ -183,48 +106,6 @@ const nextConfig: NextConfig = {
   // clé a disparu de `ExperimentalConfig` (le type-check la refuse) parce que
   // la fonctionnalité est stabilisée — l'App Router de Next 16 tourne sur la
   // canary de React, qui expose `<ViewTransition>` sans rien à activer.
-  // Configuration Turbopack explicite (requise par Next.js 16 pour satisfaire
-  // validateTurboNextConfig et supporter les builds turbopack sans conflit)
-  // `@shenron/images` est consommé depuis ses sources TypeScript (pas de dist) :
-  // Turbopack doit le transpiler comme du code du site.
-  // Published @aphrody/* packages ship TypeScript sources: Turbopack transpiles them too.
-  transpilePackages: [
-    "@aphrody/ag-ui",
-    "@aphrody/api",
-    "@aphrody/discord-kit",
-    "@aphrody/http",
-    "@aphrody/inference",
-    "@aphrody/m3-ai",
-    "@aphrody/m3-primitives",
-    "@aphrody/m3-reader",
-    "@aphrody/m3-theme",
-    "@aphrody/messaging",
-    "@aphrody/paths",
-    "@aphrody/plugin-opener",
-    "@aphrody/runtime-sdk",
-    "@aphrody/sql",
-    "@shenron/koharu",
-    "@shenron/lexicon",
-    "@shenron/media",
-    "@shenron/native",
-    "@shenron/images",
-    "@shenron/db",
-    "@shenron/auth",
-    "@shenron/pipeline",
-    "@shenron/api",
-    "@shenron/ui",
-    "@shenron/config",
-  ],
-
-  turbopack: {
-    root: monorepoRoot,
-    resolveAlias: {
-      "prosemirror-transform": "./node_modules/prosemirror-transform",
-      "next-intl/config": nextIntlRequest,
-      ...distAliases(),
-    },
-  },
-
   experimental: {
     // Repli de build pour les hôtes contraints : `next build --webpack`
     // active ce mode afin de réduire le pic mémoire au prix d'un build plus lent.
@@ -499,6 +380,14 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: "/wasm/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          { key: "Content-Type", value: "application/wasm" },
+          { key: "Access-Control-Allow-Origin", value: "*" },
+        ],
+      },
+      {
         source: "/_next/image(.*)",
         headers: [
           {
@@ -594,20 +483,17 @@ const nextConfig: NextConfig = {
 // Next.js 16 Turbopack : analyse de bundle intégrée via `next build --turbopack --experimental-analyze`
 // qui écrit les métriques dans `.next/diagnostics/analyze` sans injecter de wrapper Webpack.
 //
-// `next start` reprend le préfixe d'assets et l'identifiant de déploiement du BUILD
-// (`src/lib/build-frozen-config.ts`) : relus dans l'environnement du service, ils divergeaient
-// de ceux gravés dans le runtime Turbopack, et le site ne s'hydratait plus (2026-10-06).
-export default function config(phase: string): NextConfig {
-  if (phase !== PHASE_PRODUCTION_SERVER) return nextConfig;
-  const built = readBuiltClientConfig(path.resolve(__dirname, nextConfig.distDir ?? ".next"));
-  if (!built) return nextConfig;
-  if ((cdnUrl ?? "") !== built.assetPrefix)
-    console.warn(
-      `[next.config] assetPrefix of the build (${built.assetPrefix || "none"}) kept over NEXT_PUBLIC_CDN_URL (${cdnUrl || "none"})`,
-    );
-  return {
-    ...nextConfig,
-    assetPrefix: built.assetPrefix || undefined,
-    deploymentId: built.deploymentId,
-  };
-}
+// `withBun` (@aphrody/next-bun) porte les réglages génériques de Next sur Bun : racine Turbopack et
+// file tracing à la racine du workspace (magasin isolé de Bun), `transpilePackages` déduit des paquets
+// qui publient leurs sources TypeScript (@shenron/*, @aphrody/m3-*…), alias communs à Turbopack et
+// Webpack, et `next start` qui reprend le préfixe d'assets et l'identifiant de déploiement du build.
+export default withBun(nextConfig, {
+  bundler: "turbopack",
+  projectDir: __dirname,
+  // next-intl : son plugin ne fait, pour cette configuration, que poser cet alias ; il chargeait
+  // en plus `@swc/core` (addon natif de 30 Mio) et `@parcel/watcher` dans chaque processus qui lit
+  // la config. À revérifier à chaque montée de next-intl.
+  alias: { "next-intl/config": "./src/i18n/request.ts" },
+  // Une seule copie pour l'éditeur (Tiptap) et ses extensions.
+  dedupe: ["prosemirror-transform"],
+});

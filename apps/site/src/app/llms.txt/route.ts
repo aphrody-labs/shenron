@@ -114,6 +114,8 @@ export async function GET(): Promise<Response> {
     `- [${SITE_URL}/api/timeline](${SITE_URL}/api/timeline): the official timeline IN EDITORIAL`,
     "  order (episodes, movies, volumes). Do not rebuild it from air dates: the order is a",
     "  human decision, not a sort.",
+    `- [${SITE_URL}/api/episodes](${SITE_URL}/api/episodes): animated series episodes with streaming player links (\`?series=\`, \`?q=\`, \`?limit=\`, \`?offset=\`).`,
+    `- [${SITE_URL}/api/movies](${SITE_URL}/api/movies): animated films, TV specials and OVAs catalog with player links (\`?series=\`, \`?q=\`).`,
     `- [${SITE_URL}/news/rss.xml](${SITE_URL}/news/rss.xml): RSS feed of the articles.`,
     `- [${SITE_URL}/.well-known/agent-card.json](${SITE_URL}/.well-known/agent-card.json): A2A agent card.`,
     "",
@@ -146,10 +148,10 @@ export async function GET(): Promise<Response> {
     lines.push(
       "## AI agents (MCP)",
       "",
-      `- MCP server (Streamable HTTP): ${SITE_URL}/mcp. Read tools are open to everyone, without`,
+      `- [${SITE_URL}/mcp](${SITE_URL}/mcp): MCP server (Streamable HTTP). Read tools are open to everyone, without`,
       "  authentication: sourced search, ready-to-cite context, wiki, manga, databooks, timeline,",
       "  canon. Write tools need a bearer token or an allow-listed IP.",
-      `  Discovery card: ${SITE_URL}/.well-known/mcp.json`,
+      `  Discovery card: [${SITE_URL}/.well-known/mcp.json](${SITE_URL}/.well-known/mcp.json)`,
       "",
     );
   }

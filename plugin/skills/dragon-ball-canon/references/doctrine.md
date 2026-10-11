@@ -3,7 +3,7 @@
 <!-- Généré par scripts/plugin/build-references.ts — ne pas éditer. Sources : apps/site/src/lib/canon-engine.ts. -->
 
 > **Instantané hors ligne** — sources du dépôt Shenron (`apps/site/src/lib/canon-engine.ts`),
-> révision `b8cef86` du 2026-10-05. Citer cette révision et cette date avec toute
+> révision `db119c0f+modifications` du 2026-10-08. Citer cette révision et cette date avec toute
 > réponse tirée d'ici ; une source vivante plus récente peut avoir changé.
 
 Doctrine **livrée avec le dépôt** (défauts de `canon-engine.ts`). La doctrine de
@@ -121,7 +121,7 @@ Inclut (doctrine générale, à confronter au sujet tranché) :
 Rang `EXTENSION_OFFICIELLE`, score 50 : Affirmation nécessitant une vérification croisée dans les archives. Le sujet saisi ne correspond à aucun point de divergence répertorié. Dans la doctrine Shenron, une affirmation sans source manga, databook vérifié ou déclaration signée de Toriyama est considérée comme non établie.
 Un `fallback` n'établit aucun rang : répondre « non établi ».
 
-## Sujets tranchés (44)
+## Sujets tranchés (47)
 
 | Identifiant | Sujet | Catégorie | Rang | Score |
 | --- | --- | --- | --- | --- |
@@ -157,6 +157,9 @@ Un `fallback` n'établit aucun rang : répondre « non établi ».
 | `multiplicateurs-super-saiyan` | Multiplicateurs officiels du Super Saiyan (x50, x2, x4) | lore | `EXTENSION_OFFICIELLE` | 75 |
 | `unite-kiri-babidi` | L'unité Kiri (Babidi) et conversion en Sentōryoku | lore | `CANON_ABSOLU` | 100 |
 | `fusion-potara-vs-metamol-puissance` | Puissance Vegetto (Potara) vs Gogeta (Métamol) | lore | `EXTENSION_OFFICIELLE` | 75 |
+| `kid-buu-vs-buuhan` | Majin Buu Pur (Kid Buu) vs Buuhan | lore | `CANON_ABSOLU` | 100 |
+| `goku-ssj3-vs-ultimate-gohan` | Son Goku Super Saiyan 3 vs Gohan Ultime (Ultimate Gohan) | lore | `CANON_ABSOLU` | 100 |
+| `cell-parfait-vs-gohan-ssj2` | Cell Parfait (Super Perfect Cell) vs Son Gohan Super Saiyan 2 | lore | `CANON_ABSOLU` | 100 |
 | `puissance-goku-ssj1-namek` | Puissance de Goku SSJ1 sur Namek (150 000 000 BP) | lore | `EXTENSION_OFFICIELLE` | 75 |
 | `arret-scouter-namek-toriyama` | Abandon des niveaux de puissance chiffrés (Scouters) après Namek | lore | `CANON_ABSOLU` | 100 |
 | `beerus-whis` | Beerus, Whis et la hiérarchie divine | character | `CANON_SUPERVISE` | 98 |
@@ -546,6 +549,42 @@ Un `fallback` n'établit aucun rang : répondre « non établi ».
   - Daizenshuu 7
 - Mots-clés : potara vs metamol, fusion potara vs metamol, fusion potara vs fusion metamol, fusion potara est superieure, fusion potara superieure, potara superieure, potara est superieure, potara superieure metamol, potara superieure a la fusion metamol, vegetto vs gogeta, vegetto plus fort que gogeta, vegetto est-il plus fort que gogeta, vegetto contre gogeta, gogeta vs vegito, gogeta vs vegetto, gogeta ou vegetto, gogeta ou vegito, gogeta contre vegito, gogeta contre vegetto, comparaison potara metamol, comparaison vegetto gogeta, puissance vegetto vs gogeta, puissance gogeta vs vegetto, puissance gogeta vs vegito, multiplication potara, addition metamol, fusion comparaison puissance, potara ou metamol, potala ou metamol, potala vs metamol, formule potara seg
 - Page du site : https://dragonballfr.com/wiki/canon?q=Puissance%20Vegetto%20(Potara)%20vs%20Gogeta%20(M%C3%A9tamol)
+
+### Majin Buu Pur (Kid Buu) vs Buuhan
+
+- Identifiant : `kid-buu-vs-buuhan` · catégorie lore · rang `CANON_ABSOLU` · score 100
+- Verdict : Majin Buu Pur (Kid Buu) est plus fort que Majin Buu ayant absorbé Gohan (Buuhan).
+- Explication : Kid Buu est la forme originelle et ultime de Majin Buu, incarnation absolue du mal et de la destruction sans frein ni bride morale. Établi à travers l'ensemble des médias officiels de Dragon Ball comme l'adversaire suprême et qualifié d'« ennemi le plus fort de l'univers » (Daizenshuu 2), il représente le sommet de dangerosité et d'invulnérabilité de Majin Buu, surpassant Buuhan et exigeant les forces vives du cosmos entier concentrées dans le Super Genkidama pour être anéanti.
+- Sources :
+  - Manga Dragon Ball Tome 42
+  - Daizenshuu 2 : Story Guide
+  - Anime Dragon Ball Z
+- Mots-clés : kid buu vs buuhan, kid buu plus fort que buuhan, buuhan vs kid buu, buu pur vs buuhan, kid buu ou buuhan, buuhan ou kid buu, majin buu pur ou buuhan, majin buu pur vs buuhan, qui est le plus fort entre kid buu et buuhan, qui est le plus fort entre majin buu pur et buuhan, qui est le plus fort entre majin buu pur (kid buu) et majin buu ayant absorbe gohan (buuhan), qui est le plus fort entre kid buu et buu ayant absorbe gohan, kid buu plus fort, kid boo vs buuhan
+- Page du site : https://dragonballfr.com/wiki/canon?q=Majin%20Buu%20Pur%20(Kid%20Buu)%20vs%20Buuhan
+
+### Son Goku Super Saiyan 3 vs Gohan Ultime (Ultimate Gohan)
+
+- Identifiant : `goku-ssj3-vs-ultimate-gohan` · catégorie lore · rang `CANON_ABSOLU` · score 100
+- Verdict : Son Goku Super Saiyan 3 est plus fort que Gohan dans sa forme ultime (Ultimate Gohan).
+- Explication : Son Goku en Super Saiyan 3 est le guerrier Z d'élite suprême de la saga Buu. Seul combattant capable d'affronter Kid Buu au corps à corps lors de l'ultime bataille pour la survie du macrocosme, Goku sublime la puissance brute par son génie martial, sa maîtrise du combat au-delà des limites et ses ressources héroïques, surpassant Gohan Ultime à travers l'ensemble des médias de l'œuvre (comme illustré notamment face à Hildegarn dans le film 13).
+- Sources :
+  - Manga Dragon Ball Tomes 41-42
+  - Daizenshuu 2 : Story Guide
+  - Film DBZ 13 : L'Attaque du Dragon
+- Mots-clés : goku ssj3 vs gohan ultime, goku ssj3 vs ultimate gohan, goku ssj3 plus fort que gohan, goku ssj3 plus fort que gohan ultime, goku ssj3 plus fort qu'ultimate gohan, ultimate gohan vs goku ssj3, gohan ultime vs goku ssj3, goku super saiyan 3 vs gohan, goku super saiyan 3 vs gohan ultime, goku super saiyan 3 vs ultimate gohan, qui est le plus fort dans la saga buu entre goku super saiyan 3 et gohan, qui est le plus fort dans la saga buu entre goku ssj3 et gohan ultime, qui est le plus fort dans la saga buu entre goku super saiyan 3 et gohan dans sa derniere forme (ultimate gohan), qui est le plus fort entre goku super saiyan 3 et gohan dans sa derniere forme, qui est le plus fort entre goku ssj3 et ultimate gohan, goku ssj3 ou gohan ultime, goku ssj3 ou ultimate gohan
+- Page du site : https://dragonballfr.com/wiki/canon?q=Son%20Goku%20Super%20Saiyan%203%20vs%20Gohan%20Ultime%20(Ultimate%20Gohan)
+
+### Cell Parfait (Super Perfect Cell) vs Son Gohan Super Saiyan 2
+
+- Identifiant : `cell-parfait-vs-gohan-ssj2` · catégorie lore · rang `CANON_ABSOLU` · score 100
+- Verdict : Cell Parfait (la forme avec des éclairs) est le plus fort de la saga Cell, devant Gohan SSJ2.
+- Explication : Selon les appellations officielles de Dragon Ball, il convient de distinguer 'Cell forme parfaite' (après absorption de C-18) et 'Cell Parfait' (forme ressuscitée avec éclairs issue du Zenkai après son explosion). Doté de l'aura du Super Saiyan 2 et du Déplacement Instantané, Cell Parfait représente l'apogée de puissance de l'arc : il brise le bras gauche de Gohan d'une seule attaque, réduit son Ki de moitié et accule Gohan lors du choc des Kamehamehas, n'étant submergé par le Père-Fils Kamehameha que grâce au soutien spirituel de Goku et à la diversion décisive de Vegeta.
+- Sources :
+  - Manga Dragon Ball Tome 35 (Chapitres 413-416)
+  - Daizenshuu 2 : Story Guide
+  - Daizenshuu 7 : Le Grand Dictionnaire
+- Mots-clés : cell parfait vs gohan ssj2, cell parfait ou gohan ssj2, cell parfait plus fort que gohan, cell parfait plus fort que gohan ssj2, super perfect cell vs gohan ssj2, super perfect cell ou gohan ssj2, qui est le plus fort dans la saga cell entre cell dans sa derniere forme et gohan ssj2, qui est le plus fort dans la saga cell entre cell et gohan, qui est le plus fort dans la saga cell entre cell forme parfaite et gohan ssj2, qui est le plus fort entre cell dans sa derniere forme et gohan ssj2, qui est le plus fort entre cell parfait et gohan ssj2, qui est le plus fort entre cell et gohan ssj2, cell forme parfaite vs cell parfait, cell parfait ou cell forme parfaite, plus fort saga cell, qui est le plus fort de la saga cell
+- Page du site : https://dragonballfr.com/wiki/canon?q=Cell%20Parfait%20(Super%20Perfect%20Cell)%20vs%20Son%20Gohan%20Super%20Saiyan%202
 
 ### Puissance de Goku SSJ1 sur Namek (150 000 000 BP)
 

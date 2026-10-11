@@ -1,0 +1,105 @@
+{
+  "publication": "30th Anniversary ドラゴンボール超史集",
+  "records": [
+    {
+      "transcriptPath": "data\\catalogues\\japanese-interviews\\30th-anniversary-toriyama-interview-body.jsonl#L1",
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+      "printedPages": [
+        88
+      ],
+      "pdfPageIndices": [
+        89
+      ],
+      "imageBytes": 100224986,
+      "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
+      "completeness": "Visible interview prose on printed p.88 transcribed. The upper block ends at a visible column boundary; a lower quote continues across the printed page break into p.89.",
+      "transcriptSha256": "a4d3b170feaa2f14417cd30af888677feb225be3658de0597fc8a90fcdd61b0b"
+    },
+    {
+      "transcriptPath": "data\\catalogues\\japanese-interviews\\30th-anniversary-toriyama-interview-body.jsonl#L2",
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+      "printedPages": [
+        89
+      ],
+      "pdfPageIndices": [
+        90
+      ],
+      "imageBytes": 100224986,
+      "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
+      "completeness": "Visible interview prose on printed p.89 transcribed, including carryover fragment from p.88; lower answer continues past the page edge after 「フリーザも」.",
+      "transcriptSha256": "a4d3b170feaa2f14417cd30af888677feb225be3658de0597fc8a90fcdd61b0b"
+    },
+    {
+      "transcriptPath": "data\\catalogues\\japanese-interviews\\30th-anniversary-toriyama-interview-body.jsonl#L3",
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+      "printedPages": [
+        90
+      ],
+      "pdfPageIndices": [
+        91
+      ],
+      "imageBytes": 100224986,
+      "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
+      "completeness": "Partial: visible p.90 text transcribed through the question about Kami being an alien, but the lower worldbuilding columns on the same folio are omitted; continuation is on p.91.",
+      "transcriptSha256": "a4d3b170feaa2f14417cd30af888677feb225be3658de0597fc8a90fcdd61b0b"
+    },
+    {
+      "transcriptPath": "data\\catalogues\\japanese-interviews\\30th-anniversary-toriyama-interview-body.jsonl#L4",
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+      "printedPages": [
+        91
+      ],
+      "pdfPageIndices": [
+        92
+      ],
+      "imageBytes": 100224986,
+      "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
+      "completeness": "Visible interview text transcribed in draft; carryover and exact column breaks need independent review.",
+      "transcriptSha256": "a4d3b170feaa2f14417cd30af888677feb225be3658de0597fc8a90fcdd61b0b"
+    },
+    {
+      "transcriptPath": "data\\catalogues\\japanese-interviews\\30th-anniversary-toriyama-interview-body.jsonl#L5",
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+      "printedPages": [
+        92
+      ],
+      "pdfPageIndices": [
+        93
+      ],
+      "imageBytes": 100224986,
+      "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
+      "completeness": "Partial excerpts only; remaining visible p.92 columns not transcribed.",
+      "transcriptSha256": "a4d3b170feaa2f14417cd30af888677feb225be3658de0597fc8a90fcdd61b0b"
+    },
+    {
+      "transcriptPath": "data\\catalogues\\japanese-interviews\\30th-anniversary-toriyama-interview-body.jsonl#L6",
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+      "printedPages": [
+        93
+      ],
+      "pdfPageIndices": [
+        94
+      ],
+      "imageBytes": 100224986,
+      "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
+      "completeness": "Visible p.93 columns transcribed in draft; review for exact wording and continuation breaks needed.",
+      "transcriptSha256": "a4d3b170feaa2f14417cd30af888677feb225be3658de0597fc8a90fcdd61b0b"
+    }
+  ],
+  "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-toriyama-interview-body.jsonl",
+  "updatedAt": "2026-10-08",
+  "schemaVersion": 1,
+  "limits": [
+    "Printed pp.88–89 (PDF pp.89–90) visible interview text transcribed but pending independent review.",
+    "Printed p.90 (PDF p.91) partial: lower worldbuilding columns are omitted; check duplicated silhouette sentence.",
+    "Printed p.91 (PDF p.92) draft; column transitions and exact wording require exhaustive visual review.",
+    "Printed p.92 (PDF p.93) partial excerpts only; remaining visible columns are not transcribed.",
+    "Printed p.93 (PDF p.94) visible body drafted; pending character-level review."
+  ],
+  "transcriptSha256": "a4d3b170feaa2f14417cd30af888677feb225be3658de0597fc8a90fcdd61b0b",
+  "method": "Local PDF rendered with PyMuPDF at high resolution; manual visual transcription only; no network/OCR.",
+  "status": "pp88-89-visible-transcribed-p90-partial-p91-draft-p92-partial-p93-draft",
+  "interviewee": "鳥山明",
+  "interviewTitle": "DRAGON BALLと鳥山明",
+  "transcriptBytes": 21058
+}

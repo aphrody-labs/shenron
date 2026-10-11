@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèse d'une entrée Kanzenshuu non étiquetée interview publiée en 2023; forums exclus.",
+  "records": [
+    {
+      "id": "dr-mashiritos-ultimate-manga-technique-torishima-toriyama-back-then",
+      "title": "Toriyama et Torishima — rétrospective dessinée sur leurs débuts",
+      "summary": "Cette courte bande dessinée de deux pages, dessinée par Akira Toriyama pour le livre de technique manga de Dr. Mashirito, revient sur sa rencontre avec Kazuhiko Torishima. Toriyama se présente comme un débutant qui a découvert un concours de manga dans un café, s'est inscrit pour gagner un prix et pensait naïvement pouvoir créer des histoires sans expérience préalable. Torishima se souvient d'un jeune homme maigre, pressé, bavard et sûr de lui, qui ne ressemblait pas à un « vétéran » du manga malgré sa posture. Ils se décrivent comme un duo mal assorti : Toriyama connaissait peu le manga shōnen, tandis que Torishima n'avait presque pas lu de bandes dessinées, mais ils partageaient le désir de créer une œuvre nouvelle. La seconde page résume le rôle éditorial de Torishima dans Dr. Slump — notamment l'encouragement à faire d'Arale le personnage principal — puis la transition vers Dragon Ball. Toriyama raconte avoir voulu mêler aventure et combat autour du Voyage vers l'Occident, avant de s'orienter progressivement vers le manga de combat, qui trouvait plus aisément son public dans Jump. Il dit avec autodérision ne pas toujours comprendre ce qu'il aimait vraiment dessiner et ne pas avoir pu baisser sa garde avec Torishima, qui connaissait bien la formule du shōnen.",
+      "keyInformation": [
+        "Dans le récit dessiné par Toriyama, il explique avoir découvert un concours de mangas de Shōnen Jump dans un café, s'être présenté pour le prix et avoir commencé sans expérience, en se disant naïvement que raconter des histoires ne devait pas être difficile.",
+        "Toriyama évoque la période où il avait quitté son emploi, avait du temps mais peu d'argent et pouvait se consacrer aux histoires; Torishima se rappelle un jeune homme maigre, impatient, rapide à marcher et à parler, qui paraissait sûr de lui mais n'était qu'en deuxième année chez Shueisha.",
+        "Ils se caricaturent comme un duo étrange aux intérêts peu communs : Toriyama ne connaissait pas beaucoup de mangas ni les codes shōnen, tandis que Torishima lisait peu de bandes dessinées; ils avaient toutefois en commun l'envie de créer une œuvre inédite.",
+        "Toriyama dessine un premier Dr. Slump centré sur un génie scientifique maladroit et raconte que Torishima a immédiatement proposé de mettre la fille-robot Arale au centre; cette anecdote renvoie à l'intervention de l'éditeur dans la composition de la série.",
+        "Toriyama explique qu'il a fini par voir que le manga pouvait être amusant et valable; même s'il s'est longtemps reposé sur l'avis de Torishima, il a ensuite appris à ne plus suivre automatiquement tous les conseils.",
+        "Pour Dragon Ball, Toriyama souhaitait dessiner une aventure inspirée du Voyage vers l'Occident, tout en sachant que les récits de combat étaient plus faciles à populariser dans Jump. Il a commencé par un mélange d'aventure et de combat, puis s'est graduellement dirigé vers le manga de combat lorsque la série a trouvé son public.",
+        "La chute de la bande dessinée rappelle avec humour que Toriyama ne savait pas vraiment quel genre il voulait dessiner et que Torishima, qui connaissait les standards du shōnen, l'empêchait de baisser sa garde."
+      ],
+      "source": {
+        "publication": "Dr. Mashirito's Ultimate Manga Technique",
+        "pages": "Comic de deux pages dans le guide",
+        "date": "2023-07-21",
+        "url": "https://www.kanzenshuu.com/translations/dr-mashiritos-ultimate-manga-technique-torishima-toriyama-back-then/",
+        "participants": [
+          "Akira Toriyama",
+          "Kazuhiko Torishima"
+        ],
+        "formatNote": "Rétrospective en bande dessinée, non entretien textuel : deux pages d'images et de bulles traduites. Les souvenirs y sont mis en scène par Toriyama avec humour et condensation, non reproduits comme verbatim d'une entrevue.",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dr-mashiritos-ultimate-manga-technique-torishima-toriyama-back-then.html",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "questionBlockCount": 0,
+        "answerBlockCount": 0,
+        "sourceDescription": "English translation of the Torishima &amp; Toriyama Back Then comic from Dr. Mashirito&#039;s Ultimate Manga Technique"
+      },
+      "dragonBallRelevance": "Directe et historique : retour de Toriyama sur son entrée dans le manga, le rôle de Torishima et le passage de Dr. Slump à Dragon Ball.",
+      "forumContent": false,
+      "formatNote": "Comic biographique sur Torishima et Toriyama; aucun échange interviewé."
+    }
+  ]
+}

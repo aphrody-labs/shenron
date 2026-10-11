@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2021; contenus de forum exclus.",
+  "reviewNote": "Les synthèses de médias vidéo/audio distinguent les points rapportés par Kanzenshuu de toute transcription; les transcriptions absentes sont signalées.",
+  "records": [
+    {
+      "id": "site-post-69445-weekly-dragon-ball-news-toyotaro-interview",
+      "title": "Weekly Dragon Ball News Interview — Toyotarō and Victory Uchida",
+      "kind": "interview-summary",
+      "summary": "Kanzenshuu compile cinq points de l’entretien vidéo de Toyotarō avec son éditeur Victory Uchida. Toyotarō explique avoir proposé Granolla, personnage original lié aux Saiyans, puis élaboré une idée d’histoire avec Uchida avant de la soumettre à Toriyama. Celui-ci a développé l’intrigue, ajouté les Heeters et conçu un nouvel ensemble de Dragon Balls. Toyotarō décrit Granolla comme un survivant et un tireur d’élite au style rétro/steampunk; il explique aussi l’ajout d’Oatmeal pour accompagner le personnage. Enfin, il évoque plusieurs refus des designs des Heeters et le transfert à Toriyama du design des Sugarians après des retours sur leurs yeux. Ce sont les points retenus dans le billet, pas une transcription.",
+      "keyInformation": [
+        "Cinq points résumés depuis l’interview vidéo; transcript absent.",
+        "Les échanges originaux ne sont pas transcrits dans le billet."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2021/08/10/toyotaro-interviewed-on-official-websites-weekly-dragon-ball-news/",
+        "publication": "Kanzenshuu site post",
+        "publicationDate": "2021-08-10",
+        "participants": [
+          "Toyotarō",
+          "Victory Uchida"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2021.json",
+        "externalMediaUrl": "https://dragon-ball-official.com/news/01_392.html",
+        "transcriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Video interview summary",
+        "scopeNote": "Cinq points résumés depuis l’interview vidéo; transcript absent."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Dragon Ball Super manga, Granolla the Survivor, Manga creation"
+    },
+    {
+      "id": "site-post-69111-akio-iyoku-norihiro-hayashida-broly-home-video-interview",
+      "title": "Akio Iyoku et Norihiro Hayashida — entretien sur le film Dragon Ball Super: Broly",
+      "kind": "interview-excerpt",
+      "summary": "Le billet Kanzenshuu sur l’annonce du film suivant Dragon Ball Super reproduit plusieurs réponses attribuées au producteur exécutif Akio Iyoku et au producteur Norihiro Hayashida, tirées d’un entretien imprimé dans le livret de 60 pages accompagnant la sortie vidéo domestique de Dragon Ball Super: Broly. Iyoku dit que les préparatifs du prochain film sont en cours et qu’il faudra prendre une direction différente après Broly, dont le niveau aurait pu entraîner un épuisement de l’équipe; Hayashida relève la qualité du personnel et du casting et dit vouloir viser plus haut; Iyoku conclut que certains éléments n’ayant pu être réalisés pourraient rendre le film suivant encore plus abouti. Kanzenshuu ne reproduit pas les questions et ne donne pas la transcription intégrale.",
+      "keyInformation": [
+        "La source est un entretien imprimé dans le livret de 60 pages accompagnant la sortie vidéo domestique de Dragon Ball Super: Broly.",
+        "Iyoku indique que les préparatifs du film suivant sont en cours et évoque une direction différente après Broly ainsi que la nécessité d’éviter l’épuisement.",
+        "Hayashida estime que l’équipe et le casting étaient particulièrement bien réunis et dit vouloir s’appuyer sur cette expérience pour aller plus loin.",
+        "Iyoku ajoute que des éléments n’ayant pu être réalisés dans Broly pourraient contribuer à rendre le prochain film encore meilleur.",
+        "Le billet reproduit trois blocs de réponse, sans les questions ni le reste de l’entretien."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2021/05/07/dragon-ball-super-movie-for-2022-release-listed-by-toei-animation-europe-website/",
+        "publication": "Dragon Ball Super: Broly — livret de 60 pages accompagnant la sortie vidéo domestique, entretien staff",
+        "publicationDate": "2021-05-07",
+        "participants": [
+          "Akio Iyoku",
+          "Norihiro Hayashida"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2021.json",
+        "sourceImageUrl": "https://www.kanzenshuu.com/wp-content/uploads/2020/11/dbsuper-future-broly-book-2.png",
+        "transcriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Extrait d’entretien imprimé — trois blocs de réponse, questions absentes",
+        "scopeNote": "Le billet reproduit des propos attribués aux deux producteurs, pas l’intégralité de l’entretien."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Déclarations de producteurs sur les suites de production après Dragon Ball Super: Broly et leurs intentions pour le film suivant."
+    }
+  ]
+}

@@ -56,11 +56,45 @@ test("/api/auth/* is relayed to the host without following its redirects", async
   expect(seen.at(-1)).toEqual({ path: "/api/auth/sign-in/social", cookie: "k=v", method: "POST" });
 });
 
-test("without SHENRON_HOST_URL the site keeps its own auth", async () => {
+test("without SHENRON_HOST_URL the site fails closed without local auth", async () => {
   delete process.env.SHENRON_HOST_URL;
-  const { hostAuthUrl } = await import("../src/lib/host-auth");
+  const { hostAuthUrl, sessionAuth } = await import("../src/lib/host-auth");
   expect(hostAuthUrl()).toBeNull();
+  expect(await sessionAuth.api.getSession({ headers: new Headers({ cookie: "a=b" }) })).toBeNull();
+  const unavailable = await sessionAuth.handler(
+    new Request("https://dragonballfr.com/api/auth/get-session"),
+  );
+  expect(unavailable.status).toBe(503);
+  expect(unavailable.headers.get("cache-control")).toBe("private, no-store");
   process.env.SHENRON_HOST_URL = "http://127.0.0.1:4000/";
   expect(hostAuthUrl()).toBe("http://127.0.0.1:4000");
   delete process.env.SHENRON_HOST_URL;
+});
+
+test("the actual Next auth route and server session facade only call the configured host", async () => {
+  const previous = process.env.SHENRON_HOST_URL;
+  process.env.SHENRON_HOST_URL = origin;
+  try {
+    const { GET, POST } = await import("../src/app/api/auth/[...all]/route");
+    const { sessionAuth } = await import("../src/lib/host-auth");
+    expect(await sessionAuth.api.getSession({ headers: new Headers({ cookie: "a=b" }) })).toEqual({
+      user: { id: "u1", name: null, image: null },
+    });
+    const response = await POST(
+      new Request("https://dragonballfr.com/api/auth/sign-in/social", {
+        method: "POST",
+        body: "{}",
+        headers: { "content-type": "application/json" },
+      }),
+    );
+    expect(response.status).toBe(302);
+    expect(response.headers.get("location")).toBe("https://discord.test/x");
+    process.env.SHENRON_HOST_URL = "http://127.0.0.1:1";
+    expect((await GET(new Request("https://dragonballfr.com/api/auth/get-session"))).status).toBe(
+      503,
+    );
+  } finally {
+    if (previous === undefined) delete process.env.SHENRON_HOST_URL;
+    else process.env.SHENRON_HOST_URL = previous;
+  }
 });

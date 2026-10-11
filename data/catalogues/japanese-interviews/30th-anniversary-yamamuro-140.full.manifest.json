@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "status": "complete-independent-manual-visual-transcription",
+  "publication": "30th Anniversary ドラゴンボール超史集",
+  "interviewTitle": "INTERVIEW / 山室直儀",
+  "interviewee": "山室直儀",
+  "method": "Independent manual reading of the local PDF rendered at 3x resolution, with enlarged image crops for body columns; no OCR and no network.",
+  "records": [
+    {
+      "transcriptSha256": "6be7772caf487d12b52fc98041d68eb53a9dd223c0fb0ea495d6a168aeb08c09",
+      "transcriptPath": "30th-anniversary-yamamuro-140.full.jsonl#L1",
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+      "completeness": "Complete interview body for the printed page. Includes visible section headings. Excludes profile caption, pull-quote display text duplicated from the body, and decorative imagery.",
+      "transcriptBytes": 4824,
+      "imageBytes": 100224986,
+      "printedPages": [
+        140
+      ],
+      "pdfPageIndices": [
+        141
+      ],
+      "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2"
+    }
+  ],
+  "transcriptPath": "30th-anniversary-yamamuro-140.full.jsonl",
+  "transcriptBytes": 4824,
+  "transcriptSha256": "6be7772caf487d12b52fc98041d68eb53a9dd223c0fb0ea495d6a168aeb08c09",
+  "review": "Completed the previously truncated body columns. Corrected the visually verified G-pen/tracing passage and title ジャングルスーパーアニメツアー."
+}

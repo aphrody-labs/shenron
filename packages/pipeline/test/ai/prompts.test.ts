@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+  AUTONOMY_RULE,
   buildGroundingInstructions,
   buildSourcesBlock,
   DEFAULT_PERSONA,
@@ -24,7 +25,7 @@ describe("personas", () => {
     expect([...PERSONA_IDS]).toEqual(["whis", "beerus", "shenron", "grandpretre", "kaio", "enma"]);
     expect(Object.keys(PERSONAS)).toEqual([...PERSONA_IDS]);
     expect(DEFAULT_PERSONA).toBe("whis");
-    expect(PROMPT_VERSION).toBe("2");
+    expect(PROMPT_VERSION).toBe("3");
   });
 
   test("resolvePersona normalises like persona() in llm.ts", () => {
@@ -54,11 +55,14 @@ describe("personas", () => {
 });
 
 describe("grounding instructions", () => {
-  test("every instruction contains INJECTION_GUARD", () => {
+  test("every voice applies autonomy while preserving the final injection guard", () => {
     for (const id of PERSONA_IDS) {
       for (const voice of [undefined, "site-short", "site-long"] as const) {
         for (const chitchat of [false, true]) {
-          expect(buildGroundingInstructions(id, voice, { chitchat })).toContain(INJECTION_GUARD);
+          const instructions = buildGroundingInstructions(id, voice, { chitchat });
+          expect(instructions).toContain(AUTONOMY_RULE);
+          expect(instructions.endsWith(INJECTION_GUARD)).toBe(true);
+          expect(instructions.split(INJECTION_GUARD)).toHaveLength(2);
         }
       }
     }

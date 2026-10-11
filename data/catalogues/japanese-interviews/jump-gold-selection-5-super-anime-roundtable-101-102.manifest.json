@@ -1,0 +1,37 @@
+{
+  "source": "Jump Gold Selection 5 / 超アニメ人座談会",
+  "transcriptionStatus": "initial visual transcription; independent review needed",
+  "participants": [
+    "鳥山明",
+    "小山高生",
+    "森下孝三",
+    "清水賢治",
+    "西尾大介",
+    "前田実",
+    "野沢雅子"
+  ],
+  "method": "Manual visual transcription from the local Japanese scans; no OCR, network, translation, or secondary text used. Pages ordered by printed folio.",
+  "pages": [
+    {
+      "printedPage": 101,
+      "path": "C:\\Users\\omara\\Desktop\\Data et guide book\\Gold Selection 5\\Jump Gold Selection 5 Page 101.png",
+      "sha256": "E218CAF74BC26DBAA3425C1B4C9B18F1623C08B68BE308DA012757FFEFC6BBE0",
+      "bytes": 88737083,
+      "dimensions": "4953x7015",
+      "transcriptRow": 1
+    },
+    {
+      "printedPage": 102,
+      "path": "C:\\Users\\omara\\Desktop\\Data et guide book\\Gold Selection 5\\Jump Gold Selection 5 Page 102.png",
+      "sha256": "EF3AF1BD3F350AF99C6AE7BC17F107D335D1F2F0F161E57CC701B7C8338966D7",
+      "bytes": 91588881,
+      "dimensions": "4960x7015",
+      "transcriptRow": 2
+    }
+  ],
+  "limitations": [
+    "Several tightly printed speaker turns on p. 101 are difficult; one unclear glyph in the first turn is marked U+FFFD.",
+    "Page 102 closing dialogue is transcribed from visible columns; some trailing copy is editorial rather than dialogue."
+  ],
+  "transcriptSha256": "4AB3ABE2A49AAE57CDCD8BAF233391673D9AB87D3EEDDC4D7AB84E5F117A10AF"
+}

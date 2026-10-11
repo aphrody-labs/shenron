@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { LEXIQUE_FILE, planBackend, siblingBinary, VFS_FILE } from "../src/backend";
+import { executableDir } from "../src/config";
 import { testPaths } from "./support";
 
 const root = mkdtempSync(join(tmpdir(), "shenron-backend-"));
@@ -114,6 +115,14 @@ describe("planBackend", () => {
     expect(planBackend(paths, { APHRODY_BIN: "/opt/aphrody" }).env.APHRODY_BIN).toBe(
       "/opt/aphrody",
     );
+  });
+});
+
+describe("executableDir", () => {
+  test("uses the native desktop's absolute sidecar path over Bun's virtual compiled path", () => {
+    const { dir } = setup();
+    const binary = join(dir, "binaries", exe("shenron-server"));
+    expect(executableDir({ SHENRON_SERVER_BIN: binary })).toBe(join(dir, "binaries"));
   });
 });
 

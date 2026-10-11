@@ -57,12 +57,7 @@ describe("Aphrody Discord migration", () => {
 
     // Message in chat channel
     expect(
-      guildAiPrompt(
-        { ...message, channelId: APHRODY_DISCORD.chatChannelId },
-        botId,
-        multiGuildEnv,
-      ),
+      guildAiPrompt({ ...message, channelId: APHRODY_DISCORD.chatChannelId }, botId, multiGuildEnv),
     ).toBe("Bonjour");
   });
 });
-

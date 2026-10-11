@@ -47,13 +47,10 @@ Sans ces services, le bot et le site démarrent et dégradent explicitement.
   commande qui modifie un hôte.
 - Une documentation ou un commit ne prouve pas un déploiement : seule la
   release active, sondée par `aphrody-infra`, fait foi.
-- Parcours historique (non cible depuis la directive propriétaire du 2026-10-04) :
-  `bun scripts/ops/release.ts` construit et assemble la release sur le `vps`
-  (`release-host.ts build`), puis `aphrody-infra deploy --apply` l'active et le script publie
-  le CDN. Ne pas lancer ce parcours pour une nouvelle release avant la qualification du
-  fournisseur serverless et de son adaptateur. Cette qualification doit produire le build du SHA
-  exact, le manifeste et les sommes, configurer les secrets hors artefact, effectuer les
-  migrations selon le runbook, puis sonder l'application et prouver le retour arrière.
+- Mise en production outillée : `bun scripts/ops/release.ts` construit et assemble la
+  release sur le `vps` (`release-host.ts build`, détaché), l'active par `aphrody-infra deploy
+  --apply`, publie `public/` et `.next-build/static` sur le CDN (`release-host.ts cdn`) puis
+  sonde le site ; `--cdn-only` republie la release active.
 - Exception voulue par le propriétaire : `scripts/ops/admin-access.ts` tient la liste
   des postes d'administration (IP publique du poste, VPS, WireGuard, comptes désignés)
   sur `vps` et `dbfr` par `aphrody-infra ssh exec` — ufw, fail2ban, PostgreSQL

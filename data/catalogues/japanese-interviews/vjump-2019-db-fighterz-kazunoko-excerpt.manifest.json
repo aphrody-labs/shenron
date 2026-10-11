@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "status": "single-page-interview-excerpt-transcribed-speaker-review-needed",
+  "publication": "Vジャンプ (local folder V-Jump 2019/mars; exact issue date unverified)",
+  "interviewTitle": "オレたちプロゲーマー!! / DBFZ Kazunoko excerpt",
+  "interviewee": "かずのこ (professional fighting game player; DBFZ)",
+  "updatedAt": "2026-10-08",
+  "method": "日本語の手元スキャンを拡大して目視で転記。OCR、ネット、翻訳、外部文章による補完は不使用。",
+  "limits": [
+    "The page itself says the interview was published on V-Jump WEB; this sidecar transcribes only the readable printed excerpt, not the full interview.",
+    "The folio is estimated as p.339 from the adjacent scan pointer to the feature on p.340; the number is not visible on this crop.",
+    "Interview comments are presented in manga speech balloons alongside participant photos; some speaker-to-balloon assignments need independent review.",
+    "The V-Jump WEB interview is not included in the local source corpus and was not accessed."
+  ],
+  "transcriptFile": "data/catalogues/japanese-interviews/vjump-2019-db-fighterz-kazunoko-excerpt.jsonl",
+  "transcriptBytes": 1211,
+  "transcriptSha256": "c01de9db4bea52fe042e3937417330f6eafa74cc53cbf59500cbd598cac63702",
+  "records": [
+    {
+      "sectionTitle": "オレたちプロゲーマー!! — DBFZ / かずのこ",
+      "imageSha256": "61fa6951c15d9b05718d15fab8ed082eb7e77a4acfefca919ff598e68ed427ef",
+      "imageBytes": 593400,
+      "pages": [
+        339
+      ],
+      "transcriptPath": "data/catalogues/japanese-interviews/vjump-2019-db-fighterz-kazunoko-excerpt.jsonl#L1",
+      "completeness": "Visible direct gamer comments and the clearly associated editorial reply transcribed from one page. The page is part of a larger feature; p.339 is inferred, not printed legibly in this crop.",
+      "participants": [
+        "かずのこ",
+        "ビクトリー・ウチダ（編集部）"
+      ],
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Les V-Jump\\V-Jump 2019\\mars\\660461417_1387192693450254_3355142928239876073_n.jpg",
+      "transcriptRow": 1,
+      "title": "Vジャンプ",
+      "id": "vjump-2019-db-fighterz-kazunoko-excerpt"
+    }
+  ]
+}

@@ -149,6 +149,9 @@ const CLIENT_FORBIDDEN = [
   "@shenron/pipeline",
 ];
 
+/** Explicitly pure entry points allowed from the site client despite a forbidden package root. */
+const CLIENT_ALLOWED_PURE = new Set(["@shenron/pipeline/re-wasm-web"]);
+
 type Severity = "error" | "warn";
 
 interface Violation {
@@ -630,6 +633,7 @@ function checkApps(): void {
         report("apps/site", "boundary", `${rel} imports bun-class ${specifier}`);
       if (
         isClient &&
+        !CLIENT_ALLOWED_PURE.has(specifier) &&
         CLIENT_FORBIDDEN.some(
           (forbidden) => specifier === forbidden || specifier.startsWith(`${forbidden}/`),
         )
@@ -640,16 +644,19 @@ function checkApps(): void {
   }
 
   // transpilePackages covers every first-rank @shenron/* dependency of the site.
+  // withBun (@aphrody/next-bun) detects workspace packages publishing TypeScript sources automatically.
   const site = readJson<Manifest>(join(ROOT, "apps", "site", "package.json"));
   const nextConfigFile = join(ROOT, "apps", "site", "next.config.ts");
   const nextConfig = existsSync(nextConfigFile) ? readFileSync(nextConfigFile, "utf8") : "";
-  const listMatch = /transpilePackages\s*:\s*\[([^\]]*)\]/.exec(nextConfig);
-  const transpiled = new Set(
-    [...(listMatch?.[1] ?? "").matchAll(/["']([^"']+)["']/g)].map((m) => m[1]),
-  );
-  for (const dep of Object.keys(site?.dependencies ?? {})) {
-    if (PACKAGES[dep] && !transpiled.has(dep)) {
-      report("apps/site", "transpile", `${dep} missing from transpilePackages`);
+  if (!/\bwithBun\s*\(/.test(nextConfig)) {
+    const listMatch = /transpilePackages\s*:\s*\[([^\]]*)\]/.exec(nextConfig);
+    const transpiled = new Set(
+      [...(listMatch?.[1] ?? "").matchAll(/["']([^"']+)["']/g)].map((m) => m[1]),
+    );
+    for (const dep of Object.keys(site?.dependencies ?? {})) {
+      if (PACKAGES[dep] && !transpiled.has(dep)) {
+        report("apps/site", "transpile", `${dep} missing from transpilePackages`);
+      }
     }
   }
 }

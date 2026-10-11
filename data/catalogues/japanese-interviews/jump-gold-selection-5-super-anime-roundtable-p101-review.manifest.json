@@ -1,0 +1,23 @@
+{
+  "source": "Jump Gold Selection 5 / 超アニメ人座談会",
+  "transcriptionStatus": "partial visual review addendum; not a replacement for pp.97-102",
+  "reviewScope": "Compared local p.101 scan with the existing p.101 transcript. Corrects omissions and role attributions in the opening section, and records a visually checked excerpt from the second section. It does not claim a complete transcription.",
+  "method": "Manual visual comparison against the local high-resolution scan; offline; no OCR or web sources.",
+  "sourceImage": {
+    "printedPage": 101,
+    "path": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Gold Selection 5\\Jump Gold Selection 5 Page 101.png",
+    "sha256": "e218caf74bc26dbaa3425c1b4c9b18f1623c08b68be308da012757ffefc6bbe0",
+    "bytes": 88737083,
+    "dimensions": "4953x7015"
+  },
+  "inputs": [
+    "jump-gold-selection-5-super-anime-roundtable-97-100.jsonl",
+    "jump-gold-selection-5-super-anime-roundtable-101-102.jsonl"
+  ],
+  "limitations": [
+    "The p.101 addendum is partial. Other visible columns, including the ending passage about Goku eyes, remain untranscribed.",
+    "This artifact does not revise or replace the p.97-100 or p.102 rows.",
+    "The current 101-102 sidecar contains obvious recognition and attribution errors; do not cite it as a faithful full transcript until fully collated."
+  ],
+  "transcriptSha256": "9bd3a2edae586461f2fa8e16f2616fe1e0c97cc43962e5a376d985f22241a1f4"
+}

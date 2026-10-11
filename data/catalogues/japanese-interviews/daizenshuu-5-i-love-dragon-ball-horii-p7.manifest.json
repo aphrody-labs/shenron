@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "status": "visible-page-transcribed-review-needed",
+  "publication": "Dragon Ball Daizenshuu 5: TV Animation Part 2, Shenlong Times insert (1995)",
+  "title": "I LOVE DRAGON BALL 第5回",
+  "participant": "堀井雄二（ゲームデザイナー）",
+  "classification": "Commentaire sur Dragon Ball attribué à Horii; rubrique éditoriale sans Q/R.",
+  "method": "目視転記。OCR、ネット、外部文章による補完なし。",
+  "limits": [
+    "Une page visible; titre, introduction et commentaire Horii transcrits.",
+    "Commentaire attribué, pas une interview Q/R; légende photo omise."
+  ],
+  "records": [
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-5-i-love-dragon-ball-horii-p7.jsonl#L1",
+      "page": 7,
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 5 - TV Animation Part 2 (COMPLETE)\\Shenlong Times\\7.png",
+      "imageBytes": 1895083,
+      "imageSha256": "dac1f4fc178df4ff13782a22e17630224d0aab53a35da6df4a90be1669b1d137",
+      "completeness": "Texte visible de la rubrique et commentaire Horii transcrits."
+    }
+  ],
+  "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-5-i-love-dragon-ball-horii-p7.jsonl",
+  "transcriptBytes": 1368,
+  "transcriptSha256": "932e15db022fcfa5f8659fe75707ef3e32cb5e1cda623d609037eb891bddf2c2"
+}

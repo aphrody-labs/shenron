@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { createVideoRecovery } from "@/lib/video-recovery";
 
 export interface SubtitleTrack {
   lang: string;
@@ -45,65 +46,139 @@ function trackUrl(src: string): string {
  */
 export function VideoPlayer({ src, title, poster, subtitles, onError }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const onErrorRef = useRef(onError);
+  useEffect(() => {
+    onErrorRef.current = onError;
+  }, [onError]);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
+    let hls: { destroy: () => void } | null = null;
+    let cancelled = false;
+    const recover = createVideoRecovery();
+    const cleanup = () => {
+      cancelled = true;
+      video.pause();
+      hls?.destroy();
+      video.removeAttribute("src");
+      video.load();
+    };
 
     const isHls = src.toLowerCase().includes(".m3u8");
     // mp4 (ou autre) : lecture directe, rien à charger.
     if (!isHls) {
       video.src = src;
-      return;
+      return cleanup;
     }
     // HLS natif (Safari/iOS) : pas besoin de hls.js.
     if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = src;
-      return;
+      return cleanup;
     }
 
-    let hls: { destroy: () => void } | null = null;
-    let cancelled = false;
-    void import("hls.js").then(({ default: Hls }) => {
-      if (cancelled || !videoRef.current) return;
-      if (Hls.isSupported()) {
-        const instance = new Hls({ enableWorker: true });
-        // Recovery sur erreur fatale (pattern recommandé hls.js) : on tente
-        // de relancer le réseau / réinitialiser le média avant d'abandonner,
-        // pour absorber les blips réseau d'un flux HLS.
-        instance.on(Hls.Events.ERROR, (_evt, data) => {
-          if (!data.fatal) return;
-          switch (data.type) {
-            case Hls.ErrorTypes.NETWORK_ERROR:
-              instance.startLoad();
-              break;
-            case Hls.ErrorTypes.MEDIA_ERROR:
-              instance.recoverMediaError();
-              break;
-            default:
-              instance.destroy();
-              if (videoRef.current) {
-                videoRef.current.src = src;
-              }
-          }
-        });
-        instance.loadSource(src);
-        instance.attachMedia(videoRef.current);
-        hls = instance;
-      } else {
-        videoRef.current.src = src;
-      }
-      return undefined;
-    });
+    void import("hls.js")
+      .then(({ default: Hls }) => {
+        if (cancelled || !videoRef.current) return;
+        if (Hls.isSupported()) {
+          const instance = new Hls({ enableWorker: true });
+          // Recovery sur erreur fatale (pattern recommandé hls.js) : on tente
+          // de relancer le réseau / réinitialiser le média avant d'abandonner,
+          // pour absorber les blips réseau d'un flux HLS.
+          instance.on(Hls.Events.ERROR, (_evt, data) => {
+            if (!data.fatal) return;
+            const action = recover(
+              data.type === Hls.ErrorTypes.NETWORK_ERROR
+                ? "network"
+                : data.type === Hls.ErrorTypes.MEDIA_ERROR
+                  ? "media"
+                  : "other",
+            );
+            switch (action) {
+              case "network":
+                instance.startLoad();
+                break;
+              case "media":
+                instance.recoverMediaError();
+                break;
+              default:
+                instance.destroy();
+                onErrorRef.current?.();
+            }
+          });
+          instance.loadSource(src);
+          instance.attachMedia(videoRef.current);
+          hls = instance;
+        } else {
+          videoRef.current.src = src;
+        }
+        return undefined;
+      })
+      .catch(() => {
+        if (!cancelled) onErrorRef.current?.();
+      });
 
-    return () => {
-      cancelled = true;
-      hls?.destroy();
-    };
+    return cleanup;
   }, [src]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      const tag = target.tagName?.toLowerCase();
+      if (tag === "input" || tag === "textarea" || tag === "select" || target.isContentEditable)
+        return;
+
+      const video = videoRef.current;
+      if (!video) return;
+
+      switch (e.key.toLowerCase()) {
+        case " ":
+        case "k":
+          e.preventDefault();
+          if (video.paused) {
+            void video.play().catch(() => {});
+          } else {
+            video.pause();
+          }
+          break;
+        case "j":
+        case "arrowleft":
+          e.preventDefault();
+          video.currentTime = Math.max(0, (video.currentTime || 0) - (e.key === "j" ? 10 : 5));
+          break;
+        case "l":
+        case "arrowright":
+          e.preventDefault();
+          {
+            const maxDuration = Number.isFinite(video.duration) ? video.duration : Infinity;
+            video.currentTime = Math.min(
+              maxDuration,
+              (video.currentTime || 0) + (e.key === "l" ? 10 : 5),
+            );
+          }
+          break;
+        case "f":
+          e.preventDefault();
+          if (!document.fullscreenElement) {
+            void video.requestFullscreen().catch(() => {});
+          } else {
+            void document.exitFullscreen().catch(() => {});
+          }
+          break;
+        case "m":
+          e.preventDefault();
+          video.muted = !video.muted;
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
-    <div className="dbz-panel overflow-hidden rounded-lg border border-dbz-border bg-black p-0">
+    <div className="dbz-panel group relative overflow-hidden rounded-xl border border-amber-500/30 bg-black p-0 shadow-lg shadow-black/80 transition-all duration-500 hover:border-amber-400/60 hover:shadow-[0_0_35px_rgba(245,158,11,0.25)]">
       <video
         ref={videoRef}
         controls
@@ -112,7 +187,7 @@ export function VideoPlayer({ src, title, poster, subtitles, onError }: VideoPla
         crossOrigin="anonymous"
         poster={poster}
         title={title}
-        className="aspect-video w-full rounded-lg bg-black"
+        className="aspect-video w-full rounded-xl bg-black"
         onError={onError}
       >
         {subtitles?.map((t, i) => (

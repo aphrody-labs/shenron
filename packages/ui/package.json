@@ -1,6 +1,6 @@
 {
   "name": "@shenron/ui",
-  "version": "0.4.0",
+  "version": "1.4.4",
   "private": true,
   "description": "Shenron's single UI layer: Dragon Ball design system, site components, readers, admin primitives, the Koharu manga editor and the desktop studio.",
   "type": "module",
@@ -69,7 +69,7 @@
     "css:equivalence": "bun scripts/check-css-equivalence.ts",
     "build:check": "bun scripts/production-check.ts",
     "portability:check": "bun scripts/check-portability.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "bun check --noEmit --project tsconfig.json"
   },
   "dependencies": {
     "@aphrody/api": "catalog:",
@@ -121,7 +121,7 @@
     "react-dom": "catalog:"
   },
   "engines": {
-    "bun": ">=1.4.2"
+    "bun": ">=1.4.3"
   },
   "shenron": {
     "runtime": {

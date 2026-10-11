@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2026; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "site-post-80266-dr-slump-hilltop-interview",
+      "title": "Q&A With “Dr. Slump” PlayStation Game Fan Translator Hilltop",
+      "kind": "interview",
+      "summary": "Hilltop raconte son parcours vers la traduction et le hacking de jeux, explique son intérêt pour le jeu PlayStation Dr. Slump et les apprentissages de ce premier projet. Le Q&A aborde aussi des détails à repérer dans le jeu, puis compare les apports d’un traducteur humain à ceux de la traduction automatique. Une question bonus porte sur Boku no Natsuyasumi 2.",
+      "keyInformation": [
+        "Entretien direct en Q&A avec le traducteur amateur; le billet contient 6 questions."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2026/08/24/dr-slump-hilltop/",
+        "publication": "Kanzenshuu interview post",
+        "publicationDate": "24 August 2026",
+        "participants": [
+          "Hilltop (fan translator)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Interview Q&A",
+        "questionAnswerCount": 6,
+        "scopeNote": null
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Dr. Slump, PlayStation, Fan translation, Game hacking"
+    },
+    {
+      "id": "site-post-80126-dragon-ball-z-goku-hishoden-kazetrigger-interview",
+      "title": "Q&A With “Dragon Ball Z: Gokū Hishōden” Game Boy Game Fan Translator Kazetrigger",
+      "kind": "interview",
+      "summary": "Kazetrigger décrit son parcours de joueur et de traducteur, puis explique pourquoi il a choisi Gokū Hishōden. Il évoque la traduction japonaise, les limites de mémoire de la Game Boy et la compression graphique qui a compliqué le romhacking. Il partage des conseils pour le premier combat contre Copy Goku et analyse les limites de l’IA pour traduire un jeu sans contexte ni compréhension des voix, des pronoms et des jeux de mots.",
+      "keyInformation": [
+        "Entretien direct en Q&A avec le traducteur amateur; le billet contient 5 questions."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2026/08/10/goku-hishoden-kazetrigger/",
+        "publication": "Kanzenshuu interview post",
+        "publicationDate": "10 August 2026",
+        "participants": [
+          "Kazetrigger (fan translator and game hacker)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Interview Q&A",
+        "questionAnswerCount": 5,
+        "scopeNote": null
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Dragon Ball Z: Gokū Hishōden, Fan translation, Game Boy, Game hacking"
+    },
+    {
+      "id": "site-post-79485-masayuki-hirano-akio-iyoku-xenoverse-3-interview-summary",
+      "title": "Masayuki Hirano et Akio Iyoku — entretien résumé sur Dragon Ball XENOVERSE 3",
+      "kind": "interview-summary",
+      "summary": "Dans son compte rendu de la présentation de Dragon Ball XENOVERSE 3 à Battle Hour 2026, Kanzenshuu rapporte un entretien vidéo préenregistré avec le producteur de jeux Masayuki Hirano et le producteur exécutif Akio Iyoku. Hirano relance Iyoku sur les aspects précis du jeu auxquels Akira Toriyama a contribué; Iyoku répond que sa vision a couvert de nombreux éléments, en particulier les nouveaux personnages montrés ce jour-là, fondés sur ses designs. Le billet souligne aussi que les jeux XENOVERSE ont historiquement rassemblé des joueurs en ligne. Il ne reproduit pas l’échange intégral et ne lie pas la vidéo de l’entretien : son embed est le trailer du jeu.",
+      "keyInformation": [
+        "Le billet identifie un entretien vidéo préenregistré avec Masayuki Hirano et Akio Iyoku pendant la présentation Battle Hour 2026.",
+        "Hirano demande quels aspects du jeu ont bénéficié de la contribution de Toriyama; Iyoku répond que celle-ci concerne plusieurs aspects, particulièrement les nouveaux personnages dévoilés, basés sur ses designs.",
+        "Kanzenshuu note que la série XENOVERSE a historiquement favorisé les rassemblements de joueurs et le jeu en ligne.",
+        "Aucune transcription complète ni lien direct vers l’entretien ne figure dans le billet; la vidéo intégrée est le trailer de XENOVERSE 3."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2026/04/19/age-1000-xenoverse-3-dragon-ball-games-battle-hour-2026/",
+        "publication": "Entretien vidéo préenregistré évoqué dans le compte rendu Kanzenshuu de DRAGON BALL Games Battle Hour 2026",
+        "publicationDate": "2026-04-19",
+        "participants": [
+          "Masayuki Hirano",
+          "Akio Iyoku"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
+        "transcriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Entretien vidéo externe résumé par Kanzenshuu",
+        "scopeNote": "Le corps rapporte une relance de Hirano et une réponse d’Iyoku; le lien vidéo direct vers l’entretien n’est pas présent. L’embed du billet est le trailer, pas l’entretien."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Contribution de Toriyama au monde, à l’histoire et aux nouveaux personnages du jeu Dragon Ball XENOVERSE 3."
+    },
+    {
+      "id": "site-post-80040-hironobu-kageyama-zero-theme-song-interview-excerpt",
+      "title": "Hironobu Kageyama — message sur la chanson « ZERO » de Dragon Ball: Sparking! ZERO",
+      "kind": "interview-excerpt",
+      "summary": "Kanzenshuu signale un bref entretien de Hironobu Kageyama sur le site officiel Dragon Ball et en cite le message final au sujet de « ZERO », thème principal de Dragon Ball: Sparking! ZERO. Kageyama se dit honoré de composer à nouveau pour Dragon Ball après 18 ans; alors qu’il assurait auparavant le chant, il a cette fois écrit aussi la musique et les paroles et dit avoir mis tout ce qu’il pouvait dans le morceau. Il souhaite que les fans et un public plus large l’écoutent. Le billet ne reproduit que ce message, sans question ni entretien complet. La vidéo YouTube incorporée présente la chanson, pas l’entretien.",
+      "keyInformation": [
+        "La page officielle présente un bref entretien avec Kageyama; Kanzenshuu en reprend le message final, sans la question correspondante.",
+        "Kageyama dit que cela faisait 18 ans qu’il n’avait pas créé de musique liée à Dragon Ball et se dit honoré de fournir le thème principal du jeu.",
+        "Il distingue ses œuvres précédentes, où il était chargé du chant, de ce projet où il a également écrit la musique et les paroles.",
+        "Il dit avoir consacré tout ce qu’il pouvait au morceau et espère que les fans comme d’autres auditeurs l’écouteront.",
+        "L’embed Kanzenshuu est la vidéo de la chanson « ZERO », pas une captation de l’entretien."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2026/07/30/new-dragon-ball-sparking-zero-theme-song-zero-by-hironobu-kageyama-released/",
+        "publication": "Dragon Ball Official Site — bref entretien avec Hironobu Kageyama",
+        "publicationDate": "2026-07-30",
+        "participants": [
+          "Hironobu Kageyama"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
+        "sourcePageUrl": "https://dragon-ball-official.com/news/01_4345.html",
+        "sourcePageUrlEn": "https://en.dragon-ball-official.com/news/01_4345.html",
+        "embeddedSongVideoUrl": "https://www.youtube.com/embed/qj1jM56iYbU",
+        "transcriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Extrait cité d’entretien Web — message final, question non reproduite",
+        "scopeNote": "Le post cite uniquement le message final. La vidéo intégrée illustre le morceau et ne constitue pas le média de l’entretien."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Création de la chanson principale ZERO pour Dragon Ball: Sparking! ZERO et retour de Kageyama à la composition Dragon Ball."
+    },
+    {
+      "id": "site-post-80161-podcast-episode-0540",
+      "title": "Podcast Kanzenshuu #0540 — Vincent Haddad",
+      "kind": "audio-interview",
+      "summary": "Mike s’entretient avec Vincent Haddad, auteur de Next Time on Dragon Ball: Playing with a Manga and Anime Franchise. Le synopsis local présente l’invité et son livre sans préciser les sujets détaillés de leur conversation. Le billet ne transcrit pas l’échange et l’audio n’est pas acquis localement.",
+      "keyInformation": [
+        "L’invité est Vincent Haddad, auteur de Next Time on Dragon Ball: Playing with a Manga and Anime Franchise.",
+        "Le synopsis présente une conversation autour de son livre, sans en résumer les arguments ou thèmes précis.",
+        "Notice limitée au synopsis local; audio non acquis et transcription indisponible."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2026/08/09/podcast-episode-0540/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2026-08-09",
+        "participants": [
+          "Vincent Haddad"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "audioDownloaded": false,
+        "audioTranscriptAvailable": false,
+        "transcriptAvailable": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Résumé limité au synopsis local; audio non acquis et transcription indisponible."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Directe : entretien avec l’auteur d’un ouvrage consacré à Dragon Ball; le synopsis ne permet pas de préciser davantage son contenu."
+    }
+  ]
+}

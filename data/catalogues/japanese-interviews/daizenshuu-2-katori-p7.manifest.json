@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "status": "visible-commentary-transcribed-review-needed",
+  "publication": "Dragon Ball Daizenshuu 2, Shenlong News insert (1995)",
+  "title": "I LOVE DRAGON BALL 第2回",
+  "participant": "香取慎吾（SMAP）",
+  "classification": "Témoignage/commentaire éditorial attribué; aucun format Q/R.",
+  "method": "目視転記。OCR, réseau et texte externe non utilisés.",
+  "limits": [
+    "Une page; commentaire de Katori, pas une interview question-réponse.",
+    "Légende manuscrite et dessin décoratif omis."
+  ],
+  "records": [
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-2-katori-p7.jsonl#L1",
+      "page": 7,
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 2\\daizenshuu_02_shenron-news_page007_4887003553_o.jpg",
+      "imageBytes": 100892,
+      "imageSha256": "d99a7da04247dbbf8b79f90ee31cd8b0170752bcb18338b1e20ced9cc4e5dd29",
+      "completeness": "Texte éditorial et déclaration Katori transcrits."
+    }
+  ],
+  "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-2-katori-p7.jsonl",
+  "transcriptBytes": 1435,
+  "transcriptSha256": "ca97ff73b0b62afff024217dbe092690bd4627c89bcc54e0b58526ff23ab1441"
+}

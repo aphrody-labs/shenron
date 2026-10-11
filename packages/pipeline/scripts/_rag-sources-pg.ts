@@ -510,20 +510,40 @@ const renduJeux = (sql: Sql) =>
 const renduEpisodes = (sql: Sql) =>
   renduFiches(sql, {
     kind: "episode",
-    requete: `SELECT e.id, e.series, e.number_in_series, e.title, e.title_ja, e.air_date, e.synopsis, e.synopsis_fr, a.name AS arc
+    requete: `SELECT e.id, e.series, e.number_in_series, e.title, e.title_ja, e.air_date, e.synopsis, e.synopsis_fr, e.players, a.name AS arc
 			FROM bot.db_episodes e LEFT JOIN bot.db_arcs a ON a.id = e.arc_id
 			WHERE ${VISIBLE.replace("visible", "e.visible")}
 				AND length(coalesce(e.synopsis_fr, e.synopsis, '')) > 0
 			ORDER BY e.id`,
     titre: (e) => `${s(e.series)} ${s(e.number_in_series)} — ${s(e.title)}`,
     url: (e) => `/wiki/episodes/${s(e.id)}`,
-    fiche: (e) =>
-      lignes(
+    fiche: (e) => {
+      const players = Array.isArray(e.players)
+        ? (e.players as Array<{ lang?: string; provider?: string; name?: string }>)
+        : [];
+      const vf = players
+        .filter((p) => p && p.lang === "vf")
+        .map((p) => p.provider || p.name)
+        .filter(Boolean);
+      const vostfr = players
+        .filter((p) => p && p.lang === "vostfr")
+        .map((p) => p.provider || p.name)
+        .filter(Boolean);
+      const parts: string[] = [];
+      if (vf.length > 0) parts.push(`VF (${[...new Set(vf)].join(", ")})`);
+      if (vostfr.length > 0) parts.push(`VOSTFR (${[...new Set(vostfr)].join(", ")})`);
+      const lecteurs =
+        parts.length > 0
+          ? `Lecteurs vidéo disponibles : ${parts.join(" ; ")} sur le lecteur officiel https://dragonballfr.com/wiki/episodes/${s(e.id)}`
+          : `Lecteur vidéo officiel : https://dragonballfr.com/wiki/episodes/${s(e.id)}`;
+      return lignes(
         `Épisode ${s(e.series)} n° ${s(e.number_in_series)} : ${s(e.title)}${s(e.title_ja) ? ` (${s(e.title_ja)})` : ""}.`,
         champ("Arc", e.arc),
         champ("Première diffusion", date(e.air_date)),
+        lecteurs,
         s(e.synopsis_fr) || s(e.synopsis),
-      ),
+      );
+    },
   });
 
 const renduTomes = (sql: Sql) =>

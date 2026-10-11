@@ -1,6 +1,6 @@
 {
   "name": "@shenron/pipeline",
-  "version": "0.4.0",
+  "version": "1.4.4",
   "private": true,
   "description": "Shenron compute clients and Dragon Ball data pipeline: AI, Aphrody services, BXC and OCR/RAG workflows",
   "bin": {
@@ -73,14 +73,16 @@
     "./aphrody/media": "./src/aphrody/media.ts",
     "./aphrody/native-commands": "./src/aphrody/native-commands.ts",
     "./ai/training-hashes": "./src/ai/training-hashes.ts",
-    "./re-wasm": "./src/re-wasm.ts"
+    "./re-wasm": "./src/re-wasm.ts",
+    "./re-wasm-web": "./src/re-wasm-web.ts",
+    "./runtime/python": "./src/runtime/python.ts"
   },
   "scripts": {
     "pipeline": "bun src/cli.ts",
-    "build": "bun build src/cli.ts --target=bun --external=sharp --outfile=dist/pipeline",
+    "build": "bun build src/cli.ts --target=bun --external=sharp --external=zod --outfile=dist/pipeline",
     "lint": "oxlint -c ../../.oxlintrc.json",
     "test": "bun test --path-ignore-patterns='**/*.live.test.ts'",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.scripts.json",
+    "typecheck": "bun check --noEmit --project tsconfig.json && bun check --noEmit --project tsconfig.scripts.json",
     "rag:prepare": "bun scripts/prepare-live-rag.ts",
     "rag:test": "bun scripts/test-live-rag.ts"
   },
@@ -104,7 +106,7 @@
     "zod": "catalog:"
   },
   "engines": {
-    "bun": ">=1.4.2"
+    "bun": ">=1.4.3"
   },
   "shenron": {
     "runtime": {
@@ -172,7 +174,9 @@
       "./aphrody/media": "bun",
       "./aphrody/native-commands": "bun",
       "./ai/training-hashes": "pure",
-      "./re-wasm": "bun"
+      "./re-wasm": "bun",
+      "./re-wasm-web": "pure",
+      "./runtime/python": "bun"
     }
   }
 }

@@ -14,8 +14,13 @@ the root `AGENTS.md`.
 | SVG pipeline                                                 | [`architecture/pipeline-svg.md`](architecture/pipeline-svg.md)                                                                                      |
 | Environment variables                                        | [`operations/ENV.md`](operations/ENV.md)                                                                                                            |
 | RAG and LLM compute (compute host, databases, tunnels)       | [`operations/compute-rag.md`](operations/compute-rag.md)                                                                                            |
+| Pilotage admin natif (FFI, WASM, jobs et services Docker)     | [`operations/admin-native-pipeline.md`](operations/admin-native-pipeline.md)                                                                        |
+| SSH WireGuard (VPS, dbfr, Windows, compte Omar)              | [`operations/ssh-wireguard.md`](operations/ssh-wireguard.md)                                                                                       |
 | Development workstation                                      | [`operations/DEV-LOCAL.md`](operations/DEV-LOCAL.md)                                                                                                |
+| dbxv2 migration parity and data boundaries                   | [`operations/dbxv2-rust-bun-parity-2026-10-07.md`](operations/dbxv2-rust-bun-parity-2026-10-07.md)
+| Xenoverse 3 and Dragon Ball Super visual research (2026-10-07) | [`operations/xenoverse3-visual-research-2026-10-07.md`](operations/xenoverse3-visual-research-2026-10-07.md)
 | Rust development (crates, gates, CI)                         | [`development/rust.md`](development/rust.md)                                                                                                        |
+| Développement distant (VPS, VS Code, WSL propre, sauvegarde) | [`development/remote-dev.md`](development/remote-dev.md) |
 | Bun dependencies                                             | [`operations/BUN-PACKAGE-MANAGER.md`](operations/BUN-PACKAGE-MANAGER.md)                                                                            |
 | Operations (delegated to `aphrody-infra`)                    | [`operations/INFRA-DELEGATION.md`](operations/INFRA-DELEGATION.md)                                                                                  |
 | Content enrichment session                                   | [`operations/content-session-pipeline.md`](operations/content-session-pipeline.md)                                                                  |
@@ -24,9 +29,10 @@ the root `AGENTS.md`.
 | Design system                                                | [`reference/DESIGN.md`](reference/DESIGN.md)                                                                                                        |
 | Wiki editorial policy                                        | [`products/wiki-editorial.md`](products/wiki-editorial.md)                                                                                          |
 | Canon adjudication                                           | [`products/canon.md`](products/canon.md)                                                                                                            |
+| Powerscaling methodology (VSBW tools)                        | [powerscaling-vsbw.md](products/powerscaling-vsbw.md)                                                                                    |
 | Recherche Dragon Radar partagée, filtres et reprise          | [`products/dragon-radar.md`](products/dragon-radar.md)                                                                                              |
 | Shenron Chat (desktop, website, bot): models, memory, homes  | [`products/chat-shenron.md`](products/chat-shenron.md)                                                                                              |
-| OpenAI compatibility, MCP, A2A, skills, and plugin           | [`products/openai-compatibility.md`](products/openai-compatibility.md)                                                                              |
+| OpenAI compatibility, MCP, A2A, skills, and plugin           | [`architecture/openai-compatibility.md`](architecture/openai-compatibility.md)                                      |
 | Website home and shell invariants                            | [`products/accueil-et-shell.md`](products/accueil-et-shell.md)                                                                                      |
 | Participatory site and agent API                             | [`products/site-participatif.md`](products/site-participatif.md)                                                                                    |
 | Shenron Studio                                               | [`products/koharu/README.md`](products/koharu/README.md), with archived upstream docs in [`reference/koharu/upstream/`](reference/koharu/upstream/) |

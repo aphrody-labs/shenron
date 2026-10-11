@@ -9,7 +9,7 @@
 import { FFIType } from "bun:ffi";
 
 /** ABI revision of this table: `shenron_abi_version()` of a compatible library. */
-export const SHENRON_FFI_ABI = 4;
+export const SHENRON_FFI_ABI = 5;
 
 /** Version of the shenron-ffi crate the table was generated from (the workspace version). */
 export const SHENRON_FFI_VERSION = "1.3.0";
@@ -243,4 +243,10 @@ export const SYMBOLS = {
    * `shenron_llama_daemon(args_json: cstr) -> i32`, since ABI 4.
    */
   shenron_llama_daemon: { args: [FFIType.cstring], returns: FFIType.i32 },
+  /**
+   * Original AGE 1000 prototype map as owned JSON with official source URLs and schematic caveat.
+   *
+   * `shenron_re_xenoverse3_map() -> owned_str`, since ABI 5.
+   */
+  shenron_re_xenoverse3_map: { args: [], returns: FFIType.ptr },
 } as const;

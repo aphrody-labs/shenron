@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "transcriptSha256": "312b1c6734e58adf0a9c316cc9528696318bb112ae9f4ce5894d07b4d2d9be88",
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 3 - TV Animation Part 1 (COMPLETE)\\Shenlong Times\\7.png",
+      "dimensions": "2996x4254",
+      "id": "daizenshuu-3-satake-i-love-dragon-ball-7",
+      "transcriptFile": "data/catalogues/japanese-interviews/daizenshuu-3-satake-i-love-dragon-ball-7.jsonl",
+      "printedPage": 7,
+      "limits": [
+        "The introductory blurb, unsourced editorial caption, autograph, and image lettering are outside the direct interview transcript. No Horii attribution is visible in the page scan."
+      ],
+      "method": "manual visual transcription from local scan; no OCR, network, or translation used",
+      "transcriptBytes": 1136,
+      "publication": "DRAGON BALL 大全集③ TV Animation Part 1 / Shenlong Times",
+      "transcriptLine": 1,
+      "interviewee": "佐竹雅昭",
+      "title": "I LOVE DRAGON BALL 第3回 佐竹雅昭さん（空手家）",
+      "sha256": "085986ff89d3a0c9b9ef7e759d60f4e0e5f3dc29da7b8451fc6d16081241466d",
+      "imageBytes": 2095812,
+      "status": "complete transcription of legible direct interview text; independent review recommended"
+    }
+  ]
+}

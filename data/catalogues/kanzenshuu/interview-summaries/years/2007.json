@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés ou archivés en 2007; contenus de forum exclus.",
+  "reviewNote": "Les fiches signalent les formats narratifs ou les transcriptions partielles. Les citations et propos sont attribués à leurs participants.",
+  "records": [
+    {
+      "id": "site-page-51375-51383-shonen-jump-interview-with-the-majin",
+      "title": "Akira Toriyama — « Interview With the Majin! » (deux parties)",
+      "kind": "interview",
+      "summary": "Cette interview de Toriyama, publiée en deux livraisons de Shonen Jump, aborde les dragons, les animaux de compagnie et les choix de création de Dragon Ball. Dans la première partie, Toriyama explique notamment qu’il a choisi le dragon européen pour son équilibre visuel et qu’il aurait nommé Gon un petit dragon domestique. La seconde partie prolonge l’entretien : il explique préférer dessiner des femmes fortes, vouloir déjouer les attentes sur la croissance de la puissance, et cite Enter the Dragon et Drunken Master parmi ses films de kung-fu favoris. Les deux textes sont reliés comme parties d’une seule interview.",
+      "keyInformation": [
+        "Partie 1 : Toriyama explique que Dragon Ball est le seul titre parmi Dragon Quest, Dragon Ball et Blue Dragon qu’il a lui-même trouvé; il préfère le dessin équilibré du dragon européen et l’appellerait Gon.",
+        "Partie 2 : il dit être mal à l’aise à l’idée de dessiner des femmes faibles et explique avoir voulu surprendre les lecteurs en alternant narration directe et choix contradictoires.",
+        "Toriyama cite Enter the Dragon et Drunken Master parmi ses films de kung-fu favoris, et Alien et Galaxy Quest parmi ses films favoris en général.",
+        "La mention « Revisited » de novembre indique explicitement qu’il s’agit de la suite de l’entretien d’octobre; les deux pages ne doivent pas être comptées comme deux interviews indépendantes."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-october-2007-dragon-ball-collector-interview-with-the-majin/",
+        "relatedUrls": [
+          "https://www.kanzenshuu.com/press-archive/shonen-jump-november-2007-dragon-ball-interview-with-the-majin-revisited/"
+        ],
+        "publication": "Shonen Jump, octobre et novembre 2007, « Interview With the Majin! » / « Revisited »",
+        "publicationDate": "2007-10/2007-11",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "kanzenshuuPageIds": [
+          51375,
+          51383
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "transcriptAvailable": true,
+        "forumContent": false,
+        "format": "Entretien imprimé en questions-réponses, publié en deux parties",
+        "scopeNote": "Les deux pages contiennent les deux livraisons d’une même interview. La partie 2 renvoie explicitement au numéro précédent."
+      },
+      "dragonBallRelevance": "Directe : propos de Toriyama sur la création, ses préférences de dessin et ses inspirations cinématographiques.",
+      "status": "summary-written-site-archive-source-not-collated",
+      "forumContent": false,
+      "formatNote": "Deux parties transcrites; notice unique pour prévenir le doublon."
+    }
+  ]
+}

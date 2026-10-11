@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2023; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "sand-land-movie-akira-toriyama-qa",
+      "title": "Akira Toriyama — Sand Land, entretien lié au film",
+      "summary": "Toriyama explique que Sand Land est né après la fin de Dragon Ball, alors qu'il avait déjà dessiné plusieurs récits courts, et qu'il voulait mettre dans une dernière œuvre tout ce qu'il était à ce moment-là. Il s'étonne d'avoir réalisé seul, sans assistant, un volume entier en rythme hebdomadaire. Il juge rétrospectivement que le dessin de cette période avait une qualité et une énergie exceptionnelles, mais reconnaît avoir retenu ses envies de légèreté pour construire une histoire plus sérieuse et accessible. Il décrit son encrage sur papier, la numérisation et l'application numérique de noirs et de trames, puis raconte avoir perdu le porte-plume façonné à sa main qu'il utilisait depuis ses débuts — perte qu'il invoque en plaisantant pour expliquer qu'il dessine moins. Il répond avec autodérision à l'idée que l'œuvre concentre son identité, et dit que l'adaptation en film était pour lui un rêve inattendu dont les images déjà visibles étaient d'une qualité remarquable.",
+      "keyInformation": [
+        "Après la fin de Dragon Ball et plusieurs récits courts, Toriyama voulait dessiner une œuvre condensant tout ce qu'il était alors; il considère aujourd'hui comme remarquable d'avoir produit seul, sans assistant, l'équivalent d'un volume à rythme hebdomadaire.",
+        "Il dit que ses propres histoires tendent à être légères et simples, qu'il a volontairement retenu cette inclination pour bâtir une histoire plus sérieuse, et qu'il estime que son travail graphique de la période Sand Land avait une qualité et une vitalité exceptionnelles.",
+        "Pour Sand Land, il numérisait les planches encrées puis réalisait les aplats noirs et les trames sur ordinateur. Il pense avoir presque cessé de dormir pendant cette production.",
+        "Après avoir terminé l'œuvre, il a perdu le porte-plume en bois qu'il utilisait depuis avant ses débuts professionnels, façonné au couteau et au papier de verre à la forme de sa main; un nouvel outil ne lui convenait pas autant et il plaisante en s'en servant comme excuse pour moins dessiner.",
+        "En réponse à l'idée que Sand Land serait particulièrement représentatif de son identité, Toriyama dit avec autodérision qu'il aurait peut-être dû mieux penser aux lecteurs et se demande s'il était fait pour être professionnel.",
+        "Il qualifie les personnes qui apprécient Sand Land de fans de très haut niveau qui le comprennent; il ne s'attendait pas à voir cette œuvre adaptée en film et considère sa réalisation comme un rêve devenu réalité.",
+        "Les images en cours qu'il a vues n'étaient pas terminées, mais leur qualité lui paraissait déjà extraordinairement élevée."
+      ],
+      "source": {
+        "publication": "Site officiel du film Sand Land et livret spécial vidéo",
+        "pages": "Q&R publiée sur le Web et reprise dans un livret; pagination non indiquée",
+        "date": "2023-03-21",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/sand-land-movie-akira-toriyama-qa/",
+        "questionAnswerCount": 6,
+        "formatNote": "Six questions-réponses de Toriyama. Entretien sur Sand Land et son adaptation, non sur l'intrigue de Dragon Ball.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/sand-land-movie-akira-toriyama-qa.html"
+      },
+      "dragonBallRelevance": "Indirecte : retour de Toriyama sur sa carrière après Dragon Ball, son rythme de travail, ses outils et sa conception du manga; le sujet principal est Sand Land.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "dr-mashiritos-ultimate-manga-technique-ultimate-interview-vol-1",
+      "title": "Akira Toriyama × Kazuhiko Torishima — Ultimate Interview, vol. 1",
+      "summary": "Toriyama et son premier éditeur Kazuhiko Torishima reviennent sur leurs débuts communs et la création de Dr. Slump puis Dragon Ball. Toriyama se souvient de Torishima comme d'un éditeur énergique et franc; Torishima le décrit comme un jeune auteur ordinaire et facile d'approche. Il raconte avoir convaincu Toriyama de faire d'Arale le personnage principal après que celui-ci avait prévu de la faire disparaître, et l'avoir poussé vers une histoire de kung-fu après avoir découvert les films qu'il regardait pendant le travail. Toriyama explique que de nombreux personnages et développements naissaient spontanément; il avait même créé le Dr. Mashirito après une remarque de Torishima, puis livré son manuscrit si près de l'échéance qu'il n'était plus possible de le faire modifier. Ils décrivent les appels hebdomadaires, les storyboards et manuscrits transportés jusqu'à l'aéroport de Nagoya, ainsi que les nuits et les difficultés de respecter les délais. Toriyama admet qu'il ne planifiait pas Dragon Ball à l'avance et trouvait commode de présenter son improvisation comme volontaire. Il dit que l'escalade de puissance et la nécessité de surenchérir dans les combats étaient devenues difficiles après Freezer; Torishima répond en plaisantant que ce fut aussi le meilleur moment pour arrêter. Le duo rappelle enfin que Toriyama n'aimait pas nécessairement les genres qui ont fait son succès et qu'il considérait néanmoins le respect des échéances comme une règle absolue du métier.",
+      "keyInformation": [
+        "Toriyama se souvient que Torishima lui paraissait maigre, énergique et franc; Torishima décrit Toriyama comme un jeune auteur ordinaire, dans le bon sens du terme, plutôt que comme un débutant sombre ou difficile à approcher.",
+        "Toriyama aimait surtout les films et les arts visuels après son enfance, notamment les westerns, les films de kung-fu et les séries télévisées tokusatsu comme Ultra Q et Ultraman. Torishima relie les parodies de films de Dr. Slump à ces goûts.",
+        "Toriyama n'avait pas prévu de faire revenir Arale après son apparition initiale; Torishima l'a poussé à la mettre au premier plan en pariant que le récit « Tomato the Cutesy Gumshoe » avec une héroïne ne réussirait pas dans le classement de popularité. Toriyama dit avoir résisté parce qu'il pensait qu'un manga pour garçons devait avoir un héros masculin.",
+        "Toriyama dessinait généralement les nouveaux éléments sans consigne détaillée et demandait à Torishima de les évaluer. Torishima nie avoir dirigé les détails du récit, à l'exception de suggestions générales comme un tournoi lorsque Toriyama se lassait des histoires autonomes.",
+        "Le Dr. Mashirito a commencé comme un méchant ordinaire; après que Torishima lui a dit qu'il manquait de particularité et devait être pire, Toriyama a immédiatement imaginé le personnage. Il a volontairement soumis le manuscrit très près de l'échéance, empêchant Torishima de demander des modifications; le succès du personnage l'a ensuite rendu difficile à écarter.",
+        "Les contacts éditoriaux se faisaient surtout par appels hebdomadaires d'environ dix à quinze minutes, car Toriyama n'appelait pas lui-même. Les storyboards et manuscrits étaient envoyés par courrier, puis par avion depuis l'aéroport de Nagoya; Toriyama devait parfois faire des photocopies chez une entreprise de matériaux voisine et retourner à l'aéroport après une demande de révision.",
+        "La transition de Dr. Slump à Dragon Ball est liée à une discussion avec la direction éditoriale de Jump et au désir de Toriyama de dessiner un protagoniste masculin. Torishima a appris que Toriyama regardait des films de kung-fu en travaillant et lui a suggéré d'en tirer une histoire; Toriyama rappelle qu'il n'était d'abord pas à l'aise avec le genre du combat ni avec les méchants franchement mauvais.",
+        "Toriyama confirme qu'il n'avait pas planifié à l'avance l'histoire de Dragon Ball et plaisante en disant qu'il prétendait le faire exprès pour se donner bonne figure, alors que c'était surtout parce que planifier l'ennuyait. Il préférait laisser les personnages se mettre à agir d'eux-mêmes.",
+        "Il dit avoir été surpris que les méchants arrivent en tête des classements de popularité et avoir même tenté de rendre Vegeta moins beau en lui donnant une ligne de cheveux très dramatique.",
+        "Toriyama raconte avoir été malade et fiévreux pendant Dr. Slump et ne pas se souvenir d'avoir encré environ deux chapitres; plus tard, il pouvait parfois passer du storyboard à l'encrage d'une scène de combat en une journée. Il insiste cependant sur le fait qu'il ne prenait pas son travail à la légère.",
+        "À propos de Dragon Ball, Toriyama dit que l'escalade des adversaires et des niveaux d'action est l'une des difficultés majeures du manga de combat : une bataille au même niveau peut sembler en retrait, mais pousser toujours plus haut finit par devenir ardu. Il situe cette difficulté dès la fin du combat contre Freezer; Torishima plaisante en disant que c'était le meilleur endroit pour arrêter.",
+        "Toriyama et Torishima rappellent tous deux l'importance du respect des échéances et relient cette discipline à leur expérience antérieure du travail salarié. Toriyama observe qu'il ne serait peut-être jamais devenu mangaka si Torishima n'avait pas été présent quand il a soumis ses premiers travaux; les deux disent que leur rencontre a contribué à leur réussite.",
+        "Toriyama dit qu'il voulait initialement travailler dans le design ou l'illustration, qu'il a parfois considéré le manga comme la possibilité de fabriquer lui-même ses films préférés, mais que ni Dr. Slump ni Dragon Ball ne correspondaient vraiment à ses préférences personnelles. Il attribue aussi une part de leur succès à la chance, aux conseils de Torishima et à sa capacité à séparer le travail du loisir."
+      ],
+      "source": {
+        "publication": "Dr. Mashirito's Ultimate Manga Technique, volume 1",
+        "pages": "Pages non indiquées dans la transcription Kanzenshuu",
+        "date": "2023-07-21",
+        "participants": [
+          "Akira Toriyama",
+          "Kazuhiko Torishima"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dr-mashiritos-ultimate-manga-technique-ultimate-interview-vol-1/",
+        "questionAnswerCount": 8,
+        "formatNote": "Huit questions-réponses dialoguées entre Toriyama et Torishima; les deux intervenants sont nommés dans les réponses. Réminiscences rétrospectives, avec des plaisanteries mutuelles à conserver comme telles.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dr-mashiritos-ultimate-manga-technique-ultimate-interview-vol-1.html"
+      },
+      "dragonBallRelevance": "Directe et historique : souvenirs des créateurs de Dragon Ball sur sa genèse, son improvisation, l'édition, le rythme de production et la progression des combats; plusieurs réponses portent aussi sur Dr. Slump et leur carrière commune.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "sand-land-production-secrets",
+      "title": "Akira Toriyama — secrets de création de Sand Land",
+      "summary": "Dans un long entretien rétrospectif, Toriyama détaille les choix de création de Sand Land, manga paru en 2000. Il dit préférer les protagonistes non humains pour les récits irréalistes et avoir délibérément voulu placer démons et créatures dans un désert, également pratique pour dessiner les décors. Le cadre de sécheresse ne vient pas d'un événement d'actualité; il s'intéressait depuis longtemps aux conflits causés par le manque d'eau. Il voulait dessiner un vieux soldat, des monstres et du matériel militaire dans une histoire plus sombre, tout en reconnaissant avoir choisi les éléments de façon arbitraire et manqué de temps pour certains dessins. Il explique Beelzebub, son rapport aux autres démons, les idées de démonologie du monde et l'histoire douloureuse de Rao, ainsi que des détails précis sur le tank à motif de pingouin et la pierre antigravitationnelle. Il confirme que le lien narratif avec le manga ne doit pas être interprété comme entièrement prémédité : plusieurs choix sont venus de préférences de dessin, d'idées vagues ou de l'improvisation.",
+      "keyInformation": [
+        "Toriyama dit qu'un récit irréaliste l'amène naturellement à préférer un protagoniste non humain; les démons sont pour lui des êtres capables de tout et constituent un choix récurrent.",
+        "Il a voulu associer un désert à des démons et créatures, association qu'il trouvait peu attendue et qui facilitait aussi le dessin des arrière-plans. Le thème de la sécheresse n'était pas inspiré par l'actualité de 2000 : il s'intéressait depuis longtemps aux conflits de partage liés au manque d'eau.",
+        "Il voulait dessiner un vieil homme, des monstres et des éléments militaires dans un monde sombre, matières qu'il explorait depuis la fin de Dragon Ball. L'ordre de création variait : pour Sand Land, il avait probablement une idée générale de l'histoire avant les designs.",
+        "Toriyama juge qu'il ne pourrait plus dessiner aujourd'hui avec la même énergie et le même volume; il reconnaît que certains designs étaient révisés jusqu'à ce que leur aspect lui paraisse juste, tandis qu'en sérialisation il lui arrivait de s'arrêter à une solution suffisante faute de temps.",
+        "Il aime les personnages âgés parce qu'ils peuvent sembler cacher un passé, un secret ou une capacité remarquable; Beelzebub est son favori, avec une puissance adéquate, un côté mystérieux et une vie quotidienne faite de patrouilles, d'aide et de consultations auprès des démons.",
+        "Les lunettes de Beelzebub protègent du sable et de la poussière et servent de lunettes de soleil aux démons, naturellement nocturnes. Toriyama dit avoir choisi les créatures démoniaques de façon arbitraire et laisse volontairement indécidable le nombre de démons encore présents dans les autres régions ou sous terre.",
+        "À propos des démons, Toriyama propose une mythologie de création : Dieu aurait créé presque tous les êtres vivants, tandis que le Diable aurait créé les démons et l'humanité; les humains auraient été créés comme une version diminuée du Diable, puis auraient fini par dépasser les démons en méchanceté. Il relie à cette évolution le projet de Satan de recommencer l'extermination des humains.",
+        "Toriyama rapproche l'image du démon de haut rang de Dabra et de Satan. Il dit que Satan adulte aurait la puissance d'anéantir l'humanité presque instantanément, mais que la décision de détruire le monde demanderait une concertation avec Dieu; un extermination antérieure, menée par le grand-père de Satan, aurait demandé beaucoup de temps pour que la civilisation humaine se reconstruise.",
+        "Il retrace les pertes de Rao : il y a trente ans, le bataillon dirigé par Shiba reçut de Zeu l'ordre d'attaquer l'installation des Picchis, supposée fabriquer une arme puissante. L'explosion tua des compagnons et l'épouse de Shiba, qui quitta l'armée. Il croyait avoir empêché une attaque, mais apprit que les Picchis utilisaient l'Aquanium pour produire de l'eau et que Zeu avait menti.",
+        "Le tank est volontairement haut et imposant parce qu'il appartient à une période sans guerre de grande ampleur; sa hauteur et ses grandes trappes latérales privilégient l'apparence publique au détriment de la discrétion et de la défense. Son motif est celui d'un pingouin, à l'opposé du décor désertique.",
+        "La pierre antigravitationnelle est une ressource rare extraite d'une mine souterraine à l'ouest de Sand Land. Traversée par un courant, elle modifie la gravité et aide à compenser le poids, le centre de gravité élevé et l'équilibre médiocre du tank; quatre pierres y sont installées.",
+        "Toriyama précise que plusieurs détails sont peu calculés : le nom PlayStation 6 et Dragon Quest XIII sont arbitraires, il n'avait pas établi précisément l'époque ni les jeux de cet univers, et il aurait peut-être mieux fait d'inventer des noms fictifs. Les animaux dessinés entre les cases servent à éviter que les pages ne lui paraissent ternes, sans symbolisme particulier.",
+        "Il dit que le dessin d'un tank et la double page où les personnages s'échappent en montant à bord comptent parmi les scènes favorites, cette scène audacieuse et volontairement peu élégante étant proche de ce qu'il avait envie de dessiner au départ."
+      ],
+      "source": {
+        "publication": "Sand Land Kanzenban",
+        "pages": "Pages non indiquées dans la transcription Kanzenshuu",
+        "date": "2023-08-04",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/sand-land-production-secrets/",
+        "questionAnswerCount": 26,
+        "formatNote": "Entretien écrit de 26 questions-réponses consacré à Sand Land. Les réponses de Toriyama sur la mythologie de Sand Land sont des explications de cette œuvre; les rapprochements avec Dabra ou Satan ne constituent pas à eux seuls une déclaration sur la continuité de Dragon Ball.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/sand-land-production-secrets.html"
+      },
+      "dragonBallRelevance": "Indirecte : surtout une source sur Sand Land et la méthode de Toriyama; elle offre quelques comparaisons explicitement formulées avec Dabra et Satan, sans établir à elle seule des règles de continuité entre les œuvres.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-73737-podcast-episode-0503",
+      "title": "Podcast Episode #0503 — Julian",
+      "kind": "audio-interview",
+      "summary": "Premier épisode d’une série d’entretiens avec les membres de l’équipe Kanzenshuu. Julian revient sur ses débuts en 2002, le relancement de Daizenshuu EX et le développement de son travail de traduction. Le synopsis précise que l’épisode avait été enregistré cinq ans auparavant; aucun transcript n’est fourni.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0503; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2023/06/26/podcast-episode-0503/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2023-06-26",
+        "participants": [
+          "Julian"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+        "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0503.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-73737-podcast-episode-0503.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Kanzenshuu history and translation work",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-73737-podcast-episode-0503.mp3",
+      "audioTranscriptAvailable": false
+    },
+    {
+      "id": "site-post-74266-podcast-episode-0506",
+      "title": "Podcast Episode #0506 — Heath",
+      "kind": "audio-interview",
+      "summary": "La série d’entretiens avec l’équipe Kanzenshuu se poursuit avec Heath, qui revient sur les premiers sites de fans, le lancement d’un nouveau site en 2005, la fusion de sites en 2012 et le travail collaboratif de l’équipe. Le billet donne ce synopsis, sans transcrire l’audio.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0506; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2023/10/09/podcast-episode-0506/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2023-10-09",
+        "participants": [
+          "Heath"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+        "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0506.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-74266-podcast-episode-0506.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Kanzenshuu history and collaboration",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-74266-podcast-episode-0506.mp3",
+      "audioTranscriptAvailable": false
+    }
+  ]
+}

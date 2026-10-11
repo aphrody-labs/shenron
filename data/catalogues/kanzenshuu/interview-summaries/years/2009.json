@@ -1,0 +1,262 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2009; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "kai_book-masako_nozawa",
+      "title": "Cast Interview #1: Masako Nozawa (Son Goku, et al.)",
+      "summary": "La comédienne Masako Nozawa revient sur son travail vocal pour Dragon Ball Kai. Elle apprécie le rythme resserré de cette version et explique que l'enregistrement après la réalisation des images lui permet de mieux caler le jeu sur les mouvements et les émotions visibles. Elle parle de son interprétation de Goku, Gohan et Bardock, ainsi que de son attachement à plusieurs personnages. Ses propos décrivent l'expérience d'une interprète et sa lecture des rôles; ils ne doivent pas être attribués à Toriyama ni présentés comme des déclarations d'intention de l'auteur.",
+      "keyInformation": [
+        "Nozawa apprécie le rythme de Kai et le montage resserré de l'histoire.",
+        "Elle décrit l'enregistrement après la réalisation des images comme une aide pour synchroniser la voix et le jeu avec les expressions et les mouvements visibles.",
+        "Elle interprète Goku, Gohan et Bardock et décrit le plaisir de passer d'un personnage à l'autre.",
+        "Ses commentaires sur les motivations et les liens des personnages sont son interprétation de comédienne, pas une déclaration de Toriyama."
+      ],
+      "source": {
+        "publication": "Dragon Ball Kai Blu-ray Box #1 — Dragon Book",
+        "pages": "7–8",
+        "date": "2009-10-23",
+        "participants": [
+          "Masako Nozawa"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/kai_book-masako_nozawa/",
+        "questionAnswerCount": 5,
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/kai_book-masako_nozawa.html"
+      },
+      "dragonBallRelevance": "Directe pour la production et l'interprétation vocale de l'anime; perspective d'une comédienne, distincte du témoignage d'auteur.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "seg-story-volume-truth-about-dragon-ball",
+      "title": "Dragon Ball Super Exciting Guide: Story Volume",
+      "kind": "qa",
+      "summary": "Toriyama revient sur la genèse du manga : il voulait combiner ses films de kung-fu favoris à Journey to the West, avant que l’histoire ne s’en éloigne. Il explique notamment que les cheveux dorés du Super Saiyan réduisaient le travail d’encrage tout en signalant visuellement une puissance accrue, et que les combats privilégiaient la lisibilité. Le guide rassemble aussi ses réponses sur les inspirations, l’entraînement, les personnages et ses combats favoris.",
+      "keyInformation": [
+        "Origines de Goku et Dragon Ball",
+        "Super Saiyan imaginé pour économiser l’encrage",
+        "priorité à la clarté des combats et à la lecture."
+      ],
+      "source": {
+        "date": "04 March 2009",
+        "publication": "Dragon Ball Super Exciting Guide: Story Volume",
+        "pages": "pp. 87-93",
+        "bibliographicYears": [
+          2009
+        ],
+        "url": "https://www.kanzenshuu.com/translations/seg-story-volume-truth-about-dragon-ball/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/seg-story-volume-truth-about-dragon-ball/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/seg-story-volume-truth-about-dragon-ball.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 7,
+        "questionBlockCount": 7,
+        "answerBlockCount": 7,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "A Q&A with creator Akira Toriyama on how he came up with the story elements of Dragon Ball.",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Source primaire des commentaires de Toriyama sur la conception du manga.",
+      "formatNote": "Q&A thématique avec plusieurs réponses détaillées."
+    },
+    {
+      "id": "seg-character-volume-truth-about-dragon-ball",
+      "title": "Dragon Ball Super Exciting Guide: Character Volume (03 April 2009)",
+      "kind": "qa",
+      "summary": "Toriyama répond sur les noms, le cosmos, les personnages et les techniques. Les séries de noms facilitent son travail (Freezer et aliments, Saiyans et légumes, escouade Ginyu et produits laitiers) ; Mark est le nom de Satan et Videl est formé sur « devil ». Il décrit aussi l’univers sphérique, l’origine des Kaiō et Kaiōshin, les Nameks, la longévité des Saiyans, la monnaie et les capsules.",
+      "keyInformation": [
+        "Mark et Videl sont des anagrammes",
+        "les Kaiō naissent des fruits d’un arbre-monde",
+        "les Saiyans vieillissent lentement pendant leur maturité guerrière",
+        "les zénis sont équivalents au yen."
+      ],
+      "source": {
+        "date": "03 April 2009",
+        "publication": "Dragon Ball Super Exciting Guide: Character Volume",
+        "pages": "pp. 91-95",
+        "bibliographicYears": [
+          2009
+        ],
+        "url": "https://www.kanzenshuu.com/translations/seg-character-volume-truth-about-dragon-ball/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/seg-character-volume-truth-about-dragon-ball/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/seg-character-volume-truth-about-dragon-ball.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 12,
+        "questionBlockCount": 12,
+        "answerBlockCount": 12,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "A Q&A with creator Akira Toriyama on the world and characters of Dragon Ball.",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Référence directe sur les choix de conception et les éléments de l’univers.",
+      "formatNote": "Q&A multi-thématique riche en précisions de Toriyama."
+    },
+    {
+      "id": "site-post-4054-traci-todd-viz-kids-interview",
+      "title": "Traci Todd Viz Kids Interview (excerpt)",
+      "kind": "interview-excerpt",
+      "summary": "Extrait bref : interrogée sur les réécritures dans les livres jeunesse, Traci Todd répond que le public tolère davantage les adaptations destinées aux enfants et que Viz tente de choisir des titres qui n’exigent pas de contournements. Le billet ne reproduit qu’une question et une réponse, puis formule les réserves de Kanzenshuu sur le format Chapter Book.",
+      "keyInformation": [
+        "Le billet Kanzenshuu reproduit un seul échange question-réponse de l’entretien externe."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2009/08/26/traci-todd-viz-kids-interview/",
+        "publication": "School Library Journal interview, excerpt reproduced by Kanzenshuu",
+        "publicationDate": "26 August 2009",
+        "participants": [
+          "Traci Todd",
+          "GC4K (interviewer)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2009.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Interview excerpt",
+        "questionAnswerCount": 1,
+        "scopeNote": "Un seul échange est reproduit; l’entretien externe complet n’est pas inclus."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Viz Kids, Children’s publishing, Dragon Ball"
+    },
+    {
+      "id": "site-post-4168-kai-dragon-book-masako-nozawa",
+      "title": "Cast Interview #1: Nozawa Masako, voice of Son Goku and Son Gohan",
+      "kind": "interview",
+      "summary": "Masako Nozawa apprécie le rythme resserré de Kai et le fait que les images soient prêtes au post-enregistrement, ce qui facilite son jeu. Elle décrit son interprétation de Goku, Gohan et Bardock, son empathie pour Goku et Gohan, son rapport à Vegeta ainsi que son attachement à Kuririn et Bulma. Elle évoque aussi la convivialité des séances et souhaite que plusieurs générations découvrent la série.",
+      "keyInformation": [
+        "Nozawa décrit le rythme condensé de Kai et les effets du post-enregistrement avec images finalisées.",
+        "Elle parle de ses rôles de Goku, Gohan et Bardock ainsi que de ses liens avec les personnages et l’équipe de doublage."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2009/10/29/dragon-ball-kai-home-releases-new-interview/",
+        "publication": "Dragon Ball Kai Blu-ray Box #1 — Dragon Book, interview reproduced by Kanzenshuu",
+        "publicationDate": "29 October 2009 (Kanzenshuu post)",
+        "participants": [
+          "Masako Nozawa"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2009.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Interview",
+        "questionAnswerCount": null,
+        "scopeNote": null
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Dragon Ball Kai, Voice acting, Anime production"
+    },
+    {
+      "id": "site-post-3940-podcast-0183-teamfourstar-interview",
+      "title": "Podcast Episode #0183 — Lanipator and Takahata101",
+      "kind": "audio-interview",
+      "summary": "Le synopsis de l’épisode indique que VegettoEX, Meri et Julian interviewent Lanipator et Takahata101 de TeamFourStar, voix de Vegeta et Nappa dans DBZ Abridged. Ils abordent les projets de la deuxième saison et la réception de la première en ligne et hors ligne. Le programme mentionne aussi une discussion sur la prononciation du nom de famille de Goku, les sorties de juillet, les courriels des auditeurs et un concours lié au CD de « Yeah! Break! Care! Break! ». Le contenu de l’audio lui-même reste à acquérir et écouter; aucun détail supplémentaire n’est inféré.",
+      "keyInformation": [
+        "Le billet annonce un entretien audio et son synopsis précise les thèmes et participants; l’audio et sa transcription ne sont pas disponibles dans les sources acquises."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2009/07/12/podcast-episode-0183/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast, episode #0183",
+        "publicationDate": "12 July 2009",
+        "participants": [
+          "Lanipator",
+          "Takahata101",
+          "VegettoEX",
+          "Meri",
+          "Julian"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2009.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Audio interview",
+        "questionAnswerCount": null,
+        "audioTranscriptAvailable": false,
+        "scopeNote": "Résumé limité au synopsis du billet; audio à acquérir et écouter.",
+        "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Daizenshuu_EX_-_Episode_0183.mp3",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-3940-podcast-0183-teamfourstar-interview.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "TeamFourStar, Dragon Ball Z Abridged, Voice acting, Podcast",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-3940-podcast-0183-teamfourstar-interview.mp3",
+      "audioTranscriptAvailable": false
+    },
+    {
+      "id": "site-post-3881-podcast-episode-0180",
+      "title": "Podcast Episode #0180 — TeamFourStar",
+      "kind": "audio-interview",
+      "summary": "Le synopsis de l’épisode indique que VegettoEX et Meri parlent des nouvelles liées aux coffrets Blu-ray de Kai et aux éditions remastérisées de Dragon Ball Z, puis que Julian et Jeff interviewent KaiserNeko et MasakoX de TeamFourStar après la première saison de DBZ Abridged. Les invités évoquent le parcours de cette première saison, le processus d’écriture et le doublage de Goku. Le contenu audio n’a pas été transcrit ici.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0180; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2009/06/21/podcast-episode-0180/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2009-06-21",
+        "participants": [
+          "KaiserNeko",
+          "MasakoX"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2009.json",
+        "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Daizenshuu_EX_-_Episode_0180.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-3881-podcast-episode-0180.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "DBZ Abridged",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-3881-podcast-episode-0180.mp3",
+      "audioTranscriptAvailable": false
+    },
+    {
+      "id": "site-post-3745-kai-cast-tokyo-anime-fair-comments",
+      "kind": "interview-notice",
+      "title": "Dragon Ball Kai — propos du casting au Tokyo International Anime Fair",
+      "summary": "Kanzenshuu rapporte des commentaires de Mayumi Tanaka, Toshio Furukawa et Masako Nozawa à propos de l’enregistrement de Dragon Ball Kai. Le message d’Akira Toriyama est rapporté séparément et ne doit pas être attribué aux comédiens. Le compte rendu est partiel.",
+      "keyInformation": [
+        "Tanaka, Furukawa et Nozawa parlent de Kai et son enregistrement.",
+        "Le message de Toriyama est distinct des propos du casting.",
+        "Compte rendu partiel, non transcription complète."
+      ],
+      "source": {
+        "publication": "Kanzenshuu, billet WP3745",
+        "url": "https://www.kanzenshuu.com/2009/03/24/tokyo-international-anime-fair-dragon-ball-kai-preview/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2009.json",
+        "date": "2009-03-24",
+        "participants": [
+          "Mayumi Tanaka",
+          "Toshio Furukawa",
+          "Masako Nozawa",
+          "Akira Toriyama (message distinct)"
+        ],
+        "formatNote": "Compte rendu événementiel partiel; pas de transcription intégrale.",
+        "questionAnswerCount": null,
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : commentaires sur Dragon Ball Kai.",
+      "status": "synthèse limitée au billet local; accès externe décrit dans formatNote",
+      "formatNote": "Compte rendu événementiel partiel; pas de transcription intégrale.",
+      "forumContent": false
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Entrées éditoriales Kanzenshuu hors interviews publiées en 2012, issues du périmètre bibliographique 2006–2015 ; traductions non reproduites ; forums exclus.",
+  "records": [
+    {
+      "id": "weekly-shonen-jump-2012-issue-33-akira-toriyama-comments",
+      "title": "Akira Toriyama’s 2013 Movie Comment Weekly Shōnen Jump, 2012 #33 (p. 13) Anthology Comment 14 July 2012 Akira Toriyama Battle of Gods",
+      "kind": "authorial-comment",
+      "summary": "Toriyama présente Battle of Gods comme son premier film d’animation où il s’implique profondément dès le scénario. Il dit avoir vite retrouvé le rythme de son œuvre et décrit le film comme fidèle à l’atmosphère d’origine avec une touche contemporaine.",
+      "keyInformation": [
+        "Première implication de Toriyama à l’écriture d’un film",
+        "intention de préserver l’esprit du manga tout en le modernisant."
+      ],
+      "source": {
+        "date": "14 July 2012",
+        "publication": "Weekly Shōnen Jump , 2012 #33",
+        "pages": "p. 13",
+        "bibliographicYears": [
+          2013,
+          2012
+        ],
+        "url": "https://www.kanzenshuu.com/translations/weekly-shonen-jump-2012-issue-33-akira-toriyama-comments/"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Commentaire d’auteur sur son rôle dans le film."
+    }
+  ]
+}

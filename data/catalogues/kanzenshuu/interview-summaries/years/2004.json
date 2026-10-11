@@ -1,0 +1,1030 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2004; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "dragon-ball-forever-dragon-ball-toriyama",
+      "title": "Akira Toriyama with Dragon Ball",
+      "summary": "Ce long entretien rétrospectif réunit des réponses de Toriyama sur la création et la sérialisation de Dragon Ball. Il explique que la contrainte de devoir dessiner des villes puis les détruire lui a fait déplacer les combats vers des zones désertes; il avait notamment prévu de faire disparaître rapidement les décors urbains difficiles à dessiner. Il décrit plusieurs idées comme improvisées ou laissées volontairement ouvertes, notamment les références d'une armée à une autre et certains arrière-plans des Saiyans; il ne faut donc pas transformer toutes ces correspondances en intrigues planifiées. Il rappelle que la transformation Super Saiyan l'aidait aussi à alléger le travail d'encrage des cheveux de Goku. Il parle également de sa difficulté avec les échéances périodiques, de son goût pour les gags et les inventions mécaniques, ainsi que de sa faible volonté de reprendre une longue série hebdomadaire.",
+      "keyInformation": [
+        "Toriyama dit qu'il n'aimait pas les échéances régulières, hebdomadaires ou mensuelles; l'emploi de l'ordinateur lui a redonné du plaisir à dessiner des illustrations, sans le faire renoncer au papier pour le manga.",
+        "Il explique qu'il retardait parfois l'arrivée de Goku afin de laisser l'antagoniste faire davantage de mal et de mettre ses alliés en difficulté; il aimait la destruction du centre-ville lors de l'arc du Roi démon Piccolo.",
+        "La préférence pour les zones de combat désertes tenait aussi à la charge de dessin : les batailles en ville imposaient de représenter les habitants et les bâtiments détruits. Il indique avoir parfois détruit rapidement un décor urbain qu'il avait dû dessiner avec soin.",
+        "Il relie la forme Super Saiyan au gain de temps qu'apportait le fait de ne plus encrer les cheveux noirs de Goku; il ajoute que la transformation avait aussi une forte lisibilité visuelle.",
+        "Il dit avoir laissé des cadres et éléments d'univers volontairement souples, et donne les liens entre l'Armée du Red Ribbon et les cyborgs ou les armures saiyennes comme exemples d'idées parfois improvisées ou conçues seulement pour son propre arrière-plan, sans plan narratif secret déjà fixé.",
+        "Il dit n'avoir pas consciemment pris des proches comme modèles des personnages; il mentionne plutôt Bruce Lee comme image de référence pour l'expression de combat de Goku, tout en indiquant que les ressemblances à ses anciens éditeurs ont pu se glisser inconsciemment.",
+        "Il raconte qu'il n'aimait pas particulièrement Chi-Chi et qu'il a décidé de la marier à Goku en partie parce qu'il savait que cela l'obligerait à continuer de la dessiner; il précise qu'elle n'est pas inspirée de son épouse.",
+        "Il dit apprécier davantage les ennemis foncièrement mauvais comme Piccolo Daimao et les moments où ils rendent l'arrivée de Goku plus attendue; cette structure était plus importante pour lui que le combat seul.",
+        "Il présente la création de Ginyu Force à partir d'un motif de produits laitiers comme un exemple de conception ludique faite à partir d'une idée de groupe, et non d'un plan de saga élaboré.",
+        "Il dit préférer concevoir des mécaniques originales, dont il peut imaginer librement le fonctionnement, plutôt que dessiner à répétition des véhicules réels avec références exactes.",
+        "Il affirme ne pas prévoir de reprendre une longue sérialisation hebdomadaire, faute d'énergie pour un rythme au long cours."
+      ],
+      "source": {
+        "publication": "Kanzenban Official Guide: Dragon Ball Forever",
+        "pages": "146–155",
+        "date": "2004-04-30",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-forever-dragon-ball-toriyama/",
+        "questionAnswerCount": null,
+        "formatNote": "Entretien thématique organisé sous forme de titres et réponses, sans blocs Q/R standard.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-forever-dragon-ball-toriyama.html"
+      },
+      "dragonBallRelevance": "Directe : méthode de narration, transformations, arcs et personnages, charge de dessin et intentions de publication.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "tenkaichi-densetsu-toriyama-koyama-nozawa",
+      "title": "The World’s Best Round-Table Discussion",
+      "summary": "Cette table ronde croise les souvenirs de Toriyama, du scénariste Takao Koyama et de la comédienne Masako Nozawa. Toriyama confirme qu'au départ il avait peu défini l'origine de Goku : il le pensait humain, voyait le grand singe comme une transformation de type loup-garou et n'a conçu son identité saiyanne qu'avec l'arrivée de Vegeta. Les Dragon Ball et leur vœu répondaient au besoin d'une quête simple à suivre; le nombre de sept et la boule à quatre étoiles n'avaient pas de signification cachée particulière. Il dit aussi que la présence de femmes saiyannes lui paraît nécessaire, même s'il n'en avait jamais dessiné. Koyama décrit comment le scénario d'anime devait étirer des chapitres d'action parfois réduits à une seule case et insérer des histoires annexes pour éviter de rattraper le manga. Nozawa raconte son audition et le choix de Toriyama; celui-ci reconnaît que la voix de Nozawa a ensuite nourri sa représentation de la façon de parler de Goku. Les trois intervenants parlent ainsi des souvenirs de production et des choix d'auteur, qui restent clairement attribués à leur locuteur.",
+      "keyInformation": [
+        "Toriyama dit qu'il n'avait pas conçu Goku comme extraterrestre au lancement du manga et qu'il envisageait d'abord le grand singe comme une transformation de type loup-garou; l'idée saiyanne lui est venue avec l'arrivée de Vegeta.",
+        "Il explique que les sept Dragon Ball apportaient une quête ludique et facile à comprendre; le nombre sept et le choix de la boule à quatre étoiles étaient des décisions arbitraires, sans sens caché particulier.",
+        "Il dit que Goku devait être gentil et simple à lire, rappelle les consignes de Torishima pour que le manga soit immédiatement compréhensible, et décrit plusieurs éléments de cohérence comme raccordés après coup pendant la sérialisation.",
+        "Sur la population saiyanne, Toriyama répond qu'il suppose qu'il existe des femmes, mais qu'il n'en avait pas dessinées; il relie ce choix au fait qu'il imaginait les Saiyans comme un peuple guerrier et à la rareté, à l'époque, de femmes combattantes dans les anime.",
+        "Dans l'échange, Koyama présente Krilin comme le Terrien masculin le plus fort et Toriyama confirme cette formulation.",
+        "Toriyama confirme les jeux de noms thématiques tels que Saiya à partir de yasai (légume), Kakarot/carotte et les noms de produits laitiers du commando Ginyu; ces systèmes n'impliquent pas tous une intrigue prévue à l'avance.",
+        "Nozawa raconte que Toriyama a participé à son audition et l'a retenue parce que sa voix correspondait à l'image qu'il avait de Goku; Toriyama explique ensuite avoir entendu la voix de Nozawa en écrivant le personnage et avoir repris davantage sa manière de parler dans le manga.",
+        "Toriyama dit qu'en écrivant Gohan il pensait que celui-ci détestait réellement se battre et souhaitait devenir savant, contrairement à son père; il décrit Goku comme peu intéressé par l'éducation des enfants et principalement mû par le désir de devenir plus fort.",
+        "Koyama témoigne des contraintes d'adaptation : certains épisodes étaient développés à partir d'une seule case, et les récits annexes servaient à empêcher l'anime de rattraper le manga.",
+        "Nozawa, Koyama et Toriyama distinguent le manga et l'anime comme des médias ayant leurs méthodes propres, tout en souhaitant qu'ils donnent l'impression d'être reliés."
+      ],
+      "source": {
+        "publication": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+        "pages": "80–91",
+        "date": "2004-07-02",
+        "participants": [
+          "Akira Toriyama",
+          "Takao Koyama",
+          "Masako Nozawa"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toriyama-koyama-nozawa/",
+        "questionAnswerCount": 28,
+        "formatNote": "Le HTML contient 29 blocs question et 28 blocs réponse; la synthèse dénombre les paires complètes et conserve à part la question balisée sans bloc de réponse associé.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/tenkaichi-densetsu-toriyama-koyama-nozawa.html"
+      },
+      "dragonBallRelevance": "Directe : conception d'origine, Saiyans, Dragon Ball, Goku, Gohan, force de Krilin, casting vocal et contraintes d'adaptation.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-ball-forever-toriyama-qa",
+      "title": "Kanzenban Official Guide: Dragon Ball Forever",
+      "summary": "Toriyama répond à des questions hypothétiques sur le monde de Dragon Ball, puis développe les destins de plusieurs personnages et sa méthode de dessinateur. Il explique avoir fait évoluer les coiffures de Bulma selon les moments du récit, imagine que Lunch a fini par retrouver Tenshinhan, répond sur Satan, Yamcha, Vegeta et Bra, et conseille aux aspirants mangaka d’observer le monde au-delà des mangas.",
+      "keyInformation": [
+        "Toriyama précise que les changements de coiffure de Bulma sont intentionnels et propose une issue plaisante pour Lunch et Tenshinhan",
+        "Il donne des réponses spéculatives sur plusieurs personnages et recommande aux futurs auteurs d’élargir leurs expériences culturelles"
+      ],
+      "source": {
+        "publication": "We Asked Toriyama-sensei! Kanzenban Official Guide: Dragon Ball Forever (pp. 146-147, 150-154)",
+        "pages": "146-147, 150-154",
+        "date": "2004-04-30",
+        "url": "https://www.kanzenshuu.com/translations/dragon-ball-forever-toriyama-qa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-forever-toriyama-qa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-forever-toriyama-qa.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 13,
+        "questionBlockCount": 13,
+        "answerBlockCount": 13,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of Akira Toriyama's short Q&A about the characters of Dragon Ball and some 'what-if' situations from the 2004 guide book 'Dragon Ball Forever'",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : réponses d’auteur sur les personnages et le processus créatif.",
+      "formatNote": "Rubrique de questions thématiques organisée par sections, avec réponses parfois hypothétiques.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-masako-nozawa",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Masako Nozawa raconte son audition pour Goku et le fait que Toriyama a choisi sa voix après écoute de l’enregistrement. Elle décrit son approche instinctive du personnage et les différences entre Goku, Gohan et Goten, qu’elle interprète tous; elle revient aussi sur leur évolution au fil des séries.",
+      "keyInformation": [
+        "Nozawa a auditionné avec une séquence animée et apprend que Toriyama l’a sélectionnée",
+        "Elle distingue les caractères des trois membres de la famille Son tout en jouant chacun sans méthode vocale préétablie"
+      ],
+      "source": {
+        "publication": "Son Goku / Gohan / Goten: Masako Nozawa TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 98-101)",
+        "pages": "98-101",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-masako-nozawa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-masako-nozawa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-masako-nozawa.html",
+        "participants": [
+          "Masako Nozawa"
+        ],
+        "questionAnswerCount": 16,
+        "questionBlockCount": 16,
+        "answerBlockCount": 16,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Son Goku voice actress Masako Nozawa.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage de la comédienne principale sur le doublage japonais.",
+      "formatNote": "Entretien Q/R de guide sur un rôle de doublage.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-toshio-furukawa",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Toshio Furukawa se souvient de son premier rôle dans la série, celui du général Blue, avant d’être appelé pour Piccolo. Il décrit sa surprise devant le design du Namek et la manière dont il a construit une voix correspondant à son apparence, à sa force et à son évolution vers un personnage plus complexe.",
+      "keyInformation": [
+        "Furukawa interprète d’abord le général Blue avant Piccolo",
+        "Il décrit Piccolo comme un personnage d’une forte beauté masculine et relate sa réaction à son apparence singulière"
+      ],
+      "source": {
+        "publication": "Piccolo: Toshio Furukawa TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 102-105)",
+        "pages": "102-105",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toshio-furukawa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toshio-furukawa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-toshio-furukawa.html",
+        "participants": [
+          "Toshio Furukawa"
+        ],
+        "questionAnswerCount": 12,
+        "questionBlockCount": 12,
+        "answerBlockCount": 12,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Piccolo voice actress Toshio Furukawa.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : histoire du doublage et caractérisation de Piccolo dans l’anime.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-ryo-horikawa",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Ryō Horikawa raconte avoir imaginé que Vegeta ne resterait que quelques épisodes avant de mourir, puis avoir découvert que le rôle devenait récurrent. Il évoque la construction progressive de son interprétation à mesure que le personnage gagnait en importance et que de nouveaux aspects de sa personnalité apparaissaient.",
+      "keyInformation": [
+        "Horikawa s’attendait à un rôle bref et devient finalement l’interprète régulier de Vegeta",
+        "Il souligne que certains éléments du personnage, dont son statut de prince, se sont développés au fil du récit"
+      ],
+      "source": {
+        "publication": "Vegeta: Ryō Horikawa TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 106-109)",
+        "pages": "106-109",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-ryo-horikawa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-ryo-horikawa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-ryo-horikawa.html",
+        "participants": [
+          "Ryō Horikawa"
+        ],
+        "questionAnswerCount": 20,
+        "questionBlockCount": 20,
+        "answerBlockCount": 20,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Vegeta voice actor Ryō Horikawa.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage de doublage sur l’évolution de Vegeta.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-mayumi-tanaka",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Mayumi Tanaka raconte qu’elle s’est reconnue dans la petite taille et le crâne rasé de Kuririn et qu’elle aimait particulièrement son côté roublard dans les premiers épisodes. Elle parle aussi de Yajirobe et de l’évolution de Kuririn vers un personnage plus sérieux à l’époque de Z.",
+      "keyInformation": [
+        "Tanaka apprécie Kuririn enfant, tricheur, paresseux et comique, avant l’évolution du personnage",
+        "La comédienne associe son apparence à celle du personnage et évoque sa relation avec les rôles qu’elle interprète"
+      ],
+      "source": {
+        "publication": "Kuririn: Mayumi Tanaka TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 110-112)",
+        "pages": "110-112",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-mayumi-tanaka/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-mayumi-tanaka/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-mayumi-tanaka.html",
+        "participants": [
+          "Mayumi Tanaka"
+        ],
+        "questionAnswerCount": 13,
+        "questionBlockCount": 13,
+        "answerBlockCount": 13,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Kuririn/Yajirobe voice actress Mayumi Tanaka.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : parcours du personnage et de son interprète dans l’anime.",
+      "formatNote": "Entretien Q/R individuel sur Kuririn et Yajirobe.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-toru-furuya",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Tōru Furuya explique comment il a été choisi pour Yamcha et se rappelle avoir trouvé le personnage cool, avec son image de loup solitaire du désert. Il savait cependant que l’humour de Toriyama ferait évoluer cette première impression; il retrace ainsi le contraste entre le guerrier impressionnant de ses débuts et le personnage comique qu’il est devenu.",
+      "keyInformation": [
+        "Furuya attribue son casting à la recommandation possible d’un directeur du son",
+        "Il évoque l’évolution de Yamcha entre l’image de combattant solitaire et les ressorts comiques de la série"
+      ],
+      "source": {
+        "publication": "Yamcha: Tōru Furuya TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 146-149)",
+        "pages": "146-149",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toru-furuya/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toru-furuya/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-toru-furuya.html",
+        "participants": [
+          "Tōru Furuya"
+        ],
+        "questionAnswerCount": 18,
+        "questionBlockCount": 18,
+        "answerBlockCount": 17,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Yamcha voice actor Tōru Furuya.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage de doublage et évolution d’un personnage.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-hirotaka-suzuoki",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Hirotaka Suzuoki raconte qu’il connaissait peu Dragon Ball lorsqu’il a été choisi pour Tenshinhan et que Tōru Furuya l’a aidé à découvrir le personnage. Il décrit son approche de jeu comme liée au texte et à son affection pour un rôle qu’il a gardé pendant de nombreuses années.",
+      "keyInformation": [
+        "Suzuoki demande à Furuya de lui expliquer le personnage avant de commencer",
+        "Il exprime son attachement à Tenshinhan après de longues années d’interprétation"
+      ],
+      "source": {
+        "publication": "Tenshinhan: Hirotaka Suzuoki TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 150-153)",
+        "pages": "150-153",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hirotaka-suzuoki/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hirotaka-suzuoki/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-hirotaka-suzuoki.html",
+        "participants": [
+          "Hirotaka Suzuoki"
+        ],
+        "questionAnswerCount": 11,
+        "questionBlockCount": 11,
+        "answerBlockCount": 11,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Tenshinhan voice actor Hirotaka Suzuoki.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage de doublage sur Tenshinhan.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-takeshi-kusao",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Takeshi Kusao explique qu’il avait souhaité interpréter Trunks dès la publication de ses premières apparitions dans le manga. Il décrit comme un rêve le fait d’être finalement choisi pour un rôle dans une série aussi populaire et raconte sa première rencontre avec le personnage à travers les pages de Jump.",
+      "keyInformation": [
+        "Kusao avait exprimé son souhait de jouer Trunks avant son casting",
+        "Il décrit l’arrivée du personnage comme un moment de forte attente dans le manga et l’anime"
+      ],
+      "source": {
+        "publication": "Trunks: Takeshi Kusao TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 154-157)",
+        "pages": "154-157",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-takeshi-kusao/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-takeshi-kusao/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-takeshi-kusao.html",
+        "participants": [
+          "Takeshi Kusao"
+        ],
+        "questionAnswerCount": 13,
+        "questionBlockCount": 13,
+        "answerBlockCount": 13,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Trunks voice actor Takeshi Kusao.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : histoire du doublage de Trunks.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-hiromi-tsuru",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Hiromi Tsuru se souvient que Bulma représentait un rôle énergique inhabituel pour elle. Elle décrit la jeune Bulma comme égocentrique et déterminée, puis l’évolution vers une mère plus posée, tout en expliquant comment elle a suivi les changements du personnage sur plusieurs années.",
+      "keyInformation": [
+        "Tsuru souhaitait jouer un personnage aussi énergique et affirmé que Bulma",
+        "Elle observe que la maternité et l’âge ont adouci Bulma au fil de la série"
+      ],
+      "source": {
+        "publication": "Bulma: Hiromi Tsuru TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 158-161)",
+        "pages": "158-161",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hiromi-tsuru/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hiromi-tsuru/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-hiromi-tsuru.html",
+        "participants": [
+          "Hiromi Tsuru"
+        ],
+        "questionAnswerCount": 21,
+        "questionBlockCount": 21,
+        "answerBlockCount": 21,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Bulma voice actress Hiromi Tsuru.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage de doublage et évolution de Bulma.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-takeshi-aono",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Takeshi Aono décrit l’impact immédiat de Piccolo Daimaō et son envie de trouver une interprétation à la hauteur de son apparence singulière. Il revient sur son expérience des rôles excentriques et sur les différences entre le roi démon et Dieu, deux personnages qu’il a tous deux doublés.",
+      "keyInformation": [
+        "Aono est frappé par le design vert et imposant de Piccolo Daimaō",
+        "Il interprète aussi Dieu et compare la manière d’aborder les deux personnages"
+      ],
+      "source": {
+        "publication": "Demon King Piccolo / God: Takeshi Aono TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 162-163)",
+        "pages": "162-163",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-takeshi-aono/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-takeshi-aono/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-takeshi-aono.html",
+        "participants": [
+          "Takeshi Aono"
+        ],
+        "questionAnswerCount": 7,
+        "questionBlockCount": 7,
+        "answerBlockCount": 7,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Piccolo Daimaō / God voice actor Takeshi Aono.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : histoire du doublage de deux personnages importants.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-yuko-minaguchi",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Yūko Minaguchi parle de Videl et de Pan, rôles qu’elle a reçus sans audition selon son souvenir. Elle décrit Videl comme volontaire et franche, puis plus douce au fil de sa relation avec Gohan; elle évoque aussi la place plus active de Videl dans les scènes de combat et son appréciation de la timidité de Gohan.",
+      "keyInformation": [
+        "Minaguchi n’a pas auditionné pour Videl ni Pan et pense avoir été choisie par le producteur",
+        "Elle décrit la transformation de Videl et la relation de jeu avec Gohan"
+      ],
+      "source": {
+        "publication": "Videl: Yūko Minaguchi TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 164-165)",
+        "pages": "164-165",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-yuko-minaguchi/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-yuko-minaguchi/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-yuko-minaguchi.html",
+        "participants": [
+          "Yūko Minaguchi"
+        ],
+        "questionAnswerCount": 10,
+        "questionBlockCount": 10,
+        "answerBlockCount": 10,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Videl voice actor Yūko Minaguchi.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage de doublage sur Videl et Pan.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-mayumi-sho",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Mayumi Shō raconte ses débuts dans le rôle de Chi-Chi et son choix de préserver à la fois la douceur apparente et la forte volonté du personnage. Elle explique qu’elle préférait jouer naturellement plutôt que fixer d’emblée une voix théorique, puis évoque la force maternelle de Chi-Chi après son mariage.",
+      "keyInformation": [
+        "Shō souligne le contraste entre l’apparence mignonne et la détermination de Chi-Chi",
+        "Elle associe le rôle à ses premières années comme comédienne de doublage"
+      ],
+      "source": {
+        "publication": "Chi-Chi: Mayumi Shō TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 166-167)",
+        "pages": "166-167",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-mayumi-sho/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-mayumi-sho/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-mayumi-sho.html",
+        "participants": [
+          "Mayumi Shō"
+        ],
+        "questionAnswerCount": 7,
+        "questionBlockCount": 7,
+        "answerBlockCount": 7,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Chi-Chi voice actress Mayumi Shō.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage de doublage et caractérisation de Chi-Chi.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-hiroshi-masuoka",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Hiroshi Masuoka raconte avoir repris Kame-Sen’nin après Kōhei Miyauchi et ne pas avoir voulu imiter simplement son prédécesseur. Il imagine comment il aurait joué le maître depuis le début et compare cette reprise à son expérience d’autres rôles déjà installés.",
+      "keyInformation": [
+        "Masuoka reprend le rôle après une première interprétation de Miyauchi",
+        "Il cherche une approche personnelle du maître plutôt qu’une imitation, en tenant compte de son ancienneté dans la série"
+      ],
+      "source": {
+        "publication": "Kame-Sen’nin: Hiroshi Masuoka TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 168-169)",
+        "pages": "168-169",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hiroshi-masuoka/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hiroshi-masuoka/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-hiroshi-masuoka.html",
+        "participants": [
+          "Hiroshi Masuoka"
+        ],
+        "questionAnswerCount": 7,
+        "questionBlockCount": 7,
+        "answerBlockCount": 7,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Kame-Sen'nin voice actor Hiroshi Masuoka.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : histoire du doublage de Kame-Sen’nin.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-ryusei-nakao",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Ryūsei Nakao raconte son travail sur Freeza et la manière dont il a abordé un antagoniste d’une froideur et d’une cruauté inhabituelles. Il décrit les choix de jeu et les réactions suscitées par la voix, qui ont contribué à faire de Freeza une présence mémorable de Dragon Ball Z.",
+      "keyInformation": [
+        "Nakao aborde la création vocale de Freeza et les consignes reçues pour le personnage",
+        "L’entretien porte sur les différentes formes et sur l’impact de l’interprétation auprès du public"
+      ],
+      "source": {
+        "publication": "Freeza: Ryūsei Nakao TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 170-171)",
+        "pages": "170-171",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-ryusei-nakao/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-ryusei-nakao/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-ryusei-nakao.html",
+        "participants": [
+          "Ryūsei Nakao"
+        ],
+        "questionAnswerCount": 7,
+        "questionBlockCount": 7,
+        "answerBlockCount": 7,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Freeza actor Ryūsei Nakao.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : interprétation de Freeza dans l’anime.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-norio-wakamoto",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Norio Wakamoto raconte sa perplexité devant la première forme monstrueuse de Cell et le défi de lui trouver une voix convaincante. Il distingue cette voix plus rauque de l’interprétation plus aisée de la forme parfaite et évoque les changements de jeu au fil des transformations.",
+      "keyInformation": [
+        "Wakamoto trouve la première forme difficile à interpréter en raison de son apparence et choisit une voix rauque",
+        "La forme parfaite lui permet une interprétation plus confortable et différente"
+      ],
+      "source": {
+        "publication": "Cell: Norio Wakamoto TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 172-173)",
+        "pages": "172-173",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-norio-wakamoto/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-norio-wakamoto/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-norio-wakamoto.html",
+        "participants": [
+          "Norio Wakamoto"
+        ],
+        "questionAnswerCount": 10,
+        "questionBlockCount": 10,
+        "answerBlockCount": 10,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Cell voice actor Norio Wakamoto.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage de doublage sur les transformations de Cell.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-kozo-shioya",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Kōzō Shioya décrit Boo comme un personnage extravagant mais difficile à détester. Choisi après plusieurs petits rôles dans la série, il s’inspire du comportement égocentrique d’un enfant de trois ans et s’appuie davantage sur les possibilités offertes par l’enregistrement que sur des consignes détaillées.",
+      "keyInformation": [
+        "Shioya avait déjà joué des rôles secondaires, dont Gurd, avant d’être choisi pour Boo",
+        "Il conçoit Boo comme un enfant capricieux et souligne son mélange d’extravagance et de sympathie"
+      ],
+      "source": {
+        "publication": "Majin Boo: Kōzō Shioya TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 174-175)",
+        "pages": "174-175",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-kozo-shioya/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-kozo-shioya/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-kozo-shioya.html",
+        "participants": [
+          "Kōzō Shioya"
+        ],
+        "questionAnswerCount": 10,
+        "questionBlockCount": 10,
+        "answerBlockCount": 10,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Majin Buu voice actor Kōzō Shioya.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage de doublage sur les différentes facettes de Boo.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-joji-yanami",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Jōji Yanami raconte que le producteur lui a confié à la fois la narration et le rôle de Kaiō. Il décrit l’évolution de sa narration, passée d’un monologue à un ton plus conversationnel, et évoque son affection pour Kaiō ainsi que les années passées dans la série.",
+      "keyInformation": [
+        "Yanami reçoit les rôles de narrateur et de Kaiō à la demande du producteur",
+        "Il adapte progressivement son style de narration et apprécie le caractère attachant de Kaiō"
+      ],
+      "source": {
+        "publication": "Narration / Kaiō: Jōji Yanami TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (p. 176)",
+        "pages": "176",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-joji-yanami/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-joji-yanami/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-joji-yanami.html",
+        "participants": [
+          "Jōji Yanami"
+        ],
+        "questionAnswerCount": 4,
+        "questionBlockCount": 4,
+        "answerBlockCount": 4,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Narration / Kaiō voice actor Jōji Yanami.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage sur narration et doublage de Dragon Ball Z.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "dragon-box-dragon-interview-daisuke-nishio",
+      "title": "Dragon Interview — Daisuke Nishio (Dragon Ball DVD Box – Dragon Box)",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Daisuke Nishio, identifié comme réalisateur, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "keyInformation": [
+        "Répondant : Daisuke Nishio (réalisateur).",
+        "Longueur annoncée : 1 page.",
+        "La page source ne fournit pas de résumé ni de transcription de cet entretien."
+      ],
+      "source": {
+        "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+        "date": "2004",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 31,
+        "sourcePageTitle": "Dragon Ball DVD Box – Dragon Box",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2004
+        ],
+        "participants": [
+          "Daisuke Nishio"
+        ],
+        "pages": "1 page",
+        "format": "interview",
+        "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu.",
+      "formatNote": "Notice de repérage fondée uniquement sur la mention et les métadonnées de la page Kanzenshuu; contenu intégral non acquis.",
+      "status": "identified-content-not-described",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-box-dragon-interview-hiromi-tsuru",
+      "title": "Dragon Interview — Hiromi Tsuru (Dragon Ball DVD Box – Dragon Box)",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Hiromi Tsuru, identifié comme comédienne de doublage, sur 4 pages. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "keyInformation": [
+        "Répondant : Hiromi Tsuru (comédienne de doublage).",
+        "Longueur annoncée : 4 pages.",
+        "La page source ne fournit pas de résumé ni de transcription de cet entretien."
+      ],
+      "source": {
+        "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+        "date": "2004",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 31,
+        "sourcePageTitle": "Dragon Ball DVD Box – Dragon Box",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2004
+        ],
+        "participants": [
+          "Hiromi Tsuru"
+        ],
+        "pages": "4 pages",
+        "format": "interview",
+        "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu.",
+      "formatNote": "Notice de repérage fondée uniquement sur la mention et les métadonnées de la page Kanzenshuu; contenu intégral non acquis.",
+      "status": "identified-content-not-described",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-box-dragon-interview-keizo-shichijo",
+      "title": "Dragon Interview — Keizō Shichijō (Dragon Ball DVD Box – Dragon Box)",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Keizō Shichijō, identifié comme directeur de la photographie, sur 3 pages. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "keyInformation": [
+        "Répondant : Keizō Shichijō (directeur de la photographie).",
+        "Longueur annoncée : 3 pages.",
+        "La page source ne fournit pas de résumé ni de transcription de cet entretien."
+      ],
+      "source": {
+        "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+        "date": "2004",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 31,
+        "sourcePageTitle": "Dragon Ball DVD Box – Dragon Box",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2004
+        ],
+        "participants": [
+          "Keizō Shichijō"
+        ],
+        "pages": "3 pages",
+        "format": "interview",
+        "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu.",
+      "formatNote": "Notice de repérage fondée uniquement sur la mention et les métadonnées de la page Kanzenshuu; contenu intégral non acquis.",
+      "status": "identified-content-not-described",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-box-dragon-interview-masako-nozawa",
+      "title": "Dragon Interview — Masako Nozawa (Dragon Ball DVD Box – Dragon Box)",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Masako Nozawa, identifié comme comédienne de doublage, sur 6 pages. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "keyInformation": [
+        "Répondant : Masako Nozawa (comédienne de doublage).",
+        "Longueur annoncée : 6 pages.",
+        "La page source ne fournit pas de résumé ni de transcription de cet entretien."
+      ],
+      "source": {
+        "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+        "date": "2004",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 31,
+        "sourcePageTitle": "Dragon Ball DVD Box – Dragon Box",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2004
+        ],
+        "participants": [
+          "Masako Nozawa"
+        ],
+        "pages": "6 pages",
+        "format": "interview",
+        "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu.",
+      "formatNote": "Notice de repérage fondée uniquement sur la mention et les métadonnées de la page Kanzenshuu; contenu intégral non acquis.",
+      "status": "identified-content-not-described",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-box-dragon-interview-mayumi-tanaka",
+      "title": "Dragon Interview — Mayumi Tanaka (Dragon Ball DVD Box – Dragon Box)",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Mayumi Tanaka, identifié comme comédienne de doublage, sur 4 pages. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "keyInformation": [
+        "Répondant : Mayumi Tanaka (comédienne de doublage).",
+        "Longueur annoncée : 4 pages.",
+        "La page source ne fournit pas de résumé ni de transcription de cet entretien."
+      ],
+      "source": {
+        "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+        "date": "2004",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 31,
+        "sourcePageTitle": "Dragon Ball DVD Box – Dragon Box",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2004
+        ],
+        "participants": [
+          "Mayumi Tanaka"
+        ],
+        "pages": "4 pages",
+        "format": "interview",
+        "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu.",
+      "formatNote": "Notice de repérage fondée uniquement sur la mention et les métadonnées de la page Kanzenshuu; contenu intégral non acquis.",
+      "status": "identified-content-not-described",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-box-dragon-interview-minoru-maeda",
+      "title": "Dragon Interview — Minoru Maeda (Dragon Ball DVD Box – Dragon Box)",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Minoru Maeda, identifié comme directeur de l’animation, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "keyInformation": [
+        "Répondant : Minoru Maeda (directeur de l’animation).",
+        "Longueur annoncée : 1 page.",
+        "La page source ne fournit pas de résumé ni de transcription de cet entretien."
+      ],
+      "source": {
+        "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+        "date": "2004",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 31,
+        "sourcePageTitle": "Dragon Ball DVD Box – Dragon Box",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2004
+        ],
+        "participants": [
+          "Minoru Maeda"
+        ],
+        "pages": "1 page",
+        "format": "interview",
+        "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu.",
+      "formatNote": "Notice de repérage fondée uniquement sur la mention et les métadonnées de la page Kanzenshuu; contenu intégral non acquis.",
+      "status": "identified-content-not-described",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-box-dragon-interview-minoru-okazaki",
+      "title": "Dragon Interview — Minoru Okazaki (Dragon Ball DVD Box – Dragon Box)",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Minoru Okazaki, identifié comme réalisateur, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "keyInformation": [
+        "Répondant : Minoru Okazaki (réalisateur).",
+        "Longueur annoncée : 1 page.",
+        "La page source ne fournit pas de résumé ni de transcription de cet entretien."
+      ],
+      "source": {
+        "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+        "date": "2004",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 31,
+        "sourcePageTitle": "Dragon Ball DVD Box – Dragon Box",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2004
+        ],
+        "participants": [
+          "Minoru Okazaki"
+        ],
+        "pages": "1 page",
+        "format": "interview",
+        "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu.",
+      "formatNote": "Notice de repérage fondée uniquement sur la mention et les métadonnées de la page Kanzenshuu; contenu intégral non acquis.",
+      "status": "identified-content-not-described",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-box-dragon-interview-tadanao-tsuji",
+      "title": "Dragon Interview — Tadanao Tsuji (Dragon Ball DVD Box – Dragon Box)",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Tadanao Tsuji, identifié comme producteur, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "keyInformation": [
+        "Répondant : Tadanao Tsuji (producteur).",
+        "Longueur annoncée : 1 page.",
+        "La page source ne fournit pas de résumé ni de transcription de cet entretien."
+      ],
+      "source": {
+        "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+        "date": "2004",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 31,
+        "sourcePageTitle": "Dragon Ball DVD Box – Dragon Box",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2004
+        ],
+        "participants": [
+          "Tadanao Tsuji"
+        ],
+        "pages": "1 page",
+        "format": "interview",
+        "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu.",
+      "formatNote": "Notice de repérage fondée uniquement sur la mention et les métadonnées de la page Kanzenshuu; contenu intégral non acquis.",
+      "status": "identified-content-not-described",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-box-dragon-interview-takao-koyama",
+      "title": "Dragon Interview — Takao Koyama (Dragon Ball DVD Box – Dragon Box)",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Takao Koyama, identifié comme scénariste, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "keyInformation": [
+        "Répondant : Takao Koyama (scénariste).",
+        "Longueur annoncée : 1 page.",
+        "La page source ne fournit pas de résumé ni de transcription de cet entretien."
+      ],
+      "source": {
+        "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+        "date": "2004",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 31,
+        "sourcePageTitle": "Dragon Ball DVD Box – Dragon Box",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2004
+        ],
+        "participants": [
+          "Takao Koyama"
+        ],
+        "pages": "1 page",
+        "format": "interview",
+        "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu.",
+      "formatNote": "Notice de repérage fondée uniquement sur la mention et les métadonnées de la page Kanzenshuu; contenu intégral non acquis.",
+      "status": "identified-content-not-described",
+      "forumContent": false
+    },
+    {
+      "id": "site-page-51245-shonen-jump-budokai-3-daisuke-uchiyama-interview",
+      "title": "Daisuke Uchiyama — entretien sur Dragon Ball Z: Budokai 3",
+      "kind": "interview",
+      "summary": "Dans cet entretien de Shonen Jump, Daisuke Uchiyama, producteur en chef de la série Budokai, présente le troisième jeu et répond sur ses nouveautés. Il fait notamment une démonstration des combats, souligne la téléportation et d’autres techniques, et détaille les personnages issus de Dragon Ball Z, des films et de Dragon Ball GT. Ryo Mito, également producteur chez Bandai, joue plusieurs matchs pour illustrer le jeu; le texte identifie Uchiyama comme le principal interlocuteur.",
+      "keyInformation": [
+        "Uchiyama est présenté comme le producteur en chef de la série Budokai.",
+        "La démonstration met en avant la téléportation, Bukujutsu Flight, Teleportation Tornado Combo et Dragon Rush Attack.",
+        "Le jeu réunit des personnages de Dragon Ball Z, des films et de Dragon Ball GT; Ryo Mito participe aux matchs de démonstration, mais l’entretien s’adresse principalement à Uchiyama."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-november-2004-game-interview-dragon-ball-z-budokai-3/",
+        "publication": "Shonen Jump, novembre 2004, « Game Interview — Dragon Ball Z: Budokai 3 »",
+        "publicationDate": "2004-11",
+        "participants": [
+          "Daisuke Uchiyama",
+          "Ryo Mito (démonstration de jeu)"
+        ],
+        "kanzenshuuPageId": 51245,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "transcriptAvailable": true,
+        "forumContent": false,
+        "format": "Entretien de presse et démonstration de jeu",
+        "scopeNote": "Uchiyama est la personne interviewée; la présence de Mito comme adversaire de démonstration ne suffit pas à lui attribuer les réponses."
+      },
+      "dragonBallRelevance": "Directe : développement et fonctionnalités de Budokai 3 par son producteur.",
+      "status": "summary-written-site-archive-source-not-collated",
+      "forumContent": false,
+      "formatNote": "Entretien écrit mêlé à un reportage de démonstration."
+    },
+    {
+      "id": "site-page-71109-budokai-3-behind-the-screams-voice-cast-interviews",
+      "kind": "interview-compilation",
+      "title": "FUNimation — interviews des comédiens dans le DVD Behind the Screams",
+      "summary": "Kanzenshuu signale que le DVD Behind the Screams accompagnant l’édition collector nord-américaine de Budokai 3 comprend des interviews de la plupart des comédiens de doublage de FUNimation. Tiffany Vollmer, voix de Bulma à l’époque, apparaît aussi en train d’enregistrer des cris de combat. La page ne donne ni la liste complète des personnes interviewées ni le contenu des échanges; cette notice recense le média décrit sans prétendre en fournir une transcription.",
+      "keyInformation": [
+        "Le DVD bonus Behind the Screams contient des interviews de la majorité des comédiens FUNimation, selon la page Kanzenshuu.",
+        "Tiffany Vollmer est nommée et montrée enregistrant des cris de combat pour Bulma.",
+        "La page ne fournit ni les échanges ni la liste complète des participants."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/rumor/bulma-playable-character-dragon-ball-z-budokai-3/",
+        "publication": "Dragon Ball Z: Budokai 3 North American Collector’s Edition — Behind the Screams DVD",
+        "date": "2004-11",
+        "participants": [
+          "Tiffany Vollmer",
+          "FUNimation voice cast (other interviewees unnamed)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2022.json",
+        "transcriptAvailable": false,
+        "formatNote": "La page Kanzenshuu identifie le DVD bonus Behind the Screams de l’édition nord-américaine collector de Budokai 3 et indique qu’il contient des interviews de la plupart des comédiens de FUNimation. Elle nomme Tiffany Vollmer et décrit des images où elle enregistre des effets vocaux de combat; les autres intervenants et les échanges ne sont pas listés.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : bonus vidéo de doublage pour Dragon Ball Z: Budokai 3.",
+      "status": "source-page-cross-checked-media-described",
+      "forumContent": false
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2012; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "site-post-9176-podcast-episode-0296",
+      "title": "Podcast Episode #0296 — Jerome Mazandarani",
+      "kind": "audio-interview",
+      "summary": "Le synopsis indique que l’équipe interviewe Jerome Mazandarani, responsable du marketing et des acquisitions chez Manga Entertainment. L’échange porte sur les sorties vidéo à domicile de Dragon Ball Z au Royaume-Uni. Le billet ne fournit pas de transcription de l’audio.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0296; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2012/04/22/podcast-episode-0296/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2012-04-22",
+        "participants": [
+          "Jerome Mazandarani"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2012.json",
+        "audioUrl": "http://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0296.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-9176-podcast-episode-0296.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Manga Entertainment",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-9176-podcast-episode-0296.mp3",
+      "audioTranscriptAvailable": false
+    }
+  ]
+}

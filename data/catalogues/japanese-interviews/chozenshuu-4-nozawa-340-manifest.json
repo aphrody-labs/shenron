@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "id": "chozenshuu-4-nozawa-page-340",
+      "publication": "ドラゴンボール超全集4 超事典",
+      "publicationDate": "2013-05-09",
+      "title": "野沢雅子が振り返ってみた DRAGON BALL!!",
+      "interviewee": "野沢雅子",
+      "pages": [
+        340
+      ],
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\340.png",
+      "imageBytes": 2315141,
+      "sha256": "06f0dd65b48ba89b90aaca1706799a290246066d4f60388656962504daa35d57",
+      "transcriptFile": "data/catalogues/japanese-interviews/chozenshuu-4-nozawa-340.jsonl",
+      "transcriptLine": 1,
+      "method": "manual visual transcription from local scan; no OCR, network, or translation used",
+      "status": "single-page-transcription-review-needed",
+      "limits": [
+        "Interview continues across pages 341–345; only page 340 transcribed in this lot.",
+        "The visible page ends mid-phrase at 「長年ずっ」 and 「一体感が大事だ」; no completion inferred.",
+        "Editorial profile, captions, timeline copy, and manga image lettering are not included in the interview transcript."
+      ],
+      "transcriptBytes": 2415,
+      "transcriptSha256": "61225a8fe683faf39e6e64177af20c0084f17ace600f7280b7f16fd5c3823f9e"
+    }
+  ]
+}

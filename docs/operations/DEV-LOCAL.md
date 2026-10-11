@@ -25,6 +25,14 @@ Bun 1.4.2 (`packageManager`), linker isolé ; règles de dépendances dans
   tunnels et fichiers d'environnement fournis par `aphrody-infra` ; ils mènent
   aux services de production : écritures éditoriales par les procédures du dépôt
   seulement, jamais de `rag:build`.
+- `just env` (`bun scripts/dev/env-pull.ts pull`) lit `/etc/rose-griffon/shenron-{site,bot}.env`
+  du `vps` par SSH, en garde la copie privée dans `~/.aphrody/private/shenron/env`, la vérifie
+  par `aphrody-infra secrets check` (contrat `config/secrets-contract.json` des outils
+  d'Aphrody) et en dérive `apps/site/.env.local` et `apps/bot/.env` : origines
+  `localhost`, sans analytique ni jeton de passerelle Discord de production (jeton de dev par
+  `SHENRON_BOT_DEV_TOKEN`). `just env remote` écrit les mêmes fichiers dans `~/shenron-dev` du
+  VPS ; `just env tunnel` relaie PostgreSQL (15433) et le chat IA (8799) en local ;
+  `just env status` compte les clés sans afficher de valeur.
 
 ## Lancer
 

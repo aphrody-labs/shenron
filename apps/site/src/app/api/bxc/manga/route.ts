@@ -76,12 +76,9 @@ export async function GET(req: Request) {
       { status: 400 },
     );
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error ? error.message : "Erreur interne lors de la requête manga BXC",
-      },
-      { status: 500 },
-    );
+    const message =
+      error instanceof Error ? error.message : "Erreur interne lors de la requête manga BXC";
+    const isUnavailable = message.includes("snapshot not found") || message.includes("not found");
+    return NextResponse.json({ error: message }, { status: isUnavailable ? 503 : 500 });
   }
 }

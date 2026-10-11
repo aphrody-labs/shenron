@@ -22,6 +22,7 @@ import { existsSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, normalize, resolve, sep } from "node:path";
 import { verifyActingUser } from "@shenron/auth/acting-user";
+import { AUTH_BASE_PATH } from "@shenron/auth";
 import { hmacSha256Hex, parseBearer, timingSafeEqualString } from "@shenron/auth/crypto";
 import {
   ENV_ALIASES,
@@ -54,6 +55,8 @@ import { createStdioMcpClient } from "../chat/mcp";
 import { createPluginPort, resolvePluginRoot } from "../plugin";
 import { createCliOcr } from "../chat/ocr";
 import { createHostAuth } from "./auth";
+import { createDesktopLinkHandler } from "./desktop-link";
+import { DESKTOP_LINK } from "@shenron/db/agent-homes/types";
 import { createHostWikiLaunch } from "./wiki-launch";
 import { createHostChronology } from "./chronology";
 import { createHostPageBanners } from "./page-banners";
@@ -585,6 +588,21 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
         ? { port: options.betterAuth }
         : { reason: "authentification désactivée" };
   const betterAuthPort = "port" in authBuilt ? authBuilt.port : null;
+  const isAuthPath = (pathname: string) =>
+    pathname === AUTH_BASE_PATH || pathname.startsWith(`${AUTH_BASE_PATH}/`);
+  const unavailableAuth = (request: Request) =>
+    !betterAuthPort && isAuthPath(new URL(request.url).pathname)
+      ? Response.json(
+          { error: "auth_unavailable" },
+          {
+            status: 503,
+            headers: { "Cache-Control": "private, no-store" },
+          },
+        )
+      : null;
+  const desktopLink = createDesktopLinkHandler(env, betterAuthPort);
+  const isDesktopLink = (pathname: string) =>
+    pathname === DESKTOP_LINK.sitePath || pathname === DESKTOP_LINK.verifyPath;
   const wikiLaunch = createHostWikiLaunch(env);
   const chronology = createHostChronology(env);
   const pageBanners = createHostPageBanners(env);
@@ -688,10 +706,14 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     vfs: opened,
     conversations,
     groups,
-    handles: (pathname) => isAsset(pathname) || api.handles(pathname),
+    handles: (pathname) =>
+      isAuthPath(pathname) || isDesktopLink(pathname) || isAsset(pathname) || api.handles(pathname),
     async fetch(request, server) {
       mark(request, server);
+      const unavailable = unavailableAuth(request);
+      if (unavailable) return unavailable;
       const method = request.method;
+      if (isDesktopLink(new URL(request.url).pathname)) return desktopLink(request);
       if (isAsset(new URL(request.url).pathname) && (method === "GET" || method === "HEAD"))
         return serveAsset(request, server);
       return api.fetch(request, server);
@@ -711,11 +733,16 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
         routes[path] = entry;
       }
       routes["/assets/*"] = { GET: serveAsset };
+      routes[DESKTOP_LINK.sitePath] = { GET: desktopLink };
+      routes[DESKTOP_LINK.verifyPath] = { POST: desktopLink };
       return {
         routes,
         websocket: api.websocket,
         fetch: (request: Request, server: Bun.Server<ChatSocketData>) => {
           mark(request, server);
+          const unavailable = unavailableAuth(request);
+          if (unavailable) return unavailable;
+          if (isDesktopLink(new URL(request.url).pathname)) return desktopLink(request);
           return api.fetch(request, server);
         },
         // Explicit: Bun derives the default from NODE_ENV, which a host may leave unset.

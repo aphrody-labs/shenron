@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "publication": "30th Anniversary ドラゴンボール超史集",
+  "interviewTitle": "30年間、悟空たちを演じ続けるということ",
+  "interviewee": "野沢雅子",
+  "status": "complete-visible-interview-text",
+  "method": "目視転記。PDFの印刷ページごとの高解像度PNGを確認。OCR・ネットワーク不使用。",
+  "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-nozawa-p128-129-visual.jsonl",
+  "records": [
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-nozawa-p128-129-visual.jsonl#L1",
+      "printedPages": [
+        128
+      ],
+      "pdfPageIndices": [
+        129
+      ],
+      "completeness": "Corps d'entretien lisible transcrit. La dernière ligne s'interrompt au changement de page après オーディション, continué par のテープ au folio suivant."
+    },
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-nozawa-p128-129-visual.jsonl#L2",
+      "printedPages": [
+        129
+      ],
+      "pdfPageIndices": [
+        130
+      ],
+      "completeness": "Corps d'entretien visible transcrit; la première ligne complète le mot オーディション de la page 128. Fin du texte visible incluse."
+    }
+  ],
+  "coverage": {
+    "printedPages": [
+      128,
+      129
+    ],
+    "pdfPageIndices": [
+      129,
+      130
+    ],
+    "completeness": "Corps d'entretien visible sur les deux folios couvert. La mise en page interrompt une phrase entre les pages, raccordée sans ajout.",
+    "limits": [
+      "Les légendes de la photographie de profil, le texte incorporé aux images et les éléments décoratifs ne font pas partie du corps de l'entretien transcrit.",
+      "Pas de seconde transcription indépendante; un contrôle éditorial glyphème par glyphème reste possible."
+    ]
+  },
+  "source": {
+    "pdfPath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+    "pdfSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
+    "renders": [
+      {
+        "printedPage": 128,
+        "pdfPageIndex": 129,
+        "path": "C:\\Users\\omara\\AppData\\Local\\Temp\\shenron-30th-pages\\page-129.png",
+        "bytes": 1300848,
+        "sha256": "2268ebff07b40bff39307db40296f1c088d7a8dcab0871fcbb23f983d4e36d8c"
+      },
+      {
+        "printedPage": 129,
+        "pdfPageIndex": 130,
+        "path": "C:\\Users\\omara\\AppData\\Local\\Temp\\shenron-30th-pages\\page-130.png",
+        "bytes": 1259845,
+        "sha256": "4f72b1c0d5b273e852ea6e5538a93a8efdcff4005a0b898fe588a58b1613495"
+      }
+    ]
+  },
+  "verification": {
+    "transcriptBytes": 10032,
+    "transcriptSha256": "6d5de33d3a574751cf7f18bdc3ff5399c8927cb5140752bca1a256fe86224f7d",
+    "jsonlRecords": 2,
+    "independentSecondTranscriber": false
+  }
+}

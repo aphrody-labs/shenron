@@ -90,6 +90,15 @@ bun-format-check:
 dev-site:
     bun --filter @shenron/site dev
 
+# Remote dev on the build VPS: up | gates [--rust] | dev | stop | sync | doctor | clean-wsl | backup
+[group('bun')]
+remote *args="up":
+    bun scripts/dev/remote-dev.ts {{args}}
+
+[group('bun')]
+env *args="pull":
+    bun scripts/dev/env-pull.ts {{args}}
+
 # Discord bot in watch mode
 [group('bun')]
 dev-bot:
@@ -205,3 +214,54 @@ aphrody-local *checkout:
 [group('rust')]
 aphrody-pinned:
     bun scripts/build/rust/local-aphrody-patch.ts --remove
+
+# Container stack: prepare secrets and environment files (--prod|--dev)
+[group('container')]
+container-env *args="":
+    bun scripts/ops/container.ts env {{args}}
+
+# Container stack: build Docker image (--all-in-one)
+[group('container')]
+container-build *args="":
+    bun scripts/ops/container.ts build {{args}}
+
+# Container stack: start containers (--all-in-one)
+[group('container')]
+container-up *args="":
+    bun scripts/ops/container.ts up {{args}}
+
+# Container stack: stop containers
+[group('container')]
+container-down:
+    bun scripts/ops/container.ts down
+
+# Container stack: check service health and status
+[group('container')]
+container-status:
+    bun scripts/ops/container.ts status
+
+# Container stack: initialize database and apply migrations
+[group('container')]
+container-db-init *args="":
+    bun scripts/ops/container.ts db-init {{args}}
+
+# Container stack: OVH operations and DNS validation
+[group('container')]
+container-ovh *args="":
+    bun scripts/ops/container.ts ovh {{args}}
+
+# Container stack: backup container databases
+[group('container')]
+container-backup:
+    bun scripts/ops/container.ts backup
+
+# Connectors: generate ready-to-use configs for Codex, AGY, Claude Code, and Omar
+[group('connectors')]
+setup-connectors:
+    bun scripts/ops/setup-agent-connectors.ts --write --status
+
+# Connectors: verify connectivity to public and private MCP / A2A / LLM endpoints
+[group('connectors')]
+connectors-status:
+    bun scripts/ops/setup-agent-connectors.ts --status
+

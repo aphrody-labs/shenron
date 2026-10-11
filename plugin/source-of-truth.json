@@ -3,7 +3,9 @@
   "sources": [
     {
       "root": ".",
-      "evidence": ["references/instantane.json"]
+      "evidence": [
+        "references/instantane.json"
+      ]
     }
   ],
   "knowledge": [
@@ -37,6 +39,7 @@
     "skills/toriyama-svg/references/animation.md",
     "skills/toriyama-svg/references/blender.md",
     "skills/toriyama-svg/references/geometrie.md",
+    "skills/toriyama-svg/references/manga-anime-inspection.md",
     "skills/toriyama-svg/references/mesures/couverture-analyse-visuelle.md",
     "skills/toriyama-svg/references/mesures/kinto-un-analyse-visuelle.md",
     "skills/toriyama-svg/references/sources.md"

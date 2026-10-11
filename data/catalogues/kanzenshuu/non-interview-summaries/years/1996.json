@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des contenus Kanzenshuu hors interviews ordinaires, par année de publication (1996); forums et messages de forum exclus.",
+  "records": [
+    {
+      "id": "daizenshuu-7-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 7: Dragon Ball Large Encyclopedia (p. 13)",
+      "summary": "Toriyama présente le dernier Daizenshuu, une encyclopédie générale de Dragon Ball. Il remercie l’équipe pour un travail particulièrement ardu, plaisante sur ses propres oublis malgré son statut d’auteur et estime que cette compilation lui aurait été utile pendant la publication de la série.",
+      "keyInformation": [
+        "Le volume final rassemble les informations encyclopédiques sur Dragon Ball",
+        "Toriyama dit avoir oublié de nombreux détails de sa propre œuvre et remercie lecteurs et équipe"
+      ],
+      "source": {
+        "publication": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 7: Dragon Ball Large Encyclopedia (p. 13)",
+        "pages": "13",
+        "date": "1996-02-05",
+        "url": "https://www.kanzenshuu.com/translations/daizenshuu-7-toriyama-intro/"
+      },
+      "dragonBallRelevance": "Directe : commentaire d’auteur sur la compilation de référence et les limites de sa mémoire.",
+      "formatNote": "Introduction courte de guide.",
+      "forum": false,
+      "forumContent": false
+    },
+    {
+      "id": "daizenshuu-7-toriyama-thanks",
+      "title": "Thank You From Akira Toriyama Dragon Ball Daizenshuu 7: Dragon Ball Large Encyclopedia (p. 312)",
+      "summary": "Dans ce message de clôture, Toriyama remercie les lecteurs, ses trois éditeurs, Shueisha et les nombreux professionnels des mangas, de l’animation, des films, des jeux et des produits dérivés. Il inclut sa famille et ses amis, puis s’excuse avec humour de n’avoir jamais répondu aux lettres de fans.",
+      "keyInformation": [
+        "Toriyama remercie explicitement Torishima, Kondō et Takeda ainsi que les équipes ayant adapté ou diffusé Dragon Ball",
+        "Le message est daté de décembre 1995 et clôt l’encyclopédie finale"
+      ],
+      "source": {
+        "publication": "Thank You From Akira Toriyama Dragon Ball Daizenshuu 7: Dragon Ball Large Encyclopedia (p. 312)",
+        "pages": "312",
+        "date": "1996-02-05",
+        "url": "https://www.kanzenshuu.com/translations/daizenshuu-7-toriyama-thanks/"
+      },
+      "dragonBallRelevance": "Directe : reconnaissance de l’auteur envers les personnes ayant contribué à Dragon Ball.",
+      "formatNote": "Message de remerciement, pas une entrevue.",
+      "forum": false,
+      "forumContent": false
+    },
+    {
+      "id": "supplemental-daizenshuu-tv-animation-part-3-animations-gleanings",
+      "title": "Animation’s Gleanings Dragon Ball Supplemental Daizenshuu: TV Animation Part 3 (pp. 63-71)",
+      "summary": "Ce dossier historique retrace les étapes de la production de l’anime, des débuts de Dragon Ball après Dr. Slump jusqu’aux choix de programmation, de promotion et de conception visuelle. Il assemble anecdotes, documents et explications pour montrer comment le projet a été développé par la télévision et Toei.",
+      "keyInformation": [
+        "La première émission de Dragon Ball est diffusée le 26 février 1986 et obtient une audience initiale élevée",
+        "Le dossier compare des visuels promotionnels aux images diffusées et détaille des décisions de production"
+      ],
+      "source": {
+        "publication": "Animation’s Gleanings Dragon Ball Supplemental Daizenshuu: TV Animation Part 3 (pp. 63-71)",
+        "pages": "63-71",
+        "date": "1996-02-05",
+        "url": "https://www.kanzenshuu.com/translations/supplemental-daizenshuu-tv-animation-part-3-animations-gleanings/"
+      },
+      "dragonBallRelevance": "Directe : chronologie et documentation de la création de l’anime.",
+      "formatNote": "Article de guide en rubriques, accompagné de reproductions et légendes.",
+      "forum": false,
+      "forumContent": false
+    },
+    {
+      "id": "weekly-jump-1996-13-akira-toriyama-dragon-ball-if-you-please",
+      "title": "Dragon Ball, If You Please Weekly Shōnen Jump, 1996 #13 (p. 3)",
+      "summary": "Toriyama signe une courte bande dessinée d’introduction à un dossier anniversaire consacré au film des dix ans et à Dragon Ball GT. La page est notable comme l’un de ses rares commentaires directs pendant la diffusion de GT et comme un dessin de Goku enfant dans cette série.",
+      "keyInformation": [
+        "Le comic accompagne un dossier de Weekly Shōnen Jump sur Dragon Ball GT et le film anniversaire",
+        "Il s’agit d’une intervention directe rare de Toriyama sur GT pendant sa diffusion"
+      ],
+      "source": {
+        "publication": "Dragon Ball, If You Please Weekly Shōnen Jump, 1996 #13 (p. 3)",
+        "pages": "3",
+        "date": "1996-02-27",
+        "url": "https://www.kanzenshuu.com/translations/weekly-jump-1996-13-akira-toriyama-dragon-ball-if-you-please/"
+      },
+      "dragonBallRelevance": "Directe : commentaire graphique de l’auteur sur GT et l’anniversaire de la franchise.",
+      "formatNote": "Bande dessinée promotionnelle d’une page, sans entretien textuel.",
+      "forum": false,
+      "forumContent": false
+    }
+  ]
+}

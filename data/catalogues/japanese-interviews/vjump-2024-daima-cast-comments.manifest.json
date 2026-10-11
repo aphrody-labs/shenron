@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "status": "single-page-cast-comments-transcribed-review-needed",
+  "publication": "Vジャンプ (folder V-Jump 2024/novembre; exact issue/date unverified)",
+  "interviewTitle": "メインキャストの一部を公開!!",
+  "interviewee": "小林由美子（界王神（ミニ）役）、ファイルーズあい（パンジ役）、内山昂輝（グロリオ役）",
+  "updatedAt": "2026-10-08",
+  "method": "日本語の手元スキャンを拡大して目視で転記。OCR、ネット、翻訳、外部文章による補完は不使用。",
+  "limits": [
+    "This page contains promotional cast comments, not a question-and-answer interview; it is indexed as direct testimony, not mislabeled as a formal interview.",
+    "The scan is in the local V-Jump 2024/novembre folder; issue number, publication date, and printed page number are not visible or independently established.",
+    "Only this single visible page is transcribed; adjacent pages and any continuation are not established.",
+    "Independent character-by-character review remains pending."
+  ],
+  "transcriptFile": "data/catalogues/japanese-interviews/vjump-2024-daima-cast-comments.jsonl",
+  "transcriptBytes": 2272,
+  "transcriptSha256": "b70fe77fc52aed5822a58004a25285668d864b0810fc610a3c1341fe0933c056",
+  "records": [
+    {
+      "imageBytes": 647507,
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Les V-Jump\\V-Jump 2024\\novembre\\721189628_1946019039366449_6233491298252524125_n.jpg",
+      "completeness": "All three visible cast-comment blocks transcribed from one legible scan. Printed folio is not visible; no surrounding page or complete feature boundary claimed.",
+      "id": "vjump-2024-daima-cast-comments",
+      "imageSha256": "47ba2182ba771f09ad79b811e012d5ed031763a4ac797de760036f4c539c9086",
+      "sectionTitle": "メインキャストの一部を公開!!",
+      "transcriptPath": "data/catalogues/japanese-interviews/vjump-2024-daima-cast-comments.jsonl#L1",
+      "transcriptRow": 1,
+      "pages": [],
+      "title": "Vジャンプ",
+      "participants": [
+        "小林由美子 / 界王神（ミニ）役",
+        "ファイルーズあい / パンジ役",
+        "内山昂輝 / グロリオ役"
+      ]
+    }
+  ]
+}

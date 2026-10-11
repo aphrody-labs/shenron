@@ -1,6 +1,6 @@
 {
   "name": "@shenron/native",
-  "version": "0.4.0",
+  "version": "1.4.4",
   "private": true,
   "description": "Bun FFI binding of the Shenron native library (shenron-ffi): shenron commands, RAG/persona helpers, and a worker pool for the long calls (promises, AbortSignal).",
   "license": "Apache-2.0",
@@ -9,14 +9,15 @@
     "./shenron": "./src/shenron.ts",
     "./engine": "./src/engine.ts",
     "./worker": "./src/worker.ts",
-    "./web/pipeline": "./src/web-pipeline.ts"
+    "./web/pipeline": "./src/web-pipeline.ts",
+    "./re": "./src/re.ts"
   },
   "scripts": {
     "generate": "bun scripts/generate.ts",
     "generate:check": "bun scripts/generate.ts --check",
     "lint": "oxlint -c ../../.oxlintrc.json src test scripts",
     "test": "bun test",
-    "typecheck": "tsc --noEmit -p ."
+    "typecheck": "bun check --noEmit --project tsconfig.json"
   },
   "dependencies": {
     "@aphrody/bun": "catalog:"
@@ -26,14 +27,15 @@
     "typescript": "catalog:"
   },
   "engines": {
-    "bun": ">=1.4.2"
+    "bun": ">=1.4.3"
   },
   "shenron": {
     "runtime": {
       "./shenron": "bun",
       "./engine": "bun",
       "./worker": "bun",
-      "./web/pipeline": "bun"
+      "./web/pipeline": "bun",
+      "./re": "bun"
     }
   }
 }

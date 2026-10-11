@@ -1,0 +1,29 @@
+{
+  "source": "Saikyō Jump 2023 September local scan, printed p.24, interview feature 「鳥山明作品はギャグがおもしろい!!」",
+  "sourcePath": "C:/Users/omara/Desktop/Data et guide book/saikyou jump/2023/septembre/484035907_993007699594921_1123646754241630102_n.jpg",
+  "sourceSha256": "81373704BC8C3003ED547F4ED531AD14E038785D8767D05C5C27B51498A818F4",
+  "sourceBytes": 590525,
+  "sourceDimensions": "1417x2048",
+  "relatedTitlePage": {
+    "printedPage": 22,
+    "sourcePath": "C:/Users/omara/Desktop/Data et guide book/saikyou jump/2023/septembre/484040077_993007766261581_7382000816951942731_n.jpg",
+    "sourceSha256": "06BCF74EB4AC307205545A92740315C70BD6069FE972BBF56BAC6EA67C07E7CC",
+    "note": "Used to read the article title and identify interview participants; page 22 presents サンシャイン池崎 and ネオ・サイボーグ イワイ."
+  },
+  "transcriptPath": "data/catalogues/japanese-interviews/saikyo-jump-2023-sept-dragon-ball-gag-interview-p24.jsonl",
+  "transcriptSha256": "f6ea46c4d557a6f25a8464a022b130749160ca47430a07ff909a01847f90a237",
+  "transcribedPages": [
+    24
+  ],
+  "participants": [
+    "イワイ",
+    "サンシャイン池崎"
+  ],
+  "scope": "All four visible answer passages on p.24, under two interview questions. These are direct statements by invited comedians about Dragon Ball scenes; neither participant is identified as the creator or production staff.",
+  "method": "Manual visual transcription from the original local scan; no OCR, network, or translation.",
+  "review": "Single-pass visual transcription; not independently reviewed.",
+  "limitations": [
+    "The issue year/month is inferred from the local folder name 2023/septembre; the photographed page itself shows printed p.24 but no masthead/date.",
+    "The adjacent title page p.22 is present and readable; p.23 and any further continuation are not in the available local scans. This sidecar covers the four complete answer blocks visible on p.24 only."
+  ]
+}

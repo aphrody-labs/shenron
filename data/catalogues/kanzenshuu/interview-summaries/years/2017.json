@@ -1,0 +1,202 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2017; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "the-case-of-being-reincarnated-as-yamcha-buzzfeed-japan-interview",
+      "title": "Entretien avec l'éditeur de Dragon Ball Gaiden: Tenseishitara Yamucha datta Ken",
+      "summary": "Entretien de Tsunehiko Nishimaki avec un éditeur anonyme de Shueisha sur la création du manga dérivé consacré à Yamcha. L'idée est née d'une discussion informelle entre éditeurs autour d'un récit de réincarnation dans l'univers de Dragon Ball. Yamcha a été choisi pour le contraste comique entre son statut de personnage jugé faible et le renversement de situation; une piste mettant Krilin au centre d'une boucle temporelle avait aussi été envisagée. L'éditeur indique que Toriyama a accepté le projet, a donné des suggestions sur le storyboard — notamment sur la mort comique du protagoniste et sa caractérisation — puis a apprécié le manuscrit terminé. L'artiste Dragon Garow Lee a été repéré par un membre de l'équipe pour ses parodies publiées sur Pixiv puis approché sur Twitter. Selon l'éditeur, le premier chapitre a dépassé de plus de deux fois les lectures d'un one-shot habituel et a été le titre le plus lu de la semaine. Ces informations décrivent le processus éditorial de ce spin-off; elles ne sont pas des déclarations directes de Toriyama.",
+      "keyInformation": [
+        "L'idée du spin-off vient d'une conversation informelle dans l'équipe éditoriale de Shueisha sur une histoire de réincarnation façon romans web dans l'univers de Dragon Ball.",
+        "L'éditeur dit que Yamcha a été retenu parce que son profil permettait un renversement comique; une histoire en boucle temporelle avec Krilin avait aussi été envisagée.",
+        "Toriyama a été consulté dès la conception, a approuvé le projet, puis a proposé des améliorations au storyboard portant notamment sur la mort du protagoniste et sa caractérisation pour faciliter l'entrée du lecteur.",
+        "L'artiste Dragon Garow Lee a été signalé à l'équipe par un membre qui connaissait ses parodies sur Pixiv; l'éditeur l'a ensuite contacté sur Twitter.",
+        "L'éditeur attribue le succès initial au bouche-à-oreille et au calendrier proche d'un épisode de Dragon Ball Super consacré à Yamcha; il rapporte plus du double des lectures d'un one-shot ordinaire et la première place de la semaine.",
+        "L'interview est une source sur la production et la réception éditoriale du spin-off, pas une source directe sur les intentions de Toriyama au sujet de l'histoire principale."
+      ],
+      "source": {
+        "publication": "BuzzFeed Japan, entretien par Tsunehiko Nishimaki avec un éditeur anonyme de Shueisha",
+        "pages": null,
+        "date": "2017-01-28",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/the-case-of-being-reincarnated-as-yamcha-buzzfeed-japan-interview/",
+        "primarySource": "https://www.buzzfeed.com/jp/tsunehikonishimaki/reincarnation-yamcha",
+        "questionAnswerCount": 10,
+        "forumContent": false,
+        "kanzenshuuSitePost": {
+          "wpId": 53675,
+          "url": "https://www.kanzenshuu.com/2017/01/31/buzzfeed-japan-interview-investigates-the-case-of-being-reincarnated-as-yamcha-spin-off-manga-development/",
+          "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2017.json",
+          "reproducedFullInterview": true,
+          "questionAnswerCount": 10,
+          "forumContent": false
+        }
+      },
+      "dragonBallRelevance": "Production éditoriale d'un spin-off officiel; propos de l'éditeur Shueisha, à distinguer des déclarations d'auteur.",
+      "status": "summary-written-primary-source-available-kanzenshuu-copy-unavailable",
+      "forumContent": false
+    },
+    {
+      "id": "saikyo-jump-january-2018-we-asked-akira-toriyama-sensei-saiyan-special-qa",
+      "title": "Saikyō Jump , January 2018 Issue (01 December 2017)",
+      "summary": "Dans un dossier de Saikyō Jump entièrement consacré aux Saiyans, Toriyama décrit leurs goûts alimentaires, leurs difficultés scolaires, leur formation guerrière, leur technologie et les cellules S. Les bébés Saiyans sont classés selon leur puissance de naissance : les plus forts deviennent candidats combattants, les moins puissants peuvent être envoyés comme « bébés d'infiltration » et ceux qui survivent et deviennent assez forts peuvent revenir comme combattants. Toriyama explique que les cellules S sont nécessaires au Super Saiyan; un cœur doux les favorise, mais une puissance de combat suffisante et le déclencheur émotionnel restent nécessaires. Les enfants de Goku et Vegeta en hériteraient davantage et grandiraient dans l'environnement plus clément de la Terre. Il précise que les Saiyans n'ont pas inventé les Saibaimen et que leur armement avancé leur venait largement de l'armée de Cold. Enfin, il relie l'origine du Super Saiyan God à Yamoshi, dont l'esprit cherche six Saiyans au cœur pur, et suggère que le rêve prophétique de Beerus se rapporte à cet esprit. Les notes de Kanzenshuu signalent une contradiction avec un ancien guide sur l'origine des Saibaimen; la fiche conserve cette divergence.",
+      "keyInformation": [
+        "Les Saiyans mangent tout aliment qui paraît comestible et ne sont pas sélectifs; Toriyama leur prête une digestion robuste, les jeunes enfants étant moins résistants jusqu'à ce qu'ils s'habituent. Il dit aussi qu'étudier leur pose problème, enfants comme adultes.",
+        "La puissance de combat des bébés est mesurée à la naissance. Ceux dépassant un seuil sont élevés comme combattants; les plus faibles peuvent devenir ingénieurs ou être envoyés comme bébés d'infiltration sur une planète, avec un taux de survie faible, puis revenir comme combattants s'ils conquièrent leur planète.",
+        "Raditz était un guerrier de haut niveau affecté au groupe de Nappa, que Vegeta a rejoint ensuite. La plupart des Saiyans possèdent un talent naturel pour le combat, mais doivent souvent apprendre à voler; seuls quelques enfants reçoivent un entraînement supplémentaire ciblé.",
+        "Toriyama affirme qu'on ne devient pas Super Saiyan uniquement par entraînement ou colère : les cellules S sont nécessaires, leur quantité doit franchir un seuil, et une émotion déclenchante provoque la transformation. Il dit que la plupart des Saiyans en avaient peu.",
+        "Selon son explication, un esprit doux favorise l'augmentation des cellules S, mais il faut aussi une puissance de combat suffisante. Les descendants de Goku et Vegeta en héritent davantage et l'environnement terrestre, qu'il juge moins rude que celui de la planète Vegeta, faciliterait leur développement.",
+        "La science des Saiyans n'était pas particulièrement avancée, sauf pour les vaisseaux et l'équipement guerrier; l'armée de Cold leur fournissait largement armes, armures, véhicules et scouters.",
+        "Les Saibaimen sont une espèce découverte sur une planète, et non une invention des Saiyans dans la version donnée ici. Leurs bulbes sont difficiles à récolter et ils sont assez sauvages pour attaquer; seuls certains guerriers savent les contrôler.",
+        "Toriyama dit que les Saiyans sont individualistes et ne célèbrent pas Noël ou le Nouvel An en commun; beaucoup de combattants étant envoyés sur d'autres planètes, ils ne pourraient pas rentrer fréquemment.",
+        "Pour Toriyama, Yamoshi fut un Saiyan au cœur juste qui devint le premier Super Saiyan lors d'une rébellion avec cinq compagnons, avant d'être vaincu par épuisement. Son esprit aurait ensuite cherché six Saiyans au cœur pur afin de trouver un nouveau sauveur, le Super Saiyan God.",
+        "Il suppose que le rêve prophétique de Beerus lui a transmis des informations sur l'esprit de Yamoshi et que le livre des légendes namek aurait mentionné cette histoire parce que son auteur compatissait à Yamoshi.",
+        "Le conseil humoristique de Toriyama pour devenir fort est d'apprendre d'abord à manger de tout, puis de s'entraîner avec Tortue Géniale, et enfin, si cela ne fonctionne pas, de réunir les Dragon Balls.",
+        "La note de traduction Kanzenshuu relève que l'affirmation selon laquelle les Saibaimen n'ont pas été créés par un Saiyan contredit un mémorandum de Toriyama repris dans le Daizenshuu 7. La divergence entre ces sources n'est pas résolue dans cette fiche."
+      ],
+      "source": {
+        "publication": "Dragon Ball: Saiyan Super Strongest Comics, supplément de Saikyō Jump, numéro de janvier 2018",
+        "pages": "pp. 116–119",
+        "date": "2017-12-01",
+        "url": "https://www.kanzenshuu.com/translations/saikyo-jump-january-2018-we-asked-akira-toriyama-sensei-saiyan-special-qa/",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "formatNote": "Dossier de questions-réponses et encadrés avec plusieurs explications de Toriyama. Le désaccord sur l'origine des Saibaimen avec le Daizenshuu 7 est relevé par la note du traducteur, pas tranché par l'article.",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/saikyo-jump-january-2018-we-asked-akira-toriyama-sensei-saiyan-special-qa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/saikyo-jump-january-2018-we-asked-akira-toriyama-sensei-saiyan-special-qa.html",
+        "questionAnswerCount": 10,
+        "questionBlockCount": 10,
+        "answerBlockCount": 12,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of Akira Toriyama's 'Saiyan Special Q&A' in the January 2018 issue of 'Saikyō Jump'",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : informations de Toriyama sur la biologie, la société et la technologie Saiyans, les cellules S, Yamoshi et l'origine du Super Saiyan God.",
+      "forumContent": false,
+      "kind": "qa",
+      "formatNote": "Q&A éditorial avec répondant(s) identifié(s)."
+    },
+    {
+      "id": "site-post-57885-salon-manga-chioka-video-interview",
+      "title": "Dragon Ball Super Production Staff Interview — Kimitoshi Chioka (video)",
+      "kind": "interview-summary",
+      "summary": "Kanzenshuu résume l’entretien vidéo mené au Salón del Manga avec le réalisateur Kimitoshi Chioka. Les réponses évoquées portent sur les critères de poursuite d’une série (audience et ventes de produits), les rapports entre le manga et l’anime, l’incertitude quant à la fin de Dragon Ball Super et au lien avec la fin du manga, le tournoi en cours, le public visé, les différences de normes selon les pays, la collaboration avec Toriyama, l’organisation de la production, les consignes de couleurs pour Trunks et les possibilités de projets futurs. L’article précise que son compte rendu s’appuie sur les réponses japonaises; il ne publie pas de transcription complète.",
+      "keyInformation": [
+        "Résumé Kanzenshuu de l’interview vidéo; transcript absent.",
+        "Les échanges originaux ne sont pas transcrits dans le billet."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2017/11/04/interview-with-kimitoshi-chioka-hiroyuki-sakurada-from-salon-del-manga/",
+        "publication": "Kanzenshuu site post",
+        "publicationDate": "2017-11-04",
+        "participants": [
+          "Kimitoshi Chioka"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2017.json",
+        "externalMediaUrl": "https://www.youtube.com/watch?v=fV9wRPY9hOE",
+        "transcriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Video interview summary",
+        "scopeNote": "Résumé Kanzenshuu de l’interview vidéo; transcript absent."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Dragon Ball Super, Anime production, Salón del Manga"
+    },
+    {
+      "id": "site-post-57885-salon-manga-sakurada-audio-interview",
+      "title": "Dragon Ball Super Production Staff Interview — Hiroyuki Sakurada (audio)",
+      "kind": "interview-summary",
+      "summary": "Kanzenshuu rapporte le contenu d’un entretien privé audio mené avec le producteur Hiroyuki Sakurada. Le compte rendu aborde l’intégration des films Battle of Gods et Resurrection “F” dans l’anime, la durée inconnue de la série et l’arc de la Survie de l’Univers, les aspects les plus éprouvants de la production, la participation de Toyotarō, le ton de la série, le changement de réalisateur et l’absence d’annonce confirmée de nouveau film. Selon le billet, Sakurada situe la fin de l’arc en cours en mars et indique que Toriyama a des idées pour la suite; le texte n’est pas une transcription complète.",
+      "keyInformation": [
+        "Résumé Kanzenshuu de l’entretien audio; transcript absent.",
+        "Les échanges originaux ne sont pas transcrits dans le billet."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2017/11/04/interview-with-kimitoshi-chioka-hiroyuki-sakurada-from-salon-del-manga/",
+        "publication": "Kanzenshuu site post",
+        "publicationDate": "2017-11-04",
+        "participants": [
+          "Hiroyuki Sakurada"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2017.json",
+        "externalMediaUrl": "http://www.ivoox.com/entrevista-a-hiroyuki-sakurada-masatoshi-chioka-audios-mp3_rf_21873387_1.html",
+        "transcriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Audio interview summary",
+        "scopeNote": "Résumé Kanzenshuu de l’entretien audio; transcript absent."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Dragon Ball Super, Anime production, Salón del Manga"
+    },
+    {
+      "id": "wired-italia-2017-toyotaro-interview",
+      "title": "Toyotarō — entretien WIRED Italia au Napoli Comicon",
+      "summary": "Kanzenshuu présente un entretien de WIRED Italia réalisé à l’occasion du Napoli Comicon. Son aperçu indique que Toyotarō y parle de son attachement à Dragon Ball depuis l’enfance, de son travail sur la série dans un rôle officiel et de l’orientation à venir de l’arc Survie de l’Univers. Le billet ne fournit pas une transcription complète : l’entretien intégral reste sur WIRED Italia. Il signale aussi une traduction anglaise attribuée à un membre de la communauté; cette traduction et les propos qui n’apparaissent pas dans le résumé éditorial de Kanzenshuu ne sont pas repris ici.",
+      "keyInformation": [
+        "Entretien de WIRED Italia avec Toyotarō, à l’occasion du Napoli Comicon.",
+        "Le résumé éditorial du billet couvre son intérêt d’enfance pour la série, son travail officiel et une allusion à la suite de l’arc Survie de l’Univers.",
+        "L’entretien complet est externe; le billet ne publie pas de transcription intégrale."
+      ],
+      "source": {
+        "publication": "WIRED Italia, entretien avec Toyotarō au Napoli Comicon",
+        "date": "2017-05-01",
+        "participants": [
+          "Toyotarō"
+        ],
+        "primarySource": "http://www.wired.it/play/fumetti/2017/05/01/toyotaro-dragon-ball-super/",
+        "kanzenshuuSitePost": {
+          "wpId": 55762,
+          "url": "https://www.kanzenshuu.com/2017/05/07/wired-italia-interview-with-toyotaro-from-napoli-comicon/",
+          "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2017.json",
+          "reproducedFullInterview": false,
+          "summaryAndExcerpts": false,
+          "communityTranslationMentioned": true,
+          "forumContent": false
+        },
+        "formatNote": "Entretien externe résumé par Kanzenshuu; aucune transcription intégrale dans le billet. La traduction communautaire mentionnée n’est pas utilisée.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2017.json"
+      },
+      "dragonBallRelevance": "Directe : entretien du dessinateur de Dragon Ball Super sur son rapport à la série et son travail.",
+      "status": "summary-based-on-kanzenshuu-post-external-full-interview",
+      "forumContent": false
+    },
+    {
+      "id": "game-informer-2017-daisuke-uchiyama-budokai-interview",
+      "title": "Daisuke Uchiyama — entretien Game Informer sur les jeux Budokai",
+      "summary": "Le producteur Daisuke Uchiyama revient sur la série de jeux Budokai et sur son travail avec Akira Toriyama. L’extrait repris par Kanzenshuu explique que le projet s’est arrêté après trois épisodes, évoque le refus de licence qui a forcé l’équipe à reconstruire un jeu presque terminé, puis le changement d’ambition provoqué par le succès de Budokai et son expansion hors du Japon. Uchiyama chiffre alors à 90 % l’augmentation des ventes à l’international. Cette fiche synthétise uniquement les passages reproduits par Kanzenshuu, non l’entretien Game Informer complet.",
+      "keyInformation": [
+        "Le refus d’une licence a conduit l’équipe à reconstruire presque entièrement un jeu déjà proche de l’achèvement.",
+        "Le succès des premiers Budokai a modifié la planification de la série.",
+        "Uchiyama relie cette réussite à une progression de 90 % des ventes hors du Japon, chiffre rapporté dans l’entretien au moment de sa publication.",
+        "L’article Game Informer traite aussi de la collaboration avec Akira Toriyama; l’extrait Kanzenshuu est partiel."
+      ],
+      "source": {
+        "publication": "Game Informer, « Dragon Ball Z: Budokai’s Producer on Cutting Off After Three Entries and Working with Akira Toriyama »",
+        "date": "13 October 2017",
+        "participants": [
+          "Daisuke Uchiyama"
+        ],
+        "originalSource": "https://www.gameinformer.com/b/features/archive/2017/10/13/dragon-ball-z-budokais-producer-on-cutting-off-after-three-entries-and-working-with-akira-toriyama.aspx",
+        "kanzenshuuPage": "https://www.kanzenshuu.com/rumor/budokai-video-games-held-back-story-story-content-english-dub/",
+        "kanzenshuuPageId": 71102,
+        "questionAnswerCount": null,
+        "formatNote": "Article d’entretien Game Informer. Kanzenshuu reprend plusieurs passages substantiels, mais pas l’échange complet.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2022.json"
+      },
+      "dragonBallRelevance": "Directe: témoignage d’un producteur sur le développement et la commercialisation des jeux Dragon Ball Z Budokai.",
+      "status": "summary-based-on-kanzenshuu-excerpt-source-not-fully-collated",
+      "forumContent": false
+    }
+  ]
+}
+

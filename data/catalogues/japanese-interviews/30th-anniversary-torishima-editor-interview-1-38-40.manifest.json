@@ -1,0 +1,40 @@
+{
+  "publication": "30th Anniversary ドラゴンボール超史集",
+  "records": [
+    {
+      "printedPages": [
+        38,
+        39
+      ],
+      "pdfPageIndices": [
+        38,
+        39
+      ],
+      "imageBytes": 100224986,
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+      "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
+      "completeness": "Partial working draft; not all visible interview text on pp.38-39 transcribed.",
+      "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-torishima-editor-interview-1-38-40.jsonl#L1",
+      "transcriptSha256": "bc005b107b4b1d561f3f4c9befbbb7b28f317e673dfde351a0d4ffe714e5baf9",
+      "transcriptBytes": 12033
+    }
+  ],
+  "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-torishima-editor-interview-1-38-40.jsonl",
+  "updatedAt": "2026-10-08",
+  "schemaVersion": 1,
+  "limits": [
+    "Printed pp.38-39 contain the interview; the visible body has been expanded from the local scan but is not a verified complete transcription.",
+    "A short phrase in the final Frieza passage is marked 判読要確認; do not reconstruct it without scan confirmation.",
+    "Headings are visually separated from body where identifiable; page-spanning phrase is marked at the p.38/p.39 boundary.",
+    "Printed p.40 (PDF p.41) is a separate 1989-1992 episode timeline, not the interview continuation.",
+    "Local PDF rendered with PyMuPDF at 8x; manual visual transcription only; no OCR or network."
+  ],
+  "transcriptSha256": "bc005b107b4b1d561f3f4c9befbbb7b28f317e673dfde351a0d4ffe714e5baf9",
+  "method": "Local PDF rendered with PyMuPDF at 8x; manual visual transcription only; no network/OCR.",
+  "status": "partial-expanded-draft-needs-independent-review",
+  "interviewee": "鳥嶋和彦",
+  "interviewTitle": "DRAGON BALL EDITORS INTERVIEW #1",
+  "transcriptBytes": 12033,
+  "sourcePdfSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
+  "completeness": "Expanded visible-body working draft for printed pp.38-39; not independently proofread and not guaranteed complete."
+}

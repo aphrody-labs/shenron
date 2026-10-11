@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "status": "page-transcription-visible-text-complete-interview-continues",
+  "publication": "30th Anniversary ドラゴンボール超史集",
+  "interviewee": "森下孝三",
+  "method": "目視転記。ローカルPDFの印刷ページ125（PDF index 126）のPNGレンダーを確認。OCR・ネットワーク不使用。",
+  "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-morishita-124-125.jsonl",
+  "transcriptBytes": 7232,
+  "transcriptSha256": "74b71b4459c44d26a35ef39265cc4fe36488227a12f9836e483af0a0f80fde3e",
+  "records": [
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-morishita-124-125.jsonl#L1",
+      "printedPages": [
+        124
+      ],
+      "pdfPageIndices": [
+        125
+      ],
+      "completeness": "Page 124 text copied from the prior manually transcribed sidecar; that source marks omitted page-125 columns, which are replaced by line 2 here."
+    },
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-morishita-124-125.jsonl#L2",
+      "printedPages": [
+        125
+      ],
+      "pdfPageIndices": [
+        126
+      ],
+      "renderPath": "C:/Users/omara/AppData/Local/Temp/shenron-30th-pages/page-126.png",
+      "renderSha256": "a4cd57855859a85b3f030b6ef212a166fc26e33d123405f4fd00aca0ec0b6d13",
+      "completeness": "All body text visible on printed page 125 transcribed; the interview continues beyond this folio, so this is not an interview-complete transcript."
+    }
+  ],
+  "source": {
+    "path": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+    "bytes": 100224986,
+    "sha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2"
+  },
+  "limits": [
+    "Printed folios and PDF indices are recorded separately.",
+    "Photographs and the large decorative headings are excluded from body transcription.",
+    "This is a research transcription draft without independent character-by-character proofreading.",
+    "The interview continues beyond printed page 125; later pages are not transcribed in this sidecar."
+  ]
+}

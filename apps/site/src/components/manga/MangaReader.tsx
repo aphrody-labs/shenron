@@ -6,9 +6,8 @@ import {
   MangaReader as BaseMangaReader,
   type MangaReaderProps as ReaderProps,
 } from "@shenron/ui/reader";
-import { assetMirrorUrl } from "@shenron/config/public-urls";
-import { assetUrl } from "@/lib/assets";
-import { API_ORIGIN, CDN_ORIGIN } from "@/lib/config";
+import { readerAssetUrl } from "@/lib/reader-assets";
+import { API_ORIGIN, CDN_ORIGIN, SITE_URL } from "@/lib/config";
 
 export type MangaReaderProps = Pick<
   ReaderProps,
@@ -35,9 +34,13 @@ export function MangaReader({ chapterId, ...props }: MangaReaderProps) {
     // `?page=` ; l'ancien `?planche=` (liens déjà partagés) reste lu.
     const query = new URLSearchParams(window.location.search);
     const requested = Number(query.get("page") ?? query.get("planche"));
-    if (Number.isFinite(requested) && requested >= 1) setInitialPage(Math.trunc(requested));
+    if (Number.isFinite(requested) && requested >= 1) {
+      setInitialPage(Math.trunc(requested));
+    } else {
+      setInitialPage(1);
+    }
     setReady(true);
-  }, []);
+  }, [chapterId]);
   useEffect(() => {
     if (!chapterId) return;
     try {
@@ -52,7 +55,7 @@ export function MangaReader({ chapterId, ...props }: MangaReaderProps) {
     }
   }, [chapterId]);
   const [currentPage, setCurrentPage] = useState(1);
-  useEffect(() => setCurrentPage(initialPage), [initialPage]);
+  useEffect(() => setCurrentPage(initialPage), [initialPage, chapterId]);
   const onPageChange = useCallback(
     (page: number) => {
       setCurrentPage(page);
@@ -69,20 +72,19 @@ export function MangaReader({ chapterId, ...props }: MangaReaderProps) {
     (page: number) => (chapterId ? `/api/manga/chapter/${chapterId}/pages/${page}` : null),
     [chapterId],
   );
-  const resolveMirrorUrl = useCallback(
-    (url: string) => assetMirrorUrl(url, CDN_ORIGIN, API_ORIGIN),
+  const resolveAssetUrl = useCallback(
+    (url: string) => readerAssetUrl(url, [CDN_ORIGIN, API_ORIGIN, SITE_URL]),
     [],
   );
   return (
     <div className="m3-reader--dragon-ball">
       <BaseMangaReader
-        key={initialPage}
+        key={`${chapterId ?? "ch"}-${initialPage}`}
         {...props}
         initialPage={initialPage}
         onPageChange={onPageChange}
         apiPageHref={apiPageHref}
-        resolveAssetUrl={assetUrl}
-        resolveMirrorUrl={resolveMirrorUrl}
+        resolveAssetUrl={resolveAssetUrl}
         renderChapterLink={renderChapterLink}
       />
       {chapterId ? <TraductionFr chapterId={chapterId} page={currentPage} /> : null}

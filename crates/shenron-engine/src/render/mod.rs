@@ -1,0 +1,42 @@
+// SPDX-License-Identifier: Apache-2.0
+
+//! Modern Unified Rendering Pipeline: GPU backend abstraction, 3D meshes & procedural geometry,
+//! CPU & GPU rasterization, GLB parsing, clustered lighting, and virtual geometry.
+
+pub mod glb;
+pub mod gpu_backend;
+pub mod gpu_context;
+pub mod gpu_driven;
+pub mod lighting;
+pub mod mesh;
+pub mod model_serve;
+pub mod postprocess;
+pub mod raster3d;
+pub mod shaders;
+pub mod virtual_geometry;
+
+pub use glb::{GlbError, parse_glb};
+pub use gpu_backend::{
+    AdapterReport, ComputeLimits, DeviceLimits, DeviceRequest, GpuBackendError, GpuDevice,
+    GpuReport, SurfaceFormat, SurfaceRequest, WgslJob, create_instance, enumerate_adapters,
+    request_adapter, request_device, run_wgsl_compute, surface_configuration,
+};
+pub use gpu_context::{GpuContext, GpuError};
+pub use gpu_driven::{
+    DrawIndexedIndirectArgs, DrawIndirectArgs, GpuInstanceData, IndirectDrawBuffer,
+    InstanceStorageBuffer,
+};
+pub use lighting::{CascadedShadowMaps, ClusterGrid, GpuLight, VoxelVolumeUniforms};
+pub use mesh::{
+    Camera3d, Geometry, MeshCache, MeshData, MeshError, Model, Primitive, Ray3d, Texture,
+    pick_triangle,
+};
+pub use model_serve::{
+    GpuCharacterModel, GpuPrimitive, ModelServePipeline, ModelUniforms, ModelVertex,
+    TurntableCamera,
+};
+pub use postprocess::{HaltonSequence, PostProcessUniforms};
+pub use raster3d::{DISTANCE_CAMERA, FOCALE, TILT, couleur_fond, render_model_cpu};
+pub use virtual_geometry::{
+    HiZCulling, Meshlet, MeshletBounds, MeshletBuilder, pack_visibility_id, unpack_visibility_id,
+};

@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2008; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "jump-sq-may-2008-akira-toriyama-masakazu-katsura",
+      "title": "Sachie-chan GOOD!! — entretien Toriyama × Katsura",
+      "summary": "Cet entretien porte principalement sur Sachie-chan GOOD!!, le manga court réalisé à quatre mains par Akira Toriyama et Masakazu Katsura. Toriyama décrit son goût pour les histoires légères, le découpage en storyboard et les personnages qui provoquent des situations comiques; Katsura explique comment il a poussé son partenaire à donner plus de poids aux réactions émotionnelles. Toriyama dit préférer le dessin préparatoire à l'encrage et évoque la difficulté de tenir un rythme de publication. La discussion touche brièvement à la Patrouille Galactique : interrogé par Katsura sur une possible histoire liée à cet univers, Toriyama répond qu'il pourrait s'y prêter s'il n'avait qu'à fournir les storyboards. Cette remarque est une possibilité évoquée en plaisantant, pas l'annonce d'un projet Dragon Ball.",
+      "keyInformation": [
+        "Les deux auteurs parlent de la conception et de la collaboration autour de Sachie-chan GOOD!!, récit sans lien narratif avec Dragon Ball.",
+        "Toriyama explique qu'il aime particulièrement les storyboards, le rythme visuel et les idées comiques, tandis que l'encrage et les échéances répétées lui pèsent.",
+        "Katsura raconte avoir encouragé Toriyama à renforcer les réactions émotionnelles et la logique des personnages dans le récit collaboratif.",
+        "À une question de Katsura sur une histoire de la Patrouille Galactique, Toriyama répond qu'il pourrait la faire s'il se limitait aux storyboards; la formulation reste hypothétique et ne documente pas un projet engagé.",
+        "La Patrouille Galactique est ici une mention incidente; l'entretien ne constitue pas une source sur l'intrigue ou le canon de Dragon Ball."
+      ],
+      "source": {
+        "publication": "Jump SQ, May 2008",
+        "pages": "8–10, 267–269",
+        "date": "2008-04-02",
+        "participants": [
+          "Akira Toriyama",
+          "Masakazu Katsura"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/jump-sq-may-2008-akira-toriyama-masakazu-katsura/",
+        "questionAnswerCount": 27,
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/jump-sq-may-2008-akira-toriyama-masakazu-katsura.html"
+      },
+      "dragonBallRelevance": "Indirecte : entretien de création non-Dragon Ball avec une brève mention hypothétique de la Patrouille Galactique.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-3081-podcast-episode-0135-teamfourstar",
+      "kind": "audio-interview",
+      "title": "Podcast Episode #0135 — TeamFourStar (KaiserNeko et Lanipator)",
+      "summary": "Le descriptif de l’épisode indique que VegettoEX, Meri et Jeff s’entretiennent avec KaiserNeko et Lanipator, de TeamFourStar, au sujet des débuts de Dragon Ball Z Abridged et de ses projets à venir. Julian rejoint ensuite l’équipe pour les autres sujets d’actualité. Le billet ne reproduit pas leurs réponses : il s’agit d’un entretien audio sans transcription disponible, et le contenu précis des échanges ne peut donc pas être détaillé.",
+      "keyInformation": [
+        "Invités annoncés : KaiserNeko et Lanipator de TeamFourStar.",
+        "Thèmes annoncés : origine de Dragon Ball Z Abridged et projets futurs.",
+        "Le billet ne fournit pas de transcription; aucun détail de réponse n’est inféré."
+      ],
+      "source": {
+        "publication": "Kanzenshuu Podcast, épisode #0135",
+        "url": "https://www.kanzenshuu.com/2008/06/29/podcast-episode-0135/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+        "date": "2008-06-29",
+        "participants": [
+          "KaiserNeko",
+          "Lanipator",
+          "VegettoEX",
+          "Meri",
+          "Jeff",
+          "Julian"
+        ],
+        "audioTranscriptAvailable": false,
+        "audioDownloaded": false,
+        "formatNote": "Entretien audio annoncé dans le billet; transcription et fichier audio non disponibles dans les sources locales vérifiées.",
+        "forumContent": false
+      },
+      "formatNote": "Entretien audio sans transcription disponible.",
+      "dragonBallRelevance": "Directe : échange annoncé avec les créateurs de Dragon Ball Z Abridged.",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-3343-nozawa-kageyama-event-interview",
+      "kind": "qa",
+      "title": "Échange public avec Masako Nozawa et Hironobu Kageyama lors d’un événement Dragon Ball",
+      "summary": "Le compte rendu d’une projection privée organisée le 16 novembre 2008 rapporte un bref échange avec Masako Nozawa et Hironobu Kageyama. À la question commune sur le souhait qu’ils demanderaient à Shenlong, Nozawa répond qu’elle aimerait entrer dans le Guinness des records. Kageyama plaisante d’abord sur un pafu-pafu en raison de son admiration pour Kame-Sennin, puis précise qu’il souhaiterait surtout conserver la santé afin de continuer à chanter. Il s’agit de deux réponses rapportées à une question, et non d’une transcription intégrale d’entretien.",
+      "keyInformation": [
+        "Événement rapporté : projection privée du 16 novembre 2008.",
+        "Question commune : quel souhait adresser à Shenlong?",
+        "Nozawa cite le Guinness des records; Kageyama conclut sur la santé et la poursuite de sa carrière de chanteur.",
+        "Compte rendu bref, non transcription complète."
+      ],
+      "source": {
+        "publication": "Kanzenshuu — compte rendu d’événement",
+        "url": "https://www.kanzenshuu.com/2008/11/30/special-conest-winner-movie-screening-in-japan/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+        "date": "2008-11-30",
+        "eventDate": "2008-11-16",
+        "participants": [
+          "Masako Nozawa",
+          "Hironobu Kageyama"
+        ],
+        "questionAnswerCount": 1,
+        "detectedQuestionBlocks": 1,
+        "detectedAnswerBlocks": 2,
+        "formatNote": "Bref échange public rapporté dans un compte rendu d’événement; une question commune et deux réponses, sans transcription intégrale.",
+        "forumContent": false
+      },
+      "formatNote": "Échange événementiel rapporté; une question et deux réponses.",
+      "dragonBallRelevance": "Directe : témoignages de deux interprètes et artistes associés à Dragon Ball.",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-3075-toru-furuya-music-japan-plus-interview",
+      "kind": "interview-notice",
+      "title": "Tōru Furuya — entretien en anglais signalé par Kanzenshuu",
+      "summary": "Kanzenshuu renvoie à un entretien en anglais de MUSIC JAPAN+ avec Tōru Furuya, interprète de Yamcha, et donne une indication de navigation. Aucune réponse n’est reproduite. Cette notice atteste seulement le lien et l’existence de l’entretien.",
+      "keyInformation": [
+        "Furuya est présenté comme la voix japonaise de Yamcha.",
+        "Contenu de l’entretien externe non reproduit localement."
+      ],
+      "source": {
+        "publication": "Kanzenshuu, billet WP3075",
+        "url": "https://www.kanzenshuu.com/2008/06/26/toru-furuya-english-language-interview/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+        "date": "2008-06-26",
+        "participants": [
+          "Tōru Furuya"
+        ],
+        "formatNote": "Lien seul vers MUSIC JAPAN+; aucune réponse reproduite.",
+        "questionAnswerCount": null,
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : entretien d’un comédien de Dragon Ball.",
+      "status": "synthèse limitée au billet local; accès externe décrit dans formatNote",
+      "formatNote": "Lien seul vers MUSIC JAPAN+; aucune réponse reproduite.",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-2819-donny-clay-ign-burst-limit-interview",
+      "kind": "interview-notice",
+      "title": "IGN — Donny Clay à propos de Burst Limit (extrait)",
+      "summary": "Le billet signale un entretien IGN avec Donny Clay, décrit prudemment comme producteur lié à Atari. Kanzenshuu retient 21 personnages jouables et cinq stages pour Burst Limit. Ce sont les seules données relayées; le dialogue complet n’est pas fourni.",
+      "keyInformation": [
+        "Clay est décrit comme producteur lié à Atari.",
+        "Le billet rapporte 21 personnages jouables et cinq stages.",
+        "Une bande-annonce est mentionnée; pas de dialogue complet."
+      ],
+      "source": {
+        "publication": "Kanzenshuu, billet WP2819",
+        "url": "https://www.kanzenshuu.com/2008/03/18/burst-limit-trailer-interview-at-ign/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+        "date": "2008-03-18",
+        "participants": [
+          "Donny Clay"
+        ],
+        "formatNote": "Extrait informatif relayé; entretien complet non acquis.",
+        "questionAnswerCount": null,
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : informations sur un jeu Dragon Ball.",
+      "status": "synthèse limitée au billet local; accès externe décrit dans formatNote",
+      "formatNote": "Extrait informatif relayé; entretien complet non acquis.",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-2721-gen-fukunaga-icv2-interview-excerpt",
+      "kind": "interview-notice",
+      "title": "Gen Fukunaga — entretien ICv2 et annonce des films DBZ remastérisés",
+      "summary": "Kanzenshuu renvoie à un entretien ICv2 de Gen Fukunaga et cite son annonce de plusieurs films Dragon Ball Z remastérisés pour février. Le billet mentionne aussi des réponses sur piratage, fansubs et coffrets saisonniers, sans les reproduire; seule l’annonce citée est résumable.",
+      "keyInformation": [
+        "Fukunaga annonce plusieurs films DBZ remastérisés pour février.",
+        "Les réponses sur piratage, fansubs et coffrets ne sont pas reproduites."
+      ],
+      "source": {
+        "publication": "Kanzenshuu, billet WP2721",
+        "url": "https://www.kanzenshuu.com/2008/01/21/gen-fukunaga-interview-dbz-dvd-news/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+        "date": "2008-01-21",
+        "participants": [
+          "Gen Fukunaga"
+        ],
+        "formatNote": "Entretien externe lié; citation reproduite, autres réponses seulement signalées.",
+        "questionAnswerCount": null,
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : édition vidéo Dragon Ball Z.",
+      "status": "synthèse limitée au billet local; accès externe décrit dans formatNote",
+      "formatNote": "Entretien externe lié; citation reproduite, autres réponses seulement signalées.",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-2709-james-marsters-tv-guide-quote",
+      "kind": "interview-notice",
+      "title": "James Marsters — propos relayés par TV Guide (extrait)",
+      "summary": "Kanzenshuu reprend via Toon Zone une courte citation attribuée à TV Guide où James Marsters, choisi pour Piccolo dans le film américain à venir, loue Dragon Ball et évoque le conflit moral, l’action et le spectacle visuel du film. Aucun échange Q/R n’est fourni; ces propos ne renseignent pas sur le film achevé.",
+      "keyInformation": [
+        "Marsters loue le récit moral de Dragon Ball et l’action du film à venir.",
+        "Citation relayée par TV Guide, Toon Zone puis Kanzenshuu; entretien complet absent."
+      ],
+      "source": {
+        "publication": "Kanzenshuu, billet WP2709",
+        "url": "https://www.kanzenshuu.com/2008/01/16/james-marsters-talks-dragon-ball-to-tv-guide/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+        "date": "2008-01-16",
+        "participants": [
+          "James Marsters"
+        ],
+        "formatNote": "Citation brève relayée; contexte complet non acquis.",
+        "questionAnswerCount": null,
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : acteur du film Dragon Ball alors en préparation.",
+      "status": "synthèse limitée au billet local; accès externe décrit dans formatNote",
+      "formatNote": "Citation brève relayée; contexte complet non acquis.",
+      "forumContent": false
+    }
+  ]
+}

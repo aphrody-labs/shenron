@@ -19,6 +19,7 @@ import { type FormEvent, type ReactNode, useMemo, useState } from "react";
 import { Sketch } from "@uiw/react-color";
 import { api, proxyAsset } from "@/lib/admin-api";
 import { botAsset } from "@/lib/bot-assets";
+import { canvasPreviewParams } from "@/lib/canvas-preview";
 import { UserSelect } from "@/components/admin/UserSelect";
 
 interface CanvasDef {
@@ -1023,7 +1024,11 @@ function AssetPickerModal({
 }
 
 function CanvasPreview({ def, members }: { def: CanvasDef; members: DiscordMember[] }) {
-  const [params, setParams] = useState<Record<string, string>>(() => initialParams(def, members));
+  const [overrides, setParams] = useState<Record<string, string>>({});
+  const params = useMemo(
+    () => canvasPreviewParams(def.id, members, overrides),
+    [def.id, members, overrides],
+  );
   const [bust, setBust] = useState(0);
 
   const url = useMemo(() => buildUrl(def, params, bust), [def, params, bust]);
@@ -1043,7 +1048,7 @@ function CanvasPreview({ def, members }: { def: CanvasDef; members: DiscordMembe
             <MemberField
               label="Membre"
               value={params.userId ?? ""}
-              onChange={(v) => setParams({ ...params, userId: v })}
+              onChange={(v) => setParams({ ...overrides, userId: v })}
             />
             <div>
               <label
@@ -1056,7 +1061,7 @@ function CanvasPreview({ def, members }: { def: CanvasDef; members: DiscordMembe
                 id="page-theme-de-carte"
                 className="w-full bg-dbz-bg border-2 border-dbz-border focus:border-dbz-orange p-2 text-sm"
                 value={params.theme ?? "default"}
-                onChange={(e) => setParams({ ...params, theme: e.target.value })}
+                onChange={(e) => setParams({ ...overrides, theme: e.target.value })}
               >
                 {PROFILE_THEMES.map((t) => (
                   <option key={t} value={t}>
@@ -1072,7 +1077,7 @@ function CanvasPreview({ def, members }: { def: CanvasDef; members: DiscordMembe
           <MemberField
             label="Membre à scanner"
             value={params.userId ?? ""}
-            onChange={(v) => setParams({ ...params, userId: v })}
+            onChange={(v) => setParams({ ...overrides, userId: v })}
           />
         )}
 
@@ -1081,7 +1086,7 @@ function CanvasPreview({ def, members }: { def: CanvasDef; members: DiscordMembe
             <MemberField
               label="Cible du scouter"
               value={params.userId ?? ""}
-              onChange={(v) => setParams({ ...params, userId: v })}
+              onChange={(v) => setParams({ ...overrides, userId: v })}
             />
             <div>
               <label
@@ -1094,7 +1099,7 @@ function CanvasPreview({ def, members }: { def: CanvasDef; members: DiscordMembe
                 id="page-type-de-scouter"
                 className="w-full bg-dbz-bg border-2 border-dbz-border focus:border-dbz-orange p-2 text-sm"
                 value={params.type ?? "gay"}
-                onChange={(e) => setParams({ ...params, type: e.target.value })}
+                onChange={(e) => setParams({ ...overrides, type: e.target.value })}
               >
                 <option value="gay">Gaydar de Bulma (rose)</option>
                 <option value="raciste">Racism-o-mètre (rouge)</option>
@@ -1110,7 +1115,7 @@ function CanvasPreview({ def, members }: { def: CanvasDef; members: DiscordMembe
                 max="101"
                 className="w-full accent-dbz-orange"
                 value={params.pct ?? "50"}
-                onChange={(e) => setParams({ ...params, pct: e.target.value })}
+                onChange={(e) => setParams({ ...overrides, pct: e.target.value })}
               />
             </div>
           </>
@@ -1121,12 +1126,12 @@ function CanvasPreview({ def, members }: { def: CanvasDef; members: DiscordMembe
             <MemberField
               label="Membre A"
               value={params.a ?? ""}
-              onChange={(v) => setParams({ ...params, a: v })}
+              onChange={(v) => setParams({ ...overrides, a: v })}
             />
             <MemberField
               label="Membre B"
               value={params.b ?? ""}
-              onChange={(v) => setParams({ ...params, b: v })}
+              onChange={(v) => setParams({ ...overrides, b: v })}
             />
             <div>
               <label
@@ -1139,7 +1144,7 @@ function CanvasPreview({ def, members }: { def: CanvasDef; members: DiscordMembe
                 id="page-etat-de-la-fusion"
                 className="w-full bg-dbz-bg border-2 border-dbz-border focus:border-dbz-orange p-2 text-sm"
                 value={params.state ?? "success"}
-                onChange={(e) => setParams({ ...params, state: e.target.value })}
+                onChange={(e) => setParams({ ...overrides, state: e.target.value })}
               >
                 <option value="propose">Proposition de fusion</option>
                 <option value="success">Fusion réussie</option>
@@ -1156,7 +1161,7 @@ function CanvasPreview({ def, members }: { def: CanvasDef; members: DiscordMembe
                 id="page-nom-de-fusion"
                 className="w-full bg-dbz-bg border-2 border-dbz-border focus:border-dbz-orange p-2 text-sm"
                 value={params.name ?? ""}
-                onChange={(e) => setParams({ ...params, name: e.target.value })}
+                onChange={(e) => setParams({ ...overrides, name: e.target.value })}
                 placeholder="ex : Gokuetto"
               />
             </div>
@@ -1176,7 +1181,7 @@ function CanvasPreview({ def, members }: { def: CanvasDef; members: DiscordMembe
                 id="page-classement"
                 className="w-full bg-dbz-bg border-2 border-dbz-border focus:border-dbz-orange p-2 text-sm"
                 value={params.metric ?? "xp"}
-                onChange={(e) => setParams({ ...params, metric: e.target.value })}
+                onChange={(e) => setParams({ ...overrides, metric: e.target.value })}
               >
                 <option value="xp">Points d&apos;expérience (XP)</option>
                 <option value="zeni">Zénis (monnaie)</option>
@@ -1192,7 +1197,7 @@ function CanvasPreview({ def, members }: { def: CanvasDef; members: DiscordMembe
                 max="20"
                 className="w-full accent-dbz-orange"
                 value={params.limit ?? "10"}
-                onChange={(e) => setParams({ ...params, limit: e.target.value })}
+                onChange={(e) => setParams({ ...overrides, limit: e.target.value })}
               />
             </div>
           </>
@@ -1264,29 +1269,6 @@ function MemberField({
       <UserSelect value={value} onChange={onChange} placeholder="Rechercher un membre…" />
     </div>
   );
-}
-
-function initialParams(def: CanvasDef, members: DiscordMember[]): Record<string, string> {
-  const firstMember = members.find((m) => !m.id.startsWith("0"))?.id ?? "";
-  switch (def.id) {
-    case "profile":
-      return { userId: firstMember, theme: "default" };
-    case "scan":
-      return { userId: firstMember };
-    case "scouter":
-      return { userId: firstMember, type: "gay", pct: "50" };
-    case "fusion":
-      return {
-        a: members[0]?.id ?? "",
-        b: members[1]?.id ?? "",
-        state: "success",
-        name: "Gokuetto",
-      };
-    case "leaderboard":
-      return { metric: "xp", limit: "10" };
-    default:
-      return {};
-  }
 }
 
 function paramsValid(def: CanvasDef, params: Record<string, string>): boolean {

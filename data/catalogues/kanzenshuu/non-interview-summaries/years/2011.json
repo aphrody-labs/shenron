@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Entrées éditoriales Kanzenshuu hors interviews publiées en 2011, issues du périmètre bibliographique 2006–2015 ; traductions non reproduites ; forums exclus.",
+  "records": [
+    {
+      "id": "special-selection-toriyama-bardock",
+      "title": "Akira Toriyama’s Comments on Bardock Dragon Ball Z Special Selection DVD Home Media Comment 05 August 2011 Akira Toriyama Dragon Ball Z",
+      "kind": "authorial-comment",
+      "summary": "Toriyama dit se souvenir à peine du dessin de Bardock et de son équipe ; l’animation lui aurait demandé de reprendre des croquis proposés. Il décrit Bardock comme une version plus rude de Goku en armure de Freezer et apprécie la profondeur sérieuse de l’épisode, tonalité qu’il aurait lui-même allégée. Il rappelle que Bardock signifie bardane en japonais.",
+      "keyInformation": [
+        "Design probablement repris par Toriyama à la demande de Toei",
+        "contribution rare à l’anime",
+        "appréciation de la tonalité grave du spécial."
+      ],
+      "source": {
+        "date": "05 August 2011",
+        "publication": "Dragon Ball Z Special Selection DVD",
+        "pages": null,
+        "bibliographicYears": [
+          2011
+        ],
+        "url": "https://www.kanzenshuu.com/translations/special-selection-toriyama-bardock/"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Précise son implication dans le design de Bardock et son appréciation du spécial TV."
+    }
+  ]
+}

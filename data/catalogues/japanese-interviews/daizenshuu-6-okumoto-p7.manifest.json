@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "status": "visible-commentary-transcribed-review-needed",
+  "publication": "Dragon Ball Daizenshuu 6, Shenron News insert",
+  "itemTitle": "I LOVE DRAGON BALL 第6回 奥本大三郎さん（フランス文学者）",
+  "speaker": "奥本大三郎",
+  "method": "目視転記。ローカルスキャンのみ。OCRとネットワークは不使用。",
+  "records": [
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-6-okumoto-p7.jsonl#L1",
+      "page": 7,
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 6\\daizenshuu_06_shenron-news_page007_9717732155_o.jpg",
+      "imageBytes": 3244160,
+      "imageSha256": "1b43c76f7ab60791f4e1b3ddf859ad840a02cecc207f28935a02beec10875a3d",
+      "completeness": "Article title, visible commentary blocks, and publication note transcribed."
+    }
+  ],
+  "limits": [
+    "P.7 est un commentaire éditorial à la première personne, pas un échange de questions-réponses.",
+    "Les dialogues imprimés dans l'extrait de manga et les éléments calligraphiques décoratifs ne sont pas transcrits comme propos d'Okumoto."
+  ],
+  "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-6-okumoto-p7.jsonl",
+  "transcriptBytes": 1534,
+  "transcriptSha256": "9df31a6e4877fd82a88bdc01e4d2d05f09d007962024d8ddb7e76578f17f1651"
+}

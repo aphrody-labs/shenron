@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "publication": "ドラゴンボール超全集4 超事典",
+  "publicationDate": "2013-05-09",
+  "interviewTitle": "野沢雅子が振り返ってみた DRAGON BALL!!",
+  "interviewee": "野沢雅子",
+  "pageRange": "341-344 of 340-345",
+  "method": "manual visual transcription from local Japanese scans; no OCR, network, or translation used",
+  "transcriptBytes": 14087,
+  "transcriptSha256": "d22bf821020c08682518b35d8cb8a8e3fab962f4d5af91bb10f235dec0fd225b",
+  "records": [
+    {
+      "page": 341,
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\341.png",
+      "imageBytes": 2357218,
+      "imageSha256": "2d4af5713be3d1f225fccb746709c04ab61726bda04320c634da0127f08c7cb1",
+      "transcriptFile": "data/catalogues/japanese-interviews/chozenshuu-4-nozawa-341-344.jsonl",
+      "transcriptLine": 1,
+      "visibleEnding": "Visible page ends: 「前の週まで子供だったのに、」",
+      "visualStatus": "readable; manually transcribed from scan"
+    },
+    {
+      "page": 342,
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\342.png",
+      "imageBytes": 2326419,
+      "imageSha256": "b9623c5065ec403ea6c5467a48311cea17c62ffe2228ee6d767b3c15e340f29c",
+      "transcriptFile": "data/catalogues/japanese-interviews/chozenshuu-4-nozawa-341-344.jsonl",
+      "transcriptLine": 2,
+      "visibleEnding": "Visible page ends: 「私は掛け合いでやりたい」",
+      "visualStatus": "readable; manually transcribed from scan"
+    },
+    {
+      "page": 343,
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\343.png",
+      "imageBytes": 2587911,
+      "imageSha256": "2e6fbaf81cebdd9476a0f426e220bda524a83a2a42c636d3c817a8435200e889",
+      "transcriptFile": "data/catalogues/japanese-interviews/chozenshuu-4-nozawa-341-344.jsonl",
+      "transcriptLine": 3,
+      "visibleEnding": "Visible page ends: 「こういう編集したら死んじゃいますよ、って（笑）。」",
+      "visualStatus": "readable; manually transcribed from scan"
+    },
+    {
+      "page": 344,
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\344.png",
+      "imageBytes": 2375330,
+      "imageSha256": "7a29877411e392c786262eb9feb56ba1a9271c57bd78e70ba9c5b9da94ea11e0",
+      "transcriptFile": "data/catalogues/japanese-interviews/chozenshuu-4-nozawa-341-344.jsonl",
+      "transcriptLine": 4,
+      "visibleEnding": "Visible page ends: 「私は最後のバトルを山寺（宏」",
+      "visualStatus": "readable; manually transcribed from scan"
+    }
+  ],
+  "limitations": [
+    "This is a four-page segment of a six-page interview. Page 340 is stored separately; p.345 remains untranscribed.",
+    "Text at page edges is preserved as visible and is not completed from another source.",
+    "Editorial text, profile captions, manga panels and lettering are omitted.",
+    "Column order follows the visible reading flow; review remains advisable for Japanese punctuation and uncommon names."
+  ]
+}

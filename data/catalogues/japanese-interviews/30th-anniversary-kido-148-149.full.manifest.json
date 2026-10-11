@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "status": "complete-independent-manual-visual-transcription",
+  "publication": "30th Anniversary ドラゴンボール超史集",
+  "interviewTitle": "DRAGON BALL ANIMATION INTERVIEW / アニメの新たな未来へ / プロデューサー 木戸睦",
+  "interviewee": "木戸睦",
+  "method": "Source-first independent manual transcription after rendering the local PDF pages at high resolution; no OCR and no network.",
+  "records": [
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-kido-148-149.full.jsonl#L1",
+      "printedPages": [
+        148,
+        149
+      ],
+      "pdfPageIndices": [
+        149,
+        150
+      ],
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+      "imageBytes": 100224986,
+      "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
+      "transcriptBytes": 4045,
+      "transcriptSha256": "e9559b4ff361766897f781320219eb65216a50e0e48b737f1e7f3759f1bf2f9a",
+      "completeness": "COMPLETE interview body for printed pages 148–149. The body copy is continuous across the page break; every visible body column was transcribed. Excludes the adjacent Dragon Ball Super editorial teaser, portrait/profile caption, and staff/cast information, which are not part of this interview. The page turn splits the final word: page 148 ends with で and page 149 resumes with すよ。"
+    }
+  ],
+  "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-kido-148-149.full.jsonl",
+  "transcriptBytes": 4045,
+  "transcriptSha256": "e9559b4ff361766897f781320219eb65216a50e0e48b737f1e7f3759f1bf2f9a",
+  "review": "Independent visual pass complete; article body checked across both rendered pages, including the page-break continuation."
+}

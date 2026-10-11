@@ -297,18 +297,12 @@ describe("rerank dialects", () => {
 });
 
 describe("aphrody-infra contract parity", () => {
-  // The contract lives in the sibling aphrody-infra checkout; CI runners
-  // without it skip this parity check (the table above still pins the names).
-  const contractPath = join(
-    import.meta.dir,
-    "..",
-    "..",
-    "..",
-    "..",
-    "aphrody-infra",
-    "config",
-    "local-ai.json",
-  );
+  // Infra configuration belongs to the selected Aphrody workspace, not a fixed host checkout.
+  const contractPath =
+    process.env.APHRODY_AI_CONTRACT ||
+    (process.env.APHRODY_INFRA_ROOT
+      ? join(process.env.APHRODY_INFRA_ROOT, "config", "local-ai.json")
+      : join(import.meta.dir, "..", "..", "..", "..", "aphrody-infra", "config", "local-ai.json"));
   const present = existsSync(contractPath);
 
   test.skipIf(!present)(
@@ -370,5 +364,36 @@ describe("resolveDirectChat", () => {
     expect(resolveDirectChat({ APHRODY_AI_CHAT_BASE_URL: "https://example.com/v1" }).ok).toBe(
       false,
     );
+  });
+
+  test("a direct vLLM provider enables chat independently of the compute gateway", () => {
+    const cfg = ok({
+      APHRODY_AI_CHAT_BASE_URL: `${LOOP}/v1`,
+      APHRODY_AI_CHAT_MODEL: "gemma4-e2b-bnb-4bit",
+      APHRODY_AI_CHAT_API_KEY: TOKEN,
+    });
+    expect(cfg.compute).toBeNull();
+    expect(cfg.chatModel).toBe("gemma4-e2b-bnb-4bit");
+    expect(cfg.directChat?.apiKey).toBe(TOKEN);
+    expect(cfg.disabled.some((entry) => entry.capability === "chat")).toBe(false);
+    expect(cfg.disabled.some((entry) => entry.capability === "embed")).toBe(true);
+  });
+
+  test("canonical upstream credential wins; malformed credentials expose only variable names", () => {
+    const resolved = resolveDirectChat({
+      APHRODY_AI_CHAT_BASE_URL: `${LOOP}/v1`,
+      APHRODY_AI_CHAT_API_KEY: TOKEN,
+      SHENRON_OPENAI_API_KEY: "legacy",
+    });
+    expect(resolved.ok && resolved.value?.apiKey).toBe(TOKEN);
+    const bad = resolveDirectChat({
+      APHRODY_AI_CHAT_BASE_URL: `${LOOP}/v1`,
+      APHRODY_AI_CHAT_API_KEY: "private\nvalue",
+    });
+    expect(bad.ok).toBe(false);
+    if (!bad.ok) {
+      expect(bad.issues[0]?.name).toBe("APHRODY_AI_CHAT_API_KEY");
+      expect(JSON.stringify(bad.issues)).not.toContain("private");
+    }
   });
 });

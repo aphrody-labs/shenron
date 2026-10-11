@@ -79,7 +79,9 @@ test("/api/auth/* goes to Better Auth with the socket peer, forged headers dropp
   expect((await post.json()) as unknown).toEqual({ from: "better-auth" });
 });
 
-test("without an auth port the path is left to Next", async () => {
+test("without an auth port Bun returns unavailable without a Next relay loop", async () => {
   const response = await fetch(`http://127.0.0.1:${off.port}/api/auth/get-session`);
-  expect(await response.json()).toEqual({ from: "next" });
+  expect(response.status).toBe(503);
+  expect(response.headers.get("cache-control")).toBe("private, no-store");
+  expect(await response.json()).toEqual({ error: "auth_unavailable" });
 });

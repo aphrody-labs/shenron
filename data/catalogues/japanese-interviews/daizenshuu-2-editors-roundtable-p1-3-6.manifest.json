@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "status": "visible-editor-roundtable-excerpts-review-needed",
+  "publication": "Dragon Ball Daizenshuu 2, Shenlong News insert (1995)",
+  "interviewTitle": "歴代担当者座談会 第2回 — 今だから話せるドラゴンボール10年分の裏話!!",
+  "participants": [
+    "鳥嶋和彦",
+    "近藤裕",
+    "武田冬門",
+    "鳥山明"
+  ],
+  "method": "目視転記、 scans locaux uniquement. OCR et réseau non utilisés.",
+  "limits": [
+    "Folio p.3 : le scan imprime 6ページにつづく; le texte s’interrompt dans la dernière phrase après 決.",
+    "Les scans p.4–5 sont une pièce distincte ちかごろのワシ et ne complètent pas la discussion.",
+    "Sur p.6, quelques attributions de voix restent à contrôler à cause des colonnes; aucun propos n’est complété par conjecture.",
+    "Les légendes biographiques et crédits de page sont omis."
+  ],
+  "records": [
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-2-editors-roundtable-p1-3-6.jsonl#L1",
+      "page": 1,
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 2\\daizenshuu_02_shenron-news_page001_4887003345_o.jpg",
+      "imageBytes": 101977,
+      "imageSha256": "b8810640a264c0e29036c3384d3a8bb2a17a5700666238baf1b1eb1672b2c986",
+      "completeness": "Passages visibles transcrits; voir limites folio p.3."
+    },
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-2-editors-roundtable-p1-3-6.jsonl#L2",
+      "page": 2,
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 2\\daizenshuu_02_shenron-news_page002_4887606628_o.jpg",
+      "imageBytes": 105411,
+      "imageSha256": "34e26814817d333c801f2a50563749565ec3ab1df7addf4306179000048901e6",
+      "completeness": "Dialogues visibles transcrits; quelques glyphes demandent confirmation."
+    },
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-2-editors-roundtable-p1-3-6.jsonl#L3",
+      "page": 3,
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 2\\daizenshuu_02_shenron-news_page003_4887606190_o.jpg",
+      "imageBytes": 105465,
+      "imageSha256": "64a7404751306d095fea4896415c06b26b84f121b1b70f8be952835335afd9e7",
+      "completeness": "Dialogue visible jusqu’au pied imprimé 6ページにつづく; la dernière phrase s’interrompt après 決."
+    },
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-2-editors-roundtable-p1-3-6.jsonl#L4",
+      "page": 6,
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 2\\daizenshuu_02_shenron-news_page006_4887003483_o.jpg",
+      "imageBytes": 125554,
+      "imageSha256": "d1dd8cbf9407fe63828932c308c81919e80788ba4a4da49ce5e8b26e21272b54",
+      "completeness": "Discussion visible sur les androïdes 19/20 et Cell; segmentation de quelques locuteurs incertaine."
+    }
+  ],
+  "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-2-editors-roundtable-p1-3-6.jsonl",
+  "transcriptBytes": 5603,
+  "transcriptSha256": "16aa072388c81d91f22526429adec4d5935968266d4d36aa092ceac962fe42dd"
+}

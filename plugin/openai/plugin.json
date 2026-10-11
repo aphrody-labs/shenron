@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "shenron",
-  "version": "1.4.0",
+  "version": "1.4.4",
   "description": "Sourced Dragon Ball research, canon checks, manga and databook lookup, and Japanese terminology.",
   "author": {
     "name": "aphrody-dev",

@@ -1,0 +1,613 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2016; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "dragon-ball-super-history-book-akira-toriyama-interview",
+      "title": "Akira Toriyama Interview: Dragon Ball and Akira Toriyama",
+      "summary": "Toriyama retrace la création et l'évolution de Dragon Ball, souvent improvisées ou dictées par le dessin hebdomadaire. Goku commence comme singe, grandit pour faciliter les combats, le blond du Super Saiyan économise l'encrage et les transformations se décident pendant la publication. Il décrit ses designs, les sondages lecteurs, l'épuisement avant la fin et les raccords rétrospectifs.",
+      "keyInformation": [
+        "Goku commence comme singe puis devient humain; Torishima suggère la queue. Toriyama le fait grandir car sa taille gêne les combats.",
+        "Le blond épargne l'encrage; le regard de Bruce Lee inspire les yeux du Super Saiyan.",
+        "Les transformations de Freeza et leur nombre n'étaient pas prévus; les raccords se font au fil de la sérialisation.",
+        "Il conçoit souvent personnalité puis visage puis vêtements; silhouettes lisibles et types nouveaux comptent.",
+        "Les sondages et l'éditeur poussent vers les combats; Toriyama dit avoir résisté.",
+        "Il n'avait pas défini la fin au début; épuisé après Boo, il décide de conclure.",
+        "Il choisit souvent des décors ruraux simples pour réduire le travail et aime dessiner machines et dragons.",
+        "Il voit dieux et extraterrestres comme ressorts narratifs flexibles et dit relier des éléments après coup."
+      ],
+      "source": {
+        "publication": "30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 88-93)",
+        "date": "21 January 2016",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-history-book-akira-toriyama-interview/",
+        "questionAnswerCount": 40,
+        "detectedQuestionBlocks": 40,
+        "detectedAnswerBlocks": 40,
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-history-book-akira-toriyama-interview.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-01",
+      "title": "Video Games Selection – Pick Up! 01",
+      "summary": "Tanaka et Suzuki expliquent comment les limites de la Famicom ont conduit au jeu de cartes, au plateau d'aventure et aux combats en vignettes. Tanaka recevait parfois par fax les techniques nommées ou dessinées par Toriyama; le travail conduisit ensuite à l'OVA Plan to Eradicate the Saiyans.",
+      "keyInformation": [
+        "Cartes et plateau réunissent aventure et combat dans les limites mémoire de la console.",
+        "Toriyama transmettait noms et dessins de techniques; Toei utilisait aussi ces informations.",
+        "Suzuki relie le jeu à l'OVA originale."
+      ],
+      "source": {
+        "publication": "30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 182-183)",
+        "date": "21 January 2016",
+        "participants": [
+          "Nobuyuki Tanaka",
+          "Toshihiro Suzuki"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-01/",
+        "questionAnswerCount": 4,
+        "detectedQuestionBlocks": 4,
+        "detectedAnswerBlocks": 4,
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/super-history-book-video-games-selection-pick-up-01.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-02",
+      "title": "Video Games Selection – Pick Up! 02",
+      "summary": "Suzuki raconte Super Butōden et sa suite, créés dans le sillage des jeux de combat. L'écran partagé représente les distances; l'équipe manque de temps, ajoute des décors et personnages des films, puis simplifie la commande du Kamehameha.",
+      "keyInformation": [
+        "L'écran partagé vient d'une idée de programmeur testée sur prototype.",
+        "La suite sort la même année après un délai court; Toei fournit des visuels et personnages.",
+        "La commande du Kamehameha était difficile, même pour Toriyama, et fut simplifiée."
+      ],
+      "source": {
+        "publication": "30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 184-185)",
+        "date": "21 January 2016",
+        "participants": [
+          "Toshihiro Suzuki"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-02/",
+        "questionAnswerCount": 6,
+        "detectedQuestionBlocks": 6,
+        "detectedAnswerBlocks": 6,
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/super-history-book-video-games-selection-pick-up-02.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-03",
+      "title": "Video Games Selection – Pick Up! 03",
+      "summary": "Uchiyama raconte la relance des jeux Dragon Ball sur PlayStation 2. Les reprises de modèles 3D retardent le lancement, mais les éditions Kanzenban et Dragon Box soutiennent fortuitement le calendrier. Les ventes à l'étranger surprennent l'équipe.",
+      "keyInformation": [
+        "Bandai mise sur Dragon Ball pour la nouvelle console et le marché nostalgique.",
+        "Une refonte des modèles 3D repousse la sortie de 2002 à février 2003.",
+        "Uchiyama rapporte environ trois millions d'exemplaires vendus à l'étranger."
+      ],
+      "source": {
+        "publication": "30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 186-187)",
+        "date": "21 January 2016",
+        "participants": [
+          "Daisuke Uchiyama"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-03/",
+        "questionAnswerCount": 4,
+        "detectedQuestionBlocks": 4,
+        "detectedAnswerBlocks": 5,
+        "formatNote": "Blocs réponse locaux=5 vs index=4. Comptage Q/R distinct (4/5); vérifier structure imbriquée ou question omise.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/super-history-book-video-games-selection-pick-up-03.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-04",
+      "title": "Video Games Selection – Pick Up! 04",
+      "summary": "Mito présente Sparking! comme passage aux combats 3D et aux poursuites rapides. Le nom vient du refrain de l'anime; les équipes augmentent le roster et imaginent des scénarios alternatifs permettant des rencontres inédites.",
+      "keyInformation": [
+        "Sparking! devait dépasser les combats 2D et exploiter les projections en profondeur.",
+        "NEO et METEOR marquent les suites; les rosters grossissent pour surprendre le public.",
+        "Les scénarios hypothétiques sont des propositions de jeu, non canoniques."
+      ],
+      "source": {
+        "publication": "30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 188-189)",
+        "date": "21 January 2016",
+        "participants": [
+          "Ryō Mito"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-04/",
+        "questionAnswerCount": 5,
+        "detectedQuestionBlocks": 5,
+        "detectedAnswerBlocks": 6,
+        "formatNote": "Blocs réponse locaux=6 vs index=5. Comptage Q/R distinct (5/6); vérifier structure imbriquée ou question omise.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/super-history-book-video-games-selection-pick-up-04.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-05",
+      "title": "Video Games Selection – Pick Up! 05",
+      "summary": "Hirano décrit Xenoverse comme une nouvelle manière d'habiter Dragon Ball par un avatar chargé de réparer l'histoire. Le jeu reprend des éléments de Dragon Ball Online et crée aussi Tokitoki City et Demigra; le design du Kaiōshin du Temps est supervisé par Toriyama.",
+      "keyInformation": [
+        "Le projet dépasse le combat comme Goku et la reconstitution du manga.",
+        "Mira, Towa et le Nid temporel viennent de DB Online; Tokitoki City et Demigra sont propres à Xenoverse.",
+        "Les événements alternatifs relèvent du jeu."
+      ],
+      "source": {
+        "publication": "30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 190-191)",
+        "date": "21 January 2016",
+        "participants": [
+          "Masayuki Hirano"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-05/",
+        "questionAnswerCount": 4,
+        "detectedQuestionBlocks": 4,
+        "detectedAnswerBlocks": 5,
+        "formatNote": "Blocs réponse locaux=5 vs index=4. Comptage Q/R distinct (4/5); vérifier structure imbriquée ou question omise.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/super-history-book-video-games-selection-pick-up-05.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-ball-super-manga-vol-1-tori-toyo-interview-book-version",
+      "title": "Tori-Toyo Free Talk (Book Version)",
+      "summary": "Toriyama et Toyotarō présentent leur méthode d'adaptation manga: Toriyama fournit la trame, Toyotarō la met en cases et ajoute des scènes pour servir les personnages. Ils parlent de l'équilibre entre direction de l'auteur et autonomie du dessinateur.",
+      "keyInformation": [
+        "Toriyama fixe les grandes lignes; Toyotarō réalise storyboard et planches.",
+        "Toyotarō étudie le manga original tout en développant sa narration.",
+        "Les différences avec l'anime restent distinctes."
+      ],
+      "source": {
+        "publication": "Dragon Ball Super (Manga) Volume 1",
+        "date": "04 April 2016",
+        "participants": [
+          "Akira Toriyama",
+          "Toyotarō"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-1-tori-toyo-interview-book-version/",
+        "questionAnswerCount": 6,
+        "detectedQuestionBlocks": 6,
+        "detectedAnswerBlocks": 6,
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-manga-vol-1-tori-toyo-interview-book-version.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-ball-super-manga-vol-1-tori-toyo-interview-web-version",
+      "title": "Tori-Toyo Free Talk (Web Version)",
+      "summary": "Version web développée du dialogue sur la fabrication du manga Super, ses designs et ses différences avec l'anime. Toyotarō s'appuie sur les volumes originaux tout en assumant son trait; Toriyama lui laisse faire briller les personnages.",
+      "keyInformation": [
+        "Toyotarō étudie les volumes et modèles originaux mais garde une voix propre.",
+        "Toriyama lui accorde de la marge pour développer les personnages.",
+        "Les versions anime et manga suivent des choix distincts."
+      ],
+      "source": {
+        "publication": "Shueisha’s Official V-Jump Website",
+        "date": "04 April 2016",
+        "participants": [
+          "Akira Toriyama",
+          "Toyotarō"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-1-tori-toyo-interview-web-version/",
+        "questionAnswerCount": 13,
+        "detectedQuestionBlocks": 13,
+        "detectedAnswerBlocks": 13,
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-manga-vol-1-tori-toyo-interview-web-version.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-ball-super-cast-comment-takeshi-kusao-future-trunks-arc",
+      "title": "Takeshi Kusao Special Interview",
+      "summary": "Kusao raconte sa surprise devant le retour de Trunks dans Super. Il rapproche son statut de jeune comédien de celui du personnage et distingue le Trunks futur meurtri du Trunks enfant protégé et compétitif.",
+      "keyInformation": [
+        "Le producteur annonce l'arc à Kusao pendant une pause; il ne s'attendait pas à reprendre le rôle.",
+        "Il rapproche son intégration à une distribution expérimentée de l'arrivée de Trunks.",
+        "Il joue le futur Trunks plus éprouvé et l'enfant plus méfiant face à son double."
+      ],
+      "source": {
+        "publication": "Toei Animation’s Official “Dragon Ball Super” Website",
+        "date": "10 June 2016",
+        "participants": [
+          "Takeshi Kusao"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comment-takeshi-kusao-future-trunks-arc/",
+        "questionAnswerCount": 5,
+        "detectedQuestionBlocks": 5,
+        "detectedAnswerBlocks": 5,
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-cast-comment-takeshi-kusao-future-trunks-arc.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-1",
+      "title": "Goku vs Arale: Masako Nozawa & Mami Koyama Special Interview (Part 1)",
+      "summary": "Nozawa et Koyama célèbrent la rencontre de Goku et Aralé, leurs séances anciennes et l'ambiance joyeuse du studio. Koyama dit retrouver les sensations vocales d'Aralé; elles espèrent réunir plusieurs générations.",
+      "keyInformation": [
+        "Koyama admirait le rythme de Nozawa lorsqu'elle débutait.",
+        "L'ambiance amicale du studio nourrit selon elles l'épisode.",
+        "Les personnages restent durablement attachés aux acteurs."
+      ],
+      "source": {
+        "publication": "Toei Animation’s Official “Dragon Ball Super” Website",
+        "date": "22 November 2016",
+        "participants": [
+          "Masako Nozawa",
+          "Mami Koyama"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-1/",
+        "questionAnswerCount": 4,
+        "detectedQuestionBlocks": 4,
+        "detectedAnswerBlocks": 4,
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-1.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-2",
+      "title": "Goku vs Arale: Masako Nozawa & Mami Koyama Special Interview (Part 2)",
+      "summary": "Nozawa et Koyama voient le combat de Goku et Aralé comme un jeu, tandis que Vegeta reste prisonnier de son orgueil. Elles évoquent la polyvalence de Nozawa et l'alternance entre épisodes comiques et arcs sérieux.",
+      "keyInformation": [
+        "Goku joue avec Aralé plutôt que de la traiter en ennemie.",
+        "Elles opposent sa spontanéité à l'orgueil de Vegeta.",
+        "Nozawa cite ses rôles multiples, dont Goku Black."
+      ],
+      "source": {
+        "publication": "Toei Animation’s Official “Dragon Ball Super” Website",
+        "date": "22 November 2016",
+        "participants": [
+          "Masako Nozawa",
+          "Mami Koyama"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-2/",
+        "questionAnswerCount": 2,
+        "detectedQuestionBlocks": 2,
+        "detectedAnswerBlocks": 4,
+        "formatNote": "Blocs réponse locaux=4 vs index=2. Comptage Q/R distinct (2/4); vérifier structure imbriquée ou question omise.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-2.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-ball-super-tori-toyo-free-talk-vol-2",
+      "title": "Tori-Toyo Free Talk Vol. 2",
+      "summary": "Toriyama et Toyotarō analysent l'arc Trunks, Zamasu et Goku Black. Toriyama reconnaît sa difficulté avec la psychologie; Toyotarō détaille ses initiatives manga pour rendre lisible la justice dévoyée de Zamasu, faire briller Vegeta et Trunks et construire la fusion avant l'affrontement final. Toriyama approuve cette marge.",
+      "keyInformation": [
+        "Toriyama voulait changer de ton; il décrit Zamasu comme bon mais trop rigide.",
+        "Toriyama compare Goku Black à un faux héros, un faux Son Goku.",
+        "La fusion n'était pas au scénario initial; Toyotarō l'a rendue nécessaire dans le manga.",
+        "Toriyama loue le travail psychologique de Toyotarō."
+      ],
+      "source": {
+        "publication": "Dragon Ball Super (Manga) Volume 4",
+        "date": "02 December 2016",
+        "participants": [
+          "Akira Toriyama",
+          "Toyotarō"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-tori-toyo-free-talk-vol-2/",
+        "questionAnswerCount": 5,
+        "detectedQuestionBlocks": 5,
+        "detectedAnswerBlocks": 6,
+        "formatNote": "Blocs réponse locaux=6 vs index=5. Comptage Q/R distinct (5/6); vérifier structure imbriquée ou question omise.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-tori-toyo-free-talk-vol-2.html"
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "animedia-december-2016-atsushi-kido-dragon-ball-super-comments",
+      "title": "Animedia December 2016 Issue (10 November 2016)",
+      "summary": "Le producteur Atsushi Kido répond à une question de classement des combattants pendant l'arc de Trunks du futur. En excluant Beerus, il considère alors Goku Black comme le plus fort, car il a pris la puissance de Goku comme base et a évolué à sa manière. Il qualifie Zamasu fusionné de personnage « injuste » en raison de sa puissance et de son immortalité, mais suppose que la contradiction entre le corps mortel de Goku et l'objectif d'éliminer les mortels pourrait constituer une faiblesse. Il annonce l'affrontement de Vegetto contre Zamasu fusionné et promet que Trunks jouera un rôle décisif. Il s'agit de l'appréciation promotionnelle de Kido au moment de la publication, non d'un classement général ou intemporel.",
+      "keyInformation": [
+        "Kido répond qu'en excluant Beerus, il choisirait Goku Black comme combattant le plus fort du moment, en raison de l'usage de la puissance de Goku comme base et de l'évolution propre de Black.",
+        "Il juge Zamasu fusionné presque invincible, car celui-ci combine une puissance écrasante à l'immortalité qui neutralise les attaques; il souligne aussi l'inventivité de ses techniques.",
+        "Comme faiblesse potentielle, Kido évoque la contradiction d'un Zamasu qui veut vaincre les mortels tout en ayant pris le corps du mortel Goku; il présente cela comme une possibilité, pas comme une certitude.",
+        "Il annonce que Goku et Vegeta fusionneront en Vegetto pour combattre Zamasu fusionné et précise que les actions de Trunks seront également essentielles à l'issue de la bataille.",
+        "Le commentaire est situé à la veille de la diffusion de l'épisode 66; la note de Kanzenshuu indique que cet épisode devait être diffusé trois jours après la parution du numéro."
+      ],
+      "source": {
+        "publication": "Animedia, numéro de décembre 2016",
+        "pages": "p. 27",
+        "date": "2016-11-10",
+        "url": "https://www.kanzenshuu.com/translations/animedia-december-2016-atsushi-kido-dragon-ball-super-comments/",
+        "participants": [
+          "Atsushi Kido"
+        ],
+        "formatNote": "Réponses courtes de producteur à une question promotionnelle sur les forces des antagonistes; les jugements et prédictions de Kido sont datés et personnels.",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/animedia-december-2016-atsushi-kido-dragon-ball-super-comments/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/animedia-december-2016-atsushi-kido-dragon-ball-super-comments.html",
+        "questionAnswerCount": 3,
+        "questionBlockCount": 3,
+        "answerBlockCount": 3,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of Atsushi Kido's comments regarding the Future Trunks arc of 'Dragon Ball Super' from Animedia's December 2016 issue",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : propos d'un producteur sur les personnages et les développements imminents de Dragon Ball Super en 2016.",
+      "forumContent": false,
+      "kind": "qa",
+      "formatNote": "Q&A éditorial avec répondant(s) identifié(s)."
+    },
+    {
+      "id": "dragon-ball-super-manga-vol-2-toyotaro-sensei-super-anatomy",
+      "title": "Dragon Ball Super Volume 2 (Manga)",
+      "summary": "Dans une rubrique du deuxième volume du manga Dragon Ball Super, Toyotarō répond à plusieurs questions sur ses goûts et sa méthode. Il nomme Goku comme son personnage préféré et se souvient avoir rempli ses cahiers d'écolier de dessins de Dragon Ball, en rêvant déjà d'un dérivé dont Chaozu aurait été le protagoniste. Beerus et Whis sont difficiles à dessiner car ils n'ont pas de modèles antérieurs et Whis possède une forme d'yeux inédite. Toyotarō explique qu'il dessine un brouillon à partir de l'histoire originale de Toriyama, le remet à son éditeur qui le fait vérifier, puis réalise la version finale; recevoir des dessins correctifs de Toriyama peut le faire passer de l'excitation au découragement. Il indique que la suite de l'arc de Trunks du futur prendra une direction différente de l'anime et annonce que « cette promesse » sera tenue, sans révéler la suite. Une note de volume rappelle enfin sa rencontre avec les fans au New York Comic Con, qui a ravivé son amour du manga.",
+      "keyInformation": [
+        "Toyotarō répond que Goku est naturellement son personnage favori, même s'il plaisante sur le fait que répondre Oolong ou Pilaf aurait pu surprendre les lecteurs.",
+        "Il dessinait des personnages de Dragon Ball dans ses cahiers dès l'école primaire et imaginait déjà un manga dérivé; sa première idée mettait Chaozu en vedette.",
+        "Il juge Beerus et Whis difficiles à dessiner faute de modèles antérieurs, en particulier les yeux de Whis, dont la forme ne lui semblait pas encore utilisée dans Dragon Ball.",
+        "Sa méthode consiste à réaliser un brouillon à partir de l'histoire originale de Toriyama, l'envoyer à son éditeur pour obtenir les corrections de Toriyama, puis produire l'image définitive à partir de ces indications. Les dessins directement réalisés par Toriyama le rendent à la fois enthousiaste et intimidé.",
+        "La page compare un brouillon de Toyotarō où la planète est plus petite et sans dialogue au dessin corrigé par Toriyama, qui agrandit la planète et ajoute du dialogue; Toyotarō prépare ensuite l'image finale.",
+        "Toyotarō annonce que la fin de l'arc de Trunks du futur divergera de celle de la série télévisée et que la promesse attendue par les lecteurs sera tenue, sans révéler de détails sur l'arc ultérieur.",
+        "Une note éditoriale relate la participation de Toyotarō au New York Comic Con et son plaisir de rencontrer les fans, expérience qui aurait renouvelé son affection pour le manga."
+      ],
+      "source": {
+        "publication": "Dragon Ball Super, manga, volume 2",
+        "pages": "Rubrique de questions-réponses, pagination non indiquée dans la page Kanzenshuu",
+        "date": "2016-12-02",
+        "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-2-toyotaro-sensei-super-anatomy/",
+        "participants": [
+          "Toyotarō"
+        ],
+        "formatNote": "Questions-réponses de lecteur; les annonces sur les arcs futurs sont des commentaires promotionnels de Toyotarō au moment de publication.",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-2-toyotaro-sensei-super-anatomy/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-super-manga-vol-2-toyotaro-sensei-super-anatomy.html",
+        "questionAnswerCount": 4,
+        "questionBlockCount": 4,
+        "answerBlockCount": 4,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of the 'Toyotarō-sensei's Super Anatomy!!!' interview from the second collected edition of the 'Dragon Ball Super' manga",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : préférences de Toyotarō, origine de son intérêt pour Dragon Ball et processus de collaboration avec Toriyama sur le manga.",
+      "forumContent": false,
+      "kind": "qa",
+      "formatNote": "Q&A éditorial avec répondant(s) identifié(s)."
+    },
+    {
+      "id": "site-post-48708-podcast-episode-0400",
+      "title": "Podcast Episode #0400 — Greg Werner",
+      "kind": "audio-interview",
+      "summary": "Pour l’épisode 400, Kirbopher revient d’abord avec l’équipe sur le podcast. Greg Werner est ensuite interviewé au sujet de sa découverte de Dragon Ball en Amérique au milieu des années 1990, de la création d’un ancien site de fans, des transformations du fandom, de son travail pour le magazine Beckett et de son passage au fandom professionnel de One Piece. Le billet n’inclut pas de transcription audio.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0400; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2016/03/28/podcast-episode-0400/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2016-03-28",
+        "participants": [
+          "Greg Werner"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2016.json",
+        "audioUrl": "http://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0400.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-48708-podcast-episode-0400.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Fandom and publishing",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-48708-podcast-episode-0400.mp3",
+      "audioTranscriptAvailable": false
+    },
+    {
+      "id": "site-post-49488-podcast-episode-0403",
+      "title": "Podcast Episode #0403 — Jason Thompson",
+      "kind": "audio-interview",
+      "summary": "Le synopsis présente une interview de Jason Thompson, ancien éditeur chez Viz, enregistrée à Anime Fan Fest 2016. La discussion porte sur son travail éditorial chez Viz et les hauts et bas de la censure dans la traduction anglaise du manga Dragon Ball. L’épisode comprend aussi un échange sur l’annonce du retour de Trunks dans Dragon Ball Super; aucun transcript de l’interview n’est fourni.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0403; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2016/05/10/podcast-episode-0403/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2016-05-10",
+        "participants": [
+          "Jason Thompson"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2016.json",
+        "audioUrl": "http://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0403.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-49488-podcast-episode-0403.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Viz manga publishing and censorship",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-49488-podcast-episode-0403.mp3",
+      "audioTranscriptAvailable": false
+    },
+    {
+      "id": "site-post-49710-podcast-episode-0404",
+      "title": "Podcast Episode #0404 — Lance Heiskell",
+      "kind": "audio-interview",
+      "summary": "Le synopsis annonce une discussion de Mike avec Lance Heiskell, ancien directeur marketing puis directeur de la stratégie d’entreprise chez FUNimation. Ils reviennent sur le marketing américain de Dragon Ball, la culture de fans de l’époque, les rééditions de Dragon Ball Z jusqu’aux Blu-ray et le coffret « Rock the Dragon », puis abordent l’absence de simulcast de Dragon Ball Super. L’entretien audio n’est pas transcrit.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0404; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2016/05/17/podcast-episode-0404/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2016-05-17",
+        "participants": [
+          "Lance Heiskell"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2016.json",
+        "audioUrl": "http://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0404.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-49710-podcast-episode-0404.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "FUNimation marketing",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-49710-podcast-episode-0404.mp3",
+      "audioTranscriptAvailable": false
+    },
+    {
+      "id": "forbes-2016-kazuhiko-torishima-interview",
+      "title": "Kazuhiko Torishima — entretien Forbes sur Dragon Ball et Dragon Quest",
+      "summary": "Dans les éléments de l’entretien Forbes présentés par Kanzenshuu, l’ancien éditeur de Shūeisha revient sur ses débuts et ses collaborations avec Akira Toriyama. Le billet rapporte qu’ils tâtonnaient ensemble sur la mise en page des cases et se disputaient parfois. Il résume aussi les réflexions de Torishima sur l’adaptation télévisée : en observant le succès de l’anime Saint Seiya par rapport à son manga, il étudia le rôle de Kōzō Morishita et Takao Koyama, puis leur demanda de contribuer au redémarrage de Dragon Ball. Kanzenshuu cite certains passages et donne ces thèmes, mais ne reproduit pas l’entretien intégral; le texte complet demeure sur Forbes.",
+      "keyInformation": [
+        "Torishima raconte sa collaboration avec Toriyama, faite d’essais et de désaccords sur la mise en page.",
+        "Le billet relie ses observations sur l’adaptation de Saint Seiya à ses démarches auprès de Kōzō Morishita et Takao Koyama pour Dragon Ball.",
+        "Kanzenshuu publie un résumé et des extraits, pas l’entretien intégral."
+      ],
+      "source": {
+        "publication": "Forbes, entretien d’Ollie Barder avec Kazuhiko Torishima",
+        "date": "2016-10-15",
+        "participants": [
+          "Kazuhiko Torishima",
+          "Ollie Barder"
+        ],
+        "primarySource": "https://www.forbes.com/sites/olliebarder/2016/10/15/kazuhiko-torishima-on-shaping-the-success-of-dragon-ball-and-the-origins-of-dragon-quest/",
+        "kanzenshuuSitePost": {
+          "wpId": 52214,
+          "url": "https://www.kanzenshuu.com/2016/10/26/new-interviews-kazuhiko-torishima-forbes-and-toyotaro-anime-news-network/",
+          "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2016.json",
+          "reproducedFullInterview": false,
+          "summaryAndExcerpts": true,
+          "forumContent": false
+        },
+        "formatNote": "Entretien externe. Le billet Kanzenshuu en résume et cite certains passages; le texte intégral n’y figure pas.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2016.json"
+      },
+      "dragonBallRelevance": "Directe : souvenirs d’un éditeur de Dragon Ball et réflexions sur le manga et son adaptation.",
+      "status": "summary-based-on-kanzenshuu-post-external-full-interview",
+      "forumContent": false
+    },
+    {
+      "id": "anime-news-network-2016-toyotaro-interview",
+      "title": "Toyotarō — entretien Anime News Network à la New York Comic Con",
+      "summary": "Le compte rendu de Kanzenshuu présente cet entretien réalisé à la New York Comic Con comme un échange sur la reconnaissance de travailler officiellement sur Dragon Ball Super et sur la collaboration de Toyotarō avec Akira Toriyama. Les passages traduits dans le billet expliquent que Toyotarō reçoit les scripts de Toriyama sous forme de texte et doit imaginer expressions, regards et détails visuels; il ajoute que les retours sur ces choix sont souvent peu précis. Le billet indique également que, lors de l’entretien, le manga est alors en retard sur l’anime mais devrait bientôt le dépasser et lui retransmettre des informations. Il s’agit d’un résumé accompagné d’extraits, non de la transcription intégrale publiée par Anime News Network.",
+      "keyInformation": [
+        "Entretien mené par Todd Ciolek avec Toyotarō à la New York Comic Con.",
+        "Toyotarō décrit son travail d’interprétation des scripts textuels de Toriyama pour inventer les détails visuels.",
+        "Le billet rapporte ses propos sur la position temporairement en retard du manga par rapport à l’anime et sur l’évolution attendue de leurs échanges.",
+        "Le texte complet est externe; Kanzenshuu n’en publie que des extraits et un résumé."
+      ],
+      "source": {
+        "publication": "Anime News Network, entretien de Todd Ciolek avec Toyotarō",
+        "date": "2016-10-26",
+        "participants": [
+          "Toyotarō",
+          "Todd Ciolek"
+        ],
+        "primarySource": "https://www.animenewsnetwork.com/interview/2016-10-26/dragon-ball-super-toyotarou/.107579",
+        "kanzenshuuSitePost": {
+          "wpId": 52214,
+          "url": "https://www.kanzenshuu.com/2016/10/26/new-interviews-kazuhiko-torishima-forbes-and-toyotaro-anime-news-network/",
+          "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2016.json",
+          "reproducedFullInterview": false,
+          "summaryAndExcerpts": true,
+          "forumContent": false
+        },
+        "formatNote": "Entretien externe. Kanzenshuu en rapporte les thèmes et traduit des extraits, sans reproduire l’entretien intégral.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2016.json"
+      },
+      "dragonBallRelevance": "Directe : propos du dessinateur du manga Dragon Ball Super sur sa méthode et sa collaboration avec Toriyama.",
+      "status": "summary-based-on-kanzenshuu-post-external-full-interview",
+      "forumContent": false
+    },
+    {
+      "id": "jump-ryu-2016-akira-toriyama-fuyuto-takeda-audio-interview",
+      "title": "Akira Toriyama et Fuyuto Takeda — entretien audio Jump Ryū!",
+      "summary": "Dans son aperçu du premier mook Jump Ryū!, Kanzenshuu décrit un segment vidéo de 17 min 33 s composé d’un entretien audio entre Akira Toriyama et son troisième éditeur, Fuyuto Takeda. Le billet en indique le sujet : la vie de Toriyama avant son entrée dans Weekly Shōnen Jump et les premières années suivant ses débuts professionnels. Il précise que les deux hommes ne sont pas visibles dans la vidéo, qui montre plutôt d’anciennes photographies de l’époque de la sérialisation. Aucun échange précis n’est transcrit ou résumé dans le billet; le contenu complet se trouve dans le média du DVD externe.",
+      "keyInformation": [
+        "Entretien audio entre Akira Toriyama et son troisième éditeur Fuyuto Takeda.",
+        "Durée annoncée : 17 min 33 s.",
+        "Sujet annoncé : vie de Toriyama avant ses débuts dans Weekly Shōnen Jump et premières années de carrière.",
+        "Kanzenshuu ne transcrit pas les échanges; l’entretien intégral est sur le DVD Jump Ryū!."
+      ],
+      "source": {
+        "publication": "Jump Ryū!, volume 1 — DVD, segment ‘The Debut’s Untold Story is Recalled!’",
+        "date": "2016-01 (publication nationale du volume)",
+        "participants": [
+          "Akira Toriyama",
+          "Fuyuto Takeda"
+        ],
+        "primarySource": "http://www.jumpryu.com/",
+        "kanzenshuuSitePost": {
+          "wpId": 46927,
+          "url": "https://www.kanzenshuu.com/2016/01/06/akira-toriyama-jump-ryu-dvd-mook-contents-overview/",
+          "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2016.json",
+          "reproducedFullInterview": false,
+          "summaryAndExcerpts": false,
+          "mediaDescribed": true,
+          "forumContent": false
+        },
+        "formatNote": "Entretien audio externe décrit par l’aperçu du DVD; ni transcription ni contenu audio intégral ne figurent dans Kanzenshuu.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2016.json"
+      },
+      "dragonBallRelevance": "Directe : récit par Toriyama de ses débuts professionnels et de son travail avec son éditeur.",
+      "status": "summary-based-on-kanzenshuu-post-external-audio-not-acquired",
+      "forumContent": false
+    }
+  ]
+}
+

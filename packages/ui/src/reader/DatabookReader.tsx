@@ -175,9 +175,11 @@ function useTextesPlanches(
     if (aDemander.length === 0) return;
     for (const n of aDemander) demandes.current.add(n);
     const stop = new AbortController();
+    let abouti = false;
     loadTranscriptions!(aDemander, stop.signal)
       .then((textes) => ({ textes }))
       .then((d: { textes?: Record<string, string> }) => {
+        abouti = true;
         const recus = Object.entries(d.textes ?? {});
         if (recus.length === 0) return undefined;
         setCharges((prec) => {
@@ -188,9 +190,15 @@ function useTextesPlanches(
         return undefined;
       })
       .catch(() => {
-        /* hors ligne ou navigation : la planche reste sans texte */
+        // Hors ligne : ces planches seront redemandées au prochain défilement
+        // (une annulation est déjà traitée par le nettoyage de l'effet).
+        if (!stop.signal.aborted) for (const n of aDemander) demandes.current.delete(n);
       });
-    return () => stop.abort();
+    return () => {
+      stop.abort();
+      // Requête annulée avant sa réponse : libérer ses numéros avant le prochain passage de l'effet.
+      if (!abouti) for (const n of aDemander) demandes.current.delete(n);
+    };
   }, [manquants, loadTranscriptions]);
 
   return charges;
@@ -684,7 +692,7 @@ export function DatabookReader({
                       {item.imageUrl ? (
                         <button
                           type="button"
-                          className="group relative cursor-zoom-in rounded-sm border-0 bg-transparent p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--reader-focus,#fcf03a)]"
+                          className="group relative w-full min-w-0 cursor-zoom-in rounded-sm border-0 bg-transparent p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--reader-focus,#fcf03a)]"
                           onClick={() => openLightbox(vi.index)}
                           aria-label={`Ouvrir la page ${item.number} en plein écran`}
                         >

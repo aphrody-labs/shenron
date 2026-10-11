@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "publication": "ドラゴンボール超全集4 超事典",
+  "publicationDate": "2013-05-09",
+  "interviewTitle": "鳥山明も振り返ってみた DRAGON BALL!!; p.349 also includes 「桂くんなら、自主的に漫画が描ける!?」",
+  "interviewee": "鳥山明",
+  "pageRange": "346-349",
+  "method": "manual visual transcription from local Japanese scans; no OCR, network, or translation used",
+  "transcriptBytes": 12680,
+  "transcriptSha256": "a86c764f78a1fa90e6415d741a866f7872afd1ee9c4a2311fcc71ea8e08e35d7",
+  "records": [
+    {
+      "page": 346,
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\346.jpg",
+      "imageBytes": 4206100,
+      "imageSha256": "f13f817a2d77b13926bdd848d0d93ed8d4a8a4effaaa8982d5e05602477766e3",
+      "transcriptFile": "data/catalogues/japanese-interviews/chozenshuu-4-toriyama-346-349.jsonl",
+      "transcriptLine": 1,
+      "visualStatus": "readable; manually transcribed from original scan"
+    },
+    {
+      "page": 347,
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\347.jpg",
+      "imageBytes": 4416001,
+      "imageSha256": "bb7b1329063f8e2534bc30735a281b5d30b4155efa65b2173161ff30fd955237",
+      "transcriptFile": "data/catalogues/japanese-interviews/chozenshuu-4-toriyama-346-349.jsonl",
+      "transcriptLine": 2,
+      "visualStatus": "readable; manually transcribed from original scan"
+    },
+    {
+      "page": 348,
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\348.jpg",
+      "imageBytes": 5174335,
+      "imageSha256": "4c6407e6b0ec758ca207069466c714227febc22283bcea5465b54d98e2edb9c0",
+      "transcriptFile": "data/catalogues/japanese-interviews/chozenshuu-4-toriyama-346-349.jsonl",
+      "transcriptLine": 3,
+      "visualStatus": "readable; manually transcribed from original scan"
+    },
+    {
+      "page": 349,
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\349.jpg",
+      "imageBytes": 5175924,
+      "imageSha256": "b84b5d3a5580c29c5c93ef81074af0bc8a21b0a68d0eab98208bdaa42c4a28b0",
+      "transcriptFile": "data/catalogues/japanese-interviews/chozenshuu-4-toriyama-346-349.jsonl",
+      "transcriptLine": 4,
+      "visualStatus": "readable; manually transcribed from original scan"
+    }
+  ],
+  "limitations": [
+    "The four image files are consecutive folios 346-349; the pages contain a multi-column layout and two adjacent interview sections.",
+    "Editorial timeline callouts and manga panels are omitted; printed interview headings, Q&A dialogue, and the visible footnote on p.349 are included.",
+    "Page 346 ends mid-sentence 「激しい闘いの」 and p.347 begins with its visible continuation 「場合、位置や方向が…」; no edge text was completed from another source.",
+    "Page 348 ends with the visible start 「—『神と神』では初めて脚本に関」; the scan segment ends there.",
+    "Review advisable for exact question boundaries and punctuation in the densely set columns; no glyph was judged unreadable."
+  ]
+}

@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Setup Bun (aphrody-labs/bun fork)
+description: >-
+  Installs the Bun fork release pinned by package.json#packageManager
+  (bun@<version>, release aphrody-v<version> of aphrody-labs/bun), SHA256SUMS-checked.
+runs:
+  using: composite
+  steps:
+    - name: Resolve the fork release
+      id: fork
+      shell: bash
+      run: |
+        manager=$(sed -n 's/.*"packageManager": *"bun@\([^"]*\)".*/\1/p' package.json)
+        [ -n "$manager" ] || { echo "package.json#packageManager must be bun@<version>" >&2; exit 1; }
+        echo "tag=aphrody-v${manager}" >> "$GITHUB_OUTPUT"
+    - uses: aphrody-labs/bun/.github/actions/setup-bun@main
+      with:
+        bun-version: ${{ steps.fork.outputs.tag }}

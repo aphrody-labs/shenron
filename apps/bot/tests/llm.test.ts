@@ -7,21 +7,33 @@ import { Database } from "bun:sqlite";
 // tests pin the aphrody-ai-http origin through its canonical name.
 const savedAiHttpUrl = process.env.APHRODY_AI_HTTP_URL;
 const savedInference = process.env.APHRODY_SHENRON_INFERENCE;
+const savedChatBaseUrl = process.env.APHRODY_AI_CHAT_BASE_URL;
+const savedShenronLlmBaseUrl = process.env.APHRODY_SHENRON_LLM_BASE_URL;
+const savedChatModel = process.env.APHRODY_AI_CHAT_MODEL;
 beforeEach(() => {
   process.env.APHRODY_SHENRON_INFERENCE = "http";
   process.env.APHRODY_AI_HTTP_URL = "http://127.0.0.1:8789";
+  delete process.env.APHRODY_AI_CHAT_BASE_URL;
+  delete process.env.APHRODY_SHENRON_LLM_BASE_URL;
+  delete process.env.APHRODY_AI_CHAT_MODEL;
 });
 afterEach(() => {
   if (savedInference === undefined) delete process.env.APHRODY_SHENRON_INFERENCE;
   else process.env.APHRODY_SHENRON_INFERENCE = savedInference;
   if (savedAiHttpUrl === undefined) delete process.env.APHRODY_AI_HTTP_URL;
   else process.env.APHRODY_AI_HTTP_URL = savedAiHttpUrl;
+  if (savedChatBaseUrl === undefined) delete process.env.APHRODY_AI_CHAT_BASE_URL;
+  else process.env.APHRODY_AI_CHAT_BASE_URL = savedChatBaseUrl;
+  if (savedShenronLlmBaseUrl === undefined) delete process.env.APHRODY_SHENRON_LLM_BASE_URL;
+  else process.env.APHRODY_SHENRON_LLM_BASE_URL = savedShenronLlmBaseUrl;
+  if (savedChatModel === undefined) delete process.env.APHRODY_AI_CHAT_MODEL;
+  else process.env.APHRODY_AI_CHAT_MODEL = savedChatModel;
 });
 
 /** Pure conversational paths may only reach `llm/chat`: any retrieval request fails the test. */
 function chatOnly(handler: (init?: RequestInit) => Response | Promise<Response>): typeof fetch {
   return (async (input, init) => {
-    const url = String(input);
+    const url = input instanceof Request ? input.url : String(input);
     if (!url.endsWith("/api/v1/shenron/llm/chat"))
       throw new Error(`Retrieval-path request forbidden in a pure test: ${url}`);
     return handler(init);
@@ -130,8 +142,8 @@ describe("generateLlmAnswer (chemin conversationnel & repli)", () => {
 });
 
 describe("generateLlmAnswer — corps de requête (B17, bavardage sans récupération)", () => {
-  it("envoie système persona + règles, plus la seule phrase anti-injection partagée", async () => {
-    const { INJECTION_GUARD, PERSONAS, personaRules } =
+  it("envoie système persona, règles d’autonomie et phrase anti-injection partagées", async () => {
+    const { AUTONOMY_RULE, INJECTION_GUARD, PERSONAS, personaRules } =
       await import("@shenron/pipeline/ai/prompts");
     const originalFetch = globalThis.fetch;
     const saved = {
@@ -154,13 +166,15 @@ describe("generateLlmAnswer — corps de requête (B17, bavardage sans récupér
       const system = `${PERSONAS.beerus.instructions}\n${personaRules(true)}`;
       expect(body).toEqual({
         messages: [
-          { role: "system", content: `${system} ${INJECTION_GUARD}` },
+          { role: "system", content: `${system} ${AUTONOMY_RULE} ${INJECTION_GUARD}` },
           { role: "user", content: "Salut !" },
         ],
         model: "gemini-web/flash",
       });
-      // Seul écart (B17) : la phrase anti-injection ajoutée en fin de message système.
-      expect(body?.messages[0]?.content.slice(system.length)).toBe(` ${INJECTION_GUARD}`);
+      // The shared autonomy and injection rules finish the persona instructions.
+      expect(body?.messages[0]?.content.slice(system.length)).toBe(
+        ` ${AUTONOMY_RULE} ${INJECTION_GUARD}`,
+      );
     } finally {
       globalThis.fetch = originalFetch;
       for (const [name, value] of [

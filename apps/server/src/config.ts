@@ -59,7 +59,9 @@ function platformHome(): string {
   return join(process.env.XDG_DATA_HOME ?? join(homedir(), ".local", "share"), "shenron");
 }
 
-export function executableDir(): string {
+export function executableDir(env: NodeJS.ProcessEnv = process.env): string {
+  const serverBin = env.SHENRON_SERVER_BIN?.trim();
+  if (serverBin) return dirname(resolve(serverBin));
   // A compiled Bun binary runs from a virtual root; its real location is process.execPath.
   const compiled =
     import.meta.path.startsWith("/$bunfs/") || /^[A-Z]:[\\/]~BUN[\\/]/i.test(import.meta.path);
@@ -78,7 +80,7 @@ export function resolvePaths(env: NodeJS.ProcessEnv = process.env): ServerPaths 
     data: join(home, "data"),
     cache: join(home, "cache"),
     logs: join(home, "logs"),
-    exeDir: executableDir(),
+    exeDir: executableDir(env),
   };
 }
 

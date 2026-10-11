@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-08",
+  "method": "Manual visual transcription from locally stored Japanese scans, read in printed order pp.1-3 then p.6. No OCR, network, translation, or secondary-text completion. Pages 4-5 are excluded because they contain a separate Toriyama manga column, not the roundtable.",
+  "records": [
+    {
+      "pages": [
+        1
+      ],
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1\\daizenshuu_01_shenron-news_page001_6034223418_o.jpg",
+      "imageBytes": 839246,
+      "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-1-historical-editors-roundtable-1.jsonl#L1",
+      "imageSha256": "5992B0527FD51450E97CB8232A8B7FCFA1302DC8D3190C459B0F26B9F81978C2",
+      "sectionTitle": "歴代担当者座談会 第1回",
+      "completeness": "Visible dialogue and page headings manually transcribed from scan; page-edge continuation is preserved as printed. Related editorial story on pp.4-5 is intentionally excluded.",
+      "id": "daizenshuu-1-editors-roundtable-1",
+      "transcriptRow": 1,
+      "participants": [
+        "Kazuhiro Torishima / 鳥嶋和彦",
+        "Yutaka Kondo / 近藤裕",
+        "Fuyuto Takeda / 武田冬門"
+      ],
+      "title": "DRAGON BALL 大全集①",
+      "publisher": "集英社",
+      "firstPrinting": "1995-06-25"
+    },
+    {
+      "pages": [
+        2
+      ],
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1\\daizenshuu_01_shenron-news_page002_6033668101_o.jpg",
+      "imageBytes": 887076,
+      "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-1-historical-editors-roundtable-1.jsonl#L2",
+      "imageSha256": "89414C15007374986E6F3C94751197CD37943FC3F4B8E6CC638866A4E0F957C5",
+      "sectionTitle": "歴代担当者座談会 第1回",
+      "completeness": "Visible dialogue and page headings manually transcribed from scan; page-edge continuation is preserved as printed. Related editorial story on pp.4-5 is intentionally excluded.",
+      "id": "daizenshuu-1-editors-roundtable-2",
+      "transcriptRow": 2,
+      "participants": [
+        "Kazuhiro Torishima / 鳥嶋和彦",
+        "Yutaka Kondo / 近藤裕",
+        "Fuyuto Takeda / 武田冬門"
+      ],
+      "title": "DRAGON BALL 大全集①",
+      "publisher": "集英社",
+      "firstPrinting": "1995-06-25"
+    },
+    {
+      "pages": [
+        3
+      ],
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1\\daizenshuu_01_shenron-news_page003_6034224278_o.jpg",
+      "imageBytes": 754031,
+      "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-1-historical-editors-roundtable-1.jsonl#L3",
+      "imageSha256": "7F018E668A7C1011B80214EFC307B0C955CEAF88A6B1782EC1D29B808D193500",
+      "sectionTitle": "歴代担当者座談会 第1回",
+      "completeness": "Visible dialogue and page headings manually transcribed from scan; page-edge continuation is preserved as printed. Related editorial story on pp.4-5 is intentionally excluded.",
+      "id": "daizenshuu-1-editors-roundtable-3",
+      "transcriptRow": 3,
+      "participants": [
+        "Kazuhiro Torishima / 鳥嶋和彦",
+        "Yutaka Kondo / 近藤裕",
+        "Fuyuto Takeda / 武田冬門"
+      ],
+      "title": "DRAGON BALL 大全集①",
+      "publisher": "集英社",
+      "firstPrinting": "1995-06-25"
+    },
+    {
+      "pages": [
+        6
+      ],
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1\\daizenshuu_01_shenron-news_page006_6033670355_o.jpg",
+      "imageBytes": 775092,
+      "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-1-historical-editors-roundtable-1.jsonl#L4",
+      "imageSha256": "D3C6855EEE06E775F3E6EF12C0C7117593AE20C5764CAF73741975797468858A",
+      "sectionTitle": "歴代担当者座談会 第1回",
+      "completeness": "Visible dialogue and page headings manually transcribed from scan; page-edge continuation is preserved as printed. Related editorial story on pp.4-5 is intentionally excluded.",
+      "id": "daizenshuu-1-editors-roundtable-6",
+      "transcriptRow": 4,
+      "participants": [
+        "Kazuhiro Torishima / 鳥嶋和彦",
+        "Yutaka Kondo / 近藤裕",
+        "Fuyuto Takeda / 武田冬門"
+      ],
+      "title": "DRAGON BALL 大全集①",
+      "publisher": "集英社",
+      "firstPrinting": "1995-06-25"
+    }
+  ],
+  "transcriptSha256": "65842D34556FD9B6B993C4D310E98712A024AC0A309676A9E267D28C086FA699",
+  "reviewNotes": [
+    "Scans inspected visually at original resolution and on crops. All interview text on the four selected pages is legible; preserve the clipped sentence at the end of p.1 across into p.2 and the continuation marker at p.3 to p.6.",
+    "Second independent transcription review has not yet been completed.",
+    "The unattributed continuation on p.6 after 「そうそう。」 is kept without assigning a speaker because the scan crop does not show a clear label at that point."
+  ]
+}

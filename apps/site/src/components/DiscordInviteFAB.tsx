@@ -13,7 +13,7 @@ const FOLD_AT = 160;
  * to the server (the pill covered its blocks); elsewhere it folds into an icon once the
  * reader scrolls, so it stops sitting on the content.
  */
-export function DiscordInviteFAB() {
+export function DiscordInviteFAB({ inline = false }: { inline?: boolean }) {
   const t = useT();
   const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
@@ -43,7 +43,7 @@ export function DiscordInviteFAB() {
     if (!dismissed) setIsVisible(true);
   }, []);
 
-  if (!isVisible || pathname === "/") return null;
+  if (!isVisible || pathname === "/" || (pathname === "/desktop" && !inline)) return null;
 
   const handleDismiss = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -62,7 +62,10 @@ export function DiscordInviteFAB() {
     /* Empilé AU-DESSUS du bouton « Signaler une erreur », qui occupe désormais
 		   le coin bas gauche : deux pastilles à la même position se recouvraient,
 		   et c'est l'invitation Discord (z-50) qui masquait le signalement (z-40). */
-    <div className="fab-discord fab-secondary fixed bottom-[4.5rem] left-4 z-50 md:bottom-[5.5rem] md:left-6">
+    <div
+      data-inline={inline || undefined}
+      className="fab-discord fab-secondary fixed bottom-[4.5rem] left-4 z-50 md:bottom-[5.5rem] md:left-6"
+    >
       <div className="relative inline-block">
         <button
           type="button"

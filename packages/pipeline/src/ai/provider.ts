@@ -19,17 +19,26 @@ export type ShenronLanguageModelId = "chat" | "chat-flash-lite" | "chat-pro";
 export type ShenronEmbeddingModelId = "e5-query" | "e5-passage";
 
 export function createShenronProvider(
-  cfg: Pick<AiConfig, "chatModel" | "embed">,
+  cfg: Pick<AiConfig, "chatModel" | "embed" | "directChat">,
   deps: { compute: AphrodyCompute | null; fetch?: typeof fetch },
 ) {
   const languageModels: Partial<Record<ShenronLanguageModelId, LanguageModelV4>> = {};
   if (deps.compute) {
-    languageModels.chat = createAphrodyChatModel(deps.compute, { modelId: cfg.chatModel });
+    if (!cfg.directChat)
+      languageModels.chat = createAphrodyChatModel(deps.compute, { modelId: cfg.chatModel });
     languageModels["chat-flash-lite"] = createAphrodyChatModel(deps.compute, {
       modelId: "gemini-web/flash-lite",
     });
     languageModels["chat-pro"] = createAphrodyChatModel(deps.compute, {
       modelId: "gemini-web/pro",
+    });
+  }
+  if (cfg.directChat) {
+    languageModels.chat = createOpenAICompatibleChat({
+      baseUrl: cfg.directChat.baseUrl,
+      modelId: cfg.directChat.model,
+      ...(cfg.directChat.apiKey ? { token: cfg.directChat.apiKey } : {}),
+      ...(deps.fetch ? { fetch: deps.fetch } : {}),
     });
   }
   const embeddingModels: Partial<Record<ShenronEmbeddingModelId, EmbeddingModelV4>> = {};
@@ -46,19 +55,19 @@ export function createShenronProvider(
 export type ShenronProvider = ReturnType<typeof createShenronProvider>;
 
 /**
- * OpenAI-compatible authenticated chat model, kept ready for APH-3. Not wired
- * into {@link createShenronProvider}: Aphrody does not expose such a route yet.
+ * Native AI SDK transport for explicitly configured vLLM/llama-server endpoints.
+ * Inference stays on the capability owner; this adapter preserves streaming and tools.
  */
 export function createOpenAICompatibleChat(o: {
   baseUrl: URL;
-  token: string;
+  token?: string;
   modelId: string;
   fetch?: typeof fetch;
 }): LanguageModelV4 {
   const provider = createOpenAICompatible({
     name: "aphrody-openai",
     baseURL: o.baseUrl.href.replace(/\/+$/, ""),
-    apiKey: o.token,
+    ...(o.token ? { apiKey: o.token } : {}),
     ...(o.fetch ? { fetch: o.fetch } : {}),
   });
   return provider.chatModel(o.modelId);

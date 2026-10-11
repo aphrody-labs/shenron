@@ -67,7 +67,7 @@ test("lost submission ACK survives restart and never moves to a different host",
     await expect(
       second.submit({ key: "campaign-1", args: ["dragon-ball", "plan"] }),
     ).rejects.toThrow("different intent");
-    expect((await stat(path)).mode & 0o777).toBe(0o600);
+    if (process.platform !== "win32") expect((await stat(path)).mode & 0o777).toBe(0o600);
     second.close();
   } finally {
     await rm(directory, { recursive: true, force: true });

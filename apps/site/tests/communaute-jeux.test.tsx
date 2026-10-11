@@ -105,7 +105,8 @@ describe("index /games", () => {
   test("liens de jeu en casse normale et cibles de 44 px", () => {
     expect(html).not.toContain("JOUER");
     const liens = html.match(/<a[^>]*href="\/games\/[a-z0-9-]+"[^>]*>/g) ?? [];
-    expect(liens.length).toBe(4);
+    expect(liens.length).toBe(6);
+    expect(html).toContain('href="/games/dragon-pixel"');
     for (const lien of liens) expect(lien).toContain("min-h-11");
   });
 

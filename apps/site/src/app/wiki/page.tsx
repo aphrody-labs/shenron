@@ -159,6 +159,22 @@ export default async function WikiIndex() {
             total: volumes.length,
             unit: "tomes",
           }}
+          canon={{
+            label: "Canonicité & Preuves",
+            availableHref: "/wiki/canon",
+            available: 6905,
+            total: 6905,
+            unit: "citations & déclarations d'auteur",
+            badge: "Certifié Toriyama",
+          }}
+          rag={{
+            label: "Corpus & Savoir RAG",
+            availableHref: "/wiki/search",
+            available: 241558,
+            total: 241558,
+            unit: "extraits documentaires vectorisés",
+            badge: "Index Hybride",
+          }}
         />
 
         {vedettes.length > 0 && (

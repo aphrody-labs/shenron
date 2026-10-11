@@ -1,6 +1,6 @@
 {
   "name": "@shenron/site",
-  "version": "1.3.0",
+  "version": "1.4.4",
   "private": true,
   "exports": {
     "./lib/wiki-slugs": "./src/lib/wiki-slugs.ts",
@@ -9,10 +9,10 @@
   },
   "scripts": {
     "predev": "bun ../../packages/ui/scripts/sync-assets.ts --to public",
-    "dev": "NEXT_DIST_DIR=.next-dev NEXT_TELEMETRY_DISABLED=1 bun --bun next dev --turbopack",
+    "dev": "NEXT_DIST_DIR=.next-dev next-bun dev",
     "prebuild": "bun ../../packages/ui/scripts/sync-assets.ts --to public",
-    "build": "NEXT_DIST_DIR=.next-build NEXT_TELEMETRY_DISABLED=1 bun --bun next build --turbopack",
-    "start": "NEXT_TELEMETRY_DISABLED=1 bun --bun next start",
+    "build": "NEXT_DIST_DIR=.next-build next-bun build",
+    "start": "next-bun start",
     "lint": "oxlint -c ../../.oxlintrc.json src",
     "test": "bun test --isolate --path-ignore-patterns='**/*.live.test.ts' tests/",
     "type-check:tests": "tsc --noEmit -p tsconfig.tests.json",
@@ -27,6 +27,7 @@
   "dependencies": {
     "@aphrody/discord-kit": "catalog:",
     "@aphrody/messaging": "catalog:",
+    "@aphrody/next-bun": "catalog:",
     "@aphrody/paths": "catalog:",
     "@aphrody/plugin-opener": "catalog:",
     "@codemirror/lang-markdown": "catalog:",
@@ -42,6 +43,7 @@
     "@shenron/auth": "workspace:*",
     "@shenron/config": "workspace:*",
     "@shenron/db": "workspace:*",
+    "@shenron/engine": "workspace:*",
     "@shenron/images": "workspace:*",
     "@shenron/lexicon": "workspace:*",
     "@shenron/pipeline": "workspace:*",
@@ -102,8 +104,8 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@aphrody/bun-plugin-tailwind": "catalog:",
     "@huggingface/transformers": "catalog:",
-    "@tailwindcss/postcss": "catalog:",
     "@types/howler": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
@@ -112,6 +114,6 @@
     "tailwindcss": "catalog:"
   },
   "engines": {
-    "bun": ">=1.4.2"
+    "bun": ">=1.4.3"
   }
 }

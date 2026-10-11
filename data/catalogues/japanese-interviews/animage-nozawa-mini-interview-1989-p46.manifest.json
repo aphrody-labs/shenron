@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "status": "visible-interview-body-transcribed-and-independently-proofread",
+  "publication": "Animage（号・発行日は未確認。ローカルのフォルダー名は「animage 89 septembre」）",
+  "interviewTitle": "悟空・悟飯役 野沢雅子ミニインタビュー",
+  "intervieweeAsPrinted": "野沢雅子",
+  "printedPage": 46,
+  "transcriptPath": "data/catalogues/japanese-interviews/animage-nozawa-mini-interview-1989-p46.jsonl",
+  "completeness": "可視範囲に印刷されたミニインタビュー本文を一続きに転記。質問者の発言は見当たらない。書誌の号数・発行年月日はコロフォン未確認のため確定していない。",
+  "method": "ローカルJPEGを目視し、本文を拡大したクロップでも再読。OCR・ネットワーク不使用。",
+  "unresolvedGlyphs": [],
+  "source": {
+    "path": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\animage\\animage 89 septembre\\Ce-K7t7-MXEAAPtcm.jpg",
+    "bytes": 306143,
+    "sha256": "452a663958a58ae6fc298f5cddd0309e284f24cbd6c4d16d1da0500e5fac087a",
+    "printedPage": 46
+  },
+  "verification": {
+    "transcriptBytes": 1047,
+    "transcriptSha256": "4e2db004f721e7c6298b8ae3d4e10a380d66f874ec4bf048e5708d9eba20582a",
+    "jsonlRecords": 1,
+    "independentSecondTranscriber": true,
+    "visualCrop": "C:\\Users\\omara\\AppData\\Local\\Temp\\nozawa-interview-p46-full.png",
+    "secondReviewCorrections": "Independent visual review confirmed the two corrected readings: だけあっておっとりした and 悟空の方はお父さんになっちゃいましたけど."
+  }
+}

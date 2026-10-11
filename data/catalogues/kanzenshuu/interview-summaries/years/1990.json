@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 1990; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "akira-toriyama-the-world-toriyama-vs-akimoto",
+      "title": "Face-to-Face Talk: Akira Toriyama vs Osamu Akimoto",
+      "summary": "Toriyama et Osamu Akimoto discutent de la naissance des personnages et de leur évolution en cours d'écriture. Toriyama dit que certains éléments d'Aralé se sont formés spontanément et que Goku fonctionne mieux comme personnage relativement solitaire, car une personnalité trop dominante risquerait d'éclipser le groupe. Il explique aussi la difficulté croissante d'inventer des antagonistes réellement nouveaux à mesure que Dragon Ball accumule les affrontements. Pour le dessin, il relie ses proportions déformées à son goût pour les machines et au plaisir de les inventer plutôt qu'à une imitation réaliste. Son conseil aux aspirants mangakas est de partir de sujets et de personnages qu'ils aiment dessiner; la personnalité graphique se développe ensuite avec la pratique.",
+      "keyInformation": [
+        "Toriyama et Akimoto décrivent les personnages comme des découvertes qui peuvent émerger pendant l'écriture plutôt que comme des constructions entièrement fixées dès le départ.",
+        "Toriyama dit écrire Goku de façon réservée et solitaire afin qu'il ne domine pas excessivement les personnages autour de lui.",
+        "Il ressent une difficulté à renouveler les ennemis de Dragon Ball après l'escalade successive des adversaires.",
+        "Il privilégie le dessin de ce qu'il aime et la caricature comme point de départ pour trouver un style personnel."
+      ],
+      "source": {
+        "publication": "Akira Toriyama: The World, entretien face à face avec Osamu Akimoto",
+        "pages": "94–95",
+        "date": "1990-01-10",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/akira-toriyama-the-world-toriyama-vs-akimoto/",
+        "questionAnswerCount": 6,
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/akira-toriyama-the-world-toriyama-vs-akimoto.html"
+      },
+      "dragonBallRelevance": "Directe : Goku, écriture des adversaires et conception des personnages; méthode générale de Toriyama.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    }
+  ]
+}

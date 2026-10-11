@@ -46,9 +46,9 @@ Détecte l'OS : `uname -s` (Linux, Darwin) ; sous Windows, PowerShell (`$env:OS`
 
 ## 2 bis. Bun et paquets npm Aphrody
 
-1. Lance `bun --version`. Si Bun est absent, installe-le avec l'installeur officiel :
-   - Linux, macOS : `curl -fsSL https://bun.sh/install | bash`
-   - Windows : `irm bun.sh/install.ps1 | iex`
+1. Lance `bun --version`. Si Bun est absent, installe le fork aphrody-labs/bun :
+   - Linux, macOS : `curl -fsSL https://raw.githubusercontent.com/aphrody-labs/bun/main/scripts/aphrody/install.sh | bash`
+   - Windows : `irm https://raw.githubusercontent.com/aphrody-labs/bun/main/scripts/aphrody/install.ps1 | iex`
 
    Puis ajoute `~/.bun/bin` au `PATH` de la session et vérifie `bun --version`.
 

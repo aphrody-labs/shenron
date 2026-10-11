@@ -26,7 +26,7 @@ describe("portable OpenAI plugin package", () => {
 
     expect(plugin.$schema).toContain("agent-plugins.org/schemas/1.0.0/plugin.schema.json");
     expect(plugin.name).toBe("shenron");
-    expect(plugin.version).toBe("1.4.0");
+    expect(plugin.version).toBe("1.4.1");
     expect(plugin.extensions["com.openai"].onboardingSkill).toBe("./skills/dragon-ball/SKILL.md");
     expect(plugin.extensions["com.openai"].review).toBeDefined();
     expect(mcp.mcpServers.shenron).toEqual({

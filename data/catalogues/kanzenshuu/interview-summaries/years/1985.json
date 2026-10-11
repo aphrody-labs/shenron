@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens et Q&A publiés sur Kanzenshuu dont l’année de publication du support original est 1985; forum exclu.",
+  "reviewNote": "L’année annuelle suit la date du support original retenue dans l’index Kanzenshuu. La Q&A Tankōbon est publiée par Kanzenshuu en 2022, mais classée ici sous 1985 selon le support d’origine. La transcription locale complète est référencée par rawPath; le résumé ci-dessous n’en est pas une transcription.",
+  "records": [
+    {
+      "id": "akira-toriyama-tankobon-ask-me-anything",
+      "title": "Toriyama-san’s Dragon Ball Ask-Me-Anything Corner",
+      "summary": "Cette Q&A rassemble des questions de lecteurs auxquelles Akira Toriyama répond au fil des volumes 1 à 12 du tankōbon de Dragon Ball. Les échanges touchent à l’histoire, aux personnages, au dessin, à la création du manga et à des sujets du quotidien; Toriyama mêle explications, autodérision et réponses fantaisistes. La copie Kanzenshuu conservée localement est une transcription complète de 65 questions et 65 réponses. La présente notice en donne seulement une synthèse, pas une traduction intégrale.",
+      "keyInformation": [
+        "Toriyama répond directement aux questions envoyées par les lecteurs et publiées avec les volumes du manga.",
+        "Les échanges abordent notamment la conception des histoires et personnages, le dessin, les choix narratifs et des détails de Dragon Ball.",
+        "Ses réponses combinent explications sur son travail et humour adressé aux lecteurs.",
+        "La transcription locale complète couvre les Q&A des volumes 1 à 12; le premier support date du 10 septembre 1985 et les questions recueillies s’étendent sur plusieurs volumes."
+      ],
+      "source": {
+        "publication": "Dragon Ball Tankōbon, volumes 1–12",
+        "pages": null,
+        "date": "1985-09-10",
+        "kanzenshuuPublicationDate": "2022-04-26",
+        "url": "https://www.kanzenshuu.com/translations/akira-toriyama-tankobon-ask-me-anything/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/akira-toriyama-tankobon-ask-me-anything/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/akira-toriyama-tankobon-ask-me-anything.html",
+        "participants": [
+          "Akira Toriyama",
+          "Dragon Ball readers"
+        ],
+        "questionAnswerCount": 65,
+        "detectedQuestionBlocks": 65,
+        "detectedAnswerBlocks": 65,
+        "formatNote": "Q&A écrite entre Toriyama et des lecteurs, compilée à travers les tankōbon volumes 1–12. La page de traduction Kanzenshuu a été publiée le 26 avril 2022. Le HTML local contient la transcription complète; le résumé ne la reproduit pas.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : réponses de Toriyama sur la création et le contenu de Dragon Ball, avec des commentaires adressés aux lecteurs.",
+      "formatNote": "Q&A écrite, pas un entretien oral. L’année du fichier annuel suit la date du premier support (1985); la publication Kanzenshuu date de 2022.",
+      "status": "summary-written-source-available",
+      "forumContent": false
+    }
+  ]
+}

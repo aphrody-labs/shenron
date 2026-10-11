@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import {
   Activity,
@@ -21,118 +22,108 @@ import {
   Users,
 } from "lucide-react";
 import { api } from "@/lib/admin-api";
-import { formatBytes, formatDuration, fmtNum } from "@/lib/admin-format";
-import { useBots, type BotSummary } from "@/components/admin/BotSelector";
+import { formatBytes } from "@/lib/admin-format";
+import { type BotSummary } from "@/components/admin/BotSelector";
+import { NativePipelinePanel } from "@/components/admin/NativePipelinePanel";
 
-type MonitoringResponse = {
-  botStatus: { online: boolean; uptime: number | null };
-  pid: { cpu: number; memory: number; uptime: number; rss: number };
-  host: {
-    cpu: { count: number; usage: number };
-    memory: { total: number; free: number; used: number; usage: number };
-    platform: string;
-    uptime: number;
-  };
-  latency: { ws: number; db: number };
-};
-
-type TotalsResponse = {
-  stats: {
-    totalUsers: number;
-    totalGuilds: number;
-    totalActiveUsers: number;
-    totalCommands: number;
-  };
-};
-
-type LiveService = {
-  id: "api" | "database" | "redis" | "backOffice";
-  label: string;
-  state: "ok" | "degraded" | "down" | "unknown";
-  latencyMs: number | null;
-  detail: string;
-};
-
-type LiveDashboardResponse = {
-  services: LiveService[];
-  agents: {
-    activePeers: string[];
-    recentActivity: number;
-    activeTasks: number;
-    latestActivityAt: string | null;
-  };
-  sampledAt: string;
-  refreshAfterMs: number;
-};
+import {
+  DashboardBots,
+  DashboardMonitoring,
+  DashboardTotals,
+  DashboardLive,
+  dashboardHealthy,
+  type LiveDashboardResponse,
+  type LiveService,
+} from "@/lib/admin-dashboard";
 
 async function getLiveDashboard(): Promise<LiveDashboardResponse> {
   const response = await fetch("/api/admin/dashboard-live", { cache: "no-store" });
   if (!response.ok) throw new Error(`Sonde live indisponible (HTTP ${response.status})`);
-  return response.json() as Promise<LiveDashboardResponse>;
+  return DashboardLive.parse(await response.json());
+}
+
+function formatDuration(ms: number, locale: string): string {
+  if (!Number.isFinite(ms) || ms < 0) return "—";
+  const seconds = Math.floor(ms / 1000);
+  const unit =
+    seconds >= 86400 ? "day" : seconds >= 3600 ? "hour" : seconds >= 60 ? "minute" : "second";
+  const divisor = { day: 86400, hour: 3600, minute: 60, second: 1 }[unit];
+  return new Intl.NumberFormat(locale, {
+    style: "unit",
+    unit,
+    unitDisplay: "short",
+    maximumFractionDigits: 1,
+  }).format(seconds / divisor);
 }
 
 const QUICK_ACTIONS = [
   {
     href: "/admin/wiki",
-    label: "Encyclopédie Dragon Ball",
-    description: "Wiki, sagas, films et jeux",
+    label: "wiki",
+    description: "wikiDescription",
     icon: BookOpen,
   },
   {
     href: "/admin/levels",
-    label: "Membres & niveaux",
-    description: "Progression et activité des membres",
+    label: "levels",
+    description: "levelsDescription",
     icon: TrendingUp,
   },
   {
     href: "/admin/moderation",
-    label: "Modération",
-    description: "Sanctions, rôles et sécurité",
+    label: "moderation",
+    description: "moderationDescription",
     icon: Shield,
   },
   {
     href: "/admin/economy",
-    label: "Économie",
-    description: "Zénis, boutique et transactions",
+    label: "economy",
+    description: "economyDescription",
     icon: Coins,
   },
   {
     href: "/admin/send",
-    label: "Envoyer un message",
-    description: "Diffuser une annonce via le bot",
+    label: "send",
+    description: "sendDescription",
     icon: MessageSquare,
   },
   {
     href: "/admin/settings",
-    label: "Paramètres",
-    description: "Configurer le comportement du bot",
+    label: "settings",
+    description: "settingsDescription",
     icon: Settings,
   },
 ];
 
 const SERVICE_COPY: Record<LiveService["id"], { label: string; description: string }> = {
-  api: { label: "Application du bot", description: "Permet au site et à Discord de communiquer." },
+  api: { label: "apiLabel", description: "apiDescription" },
   database: {
-    label: "Données du site",
-    description: "Conserve les membres, articles et réglages.",
+    label: "databaseLabel",
+    description: "databaseDescription",
   },
-  redis: { label: "Mémoire rapide", description: "Accélère l’affichage et les recherches." },
+  redis: { label: "redisLabel", description: "redisDescription" },
   backOffice: {
-    label: "Commandes d’administration",
-    description: "Permet au tableau de bord d’agir sur le bot.",
+    label: "backOfficeLabel",
+    description: "backOfficeDescription",
   },
 };
 
 export default function DashboardPage() {
-  const bots = useBots();
+  const t = useTranslations("adminDashboard");
+  const locale = useLocale();
+  const bots = useQuery({
+    queryKey: ["admin", "dashboard-bots"],
+    queryFn: async () => DashboardBots.parse(await api.get("/bots")),
+    refetchInterval: 30_000,
+  });
   const health = useQuery({
-    queryKey: ["health", "monitoring"],
-    queryFn: () => api.get<MonitoringResponse>("/health/monitoring"),
+    queryKey: ["admin", "dashboard-monitoring"],
+    queryFn: async () => DashboardMonitoring.parse(await api.get("/health/monitoring")),
     refetchInterval: 30_000,
   });
   const stats = useQuery({
-    queryKey: ["stats", "totals"],
-    queryFn: () => api.get<TotalsResponse>("/stats/totals"),
+    queryKey: ["admin", "dashboard-totals"],
+    queryFn: async () => DashboardTotals.parse(await api.get("/stats/totals")),
     refetchInterval: 60_000,
   });
   const live = useQuery({
@@ -145,20 +136,27 @@ export default function DashboardPage() {
   const onlineCount = bots.data?.bots.filter((bot) => bot.online).length ?? 0;
   const totalCount = bots.data?.bots.length ?? 0;
   const avgPing =
-    bots.data && onlineCount > 0
+    bots.data && bots.data.bots.some((bot) => bot.online && bot.wsPing >= 0)
       ? Math.round(
           bots.data.bots
-            .filter((bot) => bot.online)
-            .reduce((sum, bot) => sum + Math.max(0, bot.wsPing), 0) / Math.max(1, onlineCount),
+            .filter((bot) => bot.online && bot.wsPing >= 0)
+            .reduce((sum, bot) => sum + bot.wsPing, 0) /
+            Math.max(1, bots.data.bots.filter((bot) => bot.online && bot.wsPing >= 0).length),
         )
       : null;
-  const hasError = bots.isError || health.isError || stats.isError;
-  const unavailableServices =
-    live.data?.services.filter(
-      (service) => service.state === "down" || service.state === "degraded",
-    ) ?? [];
+  const hasError = bots.isError || health.isError || stats.isError || live.isError;
+  const unavailableServices = live.data?.services.filter((service) => service.state !== "ok") ?? [];
   const allLiveServicesHealthy =
-    live.data?.services.length === 4 && unavailableServices.length === 0;
+    dashboardHealthy(live.data) &&
+    !hasError &&
+    !bots.isPending &&
+    !health.isPending &&
+    !stats.isPending &&
+    totalCount > 0 &&
+    onlineCount === totalCount &&
+    live.data?.agents.activeTasks !== null &&
+    live.data?.agents.recentActivity !== null &&
+    health.data?.botStatus.online === true;
   const refresh = () => {
     void bots.refetch();
     void health.refetch();
@@ -168,29 +166,29 @@ export default function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-[1440px] space-y-8 pb-8">
+      <NativePipelinePanel />
       <header className="flex flex-col gap-5 rounded-2xl border border-white/10 bg-white/[0.035] p-4 shadow-sm md:flex-row md:items-center md:justify-between md:p-6">
         <div>
-          <p className="text-xs font-medium text-white/55">Administration</p>
+          <p className="text-xs font-medium text-white/55">{t("admin")}</p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight text-white md:text-3xl">
-            Bonjour, voici votre espace de pilotage
+            {t("title")}
           </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">
-            Retrouvez ici ce qui fonctionne, ce qui mérite votre attention et les actions les plus
-            utiles.
-          </p>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">{t("intro")}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/admin/live"
             className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-blue-500 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300"
           >
-            Voir l’activité en direct <ArrowUpRight className="h-4 w-4" />
+            {t("liveLink")}
+            <ArrowUpRight className="h-4 w-4" />
           </Link>
           <Link
             href="/admin/console"
             className="inline-flex min-h-12 items-center gap-2 rounded-xl px-4 text-sm font-medium text-white/80 transition-colors hover:bg-white/[.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
-            <Command className="h-4 w-4" /> Ouvrir la console
+            <Command className="h-4 w-4" />
+            {t("console")}
           </Link>
         </div>
       </header>
@@ -202,15 +200,15 @@ export default function DashboardPage() {
         >
           <p className="flex items-start gap-2">
             <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" />
-            Certains indicateurs ne répondent pas. Les valeurs manquantes ne sont pas interprétées
-            comme des zéros.
+            {t("metricsError")}
           </p>
           <button
             type="button"
             onClick={refresh}
             className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl px-4 font-medium hover:bg-white/10"
           >
-            <RefreshCw className="h-4 w-4" /> Réessayer
+            <RefreshCw className="h-4 w-4" />
+            {t("retry")}
           </button>
         </div>
       )}
@@ -222,22 +220,20 @@ export default function DashboardPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-xs font-medium uppercase tracking-[0.12em] text-blue-300">
-              Actualisé automatiquement
+              {t("automatic")}
             </p>
             <h2 id="live-operations-title" className="mt-1 text-lg font-semibold text-white">
-              Est-ce que tout fonctionne ?
+              {t("healthTitle")}
             </h2>
-            <p className="mt-1 text-sm text-white/50">
-              Nous vérifions les éléments indispensables au fonctionnement du site et du bot.
-            </p>
+            <p className="mt-1 text-sm text-white/50">{t("healthDescription")}</p>
           </div>
           <div className="flex items-center gap-2 text-xs text-white/45">
             <Radio
               className={`h-3.5 w-3.5 ${live.isFetching ? "animate-pulse text-blue-300" : ""}`}
             />
             {live.data
-              ? `Mesuré à ${new Date(live.data.sampledAt).toLocaleTimeString("fr-FR")}`
-              : "Connexion aux sondes…"}
+              ? t("sampledAt", { time: new Date(live.data.sampledAt).toLocaleTimeString(locale) })
+              : t("probeLoading")}
           </div>
         </div>
         {live.isError ? (
@@ -245,8 +241,7 @@ export default function DashboardPage() {
             role="alert"
             className="mt-4 rounded-xl border border-amber-300/25 bg-amber-300/[.08] p-3 text-sm text-amber-100"
           >
-            Les sondes live sont indisponibles. Les autres métriques conservent leur dernière valeur
-            connue.
+            {t("liveError")}
           </p>
         ) : (
           <>
@@ -272,12 +267,12 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between">
           <div>
             <h2 id="quick-actions-title" className="text-lg font-semibold text-white">
-              Accès rapides
+              {t("quickTitle")}
             </h2>
-            <p className="mt-1 text-sm text-white/50">Les opérations les plus fréquentes</p>
+            <p className="mt-1 text-sm text-white/50">{t("quickDescription")}</p>
           </div>
           <span className="hidden text-sm text-white/45 sm:inline-flex sm:items-center sm:gap-1">
-            {QUICK_ACTIONS.length} raccourcis <ArrowUpRight className="h-4 w-4" />
+            {t("shortcuts", { count: QUICK_ACTIONS.length })} <ArrowUpRight className="h-4 w-4" />
           </span>
         </div>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -291,8 +286,8 @@ export default function DashboardPage() {
                 <Icon className="h-5 w-5" />
               </span>
               <div className="min-w-0">
-                <p className="font-medium text-white">{label}</p>
-                <p className="mt-1 text-sm leading-5 text-white/55">{description}</p>
+                <p className="font-medium text-white">{t(label)}</p>
+                <p className="mt-1 text-sm leading-5 text-white/55">{t(description)}</p>
               </div>
             </Link>
           ))}
@@ -303,75 +298,72 @@ export default function DashboardPage() {
         <div className="mb-4 flex items-end justify-between">
           <div>
             <h2 id="system-health-title" className="text-lg font-semibold text-white">
-              Votre communauté en un coup d’œil
+              {t("communityTitle")}
             </h2>
-            <p className="mt-1 text-sm text-white/50">
-              Les chiffres utiles pour suivre votre serveur.
-            </p>
+            <p className="mt-1 text-sm text-white/50">{t("communityDescription")}</p>
           </div>
           <span className="inline-flex items-center gap-1.5 text-xs text-white/45">
-            <RefreshCw className="h-3.5 w-3.5" /> Mise à jour auto
+            <RefreshCw className="h-3.5 w-3.5" />
+            {t("autoUpdate")}
           </span>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <KpiCard label="Bots en ligne" icon={<Server className="h-5 w-5" />}>
-            <Metric value={onlineCount} suffix={` / ${totalCount}`} />
+          <KpiCard label={t("onlineBots")} icon={<Server className="h-5 w-5" />}>
+            <Metric
+              value={bots.data ? onlineCount : "—"}
+              suffix={bots.data ? ` / ${totalCount}` : ""}
+            />
             <MetricHelp>
               {totalCount > 0
                 ? onlineCount === totalCount
-                  ? "Tous opérationnels"
-                  : `${totalCount - onlineCount} hors ligne`
+                  ? t("operational")
+                  : t("offlineCount", { count: totalCount - onlineCount })
                 : "—"}
             </MetricHelp>
           </KpiCard>
-          <KpiCard label="Joueurs en base" icon={<Users className="h-5 w-5" />}>
-            <Metric value={stats.data ? fmtNum(stats.data.stats.totalUsers) : "—"} />
+          <KpiCard label={t("users")} icon={<Users className="h-5 w-5" />}>
+            <Metric value={stats.data ? stats.data.stats.totalUsers.toLocaleString(locale) : "—"} />
             <MetricHelp>
               {stats.data
-                ? `${fmtNum(stats.data.stats.totalActiveUsers)} actifs · ${fmtNum(stats.data.stats.totalGuilds)} serveur${stats.data.stats.totalGuilds > 1 ? "s" : ""}`
+                ? t("totals", {
+                    active: stats.data.stats.totalActiveUsers.toLocaleString(locale),
+                    guilds: stats.data.stats.totalGuilds.toLocaleString(locale),
+                  })
                 : "—"}
             </MetricHelp>
           </KpiCard>
-          <KpiCard label="Réactivité du bot" icon={<Activity className="h-5 w-5" />}>
+          <KpiCard label={t("latency")} icon={<Activity className="h-5 w-5" />}>
             <Metric value={avgPing ?? "—"} suffix=" ms" />
             <MetricHelp>
-              {avgPing === null
-                ? "Mesure en cours"
-                : avgPing < 200
-                  ? "Réponse rapide"
-                  : "Le bot répond plus lentement que d’habitude"}
+              {avgPing === null ? t("measuring") : avgPing < 200 ? t("fast") : t("slow")}
             </MetricHelp>
           </KpiCard>
-          <KpiCard label="Ressources utilisées" icon={<Cpu className="h-5 w-5" />}>
+          <KpiCard label={t("resources")} icon={<Cpu className="h-5 w-5" />}>
             <Metric
               value={health.data ? formatBytes(health.data.pid.rss).split(" ")[0] : "—"}
               suffix={health.data ? ` ${formatBytes(health.data.pid.rss).split(" ")[1]}` : ""}
             />
-            <MetricHelp>
-              Utilisation par le bot ; un détail n’est utile qu’en cas de ralentissement.
-            </MetricHelp>
+            <MetricHelp>{t("resourceDescription")}</MetricHelp>
           </KpiCard>
         </div>
       </section>
 
       <section aria-labelledby="bots-title">
         <h2 id="bots-title" className="text-lg font-semibold text-white">
-          Bots connectés à Discord
+          {t("botsTitle")}
         </h2>
-        <p className="mt-1 text-sm text-white/50">
-          Chaque carte représente un bot qui peut répondre aux membres.
-        </p>
+        <p className="mt-1 text-sm text-white/50">{t("botsDescription")}</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {bots.isPending ? (
             Array.from({ length: 3 }, (_, index) => (
               <div key={index} className="h-28 animate-pulse rounded-xl bg-white/[.04]" />
             ))
           ) : bots.isError ? (
-            <EmptyState text="Inventaire des bots indisponible." />
+            <EmptyState text={t("botsUnavailable")} />
           ) : bots.data.bots.length ? (
             bots.data.bots.map((bot) => <BotCard key={bot.id} bot={bot} />)
           ) : (
-            <EmptyState text="Aucun client Gateway déclaré." />
+            <EmptyState text={t("botsEmpty")} />
           )}
         </div>
       </section>
@@ -381,23 +373,23 @@ export default function DashboardPage() {
         className="rounded-xl border border-white/10 bg-white/[.025] p-4 md:p-6"
       >
         <h2 id="host-title" className="text-lg font-semibold text-white">
-          Machine hôte
+          {t("hostTitle")}
         </h2>
         {health.data ? (
           <dl className="mt-4 grid gap-x-8 sm:grid-cols-2">
-            <HostMetric label="Système d’exploitation" value={health.data.host.platform} />
-            <HostMetric label="Cœurs CPU" value={health.data.host.cpu.count} />
+            <HostMetric label={t("os")} value={health.data.host.platform} />
+            <HostMetric label={t("cores")} value={health.data.host.cpu.count} />
             <HostMetric
-              label="Mémoire"
+              label={t("memory")}
               value={`${formatBytes(health.data.host.memory.used)} / ${formatBytes(health.data.host.memory.total)} (${health.data.host.memory.usage} %)`}
             />
             <HostMetric
-              label="Temps de fonctionnement"
-              value={formatDuration(health.data.host.uptime * 1000)}
+              label={t("uptime")}
+              value={formatDuration(health.data.pid.uptime, locale)}
             />
           </dl>
         ) : (
-          <p className="mt-4 text-sm text-white/50">Connexion à la machine hôte…</p>
+          <p className="mt-4 text-sm text-white/50">{t("hostUnavailable")}</p>
         )}
       </section>
     </div>
@@ -463,12 +455,13 @@ function LiveSummary({
   unavailableCount: number;
   loading: boolean;
 }) {
+  const t = useTranslations("adminDashboard");
   if (loading) return <div className="mt-4 h-12 animate-pulse rounded-xl bg-white/[.04]" />;
   const message = healthy
-    ? "Tout fonctionne normalement. Aucune intervention n’est nécessaire."
+    ? t("healthy")
     : unavailableCount > 0
-      ? `${unavailableCount} élément${unavailableCount > 1 ? "s demandent" : " demande"} votre attention. Consultez les cartes ci-dessous pour comprendre l’impact.`
-      : "La vérification est en cours. Nous affichons les informations disponibles.";
+      ? t("attention", { count: unavailableCount })
+      : t("checking");
   return (
     <p
       className={`mt-4 flex items-start gap-2 rounded-xl p-3 text-sm ${healthy ? "bg-emerald-400/10 text-emerald-100" : "bg-amber-300/[.08] text-amber-100"}`}
@@ -482,6 +475,7 @@ function LiveSummary({
 }
 
 function LiveServiceCard({ service }: { service: LiveService }) {
+  const t = useTranslations("adminDashboard");
   const stateStyle = {
     ok: "bg-emerald-400",
     degraded: "bg-amber-300",
@@ -495,10 +489,10 @@ function LiveServiceCard({ service }: { service: LiveService }) {
       <Activity className="h-5 w-5" />
     );
   const stateLabel = {
-    ok: "Disponible",
-    degraded: "À vérifier",
-    down: "Indisponible",
-    unknown: "Non mesuré",
+    ok: "ok",
+    degraded: "degraded",
+    down: "down",
+    unknown: "unknown",
   }[service.state];
   const copy = SERVICE_COPY[service.id];
   return (
@@ -507,18 +501,20 @@ function LiveServiceCard({ service }: { service: LiveService }) {
         <span className="text-blue-300">{icon}</span>
         <span className="inline-flex items-center gap-1.5 text-xs font-medium text-white/70">
           <span className={`h-2 w-2 rounded-full ${stateStyle}`} />
-          {stateLabel}
+          {t(stateLabel)}
         </span>
       </div>
-      <h3 className="mt-4 text-sm font-medium text-white">{copy.label}</h3>
-      <p className="mt-1 text-sm leading-5 text-white/50">{copy.description}</p>
+      <h3 className="mt-4 text-sm font-medium text-white">{t(copy.label)}</h3>
+      <p className="mt-1 text-sm leading-5 text-white/50">{t(copy.description)}</p>
       <details className="mt-3 text-xs text-white/45">
         <summary className="cursor-pointer text-white/60 hover:text-white">
-          Voir le détail technique
+          {t("technical")}
         </summary>
         <p className="mt-2 break-words">
-          {service.detail}
-          {service.latencyMs === null ? "" : ` · réponse en ${service.latencyMs} ms`}
+          {service.detail.startsWith("HTTP ")
+            ? t("httpFailure", { status: service.detail.slice(5) })
+            : t(`details.${service.detail}`)}
+          {service.latencyMs === null ? "" : t("responseTime", { latency: service.latencyMs })}
         </p>
       </details>
     </article>
@@ -526,6 +522,7 @@ function LiveServiceCard({ service }: { service: LiveService }) {
 }
 
 function AgentActivity({ agents }: { agents: LiveDashboardResponse["agents"] | undefined }) {
+  const t = useTranslations("adminDashboard");
   return (
     <div className="mt-4 flex flex-col gap-3 rounded-xl border border-white/10 bg-black/10 p-4 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex items-start gap-3">
@@ -533,13 +530,19 @@ function AgentActivity({ agents }: { agents: LiveDashboardResponse["agents"] | u
           <Radio className="h-5 w-5" />
         </span>
         <div>
-          <h3 className="text-sm font-medium text-white">Travail automatisé</h3>
+          <h3 className="text-sm font-medium text-white">{t("agentsTitle")}</h3>
           <p className="mt-1 text-sm text-white/50">
-            {agents
-              ? agents.recentActivity > 0
-                ? `${agents.activeTasks} tâche${agents.activeTasks > 1 ? "s" : ""} automatisée${agents.activeTasks > 1 ? "s" : ""} en cours ; les derniers échanges sont affichés à droite.`
-                : "Aucune tâche automatisée n’a communiqué récemment."
-              : "Vérification des automatisations en cours…"}
+            {agents?.activeTasks === null || agents?.recentActivity === null
+              ? t("agentsUnavailable")
+              : agents
+                ? (agents.activeTasks ?? 0) > 0 || (agents.recentActivity ?? 0) > 0
+                  ? t("agentCounts", {
+                      tasks: agents.activeTasks ?? "—",
+                      messages: agents.recentActivity ?? "—",
+                      limit: 100,
+                    })
+                  : t("agentsIdle")
+                : t("agentsLoading")}
           </p>
         </div>
       </div>
@@ -554,7 +557,9 @@ function AgentActivity({ agents }: { agents: LiveDashboardResponse["agents"] | u
             </span>
           ))
         ) : (
-          <span className="text-sm text-white/45">Aucune activité récente</span>
+          <span className="text-sm text-white/45">
+            {agents?.recentActivity === null ? t("agentsUnavailable") : t("noActivity")}
+          </span>
         )}
       </div>
     </div>
@@ -562,6 +567,8 @@ function AgentActivity({ agents }: { agents: LiveDashboardResponse["agents"] | u
 }
 
 function BotCard({ bot }: { bot: BotSummary }) {
+  const t = useTranslations("adminDashboard");
+  const locale = useLocale();
   return (
     <article
       className={`flex min-h-28 gap-3 rounded-xl border border-white/10 bg-white/[.025] p-4 ${bot.online ? "" : "opacity-60"}`}
@@ -581,21 +588,23 @@ function BotCard({ bot }: { bot: BotSummary }) {
           <h3 className="truncate font-medium text-white">{bot.name}</h3>
           <span
             className={`h-2 w-2 shrink-0 rounded-full ${bot.online ? "bg-emerald-400" : "bg-rose-400"}`}
-            title={bot.online ? "En ligne" : "Hors ligne"}
+            title={bot.online ? t("online") : t("offline")}
           />
         </div>
         <p className="mt-1 text-sm text-white/50">
           {bot.online ? (
             <>
-              {bot.wsPing} ms · actif depuis {bot.uptime ? formatDuration(bot.uptime) : "—"}
+              {t("botLatency", {
+                ping: bot.wsPing >= 0 ? bot.wsPing : "—",
+                uptime: bot.uptime === null ? "—" : formatDuration(bot.uptime, locale),
+              })}
             </>
           ) : (
-            "Hors ligne"
+            t("offline")
           )}
         </p>
         <p className="mt-2 text-sm text-white/65">
-          {bot.commandCount} commande{bot.commandCount > 1 ? "s" : ""} · {bot.guildCount} serveur
-          {bot.guildCount > 1 ? "s" : ""}
+          {t("botCounts", { commands: bot.commandCount, guilds: bot.guildCount })}
         </p>
       </div>
     </article>

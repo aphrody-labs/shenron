@@ -5,14 +5,36 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 <!-- CLAUDE.md est un lien symbolique vers AGENTS.md : un seul fichier pour tous les agents. -->
 
+**Avant toute modification de code, lire [START-HERE.md](START-HERE.md)** (équipe, règles, hôtes, tunnel,
+contrôle à distance, travaux en cours ; source canonique dans `aphrody-labs/aphrody`).
+
 Shenron est le produit de dragonballfr.com : site, bot Discord, API, chaîne éditoriale (OCR et
 traduction des databooks), Shenron Studio (éditeur de traduction manga, nom de code Koharu), RAG
 et serveur MCP. Répondre et documenter en français ; le code, lui, est en anglais (voir « Langues
 et noms »). Exécuter de bout en bout ; commit et push à la fin de chaque lot vert,
 auteur `aphrody-dev <contact@aphrody.com>`, sans mention d'assistant.
-Sessions cloud et locales : aucun outil n'est interdit (Cargo, Git, Bun, Python via `uv`, utilitaires shell), sans hook ni confirmation ; depuis WSL, le Cargo lourd passe par les deux VPS de build (tunnel `vps-cargo.ts` d'Aphrody, voir `docs/development/rust.md`) et WSL ne fait que le Bun. Les règles de données (`db:push`, sources éditoriales) restent en vigueur.
+Poste propriétaire : Windows natif, sans démarrer WSL. Les builds lourds (Cargo, images Docker) tournent sur la fabrique VPS ; dbfr reçoit uniquement les binaires et images scellés. Les étapes longues tournent dans tmux ([runbook conteneurs](docs/operations/CONTAINER-COMPLET.md)). Le développement distant passe par `bun scripts/dev/remote-dev.ts up` (`just remote`, [runbook](docs/development/remote-dev.md)). Résoudre les hôtes et chemins depuis la configuration courante ; les règles de données (`db:push`, sources éditoriales) restent en vigueur.
+
+Mémoire des conversations : avant tout travail substantiel, lire `data/home/MEMORY.md` s'il existe (privé, ignoré par Git) et `docs/reference/root/REPRISE.md`. À la fin de tout échange substantiel, y ajouter un résumé daté des faits nouveaux, décisions, préférences, points en suspens et prochaine étape ; mettre à jour les éléments durables et retirer ceux devenus faux. Ne pas y recopier les secrets. Ne pas prétendre se souvenir d'un échange absent du contexte ou des notes. Cette mémoire est un résumé, pas une transcription : l'historique mot à mot doit être exporté séparément s'il doit être conservé.
 
 Session cloud : `docs/operations/CLOUD-SESSION.md` (hooks, SSH, secrets) ; chantiers ouverts dans `docs/reference/root/REPRISE.md`, lus au démarrage et repris sans demander jusqu'à la production.
+
+## Exécution autonome NHIL
+
+L’utilisateur a autorisé l’exécution autonome de bout en bout dans le périmètre de chaque
+demande, l’usage des CLI/MCP/skills pertinents et la délégation parallèle des sous-tâches
+indépendantes. Au début d’un travail substantiel, formuler l’objectif concret depuis la demande
+courante, reprendre l’objectif actif correspondant s’il existe, puis poursuivre jusqu’aux portes
+requises et à la livraison sans demander de confirmation intermédiaire. Trancher les choix
+réversibles, continuer les tâches indépendantes en cas de blocage, déléguer par défaut quand cela
+réduit réellement le délai et revendiquer des chemins disjoints. Garder les tâches simples ou
+fortement couplées dans un seul fil ; relire chaque résultat délégué.
+
+Cette autorisation ne change ni le périmètre demandé, ni les accès disponibles, ni les règles
+données, les politiques des outils/reviewers ou les propriétaires techniques. Ne pas transformer
+un ancien backlog en nouvelle demande. Si une approbation externe exacte ou une décision
+indispensable du propriétaire manque, terminer d’abord le travail indépendant autorisé puis
+rapporter le blocage concret. Suivre le skill global `nhil` et son rappel au démarrage.
 
 Graphe de code : Graphify (`uv tool install graphifyy`, skill `/graphify`) indexe le code localement, sans LLM (`.graphifyignore`). `graphify update .` construit ou rafraîchit le graphe ; préférer `graphify query "<question>"`, `graphify explain` ou `graphify path` aux greps larges quand `graphify-out/graph.json` existe (sortie locale, ignorée par Git).
 
@@ -114,6 +136,90 @@ Lancer et construire :
   `bun --filter @shenron/bot gen:entries` (barrel `apps/bot/src/_entries.ts`, commité).
 - `bun --filter @shenron/koharu protocol` régénère `packages/koharu/src/protocol.ts` (Specta) ;
   `build:wasm` reconstruit `koharu-canvas`.
+
+## Workflow direct : lecteurs et livraison
+
+Procédure qualifiée le 2026-10-10. Vérifier la configuration et l'aide installées avant
+de réutiliser les chemins distants ; cette date ne garantit pas leur disponibilité future.
+
+### Exécuter un lot sans refaire la découverte
+
+1. Lire les consignes et le plan, `git status --short` et les revendications `.coord/claims` ;
+   revendiquer uniquement les chemins du lot. Réutiliser les capacités installées et les
+   rapports existants ; conserver un `TODO.md` borné et ne pas rouvrir un chantier livré.
+2. Reproduire le défaut sur le lecteur réel, puis corriger son propriétaire. Manga :
+   `@aphrody/m3-reader/source`, styles consommateurs dans `packages/ui/src/reader-styles.css`.
+   Databooks : `packages/ui/src/reader/DatabookReader.tsx`, pas la distribution M3 installée.
+3. Valider les chemins modifiés et les comportements concernés. Depuis `apps/site`, utiliser
+   `bun test --isolate tests/<fichier>.test.ts` ; `bun --cwd apps/site test ...` peut lancer
+   le script du paquet et toute la suite. Depuis la racine : `bun run oxfmt --write <chemins>`.
+   Pour une modification documentaire seule : contrôle du diff et des liens, sans build moteur.
+4. Relire le diff, commiter uniquement les chemins possédés, puis `git fetch origin` et
+   `git merge-base --is-ancestor origin/main HEAD` avant le push normal. Si la vérification
+   échoue, intégrer les nouveaux commits en préservant les travaux concurrents, sans autostash.
+   Libérer la revendication après livraison ; rapporter les preuves et limites réelles.
+
+### Crawl et contrôle du rendu
+
+- Combiner `aphrody web crawl` récursif, limité aux routes publiques concernées, avec
+  `bun scripts/ops/audit-readers.ts --origin https://dragonballfr.com --out var/reports/readers --concurrency 3 --embeds`.
+  Le crawl HTML seul ne couvre pas les catalogues paginés ; le script parcourt leurs API.
+  `--frontier <fichier.sqlite>` permet de reprendre les URL du crawl natif. Sur le VPS,
+  placer les rapports dans le foyer du profil dbfr, hors du worktree de build nettoyable.
+- Réessayer les erreurs réseau après stabilisation du déploiement. `/api/health` est la
+  sonde publique ; `/api/public/health` n'est pas une sonde supportée. Le GET de
+  `/api/databooks/:id/pages` renvoie normalement 405 : cette route est PATCH uniquement.
+- `reader-assets.ts` centralise les scans locaux : `/assets/manga/...` reste local,
+  `/assets/wiki/...` devient `/wiki/...` sur le site. Conserver les paramètres et les sources
+  externes étrangères ; les assets éditables locaux doivent refléter les remplacements admin.
+- Contrôler en navigateur les éditions manga, les modes vertical/paginé des databooks et
+  les largeurs 1280/390 : `naturalWidth > 0`, largeur affichée positive, pagination et absence
+  de débordement. Une image chargée peut mesurer 2 px ; les grilles/Swiper exigent des
+  colonnes `minmax(0, 1fr)` et des enfants `min-width: 0`.
+- Canvas admin : attendre la réponse réelle des membres Discord et vérifier les cinq
+  aperçus. Les valeurs par défaut suivent les données asynchrones sans écraser les choix.
+  Vidéos : tester une panne réseau du fournisseur et le repli dans la même langue ;
+  `iframe.onload` et HTTP 200 ne prouvent pas la lecture effective d'un épisode ou film.
+- Préférer Aphrody Web avec `@aphrody/agent-browser/engine` et `@aphrody/web-test`
+  ([exemple live](scripts/testing/integration/test/dev.live.test.ts)). Résoudre la bibliothèque
+  native qualifiée depuis la configuration ; `YOLO_RUNTIME_LIB` éventuel reste propre au job.
+  Fermer page et moteur en `finally`. Auth admin par session autorisée, cookies limités au
+  domaine et supprimés après contrôle ; aucun en-tête secret global vers les iframes externes.
+
+### Fabrique VPS → image scellée → DBFR
+
+1. Vérifier les rôles avec `aphrody infra ssh exec --host vps -c 'hostname'` et l'équivalent
+   `--host dbfr`. Au contrôle du 2026-10-10 : fabrique `vps-203bea89`, production `vps-6732365f`.
+   `scripts/ops/release.ts` utilise un ancien contexte : inspecter son routage avant usage.
+2. Sur la fabrique, inspecter les helpers installés `~/shenron-docker-build.sh` et
+   `~/ship-shenron.sh`, le checkout et le verrou de build. Lancer le build dans tmux,
+   journal durable avec statut terminal explicite, puis attendre son succès. Le helper
+   utilise actuellement `~/build/transient/shenron-docker` et sérialise Cargo par le verrou lourd.
+3. Vérifier le SHA du worktree, l'image correspondante, `version` et le bot `--smoke`.
+   Lancer ensuite `~/ship-shenron.sh` dans tmux et attendre son succès : il capture le SHA
+   du worktree au lancement. Ne pas lancer un nouveau build qui déplace ce HEAD pendant
+   la livraison. DBFR charge l'image, assemble/scelle/vérifie puis active via Infra.
+4. Vérifier la release active (`readlink -f /srv/shenron/current`), les conteneurs, la santé
+   publique et les lecteurs réellement rendus. Conserver le chemin de rollback fourni.
+   Une modification de documentation seule ne nécessite aucun déploiement.
+
+Après inspection des helpers, commandes à exécuter dans le shell Bash de la fabrique
+(attendre `EXIT_CODE=0` du build avant de lancer la livraison) :
+
+```bash
+tmux new-session -d -s shenron-build 'bash "$HOME/shenron-docker-build.sh" > "$HOME/shenron-build.log" 2>&1; code=$?; printf "EXIT_CODE=%s\n" "$code" >> "$HOME/shenron-build.log"'
+tmux new-session -d -s shenron-ship 'bash "$HOME/ship-shenron.sh" > "$HOME/shenron-ship.log" 2>&1; code=$?; printf "EXIT_CODE=%s\n" "$code" >> "$HOME/shenron-ship.log"'
+```
+
+En cas d'échec, lire la dernière étape et le code de sortie avant de relancer. Pour `ENOSPC`,
+inventorier l'espace de `/`, `/tmp` et du disque de build ; ne jamais purger les volumes Docker
+ou les données protégées. Si le SHA et le standalone Next déjà construit sont inchangés,
+reprendre avec `bun scripts/build/server.ts --flavor production --target linux-x64 --skip-site`
+et un `TMPDIR` propre au job sur le disque qualifié, puis terminer les contrôles de l'image.
+Conserver les wrappers/verrous Cargo. Les scripts `.sh` transférés depuis Windows doivent être
+en LF : un CR final peut invalider une référence Docker. Les contrôles navigateur longs vont
+aussi dans tmux : le timeout SSH peut perdre la sortie partielle. Sonder les logs par extraits
+bornés plutôt que relancer le travail.
 
 ## Architecture
 

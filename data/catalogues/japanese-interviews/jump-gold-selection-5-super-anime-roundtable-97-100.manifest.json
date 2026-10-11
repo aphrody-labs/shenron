@@ -1,0 +1,55 @@
+{
+  "source": "Jump Gold Selection 5 / 超アニメ人座談会",
+  "transcriptionStatus": "initial visual transcription; independent review still needed",
+  "participants": [
+    "鳥山明",
+    "小山高生",
+    "森下孝三",
+    "清水賢治",
+    "西尾大介",
+    "前田実",
+    "野沢雅子"
+  ],
+  "method": "Manual visual transcription from the local Japanese scans; no OCR, network, translation, or secondary text used. Entries are ordered by printed folio, not source filename.",
+  "pages": [
+    {
+      "printedPage": 97,
+      "path": "C:\\Users\\omara\\Desktop\\Data et guide book\\Gold Selection 5\\Jump Gold Selection 5 Page 100.png",
+      "sha256": "B2B2C4D2987020A5B089F6AB399DBE7D11779C5C09BAF56326DA8F06D1A8EB97",
+      "bytes": 91856012,
+      "dimensions": "4960x7015",
+      "transcriptRow": 1
+    },
+    {
+      "printedPage": 98,
+      "path": "C:\\Users\\omara\\Desktop\\Data et guide book\\Gold Selection 5\\Jump Gold Selection 5 Page 98.png",
+      "sha256": "78AA9B718FEA6C6BB54D1767AEBEB57052094C4A7137DB6C609C052158A5A8DF",
+      "bytes": 86897613,
+      "dimensions": "4960x7015",
+      "transcriptRow": 2
+    },
+    {
+      "printedPage": 99,
+      "path": "C:\\Users\\omara\\Desktop\\Data et guide book\\Gold Selection 5\\Jump Gold Selection 5 Page 99.png",
+      "sha256": "B1898F95D8C69836BB1D926FA088C37A4073300BB5246233AEADE9552902CB67",
+      "bytes": 88802691,
+      "dimensions": "4932x7015",
+      "transcriptRow": 3
+    },
+    {
+      "printedPage": 100,
+      "path": "C:\\Users\\omara\\Desktop\\Data et guide book\\Gold Selection 5\\Jump Gold Selection 5 Page 97.png",
+      "sha256": "B1314EFEC6184372A0F402645A2A74F2AE683F16549E8E5B5848CD5AF9F21F46",
+      "bytes": 85801904,
+      "dimensions": "4960x7015",
+      "folioNote": "No folio visible at the lower edge; assigned 100 by article continuity between printed pp. 99 and 101.",
+      "transcriptRow": 4
+    }
+  ],
+  "limitations": [
+    "Page 97 is the opening/title page and contains no substantial dialogue; its introductory copy and participant labels are recorded.",
+    "On p. 98, a few small-text readings and speaker attributions need independent visual review.",
+    "Printed folio 100 is not visible in its scan; page ordering is inferred from article continuity."
+  ],
+  "transcriptSha256": "52A1CA215E3F78331B99B898529D38A9D3D81F46F3D19AF85808937F7852ABAC"
+}

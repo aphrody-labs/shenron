@@ -794,3 +794,144 @@ Sur la copie Shenron bf03e5cd, le contrôle check-workspace-packages.ts termine 
 La DLL Windows historique de 247 048 704 octets, SHA-256 9171579c94dcf7f783999be0eb044fb4125ad2bce3011ae0590976550088ad5e, reste présente dans le target global MSVC, pas dans le dossier runtime du snapshot source. Le nouveau SDK refuse son utilisation normale sans manifeste. En qualification de développement explicite, il refuse ensuite le chargement faute du symbole aphrody_web_pipeline_abi_version. Cette DLL ne qualifie donc pas les nouveaux workflows natifs Shenron.
 
 Le remplacement est préparé depuis le commit producteur immuable cafa8b3e8ef494a4cfa5243a7304902057fb0380. Le contrôle MSVC de aphrody-ffi avec la feature jobs est lancé sous la garde Cargo native, cache partagé conservé. Aucun résultat terminal, nouvelle DLL, installation ou activation n’est revendiqué à ce stade.
+### Portabilité et confidentialité Windows — 2026-10-07
+
+Le producteur livre 34c5b2d0406d0797be582054ce0399110a3c5a0e : helper de configuration Unix limité à ses appelants, expressions Windows compatibles avec Clippy, attente de code inutilisé documentée sur la seule liaison SDK Everything interne. La table du SDK et le comptage restent présents. Sur la base immuable cafa8b3e et ces trois correctifs : check MSVC réussi ; Clippy strict aphrody-ffi avec jobs, toutes cibles, réussi ; 5 tests pipeline FFI et 26 tests fsindex réussis, aucun échec ou ignore. Les 14 ressources de police/licence épinglées sont vérifiées et le contrôle canonique des polices réussit. L’avertissement futur binrw reste signalé.
+
+Dans la copie Shenron bf03e5cd, quatre correctifs portables sont préparés sans intégrer les chemins revendiqués : répertoires temporaires natifs, conversion fileURLToPath et conversion des séparateurs du chemin manga vers son identité éditoriale. Le patch local portable-fixtures.patch contient 10 insertions et 5 suppressions. Les 9 tests concernés, 38 assertions, TypeScript pipeline et lint passent. La suite complète avec ce patch privé donne 395 réussites, 15 skips et 5 échecs ; ce résultat ne représente pas le contenu non modifié de main.
+
+Une sonde native sur des fixtures vides confirme que les constructeurs de ledgers jobs et automation acceptent un dossier auquel Everyone possède la lecture par ACL Windows. Les fixtures ont été supprimées ; aucune donnée protégée, acquisition, ingestion ou traduction n’est exécutée. La confidentialité Windows nécessite donc une correction réelle, pas seulement l’adaptation des assertions POSIX. Les chemins restent revendiqués par leurs lots Dragon Ball.
+
+La nouvelle DLL est préparée dans un checkout Git Windows isolé du commit producteur 34c5b2d0. Le fichier de documentation dépassant MAX_PATH est restauré après activation locale de core.longpaths ; aucune configuration système ni globale n’est modifiée. L’ancienne DLL qualifiée est conservée avec empreinte vérifiée pour rollback. La construction optimisée du runtime, son manifeste, le smoke Bun natif et l’activation restent à qualifier.
+
+### DLL et SDK natifs Windows — 2026-10-07
+
+La construction native MSVC du producteur immuable
+`34c5b2d0406d0797be582054ce0399110a3c5a0e` termine avec succès en
+5 min 57 s : `cargo build --locked -p aphrody-ffi --features jobs --profile runtime --target x86_64-pc-windows-msvc`.
+La DLL fait 272 265 728 octets ; son SHA-256 est
+`fc46eb677687b0621e75dfeb8c7f12bbc31a820cbf0164e92683b4d731454b77`.
+La garde Cargo native et le cache partagé sont conservés.
+
+Un nouveau checkout Windows figé à
+`2a29421ac59fb8dc63c0e7c407bf334b8cdd9b98` installe 958 paquets avec
+`bun install --frozen-lockfile`, depuis les seuls fichiers committés.
+Les quatre archives SDK désormais suivies correspondent au manifeste et à leurs
+empreintes. Ce résultat ferme le défaut de reproductibilité observé à bf03e5cd.
+
+Avec cette DLL explicitement sélectionnée en mode développement, les appels
+réels du SDK installé exécutent l’aide et le plan natif des 26 sources.
+Les six tests pipeline du producteur passent, avec 47 assertions et aucun skip :
+entrées invalides, annulation, propriété des handles, fermeture, GC, boucle
+d’événements et appels MCP HTTP concurrents avec authentification de fixture.
+`APHRODY_FFI_REQUIRE_NATIVE=1` interdit de masquer une DLL indisponible par un skip.
+Aucun identifiant réel ni service distant n’est utilisé.
+
+Sur ce même checkout, les tests d’identité, d’authentification Bun et de démarrage
+du serveur donnent 13 réussites, 2 skips Windows existants et aucun échec.
+Les quatre tests du relais d’authentification Next passent (16 assertions),
+ainsi que les cinq tests du module RE WASM (26 assertions).
+Le contrôle TypeScript complet réussit, applications, paquets et scripts inclus.
+Ces contrôles utilisent Bun natif et des serveurs loopback ; aucun navigateur
+ni VPS n’est lancé.
+
+Le profil Cargo `runtime` et le mode développement ne qualifient pas une
+distribution normale avec manifeste, une activation globale ou le nouvel
+installeur. Le contrôle des ACL Windows et l’intégration des correctifs sur les
+chemins encore revendiqués restent ouverts. Les révisions arrivées après
+2a29421a ne sont pas couvertes par ces résultats. Les DLL et rapports restent
+hors Git dans les stores locaux.
+
+### Distribution native en mode normal — 2026-10-07
+
+Une construction MSVC distincte avec `--release --features jobs`, depuis le
+producteur immuable `34c5b2d0406d0797be582054ce0399110a3c5a0e`, termine en
+13 min 12 s. La DLL fait 272 265 728 octets, SHA-256
+`ecb1183e4f2857c0754a300b135b237c05ca8c66489c673d6c261d4e79dffca8`.
+Elle est distincte de l’artefact du profil `runtime` décrit précédemment.
+
+Le manifeste de cette construction porte le profil réel, la feature `jobs`,
+la révision source propre, le hash du lockfile et la version de Rust.
+Les contrôles canoniques du SDK passent d’abord en développement, puis en mode
+normal : cinq ABI, addition native, CLI, extraction de texte, formatage,
+minification, lint et scan N2B sur une fixture temporaire. La vérification
+normale du manifeste et de l’empreinte réussit également.
+
+La préparation isolée initiale révèle une dépendance manquante : la fabrique
+ne copiait que le SDK, sans `@aphrody/runtime-sdk`. Le correctif producteur
+`cae1efa0e122a7cfb468977081e02cde3e15cb66` prépare les dépendances sources
+déclarées et sélectionne explicitement la même DLL pour OXC/N2B, empêchant
+le recours involontaire à un autre runtime installé. Il isole aussi les
+artefacts des fixtures et conserve le cache natif sur le port Windows qualifié.
+La fabrique donne 10 tests réussis, 2 skips existants, aucun échec ; TypeScript,
+lint, formatage et syntaxe PowerShell passent. Les skips concernent le test
+de signal Linux et le scénario optionnel nécessitant une source configurée.
+
+Dans le checkout Shenron `2a29421a`, la DLL et son manifeste sont ensuite
+installés dans le SDK local. Les six tests pipeline passent, 47 assertions,
+sans `APHRODY_FFI_LIB` ni `APHRODY_FFI_DEV`, avec l’exigence de natif activée.
+La frontière produit Shenron exécute aussi l’aide et le plan des 26 sources
+en mode normal, sans processus CLI de repli. Les tests MCP utilisent uniquement
+une authentification synthétique et des serveurs loopback.
+
+Cette installation reste celle du checkout de qualification ; le runtime global,
+le serveur réemballé et l’installeur final ne sont pas activés par ce lot.
+Le packaging actuel doit encore inclure la DLL Aphrody et son manifeste :
+son seul embarquement de `shenron_ffi` ne prouve pas ce contrat. Les chemins
+de build restent revendiqués. Les ACL des ledgers, les correctifs portables,
+le frontend récent et l’exécution graphique restent à qualifier. Aucun VPS
+ni navigateur n’est utilisé ; binaires et rapports restent hors Git.
+
+### Qualification MSVC du pin Rust `34c5b2d0` — 2026-10-07
+
+Le checkout Windows isolé, fondé sur Shenron `203e8f5e`, résout les dépendances
+Aphrody à `34c5b2d0406d0797be582054ce0399110a3c5a0e`, la source de la DLL
+release qualifiée ci-dessus. Cargo conserve 1 213 packages : seules les sources
+Git des 46 entrées Aphrody changent, sans modification des autres versions.
+
+Avec le wrapper Windows sérialisé et sccache conservé, les commandes suivantes
+terminent avec le code 0 pour `x86_64-pc-windows-msvc` :
+
+- `cargo check --locked -p shenron-ffi -p shenron-mcp -p koharu-library`
+  en 2 min 01 s ;
+- `cargo clippy --locked -p shenron-ffi -p shenron-mcp -p koharu-library
+  --all-targets -- -D warnings` en 48,83 s.
+
+Le SDK appartient au paquet `koharu-library`. Une sélection erronée de paquet
+et un premier lancement Clippy ayant perdu le séparateur PowerShell ont échoué
+avant analyse ; les résultats ci-dessus sont ceux des commandes corrigées.
+Ces contrôles portent sur ce snapshot isolé. Le pin reste hors de `main` en
+attendant la suite workspace et la qualification des artefacts de l’installeur ;
+aucune nouvelle installation ou activation n’est attestée.
+
+Le SDK portable de `bce7afe7` est aussi qualifié dans un nouveau clone Windows
+fondé sur `1e59acf1`. L’installation figée termine avec le code 0, 958 packages,
+et les quatre archives correspondent aux SHA-256 du manifeste. Le SDK Bun est
+issu de `c8134dd39f84f0e51e2b8c14d50e83dc931c8722` ; la DLL release reste issue
+de `34c5b2d0406d0797be582054ce0399110a3c5a0e`, avec son manifeste vérifié.
+Ces deux provenances sont distinctes.
+
+Dans ce clone, les six tests pipeline natifs donnent 47 assertions, aucun échec
+et aucun skip, sans `APHRODY_FFI_DEV` ni `APHRODY_FFI_LIB`. La frontière produit
+Shenron exécute l’aide native et le plan de 26 sources dans la même configuration.
+La découverte du pin installé ajoutée dans `c8134dd3` est réservée à Unix :
+cette preuve Windows utilise le dossier natif du SDK, pas l’installation globale.
+Elle n’atteste pas encore l’embarquement de la DLL dans l’installeur final.
+Le contrôle TypeScript complet de ce clone, applications, packages et scripts,
+termine également avec le code 0 sur Windows.
+
+Les tests MSVC des trois paquets Rust passent après correction de la synchronisation
+des fixtures de jobs : 18 tests `koharu-library`, 24 FFI et 51 MCP, soit 93 réussites,
+aucun échec ni test ignoré. Le premier lancement avait obtenu `Usage` dans le test
+de libération d’un job : un délai de 50 ms ne garantissait pas que le worker avait
+démarré. Les tests attendent maintenant un signal émis depuis le travail effectif
+avant annulation ou libération ; ils conservent l’exigence `Cancelled`, le délai
+de retour maximal et le contrôle de suppression du registre. Aucun comportement
+produit n’est modifié.
+
+Clippy strict `--workspace --all-targets --target x86_64-pc-windows-msvc`, avec
+`shenron-desktop/custom-protocol,shenron-mcp/koharu,koharu-library/desktop` et
+`-D warnings`, termine ensuite avec le code 0 en 3 min 23 s. Cette compilation
+analyse les fonctionnalités de l’installeur ; elle n’exécute pas de navigateur
+ni le desktop. La suite Rust workspace, les tests GPU/ML exclus par le filtre
+nextest par défaut et les artefacts finaux restent à qualifier.

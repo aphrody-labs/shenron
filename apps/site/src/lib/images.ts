@@ -31,7 +31,8 @@ const PREFIXE_EDITABLE = "assets/wiki/";
  */
 export function isEditableAsset(src: string | null | undefined): boolean {
   if (!src) return false;
-  return src.includes(PREFIXE_EDITABLE);
+  // The reader serves the same editable files through the public /wiki/ mount.
+  return src.includes(PREFIXE_EDITABLE) || /^(?:https?:\/\/[^/]+)?\/wiki\//.test(src);
 }
 
 /**

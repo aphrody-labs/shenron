@@ -7,19 +7,20 @@
  *   bun release-host.ts build   # main → artifacts/releases/<sha>, assemblé sous /srv/shenron/releases
  *   bun release-host.ts cdn [dir] # publie une release sur le CDN (défaut : la release active)
  *
- * Build réparti (`release.ts --build-host dbfr`) : `cargo [ref]` (vps : shenron-mcp et WASM),
- * `bundle <sha>` (dbfr : bot, site, emballage), puis `assemble <sha>` (vps) sur la release relayée.
+ * Tout build tourne ici, sur le vps : dbfr ne compile rien et ne garde aucun cache de build.
  *
- * `build` : avance rapide de `~/shenron` sur origin/main (arbre propre exigé), install figée,
- * `shenron-mcp` (cargo), bot compilé, WASM du viewport Koharu (`packages/koharu/scripts/
- * build-wasm.ts` : cible wasm32 et CLI wasm-bindgen verrouillé installés au premier passage,
- * rien à refaire si son tampon est à jour), site (`build-site-external.ts`, base lue dans
- * l'environnement du site, jamais affichée), emballage puis `aphrody-infra-deploy-shenron
- * assemble`. Dernière ligne : `{"commit": …, "release": …}`.
+ * `build` : arbre de build dédié `~/shenron-release` (worktree détaché de `~/shenron`, remis
+ * de force sur origin/main à chaque release : une édition en cours dans `~/shenron` ne bloque plus
+ * la release), install figée, `shenron-mcp` et `shenron-ffi` (cargo), WASM des moteurs Koharu et
+ * shenron-re et bot compilé dans l'image de build d'Aphrody (`aphrody-build:latest`, via
+ * `scripts/build/container.ts` : caches partagés, CPU et mémoire bornés), puis site
+ * (`build-site-external.ts`, déjà dans son conteneur Node borné ; base lue dans l'environnement du
+ * site, jamais affichée), emballage et `aphrody-infra-deploy-shenron assemble`. Dernière ligne :
+ * `{"commit": …, "release": …}`.
  *
  * Le site est construit avec `NEXT_PUBLIC_CDN_URL` de l'environnement du site : le préfixe des
  * chunks est gravé dans le runtime Turbopack et `next start` le reprend du build
- * (`apps/site/src/lib/build-frozen-config.ts`). Servis par l'origine, les chunks d'une release
+ * (`withBun` de `@aphrody/next-bun`, `freezeBuildConfig`). Servis par l'origine, les chunks d'une release
  * disparaissaient à la suivante et un onglet ouvert avant la bascule tombait en ChunkLoadError ;
  * le CDN, lui, garde tous les anciens chunks.
  *
@@ -28,20 +29,23 @@
  * (`/srv/shenron-cdn-src`) et, pour ce qui n'y est pas encore, directement dans l'arbre servi
  * (`/srv/shenron-cdn`) : disponibles tout de suite, ré-encodés ensuite par
  * `aphrody-cdn-optimize`. Jamais de suppression : une page en cache garde ses anciens fichiers.
- * Le WASM de Koharu y part avec les médias (`static/media/koharu_canvas_bg.<hash>.wasm`) ; nginx
- * le sert en `application/wasm`, immuable (sonde de `release.ts`).
+ * Les WASM Koharu et shenron-re y partent avec des noms empreints ; nginx les sert en
+ * `application/wasm`, immuables (sondes de `release.ts`).
  */
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 
 const HOME = process.env.HOME ?? "/home/ubuntu";
-// `bundle` tourne sur dbfr, dans un dépôt dédié que `release.ts` alimente par `git push` (dbfr n'a
-// aucun accès à GitHub) ; `SHENRON_BUILD_REPO` le désigne.
-const REPO = process.env.SHENRON_BUILD_REPO ?? join(HOME, "shenron");
+/** Checkout de travail (éditable) : seule sa base d'objets et ses remotes servent à la release. */
+const SOURCE = process.env.SHENRON_SOURCE_REPO ?? join(HOME, "shenron");
+/** Arbre de build dédié, jamais édité à la main : remis de force sur la référence publiée. */
+const REPO = process.env.SHENRON_BUILD_REPO ?? join(HOME, "shenron-release");
 const CURRENT = "/srv/shenron/current";
 const CDN_SRC = "/srv/shenron-cdn-src";
 const CDN_OUT = "/srv/shenron-cdn";
 const ADAPTER = "/usr/local/sbin/aphrody-infra-deploy-shenron";
-const PATH = `${join(HOME, ".bun", "bin")}:${join(HOME, ".cargo", "bin")}:/usr/local/bin:/usr/bin:/bin`;
+// `~/.local/bin` : `gh`, dont `scripts/build/container.ts` tire le jeton des dépendances Git privées.
+const PATH = `${join(HOME, ".bun", "bin")}:${join(HOME, ".cargo", "bin")}:${join(HOME, ".local", "bin")}:/usr/local/bin:/usr/bin:/bin`;
 
 function step(label: string, cmd: string[], env: Record<string, string> = {}, cwd = REPO): string {
   console.log(`== ${label}`);
@@ -57,29 +61,49 @@ function step(label: string, cmd: string[], env: Record<string, string> = {}, cw
   return out;
 }
 
-/** Avance rapide de `~/shenron` sur `ref` (défaut : origin/main), arbre propre exigé. */
+/**
+ * Arbre de build sur `ref` (défaut : origin/main). L'ancien build avançait `~/shenron` lui-même :
+ * des modifications locales non commitées y faisaient échouer `merge --ff-only` (release du
+ * 2026-10-07 : `== EXIT 1`). Le worktree détaché dédié est forcé sur `ref` et nettoyé des fichiers
+ * non suivis (les ignorés — node_modules, target, caches — restent pour le build incrémental).
+ */
+export function syncCommands(source: string, repo: string, ref: string, exists: boolean) {
+  return [
+    ["git", "-C", source, "fetch", "-q", "origin"],
+    ...(exists ? [] : [["git", "-C", source, "worktree", "add", "-q", "--detach", repo, ref]]),
+    ["git", "-C", repo, "checkout", "-q", "-f", "--detach", ref],
+    ["git", "-C", repo, "clean", "-ffdq"],
+  ];
+}
+
 function syncOrigin(ref = "origin/main"): string {
+  for (const cmd of syncCommands(SOURCE, REPO, ref, existsSync(join(REPO, ".git"))))
+    step("git", cmd, {}, HOME);
   // Le chargeur natif SWC refuse un cache dont un parent est accessible en écriture au groupe.
   step("permissions", ["chmod", "755", REPO]);
-  step("git", ["git", "fetch", "-q", "origin"]);
-  step("git", ["git", "checkout", "-q", "main"]);
-  step("git", ["git", "merge", "-q", "--ff-only", ref]);
   if (step("arbre propre", ["git", "status", "--porcelain", "--untracked-files=no"]).trim())
     throw new Error("arbre de build modifié : release refusée");
   return step("commit", ["git", "rev-parse", "HEAD"]).trim();
 }
 
-/**
- * Produits de cargo : `shenron-mcp`, `libshenron_ffi.so` (mémoire du chat du bot, `SHENRON_FFI_LIB`)
- * et le WASM du viewport Koharu.
- */
-function cargoProducts(): void {
-  step("shenron-mcp", ["cargo", "build", "--release", "-p", "shenron-mcp"]);
-  step("shenron-ffi", ["cargo", "build", "--release", "-p", "shenron-ffi", "--lib"]);
-  step("koharu-canvas wasm", ["bun", "packages/koharu/scripts/build-wasm.ts"]);
+/** Une étape dans l'image de build d'Aphrody (`scripts/build/container.ts` du commit construit). */
+function inBuildImage(label: string, cmd: string[]): string {
+  // Bun consumes the first `--` while parsing its own CLI. Pass a second one so
+  // container.ts receives its command separator in process.argv.
+  return step(label, ["bun", "scripts/build/container.ts", "--", "--", ...cmd]);
 }
 
-/** Bot compilé, site (base lue dans l'environnement du site) et emballage : `artifacts/releases/<sha>`. */
+/**
+ * Produits de cargo : `shenron-mcp`, `libshenron_ffi.so` (mémoire du chat du bot, `SHENRON_FFI_LIB`)
+ * et les moteurs WebAssembly Koharu et shenron-re.
+ */
+function cargoProducts(): void {
+  inBuildImage("shenron-mcp", ["cargo", "build", "--release", "-p", "shenron-mcp"]);
+  inBuildImage("shenron-ffi", ["cargo", "build", "--release", "-p", "shenron-ffi", "--lib"]);
+  inBuildImage("koharu-canvas wasm", ["bun", "packages/koharu/scripts/build-wasm.ts"]);
+  inBuildImage("shenron-re wasm", ["bun", "packages/pipeline/scripts/build-re-wasm.ts"]);
+}
+
 /** Une variable d'un fichier d'environnement (`NOM=valeur`, guillemets facultatifs). */
 export function envValue(text: string, name: string): string | undefined {
   const match = new RegExp(`^${name}=["']?([^"'\\n]+)["']?$`, "m").exec(text);
@@ -97,15 +121,22 @@ export function siteBuildEnv(envText: string): Record<string, string> {
   return { SITE_BUILD_DATABASE_URL: database, ...(cdn ? { NEXT_PUBLIC_CDN_URL: cdn } : {}) };
 }
 
-function bundleSite(commit: string): string {
-  step("bot", ["bun", "scripts/build/bot.ts", "--target", "linux-x64"]);
+/** Bot compilé, site (base lue dans l'environnement du site) et emballage : `artifacts/releases/<sha>`. */
+function bundleSite(commit: string, systemdDir?: string): string {
+  inBuildImage("bot", ["bun", "scripts/build/bot.ts", "--target", "linux-x64"]);
   const envFile = Bun.spawnSync(["sudo", "-n", "cat", "/etc/rose-griffon/shenron-site.env"]);
   const buildEnv = siteBuildEnv(envFile.stdout.toString());
   const release = join("artifacts", "releases", commit);
   step("site", ["rm", "-rf", release, `${release}.staging`]);
   step(
     "site + emballage",
-    ["bun", "scripts/build/build-site-external.ts", "--release-dir", release],
+    [
+      "bun",
+      "scripts/build/build-site-external.ts",
+      "--release-dir",
+      release,
+      ...(systemdDir ? ["--systemd-dir", systemdDir] : []),
+    ],
     buildEnv,
   );
   return release;
@@ -119,29 +150,10 @@ function assemble(release: string, commit: string): void {
 /** Tout sur le même hôte (le vps, qui a l'accès à GitHub et le cache cargo). */
 function build(): void {
   const commit = syncOrigin();
-  step("bun install", ["bun", "install", "--frozen-lockfile"]);
+  step("image de build", ["bun", "scripts/build/container.ts", "--check"]);
+  inBuildImage("bun install", ["bun", "install", "--frozen-lockfile"]);
   cargoProducts();
-  assemble(bundleSite(commit), commit);
-}
-
-/** Étape cargo seule, sur le vps : la sortie est relayée vers dbfr par `release.ts`. */
-function cargo(ref: string): void {
-  const commit = syncOrigin(ref);
-  step("bun install", ["bun", "install", "--frozen-lockfile"]);
-  cargoProducts();
-  console.log(JSON.stringify({ commit }));
-}
-
-/**
- * Étape bot + site + emballage, sur dbfr : le dépôt de build reçoit `ref` par push, les produits
- * de cargo y arrivent déjà posés (`target/release/shenron-mcp`, `packages/koharu/src/wasm`).
- */
-function bundle(ref: string): void {
-  step("git", ["git", "checkout", "-q", "-f", "--detach", ref]);
-  const commit = step("commit", ["git", "rev-parse", "HEAD"]).trim();
-  step("bun install", ["bun", "install", "--frozen-lockfile"]);
-  const release = bundleSite(commit);
-  console.log(JSON.stringify({ commit, release: join(REPO, release) }));
+  assemble(bundleSite(commit, join(CURRENT, "systemd")), commit);
 }
 
 /** Arbre publié par `cdn` : une release assemblée sous /srv/shenron/releases, sinon l'active. */
@@ -194,30 +206,10 @@ async function cdn(dir?: string): Promise<void> {
   console.log(JSON.stringify({ cdn: "published", commit }));
 }
 
-/** dbfr ne garde rien entre deux builds : seul le dépôt de build (sources) reste. */
-function clean(): void {
-  step("nettoyage", [
-    "rm",
-    "-rf",
-    "node_modules",
-    "artifacts",
-    "target",
-    "dist",
-    ".cache",
-    join(HOME, ".bun", "install"),
-  ]);
-}
-
 const [command, ref] = import.meta.main ? process.argv.slice(2) : [];
 if (!import.meta.main) {
   // importé par les tests : aucune commande
 } else if (command === "build") build();
-else if (command === "cargo") cargo(ref ?? "origin/main");
-else if (command === "bundle" && ref) bundle(ref);
 else if (command === "assemble" && ref) assemble(join("artifacts", "releases", ref), ref);
-else if (command === "clean") clean();
 else if (command === "cdn") await cdn(ref);
-else
-  throw new Error(
-    "usage: release-host.ts build | cargo [ref] | bundle <sha> | assemble <sha> | clean | cdn [dir]",
-  );
+else throw new Error("usage: release-host.ts build | assemble <sha> | cdn [dir]");

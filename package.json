@@ -1,5 +1,6 @@
 {
   "name": "shenron",
+  "version": "1.4.4",
   "private": true,
   "description": "Shenron (dragonballfr.com): Dragon Ball site, Discord bot, editorial pipeline, Koharu manga translation and the Shenron agent tooling, built on published Aphrody packages.",
   "workspaces": {
@@ -10,21 +11,21 @@
     "catalog": {
       "@ai-sdk/openai-compatible": "^3.0.59",
       "@ai-sdk/provider": "4.0.19",
-      "@aphrody/api": "3.0.0-alpha.3",
+      "@aphrody/api": "3.0.0-alpha.5",
       "@aphrody/bun-test-dom": "0.1.1",
-      "@aphrody/discord-kit": "0.1.1",
+      "@aphrody/discord-kit": "0.1.3",
       "@aphrody/http": "0.1.1",
       "@aphrody/inference": "0.1.1",
-      "@aphrody/m3-ai": "3.3.7",
-      "@aphrody/m3-primitives": "3.3.7",
-      "@aphrody/m3-reader": "3.3.7",
-      "@aphrody/m3-theme": "3.3.6",
-      "@aphrody/m3-tokens": "3.3.7",
+      "@aphrody/m3-ai": "3.3.11",
+      "@aphrody/m3-primitives": "3.3.11",
+      "@aphrody/m3-reader": "3.3.11",
+      "@aphrody/m3-theme": "3.3.11",
+      "@aphrody/m3-tokens": "3.3.11",
       "@aphrody/messaging": "0.1.1",
-      "@aphrody/paths": "0.1.1",
-      "@aphrody/plugin-opener": "3.0.0-alpha.3",
-      "@aphrody/runtime-sdk": "0.1.1",
-      "@aphrody/sql": "0.1.1",
+      "@aphrody/paths": "0.1.3",
+      "@aphrody/plugin-opener": "3.0.0-alpha.5",
+      "@aphrody/runtime-sdk": "0.1.4",
+      "@aphrody/sql": "0.1.2",
       "@base-ui/react": "^1.8.0",
       "@codemirror/lang-markdown": "^6.5.2",
       "@codemirror/language-data": "^6.5.2",
@@ -34,8 +35,8 @@
       "@discordx/pagination": "^4.4.2",
       "@huggingface/transformers": "^4.3.0",
       "@napi-rs/canvas": "1.0.9",
-      "@next/env": "^16.3.8",
-      "@next/third-parties": "^16.3.6",
+      "@next/env": "16.5.0-canary.5",
+      "@next/third-parties": "16.5.0-canary.5",
       "@paralleldrive/cuid2": "^3.3.0",
       "@pixi/react": "^8.0.5",
       "@pothos/core": "^4.15.1",
@@ -66,7 +67,7 @@
       "@tiptap/starter-kit": "^3.31.3",
       "@tiptap/static-renderer": "^3.31.3",
       "@tiptap/suggestion": "^3.31.3",
-      "@types/bun": "1.4.2",
+      "@types/bun": "npm:@aphrody/bun-types@1.4.4",
       "@types/howler": "^2.2.13",
       "@types/node": "26.6.3",
       "@types/react": "^19.3.0",
@@ -94,7 +95,7 @@
       "marked": "^18.0.14",
       "modern-gif": "^2.1.0",
       "motion": "^13.4.4",
-      "next": "16.3.8",
+      "next": "16.5.0-canary.5",
       "next-intl": "4.14.7",
       "next-themes": "^0.4.6",
       "pino": "^10.3.1",
@@ -129,14 +130,19 @@
       "typescript": "7.0.2",
       "zod": "^4.6.5",
       "zustand": "^5.0.15",
-      "@aphrody/web-test": "0.2.6",
-      "@aphrody/agent-browser": "1.0.0-canary",
-      "@aphrody/bun": "3.3.8",
-      "@aphrody/update": "0.1.1"
+      "@aphrody/web-test": "0.2.8",
+      "@aphrody/agent-browser": "1.0.0-canary.4",
+      "@aphrody/bun": "3.3.13",
+      "@aphrody/update": "0.1.5",
+      "@aphrody/next-bun": "0.2.0",
+      "@aphrody/bun-runtime": "1.4.3-aphrody.2",
+      "@aphrody/bun-plugin-tailwind": "0.1.0"
     }
   },
   "type": "module",
   "scripts": {
+    "dev": "bun run --filter @shenron/site dev",
+    "start": "bun run --filter @shenron/site start",
     "typecheck": "bun run --filter '*' typecheck && bun run typecheck:scripts",
     "typecheck:scripts": "tsc --noEmit -p scripts",
     "test": "bun run --filter '*' test",
@@ -154,10 +160,15 @@
     "audit:assets": "bun scripts/audit/assets-dedup.ts",
     "test:scripts": "bun test --path-ignore-patterns='**/*.live.test.ts' ./scripts",
     "test:live:ai": "cd apps/site && SHENRON_LIVE=1 bun test --isolate tests/ai-layer-gemini.live.test.ts",
-    "test:integration": "bun scripts/testing/integration/run.ts"
+    "test:integration": "bun scripts/testing/integration/run.ts",
+    "dev:remote": "bun scripts/dev/remote-dev.ts up",
+    "dev:env": "bun scripts/dev/env-pull.ts",
+    "gates:remote": "bun scripts/dev/remote-dev.ts gates"
   },
   "devDependencies": {
     "@aphrody/agent-browser": "catalog:",
+    "@aphrody/bun-runtime": "catalog:",
+    "@aphrody/next-bun": "catalog:",
     "@aphrody/web-test": "catalog:",
     "@shenron/api": "workspace:*",
     "@shenron/config": "workspace:*",
@@ -174,18 +185,17 @@
     "typescript": "catalog:"
   },
   "overrides": {
-    "@aphrody/bun": "file:vendor/aphrody-sdk/aphrody-bun-2e9a90d48827b1d0.tgz",
-    "@aphrody/paths": "file:vendor/aphrody-sdk/aphrody-paths-83ce57449c7d8766.tgz",
-    "@aphrody/runtime-sdk": "file:vendor/aphrody-sdk/aphrody-runtime-sdk-81b17d5191c5c099.tgz",
-    "@aphrody/update": "file:vendor/aphrody-sdk/aphrody-update-2d00a6e13f3fc7f7.tgz",
+    "@next/env": "file:vendor/next-fork/next-env-16.5.0-canary.5-dac376c6fe-f32e63fa.tgz",
+    "@next/third-parties": "file:vendor/next-fork/next-third-parties-16.5.0-canary.5-dac376c6fe-14a34de8.tgz",
     "axios": "^1.20.0",
+    "next": "file:vendor/next-fork/next-16.5.0-canary.5-dac376c6fe-80cae9ab.tgz",
     "qs": "^6.16.0",
     "undici": "^7.30.0"
   },
   "engines": {
-    "bun": ">=1.4.2"
+    "bun": ">=1.4.3"
   },
-  "packageManager": "bun@1.4.2",
+  "packageManager": "bun@1.4.3-aphrody.2",
   "patchedDependencies": {
     "@discordjs/rest@2.6.3": "patches/@discordjs%2Frest@2.6.3.patch"
   },

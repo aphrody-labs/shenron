@@ -1,0 +1,551 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-08",
+  "scope": "Official Dragon Ball Japanese interview pages in the local source manifest, local crawl cache, and previously source-verified accessible pages; not an exhaustive census.",
+  "records": [
+    {
+      "sourceId": "interview_db_official_411",
+      "title": "[「超ゼンカイソリッド」始動記念！　原型師・中澤博之さんにインタビュー‼]｜ 【公式】ドラゴンボールオフィシャルサイト",
+      "publicationDate": "2021-08-06",
+      "language": "ja",
+      "sourceType": "official-web-interview",
+      "transcriptStatus": "Japanese article HTML archived; completeness not individually reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_411.html",
+      "localWitnessPath": "data/source-acquisition/official-web/interview_db_official_411.html",
+      "sha256": "1c33d91adeb740d62e356c2bd4f0a0c957e5c0f4f60c7cc231f74914b4137702",
+      "rightsStatus": "unknown",
+      "reviewStatus": "pending",
+      "participants": [
+        "中澤博之"
+      ],
+      "participantRoles": [
+        "figure sculptor/modeler"
+      ],
+      "crawlEvidence": {
+        "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
+        "recordUrl": "https://dragon-ball-official.com/news/01_411.html",
+        "contentHash": "38947ba1a1f32cb0b15174e0a7872044cc79542ba24e216051802ae2a73666d9",
+        "markdownLengthChars": 1980,
+        "detectedQuestionMarkers": 2,
+        "markerRule": "Count of Japanese dash-prefixed question lines ending in ? or ？; indicative only"
+      }
+    },
+    {
+      "sourceId": "interview_db_official_1704",
+      "title": "[「悟飯」のような子を育てることが人生の目標｜ドラゴンボールと我が人生・田中れいな]｜ 【公式】ドラゴンボールオフィシャルサイト",
+      "publicationDate": "2023-03-23",
+      "language": "ja",
+      "sourceType": "official-web-interview",
+      "transcriptStatus": "Japanese article HTML archived; completeness not individually reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_1704.html",
+      "localWitnessPath": "data/source-acquisition/official-web/interview_db_official_1704.html",
+      "sha256": "b0328a1f17f1913cb4e0fae9e22fca57f206b75df682b127b2e93e5057149336",
+      "rightsStatus": "unknown",
+      "reviewStatus": "pending",
+      "participants": [
+        "田中れいな"
+      ],
+      "participantRoles": [
+        "singer/actor and Dragon Ball fan"
+      ],
+      "crawlEvidence": {
+        "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
+        "recordUrl": "https://dragon-ball-official.com/news/01_1704.html",
+        "contentHash": "90812932a8dbc5dc1ff6d2965feb761fc52b1d9a26c1ac90317f4e5c9c44601c",
+        "markdownLengthChars": 7415,
+        "detectedQuestionMarkers": 9,
+        "markerRule": "Count of Japanese dash-prefixed question lines ending in ? or ？; indicative only"
+      }
+    },
+    {
+      "sourceId": "interview_db_official_4345",
+      "title": "[【影山ヒロノブさんにインタビュー！】「ドラゴンボール Sparking! ZERO」大型DLC「NEO」の主題歌「ZERO」がリリース開始!!]｜ 【公式】ドラゴンボールオフィシャルサイト",
+      "publicationDate": "2026-07-30",
+      "language": "ja",
+      "sourceType": "official-web-interview",
+      "transcriptStatus": "Japanese article HTML archived; completeness not individually reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_4345.html",
+      "localWitnessPath": "data/source-acquisition/official-web/interview_db_official_4345.html",
+      "sha256": "01b7c8be047183412de715cd6a2c0335b6080e2866d576403b6ea781849d8c4a",
+      "rightsStatus": "unknown",
+      "reviewStatus": "pending",
+      "participants": [
+        "影山ヒロノブ"
+      ],
+      "participantRoles": [
+        "singer/songwriter"
+      ],
+      "crawlEvidence": {
+        "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
+        "recordUrl": "https://dragon-ball-official.com/news/01_4345.html",
+        "contentHash": "826e30da27106a17b0740ef54a5b81ef798bd37c4a309a66497b9cb9b1fb9bf7",
+        "markdownLengthChars": 2559,
+        "detectedQuestionMarkers": 0,
+        "markerRule": "Count of Japanese dash-prefixed question lines ending in ? or ？; indicative only"
+      }
+    },
+    {
+      "sourceId": "interview_db_official_3414",
+      "title": "[「とよたろうが描いてみた」特別編!!レジェンズ7周年コラボイラストについて聞いてみた!!]｜ 【公式】ドラゴンボールオフィシャルサイト",
+      "publicationDate": "2025-05-24",
+      "language": "ja",
+      "sourceType": "official-web-interview",
+      "transcriptStatus": "Japanese article HTML archived; completeness not individually reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_3414.html",
+      "localWitnessPath": "data/source-acquisition/official-web/interview_db_official_3414.html",
+      "sha256": "61c90c11ea074dd9d38f2a4d13f6c63319e45cac216e67191e84018f1be938a0",
+      "rightsStatus": "unknown",
+      "reviewStatus": "pending",
+      "participants": [
+        "とよたろう"
+      ],
+      "participantRoles": [
+        "manga artist"
+      ],
+      "crawlEvidence": {
+        "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
+        "recordUrl": "https://dragon-ball-official.com/news/01_3414.html",
+        "contentHash": "6e4c90b38023c8c7220167191d0eb8bbd58839299451be4c665c29ca9e00f66e",
+        "markdownLengthChars": 1346,
+        "detectedQuestionMarkers": 1,
+        "markerRule": "Count of Japanese dash-prefixed question lines ending in ? or ？; indicative only"
+      }
+    },
+    {
+      "sourceId": "interview_db_official_4326",
+      "title": "[「フィギュアーツZERO」から、コレクションの始まり(START)となる新ブランド「STARTune」（スターチューン）始動!!原型師チームにインタビュー!!]｜ 【公式】ドラゴンボールオフィシャルサイト",
+      "publicationDate": "2026-07-24",
+      "language": "ja",
+      "sourceType": "official-web-interview",
+      "transcriptStatus": "Japanese article HTML archived; completeness not individually reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_4326.html",
+      "localWitnessPath": "data/source-acquisition/official-web/interview_db_official_4326.html",
+      "sha256": "f987df00530f412a3ea77fdecec8e363e1334fc8a47d1376158d50678a5c1a21",
+      "rightsStatus": "unknown",
+      "reviewStatus": "pending",
+      "participants": [
+        "原型師チーム"
+      ],
+      "participantRoles": [
+        "figure prototype sculptors"
+      ],
+      "crawlEvidence": {
+        "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
+        "recordUrl": "https://dragon-ball-official.com/news/01_4326.html",
+        "contentHash": "29716a635562402b121b9debc4fc1ca3e566db3ac9bb0baaea2eca5598f1923a",
+        "markdownLengthChars": 2280,
+        "detectedQuestionMarkers": 2,
+        "markerRule": "Count of Japanese dash-prefixed question lines ending in ? or ？; indicative only"
+      }
+    },
+    {
+      "sourceId": "interview_db_official_1107",
+      "title": "[映画『ドラゴンボール超 スーパーヒーロー』孫悟飯役・野沢雅子さん＆ピッコロ役・古川登志夫さんインタビュー！]｜ 【公式】ドラゴンボールオフィシャルサイト",
+      "publicationDate": "2022-06-10",
+      "language": "ja",
+      "sourceType": "official-web-interview",
+      "transcriptStatus": "Japanese article HTML archived; completeness not individually reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_1107.html",
+      "localWitnessPath": "data/source-acquisition/official-web/interview_db_official_1107.html",
+      "sha256": "6b6cd44c6ca0fdd042a0413c2fdd9fb902082729e423e52b04eacc53b1c5c817",
+      "rightsStatus": "unknown",
+      "reviewStatus": "pending",
+      "participants": [
+        "野沢雅子",
+        "古川登志夫"
+      ],
+      "participantRoles": [
+        "voice actor",
+        "voice actor"
+      ],
+      "crawlEvidence": {
+        "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
+        "recordUrl": "https://dragon-ball-official.com/news/01_1107.html",
+        "contentHash": "7cac6182110e502e7d9fc8be41d01c62dc9a454680282b529c9a3f1219738b89",
+        "markdownLengthChars": 2178,
+        "detectedQuestionMarkers": 3,
+        "markerRule": "Count of Japanese dash-prefixed question lines ending in ? or ？; indicative only"
+      }
+    },
+    {
+      "sourceId": "interview_db_official_1004",
+      "title": "[とよたろう先生の制作現場に密着！魔人ベジータを描くポイントは「表情」]｜ 【公式】ドラゴンボールオフィシャルサイト",
+      "publicationDate": "2022-04-29",
+      "language": "ja",
+      "sourceType": "official-web-interview",
+      "transcriptStatus": "Japanese article HTML archived; completeness not individually reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_1004.html",
+      "localWitnessPath": "data/source-acquisition/official-web/interview_db_official_1004.html",
+      "sha256": "3d00669eb3baa24b4c9163ab32f5a7fd31b5999bc8841d6773045c65ab3598dd",
+      "rightsStatus": "unknown",
+      "reviewStatus": "pending",
+      "participants": [
+        "とよたろう"
+      ],
+      "participantRoles": [
+        "manga artist"
+      ],
+      "crawlEvidence": {
+        "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
+        "recordUrl": "https://dragon-ball-official.com/news/01_1004.html",
+        "contentHash": "7a1e6a073d107c4c1611a42113e6913289482ed211ae4047a34605691d152e3b",
+        "markdownLengthChars": 1555,
+        "detectedQuestionMarkers": 7,
+        "markerRule": "Count of Japanese dash-prefixed question lines ending in ? or ？; indicative only"
+      }
+    },
+    {
+      "sourceId": "interview_db_official_962",
+      "title": "[ドラゴンボール完全版の真っ赤な表紙はいかにして生まれたのか？　ブックデザイナー・シマダヒデアキ氏インタビュー]｜ 【公式】ドラゴンボールオフィシャルサイト",
+      "publicationDate": "2022-04-07",
+      "language": "ja",
+      "sourceType": "official-web-interview",
+      "transcriptStatus": "Japanese article HTML archived; completeness not individually reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_962.html",
+      "localWitnessPath": "data/source-acquisition/official-web/interview_db_official_962.html",
+      "sha256": "9c090c603100075b1d75edd203b55fb3c330275429be170338c2de7ba22e6fa8",
+      "rightsStatus": "unknown",
+      "reviewStatus": "pending",
+      "participants": [
+        "シマダヒデアキ"
+      ],
+      "participantRoles": [
+        "book designer"
+      ],
+      "crawlEvidence": {
+        "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
+        "recordUrl": "https://dragon-ball-official.com/news/01_962.html",
+        "contentHash": "3caf12941fe912eea1b51aa61c3e113bce6d28837acca8c5e260f6afd5586bb7",
+        "markdownLengthChars": 4535,
+        "detectedQuestionMarkers": 3,
+        "markerRule": "Count of Japanese dash-prefixed question lines ending in ? or ？; indicative only"
+      }
+    },
+    {
+      "sourceId": "interview_db_official_1106",
+      "title": "[映画『ドラゴンボール超 スーパーヒーロー』ガンマ2号役の宮野真守さんへインタビュー！]｜ 【公式】ドラゴンボールオフィシャルサイト",
+      "publicationDate": "2022-06-03",
+      "language": "ja",
+      "sourceType": "official-web-interview",
+      "transcriptStatus": "Japanese article HTML archived; completeness not individually reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_1106.html",
+      "localWitnessPath": "data/source-acquisition/official-web/interview_db_official_1106.html",
+      "sha256": "335d955fd333b844b41e06c3ada7a9fe46113efa2d6cb96a0907566ba0aca576",
+      "rightsStatus": "unknown",
+      "reviewStatus": "pending",
+      "participants": [
+        "宮野真守"
+      ],
+      "participantRoles": [
+        "voice actor"
+      ],
+      "crawlEvidence": {
+        "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
+        "recordUrl": "https://dragon-ball-official.com/news/01_1106.html",
+        "contentHash": "34619aba620291602e3b6b6cc155e803f668dc359604f300af86f1ee809a5b83",
+        "markdownLengthChars": 1043,
+        "detectedQuestionMarkers": 2,
+        "markerRule": "Count of Japanese dash-prefixed question lines ending in ? or ？; indicative only"
+      }
+    },
+    {
+      "sourceId": "interview_db_official_1065",
+      "title": "[【ナメックコラム】ピッコロ記念日特別編!!　古川登志夫さんにインタビュー＆描き下ろしイラストを公開!!]｜ 【公式】ドラゴンボールオフィシャルサイト",
+      "publicationDate": "2022-05-09",
+      "language": "ja",
+      "sourceType": "official-web-interview",
+      "transcriptStatus": "Japanese article HTML archived; completeness not individually reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_1065.html",
+      "localWitnessPath": "data/source-acquisition/official-web/interview_db_official_1065.html",
+      "sha256": "d4df37a5399dfd38b0e646d8bc71ac66ee35bc32e6aeb344b8affa7095c85724",
+      "rightsStatus": "unknown",
+      "reviewStatus": "pending",
+      "participants": [
+        "古川登志夫"
+      ],
+      "participantRoles": [
+        "voice actor"
+      ],
+      "crawlEvidence": {
+        "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
+        "recordUrl": "https://dragon-ball-official.com/news/01_1065.html",
+        "contentHash": "6f9245cb03f2be59bf912c2534618e0d9940f493a5c9c26ed39c125f3313bacd",
+        "markdownLengthChars": 1233,
+        "detectedQuestionMarkers": 2,
+        "markerRule": "Count of Japanese dash-prefixed question lines ending in ? or ？; indicative only"
+      }
+    },
+    {
+      "sourceId": "interview_db_official_3370",
+      "title": "[『ドラゴンボール超』24巻発売記念！モーニング娘。'25牧野真莉愛さんがとよたろう先生にインタビュー!?]｜ 【公式】ドラゴンボールオフィシャルサイト",
+      "publicationDate": "2025-04-04",
+      "language": "ja",
+      "sourceType": "official-web-interview",
+      "transcriptStatus": "Japanese article HTML archived; completeness not individually reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_3370.html",
+      "localWitnessPath": "data/source-acquisition/official-web/interview_db_official_3370.html",
+      "sha256": "1513787997c09fad2e4b7ce3280b8b1c10ad1f1ec34dac9570c85099b3daf24b",
+      "rightsStatus": "unknown",
+      "reviewStatus": "pending",
+      "participants": [
+        "とよたろう",
+        "牧野真莉愛"
+      ],
+      "participantRoles": [
+        "manga artist",
+        "singer/interviewer"
+      ],
+      "crawlEvidence": {
+        "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
+        "recordUrl": "https://dragon-ball-official.com/news/01_3370.html",
+        "contentHash": "80bf6df92075b3bd6775834e6f78401fac03cbdecc13d976a4e8f5cb3f3ed6df",
+        "markdownLengthChars": 456,
+        "detectedQuestionMarkers": 0,
+        "markerRule": "Count of Japanese dash-prefixed question lines ending in ? or ？; indicative only"
+      },
+      "interviewClassification": "Promotion/interview teaser candidate; local crawl body is only 456 chars with no Q marker; inspect archived HTML before treating it as a substantive transcript"
+    },
+    {
+      "sourceId": "interview_db_official_2256",
+      "title": "【前編】「ドラゴンボール ザ ブレイカーズ」1周年記念プロデューサーインタビュー!!",
+      "publicationDate": "2023-11-09",
+      "language": "ja",
+      "sourceType": "official-online-interview",
+      "transcriptStatus": "Q&A text visible on the official Japanese page; fetched and verified reachable 2026-10-08; not locally archived; line-by-line completeness not reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_2256.html",
+      "localWitnessPath": null,
+      "sha256": null,
+      "rightsStatus": "unknown",
+      "reviewStatus": "source-verified-local-acquisition-pending",
+      "participants": [
+        "小谷"
+      ],
+      "participantRoles": [
+        "game producer"
+      ]
+    },
+    {
+      "sourceId": "interview_db_official_2267",
+      "title": "【後編】「ドラゴンボール ザ ブレイカーズ」1周年記念プロデューサーインタビュー!!",
+      "publicationDate": "2023-11-17",
+      "language": "ja",
+      "sourceType": "official-online-interview",
+      "transcriptStatus": "Q&A text visible on the official Japanese page; fetched and verified reachable 2026-10-08; not locally archived; line-by-line completeness not reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_2267.html",
+      "localWitnessPath": null,
+      "sha256": null,
+      "rightsStatus": "unknown",
+      "reviewStatus": "source-verified-local-acquisition-pending",
+      "participants": [
+        "小谷"
+      ],
+      "participantRoles": [
+        "game producer"
+      ]
+    },
+    {
+      "sourceId": "interview_db_official_2172",
+      "title": "【前編】「ドラゴンボール ファイターズ」「ドラゴンボール ゼノバース2」累計出荷本数1,000万本突破記念！両タイトルのプロデューサーにインタビュー!!",
+      "publicationDate": "2023-10-18",
+      "language": "ja",
+      "sourceType": "official-online-interview",
+      "transcriptStatus": "Q&A text visible on the official Japanese page; fetched and verified reachable 2026-10-08; not locally archived; line-by-line completeness not reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_2172.html",
+      "localWitnessPath": null,
+      "sha256": null,
+      "rightsStatus": "unknown",
+      "reviewStatus": "source-verified-local-acquisition-pending",
+      "participants": [
+        "「ドラゴンボール ファイターズ」「ドラゴンボール ゼノバース2」各プロデューサー"
+      ],
+      "participantRoles": [
+        "game producer"
+      ]
+    },
+    {
+      "sourceId": "interview_db_official_2173",
+      "title": "【後編】「ドラゴンボール ファイターズ」「ドラゴンボール ゼノバース2」累計出荷本数1,000万本突破記念！両タイトルのプロデューサーにインタビュー!!",
+      "publicationDate": "2023-10-18",
+      "language": "ja",
+      "sourceType": "official-online-interview",
+      "transcriptStatus": "Q&A text visible on the official Japanese page; fetched and verified reachable 2026-10-08; not locally archived; line-by-line completeness not reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_2173.html",
+      "localWitnessPath": null,
+      "sha256": null,
+      "rightsStatus": "unknown",
+      "reviewStatus": "source-verified-local-acquisition-pending",
+      "participants": [
+        "「ドラゴンボール ファイターズ」「ドラゴンボール ゼノバース2」各プロデューサー"
+      ],
+      "participantRoles": [
+        "game producer"
+      ]
+    },
+    {
+      "sourceId": "interview_db_official_1149",
+      "title": "「S.H.Figuarts」シリーズにガンマ１・２号が登場！「S.H.Figuarts SUPER HERO」の開発担当者にインタビュー!!",
+      "publicationDate": "2022-06-11",
+      "language": "ja",
+      "sourceType": "official-online-interview",
+      "transcriptStatus": "Q&A text visible on the official Japanese page; fetched and verified reachable 2026-10-08; not locally archived; line-by-line completeness not reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_1149.html",
+      "localWitnessPath": null,
+      "sha256": null,
+      "rightsStatus": "unknown",
+      "reviewStatus": "source-verified-local-acquisition-pending",
+      "participants": [
+        "開発担当者"
+      ],
+      "participantRoles": [
+        "figure product developer"
+      ]
+    },
+    {
+      "sourceId": "interview_db_official_590",
+      "title": "「S.H.Figuarts ザーボン」登場記念！企画担当者にインタビュー!!",
+      "publicationDate": "2021-10-11",
+      "language": "ja",
+      "sourceType": "official-online-interview",
+      "transcriptStatus": "Q&A text visible on the official Japanese page; fetched and verified reachable 2026-10-08; not locally archived; line-by-line completeness not reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_590.html",
+      "localWitnessPath": null,
+      "sha256": null,
+      "rightsStatus": "unknown",
+      "reviewStatus": "source-verified-local-acquisition-pending",
+      "participants": [
+        "企画担当者"
+      ],
+      "participantRoles": [
+        "figure product planner"
+      ]
+    },
+    {
+      "sourceId": "interview_db_official_493",
+      "title": "「ドラゴンボールZ G×materia THE YAMCHA」登場記念！企画担当者にインタビュー!!",
+      "publicationDate": "2021-09-06",
+      "language": "ja",
+      "sourceType": "official-online-interview",
+      "transcriptStatus": "Q&A text visible on the official Japanese page; fetched and verified reachable 2026-10-08; not locally archived; line-by-line completeness not reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_493.html",
+      "localWitnessPath": null,
+      "sha256": null,
+      "rightsStatus": "unknown",
+      "reviewStatus": "source-verified-local-acquisition-pending",
+      "participants": [
+        "企画担当者"
+      ],
+      "participantRoles": [
+        "figure product planner"
+      ]
+    },
+    {
+      "sourceId": "interview_db_official_920",
+      "title": "青臭いままで、僕は『DAN DAN 心魅かれてく』を歌い続けます｜浅岡雄也インタビュー",
+      "publicationDate": "2022-03-24",
+      "language": "ja",
+      "sourceType": "official-online-interview",
+      "transcriptStatus": "Q&A text visible on the official Japanese page; fetched and verified reachable 2026-10-08; not locally archived; line-by-line completeness not reviewed",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_920.html",
+      "localWitnessPath": null,
+      "sha256": null,
+      "rightsStatus": "unknown",
+      "reviewStatus": "source-verified-local-acquisition-pending",
+      "participants": [
+        "浅岡雄也"
+      ],
+      "participantRoles": [
+        "singer/songwriter"
+      ]
+    },
+    {
+      "sourceId": "interview_db_official_1105",
+      "title": "映画『ドラゴンボール超 スーパーヒーロー』ガンマ１号役の神谷浩史さんへインタビュー！",
+      "publicationDate": "2022-05-27",
+      "language": "ja",
+      "sourceType": "official-online-interview",
+      "participants": [
+        "神谷浩史"
+      ],
+      "participantRoles": [
+        "voice actor"
+      ],
+      "transcriptStatus": "Japanese article body exists in the local crawl cache; exact text is retained there, but body completeness has not been compared against the source page",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_1105.html",
+      "localWitnessPath": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
+      "localWitnessRecordUrl": "https://dragon-ball-official.com/news/01_1105.html",
+      "localWitnessHash": "c064b77a00aa6fef1c77e542768b66d4fd9ac9ee6cd63b348a65170e95534460",
+      "localTextLengthChars": 739,
+      "detectedQuestionMarkers": 1,
+      "rightsStatus": "unknown",
+      "reviewStatus": "local-crawl-text-present-completeness-unreviewed",
+      "crawlEvidence": {
+        "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
+        "recordUrl": "https://dragon-ball-official.com/news/01_1105.html",
+        "contentHash": "c064b77a00aa6fef1c77e542768b66d4fd9ac9ee6cd63b348a65170e95534460",
+        "markdownLengthChars": 739,
+        "detectedQuestionMarkers": 1,
+        "markerRule": "Count of Japanese dash-prefixed question lines ending in ? or ？; indicative only"
+      }
+    },
+    {
+      "sourceId": "interview_db_official_1796",
+      "title": "モーニング娘。'23牧野真莉愛の“孫悟空マインド”「大きなステージに立つとワクワクします！」",
+      "publicationDate": "2023-05-25",
+      "language": "ja",
+      "sourceType": "official-online-interview",
+      "participants": [
+        "牧野真莉愛"
+      ],
+      "participantRoles": [
+        "singer/interviewee"
+      ],
+      "transcriptStatus": "Japanese article body exists in the local crawl cache; exact text is retained there, but body completeness has not been compared against the source page",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_1796.html",
+      "localWitnessPath": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
+      "localWitnessRecordUrl": "https://dragon-ball-official.com/news/01_1796.html",
+      "localWitnessHash": "e5d4542ff48b9d108221e9adfa882e96d603337dbc4387e58e57f4e284c41a9d",
+      "localTextLengthChars": 5570,
+      "detectedQuestionMarkers": 19,
+      "rightsStatus": "unknown",
+      "reviewStatus": "local-crawl-text-present-completeness-unreviewed",
+      "crawlEvidence": {
+        "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
+        "recordUrl": "https://dragon-ball-official.com/news/01_1796.html",
+        "contentHash": "e5d4542ff48b9d108221e9adfa882e96d603337dbc4387e58e57f4e284c41a9d",
+        "markdownLengthChars": 5570,
+        "detectedQuestionMarkers": 19,
+        "markerRule": "Count of Japanese dash-prefixed question lines ending in ? or ？; indicative only"
+      }
+    },
+    {
+      "sourceId": "interview_db_official_2507",
+      "title": "『ドラゴンボール超』連載100話＆ドラゴンボール レジェンズ ULTRA「身勝手の極意“兆” 孫悟空」登場記念！とよたろう先生にコラボイラストのこだわりを聞いてみた!!",
+      "publicationDate": "2024-03-21",
+      "language": "ja",
+      "sourceType": "official-online-interview",
+      "participants": [
+        "とよたろう"
+      ],
+      "participantRoles": [
+        "manga artist"
+      ],
+      "transcriptStatus": "Japanese article body exists in the local crawl cache; exact text is retained there, but body completeness has not been compared against the source page",
+      "sourceUrl": "https://dragon-ball-official.com/news/01_2507.html",
+      "localWitnessPath": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
+      "localWitnessRecordUrl": "https://dragon-ball-official.com/news/01_2507.html",
+      "localWitnessHash": "832d2afd8cf33b6e33aa1e6dc39c133cc88c1c7bd208ab013c15c39d8baf1ccf",
+      "localTextLengthChars": 1169,
+      "detectedQuestionMarkers": 3,
+      "rightsStatus": "unknown",
+      "reviewStatus": "local-crawl-text-present-completeness-unreviewed",
+      "crawlEvidence": {
+        "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
+        "recordUrl": "https://dragon-ball-official.com/news/01_2507.html",
+        "contentHash": "832d2afd8cf33b6e33aa1e6dc39c133cc88c1c7bd208ab013c15c39d8baf1ccf",
+        "markdownLengthChars": 1169,
+        "detectedQuestionMarkers": 3,
+        "markerRule": "Count of Japanese dash-prefixed question lines ending in ? or ？; indicative only"
+      }
+    }
+  ]
+}

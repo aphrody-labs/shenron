@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2011; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "site-post-5411-podcast-episode-0264",
+      "title": "Podcast Episode #0264 — Drabaz",
+      "kind": "audio-interview",
+      "summary": "Le synopsis annonce l’intervention de Drabaz, auditeur de longue date, au sujet de son niveau personnalisé sur LittleBigPlanet consacré à Dragon Ball. L’épisode parle de la création du niveau « The Search for Shenlong’s Little Big Dragonballs! ». Le podcast traite aussi d’autres sujets et l’enregistrement n’est pas transcrit dans le billet.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0264; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2011/07/11/podcast-episode-0264/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2011-07-11",
+        "participants": [
+          "Drabaz"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2011.json",
+        "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Daizenshuu_EX_-_Episode_0264.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-5411-podcast-episode-0264.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "LittleBigPlanet",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-5411-podcast-episode-0264.mp3",
+      "audioTranscriptAvailable": false
+    },
+    {
+      "id": "site-post-5204-dragon-ball-kai-ending-in-japan-first-solid-confirmation",
+      "title": "Takeshi Kusao — entretien TV Pia",
+      "kind": "interview",
+      "summary": "Kanzenshuu rapporte que Kusao, voix de Trunks, espérait refaire l’arc Majin Boo si l’occasion se présentait. TV Pia indiquait qu’il restait quatre épisodes de Kai. Kusao évoquait aussi l’enregistrement synchronisé de Gotenks avec Nozawa et les respirations improvisées apprises d’elle. Scan du magazine absent; synthèse limitée au billet.",
+      "keyInformation": [
+        "Kusao espère conditionnellement que l’arc Majin Boo puisse être refait si une occasion se présente.",
+        "La mention des quatre épisodes restants est attribuée à TV Pia, non à Kusao.",
+        "Le billet rapporte aussi les souvenirs de Kusao sur le jeu synchronisé de Gotenks avec Masako Nozawa et l’improvisation de respirations."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2011/03/03/dragon-ball-kai-ending-in-japan-first-solid-confirmation/",
+        "publication": "TV Pia — entretien bref résumé",
+        "publicationDate": "2011-03-03",
+        "participants": [
+          "Takeshi Kusao"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2011.json",
+        "questionAnswerCount": null,
+        "formatNote": "Extrait résumé; scan signalé sur forum non consulté; Q/R non dénombrables.",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Directe : doublage de Trunks.",
+      "status": "source-checked-summary-written"
+    },
+    {
+      "id": "site-post-5477-funimation-dbz-tv-blu-ray-first-comparison-shots",
+      "title": "Clarine Harp et Matt O’Hara — entretien ANNCast",
+      "kind": "interview",
+      "summary": "Kanzenshuu indique que Harp et O’Hara, responsables de production vidéo chez FUNimation, ont été interviewés sur le Blu-ray TV de DBZ. Le billet compare les Orange Bricks, Dragon Box et Blu-ray, et apprécie la conservation du grain. Ses questions sur audio japonais, encodage et éléments éditoriaux sont celles de Kanzenshuu, non des réponses des invités; entretien non transcrit.",
+      "keyInformation": [
+        "Clarine Harp est directrice de la production DVD/Blu-ray/vidéo; Matt O’Hara en est manager.",
+        "L’entretien ANNCast concerne le Blu-ray de la série télévisée Dragon Ball Z.",
+        "Kanzenshuu compare les Orange Bricks, Dragon Box et le Blu-ray annoncé; son appréciation de la conservation du grain est éditoriale.",
+        "Le billet laisse sans réponse ses questions sur la piste japonaise, l’encodage, cartons, résumés, aperçus et eyecatches."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2011/09/09/funimation-dbz-tv-blu-ray-first-comparison-shots/",
+        "publication": "ANNCast — Blu-ray TV DBZ",
+        "publicationDate": "2011-09-09",
+        "participants": [
+          "Clarine Harp",
+          "Matt O’Hara"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2011.json",
+        "questionAnswerCount": null,
+        "formatNote": "Notice Kanzenshuu sans transcription ni citations; Q/R non dénombrables.",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Directe : production vidéo FUNimation.",
+      "status": "source-checked-summary-written"
+    }
+  ]
+}

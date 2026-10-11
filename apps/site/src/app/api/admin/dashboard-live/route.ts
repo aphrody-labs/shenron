@@ -1,50 +1,42 @@
+import { z } from "zod";
 import { NextRequest, NextResponse } from "next/server";
-import net from "node:net";
 import { sql } from "drizzle-orm";
-import { getA2AHub } from "@/lib/a2a-hub";
-import { API_URL } from "@/lib/config";
+import { fetchEnvelopes, postJsonRpc } from "@/lib/a2a-hub";
+import { botApiBaseUrl } from "@/lib/config";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
 import { isAdminOrToken } from "@/lib/admin-guard";
 import { resolveRedisUrl } from "@shenron/config/services";
+import {
+  DashboardMonitoring,
+  type LiveDashboardResponse,
+  type LiveService,
+} from "@/lib/admin-dashboard";
+import { pingDashboardRedis } from "@/lib/admin-dashboard-probes";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-type ServiceState = "ok" | "degraded" | "down" | "unknown";
+type ServiceProbe = LiveService;
+type LivePayload = LiveDashboardResponse;
 
-type ServiceProbe = {
-  id: "api" | "database" | "redis" | "backOffice";
-  label: string;
-  state: ServiceState;
-  latencyMs: number | null;
-  detail: string;
-};
-
-type LivePayload = {
-  services: ServiceProbe[];
-  agents: {
-    activePeers: string[];
-    recentActivity: number;
-    activeTasks: number;
-    latestActivityAt: string | null;
-  };
-  sampledAt: string;
-  refreshAfterMs: number;
-};
-
-// Cache in-memory avec TTL pour éviter de refaire 4 sondes lourdes (HTTP, DB, TCP)
-// à chaque appel si plusieurs requêtes rapprochées ou concurrentes arrivent.
+// Brief private snapshot cache; every caller is authorized before cache access.
 let cachedPayload: { data: LivePayload; expiresAt: number } | null = null;
 const CACHE_TTL_MS = 6_000;
 
-const timeout = async <T>(work: Promise<T>, milliseconds = 1_500): Promise<T> =>
-  await Promise.race([
-    work,
-    new Promise<T>((_, reject) =>
-      setTimeout(() => reject(new Error("Délai de réponse dépassé")), milliseconds),
-    ),
-  ]);
+const timeout = async <T>(work: Promise<T>, milliseconds = 1_500): Promise<T> => {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      work,
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error("Probe timeout")), milliseconds);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+};
 
 async function probeHttp(
   id: ServiceProbe["id"],
@@ -57,26 +49,37 @@ async function probeHttp(
   try {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
-    const response = await fetch(url, {
-      cache: "no-store",
-      headers,
-      signal: controller.signal,
-    }).finally(() => clearTimeout(timer));
+    const response = await (async () => {
+      const response = await fetch(url, {
+        cache: "no-store",
+        headers,
+        signal: controller.signal,
+      });
+      if (!response.ok) return { valid: false, status: response.status };
+      const body = await response.json();
+      const valid =
+        id === "api" ? body?.status === "ok" : DashboardMonitoring.safeParse(body).success;
+      return { valid, status: response.status };
+    })().finally(() => clearTimeout(timer));
     const latencyMs = Math.round(performance.now() - started);
     return {
       id,
       label,
-      state: response.ok ? "ok" : "degraded",
+      state: response.valid ? "ok" : "degraded",
       latencyMs,
-      detail: response.ok ? "Réponse reçue" : `HTTP ${response.status}`,
+      detail: response.valid
+        ? "response_ok"
+        : response.status === 200
+          ? "invalid_response"
+          : `HTTP ${response.status}`,
     };
-  } catch (error) {
+  } catch {
     return {
       id,
       label,
       state: "down",
       latencyMs: Math.round(performance.now() - started),
-      detail: error instanceof Error ? error.message : "Sonde indisponible",
+      detail: "probe_unavailable",
     };
   }
 }
@@ -90,93 +93,37 @@ async function probeDatabase(): Promise<ServiceProbe> {
       label: "PostgreSQL",
       state: "ok",
       latencyMs: Math.round(performance.now() - started),
-      detail: "Requête de contrôle réussie",
+      detail: "database_ok",
     };
-  } catch (error) {
+  } catch {
     return {
       id: "database",
       label: "PostgreSQL",
       state: "down",
       latencyMs: Math.round(performance.now() - started),
-      detail: error instanceof Error ? error.message : "Connexion indisponible",
+      detail: "database_failed",
     };
-  }
-}
-
-function parseRedisHostPort(): { host: string; port: number } {
-  const raw = resolveRedisUrl(process.env);
-  try {
-    const u = new URL(raw);
-    return {
-      host: u.hostname || "127.0.0.1",
-      port: u.port ? Number(u.port) : 6379,
-    };
-  } catch {
-    return { host: "127.0.0.1", port: 6379 };
   }
 }
 
 async function probeRedis(): Promise<ServiceProbe> {
   const started = performance.now();
-  // 1. Test TCP net rapide sans importer bun dynamiquement en runtime nodejs
   try {
-    const { host, port } = parseRedisHostPort();
-    await new Promise<void>((resolve, reject) => {
-      const socket = net.connect({ host, port });
-      socket.setTimeout(1_000);
-      socket.on("connect", () => {
-        socket.end();
-        resolve();
-      });
-      socket.on("timeout", () => {
-        socket.destroy();
-        reject(new Error("Timeout connexion Redis (1000ms)"));
-      });
-      socket.on("error", (err) => {
-        socket.destroy();
-        reject(err);
-      });
-    });
+    await pingDashboardRedis(resolveRedisUrl(process.env));
     return {
       id: "redis",
       label: "Redis",
       state: "ok",
       latencyMs: Math.round(performance.now() - started),
-      detail: "Port TCP accessible",
+      detail: "redis_ok",
     };
-  } catch (error) {
-    // 2. Repli si Bun.RedisClient est disponible ou mocké (ex: tests unitaires bun test)
-    try {
-      const bun = (await import("bun")) as unknown as {
-        RedisClient?: new (
-          url: string,
-          options?: Record<string, unknown>,
-        ) => { send(command: string, args: string[]): Promise<unknown> };
-      };
-      if (bun?.RedisClient) {
-        const client = new bun.RedisClient(resolveRedisUrl(process.env), {
-          enableOfflineQueue: false,
-          maxRetries: 0,
-        });
-        await timeout(client.send("PING", []), 1_000);
-        return {
-          id: "redis",
-          label: "Redis",
-          state: "ok",
-          latencyMs: Math.round(performance.now() - started),
-          detail: "PING reçu",
-        };
-      }
-    } catch {
-      // Ignorer l'erreur du repli
-    }
-
+  } catch {
     return {
       id: "redis",
       label: "Redis",
       state: "down",
       latencyMs: Math.round(performance.now() - started),
-      detail: error instanceof Error ? error.message : "Connexion indisponible",
+      detail: "redis_failed",
     };
   }
 }
@@ -194,6 +141,7 @@ export async function GET(req: NextRequest) {
   }
 
   const token = env.SHENRON_ADMIN_TOKEN;
+  const API_URL = botApiBaseUrl();
   const [api, database, redis, backOffice] = await Promise.all([
     probeHttp("api", "API bot", `${API_URL}/health`),
     probeDatabase(),
@@ -207,14 +155,42 @@ export async function GET(req: NextRequest) {
           label: "Back-office bot",
           state: "unknown",
           latencyMs: null,
-          detail: "Jeton d’administration non configuré",
+          detail: "admin_unconfigured",
         }),
   ]);
 
-  const envelopes = getA2AHub().listEnvelopes(100);
+  const [mailbox, taskReplies] = await Promise.all([
+    timeout(fetchEnvelopes(100)).catch(() => null),
+    Promise.all(
+      ["submitted", "working"].map((status) =>
+        timeout(
+          postJsonRpc({
+            jsonrpc: "2.0",
+            id: `dashboard-${status}`,
+            method: "ListTasks",
+            params: { pageSize: 100, status },
+          }),
+        ).catch(() => null),
+      ),
+    ),
+  ]);
+  const envelopeSchema = z.array(
+    z.object({
+      ts: z.string(),
+      from: z.string(),
+      to: z.string(),
+    }),
+  );
+  const parsedEnvelopes = mailbox?.status === 200 ? envelopeSchema.safeParse(mailbox.body) : null;
+  const envelopes = parsedEnvelopes?.success ? parsedEnvelopes.data : [];
+  const activityNow = Date.now();
   const recentEnvelopes = envelopes.filter((envelope) => {
     const timestamp = Date.parse(envelope.ts);
-    return Number.isFinite(timestamp) && now - timestamp <= 5 * 60_000;
+    return (
+      Number.isFinite(timestamp) &&
+      timestamp <= activityNow &&
+      activityNow - timestamp <= 5 * 60_000
+    );
   });
   const peers = [
     ...new Set(
@@ -223,20 +199,22 @@ export async function GET(req: NextRequest) {
         .filter((peer) => peer && peer !== "broadcast" && peer !== "shenron-dragonball"),
     ),
   ];
-  const tasks = await getA2AHub()
-    .listTasks()
-    .catch(() => []);
-  const activeTasks = tasks.filter(
-    (task) => task.status === "submitted" || task.status === "working",
+  const taskSchema = z.object({ result: z.object({ totalSize: z.number().int().nonnegative() }) });
+  const counts = taskReplies.map((reply) =>
+    reply?.status === 200 ? taskSchema.safeParse(reply.body) : null,
   );
+  const activeTasks = counts.every((count) => count?.success)
+    ? counts.reduce((sum, count) => sum + (count?.success ? count.data.result.totalSize : 0), 0)
+    : null;
 
   const payload: LivePayload = {
     services: [api, database, redis, backOffice],
     agents: {
       activePeers: peers,
-      recentActivity: recentEnvelopes.length,
-      activeTasks: activeTasks.length,
-      latestActivityAt: recentEnvelopes[0]?.ts ?? null,
+      recentActivity: parsedEnvelopes?.success ? recentEnvelopes.length : null,
+      activeTasks,
+      latestActivityAt:
+        recentEnvelopes.sort((a, b) => Date.parse(b.ts) - Date.parse(a.ts))[0]?.ts ?? null,
     },
     sampledAt: new Date().toISOString(),
     refreshAfterMs: 10_000,

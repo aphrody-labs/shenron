@@ -26,6 +26,7 @@ const RUNTIME: Record<string, string> = {
   "./next": "server",
   "./chat": "bun",
   "./host": "bun",
+  "./desktop-link": "server",
   "./plugin": "server",
   "./openapi.json": "json",
 };
@@ -112,7 +113,10 @@ describe("@shenron/api manifest", () => {
   test("portable exports reach only pure Web contracts; chat and host add doctrine subpaths", () => {
     for (const key of ["./contract", "./client", "./http", "./server", "./next"]) {
       expect(
-        bareImports(key).filter(({ specifier }) => specifier.startsWith("@shenron/pipeline") && specifier !== PIPELINE_CONTRACT),
+        bareImports(key).filter(
+          ({ specifier }) =>
+            specifier.startsWith("@shenron/pipeline") && specifier !== PIPELINE_CONTRACT,
+        ),
       ).toEqual([]);
     }
     const reached = ["./chat", "./host"].flatMap((key) =>

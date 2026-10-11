@@ -11,6 +11,7 @@ import {
   SHENRON_FFI_FILE,
   shenronLoad,
   shenronLocalSearch,
+  shenronReXenoverse3Map,
 } from "../src/engine";
 import * as shenron from "../src/shenron";
 
@@ -109,6 +110,7 @@ describe("@shenron/native/shenron", () => {
   test("re-exports the loader and the local search", () => {
     expect(shenron.shenronLoad).toBe(shenronLoad);
     expect(shenron.shenronLocalSearch).toBe(shenronLocalSearch);
+    expect(shenron.shenronReXenoverse3Map).toBe(shenronReXenoverse3Map);
     expect(shenron.SHENRON_FFI_FILE).toBe(SHENRON_FFI_FILE);
   });
 });
@@ -145,6 +147,16 @@ describe.if(builtLibrary !== undefined)("with the built shenron-ffi library", ()
     expect(answer.total).toBe(answer.results.length);
     // An empty kind searches every kind, like an absent one.
     expect(shenronLocalSearch("Goku", 2, "").mode).toBe(answer.mode);
+  });
+
+  test("shenronReXenoverse3Map returns the cited Rust prototype geometry", () => {
+    shenronLoad(builtLibrary as string);
+    const map = shenron.shenronReXenoverse3Map();
+    expect(map.status).toBe("original_prototype_schematic");
+    expect(map.zones).toHaveLength(6);
+    expect(map.landmarks).toHaveLength(8);
+    expect(map.routes).toHaveLength(7);
+    expect(map.caveat).toContain("unreleased");
   });
 
   test("the chat memory stores, finds and deletes per agent (aphrody-memory)", () => {

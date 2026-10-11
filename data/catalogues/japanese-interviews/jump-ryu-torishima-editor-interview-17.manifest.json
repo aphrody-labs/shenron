@@ -1,0 +1,22 @@
+{
+  "publication": "ジャンプ流！ vol.01 鳥山明",
+  "interviewee": "鳥嶋和彦",
+  "interviewTitle": "初代担当に聞く!!",
+  "printedPage": 17,
+  "transcriptPath": "data/catalogues/japanese-interviews/jump-ryu-torishima-editor-interview-17.jsonl",
+  "transcriptSha256": "cf71a0911d77f329d0fba5f386e90b8c49504dd2b43d615e63ab1a6aed00ff9b",
+  "transcriptBytes": 1985,
+  "sourceImagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Jump Ryu Dragon Ball\\FB_IMG_1768465428791.jpg",
+  "sourceImageBytes": 405965,
+  "sourceImageSha256": "89c8d8eadbef01827411d2201361be9d5d0d40c05d54fb64e7331882b77b0efc",
+  "sourceImageDimensions": "1471x2048",
+  "status": "visible-interview-panel-transcribed-and-independently-proofread",
+  "method": "Manual visual transcription from the local printed scan; no OCR, network, or translation.",
+  "scope": "Visible interview text in the lower feature panel headed 初代担当に聞く!!; adjacent Jump Studio feature and reproduced Toriyama comments are not included.",
+  "limitations": [
+    "Only the visible interview panel on printed p.17 is transcribed; p.17 may not represent the full original interview.",
+    "No DVD, disc image or associated video file was found in the local Jump Ryu! collection or searched DragonWorld data tree."
+  ],
+  "schemaVersion": 1,
+  "independentReview": "Independent visual review confirmed full coverage of the visible main panel and applied three corrections: タイトル扉, これには驚きました, and ああ！新しくて面白いな！."
+}

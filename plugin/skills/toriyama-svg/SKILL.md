@@ -13,11 +13,9 @@ ni palette. Tout tient dans cette skill : Bun suffit, sans `sharp`, Python ni d�
    fonde la forme, l'édition couleur la palette ; signaler toute contradiction.
    Mesures déjà faites (embarquées) : [Kinto-Un](references/mesures/kinto-un-analyse-visuelle.md),
    [couverture de tankōbon et Dragon Ball](references/mesures/couverture-analyse-visuelle.md).
-2. **Mesurer** une image fournie : `bun scripts/mesurer.ts image.png --teinte 40 70 --sat 0.3`
-   ou `--sombre` pour l'encre (PNG lu directement ; JPEG/WebP via ImageMagick ou
-   ffmpeg s'ils sont installés, sinon convertir en PNG). Regarder `masque.png` et
-   `decoupe.png` avant d'accepter les nombres. Sans outil ni image exploitable,
-   consigner les mesures faites à la main et le contrôle non effectué.
+2. **Inspecter & Mesurer** :
+   - **Visuellement via l'outil image (`view_file`)** : inspecter directement les planches de tomes manga (`apps/bot/assets/manga/...` ou scans) et les photogrammes d'animé pour relever la composition, l'angle des cases (*koma*), le calibre de plume G (*G-pen*), les mèches et la décomposition multicouche de celluloïd ([protocole complet d'inspection](references/manga-anime-inspection.md)).
+   - **Numériquement par script** : `bun scripts/inspecter-manga-anime.ts image.png --mode manga|anime` ou `bun scripts/mesurer.ts image.png --teinte 40 70 --sat 0.3` (ou `--sombre` pour l'encre). Regarder `masque.png` et `decoupe.png` avant d'accepter les nombres. Sans outil ni image exploitable, consigner les mesures faites à la main et le contrôle non effectué.
 3. **Consigner** sources, proportions, palette et décision → mesure dans un document
    de mesures livré avec l'asset (modèle : les deux analyses ci-dessus).
 4. **Dessiner** avec la géométrie unique embarquée, `scripts/toriyama.js` (arcs,
