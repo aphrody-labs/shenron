@@ -1,9 +1,19 @@
 {
-  "name": "@shenron/engine",
+  "name": "@aphrody/shenron-engine",
   "version": "1.4.4",
-  "private": true,
+  "private": false,
   "description": "Unified full-stack Shenron game engine, GPU backend, WebGPU/WASM pipeline, vector canvas, and deterministic combat core.",
+  "homepage": "https://dragonballfr.com",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aphrody-labs/shenron.git",
+    "directory": "packages/engine"
+  },
+  "files": [
+    "src",
+    "LICENSE"
+  ],
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -14,6 +24,10 @@
     "./wasm": "./src/wasm.ts",
     "./unified_canvas": "./src/unified_canvas.ts",
     "./types": "./src/types.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
     "lint": "oxlint src test",

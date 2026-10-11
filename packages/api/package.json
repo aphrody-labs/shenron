@@ -1,7 +1,19 @@
 {
-  "name": "@shenron/api",
+  "name": "@aphrody/shenron-api",
   "version": "1.4.4",
-  "private": true,
+  "private": false,
+  "homepage": "https://dragonballfr.com",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aphrody-labs/shenron.git",
+    "directory": "packages/api"
+  },
+  "files": [
+    "src",
+    "LICENSE",
+    "openapi"
+  ],
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -16,6 +28,10 @@
     "./plugin": "./src/plugin/index.ts",
     "./openapi.json": "./openapi/public.json"
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",
     "test": "bun test --path-ignore-patterns='**/*.live.test.ts'",
@@ -25,11 +41,11 @@
   },
   "dependencies": {
     "@aphrody/http": "catalog:",
-    "@shenron/auth": "workspace:*",
-    "@shenron/config": "workspace:*",
-    "@shenron/db": "workspace:*",
-    "@shenron/lexicon": "workspace:*",
-    "@shenron/pipeline": "workspace:*",
+    "@aphrody/shenron-auth": "workspace:*",
+    "@aphrody/shenron-config": "workspace:*",
+    "@aphrody/shenron-db": "workspace:*",
+    "@aphrody/shenron-lexicon": "workspace:*",
+    "@aphrody/shenron-pipeline": "workspace:*",
     "better-auth": "catalog:",
     "drizzle-orm": "catalog:",
     "zod": "catalog:"

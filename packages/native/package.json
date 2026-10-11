@@ -1,9 +1,19 @@
 {
-  "name": "@shenron/native",
+  "name": "@aphrody/shenron-native",
   "version": "1.4.4",
-  "private": true,
+  "private": false,
   "description": "Bun FFI binding of the Shenron native library (shenron-ffi): shenron commands, RAG/persona helpers, and a worker pool for the long calls (promises, AbortSignal).",
+  "homepage": "https://dragonballfr.com",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aphrody-labs/shenron.git",
+    "directory": "packages/native"
+  },
+  "files": [
+    "src",
+    "LICENSE"
+  ],
   "type": "module",
   "exports": {
     "./shenron": "./src/shenron.ts",
@@ -11,6 +21,10 @@
     "./worker": "./src/worker.ts",
     "./web/pipeline": "./src/web-pipeline.ts",
     "./re": "./src/re.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
     "generate": "bun scripts/generate.ts",

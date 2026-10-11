@@ -1,13 +1,27 @@
 {
-  "name": "@shenron/lexicon",
+  "name": "@aphrody/shenron-lexicon",
   "version": "1.4.4",
-  "private": true,
+  "private": false,
+  "homepage": "https://dragonballfr.com",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aphrody-labs/shenron.git",
+    "directory": "packages/lexicon"
+  },
+  "files": [
+    "src",
+    "LICENSE"
+  ],
   "type": "module",
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./data": "./src/data.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",

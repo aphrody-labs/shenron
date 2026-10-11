@@ -1,14 +1,28 @@
 {
-  "name": "@shenron/media",
+  "name": "@aphrody/shenron-media",
   "version": "1.4.4",
-  "private": true,
+  "private": false,
+  "homepage": "https://dragonballfr.com",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aphrody-labs/shenron.git",
+    "directory": "packages/media"
+  },
+  "files": [
+    "src",
+    "LICENSE"
+  ],
   "type": "module",
   "exports": {
     "./manga": "./src/manga.ts",
     "./ocr": "./src/ocr.ts",
     "./remote-ocr": "./src/remote-ocr.ts",
     "./sha256": "./src/sha256.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
     "typecheck": "bun check --noEmit --project tsconfig.json",

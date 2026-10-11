@@ -98,8 +98,10 @@ mod tests {
 
         // Give Ki and trigger transformation
         engine.player.ki = 100.0;
-        let mut input = EngineInput::default();
-        input.transform = true;
+        let input = EngineInput {
+            transform: true,
+            ..EngineInput::default()
+        };
         engine.step(input, 0.016);
 
         assert_eq!(engine.player.form_level, 1);

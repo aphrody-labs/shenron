@@ -1,8 +1,20 @@
 {
-  "name": "@shenron/ui",
+  "name": "@aphrody/shenron-ui",
   "version": "1.4.4",
-  "private": true,
+  "private": false,
   "description": "Shenron's single UI layer: Dragon Ball design system, site components, readers, admin primitives, the Koharu manga editor and the desktop studio.",
+  "homepage": "https://dragonballfr.com",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aphrody-labs/shenron.git",
+    "directory": "packages/ui"
+  },
+  "files": [
+    "src",
+    "LICENSE",
+    "assets"
+  ],
   "type": "module",
   "sideEffects": [
     "*.css"
@@ -61,6 +73,10 @@
     "./chat.css": "./src/chat/chat.css",
     "./*": "./src/components/*.tsx"
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json src",
     "test": "bun test --path-ignore-patterns='test/koharu/**' --path-ignore-patterns='test/dom/**' && bun test/koharu/run.ts && bun test --preload @aphrody/bun-test-dom ./test/dom",
@@ -79,10 +95,10 @@
     "@aphrody/m3-theme": "catalog:",
     "@aphrody/m3-tokens": "catalog:",
     "@aphrody/plugin-opener": "catalog:",
+    "@aphrody/shenron-config": "workspace:*",
+    "@aphrody/shenron-koharu": "workspace:*",
+    "@aphrody/shenron-pipeline": "workspace:*",
     "@base-ui/react": "catalog:",
-    "@shenron/config": "workspace:*",
-    "@shenron/koharu": "workspace:*",
-    "@shenron/pipeline": "workspace:*",
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-virtual": "catalog:",
     "class-variance-authority": "catalog:",

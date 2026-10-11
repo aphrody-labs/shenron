@@ -1,8 +1,19 @@
 {
-  "name": "@shenron/auth",
+  "name": "@aphrody/shenron-auth",
   "version": "1.4.4",
-  "private": true,
+  "private": false,
   "description": "Briques Better Auth partagées (site Next, bot Bun, API) : secret, origines, cookies, fournisseur Discord, handler Request/Response",
+  "homepage": "https://dragonballfr.com",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aphrody-labs/shenron.git",
+    "directory": "packages/auth"
+  },
+  "files": [
+    "src",
+    "LICENSE"
+  ],
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -20,16 +31,20 @@
     "./next": "./src/next.ts",
     "./client": "./src/client.ts"
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json src",
     "test": "bun test",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@shenron/config": "workspace:*"
+    "@aphrody/shenron-config": "workspace:*"
   },
   "devDependencies": {
-    "@shenron/db": "workspace:*",
+    "@aphrody/shenron-db": "workspace:*",
     "@types/react": "catalog:",
     "better-auth": "catalog:",
     "drizzle-orm": "catalog:",

@@ -1,8 +1,19 @@
 {
-  "name": "@shenron/images",
+  "name": "@aphrody/shenron-images",
   "version": "1.4.4",
-  "private": true,
+  "private": false,
   "description": "Image hashing, deduplication, variant selection and sourced illustration picking for Shenron (Bun + sharp)",
+  "homepage": "https://dragonballfr.com",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aphrody-labs/shenron.git",
+    "directory": "packages/images"
+  },
+  "files": [
+    "src",
+    "LICENSE"
+  ],
   "type": "module",
   "exports": {
     ".": {
@@ -22,6 +33,10 @@
       "types": "./src/ink-stroke.ts",
       "default": "./src/ink-stroke.ts"
     }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
     "test": "bun test",

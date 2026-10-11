@@ -1,8 +1,19 @@
 {
-  "name": "@shenron/db",
+  "name": "@aphrody/shenron-db",
   "version": "1.4.4",
-  "private": true,
+  "private": false,
   "description": "PostgreSQL partagé Shenron : schéma Drizzle, pool postgres-js (Next) et driver Bun.SQL (scripts, API), indépendant du framework",
+  "homepage": "https://dragonballfr.com",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aphrody-labs/shenron.git",
+    "directory": "packages/db"
+  },
+  "files": [
+    "src",
+    "LICENSE"
+  ],
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -39,6 +50,10 @@
     "./repos/chronology": "./src/repos/chronology.ts",
     "./repos/wiki-launch": "./src/repos/wiki-launch.ts"
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",
     "test": "bun test",
@@ -47,9 +62,9 @@
     "check:agent-home-template": "bun scripts/agent-home-template.ts --check"
   },
   "dependencies": {
+    "@aphrody/shenron-config": "workspace:*",
     "@aphrody/sql": "catalog:",
     "@paralleldrive/cuid2": "catalog:",
-    "@shenron/config": "workspace:*",
     "drizzle-orm": "catalog:",
     "postgres": "catalog:"
   },

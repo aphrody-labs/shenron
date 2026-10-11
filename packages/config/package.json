@@ -1,7 +1,19 @@
 {
-  "name": "@shenron/config",
+  "name": "@aphrody/shenron-config",
   "version": "1.4.4",
-  "private": true,
+  "private": false,
+  "homepage": "https://dragonballfr.com",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aphrody-labs/shenron.git",
+    "directory": "packages/config"
+  },
+  "files": [
+    "src",
+    "LICENSE",
+    "tsconfig"
+  ],
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -42,6 +54,10 @@
     "./wiki-launch": "./src/wiki-launch.ts",
     "./wiki-launch-config": "./src/wiki-launch-config.ts",
     "./manga-catalogue": "./src/manga-catalogue.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",

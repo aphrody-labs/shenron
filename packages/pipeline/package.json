@@ -1,11 +1,22 @@
 {
-  "name": "@shenron/pipeline",
+  "name": "@aphrody/shenron-pipeline",
   "version": "1.4.4",
-  "private": true,
+  "private": false,
   "description": "Shenron compute clients and Dragon Ball data pipeline: AI, Aphrody services, BXC and OCR/RAG workflows",
+  "homepage": "https://dragonballfr.com",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aphrody-labs/shenron.git",
+    "directory": "packages/pipeline"
+  },
   "bin": {
     "pipeline": "./src/cli.ts"
   },
+  "files": [
+    "src",
+    "LICENSE"
+  ],
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -77,6 +88,10 @@
     "./re-wasm-web": "./src/re-wasm-web.ts",
     "./runtime/python": "./src/runtime/python.ts"
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "pipeline": "bun src/cli.ts",
     "build": "bun build src/cli.ts --target=bun --external=sharp --external=zod --outfile=dist/pipeline",
@@ -93,12 +108,12 @@
     "@aphrody/inference": "catalog:",
     "@aphrody/paths": "catalog:",
     "@aphrody/runtime-sdk": "catalog:",
-    "@shenron/config": "workspace:*",
-    "@shenron/db": "workspace:*",
-    "@shenron/koharu": "workspace:*",
-    "@shenron/lexicon": "workspace:*",
-    "@shenron/media": "workspace:*",
-    "@shenron/native": "workspace:*",
+    "@aphrody/shenron-config": "workspace:*",
+    "@aphrody/shenron-db": "workspace:*",
+    "@aphrody/shenron-koharu": "workspace:*",
+    "@aphrody/shenron-lexicon": "workspace:*",
+    "@aphrody/shenron-media": "workspace:*",
+    "@aphrody/shenron-native": "workspace:*",
     "ai": "catalog:",
     "postgres": "catalog:",
     "sharp": "catalog:",
