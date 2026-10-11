@@ -71,7 +71,7 @@ export function VideoPlayer({ src, title, poster, subtitles, onError }: VideoPla
   }, [src, subtitles, t]);
 
   useEffect(() => {
-    setPaused(true);
+    setPaused(videoRef.current?.paused ?? true);
     setActionError(false);
     setFullscreenSupported(
       Boolean(document.fullscreenEnabled && containerRef.current?.requestFullscreen),
@@ -130,7 +130,8 @@ export function VideoPlayer({ src, title, poster, subtitles, onError }: VideoPla
   };
   const selectCaption = (index: number) => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !Number.isInteger(index) || index < -1 || index >= video.textTracks.length)
+      return;
     Array.from(video.textTracks).forEach((track, i) => {
       track.mode = i === index ? "showing" : "disabled";
     });
@@ -150,6 +151,7 @@ export function VideoPlayer({ src, title, poster, subtitles, onError }: VideoPla
     });
     if (
       !action ||
+      (action === "captions" && textTracks.length === 0) ||
       (action === "fullscreen" && !fullscreenSupported) ||
       (action === "pip" && !pipSupported)
     )
@@ -198,8 +200,8 @@ export function VideoPlayer({ src, title, poster, subtitles, onError }: VideoPla
         poster={poster}
         title={title}
         className="aspect-video w-full rounded-xl bg-black"
-        onPlay={() => setPaused(false)}
-        onPause={() => setPaused(true)}
+        onPlay={(event) => setPaused(event.currentTarget.paused)}
+        onPause={(event) => setPaused(event.currentTarget.paused)}
         onLoadedMetadata={() => {
           if (videoRef.current) videoRef.current.playbackRate = rateRef.current;
         }}

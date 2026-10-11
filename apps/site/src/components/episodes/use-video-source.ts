@@ -2,7 +2,8 @@
 
 // SPDX-License-Identifier: Apache-2.0
 import { useEffect, useRef, useState, type RefObject } from "react";
-import type Hls from "hls.js";
+import type Hls from "@aphrody/hls.js";
+import { attachHlsPlayback } from "@aphrody/bun-runtime-sdk/video/hls";
 import { isHlsSource } from "@/lib/video-controls";
 import { createVideoRecovery } from "@/lib/video-recovery";
 
@@ -35,6 +36,7 @@ export function useVideoSource(
     let cancelled = false;
     let failed = false;
     let instance: Hls | null = null;
+    let destroyPlayback: (() => void) | null = null;
     const recover = createVideoRecovery();
     const update = (status: PlaybackStatus) => {
       if (!cancelled && !failed) setState({ source: src, status });
@@ -66,68 +68,81 @@ export function useVideoSource(
         return;
       }
       try {
-        const { default: Hls } = await import("hls.js");
+        const { default: Hls } = await import("@aphrody/hls.js");
         if (cancelled) return;
         if (!Hls.isSupported()) {
           if (video.canPlayType("application/vnd.apple.mpegurl")) video.src = src;
           else fail();
           return;
         }
-        instance = new Hls({
-          enableWorker: true,
-          workerPath: `/assets/vendor/hls/hls.worker.js?v=${encodeURIComponent(Hls.version)}`,
-          capLevelToPlayerSize: true,
-          backBufferLength: 30,
-          maxMaxBufferLength: 60,
+        const playback = attachHlsPlayback(video, Hls, {
+          src,
+          config: {
+            enableWorker: true,
+            workerPath: `/assets/vendor/hls/hls.worker.js?v=${encodeURIComponent(Hls.version)}`,
+            capLevelToPlayerSize: true,
+            backBufferLength: 30,
+            maxMaxBufferLength: 60,
+          },
+          beforeStart: (active) => {
+            instance = active;
+            hlsRef.current = active;
+            const syncTracks = () => {
+              if (cancelled || failed || !instance) return;
+              setLevels(
+                instance.levels.map((level, index) => ({
+                  index,
+                  height: level.height,
+                  bitrate: level.bitrate,
+                })),
+              );
+              setQuality(instance.autoLevelEnabled ? -1 : instance.currentLevel);
+              setAudioTracks(
+                instance.audioTracks.map((track, index) => ({
+                  index,
+                  name: track.name || track.lang || "",
+                })),
+              );
+              setAudioTrack(instance.audioTrack);
+            };
+            instance.on(Hls.Events.MANIFEST_PARSED, syncTracks);
+            instance.on(Hls.Events.LEVELS_UPDATED, syncTracks);
+            instance.on(Hls.Events.AUDIO_TRACKS_UPDATED, syncTracks);
+            instance.on(Hls.Events.AUDIO_TRACK_SWITCHED, (_event, data) => {
+              if (!cancelled && !failed) setAudioTrack(data.id);
+            });
+            instance.on(Hls.Events.ERROR, (_event, data) => {
+              if (cancelled || failed || !data.fatal || !instance) return;
+              // startLoad cannot restart a manifest that never produced any levels.
+              if (data.type === Hls.ErrorTypes.NETWORK_ERROR && instance.levels.length === 0) {
+                destroyPlayback?.();
+                hlsRef.current = null;
+                fail();
+                return;
+              }
+              const action = recover(
+                data.type === Hls.ErrorTypes.NETWORK_ERROR
+                  ? "network"
+                  : data.type === Hls.ErrorTypes.MEDIA_ERROR
+                    ? "media"
+                    : "other",
+              );
+              if (action === "network") {
+                update("recovering");
+                instance.startLoad();
+              } else if (action === "media") {
+                update("recovering");
+                instance.recoverMediaError();
+              } else {
+                destroyPlayback?.();
+                hlsRef.current = null;
+                fail();
+              }
+            });
+          },
         });
-        hlsRef.current = instance;
-        const syncTracks = () => {
-          if (cancelled || failed || !instance) return;
-          setLevels(
-            instance.levels.map((level, index) => ({
-              index,
-              height: level.height,
-              bitrate: level.bitrate,
-            })),
-          );
-          setQuality(instance.autoLevelEnabled ? -1 : instance.currentLevel);
-          setAudioTracks(
-            instance.audioTracks.map((track, index) => ({
-              index,
-              name: track.name || track.lang || "",
-            })),
-          );
-          setAudioTrack(instance.audioTrack);
-        };
-        instance.on(Hls.Events.MANIFEST_PARSED, syncTracks);
-        instance.on(Hls.Events.LEVELS_UPDATED, syncTracks);
-        instance.on(Hls.Events.AUDIO_TRACKS_UPDATED, syncTracks);
-        instance.on(Hls.Events.AUDIO_TRACK_SWITCHED, (_event, data) => {
-          if (!cancelled && !failed) setAudioTrack(data.id);
-        });
-        instance.on(Hls.Events.ERROR, (_event, data) => {
-          if (cancelled || failed || !data.fatal || !instance) return;
-          const action = recover(
-            data.type === Hls.ErrorTypes.NETWORK_ERROR
-              ? "network"
-              : data.type === Hls.ErrorTypes.MEDIA_ERROR
-                ? "media"
-                : "other",
-          );
-          if (action === "network") {
-            update("recovering");
-            instance.startLoad();
-          } else if (action === "media") {
-            update("recovering");
-            instance.recoverMediaError();
-          } else {
-            instance.destroy();
-            hlsRef.current = null;
-            fail();
-          }
-        });
-        instance.loadSource(src);
-        instance.attachMedia(video);
+        destroyPlayback = playback.destroy;
+        if (failed) destroyPlayback();
       } catch {
         fail();
       }
@@ -141,7 +156,7 @@ export function useVideoSource(
       video.removeEventListener("playing", ready);
       video.removeEventListener("error", nativeError);
       video.pause();
-      instance?.destroy();
+      destroyPlayback?.();
       if (hlsRef.current === instance) hlsRef.current = null;
       video.removeAttribute("src");
       video.load();
