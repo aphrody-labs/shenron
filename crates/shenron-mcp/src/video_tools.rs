@@ -145,6 +145,32 @@ fn valid_hash(hash: &str) -> bool {
     hash.len() == 64 && hash.bytes().all(|byte| byte.is_ascii_hexdigit())
 }
 
+async fn terminate_owned_child(child: &mut tokio::process::Child, grace: Duration) {
+    if child.try_wait().ok().flatten().is_some() {
+        return;
+    }
+    #[cfg(unix)]
+    if let Some(pid) = child.id() {
+        // Only the captured child PID is signalled; no client-selected executable or target.
+        let mut signal = Command::new("/bin/kill");
+        signal
+            .args(["-TERM", "--", &pid.to_string()])
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .kill_on_drop(true);
+        if matches!(tokio::time::timeout(Duration::from_secs(2), signal.status()).await, Ok(Ok(status)) if status.success())
+            && matches!(tokio::time::timeout(grace, child.wait()).await, Ok(Ok(_)))
+        {
+            return;
+        }
+    }
+    #[cfg(not(unix))]
+    let _ = grace;
+    let _ = child.kill().await;
+    let _ = child.wait().await;
+}
+
 pub async fn execute(request: VideoRequest, render: bool) -> Result<Value, String> {
     request.validate()?;
     let input = serde_json::to_vec(&request).map_err(|_| "Invalid video request")?;
@@ -184,8 +210,7 @@ pub async fn execute(request: VideoRequest, render: bool) -> Result<Value, Strin
     let output = match outcome {
         Ok(Ok(output)) => output,
         _ => {
-            let _ = child.kill().await;
-            let _ = child.wait().await;
+            terminate_owned_child(&mut child, Duration::from_secs(5)).await;
             return Err("Owner video backend failed, exceeded its limits or timed out".into());
         },
     };
@@ -241,5 +266,38 @@ mod tests {
     async fn bounds_process_output() {
         assert_eq!(bounded_read(&b"abc"[..], 3).await.unwrap(), b"abc");
         assert!(bounded_read(&b"abcd"[..], 3).await.is_err());
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn termination_allows_cleanup_and_forces_an_unresponsive_child() {
+        for (script, clean_exit) in [
+            ("trap 'exit 0' TERM; printf ready; while :; do :; done", true),
+            ("trap '' TERM; printf ready; exec sleep 60", false),
+        ] {
+            let mut child = Command::new("/bin/sh")
+                .args(["-c", script])
+                .stdout(Stdio::piped())
+                .stderr(Stdio::null())
+                .kill_on_drop(true)
+                .spawn()
+                .unwrap();
+            let mut ready = [0_u8; 5];
+            tokio::time::timeout(
+                Duration::from_secs(2),
+                child.stdout.take().unwrap().read_exact(&mut ready),
+            )
+            .await
+            .unwrap()
+            .unwrap();
+            assert_eq!(&ready, b"ready");
+            terminate_owned_child(&mut child, Duration::from_millis(100)).await;
+            let status = child.wait().await.unwrap();
+            assert_eq!(status.success(), clean_exit);
+            if !clean_exit {
+                use std::os::unix::process::ExitStatusExt;
+                assert_eq!(status.signal(), Some(9));
+            }
+        }
     }
 }
