@@ -10,7 +10,43 @@ import {
   approvedSitemap,
   parseSitemap,
   sitemapLimits,
+  qualifiedSitemapLimits,
+  pendingSitemaps,
+  acceptBodyChunk,
 } from "./crawl-beerus-site";
+test("body budgets reject overshoot chunks while recording consumed and accepted separately", () => {
+  expect(acceptBodyChunk(1048000, 8192, 1048576)).toBe(false);
+  expect(acceptBodyChunk(0, 1024, 1024)).toBe(true);
+  expect(acceptBodyChunk(0, -1, 1024)).toBe(false);
+});
+test("sitemap limits allow bounded larger documents and reject unbounded overrides", () => {
+  expect(qualifiedSitemapLimits({ documentBytes: 8 * 1024 * 1024 }).documentBytes).toBe(8388608);
+  for (const overrides of [
+    { documents: 65 },
+    { bytes: Infinity },
+    { urls: -1 },
+    { documentBytes: 0 },
+  ])
+    expect(() => qualifiedSitemapLimits(overrides)).toThrow("Invalid sitemap budget");
+});
+test("sitemap resumption prioritizes pending URLs and preserves retriable legacy failures", () => {
+  expect(
+    pendingSitemaps({
+      sitemapBudget: {
+        remaining: [
+          "https://www.db-z.com/post-sitemap5.xml",
+          "https://evil.test/a.xml",
+          "https://credential@www.db-z.com/a.xml",
+        ],
+      },
+      sitemaps: [
+        { url: "https://www.db-z.com/post-sitemap.xml", state: "unavailable_or_invalid" },
+        { url: "https://www.db-z.com/post-sitemap5.xml", state: "budget_exceeded" },
+        { url: "https://www.db-z.com/bad.xml", state: "invalid" },
+      ],
+    }),
+  ).toEqual(["https://www.db-z.com/post-sitemap5.xml", "https://www.db-z.com/post-sitemap.xml"]);
+});
 test("sitemap documents distinguish indexes and decode URL entities", () => {
   expect(
     parseSitemap(

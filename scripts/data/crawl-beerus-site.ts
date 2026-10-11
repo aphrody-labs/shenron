@@ -54,10 +54,58 @@ export function observedUrl(raw: string, base: string): string | undefined {
 }
 export const sitemapLimits = {
   documents: 16,
-  documentBytes: 1024 * 1024,
-  bytes: 4 * 1024 * 1024,
+  documentBytes: 4 * 1024 * 1024,
+  bytes: 16 * 1024 * 1024,
   urls: 2048,
 };
+export function qualifiedSitemapLimits(overrides: Partial<typeof sitemapLimits> = {}) {
+  const limits = { ...sitemapLimits, ...overrides };
+  const ceilings = {
+    documents: 64,
+    documentBytes: 8 * 1024 * 1024,
+    bytes: 64 * 1024 * 1024,
+    urls: 50000,
+  };
+  for (const key of Object.keys(limits) as (keyof typeof limits)[])
+    if (!Number.isInteger(limits[key]) || limits[key] < 1 || limits[key] > ceilings[key])
+      throw new Error(`Invalid sitemap budget: ${key}`);
+  return limits;
+}
+
+export function pendingSitemaps(previous: {
+  sitemapBudget?: { remaining?: unknown[] };
+  sitemaps?: { url?: string; state?: string }[];
+}): string[] {
+  const candidates = [
+    ...(previous.sitemapBudget?.remaining ?? []),
+    ...(previous.sitemaps ?? [])
+      .filter((row) => ["budget_exceeded", "unavailable_or_invalid"].includes(row.state ?? ""))
+      .map((row) => row.url),
+  ];
+  return [
+    ...new Set(
+      candidates
+        .filter((url): url is string => typeof url === "string")
+        .map((url) => approvedSitemap(url, seeds[0]!))
+        .filter((url): url is string => !!url),
+    ),
+  ].slice(0, 50000);
+}
+
+class CaptureSizeError extends Error {
+  constructor(
+    readonly limit: number,
+    readonly accepted: number,
+    readonly status: number,
+  ) {
+    super("Source exceeds the bounded capture size");
+    this.name = "CaptureSizeError";
+  }
+}
+
+export function acceptBodyChunk(consumed: number, size: number, limit: number): boolean {
+  return Number.isSafeInteger(size) && size >= 0 && consumed + size <= limit;
+}
 
 export function approvedSitemap(raw: string, base: string): string | undefined {
   const value = observedUrl(raw, base);
@@ -71,8 +119,9 @@ export function approvedSitemap(raw: string, base: string): string | undefined {
 export function parseSitemap(
   xml: string,
   maxUrls = sitemapLimits.urls,
+  maxBytes = sitemapLimits.documentBytes,
 ): { index: boolean; urls: string[] } {
-  if (new TextEncoder().encode(xml).byteLength > sitemapLimits.documentBytes)
+  if (new TextEncoder().encode(xml).byteLength > maxBytes)
     throw new Error("Sitemap exceeds document byte budget");
   if (/<!DOCTYPE|<!ENTITY/i.test(xml)) throw new Error("Sitemap declarations are forbidden");
   const root = xml
@@ -207,7 +256,7 @@ export function approvedUrl(raw: string, base: string, page: boolean): string | 
 async function read(
   url: string,
   byteLimit = 16 * 1024 * 1024,
-  onBytes?: (count: number) => void,
+  onBytes?: (consumed: number, accepted: number) => void,
 ): Promise<{ status: number; type: string; bytes: Uint8Array; location: string | null }> {
   const response = await fetch(url, {
     redirect: "manual",
@@ -223,9 +272,10 @@ async function read(
   let size = 0;
   if (response.body) {
     for await (const chunk of response.body) {
-      onBytes?.(chunk.byteLength);
+      const accepted = acceptBodyChunk(size, chunk.byteLength, byteLimit);
+      onBytes?.(chunk.byteLength, accepted ? chunk.byteLength : 0);
+      if (!accepted) throw new CaptureSizeError(byteLimit, size, response.status);
       size += chunk.byteLength;
-      if (size > byteLimit) throw new Error("Source exceeds the bounded capture size");
       chunks.push(chunk);
     }
   }
@@ -239,9 +289,23 @@ async function read(
 }
 export async function crawl(
   output: string,
-  options: { previousManifest?: string } = {},
+  options: { previousManifest?: string; sitemapLimits?: Partial<typeof sitemapLimits> } = {},
 ): Promise<void> {
   const directory = resolve(output);
+  const limits = qualifiedSitemapLimits(options.sitemapLimits);
+  const previous = options.previousManifest
+    ? JSON.parse(await readFile(resolve(options.previousManifest), "utf8"))
+    : undefined;
+  if (
+    previous &&
+    (previous.schema !== "shenron-source-crawl/v1" ||
+      !Array.isArray(previous.pages) ||
+      !Array.isArray(previous.media) ||
+      (previous.sitemaps !== undefined && !Array.isArray(previous.sitemaps)) ||
+      (previous.sitemapBudget?.remaining !== undefined &&
+        !Array.isArray(previous.sitemapBudget.remaining)))
+  )
+    throw new Error("Previous capture manifest invalid");
   await mkdir(join(directory, "bodies"), { recursive: true, mode: 0o700 });
   const frontier = [...seeds];
   const seen = new Set<string>();
@@ -251,7 +315,8 @@ export async function crawl(
   const corpus: Record<string, unknown>[] = [];
   const robots: Record<string, unknown>[] = [];
   const sitemapCaptures: Record<string, unknown>[] = [];
-  const sitemapQueue: string[] = [];
+  const sitemapQueue: string[] = previous ? pendingSitemaps(previous).slice(0, limits.urls) : [];
+  const deferredSitemaps: string[] = [];
   const inventory = new Map<string, InventoryEntry>();
   const observe = (raw: string, base: string, kind: InventoryKind, sourceSha256: string) => {
     const url = observedUrl(raw, base);
@@ -296,11 +361,7 @@ export async function crawl(
       for (const sitemap of sitemaps) {
         observe(sitemap, origin + "/robots.txt", "sitemap", hash(r.bytes));
         const approved = approvedSitemap(sitemap, origin + "/robots.txt");
-        if (
-          approved &&
-          sitemapQueue.length < sitemapLimits.documents &&
-          !sitemapQueue.includes(approved)
-        )
+        if (approved && sitemapQueue.length < limits.urls && !sitemapQueue.includes(approved))
           sitemapQueue.push(approved);
       }
     } catch {
@@ -319,12 +380,14 @@ export async function crawl(
   };
   const sitemapSeen = new Set<string>();
   let sitemapBytes = 0;
+  let consumedBodyBytes = 0;
+  let storedBytes = 0;
   let sitemapUrls = 0;
   while (
     sitemapQueue.length &&
-    sitemapSeen.size < sitemapLimits.documents &&
-    sitemapBytes < sitemapLimits.bytes &&
-    sitemapUrls < sitemapLimits.urls
+    sitemapSeen.size < limits.documents &&
+    consumedBodyBytes < limits.bytes &&
+    sitemapUrls < limits.urls
   ) {
     const url = sitemapQueue.shift()!;
     if (sitemapSeen.has(url)) continue;
@@ -338,17 +401,20 @@ export async function crawl(
       });
       continue;
     }
+    const consumedBeforeRequest = consumedBodyBytes;
     try {
       const r = await read(
         url,
-        Math.min(sitemapLimits.documentBytes, sitemapLimits.bytes - sitemapBytes),
-        (count) => {
-          sitemapBytes += count;
+        Math.min(limits.documentBytes, limits.bytes - consumedBodyBytes),
+        (consumed, accepted) => {
+          consumedBodyBytes += consumed;
+          sitemapBytes += accepted;
         },
       );
       const digest = hash(r.bytes);
       const fetchedAt = new Date().toISOString();
       await writeFile(join(directory, "bodies", digest), r.bytes, { mode: 0o600 });
+      storedBytes += r.bytes.byteLength;
       const row: Record<string, unknown> = {
         url,
         status: r.status,
@@ -371,17 +437,14 @@ export async function crawl(
         const destination = approvedSitemap(r.location, url);
         row.redirectLocation = observedUrl(r.location, url);
         row.redirectApproved = !!destination;
-        if (
-          destination &&
-          !sitemapSeen.has(destination) &&
-          sitemapQueue.length + sitemapSeen.size < sitemapLimits.documents
-        )
+        if (destination && !sitemapSeen.has(destination) && sitemapQueue.length < limits.urls)
           sitemapQueue.push(destination);
       }
       if (r.status !== 200) continue;
       const parsed = parseSitemap(
         new TextDecoder().decode(r.bytes),
-        sitemapLimits.urls - sitemapUrls,
+        limits.urls - sitemapUrls,
+        limits.documentBytes,
       );
       sitemapUrls += parsed.urls.length;
       row.index = parsed.index;
@@ -394,18 +457,41 @@ export async function crawl(
           if (
             !sitemapSeen.has(next) &&
             !sitemapQueue.includes(next) &&
-            sitemapQueue.length + sitemapSeen.size < sitemapLimits.documents
+            sitemapQueue.length < limits.urls
           )
             sitemapQueue.push(next);
         } else if (!frontier.includes(next) && frontier.length < 128) frontier.push(next);
       }
-    } catch {
+    } catch (error) {
       const captured = sitemapCaptures.find((row) => row.url === url);
-      if (captured) captured.state = "invalid";
+      const reason =
+        error instanceof CaptureSizeError
+          ? "body_byte_budget"
+          : error instanceof Error && error.message === "Sitemap exceeds URL budget"
+            ? "listed_url_budget"
+            : error instanceof Error && error.name === "TimeoutError"
+              ? "request_timeout"
+              : captured
+                ? "xml_parse_rejected"
+                : "request_failed";
+      const state =
+        reason === "body_byte_budget" || reason === "listed_url_budget"
+          ? "budget_exceeded"
+          : captured
+            ? "invalid"
+            : "unavailable";
+      if (state === "budget_exceeded" && !deferredSitemaps.includes(url))
+        deferredSitemaps.push(url);
+      if (captured) Object.assign(captured, { state, reason });
       else
         sitemapCaptures.push({
           url,
-          state: "unavailable_or_invalid",
+          state,
+          reason,
+          consumedBodyBytes: consumedBodyBytes - consumedBeforeRequest,
+          ...(error instanceof CaptureSizeError
+            ? { status: error.status, acceptedBodyBytes: error.accepted, byteLimit: error.limit }
+            : {}),
           fetchedAt: new Date().toISOString(),
         });
     }
@@ -595,10 +681,13 @@ export async function crawl(
     robots,
     sitemaps: sitemapCaptures,
     sitemapBudget: {
-      limits: sitemapLimits,
+      limits,
       bytes: sitemapBytes,
+      consumedBodyBytes,
+      storedBytes,
+      chunkOvershootBytes: Math.max(0, consumedBodyBytes - limits.bytes),
       listedUrls: sitemapUrls,
-      remaining: sitemapQueue,
+      remaining: [...new Set([...sitemapQueue, ...deferredSitemaps])],
     },
     pages,
     media,
@@ -665,7 +754,6 @@ export async function crawl(
     { mode: 0o600 },
   );
   if (options.previousManifest) {
-    const previous = JSON.parse(await readFile(resolve(options.previousManifest), "utf8"));
     if (
       previous.schema !== "shenron-source-crawl/v1" ||
       !Array.isArray(previous.pages) ||
@@ -714,10 +802,23 @@ export async function crawl(
 if (import.meta.main) {
   const index = Bun.argv.indexOf("--out");
   const previousIndex = Bun.argv.indexOf("--previous");
+  const limits: Partial<typeof sitemapLimits> = {};
+  for (const [flag, key] of [
+    ["--sitemap-documents", "documents"],
+    ["--sitemap-document-bytes", "documentBytes"],
+    ["--sitemap-bytes", "bytes"],
+    ["--sitemap-urls", "urls"],
+  ] as const) {
+    const position = Bun.argv.indexOf(flag);
+    if (position >= 0) limits[key] = Number(Bun.argv[position + 1]);
+  }
   await crawl(
     index >= 0
       ? Bun.argv[index + 1]!
       : resolve(import.meta.dir, "../../var/reports/beerus-site-crawl"),
-    { previousManifest: previousIndex >= 0 ? Bun.argv[previousIndex + 1] : undefined },
+    {
+      previousManifest: previousIndex >= 0 ? Bun.argv[previousIndex + 1] : undefined,
+      sitemapLimits: limits,
+    },
   );
 }
