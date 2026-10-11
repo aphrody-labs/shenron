@@ -1,6 +1,48 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { approvedUrl, isPlaybackMedia, parseRobots, robotsPermits } from "./crawl-beerus-site";
+import {
+  approvedUrl,
+  isPlaybackMedia,
+  parseRobots,
+  robotsPermits,
+  observedUrl,
+  compareCaptures,
+} from "./crawl-beerus-site";
+test("passive inventory records external HTTPS references without authorizing traversal", () => {
+  expect(
+    observedUrl(
+      "https://www.youtube-nocookie.com/embed/official#play",
+      "https://dragonball-super.com/en/",
+    ),
+  ).toBe("https://www.youtube-nocookie.com/embed/official");
+  expect(
+    approvedUrl(
+      "https://www.youtube-nocookie.com/embed/official",
+      "https://dragonball-super.com/en/",
+      false,
+    ),
+  ).toBeUndefined();
+  expect(observedUrl("javascript:alert(1)", "https://dragonball-super.com/en/")).toBeUndefined();
+  expect(
+    observedUrl("https://token@example.com/", "https://dragonball-super.com/en/"),
+  ).toBeUndefined();
+});
+test("capture delta separates content changes, failures and URLs not observed", () => {
+  expect(
+    compareCaptures(
+      [
+        { url: "a", sha256: "old", status: 200 },
+        { url: "b", sha256: "same", status: 200 },
+        { url: "c", sha256: "prior", status: 200 },
+      ],
+      [
+        { url: "a", sha256: "new", status: 200 },
+        { url: "b", state: "unavailable" },
+        { url: "d", sha256: "added", status: 200 },
+      ],
+    ),
+  ).toEqual({ added: ["d"], changed: ["a"], unobserved: ["c"], unavailable: ["b"] });
+});
 test("robots applies specific groups, wildcard endings and longest allow rules", () => {
   const { rules, sitemaps } = parseRobots(
     "User-agent: *\nDisallow: /\nUser-agent: Shenron-source-crawl\nDisallow: /en/private*\nAllow: /en/private/public\nDisallow: /*?secret=$\nSitemap: https://dragonball-super.com/sitemap.xml",

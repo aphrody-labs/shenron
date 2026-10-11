@@ -40,3 +40,36 @@ et audit propriétaire. OVH est interrogé par `infra ovh domain dnssec`, avec p
 La disponibilité de ces credentials et les droits externes sont vérifiés avant chaque
 mutation ; une configuration ne crée pas ces droits. Ne pas fusionner les stores dbfr,
 Aphrody ou IECODE.
+
+## Capture privée des sources Beerus
+
+Le propriétaire de la collecte est `scripts/data/crawl-beerus-site.ts`. Il conserve les
+corps par SHA256, les routes, redirections, règles robots, sitemaps annoncés et références
+observées dans `manifest.json` et `inventory.json`. Les iframes et actions de formulaires
+sont des références passives ; les candidats API trouvés dans le JavaScript restent
+non qualifiés et ne sont pas appelés. Le schéma du backend tiers n'est pas observable.
+Un refus robots, une erreur et les files restantes restent dans les reçus.
+
+L'index SQLite privé `capture-index.sqlite` contient les captures, provenances et une
+recherche FTS5 du texte capturé. Cet index de collecte n'active ni RAG, entraînement,
+canon, PostgreSQL public, Redis public ni publication de corps sur le CDN. Une image
+HTTP200 reste `publicationRights=unreviewed`, sans droit public déduit du statut.
+
+Le runner `scripts/data/sync-beerus-site.ts` exige une sortie externe au dépôt, prend
+un verrou exclusif et conserve chaque exécution dans un dossier daté unique. Exemple
+à exécuter via Infra sur le VPS avec un runtime Bun qualifié :
+
+```sh
+bun scripts/data/sync-beerus-site.ts \
+  --out /home/ubuntu/.aphrody/profiles/dbfr/corpus/beerus-sync \
+  --interval-seconds 900 --iterations 96 \
+  --previous /chemin/prive/capture/manifest.json
+```
+
+L'intervalle commence après la fin du crawl, sans chevauchement ; il s'agit d'une
+collecte périodique, pas d'un flux temps réel garanti. `delta.json` distingue ajout,
+changement de SHA, erreur et URL non observée ; une absence ne prouve pas suppression.
+SIGINT/SIGTERM attend la fin du crawl courant. Un verrou existant ne se supprime pas
+automatiquement. Les reçus distinguent fin d'exécution et couverture exhaustive, qui
+reste non prouvée. Conserver le code et le runtime épinglés du job, son PID, son journal
+et son statut terminal avant une nouvelle exécution.

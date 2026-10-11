@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-import { mkdir, writeFile } from "node:fs/promises";
+import { chmod, mkdir, readFile, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
+import { Database } from "bun:sqlite";
 
 const seeds = [
   "https://dragonball-super.com/en/",
@@ -9,6 +10,45 @@ const seeds = [
 const hash = (value: string | Uint8Array) =>
   new Bun.CryptoHasher("sha256").update(value).digest("hex");
 type RobotsRule = { path: string; allow: boolean };
+type InventoryKind = "page-link" | "asset" | "iframe" | "form-action" | "sitemap" | "api-candidate";
+type InventoryEntry = {
+  url: string;
+  kind: InventoryKind;
+  discoveredFrom: string;
+  sourceSha256: string;
+  discoveredOnly: true;
+  resolutionUnverified: boolean;
+};
+type CaptureIdentity = { url: string; sha256?: string; status?: number; state?: string };
+export function compareCaptures(previous: CaptureIdentity[], current: CaptureIdentity[]) {
+  const before = new Map(previous.map((row) => [row.url, row]));
+  const after = new Map(current.map((row) => [row.url, row]));
+  return {
+    added: [...after.keys()].filter((url) => !before.has(url)).toSorted(),
+    changed: current
+      .filter(
+        (row) =>
+          row.sha256 && before.get(row.url)?.sha256 && row.sha256 !== before.get(row.url)?.sha256,
+      )
+      .map((row) => row.url)
+      .toSorted(),
+    unobserved: [...before.keys()].filter((url) => !after.has(url)).toSorted(),
+    unavailable: current
+      .filter((row) => row.state || row.status !== 200)
+      .map((row) => row.url)
+      .toSorted(),
+  };
+}
+export function observedUrl(raw: string, base: string): string | undefined {
+  try {
+    const url = new URL(raw, base);
+    if (url.protocol !== "https:" || url.username || url.password || url.port) return;
+    url.hash = "";
+    return url.href;
+  } catch {
+    return;
+  }
+}
 export function parseRobots(text: string): { rules: RobotsRule[]; sitemaps: string[] } {
   const groups: { agents: string[]; rules: RobotsRule[] }[] = [];
   const sitemaps: string[] = [];
@@ -129,7 +169,10 @@ async function read(
   }
   return { status: response.status, type, bytes, location: response.headers.get("location") };
 }
-export async function crawl(output: string): Promise<void> {
+export async function crawl(
+  output: string,
+  options: { previousManifest?: string } = {},
+): Promise<void> {
   const directory = resolve(output);
   await mkdir(join(directory, "bodies"), { recursive: true, mode: 0o700 });
   const frontier = [...seeds];
@@ -139,6 +182,20 @@ export async function crawl(output: string): Promise<void> {
   const media: Record<string, unknown>[] = [];
   const corpus: Record<string, unknown>[] = [];
   const robots: Record<string, unknown>[] = [];
+  const inventory = new Map<string, InventoryEntry>();
+  const observe = (raw: string, base: string, kind: InventoryKind, sourceSha256: string) => {
+    const url = observedUrl(raw, base);
+    if (!url) return;
+    const key = JSON.stringify([url, kind, base]);
+    inventory.set(key, {
+      url,
+      kind,
+      discoveredFrom: base,
+      sourceSha256,
+      discoveredOnly: true,
+      resolutionUnverified: kind === "api-candidate",
+    });
+  };
   const forbidden = new Map<string, RobotsRule[]>();
   const robotsUnavailable = new Set<string>();
   for (const origin of ["https://dragonball-super.com", "https://www.db-z.com"]) {
@@ -156,6 +213,8 @@ export async function crawl(output: string): Promise<void> {
         sitemaps,
         sha256: hash(r.bytes),
       });
+      for (const sitemap of sitemaps)
+        observe(sitemap, origin + "/robots.txt", "sitemap", hash(r.bytes));
     } catch {
       robotsUnavailable.add(origin);
       robots.push({
@@ -208,6 +267,17 @@ export async function crawl(output: string): Promise<void> {
       const titles: string[] = [];
       const links = new Set<string>();
       const rewriter = new HTMLRewriter()
+        .on("[style]", {
+          element(element) {
+            for (const match of (element.getAttribute("style") ?? "").matchAll(
+              /url\(\s*["']?([^"')\s]+)["']?\s*\)/g,
+            )) {
+              observe(match[1]!, url, "asset", digest);
+              const next = approvedUrl(match[1]!, url, false);
+              if (next && !isPlaybackMedia(next)) assets.add(next);
+            }
+          },
+        })
         .on("title", {
           text(chunk) {
             titles.push(chunk.text);
@@ -227,8 +297,16 @@ export async function crawl(output: string): Promise<void> {
             } catch {
               return;
             }
+            observe(raw, url, "page-link", digest);
             const next = approvedUrl(raw, url, true);
             if (next && !seen.has(next) && !frontier.includes(next)) frontier.push(next);
+          },
+        })
+        .on("iframe[src],form[action]", {
+          element(element) {
+            const raw = element.getAttribute(element.tagName === "form" ? "action" : "src");
+            if (raw)
+              observe(raw, url, element.tagName === "form" ? "form-action" : "iframe", digest);
           },
         })
         .on("img,link,script,source,video", {
@@ -244,6 +322,7 @@ export async function crawl(output: string): Promise<void> {
               candidates.push(...srcset.split(",").map((entry) => entry.trim().split(/\s+/)[0]!));
             for (const raw of candidates) {
               if (!raw) continue;
+              observe(raw, url, "asset", digest);
               const next = approvedUrl(raw, url, false);
               if (next && !isPlaybackMedia(next)) assets.add(next);
             }
@@ -297,23 +376,31 @@ export async function crawl(output: string): Promise<void> {
         bytes: r.bytes.byteLength,
         sha256: digest,
         fetchedAt: new Date().toISOString(),
-        publicCandidate:
-          url.startsWith("https://dragonball-super.com/") &&
-          r.status === 200 &&
-          r.type.startsWith("image/"),
+        publicCandidate: false,
+        publicationRights: "unreviewed",
       });
       if (r.status === 200 && r.type.includes("text/css")) {
         for (const match of new TextDecoder()
           .decode(r.bytes)
           .matchAll(/url\(\s*["']?([^"')\s]+)["']?\s*\)/g)) {
           const next = approvedUrl(match[1]!, url, false);
+          observe(match[1]!, url, "asset", digest);
           if (next && !isPlaybackMedia(next) && !assetsSeen.has(next)) queue.push(next);
         }
         for (const match of new TextDecoder()
           .decode(r.bytes)
           .matchAll(/@import\s+["']([^"']+)["']/gi)) {
           const next = approvedUrl(match[1]!, url, false);
+          observe(match[1]!, url, "asset", digest);
           if (next && !isPlaybackMedia(next) && !assetsSeen.has(next)) queue.push(next);
+        }
+      }
+      if (r.status === 200 && /javascript/i.test(r.type)) {
+        const source = new TextDecoder().decode(r.bytes);
+        for (const match of source.matchAll(
+          /(?:fetch|axios\.(?:get|post))\s*\(\s*["']([^"']+)["']/g,
+        )) {
+          observe(match[1]!, url, "api-candidate", digest);
         }
       }
     } catch {
@@ -331,7 +418,90 @@ export async function crawl(output: string): Promise<void> {
     remainingPages: frontier,
     remainingAssets: queue,
     bytes: totalBytes,
+    inventoryEntries: inventory.size,
+    privateSearchIndex: "capture-index.sqlite",
+    ragIndexed: false,
+    trainingEligible: false,
   };
+  const index = new Database(join(directory, "capture-index.sqlite"), { create: true });
+  try {
+    index.exec(
+      "CREATE TABLE IF NOT EXISTS captures (url TEXT NOT NULL, kind TEXT NOT NULL, sha256 TEXT, status INTEGER, state TEXT, title TEXT, PRIMARY KEY(url, kind)); CREATE VIRTUAL TABLE IF NOT EXISTS source_text USING fts5(url UNINDEXED, title, text); CREATE TABLE IF NOT EXISTS references_inventory (url TEXT NOT NULL, kind TEXT NOT NULL, discovered_from TEXT NOT NULL, source_sha256 TEXT NOT NULL, PRIMARY KEY(url, kind, discovered_from));",
+    );
+    index.transaction(() => {
+      index.exec(
+        "DELETE FROM captures; DELETE FROM source_text; DELETE FROM references_inventory;",
+      );
+      const insertCapture = index.prepare("INSERT INTO captures VALUES (?, ?, ?, ?, ?, ?)");
+      for (const [kind, rows] of [
+        ["page", pages],
+        ["asset", media],
+      ] as const) {
+        for (const row of rows)
+          insertCapture.run(
+            String(row.url),
+            kind,
+            row.sha256 ? String(row.sha256) : null,
+            typeof row.status === "number" ? row.status : null,
+            row.state ? String(row.state) : null,
+            row.title ? String(row.title) : null,
+          );
+      }
+      const insertText = index.prepare(
+        "INSERT INTO source_text (url, title, text) VALUES (?, ?, ?)",
+      );
+      for (const row of corpus)
+        insertText.run(String(row.url), String(row.title), String(row.text));
+      const insertReference = index.prepare("INSERT INTO references_inventory VALUES (?, ?, ?, ?)");
+      for (const row of inventory.values())
+        insertReference.run(row.url, row.kind, row.discoveredFrom, row.sourceSha256);
+    })();
+  } finally {
+    index.close();
+  }
+  await chmod(join(directory, "capture-index.sqlite"), 0o600);
+  await writeFile(
+    join(directory, "inventory.json"),
+    JSON.stringify(
+      {
+        schema: "shenron-source-inventory/v1",
+        verifiedAt: report.verifiedAt,
+        privateArchive: true,
+        backendSchemaObserved: false,
+        entries: [...inventory.values()],
+      },
+      null,
+      2,
+    ),
+    { mode: 0o600 },
+  );
+  if (options.previousManifest) {
+    const previous = JSON.parse(await readFile(resolve(options.previousManifest), "utf8"));
+    if (
+      previous.schema !== "shenron-source-crawl/v1" ||
+      !Array.isArray(previous.pages) ||
+      !Array.isArray(previous.media)
+    )
+      throw new Error("Previous capture manifest invalid");
+    await writeFile(
+      join(directory, "delta.json"),
+      JSON.stringify(
+        {
+          schema: "shenron-source-delta/v1",
+          verifiedAt: report.verifiedAt,
+          previousVerifiedAt: previous.verifiedAt,
+          ...compareCaptures([...previous.pages, ...previous.media], [
+            ...pages,
+            ...media,
+          ] as CaptureIdentity[]),
+          unobservedDoesNotProveRemoval: true,
+        },
+        null,
+        2,
+      ),
+      { mode: 0o600 },
+    );
+  }
   await writeFile(join(directory, "manifest.json"), JSON.stringify(report, null, 2), {
     mode: 0o600,
   });
@@ -352,9 +522,11 @@ export async function crawl(output: string): Promise<void> {
 }
 if (import.meta.main) {
   const index = Bun.argv.indexOf("--out");
+  const previousIndex = Bun.argv.indexOf("--previous");
   await crawl(
     index >= 0
       ? Bun.argv[index + 1]!
       : resolve(import.meta.dir, "../../var/reports/beerus-site-crawl"),
+    { previousManifest: previousIndex >= 0 ? Bun.argv[previousIndex + 1] : undefined },
   );
 }
