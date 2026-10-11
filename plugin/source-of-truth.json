@@ -3,9 +3,7 @@
   "sources": [
     {
       "root": ".",
-      "evidence": [
-        "references/instantane.json"
-      ]
+      "evidence": ["references/instantane.json"]
     }
   ],
   "knowledge": [
@@ -19,6 +17,7 @@
     "openai/skills/dragon-ball-japonais/SKILL.md",
     "openai/skills/dragon-ball/SKILL.md",
     "references/execution.md",
+    "references/synchronization.md",
     "skills/databooks-ocr/SKILL.md",
     "skills/databooks-ocr/references/corrections.md",
     "skills/databooks-ocr/references/lots.md",

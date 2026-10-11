@@ -18,12 +18,15 @@ Avant de citer un instantané :
    réponse (« établi (instantané `4241d5e`, 2026-10-05) ») ;
 2. si une source vivante répond (API, MCP), elle peut être plus récente : la
    préférer quand elle cite son passage primaire, et signaler l'écart ;
-3. si le dépôt Shenron est présent (mainteneurs), `bun scripts/plugin/build-references.ts --check`
-   dit si l'instantané a dérivé du code ; `bun scripts/plugin/build-references.ts` le
-   régénère. Ne jamais corriger un fichier généré à la main : corriger la source
+3. si le dépôt Shenron est présent (mainteneurs), `bun scripts/plugin/sync.ts --check`
+   contrôle les instantanés et les manifestes ; `bun scripts/plugin/sync.ts` les
+   synchronise. Ne jamais corriger un fichier généré à la main : corriger la source
    dans le dépôt, puis régénérer.
 
 Les pages rédigées (`SKILL.md`, références non générées) décrivent une méthode ; un
 fait qui n'est ni dans un instantané ni dans une source vivante reste **non établi**.
 Une prose de guide qui contredit le code ou l'instantané se corrige, elle ne
 l'emporte pas.
+
+Le [contrat de synchronisation](../../references/synchronization.md) précise
+les effets des commandes et la séparation entre MCP, A2A et infrastructure.

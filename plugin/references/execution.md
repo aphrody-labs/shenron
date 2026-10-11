@@ -1,7 +1,7 @@
 # Exécution Shenron — contrat partagé
 
 Le plugin fonctionne **hors ligne d'abord** : il ne suppose ni l'accès à
-dragonballfr.com, ni l'API, ni le MCP `dragonball_*`, ni le RAG, ni un checkout du
+dragonballfr.com, ni l'API, ni le MCP `dragonball.*`, ni le RAG, ni un checkout du
 code Shenron ou d'Aphrody. Tout ce qu'il faut pour répondre voyage dans le dossier
 du plugin.
 
@@ -13,7 +13,7 @@ du plugin.
    et la date de ses sources. Sans Bun, lire directement les fichiers `.md` et
    `.json` des dossiers `references/`.
 2. **Sources vivantes, facultatives** : API publique (`https://dragonballfr.com`,
-   `https://bot.dragonballfr.com`), outils MCP `dragonball_*` (serveur
+   `https://bot.dragonballfr.com`), outils MCP `dragonball.*` (serveur
    `shenron-mcp` déclaré par ce plugin, ou le même catalogue exposé par un autre
    client), RAG. Elles **enrichissent** une réponse quand elles répondent ; elles ne
    la conditionnent jamais. Une seule sonde courte suffit : sur un délai dépassé, un

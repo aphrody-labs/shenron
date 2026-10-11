@@ -1,19 +1,38 @@
-# Shenron for Codex and ChatGPT
+# Shenron pour Codex et ChatGPT
 
-This Agent Plugins package provides sourced Dragon Ball research workflows and Shenron's public Dragon Ball MCP. It preserves the Claude Code plugin in the parent directory and does not require a DBFR token.
+Ce paquet décrit trois compétences de recherche Dragon Ball sourcée et le MCP
+public `https://dragonballfr.com/mcp`. Il conserve le plugin Claude Code voisin
+et ne contient aucun credential DBFR. La présence des manifestes ne prouve pas
+une installation dans un compte ni une publication dans un annuaire.
 
-## Install in ChatGPT
+## Installation et qualification
 
-The repository declares a project marketplace in `.agents/plugins/marketplace.json`. In ChatGPT desktop Work mode, add the repository marketplace, open the **DBFR** source, then select **Shenron → Install plugin**. Restart the desktop app if the source was just added. Local and repo marketplaces are for authoring, testing, and team distribution; they do not install the plugin in ChatGPT Web or publish it to OpenAI's universal public directory.
+Le dépôt déclare une marketplace locale dans `.agents/plugins/marketplace.json`
+avec une entrée vers `plugin/openai`. Elle sert aux tests et à la distribution
+dans l'équipe ; elle ne publie pas le paquet dans l'annuaire public d'OpenAI.
 
-The portable manifest and `mcp.json` follow OpenAI's documented Agent Plugins format. Codex and ChatGPT discover the three `SKILL.md` workflows under `skills/` and the public Streamable HTTP MCP server at `https://dragonballfr.com/mcp`. The skills are limited to public research and verifiable citations. Shenron exposes A2A as a separate protocol; OpenAI agents connect to Shenron's capabilities through MCP.
+La [documentation officielle](https://developers.openai.com/plugins/build/plugins#create-and-test-a-plugin-locally-with-an-mcp-server),
+consultée le 11 octobre 2026, décrit aussi une connexion dans ChatGPT : ajouter
+le MCP personnalisé dans Plugins, puis utiliser son identifiant de connexion
+avec Plugin Creator. Le manifeste de compatibilité et le mapping `.app.json`
+obtenus dépendent de cette connexion réelle. Ce dépôt ne fabrique aucun
+identifiant de compte et n'annonce pas ce parcours comme déjà exécuté.
 
-## OpenAI public directory
+Après installation, tester dans une nouvelle conversation les cinq cas positifs
+et trois cas négatifs de `plugin.json`. Recontrôler `tools/list` du serveur
+public et ses annotations de lecture seule. Un relevé ancien ne garantit ni
+le nombre actuel d'outils ni la disponibilité du serveur.
 
-One-click installation in ChatGPT Web requires publication in OpenAI's universal plugin directory. This requires a separate submission at [platform.openai.com/plugins](https://platform.openai.com/plugins), developer identity and domain verification, a passing MCP scan, and OpenAI review. The submission also needs an accessible demonstration video. A Claude or local marketplace does not publish the plugin to the universal ChatGPT/Codex directory.
+## Publication et synchronisation
 
-Production MCP check (2026-10-08, release `docker-5c09af18`): the anonymous `tools/list` of `https://dragonballfr.com/mcp` returns 48 public tools, none of them a deposit or write tool, and each declares `readOnlyHint: true`, `openWorldHint` and `destructiveHint`. Recheck it after every production deployment and before running OpenAI's scan.
+La publication publique reste distincte : suivre les exigences actuelles du
+[portail officiel](https://developers.openai.com/plugins/deploy/submission).
+Une marketplace Claude ou locale ne valide pas cette soumission.
 
-The five positive and three negative review cases are in `plugin.json`. The demonstration, domain verification, and portal review remain external submission steps.
+Dans le checkout, `bun scripts/plugin/sync.ts --check` contrôle les références,
+les manifestes Antigravity et les manifestes portables. Sans `--check`, il
+synchronise les fichiers publics, sans commit, push ni configuration de compte.
+Voir le [contrat de synchronisation](../references/synchronization.md).
 
-References: [Package your plugin](https://developers.openai.com/plugins/build/plugins), [Submit a Claude Code plugin to OpenAI](https://developers.openai.com/plugins/guides/submit-claude-plugin), and [Upload and submit your plugin](https://developers.openai.com/plugins/deploy/submission).
+A2A conserve son contrat de coordination distinct. Une connexion MCP ne crée
+ni boîte de messages A2A ni authentification d'administration.
