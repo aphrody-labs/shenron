@@ -34,7 +34,7 @@ describe("llms.txt & AI discoverability", () => {
     expect(text).toContain("## Full map");
 
     // 4. No URL has accidental attached punctuation (e.g. trailing period)
-    const rawUrls = [...text.matchAll(/https?:\/\/[^\s\)\],`]+/g)].map((m) => m[0]);
+    const rawUrls = [...text.matchAll(/https?:\/\/[^\s)\],`]+/g)].map((m) => m[0]);
     for (const url of rawUrls) {
       expect(url.endsWith(".")).toBe(false);
       expect(url.endsWith(",")).toBe(false);
@@ -71,7 +71,8 @@ describe("llms.txt & AI discoverability", () => {
         : [];
     const aiRule = rulesList.find(
       (r: { userAgent?: string | string[] }) =>
-        r && (Array.isArray(r.userAgent) ? r.userAgent.includes("GPTBot") : r.userAgent === "GPTBot"),
+        r &&
+        (Array.isArray(r.userAgent) ? r.userAgent.includes("GPTBot") : r.userAgent === "GPTBot"),
     );
     expect(aiRule).toBeDefined();
 
