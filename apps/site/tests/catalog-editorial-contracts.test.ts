@@ -229,7 +229,7 @@ describe("catalogue editorial writes", () => {
       edition: "tankobon",
       label: "Original",
       language: "ja",
-      pageColor: "nb",
+      pageColor: "unknown",
       scanPolicy: "self_hosted",
     });
     expect((await write("media_editions", { label: "Corrected" }, "PATCH")).status).toBe(200);

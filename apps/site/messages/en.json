@@ -20,6 +20,12 @@
     "legalOfferNote": "Offered by {providers}. The link opens the provider catalogue; a subscription or purchase may be required."
   },
   "mangaCatalog": {
+    "pageColor": {
+      "unknown": "Page color unverified",
+      "nb": "Black and white",
+      "color": "Color",
+      "mixed": "Black and white and color"
+    },
     "colorSectionTitle": "French color scans",
     "colorSectionDescription": "French-language color scans sourced from the scan-db forum. This collection does not contain Shueisha’s original Japanese edition. {count} chapters listed.",
     "colorTabTitle": "French color scans",

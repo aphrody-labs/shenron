@@ -20,6 +20,12 @@
     "legalOfferNote": "提供：{providers}。リンク先は提供元のカタログです。作品によって購入や契約が必要です。"
   },
   "mangaCatalog": {
+    "pageColor": {
+      "unknown": "ページの色は未確認",
+      "nb": "モノクロ",
+      "color": "カラー",
+      "mixed": "モノクロとカラー"
+    },
     "colorSectionTitle": "フランス語版カラー画像",
     "colorSectionDescription": "scan-db フォーラム由来のフランス語カラー画像です。集英社の日本語オリジナル版は含まれていません。登録章数：{count}話。",
     "colorTabTitle": "フランス語カラー画像",

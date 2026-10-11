@@ -55,7 +55,7 @@ const edition = z
     isbn,
     publisher: z.string().trim().min(1).max(500).nullable().optional(),
     publishedAt: publicationDate,
-    pageColor: z.enum(["nb", "color", "mixed"]).optional(),
+    pageColor: z.enum(["unknown", "nb", "color", "mixed"]).optional(),
     scanPolicy: z.string().min(1).max(100).optional(),
   })
   .strict();
@@ -89,7 +89,7 @@ export function parseMediaCatalogBody(
   if (table === "media_editions") {
     const parsed = (forInsert ? edition : edition.partial()).parse(body);
     return forInsert
-      ? { language: "ja", pageColor: "nb", scanPolicy: "self_hosted", ...parsed }
+      ? { language: "ja", pageColor: "unknown", scanPolicy: "self_hosted", ...parsed }
       : parsed;
   }
   if (table === "media_volumes") return (forInsert ? volume : volume.partial()).parse(body);

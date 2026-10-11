@@ -56,6 +56,7 @@ function dateInputToEpoch(dateStr: string, original: string): string {
 }
 
 export function SmartField({ table, col, value, onChange, original }: Props) {
+  const t = useT();
   if (isImageColumn(table, col)) {
     return (
       <ImageField value={value} onChange={onChange} subdir={uploadSubdir(table)} column={col} />
@@ -88,7 +89,9 @@ export function SmartField({ table, col, value, onChange, original }: Props) {
           {value && !known && <option value={value}>{value}</option>}
           {en.options.map((o) => (
             <option key={o} value={o}>
-              {o}
+              {table === "media_editions" && col === "pageColor"
+                ? t(`mangaCatalog.pageColor.${o}`)
+                : o}
             </option>
           ))}
         </select>

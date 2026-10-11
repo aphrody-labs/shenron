@@ -20,6 +20,12 @@
     "legalOfferNote": "Proposé par {providers}. Le lien ouvre le catalogue du fournisseur ; abonnement ou achat selon le titre."
   },
   "mangaCatalog": {
+    "pageColor": {
+      "unknown": "Couleur des pages non vérifiée",
+      "nb": "Noir et blanc",
+      "color": "Couleur",
+      "mixed": "Noir et blanc et couleur"
+    },
     "colorSectionTitle": "Scans couleur français",
     "colorSectionDescription": "Fonds de scans couleur en français, provenant du forum scan-db. Il ne contient pas l’édition japonaise originale de Shueisha. {count} chapitres recensés.",
     "colorTabTitle": "Scans couleur FR",

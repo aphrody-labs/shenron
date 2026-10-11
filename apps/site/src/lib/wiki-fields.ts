@@ -115,6 +115,7 @@ const ENUM_OPTIONS: Record<string, { options: string[]; strict?: boolean }> = {
   },
   "db_manga_volumes.series": { options: ["DB", "DBS"] },
   "db_manga_chapters.series": { options: ["DB", "DBS"] },
+  "media_editions.pageColor": { options: ["unknown", "nb", "color", "mixed"], strict: true },
 };
 export function enumOptionsFor(
   table: string,
