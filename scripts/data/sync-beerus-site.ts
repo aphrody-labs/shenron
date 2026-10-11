@@ -13,6 +13,9 @@ interface CaptureProgress {
     remaining: unknown[];
     bytes: number;
     listedUrls: number;
+    consumedBodyBytes?: number;
+    storedBytes?: number;
+    chunkOvershootBytes?: number;
     limits: { documents: number; documentBytes: number; bytes: number; urls: number };
   };
 }
@@ -29,6 +32,9 @@ export function captureProgress(manifest: CaptureProgress) {
       ? {
           bytes: manifest.sitemapBudget.bytes,
           listedUrls: manifest.sitemapBudget.listedUrls,
+          consumedBodyBytes: manifest.sitemapBudget.consumedBodyBytes,
+          storedBytes: manifest.sitemapBudget.storedBytes,
+          chunkOvershootBytes: manifest.sitemapBudget.chunkOvershootBytes,
           limits: manifest.sitemapBudget.limits,
         }
       : undefined,
