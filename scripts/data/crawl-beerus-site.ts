@@ -8,6 +8,67 @@ const seeds = [
 ];
 const hash = (value: string | Uint8Array) =>
   new Bun.CryptoHasher("sha256").update(value).digest("hex");
+type RobotsRule = { path: string; allow: boolean };
+export function parseRobots(text: string): { rules: RobotsRule[]; sitemaps: string[] } {
+  const groups: { agents: string[]; rules: RobotsRule[] }[] = [];
+  const sitemaps: string[] = [];
+  let group: (typeof groups)[number] | undefined;
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.replace(/#.*$/, "").trim();
+    const separator = line.indexOf(":");
+    if (separator < 0) continue;
+    const field = line.slice(0, separator).trim().toLowerCase();
+    const value = line.slice(separator + 1).trim();
+    if (field === "sitemap") {
+      sitemaps.push(value);
+      continue;
+    }
+    if (field === "user-agent") {
+      if (!group || group.rules.length) {
+        group = { agents: [], rules: [] };
+        groups.push(group);
+      }
+      group.agents.push(value.toLowerCase());
+    } else if (group && value && (field === "allow" || field === "disallow")) {
+      group.rules.push({ path: value, allow: field === "allow" });
+    }
+  }
+  const specific = groups.filter((entry) =>
+    entry.agents.some(
+      (agent) => !!agent && agent !== "*" && "shenron-source-crawl".includes(agent),
+    ),
+  );
+  return {
+    rules: (specific.length
+      ? specific
+      : groups.filter((entry) => entry.agents.includes("*"))
+    ).flatMap((entry) => entry.rules),
+    sitemaps: [...new Set(sitemaps)],
+  };
+}
+export function robotsPermits(url: string, rules: RobotsRule[]): boolean {
+  const parsed = new URL(url);
+  const target = parsed.pathname + parsed.search;
+  let winner: RobotsRule | undefined;
+  let specificity = -1;
+  for (const rule of rules) {
+    const anchored = rule.path.endsWith("$");
+    const path = anchored ? rule.path.slice(0, -1) : rule.path;
+    const expression = path
+      .split("*")
+      .map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+      .join(".*");
+    const length = path.replace(/\*/g, "").length;
+    if (
+      new RegExp("^" + expression + (anchored ? "$" : "")).test(target) &&
+      (length > specificity || (length === specificity && rule.allow))
+    ) {
+      winner = rule;
+      specificity = length;
+    }
+  }
+  return winner?.allow ?? true;
+}
 export function isPlaybackMedia(url: string): boolean {
   return /\.(?:mp4|webm|mp3|m4a|m3u8|mpd|ts|m4s|aac|key)(?:[?#]|$)/i.test(url);
 }
@@ -38,7 +99,9 @@ export function approvedUrl(raw: string, base: string, page: boolean): string | 
     return;
   }
 }
-async function read(url: string): Promise<{ status: number; type: string; bytes: Uint8Array }> {
+async function read(
+  url: string,
+): Promise<{ status: number; type: string; bytes: Uint8Array; location: string | null }> {
   const response = await fetch(url, {
     redirect: "manual",
     signal: AbortSignal.timeout(20000),
@@ -64,7 +127,7 @@ async function read(url: string): Promise<{ status: number; type: string; bytes:
     bytes.set(chunk, cursor);
     cursor += chunk.byteLength;
   }
-  return { status: response.status, type, bytes };
+  return { status: response.status, type, bytes, location: response.headers.get("location") };
 }
 export async function crawl(output: string): Promise<void> {
   const directory = resolve(output);
@@ -76,25 +139,36 @@ export async function crawl(output: string): Promise<void> {
   const media: Record<string, unknown>[] = [];
   const corpus: Record<string, unknown>[] = [];
   const robots: Record<string, unknown>[] = [];
-  const forbidden = new Map<string, string[]>();
+  const forbidden = new Map<string, RobotsRule[]>();
   const robotsUnavailable = new Set<string>();
   for (const origin of ["https://dragonball-super.com", "https://www.db-z.com"]) {
-    const r = await read(origin + "/robots.txt");
-    const text = new TextDecoder().decode(r.bytes);
-    if (r.status !== 200 && r.status !== 404) robotsUnavailable.add(origin);
-    const blocks = text.split(/\r?\n\s*\r?\n/);
-    const rules = blocks
-      .filter((block) => /User-agent:\s*\*/i.test(block))
-      .flatMap((block) => Array.from(block.matchAll(/^Disallow:\s*(\S+)/gim), (m) => m[1]!));
-    forbidden.set(origin, rules);
-    robots.push({ url: origin + "/robots.txt", status: r.status, rules, sha256: hash(r.bytes) });
+    try {
+      const r = await read(origin + "/robots.txt");
+      const text = new TextDecoder().decode(r.bytes);
+      if (r.status !== 200 && r.status !== 404) robotsUnavailable.add(origin);
+      const { rules, sitemaps } =
+        r.status === 200 ? parseRobots(text) : { rules: [], sitemaps: [] };
+      forbidden.set(origin, rules);
+      robots.push({
+        url: origin + "/robots.txt",
+        status: r.status,
+        rules,
+        sitemaps,
+        sha256: hash(r.bytes),
+      });
+    } catch {
+      robotsUnavailable.add(origin);
+      robots.push({
+        url: origin + "/robots.txt",
+        state: "unavailable",
+        fetchedAt: new Date().toISOString(),
+      });
+    }
   }
   const permitted = (url: string) => {
     const parsed = new URL(url);
     if (robotsUnavailable.has(parsed.origin)) return false;
-    return !(forbidden.get(parsed.origin) ?? []).some((rule) =>
-      parsed.pathname.startsWith(rule.replace(/\*.*$/, "")),
-    );
+    return robotsPermits(url, forbidden.get(parsed.origin) ?? []);
   };
   while (frontier.length && seen.size < 128) {
     const url = frontier.shift()!;
@@ -122,6 +196,13 @@ export async function crawl(output: string): Promise<void> {
         fetchedAt: new Date().toISOString(),
       };
       pages.push(row);
+      if (r.status >= 300 && r.status < 400 && r.location) {
+        const destination = approvedUrl(r.location, url, true);
+        row.redirectLocation = new URL(r.location, url).href;
+        row.redirectApproved = !!destination;
+        if (destination && !seen.has(destination) && !frontier.includes(destination))
+          frontier.push(destination);
+      }
       if (r.status !== 200 || !r.type.includes("text/html")) continue;
       const text: string[] = [];
       const titles: string[] = [];
