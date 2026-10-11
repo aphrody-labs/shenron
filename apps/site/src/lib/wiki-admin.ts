@@ -38,6 +38,7 @@ import { escapeLike } from "@shenron/db/repos/wiki";
 import { db } from "@/lib/db";
 import { wikiRevisions } from "@/db/schema";
 import * as botSchema from "@/db/bot-schema";
+import { resolveMediaEditionId } from "@/lib/media-edition-aliases";
 import { kindFromCategory } from "@/lib/databook-categories";
 import {
   anyGapSql,
@@ -344,7 +345,12 @@ export async function getWikiRow(table: string, id: string): Promise<Row | null>
   const spec = getSpec(table);
   if (!spec) throw new Error(`Table inconnue: ${table}`);
   const rows = (await db.select().from(spec.table).where(pkCondition(spec, id)).limit(1)) as Row[];
-  return rows[0] ?? null;
+  const row = rows[0] ?? null;
+  if (row && table === "media_editions") {
+    // Preserve the historical row and requested ID for admin and revision readers.
+    return { ...row, canonicalId: await resolveMediaEditionId(db, Number(id)) };
+  }
+  return row;
 }
 
 /**
@@ -414,6 +420,15 @@ async function assertMediaCatalogUnique(
     );
   }
   if (!identity) return;
+  if (spec.name === "media_editions") {
+    identity = and(
+      identity,
+      sql`NOT EXISTS (
+      SELECT 1 FROM bot.media_edition_aliases alias
+      WHERE alias.alias_id = ${spec.table.id}
+    )`,
+    );
+  }
   const matches = await tx
     .select({ id: spec.table.id })
     .from(spec.table)
@@ -475,6 +490,13 @@ export async function insertWiki(
   if (isMediaCatalogTable(table)) {
     return db.transaction(async (tx) => {
       await lockMediaCatalog(tx, table);
+      if (table === "media_editions" && options.restoreId !== undefined) {
+        const canonicalId = await resolveMediaEditionId(tx, options.restoreId);
+        if (canonicalId !== options.restoreId) throw new CatalogMediaConflictError([canonicalId]);
+      }
+      if (table === "media_volumes" && values.editionId !== undefined) {
+        values.editionId = await resolveMediaEditionId(tx, Number(values.editionId));
+      }
       await assertMediaCatalogUnique(tx, spec, values);
       const builder = tx.insert(spec.table);
       const query = options.restoreId === undefined ? builder : builder.overridingSystemValue();
@@ -508,6 +530,13 @@ export async function updateWiki(table: string, id: string, data: Row): Promise<
   if (isMediaCatalogTable(table)) {
     return db.transaction(async (tx) => {
       await lockMediaCatalog(tx, table);
+      if (table === "media_editions") {
+        const canonicalId = await resolveMediaEditionId(tx, Number(id));
+        if (canonicalId !== Number(id)) throw new CatalogMediaConflictError([canonicalId]);
+      }
+      if (table === "media_volumes" && values.editionId !== undefined) {
+        values.editionId = await resolveMediaEditionId(tx, Number(values.editionId));
+      }
       const [before] = (await tx.select().from(spec.table).where(cond).limit(1)) as Row[];
       if (!before) throw new Error(`Ligne introuvable: ${table}#${id}`);
       // Existing duplicate notices still need metadata repairs without new identities.
@@ -539,6 +568,11 @@ export async function deleteWiki(
 ): Promise<Row> {
   const spec = ensureVisibility(table);
   return db.transaction(async (tx) => {
+    if (table === "media_editions") {
+      await lockMediaCatalog(tx, table);
+      const canonicalId = await resolveMediaEditionId(tx, Number(id));
+      if (canonicalId !== Number(id)) throw new CatalogMediaConflictError([canonicalId]);
+    }
     const [before] = (await tx
       .select()
       .from(spec.table)

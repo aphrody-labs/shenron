@@ -73,7 +73,7 @@ mock.module("@/lib/db", () => ({
     transaction: async (callback: (tx: typeof client) => Promise<unknown>) => callback(client),
   },
 }));
-const { insertWiki, updateWiki } = await import("../src/lib/wiki-admin");
+const { insertWiki, updateWiki, getWikiRow, deleteWiki } = await import("../src/lib/wiki-admin");
 const { recordRevision } = await import("../src/lib/wiki-revisions");
 
 beforeEach(() => {
@@ -213,6 +213,7 @@ describe("catalogue identities and editorial revisions", () => {
   });
 
   test("permits metadata repairs on an existing duplicate without changing its identity", async () => {
+    reads.push([]);
     reads.push([
       {
         id: 4,
@@ -226,7 +227,61 @@ describe("catalogue identities and editorial revisions", () => {
     ]);
     await updateWiki("media_editions", "4", { publisher: "Shueisha" });
     expect(updates).toEqual([{ publisher: "Shueisha" }]);
-    expect(queries).toHaveLength(2);
+    expect(queries).toHaveLength(3);
+  });
+
+  test("excludes retained edition aliases from duplicate matching", async () => {
+    reads.push([]);
+    await insertWiki("media_editions", {
+      workId: 1,
+      edition: "tankobon",
+      label: "Different edition",
+      language: "ja",
+    });
+    expect(queries[1].sql).toContain("NOT EXISTS");
+    expect(queries[1].sql).toContain("bot.media_edition_aliases");
+  });
+
+  test("reads the historical row without replacing its requested ID or visibility", async () => {
+    reads.push([{ id: 5, visible: false, label: "Historical edition" }], [{ canonicalId: 1 }]);
+    expect(await getWikiRow("media_editions", "5")).toEqual({
+      id: 5,
+      visible: false,
+      label: "Historical edition",
+      canonicalId: 1,
+    });
+  });
+
+  test("refuses mutation and visibility changes of retained aliases", async () => {
+    reads.push([{ canonicalId: 1 }]);
+    await expect(updateWiki("media_editions", "5", { label: "Changed" })).rejects.toMatchObject({
+      existingIds: [1],
+    });
+    reads.push([{ canonicalId: 1 }]);
+    await expect(deleteWiki("media_editions", "5")).rejects.toMatchObject({ existingIds: [1] });
+    expect(updates).toHaveLength(0);
+    expect(inserts).toHaveLength(0);
+  });
+
+  test("canonicalizes an alias before testing a new volume identity", async () => {
+    reads.push([{ canonicalId: 1 }], []);
+    const row = await insertWiki("media_volumes", {
+      editionId: 5,
+      number: "43",
+      slug: "alias-volume",
+    });
+    expect(row.editionId).toBe(1);
+    expect(inserts[0].editionId).toBe(1);
+    expect(queries[2].params).toContain(1);
+    expect(queries[2].params).not.toContain(5);
+  });
+
+  test("rejects an alias volume request that conflicts with an existing canonical volume", async () => {
+    reads.push([{ canonicalId: 1 }], [{ id: 71 }]);
+    await expect(
+      insertWiki("media_volumes", { editionId: 5, number: "1", slug: "alias-volume" }),
+    ).rejects.toMatchObject({ existingIds: [71] });
+    expect(inserts).toHaveLength(0);
   });
 
   test("records the actual subtitle change while keeping large unrelated blobs out", async () => {

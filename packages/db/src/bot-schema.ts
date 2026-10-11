@@ -623,6 +623,19 @@ export const botMediaEditions = bot.table("media_editions", {
   ...visibleCol,
 });
 
+/** Retained historical edition IDs resolved without deleting editorial rows. */
+export const botMediaEditionAliases = bot.table("media_edition_aliases", {
+  aliasId: int("alias_id")
+    .primaryKey()
+    .references(() => botMediaEditions.id),
+  canonicalId: int("canonical_id")
+    .notNull()
+    .references(() => botMediaEditions.id),
+  reason: text("reason").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  createdBy: text("created_by").notNull(),
+});
+
 /** Tome ou volume rattaché à une édition spécifique. */
 export const botMediaVolumes = bot.table("media_volumes", {
   id: int("id").primaryKey(),
