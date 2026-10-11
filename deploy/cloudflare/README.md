@@ -1,0 +1,13 @@
+# CDN R2 de Shenron
+
+Worker déployé en qualification sur `shenron-cdn.aphrody-labs.workers.dev`, sans route DNS de production. Le bucket `shenron-cdn` est privé ; seuls les chemins présents dans les manifests sont servis. Les clés de manifests sont `_migration/manifests/<deux premiers caractères SHA256 du chemin décodé avec slash initial>.json`. Chaque shard est un dictionnaire `path → { sha256, size, contentType, cacheControl }` ; le SHA256 du contenu est en hexadécimal minuscule. Les alias partagent `_objects/<sha256>`.
+
+`IMPORT_ENABLED=false` par défaut. Pour la copie avant bascule, l'opérateur active temporairement `true` : un HEAD mappé dont l'objet manque copie en flux depuis l'origine fixe `https://cdn.dragonballfr.com`, sans suivre les redirections ni transmettre les en-têtes clients. Le checksum SHA256 R2 est obligatoire. GET ne déclenche jamais de copie et retourne503 tant que l'objet manque. Un manifest absent retourne503 ; un chemin absent du manifest retourne404. Seuls GET etHEAD sont acceptés.
+
+Après vérification de toute la copie, désactiver l'import et redéployer **avant** la bascule DNS vers ce Worker, afin d'éviter une boucle sur son origine. `MANIFEST_PREFIX` peut épingler un jeu de shards pour un rollback, par exemple `_migration/manifests/release1/`. La configuration livrée ne déclare volontairement aucune route.
+
+Pendant l'import seulement, un shard absent de R2 peut être amorcé depuis l'origine fixe `https://cdn.dragonballfr.com/assets/ext/cf-migrate-20261011/manifests/<xx>.json`. Les quatre bindings JSON `MANIFEST_SHARD_HASHES_0` à `_3`, groupés par 64 shards, fournissent les SHA256 exacts du texte UTF-8 de chaque shard (`{"00":"<64hex>", ...}`). Un binding reste sous la limite Cloudflare de 5,1 Ko. Le Worker refuse une réponse redirigée, non200, compressée, supérieure à2MiB, invalide JSON ou dont le checksum diffère ; il stocke le shard privé dans R2 avec le checksum obligatoire. Les URLs de manifests restent refusées aux visiteurs. Le bootstrap ne copie aucun corps d'asset lors d'un GET. Les deux racines publiques spéciales `/_next/static` et `/.well-known` restent soumises au manifeste.
+
+Validation locale : `bun test deploy/cloudflare/cdn-worker.test.ts` puis `bun run tsc --noEmit --project deploy/cloudflare/tsconfig.json`. Les doubles R2 simulent notamment un rejet checksum ; ils ne remplacent pas un essai R2 réel avec le binding déployé.
+
+Contrats vérifiés dans la [référence Workers R2 officielle](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/) : `head`, `get` avec ranges, `put` de ReadableStream avec SHA256 hex et métadonnées. Aucun secret, manifeste réel ni objet éditorial n'est inclus dans ces fichiers.
