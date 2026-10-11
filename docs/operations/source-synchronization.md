@@ -14,7 +14,7 @@ bun scripts/plugin/agy-manifest.ts --check
 bun scripts/plugin/build-references.ts --check
 ```
 
-Le premier commande relit les12manifestes npm et les manifestes Cargo, calcule leurs SHA256
+La première commande relit les12manifestes npm et les manifestes Cargo, calcule leurs SHA256
 et interroge les registres publics avec timeout et identités encodées. Son rapport privé
 `var/reports/source-sync/latest.json` sépare visibilité source, HTTP404, panne réseau et
 métadonnées de publication. Les crates `publish=false` ne sont pas interrogées ni publiées
