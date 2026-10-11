@@ -4,6 +4,7 @@ import {
   approvedUrl,
   isPlaybackMedia,
   parseRobots,
+  robotsAccess,
   robotsPermits,
   observedUrl,
   compareCaptures,
@@ -14,6 +15,18 @@ import {
   pendingSitemaps,
   acceptBodyChunk,
 } from "./crawl-beerus-site";
+
+test("robots resource status follows RFC 9309 without treating an outage as permission", () => {
+  expect(robotsAccess(200)).toBe("rules");
+  for (const status of [401, 403, 404, 410]) expect(robotsAccess(status)).toBe("unavailable");
+  for (const status of [301, 429, 500, 503]) expect(robotsAccess(status)).toBe("unreachable");
+  expect(
+    robotsPermits(
+      "https://dragonball-super.com/en/private",
+      parseRobots("User-agent: *\nDisallow: /en/private").rules,
+    ),
+  ).toBe(false);
+});
 test("body budgets reject overshoot chunks while recording consumed and accepted separately", () => {
   expect(acceptBodyChunk(1048000, 8192, 1048576)).toBe(false);
   expect(acceptBodyChunk(0, 1024, 1024)).toBe(true);

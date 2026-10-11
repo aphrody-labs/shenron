@@ -168,6 +168,14 @@ export function parseSitemap(
   }
   return { index: opening[1]!.toLowerCase() === "sitemapindex", urls };
 }
+export function robotsAccess(status: number): "rules" | "unavailable" | "unreachable" {
+  // RFC 9309 section 2.3.1: an unavailable robots resource is distinct from
+  // an unreachable origin. Rate limiting remains conservative and retryable.
+  if (status >= 200 && status < 300) return "rules";
+  if (status >= 400 && status < 500 && status !== 429) return "unavailable";
+  return "unreachable";
+}
+
 export function parseRobots(text: string): { rules: RobotsRule[]; sitemaps: string[] } {
   const groups: { agents: string[]; rules: RobotsRule[] }[] = [];
   const sitemaps: string[] = [];
@@ -351,13 +359,17 @@ export async function crawl(
     try {
       const r = await read(origin + "/robots.txt");
       const text = new TextDecoder().decode(r.bytes);
-      if (r.status !== 200 && r.status !== 404) robotsUnavailable.add(origin);
+      const access = robotsAccess(r.status);
+      if (access === "unreachable") robotsUnavailable.add(origin);
       const { rules, sitemaps } =
-        r.status === 200 ? parseRobots(text) : { rules: [], sitemaps: [] };
+        access === "rules" ? parseRobots(text) : { rules: [], sitemaps: [] };
       forbidden.set(origin, rules);
       robots.push({
         url: origin + "/robots.txt",
         status: r.status,
+        access,
+        policy: "rfc9309-2.3.1",
+        fetchedAt: new Date().toISOString(),
         rules,
         sitemaps,
         sha256: hash(r.bytes),
