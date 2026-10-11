@@ -7,10 +7,15 @@ description = "Performance-first typed scene model for Koharu."
 license = "MIT OR Apache-2.0"
 authors = ["Mayo Takanashi <mayo@linux.com>", "Wangchong Zhou <fffonion@gmail.com>"]
 readme = "README.md"
-homepage = "https://koharu.rs"
-repository = "https://github.com/koharu-rs/koharu"
+homepage = "https://dragonballfr.com"
+repository = "https://github.com/aphrody-labs/shenron"
 keywords = ["manga", "ocr", "translation", "deep_learning", "computer_vision"]
-publish = false
+publish = true
+include = ["src/**", "tests/**", "benches/**", "Cargo.toml", "LICENSE", "README.md"]
+
+[package.metadata.shenron.provenance]
+upstream-repository = "https://github.com/koharu-rs/koharu"
+upstream-license = "MIT OR Apache-2.0"
 
 [lints]
 workspace = true

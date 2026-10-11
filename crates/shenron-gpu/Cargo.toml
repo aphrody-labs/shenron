@@ -9,7 +9,8 @@ license.workspace = true
 authors.workspace = true
 homepage.workspace = true
 repository.workspace = true
-publish = false
+publish = true
+include = ["src/**", "tests/**", "benches/**", "Cargo.toml", "LICENSE", "README.md"]
 
 [lints]
 workspace = true
