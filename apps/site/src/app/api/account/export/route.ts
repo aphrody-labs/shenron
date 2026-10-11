@@ -18,9 +18,16 @@ export async function GET() {
       discordId: me.discordId,
     }),
     getShenronUserResult(me.discordId),
-    db.select({ steamId: schema.baAccount.accountId }).from(schema.baAccount).where(and(
-      eq(schema.baAccount.userId, me.sessionUserId), eq(schema.baAccount.providerId, "steam"),
-    )).limit(1),
+    db
+      .select({ steamId: schema.baAccount.accountId })
+      .from(schema.baAccount)
+      .where(
+        and(
+          eq(schema.baAccount.userId, me.sessionUserId),
+          eq(schema.baAccount.providerId, "steam"),
+        ),
+      )
+      .limit(1),
   ]);
   return NextResponse.json(
     {

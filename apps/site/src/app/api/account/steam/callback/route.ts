@@ -9,7 +9,6 @@ import {
   readSteamLinkState,
   siteOriginForRequest,
   steamLinkCookieName,
-  steamLinkCookieHeader,
   verifySteamOpenIdCallback,
 } from "@/lib/steam-openid-link";
 
@@ -31,9 +30,16 @@ export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;
   const state = readSteamLinkState(readCookie(request, cookieName));
   const session = await sessionAuth.api.getSession({ headers: request.headers });
-  if (!state || state.origin !== origin || !session?.user?.id || session.user.id !== state.userId ||
-      params.getAll("state").length !== 1 || params.get("state") !== state.state ||
-      params.getAll("openid.mode").length !== 1 || params.get("openid.mode") !== "id_res") {
+  if (
+    !state ||
+    state.origin !== origin ||
+    !session?.user?.id ||
+    session.user.id !== state.userId ||
+    params.getAll("state").length !== 1 ||
+    params.get("state") !== state.state ||
+    params.getAll("openid.mode").length !== 1 ||
+    params.get("openid.mode") !== "id_res"
+  ) {
     return finish(origin, "error", cookieName);
   }
 
@@ -42,15 +48,19 @@ export async function GET(request: Request) {
   const steamId = await verifySteamOpenIdCallback(params, callback.toString());
   if (!steamId) return finish(origin, "error", cookieName);
 
-  const [existing] = await db.select().from(schema.baAccount).where(and(
-    eq(schema.baAccount.userId, state.userId),
-    eq(schema.baAccount.providerId, "steam"),
-  )).limit(1);
+  const [existing] = await db
+    .select()
+    .from(schema.baAccount)
+    .where(and(eq(schema.baAccount.userId, state.userId), eq(schema.baAccount.providerId, "steam")))
+    .limit(1);
   if (existing && existing.accountId !== steamId) return finish(origin, "error", cookieName);
 
   try {
     if (existing) {
-      await db.update(schema.baAccount).set({ updatedAt: new Date() }).where(eq(schema.baAccount.id, existing.id));
+      await db
+        .update(schema.baAccount)
+        .set({ updatedAt: new Date() })
+        .where(eq(schema.baAccount.id, existing.id));
     } else {
       await db.insert(schema.baAccount).values({
         id: randomUUID(),

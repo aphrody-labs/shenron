@@ -9,7 +9,15 @@ import { ResponsiveSections } from "@/components/profile/ResponsiveSections";
 import { useT } from "@/components/T";
 import { authClient } from "@/lib/auth-client";
 
-type Props = { initial: { name: string; image: string; discordId: string; steamId: string | null; steamError: boolean } };
+type Props = {
+  initial: {
+    name: string;
+    image: string;
+    discordId: string;
+    steamId: string | null;
+    steamError: boolean;
+  };
+};
 
 /**
  * Retour d'action. Le drapeau `erreur` sert à deux choses : annoncer l'échec en
@@ -317,12 +325,17 @@ export default function AccountSettings({ initial }: Props) {
           {t("settings.steamLinked", { id: initial.steamId })}
         </p>
       ) : (
-        <a href="/api/account/steam/link" className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-dbz-orange px-5 text-sm font-bold text-black hover:bg-dbz-orange-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere">
+        <a
+          href="/api/account/steam/link"
+          className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-dbz-orange px-5 text-sm font-bold text-black hover:bg-dbz-orange-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere"
+        >
           {t("settings.steamLink")}
         </a>
       )}
       {initial.steamError ? (
-        <p role="alert" className="mt-3 text-sm text-dbz-red">{t("settings.steamError")}</p>
+        <p role="alert" className="mt-3 text-sm text-dbz-red">
+          {t("settings.steamError")}
+        </p>
       ) : null}
     </>
   );

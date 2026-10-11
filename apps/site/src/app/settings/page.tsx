@@ -12,11 +12,19 @@ export const dynamic = "force-dynamic";
 // `/dashboard`, `/favorites` et `/profile/[id]`, elle ne doit pas être indexée.
 export const metadata = { title: "Paramètres", robots: { index: false, follow: false } };
 
-export default async function ParametresPage({ searchParams }: { searchParams: Promise<{ steam?: string }> }) {
+export default async function ParametresPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ steam?: string }>;
+}) {
   const me = await requireUser("/settings");
   const query = await searchParams;
-  const [steam] = await db.select({ accountId: schema.baAccount.accountId }).from(schema.baAccount)
-    .where(and(eq(schema.baAccount.userId, me.sessionUserId), eq(schema.baAccount.providerId, "steam")))
+  const [steam] = await db
+    .select({ accountId: schema.baAccount.accountId })
+    .from(schema.baAccount)
+    .where(
+      and(eq(schema.baAccount.userId, me.sessionUserId), eq(schema.baAccount.providerId, "steam")),
+    )
     .limit(1);
   return (
     <PageShell rhythm="tight">
