@@ -271,7 +271,7 @@
     },
     "packages/media": {
       "name": "@aphrody/shenron-media",
-      "version": "1.4.4",
+      "version": "1.4.5",
       "dependencies": {
         "@aphrody/http": "catalog:",
       },
@@ -319,7 +319,7 @@
     },
     "packages/ui": {
       "name": "@aphrody/shenron-ui",
-      "version": "1.4.4",
+      "version": "1.4.5",
       "dependencies": {
         "@aphrody/api": "catalog:",
         "@aphrody/m3-ai": "catalog:",

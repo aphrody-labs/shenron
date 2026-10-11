@@ -1,6 +1,6 @@
 {
   "name": "@aphrody/shenron-ui",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "private": false,
   "description": "Shenron's single UI layer: Dragon Ball design system, site components, readers, admin primitives, the Koharu manga editor and the desktop studio.",
   "homepage": "https://dragonballfr.com",
@@ -71,7 +71,8 @@
     "./chat": "./src/chat/index.ts",
     "./chat/model": "./src/chat/model.ts",
     "./chat.css": "./src/chat/chat.css",
-    "./*": "./src/components/*.tsx"
+    "./*": "./src/components/*.tsx",
+    "./video/ShenronComposition": "./src/video/ShenronComposition.tsx"
   },
   "publishConfig": {
     "access": "public",
@@ -192,7 +193,8 @@
       "./chat": "react",
       "./chat/model": "pure",
       "./chat.css": "css",
-      "./*": "react"
+      "./*": "react",
+      "./video/ShenronComposition": "pure"
     }
   }
 }
