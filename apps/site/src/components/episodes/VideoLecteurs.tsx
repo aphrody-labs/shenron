@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { type SubtitleTrack, VideoPlayer } from "@/components/episodes/VideoPlayer";
 import { track } from "@/lib/telemetry";
 import { probePlayerNetwork } from "@/lib/player-network";
+import { nextPlayerIndex, resolvePlayerIndex } from "@/lib/video-selection-state";
 import { useTranslations } from "next-intl";
 import {
   normalizeVideoLanguage,
@@ -103,7 +104,7 @@ export function VideoLecteurs({
   // Le flux VO est résolu à la volée par le bot : il peut être mort. On ne le
   // sonde pas à l'affichage — ce serait une résolution de flux par visite de
   // page —, on le charge au clic et l'on bascule sur un message s'il échoue.
-  const [voEchec, setVoEchec] = useState(false);
+  const [failedVoSource, setFailedVoSource] = useState<string | null>(null);
   const networkFailure = useRef<string | null>(null);
   const [probeAttempt, setProbeAttempt] = useState(0);
 
@@ -124,9 +125,15 @@ export function VideoLecteurs({
     [players, hasLangs, selectedLang],
   );
 
-  const safeActive = active < list.length ? active : 0;
+  const safeActive = resolvePlayerIndex(active, list.length);
   const current = list[safeActive] ?? list[0];
   const enVo = modeVo && aVo;
+  const voEchec = vo != null && failedVoSource === vo.src;
+
+  // Persist the derived index so a later refresh cannot resurrect a removed selection.
+  useEffect(() => {
+    if (active !== safeActive) setActive(safeActive);
+  }, [active, safeActive]);
 
   // Réinitialise le statut de sonde à chaque changement de lecteur ou de langue
   useEffect(() => {
@@ -142,12 +149,15 @@ export function VideoLecteurs({
     networkFailure.current = null;
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 8_000);
-    void probePlayerNetwork(current.embedUrl, controller.signal).then((result) => {
+    const checkNetwork = async () => {
+      const result = await probePlayerNetwork(current.embedUrl, controller.signal);
       if (controller.signal.aborted || result !== "unreachable") return;
       networkFailure.current = current.embedUrl;
-      if (safeActive < list.length - 1) setActive(safeActive + 1);
+      const next = nextPlayerIndex(safeActive, list.length);
+      if (next !== null) setActive(next);
       else setStatus("failed");
-    });
+    };
+    void checkNetwork();
     return () => {
       controller.abort();
       window.clearTimeout(timeout);
@@ -160,7 +170,8 @@ export function VideoLecteurs({
   useEffect(() => {
     if (enVo || !current || status === "ready") return;
     const timeout = window.setTimeout(() => {
-      if (safeActive < list.length - 1) setActive((index) => index + 1);
+      const next = nextPlayerIndex(safeActive, list.length);
+      if (next !== null) setActive(next);
       else setStatus("failed");
     }, 8_000);
     return () => window.clearTimeout(timeout);
@@ -211,6 +222,7 @@ export function VideoLecteurs({
 
   const choisir = (c: string) => {
     if (c === "vo") {
+      setFailedVoSource(null);
       setModeVo(true);
       return;
     }
@@ -263,9 +275,9 @@ export function VideoLecteurs({
               key={`${p.provider}-${i}`}
               type="button"
               onClick={() => setActive(i)}
-              aria-pressed={i === active}
+              aria-pressed={i === safeActive}
               className={`rounded-full px-3.5 py-1.5 text-[12px] font-display font-semibold tracking-wide transition-colors ${
-                i === active
+                i === safeActive
                   ? "bg-dbz-orange text-black"
                   : "bg-white/[0.06] text-white/70 hover:bg-white/[0.12] hover:text-white"
               }`}
@@ -289,7 +301,7 @@ export function VideoLecteurs({
             title={vo.title}
             poster={vo.poster}
             subtitles={vo.subtitles}
-            onError={() => setVoEchec(true)}
+            onError={() => setFailedVoSource(vo.src)}
           />
         )
       ) : status === "failed" ? (
@@ -312,7 +324,7 @@ export function VideoLecteurs({
           <iframe
             key={current.embedUrl}
             src={current.embedUrl}
-            title={t("playerTitle", { number: active + 1, name: cleanName(current.name) })}
+            title={t("playerTitle", { number: safeActive + 1, name: cleanName(current.name) })}
             className="aspect-video w-full rounded-lg bg-black"
             sandbox="allow-scripts allow-same-origin allow-presentation allow-forms"
             allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
@@ -323,7 +335,8 @@ export function VideoLecteurs({
               if (networkFailure.current !== current.embedUrl) setStatus("ready");
             }}
             onError={() => {
-              if (active < list.length - 1) setActive((index) => index + 1);
+              const next = nextPlayerIndex(safeActive, list.length);
+              if (next !== null) setActive(next);
               else setStatus("failed");
             }}
           />
