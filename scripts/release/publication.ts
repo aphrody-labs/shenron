@@ -184,11 +184,14 @@ if (import.meta.main) {
     })) {
       let versions = registryVersions.get(name);
       if (!versions) {
-        const metadata = await fetch("https://registry.npmjs.org/" + encodeURIComponent(name), {
-          headers: { Accept: "application/vnd.npm.install-v1+json" },
-          redirect: "error",
-          signal: AbortSignal.timeout(20_000),
-        });
+        const metadata = await fetch(
+          "https://registry.npmjs.org/" + encodeURIComponent(name) + "?audit=" + Date.now(),
+          {
+            headers: { Accept: "application/vnd.npm.install-v1+json" },
+            redirect: "error",
+            signal: AbortSignal.timeout(20_000),
+          },
+        );
         if (!metadata.ok && metadata.status !== 404)
           throw new Error("Dependency registry lookup failed " + name + " " + metadata.status);
         const body = metadata.ok ? await metadata.json() : null;
@@ -204,7 +207,12 @@ if (import.meta.main) {
       });
     }
     const response = await fetch(
-      "https://registry.npmjs.org/" + encodeURIComponent(source.name) + "/" + source.version,
+      "https://registry.npmjs.org/" +
+        encodeURIComponent(source.name) +
+        "/" +
+        source.version +
+        "?audit=" +
+        Date.now(),
       { redirect: "error", signal: AbortSignal.timeout(20_000) },
     );
     if (!response.ok && response.status !== 404)

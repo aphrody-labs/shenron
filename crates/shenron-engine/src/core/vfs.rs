@@ -405,7 +405,7 @@ mod tests {
         let mut raw = Vec::new();
         raw.extend_from_slice(&12345u32.to_le_bytes());
         raw.extend_from_slice(&67890u32.to_le_bytes());
-        raw.extend_from_slice(&3.14159f32.to_le_bytes());
+        raw.extend_from_slice(&std::f32::consts::PI.to_le_bytes());
 
         let handle = vfs.register_memory_asset("engine://data/binary.bin", raw);
         let mut stream = handle.stream();
@@ -413,7 +413,7 @@ mod tests {
         assert_eq!(stream.read_u32_le().unwrap(), 12345);
         assert_eq!(stream.read_u32_le().unwrap(), 67890);
         let f = stream.read_f32_le().unwrap();
-        assert!((f - 3.14159).abs() < 1e-5);
+        assert!((f - std::f32::consts::PI).abs() < 1e-5);
         assert_eq!(stream.remaining(), 0);
 
         let slice_u32 = handle.as_slice_of::<u32>().unwrap();
