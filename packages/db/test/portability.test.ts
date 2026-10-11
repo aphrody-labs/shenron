@@ -10,9 +10,14 @@ import {
 const PACKAGE_DIR = join(import.meta.dir, "..");
 
 describe("@shenron/db portability", () => {
-  test("runtime classes hold for every exported entry", async () => {
-    expect(await checkPackageRuntimes(PACKAGE_DIR)).toEqual([]);
-  });
+  test(
+    "runtime classes hold for every exported entry",
+    async () => {
+      expect(await checkPackageRuntimes(PACKAGE_DIR)).toEqual([]);
+      // The Windows debug runtime takes about 21 s to scan every export's import closure.
+    },
+    process.platform === "win32" ? 60_000 : 5_000,
+  );
   test("no import escapes the package", async () => {
     expect(await checkNoEscapingImports(PACKAGE_DIR)).toEqual([]);
   });

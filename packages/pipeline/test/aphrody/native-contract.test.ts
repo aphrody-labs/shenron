@@ -2,13 +2,15 @@
 import { expect, test } from "bun:test";
 import { join } from "node:path";
 
-test("native adapters preserve Shenron doctor routing and sanitized auth presence", () => {
-  const adapter = join(import.meta.dir, "../../src/aphrody/native.ts");
-  const child = Bun.spawnSync(
-    [
-      process.execPath,
-      "-e",
-      `
+test(
+  "native adapters preserve Shenron doctor routing and sanitized auth presence",
+  () => {
+    const adapter = join(import.meta.dir, "../../src/aphrody/native.ts");
+    const child = Bun.spawnSync(
+      [
+        process.execPath,
+        "-e",
+        `
     import { mock } from "bun:test";
     import assert from "node:assert/strict";
     let status = {configured: true, admin_credentials_present: false};
@@ -61,9 +63,12 @@ test("native adapters preserve Shenron doctor routing and sanitized auth presenc
     status = {configured: true, admin_credentials_present: "true"};
     assert.equal(aphrodyNative.authStatus(), null);
   `,
-    ],
-    { stdout: "pipe", stderr: "pipe" },
-  );
-  if (child.exitCode !== 0) throw new Error(new TextDecoder().decode(child.stderr));
-  expect(child.exitCode).toBe(0);
-});
+      ],
+      { stdout: "pipe", stderr: "pipe" },
+    );
+    if (child.exitCode !== 0) throw new Error(new TextDecoder().decode(child.stderr));
+    expect(child.exitCode).toBe(0);
+    // Allow a cold Windows debug child to load the adapter without changing its command deadlines.
+  },
+  process.platform === "win32" ? 30_000 : 5_000,
+);

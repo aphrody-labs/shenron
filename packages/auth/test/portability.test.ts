@@ -48,10 +48,15 @@ describe("@shenron/auth portability", () => {
     expect(await checkPackageRuntimes(pkgDir)).toEqual([]);
   });
 
-  test("no @/ alias, no escaping relative import, no env read at load", async () => {
-    expect(await checkNoEscapingImports(pkgDir)).toEqual([]);
-    expect(await checkEmptyEnvImports(pkgDir)).toEqual([]);
-  });
+  test(
+    "no @/ alias, no escaping relative import, no env read at load",
+    async () => {
+      expect(await checkNoEscapingImports(pkgDir)).toEqual([]);
+      expect(await checkEmptyEnvImports(pkgDir)).toEqual([]);
+      // Fresh Windows debug processes for each export can exceed the default 5 s test budget.
+    },
+    process.platform === "win32" ? 30_000 : 5_000,
+  );
 
   test("never imports @shenron/db, server-only or an app env module", () => {
     for (const { file, code } of sources()) {

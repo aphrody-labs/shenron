@@ -408,5 +408,7 @@ describe("build-chat-rollouts CLI", () => {
         Array.from({ length: 3 }, () => expect.stringContaining("Question synthétique")),
       );
     },
+    // Several fresh Windows debug children complete in about 8 s; retain the bounded polling above.
+    process.platform === "win32" ? 30_000 : 5_000,
   );
 });
