@@ -1,0 +1,9 @@
+# Profil S3 de Shenron
+
+Le profil temporaire donne object-read-write sur shenron-cdn, uniquement sous _objects/ et _migration/, pendant une heure. Les credentials anciens d’Aphrody et ceux d’IECODE restent séparés. Le renouvellement passe par le credential API existant et l’[API temporaire R2](https://developers.cloudflare.com/api/resources/r2/subresources/temporary_credentials/methods/create/), sans création d’un token permanent ou élargissement de droits.
+
+DBFR : cloudflare-s3 status, probe ou renew --apply. Le wrapper installé utilise le code propriétaire root sous /etc/aphrody/cloudflare/cli ; shenron-s3.json et shenron-rclone.conf sont root0400. Rclone reçoit ce fichier explicitement avec --config. Le timer Infra renouvelle toutes les dix minutes lorsque la validité restante passe sous dix minutes, avec verrou et remplacement atomique. Un uploader doit recharger le profil et recréer son client avant l’expiration.
+
+Windows : ~/.aphrody/tools/cloudflare-cli/s3-profile.ps1 -Action status|probe|renew -BunExe <runtime qualifié> ; renew exige -Apply. Le profil est chiffré CurrentUser dans ~/.aphrody/auth/cloudflare/shenron-r2-s3.dpapi. Le wrapper n’utilise du clair que dans un répertoire temporaire ACL exclusif, supprimé en finally. La tâche limitée de l’utilisateur, toutes les dix minutes et à la connexion, garde le profil actif lorsque cette session est ouverte. Aucun service SYSTEM ne déchiffre ce profil.
+
+Qualification 2026-10-11 : Bun.S3Client lit et écrit avec le token de session ; rclone liste les manifests. Le SHA du corps relu est exact, et une requête hors préfixes renvoie403. La route fetch(s3://,{s3:…}) a renvoyé403 avec le même profil alors que S3Client et presign ont réussi : utiliser S3Client. Ne jamais journaliser une URL signée, un credential ou un environnement complet. Ces outils gèrent le profil ; la copie massive et sa preuve d’intégrité appartiennent à l’orchestration de migration.

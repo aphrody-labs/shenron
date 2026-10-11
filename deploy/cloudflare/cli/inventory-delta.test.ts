@@ -1,0 +1,76 @@
+// SPDX-License-Identifier: Apache-2.0
+import { expect, test } from "bun:test";
+import { mkdtemp, mkdir, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { mergeEntries, run, type InventoryEntry } from "./inventory-delta";
+import { digest } from "./cloudflare-ops";
+const old = (sourcePath: string): InventoryEntry => ({
+  sourcePath,
+  sha256: "a".repeat(64),
+  size: 1,
+  contentType: "text/javascript",
+  cacheControl: "public",
+});
+
+test("delta pins the previous inventory and emits public shards without source paths", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "shenron-cdn-delta-"));
+  try {
+    const site = join(dir, "site");
+    const release = join(dir, "release");
+    await mkdir(join(site, "public"), { recursive: true });
+    await mkdir(join(site, ".next/static"), { recursive: true });
+    await mkdir(release);
+    await Bun.write(join(site, "public/logo.svg"), "new-logo");
+    await Bun.write(join(site, ".next/static/new.js"), "new-chunk");
+    const previous = JSON.stringify({ entries: { "/old.svg": old("/old/old.svg") } });
+    const file = join(dir, "previous.json");
+    await Bun.write(file, previous);
+    const args = [
+      "--previous",
+      file,
+      "--previous-sha256",
+      digest(previous),
+      "--site",
+      site,
+      "--static",
+      join(site, ".next/static"),
+      "--release-public",
+      release,
+      "--out",
+      join(dir, "out"),
+    ];
+    const wrong = [...args];
+    wrong[3] = "0".repeat(64);
+    await expect(run(wrong)).rejects.toThrow("Previous inventory differs");
+    expect(await Bun.file(join(dir, "out/inventory.json")).exists()).toBe(false);
+    await run(args);
+    const report = await Bun.file(join(dir, "out/inventory.json")).json();
+    expect(report.publicPaths).toBe(3);
+    expect(report.addedObjects).toBe(2);
+    const shard = digest("/logo.svg").slice(0, 2);
+    const rows = await Bun.file(join(dir, "out/shards", shard + ".json")).json();
+    expect(rows["/logo.svg"].sha256).toBe(digest("new-logo"));
+    expect(Object.hasOwn(rows["/logo.svg"], "sourcePath")).toBe(false);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+test("a deployment delta retains old chunk URLs and gateway precedence", () => {
+  const previous = {
+    "/_next/static/old.js": old("/old-payload/old.js"),
+    "/_next/static/shared.js": old("/srv/shenron-cdn/_next/static/shared.js"),
+    "/logo.svg": old("/old-payload/logo.svg"),
+  };
+  const current = {
+    "/_next/static/new.js": old("/new-payload/new.js"),
+    "/_next/static/shared.js": old("/new-payload/shared.js"),
+    "/logo.svg": old("/new-payload/logo.svg"),
+  };
+  const result = mergeEntries(previous, current);
+  expect(result["/_next/static/old.js"]).toEqual(previous["/_next/static/old.js"]);
+  expect(result["/_next/static/shared.js"]).toEqual(previous["/_next/static/shared.js"]);
+  expect(result["/_next/static/new.js"]).toEqual(current["/_next/static/new.js"]);
+  expect(result["/logo.svg"]).toEqual(current["/logo.svg"]);
+  expect(previous["/logo.svg"].sourcePath).toBe("/old-payload/logo.svg");
+});
