@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { describe, expect, it } from "bun:test";
+import { afterEach, describe, expect, it } from "bun:test";
 import { AphrodyComputeClient, createOpenAiChat, directChatFromEnv } from "./compute";
 import { AphrodyWebClient } from "./web";
 
@@ -88,6 +88,31 @@ describe("AphrodyComputeClient", () => {
 });
 
 describe("AphrodyWebClient", () => {
+  const originalFetch = globalThis.fetch;
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  it("routes Aphrody Web requests through its configured proxy", async () => {
+    let requestInit: (RequestInit & { proxy?: unknown }) | undefined;
+    globalThis.fetch = (async (_input, init) => {
+      requestInit = init as RequestInit & { proxy?: unknown };
+      return Response.json({
+        success: true,
+        job: { id: "12345678-1234-1234-1234-123456789abc", status: "completed", stats: {} },
+      });
+    }) as typeof fetch;
+
+    const client = new AphrodyWebClient({
+      token: "fixture",
+      baseUrl: "https://aphrody.com",
+      httpProxy: "http://127.0.0.1:8080",
+    });
+    await client.status("12345678-1234-1234-1234-123456789abc");
+
+    expect(requestInit?.proxy).toEqual({ url: "http://127.0.0.1:8080", respectNoProxy: false });
+  });
+
   it("uses native BXC paths on the private VPS listener", async () => {
     const paths: string[] = [];
     const client = new AphrodyWebClient({
