@@ -1,5 +1,20 @@
 # Objectif — enrichissement documentaire Dragon Ball et catalogues médias
 
+## Demande et qualification courantes — 11 octobre 2026, 14:45 UTC
+
+La demande ajoute la collecte Bun des sources Beerus, leurs notices et médias autorisés,
+la fraîcheur des catalogues et la correction des lecteurs testés dans un navigateur réel.
+Les onze lots ci-dessous restent obligatoires et leurs lacunes restent visibles.
+
+Sept articles CMS et cinq notices sources sont réellement publiés ; Redis contient21articles
+publics, distincts du corpus et du RAG. Les correctifs épisodes et lecteurs sont poussés,
+la nouvelle image19f503de est en qualification. Une erreur d'encodage de disponibilités ADN
+est restaurée et relue indépendamment ; aucun nouveau plan ne sera appliqué sans validation
+du type JSON. Bun.WebView fonctionne, Bun.Chromium/Bun.Video sont absents. La bascule DNS
+reste bloquée par les preuves DS/TTL et la délégation. Le contrôle complet daté, les compteurs,
+les publications qualifiées et leurs limites vivent dans [REPRISE](docs/reference/root/REPRISE.md).
+
+
 ## Mission
 
 ### Priorité immédiate du 11 octobre 2026 : actualités Super

@@ -35,7 +35,7 @@ routes `/news` et son ISR propriétaire. Le miroir public Redis appartient à
 Qualifier séparément le backfill, l'image active et une écriture CMS→Redis réelle.
 
 Synchronisation autorisée le11octobre2026 : maintenir README, ce fichier, GOAL et le plan
-depuis les propriétaires réels, générer le plugin par `scripts/plugin/build-references.ts`
+depuis les propriétaires réels, générer le plugin par `scripts/plugin/sync.ts`
 et ses manifestes canoniques, puis vérifier la dérive. Le relevé registry/publication
 `scripts/ops/sync-source-status.ts` écrit uniquement dans `var/reports/source-sync/` ;
 HTTP200 metadata ne prouve ni installation, intégrité d'archive ni déploiement.
@@ -44,6 +44,15 @@ Les12bibliothèques npm sont `@aphrody/shenron-*`, les apps privées ; GitHub co
 crates. Aucune réécriture des migrations SQL historiques, y compris leurs commentaires.
 Les tâches autonomes respectent les gates Infra DNSSEC/DS/TTL, stores protégés et claims.
 
+Collecte et lecteurs (demande du11octobre2026) : le crawl Bun garde les captures complètes
+privées ; publier uniquement notices originales et médias autorisés avec provenance.
+`payload.public_excerpt` contrôle l'extrait visible, les droits refusés restent refusés ;
+aucun intake n'active implicitement RAG, entraînement ou canon. Catalogues : writers
+canoniques, snapshot complet/frais, backup, JSONarray validé, comparaison optimiste,
+relecture et replay ; ne pas employer le delegate privé Bun.SQL mal encodé puis restauré.
+Bun.WebView ou AphrodyWeb servent les tests navigateur réels ; les noms Chromium/Video
+ne prouvent pas une API installée. Fournisseurs protégés restent liens officiels quand
+l'embed est indisponible ; aucune lecture/territoire/langue ni licence ne s'invente.
 ## Exécution autonome NHIL
 
 L’utilisateur a autorisé l’exécution autonome de bout en bout dans le périmètre de chaque

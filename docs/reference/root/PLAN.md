@@ -1,5 +1,17 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## Suivi opérationnel — 11 octobre 2026, 14:45 UTC
+
+Le code, les manifestes et les reçus datés déterminent la qualification. Les invariants
+éditoriaux ci-dessous restent inchangés. La demande courante et les11lots vivent dans
+[GOAL](../../../GOAL.md), les étapes bornées dans [TODO](../../../TODO.md), les preuves
+et incidents dans [REPRISE](REPRISE.md). Une capture privée n'accorde pas droitsRAG,
+entraînement ni réhébergement public ; les notices publiées sont des synthèses originales.
+Les catalogues passent par leurs writers transactionnels, avec backup, validation JSON,
+comparaison optimiste et relecture indépendante. Annonce et lecture restent distinctes.
+La nouvelle image19f503de et le delta de28images sont encore en qualification.
+
+
 # PLAN.md — Plan Directeur Unifié de Shenron
 
 > **Autorité opérationnelle unique** — Relevé consolidé au `2026-10-07T18:36:38Z`.

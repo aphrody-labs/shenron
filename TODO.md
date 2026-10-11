@@ -1,5 +1,22 @@
 # Objectif Shenron — interface unique et serveur Bun
 
+## Lot courant — 11 octobre 2026, 14:45 UTC
+
+- [x] Publier7synthèses et5notices sourcées ; vérifier writerRedis21 et droits de collecte.
+- [x] Restaurer les disponibilités ADN mal encodées et contrôler indépendamment874/28lignes.
+- [x] Corriger recherche/pagination épisodes et sélection/recovery des lecteurs ; pousser les gates.
+- [ ] Terminer build, activation et contrôles réels de l'image commune19f503de.
+- [ ] Livrer les28images sources préparées dans le prochain delta R2 et vérifier tous les corps.
+- [ ] Qualifier publication/consumer pipeline1.4.5 et synchronisation périodique ADN sûre.
+- [ ] Qualifier délégation Cloudflare, DS/TTL, TLS et origine avant route CDN du domaine.
+- [ ] Résoudre OAuthownershipcrates et lacunes des11lots sans inventer de données.
+
+Preuves et limites datées : [REPRISE](docs/reference/root/REPRISE.md). Les notices Netflix,
+Disney+, Toei, Mangas et TVTokyo ne prouvent pas lecture, région ni langues ; aucun nouveau
+flux pirate ou contournementDRM n'est livré. Bun.WebView est qualifié, les APIs Chromium/Video
+ne sont pas disponibles. Les tâches plus anciennes ci-dessous conservent leur périmètre.
+
+
 - [ ] Aligner le dashboard admin sur les contrats bot, les sondes réelles et le stockage A2A configuré ; qualifier en navigateur puis livrer en production.
 - [ ] Qualifier les bibliothèques FFI de production et les plans natifs RAG/crawl/LLM/entraînement/Docker ; installer les features et les accès Infra manquants sur leurs hôtes avant activation.
 - [ ] Activer et qualifier la file Web distribuée du dashboard, les workers de crawl/scrape/index, puis les étapes Infra SQL, Redis et serving CDN avec reçus réels.

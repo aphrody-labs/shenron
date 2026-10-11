@@ -1,5 +1,44 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## Contrôle courant du 11 octobre 2026 à 14:45 UTC
+
+Sept synthèses Beerus sont publiées par le CMS PostgreSQL avec audits201 et pages200 ;
+le writer Redis DB4 a réellement produit21articles publics avec TTL24h. ADN annonce18h
+Paris en VOSTFR, Mangas13octobre23h ; leur annonce ne prouve pas la lecture. Le catalogue
+ADN1432 répond encore avec zéro vidéo au dernier relevé14:30UTC ; bonus non confirmé.
+
+Le crawl Bun privé des deux URL demandées capture5pages et132assets (27images officielles),
+avec17erreursassets et robots officiel403 explicitement conservés. Les fragments dynamiques
+font l'objet d'une capture complémentaire : aucune couverture intégrale n'est revendiquée.
+Cinq notices originales ont été déposées via le writer canonique, PG45927références et
+provenances ; droitsRAG/training/images=false, canonicalEligible=false. Backup21.4MB vérifié,
+replay strictement égal ; pas d'index RAG ou cacheRedis du corpus qualifié.
+
+Recherche des épisodes corrigée avant pagination/count (765d56b0). Lecteurs corrigés
+(c22923ce) : sélection cohérente après réduction des sources, repli dans la même langue,
+VO remplacée après erreur. Bun.WebView/Chrome réel1280/640/390 et tests5PASS/20assertions ;
+Bun.Chromium/Bun.Video sont absents, aucun package ajouté sans besoin. Ces corrections
+attendent la nouvelle image commune19f503de ; elles ne sont pas déclarées actives.
+
+Une application ADN privée a mal encodé847valeurs JSONB à14:41UTC. Restauration depuis
+backup terminée14:44UTC, puis relecture indépendante14:45UTC :874épisodes arrays et
+28films (26arrays/2NULL),826/19offres ADN revenues, autres colonnes strictement inchangées.
+Le writer source postgres.js tx.json est correct ; le delegate Bun.SQL fautif est écarté.
+Toute nouvelle application exige plan frais, typearray prouvé, revue, sauvegarde et replay.
+
+L'image03f0fbeb reste active, sixservicesShenron sains. R2lectureseule :110335routes,
+87458corps, delta5corps/256shards vérifiés, Workerf195979a975440dd9f3cde83d6f95f93 ;
+import=false/verify=false. DNSCloudflarepending/DSretraitTTLnonqualifié : aucune bascule
+CDN du domaine. Ancien rollback et chunks préservés. Les28images sources préparées pour
+le delta suivant ne sont pas encore déclarées servies parR2.
+
+12npm1.4.4 et9crates1.4.4 publiés avec digests/consumers ; pipeline1.4.5 qualifié et en
+publication distincte, pas encore déclaré publié. Scope npm@aphrody et org contrôlée
+aphrody-labs/teamaphrody ; OAuthownershipcrates reste limité. Plugin sync.ts --check et
+registry status passés. Automation15min actualisée pour collecte/catalogues/lecteurs,
+notifications limitées aux changements utiles. Les11lots initiaux restent partial/missing.
+
+
 # Reprise : chantiers ouverts
 
 ## Livraison vérifiée le11octobre2026 à14:03UTC
