@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Signed codes of the desktop sign-in (`@shenron/db/agent-homes/types` DESKTOP_LINK): the host
+ * Signed codes of the desktop sign-in (`@aphrody/shenron-db/agent-homes/types` DESKTOP_LINK): the host
  * vouches for a Discord identity to the local server of Shenron Studio, bound to the state the
  * local server chose, for two minutes. `base64url(payload).hmac`, HMAC-SHA-256 under the
  * Better Auth secret with a dedicated prefix. Stateless: nothing is stored on the host.
  */
-import { hmacSha256Hex, timingSafeEqualString } from "@shenron/auth/crypto";
+import { hmacSha256Hex, timingSafeEqualString } from "@aphrody/shenron-auth/crypto";
 import {
   DESKTOP_LINK,
   type DesktopLinkIdentity,
   homeLanguage,
-} from "@shenron/db/agent-homes/types";
+} from "@aphrody/shenron-db/agent-homes/types";
 
 interface Payload {
   d: string;

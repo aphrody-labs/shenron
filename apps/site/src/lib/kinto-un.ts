@@ -1,1 +1,1 @@
-export * from "@shenron/ui/toriyama-svg/kinto-un";
+export * from "@aphrody/shenron-ui/toriyama-svg/kinto-un";

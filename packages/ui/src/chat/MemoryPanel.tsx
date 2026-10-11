@@ -3,7 +3,7 @@
 /**
  * Material 3 panel of the persistent chat memory: what the chat remembered about its owner,
  * searchable, each fact deletable, and a two-step "forget everything". Transport, labels and
- * availability are injected (no fetch, no text). Styles: `@shenron/ui/chat.css`.
+ * availability are injected (no fetch, no text). Styles: `@aphrody/shenron-ui/chat.css`.
  */
 import { Banner, Button } from "@aphrody/m3-primitives";
 import { Brain, CircleAlert, Trash2 } from "lucide-react";

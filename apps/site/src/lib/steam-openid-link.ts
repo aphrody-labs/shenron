@@ -2,7 +2,7 @@ import "server-only";
 
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { env } from "@/lib/env";
-import { siteAllowedHosts } from "@shenron/auth/origins";
+import { siteAllowedHosts } from "@aphrody/shenron-auth/origins";
 
 const OPENID_NS = "http://specs.openid.net/auth/2.0";
 const STEAM_ENDPOINT = "https://steamcommunity.com/openid/login";

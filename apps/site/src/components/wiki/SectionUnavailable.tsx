@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 
 /**
  * État dégradé d'une page index : la requête n'a rien rendu.

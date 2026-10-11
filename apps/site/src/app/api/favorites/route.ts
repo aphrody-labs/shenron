@@ -1,7 +1,7 @@
 /** Favorites storage and reader identity belong exclusively to the Bun host. */
 import { NextResponse, type NextRequest } from "next/server";
-import { resolveHostUrl } from "@shenron/config/public-urls";
-import { endpoints } from "@shenron/api/contract";
+import { resolveHostUrl } from "@aphrody/shenron-config/public-urls";
+import { endpoints } from "@aphrody/shenron-api/contract";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

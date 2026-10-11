@@ -3,4 +3,4 @@ export {
   discordUserAvatar as userAvatar,
   discordDefaultAvatar as defaultAvatar,
   discordGuildIcon as guildIcon,
-} from "@shenron/config/public-urls";
+} from "@aphrody/shenron-config/public-urls";

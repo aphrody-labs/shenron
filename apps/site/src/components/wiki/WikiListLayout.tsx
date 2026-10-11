@@ -8,7 +8,7 @@
  * 32 px sur Techniques. Ici, une seule mise en page, mobile d'abord :
  *
  *  - téléphone : la recherche et un bouton « Filtres » ; les filtres s'ouvrent
- *    dans une feuille (dialogue Base UI de `@shenron/ui/dialog` : focus piégé et
+ *    dans une feuille (dialogue Base UI de `@aphrody/shenron-ui/dialog` : focus piégé et
  *    rendu, Échap, défilement verrouillé) qui se referme sur « Voir N résultats » ;
  *  - grand écran : les mêmes filtres en panneau latéral collant, à gauche des
  *    résultats — aucun clic de plus pour filtrer.
@@ -17,8 +17,8 @@
  * le panneau et la feuille montrent la même chose et ne divergent jamais.
  */
 import { useEffect, useId, useMemo, useState, type ReactNode } from "react";
-import { Dialog, DialogClose, DialogPopup, DialogTitle } from "@shenron/ui/dialog";
-import { Croix, Scouter } from "@shenron/ui/icones";
+import { Dialog, DialogClose, DialogPopup, DialogTitle } from "@aphrody/shenron-ui/dialog";
+import { Croix, Scouter } from "@aphrody/shenron-ui/icones";
 import { useT } from "@/components/T";
 import { STICKY_TOP } from "@/components/wiki/fiche-layout";
 

@@ -2,7 +2,7 @@
 /** Read private evidence into a metadata-only coverage report; no acquisition or deposition. */
 import { readFile, realpath, stat } from "node:fs/promises";
 import { isAbsolute, relative, resolve } from "node:path";
-import { createDatabooksFreezeGate } from "@shenron/db/guards";
+import { createDatabooksFreezeGate } from "@aphrody/shenron-db/guards";
 import {
   auditDatasetCoverage,
   datasetCatalogSchema,

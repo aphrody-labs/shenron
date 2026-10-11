@@ -1,6 +1,6 @@
 /**
  * Ensure package source can be installed without the host application: no Next.js, no app
- * code (`@/`, `@shenron/{site,bot,server}`), no self-import, and every other `@shenron/*`
+ * code (`@/`, `@aphrody/shenron-{site,bot,server}`), no self-import, and every other `@aphrody/shenron-*`
  * import is a declared dependency (the allowed graph itself is audited by
  * scripts/audit/check-workspace-packages.ts).
  */
@@ -9,12 +9,13 @@ import { uiAssetPaths } from "../src/assets";
 
 const root = resolve(import.meta.dir, "..");
 const manifest = await Bun.file(resolve(root, "package.json")).json();
-const forbidden = /^(?:next(?:\/|$)|@\/|server-only$|@shenron\/(?:site|bot|server|ui)(?:\/|$))/;
+const forbidden =
+  /^(?:next(?:\/|$)|@\/|server-only$|@aphrody\/shenron-(?:site|bot|server|ui)(?:\/|$))/;
 const declared = new Set(Object.keys({ ...manifest.dependencies, ...manifest.peerDependencies }));
 const failures: string[] = [];
 
 function workspacePackage(specifier: string): string | null {
-  const match = /^(@shenron\/[^/]+)/.exec(specifier);
+  const match = /^(@aphrody\/shenron-[^/]+)/.exec(specifier);
   return match ? match[1]! : null;
 }
 

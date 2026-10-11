@@ -7,7 +7,7 @@ import {
   checkPackageRuntimes,
   importSpecifiers,
   stripNonCode,
-} from "@shenron/config/guards";
+} from "@aphrody/shenron-config/guards";
 
 const PKG_DIR = join(import.meta.dir, "..");
 const manifest = JSON.parse(readFileSync(join(PKG_DIR, "package.json"), "utf8")) as {
@@ -31,11 +31,11 @@ const RUNTIME: Record<string, string> = {
   "./openapi.json": "json",
 };
 
-/** Doctrine subpaths of `@shenron/pipeline` that `./chat` and `./host` may import (§4.1). */
-const PIPELINE_CONTRACT = "@shenron/pipeline/bxc/contracts";
+/** Doctrine subpaths of `@aphrody/shenron-pipeline` that `./chat` and `./host` may import (§4.1). */
+const PIPELINE_CONTRACT = "@aphrody/shenron-pipeline/bxc/contracts";
 const PIPELINE_SUBPATHS = new Set([
-  "@shenron/pipeline/ai/prompts",
-  "@shenron/pipeline/agent-home",
+  "@aphrody/shenron-pipeline/ai/prompts",
+  "@aphrody/shenron-pipeline/agent-home",
   PIPELINE_CONTRACT,
 ]);
 
@@ -91,7 +91,7 @@ function bareImports(key: string): { file: string; specifier: string; typeOnly: 
   );
 }
 
-describe("@shenron/api manifest", () => {
+describe("@aphrody/shenron-api manifest", () => {
   test("exports and runtime classes of docs/architecture/STACK.md §3.6, no root export", () => {
     expect(manifest.exports).not.toHaveProperty(".");
     expect(Object.keys(manifest.exports).toSorted()).toEqual(Object.keys(RUNTIME).toSorted());
@@ -139,12 +139,14 @@ describe("@shenron/api manifest", () => {
         expect(
           bareImports(key).filter(
             ({ specifier }) =>
-              specifier.startsWith("@shenron/pipeline") && specifier !== PIPELINE_CONTRACT,
+              specifier.startsWith("@aphrody/shenron-pipeline") && specifier !== PIPELINE_CONTRACT,
           ),
         ).toEqual([]);
       }
       const reached = ["./chat", "./host"].flatMap((key) =>
-        bareImports(key).filter(({ specifier }) => specifier.startsWith("@shenron/pipeline")),
+        bareImports(key).filter(({ specifier }) =>
+          specifier.startsWith("@aphrody/shenron-pipeline"),
+        ),
       );
       expect(reached.length).toBeGreaterThan(0);
       expect(reached.filter(({ specifier }) => !PIPELINE_SUBPATHS.has(specifier))).toEqual([]);

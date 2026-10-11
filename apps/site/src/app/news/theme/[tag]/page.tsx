@@ -11,8 +11,8 @@ import type { Metadata } from "next";
 
 import { publicPostFilter } from "@/lib/posts";
 import { countCommentsBatch, reactionCounts } from "@/lib/social";
-import { PageShell } from "@shenron/ui/layout/PageShell";
-import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
+import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
 import { CardGrid, MangaCard, SocialCounts } from "@/components/kit";
 
 export const revalidate = 300;

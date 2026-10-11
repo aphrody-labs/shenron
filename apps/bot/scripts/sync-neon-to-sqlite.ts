@@ -19,7 +19,7 @@
 import "../src/db/wiki-write-guard";
 import { existsSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { createBunSql } from "@shenron/db/bun-sql";
+import { createBunSql } from "@aphrody/shenron-db/bun-sql";
 import { resolveBotDatabaseUrl } from "../src/db/pg-url";
 import {
   createPgReplicaSource,

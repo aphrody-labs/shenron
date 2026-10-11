@@ -9,7 +9,7 @@
  * accuser un membre sur la page que tout le monde lit.
  */
 import Link from "next/link";
-import { Stars } from "@shenron/ui/public/Stars";
+import { Stars } from "@aphrody/shenron-ui/public/Stars";
 import { T } from "@/components/T";
 import type { CheatSignal, MemberContributions } from "@/lib/contributors";
 

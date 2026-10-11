@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import "@shenron/ui/chat.css";
+import "@aphrody/shenron-ui/chat.css";
 import "./titlebar.css";
 
 import { TitleBar } from "./TitleBar";

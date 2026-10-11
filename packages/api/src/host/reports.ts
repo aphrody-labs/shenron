@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 import { z } from "zod";
-import { envString, type EnvSource } from "@shenron/config/env";
-import { createBunDb } from "@shenron/db/bun-sql";
-import { siteReports, type SiteReportInsert } from "@shenron/db/schema";
+import { envString, type EnvSource } from "@aphrody/shenron-config/env";
+import { createBunDb } from "@aphrody/shenron-db/bun-sql";
+import { siteReports, type SiteReportInsert } from "@aphrody/shenron-db/schema";
 import type { BetterAuthPort } from "../server";
 import type { RateLimitPort } from "../http";
 import { BodyLimitError, readLimitedJson } from "../server/read-json";

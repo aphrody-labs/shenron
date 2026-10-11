@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/pipeline/ai/generate` — grounded answer generation behind ports
+ * `@aphrody/shenron-pipeline/ai/generate` — grounded answer generation behind ports
  * (logic of `generateLlmAnswer` in `apps/bot/src/lib/llm.ts`).
  *
  * Runtime class: `pure`. `generateText` with `instructions` and
@@ -8,7 +8,7 @@
  * missing chunk content or a failing port never throws.
  */
 import type { LanguageModelV4 } from "@ai-sdk/provider";
-import { lexicon } from "@shenron/lexicon/data";
+import { lexicon } from "@aphrody/shenron-lexicon/data";
 import { generateText, type ModelMessage } from "ai";
 import type {
   ChunkContentPort,

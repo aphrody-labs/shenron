@@ -4,12 +4,12 @@
 //!
 //! Two request forms share the one [`Editor`] of the process:
 //!
-//! - editor commands, as the generated `@shenron/koharu/protocol` names them:
+//! - editor commands, as the generated `@aphrody/shenron-koharu/protocol` names them:
 //!   `{"id": 1, "command": "get_project", "args": {}}`, answered concurrently. A byte result
 //!   is `{"id": 1, "result": {"$bytes": "<base64>"}}`. Channel arguments are IPC tokens
 //!   (`"__CHANNEL__:7"`); their values come as `{"channel": 7, "message": ...}` and their end
 //!   as `{"channel": 7, "end": true}`.
-//! - headless methods ([`Service`], `@shenron/koharu/native`):
+//! - headless methods ([`Service`], `@aphrody/shenron-koharu/native`):
 //!   `{"id": 1, "method": "project.list", "params": {}}`, answered in order; their events are
 //!   `{"event": "pipeline" | "agent" | "agent_login", ...}`.
 //!

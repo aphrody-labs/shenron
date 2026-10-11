@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Coeur } from "@shenron/ui/icones";
+import { Coeur } from "@aphrody/shenron-ui/icones";
 import { assetUrl } from "@/lib/assets";
 import { useMe } from "@/lib/use-me";
 import {

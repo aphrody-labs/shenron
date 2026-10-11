@@ -2,12 +2,12 @@
 
 /**
  * Onglets de l'espace membre. Même barre d'onglets en liens que le reste du site
- * (`@shenron/ui/navigation/TabNav`) : chaque onglet est une URL, le retour arrière fait ce
+ * (`@aphrody/shenron-ui/navigation/TabNav`) : chaque onglet est une URL, le retour arrière fait ce
  * qu'on attend, et la navigation globale reste au shell.
  */
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { TabNav } from "@shenron/ui/navigation/TabNav";
+import { TabNav } from "@aphrody/shenron-ui/navigation/TabNav";
 
 const ITEMS = [
   { href: "/dashboard", label: "Vue d’ensemble" },

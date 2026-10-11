@@ -4,10 +4,10 @@ import { Database } from "bun:sqlite";
 import { chmodSync, existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, isAbsolute, join } from "node:path";
 import { z } from "zod";
-import { runAphrodyCommand } from "@shenron/pipeline/aphrody/native-commands";
-import { nativeAbiVersion, nativeVersion } from "@shenron/pipeline/aphrody/native";
-import { shenronWorkerPool } from "@shenron/native/worker";
-import { shenronLoad, SHENRON_FFI_FILE } from "@shenron/native/shenron";
+import { runAphrodyCommand } from "@aphrody/shenron-pipeline/aphrody/native-commands";
+import { nativeAbiVersion, nativeVersion } from "@aphrody/shenron-pipeline/aphrody/native";
+import { shenronWorkerPool } from "@aphrody/shenron-native/worker";
+import { shenronLoad, SHENRON_FFI_FILE } from "@aphrody/shenron-native/shenron";
 import { AdminWebQueue } from "./admin-web-queue";
 
 const Args = z

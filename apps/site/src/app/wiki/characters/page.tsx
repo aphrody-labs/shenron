@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 import { ContributeRail } from "@/components/kit";
 import { GatedLink } from "@/components/GatedLink";
-import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
-import { Shenron } from "@shenron/ui/icones";
+import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
+import { Shenron } from "@aphrody/shenron-ui/icones";
 import { WikiPageShell } from "@/components/wiki/WikiPageShell";
 import { WikiImg } from "@/components/wiki/WikiImg";
 import { CharacterGrid } from "@/components/wiki/CharacterGrid";

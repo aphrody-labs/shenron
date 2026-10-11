@@ -16,8 +16,8 @@ const storage: Storage = {
 let load = 0;
 const freshI18n = () =>
   import(
-    `${Bun.resolveSync("@shenron/ui/koharu/lib/i18n", import.meta.dir)}?load=${++load}`
-  ) as Promise<typeof import("@shenron/ui/koharu/lib/i18n")>;
+    `${Bun.resolveSync("@aphrody/shenron-ui/koharu/lib/i18n", import.meta.dir)}?load=${++load}`
+  ) as Promise<typeof import("@aphrody/shenron-ui/koharu/lib/i18n")>;
 
 describe("interface language persistence", () => {
   beforeEach(() => {

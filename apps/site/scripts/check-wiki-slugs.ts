@@ -17,8 +17,8 @@ import {
   CHARACTER_SLUG_ALIASES,
   TRANSFORMATION_CANONICAL_SLUGS,
   TRANSFORMATION_SLUG_ALIASES,
-} from "@shenron/config/wiki-slugs";
-import { slugify } from "@shenron/config/slug";
+} from "@aphrody/shenron-config/wiki-slugs";
+import { slugify } from "@aphrody/shenron-config/slug";
 
 async function databaseUrl(): Promise<string> {
   const direct = process.env.DATABASE_URL?.trim();

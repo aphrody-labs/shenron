@@ -1,7 +1,7 @@
 import "server-only";
 import { and, asc, eq, like, ne, sql, inArray, count } from "drizzle-orm";
-import { foldText } from "@shenron/config/slug";
-import { escapeLike } from "@shenron/db/repos/wiki";
+import { foldText } from "@aphrody/shenron-config/slug";
+import { escapeLike } from "@aphrody/shenron-db/repos/wiki";
 import { db } from "@/lib/db";
 import {
   botCharacters,
@@ -42,7 +42,7 @@ interface WithArticle {
 // Base de l'API bot résolue par `@/lib/config` (source unique des URL). PAS
 // dragonballfr.com (le site lui-même) → sinon les appels runtime boucleraient.
 import { API_URL as SHENRON_API_URL } from "@/lib/config";
-import { graphiesDeRace, slugDeRace } from "@shenron/config/races-alias";
+import { graphiesDeRace, slugDeRace } from "@aphrody/shenron-config/races-alias";
 import {
   CHARACTER_DUPLICATE_REDIRECTS,
   formatCharacterSlug,
@@ -51,7 +51,7 @@ import {
   resolveCharacterParam,
   resolvePlanetParam,
   resolveTransformationParam,
-} from "@shenron/config/wiki-slugs";
+} from "@aphrody/shenron-config/wiki-slugs";
 
 interface ShenronUser {
   discordId: string;

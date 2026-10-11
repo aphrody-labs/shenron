@@ -1,10 +1,11 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # Pilotage natif depuis le dashboard admin
 
 Le dashboard consomme le backend Bun du bot par le proxy admin existant. Next ne
-charge aucune bibliothèque FFI. Le panneau partagé dans `@shenron/ui` utilise les
+charge aucune bibliothèque FFI. Le panneau partagé dans `@aphrody/shenron-ui` utilise les
 composants Material 3 d’Aphrody. Les mesures ABI/version et les statistiques RAG
-proviennent de `@shenron/native` ; le test WASM charge le binaire publié et exécute
+proviennent de `@aphrody/shenron-native` ; le test WASM charge le binaire publié et exécute
 le parseur Rust PUP dans le navigateur.
 
 ## Contrat
@@ -98,9 +99,7 @@ Il déclare les hôtes déjà qualifiés et les seuls workflows proposés à l�
     { "id": "vps", "config": "/private/vps-mcp.json", "slots": 2, "workerReady": true },
     { "id": "dbfr", "config": "/private/dbfr-mcp.json", "slots": 2, "workerReady": true }
   ],
-  "actions": [
-    { "id": "web-index", "args": ["crawl-index", "--help"], "maxAttempts": 1 }
-  ]
+  "actions": [{ "id": "web-index", "args": ["crawl-index", "--help"], "maxAttempts": 1 }]
 }
 ```
 

@@ -4,7 +4,7 @@ Quand `SHENRON_HOST_URL` est configurée, le layout lit le thème par
 `GET /api/v1/site/theme`. Next ne charge pas son module DB. Une erreur ou une
 réponse invalide rétablit la palette par défaut, avec le délai de dix secondes
 du client API. Le contrat, les valeurs par défaut et la résolution défensive
-sont partagés dans `@shenron/config/site-theme`.
+sont partagés dans `@aphrody/shenron-config/site-theme`.
 
 L’hôte ouvre un pool Bun.SQL paresseux quand `DATABASE_URL` est configurée et
 le ferme à son arrêt. Il utilise la table `SiteTheme` existante, son singleton

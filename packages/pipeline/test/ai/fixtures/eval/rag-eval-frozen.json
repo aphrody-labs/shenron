@@ -1,5 +1,5 @@
 {
-  "$source": "generated with apps/shenron/bot/src/lib/rag-eval.ts before the move to @shenron/pipeline/ai/eval (W2-AI-07); do not regenerate from the new module",
+  "$source": "generated with apps/shenron/bot/src/lib/rag-eval.ts before the move to @aphrody/shenron-pipeline/ai/eval (W2-AI-07); do not regenerate from the new module",
   "gold": "apps/shenron/bot/tests/rag-gold.jsonl",
   "cases": 172,
   "hits": [

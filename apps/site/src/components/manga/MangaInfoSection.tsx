@@ -1,7 +1,7 @@
-import { ExternalLink } from "@shenron/ui/navigation/external";
-import { BouclierCoche, CapsuleCorp, Livre, LienExterne } from "@shenron/ui/icones";
+import { ExternalLink } from "@aphrody/shenron-ui/navigation/external";
+import { BouclierCoche, CapsuleCorp, Livre, LienExterne } from "@aphrody/shenron-ui/icones";
 import Link from "next/link";
-import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
+import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
 
 export function MangaInfoSection() {
   return (

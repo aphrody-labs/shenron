@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 import { beforeAll, describe, expect, it } from "bun:test";
-import { loadLiveRagEnv, requireLiveRag, type LiveRag } from "@shenron/pipeline/testing/live-rag";
+import {
+  loadLiveRagEnv,
+  requireLiveRag,
+  type LiveRag,
+} from "@aphrody/shenron-pipeline/testing/live-rag";
 
 loadLiveRagEnv();
 const { hybridSearch } = await import("../src/lib/rag");

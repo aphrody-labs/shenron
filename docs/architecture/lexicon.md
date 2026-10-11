@@ -22,18 +22,18 @@ n'est jamais une source.
 
 ## Propriétaires
 
-| Rôle | Propriétaire |
-| --- | --- |
-| Données | `data/lexicon/terms.json` |
-| Logique (masquage, restauration, recherche, normalisation) | crate Rust `crates/shenron-lexicon` (données embarquées par `include_str!`) |
-| Implémentation TypeScript conforme | `@shenron/lexicon` (`packages/lexicon`, classe `pure` ; `./data` embarque les termes) |
-| Conformité | fixtures dorées `data/lexicon/fixtures/*.json`, lues par `cargo test -p shenron-lexicon` et `bun run --filter @shenron/lexicon test` |
-| Traducteur de Shenron Studio | `koharu-translator` (`Glossary::shenron`, `KOHARU_GLOSSARY`, `KOHARU_GLOSSARY_TARGET`) |
-| Pipeline manga | `shenron-manga` (glossaire installé pour le français et l'anglais ; `SHENRON_LEXIQUE` remplace le lexique embarqué ; un `KOHARU_GLOSSARY` non vide l'emporte) |
-| API | `GET /api/public/lexicon?lang=&kind=&q=&limit=&offset=`, `GET /api/public/lexicon/{idOrForm}?lang=` (`lang`, sinon `Accept-Language`, sinon `fr`) |
-| MCP | `dragonball.lexicon_search` (lecture, servi au public) |
-| Plugin | `references/lexique-canonique.{json,md}` et `scripts/lexique.js` de la skill `dragon-ball-japonais`, générés par `bun scripts/plugin/build-references.ts` |
-| Bot | expansion des requêtes RAG : `apps/bot/data/rag/lexique-requetes.json`, généré depuis le lexique par `packages/pipeline/scripts/rag-lexique.ts` |
+| Rôle                                                       | Propriétaire                                                                                                                                                  |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Données                                                    | `data/lexicon/terms.json`                                                                                                                                     |
+| Logique (masquage, restauration, recherche, normalisation) | crate Rust `crates/shenron-lexicon` (données embarquées par `include_str!`)                                                                                   |
+| Implémentation TypeScript conforme                         | `@aphrody/shenron-lexicon` (`packages/lexicon`, classe `pure` ; `./data` embarque les termes)                                                                 |
+| Conformité                                                 | fixtures dorées `data/lexicon/fixtures/*.json`, lues par `cargo test -p shenron-lexicon` et `bun run --filter @aphrody/shenron-lexicon test`                  |
+| Traducteur de Shenron Studio                               | `koharu-translator` (`Glossary::shenron`, `KOHARU_GLOSSARY`, `KOHARU_GLOSSARY_TARGET`)                                                                        |
+| Pipeline manga                                             | `shenron-manga` (glossaire installé pour le français et l'anglais ; `SHENRON_LEXIQUE` remplace le lexique embarqué ; un `KOHARU_GLOSSARY` non vide l'emporte) |
+| API                                                        | `GET /api/public/lexicon?lang=&kind=&q=&limit=&offset=`, `GET /api/public/lexicon/{idOrForm}?lang=` (`lang`, sinon `Accept-Language`, sinon `fr`)             |
+| MCP                                                        | `dragonball.lexicon_search` (lecture, servi au public)                                                                                                        |
+| Plugin                                                     | `references/lexique-canonique.{json,md}` et `scripts/lexique.js` de la skill `dragon-ball-japonais`, générés par `bun scripts/plugin/build-references.ts`     |
+| Bot                                                        | expansion des requêtes RAG : `apps/bot/data/rag/lexique-requetes.json`, généré depuis le lexique par `packages/pipeline/scripts/rag-lexique.ts`               |
 
 Règles communes (identiques en Rust et en TypeScript) :
 

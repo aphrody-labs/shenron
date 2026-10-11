@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, mock, test } from "bun:test";
-import { loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
+import { loadLiveRagEnv, requireLiveRag } from "@aphrody/shenron-pipeline/testing/live-rag";
 
 // Mock server-only before importing server files
 mock.module("server-only", () => ({}));

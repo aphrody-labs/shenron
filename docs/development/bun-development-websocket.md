@@ -1,4 +1,5 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # Développement derrière le frontal Bun
 
 Le frontal de `shenron-server` présente une seule origine pour l’API Bun et
@@ -24,7 +25,7 @@ fermeture aval ferme l’amont. Un serveur indisponible répond 503 avec
 `Retry-After`, au lieu de laisser une ouverture attendre indéfiniment.
 
 Le WebSocket métier du chat continue à utiliser le gestionnaire de
-`@shenron/api`. Les tests serveur vérifient le relais de développement, les
+`@aphrody/shenron-api`. Les tests serveur vérifient le relais de développement, les
 refus en production et entre origines, les erreurs d’amont, les trames initiales
 et binaires et la fermeture. La suite du serveur contient 86 tests réussis et
 deux tests ignorés dans l’environnement de qualification du 7 octobre 2026.

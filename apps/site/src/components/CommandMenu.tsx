@@ -3,7 +3,7 @@
 /**
  * Hôte de la palette ⌘K du shell.
  *
- * Le shell (`@shenron/ui/navigation/AppShell`) porte le bouton de recherche et les
+ * Le shell (`@aphrody/shenron-ui/navigation/AppShell`) porte le bouton de recherche et les
  * raccourcis ⌘K / Ctrl+K ; ce module ne fait que charger la palette (`CommandPalette`, avec
  * `cmdk` et ses groupes de résultats) à la demande : au premier survol ou focus du bouton,
  * ou à la première ouverture. Un visiteur qui ne cherche jamais ne télécharge jamais ce code.

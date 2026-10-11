@@ -39,10 +39,10 @@ describe("personas", () => {
   });
 
   test.skipIf(!existsSync(LLM_TS))(
-    "llm.ts takes personas from @shenron/pipeline/ai/prompts, no local copy",
+    "llm.ts takes personas from @aphrody/shenron-pipeline/ai/prompts, no local copy",
     () => {
       const source = readFileSync(LLM_TS, "utf8");
-      expect(source).toContain('from "@shenron/pipeline/ai/prompts"');
+      expect(source).toContain('from "@aphrody/shenron-pipeline/ai/prompts"');
       for (const id of PERSONA_IDS) expect(source).not.toContain(PERSONAS[id].instructions);
       expect(isFallbackAnswer(PERSONAS.enma.fallback)).toBe(true);
       expect(isFallbackAnswer("autre")).toBe(false);
@@ -81,10 +81,10 @@ describe("grounding instructions", () => {
   });
 
   test.skipIf(!existsSync(SITE_RAG_TS))(
-    "site-rag.ts builds site-short instructions from @shenron/pipeline/ai/prompts",
+    "site-rag.ts builds site-short instructions from @aphrody/shenron-pipeline/ai/prompts",
     () => {
       const source = readFileSync(SITE_RAG_TS, "utf8");
-      expect(source).toContain('from "@shenron/pipeline/ai/prompts"');
+      expect(source).toContain('from "@aphrody/shenron-pipeline/ai/prompts"');
       expect(source).toContain('"site-short"');
       expect(source).not.toContain("Réponds en français comme");
       for (const persona of ["whis", "shenron"] as const) {

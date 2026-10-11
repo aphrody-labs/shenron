@@ -16,7 +16,7 @@ import { ChevronDroite, ChevronGauche } from "../icones";
 import { pagerWindow } from "../lib/page-window";
 import type { UiLinkComponent } from "./link";
 
-/** Numéros à afficher, `null` = ellipse. Même règle que la pagination client (`@shenron/ui`). */
+/** Numéros à afficher, `null` = ellipse. Même règle que la pagination client (`@aphrody/shenron-ui`). */
 export { pagerWindow };
 
 export function LinkPager({

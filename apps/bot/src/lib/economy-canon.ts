@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Façade de compatibilité vers @shenron/config/economy-canon.
+ * Façade de compatibilité vers @aphrody/shenron-config/economy-canon.
  */
 export {
   type CanonSource,
@@ -9,4 +9,4 @@ export {
   CANON_PRICES,
   CANON_INFLATION_FACTOR,
   canonEquivalent,
-} from "@shenron/config/economy-canon";
+} from "@aphrody/shenron-config/economy-canon";

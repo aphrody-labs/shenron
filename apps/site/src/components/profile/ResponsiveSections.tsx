@@ -9,7 +9,7 @@
  * chaque bloc se replie derrière son titre (le premier reste ouvert). Sur un
  * écran large, replier n'a plus de sens : tout est visible, sur deux colonnes.
  *
- * Accordéon de `@shenron/ui/accordion` (Base UI), avec deux réglages :
+ * Accordéon de `@aphrody/shenron-ui/accordion` (Base UI), avec deux réglages :
  *  - `hidden={false}` sur le panneau. Base UI pose l'attribut `hidden` sur un
  *    panneau fermé, et le préambule de Tailwind v4 le verrouille par un
  *    `display: none !important` de la couche `base` — qu'aucun utilitaire
@@ -25,7 +25,12 @@
  * (visible ou `sr-only`) pour garder une hiérarchie de titres continue.
  */
 import { useState, useSyncExternalStore, type ReactNode } from "react";
-import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from "@shenron/ui/accordion";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionPanel,
+  AccordionTrigger,
+} from "@aphrody/shenron-ui/accordion";
 
 export interface ResponsiveSection {
   /** Identifiant stable (valeur de l'accordéon, ancre). */

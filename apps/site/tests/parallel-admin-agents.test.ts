@@ -12,9 +12,9 @@
 import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { A2A_ENFORCE_ENV, A2A_TOKEN_ENV } from "@shenron/auth/a2a";
-import { A2A_TARGETS } from "@shenron/pipeline/aphrody/a2a";
-import type { AgentAuditView, AgentKeyView } from "@shenron/db/repos/agent-keys";
+import { A2A_ENFORCE_ENV, A2A_TOKEN_ENV } from "@aphrody/shenron-auth/a2a";
+import { A2A_TARGETS } from "@aphrody/shenron-pipeline/aphrody/a2a";
+import type { AgentAuditView, AgentKeyView } from "@aphrody/shenron-db/repos/agent-keys";
 import * as view from "../src/app/admin/a2a/a2a-view";
 import { describeLoadFailure, loadSource } from "../src/app/admin/agents/agents-load";
 

@@ -2,15 +2,15 @@
 /**
  * Persistent memory of the DM chat: the user's agent home memory (agent id `discord:<id>`),
  * the same Aphrody `aphrody-memory` provider as `shenron-server` (`shenron-ffi` ABI 3 through
- * `@shenron/native`), in `SHENRON_MEMORY_DB` or `memory.sqlite` beside the bot's database.
+ * `@aphrody/shenron-native`), in `SHENRON_MEMORY_DB` or `memory.sqlite` beside the bot's database.
  * Which facts are kept and which memories a message recalls come from the chat engine
- * (`@shenron/api/chat`). Without the native library (`SHENRON_FFI_LIB`) the memory is off and
+ * (`@aphrody/shenron-api/chat`). Without the native library (`SHENRON_FFI_LIB`) the memory is off and
  * the DM chat answers without it.
  */
 import { dirname } from "node:path";
-import { extractFacts, memoryBlock, newFacts, rankMemories } from "@shenron/api/chat";
-import type { MemoryEntry } from "@shenron/api/contract";
-import { resolveChatMemory } from "@shenron/config/memory";
+import { extractFacts, memoryBlock, newFacts, rankMemories } from "@aphrody/shenron-api/chat";
+import type { MemoryEntry } from "@aphrody/shenron-api/contract";
+import { resolveChatMemory } from "@aphrody/shenron-config/memory";
 import { logger } from "~/lib/logger";
 
 /** Memories scanned to rank the ones a message recalls. */
@@ -58,7 +58,7 @@ export async function nativeDmMemory(
   if (!settings.dbPath || !env.SHENRON_FFI_LIB) return null;
   const db = settings.dbPath;
   try {
-    const native = await import("@shenron/native/shenron");
+    const native = await import("@aphrody/shenron-native/shenron");
     native.shenronLoad(env.SHENRON_FFI_LIB);
     native.shenronMemorySearch(db, { agentId: "local", limit: 1 });
     const entry = (m: ReturnType<typeof native.shenronMemoryAdd>): MemoryEntry => ({

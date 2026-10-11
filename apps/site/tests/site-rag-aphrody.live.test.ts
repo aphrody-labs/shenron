@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { beforeAll, describe, expect, mock, test } from "bun:test";
-import { loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
+import { loadLiveRagEnv, requireLiveRag } from "@aphrody/shenron-pipeline/testing/live-rag";
 
 // Next's build marker has no Bun test loader; computation and data stay real.
 mock.module("server-only", () => ({}));

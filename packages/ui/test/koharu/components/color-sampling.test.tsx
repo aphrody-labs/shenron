@@ -5,9 +5,9 @@ import { beforeEach, describe, expect, it, vi } from "bun:test";
 import {
   ColorSamplingProvider,
   useColorSampling,
-} from "@shenron/ui/koharu/components/controls/ColorSampling";
-import { ColorWell } from "@shenron/ui/koharu/components/controls/ColorWell";
-import { useKoharuStore } from "@shenron/ui/koharu/lib/store";
+} from "@aphrody/shenron-ui/koharu/components/controls/ColorSampling";
+import { ColorWell } from "@aphrody/shenron-ui/koharu/components/controls/ColorWell";
+import { useKoharuStore } from "@aphrody/shenron-ui/koharu/lib/store";
 
 describe("canvas color sampling", () => {
   beforeEach(() => useKoharuStore.setState({ tool: "text" }));

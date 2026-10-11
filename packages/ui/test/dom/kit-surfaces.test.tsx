@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// The shared kit (`@shenron/ui/<part>`): placement props reach the positioner, every part names
+// The shared kit (`@aphrody/shenron-ui/<part>`): placement props reach the positioner, every part names
 // itself with `data-slot`, the site keeps the toriyama look by default, and a `planche` scope
 // paints semantic tokens and stamps its attributes on portaled surfaces.
 import * as matchers from "@testing-library/jest-dom/matchers";

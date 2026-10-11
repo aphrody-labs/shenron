@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { LienExterne } from "@shenron/ui/icones";
+import { LienExterne } from "@aphrody/shenron-ui/icones";
 import { DbRowActions } from "@/components/admin/DbCrud";
 import { assetCdnUrl } from "@/app/admin/db-universe/_lib";
 import { toMillis } from "@/lib/epoch";

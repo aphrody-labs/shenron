@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
-// Main entrypoint for @shenron/ui/koharu (the Koharu manga editor)
+// Main entrypoint for @aphrody/shenron-ui/koharu (the Koharu manga editor)
 
 // App components
 export { KoharuApp } from "./components/app/KoharuApp";
@@ -63,4 +63,4 @@ export * from "./lib/geometry";
 export * as backend from "./lib/backend";
 
 // Starts compiling the WebAssembly canvas early, before the editor opens
-export { preloadCanvasModule } from "@shenron/koharu/canvas";
+export { preloadCanvasModule } from "@aphrody/shenron-koharu/canvas";

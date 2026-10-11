@@ -1,1 +1,1 @@
-export * from "@shenron/ui/toggle";
+export * from "@aphrody/shenron-ui/toggle";

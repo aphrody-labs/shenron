@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import {
   NativePipelinePanel as Panel,
   type NativePipelineSnapshot,
-} from "@shenron/ui/admin/NativePipelinePanel";
+} from "@aphrody/shenron-ui/admin/NativePipelinePanel";
 import { api } from "@/lib/admin-api";
 import { z } from "zod";
 
@@ -100,7 +100,7 @@ export function NativePipelinePanel() {
   async function checkWasm() {
     setWasmPending(true);
     try {
-      const wasm = await import("@shenron/pipeline/re-wasm-web");
+      const wasm = await import("@aphrody/shenron-pipeline/re-wasm-web");
       await wasm.initShenronReWeb(`/wasm/${wasm.SHENRON_RE_WASM_FILENAME}`);
       // Valid empty #PUP file: execute the compiled Rust parser, not just a download.
       const bytes = new Uint8Array(16);

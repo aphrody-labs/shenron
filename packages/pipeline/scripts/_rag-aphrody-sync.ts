@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Deterministic PostgreSQL-source documents for Aphrody's generation-based RAG sync. */
 import { createHash, randomUUID } from "node:crypto";
-import type { AphrodyComputeClient, AphrodyRagDocument } from "@shenron/pipeline/aphrody";
+import type { AphrodyComputeClient, AphrodyRagDocument } from "@aphrody/shenron-pipeline/aphrody";
 import type { SourceChunk } from "./_rag-sources-pg";
 
 export interface SourceState {

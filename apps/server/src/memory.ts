@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * The persistent chat memory of `shenron-server`: Aphrody's `aphrody-memory` SQLite provider in
- * the native library (`shenron-ffi` ABI 3, `@shenron/native`), behind the `MemoryPort` of the
+ * the native library (`shenron-ffi` ABI 3, `@aphrody/shenron-native`), behind the `MemoryPort` of the
  * API host. One memory per agent home: agent id `discord:<user_id>` or `local`, database chosen
  * by the host's `memoryLocation` (agent home resolver), else `<SHENRON_HOME>/data/memory.sqlite`
- * (SHENRON_MEMORY_DB, `@shenron/config/memory`).
+ * (SHENRON_MEMORY_DB, `@aphrody/shenron-config/memory`).
  *
  * Without the native library the memory group stays disabled; the server runs on.
  */
-import type { MemoryEntry } from "@shenron/api/contract";
-import type { MemoryFactory } from "@shenron/api/host";
+import type { MemoryEntry } from "@aphrody/shenron-api/contract";
+import type { MemoryFactory } from "@aphrody/shenron-api/host";
 import {
   type ShenronMemory,
   type ShenronMemoryAdd,
@@ -19,12 +19,12 @@ import {
   shenronMemoryClear,
   shenronMemoryDelete,
   shenronMemorySearch,
-} from "@shenron/native/shenron";
+} from "@aphrody/shenron-native/shenron";
 
 import type { ServerPaths } from "./config";
 import { libraryPath } from "./local-api";
 
-/** The native memory calls (`@shenron/native` by default; a fake in tests). */
+/** The native memory calls (`@aphrody/shenron-native` by default; a fake in tests). */
 export interface NativeMemory {
   load(path: string): unknown;
   add(db: string, request: ShenronMemoryAdd): ShenronMemory;

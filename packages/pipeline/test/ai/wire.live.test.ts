@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { beforeAll, describe, expect, test } from "bun:test";
-import { createSql } from "@shenron/db/sql";
+import { createSql } from "@aphrody/shenron-db/sql";
 import { prepareSource } from "../../scripts/_rag-aphrody-sync";
 import { PG_SOURCES } from "../../scripts/_rag-sources-pg";
 import { requireAiHttpToken, requireAiHttpUrl } from "../../src/ai/config";

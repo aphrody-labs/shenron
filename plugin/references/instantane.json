@@ -1,13 +1,13 @@
 {
   "_genere": "Généré par scripts/plugin/build-references.ts — ne pas éditer. Registre des instantanés hors ligne du plugin.",
-  "bun": "1.4.2",
+  "bun": "1.4.4-debug",
   "sorties": {
     "plugin/skills/dragon-ball-canon/references/doctrine.md": {
       "revision": "db119c0f+modifications",
       "date": "2026-10-08",
       "sources": {
         "apps/site/src/lib/canon-engine.ts": "928dbca2a19601866e32a595b787ad05998fdc01313cac539a43a882dfb7b264",
-        "scripts/plugin/build-references.ts": "0d67176df6483e68674fe5e906cb392be5599c768733f03be37d2c49c3eb948d"
+        "scripts/plugin/build-references.ts": "21a224675c955d8fba8b4082d17ba62cf90d36b38743bc037b1e7bb06ac1e0b7"
       },
       "sha256": "fb3a6ee58f573ac87f4e545ad770b5decca79ec368d987c0870a54bd86568c1b"
     },
@@ -26,7 +26,7 @@
       "date": "2026-10-05",
       "sources": {
         "data/lexicon/terms.json": "f9d3f37e15c1830b0224f0a876d8843b2b724f379138f9353356d99a50433cc3",
-        "scripts/plugin/build-references.ts": "0d67176df6483e68674fe5e906cb392be5599c768733f03be37d2c49c3eb948d"
+        "scripts/plugin/build-references.ts": "21a224675c955d8fba8b4082d17ba62cf90d36b38743bc037b1e7bb06ac1e0b7"
       },
       "sha256": "0141fad4003863fa6814d28d410b436bb3946f80865e916cf3ca478b5e1a4cec"
     },
@@ -35,7 +35,7 @@
       "date": "2026-10-05",
       "sources": {
         "data/lexicon/terms.json": "f9d3f37e15c1830b0224f0a876d8843b2b724f379138f9353356d99a50433cc3",
-        "scripts/plugin/build-references.ts": "0d67176df6483e68674fe5e906cb392be5599c768733f03be37d2c49c3eb948d"
+        "scripts/plugin/build-references.ts": "21a224675c955d8fba8b4082d17ba62cf90d36b38743bc037b1e7bb06ac1e0b7"
       },
       "sha256": "9a30ca6ec3af5eecb56168b8d9e4a276781d5b83f3d24f9b7827b043149cdfd6"
     },
@@ -45,11 +45,11 @@
       "sources": {
         "data/lexicon/terms.json": "f9d3f37e15c1830b0224f0a876d8843b2b724f379138f9353356d99a50433cc3",
         "packages/lexicon/src/fold.ts": "631e52bbeb5fa9836e90299070f69271e299fbf6eeb966aa163efdda9c9f131c",
-        "packages/lexicon/src/index.ts": "60415246de2784c0b3dd743e3836aad72a531f7a92f9fea17b22a7ae0d6ef62b",
+        "packages/lexicon/src/index.ts": "f5d153755929d01195b80b3402221dce0e1733f815741393b214893758e402ed",
         "packages/lexicon/src/lexicon.ts": "d600f7bd89a5d979027b66b43b05a69b8b862fd6fe325bb21d2810e949d5a233",
         "packages/lexicon/src/mask.ts": "4ad41d4c3c11bd64b66108b3a8732ebc435caa49c022b1edb1713db636f55f65",
         "packages/lexicon/src/types.ts": "b8c222a0d0d8785ee2931e6da406c1a4485b7cde8d3d5e720cf7b3fafe36be11",
-        "scripts/plugin/src/lexique.ts": "d23481af17a7a435a7a112e11818af4dc6ed388cf764be73de0d461a46ce11f6"
+        "scripts/plugin/src/lexique.ts": "14e87e8c1db9769f2c4d4c89cb01f90b4aad896c55cc9f07fe47b24b3cb8c135"
       },
       "sha256": "ecec045f3f627ca95b194ccb2694063065a5ec43916c50d81e3f3974b645306c",
       "paquet": true
@@ -92,7 +92,7 @@
       "date": "2026-10-05",
       "sources": {
         "docs/reference/couverture-analyse-visuelle.md": "38a11f6bb5f98b508b99cce4cec9b3d66cb3792770c06f5358a84f3cd43f1a18",
-        "scripts/plugin/build-references.ts": "0d67176df6483e68674fe5e906cb392be5599c768733f03be37d2c49c3eb948d"
+        "scripts/plugin/build-references.ts": "21a224675c955d8fba8b4082d17ba62cf90d36b38743bc037b1e7bb06ac1e0b7"
       },
       "sha256": "70c654f6c570c920516ce53fae3f8d44b9103cd4789746fc6c8406ad387a77b7"
     },
@@ -101,7 +101,7 @@
       "date": "2026-10-05",
       "sources": {
         "docs/reference/kinto-un-analyse-visuelle.md": "ccbe45c00633f411035eaf1ebba6b70b8588f82a4d7bf83bed3fd0565b1932a4",
-        "scripts/plugin/build-references.ts": "0d67176df6483e68674fe5e906cb392be5599c768733f03be37d2c49c3eb948d"
+        "scripts/plugin/build-references.ts": "21a224675c955d8fba8b4082d17ba62cf90d36b38743bc037b1e7bb06ac1e0b7"
       },
       "sha256": "be1e0e7b28237fdbfc936119281e6df2b43e49bbfa9a99498c174f58481b3f5b"
     },
@@ -118,7 +118,7 @@
         "packages/ui/src/toriyama-svg/sphere.ts": "7feed0aba0942253273204814be68bcfad44cbd1f64897f1d45eadf18959b8df",
         "scripts/plugin/src/toriyama.ts": "e2870b41b11957f2b8713c1c9aa93bdc206f3e85cc4d85dc42a39d0967849360"
       },
-      "sha256": "6dfe71dee235c624b591029addb18075118d56bd22a689e027f2974296c53482",
+      "sha256": "3c77d85d072f34d35960a13c0e4439fd0e4ccfefa5deecdfceaabf532fb5ee74",
       "paquet": true
     }
   }

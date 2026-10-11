@@ -5,7 +5,7 @@ import * as I from "../src/icones";
 import { NOMS_ICONES, svgIcone } from "../src/icones";
 
 // Expected markup captured from the site components (apps/site/src/components/icones)
-// before the move into @shenron/ui (wave 3, W3-UI-01).
+// before the move into @aphrody/shenron-ui (wave 3, W3-UI-01).
 const BEFORE = {
   chevron:
     '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" aria-hidden="true" class="h-4 w-4"><path d="M 15.5 4.5 L 8 12 L 15.5 19.5"></path></svg>',
@@ -22,7 +22,7 @@ const BEFORE = {
 const sha = (s: string) => new Bun.CryptoHasher("sha256").update(s).digest("hex");
 const r = (el: Parameters<typeof renderToStaticMarkup>[0]) => renderToStaticMarkup(el);
 
-describe("@shenron/ui/icones", () => {
+describe("@aphrody/shenron-ui/icones", () => {
   test("sample glyphs render identically to the pre-move site output", () => {
     expect(r(createElement(I.ChevronGauche, { className: "h-4 w-4" }))).toBe(BEFORE.chevron);
     expect(

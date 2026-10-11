@@ -2,7 +2,7 @@
 import { describe, expect, test } from "bun:test";
 import type { LanguageModelV4 } from "@ai-sdk/provider";
 import { UnsupportedFunctionalityError } from "@ai-sdk/provider";
-import { createRecordingFetch } from "@shenron/config/testing";
+import { createRecordingFetch } from "@aphrody/shenron-config/testing";
 import { generateText, jsonSchema, streamText, tool } from "ai";
 import { createAphrodyCompute } from "../../src/ai/aphrody";
 import { chatModelTimeoutMs, createAphrodyChatModel } from "../../src/ai/chat";

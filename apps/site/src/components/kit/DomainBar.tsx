@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { DomainBarView, PublicViewLinkView } from "@shenron/ui/navigation/DomainBarView";
+import { DomainBarView, PublicViewLinkView } from "@aphrody/shenron-ui/navigation/DomainBarView";
 import { useMe } from "@/lib/use-me";
 import { domainForPath, getDomain, type DomainKey } from "@/lib/domains";
 

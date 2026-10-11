@@ -2,13 +2,13 @@
  * S2 (docs/architecture/STACK.md §2.2) : politique d'hôtes et d'origines du site.
  *
  * - `src/lib/auth.ts` n'est pas importable (Postgres + secrets) : on relit sa
- *   source pour vérifier qu'elle consomme `@shenron/auth/origins`.
+ *   source pour vérifier qu'elle consomme `@aphrody/shenron-auth/origins`.
  * - `src/proxy.ts` est importé avec ses dépendances serveur simulées : un hôte
  *   de preview Vercel est désormais redirigé vers le domaine canonique.
  */
 import { describe, expect, mock, test } from "bun:test";
 import { NextRequest } from "next/server";
-import { siteAllowedHosts, siteTrustedOrigins } from "@shenron/auth/origins";
+import { siteAllowedHosts, siteTrustedOrigins } from "@aphrody/shenron-auth/origins";
 
 mock.module("@/lib/proxy-admin", () => ({
   resolveVisitor: async () => ({ kind: "anonymous" }),

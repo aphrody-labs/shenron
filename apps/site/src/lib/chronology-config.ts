@@ -2,16 +2,16 @@
 /** Request-cached chronology adapter; only the Bun host owns storage. */
 import "server-only";
 import { cache } from "react";
-import { resolveHostUrl } from "@shenron/config/public-urls";
+import { resolveHostUrl } from "@aphrody/shenron-config/public-urls";
 import {
   DEFAULT_CHRONOLOGY_CONFIG,
   resolveChronologyConfig,
   type ChronologyConfig,
   type TimelineItem,
-} from "@shenron/config/chronology";
-import { createShenronApiClient } from "@shenron/api/client";
-import { endpoints } from "@shenron/api/contract";
-import type { TimelineEvent, TimelineAtlas } from "@shenron/api/contract";
+} from "@aphrody/shenron-config/chronology";
+import { createShenronApiClient } from "@aphrody/shenron-api/client";
+import { endpoints } from "@aphrody/shenron-api/contract";
+import type { TimelineEvent, TimelineAtlas } from "@aphrody/shenron-api/contract";
 
 import { HostChronologyError } from "./host-chronology-error";
 export { HostChronologyError } from "./host-chronology-error";

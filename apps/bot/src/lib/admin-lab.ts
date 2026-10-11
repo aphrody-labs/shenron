@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { discordFetch, DiscordRESTError } from "@aphrody/discord-kit/rest";
 import { ChannelError, DiscordChannel } from "@aphrody/messaging";
-import { resolveDiscordAi } from "@shenron/config/discord-ai";
+import { resolveDiscordAi } from "@aphrody/shenron-config/discord-ai";
 
 export const ADMIN_LAB_CHANNEL_ID = resolveDiscordAi(process.env).adminChannelId;
 

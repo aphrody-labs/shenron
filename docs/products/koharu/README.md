@@ -1,9 +1,10 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # L'éditeur de traduction manga de Shenron Studio (moteur Koharu)
 
 L'éditeur de traduction de manga de Shenron Studio (projets, scènes, détection, OCR,
 traduction, nettoyage, lettrage, export) tourne sur le moteur Koharu, absorbé dans ce dépôt :
-« Koharu » reste le nom de code des crates `koharu-*` et du paquet `@shenron/koharu`, jamais
+« Koharu » reste le nom de code des crates `koharu-*` et du paquet `@aphrody/shenron-koharu`, jamais
 un produit visible. Référence unique pour son emplacement, son interface et sa frontière
 éditoriale. Documentation amont de koharu-rs (Mintlify, en/ja/zh), archivée telle quelle et
 non maintenue : [`docs/reference/koharu/upstream/`](../../reference/koharu/upstream/) ; journal
@@ -27,14 +28,14 @@ projet ouvert, la présentation du canevas, les travaux du pipeline, l'agent et 
 interface) n'en sont que des liaisons fines. La télémétrie amont (`koharu-metrics`) est
 retirée ; les durées d'étapes et de pipeline restent des événements `tracing` locaux.
 
-| Surface | Chemin |
-| --- | --- |
-| Moteur | `koharu-library` : `editor` (état de l'éditeur, commandes par nom), `service` (méthodes `project.*`, `page.*`…), `home` (racines), `Library`/`Document` (scanlation par lots), sur les crates `crates/koharu-*` (`pipeline`, `ml`, `translator`, `scene`, `storage`, `renderer`, `rasterizer`, `psd`, `canvas`, `agent`, `secrets`, `desktop`) |
-| Commandes Tauri | `koharu-app` : bibliothèque, générateur du protocole en exemple (`examples/protocol.rs`) |
-| Application | `shenron-desktop` (« Shenron Studio »), fonctionnalité `koharu` par défaut |
-| Socle ML | `koharu-{llama,torch,diffusion,runtime,config}`, fournis par Aphrody (voir [`APHRODY-ECOSYSTEM.md`](../../architecture/APHRODY-ECOSYSTEM.md)) |
-| Client Bun | `@shenron/koharu` (`packages/koharu`) : `./protocol` (généré, transport `src/transport.ts`), `./native` (`koharu-sdk` pour `@shenron/pipeline`), `./canvas` (WASM de `koharu-canvas`) |
-| Interface | `@shenron/ui/koharu`, montée par le site sous `/studio` (onglet de l'espace Bibliothèque) |
+| Surface         | Chemin                                                                                                                                                                                                                                                                                                                                         |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Moteur          | `koharu-library` : `editor` (état de l'éditeur, commandes par nom), `service` (méthodes `project.*`, `page.*`…), `home` (racines), `Library`/`Document` (scanlation par lots), sur les crates `crates/koharu-*` (`pipeline`, `ml`, `translator`, `scene`, `storage`, `renderer`, `rasterizer`, `psd`, `canvas`, `agent`, `secrets`, `desktop`) |
+| Commandes Tauri | `koharu-app` : bibliothèque, générateur du protocole en exemple (`examples/protocol.rs`)                                                                                                                                                                                                                                                       |
+| Application     | `shenron-desktop` (« Shenron Studio »), fonctionnalité `koharu` par défaut                                                                                                                                                                                                                                                                     |
+| Socle ML        | `koharu-{llama,torch,diffusion,runtime,config}`, fournis par Aphrody (voir [`APHRODY-ECOSYSTEM.md`](../../architecture/APHRODY-ECOSYSTEM.md))                                                                                                                                                                                                  |
+| Client Bun      | `@aphrody/shenron-koharu` (`packages/koharu`) : `./protocol` (généré, transport `src/transport.ts`), `./native` (`koharu-sdk` pour `@aphrody/shenron-pipeline`), `./canvas` (WASM de `koharu-canvas`)                                                                                                                                          |
+| Interface       | `@aphrody/shenron-ui/koharu`, montée par le site sous `/studio` (onglet de l'espace Bibliothèque)                                                                                                                                                                                                                                              |
 
 ## Où l'éditeur s'ouvre
 
@@ -55,7 +56,7 @@ retirée ; les durées d'étapes et de pipeline restent des événements `tracin
 
 `koharu-sdk` est un exécutable de `koharu-library` (JSON Lines sur stdin/stdout). Il répond
 aux commandes de l'éditeur (`{ id, command, args }`, mêmes noms et arguments que le protocole,
-canaux `{ channel, message }`) et aux méthodes de `@shenron/koharu/native` (`{ id, method,
+canaux `{ channel, message }`) et aux méthodes de `@aphrody/shenron-koharu/native` (`{ id, method,
 params }`, listées dans `crates/koharu-library/README.md`) sur le même moteur. Il est livré à
 côté de `shenron-server` et `shenron-mcp` par l'installeur (`scripts/build/desktop.ts`,
 compilé avec la fonctionnalité `desktop` : sélecteurs de fichiers natifs, page de connexion
@@ -67,15 +68,15 @@ ou par `SHENRON_KOHARU_SDK_BIN`.
 Projets et modèles vivent sous `SHENRON_HOME` (`crates/koharu-library/src/home.rs`, même
 convention que `apps/server/src/config.ts` ; Shenron Studio y passe son dossier de données) :
 
-| Données | Chemin | Ancien emplacement, encore lu |
-| --- | --- | --- |
-| Projets | `$SHENRON_HOME/data/koharu/projects/<nom>.khrproj` | `Documents/Koharu` : ses projets restent listés et s'ouvrent sur place ; les nouveaux vont sous `SHENRON_HOME` |
-| Modèles et bibliothèques d'exécution | `$SHENRON_HOME/cache/koharu/packages` | `<cache OS>/koharu/packages`, réutilisé tant que le nouveau magasin n'existe pas |
-| Réglages | `~/.koharu/config.toml` (inchangé : `koharu-config`, fourni par Aphrody, n'offre pas d'autre emplacement) | |
-| Identifiants | trousseau du système (`koharu-secrets`) | |
+| Données                              | Chemin                                                                                                    | Ancien emplacement, encore lu                                                                                  |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Projets                              | `$SHENRON_HOME/data/koharu/projects/<nom>.khrproj`                                                        | `Documents/Koharu` : ses projets restent listés et s'ouvrent sur place ; les nouveaux vont sous `SHENRON_HOME` |
+| Modèles et bibliothèques d'exécution | `$SHENRON_HOME/cache/koharu/packages`                                                                     | `<cache OS>/koharu/packages`, réutilisé tant que le nouveau magasin n'existe pas                               |
+| Réglages                             | `~/.koharu/config.toml` (inchangé : `koharu-config`, fourni par Aphrody, n'offre pas d'autre emplacement) |                                                                                                                |
+| Identifiants                         | trousseau du système (`koharu-secrets`)                                                                   |                                                                                                                |
 
 `koharu-sdk --root <dossier>` garde une collection de projets explicite (sans ancien
-emplacement), comme le fait `@shenron/pipeline`.
+emplacement), comme le fait `@aphrody/shenron-pipeline`.
 
 ## Agent de l'éditeur
 
@@ -91,8 +92,8 @@ connaissances de Shenron (`koharu_library::editor::knowledge`) :
 
 ```sh
 cargo build -p koharu-library --bin koharu-sdk [--features desktop]
-bun --filter @shenron/koharu protocol      # régénère packages/koharu/src/protocol.ts (Specta)
-bun --filter @shenron/koharu build:wasm    # reconstruit koharu-canvas
+bun --filter @aphrody/shenron-koharu protocol      # régénère packages/koharu/src/protocol.ts (Specta)
+bun --filter @aphrody/shenron-koharu build:wasm    # reconstruit koharu-canvas
 ```
 
 Les fichiers générés (protocole, WASM) ne s'éditent jamais à la main. Le générateur
@@ -111,8 +112,8 @@ Ces surfaces n'avaient aucun appelant ou doublaient le moteur, et ont été supp
   `get_pages`, `get_page_result` et `get_page_source_sha256` ;
 - `koharu-metrics` (télémétrie amont) et l'hôte d'agent sans interface
   (`koharu_library::agent_host`), remplacés par l'éditeur unique ;
-- `@shenron/koharu` racine, `./tauri`, `./settings` et `./media` (client générique,
-  adaptateur Tauri, contrat de réglages JSON Lines, réexport de `@shenron/media`) ;
+- `@aphrody/shenron-koharu` racine, `./tauri`, `./settings` et `./media` (client générique,
+  adaptateur Tauri, contrat de réglages JSON Lines, réexport de `@aphrody/shenron-media`) ;
 - `MangaStudio` et `KoharuSettings` du studio, doublons de `/koharu` et de
   `SettingsPage`, ainsi que `KoharuSettings` des préférences et `Updater` de
   l'éditeur (jamais montés) ;
@@ -124,10 +125,10 @@ Une sortie Koharu ou de l'OCR Aphrody n'entre dans Shenron que comme
 **candidat non arbitré**, lié par empreintes au manifeste Shenron :
 
 ```sh
-bun run --filter @shenron/pipeline pipeline koharu-candidate <manifeste-manga.json> <résultats.jsonl> <candidats.jsonl>
-bun run --filter @shenron/pipeline pipeline koharu-databook-candidate <manifeste-haché.json> <résultats.jsonl> <candidats.jsonl>
-bun run --filter @shenron/pipeline pipeline koharu-native-candidate <manga|databook> <manifeste.json> <racine-projets> <projet> <candidats.jsonl> [--sdk <koharu-sdk>]
-bun run --filter @shenron/pipeline pipeline aphrody-ocr-candidate <manga|databook> <manifeste-haché.json> <ocr-v2.jsonl> <candidats.jsonl>
+bun run --filter @aphrody/shenron-pipeline pipeline koharu-candidate <manifeste-manga.json> <résultats.jsonl> <candidats.jsonl>
+bun run --filter @aphrody/shenron-pipeline pipeline koharu-databook-candidate <manifeste-haché.json> <résultats.jsonl> <candidats.jsonl>
+bun run --filter @aphrody/shenron-pipeline pipeline koharu-native-candidate <manga|databook> <manifeste.json> <racine-projets> <projet> <candidats.jsonl> [--sdk <koharu-sdk>]
+bun run --filter @aphrody/shenron-pipeline pipeline aphrody-ocr-candidate <manga|databook> <manifeste-haché.json> <ocr-v2.jsonl> <candidats.jsonl>
 ```
 
 - L'adaptateur exige que l'empreinte SHA-256 de l'image traitée corresponde à

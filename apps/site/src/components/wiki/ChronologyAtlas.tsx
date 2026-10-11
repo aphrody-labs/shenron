@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { GatedLink } from "@/components/GatedLink";
-import { Film, Horloge, Livre, Tv } from "@shenron/ui/icones";
+import { Film, Horloge, Livre, Tv } from "@aphrody/shenron-ui/icones";
 import { assetUrl } from "@/lib/assets";
 import { markdownToPlainText } from "@/lib/markdown-plain";
-import type { TimelineAtlas } from "@shenron/api/contract";
+import type { TimelineAtlas } from "@aphrody/shenron-api/contract";
 import { T } from "@/components/T";
 
 type ChronologyArc = TimelineAtlas["arcs"][number];

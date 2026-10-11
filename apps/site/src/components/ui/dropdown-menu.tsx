@@ -1,1 +1,1 @@
-export * from "@shenron/ui/dropdown-menu";
+export * from "@aphrody/shenron-ui/dropdown-menu";

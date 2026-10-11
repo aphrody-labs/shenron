@@ -19,7 +19,7 @@ import {
   type Preferences,
   type ProviderPreferences as ProviderSettings,
   type TypesettingConfig,
-} from "@shenron/koharu/protocol";
+} from "@aphrody/shenron-koharu/protocol";
 import { Button } from "../../../components/button";
 import { Input } from "../../../components/input";
 import { ScrollArea } from "../../internal/components/scroll-area";

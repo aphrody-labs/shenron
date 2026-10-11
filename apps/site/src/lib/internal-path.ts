@@ -1,1 +1,1 @@
-export { sanitizeInternalPath } from "@shenron/config/favorites";
+export { sanitizeInternalPath } from "@aphrody/shenron-config/favorites";

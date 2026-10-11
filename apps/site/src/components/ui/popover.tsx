@@ -1,1 +1,1 @@
-export * from "@shenron/ui/popover";
+export * from "@aphrody/shenron-ui/popover";

@@ -11,8 +11,8 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import type postgres from "postgres";
-import { loadDatabaseUrl } from "@shenron/db/env";
-import { createSql } from "@shenron/db/sql";
+import { loadDatabaseUrl } from "@aphrody/shenron-db/env";
+import { createSql } from "@aphrody/shenron-db/sql";
 import { defautCertain, signalArtefactsConnus } from "../src/lib/databooks-audit-traductions";
 import { intraduisible, refus } from "../src/lib/databooks-traduction";
 import { contientJaponais } from "../src/lib/ja/normalisation";

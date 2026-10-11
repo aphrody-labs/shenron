@@ -1,14 +1,9 @@
 {
-  "description": "restoreTokens(translation, table, options): `table` lists [token, form]; a token is read whatever case, vowel accents and single separator the engine gave it. Shared by shenron_lexicon (Rust) and @shenron/lexicon (TypeScript).",
+  "description": "restoreTokens(translation, table, options): `table` lists [token, form]; a token is read whatever case, vowel accents and single separator the engine gave it. Shared by shenron_lexicon (Rust) and @aphrody/shenron-lexicon (TypeScript).",
   "cases": [
     {
       "name": "an accented token (Zêta010) is restored",
-      "table": [
-        [
-          "Zeta010",
-          "Tenshinhan"
-        ]
-      ],
+      "table": [["Zeta010", "Tenshinhan"]],
       "translation": "* **Zêta010**\n* Un artiste martial",
       "restored": "* **Tenshinhan**\n* Un artiste martial",
       "unresolved": [],
@@ -17,14 +12,8 @@
     {
       "name": "case and separator tolerated, a three-digit token never bites a four-digit one",
       "table": [
-        [
-          "Zeta001",
-          "Goku"
-        ],
-        [
-          "Zeta0010",
-          "Cell"
-        ]
+        ["Zeta001", "Goku"],
+        ["Zeta0010", "Cell"]
       ],
       "translation": "ZETA 001 et zéta0010",
       "restored": "Goku et Cell",
@@ -33,12 +22,7 @@
     },
     {
       "name": "every separator the engine may insert",
-      "table": [
-        [
-          "Zeta001",
-          "Goku"
-        ]
-      ],
+      "table": [["Zeta001", "Goku"]],
       "translation": "Zeta-001, Zeta_001, Zeta 001, Zeta 001 et ZÊTA001",
       "restored": "Goku, Goku, Goku, Goku et Goku",
       "unresolved": [],
@@ -46,27 +30,15 @@
     },
     {
       "name": "an unknown token stays in clear and is reported once",
-      "table": [
-        [
-          "Zeta001",
-          "Goku"
-        ]
-      ],
+      "table": [["Zeta001", "Goku"]],
       "translation": "Zeta001 affronte Zêta013 puis Zêta013",
       "restored": "Goku affronte Zêta013 puis Zêta013",
-      "unresolved": [
-        "Zêta013"
-      ],
+      "unresolved": ["Zêta013"],
       "missing": []
     },
     {
       "name": "a form already translated before its token is not doubled",
-      "table": [
-        [
-          "Zeta003",
-          "Terre"
-        ]
-      ],
+      "table": [["Zeta003", "Terre"]],
       "translation": "sur la Terre Zeta003 pour fuir",
       "restored": "sur la Terre pour fuir",
       "unresolved": [],
@@ -74,12 +46,7 @@
     },
     {
       "name": "a form already translated after its token is not doubled (any case)",
-      "table": [
-        [
-          "Zeta003",
-          "Terre"
-        ]
-      ],
+      "table": [["Zeta003", "Terre"]],
       "translation": "Zeta003 terre natale",
       "restored": "terre natale",
       "unresolved": [],
@@ -87,12 +54,7 @@
     },
     {
       "name": "the form before the token, lower case",
-      "table": [
-        [
-          "Zeta001",
-          "Terre"
-        ]
-      ],
+      "table": [["Zeta001", "Terre"]],
       "translation": "sur la terre Zeta001 !",
       "restored": "sur la terre !",
       "unresolved": [],
@@ -100,12 +62,7 @@
     },
     {
       "name": "the form inside a longer word is not an echo",
-      "table": [
-        [
-          "Zeta001",
-          "Terre"
-        ]
-      ],
+      "table": [["Zeta001", "Terre"]],
       "translation": "les Terres Zeta001 et Zeta001ien",
       "restored": "les Terres Terre et Terreien",
       "unresolved": [],
@@ -113,12 +70,7 @@
     },
     {
       "name": "a plain restoration",
-      "table": [
-        [
-          "Zeta001",
-          "Terre"
-        ]
-      ],
+      "table": [["Zeta001", "Terre"]],
       "translation": "sur la Zeta001 !",
       "restored": "sur la Terre !",
       "unresolved": [],
@@ -126,18 +78,11 @@
     },
     {
       "name": "five digits are no token",
-      "table": [
-        [
-          "Zeta001",
-          "Goku"
-        ]
-      ],
+      "table": [["Zeta001", "Goku"]],
       "translation": "Zeta00123 et Zeta12",
       "restored": "Zeta00123 et Zeta12",
       "unresolved": [],
-      "missing": [
-        "Zeta001"
-      ]
+      "missing": ["Zeta001"]
     },
     {
       "name": "a fixed width reads exactly that many digits",
@@ -145,12 +90,7 @@
         "prefix": "QXZ",
         "width": 4
       },
-      "table": [
-        [
-          "QXZ0001",
-          "Saiyan"
-        ]
-      ],
+      "table": [["QXZ0001", "Saiyan"]],
       "translation": "Super QXZ00013 et QXZ001",
       "restored": "Super Saiyan3 et QXZ001",
       "unresolved": [],
@@ -158,52 +98,30 @@
     },
     {
       "name": "a form that looks like a token is reported",
-      "table": [
-        [
-          "Zeta001",
-          "Zeta002"
-        ]
-      ],
+      "table": [["Zeta001", "Zeta002"]],
       "translation": "Zeta001",
       "restored": "Zeta002",
-      "unresolved": [
-        "Zeta002"
-      ],
+      "unresolved": ["Zeta002"],
       "missing": []
     },
     {
       "name": "tokens absent from the translation are reported in table order",
       "table": [
-        [
-          "Zeta001",
-          "Son Goku"
-        ],
-        [
-          "Zeta002",
-          "Vegeta"
-        ],
-        [
-          "Zeta003",
-          "Bulma"
-        ]
+        ["Zeta001", "Son Goku"],
+        ["Zeta002", "Vegeta"],
+        ["Zeta003", "Bulma"]
       ],
       "translation": "Zeta002 arrive.",
       "restored": "Vegeta arrive.",
       "unresolved": [],
-      "missing": [
-        "Zeta001",
-        "Zeta003"
-      ]
+      "missing": ["Zeta001", "Zeta003"]
     },
     {
       "name": "an empty table leaves every token unresolved",
       "table": [],
       "translation": "Zeta001 et Zeta002",
       "restored": "Zeta001 et Zeta002",
-      "unresolved": [
-        "Zeta001",
-        "Zeta002"
-      ],
+      "unresolved": ["Zeta001", "Zeta002"],
       "missing": []
     }
   ]

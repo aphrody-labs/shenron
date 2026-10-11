@@ -10,8 +10,8 @@
  */
 import { homedir } from "node:os";
 import { join } from "node:path";
-import type { EnvSource } from "@shenron/db/config";
-import { loadDatabaseUrl } from "@shenron/db/env";
+import type { EnvSource } from "@aphrody/shenron-db/config";
+import { loadDatabaseUrl } from "@aphrody/shenron-db/env";
 
 /** Fichiers de repli de l'URL, dans l'ordre (le fichier systemd historique). */
 export function pgFallbackFiles(env: EnvSource = process.env): { path: string }[] {

@@ -63,7 +63,7 @@ Toutes les commandes s'exécutent avec Bun, jamais avec Node :
 
 ```powershell
 # Vérification sans écriture
-bun run --filter @shenron/pipeline pipeline translate --dry-run
+bun run --filter @aphrody/shenron-pipeline pipeline translate --dry-run
 
 # Session complète : 4 shards, lots de 8, dépôt et RAG
 bun scripts/ops/translate-databooks-session.ts --workers 4 --batch 8

@@ -13,7 +13,7 @@ import {
   LETTRES_DRAGON_APRES_BOULE,
   LETTRES_DRAGON_AVANT_BOULE,
   MotManga,
-} from "@shenron/ui/toriyama";
+} from "@aphrody/shenron-ui/toriyama";
 import { T } from "@/components/T";
 import type { HomeConfig } from "@/lib/home-scenes";
 import { HomeHeroScenes } from "./HomeHeroScenes";

@@ -1,7 +1,7 @@
 "use client";
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Branchement du site sur la coque `@shenron/ui/navigation/AppShell` : routeur Next (liens
+ * Branchement du site sur la coque `@aphrody/shenron-ui/navigation/AppShell` : routeur Next (liens
  * préchargés à l'intention), langue, compte, palette ⌘K et application de bureau.
  *
  * Ce que le serveur ne peut pas savoir sans perdre le cache CDN se décide ici, après
@@ -18,7 +18,7 @@ import {
   type ShellLinkProps,
   type ShellNavItem,
   type ShellNavSection,
-} from "@shenron/ui/navigation/AppShell";
+} from "@aphrody/shenron-ui/navigation/AppShell";
 import {
   CapsuleCorp,
   Crayon,
@@ -30,9 +30,9 @@ import {
   PlancheManga,
   Scouter,
   Tv,
-} from "@shenron/ui/icones";
-import { KintoUn } from "@shenron/ui/toriyama/KintoUn";
-import { isTauri } from "@shenron/ui/studio/tauri-bridge";
+} from "@aphrody/shenron-ui/icones";
+import { KintoUn } from "@aphrody/shenron-ui/toriyama/KintoUn";
+import { isTauri } from "@aphrody/shenron-ui/studio/tauri-bridge";
 import { CommandMenu } from "@/components/CommandMenu";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { NavAuth } from "@/components/NavAuth";

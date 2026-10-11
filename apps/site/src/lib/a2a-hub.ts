@@ -13,13 +13,13 @@
  * Base URL: `APHRODY_A2A_URL`. Read per call, never at module load.
  *
  * Without `APHRODY_A2A_URL` (production since the Aphrody A2A service was retired on 2026-09-25),
- * the site answers itself with the in-process Shenron hub (`@shenron/pipeline/aphrody/a2a`):
+ * the site answers itself with the in-process Shenron hub (`@aphrody/shenron-pipeline/aphrody/a2a`):
  * legacy `message/send`, `tasks/*` and the A2A 1.0 `SendMessage`, `GetTask`, `ListTasks`, with
  * tasks and envelopes kept in the durable store of `A2A_COORD_DIR`.
  */
 
-import { ShenronA2AHub, type AdminNotifier } from "@shenron/pipeline/aphrody/a2a";
-import { resolveSiteUrl } from "@shenron/config/public-urls";
+import { ShenronA2AHub, type AdminNotifier } from "@aphrody/shenron-pipeline/aphrody/a2a";
+import { resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import {
   A2A_DEFAULT_URL,
   A2A_URL_ENV,
@@ -30,7 +30,7 @@ import {
   postA2AEnvelope,
   postA2AJsonRpc,
   type UpstreamReply,
-} from "@shenron/pipeline/aphrody/a2a-transport";
+} from "@aphrody/shenron-pipeline/aphrody/a2a-transport";
 
 export { A2A_DEFAULT_URL, A2A_URL_ENV, LEGACY_SEND_METHOD, a2aBaseUrl };
 export type { UpstreamReply };

@@ -12,7 +12,7 @@
  */
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
-import { DragonRadar, Recherche } from "@shenron/ui/icones";
+import { DragonRadar, Recherche } from "@aphrody/shenron-ui/icones";
 import { useT } from "@/components/T";
 import { focusRing } from "./ui";
 

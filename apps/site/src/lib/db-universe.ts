@@ -16,8 +16,8 @@ import "server-only";
 import { cache } from "react";
 import { and, asc, count, desc, eq, gt, ilike, inArray, isNotNull, lt, or, sql } from "drizzle-orm";
 import type { PgColumn, PgTable } from "drizzle-orm/pg-core";
-import { foldText } from "@shenron/config/slug";
-import { escapeLike } from "@shenron/db/repos/wiki";
+import { foldText } from "@aphrody/shenron-config/slug";
+import { escapeLike } from "@aphrody/shenron-db/repos/wiki";
 import { db } from "@/lib/db";
 import { API_URL } from "@/lib/config";
 import { chatAphrodyRag, searchAphrodyRag, usesAphrodyRag } from "@/lib/site-rag";
@@ -69,9 +69,9 @@ import type {
   WikiSource,
 } from "@/db/bot-schema";
 import { orderPlayers } from "@/lib/players";
-import { CLE_VERIFIEE } from "@shenron/config/databooks-defauts";
+import { CLE_VERIFIEE } from "@aphrody/shenron-config/databooks-defauts";
 import type { SignauxRichesse } from "@/lib/character-richesse";
-import { formatCharacterSlug } from "@shenron/config/wiki-slugs";
+import { formatCharacterSlug } from "@aphrody/shenron-config/wiki-slugs";
 import { mangaCoverPath, publishedMangaPageCount, publishedMangaPages } from "@/lib/manga-assets";
 import { mangaVolumeBibliographicSource } from "@/lib/manga-source-registry";
 import { mediaPublicationLink } from "@/lib/media-publication-links";

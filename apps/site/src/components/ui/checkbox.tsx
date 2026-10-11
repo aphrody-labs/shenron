@@ -1,1 +1,1 @@
-export * from "@shenron/ui/checkbox";
+export * from "@aphrody/shenron-ui/checkbox";

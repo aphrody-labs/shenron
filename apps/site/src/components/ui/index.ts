@@ -33,4 +33,4 @@ export * from "./toriyama-progress";
 export * from "./toriyama-speech-bubble";
 
 /* Re-export canonical Toriyama Vectors & Emblems directly from UI layer */
-export * from "@shenron/ui/toriyama";
+export * from "@aphrody/shenron-ui/toriyama";

@@ -1,7 +1,7 @@
 // La feuille de style éditoriale n'est chargée QUE sur les routes du journal.
 // L'importer depuis `globals.css` la ferait payer aux ~850 autres pages du site
 // pour rien.
-import "@shenron/ui/editorial.css";
+import "@aphrody/shenron-ui/editorial.css";
 
 /**
  * Enveloppe du journal.

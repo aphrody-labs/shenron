@@ -1,4 +1,4 @@
-import { resolveSiteUrl } from "@shenron/config/public-urls";
+import { resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import {
   Bot,
   Discord,

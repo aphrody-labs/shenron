@@ -1,8 +1,8 @@
 import "server-only";
 import { createId } from "@paralleldrive/cuid2";
 import { and, desc, eq, ilike, inArray, sql } from "drizzle-orm";
-import { slugify } from "@shenron/config/slug";
-import { escapeLike } from "@shenron/db/repos/wiki";
+import { slugify } from "@aphrody/shenron-config/slug";
+import { escapeLike } from "@aphrody/shenron-db/repos/wiki";
 import { db } from "@/lib/db";
 import { tierlists, tierlistVotes, type TierlistItem, type TierlistTier } from "@/db/schema";
 import { botCharacters } from "@/db/bot-schema";

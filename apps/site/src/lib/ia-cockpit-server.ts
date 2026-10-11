@@ -18,16 +18,16 @@ import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { sql } from "drizzle-orm";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody/compute";
-import { hasAiHttpToken } from "@shenron/pipeline/ai/config";
-import { createShenronApiClient, type ApiResult } from "@shenron/api/client";
+import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody/compute";
+import { hasAiHttpToken } from "@aphrody/shenron-pipeline/ai/config";
+import { createShenronApiClient, type ApiResult } from "@aphrody/shenron-api/client";
 import type {
   CompleteGoalBody,
   CreateGoalBody,
   FeedbackStatusBody,
   GoldCaseBody,
-} from "@shenron/api/contract";
-import { resolveDataPath } from "@shenron/config/paths";
+} from "@aphrody/shenron-api/contract";
+import { resolveDataPath } from "@aphrody/shenron-config/paths";
 import { db } from "@/lib/db";
 import { botApiBaseUrl } from "@/lib/config";
 import { listAgentKeys } from "@/lib/agent-keys";
@@ -337,7 +337,7 @@ export async function searchConfiguredRag(
 const BOT_WRITE_TIMEOUT_MS = 15_000;
 const BOT_EVAL_TIMEOUT_MS = 180_000;
 
-/** Typed client of the bot cockpit routes (`@shenron/api/client`, admin bearer). */
+/** Typed client of the bot cockpit routes (`@aphrody/shenron-api/client`, admin bearer). */
 function botCockpitClient(timeoutMs: number) {
   const token = process.env.SHENRON_ADMIN_TOKEN?.trim();
   if (!token) {

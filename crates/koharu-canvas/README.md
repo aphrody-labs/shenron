@@ -37,7 +37,7 @@ frame.
 
 ## Build and delivery
 
-`bun --filter @shenron/koharu build:wasm` (`packages/koharu/scripts/build-wasm.ts`) builds the
+`bun --filter @aphrody/shenron-koharu build:wasm` (`packages/koharu/scripts/build-wasm.ts`) builds the
 crate with Rust tooling only: `cargo build -p koharu-canvas --target wasm32-unknown-unknown
 --release` into `target/wasm` (fat LTO, one codegen unit, `panic=abort`, debuginfo stripped,
 passed as `CARGO_PROFILE_RELEASE_*` so the shared `Cargo.toml` stays untouched), then the
@@ -55,7 +55,7 @@ Next. Turbopack emits `koharu_canvas_bg.<hash>.wasm` under `_next/static/media/`
 published on the CDN and served as `application/wasm` with an immutable cache (probe in
 `scripts/ops/release.ts`); `shenron-server` serves the same file from disk.
 
-`@shenron/koharu/canvas` compiles the module with `WebAssembly.compileStreaming` (falling back
+`@aphrody/shenron-koharu/canvas` compiles the module with `WebAssembly.compileStreaming` (falling back
 to `WebAssembly.compile` when the response is not `application/wasm`), hands the
 `WebAssembly.Module` to the glue, and exposes `preloadCanvasModule()` so the editor starts the
 download early. Without `navigator.gpu` or a GPU adapter it throws `CanvasUnavailableError`

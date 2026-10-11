@@ -1,4 +1,4 @@
-import { resolveApiUrl, resolveSiteUrl } from "@shenron/config/public-urls";
+import { resolveApiUrl, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import { injectable, inject } from "tsyringe";
 import {
   Bot,

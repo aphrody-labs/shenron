@@ -1,6 +1,6 @@
 # Lecture de l’historique du chat partagé
 
-Le composant `ChatPanel` de `@shenron/ui` utilise le même état de lecture sur le
+Le composant `ChatPanel` de `@aphrody/shenron-ui` utilise le même état de lecture sur le
 web et dans Shenron Studio. Pendant le chargement d’une conversation, le
 compositeur est désactivé : une réponse tardive ne peut plus remplacer un nouveau
 message envoyé pendant cette lecture.

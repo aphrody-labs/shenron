@@ -4,7 +4,7 @@ import { Database } from "bun:sqlite";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { createHash } from "node:crypto";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
+import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
 
 interface Chunk {
   rowid: number;

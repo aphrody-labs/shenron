@@ -1,1 +1,1 @@
-export * from "@shenron/ui/alert-dialog";
+export * from "@aphrody/shenron-ui/alert-dialog";

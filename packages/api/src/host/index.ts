@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/api/host` — composition of the single Shenron API server from an explicit
+ * `@aphrody/shenron-api/host` — composition of the single Shenron API server from an explicit
  * environment record: VFS database (file or embedded), RAG with the corpus embedder, chat
  * engine (Gemini web → local llama-server) with the owner's persistent memory when the host
  * process provides it, MCP tools (`shenron-mcp`), OCR
@@ -21,33 +21,33 @@ import type { Database } from "bun:sqlite";
 import { existsSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, normalize, resolve, sep } from "node:path";
-import { verifyActingUser } from "@shenron/auth/acting-user";
-import { AUTH_BASE_PATH } from "@shenron/auth";
-import { hmacSha256Hex, parseBearer, timingSafeEqualString } from "@shenron/auth/crypto";
+import { verifyActingUser } from "@aphrody/shenron-auth/acting-user";
+import { AUTH_BASE_PATH } from "@aphrody/shenron-auth";
+import { hmacSha256Hex, parseBearer, timingSafeEqualString } from "@aphrody/shenron-auth/crypto";
 import {
   ENV_ALIASES,
   envFirst,
   envString,
   type EnvSource,
   isProduction,
-} from "@shenron/config/env";
+} from "@aphrody/shenron-config/env";
 import {
   chatMemoryAgentId,
   legacyChatMemoryAgentId,
   resolveChatMemory,
-} from "@shenron/config/memory";
-import { clientIpFromHeaders, isDirectLoopback } from "@shenron/config/net";
-import { DEV_SITE_ORIGIN, originOf, resolveSiteUrl } from "@shenron/config/public-urls";
-import { resolveShenronApiBind } from "@shenron/config/services";
-import { PgConversationStore, SqliteConversationStore } from "@shenron/db/conversations";
-import type { ConversationStore } from "@shenron/db/conversations/types";
+} from "@aphrody/shenron-config/memory";
+import { clientIpFromHeaders, isDirectLoopback } from "@aphrody/shenron-config/net";
+import { DEV_SITE_ORIGIN, originOf, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
+import { resolveShenronApiBind } from "@aphrody/shenron-config/services";
+import { PgConversationStore, SqliteConversationStore } from "@aphrody/shenron-db/conversations";
+import type { ConversationStore } from "@aphrody/shenron-db/conversations/types";
 import {
   createE5Embedder,
   defaultCdn,
   type OpenedVfs,
   openShenronVfs,
   RAG_EMBED_MODEL,
-} from "@shenron/db/vfs";
+} from "@aphrody/shenron-db/vfs";
 import { createChatEngine } from "../chat/engine";
 import { agentHomeFromDir, agentHomeFromVfs } from "../chat/home";
 import { backendsFromEnv, geminiCookieCandidates, type LlmBackend } from "../chat/llm";
@@ -56,7 +56,7 @@ import { createPluginPort, resolvePluginRoot } from "../plugin";
 import { createCliOcr } from "../chat/ocr";
 import { createHostAuth } from "./auth";
 import { createDesktopLinkHandler } from "./desktop-link";
-import { DESKTOP_LINK } from "@shenron/db/agent-homes/types";
+import { DESKTOP_LINK } from "@aphrody/shenron-db/agent-homes/types";
 import { createHostWikiLaunch } from "./wiki-launch";
 import { createHostChronology } from "./chronology";
 import { createHostPageBanners } from "./page-banners";
@@ -341,8 +341,8 @@ export interface LocalApiOptions {
   wiki?: boolean;
   /**
    * Persistent chat memory (Aphrody `aphrody-memory`), opened by the host process (`bun:ffi`
-   * lives in `@shenron/native`, outside this package) from the settings of
-   * `@shenron/config/memory`. Absent or `null`: the memory group stays disabled.
+   * lives in `@aphrody/shenron-native`, outside this package) from the settings of
+   * `@aphrody/shenron-config/memory`. Absent or `null`: the memory group stays disabled.
    */
   memory?: MemoryFactory | null;
   /**
@@ -766,7 +766,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
   };
 }
 
-/** Start the API with `Bun.serve` on `SHENRON_API_HOST`:`SHENRON_API_PORT` (`@shenron/config/services`). */
+/** Start the API with `Bun.serve` on `SHENRON_API_HOST`:`SHENRON_API_PORT` (`@aphrody/shenron-config/services`). */
 export function serveShenronApi(env: EnvSource, options: LocalApiOptions = {}) {
   const local = createLocalApi(env, options);
   const bind = resolveShenronApiBind(env);

@@ -20,7 +20,7 @@ afterEach(() => {
   else process.env.APHRODY_PROFILE_HOME = originalProfileHome;
 });
 
-describe("@shenron/pipeline — exécution vérifiable", () => {
+describe("@aphrody/shenron-pipeline — exécution vérifiable", () => {
   it("planifie un dry-run sans exécuter le runner", async () => {
     let called = false;
     const result = await buildRagIndex({

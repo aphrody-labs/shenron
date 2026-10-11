@@ -20,7 +20,7 @@ projects of Shenron's home), `--cpu` pins the models to the CPU and `--shenron-u
 lets the agent search the local Shenron corpus. The `desktop` feature adds native file
 pickers (`import`, `export`) and opens the Codex sign-in page.
 
-Editor commands, as `@shenron/koharu/protocol` names them, run concurrently:
+Editor commands, as `@aphrody/shenron-koharu/protocol` names them, run concurrently:
 `{ "id": 1, "command": "get_project", "args": {} }` → `{ "id": 1, "result": ... }`; a byte
 result is `{ "result": { "$bytes": "<base64>" } }`; channel arguments are IPC tokens
 (`"__CHANNEL__:7"`) whose values arrive as `{ "channel": 7, "message": ... }`, then
@@ -33,16 +33,16 @@ One project is open per process, shared with the editor commands.
 
 Methods currently available:
 
-| Area | Methods |
-| --- | --- |
-| Project | `list`, `create`, `open`, `close`, `delete`, `info`, `pages`, `page`, `selectPage`, `importPaths`, `undo`, `redo` |
-| Page | `rename`, `delete`, `move`, `result`, `sourceSha256`, `exportPng`, `exportPsd` |
-| Editing | `text.addPoint`, `text.addBox`, `text.setSource`, `text.setTranslation`, `text.setTypography`, `layer.setGeometry`, `layer.setVisibility`, `layer.move`, `layer.delete`, `raster.stroke` |
-| Processing | `pipeline.run`, `pipeline.start`, `pipeline.status`, `pipeline.cancel` |
-| Canvas preparation | `canvas.preparePage`, `canvas.manifest`, `canvas.resource` |
-| Settings | `preferences.get`, `setPipeline`, `setProviders`, `setTypesetting`, `setCredential` |
-| Discovery | `models.translation`, `models.pipeline`, `resources.status` |
-| Agent | `agent.status`, `agent.models`, `agent.setConfig`, `agent.clear`, `agent.login`, `agent.cancelLogin`, `agent.logout`, `agent.run`, `agent.cancel` |
+| Area               | Methods                                                                                                                                                                                  |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Project            | `list`, `create`, `open`, `close`, `delete`, `info`, `pages`, `page`, `selectPage`, `importPaths`, `undo`, `redo`                                                                        |
+| Page               | `rename`, `delete`, `move`, `result`, `sourceSha256`, `exportPng`, `exportPsd`                                                                                                           |
+| Editing            | `text.addPoint`, `text.addBox`, `text.setSource`, `text.setTranslation`, `text.setTypography`, `layer.setGeometry`, `layer.setVisibility`, `layer.move`, `layer.delete`, `raster.stroke` |
+| Processing         | `pipeline.run`, `pipeline.start`, `pipeline.status`, `pipeline.cancel`                                                                                                                   |
+| Canvas preparation | `canvas.preparePage`, `canvas.manifest`, `canvas.resource`                                                                                                                               |
+| Settings           | `preferences.get`, `setPipeline`, `setProviders`, `setTypesetting`, `setCredential`                                                                                                      |
+| Discovery          | `models.translation`, `models.pipeline`, `resources.status`                                                                                                                              |
+| Agent              | `agent.status`, `agent.models`, `agent.setConfig`, `agent.clear`, `agent.login`, `agent.cancelLogin`, `agent.logout`, `agent.run`, `agent.cancel`                                        |
 
 `agent.run` accepts `{ "prompt": "...", "cpu": false }` and returns
 `{ "run": "<uuid>" }`. The process also writes event lines without an `id`:

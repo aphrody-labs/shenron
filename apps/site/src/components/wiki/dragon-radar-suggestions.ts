@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { lexicon } from "@shenron/lexicon/data";
+import { lexicon } from "@aphrody/shenron-lexicon/data";
 import targets from "./dragon-radar-targets.json";
 
 /** One lexicon supplies entity labels; missing entries keep their historical query. */

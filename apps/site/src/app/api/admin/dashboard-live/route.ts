@@ -6,7 +6,7 @@ import { botApiBaseUrl } from "@/lib/config";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
 import { isAdminOrToken } from "@/lib/admin-guard";
-import { resolveRedisUrl } from "@shenron/config/services";
+import { resolveRedisUrl } from "@aphrody/shenron-config/services";
 import {
   DashboardMonitoring,
   type LiveDashboardResponse,

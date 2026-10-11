@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Bouton de la trousse `@shenron/ui` (base-ui + cva + jetons sémantiques :
+ * Bouton de la trousse `@aphrody/shenron-ui` (base-ui + cva + jetons sémantiques :
  * `bg-primary`, `ring`, `destructive`…).
  *
  * Il sert les surfaces applicatives : l'éditeur d'articles de l'admin

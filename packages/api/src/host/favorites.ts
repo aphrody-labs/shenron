@@ -1,6 +1,6 @@
-import { envString, type EnvSource } from "@shenron/config/env";
-import { createBunDb } from "@shenron/db/bun-sql";
-import { createFavoritesRepository } from "@shenron/db/repos/favorites";
+import { envString, type EnvSource } from "@aphrody/shenron-config/env";
+import { createBunDb } from "@aphrody/shenron-db/bun-sql";
+import { createFavoritesRepository } from "@aphrody/shenron-db/repos/favorites";
 import type { FavoritesPort } from "../server";
 
 export function createHostFavorites(

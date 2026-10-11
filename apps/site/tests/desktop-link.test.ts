@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
-import { desktopCallbackUrl, desktopLinkPort } from "@shenron/db/agent-homes/types";
+import { desktopCallbackUrl, desktopLinkPort } from "@aphrody/shenron-db/agent-homes/types";
 import { signDesktopLink, verifyDesktopLink } from "@/lib/desktop-link";
 
 const SECRET = "x".repeat(40);

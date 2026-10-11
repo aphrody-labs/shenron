@@ -1,9 +1,9 @@
-> **Architecture courante (2026-09-28).** Les surfaces IA, clients Aphrody, pipeline de traitements et pont BXC sont réunis dans le workspace `@shenron/pipeline` (`packages/pipeline`). Les sous-chemins `@shenron/pipeline/ai/*`, `@shenron/pipeline/aphrody/*` et `@shenron/pipeline/bxc` désignent des modules de ce paquet, pas des paquets workspace distincts. Les descriptions et graphes plus bas consignent en partie l’architecture historique de la vague 1.
+> **Architecture courante (2026-09-28).** Les surfaces IA, clients Aphrody, pipeline de traitements et pont BXC sont réunis dans le workspace `@aphrody/shenron-pipeline` (`packages/pipeline`). Les sous-chemins `@aphrody/shenron-pipeline/ai/*`, `@aphrody/shenron-pipeline/aphrody/*` et `@aphrody/shenron-pipeline/bxc` désignent des modules de ce paquet, pas des paquets workspace distincts. Les descriptions et graphes plus bas consignent en partie l’architecture historique de la vague 1.
 
-# Pile unifiée Shenron (`@shenron/*`)
+# Pile unifiée Shenron (`@aphrody/shenron-*`)
 
 Les paquets Shenron sont en amont des clients Aphrody : les dépôts Aphrody
-peuvent consommer `@shenron/*` et les contrats HTTP Shenron. Le workspace
+peuvent consommer `@aphrody/shenron-*` et les contrats HTTP Shenron. Le workspace
 Shenron n'importe aucun paquet de code `@aphrody/*` ni checkout frère
 `../aphrody-*`. Le catalogue de l'Infra du monorepo reste la source opérationnelle
 des ports et services pour les tunnels locaux.
@@ -61,21 +61,21 @@ déclarés dans `yolo/config/host/nginx/routes.json`.
 Remplacer les copies divergentes (≈ 115 résolveurs de `DATABASE_URL`, 7
 comparaisons à temps constant, 4 gardes loopback, 10 clients HTTP du bot écrits
 à la main, 2 moteurs de politique d'accès, 3 implémentations de métriques RAG)
-par six paquets privés `@shenron/*` consommés en source, sans changer le
+par six paquets privés `@aphrody/shenron-*` consommés en source, sans changer le
 comportement observable hors registre (§2.2), et en laissant tout calcul lourd
 à Aphrody derrière une frontière de processus.
 
-| Paquet              | Statut    | Rôle                                                                                                                            |
-| ------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `@shenron/config`   | nouveau   | presets tsconfig TS7, lecture d'environnement, gardes réseau, chemins mutables, kit de gardes de portabilité                    |
-| `@shenron/db`       | étendu    | PostgreSQL (source de vérité éditoriale) : schémas Drizzle, pilotes, clients bruts, dépôts, gel databooks, Redis résilient      |
-| `@shenron/auth`     | étendu    | Better Auth 1.7.5 : primitives crypto, jetons, politique staff, gardes renvoyant un principal, adaptateurs Next/Hono/navigateur |
-| `@shenron/api`      | construit | contrat zod, client typé sans exception, application OpenAPIHono montée dans les processus existants                            |
-| `@shenron/ui`       | construit | Base UI 1.8 + Tailwind v4 : `cn`, jetons CSS, wrappers, `pageWindow`, icônes                                                    |
-| `@shenron/pipeline` | consolidé | modules `ai/*`, `aphrody/*`, pont BXC et workflows OCR/RAG/traduction/crawl                                                     |
+| Paquet                      | Statut    | Rôle                                                                                                                            |
+| --------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `@aphrody/shenron-config`   | nouveau   | presets tsconfig TS7, lecture d'environnement, gardes réseau, chemins mutables, kit de gardes de portabilité                    |
+| `@aphrody/shenron-db`       | étendu    | PostgreSQL (source de vérité éditoriale) : schémas Drizzle, pilotes, clients bruts, dépôts, gel databooks, Redis résilient      |
+| `@aphrody/shenron-auth`     | étendu    | Better Auth 1.7.5 : primitives crypto, jetons, politique staff, gardes renvoyant un principal, adaptateurs Next/Hono/navigateur |
+| `@aphrody/shenron-api`      | construit | contrat zod, client typé sans exception, application OpenAPIHono montée dans les processus existants                            |
+| `@aphrody/shenron-ui`       | construit | Base UI 1.8 + Tailwind v4 : `cn`, jetons CSS, wrappers, `pageWindow`, icônes                                                    |
+| `@aphrody/shenron-pipeline` | consolidé | modules `ai/*`, `aphrody/*`, pont BXC et workflows OCR/RAG/traduction/crawl                                                     |
 
-`@shenron/pipeline/ai/*`, `@shenron/pipeline/aphrody/*` et
-`@shenron/pipeline/bxc` sont des sous-chemins publics d'un seul workspace ; ils
+`@aphrody/shenron-pipeline/ai/*`, `@aphrody/shenron-pipeline/aphrody/*` et
+`@aphrody/shenron-pipeline/bxc` sont des sous-chemins publics d'un seul workspace ; ils
 ne forment pas des paquets workspace distincts.
 
 ### 1.2 Principes
@@ -101,11 +101,11 @@ ne forment pas des paquets workspace distincts.
    au moment de l'appel.
 5. **Une classe d'exécution par sous-chemin.** Chaque entrée `exports`
    déclare sa classe dans `package.json` (`"shenron": { "runtime": {…} }`).
-   Un parcoureur partagé (`@shenron/config/guards`) suit la fermeture
+   Un parcoureur partagé (`@aphrody/shenron-config/guards`) suit la fermeture
    transitive des imports de chaque entrée et fait respecter la classe.
 6. **Ports déclarés par le consommateur.** Le paquet qui consomme déclare
-   l'interface (`WikiReadPort` dans `@shenron/api`, `AgentKeyStore` dans
-   `@shenron/auth`) ; le propriétaire l'implémente structurellement, sans
+   l'interface (`WikiReadPort` dans `@aphrody/shenron-api`, `AgentKeyStore` dans
+   `@aphrody/shenron-auth`) ; le propriétaire l'implémente structurellement, sans
    importer le consommateur ; un test de conformance à la compilation
    (`createWikiReadRepository(drizzle.mock({ schema })) satisfies WikiReadPort`)
    le prouve. Le graphe d'exécution reste acyclique.
@@ -150,7 +150,7 @@ bascule pas vers le chemin API, qui lève E1467 sous TS7. `oxlint-tsgolint`
 `transpilePackages`, Bun tels quels. Les helpers propres à Next vivent
 uniquement dans un sous-chemin `./next`.
 
-**D3. Presets tsconfig sans `include`.** `@shenron/config/tsconfig/{base,bun,react}.json`
+**D3. Presets tsconfig sans `include`.** `@aphrody/shenron-config/tsconfig/{base,bun,react}.json`
 ne déclarent ni `include`, ni `baseUrl`, ni `paths`, ni `ignoreDeprecations` :
 un `include` se résout relativement au fichier qui le déclare, ce qui
 provoquerait TS18003 dans chaque paquet (vérifié sous TS 7.0.2). Chaque paquet
@@ -170,7 +170,7 @@ rendent donc des clients bruts qui ne sont jamais passés à Drizzle. Le pilote
 `drizzle-orm/bun-sql`, lui, ne modifie pas le client (vérifié dans
 `driver.js`) : le `PgService` du bot peut partager un seul pool Bun.SQL entre
 Drizzle et le SQL brut. La racine
-`@shenron/db` garde sa réexportation historique de `createDb` jusqu'à une
+`@aphrody/shenron-db` garde sa réexportation historique de `createDb` jusqu'à une
 vague ultérieure verte. Les relations restent sur l'API v1 `relations()`.
 
 **D5. Aucune migration déplacée ni rejournalisée en Phase 1.** Le runbook de
@@ -192,8 +192,8 @@ promesses. La politique staff a deux périmètres :
 actuelle, inchangée). Les silos Better Auth du site (PostgreSQL) et du bot
 (SQLite) ne fusionnent pas ; l'escalade vivante du bot (`checkAdmin` accepte
 toute session Better Auth ou cookie hérité, `apps/bot/src/api/auth.ts:34-40`)
-est corrigée dès la vague 1 (S1). `@shenron/auth` ne dépend pas de
-`@shenron/db` à l'exécution : les dépôts vivent dans `@shenron/db/repos/*` et
+est corrigée dès la vague 1 (S1). `@aphrody/shenron-auth` ne dépend pas de
+`@aphrody/shenron-db` à l'exécution : les dépôts vivent dans `@aphrody/shenron-db/repos/*` et
 satisfont les ports de l'auth.
 
 **D7. API Hono montée, jamais en unité séparée.** l'Infra du monorepo a retiré
@@ -212,8 +212,8 @@ wiki lues dans PostgreSQL, document OpenAPI). `/health`, `/api/health`,
 le code historique tant qu'un instantané de parité d'en-têtes n'existe pas
 (SH-API-2).
 
-**D8. Contrat en zod pur.** `@shenron/api/contract` n'importe que `zod` et
-`@shenron/db/constants` ; les métadonnées OpenAPI passent par
+**D8. Contrat en zod pur.** `@aphrody/shenron-api/contract` n'importe que `zod` et
+`@aphrody/shenron-db/constants` ; les métadonnées OpenAPI passent par
 `.meta({ id })`, que zod-to-openapi 9.1.0 transforme en composants (vérifié).
 Le registre des catégories wiki répond `{ categories: [{ name, label, total }] }`,
 la forme reprise par `dragonball.wiki_categories` dans
@@ -225,11 +225,11 @@ ne diffuse pas en flux et n'accepte pas d'outils : un `LanguageModelV4` sur
 mesure l'enveloppe. `createOpenAICompatible` sert au transport E5 direct et
 reste prêt pour un futur chat OpenAI-compatible authentifié (APH-3). Pas de
 `@ai-sdk/react` (aucune interface en flux). Aucun `bun:*`, `node:*`, Redis ni
-SQLite dans `@shenron/pipeline/ai` : le stockage entre par des ports.
+SQLite dans `@aphrody/shenron-pipeline/ai` : le stockage entre par des ports.
 
 La propriété de l'implémentation IA profonde est à `aphrody-ai` : modèles,
 inférence, clients fournisseurs, OCR/vision et moteurs RAG vivent dans ses
-crates et son service. `@shenron/pipeline` ne garde que l'adaptateur du contrat
+crates et son service. `@aphrody/shenron-pipeline` ne garde que l'adaptateur du contrat
 privé Shenron, le choix E5 et l'orchestration qui applique le corpus et les
 règles canoniques Shenron. Toute capacité générique ajoutée doit être fournie
 par Aphrody AI puis consommée ici par une façade ; le pipeline ne doit pas
@@ -245,18 +245,18 @@ séquentiellement, vérifie nombre, ordre des index, 384 dimensions et valeurs
 finies, et appelle avec `maxRetries: 0` sur le chemin chaud. Le transport est
 choisi par la configuration, jamais par bascule par requête.
 
-**D11. `@shenron/pipeline/aphrody` sans FFI, source seule.** Le pont
+**D11. `@aphrody/shenron-pipeline/aphrody` sans FFI, source seule.** Le pont
 `AphrodyNativeBridge` (`bun:ffi`, `bun:sqlite`, `searchMemory`, `mcpCall`) n'a
 aucun consommateur hors de son propre test : il est supprimé ; `doctor` et
 `git inspect` passent par la CLI (`./cli`, `Bun.spawn`, scripts seulement).
-`measureInkStroke` rejoint `@shenron/images/ink-stroke`. `dist/` est supprimé,
+`measureInkStroke` rejoint `@aphrody/shenron-images/ink-stroke`. `dist/` est supprimé,
 le paquet devient privé et transpilé par Next. La racine ne réexporte plus
 que `compute`, `embeddings` et `web`. Le hub A2A (`./a2a`) perd son import de
 `apps/bot` : son notificateur Discord est injecté par
 `ShenronA2AHub.configure({ notifier, coordDir })`, statique comme `setProbes`
 (la classe est entièrement statique).
 
-**D12. UI : Base UI 1.8, Tailwind v4, présentations portables.** `@shenron/ui` porte
+**D12. UI : Base UI 1.8, Tailwind v4, présentations portables.** `@aphrody/shenron-ui` porte
 `cn`, la couche de jetons (`styles.css`), les jetons générés (`tokens.ts`,
 test de dérive), les wrappers Base UI corrigés pour 1.8 et `pageWindow`.
 Les vues sans données de `components/kit` (shell, titres, onglets, compteurs,
@@ -295,9 +295,9 @@ avant INFRA-1. Seul le gel databooks devient fermé par défaut en production
 (S11), conformément au [plan](../reference/root/PLAN.md) (`freeze.databooks = true`).
 
 **D16. Contrat d'environnement par noms.** Aucune URL, hôte ni port par défaut,
-façades `@shenron/pipeline/aphrody/{compute,embeddings}` comprises depuis le contrat IA v1
+façades `@aphrody/shenron-pipeline/aphrody/{compute,embeddings}` comprises depuis le contrat IA v1
 d'`aphrody-infra` (`local-ai.json`, 2026-09-25) : le résolveur unique
-`@shenron/pipeline/ai/config` lit d'abord les noms canoniques `APHRODY_AI_*`, puis les alias
+`@aphrody/shenron-pipeline/ai/config` lit d'abord les noms canoniques `APHRODY_AI_*`, puis les alias
 hérités dans l'ordre du contrat (voir [`ENV.md`](../operations/ENV.md)). Les paires de noms
 historiques (`SHENRON_ADMIN_TOKEN`/`API_ADMIN_TOKEN`,
 `SHENRON_USER_SECRET`/`API_USER_SECRET`) sont déclarées dans `ENV_ALIASES` et
@@ -345,7 +345,7 @@ retour arrière par `git revert`.
 | B13 | Scripts du pipeline sans URL par défaut : erreur explicite nommant la variable manquante.                                                                                                                                                                                                                                                                                                                                                                                | D16                                                                                         | V4                                                                       |
 | B14 | Routes additives : bot `GET /api/public/wiki/categories`, `/api/public/wiki/{category}` et `/{category}/{idOrSlug}` (PostgreSQL, `visible = true`) pour les catégories sans route historique, `/api/public/openapi.json` ; miroir sur le site sous `/api/public/*`.                                                                                                                                                                                                      | Contrat utilisé par les outils `dragonball.*`                                               | V4                                                                       |
 | B15 | Sélecteurs Base UI 1.8 corrigés (accordéon `data-open`/`data-panel-open`, onglets `data-active`). Wrappers inutilisés : aucun changement visible.                                                                                                                                                                                                                                                                                                                        | Styles jamais appliqués                                                                     | V2                                                                       |
-| B16 | Racine de `@shenron/pipeline/aphrody` réduite ; `AphrodyNativeBridge`, `ShenronBridge`, `searchMemory`, `mcpCall` supprimés (0 consommateur).                                                                                                                                                                                                                                                                                                                            | Pas de FFI dans le bot                                                                      | V2                                                                       |
+| B16 | Racine de `@aphrody/shenron-pipeline/aphrody` réduite ; `AphrodyNativeBridge`, `ShenronBridge`, `searchMemory`, `mcpCall` supprimés (0 consommateur).                                                                                                                                                                                                                                                                                                                    | Pas de FFI dans le bot                                                                      | V2                                                                       |
 | B17 | Les personas du bot reçoivent la phrase anti-injection partagée ; `PROMPT_VERSION = 1`.                                                                                                                                                                                                                                                                                                                                                                                  | Garde absente côté bot                                                                      | V3                                                                       |
 | B18 | Chemin embed Aphrody du cache sémantique : lots de 16, 384 dimensions vérifiées, espaces réduits.                                                                                                                                                                                                                                                                                                                                                                        | Aucune de ces gardes aujourd'hui                                                            | V3                                                                       |
 
@@ -372,7 +372,7 @@ documentées dans [`BUN-PACKAGE-MANAGER.md`](../operations/BUN-PACKAGE-MANAGER.m
 
 ```jsonc
 {
-  "name": "@shenron/<pkg>",
+  "name": "@aphrody/shenron-<pkg>",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -380,7 +380,7 @@ documentées dans [`BUN-PACKAGE-MANAGER.md`](../operations/BUN-PACKAGE-MANAGER.m
   "exports": { "./<sub>": "./src/<sub>.ts" }, // sous-chemins explicites ; "." seulement pour une racine héritée
   "shenron": { "runtime": { "./<sub>": "pure" } }, // classe par entrée (tableau ci-dessous)
   "scripts": { "typecheck": "tsc --noEmit", "lint": "oxlint", "test": "bun test" },
-  "dependencies": { "<npm>": "catalog:", "@shenron/<x>": "workspace:*" },
+  "dependencies": { "<npm>": "catalog:", "@aphrody/shenron-<x>": "workspace:*" },
   "peerDependencies": {}, // better-auth, hono, next, react selon le paquet
   "devDependencies": { "@types/bun": "catalog:", "typescript": "catalog:" },
 }
@@ -417,7 +417,7 @@ l'orchestrateur.
 | `next`   | `server` + `next/*` (importés paresseusement)                                                                                                     | `bun*`                                                                                 |
 | `bun`    | `server` + `hono` + `bun`, `bun:*` sauf `bun:ffi`                                                                                                 | react, next                                                                            |
 
-Règles transverses, contrôlées par `@shenron/config/guards` et
+Règles transverses, contrôlées par `@aphrody/shenron-config/guards` et
 `scripts/audit/check-workspace-packages.ts` :
 
 | Règle                                                                                                            | Portée                                                                                                                                               |
@@ -430,7 +430,7 @@ Règles transverses, contrôlées par `@shenron/config/guards` et
 | URL, hôte ou port littéral                                                                                       | interdit dans le code neuf hors tests et fixtures                                                                                                    |
 | Pureté navigateur                                                                                                | `bun build --target=browser` des sous-chemins `pure`/`react` exposés au navigateur : aucune trace `node:` ni `bun:`                                  |
 
-### 3.1 `@shenron/config` (nouveau, feuille)
+### 3.1 `@aphrody/shenron-config` (nouveau, feuille)
 
 **Rôle.** Quatre préoccupations transverses sans foyer acyclique aujourd'hui :
 presets tsconfig TS7, discipline de lecture d'environnement avec alias de
@@ -540,10 +540,10 @@ export function createRecordingFetch(
 ): { fetch: typeof fetch; calls: RecordedCall[] };
 ```
 
-Dépendances : `zod` seulement. Interdit : tout paquet `@shenron/*`. Cibles :
+Dépendances : `zod` seulement. Interdit : tout paquet `@aphrody/shenron-*`. Cibles :
 serveur et client Next (`./env`, `./net`), bot, scripts.
 
-### 3.2 `@shenron/db`
+### 3.2 `@aphrody/shenron-db`
 
 **Rôle.** PostgreSQL, source de vérité éditoriale : schémas Drizzle, pilotes,
 clients bruts, chargement d'URL, dépôts partagés, gel databooks, Redis
@@ -676,7 +676,7 @@ export function createWikiReadRepository(db: ShenronPgDatabase<any>): {
   get(i: { category: WikiCategoryName; idOrSlug: string }): Promise<Record<string, unknown> | null>; // id numérique, sinon slug si la table en a un
 };
 
-// ./repos/agent-keys, ./repos/accounts  (satisfont structurellement AgentKeyStore et DiscordAccountLookup de @shenron/auth)
+// ./repos/agent-keys, ./repos/accounts  (satisfont structurellement AgentKeyStore et DiscordAccountLookup de @aphrody/shenron-auth)
 export function createAgentKeyRepository(db: ShenronPgDatabase<any>): {
   findActiveByHash(hash: string): Promise<AgentKeyRecord | null>;
   touch(id: string, at: Date): Promise<void>;
@@ -722,13 +722,13 @@ export function createResilientRedis(o: {
 ```
 
 Dépendances : `drizzle-orm`, `postgres`, `@paralleldrive/cuid2`,
-`@shenron/config`. Interdit : `server-only`, `bun:sqlite`, `better-auth`,
+`@aphrody/shenron-config`. Interdit : `server-only`, `bun:sqlite`, `better-auth`,
 `hono`, `ai`, `react`, `tsyringe`. Invariants conservés : jamais de
 `drizzle-kit push` sur le schéma `bot` ; index `bot.*` seulement par
 `bot-indexes.sql` ; `prepare: true` et réutilisation du pool par `globalThis`
 dans la façade du site ; le bot démarre sans PostgreSQL ; relations v1.
 
-### 3.3 `@shenron/auth`
+### 3.3 `@aphrody/shenron-auth`
 
 **Rôle.** Briques Better Auth 1.7.5 indépendantes du framework, gardes
 renvoyant un principal, adaptateurs minces.
@@ -939,8 +939,8 @@ export function createShenronAuthClient(o: {
 }): ReturnType<typeof createAuthClient>;
 ```
 
-Dépendances : `@shenron/config`. Pairs : `better-auth` (passe de dépendance à
-pair), `hono`, `next`, `react` optionnels. `@shenron/db` n'est qu'une
+Dépendances : `@aphrody/shenron-config`. Pairs : `better-auth` (passe de dépendance à
+pair), `hono`, `next`, `react` optionnels. `@aphrody/shenron-db` n'est qu'une
 dépendance de développement (tests de conformance). Interdit : `server-only`,
 `@/lib/env`, lecture d'environnement au chargement, secret de substitution,
 JWT fait main. Invariants : secret ≥ 32 caractères et fermé en production,
@@ -951,7 +951,7 @@ bot `shenron_ba`, format et durée du cookie `dbfr_admin` inchangés. Livrés
 en Phase 1 avec tests, `./hono` et `authorizeNext` attendent leur premier
 consommateur de groupe admin (SH-API-2).
 
-### 3.4 `@shenron/pipeline/ai`
+### 3.4 `@aphrody/shenron-pipeline/ai`
 
 **Rôle.** Abstraction IA en TypeScript sur AI SDK v7 (spécification v4) :
 client typé des routes `/api/v1/shenron/*` d'`aphrody-ai-http`, modèles AI
@@ -1188,27 +1188,27 @@ export function ndcgAtK(ranked: readonly string[], expected: readonly string[], 
 ```
 
 Dépendances : `ai`, `@ai-sdk/openai-compatible`, `@ai-sdk/provider`
-(4.0.17, déjà verrouillé), `zod`, `@shenron/config`. Interdit : `bun:*`,
-`node:*`, `@shenron/pipeline/aphrody`, `@shenron/db`, Redis, `sqlite-vec`,
+(4.0.17, déjà verrouillé), `zod`, `@aphrody/shenron-config`. Interdit : `bun:*`,
+`node:*`, `@aphrody/shenron-pipeline/aphrody`, `@aphrody/shenron-db`, Redis, `sqlite-vec`,
 `@huggingface/transformers`. `packages/pipeline/scripts/ai/check-contracts.ts` compare
 les miroirs `./wire` et leurs fixtures (chaque fixture cite sa ligne source)
 au fichier `../aphrody-ai/crates/aphrody-mcp/src/http_rest.rs` quand le dépôt
 voisin est présent, et s'ignore avec une raison sinon. Cibles : serveur Next,
 bot, scripts ; jamais le paquet client.
 
-### 3.5 `@shenron/pipeline/aphrody`
+### 3.5 `@aphrody/shenron-pipeline/aphrody`
 
 **Rôle.** Connecteurs Aphrody hérités, source seule : façades de
-compatibilité des clients de calcul (qui délèguent à `@shenron/pipeline/ai` à partir
+compatibilité des clients de calcul (qui délèguent à `@aphrody/shenron-pipeline/ai` à partir
 de la vague 3), client Web (`aphrody-web-api`), hub A2A, lancement de la CLI.
 
-| Sous-chemin                 | Contenu                                                                                                                                                           | Classe                                        | Importateurs autorisés |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- | ---------------------- |
-| `<repo>`                    | `AphrodyComputeClient`, `ShenronEmbeddingsClient`, `SHENRON_EMBED_MODEL`, `SHENRON_EMBED_DIMENSIONS`, `AphrodyWebClient` et leurs types                           | server                                        | tous (héritage)        |
-| `./compute`, `./embeddings` | mêmes classes ; façades sur `@shenron/pipeline/ai` : exceptions, signatures, option `fetcher`, défaut d'URL hérité (retiré par INFRA-3), `fetch` résolu à l'appel | server                                        | héritage               |
-| `./web`                     | `AphrodyWebClient`                                                                                                                                                | server                                        | scripts, site          |
-| `./a2a`                     | `ShenronA2AHub`, sondes                                                                                                                                           | server (Bun via global, sans import statique) | routes A2A du site     |
-| `./cli`                     | `runAphrodyCli`, `aphrodyDoctor`, `aphrodyGitInspect`                                                                                                             | bun                                           | scripts uniquement     |
+| Sous-chemin                 | Contenu                                                                                                                                                                   | Classe                                        | Importateurs autorisés |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- | ---------------------- |
+| `<repo>`                    | `AphrodyComputeClient`, `ShenronEmbeddingsClient`, `SHENRON_EMBED_MODEL`, `SHENRON_EMBED_DIMENSIONS`, `AphrodyWebClient` et leurs types                                   | server                                        | tous (héritage)        |
+| `./compute`, `./embeddings` | mêmes classes ; façades sur `@aphrody/shenron-pipeline/ai` : exceptions, signatures, option `fetcher`, défaut d'URL hérité (retiré par INFRA-3), `fetch` résolu à l'appel | server                                        | héritage               |
+| `./web`                     | `AphrodyWebClient`                                                                                                                                                        | server                                        | scripts, site          |
+| `./a2a`                     | `ShenronA2AHub`, sondes                                                                                                                                                   | server (Bun via global, sans import statique) | routes A2A du site     |
+| `./cli`                     | `runAphrodyCli`, `aphrodyDoctor`, `aphrodyGitInspect`                                                                                                                     | bun                                           | scripts uniquement     |
 
 ```ts
 // ./a2a
@@ -1242,14 +1242,14 @@ export function aphrodyGitInspect(o: {
 // pas d'enveloppe pour translate ni notify : leur sortie n'est pas du JSON
 ```
 
-Dépendances : `@shenron/config`, `@shenron/pipeline/ai` (façades, vague 3),
-`@shenron/db` (`./env`, pour les sondes A2A). `sharp` quitte le paquet avec
-`measureInkStroke` (`@shenron/images/ink-stroke`). Interdit : `bun:ffi`,
+Dépendances : `@aphrody/shenron-config`, `@aphrody/shenron-pipeline/ai` (façades, vague 3),
+`@aphrody/shenron-db` (`./env`, pour les sondes A2A). `sharp` quitte le paquet avec
+`measureInkStroke` (`@aphrody/shenron-images/ink-stroke`). Interdit : `bun:ffi`,
 `bun:sqlite` statique, l'import relatif de l'ancien `admin-lab` du bot
 (`a2a.ts:22`). Les défauts littéraux des sondes A2A restent jusqu'au retrait
 du hub TypeScript (ticket SH-A2A).
 
-### 3.6 `@shenron/api`
+### 3.6 `@aphrody/shenron-api`
 
 **Rôle.** Contrat HTTP (zod), client typé sans exception, aides HTTP pures,
 serveur unique à ports injectés (routeur natif, plus de Hono depuis le
@@ -1278,7 +1278,7 @@ Variables de `./host` (lues à l'appel, jamais au chargement) : `SHENRON_DATA_DI
 `SHENRON_VFS_DB`, `SHENRON_PROFILE=public` ou `SHENRON_VFS_PUBLIC_ONLY=1`,
 `SHENRON_CHAT_STORE` (`off` le coupe), `SHENRON_CHAT_PG_URL`/`_SCHEMA`,
 `SHENRON_MEMORY{,_DB,_RECALL,_REMOTE}` (mémoire persistante du chat par agent home,
-`@shenron/config/memory` ; le processus hôte l'ouvre par l'option `memory` de
+`@aphrody/shenron-config/memory` ; le processus hôte l'ouvre par l'option `memory` de
 `createLocalApi`, `apps/server/src/memory.ts` sur `aphrody-memory` via `shenron-ffi` ; le
 résolveur d'agent home place chaque base par `memoryLocation`),
 `APHRODY_AI_EMBED_BASE_URL`/`_MODEL`, `SHENRON_CHAT_BACKENDS`
@@ -1289,7 +1289,7 @@ résolveur d'agent home place chaque base par `memoryLocation`),
 `X-Shenron-Owner{,-Ts,-Sig}`), `SHENRON_USER_SECRET`/`API_USER_SECRET` (acting user
 Discord), `SHENRON_LOCAL_OWNER` (propriétaire loopback direct), `SHENRON_ADMIN_TOKEN`/
 `API_ADMIN_TOKEN` (Bearer admin), `SHENRON_API_HOST`/`SHENRON_API_PORT`
-(`resolveShenronApiBind` de `@shenron/config/services`).
+(`resolveShenronApiBind` de `@aphrody/shenron-config/services`).
 
 Authentification de l'hôte : `/api/auth/*` (Better Auth, `packages/api/src/host/auth.ts`) est servi avant le relais Next. L'`AuthPort` du groupe `owner` résout, dans l'ordre : en-têtes signés, utilisateur Discord signé, session Better Auth (cookie ou Bearer : propriétaire `discord:<id>` si un compte Discord est lié, sinon `user:<id>`), puis le propriétaire local en boucle directe. `admin` : jeton d'administration ou session du staff du site (`staffPolicyFromEnv(env, "site")`). Consommateurs : le bureau (`apps/server/src/agent-home.ts`) et le site (`apps/site/src/lib/host-auth.ts`) quand `SHENRON_HOST_URL` est posée. Aucune arête nouvelle dans le graphe : `api` consomme déjà `auth`, `db` et `config` ; le site relaie en HTTP et ne dépend pas de `api/host`.
 
@@ -1433,7 +1433,7 @@ export const noopInvalidation: InvalidationPort;
 
 // ./server
 export interface WikiReadPort {
-  // déclaré ici, implémenté par createWikiReadRepository (@shenron/db)
+  // déclaré ici, implémenté par createWikiReadRepository (@aphrody/shenron-db)
   categories(): Promise<{ name: string; label: string; total: number }[]>;
   list(i: {
     category: string;
@@ -1491,19 +1491,19 @@ export function nextInvalidationPort(fns: {
 }): InvalidationPort;
 ```
 
-Dépendances : `zod`, `@aphrody/http` (client), `@shenron/config`, `@shenron/db`
+Dépendances : `zod`, `@aphrody/http` (client), `@aphrody/shenron-config`, `@aphrody/shenron-db`
 (`./constants`, types des conversations et du VFS, `./repos/wiki` pour la
-conformance), `@shenron/auth` (`./acting-user`, `./crypto` pour `./host`) et
-`@shenron/pipeline`, limitée à la doctrine (`./ai/prompts`, `./agent-home`) et à
+conformance), `@aphrody/shenron-auth` (`./acting-user`, `./crypto` pour `./host`) et
+`@aphrody/shenron-pipeline`, limitée à la doctrine (`./ai/prompts`, `./agent-home`) et à
 `./chat` et `./host` : `./contract`, `./client`, `./http`, `./server` et `./next`
 n'atteignent jamais le pipeline (test `packages/api/test/portability.test.ts`). Le
 serveur reçoit l'IA par des ports (`ChatEnginePort`, `RagPort`, `OcrPort`) ; le
-pipeline n'importe jamais `@shenron/api`, ce qui garde le graphe acyclique.
+pipeline n'importe jamais `@aphrody/shenron-api`, ce qui garde le graphe acyclique.
 Interdit :
 `tsyringe`, `@discordx/di`, `container.resolve`, `server-only`, `next/*`,
 `discord.js`, messages français codés dans les codes d'erreur.
 
-### 3.7 `@shenron/ui`
+### 3.7 `@aphrody/shenron-ui`
 
 **Rôle.** Primitives Base UI 1.8 + Tailwind v4, SVG et couche visuelle portable
 partagées par le site et le tableau de bord du bot. Le paquet n'importe aucun
@@ -1550,7 +1550,7 @@ Dépendances : `@base-ui/react`, `@tanstack/react-query`,
 `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react` ; pairs
 `react`, `react-dom`. Interdit :
 `next/*`, next-intl, `@/…`, lecture d'environnement et tout paquet
-`@shenron/*` hors des arêtes du §4.1 (`config`, `koharu/{protocol,canvas}`, `pipeline/koharu`). Les illustrations livrées sont des SVG du paquet ;
+`@aphrody/shenron-*` hors des arêtes du §4.1 (`config`, `koharu/{protocol,canvas}`, `pipeline/koharu`). Les illustrations livrées sont des SVG du paquet ;
 les chaînes de présentation historiques ne sont pas une source de données.
 Les wrappers
 passent en sous-chemins Base UI (`@base-ui/react/<partie>`) ; accordéon et
@@ -1559,18 +1559,18 @@ restent dans les applications ; les éléments visuels Toriyama sont dans le paq
 
 ### 3.8 Paquets consommateurs
 
-- `@shenron/images` : déjà en source ; reçoit `./ink-stroke`, et porte le manifeste de dédup
+- `@aphrody/shenron-images` : déjà en source ; reçoit `./ink-stroke`, et porte le manifeste de dédup
   bot/site `src/asset-aliases.json` (résolution `./resolve`, consommée par
   `apps/bot/src/lib/asset-files.ts` et les redirections Next du site).
-- `@shenron/pipeline` regroupe les clients IA et Aphrody, le pont BXC et les
+- `@aphrody/shenron-pipeline` regroupe les clients IA et Aphrody, le pont BXC et les
   scripts de workflows. Les modules restent séparés par sous-chemin public et
   sont livrés via le même workspace.
-- `@shenron/koharu` : client du moteur Koharu, `./protocol` (généré par Specta depuis
+- `@aphrody/shenron-koharu` : client du moteur Koharu, `./protocol` (généré par Specta depuis
   `koharu-app`), `./native` (transport `koharu-sdk` en JSON Lines, classe bun) et
   `./canvas` (WASM de `koharu-canvas`).
-- `@shenron/lexicon` : le lexique unique ja/fr/en (`data/lexicon/terms.json`), recherche, localisation et masquage, classe `pure` (`.` moteur, `./data` données embarquées), sans arête `@shenron/*` ; mêmes règles que le crate `shenron-lexicon` ([lexicon.md](lexicon.md)).
-- `@shenron/media` : aides OCR et manga, classe `pure` (SHA-256 en TypeScript), sans arête `@shenron/*`.
-- `@shenron/native` : liaison `bun:ffi` de `shenron-ffi` (classe bun).
+- `@aphrody/shenron-lexicon` : le lexique unique ja/fr/en (`data/lexicon/terms.json`), recherche, localisation et masquage, classe `pure` (`.` moteur, `./data` données embarquées), sans arête `@aphrody/shenron-*` ; mêmes règles que le crate `shenron-lexicon` ([lexicon.md](lexicon.md)).
+- `@aphrody/shenron-media` : aides OCR et manga, classe `pure` (SHA-256 en TypeScript), sans arête `@aphrody/shenron-*`.
+- `@aphrody/shenron-native` : liaison `bun:ffi` de `shenron-ffi` (classe bun).
 - `@aphrody/*` vendorisés : `dist` commité, hors du périmètre.
 - Schéma SQLite du bot, `DatabaseService`.
 
@@ -1581,24 +1581,24 @@ restent dans les applications ; les éléments visuels Toriyama sont dans le paq
 ### 4.1 Paquet vers paquet (acyclique)
 
 État au 2026-10-05 : dix paquets audités, cinq paquets cadres (§3.1–3.7, `ai` et
-`aphrody` réunis depuis dans `@shenron/pipeline`) et cinq paquets consommateurs (§3.8).
+`aphrody` réunis depuis dans `@aphrody/shenron-pipeline`) et cinq paquets consommateurs (§3.8).
 Les arêtes ci-dessous sont celles du code ; `scripts/audit/check-workspace-packages.ts`
 (`ALLOWED_EDGES`, `EDGE_SUBPATHS`) les impose, y compris les sous-chemins.
 
 ```
-@shenron/config     (feuille)
-@shenron/db       → config
-@shenron/auth     → config                                ⇢ db (dev)
-@shenron/api      → config, db, auth, lexicon,
+@aphrody/shenron-config     (feuille)
+@aphrody/shenron-db       → config
+@aphrody/shenron-auth     → config                                ⇢ db (dev)
+@aphrody/shenron-api      → config, db, auth, lexicon,
                     pipeline (./ai/prompts, ./agent-home)
-@shenron/ui       → config, koharu (./protocol, ./canvas),  ⇢ config (dev)
+@aphrody/shenron-ui       → config, koharu (./protocol, ./canvas),  ⇢ config (dev)
                     pipeline (./koharu)
-@shenron/pipeline → config, db (./sql, ./bun-sql, ./env, ./guards, ./redis),
+@aphrody/shenron-pipeline → config, db (./sql, ./bun-sql, ./env, ./guards, ./redis),
                     koharu (./native), lexicon, media, native
-@shenron/koharu   (feuille)
-@shenron/lexicon  (feuille)
-@shenron/media    (feuille)
-@shenron/native   (feuille)
+@aphrody/shenron-koharu   (feuille)
+@aphrody/shenron-lexicon  (feuille)
+@aphrody/shenron-media    (feuille)
+@aphrody/shenron-native   (feuille)
 ```
 
 | De → Vers                                                                                                                                                  | Autorisé                                                                                            | Motif                                                                                  |
@@ -1616,10 +1616,10 @@ Les arêtes ci-dessous sont celles du code ; `scripts/audit/check-workspace-pack
 | `pipeline → koharu`                                                                                                                                        | oui, vers `./native` seulement                                                                      | transport `koharu-sdk` des candidats                                                   |
 | `pipeline → media, native`                                                                                                                                 | oui                                                                                                 | OCR, manga, liaison `shenron-ffi`                                                      |
 | `api, pipeline → lexicon`                                                                                                                                  | oui                                                                                                 | route `/api/public/lexicon`, expansion des requêtes RAG                                |
-| `koharu`, `lexicon`, `media`, `native`                                                                                                                     | feuilles : aucune arête `@shenron/*`                                                                | clients et liaisons sans état partagé                                                  |
+| `koharu`, `lexicon`, `media`, `native`                                                                                                                     | feuilles : aucune arête `@aphrody/shenron-*`                                                        | clients et liaisons sans état partagé                                                  |
 | `config → *`, `db → auth/api/pipeline`, `auth → db` (exécution), `auth → api`, `pipeline → api/auth/ui`, `koharu/media/native → *`, tout paquet → `apps/*` | **interdit**                                                                                        | cycle ou inversion de couches                                                          |
 
-Les dix paquets passent tous les contrôles du §4.3. Seul `@shenron/native`, liaison de
+Les dix paquets passent tous les contrôles du §4.3. Seul `@aphrody/shenron-native`, liaison de
 `shenron-ffi`, peut charger du code natif (`bun:ffi`, `dlopen`).
 
 ### 4.2 Applications vers paquets
@@ -1633,7 +1633,7 @@ Les dix paquets passent tous les contrôles du §4.3. Seul `@shenron/native`, li
 | `aphrody-ai/crates/aphrody-mcp` (`dragonball.*`) | —       | —                                                                                             | —                                 | —                                  | —             | client des routes Shenron ; catalogue MCP propre à Aphrody AI | —                                     |
 
 Arêtes interdites contrôlées : paquet → `apps/*` ; module `"use client"` →
-`@shenron/{ai, db/postgres-js, db/sql, db/bun-sql, api/server, aphrody}` ;
+`@aphrody/shenron-{ai, db/postgres-js, db/sql, db/bun-sql, api/server, aphrody}` ;
 `apps/bot` → `bun:ffi`, `@aphrody/bun`, `drawM3Scene*` ; site → sous-chemins
 de classe `bun`.
 
@@ -1652,7 +1652,7 @@ depuis les manifestes et depuis les imports réels, puis vérifie :
 4. arêtes et sous-chemins du §4.1 et absence de cycle (dépendances, développement et
    pairs compris) ;
 5. règles d'import du §3.0 via le parcoureur (`bun:ffi` et `dlopen` réservés à
-   `@shenron/native`), aucun import vers `apps/*`, imports à environnement vide, pureté
+   `@aphrody/shenron-native`), aucun import vers `apps/*`, imports à environnement vide, pureté
    navigateur ;
 6. frontières d'applications du §4.2 ;
 7. `transpilePackages` d'`apps/site/next.config.ts` couvrant chaque paquet
@@ -1687,20 +1687,20 @@ d'environnement, §6 manques). Ce qui s'applique à la pile :
   décision fondée sur `health().ocr` (drapeau de compilation) ; la façade
   héritée garde `gemini-web` pour `TranslateService` jusqu'à SH-AI-2.
 
-| Opération lourde        | Service du catalogue                                                    | Entrée Shenron                                                                                                                                                     | État en fin de Phase 1                                                                                | Cible et ticket                                                                                             |
-| ----------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Chat LLM                | `aphrody-ai-http` `llm/chat`                                            | `@shenron/pipeline/ai/chat` (`LanguageModelV4`), réponses ancrées par `@shenron/pipeline/ai/grounding` (citations `[n]` contrôlées, refus « non établi » fr/en/ja) | adaptateur livré ; repli persona si `llm=false`                                                       | APH-3 (chat OpenAI-compatible authentifié), APH-8 (backend catalogué), APH-10 (file d'attente serveur, 429) |
-| Embeddings              | `aphrody-ai-http` `embed` ; `aphrody-shenron-embed` en repli            | `@shenron/pipeline/ai/embeddings`                                                                                                                                  | D10 appliqué, clients paresseux                                                                       | APH-6 (parité de normalisation), APH-7 (épinglage SHA, portage `OrtEmbedder`)                               |
-| Reranking               | dans `rag/search`                                                       | aucune (pas de modèle client)                                                                                                                                      | `RERANK_URL` reste mort jusqu'à SH-AI-2                                                               | APH-5 (`hybrid+rerank` côté serveur)                                                                        |
-| Recherche RAG           | `aphrody-ai-http` `rag/*`                                               | `@shenron/pipeline/ai/aphrody` + `apps/bot/src/lib/rag.ts`                                                                                                         | inchangé (`RAG_BACKEND`)                                                                              | APH-1 (release alignée, pool), gate §6.2                                                                    |
-| Indexation RAG          | `rag/ingest`, `rag/sync/finish`                                         | scripts du pipeline via la façade                                                                                                                                  | inchangé                                                                                              | APH-1                                                                                                       |
-| Évaluation RAG          | `aphrody-rag-eval --target mcp`                                         | `@shenron/pipeline/ai/eval`                                                                                                                                        | métriques partagées bot/site/pipeline                                                                 | APH-11 (cible `http` avec Bearer)                                                                           |
-| OCR, vision             | `aphrody-ai-http` `ocr`, `vision/structured`                            | `@shenron/pipeline/ai/aphrody`                                                                                                                                     | client livré (ppocr par défaut)                                                                       | SH-AI-2 (retrait du service Python `relecture-ocr`)                                                         |
-| Traduction              | `scripts/ops/translate-databooks-session.ts` + Aphrody `ja→fr` + replis | `@shenron/pipeline/translation`                                                                                                                                    | supervisée Bun, dépôt PostgreSQL, preuve sous `var/runs/`, RAG rejouable ; canon/wiki restent séparés | APH-9, OS-5                                                                                                 |
-| Crawl, scrape           | `aphrody-web-api`                                                       | `@shenron/pipeline/aphrody/web`                                                                                                                                    | inchangé                                                                                              | OS-4, P2-BXC                                                                                                |
-| Transformations d'image | à créer                                                                 | `@shenron/images`                                                                                                                                                  | sharp inchangé                                                                                        | OS-2 (port `ImageOps`)                                                                                      |
-| Rendu 2D des cartes     | npm préconstruit                                                        | `@aphrody/canvas`                                                                                                                                                  | façade 1.0.9-aphrody.2 livrée (D13), shim hors cibles préconstruites                                  | CI-2 (preuve Linux), OS-3 (rendu hors processus)                                                            |
-| Pont natif              | aucun                                                                   | `@shenron/pipeline/aphrody/cli`                                                                                                                                    | FFI supprimé                                                                                          | —                                                                                                           |
+| Opération lourde        | Service du catalogue                                                    | Entrée Shenron                                                                                                                                                                     | État en fin de Phase 1                                                                                | Cible et ticket                                                                                             |
+| ----------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Chat LLM                | `aphrody-ai-http` `llm/chat`                                            | `@aphrody/shenron-pipeline/ai/chat` (`LanguageModelV4`), réponses ancrées par `@aphrody/shenron-pipeline/ai/grounding` (citations `[n]` contrôlées, refus « non établi » fr/en/ja) | adaptateur livré ; repli persona si `llm=false`                                                       | APH-3 (chat OpenAI-compatible authentifié), APH-8 (backend catalogué), APH-10 (file d'attente serveur, 429) |
+| Embeddings              | `aphrody-ai-http` `embed` ; `aphrody-shenron-embed` en repli            | `@aphrody/shenron-pipeline/ai/embeddings`                                                                                                                                          | D10 appliqué, clients paresseux                                                                       | APH-6 (parité de normalisation), APH-7 (épinglage SHA, portage `OrtEmbedder`)                               |
+| Reranking               | dans `rag/search`                                                       | aucune (pas de modèle client)                                                                                                                                                      | `RERANK_URL` reste mort jusqu'à SH-AI-2                                                               | APH-5 (`hybrid+rerank` côté serveur)                                                                        |
+| Recherche RAG           | `aphrody-ai-http` `rag/*`                                               | `@aphrody/shenron-pipeline/ai/aphrody` + `apps/bot/src/lib/rag.ts`                                                                                                                 | inchangé (`RAG_BACKEND`)                                                                              | APH-1 (release alignée, pool), gate §6.2                                                                    |
+| Indexation RAG          | `rag/ingest`, `rag/sync/finish`                                         | scripts du pipeline via la façade                                                                                                                                                  | inchangé                                                                                              | APH-1                                                                                                       |
+| Évaluation RAG          | `aphrody-rag-eval --target mcp`                                         | `@aphrody/shenron-pipeline/ai/eval`                                                                                                                                                | métriques partagées bot/site/pipeline                                                                 | APH-11 (cible `http` avec Bearer)                                                                           |
+| OCR, vision             | `aphrody-ai-http` `ocr`, `vision/structured`                            | `@aphrody/shenron-pipeline/ai/aphrody`                                                                                                                                             | client livré (ppocr par défaut)                                                                       | SH-AI-2 (retrait du service Python `relecture-ocr`)                                                         |
+| Traduction              | `scripts/ops/translate-databooks-session.ts` + Aphrody `ja→fr` + replis | `@aphrody/shenron-pipeline/translation`                                                                                                                                            | supervisée Bun, dépôt PostgreSQL, preuve sous `var/runs/`, RAG rejouable ; canon/wiki restent séparés | APH-9, OS-5                                                                                                 |
+| Crawl, scrape           | `aphrody-web-api`                                                       | `@aphrody/shenron-pipeline/aphrody/web`                                                                                                                                            | inchangé                                                                                              | OS-4, P2-BXC                                                                                                |
+| Transformations d'image | à créer                                                                 | `@aphrody/shenron-images`                                                                                                                                                          | sharp inchangé                                                                                        | OS-2 (port `ImageOps`)                                                                                      |
+| Rendu 2D des cartes     | npm préconstruit                                                        | `@aphrody/canvas`                                                                                                                                                                  | façade 1.0.9-aphrody.2 livrée (D13), shim hors cibles préconstruites                                  | CI-2 (preuve Linux), OS-3 (rendu hors processus)                                                            |
+| Pont natif              | aucun                                                                   | `@aphrody/shenron-pipeline/aphrody/cli`                                                                                                                                            | FFI supprimé                                                                                          | —                                                                                                           |
 
 ---
 
@@ -1713,7 +1713,7 @@ Phase 1.
 
 | Consommateur                                                                        | Cible                                                                                                                         | Vague             | F                 |
 | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------- | ----------------- |
-| `apps/site/src/lib/db.ts` (75 importateurs)                                         | `@shenron/db/postgres-js` ; garde `server-only`, pool `globalThis`, `closeDb`, réexportations                                 | V3                | F                 |
+| `apps/site/src/lib/db.ts` (75 importateurs)                                         | `@aphrody/shenron-db/postgres-js` ; garde `server-only`, pool `globalThis`, `closeDb`, réexportations                         | V3                | F                 |
 | `apps/site/src/db/{schema,bot-schema}.ts`                                           | inchangés                                                                                                                     | —                 | F                 |
 | `apps/site/src/lib/databooks-freeze.ts` (+ ≈ 13 scripts)                            | `createDatabooksFreezeGate` ; `DATABOOKS_FREEZE_FILE` via `resolveDataPath` ; S11                                             | V3                | F (mêmes exports) |
 | `apps/site/drizzle.config.bot.ts`                                                   | refuse `push`/`migrate` avant toute connexion                                                                                 | V3                | —                 |
@@ -1734,10 +1734,10 @@ Phase 1.
 | `apps/bot/src/lib/better-auth.ts`                                                                                    | origines S2 et crochet S1 (V1) ; preset Discord B10 (V3)                                                                                                                                                                                                                      | V1, V3             | chemin conservé                        |
 | `apps/site/src/lib/auth.ts`                                                                                          | origines S2 (V1) ; `discordProvider`, `loggingOptions`, `SESSION_COOKIE_CACHE`, `drizzleDebugLogs`, import inutilisé retiré (V3)                                                                                                                                              | V1, V3             | chemin conservé                        |
 | `apps/site/src/proxy.ts`                                                                                             | S2 (V1) ; `getSessionCookie` de `better-auth/cookies` et constante `ADMIN_COOKIE` (V4)                                                                                                                                                                                        | V1, V4             | —                                      |
-| `apps/site/src/app/api/a2a/route.ts`                                                                                 | S5 (V1) ; import `@shenron/pipeline/aphrody/a2a` (V2)                                                                                                                                                                                                                         | V1, V2             | —                                      |
+| `apps/site/src/app/api/a2a/route.ts`                                                                                 | S5 (V1) ; import `@aphrody/shenron-pipeline/aphrody/a2a` (V2)                                                                                                                                                                                                                 | V1, V2             | —                                      |
 | `apps/site/src/lib/{admin-token,api-token}.ts`                                                                       | codec et `verifyStaticBearer` ; vecteurs dorés générés avant bascule                                                                                                                                                                                                          | V3                 | F (simulées par les tests)             |
 | `apps/site/src/lib/{session,proxy-admin}.ts`                                                                         | `staffPolicyFromEnv(env, "site")`, `createDiscordAccountLookup`, `requestHeaders()` ; API publique inchangée                                                                                                                                                                  | V3                 | F                                      |
-| `apps/site/src/lib/{auth-client,agent-keys,agent-scopes,agent-api,contribution-rights-shared,wiki-launch-config}.ts` | `./client`, `./agent-keys` + `@shenron/db/repos/agent-keys`, `decideAccess(…, { emptyRoles })`, S8                                                                                                                                                                            | V3                 | F                                      |
+| `apps/site/src/lib/{auth-client,agent-keys,agent-scopes,agent-api,contribution-rights-shared,wiki-launch-config}.ts` | `./client`, `./agent-keys` + `@aphrody/shenron-db/repos/agent-keys`, `decideAccess(…, { emptyRoles })`, S8                                                                                                                                                                    | V3                 | F                                      |
 | `apps/bot/src/api/{user-auth,session,oauth}.ts`, `lib/env.ts`, `apps/bot/src/services/games/tokens.ts`               | `verifyActingUser` (vecteur partagé), `timingSafeEqualString`, `staffPolicyFromEnv(env, "bot")` ; S10 : avertissement                                                                                                                                                         | V1, V3             | F                                      |
 | 15 routes `hasValidApiToken`                                                                                         | `isAdminOrToken(req)` dans un module neuf `apps/site/src/lib/admin-guard.ts` qui importe les façades `@/lib/session` et `@/lib/api-token` (les simulations des tests restent effectives) ; chaque route garde son `forbidden()` local ; instantané statut/corps avant bascule | V4                 | —                                      |
 | `apps/site/src/app/api/{bot-user/[...path],telemetry,tierlists/upload}/route.ts`                                     | `signActingUser`, `timingSafeEqualString`, S7 côté site                                                                                                                                                                                                                       | V4                 | —                                      |
@@ -1745,19 +1745,19 @@ Phase 1.
 
 ### 6.3 IA et Aphrody
 
-| Consommateur                                                                                                                                                                                 | Cible                                                                                                                                                                                                                      | Vague             | F                                            |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- | -------------------------------------------- |
-| Racine `@shenron/pipeline/aphrody` (bot, site, pipeline, scripts)                                                                                                                            | racine sans `bun:ffi`, `bun:sqlite`, `sharp` ni A2A                                                                                                                                                                        | V2                | import inchangé                              |
-| `apps/site/src/app/api/{a2a,admin/dashboard-live}/route.ts` + `tests/admin-dashboard-{live,token}.test.ts`                                                                                   | `@shenron/pipeline/aphrody/a2a` via `apps/site/src/lib/a2a-hub.ts` (configure le notificateur depuis `@/lib/admin-lab`) ; les `mock.module` des deux tests sont repointés **dans le même changement**                      | V2                | —                                            |
-| `packages/pipeline/src/aphrody/{compute,shenron-embeddings}.ts`                                                                                                                              | façades sur `@shenron/pipeline/ai`                                                                                                                                                                                         | V3                | F                                            |
-| `apps/bot/src/lib/rag.ts`                                                                                                                                                                    | modèle d'embedding paresseux (B3) ; l'aide de réponse part dans `rag-answer.ts` (réexportée) ; `rag.ts` n'importe plus `llm.ts`                                                                                            | V3                | F                                            |
-| `apps/bot/src/lib/llm.ts`                                                                                                                                                                    | prompts et génération de `@shenron/pipeline/ai` ; port `ChunkContentPort` sur `rag_chunks` ; historique Redis résilient ; portée de cache avec `PROMPT_VERSION` (B7, B17) ; signature `generateLlmAnswer(db, …)` inchangée | V3                | F                                            |
-| `apps/bot/src/lib/{semantic-cache,rag-eval}.ts`, `apps/bot/src/services/TrainingService.ts`                                                                                                  | paresseux ; B18 ; métriques partagées ; `resolveDataPath("ragGold", { legacyDefault })`                                                                                                                                    | V3                | F                                            |
-| `apps/site/src/lib/{site-rag,ia-cockpit}.ts`                                                                                                                                                 | `generateText` via le fournisseur, `instructions`, garde partagée ; métriques réexportées                                                                                                                                  | V3                | F                                            |
-| `packages/pipeline/src/workflows.ts`                                                                                                                                                         | `generateGroundedAnswer` (B5)                                                                                                                                                                                              | V3                | —                                            |
-| `packages/pipeline/scripts/{rag-build,rag-embed-vectors,rag-lexique,rag-resync-entites,ingest-aphrody-rag,rag-status}.ts`, `apps/bot/scripts/rag-eval.ts`, `scripts/ops/eval-aphrody-rag.ts` | imports cassés réparés, `SHENRON_E5`, `@shenron/pipeline/ai/eval`, B6, B13 ; `tsconfig.scripts.json` avec cliquet                                                                                                          | V4                | —                                            |
-| `packages/pipeline/src/{cli,index}.ts`                                                                                                                                                       | B12                                                                                                                                                                                                                        | V4                | façade unifiée vers le superviseur databooks |
-| `apps/bot/src/services/TranslateService.ts`                                                                                                                                                  | inchangé (façade)                                                                                                                                                                                                          | Phase 2 (SH-AI-2) | —                                            |
+| Consommateur                                                                                                                                                                                 | Cible                                                                                                                                                                                                                              | Vague             | F                                            |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- | -------------------------------------------- |
+| Racine `@aphrody/shenron-pipeline/aphrody` (bot, site, pipeline, scripts)                                                                                                                    | racine sans `bun:ffi`, `bun:sqlite`, `sharp` ni A2A                                                                                                                                                                                | V2                | import inchangé                              |
+| `apps/site/src/app/api/{a2a,admin/dashboard-live}/route.ts` + `tests/admin-dashboard-{live,token}.test.ts`                                                                                   | `@aphrody/shenron-pipeline/aphrody/a2a` via `apps/site/src/lib/a2a-hub.ts` (configure le notificateur depuis `@/lib/admin-lab`) ; les `mock.module` des deux tests sont repointés **dans le même changement**                      | V2                | —                                            |
+| `packages/pipeline/src/aphrody/{compute,shenron-embeddings}.ts`                                                                                                                              | façades sur `@aphrody/shenron-pipeline/ai`                                                                                                                                                                                         | V3                | F                                            |
+| `apps/bot/src/lib/rag.ts`                                                                                                                                                                    | modèle d'embedding paresseux (B3) ; l'aide de réponse part dans `rag-answer.ts` (réexportée) ; `rag.ts` n'importe plus `llm.ts`                                                                                                    | V3                | F                                            |
+| `apps/bot/src/lib/llm.ts`                                                                                                                                                                    | prompts et génération de `@aphrody/shenron-pipeline/ai` ; port `ChunkContentPort` sur `rag_chunks` ; historique Redis résilient ; portée de cache avec `PROMPT_VERSION` (B7, B17) ; signature `generateLlmAnswer(db, …)` inchangée | V3                | F                                            |
+| `apps/bot/src/lib/{semantic-cache,rag-eval}.ts`, `apps/bot/src/services/TrainingService.ts`                                                                                                  | paresseux ; B18 ; métriques partagées ; `resolveDataPath("ragGold", { legacyDefault })`                                                                                                                                            | V3                | F                                            |
+| `apps/site/src/lib/{site-rag,ia-cockpit}.ts`                                                                                                                                                 | `generateText` via le fournisseur, `instructions`, garde partagée ; métriques réexportées                                                                                                                                          | V3                | F                                            |
+| `packages/pipeline/src/workflows.ts`                                                                                                                                                         | `generateGroundedAnswer` (B5)                                                                                                                                                                                                      | V3                | —                                            |
+| `packages/pipeline/scripts/{rag-build,rag-embed-vectors,rag-lexique,rag-resync-entites,ingest-aphrody-rag,rag-status}.ts`, `apps/bot/scripts/rag-eval.ts`, `scripts/ops/eval-aphrody-rag.ts` | imports cassés réparés, `SHENRON_E5`, `@aphrody/shenron-pipeline/ai/eval`, B6, B13 ; `tsconfig.scripts.json` avec cliquet                                                                                                          | V4                | —                                            |
+| `packages/pipeline/src/{cli,index}.ts`                                                                                                                                                       | B12                                                                                                                                                                                                                                | V4                | façade unifiée vers le superviseur databooks |
+| `apps/bot/src/services/TranslateService.ts`                                                                                                                                                  | inchangé (façade)                                                                                                                                                                                                                  | Phase 2 (SH-AI-2) | —                                            |
 
 ### 6.4 API
 
@@ -1767,21 +1767,21 @@ Phase 1.
 | Bot : `/graphql`                                                                                                                 | schéma inchangé, limiteur public (S9)                                                                                                                                                                                               | V4    |
 | Site : `app/api/public/[...route]/route.ts` (neuf)                                                                               | `toNextRouteHandlers(createShenronApi(sitePorts))`, `runtime = "nodejs"`, `dynamic = "force-dynamic"`                                                                                                                               | V4    |
 | `apps/site/src/lib/bot-admin.ts`, `app/admin/sync/page.tsx`                                                                      | client validé (B11), cast supprimé                                                                                                                                                                                                  | V4    |
-| `apps/site/src/app/api/admin/ai/route.ts`, `lib/ia-cockpit-server.ts`                                                            | corps du contrat, `FEEDBACK_STATUSES` de `@shenron/db/constants`, client typé à la place de `postToBot` ; `revalidatePath` conservé ; lecture du salon admin conservée                                                              | V4    |
+| `apps/site/src/app/api/admin/ai/route.ts`, `lib/ia-cockpit-server.ts`                                                            | corps du contrat, `FEEDBACK_STATUSES` de `@aphrody/shenron-db/constants`, client typé à la place de `postToBot` ; `revalidatePath` conservé ; lecture du salon admin conservée                                                      | V4    |
 | `apps/site/src/lib/config.ts`                                                                                                    | résolveur unique de l'URL du bot pour ces clients                                                                                                                                                                                   | V4    |
 | `apps/site/src/lib/{shenron,member-roles,db-universe}.ts`, `components/home/useLiveBotState.ts`, téléversements, actions serveur | Phase 2 (SH-API-4)                                                                                                                                                                                                                  | —     |
 | `aphrody-ai/plugins/aphrody/skills/dragon-ball/**`, `app/llms.txt/route.ts`, `aphrody-mcp`                                       | tests de dérive (§8.4) ; documents mis à jour dans le même commit que tout changement de contrat                                                                                                                                    | V4    |
 
 ### 6.5 Interface
 
-| Consommateur                                                                                                                   | Cible                                                                                                                                     | Vague  | F   |
-| ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- | ------ | --- |
-| `apps/site/src/lib/utils.ts` (35 importateurs)                                                                                 | `export { cn } from "@shenron/ui/lib/utils"`                                                                                              | V1     | F   |
-| `apps/site/src/app/globals.css`                                                                                                | `@import "@shenron/ui/styles.css";` après `tailwindcss`, `@source` ; `--shell-*`, `[data-wiki-surface]` et doublons non en couche restent | V1     | —   |
-| `apps/site/tests/site-theme.test.ts`                                                                                           | lit `globals.css` et `packages/ui/src/styles.css`                                                                                         | V1     | —   |
-| `components/ui/Pagination.tsx`, `kit/LinkPager.tsx`                                                                            | alias de `pageWindow` (V1) ; composant à libellés en props (V3)                                                                           | V1, V3 | F   |
-| 10 wrappers (`accordion`, `badge`, `button`, `card`, `input`, `label`, `radio-group`, `switch`, `tabs`, `toggle`) + `index.ts` | réexportations d'une ligne ; B15                                                                                                          | V2     | F   |
-| `components/icones/*`, `lib/icones.ts` (102 importateurs), `apps/site/scripts/rend-icones.ts`                                  | `@shenron/ui/icones`                                                                                                                      | V3     | F   |
+| Consommateur                                                                                                                   | Cible                                                                                                                                             | Vague  | F   |
+| ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | --- |
+| `apps/site/src/lib/utils.ts` (35 importateurs)                                                                                 | `export { cn } from "@aphrody/shenron-ui/lib/utils"`                                                                                              | V1     | F   |
+| `apps/site/src/app/globals.css`                                                                                                | `@import "@aphrody/shenron-ui/styles.css";` après `tailwindcss`, `@source` ; `--shell-*`, `[data-wiki-surface]` et doublons non en couche restent | V1     | —   |
+| `apps/site/tests/site-theme.test.ts`                                                                                           | lit `globals.css` et `packages/ui/src/styles.css`                                                                                                 | V1     | —   |
+| `components/ui/Pagination.tsx`, `kit/LinkPager.tsx`                                                                            | alias de `pageWindow` (V1) ; composant à libellés en props (V3)                                                                                   | V1, V3 | F   |
+| 10 wrappers (`accordion`, `badge`, `button`, `card`, `input`, `label`, `radio-group`, `switch`, `tabs`, `toggle`) + `index.ts` | réexportations d'une ligne ; B15                                                                                                                  | V2     | F   |
+| `components/icones/*`, `lib/icones.ts` (102 importateurs), `apps/site/scripts/rend-icones.ts`                                  | `@aphrody/shenron-ui/icones`                                                                                                                      | V3     | F   |
 
 ### 6.6 Façades conservées après la Phase 1
 
@@ -1791,7 +1791,7 @@ Phase 1.
 `apps/bot/src/api/{auth,user-auth,session}.ts`,
 `apps/bot/src/lib/{llm,rag,rag-eval,semantic-cache}.ts`,
 `packages/pipeline/src/aphrody/{compute,shenron-embeddings}.ts` et la racine
-`@shenron/pipeline/aphrody`, la racine `@shenron/db` et `./bun`. Motifs : tests qui
+`@aphrody/shenron-pipeline/aphrody`, la racine `@aphrody/shenron-db` et `./bun`. Motifs : tests qui
 simulent ces chemins, 56 modules `server-only`, `@/lib/env` (t3) propre au
 site, monolithe `server.ts` (203 `container.resolve`), importateurs externes.
 
@@ -1813,7 +1813,7 @@ site, monolithe `server.ts` (203 `container.resolve`), importateurs externes.
   `drizzle-kit push|migrate|generate` ; lancer `rag:build` ou un script du
   pipeline contre une base ; toucher un fichier hors de ses chemins possédés
   et partagés. Après modification d'une commande, d'un événement ou d'une
-  garde du bot : `bun --filter @shenron/bot gen:entries` (règle 7).
+  garde du bot : `bun --filter @aphrody/shenron-bot gen:entries` (règle 7).
 - **Rapport d'agent** : fichiers modifiés (sous-ensemble des chemins
   possédés), gates exécutés avec codes de sortie et décomptes
   réussite/échec/ignoré, identifiants S/B utilisés, points ouverts.
@@ -1840,26 +1840,26 @@ pair de `auth` ; `api` sans `ai` ; `aphrody` sans `sharp` ni tsup) ; scripts
 `bun install` ; le diff de `bun.lock` ne doit contenir que des retraits et les
 liens d'espace de travail : aucune résolution neuve.
 
-| Vague                         | Flux (un agent chacun) | Contenu                                                                                                                                                                                                                                                                        | Sortie                                                    |
-| ----------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------- |
-| **1 — gates et sécurité**     | `tooling`              | `@shenron/config`, oxlint pour le site, TS2345, Turbo (retiré depuis), POLICY de l'ancien `test-all` (paquets neufs, suites du site depuis la racine par liste d'exclusion à cliquet), `check-workspace-packages`, graines réelles `ai` et `api`, `useTypeScriptCli` explicite | CI réparable : typecheck, lint et tests stricts verts     |
-|                               | `auth`                 | S1, S2, S3, S4, S5, S6, S10 en place                                                                                                                                                                                                                                           | tests de régression de chaque S                           |
-|                               | `ui`                   | `cn`, `styles.css`, `tokens.ts`, `pageWindow`, façades `cn`                                                                                                                                                                                                                    | équivalence CSS prouvée                                   |
-| **2 — paquets**               | `db`                   | sous-chemins, clients bruts, constantes, dépôts, gel, Redis                                                                                                                                                                                                                    | tests L0 hors connexion                                   |
-|                               | `auth`                 | primitives, gardes, options, politique, adaptateurs, vecteurs dorés                                                                                                                                                                                                            | vecteurs identiques aux implémentations actuelles         |
-|                               | `ai`                   | config, miroirs, client, embeddings (D10), chat, fournisseur, prompts, génération, évaluation                                                                                                                                                                                  | corps de requête exacts, parité des métriques             |
-|                               | `aphrody`              | source seule, racine réduite, `./cli`, notificateur injecté, sous-chemin A2A pour le site (simulations repointées) ; B16                                                                                                                                                       | racine sans `bun:ffi`                                     |
-|                               | `ui`                   | 10 wrappers et correctifs 1.8 ; B15                                                                                                                                                                                                                                            | tests de sélecteurs                                       |
-| **3 — bascules**              | `db`                   | façades du site, gel S11, garde `drizzle.config.bot.ts`, ancien CLI racine, audit des migrations, `PgService` (B2), Redis de l'indexeur, résolveurs partagés (B1)                                                                                                              | le bot démarre sans PostgreSQL                            |
-|                               | `auth`                 | façades site et bot, preset Discord (B10), S7 côté bot, S8, conformance des ports                                                                                                                                                                                              | instantanés et vecteurs verts                             |
-|                               | `ai`                   | façades de calcul, consommateurs du bot, du site et du pipeline (B3, B4, B5, B7, B8, B17, B18)                                                                                                                                                                                 | `rag.ts` n'importe plus `llm.ts`                          |
-|                               | `api`                  | contrat, client, http, serveur, adaptateur Next, OpenAPI généré                                                                                                                                                                                                                | conformance `satisfies WikiReadPort`                      |
-|                               | `ui`                   | `./icones`, composant `Pagination` à libellés                                                                                                                                                                                                                                  | tests de chemins du site verts                            |
-| **4 — montages et nettoyage** | `api`                  | montages bot et site (B14), S9, client admin validé (B11), cockpit sur le client typé, tests de dérive externes                                                                                                                                                                | routes historiques prioritaires, nouvelles routes servies |
-|                               | `auth`                 | 15 routes via `admin-guard.ts`, S7 côté site, proxy                                                                                                                                                                                                                            | instantané statut/corps inchangé                          |
-|                               | `ai`                   | scripts du pipeline (B6, B12, B13), gate de typecheck des scripts                                                                                                                                                                                                              | cliquet des exclusions                                    |
-|                               | `ui`                   | styles du tableau de bord du bot                                                                                                                                                                                                                                               | CSS compilée équivalente                                  |
-| **5 — clôture**               | `tooling`              | cliquet `transitional` vidé, gates de CI ajoutés, test de pureté des modules client, démarrage du bot sans services, docs d'infra ; seul, après la vague 4                                                                                                                     | `check-workspace-packages.ts --strict` vert               |
+| Vague                         | Flux (un agent chacun) | Contenu                                                                                                                                                                                                                                                                                | Sortie                                                    |
+| ----------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| **1 — gates et sécurité**     | `tooling`              | `@aphrody/shenron-config`, oxlint pour le site, TS2345, Turbo (retiré depuis), POLICY de l'ancien `test-all` (paquets neufs, suites du site depuis la racine par liste d'exclusion à cliquet), `check-workspace-packages`, graines réelles `ai` et `api`, `useTypeScriptCli` explicite | CI réparable : typecheck, lint et tests stricts verts     |
+|                               | `auth`                 | S1, S2, S3, S4, S5, S6, S10 en place                                                                                                                                                                                                                                                   | tests de régression de chaque S                           |
+|                               | `ui`                   | `cn`, `styles.css`, `tokens.ts`, `pageWindow`, façades `cn`                                                                                                                                                                                                                            | équivalence CSS prouvée                                   |
+| **2 — paquets**               | `db`                   | sous-chemins, clients bruts, constantes, dépôts, gel, Redis                                                                                                                                                                                                                            | tests L0 hors connexion                                   |
+|                               | `auth`                 | primitives, gardes, options, politique, adaptateurs, vecteurs dorés                                                                                                                                                                                                                    | vecteurs identiques aux implémentations actuelles         |
+|                               | `ai`                   | config, miroirs, client, embeddings (D10), chat, fournisseur, prompts, génération, évaluation                                                                                                                                                                                          | corps de requête exacts, parité des métriques             |
+|                               | `aphrody`              | source seule, racine réduite, `./cli`, notificateur injecté, sous-chemin A2A pour le site (simulations repointées) ; B16                                                                                                                                                               | racine sans `bun:ffi`                                     |
+|                               | `ui`                   | 10 wrappers et correctifs 1.8 ; B15                                                                                                                                                                                                                                                    | tests de sélecteurs                                       |
+| **3 — bascules**              | `db`                   | façades du site, gel S11, garde `drizzle.config.bot.ts`, ancien CLI racine, audit des migrations, `PgService` (B2), Redis de l'indexeur, résolveurs partagés (B1)                                                                                                                      | le bot démarre sans PostgreSQL                            |
+|                               | `auth`                 | façades site et bot, preset Discord (B10), S7 côté bot, S8, conformance des ports                                                                                                                                                                                                      | instantanés et vecteurs verts                             |
+|                               | `ai`                   | façades de calcul, consommateurs du bot, du site et du pipeline (B3, B4, B5, B7, B8, B17, B18)                                                                                                                                                                                         | `rag.ts` n'importe plus `llm.ts`                          |
+|                               | `api`                  | contrat, client, http, serveur, adaptateur Next, OpenAPI généré                                                                                                                                                                                                                        | conformance `satisfies WikiReadPort`                      |
+|                               | `ui`                   | `./icones`, composant `Pagination` à libellés                                                                                                                                                                                                                                          | tests de chemins du site verts                            |
+| **4 — montages et nettoyage** | `api`                  | montages bot et site (B14), S9, client admin validé (B11), cockpit sur le client typé, tests de dérive externes                                                                                                                                                                        | routes historiques prioritaires, nouvelles routes servies |
+|                               | `auth`                 | 15 routes via `admin-guard.ts`, S7 côté site, proxy                                                                                                                                                                                                                                    | instantané statut/corps inchangé                          |
+|                               | `ai`                   | scripts du pipeline (B6, B12, B13), gate de typecheck des scripts                                                                                                                                                                                                                      | cliquet des exclusions                                    |
+|                               | `ui`                   | styles du tableau de bord du bot                                                                                                                                                                                                                                                       | CSS compilée équivalente                                  |
+| **5 — clôture**               | `tooling`              | cliquet `transitional` vidé, gates de CI ajoutés, test de pureté des modules client, démarrage du bot sans services, docs d'infra ; seul, après la vague 4                                                                                                                             | `check-workspace-packages.ts --strict` vert               |
 
 Le détail exécutable (chemins possédés, tâches, critères, tests, commandes)
 est tenu dans [PLAN.md](../reference/root/PLAN.md) ; le découpage de
@@ -1869,7 +1869,7 @@ recherche est local et non versionné.
 
 1. Gate global vert (§8.1), dont `check-workspace-packages.ts --strict`.
 2. `git grep` des imports `bun:ffi` dans `apps/` et `packages/` : zéro ; paquet
-   de la racine `@shenron/pipeline/aphrody` sans `bun:ffi`, `bun:sqlite` ni `sharp`.
+   de la racine `@aphrody/shenron-pipeline/aphrody` sans `bun:ffi`, `bun:sqlite` ni `sharp`.
 3. Instantané OpenAPI, routes lues par `aphrody-mcp`, dérive des documents du plugin et
    de `llms.txt` verts.
 4. Équivalence CSS du site et du tableau de bord du bot.
@@ -1883,26 +1883,26 @@ recherche est local et non versionné.
 
 **`shenron`**
 
-| Ticket        | Contenu                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Débloque ou dépend de                                     |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| CI-2          | Job Linux : `next typegen` + tsc (types de routes), `next build`, `canvas-render.test.ts` sur ubuntu                                                                                                                                                                                                                                                                                                                                                                                                          | retrait du shim canvas ; preuve du build ; dépend de CI-1 |
-| DB-P3         | Réparation de l'historique : `tablesFilter` complet (33 tables), DDL `bot.*` dans `migrations/bot`, instantané de référence, migrateur Bun sur un client dédié amorcé avec les empreintes appliquées, déplacement vers `packages/db`, mise à jour dans le même commit d'`audit-refonte-architecture.ts`, des tests qui lisent le SQL et des motifs d'ignorance oxlint/oxfmt ; essai à blanc puis première migration réelle via le runbook de l'Infra du monorepo                                              | toute nouvelle table ; dépend d'OPS-1                     |
-| SH-DB-3       | Migration mécanique des ≈ 200 scripts feuilles vers `createSql`/`createBunSql` + `loadDatabaseUrl`, cliquet des copies de résolveurs                                                                                                                                                                                                                                                                                                                                                                          | —                                                         |
-| SH-API-2      | Portage de `/health`, `/api/health`, `/api/public/stats` et des routes RAG vers Hono avec instantanés de parité d'en-têtes ; fusion du document généré dans `/api/openapi.json` ; retrait de `buildOpenApiSpec` et de `_bot-routes.ts` ; premier groupe admin (`./hono`)                                                                                                                                                                                                                                      | —                                                         |
-| SH-API-3      | Bascule des routes SQLite `/api/public/wiki/*` vers PostgreSQL après diff de forme ; décision GraphQL avec mise à jour des documents du plugin                                                                                                                                                                                                                                                                                                                                                                | dépend d'OPS-3                                            |
-| SH-API-4      | Clients restants du site (`shenron.ts`, `member-roles.ts`, `db-universe.ts`, `useLiveBotState.ts`, téléversements) ; 7 actions serveur sur `@shenron/auth/next`                                                                                                                                                                                                                                                                                                                                               | —                                                         |
-| SH-API-5      | Propriété des tables du cockpit (`admin_goals`, `rag_eval_history`, `rag_training_feedback`)                                                                                                                                                                                                                                                                                                                                                                                                                  | dépend d'OPS-3 et de DB-P3                                |
-| SH-PATHS      | Écrivains mutables (jeu d'or, `AdminReportGoalService`, `COORD_DIR`, hub A2A) sur chemins obligatoires en production                                                                                                                                                                                                                                                                                                                                                                                          | dépend d'INFRA-1                                          |
-| SH-A2A        | Activation de `SHENRON_A2A_ENFORCE` ; raccordement des outils `dragonball.a2a_*` d'`aphrody-mcp` au hub Shenron                                                                                                                                                                                                                                                                                                                                                                                               | vérifier le jeton et le catalogue infra avant activation  |
-| SH-SESSION    | S10 : la clé HMAC héritée ne se replie plus sur `API_ADMIN_TOKEN`                                                                                                                                                                                                                                                                                                                                                                                                                                             | dépend d'INFRA-2                                          |
-| SH-UI-2       | Primitives toriyama, sort des 14 wrappers inutilisés, extraction optionnelle du cœur du kit derrière une prop de lien, cliquet de la règle 10, retrait de `shadcn/tailwind.css`                                                                                                                                                                                                                                                                                                                               | dépend d'OWN-7                                            |
-| SH-SITE-REDIS | Façades Redis du site (`memory-rate-limit.ts`, `databooks-redis.ts`) sur `createResilientRedis`                                                                                                                                                                                                                                                                                                                                                                                                               | —                                                         |
-| SH-AI-2       | Retrait de `RERANK_URL`, l'ancien `embeddings.ts` du bot (transformers.js), NLLB, service Python `relecture-ocr` (LibreTranslate et la sonde de traduction du bot retirés le 2026-10-05) ; OCR du bot sur ppocr ; lexique unique                                                                                                                                                                                                                                                                              | dépend d'APH-2, APH-5, APH-9                              |
-| SH-ID         | Unification d'identité : purge d'un compte dans tous les magasins, avenir du silo du bot                                                                                                                                                                                                                                                                                                                                                                                                                      | dépend de DB-P3 et d'INFRA-2                              |
-| SH-SOFTDEL    | Suppression logique pour `WikiCategory`/`WikiPage` et les posts                                                                                                                                                                                                                                                                                                                                                                                                                                               | dépend de DB-P3                                           |
-| P2-BXC        | `@shenron/pipeline/bxc` en source seule, chemins absolus retirés                                                                                                                                                                                                                                                                                                                                                                                                                                              | —                                                         |
-| SH-TOOLING-P3 | Scripts racine `manga:ocr:*` repointés vers `@shenron/pipeline`, builds `@aphrody/*` hors Turbo (retiré depuis)                                                                                                                                                                                                                                                                                                                                                                                               | —                                                         |
-| SH-GRAPH      | **Clos (2026-10-05)** : écarts révélés par l'audit des paquets consommateurs, ligne de base vide. `./aphrody/a2a-transport` classé `server` ; `@shenron/db/redis` admis pour la qualification live du pipeline (§4.2) ; le doublon `scripts/manga-spin-offs.ts` retiré et `bridge-rag.live.test.ts` déplacé dans `apps/bot` ; la couche processus du pipeline (`./aphrody/cli`, `./bxc`) passée sur `node:child_process`, de classe `server`, ce qui lève l'import par le site d'un sous-chemin de classe bun | —                                                         |
+| Ticket        | Contenu                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Débloque ou dépend de                                     |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| CI-2          | Job Linux : `next typegen` + tsc (types de routes), `next build`, `canvas-render.test.ts` sur ubuntu                                                                                                                                                                                                                                                                                                                                                                                                                  | retrait du shim canvas ; preuve du build ; dépend de CI-1 |
+| DB-P3         | Réparation de l'historique : `tablesFilter` complet (33 tables), DDL `bot.*` dans `migrations/bot`, instantané de référence, migrateur Bun sur un client dédié amorcé avec les empreintes appliquées, déplacement vers `packages/db`, mise à jour dans le même commit d'`audit-refonte-architecture.ts`, des tests qui lisent le SQL et des motifs d'ignorance oxlint/oxfmt ; essai à blanc puis première migration réelle via le runbook de l'Infra du monorepo                                                      | toute nouvelle table ; dépend d'OPS-1                     |
+| SH-DB-3       | Migration mécanique des ≈ 200 scripts feuilles vers `createSql`/`createBunSql` + `loadDatabaseUrl`, cliquet des copies de résolveurs                                                                                                                                                                                                                                                                                                                                                                                  | —                                                         |
+| SH-API-2      | Portage de `/health`, `/api/health`, `/api/public/stats` et des routes RAG vers Hono avec instantanés de parité d'en-têtes ; fusion du document généré dans `/api/openapi.json` ; retrait de `buildOpenApiSpec` et de `_bot-routes.ts` ; premier groupe admin (`./hono`)                                                                                                                                                                                                                                              | —                                                         |
+| SH-API-3      | Bascule des routes SQLite `/api/public/wiki/*` vers PostgreSQL après diff de forme ; décision GraphQL avec mise à jour des documents du plugin                                                                                                                                                                                                                                                                                                                                                                        | dépend d'OPS-3                                            |
+| SH-API-4      | Clients restants du site (`shenron.ts`, `member-roles.ts`, `db-universe.ts`, `useLiveBotState.ts`, téléversements) ; 7 actions serveur sur `@aphrody/shenron-auth/next`                                                                                                                                                                                                                                                                                                                                               | —                                                         |
+| SH-API-5      | Propriété des tables du cockpit (`admin_goals`, `rag_eval_history`, `rag_training_feedback`)                                                                                                                                                                                                                                                                                                                                                                                                                          | dépend d'OPS-3 et de DB-P3                                |
+| SH-PATHS      | Écrivains mutables (jeu d'or, `AdminReportGoalService`, `COORD_DIR`, hub A2A) sur chemins obligatoires en production                                                                                                                                                                                                                                                                                                                                                                                                  | dépend d'INFRA-1                                          |
+| SH-A2A        | Activation de `SHENRON_A2A_ENFORCE` ; raccordement des outils `dragonball.a2a_*` d'`aphrody-mcp` au hub Shenron                                                                                                                                                                                                                                                                                                                                                                                                       | vérifier le jeton et le catalogue infra avant activation  |
+| SH-SESSION    | S10 : la clé HMAC héritée ne se replie plus sur `API_ADMIN_TOKEN`                                                                                                                                                                                                                                                                                                                                                                                                                                                     | dépend d'INFRA-2                                          |
+| SH-UI-2       | Primitives toriyama, sort des 14 wrappers inutilisés, extraction optionnelle du cœur du kit derrière une prop de lien, cliquet de la règle 10, retrait de `shadcn/tailwind.css`                                                                                                                                                                                                                                                                                                                                       | dépend d'OWN-7                                            |
+| SH-SITE-REDIS | Façades Redis du site (`memory-rate-limit.ts`, `databooks-redis.ts`) sur `createResilientRedis`                                                                                                                                                                                                                                                                                                                                                                                                                       | —                                                         |
+| SH-AI-2       | Retrait de `RERANK_URL`, l'ancien `embeddings.ts` du bot (transformers.js), NLLB, service Python `relecture-ocr` (LibreTranslate et la sonde de traduction du bot retirés le 2026-10-05) ; OCR du bot sur ppocr ; lexique unique                                                                                                                                                                                                                                                                                      | dépend d'APH-2, APH-5, APH-9                              |
+| SH-ID         | Unification d'identité : purge d'un compte dans tous les magasins, avenir du silo du bot                                                                                                                                                                                                                                                                                                                                                                                                                              | dépend de DB-P3 et d'INFRA-2                              |
+| SH-SOFTDEL    | Suppression logique pour `WikiCategory`/`WikiPage` et les posts                                                                                                                                                                                                                                                                                                                                                                                                                                                       | dépend de DB-P3                                           |
+| P2-BXC        | `@aphrody/shenron-pipeline/bxc` en source seule, chemins absolus retirés                                                                                                                                                                                                                                                                                                                                                                                                                                              | —                                                         |
+| SH-TOOLING-P3 | Scripts racine `manga:ocr:*` repointés vers `@aphrody/shenron-pipeline`, builds `@aphrody/*` hors Turbo (retiré depuis)                                                                                                                                                                                                                                                                                                                                                                                               | —                                                         |
+| SH-GRAPH      | **Clos (2026-10-05)** : écarts révélés par l'audit des paquets consommateurs, ligne de base vide. `./aphrody/a2a-transport` classé `server` ; `@aphrody/shenron-db/redis` admis pour la qualification live du pipeline (§4.2) ; le doublon `scripts/manga-spin-offs.ts` retiré et `bridge-rag.live.test.ts` déplacé dans `apps/bot` ; la couche processus du pipeline (`./aphrody/cli`, `./bxc`) passée sur `node:child_process`, de classe `server`, ce qui lève l'import par le site d'un sous-chemin de classe bun | —                                                         |
 
 **`aphrody`**
 
@@ -1927,7 +1927,7 @@ d'`aphrody-ui`, OS-4 d'`aphrody-web` (BXC), OS-5 d'`aphrody-ai`)
 | Ticket | Contenu                                                                                                                                                                                                                                                     |
 | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | OS-1   | `@aphrody/canvas` : la façade 1.0.9-aphrody.2 est publiée et consommée ; reste à accorder `.gitmodules` avec `m3/docs/reference/CANVAS-UPSTREAM.md` et à garder les versions suivantes sur les mêmes binaires préconstruits (win32-x64-msvc, linux-x64-gnu) |
-| OS-2   | Service Rust de transformation et d'analyse d'image (redimensionnement, WebP/AVIF, dHash, PSNR, trait), catalogué ; `@shenron/images` devient un client à API inchangée                                                                                     |
+| OS-2   | Service Rust de transformation et d'analyse d'image (redimensionnement, WebP/AVIF, dHash, PSNR, trait), catalogué ; `@aphrody/shenron-images` devient un client à API inchangée                                                                             |
 | OS-3   | `aphrody-render` : texte multiligne et CJK, dégradés, 1200 × 630, images compactes, types TS générés                                                                                                                                                        |
 | OS-4   | `aphrody-web-api` : état des jobs persisté, correctif `chunks=0` publié, exposition publique réconciliée, surface frames                                                                                                                                    |
 | OS-5   | Glossaire injecté dans `aphrody-translate` (avec APH-9)                                                                                                                                                                                                     |
@@ -1940,7 +1940,7 @@ d'`aphrody-ui`, OS-4 d'`aphrody-web` (BXC), OS-5 d'`aphrody-ai`)
 | INFRA-2 | `SHENRON_A2A_TOKEN` pour le site et le bot ; confirmation de `SESSION_SECRET` ; scission de `SHENRON_ADMIN_TOKEN` (service site → bot, connexion admin, écriture databooks) ; nom canonique du secret acting-user ; `DISCORD_TOKEN` dans l'environnement du site                                       |
 | INFRA-3 | Confirmer `APHRODY_SHENRON_API_URL`/`_TOKEN` et `DATABASE_URL` dans les deux unités ; décider du sort des fichiers d'environnement personnels ; cataloguer Redis (`REDIS_URL`) ; champ de contrat d'environnement (`RAG_BACKEND`, `APHRODY_LLM_MODEL`, `APHRODY_WEB_API_URL`, `APHRODY_BXC_API_TOKEN`) |
 | INFRA-4 | Hôtes Vercel morts ou non ; `X-Real-IP` posé par Nginx devant `shenron-bot`                                                                                                                                                                                                                            |
-| INFRA-5 | Consigner « `@shenron/api` monté dans `shenron-bot` et `shenron-site`, pas d'unité `shenron-api` » ; réconcilier `application-contracts.json` (« reuse-rg-ui-contract », « reuse-rg-better-auth-boundary ») avec les paquets Shenron bâtis sur les motifs RG                                           |
+| INFRA-5 | Consigner « `@aphrody/shenron-api` monté dans `shenron-bot` et `shenron-site`, pas d'unité `shenron-api` » ; réconcilier `application-contracts.json` (« reuse-rg-ui-contract », « reuse-rg-better-auth-boundary ») avec les paquets Shenron bâtis sur les motifs RG                                   |
 | INFRA-6 | Origines publiques de l'auth issues de `nginx-routes.json` ou de l'environnement                                                                                                                                                                                                                       |
 | INFRA-7 | Plafonds de ressources d'`aphrody-ai-http` et d'`aphrody-shenron-embed` (pas de plafond serré pour `shenron-bot`, cf. son unité)                                                                                                                                                                       |
 | INFRA-8 | `SHENRON_REVALIDATE_SECRET` et route signée de revalidation du site, dès qu'une écriture partira du bot                                                                                                                                                                                                |
@@ -1985,7 +1985,7 @@ Chaque paquet garde au moins un test ; la CI (`.github/workflows/ci.yml`) couvre
 
 `scripts/audit/check-workspace-packages.ts` (§4.3) et, dans chaque paquet, `test/portability.test.ts`
 qui appelle `checkPackageRuntimes`, `checkNoEscapingImports` et
-`checkEmptyEnvImports` de `@shenron/config/guards`.
+`checkEmptyEnvImports` de `@aphrody/shenron-config/guards`.
 
 ### 8.3 Tests ajoutés par paquet
 
@@ -2008,7 +2008,7 @@ qui appelle `checkPackageRuntimes`, `checkNoEscapingImports` et
 | OpenAPI généré                     | `openapi/public.json` = document produit avec des ports factices (`--check`)                                                                                                  |
 | Catégories Dragon Ball MCP         | Shenron possède les identifiants et labels ; test 21 identifiants uniques, chaque catégorie a une route de liste et de détail                                                 |
 | Chemins du plugin et de `llms.txt` | chaque chemin est dans `ENDPOINTS` ou `LEGACY_PUBLIC_PATHS` ; `/graphql` présent ; chaque chemin annoncé par `llms.txt` a son `route.ts`                                      |
-| Wire Aphrody                       | fixtures de `@shenron/pipeline/ai/wire` vs `http_rest.rs` (`check-contracts.ts`)                                                                                              |
+| Wire Aphrody                       | fixtures de `@aphrody/shenron-pipeline/ai/wire` vs `http_rest.rs` (`check-contracts.ts`)                                                                                      |
 | Acting-user                        | `ACTING_USER_TEST_VECTOR` vérifié par le paquet, la façade du bot et le signataire du site                                                                                    |
 | Réponses d'administration du bot   | formes enregistrées de `/api/stats/totals`, `/api/services`, `/api/database`, `/api/database/:table`, `/api/wiki/stats`, `/api/economy/stats` lues par les schémas du contrat |
 | Jetons, CSS                        | `tokens.ts` = génération depuis `styles.css` ; équivalence de la CSS compilée (site, tableau de bord)                                                                         |
@@ -2031,7 +2031,7 @@ qui appelle `checkPackageRuntimes`, `checkNoEscapingImports` et
 | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | `server-only` et l'environnement t3 font planter les paquets hors Next                    | règles du §3.0 appliquées mécaniquement ; façades du site conservées ; import à environnement vide                                                       | faible                                                                                                              |
 | Écritures dans la release immuable (jeu d'or, registres GOALS et ADMIN-REPORTS, `.coord`) | `resolveDataPath` avec défaut hérité et avertissement en production ; aucun écrivain ne passe dans un paquet sans chemin injecté ; INFRA-1 puis SH-PATHS | jusqu'à INFRA-1, la production se comporte comme aujourd'hui (écriture probablement refusée) : signalé, pas corrigé |
-| Gel databooks inactif en production                                                       | `@shenron/db/guards`, fermé par défaut en production (S11)                                                                                               | écritures databooks refusées en production tant qu'INFRA-1 ne fournit pas le chemin : voulu par le plan             |
+| Gel databooks inactif en production                                                       | `@aphrody/shenron-db/guards`, fermé par défaut en production (S11)                                                                                       | écritures databooks refusées en production tant qu'INFRA-1 ne fournit pas le chemin : voulu par le plan             |
 | Cockpit : lecture PostgreSQL, écriture SQLite, aucune synchro                             | aucun magasin ne change en Phase 1 ; aucune route neuve ne lit un magasin et écrit dans l'autre                                                          | affichage du cockpit toujours en retard (OPS-3)                                                                     |
 | API autonome en conflit avec l'infra et la passerelle Discord                             | montage dans les processus existants ; routes liées à la passerelle restent dans le bot                                                                  | aucun                                                                                                               |
 
@@ -2043,10 +2043,10 @@ qui appelle `checkPackageRuntimes`, `checkNoEscapingImports` et
 | Actions serveur absentes des cartes          | inchangées (façade `requireAdmin`), migration en SH-API-4 ; suppressions physiques signalées (SH-SOFTDEL)                                                          |
 | Redis partagé et fragile                     | `createResilientRedis` avant tout port de limiteur ou de cache (B8)                                                                                                |
 | Génération couplée au SQLite du bot          | `ChunkContentPort` ; `rag.ts` n'importe plus `llm.ts` (test de graphe)                                                                                             |
-| Jeu d'or : 5 résolveurs                      | `resolveDataPath("ragGold")` et `@shenron/pipeline/ai/eval` comme analyseur unique                                                                                 |
+| Jeu d'or : 5 résolveurs                      | `resolveDataPath("ragGold")` et `@aphrody/shenron-pipeline/ai/eval` comme analyseur unique                                                                         |
 | Consommateurs externes non inventoriés       | tests de dérive du §8.4 ; GraphQL conservé                                                                                                                         |
 | Suppression de compte incomplète             | silos non fusionnés ; SH-ID                                                                                                                                        |
-| Pas de contrat d'environnement partagé       | `@shenron/config/env`, `ENV_ALIASES`, `DATABASE_POOL_MAX` dans l'environnement de build                                                                            |
+| Pas de contrat d'environnement partagé       | `@aphrody/shenron-config/env`, `ENV_ALIASES`, `DATABASE_POOL_MAX` dans l'environnement de build                                                                    |
 
 ### 9.3 Risques d'implémentation
 
@@ -2085,7 +2085,7 @@ Toutes réversibles et consignées dans [PLAN.md](../reference/root/PLAN.md) :
 6. Le tableau de bord du bot garde sa palette bleue et son rayon 0.
 7. La valeur par défaut d'`ember` reste celle d'aujourd'hui (OWN-7).
 8. Les wrappers inutilisés restent dans le site en Phase 1.
-9. `@shenron/pipeline/ai` lit `APHRODY_AI_EMBED_BASE_URL` (base en `/v1`), puis ses alias
+9. `@aphrody/shenron-pipeline/ai` lit `APHRODY_AI_EMBED_BASE_URL` (base en `/v1`), puis ses alias
    hérités ; `EMBED_URL` y est traité comme une origine (`/v1` ajouté). Aucune
    adresse par défaut ne subsiste (contrat l'Infra du monorepo v1, 2026-09-25).
 10. Le chat reste sur l'adaptateur `LanguageModelV4` jusqu'à APH-3.

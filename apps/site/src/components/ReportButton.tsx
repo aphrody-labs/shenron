@@ -9,8 +9,8 @@
  *
  * Masqué sur le back-office (/admin) : l'équipe n'a pas à se signaler à elle-même.
  */
-import { Chargement, CocheCercle, Croix, Drapeau } from "@shenron/ui/icones";
-import { useFocusTrap } from "@shenron/ui/use-focus-trap";
+import { Chargement, CocheCercle, Croix, Drapeau } from "@aphrody/shenron-ui/icones";
+import { useFocusTrap } from "@aphrody/shenron-ui/use-focus-trap";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";

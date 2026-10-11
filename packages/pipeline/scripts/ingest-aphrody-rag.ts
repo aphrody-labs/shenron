@@ -8,7 +8,7 @@
  * fiche wiki, jamais l'auteur lui-même. Ce script comble ce trou.
  *
  * La liste des documents admis n'est pas redéfinie ici : elle est importée de
- * `@shenron/config/aphrody-corpus` (`DOCUMENTS`, `REFUSÉ`), partagée avec le
+ * `@aphrody/shenron-config/aphrody-corpus` (`DOCUMENTS`, `REFUSÉ`), partagée avec le
  * site. Une source ajoutée là-bas entre dans le RAG au
  * prochain passage, et un miroir de wiki de fans reste refusé aux deux endroits
  * — la règle est écrite une fois.
@@ -28,13 +28,13 @@
  */
 import { Database } from "bun:sqlite";
 import * as sqliteVec from "sqlite-vec";
-import { ShenronEmbeddingsClient } from "@shenron/pipeline/aphrody";
+import { ShenronEmbeddingsClient } from "@aphrody/shenron-pipeline/aphrody";
 import { readdir } from "node:fs/promises";
 import { writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { chunkDocument } from "./_rag-chunk";
-import { DOCUMENTS, REFUSÉ } from "@shenron/config/aphrody-corpus";
+import { DOCUMENTS, REFUSÉ } from "@aphrody/shenron-config/aphrody-corpus";
 import {
   ragMetaOf,
   repoRootFromScript,

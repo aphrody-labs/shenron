@@ -8,12 +8,12 @@
         "@aphrody/agent-browser": "catalog:",
         "@aphrody/bun-runtime": "catalog:",
         "@aphrody/next-bun": "catalog:",
+        "@aphrody/shenron-api": "workspace:*",
+        "@aphrody/shenron-config": "workspace:*",
+        "@aphrody/shenron-db": "workspace:*",
+        "@aphrody/shenron-pipeline": "workspace:*",
+        "@aphrody/shenron-ui": "workspace:*",
         "@aphrody/web-test": "catalog:",
-        "@shenron/api": "workspace:*",
-        "@shenron/config": "workspace:*",
-        "@shenron/db": "workspace:*",
-        "@shenron/pipeline": "workspace:*",
-        "@shenron/ui": "workspace:*",
         "@types/bun": "catalog:",
         "@types/node": "catalog:",
         "@types/react": "catalog:",
@@ -25,23 +25,23 @@
       },
     },
     "apps/bot": {
-      "name": "@shenron/bot",
+      "name": "@aphrody/shenron-bot",
       "version": "1.4.4",
       "dependencies": {
         "@aphrody/discord-kit": "catalog:",
         "@aphrody/messaging": "catalog:",
         "@aphrody/paths": "catalog:",
+        "@aphrody/shenron-api": "workspace:*",
+        "@aphrody/shenron-auth": "workspace:*",
+        "@aphrody/shenron-config": "workspace:*",
+        "@aphrody/shenron-db": "workspace:*",
+        "@aphrody/shenron-images": "workspace:*",
+        "@aphrody/shenron-native": "workspace:*",
+        "@aphrody/shenron-pipeline": "workspace:*",
         "@discordx/di": "catalog:",
         "@discordx/pagination": "catalog:",
         "@napi-rs/canvas": "catalog:",
         "@pothos/core": "catalog:",
-        "@shenron/api": "workspace:*",
-        "@shenron/auth": "workspace:*",
-        "@shenron/config": "workspace:*",
-        "@shenron/db": "workspace:*",
-        "@shenron/images": "workspace:*",
-        "@shenron/native": "workspace:*",
-        "@shenron/pipeline": "workspace:*",
         "better-auth": "catalog:",
         "discord.js": "catalog:",
         "discordx": "catalog:",
@@ -63,18 +63,18 @@
       },
     },
     "apps/server": {
-      "name": "@shenron/server",
+      "name": "@aphrody/shenron-server",
       "version": "1.4.4",
       "bin": {
         "shenron-server": "./src/cli.ts",
       },
       "dependencies": {
-        "@shenron/api": "workspace:*",
-        "@shenron/auth": "workspace:*",
-        "@shenron/config": "workspace:*",
-        "@shenron/db": "workspace:*",
-        "@shenron/native": "workspace:*",
-        "@shenron/pipeline": "workspace:*",
+        "@aphrody/shenron-api": "workspace:*",
+        "@aphrody/shenron-auth": "workspace:*",
+        "@aphrody/shenron-config": "workspace:*",
+        "@aphrody/shenron-db": "workspace:*",
+        "@aphrody/shenron-native": "workspace:*",
+        "@aphrody/shenron-pipeline": "workspace:*",
       },
       "devDependencies": {
         "@types/bun": "catalog:",
@@ -83,7 +83,7 @@
       },
     },
     "apps/site": {
-      "name": "@shenron/site",
+      "name": "@aphrody/shenron-site",
       "version": "1.4.4",
       "dependencies": {
         "@aphrody/discord-kit": "catalog:",
@@ -91,6 +91,15 @@
         "@aphrody/next-bun": "catalog:",
         "@aphrody/paths": "catalog:",
         "@aphrody/plugin-opener": "catalog:",
+        "@aphrody/shenron-api": "workspace:*",
+        "@aphrody/shenron-auth": "workspace:*",
+        "@aphrody/shenron-config": "workspace:*",
+        "@aphrody/shenron-db": "workspace:*",
+        "@aphrody/shenron-engine": "workspace:*",
+        "@aphrody/shenron-images": "workspace:*",
+        "@aphrody/shenron-lexicon": "workspace:*",
+        "@aphrody/shenron-pipeline": "workspace:*",
+        "@aphrody/shenron-ui": "workspace:*",
         "@codemirror/lang-markdown": "catalog:",
         "@codemirror/language-data": "catalog:",
         "@codemirror/state": "catalog:",
@@ -100,15 +109,6 @@
         "@paralleldrive/cuid2": "catalog:",
         "@pixi/react": "catalog:",
         "@sglkc/kuromoji": "catalog:",
-        "@shenron/api": "workspace:*",
-        "@shenron/auth": "workspace:*",
-        "@shenron/config": "workspace:*",
-        "@shenron/db": "workspace:*",
-        "@shenron/engine": "workspace:*",
-        "@shenron/images": "workspace:*",
-        "@shenron/lexicon": "workspace:*",
-        "@shenron/pipeline": "workspace:*",
-        "@shenron/ui": "workspace:*",
         "@t3-oss/env-nextjs": "catalog:",
         "@tanstack/react-query": "catalog:",
         "@tiptap/core": "catalog:",
@@ -176,28 +176,28 @@
       },
     },
     "packages/api": {
-      "name": "@shenron/api",
+      "name": "@aphrody/shenron-api",
       "version": "1.4.4",
       "dependencies": {
         "@aphrody/http": "catalog:",
-        "@shenron/auth": "workspace:*",
-        "@shenron/config": "workspace:*",
-        "@shenron/db": "workspace:*",
-        "@shenron/lexicon": "workspace:*",
-        "@shenron/pipeline": "workspace:*",
+        "@aphrody/shenron-auth": "workspace:*",
+        "@aphrody/shenron-config": "workspace:*",
+        "@aphrody/shenron-db": "workspace:*",
+        "@aphrody/shenron-lexicon": "workspace:*",
+        "@aphrody/shenron-pipeline": "workspace:*",
         "better-auth": "catalog:",
         "drizzle-orm": "catalog:",
         "zod": "catalog:",
       },
     },
     "packages/auth": {
-      "name": "@shenron/auth",
+      "name": "@aphrody/shenron-auth",
       "version": "1.4.4",
       "dependencies": {
-        "@shenron/config": "workspace:*",
+        "@aphrody/shenron-config": "workspace:*",
       },
       "devDependencies": {
-        "@shenron/db": "workspace:*",
+        "@aphrody/shenron-db": "workspace:*",
         "@types/react": "catalog:",
         "better-auth": "catalog:",
         "drizzle-orm": "catalog:",
@@ -216,7 +216,7 @@
       ],
     },
     "packages/config": {
-      "name": "@shenron/config",
+      "name": "@aphrody/shenron-config",
       "version": "1.4.4",
       "dependencies": {
         "@aphrody/paths": "catalog:",
@@ -224,18 +224,18 @@
       },
     },
     "packages/db": {
-      "name": "@shenron/db",
+      "name": "@aphrody/shenron-db",
       "version": "1.4.4",
       "dependencies": {
+        "@aphrody/shenron-config": "workspace:*",
         "@aphrody/sql": "catalog:",
         "@paralleldrive/cuid2": "catalog:",
-        "@shenron/config": "workspace:*",
         "drizzle-orm": "catalog:",
         "postgres": "catalog:",
       },
     },
     "packages/engine": {
-      "name": "@shenron/engine",
+      "name": "@aphrody/shenron-engine",
       "version": "1.4.4",
       "devDependencies": {
         "@types/bun": "catalog:",
@@ -243,14 +243,14 @@
       },
     },
     "packages/images": {
-      "name": "@shenron/images",
+      "name": "@aphrody/shenron-images",
       "version": "1.4.4",
       "dependencies": {
         "sharp": "catalog:",
       },
     },
     "packages/koharu": {
-      "name": "@shenron/koharu",
+      "name": "@aphrody/shenron-koharu",
       "version": "1.4.4",
       "dependencies": {
         "@aphrody/api": "catalog:",
@@ -261,7 +261,7 @@
       },
     },
     "packages/lexicon": {
-      "name": "@shenron/lexicon",
+      "name": "@aphrody/shenron-lexicon",
       "version": "1.4.4",
       "devDependencies": {
         "@types/bun": "catalog:",
@@ -269,7 +269,7 @@
       },
     },
     "packages/media": {
-      "name": "@shenron/media",
+      "name": "@aphrody/shenron-media",
       "version": "1.4.4",
       "dependencies": {
         "@aphrody/http": "catalog:",
@@ -280,7 +280,7 @@
       },
     },
     "packages/native": {
-      "name": "@shenron/native",
+      "name": "@aphrody/shenron-native",
       "version": "1.4.4",
       "dependencies": {
         "@aphrody/bun": "catalog:",
@@ -291,7 +291,7 @@
       },
     },
     "packages/pipeline": {
-      "name": "@shenron/pipeline",
+      "name": "@aphrody/shenron-pipeline",
       "version": "1.4.4",
       "bin": {
         "pipeline": "./src/cli.ts",
@@ -303,12 +303,12 @@
         "@aphrody/inference": "catalog:",
         "@aphrody/paths": "catalog:",
         "@aphrody/runtime-sdk": "catalog:",
-        "@shenron/config": "workspace:*",
-        "@shenron/db": "workspace:*",
-        "@shenron/koharu": "workspace:*",
-        "@shenron/lexicon": "workspace:*",
-        "@shenron/media": "workspace:*",
-        "@shenron/native": "workspace:*",
+        "@aphrody/shenron-config": "workspace:*",
+        "@aphrody/shenron-db": "workspace:*",
+        "@aphrody/shenron-koharu": "workspace:*",
+        "@aphrody/shenron-lexicon": "workspace:*",
+        "@aphrody/shenron-media": "workspace:*",
+        "@aphrody/shenron-native": "workspace:*",
         "ai": "catalog:",
         "postgres": "catalog:",
         "sharp": "catalog:",
@@ -317,7 +317,7 @@
       },
     },
     "packages/ui": {
-      "name": "@shenron/ui",
+      "name": "@aphrody/shenron-ui",
       "version": "1.4.4",
       "dependencies": {
         "@aphrody/api": "catalog:",
@@ -327,10 +327,10 @@
         "@aphrody/m3-theme": "catalog:",
         "@aphrody/m3-tokens": "catalog:",
         "@aphrody/plugin-opener": "catalog:",
+        "@aphrody/shenron-config": "workspace:*",
+        "@aphrody/shenron-koharu": "workspace:*",
+        "@aphrody/shenron-pipeline": "workspace:*",
         "@base-ui/react": "catalog:",
-        "@shenron/config": "workspace:*",
-        "@shenron/koharu": "workspace:*",
-        "@shenron/pipeline": "workspace:*",
         "@tanstack/react-query": "catalog:",
         "@tanstack/react-virtual": "catalog:",
         "class-variance-authority": "catalog:",
@@ -597,6 +597,36 @@
     "@aphrody/plugin-opener": ["@aphrody/plugin-opener@3.0.0-alpha.5", "", { "dependencies": { "@aphrody/api": "3.0.0-alpha.5" } }, "sha512-rW2El+81DnSSBr6aiE0ds8X2HfKn7qxZ3uzm9I/Q+YNe0h8A4n1LxHYiLRudrMH1Z0BxXnpFK5RRigU1jkYBTw=="],
 
     "@aphrody/runtime-sdk": ["@aphrody/runtime-sdk@0.1.4", "", {}, "sha512-BaMTxKPiloX6v0fCghhoQHb1IFpU2RGgUpaOO6BO37xZ0T6llMpx9TsnH9vHJGGI3PDkC7grAMLONrb/gJeoHA=="],
+
+    "@aphrody/shenron-api": ["@aphrody/shenron-api@workspace:packages/api"],
+
+    "@aphrody/shenron-auth": ["@aphrody/shenron-auth@workspace:packages/auth"],
+
+    "@aphrody/shenron-bot": ["@aphrody/shenron-bot@workspace:apps/bot"],
+
+    "@aphrody/shenron-config": ["@aphrody/shenron-config@workspace:packages/config"],
+
+    "@aphrody/shenron-db": ["@aphrody/shenron-db@workspace:packages/db"],
+
+    "@aphrody/shenron-engine": ["@aphrody/shenron-engine@workspace:packages/engine"],
+
+    "@aphrody/shenron-images": ["@aphrody/shenron-images@workspace:packages/images"],
+
+    "@aphrody/shenron-koharu": ["@aphrody/shenron-koharu@workspace:packages/koharu"],
+
+    "@aphrody/shenron-lexicon": ["@aphrody/shenron-lexicon@workspace:packages/lexicon"],
+
+    "@aphrody/shenron-media": ["@aphrody/shenron-media@workspace:packages/media"],
+
+    "@aphrody/shenron-native": ["@aphrody/shenron-native@workspace:packages/native"],
+
+    "@aphrody/shenron-pipeline": ["@aphrody/shenron-pipeline@workspace:packages/pipeline"],
+
+    "@aphrody/shenron-server": ["@aphrody/shenron-server@workspace:apps/server"],
+
+    "@aphrody/shenron-site": ["@aphrody/shenron-site@workspace:apps/site"],
+
+    "@aphrody/shenron-ui": ["@aphrody/shenron-ui@workspace:packages/ui"],
 
     "@aphrody/sql": ["@aphrody/sql@0.1.2", "", { "dependencies": { "sqlite-vec": "^0.1.9" } }, "sha512-/lqD1x0YxRhYZZIScyukPDXyX9PVKeo9TC/p0BLxsZ1y9ppzaoIhqZWlNfhVB8F9NUIRKxeXB6YbbPWJdZLT3Q=="],
 
@@ -1155,36 +1185,6 @@
     "@sglkc/kuromoji": ["@sglkc/kuromoji@1.1.0", "", { "dependencies": { "async": "^2.0.1", "doublearray": "0.0.2", "fflate": "^0.8.0" } }, "sha512-uKxXYUM5XNjZw0ia0yMYTI3jHSh/c1gEMNvcvS6J49B4mI+PAq8iRYPTxh2ma0RWm45LyWWrILxCJAIXpi/pww=="],
 
     "@shadcn/registry": ["@shadcn/registry@0.1.0", "", { "dependencies": { "@babel/core": "^7.28.0", "@babel/parser": "^7.28.0", "@babel/plugin-transform-typescript": "^7.28.0", "@babel/preset-typescript": "^7.27.1", "@dotenvx/dotenvx": "^1.48.4", "cn": "^0.2.4", "cosmiconfig": "^9.0.0", "deepmerge": "^4.3.1", "execa": "^9.6.0", "fast-glob": "^3.3.3", "fs-extra": "^11.3.1", "fuzzysort": "^3.1.0", "kleur": "^4.1.5", "ora": "^8.2.0", "postcss": "^8.5.23", "prompts": "^2.4.2", "recast": "^0.23.11", "socks": "^2.8.8", "stringify-object": "^5.0.0", "ts-morph": "^26.0.0", "tsconfig-paths": "^4.2.0", "type-fest": "^4.41.0", "undici": "^7.29.0", "zod": "^3.24.1" } }, "sha512-eMF6tPNi9SWZgPvqBvPQFhJN7gV9PcjRdF3kPiiWo5yZJocWqVgxFuspCHrOij3bIJ797NIGZ+j/v7AiXfA6qg=="],
-
-    "@shenron/api": ["@shenron/api@workspace:packages/api"],
-
-    "@shenron/auth": ["@shenron/auth@workspace:packages/auth"],
-
-    "@shenron/bot": ["@shenron/bot@workspace:apps/bot"],
-
-    "@shenron/config": ["@shenron/config@workspace:packages/config"],
-
-    "@shenron/db": ["@shenron/db@workspace:packages/db"],
-
-    "@shenron/engine": ["@shenron/engine@workspace:packages/engine"],
-
-    "@shenron/images": ["@shenron/images@workspace:packages/images"],
-
-    "@shenron/koharu": ["@shenron/koharu@workspace:packages/koharu"],
-
-    "@shenron/lexicon": ["@shenron/lexicon@workspace:packages/lexicon"],
-
-    "@shenron/media": ["@shenron/media@workspace:packages/media"],
-
-    "@shenron/native": ["@shenron/native@workspace:packages/native"],
-
-    "@shenron/pipeline": ["@shenron/pipeline@workspace:packages/pipeline"],
-
-    "@shenron/server": ["@shenron/server@workspace:apps/server"],
-
-    "@shenron/site": ["@shenron/site@workspace:apps/site"],
-
-    "@shenron/ui": ["@shenron/ui@workspace:packages/ui"],
 
     "@sindresorhus/merge-streams": ["@sindresorhus/merge-streams@4.0.0", "", {}, "sha512-tlqY9xq5ukxTUZBmoOp+m61cqwQD5pHJtFY3Mn8CA8ps6yghLH/Hw8UPdqg4OLmFW3IFlcXnQNmo/dh8HzXYIQ=="],
 

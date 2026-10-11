@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Administration par adresse IP (`SHENRON_ADMIN_IPS`, `@/lib/admin-ip`). */
 import { describe, expect, mock, test } from "bun:test";
-import { parseIpAllowlist } from "@shenron/config/net";
+import { parseIpAllowlist } from "@aphrody/shenron-config/net";
 
 mock.module("server-only", () => ({}));
 const { adminIpRanges, isAdminIp } = await import("../src/lib/admin-ip");

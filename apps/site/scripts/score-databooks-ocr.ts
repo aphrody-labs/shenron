@@ -7,7 +7,7 @@
  *   bun scripts/score-databooks-ocr.ts <benchmark.jsonl> <resultats.jsonl>
  */
 import { basename } from "node:path";
-import { classerDefaut } from "@shenron/config/databooks-defauts";
+import { classerDefaut } from "@aphrody/shenron-config/databooks-defauts";
 
 const [benchmarkPath, resultatPath] = Bun.argv.slice(2);
 if (!benchmarkPath || !resultatPath) {

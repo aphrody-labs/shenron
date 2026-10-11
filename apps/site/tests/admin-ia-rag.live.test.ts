@@ -8,7 +8,11 @@
 import { beforeAll, describe, expect, mock, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { loadLiveRagEnv, requireLiveRag, type LiveRag } from "@shenron/pipeline/testing/live-rag";
+import {
+  loadLiveRagEnv,
+  requireLiveRag,
+  type LiveRag,
+} from "@aphrody/shenron-pipeline/testing/live-rag";
 import {
   SourceNotConfiguredError,
   computeRetrievalMetrics,

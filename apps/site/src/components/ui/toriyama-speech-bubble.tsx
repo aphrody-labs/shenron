@@ -1,1 +1,1 @@
-export * from "@shenron/ui/toriyama-speech-bubble";
+export * from "@aphrody/shenron-ui/toriyama-speech-bubble";

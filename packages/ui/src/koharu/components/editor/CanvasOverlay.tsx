@@ -12,7 +12,7 @@ import type {
   Page,
   Point,
   TransformFrame,
-} from "@shenron/koharu/protocol";
+} from "@aphrody/shenron-koharu/protocol";
 
 interface CanvasOverlayProps {
   page: Page;

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { beforeEach, describe, expect, mock, test } from "bun:test";
 import { NextRequest } from "next/server";
-import { DatabooksFrozenError } from "@shenron/db/guards";
+import { DatabooksFrozenError } from "@aphrody/shenron-db/guards";
 
 let admin = true;
 let revertError: Error | null = null;

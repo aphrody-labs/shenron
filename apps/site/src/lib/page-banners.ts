@@ -5,8 +5,8 @@ import {
   createDefaultPageBanners,
   resolvePageBanners as resolveSharedBanners,
   type PageBannersConfig,
-} from "@shenron/config/page-banners";
-export * from "@shenron/config/page-banners";
+} from "@aphrody/shenron-config/page-banners";
+export * from "@aphrody/shenron-config/page-banners";
 const FALLBACK = createDefaultPageBanners(API).fallback;
 export const DEFAULT_PAGE_BANNERS = createDefaultPageBanners(API);
 export function resolvePageBanners(patch: unknown): PageBannersConfig {

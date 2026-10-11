@@ -21,7 +21,7 @@ import { VideoSourceSummary } from "@/components/episodes/VideoSourceSummary";
 import { VideoUnavailableCard } from "@/components/episodes/VideoUnavailableCard";
 import { OffreLegale } from "@/components/episodes/OffreLegale";
 import { EpisodeDownload } from "@/components/episodes/EpisodeDownload";
-import { KenBurns } from "@shenron/ui/cinematic/KenBurns";
+import { KenBurns } from "@aphrody/shenron-ui/cinematic/KenBurns";
 import { AnimatedMedia } from "@/components/media/AnimatedMedia";
 import { BackgroundImage } from "@/components/media/BackgroundImage";
 import { EpisodeScenes } from "./EpisodeScenes";

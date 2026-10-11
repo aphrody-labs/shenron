@@ -1,4 +1,4 @@
-# `@shenron/ui/koharu` — l'éditeur de traduction manga
+# `@aphrody/shenron-ui/koharu` — l'éditeur de traduction manga
 
 L'éditeur React de Koharu (projets, planches, détection, OCR, traduction, nettoyage,
 lettrage, export PSD) vit ici, dans la couche UI unique de Shenron. Il n'existe pas d'autre
@@ -8,20 +8,20 @@ page explique où le trouver.
 
 ## Moteur et transports
 
-- Les commandes et leurs types viennent de `@shenron/koharu/protocol`, généré par Specta
-  depuis `koharu-app` (`bun --filter @shenron/koharu protocol`, ne pas éditer à la main).
+- Les commandes et leurs types viennent de `@aphrody/shenron-koharu/protocol`, généré par Specta
+  depuis `koharu-app` (`bun --filter @aphrody/shenron-koharu protocol`, ne pas éditer à la main).
   `shenron-desktop` (fonctionnalité `koharu`) enregistre ces commandes sous leurs noms
   d'origine et exécute le moteur `koharu-library` dans son propre processus.
-- Le canevas passe par `@shenron/koharu/canvas` (WASM WebGPU de `crates/koharu-canvas`,
-  construit par `bun --filter @shenron/koharu build:wasm` avant tout build du site et émis par
+- Le canevas passe par `@aphrody/shenron-koharu/canvas` (WASM WebGPU de `crates/koharu-canvas`,
+  construit par `bun --filter @aphrody/shenron-koharu build:wasm` avant tout build du site et émis par
   Next sous `_next/static/media/`). Le module se compile en streaming ;
   `preloadCanvasModule()` en lance le téléchargement avant l'ouverture de l'éditeur. Sans
   WebGPU, `createCanvas` rejette une `CanvasUnavailableError` (« WebGPU indisponible : … »)
   que `useCanvas` affiche telle quelle ; la perte du device reste remontée par son rappel.
-- Hors Tauri, `@shenron/koharu/native` parle au même moteur par `koharu-sdk` en JSON Lines sur
-  stdio ; c'est la voie de la chaîne éditoriale (`@shenron/pipeline`), pas celle de l'éditeur.
+- Hors Tauri, `@aphrody/shenron-koharu/native` parle au même moteur par `koharu-sdk` en JSON Lines sur
+  stdio ; c'est la voie de la chaîne éditoriale (`@aphrody/shenron-pipeline`), pas celle de l'éditeur.
 - `components/ShenronExportPanel.tsx` exporte vers la chaîne Shenron par
-  `@shenron/pipeline/koharu`.
+  `@aphrody/shenron-pipeline/koharu`.
 
 ## Entrées
 

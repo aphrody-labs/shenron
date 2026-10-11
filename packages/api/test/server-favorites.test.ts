@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { FAVORITES_BODY_MAX } from "@shenron/config/favorites";
+import { FAVORITES_BODY_MAX } from "@aphrody/shenron-config/favorites";
 import { createShenronApi, type HostSession } from "../src/server";
 import { createMemoryRateLimiter, createPublicCache, noopInvalidation } from "../src/http";
 import { endpoints } from "../src/contract";

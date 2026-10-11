@@ -12,7 +12,7 @@ import {
   postA2AJsonRpc,
   postA2AJsonRpcStream,
   type UpstreamReply,
-} from "@shenron/pipeline/aphrody/a2a-transport";
+} from "@aphrody/shenron-pipeline/aphrody/a2a-transport";
 
 export { A2A_DEFAULT_URL, A2A_URL_ENV, a2aBaseUrl };
 export type { UpstreamReply };

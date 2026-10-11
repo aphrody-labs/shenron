@@ -12,7 +12,7 @@ import {
   createWasmGameEngine,
 } from "../src";
 
-describe("@shenron/engine — Unified Full-Stack Game Engine", () => {
+describe("@aphrody/shenron-engine — Unified Full-Stack Game Engine", () => {
   it("retrieves canonical fighters and authentic portrait assets", () => {
     const goku = getFighterDef("goku");
     expect(goku.name).toBe("Son Goku");

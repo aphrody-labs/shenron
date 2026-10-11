@@ -7,7 +7,7 @@
  */
 import { LoadingText } from "@/components/LoadingText";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Chargement, Croix, Lien } from "@shenron/ui/icones";
+import { Chargement, Croix, Lien } from "@aphrody/shenron-ui/icones";
 import { useState } from "react";
 import { apiAt } from "@/lib/admin-api";
 import { entityRelations, type RelationSpec } from "@/lib/wiki-fields";

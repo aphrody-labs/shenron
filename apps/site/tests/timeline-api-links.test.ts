@@ -1,8 +1,8 @@
 import { describe, expect, mock, test } from "bun:test";
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { endpoints } from "@shenron/api/contract";
-import { isWikiCategoryName } from "@shenron/db/constants";
+import { endpoints } from "@aphrody/shenron-api/contract";
+import { isWikiCategoryName } from "@aphrody/shenron-db/constants";
 
 // `/api/timeline` annonce pour chaque entrée une API de fiche : elle doit
 // mener à une route réelle, pas à `/api/episodes/{id}` (seul `/download` existe).
@@ -83,7 +83,7 @@ describe("/api/timeline : liens d'API", () => {
       const served = routeFile(pathname);
       expect(served, pathname).not.toBeNull();
       if (served !== "route.ts") {
-        // Repli `@shenron/api` : fiche du contrat `/api/public/wiki/{category}/{idOrSlug}`.
+        // Repli `@aphrody/shenron-api` : fiche du contrat `/api/public/wiki/{category}/{idOrSlug}`.
         expect(endpoints.wikiEntity.path).toBe("/api/public/wiki/{category}/{idOrSlug}");
         const [category, id] = served!.split("/").slice(-2);
         expect(isWikiCategoryName(category)).toBe(true);

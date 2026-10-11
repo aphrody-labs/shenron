@@ -15,8 +15,8 @@
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { loadDatabaseUrl } from "@shenron/db/env";
-import { createSql } from "@shenron/db/sql";
+import { loadDatabaseUrl } from "@aphrody/shenron-db/env";
+import { createSql } from "@aphrody/shenron-db/sql";
 import { requireAiHttpUrl } from "../ai/config";
 import { buildSourcesBlock } from "../ai/prompts";
 import { AphrodyComputeClient } from "./compute";

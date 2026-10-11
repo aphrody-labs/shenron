@@ -12,7 +12,7 @@
 import { LoadingText } from "@/components/LoadingText";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bouclier, Chargement, Croix, Plus, Rafraichir } from "@shenron/ui/icones";
+import { Bouclier, Chargement, Croix, Plus, Rafraichir } from "@aphrody/shenron-ui/icones";
 import { api } from "@/lib/admin-api";
 import { RoleBadge, RoleSelect } from "@/components/admin/RoleSelect";
 

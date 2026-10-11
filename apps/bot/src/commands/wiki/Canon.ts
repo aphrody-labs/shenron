@@ -1,4 +1,4 @@
-import { resolveApiUrl, resolveSiteUrl } from "@shenron/config/public-urls";
+import { resolveApiUrl, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import { inject, injectable } from "tsyringe";
 import { Bot, Discord, Guard, Slash, SlashChoice, SlashGroup, SlashOption } from "discordx";
 import {

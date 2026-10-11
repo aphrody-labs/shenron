@@ -6,7 +6,7 @@
  * arrondi complet ; gi (`dbz-orange`) pour l'action principale, écaille
  * (`dbz-green`) pour l'état actif, kinto (`kinto-lumiere`) pour l'anneau de focus.
  *
- * Elles remplacent ici `.dbz-panel` et `.dbz-button` de `@shenron/ui/site.css`
+ * Elles remplacent ici `.dbz-panel` et `.dbz-button` de `@aphrody/shenron-ui/site.css`
  * (ombre décalée noire, dégradé galactique, capitales espacées), que la direction
  * artistique du sprint proscrit et dont le propriétaire est hors de ce lot.
  */

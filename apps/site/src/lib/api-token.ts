@@ -1,7 +1,7 @@
 import "server-only";
 import { isAdminIp } from "@/lib/admin-ip";
-import { acceptedStaticTokens, verifyStaticBearer } from "@shenron/auth/tokens";
-import { ENV_ALIASES, envFirst } from "@shenron/config/env";
+import { acceptedStaticTokens, verifyStaticBearer } from "@aphrody/shenron-auth/tokens";
+import { ENV_ALIASES, envFirst } from "@aphrody/shenron-config/env";
 
 /**
  * Authentification par jeton porteur pour les API d'écriture.
@@ -14,14 +14,14 @@ import { ENV_ALIASES, envFirst } from "@shenron/config/env";
  * `SHENRON_ADMIN_TOKEN` (déjà présent en production). Sans aucun des deux,
  * l'écriture est REFUSÉE — jamais ouverte par défaut.
  *
- * Façade de `verifyStaticBearer` (`@shenron/auth/tokens`) : comparaison à durée
+ * Façade de `verifyStaticBearer` (`@aphrody/shenron-auth/tokens`) : comparaison à durée
  * constante, schéma `Bearer` insensible à la casse, jeton de 16 caractères minimum.
  */
 
 /**
  * Le jeton configuré : `DATABOOKS_API_TOKEN`, puis le jeton admin
  * (`SHENRON_ADMIN_TOKEN`, alias `API_ADMIN_TOKEN`). Une variable vide compte
- * comme absente (`envFirst` de `@shenron/config/env`).
+ * comme absente (`envFirst` de `@aphrody/shenron-config/env`).
  */
 function configuredApiToken(): string {
   return envFirst(process.env, ["DATABOOKS_API_TOKEN", ...ENV_ALIASES.adminToken])?.value ?? "";

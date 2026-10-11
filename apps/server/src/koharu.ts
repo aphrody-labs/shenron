@@ -11,13 +11,13 @@
  *                                                `{ error }`
  *
  * Commands, arguments and results are those of the generated protocol
- * (`@shenron/koharu/protocol`, transport `./transport`). Channel tokens (`__CHANNEL__:<n>`) are
+ * (`@aphrody/shenron-koharu/protocol`, transport `./transport`). Channel tokens (`__CHANNEL__:<n>`) are
  * numbered per session by the page and renumbered here for the one engine process, which is
  * started on first use and again after it exits. The engine reads and writes local files and
  * credentials: the bridge answers loopback peers on a loopback host only, never cross-origin,
  * and never in the production profile.
  */
-import type { LocalApiGroupStatus } from "@shenron/api/contract";
+import type { LocalApiGroupStatus } from "@aphrody/shenron-api/contract";
 
 export const KOHARU_PATH = "/api/local/koharu";
 export const KOHARU_SESSION_HEADER = "x-koharu-session";

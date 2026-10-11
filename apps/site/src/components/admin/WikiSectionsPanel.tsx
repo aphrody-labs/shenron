@@ -26,7 +26,7 @@ import {
   OeilBarre,
   Plus,
   Recherche,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 import { useMemo, useState } from "react";
 import { MarkdownField } from "@/components/admin/MarkdownField";
 import { apiAt } from "@/lib/admin-api";

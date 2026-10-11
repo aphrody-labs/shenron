@@ -37,7 +37,7 @@ import {
 } from "../../lib/document";
 import { pageKey, projectKey, queryClient, refresh, useFonts, usePage } from "../../lib/queries";
 import { useKoharuStore } from "../../lib/store";
-import { previewCanvasOpacity } from "@shenron/koharu/canvas";
+import { previewCanvasOpacity } from "@aphrody/shenron-koharu/canvas";
 import {
   commands,
   type EntityId,
@@ -47,7 +47,7 @@ import {
   type TextAlignment,
   type Typography,
   type WritingMode,
-} from "@shenron/koharu/protocol";
+} from "@aphrody/shenron-koharu/protocol";
 import { Button } from "../../../components/button";
 import {
   DropdownMenu,

@@ -35,7 +35,7 @@
  * ouvrages officiels n'écrivent nulle part n'entre pas au wiki.
  */
 
-import { foldKey } from "@shenron/config/slug";
+import { foldKey } from "@aphrody/shenron-config/slug";
 
 /** Un candidat de graphie, tel que le jeu l'indexe. */
 export interface CandidatXv2 {

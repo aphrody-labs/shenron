@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/api/server` — the single Shenron API server: one route table built from the
+ * `@aphrody/shenron-api/server` — the single Shenron API server: one route table built from the
  * endpoint catalogue (`../contract/endpoints`), served by `Bun.serve({ routes, websocket })` or
  * embedded through `fetch(request)` (Next route handler, the bot's legacy server, tests).
  * Groups are enabled by their ports: wiki, RAG, chat (SSE, WebSocket, resumable streams),
@@ -11,15 +11,15 @@
  * Middleware order: client IP → CORS → method gate → rate limit (direct loopback exempt) →
  * owner/admin auth → zod validation → public cache (ETag, 304) → handler.
  */
-import { resolveLaunchConfig, type LaunchConfig } from "@shenron/config/wiki-launch-config";
-import { sanitizeFavorites, type Favorite } from "@shenron/config/favorites";
+import { resolveLaunchConfig, type LaunchConfig } from "@aphrody/shenron-config/wiki-launch-config";
+import { sanitizeFavorites, type Favorite } from "@aphrody/shenron-config/favorites";
 import { BodyLimitError, readLimitedJson } from "./read-json";
 import { createHash } from "node:crypto";
 import type { Server, ServerWebSocket, WebSocketHandler } from "bun";
-import type { Kind, Lang, Lexicon, Term } from "@shenron/lexicon";
-import { lexicon as embeddedLexicon } from "@shenron/lexicon/data";
-import { isWikiCategoryName, type WikiCategoryName } from "@shenron/db/constants";
-import type { ConversationStore } from "@shenron/db/conversations/types";
+import type { Kind, Lang, Lexicon, Term } from "@aphrody/shenron-lexicon";
+import { lexicon as embeddedLexicon } from "@aphrody/shenron-lexicon/data";
+import { isWikiCategoryName, type WikiCategoryName } from "@aphrody/shenron-db/constants";
+import type { ConversationStore } from "@aphrody/shenron-db/conversations/types";
 import { z } from "zod";
 import {
   ChatRequest,
@@ -36,10 +36,10 @@ import {
   resolveChronologyConfig,
   type ChronologyConfig,
   type TimelineItem,
-} from "@shenron/config/chronology";
-import { resolvePageBanners, type PageBannersConfig } from "@shenron/config/page-banners";
-import { resolveHomeConfig, type HomeConfig } from "@shenron/config/home";
-import { resolveSiteTheme, type SiteTheme } from "@shenron/config/site-theme";
+} from "@aphrody/shenron-config/chronology";
+import { resolvePageBanners, type PageBannersConfig } from "@aphrody/shenron-config/page-banners";
+import { resolveHomeConfig, type HomeConfig } from "@aphrody/shenron-config/home";
+import { resolveSiteTheme, type SiteTheme } from "@aphrody/shenron-config/site-theme";
 import type { MemoryEntry, MemoryListQuery } from "../contract/memory";
 import type { RagContextResponse, RagHit, RagMode, RagSearchQuery } from "../contract/schemas";
 import type { VfsInfoResponse, VfsStatResponse } from "../contract/sync";
@@ -85,7 +85,7 @@ export interface RagPort {
   search(query: RagSearchQuery): Promise<{ mode: RagMode; hits: RagHit[]; error?: string }>;
 }
 
-/** Chat engine port (`createChatEngine` of `@shenron/api/chat`). */
+/** Chat engine port (`createChatEngine` of `@aphrody/shenron-api/chat`). */
 export interface ChatEnginePort {
   run(
     input: { request: ChatRequestParsed; ownerId: string; streamId: string },
@@ -98,7 +98,7 @@ export interface OcrPort {
   recognize(bytes: Uint8Array, mediaType: string): Promise<OcrResponse>;
 }
 
-/** Minimal view of `ShenronVfs` + `VfsRag` (`@shenron/db/vfs`) used by the VFS routes. */
+/** Minimal view of `ShenronVfs` + `VfsRag` (`@aphrody/shenron-db/vfs`) used by the VFS routes. */
 export interface VfsPort {
   info(): VfsInfoResponse;
   stat(path: string): Omit<VfsStatResponse, "path">;
@@ -114,7 +114,7 @@ export interface VfsPort {
 }
 
 /**
- * Better Auth of the host (`@shenron/api/host`): `/api/auth/*` is handed to `handler` as is
+ * Better Auth of the host (`@aphrody/shenron-api/host`): `/api/auth/*` is handed to `handler` as is
  * (every method, Better Auth owns its CORS, cookies and rate limit). Absent: no route.
  */
 export interface FavoritesPort {
@@ -232,7 +232,7 @@ export interface ShenronApiPorts {
   betterAuth?: BetterAuthPort | null;
   favorites?: FavoritesPort | null;
   mcp?: McpProxyPort | null;
-  /** Plugin « shenron » relu depuis `plugin/` du déploiement (`@shenron/api/plugin`). */
+  /** Plugin « shenron » relu depuis `plugin/` du déploiement (`@aphrody/shenron-api/plugin`). */
   plugin?: PluginPort | null;
   /**
    * Public origin of the absolute links the API writes (plugin index and exports), e.g. the
@@ -242,7 +242,7 @@ export interface ShenronApiPorts {
   publicOrigin?: string | null;
   /**
    * Trilingual lexicon (`/api/public/lexicon*`), served beside any other group: the embedded
-   * `@shenron/lexicon` when absent, `null` to disable it.
+   * `@aphrody/shenron-lexicon` when absent, `null` to disable it.
    */
   lexicon?: Lexicon | null;
   rateLimit: RateLimitPort;

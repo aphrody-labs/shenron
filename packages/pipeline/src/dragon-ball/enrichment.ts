@@ -3,7 +3,7 @@
 import { rename } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import postgres from "postgres";
-import { createDatabooksFreezeGate } from "@shenron/db/guards";
+import { createDatabooksFreezeGate } from "@aphrody/shenron-db/guards";
 import { enrichCatalogue, validateCatalogue, type DragonBallCatalogue } from "./catalogue";
 import { DATABOOK_ISBNS } from "./edition-metadata";
 

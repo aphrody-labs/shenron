@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
-import { envString, type EnvSource } from "@shenron/config/env";
+import { envString, type EnvSource } from "@aphrody/shenron-config/env";
 import {
   DESKTOP_LINK,
   desktopCallbackUrl,
   desktopLinkPort,
   homeLanguage,
-} from "@shenron/db/agent-homes/types";
+} from "@aphrody/shenron-db/agent-homes/types";
 import type { BetterAuthPort } from "../server";
 import { signDesktopLink, verifyDesktopLink } from "../desktop-link";
 import { BodyLimitError, readLimitedJson } from "../server/read-json";

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useLayoutEffect } fr
 import { useTranslation } from "react-i18next";
 
 import { orderedLanguageChoices } from "../../lib/translation";
-import type { LanguageChoice } from "@shenron/koharu/protocol";
+import type { LanguageChoice } from "@aphrody/shenron-koharu/protocol";
 import { Button } from "../../../components/button";
 import {
   Select,

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import type { Metadata } from "next";
-import { PageHeader } from "@shenron/ui/layout/PageHeader";
-import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { T } from "@/components/T";
 import { ogMeta } from "@/lib/og";
 import Xenoverse2Explorer from "./Xenoverse2Explorer";

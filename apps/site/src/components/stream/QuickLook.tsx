@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import Image from "next/image";
-import { FlecheCoin, Lecture } from "@shenron/ui/icones";
+import { FlecheCoin, Lecture } from "@aphrody/shenron-ui/icones";
 import { assetUrl } from "@/lib/assets";
 import { isEditableAsset } from "@/lib/images";
 

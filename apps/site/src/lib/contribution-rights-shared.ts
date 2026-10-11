@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { decideAccess } from "@shenron/auth/policy";
+import { decideAccess } from "@aphrody/shenron-auth/policy";
 
 /**
  * Droit de contribution — constantes **client-safe** (aucun import server-only).

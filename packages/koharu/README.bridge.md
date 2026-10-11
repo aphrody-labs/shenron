@@ -1,4 +1,4 @@
-# @shenron/koharu
+# @aphrody/shenron-koharu
 
 This package owns the browser/native boundary of the Shenron Studio editor (engine code name Koharu):
 
@@ -9,4 +9,4 @@ This package owns the browser/native boundary of the Shenron Studio editor (engi
 
 `bun run build:wasm` builds `crates/koharu-canvas` with `cargo build --target wasm32-unknown-unknown` and the `wasm-bindgen` CLI (no wasm-pack) into `src/wasm`, rebuilding only when an input changed (`--force`, `--check`); `src/canvas.ts` streams and compiles the module (`preloadCanvasModule` starts it early).
 
-Regenerate the protocol with `bun --filter @shenron/koharu protocol` (`cargo run -p koharu-app --example protocol`). Do not edit generated protocol or WASM output by hand.
+Regenerate the protocol with `bun --filter @aphrody/shenron-koharu protocol` (`cargo run -p koharu-app --example protocol`). Do not edit generated protocol or WASM output by hand.

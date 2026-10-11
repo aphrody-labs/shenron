@@ -20,7 +20,7 @@ import {
   requireAiHttpToken,
   requireAiHttpUrl,
   resolveVisionModel,
-} from "@shenron/pipeline/ai/config";
+} from "@aphrody/shenron-pipeline/ai/config";
 
 const MODEL = process.env.MM_MODEL ?? resolveVisionModel(process.env);
 const VISION_URL = new URL("/api/v1/shenron/vision/structured", requireAiHttpUrl(process.env));

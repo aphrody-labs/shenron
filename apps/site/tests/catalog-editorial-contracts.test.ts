@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 import { validateCatalogEditorialBody } from "../src/lib/catalog-editorial-contracts";
 import { CatalogMediaConflictError } from "../src/lib/catalog-media-contracts";
 import { z } from "zod";
-import { DatabooksFrozenError } from "@shenron/db/guards";
+import { DatabooksFrozenError } from "@aphrody/shenron-db/guards";
 
 let admin = true;
 let frozen = true;

@@ -21,7 +21,7 @@ import {
   etoilePath,
   etoileViewBox,
   svgBancNuage,
-} from "@shenron/ui/toriyama-svg/couverture";
+} from "@aphrody/shenron-ui/toriyama-svg/couverture";
 
 const racine = new URL("../public/", import.meta.url).pathname;
 const sorties: [string, string][] = [["dbz/marque/banc-nuage.svg", svgBancNuage()]];

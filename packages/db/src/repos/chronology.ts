@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 import { and, asc, eq, or, sql } from "drizzle-orm";
-import { eraOf, type TimelineItem, type ChronologyConfig } from "@shenron/config/chronology";
+import {
+  eraOf,
+  type TimelineItem,
+  type ChronologyConfig,
+} from "@aphrody/shenron-config/chronology";
 import { chronologyConfig } from "../schema";
 import type { ShenronPgDatabase } from "../types";
 

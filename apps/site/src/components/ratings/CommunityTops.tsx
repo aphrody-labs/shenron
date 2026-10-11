@@ -9,7 +9,7 @@
  */
 import { useId, useMemo, useState } from "react";
 import Link from "next/link";
-import { Etoile, Trophee } from "@shenron/ui/icones";
+import { Etoile, Trophee } from "@aphrody/shenron-ui/icones";
 import { T } from "@/components/T";
 import { WikiImg } from "@/components/wiki/WikiImg";
 import type { CommunityTopBoard, CommunityTopsPayload } from "@/lib/community-tops";

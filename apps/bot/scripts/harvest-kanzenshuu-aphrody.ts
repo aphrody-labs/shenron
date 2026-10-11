@@ -33,7 +33,7 @@
 import { mkdir, readdir, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { aphrodyWebScrape } from "@shenron/pipeline/aphrody";
+import { aphrodyWebScrape } from "@aphrody/shenron-pipeline/aphrody";
 
 const SITEMAPS = [
   "https://www.kanzenshuu.com/page-sitemap.xml",

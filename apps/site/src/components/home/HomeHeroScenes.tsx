@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { HomeScene } from "@/lib/home-scenes";
 import { SceneBackdrop } from "./SceneBackdrop";
-import { useScenePlaybackPolicy } from "@shenron/ui/public/SceneBackdrop";
+import { useScenePlaybackPolicy } from "@aphrody/shenron-ui/public/SceneBackdrop";
 
 /** Pause between two hero scenes, as on the former home deck. */
 const ROTATION_MS = 6200;

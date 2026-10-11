@@ -41,7 +41,7 @@ mock.module("@/lib/config", () => ({
 }));
 mock.module("@/lib/env", () => ({ env: { SHENRON_ADMIN_TOKEN: "test-admin-token" } }));
 mock.module("@/lib/db", () => ({ db: { execute: async () => [{ ok: 1 }] } }));
-mock.module("@shenron/pipeline/aphrody/a2a", () => ({
+mock.module("@aphrody/shenron-pipeline/aphrody/a2a", () => ({
   ShenronA2AHub: {
     configure: () => {},
     listEnvelopes: () => [],

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { PageHero as PortablePageHero } from "@shenron/ui/layout/PageHero";
+import { PageHero as PortablePageHero } from "@aphrody/shenron-ui/layout/PageHero";
 import type { ComponentProps } from "react";
 
 export function PageHero(props: Omit<ComponentProps<typeof PortablePageHero>, "renderImage">) {

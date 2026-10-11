@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { KintoUn } from "@shenron/ui/toriyama";
+import { KintoUn } from "@aphrody/shenron-ui/toriyama";
 import { useT } from "@/components/T";
 
 /** Les figures déclenchées au clic, dans l'ordre où elles s'enchaînent. */

@@ -2,7 +2,7 @@
 import { describe, expect, test } from "bun:test";
 import { DOCUMENTS, PARSEUR_NOMS, REFUSÉ } from "../src/aphrody-corpus";
 
-describe("@shenron/config/aphrody-corpus", () => {
+describe("@aphrody/shenron-config/aphrody-corpus", () => {
   test("motifs are unique and none is refused", () => {
     expect(new Set(DOCUMENTS.map((d) => d.motif)).size).toBe(DOCUMENTS.length);
     for (const doc of DOCUMENTS) expect(REFUSÉ.test(doc.motif)).toBe(false);

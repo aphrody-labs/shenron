@@ -20,14 +20,14 @@
  * Server-only.
  */
 import "server-only";
-import { DEFAULT_AGENT_RATE_LIMIT } from "@shenron/auth/agent-keys";
-import { agentKeyStrategy, authorize } from "@shenron/auth/guards";
+import { DEFAULT_AGENT_RATE_LIMIT } from "@aphrody/shenron-auth/agent-keys";
+import { agentKeyStrategy, authorize } from "@aphrody/shenron-auth/guards";
 import {
   createAgentKeyRepository,
   type AgentAuditView,
   type AgentKeyView,
   type CreatedAgentKey,
-} from "@shenron/db/repos/agent-keys";
+} from "@aphrody/shenron-db/repos/agent-keys";
 import { db } from "@/lib/db";
 import type { AgentScope } from "@/db/schema";
 
@@ -41,9 +41,9 @@ export { parseScopes } from "@/lib/agent-scopes";
 export type { AgentKeyView, CreatedAgentKey };
 
 /**
- * Stockage : `createAgentKeyRepository` (`@shenron/db`) — seul le SHA-256 du
+ * Stockage : `createAgentKeyRepository` (`@aphrody/shenron-db`) — seul le SHA-256 du
  * jeton est écrit, révocation logique (`revokedAt`), aucune ligne supprimée.
- * Format et hachage des jetons : `@shenron/auth/agent-keys`.
+ * Format et hachage des jetons : `@aphrody/shenron-auth/agent-keys`.
  */
 const repository = createAgentKeyRepository(db);
 

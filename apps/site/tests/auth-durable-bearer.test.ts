@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterAll, beforeEach, describe, expect, mock, setSystemTime, test } from "bun:test";
-import { createAdminCookieCodec } from "@shenron/auth/tokens";
+import { createAdminCookieCodec } from "@aphrody/shenron-auth/tokens";
 
 const SECRET = "durable-auth-secret-0123456789abcdef";
 const TOKEN = "durable-admin-token-0123456789";

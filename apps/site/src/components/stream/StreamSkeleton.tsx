@@ -1,1 +1,1 @@
-export * from "@shenron/ui/public/StreamSkeleton";
+export * from "@aphrody/shenron-ui/public/StreamSkeleton";

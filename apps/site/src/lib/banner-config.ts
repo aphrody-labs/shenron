@@ -2,7 +2,7 @@
 /** Request-cached banner adapter; only the Bun host owns storage. */
 import "server-only";
 import { cache } from "react";
-import { resolveHostUrl } from "@shenron/config/public-urls";
+import { resolveHostUrl } from "@aphrody/shenron-config/public-urls";
 import {
   DEFAULT_PAGE_BANNERS,
   resolveBannerUrl,
@@ -10,8 +10,8 @@ import {
   type PageBannersConfig,
   type PageHeroKey,
 } from "@/lib/page-banners";
-import { createShenronApiClient } from "@shenron/api/client";
-import { endpoints } from "@shenron/api/contract";
+import { createShenronApiClient } from "@aphrody/shenron-api/client";
+import { endpoints } from "@aphrody/shenron-api/contract";
 
 import { HostBannerError } from "./host-banner-error";
 export { HostBannerError } from "./host-banner-error";

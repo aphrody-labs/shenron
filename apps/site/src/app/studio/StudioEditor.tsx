@@ -12,8 +12,8 @@
  */
 import dynamic from "next/dynamic";
 import { type ReactNode, useEffect, useState, useSyncExternalStore } from "react";
-import type { LocalHealthResponse } from "@shenron/api/contract";
-import { isTauri } from "@shenron/ui/studio/tauri-bridge";
+import type { LocalHealthResponse } from "@aphrody/shenron-api/contract";
+import { isTauri } from "@aphrody/shenron-ui/studio/tauri-bridge";
 
 const StudioDesktop = dynamic(() => import("./StudioDesktop"), { ssr: false });
 
@@ -55,7 +55,7 @@ export function StudioEditor({ fallback }: { fallback: ReactNode }) {
   useEffect(() => {
     // The editor is about to open: stream and compile its canvas module meanwhile.
     if (!active) return;
-    void import("@shenron/ui/koharu")
+    void import("@aphrody/shenron-ui/koharu")
       .then((editor) => editor.preloadCanvasModule())
       .catch(() => undefined);
   }, [active]);

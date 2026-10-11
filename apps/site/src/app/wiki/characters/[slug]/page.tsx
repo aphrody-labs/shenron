@@ -2,7 +2,7 @@ import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { JsonLd } from "@/components/JsonLd";
 import { TrackView } from "@/components/TrackView";
-import { ViewTransition } from "@shenron/ui/layout/ViewTransition";
+import { ViewTransition } from "@aphrody/shenron-ui/layout/ViewTransition";
 import { WikiSources } from "@/components/wiki/WikiArticle";
 import { WikiRelatedCharacters } from "@/components/wiki/WikiRelatedCharacters";
 import { CharacterSagaVariants } from "@/components/wiki/CharacterSagaVariants";

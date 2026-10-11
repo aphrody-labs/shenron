@@ -21,7 +21,7 @@ import {
   type MediaCatalog,
 } from "@/components/stream/MediaCatalogRails";
 import { UserNav } from "@/components/user/UserNav";
-import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { T } from "@/components/T";
 import { readAccountSummary } from "@/lib/account-data";
 import { assetUrl } from "@/lib/assets";

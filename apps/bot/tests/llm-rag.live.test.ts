@@ -9,8 +9,8 @@
 import "./setup";
 import { afterEach, beforeAll, beforeEach, describe, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
-import { INJECTION_GUARD, PERSONAS } from "@shenron/pipeline/ai/prompts";
-import { loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
+import { INJECTION_GUARD, PERSONAS } from "@aphrody/shenron-pipeline/ai/prompts";
+import { loadLiveRagEnv, requireLiveRag } from "@aphrody/shenron-pipeline/testing/live-rag";
 
 loadLiveRagEnv();
 const { generateLlmAnswer } = await import("../src/lib/llm");

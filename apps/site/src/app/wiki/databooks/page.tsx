@@ -1,5 +1,5 @@
-import { PageShell } from "@shenron/ui/layout/PageShell";
-import { PageHeader } from "@shenron/ui/layout/PageHeader";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import { GatedLink } from "@/components/GatedLink";
 import { PageBanner } from "@/components/media/PageBanner";
 import { EditorialTabs } from "@/components/databooks/EditorialTabs";

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/pipeline/aphrody/embeddings` — legacy facade over Aphrody
+ * `@aphrody/shenron-pipeline/aphrody/embeddings` — legacy facade over Aphrody
  * `POST /api/v1/shenron/embed` (docs/architecture/STACK.md §6.3, D10, D16).
  *
  * `ShenronEmbeddingsClient` keeps its constructor (`baseUrl`, `fetcher`, plus
@@ -12,14 +12,14 @@
  * per request and checks 384 dimensions. `fetch` is resolved at call time
  * unless a `fetcher` is given.
  */
-import { createAphrodyCompute } from "@shenron/pipeline/ai/aphrody";
+import { createAphrodyCompute } from "@aphrody/shenron-pipeline/ai/aphrody";
 import {
   requireAiHttpToken,
   requireAiHttpUrl,
   requireEmbedBaseUrl,
   SHENRON_E5,
-} from "@shenron/pipeline/ai/config";
-import type { EmbedKind } from "@shenron/pipeline/ai/embeddings";
+} from "@aphrody/shenron-pipeline/ai/config";
+import type { EmbedKind } from "@aphrody/shenron-pipeline/ai/embeddings";
 
 /** Client for the local OpenAI-compatible Shenron E5 service. */
 export const SHENRON_EMBED_MODEL = SHENRON_E5.modelId;
@@ -43,7 +43,7 @@ export interface ShenronEmbeddingsOptions {
  * @deprecated Direct embedder resolver, kept for exports and health probes
  * only: embeddings no longer use this address (see {@link ShenronEmbeddingsClient}).
  * E5 base URL (ending in `/v1`): the explicit option, else the resolver of
- * `@shenron/pipeline/ai/config`. Throws on a missing, malformed or non-loopback address.
+ * `@aphrody/shenron-pipeline/ai/config`. Throws on a missing, malformed or non-loopback address.
  */
 export function resolveShenronEmbeddingsBaseUrl(
   options: { baseUrl?: string } = {},
@@ -73,7 +73,7 @@ export function resolveShenronEmbeddingsBaseUrl(
  *
  * Options: `baseUrl` is the Aphrody `aphrody-ai-http` URL (loopback HTTP, only
  * its origin is used) and overrides `APHRODY_AI_HTTP_URL`; `token` overrides
- * `APHRODY_AI_HTTP_TOKEN`. Both fall back to `@shenron/pipeline/ai/config`
+ * `APHRODY_AI_HTTP_TOKEN`. Both fall back to `@aphrody/shenron-pipeline/ai/config`
  * and the constructor throws an `AiConfigError` naming the variables when
  * neither is available. A direct embedder URL (`/v1` path) passed as
  * `baseUrl` keeps working only in the sense that its origin is used as the

@@ -2,7 +2,7 @@
  * rag-eval.ts — Harnais d'évaluation retrieval RAG Dragon Ball (jeu doré).
  *
  * Mesure la récupération sur le jeu doré (`resolveDataPath("ragGold")`) avec la
- * définition unique de `@shenron/pipeline/ai/eval` : un cas est juste quand la SOURCE attendue
+ * définition unique de `@aphrody/shenron-pipeline/ai/eval` : un cas est juste quand la SOURCE attendue
  * (`expectUrl`) remonte, pas quand un mot de la question réapparaît.
  *
  * Deux passes par cas :
@@ -32,10 +32,10 @@ import {
   runCase,
   type CaseResult,
   type Metrics,
-} from "@shenron/pipeline/ai/eval";
-import { resolveDataPath } from "@shenron/config/paths";
+} from "@aphrody/shenron-pipeline/ai/eval";
+import { resolveDataPath } from "@aphrody/shenron-config/paths";
 import { hybridSearch } from "../src/lib/rag";
-import { ShenronEmbeddingsClient } from "@shenron/pipeline/aphrody";
+import { ShenronEmbeddingsClient } from "@aphrody/shenron-pipeline/aphrody";
 import {
   repoRootFromScript,
   servedBotDbPath,

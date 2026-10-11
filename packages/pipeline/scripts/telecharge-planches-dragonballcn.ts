@@ -3,7 +3,7 @@
 import { chmod, mkdir, statfs } from "node:fs/promises";
 import { join } from "node:path";
 import sharp from "sharp";
-import { aphrodyWebScrape } from "@shenron/pipeline/aphrody";
+import { aphrodyWebScrape } from "@aphrody/shenron-pipeline/aphrody";
 
 const args = process.argv.slice(2);
 const flag = (nom: string) => args.includes(`--${nom}`);

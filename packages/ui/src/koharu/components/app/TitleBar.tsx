@@ -1,7 +1,10 @@
 "use client";
 
 import { openUrl } from "@aphrody/plugin-opener";
-import { DEFAULT_DISCORD_INVITE, DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
+import {
+  DEFAULT_DISCORD_INVITE,
+  DEFAULT_PUBLIC_ORIGINS,
+} from "@aphrody/shenron-config/public-urls";
 import { FilePlus2, FolderOpen, LoaderCircle, Settings } from "lucide-react";
 import { useState, type ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
@@ -23,7 +26,7 @@ import {
 } from "../../lib/queries";
 import { useKoharuStore } from "../../lib/store";
 import { titleBarMenuSections } from "../../navigation";
-import { commands, type Operation, type Scope, type Stage } from "@shenron/koharu/protocol";
+import { commands, type Operation, type Scope, type Stage } from "@aphrody/shenron-koharu/protocol";
 import {
   Menubar,
   MenubarContent as UiMenubarContent,

@@ -1,2 +1,2 @@
-/** Shim : le schéma bot vit dans `@shenron/db`. */
-export * from "@shenron/db/bot-schema";
+/** Shim : le schéma bot vit dans `@aphrody/shenron-db`. */
+export * from "@aphrody/shenron-db/bot-schema";

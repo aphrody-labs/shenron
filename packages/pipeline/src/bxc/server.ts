@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Node server consumer of the authenticated Shenron Web API; no native runtime imports. */
 import { readFile } from "node:fs/promises";
-import { envFirst, ENV_ALIASES } from "@shenron/config/env";
-import { resolveHostUrl } from "@shenron/config/public-urls";
+import { envFirst, ENV_ALIASES } from "@aphrody/shenron-config/env";
+import { resolveHostUrl } from "@aphrody/shenron-config/public-urls";
 import {
   WEB_PATHS,
   WebStatus,

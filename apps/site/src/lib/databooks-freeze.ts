@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Garde-fou synchrone partagé par les writers HTTP et les scripts databooks.
- * Façade de `createDatabooksFreezeGate` (@shenron/db/guards, S11) :
+ * Façade de `createDatabooksFreezeGate` (@aphrody/shenron-db/guards, S11) :
  * - `DATABOOKS_FREEZE_FILE` défini : ce fichier fait foi ;
  * - sinon, hors production : chemin dérivé historique (`<dépôt>/.coord/FREEZE-databooks.json`) ;
  * - sinon, en production : gel (fail closed, « DATABOOKS_FREEZE_FILE non configuré »).
@@ -9,12 +9,12 @@
  */
 import { realpathSync } from "node:fs";
 import { join } from "node:path";
-import { resolveDataPath } from "@shenron/config/paths";
+import { resolveDataPath } from "@aphrody/shenron-config/paths";
 import {
   createDatabooksFreezeGate,
   DatabooksFrozenError,
   DATABOOKS_FREEZE_EXIT_CODE,
-} from "@shenron/db/guards";
+} from "@aphrody/shenron-db/guards";
 
 export { DATABOOKS_FREEZE_EXIT_CODE, DatabooksFrozenError };
 

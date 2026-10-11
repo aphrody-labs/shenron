@@ -20,12 +20,12 @@ import type { JSONContent } from "@tiptap/react";
 
 import { ShenronEditor } from "@/components/editor";
 import { PlainField } from "@/components/editor/PlainField";
-import { Badge } from "@shenron/ui/badge";
-import { Button } from "@shenron/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@shenron/ui/card";
-import { Input } from "@shenron/ui/input";
-import { Label } from "@shenron/ui/label";
-import { Switch } from "@shenron/ui/switch";
+import { Badge } from "@aphrody/shenron-ui/badge";
+import { Button } from "@aphrody/shenron-ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@aphrody/shenron-ui/card";
+import { Input } from "@aphrody/shenron-ui/input";
+import { Label } from "@aphrody/shenron-ui/label";
+import { Switch } from "@aphrody/shenron-ui/switch";
 import { ImageField } from "@/components/admin/ImageField";
 import { slugify } from "@/lib/slug";
 import { cn } from "@/lib/utils";

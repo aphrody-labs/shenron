@@ -8,7 +8,7 @@ import {
   A2A_OPEN_WARNING,
   A2A_TOKEN_ENV,
   resetA2AOpenWarning,
-} from "@shenron/auth/a2a";
+} from "@aphrody/shenron-auth/a2a";
 
 mock.module("server-only", () => ({}));
 

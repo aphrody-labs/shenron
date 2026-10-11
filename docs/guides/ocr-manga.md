@@ -8,7 +8,7 @@ Le manga self-hosté est majoritairement **français** (VF) ; cf.
 Pour une revue hors ligne, `manga-revue-agents.ts prepare` accepte aussi
 `--candidates <candidates.jsonl>` après conversion des sorties Koharu ou
 `aphrody.ocr.result/v2` en `shenron.manga.review-candidate/v1` par le CLI
-`@shenron/pipeline`. Le paquet conserve ces indices sous `candidatNonRelu`.
+`@aphrody/shenron-pipeline`. Le paquet conserve ces indices sous `candidatNonRelu`.
 La commande revérifie l'identité et les SHA-256 du manifeste ainsi que les
 octets de l'image. Le juge ouvre toujours l'image originale ; `sceller` exige
 toujours la transcription visuelle et son audit indépendant avant tout résultat.

@@ -2,9 +2,9 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "bun:test";
 
-import { StartView } from "@shenron/ui/koharu/components/start/StartView";
-import { queryClient, useProject } from "@shenron/ui/koharu/lib/queries";
-import { commands } from "@shenron/koharu/protocol";
+import { StartView } from "@aphrody/shenron-ui/koharu/components/start/StartView";
+import { queryClient, useProject } from "@aphrody/shenron-ui/koharu/lib/queries";
+import { commands } from "@aphrody/shenron-koharu/protocol";
 
 function ProjectFlow() {
   const project = useProject().data;

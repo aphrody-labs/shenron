@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PageHeader } from "@shenron/ui/layout/PageHeader";
-import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { T } from "@/components/T";
 import { BTN_PRIMARY, PANEL } from "@/components/games/planche";
 import { ogMeta } from "@/lib/og";

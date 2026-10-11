@@ -18,7 +18,7 @@ import {
   FlecheHaut,
   Groupe,
   Plus,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 import {
   ALL_ENTRIES,
   ALWAYS_OPEN_KEYS,

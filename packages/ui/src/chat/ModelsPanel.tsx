@@ -4,7 +4,7 @@
  * Material 3 panel of the chat models of this server: the state of each one (ready, loading,
  * downloading with its progress, installable, failed, unavailable), one-click install and the
  * import of the fine-tuned adapter (native file dialog when the host has one, a path field
- * otherwise). Transport, labels and the file picker are injected. Styles: `@shenron/ui/chat.css`.
+ * otherwise). Transport, labels and the file picker are injected. Styles: `@aphrody/shenron-ui/chat.css`.
  */
 import { Banner, Button } from "@aphrody/m3-primitives";
 import { CircleAlert, Cpu, Globe } from "lucide-react";

@@ -5,7 +5,7 @@ import { afterAll, expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { createLocalApi } from "@shenron/api/host";
+import { createLocalApi } from "@aphrody/shenron-api/host";
 import { serveFront, type FrontHost } from "../src/front";
 
 const upstream = Bun.serve({

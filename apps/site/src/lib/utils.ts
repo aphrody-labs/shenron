@@ -1,1 +1,1 @@
-export { cn } from "@shenron/ui/lib/utils";
+export { cn } from "@aphrody/shenron-ui/lib/utils";

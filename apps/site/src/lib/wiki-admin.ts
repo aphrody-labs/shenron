@@ -34,7 +34,7 @@ import {
   sql,
   type SQL,
 } from "drizzle-orm";
-import { escapeLike } from "@shenron/db/repos/wiki";
+import { escapeLike } from "@aphrody/shenron-db/repos/wiki";
 import { db } from "@/lib/db";
 import { wikiRevisions } from "@/db/schema";
 import * as botSchema from "@/db/bot-schema";

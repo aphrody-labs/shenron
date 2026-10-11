@@ -13,18 +13,21 @@ import { StrictMode, type ReactNode } from "react";
 import { describe, expect, it, vi, mock } from "bun:test";
 import { hoisted } from "../hoisted";
 
-import { DEFAULT_DISCORD_INVITE, DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
-import { TitleBar } from "@shenron/ui/koharu/components/app/TitleBar";
-import { WindowControls } from "@shenron/ui/koharu/components/app/WindowChrome";
-import { ActivityCenter } from "@shenron/ui/koharu/components/editor/ActivityCenter";
-import { CanvasCommandBar } from "@shenron/ui/koharu/components/editor/CanvasCommandBar";
-import { Inspector } from "@shenron/ui/koharu/components/editor/Inspector";
-import { PageRail } from "@shenron/ui/koharu/components/editor/PageRail";
-import { ResourceMonitor } from "@shenron/ui/koharu/components/editor/ResourceMonitor";
-import { StatusBar } from "@shenron/ui/koharu/components/editor/StatusBar";
-import { ToolBar } from "@shenron/ui/koharu/components/editor/ToolBar";
-import { ProviderPreferences } from "@shenron/ui/koharu/components/preferences/ProviderPreferences";
-import { SettingsPage } from "@shenron/ui/koharu/components/preferences/SettingsPage";
+import {
+  DEFAULT_DISCORD_INVITE,
+  DEFAULT_PUBLIC_ORIGINS,
+} from "@aphrody/shenron-config/public-urls";
+import { TitleBar } from "@aphrody/shenron-ui/koharu/components/app/TitleBar";
+import { WindowControls } from "@aphrody/shenron-ui/koharu/components/app/WindowChrome";
+import { ActivityCenter } from "@aphrody/shenron-ui/koharu/components/editor/ActivityCenter";
+import { CanvasCommandBar } from "@aphrody/shenron-ui/koharu/components/editor/CanvasCommandBar";
+import { Inspector } from "@aphrody/shenron-ui/koharu/components/editor/Inspector";
+import { PageRail } from "@aphrody/shenron-ui/koharu/components/editor/PageRail";
+import { ResourceMonitor } from "@aphrody/shenron-ui/koharu/components/editor/ResourceMonitor";
+import { StatusBar } from "@aphrody/shenron-ui/koharu/components/editor/StatusBar";
+import { ToolBar } from "@aphrody/shenron-ui/koharu/components/editor/ToolBar";
+import { ProviderPreferences } from "@aphrody/shenron-ui/koharu/components/preferences/ProviderPreferences";
+import { SettingsPage } from "@aphrody/shenron-ui/koharu/components/preferences/SettingsPage";
 import {
   fontsKey,
   pageKey,
@@ -33,16 +36,16 @@ import {
   projectKey,
   queryClient,
   useCommand,
-} from "@shenron/ui/koharu/lib/queries";
-import { useKoharuStore } from "@shenron/ui/koharu/lib/store";
-import * as canvasRuntime from "@shenron/koharu/canvas";
+} from "@aphrody/shenron-ui/koharu/lib/queries";
+import { useKoharuStore } from "@aphrody/shenron-ui/koharu/lib/store";
+import * as canvasRuntime from "@aphrody/shenron-koharu/canvas";
 import {
   commands,
   type Layer,
   type PageSummary,
   type Preferences,
   type ProjectInfo,
-} from "@shenron/koharu/protocol";
+} from "@aphrody/shenron-koharu/protocol";
 import { TooltipProvider } from "@aphrody/m3-primitives";
 
 const nativeWindow = hoisted(() => ({

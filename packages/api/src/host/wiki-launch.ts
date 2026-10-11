@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-import { envString, type EnvSource } from "@shenron/config/env";
-import { createBunDb } from "@shenron/db/bun-sql";
-import { createWikiLaunchRepository } from "@shenron/db/repos/wiki-launch";
+import { envString, type EnvSource } from "@aphrody/shenron-config/env";
+import { createBunDb } from "@aphrody/shenron-db/bun-sql";
+import { createWikiLaunchRepository } from "@aphrody/shenron-db/repos/wiki-launch";
 import type { WikiLaunchPort } from "../server";
 
 export function createHostWikiLaunch(

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/pipeline/ai/eval` — RAG retrieval metrics on the gold set.
+ * `@aphrody/shenron-pipeline/ai/eval` — RAG retrieval metrics on the gold set.
  *
  * Runtime class: `pure`. Logic moved from `apps/bot/src/lib/rag-eval.ts`
  * with identical results (one definition of "finding the right source").

@@ -1,11 +1,12 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # Audit de migration dbxv2 vers Rust et Bun — 2026-10-07
 
 ## Portée et entrées vérifiées
 
 Audit local en lecture seule du dépôt `aphrody-code/dbxv2`, sous-module initialisé à
 `fabc19c0021e3e992786dc2a093a749c8a1c26f0`, comparé au code versionné de `shenron-re`
-et `@shenron/pipeline`. La licence du projet source est `Proprietary`. Son README
+et `@aphrody/shenron-pipeline`. La licence du projet source est `Proprietary`. Son README
 annonce 21 sous-commandes; son `pyproject.toml` déclare Python >=3.14. Le dépôt source
 exclut explicitement `output/`, `.venv/`, `tools/` et les assets extraits de Git. Il
 interdit de redistribuer les assets du jeu. Cet audit ne lit aucun fichier d'installation
@@ -13,29 +14,29 @@ Steam, aucune sauvegarde, aucun jeton/identifiant, aucun dump mémoire et aucun 
 
 ## État des commandes source
 
-| Commande dbxv2 | État Shenron Rust/Bun constaté |
-|---|---|
-| `map` | Partiel : `shenron-re inventory <game-root>` porte l'inventaire de chemins/tailles et le SHA-256 des `.exe`/`.dll` de moins de 60 Mio; la carte prototype Xenoverse 3 est une autre commande. Aucun vrai jeu installé n'a été scanné. |
-| `reverse` | Absent : pas d'analyse PE/DRM ni de CLI correspondant. |
-| `extract` | Partiel : `shenron-re cpk <file.cpk> --output-dir <new-dir>` extrait l'arborescence validée avec manifeste vers une destination neuve; pas de reprise, de scan d'installation ni de traitement batch de plusieurs archives. |
-| `tex` | Partiel : `shenron-re emb <file.emb> --output-dir <new-dir>` valide et extrait les entrées EMB nommées en DDS dans un nouveau répertoire; pas de conversion DDS→PNG, de traitement récursif, ni d'analyse d'installation réelle. |
-| `audio` | Absent : pas de conversion CRI vers WAV. |
-| `text` | Partiel : `shenron-re text <file.msg>` extrait les runs UTF-16LE; `shenron-re text <input-dir> --output-dir <new-dir>` traite récursivement les `.msg` vers un arbre de sortie distinct, avec manifeste, ordre déterministe, liens symboliques ignorés et refus d'une destination existante. Ce mode protège les entrées et ne remplace pas le comportement risqué d'écrasement source du script Python. Le binding WASM `extractMsgText` extrait ces runs depuis un buffer. |
-| `models` | Absent : pas de métadonnées géométriques EMD/viewer. |
-| `parse` | Partiel : BAC/BDM/CUS/CMS/MSG/PUP; BCM/BCS/BSA/EAN/EMM/ESK et équivalence pyxenoverse absents. |
-| `tools` | Absent : aucun catalogue/cloneur équivalent dans ce crate. |
-| `index` | Absent : pas d'index SQLite/FTS5 des assets DBXV2. |
-| `classify` | Absent : pas de classification d'assets DBXV2. |
-| `search` | Absent : pas de recherche sur cet index. |
-| `stats` | Absent : pas de statistiques d'index DBXV2. |
-| `serve` | Absent : pas de navigateur d'assets local. |
-| `sav` | Absent et délibérément non exécuté; aucune lecture/édition de sauvegarde. |
-| `rag` | Absent : pas de pipeline multimodale DBXV2. |
-| `caption` | Absent : pas de génération/stockage de descriptions d'assets. |
-| `llm` | Absent : pas d'export d'état DBXV2. |
-| `report` | Absent : pas d'agrégateur de manifests DBXV2. |
-| `setup` | Absent : aucune installation/téléchargement d'outil tiers déclenché. |
-| `all` | Absent : aucune orchestration globale ou extraction déclenchée. |
+| Commande dbxv2 | État Shenron Rust/Bun constaté                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `map`          | Partiel : `shenron-re inventory <game-root>` porte l'inventaire de chemins/tailles et le SHA-256 des `.exe`/`.dll` de moins de 60 Mio; la carte prototype Xenoverse 3 est une autre commande. Aucun vrai jeu installé n'a été scanné.                                                                                                                                                                                                                                        |
+| `reverse`      | Absent : pas d'analyse PE/DRM ni de CLI correspondant.                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `extract`      | Partiel : `shenron-re cpk <file.cpk> --output-dir <new-dir>` extrait l'arborescence validée avec manifeste vers une destination neuve; pas de reprise, de scan d'installation ni de traitement batch de plusieurs archives.                                                                                                                                                                                                                                                  |
+| `tex`          | Partiel : `shenron-re emb <file.emb> --output-dir <new-dir>` valide et extrait les entrées EMB nommées en DDS dans un nouveau répertoire; pas de conversion DDS→PNG, de traitement récursif, ni d'analyse d'installation réelle.                                                                                                                                                                                                                                             |
+| `audio`        | Absent : pas de conversion CRI vers WAV.                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `text`         | Partiel : `shenron-re text <file.msg>` extrait les runs UTF-16LE; `shenron-re text <input-dir> --output-dir <new-dir>` traite récursivement les `.msg` vers un arbre de sortie distinct, avec manifeste, ordre déterministe, liens symboliques ignorés et refus d'une destination existante. Ce mode protège les entrées et ne remplace pas le comportement risqué d'écrasement source du script Python. Le binding WASM `extractMsgText` extrait ces runs depuis un buffer. |
+| `models`       | Absent : pas de métadonnées géométriques EMD/viewer.                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `parse`        | Partiel : BAC/BDM/CUS/CMS/MSG/PUP; BCM/BCS/BSA/EAN/EMM/ESK et équivalence pyxenoverse absents.                                                                                                                                                                                                                                                                                                                                                                               |
+| `tools`        | Absent : aucun catalogue/cloneur équivalent dans ce crate.                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `index`        | Absent : pas d'index SQLite/FTS5 des assets DBXV2.                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `classify`     | Absent : pas de classification d'assets DBXV2.                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `search`       | Absent : pas de recherche sur cet index.                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `stats`        | Absent : pas de statistiques d'index DBXV2.                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `serve`        | Absent : pas de navigateur d'assets local.                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `sav`          | Absent et délibérément non exécuté; aucune lecture/édition de sauvegarde.                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `rag`          | Absent : pas de pipeline multimodale DBXV2.                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `caption`      | Absent : pas de génération/stockage de descriptions d'assets.                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `llm`          | Absent : pas d'export d'état DBXV2.                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `report`       | Absent : pas d'agrégateur de manifests DBXV2.                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `setup`        | Absent : aucune installation/téléchargement d'outil tiers déclenché.                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `all`          | Absent : aucune orchestration globale ou extraction déclenchée.                                                                                                                                                                                                                                                                                                                                                                                                              |
 
 `shenron-re` fournit aujourd'hui des décodeurs CPK/CRILAYLA et des parseurs de formats
 Dimps listés plus haut, un scanner de manifests Steam explicitement fourni en entrée,
@@ -44,7 +45,7 @@ il ne produit aucun flux d'événements temps réel et n'accède pas aux identif
 Le nouveau binaire `shenron-re map` sérialise la carte originale avec provenance;
 `shenron-re catalog` sérialise le catalogue. `shenron-re inventory <game-root>` porte le
 manifeste d'installation en lecture seule : chemins relatifs, extensions, tailles et SHA-256
-uniquement pour les petits exécutables et DLL. Le binding natif `@shenron/native` expose aussi
+uniquement pour les petits exécutables et DLL. Le binding natif `@aphrody/shenron-native` expose aussi
 la carte via le symbole ABI 5 `shenron_re_xenoverse3_map`, avec libération de la chaîne par
 le contrat FFI standard. `shenron-re text <file.msg>` porte l'extraction d'un fichier sans
 écraser un JSON existant; le mode dossier porte la conversion récursive dans une destination
@@ -80,12 +81,12 @@ carte extraite/reconstituée du jeu, ni une production AAA. Les changements du s
 Pixel ne consomment pas encore directement le graphe Rust/WASM.
 
 Portes ciblées exécutées dans ce worktree : tests et Clippy de `shenron-re` et `shenron-ffi`,
-compilation WASM, génération ABI vérifiée, typecheck/lint et 36 tests `@shenron/native` avec
+compilation WASM, génération ABI vérifiée, typecheck/lint et 36 tests `@aphrody/shenron-native` avec
 la bibliothèque debug réellement chargée. La nouvelle commande CLI a également été exécutée
 et son JSON observé. Après ajout de l'extraction CPK et du parseur EMB, de leur commande et du
 binding WASM/Bun, les 39 tests du crate (34 unitaires avec feature WASM, 5 CLI) et Clippy strict passent; les fixtures sont
 synthétiques et aucun asset du jeu n'a été copié ou extrait. Le build WASM/bindgen et les 12 tests
-`@shenron/pipeline` passent aussi. Le lint ciblé passe; le typecheck complet échoue sur des
+`@aphrody/shenron-pipeline` passent aussi. Le lint ciblé passe; le typecheck complet échoue sur des
 dépendances absentes du workspace (`zod`, `@aphrody/api/core`) et d'autres erreurs induites par
 ces modules manquants. L'alias VPS SSH configuré ne résolvait pas pendant ce lot; aucun hôte ni
 service de production n'a été modifié.

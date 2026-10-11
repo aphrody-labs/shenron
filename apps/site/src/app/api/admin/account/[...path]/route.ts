@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { getCurrentUser } from "@/lib/session";
 import { botAdmin } from "@/lib/bot-admin";
 import { discordFetch, DiscordRESTError } from "@aphrody/discord-kit/rest";
-import { discordGuildIcon as guildIcon } from "@shenron/config/public-urls";
+import { discordGuildIcon as guildIcon } from "@aphrody/shenron-config/public-urls";
 
 export const dynamic = "force-dynamic";
 

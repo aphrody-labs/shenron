@@ -196,7 +196,7 @@ impl From<shenron_cli::config::ShenronAuthPresence> for AuthStatus {
     }
 }
 
-/// Identity of the loaded library (`shenron_build_info`), checked by `@shenron/native` before use.
+/// Identity of the loaded library (`shenron_build_info`), checked by `@aphrody/shenron-native` before use.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
 pub struct BuildInfo {
     /// Version of the `shenron-ffi` crate (the workspace version).

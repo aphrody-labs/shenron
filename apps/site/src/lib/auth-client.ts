@@ -1,6 +1,6 @@
 "use client";
 
-import { createShenronAuthClient } from "@shenron/auth/client";
+import { createShenronAuthClient } from "@aphrody/shenron-auth/client";
 import { SITE_URL } from "@/lib/config";
 
 /**

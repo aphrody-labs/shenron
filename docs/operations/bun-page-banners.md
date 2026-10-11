@@ -1,7 +1,7 @@
 # Bannières de pages sur Bun
 
 Les types, les images par défaut et la résolution des patches vivent dans
-`@shenron/config/page-banners`. Le site conserve la résolution des chemins
+`@aphrody/shenron-config/page-banners`. Le site conserve la résolution des chemins
 vers les assets et ses imports historiques. Les bannières Daima respectent
 l’origine API publique configurée, sur Bun comme dans le site.
 

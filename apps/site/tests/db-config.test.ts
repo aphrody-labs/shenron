@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it, mock } from "bun:test";
-import * as dbConfig from "@shenron/db/config";
+import * as dbConfig from "@aphrody/shenron-db/config";
 
 mock.module("server-only", () => ({}));
 
@@ -29,7 +29,7 @@ describe("apps/site/src/lib/db facade", () => {
     expect(mod.DB_APPLICATION_NAME).toBe("shenron-site");
   });
 
-  it("re-exports the @shenron/db/config helpers unchanged", () => {
+  it("re-exports the @aphrody/shenron-db/config helpers unchanged", () => {
     expect(mod.resolveDatabaseUrl).toBe(dbConfig.resolveDatabaseUrl);
     expect(mod.resolvePoolMax).toBe(dbConfig.resolvePoolMax);
     expect(mod.DEFAULT_POOL_MAX).toBe(4);

@@ -2,14 +2,14 @@
 /** Shenron config and resumable batch adapter over the shared media HTTP owner. */
 import { appendFile, readdir } from "node:fs/promises";
 import { extname, join, resolve } from "node:path";
-import { requireAiHttpToken, requireAiHttpUrl } from "@shenron/pipeline/ai/config";
+import { requireAiHttpToken, requireAiHttpUrl } from "@aphrody/shenron-pipeline/ai/config";
 import {
   recogniseRemotePage as recognise,
   reviewRemoteImage as review,
   toOcrResultV2,
-} from "@shenron/media/remote-ocr";
-export { toOcrResultV2 } from "@shenron/media/remote-ocr";
-export type { RemoteOcrBlock, RemoteOcrResult } from "@shenron/media/remote-ocr";
+} from "@aphrody/shenron-media/remote-ocr";
+export { toOcrResultV2 } from "@aphrody/shenron-media/remote-ocr";
+export type { RemoteOcrBlock, RemoteOcrResult } from "@aphrody/shenron-media/remote-ocr";
 type Fetcher = typeof fetch;
 function options(fetcher: Fetcher) {
   return {

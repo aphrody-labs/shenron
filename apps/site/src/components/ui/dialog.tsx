@@ -1,1 +1,1 @@
-export * from "@shenron/ui/dialog";
+export * from "@aphrody/shenron-ui/dialog";

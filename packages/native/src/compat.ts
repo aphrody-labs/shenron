@@ -72,7 +72,7 @@ export function checkAbi(actual: number, expected: number, path: string): void {
       path,
       "abi",
       `Shenron ABI mismatch at ${path}: expected ${expected}, found ${actual} ` +
-        "(rebuild the library or update @shenron/native)",
+        "(rebuild the library or update @aphrody/shenron-native)",
     );
   }
 }
@@ -94,7 +94,7 @@ export function checkBuildInfo(info: BuildInfo, path: string, expected: Expectat
     throw new ShenronLibraryMismatch(
       path,
       "version",
-      `shenron-ffi at ${path} is version ${info.version}; @shenron/native expects ` +
+      `shenron-ffi at ${path} is version ${info.version}; @aphrody/shenron-native expects ` +
         `${expected.version} (rebuild with \`cargo build -p shenron-ffi\`, or set ` +
         "SHENRON_FFI_ALLOW_VERSION_SKEW=1 to accept another version of the same ABI)",
     );

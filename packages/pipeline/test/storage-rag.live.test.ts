@@ -4,8 +4,8 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { createResilientRedis } from "@shenron/db/redis";
-import { createSql } from "@shenron/db/sql";
+import { createResilientRedis } from "@aphrody/shenron-db/redis";
+import { createSql } from "@aphrody/shenron-db/sql";
 import { isLive, loadLiveRagEnv, requireLiveRag } from "../src/testing/live-rag";
 
 import { PG_SOURCES } from "../scripts/_rag-sources-pg";

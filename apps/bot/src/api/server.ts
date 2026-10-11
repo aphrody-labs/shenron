@@ -1,4 +1,4 @@
-import { resolveApiUrl, resolveSiteUrl } from "@shenron/config/public-urls";
+import { resolveApiUrl, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import { adminPipeline } from "./admin-pipeline";
 import os from "node:os";
 import { singleton, inject, container } from "tsyringe";
@@ -148,7 +148,7 @@ import { LevelService } from "~/services/LevelService";
 import { getLevelThresholds, levelForXP, nextThresholdFrom, type LevelThreshold } from "~/lib/xp";
 import { hybridSearch, logRagHealth } from "~/lib/rag";
 import { contextPublicRag, searchPublicRag } from "./public-rag";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
+import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
 import { generateLlmGrounded, isFallbackAnswer, rankRagHits } from "~/lib/llm";
 import { graphqlHandler } from "~/api/graphql";
 import {
@@ -159,7 +159,7 @@ import {
   searchVisibleWiki,
 } from "~/api/wiki-replica";
 import { openapiSpec, scalarHtml } from "~/api/openapi";
-import { ADMIN_ROUTES, dashboardRedirect } from "@shenron/config/admin";
+import { ADMIN_ROUTES, dashboardRedirect } from "@aphrody/shenron-config/admin";
 import { handleBetterAuthRequest, getBetterAuthSession } from "~/lib/better-auth";
 import { EventBusService } from "~/services/EventBusService";
 import { PgService } from "~/db/pg";
@@ -1175,7 +1175,7 @@ export class ApiServer {
       return;
     }
 
-    // B14 / S9 : @shenron/api en repli, même budget public que les routes historiques.
+    // B14 / S9 : @aphrody/shenron-api en repli, même budget public que les routes historiques.
     const remoteAddresses = createRemoteAddressRegistry();
     const shenronApi = createPublicFallback({
       api: createBotShenronApi({
@@ -6350,7 +6350,7 @@ export class ApiServer {
             },
           });
         }
-        // B14 : routes additives @shenron/api (wiki PG, OpenAPI), après tout l'historique.
+        // B14 : routes additives @aphrody/shenron-api (wiki PG, OpenAPI), après tout l'historique.
         if (shenronApi.handles(url.pathname)) {
           remoteAddresses.remember(req, server);
           return shenronApi.fetch(req);

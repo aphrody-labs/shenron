@@ -14,7 +14,7 @@
 import { readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import sharp from "sharp";
-import { dHash, hammingDistance, hashFile, isImagePath } from "@shenron/images";
+import { dHash, hammingDistance, hashFile, isImagePath } from "@aphrody/shenron-images";
 
 const RACINE = join(import.meta.dir, "..", "..", "..");
 const ROOTS = [

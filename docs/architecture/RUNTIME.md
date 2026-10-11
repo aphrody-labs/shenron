@@ -9,14 +9,14 @@ de production n'est décrit ici.
 
 ## 1. Processus
 
-| Processus         | Code                                           | Rôle                                                                                                                                                                                                                                                                                                                                                                                           |
-| ----------------- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `shenron-server`  | `apps/server`                                  | Binaire autonome : un `Bun.serve` frontal répond à `/api/local/*`, monte l'API Shenron (`@shenron/api/host` : `/api/v1/*`, `/api/public/*` depuis le VFS, WebSocket du chat, relais `/mcp`), sert les assets statiques (`/_next/static`, `public/`, `/assets/*` du VFS) et relaie le reste vers le `server.js` standalone de Next, lancé en processus enfant sur une adresse de boucle locale. |
-| Site Next         | `apps/site`                                    | Next 16 App Router (standalone). `/koharu`, `/studio` et `/bureau` montent `@shenron/ui` ; `/mcp` relaie vers `shenron-mcp --http --public`.                                                                                                                                                                                                                                                   |
-| `shenron-bot`     | `apps/bot`                                     | Bot Discord (discordx + tsyringe) et API du bot dans un seul processus Bun.                                                                                                                                                                                                                                                                                                                    |
-| `shenron-mcp`     | `crates/shenron-mcp`                           | Serveur MCP : stdio pour le plugin et les agents locaux (tous les outils), HTTP public en lecture seule derrière `/mcp` du site.                                                                                                                                                                                                                                                               |
-| `shenron-desktop` | `crates/shenron-desktop`                       | Application Tauri 3 : lance `shenron-server` en sidecar (qui démarre lui-même le sidecar `shenron-mcp` livré à côté) et ouvre `/bureau`.                                                                                                                                                                                                                                                       |
-| Lots              | `scripts/ops/*`, `packages/pipeline/scripts/*` | Lancés à la main, hors runtime ; jamais `rag:build` au premier plan ni sur le bot de production.                                                                                                                                                                                                                                                                                               |
+| Processus         | Code                                           | Rôle                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ----------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `shenron-server`  | `apps/server`                                  | Binaire autonome : un `Bun.serve` frontal répond à `/api/local/*`, monte l'API Shenron (`@aphrody/shenron-api/host` : `/api/v1/*`, `/api/public/*` depuis le VFS, WebSocket du chat, relais `/mcp`), sert les assets statiques (`/_next/static`, `public/`, `/assets/*` du VFS) et relaie le reste vers le `server.js` standalone de Next, lancé en processus enfant sur une adresse de boucle locale. |
+| Site Next         | `apps/site`                                    | Next 16 App Router (standalone). `/koharu`, `/studio` et `/bureau` montent `@aphrody/shenron-ui` ; `/mcp` relaie vers `shenron-mcp --http --public`.                                                                                                                                                                                                                                                   |
+| `shenron-bot`     | `apps/bot`                                     | Bot Discord (discordx + tsyringe) et API du bot dans un seul processus Bun.                                                                                                                                                                                                                                                                                                                            |
+| `shenron-mcp`     | `crates/shenron-mcp`                           | Serveur MCP : stdio pour le plugin et les agents locaux (tous les outils), HTTP public en lecture seule derrière `/mcp` du site.                                                                                                                                                                                                                                                                       |
+| `shenron-desktop` | `crates/shenron-desktop`                       | Application Tauri 3 : lance `shenron-server` en sidecar (qui démarre lui-même le sidecar `shenron-mcp` livré à côté) et ouvre `/bureau`.                                                                                                                                                                                                                                                               |
+| Lots              | `scripts/ops/*`, `packages/pipeline/scripts/*` | Lancés à la main, hors runtime ; jamais `rag:build` au premier plan ni sur le bot de production.                                                                                                                                                                                                                                                                                                       |
 
 ## 2. `shenron-server`
 
@@ -37,13 +37,13 @@ shenron-server paths | doctor | init | version
   dragonballfr.com, sans secret. `doctor` ne signale que la présence des
   secrets, jamais leur valeur.
 - **API locale** : `GET /api/local/health` (`LocalHealthResponse` de
-  `@shenron/api/contract` : profil, `localRag` et `groups`, la disponibilité de chaque
+  `@aphrody/shenron-api/contract` : profil, `localRag` et `groups`, la disponibilité de chaque
   groupe `wiki | rag | chat | conversations | sync | vfs | ocr | mcp | models` avec une
   raison courte en français) et `GET /api/local/rag/search` (corpus hors ligne par
   `bun:ffi` vers `libshenron_ffi`, livrée à côté de l'exécutable ou désignée par
   `SHENRON_FFI_LIB`).
 - **API Shenron** (`apps/server/src/backend.ts`, tous profils) : l'hôte
-  `@shenron/api/host` câblé depuis `SHENRON_HOME` et le payload. VFS :
+  `@aphrody/shenron-api/host` câblé depuis `SHENRON_HOME` et le payload. VFS :
   `SHENRON_VFS_DB`, `<home>/data/shenron-vfs.sqlite`, le VFS public du payload, `vfs/`
   à côté de l'exécutable ; conversations : `<home>/data/conversations.sqlite` (ou
   `SHENRON_CHAT_PG_URL`) ; agent home : `/home` du VFS, `APHRODY_WORKSPACE`, sinon le
@@ -85,7 +85,7 @@ ni connexion Discord) et `--smoke` (charge toutes les commandes et tous les
 base, `ApiServer` et connexion Discord. Un seul client Gateway ; les tâches
 périodiques passent par `CronRegistry` (`apps/bot/src/api/cron-registry.ts`).
 Le barrel `apps/bot/src/_entries.ts` se régénère par
-`bun --filter @shenron/bot gen:entries` après tout ajout ou retrait de commande
+`bun --filter @aphrody/shenron-bot gen:entries` après tout ajout ou retrait de commande
 ou d'événement.
 
 Construction : `bun run build:bot`.
@@ -114,7 +114,7 @@ Construction : `bun run build:bot`.
 
 ## 6. Frontière native (`bun:ffi`)
 
-`libshenron_ffi` (`crates/shenron-ffi`) n'est chargée que par `@shenron/native`
+`libshenron_ffi` (`crates/shenron-ffi`) n'est chargée que par `@aphrody/shenron-native`
 ([README](../../packages/native/README.md), [ABI](../../crates/shenron-ffi/README.md)).
 
 - **ABI 2**, rétrocompatible : les symboles de l'ABI 1 restent ; s'ajoutent les tâches
@@ -129,7 +129,7 @@ Construction : `bun run build:bot`.
 - **Mémoire** : chaîne possédée libérée une fois par `shenron_string_free` ; chaîne statique
   jamais ; `shenron_last_error` par thread, lu sur le thread de l'appel.
 - **Threads** : les appels longs (recherche, commandes, persona) passent par
-  `@shenron/native/worker`, un pool borné de workers Bun ayant chacun sa poignée `dlopen` ;
+  `@aphrody/shenron-native/worker`, un pool borné de workers Bun ayant chacun sa poignée `dlopen` ;
   la boucle d'événements reste libre. Un `AbortSignal` annule depuis le thread principal
   (`shenron_cancel`) sans attendre le worker. Les commandes capturées redirigent stdout/stderr
   de tout le processus pendant leur exécution.

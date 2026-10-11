@@ -1,1 +1,1 @@
-export * from "@shenron/ui/layout/ViewTransition";
+export * from "@aphrody/shenron-ui/layout/ViewTransition";

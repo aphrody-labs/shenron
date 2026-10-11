@@ -4,7 +4,7 @@ import {
   DEFAULT_LAUNCH_CONFIG,
   resolveLaunchConfig,
   type LaunchConfig,
-} from "@shenron/config/wiki-launch-config";
+} from "@aphrody/shenron-config/wiki-launch-config";
 import { wikiLaunch } from "../schema";
 import type { ShenronPgDatabase } from "../types";
 

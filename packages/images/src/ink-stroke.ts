@@ -2,7 +2,7 @@
 /**
  * ink-stroke.ts — median ink stroke width of a manga page (Toriyama line calibration).
  *
- * Moved from `AphrodyNativeBridge.measureInkStroke` (@shenron/pipeline/aphrody, B16) with the
+ * Moved from `AphrodyNativeBridge.measureInkStroke` (@aphrody/shenron-pipeline/aphrody, B16) with the
  * same algorithm and output: about 60 evenly spaced rows are scanned, every run of
  * dark pixels (Rec. 709 luminance < 60) shorter than 10 % of the width is a stroke
  * sample, and the result is the upper median of those run lengths.

@@ -3,9 +3,9 @@
 import { readFileSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { lastAssignment } from "@shenron/db/env";
-import { createSql } from "@shenron/db/sql";
-import { createResilientRedis } from "@shenron/db/redis";
+import { lastAssignment } from "@aphrody/shenron-db/env";
+import { createSql } from "@aphrody/shenron-db/sql";
+import { createResilientRedis } from "@aphrody/shenron-db/redis";
 import { AphrodyComputeClient, type AphrodyRagStats } from "../aphrody/compute";
 
 /**

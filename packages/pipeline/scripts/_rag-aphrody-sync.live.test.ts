@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 import { beforeAll, describe, expect, it } from "bun:test";
-import { createSql } from "@shenron/db/sql";
+import { createSql } from "@aphrody/shenron-db/sql";
 import { isLive, requireLiveRag, type LiveRag } from "../src/testing/live-rag";
 import { prepareSource, syncSource } from "./_rag-aphrody-sync";
-import { requireAiHttpUrl } from "@shenron/pipeline/ai/config";
+import { requireAiHttpUrl } from "@aphrody/shenron-pipeline/ai/config";
 import { AphrodyComputeClient } from "../src/aphrody/compute";
 import { PG_SOURCES, type SourceChunk } from "./_rag-sources-pg";
 

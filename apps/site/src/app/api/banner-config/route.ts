@@ -6,7 +6,7 @@
  */
 import { adminUserOrToken, isAdminOrToken } from "@/lib/admin-guard";
 import { HostBannerError } from "@/lib/host-banner-error";
-import { ENV_ALIASES, envFirst } from "@shenron/config/env";
+import { ENV_ALIASES, envFirst } from "@aphrody/shenron-config/env";
 import { getPageBanners, savePageBanners } from "@/lib/banner-config";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";

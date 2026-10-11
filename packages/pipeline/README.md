@@ -1,4 +1,4 @@
-# @shenron/pipeline
+# @aphrody/shenron-pipeline
 
 CLI de coordination des imports Dragon Ball : OCR, RAG, crawl, IA et traduction.
 Les calculs OCR/RAG/LLM et le crawl Web passent par Aphrody lorsque leurs

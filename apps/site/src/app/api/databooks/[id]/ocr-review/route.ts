@@ -37,7 +37,7 @@ import { isAdminUserOrToken } from "@/lib/admin-guard";
 import { getDatabook } from "@/lib/databooks";
 import { parseDatabookId } from "@/lib/databooks-rules";
 import path from "node:path";
-import { resolveRelectureOcrUrl } from "@shenron/config/services";
+import { resolveRelectureOcrUrl } from "@aphrody/shenron-config/services";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

@@ -6,10 +6,10 @@ import { cleanup, render, renderHook, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "bun:test";
 import { fileURLToPath } from "node:url";
 
-import { StartupView } from "@shenron/ui/koharu/components/app/StartupView";
-import { WindowControls } from "@shenron/ui/koharu/components/app/WindowChrome";
-import i18n, { editorLanguage, resources } from "@shenron/ui/koharu/lib/i18n";
-import { useSiteLocale } from "@shenron/ui/koharu/lib/site-locale";
+import { StartupView } from "@aphrody/shenron-ui/koharu/components/app/StartupView";
+import { WindowControls } from "@aphrody/shenron-ui/koharu/components/app/WindowChrome";
+import i18n, { editorLanguage, resources } from "@aphrody/shenron-ui/koharu/lib/i18n";
+import { useSiteLocale } from "@aphrody/shenron-ui/koharu/lib/site-locale";
 
 const host = window as unknown as { __TAURI_INTERNALS__?: unknown };
 

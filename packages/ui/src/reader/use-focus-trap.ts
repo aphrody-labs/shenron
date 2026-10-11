@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copied from @aphrody/m3-reader@3.3.4 (src/use-focus-trap.ts); owned by @shenron/ui since the Shenron extraction.
+// Copied from @aphrody/m3-reader@3.3.4 (src/use-focus-trap.ts); owned by @aphrody/shenron-ui since the Shenron extraction.
 "use client";
 
 /**

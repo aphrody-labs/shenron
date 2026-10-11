@@ -8,7 +8,7 @@ From the monorepo root:
 
 ```sh
 bun install --frozen-lockfile
-bun --filter @shenron/site dev
+bun --filter @aphrody/shenron-site dev
 ```
 
 Next's dev server prints the local URL. This command does not generate `.env.local`.

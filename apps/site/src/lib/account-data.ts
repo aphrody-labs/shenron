@@ -5,7 +5,10 @@
 // tiré `postgres`/`drizzle` dans le bundle et fait fuiter la forme même de
 // l'export. Cf. `docs/guides/pieges.md` (« shenron.ts / db-universe.ts sont server-only »).
 import "server-only";
-import { createAccountDataRepository, type AccountIdentity } from "@shenron/db/repos/accounts";
+import {
+  createAccountDataRepository,
+  type AccountIdentity,
+} from "@aphrody/shenron-db/repos/accounts";
 import { and, count, desc, eq, or } from "drizzle-orm";
 import {
   baUser,
@@ -24,7 +27,7 @@ import {
 } from "@/db/schema";
 import { db } from "@/lib/db";
 
-export type { AccountIdentity } from "@shenron/db/repos/accounts";
+export type { AccountIdentity } from "@aphrody/shenron-db/repos/accounts";
 
 export async function readAccountSummary(appUserId: string) {
   const [

@@ -32,18 +32,18 @@ l'application utilise les adresses publiques de dragonballfr.com.
 
 ## Ce que contient le dépôt
 
-| Chemin                                                              | Rôle                                                                                                                                                                              |
-| ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `apps/site`                                                         | L'application frontale unique (Next 16) : site public, administration, éditeur Koharu (`/koharu`), studio (`/studio`), passerelle MCP publique (`/mcp`).                          |
-| `apps/bot`                                                          | Le bot Discord multi-personas et son API publique (Bun).                                                                                                                          |
-| `apps/server`                                                       | `shenron-server` : le binaire autonome qui sert l'application frontale et les API locales.                                                                                        |
-| `packages/ui`                                                       | La couche UI unique : système de design Dragon Ball, lecteurs, éditeur Koharu, studio.                                                                                            |
-| `packages/{api,auth,config,db,images,koharu,media,native,pipeline}` | Contrat d'API, authentification, configuration, base de données, assets, client Koharu, médias, liaison native, chaîne éditoriale.                                                |
-| `crates/shenron-*`                                                  | Rust : CLI `shenron`, serveur MCP, moteur RE pur Rust `shenron-re` (parseurs binaires DBXV2/CPK, FFI C ABI), RAG, traduction JP→FR, manga, C ABI, commandes du studio, application de bureau (Tauri 3). |
-| `crates/koharu-*`                                                   | Le moteur de traduction manga Koharu (détection, OCR, inpainting, rendu, PSD).                                                                                                    |
-| `plugin/`                                                           | Le plugin Claude Code « shenron » (compétences Dragon Ball, MCP).                                                                                                                 |
-| `vendor/dbxv2`                                                      | Sous-module [dbxv2](https://github.com/aphrody-code/dbxv2) : référence des outils Xenoverse 2 historiques, migré vers le socle Rust natif `crates/shenron-re` et la liaison Bun FFI `@shenron/native/re`. |
-| `deploy/`, `config/`, `docs/`                                       | Artefacts de déploiement, configuration publique, documentation.                                                                                                                  |
+| Chemin                                                              | Rôle                                                                                                                                                                                                              |
+| ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/site`                                                         | L'application frontale unique (Next 16) : site public, administration, éditeur Koharu (`/koharu`), studio (`/studio`), passerelle MCP publique (`/mcp`).                                                          |
+| `apps/bot`                                                          | Le bot Discord multi-personas et son API publique (Bun).                                                                                                                                                          |
+| `apps/server`                                                       | `shenron-server` : le binaire autonome qui sert l'application frontale et les API locales.                                                                                                                        |
+| `packages/ui`                                                       | La couche UI unique : système de design Dragon Ball, lecteurs, éditeur Koharu, studio.                                                                                                                            |
+| `packages/{api,auth,config,db,images,koharu,media,native,pipeline}` | Contrat d'API, authentification, configuration, base de données, assets, client Koharu, médias, liaison native, chaîne éditoriale.                                                                                |
+| `crates/shenron-*`                                                  | Rust : CLI `shenron`, serveur MCP, moteur RE pur Rust `shenron-re` (parseurs binaires DBXV2/CPK, FFI C ABI), RAG, traduction JP→FR, manga, C ABI, commandes du studio, application de bureau (Tauri 3).           |
+| `crates/koharu-*`                                                   | Le moteur de traduction manga Koharu (détection, OCR, inpainting, rendu, PSD).                                                                                                                                    |
+| `plugin/`                                                           | Le plugin Claude Code « shenron » (compétences Dragon Ball, MCP).                                                                                                                                                 |
+| `vendor/dbxv2`                                                      | Sous-module [dbxv2](https://github.com/aphrody-code/dbxv2) : référence des outils Xenoverse 2 historiques, migré vers le socle Rust natif `crates/shenron-re` et la liaison Bun FFI `@aphrody/shenron-native/re`. |
+| `deploy/`, `config/`, `docs/`                                       | Artefacts de déploiement, configuration publique, documentation.                                                                                                                                                  |
 
 ## Migration et intégration dbxv2
 
@@ -54,7 +54,7 @@ Les fonctionnalités de l'écosystème DBXV2 ont été migrées vers un socle un
    - **Décodeurs de formats binaires** : Modèles 3D et maillages (`EMD`), atlas de textures et conversion RGBA8888 (`EMB`), matériaux et shaders (`EMM`), squelettes et os (`ESK`), animations de combat et hitboxes (`BAC`), matrices de dégâts (`BDM`), catalogue des 708 compétences (`CUS`), coefficients de transformation (`PUP`), chaînes textuelles localisées (`MSG`), et conteneur de sauvegarde PC avec déchiffrement et inspection CaC/Zeni/TP (`SAV`).
    - **Catalogue exhaustif** : Registre unifié des jeux vidéo Dragon Ball sur Steam, PC, Android et consoles avec moteurs, formats et chemins de sauvegarde.
 
-2. **Liaison Bun FFI (`@shenron/native/re`)** :
+2. **Liaison Bun FFI (`@aphrody/shenron-native/re`)** :
    - Exporte une interface TypeScript typée via `bun:ffi` (`dlopen`) se liant directement à la bibliothèque partagée `libshenron_re.so` / `shenron_re.dll`.
    - Permet au serveur Bun et aux scripts de trier des binaires, inspecter des sauvegardes et extraire des fichiers d'archives CPK en mémoire en quelques microsecondes sans runtime Python ni JVM.
 

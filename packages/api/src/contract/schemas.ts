@@ -2,7 +2,7 @@
 /**
  * Response and request schemas of the Shenron HTTP contract (docs/architecture/STACK.md §3.6).
  *
- * Runtime class: `pure` — only `zod` and `@shenron/db/constants`. Every
+ * Runtime class: `pure` — only `zod` and `@aphrody/shenron-db/constants`. Every
  * response schema carries `.meta({ id })`, which the OpenAPI generator turns
  * into a named component. Shapes mirror the current bot handlers
  * (`apps/bot/src/api/server.ts`, `apps/bot/src/api/ia-cockpit.ts`).
@@ -12,7 +12,7 @@ import {
   GOAL_PRIORITIES,
   WIKI_CATEGORIES,
   type WikiCategoryName as WikiCategoryNameValue,
-} from "@shenron/db/constants";
+} from "@aphrody/shenron-db/constants";
 import { z } from "zod";
 
 // ── Health & stats ──────────────────────────────────────────────────────────

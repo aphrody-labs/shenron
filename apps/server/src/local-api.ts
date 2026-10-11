@@ -4,7 +4,7 @@
  *
  *   GET /api/local/health                 liveness, profile, version, capabilities and the
  *                                         availability of each API group (`LocalHealthResponse`
- *                                         of `@shenron/api/contract`)
+ *                                         of `@aphrody/shenron-api/contract`)
  *   /api/local/koharu/*                   the editor engine of a browser on this machine
  *                                         (./koharu.ts), when the server has one
  *   GET /v1/models, POST /v1/chat/completions
@@ -17,23 +17,23 @@
  *                                         the shenron-ffi C ABI, in process
  *
  * The native library is the one shipped beside the executable (or SHENRON_FFI_LIB), opened
- * through the single `bun:ffi` binding of `@shenron/native`. Searches run on its worker pool
- * (`@shenron/native/worker`), off the event loop; a client that goes away aborts its search
+ * through the single `bun:ffi` binding of `@aphrody/shenron-native`. Searches run on its worker pool
+ * (`@aphrody/shenron-native/worker`), off the event loop; a client that goes away aborts its search
  * (the request `AbortSignal` cancels the native job).
  */
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import type { LocalApiGroups, LocalHealthResponse } from "@shenron/api/contract";
+import type { LocalApiGroups, LocalHealthResponse } from "@aphrody/shenron-api/contract";
 import type { ChatModel } from "./chat-model";
 import type { KoharuBridge } from "./koharu";
-import { SHENRON_FFI_FILE } from "@shenron/native/shenron";
-import { shenronWorkerPool } from "@shenron/native/worker";
+import { SHENRON_FFI_FILE } from "@aphrody/shenron-native/shenron";
+import { shenronWorkerPool } from "@aphrody/shenron-native/worker";
 
 import { profileOf, type ServerPaths } from "./config";
 import { VERSION } from "./version";
 import { openAiApi } from "./openai";
 
-/** The native calls of the local APIs (`@shenron/native` by default; a fake in tests). */
+/** The native calls of the local APIs (`@aphrody/shenron-native` by default; a fake in tests). */
 export interface LocalNative {
   /** Open the library at `path` and check it (ABI, target, version); throws when it cannot. */
   load(path: string): unknown;

@@ -20,7 +20,7 @@ import { drizzle } from "drizzle-orm/bun-sqlite";
 import { Database } from "bun:sqlite";
 import { dbNews } from "../../src/db/schema";
 import { eq } from "drizzle-orm";
-import { aphrodyWebScrape } from "@shenron/pipeline/aphrody";
+import { aphrodyWebScrape } from "@aphrody/shenron-pipeline/aphrody";
 
 const sqlite = new Database(Bun.env.DATABASE_PATH ?? "./data/bot.db");
 sqlite.exec("PRAGMA foreign_keys = ON");

@@ -33,7 +33,7 @@ jobs:
       # Mêmes portes que ci.yml.
       - name: Verify
         run: |
-          bun --filter @shenron/bot gen:entries
+          bun --filter @aphrody/shenron-bot gen:entries
           bun packages/api/scripts/openapi.ts --check
           bun packages/ui/scripts/generate-tokens.ts --check
           bun packages/pipeline/scripts/ai/check-contracts.ts

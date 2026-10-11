@@ -5,9 +5,9 @@ import { useLocale } from "next-intl";
 import {
   DragonRadarSearch as SharedDragonRadarSearch,
   type RadarLinkProps,
-} from "@shenron/ui/public/DragonRadarSearch";
-import { createDragonRadarHttpTransport } from "@shenron/ui/public/dragon-radar-http";
-import { getDragonRadarMessages } from "@shenron/ui/public/dragon-radar-messages";
+} from "@aphrody/shenron-ui/public/DragonRadarSearch";
+import { createDragonRadarHttpTransport } from "@aphrody/shenron-ui/public/dragon-radar-http";
+import { getDragonRadarMessages } from "@aphrody/shenron-ui/public/dragon-radar-messages";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
 import { assetUrl } from "@/lib/assets";
 import { getRadarSuggestions } from "./dragon-radar-suggestions";

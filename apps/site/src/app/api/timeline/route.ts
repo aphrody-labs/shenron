@@ -64,7 +64,7 @@ export async function GET(req: Request) {
         date: it.date ? new Date(it.date * 1000).toISOString().slice(0, 10) : null,
         href: `${SITE_URL}${it.href}`,
         // Fiche JSON réelle : `/api/episodes/{id}` et `/api/movies/{id}` n'existent
-        // pas (seul `…/download` y est servi) ; le contrat `@shenron/api` sert la
+        // pas (seul `…/download` y est servi) ; le contrat `@aphrody/shenron-api` sert la
         // fiche (`visible = true`) sous `/api/public/wiki/{catégorie}/{id}`.
         api:
           it.kind === "manga"

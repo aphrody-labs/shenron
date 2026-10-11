@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-/** `@shenron/api/contract` — zod schemas of the Shenron HTTP contract (runtime class `pure`). */
+/** `@aphrody/shenron-api/contract` — zod schemas of the Shenron HTTP contract (runtime class `pure`). */
 export { ApiErrorCode, ErrorEnvelope } from "./error";
 export * from "./schemas";
 export * from "./chat";

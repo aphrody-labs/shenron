@@ -11,15 +11,15 @@ restent dans Shenron.
 Le point d’entrée produit existant est conservé :
 
 ```sh
-bun run --filter @shenron/pipeline pipeline crawl official --dry-run --max-requests 1 --max-depth 0
-bun run --filter @shenron/pipeline pipeline crawl kanzenshuu --max-requests 100
-bun run --filter @shenron/pipeline pipeline crawl databooks --max-requests 100
-bun run --filter @shenron/pipeline pipeline crawl guides --max-requests 5
-bun run --filter @shenron/pipeline pipeline crawl dragonballcn --max-requests 100
-bun run --filter @shenron/pipeline pipeline crawl universal --max-requests 500
-bun run --filter @shenron/pipeline pipeline unify
-bun run --filter @shenron/pipeline pipeline dragon-ball sources
-bun run --filter @shenron/pipeline pipeline dragon-ball catalogue-enrich --catalogue /chemin/prive/catalogue.json
+bun run --filter @aphrody/shenron-pipeline pipeline crawl official --dry-run --max-requests 1 --max-depth 0
+bun run --filter @aphrody/shenron-pipeline pipeline crawl kanzenshuu --max-requests 100
+bun run --filter @aphrody/shenron-pipeline pipeline crawl databooks --max-requests 100
+bun run --filter @aphrody/shenron-pipeline pipeline crawl guides --max-requests 5
+bun run --filter @aphrody/shenron-pipeline pipeline crawl dragonballcn --max-requests 100
+bun run --filter @aphrody/shenron-pipeline pipeline crawl universal --max-requests 500
+bun run --filter @aphrody/shenron-pipeline pipeline unify
+bun run --filter @aphrody/shenron-pipeline pipeline dragon-ball sources
+bun run --filter @aphrody/shenron-pipeline pipeline dragon-ball catalogue-enrich --catalogue /chemin/prive/catalogue.json
 ```
 
 Un dry-run construit la commande sans lancer de processus ni écrire de données.
@@ -36,7 +36,7 @@ consulter le plan et l’état d’une campagne. `crawl custom URL` appelle
 | dragonballcn   | dragonballcn                                 |
 | universal      | Sources activées dans le plan du module      |
 
-La frontière `@shenron/native/web/pipeline` consomme
+La frontière `@aphrody/shenron-native/web/pipeline` consomme
 `@aphrody/bun/web/pipeline`, qui charge la bibliothèque native vérifiée ;
 `APHRODY_FFI_LIB` sélectionne explicitement un artefact accompagné de son manifeste compatible.
 Sans cette variable, le SDK recherche son payload puis la bibliothèque compagnon
@@ -65,13 +65,13 @@ poids ou contenu de conversation n’entre dans Git.
 Le gel éditorial des databooks reste applicable : cette migration de code ne
 lève aucun gel et n’exécute aucun dépôt OCR, traduction ou migration PostgreSQL.
 
-Les points d’entrée Bun `@shenron/pipeline/dragon-ball` regroupent catalogue,
+Les points d’entrée Bun `@aphrody/shenron-pipeline/dragon-ball` regroupent catalogue,
 couvertures et import manga. Les dépôts PostgreSQL utilisent les ports éditoriaux
 existants. Les fichiers acquis sont vérifiés par SHA-256 et les fichiers revus
 ne sont pas écrasés. `catalogue-enrich` prépare un résultat par défaut ; `--apply`
 exige le gel levé et un `--output` distinct du snapshot natif.
 
-`@shenron/pipeline/aphrody/jobs` conserve les intentions et les résultats dans un
+`@aphrody/shenron-pipeline/aphrody/jobs` conserve les intentions et les résultats dans un
 SQLite privé local. Il appelle les outils natifs MCP de soumission, suivi et
 annulation via le client HTTP natif et sa configuration authentifiée. Chaque
 hôte garde sa propre file SQLite. Le placement estime la charge à partir des
@@ -89,7 +89,7 @@ L’inventaire Bun vérifie les 16 familles, les fichiers réels et leurs SHA-25
 la recension datée, la relecture et les droits distincts RAG/entraînement :
 
 ```sh
-bun run --filter @shenron/pipeline pipeline dragon-ball coverage \
+bun run --filter @aphrody/shenron-pipeline pipeline dragon-ball coverage \
   --catalogue /chemin/prive/datasets/catalogue.json \
   --manifests /chemin/prive/datasets/manifests \
   --assets /chemin/prive/datasets/assets
@@ -108,7 +108,7 @@ contiennent que des empreintes et des preuves de statut. Les accusés perdus
 réutilisent la même clé ; la vérification RAG expire après une heure.
 
 ```sh
-bun run --filter @shenron/pipeline pipeline dragon-ball automate \
+bun run --filter @aphrody/shenron-pipeline pipeline dragon-ball automate \
   --catalogue /chemin/prive/datasets/catalogue.json \
   --manifests /chemin/prive/datasets/manifests \
   --assets /chemin/prive/datasets/assets \

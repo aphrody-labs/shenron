@@ -11,7 +11,7 @@ import {
   resolveSiteUrl,
 } from "../src/public-urls";
 
-describe("@shenron/config/public-urls", () => {
+describe("@aphrody/shenron-config/public-urls", () => {
   test("defaults apply with an empty environment", () => {
     expect(resolveSiteUrl({})).toBe(DEFAULT_PUBLIC_ORIGINS.site);
     expect(resolveApiUrl({})).toBe(DEFAULT_PUBLIC_ORIGINS.api);

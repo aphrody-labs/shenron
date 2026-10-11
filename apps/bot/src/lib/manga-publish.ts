@@ -12,7 +12,7 @@
  */
 import type { Database } from "bun:sqlite";
 import type postgres from "postgres";
-import type { ParsedMangaPage } from "@shenron/pipeline/manga-ocr";
+import type { ParsedMangaPage } from "@aphrody/shenron-pipeline/manga-ocr";
 import {
   extractTranslationPairs,
   getMangaCandidate,

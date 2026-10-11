@@ -1,1 +1,1 @@
-export * from "@shenron/ui/toriyama/MotifsCouverture";
+export * from "@aphrody/shenron-ui/toriyama/MotifsCouverture";

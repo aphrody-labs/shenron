@@ -7,7 +7,7 @@ export {
   WebFrameSearch,
   WebMediaResolve,
   WebMediaSearch,
-} from "@shenron/pipeline/bxc/contracts";
+} from "@aphrody/shenron-pipeline/bxc/contracts";
 
 import {
   WebStatus as Status,
@@ -16,7 +16,7 @@ import {
   BxcFramesStatsSchema,
   BxcVectorOutputSchema,
   BxcSearchOutputSchema,
-} from "@shenron/pipeline/bxc/contracts";
+} from "@aphrody/shenron-pipeline/bxc/contracts";
 
 export const WebStatus = Status.meta({ id: "WebStatus" });
 export const WebMediaSource = MediaSource.meta({ id: "WebMediaSource" });

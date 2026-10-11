@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-/** Material 3 chat surface of Shenron Studio (`@shenron/ui/chat`). Styles: `@shenron/ui/chat.css`. */
+/** Material 3 chat surface of Shenron Studio (`@aphrody/shenron-ui/chat`). Styles: `@aphrody/shenron-ui/chat.css`. */
 export { ChatPanel, type ChatLabels, type ChatPanelProps } from "./ChatPanel";
 export {
   MemoryPanel,

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Bun-native PostgreSQL lifecycle for page and series banners. */
-import { createDefaultPageBanners } from "@shenron/config/page-banners";
-import { resolveApiUrl } from "@shenron/config/public-urls";
-import { envString, type EnvSource } from "@shenron/config/env";
-import { createBunDb } from "@shenron/db/bun-sql";
-import { createPageBannersConfigRepository } from "@shenron/db/repos/page-banners";
+import { createDefaultPageBanners } from "@aphrody/shenron-config/page-banners";
+import { resolveApiUrl } from "@aphrody/shenron-config/public-urls";
+import { envString, type EnvSource } from "@aphrody/shenron-config/env";
+import { createBunDb } from "@aphrody/shenron-db/bun-sql";
+import { createPageBannersConfigRepository } from "@aphrody/shenron-db/repos/page-banners";
 import type { PageBannersPort } from "../server";
 
 export function createHostPageBanners(

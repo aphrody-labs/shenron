@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
-// The editor imports the shared @shenron/ui kit directly under its planche scope: these tests
+// The editor imports the shared @aphrody/shenron-ui kit directly under its planche scope: these tests
 // pin the hooks its stylesheet targets (`data-slot`, `data-koharu-ui-layer`), the semantic
 // surface it paints on the host M3 roles, and the keyboard behaviour.
 import { act, render, screen, waitFor } from "@testing-library/react";
@@ -18,15 +18,15 @@ import {
   AlertDialogMedia,
   AlertDialogPopup,
   AlertDialogTitle,
-} from "@shenron/ui/alert-dialog";
-import { Button } from "@shenron/ui/button";
+} from "@aphrody/shenron-ui/alert-dialog";
+import { Button } from "@aphrody/shenron-ui/button";
 import {
   Dialog,
   DialogDescription,
   DialogHeader,
   DialogPopup,
   DialogTitle,
-} from "@shenron/ui/dialog";
+} from "@aphrody/shenron-ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -37,14 +37,20 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@shenron/ui/dropdown-menu";
-import { Input } from "@shenron/ui/input";
-import i18n, { resources } from "@shenron/ui/koharu/lib/i18n";
-import { receiveError } from "@shenron/ui/koharu/lib/store";
-import { Popover, PopoverPopup, PopoverTitle, PopoverTrigger } from "@shenron/ui/popover";
-import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "@shenron/ui/select";
-import { Slider } from "@shenron/ui/slider";
-import { Tooltip, TooltipPopup, TooltipTrigger } from "@shenron/ui/tooltip";
+} from "@aphrody/shenron-ui/dropdown-menu";
+import { Input } from "@aphrody/shenron-ui/input";
+import i18n, { resources } from "@aphrody/shenron-ui/koharu/lib/i18n";
+import { receiveError } from "@aphrody/shenron-ui/koharu/lib/store";
+import { Popover, PopoverPopup, PopoverTitle, PopoverTrigger } from "@aphrody/shenron-ui/popover";
+import {
+  Select,
+  SelectItem,
+  SelectPopup,
+  SelectTrigger,
+  SelectValue,
+} from "@aphrody/shenron-ui/select";
+import { Slider } from "@aphrody/shenron-ui/slider";
+import { Tooltip, TooltipPopup, TooltipTrigger } from "@aphrody/shenron-ui/tooltip";
 import {
   InputGroup,
   InputGroupAddon,

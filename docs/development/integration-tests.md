@@ -13,9 +13,9 @@ bun run test:integration --no-browser    # suites et contrats
 bun test scripts/testing/integration/test/contracts.test.ts
 ```
 
-Les tests importent les composants partagés de `@shenron/ui`, le client et
-l'hôte de `@shenron/api`, le VFS et le store de `@shenron/db`, les helpers de
-`@shenron/config` et le serveur frontal réel de `apps/server`. Ils vérifient
+Les tests importent les composants partagés de `@aphrody/shenron-ui`, le client et
+l'hôte de `@aphrody/shenron-api`, le VFS et le store de `@aphrody/shenron-db`, les helpers de
+`@aphrody/shenron-config` et le serveur frontal réel de `apps/server`. Ils vérifient
 notamment une recherche wiki, les compteurs rendus par l'UI, les réponses
 invalides et l'absence de repli HTML pour une API désactivée. Ce code de
 qualification vit dans `scripts/testing/integration`, hors du graphe de
@@ -28,11 +28,11 @@ qui déclenche `open` sans transmettre de messages.
 Une étape DOM dédiée monte la palette réelle du shell avec le préchargement
 `@aphrody/bun-test-dom`. Elle vérifie les résultats databooks et romans,
 la navigation vers une fiche databook et le changement anglais/japonais.
-Les dictionnaires de la palette vivent dans `@shenron/ui/public` et couvrent
+Les dictionnaires de la palette vivent dans `@aphrody/shenron-ui/public` et couvrent
 toutes ses catégories. Cette étape s’exécute aussi avec `--no-browser` et
 `--cross-only` ; elle ne remplace pas une qualification visuelle dans Obscura.
 
-Le rendu canonique est `@shenron/ui/public/CommandPalette`, sans import Next,
+Le rendu canonique est `@aphrody/shenron-ui/public/CommandPalette`, sans import Next,
 DB ou serveur. L’application fournit la navigation, la résolution des images
 et la télémétrie ; `searchUrl` permet de viser une API Bun distincte. Le cycle
 de requête borné est aussi dans le paquet UI. Un test DOM du paquet monte cette

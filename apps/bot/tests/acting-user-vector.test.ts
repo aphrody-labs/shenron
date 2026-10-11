@@ -1,6 +1,6 @@
 /**
  * W3-AUTH-04 — le vérificateur acting-user du bot (`api/user-auth.ts`, façade
- * de `@shenron/auth/acting-user`) accepte le vecteur partagé
+ * de `@aphrody/shenron-auth/acting-user`) accepte le vecteur partagé
  * `ACTING_USER_TEST_VECTOR` produit par le signataire du site, et lit le secret
  * via `ENV_ALIASES.actingUserSecret` (SHENRON_USER_SECRET puis API_USER_SECRET).
  */
@@ -10,7 +10,7 @@ import {
   ACTING_USER_HEADERS,
   ACTING_USER_TEST_VECTOR as V,
   signActingUser,
-} from "@shenron/auth/acting-user";
+} from "@aphrody/shenron-auth/acting-user";
 import { actingUserSecret, verifyActingUser } from "../src/api/user-auth";
 import { env } from "../src/lib/env";
 

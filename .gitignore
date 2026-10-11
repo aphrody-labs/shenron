@@ -27,7 +27,7 @@ next-env.d.ts
 playwright-report/
 test-results/
 
-# Native artifacts staged next to @shenron/native
+# Native artifacts staged next to @aphrody/shenron-native
 /packages/native/native/
 
 # Local run state: guard bundles (var/unification), crawl and workflow runs (var/runs, var/dragon-ball-*)

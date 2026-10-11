@@ -8,16 +8,16 @@ listed in [`operations/ENV.md`](../operations/ENV.md), and process topology in
 
 ## Models
 
-| ID | Model | Where it runs |
-| --- | --- | --- |
-| `shenron-chat-v2` | Qwen3-4B Instruct 2507 Q4_K_M + Shenron LoRA adapter | Desktop (default) |
-| `gemma4-e2b` | Gemma 4 E2B instruct Q4_K_M (Unsloth, Apache-2.0) | Desktop (on-demand download), website and bot (production) |
-| `gemini-web/flash` | Gemini web app, operator's Google session | Optional remote backend |
+| ID                 | Model                                                | Where it runs                                              |
+| ------------------ | ---------------------------------------------------- | ---------------------------------------------------------- |
+| `shenron-chat-v2`  | Qwen3-4B Instruct 2507 Q4_K_M + Shenron LoRA adapter | Desktop (default)                                          |
+| `gemma4-e2b`       | Gemma 4 E2B instruct Q4_K_M (Unsloth, Apache-2.0)    | Desktop (on-demand download), website and bot (production) |
+| `gemini-web/flash` | Gemini web app, operator's Google session            | Optional remote backend                                    |
 
 - **Desktop:** Aphrody's router and provisioner (`aphrody-llama-server`, contract
   `LOCAL-CHAT.md`) run inside `shenron-server` through `libshenron_ffi` (ABI 5,
   `shenron_llama_*`). `apps/server/src/chat-model.ts` only selects files (defaults pinned in
-  `@shenron/config/chat-model`). One `llama-server` starts on first use; the supervisor
+  `@aphrody/shenron-config/chat-model`). One `llama-server` starts on first use; the supervisor
   re-executes `shenron-server llama-daemon`, so no Aphrody executable ships with the app. The
   model store is `<SHENRON_HOME>/models` (`registry.json`). The installer includes the Vulkan
   llama.cpp runtime and LoRA adapter. Qwen (2.5 GB) and Gemma (3.1 GB) download on first launch
@@ -46,7 +46,7 @@ listed in [`operations/ENV.md`](../operations/ENV.md), and process topology in
 - **Template:** `templates/agent-home/` follows the native aphrody-agent-home format. It carries
   Shenron's persona, editorial rules (the manga, scans, and Akira Toriyama's statements take
   priority; Fandom is not an authority), the fr/en/ja language rule, and an empty `USER.md`. It
-  is embedded by `@shenron/db/agent-homes` (`bun packages/db/scripts/agent-home-template.ts
+  is embedded by `@aphrody/shenron-db/agent-homes` (`bun packages/db/scripts/agent-home-template.ts
   --check` in CI) and copied into the server payload. The guard in `scripts/build/server.ts`
   rejects private data.
 - **One home per user**, identified as `discord:<user_id>`, or `local`:
@@ -62,13 +62,13 @@ listed in [`operations/ENV.md`](../operations/ENV.md), and process topology in
     not connected.
 - **Every model acts as Shenron:** each backend's system prompt, including Gemini web, includes
   the home persona, user fields (name, language, timezone, preferences, treated as data), the
-  `shenron` plugin index (`@shenron/api/plugin`, context only and not callable tools yet), and
+  `shenron` plugin index (`@aphrody/shenron-api/plugin`, context only and not callable tools yet), and
   memory.
 
 ## Persistent memory
 
 - **Storage:** `aphrody_memory` (`SqliteLocalProvider`) is called by `crates/shenron-ffi`
-  (ABI 3) through `@shenron/native`; `apps/server/src/memory.ts` supplies the host factory. Each
+  (ABI 3) through `@aphrody/shenron-native`; `apps/server/src/memory.ts` supplies the host factory. Each
   home has a database at `<home>/.aphrody/memory.sqlite` (default
   `<SHENRON_HOME>/data/memory.sqlite`), created with mode 600; access is scoped to one agent ID.
 - **Each turn:** up to five relevant memories are attached to the question as data
@@ -90,7 +90,7 @@ listed in [`operations/ENV.md`](../operations/ENV.md), and process topology in
   panel (install Gemma, import the adapter through the native file picker). Links open in the
   system browser. UI labels are localized in French, English, and Japanese.
 - **Discord DMs** (`apps/bot/src/events/DirectMessageRelay.ts`): available to guild members.
-  Defaults from `@shenron/config/dm-chat`: two concurrent generations, 20 queued requests with
+  Defaults from `@aphrody/shenron-config/dm-chat`: two concurrent generations, 20 queued requests with
   announced position, one in-flight request and five replies per user every 10 minutes, 90
   seconds per generation, 320 tokens and 1,800 characters per reply. Owners are unlimited and
   prioritized; `SHENRON_DM_CHAT=off` restricts chat to owners. Responses do not stream; the
@@ -115,6 +115,6 @@ listed in [`operations/ENV.md`](../operations/ENV.md), and process topology in
 - Next fine-tune on an RTX 4070 (12 GB): Qwen3.5-4B LoRA bf16, which requires Transformers v5
   in Aphrody's pipeline; immediate fallback is Qwen3-4B-Instruct-2507 (about 30 minutes for
   three epochs).
-- Replace the `@shenron/pipeline` A2A hub (about 2,000 lines, legacy dialect) with `@aphrody/a2a`
+- Replace the `@aphrody/shenron-pipeline` A2A hub (about 2,000 lines, legacy dialect) with `@aphrody/a2a`
   when published; move pipeline calls to the `aphrody` binary through FFI, which requires
-  allowing `@shenron/native` through the `bun:ffi` guard.
+  allowing `@aphrody/shenron-native` through the `bun:ffi` guard.

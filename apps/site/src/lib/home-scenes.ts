@@ -1,2 +1,2 @@
 // SPDX-License-Identifier: Apache-2.0
-export * from "@shenron/config/home";
+export * from "@aphrody/shenron-config/home";

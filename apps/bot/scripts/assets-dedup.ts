@@ -33,7 +33,7 @@ import {
   diskToDbPath,
   hashFile,
   normalizeDbPath,
-} from "@shenron/images";
+} from "@aphrody/shenron-images";
 import { arretSiGel } from "../../site/scripts/_databooks-base";
 
 const APPLY = process.argv.includes("--apply");

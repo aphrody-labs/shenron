@@ -3,7 +3,7 @@ import { afterEach, describe, expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { createRecordingFetch } from "@shenron/config/testing";
+import { createRecordingFetch } from "@aphrody/shenron-config/testing";
 import { createShenronApiClient } from "../src/client";
 import { endpoints } from "../src/contract";
 import responses from "./fixtures/bot-responses.json";

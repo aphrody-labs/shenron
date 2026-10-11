@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://dragonballfr.com/schemas/lexicon/terms.schema.json",
   "title": "Shenron Dragon Ball lexicon",
-  "description": "The one translation lexicon of Shenron (site, API, bot, plugin, pipeline, Shenron Studio translator). Japanese and French forms come from the dragonballfr.com wiki (name_ja / name) unless `sources` says otherwise; manga, scans and Akira Toriyama's statements prevail, Fandom is never a source. Edited by hand, checked by `bun scripts/data/lexicon.ts --check`, read by the Rust crate shenron-lexicon and the package @shenron/lexicon.",
+  "description": "The one translation lexicon of Shenron (site, API, bot, plugin, pipeline, Shenron Studio translator). Japanese and French forms come from the dragonballfr.com wiki (name_ja / name) unless `sources` says otherwise; manga, scans and Akira Toriyama's statements prevail, Fandom is never a source. Edited by hand, checked by `bun scripts/data/lexicon.ts --check`, read by the Rust crate shenron-lexicon and the package @aphrody/shenron-lexicon.",
   "type": "object",
   "required": ["version", "terms"],
   "additionalProperties": false,

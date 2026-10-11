@@ -3,7 +3,7 @@ import { injectable, inject } from "tsyringe";
 import { Bot, Discord, Once, Client } from "discordx";
 import { CronRegistry } from "~/api/cron-registry";
 import { logger } from "~/lib/logger";
-import { APHRODY_DISCORD } from "@shenron/config/discord-ai";
+import { APHRODY_DISCORD } from "@aphrody/shenron-config/discord-ai";
 import { initApplicationCommandsSafe } from "@aphrody/discord-kit";
 
 /**

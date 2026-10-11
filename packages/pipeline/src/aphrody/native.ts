@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Shenron result adapters over shenron-ffi (`@shenron/native`). The calls that can last
- * (commands, serving RAG search and statistics: network) run on the `@shenron/native/worker`
+ * Shenron result adapters over shenron-ffi (`@aphrody/shenron-native`). The calls that can last
+ * (commands, serving RAG search and statistics: network) run on the `@aphrody/shenron-native/worker`
  * pool, off the event loop and cancellable by `AbortSignal`; the instant ones stay synchronous.
  */
 import {
@@ -14,8 +14,8 @@ import {
   type RagSearchResponse,
   type RagStats,
   type ShenronAuthStatusPayload,
-} from "@shenron/native/shenron";
-import { shenronWorkerPool } from "@shenron/native/worker";
+} from "@aphrody/shenron-native/shenron";
+import { shenronWorkerPool } from "@aphrody/shenron-native/worker";
 import type { AphrodyDoctorResult, CliResult } from "./cli";
 import { AphrodyComputeClient, type AphrodyRagHit, type AphrodyRagStats } from "./compute";
 

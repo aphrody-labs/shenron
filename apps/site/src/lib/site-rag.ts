@@ -1,14 +1,18 @@
 import "server-only";
-import { AiConfigError, resolveChatModel, resolveDirectChat } from "@shenron/pipeline/ai/config";
+import {
+  AiConfigError,
+  resolveChatModel,
+  resolveDirectChat,
+} from "@aphrody/shenron-pipeline/ai/config";
 import {
   AphrodyComputeClient,
   aphrodyComputeFromChat,
   type AphrodyRagHit,
   type ChatFn,
   createOpenAiChat,
-} from "@shenron/pipeline/aphrody/compute";
-import { buildGroundingInstructions, resolvePersona } from "@shenron/pipeline/ai/prompts";
-import { createShenronProvider } from "@shenron/pipeline/ai/provider";
+} from "@aphrody/shenron-pipeline/aphrody/compute";
+import { buildGroundingInstructions, resolvePersona } from "@aphrody/shenron-pipeline/ai/prompts";
+import { createShenronProvider } from "@aphrody/shenron-pipeline/ai/provider";
 import { generateText } from "ai";
 
 export function usesAphrodyRag(): boolean {
@@ -75,7 +79,7 @@ export async function chatAphrodyRag(
     ? `[Page consultée] ${options.context.trim().slice(0, 1500)}\n\n${sources}`
     : sources;
   // Serveur direct déclaré (APHRODY_AI_CHAT_BASE_URL), sinon aphrody-ai-http ; modèle :
-  // `APHRODY_AI_CHAT_MODEL`, puis les alias hérités (résolveur unique @shenron/pipeline/ai/config).
+  // `APHRODY_AI_CHAT_MODEL`, puis les alias hérités (résolveur unique @aphrody/shenron-pipeline/ai/config).
   const route = chatRoute(client);
   const pid = resolvePersona(persona);
   const instructions = buildGroundingInstructions(pid, "site-short");

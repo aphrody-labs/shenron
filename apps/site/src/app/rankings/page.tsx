@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PageHeader } from "@shenron/ui/layout/PageHeader";
-import { PageShell } from "@shenron/ui/layout/PageShell";
-import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
-import { Trophee } from "@shenron/ui/icones";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
+import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
+import { Trophee } from "@aphrody/shenron-ui/icones";
 import { DomainBar } from "@/components/kit";
 import { GatedLink } from "@/components/GatedLink";
 import { Avatar } from "@/components/Avatar";

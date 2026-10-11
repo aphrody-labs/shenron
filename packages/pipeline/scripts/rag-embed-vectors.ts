@@ -14,8 +14,8 @@
  *   APHRODY_AI_HTTP_TOKEN (ou leurs alias ; obligatoires, aucun défaut).
  */
 import { Database } from "bun:sqlite";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
-import { warnIgnoredEmbedBaseUrl } from "@shenron/pipeline/ai/config";
+import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
+import { warnIgnoredEmbedBaseUrl } from "@aphrody/shenron-pipeline/ai/config";
 import { syncSource, type SyncResult } from "./_rag-aphrody-sync";
 import type { SourceChunk } from "./_rag-sources-pg";
 import {

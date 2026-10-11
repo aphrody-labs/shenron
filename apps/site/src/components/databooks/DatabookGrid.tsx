@@ -10,8 +10,15 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { Pagination } from "@/components/kit/Pagination";
-import { Bibliotheque, DragonRadar, Livre, Micro, Palette, Tendance } from "@shenron/ui/icones";
-import { ViewTransition } from "@shenron/ui/layout/ViewTransition";
+import {
+  Bibliotheque,
+  DragonRadar,
+  Livre,
+  Micro,
+  Palette,
+  Tendance,
+} from "@aphrody/shenron-ui/icones";
+import { ViewTransition } from "@aphrody/shenron-ui/layout/ViewTransition";
 import { WikiImg } from "@/components/wiki/WikiImg";
 import {
   DATABOOK_CATEGORIES,

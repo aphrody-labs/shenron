@@ -1,7 +1,7 @@
 import { PageShell } from "@/components/kit";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Etincelle, Groupe, Oeil, Tendance } from "@shenron/ui/icones";
+import { Etincelle, Groupe, Oeil, Tendance } from "@aphrody/shenron-ui/icones";
 import { PageHeader } from "@/components/PageHeader";
 import { getShenronStats } from "@/lib/shenron";
 import { getPublicActivitySafe, prettyPath } from "@/lib/analytics";

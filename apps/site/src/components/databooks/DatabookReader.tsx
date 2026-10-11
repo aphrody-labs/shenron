@@ -1,6 +1,9 @@
 "use client";
 import { useCallback } from "react";
-import { DatabookReader as BaseDatabookReader, type DatabookReaderPage } from "@shenron/ui/reader";
+import {
+  DatabookReader as BaseDatabookReader,
+  type DatabookReaderPage,
+} from "@aphrody/shenron-ui/reader";
 import { TranscriptionTexte } from "./TranscriptionTexte";
 import { readerAssetUrl } from "@/lib/reader-assets";
 import { API_ORIGIN, CDN_ORIGIN, SITE_URL } from "@/lib/config";

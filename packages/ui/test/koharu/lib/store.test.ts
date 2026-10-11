@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { receiveDownload, useKoharuStore } from "@shenron/ui/koharu/lib/store";
+import { receiveDownload, useKoharuStore } from "@aphrody/shenron-ui/koharu/lib/store";
 
 describe("editor state", () => {
   it("retains failed downloads until they are dismissed", () => {

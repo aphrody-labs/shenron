@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/pipeline/ai/grounding` — fidelity of a grounded answer, with no model call.
+ * `@aphrody/shenron-pipeline/ai/grounding` — fidelity of a grounded answer, with no model call.
  *
  * Runtime class: `pure`. Four jobs, all deterministic:
  * - rank the hits sent to the model: collected documents ("Cette fiche décrit un document

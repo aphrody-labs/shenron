@@ -10,23 +10,23 @@
 bun apps/site/scripts/ja-preparer.ts [--force]   # dans apps/site/.ja-data/
 ```
 
-| Ressource | Rôle | Poids |
-| --- | --- | --- |
-| dictionnaire **kuromoji** (IPADIC) | découpage, nature, lecture, lemme | 18 Mo |
-| index **JMdict** (EDRDG, CC BY-SA 4.0) | « ce mot existe-t-il ? » | 7,6 Mo |
+| Ressource                              | Rôle                              | Poids  |
+| -------------------------------------- | --------------------------------- | ------ |
+| dictionnaire **kuromoji** (IPADIC)     | découpage, nature, lecture, lemme | 18 Mo  |
+| index **JMdict** (EDRDG, CC BY-SA 4.0) | « ce mot existe-t-il ? »          | 7,6 Mo |
 
 ## Modules — `apps/site/src/lib/ja/`
 
-| Fichier | Contenu | Pur ? |
-| --- | --- | --- |
-| `normalisation.ts` | écritures, `normaliserJa`, katakana → hiragana, furigana | oui |
-| `anomalies.ts` | distance bornée, index du lexique, suggestion | oui |
-| `traduction.ts` | masquage des termes, jetons, segments traduisibles | oui |
-| `lexique-canonique.ts` | lexique canonique (`@shenron/lexicon`), contrôles de dépôt | oui |
-| `lexique.ts` | lexique du domaine depuis `bot.*` | `server-only` |
-| `dictionnaire.ts` | kuromoji + JMdict, chargement paresseux | fichiers |
+| Fichier                | Contenu                                                            | Pur ?         |
+| ---------------------- | ------------------------------------------------------------------ | ------------- |
+| `normalisation.ts`     | écritures, `normaliserJa`, katakana → hiragana, furigana           | oui           |
+| `anomalies.ts`         | distance bornée, index du lexique, suggestion                      | oui           |
+| `traduction.ts`        | masquage des termes, jetons, segments traduisibles                 | oui           |
+| `lexique-canonique.ts` | lexique canonique (`@aphrody/shenron-lexicon`), contrôles de dépôt | oui           |
+| `lexique.ts`           | lexique du domaine depuis `bot.*`                                  | `server-only` |
+| `dictionnaire.ts`      | kuromoji + JMdict, chargement paresseux                            | fichiers      |
 
-`scripts/lexique.js` du plugin est généré depuis `@shenron/lexicon` (`packages/lexicon`) et
+`scripts/lexique.js` du plugin est généré depuis `@aphrody/shenron-lexicon` (`packages/lexicon`) et
 `data/lexicon/terms.json` par `bun scripts/plugin/build-references.ts`.
 
 ## Scripts

@@ -12,7 +12,7 @@ import {
   FlecheBas,
   FlecheHaut,
   Plus,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/admin-api";
 import { RoleSelect, RoleBadge } from "@/components/admin/RoleSelect";

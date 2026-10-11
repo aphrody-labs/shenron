@@ -9,7 +9,7 @@ project, canvas, jobs, agent and settings. `shenron-desktop` calls `setup` (one 
 The command signatures are the frontend contract (`packages/koharu/src/protocol.ts`):
 
 ```sh
-bun --filter @shenron/koharu protocol   # cargo run -p koharu-app --example protocol
+bun --filter @aphrody/shenron-koharu protocol   # cargo run -p koharu-app --example protocol
 ```
 
 `koharu_library::editor::dispatch` answers the same commands outside Tauri (`koharu-sdk`, the

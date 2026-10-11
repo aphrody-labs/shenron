@@ -10,7 +10,7 @@ import {
   SHENRON_RE_WASM_FILENAME,
   type GameDataFileResult,
   type GameDataFormat,
-} from "@shenron/pipeline/re-wasm-web";
+} from "@aphrody/shenron-pipeline/re-wasm-web";
 
 const FORMATS = new Set<GameDataFormat>(["bac", "bdm", "cus", "msg", "pup"]);
 const MAX_FILE_BYTES = 16 * 1024 * 1024;

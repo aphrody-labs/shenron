@@ -1,7 +1,7 @@
 # Chargement de la chronologie sur Bun
 
 Le modèle, la résolution de la curation et les helpers de tri/export sont
-partagés dans `@shenron/config/chronology`. L’ancien module du site les
+partagés dans `@aphrody/shenron-config/chronology`. L’ancien module du site les
 réexporte ; l’ordre des ères, les notes, le masquage et les rangs sont conservés.
 
 L’hôte Bun expose `GET /api/v1/site/chronology` pour la curation,

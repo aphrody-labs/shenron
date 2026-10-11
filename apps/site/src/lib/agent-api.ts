@@ -14,7 +14,7 @@
  * Server-only.
  */
 import "server-only";
-import { decideWriteQuota, hasScope, isQuotaExemptMethod } from "@shenron/auth/agent-keys";
+import { decideWriteQuota, hasScope, isQuotaExemptMethod } from "@aphrody/shenron-auth/agent-keys";
 import type { AgentScope } from "@/db/schema";
 import {
   agentCallsLastHour,

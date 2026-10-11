@@ -1,4 +1,4 @@
-import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
+import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
 
 /** Serve owned scans from the page origin, independently of the CDN. */
 export function readerAssetUrl(

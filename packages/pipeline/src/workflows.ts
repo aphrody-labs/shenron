@@ -3,16 +3,16 @@
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { wrapLanguageModel } from "ai";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
-import { aphrodyComputeFromChat } from "@shenron/pipeline/aphrody/compute";
-import { createAphrodyChatModel } from "@shenron/pipeline/ai/chat";
-import { SHENRON_E5 } from "@shenron/pipeline/ai/config";
+import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
+import { aphrodyComputeFromChat } from "@aphrody/shenron-pipeline/aphrody/compute";
+import { createAphrodyChatModel } from "@aphrody/shenron-pipeline/ai/chat";
+import { SHENRON_E5 } from "@aphrody/shenron-pipeline/ai/config";
 import {
   generateGroundedAnswer,
   type GroundedAnswerInput,
   type GroundedHit,
-} from "@shenron/pipeline/ai/generate";
-import { withHomePersona, type HomePersona } from "@shenron/pipeline/ai/prompts";
+} from "@aphrody/shenron-pipeline/ai/generate";
+import { withHomePersona, type HomePersona } from "@aphrody/shenron-pipeline/ai/prompts";
 import { loadShenronHomePersona, type AgentEnv } from "./agent-home";
 import { executeCommand, type CommandRunner, type PipelineExecution } from "./execution";
 
@@ -75,7 +75,7 @@ function withHomeInstructions(
 /**
  * Tâche IA ancrée (B5) : les citations récupérées par le RAG sont réellement
  * injectées dans le prompt via `generateGroundedAnswer` (persona Shenron,
- * règles et garde anti-injection de `@shenron/pipeline/ai/prompts`). Le ton et le
+ * règles et garde anti-injection de `@aphrody/shenron-pipeline/ai/prompts`). Le ton et le
  * style du profil Agent Home du domaine (`./agent-home`) s'y ajoutent quand le
  * profil existe ; sinon la persona canonique seule. Aucun repli silencieux :
  * une configuration d'Agent Home invalide, une génération en échec rejettent avec
@@ -175,7 +175,7 @@ export async function runDatabooksOcr(options: OcrJobOptions = {}): Promise<Pipe
 }
 
 /**
- * E5 constants of the RAG index, read from `@shenron/ai/config` (single
+ * E5 constants of the RAG index, read from `@aphrody/shenron-ai/config` (single
  * source: `aphrody-shenron-embed` model, 384 dimensions, 16 inputs per call).
  */
 export const RAG_EMBED_MODEL: string = SHENRON_E5.modelId;

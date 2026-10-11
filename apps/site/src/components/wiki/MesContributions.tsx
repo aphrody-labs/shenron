@@ -14,7 +14,7 @@
 import { LoadingText } from "@/components/LoadingText";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Chargement } from "@shenron/ui/icones";
+import { Chargement } from "@aphrody/shenron-ui/icones";
 import {
   CONTRIBUTABLE_COLUMNS,
   CONTRIBUTION_STATUS_LABELS,

@@ -5,7 +5,14 @@
  * depuis le studio du perso plutôt que via la table globale + picker de perso.
  */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Chargement, Corbeille, Croix, Etincelle, LienExterne, Plus } from "@shenron/ui/icones";
+import {
+  Chargement,
+  Corbeille,
+  Croix,
+  Etincelle,
+  LienExterne,
+  Plus,
+} from "@aphrody/shenron-ui/icones";
 import Link from "next/link";
 import { useState } from "react";
 import { ImageField } from "@/components/admin/ImageField";

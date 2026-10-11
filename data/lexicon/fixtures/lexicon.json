@@ -1,5 +1,5 @@
 {
-  "description": "Lexicon rules on a small lexicon: resolution (id, main forms, romaji, aliases), labels with the English → French fallback, ranked search, masking per target language and coverage. `invalid` documents must be rejected. Shared by shenron_lexicon (Rust) and @shenron/lexicon (TypeScript).",
+  "description": "Lexicon rules on a small lexicon: resolution (id, main forms, romaji, aliases), labels with the English → French fallback, ranked search, masking per target language and coverage. `invalid` documents must be rejected. Shared by shenron_lexicon (Rust) and @aphrody/shenron-lexicon (TypeScript).",
   "lexicon": {
     "version": 1,
     "terms": [
@@ -209,7 +209,9 @@
       "name": "id not a slug",
       "doc": {
         "version": 1,
-        "terms": [{ "id": "Son Goku", "kind": "character", "ja": "孫悟空", "fr": "Son Goku", "en": "" }]
+        "terms": [
+          { "id": "Son Goku", "kind": "character", "ja": "孫悟空", "fr": "Son Goku", "en": "" }
+        ]
       }
     },
     {
@@ -254,7 +256,9 @@
       "name": "empty alias list",
       "doc": {
         "version": 1,
-        "terms": [{ "id": "a", "kind": "other", "ja": "ああ", "fr": "A", "en": "", "aliases": { "fr": [] } }]
+        "terms": [
+          { "id": "a", "kind": "other", "ja": "ああ", "fr": "A", "en": "", "aliases": { "fr": [] } }
+        ]
       }
     }
   ]

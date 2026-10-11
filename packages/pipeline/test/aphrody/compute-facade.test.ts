@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Facade parity: `AphrodyComputeClient` and `ShenronEmbeddingsClient` now
- * delegate to `@shenron/pipeline/ai`. The request fixtures below are what the
+ * delegate to `@aphrody/shenron-pipeline/ai`. The request fixtures below are what the
  * pre-switch clients sent (method, path, query, headers, JSON body); the
  * facades must send exactly the same, except the registered B18 batching.
  */

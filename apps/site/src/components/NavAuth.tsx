@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Avatar } from "@/components/Avatar";
 import { SignInDiscord } from "@/components/SignInDiscord";
 import { SignOut } from "@/components/SignOut";
-import { Curseurs, DragonBall } from "@shenron/ui/icones";
+import { Curseurs, DragonBall } from "@aphrody/shenron-ui/icones";
 import { useMe } from "@/lib/use-me";
 import { useLangue } from "@/lib/i18n/client";
 

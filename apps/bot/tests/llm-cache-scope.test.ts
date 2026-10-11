@@ -112,8 +112,8 @@ test("the same question only reuses a cached answer with the same evidence and m
 });
 
 test("B7: the cache scope binds the model, PROMPT_VERSION and the evidence", async () => {
-  const { semanticCacheScope } = await import("@shenron/pipeline/ai/ports");
-  const { PROMPT_VERSION } = await import("@shenron/pipeline/ai/prompts");
+  const { semanticCacheScope } = await import("@aphrody/shenron-pipeline/ai/ports");
+  const { PROMPT_VERSION } = await import("@aphrody/shenron-pipeline/ai/prompts");
   process.env.RAG_BACKEND = "aphrody";
   process.env.APHRODY_SHENRON_API_TOKEN = "fixture";
   delete process.env.APHRODY_LLM_MODEL;

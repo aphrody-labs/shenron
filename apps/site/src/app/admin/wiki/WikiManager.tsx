@@ -18,7 +18,7 @@ import {
   Oeil,
   Plus,
   Presse,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 import { TABLE_LABELS } from "@/lib/db-labels";
 import { isStudioTable } from "@/lib/wiki-fields";
 

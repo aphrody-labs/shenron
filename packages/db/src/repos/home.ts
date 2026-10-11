@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { eq, sql } from "drizzle-orm";
-import type { HomeConfig } from "@shenron/config/home";
+import type { HomeConfig } from "@aphrody/shenron-config/home";
 import { homeConfig } from "../schema";
 import type { ShenronPgDatabase } from "../types";
 

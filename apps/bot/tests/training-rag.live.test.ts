@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 import "./setup-training";
 import { beforeAll, describe, expect, test } from "bun:test";
-import { loadLiveRagEnv, requireLiveRag, type LiveRag } from "@shenron/pipeline/testing/live-rag";
+import {
+  loadLiveRagEnv,
+  requireLiveRag,
+  type LiveRag,
+} from "@aphrody/shenron-pipeline/testing/live-rag";
 
 loadLiveRagEnv();
 const { TrainingService } = await import("../src/services/TrainingService");

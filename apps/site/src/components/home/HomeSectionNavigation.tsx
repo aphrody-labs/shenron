@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 "use client";
 import { useMemo } from "react";
-import { SectionNavigation, type PageSectionLink } from "@shenron/ui/public/SectionNavigation";
+import {
+  SectionNavigation,
+  type PageSectionLink,
+} from "@aphrody/shenron-ui/public/SectionNavigation";
 import { useT } from "@/components/T";
 import { useHomeLiveState } from "./HomeLive";
 

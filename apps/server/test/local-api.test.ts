@@ -3,9 +3,9 @@ import { afterAll, describe, expect, test } from "bun:test";
 import { existsSync, mkdirSync, mkdtempSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { LocalHealthResponse } from "@shenron/api/contract";
-import { SHENRON_FFI_FILE } from "@shenron/native/shenron";
-import { closeShenronWorkerPool } from "@shenron/native/worker";
+import { LocalHealthResponse } from "@aphrody/shenron-api/contract";
+import { SHENRON_FFI_FILE } from "@aphrody/shenron-native/shenron";
+import { closeShenronWorkerPool } from "@aphrody/shenron-native/worker";
 
 import { unavailableGroups } from "../src/backend";
 import type { ChatModel } from "../src/chat-model";
@@ -305,7 +305,7 @@ describe("/api/local/rag/search", () => {
   });
 });
 
-describe("default binding: @shenron/native", () => {
+describe("default binding: @aphrody/shenron-native", () => {
   test("an invalid library file is reported by the shared loader", async () => {
     const paths = serverPaths();
     const junk = libraryAt(join(paths.exeDir, SHENRON_FFI_FILE));
@@ -316,7 +316,7 @@ describe("default binding: @shenron/native", () => {
   });
 
   // Opt-in: only where a shenron-ffi build is present (the test never builds it); the most
-  // recent build, as @shenron/native resolves it (a stale release is refused by its ABI check).
+  // recent build, as @aphrody/shenron-native resolves it (a stale release is refused by its ABI check).
   const built = ["release", "debug"]
     .map((profile) => join(import.meta.dir, "../../../target", profile, SHENRON_FFI_FILE))
     .filter((path) => existsSync(path))

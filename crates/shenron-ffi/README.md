@@ -1,6 +1,6 @@
 # shenron-ffi
 
-ABI C de Shenron (`libshenron_ffi`) pour `bun:ffi` (`@shenron/native`) et tout hôte C : la
+ABI C de Shenron (`libshenron_ffi`) pour `bun:ffi` (`@aphrody/shenron-native`) et tout hôte C : la
 commande `shenron` en processus, la recherche RAG, le corpus local, le découpage Markdown, la
 persona, la présence des identifiants, depuis l'ABI 2 des tâches annulables, depuis l'ABI 3
 la mémoire persistante du chat (`aphrody-memory`), depuis l'ABI 4 les modèles de chat locaux
@@ -31,7 +31,7 @@ la mémoire persistante du chat (`aphrody-memory`), depuis l'ABI 4 les modèles 
   variantes `*_job`.
 - `shenron_build_info()` rend `BuildInfo` : `version` (version du workspace), `abi`, `target`
   (triplet), `os`, `arch`, `profile`, `features`, `rustc` (écrits par `build.rs`).
-  `@shenron/native` refuse une ABI, une cible ou une version différentes avant tout autre appel.
+  `@aphrody/shenron-native` refuse une ABI, une cible ou une version différentes avant tout autre appel.
 
 ## Source unique des signatures et des types
 
@@ -61,7 +61,7 @@ Chaque export attrape les paniques (`catch_unwind`) : rien ne déroule à traver
 ## Threads et annulation
 
 - Tout export s'appelle depuis n'importe quel thread. Les appels longs bloquent leur appelant :
-  on les lance depuis un thread de travail (`@shenron/native/worker`). Le travail asynchrone
+  on les lance depuis un thread de travail (`@aphrody/shenron-native/worker`). Le travail asynchrone
   tourne sur un runtime tokio global.
 - `shenron_last_error` est local au thread : le lire sur le thread de l'appel en échec.
 - Tâches : `shenron_job_new()` enregistre un jeton (`u64`, jamais réutilisé) ; un seul export

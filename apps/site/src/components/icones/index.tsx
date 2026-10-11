@@ -1,5 +1,5 @@
 /**
- * icones — façade. Le jeu de glyphes maison vit dans `@shenron/ui/icones`
+ * icones — façade. Le jeu de glyphes maison vit dans `@aphrody/shenron-ui/icones`
  * (`packages/ui/src/icones/`) ; ce module garde l'ancien chemin pour les
  * importeurs du site. Liste explicite : un glyphe ajouté au paquet doit être
  * exposé ici pour être importable par `@/components/icones`.
@@ -86,4 +86,4 @@ export {
   Scouter,
   Shenron,
   Rouage,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";

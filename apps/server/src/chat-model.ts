@@ -2,7 +2,7 @@
 /**
  * The local chat models of `shenron-server` (Shenron Studio), on Aphrody's local chat
  * (`aphrody-llama-server`, contract `crates/ai/llama-server/LOCAL-CHAT.md`) linked in the native
- * library (`shenron-ffi` ABI 4, `@shenron/native`): nothing of it is reimplemented here.
+ * library (`shenron-ffi` ABI 4, `@aphrody/shenron-native`): nothing of it is reimplemented here.
  *
  *   provisioning  `shenron_llama_provision_job` on the worker pool: catalog ids of
  *                 aphrody-models (pinned revision and digest), resumed and digest-checked
@@ -26,7 +26,11 @@
  */
 import { copyFileSync, existsSync, mkdirSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import type { ChatModelEntry, ChatModelState, LocalApiGroupStatus } from "@shenron/api/contract";
+import type {
+  ChatModelEntry,
+  ChatModelState,
+  LocalApiGroupStatus,
+} from "@aphrody/shenron-api/contract";
 import {
   CHAT_ADAPTER,
   CHAT_BASE_MODEL,
@@ -36,7 +40,7 @@ import {
   GEMMA_MODEL,
   resolveChatModelConfig,
   resolveGemmaConfig,
-} from "@shenron/config/chat-model";
+} from "@aphrody/shenron-config/chat-model";
 import type {
   LlamaProgress,
   LlamaProvisioned,
@@ -44,7 +48,7 @@ import type {
   ShenronLlamaArtifact,
   ShenronLlamaProvision,
   ShenronLlamaRouterStart,
-} from "@shenron/native/shenron";
+} from "@aphrody/shenron-native/shenron";
 
 import { profileOf, type ServerPaths } from "./config";
 import { freePort } from "./front";
@@ -108,7 +112,7 @@ export function planChatModel(
   };
 }
 
-/** The local chat calls of the native library (`@shenron/native` by default; a fake in tests). */
+/** The local chat calls of the native library (`@aphrody/shenron-native` by default; a fake in tests). */
 export interface LocalChatNative {
   provision(
     request: ShenronLlamaProvision,
@@ -126,8 +130,8 @@ export interface LocalChatNative {
 export async function nativeLocalChat(library: string | null): Promise<LocalChatNative | string> {
   if (!library) return "bibliothèque native absente : modèle de chat local indisponible";
   try {
-    const native = await import("@shenron/native/shenron");
-    const { shenronWorkerPool } = await import("@shenron/native/worker");
+    const native = await import("@aphrody/shenron-native/shenron");
+    const { shenronWorkerPool } = await import("@aphrody/shenron-native/worker");
     native.shenronLoad(library);
     if (native.shenronAbiVersion() < 4)
       return "bibliothèque native trop ancienne (ABI 4 requise) : modèle de chat local indisponible";

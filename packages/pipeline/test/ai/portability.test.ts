@@ -30,7 +30,7 @@ const SUBPATHS = [
   ].map((name) => `./ai/${name}`),
 ];
 
-describe("@shenron/pipeline/ai manifest", () => {
+describe("@aphrody/shenron-pipeline/ai manifest", () => {
   test("exports every subpath of docs/architecture/STACK.md §3.4 with its runtime class", () => {
     expect(
       Object.keys(manifest.exports)
@@ -58,7 +58,9 @@ describe("@shenron/pipeline/ai manifest", () => {
         .replace(/^\s*\/\/.*$/gm, "");
       expect(source).not.toMatch(/from\s+["'](?:node:|bun(?::|["']))/);
       expect(source).not.toMatch(/\bprocess\.|\bBun\.|\bimport\.meta\b/);
-      expect(source).not.toMatch(/@shenron\/(?:pipeline\/aphrody|db)|sqlite|redis|@huggingface/i);
+      expect(source).not.toMatch(
+        /@aphrody\/shenron-(?:pipeline\/aphrody|db)|sqlite|redis|@huggingface/i,
+      );
       expect(source).not.toMatch(/127\.0\.0\.1|localhost/);
       const mod = (await import(file)) as Record<string, unknown>;
       expect(Object.keys(mod).length).toBeGreaterThan(0);

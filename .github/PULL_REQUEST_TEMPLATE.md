@@ -15,8 +15,8 @@
 ## Checklist
 
 - [ ] `bun run typecheck`, `bun run lint` et `bun run test` passent
-- [ ] `bun --filter @shenron/bot gen:entries` lancé si commande ou événement discordx ajouté ou retiré
-- [ ] `bun --filter @shenron/site db:generate` (ou `@shenron/bot`) lancé si `src/db/schema.ts` change
+- [ ] `bun --filter @aphrody/shenron-bot gen:entries` lancé si commande ou événement discordx ajouté ou retiré
+- [ ] `bun --filter @aphrody/shenron-site db:generate` (ou `@aphrody/shenron-bot`) lancé si `src/db/schema.ts` change
 - [ ] `bun packages/api/scripts/openapi.ts` lancé si le contrat d'API change (`--check` en CI)
 - [ ] Crates touchées : `bun run clippy:rust` et `bun run test:rust` passent
 - [ ] `.env.example` et `docs/operations/ENV.md` à jour si nouvelle variable

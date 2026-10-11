@@ -1,1 +1,1 @@
-export * from "@shenron/ui/collapsible";
+export * from "@aphrody/shenron-ui/collapsible";

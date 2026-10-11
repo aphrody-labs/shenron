@@ -55,7 +55,7 @@ export const DEFAULT_MAX_QUEUE = 1024;
 const CLOSE_GRACE_MS = 2000;
 
 export interface ShenronWorkerPoolOptions {
-  /** Library to open (default: the `@shenron/native` resolution, see `shenronLoad`). */
+  /** Library to open (default: the `@aphrody/shenron-native` resolution, see `shenronLoad`). */
   path?: string;
   /** Number of workers, 1–64 (default 2). */
   size?: number;
@@ -255,7 +255,7 @@ export class ShenronWorkerPool {
    */
   close(): Promise<void> {
     if (this.#closing) return this.#closing;
-    const reason = abortError("@shenron/native worker pool closed");
+    const reason = abortError("@aphrody/shenron-native worker pool closed");
     for (const task of this.#queue.splice(0)) this.#settle(task, () => task.reject(reason));
     for (const slot of this.#slots) {
       const task = slot.task;
@@ -276,7 +276,8 @@ export class ShenronWorkerPool {
     signal: AbortSignal | undefined,
     onStart?: (job: number) => void,
   ): Promise<T> {
-    if (this.#closing) return Promise.reject(abortError("@shenron/native worker pool closed"));
+    if (this.#closing)
+      return Promise.reject(abortError("@aphrody/shenron-native worker pool closed"));
     let call: JobCall;
     try {
       call = build();
@@ -286,7 +287,7 @@ export class ShenronWorkerPool {
     if (signal?.aborted) return Promise.reject(signal.reason);
     if (this.#queue.length >= this.maxQueue && !this.#hasCapacity())
       return Promise.reject(
-        new Error(`@shenron/native worker pool saturated (${this.maxQueue} calls queued)`),
+        new Error(`@aphrody/shenron-native worker pool saturated (${this.maxQueue} calls queued)`),
       );
     const { promise, resolve, reject } = Promise.withResolvers<T>();
     const task: Task = {
@@ -422,7 +423,7 @@ export class ShenronWorkerPool {
       if (task.job !== undefined) this.#lib.symbols.shenron_cancel(task.job);
       this.#release(task);
       this.#settle(task, () =>
-        task.reject(new Error(`@shenron/native worker failed: ${event.message}`)),
+        task.reject(new Error(`@aphrody/shenron-native worker failed: ${event.message}`)),
       );
     }
     slot.worker.terminate();

@@ -13,7 +13,7 @@
  * serveur), donc filtrer ne coûte aucun aller-retour et fonctionne hors ligne.
  */
 import { useEffect, useMemo, useState } from "react";
-import { Recherche } from "@shenron/ui/icones";
+import { Recherche } from "@aphrody/shenron-ui/icones";
 import { EpisodeCard } from "@/components/stream/EpisodeCard";
 import { useTranslations } from "next-intl";
 

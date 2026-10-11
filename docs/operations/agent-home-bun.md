@@ -1,4 +1,5 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # Agent Home dbfr côté Bun/TS
 
 État vérifié le 2026-10-03. Le profil privé reste dans
@@ -50,8 +51,8 @@ récupération utilisent le vrai corpus préchargé et `requireLiveRag`.
 
 ```bash
 (cd packages/pipeline && bun test test/workflows.test.ts test/workflows-ia.test.ts test/ai/prompts.test.ts test/ai/generate.test.ts test/ai/portability.test.ts)
-bun run --filter @shenron/pipeline typecheck
-bun run --filter @shenron/pipeline rag:test
+bun run --filter @aphrody/shenron-pipeline typecheck
+bun run --filter @aphrody/shenron-pipeline rag:test
 ```
 
 Les cinq suites ciblées passent : 61 tests, 249 assertions, deux tests ignorés
@@ -66,7 +67,7 @@ Le gabarit public et versionné vit dans `templates/agent-home/` : les sept docu
 d'`aphrody-agent-home` (`AGENTS`, `SOUL`, `IDENTITY`, `USER`, `TOOLS`, `HEARTBEAT`, `BOOT`),
 avec `USER.md` vide (frontmatter `agent_id`, `address_as`, `language`, `timezone`, `avatar`,
 `preferences`, `updated_at`, `template_revision`). `packages/db/scripts/agent-home-template.ts`
-l'embarque dans `@shenron/db/agent-homes` (`--check` en CI) ; `scripts/build/server.ts` le copie
+l'embarque dans `@aphrody/shenron-db/agent-homes` (`--check` en CI) ; `scripts/build/server.ts` le copie
 dans le payload (`home/`) et refuse tout document manquant, toute entrée privée (`MEMORY.md`,
 `memory/`, `.aphrody/`, base, `.env`) et tout `USER.md` rempli.
 

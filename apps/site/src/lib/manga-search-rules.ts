@@ -13,7 +13,7 @@
  * mots présents et rapprochés, puis la fréquence.
  */
 
-import { foldText } from "@shenron/config/slug";
+import { foldText } from "@aphrody/shenron-config/slug";
 
 /** Minuscules, sans diacritiques latins, espaces compactés. Préserve les marques sonores japonaises. */
 export const normaliser: (texte: string) => string = foldText;

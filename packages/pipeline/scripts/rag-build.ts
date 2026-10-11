@@ -23,7 +23,7 @@ import * as sqliteVec from "sqlite-vec";
 import postgres from "postgres";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { ShenronEmbeddingsClient } from "@shenron/pipeline/aphrody";
+import { ShenronEmbeddingsClient } from "@aphrody/shenron-pipeline/aphrody";
 import { PG_SOURCES, resolveEntity, urlPostgres } from "./_rag-sources-pg";
 import { corpusDir, loadCorpusDocs, renderCorpusDocs } from "./_rag-corpus-sources";
 import {

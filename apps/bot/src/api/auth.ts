@@ -1,12 +1,12 @@
-import { timingSafeEqualString } from "@shenron/auth/crypto";
+import { timingSafeEqualString } from "@aphrody/shenron-auth/crypto";
 import {
   authorize,
   legacySessionStrategy,
   sessionStrategy,
   staticBearerStrategy,
   type AuthDecision,
-} from "@shenron/auth/guards";
-import type { StaffPolicy } from "@shenron/auth/staff";
+} from "@aphrody/shenron-auth/guards";
+import type { StaffPolicy } from "@aphrody/shenron-auth/staff";
 import { env } from "~/lib/env";
 import { getBetterAuthSession } from "~/lib/better-auth";
 import { logger } from "~/lib/logger";
@@ -17,7 +17,7 @@ import { verifyActingUser } from "./user-auth";
 /**
  * Auth admin pour les routes protégées de l'API.
  *
- * `authorize()` de `@shenron/auth/guards` sur trois stratégies, dans cet ordre
+ * `authorize()` de `@aphrody/shenron-auth/guards` sur trois stratégies, dans cet ordre
  * (inchangé) :
  *   1. **Bearer token** (`Authorization: Bearer <API_ADMIN_TOKEN>`, préfixe exact)
  *      — clients API. Un mauvais jeton est un 401 final ; jeton non configuré → 503.
@@ -59,7 +59,7 @@ export const defaultCheckAdminDeps: CheckAdminDeps = {
   isStaff: isBotStaff,
 };
 
-/** Décision `@shenron/auth` pour la politique admin du bot. */
+/** Décision `@aphrody/shenron-auth` pour la politique admin du bot. */
 export function authorizeAdmin(
   req: Request,
   deps: CheckAdminDeps = defaultCheckAdminDeps,
@@ -125,7 +125,7 @@ export async function checkAdmin(
   return denial(decision);
 }
 
-/** Égalité à durée constante (`timingSafeEqualString` de `@shenron/auth/crypto`). */
+/** Égalité à durée constante (`timingSafeEqualString` de `@aphrody/shenron-auth/crypto`). */
 function constantTimeEqual(a: string, b: string): boolean {
   return timingSafeEqualString(a, b);
 }

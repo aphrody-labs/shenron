@@ -22,7 +22,7 @@
  * Server-only.
  */
 import "server-only";
-import { foldKey, foldText } from "@shenron/config/slug";
+import { foldKey, foldText } from "@aphrody/shenron-config/slug";
 import { getCanonReferences } from "@/lib/canon-config";
 import { listDatabooks, type DatabookRecord } from "@/lib/databooks";
 import {

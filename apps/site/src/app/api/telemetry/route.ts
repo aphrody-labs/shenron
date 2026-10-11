@@ -15,7 +15,7 @@
  * Rate-limit basique en mémoire (par visitorHash) pour éviter le flood.
  */
 import { createHash, createHmac } from "node:crypto";
-import { timingSafeEqualString } from "@shenron/auth/crypto";
+import { timingSafeEqualString } from "@aphrody/shenron-auth/crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";

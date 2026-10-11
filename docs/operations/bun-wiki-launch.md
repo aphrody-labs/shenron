@@ -1,16 +1,16 @@
 # Ouverture des rubriques sur le serveur Bun
 
 Le registre de navigation et les règles d’accès vivent dans
-`@shenron/config/wiki-launch`. La normalisation de `openKeys`, `order` et
-`access` appartient à `@shenron/config/wiki-launch-config`. Les anciens modules
+`@aphrody/shenron-config/wiki-launch`. La normalisation de `openKeys`, `order` et
+`access` appartient à `@aphrody/shenron-config/wiki-launch-config`. Les anciens modules
 du site conservent les imports existants ; aucun registre parallèle n’est créé.
 
 Le serveur Bun possède la connexion PostgreSQL à `WikiLaunch`, avec un pool
 paresseux de deux connexions. Le contrat expose :
 
-| Route | Autorité | Résultat |
-| --- | --- | --- |
-| `GET /api/v1/site/launch` | Lecture publique | `{ config }` |
+| Route                      | Autorité              | Résultat               |
+| -------------------------- | --------------------- | ---------------------- |
+| `GET /api/v1/site/launch`  | Lecture publique      | `{ config }`           |
 | `POST /api/v1/site/launch` | Administration native | `{ ok: true, config }` |
 
 Les réponses sont `no-store`. La sauvegarde accepte un sous-ensemble des trois

@@ -31,7 +31,7 @@
  */
 import { join } from "node:path";
 import postgres from "postgres";
-import { defautDePlanche } from "@shenron/config/databooks-defauts";
+import { defautDePlanche } from "@aphrody/shenron-config/databooks-defauts";
 import { normaliserJa } from "../src/lib/ja/normalisation";
 import { SITE_URL } from "../src/lib/config";
 import { texteDePlanche, urlBase } from "./_databooks-base";

@@ -12,7 +12,7 @@
 import { Database } from "bun:sqlite";
 import { mkdirSync, writeFileSync } from "node:fs";
 
-import { aphrodyWebScrape } from "@shenron/pipeline/aphrody";
+import { aphrodyWebScrape } from "@aphrody/shenron-pipeline/aphrody";
 
 const DB = new URL("../data/bot.db", import.meta.url).pathname;
 const OUT = new URL("../data/rag/", import.meta.url).pathname;

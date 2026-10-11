@@ -11,7 +11,7 @@ import { getLaunchConfig } from "@/lib/wiki-launch-config";
  * Onglets de l'encyclopédie (Personnages, Races, Transformations, Techniques,
  * Sagas, Puissances, Objets, Lieux) — le passage latéral d'un index à l'autre.
  *
- * Rendu par la barre d'onglets en liens du kit (`TabNav`, `@shenron/ui`) : une
+ * Rendu par la barre d'onglets en liens du kit (`TabNav`, `@aphrody/shenron-ui`) : une
  * URL par onglet, défilement horizontal au téléphone, cibles de 44 px. Deux
  * barres maison faisaient la même chose (puces ici, onglets soulignés dans
  * `UniverseTabs`) ; il n'en reste qu'une.

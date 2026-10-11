@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Test helpers shared by every `@shenron/*` package.
+ * Test helpers shared by every `@aphrody/shenron-*` package.
  *
  * Runtime class: `pure` (only `Request`, `Response`, `Headers`, `URL`).
  */

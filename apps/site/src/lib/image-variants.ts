@@ -11,7 +11,7 @@
  * Server-only by intent (the map is a few hundred KB); the chosen path is passed
  * to client components as a plain string.
  */
-import { bestVariant, type ImageVariant } from "@shenron/images/variants";
+import { bestVariant, type ImageVariant } from "@aphrody/shenron-images/variants";
 import variantsJson from "@/data/image-variants.json";
 
 interface VariantRecord {

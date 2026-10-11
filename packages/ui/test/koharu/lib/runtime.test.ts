@@ -2,16 +2,16 @@ import { act, render, screen, waitFor } from "@testing-library/react";
 import { createElement, StrictMode } from "react";
 import { beforeEach, describe, expect, it, vi, mock } from "bun:test";
 
-import Providers from "@shenron/ui/koharu/providers";
-import { call } from "@shenron/ui/koharu/lib/backend";
-import { useProject } from "@shenron/ui/koharu/lib/queries";
-import { useKoharuStore } from "@shenron/ui/koharu/lib/store";
+import Providers from "@aphrody/shenron-ui/koharu/providers";
+import { call } from "@aphrody/shenron-ui/koharu/lib/backend";
+import { useProject } from "@aphrody/shenron-ui/koharu/lib/queries";
+import { useKoharuStore } from "@aphrody/shenron-ui/koharu/lib/store";
 import {
   commands,
   type Preferences,
   type ProjectInfo,
   type StartupState,
-} from "@shenron/koharu/protocol";
+} from "@aphrody/shenron-koharu/protocol";
 
 mock.module("@aphrody/api/core", () => ({
   Channel: class<T> {

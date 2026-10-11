@@ -37,7 +37,7 @@ import { isPathPublic } from "@/lib/wiki-launch";
 import { ogMeta } from "@/lib/og";
 import { T } from "@/components/T";
 import { assetUrl } from "@/lib/assets";
-import { ToriyamaEmblem, KintoUnCloud, DragonBallSphere } from "@shenron/ui/toriyama";
+import { ToriyamaEmblem, KintoUnCloud, DragonBallSphere } from "@aphrody/shenron-ui/toriyama";
 
 export const revalidate = 3600;
 

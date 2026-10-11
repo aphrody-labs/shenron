@@ -15,7 +15,7 @@ import {
   type LoginEvent,
   type Reasoning,
   type RunId,
-} from "@shenron/koharu/protocol";
+} from "@aphrody/shenron-koharu/protocol";
 import { Badge } from "@aphrody/m3-primitives";
 import { Button } from "../../../components/button";
 import { ScrollArea } from "../../internal/components/scroll-area";

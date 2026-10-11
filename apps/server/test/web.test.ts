@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
 import { createNativeWebPort } from "../src/web";
-import type { NativeCommandExecutor } from "@shenron/pipeline/aphrody/native-commands";
+import type { NativeCommandExecutor } from "@aphrody/shenron-pipeline/aphrody/native-commands";
 
 test("A failed native probe disables the Web group", async () => {
   const executor: NativeCommandExecutor = async () => ({ code: 1, stdout: "", stderr: "missing" });

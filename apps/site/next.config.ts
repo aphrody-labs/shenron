@@ -1,7 +1,11 @@
 import { withBun } from "@aphrody/next-bun";
 import type { NextConfig } from "next";
-import { ownImageRemotePatterns, resolveApiUrl, resolveSiteUrl } from "@shenron/config/public-urls";
-import { sitePublicRedirects } from "@shenron/images/resolve";
+import {
+  ownImageRemotePatterns,
+  resolveApiUrl,
+  resolveSiteUrl,
+} from "@aphrody/shenron-config/public-urls";
+import { sitePublicRedirects } from "@aphrody/shenron-images/resolve";
 import { PUBLIC_ROUTE_RENAMES, nextApiRewrites, nextRedirectsOf } from "./src/lib/legacy-routes";
 
 const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL?.trim().replace(/\/+$/, "");
@@ -174,7 +178,7 @@ const nextConfig: NextConfig = {
     // Bot expose les assets DB via /db/* (Cache-Control immutable + Vary:Accept côté bot).
     remotePatterns: [
       // Origines propres (CDN, API/assets du bot, site, Discord) : dérivées des
-      // mêmes variables que `@/lib/config` via `@shenron/config/public-urls`.
+      // mêmes variables que `@/lib/config` via `@aphrody/shenron-config/public-urls`.
       ...ownImageRemotePatterns(process.env),
       // Posters films (MyAnimeList), news officielles (DB Official).
       { protocol: "https", hostname: "myanimelist.net", pathname: "/**" },
@@ -229,7 +233,7 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       // Copies binaires dédoublonnées de `public/` (manifeste
-      // `@shenron/images/asset-aliases.json`) : l'ancienne URL garde sa réponse.
+      // `@aphrody/shenron-images/asset-aliases.json`) : l'ancienne URL garde sa réponse.
       ...sitePublicRedirects().map(([source, destination]) => ({
         source: source.replace(/[():*+?{}]/g, "\\$&"),
         destination,
@@ -485,7 +489,7 @@ const nextConfig: NextConfig = {
 //
 // `withBun` (@aphrody/next-bun) porte les réglages génériques de Next sur Bun : racine Turbopack et
 // file tracing à la racine du workspace (magasin isolé de Bun), `transpilePackages` déduit des paquets
-// qui publient leurs sources TypeScript (@shenron/*, @aphrody/m3-*…), alias communs à Turbopack et
+// qui publient leurs sources TypeScript (@aphrody/shenron-*, @aphrody/m3-*…), alias communs à Turbopack et
 // Webpack, et `next start` qui reprend le préfixe d'assets et l'identifiant de déploiement du build.
 export default withBun(nextConfig, {
   bundler: "turbopack",

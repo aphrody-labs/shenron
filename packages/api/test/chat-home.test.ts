@@ -7,7 +7,7 @@ import {
   DirAgentHomeStore,
   instantiateAgentHome,
   SHENRON_AGENT_TEMPLATE,
-} from "@shenron/db/agent-homes";
+} from "@aphrody/shenron-db/agent-homes";
 import { agentHomeFromDir, homeUserNote } from "../src/chat/home";
 import { systemPrompt } from "../src/chat/engine";
 

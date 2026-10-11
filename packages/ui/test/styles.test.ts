@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { THEME_COLOR_VARS } from "@shenron/config/site-theme";
+import { THEME_COLOR_VARS } from "@aphrody/shenron-config/site-theme";
 
 // The package lives at packages/ui of the aphrody checkout that hosts the
 // Shenron apps; the package stylesheet is read next to this test.
@@ -43,7 +43,7 @@ describe("styles.css", () => {
     const imports = siteCss.split(/\r?\n/).filter((l) => l.startsWith("@import"));
     expect(imports.slice(0, 2)).toEqual([
       '@import "tailwindcss";',
-      '@import "@shenron/ui/styles.css";',
+      '@import "@aphrody/shenron-ui/styles.css";',
     ]);
   });
 

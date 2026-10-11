@@ -144,7 +144,7 @@ describe("generateLlmAnswer (chemin conversationnel & repli)", () => {
 describe("generateLlmAnswer — corps de requête (B17, bavardage sans récupération)", () => {
   it("envoie système persona, règles d’autonomie et phrase anti-injection partagées", async () => {
     const { AUTONOMY_RULE, INJECTION_GUARD, PERSONAS, personaRules } =
-      await import("@shenron/pipeline/ai/prompts");
+      await import("@aphrody/shenron-pipeline/ai/prompts");
     const originalFetch = globalThis.fetch;
     const saved = {
       token: process.env.APHRODY_SHENRON_API_TOKEN,

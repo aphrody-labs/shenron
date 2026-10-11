@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { startEngine } from "@aphrody/agent-browser/engine";
 import { TestPage, expect as webExpect } from "@aphrody/web-test";
 import { instant, INSTANT_COOKIE, adaptPage } from "@aphrody/web-test/next";
-import { createShenronApiClient } from "@shenron/api/client";
+import { createShenronApiClient } from "@aphrody/shenron-api/client";
 import { freePort } from "../../../../apps/server/src/front";
 import { createFixture } from "../fixture";
 

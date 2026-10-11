@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
 import "./setup";
-import { createOpenAiChat } from "@shenron/pipeline/aphrody/compute";
+import { createOpenAiChat } from "@aphrody/shenron-pipeline/aphrody/compute";
 import { boundReply, DmChatGate, DmTimeoutError, withTimeout } from "~/lib/dm-chat";
 import { createDmMemory } from "~/lib/dm-memory";
 import { botLang, t } from "~/lib/i18n";

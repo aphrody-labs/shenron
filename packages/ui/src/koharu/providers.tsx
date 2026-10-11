@@ -27,7 +27,7 @@ import {
   type Job,
   type ModelResources,
   type ProjectInfo,
-} from "@shenron/koharu/protocol";
+} from "@aphrody/shenron-koharu/protocol";
 import { Toaster } from "@aphrody/m3-primitives";
 import { TooltipProvider } from "@aphrody/m3-primitives";
 

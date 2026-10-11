@@ -2,8 +2,8 @@ import { requireUser } from "@/lib/session";
 import AccountSettings from "./AccountSettings";
 import { UserNav } from "@/components/user/UserNav";
 import { T } from "@/components/T";
-import { PageHeader } from "@shenron/ui/layout/PageHeader";
-import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { db, schema } from "@/lib/db";
 import { and, eq } from "drizzle-orm";
 

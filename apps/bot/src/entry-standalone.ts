@@ -16,7 +16,7 @@ if (process.argv.includes("--version") || process.argv.includes("-v")) {
   const { getBotRuntimeInfo } = await import("@aphrody/discord-kit");
   const info = getBotRuntimeInfo();
   console.log(
-    `@shenron/bot v1.0.0 (Bun ${info.bunVersion}, ${info.platform}-${info.arch}, ${info.isCompiled ? "compiled" : "source"})`,
+    `@aphrody/shenron-bot v1.0.0 (Bun ${info.bunVersion}, ${info.platform}-${info.arch}, ${info.isCompiled ? "compiled" : "source"})`,
   );
   process.exit(0);
 }

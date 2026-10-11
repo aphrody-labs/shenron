@@ -1,7 +1,8 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # SDK Python natif dans le pipeline
 
-`@shenron/pipeline/runtime/python` est le propriétaire commun du SDK Python
+`@aphrody/shenron-pipeline/runtime/python` est le propriétaire commun du SDK Python
 pour les paquets Bun de Shenron. Il est également exporté par la racine du
 pipeline. Importer le module ne charge ni CPython, ni fournisseur optionnel.
 `openAphrodyPython()` ouvre le `Python.async()` du fork ; Buv résout ses
@@ -9,15 +10,13 @@ artefacts CPython et PyJS utilise le même `bun:python`. Aucun lanceur Python,
 `uv run`, code Torch copié ou SDK vendored n’est ajouté.
 
 ```ts
-import { openAphrodyPython } from "@shenron/pipeline/runtime/python";
+import { openAphrodyPython } from "@aphrody/shenron-pipeline/runtime/python";
 
 await using sdk = await openAphrodyPython({
   sourceRoots: [process.env.SHENRON_APHRODY_PYTHON_SOURCE!],
 });
 const names = await sdk.exports();
-const normalized = await sdk.invoke(
-  "aphrody.command_guard", "normalize_command", ["café🐍"],
-);
+const normalized = await sdk.invoke("aphrody.command_guard", "normalize_command", ["café🐍"]);
 await using guard = await sdk.construct("aphrody", "CommandGuard");
 const verdict = await guard.call("verify_command", ["bun --version"]);
 ```

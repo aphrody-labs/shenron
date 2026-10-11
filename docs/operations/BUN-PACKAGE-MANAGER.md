@@ -22,9 +22,9 @@ Bun 1.4.2 est épinglé par `packageManager` dans le `package.json` racine ;
 ## Modifier
 
 ```sh
-bun add zod --filter @shenron/site --catalog          # version au catalogue, "catalog:" dans le paquet
-bun add -d typescript --filter @shenron/site --catalog
-bun add @shenron/db --filter @shenron/api             # dépendance interne : vérifier "workspace:*"
+bun add zod --filter @aphrody/shenron-site --catalog          # version au catalogue, "catalog:" dans le paquet
+bun add -d typescript --filter @aphrody/shenron-site --catalog
+bun add @aphrody/shenron-db --filter @aphrody/shenron-api             # dépendance interne : vérifier "workspace:*"
 ```
 
 Après toute modification :
@@ -35,7 +35,7 @@ bun scripts/audit/check-workspace-catalog.ts
 bun scripts/audit/check-workspace-packages.ts --strict
 ```
 
-`check-workspace-packages.ts` contrôle la conformité des paquets `@shenron/*`
+`check-workspace-packages.ts` contrôle la conformité des paquets `@aphrody/shenron-*`
 (graphe, classes `shenron.runtime`, exports) ; voir
 [`STACK.md`](../architecture/STACK.md) §4.3.
 

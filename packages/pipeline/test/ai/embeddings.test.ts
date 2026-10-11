@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
-import { createRecordingFetch } from "@shenron/config/testing";
+import { createRecordingFetch } from "@aphrody/shenron-config/testing";
 import { createAphrodyCompute } from "../../src/ai/aphrody";
 import type { AiConfig } from "../../src/ai/config";
 import { DEFAULT_AI_TIMEOUTS, SHENRON_RAG_INDEX } from "../../src/ai/config";

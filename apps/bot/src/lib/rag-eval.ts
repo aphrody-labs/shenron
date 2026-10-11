@@ -2,7 +2,7 @@
  * rag-eval.ts — mesure de la récupération RAG sur le jeu doré (adaptateur).
  *
  * La définition unique de « trouver la bonne source » (matchers, rang, nDCG,
- * agrégats, parseur JSONL) vit dans `@shenron/pipeline/ai/eval`, partagée avec le site
+ * agrégats, parseur JSONL) vit dans `@aphrody/shenron-pipeline/ai/eval`, partagée avec le site
  * et les scripts du pipeline. Ce module la réexporte sous ses noms historiques,
  * typée sur `RagHit`.
  *
@@ -27,7 +27,7 @@ import {
   parseGold,
   RANKS,
   runCase as sharedRunCase,
-} from "@shenron/pipeline/ai/eval";
+} from "@aphrody/shenron-pipeline/ai/eval";
 import type { RagHit } from "./rag";
 
 export {

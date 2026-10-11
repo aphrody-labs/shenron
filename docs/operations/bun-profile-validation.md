@@ -25,7 +25,7 @@ admin accordés manuellement en base sont conservés, comme dans le site.
 La résolution d'identité des API Bun relit aussi la session en base pour
 observer sa révocation sans attendre l'expiration du cache signé.
 
-Le dépôt partagé `@shenron/db/repos/accounts` lit le lien Discord et le profil
+Le dépôt partagé `@aphrody/shenron-db/repos/accounts` lit le lien Discord et le profil
 dans une transaction qui verrouille la ligne `ba_user`. Il ne réécrit pas un
 profil inchangé. L'upsert conserve l'identifiant métier, la date de création et
 les données liées ; le calcul des droits dans l'upsert préserve aussi une

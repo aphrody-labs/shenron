@@ -5,7 +5,15 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-import { Alerte, Bulle, Chargement, Flamme, Micro, Piece, Trophee } from "@shenron/ui/icones";
+import {
+  Alerte,
+  Bulle,
+  Chargement,
+  Flamme,
+  Micro,
+  Piece,
+  Trophee,
+} from "@aphrody/shenron-ui/icones";
 import { api } from "@/lib/admin-api";
 import { formatDuration } from "@/lib/admin-format";
 import { formatZeni } from "@/lib/zeni";

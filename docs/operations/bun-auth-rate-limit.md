@@ -2,7 +2,7 @@
 
 # Limite de débit de l'authentification Bun
 
-L'hôte `@shenron/api/host` active en production la limite Better Auth :
+L'hôte `@aphrody/shenron-api/host` active en production la limite Better Auth :
 100 requêtes par fenêtre de 60 secondes, avec les règles spécifiques des
 endpoints de Better Auth 1.7.6. Les sessions restent en PostgreSQL via Bun.SQL.
 

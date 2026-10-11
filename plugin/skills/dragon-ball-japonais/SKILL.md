@@ -26,7 +26,7 @@ bun scripts/lexique.js restaure "Zeta001 a utilisé le Zeta002." --table masque.
 Le lexique (`references/lexique-canonique.json`, lisible dans
 [lexique-canonique.md](references/lexique-canonique.md)) est l'instantané du lexique
 unique de Shenron (`data/lexicon/terms.json` : japonais, français du wiki, anglais quand une
-source l'établit, alias) ; `lexique.js` applique les règles de `@shenron/lexicon`, les mêmes que
+source l'établit, alias) ; `lexique.js` applique les règles de `@aphrody/shenron-lexicon`, les mêmes que
 le site, l'API et le traducteur de Shenron Studio (le plus long d'abord, frontières de mot
 katakana, jetons `Zeta001`). Une forme anglaise vide n'est pas établie : ne pas l'inventer.
 Graphies prouvées par une planche de databook : `bun ../dragon-ball/scripts/faits.ts

@@ -4,10 +4,10 @@ import "./globals.css";
 import { FONT_PRELOADS } from "@/lib/font-preloads";
 // Conséquences de la barre de navigation basse (réserve sous le contenu,
 // remontée des pastilles flottantes et du bandeau de consentement).
-import "@shenron/ui/barre-nav.css";
+import "@aphrody/shenron-ui/barre-nav.css";
 import dynamic from "next/dynamic";
 import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
-import { ShellBoot } from "@shenron/ui/navigation/ShellBoot";
+import { ShellBoot } from "@aphrody/shenron-ui/navigation/ShellBoot";
 import { SiteShell } from "@/components/SiteShell";
 import { LocaleProvider } from "@/lib/i18n/client";
 import { T } from "@/components/T";
@@ -17,7 +17,7 @@ import { PageViewTracker } from "@/components/PageViewTracker";
 import { ConsentGate } from "@/components/ConsentGate";
 import { ChunkReloadGuard } from "@/components/ChunkReloadGuard";
 import { SiteJsonLd } from "@/components/SiteJsonLd";
-import { DISCORD_CDN } from "@shenron/config/public-urls";
+import { DISCORD_CDN } from "@aphrody/shenron-config/public-urls";
 import { API_ORIGIN, ASSET_ORIGIN, CDN_ORIGIN, SITE_URL, STATIC_PREFIX } from "@/lib/config";
 import { env } from "@/lib/env";
 import { getSiteTheme } from "@/lib/theme-config";

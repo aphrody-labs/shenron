@@ -27,7 +27,7 @@
  *   bun apps/bot/scripts/volumetrie-dragonballcn.ts --recommencer      # ignore les mesures acquises
  */
 import { join } from "node:path";
-import { aphrodyWebScrape } from "@shenron/pipeline/aphrody";
+import { aphrodyWebScrape } from "@aphrody/shenron-pipeline/aphrody";
 
 const args = process.argv.slice(2);
 const opt = (nom: string, defaut?: string) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { ViewTransition } from "@shenron/ui/layout/ViewTransition";
+import { ViewTransition } from "@aphrody/shenron-ui/layout/ViewTransition";
 
 /**
  * Point d'entrée unique des transitions de route.

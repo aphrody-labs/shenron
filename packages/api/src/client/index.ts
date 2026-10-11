@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/api/client` — typed client of the Shenron HTTP contract that never
+ * `@aphrody/shenron-api/client` — typed client of the Shenron HTTP contract that never
  * throws: every call resolves to an {@link ApiResult}. Runtime class: `pure`
  * (no hono, no node:, no bun:; the acting-user signer is injected).
  *
@@ -59,7 +59,7 @@ export interface ShenronApiClientOptions {
   timeoutMs?: number;
   /** Server-side callers only; the token is sent to `admin` endpoints when it returns a value. */
   adminToken?: () => string | null;
-  /** Injected signer (for instance `@shenron/auth` `signActingUser`): keeps this module pure. */
+  /** Injected signer (for instance `@aphrody/shenron-auth` `signActingUser`): keeps this module pure. */
   signActingUser?: (discordId: string) => Record<string, string>;
   userAgent?: string;
 }

@@ -2,7 +2,7 @@
 // Recherche manga sur le vrai PostgreSQL éditorial (transcriptions OCR) : aucune base vide ni test
 // sauté. La frontière requireLiveRag refuse un préchargement RAG absent, partiel ou périmé.
 import { beforeAll, describe, expect, mock, test } from "bun:test";
-import { loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
+import { loadLiveRagEnv, requireLiveRag } from "@aphrody/shenron-pipeline/testing/live-rag";
 
 // Mock de server-only pour permettre les tests dans l'environnement Bun
 mock.module("server-only", () => ({}));

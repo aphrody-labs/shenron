@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
-//! The headless method set of `koharu-sdk` (`@shenron/koharu/native`, the Shenron editorial
+//! The headless method set of `koharu-sdk` (`@aphrody/shenron-koharu/native`, the Shenron editorial
 //! chain): `project.*`, `page.*`, `text.*`, `layer.*`, `raster.stroke`, `pipeline.*`,
 //! `canvas.*`, `preferences.*`, `models.*`, `resources.status` and `agent.*`.
 //!

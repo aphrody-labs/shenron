@@ -15,7 +15,7 @@ describe("vrai bxc monorepo", () => {
   test("script harvest existe et passe par Aphrody Web (rag-harvest pattern)", () => {
     expect(existsSync(SCRIPT)).toBe(true);
     const src = readFileSync(SCRIPT, "utf8");
-    expect(src.includes("@shenron/pipeline/aphrody")).toBe(true);
+    expect(src.includes("@aphrody/shenron-pipeline/aphrody")).toBe(true);
     expect(src.includes("rag-harvest")).toBe(true);
     // Doit invoquer les sous-commandes bxc réelles
     expect(src.includes('"scrape"') || src.includes("scrape")).toBe(true);

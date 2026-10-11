@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/pipeline/aphrody/compute` — legacy facade over `@shenron/pipeline/ai/aphrody`
+ * `@aphrody/shenron-pipeline/aphrody/compute` — legacy facade over `@aphrody/shenron-pipeline/ai/aphrody`
  * (docs/architecture/STACK.md §6.3, D16).
  *
  * `AphrodyComputeClient` keeps its historical contract: constructor options
  * (`baseUrl`, `token`, `fetcher`), method signatures, thrown errors and
  * their messages, and `ocr` still asking for the `gemini-web` engine. Without
  * options, the address and token come from the single resolver
- * `@shenron/pipeline/ai/config` (`APHRODY_AI_HTTP_URL` / `APHRODY_AI_HTTP_TOKEN`, then
+ * `@aphrody/shenron-pipeline/ai/config` (`APHRODY_AI_HTTP_URL` / `APHRODY_AI_HTTP_TOKEN`, then
  * their legacy aliases); there is no address default, a missing one throws an
  * error naming the variables. Every request is delegated to
  * {@link createAphrodyCompute}; `fetch` is resolved at call time unless a
@@ -22,7 +22,7 @@ import {
   type AiResult,
   type AphrodyCompute,
   createAphrodyCompute,
-} from "@shenron/pipeline/ai/aphrody";
+} from "@aphrody/shenron-pipeline/ai/aphrody";
 import {
   AiConfigError,
   chatTimeoutMs,
@@ -30,7 +30,7 @@ import {
   requireAiHttpToken,
   requireAiHttpUrl,
   resolveDirectChat,
-} from "@shenron/pipeline/ai/config";
+} from "@aphrody/shenron-pipeline/ai/config";
 
 /** Private Shenron workload boundary served by the Aphrody AI process. */
 export interface AphrodyComputeOptions {
@@ -83,7 +83,7 @@ function unwrap<T>(result: AiResult<T>, invalid: string): T {
 }
 
 export class AphrodyComputeClient {
-  /** Typed client every call is delegated to (`@shenron/pipeline/ai/aphrody`). */
+  /** Typed client every call is delegated to (`@aphrody/shenron-pipeline/ai/aphrody`). */
   readonly compute: AphrodyCompute;
 
   constructor(options: AphrodyComputeOptions = {}) {

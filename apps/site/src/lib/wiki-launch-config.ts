@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Cached launch adapter; only the Bun host owns storage. */
 import "server-only";
-import { resolveHostUrl } from "@shenron/config/public-urls";
+import { resolveHostUrl } from "@aphrody/shenron-config/public-urls";
 import {
   DEFAULT_LAUNCH_CONFIG,
   resolveLaunchConfig,
   type LaunchConfig,
-} from "@shenron/config/wiki-launch-config";
-import { createShenronApiClient } from "@shenron/api/client";
-import { endpoints } from "@shenron/api/contract";
+} from "@aphrody/shenron-config/wiki-launch-config";
+import { createShenronApiClient } from "@aphrody/shenron-api/client";
+import { endpoints } from "@aphrody/shenron-api/contract";
 
 import { HostLaunchError } from "./host-launch-error";
 export { HostLaunchError } from "./host-launch-error";
@@ -86,4 +86,4 @@ export async function getLaunchConfig(): Promise<LaunchConfig> {
 export async function getOpenCategoryKeys(): Promise<string[]> {
   return (await getLaunchConfig()).openKeys;
 }
-export type { LaunchConfig } from "@shenron/config/wiki-launch-config";
+export type { LaunchConfig } from "@aphrody/shenron-config/wiki-launch-config";

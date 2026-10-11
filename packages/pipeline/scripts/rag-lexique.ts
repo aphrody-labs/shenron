@@ -10,7 +10,7 @@
  *
  * Sources, de la plus sûre à la moins sûre :
  *   1. PostgreSQL : `name` / `name_ja` / `name_romaji` des entités visibles ;
- *   2. le lexique canonique `@shenron/lexicon` (`data/lexicon/terms.json` : ja, fr, en,
+ *   2. le lexique canonique `@aphrody/shenron-lexicon` (`data/lexicon/terms.json` : ja, fr, en,
  *      romaji et alias) ;
  *   3. les groupes de recherche ci-dessous, pour les entités que le lexique ne porte pas encore.
  *
@@ -20,7 +20,7 @@
  * Usage : bun packages/pipeline/scripts/rag-lexique.ts
  */
 import postgres from "postgres";
-import { lexicon } from "@shenron/lexicon/data";
+import { lexicon } from "@aphrody/shenron-lexicon/data";
 import { urlPostgres } from "./_rag-sources-pg";
 import { resolveLexiquePath } from "./lib/script-env";
 

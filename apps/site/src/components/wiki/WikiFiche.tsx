@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import type { ReactNode } from "react";
-import { PageShell } from "@shenron/ui/layout/PageShell";
-import { PageHeader } from "@shenron/ui/layout/PageHeader";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import { Breadcrumbs, type Crumb } from "@/components/Breadcrumbs";
 import { DomainBar } from "@/components/kit/DomainBar";
 import { WikiSectionsReader, type ReaderPanel } from "@/components/wiki/WikiSectionsReader";

@@ -1,4 +1,4 @@
-import { timingSafeEqualString } from "@shenron/auth/crypto";
+import { timingSafeEqualString } from "@aphrody/shenron-auth/crypto";
 import { env } from "~/lib/env";
 import { logger } from "~/lib/logger";
 import { container } from "tsyringe";
@@ -133,7 +133,7 @@ export async function verifySession(cookie: string | null): Promise<SessionPaylo
   if (!encoded || !sig) return null;
   try {
     const expected = await hmac(encoded);
-    // Comparaison constant-time (`@shenron/auth/crypto`)
+    // Comparaison constant-time (`@aphrody/shenron-auth/crypto`)
     if (!timingSafeEqualString(sig, expected)) return null;
     const json = new TextDecoder().decode(b64urlDecode(encoded));
     const payload = JSON.parse(json) as SessionPayload;

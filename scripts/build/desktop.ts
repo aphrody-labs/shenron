@@ -5,7 +5,7 @@
  * editor engine in process): the native app, the shenron-server sidecar (front app, Shenron API
  * and local APIs, one file), the shenron-mcp sidecar (MCP tools of the chat and the `/mcp`
  * endpoint), the koharu-sdk sidecar (the editor engine over JSON Lines, for a browser on the
- * local server through `/api/local/koharu` and for `@shenron/pipeline`; the app window itself
+ * local server through `/api/local/koharu` and for `@aphrody/shenron-pipeline`; the app window itself
  * never uses it), the local chat model runtime (llama.cpp `llama-server` and the Shenron LoRA
  * adapter, scripts/build/chat-model-runtime.ts) and the platform bundle. shenron-server starts
  * the sidecars from beside itself.

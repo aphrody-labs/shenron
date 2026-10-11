@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/api/http` — pure HTTP helpers of the public API: memory rate
+ * `@aphrody/shenron-api/http` — pure HTTP helpers of the public API: memory rate
  * limiter, public JSON cache (TTL, LRU, FNV ETag, 304), cache and CORS headers,
  * invalidation port. Runtime class: `pure` (no hono, no node:, no bun:).
  *

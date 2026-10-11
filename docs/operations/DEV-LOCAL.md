@@ -20,7 +20,7 @@ Bun 1.4.2 (`packageManager`), linker isolé ; règles de dépendances dans
   bot : `apps/bot/.env.example`.
 - Le site lit son environnement par `apps/site/src/lib/env.ts` (t3-env) ; le bot
   par `apps/bot/src/lib/env.ts`. Les défauts codés ne vivent que dans
-  `@shenron/config`. Référence des noms : [`ENV.md`](ENV.md).
+  `@aphrody/shenron-config`. Référence des noms : [`ENV.md`](ENV.md).
 - L'accès aux services distants (PostgreSQL, calcul Aphrody) passe par les
   tunnels et fichiers d'environnement fournis par `aphrody-infra` ; ils mènent
   aux services de production : écritures éditoriales par les procédures du dépôt
@@ -37,8 +37,8 @@ Bun 1.4.2 (`packageManager`), linker isolé ; règles de dépendances dans
 ## Lancer
 
 ```sh
-bun --filter @shenron/site dev                   # Next dans .next-dev ; predev copie packages/ui/assets vers public/
-bun --filter @shenron/bot dev                    # bun --watch src/index.ts
+bun --filter @aphrody/shenron-site dev                   # Next dans .next-dev ; predev copie packages/ui/assets vers public/
+bun --filter @aphrody/shenron-bot dev                    # bun --watch src/index.ts
 bun apps/server/src/cli.ts serve|doctor|paths|init
 ```
 
@@ -52,7 +52,7 @@ bun run typecheck
 bun run lint
 bun run test                           # *.live.test.ts exclus
 bun run format:check
-bun run --filter @shenron/db test      # un seul paquet
+bun run --filter @aphrody/shenron-db test      # un seul paquet
 cd apps/site && bun test --isolate tests/<fichier>.test.ts
 bun run test:live                      # services réels (SHENRON_LIVE=1)
 bun run clippy:rust && bun run test:rust

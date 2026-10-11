@@ -25,7 +25,7 @@ import { Database } from "bun:sqlite";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import postgres from "postgres";
-import { classerDefaut, type Defaut } from "@shenron/config/databooks-defauts";
+import { classerDefaut, type Defaut } from "@aphrody/shenron-config/databooks-defauts";
 import { urlBase } from "./_databooks-base";
 
 const args = process.argv.slice(2);

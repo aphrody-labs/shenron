@@ -14,7 +14,7 @@ import {
   Plus,
   Rafraichir,
   Telecharger,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 import { type FormEvent, type ReactNode, useMemo, useState } from "react";
 import { Sketch } from "@uiw/react-color";
 import { api, proxyAsset } from "@/lib/admin-api";

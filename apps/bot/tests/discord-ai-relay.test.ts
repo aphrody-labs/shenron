@@ -1,8 +1,8 @@
 import "./setup-discord-ai";
 import { afterAll, expect, mock, test } from "bun:test";
-import { APHRODY_DISCORD } from "@shenron/config/discord-ai";
+import { APHRODY_DISCORD } from "@aphrody/shenron-config/discord-ai";
 import { DmChatGate } from "../src/lib/dm-chat";
-import { resolveDmChat } from "@shenron/config/dm-chat";
+import { resolveDmChat } from "@aphrody/shenron-config/dm-chat";
 
 let modelOptions: Record<string, unknown> | undefined;
 mock.module("../src/lib/llm", () => ({

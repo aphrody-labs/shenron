@@ -9,7 +9,7 @@
  * du marqueur `server-only` de Next.
  */
 import { describe, expect, mock, test } from "bun:test";
-import { createGeminiWebBackend, geminiCookieCandidates } from "@shenron/api/chat";
+import { createGeminiWebBackend, geminiCookieCandidates } from "@aphrody/shenron-api/chat";
 
 mock.module("server-only", () => ({}));
 

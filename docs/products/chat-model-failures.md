@@ -1,6 +1,6 @@
 # Échecs du panneau partagé des modèles
 
-`ModelsPanel` de `@shenron/ui` sert le web et Shenron Studio. Un rejet de la
+`ModelsPanel` de `@aphrody/shenron-ui` sert le web et Shenron Studio. Un rejet de la
 lecture termine désormais la vérification avec l’erreur localisée existante.
 Le bouton de reprise utilise `error.retry`, déjà traduit en français, anglais
 et japonais. Un rejet pendant un téléchargement n’interrompt plus le polling

@@ -3,7 +3,7 @@
  * File de revue Koharu → Shenron (`shenron.manga.review-candidate/v1`).
  *
  * Les candidats Koharu sont des données non fiables : ils sont validés par le
- * parseur de `@shenron/pipeline` (même contrat que la sortie Koharu), stockés
+ * parseur de `@aphrody/shenron-pipeline` (même contrat que la sortie Koharu), stockés
  * dans le SQLite du bot (`data/bot.db`, création idempotente comme les autres
  * tables runtime de `DatabaseService`) et n'ont aucun effet éditorial tant
  * qu'un membre du staff ne les a pas approuvés puis publiés.
@@ -18,7 +18,7 @@ import {
   SHENRON_MANGA_CANDIDATE_SCHEMA,
   parseKoharuPageResult,
   type MangaReviewCandidateInput,
-} from "@shenron/pipeline";
+} from "@aphrody/shenron-pipeline";
 
 export type MangaCandidateStatus = "unreviewed" | "approved" | "rejected" | "published";
 export const MANGA_CANDIDATE_STATUSES: readonly MangaCandidateStatus[] = [

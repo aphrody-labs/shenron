@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Trilingual lexicon (`@shenron/lexicon`, `data/lexicon/terms.json`): list, search and the
+ * Trilingual lexicon (`@aphrody/shenron-lexicon`, `data/lexicon/terms.json`): list, search and the
  * localised resolution of one term. Runtime class: `pure`.
  */
-import { KINDS, LANGS, SEARCH_MAX_LIMIT } from "@shenron/lexicon";
+import { KINDS, LANGS, SEARCH_MAX_LIMIT } from "@aphrody/shenron-lexicon";
 import { z } from "zod";
 
 export const LexiconLang = z.enum(LANGS).meta({ id: "LexiconLang" });

@@ -3,13 +3,13 @@
 // the editor commands (`get_pages`, `get_page_result`, `get_page_source_sha256`) of the
 // engine the editor runs on (Tauri IPC or the local bridge).
 import { useEffect, useState, useCallback } from "react";
-import { commands, type PageSummary } from "@shenron/koharu/protocol";
+import { commands, type PageSummary } from "@aphrody/shenron-koharu/protocol";
 import {
   mapNativeKoharuPageResult,
   toMangaReviewCandidateInput,
   type KoharuMangaPageSource,
   type MangaCandidateBinding,
-} from "@shenron/pipeline/koharu";
+} from "@aphrody/shenron-pipeline/koharu";
 
 /** @deprecated Ignored: the panel speaks the editor commands. Kept while hosts still pass it. */
 export interface ShenronExportHost {

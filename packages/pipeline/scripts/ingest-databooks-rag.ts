@@ -28,7 +28,7 @@
  * Usage : bun apps/bot/scripts/ingest-databooks-rag.ts
  */
 import postgres from "postgres";
-import { defautDePlanche } from "@shenron/config/databooks-defauts";
+import { defautDePlanche } from "@aphrody/shenron-config/databooks-defauts";
 import { urlPostgres } from "./_rag-sources-pg";
 
 const BOT_ROOT = new URL("../../../apps/bot/", import.meta.url);

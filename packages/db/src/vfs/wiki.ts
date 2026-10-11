@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Public wiki read port over the `wiki_categories` / `wiki_entities` tables of a VFS database:
- * the same contract as `createWikiReadRepository` (`@shenron/db/repos/wiki`), so the public
- * API (`WikiReadPort` of `@shenron/api/server`) runs offline in the desktop and in the
+ * the same contract as `createWikiReadRepository` (`@aphrody/shenron-db/repos/wiki`), so the public
+ * API (`WikiReadPort` of `@aphrody/shenron-api/server`) runs offline in the desktop and in the
  * compiled binaries. Rows are the visible rows exported at build time, `visible` and the
  * other omitted columns already stripped. Runtime class: `bun`.
  */

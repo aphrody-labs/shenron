@@ -11,7 +11,7 @@ viennent du catalogue Infra et de ses fichiers privés.
 ## Inférence native et vLLM
 
 Shenron consomme les capacités Aphrody. `resolveDirectChat` dans
-`@shenron/pipeline/ai/config` résout le serveur explicitement choisi par Infra.
+`@aphrody/shenron-pipeline/ai/config` résout le serveur explicitement choisi par Infra.
 `createShenronProvider` expose ce serveur comme modèle AI SDK `chat`, y compris
 la génération et les flux. `createOpenAiChat` conserve les consommateurs site/bot
 existants. Les deux chemins envoient la clé amont `APHRODY_AI_CHAT_API_KEY`.
@@ -30,7 +30,7 @@ reste visible ; le relais n’invente ni Responses, ni compaction, ni entraînem
 Les réponses personnalisées et les sessions ne deviennent pas un cache partagé.
 
 `shenron-chat-v2` désigne Qwen3-4B-Instruct-2507 et son adaptateur Shenron, comme
-le fixe `@shenron/config/chat-model`. Le Gemma 4 quantifié de la flotte Aphrody
+le fixe `@aphrody/shenron-config/chat-model`. Le Gemma 4 quantifié de la flotte Aphrody
 est un candidat distinct. Sa seule disponibilité ne remplace pas le modèle
 entraîné ni ne prouve une amélioration du RAG.
 
@@ -51,8 +51,8 @@ Préparer et qualifier le corpus sur l’hôte déclaré, avec la connexion Post
 et la passerelle RAG réellement configurées :
 
 ```sh
-bun run --filter @shenron/pipeline rag:prepare
-bun run --filter @shenron/pipeline rag:test
+bun run --filter @aphrody/shenron-pipeline rag:prepare
+bun run --filter @aphrody/shenron-pipeline rag:test
 ```
 
 Le garde `requireLiveRag` refuse un preload incomplet, périmé ou des sources
@@ -84,7 +84,7 @@ DBFR. Ces quatre réceptions sont séparées et doivent avoir leurs propres preu
 ## Fidélité du chat RAG
 
 `POST /api/public/rag/chat` (bot) répond depuis des passages numérotés `[n]` et ne sort jamais
-de ce périmètre. Le contrôle est déterministe (`@shenron/pipeline/ai/grounding`, sans appel
+de ce périmètre. Le contrôle est déterministe (`@aphrody/shenron-pipeline/ai/grounding`, sans appel
 modèle) :
 
 - **Rappel** : le bot demande 12 hits, puis classe : canon d'abord (`db_*`, `canon_references`,

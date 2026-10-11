@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Continuous, source-scoped PostgreSQL editorial RAG sync to Aphrody. */
 import postgres from "postgres";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
+import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
 import { mkdir, open, readFile, readdir, rename, unlink, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";

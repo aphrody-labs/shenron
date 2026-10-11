@@ -21,7 +21,7 @@ import postgres from "postgres";
 import sharp from "sharp";
 import { unlink } from "node:fs/promises";
 import { join } from "node:path";
-import { recogniseRemotePage } from "@shenron/pipeline/aphrody/remote-ocr";
+import { recogniseRemotePage } from "@aphrody/shenron-pipeline/aphrody/remote-ocr";
 
 const NEON_URL = process.env.DATABASE_URL;
 if (!NEON_URL) {

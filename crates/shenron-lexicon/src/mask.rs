@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-//! Term protection around a translation engine, identical to `@shenron/lexicon`'s `mask.ts`
+//! Term protection around a translation engine, identical to `@aphrody/shenron-lexicon`'s `mask.ts`
 //! (fixtures `data/lexicon/fixtures/{mask,restore,tokens}.json`).
 //!
 //! - **Masking**: the source spellings found in a text are replaced, longest first, in one pass

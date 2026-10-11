@@ -11,7 +11,7 @@ import {
 const nativeAvailable = isNativeAvailable();
 const requireNative = process.env.APHRODY_FFI_REQUIRE_NATIVE === "1";
 
-describe("@shenron/pipeline/aphrody/native FFI bridge", () => {
+describe("@aphrody/shenron-pipeline/aphrody/native FFI bridge", () => {
   it("detects whether native library is available on host", () => {
     expect(typeof nativeAvailable).toBe("boolean");
     if (requireNative) expect(nativeAvailable).toBe(true);

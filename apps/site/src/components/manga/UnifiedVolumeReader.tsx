@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { CollectionReader, type ReaderCollectionEdition } from "@shenron/ui/reader";
+import { CollectionReader, type ReaderCollectionEdition } from "@aphrody/shenron-ui/reader";
 import { MangaReader } from "./MangaReader";
 import { useT } from "@/components/T";
 import { colorisationDemandee } from "@/lib/manga-editions";

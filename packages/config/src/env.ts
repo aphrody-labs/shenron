@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Environment reading discipline shared by every `@shenron/*` package.
+ * Environment reading discipline shared by every `@aphrody/shenron-*` package.
  *
  * Runtime class: `pure`. Nothing here reads `process.env` on its own: the
  * caller always passes an {@link EnvSource} (usually `process.env`) at call

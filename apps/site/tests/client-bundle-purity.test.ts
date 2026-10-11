@@ -2,9 +2,9 @@
 /**
  * Pureté du bundle client (W5-TOOL-01, docs/architecture/STACK.md §4.2) : depuis chaque
  * module `"use client"` d'`apps/site/src`, le graphe d'imports statiques
- * (relatifs, alias `@/`, et entrées source des paquets `@shenron/*`) ne doit
- * jamais atteindre `@shenron/pipeline/ai`, `@shenron/db/{postgres-js,sql,bun-sql,redis}`,
- * `@shenron/api/server` ni `@shenron/pipeline/aphrody`.
+ * (relatifs, alias `@/`, et entrées source des paquets `@aphrody/shenron-*`) ne doit
+ * jamais atteindre `@aphrody/shenron-pipeline/ai`, `@aphrody/shenron-db/{postgres-js,sql,bun-sql,redis}`,
+ * `@aphrody/shenron-api/server` ni `@aphrody/shenron-pipeline/aphrody`.
  *
  * Les imports `import type` sont effacés à la compilation et ne comptent pas ;
  * un module `"use server"` n'est jamais embarqué côté client (Next ne transmet
@@ -21,20 +21,20 @@ import {
   writeFileSync,
 } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
-import { stripNonCode } from "@shenron/config/guards";
+import { stripNonCode } from "@aphrody/shenron-config/guards";
 
 const SITE = resolve(import.meta.dir, "..");
 const SRC = join(SITE, "src");
 const ROOT = resolve(SITE, "..", "..");
 
 const FORBIDDEN = [
-  "@shenron/pipeline/ai",
-  "@shenron/db/postgres-js",
-  "@shenron/db/sql",
-  "@shenron/db/bun-sql",
-  "@shenron/db/redis",
-  "@shenron/api/server",
-  "@shenron/pipeline/aphrody",
+  "@aphrody/shenron-pipeline/ai",
+  "@aphrody/shenron-db/postgres-js",
+  "@aphrody/shenron-db/sql",
+  "@aphrody/shenron-db/bun-sql",
+  "@aphrody/shenron-db/redis",
+  "@aphrody/shenron-api/server",
+  "@aphrody/shenron-pipeline/aphrody",
 ];
 
 const EXTENSIONS = [".ts", ".tsx", ".js", ".jsx", ".mts", ".mjs"];
@@ -112,7 +112,7 @@ for (const group of ["packages", "apps"]) {
     const manifestFile = join(groupDir, entry, "package.json");
     if (!existsSync(manifestFile)) continue;
     const name = (JSON.parse(readFileSync(manifestFile, "utf8")) as { name?: string }).name;
-    if (name?.startsWith("@shenron/")) packageDirs.set(name, join(groupDir, entry));
+    if (name?.startsWith("@aphrody/shenron-")) packageDirs.set(name, join(groupDir, entry));
   }
 }
 
@@ -128,7 +128,7 @@ function exportTarget(value: unknown): string | null {
   return null;
 }
 
-/** Source file of a `@shenron/*` specifier (source-first exports, wildcards). */
+/** Source file of a `@aphrody/shenron-*` specifier (source-first exports, wildcards). */
 function resolveWorkspace(specifier: string): string | null {
   const name = specifier.split("/").slice(0, 2).join("/");
   const dir = packageDirs.get(name);
@@ -154,7 +154,7 @@ function resolveSpecifier(fromFile: string, specifier: string, srcDir: string): 
   if (specifier.startsWith("./") || specifier.startsWith("../"))
     return resolveFile(resolve(dirname(fromFile), specifier));
   if (specifier.startsWith("@/")) return resolveFile(join(srcDir, specifier.slice(2)));
-  if (specifier.startsWith("@shenron/")) return resolveWorkspace(specifier);
+  if (specifier.startsWith("@aphrody/shenron-")) return resolveWorkspace(specifier);
   return null;
 }
 
@@ -227,7 +227,7 @@ describe("client bundle purity (docs/architecture/STACK.md §4.2)", () => {
   });
 
   it(
-    "no 'use client' module reaches a server-only @shenron entry",
+    "no 'use client' module reaches a server-only @aphrody/shenron entry",
     () => {
       // Share immutable file analyses only within this graph snapshot.
       const cache = new Map<string, GraphNode>();
@@ -239,20 +239,20 @@ describe("client bundle purity (docs/architecture/STACK.md §4.2)", () => {
     process.platform === "win32" ? 90_000 : 5000,
   );
 
-  it("detects a client module importing @shenron/pipeline/ai, directly or transitively", () => {
+  it("detects a client module importing @aphrody/shenron-pipeline/ai, directly or transitively", () => {
     const dir = mkdtempSync(join(SITE, ".purity-fixture-"));
     try {
       writeFileSync(
         join(dir, "helper.ts"),
-        'export { generateText } from "@shenron/pipeline/ai";\n',
+        'export { generateText } from "@aphrody/shenron-pipeline/ai";\n',
       );
       writeFileSync(
         join(dir, "typed.ts"),
-        'import type { X } from "@shenron/pipeline/aphrody";\nexport type Y = X;\n',
+        'import type { X } from "@aphrody/shenron-pipeline/aphrody";\nexport type Y = X;\n',
       );
       writeFileSync(
         join(dir, "action.ts"),
-        '"use server";\nimport { db } from "@shenron/db/sql";\nexport async function run() { return db; }\n',
+        '"use server";\nimport { db } from "@aphrody/shenron-db/sql";\nexport async function run() { return db; }\n',
       );
       writeFileSync(
         join(dir, "widget.tsx"),
@@ -269,7 +269,7 @@ describe("client bundle purity (docs/architecture/STACK.md §4.2)", () => {
       expect(entries.map((f) => toPosix(relative(dir, f)))).toEqual(["widget.tsx"]);
       const reaches = forbiddenReaches(entries[0] as string, dir);
       expect(reaches).toHaveLength(1);
-      expect(reaches[0]?.at(-1)).toBe("@shenron/pipeline/ai");
+      expect(reaches[0]?.at(-1)).toBe("@aphrody/shenron-pipeline/ai");
       const cache = new Map<string, GraphNode>();
       expect(forbiddenReaches(entries[0] as string, dir, cache)).toEqual(reaches);
       expect(forbiddenReaches(entries[0] as string, dir, cache)).toEqual(reaches);

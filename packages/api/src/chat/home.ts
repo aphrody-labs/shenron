@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Agent home of the chat (domain `dbfr`): the persona tone/brevity/vibe keys of SOUL.md and
- * IDENTITY.md (the only instructions a profile may add, `@shenron/pipeline/ai/prompts`
+ * IDENTITY.md (the only instructions a profile may add, `@aphrody/shenron-pipeline/ai/prompts`
  * doctrine) and the display identity. Read from the VFS (`/home/*`, embedded binaries) or
  * from the live agent home directory (`~/.aphrody/workspaces/dbfr`). Its memory and
  * knowledge files reach the chat as retrieval sources (VFS corpus `home`), never as
@@ -9,9 +9,9 @@
  */
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { type AgentHomeProfile, readUserProfile } from "@shenron/db/agent-homes/types";
-import { parseFrontmatter } from "@shenron/pipeline/agent-home";
-import type { HomePersona } from "@shenron/pipeline/ai/prompts";
+import { type AgentHomeProfile, readUserProfile } from "@aphrody/shenron-db/agent-homes/types";
+import { parseFrontmatter } from "@aphrody/shenron-pipeline/agent-home";
+import type { HomePersona } from "@aphrody/shenron-pipeline/ai/prompts";
 
 export interface AgentHome {
   persona: HomePersona | null;
@@ -99,7 +99,7 @@ export function agentHomeFromDir(dir: string): AgentHome {
   return fromTexts(read("SOUL.md"), read("IDENTITY.md"), "dir", read("USER.md"));
 }
 
-/** Agent home from a stored snapshot (`@shenron/db/agent-homes`: cloud PostgreSQL, bot). */
+/** Agent home from a stored snapshot (`@aphrody/shenron-db/agent-homes`: cloud PostgreSQL, bot). */
 export function agentHomeFromSnapshot(home: {
   files: Partial<Record<"SOUL.md" | "IDENTITY.md" | "USER.md", string>>;
 }): AgentHome {

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronDroite } from "@shenron/ui/icones";
+import { ChevronDroite } from "@aphrody/shenron-ui/icones";
 import { StreamRail } from "./StreamRail";
 
 // Construit UNE fois : `new Intl.NumberFormat` à chaque rendu est l'un des

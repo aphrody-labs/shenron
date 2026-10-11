@@ -15,11 +15,11 @@ import {
   renderPluginFile,
   resolvePluginRoot,
 } from "../src/plugin";
-import { AGENT_HOME_DOCUMENTS } from "@shenron/db/agent-homes/types";
+import { AGENT_HOME_DOCUMENTS } from "@aphrody/shenron-db/agent-homes/types";
 import {
   PUBLIC_TEMPLATE_DOCUMENTS,
   templateProblems,
-} from "@shenron/db/agent-homes/public-template";
+} from "@aphrody/shenron-db/agent-homes/public-template";
 import { createShenronApi } from "../src/server";
 import { basePorts } from "./support/ports";
 

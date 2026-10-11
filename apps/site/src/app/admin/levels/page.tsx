@@ -22,7 +22,7 @@ import {
   Reinitialiser,
   Tendance,
   Trophee,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 import { type FormEvent, useRef, useState } from "react";
 import { api } from "@/lib/admin-api";
 import { formatDuration } from "@/lib/admin-format";

@@ -26,7 +26,7 @@ no overlap, on word edges for katakana and Latin terms) become numbered tokens s
 `Zeta001`; after translation each token, however the engine spelled it (`Zêta001`,
 `ZETA 001`), is replaced by the official target form. A token the table does not know makes
 the request fail with `GlossaryTokens` rather than reach the page. The masking and restoration
-rules belong to Shenron's `shenron-lexicon` crate (the same rules as `@shenron/lexicon`,
+rules belong to Shenron's `shenron-lexicon` crate (the same rules as `@aphrody/shenron-lexicon`,
 checked by the shared fixtures of `data/lexicon/fixtures/`); this module only wires them to
 the translator.
 

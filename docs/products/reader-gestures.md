@@ -2,7 +2,7 @@
 
 # Gestes de la visionneuse des databooks
 
-La visionneuse de `@shenron/ui/reader` conserve une seule implémentation
+La visionneuse de `@aphrody/shenron-ui/reader` conserve une seule implémentation
 Pointer Events pour les surfaces web, mobile et bureau. Deux doigts agrandissent
 la planche autour de leur centre ; une planche agrandie se déplace sous le
 doigt, tandis qu'un balayage horizontal à taille ajustée tourne la page.

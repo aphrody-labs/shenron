@@ -22,7 +22,7 @@ import {
   type ThemeColorKey,
 } from "../src/lib/site-theme";
 
-// Les blocs @theme / :root partagés vivent dans @shenron/ui (styles.css), importé
+// Les blocs @theme / :root partagés vivent dans @aphrody/shenron-ui (styles.css), importé
 // par globals.css : le rendu du site est la concaténation des deux feuilles.
 const css = [
   await Bun.file(new URL("../src/app/globals.css", import.meta.url)).text(),

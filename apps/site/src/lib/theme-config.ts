@@ -2,10 +2,14 @@
 /** Request-cached theme adapter; only the Bun host owns storage. */
 import "server-only";
 import { cache } from "react";
-import { resolveHostUrl } from "@shenron/config/public-urls";
-import { DEFAULT_SITE_THEME, resolveSiteTheme, type SiteTheme } from "@shenron/config/site-theme";
-import { createShenronApiClient } from "@shenron/api/client";
-import { endpoints } from "@shenron/api/contract";
+import { resolveHostUrl } from "@aphrody/shenron-config/public-urls";
+import {
+  DEFAULT_SITE_THEME,
+  resolveSiteTheme,
+  type SiteTheme,
+} from "@aphrody/shenron-config/site-theme";
+import { createShenronApiClient } from "@aphrody/shenron-api/client";
+import { endpoints } from "@aphrody/shenron-api/contract";
 
 import { HostThemeError } from "./host-theme-error";
 export { HostThemeError } from "./host-theme-error";

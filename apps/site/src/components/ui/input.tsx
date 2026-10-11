@@ -1,1 +1,1 @@
-export * from "@shenron/ui/input";
+export * from "@aphrody/shenron-ui/input";

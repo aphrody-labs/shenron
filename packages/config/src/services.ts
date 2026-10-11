@@ -15,7 +15,7 @@
  * | relecture OCR  | `RELECTURE_OCR_URL`             | `http://127.0.0.1:8791`   |
  * | Shenron API    | `SHENRON_API_HOST` + `_PORT`    | `127.0.0.1:8797` (bind)   |
  *
- * The direct chat server (`APHRODY_AI_CHAT_BASE_URL`, read by `@shenron/pipeline/ai/config`)
+ * The direct chat server (`APHRODY_AI_CHAT_BASE_URL`, read by `@aphrody/shenron-pipeline/ai/config`)
  * has no default address; only its default model id lives here.
  *
  * Runtime class: `pure` (takes an explicit env record).
@@ -79,7 +79,7 @@ export function resolveBotApiServerUrl(env: EnvSource): string {
   return internal ? trimSlash(internal) : resolveApiUrl(env);
 }
 
-/** Bind address of the standalone Shenron API (`@shenron/api/host`); an invalid port keeps the default. */
+/** Bind address of the standalone Shenron API (`@aphrody/shenron-api/host`); an invalid port keeps the default. */
 export function resolveShenronApiBind(env: EnvSource): { hostname: string; port: number } {
   const port = Number(envString(env, "SHENRON_API_PORT"));
   return {

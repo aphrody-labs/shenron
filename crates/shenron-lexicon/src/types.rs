@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 //! Shapes of `data/lexicon/terms.json` (schema `data/lexicon/terms.schema.json`), shared with
-//! `@shenron/lexicon`'s `types.ts`.
+//! `@aphrody/shenron-lexicon`'s `types.ts`.
 
 use std::{fmt, str::FromStr};
 

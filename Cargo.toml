@@ -46,9 +46,12 @@ secrecy = { version = "0.10.3", features = ["serde"] }
 serde-wasm-bindgen = "0.6.5"
 slotmap = "1.1.1"
 smallvec = "1.16.0"
-# shenron-ffi: serde-aware generation of the @shenron/native payload types (pinned with specta).
+# shenron-ffi: serde-aware generation of the @aphrody/shenron-native payload types (pinned with specta).
 specta-serde = "=0.0.12"
-tauri-specta = { git = "https://github.com/aphrody-labs/aphrody", rev = "7daf113b06c0c86dded6ec8ca5a7fe1971b1febf", package = "aphrody-tauri-specta", version = "2.0.0-rc.25", features = ["derive", "typescript"] }
+tauri-specta = { git = "https://github.com/aphrody-labs/aphrody", rev = "7daf113b06c0c86dded6ec8ca5a7fe1971b1febf", package = "aphrody-tauri-specta", version = "2.0.0-rc.25", features = [
+  "derive",
+  "typescript",
+] }
 tokio-rayon = "2.1.0"
 unicode-bidi = "0.3.18"
 # The one wgpu of the workspace (crates/shenron-gpu owns it); vello 0.11 builds on wgpu 30, keep both in step.
@@ -77,7 +80,13 @@ aphrody-torch = { git = "https://github.com/aphrody-labs/aphrody", rev = "7daf11
 arc-swap = "1.9.2"
 assert_cmd = { version = "2", features = [] }
 async-trait = "0.1.92"
-axum = { version = "0.8", default-features = false, features = ["json", "query", "tokio", "http1", "http2"] }
+axum = { version = "0.8", default-features = false, features = [
+  "json",
+  "query",
+  "tokio",
+  "http1",
+  "http2",
+] }
 base64 = "0.23.1"
 blake3 = "1.8.7"
 bytes = "1.12.1"
@@ -114,8 +123,30 @@ parking_lot = "0.12.5"
 pollster = "1.0.1"
 predicates = { version = "3", features = [] }
 rayon = "1.12.0"
-reqwest = { version = "0.13.5", features = ["rustls-no-provider", "json", "stream", "form", "query", "charset", "http2", "system-proxy", "blocking", "cookies", "gzip", "brotli", "deflate", "socks", "multipart"], default-features = false }
-rmcp = { version = "=3.5.0", features = ["server", "transport-io", "transport-streamable-http-server", "macros", "schemars"] }
+reqwest = { version = "0.13.5", features = [
+  "rustls-no-provider",
+  "json",
+  "stream",
+  "form",
+  "query",
+  "charset",
+  "http2",
+  "system-proxy",
+  "blocking",
+  "cookies",
+  "gzip",
+  "brotli",
+  "deflate",
+  "socks",
+  "multipart",
+], default-features = false }
+rmcp = { version = "=3.5.0", features = [
+  "server",
+  "transport-io",
+  "transport-streamable-http-server",
+  "macros",
+  "schemars",
+] }
 rusqlite = { version = "0.40", features = ["bundled"] }
 rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
 schemars = { version = "1.2.2", features = ["derive", "chrono04", "indexmap2", "uuid1"] }
@@ -133,7 +164,9 @@ specta = { version = "=2.0.0-rc.25", features = ["derive", "url", "uuid"] }
 specta-typescript = "=0.0.12"
 strum = { version = "0.28.0", features = ["derive"] }
 sysinfo = { version = "0.39.6", features = ["system", "disk"], default-features = false }
-tauri = { git = "https://github.com/aphrody-labs/aphrody", rev = "7daf113b06c0c86dded6ec8ca5a7fe1971b1febf", package = "aphrody-tauri", version = "=3.0.0-alpha.4", default-features = false, features = ["compression"] }
+tauri = { git = "https://github.com/aphrody-labs/aphrody", rev = "7daf113b06c0c86dded6ec8ca5a7fe1971b1febf", package = "aphrody-tauri", version = "=3.0.0-alpha.4", default-features = false, features = [
+  "compression",
+] }
 tauri-build = { git = "https://github.com/aphrody-labs/aphrody", rev = "7daf113b06c0c86dded6ec8ca5a7fe1971b1febf", package = "aphrody-tauri-build", version = "=3.0.0-alpha.3" }
 tauri-plugin-log = { git = "https://github.com/aphrody-labs/aphrody", rev = "7daf113b06c0c86dded6ec8ca5a7fe1971b1febf", package = "aphrody-tauri-plugin-log", version = "=3.0.0-alpha.2" }
 tauri-plugin-opener = { git = "https://github.com/aphrody-labs/aphrody", rev = "7daf113b06c0c86dded6ec8ca5a7fe1971b1febf", package = "aphrody-tauri-plugin-opener", version = "=3.0.0-alpha.2" }
@@ -144,11 +177,27 @@ tauri-runtime-cef = { git = "https://github.com/aphrody-labs/aphrody", rev = "7d
 tempfile = "3.27.0"
 thiserror = "2.0.20"
 tokenizers = { version = "0.23.2", features = ["fancy-regex", "onig"], default-features = false }
-tokio = { version = "1.53.1", features = ["process", "rt-multi-thread", "macros", "time", "signal", "sync", "fs", "io-util", "full"] }
+tokio = { version = "1.53.1", features = [
+  "process",
+  "rt-multi-thread",
+  "macros",
+  "time",
+  "signal",
+  "sync",
+  "fs",
+  "io-util",
+  "full",
+] }
 toml = "1.1.5"
 tower-http = { version = "0.7", features = ["cors"] }
 tracing = "0.1.44"
-tracing-subscriber = { version = "0.3.22", features = ["env-filter", "fmt", "json", "regex", "registry"] }
+tracing-subscriber = { version = "0.3.22", features = [
+  "env-filter",
+  "fmt",
+  "json",
+  "regex",
+  "registry",
+] }
 url = { version = "2.5.8", features = ["serde"] }
 uuid = { version = "1.26.0", features = ["v4", "v7", "serde"] }
 walkdir = "2.5.0"
@@ -156,7 +205,35 @@ wasm-bindgen = "0.2.128"
 wasm-bindgen-futures = "0.4.78"
 web-sys = "0.3.105"
 webp = { version = "0.3.1" }
-windows = { version = "0.62.2", features = ["Foundation", "Globalization", "Graphics_Imaging", "Media_Ocr", "Media_SpeechSynthesis", "Media_Core", "Storage_Streams", "Win32_Foundation", "Win32_Media_Audio", "Win32_Security", "Win32_Graphics_Dwm", "Win32_Graphics_Gdi", "Win32_Storage_IndexServer", "Win32_System_Com", "Win32_System_Ole", "Win32_System_Search", "Win32_System_Threading", "Win32_System_IO", "Win32_System_Diagnostics_Debug", "Win32_System_Memory", "Win32_System_SystemInformation", "Win32_System_Diagnostics_ToolHelp", "Win32_System_Variant", "Win32_UI_WindowsAndMessaging", "Win32", "Win32_System", "Win32_System_Console"] }
+windows = { version = "0.62.2", features = [
+  "Foundation",
+  "Globalization",
+  "Graphics_Imaging",
+  "Media_Ocr",
+  "Media_SpeechSynthesis",
+  "Media_Core",
+  "Storage_Streams",
+  "Win32_Foundation",
+  "Win32_Media_Audio",
+  "Win32_Security",
+  "Win32_Graphics_Dwm",
+  "Win32_Graphics_Gdi",
+  "Win32_Storage_IndexServer",
+  "Win32_System_Com",
+  "Win32_System_Ole",
+  "Win32_System_Search",
+  "Win32_System_Threading",
+  "Win32_System_IO",
+  "Win32_System_Diagnostics_Debug",
+  "Win32_System_Memory",
+  "Win32_System_SystemInformation",
+  "Win32_System_Diagnostics_ToolHelp",
+  "Win32_System_Variant",
+  "Win32_UI_WindowsAndMessaging",
+  "Win32",
+  "Win32_System",
+  "Win32_System_Console",
+] }
 zip = { version = "8.6.0", features = ["deflate"] }
 # END generated
 

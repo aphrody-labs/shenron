@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Native Web capabilities share Aphrody's FFI owner; no process is started per request. */
-import type { WebPort } from "@shenron/api/server";
-import { AphrodyFramesClient } from "@shenron/pipeline/aphrody/frames";
-import { AphrodyMediaService } from "@shenron/pipeline/aphrody/media";
+import type { WebPort } from "@aphrody/shenron-api/server";
+import { AphrodyFramesClient } from "@aphrody/shenron-pipeline/aphrody/frames";
+import { AphrodyMediaService } from "@aphrody/shenron-pipeline/aphrody/media";
 import {
   runAphrodyCommand,
   type NativeCommandExecutor,
-} from "@shenron/pipeline/aphrody/native-commands";
+} from "@aphrody/shenron-pipeline/aphrody/native-commands";
 
 export async function createNativeWebPort(
   executor?: NativeCommandExecutor,

@@ -10,7 +10,12 @@
  */
 import { join } from "node:path";
 import postgres from "postgres";
-import { coversResolution, dbPathToDisk, diskToDbPath, normalizeDbPath } from "@shenron/images";
+import {
+  coversResolution,
+  dbPathToDisk,
+  diskToDbPath,
+  normalizeDbPath,
+} from "@aphrody/shenron-images";
 
 const RACINE = join(import.meta.dir, "..", "..", "..");
 const ROOTS = { bot: join(RACINE, "apps/bot"), site: join(RACINE, "apps/site") };

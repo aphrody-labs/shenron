@@ -2,7 +2,7 @@
 "use client";
 
 import Image from "next/image";
-import { SceneBackdrop as SharedSceneBackdrop } from "@shenron/ui/public/SceneBackdrop";
+import { SceneBackdrop as SharedSceneBackdrop } from "@aphrody/shenron-ui/public/SceneBackdrop";
 import { assetUrl } from "@/lib/assets";
 import type { HomeScene } from "@/lib/home-scenes";
 import { isEditableAsset } from "@/lib/images";

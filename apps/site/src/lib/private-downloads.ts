@@ -7,7 +7,7 @@ import {
   DEFAULT_PRIVATE_DOWNLOADS_DIR,
   resolveDataPath,
   type DataPath,
-} from "@shenron/config/paths";
+} from "@aphrody/shenron-config/paths";
 
 /**
  * Admin-only downloads (`/api/private-downloads`): files handed to administrators, such as the

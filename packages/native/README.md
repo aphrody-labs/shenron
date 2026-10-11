@@ -1,4 +1,4 @@
-# @shenron/native
+# @aphrody/shenron-native
 
 Seul paquet autorisé à charger du code natif : la liaison `bun:ffi` de `shenron-ffi`
 (`crates/shenron-ffi`, voir son README pour l'ABI).
@@ -23,12 +23,12 @@ dans l'ordre : Bun dans `engines.bun` (aligné sur la racine), ABI (par le seul 
 
 `src/generated/symbols.ts` (table `dlopen`, `SHENRON_FFI_ABI`, `SHENRON_FFI_VERSION`,
 `SHENRON_STATUS`) et `src/generated/types.ts` (charges JSON) viennent de Rust :
-`bun run --filter @shenron/native generate`, porte `generate:check`. Ne jamais les éditer.
+`bun run --filter @aphrody/shenron-native generate`, porte `generate:check`. Ne jamais les éditer.
 
 ## Worker
 
 ```ts
-import { shenronWorkerPool, closeShenronWorkerPool } from "@shenron/native/worker";
+import { shenronWorkerPool, closeShenronWorkerPool } from "@aphrody/shenron-native/worker";
 
 const pool = shenronWorkerPool({ path, size: 2 }); // ouvre et vérifie la bibliothèque ici
 const answer = await pool.localSearch("Son Goku", { limit: 8, signal: request.signal });
@@ -52,8 +52,8 @@ await closeShenronWorkerPool();
 ## Tests
 
 ```sh
-bun run --filter @shenron/native test                                      # sans bibliothèque : suites natives sautées
-APHRODY_LOCAL_CARGO=1 cargo build -p shenron-ffi && SHENRON_FFI_DEV=1 bun run --filter @shenron/native test
+bun run --filter @aphrody/shenron-native test                                      # sans bibliothèque : suites natives sautées
+APHRODY_LOCAL_CARGO=1 cargo build -p shenron-ffi && SHENRON_FFI_DEV=1 bun run --filter @aphrody/shenron-native test
 ```
 
 Avec la bibliothèque : appels concurrents, annulation (rejet < 50 ms, worker libre < 1 s),

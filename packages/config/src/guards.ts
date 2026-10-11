@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Portability guards shared by every `@shenron/*` package (docs/architecture/STACK.md §3.0).
+ * Portability guards shared by every `@aphrody/shenron-*` package (docs/architecture/STACK.md §3.0).
  *
  * The walker reads a package manifest (`exports` + `shenron.runtime`), follows
  * the relative-import closure of each entry and applies the runtime class
@@ -35,7 +35,7 @@ export const RUNTIME_CLASSES: readonly RuntimeClass[] = [
 /** Classes of non-code export entries (tsconfig presets, stylesheets). */
 export const ASSET_CLASSES: readonly string[] = ["json", "css"];
 
-/** Classes an importer of a given class may reach through `@shenron/*` subpaths. */
+/** Classes an importer of a given class may reach through `@aphrody/shenron-*` subpaths. */
 const CLASS_REACH: Readonly<Record<RuntimeClass, readonly RuntimeClass[]>> = {
   pure: ["pure"],
   server: ["pure", "server"],
@@ -416,7 +416,7 @@ function findWorkspaceRoot(fromDir: string): string | null {
 
 const shenronPackageCache = new Map<string, Map<string, string>>();
 
-/** `@shenron/<name>` → package directory in either Shenron workspace layout. */
+/** `@aphrody/shenron-<name>` → package directory in either Shenron workspace layout. */
 function shenronPackages(root: string): Map<string, string> {
   const cached = shenronPackageCache.get(root);
   if (cached) return cached;
@@ -427,14 +427,14 @@ function shenronPackages(root: string): Map<string, string> {
       if (!entry.isDirectory()) continue;
       const packageDir = join(packagesDir, entry.name);
       const manifest = readManifest(packageDir);
-      if (manifest?.name?.startsWith("@shenron/")) map.set(manifest.name, packageDir);
+      if (manifest?.name?.startsWith("@aphrody/shenron-")) map.set(manifest.name, packageDir);
     }
   }
   shenronPackageCache.set(root, map);
   return map;
 }
 
-/** Declared runtime class of an `@shenron/<pkg>[/sub]` specifier, or why it cannot be found. */
+/** Declared runtime class of an `@aphrody/shenron-<pkg>[/sub]` specifier, or why it cannot be found. */
 function shenronSpecifierClass(
   root: string | null,
   specifier: string,
@@ -670,7 +670,7 @@ function checkFile(
       push(classRule, ref.index);
       continue;
     }
-    if (specifier.startsWith("@shenron/")) {
+    if (specifier.startsWith("@aphrody/shenron-")) {
       const target = shenronSpecifierClass(root, specifier);
       if (!target.found) continue;
       const declared = target.declared;

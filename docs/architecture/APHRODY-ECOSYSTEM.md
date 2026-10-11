@@ -40,21 +40,21 @@ On consomme ces capacités ; on ne les copie pas.
 
 ### 1.3 Frontières autorisées
 
-| Frontière | Usage | Entrée Shenron |
-| --- | --- | --- |
-| HTTP REST Bearer `/api/v1/shenron/*` | RAG, LLM, embeddings, OCR, vision | `@shenron/pipeline/ai` (résolveur unique `@shenron/pipeline/ai/config`) |
-| HTTP OpenAI-compatible `/v1/embeddings` | embeddings E5 | `@shenron/pipeline/ai/embeddings` |
-| HTTP `/api/v1/web/*` | crawl, scrape | `@shenron/pipeline/aphrody/web` |
-| CLI `aphrody … --json` par `Bun.spawn` | lots OCR, traduction | `@shenron/pipeline/aphrody/cli`, scripts |
-| Crates Rust liées à la compilation | RAG local, OCR, traduction, Koharu | `crates/shenron-*`, `crates/koharu-*` ; exposées à Bun par `crates/shenron-ffi` → `@shenron/native` (`bun:ffi`) |
-| MCP | outils `dragonball.*` pour les agents | `shenron-mcp` (stdio pour le plugin ; HTTP public en lecture seule derrière `/mcp` du site) |
+| Frontière                               | Usage                                 | Entrée Shenron                                                                                                          |
+| --------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| HTTP REST Bearer `/api/v1/shenron/*`    | RAG, LLM, embeddings, OCR, vision     | `@aphrody/shenron-pipeline/ai` (résolveur unique `@aphrody/shenron-pipeline/ai/config`)                                 |
+| HTTP OpenAI-compatible `/v1/embeddings` | embeddings E5                         | `@aphrody/shenron-pipeline/ai/embeddings`                                                                               |
+| HTTP `/api/v1/web/*`                    | crawl, scrape                         | `@aphrody/shenron-pipeline/aphrody/web`                                                                                 |
+| CLI `aphrody … --json` par `Bun.spawn`  | lots OCR, traduction                  | `@aphrody/shenron-pipeline/aphrody/cli`, scripts                                                                        |
+| Crates Rust liées à la compilation      | RAG local, OCR, traduction, Koharu    | `crates/shenron-*`, `crates/koharu-*` ; exposées à Bun par `crates/shenron-ffi` → `@aphrody/shenron-native` (`bun:ffi`) |
+| MCP                                     | outils `dragonball.*` pour les agents | `shenron-mcp` (stdio pour le plugin ; HTTP public en lecture seule derrière `/mcp` du site)                             |
 
 ### 1.4 Interdits
 
 - Copier du code Aphrody dans ce dépôt, ou tenir un second registre de
   services : le catalogue d'`aphrody-infra` fait foi.
 - Écrire une URL, un hôte ou un port par défaut dans le code. Les seuls
-  défauts autorisés vivent dans `@shenron/config` (voir `ENV.md`). Une capacité
+  défauts autorisés vivent dans `@aphrody/shenron-config` (voir `ENV.md`). Une capacité
   Aphrody absente échoue explicitement ; aucun calcul local silencieux ne la
   remplace.
 - Laisser un client Aphrody ouvrir PostgreSQL ou écrire une donnée éditoriale :
@@ -64,11 +64,11 @@ On consomme ces capacités ; on ne les copie pas.
 
 ## 2. Discord
 
-| Couche | Propriétaire |
-| --- | --- |
+| Couche                                                 | Propriétaire                                           |
+| ------------------------------------------------------ | ------------------------------------------------------ |
 | Transport Discord (REST, Gateway, interactions, santé) | `aphrody-discord`, consommé par `@aphrody/discord-kit` |
-| Commandes, événements, gardes, canon, données, API | Shenron (`apps/bot`, discordx + tsyringe) |
-| Releases, unités, routes, secrets | `aphrody-infra` |
+| Commandes, événements, gardes, canon, données, API     | Shenron (`apps/bot`, discordx + tsyringe)              |
+| Releases, unités, routes, secrets                      | `aphrody-infra`                                        |
 
 Le bot a un seul client Gateway ; discordx et discord.js viennent du registre
 par le catalogue. Une façade de compatibilité doit avoir un consommateur mesuré
@@ -76,33 +76,33 @@ et une échéance de retrait ; aucun second client Discord n'est admis.
 
 ## 3. Paquets `@aphrody/*` consommés
 
-| Paquet | Consommateurs |
-| --- | --- |
-| `@aphrody/api` (Tauri 3) | `@shenron/ui`, `@shenron/koharu` |
-| `@aphrody/plugin-opener` | `@shenron/ui`, `@shenron/site` |
-| `@aphrody/m3-primitives`, `@aphrody/m3-reader`, `@aphrody/m3-theme` | `@shenron/ui` |
-| `@aphrody/http` | `@shenron/api`, `@shenron/pipeline`, `@shenron/media` |
-| `@aphrody/inference`, `@aphrody/runtime-sdk` | `@shenron/pipeline` |
-| `@aphrody/paths` | `@shenron/config`, `@shenron/pipeline`, `@shenron/bot`, `@shenron/site` |
-| `@aphrody/sql` | `@shenron/db` |
-| `@aphrody/discord-kit` | `@shenron/bot`, `@shenron/site` |
-| `@aphrody/bun-test-dom` | tests de `@shenron/ui` |
+| Paquet                                                              | Consommateurs                                                                                           |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `@aphrody/api` (Tauri 3)                                            | `@aphrody/shenron-ui`, `@aphrody/shenron-koharu`                                                        |
+| `@aphrody/plugin-opener`                                            | `@aphrody/shenron-ui`, `@aphrody/shenron-site`                                                          |
+| `@aphrody/m3-primitives`, `@aphrody/m3-reader`, `@aphrody/m3-theme` | `@aphrody/shenron-ui`                                                                                   |
+| `@aphrody/http`                                                     | `@aphrody/shenron-api`, `@aphrody/shenron-pipeline`, `@aphrody/shenron-media`                           |
+| `@aphrody/inference`, `@aphrody/runtime-sdk`                        | `@aphrody/shenron-pipeline`                                                                             |
+| `@aphrody/paths`                                                    | `@aphrody/shenron-config`, `@aphrody/shenron-pipeline`, `@aphrody/shenron-bot`, `@aphrody/shenron-site` |
+| `@aphrody/sql`                                                      | `@aphrody/shenron-db`                                                                                   |
+| `@aphrody/discord-kit`                                              | `@aphrody/shenron-bot`, `@aphrody/shenron-site`                                                         |
+| `@aphrody/bun-test-dom`                                             | tests de `@aphrody/shenron-ui`                                                                          |
 
 Les versions exactes sont dans les `package.json` ; `bunfig.toml` les exclut
 du délai de publication (`minimumReleaseAgeExcludes`).
 
 ## 4. Opérations lourdes
 
-| Opération | Calcul | Entrée Shenron |
-| --- | --- | --- |
-| Chat LLM | `aphrody-ai-http` `llm/chat` | `@shenron/pipeline/ai/chat` ; repli de persona si le LLM est indisponible |
-| Embeddings | `aphrody-ai-http` `embed`, `aphrody-shenron-embed` | `@shenron/pipeline/ai/embeddings` |
-| Recherche RAG | `aphrody-ai-http` `rag/*` avec `RAG_BACKEND=aphrody` ; sinon index local du bot (`apps/bot/src/lib/rag.ts`) et VFS (`shenron-rag`) | bot, site, `@shenron/pipeline/ai` |
-| Indexation RAG | `rag/ingest`, `rag/sync/finish` | `packages/pipeline/scripts/rag-sync-aphrody.ts` |
-| OCR, vision | `aphrody-ai-http` `ocr`, `vision/structured` ; lots par `aphrody ocr shenron` | `@shenron/pipeline/ai`, [`databooks-transcription.md`](../guides/databooks-transcription.md) |
-| Traduction JA→FR | `aphrody-translate` | `@shenron/pipeline` ; juges et dépôt restent Shenron ([`TRADUCTION-DATABOOKS.md`](../guides/TRADUCTION-DATABOOKS.md)) |
-| Crawl, scrape | `aphrody-web-api` | `@shenron/pipeline/aphrody/web` |
-| Pipeline manga Koharu | `crates/koharu-*` sur le socle ML Aphrody | `@shenron/koharu`, candidats non arbitrés |
+| Opération             | Calcul                                                                                                                             | Entrée Shenron                                                                                                                |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Chat LLM              | `aphrody-ai-http` `llm/chat`                                                                                                       | `@aphrody/shenron-pipeline/ai/chat` ; repli de persona si le LLM est indisponible                                             |
+| Embeddings            | `aphrody-ai-http` `embed`, `aphrody-shenron-embed`                                                                                 | `@aphrody/shenron-pipeline/ai/embeddings`                                                                                     |
+| Recherche RAG         | `aphrody-ai-http` `rag/*` avec `RAG_BACKEND=aphrody` ; sinon index local du bot (`apps/bot/src/lib/rag.ts`) et VFS (`shenron-rag`) | bot, site, `@aphrody/shenron-pipeline/ai`                                                                                     |
+| Indexation RAG        | `rag/ingest`, `rag/sync/finish`                                                                                                    | `packages/pipeline/scripts/rag-sync-aphrody.ts`                                                                               |
+| OCR, vision           | `aphrody-ai-http` `ocr`, `vision/structured` ; lots par `aphrody ocr shenron`                                                      | `@aphrody/shenron-pipeline/ai`, [`databooks-transcription.md`](../guides/databooks-transcription.md)                          |
+| Traduction JA→FR      | `aphrody-translate`                                                                                                                | `@aphrody/shenron-pipeline` ; juges et dépôt restent Shenron ([`TRADUCTION-DATABOOKS.md`](../guides/TRADUCTION-DATABOOKS.md)) |
+| Crawl, scrape         | `aphrody-web-api`                                                                                                                  | `@aphrody/shenron-pipeline/aphrody/web`                                                                                       |
+| Pipeline manga Koharu | `crates/koharu-*` sur le socle ML Aphrody                                                                                          | `@aphrody/shenron-koharu`, candidats non arbitrés                                                                             |
 
 Le détail par paquet est dans [`STACK.md`](STACK.md) §5.
 

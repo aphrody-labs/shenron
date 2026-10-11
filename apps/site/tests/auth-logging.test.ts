@@ -6,12 +6,16 @@
  * JETON DE SESSION EN CLAIR de chaque visiteur connecté — 343 jetons, 343
  * e-mails et 686 couples IP/user-agent sur 24 heures.
  *
- * Deux niveaux : les presets de `@shenron/auth/options` (unitaires), puis le
+ * Deux niveaux : les presets de `@aphrody/shenron-auth/options` (unitaires), puis le
  * câblage de `src/lib/auth.ts` via `buildAuthOptions` / `authDatabaseConfig`,
  * construits avec des dépendances factices (aucune connexion PostgreSQL).
  */
 import { describe, expect, mock, test } from "bun:test";
-import { SESSION_COOKIE_CACHE, drizzleDebugLogs, loggingOptions } from "@shenron/auth/options";
+import {
+  SESSION_COOKIE_CACHE,
+  drizzleDebugLogs,
+  loggingOptions,
+} from "@aphrody/shenron-auth/options";
 
 const fakeEnv = {
   NODE_ENV: "production" as const,
@@ -40,7 +44,7 @@ function options(nodeEnv: "production" | "development" | "test") {
   });
 }
 
-describe("presets @shenron/auth/options", () => {
+describe("presets @aphrody/shenron-auth/options", () => {
   test("niveau de log : warn en production, debug ailleurs", () => {
     expect(loggingOptions("production")).toEqual({ logger: { level: "warn" } });
     expect(loggingOptions("development")).toEqual({ logger: { level: "debug" } });

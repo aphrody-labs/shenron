@@ -13,7 +13,7 @@ import type {
   Stage,
   StartupState,
   ModelResources,
-} from "@shenron/koharu/protocol";
+} from "@aphrody/shenron-koharu/protocol";
 // The editor mounts the @aphrody/m3-primitives Toaster (providers.tsx): notices go straight to it.
 import { toast } from "@aphrody/m3-primitives";
 

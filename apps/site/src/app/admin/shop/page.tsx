@@ -13,7 +13,7 @@ import {
   Plus,
   Recherche,
   Sac,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 import { type FormEvent, useMemo, useState } from "react";
 import { api } from "@/lib/admin-api";
 import { RoleBadge } from "@/components/admin/RoleSelect";

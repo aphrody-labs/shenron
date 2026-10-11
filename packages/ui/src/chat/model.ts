@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * State model of the chat surface: transport-agnostic types (structural mirrors of the
- * `@shenron/api/contract` chat events, so a contract `ChatEvent` is assignable to
+ * `@aphrody/shenron-api/contract` chat events, so a contract `ChatEvent` is assignable to
  * {@link ChatStreamEvent}) and a pure reducer driven by the stream events.
  *
  * Runtime class: `pure` (no DOM, no React, no node:/bun:).

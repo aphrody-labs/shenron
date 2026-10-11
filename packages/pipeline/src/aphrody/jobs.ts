@@ -33,7 +33,7 @@ export type NativeMcpTransport = (
 ) => Promise<unknown>;
 
 const nativeTransport: NativeMcpTransport = async (request, options) => {
-  const owner = await import("@shenron/native/web/pipeline");
+  const owner = await import("@aphrody/shenron-native/web/pipeline");
   return owner.mcpTool(request, options);
 };
 interface IntentRow {

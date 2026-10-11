@@ -3,14 +3,14 @@
  * Squelettes des pages du wiki (`loading.tsx`).
  *
  * Les pièces (grille, liste de cartes, barre d'outils, bandeau) viennent de
- * `@shenron/ui/public/WikiSkeleton`. L'assemblage de page se fait ici, dans la
+ * `@aphrody/shenron-ui/public/WikiSkeleton`. L'assemblage de page se fait ici, dans la
  * même colonne que la page qui va s'afficher (`PageShell`) : le squelette du
  * paquet refaisait sa propre largeur (1 400 px, gouttière de 24 px) et le
  * contenu sautait de côté à l'arrivée de la page.
  */
 import type { ReactNode } from "react";
-import { PageShell } from "@shenron/ui/layout/PageShell";
-import { GridSkeleton, ToolbarSkeleton } from "@shenron/ui/public/WikiSkeleton";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
+import { GridSkeleton, ToolbarSkeleton } from "@aphrody/shenron-ui/public/WikiSkeleton";
 import { FICHE_GRID } from "@/components/wiki/fiche-layout";
 
 export {
@@ -18,7 +18,7 @@ export {
   GridSkeleton,
   HeroSkeleton,
   ToolbarSkeleton,
-} from "@shenron/ui/public/WikiSkeleton";
+} from "@aphrody/shenron-ui/public/WikiSkeleton";
 
 /** En-tête de page (`PageHeader`) en attente. */
 function HeaderSkeleton() {

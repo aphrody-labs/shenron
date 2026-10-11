@@ -38,8 +38,17 @@ import {
   useKoharuStore,
   type CanvasTool,
 } from "../../lib/store";
-import { prefetchCanvasPages, workspaceColor, type CanvasColor } from "@shenron/koharu/canvas";
-import { commands, type Frame, type Point, type TransformFrame } from "@shenron/koharu/protocol";
+import {
+  prefetchCanvasPages,
+  workspaceColor,
+  type CanvasColor,
+} from "@aphrody/shenron-koharu/canvas";
+import {
+  commands,
+  type Frame,
+  type Point,
+  type TransformFrame,
+} from "@aphrody/shenron-koharu/protocol";
 import { Button } from "../../../components/button";
 
 const BRUSH_DIAMETER_STEP = 4;

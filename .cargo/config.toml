@@ -18,7 +18,7 @@ t = "nextest run --workspace"
 koharu = "clippy -p shenron-manga -p shenron-cli -p shenron-mcp --all-targets --features shenron-manga/koharu,shenron-cli/koharu,shenron-mcp/koharu -- -D warnings"
 koharu-test = "nextest run -p shenron-manga -p shenron-cli -p shenron-mcp --features shenron-manga/koharu,shenron-cli/koharu,shenron-mcp/koharu"
 # The WebGPU viewport of Shenron Studio on its browser target (built by
-# `bun --filter @shenron/koharu build:wasm`).
+# `bun --filter @aphrody/shenron-koharu build:wasm`).
 wasm = "check -p koharu-canvas --lib --target wasm32-unknown-unknown"
 # Rustdoc of the workspace crates, without their dependencies.
 docs = "doc --workspace --no-deps"

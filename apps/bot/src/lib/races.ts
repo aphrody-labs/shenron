@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Façade de compatibilité vers @shenron/config/races.
+ * Façade de compatibilité vers @aphrody/shenron-config/races.
  */
 export {
   RACE_IDS,
@@ -21,4 +21,4 @@ export {
   hasRegen,
   setRaceTuning,
   regenTuning,
-} from "@shenron/config/races";
+} from "@aphrody/shenron-config/races";

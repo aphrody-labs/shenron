@@ -1,6 +1,6 @@
 "use client";
 
-import { Cadenas, Telecharger } from "@shenron/ui/icones";
+import { Cadenas, Telecharger } from "@aphrody/shenron-ui/icones";
 import { useMe } from "@/lib/use-me";
 
 interface EpisodeDownloadProps {

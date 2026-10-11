@@ -15,7 +15,7 @@ import {
   Historique,
   LienExterne,
   Oeil,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RelationsPanel } from "@/components/admin/RelationsPanel";

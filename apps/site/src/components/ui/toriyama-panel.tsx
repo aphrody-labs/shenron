@@ -1,1 +1,1 @@
-export * from "@shenron/ui/toriyama-panel";
+export * from "@aphrody/shenron-ui/toriyama-panel";

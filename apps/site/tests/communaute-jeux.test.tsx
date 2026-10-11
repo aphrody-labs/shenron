@@ -148,7 +148,7 @@ describe("contrat du shell — jeux", () => {
     .filter((f) => /\.tsx?$/.test(f))
     .map((f) => [f, readFileSync(f, "utf8")] as const);
 
-  test("PageShell et PageHeader viennent de @shenron/ui", () => {
+  test("PageShell et PageHeader viennent de @aphrody/shenron-ui", () => {
     for (const [f, code] of sources) {
       expect(`${f}: ${code.includes("@/components/PageHeader")}`).toBe(`${f}: false`);
       expect(`${f}: ${code.includes("GamePageLayout")}`).toBe(`${f}: false`);

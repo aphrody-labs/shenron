@@ -47,7 +47,7 @@ const mcpBinary = join(
   "release",
   "shenron-mcp",
 );
-// Mémoire du chat du bot (`@shenron/native`) : `SHENRON_FFI_LIB=/srv/shenron/current/bin/libshenron_ffi.so`.
+// Mémoire du chat du bot (`@aphrody/shenron-native`) : `SHENRON_FFI_LIB=/srv/shenron/current/bin/libshenron_ffi.so`.
 const ffiLibrary = join(
   process.env.CARGO_TARGET_DIR?.trim() || join(repo, "target"),
   "release",

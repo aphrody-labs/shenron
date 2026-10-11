@@ -1,1 +1,1 @@
-export * from "@shenron/ui/accordion";
+export * from "@aphrody/shenron-ui/accordion";

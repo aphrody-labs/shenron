@@ -26,9 +26,9 @@ import {
   OeilBarre,
   Plus,
   Reinitialiser,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 import { assetUrl } from "@/lib/assets";
-import { DragonBallLoader } from "@shenron/ui/toriyama";
+import { DragonBallLoader } from "@aphrody/shenron-ui/toriyama";
 import { MarkdownField } from "@/components/admin/MarkdownField";
 import { ImageField } from "@/components/admin/ImageField";
 import {

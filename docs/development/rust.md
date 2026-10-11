@@ -15,7 +15,7 @@ commandes, dépendances Aphrody, règles WSL, conventions et ajout d'une crate. 
   `cargo` ; MSRV des crates : `rust-version = "1.97"`, édition 2024.
 - **Outils** (tous en Rust) : `cargo install --locked just cargo-nextest cargo-deny`, puis selon
   le besoin `sccache`, `cargo-xwin` (installeur Windows) ; `wasm-bindgen-cli` est installé à la
-  version de `Cargo.lock` par `bun --filter @shenron/koharu build:wasm`.
+  version de `Cargo.lock` par `bun --filter @aphrody/shenron-koharu build:wasm`.
 - **Bibliothèques système (Linux)** : celles du runtime Tauri 3 CEF (GTK 4, X11, xkbcommon), `libclang` (bindgen des crates `koharu-*-sys` d'Aphrody), fontconfig, D-Bus,
   OpenSSL, `cmake`, `pkg-config`. La liste exacte est l'étape « System libraries » de
   `.github/workflows/rust.yml`.
@@ -38,7 +38,7 @@ d'Aphrody : on les consomme, on ne les copie pas.
 | `shenron-manga`     | Adaptateur Shenron sur `koharu-library` : catalogue CDN, résultats de page, projection OCR                                | `koharu` (désactivée par défaut)          | natif                 |
 | `shenron-cli`       | Binaire `shenron` : santé, RAG, entraînement, pont OCR des databooks, API databooks, manga, configuration                 | `ocr` (défaut), `koharu`                  | natif                 |
 | `shenron-mcp`       | Serveur MCP (stdio, HTTP `--http --public`) : outils `dragonball.*` et `dbfr_*`                                           | `koharu`                                  | natif                 |
-| `shenron-ffi`       | ABI C `shenron_*` (`cdylib` + `rlib`) chargée par `@shenron/native` (`bun:ffi`)                                           | —                                         | natif (`.so`, `.dll`) |
+| `shenron-ffi`       | ABI C `shenron_*` (`cdylib` + `rlib`) chargée par `@aphrody/shenron-native` (`bun:ffi`)                                   | —                                         | natif (`.so`, `.dll`) |
 | `shenron-studio`    | Commandes Tauri du studio : santé, RAG, corpus, modèles locaux, moteur Koharu en processus                                | —                                         | natif                 |
 | `shenron-desktop`   | Application Tauri 3 : le site, l'éditeur et le studio dans une fenêtre, `shenron-server` en sidecar                       | `koharu` (défaut), `custom-protocol`      | Windows (NSIS), Linux |
 | `koharu-library`    | Moteur sans interface : projets, édition, traitement, rendu, outils d'agent ; binaire `koharu-sdk` (JSON Lines sur stdio) | —                                         | natif                 |
@@ -66,22 +66,22 @@ Les cibles natives sont Linux x64 et Windows x64 ; les binaires livrés (`shenro
 `just` est le point d'entrée unique (Bun et Rust) ; ses recettes appellent les scripts existants.
 Les alias Cargo vivent dans `.cargo/config.toml`, les scripts `*:rust` dans `package.json`.
 
-| Tâche                              | `just`                                               | Cargo                                        | `bun run`                              |
-| ---------------------------------- | ---------------------------------------------------- | -------------------------------------------- | -------------------------------------- |
-| Vérifier les types (toutes cibles) | `just rust-check`                                    | `cargo ck`                                   | `check:rust`                           |
-| Clippy, avertissements refusés     | `just rust-lint`                                     | `cargo lint`                                 | `clippy:rust`                          |
-| Tests (nextest)                    | `just rust-test [args]`                              | `cargo t`                                    | `test:rust`                            |
-| Format                             | `just rust-fmt`, `just rust-fmt-check`               | `cargo fmt --all [--check]`                  | `fmt:rust` (vérifie)                   |
-| Licences, avis, sources            | `just rust-deny`                                     | `cargo deny check`                           | `deny:rust`                            |
-| Feature `koharu` (clippy + tests)  | `just koharu`                                        | `cargo koharu`, `cargo koharu-test`          | —                                      |
-| `koharu-canvas` en wasm32          | `just wasm` (vérifie), `just wasm-build` (construit) | `cargo wasm`                                 | `--filter @shenron/koharu build:wasm`  |
-| Rustdoc du workspace               | `just rust-doc`                                      | `cargo docs`                                 | —                                      |
-| Protocole Specta                   | `just protocol`                                      | —                                            | `--filter @shenron/koharu protocol`    |
-| Serveur MCP, CLI                   | `just mcp [args]`, `just cli [args]`                 | `cargo run -p shenron-mcp`, `-p shenron-cli` | —                                      |
-| Installeur de bureau               | `just desktop [--target …]`                          | —                                            | `scripts/build/desktop.ts`             |
-| Bloc de dépendances généré         | `just deps`, `just deps-check`                       | —                                            | `scripts/build/rust/workspace-deps.ts` |
-| Manifestes alignés                 | `just align-check`                                   | —                                            | `scripts/build/rust/align-crates.ts`   |
-| Tout ce que fait la CI             | `just ci`                                            | —                                            | —                                      |
+| Tâche                              | `just`                                               | Cargo                                        | `bun run`                                     |
+| ---------------------------------- | ---------------------------------------------------- | -------------------------------------------- | --------------------------------------------- |
+| Vérifier les types (toutes cibles) | `just rust-check`                                    | `cargo ck`                                   | `check:rust`                                  |
+| Clippy, avertissements refusés     | `just rust-lint`                                     | `cargo lint`                                 | `clippy:rust`                                 |
+| Tests (nextest)                    | `just rust-test [args]`                              | `cargo t`                                    | `test:rust`                                   |
+| Format                             | `just rust-fmt`, `just rust-fmt-check`               | `cargo fmt --all [--check]`                  | `fmt:rust` (vérifie)                          |
+| Licences, avis, sources            | `just rust-deny`                                     | `cargo deny check`                           | `deny:rust`                                   |
+| Feature `koharu` (clippy + tests)  | `just koharu`                                        | `cargo koharu`, `cargo koharu-test`          | —                                             |
+| `koharu-canvas` en wasm32          | `just wasm` (vérifie), `just wasm-build` (construit) | `cargo wasm`                                 | `--filter @aphrody/shenron-koharu build:wasm` |
+| Rustdoc du workspace               | `just rust-doc`                                      | `cargo docs`                                 | —                                             |
+| Protocole Specta                   | `just protocol`                                      | —                                            | `--filter @aphrody/shenron-koharu protocol`   |
+| Serveur MCP, CLI                   | `just mcp [args]`, `just cli [args]`                 | `cargo run -p shenron-mcp`, `-p shenron-cli` | —                                             |
+| Installeur de bureau               | `just desktop [--target …]`                          | —                                            | `scripts/build/desktop.ts`                    |
+| Bloc de dépendances généré         | `just deps`, `just deps-check`                       | —                                            | `scripts/build/rust/workspace-deps.ts`        |
+| Manifestes alignés                 | `just align-check`                                   | —                                            | `scripts/build/rust/align-crates.ts`          |
+| Tout ce que fait la CI             | `just ci`                                            | —                                            | —                                             |
 
 `just check`, `just lint`, `just test` et `just format-check` enchaînent le côté Bun puis le côté
 Rust. Les alias Clippy finissent par `-- -D warnings` : pour cibler une crate, écrire la commande
@@ -160,7 +160,7 @@ Next exclues.
 - **Journalisation** : `tracing` dans les bibliothèques, `tracing-subscriber` dans les binaires ;
   pas de `println!` hors des sorties voulues d'une CLI. En MCP stdio, la sortie standard porte le
   protocole : les journaux vont sur la sortie d'erreur.
-- **FFI** : Bun n'appelle Rust que par `shenron-ffi` (`@shenron/native`, `bun:ffi`). Les symboles
+- **FFI** : Bun n'appelle Rust que par `shenron-ffi` (`@aphrody/shenron-native`, `bun:ffi`). Les symboles
   `shenron_*` sont `extern "C"` et `#[unsafe(no_mangle)]` ; une chaîne allouée par Rust se libère
   par `shenron_string_free` ; `shenron_abi_version` est vérifiée au chargement et change avec
   toute rupture d'ABI, des deux côtés. Bibliothèque : `SHENRON_FFI_LIB`, `native/` du paquet, ou
@@ -180,14 +180,14 @@ Next exclues.
    workspace.
 2. `Cargo.toml` : en-tête SPDX, `name`, `description`, `version.workspace = true` et les autres
    clés héritées, `[lints] workspace = true` (`bun scripts/build/rust/align-crates.ts --write
-shenron-<nom>` les pose), dépendances en `{ workspace = true }`.
+   shenron-<nom>` les pose), dépendances en `{ workspace = true }`.
 3. Dépendance nouvelle : présente dans le workspace d'Aphrody → `just deps` ; sinon, la déclarer
    à la main dans la section propre à Shenron de `[workspace.dependencies]`. Vérifier sa licence
    (`just rust-deny`).
 4. Si une autre crate en dépend, `just deps` l'ajoute au bloc généré (`path`).
 5. Tests : `just rust-test` la prend d'office (`cargo metadata`) ; tests lourds en `#[ignore]`.
 6. Exposition à Bun : par un symbole `shenron_*` de `shenron-ffi` (version d'ABI et binding de
-   `@shenron/native` mis à jour), jamais par une bibliothèque de plus.
+   `@aphrody/shenron-native` mis à jour), jamais par une bibliothèque de plus.
 7. Documentation : ajouter la crate à la carte ci-dessus, et à
    [`architecture/STACK.md`](../architecture/STACK.md) si le graphe change.
 8. Portes : `just rust-fmt-check rust-lint rust-test deps-check align-check rust-deny`.

@@ -49,7 +49,7 @@ import type {
   SourceReport,
   SourceStatus,
 } from "@/lib/ia-cockpit";
-import { Card, CardContent, CardHeader, CardTitle } from "@shenron/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@aphrody/shenron-ui/card";
 
 type IaDashboardData = IaCockpitReport & {
   canonConfig: CanonConfig;

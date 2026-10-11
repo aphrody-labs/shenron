@@ -11,7 +11,7 @@ import {
   FlecheGauche,
   Plus,
   Recherche,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 import { useState, type ReactNode, useEffect } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { SmartField } from "@/components/admin/SmartField";

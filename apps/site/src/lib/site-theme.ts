@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Client-safe palette editor metadata; shared values come from config. */
-import type { ThemeColorKey } from "@shenron/config/site-theme";
-export * from "@shenron/config/site-theme";
+import type { ThemeColorKey } from "@aphrody/shenron-config/site-theme";
+export * from "@aphrody/shenron-config/site-theme";
 
 export interface ThemeColorMeta {
   key: ThemeColorKey;

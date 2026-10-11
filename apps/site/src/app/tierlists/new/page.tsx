@@ -1,7 +1,7 @@
-import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PageHeader } from "@shenron/ui/layout/PageHeader";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import { TierlistEditor } from "@/components/tierlist/TierlistEditor";
 import {
   TIERLIST_TEMPLATES,

@@ -3,7 +3,7 @@
 import { useTranslation } from "react-i18next";
 
 import { NumberField, PreferenceRow, PreferenceSection } from "./PreferenceFields";
-import type { GenerationConfig } from "@shenron/koharu/protocol";
+import type { GenerationConfig } from "@aphrody/shenron-koharu/protocol";
 import { Switch } from "@aphrody/m3-primitives";
 
 export function GenerationPreferences({

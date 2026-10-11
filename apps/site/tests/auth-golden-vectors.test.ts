@@ -1,6 +1,6 @@
 /**
  * Façades auth du site (W3-AUTH-01, W3-AUTH-03) contre les vecteurs dorés des
- * tests de `@shenron/auth` (`packages/auth/test/tokens.test.ts`) : le cookie
+ * tests de `@aphrody/shenron-auth` (`packages/auth/test/tokens.test.ts`) : le cookie
  * `dbfr_admin` et le Bearer statique produits par le paquet sont acceptés par
  * `admin-token.ts` / `api-token.ts`, API publiques inchangées. S8 : un 401
  * anonyme de l'API agents n'écrit plus dans `agent_audit`.
@@ -15,7 +15,7 @@ import {
   setSystemTime,
   test,
 } from "bun:test";
-import { createAdminCookieCodec } from "@shenron/auth/tokens";
+import { createAdminCookieCodec } from "@aphrody/shenron-auth/tokens";
 
 // Vecteurs dorés du paquet (tokens.test.ts).
 const SECRET = "golden-better-auth-secret-0123456789abcdef";

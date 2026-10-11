@@ -4,7 +4,7 @@
 //!
 //! - `koharu-app`: Tauri commands (Specta), in the desktop process;
 //! - `koharu-sdk`: JSON Lines on stdio ([`dispatch`]), for `shenron-server` and Bun;
-//! - [`crate::Service`]: the headless method set of `@shenron/koharu/native`.
+//! - [`crate::Service`]: the headless method set of `@aphrody/shenron-koharu/native`.
 //!
 //! Hosts receive live values through [`Sink`]s (Tauri channels, JSON Lines events).
 

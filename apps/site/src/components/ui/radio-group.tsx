@@ -1,1 +1,1 @@
-export * from "@shenron/ui/radio-group";
+export * from "@aphrody/shenron-ui/radio-group";

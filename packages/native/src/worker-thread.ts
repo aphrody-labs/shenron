@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Body of a `@shenron/native/worker` thread. It opens its own `dlopen` handle on the library the
+ * Body of a `@aphrody/shenron-native/worker` thread. It opens its own `dlopen` handle on the library the
  * main thread already checked, then runs the blocking `shenron_*_job` exports one at a time.
  *
  * It runs from a `blob:` URL (`worker.ts` embeds this file as text), so it imports nothing at
@@ -108,4 +108,4 @@ addEventListener("message", (event: MessageEvent<WorkerRequest>) => {
 });
 
 /** TypeScript's view of this module; `worker.ts` imports its source text instead. */
-export default "@shenron/native/worker-thread";
+export default "@aphrody/shenron-native/worker-thread";

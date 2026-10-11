@@ -23,7 +23,7 @@ import { homedir } from "node:os";
 import { createInterface } from "node:readline";
 import { dirname, join } from "node:path";
 import { parseArgs } from "node:util";
-import type { AphrodyChatMessage } from "@shenron/pipeline/aphrody";
+import type { AphrodyChatMessage } from "@aphrody/shenron-pipeline/aphrody";
 
 export interface Triple {
   query: string;
@@ -473,7 +473,7 @@ async function main(): Promise<void> {
       teacher === "antigravity"
         ? (messages) => antigravityChat(messages, values.model)
         : await (async () => {
-            const { AphrodyComputeClient } = await import("@shenron/pipeline/aphrody");
+            const { AphrodyComputeClient } = await import("@aphrody/shenron-pipeline/aphrody");
             const client = new AphrodyComputeClient();
             return (messages) => client.chat(messages, values.model);
           })();

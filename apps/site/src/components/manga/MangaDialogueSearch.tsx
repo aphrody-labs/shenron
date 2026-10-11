@@ -1,9 +1,9 @@
 "use client";
 
-import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
+import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
 import { apiUrl } from "@/lib/config";
-import { DragonBallLoader } from "@shenron/ui/toriyama";
-import { DragonRadar } from "@shenron/ui/icones";
+import { DragonBallLoader } from "@aphrody/shenron-ui/toriyama";
+import { DragonRadar } from "@aphrody/shenron-ui/icones";
 import { useCallback, useId, useState } from "react";
 
 /**

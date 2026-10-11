@@ -20,7 +20,7 @@ import {
   WebFrameVector,
   WebFrameMatches,
 } from "./web";
-import { FAVORITES_BODY_MAX } from "@shenron/config/favorites";
+import { FAVORITES_BODY_MAX } from "@aphrody/shenron-config/favorites";
 import { FavoritesResponse, FavoritesSaveResponse } from "./favorites";
 import { AccountSessionResponse } from "./account";
 import {
@@ -125,7 +125,7 @@ export interface EndpointSpec {
   websocket?: boolean;
   /** Answered by an engine (chat backends, OCR): its failure is a 502 `upstream_unavailable`. */
   upstream?: boolean;
-  /** Served by the backend API server (`@shenron/api/server`); false for bot-owned historical routes. */
+  /** Served by the backend API server (`@aphrody/shenron-api/server`); false for bot-owned historical routes. */
   native?: boolean;
 }
 

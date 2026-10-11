@@ -10,11 +10,11 @@
  * l'intent privilégié GuildMembers. La détection de lore utilise des limites de mots (\b) pour
  * éviter les faux positifs ("cell" dans "excellent").
  */
-import { createResilientRedis } from "@shenron/db/redis";
-import { resolveRedisUrl } from "@shenron/config/services";
+import { createResilientRedis } from "@aphrody/shenron-db/redis";
+import { resolveRedisUrl } from "@aphrody/shenron-config/services";
 
 /**
- * Client Redis résilient (B8, `@shenron/db/redis`).
+ * Client Redis résilient (B8, `@aphrody/shenron-db/redis`).
  *
  * Le singleton `bun.redis` abandonne après `maxRetries` (10 par défaut) : une
  * fois ce quota épuisé, TOUTE commande ultérieure jette
@@ -27,7 +27,7 @@ import { resolveRedisUrl } from "@shenron/config/services";
  * un nouveau est rebâti (mêmes options : autoReconnect, maxRetries 20, file
  * hors-ligne), après un court backoff. La reconnexion n'a donc pas de plafond.
  * Même URL que le `RedisClient` natif sans argument : `REDIS_URL`, puis
- * `VALKEY_URL`, puis le défaut de `@shenron/config/services`.
+ * `VALKEY_URL`, puis le défaut de `@aphrody/shenron-config/services`.
  */
 const redis = createResilientRedis({
   url: resolveRedisUrl(process.env),

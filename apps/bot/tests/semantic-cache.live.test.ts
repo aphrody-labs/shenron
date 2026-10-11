@@ -10,12 +10,15 @@
  */
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { randomUUID } from "node:crypto";
-import { AphrodyComputeClient, type AphrodyRagHit } from "@shenron/pipeline/aphrody";
-import { buildGroundedContext, DEFAULT_CONTEXT_LIMITS } from "@shenron/pipeline/ai/generate";
-import { semanticCacheScope } from "@shenron/pipeline/ai/ports";
-import { PROMPT_VERSION } from "@shenron/pipeline/ai/prompts";
-import { createResilientRedis, type ResilientRedis } from "@shenron/db/redis";
-import { loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
+import { AphrodyComputeClient, type AphrodyRagHit } from "@aphrody/shenron-pipeline/aphrody";
+import {
+  buildGroundedContext,
+  DEFAULT_CONTEXT_LIMITS,
+} from "@aphrody/shenron-pipeline/ai/generate";
+import { semanticCacheScope } from "@aphrody/shenron-pipeline/ai/ports";
+import { PROMPT_VERSION } from "@aphrody/shenron-pipeline/ai/prompts";
+import { createResilientRedis, type ResilientRedis } from "@aphrody/shenron-db/redis";
+import { loadLiveRagEnv, requireLiveRag } from "@aphrody/shenron-pipeline/testing/live-rag";
 import {
   getSemanticCache,
   resilientSemanticCacheStore,

@@ -1,8 +1,8 @@
 import { describe, expect, it } from "bun:test";
 import { fileURLToPath } from "node:url";
 
-import { resources, supportedLanguages } from "@shenron/ui/koharu/lib/i18n";
-import { orderedLanguageChoices } from "@shenron/ui/koharu/lib/translation";
+import { resources, supportedLanguages } from "@aphrody/shenron-ui/koharu/lib/i18n";
+import { orderedLanguageChoices } from "@aphrody/shenron-ui/koharu/lib/translation";
 
 const localesDir = fileURLToPath(new URL("../../../src/koharu/locales/", import.meta.url));
 

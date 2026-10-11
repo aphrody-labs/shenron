@@ -37,7 +37,7 @@ jobs:
         run: bun ci
 
       - name: Generate entries barrel
-        run: bun --filter @shenron/bot gen:entries
+        run: bun --filter @aphrody/shenron-bot gen:entries
 
       - name: OpenAPI document is up to date
         run: bun packages/api/scripts/openapi.ts --check
@@ -58,7 +58,7 @@ jobs:
         run: bun scripts/audit/check-workspace-packages.ts --strict
 
       - name: Migrations (offline audit)
-        run: bun run --filter @shenron/db audit:migrations
+        run: bun run --filter @aphrody/shenron-db audit:migrations
 
       - name: Plugin offline snapshots are up to date
         run: bun scripts/plugin/build-references.ts --check

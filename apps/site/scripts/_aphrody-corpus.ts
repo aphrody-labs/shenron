@@ -13,10 +13,15 @@
 
 // ── Corpus ──────────────────────────────────────────────────────────────────
 
-// Registre et garde-fou détenus par `@shenron/config` (partagés avec le
+// Registre et garde-fou détenus par `@aphrody/shenron-config` (partagés avec le
 // pipeline RAG) ; réexportés ici pour préserver l'API du module.
-import type { Parseur } from "@shenron/config/aphrody-corpus";
-export { DOCUMENTS, REFUSÉ, type Document, type Parseur } from "@shenron/config/aphrody-corpus";
+import type { Parseur } from "@aphrody/shenron-config/aphrody-corpus";
+export {
+  DOCUMENTS,
+  REFUSÉ,
+  type Document,
+  type Parseur,
+} from "@aphrody/shenron-config/aphrody-corpus";
 
 // ── Utilitaires de texte ────────────────────────────────────────────────────
 

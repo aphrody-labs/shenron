@@ -25,7 +25,7 @@
 import type { ServerWebSocket, WebSocketHandler } from "bun";
 import { existsSync, statSync } from "node:fs";
 import { join, normalize, sep } from "node:path";
-import type { ChatSocketData } from "@shenron/api/server";
+import type { ChatSocketData } from "@aphrody/shenron-api/server";
 
 import type { LocalApi } from "./local-api";
 import { connectNextDev, frontWebSockets, type FrontSocketData } from "./next-dev";
@@ -33,7 +33,7 @@ import { connectNextDev, frontWebSockets, type FrontSocketData } from "./next-de
 /** Idle timeout of the front server, in seconds (Bun's maximum is 255). */
 export const FRONT_IDLE_TIMEOUT_S = 120;
 
-/** The part of the Shenron API host (`@shenron/api/host`) the front server uses. */
+/** The part of the Shenron API host (`@aphrody/shenron-api/host`) the front server uses. */
 export interface FrontHost {
   handles(pathname: string): boolean;
   fetch(request: Request, server: Bun.Server<ChatSocketData>): Promise<Response>;

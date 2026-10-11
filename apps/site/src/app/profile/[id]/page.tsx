@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { DomainBar } from "@/components/kit";
-import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { UserNav } from "@/components/user/UserNav";
 import { T } from "@/components/T";
 import { ContinueRail } from "@/components/history/ContinueRail";

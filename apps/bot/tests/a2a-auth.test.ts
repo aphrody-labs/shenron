@@ -5,7 +5,7 @@ import {
   A2A_OPEN_WARNING,
   A2A_TOKEN_ENV,
   resetA2AOpenWarning,
-} from "@shenron/auth/a2a";
+} from "@aphrody/shenron-auth/a2a";
 import { A2A_WRITE_METHODS, a2aWriteGuard } from "../src/api/request-guards";
 import { a2aJsonRpc } from "../src/api/server";
 

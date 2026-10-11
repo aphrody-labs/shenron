@@ -4,10 +4,10 @@
 //! [`SYMBOLS`] lists each `shenron_*` export with its arguments and return value as
 //! [`FfiKind`]s. The table macro checks every entry against the real function at compile time
 //! (a `const` coercion to the declared `unsafe extern "C" fn` type), and `tests/typescript.rs`
-//! generates the `bun:ffi` `dlopen` table of `@shenron/native` from it: a signature drift fails
+//! generates the `bun:ffi` `dlopen` table of `@aphrody/shenron-native` from it: a signature drift fails
 //! the build or the generation check, never the process.
 
-/// ABI revision of the `shenron_*` symbol set (`SHENRON_FFI_ABI` in `@shenron/native`).
+/// ABI revision of the `shenron_*` symbol set (`SHENRON_FFI_ABI` in `@aphrody/shenron-native`).
 ///
 /// - 1: commands, RAG search, stats and chunking, local corpus, persona, auth presence.
 /// - 2: adds cancellable jobs (`shenron_job_new`, `shenron_cancel`, `shenron_job_release`,

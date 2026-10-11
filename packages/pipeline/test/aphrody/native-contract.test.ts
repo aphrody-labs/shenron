@@ -15,7 +15,7 @@ test(
     import assert from "node:assert/strict";
     let status = {configured: true, admin_credentials_present: false};
     let args;
-    mock.module("@shenron/native/shenron", () => ({
+    mock.module("@aphrody/shenron-native/shenron", () => ({
       EXPECTED_SHENRON_ABI_VERSION: 2,
       shenronAbiVersion: () => 2,
       shenronVersion: () => "fixture",
@@ -24,7 +24,7 @@ test(
       shenronAuthStatus: () => ({code: 0, stdout: JSON.stringify(status), stderr: ""}),
     }));
     let signal;
-    mock.module("@shenron/native/worker", () => ({
+    mock.module("@aphrody/shenron-native/worker", () => ({
       shenronWorkerPool: () => ({
         runCaptured: async (received, options) => {
           args = received;

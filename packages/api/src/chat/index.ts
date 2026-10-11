@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-/** `@shenron/api/chat` — the unified chat engine and its backends. Runtime class: `bun`. */
+/** `@aphrody/shenron-api/chat` — the unified chat engine and its backends. Runtime class: `bun`. */
 export * from "./engine";
 export * from "./home";
 export * from "./llm";

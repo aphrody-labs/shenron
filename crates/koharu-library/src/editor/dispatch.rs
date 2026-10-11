@@ -2,7 +2,7 @@
 //! The editor's commands by name, for hosts without Tauri (`koharu-sdk`, then the
 //! `/api/local/koharu` bridge of `shenron-server`).
 //!
-//! Names, argument keys (camelCase, as the generated `@shenron/koharu/protocol` sends them)
+//! Names, argument keys (camelCase, as the generated `@aphrody/shenron-koharu/protocol` sends them)
 //! and results are those of the `koharu-app` Tauri commands; a test there keeps both lists
 //! equal. Channel arguments are IPC tokens (`__CHANNEL__:<id>`) the [`Bridge`] turns into
 //! [`Sink`]s; byte results (canvas packets, thumbnails, font samples) are [`Reply::Bytes`].

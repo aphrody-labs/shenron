@@ -19,8 +19,12 @@
 const KEY = "dbfr_favorites_v1";
 export const FAVORITES_EVENT = "dbfr:favorites";
 
-import { sanitizeFavorites, type Favorite, type FavoriteKind } from "@shenron/config/favorites";
-export type { Favorite, FavoriteKind } from "@shenron/config/favorites";
+import {
+  sanitizeFavorites,
+  type Favorite,
+  type FavoriteKind,
+} from "@aphrody/shenron-config/favorites";
+export type { Favorite, FavoriteKind } from "@aphrody/shenron-config/favorites";
 
 const favKey = (kind: FavoriteKind, id: string) => `${kind}:${id}`;
 

@@ -13,7 +13,7 @@
  */
 import { createHash, timingSafeEqual } from "node:crypto";
 
-/** Structural environment source (same shape as `@shenron/config/env` `EnvSource`). */
+/** Structural environment source (same shape as `@aphrody/shenron-config/env` `EnvSource`). */
 export type A2AEnvSource = Readonly<Record<string, string | undefined>>;
 
 export const A2A_ENFORCE_ENV = "SHENRON_A2A_ENFORCE";

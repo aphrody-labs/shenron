@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import type { ReactNode } from "react";
-import { PageShell, Stack, type ShellWidth } from "@shenron/ui/layout/PageShell";
-import { PageHeader } from "@shenron/ui/layout/PageHeader";
+import { PageShell, Stack, type ShellWidth } from "@aphrody/shenron-ui/layout/PageShell";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import { Breadcrumbs, type Crumb } from "@/components/Breadcrumbs";
 import { DomainBar } from "@/components/kit/DomainBar";
 import { WikiCategoryNav } from "@/components/wiki/WikiCategoryNav";
@@ -10,7 +10,7 @@ import { WikiCategoryNav } from "@/components/wiki/WikiCategoryNav";
  * Coque des pages du wiki — ce qui est propre au wiki, posé sur `PageShell`.
  *
  * La largeur, la gouttière et le rythme vertical appartiennent à `PageShell`
- * (`@shenron/ui/layout`) ; l'en-tête global, la navigation, le fil d'Ariane
+ * (`@aphrody/shenron-ui/layout`) ; l'en-tête global, la navigation, le fil d'Ariane
  * visible et le pied de page appartiennent au shell du layout racine. Il ne
  * reste ici que ce que le shell ne peut pas savoir :
  *

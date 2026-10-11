@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import type postgres from "postgres";
-import { loadDatabaseUrl } from "@shenron/db/env";
+import { loadDatabaseUrl } from "@aphrody/shenron-db/env";
 
 /**
  * URL PostgreSQL : `DATABASE_URL` de l'environnement, puis `apps/site/.env`,

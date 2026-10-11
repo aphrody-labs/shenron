@@ -1,9 +1,10 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # Shenron dans le serveur Discord Aphrody
 
 Le serveur cible est `1554189180030947338`, son salon général textuel
 `1554189195201740803`. Le bot Shenron est `1497194276025663680`.
-Ces identifiants sont centralisés dans `@shenron/config/discord-ai`.
+Ces identifiants sont centralisés dans `@aphrody/shenron-config/discord-ai`.
 
 Dans général, une mention du bot ou `Shenron, <question>` utilise le moteur de
 chat des DM : recherche RAG, modèle Aphrody configuré, file bornée, quotas,

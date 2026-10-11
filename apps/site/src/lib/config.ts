@@ -27,12 +27,12 @@ import {
   resolveApiUrl,
   resolveAssetsUrl,
   resolveSiteUrl,
-} from "@shenron/config/public-urls";
-import { resolveBotApiServerUrl } from "@shenron/config/services";
+} from "@aphrody/shenron-config/public-urls";
+import { resolveBotApiServerUrl } from "@aphrody/shenron-config/services";
 
 /**
  * Accès littéraux (Next n'inline `NEXT_PUBLIC_*` que sous cette forme) ; la
- * précédence et les noms historiques vivent dans `@shenron/config/public-urls`.
+ * précédence et les noms historiques vivent dans `@aphrody/shenron-config/public-urls`.
  */
 const PUBLIC_ENV = {
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
@@ -98,7 +98,7 @@ export function apiUrl(path = ""): string {
  * Base de l'API du bot pour les appels **serveur** (client admin
  * `@/lib/bot-admin`, cockpit IA `@/lib/ia-cockpit-server`). Sans slash final.
  * `BOT_INTERNAL_URL` d'abord, sinon la même résolution que {@link API_URL} :
- * `resolveBotApiServerUrl` de `@shenron/config/services`.
+ * `resolveBotApiServerUrl` de `@aphrody/shenron-config/services`.
  */
 export function botApiBaseUrl(env: Record<string, string | undefined> = process.env): string {
   return resolveBotApiServerUrl(env);

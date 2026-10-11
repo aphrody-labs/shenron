@@ -21,8 +21,8 @@ import type { Database } from "bun:sqlite";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import * as sqliteVec from "sqlite-vec";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
-import { aphrodyNative, isNativeAvailable } from "@shenron/pipeline/aphrody/native";
+import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
+import { aphrodyNative, isNativeAvailable } from "@aphrody/shenron-pipeline/aphrody/native";
 import {
   DEFAULT_AI_TIMEOUTS,
   type EmbeddingSpace,
@@ -31,8 +31,8 @@ import {
   requireEmbeddingSpace,
   resolveRerank,
   SHENRON_RAG_INDEX,
-} from "@shenron/pipeline/ai/config";
-import { e5DirectEmbeddingModel, embedQuery } from "@shenron/pipeline/ai/embeddings";
+} from "@aphrody/shenron-pipeline/ai/config";
+import { e5DirectEmbeddingModel, embedQuery } from "@aphrody/shenron-pipeline/ai/embeddings";
 
 /** Modèle d'embedding de requête (type du fournisseur, sans dépendance directe au SDK). */
 export type QueryEmbeddingModel = ReturnType<typeof e5DirectEmbeddingModel>;
@@ -51,7 +51,7 @@ let queryEmbeddingState: QueryEmbedding | undefined;
  * (B3) : une mauvaise URL ne fait plus planter l'import du module, la recherche
  * retombe simplement en lexical. Transport unique (D10) : Aphrody
  * `POST /api/v1/shenron/embed`, adresse et jeton lus par le résolveur unique
- * `@shenron/pipeline/ai/config` (`APHRODY_AI_HTTP_URL` / `APHRODY_AI_HTTP_TOKEN`
+ * `@aphrody/shenron-pipeline/ai/config` (`APHRODY_AI_HTTP_URL` / `APHRODY_AI_HTTP_TOKEN`
  * ou leurs alias ; aucune adresse par défaut : sans configuration, la recherche
  * reste lexicale). `maxRetries: 0`, délai `EMBED_TIMEOUT_MS`. Ne jette jamais.
  */
@@ -86,7 +86,7 @@ export async function embedQueryVector(text: string, timeoutMs?: number): Promis
 const RERANK_TIMEOUT_MS = Number(process.env.RERANK_TIMEOUT_MS ?? 6000);
 
 /**
- * Reranker optionnel, résolu par `@shenron/pipeline/ai/config` : `APHRODY_AI_RERANK_BASE_URL`
+ * Reranker optionnel, résolu par `@aphrody/shenron-pipeline/ai/config` : `APHRODY_AI_RERANK_BASE_URL`
  * (dialecte llama-server), puis `RERANK_URL` (sidecar Shenron) et
  * `APHRODY_RAG_RERANK_ENDPOINT`. Une valeur invalide désactive le rerank avec
  * un avertissement nommant la variable, jamais sa valeur.
@@ -1368,7 +1368,7 @@ export function logRagHealth(db: Database): void {
     }
     if (chunks === 0) {
       console.warn(
-        "[RAG] rag_chunks vide → recherche indisponible. Lancer `bun --filter @shenron/bot run rag:build`.",
+        "[RAG] rag_chunks vide → recherche indisponible. Lancer `bun --filter @aphrody/shenron-bot run rag:build`.",
       );
     } else if (vec <= 0) {
       console.warn(

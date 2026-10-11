@@ -231,7 +231,7 @@ async function gates(config: RemoteDevConfig, rust: boolean): Promise<number> {
 }
 
 async function dev(config: RemoteDevConfig): Promise<number> {
-  const site = `PORT=${config.remoteDevPort} HOSTNAME=127.0.0.1 bun --filter @shenron/site dev`;
+  const site = `PORT=${config.remoteDevPort} HOSTNAME=127.0.0.1 bun --filter @aphrody/shenron-site dev`;
   const start = [
     `tmux kill-session -t ${config.devSession} 2>/dev/null || true`,
     `tmux new-session -d -s ${config.devSession} ${shellQuote(remoteScript(config, site))}`,

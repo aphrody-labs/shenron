@@ -12,7 +12,7 @@ import { getSessionUser } from "@/lib/session";
 import { env } from "@/lib/env";
 import { API_URL as API } from "@/lib/config";
 import { NextRequest, NextResponse } from "next/server";
-import { signActingUser } from "@shenron/auth/acting-user";
+import { signActingUser } from "@aphrody/shenron-auth/acting-user";
 
 const USER_SECRET = env.SHENRON_USER_SECRET ?? "";
 
@@ -45,7 +45,7 @@ async function proxy(req: NextRequest, ctx: { params: Promise<{ path: string[] }
       : await req.text().catch(() => undefined);
 
   // En-têtes `x-acting-user` / `x-acting-ts` / `x-acting-sig` (ordre et octets
-  // inchangés), signés par le module partagé `@shenron/auth/acting-user`.
+  // inchangés), signés par le module partagé `@aphrody/shenron-auth/acting-user`.
   const acting = signActingUser({ secret: USER_SECRET, discordId: me.discordId });
   const res = await fetch(url, {
     method: req.method,

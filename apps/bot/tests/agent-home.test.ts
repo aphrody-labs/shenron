@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import "./setup";
 import "reflect-metadata";
-import { DirAgentHomeStore, PgAgentHomeStore } from "@shenron/db/agent-homes";
+import { DirAgentHomeStore, PgAgentHomeStore } from "@aphrody/shenron-db/agent-homes";
 import { PgService } from "~/db/pg";
 import { AgentHomeService, botAgentHomeStore } from "~/lib/agent-home";
 

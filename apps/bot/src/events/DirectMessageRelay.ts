@@ -1,4 +1,4 @@
-import { resolveSiteUrl } from "@shenron/config/public-urls";
+import { resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import { injectable, inject } from "tsyringe";
 import { NotBot } from "@aphrody/discord-kit";
 import { Bot, Discord, Guard, On, type ArgsOf } from "discordx";
@@ -7,10 +7,10 @@ import { DatabaseService } from "~/db/index";
 import { dmContacts, dmMessages } from "~/db/schema";
 import { logger } from "~/lib/logger";
 import { env, isBotOwner } from "~/lib/env";
-import { resolveDmChat } from "@shenron/config/dm-chat";
-import { homeUserNote, agentHomeFromSnapshot } from "@shenron/api/chat";
-import type { AgentHomeSnapshot } from "@shenron/db/agent-homes";
-import { resolveAnswerLang, stripCitationMarkers } from "@shenron/pipeline/ai/grounding";
+import { resolveDmChat } from "@aphrody/shenron-config/dm-chat";
+import { homeUserNote, agentHomeFromSnapshot } from "@aphrody/shenron-api/chat";
+import type { AgentHomeSnapshot } from "@aphrody/shenron-db/agent-homes";
+import { resolveAnswerLang, stripCitationMarkers } from "@aphrody/shenron-pipeline/ai/grounding";
 import { boundReply, DmChatGate, DmTimeoutError, keepTyping, withTimeout } from "~/lib/dm-chat";
 import { type DmMemory, nativeDmMemory } from "~/lib/dm-memory";
 import { t } from "~/lib/i18n";
@@ -19,7 +19,7 @@ import { hybridSearch } from "~/lib/rag";
 import { StatsService } from "~/services/StatsService";
 import { DatabooksService, type Databook, type PlateHit } from "~/services/DatabooksService";
 import { AgentHomeService } from "~/lib/agent-home";
-import { guildAiPrompt } from "@shenron/config/discord-ai";
+import { guildAiPrompt } from "@aphrody/shenron-config/discord-ai";
 
 /** IDs des Owners / Fondateurs (Omar, Yoyo / Shawn, trape17) */
 const OWNER_DISCORD_IDS = new Set([
@@ -60,7 +60,7 @@ const STATUS_TRIGGERS = [
 /**
  * Relais de messages privés — réception, automatisation pour les owners et chat avec le modèle
  * pour tout membre de la guilde (persona Shenron, agent home et mémoire de l'utilisateur),
- * derrière une file bornée et des quotas par utilisateur (`@shenron/config/dm-chat`).
+ * derrière une file bornée et des quotas par utilisateur (`@aphrody/shenron-config/dm-chat`).
  *
  * Shenron sert de canal direct entre les porteurs du projet et l'infrastructure :
  * - Les owners obtiennent des rapports de diagnostic temps réel (VPS, services, OCR, PostgreSQL).

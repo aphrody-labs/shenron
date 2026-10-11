@@ -6,7 +6,7 @@ import {
   IllustrationAbsente,
   OeilBarre,
   Presse,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 import { StatTiles } from "@/components/kit";
 import { listIncompleteContent, type IncompleteGroup, type IncompleteRow } from "@/lib/wiki-admin";
 import { assetUrl } from "@/lib/db-universe";

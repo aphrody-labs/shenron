@@ -1,6 +1,6 @@
 /**
  * Ports implemented by the applications (runtime class `pure`, types only).
- * `@shenron/auth` never imports `@shenron/db`: the site and the bot provide
+ * `@aphrody/shenron-auth` never imports `@aphrody/shenron-db`: the site and the bot provide
  * these over their own Drizzle instance.
  */
 

@@ -25,7 +25,7 @@ import type {
   IaObjective,
   AutoEvalMetric,
 } from "./types";
-import { resolveBotApiInternalUrl, resolveSiteInternalUrl } from "@shenron/config/services";
+import { resolveBotApiInternalUrl, resolveSiteInternalUrl } from "@aphrody/shenron-config/services";
 
 /** Environment of the process, read at call time; none in a webview. */
 function processEnv(): Record<string, string | undefined> {

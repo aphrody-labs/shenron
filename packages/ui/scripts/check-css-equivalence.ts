@@ -1,7 +1,7 @@
 /**
  * Proves that the site stylesheet compiles to the same CSS before and after a
  * change of `apps/site/src/app/globals.css` / `packages/ui/src/styles.css`
- * (first use: moving the token layer into `@shenron/ui/styles.css`).
+ * (first use: moving the token layer into `@aphrody/shenron-ui/styles.css`).
  *
  *   bun packages/ui/scripts/check-css-equivalence.ts [--ref <rev>] [--keep <dir>] [--limit <n>]
  *
@@ -12,9 +12,9 @@
  * own `bun` process: the plugin caches compilers per input file.
  *
  * - Baseline: `git show <rev>:apps/site/src/app/globals.css` (default `HEAD`).
- *   When that revision already imports `@shenron/ui/styles.css`, the package
+ *   When that revision already imports `@aphrody/shenron-ui/styles.css`, the package
  *   stylesheet of the same revision is inlined at the import.
- * - Candidate: the working-tree `globals.css`; its `@import "@shenron/ui/styles.css"`
+ * - Candidate: the working-tree `globals.css`; its `@import "@aphrody/shenron-ui/styles.css"`
  *   resolves through the workspace link and the package `exports`.
  *
  * Verdict, exit 1 on any finding:
@@ -37,7 +37,7 @@ const SITE_DIR = join(REPO_ROOT, "apps", "site");
 const GLOBALS_PATH = join(SITE_DIR, "src", "app", "globals.css");
 const GLOBALS_GIT_PATH = "apps/site/src/app/globals.css";
 const PACKAGE_STYLES_GIT_PATH = "packages/ui/src/styles.css";
-const PACKAGE_IMPORT = /@import\s+["']@shenron\/ui\/styles\.css["']\s*;/;
+const PACKAGE_IMPORT = /@import\s+["']@aphrody\/shenron-ui\/styles\.css["']\s*;/;
 
 // ─── Compilation ────────────────────────────────────────────────────────────
 
@@ -485,7 +485,7 @@ async function main(argv: string[]): Promise<number> {
       findings.structure.length;
 
     console.log(
-      `css-equivalence: baseline ${rev}:${GLOBALS_GIT_PATH}${baseline.inlinedPackage ? " (+ package stylesheet inlined)" : ""} vs working tree ${relative(REPO_ROOT, GLOBALS_PATH).replaceAll("\\", "/")} + @shenron/ui/styles.css`,
+      `css-equivalence: baseline ${rev}:${GLOBALS_GIT_PATH}${baseline.inlinedPackage ? " (+ package stylesheet inlined)" : ""} vs working tree ${relative(REPO_ROOT, GLOBALS_PATH).replaceAll("\\", "/")} + @aphrody/shenron-ui/styles.css`,
     );
     console.log(
       `css-equivalence: declarations ${base.declarations} → ${next.declarations}; selector+property pairs ${base.winners.size} → ${next.winners.size}; layers ${base.layerOrder.length}; atomic at-rules ${base.atomic.size} → ${next.atomic.size}`,

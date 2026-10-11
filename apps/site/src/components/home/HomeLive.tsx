@@ -12,7 +12,7 @@
  */
 import { createContext, useContext, type ReactNode } from "react";
 import Link from "next/link";
-import { ExternalLink } from "@shenron/ui/navigation/external";
+import { ExternalLink } from "@aphrody/shenron-ui/navigation/external";
 import { Avatar } from "@/components/Avatar";
 import { useT } from "@/components/T";
 import { assetUrl } from "@/lib/assets";

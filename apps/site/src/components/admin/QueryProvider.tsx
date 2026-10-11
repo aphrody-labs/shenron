@@ -1,1 +1,1 @@
-export * from "@shenron/ui/admin/QueryProvider";
+export * from "@aphrody/shenron-ui/admin/QueryProvider";

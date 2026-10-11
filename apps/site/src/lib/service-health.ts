@@ -1,4 +1,4 @@
-import { isDatabaseConfigured, type EnvSource } from "@shenron/db/config";
+import { isDatabaseConfigured, type EnvSource } from "@aphrody/shenron-db/config";
 
 export interface ServiceHealth {
   status: "ok" | "degraded";
@@ -88,7 +88,7 @@ export async function probeRag(
         (async (q, limit) => {
           const [{ searchAphrodyRag }, { AphrodyComputeClient }] = await Promise.all([
             import("@/lib/site-rag"),
-            import("@shenron/pipeline/aphrody/compute"),
+            import("@aphrody/shenron-pipeline/aphrody/compute"),
           ]);
           const fetcher = ((input: RequestInfo | URL, init?: RequestInit) =>
             fetch(input, {

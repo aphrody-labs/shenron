@@ -18,7 +18,7 @@
  */
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Croix } from "@shenron/ui/icones";
+import { Croix } from "@aphrody/shenron-ui/icones";
 import { WikiImg } from "@/components/wiki/WikiImg";
 import { forgetHistory, readHistory, HISTORY_EVENT, type HistoryEntry } from "@/lib/history";
 import { reprises } from "@/lib/historique-local";

@@ -4,7 +4,7 @@
  * WebSocket): no database, engine, network or OCR binary is ever reached.
  */
 import { expect } from "bun:test";
-import type { ConversationStore } from "@shenron/db/conversations/types";
+import type { ConversationStore } from "@aphrody/shenron-db/conversations/types";
 import {
   ErrorEnvelope,
   type ApiErrorCode,
@@ -338,7 +338,7 @@ export const VFS_INFO: VfsInfoResponse = {
   wiki: 2,
 };
 
-/** Vfs error carrying the `code` of `@shenron/db/vfs` errors. */
+/** Vfs error carrying the `code` of `@aphrody/shenron-db/vfs` errors. */
 function vfsError(code: string, message: string): Error {
   return Object.assign(new Error(message), { code });
 }

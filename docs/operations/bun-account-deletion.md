@@ -5,7 +5,7 @@
 L'hôte Bun active `/api/auth/delete-user` avec les contrôles de session fraîche
 de Better Auth 1.7.6. Il capture l'identité Discord et le profil métier avant
 la suppression des tables d'authentification, puis appelle la purge partagée
-de `@shenron/db/repos/accounts`. Le site Next utilise la même purge : son
+de `@aphrody/shenron-db/repos/accounts`. Le site Next utilise la même purge : son
 implémentation DB locale a été retirée.
 
 L'identité temporaire est attachée à la requête, pas à un identifiant global.

@@ -20,7 +20,7 @@
  * par le script `scripts/audit-traductions-databooks.ts` ; `suspect` reste un
  * signalement à relire.
  */
-import { foldKey } from "@shenron/config/slug";
+import { foldKey } from "@aphrody/shenron-config/slug";
 import { proportionJaponais, katakanaVersHiragana } from "./ja/normalisation";
 
 export interface Signal {

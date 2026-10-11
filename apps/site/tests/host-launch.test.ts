@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterAll, expect, mock, test } from "bun:test";
-import { DEFAULT_LAUNCH_CONFIG, resolveLaunchConfig } from "@shenron/config/wiki-launch-config";
+import {
+  DEFAULT_LAUNCH_CONFIG,
+  resolveLaunchConfig,
+} from "@aphrody/shenron-config/wiki-launch-config";
 
 mock.module("server-only", () => ({}));
 mock.module("@/lib/db", () => {

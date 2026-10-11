@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DragonBall } from "@shenron/ui/toriyama";
+import { DragonBall } from "@aphrody/shenron-ui/toriyama";
 
 export default function NotFound() {
   return (

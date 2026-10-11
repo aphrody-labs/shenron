@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import type { BetterAuthOptions } from "better-auth";
-import type { AccountProfile } from "@shenron/db/repos/accounts";
+import type { AccountProfile } from "@aphrody/shenron-db/repos/accounts";
 
 export interface AccountProfileRepository {
   synchronize(authUserId: string): Promise<AccountProfile | null>;

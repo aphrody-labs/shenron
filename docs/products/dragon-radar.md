@@ -2,7 +2,7 @@
 
 # Dragon Radar : recherche partagée et reprise
 
-La vue de recherche appartient à `@shenron/ui/public/DragonRadarSearch`. Elle est
+La vue de recherche appartient à `@aphrody/shenron-ui/public/DragonRadarSearch`. Elle est
 issue du composant du site présent dans `691e28e` : écran radar, icônes, suggestions,
 filtres, cartes et destinations existantes sont conservés. Le site fournit ses
 liens Next, sa garde de navigation et les URL des assets. La vue et son comportement

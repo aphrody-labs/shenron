@@ -2,9 +2,9 @@
 import { afterAll, expect, test } from "bun:test";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { createShenronApiClient } from "@shenron/api/client";
-import { createRecordingFetch } from "@shenron/config/testing";
-import { StatTiles } from "@shenron/ui/public/StatTiles";
+import { createShenronApiClient } from "@aphrody/shenron-api/client";
+import { createRecordingFetch } from "@aphrody/shenron-config/testing";
+import { StatTiles } from "@aphrody/shenron-ui/public/StatTiles";
 import { createFixture } from "../fixture";
 
 const fixture = createFixture();

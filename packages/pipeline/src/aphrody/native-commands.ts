@@ -49,7 +49,7 @@ export interface AphrodyGitInspectResult {
 
 const nativeExecutor: NativeCommandExecutor = async (args, controls) => {
   // Server exports remain importable by Next. Only execution loads the Bun ABI.
-  const native = await import("@shenron/native/web/pipeline");
+  const native = await import("@aphrody/shenron-native/web/pipeline");
   if (args[0] === "web" && ["dragon-ball", "crawl-index"].includes(args[1] ?? "")) {
     const result = await native.webPipeline(args.slice(1), controls);
     return { code: 0, stdout: JSON.stringify(result), stderr: "" };

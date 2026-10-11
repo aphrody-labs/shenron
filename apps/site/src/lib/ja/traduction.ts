@@ -16,9 +16,9 @@
  * le prince des **Saiyans** », « **Piccolo** et **Krilin** protègent la Terre ».
  *
  * Les règles (masquage le plus long d'abord, frontières de mot, jetons `Zeta001`, restauration
- * tolérante) appartiennent à `@shenron/lexicon`, identique au crate Rust `shenron-lexicon`
+ * tolérante) appartiennent à `@aphrody/shenron-lexicon`, identique au crate Rust `shenron-lexicon`
  * (fixtures partagées `data/lexicon/fixtures/`). Ce module garde les noms historiques de ses
- * appelants ; le code nouveau importe `@shenron/lexicon` directement.
+ * appelants ; le code nouveau importe `@aphrody/shenron-lexicon` directement.
  *
  * Ce module ne charge aucun modèle : il prépare le texte et recompose la
  * sortie. L'inférence vit dans `scripts/ja-traduire.ts`, parce qu'elle demande
@@ -34,7 +34,7 @@ import {
   restoreTokens,
   wordEdges,
   type MaskEntry,
-} from "@shenron/lexicon";
+} from "@aphrody/shenron-lexicon";
 import type { TermeLexique } from "./anomalies";
 
 /**

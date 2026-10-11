@@ -89,7 +89,7 @@ describe("Bun runtime", () => {
 
   test("a Bun outside the range is refused", () => {
     expect(() => checkBunRuntime("1.0.0", ">=1.4.2")).toThrow(
-      "@shenron/native requires Bun >=1.4.2; this process runs Bun 1.0.0",
+      "@aphrody/shenron-native requires Bun >=1.4.2; this process runs Bun 1.0.0",
     );
     expect(() => checkBunRuntime("1.4.2", ">=1.4.2")).not.toThrow();
   });
@@ -104,7 +104,9 @@ describe("Bun runtime", () => {
 
   test("invalid runtime versions cannot satisfy the minimum", () => {
     for (const version of ["", "garbage", "v1.4.4", "1.4", "01.4.4", "1.4.4-debug..", "1.4.4-01"]) {
-      expect(() => checkBunRuntime(version, ">=1.4.3")).toThrow("@shenron/native requires Bun");
+      expect(() => checkBunRuntime(version, ">=1.4.3")).toThrow(
+        "@aphrody/shenron-native requires Bun",
+      );
     }
     expect(() => checkBunRuntime("1.4.4-debug+aphrody", ">=1.4.3")).not.toThrow();
   });
@@ -118,7 +120,7 @@ describe("generated table", () => {
   });
 
   test("keeps every ABI 1 symbol with its ABI 1 signature", () => {
-    // The hand-written table of @shenron/native for ABI 1, frozen.
+    // The hand-written table of @aphrody/shenron-native for ABI 1, frozen.
     const abi1 = {
       shenron_abi_version: { args: [], returns: FFIType.u32 },
       shenron_version: { args: [], returns: FFIType.cstring },

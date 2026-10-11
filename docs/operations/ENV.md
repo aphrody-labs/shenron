@@ -9,13 +9,13 @@ Règles :
 - **Aucune valeur de production n'est écrite dans ce dépôt.** Les adresses, ports et secrets
   de production viennent de l'environnement fourni par `aphrody-infra`
   (catalogue de services et fichiers d'environnement de l'opérateur).
-- Les défauts codés dans `@shenron/config` ne servent qu'à garder un processus utilisable sans
+- Les défauts codés dans `@aphrody/shenron-config` ne servent qu'à garder un processus utilisable sans
   environnement (poste de dev, tests). C'est le seul endroit autorisé à les écrire.
 - Les `.env` ne sont jamais affichés ni commités. Poste de développement : [`DEV-LOCAL.md`](DEV-LOCAL.md).
 - Nom canonique d'abord ; les noms historiques restent acceptés en lecture. Quand plusieurs
   noms sont posés, la première valeur non vide dans l'ordre de lecture l'emporte.
 
-## Origines publiques — `@shenron/config/public-urls`
+## Origines publiques — `@aphrody/shenron-config/public-urls`
 
 Résolveurs `resolveSiteUrl`, `resolveApiUrl`, `resolveAssetsUrl`, table `PUBLIC_URL_ENV`.
 Le miroir `NEXT_PUBLIC_*` est lu en premier : c'est la valeur que Next inscrit dans les bundles
@@ -31,7 +31,7 @@ client, serveur et client doivent donc résoudre la même origine.
 (assets, CDN miroir, médias Discord) ; `assetMirrorUrl` bascule une URL d'asset entre le CDN et
 l'API, qui servent le même arbre `/assets/**`.
 
-## Services internes — `@shenron/config/services`
+## Services internes — `@aphrody/shenron-config/services`
 
 Résolveurs `resolveRedisUrl`, `resolveSiteInternalUrl`, `resolveBotApiInternalUrl`,
 `resolveBotApiServerUrl`, `resolveRelectureOcrUrl`, table
@@ -50,7 +50,7 @@ Le rate limit d'authentification du site (`apps/site/src/lib/auth-rate-limit.ts`
 `REDIS_URL` s'il est posé et se replie sur un stockage en mémoire sinon ; il n'a pas d'URL par
 défaut.
 
-## Alias de secrets et de chemins — `@shenron/config/env`, `@shenron/config/paths`
+## Alias de secrets et de chemins — `@aphrody/shenron-config/env`, `@aphrody/shenron-config/paths`
 
 `ENV_ALIASES` : paires qui doivent porter la même valeur quand les deux sont posées
 (`checkAlias` signale l'écart en nommant les variables, jamais les valeurs).
@@ -79,7 +79,7 @@ fois par processus.
   écritures exigent `SHENRON_A2A_TOKEN`, un jeton admin ou une IP d'administration. Le bot relaie
   carte et JSON-RPC au site et diffuse ses événements publics sur `/api/a2a/events`.
 
-## Base de données — `@shenron/db`
+## Base de données — `@aphrody/shenron-db`
 
 | Variable                  | Rôle                                                                                                                |
 | ------------------------- | ------------------------------------------------------------------------------------------------------------------- |
@@ -87,7 +87,7 @@ fois par processus.
 | `SITE_BUILD_DATABASE_URL` | Base de lecture d'un build du site qui en a besoin ; le build public de `shenron-server` compile le site sans base. |
 | `DATABASE_PATH`           | Fichier SQLite du bot (runtime + réplica wiki).                                                                     |
 
-## Authentification — `@shenron/auth`
+## Authentification — `@aphrody/shenron-auth`
 
 | Variable                                                                                  | Rôle                                                                                                                                                                                                                                                                                                                                                                                    |
 | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -105,7 +105,7 @@ fois par processus.
 | Variable                                                     | Rôle                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `SHENRON_MCP_URL`                                            | Origine HTTP(S) du serveur `shenron-mcp --http <adresse> --public`, lue côté serveur seulement (validée par `apps/site/src/lib/env.ts`). Le site relaie `/mcp` vers `<origine>/mcp` en transmettant `Authorization`, `X-Forwarded-For` et `X-Real-IP`. **Aucun défaut** : sans valeur (ou avec une URL invalide), `/mcp` répond 503 et ni `llms.txt` ni `/.well-known/mcp.json` n'annoncent le serveur.                    |
-| `SHENRON_HOST_URL`                                           | Origine de l'hôte Bun (`shenron-server`), optionnelle (`@shenron/config/public-urls` `resolveHostUrl`). Site : si posée, `/api/auth/*` lui est relayé et la session se lit chez lui (cookie ou Bearer transmis) ; absente, le site garde son Better Auth (aucun changement). Bureau : `agent-home` valide le jeton Bearer sur `<origine>/api/auth/get-session`, à défaut sur le site public.                               |
+| `SHENRON_HOST_URL`                                           | Origine de l'hôte Bun (`shenron-server`), optionnelle (`@aphrody/shenron-config/public-urls` `resolveHostUrl`). Site : si posée, `/api/auth/*` lui est relayé et la session se lit chez lui (cookie ou Bearer transmis) ; absente, le site garde son Better Auth (aucun changement). Bureau : `agent-home` valide le jeton Bearer sur `<origine>/api/auth/get-session`, à défaut sur le site public.                       |
 | `SHENRON_AUTH_ALLOWED_HOSTS`, `SHENRON_AUTH_TRUSTED_ORIGINS` | Listes CSV ajoutées aux hôtes et origines de confiance du Better Auth de l'hôte Bun (`packages/api/src/host/auth.ts`), par exemple la boucle locale d'un profil bureau. Le groupe auth de l'hôte exige `DATABASE_URL`, `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET` (et `BETTER_AUTH_SECRET` en production) ; sinon il reste désactivé avec sa raison.                                                                     |
 | `SHENRON_MCP_TOKENS`                                         | Jetons porteurs acceptés (liste séparée par des virgules, 16 octets minimum chacun, comparaison à durée constante). Process `shenron-mcp`.                                                                                                                                                                                                                                                                                 |
 | `SHENRON_API_ADMIN_TOKEN`, `DBFR_TOKEN`                      | Acceptés aussi comme jetons porteurs d'élévation quand ils sont posés (16 octets minimum). Ce sont également les jetons que les outils d'écriture envoient aux API : voir ci-dessous.                                                                                                                                                                                                                                      |
@@ -126,13 +126,13 @@ Quand le serveur est élevé, les outils appellent les API avec les variables du
 | `SHENRON_AGENT_API_KEY`                                                                          | `dragonball.agent_*` (`/api/agent/v1/*`) : clé `dbfr_agent_...` créée dans `/admin/agents`, ses portées (`read`, `write:articles`, `publish:articles`, `comment`, `moderate`, `contribute`) décident ce qui est permis. |
 | `SHENRON_API_URL`, `SHENRON_SITE_API_URL`, `SHENRON_SITE_URL`, `DBFR_BASE_URL`                   | Cibles des appels (défauts : bot et site publics).                                                                                                                                                                      |
 
-## IA Aphrody — `@shenron/pipeline/ai/config` (contrat `aphrody-infra`)
+## IA Aphrody — `@aphrody/shenron-pipeline/ai/config` (contrat `aphrody-infra`)
 
 Les noms suivent le contrat IA local v1 d'`aphrody-infra` :
 fichier `local-ai.json` de la configuration d'`aphrody-infra`
 (noms canoniques, alias hérités, forme d'URL de chaque alias, index `shenron-rag` et valeurs
-de la cible `vps`). Le résolveur unique est `@shenron/pipeline/ai/config` (table `AI_ENV`) : bot,
-site, façades `@shenron/pipeline/aphrody`, pipeline et scripts passent tous par lui. Il lit le nom
+de la cible `vps`). Le résolveur unique est `@aphrody/shenron-pipeline/ai/config` (table `AI_ENV`) : bot,
+site, façades `@aphrody/shenron-pipeline/aphrody`, pipeline et scripts passent tous par lui. Il lit le nom
 canonique d'abord, puis chaque alias dans l'ordre du contrat ; un alias de forme `origin`
 reçoit `/v1`, un alias de forme `endpoint` perd son chemin d'opération. **Aucune adresse par
 défaut** : sans valeur, la capacité est désactivée, et un appel explicite (client de calcul,
@@ -168,7 +168,7 @@ alias lus ensuite : `APHRODY_SHENRON_LLM_BASE_URL`, `APHRODY_OSS_BASE_URL`, puis
 chat du site (`/api/chat`, `chatAphrodyRag`) et du bot (`APHRODY_SHENRON_INFERENCE=http`) à la
 place de `/llm/chat` ; la recherche RAG reste sur `aphrody-ai-http`. Aucune adresse par défaut ;
 le modèle envoyé est `APHRODY_AI_CHAT_MODEL` (ou ses alias), sinon `gemma4-e2b`
-(`DIRECT_CHAT_MODEL_ID` de `@shenron/config/services`). Infra fournit l'adresse de boucle
+(`DIRECT_CHAT_MODEL_ID` de `@aphrody/shenron-config/services`). Infra fournit l'adresse de boucle
 locale du tunnel vers l'hôte GPU et l'identifiant réellement servi. Aucun modèle Gemma de base
 ne reçoit l'identité `shenron-chat-v2` par simple renommage.
 
@@ -198,7 +198,7 @@ Autres variables Aphrody :
 | `APHRODY_WEB_API_URL`, `APHRODY_BXC_API_TOKEN`        | API web/crawl d'Aphrody.                                                                    |
 | `APHRODY_BIN`                                         | Chemin du CLI `aphrody` quand il n'est pas sur le `PATH`.                                   |
 
-## Modèles de chat locaux (Shenron Studio) — `@shenron/config/chat-model`, `apps/server/src/chat-model.ts`
+## Modèles de chat locaux (Shenron Studio) — `@aphrody/shenron-config/chat-model`, `apps/server/src/chat-model.ts`
 
 Dans le profil `desktop`, sans URL de chat déclarée (`APHRODY_AI_CHAT_BASE_URL`,
 `APHRODY_SHENRON_LLM_BASE_URL`, `APHRODY_LOCAL_MODEL_URL`) et avec `local` dans
@@ -257,7 +257,7 @@ Le glossaire protège les termes canoniques pendant la traduction : chaque terme
 (le plus long d'abord, sans chevauchement) devient un jeton numéroté (`Zeta001`) que le moteur
 recopie, puis la forme officielle le remplace ; un jeton que la table ne connaît pas fait
 échouer la requête (`GlossaryTokens`) au lieu d'atteindre la planche. Le lexique canonique
-(`data/lexicon/terms.json`, crate `shenron-lexicon`, paquet `@shenron/lexicon`) est embarqué
+(`data/lexicon/terms.json`, crate `shenron-lexicon`, paquet `@aphrody/shenron-lexicon`) est embarqué
 dans les binaires et sert le français et l'anglais ; `docs/architecture/lexicon.md` décrit le
 format et la fin de vie de `data/lexique-db-canonique.json`, désormais un fichier dérivé.
 
@@ -275,11 +275,11 @@ vivent sous `$SHENRON_HOME/data/koharu/projects`, ses modèles sous
 `$SHENRON_HOME/cache/koharu/packages` ; les réglages restent dans `~/.koharu/config.toml`
 (`koharu-config`, Aphrody, n'accepte pas d'autre emplacement).
 
-## Mémoire persistante du chat — `@shenron/config/memory`, `apps/server/src/memory.ts`
+## Mémoire persistante du chat — `@aphrody/shenron-config/memory`, `apps/server/src/memory.ts`
 
 L'hôte de l'API (`shenron-server`, Shenron Studio) garde une mémoire par agent home dans le
 fournisseur SQLite d'Aphrody (`aphrody-memory`, `SqliteLocalProvider`), atteint par
-`shenron-ffi` (ABI 3, `@shenron/native`). L'agent-id est celui de l'agent home de
+`shenron-ffi` (ABI 3, `@aphrody/shenron-native`). L'agent-id est celui de l'agent home de
 l'utilisateur : `discord:<user_id>` quand l'utilisateur Discord est connu, `local` sinon ; le
 même pour tous les modèles. À chaque tour, les souvenirs pertinents sont joints à la question
 (comme données, jamais comme sources ni instructions) ; après la réponse, les faits saillants
@@ -299,7 +299,7 @@ accès. Routes : `GET /api/v1/memory`, `POST /api/v1/memory/{id}/delete`,
 | `SHENRON_MEMORY_RECALL` | souvenirs joints à un tour (0–20 ; 0 écrit sans rappeler)                 | `5`                               |
 | `SHENRON_MEMORY_REMOTE` | `off` retire les souvenirs du prompt des backends distants (`gemini-web`) | active : tous les backends        |
 
-## Chat du bot en messages privés — `@shenron/config/dm-chat`, `apps/bot/src/events/DirectMessageRelay.ts`
+## Chat du bot en messages privés — `@aphrody/shenron-config/dm-chat`, `apps/bot/src/events/DirectMessageRelay.ts`
 
 Tout membre de la guilde `GUILD_ID` reçoit une réponse du modèle en DM (persona Shenron, agent
 home `discord:<id>` et sa mémoire) ; un non-membre, banni compris, reçoit un refus unique. Le

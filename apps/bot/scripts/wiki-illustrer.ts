@@ -14,7 +14,7 @@
  */
 import { join } from "node:path";
 import postgres from "postgres";
-import type { IllustrationSource } from "@shenron/images";
+import type { IllustrationSource } from "@aphrody/shenron-images";
 import {
   applyIllustration,
   ILLUSTRATION_TYPES,

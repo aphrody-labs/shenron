@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { createBunSql } from "@shenron/db/bun-sql";
-import { DEFAULT_CHRONOLOGY_CONFIG } from "@shenron/config/chronology";
+import { createBunSql } from "@aphrody/shenron-db/bun-sql";
+import { DEFAULT_CHRONOLOGY_CONFIG } from "@aphrody/shenron-config/chronology";
 import { createHostChronology } from "../src/host/chronology";
 import { createShenronApiClient } from "../src/client";
 import { endpoints } from "../src/contract";

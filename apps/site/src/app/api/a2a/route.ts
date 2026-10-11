@@ -26,7 +26,12 @@ import {
   postJsonRpc,
 } from "@/lib/a2a-hub";
 import { hasValidApiToken } from "@/lib/api-token";
-import { A2A_TOKEN_ENV, a2aDeniedBody, a2aEnforced, decideA2AWrite } from "@shenron/auth/a2a";
+import {
+  A2A_TOKEN_ENV,
+  a2aDeniedBody,
+  a2aEnforced,
+  decideA2AWrite,
+} from "@aphrody/shenron-auth/a2a";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

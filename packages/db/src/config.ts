@@ -38,7 +38,7 @@ export function resolvePoolMax(raw: string | undefined): number {
   return Math.min(value, POOL_MAX_CEILING);
 }
 
-/** Minimal environment shape (compatible with `process.env` and `@shenron/config/env`). */
+/** Minimal environment shape (compatible with `process.env` and `@aphrody/shenron-config/env`). */
 export type EnvSource = Readonly<Record<string, string | undefined>>;
 
 /**

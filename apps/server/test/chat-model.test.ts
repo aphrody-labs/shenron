@@ -8,8 +8,11 @@ import {
   CHAT_BASE_MODEL,
   CHAT_MODEL_IDS,
   GEMMA_MODEL,
-} from "@shenron/config/chat-model";
-import type { ShenronLlamaProvision, ShenronLlamaRouterStart } from "@shenron/native/shenron";
+} from "@aphrody/shenron-config/chat-model";
+import type {
+  ShenronLlamaProvision,
+  ShenronLlamaRouterStart,
+} from "@aphrody/shenron-native/shenron";
 
 import { planBackend } from "../src/backend";
 import {

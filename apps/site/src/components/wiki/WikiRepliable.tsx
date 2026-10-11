@@ -9,7 +9,7 @@
  * replie s'il veut aller droit au texte.
  */
 import { useId, useState, type ReactNode } from "react";
-import { ChevronBas } from "@shenron/ui/icones";
+import { ChevronBas } from "@aphrody/shenron-ui/icones";
 
 export function WikiRepliable({
   title,

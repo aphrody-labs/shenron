@@ -13,9 +13,9 @@ import { CanonService } from "~/services/CanonService";
 import { ragTrainingFeedback } from "~/db/schema";
 import { fileURLToPath } from "node:url";
 import { sendAdminLabMessage } from "~/lib/admin-lab";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
-import { resolveDataPath, warnIfEphemeral } from "@shenron/config/paths";
-import { resolveBotApiInternalUrl, resolveSiteInternalUrl } from "@shenron/config/services";
+import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
+import { resolveDataPath, warnIfEphemeral } from "@aphrody/shenron-config/paths";
+import { resolveBotApiInternalUrl, resolveSiteInternalUrl } from "@aphrody/shenron-config/services";
 
 /** Jeu doré livré avec le bot (défaut historique, D15). */
 const LEGACY_GOLD_PATH = fileURLToPath(new URL("../../tests/rag-gold.jsonl", import.meta.url));

@@ -23,7 +23,11 @@ import { Database } from "bun:sqlite";
 import { mkdirSync, writeFileSync, existsSync, readFileSync, appendFileSync } from "node:fs";
 import { join, dirname, basename, extname } from "node:path";
 import { createHash } from "node:crypto";
-import { aphrodyWebMirror, aphrodyWebRecon, aphrodyWebScrape } from "@shenron/pipeline/aphrody";
+import {
+  aphrodyWebMirror,
+  aphrodyWebRecon,
+  aphrodyWebScrape,
+} from "@aphrody/shenron-pipeline/aphrody";
 import { BOT_HOST, CDN_ORIGIN, SITE_URL } from "../src/lib/config";
 
 const SITE_ROOT = join(import.meta.dir, "..");

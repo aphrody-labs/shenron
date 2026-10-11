@@ -1,17 +1,21 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * The persistent chat memory of `shenron-server` (./memory.ts): the native port over a fake of
- * `@shenron/native`, then (SHENRON_FFI_DEV=1 after `cargo build -p shenron-ffi`) the real
+ * `@aphrody/shenron-native`, then (SHENRON_FFI_DEV=1 after `cargo build -p shenron-ffi`) the real
  * Aphrody provider through the host, from `<SHENRON_HOME>/data/memory.sqlite` to the routes.
  */
 import { afterAll, describe, expect, test } from "bun:test";
 import { existsSync, mkdtempSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { MemoryListResponse } from "@shenron/api/contract";
-import { createLocalApi } from "@shenron/api/host";
-import type { ChatSocketData } from "@shenron/api/server";
-import { SHENRON_FFI_FILE, shenronMemoryAdd, shenronMemorySearch } from "@shenron/native/shenron";
+import { MemoryListResponse } from "@aphrody/shenron-api/contract";
+import { createLocalApi } from "@aphrody/shenron-api/host";
+import type { ChatSocketData } from "@aphrody/shenron-api/server";
+import {
+  SHENRON_FFI_FILE,
+  shenronMemoryAdd,
+  shenronMemorySearch,
+} from "@aphrody/shenron-native/shenron";
 
 import { nativeMemory, type NativeMemory } from "../src/memory";
 import { testPaths } from "./support";
@@ -157,7 +161,7 @@ describe("agent home sign-in", () => {
   });
 });
 
-/** The library built by `cargo build -p shenron-ffi`, opt-in like the @shenron/native suite. */
+/** The library built by `cargo build -p shenron-ffi`, opt-in like the @aphrody/shenron-native suite. */
 function builtLibrary(): string | undefined {
   if (process.env.SHENRON_FFI_LIB) return process.env.SHENRON_FFI_LIB;
   if (process.env.SHENRON_FFI_DEV !== "1") return undefined;

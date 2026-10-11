@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { Cadenas, FlecheDroite } from "@shenron/ui/icones";
+import { Cadenas, FlecheDroite } from "@aphrody/shenron-ui/icones";
 import { effectiveOpenKeys, LAUNCH_CATEGORIES } from "@/lib/wiki-launch";
 import { getOpenCategoryKeys } from "@/lib/wiki-launch-config";
 

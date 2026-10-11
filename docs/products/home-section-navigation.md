@@ -1,4 +1,5 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # Navigation entre les sections de l’accueil
 
 Le composant `HomeExperience` antérieur à `d27d7054` proposait un repère
@@ -6,7 +7,7 @@ Le composant `HomeExperience` antérieur à `d27d7054` proposait un repère
 perdu ce moyen de les rejoindre. Les invariants de l’accueil restent décrits
 dans [accueil-et-shell.md](accueil-et-shell.md).
 
-Le rail repose désormais sur `SectionNavigation`, dans `@shenron/ui/public`.
+Le rail repose désormais sur `SectionNavigation`, dans `@aphrody/shenron-ui/public`.
 Le site transmet ses rubriques visibles dans leur ordre de lecture, avec le
 libellé de navigation configuré en priorité, puis le titre. Les libellés de
 repli et le nom accessible viennent des dictionnaires existants. Les gardiens

@@ -28,7 +28,7 @@
  *   bun scripts/audit-traductions-databooks.ts --ecrivain=shenron-massive-vps --details
  *   bun scripts/audit-traductions-databooks.ts --appliquer --json=/tmp/audit.json
  */
-import { lexicon } from "@shenron/lexicon/data";
+import { lexicon } from "@aphrody/shenron-lexicon/data";
 import {
   auditerPlanche,
   indexerEntites,

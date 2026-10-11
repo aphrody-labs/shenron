@@ -34,7 +34,7 @@ bandes-annonces officielles. Replay sans doublon et clé temporaire révoquée ;
 invalidé par son propriétaire. Aucun mécanisme Redis CMS confirmé. La première japonaise
 est programmée à14:15UTC/16:15Paris ; aucun épisode bonus confirmé. Les douze bibliothèques
 npm sont préparées avec visibilité publique explicite et allowlists auditées, mais la
-première tentative `@shenron/engine@1.4.4` reçoit404 au PUT registry ; aucune publication
+première tentative `@aphrody/shenron-engine@1.4.4` reçoit404 au PUT registry ; aucune publication
 npm effective annoncée. Les qualifications crates.io restent distinctes.
 
 Étendre le catalogue Dragon Ball France déjà servi par Shenron, en partant des œuvres,
@@ -70,23 +70,23 @@ existantes au lieu de créer un catalogue parallèle. L'exécution avance sans s
 Garder chaque changement dans son paquet propriétaire et les relier par les contrats
 existants. Les 12 paquets `packages/*` et les applications qui portent ce travail sont :
 
-| Paquet/application  | Rôle dans ce chantier                                                                               |
-| ------------------- | --------------------------------------------------------------------------------------------------- |
-| `@shenron/config`   | Codes de séries, langues, chronologie, catégories et types partagés                                 |
-| `@shenron/db`       | Schémas PostgreSQL, schémas du réplica bot, dépôts catalogue et chronologie                         |
-| `@shenron/api`      | Contrats des endpoints, validation des réponses et OpenAPI                                          |
-| `@shenron/auth`     | Sessions de l’interface d’administration et intégration aux routes éditoriales existantes           |
-| `@shenron/pipeline` | Importeurs Bun, collecte de sources, normalisation, OCR/transcription, traduction et indexation RAG |
-| `@shenron/lexicon`  | Formes ja/fr/en et normalisation des noms Dragon Ball                                               |
-| `@shenron/media`    | Primitives d'OCR, sources média et empreintes de planches                                           |
-| `@shenron/images`   | Déduplication et résolution des images de catalogue                                                 |
-| `@shenron/ui`       | Vues catalogue, lecteurs manga/databook, filtres et présentation admin                              |
-| `@shenron/native`   | Fonctions FFI locales appelées par les outils Bun de traitement                                     |
-| `@shenron/koharu`   | Protocole du moteur de lecture/traduction Shenron Studio                                            |
-| `@shenron/engine`   | Moteur de rendu partagé si une nouvelle vue média l'utilise                                         |
-| `apps/site`         | Routes publiques/admin, pages et données affichées sur dragonballfr.com                             |
-| `apps/bot`          | Réplica SQLite, commandes et consommation du catalogue par le bot                                   |
-| `apps/server`       | Assemblage du site, API et capacités locales dans le binaire serveur                                |
+| Paquet/application          | Rôle dans ce chantier                                                                               |
+| --------------------------- | --------------------------------------------------------------------------------------------------- |
+| `@aphrody/shenron-config`   | Codes de séries, langues, chronologie, catégories et types partagés                                 |
+| `@aphrody/shenron-db`       | Schémas PostgreSQL, schémas du réplica bot, dépôts catalogue et chronologie                         |
+| `@aphrody/shenron-api`      | Contrats des endpoints, validation des réponses et OpenAPI                                          |
+| `@aphrody/shenron-auth`     | Sessions de l’interface d’administration et intégration aux routes éditoriales existantes           |
+| `@aphrody/shenron-pipeline` | Importeurs Bun, collecte de sources, normalisation, OCR/transcription, traduction et indexation RAG |
+| `@aphrody/shenron-lexicon`  | Formes ja/fr/en et normalisation des noms Dragon Ball                                               |
+| `@aphrody/shenron-media`    | Primitives d'OCR, sources média et empreintes de planches                                           |
+| `@aphrody/shenron-images`   | Déduplication et résolution des images de catalogue                                                 |
+| `@aphrody/shenron-ui`       | Vues catalogue, lecteurs manga/databook, filtres et présentation admin                              |
+| `@aphrody/shenron-native`   | Fonctions FFI locales appelées par les outils Bun de traitement                                     |
+| `@aphrody/shenron-koharu`   | Protocole du moteur de lecture/traduction Shenron Studio                                            |
+| `@aphrody/shenron-engine`   | Moteur de rendu partagé si une nouvelle vue média l'utilise                                         |
+| `apps/site`                 | Routes publiques/admin, pages et données affichées sur dragonballfr.com                             |
+| `apps/bot`                  | Réplica SQLite, commandes et consommation du catalogue par le bot                                   |
+| `apps/server`               | Assemblage du site, API et capacités locales dans le binaire serveur                                |
 
 Le sous-ensemble de code à modifier se décide après l'audit du catalogue ; la présence
 d'un paquet dans cette carte n'implique pas une modification obligatoire.
@@ -211,7 +211,7 @@ relevé daté comme un état permanent.
    épisode, vidéo ou interview demandés. Dédoublonner contre le catalogue existant ; noter
    langue, format (couleur/N&B), participants, dates, références, URL primaire, état de
    complétude et statut de transcription. Pour la collecte et la normalisation, s'appuyer
-   sur le CLI existant `bun run --filter @shenron/pipeline pipeline <crawl|ocr|translation|unify>`
+   sur le CLI existant `bun run --filter @aphrody/shenron-pipeline pipeline <crawl|ocr|translation|unify>`
    et sur les API de sources disponibles ; faire les écritures de catalogue par l'interface
    ou les routes d'administration Shenron.
 3. **Priorité de collecte** : compléter d'abord les notices bibliographiques et les liens

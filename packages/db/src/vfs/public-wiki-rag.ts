@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import type { Database } from "bun:sqlite";
-import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
+import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
 import { createRagWriter } from "./build";
 
 /** Index only the public wiki snapshot already selected by the public read repository. */

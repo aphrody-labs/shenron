@@ -20,7 +20,7 @@ import {
   PreferenceSection,
   TextField,
 } from "./PreferenceFields";
-import type { PipelineConfig } from "@shenron/koharu/protocol";
+import type { PipelineConfig } from "@aphrody/shenron-koharu/protocol";
 import {
   Select,
   SelectPopup,

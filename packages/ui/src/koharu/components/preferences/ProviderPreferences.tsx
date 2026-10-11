@@ -10,7 +10,7 @@ import type {
   ProviderConfig,
   ProviderPreference,
   ProviderPreferences as ProviderSettings,
-} from "@shenron/koharu/protocol";
+} from "@aphrody/shenron-koharu/protocol";
 import { Button } from "../../../components/button";
 import { Input } from "../../../components/input";
 

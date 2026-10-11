@@ -12,7 +12,7 @@
 import { adminUserOrToken, isAdminOrToken } from "@/lib/admin-guard";
 import { getLaunchConfig, saveLaunchConfig } from "@/lib/wiki-launch-config";
 import { HostLaunchError } from "@/lib/host-launch-error";
-import { ENV_ALIASES, envFirst } from "@shenron/config/env";
+import { ENV_ALIASES, envFirst } from "@aphrody/shenron-config/env";
 import type { AccessRule } from "@/lib/wiki-launch";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";

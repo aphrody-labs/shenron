@@ -1,6 +1,6 @@
 import "./setup";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "bun:test";
-import { A2A_ENFORCE_ENV } from "@shenron/auth/a2a";
+import { A2A_ENFORCE_ENV } from "@aphrody/shenron-auth/a2a";
 import { A2A_URL_ENV, a2aBaseUrl } from "../src/api/a2a-proxy";
 import { a2aAgentCard, a2aEventsStream, a2aJsonRpc } from "../src/api/server";
 

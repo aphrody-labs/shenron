@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { EmptyState as PortableEmptyState } from "@shenron/ui/public/EmptyState";
+import { EmptyState as PortableEmptyState } from "@aphrody/shenron-ui/public/EmptyState";
 import type { ComponentProps } from "react";
 
 export function EmptyState(

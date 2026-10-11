@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Shared hash anti-join semantics from aphrody_train.hashing; no inference or I/O. */
-import { sha256Hex } from "@shenron/media/sha256";
+import { sha256Hex } from "@aphrody/shenron-media/sha256";
 
-export { sha256Hex as sha256 } from "@shenron/media/sha256";
+export { sha256Hex as sha256 } from "@aphrody/shenron-media/sha256";
 export interface TextNormalizationOptions {
   /** Conservative compatibility spelling checks; not a complete Unicode confusables table. */
   compatibility?: boolean;

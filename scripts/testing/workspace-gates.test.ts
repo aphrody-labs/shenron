@@ -31,7 +31,9 @@ test("discovers every current package gate and retains the scripts typecheck", (
   ).toBe(15);
   expect(commands.at(-1)?.args).toEqual(["tsc", "--noEmit", "-p", "scripts"]);
   expect(
-    workspaceCommands(root, "test").filter((command) => command.packageName === "@shenron/ui"),
+    workspaceCommands(root, "test").filter(
+      (command) => command.packageName === "@aphrody/shenron-ui",
+    ),
   ).toHaveLength(3);
 });
 

@@ -1,1 +1,1 @@
-export * from "@shenron/ui/textarea";
+export * from "@aphrody/shenron-ui/textarea";

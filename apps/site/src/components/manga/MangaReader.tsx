@@ -5,7 +5,7 @@ import Link from "next/link";
 import {
   MangaReader as BaseMangaReader,
   type MangaReaderProps as ReaderProps,
-} from "@shenron/ui/reader";
+} from "@aphrody/shenron-ui/reader";
 import { readerAssetUrl } from "@/lib/reader-assets";
 import { API_ORIGIN, CDN_ORIGIN, SITE_URL } from "@/lib/config";
 

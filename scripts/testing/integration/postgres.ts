@@ -3,7 +3,7 @@
 import { mkdtemp, rm } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
-import { createBunSql } from "@shenron/db/bun-sql";
+import { createBunSql } from "@aphrody/shenron-db/bun-sql";
 
 const root = join(import.meta.dir, "../../..");
 const candidates = [

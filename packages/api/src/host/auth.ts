@@ -1,33 +1,33 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Better Auth on the Bun host: `/api/auth/*` (Request/Response) built from the shared
- * `@shenron/auth` bricks (secret, origins, cookies, Discord provider) over the `ba_*` tables
- * of `@shenron/db`. Runtime class: `bun`.
+ * `@aphrody/shenron-auth` bricks (secret, origins, cookies, Discord provider) over the `ba_*` tables
+ * of `@aphrody/shenron-db`. Runtime class: `bun`.
  *
  * The group needs `DATABASE_URL` (PostgreSQL), a Discord application (`DISCORD_CLIENT_ID`,
  * `DISCORD_CLIENT_SECRET`) and, in production, `BETTER_AUTH_SECRET`; a missing piece disables
  * it with a short reason, nothing throws. The public origin comes from
- * `@shenron/config/public-urls`; `SHENRON_AUTH_ALLOWED_HOSTS` and `SHENRON_AUTH_TRUSTED_ORIGINS`
+ * `@aphrody/shenron-config/public-urls`; `SHENRON_AUTH_ALLOWED_HOSTS` and `SHENRON_AUTH_TRUSTED_ORIGINS`
  * (comma lists) add the loopback origin of a desktop or CLI profile.
  */
-import { AUTH_BASE_PATH, normalizeBaseUrl, resolveBetterAuthSecret } from "@shenron/auth";
+import { AUTH_BASE_PATH, normalizeBaseUrl, resolveBetterAuthSecret } from "@aphrody/shenron-auth";
 import {
   SESSION_COOKIE_CACHE,
   advancedOptions,
   discordProvider,
   loggingOptions,
-} from "@shenron/auth/options";
-import { siteAllowedHosts, siteTrustedOrigins } from "@shenron/auth/origins";
-import { type EnvSource, envString, isProduction } from "@shenron/config/env";
-import { resolveSiteUrl } from "@shenron/config/public-urls";
-import { staffPolicyFromEnv } from "@shenron/auth/staff";
-import { createBunDb } from "@shenron/db/bun-sql";
-import { baAccount, baSession, baUser, baVerification } from "@shenron/db/schema";
+} from "@aphrody/shenron-auth/options";
+import { siteAllowedHosts, siteTrustedOrigins } from "@aphrody/shenron-auth/origins";
+import { type EnvSource, envString, isProduction } from "@aphrody/shenron-config/env";
+import { resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
+import { staffPolicyFromEnv } from "@aphrody/shenron-auth/staff";
+import { createBunDb } from "@aphrody/shenron-db/bun-sql";
+import { baAccount, baSession, baUser, baVerification } from "@aphrody/shenron-db/schema";
 import {
   createAccountDataRepository,
   createAccountProfileRepository,
-} from "@shenron/db/repos/accounts";
-import { createResilientRedis } from "@shenron/db/redis";
+} from "@aphrody/shenron-db/repos/accounts";
+import { createResilientRedis } from "@aphrody/shenron-db/redis";
 import { RedisClient } from "bun";
 import { betterAuth, type BetterAuthOptions } from "better-auth";
 import { APIError } from "better-auth/api";

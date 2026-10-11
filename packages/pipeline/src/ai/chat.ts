@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/pipeline/ai/chat` — `LanguageModelV4` adapter over `/api/v1/shenron/llm/chat` (D9).
+ * `@aphrody/shenron-pipeline/ai/chat` — `LanguageModelV4` adapter over `/api/v1/shenron/llm/chat` (D9).
  *
  * Runtime class: `pure`. The route neither streams nor accepts tools, files
  * or images: those are rejected with `UnsupportedFunctionalityError`. System

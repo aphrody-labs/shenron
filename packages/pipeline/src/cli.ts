@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * CLI unifié @shenron/pipeline
+ * CLI unifié @aphrody/shenron-pipeline
  * Commande d'exécution unique pour tout l'offload : OCR, RAG, IA, Traduction, Crawl.
  * Le serveur MCP Shenron est porté par aphrody-ai (apps/shenron-mcp), plus par ce dépôt.
  * Usage :

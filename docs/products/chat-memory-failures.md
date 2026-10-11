@@ -1,6 +1,6 @@
 # Échecs et lectures concurrentes de la mémoire partagée
 
-`MemoryPanel` de `@shenron/ui` conserve une seule interface pour le navigateur
+`MemoryPanel` de `@aphrody/shenron-ui` conserve une seule interface pour le navigateur
 et Shenron Studio. Les rejets de lecture, de suppression et d’effacement utilisent
 l’erreur localisée existante ; le texte des exceptions n’est pas affiché. Une
 suppression échouée conserve les souvenirs et libère les contrôles. Un nouvel

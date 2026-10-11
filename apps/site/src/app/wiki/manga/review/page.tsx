@@ -10,8 +10,8 @@ import type { Metadata } from "next";
 import { revalidatePath } from "next/cache";
 import { botAdmin, BotAdminError } from "@/lib/bot-admin";
 import { requireAdmin } from "@/lib/session";
-import { PageShell } from "@shenron/ui/layout/PageShell";
-import { PageHeader } from "@shenron/ui/layout/PageHeader";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {

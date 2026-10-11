@@ -1,4 +1,4 @@
-import { VideoSourceSummary as PortableVideoSourceSummary } from "@shenron/ui/server";
+import { VideoSourceSummary as PortableVideoSourceSummary } from "@aphrody/shenron-ui/server";
 import type { Lecteur } from "./VideoLecteurs";
 
 /** Shenron vocabulary adapter for the portable source-summary presentation. */

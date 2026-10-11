@@ -12,12 +12,12 @@ Ce document-ci est l'inventaire, pas la méthode.
 
 ### Rastérisation et mesure
 
-| Rôle                                                                 | Outil                       | Où                                                  | Version mesurée            |
-| -------------------------------------------------------------------- | --------------------------- | --------------------------------------------------- | -------------------------- |
-| SVG → PNG/WebP/ICO, redimensionnement, composition, métadonnées      | `sharp`                     | chaque paquet qui l’emploie, version du catalogue    | catalogue (^0.35.5)        |
-| Masque, k-means, HSL/OKLCH, profil de silhouette, épaisseur du trait | Pillow + numpy              | système (`apt install python3-pil python3-numpy`)   | Pillow 12.1.1, numpy 2.3.5 |
-| Dessin raster côté bot (runtime Discord)                             | `@napi-rs/canvas`           | `apps/bot`                                          | 1.0.9                      |
-| Rendu d'image sociale (OG)                                           | `next/og` (`ImageResponse`) | `apps/site`                                         | Next 16.3.5 (stable)       |
+| Rôle                                                                 | Outil                       | Où                                                | Version mesurée            |
+| -------------------------------------------------------------------- | --------------------------- | ------------------------------------------------- | -------------------------- |
+| SVG → PNG/WebP/ICO, redimensionnement, composition, métadonnées      | `sharp`                     | chaque paquet qui l’emploie, version du catalogue | catalogue (^0.35.5)        |
+| Masque, k-means, HSL/OKLCH, profil de silhouette, épaisseur du trait | Pillow + numpy              | système (`apt install python3-pil python3-numpy`) | Pillow 12.1.1, numpy 2.3.5 |
+| Dessin raster côté bot (runtime Discord)                             | `@napi-rs/canvas`           | `apps/bot`                                        | 1.0.9                      |
+| Rendu d'image sociale (OG)                                           | `next/og` (`ImageResponse`) | `apps/site`                                       | Next 16.3.5 (stable)       |
 
 Avec le linker isolé, chaque paquet déclare `sharp` (`"catalog:"`) ; la version
 vient du catalogue racine (voir [`BUN-PACKAGE-MANAGER.md`](../operations/BUN-PACKAGE-MANAGER.md)).
@@ -40,12 +40,12 @@ vient du catalogue racine (voir [`BUN-PACKAGE-MANAGER.md`](../operations/BUN-PAC
 Aucune dépendance : le vecteur est produit par des fonctions TypeScript qui
 émettent des chaînes de `path`.
 
-| Fichier                                                                                                                           | Contenu                                                                                                             | Consommateurs                                                                                   |
-| --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| [`apps/site/src/lib/kinto-un.ts`](../../apps/site/src/lib/kinto-un.ts)                                                               | `arcs`, `volute`, `corpsNuage`, `svgIllustration`, `svgIcone`, `svgMonochrome`, `KINTO_UN_COULEURS`                 | `KintoUn.tsx`, `genere-kinto-un.ts`, `genere-icones.ts`, `opengraph-image.tsx`, `couverture.ts` |
-| [`packages/ui/src/toriyama-svg/couverture.ts`](../../packages/ui/src/toriyama-svg/couverture.ts)                                                           | `anneauxCadre`, `bancNuage`, `etoilePath`, `anneauPastille`, `svgBancNuage` (importe `arcs`/`volute` de `kinto-un`) | `MotifsCouverture.tsx`, `genere-motifs-couverture.ts`                                           |
-| [`packages/ui/src/icones/geometries.ts`](../../packages/ui/src/icones/geometries.ts)                                                | `GEOMETRIES` — glyphes maison, `BOITE_ICONE` 24, `TRAIT_ICONE` 2                                                    | `glyphe.tsx`, `rend-icones.ts`                                                                  |
-| `plugin/skills/toriyama-svg/scripts/geometrie.ts` | primitives à copier pour un **nouveau** sujet : `arcs`, `volute`, `meche`, `planDombre`, `trait`, `miroir`, `svg`   | modèle, pas importé                                                                             |
+| Fichier                                                                                          | Contenu                                                                                                             | Consommateurs                                                                                   |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| [`apps/site/src/lib/kinto-un.ts`](../../apps/site/src/lib/kinto-un.ts)                           | `arcs`, `volute`, `corpsNuage`, `svgIllustration`, `svgIcone`, `svgMonochrome`, `KINTO_UN_COULEURS`                 | `KintoUn.tsx`, `genere-kinto-un.ts`, `genere-icones.ts`, `opengraph-image.tsx`, `couverture.ts` |
+| [`packages/ui/src/toriyama-svg/couverture.ts`](../../packages/ui/src/toriyama-svg/couverture.ts) | `anneauxCadre`, `bancNuage`, `etoilePath`, `anneauPastille`, `svgBancNuage` (importe `arcs`/`volute` de `kinto-un`) | `MotifsCouverture.tsx`, `genere-motifs-couverture.ts`                                           |
+| [`packages/ui/src/icones/geometries.ts`](../../packages/ui/src/icones/geometries.ts)             | `GEOMETRIES` — glyphes maison, `BOITE_ICONE` 24, `TRAIT_ICONE` 2                                                    | `glyphe.tsx`, `rend-icones.ts`                                                                  |
+| `plugin/skills/toriyama-svg/scripts/geometrie.ts`                                                | primitives à copier pour un **nouveau** sujet : `arcs`, `volute`, `meche`, `planDombre`, `trait`, `miroir`, `svg`   | modèle, pas importé                                                                             |
 
 Règle qui tient tout : **une seule source de géométrie par sujet**, consommée à
 la fois par le composant, le générateur de fichiers et le script d'icônes.
@@ -55,11 +55,11 @@ Sinon l'icône et l'illustration divergent au premier ajustement.
 
 | Composant                                                                      | Ce qu'il rend                                                          | Particularité                                                                                                                                                           |
 | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`KintoUn.tsx`](../../apps/site/src/components/KintoUn.tsx)                       | le nuage, variantes `illustration` (1200 × 648) et `icone` (512 carré) | SVG pur, 0 JS, server-safe ; préfixes d'id `kt-*`/`kti-*` pour que deux nuages ne se volent pas leur `clipPath`                                                         |
-| [`packages/ui/src/icones/glyphe.tsx`](../../packages/ui/src/icones/glyphe.tsx)     | les glyphes maison                                                      | API calquée sur `lucide-react` (`size`, `strokeWidth`, `color`, `ref`), `aria-hidden` par défaut ; exportée par `@shenron/ui/icones`                                   |
-| [`DragonBall.tsx`](../../apps/site/src/components/DragonBall.tsx)                 | la boule de cristal                                                    | dégradé à 10 arrêts, foyer mesuré à (−0,30 ; −0,39) R sur la couverture du tome 1                                                                                       |
-| [`MotifsCouverture.tsx`](../../apps/site/src/components/MotifsCouverture.tsx)     | étoile, cadre, pastille, banc de nuages                                | **mixte assumé** : SVG pour la forme, `box-shadow`/`radial-gradient` pour les couronnes (évite des ids dupliqués sur une grille), fichier statique répété pour la frise |
-| [`app/opengraph-image.tsx`](../../apps/site/src/app/opengraph-image.tsx)          | l'image sociale 1200 × 630                                             | `next/og` + `svgIllustration()` en data-URI                                                                                                                             |
+| [`KintoUn.tsx`](../../apps/site/src/components/KintoUn.tsx)                    | le nuage, variantes `illustration` (1200 × 648) et `icone` (512 carré) | SVG pur, 0 JS, server-safe ; préfixes d'id `kt-*`/`kti-*` pour que deux nuages ne se volent pas leur `clipPath`                                                         |
+| [`packages/ui/src/icones/glyphe.tsx`](../../packages/ui/src/icones/glyphe.tsx) | les glyphes maison                                                     | API calquée sur `lucide-react` (`size`, `strokeWidth`, `color`, `ref`), `aria-hidden` par défaut ; exportée par `@aphrody/shenron-ui/icones`                            |
+| [`DragonBall.tsx`](../../apps/site/src/components/DragonBall.tsx)              | la boule de cristal                                                    | dégradé à 10 arrêts, foyer mesuré à (−0,30 ; −0,39) R sur la couverture du tome 1                                                                                       |
+| [`MotifsCouverture.tsx`](../../apps/site/src/components/MotifsCouverture.tsx)  | étoile, cadre, pastille, banc de nuages                                | **mixte assumé** : SVG pour la forme, `box-shadow`/`radial-gradient` pour les couronnes (évite des ids dupliqués sur une grille), fichier statique répété pour la frise |
+| [`app/opengraph-image.tsx`](../../apps/site/src/app/opengraph-image.tsx)       | l'image sociale 1200 × 630                                             | `next/og` + `svgIllustration()` en data-URI                                                                                                                             |
 
 Fichiers vectoriels versionnés, tous générés :
 
@@ -107,9 +107,9 @@ Scripts, par rôle :
 
 | Script                                          | Rôle                                                         |
 | ----------------------------------------------- | ------------------------------------------------------------ |
-| `plugin/skills/toriyama-svg/scripts/mesurer.py`                | mesure (Python)                                              |
-| `plugin/skills/toriyama-svg/scripts/rendu.ts`                  | planches de contrôle multi-tailles + comparaison (Bun)       |
-| `plugin/skills/toriyama-svg/scripts/icones.ts`                 | jeu de favicons générique (modèle)                           |
+| `plugin/skills/toriyama-svg/scripts/mesurer.py` | mesure (Python)                                              |
+| `plugin/skills/toriyama-svg/scripts/rendu.ts`   | planches de contrôle multi-tailles + comparaison (Bun)       |
+| `plugin/skills/toriyama-svg/scripts/icones.ts`  | jeu de favicons générique (modèle)                           |
 | `apps/site/scripts/genere-kinto-un.ts`          | écrit les 3 SVG du nuage, `--rendu` pour les PNG de contrôle |
 | `apps/site/scripts/genere-motifs-couverture.ts` | écrit la tuile `banc-nuage.svg`                              |
 | `apps/site/scripts/genere-icones.ts`            | rastérise le jeu complet, site **et** bot                    |

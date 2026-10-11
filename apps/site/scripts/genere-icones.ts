@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Rastérise l'icône Kinto-un (`src/lib/kinto-un.ts`) en favicons pour le site
- * (le bot les sert par alias, cf. `ASSET_ALIASES` de `@shenron/images`), avec
+ * (le bot les sert par alias, cf. `ASSET_ALIASES` de `@aphrody/shenron-images`), avec
  * `sharp` seul — l'ICO multi-tailles est un simple conteneur de PNG, écrit ici
  * en quinze lignes plutôt qu'avec une dépendance.
  *
@@ -18,7 +18,11 @@
  * Usage : bun scripts/genere-icones.ts
  */
 import sharp from "sharp";
-import { KINTO_UN_COULEURS, svgIcone, svgIllustration } from "@shenron/ui/toriyama-svg/kinto-un";
+import {
+  KINTO_UN_COULEURS,
+  svgIcone,
+  svgIllustration,
+} from "@aphrody/shenron-ui/toriyama-svg/kinto-un";
 
 const site = new URL("../../../packages/ui/assets/", import.meta.url).pathname;
 const logoBot = new URL("../../bot/assets/logo.webp", import.meta.url).pathname;

@@ -16,7 +16,7 @@ import { PageShell } from "@/components/kit";
  */
 import { PageHeader } from "@/components/PageHeader";
 import Link from "next/link";
-import { BouclierCoche, Crayon, Etincelle, Livre } from "@shenron/ui/icones";
+import { BouclierCoche, Crayon, Etincelle, Livre } from "@aphrody/shenron-ui/icones";
 import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { WikiDrawer } from "@/components/wiki/WikiDrawer";

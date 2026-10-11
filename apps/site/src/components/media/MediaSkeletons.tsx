@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 
 /**
  * Squelettes des rubriques médias (manga, databooks, épisodes, films, jeux) — dans la même

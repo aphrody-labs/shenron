@@ -1,8 +1,8 @@
-import { ExternalLink } from "@shenron/ui/navigation/external";
+import { ExternalLink } from "@aphrody/shenron-ui/navigation/external";
 import Link from "next/link";
 import Image from "next/image";
 import { assetUrl } from "@/lib/assets";
-import { CadreCase, PastilleTome } from "@shenron/ui/toriyama/MotifsCouverture";
+import { CadreCase, PastilleTome } from "@aphrody/shenron-ui/toriyama/MotifsCouverture";
 
 export interface VignetteVolume {
   id: number;

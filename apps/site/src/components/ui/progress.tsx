@@ -1,1 +1,1 @@
-export * from "@shenron/ui/progress";
+export * from "@aphrody/shenron-ui/progress";

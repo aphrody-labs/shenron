@@ -16,8 +16,8 @@ import {
   aphrodyWebRecon,
   aphrodyWebScrape,
   aphrodyWebSearch,
-} from "@shenron/pipeline/aphrody";
-import { aphrodyWebMirror } from "@shenron/pipeline/aphrody/mirror";
+} from "@aphrody/shenron-pipeline/aphrody";
+import { aphrodyWebMirror } from "@aphrody/shenron-pipeline/aphrody/mirror";
 
 // Paths
 const DB_PATH = fileURLToPath(new URL("../data/bot.db", import.meta.url));

@@ -1,1 +1,1 @@
-export * from "@shenron/ui/separator";
+export * from "@aphrody/shenron-ui/separator";

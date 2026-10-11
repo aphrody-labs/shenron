@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/db/vfs` — the Shenron virtual filesystem: one SQLite database holding the file tree
+ * `@aphrody/shenron-db/vfs` — the Shenron virtual filesystem: one SQLite database holding the file tree
  * (agent home, assets index, data), the aphrody-rag index and the public wiki rows, embedded
  * in the compiled Shenron binaries or opened from disk. Runtime class: `bun`.
  *

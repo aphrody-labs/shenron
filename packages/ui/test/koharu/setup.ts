@@ -5,12 +5,13 @@ import { afterEach, beforeEach, expect, mock, vi } from "bun:test";
 expect.extend(matchers);
 configure({ asyncUtilTimeout: process.platform === "win32" ? 10_000 : 1000 });
 
-import { queryClient } from "@shenron/ui/koharu/lib/queries";
-import { defaultShortcuts, useKoharuStore } from "@shenron/ui/koharu/lib/store";
+import { queryClient } from "@aphrody/shenron-ui/koharu/lib/queries";
+import { defaultShortcuts, useKoharuStore } from "@aphrody/shenron-ui/koharu/lib/store";
 
 const actual = await import("react-i18next");
 const { createInstance } = await import("i18next");
-const { default: translations } = await import("@shenron/ui/koharu/locales/en-US/translation.json");
+const { default: translations } =
+  await import("@aphrody/shenron-ui/koharu/locales/en-US/translation.json");
 const i18n = createInstance();
 await i18n.init({
   resources: { "en-US": { translation: translations } },

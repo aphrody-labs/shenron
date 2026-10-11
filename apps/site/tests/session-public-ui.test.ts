@@ -18,7 +18,7 @@ let headers = new Headers();
 let adminIp = false;
 
 mock.module("server-only", () => ({}));
-mock.module("@shenron/auth/next", () => ({ requestHeaders: async () => headers }));
+mock.module("@aphrody/shenron-auth/next", () => ({ requestHeaders: async () => headers }));
 mock.module("@/lib/auth", () => ({ auth: { api: { getSession: async () => null } } }));
 mock.module("@/lib/env", () => ({ env: { OWNER_ID: "owner-discord", OAUTH_ALLOWED_USERS: [] } }));
 mock.module("@/lib/admin-ip", () => ({ isAdminIp: () => adminIp }));
@@ -28,7 +28,7 @@ mock.module("@/lib/admin-token", () => ({
   verifyAdminCookie: () => false,
   verifyAdminTokenOrBearer: () => false,
 }));
-mock.module("@shenron/db/repos/accounts", () => ({
+mock.module("@aphrody/shenron-db/repos/accounts", () => ({
   createDiscordAccountLookup: () => ({ discordIdForUser: async () => null }),
 }));
 mock.module("@/lib/db", () => {

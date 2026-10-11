@@ -21,7 +21,7 @@ import "server-only";
  */
 
 import { transcriptionsDe } from "@/lib/databooks-index-shared";
-import { resolveRedisUrl } from "@shenron/config/services";
+import { resolveRedisUrl } from "@aphrody/shenron-config/services";
 
 /** Base 4 : 0/1/3 sont prises par le bot (indexeur, files, mémoire LLM). */
 const DB_INDEX = 4;

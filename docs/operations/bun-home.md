@@ -1,8 +1,8 @@
 # Configuration de l’accueil sur Bun
 
 Le contrat de l’accueil (scènes, sections, destinations et résolution défensive)
-vit dans `@shenron/config/home`. Les liens historiques sont résolus par une
-seule table partagée dans `@shenron/config/legacy-routes`. Les anciens imports
+vit dans `@aphrody/shenron-config/home`. Les liens historiques sont résolus par une
+seule table partagée dans `@aphrody/shenron-config/legacy-routes`. Les anciens imports
 du site réexportent ces modules ; aucune scène ni destination n’a été retirée.
 
 L’hôte Bun expose `GET /api/v1/site/home` sans cache et `POST` avec

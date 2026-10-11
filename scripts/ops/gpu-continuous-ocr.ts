@@ -9,8 +9,11 @@
 
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
-import { requireAiHttpToken, requireAiHttpUrl } from "@shenron/pipeline/ai/config";
-import { legacyAuditProjection, runRemoteBatch } from "@shenron/pipeline/aphrody/remote-ocr";
+import { requireAiHttpToken, requireAiHttpUrl } from "@aphrody/shenron-pipeline/ai/config";
+import {
+  legacyAuditProjection,
+  runRemoteBatch,
+} from "@aphrody/shenron-pipeline/aphrody/remote-ocr";
 
 const APHRODY_BIN = process.env.APHRODY_BIN?.trim() || "aphrody";
 const WORK_DIR = join(process.cwd(), "data", "ocr-gpu");

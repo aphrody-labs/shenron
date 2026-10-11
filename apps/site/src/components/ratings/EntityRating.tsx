@@ -11,9 +11,9 @@
 import Link from "next/link";
 import { Avatar } from "@/components/Avatar";
 import { useCallback, useEffect, useId, useState } from "react";
-import { Bulle, Chargement, ChevronBas, Corbeille, Etoile } from "@shenron/ui/icones";
+import { Bulle, Chargement, ChevronBas, Corbeille, Etoile } from "@aphrody/shenron-ui/icones";
 import { useMe } from "@/lib/use-me";
-import { RatingBadge, Stars } from "@shenron/ui/public/Stars";
+import { RatingBadge, Stars } from "@aphrody/shenron-ui/public/Stars";
 import { onTablistKeyDown } from "@/lib/tablist-keys";
 import { PlainField } from "@/components/editor/PlainField";
 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { eq, sql } from "drizzle-orm";
-import type { PageBannersConfig } from "@shenron/config/page-banners";
+import type { PageBannersConfig } from "@aphrody/shenron-config/page-banners";
 import { pageBanners } from "../schema";
 import type { ShenronPgDatabase } from "../types";
 

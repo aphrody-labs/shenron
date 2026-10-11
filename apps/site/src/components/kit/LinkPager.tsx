@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { T } from "@/components/T";
-import { LinkPager as PortableLinkPager } from "@shenron/ui/navigation/LinkPager";
+import { LinkPager as PortableLinkPager } from "@aphrody/shenron-ui/navigation/LinkPager";
 import type { ComponentProps } from "react";
 
 /** Next.js links and site translations for the portable link pager. */

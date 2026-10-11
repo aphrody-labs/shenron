@@ -11,10 +11,10 @@
  * la portée inclut désormais `PROMPT_VERSION`.
  */
 import { createHash } from "node:crypto";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
-import { createResilientRedis, type ResilientRedis } from "@shenron/db/redis";
+import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
+import { createResilientRedis, type ResilientRedis } from "@aphrody/shenron-db/redis";
 import { embedQueryVector } from "./rag";
-import { resolveRedisUrl } from "@shenron/config/services";
+import { resolveRedisUrl } from "@aphrody/shenron-config/services";
 
 /** Commandes Redis utilisées par le cache (même forme que le client `redis` de Bun). */
 export interface SemanticCacheStore {

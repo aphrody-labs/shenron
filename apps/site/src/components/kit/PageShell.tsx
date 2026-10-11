@@ -1,1 +1,1 @@
-export * from "@shenron/ui/layout/PageShell";
+export * from "@aphrody/shenron-ui/layout/PageShell";

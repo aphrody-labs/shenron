@@ -21,8 +21,8 @@ import {
   requireAiHttpUrl,
   requireEmbedBaseUrl as resolveEmbedBase,
   requireEmbeddingSpace,
-} from "@shenron/pipeline/ai/config";
-import { resolveDataPath } from "@shenron/config/paths";
+} from "@aphrody/shenron-pipeline/ai/config";
+import { resolveDataPath } from "@aphrody/shenron-config/paths";
 
 export type EnvSource = Record<string, string | undefined>;
 export type PathPlatform = "win32" | "posix";
@@ -64,7 +64,7 @@ function requireAiSetting(env: EnvSource, setting: AiEnvSetting, purpose: string
 }
 
 /**
- * E5 embedder base URL (ending in `/v1`), resolved by `@shenron/pipeline/ai/config`:
+ * E5 embedder base URL (ending in `/v1`), resolved by `@aphrody/shenron-pipeline/ai/config`:
  * `APHRODY_AI_EMBED_BASE_URL`, then the contract aliases
  * (`APHRODY_SHENRON_EMBED_BASE_URL`, `EMBED_URL` as an origin,
  * `APHRODY_RAG_EMBED_ENDPOINT` as an endpoint). No default (B13).

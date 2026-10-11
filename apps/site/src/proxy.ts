@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
-import { ADMIN_COOKIE } from "@shenron/auth/tokens";
+import { ADMIN_COOKIE } from "@aphrody/shenron-auth/tokens";
 import { resolveVisitor, type Visitor } from "@/lib/proxy-admin";
 import { isAdminIp } from "@/lib/admin-ip";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";

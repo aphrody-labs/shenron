@@ -1,5 +1,5 @@
 /**
- * Montage de `@shenron/api` dans le site (B14 — docs/architecture/STACK.md §2.2, D7) :
+ * Montage de `@aphrody/shenron-api` dans le site (B14 — docs/architecture/STACK.md §2.2, D7) :
  * mêmes routes additives que le bot (`/api/public/wiki/categories`,
  * `/api/public/wiki/{category}[/{idOrSlug}]`, `/api/public/openapi.json`),
  * servies par le catch-all `app/api/public/[...route]/route.ts` sur la base
@@ -11,11 +11,15 @@
  * le groupe wiki est désactivé et les chemins rendent le 404 historique.
  */
 import "server-only";
-import { clientIpFromHeaders } from "@shenron/config/net";
-import { createWikiReadRepository } from "@shenron/db/repos/wiki";
-import { createMemoryRateLimiter, createPublicCache, noopInvalidation } from "@shenron/api/http";
-import type { FetchableApi } from "@shenron/api/next";
-import { createShenronApi, type ShenronApi, type WikiReadPort } from "@shenron/api/server";
+import { clientIpFromHeaders } from "@aphrody/shenron-config/net";
+import { createWikiReadRepository } from "@aphrody/shenron-db/repos/wiki";
+import {
+  createMemoryRateLimiter,
+  createPublicCache,
+  noopInvalidation,
+} from "@aphrody/shenron-api/http";
+import type { FetchableApi } from "@aphrody/shenron-api/next";
+import { createShenronApi, type ShenronApi, type WikiReadPort } from "@aphrody/shenron-api/server";
 import { SITE_HOST, SITE_URL } from "@/lib/config";
 import { sitePluginPort } from "@/lib/plugin";
 
@@ -24,7 +28,7 @@ const SITE_PUBLIC_CORS_ORIGINS: readonly string[] = [
   ...new Set([SITE_URL, SITE_HOST, SITE_HOST.replace("https://", "https://www.")]),
 ];
 
-/** Application `@shenron/api` du site sur un port wiki donné (`null` → groupe désactivé). */
+/** Application `@aphrody/shenron-api` du site sur un port wiki donné (`null` → groupe désactivé). */
 function createSiteShenronApi(wiki: WikiReadPort | null): ShenronApi {
   return createShenronApi(
     {

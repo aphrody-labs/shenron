@@ -3,8 +3,8 @@ import { afterAll, describe, expect, test } from "bun:test";
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { testExecutable } from "@shenron/config/testing-executable";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
+import { testExecutable } from "@aphrody/shenron-config/testing-executable";
+import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
 import {
   ANTIGRAVITY_TIMEOUT_MS,
   antigravityChat,

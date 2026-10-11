@@ -4,7 +4,7 @@
  * single resolution point of the active agent home of the chat.
  *
  *   `<SHENRON_HOME>/agents/<id>/`  one home per user in the native `aphrody-agent-home` layout
- *                                  (`@shenron/db/agent-homes` DirAgentHomeStore), instantiated
+ *                                  (`@aphrody/shenron-db/agent-homes` DirAgentHomeStore), instantiated
  *                                  from the embedded public template `templates/agent-home`
  *   `<SHENRON_HOME>/agents/active.json`  `{ agentId }` of the active home
  *   `<home>/.aphrody/memory.sqlite`      the persistent chat memory of that home
@@ -30,8 +30,8 @@
  */
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { isDirectLoopback } from "@shenron/config/net";
-import { resolveAuthUrl, resolveSiteUrl } from "@shenron/config/public-urls";
+import { isDirectLoopback } from "@aphrody/shenron-config/net";
+import { resolveAuthUrl, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import {
   type AgentHomeSnapshot,
   type AgentHomeTemplate,
@@ -46,7 +46,7 @@ import {
   LOCAL_AGENT_ID,
   SHENRON_AGENT_TEMPLATE,
   updateAgentHome,
-} from "@shenron/db/agent-homes";
+} from "@aphrody/shenron-db/agent-homes";
 
 import type { ServerPaths } from "./config";
 

@@ -5,7 +5,7 @@
  * assembly around `@aphrody/m3-ai` (`MessageBubble`, `ChatComposer`) — persisted
  * conversations in a side pane, the streamed thread with its numbered citations, the
  * availability of the model. Transport, labels and availability are injected: the component
- * never fetches by itself and carries no text. Styles: `@shenron/ui/chat.css`.
+ * never fetches by itself and carries no text. Styles: `@aphrody/shenron-ui/chat.css`.
  */
 import { ChatComposer, MessageBubble } from "@aphrody/m3-ai";
 import { Banner, Button } from "@aphrody/m3-primitives";

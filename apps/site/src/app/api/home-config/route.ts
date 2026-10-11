@@ -12,7 +12,7 @@ import { readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { adminUserOrToken, isAdminOrToken } from "@/lib/admin-guard";
 import { HostHomeError } from "@/lib/host-home-error";
-import { ENV_ALIASES, envFirst } from "@shenron/config/env";
+import { ENV_ALIASES, envFirst } from "@aphrody/shenron-config/env";
 import { getHomeConfig, saveHomeConfig } from "@/lib/home-config";
 import type { HomeClip } from "@/lib/home-scenes";
 import { revalidatePath } from "next/cache";

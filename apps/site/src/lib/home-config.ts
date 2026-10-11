@@ -3,10 +3,14 @@
 import "server-only";
 import { cache } from "react";
 import { pickBestImage } from "@/lib/image-variants";
-import { resolveHostUrl } from "@shenron/config/public-urls";
-import { DEFAULT_HOME_CONFIG, resolveHomeConfig, type HomeConfig } from "@shenron/config/home";
-import { createShenronApiClient } from "@shenron/api/client";
-import { endpoints } from "@shenron/api/contract";
+import { resolveHostUrl } from "@aphrody/shenron-config/public-urls";
+import {
+  DEFAULT_HOME_CONFIG,
+  resolveHomeConfig,
+  type HomeConfig,
+} from "@aphrody/shenron-config/home";
+import { createShenronApiClient } from "@aphrody/shenron-api/client";
+import { endpoints } from "@aphrody/shenron-api/contract";
 import { HostHomeError } from "./host-home-error";
 export { HostHomeError } from "./host-home-error";
 /**

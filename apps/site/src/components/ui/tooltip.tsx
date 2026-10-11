@@ -1,1 +1,1 @@
-export * from "@shenron/ui/tooltip";
+export * from "@aphrody/shenron-ui/tooltip";

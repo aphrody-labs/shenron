@@ -101,7 +101,7 @@ main:focus {
 }
 
 /* Jetons de thème (@theme inline, miroirs :root des --dbz-*, pont shadcn) :
-   @shenron/ui/styles.css, importé en tête de ce fichier. Seules les variables
+   @aphrody/shenron-ui/styles.css, importé en tête de ce fichier. Seules les variables
    de gabarit propres au site (--shell-*) restent ici. */
 :root,
 .dark {
@@ -212,7 +212,7 @@ main:focus {
 }
 
 /* `.cible-44` et les primitives `.card` / `.btn*` / `.input` / `.badge*` :
-   @shenron/ui/styles.css, en `@layer components`. */
+   @aphrody/shenron-ui/styles.css, en `@layer components`. */
 
 /* ── Surfaces et libellés de marque — EN COUCHE `components` ──────────────
    Une classe posée dans `@layer utilities` arrive APRÈS les utilitaires que
@@ -223,7 +223,7 @@ main:focus {
 
    Ces deux classes vivent donc dans `components`, où l'ordre des couches rend
    la main aux utilitaires — même raisonnement que `.cible-44`
-   (@shenron/ui/styles.css). */
+   (@aphrody/shenron-ui/styles.css). */
 @layer components {
   /* === Surface panneau galactique ===
 	   Mesuré en production avant le déplacement : un
@@ -2031,7 +2031,7 @@ main:focus {
    — fond, bordure, arrondi, transition — que les points d'appel ajustent avec
    des utilitaires Tailwind. En `utilities`, elles écrasaient ces ajustements
    en silence. C'est déjà la couche de `.card`, `.btn` et `.badge-*`
-   (@shenron/ui/styles.css) :
+   (@aphrody/shenron-ui/styles.css) :
    les deux moitiés de la même trousse sont enfin dans la même couche. */
 
 @layer components {

@@ -58,7 +58,7 @@ import {
 } from "../src/lib/databooks-ocr/generations-deraillees";
 import { corrigerArtefactsModele } from "../src/lib/databooks-ocr/artefacts-modele";
 import { corrigerSosiesEtIntrusions } from "../src/lib/databooks-ocr/sosies-intrusions";
-import { SEUIL_COURT, classerDefaut } from "@shenron/config/databooks-defauts";
+import { SEUIL_COURT, classerDefaut } from "@aphrody/shenron-config/databooks-defauts";
 
 const args = process.argv.slice(2);
 const flag = (nom: string) => args.includes(`--${nom}`);

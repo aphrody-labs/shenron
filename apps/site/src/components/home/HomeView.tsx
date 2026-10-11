@@ -18,7 +18,7 @@
  * Les îlots client (recherche, direct, reprise, best-of, tops) se montent dedans.
  */
 import Link from "next/link";
-import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
 import { T } from "@/components/T";
 import { FeedLead, FeedStream } from "@/components/feed/FeedStream";

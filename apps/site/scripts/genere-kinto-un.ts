@@ -15,7 +15,11 @@
  *   bun scripts/genere-kinto-un.ts            # écrit les SVG
  *   bun scripts/genere-kinto-un.ts --rendu    # + PNG de contrôle dans /tmp
  */
-import { svgIcone, svgIllustration, svgMonochrome } from "@shenron/ui/toriyama-svg/kinto-un";
+import {
+  svgIcone,
+  svgIllustration,
+  svgMonochrome,
+} from "@aphrody/shenron-ui/toriyama-svg/kinto-un";
 
 const racine = new URL("../../../packages/ui/assets/", import.meta.url).pathname;
 const sorties: [string, string][] = [

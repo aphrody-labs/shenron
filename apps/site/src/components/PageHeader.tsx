@@ -1,1 +1,1 @@
-export * from "@shenron/ui/layout/PageHeader";
+export * from "@aphrody/shenron-ui/layout/PageHeader";

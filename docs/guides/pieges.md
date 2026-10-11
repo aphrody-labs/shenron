@@ -75,7 +75,7 @@ tenus ici.
 - **tsyringe + `import type`** casse `Reflect.metadata("design:paramtypes")` :
   toujours `import { Classe }` pour une classe injectée.
 - **`_entries.ts` désynchronisé** : une commande ajoutée sans
-  `bun --filter @shenron/bot gen:entries` n'est pas chargée.
+  `bun --filter @aphrody/shenron-bot gen:entries` n'est pas chargée.
 - **Intent retiré, handler muet** : sans l'intent `GuildMembers`,
   `message.member` vaut `null` et les handlers qui en dépendent (montée de
   niveau, rôles automatiques) deviennent des no-op silencieux. Vérifier les
@@ -184,7 +184,7 @@ tenus ici.
   script, jamais l'appeler pour son aide.
 - **Le WASM de koharu-canvas n'est pas suivi par Git** : sur un arbre propre (CI, worktree,
   installeur), `packages/koharu/src/wasm/` reste vide tant que
-  `bun --filter @shenron/koharu build:wasm` n'a pas tourné, et `/studio` comme l'audit des
+  `bun --filter @aphrody/shenron-koharu build:wasm` n'a pas tourné, et `/studio` comme l'audit des
   paquets cassent.
 - **`minimumReleaseAge` bloque une version `@aphrody/*` publiée le jour même** : l'exclusion
   se déclare dans `bunfig.toml`.

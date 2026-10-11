@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Submit a bounded Shenron seed crawl to Aphrody Web. */
-import { AphrodyWebClient } from "@shenron/pipeline/aphrody";
+import { AphrodyWebClient } from "@aphrody/shenron-pipeline/aphrody";
 
 function argument(name: string): string | undefined {
   const index = process.argv.indexOf(name);

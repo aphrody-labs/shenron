@@ -19,7 +19,7 @@ import {
   parseMangaResults,
   readMangaManifest,
   sha256File,
-} from "@shenron/pipeline/manga-ocr";
+} from "@aphrody/shenron-pipeline/manga-ocr";
 import { writeMangaTranscriptions } from "../src/lib/manga-publish";
 
 const args = Bun.argv.slice(2);

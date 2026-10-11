@@ -38,7 +38,7 @@ import { userHome } from "@aphrody/paths";
 import { Database } from "bun:sqlite";
 import postgres from "postgres";
 import { join } from "node:path";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
+import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
 
 const ROOT = new URL("..", import.meta.url).pathname; // apps/bot/
 const DEPOT = join(ROOT, "..", "..");

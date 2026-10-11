@@ -14,7 +14,7 @@ import {
   FIGHTERS,
   STORY_CHAPTERS,
 } from "./engine";
-import { KiExplosionEffect, type KiColorStyle } from "@shenron/ui/cinematic";
+import { KiExplosionEffect, type KiColorStyle } from "@aphrody/shenron-ui/cinematic";
 
 /**
  * Authentic Full-Body High-Definition Akira Toriyama Character Artwork.

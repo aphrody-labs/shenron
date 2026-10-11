@@ -20,7 +20,7 @@
  * via `@/components/editor` : le point d'entrée du module tirerait l'éditeur
  * riche et ses CSS dans le paquet d'une page publique.
  */
-import { Chargement, CocheCercle, Crayon, Croix } from "@shenron/ui/icones";
+import { Chargement, CocheCercle, Crayon, Croix } from "@aphrody/shenron-ui/icones";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 import { SignInDiscord } from "@/components/SignInDiscord";

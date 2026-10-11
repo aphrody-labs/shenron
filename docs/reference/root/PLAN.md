@@ -1,4 +1,5 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # PLAN.md — Plan Directeur Unifié de Shenron
 
 > **Autorité opérationnelle unique** — Relevé consolidé au `2026-10-07T18:36:38Z`.
@@ -10,7 +11,11 @@
   "last_verified_at": "2026-10-07T18:36:38Z",
   "status": "CONSOLIDÉ",
   "authoritative_file": "docs/reference/root/PLAN.md",
-  "freeze": { "databooks": false, "path": ".coord/FREEZE-databooks.json", "owner_lifted_at": "2026-10-11" },
+  "freeze": {
+    "databooks": false,
+    "path": ".coord/FREEZE-databooks.json",
+    "owner_lifted_at": "2026-10-11"
+  },
   "baseline": {
     "rag_chunks": 241558,
     "wiki_pages": 181636,
@@ -68,20 +73,20 @@ La cartographie native `aphrody-graph` unifie les quatre couches de la plateform
 
 ## 3. File d'Exécution Unique & Statut Consolidé
 
-| ID | Chantier | Priorité | Statut | Résultat & Preuve de Clôture |
-| :--- | :--- | :---: | :---: | :--- |
-| **SH-P0-001** | Sécurité OAuth & MCP | P0 | [x] | Fail-closed, égalités exactes, allowlists strictes sans secrets implicites. |
-| **SH-P0-002** | Typecheck TS 7.0 global | P0 | [x] | `bun run typecheck` exit 0 sur l'ensemble des 13 paquets et scripts racine. |
-| **SH-P0-003** | Intégrité des databooks sous gel | P0 | [x] | Garde commune CLI/HTTP, réception atomique, corruption active = 0. |
-| **SH-P0-004** | Gouvernance des données | P0 | [x] | Remplacement des suppressions physiques par masquage logique et révision. |
-| **SH-P0-005** | Qualité RAG & Anti-leak | P0 | [x] | Partitionnement anti-gold-leak vérifié : 1 495 rollouts / 1 091 cibles gold étanches. |
-| **SH-P0-016** | Unification de la stack modulaire | P0 | [x] | Découpage propre en paquets `@shenron/*` (config, db, auth, api, ui, pipeline, native). |
-| **SH-P0-017** | Sécurité staff & Bot admin | P0 | [x] | `checkAdmin` accorde les droits selon la politique staff (403 sinon, tests validés). |
-| **SH-P1-001** | Production & Sondes live | P1 | [x] | `dragonballfr.com` HTTP/2 200, `/api/health` ok, agent-card A2A 1.0 en ligne. |
-| **SH-P1-002** | Contrats OpenAPI & Tokens M3 | P1 | [x] | `openapi.ts --check` et `generate-tokens.ts --check` validés sans dérive. |
-| **SH-P1-003** | Moteur RE Dragon Ball (`shenron-re`)| P1 | [x] | Parser CPK/CRILAYLA et extraction arborescente, formats Dimps (BDM/BAC/CUS/PUP/MSG/EMB), WASM/Bun, carte prototype ABI natif 5, export récursif MSG et extraction de texte par WASM validés (39 tests Rust du crate, 12 tests pipeline WASM). |
-| **SH-P1-004** | Entraînement continu `shenron-chat-v2`| P1 | [ ] | Exécution itérative de `train-shenron-chat-loop.ts` avec monitoring GPU VRAM. |
-| **SH-P1-005** | Signature & Packaging Studio Desktop | P1 | [ ] | Packaging NSIS, mise à jour automatique Tauri 3, détection CUDA native. |
+| ID            | Chantier                               | Priorité | Statut | Résultat & Preuve de Clôture                                                                                                                                                                                                                  |
+| :------------ | :------------------------------------- | :------: | :----: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **SH-P0-001** | Sécurité OAuth & MCP                   |    P0    |  [x]   | Fail-closed, égalités exactes, allowlists strictes sans secrets implicites.                                                                                                                                                                   |
+| **SH-P0-002** | Typecheck TS 7.0 global                |    P0    |  [x]   | `bun run typecheck` exit 0 sur l'ensemble des 13 paquets et scripts racine.                                                                                                                                                                   |
+| **SH-P0-003** | Intégrité des databooks sous gel       |    P0    |  [x]   | Garde commune CLI/HTTP, réception atomique, corruption active = 0.                                                                                                                                                                            |
+| **SH-P0-004** | Gouvernance des données                |    P0    |  [x]   | Remplacement des suppressions physiques par masquage logique et révision.                                                                                                                                                                     |
+| **SH-P0-005** | Qualité RAG & Anti-leak                |    P0    |  [x]   | Partitionnement anti-gold-leak vérifié : 1 495 rollouts / 1 091 cibles gold étanches.                                                                                                                                                         |
+| **SH-P0-016** | Unification de la stack modulaire      |    P0    |  [x]   | Découpage propre en paquets `@aphrody/shenron-*` (config, db, auth, api, ui, pipeline, native).                                                                                                                                               |
+| **SH-P0-017** | Sécurité staff & Bot admin             |    P0    |  [x]   | `checkAdmin` accorde les droits selon la politique staff (403 sinon, tests validés).                                                                                                                                                          |
+| **SH-P1-001** | Production & Sondes live               |    P1    |  [x]   | `dragonballfr.com` HTTP/2 200, `/api/health` ok, agent-card A2A 1.0 en ligne.                                                                                                                                                                 |
+| **SH-P1-002** | Contrats OpenAPI & Tokens M3           |    P1    |  [x]   | `openapi.ts --check` et `generate-tokens.ts --check` validés sans dérive.                                                                                                                                                                     |
+| **SH-P1-003** | Moteur RE Dragon Ball (`shenron-re`)   |    P1    |  [x]   | Parser CPK/CRILAYLA et extraction arborescente, formats Dimps (BDM/BAC/CUS/PUP/MSG/EMB), WASM/Bun, carte prototype ABI natif 5, export récursif MSG et extraction de texte par WASM validés (39 tests Rust du crate, 12 tests pipeline WASM). |
+| **SH-P1-004** | Entraînement continu `shenron-chat-v2` |    P1    |  [ ]   | Exécution itérative de `train-shenron-chat-loop.ts` avec monitoring GPU VRAM.                                                                                                                                                                 |
+| **SH-P1-005** | Signature & Packaging Studio Desktop   |    P1    |  [ ]   | Packaging NSIS, mise à jour automatique Tauri 3, détection CUDA native.                                                                                                                                                                       |
 
 ---
 
@@ -120,7 +125,7 @@ Absorption du plan technique de migration DBXV2 et des outils d'extraction d'ass
 
 ## 6. Exploitation & Portes de Contrôle
 
-* **Contrôles CI obligatoires** :
+- **Contrôles CI obligatoires** :
   ```sh
   bun install --frozen-lockfile
   bun run typecheck
@@ -129,7 +134,7 @@ Absorption du plan technique de migration DBXV2 et des outils d'extraction d'ass
   bun packages/ui/scripts/generate-tokens.ts --check
   bun packages/pipeline/scripts/ai/check-contracts.ts
   ```
-* **Déploiement en production** :
+- **Déploiement en production** :
   - Délégué à `aphrody-infra` via `bun scripts/ops/release.ts` (tout build sur le vps).
   - Sondes de santé après bascule : `/api/health`, `/api/canon`, `/.well-known/agent-card.json`.
 

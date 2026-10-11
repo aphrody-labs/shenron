@@ -1,12 +1,12 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
 //
-// check-workspace-packages.ts — conformance and dependency graph of the @shenron/* packages
-// (docs/architecture/STACK.md §4.3). Thin CLI over @shenron/config/guards.
+// check-workspace-packages.ts — conformance and dependency graph of the @aphrody/shenron-* packages
+// (docs/architecture/STACK.md §4.3). Thin CLI over @aphrody/shenron-config/guards.
 //
 // Usage:
 //   bun scripts/audit/check-workspace-packages.ts                       # all checks, fail on violations missing from the baseline
-//   bun scripts/audit/check-workspace-packages.ts --package @shenron/db       # one package (app checks skipped)
+//   bun scripts/audit/check-workspace-packages.ts --package @aphrody/shenron-db       # one package (app checks skipped)
 //   bun scripts/audit/check-workspace-packages.ts --strict              # also fail while the `transitional` baseline is not empty
 //   bun scripts/audit/check-workspace-packages.ts --write-baseline      # record current violations (new ones go to `transitional`)
 //   bun scripts/audit/check-workspace-packages.ts --json                # machine-readable report on stdout
@@ -35,74 +35,74 @@ const BASELINE_FILE = join(import.meta.dir, "check-workspace-packages.baseline.j
 
 /**
  * Workspace packages checked against docs/architecture/STACK.md, all with every check: the
- * framework packages (§3.1–3.7) and the consumer packages (§3.8). `@shenron/images` has no
+ * framework packages (§3.1–3.7) and the consumer packages (§3.8). `@aphrody/shenron-images` has no
  * runtime class map yet.
  */
 const PACKAGES: Readonly<Record<string, string>> = {
-  "@shenron/config": "packages/config",
-  "@shenron/db": "packages/db",
-  "@shenron/auth": "packages/auth",
+  "@aphrody/shenron-config": "packages/config",
+  "@aphrody/shenron-db": "packages/db",
+  "@aphrody/shenron-auth": "packages/auth",
 
-  "@shenron/api": "packages/api",
-  "@shenron/ui": "packages/ui",
+  "@aphrody/shenron-api": "packages/api",
+  "@aphrody/shenron-ui": "packages/ui",
 
-  "@shenron/koharu": "packages/koharu",
-  "@shenron/lexicon": "packages/lexicon",
-  "@shenron/media": "packages/media",
-  "@shenron/native": "packages/native",
-  "@shenron/pipeline": "packages/pipeline",
+  "@aphrody/shenron-koharu": "packages/koharu",
+  "@aphrody/shenron-lexicon": "packages/lexicon",
+  "@aphrody/shenron-media": "packages/media",
+  "@aphrody/shenron-native": "packages/native",
+  "@aphrody/shenron-pipeline": "packages/pipeline",
 };
 
 /**
- * The one package allowed to load native code: `@shenron/native` binds shenron-ffi through
+ * The one package allowed to load native code: `@aphrody/shenron-native` binds shenron-ffi through
  * `bun:ffi` (CLAUDE.md, STACK §5). Everywhere else `bun:ffi` and `dlopen` stay offences.
  */
-const FFI_OWNER = "@shenron/native";
+const FFI_OWNER = "@aphrody/shenron-native";
 const FFI_RULES: ReadonlySet<string> = new Set(["bun-ffi", "dlopen", "aphrody-native"]);
 
 /**
- * Allowed @shenron/* edges (docs/architecture/STACK.md §4.1). `dev` edges are allowed only
+ * Allowed @aphrody/shenron-* edges (docs/architecture/STACK.md §4.1). `dev` edges are allowed only
  * in devDependencies. Anything not listed is forbidden.
  */
 const ALLOWED_EDGES: Readonly<
   Record<string, { runtime: readonly string[]; dev: readonly string[] }>
 > = {
-  "@shenron/config": { runtime: [], dev: [] },
-  "@shenron/db": { runtime: ["@shenron/config"], dev: [] },
-  "@shenron/auth": { runtime: ["@shenron/config"], dev: ["@shenron/db"] },
+  "@aphrody/shenron-config": { runtime: [], dev: [] },
+  "@aphrody/shenron-db": { runtime: ["@aphrody/shenron-config"], dev: [] },
+  "@aphrody/shenron-auth": { runtime: ["@aphrody/shenron-config"], dev: ["@aphrody/shenron-db"] },
 
-  "@shenron/api": {
+  "@aphrody/shenron-api": {
     runtime: [
-      "@shenron/config",
-      "@shenron/db",
-      "@shenron/auth",
-      "@shenron/lexicon",
-      "@shenron/pipeline",
+      "@aphrody/shenron-config",
+      "@aphrody/shenron-db",
+      "@aphrody/shenron-auth",
+      "@aphrody/shenron-lexicon",
+      "@aphrody/shenron-pipeline",
     ],
     dev: [],
   },
   // The UI layer hosts the Koharu editor (protocol, canvas), the studio (config/admin) and the
-  // Koharu export of the pipeline; none of them depends back on @shenron/ui.
-  "@shenron/ui": {
-    runtime: ["@shenron/config", "@shenron/koharu", "@shenron/pipeline"],
-    dev: ["@shenron/config"],
+  // Koharu export of the pipeline; none of them depends back on @aphrody/shenron-ui.
+  "@aphrody/shenron-ui": {
+    runtime: ["@aphrody/shenron-config", "@aphrody/shenron-koharu", "@aphrody/shenron-pipeline"],
+    dev: ["@aphrody/shenron-config"],
   },
 
   // Leaves: the Koharu client, the media helpers and the shenron-ffi binding.
-  "@shenron/koharu": { runtime: [], dev: [] },
+  "@aphrody/shenron-koharu": { runtime: [], dev: [] },
   // The one ja/fr/en lexicon (data embedded, no I/O): a leaf every layer may read.
-  "@shenron/lexicon": { runtime: [], dev: [] },
-  "@shenron/media": { runtime: [], dev: [] },
-  "@shenron/native": { runtime: [], dev: [] },
-  // Compute clients and the editorial pipeline; never @shenron/api, @shenron/auth or @shenron/ui.
-  "@shenron/pipeline": {
+  "@aphrody/shenron-lexicon": { runtime: [], dev: [] },
+  "@aphrody/shenron-media": { runtime: [], dev: [] },
+  "@aphrody/shenron-native": { runtime: [], dev: [] },
+  // Compute clients and the editorial pipeline; never @aphrody/shenron-api, @aphrody/shenron-auth or @aphrody/shenron-ui.
+  "@aphrody/shenron-pipeline": {
     runtime: [
-      "@shenron/config",
-      "@shenron/db",
-      "@shenron/koharu",
-      "@shenron/lexicon",
-      "@shenron/media",
-      "@shenron/native",
+      "@aphrody/shenron-config",
+      "@aphrody/shenron-db",
+      "@aphrody/shenron-koharu",
+      "@aphrody/shenron-lexicon",
+      "@aphrody/shenron-media",
+      "@aphrody/shenron-native",
     ],
     dev: [],
   },
@@ -111,46 +111,49 @@ const ALLOWED_EDGES: Readonly<
 /** Subpath restrictions on allowed package edges. */
 const EDGE_SUBPATHS: Readonly<Record<string, Readonly<Record<string, readonly string[]>>>> = {
   // Chat engine doctrine only (§4.1): personas and the agent home, never the pipeline runtime.
-  "@shenron/api": {
-    "@shenron/pipeline": [
-      "@shenron/pipeline/ai/prompts",
-      "@shenron/pipeline/agent-home",
-      "@shenron/pipeline/bxc/contracts",
+  "@aphrody/shenron-api": {
+    "@aphrody/shenron-pipeline": [
+      "@aphrody/shenron-pipeline/ai/prompts",
+      "@aphrody/shenron-pipeline/agent-home",
+      "@aphrody/shenron-pipeline/bxc/contracts",
     ],
   },
-  "@shenron/ui": {
+  "@aphrody/shenron-ui": {
     // The editor speaks the generated protocol and draws on the wasm canvas; the koharu-sdk
     // transport (`./native`, class bun) stays with the pipeline.
-    "@shenron/koharu": ["@shenron/koharu/protocol", "@shenron/koharu/canvas"],
+    "@aphrody/shenron-koharu": [
+      "@aphrody/shenron-koharu/protocol",
+      "@aphrody/shenron-koharu/canvas",
+    ],
     // Koharu export panel only.
-    "@shenron/pipeline": ["@shenron/pipeline/koharu"],
+    "@aphrody/shenron-pipeline": ["@aphrody/shenron-pipeline/koharu"],
   },
-  "@shenron/pipeline": {
+  "@aphrody/shenron-pipeline": {
     // §4.2: SQL clients, environment and guards; Redis for the live qualification only
     // (src/testing/live-rag.ts and its storage suite check Redis durability itself).
-    "@shenron/db": [
-      "@shenron/db/sql",
-      "@shenron/db/bun-sql",
-      "@shenron/db/env",
-      "@shenron/db/guards",
-      "@shenron/db/redis",
+    "@aphrody/shenron-db": [
+      "@aphrody/shenron-db/sql",
+      "@aphrody/shenron-db/bun-sql",
+      "@aphrody/shenron-db/env",
+      "@aphrody/shenron-db/guards",
+      "@aphrody/shenron-db/redis",
     ],
     // The koharu-sdk JSON Lines transport.
-    "@shenron/koharu": ["@shenron/koharu/native"],
+    "@aphrody/shenron-koharu": ["@aphrody/shenron-koharu/native"],
   },
 };
 
 /** Imports forbidden in a `"use client"` module (docs/architecture/STACK.md §4.2). */
 const CLIENT_FORBIDDEN = [
-  "@shenron/db/postgres-js",
-  "@shenron/db/sql",
-  "@shenron/db/bun-sql",
-  "@shenron/api/server",
-  "@shenron/pipeline",
+  "@aphrody/shenron-db/postgres-js",
+  "@aphrody/shenron-db/sql",
+  "@aphrody/shenron-db/bun-sql",
+  "@aphrody/shenron-api/server",
+  "@aphrody/shenron-pipeline",
 ];
 
 /** Explicitly pure entry points allowed from the site client despite a forbidden package root. */
-const CLIENT_ALLOWED_PURE = new Set(["@shenron/pipeline/re-wasm-web"]);
+const CLIENT_ALLOWED_PURE = new Set(["@aphrody/shenron-pipeline/re-wasm-web"]);
 
 type Severity = "error" | "warn";
 
@@ -326,7 +329,7 @@ function importSpecifiers(source: string): { specifier: string; index: number }[
 }
 
 function shenronPackageOf(specifier: string): string | null {
-  if (!specifier.startsWith("@shenron/")) return null;
+  if (!specifier.startsWith("@aphrody/shenron-")) return null;
   const [scope, name] = specifier.split("/");
   return `${scope}/${name}`;
 }
@@ -460,7 +463,7 @@ function checkTsconfig(name: string, dir: string): void {
     report(name, "tsconfig", "tsconfig.json missing or unreadable");
   } else {
     const expected =
-      name === "@shenron/config"
+      name === "@aphrody/shenron-config"
         ? /^\.\/tsconfig\/[\w-]+\.json$/
         : /^\.\.\/config\/tsconfig\/[\w-]+\.json$/;
     if (typeof tsconfig.extends !== "string" || !expected.test(tsconfig.extends)) {
@@ -485,7 +488,7 @@ function checkEdges(name: string, dir: string, manifest: Manifest): void {
     ["devDependencies", manifest.devDependencies],
   ] as const) {
     for (const dep of Object.keys(deps ?? {})) {
-      if (!dep.startsWith("@shenron/")) continue;
+      if (!dep.startsWith("@aphrody/shenron-")) continue;
       const ok =
         allowed.runtime.includes(dep) || (group === "devDependencies" && allowed.dev.includes(dep));
       if (!ok) report(name, "edges", `${group} → ${dep} is not allowed (§4.1)`);
@@ -513,7 +516,7 @@ function checkEdges(name: string, dir: string, manifest: Manifest): void {
   }
 }
 
-/** Cycles over every @shenron/* manifest edge (dependencies + dev + peer). */
+/** Cycles over every @aphrody/shenron-* manifest edge (dependencies + dev + peer). */
 function checkCycles(): void {
   const graph = new Map<string, string[]>();
   for (const [name, relDir] of Object.entries(PACKAGES)) {
@@ -628,7 +631,7 @@ function checkApps(): void {
     const rel = toPosix(relative(ROOT, file));
     const isClient = /^\s*(?:(?:\/\/[^\n]*|\/\*[\s\S]*?\*\/)\s*)*["']use client["']/.test(source);
     for (const { specifier } of importSpecifiers(source)) {
-      if (!specifier.startsWith("@shenron/")) continue;
+      if (!specifier.startsWith("@aphrody/shenron-")) continue;
       if (runtimeOf(specifier) === "bun")
         report("apps/site", "boundary", `${rel} imports bun-class ${specifier}`);
       if (
@@ -643,7 +646,7 @@ function checkApps(): void {
     }
   }
 
-  // transpilePackages covers every first-rank @shenron/* dependency of the site.
+  // transpilePackages covers every first-rank @aphrody/shenron-* dependency of the site.
   // withBun (@aphrody/next-bun) detects workspace packages publishing TypeScript sources automatically.
   const site = readJson<Manifest>(join(ROOT, "apps", "site", "package.json"));
   const nextConfigFile = join(ROOT, "apps", "site", "next.config.ts");

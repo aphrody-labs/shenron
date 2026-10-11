@@ -6,7 +6,7 @@ import {
   calculateXpRequiredForLevel,
   formatXP as formatXpHelper,
   type LevelThreshold,
-} from "@shenron/config/xp";
+} from "@aphrody/shenron-config/xp";
 
 export type { LevelThreshold };
 

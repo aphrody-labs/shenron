@@ -1,1 +1,1 @@
-export * from "@shenron/ui/cinematic/KenBurns";
+export * from "@aphrody/shenron-ui/cinematic/KenBurns";

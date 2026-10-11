@@ -11,7 +11,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Alerte, Corbeille, Crayon, Croix, Enregistrer, Plus } from "@shenron/ui/icones";
+import { Alerte, Corbeille, Crayon, Croix, Enregistrer, Plus } from "@aphrody/shenron-ui/icones";
 import { SmartField } from "@/components/admin/SmartField";
 import { api, apiAt } from "@/lib/admin-api";
 import { colLabel } from "@/lib/db-labels";

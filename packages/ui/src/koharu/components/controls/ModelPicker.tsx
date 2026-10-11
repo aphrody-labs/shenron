@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { modelKey, modelSelection, providerName } from "../../lib/translation";
-import type { Model, ModelSelection, ProviderPreference } from "@shenron/koharu/protocol";
+import type { Model, ModelSelection, ProviderPreference } from "@aphrody/shenron-koharu/protocol";
 import { Button } from "../../../components/button";
 import {
   InputGroup,

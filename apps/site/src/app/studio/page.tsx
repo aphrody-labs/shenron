@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 import Link from "next/link";
 import type { Metadata } from "next";
-import { PageShell } from "@shenron/ui/layout/PageShell";
-import { PageHeader } from "@shenron/ui/layout/PageHeader";
-import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
+import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { LibraryNav } from "@/components/library/LibraryNav";
 import { T } from "@/components/T";

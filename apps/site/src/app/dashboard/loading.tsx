@@ -1,4 +1,4 @@
-import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 
 export default function DashboardLoading() {
   return (

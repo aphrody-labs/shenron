@@ -1,6 +1,6 @@
 "use client";
 
-import { ApiAccess } from "@shenron/ui/client";
+import { ApiAccess } from "@aphrody/shenron-ui/client";
 
 export type AccesApiProps = {
   chemin: string;

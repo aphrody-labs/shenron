@@ -1,3 +1,3 @@
 // SPDX-License-Identifier: Apache-2.0
-// Compatibility entry; domain rules are owned by @shenron/config.
-export * from "@shenron/config/databooks-defauts";
+// Compatibility entry; domain rules are owned by @aphrody/shenron-config.
+export * from "@aphrody/shenron-config/databooks-defauts";

@@ -2,7 +2,7 @@
 
 # Médias de l’accueil partagé
 
-Le fond des scènes appartient à `@shenron/ui/public/SceneBackdrop`. Le site résout
+Le fond des scènes appartient à `@aphrody/shenron-ui/public/SceneBackdrop`. Le site résout
 les URL d’assets et fournit son rendu Next Image ; la lecture, les préférences et
 les couches visuelles appartiennent à la même UI React utilisable hors Next.
 Les couches proviennent du composant d’accueil présent dans `7ff639b` ; les

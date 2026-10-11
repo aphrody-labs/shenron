@@ -1,7 +1,7 @@
-import { PageShell } from "@shenron/ui/layout/PageShell";
-import { JAPANESE_FULL_COLOR_CATALOGUE } from "@shenron/config/manga-catalogue";
-import { PageHeader } from "@shenron/ui/layout/PageHeader";
-import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
+import { JAPANESE_FULL_COLOR_CATALOGUE } from "@aphrody/shenron-config/manga-catalogue";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
+import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
 import { T } from "@/components/T";
 import { ContributeRail, StatTiles } from "@/components/kit";
 import { Breadcrumbs } from "@/components/Breadcrumbs";

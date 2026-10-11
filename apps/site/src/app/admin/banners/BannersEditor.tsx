@@ -16,8 +16,8 @@ import { LoadingText } from "@/components/LoadingText";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
-import { Bibliotheque, Enregistrer, Illustration, Reinitialiser } from "@shenron/ui/icones";
-import { DragonBallLoader } from "@shenron/ui/toriyama";
+import { Bibliotheque, Enregistrer, Illustration, Reinitialiser } from "@aphrody/shenron-ui/icones";
+import { DragonBallLoader } from "@aphrody/shenron-ui/toriyama";
 import { ImageField } from "@/components/admin/ImageField";
 import { assetUrl } from "@/lib/assets";
 import {

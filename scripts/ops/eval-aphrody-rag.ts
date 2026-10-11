@@ -216,7 +216,7 @@ async function attestCompute(
 
 /**
  * B13: the private Aphrody API address has no default here. Returns the origin
- * resolved by `@shenron/pipeline/ai/config` (`APHRODY_AI_HTTP_URL`, then the legacy
+ * resolved by `@aphrody/shenron-pipeline/ai/config` (`APHRODY_AI_HTTP_URL`, then the legacy
  * `APHRODY_SHENRON_API_URL`), or throws an error naming the variables.
  */
 export function aphrodyApiUrlFromEnv(

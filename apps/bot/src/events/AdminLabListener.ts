@@ -8,7 +8,7 @@ import { ADMIN_LAB_CHANNEL_ID } from "~/lib/admin-lab";
 import { logger } from "~/lib/logger";
 import { env, isBotOwner } from "~/lib/env";
 import { PermissionFlagsBits } from "discord.js";
-import { resolveDiscordAi, APHRODY_DISCORD } from "@shenron/config/discord-ai";
+import { resolveDiscordAi, APHRODY_DISCORD } from "@aphrody/shenron-config/discord-ai";
 
 /**
  * AdminLabListener — Écoute et automatisation en temps réel du salon admin (🤖・lab-ia-admin).

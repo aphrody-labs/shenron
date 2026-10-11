@@ -8,7 +8,7 @@ import {
   MANGA_SERIES,
   type MangaSeries,
   mangaTomeMarkdown,
-} from "@shenron/pipeline/manga-ocr";
+} from "@aphrody/shenron-pipeline/manga-ocr";
 
 const args = Bun.argv.slice(2);
 const option = (name: string, fallback?: string): string | undefined => {

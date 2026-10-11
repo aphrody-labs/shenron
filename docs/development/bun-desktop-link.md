@@ -1,6 +1,6 @@
 # Connexion de Shenron Studio sur le serveur Bun
 
-`/api/desktop/link` est servi par `@shenron/api/host`, dans le frontal autonome
+`/api/desktop/link` est servi par `@aphrody/shenron-api/host`, dans le frontal autonome
 comme dans son serveur Bun direct. Il lit exclusivement la session Better Auth
 du backend. Les identités d'automatisation et les en-têtes de propriétaire ne
 permettent pas d'émettre un code de connexion Discord.

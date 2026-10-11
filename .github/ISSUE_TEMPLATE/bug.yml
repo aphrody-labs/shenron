@@ -23,7 +23,7 @@ body:
     id: logs
     attributes:
       label: Logs pertinents
-      description: Extrait de `bun --filter @shenron/bot dev`, de `shenron-server` ou des journaux du service. Masque les tokens.
+      description: Extrait de `bun --filter @aphrody/shenron-bot dev`, de `shenron-server` ou des journaux du service. Masque les tokens.
       render: text
   - type: input
     id: bun-version

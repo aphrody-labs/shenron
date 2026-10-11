@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { PageShell } from "@shenron/ui/layout/PageShell";
-import { PageHeader } from "@shenron/ui/layout/PageHeader";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { LibraryNav, WorkshopNav } from "@/components/library/LibraryNav";
 import { DatabooksCatalogManager } from "@/components/admin/DatabooksCatalogManager";

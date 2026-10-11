@@ -5,9 +5,9 @@ import {
   MangaCard as PortableMangaCard,
   type MangaCardProps,
   type UiCardImageProps,
-} from "@shenron/ui/public/MangaCard";
+} from "@aphrody/shenron-ui/public/MangaCard";
 
-export { CardGrid, SocialCounts } from "@shenron/ui/public/MangaCard";
+export { CardGrid, SocialCounts } from "@aphrody/shenron-ui/public/MangaCard";
 
 function renderImage({ src, alt, priority, sizes, className }: UiCardImageProps) {
   return <Image src={src} alt={alt} fill sizes={sizes} priority={priority} className={className} />;

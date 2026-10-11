@@ -1,2 +1,2 @@
 // SPDX-License-Identifier: Apache-2.0
-export * from "@shenron/config/legacy-routes";
+export * from "@aphrody/shenron-config/legacy-routes";

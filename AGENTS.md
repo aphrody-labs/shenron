@@ -60,7 +60,7 @@ Graphe de code : Graphify (`uv tool install graphifyy`, skill `/graphify`) index
   langue (`lang` ou `Accept-Language`, `fr | en | ja`) et renvoient les libellés localisés.
 - Un seul lexique de traduction (personnages, techniques, lieux… en ja/fr/en) sert le site,
   l'API, le bot, le plugin, le pipeline et le traducteur de Shenron Studio.
-- Koharu est un nom de code interne (crates `koharu-*`, `@shenron/koharu`) : le produit public
+- Koharu est un nom de code interne (crates `koharu-*`, `@aphrody/shenron-koharu`) : le produit public
   est **Shenron Studio**, et aucun texte visible ne dit « Koharu ».
 - La documentation (`docs/`) reste en français.
 
@@ -70,7 +70,7 @@ Graphe de code : Graphify (`uv tool install graphifyy`, skill `/graphify`) index
   autorisé : `docs/architecture/STACK.md` (§3–4), avec `RUNTIME.md` et `i18n.md` à côté. En
   cas d'écart, le code fait foi.
 - Variables d'environnement : `docs/operations/ENV.md`. Les défauts codés ne vivent que dans
-  `@shenron/config` ; le site lit l'environnement par `apps/site/src/lib/env.ts` (t3-env).
+  `@aphrody/shenron-config` ; le site lit l'environnement par `apps/site/src/lib/env.ts` (t3-env).
 - Plan directeur : `docs/reference/root/PLAN.md` (invariants éditoriaux). Mémoire datée :
   `data/home/MEMORY.md`, privée et ignorée par Git. Les rapports générés (signalements,
   objectifs, audits i18n/SEO, profils) s'écrivent dans `var/reports/`, jamais dans `docs/`.
@@ -116,7 +116,7 @@ bun run typecheck                      # tsc 7 : les 13 paquets, puis scripts/ (
 bun run lint                           # oxlint (.oxlintrc.json) sur apps packages scripts
 bun run test                           # bun test de chaque paquet, *.live.test.ts exclus
 bun run format:check                   # oxfmt
-bun run --filter @shenron/db test      # un seul paquet
+bun run --filter @aphrody/shenron-db test      # un seul paquet
 cd packages/db && bun test test/vfs-data.test.ts -t "motif"   # un fichier, un test
 cd apps/site && bun test --isolate tests/<fichier>.test.ts    # apps site et bot : --isolate
 bun run test:scripts                   # tests de scripts/ (bun test ./scripts)
@@ -126,7 +126,7 @@ bun run test:live                      # suites live (SHENRON_LIVE=1, services r
 Contrôles de dérive (CI) : `bun packages/api/scripts/openapi.ts --check` (sans `--check`, il
 régénère `packages/api/openapi/public.json`, à commiter), `bun packages/ui/scripts/generate-tokens.ts --check`,
 `bun packages/pipeline/scripts/ai/check-contracts.ts`. Migrations : audit hors ligne par
-`bun run --filter @shenron/db audit:migrations`.
+`bun run --filter @aphrody/shenron-db audit:migrations`.
 
 Rust : `bun run check:rust`, `bun run clippy:rust` (`-D warnings`), `bun run test:rust`
 (nextest sur les crates de `cargo metadata`), `cargo nextest run -p shenron-rag <filtre>`. Le bloc généré de
@@ -136,16 +136,16 @@ Rust : `bun run check:rust`, `bun run clippy:rust` (`-D warnings`), `bun run tes
 
 Lancer et construire :
 
-- `bun --filter @shenron/site dev` (Next, `.next-dev` ; `predev` copie les assets de
-  `packages/ui/assets` vers `public/`) ; `bun --filter @shenron/bot dev`.
+- `bun --filter @aphrody/shenron-site dev` (Next, `.next-dev` ; `predev` copie les assets de
+  `packages/ui/assets` vers `public/`) ; `bun --filter @aphrody/shenron-bot dev`.
 - `bun apps/server/src/cli.ts serve|doctor|paths|init` (le site standalone vient de
   `SHENRON_SITE_DIR` ou de `site/` à côté du binaire).
 - `bun run build:server` (`--target linux-x64|windows-x64`, `--flavor desktop|production`,
   `--skip-site`, `--no-embed`), `bun run build:bot`, `bun scripts/build/desktop.ts`
   (installeur NSIS), `cargo build --release -p shenron-{cli,mcp,desktop}`.
 - Après ajout ou retrait d'une commande ou d'un événement discordx :
-  `bun --filter @shenron/bot gen:entries` (barrel `apps/bot/src/_entries.ts`, commité).
-- `bun --filter @shenron/koharu protocol` régénère `packages/koharu/src/protocol.ts` (Specta) ;
+  `bun --filter @aphrody/shenron-bot gen:entries` (barrel `apps/bot/src/_entries.ts`, commité).
+- `bun --filter @aphrody/shenron-koharu protocol` régénère `packages/koharu/src/protocol.ts` (Specta) ;
   `build:wasm` reconstruit `koharu-canvas`.
 
 ## Workflow direct : lecteurs et livraison
@@ -234,11 +234,11 @@ bornés plutôt que relancer le travail.
 
 ## Architecture
 
-- **Graphe** : acyclique, `config ← db/auth ← api` ; `@shenron/ui` ne dépend que de `config`,
+- **Graphe** : acyclique, `config ← db/auth ← api` ; `@aphrody/shenron-ui` ne dépend que de `config`,
   `koharu` et `pipeline` ; aucun paquet n'importe une app. Chaque export déclare une classe `"shenron.runtime"`
   (`pure | server | bun | json`) auditée par `scripts/audit/check-workspace-packages.ts` :
-  un module `"use client"` n'importe ni `@shenron/db/postgres-js`, ni `api/server`, ni rien
-  de classe `bun`. `next.config.ts` liste chaque `@shenron/*` et `@aphrody/*` dans
+  un module `"use client"` n'importe ni `@aphrody/shenron-db/postgres-js`, ni `api/server`, ni rien
+  de classe `bun`. `next.config.ts` liste chaque `@aphrody/shenron-*` et `@aphrody/*` dans
   `transpilePackages`.
 - **Données** : PostgreSQL est la source éditoriale (Drizzle, `packages/db/src/schema.ts` pour
   le site, `bot-schema.ts` pour le schéma `bot`) ; le SQLite du bot (`data/bot.db`, ses propres
@@ -250,7 +250,7 @@ bornés plutôt que relancer le travail.
   un cosinus e5 ; construite par `scripts/data/build-vfs.ts`. Le store de conversations
   (`src/conversations/`) a le même contrat en SQLite local et en PostgreSQL (schéma `chat`),
   last-writer-wins sur `updatedAt`.
-- **API** : `@shenron/api/contract` est le catalogue zod v4 des endpoints (auth, cache, SSE,
+- **API** : `@aphrody/shenron-api/contract` est le catalogue zod v4 des endpoints (auth, cache, SSE,
   WebSocket) ; `server/` est un routeur `Bun.serve` natif (pas Hono), `createShenronApi(ports)`
   n'active que les groupes dont les ports sont fournis. Le site le monte par
   `app/api/public/[...route]` (`toNextRouteHandlers`), le bot en repli après ses routes
@@ -258,7 +258,7 @@ bornés plutôt que relancer le travail.
 - **Site** : Next 16 App Router, Turbopack ; `src/proxy.ts` remplace le middleware (host
   canonique, garde admin) ; next-intl par cookie `NEXT_LOCALE`, sans segment `[locale]`
   (`messages/{fr,en,ja}.json`). `/studio` (Shenron Studio, l'éditeur de traduction manga), `/desktop` (accueil de
-  l'application de bureau) et `/desktop/control` (son pilotage) montent `@shenron/ui`.
+  l'application de bureau) et `/desktop/control` (son pilotage) montent `@aphrody/shenron-ui`.
   Espace Bibliothèque (`src/lib/library.ts`) : `/wiki/manga`, `/wiki/databooks`, `/workshop`
   (avancement public ; outils staff `/workshop/{transcription,translation,databooks/[id]}`, gardés
   par `proxy.ts` comme `/admin`) et `/studio` partagent leurs onglets. Les anciennes adresses
@@ -275,7 +275,7 @@ bornés plutôt que relancer le travail.
   gardes métier (owner, staff, salon, permissions) restent dans `src/guards/`.
 - **Binaire autonome** (`apps/server`) : un `Bun.serve` frontal sert, dans cet ordre,
   `/api/local/*` (`bun:ffi` vers `libshenron_ffi` ; `health` rapporte les `groups` de
-  l'API, type `LocalHealthResponse` du contrat), l'hôte `@shenron/api/host` (`/api/v1/*`
+  l'API, type `LocalHealthResponse` du contrat), l'hôte `@aphrody/shenron-api/host` (`/api/v1/*`
   toujours, `/api/public/*` et `/mcp` quand il les sert, WebSocket du chat), les assets
   statiques puis `/assets/*` du VFS, et relaie le reste vers le `server.js` standalone de
   Next lancé en processus enfant. `src/backend.ts` câble l'hôte depuis `SHENRON_HOME` et
@@ -294,12 +294,12 @@ bornés plutôt que relancer le travail.
   `koharu-sdk` à côté) et ouvre `/desktop` ; le moteur de l'éditeur (`koharu-library`,
   propriétaire unique de l'état) tourne dans son processus derrière `koharu-app`, simple
   bibliothèque de commandes Specta (`docs/products/koharu/README.md`).
-- **Natif** : `@shenron/native` (`bun:ffi` vers `crates/shenron-ffi`, `SHENRON_FFI_LIB`) ;
-  `@shenron/koharu/protocol` parle au moteur par son transport (`src/transport.ts`) : Tauri
+- **Natif** : `@aphrody/shenron-native` (`bun:ffi` vers `crates/shenron-ffi`, `SHENRON_FFI_LIB`) ;
+  `@aphrody/shenron-koharu/protocol` parle au moteur par son transport (`src/transport.ts`) : Tauri
   IPC dans Shenron Studio, le pont `/api/local/koharu` ailleurs ; `./native` pilote
-  `koharu-sdk` (JSON Lines sur stdio) pour `@shenron/pipeline`.
+  `koharu-sdk` (JSON Lines sur stdio) pour `@aphrody/shenron-pipeline`.
   Les globals Tauri se lisent par `globalThis.__TAURI_INTERNALS__`.
-- **Chaîne éditoriale** : `bun run --filter @shenron/pipeline pipeline <ocr|rag|ia|translation|crawl|unify>`
+- **Chaîne éditoriale** : `bun run --filter @aphrody/shenron-pipeline pipeline <ocr|rag|ia|translation|crawl|unify>`
   délègue le calcul à Aphrody.
 
 ## Portes et invariants
@@ -307,7 +307,7 @@ bornés plutôt que relancer le travail.
 - `bun install --frozen-lockfile`, `bun run typecheck`, `bun run test`, `bun run lint` ; Rust :
   `bun run clippy:rust`, `bun run test:rust`. La CI GitHub : `ci.yml` pour Bun, `rust.yml` pour
   Rust (actif avec le secret `APHRODY_GIT_TOKEN`).
-- Les suites `*.live.test.ts` (et `describe.if(isLive())` de `@shenron/pipeline/testing/live-rag`) exigent les services réels.
+- Les suites `*.live.test.ts` (et `describe.if(isLive())` de `@aphrody/shenron-pipeline/testing/live-rag`) exigent les services réels.
 - Manga, scans et déclarations d'Akira Toriyama priment ; Fandom est interdit comme source.
   Aucune écriture OCR/traduction pendant un gel des databooks ; `rag:build` jamais au premier
   plan ni sur le bot de production.

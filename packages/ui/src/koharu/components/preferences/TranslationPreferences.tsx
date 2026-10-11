@@ -13,7 +13,7 @@ import type {
   Model,
   ProviderPreference,
   TranslationConfig as TranslationSettings,
-} from "@shenron/koharu/protocol";
+} from "@aphrody/shenron-koharu/protocol";
 import { Badge } from "@aphrody/m3-primitives";
 import { Popover, PopoverPopup, PopoverTrigger } from "../../../components/popover";
 import {

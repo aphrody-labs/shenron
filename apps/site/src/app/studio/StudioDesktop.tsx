@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 "use client";
 import { ThemeProvider } from "next-themes";
-import { Providers } from "@shenron/ui/koharu/providers";
-import { KoharuApp } from "@shenron/ui/koharu/components/app/KoharuApp";
+import { Providers } from "@aphrody/shenron-ui/koharu/providers";
+import { KoharuApp } from "@aphrody/shenron-ui/koharu/components/app/KoharuApp";
 import { useLangue } from "@/lib/i18n/client";
 
 /**

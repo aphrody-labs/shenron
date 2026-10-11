@@ -7,8 +7,8 @@
  */
 import { useTranslations } from "next-intl";
 import { useSyncExternalStore } from "react";
-import { DragonBall } from "@shenron/ui/toriyama";
-import { isTauri, tauriInvoke } from "@shenron/ui/studio/tauri-bridge";
+import { DragonBall } from "@aphrody/shenron-ui/toriyama";
+import { isTauri, tauriInvoke } from "@aphrody/shenron-ui/studio/tauri-bridge";
 
 type WindowAction = "minimize" | "toggle_maximize" | "close";
 

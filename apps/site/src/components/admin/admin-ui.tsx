@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Liaison entre les primitives d'administration de `@shenron/ui/admin` et le
+ * Liaison entre les primitives d'administration de `@aphrody/shenron-ui/admin` et le
  * site : libellés traduits (`admin.*` de `messages/*.json`) et liens Next. Rien
  * n'est redessiné ici — la table, la confirmation et l'en-tête vivent dans le
  * paquet ; ce module ne fait que leur passer la langue de l'interface.
@@ -20,7 +20,7 @@ import {
   useConfirm as useUiConfirm,
   type ConfirmLabels,
   type DataTableLabels,
-} from "@shenron/ui/admin";
+} from "@aphrody/shenron-ui/admin";
 import type { AdminPageId } from "./admin-pages";
 
 const TABLE_KEYS = [

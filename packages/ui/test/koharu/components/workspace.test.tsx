@@ -3,10 +3,10 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi, mock } from "bun:test";
 import { hoisted, stubGlobal, unstubAllGlobals } from "../hoisted";
 
-import { CanvasWorkspace } from "@shenron/ui/koharu/components/editor/CanvasWorkspace";
-import { pageKey, pagesKey, projectKey, queryClient } from "@shenron/ui/koharu/lib/queries";
-import { useKoharuStore } from "@shenron/ui/koharu/lib/store";
-import { commands, type Layer } from "@shenron/koharu/protocol";
+import { CanvasWorkspace } from "@aphrody/shenron-ui/koharu/components/editor/CanvasWorkspace";
+import { pageKey, pagesKey, projectKey, queryClient } from "@aphrody/shenron-ui/koharu/lib/queries";
+import { useKoharuStore } from "@aphrody/shenron-ui/koharu/lib/store";
+import { commands, type Layer } from "@aphrody/shenron-koharu/protocol";
 import { TooltipProvider } from "@aphrody/m3-primitives";
 
 const canvas = hoisted(() => ({
@@ -40,10 +40,10 @@ const canvasState = hoisted(() => ({
 }));
 const prefetchCanvasPages = hoisted(() => vi.fn(async () => []));
 
-mock.module("@shenron/ui/koharu/components/editor/useCanvas", () => ({
+mock.module("@aphrody/shenron-ui/koharu/components/editor/useCanvas", () => ({
   useCanvas: () => canvasState,
 }));
-mock.module("@shenron/koharu/canvas", () => ({
+mock.module("@aphrody/shenron-koharu/canvas", () => ({
   prefetchCanvasPages,
   workspaceColor: () => [245, 245, 245],
 }));

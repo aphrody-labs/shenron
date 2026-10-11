@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/api/host`: group availability (`groups`, `handles`) of the composed API, each
+ * `@aphrody/shenron-api/host`: group availability (`groups`, `handles`) of the composed API, each
  * missing capability reported without throwing, and the chat backends a host can call.
  */
 import { Database } from "bun:sqlite";
@@ -8,7 +8,7 @@ import { afterAll, describe, expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { ShenronVfs, writeWikiRows } from "@shenron/db/vfs";
+import { ShenronVfs, writeWikiRows } from "@aphrody/shenron-db/vfs";
 import { LocalApiGroups } from "../src/contract/local";
 import { createLocalApi, type LocalApi, usableChatBackends } from "../src/host";
 

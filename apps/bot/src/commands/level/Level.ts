@@ -1,4 +1,4 @@
-import { discordEmbedAvatar } from "@shenron/config/public-urls";
+import { discordEmbedAvatar } from "@aphrody/shenron-config/public-urls";
 import { injectable, inject } from "tsyringe";
 import { Bot, Discord, Guard, Slash, SlashOption } from "discordx";
 import { userTransformer } from "~/lib/slash-user";

@@ -30,7 +30,7 @@ import { FeatureEnabled } from "~/guards/FeatureEnabled";
 import { DatabaseService } from "~/db/index";
 import { hybridSearch, hitTruthWeight, type SearchOptions } from "~/lib/rag";
 import { TrainingService } from "~/services/TrainingService";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
+import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
 
 const SITE = "https://dragonballfr.com";
 
