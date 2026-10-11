@@ -7,7 +7,54 @@ import {
   robotsPermits,
   observedUrl,
   compareCaptures,
+  approvedSitemap,
+  parseSitemap,
+  sitemapLimits,
 } from "./crawl-beerus-site";
+test("sitemap documents distinguish indexes and decode URL entities", () => {
+  expect(
+    parseSitemap(
+      '<?xml version="1.0"?><sitemapindex><sitemap><loc>https://dragonball-super.com/sitemap-en.xml</loc></sitemap></sitemapindex>',
+    ),
+  ).toEqual({ index: true, urls: ["https://dragonball-super.com/sitemap-en.xml"] });
+  expect(
+    parseSitemap(
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://dragonball-super.com/en/updates/detail.html?id=20261011&amp;v=&#49;</loc></url></urlset>',
+    ),
+  ).toEqual({
+    index: false,
+    urls: ["https://dragonball-super.com/en/updates/detail.html?id=20261011&v=1"],
+  });
+});
+test("sitemap parsing rejects declarations, malformed roots and budget overflow", () => {
+  expect(
+    parseSitemap(
+      "<urlset><url><loc><![CDATA[https://dragonball-super.com/en/?a=1&b=2]]></loc></url></urlset>",
+    ).urls,
+  ).toEqual(["https://dragonball-super.com/en/?a=1&b=2"]);
+  expect(() =>
+    parseSitemap('<!DOCTYPE urlset [<!ENTITY x SYSTEM "file:///secret">]><urlset></urlset>'),
+  ).toThrow("declarations");
+  expect(() => parseSitemap("<urlset><url><loc>&custom;</loc></url></urlset>")).toThrow("entity");
+  expect(() => parseSitemap("<html></html>")).toThrow("root");
+  expect(() => parseSitemap("<urlset><loc>a</loc><loc>b</loc></urlset>", 1)).toThrow("URL budget");
+  expect(() => parseSitemap(" ".repeat(sitemapLimits.documentBytes + 1))).toThrow("byte budget");
+});
+test("sitemaps are restricted to approved HTTPS XML origins independently of page scope", () => {
+  expect(approvedSitemap("/sitemap.xml", "https://dragonball-super.com/en/")).toBe(
+    "https://dragonball-super.com/sitemap.xml",
+  );
+  expect(approvedSitemap("/sitemap.xml", "https://www.db-z.com/")).toBe(
+    "https://www.db-z.com/sitemap.xml",
+  );
+  for (const url of [
+    "https://evil.test/sitemap.xml",
+    "http://dragonball-super.com/sitemap.xml",
+    "https://token@dragonball-super.com/sitemap.xml",
+    "https://dragonball-super.com/movie.mpd",
+  ])
+    expect(approvedSitemap(url, "https://dragonball-super.com/")).toBeUndefined();
+});
 test("passive inventory records external HTTPS references without authorizing traversal", () => {
   expect(
     observedUrl(

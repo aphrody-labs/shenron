@@ -16,7 +16,10 @@ type InventoryEntry = {
   kind: InventoryKind;
   discoveredFrom: string;
   sourceSha256: string;
-  discoveredOnly: true;
+  discoveredOnly: boolean;
+  observedAt?: string;
+  observedSha256?: string;
+  observedStatus?: number;
   resolutionUnverified: boolean;
 };
 type CaptureIdentity = { url: string; sha256?: string; status?: number; state?: string };
@@ -48,6 +51,69 @@ export function observedUrl(raw: string, base: string): string | undefined {
   } catch {
     return;
   }
+}
+export const sitemapLimits = {
+  documents: 16,
+  documentBytes: 1024 * 1024,
+  bytes: 4 * 1024 * 1024,
+  urls: 2048,
+};
+
+export function approvedSitemap(raw: string, base: string): string | undefined {
+  const value = observedUrl(raw, base);
+  if (!value) return;
+  const url = new URL(value);
+  if (!["dragonball-super.com", "www.db-z.com"].includes(url.hostname)) return;
+  if (!url.pathname.endsWith(".xml") || isPlaybackMedia(value)) return;
+  return value;
+}
+
+export function parseSitemap(
+  xml: string,
+  maxUrls = sitemapLimits.urls,
+): { index: boolean; urls: string[] } {
+  if (new TextEncoder().encode(xml).byteLength > sitemapLimits.documentBytes)
+    throw new Error("Sitemap exceeds document byte budget");
+  if (/<!DOCTYPE|<!ENTITY/i.test(xml)) throw new Error("Sitemap declarations are forbidden");
+  const root = xml
+    .replace(/<\?xml[\s\S]*?\?>/g, "")
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .trim();
+  const opening = /^<(?:[\w.-]+:)?(sitemapindex|urlset)(?:\s[^<>]*|)>/i.exec(root);
+  if (!opening || !new RegExp(`</(?:[\\w.-]+:)?${opening[1]}\\s*>$`, "i").test(root))
+    throw new Error("Sitemap root is invalid");
+  const urls: string[] = [];
+  for (const match of root.matchAll(
+    /<(?:[\w.-]+:)?loc\s*>(<!\[CDATA\[[\s\S]*?\]\]>|[^<>]*)<\/(?:[\w.-]+:)?loc\s*>/gi,
+  )) {
+    if (urls.length >= maxUrls) throw new Error("Sitemap exceeds URL budget");
+    const value = match[1]!;
+    const decoded = (
+      value.startsWith("<![CDATA[")
+        ? value.slice(9, -3)
+        : value.replace(/&([^;]+);/g, (_, entity: string) => {
+            const named: Record<string, string> = {
+              amp: "&",
+              lt: "<",
+              gt: ">",
+              quot: '"',
+              apos: "'",
+            };
+            if (named[entity]) return named[entity];
+            if (!/^#(?:[0-9]+|x[0-9a-f]+)$/i.test(entity))
+              throw new Error("Unknown sitemap entity");
+            const code =
+              entity[1]?.toLowerCase() === "x"
+                ? parseInt(entity.slice(2), 16)
+                : Number(entity.slice(1));
+            if (!code || code > 0x10ffff || (code >= 0xd800 && code <= 0xdfff))
+              throw new Error("Invalid sitemap character");
+            return String.fromCodePoint(code);
+          })
+    ).trim();
+    if (decoded) urls.push(decoded);
+  }
+  return { index: opening[1]!.toLowerCase() === "sitemapindex", urls };
 }
 export function parseRobots(text: string): { rules: RobotsRule[]; sitemaps: string[] } {
   const groups: { agents: string[]; rules: RobotsRule[] }[] = [];
@@ -141,6 +207,8 @@ export function approvedUrl(raw: string, base: string, page: boolean): string | 
 }
 async function read(
   url: string,
+  byteLimit = 16 * 1024 * 1024,
+  onBytes?: (count: number) => void,
 ): Promise<{ status: number; type: string; bytes: Uint8Array; location: string | null }> {
   const response = await fetch(url, {
     redirect: "manual",
@@ -156,8 +224,9 @@ async function read(
   let size = 0;
   if (response.body) {
     for await (const chunk of response.body) {
+      onBytes?.(chunk.byteLength);
       size += chunk.byteLength;
-      if (size > 16 * 1024 * 1024) throw new Error("Source exceeds the bounded capture size");
+      if (size > byteLimit) throw new Error("Source exceeds the bounded capture size");
       chunks.push(chunk);
     }
   }
@@ -182,6 +251,8 @@ export async function crawl(
   const media: Record<string, unknown>[] = [];
   const corpus: Record<string, unknown>[] = [];
   const robots: Record<string, unknown>[] = [];
+  const sitemapCaptures: Record<string, unknown>[] = [];
+  const sitemapQueue: string[] = [];
   const inventory = new Map<string, InventoryEntry>();
   const observe = (raw: string, base: string, kind: InventoryKind, sourceSha256: string) => {
     const url = observedUrl(raw, base);
@@ -195,6 +266,16 @@ export async function crawl(
       discoveredOnly: true,
       resolutionUnverified: kind === "api-candidate",
     });
+    if (kind === "sitemap") {
+      const captured = sitemapCaptures.find((row) => row.url === url && row.sha256);
+      if (captured)
+        Object.assign(inventory.get(key)!, {
+          discoveredOnly: false,
+          observedAt: captured.fetchedAt,
+          observedSha256: captured.sha256,
+          observedStatus: captured.status,
+        });
+    }
   };
   const forbidden = new Map<string, RobotsRule[]>();
   const robotsUnavailable = new Set<string>();
@@ -213,8 +294,16 @@ export async function crawl(
         sitemaps,
         sha256: hash(r.bytes),
       });
-      for (const sitemap of sitemaps)
+      for (const sitemap of sitemaps) {
         observe(sitemap, origin + "/robots.txt", "sitemap", hash(r.bytes));
+        const approved = approvedSitemap(sitemap, origin + "/robots.txt");
+        if (
+          approved &&
+          sitemapQueue.length < sitemapLimits.documents &&
+          !sitemapQueue.includes(approved)
+        )
+          sitemapQueue.push(approved);
+      }
     } catch {
       robotsUnavailable.add(origin);
       robots.push({
@@ -229,6 +318,99 @@ export async function crawl(
     if (robotsUnavailable.has(parsed.origin)) return false;
     return robotsPermits(url, forbidden.get(parsed.origin) ?? []);
   };
+  const sitemapSeen = new Set<string>();
+  let sitemapBytes = 0;
+  let sitemapUrls = 0;
+  while (
+    sitemapQueue.length &&
+    sitemapSeen.size < sitemapLimits.documents &&
+    sitemapBytes < sitemapLimits.bytes &&
+    sitemapUrls < sitemapLimits.urls
+  ) {
+    const url = sitemapQueue.shift()!;
+    if (sitemapSeen.has(url)) continue;
+    sitemapSeen.add(url);
+    if (!permitted(url)) {
+      sitemapCaptures.push({
+        url,
+        state: robotsUnavailable.has(new URL(url).origin)
+          ? "robots_unavailable"
+          : "robots_excluded",
+      });
+      continue;
+    }
+    try {
+      const r = await read(
+        url,
+        Math.min(sitemapLimits.documentBytes, sitemapLimits.bytes - sitemapBytes),
+        (count) => {
+          sitemapBytes += count;
+        },
+      );
+      const digest = hash(r.bytes);
+      const fetchedAt = new Date().toISOString();
+      await writeFile(join(directory, "bodies", digest), r.bytes, { mode: 0o600 });
+      const row: Record<string, unknown> = {
+        url,
+        status: r.status,
+        contentType: r.type,
+        sha256: digest,
+        bytes: r.bytes.byteLength,
+        fetchedAt,
+      };
+      sitemapCaptures.push(row);
+      for (const reference of inventory.values())
+        if (reference.url === url && reference.kind === "sitemap")
+          Object.assign(reference, {
+            discoveredOnly: false,
+            observedAt: fetchedAt,
+            observedSha256: digest,
+            observedStatus: r.status,
+          });
+      if (r.status >= 300 && r.status < 400 && r.location) {
+        observe(r.location, url, "sitemap", digest);
+        const destination = approvedSitemap(r.location, url);
+        row.redirectLocation = observedUrl(r.location, url);
+        row.redirectApproved = !!destination;
+        if (
+          destination &&
+          !sitemapSeen.has(destination) &&
+          sitemapQueue.length + sitemapSeen.size < sitemapLimits.documents
+        )
+          sitemapQueue.push(destination);
+      }
+      if (r.status !== 200) continue;
+      const parsed = parseSitemap(
+        new TextDecoder().decode(r.bytes),
+        sitemapLimits.urls - sitemapUrls,
+      );
+      sitemapUrls += parsed.urls.length;
+      row.index = parsed.index;
+      row.listedUrls = parsed.urls.length;
+      for (const listed of parsed.urls) {
+        observe(listed, url, parsed.index ? "sitemap" : "page-link", digest);
+        const next = parsed.index ? approvedSitemap(listed, url) : approvedUrl(listed, url, true);
+        if (!next || isPlaybackMedia(next)) continue;
+        if (parsed.index) {
+          if (
+            !sitemapSeen.has(next) &&
+            !sitemapQueue.includes(next) &&
+            sitemapQueue.length + sitemapSeen.size < sitemapLimits.documents
+          )
+            sitemapQueue.push(next);
+        } else if (!frontier.includes(next) && frontier.length < 128) frontier.push(next);
+      }
+    } catch {
+      const captured = sitemapCaptures.find((row) => row.url === url);
+      if (captured) captured.state = "invalid";
+      else
+        sitemapCaptures.push({
+          url,
+          state: "unavailable_or_invalid",
+          fetchedAt: new Date().toISOString(),
+        });
+    }
+  }
   while (frontier.length && seen.size < 128) {
     const url = frontier.shift()!;
     if (seen.has(url)) continue;
@@ -412,6 +594,13 @@ export async function crawl(
     verifiedAt: new Date().toISOString(),
     seeds,
     robots,
+    sitemaps: sitemapCaptures,
+    sitemapBudget: {
+      limits: sitemapLimits,
+      bytes: sitemapBytes,
+      listedUrls: sitemapUrls,
+      remaining: sitemapQueue,
+    },
     pages,
     media,
     privateArchive: true,
@@ -436,6 +625,7 @@ export async function crawl(
       for (const [kind, rows] of [
         ["page", pages],
         ["asset", media],
+        ["sitemap", sitemapCaptures],
       ] as const) {
         for (const row of rows)
           insertCapture.run(
@@ -480,7 +670,8 @@ export async function crawl(
     if (
       previous.schema !== "shenron-source-crawl/v1" ||
       !Array.isArray(previous.pages) ||
-      !Array.isArray(previous.media)
+      !Array.isArray(previous.media) ||
+      (previous.sitemaps !== undefined && !Array.isArray(previous.sitemaps))
     )
       throw new Error("Previous capture manifest invalid");
     await writeFile(
@@ -490,9 +681,10 @@ export async function crawl(
           schema: "shenron-source-delta/v1",
           verifiedAt: report.verifiedAt,
           previousVerifiedAt: previous.verifiedAt,
-          ...compareCaptures([...previous.pages, ...previous.media], [
+          ...compareCaptures([...previous.pages, ...previous.media, ...(previous.sitemaps ?? [])], [
             ...pages,
             ...media,
+            ...sitemapCaptures,
           ] as CaptureIdentity[]),
           unobservedDoesNotProveRemoval: true,
         },
