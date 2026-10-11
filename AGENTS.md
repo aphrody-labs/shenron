@@ -19,6 +19,23 @@ Mémoire des conversations : avant tout travail substantiel, lire `data/home/MEM
 
 Session cloud : `docs/operations/CLOUD-SESSION.md` (hooks, SSH, secrets) ; chantiers ouverts dans `docs/reference/root/REPRISE.md`, lus au démarrage et repris sans demander jusqu'à la production.
 
+## Exécution autonome NHIL
+
+L’utilisateur a autorisé l’exécution autonome de bout en bout dans le périmètre de chaque
+demande, l’usage des CLI/MCP/skills pertinents et la délégation parallèle des sous-tâches
+indépendantes. Au début d’un travail substantiel, formuler l’objectif concret depuis la demande
+courante, reprendre l’objectif actif correspondant s’il existe, puis poursuivre jusqu’aux portes
+requises et à la livraison sans demander de confirmation intermédiaire. Trancher les choix
+réversibles, continuer les tâches indépendantes en cas de blocage, déléguer par défaut quand cela
+réduit réellement le délai et revendiquer des chemins disjoints. Garder les tâches simples ou
+fortement couplées dans un seul fil ; relire chaque résultat délégué.
+
+Cette autorisation ne change ni le périmètre demandé, ni les accès disponibles, ni les règles
+données, les politiques des outils/reviewers ou les propriétaires techniques. Ne pas transformer
+un ancien backlog en nouvelle demande. Si une approbation externe exacte ou une décision
+indispensable du propriétaire manque, terminer d’abord le travail indépendant autorisé puis
+rapporter le blocage concret. Suivre le skill global `nhil` et son rappel au démarrage.
+
 Graphe de code : Graphify (`uv tool install graphifyy`, skill `/graphify`) indexe le code localement, sans LLM (`.graphifyignore`). `graphify update .` construit ou rafraîchit le graphe ; préférer `graphify query "<question>"`, `graphify explain` ou `graphify path` aux greps larges quand `graphify-out/graph.json` existe (sortie locale, ignorée par Git).
 
 ## Langues et noms

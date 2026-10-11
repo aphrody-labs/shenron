@@ -37,8 +37,9 @@ const ssh = Bun.spawnSync(["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=5
 });
 
 const context = [
-  `[shenron] session ${remote ? "cloud" : "locale"} : mode full yolo, aucun humain dans la boucle.`,
-  "Reprends sans demander les chantiers ouverts ci-dessous, de bout en bout : code, gates, commit, push sur main, puis production par SSH (`bun scripts/ops/release.ts`, tout build sur le vps, sondes, ENV/restarts via `aphrody-infra ssh exec --host vps|dbfr`).",
+  `[shenron] session ${remote ? "cloud" : "locale"} : exécution autonome NHIL, dans le périmètre autorisé.`,
+  "NHIL SessionStart : définir l’objectif concret à partir de la demande utilisateur courante, ou reprendre le goal actif correspondant ; pour un travail substantiel, charger le skill nhil et poursuivre jusqu’aux gates et à la livraison. Utiliser les skills, MCP et CLI pertinents ; déléguer par défaut les sous-tâches indépendantes avec chemins disjoints et vérifier chaque résultat. Les chantiers de REPRISE.md guident la reprise quand ils correspondent à la demande, sans créer de portée depuis un backlog ancien. Respecter les contrôles d’accès et d’approbation des outils.",
+  "Pour Shenron, suivre les gates, le workflow commit/push et la livraison de AGENTS.md ; les changements de production passent par le chemin Aphrody Infra (builds sur vps, artefacts scellés vers dbfr, sondes et ENV/restarts via `aphrody-infra`).",
   `SSH production (alias vps) : ${ssh.exitCode === 0 ? "joignable" : "indisponible (voir docs/operations/CLOUD-SESSION.md)"}.`,
   `Branche ${branch}. Derniers commits :\n${head}`,
   dirty
