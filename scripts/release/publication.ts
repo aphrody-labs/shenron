@@ -11,7 +11,12 @@ export async function readPublishedVersion(
 ) {
   for (let attempt = 0; attempt < 13; attempt++) {
     const response = await request(
-      "https://registry.npmjs.org/" + encodeURIComponent(name) + "/" + version,
+      "https://registry.npmjs.org/" +
+        encodeURIComponent(name) +
+        "/" +
+        version +
+        "?readback=" +
+        Date.now(),
       {
         redirect: "error",
         signal: AbortSignal.timeout(20_000),
