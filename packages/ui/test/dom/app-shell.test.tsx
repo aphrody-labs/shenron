@@ -64,7 +64,7 @@ describe("AppShell clicks", () => {
     fireEvent.click(within(sheet).getByRole("link", { name: "Home" }), { ctrlKey: true });
     expect(screen.getByRole("dialog")).toBe(sheet);
     fireEvent.click(within(sheet).getByRole("link", { name: "Home" }));
-    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    await waitFor(() => expect(screen.queryByRole("dialog") === null).toBe(true));
     expect(screen.getByTestId("path").textContent).toBe("/");
     expect(screen.getByRole("button", { name: "Plus" }).getAttribute("aria-expanded")).toBe(
       "false",
@@ -92,7 +92,7 @@ describe("AppShell clicks", () => {
       desktop = true;
       for (const listener of listeners) listener();
     });
-    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    await waitFor(() => expect(screen.queryByRole("dialog") === null).toBe(true));
     expect(document.querySelector("main")?.closest("[aria-hidden='true']")).toBeNull();
     fireEvent.click(screen.getByRole("link", { name: "Latest news" }));
     expect(screen.getByTestId("path").textContent).toBe("/news");
