@@ -54,7 +54,7 @@ export const crawlIngestPolicySchema = z
             evidence: sourceUrl,
             rights: z
               .object({
-                ragPermitted: z.literal(true),
+                ragPermitted: z.boolean(),
                 trainingPermitted: z.boolean(),
                 publicImagesPermitted: z.boolean(),
               })
@@ -88,6 +88,7 @@ const nativeDocumentSchema = z.object({
   payload: z.object({
     title_raw: z.string().max(10000),
     body_markdown: z.string().max(1024 * 1024),
+    public_excerpt: z.string().max(8000).optional(),
     embedded_media: z
       .array(
         z.object({
@@ -146,7 +147,10 @@ export function projectNativeCrawl(
       url: document.canonical_url,
       kind: source.kind,
       title: text(document.payload.title_raw, 1000) || document.canonical_url,
-      excerpt: body.replace(/\s+/g, " ").slice(0, 8000),
+      excerpt: text(
+        document.payload.public_excerpt ?? (source.rights.ragPermitted ? body : ""),
+        8000,
+      ).replace(/\s+/g, " "),
       contentHash: digest(body),
       httpStatus: document.http_status,
       fetchedAt: document.timestamp_utc,

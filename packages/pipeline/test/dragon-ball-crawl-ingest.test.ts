@@ -11,6 +11,12 @@ import {
   type CrawlRegistryPort,
   type ExternalCrawlRecord,
 } from "../src/dragon-ball/crawl-ingest";
+import {
+  auditDatasetCoverage,
+  digest,
+  sourceManifestSchema,
+  type DatasetManifest,
+} from "../src/dragon-ball/source-coverage";
 
 const roots: string[] = [];
 afterEach(async () => {
@@ -91,6 +97,122 @@ test("unreviewed domains, malformed exports and Fandom including archive wrapper
       ...policy,
       sources: [{ ...source("dragon-ball-official.com"), reviewed: false }],
     }),
+  ).toThrow();
+});
+
+test("reference intake preserves denied RAG, training and public image rights without canon promotion", async () => {
+  const denied = crawlIngestPolicySchema.parse({
+    ...policy,
+    sources: policy.sources.map((entry) => ({
+      ...entry,
+      rights: { ragPermitted: false, trainingPermitted: false, publicImagesPermitted: false },
+    })),
+  });
+  const records = projectNativeCrawl(document(), denied);
+  expect(records).toHaveLength(2);
+  expect(records[0]!.excerpt).toBe("");
+  for (const record of records) {
+    expect(record.provenance.rights).toEqual({
+      ragPermitted: false,
+      trainingPermitted: false,
+      publicImagesPermitted: false,
+    });
+    expect(record.provenance.canonicalEligible).toBe(false);
+  }
+  const deposited: ExternalCrawlRecord[] = [];
+  const report = await ingestNativeCrawl(
+    { inputPath: await exportFile([document()]), policy: denied, apply: true },
+    {
+      assertReady: async () => {},
+      upsert: async (record) => {
+        deposited.push(record);
+        return "applied";
+      },
+    },
+  );
+  expect(report).toMatchObject({ applied: 2, canonicalPromotions: 0, complete: true });
+  expect(deposited).toEqual(records);
+  expect(() =>
+    sourceManifestSchema.shape.rights.parse({
+      ragPermitted: false,
+      trainingPermitted: false,
+      publicImagesPermitted: false,
+    }),
+  ).toThrow();
+  const manifest: DatasetManifest = {
+    version: 1,
+    id: "official_news",
+    family: "official_news",
+    title: "Reference fixture",
+    citation: document().canonical_url,
+    edition: { publisher: "Fixture", format: "digital", language: "en", identifier: "reference" },
+    unit: "document",
+    asOf: "2026-10-11",
+    enumerationEvidence: document().canonical_url,
+    enumerationReviewed: true,
+    expectedIds: ["reference"],
+    editorialTarget: "none",
+    rights: {
+      basis: "permission",
+      evidence: "Reviewed fixture",
+      ragPermitted: false,
+      trainingPermitted: true,
+      publicImagesPermitted: false,
+    },
+    trainingReview: "approved",
+    items: [],
+  };
+  const coverage = auditDatasetCoverage(
+    {
+      version: 1,
+      asOf: manifest.asOf,
+      families: [
+        {
+          family: manifest.family,
+          expectedIds: [manifest.id],
+          enumerationEvidence: manifest.citation,
+          enumerationReviewed: true,
+        },
+      ],
+    },
+    [{ manifest, digest: digest(JSON.stringify(manifest)), gaps: [] }],
+    { asOf: manifest.asOf, editorialFrozen: false },
+  );
+  expect(coverage.datasets).toContainEqual(
+    expect.objectContaining({
+      id: manifest.id,
+      coverageComplete: true,
+      ragReady: false,
+      trainingReady: false,
+    }),
+  );
+  expect(coverage.gaps).toContainEqual({
+    family: manifest.family,
+    datasetId: manifest.id,
+    code: "rag-rights-unapproved",
+  });
+});
+
+test("a reviewed public excerpt does not expose the private captured body or alter its content hash", () => {
+  const input = document();
+  const original = projectNativeCrawl(input, policy)[0]!;
+  const summarized = projectNativeCrawl(
+    { ...input, payload: { ...input.payload, public_excerpt: "Original factual summary." } },
+    policy,
+  )[0]!;
+  expect(summarized.excerpt).toBe("Original factual summary.");
+  expect(summarized.excerpt).not.toContain("PRIVATE SOURCE BODY");
+  expect(summarized.contentHash).toBe(original.contentHash);
+  expect(summarized.provenance.rawChecksum).toBe(original.provenance.rawChecksum);
+  expect(
+    projectNativeCrawl({ ...input, payload: { ...input.payload, public_excerpt: "" } }, policy)[0]!
+      .excerpt,
+  ).toBe("");
+  expect(() =>
+    projectNativeCrawl(
+      { ...input, payload: { ...input.payload, public_excerpt: "x".repeat(8001) } },
+      policy,
+    ),
   ).toThrow();
 });
 
