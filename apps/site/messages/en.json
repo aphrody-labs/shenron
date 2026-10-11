@@ -17,7 +17,8 @@
     "selected": "{version}External player “{name}” selected.",
     "watchLegally": "Watch legally",
     "availableLanguages": "Observed versions",
-    "legalOfferNote": "Offered by {providers}. The link opens the provider catalogue; a subscription or purchase may be required."
+    "legalOfferNote": "Offered by {providers}. The link opens the provider catalogue; a subscription or purchase may be required.",
+    "numberUnverified": "Episode number unverified"
   },
   "mangaCatalog": {
     "pageColor": {
@@ -1029,6 +1030,17 @@
       "newTab": "(opens in a new tab)"
     },
     "jeux": {
+      "2048": {
+        "help": "Swipe the board, use the arrow keys once it has focus, or the buttons below it.",
+        "board": "2048 board: merge fighters of equal power",
+        "controls": "Move the tiles",
+        "up": "Up",
+        "down": "Down",
+        "left": "Left",
+        "right": "Right",
+        "score": "Total ki: {score}",
+        "gameOver": "Game over. Final ki: {score}."
+      },
       "xenoverse": {
         "cardDescription": "Explore Xenoverse 2 formats and analyze data extracted from your copy locally.",
         "title": "Dragon Ball Xenoverse 2",
@@ -1048,17 +1060,6 @@
         "preview": "Show preview ({count} records)",
         "invalid": "Unreadable format",
         "oversize": "File exceeds 16 MiB and was skipped"
-      },
-      "2048": {
-        "help": "Swipe the board, use the arrow keys once it has focus, or the buttons below it.",
-        "board": "2048 board: merge fighters of equal power",
-        "controls": "Move the tiles",
-        "up": "Up",
-        "down": "Down",
-        "left": "Left",
-        "right": "Right",
-        "score": "Total ki: {score}",
-        "gameOver": "Game over. Final ki: {score}."
       },
       "play": "Play",
       "discordOnly": "Playable on Discord only",
@@ -1500,8 +1501,8 @@
       "play": "Play",
       "discord": "Hangman and member challenges are played on the Discord server.",
       "items": {
-        "dragon_pixel": "Retro 2D fighter with 60 FPS WASM: 15 Story Mode chapters and Ki beam clashes.",
         "2048": "Merge warriors up to Whis and push your Ki higher.",
+        "dragon_pixel": "Retro 2D fighter with 60 FPS WASM: 15 Story Mode chapters and Ki beam clashes.",
         "pfc": "Rock, paper, scissors with Ki techniques.",
         "morpion": "Line up three X before the bot does.",
         "bingo": "Find the hidden power level in ten scans."

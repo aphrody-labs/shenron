@@ -17,7 +17,8 @@
     "selected": "{version}Lecteur externe « {name} » sélectionné.",
     "watchLegally": "Regarder légalement",
     "availableLanguages": "Versions relevées",
-    "legalOfferNote": "Proposé par {providers}. Le lien ouvre le catalogue du fournisseur ; abonnement ou achat selon le titre."
+    "legalOfferNote": "Proposé par {providers}. Le lien ouvre le catalogue du fournisseur ; abonnement ou achat selon le titre.",
+    "numberUnverified": "Numéro non établi"
   },
   "mangaCatalog": {
     "pageColor": {
@@ -1029,6 +1030,17 @@
       "newTab": "(s’ouvre dans un nouvel onglet)"
     },
     "jeux": {
+      "2048": {
+        "help": "Balaie le plateau du doigt, utilise les flèches du clavier quand il a le focus, ou les boutons sous le plateau.",
+        "board": "Plateau du 2048 : fusionne les guerriers de même puissance",
+        "controls": "Déplacer les tuiles",
+        "up": "Vers le haut",
+        "down": "Vers le bas",
+        "left": "Vers la gauche",
+        "right": "Vers la droite",
+        "score": "Ki total : {score}",
+        "gameOver": "Partie terminée. Ki final : {score}."
+      },
       "xenoverse": {
         "cardDescription": "Explore les formats Xenoverse 2 et analyse localement les données que tu as extraites.",
         "title": "Dragon Ball Xenoverse 2",
@@ -1048,17 +1060,6 @@
         "preview": "Afficher un aperçu ({count} entrées)",
         "invalid": "Format illisible",
         "oversize": "Fichier supérieur à 16 Mio, ignoré"
-      },
-      "2048": {
-        "help": "Balaie le plateau du doigt, utilise les flèches du clavier quand il a le focus, ou les boutons sous le plateau.",
-        "board": "Plateau du 2048 : fusionne les guerriers de même puissance",
-        "controls": "Déplacer les tuiles",
-        "up": "Vers le haut",
-        "down": "Vers le bas",
-        "left": "Vers la gauche",
-        "right": "Vers la droite",
-        "score": "Ki total : {score}",
-        "gameOver": "Partie terminée. Ki final : {score}."
       },
       "play": "Jouer",
       "discordOnly": "Jouable sur Discord uniquement",
@@ -1500,8 +1501,8 @@
       "play": "Jouer",
       "discord": "Le pendu et les défis entre membres se jouent sur le serveur Discord.",
       "items": {
-        "dragon_pixel": "Combat 2D rétro WASM 60 FPS : Mode Histoire en quinze chapitres et duels de Ki.",
         "2048": "Fusionne les guerriers jusqu'à Whis et fais grimper ton Ki.",
+        "dragon_pixel": "Combat 2D rétro WASM 60 FPS : Mode Histoire en quinze chapitres et duels de Ki.",
         "pfc": "Pierre, feuille, ciseaux à coups de techniques de Ki.",
         "morpion": "Aligne trois X avant le bot.",
         "bingo": "Trouve la puissance cachée en dix scans."

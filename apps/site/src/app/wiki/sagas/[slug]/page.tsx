@@ -1,3 +1,4 @@
+import { T } from "@/components/T";
 import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { Suspense } from "react";
@@ -272,10 +273,19 @@ export default async function SagaPage({ params }: { params: Promise<{ slug: str
             <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
           </div>
           <p className="mb-6 max-w-2xl text-[13px] leading-relaxed text-white/45">
-            Relevé sur les bornes de la saga ({seriesLabel} #{saga.episodes[0]!.number_in_series}
+            Relevé sur les bornes de la saga ({seriesLabel}{" "}
+            {saga.episodes[0]!.number_in_series === null ? (
+              <T k="mediaPlayback.numberUnverified" />
+            ) : (
+              `#${saga.episodes[0]!.number_in_series}`
+            )}
             {" à "}
-            {saga.episodes.at(-1)!.number_in_series}). L&apos;anime n&apos;est pas le manga :
-            certains de ces épisodes sont du remplissage.
+            {saga.episodes.at(-1)!.number_in_series === null ? (
+              <T k="mediaPlayback.numberUnverified" />
+            ) : (
+              saga.episodes.at(-1)!.number_in_series
+            )}
+            ). L&apos;anime n&apos;est pas le manga : certains de ces épisodes sont du remplissage.
           </p>
           <div className="flex flex-wrap gap-2">
             {saga.episodes.map((ep) => (
@@ -285,7 +295,11 @@ export default async function SagaPage({ params }: { params: Promise<{ slug: str
                 title={ep.title}
                 className="inline-flex min-h-11 items-center rounded-full border border-white/[0.12] bg-white/[0.04] px-4 py-2.5 text-[13px] font-display font-semibold text-white/70 transition-colors hover:border-dbz-orange/60 hover:text-white"
               >
-                #{ep.number_in_series}
+                {ep.number_in_series === null ? (
+                  <T k="mediaPlayback.numberUnverified" />
+                ) : (
+                  `#${ep.number_in_series}`
+                )}
               </Link>
             ))}
           </div>

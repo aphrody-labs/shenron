@@ -85,7 +85,10 @@ export default async function EpisodeSeriePage({
         backdrop={await bannerForSeries(series)}
         eyebrow={SERIES_YEARS[series] ? `Anime · ${SERIES_YEARS[series]}` : "Anime"}
         title={SERIES_LABELS[series] ?? series}
-        meta={[`${total} épisodes`, "VF · VOSTFR"]}
+        meta={[`${total} épisodes`]}
+        hasVf={episodes.some((episode) => hasLang(episode.players, "vf"))}
+        hasVostfr={episodes.some((episode) => hasLang(episode.players, "vostfr"))}
+        hasVost={episodes.some((episode) => hasLang(episode.players, "vost"))}
         synopsis={stripSourceTags(opener.synopsis)}
         primaryHref={`/wiki/episodes/${opener.id}`}
         primaryLabel="Commencer la série"

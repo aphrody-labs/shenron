@@ -1,3 +1,4 @@
+import { T } from "@/components/T";
 import { countEpisodesBySeries, listEpisodesBySeries } from "@/lib/wiki-admin";
 import { AdminHeader } from "../_Header";
 import { DbAddButton, DbRowActions } from "@/components/admin/DbCrud";
@@ -22,7 +23,7 @@ const SERIES_LABELS: Record<string, string> = {
 type Episode = {
   id: number;
   series: string;
-  number_in_series: number;
+  number_in_series: number | null;
   title: string;
   title_ja: string | null;
   air_date: number | null;
@@ -118,7 +119,11 @@ export default async function AdminEpisodesPage({
                   className="border-b border-dbz-border/30 hover:bg-dbz-blue-light/5 transition-colors"
                 >
                   <td className="p-2 font-mono text-xs text-dbz-orange tabular-nums">
-                    {String(ep.number_in_series).padStart(3, "0")}
+                    {ep.number_in_series === null ? (
+                      <T k="mediaPlayback.numberUnverified" />
+                    ) : (
+                      String(ep.number_in_series).padStart(3, "0")
+                    )}
                   </td>
                   <td className="p-2">
                     <div className="text-sm text-white">{ep.title}</div>

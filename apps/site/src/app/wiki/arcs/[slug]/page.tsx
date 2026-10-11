@@ -1,3 +1,4 @@
+import { T } from "@/components/T";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
 import { WikiArticle } from "@/components/wiki/WikiArticle";
@@ -146,7 +147,11 @@ export default async function ArcPage({ params }: { params: Promise<{ slug: stri
                 style={{ animationDelay: `${0.1 + idx * 0.02}s` }}
               >
                 <span className="scouter-text text-lg text-dbz-orange min-w-[52px] shrink-0">
-                  #{String(ep.number_in_series).padStart(3, "0")}
+                  {ep.number_in_series === null ? (
+                    <T k="mediaPlayback.numberUnverified" />
+                  ) : (
+                    `#${String(ep.number_in_series).padStart(3, "0")}`
+                  )}
                 </span>
                 {ep.image ? (
                   <div className="w-20 aspect-video overflow-hidden rounded bg-dbz-bg shrink-0">
@@ -242,7 +247,11 @@ export default async function ArcPage({ params }: { params: Promise<{ slug: stri
                     title={ep.title}
                     className="inline-flex min-h-11 items-center rounded-full border border-white/[0.12] bg-white/[0.04] px-4 py-2.5 text-[13px] font-display font-semibold text-white/70 transition-colors hover:border-dbz-orange/60 hover:text-white"
                   >
-                    #{ep.number_in_series}
+                    {ep.number_in_series === null ? (
+                      <T k="mediaPlayback.numberUnverified" />
+                    ) : (
+                      `#${ep.number_in_series}`
+                    )}
                   </Link>
                 ))}
               </div>

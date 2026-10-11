@@ -1,3 +1,4 @@
+import { T } from "@/components/T";
 import { dbUniverse, type SearchResults } from "@/lib/db-universe";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { isPathPublic, type AccessSnapshot } from "@/lib/wiki-launch";
@@ -547,7 +548,12 @@ export default async function SearchPage({
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
                       <div className="absolute inset-x-0 bottom-0 p-3">
                         <p className="scouter-text text-[11px] text-dbz-orange">
-                          {e.series} #{e.number_in_series}
+                          {e.series}{" "}
+                          {e.number_in_series === null ? (
+                            <T k="mediaPlayback.numberUnverified" />
+                          ) : (
+                            `#${e.number_in_series}`
+                          )}
                         </p>
                         <p className="font-display font-bold text-xs text-white group-hover:text-dbz-blue-light transition-colors line-clamp-2">
                           {e.title}

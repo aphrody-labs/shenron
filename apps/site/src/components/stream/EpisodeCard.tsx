@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Lecture } from "@shenron/ui/icones";
 import { assetUrl } from "@/lib/assets";
 import { isEditableAsset } from "@/lib/images";
+import { episodeNumberText } from "@/lib/episode-number";
 
 /**
  * EpisodeCard — carte vignette 16:9 (épisodes) façon streaming.
@@ -54,7 +55,7 @@ export function EpisodeCard({
   priority?: boolean;
 }) {
   const t = useTranslations("mediaPlayback");
-  const num = number != null ? String(number).padStart(3, "0") : "—";
+  const num = episodeNumberText(number, true);
   return (
     <Link
       href={href}
@@ -72,7 +73,7 @@ export function EpisodeCard({
           aria-hidden
           className="pointer-events-none absolute inset-0 flex items-center justify-center font-saiyan text-2xl text-white/10"
         >
-          {num}
+          {num ?? "—"}
         </span>
         {image && (
           <Image
@@ -100,7 +101,7 @@ export function EpisodeCard({
         {/* Dégradé permanent bas + numéro HUD */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
         <span className="scouter-text absolute left-2 top-2 bg-black/60 px-1.5 py-0.5 text-[10px] text-dbz-orange">
-          #{num}
+          {num === null ? t("numberUnverified") : `#${num}`}
         </span>
         {(hasVf || hasVostfr || hasVost) && (
           <div className="absolute right-2 top-2 flex gap-1">

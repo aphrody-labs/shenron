@@ -3,6 +3,7 @@
  * quand on navigue depuis la landing/vue-série (statiques). Accès direct/refresh
  * de `/wiki/episodes/[id]` = fiche pleine page. Cf. `wiki/movies/@modal/(.)[slug]`.
  */
+import { T } from "@/components/T";
 import { dbUniverse } from "@/lib/db-universe";
 import { bannerForSeries } from "@/lib/banner-config";
 import { Modal } from "@/components/stream/Modal";
@@ -38,7 +39,15 @@ export default async function EpisodeModal({ params }: { params: Promise<{ id: s
     <Modal>
       <QuickLook
         backdrop={await bannerForSeries(ep.series)}
-        eyebrow={`${SERIES_LABELS[ep.series] ?? ep.series} · Épisode ${ep.number_in_series}`}
+        eyebrow={
+          ep.number_in_series === null ? (
+            <>
+              {SERIES_LABELS[ep.series] ?? ep.series} · <T k="mediaPlayback.numberUnverified" />
+            </>
+          ) : (
+            `${SERIES_LABELS[ep.series] ?? ep.series} · Épisode ${ep.number_in_series}`
+          )
+        }
         title={ep.title}
         titleJa={ep.title_ja}
         meta={[year ? String(year) : null]}

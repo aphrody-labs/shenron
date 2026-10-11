@@ -1,3 +1,5 @@
+import { T } from "@/components/T";
+import { episodeNumberText } from "@/lib/episode-number";
 import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
@@ -70,9 +72,15 @@ export async function generateMetadata({
   // Synopsis nettoyé (Markdown retiré) et tronqué ~160 car. pour meta/og :
   // certains synopsis contiennent du Markdown (*_#>) qui fuiterait sinon brut.
   const description =
-    excerpt(ep.synopsis) || `Fiche détaillée de l'épisode ${ep.number_in_series} de ${ep.series}.`;
+    excerpt(ep.synopsis) ||
+    (ep.number_in_series === null
+      ? `${ep.title} — ${ep.series}`
+      : `Fiche détaillée de l'épisode ${ep.number_in_series} de ${ep.series}.`);
   return {
-    title: `Épisode ${ep.number_in_series} : ${ep.title} — ${SERIES_LABELS[ep.series] ?? ep.series}`,
+    title:
+      ep.number_in_series === null
+        ? `${ep.title} — ${SERIES_LABELS[ep.series] ?? ep.series}`
+        : `Épisode ${ep.number_in_series} : ${ep.title} — ${SERIES_LABELS[ep.series] ?? ep.series}`,
     description,
     ...ogMeta({
       title: `${ep.title} — ${SERIES_LABELS[ep.series] ?? ep.series}`,
@@ -144,7 +152,13 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
 
   const youtubeId = getYoutubeId(ep.video_url);
   const seriesLabel = SERIES_LABELS[ep.series] ?? ep.series;
-  const epNum = String(ep.number_in_series).padStart(3, "0");
+  const epNum = episodeNumberText(ep.number_in_series, true);
+  const episodeTitle =
+    ep.number_in_series === null ? ep.title : `Épisode ${ep.number_in_series} : ${ep.title}`;
+  const episodeCaption =
+    ep.number_in_series === null
+      ? `${seriesLabel} · ${ep.title}`
+      : `${seriesLabel} · épisode ${ep.number_in_series}`;
 
   // Priorité aux lecteurs voir-anime (VF/VOSTFR, sources réelles maintenues à
   // jour) : ils priment sur `video_url`/`stream_url` qui pouvaient contenir des
@@ -161,7 +175,7 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
           ep.stream_url && ep.subtitles?.length
             ? {
                 src: hlsMasterUrl(ep.id, "vostfr"),
-                title: `Épisode ${ep.number_in_series} : ${ep.title ?? ""}`,
+                title: episodeTitle,
                 poster: ep.image ? assetUrl(ep.image) : undefined,
                 subtitles: ep.subtitles,
               }
@@ -171,14 +185,14 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
     ) : ep.video_url ? (
       <VideoPlayer
         src={ep.video_url}
-        title={`Épisode ${ep.number_in_series} : ${ep.title ?? ""}`}
+        title={episodeTitle}
         poster={ep.image ? assetUrl(ep.image) : undefined}
         subtitles={ep.subtitles ?? undefined}
       />
     ) : ep.stream_url ? (
       <VideoPlayer
         src={hlsMasterUrl(ep.id)}
-        title={`Épisode ${ep.number_in_series} : ${ep.title ?? ""}`}
+        title={episodeTitle}
         poster={ep.image ? assetUrl(ep.image) : undefined}
         subtitles={ep.subtitles ?? undefined}
       />
@@ -234,7 +248,7 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
   const episodeSchema: WithContext<TVEpisode> = {
     "@context": "https://schema.org",
     "@type": "TVEpisode",
-    episodeNumber: String(ep.number_in_series),
+    ...(ep.number_in_series === null ? {} : { episodeNumber: String(ep.number_in_series) }),
     name: ep.title,
     description: excerpt(ep.synopsis) || undefined,
     image: ep.image ? assetUrl(ep.image) : undefined,
@@ -269,7 +283,7 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
           title={ep.title}
           href={`/wiki/episodes/${ep.id}`}
           image={ep.image}
-          caption={`${seriesLabel} · épisode ${ep.number_in_series}`}
+          caption={episodeCaption}
         />
         <Breadcrumbs
           className="mb-4"
@@ -279,7 +293,7 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
             // La saga s'intercale quand les bornes la donnent : c'est le seul
             // chemin qui relie un épisode au récit dont il fait partie.
             ...(saga ? [{ label: saga.name, href: `/wiki/sagas/${saga.slug}` }] : []),
-            { label: `Épisode ${ep.number_in_series}` },
+            { label: ep.number_in_series === null ? ep.title : `Épisode ${ep.number_in_series}` },
           ]}
         />
         <WikiEditBar table="db_episodes" id={ep.id} indexHref="/wiki/episodes" label={ep.title} />
@@ -290,11 +304,11 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
             title={ep.title}
             href={`/wiki/episodes/${ep.id}`}
             image={ep.image}
-            caption={`${seriesLabel} · épisode ${ep.number_in_series}`}
+            caption={episodeCaption}
           />
           <ShareButton
             title={`${ep.title} — ${seriesLabel}`}
-            text={`Épisode ${ep.number_in_series} de ${seriesLabel}`}
+            text={episodeCaption}
             path={`/wiki/episodes/${ep.id}`}
           />
         </div>
@@ -303,7 +317,7 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
         <header className="mb-8 reveal-up">
           <div className="flex items-center gap-4 mb-4">
             <span className="scouter-text text-2xl text-dbz-orange drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
-              #{epNum}
+              {epNum === null ? <T k="mediaPlayback.numberUnverified" /> : `#${epNum}`}
             </span>
             <div className="h-px w-12 bg-dbz-orange/40" />
             <p className="font-display font-semibold text-[12px] tracking-[0.3em] uppercase text-white/60">

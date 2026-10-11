@@ -107,7 +107,7 @@ export type Saga = WithArticle & {
 export type Episode = {
   id: number;
   series: string;
-  number_in_series: number;
+  number_in_series: number | null;
   arc_id: number | null;
   title: string;
   title_ja: string | null;
@@ -454,7 +454,7 @@ export type SearchResults = {
   episodes: Array<{
     id: number;
     series: string;
-    number_in_series: number;
+    number_in_series: number | null;
     title: string;
     image: string | null;
   }>;
@@ -641,7 +641,7 @@ function toEpisode(r: typeof botEpisodes.$inferSelect): Episode {
   return {
     id: r.id,
     series: r.series,
-    number_in_series: r.numberInSeries ?? 0,
+    number_in_series: r.numberInSeries,
     arc_id: r.arcId,
     title: r.title ?? "",
     title_ja: r.titleJa,
@@ -1421,8 +1421,9 @@ export const dbUniverse = {
    * SQL sur des colonnes typées, donc le piège ne mord pas — mais la borne
    * remonte quand même en chaîne côté TypeScript, d'où le cast à la lecture.
    */
-  episodeSaga: (series: string, numberInSeries: number) =>
+  episodeSaga: (series: string, numberInSeries: number | null) =>
     safe(async () => {
+      if (numberInSeries === null) return null;
       const [s] = await db
         .select({
           id: botSagas.id,
@@ -1541,8 +1542,9 @@ export const dbUniverse = {
    * Épisode précédent / suivant + un échantillon d'épisodes voisins de la même
    * série, pour la navigation cinématique de la page épisode.
    */
-  episodeNav: (series: string, number: number) =>
+  episodeNav: (series: string, number: number | null) =>
     safe(async () => {
+      if (number === null) return { prev: null, next: null, around: [] };
       const lite = {
         id: botEpisodes.id,
         number_in_series: botEpisodes.numberInSeries,
@@ -1587,10 +1589,10 @@ export const dbUniverse = {
         )
         .orderBy(asc(botEpisodes.numberInSeries));
       const lift = (e: typeof prev | undefined): EpisodeNavItem | null =>
-        e
+        e && e.number_in_series !== null
           ? {
               id: e.id,
-              number_in_series: e.number_in_series ?? 0,
+              number_in_series: e.number_in_series,
               title: e.title ?? "",
               image: e.image,
             }
@@ -2435,7 +2437,7 @@ export const dbUniverse = {
         episodes: episodes.map((e) =>
           Object.assign(e, {
             title: e.title ?? "",
-            number_in_series: e.number_in_series ?? 0,
+            number_in_series: e.number_in_series,
           }),
         ),
         techniques,

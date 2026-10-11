@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import Image from "next/image";
 import { FlecheCoin, Lecture } from "@shenron/ui/icones";
 import { assetUrl } from "@/lib/assets";
@@ -27,7 +28,7 @@ export function QuickLook({
 }: {
   backdrop: string;
   poster?: string | null;
-  eyebrow: string;
+  eyebrow: ReactNode;
   title: string;
   titleJa?: string | null;
   meta?: (string | null | undefined)[];

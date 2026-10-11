@@ -23,7 +23,7 @@ export type SceneFrame = {
   source: "ffmpeg";
   sourceId: string;
   sourceUrl: string | null;
-  episodeNumber: number;
+  episodeNumber: number | null;
   imagePath: string | null;
   timecodeSec: number | null;
   width: number | null;
@@ -131,7 +131,7 @@ export function EpisodeScenes({
 }: {
   frames?: SceneFrame[];
   title: string;
-  episodeNumber: number;
+  episodeNumber: number | null;
   series?: string;
   episodeId?: number;
   episodeImage?: string | null;
@@ -320,7 +320,9 @@ export function EpisodeScenes({
                 f.caption ??
                 (f.characterNames.length > 0
                   ? `Scène avec ${f.characterNames.join(", ")}`
-                  : `Scène de l'épisode ${episodeNumber}`);
+                  : episodeNumber === null
+                    ? title
+                    : `Scène de l'épisode ${episodeNumber}`);
               return (
                 <button
                   key={`${f.imagePath}-${i}`}
@@ -418,7 +420,7 @@ export function EpisodeScenes({
                   />
                   <a
                     href={gifUrl}
-                    download={`dbfr-ep${String(episodeNumber).padStart(3, "0")}-scenes.gif`}
+                    download={`dbfr-ep${episodeNumber === null ? `id-${episodeId}` : String(episodeNumber).padStart(3, "0")}-scenes.gif`}
                     className="text-sm text-dbz-orange underline"
                   >
                     Télécharger le GIF
@@ -601,7 +603,8 @@ export function EpisodeScenes({
                     const isCurrentEp =
                       m.isDragonBall &&
                       (m.siteEpisode?.id === episodeId ||
-                        (m.siteEpisode?.numberInSeries === episodeNumber &&
+                        (episodeNumber !== null &&
+                          m.siteEpisode?.numberInSeries === episodeNumber &&
                           m.siteEpisode?.series === series));
                     return (
                       <div
