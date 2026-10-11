@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterAll, describe, expect, test } from "bun:test";
 import {
+  chmodSync,
   existsSync,
   mkdirSync,
   mkdtempSync,
@@ -24,6 +25,9 @@ function fixture(): Record<string, string> {
   writeFileSync(join(site, "server.js"), "console.log('next');\n");
   writeFileSync(join(site, "static", "chunks", "app.js"), "export {};\n");
   writeFileSync(join(site, "launch.sh"), "#!/bin/sh\n", { mode: 0o755 });
+  // Creation permissions are filtered by the job umask; the archive must receive
+  // an explicitly executable fixture rather than inheriting the private job mode.
+  if (process.platform !== "win32") chmodSync(join(site, "launch.sh"), 0o755);
   const lib = join(root, "src", "libshenron_ffi.so");
   writeFileSync(lib, new Uint8Array([0x7f, 0x45, 0x4c, 0x46, 0, 1, 2, 3]));
   return { site, "libshenron_ffi.so": lib };
@@ -60,6 +64,15 @@ describe("payload", () => {
     const second = await extract(file, cache);
     expect(second.dir).toBe(first.dir);
     expect(second.extracted).toBe(false);
+  });
+
+  test.skipIf(process.platform === "win32")("private executable modes remain private", async () => {
+    const source = join(root, "private-launch.sh");
+    writeFileSync(source, "#!/bin/sh\n", { mode: 0o700 });
+    chmodSync(source, 0o700);
+    const file = payloadFile("private-mode.zst", pack({ "launch.sh": source }, 1));
+    const { dir } = await extract(file, join(root, "cache-private-mode"));
+    expect(statSync(join(dir, "launch.sh")).mode & 0o777).toBe(0o700);
   });
 
   test("a payload without the magic header is refused", async () => {
