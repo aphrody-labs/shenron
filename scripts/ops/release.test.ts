@@ -5,9 +5,34 @@
  */
 import { describe, expect, test } from "bun:test";
 import { cdnSource, envValue, siteBuildEnv, syncCommands } from "./release-host";
-import { asServiceUser, releasePlan } from "./release";
+import { asServiceUser, releaseConfig, releasePlan } from "./release";
 
 describe("release plan", () => {
+  test("release endpoints and remote paths come from environment", () => {
+    expect(
+      releaseConfig({
+        SHENRON_RELEASE_HOST: "factory",
+        SHENRON_RELEASE_SERVICE_HOME: "/srv/runner",
+        SHENRON_RELEASE_SERVICE_PATH: "/srv/runner/bin",
+        SHENRON_RELEASE_REMOTE: "/tmp/release.ts",
+        SHENRON_RELEASE_LOG: "/tmp/release.log",
+        SHENRON_SITE_URL: "https://site.example",
+        SHENRON_CDN_URL: "https://cdn.example",
+        SHENRON_BOT_URL: "https://bot.example",
+        SHENRON_RELEASE_STACK: "catalog",
+      }),
+    ).toEqual({
+      host: "factory",
+      serviceHome: "/srv/runner",
+      servicePath: "/srv/runner/bin",
+      remoteScript: "/tmp/release.ts",
+      logPath: "/tmp/release.log",
+      siteUrl: "https://site.example",
+      cdnUrl: "https://cdn.example",
+      botUrl: "https://bot.example",
+      stack: "catalog",
+    });
+  });
   test("remote commands use the service account instead of the SSH login user's home", () => {
     const command = asServiceUser("printf '%s' \"$HOME\"");
     expect(command.startsWith("sudo -n -u ubuntu ")).toBe(true);

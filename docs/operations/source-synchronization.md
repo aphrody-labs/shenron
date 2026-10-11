@@ -41,6 +41,14 @@ La disponibilité de ces credentials et les droits externes sont vérifiés avan
 mutation ; une configuration ne crée pas ces droits. Ne pas fusionner les stores dbfr,
 Aphrody ou IECODE.
 
+Le release runner lit ses cibles depuis l'environnement protégé :
+`SHENRON_RELEASE_HOST`, `SHENRON_RELEASE_STACK`, `SHENRON_RELEASE_SERVICE_USER`,
+`SHENRON_RELEASE_SERVICE_HOME`, `SHENRON_RELEASE_SERVICE_PATH`,
+`SHENRON_RELEASE_REMOTE`, `SHENRON_RELEASE_LOG`, `SHENRON_SITE_URL`,
+`SHENRON_CDN_URL` et `SHENRON_BOT_URL`. Les valeurs par défaut servent uniquement au
+mode historique local ; Infra doit fournir ces variables pour une release distante.
+Les credentials Cloudflare/R2 restent hors du dépôt et sont lus par leurs wrappers Infra.
+
 ## Capture privée des sources Beerus
 
 Le propriétaire de la collecte est `scripts/data/crawl-beerus-site.ts`. Il conserve les
