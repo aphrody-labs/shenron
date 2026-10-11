@@ -1,0 +1,17 @@
+{
+  "chronology": {
+    "title": "Dragon Ball chronology",
+    "subtitle": "Editorial order; dates refer to broadcast",
+    "dateLabel": "Broadcast"
+  },
+  "beerus": {
+    "title": "Dragon Ball Super: Beerus",
+    "subtitle": "Verified news with dated sources",
+    "dateLabel": "Published"
+  },
+  "original": {
+    "title": "Journey on Kinto-un",
+    "subtitle": "Original animation — Shenron cloud geometry",
+    "dateLabel": ""
+  }
+}

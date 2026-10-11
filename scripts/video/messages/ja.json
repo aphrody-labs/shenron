@@ -1,0 +1,17 @@
+{
+  "chronology": {
+    "title": "ドラゴンボールの時系列",
+    "subtitle": "編集順序。日付は放送日を示します",
+    "dateLabel": "放送日"
+  },
+  "beerus": {
+    "title": "ドラゴンボール超 ビルス",
+    "subtitle": "出典と確認日時のあるニュース",
+    "dateLabel": "公開日"
+  },
+  "original": {
+    "title": "筋斗雲の旅",
+    "subtitle": "シェンロンの雲の幾何学によるオリジナルアニメーション",
+    "dateLabel": ""
+  }
+}
