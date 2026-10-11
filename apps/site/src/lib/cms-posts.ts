@@ -197,7 +197,8 @@ export async function savePostRecord(input: PostInput, author: PostAuthor): Prom
     noindex: data.noindex,
     readingMinutes: stats.readingMinutes,
     wordCount: stats.wordCount,
-    agentName: author.agentName ?? null,
+    // Admin edits preserve the original agent provenance on an existing post.
+    ...(data.id && author.agentName == null ? {} : { agentName: author.agentName ?? null }),
     updatedAt: now,
   };
 

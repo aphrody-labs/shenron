@@ -162,7 +162,8 @@ describe("public article Redis mirror", () => {
 let failPostgres = false;
 let failAuth = false;
 let deleted = false;
-const indexed = mock(async () => ({ ok: false, action: "failed" as const }));
+let writtenValues: Record<string, unknown> | null = null;
+const indexed = mock(async (_post: IndexablePost) => ({ ok: false, action: "failed" as const }));
 const forgotten = mock(async () => ({ ok: false, action: "failed" as const }));
 mock.module("@/lib/posts-redis", () => ({ ...owner, indexPost: indexed, forgetPost: forgotten }));
 mock.module("@/lib/session", () => ({
@@ -192,10 +193,19 @@ mock.module("@/lib/db", () => ({
       },
     }),
     select: () => ({ from: () => ({ where: async () => [] }) }),
+    update: () => ({
+      set: (values: Record<string, unknown>) => ({
+        where: async () => {
+          if (failPostgres) throw new Error("PostgreSQL rejected");
+          writtenValues = values;
+        },
+      }),
+    }),
     insert: () => ({
-      values: () => ({
+      values: (values: Record<string, unknown>) => ({
         returning: async () => {
           if (failPostgres) throw new Error("PostgreSQL rejected");
+          writtenValues = values;
           return [{ id: "created-public-id" }];
         },
       }),
@@ -208,6 +218,7 @@ afterEach(() => {
   failPostgres = false;
   failAuth = false;
   deleted = false;
+  writtenValues = null;
   indexed.mockClear();
   forgotten.mockClear();
   mock.restore();
@@ -266,4 +277,29 @@ test("Redis failure preserves PostgreSQL success and logs a sanitized receipt", 
   expect(warn).toHaveBeenCalledWith(
     JSON.stringify({ event: "posts_cache", cached: false, action: "failed" }),
   );
+});
+
+test("admin edits preserve stored agent provenance while indexing the public update", async () => {
+  spyOn(console, "warn").mockImplementation(() => {});
+  const result = await savePostRecord(
+    { id: post.id, title: post.title, slug: post.slug, doc: {}, status: "published" },
+    { userId: "staff", canPublish: true },
+  );
+  expect(result).toEqual({ ok: true, id: post.id, slug: post.slug });
+  expect(writtenValues).not.toHaveProperty("agentName");
+  expect(writtenValues).not.toHaveProperty("authorId");
+  expect(indexed).toHaveBeenCalledTimes(1);
+  expect(indexed.mock.calls[0]?.[0]).toMatchObject({ id: post.id, slug: post.slug });
+});
+
+test("agent creations retain the authenticated agent provenance", async () => {
+  spyOn(console, "warn").mockImplementation(() => {});
+  await savePostRecord(
+    { title: post.title, slug: post.slug, doc: {}, status: "published" },
+    { userId: "staff", agentName: "Authorized news collector", canPublish: true },
+  );
+  expect(writtenValues).toMatchObject({
+    agentName: "Authorized news collector",
+    authorId: "staff",
+  });
 });
