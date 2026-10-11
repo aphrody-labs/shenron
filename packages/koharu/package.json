@@ -1,6 +1,6 @@
 {
   "name": "@shenron/koharu",
-  "version": "0.4.0",
+  "version": "1.4.4",
   "private": true,
   "description": "Koharu manga translation engine client for Shenron: typed IPC protocol generated from koharu-app (Tauri Specta), the koharu-sdk JSON Lines transport and the wasm canvas.",
   "license": "MIT OR Apache-2.0",
@@ -11,7 +11,7 @@
     "./protocol": "./src/protocol.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "bun check --noEmit --project tsconfig.json",
     "test": "bun test",
     "lint": "oxlint -c ../../.oxlintrc.json src --ignore-pattern src/protocol.ts --ignore-pattern src/wasm",
     "build:wasm": "bun scripts/build-wasm.ts",

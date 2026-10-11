@@ -1,6 +1,6 @@
 {
   "name": "@shenron/images",
-  "version": "0.4.0",
+  "version": "1.4.4",
   "private": true,
   "description": "Image hashing, deduplication, variant selection and sourced illustration picking for Shenron (Bun + sharp)",
   "type": "module",
@@ -25,7 +25,7 @@
   },
   "scripts": {
     "test": "bun test",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "bun check --noEmit --project tsconfig.json",
     "lint": "oxlint -c ../../.oxlintrc.json src"
   },
   "dependencies": {

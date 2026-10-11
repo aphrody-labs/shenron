@@ -1,6 +1,6 @@
 {
   "name": "@shenron/api",
-  "version": "0.4.0",
+  "version": "1.4.4",
   "private": true,
   "type": "module",
   "sideEffects": false,
@@ -21,7 +21,7 @@
     "test": "bun test --path-ignore-patterns='**/*.live.test.ts'",
     "openapi": "bun scripts/openapi.ts",
     "openapi:check": "bun scripts/openapi.ts --check",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "bun check --noEmit --project tsconfig.json"
   },
   "dependencies": {
     "@aphrody/http": "catalog:",
