@@ -25,7 +25,9 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.tests.json"
   },
   "dependencies": {
+    "@aphrody/bun-runtime-sdk": "catalog:",
     "@aphrody/discord-kit": "catalog:",
+    "@aphrody/hls.js": "catalog:",
     "@aphrody/messaging": "catalog:",
     "@aphrody/next-bun": "catalog:",
     "@aphrody/paths": "catalog:",
@@ -74,7 +76,6 @@
     "ai": "catalog:",
     "better-auth": "catalog:",
     "drizzle-orm": "catalog:",
-    "hls.js": "catalog:",
     "howler": "catalog:",
     "kysely": "catalog:",
     "lucide-react": "catalog:",

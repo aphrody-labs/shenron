@@ -13,6 +13,7 @@ minimumReleaseAgeExcludes = [
   "@aphrody/bun-types",
   "@aphrody/agent-browser",
   "@aphrody/bun-runtime",
+  "@aphrody/bun-runtime-sdk",
   "@aphrody/bun-runtime-darwin-aarch64",
   "@aphrody/bun-runtime-linux-aarch64",
   "@aphrody/bun-runtime-linux-x64",
