@@ -408,7 +408,9 @@ export async function crawl(
       const r = await read(origin + "/robots.txt");
       const text = new TextDecoder().decode(r.bytes);
       const access = robotsAccess(r.status);
-      if (access === "unreachable") robotsUnavailable.add(origin);
+      // RFC 9309 treats a non-2xx robots resource as unavailable for crawling.
+      // Keep the crawl fail-closed for both HTTP errors and network failures.
+      if (access !== "rules") robotsUnavailable.add(origin);
       const { rules, sitemaps } =
         access === "rules" ? parseRobots(text) : { rules: [], sitemaps: [] };
       forbidden.set(origin, rules);

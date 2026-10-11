@@ -48,7 +48,8 @@ corps par SHA256, les routes, redirections, règles robots, sitemaps annoncés e
 observées dans `manifest.json` et `inventory.json`. Les iframes et actions de formulaires
 sont des références passives ; les candidats API trouvés dans le JavaScript restent
 non qualifiés et ne sont pas appelés. Le schéma du backend tiers n'est pas observable.
-Un refus robots, une erreur et les files restantes restent dans les reçus.
+Un refus robots, une erreur et les files restantes restent dans les reçus ; une ressource
+robots non-2xx ou inaccessible bloque la traversée de l'origine (comportement fail-closed).
 
 L'index SQLite privé `capture-index.sqlite` contient les captures, provenances et une
 recherche FTS5 du texte capturé. Cet index de collecte n'active ni RAG, entraînement,
