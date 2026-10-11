@@ -151,11 +151,12 @@ export function daemonLauncher(
   execPath = process.execPath,
   argv = process.argv,
   main = Bun.main,
+  serverBin = process.env.SHENRON_SERVER_BIN,
 ): { program: string; args: string[] } {
   const compiled = main.startsWith("/$bunfs/") || /^[A-Z]:[\\/]~BUN[\\/]/i.test(main);
   const verb = [LLAMA_DAEMON_VERB, ...(library ? ["--library", library] : [])];
   return compiled
-    ? { program: execPath, args: verb }
+    ? { program: serverBin?.trim() || execPath, args: verb }
     : { program: execPath, args: [argv[1] ?? main, ...verb] };
 }
 
