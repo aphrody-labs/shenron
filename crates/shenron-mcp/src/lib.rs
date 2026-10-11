@@ -20,6 +20,7 @@ pub mod guide;
 pub mod http;
 pub mod lexicon_tools;
 pub mod site_tools;
+pub mod video_tools;
 
 use rmcp::handler::server::router::tool::ToolRouter;
 
@@ -35,12 +36,13 @@ const SCANLATION_TOOLS: [&str; 2] = ["dragonball.manga_scanlate", "dragonball.da
 
 /// Read tools that use a server-side credential or expose non-public data: elevated only, even
 /// though they do not write.
-const ELEVATED_READS: [&str; 5] = [
+const ELEVATED_READS: [&str; 6] = [
     "dragonball.databook_anomalies",
     "dragonball.databook_ocr_review",
     "dragonball.databook_relecture_ocr",
     "dragonball.site_config_get",
     "dragonball.reports_list",
+    "dragonball.toei_animation",
 ];
 
 /// Read-only tools without heavy compute: what an anonymous public endpoint may serve.
@@ -81,6 +83,7 @@ impl ShenronMcp {
         let mut router = Self::dbfr_router();
         router += Self::dragonball_router();
         router += Self::site_router();
+        router += Self::video_router();
         #[cfg(not(feature = "koharu"))]
         for name in SCANLATION_TOOLS {
             router.remove_route(name);
@@ -106,6 +109,51 @@ impl ShenronMcp {
 
     fn tools(&self) -> ToolRouter<Self> {
         if self.public { Self::public_tools() } else { Self::all_tools() }
+    }
+}
+
+#[tool_router(router = video_router)]
+impl ShenronMcp {
+    #[tool(
+        name = "dragonball.toei_animation",
+        description = "Plan original chronology, Beerus or original-scene animation with bounded parameters and sourced provenance. Elevated only; requires the owner-installed video CLI. This is not an official Toei service and does not render frames.",
+        annotations(
+            title = "Plan original animation",
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = true
+        )
+    )]
+    async fn dragonball_toei_animation(
+        &self,
+        Parameters(request): Parameters<video_tools::VideoRequest>,
+    ) -> rmcp::model::CallToolResult {
+        if self.public {
+            return dragonball_tools::err("Video tools require elevated access");
+        }
+        dragonball_tools::done(video_tools::execute(request, false).await)
+    }
+
+    #[tool(
+        name = "dragonball.toei_animation_render",
+        description = "Render an original animation through the owner-installed video backend after explicit authorization. Elevated only, bounded input and execution; returns the actual artifact receipt or a capability error. No official Toei affiliation or pixel-match claim.",
+        annotations(
+            title = "Render original animation",
+            read_only_hint = false,
+            destructive_hint = false,
+            idempotent_hint = false,
+            open_world_hint = true
+        )
+    )]
+    async fn dragonball_toei_animation_render(
+        &self,
+        Parameters(request): Parameters<video_tools::VideoRequest>,
+    ) -> rmcp::model::CallToolResult {
+        if self.public {
+            return dragonball_tools::err("Video tools require elevated access");
+        }
+        dragonball_tools::done(video_tools::execute(request, true).await)
     }
 }
 
@@ -1602,7 +1650,7 @@ impl ShenronMcp {
 
 #[cfg(test)]
 mod tests {
-    use super::ShenronMcp;
+    use super::{Parameters, ShenronMcp, is_public, video_tools};
 
     /// Tools backed by the Koharu engine.
     const SCANLATION_TOOLS: [&str; 2] =
@@ -1722,6 +1770,39 @@ mod tests {
         for name in ["dbfr_deposit", "dragonball.bot_personas", "dragonball.a2a_send"] {
             assert!(public.get(name).is_none(), "write tool exposed publicly: {name}");
         }
+    }
+
+    #[test]
+    fn video_tools_are_elevated_even_when_planning_is_read_only() {
+        let full = ShenronMcp::all_tools();
+        let public = ShenronMcp::public_tools();
+        for (name, read_only) in
+            [("dragonball.toei_animation", true), ("dragonball.toei_animation_render", false)]
+        {
+            let tool = full.get(name).expect("video tool registered");
+            assert_eq!(tool.annotations.as_ref().and_then(|a| a.read_only_hint), Some(read_only));
+            assert!(public.get(name).is_none());
+            assert!(!is_public(tool));
+        }
+    }
+
+    #[tokio::test]
+    async fn public_video_calls_fail_before_backend_configuration() {
+        let server = ShenronMcp::public();
+        assert_eq!(
+            server
+                .dragonball_toei_animation(Parameters(video_tools::VideoRequest::default()))
+                .await
+                .is_error,
+            Some(true)
+        );
+        assert_eq!(
+            server
+                .dragonball_toei_animation_render(Parameters(video_tools::VideoRequest::default()))
+                .await
+                .is_error,
+            Some(true)
+        );
     }
 
     #[test]
@@ -1858,6 +1939,7 @@ mod tests {
                 names.len()
                     + SITE_PUBLIC_TOOLS.len()
                     + SITE_ELEVATED_TOOLS.len()
+                    + 2
                     + if cfg!(feature = "koharu") { SCANLATION_TOOLS.len() } else { 0 },
                 "unexpected dragonball.* tool count"
             );
