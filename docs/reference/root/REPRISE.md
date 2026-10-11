@@ -36,3 +36,7 @@
 9. **Lecteurs Médias & Rendu Canvas** :
    * Lecteurs Manga (`?edition=couleur|color` via `colorisationDemandee`, réinitialisation de page au changement de chapitre), Databooks (pages libérées après échec ou démontage), Épisodes vidéo (probing, langue, nettoyage audio).
    * `ShenronCanvasEngine` (`packages/engine/src/unified_canvas.ts`) : particules Ki en WebGPU avec repli Canvas 2D, planches manga procédurales en Canvas 2D ; composant `ShenronGpuCanvas`, fond `KiCanvas.tsx`, vitrine `/canvas`.
+
+## 2026-10-11 — Fusion Omar et gates Shenron
+- Fusion de origin/omar/integration-20261011 (66adf88d) dans main, merge 447eeeaa ; fix lint 31b1a9b3, les deux poussés. Lint, typecheck, format et OpenAPI verts ; aucun test lancé.
+- Release DBFR en attente : Bun local 1.4.3-aphrody.4, fabrique 1.4.3-aphrody.2, manifeste épinglé 1.4.3-aphrody.2. La dernière release Aphrody vérifiée est 1.4.3-aphrody.2 ; ne pas prétendre qualifier sous 1.4.4. Reprendre quand 1.4.4 et l'image de build correspondante seront publiées.
