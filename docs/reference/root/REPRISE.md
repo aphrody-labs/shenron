@@ -17,9 +17,20 @@ quatre éditions masquées conservées, schéma inchangé, replay3unchanged/0wri
 var/reports/catalog-expansion/media-replica-20261011/production-apply.json ; quatre orphelins
 assets→sources préexistants identiques avant/après, aucune nouvelle violation.
 
-Source e7c66e0d poussée :ISBN public486 et liens des volumes normalisés ; wrapper des index
-pour le correctifsoft404. Gates ciblés30tests131assertions,TS/lint/format verts ; image en
-livraison sur la fabrique. Ne pas attribuer à la production une source seulement poussée.
+Source e7c66e0d activée via Infra :ISBN public486 et82liens vérifiés, manga absent HTTP404,
+six services sains et chat réel. Fabrique ba7a7d40 :3861testsPASS/75SKIP et110tests scriptsPASS ;
+TS/lint/format/contrats verts. Qualification navigateur encore en cours.
+
+Actualités Super : Codex réel sur DBFR terminé exit0, publication API CMS201 et relecture
+PG/HTML200. Article `/news/dragon-ball-super-beerus-premiere-2026-10-11`, deux visuels et
+trois embeds officiels, replay sans doublon. ISR propriétaire invalidé, aucune clé Redis
+CMS inventée. Clé agent bornée révoquée et whoami401 confirmé. Première japonaise14:15UTC,
+bonus non confirmé. Archives des12bibliothèques npm auditées ; PUTengine1.4.4 reçoit404
+malgréwhoami valide, aucune publication npm annoncée. Crates.io en qualification.
+
+Delta CDN final e7c66e0d :110316routes/87445corps,6nouveaux corps et256shards SHA/S3GET
+vérifiés. Worker506304f66f9f47828882c5f79d6ea8c7 import=false/verify=false,6GET SHAverts,
+range206/16bytes, conditionnel304, privé404, santé200. Anciennes URL conservées.
 Cloudflare demeure pending, DNSSECOVHdisableInProgress, date/TTL du retraitDS non établis.
 
 > Lu au démarrage de chaque session (hook `scripts/dev/session-start.ts`).

@@ -24,10 +24,10 @@
 
 ## GOAL.md — catalogue Dragon Ball (11 octobre 2026)
 
-- [ ] Priorité actualités Super : collecte Codex sur DBFR, annonces officielles datées, publication dédupliquée PostgreSQL et invalidation Redis ciblée ; vérifier l'épisode bonus séparément.
+- [x] Collecte Codex bornée sur DBFR et article Super publié par API CMS : synthèse officielle, deux visuels et trois vidéos, relecture PostgreSQL et page publique200, replay sans doublon, clé temporaire révoquée. Le CMS invalide son ISR propriétaire ; aucun cache Redis CMS établi, épisode bonus non confirmé.
 - [ ] Gates du monorepo et audit des paquets npm/crates.io ; publier les versions qualifiées disponibles et rapporter les blocages sans changer implicitement la visibilité.
 - [x] Appliquer et relire le réplica média normalisé : 11 œuvres/24 éditions/166 volumes, quatre aliases masqués conservés, sauvegarde cohérente et replay sans écriture ; autres catalogues préservés.
-- [ ] Activer et contrôler l'image `e7c66e0d` : ISBN public, liens des éditions et statuts HTML404 ; source et gates ciblés poussés, production en livraison.
+- [x] Activer et contrôler l'image `e7c66e0d` : ISBN public486, 82 liens supplémentaires, manga absent en HTTP404, six services sains et chat réel. Tests fabrique3861PASS/75SKIP, scripts110PASS, TS/lint/format et contrats verts ; qualification navigateur en cours.
 
 - [x] Inventorier PostgreSQL en lecture : 11 lots, identifiants, sources et rapprochement ISBN des 18 Sōshūhen ; rapports privés dans `var/reports/catalog-expansion/`.
 - [x] Vérifier les contrats admin et les dépendances runtime/gel ; préparer les corrections bibliographiques sourcées sans mutation.
@@ -36,7 +36,7 @@
 - [x] Installer les dépendances figées et qualifier des binaires Bun 1.4.4 isolés : Windows debug, Linux canary. Les manifestes de runtime restent dans les rapports privés ; aucune attente d'une release GitHub stable.
 - [x] Corriger trois ISBN Kanzenban par API admin, relire révisions/PG/public et synchroniser le réplica par son script propriétaire. Réparer la séquence identity databooks via Infra, sans changement des lignes.
 - [ ] Terminer la qualification Windows : DLL RE qualifiée (29 tests), fixtures corrigées et poussées ; deux benchmarks debug restent rouges. Les performances Linux passent ; seuils inchangés.
-- [ ] Enrichir les autres lots dédupliqués et relire fiches, révisions, réplica et index ; gel levé sur instruction explicite, configuration et activation Infra vérifiées. Artbook Dragon Quest créé (#486), exposition ISBN à compléter.
+- [ ] Enrichir les autres lots dédupliqués et relire fiches, révisions, réplica et index ; gel levé sur instruction explicite, configuration et activation Infra vérifiées. Artbook Dragon Quest créé (#486), ISBN public vérifié ; les onze lots restent partiels.
 - [x] Livrer la release `9fb19e97` via fabrique VPS et Infra DBFR : six services sains, chat réel et API catalogues en200 ; rollback restauré et qualifié.
 - [ ] Livrer le lot suivant (alias SQL, ISBN et extensions catalogue), puis qualifier les lecteurs et les réponses HTML aux slugs absents.
 
@@ -48,5 +48,5 @@
 - [x] Activer tunnel/audit via Infra et authentifier la CLI avec le credential existant protégé ; tunnel sain, API account/R2/Worker/tunnel vérifiées.
 - [x] Qualifier S3 local Windows et DBFR : credentials temporaires limités à Shenron, DPAPI local, renouvellement automatique local et timer Infra ; GET S3 checksum vérifié.
 - [x] Finaliser et pousser la CLI reproductible de transfert/reprise et son installation (`b9bd4a56`).
-- [x] Copier le CDN initial vers R2 : 87149 corps vérifiés, zéro échec ; delta9fb273 vérifié, 110280 routes/87418 corps couverts. Delta6249 vérifié :110296routes/87431corps, zéro non vérifié ; Worker en lecture seule.
+- [x] Copier le CDN initial et les deltas vers R2 : 87149 corps initiaux vérifiés, delta final e7c66e0d de six corps et256shards avec SHA/S3GET/HEAD/GET vérifiés ;110316routes/87445corps au total. Worker506304f66f9f47828882c5f79d6ea8c7 en lecture seule, range206/16bytes, conditionnel304, chemin privé404 et santé200.
 - [ ] Qualifier DNSSEC/délégation, désactiver l'import du Worker puis basculer le CDN et contrôler HTTPS, ranges, cache et rollback. Zone Cloudflare encore `pending` au dernier contrôle.

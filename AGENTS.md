@@ -24,8 +24,11 @@ Actualités urgentes (demande propriétaire du 2026-10-11) : suivre la priorité
 Collecte Codex distante DBFR par Infra, jobs bornés et journaux privés ; PostgreSQL par les
 writers éditoriaux, Redis par l'invalidation ciblée propriétaire. Ne pas convertir une
 annonce de diffusion en preuve de lecture d'un épisode. La publication npm/crates.io exige
-un artefact qualifié, l'audit de ses fichiers et une version disponible ; préserver les
-marqueurs de publication des paquets et les stores protégés.
+un artefact qualifié, l'audit de ses fichiers et une version disponible. La demande explicite
+de publication autorise la préparation publique des bibliothèques avec allowlists relues ;
+les applications, données et stores restent protégés. Ne pas déclarer une publication à
+partir d'une archive préparée ou d'une authentification seule. Le CMS public utilise ses
+routes `/news` et son ISR propriétaire ; qualifier séparément toute intégration Redis.
 
 ## Exécution autonome NHIL
 

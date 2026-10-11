@@ -27,6 +27,16 @@ exécuté par SSH sur DBFR. Conserver les onze lots documentaires ci-dessous et 
   publier les seuls artefacts qualifiés et autorisés dont la version n'existe pas déjà,
   sans changer implicitement les marqueurs `private`/`publish` ni publier de données privées.
 
+État vérifié le 11 octobre à13:21UTC : collecte Codex sur DBFR terminée ;
+[article publié](https://dragonballfr.com/news/dragon-ball-super-beerus-premiere-2026-10-11)
+par API CMS, PostgreSQL relu, index `/news` et détail en200, deux visuels et trois
+bandes-annonces officielles. Replay sans doublon et clé temporaire révoquée ; ISR du CMS
+invalidé par son propriétaire. Aucun mécanisme Redis CMS confirmé. La première japonaise
+est programmée à14:15UTC/16:15Paris ; aucun épisode bonus confirmé. Les douze bibliothèques
+npm sont préparées avec visibilité publique explicite et allowlists auditées, mais la
+première tentative `@shenron/engine@1.4.4` reçoit404 au PUT registry ; aucune publication
+npm effective annoncée. Les qualifications crates.io restent distinctes.
+
 Étendre le catalogue Dragon Ball France déjà servi par Shenron, en partant des œuvres,
 fiches, volumes, épisodes, databooks, sources et événements de chronologie existants.
 Compléter les lacunes avec des notices dédupliquées, des références vérifiables et des
