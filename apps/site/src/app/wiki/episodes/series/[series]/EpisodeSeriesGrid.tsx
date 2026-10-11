@@ -18,7 +18,8 @@ import { EpisodeCard } from "@/components/stream/EpisodeCard";
 import { useTranslations } from "next-intl";
 
 export interface SeriesEpisode {
-  id: number;
+  id: number | string;
+  href?: string;
   number: number | null;
   title: string;
   titleJa: string | null;
@@ -61,13 +62,23 @@ export function filterSeriesEpisodes(
 export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
   const t = useTranslations("mediaPlayback");
   const labels = useTranslations("episodeSeries");
+  const beerus = useTranslations("dbsBeerus");
+  const localizedEpisodes = useMemo(
+    () =>
+      episodes.map((episode) =>
+        episode.id === "DBS_BEERUS:1"
+          ? { ...episode, title: beerus("episodeTitle"), synopsis: beerus("episodeSynopsis") }
+          : episode,
+      ),
+    [episodes, beerus],
+  );
   const [query, setQuery] = useState("");
   const [limit, setLimit] = useState(PAGE);
   const [language, setLanguage] = useState<"all" | "vf" | "vostfr" | "vost">("all");
 
   const filtered = useMemo(() => {
-    return filterSeriesEpisodes(episodes, query, language);
-  }, [episodes, query, language]);
+    return filterSeriesEpisodes(localizedEpisodes, query, language);
+  }, [localizedEpisodes, query, language]);
 
   const visible = filtered.slice(0, limit);
   const remaining = filtered.length - visible.length;
@@ -155,8 +166,8 @@ export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
           >
             {visible.map((ep) => (
               <EpisodeCard
-                key={ep.id}
-                href={`/wiki/episodes/${ep.id}`}
+                key={ep.href ?? ep.id}
+                href={ep.href ?? `/wiki/episodes/${ep.id}`}
                 number={ep.number}
                 title={ep.title}
                 titleJa={ep.titleJa}

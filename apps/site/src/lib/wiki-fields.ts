@@ -105,7 +105,7 @@ const ENUM_OPTIONS: Record<string, { options: string[]; strict?: boolean }> = {
     strict: true,
   },
   "db_tools.category": { options: ["api", "modding", "shader", "utility"] },
-  "db_episodes.series": { options: ["DB", "DBZ", "DBGT", "DBS", "DB_DAIMA"] },
+  "db_episodes.series": { options: ["DB", "DBZ", "DBGT", "DBS", "DB_DAIMA", "DBS_BEERUS"] },
   "db_arcs.series": { options: ["DB", "DBZ", "DBGT", "DBS", "DB_DAIMA"] },
   "db_sagas.series": {
     options: ["DB", "DBZ", "DBGT", "DBS", "DBS_MANGA", "DBS_MOVIE", "DB_DAIMA"],

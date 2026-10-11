@@ -1926,8 +1926,21 @@
     "catalogueNote": "2026年の新しい版は、下に掲載した2015〜2018年のオリジナル版とは別です。配信状況は公式発表と公式サービスでご確認ください。",
     "news": "フランスの配信情報",
     "official": "公式サイト",
-    "originalVideo": "オリジナル動画まとめ",
-    "originalVideoNote": "発表と出典をまとめたオリジナル動画です。アニメのエピソードではありません。"
+    "episodeOne": "第1話 · 破壊の神様",
+    "episodeOneDetails": "魔人ブウとの戦いの後、悟空は平和な日々を過ごし、遠い惑星ではビルスが長い眠りから目覚めます。日本での初回放送は2026年10月11日と発表されています。実際の視聴可否はサービスと地域によって異なります。",
+    "episodeTitle": "破壊の神様",
+    "episodeSynopsis": "魔人ブウとの戦いの後、悟空は地球で平穏に暮らしています。遠い惑星では、破壊神ビルスが長い眠りから目覚めます。",
+    "episodeContinuity": "この強化版は魔人ブウの後のビルス編から『ドラゴンボール超』を再構成します。第132話ではありません。2015〜2018年版の全131話は独立した番号とカタログを維持します。",
+    "episodeCountOne": "公式に紹介された1話",
+    "openEpisode": "エピソード情報を開く",
+    "openLocalEpisode": "DBFR 第1話ページ",
+    "originalCatalogue": "オリジナル版カタログ · 2015–2018",
+    "episodeProviderNote": "DBFRは配信元の映像を再生・複製しません。お住まいの地域での視聴条件は公式ページをご確認ください。",
+    "episodeSource": "公式ストーリー · ドラゴンボール超公式サイト",
+    "episodeReleaseDate": "日本初回放送：2026年10月11日",
+    "watchEpisode": "Crunchyroll公式ページを開く",
+    "originalVideo": "公式動画",
+    "originalVideoNote": "公式配信元のページをご確認ください。"
   },
   "episodeSeries": {
     "coverage": "シリーズの収録状況",

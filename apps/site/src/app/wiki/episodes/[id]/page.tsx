@@ -57,6 +57,7 @@ const SERIES_LABELS: Record<string, string> = {
   DBZ_KAI_FINAL: "Dragon Ball Z Kai – Final Chapters",
   DBGT: "Dragon Ball GT",
   DBS: "Dragon Ball Super",
+  DBS_BEERUS: "Dragon Ball Super: Beerus",
   DB_DAIMA: "Dragon Ball Daima",
 };
 

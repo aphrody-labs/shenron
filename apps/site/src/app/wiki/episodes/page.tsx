@@ -12,7 +12,10 @@ import { eraOf, ERA_ACCENT } from "@/lib/chronology";
 import { Billboard } from "@/components/stream/Billboard";
 import { StreamRow } from "@/components/stream/StreamRow";
 import { EpisodeCard } from "@/components/stream/EpisodeCard";
+import { OfficialBeerusCard } from "./OfficialBeerusCard";
 import { RailSkeleton } from "@/components/stream/StreamSkeleton";
+import { DBS_BEERUS_SERIES_CODE, dbsBeerusEpisodeCard } from "@/lib/episode-series-catalogue";
+import { getDictionary } from "@/lib/i18n";
 import { ogMeta } from "@/lib/og";
 import {
   SERIES_LABELS,
@@ -47,11 +50,14 @@ export const metadata: Metadata = {
 
 export default async function EpisodesLanding() {
   const seriesRows = await getEpisodeSeriesCached().catch(() => null);
-  const availableSeries = orderSeries(seriesRows);
+  const availableSeries = [
+    ...new Set(orderSeries([...(seriesRows ?? []), { series: DBS_BEERUS_SERIES_CODE }])),
+  ];
   if (availableSeries.length === 0)
     return <SectionUnavailable title={<T k="wiki.episodes.unavailable" />} />;
 
   const counts = new Map((seriesRows ?? []).map((r) => [r.series, r.count]));
+  if (!counts.has(DBS_BEERUS_SERIES_CODE)) counts.set(DBS_BEERUS_SERIES_CODE, 1);
   const grandTotal = [...counts.values()].reduce((a, b) => a + b, 0);
   const openerSeries = availableSeries.find((s) => s === "DB") ?? availableSeries[0]!;
   const opener = (await getEpisodesCached(openerSeries, 1, 0).catch(() => null))?.episodes[0];
@@ -114,6 +120,22 @@ export default async function EpisodesLanding() {
             </Link>
           ))}
         </div>
+        <section className="mb-8 flex min-w-0 flex-col gap-3 rounded-xl border border-dbz-orange/25 bg-dbz-orange/[0.06] p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <p className="font-display text-sm font-bold text-white">
+              {SERIES_LABELS[DBS_BEERUS_SERIES_CODE]} · 2026
+            </p>
+            <p className="mt-1 text-sm leading-relaxed text-white/60">
+              <T k="dbsBeerus.episodeContinuity" />
+            </p>
+          </div>
+          <Link
+            href="/wiki/episodes/series/DBS_BEERUS/1"
+            className="dbz-button min-h-11 shrink-0 !text-xs"
+          >
+            <T k="dbsBeerus.openEpisode" />
+          </Link>
+        </section>
         <nav
           aria-label="Séries du catalogue épisodes"
           className="mb-8 flex gap-2 overflow-x-auto pb-1"
@@ -142,8 +164,8 @@ export default async function EpisodesLanding() {
         <Suspense
           fallback={
             <>
-              {Array.from({ length: Math.min(5, availableSeries.length) }).map((_, i) => (
-                <RailSkeleton key={i} variant="episode" />
+              {availableSeries.slice(0, 5).map((series) => (
+                <RailSkeleton key={series} variant="episode" />
               ))}
             </>
           }
@@ -165,7 +187,27 @@ async function EpisodeRails({ series }: { series: string[] }) {
   const groups = await Promise.all(
     series.map(async (s) => {
       const data = await getEpisodesCached(s, RAIL_CAP, 0).catch(() => null);
-      return data ? { series: s, episodes: data.episodes, total: data.total } : null;
+      if (data?.episodes.length) return { series: s, episodes: data.episodes, total: data.total };
+      if (s === DBS_BEERUS_SERIES_CODE) {
+        const episode = dbsBeerusEpisodeCard(getDictionary().dbsBeerus.episodeTitle);
+        return {
+          series: s,
+          episodes: [
+            {
+              id: episode.id,
+              number_in_series: episode.number,
+              title: episode.title,
+              title_ja: null,
+              image: null,
+              air_date: null,
+              players: [],
+              href: episode.href,
+            },
+          ],
+          total: 1,
+        };
+      }
+      return null;
     }),
   );
   const present = groups.filter((g): g is NonNullable<typeof g> => !!g && g.episodes.length > 0);
@@ -187,25 +229,29 @@ async function EpisodeRails({ series }: { series: string[] }) {
           accent={ERA_ACCENT[eraOf(g.series)]}
           seeAllHref={`/wiki/episodes/series/${g.series}`}
         >
-          {g.episodes.map((ep, cardIdx) => (
-            <EpisodeCard
-              key={ep.id}
-              href={`/wiki/episodes/${ep.id}`}
-              number={ep.number_in_series}
-              title={ep.title}
-              titleJa={ep.title_ja}
-              image={ep.image}
-              year={yearOf(ep.air_date)}
-              hasVf={hasLang(ep.players, "vf")}
-              hasVostfr={hasLang(ep.players, "vostfr")}
-              hasVost={hasLang(ep.players, "vost")}
-              playerCount={ep.players?.length ?? 0}
-              // Premier rail, cartes au-dessus de la ligne de flottaison →
-              // chargement immédiat (pas de flash de vignette vide au fold).
-              eager={rowIdx === 0 && cardIdx < 6}
-              priority={rowIdx === 0 && cardIdx === 0}
-            />
-          ))}
+          {g.episodes.map((ep, cardIdx) =>
+            ep.id === "DBS_BEERUS:1" ? (
+              <OfficialBeerusCard key={ep.id} />
+            ) : (
+              <EpisodeCard
+                key={ep.id}
+                href={"href" in ep && ep.href ? ep.href : `/wiki/episodes/${ep.id}`}
+                number={ep.number_in_series}
+                title={ep.title}
+                titleJa={ep.title_ja}
+                image={ep.image}
+                year={yearOf(ep.air_date)}
+                hasVf={hasLang(ep.players, "vf")}
+                hasVostfr={hasLang(ep.players, "vostfr")}
+                hasVost={hasLang(ep.players, "vost")}
+                playerCount={ep.players?.length ?? 0}
+                // Premier rail, cartes au-dessus de la ligne de flottaison →
+                // chargement immédiat (pas de flash de vignette vide au fold).
+                eager={rowIdx === 0 && cardIdx < 6}
+                priority={rowIdx === 0 && cardIdx === 0}
+              />
+            ),
+          )}
           {g.total > g.episodes.length && (
             <Link
               href={`/wiki/episodes/series/${g.series}`}

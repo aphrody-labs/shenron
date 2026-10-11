@@ -1926,8 +1926,21 @@
     "catalogueNote": "The new 2026 edition is separate from the original 2015–2018 catalogue shown below. Check announcements and official platforms for availability.",
     "news": "Broadcasting in France",
     "official": "Official website",
-    "originalVideo": "Original video summary",
-    "originalVideoNote": "An original summary of announcements and their sources; this content is not an anime episode."
+    "episodeOne": "Episode 1 · The God Who Destroys",
+    "episodeOneDetails": "After the battle with Majin Buu, Goku lives in peace while Beerus awakens from his long sleep. The Japanese premiere is announced for October 11, 2026; actual access depends on the service and region.",
+    "episodeTitle": "The God Who Destroys",
+    "episodeSynopsis": "After the battle with Majin Buu, Goku lives peacefully on Earth. On a distant planet, Beerus, the God of Destruction, awakens from a long sleep.",
+    "episodeContinuity": "This enhanced edition restarts Dragon Ball Super with the Beerus story after Majin Buu. It is not episode 132: the 131 episodes from 2015–2018 retain their own catalogue and numbering.",
+    "episodeCountOne": "1 officially presented episode",
+    "openEpisode": "Open episode details",
+    "openLocalEpisode": "DBFR episode 1 page",
+    "originalCatalogue": "Original catalogue · 2015–2018",
+    "episodeProviderNote": "DBFR does not reproduce the distributor stream. Check its official listing for viewing conditions in your region.",
+    "episodeSource": "Official story · Dragon Ball Super website",
+    "episodeReleaseDate": "Japanese premiere: October 11, 2026",
+    "watchEpisode": "Open official Crunchyroll listing",
+    "originalVideo": "Official video",
+    "originalVideoNote": "Open the official distributor's listing."
   },
   "episodeSeries": {
     "coverage": "Series coverage",

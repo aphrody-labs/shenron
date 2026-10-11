@@ -17,8 +17,10 @@ mock.module("next/link", () => ({
   default: ({ children, href }: { children: ReactNode; href: string }) =>
     createElement("a", { href }, children),
 }));
-const { filterSeriesEpisodes } =
+const { filterSeriesEpisodes, EpisodeSeriesGrid } =
   await import("../src/app/wiki/episodes/series/[series]/EpisodeSeriesGrid");
+const { dbsBeerusEpisodeCard, DBS_BEERUS_SERIES_CODE } =
+  await import("../src/lib/episode-series-catalogue");
 const { DbsBeerusSpotlight } = await import("../src/components/home/DbsBeerusSpotlight");
 const episodes = [
   {
@@ -57,19 +59,73 @@ test("exact episode search excludes numbered titles and unestablished numbers", 
   expect(filterSeriesEpisodes(episodes, "破壊神", "all").map((e) => e.id)).toEqual([900]);
 });
 
-test("the 2026 promotion links editorial and official sources without presenting an episode player", () => {
+test("the 2026 page separates the original 131 episodes and links the new episode to its official listing", () => {
   for (locale of ["fr", "en", "ja"] as const) {
     const html = renderToStaticMarkup(createElement(DbsBeerusSpotlight, { catalogue: true }));
     expect(html).toContain(dictionaries[locale].dbsBeerus.title);
     expect(html).toContain(dictionaries[locale].dbsBeerus.catalogueNote);
+    expect(html).toContain(dictionaries[locale].dbsBeerus.episodeOne);
+    expect(html).toContain(dictionaries[locale].dbsBeerus.episodeOneDetails);
+    expect(html).toContain(
+      'href="https://www.crunchyroll.com/fr/watch/GE00389313JAJP/the-god-who-destroys"',
+    );
+    expect(html).toContain(dictionaries[locale].dbsBeerus.watchEpisode);
+    expect(html).toContain(dictionaries[locale].dbsBeerus.openLocalEpisode);
     expect(html).toContain("/news/dragon-ball-super-beerus-adn-vostfr-18h-2026-10-11");
     expect(html).toContain('href="https://dragonball-super.com/en/"');
-    expect(html).toContain(dictionaries[locale].dbsBeerus.originalVideoNote);
-    expect(html).toContain(
-      "/assets/video/9cd332d95dedde18175eca4b394d9923a59669fb301a0caf0d1b2723f15034b3/poster.png",
-    );
+    expect(html).not.toContain("<video");
     expect(html).not.toContain("iframe");
     expect(html).not.toContain("/wiki/episodes/445");
+  }
+  locale = "fr";
+});
+
+test("the confirmed 2026 episode has its own local episode route and no fabricated database id", () => {
+  for (locale of ["fr", "en", "ja"] as const) {
+    const episode = dbsBeerusEpisodeCard(dictionaries[locale].dbsBeerus.episodeTitle);
+    expect(DBS_BEERUS_SERIES_CODE).toBe("DBS_BEERUS");
+    expect(episode.id).toBe("DBS_BEERUS:1");
+    expect(episode.number).toBe(1);
+    expect(episode.href).toBe("/wiki/episodes/series/DBS_BEERUS/1");
+    expect(episode.title).toBe(dictionaries[locale].dbsBeerus.episodeTitle);
+    expect(dictionaries[locale].dbsBeerus.episodeContinuity).toContain("131");
+  }
+  locale = "fr";
+});
+
+const { OfficialBeerusCard } = await import("../src/app/wiki/episodes/OfficialBeerusCard");
+test("official metadata rail changes its visible and accessible title with the reader locale", () => {
+  for (locale of ["fr", "en", "ja"] as const) {
+    const html = renderToStaticMarkup(createElement(OfficialBeerusCard));
+    expect(html).toContain(dictionaries[locale].dbsBeerus.episodeTitle);
+    expect(html).toContain("/wiki/episodes/series/DBS_BEERUS/1");
+    expect(html).not.toContain("<video");
+    for (const other of ["fr", "en", "ja"] as const) {
+      if (other !== locale) expect(html).not.toContain(dictionaries[other].dbsBeerus.episodeTitle);
+    }
+  }
+  locale = "fr";
+});
+
+test("official metadata grid localizes title and synopsis without introducing player availability", () => {
+  const episode = {
+    id: "DBS_BEERUS:1",
+    href: "/wiki/episodes/series/DBS_BEERUS/1",
+    number: 1,
+    title: fr.dbsBeerus.episodeTitle,
+    titleJa: null,
+    image: null,
+    synopsis: fr.dbsBeerus.episodeSynopsis,
+    year: 2026,
+    hasVf: false,
+    hasVostfr: false,
+    playerCount: 0,
+  };
+  for (locale of ["fr", "en", "ja"] as const) {
+    const html = renderToStaticMarkup(createElement(EpisodeSeriesGrid, { episodes: [episode] }));
+    expect(html).toContain(dictionaries[locale].dbsBeerus.episodeTitle);
+    expect(html).toContain(dictionaries[locale].dbsBeerus.episodeSynopsis);
+    expect(html).not.toContain("<video");
   }
   locale = "fr";
 });

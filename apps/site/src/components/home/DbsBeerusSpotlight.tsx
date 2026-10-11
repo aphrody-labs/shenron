@@ -3,9 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { VideoPlayer } from "@/components/episodes/VideoPlayer";
-
-const VIDEO_BASE = "/assets/video/9cd332d95dedde18175eca4b394d9923a59669fb301a0caf0d1b2723f15034b3";
+import { DBS_BEERUS_EPISODE_HREF } from "@/lib/episode-series-catalogue";
 
 export function DbsBeerusSpotlight({ catalogue = false }: { catalogue?: boolean }) {
   const t = useTranslations("dbsBeerus");
@@ -41,19 +39,30 @@ export function DbsBeerusSpotlight({ catalogue = false }: { catalogue?: boolean 
           </a>
         </div>
       </div>
-      <details className="page-shell pb-5">
-        <summary className="cursor-pointer text-sm font-semibold text-dbz-orange">
-          {t("originalVideo")}
-        </summary>
-        <div className="mt-3 max-w-3xl">
-          <p className="mb-3 text-sm text-white/65">{t("originalVideoNote")}</p>
-          <VideoPlayer
-            src={`${VIDEO_BASE}/web.mp4`}
-            poster={`${VIDEO_BASE}/poster.png`}
-            title={t("originalVideo")}
-          />
+      <div className="page-shell pb-5">
+        <div className="flex min-w-0 flex-col gap-3 border-t border-dbz-orange/20 pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <p className="font-bold text-white">{t("episodeOne")}</p>
+            <p className="mt-1 max-w-3xl text-sm leading-relaxed text-white/65">
+              {t("episodeOneDetails")}
+            </p>
+          </div>
+          <a
+            className="dbz-button min-h-11 shrink-0 !text-xs"
+            href="https://www.crunchyroll.com/fr/watch/GE00389313JAJP/the-god-who-destroys"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t("watchEpisode")}
+          </a>
+          <Link
+            className="dbz-button-ghost min-h-11 shrink-0 !text-xs"
+            href={DBS_BEERUS_EPISODE_HREF}
+          >
+            {t("openLocalEpisode")}
+          </Link>
         </div>
-      </details>
+      </div>
     </aside>
   );
 }

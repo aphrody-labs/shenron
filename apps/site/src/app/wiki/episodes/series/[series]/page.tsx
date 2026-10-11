@@ -13,6 +13,11 @@ import { DbsBeerusSpotlight } from "@/components/home/DbsBeerusSpotlight";
 import { T } from "@/components/T";
 import { getDictionary } from "@/lib/i18n";
 import {
+  DBS_BEERUS_EPISODE_HREF,
+  DBS_BEERUS_SERIES_CODE,
+  dbsBeerusEpisodeCard,
+} from "@/lib/episode-series-catalogue";
+import {
   SERIES_LABELS,
   SERIES_YEARS,
   orderSeries,
@@ -32,10 +37,10 @@ export const revalidate = 3600;
 const MAX_EPISODES = 1000; // couvre la plus longue série (DBZ ~291)
 
 export async function generateStaticParams() {
-  if (!hasEditorialDatabase()) return [];
+  if (!hasEditorialDatabase()) return [{ series: DBS_BEERUS_SERIES_CODE }];
   if (process.env.SHENRON_BUILD_LOW_MEMORY === "1") return [];
   const rows = await getEpisodeSeriesCached().catch(() => null);
-  return orderSeries(rows).map((series) => ({ series }));
+  return [...new Set([...orderSeries(rows), DBS_BEERUS_SERIES_CODE])].map((series) => ({ series }));
 }
 
 export async function generateMetadata({
@@ -74,6 +79,9 @@ export default async function EpisodeSeriePage({
   //   data.episodes.length = 0 → la série demandée n'existe pas
   // Le premier ne doit surtout pas figer un 404 en cache ISR ; le second est un
   // vrai 404.
+  if (series === DBS_BEERUS_SERIES_CODE && (!data || data.episodes.length === 0)) {
+    return <OfficialBeerusEpisodeSeries />;
+  }
   if (!data) return <SectionUnavailable title={getDictionary().episodeSeries.unavailable} />;
   if (data.episodes.length === 0) notFound();
 
@@ -83,7 +91,9 @@ export default async function EpisodeSeriePage({
 
   return (
     <>
-      {series === "DBS" ? <DbsBeerusSpotlight catalogue /> : null}
+      {series === "DBS" || series === DBS_BEERUS_SERIES_CODE ? (
+        <DbsBeerusSpotlight catalogue />
+      ) : null}
       <Billboard
         backdrop={await bannerForSeries(series)}
         eyebrow={SERIES_YEARS[series] ? `Anime · ${SERIES_YEARS[series]}` : "Anime"}
@@ -157,6 +167,66 @@ export default async function EpisodeSeriePage({
             hasVost: hasLang(ep.players, "vost"),
             playerCount: ep.players?.length ?? 0,
           }))}
+        />
+      </div>
+    </>
+  );
+}
+
+async function OfficialBeerusEpisodeSeries() {
+  const text = getDictionary().dbsBeerus;
+  const episode = dbsBeerusEpisodeCard(text.episodeTitle);
+  return (
+    <>
+      <DbsBeerusSpotlight catalogue />
+      <Billboard
+        backdrop={await bannerForSeries(DBS_BEERUS_SERIES_CODE)}
+        eyebrow={<T k="dbsBeerus.edition" />}
+        title={SERIES_LABELS[DBS_BEERUS_SERIES_CODE]}
+        meta={[text.episodeCountOne]}
+        synopsis={<T k="dbsBeerus.episodeSynopsis" />}
+        primaryHref={DBS_BEERUS_EPISODE_HREF}
+        primaryLabel={<T k="dbsBeerus.openEpisode" />}
+        secondaryHref="/wiki/episodes/series/DBS"
+        secondaryLabel={<T k="dbsBeerus.originalCatalogue" />}
+      />
+      <div className="wiki-container">
+        <Breadcrumbs
+          className="mb-8"
+          items={[
+            {
+              label: getDictionary().episodeSeries.episodes,
+              display: <T k="episodeSeries.episodes" />,
+              href: "/wiki/episodes",
+            },
+            { label: SERIES_LABELS[DBS_BEERUS_SERIES_CODE] },
+          ]}
+        />
+        <section className="mb-8 rounded-xl border border-dbz-orange/20 bg-white/[0.03] p-5 text-sm leading-relaxed text-white/70">
+          <T k="dbsBeerus.episodeContinuity" />{" "}
+          <Link
+            className="font-semibold text-dbz-orange underline"
+            href="/wiki/episodes/series/DBS"
+          >
+            <T k="dbsBeerus.originalCatalogue" />
+          </Link>
+        </section>
+        <EpisodeSeriesGrid
+          episodes={[
+            {
+              id: episode.id,
+              href: episode.href,
+              number: episode.number,
+              title: episode.title,
+              titleJa: null,
+              image: null,
+              synopsis: text.episodeSynopsis,
+              year: 2026,
+              hasVf: false,
+              hasVostfr: false,
+              playerCount: 0,
+            },
+          ]}
         />
       </div>
     </>

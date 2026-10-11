@@ -16,6 +16,7 @@ export const SERIES_LABELS: Record<string, string> = {
   DBZ_KAI_FINAL: "Dragon Ball Z Kai – Final Chapters",
   DBGT: "Dragon Ball GT",
   DBS: "Dragon Ball Super",
+  DBS_BEERUS: "Dragon Ball Super: Beerus",
   DB_DAIMA: "Dragon Ball Daima",
 };
 
@@ -26,10 +27,20 @@ export const SERIES_YEARS: Record<string, string> = {
   DBZ_KAI_FINAL: "2014-2015",
   DBGT: "1996-1997",
   DBS: "2015-2018",
+  DBS_BEERUS: "2026",
   DB_DAIMA: "2024-2025",
 };
 
-const SERIES_ORDER = ["DB", "DBZ", "DBZ_KAI", "DBZ_KAI_FINAL", "DBGT", "DBS", "DB_DAIMA"];
+const SERIES_ORDER = [
+  "DB",
+  "DBZ",
+  "DBZ_KAI",
+  "DBZ_KAI_FINAL",
+  "DBGT",
+  "DBS",
+  "DB_DAIMA",
+  "DBS_BEERUS",
+];
 
 /** Cartes par rail sur la landing (au-delà → carte « Tout voir »). Un rail n'en
  *  montre ~5 ; 14 suffit largement en réserve de défilement sans alourdir le DOM. */
@@ -65,7 +76,7 @@ export const getEpisodesCached = unstable_cache(
     return data;
   },
   ["episodes"],
-  { revalidate: 3600 },
+  { revalidate: 3600, tags: ["episode-series", "episodes-by-series"] },
 );
 
 export const getEpisodeSeriesCached = unstable_cache(
@@ -75,5 +86,5 @@ export const getEpisodeSeriesCached = unstable_cache(
     return rows;
   },
   ["episode-series"],
-  { revalidate: 3600 },
+  { revalidate: 3600, tags: ["episode-series"] },
 );

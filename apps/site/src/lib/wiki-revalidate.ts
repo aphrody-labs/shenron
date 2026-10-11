@@ -7,7 +7,7 @@
  * best-effort (try/catch), la source de vérité reste la DB.
  */
 import "server-only";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { getWikiRow } from "@/lib/wiki-admin";
 import { publicEntityUrl } from "@/lib/wiki-fields";
 
@@ -54,6 +54,14 @@ export function revalidateWikiEntity(table: string, row?: Record<string, unknown
     revalidatePath("/wiki");
     const detail = row ? publicEntityUrl(table, row) : null;
     if (detail) revalidatePath(detail);
+    if (table === "db_episodes") {
+      revalidateTag("episode-series", { expire: 0 });
+      revalidateTag("episodes-by-series", { expire: 0 });
+      if (typeof row?.series === "string") {
+        revalidatePath(`/wiki/episodes/series/${encodeURIComponent(row.series)}`);
+      }
+      revalidatePath("/sitemap.xml");
+    }
     // Les transformations n'ont pas de page propre → elles s'affichent sur la
     // fiche du personnage.
     if (table === "db_transformations" && row?.characterId != null) {
