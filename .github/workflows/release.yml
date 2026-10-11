@@ -205,7 +205,9 @@ jobs:
 
             ```bash
             git clone https://github.com/aphrody-labs/shenron.git
-            cd shenron && bun install --frozen-lockfile
+            cd shenron
+            bun scripts/build/prepare-vendor.ts --init
+            bun install --frozen-lockfile
             cp apps/bot/.env.example apps/bot/.env   # DISCORD_TOKEN / GUILD_ID / OWNER_ID
             bun --filter @aphrody/shenron-bot dev
             ```

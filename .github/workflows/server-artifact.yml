@@ -35,6 +35,9 @@ jobs:
         with:
           persist-credentials: false
 
+      # Bootstrap into RUNNER_TEMP; the host's installed runtime is not a release qualification.
+      - uses: ./.github/actions/setup-bun
+
       # The host Bun only launches the container; the toolchain lives in the image.
       - name: Check the build image against this checkout
         run: bun scripts/build/container.ts --check

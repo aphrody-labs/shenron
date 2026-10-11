@@ -35,7 +35,6 @@
 import {
   cpSync,
   existsSync,
-  lstatSync,
   mkdirSync,
   readdirSync,
   readFileSync,
@@ -46,6 +45,8 @@ import {
 import { join, resolve } from "node:path";
 import { nextCommand } from "@aphrody/next-bun/run";
 import { flattenStandalone } from "@aphrody/next-bun/standalone";
+import { prepareVendor } from "./prepare-vendor";
+import { stageHlsPublic } from "./hls-license";
 
 import { pack, publicVfsProblems } from "../../apps/server/src/payload";
 import { requireProductionVfs } from "./server-vfs-policy";
@@ -55,6 +56,7 @@ import { templateProblems } from "../../packages/db/src/agent-homes/template";
 import { AGENT_HOME_DOCUMENTS } from "../../packages/db/src/agent-homes/types";
 
 const ROOT = resolve(import.meta.dir, "../..");
+const hlsVendor = prepareVendor(ROOT);
 const args = process.argv.slice(2);
 const flag = (name: string) => args.includes(name);
 const option = (name: string, fallback: string) => {
@@ -162,11 +164,12 @@ cpSync(join(SITE, "public"), join(siteOut, "apps/site/public"), {
   recursive: true,
   dereference: true,
 });
+stageHlsPublic(hlsVendor.path, join(siteOut, "apps/site/public"));
 cpSync(join(SITE, DIST_DIR, "static"), join(siteOut, "apps/site", DIST_DIR, "static"), {
   recursive: true,
 });
 // Server source maps only weigh the payload: drop them.
-for (const map of [...new Bun.Glob("**/*.map").scanSync({ cwd: siteOut, dot: true })])
+for (const map of new Bun.Glob("**/*.map").scanSync({ cwd: siteOut, dot: true }))
   rmSync(join(siteOut, map));
 // Nothing private may ship: no database, env file or key.
 const leaks = privateFiles(siteOut);
@@ -174,14 +177,14 @@ if (leaks.length)
   throw new Error(`private files in the release tree: ${leaks.slice(0, 10).join(", ")}`);
 
 // 3. Native library of the target (optional; the local RAG API reports its absence).
-const libCandidates = [
+const libCandidate = [
   join(ROOT, "target", spec.rust, "release", spec.lib),
   join(ROOT, "target/release", spec.lib),
-].filter((path) => existsSync(path) && (target === "linux-x64" || path.includes(spec.rust)));
+].find((path) => existsSync(path) && (target === "linux-x64" || path.includes(spec.rust)));
 const nativeOut = join(OUT, "native");
-if (libCandidates[0]) {
+if (libCandidate) {
   mkdirSync(nativeOut, { recursive: true });
-  cpSync(libCandidates[0], join(nativeOut, spec.lib));
+  cpSync(libCandidate, join(nativeOut, spec.lib));
 }
 
 // 3b. Public VFS and agent home template (both public by construction, the VFS checked).
@@ -249,7 +252,7 @@ if (embed) {
   const started = performance.now();
   const payload = pack({
     site: siteOut,
-    ...(libCandidates[0] ? { native: nativeOut } : {}),
+    ...(libCandidate ? { native: nativeOut } : {}),
     ...(vfsShipped ? { vfs: vfsOut } : {}),
     home: homeOut,
     data: dataOut,
@@ -300,6 +303,7 @@ if (embed) {
 const cdn = join(ROOT, "dist/cdn");
 rmSync(cdn, { recursive: true, force: true });
 cpSync(join(SITE, "public"), join(cdn, "site"), { recursive: true, dereference: true });
+stageHlsPublic(hlsVendor.path, join(cdn, "site"));
 cpSync(join(SITE, DIST_DIR, "static"), join(cdn, "_next/static"), { recursive: true });
 const buildId = readFileSync(join(SITE, DIST_DIR, "BUILD_ID"), "utf8").trim();
 writeFileSync(join(cdn, "BUILD_ID"), `${buildId}\n`);

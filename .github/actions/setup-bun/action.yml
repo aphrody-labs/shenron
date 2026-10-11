@@ -16,3 +16,4 @@ runs:
     - uses: aphrody-labs/bun/.github/actions/setup-bun@main
       with:
         bun-version: ${{ steps.fork.outputs.tag }}
+    - uses: ./.github/actions/prepare-vendor
