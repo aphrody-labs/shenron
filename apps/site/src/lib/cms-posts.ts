@@ -23,6 +23,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { posts, POST_STATUSES, type PostContentDoc, type PostStatus } from "@/db/schema";
 import { autoExcerpt, computeReadingStats, renderPostDoc } from "@/lib/posts";
+import { indexPost } from "@/lib/posts-redis";
 import { isValidSlug, slugify, uniqueSlug } from "@aphrody/shenron-config/slug";
 
 const TAG_MAX = 8;
@@ -212,6 +213,9 @@ export async function savePostRecord(input: PostInput, author: PostAuthor): Prom
     id = created.id;
   }
 
+  const cache = await indexPost({ id, ...values });
+  if (!cache.ok)
+    console.warn(JSON.stringify({ event: "posts_cache", cached: false, action: cache.action }));
   revalidateArticleRoutes(slug);
   return { ok: true, id, slug };
 }

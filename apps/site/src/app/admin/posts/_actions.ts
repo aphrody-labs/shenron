@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { posts } from "@/db/schema";
 import { requireAdmin } from "@/lib/session";
+import { forgetPost } from "@/lib/posts-redis";
 import {
   isSlugAvailable,
   revalidateArticleRoutes,
@@ -44,6 +45,9 @@ export async function deletePost(formData: FormData): Promise<void> {
   if (!id) return;
   const post = await db.query.posts.findFirst({ where: eq(posts.id, id) });
   await db.delete(posts).where(eq(posts.id, id));
+  const cache = await forgetPost(id);
+  if (!cache.ok)
+    console.warn(JSON.stringify({ event: "posts_cache", cached: false, action: cache.action }));
   revalidateArticleRoutes(post?.slug);
   redirect("/admin/posts");
 }
