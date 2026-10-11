@@ -1918,5 +1918,36 @@
       "admin_unconfigured": "Jeton d’administration du bot non configuré"
     },
     "httpFailure": "Réponse HTTP {status}"
+  },
+  "dbsBeerus": {
+    "edition": "Édition améliorée · 2026",
+    "title": "Dragon Ball Super : Beerus",
+    "description": "Découvrez la nouvelle édition et les annonces de diffusion officielles pour la France.",
+    "catalogueNote": "Cette nouvelle édition de 2026 est distincte du catalogue original de 2015–2018 présenté ci-dessous. Consultez les annonces et les plateformes officielles pour sa disponibilité.",
+    "news": "Diffusion en France",
+    "official": "Site officiel",
+    "originalVideo": "Synthèse vidéo originale",
+    "originalVideoNote": "Une synthèse originale des annonces et de leurs sources : ce contenu n’est pas un épisode de l’anime."
+  },
+  "episodeSeries": {
+    "coverage": "Couverture de la série",
+    "episodes": "Épisodes",
+    "vfSources": "Liens VF",
+    "vostfrSources": "Liens VOSTFR",
+    "thumbnails": "Vignettes",
+    "coverageNote": "Les langues indiquent les liens recensés. Vérifiez leur disponibilité actuelle sur la plateforme officielle.",
+    "searchLabel": "Rechercher un épisode par titre ou par numéro exact",
+    "searchPlaceholder": "Titre ou numéro exact d’épisode…",
+    "jump": "Aller aux épisodes",
+    "languageFilter": "Filtrer par version",
+    "all": "Toutes",
+    "results": "{count, plural, one {# épisode} other {# épisodes}} sur {total}",
+    "empty": "Aucun épisode ne correspond à ces filtres.",
+    "more": "Afficher {count} épisodes de plus",
+    "description": "Catalogue des épisodes, titres, dates, synopsis et liens de diffusion recensés. La disponibilité dépend des plateformes et du territoire.",
+    "unavailable": "Épisodes Dragon Ball",
+    "episodeCount": "{count} épisodes",
+    "start": "Commencer la série",
+    "timeline": "Chronologie"
   }
 }

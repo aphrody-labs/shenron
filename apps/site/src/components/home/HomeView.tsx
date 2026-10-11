@@ -43,6 +43,7 @@ import type { AccessSnapshot } from "@/lib/wiki-launch";
 import { HomeCanonArbitre } from "./HomeCanonArbitre";
 import { HOME_GAMES, HomeGames } from "./HomeGames";
 import { HomeHero } from "./HomeHero";
+import { DbsBeerusSpotlight } from "./DbsBeerusSpotlight";
 import { HomeGuardians, HomeLivePanel, HomeLiveProvider, HomePantheon } from "./HomeLive";
 import { HomeMenuJourney } from "./HomeMenuJourney";
 import { HomeQuickAccess, QUICK_ACCESS } from "./HomeQuickAccess";
@@ -191,6 +192,7 @@ export function HomeView(rawProps: HomeViewProps) {
       topMembers={props.topMembers}
       presence={props.presence}
     >
+      <DbsBeerusSpotlight />
       <HomeHero hero={config.hero} />
       <PageShell width="wide" rhythm="tight">
         <HomeSectionNavigation

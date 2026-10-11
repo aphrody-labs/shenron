@@ -1918,5 +1918,36 @@
       "admin_unconfigured": "Bot administration token is not configured"
     },
     "httpFailure": "HTTP response {status}"
+  },
+  "dbsBeerus": {
+    "edition": "Enhanced edition · 2026",
+    "title": "Dragon Ball Super: Beerus",
+    "description": "Explore the new edition and official broadcast announcements for France.",
+    "catalogueNote": "The new 2026 edition is separate from the original 2015–2018 catalogue shown below. Check announcements and official platforms for availability.",
+    "news": "Broadcasting in France",
+    "official": "Official website",
+    "originalVideo": "Original video summary",
+    "originalVideoNote": "An original summary of announcements and their sources; this content is not an anime episode."
+  },
+  "episodeSeries": {
+    "coverage": "Series coverage",
+    "episodes": "Episodes",
+    "vfSources": "French audio links",
+    "vostfrSources": "French subtitle links",
+    "thumbnails": "Thumbnails",
+    "coverageNote": "Languages describe the listed links. Check current availability on the official platform.",
+    "searchLabel": "Search episodes by title or exact number",
+    "searchPlaceholder": "Title or exact episode number…",
+    "jump": "Go to episodes",
+    "languageFilter": "Filter by version",
+    "all": "All",
+    "results": "{count, plural, one {# episode} other {# episodes}} of {total}",
+    "empty": "No episodes match these filters.",
+    "more": "Show {count} more episodes",
+    "description": "Episode catalogue with titles, dates, summaries and listed broadcast links. Availability depends on platforms and territory.",
+    "unavailable": "Dragon Ball episodes",
+    "episodeCount": "{count} episodes",
+    "start": "Start the series",
+    "timeline": "Timeline"
   }
 }

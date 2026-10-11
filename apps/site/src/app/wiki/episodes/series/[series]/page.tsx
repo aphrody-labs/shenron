@@ -9,6 +9,9 @@ import { ogMeta } from "@/lib/og";
 import { bannerForSeries } from "@/lib/banner-config";
 import { eraOf, ERA_ACCENT } from "@/lib/chronology";
 import { Billboard } from "@/components/stream/Billboard";
+import { DbsBeerusSpotlight } from "@/components/home/DbsBeerusSpotlight";
+import { T } from "@/components/T";
+import { getDictionary } from "@/lib/i18n";
 import {
   SERIES_LABELS,
   SERIES_YEARS,
@@ -42,8 +45,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { series } = await params;
   const label = SERIES_LABELS[series] ?? series;
-  const description =
-    "Index complet des épisodes avec vignettes, titres FR/JP, date de diffusion et synopsis. Regarde en VF et VOSTFR.";
+  const description = getDictionary().episodeSeries.description;
   // Cf. `@/lib/og` : un `alternates` seul laissait la page sans `og:image`.
   return {
     title: `${label} — Épisodes`,
@@ -72,7 +74,7 @@ export default async function EpisodeSeriePage({
   //   data.episodes.length = 0 → la série demandée n'existe pas
   // Le premier ne doit surtout pas figer un 404 en cache ISR ; le second est un
   // vrai 404.
-  if (!data) return <SectionUnavailable title="Épisodes Dragon Ball" />;
+  if (!data) return <SectionUnavailable title={getDictionary().episodeSeries.unavailable} />;
   if (data.episodes.length === 0) notFound();
 
   const { episodes, total } = data;
@@ -81,25 +83,30 @@ export default async function EpisodeSeriePage({
 
   return (
     <>
+      {series === "DBS" ? <DbsBeerusSpotlight catalogue /> : null}
       <Billboard
         backdrop={await bannerForSeries(series)}
         eyebrow={SERIES_YEARS[series] ? `Anime · ${SERIES_YEARS[series]}` : "Anime"}
         title={SERIES_LABELS[series] ?? series}
-        meta={[`${total} épisodes`]}
+        meta={[<T key="count" k="episodeSeries.episodeCount" values={{ count: total }} />]}
         hasVf={episodes.some((episode) => hasLang(episode.players, "vf"))}
         hasVostfr={episodes.some((episode) => hasLang(episode.players, "vostfr"))}
         hasVost={episodes.some((episode) => hasLang(episode.players, "vost"))}
         synopsis={stripSourceTags(opener.synopsis)}
         primaryHref={`/wiki/episodes/${opener.id}`}
-        primaryLabel="Commencer la série"
+        primaryLabel={<T k="episodeSeries.start" />}
         secondaryHref="/wiki/timeline"
-        secondaryLabel="Chronologie"
+        secondaryLabel={<T k="episodeSeries.timeline" />}
       />
       <div className="wiki-container">
         <Breadcrumbs
           className="mb-8"
           items={[
-            { label: "Épisodes", href: "/wiki/episodes" },
+            {
+              label: getDictionary().episodeSeries.episodes,
+              display: <T k="episodeSeries.episodes" />,
+              href: "/wiki/episodes",
+            },
             { label: SERIES_LABELS[series] ?? series },
           ]}
         />
@@ -108,7 +115,7 @@ export default async function EpisodeSeriePage({
             href="/wiki/episodes"
             className="rounded-full bg-white/[0.06] px-3 py-1.5 font-display text-[12px] font-semibold uppercase tracking-[0.08em] text-white/72 transition-colors hover:bg-white/[0.12]"
           >
-            ← Tout
+            ← <T k="episodeSeries.all" />
           </Link>
           {(navSeries.length > 0 ? navSeries : [series]).map((key) => (
             <Link
@@ -131,7 +138,9 @@ export default async function EpisodeSeriePage({
             style={{ backgroundColor: ERA_ACCENT[eraOf(series)] }}
           />
           {SERIES_LABELS[series] ?? series}
-          <span className="font-mono text-[14px] font-normal text-white/50">{total} épisodes</span>
+          <span className="font-mono text-[14px] font-normal text-white/50">
+            <T k="episodeSeries.episodeCount" values={{ count: total }} />
+          </span>
         </h2>
 
         <EpisodeSeriesGrid
