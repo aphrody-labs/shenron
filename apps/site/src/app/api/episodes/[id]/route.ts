@@ -57,6 +57,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     const players = Array.isArray(ep.players) ? ep.players : [];
     const hasVf = players.some((p) => p.lang === "vf");
     const hasVostfr = players.some((p) => p.lang === "vostfr");
+    const hasVost = players.some((p) => p.lang === "vost");
 
     return NextResponse.json(
       {
@@ -75,6 +76,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         saga: saga ? { id: saga.id, name: saga.name, slug: saga.slug } : null,
         hasVf,
         hasVostfr,
+        hasVost,
         playerCount: players.length,
         players: players.map((p) => ({
           name: p.name,

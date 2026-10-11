@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -25,6 +26,7 @@ export function Billboard({
   synopsis,
   hasVf,
   hasVostfr,
+  hasVost,
   primaryHref,
   primaryLabel,
   primaryHardNav = false,
@@ -42,6 +44,7 @@ export function Billboard({
   synopsis?: ReactNode | null;
   hasVf?: boolean;
   hasVostfr?: boolean;
+  hasVost?: boolean;
   primaryHref: string;
   primaryLabel: ReactNode;
   /** Navigation DURE (`<a>`) pour l'action primaire — utile quand le catalogue
@@ -51,6 +54,7 @@ export function Billboard({
   secondaryHref?: string;
   secondaryLabel?: ReactNode;
 }) {
+  const t = useTranslations("mediaPlayback");
   const metaParts = (meta ?? []).filter(Boolean) as ReactNode[];
   return (
     <section className="relative h-[70vh] max-h-[680px] min-h-[440px] w-full overflow-hidden border-b border-white/[0.08]">
@@ -82,7 +86,7 @@ export function Billboard({
             </h1>
             {titleJa && <p className="mb-3 font-jp text-[15px] text-white/55">{titleJa}</p>}
 
-            {(metaParts.length > 0 || hasVf || hasVostfr) && (
+            {(metaParts.length > 0 || hasVf || hasVostfr || hasVost) && (
               <div className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px] font-display font-semibold uppercase tracking-wide text-white/70">
                 {metaParts.map((m, i) => (
                   <span key={i} className="flex items-center gap-3">
@@ -96,12 +100,17 @@ export function Billboard({
                 ))}
                 {hasVf && (
                   <span className="rounded bg-namek/85 px-1.5 py-0.5 text-[10px] text-black">
-                    VF
+                    {t("vf")}
                   </span>
                 )}
                 {hasVostfr && (
                   <span className="rounded bg-dbz-blue-light/85 px-1.5 py-0.5 text-[10px] text-black">
-                    VOSTFR
+                    {t("vostfr")}
+                  </span>
+                )}
+                {hasVost && (
+                  <span className="rounded bg-dbz-blue-light/85 px-1.5 py-0.5 text-[10px] text-black">
+                    {t("vost")}
                   </span>
                 )}
               </div>

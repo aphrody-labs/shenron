@@ -259,6 +259,7 @@ export function SagaBestOf({
                 year={yearOf(ep.airDate)}
                 hasVf={languages.hasVf}
                 hasVostfr={languages.hasVostfr}
+                hasVost={languages.hasVost}
               />
             );
           })}
@@ -294,6 +295,7 @@ export function SagaBestOf({
                 meta={mov.duration ? `${mov.duration} min` : null}
                 hasVf={languages.hasVf}
                 hasVostfr={languages.hasVostfr}
+                hasVost={languages.hasVost}
                 badge={t("home.bestof.badgeMovie")}
               />
             );

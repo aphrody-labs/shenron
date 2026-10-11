@@ -5,6 +5,13 @@ import { NextRequest } from "next/server";
 // Mock server-only before importing server code
 mock.module("server-only", () => ({}));
 
+// Route unit tests use a deterministic limiter; shared-rate-limit.test.ts exercises Redis failures.
+mock.module("@/lib/memory-rate-limit", () => ({
+  createMemoryRateLimiter: () => ({
+    consume: async () => ({ limited: false, retryAfter: 1, remaining: 19, backend: "redis" }),
+  }),
+}));
+
 // Mock site-rag before importing the route
 mock.module("@/lib/site-rag", () => ({
   usesAphrodyRag: () => true,

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { Lecture, Livre } from "@shenron/ui/icones";
@@ -21,6 +22,7 @@ export function PosterCard({
   playerCount,
   hasVf,
   hasVostfr,
+  hasVost,
   badge,
   action = "play",
 }: {
@@ -34,11 +36,13 @@ export function PosterCard({
   playerCount?: number;
   hasVf?: boolean;
   hasVostfr?: boolean;
+  hasVost?: boolean;
   /** Pastille d'angle (ex. « FILM », « TOME 12 »). */
   badge?: string;
   /** Le pictogramme doit refléter l'action réelle : lecture vidéo ou document. */
   action?: "play" | "read";
 }) {
+  const t = useTranslations("mediaPlayback");
   return (
     <Link
       href={href}
@@ -71,16 +75,21 @@ export function PosterCard({
         )}
 
         {/* Puces de langue (haut droite) */}
-        {(hasVf || hasVostfr) && (
+        {(hasVf || hasVostfr || hasVost) && (
           <div className="absolute right-1.5 top-1.5 flex gap-1">
             {hasVf && (
               <span className="rounded bg-namek/85 px-1 py-0.5 text-[10px] font-bold uppercase text-black">
-                VF
+                {t("vf")}
               </span>
             )}
             {hasVostfr && (
               <span className="rounded bg-dbz-blue-light/85 px-1 py-0.5 text-[10px] font-bold uppercase text-black">
-                VOSTFR
+                {t("vostfr")}
+              </span>
+            )}
+            {hasVost && (
+              <span className="rounded bg-dbz-blue-light/85 px-1 py-0.5 text-[10px] font-bold uppercase text-black">
+                {t("vost")}
               </span>
             )}
           </div>

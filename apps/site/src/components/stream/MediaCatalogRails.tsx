@@ -16,14 +16,16 @@ const SERIES_LABELS: Record<string, string> = {
   DB_DAIMA: "Dragon Ball Daima",
 };
 
-export function languageBadges(players: { lang?: "vf" | "vostfr" }[] | null): {
+export function languageBadges(players: { lang?: "vf" | "vostfr" | "vost" }[] | null): {
   hasVf: boolean;
   hasVostfr: boolean;
+  hasVost: boolean;
 } {
   const safe = Array.isArray(players) ? players : [];
   return {
     hasVf: safe.some((player) => player.lang === "vf"),
     hasVostfr: safe.some((player) => player.lang === "vostfr"),
+    hasVost: safe.some((player) => player.lang === "vost"),
   };
 }
 
@@ -69,6 +71,7 @@ export function MediaCatalogRails({
                   year={yearOf(episode.airDate)}
                   hasVf={languages.hasVf}
                   hasVostfr={languages.hasVostfr}
+                  hasVost={languages.hasVost}
                   eager={eagerEpisodes && index < 3}
                 />
               );
@@ -92,6 +95,7 @@ export function MediaCatalogRails({
                   meta={movie.duration ? `${movie.duration} min` : null}
                   hasVf={languages.hasVf}
                   hasVostfr={languages.hasVostfr}
+                  hasVost={languages.hasVost}
                   badge="Film"
                 />
               );

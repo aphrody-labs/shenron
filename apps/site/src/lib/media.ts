@@ -24,7 +24,7 @@ export function stripSourceTags(s: string | null | undefined): string | null {
   return out.trimEnd();
 }
 
-type Player = { lang?: "vf" | "vostfr" };
+type Player = { lang?: "vf" | "vostfr" | "vost" };
 
 /**
  * Disponibilité VF/VOSTFR depuis la colonne jsonb `players`. **Garde
@@ -33,10 +33,15 @@ type Player = { lang?: "vf" | "vostfr" };
  * notFound chronologie, erreur streamée post-shell épisodes). Ici : dégradation
  * silencieuse (pas de badge) plutôt que crash.
  */
-export function langBadges(players: unknown): { hasVf: boolean; hasVostfr: boolean } {
+export function langBadges(players: unknown): {
+  hasVf: boolean;
+  hasVostfr: boolean;
+  hasVost: boolean;
+} {
   const arr = Array.isArray(players) ? (players as Player[]) : [];
   return {
     hasVf: arr.some((p) => p?.lang === "vf"),
     hasVostfr: arr.some((p) => p?.lang === "vostfr"),
+    hasVost: arr.some((p) => p?.lang === "vost"),
   };
 }

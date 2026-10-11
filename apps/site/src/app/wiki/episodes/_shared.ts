@@ -48,8 +48,8 @@ export const yearOf = (sec: number | null) => (sec ? new Date(sec * 1000).getFul
 
 // Garde `Array.isArray` (piège jsonb scalaire) — cf. lib/media.
 export const hasLang = (
-  players: { lang?: "vf" | "vostfr" }[] | null,
-  lang: "vf" | "vostfr",
+  players: { lang?: "vf" | "vostfr" | "vost" }[] | null,
+  lang: "vf" | "vostfr" | "vost",
 ): boolean => (Array.isArray(players) ? players : []).some((p) => p.lang === lang);
 
 export { stripSourceTags } from "@/lib/media";

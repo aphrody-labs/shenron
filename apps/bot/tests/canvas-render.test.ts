@@ -1,9 +1,9 @@
 import { tempPath } from "@aphrody/paths";
 import "./setup";
 import "reflect-metadata";
-import { describe, expect, test } from "bun:test";
+import { afterAll, describe, expect, test } from "bun:test";
 import { container } from "tsyringe";
-import { writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import "~/lib/canvas-kit";
 
 import { CardService } from "~/services/CardService";
@@ -18,9 +18,8 @@ const fakeUser = (id: string, name: string) =>
     displayAvatarURL: () => `https://cdn.discordapp.com/embed/avatars/${Number(id) % 5}.png`,
   }) as any;
 
-const OUT = tempPath("shenron-canvas");
-import { mkdirSync } from "node:fs";
-mkdirSync(OUT, { recursive: true });
+const OUT = mkdtempSync(tempPath("shenron-canvas-"));
+afterAll(() => rmSync(OUT, { recursive: true, force: true }));
 
 // Le rendu réel exige le binding natif skia. Sur les runners CI (GLIBC trop
 // ancienne / pas de binaire darwin) le shim no-op de preload.ts est actif et

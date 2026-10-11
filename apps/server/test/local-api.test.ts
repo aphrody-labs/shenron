@@ -11,6 +11,7 @@ import { unavailableGroups } from "../src/backend";
 import type { ChatModel } from "../src/chat-model";
 import type { ServerPaths } from "../src/config";
 import { type LocalFacts, localApi, type LocalNative } from "../src/local-api";
+import { VERSION } from "../src/version";
 
 const root = mkdtempSync(join(tmpdir(), "shenron-local-api-"));
 afterAll(() => rmSync(root, { recursive: true, force: true }));
@@ -121,7 +122,7 @@ describe("/api/local/health", () => {
     expect(body).toEqual({
       ok: false,
       service: "shenron-server",
-      version: "1.3.0",
+      version: VERSION,
       profile: "public",
       home: paths.home,
       localRag: false,

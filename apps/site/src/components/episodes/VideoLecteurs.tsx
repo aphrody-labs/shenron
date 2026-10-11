@@ -4,12 +4,19 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { type SubtitleTrack, VideoPlayer } from "@/components/episodes/VideoPlayer";
 import { track } from "@/lib/telemetry";
 import { probePlayerNetwork } from "@/lib/player-network";
+import { useTranslations } from "next-intl";
+import {
+  normalizeVideoLanguage,
+  playersForVideoLanguage,
+  resolveVideoSelection,
+  videoLanguages,
+} from "@/lib/video-languages";
 
 export interface Lecteur {
   name: string;
   provider: string;
   embedUrl: string;
-  lang?: "vf" | "vostfr";
+  lang?: "vf" | "vostfr" | "vost";
 }
 
 /**
@@ -30,18 +37,10 @@ export interface LecteurVo {
   subtitles: SubtitleTrack[];
 }
 
-const LANG_LABEL: Record<string, string> = {
-  vf: "VF",
-  vostfr: "VOSTFR",
-  ext: "Lecteurs",
-  vo: "VO sous-titrée",
-};
-const LANG_ORDER = ["vf", "vostfr"] as const;
-
 /** Retire le préfixe « VF · » / « VOSTFR · » que l'import ajoute au nom du lecteur
  *  (la langue est désormais portée par le sélecteur dédié). */
 function cleanName(name: string): string {
-  return name.replace(/^\s*(VF|VOSTFR)\s*·\s*/i, "").trim();
+  return name.replace(/^\s*(VF|VOSTFR|VOST)\s*·\s*/i, "").trim();
 }
 
 /**
@@ -70,10 +69,24 @@ export function VideoLecteurs({
   entityId?: string | number;
   vo?: LecteurVo;
 }) {
+  const t = useTranslations("mediaPlayback");
+  const langLabel = (value: string) => {
+    switch (value) {
+      case "vf":
+        return t("vf");
+      case "vostfr":
+        return t("vostfr");
+      case "vost":
+        return t("vost");
+      case "vo":
+        return t("vo");
+      default:
+        return t("externalPlayers");
+    }
+  };
   // Langues réellement présentes, ordonnées VF puis VOSTFR.
   const langs = useMemo(() => {
-    const present = new Set(players.map((p) => p.lang).filter(Boolean) as string[]);
-    return LANG_ORDER.filter((l) => present.has(l));
+    return videoLanguages(players);
   }, [players]);
   const hasLangs = langs.length > 0;
   // La VO passe par la variante VOSTFR du proxy HLS. Sans lecteur VOSTFR, le
@@ -82,7 +95,8 @@ export function VideoLecteurs({
   // règle que resolve-streams.ts, qui déduit les langues des tags des lecteurs.
   const aVo = vo != null && players.some((p) => p.lang === "vostfr");
 
-  const [lang, setLang] = useState<string>(() => langs[0] ?? "");
+  const [lang, setLang] = useState<string>(() => resolveVideoSelection(players, ""));
+  const selectedLang = resolveVideoSelection(players, lang);
   const [active, setActive] = useState(0);
   const [modeVo, setModeVo] = useState(false);
   const [status, setStatus] = useState<"probing" | "ready" | "failed">("probing");
@@ -93,24 +107,25 @@ export function VideoLecteurs({
   const networkFailure = useRef<string | null>(null);
   const [probeAttempt, setProbeAttempt] = useState(0);
 
-  // Synchronise la langue active si la sélection courante n'existe pas dans le lot d'épisode
+  // Derived selection prevents an empty render while the state catches up.
   useEffect(() => {
-    if (hasLangs && !langs.includes(lang as "vf" | "vostfr")) {
-      setLang(langs[0] ?? "");
+    if (lang !== selectedLang) {
+      setLang(selectedLang);
       setActive(0);
       setStatus("probing");
     }
-  }, [hasLangs, langs, lang]);
+    if (modeVo && !aVo) setModeVo(false);
+  }, [lang, selectedLang, modeVo, aVo]);
 
-  // Lecteurs de la langue choisie. Les lecteurs SANS tag de langue restent
-  // toujours visibles (sinon, en cas de data mixte, ils disparaîtraient).
+  // Untagged sources stay in a separate choice; they never inherit a version.
   const list = useMemo(
-    () => (hasLangs && lang ? players.filter((p) => !p.lang || p.lang === lang) : players),
-    [players, hasLangs, lang],
+    () =>
+      hasLangs ? playersForVideoLanguage(players, normalizeVideoLanguage(selectedLang)) : players,
+    [players, hasLangs, selectedLang],
   );
 
   const safeActive = active < list.length ? active : 0;
-  const current = list[safeActive] ?? list[0] ?? players[0];
+  const current = list[safeActive] ?? list[0];
   const enVo = modeVo && aVo;
 
   // Réinitialise le statut de sonde à chaque changement de lecteur ou de langue
@@ -155,8 +170,11 @@ export function VideoLecteurs({
   // portent aucun tag), puis la VO quand elle existe.
   const choix = useMemo(() => {
     const externes: string[] = hasLangs ? [...langs] : ["ext"];
+    if (hasLangs && players.some((player) => normalizeVideoLanguage(player.lang) === null)) {
+      externes.push("ext");
+    }
     return aVo ? [...externes, "vo"] : externes;
-  }, [hasLangs, langs, aVo]);
+  }, [hasLangs, langs, aVo, players]);
 
   /**
    * Ouverture d'un lecteur. C'est LE signal de valeur du site — savoir ce qui
@@ -183,7 +201,7 @@ export function VideoLecteurs({
     track("play_open", {
       entityType,
       entityId,
-      lang: current.lang ?? undefined,
+      lang: normalizeVideoLanguage(current.lang) ?? undefined,
       // `provider` (« vidmoly », « mail.ru ») plutôt que le nom d'affichage :
       // c'est l'hébergeur qui tombe, pas le libellé.
       player: current.provider || current.name || undefined,
@@ -197,10 +215,10 @@ export function VideoLecteurs({
       return;
     }
     setModeVo(false);
-    if (c !== "ext") setLang(c);
+    setLang(c);
     setActive(0);
   };
-  const estChoisi = (c: string) => (c === "vo" ? enVo : !enVo && (c === "ext" || lang === c));
+  const estChoisi = (c: string) => (c === "vo" ? enVo : !enVo && selectedLang === c);
   const retry = () => {
     networkFailure.current = null;
     setProbeAttempt((attempt) => attempt + 1);
@@ -214,7 +232,7 @@ export function VideoLecteurs({
       {choix.length > 1 && (
         <div
           role="group"
-          aria-label="Version (VF, VOSTFR, VO sous-titrée)"
+          aria-label={t("versionChoice")}
           className="inline-flex flex-wrap items-center gap-1 rounded-full bg-white/[0.06] p-1"
         >
           {choix.map((c) => (
@@ -227,7 +245,7 @@ export function VideoLecteurs({
                 estChoisi(c) ? "bg-dbz-orange text-black" : "text-white/70 hover:text-white"
               }`}
             >
-              {LANG_LABEL[c]}
+              {langLabel(c)}
             </button>
           ))}
         </div>
@@ -237,7 +255,7 @@ export function VideoLecteurs({
       {!enVo && (
         <div
           role="group"
-          aria-label="Choix du lecteur"
+          aria-label={t("playerChoice")}
           className="flex flex-wrap items-center gap-2"
         >
           {list.map((p, i) => (
@@ -253,7 +271,7 @@ export function VideoLecteurs({
               }`}
               title={`${cleanName(p.name)} · ${p.provider}`}
             >
-              Lecteur {i + 1}
+              {t("playerNumber", { number: i + 1 })}
             </button>
           ))}
         </div>
@@ -262,8 +280,7 @@ export function VideoLecteurs({
       {enVo && vo ? (
         voEchec ? (
           <div className="dbz-panel flex aspect-video w-full items-center justify-center rounded-lg border border-dbz-border bg-black p-6 text-center text-sm text-white/60">
-            Flux VO indisponible pour le moment. Les lecteurs VF et VOSTFR restent accessibles
-            ci-dessus.
+            {t("voUnavailable")}
           </div>
         ) : (
           <VideoPlayer
@@ -277,15 +294,13 @@ export function VideoLecteurs({
         )
       ) : status === "failed" ? (
         <div className="dbz-panel flex aspect-video w-full flex-col items-center justify-center gap-3 rounded-lg border border-dbz-border bg-black p-6 text-center text-sm text-white/60">
-          <p>
-            Aucun des {list.length} lecteur{list.length > 1 ? "s" : ""} ne répond pour le moment.
-          </p>
+          <p>{t("playersUnavailable", { count: list.length })}</p>
           <button
             type="button"
             onClick={retry}
             className="min-h-10 rounded-lg bg-dbz-orange px-4 text-xs font-bold text-black hover:bg-dbz-orange-dark"
           >
-            Réessayer automatiquement
+            {t("retry")}
           </button>
         </div>
       ) : (
@@ -297,7 +312,7 @@ export function VideoLecteurs({
           <iframe
             key={current.embedUrl}
             src={current.embedUrl}
-            title={`Lecteur ${active + 1} — ${cleanName(current.name)}`}
+            title={t("playerTitle", { number: active + 1, name: cleanName(current.name) })}
             className="aspect-video w-full rounded-lg bg-black"
             sandbox="allow-scripts allow-same-origin allow-presentation allow-forms"
             allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
@@ -316,10 +331,16 @@ export function VideoLecteurs({
       )}
       <p className="text-[11px] text-white/50" aria-live="polite">
         {enVo && vo
-          ? `Audio japonais · pistes : ${vo.subtitles.map((t) => t.label).join(", ")} — à choisir dans le menu du lecteur.`
+          ? t("voTracks", { tracks: vo.subtitles.map((track) => track.label).join(", ") })
           : status === "probing"
-            ? `${hasLangs && lang ? `${LANG_LABEL[lang]} · ` : ""}Vérification automatique du lecteur « ${cleanName(current.name)} »…`
-            : `${hasLangs && lang ? `${LANG_LABEL[lang]} · ` : ""}Lecteur externe « ${cleanName(current.name)} » sélectionné.`}
+            ? t("probing", {
+                version: hasLangs ? `${langLabel(selectedLang)} · ` : "",
+                name: cleanName(current.name),
+              })
+            : t("selected", {
+                version: hasLangs ? `${langLabel(selectedLang)} · ` : "",
+                name: cleanName(current.name),
+              })}
       </p>
     </div>
   );

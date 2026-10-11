@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, it } from "bun:test";
+import { SHENRON_FFI_VERSION } from "../src/generated/symbols";
 import {
   reAbiVersion,
   reVersion,
@@ -19,7 +20,7 @@ describe("shenron-re Bun FFI", () => {
 
   it("reads ABI version and crate version", () => {
     expect(reAbiVersion()).toBe(1);
-    expect(reVersion()).toBe("1.3.0");
+    expect(reVersion()).toBe(SHENRON_FFI_VERSION);
   });
 
   it("triages binary bytes via FFI", () => {

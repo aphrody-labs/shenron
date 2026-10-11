@@ -18,6 +18,7 @@
  * auto (id) n'est jamais écrite à l'insert si absente du body.
  */
 import "server-only";
+import { assertDatabooksWritable } from "@/lib/databooks-freeze";
 import {
   and,
   type Column,
@@ -57,6 +58,12 @@ import {
   type VisibilityScope,
 } from "@/lib/wiki-gaps";
 import { WIKI_TABLE_SPECS, type WikiTableSpec } from "@/lib/wiki-tables";
+import {
+  CatalogMediaConflictError,
+  isMediaCatalogTable,
+  isbnVariants,
+  parseMediaCatalogBody,
+} from "@/lib/catalog-media-contracts";
 
 // Les tables Drizzle bot-schema sont hétérogènes → any localisé et assumé
 // (la règle no-explicit-any est déjà off dans eslint.config.mjs).
@@ -109,6 +116,9 @@ const TABLE_OBJECTS: Record<string, AnyTable> = {
   db_sources: botSchema.botSources,
   db_licenses: botSchema.botLicenses,
   db_assets: botSchema.botAssets,
+  media_works: botSchema.botMediaWorks,
+  media_editions: botSchema.botMediaEditions,
+  media_volumes: botSchema.botMediaVolumes,
 };
 
 export const WIKI_TABLES: Record<string, ResolvedTable> = Object.fromEntries(
@@ -169,16 +179,20 @@ function coerceValue(spec: ResolvedTable, key: string, value: unknown): unknown 
  * `forInsert` autorise en plus la pk simple si fournie (jamais générée si absente).
  */
 function buildValues(spec: ResolvedTable, body: Row, { forInsert }: { forInsert: boolean }): Row {
+  // Guard the owner writer as well as HTTP routes, including historical restores.
+  if (spec.name === "db_databooks" && Object.hasOwn(body, "pages")) assertDatabooksWritable();
   const out: Row = {};
   const allowed = new Set(spec.mutableColumns);
   // À l'insert, on autorise aussi la/les pk si explicitement fournies.
-  if (forInsert) {
+  if (forInsert && !isMediaCatalogTable(spec.name)) {
     for (const pkCol of pkCamelKeys(spec)) {
       if (body[pkCol] !== undefined) allowed.add(pkCol);
     }
   }
+  const selected = Object.fromEntries(Object.entries(body).filter(([key]) => allowed.has(key)));
+  const parsed = parseMediaCatalogBody(spec.name, selected, forInsert);
   for (const key of allowed) {
-    if (key in body) out[key] = coerceValue(spec, key, body[key]);
+    if (key in parsed) out[key] = coerceValue(spec, key, parsed[key]);
   }
   return out;
 }
@@ -344,7 +358,68 @@ const DB_AUTOGEN_PK = new Set<string>([
   "db_wiki_sections",
   "db_databooks",
   "db_character_variants",
+  "media_works",
+  "media_editions",
+  "media_volumes",
 ]);
+
+type CatalogTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+const MEDIA_IDENTITY_FIELDS: Record<string, string[]> = {
+  media_works: ["slug", "kind", "series"],
+  media_editions: ["workId", "edition", "language", "isbn", "label", "pageColor"],
+  media_volumes: ["slug", "editionId", "number", "legacyVolumeId"],
+};
+
+/** NULL ISBNs have no unique constraint in PostgreSQL; serialize editorial deduplication. */
+async function lockMediaCatalog(tx: CatalogTransaction, table: string): Promise<void> {
+  await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${`shenron:catalog:${table}`}))`);
+}
+
+async function assertMediaCatalogUnique(
+  tx: CatalogTransaction,
+  spec: ResolvedTable,
+  values: Row,
+  currentId?: string,
+): Promise<void> {
+  let identity: SQL | undefined;
+  if (spec.name === "media_works") {
+    identity = or(
+      eq(spec.table.slug, values.slug),
+      and(eq(spec.table.kind, values.kind), eq(spec.table.series, values.series)),
+    );
+  } else if (spec.name === "media_editions") {
+    const isbnIdentity =
+      typeof values.isbn === "string"
+        ? inArray(
+            sql`upper(regexp_replace(${spec.table.isbn}, '[[:space:]-]', '', 'g'))`,
+            isbnVariants(values.isbn),
+          )
+        : undefined;
+    const editorialIdentity = and(
+      eq(spec.table.workId, values.workId),
+      eq(spec.table.edition, values.edition),
+      eq(spec.table.language, values.language),
+      sql`lower(trim(${spec.table.label})) = lower(trim(${String(values.label)}))`,
+      eq(spec.table.pageColor, values.pageColor),
+      typeof values.isbn === "string" ? isNull(spec.table.isbn) : undefined,
+    );
+    identity = or(isbnIdentity, editorialIdentity);
+  } else if (spec.name === "media_volumes") {
+    identity = or(
+      eq(spec.table.slug, values.slug),
+      and(eq(spec.table.editionId, values.editionId), eq(spec.table.number, values.number)),
+      values.legacyVolumeId != null
+        ? eq(spec.table.legacyVolumeId, values.legacyVolumeId)
+        : undefined,
+    );
+  }
+  if (!identity) return;
+  const matches = await tx
+    .select({ id: spec.table.id })
+    .from(spec.table)
+    .where(currentId ? and(identity, sql`${spec.table.id} <> ${Number(currentId)}`) : identity);
+  if (matches.length) throw new CatalogMediaConflictError(matches.map((row) => Number(row.id)));
+}
 
 /** Prochain id disponible (max+1) pour une table à pk numérique sans séquence. */
 async function nextPkValue(spec: ResolvedTable, pkKey: string): Promise<number> {
@@ -372,10 +447,24 @@ function applyDatabookKind(
   }
 }
 
-export async function insertWiki(table: string, data: Row): Promise<Row> {
+export async function insertWiki(
+  table: string,
+  data: Row,
+  options: { restoreId?: number } = {},
+): Promise<Row> {
   const spec = getSpec(table);
   if (!spec) throw new Error(`Table inconnue: ${table}`);
   const values = buildValues(spec, data, { forInsert: true });
+  if (options.restoreId !== undefined) {
+    if (
+      !isMediaCatalogTable(table) ||
+      !Number.isSafeInteger(options.restoreId) ||
+      options.restoreId <= 0
+    ) {
+      throw new Error("Invalid media restoration identity.");
+    }
+    values.id = options.restoreId;
+  }
   applyDatabookKind(table, values, { forInsert: true });
   if (Object.keys(values).length === 0) {
     throw new Error("Aucune colonne fournie.");
@@ -383,6 +472,17 @@ export async function insertWiki(table: string, data: Row): Promise<Row> {
   // Tables de jointure (pk composite) : lier est idempotent → un re-lien d'une
   // paire existante est un no-op au lieu d'une erreur unique_violation brute.
   const isJoin = Array.isArray(spec.pk);
+  if (isMediaCatalogTable(table)) {
+    return db.transaction(async (tx) => {
+      await lockMediaCatalog(tx, table);
+      await assertMediaCatalogUnique(tx, spec, values);
+      const builder = tx.insert(spec.table);
+      const query = options.restoreId === undefined ? builder : builder.overridingSystemValue();
+      const [inserted] = (await query.values(values as never).returning()) as Row[];
+      if (!inserted) throw new Error("Catalogue insert returned no row.");
+      return inserted;
+    });
+  }
   // Pk numérique simple non fournie et non auto-générée → attribue max+1 pour
   // permettre la création d'entités depuis le studio (« Nouvelle entrée »).
   if (!isJoin && !DB_AUTOGEN_PK.has(table)) {
@@ -405,6 +505,24 @@ export async function updateWiki(table: string, id: string, data: Row): Promise<
     throw new Error("Aucune colonne mutable fournie.");
   }
   const cond = pkCondition(spec, id);
+  if (isMediaCatalogTable(table)) {
+    return db.transaction(async (tx) => {
+      await lockMediaCatalog(tx, table);
+      const [before] = (await tx.select().from(spec.table).where(cond).limit(1)) as Row[];
+      if (!before) throw new Error(`Ligne introuvable: ${table}#${id}`);
+      // Existing duplicate notices still need metadata repairs without new identities.
+      if (
+        MEDIA_IDENTITY_FIELDS[table].some(
+          (field) => field in values && values[field] !== before[field],
+        )
+      ) {
+        await assertMediaCatalogUnique(tx, spec, { ...before, ...values }, id);
+      }
+      const [updated] = (await tx.update(spec.table).set(values).where(cond).returning()) as Row[];
+      if (!updated) throw new Error(`Ligne introuvable: ${table}#${id}`);
+      return updated;
+    });
+  }
   const updated = (await db.update(spec.table).set(values).where(cond).returning()) as Row[];
   // 0 ligne matchée = pk introuvable → ne JAMAIS renvoyer un faux succès
   // (l'admin croirait avoir sauvegardé). Le route handler mappe ça en 404.
@@ -467,6 +585,9 @@ const VISIBILITY_TABLES = new Set<string>([
   "db_manga_volumes",
   "db_databooks",
   "db_manga_chapters",
+  "media_works",
+  "media_editions",
+  "media_volumes",
 ]);
 
 export function hasVisibility(table: string): boolean {

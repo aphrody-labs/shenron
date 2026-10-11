@@ -1,4 +1,24 @@
 {
+  "mediaPlayback": {
+    "vf": "French dub",
+    "vostfr": "Original audio, French subtitles",
+    "vost": "Original audio, other subtitles",
+    "vo": "Original audio with subtitle tracks",
+    "externalPlayers": "Players",
+    "versionChoice": "Choose a video version",
+    "playerChoice": "Choose a player",
+    "playerNumber": "Player {number}",
+    "playerTitle": "Player {number} — {name}",
+    "voUnavailable": "This stream is currently unavailable. Other players remain accessible above.",
+    "playersUnavailable": "None of the {count} players is responding at the moment.",
+    "retry": "Retry automatically",
+    "voTracks": "Tracks: {tracks} — choose one in the player menu.",
+    "probing": "{version}Checking player “{name}”…",
+    "selected": "{version}External player “{name}” selected.",
+    "watchLegally": "Watch legally",
+    "availableLanguages": "Observed versions",
+    "legalOfferNote": "Offered by {providers}. The link opens the provider catalogue; a subscription or purchase may be required."
+  },
   "mangaCatalog": {
     "colorSectionTitle": "French color scans",
     "colorSectionDescription": "French-language color scans sourced from the scan-db forum. This collection does not contain Shueisha’s original Japanese edition. {count} chapters listed.",

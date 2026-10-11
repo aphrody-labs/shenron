@@ -50,7 +50,7 @@ describe("template", () => {
     const text =
       SHENRON_AGENT_TEMPLATE.files["AGENTS.md"] + SHENRON_AGENT_TEMPLATE.files["SOUL.md"];
     expect(text).toContain("Akira Toriyama");
-    expect(text).toContain("Fandom est interdit");
+    expect(text).toMatch(/Fandom[^\n]*est interdit comme source/);
     expect(text).toMatch(/fr`, `en` ou\s+`ja`/);
   });
 

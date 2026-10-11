@@ -10,7 +10,7 @@ import { DatabaseService } from "../src/db/index";
 import { TrainingService } from "../src/services/TrainingService";
 import { AdminReportGoalService } from "../src/services/AdminReportGoalService";
 import { CanonService } from "../src/services/CanonService";
-import { env } from "../src/lib/env";
+import { env, isBotOwner } from "../src/lib/env";
 import { PermissionFlagsBits } from "discord.js";
 import { ADMIN_LAB_CHANNEL_ID } from "../src/lib/admin-lab";
 
@@ -94,7 +94,9 @@ describe("AdminLabListener — Écoute et Automatisation du Salon Lab IA", () =>
   });
 
   test("refuse les commandes et l'archivage sans droits administrateur", async () => {
-    const msg = createMockMessage({ content: "!goal unauthorized", admin: false });
+    const authorId = "999999999999999997";
+    expect(isBotOwner(authorId)).toBe(false);
+    const msg = createMockMessage({ content: "!goal unauthorized", admin: false, authorId });
     await listener.onMessage([msg as any]);
     expect(msg.getReply()).toBeNull();
     expect(

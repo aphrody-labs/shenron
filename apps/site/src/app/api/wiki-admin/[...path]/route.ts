@@ -44,7 +44,14 @@ import {
   type RevisionActor,
 } from "@/lib/wiki-revisions";
 import { revalidateSectionParent, revalidateWikiEntity } from "@/lib/wiki-revalidate";
+import {
+  validateCatalogEditorialBody,
+  writesDatabookPages,
+} from "@/lib/catalog-editorial-contracts";
+import { databooksFreeze, DatabooksFrozenError } from "@/lib/databooks-freeze";
+import { CatalogMediaConflictError } from "@/lib/catalog-media-contracts";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -72,10 +79,29 @@ const badRequest = (msg: string) => NextResponse.json({ error: msg }, { status: 
 
 async function readJson(req: NextRequest): Promise<Record<string, unknown> | null> {
   try {
-    return (await req.json()) as Record<string, unknown>;
+    const body: unknown = await req.json();
+    return body !== null && typeof body === "object" && !Array.isArray(body)
+      ? (body as Record<string, unknown>)
+      : null;
   } catch {
     return null;
   }
+}
+
+function databookPagesFreezeError(
+  table: string,
+  body: Record<string, unknown>,
+): NextResponse | null {
+  if (writesDatabookPages(table, body)) {
+    const freeze = databooksFreeze();
+    if (freeze) {
+      return NextResponse.json(
+        { error: "DATABOOKS_FROZEN", reason: freeze.reason },
+        { status: 423 },
+      );
+    }
+  }
+  return null;
 }
 
 export async function GET(req: NextRequest, ctx: Ctx) {
@@ -182,7 +208,15 @@ export async function POST(req: NextRequest, ctx: Ctx) {
       });
       return NextResponse.json({ ok: true });
     }
-    const row = await insertWiki(table, body);
+    const bodyError = databookPagesFreezeError(table, body);
+    if (bodyError) return bodyError;
+    const validated = validateCatalogEditorialBody(table, body, true);
+    if (!validated.ok)
+      return NextResponse.json(
+        { error: "invalid_catalog_metadata", fields: validated.fields },
+        { status: 400 },
+      );
+    const row = await insertWiki(table, validated.value);
     revalidateWikiEntity(table, row);
     if (table === "db_wiki_sections") await revalidateSectionParent(row);
     await recordRevision({ table, action: "create", after: row, actor: await currentActor() });
@@ -201,10 +235,18 @@ async function mutate(req: NextRequest, ctx: Ctx) {
   const body = await readJson(req);
   if (!body) return badRequest("JSON body requis");
   try {
+    const bodyError = databookPagesFreezeError(table, body);
+    if (bodyError) return bodyError;
+    const validated = validateCatalogEditorialBody(table, body);
+    if (!validated.ok)
+      return NextResponse.json(
+        { error: "invalid_catalog_metadata", fields: validated.fields },
+        { status: 400 },
+      );
     const decoded = decodeURIComponent(id);
     // Snapshot AVANT pour la révision (diff avant/après + retour arrière).
     const before = await getWikiRow(table, decoded).catch(() => null);
-    const row = await updateWiki(table, decoded, body);
+    const row = await updateWiki(table, decoded, validated.value);
     revalidateWikiEntity(table, row);
     if (table === "db_wiki_sections") await revalidateSectionParent(row);
     await recordRevision({
@@ -258,6 +300,24 @@ export async function DELETE(req: NextRequest, ctx: Ctx) {
  * l'utilisateur et ne contiennent rien d'interne.
  */
 function writeFailed(context: string, err: unknown): NextResponse {
+  if (err instanceof DatabooksFrozenError) {
+    return NextResponse.json({ error: err.code, reason: err.freeze.reason }, { status: 423 });
+  }
+  if (err instanceof CatalogMediaConflictError) {
+    return NextResponse.json(
+      { error: "catalog_media_conflict", existingIds: err.existingIds },
+      { status: 409 },
+    );
+  }
+  if (err instanceof z.ZodError) {
+    return NextResponse.json(
+      {
+        error: "invalid_catalog_metadata",
+        fields: err.issues.map((issue) => issue.path.join(".")),
+      },
+      { status: 400 },
+    );
+  }
   const msg = err instanceof Error ? err.message : String(err);
   console.error(`[${context}]`, err);
   // Signature d'une erreur du pilote PostgreSQL (code SQLSTATE) → on masque.

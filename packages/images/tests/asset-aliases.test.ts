@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
+import portraitDistributions from "./fixtures/portrait-distributions.json";
 import { ASSET_ALIASES, dbPathToDisk, resolveAppFile, sitePublicRedirects } from "../src/resolve";
 
 const APPS = join(import.meta.dir, "..", "..", "..", "apps");
@@ -24,10 +25,26 @@ const SCANNED = ["bot/assets", "bot/public", "site/public"];
 /**
  * Accepted identical groups: Xenoverse 2 portraits are keyed by game code and
  * the seeds test `<CODE>.png` existence, so two codes sharing art stay two files.
+ * Dragon Pixel ships these code-keyed portraits in its own public distribution.
+ * Keep this exception restricted to the two known portrait roots.
  */
 /** Binary media only: small JSON/text twins (e.g. `.well-known` agent cards) are intentional. */
 const BINARY = /.(png|jpe?g|webp|avif|gif|ico|svg|woff2?|ttf|otf|mp3|ogg|wav|mp4|webm)$/i;
-const ALLOWED_GROUP = (paths: string[]) => paths.every((p) => p.includes("/xv2-portraits/"));
+const PORTRAIT_DISTRIBUTIONS = new Map(
+  portraitDistributions.map(({ sha256, paths }) => [JSON.stringify(paths), sha256]),
+);
+const ALLOWED_GROUP = (paths: string[]) => {
+  if (paths.every((p) => p.includes("/xv2-portraits/"))) return true;
+  const expected = PORTRAIT_DISTRIBUTIONS.get(JSON.stringify(paths.toSorted()));
+  return (
+    expected !== undefined &&
+    paths.every(
+      (p) =>
+        new Bun.CryptoHasher("sha256").update(readFileSync(join(APPS, p))).digest("hex") ===
+        expected,
+    )
+  );
+};
 
 function walk(dir: string, rel: string, out: string[]): void {
   for (const e of readdirSync(dir, { withFileTypes: true })) {
@@ -39,6 +56,12 @@ function walk(dir: string, rel: string, out: string[]): void {
 }
 
 describe("asset dedup manifest", () => {
+  test("portrait distribution exceptions do not allow new paths or partial groups", () => {
+    const paths = portraitDistributions[0]!.paths;
+    expect(ALLOWED_GROUP(paths)).toBe(true);
+    expect(ALLOWED_GROUP([...paths, "site/public/unrelated.png"])).toBe(false);
+    expect(ALLOWED_GROUP(paths.slice(1))).toBe(false);
+  });
   test("every alias points to an existing canonical file and its copy is gone", () => {
     const problems: string[] = [];
     for (const [from, to] of Object.entries(ASSET_ALIASES)) {

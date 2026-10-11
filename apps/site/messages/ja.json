@@ -1,4 +1,24 @@
 {
+  "mediaPlayback": {
+    "vf": "フランス語吹替",
+    "vostfr": "原語音声・フランス語字幕",
+    "vost": "原語音声・その他の字幕",
+    "vo": "原語音声と字幕トラック",
+    "externalPlayers": "プレーヤー",
+    "versionChoice": "動画のバージョンを選択",
+    "playerChoice": "プレーヤーを選択",
+    "playerNumber": "プレーヤー {number}",
+    "playerTitle": "プレーヤー {number} — {name}",
+    "voUnavailable": "このストリームは現在利用できません。上の別のプレーヤーをご利用ください。",
+    "playersUnavailable": "現在、{count} 件のプレーヤーから応答がありません。",
+    "retry": "自動で再試行",
+    "voTracks": "字幕トラック：{tracks} — プレーヤーのメニューで選択できます。",
+    "probing": "{version}プレーヤー「{name}」を確認中…",
+    "selected": "{version}外部プレーヤー「{name}」を選択しました。",
+    "watchLegally": "公式サービスで視聴",
+    "availableLanguages": "確認されたバージョン",
+    "legalOfferNote": "提供：{providers}。リンク先は提供元のカタログです。作品によって購入や契約が必要です。"
+  },
   "mangaCatalog": {
     "colorSectionTitle": "フランス語版カラー画像",
     "colorSectionDescription": "scan-db フォーラム由来のフランス語カラー画像です。集英社の日本語オリジナル版は含まれていません。登録章数：{count}話。",

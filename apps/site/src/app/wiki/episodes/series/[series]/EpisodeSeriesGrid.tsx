@@ -15,6 +15,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Recherche } from "@shenron/ui/icones";
 import { EpisodeCard } from "@/components/stream/EpisodeCard";
+import { useTranslations } from "next-intl";
 
 export interface SeriesEpisode {
   id: number;
@@ -26,6 +27,7 @@ export interface SeriesEpisode {
   year: number | null;
   hasVf: boolean;
   hasVostfr: boolean;
+  hasVost?: boolean;
   playerCount: number;
 }
 
@@ -40,9 +42,10 @@ const fold = (s: string) =>
     .toLowerCase();
 
 export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
+  const t = useTranslations("mediaPlayback");
   const [query, setQuery] = useState("");
   const [limit, setLimit] = useState(PAGE);
-  const [language, setLanguage] = useState<"all" | "vf" | "vostfr">("all");
+  const [language, setLanguage] = useState<"all" | "vf" | "vostfr" | "vost">("all");
 
   const filtered = useMemo(() => {
     const q = fold(query.trim());
@@ -52,6 +55,7 @@ export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
     return episodes.filter((e) => {
       if (language === "vf" && !e.hasVf) return false;
       if (language === "vostfr" && !e.hasVostfr) return false;
+      if (language === "vost" && !e.hasVost) return false;
       if (!q) return true;
       if (asNumber !== null && e.number === asNumber) return true;
       return fold(`${e.title} ${e.titleJa ?? ""}`).includes(q);
@@ -68,6 +72,7 @@ export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
   const remaining = filtered.length - visible.length;
   const vfCount = episodes.filter((episode) => episode.hasVf).length;
   const vostfrCount = episodes.filter((episode) => episode.hasVostfr).length;
+  const vostCount = episodes.filter((episode) => episode.hasVost).length;
   const imageCount = episodes.filter((episode) => episode.image).length;
 
   return (
@@ -77,6 +82,7 @@ export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
           ["Épisodes", episodes.length],
           ["VF disponible", vfCount],
           ["VOSTFR", vostfrCount],
+          [t("vost"), vostCount],
           ["Vignettes", imageCount],
         ].map(([label, value]) => (
           <div key={label} className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3">
@@ -116,6 +122,7 @@ export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
               ["all", "Toutes"],
               ["vf", `VF (${vfCount})`],
               ["vostfr", `VOSTFR (${vostfrCount})`],
+              ["vost", `${t("vost")} (${vostCount})`],
             ] as const
           ).map(([key, label]) => (
             <button
@@ -157,6 +164,7 @@ export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
                 year={ep.year}
                 hasVf={ep.hasVf}
                 hasVostfr={ep.hasVostfr}
+                hasVost={ep.hasVost}
                 playerCount={ep.playerCount}
                 width="full"
               />

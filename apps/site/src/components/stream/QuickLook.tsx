@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { FlecheCoin, Lecture } from "@shenron/ui/icones";
 import { assetUrl } from "@/lib/assets";
@@ -19,6 +20,7 @@ export function QuickLook({
   synopsis,
   hasVf,
   hasVostfr,
+  hasVost,
   resources,
   watchHref,
   watchLabel,
@@ -32,11 +34,13 @@ export function QuickLook({
   synopsis?: string | null;
   hasVf?: boolean;
   hasVostfr?: boolean;
+  hasVost?: boolean;
   /** Indicateurs calculés depuis la fiche vidéo (lecteurs, sous-titres, etc.). */
   resources?: string[];
   watchHref: string;
   watchLabel: string;
 }) {
+  const t = useTranslations("mediaPlayback");
   const metaParts = (meta ?? []).filter(Boolean) as string[];
   return (
     <div className="max-h-[88vh] overflow-y-auto">
@@ -105,17 +109,24 @@ export function QuickLook({
           </div>
         )}
         <div className="min-w-0 flex-1 space-y-3">
-          {(metaParts.length > 0 || hasVf || hasVostfr || resources?.length) && (
+          {(metaParts.length > 0 || hasVf || hasVostfr || hasVost || resources?.length) && (
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[12px] font-display font-semibold uppercase tracking-wide text-white/65">
               {metaParts.map((m, i) => (
                 <span key={i}>{m}</span>
               ))}
               {hasVf && (
-                <span className="rounded bg-namek/85 px-1.5 py-0.5 text-[10px] text-black">VF</span>
+                <span className="rounded bg-namek/85 px-1.5 py-0.5 text-[10px] text-black">
+                  {t("vf")}
+                </span>
               )}
               {hasVostfr && (
                 <span className="rounded bg-dbz-blue-light/85 px-1.5 py-0.5 text-[10px] text-black">
-                  VOSTFR
+                  {t("vostfr")}
+                </span>
+              )}
+              {hasVost && (
+                <span className="rounded bg-dbz-blue-light/85 px-1.5 py-0.5 text-[10px] text-black">
+                  {t("vost")}
                 </span>
               )}
               {resources?.map((resource) => (

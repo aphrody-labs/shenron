@@ -27,6 +27,9 @@ const WIKI_LIST_PATHS: Record<string, string[]> = {
   db_tools: ["/wiki/tools"],
   db_news: ["/wiki/news"],
   db_databooks: ["/wiki/databooks"],
+  media_works: ["/wiki/manga"],
+  media_editions: ["/wiki/manga"],
+  media_volumes: ["/wiki/manga"],
 };
 
 /** entity_type d'une section → table wiki de l'entité parente (revalidation). */

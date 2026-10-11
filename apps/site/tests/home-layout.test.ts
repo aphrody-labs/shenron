@@ -3,7 +3,7 @@
  * per block, loaded lazily) and ends on the latest news, then the mini-games.
  */
 import { describe, expect, test } from "bun:test";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 const source = (relative: string) => readFileSync(path.join(import.meta.dir, relative), "utf8");
@@ -80,7 +80,9 @@ describe("no placeholder data on the home", () => {
   });
 
   test("no hard-coded loading banner", async () => {
-    expect(source("../src/app/loading.tsx")).not.toMatch(/CHARGEMENT|Chargement/);
+    const loading = path.join(import.meta.dir, "../src/app/loading.tsx");
+    if (existsSync(loading))
+      expect(readFileSync(loading, "utf8")).not.toMatch(/CHARGEMENT|Chargement/);
     const glob = new Bun.Glob("src/**/*.tsx");
     const offenders: string[] = [];
     for await (const file of glob.scan(path.join(import.meta.dir, ".."))) {

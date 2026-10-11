@@ -213,7 +213,10 @@ describe("adapter evaluation process", () => {
       JSON.stringify({ query: "test", expect: ["dragon sacred knowledge"] }) + "\n",
     );
     writeFileSync(join(data, "SOUL.md"), "Frozen persona");
-    f.options.llamaServer = join(f.root, "fake-llama");
+    f.options.llamaServer = join(
+      f.root,
+      process.platform === "win32" ? "fake-llama.exe" : "fake-llama",
+    );
     const code = `#!${process.execPath}
 const args = process.argv;
 const adapter = args[args.indexOf("--lora") + 1];
@@ -224,8 +227,24 @@ Bun.serve({ hostname: "127.0.0.1", port: Number(args[args.indexOf("--port") + 1]
   }
 });
 `;
-    writeFileSync(f.options.llamaServer, code);
-    chmodSync(f.options.llamaServer, 0o755);
+    if (process.platform === "win32") {
+      const source = join(f.root, "fake-llama.ts");
+      writeFileSync(source, code);
+      const compiler = Bun.spawn(
+        [process.execPath, "build", "--compile", source, "--outfile", f.options.llamaServer],
+        { stdout: "pipe", stderr: "pipe" },
+      );
+      const [exitCode, stdout, stderr] = await Promise.all([
+        compiler.exited,
+        new Response(compiler.stdout).text(),
+        new Response(compiler.stderr).text(),
+      ]);
+      if (exitCode !== 0)
+        throw new Error(`Fixture compilation failed (${exitCode}): ${stdout}${stderr}`);
+    } else {
+      writeFileSync(f.options.llamaServer, code);
+      chmodSync(f.options.llamaServer, 0o755);
+    }
     const result = await evaluateAdapter(
       f.options,
       f.options.baselineAdapter,
@@ -242,5 +261,5 @@ Bun.serve({ hostname: "127.0.0.1", port: Number(args[args.indexOf("--port") + 1]
       fetch: () => new Response(),
     });
     await probe.stop(true);
-  });
+  }, 30_000);
 });

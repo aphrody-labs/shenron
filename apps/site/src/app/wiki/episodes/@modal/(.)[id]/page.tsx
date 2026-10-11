@@ -45,6 +45,7 @@ export default async function EpisodeModal({ params }: { params: Promise<{ id: s
         synopsis={stripSourceTags(ep.synopsis)}
         hasVf={hasLang(ep.players, "vf")}
         hasVostfr={hasLang(ep.players, "vostfr")}
+        hasVost={hasLang(ep.players, "vost")}
         resources={[
           `${ep.players?.length ?? 0} lecteur${(ep.players?.length ?? 0) > 1 ? "s" : ""}`,
           ...(ep.subtitles?.length

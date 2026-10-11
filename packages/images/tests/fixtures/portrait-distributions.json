@@ -1,0 +1,1009 @@
+[
+  {
+    "sha256": "02c9902c3aa044eb6e0d86ede70f355e4216f9d155dbe5cc5e88694cf6ff2051",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/COL.png",
+      "site/public/games/dragon-pixel/portraits/COL.png"
+    ]
+  },
+  {
+    "sha256": "038c24440bfe50e14b7cdf7260591e9f62305b1c3bbf917db3d758b339d1010b",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/TRF.png",
+      "site/public/games/dragon-pixel/portraits/TRF.png"
+    ]
+  },
+  {
+    "sha256": "04969a19782be995ec3c041a5684cc2434c1d3e505488a24b58a7df5de9ef1b7",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GTX.png",
+      "site/public/games/dragon-pixel/portraits/GTX.png"
+    ]
+  },
+  {
+    "sha256": "05131c10636242ed4e24cac12b0684cdb5466bebebf503ad89f3cfe3ef7ff17f",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/CL2.png",
+      "site/public/games/dragon-pixel/portraits/CL2.png"
+    ]
+  },
+  {
+    "sha256": "067ee09af8ce92616fc448b4befb7dece07218b89365dd7e8b47064e03bb4331",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/G18.png",
+      "site/public/games/dragon-pixel/portraits/G18.png"
+    ]
+  },
+  {
+    "sha256": "0690d883a3c1ebf600e184c3a1cbbfb9ec171d01da4ddf0354d13d9999b41fc1",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/SVE.png",
+      "site/public/games/dragon-pixel/portraits/SVE.png"
+    ]
+  },
+  {
+    "sha256": "0a662c721f750deb3c71dbb2c5f3f0a3685b99ff6e1d29dc0c3d8d513ec5df03",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/MRN.png",
+      "site/public/games/dragon-pixel/portraits/MRN.png"
+    ]
+  },
+  {
+    "sha256": "0a780587391c52d58363cabea696e96ce02d7a9a9bc1278e761793a524d64dfd",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GNY.png",
+      "site/public/games/dragon-pixel/portraits/GNY.png"
+    ]
+  },
+  {
+    "sha256": "0b0a0556c10c4819ad467da4bc2ac793aea72664b57868e0bdf34c7179aeb336",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/CO2.png",
+      "site/public/games/dragon-pixel/portraits/CO2.png"
+    ]
+  },
+  {
+    "sha256": "0b458aa3c2a395cae2701e27acb69298e92786639f7c1ac191653dc9764fafc4",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/XXV.png",
+      "site/public/games/dragon-pixel/portraits/XXV.png"
+    ]
+  },
+  {
+    "sha256": "10a04d81a6ea5a17872714b66317facc9c4c94ddbb9013d78e5aeeccb664608e",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/SBM.png",
+      "site/public/games/dragon-pixel/portraits/SBM.png"
+    ]
+  },
+  {
+    "sha256": "11a9c3bd180bd641d541f1e79f26fb0de465d3289c61c8c7da415b743cb535e0",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/ZMD.png",
+      "site/public/games/dragon-pixel/portraits/ZMD.png"
+    ]
+  },
+  {
+    "sha256": "12947804bd65709d2ba021f204fe21e673d903ddcc36bd022ff037f9d4e2eceb",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/FRS.png",
+      "site/public/games/dragon-pixel/portraits/FRS.png"
+    ]
+  },
+  {
+    "sha256": "14271b443384f07484936104c38947e3bea96a2287d5235ab83cbfcaebabbc8f",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/SLG.png",
+      "site/public/games/dragon-pixel/portraits/SLG.png"
+    ]
+  },
+  {
+    "sha256": "1794972065bfa06d079aa25b715a06e2003ac3c3d7fdc614a33c7dc6f84cbbe5",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/SD4.png",
+      "site/public/games/dragon-pixel/portraits/SD4.png"
+    ]
+  },
+  {
+    "sha256": "1c3cc898604190159865a92a3e1ea3c7fe5baffa182685a35877b410ac460e95",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/THJ.png",
+      "site/public/games/dragon-pixel/portraits/THJ.png"
+    ]
+  },
+  {
+    "sha256": "1c5947702194cf3bbf8903ef431b6e07b2331a1c0736625c06fa2ede56087324",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/S17.png",
+      "site/public/games/dragon-pixel/portraits/S17.png"
+    ]
+  },
+  {
+    "sha256": "1d10242032a2821b1c379ff4f98deeb0bf665a6c3a9bc2857a832ea4801adb01",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/THC.png",
+      "site/public/games/dragon-pixel/portraits/THC.png"
+    ]
+  },
+  {
+    "sha256": "1e07c1847d901e0edb3d6bbef584af5a17b5d099feb06a597d9b23471afe8052",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/TM0.png",
+      "site/public/games/dragon-pixel/portraits/TM0.png"
+    ]
+  },
+  {
+    "sha256": "1e64ea4f3c45b986d2f5208483cd3d96f5276ae6eefa4b133128ee26ad5266a2",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/FIO.png",
+      "site/public/games/dragon-pixel/portraits/FIO.png"
+    ]
+  },
+  {
+    "sha256": "1e83ea421b1f93b07be82a6db55ee97609cee50dcf30a1ea8d3121aa34c783ee",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/STN.png",
+      "site/public/games/dragon-pixel/portraits/STN.png"
+    ]
+  },
+  {
+    "sha256": "1ef1237c43fe7f9a64865a762bd5fc69fd9f5723aad409f1b117f32dc5f842b8",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/NAP.png",
+      "site/public/games/dragon-pixel/portraits/NAP.png"
+    ]
+  },
+  {
+    "sha256": "1f5eb499115f4c229c91d999d7537e916af49bd41de0defe9f46b1eab8410899",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/SVV.png",
+      "site/public/games/dragon-pixel/portraits/SVV.png"
+    ]
+  },
+  {
+    "sha256": "20121e0937e9b3b20134372276f8c679eade6e51d38c8e3a4d81ccf027b88ba2",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/NTV.png",
+      "site/public/games/dragon-pixel/portraits/NTV.png"
+    ]
+  },
+  {
+    "sha256": "20936acf026215f51792c94f371c7028918e67f61243b00672adcb959618b028",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/HIK.png",
+      "bot/assets/dbz/xv2-portraits/HIT.png",
+      "site/public/games/dragon-pixel/portraits/HIK.png",
+      "site/public/games/dragon-pixel/portraits/HIT.png"
+    ]
+  },
+  {
+    "sha256": "218b4357fad8407523279f6ce66e7079e851f46f74ead09b53b15c01f508a37b",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/BAT.png",
+      "site/public/games/dragon-pixel/portraits/BAT.png"
+    ]
+  },
+  {
+    "sha256": "2b853a7a4f83df02240dbdc68d0eeca02bf534e982d73eae326e6c0d95eed2c8",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GGK.png",
+      "site/public/games/dragon-pixel/portraits/GGK.png"
+    ]
+  },
+  {
+    "sha256": "2bed0bdcd89e89439834b0d36c3d0822f6da3826d984841b2023bf5fb542816b",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/CAB.png",
+      "site/public/games/dragon-pixel/portraits/CAB.png"
+    ]
+  },
+  {
+    "sha256": "32dc7cdf0c962281e0ab2261183ee3301824b1c53a1a0e797430f290e98637ac",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/FRZ.png",
+      "site/public/games/dragon-pixel/portraits/FRZ.png"
+    ]
+  },
+  {
+    "sha256": "337be8710adfe272a5a8f04ea97971a74adf4e55ee3886c9453ad3c437875495",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/TE1.png",
+      "site/public/games/dragon-pixel/portraits/TE1.png"
+    ]
+  },
+  {
+    "sha256": "35426afe7af2f3f28eacaad4606a158028e77f3eccfcc2609fcd5e094e20df09",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/NIL.png",
+      "site/public/games/dragon-pixel/portraits/NIL.png"
+    ]
+  },
+  {
+    "sha256": "3a488915614a9fba682b55a6208f5a85110f2155d4ac36ee14924ce4c7bab12a",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/MIR.png",
+      "site/public/games/dragon-pixel/portraits/MIR.png"
+    ]
+  },
+  {
+    "sha256": "3dee83b5ed8349ca185bb97827599a0b74e0cbe65eb7c41f7a47cdc507c4d3ac",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/EIB.png",
+      "site/public/games/dragon-pixel/portraits/EIB.png"
+    ]
+  },
+  {
+    "sha256": "4043d934697d364bbda5bd5739ef18e8b800462778db9ad936294cd53ab7f02a",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/TWP.png",
+      "site/public/games/dragon-pixel/portraits/TWP.png"
+    ]
+  },
+  {
+    "sha256": "43604de19a87788b565dde0a01999908d472aab4c947984057d4f8a728860765",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/EIM.png",
+      "site/public/games/dragon-pixel/portraits/EIM.png"
+    ]
+  },
+  {
+    "sha256": "43b10bf8e2f4ba14de13add4be82be0ba86509338a21a3356665e28c32e4f6de",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/SIP.png",
+      "site/public/games/dragon-pixel/portraits/SIP.png"
+    ]
+  },
+  {
+    "sha256": "449cfe94f605c5d5e0061c5089a7007db7189063064f750245f65b564bd72ce2",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/THK.png",
+      "site/public/games/dragon-pixel/portraits/THK.png"
+    ]
+  },
+  {
+    "sha256": "4798483e80b34fed53c05123a0bf100e801080a4304f94ada454b30249601927",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/DBR.png",
+      "site/public/games/dragon-pixel/portraits/DBR.png"
+    ]
+  },
+  {
+    "sha256": "49967b10ca78db86c3d778c2795e7aa80d56b368c168555b186a2ce6c38f336c",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/EIR.png",
+      "site/public/games/dragon-pixel/portraits/EIR.png"
+    ]
+  },
+  {
+    "sha256": "4a7f263c9a923d0c55a51c8622e18d6471f8288758bf6d836dfd69a8230ce1b1",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/FIT.png",
+      "site/public/games/dragon-pixel/portraits/FIT.png"
+    ]
+  },
+  {
+    "sha256": "4b340d95ed0a1d1af9cf8a3cade1ebbb6c2c94fed7d6652b28be32b6a48249a1",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/BUM.png",
+      "site/public/games/dragon-pixel/portraits/BUM.png"
+    ]
+  },
+  {
+    "sha256": "4baedeb56e02a2b3091d8fde2ebf2d59b13644494698e3992f9087185d418ee6",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/FOV.png",
+      "site/public/games/dragon-pixel/portraits/FOV.png"
+    ]
+  },
+  {
+    "sha256": "4be2974576dbebd83cedf42eba43d303dab8a132d45d48efd2dd65dc8b74079b",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/JNB.png",
+      "site/public/games/dragon-pixel/portraits/JNB.png"
+    ]
+  },
+  {
+    "sha256": "4d1de5408750028a9bf99da65a036b3f59f8f01e6964775d272cffc44974effc",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/TRX.png",
+      "site/public/games/dragon-pixel/portraits/TRX.png"
+    ]
+  },
+  {
+    "sha256": "4e97ac8e25ab28926d25729d9fa1150c8ddb0ca844f44e4b106c27cdf29d3456",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GG1.png",
+      "site/public/games/dragon-pixel/portraits/GG1.png"
+    ]
+  },
+  {
+    "sha256": "52955386c930ce5dea45d6930bf583ea7cfa1284ed102db2a85b0e2460950271",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GKB.png",
+      "site/public/games/dragon-pixel/portraits/GKB.png"
+    ]
+  },
+  {
+    "sha256": "545957b05bcd46c7e366ad89ec07017bad3add317c194736886c54e990705bcc",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/BLS.png",
+      "site/public/games/dragon-pixel/portraits/BLS.png"
+    ]
+  },
+  {
+    "sha256": "54e33d16812815d7e231aa28c3610403275cadad770e29ae88327c0ba7ba4585",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/EIG.png",
+      "site/public/games/dragon-pixel/portraits/EIG.png"
+    ]
+  },
+  {
+    "sha256": "553a6667a5b9a6ace6db53fd7a31f430787bf601b3095aae13202799e399701d",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/OSN.png",
+      "site/public/games/dragon-pixel/portraits/OSN.png"
+    ]
+  },
+  {
+    "sha256": "58410173a2d1de1bd1c2cc7e377acc64b0eca0c394506c30b5c9392fe5bc7f9b",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/G17.png",
+      "site/public/games/dragon-pixel/portraits/G17.png"
+    ]
+  },
+  {
+    "sha256": "588a4a94229b593410430362690755e94ef9daabaf25f6946a284c7683bc91c4",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/RSB.png",
+      "site/public/games/dragon-pixel/portraits/RSB.png"
+    ]
+  },
+  {
+    "sha256": "5b0e00af4acd4b75d77a21dfbfbfb42b85c08842d609b5529d119b99d99ce612",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/FOD.png",
+      "site/public/games/dragon-pixel/portraits/FOD.png"
+    ]
+  },
+  {
+    "sha256": "5bd15e51833763cc544f8dee8628de384f678e5f0852fb8a7377b9e55df5fa15",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/_QA.png",
+      "site/public/games/dragon-pixel/portraits/_QA.png"
+    ]
+  },
+  {
+    "sha256": "5c7b8841c61d4f3d42672ee88deb5a556b9d36d1be76d681b262d4de1332d81f",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/XAS.png",
+      "site/public/games/dragon-pixel/portraits/XAS.png"
+    ]
+  },
+  {
+    "sha256": "5cbc9ac86441922a50c80da4ef64d78b6c74aaad6a0e89767f21f575651f4e4b",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GBR.png",
+      "site/public/games/dragon-pixel/portraits/GBR.png"
+    ]
+  },
+  {
+    "sha256": "5d4c2fd743d975053ba1a0af233289c2d46d169db592bd8ae1d2cbc09d859750",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/VG4.png",
+      "site/public/games/dragon-pixel/portraits/VG4.png"
+    ]
+  },
+  {
+    "sha256": "5fb698d6d553568a54a0247b5ef82a24d0b4a4322deb389be2f3136490e1e849",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/PAN.png",
+      "site/public/games/dragon-pixel/portraits/PAN.png"
+    ]
+  },
+  {
+    "sha256": "6202fc4d111274c10638e247fc3594584d46bde304958a1b4cff745fa9f66f7e",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GGT.png",
+      "site/public/games/dragon-pixel/portraits/GGT.png"
+    ]
+  },
+  {
+    "sha256": "6325cfafc6d0e4443d6d9adb77e18a82a1ae5fe5770f81c8ed713248101056b6",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GKG.png",
+      "site/public/games/dragon-pixel/portraits/GKG.png"
+    ]
+  },
+  {
+    "sha256": "66542e72bf2c859ef4cde847fbca056f70647b574ad20a86d3b2ac2235a8880e",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GHM.png",
+      "site/public/games/dragon-pixel/portraits/GHM.png"
+    ]
+  },
+  {
+    "sha256": "6ba5591d751d368b11c512e138d6a126ae9a4ff5c16637eeac90c17743368165",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/CL3.png",
+      "site/public/games/dragon-pixel/portraits/CL3.png"
+    ]
+  },
+  {
+    "sha256": "6d0db71b3c4fb1a464dda0eb80cda4fc24fca5154049911722d22b4ac3285fe3",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/BDK.png",
+      "site/public/games/dragon-pixel/portraits/BDK.png"
+    ]
+  },
+  {
+    "sha256": "6e0eb1d4399f463d6d9624155f5470fc45cea6f34e4e5bffcc4d17de7f3b1696",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/CL4.png",
+      "site/public/games/dragon-pixel/portraits/CL4.png"
+    ]
+  },
+  {
+    "sha256": "6e9a76baee24dda995b3c57f96c1bb069fa303510bf19e3ea41c0558e1ebeec8",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/JCO.png",
+      "site/public/games/dragon-pixel/portraits/JCO.png"
+    ]
+  },
+  {
+    "sha256": "711d7169203564e809c2ead108db0fe5ab539bd399c562464e6ea30319775bf2",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/TRS.png",
+      "site/public/games/dragon-pixel/portraits/TRS.png"
+    ]
+  },
+  {
+    "sha256": "75e704fb88726e1423f3a3b6ebb6fce965c7eb845d399f2d53861a4859e4b1b7",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/CL1.png",
+      "site/public/games/dragon-pixel/portraits/CL1.png"
+    ]
+  },
+  {
+    "sha256": "76cf7cb9bb87e919e8c9bc14ebf81eb03f0da99d0ba1e591be236aa8511192e2",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GRD.png",
+      "site/public/games/dragon-pixel/portraits/GRD.png"
+    ]
+  },
+  {
+    "sha256": "77eba76e90cf856224a220c8d6b03bf4e3ad6bdae1c2e85247f9c7ec4f23ff86",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/ZBN.png",
+      "site/public/games/dragon-pixel/portraits/ZBN.png"
+    ]
+  },
+  {
+    "sha256": "78ce487cafade95c5bb080be0c409204cfde9e7a58ea5aafb8f087fbb0dd40ba",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/NTG.png",
+      "site/public/games/dragon-pixel/portraits/NTG.png"
+    ]
+  },
+  {
+    "sha256": "7d2b98fbc6f9c63d4ce522cbe2128f985eca749d822d4565effc4b4e53e5e517",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/CMP.png",
+      "site/public/games/dragon-pixel/portraits/CMP.png"
+    ]
+  },
+  {
+    "sha256": "7f84bb7f08b98e214e336c23168b4f6104c1c22c18c609a005bcfe568ee1b24d",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/DDR.png",
+      "site/public/games/dragon-pixel/portraits/DDR.png"
+    ]
+  },
+  {
+    "sha256": "80608d07261a574ee6773e06c774a3acc37851c5fcea9b8d80f073b4101e502b",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/XXG.png",
+      "site/public/games/dragon-pixel/portraits/XXG.png"
+    ]
+  },
+  {
+    "sha256": "80d826db909e4bdf8528494f8d96267e3b76a76335b22a58779cc00453534a2a",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/VDS.png",
+      "site/public/games/dragon-pixel/portraits/VDS.png"
+    ]
+  },
+  {
+    "sha256": "8173067dd3a2a039e0391447b007412e2058d800ce4f8313f3be34c788464add",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GHF.png",
+      "site/public/games/dragon-pixel/portraits/GHF.png"
+    ]
+  },
+  {
+    "sha256": "81b44a25cb9d236b39dc6bf73c1519f25dfc7b87798065c9e7d162f81f2914ce",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/VTB.png",
+      "site/public/games/dragon-pixel/portraits/VTB.png"
+    ]
+  },
+  {
+    "sha256": "843522e3c10e7858fa590bf01983576b54f2cddb828de8947108d900d6e25c12",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/BJK.png",
+      "site/public/games/dragon-pixel/portraits/BJK.png"
+    ]
+  },
+  {
+    "sha256": "8e3546edfcf05e228802429628bfd218117f20ccb1b0b677740250ed16787c45",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/JRN.png",
+      "site/public/games/dragon-pixel/portraits/JRN.png"
+    ]
+  },
+  {
+    "sha256": "8e36e0e8dc5d8ff51a8987adfc775829b492f76492a63b255529e528036037b2",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/VGT.png",
+      "site/public/games/dragon-pixel/portraits/VGT.png"
+    ]
+  },
+  {
+    "sha256": "8ed058fc45909a96693752574a4671b377c11748bcafcecb037e86465927fc77",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/TOW.png",
+      "site/public/games/dragon-pixel/portraits/TOW.png"
+    ]
+  },
+  {
+    "sha256": "8ef6a315b9ec5f0b0f3a56c178485bd8587674fcb2a3f243dd4f5992ed117c12",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/NI0.png",
+      "site/public/games/dragon-pixel/portraits/NI0.png"
+    ]
+  },
+  {
+    "sha256": "8f2950da9fef1017493ceb237e672273116f104ff939d61d325e852cbc39fdca",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/G13.png",
+      "site/public/games/dragon-pixel/portraits/G13.png"
+    ]
+  },
+  {
+    "sha256": "90e50cf83b2c56c5667d8bb341e4f83c1a3587aa6b79cf02c0c09849475809ed",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GVG.png",
+      "site/public/games/dragon-pixel/portraits/GVG.png"
+    ]
+  },
+  {
+    "sha256": "92b5afa89786ad265c7769cf1a35c85cec497378b965e18608d4b4a2e1a83ce8",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/RCM.png",
+      "site/public/games/dragon-pixel/portraits/RCM.png"
+    ]
+  },
+  {
+    "sha256": "948c254a5307a3de958cf3404358e28ac2991942024889de1a05295028f3d1e7",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/VDL.png",
+      "site/public/games/dragon-pixel/portraits/VDL.png"
+    ]
+  },
+  {
+    "sha256": "96e92e44e8aed76f1d46e004c45a403cf21d0cba26be4439c02718e7ec8712a3",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/TE0.png",
+      "site/public/games/dragon-pixel/portraits/TE0.png"
+    ]
+  },
+  {
+    "sha256": "98f5f90b314a1dfecc2bfb0d60e310903b8272602661d27ae958b17ceae3f073",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GK4.png",
+      "site/public/games/dragon-pixel/portraits/GK4.png"
+    ]
+  },
+  {
+    "sha256": "9b9c7f1cd220ae2c9ea07eae8e3385a433d08d2ea96ac3053e7fc358c92144c8",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/OSB.png",
+      "site/public/games/dragon-pixel/portraits/OSB.png"
+    ]
+  },
+  {
+    "sha256": "9bbbe0c812579b7cac9910a3b6c7cf2f3646e736970341db8b1d5b8aa55c7e52",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/SD3.png",
+      "site/public/games/dragon-pixel/portraits/SD3.png"
+    ]
+  },
+  {
+    "sha256": "9c89e4c09c285f9be94e465ab34041d0ae77ff9db3ed15335ec8837e12ef23ea",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GOK.png",
+      "site/public/games/dragon-pixel/portraits/GOK.png"
+    ]
+  },
+  {
+    "sha256": "9ca9d28b9c0bf6b0479d9525d61a3acad8fec8f2be175ae63f62f8816b040fc3",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GHS.png",
+      "site/public/games/dragon-pixel/portraits/GHS.png"
+    ]
+  },
+  {
+    "sha256": "9d7c225fe8a64ed3924deaa9176849afccaf26306974fb33e3aeb7b632f25a48",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/SIM.png",
+      "site/public/games/dragon-pixel/portraits/SIM.png"
+    ]
+  },
+  {
+    "sha256": "9f8d6cfe0af5858ee1eca59e0cbcd9a4a5dfa2759ed5996b572efde52379881e",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/FR5.png",
+      "site/public/games/dragon-pixel/portraits/FR5.png"
+    ]
+  },
+  {
+    "sha256": "a002c4011cb324dd4015e597f65e6a5789062ba95b5fe9d3d7d44e434b18194e",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/STD.png",
+      "site/public/games/dragon-pixel/portraits/STD.png"
+    ]
+  },
+  {
+    "sha256": "a1753f14a82c6df6280cb897ccd1cec39a666ee51668f567b0e7ef7a6daa97a8",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/VTO.png",
+      "site/public/games/dragon-pixel/portraits/VTO.png"
+    ]
+  },
+  {
+    "sha256": "a5b994b16b1a4f9669a14442b870d979b57bd87045719235e85957430edb4603",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/BUU.png",
+      "site/public/games/dragon-pixel/portraits/BUU.png"
+    ]
+  },
+  {
+    "sha256": "a666a84e17dff0715e101c69887c848b1f9be9de5c310b728da810d99b0e273e",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/NTJ.png",
+      "site/public/games/dragon-pixel/portraits/NTJ.png"
+    ]
+  },
+  {
+    "sha256": "a6ed212fea1096bb1e1d88815fd5072897d4e6bb5ffba0b4996f902b966a2a73",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/DMG.png",
+      "site/public/games/dragon-pixel/portraits/DMG.png"
+    ]
+  },
+  {
+    "sha256": "ab75bc11b18297c86355dfb80d3750a4c8dd1984be3a8c281958ffc9e41c8fff",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/BUS.png",
+      "site/public/games/dragon-pixel/portraits/BUS.png"
+    ]
+  },
+  {
+    "sha256": "ac6c1b7c9fd270f444e21ae04834e954a80d987524731f8675c665f5aba5c73f",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GFR.png",
+      "site/public/games/dragon-pixel/portraits/GFR.png"
+    ]
+  },
+  {
+    "sha256": "ad333d3d263c483b923c4694a29bff65fe24e94da9846710261292e9d0d588fd",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/SIG.png",
+      "site/public/games/dragon-pixel/portraits/SIG.png"
+    ]
+  },
+  {
+    "sha256": "b081951bdc41fc63dcd0bcae84cba163ba00de24002e9ed9a02370c6bf25d38b",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/WIS.png",
+      "site/public/games/dragon-pixel/portraits/WIS.png"
+    ]
+  },
+  {
+    "sha256": "b50fb7e067df66b09eb97e3c23b70d4010396d27c9fbf162374e2bb0bab686ec",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/CLJ.png",
+      "site/public/games/dragon-pixel/portraits/CLJ.png"
+    ]
+  },
+  {
+    "sha256": "b6c95313ffd53f53ec0abff1777e8c9b33dabff1de674ced262db13806319eba",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/ZMG.png",
+      "site/public/games/dragon-pixel/portraits/ZMG.png"
+    ]
+  },
+  {
+    "sha256": "ba1fe6416e16e76c81fad3689bb2abc23bc3d429266372ecf138828765b3ed49",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/EL0.png",
+      "bot/assets/dbz/xv2-portraits/TOK.png",
+      "site/public/games/dragon-pixel/portraits/EL0.png",
+      "site/public/games/dragon-pixel/portraits/TOK.png"
+    ]
+  },
+  {
+    "sha256": "bbf5978759696e57787e4850d266849dc234dd544748ce61ca91f7a50e1fcbf0",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/RAD.png",
+      "site/public/games/dragon-pixel/portraits/RAD.png"
+    ]
+  },
+  {
+    "sha256": "bdad19360925537c821b760ae596fd29517e3fcba723339abe68e8cb4c755186",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GTG.png",
+      "site/public/games/dragon-pixel/portraits/GTG.png"
+    ]
+  },
+  {
+    "sha256": "bf2b4c21e03208ec5dbf323d8ced73d25502f894fc64f3c7bb092b289d4d19b2",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/SD1.png",
+      "site/public/games/dragon-pixel/portraits/SD1.png"
+    ]
+  },
+  {
+    "sha256": "c0542aa4c443190927d7dc2889ddf9c73f363f0a0518e59c856ed8b090c3d24c",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/KLL.png",
+      "site/public/games/dragon-pixel/portraits/KLL.png"
+    ]
+  },
+  {
+    "sha256": "c08990cea67844cc35b8cf176fae588971ce994d8a5ad126c9b5a5b2d7afe7e2",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/FR4.png",
+      "site/public/games/dragon-pixel/portraits/FR4.png"
+    ]
+  },
+  {
+    "sha256": "c29988f558a66e559a82689016bf90d3d39d3f2a347e9501f7e82ff53c79bec4",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/ROK.png",
+      "site/public/games/dragon-pixel/portraits/ROK.png"
+    ]
+  },
+  {
+    "sha256": "c4fc87d45e95185ae66ab5498ad4228c6a406c4d9dcaa092350ebd0310a84c17",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GHL.png",
+      "site/public/games/dragon-pixel/portraits/GHL.png"
+    ]
+  },
+  {
+    "sha256": "c53f51a25ebc43ba48639fd3d2b40fffeaad4fb443cee93be9cc64ccc0d46448",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/TPO.png",
+      "site/public/games/dragon-pixel/portraits/TPO.png"
+    ]
+  },
+  {
+    "sha256": "c6285793781b4d18b0c42e7ae922a81a632c5d2df6b2f5b5348aa34123e23b96",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/BUL.png",
+      "bot/assets/dbz/xv2-portraits/BUZ.png",
+      "site/public/games/dragon-pixel/portraits/BUL.png",
+      "site/public/games/dragon-pixel/portraits/BUZ.png"
+    ]
+  },
+  {
+    "sha256": "c9f459a55ff67a5eac1873ed073e94cb04d765e97724b1a19340d8be1ad207f3",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/FOF.png",
+      "site/public/games/dragon-pixel/portraits/FOF.png"
+    ]
+  },
+  {
+    "sha256": "ca0555680f3a738c9d7715eab76fa1f8d49ac13978fba7370b0c173ba61c12b6",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/SIO.png",
+      "site/public/games/dragon-pixel/portraits/SIO.png"
+    ]
+  },
+  {
+    "sha256": "cd1badfff55ef93304610e2bf33608c2f5a64fcbaa6cd899865fac15ffad0b6f",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GKS.png",
+      "site/public/games/dragon-pixel/portraits/GKS.png"
+    ]
+  },
+  {
+    "sha256": "cd319ea5f68fb10228dcb12d31dd9cdeb63b5f1861ca9e20efd304efa5dd6b47",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/OBB.png",
+      "site/public/games/dragon-pixel/portraits/OBB.png"
+    ]
+  },
+  {
+    "sha256": "ce41e9b2e551c6f437227d2ca9b81a39465cd9a7d8664689216b65602efae018",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/TM1.png",
+      "site/public/games/dragon-pixel/portraits/TM1.png"
+    ]
+  },
+  {
+    "sha256": "cfe4d11e5c6f54bdc982310aa02db09623ef97eba6389148b30f60778b57a49d",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/JES.png",
+      "site/public/games/dragon-pixel/portraits/JES.png"
+    ]
+  },
+  {
+    "sha256": "d1231cd4dc2f1fdaa9a55ba8c7a599bff36b0e44d814a8888aa9246cb91c9ec7",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/BRL.png",
+      "site/public/games/dragon-pixel/portraits/BRL.png"
+    ]
+  },
+  {
+    "sha256": "d1fa0d6a33ef7f577051aaed0b01368edbe61a862ad9a531662f79fe109fc983",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/TWT.png",
+      "site/public/games/dragon-pixel/portraits/TWT.png"
+    ]
+  },
+  {
+    "sha256": "d2b15680174286a9e2bbe393a2761c6d4deacf6104be424858d11d08ab199e4f",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/YMC.png",
+      "site/public/games/dragon-pixel/portraits/YMC.png"
+    ]
+  },
+  {
+    "sha256": "d2dcd482b276db1499e7ed1acac02353c9266f3157abfb76e7991287989e0993",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/FIG.png",
+      "site/public/games/dragon-pixel/portraits/FIG.png"
+    ]
+  },
+  {
+    "sha256": "d87a1db1a927095ee233136d3fb5ddf28b0667758a95e86f637b8cc640bbf892",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/APL.png",
+      "site/public/games/dragon-pixel/portraits/APL.png"
+    ]
+  },
+  {
+    "sha256": "db2cfe2e80a13c665c0d198ddf2843c5196abdf40dd2e89d6cf989c8d89eab17",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/JNG.png",
+      "site/public/games/dragon-pixel/portraits/JNG.png"
+    ]
+  },
+  {
+    "sha256": "dd9ff4fc75c02453e0fc4ebaccea0946382def9019022ce7379c524b56b0030a",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/THG.png",
+      "site/public/games/dragon-pixel/portraits/THG.png"
+    ]
+  },
+  {
+    "sha256": "de1f9ab63910c647b9613b3673d6f2acbe5776b27be8e56ba9af72a81095f14c",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/GOD.png",
+      "site/public/games/dragon-pixel/portraits/GOD.png"
+    ]
+  },
+  {
+    "sha256": "e16a6a773720fc716c41c90139270cc21d39b10b393fbbfa4527c8907a9c02ea",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/FOK.png",
+      "site/public/games/dragon-pixel/portraits/FOK.png"
+    ]
+  },
+  {
+    "sha256": "e4761db3e991924d66ca0843b373844792765c654be3bf7612d3e46f4ddad7b8",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/SB2.png",
+      "site/public/games/dragon-pixel/portraits/SB2.png"
+    ]
+  },
+  {
+    "sha256": "e6de370ada5a8fea00126a4011f5e46df556527664451ffdea25fb503b993625",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/PIC.png",
+      "site/public/games/dragon-pixel/portraits/PIC.png"
+    ]
+  },
+  {
+    "sha256": "e79d89cef1f96781bcc3baee560cd306e16987855b790b55038f41459b2c66ba",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/NI2.png",
+      "site/public/games/dragon-pixel/portraits/NI2.png"
+    ]
+  },
+  {
+    "sha256": "ecc203d8ea980fa163475b915bf3dc1143613e4494ad0c8b2e0783bd5e49c657",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/TLS.png",
+      "site/public/games/dragon-pixel/portraits/TLS.png"
+    ]
+  },
+  {
+    "sha256": "eecdffa26428d6c2324ce5e5ee5068a1519fbb0c2c1244510bd0594ff319dbea",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/XAM.png",
+      "site/public/games/dragon-pixel/portraits/XAM.png"
+    ]
+  },
+  {
+    "sha256": "f17fa85461ecf49831775174280da94006f7c808373c056402c8ebbc31f33fa6",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/FUU.png",
+      "site/public/games/dragon-pixel/portraits/FUU.png"
+    ]
+  },
+  {
+    "sha256": "f4c824c08faef767b40ed59ea5641f932d5b415d9df9c1a685433ed43b393daf",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/NI1.png",
+      "site/public/games/dragon-pixel/portraits/NI1.png"
+    ]
+  },
+  {
+    "sha256": "f517a167780343dddded19215c1fca5d8d4b1acb5bbb2ec248d159a5a90dca75",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/R17.png",
+      "site/public/games/dragon-pixel/portraits/R17.png"
+    ]
+  },
+  {
+    "sha256": "f617e4f741b48c7908fa4fc3d1b111a74ce9513e5a874769eef7431b48fec32e",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/XAB.png",
+      "site/public/games/dragon-pixel/portraits/XAB.png"
+    ]
+  },
+  {
+    "sha256": "f7493420a2140c52572eac1c8baabe7fc2e9395c5d7c525b8f108c2a43d4e7f8",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/OSV.png",
+      "site/public/games/dragon-pixel/portraits/OSV.png"
+    ]
+  },
+  {
+    "sha256": "faa5ac16660895febe4ccb2cf3329ba470fa21f3656e4c65cf8f83bd9af06886",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/KFL.png",
+      "site/public/games/dragon-pixel/portraits/KFL.png"
+    ]
+  },
+  {
+    "sha256": "fe68dfb0ad437f231a0de4f7c1b211207df350ca0cb3c1ce96c811e4c3f4443e",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/G16.png",
+      "site/public/games/dragon-pixel/portraits/G16.png"
+    ]
+  },
+  {
+    "sha256": "fe7c53795806108575c5f3e25a8b3f4b44aa11c323c4e3c6afc06ae73fe8e095",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/TSH.png",
+      "site/public/games/dragon-pixel/portraits/TSH.png"
+    ]
+  },
+  {
+    "sha256": "feab7c356ed4acb304653c6aaa8a14d88a0c1bb665b77e3f946eccca669e18a6",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/XAF.png",
+      "site/public/games/dragon-pixel/portraits/XAF.png"
+    ]
+  },
+  {
+    "sha256": "ff65e8bdf51ca318a9163d6a16996e2b0864456204e7f632f14fc489141fd8d4",
+    "paths": [
+      "bot/assets/dbz/xv2-portraits/ZMS.png",
+      "site/public/games/dragon-pixel/portraits/ZMS.png"
+    ]
+  }
+]

@@ -1,4 +1,5 @@
 import { getTimelineItems, getTimelineEvents } from "./chronology-config";
+import { normalizeAvailability } from "./video-languages";
 /**
  * db-universe — accès au **wiki Dragon Ball** (schéma Neon `bot`, miroir du
  * SQLite du bot) via Drizzle, en LECTURE SEULE.
@@ -122,7 +123,7 @@ export type Episode = {
         name: string;
         provider: string;
         embedUrl: string;
-        lang?: "vf" | "vostfr";
+        lang?: "vf" | "vostfr" | "vost";
       }[]
     | null;
   /** Offres légales relevées (ADN…) — lien sortant, distinct de `players`. */
@@ -169,7 +170,7 @@ export type Movie = {
         name: string;
         provider: string;
         embedUrl: string;
-        lang?: "vf" | "vostfr";
+        lang?: "vf" | "vostfr" | "vost";
       }[]
     | null;
   /** Offres légales relevées (ADN…) — lien sortant, distinct de `players`. */
@@ -693,27 +694,7 @@ function toMovie(r: typeof botMovies.$inferSelect): Movie {
  * un bouton « Regarder » qui ne mène nulle part.
  */
 function normaliseOffres(raw: unknown): Availability[] | null {
-  if (!Array.isArray(raw)) return null;
-  const out: Availability[] = [];
-  for (const item of raw) {
-    if (!item || typeof item !== "object") continue;
-    const o = item as Record<string, unknown>;
-    if (typeof o.url !== "string" || !o.url) continue;
-    if (o.available === false) continue;
-    const langs = Array.isArray(o.langs)
-      ? (o.langs.filter((l) => l === "vf" || l === "vostfr") as ("vf" | "vostfr")[])
-      : [];
-    out.push({
-      provider: typeof o.provider === "string" ? o.provider : "",
-      label: typeof o.label === "string" && o.label ? o.label : "Officiel",
-      url: o.url,
-      embedUrl: typeof o.embedUrl === "string" ? o.embedUrl : null,
-      langs,
-      available: true,
-      checkedAt: typeof o.checkedAt === "number" ? o.checkedAt : 0,
-    });
-  }
-  return out.length ? out : null;
+  return normalizeAvailability(raw);
 }
 
 function normalizeGameMedia(raw: unknown): GameMedia[] {

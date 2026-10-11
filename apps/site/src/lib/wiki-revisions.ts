@@ -14,6 +14,7 @@
  * Server-only : Drizzle/Postgres + réutilise le CRUD de `wiki-admin.ts`.
  */
 import "server-only";
+import { isCatalogRevisionJson, isMediaCatalogTable } from "@/lib/catalog-media-contracts";
 import { and, count, desc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { wikiRevisions, type WikiRevision } from "@/db/schema";
@@ -94,7 +95,7 @@ function snapshot(table: string, row: Row | null | undefined): Row | null {
   for (const c of cols) {
     if (!(c in row)) continue;
     const v = row[c];
-    if (v !== null && typeof v === "object") continue; // ignore jsonb objets lourds
+    if (v !== null && typeof v === "object" && !isCatalogRevisionJson(table, c)) continue;
     out[c] = v;
   }
   // Les cibles de planche (transcription comme traduction) ne sont pas des
@@ -127,8 +128,8 @@ function diffKeys(before: Row | null, after: Row | null): string[] {
   for (const k of keys) {
     const a = before?.[k];
     const b = after?.[k];
-    const av = a == null ? "" : String(a);
-    const bv = b == null ? "" : String(b);
+    const av = a == null ? "" : typeof a === "object" ? JSON.stringify(a) : String(a);
+    const bv = b == null ? "" : typeof b === "object" ? JSON.stringify(b) : String(b);
     if (av !== bv) changed.push(k);
   }
   return changed;
@@ -404,7 +405,11 @@ export async function revertRevision(
     if (!Array.isArray(spec.pk) && !(spec.pk in payload)) {
       payload[spec.pk] = rowId;
     }
-    resultRow = await insertWiki(table, payload);
+    resultRow = await insertWiki(
+      table,
+      payload,
+      isMediaCatalogTable(table) ? { restoreId: Number(rowId) } : {},
+    );
     mode = "reinsert";
   }
 

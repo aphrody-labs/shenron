@@ -142,7 +142,7 @@ export function createChronologyConfigRepository(db: ChronologyDatabase) {
       // Garde `Array.isArray` : `players` jsonb peut être un scalaire corrompu
       // (piège documenté) → un `.some` non gardé planterait tout le dataset.
       const langs = (
-        players: { lang?: "vf" | "vostfr" }[] | null,
+        players: { lang?: "vf" | "vostfr" | "vost" }[] | null,
       ): { hasVf: boolean; hasVostfr: boolean } => {
         const arr = Array.isArray(players) ? players : [];
         return {

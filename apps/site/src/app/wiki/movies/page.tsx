@@ -129,6 +129,7 @@ export default async function FilmsPage() {
         synopsis={featured.synopsis}
         hasVf={langBadges(featured.players).hasVf}
         hasVostfr={langBadges(featured.players).hasVostfr}
+        hasVost={langBadges(featured.players).hasVost}
         primaryHref={`/wiki/movies/${featured.slug}`}
         primaryHardNav
         primaryLabel={<T k="wiki.films.watch" />}
@@ -195,6 +196,7 @@ export default async function FilmsPage() {
                 playerCount={m.players?.length ?? 0}
                 hasVf={langBadges(m.players).hasVf}
                 hasVostfr={langBadges(m.players).hasVostfr}
+                hasVost={langBadges(m.players).hasVost}
                 badge={badgeFor(m.series)}
               />
             ))}

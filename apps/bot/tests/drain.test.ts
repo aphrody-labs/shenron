@@ -121,8 +121,9 @@ describe("S1 — Drain on SIGTERM (CronRegistry & ApiServer)", () => {
 
       const reqPromise = fetch(`http://127.0.0.1:${server.port}/test`).then((r) => r.json());
 
-      // Wait for request to be in flight
-      await Bun.sleep(20);
+      // Observe request arrival instead of relying on scheduler timing.
+      const arrivalDeadline = Date.now() + 2000;
+      while (server.pendingRequests === 0 && Date.now() < arrivalDeadline) await Bun.sleep(5);
       expect(server.pendingRequests).toBe(1);
 
       // Start draining server
@@ -159,7 +160,8 @@ describe("S1 — Drain on SIGTERM (CronRegistry & ApiServer)", () => {
       // Fire and forget request
       const reqPromise = fetch(`http://127.0.0.1:${server.port}/test`).catch((err) => err);
 
-      await Bun.sleep(20);
+      const arrivalDeadline = Date.now() + 2000;
+      while (server.pendingRequests === 0 && Date.now() < arrivalDeadline) await Bun.sleep(5);
       expect(server.pendingRequests).toBe(1);
 
       // Drain with 50ms timeout

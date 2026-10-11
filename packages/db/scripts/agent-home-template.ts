@@ -8,7 +8,8 @@
  *   bun packages/db/scripts/agent-home-template.ts           # regenerate
  *   bun packages/db/scripts/agent-home-template.ts --check   # exit 1 on drift (CI)
  */
-import { join, resolve } from "node:path";
+import { mkdtempSync, rmSync } from "node:fs";
+import { basename, dirname, join, resolve } from "node:path";
 import { AGENT_HOME_DOCUMENTS } from "../src/agent-homes/types";
 
 const ROOT = resolve(import.meta.dir, "../../..");
@@ -34,14 +35,21 @@ export async function renderTemplateModule(root = ROOT): Promise<string> {
 async function formatted(source: string): Promise<string> {
   const oxfmt = Bun.which("oxfmt");
   if (!oxfmt) throw new Error("oxfmt not found on PATH");
-  const child = Bun.spawn([oxfmt, `--stdin-filepath=${OUT}`], {
-    stdin: new TextEncoder().encode(source),
-    stdout: "pipe",
-    stderr: "inherit",
-  });
-  const out = await new Response(child.stdout).text();
-  if ((await child.exited) !== 0) throw new Error("oxfmt failed");
-  return out;
+  // Keep the candidate beside the output so oxfmt resolves the same repository config.
+  // oxfmt 0.72 supports file formatting but has no --stdin-filepath option.
+  const dir = mkdtempSync(join(dirname(OUT), ".agent-home-template-"));
+  const candidate = join(dir, basename(OUT));
+  try {
+    await Bun.write(candidate, source);
+    const child = Bun.spawnSync([oxfmt, "--write", candidate], {
+      stdout: "ignore",
+      stderr: "inherit",
+    });
+    if (child.exitCode !== 0) throw new Error("oxfmt failed");
+    return await Bun.file(candidate).text();
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 }
 
 if (import.meta.main) {

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { Lecture } from "@shenron/ui/icones";
@@ -22,6 +23,7 @@ export function EpisodeCard({
   year,
   hasVf,
   hasVostfr,
+  hasVost,
   playerCount,
   width = "rail",
   eager = false,
@@ -36,6 +38,7 @@ export function EpisodeCard({
   year?: number | null;
   hasVf?: boolean;
   hasVostfr?: boolean;
+  hasVost?: boolean;
   /** Nombre de lecteurs réellement attachés à l’épisode. */
   playerCount?: number;
   /** "rail" = largeur fixe pour un rail horizontal ; "full" = pleine largeur (grille). */
@@ -50,6 +53,7 @@ export function EpisodeCard({
    */
   priority?: boolean;
 }) {
+  const t = useTranslations("mediaPlayback");
   const num = number != null ? String(number).padStart(3, "0") : "—";
   return (
     <Link
@@ -98,16 +102,21 @@ export function EpisodeCard({
         <span className="scouter-text absolute left-2 top-2 bg-black/60 px-1.5 py-0.5 text-[10px] text-dbz-orange">
           #{num}
         </span>
-        {(hasVf || hasVostfr) && (
+        {(hasVf || hasVostfr || hasVost) && (
           <div className="absolute right-2 top-2 flex gap-1">
             {hasVf && (
               <span className="rounded bg-namek/85 px-1 py-0.5 text-[10px] font-bold uppercase text-black">
-                VF
+                {t("vf")}
               </span>
             )}
             {hasVostfr && (
               <span className="rounded bg-dbz-blue-light/85 px-1 py-0.5 text-[10px] font-bold uppercase text-black">
-                VOSTFR
+                {t("vostfr")}
+              </span>
+            )}
+            {hasVost && (
+              <span className="rounded bg-dbz-blue-light/85 px-1 py-0.5 text-[10px] font-bold uppercase text-black">
+                {t("vost")}
               </span>
             )}
           </div>

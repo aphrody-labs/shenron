@@ -12,6 +12,7 @@ import { getCurrentUser, isCurrentUserAdmin } from "@/lib/session";
 import { getWikiRow } from "@/lib/wiki-admin";
 import { listRevisions, revertRevision, type RevisionActor } from "@/lib/wiki-revisions";
 import { revalidateWikiEntity } from "@/lib/wiki-revalidate";
+import { DatabooksFrozenError } from "@/lib/databooks-freeze";
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
@@ -81,6 +82,9 @@ export async function POST(req: NextRequest) {
  * l'utilisateur et ne contiennent rien d'interne.
  */
 function writeFailed(context: string, err: unknown): NextResponse {
+  if (err instanceof DatabooksFrozenError) {
+    return NextResponse.json({ error: err.code, reason: err.freeze.reason }, { status: 423 });
+  }
   const msg = err instanceof Error ? err.message : String(err);
   console.error(`[${context}]`, err);
   // Signature d'une erreur du pilote PostgreSQL (code SQLSTATE) → on masque.

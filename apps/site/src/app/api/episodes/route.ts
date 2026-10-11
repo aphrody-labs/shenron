@@ -61,6 +61,7 @@ export async function GET(req: Request) {
       const players = Array.isArray(ep.players) ? ep.players : [];
       const hasVf = players.some((p) => p.lang === "vf");
       const hasVostfr = players.some((p) => p.lang === "vostfr");
+      const hasVost = players.some((p) => p.lang === "vost");
 
       return {
         id: ep.id,
@@ -76,6 +77,7 @@ export async function GET(req: Request) {
         playerCount: players.length,
         hasVf,
         hasVostfr,
+        hasVost,
         players: players.map((p) => ({
           name: p.name,
           provider: p.provider,

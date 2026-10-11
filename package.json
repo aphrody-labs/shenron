@@ -143,9 +143,9 @@
   "scripts": {
     "dev": "bun run --filter @shenron/site dev",
     "start": "bun run --filter @shenron/site start",
-    "typecheck": "bun run --filter '*' typecheck && bun run typecheck:scripts",
+    "typecheck": "bun scripts/testing/workspace-gates.ts typecheck",
     "typecheck:scripts": "tsc --noEmit -p scripts",
-    "test": "bun run --filter '*' test",
+    "test": "bun scripts/testing/workspace-gates.ts test",
     "lint": "oxlint -c .oxlintrc.json apps packages scripts",
     "format:check": "oxfmt --check apps packages scripts",
     "build": "bun scripts/build/server.ts && bun scripts/build/bot.ts",

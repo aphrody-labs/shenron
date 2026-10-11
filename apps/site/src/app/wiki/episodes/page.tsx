@@ -198,6 +198,7 @@ async function EpisodeRails({ series }: { series: string[] }) {
               year={yearOf(ep.air_date)}
               hasVf={hasLang(ep.players, "vf")}
               hasVostfr={hasLang(ep.players, "vostfr")}
+              hasVost={hasLang(ep.players, "vost")}
               playerCount={ep.players?.length ?? 0}
               // Premier rail, cartes au-dessus de la ligne de flottaison →
               // chargement immédiat (pas de flash de vignette vide au fold).

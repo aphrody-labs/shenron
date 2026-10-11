@@ -1,4 +1,24 @@
 {
+  "mediaPlayback": {
+    "vf": "VF",
+    "vostfr": "VOSTFR",
+    "vost": "VOST",
+    "vo": "VO avec pistes de sous-titres",
+    "externalPlayers": "Lecteurs",
+    "versionChoice": "Choisir une version vidéo",
+    "playerChoice": "Choisir un lecteur",
+    "playerNumber": "Lecteur {number}",
+    "playerTitle": "Lecteur {number} — {name}",
+    "voUnavailable": "Ce flux est indisponible pour le moment. Les autres lecteurs restent accessibles ci-dessus.",
+    "playersUnavailable": "Aucun des {count} lecteurs ne répond pour le moment.",
+    "retry": "Réessayer automatiquement",
+    "voTracks": "Pistes : {tracks} — à choisir dans le menu du lecteur.",
+    "probing": "{version}Vérification du lecteur « {name} »…",
+    "selected": "{version}Lecteur externe « {name} » sélectionné.",
+    "watchLegally": "Regarder légalement",
+    "availableLanguages": "Versions relevées",
+    "legalOfferNote": "Proposé par {providers}. Le lien ouvre le catalogue du fournisseur ; abonnement ou achat selon le titre."
+  },
   "mangaCatalog": {
     "colorSectionTitle": "Scans couleur français",
     "colorSectionDescription": "Fonds de scans couleur en français, provenant du forum scan-db. Il ne contient pas l’édition japonaise originale de Shueisha. {count} chapitres recensés.",

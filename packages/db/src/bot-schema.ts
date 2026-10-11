@@ -380,8 +380,8 @@ export type Availability = {
   url: string;
   /** Lecteur officiel incrustable, quand le fournisseur en expose un. */
   embedUrl: string | null;
-  /** Pistes proposées. `vostfr` = audio japonais d'origine sous-titré FR. */
-  langs: ("vf" | "vostfr")[];
+  /** Observed versions. `vostfr` has French subtitles; `vost` uses other original-audio subtitles. */
+  langs: ("vf" | "vostfr" | "vost")[];
   available: boolean;
   /** Date du relevé (epoch secondes) — dit au lecteur si l'info est fraîche. */
   checkedAt: number;
@@ -417,7 +417,7 @@ export const botEpisodes = bot.table("db_episodes", {
       name: string;
       provider: string;
       embedUrl: string;
-      lang?: "vf" | "vostfr";
+      lang?: "vf" | "vostfr" | "vost";
     }[]
   >(),
   /** Offres légales relevées (cf. type `Availability`). */
@@ -474,7 +474,7 @@ export const botMovies = bot.table("db_movies", {
       name: string;
       provider: string;
       embedUrl: string;
-      lang?: "vf" | "vostfr";
+      lang?: "vf" | "vostfr" | "vost";
     }[]
   >(),
   /** Offres légales relevées (cf. type `Availability`). */

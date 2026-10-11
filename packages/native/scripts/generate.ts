@@ -15,12 +15,23 @@ import { join } from "node:path";
 const root = join(import.meta.dir, "..", "..", "..");
 const check = Bun.argv.includes("--check");
 
-const cargo = Bun.spawn(["cargo", "test", "--quiet", "-p", "shenron-ffi", "--test", "typescript"], {
-  cwd: root,
-  env: { ...process.env, UPDATE: check ? "0" : "1" },
-  stdout: "inherit",
-  stderr: "inherit",
-});
+const cargo = Bun.spawn(
+  [
+    process.env.APHRODY_CARGO_SERIAL || "cargo",
+    "test",
+    "--quiet",
+    "-p",
+    "shenron-ffi",
+    "--test",
+    "typescript",
+  ],
+  {
+    cwd: root,
+    env: { ...process.env, UPDATE: check ? "0" : "1" },
+    stdout: "inherit",
+    stderr: "inherit",
+  },
+);
 const code = await cargo.exited;
 if (code !== 0) {
   console.error(

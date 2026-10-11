@@ -58,6 +58,7 @@ export default async function FilmModal({ params }: { params: Promise<{ slug: st
         synopsis={stripSourceTags(m.synopsis)}
         hasVf={langBadges(m.players).hasVf}
         hasVostfr={langBadges(m.players).hasVostfr}
+        hasVost={langBadges(m.players).hasVost}
         resources={[
           `${m.players?.length ?? 0} lecteur${(m.players?.length ?? 0) > 1 ? "s" : ""}`,
           ...(m.subtitles?.length
