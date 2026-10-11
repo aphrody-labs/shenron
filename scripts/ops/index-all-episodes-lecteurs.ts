@@ -5,14 +5,16 @@
  */
 import postgres from "postgres";
 
-const PG_URL =
-  process.env.DATABASE_URL ||
-  "postgresql://shenron:9a2bafd9a5f17e4477fb3faf84906ea27ceda8561d7ca608@127.0.0.1:5432/shenron_site";
+function requiredCredential(name: string): string {
+  const value = process.env[name]?.trim();
+  if (!value) throw new Error(`${name} is required from protected stores`);
+  return value;
+}
+
+const PG_URL = requiredCredential("DATABASE_URL");
 const RAG_ENDPOINT =
   process.env.APHRODY_AI_HTTP_URL || "http://127.0.0.1:8789/api/v1/shenron/rag/ingest";
-const RAG_TOKEN =
-  process.env.APHRODY_AI_HTTP_TOKEN ||
-  "7817d30a4c9e07d06fbba4e8e202eae8ad4bb8c294908ba0ffe4c474b484701e";
+const RAG_TOKEN = requiredCredential("APHRODY_AI_HTTP_TOKEN");
 
 const SERIES_LABELS: Record<string, string> = {
   DB: "Dragon Ball",
@@ -47,9 +49,7 @@ function formatDate(sec: number | null): string {
 }
 
 async function main() {
-  console.log(
-    `[Shenron RAG Indexer] Connexion à PostgreSQL : ${PG_URL.replace(/:[^:@]+@/, ":***@")}`,
-  );
+  console.log("[Shenron RAG Indexer] Connecting to the configured PostgreSQL database.");
   const sql = postgres(PG_URL, { max: 5 });
 
   try {
