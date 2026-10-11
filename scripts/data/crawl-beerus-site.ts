@@ -8,6 +8,9 @@ const seeds = [
 ];
 const hash = (value: string | Uint8Array) =>
   new Bun.CryptoHasher("sha256").update(value).digest("hex");
+export function isPlaybackMedia(url: string): boolean {
+  return /\.(?:mp4|webm|mp3|m4a|m3u8|mpd|ts|m4s|aac|key)(?:[?#]|$)/i.test(url);
+}
 export function approvedUrl(raw: string, base: string, page: boolean): string | undefined {
   try {
     const url = new URL(raw, base);
@@ -19,7 +22,17 @@ export function approvedUrl(raw: string, base: string, page: boolean): string | 
       if (page && url.pathname !== new URL(seeds[1]!).pathname) return;
       if (!page && !url.pathname.startsWith("/wp-content/")) return;
     } else return;
-    if (page) url.search = "";
+    if (page) {
+      const id = url.searchParams.get("id");
+      url.search = "";
+      if (
+        url.hostname === "dragonball-super.com" &&
+        url.pathname === "/en/updates/detail.html" &&
+        id &&
+        /^[0-9]{8}(?:-[0-9]+)?$/.test(id)
+      )
+        url.searchParams.set("id", id);
+    }
     return url.href;
   } catch {
     return;
@@ -31,6 +44,11 @@ async function read(url: string): Promise<{ status: number; type: string; bytes:
     signal: AbortSignal.timeout(20000),
     headers: { "User-Agent": "Shenron-source-crawl/1.4.4 (+https://dragonballfr.com)" },
   });
+  const type = response.headers.get("content-type") ?? "";
+  if (/^(?:audio|video)\//i.test(type) || /(?:mpegurl|dash\+xml)/i.test(type)) {
+    await response.body?.cancel();
+    throw new Error("Playback media is excluded from private site capture");
+  }
   const chunks: Uint8Array[] = [];
   let size = 0;
   if (response.body) {
@@ -46,7 +64,7 @@ async function read(url: string): Promise<{ status: number; type: string; bytes:
     bytes.set(chunk, cursor);
     cursor += chunk.byteLength;
   }
-  return { status: response.status, type: response.headers.get("content-type") ?? "", bytes };
+  return { status: response.status, type, bytes };
 }
 export async function crawl(output: string): Promise<void> {
   const directory = resolve(output);
@@ -59,9 +77,11 @@ export async function crawl(output: string): Promise<void> {
   const corpus: Record<string, unknown>[] = [];
   const robots: Record<string, unknown>[] = [];
   const forbidden = new Map<string, string[]>();
+  const robotsUnavailable = new Set<string>();
   for (const origin of ["https://dragonball-super.com", "https://www.db-z.com"]) {
     const r = await read(origin + "/robots.txt");
     const text = new TextDecoder().decode(r.bytes);
+    if (r.status !== 200 && r.status !== 404) robotsUnavailable.add(origin);
     const blocks = text.split(/\r?\n\s*\r?\n/);
     const rules = blocks
       .filter((block) => /User-agent:\s*\*/i.test(block))
@@ -71,6 +91,7 @@ export async function crawl(output: string): Promise<void> {
   }
   const permitted = (url: string) => {
     const parsed = new URL(url);
+    if (robotsUnavailable.has(parsed.origin)) return false;
     return !(forbidden.get(parsed.origin) ?? []).some((rule) =>
       parsed.pathname.startsWith(rule.replace(/\*.*$/, "")),
     );
@@ -80,7 +101,12 @@ export async function crawl(output: string): Promise<void> {
     if (seen.has(url)) continue;
     seen.add(url);
     if (!permitted(url)) {
-      pages.push({ url, state: "robots_excluded" });
+      pages.push({
+        url,
+        state: robotsUnavailable.has(new URL(url).origin)
+          ? "robots_unavailable"
+          : "robots_excluded",
+      });
       continue;
     }
     try {
@@ -132,10 +158,13 @@ export async function crawl(output: string): Promise<void> {
               element.getAttribute("poster"),
             ];
             if (element.tagName === "link") candidates.push(element.getAttribute("href"));
+            const srcset = element.getAttribute("srcset") ?? element.getAttribute("data-srcset");
+            if (srcset)
+              candidates.push(...srcset.split(",").map((entry) => entry.trim().split(/\s+/)[0]!));
             for (const raw of candidates) {
               if (!raw) continue;
               const next = approvedUrl(raw, url, false);
-              if (next && !/\.(?:mp4|webm|mp3|m4a)(?:\?|$)/i.test(next)) assets.add(next);
+              if (next && !isPlaybackMedia(next)) assets.add(next);
             }
           },
         });
@@ -164,10 +193,15 @@ export async function crawl(output: string): Promise<void> {
   const assetsSeen = new Set<string>();
   while (queue.length && assetsSeen.size < 256 && totalBytes < 128 * 1024 * 1024) {
     const url = queue.shift()!;
-    if (assetsSeen.has(url)) continue;
+    if (assetsSeen.has(url) || isPlaybackMedia(url)) continue;
     assetsSeen.add(url);
     if (!permitted(url)) {
-      media.push({ url, state: "robots_excluded" });
+      media.push({
+        url,
+        state: robotsUnavailable.has(new URL(url).origin)
+          ? "robots_unavailable"
+          : "robots_excluded",
+      });
       continue;
     }
     try {
@@ -192,7 +226,13 @@ export async function crawl(output: string): Promise<void> {
           .decode(r.bytes)
           .matchAll(/url\(\s*["']?([^"')\s]+)["']?\s*\)/g)) {
           const next = approvedUrl(match[1]!, url, false);
-          if (next && !assetsSeen.has(next)) queue.push(next);
+          if (next && !isPlaybackMedia(next) && !assetsSeen.has(next)) queue.push(next);
+        }
+        for (const match of new TextDecoder()
+          .decode(r.bytes)
+          .matchAll(/@import\s+["']([^"']+)["']/gi)) {
+          const next = approvedUrl(match[1]!, url, false);
+          if (next && !isPlaybackMedia(next) && !assetsSeen.has(next)) queue.push(next);
         }
       }
     } catch {
