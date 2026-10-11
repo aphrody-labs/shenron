@@ -33,6 +33,7 @@ export interface CdnBucket {
 export interface CdnEnvironment {
   CDN: CdnBucket;
   IMPORT_ENABLED?: string;
+  VERIFY_UPLOADS?: string;
   MANIFEST_PREFIX?: string;
   MANIFEST_SHARD_HASHES?: Record<string, string>;
   MANIFEST_SHARD_HASHES_0?: Record<string, string>;
@@ -176,10 +177,12 @@ function responseHeaders(entry: ManifestEntry): Headers {
     "Content-Length": String(entry.size),
     ETag: `"${entry.sha256}"`,
     "X-Content-SHA256": entry.sha256,
+    "X-Content-Size": String(entry.size),
     "Accept-Ranges": "bytes",
     "Access-Control-Allow-Origin": "*",
     "X-Content-Type-Options": "nosniff",
-    "Access-Control-Expose-Headers": "Content-Length, Content-Range, ETag, X-Content-SHA256",
+    "Access-Control-Expose-Headers":
+      "Content-Length, Content-Range, ETag, X-Content-SHA256, X-Content-Size",
   });
 }
 
@@ -234,6 +237,21 @@ export async function handleCdn(
     if (!validEntry(entry)) return failure(503);
     const key = `_objects/${entry.sha256}`;
     let metadata = await env.CDN.head(key);
+    if (
+      metadata &&
+      !verified(metadata, entry) &&
+      request.method === "HEAD" &&
+      env.VERIFY_UPLOADS === "true"
+    ) {
+      const uploaded = await env.CDN.get(key);
+      if (!uploaded || uploaded.size !== entry.size || !uploaded.body) return failure(503);
+      // R2 validates the pinned checksum before atomically attaching trusted metadata.
+      metadata = await env.CDN.put(key, uploaded.body, {
+        sha256: entry.sha256,
+        httpMetadata: { contentType: entry.contentType, cacheControl: entry.cacheControl },
+        customMetadata: { sha256: entry.sha256 },
+      });
+    }
     if (!metadata && request.method === "HEAD" && env.IMPORT_ENABLED === "true") {
       const source = await fetchOrigin(
         `${ORIGIN}${path.split("/").map(encodeURIComponent).join("/")}`,

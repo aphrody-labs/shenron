@@ -7,6 +7,7 @@
   "r2_buckets": [{ "binding": "CDN", "bucket_name": "shenron-cdn" }],
   "vars": {
     "IMPORT_ENABLED": "false",
+    "VERIFY_UPLOADS": "false",
     "MANIFEST_PREFIX": "_migration/manifests/",
     "MANIFEST_SHARD_HASHES_0": {},
     "MANIFEST_SHARD_HASHES_1": {},

@@ -82,6 +82,42 @@ function request(path = "/fonts/a.woff2", method = "GET", headers?: HeadersInit)
 }
 
 describe("CDN manifest and import", () => {
+  test("REST uploads are checksum-verified before attaching serving metadata", async () => {
+    class UploadedBucket extends Bucket {
+      attached = false;
+      override metadata(data: Uint8Array): StoredObject {
+        const value = super.metadata(data);
+        return this.attached ? value : { ...value, customMetadata: undefined };
+      }
+      override async put(...args: Parameters<Bucket["put"]>) {
+        await super.put(...args);
+        this.attached = true;
+        return this.metadata(this.objects.get(args[0])!);
+      }
+    }
+    const key = `_objects/${sha256}`;
+    const bucket = new UploadedBucket();
+    bucket.objects.set(key, bytes);
+    expect((await handleCdn(request(), { CDN: bucket, VERIFY_UPLOADS: "true" })).status).toBe(503);
+    expect((await handleCdn(request(undefined, "HEAD"), { CDN: bucket })).status).toBe(503);
+    expect(bucket.puts).toBe(0);
+    const verified = await handleCdn(request(undefined, "HEAD"), {
+      CDN: bucket,
+      VERIFY_UPLOADS: "true",
+    });
+    expect(verified.status).toBe(200);
+    expect(verified.headers.get("X-Content-SHA256")).toBe(sha256);
+    expect(verified.headers.get("X-Content-Size")).toBe(String(bytes.length));
+    expect(bucket.puts).toBe(1);
+    expect(await (await handleCdn(request(), { CDN: bucket })).text()).toBe("verified-font");
+    const wrong = new UploadedBucket();
+    wrong.objects.set(key, new Uint8Array(bytes.length));
+    expect(
+      (await handleCdn(request(undefined, "HEAD"), { CDN: wrong, VERIFY_UPLOADS: "true" })).status,
+    ).toBe(503);
+    expect(wrong.attached).toBe(false);
+    expect(wrong.objects.get(key)).toEqual(new Uint8Array(bytes.length));
+  });
   test("bootstrap imports a pinned manifest shard without serving its private URL", async () => {
     const bucket = new Bucket();
     bucket.missingManifest = true;
