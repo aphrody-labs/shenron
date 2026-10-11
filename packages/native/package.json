@@ -1,6 +1,6 @@
 {
   "name": "@shenron/native",
-  "version": "0.4.0",
+  "version": "1.4.4",
   "private": true,
   "description": "Bun FFI binding of the Shenron native library (shenron-ffi): shenron commands, RAG/persona helpers, and a worker pool for the long calls (promises, AbortSignal).",
   "license": "Apache-2.0",
@@ -17,7 +17,7 @@
     "generate:check": "bun scripts/generate.ts --check",
     "lint": "oxlint -c ../../.oxlintrc.json src test scripts",
     "test": "bun test",
-    "typecheck": "tsc --noEmit -p ."
+    "typecheck": "bun check --noEmit --project tsconfig.json"
   },
   "dependencies": {
     "@aphrody/bun": "catalog:"

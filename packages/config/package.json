@@ -1,6 +1,6 @@
 {
   "name": "@shenron/config",
-  "version": "0.4.0",
+  "version": "1.4.4",
   "private": true,
   "type": "module",
   "sideEffects": false,
@@ -46,7 +46,7 @@
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",
     "test": "bun test",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "bun check --noEmit --project tsconfig.json"
   },
   "dependencies": {
     "@aphrody/paths": "catalog:",

@@ -26,7 +26,7 @@
     },
     "apps/bot": {
       "name": "@shenron/bot",
-      "version": "1.3.0",
+      "version": "1.4.4",
       "dependencies": {
         "@aphrody/discord-kit": "catalog:",
         "@aphrody/messaging": "catalog:",
@@ -64,7 +64,7 @@
     },
     "apps/server": {
       "name": "@shenron/server",
-      "version": "1.3.0",
+      "version": "1.4.4",
       "bin": {
         "shenron-server": "./src/cli.ts",
       },
@@ -84,7 +84,7 @@
     },
     "apps/site": {
       "name": "@shenron/site",
-      "version": "1.3.0",
+      "version": "1.4.4",
       "dependencies": {
         "@aphrody/discord-kit": "catalog:",
         "@aphrody/messaging": "catalog:",
@@ -177,7 +177,7 @@
     },
     "packages/api": {
       "name": "@shenron/api",
-      "version": "0.4.0",
+      "version": "1.4.4",
       "dependencies": {
         "@aphrody/http": "catalog:",
         "@shenron/auth": "workspace:*",
@@ -192,7 +192,7 @@
     },
     "packages/auth": {
       "name": "@shenron/auth",
-      "version": "0.4.0",
+      "version": "1.4.4",
       "dependencies": {
         "@shenron/config": "workspace:*",
       },
@@ -217,7 +217,7 @@
     },
     "packages/config": {
       "name": "@shenron/config",
-      "version": "0.4.0",
+      "version": "1.4.4",
       "dependencies": {
         "@aphrody/paths": "catalog:",
         "zod": "catalog:",
@@ -225,7 +225,7 @@
     },
     "packages/db": {
       "name": "@shenron/db",
-      "version": "0.4.0",
+      "version": "1.4.4",
       "dependencies": {
         "@aphrody/sql": "catalog:",
         "@paralleldrive/cuid2": "catalog:",
@@ -236,7 +236,7 @@
     },
     "packages/engine": {
       "name": "@shenron/engine",
-      "version": "1.3.0",
+      "version": "1.4.4",
       "devDependencies": {
         "@types/bun": "catalog:",
         "typescript": "catalog:",
@@ -244,14 +244,14 @@
     },
     "packages/images": {
       "name": "@shenron/images",
-      "version": "0.4.0",
+      "version": "1.4.4",
       "dependencies": {
         "sharp": "catalog:",
       },
     },
     "packages/koharu": {
       "name": "@shenron/koharu",
-      "version": "0.4.0",
+      "version": "1.4.4",
       "dependencies": {
         "@aphrody/api": "catalog:",
       },
@@ -262,7 +262,7 @@
     },
     "packages/lexicon": {
       "name": "@shenron/lexicon",
-      "version": "0.3.0",
+      "version": "1.4.4",
       "devDependencies": {
         "@types/bun": "catalog:",
         "typescript": "catalog:",
@@ -270,7 +270,7 @@
     },
     "packages/media": {
       "name": "@shenron/media",
-      "version": "0.4.0",
+      "version": "1.4.4",
       "dependencies": {
         "@aphrody/http": "catalog:",
       },
@@ -281,7 +281,7 @@
     },
     "packages/native": {
       "name": "@shenron/native",
-      "version": "0.4.0",
+      "version": "1.4.4",
       "dependencies": {
         "@aphrody/bun": "catalog:",
       },
@@ -292,7 +292,7 @@
     },
     "packages/pipeline": {
       "name": "@shenron/pipeline",
-      "version": "0.4.0",
+      "version": "1.4.4",
       "bin": {
         "pipeline": "./src/cli.ts",
       },
@@ -318,7 +318,7 @@
     },
     "packages/ui": {
       "name": "@shenron/ui",
-      "version": "0.4.0",
+      "version": "1.4.4",
       "dependencies": {
         "@aphrody/api": "catalog:",
         "@aphrody/m3-ai": "catalog:",

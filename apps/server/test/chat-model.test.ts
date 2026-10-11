@@ -194,6 +194,18 @@ describe("planChatModel", () => {
         ),
       ).toEqual({ program: "C:\\S\\shenron-server.exe", args: [LLAMA_DAEMON_VERB] });
     }
+    expect(
+      daemonLauncher(
+        "/app/libshenron_ffi.dll",
+        "bun",
+        ["bun", "B:/~BUN/root/shenron-server.exe", "serve", "site"],
+        "B:/~BUN/root/shenron-server.exe",
+        "C:\\S\\shenron-server.exe",
+      ),
+    ).toEqual({
+      program: "C:\\S\\shenron-server.exe",
+      args: [LLAMA_DAEMON_VERB, "--library", "/app/libshenron_ffi.dll"],
+    });
   });
 });
 

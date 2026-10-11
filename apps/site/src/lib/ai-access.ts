@@ -36,6 +36,8 @@ export const PUBLIC_API_PREFIXES = [
   "/api/databooks",
   "/api/manga",
   "/api/timeline",
+  "/api/episodes",
+  "/api/movies",
   // Former French path, still served (rewrite to /api/timeline, lib/legacy-routes.ts).
   "/api/chronologie",
 ] as const;

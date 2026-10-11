@@ -33,7 +33,7 @@ parking_lot = { workspace = true }
 rayon = { workspace = true }
 bytes = { workspace = true }
 sha2 = { workspace = true }
-shenron-re = { path = "../shenron-re", version = "1.3.0" }
+shenron-re = { path = "../shenron-re", version = "1.4.4" }
 
 # GPU & Graphics
 wgpu = { workspace = true }

@@ -1,5 +1,6 @@
 {
   "name": "shenron",
+  "version": "1.4.4",
   "private": true,
   "description": "Shenron (dragonballfr.com): Dragon Ball site, Discord bot, editorial pipeline, Koharu manga translation and the Shenron agent tooling, built on published Aphrody packages.",
   "workspaces": {
@@ -184,10 +185,10 @@
     "typescript": "catalog:"
   },
   "overrides": {
-    "next": "file:vendor/next-fork/next-16.5.0-canary.5-dac376c6fe-80cae9ab.tgz",
     "@next/env": "file:vendor/next-fork/next-env-16.5.0-canary.5-dac376c6fe-f32e63fa.tgz",
     "@next/third-parties": "file:vendor/next-fork/next-third-parties-16.5.0-canary.5-dac376c6fe-14a34de8.tgz",
     "axios": "^1.20.0",
+    "next": "file:vendor/next-fork/next-16.5.0-canary.5-dac376c6fe-80cae9ab.tgz",
     "qs": "^6.16.0",
     "undici": "^7.30.0"
   },

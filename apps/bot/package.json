@@ -1,6 +1,6 @@
 {
   "name": "@shenron/bot",
-  "version": "1.3.0",
+  "version": "1.4.4",
   "private": true,
   "type": "module",
   "exports": {
@@ -39,7 +39,7 @@
     "db:push": "drizzle-kit push",
     "db:seed-xv2-char-meta": "bun src/db/seed-xv2-char-meta.ts",
     "db:seed-xv2-all": "bun src/db/seed-xv2-techniques.ts && bun src/db/seed-xv2-characters.ts && bun src/db/seed-xv2-char-meta.ts && bun src/db/seed-xv2-portraits.ts && bun src/db/seed-xv2-transformations.ts && bun src/db/seed-xv2-char-techniques.ts",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.scripts.json"
+    "typecheck": "bun check --noEmit --project tsconfig.json && bun check --noEmit --project tsconfig.scripts.json"
   },
   "dependencies": {
     "@aphrody/discord-kit": "catalog:",
