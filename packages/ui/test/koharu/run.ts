@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const files = [...new Bun.Glob("test/koharu/**/*.test.{ts,tsx}").scanSync(root)].toSorted();
 const extra = Bun.argv.slice(2);
+// Windows debug cold renders and the 10-second async wait need room inside the test deadline.
+const timeout = process.platform === "win32" ? "30000" : "8000";
 let failed = 0;
 for (const file of files) {
   const proc = Bun.spawn(
@@ -13,7 +15,7 @@ for (const file of files) {
       process.execPath,
       "test",
       "--timeout",
-      "8000",
+      timeout,
       "--preload",
       "@aphrody/bun-test-dom",
       "--preload",

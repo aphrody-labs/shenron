@@ -1092,43 +1092,58 @@ describe("greenfield editor", () => {
     const pendingSave = new Promise<Preferences>((resolve) => {
       finishSave = resolve;
     });
-    const save = vi.spyOn(commands, "savePreferences").mockImplementation(() => pendingSave);
+    const save = vi
+      .spyOn(commands, "savePreferences")
+      .mockImplementation(async (pipeline, providers, typesetting) => {
+        // Slow user input can autosave intermediate drafts before the final draft is complete.
+        if (
+          pipeline.translation.instructions === nextPreferences.pipeline.translation.instructions
+        ) {
+          return pendingSave;
+        }
+        return { ...preferences, pipeline, providers, typesetting };
+      });
     render(<CanvasCommandBar />);
 
-    await user.click(screen.getByRole("button", { name: "Processing settings" }));
-    await waitFor(() => expect(commands.getTranslationModels).toHaveBeenCalled());
-    await user.click(screen.getByRole("button", { name: /Output English/ }));
-    const language = screen.getByRole("combobox", { name: "Target language" });
-    expect(language).toHaveTextContent("English");
-    expect(language).not.toHaveTextContent("en-US");
-    await user.click(language);
-    await user.click(await screen.findByRole("option", { name: "Japanese" }));
-    const instructions = screen.getByRole("textbox", { name: "Translation instructions" });
-    expect(instructions).toHaveClass("max-h-20", "overflow-y-auto");
-    await user.type(instructions, "Keep character names unchanged.");
-    expect(screen.queryByRole("button", { name: "Apply output" })).not.toBeInTheDocument();
+    try {
+      await user.click(screen.getByRole("button", { name: "Processing settings" }));
+      await waitFor(() => expect(commands.getTranslationModels).toHaveBeenCalled());
+      await user.click(screen.getByRole("button", { name: /Output English/ }));
+      const language = screen.getByRole("combobox", { name: "Target language" });
+      expect(language).toHaveTextContent("English");
+      expect(language).not.toHaveTextContent("en-US");
+      await user.click(language);
+      await user.click(await screen.findByRole("option", { name: "Japanese" }));
+      const instructions = screen.getByRole("textbox", { name: "Translation instructions" });
+      expect(instructions).toHaveClass("max-h-20", "overflow-y-auto");
+      await user.type(instructions, "Keep character names unchanged.");
+      expect(screen.queryByRole("button", { name: "Apply output" })).not.toBeInTheDocument();
 
-    await waitFor(() =>
-      expect(save).toHaveBeenCalledWith(
-        nextPreferences.pipeline,
-        preferences.providers,
-        preferences.typesetting,
-      ),
-    );
-    expect(
-      screen.queryByLabelText(/Saving output settings|outputPicker\.saving/),
-    ).not.toBeInTheDocument();
-    expect(language).not.toBeDisabled();
-    expect(instructions).not.toBeDisabled();
-    expect(instructions).toHaveFocus();
-    await act(async () => finishSave(nextPreferences));
-    await waitFor(() =>
-      expect(useKoharuStore.getState().preferences?.pipeline.translation).toEqual(
-        nextPreferences.pipeline.translation,
-      ),
-    );
-    expect(instructions).toBeInTheDocument();
-    expect(instructions).toHaveFocus();
+      await waitFor(() =>
+        expect(save).toHaveBeenCalledWith(
+          nextPreferences.pipeline,
+          preferences.providers,
+          preferences.typesetting,
+        ),
+      );
+      expect(
+        screen.queryByLabelText(/Saving output settings|outputPicker\.saving/),
+      ).not.toBeInTheDocument();
+      expect(language).not.toBeDisabled();
+      expect(instructions).not.toBeDisabled();
+      expect(instructions).toHaveFocus();
+      await act(async () => finishSave(nextPreferences));
+      await waitFor(() =>
+        expect(useKoharuStore.getState().preferences?.pipeline.translation).toEqual(
+          nextPreferences.pipeline.translation,
+        ),
+      );
+      expect(instructions).toBeInTheDocument();
+      expect(instructions).toHaveFocus();
+    } finally {
+      // A failed assertion must not leave the shared backend write queue blocked for later tests.
+      await act(async () => finishSave(nextPreferences));
+    }
   });
 
   it("preserves the runtime shortcuts while visiting settings", async () => {

@@ -39,7 +39,8 @@ describe("locales", () => {
         : [p];
     const ref = keys(fr);
     for (const [code, dico] of Object.entries({ en, ja })) {
-      const missing = ref.filter((k) => !keys(dico).includes(k));
+      const available = new Set(keys(dico));
+      const missing = ref.filter((k) => !available.has(k));
       expect({ code, missing }).toEqual({ code, missing: [] });
     }
   });

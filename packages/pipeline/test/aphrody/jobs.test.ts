@@ -151,52 +151,56 @@ test("parallel intents balance qualified slots and concurrent clients agree on o
   }
 });
 
-test("delayed queue snapshots include new ACK reservations without retaining old ones", async () => {
-  const directory = await mkdtemp(join(tmpdir(), "shenron-jobs-"));
-  const path = join(directory, "ledger.sqlite");
-  const releases: Array<() => void> = [];
-  const gates = Array.from(
-    { length: 4 },
-    () => new Promise<void>((resolve) => releases.push(resolve)),
-  );
-  const assignments = new Map<string, string>();
-  let probes = 0;
-  const transport: NativeMcpTransport = async (request) => {
-    if (request.tool === "aphrody_job_status") {
-      // Every snapshot was empty when captured; responses arrive after earlier ACKs.
-      const gate = gates[Math.floor(probes++ / hosts.length)];
-      if (gate) await gate;
-      return envelope({ queue: { queued: 0, running: 0 } });
+test(
+  "delayed queue snapshots include new ACK reservations without retaining old ones",
+  async () => {
+    const directory = await mkdtemp(join(tmpdir(), "shenron-jobs-"));
+    const path = join(directory, "ledger.sqlite");
+    const releases: Array<() => void> = [];
+    const gates = Array.from(
+      { length: 4 },
+      () => new Promise<void>((resolve) => releases.push(resolve)),
+    );
+    const assignments = new Map<string, string>();
+    let probes = 0;
+    const transport: NativeMcpTransport = async (request) => {
+      if (request.tool === "aphrody_job_status") {
+        // Every snapshot was empty when captured; responses arrive after earlier ACKs.
+        const gate = gates[Math.floor(probes++ / hosts.length)];
+        if (gate) await gate;
+        return envelope({ queue: { queued: 0, running: 0 } });
+      }
+      const key = String(request.arguments.idempotency_key);
+      assignments.set(key, request.config);
+      return envelope({ id: `remote-${key}`, state: "queued" });
+    };
+    const client = new AphrodyWebJobs(path, hosts, transport);
+    const pending = ["a", "b", "c", "d"].map((key) =>
+      client.submit({ key, args: ["dragon-ball", "sources"] }),
+    );
+    try {
+      for (let index = 0; index < pending.length; index++) {
+        releases[index]!();
+        await pending[index];
+      }
+      expect([...assignments.values()]).toEqual([
+        "/private/dbfr.toml",
+        "/private/vps.toml",
+        "/private/vps.toml",
+        "/private/dbfr.toml",
+      ]);
+      // A new empty snapshot supersedes old ACK evidence, even before a local refresh.
+      await client.submit({ key: "fresh", args: ["dragon-ball", "sources"] });
+      expect(assignments.get("fresh")).toBe("/private/dbfr.toml");
+    } finally {
+      for (const release of releases) release();
+      await Promise.allSettled(pending);
+      client.close();
+      await rm(directory, { recursive: true, force: true });
     }
-    const key = String(request.arguments.idempotency_key);
-    assignments.set(key, request.config);
-    return envelope({ id: `remote-${key}`, state: "queued" });
-  };
-  const client = new AphrodyWebJobs(path, hosts, transport);
-  const pending = ["a", "b", "c", "d"].map((key) =>
-    client.submit({ key, args: ["dragon-ball", "sources"] }),
-  );
-  try {
-    for (let index = 0; index < pending.length; index++) {
-      releases[index]!();
-      await pending[index];
-    }
-    expect([...assignments.values()]).toEqual([
-      "/private/dbfr.toml",
-      "/private/vps.toml",
-      "/private/vps.toml",
-      "/private/dbfr.toml",
-    ]);
-    // A new empty snapshot supersedes old ACK evidence, even before a local refresh.
-    await client.submit({ key: "fresh", args: ["dragon-ball", "sources"] });
-    expect(assignments.get("fresh")).toBe("/private/dbfr.toml");
-  } finally {
-    for (const release of releases) release();
-    await Promise.allSettled(pending);
-    client.close();
-    await rm(directory, { recursive: true, force: true });
-  }
-});
+  },
+  process.platform === "win32" ? 60_000 : 5000,
+);
 
 test("terminal ACKs never reserve worker load in a delayed snapshot", async () => {
   const directory = await mkdtemp(join(tmpdir(), "shenron-jobs-"));

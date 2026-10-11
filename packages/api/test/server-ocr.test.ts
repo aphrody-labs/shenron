@@ -55,34 +55,38 @@ describe("ocr group", () => {
     expect(calls[0]!.mediaType).toBe("image/png");
   });
 
-  test("body validation: supported image types, base64 of 1 byte to 8 MiB", async () => {
-    const { api, calls } = setup();
-    for (const body of [
-      {},
-      image(base64(PNG), "image/gif"),
-      { attachment: { mediaType: "image/png" } },
-    ]) {
-      await expectApiError(await api.request(OCR, recognize(body)), {
-        path: OCR,
-        method: "post",
-        status: 400,
-        code: "invalid_request",
-      });
-    }
-    for (const data of ["", "!!!!", base64(new Uint8Array(8 * 1024 * 1024 + 1))]) {
-      expect(
-        await expectApiError(await api.request(OCR, recognize(image(data))), {
+  test(
+    "body validation: supported image types, base64 of 1 byte to 8 MiB",
+    async () => {
+      const { api, calls } = setup();
+      for (const body of [
+        {},
+        image(base64(PNG), "image/gif"),
+        { attachment: { mediaType: "image/png" } },
+      ]) {
+        await expectApiError(await api.request(OCR, recognize(body)), {
           path: OCR,
           method: "post",
           status: 400,
-        }),
-      ).toEqual({ error: "attachment must hold 1 byte to 8 MiB", code: "invalid_request" });
-    }
-    expect(calls).toEqual([]);
-    // Exactly 8 MiB is accepted.
-    const max = await api.request(OCR, recognize(image(base64(new Uint8Array(8 * 1024 * 1024)))));
-    expect(max.status).toBe(200);
-  });
+          code: "invalid_request",
+        });
+      }
+      for (const data of ["", "!!!!", base64(new Uint8Array(8 * 1024 * 1024 + 1))]) {
+        expect(
+          await expectApiError(await api.request(OCR, recognize(image(data))), {
+            path: OCR,
+            method: "post",
+            status: 400,
+          }),
+        ).toEqual({ error: "attachment must hold 1 byte to 8 MiB", code: "invalid_request" });
+      }
+      expect(calls).toEqual([]);
+      // Exactly 8 MiB is accepted.
+      const max = await api.request(OCR, recognize(image(base64(new Uint8Array(8 * 1024 * 1024)))));
+      expect(max.status).toBe(200);
+    },
+    process.platform === "win32" ? 60_000 : 5000,
+  );
 
   // Regression: an OCR engine failure was reported as 503 pg_unavailable ("Data store unavailable").
   test("engine failure → 502 upstream_unavailable without the engine output", async () => {

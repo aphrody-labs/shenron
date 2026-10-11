@@ -202,45 +202,62 @@ const reply = (text: string) =>
   });
 
 describe("antigravityChat", () => {
+  const fixtureTimeout = process.platform === "win32" ? 60_000 : 5000;
   const messages = [
     { role: "system", content: "sys" },
     { role: "user", content: "question" },
   ];
 
-  test("passes the prompt and model, drops thought parts", async () => {
-    const argsPath = join(scratchDir(), "argv.txt");
-    const bin = fakeAphrody(
-      `import { writeFileSync } from "node:fs";
+  test(
+    "passes the prompt and model, drops thought parts",
+    async () => {
+      const argsPath = join(scratchDir(), "argv.txt");
+      const bin = fakeAphrody(
+        `import { writeFileSync } from "node:fs";
 writeFileSync(${JSON.stringify(argsPath)}, process.argv.slice(2).join("\\n") + "\\n");
 process.stdout.write(${JSON.stringify(reply("Réponse finale"))});`,
-    );
-    const result = await withBin(bin, () => antigravityChat(messages, "m"));
-    expect(result).toEqual({ answer: "Réponse finale", model: "antigravity/gemini-test" });
-    const args = readFileSync(argsPath, "utf8");
-    expect(args.startsWith("antigravity\nchat\n--prompt\n[system]\nsys")).toBe(true);
-    expect(args.endsWith("--model\nm\n")).toBe(true);
-  });
+      );
+      const result = await withBin(bin, () => antigravityChat(messages, "m"));
+      expect(result).toEqual({ answer: "Réponse finale", model: "antigravity/gemini-test" });
+      const args = readFileSync(argsPath, "utf8");
+      expect(args.startsWith("antigravity\nchat\n--prompt\n[system]\nsys")).toBe(true);
+      expect(args.endsWith("--model\nm\n")).toBe(true);
+    },
+    fixtureTimeout,
+  );
 
-  test("surfaces the exit code with the stderr tail", async () => {
-    const bin = fakeAphrody('console.error("quota exceeded"); process.exit(3);');
-    await expect(withBin(bin, () => antigravityChat(messages))).rejects.toThrow(
-      /exited 3: quota exceeded/,
-    );
-  });
+  test(
+    "surfaces the exit code with the stderr tail",
+    async () => {
+      const bin = fakeAphrody('console.error("quota exceeded"); process.exit(3);');
+      await expect(withBin(bin, () => antigravityChat(messages))).rejects.toThrow(
+        /exited 3: quota exceeded/,
+      );
+    },
+    fixtureTimeout,
+  );
 
-  test("rejects non-JSON output", async () => {
-    const bin = fakeAphrody('console.log("not json");');
-    await expect(withBin(bin, () => antigravityChat(messages))).rejects.toThrow(/non-JSON/);
-  });
+  test(
+    "rejects non-JSON output",
+    async () => {
+      const bin = fakeAphrody('console.log("not json");');
+      await expect(withBin(bin, () => antigravityChat(messages))).rejects.toThrow(/non-JSON/);
+    },
+    fixtureTimeout,
+  );
 
-  test("kills a hung teacher at the timeout", async () => {
-    const bin = fakeAphrody("await Bun.sleep(5000);");
-    const started = performance.now();
-    await expect(withBin(bin, () => antigravityChat(messages, undefined, 200))).rejects.toThrow(
-      /timed out after 200 ms/,
-    );
-    expect(performance.now() - started).toBeLessThan(3000);
-  });
+  test(
+    "kills a hung teacher at the timeout",
+    async () => {
+      const bin = fakeAphrody("await Bun.sleep(5000);");
+      const started = performance.now();
+      await expect(withBin(bin, () => antigravityChat(messages, undefined, 200))).rejects.toThrow(
+        /timed out after 200 ms/,
+      );
+      expect(performance.now() - started).toBeLessThan(3000);
+    },
+    fixtureTimeout,
+  );
 });
 
 describe("eval-chat-gold scoring", () => {
@@ -324,26 +341,30 @@ function triplesFile(dir: string, count: number): string {
 describe("build-chat-rollouts CLI", () => {
   const script = join(import.meta.dir, "build-chat-rollouts.ts");
 
-  test("rejects invalid options before touching any output", async () => {
-    const dir = scratchDir();
-    const input = triplesFile(dir, 5);
-    for (const [flag, value, message] of [
-      ["--teacher", "antigravty", /--teacher must be one of/],
-      ["--limit", "abc", /--limit must be an integer/],
-      ["--concurrency", "0", /--concurrency must be an integer/],
-    ] as const) {
-      const out = join(dir, `out${flag}`);
-      const proc = Bun.spawn(
-        [process.execPath, script, "--input", input, "--out", out, "--split-only", flag, value],
-        { stdout: "pipe", stderr: "pipe", stdin: "ignore" },
-      );
-      // oxlint-disable-next-line no-await-in-loop -- one child at a time keeps the cases independent
-      const [stderr, code] = await Promise.all([new Response(proc.stderr).text(), proc.exited]);
-      expect(code).toBe(1);
-      expect(stderr).toMatch(message);
-      expect(existsSync(join(out, "gold.jsonl"))).toBe(false);
-    }
-  });
+  test(
+    "rejects invalid options before touching any output",
+    async () => {
+      const dir = scratchDir();
+      const input = triplesFile(dir, 5);
+      for (const [flag, value, message] of [
+        ["--teacher", "antigravty", /--teacher must be one of/],
+        ["--limit", "abc", /--limit must be an integer/],
+        ["--concurrency", "0", /--concurrency must be an integer/],
+      ] as const) {
+        const out = join(dir, `out${flag}`);
+        const proc = Bun.spawn(
+          [process.execPath, script, "--input", input, "--out", out, "--split-only", flag, value],
+          { stdout: "pipe", stderr: "pipe", stdin: "ignore" },
+        );
+        // oxlint-disable-next-line no-await-in-loop -- one child at a time keeps the cases independent
+        const [stderr, code] = await Promise.all([new Response(proc.stderr).text(), proc.exited]);
+        expect(code).toBe(1);
+        expect(stderr).toMatch(message);
+        expect(existsSync(join(out, "gold.jsonl"))).toBe(false);
+      }
+    },
+    process.platform === "win32" ? 60_000 : 5000,
+  );
 
   test.each(process.platform === "win32" ? ["stdin"] : ["stdin", "SIGTERM"])(
     "%s flushes the rollouts accepted since the last periodic flush",

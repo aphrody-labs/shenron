@@ -159,20 +159,42 @@ function resolveSpecifier(fromFile: string, specifier: string, srcDir: string): 
 }
 
 /** Forbidden reaches of one client entry: `chain` from the entry to the offending import. */
-export function forbiddenReaches(entry: string, srcDir: string): string[][] {
+interface GraphNode {
+  server: boolean;
+  imports: string[];
+  resolutions: Map<string, string | null>;
+}
+
+export function forbiddenReaches(
+  entry: string,
+  srcDir: string,
+  cache: Map<string, GraphNode> = new Map(),
+): string[][] {
   const found: string[][] = [];
   const seen = new Set<string>([entry]);
   const queue: { file: string; chain: string[] }[] = [{ file: entry, chain: [entry] }];
   while (queue.length > 0) {
     const { file, chain } = queue.shift() as { file: string; chain: string[] };
-    const source = readFileSync(file, "utf8");
-    if (file !== entry && directive(source, "use server")) continue;
-    for (const specifier of runtimeImports(source)) {
+    let node = cache.get(file);
+    if (!node) {
+      const source = readFileSync(file, "utf8");
+      node = {
+        server: directive(source, "use server"),
+        imports: runtimeImports(source),
+        resolutions: new Map(),
+      };
+      cache.set(file, node);
+    }
+    if (file !== entry && node.server) continue;
+    for (const specifier of node.imports) {
       if (isForbidden(specifier)) {
         found.push([...chain, specifier]);
         continue;
       }
-      const next = resolveSpecifier(file, specifier, srcDir);
+      const key = `${srcDir}\0${specifier}`;
+      if (!node.resolutions.has(key))
+        node.resolutions.set(key, resolveSpecifier(file, specifier, srcDir));
+      const next = node.resolutions.get(key);
       if (!next || seen.has(next) || /\.(css|json|svg)$/.test(next)) continue;
       seen.add(next);
       queue.push({ file: next, chain: [...chain, next] });
@@ -204,12 +226,18 @@ describe("client bundle purity (docs/architecture/STACK.md §4.2)", () => {
     expect(clientEntries(SRC).length).toBeGreaterThan(50);
   });
 
-  it("no 'use client' module reaches a server-only @shenron entry", () => {
-    const offences = clientEntries(SRC).flatMap((entry) =>
-      forbiddenReaches(entry, SRC).map(describeChain),
-    );
-    expect(offences).toEqual([]);
-  });
+  it(
+    "no 'use client' module reaches a server-only @shenron entry",
+    () => {
+      // Share immutable file analyses only within this graph snapshot.
+      const cache = new Map<string, GraphNode>();
+      const offences = clientEntries(SRC).flatMap((entry) =>
+        forbiddenReaches(entry, SRC, cache).map(describeChain),
+      );
+      expect(offences).toEqual([]);
+    },
+    process.platform === "win32" ? 90_000 : 5000,
+  );
 
   it("detects a client module importing @shenron/pipeline/ai, directly or transitively", () => {
     const dir = mkdtempSync(join(SITE, ".purity-fixture-"));
@@ -242,6 +270,9 @@ describe("client bundle purity (docs/architecture/STACK.md §4.2)", () => {
       const reaches = forbiddenReaches(entries[0] as string, dir);
       expect(reaches).toHaveLength(1);
       expect(reaches[0]?.at(-1)).toBe("@shenron/pipeline/ai");
+      const cache = new Map<string, GraphNode>();
+      expect(forbiddenReaches(entries[0] as string, dir, cache)).toEqual(reaches);
+      expect(forbiddenReaches(entries[0] as string, dir, cache)).toEqual(reaches);
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

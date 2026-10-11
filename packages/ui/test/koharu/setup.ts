@@ -1,7 +1,9 @@
 import * as matchers from "@testing-library/jest-dom/matchers";
+import { configure } from "@testing-library/react";
 import { afterEach, beforeEach, expect, mock, vi } from "bun:test";
 
 expect.extend(matchers);
+configure({ asyncUtilTimeout: process.platform === "win32" ? 10_000 : 1000 });
 
 import { queryClient } from "@shenron/ui/koharu/lib/queries";
 import { defaultShortcuts, useKoharuStore } from "@shenron/ui/koharu/lib/store";

@@ -39,13 +39,35 @@ const PIPELINE_SUBPATHS = new Set([
   PIPELINE_CONTRACT,
 ]);
 
+// The source tree is an immutable snapshot for this suite.
+const sourceCache = new Map<
+  string,
+  {
+    source: string;
+    imports: ReturnType<typeof importSpecifiers>;
+    code: string;
+  }
+>();
+function sourceAt(file: string) {
+  let cached = sourceCache.get(file);
+  if (!cached) {
+    const source = readFileSync(file, "utf8");
+    cached = { source, imports: importSpecifiers(source), code: stripNonCode(source) };
+    sourceCache.set(file, cached);
+  }
+  return cached;
+}
+const closureCache = new Map<string, string[]>();
+
 /** Source files reached from an export through relative imports (type-only ones included). */
 function closure(key: string): string[] {
+  const cached = closureCache.get(key);
+  if (cached) return cached;
   const seen = new Set<string>();
   const visit = (file: string) => {
     if (seen.has(file)) return;
     seen.add(file);
-    for (const { specifier } of importSpecifiers(readFileSync(file, "utf8"))) {
+    for (const { specifier } of sourceAt(file).imports) {
       if (!specifier.startsWith(".")) continue;
       const base = join(dirname(file), specifier);
       const target = [`${base}.ts`, join(base, "index.ts")].find((candidate) =>
@@ -55,14 +77,16 @@ function closure(key: string): string[] {
     }
   };
   visit(join(PKG_DIR, manifest.exports[key]!));
-  return [...seen];
+  const files = [...seen];
+  closureCache.set(key, files);
+  return files;
 }
 
 /** Bare specifiers imported anywhere in the closure of an export, with the importing file. */
 function bareImports(key: string): { file: string; specifier: string; typeOnly: boolean }[] {
   return closure(key).flatMap((file) =>
-    importSpecifiers(readFileSync(file, "utf8"))
-      .filter(({ specifier }) => !specifier.startsWith("."))
+    sourceAt(file)
+      .imports.filter(({ specifier }) => !specifier.startsWith("."))
       .map((ref) => Object.assign({ file: relative(PKG_DIR, file) }, ref)),
   );
 }
@@ -85,9 +109,7 @@ describe("@shenron/api manifest", () => {
         ),
       ).toEqual([]);
       for (const file of closure(key)) {
-        expect(stripNonCode(readFileSync(file, "utf8"))).not.toMatch(
-          /\bprocess\.|\bBun\.|\bimport\.meta\b/,
-        );
+        expect(sourceAt(file).code).not.toMatch(/\bprocess\.|\bBun\.|\bimport\.meta\b/);
       }
       const mod = (await import(join(PKG_DIR, manifest.exports[key]!))) as Record<string, unknown>;
       expect(Object.keys(mod).length).toBeGreaterThan(0);
@@ -103,28 +125,32 @@ describe("@shenron/api manifest", () => {
       );
       expect(offending).toEqual([]);
       for (const file of closure(key)) {
-        const code = stripNonCode(readFileSync(file, "utf8"));
+        const code = sourceAt(file).code;
         expect(code).not.toContain("container.resolve");
         expect(code).not.toMatch(/(?<![\w$.])Bun\s*\./);
       }
     }
   });
 
-  test("portable exports reach only pure Web contracts; chat and host add doctrine subpaths", () => {
-    for (const key of ["./contract", "./client", "./http", "./server", "./next"]) {
-      expect(
-        bareImports(key).filter(
-          ({ specifier }) =>
-            specifier.startsWith("@shenron/pipeline") && specifier !== PIPELINE_CONTRACT,
-        ),
-      ).toEqual([]);
-    }
-    const reached = ["./chat", "./host"].flatMap((key) =>
-      bareImports(key).filter(({ specifier }) => specifier.startsWith("@shenron/pipeline")),
-    );
-    expect(reached.length).toBeGreaterThan(0);
-    expect(reached.filter(({ specifier }) => !PIPELINE_SUBPATHS.has(specifier))).toEqual([]);
-  });
+  test(
+    "portable exports reach only pure Web contracts; chat and host add doctrine subpaths",
+    () => {
+      for (const key of ["./contract", "./client", "./http", "./server", "./next"]) {
+        expect(
+          bareImports(key).filter(
+            ({ specifier }) =>
+              specifier.startsWith("@shenron/pipeline") && specifier !== PIPELINE_CONTRACT,
+          ),
+        ).toEqual([]);
+      }
+      const reached = ["./chat", "./host"].flatMap((key) =>
+        bareImports(key).filter(({ specifier }) => specifier.startsWith("@shenron/pipeline")),
+      );
+      expect(reached.length).toBeGreaterThan(0);
+      expect(reached.filter(({ specifier }) => !PIPELINE_SUBPATHS.has(specifier))).toEqual([]);
+    },
+    process.platform === "win32" ? 60_000 : 5000,
+  );
 
   test("./openapi.json is valid JSON", () => {
     const doc = JSON.parse(

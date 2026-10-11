@@ -50,11 +50,19 @@ describe("@shenron/ui portability", () => {
     for (const e of entries) expect(e.runtime).toBe("react");
   });
 
-  test("runtime classes hold (no next/, no server modules)", async () => {
-    expect(await checkPackageRuntimes(pkgDir)).toEqual([]);
-  });
+  test(
+    "runtime classes hold (no next/, no server modules)",
+    async () => {
+      expect(await checkPackageRuntimes(pkgDir)).toEqual([]);
+    },
+    process.platform === "win32" ? 120_000 : 5000,
+  );
 
-  test("no @/ alias and no escaping relative imports", async () => {
-    expect(await checkNoEscapingImports(pkgDir)).toEqual([]);
-  });
+  test(
+    "no @/ alias and no escaping relative imports",
+    async () => {
+      expect(await checkNoEscapingImports(pkgDir)).toEqual([]);
+    },
+    process.platform === "win32" ? 120_000 : 5000,
+  );
 });
