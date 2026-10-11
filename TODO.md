@@ -21,3 +21,11 @@
 - [x] [Partager Dragon Radar, rétablir ses dix familles et borner ses chargements avec reprise](docs/products/dragon-radar.md).
 - [ ] Unifier le rendu manga web, bureau et mobile ; vérifier visuellement les états et tailles d'écran.
 - [ ] Qualifier les chargements, erreurs, accessibilité et livraison de bout en bout.
+
+## GOAL.md — catalogue Dragon Ball (11 octobre 2026)
+
+- [x] Inventorier PostgreSQL en lecture : 11 lots, identifiants, sources et rapprochement ISBN des 18 Sōshūhen ; rapports privés dans `var/reports/catalog-expansion/`.
+- [x] Vérifier les contrats admin et les dépendances runtime/gel ; préparer les corrections bibliographiques sourcées sans mutation.
+- [ ] Rendre disponible Bun stable 1.4.4 sur Windows et VPS, puis exécuter installation figée et gates exigées par GOAL.md.
+- [ ] Qualifier l'accès éditorial et les writers des éditions/langues/sous-titres ; enrichir et relire les fiches, révisions, réplica et index. Conserver le gel OCR/traduction databooks.
+- [ ] Livrer via la fabrique VPS et Infra DBFR, puis contrôler le catalogue et la chronologie publics.
