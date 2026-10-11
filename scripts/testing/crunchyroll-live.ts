@@ -174,9 +174,10 @@ async function credentials() {
 }
 
 async function main() {
-  if (!process.argv.includes("--run"))
+  const diagnose = process.argv.includes("--diagnose");
+  if (!process.argv.includes("--run") && !diagnose)
     throw new Error("Explicit --run required; no credentials or browser accessed");
-  const account = await credentials();
+  const account = diagnose ? { username: "", password: "" } : await credentials();
   const profile = await mkdtemp(join(tmpdir(), "shenron-crunchyroll-"));
   const child = Bun.spawn(
     [
@@ -204,6 +205,7 @@ async function main() {
     forkHlsPlayback: false,
     status: "failed",
     reason: "not_started",
+    credentialsAccessed: !diagnose,
   };
   try {
     let port = "",
@@ -241,6 +243,21 @@ async function main() {
       await pause(2000);
       const state = await evaluate(
         `(() => { const text=document.body?.innerText||''; const u=new URL(location.href); const title=[...document.querySelectorAll('h1')].map(e=>e.textContent).join(' ')+' '+(navigator.mediaSession?.metadata?.title||'');const visible=e=>!!e&&e.getClientRects().length>0;return {allowed:u.protocol==='https:'&&(u.hostname==='crunchyroll.com'||u.hostname.endsWith('.crunchyroll.com')),identity:u.pathname.includes('${episodeId}'),hasEpisodeTitle:/the god who destroys|dieu de la destruction/i.test(title),adActive:[...document.querySelectorAll('.ad-showing,.video-ads,[data-testid="ad-container"]')].some(visible),authenticatedKnown:[...document.querySelectorAll('a,button')].some(e=>visible(e)&&/^(log out|sign out|déconnexion|se déconnecter)$/i.test(e.textContent.trim())),unsupported:/unsupported browser|browser is not supported|navigateur.*pas pris en charge|navigateur.*non.*compatible/i.test(text),invalidCredentials:/invalid credentials|incorrect password|invalid email|identifiants incorrects|mot de passe incorrect/i.test(text),challenge:/verify you are human|checking your browser|captcha|vérifiez que vous êtes humain|two.factor|verification code|code de vérification/i.test(text),video:!!document.querySelector('video')}; })()`,
+      );
+      report.publicDomDiagnostics = await evaluate(
+        `(() => {const text=document.body?.innerText||'';const labels=/^(log in|sign in|se connecter|connexion)$/i;const links=[...document.querySelectorAll('a')].filter(a=>{try{const u=new URL(a.href);return ['www.crunchyroll.com','sso.crunchyroll.com','auth.crunchyroll.com'].includes(u.hostname)&&u.protocol==='https:'&&/\\/(login|signin)(\\/|$)/i.test(u.pathname)&&labels.test(a.textContent.trim());}catch{return false;}});return {readyState:document.readyState,iframeCount:document.querySelectorAll('iframe').length,explicitLoginLinks:links.length,cookieConsentPresent:/cookie|consentement/i.test(text),blankDocument:text.trim().length===0,browserError:location.protocol==='chrome-error:',accessDenied:/access denied|accès refusé|403 forbidden|permission denied/i.test(text),loginFormPresent:!!document.querySelector('input[type=password]'),bodyElementCount:document.body?.children.length??0};})()`,
+      );
+      const diagnostics = report.publicDomDiagnostics as {
+        accessDenied: boolean;
+        browserError: boolean;
+        loginFormPresent: boolean;
+      };
+      if (diagnostics.accessDenied || diagnostics.browserError) {
+        report.reason = diagnostics.accessDenied ? "public_access_denied" : "browser_error_page";
+        break;
+      }
+      await evaluate(
+        `(() => {const visible=e=>e.getClientRects().length>0;const button=[...document.querySelectorAll('button')].find(e=>visible(e)&&/^(reject all|reject optional cookies|refuser tout|tout refuser|refuser les cookies optionnels)$/i.test(e.textContent.trim()));if(button){button.click();return true;}return false;})()`,
       );
       if (!state.allowed) {
         report.reason = "unexpected_origin";
@@ -311,9 +328,14 @@ async function main() {
       }
       if (!loginClicked)
         loginClicked = await evaluate(
-          `(() => { const a=[...document.querySelectorAll('a')].find(a=>{try{const u=new URL(a.href);return u.protocol==='https:'&&(u.hostname==='sso.crunchyroll.com'||u.hostname==='auth.crunchyroll.com')&&/\\/(login|signin)(\\/|$)/i.test(u.pathname)&&/^(log in|sign in|se connecter|connexion)$/i.test(a.textContent.trim());}catch{return false;}});if(a){a.click();return true;}return false;})()`,
+          `(() => { const a=[...document.querySelectorAll('a')].find(a=>{try{const u=new URL(a.href);return u.protocol==='https:'&&['www.crunchyroll.com','sso.crunchyroll.com','auth.crunchyroll.com'].includes(u.hostname)&&/\\/(login|signin)(\\/|$)/i.test(u.pathname)&&/^(log in|sign in|se connecter|connexion)$/i.test(a.textContent.trim());}catch{return false;}});if(a){a.click();return true;}return false;})()`,
         );
-      if (!submitted) {
+      if (diagnose && diagnostics.loginFormPresent) {
+        report.reason = "normal_login_form_available";
+        report.status = "diagnosed";
+        break;
+      }
+      if (!submitted && !diagnose) {
         const tree = await cdp.call("Page.getFrameTree", {}, sessionId);
         const frames: any[] = [];
         const visit = (node: any) => {
