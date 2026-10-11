@@ -4,3 +4,6 @@
 [submodule "vendor/codex"]
 	path = vendor/codex
 	url = https://github.com/openai/codex.git
+[submodule "vendor/hls.js"]
+	path = vendor/hls.js
+	url = https://github.com/aphrody-labs/hls.js.git
