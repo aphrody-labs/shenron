@@ -47,6 +47,27 @@ test("sitemap resumption prioritizes pending URLs and preserves retriable legacy
     }),
   ).toEqual(["https://www.db-z.com/post-sitemap5.xml", "https://www.db-z.com/post-sitemap.xml"]);
 });
+test("sitemap resumption retains transient failures while rejecting robots and malformed XML failures", () => {
+  expect(
+    pendingSitemaps({
+      sitemaps: [
+        {
+          url: "https://www.db-z.com/post-sitemap4.xml",
+          state: "unavailable",
+          reason: "request_timeout",
+        },
+        {
+          url: "https://www.db-z.com/post-sitemap5.xml",
+          state: "unavailable",
+          reason: "request_failed",
+        },
+        { url: "https://www.db-z.com/bad.xml", state: "invalid", reason: "xml_parse_rejected" },
+        { url: "https://dragonball-super.com/sitemap.xml", state: "robots_unavailable" },
+        { url: "https://evil.test/sitemap.xml", state: "unavailable", reason: "request_timeout" },
+      ],
+    }),
+  ).toEqual(["https://www.db-z.com/post-sitemap4.xml", "https://www.db-z.com/post-sitemap5.xml"]);
+});
 test("sitemap documents distinguish indexes and decode URL entities", () => {
   expect(
     parseSitemap(

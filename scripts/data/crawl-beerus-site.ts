@@ -74,12 +74,16 @@ export function qualifiedSitemapLimits(overrides: Partial<typeof sitemapLimits> 
 
 export function pendingSitemaps(previous: {
   sitemapBudget?: { remaining?: unknown[] };
-  sitemaps?: { url?: string; state?: string }[];
+  sitemaps?: { url?: string; state?: string; reason?: string }[];
 }): string[] {
   const candidates = [
     ...(previous.sitemapBudget?.remaining ?? []),
     ...(previous.sitemaps ?? [])
-      .filter((row) => ["budget_exceeded", "unavailable_or_invalid"].includes(row.state ?? ""))
+      .filter(
+        (row) =>
+          ["budget_exceeded", "unavailable_or_invalid", "unavailable"].includes(row.state ?? "") ||
+          ["request_timeout", "request_failed"].includes(row.reason ?? ""),
+      )
       .map((row) => row.url),
   ];
   return [
@@ -480,7 +484,10 @@ export async function crawl(
           : captured
             ? "invalid"
             : "unavailable";
-      if (state === "budget_exceeded" && !deferredSitemaps.includes(url))
+      if (
+        (state === "budget_exceeded" || state === "unavailable") &&
+        !deferredSitemaps.includes(url)
+      )
         deferredSitemaps.push(url);
       if (captured) Object.assign(captured, { state, reason });
       else
