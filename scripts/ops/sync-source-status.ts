@@ -45,6 +45,8 @@ export async function lookup(url: string): Promise<Record<string, unknown>> {
 export async function run(): Promise<void> {
   const packages: Record<string, unknown>[] = [];
   const crates: Record<string, unknown>[] = [];
+  const vendors: Record<string, unknown>[] = [];
+  const integrations: Record<string, unknown>[] = [];
   for (const folder of (await readdir(join(root, "packages"))).toSorted()) {
     const file = Bun.file(join(root, "packages", folder, "package.json"));
     if (!(await file.exists())) continue;
@@ -62,6 +64,43 @@ export async function run(): Promise<void> {
           : await lookup(registryUrl("npm", manifest.name, manifest.version)),
     });
   }
+  const hlsPath = "vendor/hls.js";
+  const hlsManifest = Bun.file(join(root, hlsPath, "package.json"));
+  if (await hlsManifest.exists()) {
+    const bytes = await hlsManifest.text();
+    const manifest = JSON.parse(bytes) as { name: string; version: string; private?: boolean };
+    if (manifest.name !== "@aphrody/hls.js") throw new Error("Unexpected HLS vendor identity");
+    const head = Bun.spawnSync(["git", "-C", hlsPath, "rev-parse", "HEAD"], { cwd: root });
+    const tree = Bun.spawnSync(["git", "ls-tree", "HEAD", "--", hlsPath], { cwd: root });
+    const gitlink = /^160000 commit ([a-f0-9]{40})\tvendor\/hls\.js$/.exec(
+      tree.stdout.toString().trim(),
+    );
+    vendors.push({
+      path: `${hlsPath}/package.json`,
+      name: manifest.name,
+      version: manifest.version,
+      sourceSha256: new Bun.CryptoHasher("sha256").update(bytes).digest("hex"),
+      commit: head.exitCode === 0 ? head.stdout.toString().trim() : null,
+      gitlink: gitlink?.[1] ?? null,
+      private: manifest.private === true,
+      registry:
+        manifest.private === true
+          ? { state: "private" }
+          : await lookup(registryUrl("npm", manifest.name, manifest.version)),
+    });
+  }
+  const rootManifest = (await Bun.file(join(root, "package.json")).json()) as {
+    workspaces?: { catalog?: Record<string, string> };
+  };
+  const sdkName = "@aphrody/bun-runtime-sdk";
+  const sdkVersion = rootManifest.workspaces?.catalog?.[sdkName];
+  if (sdkVersion && /^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$/.test(sdkVersion))
+    integrations.push({
+      name: sdkName,
+      version: sdkVersion,
+      source: "package.json#workspaces.catalog",
+      registry: await lookup(registryUrl("npm", sdkName, sdkVersion)),
+    });
   for (const folder of (await readdir(join(root, "crates"))).toSorted()) {
     const file = Bun.file(join(root, "crates", folder, "Cargo.toml"));
     if (!(await file.exists())) continue;
@@ -100,11 +139,13 @@ export async function run(): Promise<void> {
     qualification:
       "Registry metadata only; installation, archive integrity and deployment require separate receipts",
     packages,
+    vendors,
+    integrations,
     crates,
   };
   await Bun.write(join(directory, "latest.json"), JSON.stringify(report, null, 2) + "\n");
   console.log(
-    `Source sync: ${packages.length} packages, ${crates.length} crates; var/reports/source-sync/latest.json`,
+    `Source sync: ${packages.length} packages, ${vendors.length} vendors, ${crates.length} crates; var/reports/source-sync/latest.json`,
   );
 }
 if (import.meta.main) await run();

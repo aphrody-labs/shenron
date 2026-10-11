@@ -1,5 +1,18 @@
 # Objectif — enrichissement documentaire Dragon Ball et catalogues médias
 
+## Extension HLS demandée le 11 octobre 2026
+
+Forker hls.js sous `aphrody-labs/hls.js`, le suivre par gitlink dans `vendor/hls.js`,
+migrer ses outils et tests vers Bun puis publier la bibliothèque qualifiée sous
+`@aphrody/hls.js`. Conserver la licence Apache-2.0 et les notices de Dailymotion.
+Répartir les capacités réutilisables dans la partie vidéo du fork Bun ; le lecteur,
+ses états, traductions et intégration restent dans Shenron. Vérifier le code propriétaire
+avant de créer une API native. Les profils complets doivent conserver les fonctions HLS
+amont ; DRM, CMCD et services externes exigent une configuration et leurs propres preuves.
+Les mesures doivent distinguer build, tests et lecture : aucune accélération ne se déduit
+du changement de runtime. Terminer archive, registry, consommateur, worker, image scellée
+et sondes réelles avant de déclarer livraison.
+
 ## Lot lecteur vidéo demandé le 11 octobre 2026 à 14:54 UTC
 
 Comparer via Context7 les packages npm et crates Rust utiles au lecteur, puis livrer des
@@ -12,6 +25,7 @@ seconde ABI FFmpeg exige un défaut démontré et une qualification distincte.
 
 L'image19f503de et son delta R2 sont livrés ; ce nouveau lot attend ses propres gates.
 La qualification datée complète reste dans [REPRISE](docs/reference/root/REPRISE.md).
+
 ## Demande et qualification courantes — 11 octobre 2026, 14:45 UTC
 
 La demande ajoute la collecte Bun des sources Beerus, leurs notices et médias autorisés,
@@ -25,7 +39,6 @@ est restaurée et relue indépendamment ; aucun nouveau plan ne sera appliqué s
 du type JSON. Bun.WebView fonctionne, Bun.Chromium/Bun.Video sont absents. La bascule DNS
 reste bloquée par les preuves DS/TTL et la délégation. Le contrôle complet daté, les compteurs,
 les publications qualifiées et leurs limites vivent dans [REPRISE](docs/reference/root/REPRISE.md).
-
 
 ## Mission
 

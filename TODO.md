@@ -1,6 +1,10 @@
 # Objectif Shenron — interface unique et serveur Bun
 
-## Nouveau lot lecteur vidéo
+## Nouveau lot HLS et lecteur vidéo
+
+- [ ] Qualifier fork Bun HLS, submodule propre et distribution full/light/worker/types.
+- [ ] Publier @aphrody/hls.js et vérifier archive, registre et consommateur.
+- [ ] Livrer les capacités HLS réutilisables dans la partie vidéo propriétaire du fork Bun.
 
 - [ ] Compléter le lecteur via Context7 : clavier focalisé, états/retry, vitesse, pistes et qualité.
 - [ ] Valider en navigateur avec média synthétique, puis commiter/pousser et activer l'image scellée.
@@ -21,7 +25,6 @@ Preuves et limites datées : [REPRISE](docs/reference/root/REPRISE.md). Les noti
 Disney+, Toei, Mangas et TVTokyo ne prouvent pas lecture, région ni langues ; aucun nouveau
 flux pirate ou contournementDRM n'est livré. Bun.WebView est qualifié, les APIs Chromium/Video
 ne sont pas disponibles. Les tâches plus anciennes ci-dessous conservent leur périmètre.
-
 
 - [ ] Aligner le dashboard admin sur les contrats bot, les sondes réelles et le stockage A2A configuré ; qualifier en navigateur puis livrer en production.
 - [ ] Qualifier les bibliothèques FFI de production et les plans natifs RAG/crawl/LLM/entraînement/Docker ; installer les features et les accès Infra manquants sur leurs hôtes avant activation.
