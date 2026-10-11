@@ -17,7 +17,7 @@ article intégral n’est recopié. Le nom `toei-animation` est un outil Shenron
 
 Le transport MCP complet expose `dragonball.toei_animation` pour le plan et
 `dragonball.toei_animation_render` pour le rendu. Les deux sont exclus du serveur public.
-Le backend est installé par le propriétaire : chemins fixes, requête JSON bornée,
+Le backend doit être installé par le propriétaire : chemins fixes, requête JSON bornée,
 capture locale isolée et nettoyage des processus du job. Une capacité absente échoue explicitement.
 Les scripts vivent dans `scripts/video/` ; ils restent en qualification tant que les reçus
 de capture, encodage, publication et backend ne sont pas tous établis.
