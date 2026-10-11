@@ -3,6 +3,38 @@ import { mkdir, realpath, rm, writeFile } from "node:fs/promises";
 import { isAbsolute, join, relative, resolve, sep } from "node:path";
 import { crawl } from "./crawl-beerus-site";
 
+interface CaptureProgress {
+  pages: { state?: string; status?: number }[];
+  media: { state?: string; status?: number }[];
+  sitemaps?: { state?: string; status?: number }[];
+  remainingPages: unknown[];
+  remainingAssets: unknown[];
+  sitemapBudget?: {
+    remaining: unknown[];
+    bytes: number;
+    listedUrls: number;
+    limits: { documents: number; documentBytes: number; bytes: number; urls: number };
+  };
+}
+
+export function captureProgress(manifest: CaptureProgress) {
+  return {
+    incompleteRecords: [...manifest.pages, ...manifest.media, ...(manifest.sitemaps ?? [])].filter(
+      (record) => record.state !== undefined || record.status !== 200,
+    ).length,
+    remainingPages: manifest.remainingPages.length,
+    remainingAssets: manifest.remainingAssets.length,
+    remainingSitemaps: manifest.sitemapBudget?.remaining.length ?? 0,
+    sitemapBudget: manifest.sitemapBudget
+      ? {
+          bytes: manifest.sitemapBudget.bytes,
+          listedUrls: manifest.sitemapBudget.listedUrls,
+          limits: manifest.sitemapBudget.limits,
+        }
+      : undefined,
+  };
+}
+
 function argument(name: string): string | undefined {
   const index = Bun.argv.indexOf(name);
   return index < 0 ? undefined : Bun.argv[index + 1];
@@ -65,24 +97,13 @@ export async function sync(): Promise<void> {
       await mkdir(run, { mode: 0o700 });
       let status: "success" | "failure" = "success";
       let failureType: string | undefined;
-      let incompleteRecords: number | undefined;
-      let remainingPages: number | undefined;
-      let remainingAssets: number | undefined;
+      let progress: ReturnType<typeof captureProgress> | undefined;
       try {
         const capture = join(run, "capture");
         await crawl(capture, { previousManifest });
         const manifestPath = join(capture, "manifest.json");
-        const manifest = (await Bun.file(manifestPath).json()) as {
-          pages: { state?: string; status?: number }[];
-          media: { state?: string; status?: number }[];
-          remainingPages: unknown[];
-          remainingAssets: unknown[];
-        };
-        incompleteRecords = [...manifest.pages, ...manifest.media].filter(
-          (record) => record.state !== undefined || record.status !== 200,
-        ).length;
-        remainingPages = manifest.remainingPages.length;
-        remainingAssets = manifest.remainingAssets.length;
+        const manifest = (await Bun.file(manifestPath).json()) as CaptureProgress;
+        progress = captureProgress(manifest);
         previousManifest = manifestPath;
       } catch (error) {
         failures++;
@@ -103,9 +124,7 @@ export async function sync(): Promise<void> {
         // Success means the bounded crawler completed, not that every URL was captured.
         coverageVerified: false,
         completeCoverage: false,
-        incompleteRecords,
-        remainingPages,
-        remainingAssets,
+        ...progress,
       };
       await writeFile(join(run, "receipt.json"), JSON.stringify(receipt, null, 2), { mode: 0o600 });
       console.log(JSON.stringify(receipt));
