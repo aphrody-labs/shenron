@@ -149,7 +149,10 @@ export async function importDragonBallManga(
       receipt.files.length - 3,
     ]);
     for (const [index, asset] of receipt.files.entries()) {
-      const path = relative(resolve(options.nativeOutputDir, "assets"), resolve(asset.path));
+      const path = relative(
+        resolve(options.nativeOutputDir, "assets"),
+        resolve(asset.path),
+      ).replaceAll("\\", "/");
       if (!new RegExp(`^manga/DB/regular/vol${volume.number}/[0-9]+\\.webp$`).test(path))
         throw new Error("Native volume page path does not match its editorial identity");
       const bytes = await readVerifiedNativeAsset(asset, options.nativeOutputDir);

@@ -9,6 +9,8 @@ minimumReleaseAge = 259200
 # Owner-published Aphrody packages are pinned exactly and released in step with this repository;
 # security fixes (next, nodemailer, undici) track upstream in real time.
 minimumReleaseAgeExcludes = [
+  "@aphrody/bun",
+  "@aphrody/bun-types",
   "@aphrody/agent-browser",
   "@aphrody/bun-runtime",
   "@aphrody/bun-runtime-darwin-aarch64",

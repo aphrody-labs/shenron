@@ -113,18 +113,27 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
         allowPrivateNetwork: true,
       });
       page = await TestPage.create({ cdpUrl: engine.endpoint, baseURL: fixture.url });
-      page.raw.onEvent((method, params) => {
-        const channel = method.startsWith("Runtime.")
-          ? "runtime"
-          : method.startsWith("Network.")
-            ? "network"
-            : null;
-        if (channel && diagnosticCounts[channel] < (channel === "runtime" ? 100 : 400)) {
-          diagnosticCounts[channel]++;
-          diagnostics.push({ method, params });
-        }
-      });
-      await page.raw._send("Page.addScriptToEvaluateOnNewDocument", {
+      for (const method of [
+        "Runtime.exceptionThrown",
+        "Runtime.consoleAPICalled",
+        "Network.requestWillBeSent",
+        "Network.responseReceived",
+        "Network.loadingFailed",
+        "Network.loadingFinished",
+      ])
+        page.raw.view.addEventListener(method, (event) => {
+          const params = (event as Event & { data?: Record<string, unknown> }).data ?? {};
+          const channel = method.startsWith("Runtime.")
+            ? "runtime"
+            : method.startsWith("Network.")
+              ? "network"
+              : null;
+          if (channel && diagnosticCounts[channel] < (channel === "runtime" ? 100 : 400)) {
+            diagnosticCounts[channel]++;
+            diagnostics.push({ method, params });
+          }
+        });
+      await page.raw.cdp("Page.addScriptToEvaluateOnNewDocument", {
         source:
           "globalThis.__qualificationErrors=[];(()=>{const record=value=>{if(__qualificationErrors.length<100)__qualificationErrors.push(String(value))};addEventListener('error',e=>record(e.error?.stack||e.message));addEventListener('unhandledrejection',e=>record(e.reason?.stack||e.reason))})();",
       });

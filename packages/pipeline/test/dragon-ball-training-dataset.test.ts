@@ -152,7 +152,10 @@ test("missing files, modified bytes and escaping symlinks never qualify", async 
     code: "training-dataset-checksum-mismatch",
   });
   await rm(join(f.root, "train.jsonl"));
-  await symlink("/etc/passwd", join(f.root, "train.jsonl"));
+  const outside = await mkdtemp(join(tmpdir(), "shenron-training-outside-"));
+  roots.push(outside);
+  await writeFile(join(outside, "outside.jsonl"), "outside fixture");
+  await symlink(join(outside, "outside.jsonl"), join(f.root, "train.jsonl"), "file");
   expect(await f.port(f.source, f.context)).toEqual({
     state: "blocked",
     code: "training-dataset-path-outside-root",

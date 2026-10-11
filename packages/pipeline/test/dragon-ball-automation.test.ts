@@ -202,8 +202,8 @@ test("native RAG lost acknowledgement retries stable documents after restart and
     expect(JSON.stringify(automation.checkpoints())).not.toContain("PRIVATE SOURCE TEXT");
     expect(JSON.stringify(automation.checkpoints())).not.toContain("PRIVATE RIGHTS EVIDENCE");
   }
-  expect((await stat(ledger)).mode & 0o777).toBe(0o600);
-  expect((await stat(root)).mode & 0o777).toBe(0o700);
+  if (process.platform !== "win32") expect((await stat(ledger)).mode & 0o777).toBe(0o600);
+  if (process.platform !== "win32") expect((await stat(root)).mode & 0o777).toBe(0o700);
 });
 
 test("503, lexical ingest and absent post-ingest retrieval proof block dataset preparation", async () => {
@@ -435,15 +435,21 @@ test("parallelism is bounded, close waits for a pass and provider extensions nev
   automation.close();
 });
 
-test("shared checkpoint directories are refused without changing their permissions", async () => {
-  const { root, ledger } = await fixture();
-  await chmod(root, 0o755);
-  expect(() => new DragonBallAutomation(ledger, {})).toThrow("private directory");
-  expect((await stat(root)).mode & 0o777).toBe(0o755);
-  const source = await readFile(join(import.meta.dir, "../src/dragon-ball/automation.ts"), "utf8");
-  expect(source).not.toMatch(/Bun\.spawn|spawnSync|commandPipeline|runProcess/);
-  expect(new AutomationBlocked("rag-backend-unavailable").code).toBe("rag-backend-unavailable");
-});
+test.skipIf(process.platform === "win32")(
+  "shared checkpoint directories are refused without changing their permissions",
+  async () => {
+    const { root, ledger } = await fixture();
+    await chmod(root, 0o755);
+    expect(() => new DragonBallAutomation(ledger, {})).toThrow("private directory");
+    expect((await stat(root)).mode & 0o777).toBe(0o755);
+    const source = await readFile(
+      join(import.meta.dir, "../src/dragon-ball/automation.ts"),
+      "utf8",
+    );
+    expect(source).not.toMatch(/Bun\.spawn|spawnSync|commandPipeline|runProcess/);
+    expect(new AutomationBlocked("rag-backend-unavailable").code).toBe("rag-backend-unavailable");
+  },
+);
 
 test("restart with a stale RAG proof rechecks the backend and never reuses it to train", async () => {
   const { root, input, ledger } = await fixture();
