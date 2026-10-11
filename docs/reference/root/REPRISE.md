@@ -1,5 +1,22 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## Contrôle du 11 octobre 2026 — reprise après 18:37 UTC
+
+88d8b22a/c4bf8486/ed0dc365 poussés : sitemaps privés bornés et reçus de progression,
+identifiants opaques des actualités officielles préservés. Tests du crawl :12tests,
+58assertions verts sur Windows et VPS Bun1.4.4. Sync précédente arrêtée proprement ;
+`shenron-source-sync-ed0dc365` et PID1993868 confirmés vivants. Premier reçu
+18:36:26–18:37:23UTC : success,21enregistrements incomplets,6sitemaps restants,
+10URL listées ; completeCoverage=false, aucune publication publique ni indexRAG.
+Le compteur réseau sitemaps4233438octets dépasse la limite4194304 d'un chunk reçu :
+ne pas présenter ce reçu comme une couverture complète ou un budget réseau strict.
+
+Infra324cd0e0 poussé et intégré au VPS : reconnaissance qualifiée du superviseur
+détenant le verrou,19tests/87assertions Linux verts. Ancien build10e terminé1 après
+arrêt du seul verrou imbriqué bloqué. Fabrique `shenron-build-ed0dc365` confirmée
+vivante, suites UI en cours ; aucune nouvelle image activée. Deux propositions CMS
+OP/ED et interview revalidées, non publiées : quatre credentials existants répondent401.
+
 ## Contrôle du 11 octobre 2026 à 18:31 UTC — Bun et fabrique
 
 8ac6a49c/a7ab9972 poussés : check:native, lint:native et format:native:check,
