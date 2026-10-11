@@ -560,6 +560,7 @@ export const botDatabooks = bot.table("db_databooks", {
   title: text("title").notNull(),
   titleJa: text("title_ja"),
   author: text("author"),
+  isbn: text("isbn"),
   /** Date de publication (epoch ms) — sert au tri. */
   publishedAt: int("published_at"),
   cover: text("cover"),

@@ -196,6 +196,7 @@ export const WIKI_TABLE_SPECS: Record<string, WikiTableSpec> = {
       "title",
       "titleJa",
       "author",
+      "isbn",
       "publishedAt",
       "cover",
       "description",
