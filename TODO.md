@@ -42,6 +42,6 @@
 - [x] Installer Wrangler 4.149.0 sur DBFR via Bun 1.4.4 et vérifier cloudflared 2026.10.0 ; créer/configurer le tunnel `shenron-dbfr`, credential protégé.
 - [x] Activer tunnel/audit via Infra et authentifier la CLI avec le credential existant protégé ; tunnel sain, API account/R2/Worker/tunnel vérifiées.
 - [x] Qualifier S3 local Windows et DBFR : credentials temporaires limités à Shenron, DPAPI local, renouvellement automatique local et timer Infra ; GET S3 checksum vérifié.
-- [ ] Finaliser et pousser la CLI reproductible de transfert/reprise et son installation.
-- [ ] Copier tout le CDN public vers R2 : 110014 routes/87149 corps dédupliqués, environ31,7Go uniques ; transfert64 workers borné256MiB et reçus SHA256 en cours. Ajouter le delta des assets du dernier déploiement avant bascule.
+- [x] Finaliser et pousser la CLI reproductible de transfert/reprise et son installation (`b9bd4a56`).
+- [x] Copier le CDN initial vers R2 : 87149 corps vérifiés, zéro échec ; delta9fb273 vérifié, 110280 routes/87418 corps couverts. Delta6249 vérifié :110296routes/87431corps, zéro non vérifié ; Worker en lecture seule.
 - [ ] Qualifier DNSSEC/délégation, désactiver l'import du Worker puis basculer le CDN et contrôler HTTPS, ranges, cache et rollback. Zone Cloudflare encore `pending` au dernier contrôle.
