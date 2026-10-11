@@ -1,108 +1,63 @@
 # MCP Shenron et GraphQL
 
-> **Facultatif.** Le MCP enrichit l'instantané embarqué quand il est connecté **et** que l'API derrière lui répond. Sans lui, les skills restent utilisables hors ligne ; la section GraphQL ne dépend pas du MCP.
+Le MCP enrichit les instantanés lorsque son serveur et les API derrière lui
+répondent. Sans connexion, les compétences restent utilisables hors ligne.
 
-## Serveur MCP Dragon Ball
+## Transports et droits
 
-Ce plugin déclare dans `.mcp.json` le serveur stdio `shenron-mcp` (crate
-`crates/shenron-mcp` du dépôt Shenron, binaire à placer dans le `PATH` :
-`cargo build --release -p shenron-mcp`). S'il n'est pas installé, le client
-signale un serveur qui ne démarre pas : c'est sans effet sur les skills, qui
-restent hors ligne. Le même catalogue peut aussi être exposé par un autre client
-(serveur `aphrody-mcp` du plugin `aphrody`) ; les préfixes affichés varient
-(`dragonball_*`, `mcp__…__dragonball_*`) : utiliser le nom et le schéma reçus.
-Le serveur interroge `SHENRON_API_URL` (défaut `https://bot.dragonballfr.com`) et
-`SHENRON_SITE_API_URL` (défaut `https://dragonballfr.com`) : sans réseau, ses
-outils publics échouent et renvoient une erreur à lire comme « source injoignable ».
+Le plugin Claude Code lance `shenron-mcp` en stdio depuis son `PATH`. Les
+manifestes Antigravity et OpenAI déclarent `https://dragonballfr.com/mcp`.
+Le catalogue stdio contient les outils enregistrés par le binaire ; un outil
+administratif exige encore l'authentification officielle de son API cible.
 
-Le serveur possède deux catalogues (37 outils `dragonball.*`, comptés dans les
-sources le 2026-10-01) :
+Le transport HTTP public distingue les requêtes :
 
-- **32 outils publics** pour RAG, sources, couverture, wiki, manga, databooks,
-  canon, chronologie, bot, actualités et A2A. La plupart consultent des données ;
-  `a2a_send` dépose une tâche et a donc un effet externe ; `manga_scanlate` et
-  `databooks_scanlate` n'existent que dans le sidecar du bureau (construit avec
-  `--features koharu`) et exigent les modèles Koharu ; le serveur public ne les liste pas.
-- **5 outils admin** : dépôt databooks, lecture du catalogue des commandes bot,
-  exécution de commande, catalogue et actions de service. Ils appellent les API
-  d'administration Shenron avec leurs secrets d'hôte ; le transport stdio ne
-  fournit pas OAuth.
+- sans autorisation élevée, uniquement les outils publics filtrés en lecture ;
+- avec un Bearer valide ou une IP autorisée par la configuration du serveur,
+  le catalogue élevé ; un Bearer présent mais invalide est refusé ;
+- les outils de scanlation ne sont enregistrés que dans les builds disposant
+  de la feature `koharu`, et restent exclus du catalogue anonyme.
 
-La liste renvoyée par `tools/list` est l'autorité pour le binaire local. Elle ne
-prouve pas que les API éditoriales, le RAG vectoriel ou le LLM sont joignables.
+Ces règles proviennent de `ShenronMcp::public_tools`, du filtre `is_public` et
+du transport HTTP du code Shenron, relus le 11 octobre 2026. Les lectures qui
+exposent des données non publiques ou nécessitent un credential serveur sont
+également élevées. Ne pas déduire le palier du seul nombre d'outils.
 
-### Connexion
+## Catalogue réel
 
-Le client lance `shenron-mcp` (déclaré par le plugin) ou `aphrody-mcp server` ;
-vérifier son catalogue d'outils. Les outils publics ne requièrent pas de jeton Shenron.
-Les outils admin reçoivent leurs secrets API depuis l'environnement autorisé
-du processus ; ne mets jamais un secret dans une URL, `.mcp.json`, le dépôt,
-un script ou une conversation.
+Les noms de protocole sont `dragonball.*` et `dbfr_*`. Certains clients les
+normalisent, par exemple avec un préfixe `mcp__`. Utiliser le nom et le schéma
+réellement reçus dans `tools/list`, pas une ancienne liste copiée.
 
-Les API d'administration vérifient `SHENRON_API_ADMIN_TOKEN` et
-`SHENRON_DATABOOKS_API_TOKEN`. Le plugin ne lit ni ne distribue leurs valeurs.
-Si un appel admin manque d'autorisation, rester sur les outils publics et faire
-corriger l'environnement approuvé par l'opérateur.
+Exemples de recherches du catalogue : `dragonball.rag_search`,
+`dragonball.rag_context`, `dragonball.wiki_search`, `dragonball.manga_search`,
+`dragonball.databooks_search`, `dragonball.canon_check` et
+`dragonball.lexicon_search`. Les annotations et schémas décrivent les effets,
+les champs et les paramètres. Un outil annoncé ne prouve pas que le RAG, les
+modèles ou l'API cible sont joignables.
 
-### Outils publics
+Le binaire lit les origines API de son environnement configuré ; les défauts
+publics sont `https://bot.dragonballfr.com` et `https://dragonballfr.com`.
+Une réponse en erreur reste une source injoignable, sans résultat inventé.
+Les secrets des opérations élevées demeurent dans l'environnement protégé du
+serveur et ne sont jamais distribués dans le plugin ou transmis aux prompts.
 
-Les noms de base, vérifiés dans les sources le 2026-10-05 :
+## A2A et administration
 
-```text
-dragonball.rag_search dragonball.rag_context dragonball.rag_ask
-dragonball.sources dragonball.data_coverage
-dragonball.wiki_search dragonball.wiki_list dragonball.wiki_get dragonball.wiki_categories
-dragonball.manga_search dragonball.manga_volumes dragonball.manga_page
-dragonball.manga_chapter dragonball.manga_chapter_page dragonball.manga_search_pages
-dragonball.manga_scanlate dragonball.timeline dragonball.databooks_search dragonball.databooks_plates
-dragonball.databooks_get dragonball.databooks_scanlate
-dragonball.canon_check dragonball.canon_references
-dragonball.bot_stats dragonball.bot_personas dragonball.bot_leaderboard
-dragonball.bot_commands dragonball.news dragonball.a2a_send
-dragonball.a2a_task_status dragonball.a2a_task_list dragonball.a2a_agent_card
-```
+`dragonball.a2a_send` est un outil **élevé avec effet externe**, exclu du
+catalogue anonyme. Il peut créer une tâche ou transmettre un rapport ; une
+soumission ne prouve pas qu'un pair a exécuté la tâche. Les consultations
+`dragonball.a2a_task_status`, `dragonball.a2a_task_list` et
+`dragonball.a2a_agent_card` lisent leurs schémas courants. Un verdict `FAIT`
+requiert un artefact réel. N'envoyer une tâche que dans le périmètre autorisé.
 
-Anciens noms français, encore enregistrés comme alias dépréciés (même
-comportement, à ne plus utiliser) : `manga_tomes`, `manga_chapitre`,
-`manga_planche`, `manga_recherche`, `chronologie`, `databooks_planches`,
-`databook_relecture_ocr` et `dbfr_textes`.
+Les outils `dragonball.admin_*`, les dépôts `dbfr_*` et les writers d'agents
+restent élevés, avec gardes d'API distinctes. Consulter le catalogue puis le
+[contrat d'administration](../../shenron-admin/SKILL.md) avant toute action.
+L'OCR et la traduction respectent le gel éditorial courant.
 
-Les champs et paramètres sont définis par les schémas MCP reçus du serveur.
-Inspecte ces schémas plutôt que de supposer qu'une ancienne fiche API est à
-jour. `a2a_send` a un effet externe et dépose une tâche ; ne l'appelle que si
-une délégation est demandée. Il ne prouve pas qu'un pair l'a acceptée ou
-terminée. Vérifie son état avec `a2a_task_status` ou `a2a_task_list`.
-
-### Outils admin
-
-Le serveur enregistre ces cinq outils admin (secrets : `SHENRON_API_ADMIN_TOKEN` pour le bot, `SHENRON_DATABOOKS_API_TOKEN` pour le dépôt databooks ; voir `shenron-admin`) :
-
-```text
-dragonball.admin_databooks_deposit
-dragonball.admin_bot_commands
-dragonball.admin_bot_command_execute
-dragonball.admin_services
-dragonball.admin_service_action
-```
-
-Avant un appel qui écrit ou exécute, consulte d'abord le catalogue et le schéma
-de l'outil, vérifie que la demande utilisateur vise bien cette action, puis
-contrôle le résultat séparément. Les données de service sensibles ne doivent
-pas être recopiées dans le contenu MCP. Ce catalogue ne contient pas de chat
-admin ni d'outil générique de génération LLM. Les opérations locales Aphrody
-passent par son CLI.
-
-### Vérifier le catalogue public
-
-```bash
-shenron-mcp --help    # ou : aphrody-mcp --help
-```
-
-`--help` décrit le serveur et rappelle que l'ensemble d'outils
-dépend des fonctionnalités Cargo de la construction. Pour l'appel `tools/list`,
-utilise le client MCP afin qu'il négocie correctement
-le transport et les versions du protocole. Évite de recopier un exemple JSON-RPC
-ancien quand le SDK du client gère déjà l'initialisation.
+Voir aussi le [contrat de synchronisation](../../../references/synchronization.md)
+pour la distinction entre MCP, A2A et configuration Infra.
 
 ## GraphQL Shenron
 

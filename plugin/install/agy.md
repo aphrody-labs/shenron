@@ -175,8 +175,8 @@ système, `address_as` vide.
    premier : `rag_search` pour les passages, `rag_context` pour un contexte à citer,
    `rag_ask` pour une réponse rédigée, toujours avec les sources.
 5. Outils élevés : liste les outils du MCP `shenron`. Depuis une IP d'administration (ou avec
-   un jeton porteur), tu dois en voir 78, dont `dragonball.a2a_send`, `dbfr_deposit` et les
-   outils `dragonball.admin_*` ; un appelant anonyme n'en voit que 48, tous en lecture.
+   un jeton porteur valide), vérifie la présence de `dragonball.a2a_send`, `dbfr_deposit` et des
+   outils `dragonball.admin_*` selon le build. Un appelant anonyme reçoit uniquement le catalogue filtré en lecture ; les effectifs peuvent évoluer.
    Rapporte le palier obtenu (anonyme ou élevé) et le nombre d'outils, sans afficher aucun jeton.
 6. Affiche un récapitulatif en tableau : Aphrody (version avant, après), Bun, CLI `m3` et kit
    `~/.shenron-kit` (paquets installés ou refusés), plugin (version {{version}}), MCP
@@ -186,7 +186,7 @@ système, `address_as` vide.
 
 ## 8. Pair A2A Shenron
 
-agy n'a pas de client A2A natif : il rejoint le hub A2A de Shenron par le MCP `shenron`.
+Ce parcours rejoint le hub A2A de Shenron par les outils MCP `shenron` réellement connectés ; il ne suppose pas un client A2A natif dans agy.
 
 1. Lis la carte `{{origin}}/.well-known/agent-card.json` (nom `shenron-dragonball`, interface
    JSON-RPC A2A 1.0 sur `{{origin}}/api/a2a`). Note-la dans le récapitulatif.
