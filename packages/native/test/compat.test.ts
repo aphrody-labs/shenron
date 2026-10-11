@@ -93,6 +93,21 @@ describe("Bun runtime", () => {
     );
     expect(() => checkBunRuntime("1.4.2", ">=1.4.2")).not.toThrow();
   });
+
+  test("the minimum accepts newer fork builds without lowering the requirement", () => {
+    expect(() => checkBunRuntime("1.4.2", ">=1.4.3")).toThrow();
+    expect(() => checkBunRuntime("1.4.3", ">=1.4.3")).not.toThrow();
+    expect(() => checkBunRuntime("1.4.4-debug", ">=1.4.3")).not.toThrow();
+    expect(() => checkBunRuntime("1.4.3-debug", ">=1.4.3")).toThrow();
+    expect(() => checkBunRuntime("1.4.4-debug", "^1.4.3")).toThrow();
+  });
+
+  test("invalid runtime versions cannot satisfy the minimum", () => {
+    for (const version of ["", "garbage", "v1.4.4", "1.4", "01.4.4", "1.4.4-debug..", "1.4.4-01"]) {
+      expect(() => checkBunRuntime(version, ">=1.4.3")).toThrow("@shenron/native requires Bun");
+    }
+    expect(() => checkBunRuntime("1.4.4-debug+aphrody", ">=1.4.3")).not.toThrow();
+  });
 });
 
 describe("generated table", () => {

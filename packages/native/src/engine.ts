@@ -94,7 +94,20 @@ export function resolveNativeLibraryPath(): string | undefined {
 
 /** Refuse a Bun outside `engines.bun`: `bun:ffi` trampolines are compiled by the runtime. */
 export function checkBunRuntime(version = Bun.version, range = SHENRON_NATIVE_BUN_RANGE): void {
-  if (!Bun.semver.satisfies(version, range)) {
+  const validVersion =
+    /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/.test(
+      version,
+    );
+  // Minimum-only requirements also admit a newer fork build with a prerelease suffix.
+  // General ranges retain their prerelease rules, and a prerelease of the minimum stays older.
+  const minimum = /^>=\s*((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))$/.exec(range);
+  if (
+    !validVersion ||
+    !(
+      Bun.semver.satisfies(version, range) ||
+      (minimum && Bun.semver.order(version, minimum[1]!) >= 0)
+    )
+  ) {
     throw new Error(`@shenron/native requires Bun ${range}; this process runs Bun ${version}`);
   }
 }
