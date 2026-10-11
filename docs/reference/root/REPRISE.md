@@ -1,5 +1,21 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## Contrôle S3 et robots — 11 octobre 2026 après 18:50 UTC
+
+`S3Client` est natif dans Bun1.4.4 local/VPS et Bun1.4.3 DBFR ; Shenron utilise déjà
+le client natif dans le propriétaire de transfert S3/R2. Aucun SDK/package manquant
+constaté dans le crawl, packages/media ou les scripts de transfert. Le profil protégé
+shenron-cdn reste géré par le renouvellement Infra. Les403 S3 ne prouvent pas une
+dépendance manquante : robots officiel renvoie une réponse Amazon S3 AccessDenied.
+
+Commit ed0763a9 traite selon RFC9309 §2.3.1 les réponses robots 4xx comme ressource
+indisponible, 5xx/réseau/429 comme origine inaccessible, et suit les règles parseables
+en 2xx. Tests15/73, TS scripts, lint et format verts ; capture VPS terminée :4 pages
+officielles200,147assets inventoriés, officiel robots403 explicitement consigné.
+Le crawl reste partiel : robots403 source, contenu dynamique potentiellement absent,
+aucune preuve de backend interne, et actifs vidéo protégés exclus. Une nouvelle
+synchronisation périodique tourne ; son premier reçu reste à vérifier.
+
 ## Contrôle du 11 octobre 2026 — reprise après 18:37 UTC
 
 88d8b22a/c4bf8486/ed0dc365 poussés : sitemaps privés bornés et reçus de progression,
