@@ -54,6 +54,13 @@ L'index SQLite privé `capture-index.sqlite` contient les captures, provenances 
 recherche FTS5 du texte capturé. Cet index de collecte n'active ni RAG, entraînement,
 canon, PostgreSQL public, Redis public ni publication de corps sur le CDN. Une image
 HTTP200 reste `publicationRights=unreviewed`, sans droit public déduit du statut.
+La décision éditoriale est fournie par l'environnement protégé du job, jamais par une
+valeur codée dans le crawler : `SHENRON_CRAWL_PUBLICATION_RIGHTS` accepte
+`unreviewed`, `approved` ou `rejected` et vaut `unreviewed` par défaut ;
+`SHENRON_CRAWL_PUBLIC_IMAGES_PERMITTED` accepte `true` ou `false` et vaut `false` par
+défaut. La valeur `true` pour les images exige explicitement `approved`, sinon le crawl
+échoue avant toute capture. Ces variables décrivent l'intention de l'administrateur dans
+le reçu ; elles ne publient pas à elles seules un corps sur PostgreSQL, Redis ou le CDN.
 
 Le runner `scripts/data/sync-beerus-site.ts` exige une sortie externe au dépôt, prend
 un verrou exclusif et conserve chaque exécution dans un dossier daté unique. Exemple

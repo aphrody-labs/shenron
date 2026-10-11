@@ -23,6 +23,35 @@ type InventoryEntry = {
   resolutionUnverified: boolean;
 };
 type CaptureIdentity = { url: string; sha256?: string; status?: number; state?: string };
+export type CrawlPublicationRights = "unreviewed" | "approved" | "rejected";
+export type CrawlPublicationConfig = {
+  publicationRights: CrawlPublicationRights;
+  publicImagesPermitted: boolean;
+};
+
+/**
+ * Resolve the editorial decision from the protected job environment.
+ * The conservative defaults keep captures private until an administrator opts in.
+ */
+export function crawlPublicationConfig(
+  env: Record<string, string | undefined> = Bun.env,
+): CrawlPublicationConfig {
+  const rights = env.SHENRON_CRAWL_PUBLICATION_RIGHTS ?? "unreviewed";
+  if (rights !== "unreviewed" && rights !== "approved" && rights !== "rejected") {
+    throw new Error("SHENRON_CRAWL_PUBLICATION_RIGHTS must be unreviewed, approved, or rejected");
+  }
+  const images = env.SHENRON_CRAWL_PUBLIC_IMAGES_PERMITTED ?? "false";
+  if (images !== "true" && images !== "false") {
+    throw new Error("SHENRON_CRAWL_PUBLIC_IMAGES_PERMITTED must be true or false");
+  }
+  const publicImagesPermitted = images === "true";
+  if (publicImagesPermitted && rights !== "approved") {
+    throw new Error(
+      "SHENRON_CRAWL_PUBLIC_IMAGES_PERMITTED=true requires approved publication rights",
+    );
+  }
+  return { publicationRights: rights, publicImagesPermitted };
+}
 export function compareCaptures(previous: CaptureIdentity[], current: CaptureIdentity[]) {
   const before = new Map(previous.map((row) => [row.url, row]));
   const after = new Map(current.map((row) => [row.url, row]));
@@ -317,6 +346,7 @@ export async function crawl(
 ): Promise<void> {
   const directory = resolve(output);
   const limits = qualifiedSitemapLimits(options.sitemapLimits);
+  const publication = crawlPublicationConfig();
   const previous = options.previousManifest
     ? JSON.parse(await readFile(resolve(options.previousManifest), "utf8"))
     : undefined;
@@ -680,8 +710,8 @@ export async function crawl(
         bytes: r.bytes.byteLength,
         sha256: digest,
         fetchedAt: new Date().toISOString(),
-        publicCandidate: false,
-        publicationRights: "unreviewed",
+        publicCandidate: publication.publicImagesPermitted,
+        publicationRights: publication.publicationRights,
       });
       if (r.status === 200 && r.type.includes("text/css")) {
         for (const match of new TextDecoder()

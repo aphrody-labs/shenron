@@ -15,7 +15,30 @@ import {
   pendingSitemaps,
   acceptBodyChunk,
   resumableUrls,
+  crawlPublicationConfig,
 } from "./crawl-beerus-site";
+
+test("crawl publication rights are explicit and conservative by default", () => {
+  expect(crawlPublicationConfig({})).toEqual({
+    publicationRights: "unreviewed",
+    publicImagesPermitted: false,
+  });
+  expect(
+    crawlPublicationConfig({
+      SHENRON_CRAWL_PUBLICATION_RIGHTS: "approved",
+      SHENRON_CRAWL_PUBLIC_IMAGES_PERMITTED: "true",
+    }),
+  ).toEqual({ publicationRights: "approved", publicImagesPermitted: true });
+  expect(() => crawlPublicationConfig({ SHENRON_CRAWL_PUBLICATION_RIGHTS: "pending" })).toThrow(
+    "SHENRON_CRAWL_PUBLICATION_RIGHTS",
+  );
+  expect(() =>
+    crawlPublicationConfig({
+      SHENRON_CRAWL_PUBLICATION_RIGHTS: "unreviewed",
+      SHENRON_CRAWL_PUBLIC_IMAGES_PERMITTED: "true",
+    }),
+  ).toThrow("requires approved publication rights");
+});
 
 test("robots resource status follows RFC 9309 without treating an outage as permission", () => {
   expect(robotsAccess(200)).toBe("rules");
