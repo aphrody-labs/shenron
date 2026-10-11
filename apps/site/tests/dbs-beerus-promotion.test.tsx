@@ -88,7 +88,9 @@ test("the confirmed 2026 episode has its own local episode route and no fabricat
     expect(episode.number).toBe(1);
     expect(episode.href).toBe("/wiki/episodes/series/DBS_BEERUS/1");
     expect(episode.title).toBe(dictionaries[locale].dbsBeerus.episodeTitle);
-    expect(dictionaries[locale].dbsBeerus.episodeContinuity).toContain("131");
+    expect(dictionaries[locale].dbsBeerus.episodeContinuity).toContain("2015");
+    expect(dictionaries[locale].dbsBeerus.episodeContinuity).toContain("2018");
+    expect(dictionaries[locale].dbsBeerus.episodeContinuity).not.toContain("131");
   }
   locale = "fr";
 });
