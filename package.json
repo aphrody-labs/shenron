@@ -167,7 +167,8 @@
     "test:integration": "bun scripts/testing/integration/run.ts",
     "dev:remote": "bun scripts/dev/remote-dev.ts up",
     "dev:env": "bun scripts/dev/env-pull.ts",
-    "gates:remote": "bun scripts/dev/remote-dev.ts gates"
+    "gates:remote": "bun scripts/dev/remote-dev.ts gates",
+    "ship": "bun scripts/ops/ship.ts"
   },
   "devDependencies": {
     "@aphrody/agent-browser": "catalog:",
