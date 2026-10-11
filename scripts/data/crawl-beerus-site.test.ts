@@ -14,6 +14,7 @@ import {
   qualifiedSitemapLimits,
   pendingSitemaps,
   acceptBodyChunk,
+  resumableUrls,
 } from "./crawl-beerus-site";
 
 test("robots resource status follows RFC 9309 without treating an outage as permission", () => {
@@ -192,6 +193,36 @@ test("source traversal stays on public approved hosts and the requested English 
   expect(
     approvedUrl("https://127.0.0.1/a", "https://dragonball-super.com/en/", false),
   ).toBeUndefined();
+});
+test("bounded crawl queues resume only deduplicated URLs inside the approved page and asset scopes", () => {
+  expect(
+    resumableUrls(
+      [
+        "https://dragonball-super.com/en/updates/detail.html?id=beerus-01",
+        "https://dragonball-super.com/en/updates/detail.html?id=beerus-01",
+        "https://dragonball-super.com/private/admin",
+        "https://evil.test/en/",
+        "https://www.db-z.com/another-article/",
+      ],
+      "https://dragonball-super.com/en/",
+      true,
+    ),
+  ).toEqual(["https://dragonball-super.com/en/updates/detail.html?id=beerus-01"]);
+  expect(
+    resumableUrls(
+      [
+        "https://dragonball-super.com/en/assets/site.css",
+        "https://dragonball-super.com/en/assets/site.css",
+        "https://www.db-z.com/wp-content/site.css",
+        "https://www.db-z.com/private/site.css",
+      ],
+      "https://dragonball-super.com/en/",
+      false,
+    ),
+  ).toEqual([
+    "https://dragonball-super.com/en/assets/site.css",
+    "https://www.db-z.com/wp-content/site.css",
+  ]);
 });
 test("official update identity survives normalization without tracking parameters", () => {
   for (const id of ["w8dcvq713", "c9501ns2dfyu"])

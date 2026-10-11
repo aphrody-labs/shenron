@@ -265,6 +265,18 @@ export function approvedUrl(raw: string, base: string, page: boolean): string | 
     return;
   }
 }
+
+export function resumableUrls(values: unknown, base: string, page: boolean): string[] {
+  if (!Array.isArray(values)) return [];
+  return [
+    ...new Set(
+      values
+        .filter((value): value is string => typeof value === "string")
+        .map((value) => approvedUrl(value, base, page))
+        .filter((value): value is string => !!value),
+    ),
+  ];
+}
 async function read(
   url: string,
   byteLimit = 16 * 1024 * 1024,
@@ -314,14 +326,20 @@ export async function crawl(
       !Array.isArray(previous.pages) ||
       !Array.isArray(previous.media) ||
       (previous.sitemaps !== undefined && !Array.isArray(previous.sitemaps)) ||
+      (previous.remainingPages !== undefined && !Array.isArray(previous.remainingPages)) ||
+      (previous.remainingAssets !== undefined && !Array.isArray(previous.remainingAssets)) ||
       (previous.sitemapBudget?.remaining !== undefined &&
         !Array.isArray(previous.sitemapBudget.remaining)))
   )
     throw new Error("Previous capture manifest invalid");
   await mkdir(join(directory, "bodies"), { recursive: true, mode: 0o700 });
-  const frontier = [...seeds];
+  // Sitemap/page discovery is intentionally split over bounded passes. Keep only
+  // approved URLs from the prior pass so a successful partial crawl can progress.
+  const frontier = [
+    ...new Set([...seeds, ...resumableUrls(previous?.remainingPages, seeds[0]!, true)]),
+  ];
   const seen = new Set<string>();
-  const assets = new Set<string>();
+  const assets = new Set(resumableUrls(previous?.remainingAssets, seeds[0]!, false));
   const pages: Record<string, unknown>[] = [];
   const media: Record<string, unknown>[] = [];
   const corpus: Record<string, unknown>[] = [];
