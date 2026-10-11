@@ -11,6 +11,7 @@ function required(name: string): string {
 
 async function requireHumanReview(): Promise<void> {
   const path = required("SHENRON_HUMAN_REVIEW_RECEIPT");
+  const reviewerEmail = required("SHENRON_HUMAN_REVIEWER_EMAIL").toLowerCase();
   const receipt = (await Bun.file(path)
     .json()
     .catch(() => undefined)) as
@@ -18,6 +19,7 @@ async function requireHumanReview(): Promise<void> {
     | undefined;
   if (
     !receipt?.reviewedBy?.trim() ||
+    receipt.reviewedBy.toLowerCase() !== reviewerEmail ||
     !receipt.reviewedAt ||
     receipt.decision !== "approved" ||
     !receipt.capture?.trim()
