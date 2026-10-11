@@ -1,8 +1,8 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 # shenron-gpu
 
-Shared WGPU adapter/device management, render targets, readback and Vello integration for Shenron. GPU availability is determined by the consuming application.
+Gestion WGPU partagée pour Shenron : sélection de l'adaptateur et du périphérique, cibles de rendu, relecture des pixels et intégration Vello. L'application consommatrice détermine la disponibilité du GPU.
 
-Source: [aphrody-labs/shenron](https://github.com/aphrody-labs/shenron).
+Source : [aphrody-labs/shenron](https://github.com/aphrody-labs/shenron).
 
-Licensed under Apache-2.0.
+Sous licence Apache-2.0.
