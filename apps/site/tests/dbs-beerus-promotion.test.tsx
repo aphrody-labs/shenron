@@ -74,7 +74,8 @@ test("the 2026 page separates the original 131 episodes and links the new episod
     expect(html).toContain("/news/dragon-ball-super-beerus-adn-vostfr-18h-2026-10-11");
     expect(html).toContain('href="https://dragonball-super.com/en/"');
     expect(html).not.toContain("<video");
-    expect(html).not.toContain("iframe");
+    expect(html).toContain("youtube-nocookie.com/embed/p7j-iOhl8GI");
+    expect(html).toContain("/assets/dbz/characters/Beerus_DBS_Broly_Artwork.webp");
     expect(html).not.toContain("/wiki/episodes/445");
   }
   locale = "fr";
