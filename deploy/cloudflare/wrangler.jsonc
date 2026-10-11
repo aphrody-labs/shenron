@@ -8,6 +8,7 @@
   "vars": {
     "IMPORT_ENABLED": "false",
     "VERIFY_UPLOADS": "false",
+    "DYNAMIC_ORIGIN": "",
     "MANIFEST_PREFIX": "_migration/manifests/",
     "MANIFEST_SHARD_HASHES_0": {},
     "MANIFEST_SHARD_HASHES_1": {},

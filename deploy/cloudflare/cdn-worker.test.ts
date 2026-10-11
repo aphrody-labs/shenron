@@ -82,6 +82,106 @@ function request(path = "/fonts/a.woff2", method = "GET", headers?: HeadersInit)
 }
 
 describe("CDN manifest and import", () => {
+  test("CDN root, liveness and robots retain their public behavior without origin access", async () => {
+    const env = { CDN: new Bucket() };
+    const offline: OriginFetch = async () => {
+      throw new Error("must not fetch");
+    };
+    const root = await handleCdn(request("/"), env, offline);
+    expect(root.status).toBe(302);
+    expect(root.headers.get("Location")).toBe("https://dragonballfr.com/");
+    const health = await handleCdn(request("/health"), env, offline);
+    expect(await health.text()).toBe("cdn ok\n");
+    expect(health.headers.get("Cache-Control")).toBe("no-store");
+    expect(await (await handleCdn(request("/health", "HEAD"), env, offline)).text()).toBe("");
+    expect(await (await handleCdn(request("/robots.txt"), env, offline)).text()).toBe(
+      "User-agent: *\nAllow: /\n",
+    );
+  });
+  test("dynamic routes use only the fixed tunnel origin and never forward credentials", async () => {
+    const env = { CDN: new Bucket(), DYNAMIC_ORIGIN: "https://origin-cdn.dragonballfr.com" };
+    const seen: Array<{ url: string; init: RequestInit }> = [];
+    const origin: OriginFetch = async (url, init) => {
+      seen.push({ url, init });
+      return new Response("public", {
+        headers: { "Content-Type": "image/webp", "Set-Cookie": "private" },
+      });
+    };
+    const r = await handleCdn(
+      request("/_next/image?url=%2Fwiki%2Fa.png&w=384&q=70", "GET", {
+        Cookie: "private",
+        Authorization: "Bearer private",
+        Accept: "image/webp",
+      }),
+      env,
+      origin,
+    );
+    expect(await r.text()).toBe("public");
+    expect(r.headers.has("Set-Cookie")).toBe(false);
+    expect(seen[0]!.url).toBe(
+      "https://origin-cdn.dragonballfr.com/_next/image?url=%2Fwiki%2Fa.png&w=384&q=70",
+    );
+    expect(seen[0]!.init.redirect).toBe("manual");
+    expect(new Headers(seen[0]!.init.headers).has("Cookie")).toBe(false);
+    expect(new Headers(seen[0]!.init.headers).has("Authorization")).toBe(false);
+    expect(new Headers(seen[0]!.init.headers).has("Host")).toBe(false);
+    expect(
+      (
+        await handleCdn(
+          request("/api/health"),
+          { ...env, DYNAMIC_ORIGIN: "https://evil.example" },
+          origin,
+        )
+      ).status,
+    ).toBe(503);
+    expect(seen).toHaveLength(1);
+  });
+  test("origin failures preserve the health fallback and invalid image requests never reach it", async () => {
+    const env = { CDN: new Bucket(), DYNAMIC_ORIGIN: "https://origin-cdn.dragonballfr.com" };
+    let calls = 0;
+    const origin: OriginFetch = async () => {
+      calls++;
+      throw new Error("network");
+    };
+    const down = await handleCdn(request("/api/health"), env, origin);
+    expect(down.status).toBe(503);
+    expect(await down.text()).toBe('{"status":"down","cdn":"ok"}\n');
+    const image = await handleCdn(
+      request("/_next/image?url=%2Fwiki%2Fa.png&w=384&q=70"),
+      env,
+      origin,
+    );
+    expect(image.status).toBe(302);
+    expect(image.headers.get("Location")).toBe("https://cdn.dragonballfr.com/wiki/a.png");
+    for (const query of [
+      "url=http%3A%2F%2F127.0.0.1%2Fsecret&w=384&q=70",
+      "url=%2F_objects%2Fsecret&w=384&q=70",
+      "url=%2Fa.png&w=384&q=70&token=secret",
+      "url=%2Fa.png&w=384&w=384&q=70",
+      "url=%2Fa.png&w=0&q=70",
+    ])
+      expect((await handleCdn(request("/_next/image?" + query), env, origin)).status).toBe(400);
+    expect((await handleCdn(request("/api/private"), env, origin)).status).toBe(404);
+    expect(calls).toBe(2);
+  });
+  test("image fallback redirects only to the requested public source", async () => {
+    const env = { CDN: new Bucket(), DYNAMIC_ORIGIN: "https://origin-cdn.dragonballfr.com" };
+    const input = request("/_next/image?url=%2Fwiki%2Fa.png&w=384&q=70");
+    const okay = await handleCdn(
+      input,
+      env,
+      async () => new Response(null, { status: 302, headers: { Location: "/wiki/a.png" } }),
+    );
+    expect(okay.status).toBe(302);
+    expect(okay.headers.get("Location")).toBe("https://cdn.dragonballfr.com/wiki/a.png");
+    const wrong = await handleCdn(
+      input,
+      env,
+      async () =>
+        new Response(null, { status: 302, headers: { Location: "https://evil.example/" } }),
+    );
+    expect(wrong.status).toBe(503);
+  });
   test("REST uploads are checksum-verified before attaching serving metadata", async () => {
     class UploadedBucket extends Bucket {
       attached = false;

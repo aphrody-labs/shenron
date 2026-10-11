@@ -34,6 +34,7 @@ export interface CdnEnvironment {
   CDN: CdnBucket;
   IMPORT_ENABLED?: string;
   VERIFY_UPLOADS?: string;
+  DYNAMIC_ORIGIN?: string;
   MANIFEST_PREFIX?: string;
   MANIFEST_SHARD_HASHES?: Record<string, string>;
   MANIFEST_SHARD_HASHES_0?: Record<string, string>;
@@ -186,6 +187,122 @@ function responseHeaders(entry: ManifestEntry): Headers {
   });
 }
 
+function imageSource(value: string): URL | undefined {
+  if (value.length > 2048 || (!value.startsWith("/") && !/^https?:\/\//.test(value))) return;
+  try {
+    const source = new URL(value, ORIGIN);
+    if (
+      source.username ||
+      source.password ||
+      source.port ||
+      source.hash ||
+      source.hostname === "localhost" ||
+      !source.hostname.includes(".") ||
+      /^[\d.]+$/.test(source.hostname) ||
+      source.hostname.includes(":") ||
+      (source.protocol !== "https:" &&
+        !(source.protocol === "http:" && source.hostname === "comic.dragonballcn.com")) ||
+      !publicPath(source)
+    )
+      return;
+    return source;
+  } catch {
+    return;
+  }
+}
+
+async function dynamicRoute(
+  request: Request,
+  env: CdnEnvironment,
+  fetchOrigin: OriginFetch,
+): Promise<Response | undefined> {
+  const url = new URL(request.url);
+  const headers = new Headers({ "Cache-Control": "no-store", "Access-Control-Allow-Origin": "*" });
+  const text = (body: string, type = "text/plain; charset=utf-8", status = 200) => {
+    headers.set("Content-Type", type);
+    return new Response(request.method === "HEAD" ? null : body, { status, headers });
+  };
+  if (url.pathname === "/") {
+    headers.set("Location", "https://dragonballfr.com/");
+    return new Response(null, { status: 302, headers });
+  }
+  if (url.pathname === "/health") return text("cdn ok\n");
+  if (url.pathname === "/robots.txt") return text("User-agent: *\nAllow: /\n");
+  if (url.pathname !== "/api/health" && url.pathname !== "/_next/image") return;
+  const isImage = url.pathname === "/_next/image";
+  let source: URL | undefined;
+  const target = new URL(url.pathname, "https://origin-cdn.dragonballfr.com");
+  if (isImage) {
+    if ([...url.searchParams.keys()].some((key) => !["url", "w", "q"].includes(key)))
+      return failure(400);
+    if (["url", "w", "q"].some((key) => url.searchParams.getAll(key).length !== 1))
+      return failure(400);
+    source = imageSource(url.searchParams.get("url")!);
+    const width = Number(url.searchParams.get("w"));
+    const quality = Number(url.searchParams.get("q"));
+    if (
+      !source ||
+      !Number.isInteger(width) ||
+      width < 1 ||
+      width > 8192 ||
+      !Number.isInteger(quality) ||
+      quality < 1 ||
+      quality > 100
+    )
+      return failure(400);
+    for (const key of ["url", "w", "q"]) target.searchParams.set(key, url.searchParams.get(key)!);
+  }
+  const unavailable = () => {
+    if (isImage && source) {
+      headers.set("Location", source.href);
+      return new Response(null, { status: 302, headers });
+    }
+    return text('{"status":"down","cdn":"ok"}\n', "application/json", 503);
+  };
+  if (env.DYNAMIC_ORIGIN !== "https://origin-cdn.dragonballfr.com") return unavailable();
+  try {
+    // Next retains ownership of its image source allowlist and optimizer constraints.
+    const response = await fetchOrigin(target.href, {
+      method: request.method,
+      redirect: "manual",
+      signal: AbortSignal.timeout(isImage ? 30000 : 5000),
+      headers: {
+        Accept: isImage ? (request.headers.get("Accept") ?? "image/*") : "application/json",
+      },
+    });
+    if (response.status >= 500) {
+      await response.body?.cancel();
+      return unavailable();
+    }
+    if (response.status >= 300 && response.status < 400) {
+      const location = response.headers.get("Location");
+      const redirect = location && source ? new URL(location, ORIGIN) : undefined;
+      await response.body?.cancel();
+      if (!redirect || redirect.href !== source!.href) return failure(503);
+      headers.set("Location", redirect.href);
+      return new Response(null, { status: response.status, headers });
+    }
+    for (const key of [
+      "Content-Type",
+      "Content-Length",
+      "Cache-Control",
+      "ETag",
+      "Last-Modified",
+      "Vary",
+    ]) {
+      const value = response.headers.get(key);
+      if (value) headers.set(key, value);
+    }
+    if (!isImage) headers.set("Cache-Control", "no-store");
+    return new Response(request.method === "HEAD" ? null : response.body, {
+      status: response.status,
+      headers,
+    });
+  } catch {
+    return unavailable();
+  }
+}
+
 function failure(status: number): Response {
   return new Response(null, { status, headers: { "Cache-Control": "no-store" } });
 }
@@ -221,6 +338,8 @@ export async function handleCdn(
       headers: { Allow: "GET, HEAD", "Cache-Control": "no-store" },
     });
   }
+  const dynamic = await dynamicRoute(request, env, fetchOrigin);
+  if (dynamic) return dynamic;
   const path = publicPath(new URL(request.url));
   if (!path) return failure(404);
   try {
