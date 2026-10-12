@@ -2604,6 +2604,8 @@ export class ApiServer {
                 lineCount: p.lineCount,
                 lines: p.lines,
                 text: p.text,
+                koharuPageId: p.koharuPageId,
+                koharuRevision: p.koharuRevision,
               })),
             };
           }),
@@ -2634,6 +2636,8 @@ export class ApiServer {
               lineCount: page.lineCount,
               lines: page.lines,
               text: page.text,
+              koharuPageId: page.koharuPageId,
+              koharuRevision: page.koharuRevision,
             };
           }),
 
