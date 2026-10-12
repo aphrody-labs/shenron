@@ -34,6 +34,9 @@ if (process.argv.includes("--smoke")) {
   const fixtured = Object.keys(fixture).filter((name) => !process.env[name]);
   for (const name of fixtured) process.env[name] = fixture[name];
   const started = performance.now();
+  // Load the canvas fallback before the command barrel: several command modules import
+  // the native renderer during module evaluation, including the smoke path.
+  await import("./lib/preload");
   await import("reflect-metadata");
   const { MetadataStorage } = await import("discordx");
   const { getBotRuntimeInfo } = await import("@aphrody/discord-kit");
