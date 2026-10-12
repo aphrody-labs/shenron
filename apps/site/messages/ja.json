@@ -1717,6 +1717,11 @@
     "models": {
       "title": "モデル",
       "description": "このパソコンのチャットモデルです。オンラインモデルは質問をこのマシンの外へ送信します。",
+      "catalogTitle": "Aphrody AI カタログ",
+      "catalogDescription": "このパソコンに実際にある Aphrody AI カタログとエージェントです。",
+      "agentsLabel": "ホストにインストールされたエージェント",
+      "installed": "インストール済み",
+      "missing": "未検出",
       "checking": "モデルを確認しています…",
       "unavailable": "このサーバーではモデル一覧を利用できません。",
       "failed": "モデル一覧を読み込めないか、操作に失敗しました。",

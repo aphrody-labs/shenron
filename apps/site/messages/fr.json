@@ -1717,6 +1717,11 @@
     "models": {
       "title": "Modèles",
       "description": "Les modèles de discussion de cet ordinateur. Un modèle en ligne envoie vos questions hors de cette machine.",
+      "catalogTitle": "Catalogue Aphrody AI",
+      "catalogDescription": "Catalogue réel Aphrody AI et agents installés sur cet ordinateur.",
+      "agentsLabel": "Agents installés sur l’hôte",
+      "installed": "installé",
+      "missing": "absent",
       "checking": "Vérification des modèles…",
       "unavailable": "La liste des modèles n’est pas disponible sur ce serveur.",
       "failed": "La liste des modèles n’a pas pu être lue ou l’action a échoué.",

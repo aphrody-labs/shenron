@@ -1717,6 +1717,11 @@
     "models": {
       "title": "Models",
       "description": "The chat models of this computer. An online model sends your questions outside this machine.",
+      "catalogTitle": "Aphrody AI catalog",
+      "catalogDescription": "The real Aphrody AI catalog and agents installed on this computer.",
+      "agentsLabel": "Agents installed on the host",
+      "installed": "installed",
+      "missing": "missing",
       "checking": "Checking the models…",
       "unavailable": "The model list is not available on this server.",
       "failed": "The model list could not be read, or the action failed.",

@@ -11,6 +11,7 @@
  *                                         loopback-only OpenAI-compatible local chat model
  *   GET /api/local/models                 managed chat models and their state; POST
  *   /api/local/models/{id}/install|import download Gemma 4 E2B, import the adapter (./chat-model.ts)
+ *   GET /api/local/ai/catalog              Aphrody's host catalog and installed coding agents
  *   GET /api/local/rag/search?q=&limit=&kind=
  *                                         offline Shenron corpus (embedded canon and guide, the
  *                                         configured corpus and the local RAG store) through
@@ -66,6 +67,46 @@ export function libraryPath(paths: ServerPaths, env: NodeJS.ProcessEnv): string 
 }
 
 const withoutNul = (text: string) => text.replaceAll("\0", "");
+
+async function aphrodyHostCatalog(): Promise<Record<string, unknown>> {
+  const aphrody = Bun.which("aphrody");
+  const command = aphrody ? [aphrody, "model", "catalog", "--json"] : null;
+  let models: unknown[] = [];
+  let error: string | null = command ? null : "aphrody CLI introuvable";
+  if (command) {
+    const child = Bun.spawn(command, { stdout: "pipe", stderr: "pipe", windowsHide: true });
+    const timeout = setTimeout(() => child.kill(), 10_000);
+    try {
+      const [code, stdout, stderr] = await Promise.all([
+        child.exited,
+        new Response(child.stdout).text(),
+        new Response(child.stderr).text(),
+      ]);
+      if (code === 0) {
+        const parsed = JSON.parse(stdout) as { entries?: unknown };
+        models = Array.isArray(parsed.entries) ? parsed.entries : [];
+      } else error = stderr.trim() || `aphrody exited ${code}`;
+    } catch (cause) {
+      error = cause instanceof Error ? cause.message : String(cause);
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+  const installed = (names: string[]) =>
+    names.flatMap((name) => {
+      const path = Bun.which(name);
+      return path ? [{ id: name, path }] : [];
+    });
+  return {
+    source: "aphrody",
+    models,
+    ...(error ? { error } : {}),
+    agents: {
+      aphrodyCodex: Boolean(Bun.which("aphrody")),
+      installed: installed(["claude", "codex", "agy", "agycli", "antigravity"]),
+    },
+  };
+}
 
 /** `peer`: address of the client (`server.requestIP`), for the loopback-only routes. */
 export type LocalApi = (
@@ -140,6 +181,11 @@ export function localApi(
       };
       if (koharu) body.groups = { ...body.groups, koharu: koharu.status() };
       return Response.json(body, { status: ready ? 200 : 503, headers });
+    }
+    if (url.pathname === "/api/local/ai/catalog" && request.method === "GET") {
+      if (peer && !/^127\.0\.0\.1$|^::1$/.test(peer))
+        return Response.json({ error: "loopback_only" }, { status: 403, headers });
+      return Response.json(await aphrodyHostCatalog(), { headers });
     }
     if (url.pathname === "/api/local/rag/search") {
       const query = url.searchParams.get("q")?.trim() ?? "";

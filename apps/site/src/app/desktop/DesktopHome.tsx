@@ -41,6 +41,15 @@ interface LocalHit {
   score: number;
 }
 
+interface HostAiCatalog {
+  models: Array<{ id: string; title?: string; task?: string; backend?: string }>;
+  agents: {
+    aphrodyCodex: boolean;
+    installed: Array<{ id: string; path: string }>;
+  };
+  error?: string;
+}
+
 /** The local health, as far as this page reads it (older servers have no `groups`). */
 type Health = Pick<LocalHealthResponse, "ok" | "version" | "profile" | "localRag"> &
   Partial<Pick<LocalHealthResponse, "localRagError" | "groups">>;
@@ -205,6 +214,7 @@ export function DesktopHome() {
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [tookMs, setTookMs] = useState<number | null>(null);
+  const [hostCatalog, setHostCatalog] = useState<HostAiCatalog | null>(null);
 
   const transport = useMemo(
     () =>
@@ -286,6 +296,15 @@ export function DesktopHome() {
       }),
     [],
   );
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetch("/api/local/ai/catalog", { cache: "no-store", signal: controller.signal })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((value: HostAiCatalog | null) => setHostCatalog(value))
+      .catch(() => undefined);
+    return () => controller.abort();
+  }, []);
 
   // Without the local server (plain browser) or without `groups` (older server), the chat
   // and its history count as unavailable rather than checking forever.
@@ -380,6 +399,50 @@ export function DesktopHome() {
         {...(tauri ? { pickAdapterPath } : {})}
         onChange={onModelsChange}
       />
+
+      <section
+        className="toriyama-panel flex flex-col gap-4 p-6"
+        aria-labelledby="aphrody-ai-catalog"
+      >
+        <div>
+          <h2 id="aphrody-ai-catalog" className="m-0 text-xl font-bold">
+            {t("models.catalogTitle")}
+          </h2>
+          <p className="mt-1 text-sm text-os/70">{t("models.catalogDescription")}</p>
+        </div>
+        {hostCatalog?.error ? <p role="alert">{hostCatalog.error}</p> : null}
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {(hostCatalog?.models ?? []).map((model) => (
+            <article
+              key={model.id}
+              className="rounded-xl border border-white/10 bg-white/[0.03] p-4"
+            >
+              <h3 className="font-semibold">{model.title ?? model.id}</h3>
+              <p className="mt-1 text-xs text-os/65">{model.id}</p>
+              <p className="mt-2 text-sm text-os/75">
+                {[model.task, model.backend].filter(Boolean).join(" · ")}
+              </p>
+            </article>
+          ))}
+        </div>
+        {hostCatalog ? (
+          <div className="flex flex-wrap gap-2 text-sm" aria-label={t("models.agentsLabel")}>
+            <span className="capsule-badge">
+              Codex: {hostCatalog.agents.aphrodyCodex ? t("models.installed") : t("models.missing")}
+            </span>
+            {(["claude", "agy", "agy cli", "antigravity"] as const).map((id) => (
+              <span key={id} className="capsule-badge">
+                {id}:{" "}
+                {hostCatalog.agents.installed.some(
+                  (agent) => agent.id === id || agent.id === id.replace(" ", ""),
+                )
+                  ? t("models.installed")
+                  : t("models.missing")}
+              </span>
+            ))}
+          </div>
+        ) : null}
+      </section>
 
       <MemoryPanel
         transport={memoryTransport}
