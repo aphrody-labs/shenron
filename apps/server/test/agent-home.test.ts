@@ -72,7 +72,7 @@ describe("agent homes of the desktop", () => {
     const [callback, callbackUrl] = req(`/api/local/agent-home/callback?state=${state}&code=abc`);
     const done = await homes.handle(callback, callbackUrl, loopback);
     expect(done!.status).toBe(302);
-    expect(done!.headers.get("location")).toBe("http://127.0.0.1:4100/desktop?agentHome=linked");
+    expect(done!.headers.get("location")).toBe("http://127.0.0.1:4100/studio?agentHome=linked");
     expect(verified).toEqual([
       { url: expect.stringContaining("/api/desktop/link/verify"), body: { code: "abc", state } },
     ]);

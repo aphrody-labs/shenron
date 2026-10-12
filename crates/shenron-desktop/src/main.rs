@@ -6,8 +6,7 @@
 //!
 //! Start-up: the window opens on the bundled splash (`frontendDist`), the server
 //! starts (or `SHENRON_DESKTOP_URL` names one already running), and the window
-//! navigates to the home page of the local site (its full navigation, `/desktop` for the chat
-//! included) once it answers. Without a local server the window shows the public site, which
+//! navigates to the manga editor at `/studio` once it answers. Without a local server the window shows the public site, which
 //! receives no IPC access.
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
@@ -115,7 +114,7 @@ fn main() {
                         if let Some(editor) = &editor {
                             editor.set_toolbox(Some(Arc::new(ShenronKnowledge::new(Some(url.clone())))));
                         }
-                        format!("{url}/")
+                        format!("{url}/studio")
                     },
                     Err(error) => {
                         log::error!("local Shenron server unavailable: {error}");

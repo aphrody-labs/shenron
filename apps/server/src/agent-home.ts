@@ -20,7 +20,7 @@
  *   GET   /api/local/agent-home            the active home (id, profile, linked)
  *   PATCH /api/local/agent-home            `{ name?, language?, timezone?, preferences? }`
  *   POST  /api/local/agent-home/login      `{ open?: boolean }` → `{ url }` (opens the browser)
- *   GET   /api/local/agent-home/callback   `?state=&code=` → 302 `/desktop?agentHome=…`
+ *   GET   /api/local/agent-home/callback   `?state=&code=` → 302 `/studio?agentHome=…`
  *   POST  /api/local/agent-home/logout     forget the site session (the home and memory stay)
  *
  * Persistent session: the `sessionToken` the site's verify step may return is kept in
@@ -317,7 +317,7 @@ export function openAgentHomes(
         const expiry = pending.get(state);
         pending.delete(state);
         const back = (status: string) =>
-          Response.redirect(new URL(`/desktop?agentHome=${status}`, url.origin).toString(), 302);
+          Response.redirect(new URL(`/studio?agentHome=${status}`, url.origin).toString(), 302);
         if (!expiry || expiry <= Date.now() || !code) return back("expired");
         try {
           const response = await doFetch(new URL(DESKTOP_LINK.verifyPath, resolveSiteUrl(env)), {

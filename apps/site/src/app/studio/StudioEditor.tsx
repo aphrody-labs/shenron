@@ -12,8 +12,10 @@
  */
 import dynamic from "next/dynamic";
 import { type ReactNode, useEffect, useState, useSyncExternalStore } from "react";
+import { useTranslations } from "next-intl";
 import type { LocalHealthResponse } from "@aphrody/shenron-api/contract";
 import { isTauri } from "@aphrody/shenron-ui/studio/tauri-bridge";
+import { useLangue } from "@/lib/i18n/client";
 
 const StudioDesktop = dynamic(() => import("./StudioDesktop"), { ssr: false });
 
@@ -40,6 +42,7 @@ export function StudioEditor({ fallback }: { fallback: ReactNode }) {
   // switches to the editor inside Tauri. Being in Tauri never changes during a session.
   const desktop = useSyncExternalStore(noSubscription, isTauri, notDesktop);
   const [bridge, setBridge] = useState(false);
+  const [linked, setLinked] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (desktop) return;
@@ -48,6 +51,16 @@ export function StudioEditor({ fallback }: { fallback: ReactNode }) {
       if (available) setBridge(true);
       return undefined;
     });
+    return () => controller.abort();
+  }, [desktop]);
+
+  useEffect(() => {
+    if (!desktop) return;
+    const controller = new AbortController();
+    void fetch("/api/local/agent-home", { cache: "no-store", signal: controller.signal })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((home: { signedIn?: boolean } | null) => setLinked(home?.signedIn === true))
+      .catch(() => setLinked(false));
     return () => controller.abort();
   }, [desktop]);
 
@@ -60,6 +73,41 @@ export function StudioEditor({ fallback }: { fallback: ReactNode }) {
       .catch(() => undefined);
   }, [active]);
 
+  if (desktop && linked !== true) return <DesktopAuthGate />;
   if (desktop) return <StudioDesktop />;
   return bridge ? <StudioDesktop embedded /> : fallback;
+}
+
+function DesktopAuthGate() {
+  const t = useTranslations("library.studio");
+  const { dico } = useLangue();
+  const [loading, setLoading] = useState(false);
+  async function signIn() {
+    setLoading(true);
+    try {
+      await fetch("/api/local/agent-home/login", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ open: true }),
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+  return (
+    <main className="grid min-h-screen place-items-center bg-dbz-bg px-6 text-white">
+      <section className="max-w-xl space-y-5 rounded-2xl border border-dbz-orange/30 bg-dbz-card/80 p-8 text-center">
+        <h1 className="font-display text-2xl font-semibold">{t("title")}</h1>
+        <p className="text-white/75">{t("desktopText")}</p>
+        <button
+          type="button"
+          disabled={loading}
+          onClick={() => void signIn()}
+          className="min-h-11 rounded-xl bg-dbz-orange px-6 font-display font-bold text-black disabled:opacity-60"
+        >
+          {loading ? t("desktopTitle") : dico.common.signInDiscord}
+        </button>
+      </section>
+    </main>
+  );
 }

@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { Providers } from "@aphrody/shenron-ui/koharu/providers";
 import { KoharuApp } from "@aphrody/shenron-ui/koharu/components/app/KoharuApp";
 import { useLangue } from "@/lib/i18n/client";
+import { DesktopStudioShell } from "./DesktopStudioShell";
 
 /**
  * The full editor, loaded only where its engine is local (see `StudioEditor`). `embedded`: in
@@ -13,12 +14,14 @@ import { useLangue } from "@/lib/i18n/client";
 export default function StudioDesktop({ embedded = false }: { embedded?: boolean }) {
   const { locale } = useLangue();
   return (
-    <div className="fixed inset-0 z-[100]" data-koharu-host>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <Providers locale={locale}>
-          <KoharuApp embedded={embedded} />
-        </Providers>
-      </ThemeProvider>
-    </div>
+    <DesktopStudioShell>
+      <div className="flex min-h-0 flex-1" data-koharu-host>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <Providers locale={locale}>
+            <KoharuApp embedded />
+          </Providers>
+        </ThemeProvider>
+      </div>
+    </DesktopStudioShell>
   );
 }
