@@ -109,6 +109,26 @@ describe("local API routing", () => {
     expect(unknown.status).toBe(404);
     expect(await unknown.json()).toEqual({ error: "unknown local API" });
   });
+
+  test("Koharu catalog submission stays loopback-only and hides missing credentials", async () => {
+    const api = localApi(serverPaths(), NO_FACTS, {}, fakeNative());
+    const remote = await api(
+      new Request("http://127.0.0.1/api/local/koharu/candidates", {
+        method: "POST",
+        body: "{}",
+      }),
+      new URL("http://127.0.0.1/api/local/koharu/candidates"),
+      true,
+      "10.0.0.2",
+    );
+    expect(remote?.status).toBe(403);
+    const unavailable = await call(api, "/api/local/koharu/candidates", {
+      method: "POST",
+      body: "{}",
+    });
+    expect(unavailable?.status).toBe(503);
+    expect(await unavailable?.json()).toEqual({ error: "catalog_unavailable" });
+  });
 });
 
 describe("/api/local/health", () => {

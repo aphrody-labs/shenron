@@ -12,6 +12,7 @@
  *   GET /api/local/models                 managed chat models and their state; POST
  *   /api/local/models/{id}/install|import download Gemma 4 E2B, import the adapter (./chat-model.ts)
  *   GET /api/local/ai/catalog              Aphrody's host catalog and installed coding agents
+ *   POST /api/local/koharu/candidates      submit a Koharu result to the local Shenron catalog
  *   GET /api/local/rag/search?q=&limit=&kind=
  *                                         offline Shenron corpus (embedded canon and guide, the
  *                                         configured corpus and the local RAG store) through
