@@ -43,7 +43,7 @@ const child = Bun.spawn(
     "src/entry-standalone.ts",
     // Workers are extra entry points: new Worker() can only load modules embedded in the binary.
     "src/workers/indexer.ts",
-    canvasBinding,
+    canvas,
     "--compile",
     "--asset-naming=[name].[ext]",
     `--target=${bunTarget}`,
