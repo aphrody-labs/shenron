@@ -1084,6 +1084,10 @@ export const dbMangaPages = sqliteTable(
     hasJa: integer("has_ja", { mode: "boolean" }).notNull().default(false),
     lineCount: integer("line_count").notNull().default(0),
     charCount: integer("char_count").notNull().default(0),
+    /** Stable Koharu scene identity; populated only after an editorial import. */
+    koharuPageId: text("koharu_page_id"),
+    /** Native scene revision used by the Canvas manifest contract. */
+    koharuRevision: integer("koharu_revision"),
   },
   (t) => [
     uniqueIndex("uq_db_manga_pages").on(t.series, t.tome, t.planche),

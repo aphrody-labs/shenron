@@ -39,4 +39,15 @@ describe("réplica wiki : colonnes absentes des migrations SQL", () => {
     });
     db.close();
   });
+
+  test("une réplica manga reçoit l'identité et la révision Koharu", () => {
+    const db = new Database(":memory:");
+    db.exec("CREATE TABLE db_manga_pages (id INTEGER PRIMARY KEY, series TEXT NOT NULL)");
+    ensureWikiReplicaSchema(db);
+    ensureWikiReplicaSchema(db);
+    expect(columns(db, "db_manga_pages")).toEqual(
+      expect.arrayContaining(["koharu_page_id", "koharu_revision"]),
+    );
+    db.close();
+  });
 });

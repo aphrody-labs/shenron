@@ -798,6 +798,10 @@ export const botMangaPages = bot.table("db_manga_pages", {
   hasJa: int("has_ja"),
   lineCount: int("line_count"),
   charCount: int("char_count"),
+  /** Stable Koharu scene identity, nullable until an editorial import is accepted. */
+  koharuPageId: text("koharu_page_id"),
+  /** Native scene revision for versioned Canvas manifests. */
+  koharuRevision: int("koharu_revision"),
 });
 
 export const botNews = bot.table("db_news", {

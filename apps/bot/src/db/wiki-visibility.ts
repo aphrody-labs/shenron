@@ -63,6 +63,7 @@ export function ensureWikiVisibility(sqlite: Database): WikiVisibilityTable[] {
  */
 export function ensureWikiReplicaSchema(sqlite: Database): void {
   migrateEpisodeReplica(sqlite);
+  ensureKoharuMangaPages(sqlite);
   const columns = (table: string) =>
     sqlite
       .query<{ name: string }, [string]>("SELECT name FROM pragma_table_info(?)")
@@ -92,6 +93,26 @@ export function ensureWikiReplicaSchema(sqlite: Database): void {
   }
   sqlite.exec(`CREATE UNIQUE INDEX IF NOT EXISTS db_tools_slug_unique ON db_tools (slug);
   CREATE INDEX IF NOT EXISTS idx_db_tools_game ON db_tools (target_game_id);`);
+}
+
+/**
+ * Adds the optional Koharu identity to existing manga replicas.
+ * Values remain NULL until a reviewed import is accepted, so a reader never
+ * infers a native scene from an image URL.
+ */
+export function ensureKoharuMangaPages(sqlite: Database): void {
+  const columns = sqlite
+    .query<{ name: string }, [string]>("SELECT name FROM pragma_table_info(?)")
+    .all("db_manga_pages")
+    .map((column) => column.name);
+  if (columns.length === 0) return;
+  if (!columns.includes("koharu_page_id"))
+    sqlite.exec("ALTER TABLE db_manga_pages ADD COLUMN koharu_page_id TEXT");
+  if (!columns.includes("koharu_revision"))
+    sqlite.exec("ALTER TABLE db_manga_pages ADD COLUMN koharu_revision INTEGER");
+  sqlite.exec(
+    "CREATE INDEX IF NOT EXISTS idx_db_manga_pages_koharu ON db_manga_pages (koharu_page_id)",
+  );
 }
 
 /** Colonnes du schéma Drizzle absentes des migrations SQL (`visible` a sa propre garantie). */
