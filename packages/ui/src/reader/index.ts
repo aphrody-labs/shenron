@@ -10,6 +10,8 @@ export type {
 } from "./DatabookReader";
 export { CanonicalMangaReader, MangaReader } from "./MangaReader";
 export { CollectionReader } from "@aphrody/m3-reader/source";
+export { useKoharuCanvasWarmup } from "./use-koharu-canvas";
+export type { KoharuCanvasWarmup } from "./use-koharu-canvas";
 export type {
   CollectionReaderProps,
   MangaReaderProps,

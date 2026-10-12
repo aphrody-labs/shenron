@@ -8,6 +8,7 @@ import {
 } from "@aphrody/shenron-ui/reader";
 import { readerAssetUrl } from "@/lib/reader-assets";
 import { API_ORIGIN, CDN_ORIGIN, SITE_URL } from "@/lib/config";
+import { useKoharuCanvasWarmup } from "@aphrody/shenron-ui/reader";
 
 export type MangaReaderProps = Pick<
   ReaderProps,
@@ -28,6 +29,7 @@ const renderChapterLink: NonNullable<ReaderProps["renderChapterLink"]> = ({
 );
 
 export function MangaReader({ chapterId, ...props }: MangaReaderProps) {
+  const canvasWarmup = useKoharuCanvasWarmup();
   const [initialPage, setInitialPage] = useState(1);
   const [ready, setReady] = useState(false);
   useEffect(() => {
@@ -77,7 +79,7 @@ export function MangaReader({ chapterId, ...props }: MangaReaderProps) {
     [],
   );
   return (
-    <div className="m3-reader--dragon-ball">
+    <div className="m3-reader--dragon-ball" data-koharu-canvas={canvasWarmup}>
       <BaseMangaReader
         key={`${chapterId ?? "ch"}-${initialPage}`}
         {...props}
