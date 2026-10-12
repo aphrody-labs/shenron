@@ -1,10 +1,9 @@
 # `@aphrody/shenron-ui/koharu` — l'éditeur de traduction manga
 
 L'éditeur React de Koharu (projets, planches, détection, OCR, traduction, nettoyage,
-lettrage, export PSD) vit ici, dans la couche UI unique de Shenron. Il n'existe pas d'autre
-interface Koharu : le site le monte sur `/koharu` (`apps/site/src/app/koharu/KoharuEditor.tsx`)
-et seule l'application de bureau `shenron-desktop` le rend utilisable ; dans un navigateur, la
-page explique où le trouver.
+lettrage, export PSD) vit ici, dans la couche UI unique de Shenron. Le site le monte sur `/studio`
+(`apps/site/src/app/studio/StudioEditor.tsx`) et Shenron Studio le rend utilisable en Tauri ou
+dans un navigateur servi par `shenron-server` lorsque le moteur local est disponible.
 
 ## Moteur et transports
 
@@ -21,7 +20,13 @@ page explique où le trouver.
 - Hors Tauri, `@aphrody/shenron-koharu/native` parle au même moteur par `koharu-sdk` en JSON Lines sur
   stdio ; c'est la voie de la chaîne éditoriale (`@aphrody/shenron-pipeline`), pas celle de l'éditeur.
 - `components/ShenronExportPanel.tsx` exporte vers la chaîne Shenron par
-  `@aphrody/shenron-pipeline/koharu`.
+  `@aphrody/shenron-pipeline/koharu`. Le serveur local relaie cet envoi vers le vrai catalogue
+  manga du bot via `/api/local/koharu/candidates`, sans exposer le jeton au navigateur.
+- Le même pont expose `/api/local/koharu/catalog` : il relaie les routes publiques
+  `/api/public/manga/tomes` et `/api/public/manga/tomes/:series/:volume`. L'éditeur peut ainsi
+  sélectionner DB ou DBS, récupérer les numéros de planches et prévisualiser l'OCR publié.
+  `db_manga_pages` ne contient pas les empreintes ni les chemins des images source ; ces champs
+  restent donc soumis au manifeste éditorial, sans valeur inventée.
 
 ## Entrées
 
@@ -33,7 +38,7 @@ internes (`internal/`).
 
 ## Styles
 
-`./koharu.css` (`editor.css`) n'est importé que par la route `/koharu` : jetons M3 d'Aphrody,
+`./koharu.css` (`editor.css`) n'est importé que par la route `/studio` : jetons M3 d'Aphrody,
 puis `styles.css`, dont chaque règle est bornée à `[data-koharu-ui]` et
 `[data-koharu-ui-layer]`. La police Noto Sans CJK variable (japonais, coréen, chinois) est
 livrée sous SIL OFL 1.1 (`assets/OFL.txt`).
