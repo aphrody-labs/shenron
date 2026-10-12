@@ -5,7 +5,8 @@
  * editor engine in process): the native app, the shenron-server sidecar (front app, Shenron API
  * and local APIs, one file), the shenron-bot sidecar (private admin/API services without Discord
  * OAuth in the desktop UI), the shenron-mcp sidecar (MCP tools of the chat and the `/mcp`
- * endpoint), the koharu-sdk sidecar (the editor engine over JSON Lines, for a browser on the
+ * endpoint), the `shenron` Rust CLI sidecar (OCR, RAG, databooks, manga and Aphrody bridges),
+ * the koharu-sdk sidecar (the editor engine over JSON Lines, for a browser on the
  * local server through `/api/local/koharu` and for `@aphrody/shenron-pipeline`; the app window itself
  * never uses it), the local chat model runtime (llama.cpp `llama-server` and the Shenron LoRA
  * adapter, scripts/build/chat-model-runtime.ts) and the platform bundle. shenron-server starts
@@ -86,6 +87,10 @@ await run(
     "--bin",
     "shenron-desktop",
     ...(withServer ? ["-p", "shenron-ffi", "--lib"] : []),
+    "-p",
+    "shenron-cli",
+    "--bin",
+    "shenron",
     ...(withMcp ? ["-p", "shenron-mcp", "--bin", "shenron-mcp"] : []),
     ...(withKoharuSdk ? ["-p", "koharu-library", "--bin", "koharu-sdk"] : []),
     "--features",
@@ -106,6 +111,7 @@ const server = join(ROOT, "dist/server", target, `shenron-server${SPEC.exe}`);
 if (withServer || !existsSync(server)) {
   await run([process.execPath, join(ROOT, "scripts/build/server.ts"), "--target", target], ROOT);
 }
+const shenronCli = join(release, `shenron${SPEC.exe}`);
 
 // 1a. Private administration sidecar. The desktop UI authenticates locally; the bot binary
 // remains beside the server so `serve all` can start its existing API surface in the same
@@ -122,7 +128,14 @@ const botSidecar = join(binaries, `shenron-bot-${SPEC.triple}${SPEC.exe}`);
 rmSync(botSidecar, { force: true });
 if (withBot) copyFileSync(bot, botSidecar);
 
-// 1b. MCP sidecar: shenron-server starts it from beside itself.
+// 1c. Rust capability-owner CLI: the native OCR/RAG/databook/manga/Aphrody bridge used by
+// Studio and by support diagnostics. It is kept as a sidecar so the GUI does not shell out to
+// a developer checkout.
+const cliSidecar = join(binaries, `shenron-${SPEC.triple}${SPEC.exe}`);
+rmSync(cliSidecar, { force: true });
+copyFileSync(shenronCli, cliSidecar);
+
+// 1d. MCP sidecar: shenron-server starts it from beside itself.
 const mcpSidecar = join(binaries, `shenron-mcp-${SPEC.triple}${SPEC.exe}`);
 rmSync(mcpSidecar, { force: true });
 if (withMcp) copyFileSync(join(release, `shenron-mcp${SPEC.exe}`), mcpSidecar);
@@ -148,6 +161,7 @@ if (withChatModel) {
 const bundleConfig = join(CRATE, "tauri.bundle.json");
 const externalBin = [
   "binaries/shenron-server",
+  "binaries/shenron",
   ...(withBot ? ["binaries/shenron-bot"] : []),
   ...(withMcp ? ["binaries/shenron-mcp"] : []),
   ...(withKoharuSdk ? ["binaries/koharu-sdk"] : []),
