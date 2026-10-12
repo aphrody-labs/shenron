@@ -156,23 +156,19 @@ if (target === "windows-x64" && process.platform !== "win32") {
 }
 
 // 4. Tauri build (the CLI compiles with --features custom-protocol and bundles).
-await run(
-  [
-    "cargo-tauri",
-    "build",
-    "--target",
-    SPEC.triple,
-    "--bundles",
-    SPEC.bundles,
-    "--config",
-    bundleConfig,
-    "--runner",
-    runner,
-    "--ci",
-  ],
-  CRATE,
-  env,
-);
+const tauriArgs = [
+  "cargo-tauri",
+  "build",
+  "--target",
+  SPEC.triple,
+  "--bundles",
+  SPEC.bundles,
+  "--config",
+  bundleConfig,
+  ...(process.platform === "win32" ? [] : ["--runner", runner]),
+  "--ci",
+];
+await run(tauriArgs, CRATE, env);
 
 // 5. Collect installers and their checksums.
 const out = join(ROOT, "dist/desktop", target);
