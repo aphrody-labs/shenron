@@ -53,6 +53,7 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
   const [pages, setPages] = useState<PageSummary[]>([]);
   const [volumes, setVolumes] = useState<CatalogVolume[]>([]);
   const [series, setSeries] = useState("DB");
+  const [volume, setVolume] = useState("");
   const [bindings, setBindings] = useState<Record<string, Binding>>({});
   const [statuses, setStatuses] = useState<Record<string, Status>>({});
   const [error, setError] = useState<string | null>(null);
@@ -75,7 +76,11 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
     const controller = new AbortController();
     void fetch(`/api/local/koharu/catalog?series=${series}`, { signal: controller.signal })
       .then((response) => (response.ok ? response.json() : null))
-      .then((body: { volumes?: CatalogVolume[] } | null) => setVolumes(body?.volumes ?? []))
+      .then((body: { volumes?: CatalogVolume[] } | null) => {
+        const next = body?.volumes ?? [];
+        setVolumes(next);
+        setVolume((current) => (next.some((item) => item.volume === current) ? current : ""));
+      })
       .catch(() => undefined);
     return () => controller.abort();
   }, [series]);
@@ -166,6 +171,36 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
           ? `${volumes.length} tome(s) disponibles dans le catalogue.`
           : "Catalogue indisponible ou vide."}
       </p>
+      <label className="grid gap-1">
+        <span>Tome cible</span>
+        <select
+          className={fieldClass}
+          value={volume}
+          disabled={!volumes.length}
+          onChange={(event) => {
+            const next = event.target.value;
+            setVolume(next);
+            if (!next) return;
+            setBindings((current) => {
+              const updated = { ...current };
+              for (const [index, page] of pages.entries()) {
+                updated[page.id] = {
+                  ...(updated[page.id] ?? { sourceSha256: "", image: "" }),
+                  mangaPageId: `${series}:${next}:${index + 1}`,
+                };
+              }
+              return updated;
+            });
+          }}
+        >
+          <option value="">Sélectionner un tome…</option>
+          {volumes.map((item) => (
+            <option key={`${item.series}:${item.volume}`} value={item.volume}>
+              {item.volume} · {item.pages} pages
+            </option>
+          ))}
+        </select>
+      </label>
       <div className="flex gap-1">
         <button
           type="button"
