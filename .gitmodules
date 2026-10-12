@@ -7,3 +7,6 @@
 [submodule "vendor/hls.js"]
 	path = vendor/hls.js
 	url = https://github.com/aphrody-labs/hls.js.git
+[submodule "packages/config"]
+	path = packages/config
+	url = https://github.com/aphrody-labs/shenron-config.git
