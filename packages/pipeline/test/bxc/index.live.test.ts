@@ -10,6 +10,7 @@ const framesFixture = resolve(import.meta.dir, "fixtures/bxc-frames-stats.mjs");
 /** The scraper cases hit live sites: only in a live run (SHENRON_LIVE=1) with a bxc binary. */
 const hasBxcScraper =
   isLive() && Boolean(Bun.which("bxc") || (process.env.BXC_BIN && existsSync(process.env.BXC_BIN)));
+const hasFramesFixture = isLive() && Boolean(process.env.APHRODY_FFI_LIB);
 
 describe("BxcBridge Native Client Suite", () => {
   it("resolves valid bxc path", () => {
@@ -18,7 +19,7 @@ describe("BxcBridge Native Client Suite", () => {
     expect(path.length).toBeGreaterThan(0);
   });
 
-  it("checks bxc version", async () => {
+  it.skipIf(!hasBxcScraper)("checks bxc version", async () => {
     const v = await bxc.version();
     expect(v).toMatch(/bxc|aphrody/i);
   });
@@ -123,7 +124,7 @@ describe("BxcBridge Native Client Suite", () => {
     });
   }, 50000);
 
-  it("Frames: local index stats", async () => {
+  it.skipIf(!hasFramesFixture)("Frames: local index stats", async () => {
     const stats = await new FramesService({ aphrodyBin: framesFixture }).stats();
     expect(stats).toEqual({ path: "/fixture/frames.sqlite", media: 1, frames: 8, durationMs: 12 });
   });

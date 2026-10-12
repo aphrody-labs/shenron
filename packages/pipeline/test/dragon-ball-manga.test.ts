@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterEach, expect, test } from "bun:test";
 import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
   importDragonBallManga,
@@ -40,7 +41,7 @@ test("manga dry run and idempotent volumes never invoke native acquisition or OC
   expect(calls).toBe(0);
 });
 test("promo review excludes editorial references while keeping native originals", async () => {
-  const dir = await mkdtemp("/tmp/shenron-native-manga-");
+  const dir = await mkdtemp(join(tmpdir(), "shenron-native-manga-"));
   directories.push(dir);
   const native = join(dir, "native");
   const files = await Promise.all(

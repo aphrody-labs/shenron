@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterEach, describe, expect, test } from "bun:test";
 import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { importDragonBallCovers, type CoverAssetRecord } from "../src/dragon-ball/assets";
 const directories: string[] = [];
@@ -9,7 +10,7 @@ afterEach(async () => {
     await rm(directory, { recursive: true, force: true });
 });
 async function fixture() {
-  const dir = await mkdtemp("/tmp/shenron-native-covers-");
+  const dir = await mkdtemp(join(tmpdir(), "shenron-native-covers-"));
   directories.push(dir);
   const native = join(dir, "native");
   const source = join(native, "original.png");
