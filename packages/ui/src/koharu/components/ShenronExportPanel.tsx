@@ -37,6 +37,14 @@ interface CatalogPage {
   text?: string;
 }
 
+interface CatalogHit {
+  series: string;
+  tome: string;
+  planche: number;
+  lang: string;
+  snippet?: string;
+}
+
 type Status =
   | { state: "idle" }
   | { state: "busy" }
@@ -64,6 +72,8 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
   const [series, setSeries] = useState("DB");
   const [volume, setVolume] = useState("");
   const [catalogPages, setCatalogPages] = useState<CatalogPage[]>([]);
+  const [query, setQuery] = useState("");
+  const [hits, setHits] = useState<CatalogHit[]>([]);
   const [bindings, setBindings] = useState<Record<string, Binding>>({});
   const [statuses, setStatuses] = useState<Record<string, Status>>({});
   const [error, setError] = useState<string | null>(null);
@@ -125,6 +135,23 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
       return updated;
     });
   }, [catalogPages, pages, series, volume]);
+
+  const searchCatalog = async () => {
+    const value = query.trim();
+    if (!value) {
+      setHits([]);
+      return;
+    }
+    try {
+      const response = await fetch(
+        `/api/local/koharu/search?q=${encodeURIComponent(value)}&series=${series}`,
+      );
+      const body = (await response.json()) as { results?: CatalogHit[] };
+      setHits(response.ok ? (body.results ?? []) : []);
+    } catch {
+      setHits([]);
+    }
+  };
 
   const setBinding = (page: string, patch: Partial<Binding>) =>
     setBindings((current) => ({
@@ -212,6 +239,45 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
           ? t("shenronExport.volumeCount", { count: volumes.length })
           : t("shenronExport.emptyCatalog")}
       </p>
+      <div className="grid gap-1">
+        <span>{t("shenronExport.searchTitle")}</span>
+        <div className="flex gap-1">
+          <input
+            className={`${fieldClass} min-w-0 flex-1`}
+            value={query}
+            placeholder={t("shenronExport.searchPlaceholder")}
+            onChange={(event) => setQuery(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") void searchCatalog();
+            }}
+          />
+          <button
+            type="button"
+            className="h-7 rounded border border-border px-2"
+            onClick={() => void searchCatalog()}
+          >
+            {t("shenronExport.search")}
+          </button>
+        </div>
+        {hits.length ? (
+          <ul className="grid gap-1 rounded border border-border/80 bg-muted/20 p-2 text-[10px]">
+            {hits.slice(0, 5).map((hit) => (
+              <li key={`${hit.series}:${hit.tome}:${hit.planche}`}>
+                <button
+                  type="button"
+                  className="w-full truncate text-left hover:text-primary"
+                  onClick={() => {
+                    setSeries(hit.series);
+                    setVolume(hit.tome);
+                  }}
+                >
+                  {hit.series}:{hit.tome}:{hit.planche} · {hit.snippet || hit.lang}
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
       <label className="grid gap-1">
         <span>{t("shenronExport.targetVolume")}</span>
         <select

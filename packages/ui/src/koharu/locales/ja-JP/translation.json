@@ -356,7 +356,10 @@
     "selectVolume": "巻を選択…",
     "pageCount": "{{count}} ページ",
     "pageMapping": "カタログ済み {{count}} ページ、日本語あり {{japanese}}",
-    "noOcr": "公開OCRなし"
+    "noOcr": "公開OCRなし",
+    "searchTitle": "ドラゴンボールOCRを検索",
+    "searchPlaceholder": "キャラクター、技、文章…",
+    "search": "検索"
   },
   "settings": {
     "appearance": {

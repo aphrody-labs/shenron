@@ -356,7 +356,10 @@
     "selectVolume": "Select a volume…",
     "pageCount": "{{count}} pages",
     "pageMapping": "{{count}} cataloged pages, {{japanese}} with Japanese",
-    "noOcr": "No published OCR"
+    "noOcr": "No published OCR",
+    "searchTitle": "Search Dragon Ball OCR",
+    "searchPlaceholder": "Character, technique, phrase…",
+    "search": "Search"
   },
   "settings": {
     "appearance": {

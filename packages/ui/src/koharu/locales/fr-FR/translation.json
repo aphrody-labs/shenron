@@ -356,7 +356,10 @@
     "selectVolume": "Sélectionner un tome…",
     "pageCount": "{{count}} pages",
     "pageMapping": "{{count}} planches cataloguées, {{japanese}} avec japonais",
-    "noOcr": "Aucun OCR publié"
+    "noOcr": "Aucun OCR publié",
+    "searchTitle": "Rechercher dans l’OCR Dragon Ball",
+    "searchPlaceholder": "Personnage, technique, phrase…",
+    "search": "Chercher"
   },
   "settings": {
     "appearance": {
