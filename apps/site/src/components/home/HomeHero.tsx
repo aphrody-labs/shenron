@@ -7,6 +7,7 @@
  * Server component; the clips, the cloud and the search are the client islands.
  */
 import Link from "next/link";
+import Image from "next/image";
 import {
   DragonBall,
   LETTRES_BALL,
@@ -20,6 +21,8 @@ import { HomeHeroScenes } from "./HomeHeroScenes";
 import { HomeSearch } from "./HomeSearch";
 import { KintoUnVolant } from "./KintoUnVolant";
 import { focusRing } from "./ui";
+
+const BEERUS_ARTWORK = "/banners/dbs-beerus-2026.jpg";
 
 export function HomeHero({
   hero,
@@ -36,6 +39,16 @@ export function HomeHero({
       className={`home-stage relative isolate min-w-0 overflow-hidden border-b border-white/[0.08] ${className}`}
     >
       <HomeHeroScenes scenes={hero.scenes} />
+      <div className="home-hero__beerus" aria-hidden="true">
+        <Image
+          src={BEERUS_ARTWORK}
+          alt=""
+          fill
+          priority
+          sizes="(max-width: 767px) 100vw, 52vw"
+          className="object-cover object-center"
+        />
+      </div>
       <KintoUnVolant />
       <div className="page-shell relative z-[3] flex min-h-[clamp(26rem,72svh,46rem)] flex-col justify-end pt-[clamp(3rem,10vh,6rem)] pb-[clamp(2rem,6vh,3.5rem)]">
         {/* The wordmark IS the page title: one heading, drawn. A second visible title

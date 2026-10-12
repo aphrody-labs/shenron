@@ -2992,6 +2992,34 @@ main:focus {
 .home-hero {
   min-height: calc(100svh - var(--home-section-nav));
 }
+.home-hero__beerus {
+  position: absolute;
+  inset: 0 0 0 43%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.72;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 28%, black 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, black 28%, black 100%);
+}
+.home-hero__beerus::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background:
+    linear-gradient(90deg, var(--color-encre) 0%, transparent 42%),
+    linear-gradient(0deg, rgba(10, 10, 10, 0.82), transparent 38%);
+}
+@media (max-width: 767px) {
+  .home-hero__beerus {
+    inset: 0;
+    opacity: 0.34;
+    -webkit-mask-image: linear-gradient(180deg, black 0%, transparent 70%);
+    mask-image: linear-gradient(180deg, black 0%, transparent 70%);
+  }
+  .home-hero__beerus::after {
+    background: linear-gradient(180deg, rgba(10, 10, 10, 0.18), var(--color-encre) 74%);
+  }
+}
 .home-hero__content {
   position: relative;
   /* Au-dessus du Kinto-Un (z 0) : rien de décoratif ne passe sur le titre. */
