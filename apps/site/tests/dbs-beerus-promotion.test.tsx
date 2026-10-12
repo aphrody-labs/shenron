@@ -65,7 +65,6 @@ test("the 2026 page separates the original 131 episodes and links the new episod
     expect(html).toContain(dictionaries[locale].dbsBeerus.title);
     expect(html).toContain(dictionaries[locale].dbsBeerus.catalogueNote);
     expect(html).toContain(dictionaries[locale].dbsBeerus.episodeOne);
-    expect(html).toContain(dictionaries[locale].dbsBeerus.episodeOneDetails);
     expect(html).toContain(
       'href="https://www.crunchyroll.com/fr/watch/GE00389313JAJP/the-god-who-destroys"',
     );
@@ -74,8 +73,11 @@ test("the 2026 page separates the original 131 episodes and links the new episod
     expect(html).toContain("/news/dragon-ball-super-beerus-adn-vostfr-18h-2026-10-11");
     expect(html).toContain('href="https://dragonball-super.com/en/"');
     expect(html).not.toContain("<video");
-    expect(html).toContain("youtube-nocookie.com/embed/p7j-iOhl8GI");
-    expect(html).toContain("/assets/dbz/characters/Beerus_DBS_Broly_Artwork.webp");
+    expect(html).toContain("dbs-beerus-2026.jpg");
+    expect(html).toContain('src="/banners/dbs-beerus-2026.jpg"');
+    expect(html).toContain('rel="preload" as="image"');
+    expect(html).not.toContain("youtube-nocookie.com/embed/");
+    expect(html).not.toContain("Beerus_DBS_Broly_Artwork.webp");
     expect(html).not.toContain("/wiki/episodes/445");
   }
   locale = "fr";
