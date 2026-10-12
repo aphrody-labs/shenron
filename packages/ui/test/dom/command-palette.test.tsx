@@ -1,5 +1,5 @@
 import { afterEach, expect, test } from "bun:test";
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { CommandPalette } from "../../src/public/CommandPalette";
 import { useState } from "react";
 
@@ -209,16 +209,12 @@ test("the shared palette runs without Next against a configurable Bun search ser
     fireEvent.change(screen.getByPlaceholderText("A character, saga, technique, episode…"), {
       target: { value: "goku" },
     });
-    await act(async () => {
-      await Bun.sleep(250);
-    });
+    await screen.findByRole("alert");
     expect(screen.getByRole("alert").textContent).toContain("Search is unavailable");
     expect(counts).toEqual([]);
     status = 200;
     fireEvent.click(screen.getByRole("button", { name: "Try again" }));
-    await act(async () => {
-      await Bun.sleep(250);
-    });
+    await waitFor(() => expect(counts).toEqual([24]));
     expect(screen.queryByRole("alert")).toBeNull();
     expect(requested!.searchParams.get("lang")).toBe("en");
     expect(requested!.searchParams.get("q")).toBe("goku");

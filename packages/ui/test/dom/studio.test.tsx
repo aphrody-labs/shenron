@@ -109,6 +109,7 @@ describe("studio du bureau", () => {
       "Databooks",
       "Entraînement",
       "Administration",
+      "Pipeline natif",
     ]);
   });
 
