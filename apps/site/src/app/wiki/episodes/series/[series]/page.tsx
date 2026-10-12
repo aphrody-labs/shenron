@@ -221,7 +221,7 @@ async function OfficialBeerusEpisodeSeries() {
               titleJa: null,
               image: null,
               synopsis: text.episodeSynopsis,
-              year: 2026,
+              year: 2018,
               hasVf: false,
               hasVostfr: false,
               playerCount: 0,

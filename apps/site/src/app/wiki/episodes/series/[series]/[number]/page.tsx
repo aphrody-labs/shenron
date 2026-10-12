@@ -12,7 +12,7 @@ import { DBS_BEERUS_EPISODE_HREF, DBS_BEERUS_SERIES_CODE } from "@/lib/episode-s
 export const revalidate = 3600;
 
 export function generateStaticParams() {
-  return [{ series: DBS_BEERUS_SERIES_CODE, number: "1" }];
+  return [{ series: DBS_BEERUS_SERIES_CODE, number: "131" }];
 }
 
 export async function generateMetadata({
@@ -21,7 +21,7 @@ export async function generateMetadata({
   params: Promise<{ series: string; number: string }>;
 }): Promise<Metadata> {
   const { series, number } = await params;
-  if (series !== DBS_BEERUS_SERIES_CODE || number !== "1") return {};
+  if (series !== DBS_BEERUS_SERIES_CODE || number !== "131") notFound();
   const text = getDictionary().dbsBeerus;
   const title = `${text.episodeTitle} — ${text.title}`;
   return {
@@ -42,16 +42,16 @@ export default async function OfficialBeerusEpisodePage({
   params: Promise<{ series: string; number: string }>;
 }) {
   const { series, number } = await params;
-  if (series !== DBS_BEERUS_SERIES_CODE || number !== "1") notFound();
+  if (series !== DBS_BEERUS_SERIES_CODE || number !== "131") notFound();
 
   const text = getDictionary().dbsBeerus;
   const schema = {
     "@context": "https://schema.org",
     "@type": "TVEpisode",
-    episodeNumber: "1",
+    episodeNumber: "131",
     name: text.episodeTitle,
     description: text.episodeSynopsis,
-    datePublished: "2026-10-11",
+    datePublished: "2018-03-25",
     partOfSeries: { "@type": "TVSeries", name: text.title },
   } as const;
 
@@ -62,7 +62,7 @@ export default async function OfficialBeerusEpisodePage({
         backdrop={await bannerForSeries(DBS_BEERUS_SERIES_CODE)}
         eyebrow={
           <>
-            <T k="dbsBeerus.edition" /> · 01
+            <T k="dbsBeerus.edition" /> · 131
           </>
         }
         title={<T k="dbsBeerus.episodeTitle" />}
@@ -88,10 +88,10 @@ export default async function OfficialBeerusEpisodePage({
               href: "/wiki/episodes/series/DBS_BEERUS",
             },
             {
-              label: `${text.episodeTitle} · 01`,
+              label: `${text.episodeTitle} · 131`,
               display: (
                 <>
-                  <T k="dbsBeerus.episodeTitle" /> · 01
+                  <T k="dbsBeerus.episodeTitle" /> · 131
                 </>
               ),
             },

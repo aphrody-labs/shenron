@@ -10,7 +10,7 @@ export function OfficialBeerusCard() {
   return (
     <EpisodeCard
       href={DBS_BEERUS_EPISODE_HREF}
-      number={1}
+      number={131}
       title={t("episodeTitle")}
       image={null}
       playerCount={0}

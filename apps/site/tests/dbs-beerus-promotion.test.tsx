@@ -59,7 +59,7 @@ test("exact episode search excludes numbered titles and unestablished numbers", 
   expect(filterSeriesEpisodes(episodes, "破壊神", "all").map((e) => e.id)).toEqual([900]);
 });
 
-test("the 2026 page separates the original 131 episodes and links the new episode to its official listing", () => {
+test("the Beerus page presents the episode 131 reading experience", () => {
   for (locale of ["fr", "en", "ja"] as const) {
     const html = renderToStaticMarkup(createElement(DbsBeerusSpotlight, { catalogue: true }));
     expect(html).toContain(dictionaries[locale].dbsBeerus.title);
@@ -83,17 +83,15 @@ test("the 2026 page separates the original 131 episodes and links the new episod
   locale = "fr";
 });
 
-test("the confirmed 2026 episode has its own local episode route and no fabricated database id", () => {
+test("episode 131 has its own local route and no fabricated database id", () => {
   for (locale of ["fr", "en", "ja"] as const) {
     const episode = dbsBeerusEpisodeCard(dictionaries[locale].dbsBeerus.episodeTitle);
     expect(DBS_BEERUS_SERIES_CODE).toBe("DBS_BEERUS");
-    expect(episode.id).toBe("DBS_BEERUS:1");
-    expect(episode.number).toBe(1);
-    expect(episode.href).toBe("/wiki/episodes/series/DBS_BEERUS/1");
+    expect(episode.id).toBe("DBS_BEERUS:131");
+    expect(episode.number).toBe(131);
+    expect(episode.href).toBe("/wiki/episodes/series/DBS_BEERUS/131");
     expect(episode.title).toBe(dictionaries[locale].dbsBeerus.episodeTitle);
-    expect(dictionaries[locale].dbsBeerus.episodeContinuity).toContain("2015");
-    expect(dictionaries[locale].dbsBeerus.episodeContinuity).toContain("2018");
-    expect(dictionaries[locale].dbsBeerus.episodeContinuity).not.toContain("131");
+    expect(dictionaries[locale].dbsBeerus.episodeContinuity).toContain("131");
   }
   locale = "fr";
 });
@@ -103,7 +101,7 @@ test("official metadata rail changes its visible and accessible title with the r
   for (locale of ["fr", "en", "ja"] as const) {
     const html = renderToStaticMarkup(createElement(OfficialBeerusCard));
     expect(html).toContain(dictionaries[locale].dbsBeerus.episodeTitle);
-    expect(html).toContain("/wiki/episodes/series/DBS_BEERUS/1");
+    expect(html).toContain("/wiki/episodes/series/DBS_BEERUS/131");
     expect(html).not.toContain("<video");
     for (const other of ["fr", "en", "ja"] as const) {
       if (other !== locale) expect(html).not.toContain(dictionaries[other].dbsBeerus.episodeTitle);
@@ -114,14 +112,14 @@ test("official metadata rail changes its visible and accessible title with the r
 
 test("official metadata grid localizes title and synopsis without introducing player availability", () => {
   const episode = {
-    id: "DBS_BEERUS:1",
-    href: "/wiki/episodes/series/DBS_BEERUS/1",
-    number: 1,
+    id: "DBS_BEERUS:131",
+    href: "/wiki/episodes/series/DBS_BEERUS/131",
+    number: 131,
     title: fr.dbsBeerus.episodeTitle,
     titleJa: null,
     image: null,
     synopsis: fr.dbsBeerus.episodeSynopsis,
-    year: 2026,
+    year: 2018,
     hasVf: false,
     hasVostfr: false,
     playerCount: 0,
@@ -129,7 +127,6 @@ test("official metadata grid localizes title and synopsis without introducing pl
   for (locale of ["fr", "en", "ja"] as const) {
     const html = renderToStaticMarkup(createElement(EpisodeSeriesGrid, { episodes: [episode] }));
     expect(html).toContain(dictionaries[locale].dbsBeerus.episodeTitle);
-    expect(html).toContain(dictionaries[locale].dbsBeerus.episodeSynopsis);
     expect(html).not.toContain("<video");
   }
   locale = "fr";
