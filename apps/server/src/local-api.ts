@@ -102,6 +102,27 @@ async function submitKoharuCandidate(
   }
 }
 
+async function koharuCatalog(
+  request: Request,
+  url: URL,
+  env: NodeJS.ProcessEnv,
+  headers: Record<string, string>,
+): Promise<Response> {
+  const target = env.SHENRON_API_URL?.trim();
+  if (!target) return Response.json({ error: "catalog_unavailable" }, { status: 503, headers });
+  const series = url.searchParams.get("series")?.trim().toUpperCase();
+  const volume = url.searchParams.get("volume")?.trim();
+  const path = volume
+    ? `/api/public/manga/tomes/${encodeURIComponent(series || "DB")}/${encodeURIComponent(volume)}`
+    : `/api/public/manga/tomes${series ? `?series=${encodeURIComponent(series)}` : ""}`;
+  try {
+    const response = await fetch(new URL(path, target), { signal: request.signal });
+    return new Response(response.body, { status: response.status, headers });
+  } catch {
+    return Response.json({ error: "catalog_unavailable" }, { status: 503, headers });
+  }
+}
+
 async function aphrodyHostCatalog(): Promise<Record<string, unknown>> {
   const aphrody = Bun.which("aphrody");
   const command = aphrody ? [aphrody, "model", "catalog", "--json"] : null;
@@ -225,6 +246,11 @@ export function localApi(
       if (peer && !/^127\.0\.0\.1$|^::1$/.test(peer))
         return Response.json({ error: "loopback_only" }, { status: 403, headers });
       return submitKoharuCandidate(request, env, headers);
+    }
+    if (url.pathname === "/api/local/koharu/catalog" && request.method === "GET") {
+      if (peer && !/^127\.0\.0\.1$|^::1$/.test(peer))
+        return Response.json({ error: "loopback_only" }, { status: 403, headers });
+      return koharuCatalog(request, url, env, headers);
     }
     if (url.pathname === "/api/local/rag/search") {
       const query = url.searchParams.get("q")?.trim() ?? "";

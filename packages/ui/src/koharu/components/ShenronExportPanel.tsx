@@ -23,6 +23,12 @@ interface Binding {
   image: string;
 }
 
+interface CatalogVolume {
+  series: string;
+  volume: string;
+  pages: number;
+}
+
 type Status =
   | { state: "idle" }
   | { state: "busy" }
@@ -45,6 +51,8 @@ async function sha256Hex(bytes: Uint8Array): Promise<string> {
 
 export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
   const [pages, setPages] = useState<PageSummary[]>([]);
+  const [volumes, setVolumes] = useState<CatalogVolume[]>([]);
+  const [series, setSeries] = useState("DB");
   const [bindings, setBindings] = useState<Record<string, Binding>>({});
   const [statuses, setStatuses] = useState<Record<string, Status>>({});
   const [error, setError] = useState<string | null>(null);
@@ -62,6 +70,15 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
   useEffect(() => {
     void refresh();
   }, [refresh]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetch(`/api/local/koharu/catalog?series=${series}`, { signal: controller.signal })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((body: { volumes?: CatalogVolume[] } | null) => setVolumes(body?.volumes ?? []))
+      .catch(() => undefined);
+    return () => controller.abort();
+  }, [series]);
 
   const setBinding = (page: string, patch: Partial<Binding>) =>
     setBindings((current) => ({
@@ -132,6 +149,22 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
     <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-2.5 text-[11px]">
       <p className="rounded border border-border/80 bg-muted/20 p-2 text-[10px] leading-4 text-muted-foreground">
         Les candidats sont envoyés au catalogue Shenron local avec l’authentification du serveur.
+      </p>
+      <label className="grid gap-1">
+        <span>Série Dragon Ball</span>
+        <select
+          className={fieldClass}
+          value={series}
+          onChange={(event) => setSeries(event.target.value)}
+        >
+          <option value="DB">Dragon Ball</option>
+          <option value="DBS">Dragon Ball Super</option>
+        </select>
+      </label>
+      <p className="text-[10px] text-muted-foreground">
+        {volumes.length
+          ? `${volumes.length} tome(s) disponibles dans le catalogue.`
+          : "Catalogue indisponible ou vide."}
       </p>
       <div className="flex gap-1">
         <button
