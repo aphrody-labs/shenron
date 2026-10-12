@@ -11,6 +11,7 @@ import {
   type KoharuMangaPageSource,
   type MangaCandidateBinding,
 } from "@aphrody/shenron-pipeline/koharu";
+import { parseKoharuCandidateReceipt } from "../lib/export-receipt";
 
 /** @deprecated Ignored: the panel speaks the editor commands. Kept while hosts still pass it. */
 export interface ShenronExportHost {
@@ -219,9 +220,16 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
       headers: { "content-type": "application/json" },
       body: JSON.stringify(candidate),
     });
-    const text = await response.text();
-    if (!response.ok) throw new Error(`HTTP ${response.status}: ${text.slice(0, 200)}`);
-    return `HTTP ${response.status}`;
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`HTTP ${response.status}: ${text.slice(0, 200)}`);
+    }
+    const receipt = parseKoharuCandidateReceipt(await response.json().catch(() => null));
+    if (!receipt) throw new Error(t("shenronExport.receiptInvalid"));
+    const status = t(`shenronExport.candidateStatus.${receipt.status}`);
+    return receipt.created
+      ? t("shenronExport.candidateCreated", { id: receipt.id, status })
+      : t("shenronExport.candidateExisting", { id: receipt.id, status });
   };
 
   const exportAll = async () => {

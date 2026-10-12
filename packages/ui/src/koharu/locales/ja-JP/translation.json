@@ -378,6 +378,15 @@
     "statusBusy": "処理中…",
     "statusDone": "送信済み · {{detail}}",
     "statusError": "失敗",
+    "candidateCreated": "候補 #{{id}} をスタッフ確認待ちに追加しました（{{status}}）。未公開です。",
+    "candidateExisting": "候補 #{{id}} は既に存在します（{{status}}）。",
+    "candidateStatus": {
+      "unreviewed": "確認待ち",
+      "approved": "承認済み",
+      "rejected": "却下済み",
+      "published": "公開済み"
+    },
+    "receiptInvalid": "サーバーから無効な候補レシートが返されました。",
     "searchTitle": "ドラゴンボールOCRを検索",
     "searchPlaceholder": "キャラクター、技、文章…",
     "search": "検索"

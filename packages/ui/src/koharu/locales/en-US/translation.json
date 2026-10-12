@@ -378,6 +378,15 @@
     "statusBusy": "Working…",
     "statusDone": "Submitted · {{detail}}",
     "statusError": "Failed",
+    "candidateCreated": "Candidate #{{id}} queued for staff review ({{status}}); not published.",
+    "candidateExisting": "Candidate #{{id}} already exists ({{status}}).",
+    "candidateStatus": {
+      "unreviewed": "awaiting review",
+      "approved": "approved",
+      "rejected": "rejected",
+      "published": "published"
+    },
+    "receiptInvalid": "The server returned an invalid candidate receipt.",
     "searchTitle": "Search Dragon Ball OCR",
     "searchPlaceholder": "Character, technique, phrase…",
     "search": "Search"

@@ -27,13 +27,19 @@ function installCatalogFetch() {
   let candidatePosts = 0;
   const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = new URL(input.toString(), "http://localhost");
-    if (init?.method === "POST") candidatePosts++;
+    if (init?.method === "POST") {
+      candidatePosts++;
+      return Response.json(
+        { data: { id: 17, status: "unreviewed" }, created: true },
+        { status: 201 },
+      );
+    }
     if (url.pathname !== "/api/local/koharu/catalog") return Response.json({});
     if (!url.searchParams.has("volume")) {
       return Response.json({
         volumes: [
-          { series: "DB", volume: "1", pages: 2 },
-          { series: "DB", volume: "2", pages: 2 },
+          { series: "DB", volume: "vol1", pages: 2 },
+          { series: "DB", volume: "vol2", pages: 2 },
         ],
       });
     }
@@ -61,7 +67,7 @@ describe("Shenron catalog export bindings", () => {
 
     const volume = await screen.findByRole("combobox", { name: "Target volume" });
     await waitFor(() => expect(volume).toBeEnabled());
-    fireEvent.change(volume, { target: { value: "1" } });
+    fireEvent.change(volume, { target: { value: "vol1" } });
 
     const pageTargets = (await screen.findAllByRole("combobox", {
       name: /Manga page for Project page/,
@@ -71,10 +77,10 @@ describe("Shenron catalog export bindings", () => {
     expect(pageTargets[0]?.value).toBe("");
     expect(pageTargets[1]?.value).toBe("");
 
-    fireEvent.change(pageTargets[0]!, { target: { value: "DB:1:2" } });
-    expect(pageTargets[0]?.value).toBe("DB:1:2");
+    fireEvent.change(pageTargets[0]!, { target: { value: "DB:vol1:2" } });
+    expect(pageTargets[0]?.value).toBe("DB:vol1:2");
 
-    fireEvent.change(volume, { target: { value: "2" } });
+    fireEvent.change(volume, { target: { value: "vol2" } });
     await waitFor(() => expect(pageTargets[0]?.value).toBe(""));
     expect(pageTargets[1]?.value).toBe("");
   });
@@ -88,12 +94,12 @@ describe("Shenron catalog export bindings", () => {
 
     const volume = await screen.findByRole("combobox", { name: "Target volume" });
     await waitFor(() => expect(volume).toBeEnabled());
-    fireEvent.change(volume, { target: { value: "1" } });
+    fireEvent.change(volume, { target: { value: "vol1" } });
     const target = (await screen.findByRole("combobox", {
       name: "Manga page for Project page 1",
     })) as HTMLSelectElement;
     await waitFor(() => expect(target).toBeEnabled());
-    fireEvent.change(target, { target: { value: "DB:1:1" } });
+    fireEvent.change(target, { target: { value: "DB:vol1:1" } });
     fireEvent.click(screen.getByRole("button", { name: "Export candidates" }));
 
     expect(
@@ -101,5 +107,44 @@ describe("Shenron catalog export bindings", () => {
     ).toBeInTheDocument();
     expect(candidatePosts()).toBe(0);
     expect(commands.getPageResult).not.toHaveBeenCalled();
+  });
+
+  it("shows the persisted review receipt without implying publication", async () => {
+    vi.spyOn(commands, "getPages").mockResolvedValue([projectPages[0]!]);
+    vi.spyOn(commands, "getPageResult").mockResolvedValue({
+      page: "12345678-1234-1234-1234-123456789abc",
+      width: 1000,
+      height: 1500,
+      regions: [],
+      cleanup_layer_png: null,
+      cleanup_provenance: null,
+    });
+    vi.spyOn(commands, "getPageSourceSha256").mockResolvedValue("a".repeat(64));
+    const candidatePosts = installCatalogFetch();
+
+    render(<ShenronExportPanel />);
+
+    const volume = await screen.findByRole("combobox", { name: "Target volume" });
+    await waitFor(() => expect(volume).toBeEnabled());
+    fireEvent.change(volume, { target: { value: "vol1" } });
+    const target = await screen.findByRole("combobox", {
+      name: "Manga page for Project page 1",
+    });
+    await waitFor(() => expect(target).toBeEnabled());
+    fireEvent.change(target, { target: { value: "DB:vol1:1" } });
+    fireEvent.change(screen.getByPlaceholderText("64-character SHA-256 digest"), {
+      target: { value: "b".repeat(64) },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Image path from the source manifest"), {
+      target: { value: "manga/vol1/page1.png" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Export candidates" }));
+    await waitFor(() => expect(candidatePosts()).toBe(1));
+
+    expect(
+      await screen.findByText(
+        "Submitted · Candidate #17 queued for staff review (awaiting review); not published.",
+      ),
+    ).toBeInTheDocument();
   });
 });

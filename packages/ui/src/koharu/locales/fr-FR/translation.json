@@ -378,6 +378,15 @@
     "statusBusy": "En cours…",
     "statusDone": "Envoyé · {{detail}}",
     "statusError": "Échec",
+    "candidateCreated": "Candidat n°{{id}} ajouté à la file de relecture ({{status}}), non publié.",
+    "candidateExisting": "Candidat n°{{id}} déjà présent ({{status}}).",
+    "candidateStatus": {
+      "unreviewed": "en attente de relecture",
+      "approved": "approuvé",
+      "rejected": "rejeté",
+      "published": "publié"
+    },
+    "receiptInvalid": "Le serveur a renvoyé un reçu de candidat invalide.",
     "searchTitle": "Rechercher dans l’OCR Dragon Ball",
     "searchPlaceholder": "Personnage, technique, phrase…",
     "search": "Chercher"
