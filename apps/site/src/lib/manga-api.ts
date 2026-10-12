@@ -48,6 +48,10 @@ export type PlancheApi = {
   /** Bulles séparées, quand l'OCR les a conservées. */
   lines: string[] | null;
   lang: string | null;
+  /** Accepted native scene mapping, when the editorial source has one. */
+  koharuPageId: string | null;
+  /** Revision paired with `koharuPageId`; absent on unmapped pages. */
+  koharuRevision: number | null;
   /** Page du lecteur, cadrée sur cette planche. */
   href: string;
   /** Ressource JSON de CETTE planche seule. */
@@ -117,7 +121,14 @@ function numeroDePlanche(chemin: string, index: number): number {
   return Number.isFinite(n) && n > 0 ? n : index + 1;
 }
 
-type LigneOcr = { planche: number; text: string | null; lines: string | null; lang: string | null };
+type LigneOcr = {
+  planche: number;
+  text: string | null;
+  lines: string | null;
+  lang: string | null;
+  koharu_page_id: string | null;
+  koharu_revision: number | string | null;
+};
 
 /** Transcriptions d'un chapitre, indexées par numéro de planche. */
 async function ocrDuChapitre(chapter: {
@@ -129,8 +140,10 @@ async function ocrDuChapitre(chapter: {
   if (!cle) return new Map();
   try {
     const rows = await db.execute<LigneOcr>(sql`
-			SELECT planche, text, lines, lang
-			FROM bot.db_manga_pages
+			SELECT planche, text, lines, lang,
+			       to_jsonb(p)->>'koharu_page_id' AS koharu_page_id,
+			       to_jsonb(p)->>'koharu_revision' AS koharu_revision
+			FROM bot.db_manga_pages p
 			WHERE series = ${cle.series} AND tome = ${cle.tome}
 		`);
     const map = new Map<number, LigneOcr>();
@@ -173,6 +186,11 @@ export async function chapitreApi(id: number): Promise<ChapitreApi | null> {
       text: t?.text?.trim() ? t.text : null,
       lines: decodeLignes(t?.lines ?? null),
       lang: t?.lang ?? null,
+      koharuPageId: t?.koharu_page_id ?? null,
+      koharuRevision:
+        t?.koharu_revision == null || !Number.isSafeInteger(Number(t.koharu_revision))
+          ? null
+          : Number(t.koharu_revision),
       href: `${SITE_URL}/wiki/manga/${chapter.id}?page=${i + 1}`,
       api: `${SITE_URL}/api/manga/chapter/${chapter.id}/pages/${i + 1}`,
     };
