@@ -59,6 +59,10 @@ const child = Bun.spawn(
   { cwd: BOT, stdio: ["inherit", "inherit", "inherit"] },
 );
 if ((await child.exited) !== 0) throw new Error("bot compile failed");
+// Bun's compiled loader keeps the napi binding as a relative native require.
+// Keep the platform package beside the binary so the sealed image can copy it
+// into the runtime filesystem; this is required by Bun 1.4.4 as well as Linux.
+cpSync(canvasBinding, join(out, `skia.${canvasPlatform}.node`));
 // Migrations are read from disk by drizzle at boot: ship them beside the binary.
 const migrations = join(BOT, "src/db/migrations");
 if (existsSync(migrations)) cpSync(migrations, join(out, "src/db/migrations"), { recursive: true });
