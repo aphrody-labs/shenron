@@ -68,4 +68,7 @@ if (process.argv.includes("--dry-run")) {
 }
 
 await import("reflect-metadata");
+// Install the canvas fallback before loading command modules. This keeps the
+// production binary bootable when the platform Skia addon is unavailable.
+await import("./lib/preload");
 await import("./index");
