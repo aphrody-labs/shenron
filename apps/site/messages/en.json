@@ -1626,6 +1626,11 @@
       },
       "desktopTitle": "Open the editor",
       "desktopText": "The editor opens in the Shenron desktop app, which ships the models and works offline. Translated pages then join the workshop.",
+      "desktopAuthButton": "Link my Discord account",
+      "desktopAuthOpening": "Opening sign-in…",
+      "desktopAuthWaiting": "Finish linking your account in the browser. Shenron Studio will update automatically.",
+      "desktopAuthRetry": "Reopen sign-in",
+      "desktopAuthError": "Could not start account linking. Check that the local Shenron server is responding, then try again.",
       "workshopLink": "See the translation progress"
     }
   },

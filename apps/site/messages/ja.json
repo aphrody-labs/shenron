@@ -1626,6 +1626,11 @@
       },
       "desktopTitle": "エディタを開く",
       "desktopText": "エディタは、モデルを同梱しオフラインで動く Shenron デスクトップアプリで開きます。翻訳した原稿はその後、工房に加わります。",
+      "desktopAuthButton": "Discordアカウントを連携",
+      "desktopAuthOpening": "ログイン画面を開いています…",
+      "desktopAuthWaiting": "ブラウザーでアカウント連携を完了してください。Shenron Studio は自動的に更新されます。",
+      "desktopAuthRetry": "ログイン画面を再度開く",
+      "desktopAuthError": "アカウント連携を開始できませんでした。Shenron のローカルサーバーを確認して、もう一度お試しください。",
       "workshopLink": "翻訳の進捗を見る"
     }
   },

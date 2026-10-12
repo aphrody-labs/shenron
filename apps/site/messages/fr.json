@@ -1626,6 +1626,11 @@
       },
       "desktopTitle": "Ouvrir l'éditeur",
       "desktopText": "L'éditeur s'ouvre dans l'application de bureau Shenron, qui embarque les modèles et fonctionne hors ligne. Les planches traduites rejoignent ensuite l'atelier.",
+      "desktopAuthButton": "Lier mon compte Discord",
+      "desktopAuthOpening": "Ouverture de la connexion…",
+      "desktopAuthWaiting": "Terminez la connexion dans le navigateur. Shenron Studio se mettra à jour automatiquement.",
+      "desktopAuthRetry": "Rouvrir la connexion",
+      "desktopAuthError": "Impossible de démarrer la liaison du compte. Vérifiez que le serveur local Shenron répond, puis réessayez.",
       "workshopLink": "Voir l'avancement de la traduction"
     }
   },

@@ -15,7 +15,6 @@ import { type ReactNode, useEffect, useState, useSyncExternalStore } from "react
 import { useTranslations } from "next-intl";
 import type { LocalHealthResponse } from "@aphrody/shenron-api/contract";
 import { isTauri } from "@aphrody/shenron-ui/studio/tauri-bridge";
-import { useLangue } from "@/lib/i18n/client";
 
 const StudioDesktop = dynamic(() => import("./StudioDesktop"), { ssr: false });
 
@@ -43,6 +42,7 @@ export function StudioEditor({ fallback }: { fallback: ReactNode }) {
   const desktop = useSyncExternalStore(noSubscription, isTauri, notDesktop);
   const [bridge, setBridge] = useState(false);
   const [linked, setLinked] = useState<boolean | null>(null);
+  const [loginPending, setLoginPending] = useState(false);
 
   useEffect(() => {
     if (desktop) return;
@@ -64,6 +64,36 @@ export function StudioEditor({ fallback }: { fallback: ReactNode }) {
     return () => controller.abort();
   }, [desktop]);
 
+  useEffect(() => {
+    if (!desktop || !loginPending) return;
+    const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const checkLink = async () => {
+      try {
+        const response = await fetch("/api/local/agent-home", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (response.ok) {
+          const home = (await response.json()) as { signedIn?: boolean };
+          if (home.signedIn === true) {
+            setLinked(true);
+            setLoginPending(false);
+            return;
+          }
+        }
+      } catch {
+        if (controller.signal.aborted) return;
+      }
+      if (!controller.signal.aborted) timer = setTimeout(checkLink, 1_000);
+    };
+    void checkLink();
+    return () => {
+      controller.abort();
+      if (timer) clearTimeout(timer);
+    };
+  }, [desktop, loginPending]);
+
   const active = desktop || bridge;
   useEffect(() => {
     // The editor is about to open: stream and compile its canvas module meanwhile.
@@ -73,23 +103,35 @@ export function StudioEditor({ fallback }: { fallback: ReactNode }) {
       .catch(() => undefined);
   }, [active]);
 
-  if (desktop && linked !== true) return <DesktopAuthGate />;
+  if (desktop && linked !== true)
+    return <DesktopAuthGate pending={loginPending} onPendingChange={setLoginPending} />;
   if (desktop) return <StudioDesktop />;
   return bridge ? <StudioDesktop embedded /> : fallback;
 }
 
-function DesktopAuthGate() {
+function DesktopAuthGate({
+  pending,
+  onPendingChange,
+}: {
+  pending: boolean;
+  onPendingChange: (pending: boolean) => void;
+}) {
   const t = useTranslations("library.studio");
-  const { dico } = useLangue();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   async function signIn() {
     setLoading(true);
+    setError(false);
     try {
-      await fetch("/api/local/agent-home/login", {
+      const response = await fetch("/api/local/agent-home/login", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ open: true }),
       });
+      if (!response.ok) throw new Error("Desktop account linking failed");
+      onPendingChange(true);
+    } catch {
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -99,13 +141,19 @@ function DesktopAuthGate() {
       <section className="max-w-xl space-y-5 rounded-2xl border border-dbz-orange/30 bg-dbz-card/80 p-8 text-center">
         <h1 className="font-display text-2xl font-semibold">{t("title")}</h1>
         <p className="text-white/75">{t("desktopText")}</p>
+        {pending ? <output aria-live="polite">{t("desktopAuthWaiting")}</output> : null}
+        {error ? <p role="alert">{t("desktopAuthError")}</p> : null}
         <button
           type="button"
           disabled={loading}
           onClick={() => void signIn()}
           className="min-h-11 rounded-xl bg-dbz-orange px-6 font-display font-bold text-black disabled:opacity-60"
         >
-          {loading ? t("desktopTitle") : dico.common.signInDiscord}
+          {loading
+            ? t("desktopAuthOpening")
+            : pending
+              ? t("desktopAuthRetry")
+              : t("desktopAuthButton")}
         </button>
       </section>
     </main>
