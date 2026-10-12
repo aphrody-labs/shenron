@@ -355,7 +355,8 @@
     "targetVolume": "Target volume",
     "selectVolume": "Select a volume…",
     "pageCount": "{{count}} pages",
-    "pageMapping": "{{count}} cataloged pages, {{japanese}} with Japanese"
+    "pageMapping": "{{count}} cataloged pages, {{japanese}} with Japanese",
+    "noOcr": "No published OCR"
   },
   "settings": {
     "appearance": {

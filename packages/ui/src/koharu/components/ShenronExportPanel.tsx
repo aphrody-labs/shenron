@@ -34,6 +34,7 @@ interface CatalogPage {
   page: number;
   hasJa: boolean;
   lineCount: number;
+  text?: string;
 }
 
 type Status =
@@ -232,12 +233,27 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
         </select>
       </label>
       {volume && catalogPages.length ? (
-        <p className="text-[10px] text-muted-foreground">
-          {t("shenronExport.pageMapping", {
-            count: catalogPages.length,
-            japanese: catalogPages.filter((page) => page.hasJa).length,
-          })}
-        </p>
+        <div className="grid gap-1 rounded border border-border/80 bg-muted/20 p-2 text-[10px]">
+          <p className="text-muted-foreground">
+            {t("shenronExport.pageMapping", {
+              count: catalogPages.length,
+              japanese: catalogPages.filter((page) => page.hasJa).length,
+            })}
+          </p>
+          <ul className="grid gap-1">
+            {catalogPages.slice(0, 6).map((page) => (
+              <li key={page.page} className="flex items-center gap-2">
+                <span className="w-8 shrink-0 font-mono">#{page.page}</span>
+                <span className="min-w-0 flex-1 truncate">
+                  {page.text?.trim() || t("shenronExport.noOcr")}
+                </span>
+                <span className="shrink-0 text-muted-foreground">
+                  {page.hasJa ? "JP" : "—"} · {page.lineCount}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : null}
       <div className="flex gap-1">
         <button

@@ -355,7 +355,8 @@
     "targetVolume": "対象巻",
     "selectVolume": "巻を選択…",
     "pageCount": "{{count}} ページ",
-    "pageMapping": "カタログ済み {{count}} ページ、日本語あり {{japanese}}"
+    "pageMapping": "カタログ済み {{count}} ページ、日本語あり {{japanese}}",
+    "noOcr": "公開OCRなし"
   },
   "settings": {
     "appearance": {

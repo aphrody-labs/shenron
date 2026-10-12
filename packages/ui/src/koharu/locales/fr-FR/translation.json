@@ -355,7 +355,8 @@
     "targetVolume": "Tome cible",
     "selectVolume": "Sélectionner un tome…",
     "pageCount": "{{count}} pages",
-    "pageMapping": "{{count}} planches cataloguées, {{japanese}} avec japonais"
+    "pageMapping": "{{count}} planches cataloguées, {{japanese}} avec japonais",
+    "noOcr": "Aucun OCR publié"
   },
   "settings": {
     "appearance": {
