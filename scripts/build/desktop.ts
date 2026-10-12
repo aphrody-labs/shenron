@@ -3,14 +3,15 @@
 /**
  * Build the installer of Shenron Studio, the one desktop app (Tauri 3, `shenron-desktop`, the
  * editor engine in process): the native app, the shenron-server sidecar (front app, Shenron API
- * and local APIs, one file), the shenron-mcp sidecar (MCP tools of the chat and the `/mcp`
+ * and local APIs, one file), the shenron-bot sidecar (private admin/API services without Discord
+ * OAuth in the desktop UI), the shenron-mcp sidecar (MCP tools of the chat and the `/mcp`
  * endpoint), the koharu-sdk sidecar (the editor engine over JSON Lines, for a browser on the
  * local server through `/api/local/koharu` and for `@aphrody/shenron-pipeline`; the app window itself
  * never uses it), the local chat model runtime (llama.cpp `llama-server` and the Shenron LoRA
  * adapter, scripts/build/chat-model-runtime.ts) and the platform bundle. shenron-server starts
  * the sidecars from beside itself.
  *
- *   bun scripts/build/desktop.ts [--target windows-x64|linux-x64] [--skip-server] [--skip-mcp]
+ *   bun scripts/build/desktop.ts [--target windows-x64|linux-x64] [--skip-server] [--skip-bot] [--skip-mcp]
  *                                [--skip-koharu-sdk] [--skip-chat-model] [--chat-lora <gguf>]
  *
  * --skip-mcp ships no MCP sidecar: the desktop then reports its MCP group unavailable.
@@ -63,6 +64,7 @@ async function run(command: string[], cwd: string, env: Record<string, string> =
 }
 
 const withMcp = !args.includes("--skip-mcp");
+const withBot = !args.includes("--skip-bot");
 const withKoharuSdk = !args.includes("--skip-koharu-sdk");
 const withServer = !args.includes("--skip-server");
 const release = join(ROOT, "target", SPEC.triple, "release");
@@ -104,9 +106,21 @@ const server = join(ROOT, "dist/server", target, `shenron-server${SPEC.exe}`);
 if (withServer || !existsSync(server)) {
   await run([process.execPath, join(ROOT, "scripts/build/server.ts"), "--target", target], ROOT);
 }
+
+// 1a. Private administration sidecar. The desktop UI authenticates locally; the bot binary
+// remains beside the server so `serve all` can start its existing API surface in the same
+// loopback-only desktop profile.
+const bot = join(ROOT, "dist/bot", target, `shenron-bot${SPEC.exe}`);
+if (withBot && !existsSync(bot)) {
+  await run([process.execPath, join(ROOT, "scripts/build/bot.ts"), "--target", target], ROOT);
+}
 const binaries = join(CRATE, "binaries");
 mkdirSync(binaries, { recursive: true });
 copyFileSync(server, join(binaries, `shenron-server-${SPEC.triple}${SPEC.exe}`));
+
+const botSidecar = join(binaries, `shenron-bot-${SPEC.triple}${SPEC.exe}`);
+rmSync(botSidecar, { force: true });
+if (withBot) copyFileSync(bot, botSidecar);
 
 // 1b. MCP sidecar: shenron-server starts it from beside itself.
 const mcpSidecar = join(binaries, `shenron-mcp-${SPEC.triple}${SPEC.exe}`);
@@ -134,6 +148,7 @@ if (withChatModel) {
 const bundleConfig = join(CRATE, "tauri.bundle.json");
 const externalBin = [
   "binaries/shenron-server",
+  ...(withBot ? ["binaries/shenron-bot"] : []),
   ...(withMcp ? ["binaries/shenron-mcp"] : []),
   ...(withKoharuSdk ? ["binaries/koharu-sdk"] : []),
 ];

@@ -269,8 +269,14 @@ pub async fn start(app: &AppHandle) -> Result<String, String> {
     stop_previous(&data);
     let started = Instant::now();
     let mut command = Command::new(&binary);
+    // The desktop package carries the bot API as a local sidecar.  It keeps the
+    // administration surface available without Discord OAuth; the server remains
+    // loopback-only and the bot inherits the desktop profile.  A server-only developer
+    // package remains supported when the optional bot sidecar is deliberately omitted.
+    let bot_name = if cfg!(windows) { "shenron-bot.exe" } else { "shenron-bot" };
+    let has_bot = binary.parent().is_some_and(|dir| dir.join(bot_name).is_file());
     command
-        .args(["serve", "site"])
+        .args(if has_bot { ["serve", "all"] } else { ["serve", "site"] })
         .env("PORT", port.to_string())
         .env("HOSTNAME", "127.0.0.1")
         .env("SHENRON_HOME", &data)
