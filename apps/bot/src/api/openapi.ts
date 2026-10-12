@@ -264,6 +264,16 @@ const schemas = {
         description: "Bulles OCR en ordre de lecture (FR+JP).",
       },
       text: { type: "string" },
+      koharuPageId: {
+        type: "string",
+        nullable: true,
+        description: "Stable native scene identity when the page has an accepted Koharu mapping.",
+      },
+      koharuRevision: {
+        type: "integer",
+        nullable: true,
+        description: "Native scene revision used to request a versioned Koharu canvas manifest.",
+      },
     },
   },
   MangaVolume: {
