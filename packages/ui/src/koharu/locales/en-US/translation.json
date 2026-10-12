@@ -345,6 +345,17 @@
     "vramUnavailable": "Unavailable",
     "vramValue": "{{value}} VRAM"
   },
+  "shenronExport": {
+    "localDescription": "Candidates are sent to the local Shenron catalog using the server authentication.",
+    "series": "Dragon Ball series",
+    "dragonBall": "Dragon Ball",
+    "dragonBallSuper": "Dragon Ball Super",
+    "volumeCount": "{{count}} volume(s) available in the catalog.",
+    "emptyCatalog": "Catalog unavailable or empty.",
+    "targetVolume": "Target volume",
+    "selectVolume": "Select a volume…",
+    "pageCount": "{{count}} pages"
+  },
   "settings": {
     "appearance": {
       "description": "Match your workspace to the room without changing how artwork is rendered.",

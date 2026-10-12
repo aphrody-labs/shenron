@@ -345,6 +345,17 @@
     "vramUnavailable": "利用不可",
     "vramValue": "VRAM {{value}}"
   },
+  "shenronExport": {
+    "localDescription": "候補はサーバー認証を使って Shenron のローカルカタログに送信されます。",
+    "series": "ドラゴンボールのシリーズ",
+    "dragonBall": "ドラゴンボール",
+    "dragonBallSuper": "ドラゴンボール超",
+    "volumeCount": "カタログに {{count}} 巻あります。",
+    "emptyCatalog": "カタログが利用できないか空です。",
+    "targetVolume": "対象巻",
+    "selectVolume": "巻を選択…",
+    "pageCount": "{{count}} ページ"
+  },
   "settings": {
     "appearance": {
       "description": "アートワークの描画には影響せず、作業環境の見た目を調整します。",

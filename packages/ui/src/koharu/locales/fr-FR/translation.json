@@ -345,6 +345,17 @@
     "vramUnavailable": "Indisponible",
     "vramValue": "{{value}} de VRAM"
   },
+  "shenronExport": {
+    "localDescription": "Les candidats sont envoyés au catalogue Shenron local avec l’authentification du serveur.",
+    "series": "Série Dragon Ball",
+    "dragonBall": "Dragon Ball",
+    "dragonBallSuper": "Dragon Ball Super",
+    "volumeCount": "{{count}} tome(s) disponibles dans le catalogue.",
+    "emptyCatalog": "Catalogue indisponible ou vide.",
+    "targetVolume": "Tome cible",
+    "selectVolume": "Sélectionner un tome…",
+    "pageCount": "{{count}} pages"
+  },
   "settings": {
     "appearance": {
       "description": "Adaptez l’espace de travail à la pièce sans changer le rendu des planches.",

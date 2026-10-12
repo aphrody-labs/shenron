@@ -3,6 +3,7 @@
 // the editor commands (`get_pages`, `get_page_result`, `get_page_source_sha256`) of the
 // engine the editor runs on (Tauri IPC or the local bridge).
 import { useEffect, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { commands, type PageSummary } from "@aphrody/shenron-koharu/protocol";
 import {
   mapNativeKoharuPageResult,
@@ -50,6 +51,7 @@ async function sha256Hex(bytes: Uint8Array): Promise<string> {
 }
 
 export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
+  const { t } = useTranslation();
   const [pages, setPages] = useState<PageSummary[]>([]);
   const [volumes, setVolumes] = useState<CatalogVolume[]>([]);
   const [series, setSeries] = useState("DB");
@@ -153,26 +155,26 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-2.5 text-[11px]">
       <p className="rounded border border-border/80 bg-muted/20 p-2 text-[10px] leading-4 text-muted-foreground">
-        Les candidats sont envoyés au catalogue Shenron local avec l’authentification du serveur.
+        {t("shenronExport.localDescription")}
       </p>
       <label className="grid gap-1">
-        <span>Série Dragon Ball</span>
+        <span>{t("shenronExport.series")}</span>
         <select
           className={fieldClass}
           value={series}
           onChange={(event) => setSeries(event.target.value)}
         >
-          <option value="DB">Dragon Ball</option>
-          <option value="DBS">Dragon Ball Super</option>
+          <option value="DB">{t("shenronExport.dragonBall")}</option>
+          <option value="DBS">{t("shenronExport.dragonBallSuper")}</option>
         </select>
       </label>
       <p className="text-[10px] text-muted-foreground">
         {volumes.length
-          ? `${volumes.length} tome(s) disponibles dans le catalogue.`
-          : "Catalogue indisponible ou vide."}
+          ? t("shenronExport.volumeCount", { count: volumes.length })
+          : t("shenronExport.emptyCatalog")}
       </p>
       <label className="grid gap-1">
-        <span>Tome cible</span>
+        <span>{t("shenronExport.targetVolume")}</span>
         <select
           className={fieldClass}
           value={volume}
@@ -193,10 +195,10 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
             });
           }}
         >
-          <option value="">Sélectionner un tome…</option>
+          <option value="">{t("shenronExport.selectVolume")}</option>
           {volumes.map((item) => (
             <option key={`${item.series}:${item.volume}`} value={item.volume}>
-              {item.volume} · {item.pages} pages
+              {item.volume} · {t("shenronExport.pageCount", { count: item.pages })}
             </option>
           ))}
         </select>
