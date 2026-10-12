@@ -23,6 +23,7 @@ export type SettingsTab = (typeof settingsTabs)[number][0];
 
 export const rightSidebarPanels = [
   { id: "properties", icon: SlidersHorizontal, label: "agent.properties" },
+  { id: "pipeline", icon: Cpu, label: "menu.process" },
   { id: "agent", icon: Bot, label: "agent.title" },
   { id: "shenron", icon: Upload, label: "Shenron" },
 ] as const;

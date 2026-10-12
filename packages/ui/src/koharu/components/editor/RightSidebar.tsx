@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { AgentPanel } from "./AgentPanel";
+import { PipelinePanel } from "./PipelinePanel";
 import { ShenronExportPanel } from "../ShenronExportPanel";
 import { Inspector } from "./Inspector";
 import { rightSidebarPanels, type RightSidebarPanel } from "../../navigation";
@@ -30,6 +31,9 @@ export function RightSidebar() {
       </div>
       <div className={panel === "agent" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
         <AgentPanel />
+      </div>
+      <div className={panel === "pipeline" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
+        <PipelinePanel />
       </div>
       <div className={panel === "properties" ? "min-h-0 flex-1" : "hidden"}>
         <Inspector />
