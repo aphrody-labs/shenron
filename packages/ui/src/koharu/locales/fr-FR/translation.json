@@ -354,7 +354,8 @@
     "emptyCatalog": "Catalogue indisponible ou vide.",
     "targetVolume": "Tome cible",
     "selectVolume": "Sélectionner un tome…",
-    "pageCount": "{{count}} pages"
+    "pageCount": "{{count}} pages",
+    "pageMapping": "{{count}} planches cataloguées, {{japanese}} avec japonais"
   },
   "settings": {
     "appearance": {

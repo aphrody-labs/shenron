@@ -354,7 +354,8 @@
     "emptyCatalog": "カタログが利用できないか空です。",
     "targetVolume": "対象巻",
     "selectVolume": "巻を選択…",
-    "pageCount": "{{count}} ページ"
+    "pageCount": "{{count}} ページ",
+    "pageMapping": "カタログ済み {{count}} ページ、日本語あり {{japanese}}"
   },
   "settings": {
     "appearance": {

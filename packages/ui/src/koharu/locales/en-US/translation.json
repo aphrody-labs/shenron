@@ -354,7 +354,8 @@
     "emptyCatalog": "Catalog unavailable or empty.",
     "targetVolume": "Target volume",
     "selectVolume": "Select a volume…",
-    "pageCount": "{{count}} pages"
+    "pageCount": "{{count}} pages",
+    "pageMapping": "{{count}} cataloged pages, {{japanese}} with Japanese"
   },
   "settings": {
     "appearance": {

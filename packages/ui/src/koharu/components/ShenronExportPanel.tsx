@@ -30,6 +30,12 @@ interface CatalogVolume {
   pages: number;
 }
 
+interface CatalogPage {
+  page: number;
+  hasJa: boolean;
+  lineCount: number;
+}
+
 type Status =
   | { state: "idle" }
   | { state: "busy" }
@@ -56,6 +62,7 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
   const [volumes, setVolumes] = useState<CatalogVolume[]>([]);
   const [series, setSeries] = useState("DB");
   const [volume, setVolume] = useState("");
+  const [catalogPages, setCatalogPages] = useState<CatalogPage[]>([]);
   const [bindings, setBindings] = useState<Record<string, Binding>>({});
   const [statuses, setStatuses] = useState<Record<string, Status>>({});
   const [error, setError] = useState<string | null>(null);
@@ -86,6 +93,37 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
       .catch(() => undefined);
     return () => controller.abort();
   }, [series]);
+
+  useEffect(() => {
+    if (!volume) {
+      setCatalogPages([]);
+      return;
+    }
+    const controller = new AbortController();
+    void fetch(`/api/local/koharu/catalog?series=${series}&volume=${encodeURIComponent(volume)}`, {
+      signal: controller.signal,
+    })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((body: { pages?: CatalogPage[] } | null) => setCatalogPages(body?.pages ?? []))
+      .catch(() => undefined);
+    return () => controller.abort();
+  }, [series, volume]);
+
+  useEffect(() => {
+    if (!volume || !catalogPages.length || !pages.length) return;
+    setBindings((current) => {
+      const updated = { ...current };
+      for (const [index, page] of pages.entries()) {
+        const catalogPage = catalogPages[index];
+        if (!catalogPage) break;
+        updated[page.id] = {
+          ...(updated[page.id] ?? { sourceSha256: "", image: "" }),
+          mangaPageId: `${series}:${volume}:${catalogPage.page}`,
+        };
+      }
+      return updated;
+    });
+  }, [catalogPages, pages, series, volume]);
 
   const setBinding = (page: string, patch: Partial<Binding>) =>
     setBindings((current) => ({
@@ -183,16 +221,6 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
             const next = event.target.value;
             setVolume(next);
             if (!next) return;
-            setBindings((current) => {
-              const updated = { ...current };
-              for (const [index, page] of pages.entries()) {
-                updated[page.id] = {
-                  ...(updated[page.id] ?? { sourceSha256: "", image: "" }),
-                  mangaPageId: `${series}:${next}:${index + 1}`,
-                };
-              }
-              return updated;
-            });
           }}
         >
           <option value="">{t("shenronExport.selectVolume")}</option>
@@ -203,6 +231,14 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
           ))}
         </select>
       </label>
+      {volume && catalogPages.length ? (
+        <p className="text-[10px] text-muted-foreground">
+          {t("shenronExport.pageMapping", {
+            count: catalogPages.length,
+            japanese: catalogPages.filter((page) => page.hasJa).length,
+          })}
+        </p>
+      ) : null}
       <div className="flex gap-1">
         <button
           type="button"
