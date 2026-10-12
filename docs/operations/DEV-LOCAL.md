@@ -33,6 +33,16 @@ Bun 1.4.2 (`packageManager`), linker isolé ; règles de dépendances dans
   `SHENRON_BOT_DEV_TOKEN`). `just env remote` écrit les mêmes fichiers dans `~/shenron-dev` du
   VPS ; `just env tunnel` relaie PostgreSQL (15433) et le chat IA (8799) en local ;
   `just env status` compte les clés sans afficher de valeur.
+- `bun scripts/dev/env-pull.ts pull --local-services --host vps` conserve le jeu de clés site/bot
+  de l'environnement d'exploitation, mais remplace DB, Redis, API et assets par les services
+  Docker locaux (`shenron_site_local`, `127.0.0.1:6379`, API `:5006`, gateway `:8080`) et
+  génère de nouveaux secrets locaux d'authentification. Le jeton de passerelle Discord de
+  production reste retiré. La base locale est un snapshot privé distinct; aucune écriture
+  applicative n'est dirigée vers PostgreSQL/Redis de production.
+- La passerelle Docker sert d'abord le volume local `shenron-local-cdn`; si un asset manque,
+  elle le relaie au Worker CDN public réel. Ce mode couvre les routes CDN en ligne sans
+  recopier le corpus R2 de 31,7 Go; il ne constitue pas un miroir hors ligne. Le relais
+  transmet uniquement `Accept`, `Range` et les validateurs, jamais cookie ni autorisation.
 
 ## Lancer
 
@@ -60,9 +70,10 @@ bun run clippy:rust && bun run test:rust
 
 ## Pièges de poste
 
-- **Windows** : Turbopack lance un processus `node` pour PostCSS/Tailwind, absent
-  d'un poste Bun seul. Le dev et le build du site se font dans WSL ; typecheck,
-  lint et tests restent utilisables sous Windows.
+- **Windows natif** : utiliser le runtime Aphrody Bun et les outils Windows du poste ;
+  ne pas démarrer WSL pour ce workflow. Si Turbopack exige un processus `node`,
+  installer uniquement le runtime/outillage natif requis ou utiliser le build Linux
+  qualifié sur la fabrique VPS, sans détourner le poste vers WSL.
 - **`next dev` réécrit `apps/site/tsconfig.json`** : restaurer le fichier avant
   de committer.
 - Autres faits mesurés : [`pieges.md`](../guides/pieges.md).

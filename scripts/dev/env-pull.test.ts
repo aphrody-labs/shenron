@@ -27,6 +27,48 @@ describe("env-pull", () => {
     expect(dev.get("DATABASE_URL")).toBe("p");
   });
 
+  test("local-services mode keeps production keys but isolates state and credentials", () => {
+    const site = deriveDev(
+      "site",
+      parseEnv(
+        "DATABASE_URL=postgres://prod\nREDIS_URL=redis://prod\nSHENRON_API_URL=https://api.prod\nNEXT_PUBLIC_CDN_URL=https://cdn.prod\nSHENRON_ADMIN_TOKEN=prod-admin\nBETTER_AUTH_SECRET=prod-auth",
+      ),
+      undefined,
+      true,
+      {
+        authSecret: "local-auth",
+        adminToken: "local-admin",
+        userSecret: "local-user",
+      },
+    );
+    expect(site.get("DATABASE_URL")).toBe(
+      "postgresql://shenron:shenron_local_only@127.0.0.1:5432/shenron_site_local",
+    );
+    expect(site.get("REDIS_URL")).toBe("redis://127.0.0.1:6379/0");
+    expect(site.get("SHENRON_API_URL")).toBe("http://127.0.0.1:5006");
+    expect(site.get("NEXT_PUBLIC_CDN_URL")).toBe("http://localhost:8080");
+    expect(site.get("SHENRON_ADMIN_TOKEN")).toBe("local-admin");
+    expect(site.get("BETTER_AUTH_SECRET")).toBe("local-auth");
+    expect(site.get("DISCORD_CLIENT_SECRET")).toBeUndefined();
+
+    const bot = deriveDev(
+      "bot",
+      parseEnv(
+        "DATABASE_URL=postgres://prod\nAPI_ADMIN_TOKEN=prod-admin\nAPI_USER_SECRET=prod-user",
+      ),
+      undefined,
+      true,
+      {
+        authSecret: "local-auth",
+        adminToken: "local-admin",
+        userSecret: "local-user",
+      },
+    );
+    expect(bot.get("DATABASE_URL")).toBe(site.get("DATABASE_URL"));
+    expect(bot.get("API_ADMIN_TOKEN")).toBe(site.get("SHENRON_ADMIN_TOKEN"));
+    expect(bot.get("API_USER_SECRET")).toBe("local-user");
+  });
+
   test("bot: production gateway tokens never survive", () => {
     const prod = parseEnv(
       "DISCORD_TOKEN=prod\nDISCORD_TOKEN_WHIS=w\nAPPLICATION_ID_WHIS=1\nAPPLICATION_ID=2\nGUILD_ID=3",

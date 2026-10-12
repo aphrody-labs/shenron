@@ -10,7 +10,7 @@ services:
     environment:
       POSTGRES_DB: shenron_site
       POSTGRES_USER: shenron
-      POSTGRES_PASSWORD: shenron_local_only
+      POSTGRES_PASSWORD: ${SHENRON_LOCAL_POSTGRES_PASSWORD:-shenron_local_only}
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
@@ -24,7 +24,16 @@ services:
 
   redis:
     image: redis:7-alpine
-    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "256mb", "--maxmemory-policy", "volatile-lru"]
+    command:
+      [
+        "redis-server",
+        "--appendonly",
+        "yes",
+        "--maxmemory",
+        "256mb",
+        "--maxmemory-policy",
+        "volatile-lru",
+      ]
     restart: unless-stopped
     ports:
       - "127.0.0.1:6379:6379"

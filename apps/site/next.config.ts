@@ -189,6 +189,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "en.dragon-ball-official.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "www.dragon-ball-official.com",
         pathname: "/**",
       },

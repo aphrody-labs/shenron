@@ -8,7 +8,8 @@
  * localhost origins, no analytics, and no production Discord gateway token (a second session on
  * the production bot would answer twice). Values are never printed.
  *
- *   bun scripts/dev/env-pull.ts pull [--host vps|dbfr]   private copy + apps/site/.env.local, apps/bot/.env
+ *   bun scripts/dev/env-pull.ts pull [--host vps|dbfr] [--local-services]
+ *                                                        private copy + development env files
  *   bun scripts/dev/env-pull.ts remote [--host vps]      same dev files written into ~/shenron-dev on the host
  *   bun scripts/dev/env-pull.ts tunnel [--host vps]      forward PostgreSQL (15433) and the AI chat (8799)
  *   bun scripts/dev/env-pull.ts status                   key counts and missing contract keys, no values
@@ -18,6 +19,7 @@
  * See docs/operations/DEV-LOCAL.md.
  */
 import { chmod, mkdir } from "node:fs/promises";
+import { randomBytes } from "node:crypto";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 
@@ -36,6 +38,12 @@ export const SERVICES: Record<Service, { unit: string; target: string }> = {
 };
 
 export type EnvMap = Map<string, string>;
+
+export interface LocalCredentials {
+  authSecret: string;
+  adminToken: string;
+  userSecret: string;
+}
 
 export function parseEnv(text: string): EnvMap {
   const env: EnvMap = new Map();
@@ -56,7 +64,13 @@ const ANALYTICS = /^NEXT_PUBLIC_(GTM_ID|GA_ID|ADSENSE_.*)$/;
 const GATEWAY_TOKEN = /^(DISCORD_TOKEN(_[A-Z_]+)?|APPLICATION_ID_[A-Z_]+)$/;
 
 /** Rewrites a production env map for development; pure, so it is unit tested. */
-export function deriveDev(service: Service, prod: EnvMap, devToken?: string): EnvMap {
+export function deriveDev(
+  service: Service,
+  prod: EnvMap,
+  devToken?: string,
+  localServices = false,
+  localCredentials?: LocalCredentials,
+): EnvMap {
   const origin = `http://localhost:${DEV_PORT}`;
   const env: EnvMap = new Map();
   for (const [key, value] of prod) {
@@ -73,6 +87,40 @@ export function deriveDev(service: Service, prod: EnvMap, devToken?: string): En
     env.set("API_HOST", "127.0.0.1");
     const token = devToken ?? prod.get("DISCORD_TOKEN_DEV");
     if (token) env.set("DISCORD_TOKEN_SHENRON", token);
+  }
+
+  if (localServices) {
+    if (!localCredentials) throw new Error("local credentials are required for local services");
+    const databaseUrl = "postgresql://shenron:shenron_local_only@127.0.0.1:5432/shenron_site_local";
+    if (service === "site") {
+      env.set("DATABASE_URL", databaseUrl);
+      if (env.has("SITE_BUILD_DATABASE_URL")) env.set("SITE_BUILD_DATABASE_URL", databaseUrl);
+      env.set("REDIS_URL", "redis://127.0.0.1:6379/0");
+      if (env.has("VALKEY_URL")) env.set("VALKEY_URL", "redis://127.0.0.1:6379/0");
+      env.set("BETTER_AUTH_SECRET", localCredentials.authSecret);
+      env.set("SHENRON_ADMIN_TOKEN", localCredentials.adminToken);
+      env.set("SHENRON_USER_SECRET", localCredentials.userSecret);
+      env.set("SHENRON_API_URL", "http://127.0.0.1:5006");
+      if (env.has("SHENRON_PUBLIC_API_URL"))
+        env.set("SHENRON_PUBLIC_API_URL", "http://localhost:5006");
+      env.set("NEXT_PUBLIC_SHENRON_API_URL", "http://localhost:5006");
+      env.set("NEXT_PUBLIC_CDN_URL", "http://localhost:8080");
+      env.set("NEXT_PUBLIC_SHENRON_ASSETS_URL", "http://localhost:8080");
+      env.set("SHENRON_PUBLIC_ASSETS_URL", "http://localhost:8080");
+      env.set("SHENRON_LOCAL_POSTGRES_PASSWORD", "shenron_local_only");
+      env.set("SHENRON_LOCAL_STACK", "1");
+    } else {
+      env.set("DATABASE_URL", databaseUrl);
+      env.set("REDIS_URL", "redis://127.0.0.1:6379/0");
+      env.set("API_ADMIN_TOKEN", localCredentials.adminToken);
+      env.set("SHENRON_ADMIN_TOKEN", localCredentials.adminToken);
+      env.set("API_USER_SECRET", localCredentials.userSecret);
+      env.set("SHENRON_USER_SECRET", localCredentials.userSecret);
+      env.set("SESSION_SECRET", localCredentials.authSecret);
+      env.set("API_HOST", "127.0.0.1");
+      env.set("API_PORT", "5006");
+      env.set("SHENRON_LOCAL_STACK", "1");
+    }
   }
   return env;
 }
@@ -124,8 +172,8 @@ async function contractCheck(service: Service, path: string): Promise<string> {
 function infraRoot(): string {
   return (
     process.env.APHRODY_INFRA_ROOT ??
-    [join(homedir(), "aphrody", "tools"), "C:/aphrody/tools"].find(
-      (dir) => Bun.file(join(dir, "config", "secrets-contract.json")).size > 0,
+    [join(homedir(), "aphrody"), "C:/aphrody"].find(
+      (dir) => Bun.file(join(dir, "tools", "config", "secrets-contract.json")).size > 0,
     ) ??
     "."
   );
@@ -146,10 +194,21 @@ async function pull(host: string): Promise<Map<Service, EnvMap>> {
   return result;
 }
 
-async function writeDev(prod: Map<Service, EnvMap>, remoteHost?: string): Promise<void> {
+async function writeDev(
+  prod: Map<Service, EnvMap>,
+  remoteHost?: string,
+  localServices = false,
+): Promise<void> {
   const devToken = process.env.SHENRON_BOT_DEV_TOKEN;
+  const localCredentials = localServices
+    ? {
+        authSecret: randomSecret(),
+        adminToken: randomSecret(),
+        userSecret: randomSecret(),
+      }
+    : undefined;
   for (const [service, env] of prod) {
-    const dev = deriveDev(service, env, devToken);
+    const dev = deriveDev(service, env, devToken, localServices, localCredentials);
     const text = serializeEnv(
       dev,
       `generated by scripts/dev/env-pull.ts from ${SERVICES[service].unit}.env; private, never commit`,
@@ -168,6 +227,10 @@ async function writeDev(prod: Map<Service, EnvMap>, remoteHost?: string): Promis
   }
 }
 
+function randomSecret(): string {
+  return randomBytes(32).toString("hex");
+}
+
 async function loadStore(): Promise<Map<Service, EnvMap>> {
   const result = new Map<Service, EnvMap>();
   for (const service of Object.keys(SERVICES) as Service[]) {
@@ -183,7 +246,7 @@ async function main(): Promise<void> {
   const host = option(args, "--host", process.env.SHENRON_DEV_HOST ?? "vps");
   switch (command) {
     case "pull":
-      await writeDev(await pull(host));
+      await writeDev(await pull(host), undefined, args.includes("--local-services"));
       return;
     case "remote":
       await writeDev(await pull(host), host);
