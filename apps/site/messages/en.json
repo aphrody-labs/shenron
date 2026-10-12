@@ -105,6 +105,7 @@
       "anonymous": "Anonymous Warrior",
       "level": "Level {level}",
       "unavailable": "Ranking temporarily unavailable.",
+      "empty": "No members have earned XP yet.",
       "allRanking": "All ranking",
       "onlineNow": "Connected now",
       "onlineCount": "{count} warrior(s) online on the server.",

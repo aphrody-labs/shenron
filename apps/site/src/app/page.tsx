@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import {
   getShenronPersonas,
   getShenronStats,
-  getShenronLeaderboard,
+  getShenronLeaderboardResult,
   getShenronPresence,
 } from "@/lib/shenron";
 import { HomeView } from "@/components/home/HomeView";
@@ -186,7 +186,7 @@ export default async function Home() {
     sagas,
     bestof,
     communityTops,
-    topMembers,
+    leaderboard,
     presence,
     config,
     access,
@@ -204,7 +204,7 @@ export default async function Home() {
     getSagas(),
     getSagaBestOf(),
     getHomeCommunityTops(),
-    getShenronLeaderboard(12, true, 900).catch(() => []),
+    getShenronLeaderboardResult(12, true, 900),
     getShenronPresence(900).catch(() => ({ total: 0, online: 0, members: [] })),
     getHomeConfig(),
     // Instantané de la configuration de lancement : les îlots client ne peuvent
@@ -252,7 +252,7 @@ export default async function Home() {
       bestof={bestof}
       communityTops={communityTops}
       feed={feed}
-      topMembers={topMembers.map((m) => ({
+      topMembers={leaderboard.entries.map((m) => ({
         rank: m.rank,
         discordId: m.discordId,
         username: m.username,
@@ -260,6 +260,7 @@ export default async function Home() {
         xp: m.xp,
         level: m.level,
       }))}
+      topMembersAvailable={leaderboard.available}
       presence={presence}
       catalog={catalog}
       canon={{ doctrine: canonDoctrine, references: canonReferences.length }}

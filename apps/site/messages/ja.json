@@ -105,6 +105,7 @@
       "anonymous": "匿名の戦士",
       "level": "レベル{level}",
       "unavailable": "ランキングは一時的に利用できなくなりました。",
+      "empty": "まだ経験値を獲得したメンバーはいません。",
       "allRanking": "全ランキング",
       "onlineNow": "現在接続中です",
       "onlineCount": "{count} 戦士はサーバー上でオンラインです。",

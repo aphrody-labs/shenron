@@ -60,6 +60,7 @@ export interface HomeViewProps {
   stats: BotStats;
   personas: PersonaLive[];
   topMembers: TopMember[];
+  topMembersAvailable: boolean;
   presence: PresenceState;
   wikiCounts: WikiCounts;
   characters: FeaturedCharacter[];
@@ -190,6 +191,7 @@ export function HomeView(rawProps: HomeViewProps) {
       stats={props.stats}
       personas={props.personas}
       topMembers={props.topMembers}
+      topMembersAvailable={props.topMembersAvailable}
       presence={props.presence}
     >
       <DbsBeerusSpotlight />

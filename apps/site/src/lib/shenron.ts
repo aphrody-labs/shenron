@@ -42,6 +42,7 @@ interface WithArticle {
 // Base de l'API bot résolue par `@/lib/config` (source unique des URL). PAS
 // dragonballfr.com (le site lui-même) → sinon les appels runtime boucleraient.
 import { API_URL as SHENRON_API_URL } from "@/lib/config";
+import { parseLeaderboardPayload } from "@/lib/leaderboard-state";
 import { graphiesDeRace, slugDeRace } from "@aphrody/shenron-config/races-alias";
 import {
   CHARACTER_DUPLICATE_REDIRECTS,
@@ -507,13 +508,13 @@ export async function getShenronShopCatalog(): Promise<{
   }
 }
 
-export async function getShenronLeaderboard(
+export async function getShenronLeaderboardResult(
   limit = 100,
   enrich = true,
   revalidateSec = 60,
   metric: "xp" | "zeni" = "xp",
   period: "general" | "month" = "general",
-): Promise<LeaderboardEntry[]> {
+): Promise<{ entries: LeaderboardEntry[]; available: boolean }> {
   try {
     const res = await fetch(
       `${SHENRON_API_URL}/api/public/leaderboard?limit=${limit}&metric=${metric}&period=${period}${enrich ? "&enrich=1" : ""}`,
@@ -521,13 +522,23 @@ export async function getShenronLeaderboard(
         next: { revalidate: revalidateSec },
       },
     );
-    if (!res.ok) return [];
+    if (!res.ok) return { entries: [], available: false };
     const data = await res.json();
-    return data.leaderboard || [];
+    return parseLeaderboardPayload<LeaderboardEntry>(data);
   } catch (e) {
     console.error("[shenron] getShenronLeaderboard a échoué:", e);
-    return [];
+    return { entries: [], available: false };
   }
+}
+
+export async function getShenronLeaderboard(
+  limit = 100,
+  enrich = true,
+  revalidateSec = 60,
+  metric: "xp" | "zeni" = "xp",
+  period: "general" | "month" = "general",
+): Promise<LeaderboardEntry[]> {
+  return (await getShenronLeaderboardResult(limit, enrich, revalidateSec, metric, period)).entries;
 }
 
 /**

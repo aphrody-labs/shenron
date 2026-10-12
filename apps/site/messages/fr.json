@@ -105,6 +105,7 @@
       "anonymous": "Guerrier anonyme",
       "level": "Niveau {level}",
       "unavailable": "Classement momentanément indisponible.",
+      "empty": "Aucun membre n’a encore gagné d’XP.",
       "allRanking": "Tout le classement",
       "onlineNow": "Connectés maintenant",
       "onlineCount": "{count} guerrier(s) en ligne sur le serveur.",

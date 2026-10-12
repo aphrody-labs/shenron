@@ -38,6 +38,7 @@ const VIDE: LiveState = {
   },
   personas: [],
   topMembers: [],
+  topMembersAvailable: false,
   presence: { total: 0, online: 0, members: [] },
   onlineCount: 0,
   connected: false,
@@ -53,16 +54,18 @@ export function HomeLiveProvider({
   stats,
   personas,
   topMembers,
+  topMembersAvailable,
   presence,
   children,
 }: {
   stats: BotStats;
   personas: PersonaLive[];
   topMembers: TopMember[];
+  topMembersAvailable: boolean;
   presence: PresenceState;
   children: ReactNode;
 }) {
-  const live = useLiveBotState({ stats, personas, topMembers, presence });
+  const live = useLiveBotState({ stats, personas, topMembers, topMembersAvailable, presence });
   return <LiveContext.Provider value={live}>{children}</LiveContext.Provider>;
 }
 
@@ -202,7 +205,7 @@ export function HomePantheon({
   className?: string;
 }) {
   const t = useT();
-  const { topMembers } = useContext(LiveContext);
+  const { topMembers, topMembersAvailable } = useContext(LiveContext);
   return (
     <section
       id="pantheon"
@@ -220,8 +223,10 @@ export function HomePantheon({
           {t("home.pantheon.allRanking")}
         </Link>
       </div>
-      {topMembers.length === 0 ? (
+      {!topMembersAvailable ? (
         <p className="mt-2 text-sm text-os/65">{t("home.pantheon.unavailable")}</p>
+      ) : topMembers.length === 0 ? (
+        <p className="mt-2 text-sm text-os/65">{t("home.pantheon.empty")}</p>
       ) : (
         <ol className="mt-1 divide-y divide-os/10">
           {topMembers.slice(0, limit).map((m) => (

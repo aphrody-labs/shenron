@@ -55,6 +55,7 @@ export interface LiveState {
   stats: BotStats;
   personas: PersonaLive[];
   topMembers: TopMember[];
+  topMembersAvailable: boolean;
   presence: PresenceState;
   onlineCount: number;
   connected: boolean;
@@ -90,11 +91,15 @@ export function useLiveBotState(initial: {
   stats: BotStats;
   personas: PersonaLive[];
   topMembers?: TopMember[];
+  topMembersAvailable?: boolean;
   presence?: PresenceState;
 }): LiveState {
   const [stats, setStats] = useState<BotStats>(initial.stats);
   const [personas, setPersonas] = useState<PersonaLive[]>(initial.personas);
   const [topMembers, setTopMembers] = useState<TopMember[]>(initial.topMembers ?? []);
+  const [topMembersAvailable, setTopMembersAvailable] = useState(
+    initial.topMembersAvailable ?? (initial.topMembers?.length ?? 0) > 0,
+  );
   const [presence, setPresence] = useState<PresenceState>(
     initial.presence ?? { total: 0, online: 0, members: [] },
   );
@@ -141,7 +146,10 @@ export function useLiveBotState(initial: {
         if (s && typeof s.users === "number") setStats((prev) => ({ ...prev, ...s }));
         // Liste vide valide = plus aucune persona en ligne : on l'applique.
         if (Array.isArray(p?.personas)) setPersonas(p.personas);
-        if (Array.isArray(lb?.leaderboard)) setTopMembers(lb.leaderboard);
+        if (Array.isArray(lb?.leaderboard)) {
+          setTopMembers(lb.leaderboard);
+          setTopMembersAvailable(true);
+        }
         if (pr && typeof pr.online === "number") setPresence(pr);
       } finally {
         inFlight = false;
@@ -237,6 +245,7 @@ export function useLiveBotState(initial: {
     stats,
     personas,
     topMembers,
+    topMembersAvailable,
     presence,
     onlineCount,
     connected,
