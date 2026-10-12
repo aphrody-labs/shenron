@@ -146,6 +146,7 @@
     "start": "bun run --filter @aphrody/shenron-site start",
     "typecheck": "bun scripts/testing/workspace-gates.ts typecheck",
     "typecheck:scripts": "tsc --noEmit -p scripts",
+    "i18n:contract": "bun scripts/i18n/complete-contract.ts",
     "check:native": "bun scripts/testing/native-quality.ts check",
     "lint:native": "bun scripts/testing/native-quality.ts lint",
     "format:native:check": "bun scripts/testing/native-quality.ts fmt",
