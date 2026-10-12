@@ -29,24 +29,7 @@ type Status =
   | { state: "done"; detail: string }
   | { state: "error"; detail: string };
 
-const STORAGE_KEY = "aphrody.koharu.shenron-export";
 const fieldClass = "h-7 w-full rounded border border-border bg-transparent px-2 text-[11px]";
-
-function loadSettings(): { apiUrl: string; token: string } {
-  try {
-    const raw = globalThis.localStorage?.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as { apiUrl?: unknown; token?: unknown };
-      return {
-        apiUrl: typeof parsed.apiUrl === "string" ? parsed.apiUrl : "",
-        token: typeof parsed.token === "string" ? parsed.token : "",
-      };
-    }
-  } catch {
-    // ignore unreadable storage
-  }
-  return { apiUrl: "", token: "" };
-}
 
 function mimeFor(image: string): KoharuMangaPageSource["mime"] {
   if (/\.jpe?g$/i.test(image)) return "image/jpeg";
@@ -61,7 +44,6 @@ async function sha256Hex(bytes: Uint8Array): Promise<string> {
 }
 
 export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
-  const [settings, setSettings] = useState(loadSettings);
   const [pages, setPages] = useState<PageSummary[]>([]);
   const [bindings, setBindings] = useState<Record<string, Binding>>({});
   const [statuses, setStatuses] = useState<Record<string, Status>>({});
@@ -80,14 +62,6 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
   useEffect(() => {
     void refresh();
   }, [refresh]);
-
-  useEffect(() => {
-    try {
-      globalThis.localStorage?.setItem(STORAGE_KEY, JSON.stringify(settings));
-    } catch {
-      // ignore unwritable storage
-    }
-  }, [settings]);
 
   const setBinding = (page: string, patch: Partial<Binding>) =>
     setBindings((current) => ({
@@ -126,13 +100,9 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
       };
     }
     const candidate = toMangaReviewCandidateInput(mapped, manifest);
-    const base = settings.apiUrl.trim().replace(/\/+$/, "");
-    const response = await fetch(`${base}/api/manga/candidates`, {
+    const response = await fetch("/api/local/koharu/candidates", {
       method: "POST",
-      headers: {
-        "content-type": "application/json",
-        ...(settings.token ? { authorization: `Bearer ${settings.token}` } : {}),
-      },
+      headers: { "content-type": "application/json" },
       body: JSON.stringify(candidate),
     });
     const text = await response.text();
@@ -141,10 +111,6 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
   };
 
   const exportAll = async () => {
-    if (!settings.apiUrl.trim()) {
-      setError("SHENRON_API_URL manquant.");
-      return;
-    }
     setRunning(true);
     setError(null);
     for (const page of pages) {
@@ -164,24 +130,9 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-2.5 text-[11px]">
-      <label className="grid gap-1">
-        <span>SHENRON_API_URL</span>
-        <input
-          className={fieldClass}
-          type="url"
-          value={settings.apiUrl}
-          onChange={(e) => setSettings({ ...settings, apiUrl: e.currentTarget.value })}
-        />
-      </label>
-      <label className="grid gap-1">
-        <span>Jeton</span>
-        <input
-          className={fieldClass}
-          type="password"
-          value={settings.token}
-          onChange={(e) => setSettings({ ...settings, token: e.currentTarget.value })}
-        />
-      </label>
+      <p className="rounded border border-border/80 bg-muted/20 p-2 text-[10px] leading-4 text-muted-foreground">
+        Les candidats sont envoyés au catalogue Shenron local avec l’authentification du serveur.
+      </p>
       <div className="flex gap-1">
         <button
           type="button"

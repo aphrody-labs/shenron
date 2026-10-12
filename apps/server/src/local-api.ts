@@ -68,6 +68,39 @@ export function libraryPath(paths: ServerPaths, env: NodeJS.ProcessEnv): string 
 
 const withoutNul = (text: string) => text.replaceAll("\0", "");
 
+async function submitKoharuCandidate(
+  request: Request,
+  env: NodeJS.ProcessEnv,
+  headers: Record<string, string>,
+): Promise<Response> {
+  const target = env.SHENRON_API_URL?.trim();
+  const token =
+    env.API_ADMIN_TOKEN?.trim() ||
+    env.SHENRON_API_ADMIN_TOKEN?.trim() ||
+    env.SHENRON_ADMIN_TOKEN?.trim();
+  if (!target || !token)
+    return Response.json({ error: "catalog_unavailable" }, { status: 503, headers });
+  const body = await request.text();
+  if (body.length > 2 * 1024 * 1024)
+    return Response.json({ error: "body_too_large" }, { status: 413, headers });
+  try {
+    JSON.parse(body);
+  } catch {
+    return Response.json({ error: "invalid_json" }, { status: 400, headers });
+  }
+  try {
+    const response = await fetch(new URL("/api/manga/candidates", target), {
+      method: "POST",
+      headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
+      body,
+      signal: request.signal,
+    });
+    return new Response(response.body, { status: response.status, headers });
+  } catch {
+    return Response.json({ error: "catalog_unavailable" }, { status: 503, headers });
+  }
+}
+
 async function aphrodyHostCatalog(): Promise<Record<string, unknown>> {
   const aphrody = Bun.which("aphrody");
   const command = aphrody ? [aphrody, "model", "catalog", "--json"] : null;
@@ -186,6 +219,11 @@ export function localApi(
       if (peer && !/^127\.0\.0\.1$|^::1$/.test(peer))
         return Response.json({ error: "loopback_only" }, { status: 403, headers });
       return Response.json(await aphrodyHostCatalog(), { headers });
+    }
+    if (url.pathname === "/api/local/koharu/candidates" && request.method === "POST") {
+      if (peer && !/^127\.0\.0\.1$|^::1$/.test(peer))
+        return Response.json({ error: "loopback_only" }, { status: 403, headers });
+      return submitKoharuCandidate(request, env, headers);
     }
     if (url.pathname === "/api/local/rag/search") {
       const query = url.searchParams.get("q")?.trim() ?? "";
