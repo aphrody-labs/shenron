@@ -1,25 +1,13 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
-# Spécifications Techniques : `shenron-re`
 
-> **Rattachement** : Section 4 du [Plan Directeur Unique](file:///home/aphro/shenron/docs/reference/root/PLAN.md).  
-> **Cible** : Workspace Shenron ([`crates/shenron-re`](file:///home/aphro/shenron/crates/shenron-re)), ponts `aphrody-re` & `aphrody-winclean`.
+# Shenron RE
 
----
+La spécification `shenron-re` est intégrée au plan directeur unique :
 
-## 1. Découpage Modulaire
+- [section 4 — Shenron RE](../reference/root/PLAN.md#4-chantier-reverse-engineering--formats-jeux-shenron-re) ;
+- [architecture et contrats](../architecture/STACK.md) ;
+- [preuves et état courant](../reference/root/REPRISE.md).
 
-* **`shenron-re-fs`** : Parsing pur Rust des archives CRIWARE CPK et compression CRILAYLA (`zerocopy` + `binrw`).
-* **`shenron-re-formats`** : Décodage des formats binaires Dimps de Dragon Ball Xenoverse 2 :
-  * `BAC` : Scripts d'animation, déclencheurs d'effets visuels et hitbox.
-  * `BDM` : Matrices de dégâts et coefficients d'impact.
-  * `CUS` & `PUP` : Métadonnées des compétences et modificateurs de statistiques de combat.
-  * `MSG` : Dialogues et fiches multilingues intégrés au RAG et au VFS.
-* **`shenron-re-live`** : Inspection mémoire temps réel en environnement de test isolé.
-
----
-
-## 2. Intégration dans l'Écosystème Shenron
-
-* **RAG & Connaissance** : Les extractions de lore et descriptions alimentent le corpus RAG (`aphrody-rag`).
-* **API Publique** : Les multiplicateurs et données de combat alimentent les fiches de techniques sur `dragonballfr.com`.
-* **Shenron Studio** : Rendu des modèles 3D via le viewport WebGPU et lecture des fichiers audio HCA.
+Les crates `shenron-re-*`, leurs parseurs et leurs intégrations restent soumis aux portes
+du plan directeur. Ce fichier est conservé comme point d’entrée historique pour les liens
+existants ; il ne contient pas une seconde spécification.
