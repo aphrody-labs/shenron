@@ -51,13 +51,15 @@ type Status =
   | { state: "done"; detail: string }
   | { state: "error"; detail: string };
 
+type CatalogState = "loading" | "ready" | "empty" | "unavailable";
+
 const fieldClass = "h-7 w-full rounded border border-border bg-transparent px-2 text-[11px]";
 
-function mimeFor(image: string): KoharuMangaPageSource["mime"] {
+function mimeFor(image: string, t: (key: string) => string): KoharuMangaPageSource["mime"] {
   if (/\.jpe?g$/i.test(image)) return "image/jpeg";
   if (/\.png$/i.test(image)) return "image/png";
   if (/\.webp$/i.test(image)) return "image/webp";
-  throw new Error("image path needs a .jpg, .png or .webp extension");
+  throw new Error(t("shenronExport.imageTypeUnsupported"));
 }
 
 async function sha256Hex(bytes: Uint8Array): Promise<string> {
@@ -69,6 +71,7 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
   const { t } = useTranslation();
   const [pages, setPages] = useState<PageSummary[]>([]);
   const [volumes, setVolumes] = useState<CatalogVolume[]>([]);
+  const [catalogState, setCatalogState] = useState<CatalogState>("loading");
   const [series, setSeries] = useState("DB");
   const [volume, setVolume] = useState("");
   const [catalogPages, setCatalogPages] = useState<CatalogPage[]>([]);
@@ -89,27 +92,36 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
   }, []);
 
   useEffect(() => {
-    void refresh();
+    void Promise.resolve().then(refresh);
   }, [refresh]);
 
   useEffect(() => {
     const controller = new AbortController();
-    void fetch(`/api/local/koharu/catalog?series=${series}`, { signal: controller.signal })
-      .then((response) => (response.ok ? response.json() : null))
-      .then((body: { volumes?: CatalogVolume[] } | null) => {
-        const next = body?.volumes ?? [];
+    void (async () => {
+      try {
+        const response = await fetch(`/api/local/koharu/catalog?series=${series}`, {
+          signal: controller.signal,
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const body = (await response.json()) as { volumes?: CatalogVolume[] };
+        if (!Array.isArray(body?.volumes)) throw new Error("Invalid manga catalog response");
+        const next = body.volumes;
         setVolumes(next);
         setVolume((current) => (next.some((item) => item.volume === current) ? current : ""));
-      })
-      .catch(() => undefined);
+        setCatalogState(next.length ? "ready" : "empty");
+      } catch {
+        if (!controller.signal.aborted) {
+          setVolumes([]);
+          setVolume("");
+          setCatalogState("unavailable");
+        }
+      }
+    })();
     return () => controller.abort();
   }, [series]);
 
   useEffect(() => {
-    if (!volume) {
-      setCatalogPages([]);
-      return;
-    }
+    if (!volume) return;
     const controller = new AbortController();
     void fetch(`/api/local/koharu/catalog?series=${series}&volume=${encodeURIComponent(volume)}`, {
       signal: controller.signal,
@@ -120,21 +132,19 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
     return () => controller.abort();
   }, [series, volume]);
 
-  useEffect(() => {
-    if (!volume || !catalogPages.length || !pages.length) return;
-    setBindings((current) => {
-      const updated = { ...current };
-      for (const [index, page] of pages.entries()) {
-        const catalogPage = catalogPages[index];
-        if (!catalogPage) break;
-        updated[page.id] = {
-          ...(updated[page.id] ?? { sourceSha256: "", image: "" }),
-          mangaPageId: `${series}:${volume}:${catalogPage.page}`,
-        };
-      }
-      return updated;
-    });
-  }, [catalogPages, pages, series, volume]);
+  const selectCatalogTarget = (nextSeries: string, nextVolume: string) => {
+    if (nextSeries === series && nextVolume === volume) return;
+    if (nextSeries !== series) setCatalogState("loading");
+    setSeries(nextSeries);
+    setVolume(nextVolume);
+    setCatalogPages([]);
+    setStatuses({});
+    setBindings((current) =>
+      Object.fromEntries(
+        Object.entries(current).map(([page, binding]) => [page, { ...binding, mangaPageId: "" }]),
+      ),
+    );
+  };
 
   const searchCatalog = async () => {
     const value = query.trim();
@@ -160,20 +170,34 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
     }));
 
   const exportPage = async (page: PageSummary, binding: Binding) => {
+    if (
+      !catalogPages.some(
+        (catalogPage) => `${series}:${volume}:${catalogPage.page}` === binding.mangaPageId.trim(),
+      )
+    ) {
+      throw new Error(t("shenronExport.pageTargetRequired"));
+    }
+    const sourceSha256 = binding.sourceSha256.trim().toLowerCase();
+    if (!/^[a-f0-9]{64}$/.test(sourceSha256)) {
+      throw new Error(t("shenronExport.sourceHashInvalid"));
+    }
+    const image = binding.image.trim();
+    if (!image) throw new Error(t("shenronExport.imageRequired"));
+    const mime = mimeFor(image, t);
     const result = await commands.getPageResult(page.id);
     const sha256 = await commands.getPageSourceSha256(page.id);
     const manifest: MangaCandidateBinding = {
       id: binding.mangaPageId.trim(),
-      sourceSha256: binding.sourceSha256.trim().toLowerCase(),
+      sourceSha256,
       imageSha256: sha256,
-      image: binding.image.trim(),
+      image,
     };
     const source: KoharuMangaPageSource = {
       kind: "manga",
       pageId: manifest.id,
       sourceSha256: manifest.sourceSha256,
       imageSha256: manifest.imageSha256,
-      mime: mimeFor(manifest.image),
+      mime,
       width: page.size.width,
       height: page.size.height,
     };
@@ -228,16 +252,20 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
         <select
           className={fieldClass}
           value={series}
-          onChange={(event) => setSeries(event.target.value)}
+          onChange={(event) => selectCatalogTarget(event.target.value, "")}
         >
           <option value="DB">{t("shenronExport.dragonBall")}</option>
           <option value="DBS">{t("shenronExport.dragonBallSuper")}</option>
         </select>
       </label>
-      <p className="text-[10px] text-muted-foreground">
-        {volumes.length
-          ? t("shenronExport.volumeCount", { count: volumes.length })
-          : t("shenronExport.emptyCatalog")}
+      <p className="text-[10px] text-muted-foreground" aria-live="polite">
+        {catalogState === "loading"
+          ? t("shenronExport.catalogLoading")
+          : catalogState === "ready"
+            ? t("shenronExport.volumeCount", { count: volumes.length })
+            : catalogState === "empty"
+              ? t("shenronExport.emptyCatalog")
+              : t("shenronExport.catalogUnavailable")}
       </p>
       <div className="grid gap-1">
         <span>{t("shenronExport.searchTitle")}</span>
@@ -267,8 +295,7 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
                   type="button"
                   className="w-full truncate text-left hover:text-primary"
                   onClick={() => {
-                    setSeries(hit.series);
-                    setVolume(hit.tome);
+                    selectCatalogTarget(hit.series, hit.tome);
                   }}
                 >
                   {hit.series}:{hit.tome}:{hit.planche} · {hit.snippet || hit.lang}
@@ -283,11 +310,9 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
         <select
           className={fieldClass}
           value={volume}
-          disabled={!volumes.length}
+          disabled={catalogState !== "ready"}
           onChange={(event) => {
-            const next = event.target.value;
-            setVolume(next);
-            if (!next) return;
+            selectCatalogTarget(series, event.target.value);
           }}
         >
           <option value="">{t("shenronExport.selectVolume")}</option>
@@ -314,7 +339,10 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
                   {page.text?.trim() || t("shenronExport.noOcr")}
                 </span>
                 <span className="shrink-0 text-muted-foreground">
-                  {page.hasJa ? "JP" : "—"} · {page.lineCount}
+                  {page.hasJa
+                    ? t("shenronExport.japaneseShort")
+                    : t("shenronExport.noJapaneseShort")}{" "}
+                  · {page.lineCount}
                 </span>
               </li>
             ))}
@@ -328,15 +356,15 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
           onClick={() => void refresh()}
           disabled={running}
         >
-          Actualiser
+          {t("shenronExport.refresh")}
         </button>
         <button
           type="button"
           className="h-7 flex-1 rounded bg-primary text-primary-foreground"
           onClick={() => void exportAll()}
-          disabled={running || pages.length === 0}
+          disabled={running || !pages.some((page) => bindings[page.id]?.mangaPageId.trim())}
         >
-          Exporter
+          {t("shenronExport.export")}
         </button>
       </div>
       {error && (
@@ -354,32 +382,56 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
                 <span className="truncate font-medium">{page.label}</span>
                 <span data-state={status.state}>
                   {status.state === "idle"
-                    ? "—"
+                    ? t("shenronExport.statusIdle")
                     : status.state === "busy"
-                      ? "…"
+                      ? t("shenronExport.statusBusy")
                       : status.state === "done"
-                        ? `OK ${status.detail}`
-                        : "Erreur"}
+                        ? t("shenronExport.statusDone", { detail: status.detail })
+                        : t("shenronExport.statusError")}
                 </span>
               </div>
-              <input
-                className={fieldClass}
-                placeholder="ID page manga"
-                value={binding?.mangaPageId ?? ""}
-                onChange={(e) => setBinding(page.id, { mangaPageId: e.currentTarget.value })}
-              />
-              <input
-                className={fieldClass}
-                placeholder="sourceSha256 (manifeste)"
-                value={binding?.sourceSha256 ?? ""}
-                onChange={(e) => setBinding(page.id, { sourceSha256: e.currentTarget.value })}
-              />
-              <input
-                className={fieldClass}
-                placeholder="image (manifeste)"
-                value={binding?.image ?? ""}
-                onChange={(e) => setBinding(page.id, { image: e.currentTarget.value })}
-              />
+              <label className="grid gap-1">
+                <span>{t("shenronExport.pageTarget", { page: page.label })}</span>
+                <select
+                  className={fieldClass}
+                  value={binding?.mangaPageId ?? ""}
+                  disabled={!catalogPages.length || !volume}
+                  onChange={(event) => setBinding(page.id, { mangaPageId: event.target.value })}
+                >
+                  <option value="">{t("shenronExport.selectPage")}</option>
+                  {catalogPages.map((catalogPage) => (
+                    <option
+                      key={catalogPage.page}
+                      value={`${series}:${volume}:${catalogPage.page}`}
+                    >
+                      {t("shenronExport.pageOption", {
+                        page: catalogPage.page,
+                        language: catalogPage.hasJa
+                          ? t("shenronExport.japaneseShort")
+                          : t("shenronExport.noJapaneseShort"),
+                      })}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="grid gap-1">
+                <span>{t("shenronExport.sourceHash")}</span>
+                <input
+                  className={fieldClass}
+                  placeholder={t("shenronExport.sourceHashPlaceholder")}
+                  value={binding?.sourceSha256 ?? ""}
+                  onChange={(event) => setBinding(page.id, { sourceSha256: event.target.value })}
+                />
+              </label>
+              <label className="grid gap-1">
+                <span>{t("shenronExport.manifestImage")}</span>
+                <input
+                  className={fieldClass}
+                  placeholder={t("shenronExport.manifestImagePlaceholder")}
+                  value={binding?.image ?? ""}
+                  onChange={(event) => setBinding(page.id, { image: event.target.value })}
+                />
+              </label>
               {status.state === "error" && (
                 <p className="break-words text-destructive">{status.detail}</p>
               )}
