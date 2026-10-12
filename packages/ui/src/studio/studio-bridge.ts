@@ -82,6 +82,24 @@ export const nativeAi = {
   openAdmin: (url?: string) => studio<null>("studio_open_shenron_admin", { url: url ?? null }),
 };
 
+export interface PipelineCapability {
+  id: string;
+  label: string;
+  owner: string;
+}
+
+export interface PipelineCapabilities {
+  mode: string;
+  site: string;
+  mcp: string;
+  a2a: string;
+  capabilities: PipelineCapability[];
+}
+
+export const pipeline = {
+  capabilities: () => studio<PipelineCapabilities>("studio_pipeline_capabilities"),
+};
+
 export type TrainKind = "embed" | "rerank";
 
 export type TrainEvent =

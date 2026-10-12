@@ -152,6 +152,7 @@ fn main() {
                 shenron_studio::studio::studio_shenron_rag_search,
                 shenron_studio::studio::studio_shenron_training,
                 shenron_studio::studio::studio_native_ai_status,
+                shenron_studio::studio::studio_pipeline_capabilities,
                 shenron_studio::studio::studio_native_chat,
                 shenron_studio::studio::studio_open_shenron_admin,
                 shenron_studio::studio::studio_shenron_train_start,

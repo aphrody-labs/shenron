@@ -22,17 +22,20 @@ import { TrainingStudio } from "./TrainingStudio";
 import { isTauri } from "./tauri-bridge";
 import {
   shenron,
+  nativeAi,
   type ShenronHealth,
   type ShenronProbe,
   type ShenronRagHit,
   type ShenronRagStats,
 } from "./studio-bridge";
+import { pipeline, type PipelineCapabilities } from "./studio-bridge";
 
 const TABS = [
   ["pilotage", "Pilotage"],
   ["databooks", "Databooks"],
   ["entrainement", "Entraînement"],
   ["administration", "Administration"],
+  ["pipeline", "Pipeline natif"],
 ] as const;
 
 function message(error: unknown): string {
@@ -193,6 +196,7 @@ async function settle<T>(task: () => Promise<T>): Promise<[T | null, string | un
 
 export function ShenronStudio() {
   const [reports, setReports] = useState<Reports>({ health: null, stats: null, errors: {} });
+  const [pipelineInfo, setPipelineInfo] = useState<PipelineCapabilities | null>(null);
   const [busy, setBusy] = useState(false);
 
   const refresh = useCallback(async () => {
@@ -201,6 +205,8 @@ export function ShenronStudio() {
       settle(shenron.health),
       settle(shenron.ragStats),
     ]);
+    const pipelineState = await settle(pipeline.capabilities);
+    setPipelineInfo(pipelineState[0]);
     setReports({ health, stats, errors: { health: healthError, stats: statsError } });
     setBusy(false);
   }, []);
@@ -252,6 +258,38 @@ export function ShenronStudio() {
         </TabsPanel>
         <TabsPanel value="administration">
           <AdminStudio />
+        </TabsPanel>
+        <TabsPanel value="pipeline">
+          <section className="flex flex-col gap-4">
+            <SectionHeading
+              level={3}
+              title="Pipeline Aphrody natif"
+              standfirst="Capacités réellement fournies par les sidecars locaux."
+              actions={
+                <button type="button" className={primaryButtonClass} onClick={() => void nativeAi.openAdmin()}>
+                  Ouvrir le cockpit
+                </button>
+              }
+            />
+            {pipelineInfo ? (
+              <>
+                <div className="grid gap-3 md:grid-cols-2">
+                  {pipelineInfo.capabilities.map((capability) => (
+                    <div key={capability.id} className={rowClass}>
+                      <span>{capability.label}</span>
+                      <StatusChip ok>{capability.owner}</StatusChip>
+                    </div>
+                  ))}
+                </div>
+                <div className={panelClass}>
+                  <p>MCP : {pipelineInfo.mcp}</p>
+                  <p className="break-all">A2A : {pipelineInfo.a2a}</p>
+                </div>
+              </>
+            ) : (
+              <ErrorNote>Capacités pipeline indisponibles.</ErrorNote>
+            )}
+          </section>
         </TabsPanel>
       </Tabs>
     </div>

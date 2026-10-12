@@ -66,6 +66,33 @@ pub fn studio_native_ai_status() -> Value {
     })
 }
 
+/// Native pipeline surface advertised to Studio. Execution remains owned by the packaged
+/// Aphrody/Pipeline services; this command exposes the real local routes and capabilities so the
+/// UI never presents a fake local implementation.
+#[tauri::command]
+pub fn studio_pipeline_capabilities() -> Value {
+    let site = std::env::var("SHENRON_HOST_URL")
+        .or_else(|_| std::env::var("SHENRON_SITE_API_URL"))
+        .unwrap_or_else(|_| "http://127.0.0.1:3000".to_string());
+    let mcp = std::env::var("SHENRON_MCP_URL").unwrap_or_else(|_| "loopback sidecar".into());
+    serde_json::json!({
+        "mode": "native-desktop",
+        "site": site,
+        "mcp": mcp,
+        "a2a": format!("{site}/api/a2a"),
+        "capabilities": [
+            {"id":"ocr", "label":"OCR manga et databooks", "owner":"shenron-pipeline"},
+            {"id":"rag", "label":"RAG hybride et embeddings", "owner":"shenron-pipeline"},
+            {"id":"ai", "label":"IA ancrée et évaluation", "owner":"shenron-pipeline"},
+            {"id":"translation", "label":"Traduction Aphrody avec gates", "owner":"shenron-pipeline"},
+            {"id":"crawl", "label":"Crawl borné et ingestion", "owner":"shenron-pipeline"},
+            {"id":"unify", "label":"Unification des catalogues", "owner":"shenron-pipeline"},
+            {"id":"mcp-admin", "label":"MCP admin local", "owner":"shenron-mcp"},
+            {"id":"a2a", "label":"Synchronisation A2A", "owner":"shenron-mcp"}
+        ]
+    })
+}
+
 /// Chat completion on the local chat model (OpenAI-compatible `/v1/chat/completions`).
 #[tauri::command]
 pub async fn studio_native_chat(
