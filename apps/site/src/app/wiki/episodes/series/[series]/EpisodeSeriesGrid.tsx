@@ -66,7 +66,7 @@ export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
   const localizedEpisodes = useMemo(
     () =>
       episodes.map((episode) =>
-        episode.id === "DBS_BEERUS:131"
+        episode.id === "DBS_BEERUS:1"
           ? { ...episode, title: beerus("episodeTitle"), synopsis: beerus("episodeSynopsis") }
           : episode,
       ),

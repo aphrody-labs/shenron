@@ -27,7 +27,7 @@ export const SERIES_YEARS: Record<string, string> = {
   DBZ_KAI_FINAL: "2014-2015",
   DBGT: "1996-1997",
   DBS: "2015-2018",
-  DBS_BEERUS: "131",
+  DBS_BEERUS: "2026",
   DB_DAIMA: "2024-2025",
 };
 

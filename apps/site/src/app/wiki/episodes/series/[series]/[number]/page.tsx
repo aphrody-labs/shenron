@@ -1,18 +1,24 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { JsonLd } from "@/components/JsonLd";
 import { T } from "@/components/T";
-import { Billboard } from "@/components/stream/Billboard";
+import { BackgroundImage } from "@/components/media/BackgroundImage";
+import { VideoSourceSummary } from "@/components/episodes/VideoSourceSummary";
+import { VideoUnavailableCard } from "@/components/episodes/VideoUnavailableCard";
+import { EpisodeScenes } from "../../../[id]/EpisodeScenes";
+import { ShareButton } from "@/components/ShareButton";
 import { ogMeta } from "@/lib/og";
 import { getDictionary } from "@/lib/i18n";
-import { bannerForSeries } from "@/lib/banner-config";
 import { DBS_BEERUS_EPISODE_HREF, DBS_BEERUS_SERIES_CODE } from "@/lib/episode-series-catalogue";
 
 export const revalidate = 3600;
+const artwork = "/banners/dbs-beerus-2026.jpg";
+const providerUrl = "https://www.crunchyroll.com/fr/watch/GE00389313JAJP/the-god-who-destroys";
 
 export function generateStaticParams() {
-  return [{ series: DBS_BEERUS_SERIES_CODE, number: "131" }];
+  return [{ series: DBS_BEERUS_SERIES_CODE, number: "1" }];
 }
 
 export async function generateMetadata({
@@ -21,7 +27,7 @@ export async function generateMetadata({
   params: Promise<{ series: string; number: string }>;
 }): Promise<Metadata> {
   const { series, number } = await params;
-  if (series !== DBS_BEERUS_SERIES_CODE || number !== "131") notFound();
+  if (series !== DBS_BEERUS_SERIES_CODE || number !== "1") notFound();
   const text = getDictionary().dbsBeerus;
   const title = `${text.episodeTitle} — ${text.title}`;
   return {
@@ -32,6 +38,7 @@ export async function generateMetadata({
       description: text.episodeSynopsis,
       type: "video.episode",
       canonical: DBS_BEERUS_EPISODE_HREF,
+      image: artwork,
     }),
   };
 }
@@ -42,74 +49,84 @@ export default async function OfficialBeerusEpisodePage({
   params: Promise<{ series: string; number: string }>;
 }) {
   const { series, number } = await params;
-  if (series !== DBS_BEERUS_SERIES_CODE || number !== "131") notFound();
-
+  if (series !== DBS_BEERUS_SERIES_CODE || number !== "1") notFound();
   const text = getDictionary().dbsBeerus;
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "TVEpisode",
-    episodeNumber: "131",
-    name: text.episodeTitle,
-    description: text.episodeSynopsis,
-    datePublished: "2018-03-25",
-    partOfSeries: { "@type": "TVSeries", name: text.title },
-  } as const;
-
   return (
-    <main>
-      <JsonLd data={schema} />
-      <Billboard
-        backdrop={await bannerForSeries(DBS_BEERUS_SERIES_CODE)}
-        eyebrow={
-          <>
-            <T k="dbsBeerus.edition" /> · 131
-          </>
-        }
-        title={<T k="dbsBeerus.episodeTitle" />}
-        meta={[<T key="release" k="dbsBeerus.episodeReleaseDate" />]}
-        synopsis={<T k="dbsBeerus.episodeSynopsis" />}
-        primaryHref="https://www.crunchyroll.com/fr/watch/GE00389313JAJP/the-god-who-destroys"
-        primaryLabel={<T k="dbsBeerus.watchEpisode" />}
-        secondaryHref="/wiki/episodes/series/DBS_BEERUS"
-        secondaryLabel={<T k="episodeSeries.episodes" />}
+    <main className="relative isolate min-w-0">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "TVEpisode",
+          episodeNumber: "1",
+          name: text.episodeTitle,
+          description: text.episodeSynopsis,
+          datePublished: "2026-10-11",
+          partOfSeries: { "@type": "TVSeries", name: text.title },
+        }}
       />
-      <article className="wiki-container">
+      <div className="absolute inset-x-0 top-0 -z-10 h-[36rem] overflow-hidden" aria-hidden>
+        <BackgroundImage src={artwork} priority className="absolute inset-0 opacity-35" />
+        <div className="absolute inset-0 bg-gradient-to-t from-dbz-bg via-dbz-bg/50 to-transparent" />
+      </div>
+      <article className="relative mx-auto w-full max-w-[1180px] px-6 pb-20 pt-10 lg:px-10">
         <Breadcrumbs
-          className="mb-8"
+          className="mb-4"
           items={[
-            {
-              label: getDictionary().episodeSeries.episodes,
-              display: <T k="episodeSeries.episodes" />,
-              href: "/wiki/episodes",
-            },
-            {
-              label: text.title,
-              display: <T k="dbsBeerus.title" />,
-              href: "/wiki/episodes/series/DBS_BEERUS",
-            },
-            {
-              label: `${text.episodeTitle} · 131`,
-              display: (
-                <>
-                  <T k="dbsBeerus.episodeTitle" /> · 131
-                </>
-              ),
-            },
+            { label: getDictionary().episodeSeries.episodes, href: "/wiki/episodes" },
+            { label: text.title, href: "/wiki/episodes/series/DBS_BEERUS" },
+            { label: text.episodeOne },
           ]}
         />
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]">
-          <section className="dbz-panel p-6 sm:p-8">
-            <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-dbz-orange">
-              <T k="dbsBeerus.episodeSource" />
+        <div className="mb-10">
+          <ShareButton
+            title={text.episodeTitle}
+            text={text.episodeSynopsis}
+            path={DBS_BEERUS_EPISODE_HREF}
+          />
+        </div>
+        <header className="mb-8">
+          <div className="mb-4 flex flex-wrap items-center gap-4">
+            <span className="scouter-text text-2xl text-dbz-orange">#001</span>
+            <div className="h-px w-12 bg-dbz-orange/40" />
+            <p className="font-display text-xs font-semibold uppercase tracking-widest text-white/60">
+              <T k="dbsBeerus.title" />
             </p>
-            <h2 className="mb-4 font-display text-2xl font-bold text-white sm:text-3xl">
+          </div>
+          <h1 className="mb-4 max-w-3xl font-display text-4xl font-bold leading-tight text-white lg:text-6xl">
+            <T k="dbsBeerus.episodeTitle" />
+          </h1>
+          <p className="text-sm text-white/60">
+            <T k="dbsBeerus.episodeReleaseDate" />
+          </p>
+        </header>
+        <div id="player" className="mb-8 space-y-4">
+          <VideoUnavailableCard title={text.episodeTitle} kind="episode" />
+          <VideoSourceSummary players={[]} />
+          <div className="dbz-panel space-y-3 p-5">
+            <a
+              className="inline-flex min-h-11 items-center rounded-lg border border-dbz-orange/40 px-4 text-sm font-semibold text-dbz-orange"
+              href={providerUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <T k="dbsBeerus.watchEpisode" />
+            </a>
+            <p className="text-sm leading-relaxed text-white/60">
+              <T k="dbsBeerus.episodeProviderNote" />
+            </p>
+          </div>
+        </div>
+        <div className="space-y-12">
+          <section className="dbz-panel relative overflow-hidden p-6 sm:p-8">
+            <div className="absolute inset-y-0 left-0 w-1 bg-dbz-orange" />
+            <h2 className="mb-4 font-display text-xl font-bold text-dbz-orange">
               <T k="dbsBeerus.episodeTitle" />
             </h2>
             <p className="leading-relaxed text-white/75">
               <T k="dbsBeerus.episodeSynopsis" />
             </p>
             <a
-              className="mt-6 inline-flex min-h-11 items-center rounded-lg border border-dbz-orange/40 px-4 text-sm font-semibold text-dbz-orange transition hover:bg-dbz-orange hover:text-black"
+              className="mt-5 inline-block text-sm text-dbz-orange underline underline-offset-4"
               href="https://dragonball-super.com/en/index.html#story"
               target="_blank"
               rel="noopener noreferrer"
@@ -117,27 +134,23 @@ export default async function OfficialBeerusEpisodePage({
               <T k="dbsBeerus.episodeSource" />
             </a>
           </section>
-          <aside className="flex flex-col gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-5">
+          <EpisodeScenes
+            frames={[]}
+            title={text.episodeTitle}
+            episodeNumber={1}
+            series={DBS_BEERUS_SERIES_CODE}
+            episodeImage={artwork}
+          />
+          <aside className="dbz-panel space-y-4 p-6">
             <p className="text-sm leading-relaxed text-white/65">
               <T k="dbsBeerus.episodeContinuity" />
             </p>
-            <a
-              className="dbz-button min-h-11 text-center !text-xs"
-              href="https://www.crunchyroll.com/fr/watch/GE00389313JAJP/the-god-who-destroys"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/wiki/episodes/series/DBS_BEERUS"
+              className="inline-flex min-h-11 items-center text-dbz-orange"
             >
-              <T k="dbsBeerus.watchEpisode" />
-            </a>
-            <p className="text-xs leading-relaxed text-white/50">
-              <T k="dbsBeerus.episodeProviderNote" />
-            </p>
-            <a
-              className="text-sm font-semibold text-dbz-orange underline underline-offset-4"
-              href="/wiki/episodes/series/DBS"
-            >
-              <T k="dbsBeerus.originalCatalogue" />
-            </a>
+              <T k="episodeSeries.episodes" />
+            </Link>
           </aside>
         </div>
       </article>
