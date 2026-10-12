@@ -15,7 +15,6 @@ import { DBS_BEERUS_EPISODE_HREF, DBS_BEERUS_SERIES_CODE } from "@/lib/episode-s
 
 export const revalidate = 3600;
 const artwork = "/banners/dbs-beerus-2026.jpg";
-const providerUrl = "https://www.crunchyroll.com/fr/watch/GE00389313JAJP/the-god-who-destroys";
 
 export function generateStaticParams() {
   return [{ series: DBS_BEERUS_SERIES_CODE, number: "1" }];
@@ -102,19 +101,6 @@ export default async function OfficialBeerusEpisodePage({
         <div id="player" className="mb-8 space-y-4">
           <VideoUnavailableCard title={text.episodeTitle} kind="episode" />
           <VideoSourceSummary players={[]} />
-          <div className="dbz-panel space-y-3 p-5">
-            <a
-              className="inline-flex min-h-11 items-center rounded-lg border border-dbz-orange/40 px-4 text-sm font-semibold text-dbz-orange"
-              href={providerUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <T k="dbsBeerus.watchEpisode" />
-            </a>
-            <p className="text-sm leading-relaxed text-white/60">
-              <T k="dbsBeerus.episodeProviderNote" />
-            </p>
-          </div>
         </div>
         <div className="space-y-12">
           <section className="dbz-panel relative overflow-hidden p-6 sm:p-8">
@@ -125,14 +111,22 @@ export default async function OfficialBeerusEpisodePage({
             <p className="leading-relaxed text-white/75">
               <T k="dbsBeerus.episodeSynopsis" />
             </p>
-            <a
-              className="mt-5 inline-block text-sm text-dbz-orange underline underline-offset-4"
-              href="https://dragonball-super.com/en/index.html#story"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <T k="dbsBeerus.episodeSource" />
-            </a>
+          </section>
+          <section className="space-y-4">
+            <h2 className="font-display text-2xl font-bold text-white">
+              <T k="dbsBeerus.trailer" />
+            </h2>
+            <div className="aspect-video overflow-hidden rounded-xl bg-black">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/CFgEL7ei8VE"
+                title={text.trailer}
+                loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="h-full w-full border-0"
+              />
+            </div>
           </section>
           <EpisodeScenes
             frames={[]}
@@ -142,6 +136,12 @@ export default async function OfficialBeerusEpisodePage({
             episodeImage={artwork}
           />
           <aside className="dbz-panel space-y-4 p-6">
+            <h2 className="font-display text-xl font-bold text-white">
+              <T k="dbsBeerus.details" />
+            </h2>
+            <p className="text-sm leading-relaxed text-white/75">
+              <T k="dbsBeerus.episodeOneDetails" />
+            </p>
             <p className="text-sm leading-relaxed text-white/65">
               <T k="dbsBeerus.episodeContinuity" />
             </p>
@@ -152,6 +152,16 @@ export default async function OfficialBeerusEpisodePage({
               <T k="episodeSeries.episodes" />
             </Link>
           </aside>
+          <footer className="border-t border-white/10 pt-6 text-xs text-white/50">
+            <a
+              href="https://dragonball-super.com/en/index.html#story"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-4"
+            >
+              <T k="dbsBeerus.episodeSource" />
+            </a>
+          </footer>
         </div>
       </article>
     </main>

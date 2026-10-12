@@ -1931,6 +1931,8 @@
     "httpFailure": "HTTP応答 {status}"
   },
   "dbsBeerus": {
+    "trailer": "予告編",
+    "details": "作品紹介",
     "edition": "エンハンスド版 · 2026",
     "title": "ドラゴンボール超 ビルス",
     "description": "新しい版とフランスでの公式配信・放送情報をご覧ください。",

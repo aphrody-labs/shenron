@@ -1931,6 +1931,8 @@
     "httpFailure": "Réponse HTTP {status}"
   },
   "dbsBeerus": {
+    "trailer": "Bande-annonce",
+    "details": "Description",
     "edition": "Édition améliorée · 2026",
     "title": "Dragon Ball Super : Beerus",
     "description": "Découvrez la nouvelle édition et les annonces de diffusion officielles pour la France.",
