@@ -266,9 +266,11 @@ pub async fn start(app: &AppHandle) -> Result<String, String> {
     let port = free_port().map_err(|error| format!("no free loopback port: {error}"))?;
     let data = app.path().app_data_dir().map_err(|error| error.to_string())?;
     std::fs::create_dir_all(&data).map_err(|error| error.to_string())?;
+    std::fs::create_dir_all(data.join("data")).map_err(|error| error.to_string())?;
     stop_previous(&data);
     let started = Instant::now();
     let mut command = Command::new(&binary);
+    let local_token = local_admin_token();
     // The desktop package carries the bot API as a local sidecar.  It keeps the
     // administration surface available without Discord OAuth; the server remains
     // loopback-only and the bot inherits the desktop profile.  A server-only developer
@@ -282,6 +284,15 @@ pub async fn start(app: &AppHandle) -> Result<String, String> {
         .env("SHENRON_HOME", &data)
         .env("SHENRON_SERVER_BIN", &binary)
         .env("SHENRON_PROFILE", "desktop")
+        .env("SHENRON_DESKTOP_LOCAL", "true")
+        .env("API_ADMIN_TOKEN", &local_token)
+        .env("SHENRON_ADMIN_TOKEN", &local_token)
+        .env("SHENRON_API_URL", "http://127.0.0.1:5006")
+        .env("DATABASE_PATH", data.join("data").join("bot.db"))
+        // The local API does not use Discord identities, but the bot schema keeps these
+        // required production fields for migrations and owner-policy compatibility.
+        .env("GUILD_ID", "100000000000000001")
+        .env("OWNER_ID", "100000000000000002")
         .env("NODE_ENV", "production")
         .stdin(Stdio::null())
         .stdout(Stdio::null())
@@ -319,6 +330,15 @@ pub async fn start(app: &AppHandle) -> Result<String, String> {
     log::info!("local Shenron server ready on {url} in {} ms", started.elapsed().as_millis());
     *state.url.lock().map_err(|e| e.to_string())? = Some(url.clone());
     Ok(url)
+}
+
+/// Per-launch bearer shared by the local Next proxy and the bot sidecar. It never leaves the
+/// process environment or the loopback server and is invalidated when Desktop exits.
+fn local_admin_token() -> String {
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |duration| duration.as_nanos());
+    format!("shenron-desktop-{}-{now:x}", std::process::id())
 }
 
 /// Desktop facts for the front app: version and local server URL.

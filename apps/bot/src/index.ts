@@ -238,11 +238,16 @@ process.on("uncaughtException", (err) => {
 // → boot ~10 s → ~2-3 s.
 // Non-bloquant : si un persona échoue (privileged intents, token révoqué…),
 // on log et on continue avec les autres. Shenron reste obligatoire.
-try {
-  await client.login(PERSONAS.shenron.token);
-} catch (err) {
-  logger.fatal({ err }, "Shenron failed to start — aborting (no API REST possible)");
-  process.exit(1);
+if (env.SHENRON_DESKTOP_LOCAL) {
+  container.resolve(ApiServer).start();
+  logger.info("✓ Shenron local admin API started (Discord disabled)");
+} else {
+  try {
+    await client.login(PERSONAS.shenron.token);
+  } catch (err) {
+    logger.fatal({ err }, "Shenron failed to start — aborting (no API REST possible)");
+    process.exit(1);
+  }
 }
 
 // ── Auto-seed wiki si DB vide (self-healing après perte bot.db) ─────────

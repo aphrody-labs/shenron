@@ -126,6 +126,8 @@ const schema = z.object({
   // utilisateur browser puisse forger l'identité.
   API_USER_SECRET: z.string().min(32).optional(),
   API_ENABLED: z.coerce.boolean().default(true),
+  // Local desktop mode keeps the admin API on loopback without Discord OAuth/Gateway.
+  SHENRON_DESKTOP_LOCAL: z.coerce.boolean().default(false),
 
   // OAuth2 Discord (login dashboard)
   // Le client_secret ne doit JAMAIS être commit ; uniquement dans .env (gitignored).
@@ -175,7 +177,7 @@ if (!parsed.success) {
 
 const raw = parsed.data;
 const shenronToken = raw.DISCORD_TOKEN_SHENRON ?? raw.DISCORD_TOKEN;
-if (!shenronToken) {
+if (!shenronToken && !raw.SHENRON_DESKTOP_LOCAL) {
   console.error("✗ Invalid environment:");
   console.error("  - DISCORD_TOKEN_SHENRON (or legacy DISCORD_TOKEN) is required");
   process.exit(1);
@@ -186,13 +188,13 @@ export const env = {
   ...raw,
   ADMIN_LAB_CHANNEL_ID: resolveDiscordAi(Bun.env).adminChannelId,
   SHENRON_AI_CHANNEL_ID: resolveDiscordAi(Bun.env).generalChannelId,
-  DISCORD_TOKEN: shenronToken,
-  DISCORD_TOKEN_SHENRON: shenronToken,
-  DISCORD_TOKEN_BEERUS: shenronToken,
-  DISCORD_TOKEN_WHIS: shenronToken,
-  DISCORD_TOKEN_GRAND_PRETRE: shenronToken,
-  DISCORD_TOKEN_ENMA: shenronToken,
-  DISCORD_TOKEN_KAIO: shenronToken,
+  DISCORD_TOKEN: shenronToken ?? "",
+  DISCORD_TOKEN_SHENRON: shenronToken ?? "",
+  DISCORD_TOKEN_BEERUS: shenronToken ?? "",
+  DISCORD_TOKEN_WHIS: shenronToken ?? "",
+  DISCORD_TOKEN_GRAND_PRETRE: shenronToken ?? "",
+  DISCORD_TOKEN_ENMA: shenronToken ?? "",
+  DISCORD_TOKEN_KAIO: shenronToken ?? "",
   APPLICATION_ID: shenronAppId,
   APPLICATION_ID_SHENRON: shenronAppId,
 };
