@@ -164,9 +164,14 @@ export function cdnSource(dir: string | undefined): string {
   return dir;
 }
 
+function cdnSiteRoot(tree: string): string {
+  const workspaceSite = join(tree, "apps", "site");
+  return existsSync(join(workspaceSite, "public")) ? workspaceSite : tree;
+}
+
 async function cdn(dir?: string): Promise<void> {
   const tree = cdnSource(dir);
-  const site = join(tree, "apps", "site");
+  const site = cdnSiteRoot(tree);
   const rsync = (from: string, to: string, extra: string[] = []) => [
     "rsync",
     "-rlt",
@@ -184,20 +189,16 @@ async function cdn(dir?: string): Promise<void> {
     {},
     "/",
   );
-  step(
-    "cdn _next/static → miroir",
-    rsync(join(site, ".next-build", "static"), join(CDN_SRC, "_next", "static")),
-    {},
-    "/",
-  );
-  step(
-    "cdn _next/static → servi",
-    rsync(join(site, ".next-build", "static"), join(CDN_OUT, "_next", "static"), [
-      "--ignore-existing",
-    ]),
-    {},
-    "/",
-  );
+  const staticDir = join(site, ".next-build", "static");
+  if (existsSync(staticDir)) {
+    step("cdn _next/static → miroir", rsync(staticDir, join(CDN_SRC, "_next", "static")), {}, "/");
+    step(
+      "cdn _next/static → servi",
+      rsync(staticDir, join(CDN_OUT, "_next", "static"), ["--ignore-existing"]),
+      {},
+      "/",
+    );
+  }
   // Une release pas encore activée n'a pas forcément `RELEASE_SHA` : son dossier porte le sha.
   const shaFile = Bun.file(join(tree, "RELEASE_SHA"));
   const commit = (await shaFile.exists())
