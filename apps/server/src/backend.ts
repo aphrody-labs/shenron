@@ -165,7 +165,10 @@ export interface McpSidecar {
   stop(): void;
 }
 
-/** Start `shenron-mcp --http 127.0.0.1:<free port> --public` and wait for its `/health`. */
+/** Start `shenron-mcp --http 127.0.0.1:<free port> --public` and wait for its `/health`.
+ * On the desktop profile, the inherited admin/A2A token unlocks the private tool set and the
+ * inherited `SHENRON_SITE_API_URL` points A2A writes at the local hub.
+ */
 export async function startMcpSidecar(
   binary: string,
   o: { env?: Record<string, string | undefined>; timeoutMs?: number } = {},

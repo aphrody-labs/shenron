@@ -286,6 +286,7 @@ pub async fn start(app: &AppHandle) -> Result<String, String> {
         .env("SHENRON_PROFILE", "desktop")
         .env("SHENRON_DESKTOP_LOCAL", "true")
         .env("API_ADMIN_TOKEN", &local_token)
+        .env("SHENRON_API_ADMIN_TOKEN", &local_token)
         .env("SHENRON_ADMIN_TOKEN", &local_token)
         .env("SHENRON_API_URL", "http://127.0.0.1:5006")
         .env("DATABASE_PATH", data.join("data").join("bot.db"))

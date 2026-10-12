@@ -132,6 +132,10 @@ export async function main(
   }
   const port = Number(option(rest, "--port") ?? process.env.PORT ?? 3000);
   const hostname = option(rest, "--host") ?? process.env.HOSTNAME ?? "127.0.0.1";
+  // Desktop A2A tools must sync against this private site hub, never the public API.
+  if (profile === "desktop") {
+    process.env.SHENRON_SITE_API_URL ??= `http://127.0.0.1:${port}`;
+  }
   const site = await serveSite(paths, { hostname, port, startedAt, payloadDir });
   let bot: ReturnType<typeof Bun.spawn> | undefined;
   if (rest[0] === "all") {
