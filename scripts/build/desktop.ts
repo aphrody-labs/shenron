@@ -91,6 +91,10 @@ await run(
     "shenron-cli",
     "--bin",
     "shenron",
+    "-p",
+    "koharu-translator",
+    "--bin",
+    "translate",
     ...(withMcp ? ["-p", "shenron-mcp", "--bin", "shenron-mcp"] : []),
     ...(withKoharuSdk ? ["-p", "koharu-library", "--bin", "koharu-sdk"] : []),
     "--features",
@@ -112,6 +116,7 @@ if (withServer || !existsSync(server)) {
   await run([process.execPath, join(ROOT, "scripts/build/server.ts"), "--target", target], ROOT);
 }
 const shenronCli = join(release, `shenron${SPEC.exe}`);
+const koharuTranslator = join(release, `translate${SPEC.exe}`);
 
 // 1a. Private administration sidecar. The desktop UI authenticates locally; the bot binary
 // remains beside the server so `serve all` can start its existing API surface in the same
@@ -135,7 +140,13 @@ const cliSidecar = join(binaries, `shenron-${SPEC.triple}${SPEC.exe}`);
 rmSync(cliSidecar, { force: true });
 copyFileSync(shenronCli, cliSidecar);
 
-// 1d. MCP sidecar: shenron-server starts it from beside itself.
+// 1d. Koharu's standalone translation worker, using the same Rust translator contract as the
+// in-process editor pipeline. It is useful for bounded batch jobs without opening a second UI.
+const translatorSidecar = join(binaries, `koharu-translate-${SPEC.triple}${SPEC.exe}`);
+rmSync(translatorSidecar, { force: true });
+copyFileSync(koharuTranslator, translatorSidecar);
+
+// 1e. MCP sidecar: shenron-server starts it from beside itself.
 const mcpSidecar = join(binaries, `shenron-mcp-${SPEC.triple}${SPEC.exe}`);
 rmSync(mcpSidecar, { force: true });
 if (withMcp) copyFileSync(join(release, `shenron-mcp${SPEC.exe}`), mcpSidecar);
@@ -162,6 +173,7 @@ const bundleConfig = join(CRATE, "tauri.bundle.json");
 const externalBin = [
   "binaries/shenron-server",
   "binaries/shenron",
+  "binaries/koharu-translate",
   ...(withBot ? ["binaries/shenron-bot"] : []),
   ...(withMcp ? ["binaries/shenron-mcp"] : []),
   ...(withKoharuSdk ? ["binaries/koharu-sdk"] : []),
