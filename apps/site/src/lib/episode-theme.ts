@@ -7,5 +7,13 @@ export function resolveEpisodeTheme(value: unknown): EpisodeTheme {
 export function applyEpisodeTheme(theme: EpisodeTheme) {
   document.documentElement.dataset.episodeTheme = theme;
   document.documentElement.classList.toggle("dark", theme === "beerus");
+  const background = getComputedStyle(document.documentElement)
+    .getPropertyValue("--md-sys-color-background")
+    .trim();
+  if (background)
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", background);
+  document
+    .querySelector('meta[name="color-scheme"]')
+    ?.setAttribute("content", theme === "beerus" ? "dark" : "light");
 }
 export const EPISODE_THEME_BOOT = `try{const t=localStorage.getItem('${EPISODE_THEME_KEY}')==='goku'?'goku':'beerus';document.documentElement.dataset.episodeTheme=t;document.documentElement.classList.toggle('dark',t==='beerus')}catch{}`;
