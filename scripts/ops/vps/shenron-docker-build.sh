@@ -4,13 +4,12 @@ set -euo pipefail
 export PATH="$HOME/.bun/bin:$HOME/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
 SOURCE=${SHENRON_SOURCE_REPO:-$HOME/src/shenron}
 W=${SHENRON_BUILD_REPO:-$HOME/build/transient/shenron-docker}
-LOCK=${SHENRON_BUILD_LOCK:-$HOME/build/locks/shenron-docker.lock}
+LOCK=${SHENRON_BUILD_LOCK:-$HOME/build/locks/heavy.lock}
 mkdir -p "$(dirname "$W")" "$(dirname "$LOCK")"
 exec 9>"$LOCK"
 flock -n 9 || { echo "shenron build already running" >&2; exit 75; }
 cleanup() {
   git -C "$SOURCE" worktree prune >/dev/null 2>&1 || true
-  find /tmp -maxdepth 1 -type f -name 'shenron-*.tar.zst' -delete 2>/dev/null || true
 }
 trap cleanup EXIT
 git -C "$SOURCE" fetch -q origin
@@ -23,9 +22,9 @@ else
 fi
 cd "$W"; SHA=$(git rev-parse HEAD); echo "== commit $SHA"
 echo "== bun install"; bun install --frozen-lockfile
-echo "== cargo"; flock /srv/aphrody-build/locks/heavy.lock bash -c 'nice -n 5 cargo build --release -p shenron-mcp && nice -n 5 cargo build --release -p shenron-ffi --lib'
+echo "== cargo"; nice -n 5 cargo build --release -p shenron-mcp; nice -n 5 cargo build --release -p shenron-ffi --lib
 echo "== wasm"; bun packages/koharu/scripts/build-wasm.ts; bun packages/pipeline/scripts/build-re-wasm.ts
-echo "== vfs"; mkdir -p dist/vfs; scp -q dbfr:/srv/shenron/shared/server/data/7b26187/shenron-vfs.public.sqlite dist/vfs/shenron-vfs.public.sqlite
+echo "== vfs"; mkdir -p dist/vfs; scp -q dbfr:/home/ubuntu/apps/shenron/shared/server/data/7b26187/shenron-vfs.public.sqlite dist/vfs/shenron-vfs.public.sqlite
 echo "== bot"; bun scripts/build/bot.ts --target linux-x64
 echo "== server"; bun scripts/build/server.ts --flavor production --target linux-x64
 install -D -m 0755 target/release/shenron-mcp dist/mcp/linux-x64/shenron-mcp

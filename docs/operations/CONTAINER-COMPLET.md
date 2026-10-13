@@ -162,26 +162,32 @@ self-hosted (`server-artifact.yml`) tournent dans l'image de build d'Aphrody (`a
 `scripts/build/container.ts` : toolchain épinglée (Rust de `rust-toolchain.toml`, Bun de `packageManager`,
 `wasm-bindgen` de `Cargo.lock`), caches partagés en volumes (`aphrody-build-{cargo,sccache,bun,xwin,xdg}`),
 6 CPU et 16 Gio sans swap au plus, verrou lourd de l'usine. `bun scripts/build/container.ts --check` compare
-l'image au checkout. La release construit dans `~/shenron-release` (worktree détaché forcé sur `origin/main`),
-jamais dans `~/shenron`. Contrat et mesures : `docs/operations/container/CONTAINER.md` et
+l'image au checkout. Le runner `release-host.ts` construit dans `~/shenron-release`.
+Le script Docker versionné construit sous `~/build/transient/shenron-docker` avec
+`~/build/locks/heavy.lock`, jamais dans `~/src/shenron`. Contrat et mesures :
+`docs/operations/container/CONTAINER.md` et
 `docs/operations/infra/SHENRON-DOCKER.md` d'Aphrody.
 
 ### Livraison Docker vers dbfr
 
-Aucun build sur dbfr : il reçoit seulement l'image scellée. Sur le vps, les étapes longues tournent
-dans tmux, sans flux SSH maintenu ouvert. Sources versionnées des scripts d'hôte (copiés dans le
-home de chaque hôte) : `scripts/ops/vps/` (`shenron-docker-build.sh`, `ship-shenron.sh`) et
-`scripts/ops/dbfr/` (`deploy-shenron-image.sh`, `assemble-shenron.py`, `seal-shenron-docker-release.py`).
+Aucun build sur dbfr : il reçoit seulement l'image construite sur le vps. Sur le vps, les étapes
+longues tournent dans tmux, sans flux SSH maintenu ouvert. Les scripts VPS versionnés sont dans
+`~/src/shenron/scripts/ops/vps/` (`shenron-docker-build.sh`, `ship-shenron.sh`). Les helpers DBFR
+installés dans `~/` proviennent de `scripts/ops/dbfr/` (`deploy-shenron-image.sh`,
+`assemble-shenron.py`, `seal-shenron-docker-release.py`). Vérifier leur présence avant livraison.
 
-1. `tmux new -d -s shenron-build 'bash ~/shenron-docker-build.sh > ~/shenron-docker-build.log 2>&1'` :
-   worktree détaché sur `origin/main`, cargo (verrou lourd), WASM, bot, serveur, image
+1. `tmux new -d -s shenron-build 'bash ~/src/shenron/scripts/ops/vps/shenron-docker-build.sh > ~/shenron-docker-build.log 2>&1; code=$?; printf "EXIT_CODE=%s\n" "$code" >> ~/shenron-docker-build.log'` :
+   worktree détaché sur `origin/main` sous `~/build/transient/shenron-docker`, verrou lourd,
+   Cargo, WASM, bot, serveur, image
    `localhost/shenron:<sha>`, puis `version` et `--smoke` du bot.
-2. `~/ship-shenron.sh` (session `shenron-ship`, lancée après un build vert) : `docker save | zstd`,
+2. Après `EXIT_CODE=0` et vérification du SHA de l'image, lancer dans `shenron-ship`
+   `~/src/shenron/scripts/ops/vps/ship-shenron.sh`. Il lit le même worktree via
+   `SHENRON_BUILD_REPO` (ou le chemin par défaut), exécute `docker save | zstd`,
    `scp` vers dbfr, puis `~/deploy-shenron-image.sh <sha> <tar>` sur dbfr. Ce script charge l'image,
    assemble la release (`~/assemble-shenron.py`, override `guild-admission`), la scelle
    (`~/seal-shenron-docker-release.py`, en reprenant les images passerelle, postgres, redis et chat
    de la release active), puis `aphrody-infra-deploy-shenron verify` et `activate` (sauvegarde de
-   retour arrière dans `/srv/shenron/deploy-backups/`).
+   retour arrière dans `/home/ubuntu/apps/shenron/deploy-backups/`).
 3. Sondes : pages, `/api/health`, `/api/public/rag/search`, `tools/list` anonyme de `/mcp`, `bot.` et `cdn.`.
 
 ## 7. Tunnel vers le vps et dbfr
