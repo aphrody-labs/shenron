@@ -393,6 +393,13 @@ export function publicEntityUrl(table: string, row: Record<string, unknown>): st
       return slug ? `/wiki/movies/${slug}` : null;
     case "db_manga_volumes":
       return hasId ? `/wiki/manga/volume/${id}` : null;
+    case "media_volumes": {
+      // Public volume routes address legacy manga records, never native media IDs.
+      const legacyId = Number(row.legacyVolumeId);
+      return Number.isSafeInteger(legacyId) && legacyId > 0
+        ? `/wiki/manga/volume/${legacyId}`
+        : null;
+    }
     case "db_databooks":
       return hasId ? `/wiki/databooks/${id}` : "/wiki/databooks";
     case "db_episodes":
