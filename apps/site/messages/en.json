@@ -1850,6 +1850,15 @@
       "autre": "Other"
     }
   },
+  "adminLogs": {
+    "title": "Bot logs",
+    "description": "Shenron process logs. Automatically refreshed every 10 seconds.",
+    "lines": "{count} line(s)",
+    "refresh": "Refresh",
+    "loading": "Loading logs…",
+    "empty": "No logs available.",
+    "error": "Unable to load the bot logs. Try again."
+  },
   "adminDashboard": {
     "nativePipeline": {
       "ragCounts": "{chunks, number} chunks · {vectors, number} vectors",

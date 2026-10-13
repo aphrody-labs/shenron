@@ -1850,6 +1850,15 @@
       "autre": "Autre"
     }
   },
+  "adminLogs": {
+    "title": "Journaux du bot",
+    "description": "Journaux du processus Shenron. Actualisation automatique toutes les 10 secondes.",
+    "lines": "{count} ligne(s)",
+    "refresh": "Actualiser",
+    "loading": "Chargement des journaux…",
+    "empty": "Aucun journal disponible.",
+    "error": "Impossible de charger les journaux du bot. Réessaie."
+  },
   "adminDashboard": {
     "nativePipeline": {
       "ragCounts": "{chunks, number} passages · {vectors, number} vecteurs",
