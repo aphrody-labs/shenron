@@ -1,5 +1,38 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## Contrôle du 13 octobre 2026 — accueil, frames et corpus vidéo
+
+Sources `7bd95e65` poussées : retrait demandé du menu d'ancrage, du bloc univers et
+de ses sept lectures de comptage, de la reprise sur l'accueil et de la promotion
+Beerus. Les contenus éditoriaux restent, avec un lien GIF. Le wildcard des détails
+`/wiki/arcs/:path*` qui masquait les fiches et les 404 par une redirection vers le
+catalogue est retiré ; le seul index `/wiki/arcs` reste redirigé vers `/wiki/sagas`.
+Tests ciblés : 23 réussis, 13 volontairement ignorés ; typecheck du lot vert.
+Le publisher de récupération qualifie uniquement une liste explicite et bornée,
+sans annoncer la qualification du manifeste historique complet : 10 tests et
+104 assertions réussis. Cette nouvelle source n'est pas installée pendant le
+transfert GIF en cours.
+
+Production : application `62ff9387`, lecteurs livrés et CDN natif readonly sur9077.
+L'image suivante est coordonnée avec le Codex dashboard après ses correctifs
+Canvas ; aucun build concurrent ni activation de l'ancienne image14ad. Le dernier
+retrait accueil et le correctif des arcs ne sont pas encore servis en production.
+
+Épisode875 : une mutation canonique des seules six frames, revision
+`dk8k2a78s52n21uo1mixutdi`, suivie d'une relecture indépendante des26champs ; les
+autres champs sont inchangés. Les six PNG1920×1080 sont vérifiés par SHA sur les
+deux origines publiques. Aucun titre, date, langue ou droit non établi n'est ajouté.
+
+Corpus privé physiquement déplacé dans `C:\shenron\data\source-acquisition\episodes\beerus-01` ;
+son ancien chemin BunVideo est un lien symbolique vérifié. 34 827 fichiers conservés,
+dont33 511 PNG originaux ; 46 422 019 042 octets de doublons supprimés après
+comparaison complète, archives incluses. Compression LZX de460textes :
+88 951 284 octets alloués gagnés, SHA logiques inchangés. Le corpus complet reste
+privé ; il ne constitue pas une publication R2. Les cinq GIF et cinq aperçus sont
+en qualification publique séparée ; index qualifié et validation page/API restent
+à terminer. Preuves privées dans `var/reports/beerus-full-intake-20261013/` et
+`var/reports/episode-875-final-data-20261013/`.
+
 ## Contrôle S3 et robots — 11 octobre 2026 après 18:50 UTC
 
 `S3Client` est natif dans Bun1.4.4 local/VPS et Bun1.4.3 DBFR ; Shenron utilise déjà

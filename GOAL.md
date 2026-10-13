@@ -8,6 +8,13 @@ l’historique sont dans [REPRISE.md](docs/reference/root/REPRISE.md) ; les inva
 
 ## Priorités
 
+0. Terminer la demande propriétaire du 13 octobre : accueil sans menu d'ancrage,
+   bloc univers/compteurs, reprise ni promotion Beerus ; catalogue épisodes/sagas
+   immédiatement accessible, héros compacts et frames HD qualifiées. Livrer les cinq
+   GIF et leurs aperçus via le catalogue public, puis vérifier page/API/téléchargements.
+   Les sources `7bd95e65` attendent la prochaine image commune avec les correctifs
+   dashboard/Canvas ; ne pas activer une ancienne image intermédiaire.
+
 1. Maintenir la collecte privée des sources officielles avec provenance, robots, sitemaps,
    budgets et couverture explicitement qualifiés.
 2. Livrer les lecteurs manga, databooks et vidéo avec tests navigateur réels ; distinguer
