@@ -80,12 +80,19 @@ export interface StagedBudget {
   timeoutMs: number;
 }
 export interface StagedAttestation {
+  schema: "shenron-staged-cas-attestation/v1";
+  qualifiedAt: string;
   key: string;
   sha256: string;
   size: number;
   metadataUpdated: boolean;
   actualGets: number;
   budget: StagedBudget;
+  beforeEtag: string;
+  afterEtag: string;
+  beforeBodySha256: string;
+  afterBodySha256: string;
+  headMetadata: { sha256: string; size: number; contentType: string; cacheControl: string };
   objectBytesUploaded: 0;
 }
 async function stagedBytes(response: Response, entry: Pick<Entry, "sha256" | "size">) {
@@ -110,8 +117,9 @@ async function stagedBytes(response: Response, entry: Pick<Entry, "sha256" | "si
   } finally {
     reader.releaseLock();
   }
-  if (size !== entry.size || hash.digest("hex") !== entry.sha256)
-    throw new Error("Staged bytes SHA differs");
+  const sha256 = hash.digest("hex");
+  if (size !== entry.size || sha256 !== entry.sha256) throw new Error("Staged bytes SHA differs");
+  return sha256;
 }
 /** Qualify owner-staged CAS bytes and merge SHA metadata; never upload an object body. */
 export async function attestStagedObject(
@@ -181,7 +189,7 @@ export async function attestStagedObject(
     await before.body?.cancel();
     throw new Error("Staged HEAD differs");
   }
-  await stagedBytes(await request("GET", { "If-Match": etag }), entry);
+  const beforeBodySha256 = await stagedBytes(await request("GET", { "If-Match": etag }), entry);
   const metadataUpdated =
     before.headers.get("x-amz-meta-sha256") !== entry.sha256 ||
     before.headers.get("content-type") !== entry.contentType ||
@@ -235,14 +243,26 @@ export async function attestStagedObject(
     await after.body?.cancel();
     throw new Error("Staged metadata readback differs");
   }
-  await stagedBytes(await request("GET", { "If-Match": afterEtag }), entry);
+  const afterBodySha256 = await stagedBytes(await request("GET", { "If-Match": afterEtag }), entry);
   return {
+    schema: "shenron-staged-cas-attestation/v1",
+    qualifiedAt: new Date().toISOString(),
     key,
     sha256: entry.sha256,
     size: entry.size,
     metadataUpdated,
     actualGets: 2,
     budget,
+    beforeEtag: etag,
+    afterEtag,
+    beforeBodySha256,
+    afterBodySha256,
+    headMetadata: {
+      sha256: after.headers.get("x-amz-meta-sha256")!,
+      size: Number(after.headers.get("content-length")),
+      contentType: after.headers.get("content-type")!,
+      cacheControl: after.headers.get("cache-control")!,
+    },
     objectBytesUploaded: 0,
   };
 }
