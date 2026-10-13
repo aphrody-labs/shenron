@@ -3,21 +3,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { Terminal, RefreshCw } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { api } from "@/lib/admin-api";
-
-interface LogEntry {
-  time?: string;
-  host?: string;
-  unit?: string;
-  message?: string;
-  raw?: string;
-}
+import { parseLogsResponse } from "./logs-view";
 
 export default function Logs() {
+  const t = useTranslations("adminLogs");
   const [lines, setLines] = useState(100);
-  const { data, isLoading, refetch, isFetching } = useQuery({
+  const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ["logs", lines],
-    queryFn: () => api.get<{ logs: LogEntry[]; count: number }>(`/health/logs?lines=${lines}`),
+    queryFn: async ({ signal }) =>
+      parseLogsResponse(await api.get(`/health/logs?lines=${lines}`, { signal })),
     refetchInterval: 10_000,
   });
 
@@ -26,17 +22,14 @@ export default function Logs() {
       <div className="card">
         <div className="flex items-center gap-2">
           <Terminal className="h-5 w-5 text-brand-400" />
-          <h2 className="text-lg font-semibold">Journaux du service</h2>
+          <h2 className="text-lg font-semibold">{t("title")}</h2>
         </div>
-        <p className="mt-1 text-sm text-zinc-400">
-          Sortie de <code>journalctl -u shenron</code> en temps réel. Actualisation automatique
-          toutes les 10 secondes.
-        </p>
+        <p className="mt-1 text-sm text-zinc-400">{t("description")}</p>
       </div>
 
       <div className="card flex items-center gap-3">
         <label htmlFor="page-lignes-affichees" className="text-sm text-zinc-400">
-          Lignes affichées
+          {t("lines")}
         </label>
         <select
           id="page-lignes-affichees"
@@ -57,16 +50,21 @@ export default function Logs() {
           className="btn btn-ghost ml-auto"
         >
           <RefreshCw className={`h-3 w-3 ${isFetching ? "animate-spin" : ""}`} />
-          Actualiser
+          {t("refresh")}
         </button>
       </div>
 
+      {isError && (
+        <div role="alert" className="card border-red-400/30 text-red-300">
+          {t("error")}
+        </div>
+      )}
       {isLoading ? (
-        <div className="text-zinc-500">Chargement en cours…</div>
+        <div className="text-zinc-500">{t("loading")}</div>
       ) : (
         <div className="card overflow-x-auto bg-zinc-950 p-3 font-mono text-xs">
-          {data?.logs.map((log, i) => (
-            <div key={i} className="whitespace-pre-wrap py-0.5">
+          {data?.logs.map((log) => (
+            <div key={log.key} className="whitespace-pre-wrap py-0.5">
               {log.raw ? (
                 <span className="text-zinc-300">{log.raw}</span>
               ) : (
@@ -78,8 +76,8 @@ export default function Logs() {
               )}
             </div>
           ))}
-          {data?.logs.length === 0 && (
-            <p className="italic text-zinc-500">Aucun journal pour l'instant.</p>
+          {!isError && data?.logs.length === 0 && (
+            <p className="italic text-zinc-500">{t("empty")}</p>
           )}
         </div>
       )}
