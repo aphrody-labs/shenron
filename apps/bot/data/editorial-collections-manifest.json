@@ -1,0 +1,349 @@
+{
+  "schema": "shenron-editorial-collections/v1",
+  "requestedAt": "2026-10-13",
+  "policy": {
+    "assetPublication": "requires-owned-asset-and-publishing-evidence",
+    "transcriptionSourceLanguage": "ja",
+    "transcriptionPivotLanguage": null,
+    "translationSource": "reviewed-original-japanese",
+    "trainingOptIn": false,
+    "ragOptIn": false,
+    "canonicalAssignment": "per-work-edition-source",
+    "exclusiveDistribution": "owner-request-unverified",
+    "coverage": "requested-not-completed",
+    "staffInterviewSubjects": [
+      "鳥山明",
+      "小山高生",
+      "鳥嶋和彦",
+      "とよたろう",
+      "内田",
+      "声優",
+      "制作スタッフ"
+    ],
+    "colorRequests": "desired-variants-not-proof-of-published-edition",
+    "specialChapterRequests": "exact-title-and-edition-must-be-resolved"
+  },
+  "collections": [
+    {
+      "id": "sdbh-anime",
+      "kind": "anime",
+      "labels": {
+        "fr": "Super Dragon Ball Heroes — épisodes",
+        "en": "Super Dragon Ball Heroes episodes",
+        "ja": "スーパードラゴンボールヒーローズ アニメ"
+      },
+      "languages": ["ja", "fr"],
+      "subtitles": ["vost", "vostfr"],
+      "colors": ["color"],
+      "targetCount": null,
+      "matchSeries": ["SDBH"],
+      "matchWorks": [],
+      "sources": ["https://www.carddass.com/dbh/sdbh_ugm/anime/story.php"],
+      "status": "requested"
+    },
+    {
+      "id": "dr-slump-anime",
+      "kind": "anime",
+      "labels": {
+        "fr": "Dr Slump — épisodes exclusifs demandés",
+        "en": "Dr Slump episodes",
+        "ja": "Dr.スランプ アニメ"
+      },
+      "languages": ["ja", "fr"],
+      "subtitles": ["vost", "vostfr"],
+      "colors": ["color"],
+      "targetCount": null,
+      "matchSeries": ["DR_SLUMP", "DR_SLUMP_1981", "DR_SLUMP_1997"],
+      "matchWorks": [],
+      "sources": ["https://lineup.toei-anim.co.jp/ja/tv/arale_2nd/story/"],
+      "status": "requested"
+    },
+    {
+      "id": "soshuhen",
+      "kind": "manga",
+      "labels": {
+        "fr": "Dragon Ball Sōshūhen — 18 tomes",
+        "en": "Dragon Ball Sōshūhen — 18 volumes",
+        "ja": "DRAGON BALL総集編 超悟空伝"
+      },
+      "languages": ["ja"],
+      "subtitles": [],
+      "colors": ["mixed-original"],
+      "targetCount": 18,
+      "matchSeries": ["SOSH"],
+      "matchWorks": [],
+      "sources": ["https://www.dreamnews.jp/press/0000131506"],
+      "status": "requested"
+    },
+    {
+      "id": "japanese-interviews",
+      "kind": "interview",
+      "labels": {
+        "fr": "Interviews — transcription japonaise originale",
+        "en": "Interviews — original Japanese transcripts",
+        "ja": "インタビュー 日本語原文"
+      },
+      "languages": ["ja", "fr"],
+      "subtitles": [],
+      "colors": [],
+      "targetCount": null,
+      "matchSeries": [],
+      "matchWorks": [],
+      "sources": ["https://dragon-ball-official.com/news/01_3370.html"],
+      "status": "requested"
+    },
+    {
+      "id": "dragon-ball-full-color-ja",
+      "kind": "manga",
+      "labels": {
+        "fr": "Dragon Ball Full Color japonais et suppléments",
+        "en": "Japanese Dragon Ball Full Color and supplements",
+        "ja": "DRAGON BALL フルカラー 日本語版"
+      },
+      "languages": ["ja"],
+      "subtitles": [],
+      "colors": ["color"],
+      "targetCount": null,
+      "matchSeries": ["DB_FULL_COLOR"],
+      "matchWorks": ["dragon_ball"],
+      "sources": ["https://www.shueisha.co.jp/books/items/contents.html?jdcn=08851831851831325501"],
+      "status": "requested"
+    },
+    {
+      "id": "youtube-staff-interviews",
+      "kind": "interview",
+      "labels": {
+        "fr": "YouTube — interviews du staff Dragon Ball",
+        "en": "YouTube — Dragon Ball staff interviews",
+        "ja": "YouTube ドラゴンボール関係者インタビュー"
+      },
+      "languages": ["ja", "fr", "en"],
+      "subtitles": [],
+      "colors": [],
+      "targetCount": null,
+      "matchSeries": [],
+      "matchWorks": [],
+      "sources": ["https://dragon-ball-official.com/news/"],
+      "status": "requested"
+    },
+    {
+      "id": "dragon-ball-official",
+      "kind": "official",
+      "labels": {
+        "fr": "Dragon Ball Official — articles et vidéos",
+        "en": "Dragon Ball Official articles and videos",
+        "ja": "ドラゴンボールオフィシャルサイト"
+      },
+      "languages": ["ja"],
+      "subtitles": [],
+      "colors": [],
+      "targetCount": null,
+      "matchSeries": [],
+      "matchWorks": [],
+      "sources": ["https://dragon-ball-official.com/news/"],
+      "status": "requested"
+    },
+    {
+      "id": "toei-official",
+      "kind": "official",
+      "labels": {
+        "fr": "Toei — sources Dragon Ball officielles",
+        "en": "Toei — official Dragon Ball sources",
+        "ja": "東映アニメーション ドラゴンボール資料"
+      },
+      "languages": ["ja"],
+      "subtitles": [],
+      "colors": [],
+      "targetCount": null,
+      "matchSeries": [],
+      "matchWorks": [],
+      "sources": ["https://lineup.toei-anim.co.jp/ja/movie/2022dbs/"],
+      "status": "requested"
+    },
+    {
+      "id": "weekly-shonen-jump",
+      "kind": "magazine",
+      "labels": {
+        "fr": "Weekly Shōnen Jump — numéros et pages Dragon Ball",
+        "en": "Weekly Shōnen Jump issues and Dragon Ball pages",
+        "ja": "週刊少年ジャンプ ドラゴンボール掲載号"
+      },
+      "languages": ["ja"],
+      "subtitles": [],
+      "colors": ["mixed-original"],
+      "targetCount": null,
+      "matchSeries": [],
+      "matchWorks": [],
+      "sources": ["https://www.shonenjump.com/j/"],
+      "status": "requested"
+    },
+    {
+      "id": "dragon-quest-artbooks",
+      "kind": "artbook",
+      "labels": {
+        "fr": "Dragon Quest — artbooks Toriyama à compléter",
+        "en": "Dragon Quest — Toriyama artbooks",
+        "ja": "鳥山明 ドラゴンクエスト イラストレーションズ"
+      },
+      "languages": ["ja"],
+      "subtitles": [],
+      "colors": ["color", "monochrome"],
+      "targetCount": null,
+      "matchSeries": [],
+      "matchWorks": [],
+      "sources": ["https://www.shueisha.co.jp/books/items/contents.html?isbn=978-4-08-792508-1"],
+      "status": "requested"
+    },
+    {
+      "id": "sdbh-manga",
+      "kind": "manga",
+      "labels": {
+        "fr": "Super Dragon Ball Heroes — mangas",
+        "en": "Super Dragon Ball Heroes manga",
+        "ja": "スーパードラゴンボールヒーローズ 漫画"
+      },
+      "languages": ["ja", "fr"],
+      "subtitles": [],
+      "colors": ["color", "monochrome"],
+      "targetCount": null,
+      "matchSeries": [
+        "SDBH_DARK_DEMON_REALM",
+        "SDBH_UNIVERSE",
+        "SDBH_BIG_BANG",
+        "SDBH_ULTRA_GOD",
+        "SDBH_METEOR",
+        "SDBH_AVATARS"
+      ],
+      "matchWorks": ["super_dragon_ball_heroes"],
+      "sources": ["https://www.shueisha.co.jp/books/items/contents.html?isbn=978-4-08-881110-9"],
+      "status": "requested"
+    },
+    {
+      "id": "dragon-ball-en",
+      "kind": "manga",
+      "labels": {
+        "fr": "Dragon Ball — édition anglaise",
+        "en": "Dragon Ball — English edition",
+        "ja": "DRAGON BALL 英語版"
+      },
+      "languages": ["en"],
+      "subtitles": [],
+      "colors": ["color", "monochrome"],
+      "targetCount": null,
+      "matchSeries": ["DBEN"],
+      "matchWorks": ["dragon_ball"],
+      "sources": ["https://www.viz.com/dragon-ball"],
+      "status": "requested"
+    },
+    {
+      "id": "dragon-ball-super-en",
+      "kind": "manga",
+      "labels": {
+        "fr": "Dragon Ball Super — édition anglaise",
+        "en": "Dragon Ball Super — English edition",
+        "ja": "ドラゴンボール超 英語版"
+      },
+      "languages": ["en"],
+      "subtitles": [],
+      "colors": ["color", "monochrome"],
+      "targetCount": null,
+      "matchSeries": ["DBSEN"],
+      "matchWorks": ["dragon_ball_super"],
+      "sources": ["https://www.viz.com/shonenjump/chapters/dragon-ball-super?locale=en"],
+      "status": "requested"
+    },
+    {
+      "id": "dr-slump-manga",
+      "kind": "manga",
+      "labels": {
+        "fr": "Dr Slump — mangas japonais et français",
+        "en": "Dr Slump — Japanese and French manga",
+        "ja": "Dr.スランプ 日本語・フランス語版"
+      },
+      "languages": ["ja", "fr"],
+      "subtitles": [],
+      "colors": ["color", "monochrome"],
+      "targetCount": null,
+      "matchSeries": ["ARALE"],
+      "matchWorks": ["dr_slump"],
+      "sources": [
+        "https://www.shueisha.co.jp/books/search/search.html?titleauthor=Dr.%E3%82%B9%E3%83%A9%E3%83%B3%E3%83%97"
+      ],
+      "status": "requested"
+    },
+    {
+      "id": "nekomajin",
+      "kind": "manga",
+      "labels": {
+        "fr": "Neko Majin",
+        "en": "Neko Majin",
+        "ja": "ネコマジン"
+      },
+      "languages": ["ja", "fr"],
+      "subtitles": [],
+      "colors": ["color", "monochrome"],
+      "targetCount": null,
+      "matchSeries": ["NEKOMAJIN"],
+      "matchWorks": ["nekomajin"],
+      "sources": [
+        "https://www.shueisha.co.jp/books/search/search.html?titleauthor=%E3%83%8D%E3%82%B3%E3%83%9E%E3%82%B8%E3%83%B3"
+      ],
+      "status": "requested"
+    },
+    {
+      "id": "jaco-special",
+      "kind": "manga",
+      "labels": {
+        "fr": "Jaco — chapitre spécial",
+        "en": "Jaco — special chapter",
+        "ja": "銀河パトロール ジャコ 特別編"
+      },
+      "languages": ["ja", "fr"],
+      "subtitles": [],
+      "colors": ["color", "monochrome"],
+      "targetCount": null,
+      "matchSeries": ["JACO"],
+      "matchWorks": ["jaco"],
+      "sources": [
+        "https://www.shueisha.co.jp/books/search/search.html?titleauthor=%E3%82%B8%E3%83%A3%E3%82%B3"
+      ],
+      "status": "requested"
+    },
+    {
+      "id": "bardock-special",
+      "kind": "manga",
+      "labels": {
+        "fr": "Bardock — chapitre spécial",
+        "en": "Bardock — special chapter",
+        "ja": "バーダック 特別編"
+      },
+      "languages": ["ja", "fr"],
+      "subtitles": [],
+      "colors": ["color", "monochrome"],
+      "targetCount": null,
+      "matchSeries": ["BARDOCK"],
+      "matchWorks": [],
+      "sources": [
+        "https://www.shueisha.co.jp/books/search/search.html?titleauthor=%E3%83%90%E3%83%BC%E3%83%80%E3%83%83%E3%82%AF"
+      ],
+      "status": "requested"
+    },
+    {
+      "id": "dragon-ball-sd",
+      "kind": "manga",
+      "labels": {
+        "fr": "Dragon Ball SD",
+        "en": "Dragon Ball SD",
+        "ja": "ドラゴンボールSD"
+      },
+      "languages": ["ja", "fr"],
+      "subtitles": [],
+      "colors": ["color", "monochrome"],
+      "targetCount": null,
+      "matchSeries": ["DB_SD"],
+      "matchWorks": ["dragon_ball_sd"],
+      "sources": ["https://www.shueisha.co.jp/books/items/contents.html?jdcn=08X10000000040006200"],
+      "status": "requested"
+    }
+  ]
+}
