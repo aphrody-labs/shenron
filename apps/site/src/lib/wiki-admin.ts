@@ -367,11 +367,20 @@ export async function readMediaVolumePageReferenceInventory(): Promise<
     FROM bot.media_chapters c WHERE c.volume_id=v.id),'[]'::json) AS chapters
     FROM bot.media_volumes v WHERE v.page_count IS NULL ORDER BY v.id`);
   if (rows.length > 1000) throw new Error("Media page-reference inventory exceeds bounds");
-  return rows as unknown as Array<{
-    id: number;
-    pageCount: number | null;
-    chapters: Array<{ id: number; pages: string[] }>;
-  }>;
+  return rows.map((row) => {
+    const id = Number(row.id);
+    if (!Number.isSafeInteger(id) || id < 1 || !Array.isArray(row.chapters)) {
+      throw new Error("Invalid media page-reference inventory row");
+    }
+    return {
+      id,
+      pageCount: row.pageCount === null ? null : Number(row.pageCount),
+      chapters: row.chapters.map((chapter: { id: number; pages: string[] }) => ({
+        id: Number(chapter.id),
+        pages: chapter.pages,
+      })),
+    };
+  });
 }
 
 /**

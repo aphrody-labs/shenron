@@ -14,7 +14,11 @@ export function planMediaPageCounts(
   volumes: VolumePageReferences[],
   entries: Record<string, AssetInventoryEntry>,
 ) {
-  if (volumes.length > 1000 || new Set(volumes.map((row) => row.id)).size !== volumes.length) {
+  if (
+    volumes.length > 1000 ||
+    volumes.some((row) => !Number.isSafeInteger(row.id) || row.id < 1) ||
+    new Set(volumes.map((row) => row.id)).size !== volumes.length
+  ) {
     throw new Error("Invalid bounded volume inventory");
   }
   return volumes
