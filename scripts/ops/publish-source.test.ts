@@ -11,7 +11,110 @@ import {
   publicationPolicy,
   preserveExistingRegistry,
   publicationIndexBody,
+  reviewedTranscription,
+  reviewedProvenance,
+  verifyReviewedImage,
+  reviewedPublicationPages,
 } from "./publish-source";
+
+const reviewedFixture = () => ({
+  schema: "shenron-reviewed-transcription/v1",
+  sourceUrl: "https://publisher.example/interview",
+  targetUrl: "https://dragonballfr.com/publications/interview",
+  reviewed: true,
+  method: "direct_visual_transcription",
+  language: "ja",
+  title: "対談",
+  text: "日本語の対談\n",
+  textSha256: digest("日本語の対談\n"),
+  sourceImages: [{ url: "https://publisher.example/img.png", sha256: "a".repeat(64) }],
+  nativeOcr: { qualified: false, status: "failed" },
+});
+test("image-only native capture remains empty and distinct from reviewed public text", () => {
+  const fixture = reviewedFixture(),
+    input = reviewedTranscription(fixture, fixture.sourceUrl, fixture.targetUrl);
+  const page = {
+    url: fixture.sourceUrl,
+    title: "Native shell",
+    markdown: "",
+    content_hash: "native-original",
+    fetched_at: 1791900000123,
+  };
+  const original = nativePageExport(page, page.url),
+    published = reviewedPublicationPages([page], input);
+  expect(page.markdown).toBe("");
+  expect(nativePageExport(page, page.url)).toEqual(original);
+  expect(published[0]!.markdown).toBe(input.text);
+  expect(published[0]).not.toBe(page);
+  expect(() => reviewedPublicationPages([], input)).toThrow();
+  expect(() =>
+    reviewedPublicationPages([{ ...page, url: "https://publisher.example/other" }], input),
+  ).toThrow();
+});
+test("reviewed text is exact UTF-8 SHA pinned and cannot masquerade as qualified native OCR", () => {
+  const fixture = reviewedFixture();
+  const parsed = reviewedTranscription(fixture, fixture.sourceUrl, fixture.targetUrl);
+  expect(parsed.text).toBe(fixture.text);
+  const provenance = reviewedProvenance(parsed, "b".repeat(64));
+  expect(provenance.method).toBe("direct_visual_transcription");
+  expect(provenance.nativeCaptureSeparate).toBe(true);
+  expect(provenance.nativeOcr.qualified).toBe(false);
+  expect([
+    provenance.ragPermitted,
+    provenance.trainingPermitted,
+    provenance.canonicalEligible,
+  ]).toEqual([false, false, false]);
+  for (const patch of [
+    { reviewed: false },
+    { method: "ocr" },
+    { nativeOcr: { qualified: true, status: "passed" } },
+    { language: "en" },
+    { text: fixture.text + "x" },
+    { text: "\ud800", textSha256: digest("\ud800") },
+    { text: " ", textSha256: digest(" ") },
+    { text: "日".repeat(350000), textSha256: digest("日".repeat(350000)) },
+    { unknown: true },
+  ])
+    expect(() =>
+      reviewedTranscription({ ...fixture, ...patch }, fixture.sourceUrl, fixture.targetUrl),
+    ).toThrow();
+});
+test("reviewed image graph rejects foreign hosts, duplicates, credentials and non-public local input", () => {
+  const fixture = reviewedFixture();
+  for (const sourceImages of [
+    [],
+    [...fixture.sourceImages, ...fixture.sourceImages],
+    [{ url: "file:///private.png", sha256: "a".repeat(64) }],
+    [{ url: "https://other.example/img.png", sha256: "a".repeat(64) }],
+    [{ url: fixture.sourceUrl, sha256: "a".repeat(64) }],
+    [{ url: "https://user:pass@publisher.example/img.png", sha256: "a".repeat(64) }],
+  ])
+    expect(() =>
+      reviewedTranscription({ ...fixture, sourceImages }, fixture.sourceUrl, fixture.targetUrl),
+    ).toThrow();
+  expect(() =>
+    reviewedTranscription(
+      fixture,
+      fixture.sourceUrl,
+      "https://dragonballfr.com/publications/other",
+    ),
+  ).toThrow();
+});
+test("reviewed PNG acquisition verifies actual fresh digest and magic", () => {
+  const png = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10, 1]);
+  const fixture = reviewedFixture();
+  fixture.sourceImages[0]!.sha256 = digest(png);
+  const parsed = reviewedTranscription(fixture, fixture.sourceUrl, fixture.targetUrl),
+    url = fixture.sourceImages[0]!.url;
+  expect(() => verifyReviewedImage(url, digest(png), parsed, png, "image/png")).not.toThrow();
+  expect(() => verifyReviewedImage(url, "b".repeat(64), parsed, png, "image/png")).toThrow(
+    "pinned SHA",
+  );
+  expect(() =>
+    verifyReviewedImage(url, digest(png), parsed, new Uint8Array([1]), "image/png"),
+  ).toThrow("PNG");
+  expect(() => verifyReviewedImage(url, digest(png), parsed, png, "image/jpeg")).toThrow("PNG");
+});
 
 test("index budget includes actual UTF-8 serialization and indentation bytes", () => {
   expect(publicationIndexBody({ title: "日本語" })).toBe(

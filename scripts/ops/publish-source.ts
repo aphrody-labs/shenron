@@ -15,6 +15,156 @@ import {
 
 export const digest = (body: string | Uint8Array) =>
   new Bun.CryptoHasher("sha256").update(body).digest("hex");
+type ReviewedInput = {
+  schema: "shenron-reviewed-transcription/v1";
+  sourceUrl: string;
+  targetUrl: string;
+  reviewed: true;
+  method: "direct_visual_transcription";
+  language: "ja";
+  title: string;
+  text: string;
+  textSha256: string;
+  sourceImages: { url: string; sha256: string }[];
+  nativeOcr: { qualified: false; status: "failed" };
+};
+function exactKeys(value: unknown, keys: string[]): value is Record<string, unknown> {
+  return (
+    !!value &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    Object.keys(value).length === keys.length &&
+    keys.every((key) => Object.hasOwn(value, key))
+  );
+}
+function parseReviewedInput(value: unknown): ReviewedInput {
+  if (
+    !exactKeys(value, [
+      "schema",
+      "sourceUrl",
+      "targetUrl",
+      "reviewed",
+      "method",
+      "language",
+      "title",
+      "text",
+      "textSha256",
+      "sourceImages",
+      "nativeOcr",
+    ]) ||
+    value.schema !== "shenron-reviewed-transcription/v1" ||
+    value.reviewed !== true ||
+    value.method !== "direct_visual_transcription" ||
+    value.language !== "ja" ||
+    typeof value.sourceUrl !== "string" ||
+    typeof value.targetUrl !== "string" ||
+    typeof value.title !== "string" ||
+    !value.title.trim() ||
+    value.title.length > 1000 ||
+    !value.title.isWellFormed() ||
+    typeof value.text !== "string" ||
+    typeof value.textSha256 !== "string" ||
+    !/^[a-f0-9]{64}$/.test(value.textSha256) ||
+    !Array.isArray(value.sourceImages) ||
+    !value.sourceImages.length ||
+    value.sourceImages.length > 96 ||
+    !value.sourceImages.every(
+      (image) =>
+        exactKeys(image, ["url", "sha256"]) &&
+        typeof image.url === "string" &&
+        typeof image.sha256 === "string" &&
+        /^[a-f0-9]{64}$/.test(image.sha256),
+    ) ||
+    !exactKeys(value.nativeOcr, ["qualified", "status"]) ||
+    value.nativeOcr.qualified !== false ||
+    value.nativeOcr.status !== "failed"
+  )
+    throw new Error("Invalid reviewed transcription schema");
+  return value as unknown as ReviewedInput;
+}
+export function reviewedTranscription(value: unknown, source: string, target: string) {
+  const input = parseReviewedInput(value);
+  if (
+    input.sourceUrl !== publicSource(source).href ||
+    input.targetUrl !== publicationTarget(target).url ||
+    !input.text.trim() ||
+    !input.text.isWellFormed() ||
+    [...input.text].some((character) => {
+      const code = character.charCodeAt(0);
+      return (code < 32 && ![9, 10, 13].includes(code)) || code === 127;
+    }) ||
+    new TextEncoder().encode(input.text).length > 1024 * 1024 ||
+    digest(input.text) !== input.textSha256
+  )
+    throw new Error("Reviewed transcription identity, UTF-8 text or SHA is invalid");
+  const seen = new Set<string>();
+  for (const image of input.sourceImages) {
+    const url = publicSource(image.url);
+    if (
+      url.href !== image.url ||
+      url.hostname !== new URL(source).hostname ||
+      url.href === input.sourceUrl ||
+      seen.has(url.href)
+    )
+      throw new Error("Reviewed images must be unique exact same-host public URLs");
+    seen.add(url.href);
+  }
+  return input;
+}
+export function reviewedProvenance(
+  input: ReturnType<typeof reviewedTranscription>,
+  inputSha256: string,
+) {
+  return {
+    schema: input.schema,
+    inputSha256,
+    reviewed: true,
+    method: input.method,
+    language: input.language,
+    textSha256: input.textSha256,
+    sourceImages: input.sourceImages,
+    nativeOcr: input.nativeOcr,
+    nativeCaptureSeparate: true,
+    ragPermitted: false,
+    trainingPermitted: false,
+    canonicalEligible: false,
+  };
+}
+export function verifyReviewedImage(
+  url: string,
+  sha256: string,
+  input: ReturnType<typeof reviewedTranscription>,
+  bytes?: Uint8Array,
+  mime?: string,
+) {
+  if (input.sourceImages.find((image) => image.url === url)?.sha256 !== sha256)
+    throw new Error("Reviewed image fresh bytes differ from pinned SHA");
+  if (
+    bytes &&
+    (mime !== "image/png" ||
+      ![137, 80, 78, 71, 13, 10, 26, 10].every((value, index) => bytes[index] === value))
+  )
+    throw new Error("Reviewed visual images require actual PNG bytes");
+}
+async function loadReviewedInput(path: string, sha256: string, source: string, target: string) {
+  if (!isAbsolute(path) || !/^[a-f0-9]{64}$/.test(sha256))
+    throw new Error("Reviewed input requires absolute private path and SHA");
+  const stat = await lstat(path);
+  if (
+    !stat.isFile() ||
+    stat.isSymbolicLink() ||
+    stat.size > 2 * 1024 * 1024 ||
+    (process.platform !== "win32" && stat.mode & 0o077)
+  )
+    throw new Error("Reviewed input must be a protected regular file <=2 MiB");
+  const bytes = await Bun.file(path).bytes();
+  if (digest(bytes) !== sha256) throw new Error("Reviewed input SHA differs");
+  return reviewedTranscription(
+    JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)),
+    source,
+    target,
+  );
+}
 export function publicationIndexBody(value: unknown) {
   const body = JSON.stringify(value, null, 2) + "\n";
   if (new TextEncoder().encode(body).length > 2 * 1024 * 1024)
@@ -160,6 +310,14 @@ type Page = {
   content_hash: string;
   fetched_at: number;
 };
+export function reviewedPublicationPages(
+  pages: Page[],
+  input: ReturnType<typeof reviewedTranscription>,
+) {
+  if (pages.length !== 1 || pages[0]!.url !== input.sourceUrl)
+    throw new Error("Reviewed body requires the independent exact native seed");
+  return [{ ...pages[0]!, title: input.title, markdown: input.text }];
+}
 export function nativePageExport(page: Page, sourceUrl: string) {
   return {
     crawl_id: digest(sourceUrl),
@@ -229,6 +387,9 @@ async function run() {
       job: { type: "string" },
       apply: { type: "boolean" },
       help: { type: "boolean", short: "h" },
+      "reviewed-input": { type: "string" },
+      "reviewed-sha256": { type: "string" },
+      "plan-sha256": { type: "string" },
       "max-requests": { type: "string", default: "256" },
       "max-depth": { type: "string", default: "5" },
       timeout: { type: "string", default: "900" },
@@ -236,7 +397,7 @@ async function run() {
   });
   if (values.help) {
     console.log(
-      `Usage: bun scripts/ops/publish-source.ts --source <public HTTPS URL> --target ${DEFAULT_PUBLIC_ORIGINS.site}/publications/<slug> [--job <absolute private directory>] [--apply]\nBudgets: --max-requests 1..256 (256), --max-depth 0..10 (5), --timeout 1..1800 (900 seconds).\nPlan pins plan.json in --job; --apply requires the identical plan and configured protected DBFR/CDN owners.\nThe dynamic /publications routes require an initial qualified site deployment. Subsequent source publications reuse those routes without another Next build.`,
+      `Usage: bun scripts/ops/publish-source.ts --source <public HTTPS URL> --target ${DEFAULT_PUBLIC_ORIGINS.site}/publications/<slug> [--job <absolute private directory>] [--apply]\nBudgets: --max-requests 1..256 (256), --max-depth 0..10 (5), --timeout 1..1800 (900 seconds).\nReviewed visual input: --reviewed-input <private JSON> --reviewed-sha256 <SHA256>, requests1/depth0; apply additionally requires --plan-sha256 <physical plan SHA256>.\nPlan pins plan.json in --job; --apply requires the identical plan and configured protected DBFR/CDN owners.\nThe dynamic /publications routes require an initial qualified site deployment. Subsequent source publications reuse those routes without another Next build.`,
     );
     return;
   }
@@ -244,11 +405,35 @@ async function run() {
     throw new Error(
       "Usage: publish-source --source <public URL> --target https://dragonballfr.com/publications/<slug> [--job <private directory>] [--apply]",
     );
-  const plan = publicationPlan(values.source, values.target, {
+  const basePlan = publicationPlan(values.source, values.target, {
     requests: Number(values["max-requests"]),
     depth: Number(values["max-depth"]),
     timeout: Number(values.timeout),
   });
+  if (!!values["reviewed-input"] !== !!values["reviewed-sha256"])
+    throw new Error("Reviewed input and SHA must be supplied together");
+  const reviewed = values["reviewed-input"]
+    ? await loadReviewedInput(
+        values["reviewed-input"],
+        values["reviewed-sha256"]!,
+        basePlan.sourceUrl,
+        basePlan.targetUrl,
+      )
+    : undefined;
+  if (reviewed && (basePlan.limits.requests !== 1 || basePlan.limits.depth !== 0))
+    throw new Error("Reviewed transcription requires independent single-page depth-zero crawl");
+  const plan = {
+    ...basePlan,
+    ...(reviewed
+      ? {
+          reviewedInput: {
+            path: resolve(values["reviewed-input"]!),
+            sha256: values["reviewed-sha256"]!,
+            provenance: reviewedProvenance(reviewed, values["reviewed-sha256"]!),
+          },
+        }
+      : {}),
+  };
   if (!values.apply) {
     if (values.job) {
       if (!isAbsolute(values.job)) throw new Error("Job requires an absolute directory");
@@ -280,6 +465,11 @@ async function run() {
     throw new Error("Job must be a protected regular directory");
   if (!Bun.deepEquals(await Bun.file(join(root, "plan.json")).json(), plan))
     throw new Error("Apply differs from the pinned plan");
+  if (
+    (reviewed || values["plan-sha256"]) &&
+    digest(await Bun.file(join(root, "plan.json")).bytes()) !== values["plan-sha256"]
+  )
+    throw new Error("Apply requires exact reviewed plan SHA");
   if (await Bun.file(join(root, "crawl.json")).exists())
     throw new Error("Apply already started; inspect receipts before retrying");
   await assertPublicDns(new URL(plan.sourceUrl));
@@ -338,22 +528,48 @@ async function run() {
     )
   )
     throw new Error("Frontier page lacks a successful native response in this crawl");
+  if (reviewed && (pages.length !== 1 || statuses.get(plan.sourceUrl) !== 200))
+    throw new Error("Reviewed transcription requires exactly one native HTTP200 seed proof");
+  // Native captures remain untouched; the reviewed body is a separately attributed publication input.
+  const publicationPages = reviewed ? reviewedPublicationPages(pages, reviewed) : pages;
+  const nativeExports = pages.map((page) => nativePageExport(page, plan.sourceUrl));
+  const nativeExportBody =
+    nativeExports.map((document) => JSON.stringify(document)).join("\n") + "\n";
+  const provenance = reviewed
+    ? {
+        ...reviewedProvenance(reviewed, values["reviewed-sha256"]!),
+        nativeCapture: {
+          sourceUrl: plan.sourceUrl,
+          httpStatus: 200,
+          sourceCaptureSha256: digest(nativeExportBody),
+          captureFormat: "native-export.jsonl",
+        },
+      }
+    : undefined;
   const publicRoot = join(root, "public");
   const objects = join(publicRoot, "publications", plan.slug, "objects");
   await mkdir(objects, { recursive: true, mode: 0o700 });
-  const documents = pages.map((page) =>
+  const documents = publicationPages.map((page) =>
     projectPage(page, plan.publicPrefix, new URL(plan.sourceUrl).hostname),
   );
   const identities = new Set(pages.map((page) => page.url));
   for (const document of documents)
     document.children = document.children.filter((url) => identities.has(url));
   for (let i = 0; i < pages.length; i++)
-    await privateWrite(join(objects, `${documents[i]!.body.sha256}.md`), pages[i]!.markdown);
+    await privateWrite(
+      join(objects, `${documents[i]!.body.sha256}.md`),
+      publicationPages[i]!.markdown,
+    );
   let mediaBytes = 0;
   const acquired = new Map<string, { path: string; mime: string; size: number; sha256: string }>();
   for (let i = 0; i < pages.length; i++) {
-    for (const match of pages[i]!.markdown.matchAll(/!\[[^\]]*\]\((https:\/\/[^\s)]+)\)/g)) {
-      const url = publicSource(match[1]!);
+    const imageUrls = reviewed
+      ? reviewed.sourceImages.map((image) => image.url)
+      : [...pages[i]!.markdown.matchAll(/!\[[^\]]*\]\((https:\/\/[^\s)]+)\)/g)].map(
+          (match) => match[1]!,
+        );
+    for (const imageUrl of imageUrls) {
+      const url = publicSource(imageUrl);
       if (url.hostname !== new URL(plan.sourceUrl).hostname) continue;
       let media = acquired.get(url.href);
       if (!media) {
@@ -367,6 +583,7 @@ async function run() {
         const mime = response.headers.get("content-type")?.split(";")[0]?.toLowerCase();
         if (
           !response.ok ||
+          (reviewed && response.status !== 200) ||
           !["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"].includes(
             mime ?? "",
           ) ||
@@ -389,6 +606,7 @@ async function run() {
           offset += chunk.length;
         }
         const sha256 = digest(bytes);
+        if (reviewed) verifyReviewedImage(url.href, sha256, reviewed, bytes, mime);
         const extension = {
           "image/jpeg": "jpg",
           "image/png": "png",
@@ -412,17 +630,32 @@ async function run() {
     sourceUrl: plan.sourceUrl,
     targetUrl: plan.targetUrl,
     publishedAt: new Date().toISOString(),
-    title: (pages.find((page) => page.url === plan.sourceUrl) ?? pages[0]!).title.slice(0, 1000),
+    title: (
+      publicationPages.find((page) => page.url === plan.sourceUrl) ?? publicationPages[0]!
+    ).title.slice(0, 1000),
     documents,
+    ...(reviewed ? { provenance } : {}),
   };
   const indexBody = publicationIndexBody(publication);
   await privateWrite(join(publicRoot, "publications", plan.slug, "index.json"), indexBody);
   const policy = publicationPolicy(plan.sourceUrl);
-  const exports = pages.map((page) => nativePageExport(page, plan.sourceUrl));
+  const exports = reviewed
+    ? publicationPages.map((page) =>
+        Object.assign(nativePageExport(page, plan.sourceUrl), {
+          category: "reviewed-visual-transcription",
+          provenance,
+        }),
+      )
+    : nativeExports;
+  const enrichReviewed = (record: ReturnType<typeof projectNativeCrawl>[number]) =>
+    reviewed
+      ? { ...record, provenance: { ...record.provenance, reviewedPublication: provenance } }
+      : record;
   const expectedRecords = exports.flatMap((document) =>
-    projectNativeCrawl(document, crawlIngestPolicySchema.parse(policy)),
+    projectNativeCrawl(document, crawlIngestPolicySchema.parse(policy)).map(enrichReviewed),
   );
-  const inputPath = join(root, "native-export.jsonl");
+  await privateWrite(join(root, "native-export.jsonl"), nativeExportBody);
+  const inputPath = join(root, reviewed ? "reviewed-export.jsonl" : "native-export.jsonl");
   await privateWrite(
     inputPath,
     exports.map((document) => JSON.stringify(document)).join("\n") + "\n",
@@ -515,7 +748,13 @@ async function run() {
       throw new Error("Registry optimistic snapshot changed during CDN publication");
     const result = await ingestNativeCrawl(
       { inputPath, policy, apply: true, maxDocuments: 256, signal },
-      preserveExistingRegistry(registry, new Set(before.map((row) => row.url))),
+      preserveExistingRegistry(
+        {
+          assertReady: () => registry.assertReady(),
+          upsert: (record) => registry.upsert(enrichReviewed(record)),
+        },
+        new Set(before.map((row) => row.url)),
+      ),
     );
     const after = await snapshot();
     if (!result.complete || after.length !== pages.length)
@@ -547,6 +786,7 @@ async function run() {
       mediaBytes,
       mediaCoverage: "same-domain Markdown images; foreign providers remain links",
       boundedCrawlComplete: true,
+      ...(reviewed ? { reviewedPublication: provenance } : {}),
     });
     console.log(
       JSON.stringify({

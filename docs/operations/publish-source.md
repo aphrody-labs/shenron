@@ -64,3 +64,43 @@ avant toute reprise ; aucun rollback ou replay implicite n’est exécuté.
 Tout lancement distant long passe par un job tmux borné et journalisé avec
 `EXIT_CODE`, puis un contrôle réel de la cible, des SHA CDN et du catalogue.
 Les tests unitaires du script ne prouvent pas une publication de production.
+
+## Transcription visuelle relue
+
+Pour une page dont le texte existe uniquement dans des PNG, fournir séparément
+`--reviewed-input /chemin/prive/reviewed-input.json --reviewed-sha256 <SHA256>`.
+Ce JSON régulier privé ≤2MiB suit strictement le contrat :
+
+```json
+{
+  "schema": "shenron-reviewed-transcription/v1",
+  "sourceUrl": "https://publisher.example/interview",
+  "targetUrl": "https://dragonballfr.com/publications/interview",
+  "reviewed": true,
+  "method": "direct_visual_transcription",
+  "language": "ja",
+  "title": "対談",
+  "text": "日本語の対談\n",
+  "textSha256": "<SHA256 des octets UTF-8 exacts de text>",
+  "sourceImages": [{ "url": "https://publisher.example/img.png", "sha256": "<SHA256 PNG>" }],
+  "nativeOcr": { "qualified": false, "status": "failed" }
+}
+```
+
+Préparer avec `--max-requests 1 --max-depth 0`, puis appliquer avec les mêmes
+arguments et `--plan-sha256 <SHA256 physique de plan.json> --apply`.
+Le plan épingle le JSON, le texte, les URL et les images ; il ne publie rien.
+L’application conserve le crawl natif intact et exige son unique page source
+HTTP200. Elle publie le texte relu distinct, sans remplacer le Markdown vide
+dans la frontière SQLite. Les images sont des URL HTTPS publiques uniques du
+même hôte, jamais des fichiers locaux arbitraires : chaque GET frais doit
+répondre200 avec des octets PNG et le SHA épinglé, dans les budgets habituels.
+
+`native-export.jsonl` garde exclusivement la capture native ; l’entrée séparée
+`reviewed-export.jsonl` porte la catégorie `reviewed-visual-transcription`.
+L’index public v1 et la provenance du writer canonique identifient la méthode,
+la langue, les SHA originaux, l’empreinte de la capture native séparée et
+l’OCR natif non qualifié. Les droits RAG, entraînement et canon restent faux.
+Les notices existantes restent protégées ; un refus de hash ou une capture
+incomplète interdit l’activation. Une transcription visuelle relue ne constitue
+pas une réussite OCR native.
