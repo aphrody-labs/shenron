@@ -141,7 +141,9 @@ async function runRemote(): Promise<number> {
     if (!pkg) throw new Error(`unknown package ${name}`);
     return artifactNames(pkg, selection, windows, target.startsWith("wasm32"));
   });
-  const config = (await Bun.file(join(aphrody, "config/host/vps-cargo.json")).json()) as VpsConfig;
+  const config = (await Bun.file(
+    join(aphrody, "tools/config/host/vps-cargo.json"),
+  ).json()) as VpsConfig;
   const stampFile = join(localDir, ".shenron-remote.json");
   const tree = worktreeTree();
   const stamp: Stamp = existsSync(stampFile)

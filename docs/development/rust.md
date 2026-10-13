@@ -128,7 +128,7 @@ Next exclues.
 - Sous WSL, ce wrapper refuse les commandes lourdes (build, test, clippy…). Le Rust lourd de
   Shenron passe par le tunnel Cargo d'Aphrody (`vps-cargo.ts run --repo shenron`, dans
   `~/aphrody/scripts/build/rust/`), qui compile l'arbre de travail exact sur les deux VPS de
-  build déclarés dans `~/aphrody/config/host/vps-cargo.json`. Le runner de `cargo tauri build`
+  build déclarés dans `~/aphrody/tools/config/host/vps-cargo.json`. Le runner de `cargo tauri build`
   (`scripts/build/rust/cargo-runner.ts`) choisit le dépôt du tunnel qui correspond à l'arbre
   de travail. Répartir les jobs indépendants sur les deux hôtes (une cible par hôte). Le second
   hôte porte la base de production : ses builds tournent sous cgroup (`MemoryMax=7G`,
