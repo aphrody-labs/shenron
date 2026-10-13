@@ -60,6 +60,19 @@ async function settled(pipeline: AdminPipeline, id: string) {
 }
 
 describe("native admin pipeline", () => {
+  test("a failed capability probe reports unavailable without hiding the dashboard", async () => {
+    const f = await fixture(async () => {
+      throw new Error("private-provider-failure");
+    });
+    try {
+      const status = await f.pipeline.status();
+      expect(status.actions).toMatchObject([{ id: "rag-stats", available: false }]);
+      expect(status.jobs).toEqual([]);
+      expect(JSON.stringify(status)).not.toContain("private-provider-failure");
+    } finally {
+      f.close();
+    }
+  });
   test("refuses browser-supplied plans, cross-host execution and missing features", async () => {
     let calls = 0;
     const f = await fixture(async () => {
