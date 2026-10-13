@@ -496,7 +496,7 @@ export class DirectMessageRelay {
 
       if (autorise) {
         await message.react("✅").catch(() => undefined);
-        logger.info(`[DM] message reçu de ${username} (${userId}) : "${texte.slice(0, 80)}"`);
+        logger.info({ userId }, "[DM] message reçu d'un correspondant autorisé");
       }
 
       // Automatisation de discussion et monitoring pour les owners du projet
