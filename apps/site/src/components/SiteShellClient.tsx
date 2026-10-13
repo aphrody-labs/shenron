@@ -42,6 +42,7 @@ import type { Journey } from "@/lib/site-map";
 import type { ShellJourney } from "@/lib/shell-nav";
 import { useMe } from "@/lib/use-me";
 import { EpisodeThemeSwitcher } from "@/components/episodes/EpisodeThemeSwitcher";
+import { PwaControls } from "@/components/PwaProvider";
 
 export type { ShellJourney };
 
@@ -189,9 +190,19 @@ export function SiteShellClient({
           <LanguageSwitcher variant="compact" />
         </div>
       }
-      account={<NavAuth variant="sidebar" />}
+      account={
+        <>
+          <NavAuth variant="sidebar" />
+          <PwaControls />
+        </>
+      }
       mobileAccount={<NavAuth variant="compact" />}
-      sheetFooter={<NavAuth variant="sheet" />}
+      sheetFooter={
+        <>
+          <NavAuth variant="sheet" />
+          <PwaControls />
+        </>
+      }
       footer={footer}
       onCommandIntent={() => setArmed(true)}
       renderCommand={({ open, onOpenChange }) => (

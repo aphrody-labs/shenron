@@ -1,0 +1,16 @@
+{
+  "install": "Installer DBFR",
+  "installing": "Installation…",
+  "installError": "L’installation n’a pas abouti. Réessayez depuis le menu du navigateur.",
+  "update": "Mettre à jour DBFR",
+  "iosInstall": "Installer sur iPhone ou iPad",
+  "iosHint": "Dans Safari, ouvrez Partager puis Sur l’écran d’accueil.",
+  "offline": "Hors connexion",
+  "offlineTitle": "La connexion est interrompue",
+  "offlineBody": "Retrouvez les pages, les planches et les vidéos dès que votre connexion revient.",
+  "retry": "Réessayer",
+  "home": "Accueil",
+  "manga": "Manga",
+  "episodes": "Épisodes",
+  "description": "Dragon Ball France : encyclopédie, manga, épisodes et actualités."
+}

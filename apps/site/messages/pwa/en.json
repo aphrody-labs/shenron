@@ -1,0 +1,16 @@
+{
+  "install": "Install DBFR",
+  "installing": "Installing…",
+  "installError": "Installation did not finish. Try again from your browser’s menu.",
+  "update": "Update DBFR",
+  "iosInstall": "Install on iPhone or iPad",
+  "iosHint": "In Safari, open Share, then Add to Home Screen.",
+  "offline": "Offline",
+  "offlineTitle": "Your connection was interrupted",
+  "offlineBody": "Pages, manga scans and videos will be available when your connection returns.",
+  "retry": "Try again",
+  "home": "Home",
+  "manga": "Manga",
+  "episodes": "Episodes",
+  "description": "Dragon Ball France: encyclopedia, manga, episodes and news."
+}

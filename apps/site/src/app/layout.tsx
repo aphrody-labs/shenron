@@ -24,6 +24,7 @@ import { env } from "@/lib/env";
 import { getSiteTheme } from "@/lib/theme-config";
 import { themeCssVars } from "@/lib/site-theme";
 import { EPISODE_THEME_BOOT } from "@/lib/episode-theme";
+import { PwaProvider } from "@/components/PwaProvider";
 
 // FAB Discord lazy : composant client gated par localStorage, jamais critical.
 const DiscordInviteFAB = dynamic(() =>
@@ -122,7 +123,8 @@ export const metadata: Metadata = {
 
 export const viewport = {
   themeColor: "#0a0a0a",
-  colorScheme: "dark" as const,
+  colorScheme: "dark light" as const,
+  viewportFit: "cover" as const,
 };
 
 export default async function RootLayout({
@@ -254,9 +256,11 @@ export default async function RootLayout({
 				    palette ⌘K, fil d'Ariane, barre de titre Tauri. Elle porte le `main#contenu`
 				    et le pied de page ; les onglets mobiles viennent après dans le DOM (ordre
 				    de tabulation : contenu, pied, puis navigation basse). */}
-          <SiteShell>
-            <PageTransition>{children}</PageTransition>
-          </SiteShell>
+          <PwaProvider>
+            <SiteShell>
+              <PageTransition>{children}</PageTransition>
+            </SiteShell>
+          </PwaProvider>
           <DiscordInviteFAB />
           <ReportButton />
         </LocaleProvider>

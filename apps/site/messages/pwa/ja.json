@@ -1,0 +1,16 @@
+{
+  "install": "DBFRをインストール",
+  "installing": "インストール中…",
+  "installError": "インストールが完了しませんでした。ブラウザーのメニューから再試行してください。",
+  "update": "DBFRを更新",
+  "iosInstall": "iPhone・iPadにインストール",
+  "iosHint": "Safariの共有メニューから「ホーム画面に追加」を選んでください。",
+  "offline": "オフライン",
+  "offlineTitle": "接続が切れました",
+  "offlineBody": "接続が復旧すると、ページ、漫画の画像、動画をご利用いただけます。",
+  "retry": "再試行",
+  "home": "ホーム",
+  "manga": "漫画",
+  "episodes": "エピソード",
+  "description": "Dragon Ball France：百科事典、漫画、エピソード、ニュース。"
+}
