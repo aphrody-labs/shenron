@@ -162,6 +162,8 @@ export class AdminPipeline {
                 });
               } catch (error) {
                 if (deadline.aborted && !controls.signal?.aborted)
+                  // The executor recognizes this sanitized deadline marker.
+                  // eslint-disable-next-line preserve-caught-error
                   throw new Error("Native pipeline deadline exceeded", {
                     cause: "native-deadline",
                   });
@@ -191,7 +193,9 @@ export class AdminPipeline {
             .catch(() => null);
     const actions = await Promise.all(
       this.plans().map(async (plan) => {
-        const probe = this.hostMatches(plan) ? await this.call(plan, plan.probe, 10_000) : null;
+        const probe = this.hostMatches(plan)
+          ? await this.call(plan, plan.probe, 10_000).catch(() => null)
+          : null;
         return {
           id: plan.id,
           category: plan.category,
@@ -206,7 +210,7 @@ export class AdminPipeline {
       native: { abi, version: nativeVersion(), bun: Bun.version, rag },
       actions: [...actions, ...web.actions],
       jobs: [...(this.env.SHENRON_ADMIN_PIPELINE_HOME ? this.jobs() : []), ...web.jobs]
-        .sort((a, b) => b.startedAt.localeCompare(a.startedAt))
+        .toSorted((a, b) => b.startedAt.localeCompare(a.startedAt))
         .slice(0, 50),
     };
   }

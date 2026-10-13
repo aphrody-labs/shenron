@@ -4,7 +4,7 @@
 //! A caller is elevated when it either
 //!
 //! - presents `Authorization: Bearer <token>` with an accepted token: any entry of
-//!   `SHENRON_MCP_TOKENS` (comma-separated), plus `SHENRON_API_ADMIN_TOKEN` and `DBFR_TOKEN` when
+//!   `SHENRON_MCP_TOKENS` (comma-separated), plus `SHENRON_ADMIN_TOKEN`, `SHENRON_API_ADMIN_TOKEN` and `DBFR_TOKEN` when
 //!   they are set. Comparison is constant-time. A bearer that is present but unknown is refused
 //!   (401), never silently downgraded to anonymous access; or
 //! - connects from an address listed in `SHENRON_MCP_ALLOWED_IPS` (comma-separated IPs or CIDR
@@ -100,10 +100,6 @@ fn list(raw: &str) -> impl Iterator<Item = &str> {
     raw.split(',').map(str::trim).filter(|item| !item.is_empty())
 }
 
-fn env_list(name: &str) -> Option<String> {
-    std::env::var(name).ok()
-}
-
 fn cidrs(name: &str, raw: &str) -> Vec<Cidr> {
     list(raw)
         .filter_map(|item| {
@@ -180,8 +176,12 @@ impl Access {
     /// The policy configured through the environment (see the module documentation).
     #[must_use]
     pub fn from_env() -> Self {
+        Self::from_environment(|name| std::env::var(name).ok())
+    }
+
+    fn from_environment(get: impl Fn(&str) -> Option<String>) -> Self {
         let mut tokens: Vec<String> = Vec::new();
-        if let Some(raw) = env_list("SHENRON_MCP_TOKENS") {
+        if let Some(raw) = get("SHENRON_MCP_TOKENS") {
             for token in list(&raw) {
                 if token.len() >= MIN_TOKEN_LEN {
                     tokens.push(token.to_owned());
@@ -192,17 +192,17 @@ impl Access {
                 }
             }
         }
-        for name in ["SHENRON_API_ADMIN_TOKEN", "DBFR_TOKEN"] {
-            if let Some(value) = std::env::var(name).ok().map(|v| v.trim().to_owned())
+        for name in ["SHENRON_ADMIN_TOKEN", "SHENRON_API_ADMIN_TOKEN", "DBFR_TOKEN"] {
+            if let Some(value) = get(name).map(|v| v.trim().to_owned())
                 && value.len() >= MIN_TOKEN_LEN
             {
                 tokens.push(value);
             }
         }
-        let allowed_ips = env_list("SHENRON_MCP_ALLOWED_IPS")
+        let allowed_ips = get("SHENRON_MCP_ALLOWED_IPS")
             .map(|raw| cidrs("SHENRON_MCP_ALLOWED_IPS", &raw))
             .unwrap_or_default();
-        let trusted_proxies = match env_list("SHENRON_MCP_TRUSTED_PROXIES") {
+        let trusted_proxies = match get("SHENRON_MCP_TRUSTED_PROXIES") {
             Some(raw) => cidrs("SHENRON_MCP_TRUSTED_PROXIES", &raw),
             None => ["127.0.0.0/8", "::1/128"].iter().filter_map(|c| Cidr::parse(c)).collect(),
         };
@@ -355,6 +355,22 @@ mod tests {
         assert_eq!(access.token_count(), 0);
         let auth = headers(&[("authorization", "Bearer short")]);
         assert_eq!(access.authorize(ip("8.8.8.8"), &auth), Decision::Invalid);
+    }
+
+    #[test]
+    fn canonical_site_admin_token_unlocks_authenticated_tools_without_ip_allowlists() {
+        let access = Access::from_environment(|name| {
+            (name == "SHENRON_ADMIN_TOKEN").then(|| format!("  {TOKEN}  "))
+        });
+        assert_eq!(access.token_count(), 1);
+        assert_eq!(access.allowed_ip_count(), 0);
+        let auth = headers(&[("authorization", &format!("Bearer {TOKEN}"))]);
+        assert_eq!(access.authorize(ip("8.8.8.8"), &auth), Decision::ElevatedToken);
+        assert_eq!(access.authorize(ip("8.8.8.8"), &HeaderMap::new()), Decision::Anonymous);
+        let short = Access::from_environment(|name| {
+            (name == "SHENRON_ADMIN_TOKEN").then(|| "short".to_owned())
+        });
+        assert_eq!(short.token_count(), 0);
     }
 
     #[test]

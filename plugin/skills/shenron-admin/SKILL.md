@@ -6,6 +6,7 @@ description: "Prépare ou exécute une administration Shenron couverte par la de
 # Administration Shenron
 
 Appliquer le [contrat partagé](../../references/execution.md).
+Configuration des clients et références de secrets : [clients administratifs](../../references/admin-clients.md).
 
 ## Deux modes
 
@@ -27,14 +28,14 @@ d'exposition se rapporte sans contournement.
 
 ## Requêtes
 
-| Effet | Outil MCP | Requête HTTP | Vérification |
-| --- | --- | --- | --- |
-| Dépôt de transcription databook (fusion ciblée) | `admin_databooks_deposit` `{databookId, pages:[{number,text}]}` | `POST https://dragonballfr.com/api/databooks/<id>/transcription`, `Authorization: Bearer $SHENRON_DATABOOKS_API_TOKEN`, corps `{"mode":"merge","pages":[{"number":7,"text":"…"}]}` | `GET https://dragonballfr.com/api/databooks/<id>` : le texte des planches citées, et une révision dans `/admin/wiki/history` |
-| Catalogue des commandes Discord | `admin_bot_commands` | `GET https://bot.dragonballfr.com/api/bot/commands/catalog`, `Authorization: Bearer $SHENRON_API_ADMIN_TOKEN` | — (lecture) |
-| Exécution d'une commande Discord | `admin_bot_command_execute` `{invocation, options?, channelId?}` | `POST https://bot.dragonballfr.com/api/bot/commands/exec`, même jeton, corps `{"invocation":"…","options":{…},"channelId":"<17-20 chiffres>"}` | effet visible dans le salon ou par la lecture publique concernée (`/api/public/…`) |
-| Catalogue des actions de service | `admin_services` | `GET https://bot.dragonballfr.com/api/services`, même jeton | — (lecture) |
-| Action de service | `admin_service_action` `{service, action, arguments?}` | `POST https://bot.dragonballfr.com/api/services/<service>/<action>` (`[a-z0-9-]{1,80}`), même jeton, corps = arguments | relire `GET /api/services` et `GET https://bot.dragonballfr.com/health` |
-| Correction d'une fiche du wiki | — | `PATCH https://dragonballfr.com/api/wiki-admin/<table>/<id>` (session admin du site, pas de jeton), corps = champs modifiés | `GET /api/wiki-admin/<table>/<id>` puis la fiche publique ; révision dans `public.wiki_revisions` (`/admin/wiki/history`) |
+| Effet                                           | Outil MCP                                                        | Requête HTTP                                                                                                                                                                       | Vérification                                                                                                                 |
+| ----------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Dépôt de transcription databook (fusion ciblée) | `admin_databooks_deposit` `{databookId, pages:[{number,text}]}`  | `POST https://dragonballfr.com/api/databooks/<id>/transcription`, `Authorization: Bearer $SHENRON_DATABOOKS_API_TOKEN`, corps `{"mode":"merge","pages":[{"number":7,"text":"…"}]}` | `GET https://dragonballfr.com/api/databooks/<id>` : le texte des planches citées, et une révision dans `/admin/wiki/history` |
+| Catalogue des commandes Discord                 | `admin_bot_commands`                                             | `GET https://bot.dragonballfr.com/api/bot/commands/catalog`, `Authorization: Bearer $SHENRON_API_ADMIN_TOKEN`                                                                      | — (lecture)                                                                                                                  |
+| Exécution d'une commande Discord                | `admin_bot_command_execute` `{invocation, options?, channelId?}` | `POST https://bot.dragonballfr.com/api/bot/commands/exec`, même jeton, corps `{"invocation":"…","options":{…},"channelId":"<17-20 chiffres>"}`                                     | effet visible dans le salon ou par la lecture publique concernée (`/api/public/…`)                                           |
+| Catalogue des actions de service                | `admin_services`                                                 | `GET https://bot.dragonballfr.com/api/services`, même jeton                                                                                                                        | — (lecture)                                                                                                                  |
+| Action de service                               | `admin_service_action` `{service, action, arguments?}`           | `POST https://bot.dragonballfr.com/api/services/<service>/<action>` (`[a-z0-9-]{1,80}`), même jeton, corps = arguments                                                             | relire `GET /api/services` et `GET https://bot.dragonballfr.com/health`                                                      |
+| Correction d'une fiche du wiki                  | —                                                                | `PATCH https://dragonballfr.com/api/wiki-admin/<table>/<id>` (session admin du site, pas de jeton), corps = champs modifiés                                                        | `GET /api/wiki-admin/<table>/<id>` puis la fiche publique ; révision dans `public.wiki_revisions` (`/admin/wiki/history`)    |
 
 Règles de corps : databook `id ≥ 1`, 1 à 2 000 planches, numéro ≥ 1, texte non vide
 d'au plus 40 000 caractères. Une chaîne vide est ignorée ; `"text": null` efface et

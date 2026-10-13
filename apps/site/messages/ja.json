@@ -1850,6 +1850,15 @@
       "autre": "その他"
     }
   },
+  "adminLogs": {
+    "title": "ボットのログ",
+    "description": "Shenronプロセスのログです。10秒ごとに自動更新します。",
+    "lines": "ログ{count}行",
+    "refresh": "更新",
+    "loading": "ログを読み込み中…",
+    "empty": "ログはありません。",
+    "error": "ボットのログを読み込めません。もう一度お試しください。"
+  },
   "adminDashboard": {
     "nativePipeline": {
       "ragCounts": "{chunks, number}件のチャンク · {vectors, number}件のベクトル",

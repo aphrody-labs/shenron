@@ -24,6 +24,7 @@ import type { AgentKeyView } from "@/lib/agent-keys";
 import type { AgentScope } from "@/db/schema";
 
 const dateFormat = new Intl.DateTimeFormat("fr-FR", {
+  timeZone: "Europe/Paris",
   day: "2-digit",
   month: "short",
   year: "numeric",
@@ -169,6 +170,7 @@ export function AgentKeysManager({
             {scopes.map((scope) => (
               <label
                 key={scope}
+                aria-label={scope}
                 className={`flex cursor-pointer items-start gap-2.5 rounded-md border p-3 transition-colors ${
                   picked.has(scope)
                     ? "border-dbz-orange/50 bg-dbz-orange/[0.07]"
