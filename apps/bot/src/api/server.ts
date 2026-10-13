@@ -1,3 +1,4 @@
+import { botOperationalLogs } from "../lib/operational-logs";
 import { resolveApiUrl, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import { adminPipeline } from "./admin-pipeline";
 import os from "node:os";
@@ -1117,7 +1118,7 @@ import { findAction, listServiceActions, SERVICE_ACTIONS } from "./service-regis
  *     GET  /health/usage         pid CPU/mem
  *     GET  /health/host          host CPU/mem
  *     GET  /health/monitoring    aggregate
- *     GET  /health/logs          journalctl -u shenron, JSON parsé
+ *     GET  /health/logs          bounded process operational log snapshot
  *
  *     GET  /stats/totals         users/guilds/commands
  *     GET  /stats/interaction/last
@@ -1525,48 +1526,12 @@ export class ApiServer {
             latency: this.stats.getLatency(),
           });
         }),
-        "/api/health/logs": admin(async (req) => {
-          // Lecture des derniers logs via journalctl (le service systemd
-          // `shenron.service` envoie tout sur stdout/stderr → journald).
-          // Format JSON natif pour parser facilement.
-          const url = new URL(req.url);
-          const lines = Math.min(500, Number(url.searchParams.get("lines")) || 100);
-          try {
-            const proc = Bun.spawn(
-              [
-                "journalctl",
-                "-u",
-                "shenron",
-                "-n",
-                String(lines),
-                "--output=short-iso",
-                "--no-pager",
-                "--reverse",
-              ],
-              { stdout: "pipe", stderr: "pipe" },
-            );
-            const text = await new Response(proc.stdout).text();
-            await proc.exited;
-            const logs = text
-              .split("\n")
-              .filter((line) => line.trim() && !line.startsWith("--"))
-              .map((line) => {
-                const m = line.match(/^(\S+)\s+(\S+)\s+(\S+)\s+(.*)$/);
-                if (!m) return { raw: line };
-                return { time: m[1], host: m[2], unit: m[3], message: m[4] };
-              });
-            return Response.json({ logs, count: logs.length });
-          } catch (err) {
-            return Response.json(
-              {
-                error: "journalctl indisponible",
-                message: err instanceof Error ? err.message : String(err),
-              },
-              { status: 500 },
-            );
-          }
+        "/api/health/logs": admin((req) => {
+          const lines = Number(new URL(req.url).searchParams.get("lines") ?? 100);
+          return Response.json(botOperationalLogs.snapshot(lines), {
+            headers: { "cache-control": "private, no-store" },
+          });
         }),
-
         // ── Stats ─────────────────────────────────────────────────────
         "/api/stats/totals": admin(async () =>
           Response.json({ stats: await this.stats.getTotalStats() }),
