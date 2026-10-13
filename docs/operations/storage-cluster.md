@@ -80,9 +80,17 @@ Ces deux SQLite ne sont pas présumés identiques. Le SQLite local contient auss
 des données propres au bot, dont 59 995 chunks RAG vectorisés, 225 752 lignes
 de journal d'actions et 8 037 utilisateurs au relevé du 13 octobre 2026 :
 son rôle ne se réduit pas à une copie éditoriale. Les captures ne sont pas des
-assets CDN publiables. Un transfert privé reprenable vers le profil `dbfr` du
-VPS est en cours ; ni son intégrité complète ni un basculement ne sont encore
-établis. Aucune suppression locale n'a été effectuée.
+assets CDN publiables. Le propriétaire a arrêté le transfert des frames le
+13 octobre : les trois tâches `Shenron-Corpus-even`, `Shenron-Corpus-odd` et
+`Shenron-Corpus-Verify` sont désactivées et leurs processus rsync associés
+arrêtés. La copie partielle privée sur le VPS n'est pas un corpus vérifié.
+Le seul transfert courant est une archive privée contenant la vidéo source de
+681 525 411 octets et les distributions complètes de `@aphrody/bun-video` et
+`@aphrody/bun-runtime-sdk`, directement vers DBFR par rsync reprenable. Son
+chemin cible est `/home/ubuntu/.aphrody/profiles/dbfr/video-handoff/beerus-01/beerus-video-sdk.tar`.
+Son manifeste contient les SHA-256 et indique `publicPublicationQualified=false`.
+Le transfert et le hash distant doivent être vérifiés avant toute extraction.
+Aucune suppression locale n'a été effectuée.
 
 L'inventaire des fichiers SQLite sous `data/` (répertoires ignorés inclus)
 compte sept bases. Quatre sont des miroirs historiques du VPS et une est un
@@ -93,14 +101,13 @@ fichiers encore présents sur ces hôtes au contrôle du 13 octobre. Le
 protégé jusqu'à qualification de sa provenance. Aucun de ces miroirs n'est
 promu comme nouveau writer PostgreSQL ni envoyé une seconde fois au cloud.
 
-Sur le poste propriétaire, `Shenron-Corpus-even` et `Shenron-Corpus-odd`
-reprennent au plus deux shards rsync toutes les 15 minutes, chaque tentative
-étant bornée à six heures. `Shenron-Corpus-Verify` contrôle les huit statuts,
-recalcule le manifeste local avec huit workers Bun, lance le hash distant dans
-tmux sur le VPS et compare les manifestes SHA-256 récupérés par rclone.
-Le reçu privé `var/reports/storage-cluster/beerus-transfer-verified.txt` n'est
-écrit qu'après égalité intégrale ; sa présence ne réalise pas le basculement
-du chemin local. Aucun effacement automatique n'est programmé.
+La pipeline privée `dbfr-private-pipeline.sh` accompagne l'archive sur DBFR.
+Après vérification du hash global et des trois contenus, elle crée un MP4
+720p H.264/AAC optimisé avec FFmpeg, sous priorité CPU et disque réduite.
+Les sorties et le SDK restent en mode 700/600 dans le profil privé. Aucune
+écriture CDN, PostgreSQL ou publication du site ne découle de ce traitement :
+le manifeste de production classe encore l'épisode comme non qualifié pour la
+publication publique. Aucun effacement automatique n'est programmé.
 
 ## Placement exclusif
 
