@@ -567,6 +567,10 @@ async function finalizeQualified(
         if (!Bun.deepEquals(prior, row)) throw new Error("Protected registry changed");
       } else if (
         row.canonical_eligible ||
+        row.url !== expected[0]!.url ||
+        row.kind !== expected[0]!.kind ||
+        row.http_status !== expected[0]!.httpStatus ||
+        new Date(row.fetched_at).toISOString() !== new Date(expected[0]!.fetchedAt).toISOString() ||
         row.content_hash !== expected[0]!.contentHash ||
         row.title !== expected[0]!.title ||
         row.excerpt !== expected[0]!.excerpt ||
