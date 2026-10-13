@@ -34,15 +34,16 @@ function tomeLabel(tome: string, t: ReturnType<typeof useT>): string {
 
 const hasCjk = (s: string) => /[぀-ヿ㐀-鿿]/.test(s);
 
-function Snippet({ text }: { text: string }) {
-  // L'API entoure le terme trouvé de crochets → on le surligne.
+export function Snippet({ text }: { text: string }) {
+  // Render only the API's mark tokens, keeping all other text escaped by React.
   return (
     <>
-      {text.split(/(\[[^\]]+\])/g).map((part, i) =>
-        part.startsWith("[") && part.endsWith("]") ? (
+      {text.split(/(<mark>[\s\S]*?<\/mark>|\[[^\]]+\])/g).map((part, i) =>
+        (part.startsWith("[") && part.endsWith("]")) ||
+        (part.startsWith("<mark>") && part.endsWith("</mark>")) ? (
           // oxlint-disable-next-line no-array-index-key
           <mark key={i} className="rounded bg-dbz-orange/25 px-1 text-dbz-orange">
-            {part.slice(1, -1)}
+            {part.startsWith("<mark>") ? part.slice(6, -7) : part.slice(1, -1)}
           </mark>
         ) : (
           // oxlint-disable-next-line no-array-index-key

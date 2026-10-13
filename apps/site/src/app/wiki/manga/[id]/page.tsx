@@ -16,6 +16,7 @@ import { idDeFiche } from "../../_id-fiche";
 import { JsonLd } from "@/components/JsonLd";
 import { AccesApi } from "@/components/manga/AccesApi";
 import { SITE_URL } from "@/lib/config";
+import { readingLabel, readingTitle } from "@/lib/manga-reader-title";
 import type { ComicStory, WithContext } from "schema-dts";
 
 import type { Metadata } from "next";
@@ -43,9 +44,7 @@ const isGenericTitle = (t?: string | null) =>
   !t || /^(chapitre|tome|chapter)\s*\d+$/i.test(t.trim());
 
 function chapterTitle(chapter: { chapter_number: number; title: string | null }): string {
-  return isGenericTitle(chapter.title)
-    ? `Chapitre ${chapter.chapter_number}`
-    : `Chapitre ${chapter.chapter_number} — ${chapter.title}`;
+  return readingTitle(chapter);
 }
 
 export async function generateMetadata({
@@ -57,9 +56,7 @@ export async function generateMetadata({
   const numero = idDeFiche(id);
   const chapter = numero === null ? null : await dbUniverse.mangaChapter(numero);
   if (!chapter) return { title: "Manga Dragon Ball" };
-  const label = isGenericTitle(chapter.title)
-    ? `Chapitre ${chapter.chapter_number}`
-    : `Chapitre ${chapter.chapter_number} : ${chapter.title}`;
+  const label = chapterTitle(chapter);
   // La description tenait en une phrase identique pour les 665 chapitres : même
   // texte, même longueur, aucun mot propre au chapitre → Google la classait en
   // « description dupliquée » et la réécrivait. On y met ce qui distingue
@@ -68,7 +65,7 @@ export async function generateMetadata({
   const planches = chapter.pages?.length ?? 0;
   const morceaux = [
     isGenericTitle(chapter.title)
-      ? `Chapitre ${chapter.chapter_number} du manga Dragon Ball`
+      ? `${readingLabel(chapter)} du manga Dragon Ball`
       : `« ${chapter.title} » — chapitre ${chapter.chapter_number} du manga Dragon Ball`,
     planches > 0 ? `${planches} planches à lire en ligne` : null,
     "navigation planche par planche, lecture japonaise (droite à gauche)",
@@ -131,13 +128,13 @@ export default async function MangaReaderPage({ params }: { params: Promise<{ id
         id={chapter.id}
         title={chapterTitle(chapter)}
         href={`/wiki/manga/${chapter.id}`}
-        caption={`${chapter.series ?? "Manga"} · chapitre ${chapter.chapter_number}`}
+        caption={`${chapter.series ?? "Manga"} · ${readingLabel(chapter)}`}
       />
       <Breadcrumbs
         className="mb-4"
         items={[
           { label: "Manga", href: "/wiki/manga" },
-          { label: `Chapitre ${chapter.chapter_number}` },
+          { label: readingLabel(chapter) },
         ]}
       />
       <PageHeader
@@ -147,7 +144,7 @@ export default async function MangaReaderPage({ params }: { params: Promise<{ id
         title={
           generique ? (
             <>
-              Chapitre <span className="tabular-nums">{chapter.chapter_number}</span>
+              <span className="tabular-nums">{readingLabel(chapter)}</span>
             </>
           ) : (
             chapter.title
@@ -163,11 +160,11 @@ export default async function MangaReaderPage({ params }: { params: Promise<{ id
           id={chapter.id}
           title={chapterTitle(chapter)}
           href={`/wiki/manga/${chapter.id}`}
-          caption={`${chapter.series ?? "Manga"} · chapitre ${chapter.chapter_number}`}
+          caption={`${chapter.series ?? "Manga"} · ${readingLabel(chapter)}`}
         />
         <ShareButton
           title={chapterTitle(chapter)}
-          text={`${chapter.series ?? "Manga"} — chapitre ${chapter.chapter_number}`}
+          text={`${chapter.series ?? "Manga"} — ${readingLabel(chapter)}`}
           path={`/wiki/manga/${chapter.id}`}
         />
         {/* Passerelle entre éditions. Elle vise la fiche du TOME et non un chapitre
