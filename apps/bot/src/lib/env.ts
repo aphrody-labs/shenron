@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { botApiEnvironment } from "./bot-api-env";
 import { resolveDiscordAi } from "@aphrody/shenron-config/discord-ai";
 import {
   staffPolicyFromEnv,
@@ -166,7 +167,7 @@ const schema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 
-const parsed = schema.safeParse(Bun.env);
+const parsed = schema.safeParse(botApiEnvironment(Bun.env));
 if (!parsed.success) {
   console.error("✗ Invalid environment:");
   for (const issue of parsed.error.issues) {

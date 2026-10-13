@@ -1,3 +1,4 @@
+import { botOperationalLogs } from "../lib/operational-logs";
 import { resolveApiUrl, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import { adminPipeline } from "./admin-pipeline";
 import os from "node:os";
@@ -1117,7 +1118,7 @@ import { findAction, listServiceActions, SERVICE_ACTIONS } from "./service-regis
  *     GET  /health/usage         pid CPU/mem
  *     GET  /health/host          host CPU/mem
  *     GET  /health/monitoring    aggregate
- *     GET  /health/logs          journalctl -u shenron, JSON parsé
+ *     GET  /health/logs          bounded process operational log snapshot
  *
  *     GET  /stats/totals         users/guilds/commands
  *     GET  /stats/interaction/last
@@ -1525,48 +1526,12 @@ export class ApiServer {
             latency: this.stats.getLatency(),
           });
         }),
-        "/api/health/logs": admin(async (req) => {
-          // Lecture des derniers logs via journalctl (le service systemd
-          // `shenron.service` envoie tout sur stdout/stderr → journald).
-          // Format JSON natif pour parser facilement.
-          const url = new URL(req.url);
-          const lines = Math.min(500, Number(url.searchParams.get("lines")) || 100);
-          try {
-            const proc = Bun.spawn(
-              [
-                "journalctl",
-                "-u",
-                "shenron",
-                "-n",
-                String(lines),
-                "--output=short-iso",
-                "--no-pager",
-                "--reverse",
-              ],
-              { stdout: "pipe", stderr: "pipe" },
-            );
-            const text = await new Response(proc.stdout).text();
-            await proc.exited;
-            const logs = text
-              .split("\n")
-              .filter((line) => line.trim() && !line.startsWith("--"))
-              .map((line) => {
-                const m = line.match(/^(\S+)\s+(\S+)\s+(\S+)\s+(.*)$/);
-                if (!m) return { raw: line };
-                return { time: m[1], host: m[2], unit: m[3], message: m[4] };
-              });
-            return Response.json({ logs, count: logs.length });
-          } catch (err) {
-            return Response.json(
-              {
-                error: "journalctl indisponible",
-                message: err instanceof Error ? err.message : String(err),
-              },
-              { status: 500 },
-            );
-          }
+        "/api/health/logs": admin((req) => {
+          const lines = Number(new URL(req.url).searchParams.get("lines") ?? 100);
+          return Response.json(botOperationalLogs.snapshot(lines), {
+            headers: { "cache-control": "private, no-store" },
+          });
         }),
-
         // ── Stats ─────────────────────────────────────────────────────
         "/api/stats/totals": admin(async () =>
           Response.json({ stats: await this.stats.getTotalStats() }),
@@ -2546,12 +2511,12 @@ export class ApiServer {
             const url = new URL(req.url);
             const series = url.searchParams.get("series") || undefined;
             const dbs = container.resolve(DatabaseService);
-            const sql =
+            const querySql =
               `SELECT series, tome, COUNT(*) AS planches, SUM(line_count) AS lines, ` +
               `SUM(has_ja) AS planches_ja, MIN(planche) AS first, MAX(planche) AS last ` +
               `FROM db_manga_pages ${series ? "WHERE series = ?" : ""} ` +
               `GROUP BY series, tome ORDER BY series, tome`;
-            const rows = dbs.sqlite.query(sql).all(...(series ? [series] : [])) as {
+            const rows = dbs.sqlite.query(querySql).all(...(series ? [series] : [])) as {
               series: string;
               tome: string;
               planches: number;
@@ -2585,8 +2550,9 @@ export class ApiServer {
             if (!/^[\w-]{1,32}$/.test(tome)) throw new HttpError(400, "volume invalide");
             const dbs = container.resolve(DatabaseService);
             const pages = await dbs.db.query.dbMangaPages.findMany({
-              where: (p, { eq, and }) => and(eq(p.series, series), eq(p.tome, tome)),
-              orderBy: (p, { asc }) => asc(p.planche),
+              where: (p, { eq: rowEquals, and: allConditions }) =>
+                allConditions(rowEquals(p.series, series), rowEquals(p.tome, tome)),
+              orderBy: (p, { asc: ascendingRows }) => ascendingRows(p.planche),
             });
             if (!pages.length) throw new HttpError(404, "Tome introuvable");
             return {
@@ -2620,8 +2586,12 @@ export class ApiServer {
               throw new HttpError(400, "page invalide");
             const dbs = container.resolve(DatabaseService);
             const page = await dbs.db.query.dbMangaPages.findFirst({
-              where: (p, { eq, and }) =>
-                and(eq(p.series, series), eq(p.tome, tome), eq(p.planche, planche)),
+              where: (p, { eq: rowEquals, and: allConditions }) =>
+                allConditions(
+                  rowEquals(p.series, series),
+                  rowEquals(p.tome, tome),
+                  rowEquals(p.planche, planche),
+                ),
             });
             if (!page) throw new HttpError(404, "Planche introuvable");
             return {
@@ -2655,15 +2625,15 @@ export class ApiServer {
             if (tokens.length === 0) return { q, count: 0, results: [] };
             const dbs = container.resolve(DatabaseService);
             const params: (string | number)[] = [tokens.join(" OR ")];
-            let sql =
+            let querySql =
               `SELECT series, tome, planche, lang, ` +
               `snippet(manga_pages_fts, 0, '[', ']', '…', 12) AS snippet ` +
               `FROM manga_pages_fts WHERE manga_pages_fts MATCH ?`;
             if (series) {
-              sql += " AND series = ?";
+              querySql += " AND series = ?";
               params.push(series);
             }
-            sql += " ORDER BY rank LIMIT ?";
+            querySql += " ORDER BY rank LIMIT ?";
             params.push(limit);
             let rows: {
               series: string;
@@ -2673,7 +2643,7 @@ export class ApiServer {
               snippet: string;
             }[] = [];
             try {
-              rows = dbs.sqlite.query(sql).all(...params) as typeof rows;
+              rows = dbs.sqlite.query(querySql).all(...params) as typeof rows;
             } catch (err) {
               // Missing/broken FTS index is an outage, not an empty result.
               logger.error({ err }, "manga search: manga_pages_fts query failed");
@@ -2903,12 +2873,12 @@ export class ApiServer {
             const source = url.searchParams.get("source");
             const limit = Math.min(parseInt(url.searchParams.get("limit") ?? "20", 10), 100);
             const dbs = container.resolve(DatabaseService);
-            const sql = source
+            const querySql = source
               ? "SELECT * FROM db_news WHERE source_id = ? ORDER BY published_at DESC LIMIT ?"
               : "SELECT * FROM db_news ORDER BY published_at DESC LIMIT ?";
             const news = source
-              ? dbs.sqlite.query(sql).all(source, limit)
-              : dbs.sqlite.query(sql).all(limit);
+              ? dbs.sqlite.query(querySql).all(source, limit)
+              : dbs.sqlite.query(querySql).all(limit);
             return { news, limit };
           }),
 
@@ -2918,12 +2888,12 @@ export class ApiServer {
             const bucket = url.searchParams.get("bucket"); // path prefix
             const limit = Math.min(parseInt(url.searchParams.get("limit") ?? "50", 10), 200);
             const dbs = container.resolve(DatabaseService);
-            const sql = bucket
+            const querySql = bucket
               ? "SELECT id, path, source_id, attribution, license_key, role FROM db_assets WHERE path LIKE ? ORDER BY id DESC LIMIT ?"
               : "SELECT id, path, source_id, attribution, license_key, role FROM db_assets ORDER BY id DESC LIMIT ?";
             const assets = bucket
-              ? dbs.sqlite.query(sql).all(`${bucket}%`, limit)
-              : dbs.sqlite.query(sql).all(limit);
+              ? dbs.sqlite.query(querySql).all(`${bucket}%`, limit)
+              : dbs.sqlite.query(querySql).all(limit);
             return { assets };
           }),
 
@@ -5143,7 +5113,7 @@ export class ApiServer {
             try {
               const dbs = container.resolve(DatabaseService);
               const { cardThemes } = await import("~/db/schema");
-              const { CardService } = await import("~/services/CardService");
+              const { CardService: cardServiceClass } = await import("~/services/CardService");
               await dbs.db.insert(cardThemes).values({
                 id: body.id,
                 name: body.name,
@@ -5160,7 +5130,7 @@ export class ApiServer {
                 gradientAngle: typeof body.gradientAngle === "number" ? body.gradientAngle : 135,
                 enabled: body.enabled ?? true,
               });
-              container.resolve(CardService).invalidateThemes();
+              container.resolve(cardServiceClass).invalidateThemes();
               return Response.json({ ok: true, id: body.id });
             } catch (err) {
               return Response.json(
@@ -5176,7 +5146,7 @@ export class ApiServer {
             if (!body) return Response.json({ error: "JSON body requis" }, { status: 400 });
             const dbs = container.resolve(DatabaseService);
             const { cardThemes } = await import("~/db/schema");
-            const { CardService } = await import("~/services/CardService");
+            const { CardService: cardServiceClass } = await import("~/services/CardService");
             const patch: Record<string, unknown> = {};
             for (const k of [
               "name",
@@ -5199,15 +5169,15 @@ export class ApiServer {
             if (typeof body.gradientAngle === "number")
               patch.gradientAngle = clamp(Math.round(body.gradientAngle), 0, 360);
             await dbs.db.update(cardThemes).set(patch).where(eq(cardThemes.id, req.params.id));
-            container.resolve(CardService).invalidateThemes();
+            container.resolve(cardServiceClass).invalidateThemes();
             return Response.json({ ok: true });
           }),
           DELETE: admin(async (req) => {
             const dbs = container.resolve(DatabaseService);
             const { cardThemes } = await import("~/db/schema");
-            const { CardService } = await import("~/services/CardService");
+            const { CardService: cardServiceClass } = await import("~/services/CardService");
             await dbs.db.delete(cardThemes).where(eq(cardThemes.id, req.params.id));
-            container.resolve(CardService).invalidateThemes();
+            container.resolve(cardServiceClass).invalidateThemes();
             return Response.json({ ok: true });
           }),
         },
@@ -5628,14 +5598,14 @@ export class ApiServer {
           const closed = url.searchParams.get("closed");
           const dbs = container.resolve(DatabaseService);
           const { tickets } = await import("~/db/schema");
-          const { desc, eq } = await import("drizzle-orm");
+          const { desc: descendingRows, eq: rowEquals } = await import("drizzle-orm");
           const where =
             closed === "true"
-              ? eq(tickets.closed, true)
+              ? rowEquals(tickets.closed, true)
               : closed === "false"
-                ? eq(tickets.closed, false)
+                ? rowEquals(tickets.closed, false)
                 : undefined;
-          const q = dbs.db.select().from(tickets).orderBy(desc(tickets.createdAt));
+          const q = dbs.db.select().from(tickets).orderBy(descendingRows(tickets.createdAt));
           const rows = where ? await q.where(where) : await q;
           return Response.json({ rows, total: rows.length });
         }),
@@ -5670,17 +5640,21 @@ export class ApiServer {
           const ended = url.searchParams.get("ended");
           const dbs = container.resolve(DatabaseService);
           const { giveaways, giveawayEntries } = await import("~/db/schema");
-          const { desc, eq, sql } = await import("drizzle-orm");
+          const {
+            desc: descendingRows,
+            eq: rowEquals,
+            sql: querySql,
+          } = await import("drizzle-orm");
           const where =
             ended === "true"
-              ? eq(giveaways.ended, true)
+              ? rowEquals(giveaways.ended, true)
               : ended === "false"
-                ? eq(giveaways.ended, false)
+                ? rowEquals(giveaways.ended, false)
                 : undefined;
-          const q = dbs.db.select().from(giveaways).orderBy(desc(giveaways.endsAt));
+          const q = dbs.db.select().from(giveaways).orderBy(descendingRows(giveaways.endsAt));
           const rows = where ? await q.where(where) : await q;
           const counts = await dbs.db
-            .select({ giveawayId: giveawayEntries.giveawayId, c: sql<number>`count(*)` })
+            .select({ giveawayId: giveawayEntries.giveawayId, c: querySql<number>`count(*)` })
             .from(giveawayEntries)
             .groupBy(giveawayEntries.giveawayId);
           const countMap = new Map(counts.map((r) => [r.giveawayId, Number(r.c)]));
@@ -5697,14 +5671,14 @@ export class ApiServer {
             }
             const dbs = container.resolve(DatabaseService);
             const { giveaways } = await import("~/db/schema");
-            const { eq } = await import("drizzle-orm");
+            const { eq: rowEquals } = await import("drizzle-orm");
             // Avance la date de fin à maintenant — le ticker (1 min) tirera les
             // gagnants au prochain cycle. Solution la plus sûre : on délègue le
             // flow au GiveawayTicker plutôt que de dupliquer ici.
             const updated = await dbs.db
               .update(giveaways)
               .set({ endsAt: new Date() })
-              .where(eq(giveaways.id, id))
+              .where(rowEquals(giveaways.id, id))
               .returning();
             if (updated.length === 0) {
               return Response.json({ error: "giveaway introuvable" }, { status: 404 });
@@ -5715,8 +5689,8 @@ export class ApiServer {
 
         // ── Wiki (utilise WikiService — DragonBall content) ───────────
         "/api/wiki/stats": admin(async () => {
-          const { WikiService } = await import("~/services/WikiService");
-          const wiki = container.resolve(WikiService);
+          const { WikiService: wikiServiceClass } = await import("~/services/WikiService");
+          const wiki = container.resolve(wikiServiceClass);
           return Response.json({
             counts: await wiki.count(),
             isSeeded: await wiki.isSeeded(),
@@ -5781,13 +5755,13 @@ export class ApiServer {
           const limit = Math.min(500, Number(url.searchParams.get("limit")) || 100);
           const offset = Math.max(0, Number(url.searchParams.get("offset")) || 0);
           const dbs = container.resolve(DatabaseService);
-          const { actionLogs } = await import("~/db/schema");
-          const { inArray } = await import("drizzle-orm");
+          const { actionLogs: auditLogTable } = await import("~/db/schema");
+          const { inArray: includedValues } = await import("drizzle-orm");
           const rows = await dbs.db
             .select()
-            .from(actionLogs)
+            .from(auditLogTable)
             .where(
-              inArray(actionLogs.action, [
+              includedValues(auditLogTable.action, [
                 "SHOP_PURCHASE",
                 "LEVEL_UP",
                 "ZENI_ADMIN_GIVE",
@@ -5796,7 +5770,7 @@ export class ApiServer {
                 "ZENI_ADMIN_BULK",
               ]),
             )
-            .orderBy(desc(actionLogs.createdAt))
+            .orderBy(desc(auditLogTable.createdAt))
             .limit(limit)
             .offset(offset);
           return Response.json({ rows, total: rows.length });
@@ -5815,7 +5789,7 @@ export class ApiServer {
             }
             const eco = container.resolve(EconomyService);
             const dbs = container.resolve(DatabaseService);
-            const { users: u, actionLogs } = await import("~/db/schema");
+            const { users: u, actionLogs: auditLogTable } = await import("~/db/schema");
 
             if (body.mode === "user") {
               if (!body.userId) return Response.json({ error: "userId requis" }, { status: 400 });
@@ -5825,7 +5799,7 @@ export class ApiServer {
                 const ok = await eco.removeZeni(body.userId, -amount);
                 if (!ok) return Response.json({ error: "solde insuffisant" }, { status: 400 });
               }
-              await dbs.db.insert(actionLogs).values({
+              await dbs.db.insert(auditLogTable).values({
                 userId: body.userId,
                 action: amount > 0 ? "ZENI_ADMIN_GIVE" : "ZENI_ADMIN_REMOVE",
                 meta: JSON.stringify({ amount, mode: "user", source: "dashboard" }),
@@ -5859,7 +5833,7 @@ export class ApiServer {
                   if (ok) applied++;
                 }
               }
-              await dbs.db.insert(actionLogs).values({
+              await dbs.db.insert(auditLogTable).values({
                 action: "ZENI_ADMIN_BULK",
                 meta: JSON.stringify({
                   amount,
@@ -5890,8 +5864,8 @@ export class ApiServer {
             const eco = container.resolve(EconomyService);
             await eco.setZeni(body.userId, amount);
             const dbs = container.resolve(DatabaseService);
-            const { actionLogs } = await import("~/db/schema");
-            await dbs.db.insert(actionLogs).values({
+            const { actionLogs: auditLogTable } = await import("~/db/schema");
+            await dbs.db.insert(auditLogTable).values({
               userId: body.userId,
               action: "ZENI_ADMIN_SET",
               meta: JSON.stringify({ amount, source: "dashboard" }),
@@ -5908,28 +5882,36 @@ export class ApiServer {
           const action = url.searchParams.get("action") ?? undefined;
           const userId = url.searchParams.get("userId") ?? undefined;
           const dbs = container.resolve(DatabaseService);
-          const { actionLogs } = await import("~/db/schema");
-          const { desc, eq, and } = await import("drizzle-orm");
+          const { actionLogs: auditLogTable } = await import("~/db/schema");
+          const {
+            desc: descendingRows,
+            eq: rowEquals,
+            and: allConditions,
+          } = await import("drizzle-orm");
           const conds = [
-            action ? eq(actionLogs.action, action) : undefined,
-            userId ? eq(actionLogs.userId, userId) : undefined,
-          ].filter(Boolean) as ReturnType<typeof eq>[];
+            action ? rowEquals(auditLogTable.action, action) : undefined,
+            userId ? rowEquals(auditLogTable.userId, userId) : undefined,
+          ].filter(Boolean) as ReturnType<typeof rowEquals>[];
           const where =
-            conds.length === 0 ? undefined : conds.length === 1 ? conds[0] : and(...conds);
+            conds.length === 0
+              ? undefined
+              : conds.length === 1
+                ? conds[0]
+                : allConditions(...conds);
           // Id tie-break: many rows share the same second-resolution createdAt,
           // so pagination must be stable across pages.
           const rows = await dbs.db
             .select()
-            .from(actionLogs)
+            .from(auditLogTable)
             .where(where)
-            .orderBy(desc(actionLogs.createdAt), desc(actionLogs.id))
+            .orderBy(descendingRows(auditLogTable.createdAt), descendingRows(auditLogTable.id))
             .limit(limit)
             .offset(offset);
           // `total` is the filtered row count, not the page size: the admin audit
           // pages compute "page X of Y" from it.
           const [{ count = 0 } = { count: 0 }] = await dbs.db
             .select({ count: sql<number>`COUNT(*)` })
-            .from(actionLogs)
+            .from(auditLogTable)
             .where(where);
           return Response.json({ rows, total: Number(count), limit, offset });
         }),
