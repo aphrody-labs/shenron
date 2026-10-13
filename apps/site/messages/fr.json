@@ -1,5 +1,16 @@
 {
   "mediaPlayback": {
+    "episodeNavigation": "Navigation des épisodes",
+    "previousEpisode": "Épisode précédent",
+    "nextEpisode": "Épisode suivant",
+    "bufferedUntil": "Chargé jusqu’à {time}",
+    "seekPosition": "Position de lecture",
+    "volume": "Volume",
+    "mute": "Couper le son",
+    "unmute": "Activer le son",
+    "theater": "Mode cinéma",
+    "exitTheater": "Quitter le mode cinéma",
+    "videoBuffering": "Mise en mémoire tampon…",
     "vf": "VF",
     "vostfr": "VOSTFR",
     "vost": "VOST",

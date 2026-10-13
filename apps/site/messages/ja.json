@@ -1,5 +1,16 @@
 {
   "mediaPlayback": {
+    "episodeNavigation": "エピソードのナビゲーション",
+    "previousEpisode": "前のエピソード",
+    "nextEpisode": "次のエピソード",
+    "bufferedUntil": "{time} まで読み込み済み",
+    "seekPosition": "再生位置",
+    "volume": "音量",
+    "mute": "ミュート",
+    "unmute": "ミュート解除",
+    "theater": "シアターモード",
+    "exitTheater": "シアターモードを終了",
+    "videoBuffering": "バッファリング中…",
     "vf": "フランス語吹替",
     "vostfr": "原語音声・フランス語字幕",
     "vost": "原語音声・その他の字幕",

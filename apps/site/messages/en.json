@@ -1,5 +1,16 @@
 {
   "mediaPlayback": {
+    "episodeNavigation": "Episode navigation",
+    "previousEpisode": "Previous episode",
+    "nextEpisode": "Next episode",
+    "bufferedUntil": "Buffered to {time}",
+    "seekPosition": "Playback position",
+    "volume": "Volume",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "theater": "Theater mode",
+    "exitTheater": "Exit theater mode",
+    "videoBuffering": "Buffering…",
     "vf": "French dub",
     "vostfr": "Original audio, French subtitles",
     "vost": "Original audio, other subtitles",

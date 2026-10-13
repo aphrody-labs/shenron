@@ -57,6 +57,12 @@ export default async function OfficialBeerusEpisodePage({
   const catalogue = await getEpisodesCached(series, 1000, 0);
   const episode = catalogue.episodes.find((entry) => entry.number_in_series === Number(number));
   if (!episode?.video_url) notFound();
+  const playable = catalogue.episodes
+    .filter((entry) => entry.video_url && entry.number_in_series !== null)
+    .toSorted((a, b) => (a.number_in_series ?? 0) - (b.number_in_series ?? 0));
+  const currentIndex = playable.findIndex((entry) => entry.id === episode.id);
+  const previous = playable[currentIndex - 1];
+  const next = playable[currentIndex + 1];
   const cards = officialEpisodeCatalogue(series, catalogue.episodes, {
     title: text.episodeTitle,
     synopsis: text.episodeSynopsis,
@@ -115,6 +121,14 @@ export default async function OfficialBeerusEpisodePage({
             title={episode.title}
             poster={episode.image ? assetUrl(episode.image) : undefined}
             subtitles={episode.subtitles ?? undefined}
+            previousEpisode={
+              previous
+                ? { href: `/wiki/episodes/${previous.id}`, label: previous.title }
+                : undefined
+            }
+            nextEpisode={
+              next ? { href: `/wiki/episodes/${next.id}`, label: next.title } : undefined
+            }
           />
           <VideoSourceSummary
             players={[{ name: episode.title, provider: "mugiwara", embedUrl: episode.video_url }]}
