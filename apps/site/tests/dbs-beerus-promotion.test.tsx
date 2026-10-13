@@ -10,6 +10,7 @@ import ja from "../messages/ja.json";
 let locale: "fr" | "en" | "ja" = "fr";
 const dictionaries = { fr, en, ja };
 mock.module("next-intl", () => ({
+  useLocale: () => locale,
   useTranslations: (namespace: string) =>
     createTranslator({ locale, messages: dictionaries[locale], namespace } as never),
 }));
@@ -22,6 +23,17 @@ const { filterSeriesEpisodes, EpisodeSeriesGrid } =
 const { dbsBeerusEpisodeCard, DBS_BEERUS_SERIES_CODE } =
   await import("../src/lib/episode-series-catalogue");
 const { DbsBeerusSpotlight } = await import("../src/components/home/DbsBeerusSpotlight");
+
+test("the compact spotlight uses the official logo in the reader language", () => {
+  for (locale of ["fr", "en", "ja"] as const) {
+    const html = renderToStaticMarkup(createElement(DbsBeerusSpotlight, { compact: true }));
+    expect(html).toContain(`/official/beerus/logo-${locale === "ja" ? "ja" : "en"}.webp`);
+    expect(html).toContain("official-beerus-info");
+    expect(html).toContain('width="1233" height="563"');
+    expect(html).not.toContain('rel="preload" as="image"');
+  }
+  locale = "fr";
+});
 const episodes = [
   {
     id: 447,
@@ -71,7 +83,7 @@ test("the 2026 page separates the original 131 episodes and links the new episod
     expect(html).toContain(dictionaries[locale].dbsBeerus.watchEpisode);
     expect(html).toContain(dictionaries[locale].dbsBeerus.openLocalEpisode);
     expect(html).toContain("/news/dragon-ball-super-beerus-adn-vostfr-18h-2026-10-11");
-    expect(html).toContain('href="https://dragonball-super.com/en/"');
+    expect(html).toContain(`href="https://dragonball-super.com/${locale === "ja" ? "" : "en/"}"`);
     expect(html).not.toContain("<video");
     expect(html).toContain("dbs-beerus-2026.jpg");
     expect(html).toContain('src="/banners/dbs-beerus-2026.jpg"');

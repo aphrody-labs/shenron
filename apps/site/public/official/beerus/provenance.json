@@ -1,0 +1,46 @@
+{
+  "sourceHtmlSha256": "1b77e496029685807296c51bcacb671e174b26a6b613c2f769e9017df0421757",
+  "sourceCssSha256": "47f2fa2d45f081c23de3e7e3fcda32945535bca3607457a5bf691a392b61bdeb",
+  "sourceUrl": "https://dragonball-super.com/",
+  "copyright": "©バード・スタジオ／集英社・東映アニメーション",
+  "schema": "shenron-official-assets/v1",
+  "observedAt": "2026-10-13T08:04:47.978Z",
+  "assets": [
+    {
+      "height": 563,
+      "sha256": "524c64926fe58cfbefc75430f719a196f97451720843cccf23a22a22bfd2fada",
+      "url": "https://dragonball-super.com/img/logo.webp",
+      "bytes": 85728,
+      "path": "/official/beerus/logo-ja.webp",
+      "format": "webp",
+      "width": 1233
+    },
+    {
+      "height": 563,
+      "sha256": "395c6052200aff36709084dcdb72e31e6ace6a5d7a16a6174d5c268c56dd3140",
+      "url": "https://dragonball-super.com/img/logo_en.webp",
+      "bytes": 79850,
+      "path": "/official/beerus/logo-en.webp",
+      "format": "webp",
+      "width": 1233
+    },
+    {
+      "height": 400,
+      "sha256": "698b9dbccee5e2b85492a24e832724e8f3e2960febee0aa59055d386f6f9e09e",
+      "url": "https://dragonball-super.com/img/bg_nz-BL.png",
+      "bytes": 150146,
+      "path": "/official/beerus/texture-blue.png",
+      "format": "png",
+      "width": 400
+    },
+    {
+      "height": 1681,
+      "sha256": "90bac0ee85a0fec71e717c6af29ebd63c8164f244b93ef9b9da25f46e2001599",
+      "url": "https://dragonball-super.com/img/bg-intro.jpg",
+      "bytes": 219545,
+      "path": "/official/beerus/intro.jpg",
+      "format": "jpeg",
+      "width": 3000
+    }
+  ]
+}

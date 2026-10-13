@@ -1,0 +1,38 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* Byte-identical official source assets; provenance accompanies their public files. */
+@layer components {
+  [data-shell-variant="site"] {
+    background-image: url("/official/beerus/texture-blue.png");
+    background-repeat: repeat;
+    background-size: 200px 200px;
+  }
+
+  .official-beerus-info {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--color-dbz-bg);
+  }
+  .official-beerus-info::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: url("/official/beerus/intro.jpg") center / cover;
+    opacity: 0.12;
+  }
+  .official-beerus-logo {
+    display: block;
+    width: min(100%, 15rem);
+    height: auto;
+    align-self: flex-start;
+  }
+}
+
+@media (forced-colors: active) {
+  [data-shell-variant="site"],
+  .official-beerus-info::before {
+    background-image: none;
+  }
+}
