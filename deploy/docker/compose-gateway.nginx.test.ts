@@ -33,3 +33,11 @@ test("CDN quota failures use the private public-image origin without browser cre
     expect(origin).not.toContain("$http_authorization");
   }
 });
+
+test("CDN chunks prefer the sealed rolling tree and use the active site on a miss", async () => {
+  const source = await Bun.file(new URL("./cdn-dragonballfr-ssl.conf", import.meta.url)).text();
+  expect(source).toContain("try_files $uri @release_static;");
+  expect(source).toContain("root /srv/shenron-cdn;");
+  expect(source).toContain("location @release_static {");
+  expect(source).toContain("proxy_pass http://127.0.0.1:5011;");
+});
