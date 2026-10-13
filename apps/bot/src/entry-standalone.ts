@@ -1,3 +1,11 @@
+if (process.argv.includes("--replica-sync")) {
+  // Reuse the canonical wiki-only writer without starting migrations, services or Discord.
+  const { runReplicaSync } = await import("./db/replica-cli");
+  process.exit(
+    await runReplicaSync(process.argv.slice(2).filter((arg) => arg !== "--replica-sync")),
+  );
+}
+
 if (process.argv.includes("--help") || process.argv.includes("-h")) {
   console.log(`Shenron Discord Bot + Public API`);
   console.log(`Usage: shenron [options]\n`);
@@ -5,6 +13,7 @@ if (process.argv.includes("--help") || process.argv.includes("-h")) {
   console.log(`  -h, --help     Show this help message`);
   console.log(`  -v, --version  Show version and runtime info`);
   console.log(`  --dry-run      Validate environment and exit without services or Discord login`);
+  console.log(`  --replica-sync Run the canonical PostgreSQL-to-SQLite wiki replica CLI (--help)`);
   console.log(
     `  --smoke        Render a native PNG and load commands/events without databases or Discord`,
   );

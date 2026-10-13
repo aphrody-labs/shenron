@@ -17,6 +17,7 @@ ENV SHENRON_HOME=/var/lib/shenron \
     API_HOST=127.0.0.1 \
     DATABASE_PATH=/app/data/bot.db \
     SHENRON_FFI_LIB=/usr/local/lib/libshenron_ffi.so \
+    NAPI_RS_NATIVE_LIBRARY_PATH=/usr/local/bin/skia.linux-x64-gnu.node \
     NEXT_TELEMETRY_DISABLED=1
 
 RUN apt-get update \

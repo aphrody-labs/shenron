@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import { mock } from "bun:test";
+import { configureCanvasBinding } from "./canvas-binding";
 
 // ─── Shim canvas pour environnements sans binding natif ─────────────────────
 // @napi-rs/canvas fournit Skia directement ; ses optionalDependencies
@@ -29,6 +30,7 @@ if (
   CANVAS_PREBUILT_TARGETS.has(`${process.platform}-${process.arch}`)
 ) {
   try {
+    await configureCanvasBinding();
     await import("@napi-rs/canvas");
     canvasNativeOk = true;
   } catch {
