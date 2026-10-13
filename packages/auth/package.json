@@ -36,9 +36,9 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "lint": "oxlint -c ../../.oxlintrc.json src",
+    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src",
     "test": "bun test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "bun check"
   },
   "dependencies": {
     "@aphrody/shenron-config": "workspace:*"

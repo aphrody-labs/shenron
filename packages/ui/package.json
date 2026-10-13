@@ -79,14 +79,14 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "lint": "oxlint -c ../../.oxlintrc.json src",
+    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src",
     "test": "bun test --path-ignore-patterns='test/koharu/**' --path-ignore-patterns='test/dom/**' && bun test/koharu/run.ts && bun test --preload @aphrody/bun-test-dom ./test/dom",
     "tokens": "bun scripts/generate-tokens.ts",
     "tokens:check": "bun scripts/generate-tokens.ts --check",
     "css:equivalence": "bun scripts/check-css-equivalence.ts",
     "build:check": "bun scripts/production-check.ts",
     "portability:check": "bun scripts/check-portability.ts",
-    "typecheck": "bun check --noEmit --project tsconfig.json"
+    "typecheck": "bun check --project tsconfig.json"
   },
   "dependencies": {
     "@aphrody/api": "catalog:",

@@ -63,3 +63,12 @@ bun = true
 [jsx]
 runtime = "automatic"
 importSource = "react"
+
+[lint]
+config = ".oxlintrc.json"
+paths = ["apps", "packages", "scripts"]
+n2b = false
+
+[fmt]
+config = ".oxfmtrc.json"
+paths = ["apps", "packages", "scripts"]

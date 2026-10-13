@@ -12,8 +12,8 @@
     "start": "bun src/index.ts",
     "build": "bun ../../scripts/build/bot.ts",
     "compile": "bun ../../scripts/build/bot.ts",
-    "lint": "oxlint -c ../../.oxlintrc.json src scripts tests drizzle.config.ts",
-    "lint:fix": "oxlint -c ../../.oxlintrc.json --fix src scripts tests drizzle.config.ts",
+    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src scripts tests drizzle.config.ts",
+    "lint:fix": "bun lint --no-n2b -c ../../.oxlintrc.json --fix src scripts tests drizzle.config.ts",
     "test": "bun test --isolate --path-ignore-patterns='**/*.live.test.ts' tests/",
     "ids": "bun scripts/discover-ids.ts",
     "watch-logs": "bun scripts/log-watcher.ts",
@@ -39,7 +39,7 @@
     "db:push": "drizzle-kit push",
     "db:seed-xv2-char-meta": "bun src/db/seed-xv2-char-meta.ts",
     "db:seed-xv2-all": "bun src/db/seed-xv2-techniques.ts && bun src/db/seed-xv2-characters.ts && bun src/db/seed-xv2-char-meta.ts && bun src/db/seed-xv2-portraits.ts && bun src/db/seed-xv2-transformations.ts && bun src/db/seed-xv2-char-techniques.ts",
-    "typecheck": "bun check --noEmit --project tsconfig.json && bun check --noEmit --project tsconfig.scripts.json"
+    "typecheck": "bun check --project tsconfig.json && bun check --project tsconfig.scripts.json"
   },
   "dependencies": {
     "@aphrody/discord-kit": "catalog:",

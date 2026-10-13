@@ -13,16 +13,16 @@
     "prebuild": "bun ../../packages/ui/scripts/sync-assets.ts --to public",
     "build": "NEXT_DIST_DIR=.next-build next-bun build",
     "start": "next-bun start",
-    "lint": "oxlint -c ../../.oxlintrc.json src",
+    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src",
     "test": "bun test --isolate --path-ignore-patterns='**/*.live.test.ts' tests/",
-    "type-check:tests": "tsc --noEmit -p tsconfig.tests.json",
+    "type-check:tests": "bun check -p tsconfig.tests.json",
     "wiki:repair-interviews": "bun scripts/repair-interview-databook-links.ts",
     "manga:populate": "bun scripts/populate-manga-pages.ts",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "echo \"db:push est interdit : migrations via le runbook aphrody-infra (docs/architecture/STACK.md D5)\" >&2 && exit 1",
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.tests.json"
+    "typecheck": "bun check && bun check -p tsconfig.tests.json"
   },
   "dependencies": {
     "@aphrody/bun-runtime-sdk": "catalog:",

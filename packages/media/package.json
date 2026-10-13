@@ -26,9 +26,9 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "typecheck": "bun check --noEmit --project tsconfig.json",
+    "typecheck": "bun check --project tsconfig.json",
     "test": "bun test",
-    "lint": "oxlint -c ../../.oxlintrc.json src"
+    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src"
   },
   "dependencies": {
     "@aphrody/http": "catalog:"

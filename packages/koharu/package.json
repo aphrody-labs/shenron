@@ -25,9 +25,9 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "typecheck": "bun check --noEmit --project tsconfig.json",
+    "typecheck": "bun check --project tsconfig.json",
     "test": "bun test",
-    "lint": "oxlint -c ../../.oxlintrc.json src --ignore-pattern src/protocol.ts --ignore-pattern src/wasm",
+    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src --ignore-pattern src/protocol.ts --ignore-pattern src/wasm",
     "build:wasm": "bun scripts/build-wasm.ts",
     "protocol": "cargo run -p koharu-app --example protocol"
   },

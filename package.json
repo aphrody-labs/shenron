@@ -144,15 +144,15 @@
   "scripts": {
     "dev": "bun run --filter @aphrody/shenron-site dev",
     "start": "bun run --filter @aphrody/shenron-site start",
-    "typecheck": "bun scripts/testing/workspace-gates.ts typecheck",
-    "typecheck:scripts": "tsc --noEmit -p scripts",
+    "typecheck": "bun scripts/testing/native-quality.ts check",
+    "typecheck:scripts": "bun check -p scripts",
     "i18n:contract": "bun scripts/i18n/complete-contract.ts",
     "check:native": "bun scripts/testing/native-quality.ts check",
     "lint:native": "bun scripts/testing/native-quality.ts lint",
-    "format:native:check": "bun scripts/testing/native-quality.ts fmt",
+    "format:native:check": "bun scripts/testing/native-quality.ts fmt --check",
     "test": "bun scripts/testing/workspace-gates.ts test",
-    "lint": "oxlint -c .oxlintrc.json apps packages scripts",
-    "format:check": "oxfmt --check apps packages scripts",
+    "lint": "bun scripts/testing/native-quality.ts lint",
+    "format:check": "bun scripts/testing/native-quality.ts fmt --check",
     "build": "bun scripts/build/server.ts && bun scripts/build/bot.ts",
     "build:server": "bun scripts/build/server.ts",
     "build:bot": "bun scripts/build/bot.ts",
@@ -172,7 +172,9 @@
     "remote:doctor": "bun scripts/ops/remote-build.ts doctor",
     "dev:env": "bun scripts/dev/env-pull.ts",
     "gates:remote": "bun scripts/dev/remote-dev.ts gates",
-    "ship": "bun scripts/ops/ship.ts"
+    "ship": "bun scripts/ops/ship.ts",
+    "check": "bun check",
+    "fmt": "bun scripts/testing/native-quality.ts fmt"
   },
   "devDependencies": {
     "@aphrody/agent-browser": "catalog:",
@@ -202,9 +204,9 @@
     "undici": "^7.30.0"
   },
   "engines": {
-    "bun": ">=1.4.3"
+    "bun": ">=1.4.4"
   },
-  "packageManager": "bun@1.4.3-aphrody.2",
+  "packageManager": "bun@1.4.4",
   "patchedDependencies": {
     "@discordjs/rest@2.6.3": "patches/@discordjs%2Frest@2.6.3.patch"
   },

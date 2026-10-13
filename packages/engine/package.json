@@ -30,9 +30,9 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "lint": "oxlint src test",
+    "lint": "bun lint --no-n2b src test",
     "test": "bun test",
-    "typecheck": "bun check --noEmit --project tsconfig.json"
+    "typecheck": "bun check --project tsconfig.json"
   },
   "dependencies": {},
   "devDependencies": {

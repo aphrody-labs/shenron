@@ -40,8 +40,8 @@
   },
   "scripts": {
     "test": "bun test",
-    "typecheck": "bun check --noEmit --project tsconfig.json",
-    "lint": "oxlint -c ../../.oxlintrc.json src"
+    "typecheck": "bun check --project tsconfig.json",
+    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src"
   },
   "dependencies": {
     "sharp": "catalog:"

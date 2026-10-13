@@ -29,9 +29,9 @@
   "scripts": {
     "generate": "bun scripts/generate.ts",
     "generate:check": "bun scripts/generate.ts --check",
-    "lint": "oxlint -c ../../.oxlintrc.json src test scripts",
+    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src test scripts",
     "test": "bun test",
-    "typecheck": "bun check --noEmit --project tsconfig.json"
+    "typecheck": "bun check --project tsconfig.json"
   },
   "dependencies": {
     "@aphrody/bun": "catalog:"

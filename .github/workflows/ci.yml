@@ -20,9 +20,10 @@ env:
 jobs:
   check:
     name: Check (Bun)
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     # Cible de prod = Linux. Les crates Rust (dépendances git épinglées sur Aphrody, socle ML)
     # ont leur workflow, rust.yml, actif quand le secret APHRODY_GIT_TOKEN est défini.
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, shenron-factory]
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-bun
@@ -63,11 +64,14 @@ jobs:
       - name: Plugin offline snapshots are up to date
         run: bun scripts/plugin/build-references.ts --check
 
-      - name: Type-check
-        run: bun run typecheck
+      - name: Native type-check
+        run: bun check
 
-      - name: Lint (oxlint)
-        run: bun run lint
+      - name: Native lint
+        run: bun lint --no-n2b -c .oxlintrc.json apps packages scripts
+
+      - name: Native format check
+        run: bun run format:check
 
       # Les suites *.live.test.ts (services réels) restent hors CI : `bun run test:live`.
       - name: Tests

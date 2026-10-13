@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { readdirSync, readFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { join, resolve } from "node:path";
+import { nativeEnvironment, nativeRuntime } from "./native-runtime";
 
 export type Gate = "typecheck" | "test";
 export interface GateCommand {
@@ -27,7 +27,7 @@ export function splitGateScript(script: string): string[][] {
     }
     if (quote) throw new Error(`Unclosed quote in workspace gate command: ${command}`);
     if (token) tokens.push(token);
-    if (!tokens.length || !["bun", "tsc"].includes(tokens[0]!) || /[;|<>`$]/.test(command)) {
+    if (!tokens.length || tokens[0] !== "bun" || /[;|<>`$]/.test(command)) {
       throw new Error(`Unsupported workspace gate command: ${command}`);
     }
     return tokens;
@@ -51,26 +51,21 @@ export function workspaceCommands(root: string, gate: Gate): GateCommand[] {
     }
   }
   if (gate === "typecheck")
-    result.push({ cwd: root, packageName: "scripts", args: ["tsc", "--noEmit", "-p", "scripts"] });
+    result.push({ cwd: root, packageName: "scripts", args: ["bun", "check", "-p", "scripts"] });
   return result;
-}
-
-async function nativeTypeScript(root: string): Promise<string> {
-  const pkg = Bun.resolveSync("typescript/package.json", root);
-  const module = await import(pathToFileURL(join(dirname(pkg), "lib/getExePath.js")).href);
-  return module.default();
 }
 
 export async function runWorkspaceGate(root: string, gate: Gate): Promise<number> {
   let result = 0;
+  const runtime = nativeRuntime(process.env.SHENRON_BUN_EXECUTABLE);
   for (const command of workspaceCommands(root, gate)) {
     console.log(`[${command.packageName}] ${command.args.join(" ")}`);
-    const [executable, ...args] = command.args;
-    const cmd =
-      executable === "bun" ? [process.execPath, ...args] : [await nativeTypeScript(root), ...args];
+    const [, ...args] = command.args;
+    const cmd = [runtime, ...args];
     try {
       const child = Bun.spawn(cmd, {
         cwd: command.cwd,
+        env: nativeEnvironment(runtime, args[0]!),
         stdin: "inherit",
         stdout: "inherit",
         stderr: "inherit",

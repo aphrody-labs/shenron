@@ -2,7 +2,7 @@
 name: Setup Bun (aphrody-labs/bun fork)
 description: >-
   Installs the Bun fork release pinned by package.json#packageManager
-  (bun@<version>, release aphrody-v<version> of aphrody-labs/bun), SHA256SUMS-checked.
+  (bun@<version> of aphrody-labs/bun), SHA256SUMS-checked.
 runs:
   using: composite
   steps:
@@ -12,8 +12,38 @@ runs:
       run: |
         manager=$(sed -n 's/.*"packageManager": *"bun@\([^"]*\)".*/\1/p' package.json)
         [ -n "$manager" ] || { echo "package.json#packageManager must be bun@<version>" >&2; exit 1; }
-        echo "tag=aphrody-v${manager}" >> "$GITHUB_OUTPUT"
+        echo "tag=${manager}" >> "$GITHUB_OUTPUT"
+    - name: Resolve the qualified factory runtime
+      if: runner.environment == 'self-hosted'
+      shell: bash
+      env:
+        SHENRON_EXPECTED_BUN: ${{ steps.fork.outputs.tag }}
+      run: |
+        set -euo pipefail
+        candidate=$(command -v bun || true)
+        if [ ! -x "$candidate" ]; then candidate="${BUN_INSTALL:-$HOME/.bun}/bin/bun"; fi
+        native=$(realpath "$candidate")
+        [ -x "$native" ] || { echo "Qualified factory Bun is unavailable" >&2; exit 1; }
+        # Qualified native Linux x64 factory artifact, revision dfde053a3 (2026-10-13).
+        printf '%s  %s\n' '890af6a675e1dc58b15a15777c53de3b2e82668690c9be5f6e87ec690246ac0e' "$native" | sha256sum -c -
+        [ "$("$native" --revision)" = '1.4.4+dfde053a3' ] || { echo "Factory Bun revision differs" >&2; exit 1; }
+        echo "$(dirname "$native")" >> "$GITHUB_PATH"
+        echo "SHENRON_BUN_EXECUTABLE=$native" >> "$GITHUB_ENV"
     - uses: aphrody-labs/bun/.github/actions/setup-bun@main
+      if: runner.environment != 'self-hosted'
       with:
         bun-version: ${{ steps.fork.outputs.tag }}
+    - name: Verify the pinned native runtime
+      shell: bash
+      env:
+        SHENRON_EXPECTED_BUN: ${{ steps.fork.outputs.tag }}
+      run: |
+        bun -e '
+          const expected = process.env.SHENRON_EXPECTED_BUN;
+          const source = process.release.sourceUrl ?? "";
+          if (Bun.version !== expected || !source.startsWith("https://github.com/aphrody-labs/bun/releases/download/")) {
+            throw new Error("The pinned Aphrody Bun runtime is unavailable; refusing a bootstrap fallback");
+          }
+          console.log(`Qualified Aphrody Bun ${Bun.version}`);
+        '
     - uses: ./.github/actions/prepare-vendor

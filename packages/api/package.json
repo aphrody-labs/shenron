@@ -33,11 +33,11 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "lint": "oxlint -c ../../.oxlintrc.json",
+    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json",
     "test": "bun test --path-ignore-patterns='**/*.live.test.ts'",
     "openapi": "bun scripts/openapi.ts",
     "openapi:check": "bun scripts/openapi.ts --check",
-    "typecheck": "bun check --noEmit --project tsconfig.json"
+    "typecheck": "bun check --project tsconfig.json"
   },
   "dependencies": {
     "@aphrody/http": "catalog:",

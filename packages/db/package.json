@@ -55,10 +55,10 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "lint": "oxlint -c ../../.oxlintrc.json",
+    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json",
     "test": "bun test",
     "audit:migrations": "bun scripts/migration-audit.ts --check",
-    "typecheck": "bun check --noEmit --project tsconfig.json",
+    "typecheck": "bun check --project tsconfig.json",
     "check:agent-home-template": "bun scripts/agent-home-template.ts --check"
   },
   "dependencies": {

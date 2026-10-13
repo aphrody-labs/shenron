@@ -1,0 +1,62 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "apps/bot/tsconfig.json"
+    },
+    {
+      "path": "apps/bot/tsconfig.scripts.json"
+    },
+    {
+      "path": "apps/server/tsconfig.json"
+    },
+    {
+      "path": "apps/site/tsconfig.json"
+    },
+    {
+      "path": "apps/site/tsconfig.tests.json"
+    },
+    {
+      "path": "packages/api/tsconfig.json"
+    },
+    {
+      "path": "packages/auth/tsconfig.json"
+    },
+    {
+      "path": "packages/config/tsconfig.json"
+    },
+    {
+      "path": "packages/db/tsconfig.json"
+    },
+    {
+      "path": "packages/engine/tsconfig.json"
+    },
+    {
+      "path": "packages/images/tsconfig.json"
+    },
+    {
+      "path": "packages/koharu/tsconfig.json"
+    },
+    {
+      "path": "packages/lexicon/tsconfig.json"
+    },
+    {
+      "path": "packages/media/tsconfig.json"
+    },
+    {
+      "path": "packages/native/tsconfig.json"
+    },
+    {
+      "path": "packages/pipeline/tsconfig.json"
+    },
+    {
+      "path": "packages/pipeline/tsconfig.scripts.json"
+    },
+    {
+      "path": "packages/ui/tsconfig.json"
+    },
+    {
+      "path": "scripts/tsconfig.json"
+    }
+  ]
+}

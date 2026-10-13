@@ -1,19 +1,22 @@
 // SPDX-License-Identifier: Apache-2.0
-import { existsSync } from "node:fs";
-import { delimiter, dirname, isAbsolute, resolve } from "node:path";
+import { resolve } from "node:path";
 import { workspaceCommands } from "./workspace-gates";
-
-export function nativeRuntime(configured: string | undefined): string {
-  if (!configured) return process.execPath;
-  if (!isAbsolute(configured) || !existsSync(configured))
-    throw new Error("SHENRON_BUN_EXECUTABLE must name an existing absolute runtime path");
-  return configured;
-}
+import { nativeEnvironment, nativeRuntime } from "./native-runtime";
+export { nativeRuntime } from "./native-runtime";
 
 export function nativeCheckArgs(args: string[]): string[] {
-  if (args[0] === "tsc") return ["check", ...args.slice(1).filter((arg) => arg !== "--noEmit")];
-  if (args[0] === "bun") return args.slice(1);
+  if (args[0] === "bun" && args[1] === "check")
+    return args.slice(1).filter((arg) => arg !== "--noEmit");
   throw new Error(`Unsupported native check command: ${args[0]}`);
+}
+
+export function hasStylePaths(args: string[]): boolean {
+  const valueFlags = new Set(["-c", "--config", "--ignore-pattern", "--format"]);
+  for (let index = 0; index < args.length; index++) {
+    if (valueFlags.has(args[index]!)) index++;
+    else if (!args[index]!.startsWith("-")) return true;
+  }
+  return false;
 }
 
 async function run(): Promise<number> {
@@ -23,6 +26,10 @@ async function run(): Promise<number> {
   const root = resolve(import.meta.dir, "../..");
   const runtime = nativeRuntime(process.env.SHENRON_BUN_EXECUTABLE);
   const supplied = process.argv.slice(3);
+  const formatterIgnores: string[] =
+    mode === "fmt"
+      ? ((await Bun.file(resolve(root, ".oxfmtrc.json")).json()).ignorePatterns ?? [])
+      : [];
   const commands =
     mode === "check" && supplied.length === 0
       ? workspaceCommands(root, "typecheck").map((command) => ({
@@ -35,8 +42,12 @@ async function run(): Promise<number> {
             args: [
               mode!,
               ...(mode === "lint" ? ["--no-n2b", "-c", ".oxlintrc.json"] : []),
-              ...(mode === "fmt" ? ["--check", "-c", ".oxfmtrc.json"] : []),
-              ...(supplied.length ? supplied : ["apps", "packages", "scripts"]),
+              ...(mode === "fmt" ? ["-c", ".oxfmtrc.json"] : []),
+              ...formatterIgnores.flatMap((pattern) => ["--ignore-pattern", pattern]),
+              ...supplied,
+              ...(mode !== "check" && !hasStylePaths(supplied)
+                ? ["apps", "packages", "scripts"]
+                : []),
             ],
           },
         ];
@@ -45,13 +56,7 @@ async function run(): Promise<number> {
   for (const command of commands) {
     const child = Bun.spawn([runtime, ...command.args], {
       cwd: command.cwd,
-      // The fork resolves a same-named package script unless this lifecycle identifies
-      // the command itself. This prevents the root lint script shadowing native lint.
-      env: {
-        ...process.env,
-        PATH: [dirname(runtime), process.env.PATH].filter(Boolean).join(delimiter),
-        npm_lifecycle_event: mode,
-      },
+      env: nativeEnvironment(runtime, mode!),
       stdin: "inherit",
       stdout: "inherit",
       stderr: "inherit",
