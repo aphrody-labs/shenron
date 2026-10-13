@@ -1,0 +1,20 @@
+{
+  "eyebrow": "Shenron グラフィックス",
+  "title": "Canvas & WebGPU",
+  "lead": "気の粒子とベクター形式の漫画コマを操作できるデモです。",
+  "samples": "ボットが生成するカード",
+  "member": "メンバーの Discord ID",
+  "memberHint": "公開画像を表示するメンバーを選択してください。プロフィールは自動で読み込まれません。",
+  "show": "プレビューを表示",
+  "empty": "メンバーを選択するとプレビューが表示されます。",
+  "loading": "プレビューを読み込み中…",
+  "unavailable": "プレビューを表示できません。プロフィールまたは描画サービスが応答していません。",
+  "profile": "プロフィールカード",
+  "profileDescription": "メンバーのカスタムカード。テーマ：default、goku、vegeta、kaio、ssj、blue、rose、ultra。",
+  "scan": "スキャン / スカウター",
+  "scanDescription": "メンバーのレベルを表示するスカウター画像。",
+  "api": "公開 API",
+  "command": "Discord コマンド",
+  "backgrounds": "NASA の背景画像",
+  "backgroundDescription": "ボットは既存の背景を必要に応じて読み込み、デコード済みの画像を各描画で共有します。"
+}

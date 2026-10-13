@@ -1,0 +1,20 @@
+{
+  "eyebrow": "Shenron graphics",
+  "title": "Canvas & WebGPU",
+  "lead": "Interactive demonstration of Ki particles and vector manga panels.",
+  "samples": "Bot-generated cards",
+  "member": "Member’s Discord ID",
+  "memberHint": "Choose a member to view their public renders. No profile loads automatically.",
+  "show": "Show previews",
+  "empty": "Choose a member to display this preview.",
+  "loading": "Loading preview…",
+  "unavailable": "This preview is unavailable. The profile or rendering service is not responding.",
+  "profile": "Profile card",
+  "profileDescription": "Member’s personalized card. Themes: default, goku, vegeta, kaio, ssj, blue, rose and ultra.",
+  "scan": "Scan / Scouter",
+  "scanDescription": "Scouter render of the member’s level.",
+  "api": "Public API",
+  "command": "Discord command",
+  "backgrounds": "NASA backgrounds",
+  "backgroundDescription": "The bot loads existing backgrounds on demand and shares decoded images between renders."
+}

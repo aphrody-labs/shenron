@@ -1,0 +1,20 @@
+{
+  "eyebrow": "Rendu graphique Shenron",
+  "title": "Canvas & WebGPU",
+  "lead": "Démonstration interactive de particules Ki et de planches manga vectorielles.",
+  "samples": "Cartes générées par le bot",
+  "member": "Identifiant Discord du membre",
+  "memberHint": "Choisissez un membre pour afficher ses rendus publics. Aucun profil n’est chargé automatiquement.",
+  "show": "Afficher les aperçus",
+  "empty": "Choisissez un membre pour afficher cet aperçu.",
+  "loading": "Chargement de l’aperçu…",
+  "unavailable": "Cet aperçu est indisponible. Le profil ou le service de rendu ne répond pas.",
+  "profile": "Carte de profil",
+  "profileDescription": "Carte personnalisée du membre. Thèmes : default, goku, vegeta, kaio, ssj, blue, rose et ultra.",
+  "scan": "Scan / Scouter",
+  "scanDescription": "Rendu Scouter du niveau du membre.",
+  "api": "API publique",
+  "command": "Commande Discord",
+  "backgrounds": "Fonds NASA",
+  "backgroundDescription": "Le bot charge les fonds existants à la demande et partage les images décodées entre ses rendus."
+}

@@ -2934,7 +2934,8 @@ export class ApiServer {
               const row = await dbs.db.query.users.findFirst({
                 where: eq(users.id, id),
               });
-              const xp = row?.xp ?? 0;
+              if (!row) throw new HttpError(404, "Profil bot introuvable");
+              const xp = row.xp;
               const accent = xpAccent(xp);
               const gauge = container.resolve(GaugeService);
               const pct = Math.min(100, Math.round((xp / 9_000_000) * 100));
@@ -6764,7 +6765,9 @@ async function publicCachedImage(
   // qui n'autorise pas Vercel/CDN à servir stale. Ici on veut `s-maxage` + `swr`.
   headers.set(
     "Cache-Control",
-    `public, max-age=${cacheSeconds}, s-maxage=${cacheSeconds * 2}, stale-while-revalidate=${cacheSeconds * 4}`,
+    res.ok || res.status === 304
+      ? `public, max-age=${cacheSeconds}, s-maxage=${cacheSeconds * 2}, stale-while-revalidate=${cacheSeconds * 4}`
+      : "private, no-store",
   );
   return new Response(res.body, { status: res.status, headers });
 }

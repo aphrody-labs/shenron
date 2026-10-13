@@ -3,6 +3,20 @@ import { assetUrl } from "../src/lib/assets";
 import { ownImageRemotePatterns } from "@aphrody/shenron-config/public-urls";
 
 describe("canonical public DBZ artwork", () => {
+  test("verified legacy worker ADN media resolves through the same public asset owner", () => {
+    const path = "/adn/dc091e3b7b0940c8a6f3567b600be69736198f63d776224fb2fce12481e28d19.png";
+    expect(assetUrl(`https://shenron-cdn.aphrody-labs.workers.dev${path}?v=2#frame`)).toBe(
+      `https://cdn.dragonballfr.com${path}?v=2#frame`,
+    );
+    expect(assetUrl(`https://foreign.workers.dev${path}`)).toBe(
+      `https://foreign.workers.dev${path}`,
+    );
+    expect(ownImageRemotePatterns({})).toContainEqual({
+      protocol: "https",
+      hostname: "cdn.dragonballfr.com",
+      pathname: "/adn/*.png",
+    });
+  });
   test("normalizes every owned legacy spelling without dropping query or fragment", () => {
     for (const source of [
       "./assets/dbz/characters/bulma.webp",
