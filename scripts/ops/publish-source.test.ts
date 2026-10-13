@@ -10,7 +10,18 @@ import {
   publicationTarget,
   publicationPolicy,
   preserveExistingRegistry,
+  publicationIndexBody,
 } from "./publish-source";
+
+test("index budget includes actual UTF-8 serialization and indentation bytes", () => {
+  expect(publicationIndexBody({ title: "日本語" })).toBe(
+    JSON.stringify({ title: "日本語" }, null, 2) + "\n",
+  );
+  expect(() => publicationIndexBody({ title: "日".repeat(700000) })).toThrow("2 MiB");
+  const many = Array.from({ length: 40000 }, () => ({ value: "a".repeat(32) }));
+  expect(new TextEncoder().encode(JSON.stringify(many)).length).toBeLessThan(2 * 1024 * 1024);
+  expect(() => publicationIndexBody(many)).toThrow("2 MiB");
+});
 import {
   crawlIngestPolicySchema,
   projectNativeCrawl,

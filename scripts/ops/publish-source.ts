@@ -15,6 +15,12 @@ import {
 
 export const digest = (body: string | Uint8Array) =>
   new Bun.CryptoHasher("sha256").update(body).digest("hex");
+export function publicationIndexBody(value: unknown) {
+  const body = JSON.stringify(value, null, 2) + "\n";
+  if (new TextEncoder().encode(body).length > 2 * 1024 * 1024)
+    throw new Error("Public index exceeds 2 MiB");
+  return body;
+}
 export function publicationPolicy(sourceUrl: string) {
   const domain = new URL(sourceUrl).hostname;
   return crawlIngestPolicySchema.parse({
@@ -409,9 +415,8 @@ async function run() {
     title: (pages.find((page) => page.url === plan.sourceUrl) ?? pages[0]!).title.slice(0, 1000),
     documents,
   };
-  if (new TextEncoder().encode(JSON.stringify(publication)).length > 2 * 1024 * 1024)
-    throw new Error("Public index exceeds 2 MiB");
-  await privateWrite(join(publicRoot, "publications", plan.slug, "index.json"), publication);
+  const indexBody = publicationIndexBody(publication);
+  await privateWrite(join(publicRoot, "publications", plan.slug, "index.json"), indexBody);
   const policy = publicationPolicy(plan.sourceUrl);
   const exports = pages.map((page) => nativePageExport(page, plan.sourceUrl));
   const expectedRecords = exports.flatMap((document) =>
@@ -498,7 +503,7 @@ async function run() {
       apply: true,
       planSha256: cdnPlan.planSha256,
     });
-    const indexSha = digest(JSON.stringify(publication, null, 2) + "\n");
+    const indexSha = digest(indexBody);
     if (
       !/^[a-f0-9]{64}$/.test(cdn.inventorySha256 ?? "") ||
       cdn.indexSha256 !== indexSha ||
@@ -534,7 +539,7 @@ async function run() {
       schema: "shenron-source-publication-receipt/v1",
       requestedTarget: values.target,
       actualPublicUrl: plan.targetUrl,
-      publicationSha256: digest(JSON.stringify(publication, null, 2) + "\n"),
+      publicationSha256: digest(indexBody),
       cdn,
       registry: result,
       documents: documents.length,
