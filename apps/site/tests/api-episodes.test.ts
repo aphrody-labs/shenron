@@ -176,7 +176,7 @@ describe("API routes /api/episodes", () => {
     expect(res.status).toBe(404);
   });
 
-  test("native playback, official offers and series labels match between list and detail", async () => {
+  test("native playback and labels match while catalogue links do not prove official playback", async () => {
     const list = await getEpisodes(
       new NextRequest("http://localhost:3000/api/episodes?series=DBS_BEERUS"),
     );
@@ -208,7 +208,7 @@ describe("API routes /api/episodes", () => {
     expect(data.hasVostfr).toBe(false);
     expect(data.durationSec).toBe(1397);
     expect(data.scenePreview).toBe(nativeEpisode.scene_preview);
-    expect(data.availability[0].langs).toEqual(["vostfr"]);
+    expect(data.availability).toEqual([]);
   });
 
   test("a missing catalogue is an uncached service failure instead of an empty success", async () => {
