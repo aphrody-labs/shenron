@@ -1850,6 +1850,10 @@
       "autre": "Other"
     }
   },
+  "adminCanvas": {
+    "profileUnavailable": "This profile is unavailable.",
+    "previewUnavailable": "Unable to load this preview."
+  },
   "adminLogs": {
     "title": "Bot logs",
     "description": "Shenron process logs. Automatically refreshed every {seconds} seconds.",
