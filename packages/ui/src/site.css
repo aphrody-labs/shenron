@@ -20,7 +20,7 @@ html {
 /* Standard CSS Scrollbars */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-dbz-orange, #e78220) #0a0a0a;
+  scrollbar-color: var(--color-dbz-orange) var(--color-dbz-bg);
 }
 
 /* WebKit Custom Scrollbars */
@@ -29,23 +29,21 @@ html {
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #090909;
-  border-left: 1px solid #1c1c1c;
+  background: var(--color-dbz-bg);
+  border-left: 1px solid var(--color-dbz-border);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-dbz-orange, #e78220);
-  border: 1.5px solid #000;
+  background: var(--color-dbz-orange);
+  border: 1px solid var(--color-encre);
   border-radius: 4px;
-  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.6);
+  box-shadow: none;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-dbz-yellow, #fec93a);
-  box-shadow:
-    inset 0 0 2px rgba(0, 0, 0, 0.4),
-    0 0 6px rgba(254, 201, 58, 0.4);
+  background: var(--color-dbz-yellow);
+  box-shadow: none;
 }
 ::-webkit-scrollbar-thumb:active {
-  background: #ffffff;
+  background: var(--color-os);
 }
 
 /* ==========================================================================
@@ -68,9 +66,9 @@ html {
   align-items: center;
   padding: 0.65rem 1.1rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--dbz-orange, #e78220);
-  background: #0a0a0a;
-  color: #fff;
+  border: 1px solid var(--color-dbz-orange);
+  background: var(--color-dbz-bg);
+  color: var(--foreground);
   font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -79,7 +77,7 @@ html {
 }
 .skip-link:focus-visible {
   transform: translateY(0);
-  outline: 2px solid #fff;
+  outline: 2px solid var(--color-os);
   outline-offset: 2px;
 }
 
@@ -95,7 +93,7 @@ main:focus {
    invisible sur une bonne partie de l'interface. `:focus-visible` (et non
    `:focus`) → aucun anneau au clic souris. */
 :focus-visible {
-  outline: 2px solid var(--dbz-orange, #e78220);
+  outline: 2px solid var(--color-dbz-orange);
   outline-offset: 2px;
   border-radius: 2px;
 }
@@ -145,7 +143,7 @@ main:focus {
        la même famille poussée par ses axes (« Planche couleur »), sans serif. */
     @apply font-display font-semibold;
     letter-spacing: -0.015em;
-    color: #f0f0ff;
+    color: var(--foreground);
   }
   h1,
   h2 {
@@ -158,7 +156,7 @@ main:focus {
   }
   ::selection {
     background: color-mix(in srgb, var(--color-dbz-ember) 40%, transparent);
-    color: #fff;
+    color: var(--foreground);
   }
 
   /* ── Mobile d'abord : aucun enfant de <main> plus large que l'écran ─────
@@ -257,29 +255,15 @@ main:focus {
 	   chamfered corners and Capsule Corp industrial textures.
 	   ========================================================================== */
 
-  /** Panel with solid comic ink contour and hard offset drop shadow */
-  .toriyama-panel {
-    @apply bg-dbz-card/95 border-2 border-black relative;
-    box-shadow: 4px 4px 0px #000;
-    transition:
-      border-color 0.15s ease,
-      box-shadow 0.15s ease,
-      transform 0.15s ease;
-  }
-  .toriyama-panel:hover {
-    border-color: var(--color-dbz-orange);
-    box-shadow: 5px 5px 0px #000;
-  }
+  /* Toriyama panels, primary buttons and HUDs belong to toriyama.css. */
 
   /** Comic vignette / card container with responsive tactile lift */
   .toriyama-card {
-    @apply bg-dbz-card/90 border-2 border-dbz-border relative overflow-hidden transition-all duration-200;
-    box-shadow: 3px 3px 0px #000;
+    @apply bg-dbz-card border border-dbz-border rounded-xl relative min-w-0 overflow-hidden transition-colors duration-200;
+    box-shadow: none;
   }
   .toriyama-card:hover {
-    transform: translateY(-2px);
     border-color: var(--color-dbz-orange);
-    box-shadow: 5px 5px 0px var(--color-dbz-orange);
   }
 
   /** Mechanical 45-degree chamfered / clipped corners (Toriyama Capsule & Mech) */
@@ -324,37 +308,17 @@ main:focus {
     transform: skewX(12.3deg);
   }
 
-  /** Tactile Comic Push Button — Solid ink border, tactile depression click */
-  .toriyama-btn {
-    @apply font-sans font-extrabold uppercase tracking-wider min-h-11 px-5 py-2.5 inline-flex items-center justify-center gap-2 border-2 border-black transition-all cursor-pointer select-none;
-    background-color: var(--color-dbz-orange);
-    color: #000;
-    box-shadow: 3px 3px 0px #000;
-  }
-  .toriyama-btn:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0px #000;
-    filter: brightness(1.06);
-  }
-  .toriyama-btn:active {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0px #000;
-  }
-
   /** Secondary tactical button */
   .toriyama-btn-secondary {
-    @apply font-sans font-bold uppercase tracking-wider min-h-11 px-5 py-2.5 inline-flex items-center justify-center gap-2 border-2 border-white/20 bg-white/[0.06] text-white transition-all cursor-pointer select-none;
-    box-shadow: 3px 3px 0px #000;
+    @apply font-sans font-bold uppercase tracking-wider min-h-11 px-5 py-2.5 inline-flex items-center justify-center gap-2 border border-dbz-border rounded-xl bg-dbz-card text-foreground transition-colors cursor-pointer select-none;
+    box-shadow: none;
   }
   .toriyama-btn-secondary:hover {
-    transform: translate(-1px, -1px);
     border-color: var(--color-dbz-orange);
     color: var(--color-dbz-orange);
-    box-shadow: 4px 4px 0px #000;
   }
   .toriyama-btn-secondary:active {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0px #000;
+    background-color: color-mix(in srgb, var(--color-dbz-orange) 12%, var(--color-dbz-card));
   }
 
   /* === Libellé « scouter » ===
@@ -365,42 +329,14 @@ main:focus {
 	   n'en demandent aucune gardent le jaune par défaut. */
   .scouter-text {
     @apply font-scouter text-dbz-yellow tracking-widest uppercase;
-    text-shadow: 0 0 8px color-mix(in srgb, var(--color-dbz-amber) 60%, transparent);
-  }
-
-  /** Scouter HUD frame with corner brackets */
-  .scouter-hud {
-    position: relative;
-    border: 1px solid color-mix(in srgb, var(--color-dbz-ki) 40%, transparent);
-    background-color: color-mix(in srgb, var(--color-dbz-ki) 4%, transparent);
-  }
-  .scouter-hud::before,
-  .scouter-hud::after {
-    content: "";
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    border-color: var(--color-dbz-yellow);
-    pointer-events: none;
-  }
-  .scouter-hud::before {
-    top: -1px;
-    left: -1px;
-    border-top: 2px solid;
-    border-left: 2px solid;
-  }
-  .scouter-hud::after {
-    bottom: -1px;
-    right: -1px;
-    border-bottom: 2px solid;
-    border-right: 2px solid;
+    text-shadow: none;
   }
 
   /* === Toriyama comic layout === */
 
   /** Comic speech bubble for author quotes and databook transcriptions */
   .manga-speech-bubble {
-    @apply relative rounded-xl border-2 border-black bg-white p-4 text-black shadow-[3px_3px_0px_#000];
+    @apply relative rounded-xl border border-encre bg-os p-4 text-encre;
   }
   .manga-speech-bubble::before {
     content: "";
@@ -409,7 +345,7 @@ main:focus {
     left: 24px;
     border-width: 10px 10px 0 0;
     border-style: solid;
-    border-color: #000 transparent transparent transparent;
+    border-color: var(--color-encre) transparent transparent transparent;
   }
   .manga-speech-bubble::after {
     content: "";
@@ -418,7 +354,7 @@ main:focus {
     left: 26px;
     border-width: 8px 8px 0 0;
     border-style: solid;
-    border-color: #ffffff transparent transparent transparent;
+    border-color: var(--color-os) transparent transparent transparent;
   }
 
   /* === Fandom x Toriyama Unified Wiki Architecture === */
@@ -440,19 +376,18 @@ main:focus {
 
   /** High-readability solid wiki article card with crisp ink contour */
   .wiki-content-card {
-    @apply bg-[#0c0c0f]/95 border-2 border-black rounded-xl p-6 sm:p-8 lg:p-10 relative overflow-hidden;
-    box-shadow: 4px 4px 0px #000;
+    @apply bg-dbz-card border border-dbz-border rounded-xl p-6 sm:p-8 lg:p-10 relative min-w-0 overflow-hidden;
+    box-shadow: none;
   }
 
   /** Standardized Fandom / Databook Infobox */
   .wiki-infobox {
-    @apply border-2 border-black bg-[#0e0e12] rounded-xl overflow-hidden relative select-none;
-    box-shadow: 4px 4px 0px #000;
+    @apply border border-dbz-border bg-dbz-card rounded-xl min-w-0 overflow-hidden relative select-none;
+    box-shadow: none;
   }
 
   .wiki-infobox-header {
-    @apply bg-dbz-orange text-black p-3 text-center font-sans font-black uppercase tracking-wider text-sm border-b-2 border-black;
-    box-shadow: 0 2px 0px #000;
+    @apply bg-dbz-orange text-encre p-3 text-center font-sans font-black uppercase tracking-wider text-sm border-b border-encre;
   }
 
   .wiki-infobox-row {
@@ -469,8 +404,8 @@ main:focus {
 
   /** Table of contents / Quick Navigation */
   .wiki-toc {
-    @apply border-2 border-black bg-[#0d0d10] rounded-xl p-4 space-y-2;
-    box-shadow: 3px 3px 0px #000;
+    @apply border border-dbz-border bg-dbz-card rounded-xl p-4 space-y-2;
+    box-shadow: none;
   }
 }
 
