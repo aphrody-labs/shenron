@@ -58,8 +58,12 @@ describe("wiki-nav-manifest — Manifeste de navigation encyclopédique", () => 
   test("les anciennes rubriques restent compatibles via des redirections, sans revenir dans le menu", async () => {
     const nextConfig = await Bun.file(new URL("../next.config.ts", import.meta.url)).text();
     expect(nextConfig).toContain(
-      'source: "/wiki/arcs/:path*", destination: "/wiki/sagas", permanent: true',
+      'source: "/wiki/arcs", destination: "/wiki/sagas", permanent: true',
     );
+    expect(nextConfig).not.toContain('source: "/wiki/arcs/:path*"');
+    expect(
+      await Bun.file(new URL("../src/app/wiki/arcs/[slug]/page.tsx", import.meta.url)).exists(),
+    ).toBe(true);
     expect(nextConfig).toContain("...nextRedirectsOf(PUBLIC_ROUTE_RENAMES)");
     for (const legacy of ["/wiki/romans", "/wiki/novels", "/wiki/novels/3"])
       expect(publicLegacyRedirect(legacy)).toBe("/wiki/manga");
