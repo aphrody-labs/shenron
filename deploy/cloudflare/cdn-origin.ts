@@ -167,15 +167,53 @@ export async function startCdnOrigin(configPath: string) {
           });
         },
       );
-      return originResponse(request, response);
+      return await originResponse(request, response);
     },
   });
 }
 
-export function originResponse(request: Request, response: Response): Response {
+const MAX_BUFFERED_MEDIA_RANGE_BYTES = 2 * 1024 * 1024;
+
+/** Bun streams unknown-length bodies as chunked even when Content-Length is set. */
+export async function originResponse(request: Request, response: Response): Promise<Response> {
   if (new URL(request.url).pathname.endsWith("/index.json"))
     response.headers.set("Cache-Control", "no-store");
-  return response;
+  if (
+    request.method !== "GET" ||
+    response.status !== 206 ||
+    !/^(?:video|audio)\//.test(response.headers.get("Content-Type") ?? "")
+  )
+    return response;
+  const length = Number(response.headers.get("Content-Length"));
+  const range = /^bytes (\d+)-(\d+)\/(\d+)$/.exec(response.headers.get("Content-Range") ?? "");
+  if (
+    !range ||
+    !Number.isSafeInteger(length) ||
+    length < 1 ||
+    length > MAX_BUFFERED_MEDIA_RANGE_BYTES ||
+    Number(range[2]) - Number(range[1]) + 1 !== length ||
+    !response.body
+  )
+    return response;
+  const bytes = new Uint8Array(length);
+  const reader = response.body.getReader();
+  let offset = 0;
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      if (offset + value.byteLength > length) throw Error("Origin range exceeds declared length");
+      bytes.set(value, offset);
+      offset += value.byteLength;
+    }
+    if (offset !== length) throw Error("Origin range differs from declared length");
+  } catch {
+    await reader.cancel().catch(() => {});
+    return new Response(null, { status: 502, headers: { "Cache-Control": "no-store" } });
+  } finally {
+    reader.releaseLock();
+  }
+  return new Response(bytes, { status: 206, headers: response.headers });
 }
 
 if (import.meta.main)

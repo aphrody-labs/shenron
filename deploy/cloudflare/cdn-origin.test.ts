@@ -10,21 +10,59 @@ import {
   storedOriginObject,
 } from "./cdn-origin";
 
-test("media and catalogue indexes remain fresh while image cache policy is preserved", () => {
+test("media and catalogue indexes remain fresh while image cache policy is preserved", async () => {
   for (const path of ["/media/episodes/875/source/gifs/index.json", "/catalog/assets/index.json"]) {
     const response = new Response("{}", { headers: { "Cache-Control": "public, max-age=86400" } });
     expect(
-      originResponse(new Request("https://cdn.dragonballfr.com" + path), response).headers.get(
-        "Cache-Control",
-      ),
+      (
+        await originResponse(new Request("https://cdn.dragonballfr.com" + path), response)
+      ).headers.get("Cache-Control"),
     ).toBe("no-store");
   }
   const image = new Response(null, { headers: { "Cache-Control": "public, max-age=86400" } });
   expect(
-    originResponse(new Request("https://cdn.dragonballfr.com/media/frame.png"), image).headers.get(
-      "Cache-Control",
-    ),
+    (
+      await originResponse(new Request("https://cdn.dragonballfr.com/media/frame.png"), image)
+    ).headers.get("Cache-Control"),
   ).toBe("public, max-age=86400");
+});
+
+test("small media ranges retain a fixed length on Bun.serve", async () => {
+  const bytes = new Uint8Array(1024).fill(7);
+  const upstream = new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(bytes);
+      controller.close();
+    },
+  });
+  const server = Bun.serve({
+    port: 0,
+    fetch(request) {
+      return originResponse(
+        request,
+        new Response(upstream, {
+          status: 206,
+          headers: {
+            "Content-Type": "video/mp4",
+            "Content-Length": "1024",
+            "Content-Range": "bytes 0-1023/7922847",
+          },
+        }),
+      );
+    },
+  });
+  try {
+    const response = await fetch(`http://127.0.0.1:${server.port}/assets/wiki/example.mp4`, {
+      headers: { Range: "bytes=0-1023" },
+    });
+    expect(response.status).toBe(206);
+    expect(response.headers.get("Content-Length")).toBe("1024");
+    expect(response.headers.get("Content-Range")).toBe("bytes 0-1023/7922847");
+    expect(response.headers.get("Transfer-Encoding")).toBeNull();
+    expect((await response.bytes()).byteLength).toBe(1024);
+  } finally {
+    server.stop(true);
+  }
 });
 
 test("origin attestation exposes pins without local paths or credentials", () => {
