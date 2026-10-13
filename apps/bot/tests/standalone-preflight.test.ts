@@ -14,6 +14,10 @@ test("standalone dry-run validates the actual environment owner without importin
       await readFile(join(source, "entry-standalone.ts")),
     );
     await writeFile(join(directory, "lib/env.ts"), await readFile(join(source, "lib/env.ts")));
+    await writeFile(
+      join(directory, "lib/bot-api-env.ts"),
+      await readFile(join(source, "lib/bot-api-env.ts")),
+    );
     await symlink(resolve(import.meta.dir, "../node_modules"), join(directory, "node_modules"));
     const marker = join(directory, "runtime-was-imported");
     await writeFile(
