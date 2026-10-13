@@ -185,8 +185,8 @@ export function SiteShellClient({
       labels={labels}
       linkComponent={NavLink}
       actions={
-        <div className="flex min-w-0 items-center gap-2">
-          <EpisodeThemeSwitcher />
+        <div className="flex min-w-0 items-center gap-1 sm:gap-2">
+          <EpisodeThemeSwitcher compact />
           <LanguageSwitcher variant="compact" />
         </div>
       }
