@@ -4,7 +4,7 @@
 
 État vérifié le 13 octobre 2026. La demande porte sur le débordement de Shenron
 entre DBFR, Neon, Supabase et Cloudflare, sans doublons et sans abonnement payant.
-Le projet Neon est provisionné ; la répartition en production reste inactive.
+Les projets Neon et Supabase dédiés sont provisionnés ; la répartition en production reste inactive.
 
 ## Propriétaires et mesures
 
@@ -12,7 +12,7 @@ Le projet Neon est provisionné ; la répartition en production reste inactive.
 | ---------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | DBFR       | PostgreSQL éditorial, données privées, origine CDN | SSH Infra fonctionnel, PostgreSQL sain                                                              |
 | Neon       | SQL public explicitement détachable                | Projet dédié `patient-cloud-06530995`, `shenron-overflow`, organisation Aphrody gratuite, Francfort |
-| Supabase   | Débordement dédié Shenron                          | Organisation `lsfmulepkfwxyickybfl` gratuite, création bloquée                                      |
+| Supabase   | Débordement dédié Shenron                          | Projet `shenron` / `odtrkpeykybmfqhoxvlx`, organisation `aphrody` gratuite, Francfort, sain          |
 | Cloudflare | Cache et stockage public R2 existants              | Compte `ca22c1a51a145f919b54afa18d936516`, bucket `shenron-cdn` existant                            |
 
 Neon : branche `br-noisy-voice-b9x9aubu` (`production`), PostgreSQL 18,
@@ -37,13 +37,47 @@ La santé publique et les deux index CDN répondent HTTP 200. Le catalogue servi
 annonce 110 782 fichiers et 54 011 802 453 octets logiques, observation du
 13 octobre à 11:49:57 UTC. Les alias peuvent partager des objets : ce total
 ne mesure pas les octets uniques facturés par R2 et ne prouve pas la lecture
-de chaque fichier. La consommation R2 globale reste inconnue.
+de chaque fichier. La métrique du compte est précisée ci-dessous.
 
 Les projets existants Neon `inagle` et Supabase `rg` restent affectés à leurs
 produits. Le propriétaire a choisi explicitement l'organisation Supabase
-`aphrody` pour un projet Shenron séparé. Les outils `get_cost` et `confirm_cost`
-renvoient `UNAVAILABLE`, « MCP tool … was not returned by tools/list ».
-Aucun projet Supabase Shenron ni bucket supplémentaire n'est créé.
+`aphrody` pour un projet Shenron séparé. Son plan `free` et son projet existant
+ont été vérifiés avant création. Les outils connecteur `get_cost` et
+`confirm_cost` renvoient encore `UNAVAILABLE`, « MCP tool … was not returned by
+tools/list » ; le projet dédié a été créé par l'API officielle après connexion
+de la CLI, avec un mot de passe aléatoire scellé par DPAPI dans le profil local.
+La CLI et le connecteur confirment `ACTIVE_HEALTHY` le 13 octobre 2026. Aucun
+bucket supplémentaire ni schéma applicatif n'est créé.
+
+Les CLI locales Neon 8.4.3, Supabase 2.120.0, Wrangler 4.149.0 et cloudflared
+2026.10.0 sont disponibles. Le binaire Supabase a été vérifié contre le checksum
+de sa release. Le wrapper privé `~/.local/bin/wrangler-aphrody.ps1` utilise le
+jeton Cloudflare du store protégé sans le recopier et `whoami` confirme un compte.
+Les alias SSH `vps` et `dbfr` ont été testés avec `BatchMode yes`,
+`ConnectTimeout 15` et la vérification stricte des clés d'hôtes ; les hôtes
+renvoient respectivement `vps-203bea89` et `vps-6732365f`.
+Sur les deux hôtes, Supabase CLI 2.120.0 et Neon CLI 8.4.3 sont installées
+dans les dossiers utilisateur et répondent à `--version` ; l'archive Linux
+Supabase a passé son SHA-256 officiel. Sur DBFR, un wrapper local exécute la
+CLI Neon par Bun, car son lanceur amont exige `node`, absent de ce serveur.
+Aucun jeton de session local n'a été copié sur ces hôtes.
+
+Le catalogue CDN a été parcouru entièrement : 1 154 pages, 110 782 URL,
+87 877 empreintes distinctes et 31 804 128 614 octets uniques référencés. Les
+542 assets de la release publique active DBFR, les 536 fichiers publics du dépôt
+et les 851 assets bot sont déjà couverts. Seuls 15 fichiers d'un ancien build
+`/_next/static` sont absents ; ils renvoient 404 et aucune référence active n'a
+été observée. Ils ne sont pas publiés sans preuve d'usage et de droits.
+La métrique R2 du compte rapporte 35 459 389 060 octets de payload stocké dans
+six buckets ; elle n'est pas une facture mensuelle. Elle dépasse déjà la capacité
+gratuite nominale de 10 GB-month, donc aucune nouvelle copie massive R2 n'est
+engagée pour cette demande.
+
+Les données hors PostgreSQL inventoriées comprennent notamment 44 714 731 005
+octets de captures privées locales dans `data/source-acquisition/episodes`, le
+SQLite bot local (environ 286 Mo) et le SQLite bot DBFR (environ 808 Ko).
+Ces deux SQLite ne sont pas présumés identiques. Les captures ne sont pas des
+assets CDN publiables ; aucun transfert ni suppression n'a été effectué.
 
 ## Placement exclusif
 
@@ -110,8 +144,7 @@ ni les comptes fournisseurs ; un plan possible ne garantit pas la disponibilité
 des placements conservés. `var/reports/storage-cluster/preflight.json`
 consigne les observations de cette session, sans servir de snapshot de capacité.
 
-L'activation exige encore : accès aux outils de création Supabase et
-vérification du coût nul, mesures fraîches globales R2 et des autres quotas,
+L'activation exige encore : mesures fraîches de consommation mensuelle R2 et des autres quotas,
 inventaire complet avec propriétaires exclusifs et données éligibles,
 registre de placement et budgets transactionnels dans le propriétaire
 canonique, routage des consommateurs, puis qualification d'écritures/lectures
