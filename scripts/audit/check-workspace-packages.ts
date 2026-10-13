@@ -19,6 +19,13 @@
 
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
+import { prepareVendor } from "../build/prepare-vendor";
+import {
+  PUBLIC_LIBRARY_FILES,
+  pinnedAphrodyDependency,
+  publicationViolations,
+  publicFileViolations,
+} from "./workspace-policy";
 import {
   ASSET_CLASSES,
   checkBrowserBundles,
@@ -213,6 +220,8 @@ interface Manifest {
   main?: unknown;
   module?: unknown;
   files?: unknown;
+  license?: unknown;
+  publishConfig?: { access?: unknown; registry?: unknown };
   exports?: unknown;
   scripts?: Record<string, string>;
   shenron?: { runtime?: Record<string, unknown> };
@@ -433,8 +442,11 @@ function checkManifest(name: string, dir: string, manifest: Manifest): void {
   for (const script of ["typecheck", "lint", "test"]) {
     if (!manifest.scripts?.[script]) report(name, "scripts", `missing script "${script}"`);
   }
-  if (manifest.private !== true) report(name, "manifest", "private is not true");
-  for (const field of ["main", "module", "files"] as const) {
+  for (const issue of publicationViolations(manifest, toPosix(relative(ROOT, dir))))
+    report(name, "manifest", issue);
+  for (const issue of publicFileViolations(dir, PUBLIC_LIBRARY_FILES[name] ?? []))
+    report(name, "public-files", issue);
+  for (const field of ["main", "module"] as const) {
     if (manifest[field] !== undefined) report(name, "manifest", `field "${field}" is set`);
   }
   if (
@@ -563,17 +575,47 @@ function checkDependencyDirection(): void {
     if (workspace.startsWith("../"))
       report("workspace", "direction", `workspace glob ${workspace} leaves the repository`);
   }
-  const exact = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/;
-  for (const dir of [
+  const directories = [
     ROOT,
     ...["apps", "packages"].flatMap((kind) =>
       readdirSync(join(ROOT, kind), { withFileTypes: true })
         .filter((entry) => entry.isDirectory())
         .map((entry) => join(ROOT, kind, entry.name)),
     ),
-  ]) {
+  ];
+  const localIdentities = new Set(
+    directories.flatMap((dir) => {
+      const manifest = readJson<Manifest>(join(dir, "package.json"));
+      return manifest?.name ? [manifest.name] : [];
+    }),
+  );
+  let qualifiedHls = false;
+  if (catalog["@aphrody/hls.js"] === "file:vendor/hls.js") {
+    try {
+      prepareVendor(ROOT);
+      qualifiedHls = true;
+    } catch (error) {
+      report(
+        "workspace",
+        "direction",
+        `controlled HLS gitlink qualification failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  }
+  for (const dir of directories) {
     const manifest = readJson<Manifest>(join(dir, "package.json"));
     const where = toPosix(relative(ROOT, dir)) || ".";
+    // Package checks already inspect their reviewed public roots; this also covers
+    // the other approved libraries and every private application/root workspace.
+    if (!manifest) continue;
+    if (!PACKAGES[manifest.name ?? ""]) {
+      for (const issue of publicationViolations(manifest, where)) report(where, "manifest", issue);
+      for (const issue of publicFileViolations(
+        dir,
+        PUBLIC_LIBRARY_FILES[manifest.name ?? ""] ?? [],
+      ))
+        report(where, "public-files", issue);
+    }
     for (const group of [
       manifest?.dependencies,
       manifest?.devDependencies,
@@ -588,7 +630,15 @@ function checkDependencyDirection(): void {
             `${where} links ${name} outside the repository (${version})`,
           );
         const pinned = version === "catalog:" ? (catalog[name] ?? version) : version;
-        if (name.startsWith("@aphrody/") && !exact.test(pinned))
+        if (
+          name.startsWith("@aphrody/") &&
+          !pinnedAphrodyDependency(
+            name,
+            pinned,
+            localIdentities,
+            qualifiedHls && (version === "catalog:" || dir === ROOT),
+          )
+        )
           report(
             "workspace",
             "direction",
