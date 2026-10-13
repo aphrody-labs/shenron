@@ -132,10 +132,7 @@ export default async function MangaReaderPage({ params }: { params: Promise<{ id
       />
       <Breadcrumbs
         className="mb-4"
-        items={[
-          { label: "Manga", href: "/wiki/manga" },
-          { label: readingLabel(chapter) },
-        ]}
+        items={[{ label: "Manga", href: "/wiki/manga" }, { label: readingLabel(chapter) }]}
       />
       <PageHeader
         size="md"
