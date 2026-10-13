@@ -84,13 +84,20 @@ assets CDN publiables. Le propriétaire a arrêté le transfert des frames le
 13 octobre : les trois tâches `Shenron-Corpus-even`, `Shenron-Corpus-odd` et
 `Shenron-Corpus-Verify` sont désactivées et leurs processus rsync associés
 arrêtés. La copie partielle privée sur le VPS n'est pas un corpus vérifié.
-Le seul transfert courant est une archive privée contenant la vidéo source de
+Le transfert média courant est une archive privée contenant la vidéo source de
 681 525 411 octets et les distributions complètes de `@aphrody/bun-video` et
 `@aphrody/bun-runtime-sdk`, directement vers DBFR par rsync reprenable. Son
 chemin cible est `/home/ubuntu/.aphrody/profiles/dbfr/video-handoff/beerus-01/beerus-video-sdk.tar`.
 Son manifeste contient les SHA-256 et indique `publicPublicationQualified=false`.
 Le transfert et le hash distant doivent être vérifiés avant toute extraction.
 Aucune suppression locale n'a été effectuée.
+
+Les fichiers `.env` de Shenron, la base de cookies Crunchyroll et le HAR requis
+ont été copiés séparément dans les stores privés de DBFR, avec permissions 600
+et SHA-256 identiques à leurs sources. Les environnements locaux sont conservés
+comme imports, sans écraser la configuration de production. Le catalogue SQLite
+Bun Video et ses références privées sont transférés dans un dossier distinct ;
+sa migration Neon attend un instantané intégral et la qualification des writers.
 
 L'inventaire des fichiers SQLite sous `data/` (répertoires ignorés inclus)
 compte sept bases. Quatre sont des miroirs historiques du VPS et une est un
@@ -105,9 +112,11 @@ La pipeline privée `dbfr-private-pipeline.sh` accompagne l'archive sur DBFR.
 Après vérification du hash global et des trois contenus, elle crée un MP4
 720p H.264/AAC optimisé avec FFmpeg, sous priorité CPU et disque réduite.
 Les sorties et le SDK restent en mode 700/600 dans le profil privé. Aucune
-écriture CDN, PostgreSQL ou publication du site ne découle de ce traitement :
-le manifeste de production classe encore l'épisode comme non qualifié pour la
-publication publique. Aucun effacement automatique n'est programmé.
+écriture CDN, PostgreSQL ou publication du site ne découle automatiquement de
+ce traitement. Le propriétaire a attesté un accord privé de diffusion dans
+`AGENTS.md` ; cette attestation n'a pas encore été rapprochée du manifeste de
+production, dont le champ `publicPublicationQualified` reste faux. Aucun
+effacement automatique n'est programmé.
 
 ## Placement exclusif
 
@@ -178,5 +187,6 @@ L'activation exige encore : mesures fraîches de consommation mensuelle R2 et de
 inventaire complet avec propriétaires exclusifs et données éligibles,
 registre de placement et budgets transactionnels dans le propriétaire
 canonique, routage des consommateurs, puis qualification d'écritures/lectures
-réelles avant l'activation par Infra. Aucun transfert massif, modification
-de DNS, abonnement ou déploiement n'a été effectué.
+réelles avant l'activation par Infra. Les transferts privés ci-dessus ne sont
+pas une activation du cluster ; aucune modification de DNS, aucun abonnement
+ni déploiement n'a été effectué.
