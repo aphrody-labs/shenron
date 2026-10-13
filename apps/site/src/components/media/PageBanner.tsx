@@ -16,6 +16,7 @@ export function PageBanner({
   alt = "",
   position = "center",
   className = "",
+  priority = true,
 }: {
   /** URL déjà résolue (`pageHero`, `bannerForSeries`). Vide : rien n'est rendu. */
   src: string | null | undefined;
@@ -24,6 +25,7 @@ export function PageBanner({
   /** Cadrage vertical d'un visuel recadré en bandeau. */
   position?: "top" | "center" | "bottom";
   className?: string;
+  priority?: boolean;
 }) {
   if (!src) return null;
   const objectPosition =
@@ -36,7 +38,7 @@ export function PageBanner({
         src={src}
         alt={alt}
         fill
-        priority
+        priority={priority}
         // Largeur réelle : la colonne du shell (1 180 px au plus), pas la fenêtre.
         sizes="(min-width: 1240px) 1180px, 100vw"
         quality={70}

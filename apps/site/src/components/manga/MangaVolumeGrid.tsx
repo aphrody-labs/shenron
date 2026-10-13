@@ -1,57 +1,27 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  Bibliotheque,
-  Cadenas,
-  Couches,
-  DragonBall,
-  DragonRadar,
-  Kame,
-  Livre,
-  Palette,
-  Trophee,
-} from "@aphrody/shenron-ui/icones";
 import { assetUrl } from "@/lib/assets";
 import {
   readAvailability,
   writeAvailability,
   type AvailabilityFilter,
 } from "@/lib/availability-query";
-import { onTablistKeyDown } from "@/lib/tablist-keys";
 import { estChapitreCouleur, libelleSerie } from "@/lib/manga-editions";
-import { VignetteTome } from "@/components/manga/VignetteTome";
 import { useT } from "@/components/T";
+import { useMangaUIText } from "@/lib/manga-ui-text";
+import { VignetteTome } from "@/components/manga/VignetteTome";
 import { Etoile } from "@aphrody/shenron-ui/toriyama/MotifsCouverture";
+import {
+  mangaLibraryPage,
+  matchesLibrarySearch,
+  uniqueLibraryVolumes,
+  type LibraryChapter,
+  type LibraryVolume,
+} from "@/lib/manga-library";
 
-export interface Volume {
-  id: number;
-  series: string;
-  volumeNumber: number;
-  title: string | null;
-  cover: string | null;
-  sourceUrl?: string | null;
-}
-
-interface Chapter {
-  id: number;
-  chapter_number: number;
-  title: string | null;
-  series: string;
-  cover: string | null;
-  pages?: string[] | null;
-  volume_id?: number | null;
-}
-
-interface Achievement {
-  id: string;
-  title: string;
-  desc: string;
-  required: number;
-}
-
+export type Volume = LibraryVolume;
 interface MangaVolumeGridProps {
   dbVolumes: Volume[];
   dbsVolumes: Volume[];
@@ -65,1239 +35,383 @@ interface MangaVolumeGridProps {
   dbjpVolumes?: Volume[];
   araleVolumes?: Volume[];
   otherVolumes?: Volume[];
-  readableChapters: Chapter[];
-  /**
-   * Les tomes dont l'édition couleur est lisible, et le nombre de chapitres
-   * couleur au total.
-   */
+  readableChapters: LibraryChapter[];
   colorVolumeIds?: number[];
   colorChapterCount?: number;
 }
+const EMPTY_VOLUMES: Volume[] = [];
+const EMPTY_IDS: number[] = [];
+const COLOR_COLLECTION = "color";
+const ACHIEVEMENTS = [
+  { id: "initiate", required: 1 },
+  { id: "warrior", required: 10 },
+  { id: "super_saiyan", required: 30 },
+  { id: "divine", required: 60 },
+  { id: "god", required: 80 },
+  { id: "instinct", required: 100 },
+] as const;
+const CONTROL =
+  "min-h-11 rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
-const ACHIEVEMENTS: Achievement[] = [
-  {
-    id: "initiate",
-    title: "Initié Z",
-    desc: "Commencez votre entraînement en ouvrant et lisant au moins 1 chapitre.",
-    required: 1,
-  },
-  {
-    id: "warrior",
-    title: "Guerrier de l'Espace",
-    desc: "Dépassez la puissance moyenne d'un humain en lisant 10 chapitres.",
-    required: 10,
-  },
-  {
-    id: "super_saiyan",
-    title: "Super Saiyan",
-    desc: "Éveillez la légendaire colère dorée des Saiyans en lisant 30 chapitres.",
-    required: 30,
-  },
-  {
-    id: "divine",
-    title: "Super Saiyan Divin",
-    desc: "Ressentez le Ki divin et repoussez les limites mortelles en lisant 60 chapitres.",
-    required: 60,
-  },
-  {
-    id: "god",
-    title: "Super Saiyan Blue",
-    desc: "Combinez la puissance du Super Saiyan avec le Ki divin en lisant 80 chapitres.",
-    required: 80,
-  },
-  {
-    id: "instinct",
-    title: "Ultra Instinct",
-    desc: "Maîtrisez l'esprit et le corps sans y penser en lisant 100 chapitres.",
-    required: 100,
-  },
-];
-
-/** Entête de section « Édition Couleur », partagé par les onglets. */
-function ColorSectionHeader({ count }: { count: number }) {
-  const t = useT();
-  return (
-    <>
-      <div className="flex items-center gap-3">
-        <Palette className="w-5 h-5 text-fuchsia-400" aria-hidden="true" />
-        <h3 className="font-display text-2xl text-white">
-          <Etoile taille={14} className="mr-2 align-baseline text-[var(--color-logo-rouge)]" />
-          {t("mangaCatalog.colorSectionTitle")}
-        </h3>
-        <span className="text-[11px] px-2 py-0.5 rounded bg-fuchsia-400 text-black font-black">
-          Full Color
-        </span>
-        <div className="h-px flex-1 bg-white/12" />
-      </div>
-      <p className="text-xs text-white/50 max-w-2xl font-display">
-        {t("mangaCatalog.colorSectionDescription", { count })}
-      </p>
-    </>
-  );
-}
-
-/** Grille des tomes disponibles en couleur. */
-function ColorVolumeGrid({ volumes }: { volumes: Volume[] }) {
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-      {volumes.map((vol, idx) => (
-        <VignetteTome
-          key={vol.id}
-          volume={vol}
-          href={`/wiki/manga/volume/${vol.id}?edition=couleur`}
-          idx={idx}
-          couleur
-        />
-      ))}
-    </div>
-  );
-}
-
-/** Carte d'un chapitre lisible (onglet Scans). Met en avant les éditions couleur. */
-function MangaChapterCard({ chapter, idx }: { chapter: Chapter; idx: number }) {
-  const color = estChapitreCouleur(chapter);
-  const prefetch = () => {
+function MangaChapterCard({ chapter }: { chapter: LibraryChapter }) {
+  const t = useMangaUIText();
+  const title = chapter.title ?? t("chapter", { number: chapter.chapter_number });
+  const image = chapter.cover ?? chapter.pages?.[0];
+  const warm = () =>
     chapter.pages?.slice(0, 3).forEach((page) => {
-      const img = new window.Image();
-      img.src = assetUrl(page);
+      const preview = new window.Image();
+      preview.src = assetUrl(page);
     });
-  };
   return (
     <Link
       href={`/wiki/manga/${chapter.id}`}
-      onMouseEnter={prefetch}
-      onTouchStart={prefetch}
-      className={`group dbz-panel overflow-hidden transition-all duration-300 ${color ? "border-fuchsia-500/30 hover:border-fuchsia-400" : "hover:border-dbz-orange"}`}
-      style={{ animationDelay: `${idx * 0.03}s` }}
+      onMouseEnter={warm}
+      onTouchStart={warm}
+      className="group min-w-0 rounded-lg border border-border bg-card p-2 focus-visible:outline-2 focus-visible:outline-ring"
     >
-      <div className="relative aspect-[3/4] bg-dbz-bg overflow-hidden">
-        <div className="absolute inset-0 halftone opacity-10 z-10 pointer-events-none" />
-        {chapter.cover ? (
+      <div className="relative aspect-[2/3] overflow-hidden rounded bg-background">
+        {image ? (
           <Image
-            src={assetUrl(chapter.cover)}
-            alt={chapter.title ?? `Chapitre ${chapter.chapter_number}`}
+            src={assetUrl(image)}
+            alt={title}
             fill
-            sizes="(max-width: 768px) 50vw, 16vw"
-            className="object-cover opacity-90 group-hover:opacity-100 transition-all duration-700"
-            priority={idx < 6}
+            sizes="(max-width: 640px) 33vw, 16vw"
+            className="object-contain"
           />
         ) : (
-          <div className="grid h-full w-full place-items-center">
-            <Livre className="w-10 h-10 text-dbz-orange/20" aria-hidden="true" />
-          </div>
-        )}
-        {color && (
-          <span className="absolute top-2 right-2 z-30 inline-flex items-center gap-1 rounded-full bg-fuchsia-400 px-2 py-0.5 text-[11px] font-black text-black">
-            <Palette className="w-2.5 h-2.5" /> Couleur
+          <span className="grid h-full place-items-center text-2xl text-[var(--muted-foreground)]">
+            {chapter.chapter_number}
           </span>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent z-20" />
-        <div className="absolute inset-x-0 bottom-0 p-4 z-30">
-          <span
-            className={`tabular-nums text-xs block mb-1 ${color ? "text-fuchsia-300" : "text-dbz-orange"}`}
-          >
-            {color ? "Dragon Ball, couleur" : `${chapter.series} #${chapter.chapter_number}`}
-          </span>
-          <p className="font-display font-bold text-sm text-white group-hover:text-dbz-orange transition-colors line-clamp-2">
-            {chapter.title ?? `Chapitre ${chapter.chapter_number}`}
-          </p>
-        </div>
       </div>
+      <p className="mt-2 text-xs text-[var(--muted-foreground)]">
+        {t("chapter", { number: chapter.chapter_number })}
+        {estChapitreCouleur(chapter) ? ` · ${t("color")}` : ""}
+      </p>
+      <p className="line-clamp-2 text-sm font-semibold text-foreground">{title}</p>
     </Link>
   );
 }
 
-export type MangaTab =
-  | "all"
-  | "db"
-  | "full_color"
-  | "kanzenban"
-  | "soshuhen"
-  | "anime_z"
-  | "anime_gt"
-  | "anime_films"
-  | "dbs"
-  // Kept only to decode legacy client URLs; no control can select this view.
-  | "light_novels"
-  | "jp"
-  | "arale"
-  | "scans"
-  | "achievements";
-
+/** One catalogue projection serves every collection, reading filter and bounded page. */
 export function MangaVolumeGrid({
   dbVolumes,
   dbsVolumes,
-  kanzenbanVolumes = [],
-  soshuhenVolumes = [],
-  animeZVolumes = [],
-  animeMovieVolumes = [],
-  dbgtAnimeVolumes = [],
-  dbsAnimeVolumes = [],
-  lightNovelVolumes = [],
-  dbjpVolumes = [],
-  araleVolumes = [],
-  otherVolumes = [],
+  kanzenbanVolumes = EMPTY_VOLUMES,
+  soshuhenVolumes = EMPTY_VOLUMES,
+  animeZVolumes = EMPTY_VOLUMES,
+  animeMovieVolumes = EMPTY_VOLUMES,
+  dbgtAnimeVolumes = EMPTY_VOLUMES,
+  dbsAnimeVolumes = EMPTY_VOLUMES,
+  lightNovelVolumes = EMPTY_VOLUMES,
+  dbjpVolumes = EMPTY_VOLUMES,
+  araleVolumes = EMPTY_VOLUMES,
+  otherVolumes = EMPTY_VOLUMES,
   readableChapters,
-  colorVolumeIds = [],
+  colorVolumeIds = EMPTY_IDS,
   colorChapterCount = 0,
 }: MangaVolumeGridProps) {
+  const ui = useMangaUIText();
   const t = useT();
-  // L'inventaire complet s'ouvre en premier ; les onglets suivants sont des raccourcis d'édition.
-  const [tab, setTab] = useState<MangaTab>("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [readChapterIds, setReadChapterIds] = useState<number[]>([]);
-  const [availabilityFilter, setAvailabilityFilter] = useState<AvailabilityFilter>("all");
-  const [visibleVolumes, setVisibleVolumes] = useState<Record<string, number>>({});
-
-  useEffect(() => {
-    try {
-      setAvailabilityFilter(readAvailability(window.location.search));
-    } catch {
-      // URL indisponible : l'état par défaut reste « Tous ».
-    }
-  }, []);
-
-  const changeAvailabilityFilter = (value: AvailabilityFilter) => {
-    setAvailabilityFilter(value);
-    try {
-      const url = new URL(window.location.href);
-      writeAvailability(url, value);
-      window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
-    } catch {
-      // L'état local reste utilisable dans un environnement sans historique.
-    }
-  };
-
-  useEffect(() => {
-    try {
-      const savedRead = localStorage.getItem("dbfr_read_chapters");
-      if (savedRead) {
-        const parsed = JSON.parse(savedRead);
-        if (Array.isArray(parsed)) {
-          setReadChapterIds(parsed.map(Number));
-        }
-      }
-    } catch (e) {
-      console.error("Failed to load reading states from localStorage", e);
-    }
-  }, []);
-
-  // La présence est mesurée par les chapitres réellement lisibles.
-  const scanVolumeIds = new Set(
-    readableChapters.map((c) => c.volume_id).filter((v): v is number => v != null),
+  const [collection, setCollection] = useState("all");
+  const [view, setView] = useState<"volumes" | "chapters">("volumes");
+  const [query, setQuery] = useState("");
+  const [availability, setAvailability] = useState<AvailabilityFilter>("all");
+  const [page, setPage] = useState(1);
+  const [readIds, setReadIds] = useState<number[]>(EMPTY_IDS);
+  const results = useRef<HTMLDivElement>(null);
+  const volumes = useMemo(
+    () =>
+      uniqueLibraryVolumes([
+        dbVolumes,
+        dbsVolumes,
+        kanzenbanVolumes,
+        soshuhenVolumes,
+        animeZVolumes,
+        animeMovieVolumes,
+        dbgtAnimeVolumes,
+        dbsAnimeVolumes,
+        lightNovelVolumes,
+        dbjpVolumes,
+        araleVolumes,
+        otherVolumes,
+      ]),
+    [
+      dbVolumes,
+      dbsVolumes,
+      kanzenbanVolumes,
+      soshuhenVolumes,
+      animeZVolumes,
+      animeMovieVolumes,
+      dbgtAnimeVolumes,
+      dbsAnimeVolumes,
+      lightNovelVolumes,
+      dbjpVolumes,
+      araleVolumes,
+      otherVolumes,
+    ],
   );
-  const colorIds = new Set(colorVolumeIds);
-  const volumeIsAvailable = (volume: Volume) =>
-    scanVolumeIds.has(volume.id) || (volume.series === "DB" && colorIds.has(volume.id));
-  const includeVolume = (volume: Volume) => {
-    if (availabilityFilter === "all") return true;
-    const available = volumeIsAvailable(volume);
-    return availabilityFilter === "available" ? available : !available;
-  };
-
-  // Filtrage par état du catalogue et barre de recherche.
-  const q = searchQuery.toLowerCase().trim();
-  const matchesQuery = (vol: Volume) =>
-    !q || vol.title?.toLowerCase().includes(q) || vol.volumeNumber.toString().includes(q);
-  const filteredDbs = dbsVolumes.filter((vol) => includeVolume(vol) && matchesQuery(vol));
-  const filteredDb = dbVolumes.filter((vol) => includeVolume(vol) && matchesQuery(vol));
-  const filteredKanzenban = kanzenbanVolumes.filter(
-    (vol) => includeVolume(vol) && matchesQuery(vol),
-  );
-  const filteredSoshuhen = soshuhenVolumes.filter((vol) => includeVolume(vol) && matchesQuery(vol));
-  const filteredAnimeZ = animeZVolumes.filter((vol) => includeVolume(vol) && matchesQuery(vol));
-  const filteredAnimeMovie = animeMovieVolumes.filter(
-    (vol) => includeVolume(vol) && matchesQuery(vol),
-  );
-  const filteredDbgtAnime = dbgtAnimeVolumes.filter(
-    (vol) => includeVolume(vol) && matchesQuery(vol),
-  );
-  const filteredDbsAnime = dbsAnimeVolumes.filter((vol) => includeVolume(vol) && matchesQuery(vol));
-  const filteredLightNovels = lightNovelVolumes.filter(
-    (vol) => includeVolume(vol) && matchesQuery(vol),
-  );
-  const filteredDbjp = dbjpVolumes.filter((vol) => includeVolume(vol) && matchesQuery(vol));
-  const filteredArale = araleVolumes.filter((vol) => includeVolume(vol) && matchesQuery(vol));
-  const catalogVolumes = [
-    ...dbVolumes,
-    ...dbsVolumes,
-    ...kanzenbanVolumes,
-    ...soshuhenVolumes,
-    ...animeZVolumes,
-    ...animeMovieVolumes,
-    ...dbgtAnimeVolumes,
-    ...dbsAnimeVolumes,
-    ...lightNovelVolumes,
-    ...dbjpVolumes,
-    ...araleVolumes,
-    ...otherVolumes,
+  const collections = [
+    ...new Set([
+      ...volumes.map((volume) => volume.series),
+      ...readableChapters.map((chapter) => chapter.series),
+    ]),
   ];
-  const allSeriesVolumes = catalogVolumes.filter(
-    (volume) => includeVolume(volume) && matchesQuery(volume),
-  );
-  const allVolumeGroups = Array.from(
-    allSeriesVolumes.reduce((groups, volume) => {
-      const volumes = groups.get(volume.series) ?? [];
-      volumes.push(volume);
-      groups.set(volume.series, volumes);
-      return groups;
-    }, new Map<string, Volume[]>()),
+  const colorIds = new Set(colorVolumeIds);
+  const readableIds = new Set(readableChapters.map((chapter) => chapter.volume_id));
+  const isReadable = (volume: Volume) =>
+    readableIds.has(volume.id) || (volume.series === "DB" && colorIds.has(volume.id));
+  const colorVolumes = volumes.filter(
+    (volume) => volume.series === "DBFC" || (volume.series === "DB" && colorIds.has(volume.id)),
   );
 
-  const filteredChapters = readableChapters.filter((ch) => {
-    if (availabilityFilter === "incomplete") return false;
-    if (!q) return true;
-    return ch.title?.toLowerCase().includes(q) || ch.chapter_number.toString().includes(q);
+  useEffect(() => {
+    const restore = () => {
+      const params = new URLSearchParams(window.location.search);
+      setCollection(params.get("collection") ?? "all");
+      setView(params.get("view") === "chapters" ? "chapters" : "volumes");
+      setQuery(params.get("q") ?? "");
+      setAvailability(readAvailability(window.location.search));
+      setPage(Number(params.get("page")) || 1);
+    };
+    restore();
+    window.addEventListener("popstate", restore);
+    try {
+      const saved: unknown = JSON.parse(localStorage.getItem("dbfr_read_chapters") ?? "[]");
+      if (Array.isArray(saved))
+        setReadIds([
+          ...new Set(saved.map(Number).filter((id) => Number.isSafeInteger(id) && id > 0)),
+        ]);
+    } catch {
+      /* Local progress can be unavailable while the catalogue remains usable. */
+    }
+    return () => window.removeEventListener("popstate", restore);
+  }, []);
+  const selected =
+    collection === "DBFC"
+      ? COLOR_COLLECTION
+      : collection === "all" || collection === COLOR_COLLECTION || collections.includes(collection)
+        ? collection
+        : "all";
+  const collectionLabel = (series: string) => {
+    const key = `collections.${series}` as "collections.DB";
+    return ui.has(key) ? ui(key) : libelleSerie(series);
+  };
+  const filteredVolumes = volumes.filter((volume) => {
+    if (selected === COLOR_COLLECTION && !colorVolumes.some((entry) => entry.id === volume.id))
+      return false;
+    if (selected !== "all" && selected !== COLOR_COLLECTION && volume.series !== selected)
+      return false;
+    if (availability === "available" && !isReadable(volume)) return false;
+    if (availability === "incomplete" && isReadable(volume)) return false;
+    return matchesLibrarySearch(volume.title, volume.volumeNumber, query);
   });
-  // Certaines planches (préface, bonus) n'appartiennent à aucun tome. Elles
-  // doivent rester accessibles dans l'inventaire, sans les rattacher de force
-  // à un volume qui ne les contient pas.
-  const unattachedChapters = filteredChapters.filter((chapter) => chapter.volume_id == null);
-
-  const colorChapters = filteredChapters.filter((ch) => estChapitreCouleur(ch));
-  const bwChapters = filteredChapters.filter((ch) => !estChapitreCouleur(ch));
-  const colorVolumes = dbVolumes.filter(
-    (vol) => colorIds.has(vol.id) && includeVolume(vol) && matchesQuery(vol),
+  const filteredChapters = readableChapters.filter((chapter) => {
+    if (availability === "incomplete") return false;
+    if (selected === COLOR_COLLECTION && chapter.series !== "DBFC") return false;
+    if (selected !== "all" && selected !== COLOR_COLLECTION && chapter.series !== selected)
+      return false;
+    return matchesLibrarySearch(chapter.title, chapter.chapter_number, query);
+  });
+  const volumePage = mangaLibraryPage(filteredVolumes, page);
+  const chapterPage = mangaLibraryPage(filteredChapters, page);
+  const current = view === "volumes" ? volumePage : chapterPage;
+  const update = (next: {
+    collection?: string;
+    view?: "volumes" | "chapters";
+    query?: string;
+    availability?: AvailabilityFilter;
+    page?: number;
+  }) => {
+    const chosen = { collection: selected, view, query, availability, page: 1, ...next };
+    setCollection(chosen.collection);
+    setView(chosen.view);
+    setQuery(chosen.query);
+    setAvailability(chosen.availability);
+    setPage(chosen.page);
+    const url = new URL(window.location.href);
+    for (const [key, value, fallback] of [
+      ["collection", chosen.collection, "all"],
+      ["view", chosen.view, "volumes"],
+      ["q", chosen.query, ""],
+      ["page", String(chosen.page), "1"],
+    ]) {
+      if (value === fallback) url.searchParams.delete(key!);
+      else url.searchParams.set(key!, value!);
+    }
+    writeAvailability(url, chosen.availability);
+    window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+  };
+  const pagination = (
+    <nav aria-label={ui("pagination")} className="flex flex-wrap items-center gap-2">
+      <button
+        type="button"
+        className={`${CONTROL} disabled:opacity-40`}
+        disabled={current.page <= 1}
+        onClick={() => {
+          update({ page: current.page - 1 });
+          requestAnimationFrame(() => results.current?.querySelector("a")?.focus());
+        }}
+      >
+        {ui("previous")}
+      </button>
+      <span className="text-sm tabular-nums text-[var(--muted-foreground)]">
+        {ui("page", { page: current.page, pages: current.pages })}
+      </span>
+      <button
+        type="button"
+        className={`${CONTROL} disabled:opacity-40`}
+        disabled={current.page >= current.pages}
+        onClick={() => {
+          update({ page: current.page + 1 });
+          requestAnimationFrame(() => results.current?.querySelector("a")?.focus());
+        }}
+      >
+        {ui("next")}
+      </button>
+    </nav>
   );
-  const dbColorChapters = colorChapters.filter((ch) => ch.series === "DB");
-  const dbsChapters = filteredChapters.filter((ch) => ch.series === "DBS");
-
-  // Métriques de succès
-  const totalReadChapters = readChapterIds.length;
-  const unlockedCount = ACHIEVEMENTS.filter((ach) => totalReadChapters >= ach.required).length;
-
-  let currentRank = "Terrien";
-  if (totalReadChapters >= 100) currentRank = "Ultra Instinct";
-  else if (totalReadChapters >= 80) currentRank = "Super Saiyan Blue";
-  else if (totalReadChapters >= 60) currentRank = "Super Saiyan Divin";
-  else if (totalReadChapters >= 30) currentRank = "Super Saiyan";
-  else if (totalReadChapters >= 10) currentRank = "Guerrier Saiyan";
-  else if (totalReadChapters >= 1) currentRank = "Disciple de Tortue Géniale";
-
+  const rank =
+    ACHIEVEMENTS.toReversed().find((achievement) => readIds.length >= achievement.required)?.id ??
+    "earthling";
   return (
-    <div className="space-y-10">
-      {/* Catalogue complet et filtre de lecture, partageables via `?state=`. */}
-      <div className="flex flex-col gap-3 rounded-xl border border-white/12 p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-[10px] text-dbz-yellow font-extrabold">Catalogue complet</p>
-          <p className="mt-1 text-sm text-white/80 font-bold">
-            {catalogVolumes.filter(volumeIsAvailable).length} / {catalogVolumes.length} tomes — tous
-            affichés
-          </p>
-        </div>
-        <div
-          className="m3-reader m3-reader--dragon-ball flex flex-wrap gap-2"
-          role="group"
-          aria-label="Filtrer par lecture disponible"
-        >
-          {(
-            [
-              ["all", "Tous les tomes"],
-              ["available", "Lecture ici"],
-              ["incomplete", "Catalogue seul"],
-            ] as const
-          ).map(([value, label]) => (
+    <section
+      className="shenron-manga-library @container min-w-0 space-y-4"
+      aria-label={ui("title")}
+    >
+      <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-border bg-card p-3">
+        <label className="min-w-0 flex-1 basis-full @xl:basis-56 text-sm font-semibold text-foreground">
+          <span className="mb-1 block">{ui("collection")}</span>
+          <select
+            value={selected}
+            onChange={(event) => update({ collection: event.target.value })}
+            className={`${CONTROL} w-full`}
+          >
+            <option value="all">
+              {ui("allCollections")} · {volumes.length}
+            </option>
+            {collections
+              .filter((series) => series !== "DBFC")
+              .map((series) => (
+                <option key={series} value={series}>
+                  {collectionLabel(series)} ·{" "}
+                  {volumes.filter((volume) => volume.series === series).length}
+                </option>
+              ))}
+            <option value={COLOR_COLLECTION}>
+              {ui("colorCollection")} · {colorVolumes.length}
+            </option>
+          </select>
+        </label>
+        <label className="min-w-0 flex-1 basis-32 @xl:basis-56 text-sm font-semibold text-foreground">
+          <span className="mb-1 block">{ui("searchShort")}</span>
+          <input
+            type="search"
+            aria-label={ui("search")}
+            value={query}
+            onChange={(event) => update({ query: event.target.value })}
+            className={`${CONTROL} w-full`}
+          />
+        </label>
+        <label className="min-w-0 text-sm font-semibold text-foreground">
+          <span className="mb-1 block">{ui("availability")}</span>
+          <select
+            value={availability}
+            onChange={(event) => update({ availability: event.target.value as AvailabilityFilter })}
+            className={CONTROL}
+          >
+            <option value="all">{ui("all")}</option>
+            <option value="available">{ui("available")}</option>
+            <option value="incomplete">{ui("incomplete")}</option>
+          </select>
+        </label>
+      </div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <fieldset aria-label={ui("title")} className="flex flex-wrap gap-2">
+          {(["volumes", "chapters"] as const).map((value) => (
             <button
-              key={value}
               type="button"
-              onClick={() => changeAvailabilityFilter(value)}
-              aria-pressed={availabilityFilter === value}
-              className={availabilityFilter === value ? "m3-reader-btn-active" : "m3-reader-btn"}
+              key={value}
+              aria-pressed={view === value}
+              onClick={() => update({ view: value })}
+              className={`${CONTROL} ${view === value ? "bg-primary text-primary-foreground" : ""}`}
             >
-              {label}
+              {ui(value)}
             </button>
           ))}
-        </div>
+          <span
+            className="self-center text-sm tabular-nums text-[var(--muted-foreground)]"
+            aria-live="polite"
+          >
+            {ui("results", { start: current.start, end: current.end, total: current.total })}
+          </span>
+        </fieldset>
+        {pagination}
       </div>
-
-      {/* Grille de Sélection Visuelle des Collections (calquée sur Databooks & Jeux Vidéo) */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-dbz-orange/20 text-dbz-orange border border-dbz-orange/40 rounded-lg">
-              <Bibliotheque className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="font-display text-xl text-white">
-                Collections &amp; Éditions du Manga
-              </h3>
-              <p className="text-xs text-white/50">
-                Sélectionnez une collection pour explorer ses volumes, formats et chapitres
-                numérisés.
-              </p>
-            </div>
-          </div>
-
-          {tab !== "achievements" && (
-            <div className="relative w-full sm:w-80 flex-shrink-0">
-              <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-dbz-orange/60">
-                <DragonRadar className="w-4 h-4" />
-              </span>
-              <input
-                type="search"
-                aria-label="Rechercher un tome ou un chapitre"
-                placeholder="Rechercher un tome ou chapitre..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-11 w-full rounded-xl border border-white/10 bg-black/60 pl-9 pr-4 text-base text-white placeholder-white/40 outline-none transition-colors focus:border-dbz-orange focus:ring-1 focus:ring-dbz-orange sm:text-sm"
-              />
-            </div>
-          )}
-        </div>
-
-        <div
-          tabIndex={0}
-          role="tablist"
-          aria-label="Collections du manga"
-          onKeyDown={onTablistKeyDown}
-          className="-mx-[var(--shell-pad,1.5rem)] flex snap-x gap-2 overflow-x-auto px-[var(--shell-pad,1.5rem)] pb-1 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-5 lg:gap-3 lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden"
-        >
-          {[
-            {
-              id: "all" as MangaTab,
-              title: "Toutes les Séries",
-              desc: "Catalogue exhaustif",
-              badge: `${allSeriesVolumes.length} tomes`,
-              icon: Bibliotheque,
-            },
-            {
-              id: "db" as MangaTab,
-              title: "Dragon Ball Original",
-              desc: "42 tomes canoniques N&B",
-              badge: "Canon Toriyama",
-              icon: DragonBall,
-            },
-            {
-              id: "full_color" as MangaTab,
-              title: t("mangaCatalog.colorTabTitle"),
-              desc: t("mangaCatalog.colorTabDescription"),
-              badge: t("mangaCatalog.volumeCount", { count: colorVolumes.length }),
-              icon: Palette,
-            },
-            {
-              id: "dbs" as MangaTab,
-              title: "Dragon Ball Super",
-              desc: "Toyotarō / Toriyama",
-              badge: `${filteredDbs.length} tomes`,
-              icon: Couches,
-            },
-            {
-              id: "kanzenban" as MangaTab,
-              title: "Kanzenban",
-              desc: "Perfect Edition B5",
-              badge: `${filteredKanzenban.length} tomes`,
-              icon: Livre,
-            },
-            {
-              id: "soshuhen" as MangaTab,
-              title: "Sōshūhen (Digest)",
-              desc: "Format Jump d'origine",
-              badge: `${filteredSoshuhen.length} tomes`,
-              icon: Couches,
-            },
-            {
-              id: "anime_z" as MangaTab,
-              title: "Anime Comics DBZ",
-              desc: "Série TV Dragon Ball Z",
-              badge: `${filteredAnimeZ.length} tomes`,
-              icon: Palette,
-            },
-            {
-              id: "anime_gt" as MangaTab,
-              title: "Anime Comics DBGT",
-              desc: "Série TV Dragon Ball GT",
-              badge: `${filteredDbgtAnime.length} tomes`,
-              icon: Palette,
-            },
-            {
-              id: "anime_films" as MangaTab,
-              title: "Anime Comics Films",
-              desc: "Films et téléfilms",
-              badge: `${filteredAnimeMovie.length + filteredDbsAnime.length} tomes`,
-              icon: Livre,
-            },
-            {
-              id: "scans" as MangaTab,
-              title: "Lecteur de Scans",
-              desc: "Lecture planche par planche",
-              badge: `${filteredChapters.length} chapitres`,
-              icon: Bibliotheque,
-            },
-            {
-              id: "achievements" as MangaTab,
-              title: "Succès & Rangs",
-              desc: `Rang : ${currentRank}`,
-              badge: `${unlockedCount}/${ACHIEVEMENTS.length}`,
-              icon: Trophee,
-            },
-          ].map((col) => {
-            const isSelected = tab === col.id;
-            const IconComp = col.icon;
-            return (
-              <button
-                key={col.id}
-                type="button"
-                role="tab"
-                id={`manga-tab-${col.id}`}
-                aria-controls={`manga-panel-${col.id}`}
-                aria-selected={isSelected}
-                tabIndex={isSelected ? 0 : -1}
-                onClick={() => setTab(col.id)}
-                className={`group relative flex min-h-11 w-44 shrink-0 snap-start flex-col justify-between rounded-xl border p-3 text-left transition-colors duration-200 lg:w-auto lg:p-3.5 ${
-                  isSelected
-                    ? "border-dbz-orange bg-dbz-orange/10 text-white"
-                    : "border-white/10 bg-white/[0.03] text-white/70 hover:border-white/25 hover:bg-white/[0.06] hover:text-white"
-                }`}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div
-                    className={`p-2 rounded-lg border transition-colors ${
-                      isSelected
-                        ? "border-dbz-orange/60 bg-dbz-orange text-black"
-                        : "border-white/10 bg-white/5 text-white/60 group-hover:text-dbz-orange group-hover:border-dbz-orange/30"
-                    }`}
-                  >
-                    <IconComp className="w-4 h-4" />
-                  </div>
-                  <span
-                    className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${
-                      isSelected
-                        ? "border-orange-400/50 bg-orange-500/20 text-orange-200"
-                        : "border-white/10 bg-white/5 text-white/50"
-                    }`}
-                  >
-                    {col.badge}
-                  </span>
-                </div>
-                <div className="mt-3">
-                  <div
-                    className={`font-display text-sm font-extrabold ${isSelected ? "text-dbz-orange" : "text-white"}`}
-                  >
-                    {col.title}
-                  </div>
-                  <div className="mt-0.5 hidden text-[11px] text-white/50 line-clamp-1 lg:block">
-                    {col.desc}
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {tab === "all" && (
-        <div
-          role="tabpanel"
-          id="manga-panel-all"
-          aria-labelledby="manga-tab-all"
-          className="space-y-12"
-        >
-          {allVolumeGroups.map(([series, volumes], groupIndex) => (
-            <section key={series} className="space-y-5" aria-labelledby={`manga-series-${series}`}>
-              <div className="flex items-center gap-3">
-                <Livre className="h-5 w-5 text-dbz-orange" aria-hidden="true" />
-                <h3 id={`manga-series-${series}`} className="font-display text-2xl text-white">
-                  {libelleSerie(series)}
-                </h3>
-                <span className="text-[10px] font-bold text-white/50">
-                  {volumes.length} {volumes.length === 1 ? "tome" : "tomes"}
-                </span>
-                <div className="h-px flex-1 bg-white/12" />
-              </div>
-              <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-                {volumes
-                  .slice(0, q ? volumes.length : (visibleVolumes[series] ?? 12))
-                  .map((vol, idx) => (
-                    <VignetteTome
-                      key={vol.id}
-                      volume={vol}
-                      href={`/wiki/manga/volume/${vol.id}`}
-                      idx={idx}
-                      priority={groupIndex === 0 && idx < 2}
-                      status={volumeIsAvailable(vol) ? "available" : "to-complete"}
-                    />
-                  ))}
-              </div>
-              {!q && volumes.length > (visibleVolumes[series] ?? 12) && (
-                <button
-                  type="button"
-                  onClick={() =>
-                    setVisibleVolumes((current) => ({
-                      ...current,
-                      [series]: (current[series] ?? 12) + 12,
-                    }))
-                  }
-                  className="inline-flex min-h-11 items-center rounded-xl border border-white/15 px-4 font-semibold text-dbz-orange hover:border-dbz-orange"
-                >
-                  {t("mangaCatalog.moreVolumes", {
-                    count: Math.min(12, volumes.length - (visibleVolumes[series] ?? 12)),
-                  })}
-                </button>
-              )}
-            </section>
-          ))}
-          {unattachedChapters.length > 0 && (
-            <section className="space-y-5" aria-labelledby="manga-unattached-chapters">
-              <div className="flex items-center gap-3">
-                <Livre className="h-5 w-5 text-dbz-orange" aria-hidden="true" />
-                <h3 id="manga-unattached-chapters" className="font-display text-2xl text-white">
-                  Planches hors tome
-                </h3>
-                <div className="h-px flex-1 bg-white/12" />
-              </div>
-              <p className="text-xs text-white/50">
-                Bonus et préfaces conservés à leur adresse propre.
-              </p>
-              <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-                {unattachedChapters.map((chapter, idx) => (
-                  <MangaChapterCard key={chapter.id} chapter={chapter} idx={idx} />
-                ))}
-              </div>
-            </section>
-          )}
-          {allVolumeGroups.length === 0 && (
-            <div className="py-16 text-center italic text-white/50">
-              Aucun tome ne correspond à votre recherche.
-            </div>
-          )}
-        </div>
+      {selected === COLOR_COLLECTION && (
+        <p className="rounded-xl border border-border bg-card p-3 text-sm text-[var(--muted-foreground)]">
+          {t("mangaCatalog.colorPanelDescription")}{" "}
+          {colorChapterCount > 0 ? ui("chapters") + ` · ${colorChapterCount}` : ""}
+        </p>
       )}
-
-      {/* Dragon Ball Original */}
-      {tab === "db" && (
+      {current.total === 0 ? (
+        <div className="rounded-xl border border-dashed border-border p-6 text-center">
+          <p>{ui("empty")}</p>
+          <button
+            type="button"
+            className={`${CONTROL} mt-3`}
+            onClick={() => update({ collection: "all", query: "", availability: "all" })}
+          >
+            {ui("reset")}
+          </button>
+        </div>
+      ) : (
         <div
-          role="tabpanel"
-          id="manga-panel-db"
-          aria-labelledby="manga-tab-db"
-          className="space-y-12"
+          ref={results}
+          className="grid grid-cols-3 gap-x-3 gap-y-5 @xl:grid-cols-4 @4xl:grid-cols-6"
         >
-          {/* Dragon Ball original — édition couleur, présentée par tome. */}
-          {(colorVolumes.length > 0 || dbColorChapters.length > 0) && (
-            <div className="space-y-5">
-              <ColorSectionHeader count={colorChapterCount} />
-              {colorVolumes.length > 0 && <ColorVolumeGrid volumes={colorVolumes} />}
-              {dbColorChapters.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-                  {dbColorChapters.map((chapter, idx) => (
-                    <MangaChapterCard key={chapter.id} chapter={chapter} idx={idx} />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {filteredDb.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-              {filteredDb.map((vol, idx) => (
+          {view === "volumes"
+            ? volumePage.items.map((volume, index) => (
                 <VignetteTome
-                  key={vol.id}
-                  volume={vol}
-                  href={`/wiki/manga/volume/${vol.id}`}
-                  idx={idx}
-                  priority={idx < 6}
-                  status={volumeIsAvailable(vol) ? "available" : "to-complete"}
+                  key={volume.id}
+                  volume={volume}
+                  href={`/wiki/manga/volume/${volume.id}${selected === COLOR_COLLECTION ? "?edition=couleur" : ""}`}
+                  idx={index}
+                  compact
+                  couleur={selected === COLOR_COLLECTION}
+                  status={isReadable(volume) ? "available" : "to-complete"}
+                  priority={index < 2}
                 />
+              ))
+            : chapterPage.items.map((chapter) => (
+                <MangaChapterCard key={chapter.id} chapter={chapter} />
               ))}
-            </div>
-          )}
-
-          {filteredDb.length === 0 && dbColorChapters.length === 0 && (
-            <div className="py-16 text-center text-white/50 italic">
-              Aucun volume ne correspond à votre recherche.
-            </div>
-          )}
         </div>
       )}
-
-      {/* Dragon Ball Full Color */}
-      {tab === "full_color" && (
-        <div
-          role="tabpanel"
-          id="manga-panel-full-color"
-          aria-labelledby="manga-tab-full-color"
-          className="space-y-12"
-        >
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
-              <div>
-                <div className="flex items-center gap-3">
-                  <Palette className="w-5 h-5 text-fuchsia-400" aria-hidden="true" />
-                  <h3 className="font-display text-2xl text-white">
-                    {t("mangaCatalog.colorPanelTitle")}
-                  </h3>
-                  <span className="text-[11px] px-2 py-0.5 rounded bg-fuchsia-500/15 text-fuchsia-300 font-bold border border-fuchsia-500/30">
-                    {t("mangaCatalog.colorPanelCount", {
-                      volumes: colorVolumes.length,
-                      chapters: colorChapterCount,
-                    })}
-                  </span>
-                </div>
-                <p className="mt-1 text-xs text-white/50 max-w-2xl font-display">
-                  {t("mangaCatalog.colorPanelDescription")}
-                </p>
-              </div>
-            </div>
-
-            {colorVolumes.length > 0 && <ColorVolumeGrid volumes={colorVolumes} />}
-
-            {colorChapters.length > 0 && (
-              <div className="space-y-4 pt-6 border-t border-white/10">
-                <h4 className="font-display font-bold text-sm text-fuchsia-300">
-                  {t("mangaCatalog.colorChapterListTitle", { count: colorChapters.length })}
-                </h4>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-                  {colorChapters.map((chapter, idx) => (
-                    <MangaChapterCard key={chapter.id} chapter={chapter} idx={idx} />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Kanzenban */}
-      {tab === "kanzenban" && (
-        <div
-          role="tabpanel"
-          id="manga-panel-kanzenban"
-          aria-labelledby="manga-tab-kanzenban"
-          className="space-y-8"
-        >
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
-            <div>
-              <div className="flex items-center gap-3">
-                <Livre className="w-5 h-5 text-amber-400" aria-hidden="true" />
-                <h3 className="font-display text-2xl text-white">Dragon Ball Kanzenban (完全版)</h3>
-                <span className="text-[11px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">
-                  34 tomes, pages couleur d&apos;origine
-                </span>
-              </div>
-              <p className="mt-1 text-xs text-white/50 max-w-2xl font-display">
-                L&apos;édition ultime reproduisant les planches quadrichromies et bicolores
-                d&apos;époque du Weekly Shōnen Jump, avec illustrations de couverture inédites et
-                fin modifiée par Akira Toriyama.
+      {current.pages > 1 && <div className="flex justify-end">{pagination}</div>}
+      <details className="rounded-xl border border-border bg-card p-3">
+        <summary className="min-h-11 cursor-pointer py-2 font-semibold text-foreground">
+          <Etoile decorative taille={16} className="mr-2 text-primary" />
+          {ui("progress")}
+        </summary>
+        <p className="text-sm text-[var(--muted-foreground)]">
+          {ui("readCount", { count: readIds.length })} ·{" "}
+          {ui("rank", { title: ui(`ranks.${rank}`) })}
+        </p>
+        <ul className="mt-3 grid grid-cols-2 gap-2 @xl:grid-cols-3">
+          {ACHIEVEMENTS.map((achievement) => (
+            <li key={achievement.id} className="rounded-lg border border-border p-3">
+              <p className="text-sm font-semibold">{ui(`ranks.${achievement.id}`)}</p>
+              <p className="text-xs text-[var(--muted-foreground)]">
+                {ui("achievementRequirement", { count: achievement.required })} ·{" "}
+                {readIds.length >= achievement.required
+                  ? ui("unlocked")
+                  : `${readIds.length}/${achievement.required}`}
               </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-            {filteredKanzenban.map((vol, idx) => (
-              <VignetteTome
-                key={vol.id}
-                volume={vol}
-                href={`/wiki/manga/volume/${vol.id}`}
-                idx={idx}
-                priority={idx < 6}
-                status={volumeIsAvailable(vol) ? "available" : "to-complete"}
-              />
-            ))}
-          </div>
-          {filteredKanzenban.length === 0 && (
-            <div className="py-16 text-center text-white/50 italic">
-              Aucun volume ne correspond à votre recherche.
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Sōshūhen — Digest Edition */}
-      {tab === "soshuhen" && (
-        <div
-          role="tabpanel"
-          id="manga-panel-soshuhen"
-          aria-labelledby="manga-tab-soshuhen"
-          className="space-y-8"
-        >
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
-            <div>
-              <div className="flex items-center gap-3">
-                <Couches className="w-5 h-5 text-purple-400" aria-hidden="true" />
-                <h3 className="font-display text-2xl text-white">
-                  Dragon Ball Sōshūhen (総集編 超悟空伝)
-                </h3>
-                <span className="text-[11px] px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30">
-                  18 Legends, grand format B5 Jump
-                </span>
-              </div>
-              <p className="mt-1 text-xs text-white/50 max-w-2xl font-display">
-                L&apos;édition Shōnen Jump Digest reproduisant à l&apos;identique la pagination et
-                les couleurs du magazine d&apos;époque (1984–1995), posters géants à double face
-                inclus.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-            {filteredSoshuhen.map((vol, idx) => (
-              <VignetteTome
-                key={vol.id}
-                volume={vol}
-                href={`/wiki/manga/volume/${vol.id}`}
-                idx={idx}
-                priority={idx < 6}
-                status={volumeIsAvailable(vol) ? "available" : "to-complete"}
-              />
-            ))}
-          </div>
-          {filteredSoshuhen.length === 0 && (
-            <div className="py-16 text-center text-white/50 italic">
-              Aucun volume ne correspond à votre recherche.
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Anime Comics (TV + Films) */}
-      {(tab === "anime_z" || tab === "anime_gt" || tab === "anime_films") && (
-        <div
-          role="tabpanel"
-          id={`manga-panel-${tab}`}
-          aria-labelledby={`manga-tab-${tab}`}
-          className="space-y-12"
-        >
-          {/* TV Anime Comics Z */}
-          {tab === "anime_z" && filteredAnimeZ.length > 0 && (
-            <div className="space-y-5">
-              <div className="flex items-center gap-3">
-                <Palette className="w-5 h-5 text-emerald-400" aria-hidden="true" />
-                <h3 className="font-display text-2xl text-white">
-                  Dragon Ball Z — TV Anime Comics
-                </h3>
-                <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
-                  39 tomes en couleur
-                </span>
-                <div className="h-px flex-1 bg-white/12" />
-              </div>
-              <p className="text-xs text-white/50 max-w-2xl font-display">
-                L&apos;adaptation manga intégrale de la série animée DBZ capture par capture :
-                Saiyans, Namek, Cyborgs, Cell et Majin Buu.
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-                {filteredAnimeZ.map((vol, idx) => (
-                  <VignetteTome
-                    key={vol.id}
-                    volume={vol}
-                    href={`/wiki/manga/volume/${vol.id}`}
-                    idx={idx}
-                    priority={idx < 6}
-                    status={volumeIsAvailable(vol) ? "available" : "to-complete"}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Films Anime Comics */}
-          {tab === "anime_films" && filteredAnimeMovie.length > 0 && (
-            <div className="space-y-5">
-              <div className="flex items-center gap-3">
-                <Palette className="w-5 h-5 text-sky-400" aria-hidden="true" />
-                <h3 className="font-display text-2xl text-white">
-                  Films &amp; Téléfilms — Anime Comics
-                </h3>
-                <span className="text-[11px] px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 font-bold border border-sky-500/30">
-                  20 tomes, films et téléfilms
-                </span>
-                <div className="h-px flex-1 bg-white/12" />
-              </div>
-              <p className="text-xs text-white/50 max-w-2xl font-display">
-                Tous les films classiques Dragon Ball et DBZ (Broly, Cooler, Fusion, Janemba,
-                Tapion...) et TV Spéciaux (Baddack, Trunks, 100 ans après) en manga couleur.
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-                {filteredAnimeMovie.map((vol, idx) => (
-                  <VignetteTome
-                    key={vol.id}
-                    volume={vol}
-                    href={`/wiki/manga/volume/${vol.id}`}
-                    idx={idx}
-                    priority={idx < 6}
-                    status={volumeIsAvailable(vol) ? "available" : "to-complete"}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Dragon Ball GT Anime Comics */}
-          {tab === "anime_gt" && filteredDbgtAnime.length > 0 && (
-            <div className="space-y-5">
-              <div className="flex items-center gap-3">
-                <Palette className="w-5 h-5 text-amber-400" aria-hidden="true" />
-                <h3 className="font-display text-2xl text-white">
-                  Dragon Ball GT — TV Anime Comics
-                </h3>
-                <span className="text-[11px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">
-                  3 tomes, arcs Voyage dans l&apos;espace et Baby
-                </span>
-                <div className="h-px flex-1 bg-white/12" />
-              </div>
-              <p className="text-xs text-white/50 max-w-2xl font-display">
-                L&apos;intégrale des tomes Dragon Ball GT Anime Comics publiés par Shueisha : de la
-                quête des Dragon Balls aux étoiles noires jusqu&apos;au dénouement tragique contre
-                Baby.
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-                {filteredDbgtAnime.map((vol, idx) => (
-                  <VignetteTome
-                    key={vol.id}
-                    volume={vol}
-                    href={`/wiki/manga/volume/${vol.id}`}
-                    idx={idx}
-                    priority={idx < 3}
-                    status={volumeIsAvailable(vol) ? "available" : "to-complete"}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Films Récents & DB Super Anime Comics */}
-          {tab === "anime_films" && filteredDbsAnime.length > 0 && (
-            <div className="space-y-5">
-              <div className="flex items-center gap-3">
-                <Palette className="w-5 h-5 text-fuchsia-400" aria-hidden="true" />
-                <h3 className="font-display text-2xl text-white">
-                  Films Récents — DB Super Anime Comics
-                </h3>
-                <span className="text-[11px] px-2 py-0.5 rounded bg-fuchsia-500/20 text-fuchsia-300 font-bold border border-fuchsia-500/30">
-                  3 tomes : Battle of Gods, Broly et Super Hero
-                </span>
-                <div className="h-px flex-1 bg-white/12" />
-              </div>
-              <p className="text-xs text-white/50 max-w-2xl font-display">
-                Les films de l&apos;ère moderne scénarisés par Akira Toriyama adaptés en bande
-                dessinée tout en couleur.
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-                {filteredDbsAnime.map((vol, idx) => (
-                  <VignetteTome
-                    key={vol.id}
-                    volume={vol}
-                    href={`/wiki/manga/volume/${vol.id}`}
-                    idx={idx}
-                    priority={idx < 3}
-                    status={volumeIsAvailable(vol) ? "available" : "to-complete"}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {((tab === "anime_z" && filteredAnimeZ.length === 0) ||
-            (tab === "anime_gt" && filteredDbgtAnime.length === 0) ||
-            (tab === "anime_films" &&
-              filteredAnimeMovie.length === 0 &&
-              filteredDbsAnime.length === 0)) && (
-            <div className="py-16 text-center text-white/50 italic">
-              Aucun volume ne correspond à votre recherche.
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Romans & Light Novels */}
-      {tab === "light_novels" && (
-        <div
-          role="tabpanel"
-          id="manga-panel-light-novels"
-          aria-labelledby="manga-tab-light_novels"
-          className="space-y-8"
-        >
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
-            <div>
-              <div className="flex items-center gap-3">
-                <Livre className="w-5 h-5 text-indigo-400" aria-hidden="true" />
-                <h3 className="font-display text-2xl text-white">
-                  Romans &amp; Light Novels Officiels
-                </h3>
-                <span className="text-[11px] px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-500/30">
-                  3 romans recensés (Mirai Bunko, Jump j-Books)
-                </span>
-              </div>
-              <p className="mt-1 text-xs text-white/50 max-w-2xl font-display">
-                Les adaptations littéraires officielles des longs-métrages Dragon Ball. Ces récits
-                textuels supervisés apportent des détails psychologiques et des éléments de lore
-                canoniques exclusifs.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-            {filteredLightNovels.map((vol, idx) => (
-              <VignetteTome
-                key={vol.id}
-                volume={vol}
-                href={`/wiki/manga/volume/${vol.id}`}
-                idx={idx}
-                priority={idx < 3}
-                status={volumeIsAvailable(vol) ? "available" : "to-complete"}
-              />
-            ))}
-          </div>
-          {filteredLightNovels.length === 0 && (
-            <div className="py-16 text-center text-white/50 italic">
-              Aucun roman ne correspond à votre recherche.
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Dragon Ball Super */}
-      {tab === "dbs" && (
-        <div
-          role="tabpanel"
-          id="manga-panel-dbs"
-          aria-labelledby="manga-tab-dbs"
-          className="space-y-10"
-        >
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-            {filteredDbs.map((vol, idx) => (
-              <VignetteTome
-                key={vol.id}
-                volume={vol}
-                href={`/wiki/manga/volume/${vol.id}`}
-                idx={idx}
-                priority={idx < 6}
-                status={volumeIsAvailable(vol) ? "available" : "to-complete"}
-              />
-            ))}
-          </div>
-          {filteredDbs.length === 0 && (
-            <div className="py-16 text-center text-white/50 italic">
-              Aucun volume ne correspond à votre recherche.
-            </div>
-          )}
-          {dbsChapters.length > 0 && (
-            <div className="space-y-4 pt-6 border-t border-white/10">
-              <div className="flex items-center gap-3">
-                <Couches className="w-5 h-5 text-dbz-orange" aria-hidden="true" />
-                <h4 className="font-display font-bold text-sm text-dbz-orange">
-                  Chapitres Dragon Ball Super ({dbsChapters.length})
-                </h4>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-                {dbsChapters.map((chapter, idx) => (
-                  <MangaChapterCard key={chapter.id} chapter={chapter} idx={idx} />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Édition Japonaise Tankōbon */}
-      {tab === "jp" && (
-        <div
-          role="tabpanel"
-          id="manga-panel-jp"
-          aria-labelledby="manga-tab-jp"
-          className="space-y-8"
-        >
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
-            <div>
-              <div className="flex items-center gap-3">
-                <Livre className="w-5 h-5 text-red-400" aria-hidden="true" />
-                <h3 className="font-display text-2xl text-white">
-                  Dragon Ball — Édition Japonaise Originale (ドラゴンボール)
-                </h3>
-                <span className="text-[11px] px-2 py-0.5 rounded bg-red-500/20 text-red-300 font-bold border border-red-500/30">
-                  42 tomes Tankōbon Jump Comics
-                </span>
-              </div>
-              <p className="mt-1 text-xs text-white/50 max-w-2xl font-display">
-                Les 42 volumes originaux tels que parus au Japon chez Shueisha entre 1985 et 1995
-                avec onomatopées et calligraphies d&apos;Akira Toriyama.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-            {filteredDbjp.map((vol, idx) => (
-              <VignetteTome
-                key={vol.id}
-                volume={vol}
-                href={`/wiki/manga/volume/${vol.id}`}
-                idx={idx}
-                priority={idx < 6}
-                status={volumeIsAvailable(vol) ? "available" : "to-complete"}
-              />
-            ))}
-          </div>
-          {filteredDbjp.length === 0 && (
-            <div className="py-16 text-center text-white/50 italic">
-              Aucun volume ne correspond à votre recherche.
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Dr. Slump */}
-      {tab === "arale" && (
-        <div
-          role="tabpanel"
-          id="manga-panel-arale"
-          aria-labelledby="manga-tab-arale"
-          className="space-y-8"
-        >
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
-            <div>
-              <div className="flex items-center gap-3">
-                <Kame className="w-5 h-5 text-pink-400" aria-hidden="true" />
-                <h3 className="font-display text-2xl text-white">
-                  Dr. Slump (Dr.スランプ — アラレちゃん)
-                </h3>
-                <span className="text-[11px] px-2 py-0.5 rounded bg-pink-500/20 text-pink-300 font-bold border border-pink-500/30">
-                  18 tomes, l&apos;œuvre fondatrice
-                </span>
-              </div>
-              <p className="mt-1 text-xs text-white/50 max-w-2xl font-display">
-                L&apos;intégrale des aventures d&apos;Arale Norimaki et Senbei Norimaki au Village
-                Pinguouin, le chef-d&apos;œuvre comique et visuel d&apos;Akira Toriyama.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-            {filteredArale.map((vol, idx) => (
-              <VignetteTome
-                key={vol.id}
-                volume={vol}
-                href={`/wiki/manga/volume/${vol.id}`}
-                idx={idx}
-                priority={idx < 6}
-                status={volumeIsAvailable(vol) ? "available" : "to-complete"}
-              />
-            ))}
-          </div>
-          {filteredArale.length === 0 && (
-            <div className="py-16 text-center text-white/50 italic">
-              Aucun volume ne correspond à votre recherche.
-            </div>
-          )}
-        </div>
-      )}
-
-      {tab === "scans" && (
-        <div
-          role="tabpanel"
-          id="manga-panel-scans"
-          aria-labelledby="manga-tab-scans"
-          className="space-y-12"
-        >
-          {/* Édition couleur (Full Color) mise en avant, par tome. */}
-          {(colorVolumes.length > 0 || colorChapters.length > 0) && (
-            <div className="space-y-5">
-              <ColorSectionHeader count={colorChapterCount} />
-              {colorVolumes.length > 0 && <ColorVolumeGrid volumes={colorVolumes} />}
-              {colorChapters.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-                  {colorChapters.map((chapter, idx) => (
-                    <MangaChapterCard key={chapter.id} chapter={chapter} idx={idx} />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Scans N&B. */}
-          {bwChapters.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-              {bwChapters.map((chapter, idx) => (
-                <MangaChapterCard key={chapter.id} chapter={chapter} idx={idx} />
-              ))}
-            </div>
-          )}
-
-          {filteredChapters.length === 0 && (
-            <div className="py-16 text-center text-white/50 italic">
-              Aucun chapitre ne correspond à votre recherche.
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Onglet Succès & Gamification */}
-      {tab === "achievements" && (
-        <div
-          role="tabpanel"
-          id="manga-panel-achievements"
-          aria-labelledby="manga-tab-achievements"
-          className="space-y-8"
-        >
-          <div className="dbz-panel p-6 bg-black/40 border border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="space-y-1">
-              <span className="text-xs text-dbz-orange block font-bold">
-                Progression de lecture
-              </span>
-              <p className="font-display font-black text-2xl text-white">Statistiques de Lecture</p>
-            </div>
-            <div className="grid grid-cols-2 gap-8 text-center md:text-left">
-              <div>
-                <span className="block text-[10px] text-white/50">Chapitres Lus</span>
-                <span className="font-display text-3xl text-dbz-orange leading-none">
-                  {totalReadChapters}
-                </span>
-              </div>
-              <div>
-                <span className="block text-[10px] text-white/50">Rang Débloqué</span>
-                <span className="font-display text-2xl text-white leading-none block mt-1">
-                  {currentRank}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {ACHIEVEMENTS.map((ach) => {
-              const isUnlocked = totalReadChapters >= ach.required;
-              return (
-                <div
-                  key={ach.id}
-                  className={`dbz-panel p-6 border transition-all duration-300 relative overflow-hidden group ${
-                    isUnlocked
-                      ? "border-dbz-orange/30 bg-dbz-card hover:border-dbz-orange"
-                      : "border-white/5 bg-zinc-950/20 opacity-60"
-                  }`}
-                >
-                  <div className="absolute inset-0 halftone opacity-5 pointer-events-none" />
-                  <div className="relative z-10 flex items-start gap-4">
-                    <div
-                      className={`p-3 rounded-lg border ${isUnlocked ? "bg-dbz-orange/10 text-dbz-orange border-dbz-orange/20" : "bg-zinc-900 text-zinc-600 border-zinc-800"}`}
-                    >
-                      {isUnlocked ? (
-                        <Trophee className="w-6 h-6" />
-                      ) : (
-                        <Cadenas className="w-6 h-6" />
-                      )}
-                    </div>
-                    <div className="space-y-1 flex-1">
-                      <div className="flex justify-between items-start gap-2">
-                        <h4 className="font-display font-extrabold text-sm text-white group-hover:text-dbz-orange transition-colors">
-                          {ach.title}
-                        </h4>
-                        <span
-                          className={`text-[8px] font-bold px-1.5 py-0.5 rounded ${
-                            isUnlocked
-                              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                              : "bg-zinc-800 text-zinc-500"
-                          }`}
-                        >
-                          {isUnlocked ? "Obtenu" : `${totalReadChapters}/${ach.required}`}
-                        </span>
-                      </div>
-                      <p className="text-xs text-white/60 font-display leading-relaxed">
-                        {ach.desc}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-    </div>
+            </li>
+          ))}
+        </ul>
+      </details>
+    </section>
   );
 }

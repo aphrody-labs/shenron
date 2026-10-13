@@ -1,9 +1,10 @@
 import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { JAPANESE_FULL_COLOR_CATALOGUE } from "@aphrody/shenron-config/manga-catalogue";
-import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
+import { MangaLibraryHeader, MangaLibraryStats } from "@/components/manga/MangaLibraryHeader";
+import { MangaUIText } from "@/lib/manga-ui-text";
 import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
 import { T } from "@/components/T";
-import { ContributeRail, StatTiles } from "@/components/kit";
+import { ContributeRail } from "@/components/kit";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { PageBanner } from "@/components/media/PageBanner";
 import { ContinueRail } from "@/components/history/ContinueRail";
@@ -117,10 +118,8 @@ async function MangaIndexContent() {
 
   const allChapters = readableData?.chapters ?? [];
 
-  // L'édition couleur compte 520 chapitres. Les sérialiser un par un dans la
-  // grille ajoutait ~470 Ko à cette page (charge RSC + DOM dupliqués) pour un
-  // contenu qu'on navigue de toute façon par tome. On ne transmet donc
-  // que les TOMES concernés et le total ; le détail vit sur la fiche du tome.
+  // The catalogue sends chapter metadata once for client filtering and pagination.
+  // Reader pages stay on their detail route; only three real preview URLs are warmed on intent.
   const colorChapters = allChapters.filter((ch) => ch.series === SERIE_COULEUR);
   const colorVolumeIds = [
     ...new Set(colorChapters.map((ch) => ch.volume_id).filter((v): v is number => v != null)),
@@ -164,112 +163,16 @@ async function MangaIndexContent() {
   ).length;
   const coveredVolumes = completeCatalog.filter((volume) => Boolean(volume.cover?.trim())).length;
 
-  const lead =
-    readableVolumeCount > 0
-      ? `${readableVolumeCount.toLocaleString("fr-FR")} tomes à lire et ${allChapters.length.toLocaleString("fr-FR")} chapitres disponibles, parmi ${completeCatalog.length.toLocaleString("fr-FR")} tomes répertoriés.`
-      : `${completeCatalog.length.toLocaleString("fr-FR")} tomes répertoriés — les lectures disponibles apparaîtront ici au fur et à mesure de leur publication.`;
-
   return (
     <PageShell rhythm="tight">
       <Breadcrumbs className="mb-4" items={[{ label: "Manga" }]} />
-      <PageHeader eyebrow="Manga" title="Lecteur de scan" subtitle={lead} className="mb-6" />
+      <MangaLibraryHeader
+        readable={readableVolumeCount}
+        chapters={allChapters.length}
+        total={completeCatalog.length}
+      />
       <LibraryNav />
-      <PageBanner src={heroImage} alt="Couverture du manga Dragon Ball" position="top" />
       <ContinueRail kinds={["chapter"]} titleKey="history.resumeReading" />
-      <MangaDialogueSearch />
-      <section aria-label="Couverture du catalogue manga" className="my-8 space-y-3">
-        <StatTiles
-          items={[
-            {
-              label: "Tomes répertoriés",
-              value: completeCatalog.length,
-              hint: `${coveredVolumes} avec couverture`,
-            },
-            { label: "Tomes lisibles", value: readableVolumeCount, hint: "planches servies ici" },
-            { label: "Chapitres indexés", value: allChapters.length },
-            { label: "Chapitres en couleur", value: colorChapters.length },
-          ]}
-        />
-        <p className="text-sm text-white/60">
-          Éditeurs, archives et corpus attribués :{" "}
-          <Link
-            href="/sources/dragon-ball"
-            className="inline-flex min-h-11 items-center font-semibold text-dbz-orange hover:text-white"
-          >
-            provenance des sources
-          </Link>
-        </p>
-      </section>
-
-      {mediaWorks
-        .filter((work) => work.editions.length > 0)
-        .map((mediaWork) => (
-          <section key={mediaWork.id} className="mb-10 space-y-4">
-            <SectionHeading
-              level={3}
-              title={<T k="mangaCatalog.editionsForWork" values={{ title: mediaWork.title }} />}
-              actions={
-                // Point d’entrée JSON du même inventaire : un lien interne ordinaire, pas un
-                // nouvel onglet (sous Tauri, `target=_blank` ouvrirait une fenêtre orpheline).
-                <a
-                  href={`/api/wiki/media?slug=${encodeURIComponent(mediaWork.slug)}`}
-                  className="inline-flex min-h-11 items-center text-sm font-semibold text-dbz-orange hover:text-white"
-                >
-                  <T k="mangaCatalog.catalogueData" />
-                </a>
-              }
-            />
-            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {mediaWork.editions.map((ed) => (
-                <li key={ed.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                  <p className="flex items-center justify-between gap-2 text-[12px] text-white/55">
-                    <span>{ed.edition}</span>
-                    <span className="font-semibold text-dbz-orange">{ed.language}</span>
-                  </p>
-                  <p className="mt-1 font-display font-semibold text-white">{ed.label}</p>
-                  <p className="mt-2 flex items-center justify-between gap-2 text-[13px] text-white/60">
-                    <span>{ed.publisher}</span>
-                    {ed.edition !== "full_color" && (
-                      <span className="tabular-nums text-white/80">
-                        <T k="mangaCatalog.volumeCount" values={{ count: ed.volumes_count }} />
-                      </span>
-                    )}
-                  </p>
-                  <p className="mt-2 text-[12px] text-white/60">
-                    <T k={`mangaCatalog.pageColor.${ed.page_color}`} />
-                  </p>
-                  {ed.volumes.length > 0 && (
-                    <ul className="mt-3 space-y-2 text-sm">
-                      {ed.volumes.map((volume) => (
-                        <li key={volume.id}>
-                          {volume.href ? (
-                            <Link
-                              href={volume.href}
-                              className="inline-flex min-h-11 items-center text-dbz-orange hover:text-white"
-                            >
-                              {volume.title ?? `#${volume.number}`}
-                            </Link>
-                          ) : (
-                            <span>{volume.title ?? `#${volume.number}`}</span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  {mediaWork.slug === "dragon-ball" && ed.edition === "full_color" && (
-                    <p className="mt-2 text-[12px] leading-relaxed text-white/60">
-                      <T
-                        k="mangaCatalog.japaneseOriginalCatalogueStatus"
-                        values={JAPANESE_FULL_COLOR_CATALOGUE}
-                      />
-                    </p>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
-
       <MangaVolumeGrid
         dbVolumes={dbVolumes}
         dbsVolumes={dbsVolumes}
@@ -286,8 +189,106 @@ async function MangaIndexContent() {
         colorVolumeIds={colorVolumeIds}
         colorChapterCount={colorChapters.length}
       />
+      <details className="mt-4 rounded-xl border border-border bg-card p-3">
+        <summary className="min-h-11 cursor-pointer py-2 font-semibold text-foreground">
+          <MangaUIText name="dialogue" />
+        </summary>
+        <MangaDialogueSearch />
+      </details>
+      <details className="mt-4 rounded-xl border border-border bg-card p-3">
+        <summary className="min-h-11 cursor-pointer py-2 font-semibold text-foreground">
+          <MangaUIText name="details" />
+        </summary>
+        <PageBanner src={heroImage} alt="" position="top" className="mt-3" priority={false} />
+        <MangaLibraryStats
+          total={completeCatalog.length}
+          readable={readableVolumeCount}
+          covered={coveredVolumes}
+          chapters={allChapters.length}
+          color={colorChapters.length}
+        />
+        <p className="text-sm text-[var(--muted-foreground)]">
+          <MangaUIText name="sourceLead" />
+          {" : "}
+          <Link
+            href="/sources/dragon-ball"
+            className="inline-flex min-h-11 items-center font-semibold text-primary hover:underline"
+          >
+            <MangaUIText name="sources" />
+          </Link>
+        </p>
 
-      <MangaInfoSection />
+        {mediaWorks
+          .filter((work) => work.editions.length > 0)
+          .map((mediaWork) => (
+            <section key={mediaWork.id} className="mb-10 space-y-4">
+              <SectionHeading
+                level={3}
+                title={<T k="mangaCatalog.editionsForWork" values={{ title: mediaWork.title }} />}
+                actions={
+                  // Point d’entrée JSON du même inventaire : un lien interne ordinaire, pas un
+                  // nouvel onglet (sous Tauri, `target=_blank` ouvrirait une fenêtre orpheline).
+                  <a
+                    href={`/api/wiki/media?slug=${encodeURIComponent(mediaWork.slug)}`}
+                    className="inline-flex min-h-11 items-center text-sm font-semibold text-dbz-orange hover:underline"
+                  >
+                    <T k="mangaCatalog.catalogueData" />
+                  </a>
+                }
+              />
+              <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {mediaWork.editions.map((ed) => (
+                  <li key={ed.id} className="rounded-xl border border-border bg-card p-4">
+                    <p className="flex items-center justify-between gap-2 text-[12px] text-[var(--muted-foreground)]">
+                      <span>{ed.edition}</span>
+                      <span className="font-semibold text-dbz-orange">{ed.language}</span>
+                    </p>
+                    <p className="mt-1 font-display font-semibold text-foreground">{ed.label}</p>
+                    <p className="mt-2 flex items-center justify-between gap-2 text-[13px] text-[var(--muted-foreground)]">
+                      <span>{ed.publisher}</span>
+                      {ed.edition !== "full_color" && (
+                        <span className="tabular-nums text-foreground">
+                          <T k="mangaCatalog.volumeCount" values={{ count: ed.volumes_count }} />
+                        </span>
+                      )}
+                    </p>
+                    <p className="mt-2 text-[12px] text-[var(--muted-foreground)]">
+                      <T k={`mangaCatalog.pageColor.${ed.page_color}`} />
+                    </p>
+                    {ed.volumes.length > 0 && (
+                      <ul className="mt-3 space-y-2 text-sm">
+                        {ed.volumes.map((volume) => (
+                          <li key={volume.id}>
+                            {volume.href ? (
+                              <Link
+                                href={volume.href}
+                                className="inline-flex min-h-11 items-center text-dbz-orange hover:underline"
+                              >
+                                {volume.title ?? `#${volume.number}`}
+                              </Link>
+                            ) : (
+                              <span>{volume.title ?? `#${volume.number}`}</span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {mediaWork.slug === "dragon-ball" && ed.edition === "full_color" && (
+                      <p className="mt-2 text-[12px] leading-relaxed text-[var(--muted-foreground)]">
+                        <T
+                          k="mangaCatalog.japaneseOriginalCatalogueStatus"
+                          values={JAPANESE_FULL_COLOR_CATALOGUE}
+                        />
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+
+        <MangaInfoSection />
+      </details>
       <ContributeRail className="mt-14" quoiKey="kit.contribute.what.volume" />
     </PageShell>
   );

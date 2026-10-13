@@ -39,13 +39,15 @@ export function StatTiles({
       {items.map((item, index) => {
         const body = (
           <>
-            <dt className="font-display text-[0.625rem] font-bold uppercase tracking-[0.14em] text-white/45">
+            <dt className="font-display text-[0.625rem] font-bold uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
               {item.label}
             </dt>
-            <dd className="mt-1.5 font-display text-[clamp(1.375rem,1.1rem+1.2vw,1.875rem)] font-bold leading-none tabular-nums text-white">
+            <dd className="mt-1.5 font-display text-[clamp(1.375rem,1.1rem+1.2vw,1.875rem)] font-bold leading-none tabular-nums text-card-foreground">
               {item.value === null ? "—" : nf.format(item.value)}
             </dd>
-            {item.hint && <p className="mt-1 text-[0.6875rem] text-white/35">{item.hint}</p>}
+            {item.hint && (
+              <p className="mt-1 text-[0.6875rem] text-[var(--muted-foreground)]">{item.hint}</p>
+            )}
           </>
         );
         // La clé était le libellé ; traduit, ce n'est plus une chaîne. Le
@@ -54,15 +56,12 @@ export function StatTiles({
           <Link
             key={item.href ?? index}
             href={item.href}
-            className="rounded-xl border border-white/[0.08] bg-dbz-card/80 p-3.5 transition-colors hover:border-dbz-orange/60 sm:p-4"
+            className="rounded-xl border border-border bg-card p-3.5 transition-colors hover:border-primary/60 sm:p-4"
           >
             {body}
           </Link>
         ) : (
-          <div
-            key={index}
-            className="rounded-xl border border-white/[0.08] bg-dbz-card/80 p-3.5 sm:p-4"
-          >
+          <div key={index} className="rounded-xl border border-border bg-card p-3.5 sm:p-4">
             {body}
           </div>
         );
