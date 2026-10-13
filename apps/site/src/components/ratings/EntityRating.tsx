@@ -10,7 +10,7 @@
 
 import Link from "next/link";
 import { Avatar } from "@/components/Avatar";
-import { useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useId, useState, useSyncExternalStore } from "react";
 import { Bulle, Chargement, ChevronBas, Corbeille, Etoile } from "@aphrody/shenron-ui/icones";
 import { useMe } from "@/lib/use-me";
 import { RatingBadge, Stars } from "@aphrody/shenron-ui/public/Stars";
@@ -72,14 +72,14 @@ const ANCHOR_ID = "notes";
  * On mutualise donc la requête en vol et on diffuse toute nouvelle valeur aux
  * deux abonnés.
  */
-type AbonneNotes = (state: State) => void;
+type AbonneNotes = () => void;
 const cacheNotes = new Map<string, State>();
 const requetesNotes = new Map<string, Promise<State | null>>();
 const abonnesNotes = new Map<string, Set<AbonneNotes>>();
 
 function diffuserNotes(cle: string, state: State): void {
   cacheNotes.set(cle, state);
-  for (const abonne of abonnesNotes.get(cle) ?? []) abonne(state);
+  for (const abonne of abonnesNotes.get(cle) ?? []) abonne();
 }
 
 /** Renvoie `null` en cas d'échec — jamais de rejet à gérer chez l'appelant. */
@@ -116,8 +116,24 @@ function chargerNotes(
 function useRatingState(targetType: RatingTargetType, targetId: string | number) {
   const id = String(targetId);
   const cle = `${targetType}:${id}`;
-  const [state, setState] = useState<State | null>(null);
   const [loadErr, setLoadErr] = useState<string | null>(null);
+  const subscribe = useCallback(
+    (notify: AbonneNotes) => {
+      let group = abonnesNotes.get(cle);
+      if (!group) {
+        group = new Set();
+        abonnesNotes.set(cle, group);
+      }
+      group.add(notify);
+      return () => {
+        group.delete(notify);
+        if (group.size === 0) abonnesNotes.delete(cle);
+      };
+    },
+    [cle],
+  );
+  const getSnapshot = useCallback(() => cacheNotes.get(cle) ?? null, [cle]);
+  const state = useSyncExternalStore(subscribe, getSnapshot, () => null);
 
   const publier = useCallback((s: State) => diffuserNotes(cle, s), [cle]);
 
@@ -128,25 +144,10 @@ function useRatingState(targetType: RatingTargetType, targetId: string | number)
     }
   }, [cle, targetType, id]);
 
-  // L'état initial reste `null`, JAMAIS le cache : le HTML servi est celui de
-  // l'état « pas encore chargé » et hydrater un arbre différent ferait
-  // abandonner l'hydratation à React (même piège que `useMe`). Le cache est
-  // appliqué depuis l'effet, donc après hydratation.
+  // The server snapshot remains empty to preserve hydration parity.
   useEffect(() => {
     let vivant = true;
-    const abonne: AbonneNotes = (frais) => {
-      if (!vivant) return;
-      setState(frais);
-      setLoadErr(null);
-    };
-    let groupe = abonnesNotes.get(cle);
-    if (!groupe) {
-      groupe = new Set();
-      abonnesNotes.set(cle, groupe);
-    }
-    groupe.add(abonne);
     const connu = cacheNotes.get(cle);
-    if (connu) setState(connu);
     void chargerNotes(cle, targetType, id).then((frais) => {
       // Un échec de rafraîchissement ne doit pas effacer une valeur déjà à
       // l'écran : on n'affiche l'erreur que si on n'a rien à montrer.
@@ -155,12 +156,10 @@ function useRatingState(targetType: RatingTargetType, targetId: string | number)
     });
     return () => {
       vivant = false;
-      groupe.delete(abonne);
-      if (groupe.size === 0) abonnesNotes.delete(cle);
     };
   }, [cle, targetType, id]);
 
-  return { id, state, setState: publier, load, loadErr };
+  return { id, state, setState: publier, load, loadErr: state ? null : loadErr };
 }
 
 // ─── Moyenne compacte (haut de page) ─────────────────────────────────────────
@@ -182,13 +181,15 @@ export function EntityRatingSummary({
   const summary = state?.summary ?? { average: 0, count: 0 };
 
   if (loadErr) {
-    return <span className={`text-[12px] text-white/50 ${className}`}>Notes indisponibles</span>;
+    return (
+      <span className={`text-[12px] text-muted-foreground ${className}`}>Notes indisponibles</span>
+    );
   }
 
   if (!state) {
     return (
       <span
-        className={`inline-block h-7 w-28 animate-pulse rounded-full bg-white/[0.06] ${className}`}
+        className={`inline-block h-7 w-28 animate-pulse motion-reduce:animate-none rounded-full bg-muted ${className}`}
         aria-hidden
       />
     );
@@ -197,30 +198,33 @@ export function EntityRatingSummary({
   return (
     <a
       href={`#${ANCHOR_ID}`}
-      className={`group inline-flex min-h-11 items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3 py-1.5 transition-colors hover:border-dbz-orange/50 hover:bg-dbz-orange/10 ${className}`}
+      className={`group inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-card text-card-foreground px-3 py-1.5 transition-colors hover:border-primary/50 hover:bg-primary/10 ${className}`}
       title="Voir les notes et avis"
     >
       {summary.count > 0 ? (
         <>
           <Stars value={summary.average} size="sm" label="Moyenne" />
-          <span className="text-sm font-bold tabular-nums text-white">
+          <span className="text-sm font-bold tabular-nums text-foreground">
             {summary.average.toFixed(1)}
           </span>
-          <span className="text-[0.75rem] tabular-nums text-white/60">
+          <span className="text-[0.75rem] tabular-nums text-muted-foreground">
             {summary.count} note{summary.count > 1 ? "s" : ""}
           </span>
         </>
       ) : (
         <>
-          <span className="text-dbz-orange/70" aria-hidden>
+          <span className="text-primary" aria-hidden>
             ★
           </span>
-          <span className="text-[0.8125rem] font-semibold text-white/65 group-hover:text-dbz-orange">
+          <span className="text-[0.8125rem] font-semibold text-muted-foreground group-hover:text-primary">
             Noter
           </span>
         </>
       )}
-      <ChevronBas className="h-3.5 w-3.5 text-white/50 group-hover:text-dbz-orange" aria-hidden />
+      <ChevronBas
+        className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary"
+        aria-hidden
+      />
     </a>
   );
 }
@@ -252,12 +256,16 @@ export function EntityRating({
   const [tab, setTab] = useState<TabId>("rate");
   const baseId = useId();
 
-  // Sync draft quand l'état arrive / change.
-  useEffect(() => {
-    if (!state) return;
-    setDraftScore(state.mine?.score ?? 0);
-    setDraftComment(state.mine?.comment ?? "");
-  }, [state]);
+  const mineScore = state?.mine?.score ?? 0;
+  const mineComment = state?.mine?.comment ?? "";
+  const draftSource = JSON.stringify([targetType, id, mineScore, mineComment]);
+  const [previousDraftSource, setPreviousDraftSource] = useState(draftSource);
+  // Keep edits when an unrelated summary or comment refresh arrives.
+  if (draftSource !== previousDraftSource) {
+    setPreviousDraftSource(draftSource);
+    setDraftScore(mineScore);
+    setDraftComment(mineComment);
+  }
 
   // Si l'URL arrive avec #notes, ouvrir l'onglet Avis s'il y en a.
   useEffect(() => {
@@ -357,8 +365,8 @@ export function EntityRating({
 
   const tabBtn =
     "inline-flex min-h-11 items-center gap-1.5 rounded-t-lg border border-b-0 px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere";
-  const tabActive = "border-dbz-green bg-dbz-card text-white";
-  const tabIdle = "border-transparent bg-transparent text-white/50 hover:text-white/80";
+  const tabActive = "border-primary bg-card text-card-foreground";
+  const tabIdle = "border-transparent bg-transparent text-muted-foreground hover:text-foreground";
 
   return (
     <section
@@ -367,7 +375,7 @@ export function EntityRating({
       aria-labelledby={`${baseId}-heading`}
     >
       {/* En-tête compact + onglets */}
-      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-white/10">
+      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border">
         <div
           tabIndex={0}
           className="flex flex-wrap items-end gap-1"
@@ -385,7 +393,7 @@ export function EntityRating({
             onClick={() => setTab("rate")}
             className={`${tabBtn} ${tab === "rate" ? tabActive : tabIdle}`}
           >
-            <Etoile className="h-3.5 w-3.5 text-dbz-orange" aria-hidden />
+            <Etoile className="h-3.5 w-3.5 text-primary" aria-hidden />
             Noter
           </button>
           <button
@@ -401,7 +409,7 @@ export function EntityRating({
             <Bulle className="h-3.5 w-3.5" aria-hidden />
             Avis
             {reviewCount > 0 && (
-              <span className="rounded bg-white/10 px-1.5 text-[11px] tabular-nums text-dbz-orange">
+              <span className="rounded bg-muted px-1.5 text-[11px] tabular-nums text-primary">
                 {reviewCount}
               </span>
             )}
@@ -419,12 +427,15 @@ export function EntityRating({
           ) : loadErr ? (
             <span className="text-[12px] text-red-400">{loadErr}</span>
           ) : (
-            <span className="h-5 w-20 animate-pulse rounded bg-white/[0.06]" aria-hidden />
+            <span
+              className="h-5 w-20 animate-pulse motion-reduce:animate-none rounded bg-muted"
+              aria-hidden
+            />
           )}
         </div>
       </div>
 
-      <div className="rounded-b-xl rounded-tr-xl border border-t-0 border-white/10 bg-dbz-card/80 p-4 sm:p-5">
+      <div className="rounded-b-xl rounded-tr-xl border border-t-0 border-border bg-card p-4 sm:p-5">
         {/* ── Onglet Noter ── */}
         {tab === "rate" && (
           <div
@@ -433,17 +444,19 @@ export function EntityRating({
             aria-labelledby={`${baseId}-tab-rate`}
             className="space-y-4"
           >
-            <p className="text-[13px] text-white/50">
+            <p className="text-[13px] text-muted-foreground">
               Note {label} sur 5 étoiles. Commentaire facultatif — les avis s&apos;affichent dans
               l&apos;onglet voisin.
             </p>
 
             {!authReady ? (
-              <div className="h-20 rounded-lg bg-white/[0.03]" aria-hidden />
+              <div className="h-20 rounded-lg bg-muted" aria-hidden />
             ) : canRate ? (
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center gap-3">
-                  <span className="text-[0.8125rem] font-semibold text-white/65">Ta note</span>
+                  <span className="text-[0.8125rem] font-semibold text-muted-foreground">
+                    Ta note
+                  </span>
                   <Stars
                     value={draftScore}
                     size="lg"
@@ -457,16 +470,19 @@ export function EntityRating({
                     label="Ta note"
                   />
                   {draftScore > 0 && (
-                    <span className="text-[13px] tabular-nums text-white/70">{draftScore}/5</span>
+                    <span className="text-[13px] tabular-nums text-muted-foreground">
+                      {draftScore}/5
+                    </span>
                   )}
                 </div>
 
                 <div>
                   <label
                     htmlFor={`rating-comment-${id}`}
-                    className="mb-1.5 block text-[0.8125rem] font-semibold text-white/65"
+                    className="mb-1.5 block text-[0.8125rem] font-semibold text-muted-foreground"
                   >
-                    Commentaire <span className="font-normal text-white/50">(optionnel)</span>
+                    Commentaire{" "}
+                    <span className="font-normal text-muted-foreground">(optionnel)</span>
                   </label>
                   <PlainField
                     id={`rating-comment-${id}`}
@@ -477,7 +493,7 @@ export function EntityRating({
                     maxLength={COMMENT_MAX}
                     placeholder="Un avis court…"
                   />
-                  <div className="mt-1 flex justify-end text-[11px] text-white/50">
+                  <div className="mt-1 flex justify-end text-[11px] text-muted-foreground">
                     {state?.mine && (
                       <button
                         type="button"
@@ -501,7 +517,7 @@ export function EntityRating({
                     type="button"
                     disabled={saving || draftScore < 1}
                     onClick={() => void submit(draftScore, draftComment)}
-                    className="inline-flex min-h-11 items-center rounded-full bg-dbz-orange px-5 font-display text-[0.8125rem] font-bold text-black transition-colors hover:bg-white disabled:pointer-events-none disabled:opacity-40"
+                    className="inline-flex min-h-11 items-center rounded-full bg-primary px-5 font-display text-[0.8125rem] font-bold text-primary-foreground transition-colors hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-40"
                   >
                     {saving ? (
                       <>
@@ -519,13 +535,13 @@ export function EntityRating({
                 </div>
               </div>
             ) : (
-              <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-dbz-orange/25 bg-dbz-orange/10 px-4 py-3">
-                <p className="text-[13px] text-white/85">
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-primary/25 bg-primary/10 px-4 py-3">
+                <p className="text-[13px] text-foreground">
                   Connecte-toi avec Discord pour noter {label}.
                 </p>
                 <Link
                   href={`/signin?callbackURL=${encodeURIComponent(signinCallback)}`}
-                  className="inline-flex min-h-11 items-center whitespace-nowrap rounded-full bg-dbz-orange px-5 font-display text-[0.8125rem] font-bold text-black transition-colors hover:bg-white"
+                  className="inline-flex min-h-11 items-center whitespace-nowrap rounded-full bg-primary px-5 font-display text-[0.8125rem] font-bold text-primary-foreground transition-colors hover:bg-primary/90"
                 >
                   Connexion Discord
                 </Link>
@@ -538,26 +554,26 @@ export function EntityRating({
         {tab === "reviews" && (
           <div role="tabpanel" id={`${baseId}-reviews`} aria-labelledby={`${baseId}-tab-reviews`}>
             {!state ? (
-              <div className="h-16 animate-pulse rounded-lg bg-white/[0.04]" aria-hidden />
+              <div
+                className="h-16 animate-pulse motion-reduce:animate-none rounded-lg bg-muted"
+                aria-hidden
+              />
             ) : comments.length > 0 ? (
               <ul className="space-y-3">
                 {comments.map((c) => {
                   const canDelete = me?.isAdmin || (me?.authenticated && state.mine?.id === c.id);
                   return (
-                    <li
-                      key={c.id}
-                      className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3.5"
-                    >
+                    <li key={c.id} className="rounded-lg border border-border bg-muted/50 p-3.5">
                       <div className="mb-1.5 flex items-start justify-between gap-3">
                         <div className="flex min-w-0 items-center gap-2.5">
                           <Avatar src={c.author.avatar} size={28} />
                           <div className="min-w-0">
-                            <p className="truncate font-display text-[13px] font-semibold text-white">
+                            <p className="truncate font-display text-[13px] font-semibold text-foreground">
                               {c.author.username}
                             </p>
                             <div className="flex items-center gap-2">
                               <Stars value={c.score} size="sm" />
-                              <span className="text-[11px] text-white/50">
+                              <span className="text-[11px] text-muted-foreground">
                                 {formatDate(c.updatedAt)}
                               </span>
                             </div>
@@ -575,7 +591,7 @@ export function EntityRating({
                             // 28 px au dessin : `.cible-44` porte la zone tactile à
                             // 44 px sans grossir la corbeille ni décaler l'en-tête de
                             // l'avis. Même traitement que la croix de `/settings`.
-                            className="cible-44 rounded-md p-1.5 text-white/50 transition-colors hover:bg-white/5 hover:text-red-400 disabled:opacity-40"
+                            className="cible-44 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-red-400 disabled:opacity-40"
                           >
                             {deletingId === c.id ? (
                               <Chargement className="h-4 w-4 animate-spin" />
@@ -585,7 +601,7 @@ export function EntityRating({
                           </button>
                         )}
                       </div>
-                      <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-white/80">
+                      <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-foreground">
                         {c.comment}
                       </p>
                     </li>
@@ -593,17 +609,17 @@ export function EntityRating({
                 })}
               </ul>
             ) : summary.count > 0 ? (
-              <p className="py-4 text-center text-[13px] text-white/50">
+              <p className="py-4 text-center text-[13px] text-muted-foreground">
                 Des notes sans commentaire pour l&apos;instant — sois le premier à laisser un avis
-                dans l&apos;onglet <strong className="text-white/60">Noter</strong>.
+                dans l&apos;onglet <strong className="text-muted-foreground">Noter</strong>.
               </p>
             ) : (
-              <p className="py-4 text-center text-[13px] text-white/50">
+              <p className="py-4 text-center text-[13px] text-muted-foreground">
                 Aucun avis pour l&apos;instant. Ouvre l&apos;onglet{" "}
                 <button
                   type="button"
                   onClick={() => setTab("rate")}
-                  className="cible-44 font-semibold text-dbz-orange hover:underline"
+                  className="cible-44 font-semibold text-primary hover:underline"
                 >
                   Noter
                 </button>{" "}
@@ -631,15 +647,15 @@ export function AggregateRatingBanner({
 }) {
   return (
     <div
-      className={`inline-flex flex-wrap items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 ${className}`}
+      className={`inline-flex flex-wrap items-center gap-3 rounded-xl border border-border bg-muted px-4 py-3 ${className}`}
     >
       <Stars value={average} size="md" label="Moyenne" />
       <div>
-        <p className="font-display text-lg font-bold tabular-nums leading-none text-white">
+        <p className="font-display text-lg font-bold tabular-nums leading-none text-foreground">
           {count > 0 ? average.toFixed(1) : "—"}
-          <span className="text-sm font-normal text-white/50"> / 5</span>
+          <span className="text-sm font-normal text-muted-foreground"> / 5</span>
         </p>
-        <p className="mt-0.5 text-[11px] text-white/50">
+        <p className="mt-0.5 text-[11px] text-muted-foreground">
           {subtitle ??
             (count > 0
               ? `${count} note${count > 1 ? "s" : ""} sur les arcs`

@@ -172,7 +172,7 @@ export function PlainField({
               aria-live={nearLimit ? "polite" : "off"}
               className={cn(
                 "shrink-0 tabular-nums",
-                nearLimit ? "text-amber-300" : "text-white/35",
+                nearLimit ? "text-amber-300" : "text-muted-foreground",
               )}
             >
               {current.length} / {maxLength}
