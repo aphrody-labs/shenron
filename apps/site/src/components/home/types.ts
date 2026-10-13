@@ -16,4 +16,3 @@ export interface SagaTeaser {
   series: string | null;
   description: string | null;
 }
-
