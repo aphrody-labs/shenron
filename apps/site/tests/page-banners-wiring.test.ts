@@ -5,18 +5,18 @@ import { describe, expect, test } from "bun:test";
 import { PAGE_HERO_KEYS } from "../src/lib/page-banners";
 
 const routes: Record<(typeof PAGE_HERO_KEYS)[number], string> = {
-  episodes: "../src/app/wiki/episodes/page.tsx",
-  films: "../src/app/wiki/movies/page.tsx",
+  episodes: "../src/app/wiki/episodes/(index)/page.tsx",
+  films: "../src/app/wiki/movies/(index)/page.tsx",
   chronologie: "../src/app/wiki/timeline/page.tsx",
-  personnages: "../src/app/wiki/characters/page.tsx",
-  sagas: "../src/app/wiki/sagas/page.tsx",
+  personnages: "../src/app/wiki/characters/(index)/page.tsx",
+  sagas: "../src/app/wiki/sagas/(index)/page.tsx",
   arcs: "../src/app/wiki/arcs/page.tsx",
-  races: "../src/app/wiki/races/page.tsx",
-  transformations: "../src/app/wiki/transformations/page.tsx",
-  techniques: "../src/app/wiki/techniques/page.tsx",
-  jeux: "../src/app/wiki/games/page.tsx",
+  races: "../src/app/wiki/races/(index)/page.tsx",
+  transformations: "../src/app/wiki/transformations/(index)/page.tsx",
+  techniques: "../src/app/wiki/techniques/(index)/page.tsx",
+  jeux: "../src/app/wiki/games/(index)/page.tsx",
   manga: "../src/app/wiki/manga/page.tsx",
-  databooks: "../src/app/wiki/databooks/page.tsx",
+  databooks: "../src/app/wiki/databooks/(index)/page.tsx",
   combats: "../src/app/wiki/events/page.tsx",
   dragons: "../src/app/wiki/dragons/page.tsx",
   lieux: "../src/app/wiki/locations/page.tsx",
@@ -43,12 +43,12 @@ describe("bannières configurées dans l'administration", () => {
   });
 
   test("les aperçus série utilisent aussi la configuration PostgreSQL", async () => {
-    const routes = [
+    const seriesRoutes = [
       "../src/app/wiki/episodes/series/[series]/page.tsx",
       "../src/app/wiki/episodes/@modal/(.)[id]/page.tsx",
       "../src/app/wiki/movies/@modal/(.)[slug]/page.tsx",
     ];
-    for (const route of routes) {
+    for (const route of seriesRoutes) {
       const source = await Bun.file(new URL(route, import.meta.url)).text();
       expect(source).toContain('from "@/lib/banner-config"');
       expect(source).toContain("await bannerForSeries(");

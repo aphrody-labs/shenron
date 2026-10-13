@@ -15,6 +15,7 @@ import { PageTransition } from "@/components/PageTransition";
 import { NavigationProgress } from "@/components/NavigationProgress";
 import { PageViewTracker } from "@/components/PageViewTracker";
 import { ConsentGate } from "@/components/ConsentGate";
+import { PublicAdsScript } from "@/components/ads/PublicAdsScript";
 import { ChunkReloadGuard } from "@/components/ChunkReloadGuard";
 import { SiteJsonLd } from "@/components/SiteJsonLd";
 import { DISCORD_CDN } from "@aphrody/shenron-config/public-urls";
@@ -22,8 +23,6 @@ import { API_ORIGIN, ASSET_ORIGIN, CDN_ORIGIN, SITE_URL, STATIC_PREFIX } from "@
 import { env } from "@/lib/env";
 import { getSiteTheme } from "@/lib/theme-config";
 import { themeCssVars } from "@/lib/site-theme";
-import Script from "next/script";
-import type { ComponentType, ScriptHTMLAttributes } from "react";
 
 // FAB Discord lazy : composant client gated par localStorage, jamais critical.
 const DiscordInviteFAB = dynamic(() =>
@@ -125,10 +124,6 @@ export const viewport = {
   colorScheme: "dark" as const,
 };
 
-const AdsScript = Script as ComponentType<
-  ScriptHTMLAttributes<HTMLScriptElement> & { strategy?: "afterInteractive" }
->;
-
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -209,17 +204,14 @@ export default async function RootLayout({
       {env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={env.NEXT_PUBLIC_GA_ID} />}
       {/* Google AdSense Script */}
       {env.NEXT_PUBLIC_ADSENSE_CLIENT && (
-        <AdsScript
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${env.NEXT_PUBLIC_ADSENSE_CLIENT}`}
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
+        <PublicAdsScript client={env.NEXT_PUBLIC_ADSENSE_CLIENT} />
       )}
       <body className="antialiased min-h-screen relative flex flex-col font-sans bg-dbz-bg text-white">
         {/* GTM noscript — fallback sans JS, juste après l'ouverture de <body>. */}
         <noscript>
           <iframe
             src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+            sandbox=""
             height="0"
             width="0"
             style={{ display: "none", visibility: "hidden" }}

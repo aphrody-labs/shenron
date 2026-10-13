@@ -50,17 +50,27 @@ async function requestAt<T>(base: string, path: string, opts: ApiOpts = {}): Pro
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new ApiError(res.status, text || `HTTP ${res.status}`);
+    let message = text || `HTTP ${res.status}`;
+    try {
+      const error = JSON.parse(text) as { error?: unknown; message?: unknown };
+      const detail = error.error ?? error.message;
+      if (typeof detail === "string") message = detail;
+    } catch {
+      // Keep non-JSON error responses readable.
+    }
+    throw new ApiError(res.status, message);
   }
   // 204 No Content ou corps vide → renvoie null typé
-  if (res.status === 204) return null as T;
+  if (res.status === 204 || res.status === 205) return null as T;
   const ct = res.headers.get("content-type") ?? "";
-  if (!ct.includes("application/json")) return (await res.text()) as unknown as T;
-  return (await res.json()) as T;
+  const text = await res.text();
+  if (!text) return null as T;
+  if (!ct.includes("application/json") && !ct.includes("+json")) return text as unknown as T;
+  return JSON.parse(text) as T;
 }
 
 interface CrudClient {
-  get: <T = unknown>(path: string) => Promise<T>;
+  get: <T = unknown>(path: string, opts?: RequestInit) => Promise<T>;
   post: <T = unknown>(path: string, json?: unknown) => Promise<T>;
   put: <T = unknown>(path: string, json?: unknown) => Promise<T>;
   patch: <T = unknown>(path: string, json?: unknown) => Promise<T>;
@@ -74,7 +84,7 @@ interface CrudClient {
  */
 export function apiAt(base: string): CrudClient {
   return {
-    get: <T = unknown>(path: string) => requestAt<T>(base, path),
+    get: <T = unknown>(path: string, opts?: RequestInit) => requestAt<T>(base, path, opts),
     post: <T = unknown>(path: string, json?: unknown) =>
       requestAt<T>(base, path, { method: "POST", json }),
     put: <T = unknown>(path: string, json?: unknown) =>

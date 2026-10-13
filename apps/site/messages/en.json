@@ -1,4 +1,24 @@
 {
+  "gifLibrary": {
+    "title": "Dragon Ball GIFs",
+    "description": "Animated excerpts from the public media referenced in our catalogue. Previews remain still; start animations at your own pace.",
+    "clipAt": "Excerpt at {time}",
+    "duration": "{seconds} s",
+    "animate": "Animate",
+    "pause": "Stop animation",
+    "download": "Download GIF",
+    "episode": "Episode details",
+    "search": "Search by filename or second",
+    "submit": "Search",
+    "empty": "No qualified public GIFs yet.",
+    "noResults": "No excerpts match this search.",
+    "unavailable": "The catalogue is temporarily unavailable.",
+    "count": "{count} excerpts available",
+    "pagination": "GIF pagination",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {page} of {pages}"
+  },
   "mediaPlayback": {
     "episodeNavigation": "Episode navigation",
     "previousEpisode": "Previous episode",

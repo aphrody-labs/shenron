@@ -69,7 +69,7 @@ export async function generateMetadata({
   const { id } = await params;
   const numero = idDeFiche(id);
   const ep = numero === null ? null : await dbUniverse.episode(numero);
-  if (!ep) return { title: "Épisode Dragon Ball" };
+  if (!ep) notFound();
   // Synopsis nettoyé (Markdown retiré) et tronqué ~160 car. pour meta/og :
   // certains synopsis contiennent du Markdown (*_#>) qui fuiterait sinon brut.
   const description =

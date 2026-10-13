@@ -36,9 +36,9 @@ import {
   type LiveService,
 } from "@/lib/admin-dashboard";
 
-async function getLiveDashboard(): Promise<LiveDashboardResponse> {
-  const response = await fetch("/api/admin/dashboard-live", { cache: "no-store" });
-  if (!response.ok) throw new Error(`Sonde live indisponible (HTTP ${response.status})`);
+async function getLiveDashboard(signal: AbortSignal): Promise<LiveDashboardResponse> {
+  const response = await fetch("/api/admin/dashboard-live", { cache: "no-store", signal });
+  if (!response.ok) throw new Error(`Live dashboard probe unavailable (HTTP ${response.status})`);
   return DashboardLive.parse(await response.json());
 }
 
@@ -113,50 +113,56 @@ export default function DashboardPage() {
   const locale = useLocale();
   const bots = useQuery({
     queryKey: ["admin", "dashboard-bots"],
-    queryFn: async () => DashboardBots.parse(await api.get("/bots")),
+    queryFn: async ({ signal }) => DashboardBots.parse(await api.get("/bots", { signal })),
     refetchInterval: 30_000,
   });
   const health = useQuery({
     queryKey: ["admin", "dashboard-monitoring"],
-    queryFn: async () => DashboardMonitoring.parse(await api.get("/health/monitoring")),
+    queryFn: async ({ signal }) =>
+      DashboardMonitoring.parse(await api.get("/health/monitoring", { signal })),
     refetchInterval: 30_000,
   });
   const stats = useQuery({
     queryKey: ["admin", "dashboard-totals"],
-    queryFn: async () => DashboardTotals.parse(await api.get("/stats/totals")),
+    queryFn: async ({ signal }) =>
+      DashboardTotals.parse(await api.get("/stats/totals", { signal })),
     refetchInterval: 60_000,
   });
   const live = useQuery({
     queryKey: ["admin", "dashboard-live"],
-    queryFn: getLiveDashboard,
+    queryFn: ({ signal }) => getLiveDashboard(signal),
     refetchInterval: 10_000,
     refetchIntervalInBackground: false,
   });
 
-  const onlineCount = bots.data?.bots.filter((bot) => bot.online).length ?? 0;
-  const totalCount = bots.data?.bots.length ?? 0;
+  const liveData = live.isError ? undefined : live.data;
+  const botData = bots.isError ? undefined : bots.data;
+  const monitoringData = health.isError ? undefined : health.data;
+  const totalsData = stats.isError ? undefined : stats.data;
+  const onlineCount = botData?.bots.filter((bot) => bot.online).length ?? 0;
+  const totalCount = botData?.bots.length ?? 0;
   const avgPing =
-    bots.data && bots.data.bots.some((bot) => bot.online && bot.wsPing >= 0)
+    botData && botData.bots.some((bot) => bot.online && bot.wsPing >= 0)
       ? Math.round(
-          bots.data.bots
+          botData.bots
             .filter((bot) => bot.online && bot.wsPing >= 0)
             .reduce((sum, bot) => sum + bot.wsPing, 0) /
-            Math.max(1, bots.data.bots.filter((bot) => bot.online && bot.wsPing >= 0).length),
+            Math.max(1, botData.bots.filter((bot) => bot.online && bot.wsPing >= 0).length),
         )
       : null;
   const hasError = bots.isError || health.isError || stats.isError || live.isError;
-  const unavailableServices = live.data?.services.filter((service) => service.state !== "ok") ?? [];
+  const unavailableServices = liveData?.services.filter((service) => service.state !== "ok") ?? [];
   const allLiveServicesHealthy =
-    dashboardHealthy(live.data) &&
+    dashboardHealthy(liveData) &&
     !hasError &&
     !bots.isPending &&
     !health.isPending &&
     !stats.isPending &&
     totalCount > 0 &&
     onlineCount === totalCount &&
-    live.data?.agents.activeTasks !== null &&
-    live.data?.agents.recentActivity !== null &&
-    health.data?.botStatus.online === true;
+    liveData?.agents.activeTasks !== null &&
+    liveData?.agents.recentActivity !== null &&
+    monitoringData?.botStatus.online === true;
   const refresh = () => {
     void bots.refetch();
     void health.refetch();
@@ -231,8 +237,8 @@ export default function DashboardPage() {
             <Radio
               className={`h-3.5 w-3.5 ${live.isFetching ? "animate-pulse text-blue-300" : ""}`}
             />
-            {live.data
-              ? t("sampledAt", { time: new Date(live.data.sampledAt).toLocaleTimeString(locale) })
+            {liveData
+              ? t("sampledAt", { time: new Date(liveData.sampledAt).toLocaleTimeString(locale) })
               : t("probeLoading")}
           </div>
         </div>
@@ -248,17 +254,17 @@ export default function DashboardPage() {
             <LiveSummary
               healthy={allLiveServicesHealthy}
               unavailableCount={unavailableServices.length}
-              loading={!live.data}
+              loading={!liveData}
             />
             <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              {live.data?.services.map((service) => (
+              {liveData?.services.map((service) => (
                 <LiveServiceCard key={service.id} service={service} />
               )) ??
                 Array.from({ length: 4 }, (_, index) => (
                   <div key={index} className="h-28 animate-pulse rounded-xl bg-white/[.04]" />
                 ))}
             </div>
-            <AgentActivity agents={live.data?.agents} />
+            <AgentActivity agents={liveData?.agents} />
           </>
         )}
       </section>
@@ -310,8 +316,8 @@ export default function DashboardPage() {
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <KpiCard label={t("onlineBots")} icon={<Server className="h-5 w-5" />}>
             <Metric
-              value={bots.data ? onlineCount : "—"}
-              suffix={bots.data ? ` / ${totalCount}` : ""}
+              value={botData ? onlineCount : "—"}
+              suffix={botData ? ` / ${totalCount}` : ""}
             />
             <MetricHelp>
               {totalCount > 0
@@ -322,12 +328,12 @@ export default function DashboardPage() {
             </MetricHelp>
           </KpiCard>
           <KpiCard label={t("users")} icon={<Users className="h-5 w-5" />}>
-            <Metric value={stats.data ? stats.data.stats.totalUsers.toLocaleString(locale) : "—"} />
+            <Metric value={totalsData ? totalsData.stats.totalUsers.toLocaleString(locale) : "—"} />
             <MetricHelp>
-              {stats.data
+              {totalsData
                 ? t("totals", {
-                    active: stats.data.stats.totalActiveUsers.toLocaleString(locale),
-                    guilds: stats.data.stats.totalGuilds.toLocaleString(locale),
+                    active: totalsData.stats.totalActiveUsers.toLocaleString(locale),
+                    guilds: totalsData.stats.totalGuilds.toLocaleString(locale),
                   })
                 : "—"}
             </MetricHelp>
@@ -340,8 +346,8 @@ export default function DashboardPage() {
           </KpiCard>
           <KpiCard label={t("resources")} icon={<Cpu className="h-5 w-5" />}>
             <Metric
-              value={health.data ? formatBytes(health.data.pid.rss).split(" ")[0] : "—"}
-              suffix={health.data ? ` ${formatBytes(health.data.pid.rss).split(" ")[1]}` : ""}
+              value={monitoringData ? formatBytes(monitoringData.pid.rss).split(" ")[0] : "—"}
+              suffix={monitoringData ? ` ${formatBytes(monitoringData.pid.rss).split(" ")[1]}` : ""}
             />
             <MetricHelp>{t("resourceDescription")}</MetricHelp>
           </KpiCard>
@@ -360,8 +366,8 @@ export default function DashboardPage() {
             ))
           ) : bots.isError ? (
             <EmptyState text={t("botsUnavailable")} />
-          ) : bots.data.bots.length ? (
-            bots.data.bots.map((bot) => <BotCard key={bot.id} bot={bot} />)
+          ) : botData?.bots.length ? (
+            botData.bots.map((bot) => <BotCard key={bot.id} bot={bot} />)
           ) : (
             <EmptyState text={t("botsEmpty")} />
           )}
@@ -375,17 +381,17 @@ export default function DashboardPage() {
         <h2 id="host-title" className="text-lg font-semibold text-white">
           {t("hostTitle")}
         </h2>
-        {health.data ? (
+        {monitoringData ? (
           <dl className="mt-4 grid gap-x-8 sm:grid-cols-2">
-            <HostMetric label={t("os")} value={health.data.host.platform} />
-            <HostMetric label={t("cores")} value={health.data.host.cpu.count} />
+            <HostMetric label={t("os")} value={monitoringData.host.platform} />
+            <HostMetric label={t("cores")} value={monitoringData.host.cpu.count} />
             <HostMetric
               label={t("memory")}
-              value={`${formatBytes(health.data.host.memory.used)} / ${formatBytes(health.data.host.memory.total)} (${health.data.host.memory.usage} %)`}
+              value={`${formatBytes(monitoringData.host.memory.used)} / ${formatBytes(monitoringData.host.memory.total)} (${monitoringData.host.memory.usage} %)`}
             />
             <HostMetric
               label={t("uptime")}
-              value={formatDuration(health.data.pid.uptime, locale)}
+              value={formatDuration(monitoringData.pid.uptime, locale)}
             />
           </dl>
         ) : (

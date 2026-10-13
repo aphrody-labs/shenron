@@ -53,6 +53,31 @@ describe("dashboard Redis protocol", () => {
       },
     );
   });
+  test("checks the configured database before PING", async () => {
+    let received = "";
+    await withRedis(
+      (data) => {
+        received = data;
+        return "+OK\r\n+OK\r\n+PONG\r\n";
+      },
+      async (url) => {
+        const authenticatedUrl = url.replace("redis://", "redis://default:secret@");
+        await pingDashboardRedis(`${authenticatedUrl}/4`);
+      },
+    );
+    expect(received).toContain("SELECT\r\n$1\r\n4\r\n");
+  });
+  test("rejects a database that Redis cannot select", async () => {
+    await withRedis(
+      () => "-ERR DB index is out of range\r\n+PONG\r\n",
+      async (url) => {
+        await expect(pingDashboardRedis(`${url}/99`)).rejects.toThrow("failed");
+      },
+    );
+    await expect(pingDashboardRedis("redis://127.0.0.1/not-a-database")).rejects.toThrow(
+      "database",
+    );
+  });
 });
 
 describe("dashboard evidence", () => {
@@ -75,13 +100,15 @@ describe("dashboard evidence", () => {
     expect(
       dashboardHealthy({
         ...base,
-        services: services.map((service) => ({ ...service, id: "api" })),
+        services: services.map((service) => Object.assign({}, service, { id: "api" as const })),
       }),
     ).toBe(false);
     expect(
       dashboardHealthy({
         ...base,
-        services: services.map((service) => ({ ...service, state: "unknown" })),
+        services: services.map((service) =>
+          Object.assign({}, service, { state: "unknown" as const }),
+        ),
       }),
     ).toBe(false);
   });

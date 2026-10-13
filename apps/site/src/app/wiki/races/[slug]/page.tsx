@@ -29,7 +29,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const race = await getShenronRace(slug);
-  if (!race) return { title: "Race Dragon Ball" };
+  if (!race) notFound();
   // Cf. `@/lib/og` : sans `ogMeta`, la fiche n'émettait aucun `og:image`.
   // `db_races` ne porte pas d'illustration — on laisse `image` vide, ce qui
   // fait pointer explicitement la carte de marque au lieu de rien.

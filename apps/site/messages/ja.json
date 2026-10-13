@@ -1,4 +1,24 @@
 {
+  "gifLibrary": {
+    "title": "ドラゴンボールのGIF",
+    "description": "公開カタログに掲載されたメディアからのアニメーション抜粋です。プレビューは静止画で表示され、アニメーションは手動で開始できます。",
+    "clipAt": "{time} の抜粋",
+    "duration": "{seconds} 秒",
+    "animate": "アニメーションを開始",
+    "pause": "アニメーションを停止",
+    "download": "GIFをダウンロード",
+    "episode": "エピソードの詳細",
+    "search": "ファイル名または秒数で検索",
+    "submit": "検索",
+    "empty": "公開確認済みのGIFはまだありません。",
+    "noResults": "検索に一致する抜粋はありません。",
+    "unavailable": "カタログは一時的に利用できません。",
+    "count": "{count} 件の抜粋",
+    "pagination": "GIFのページ切り替え",
+    "previous": "前へ",
+    "next": "次へ",
+    "page": "{pages} ページ中 {page} ページ"
+  },
   "mediaPlayback": {
     "episodeNavigation": "エピソードのナビゲーション",
     "previousEpisode": "前のエピソード",

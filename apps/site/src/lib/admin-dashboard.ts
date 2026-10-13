@@ -49,9 +49,9 @@ export const DashboardLive = z.object({
     activePeers: z.array(z.string()),
     recentActivity: measurement.nullable(),
     activeTasks: measurement.nullable(),
-    latestActivityAt: z.string().nullable(),
+    latestActivityAt: z.iso.datetime({ offset: true }).nullable(),
   }),
-  sampledAt: z.string(),
+  sampledAt: z.iso.datetime({ offset: true }),
   refreshAfterMs: measurement,
 });
 export type LiveDashboardResponse = z.infer<typeof DashboardLive>;

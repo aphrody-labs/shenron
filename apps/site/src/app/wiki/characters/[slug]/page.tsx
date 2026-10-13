@@ -71,7 +71,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const resolved = resolveCharacterParam(slug);
   const c = await getChar(resolved.id ?? resolved.canonicalSlug ?? slug);
-  if (!c) return { title: "Personnage introuvable" };
+  if (!c) notFound();
   const heroImage = pickBestImage([c.image, c.portraitXv2]) ?? c.image;
   const img = heroImage ? assetUrl(heroImage) : undefined;
   const description = c.description

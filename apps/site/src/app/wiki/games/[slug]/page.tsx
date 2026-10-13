@@ -31,7 +31,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const g = await dbUniverse.game(slug);
-  if (!g) return { title: "Jeu" };
+  if (!g) notFound();
   const description = g.description ?? `${g.title} (${g.developer ?? "Bandai Namco"}).`;
   return {
     title: `${g.title} — Jeu vidéo Dragon Ball`,
