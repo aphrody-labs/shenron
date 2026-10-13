@@ -75,9 +75,14 @@ engagée pour cette demande.
 
 Les données hors PostgreSQL inventoriées comprennent notamment 44 714 731 005
 octets de captures privées locales dans `data/source-acquisition/episodes`, le
-SQLite bot local (environ 286 Mo) et le SQLite bot DBFR (environ 808 Ko).
-Ces deux SQLite ne sont pas présumés identiques. Les captures ne sont pas des
-assets CDN publiables ; aucun transfert ni suppression n'a été effectué.
+SQLite bot local (286 113 792 octets) et le SQLite bot DBFR (environ 808 Ko).
+Ces deux SQLite ne sont pas présumés identiques. Le SQLite local contient aussi
+des données propres au bot, dont 59 995 chunks RAG vectorisés, 225 752 lignes
+de journal d'actions et 8 037 utilisateurs au relevé du 13 octobre 2026 :
+son rôle ne se réduit pas à une copie éditoriale. Les captures ne sont pas des
+assets CDN publiables. Un transfert privé reprenable vers le profil `dbfr` du
+VPS est en cours ; ni son intégrité complète ni un basculement ne sont encore
+établis. Aucune suppression locale n'a été effectuée.
 
 ## Placement exclusif
 
