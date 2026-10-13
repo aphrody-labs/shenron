@@ -1,0 +1,16 @@
+{
+  "beerus": {
+    "background": "#17111a",
+    "foreground": "#ebdeec",
+    "primary": "#e5b4ff",
+    "onPrimary": "#47006c",
+    "focus": "#79d1ff"
+  },
+  "goku": {
+    "background": "#fdfae3",
+    "foreground": "#1c1c0e",
+    "primary": "#545400",
+    "onPrimary": "#ffffff",
+    "focus": "#005877"
+  }
+}

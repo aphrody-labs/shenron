@@ -44,6 +44,7 @@ const aliases = {
   "--destructive-foreground": "on-error",
 } as const;
 
+const palette: Record<string, Record<string, string>> = {};
 const blocks = reference.themes.map((theme) => {
   const options = {
     dark: theme.dark,
@@ -62,6 +63,15 @@ const blocks = reference.themes.map((theme) => {
     theme.id === "beerus"
       ? ':root:root:not([data-episode-theme="goku"])'
       : ':root[data-episode-theme="goku"]';
+  palette[theme.id] = Object.fromEntries(
+    Object.entries({
+      background: "surface",
+      foreground: "on-surface",
+      primary: "primary",
+      onPrimary: "on-primary",
+      focus: "secondary",
+    }).map(([name, role]) => [name, roles[`--md-sys-color-${role}`]!]),
+  );
   const declarations = [
     `  color-scheme: ${theme.dark ? "dark" : "light"};`,
     ...Object.entries(roles).map(([name, color]) => `  ${name}: ${color};`),
@@ -70,7 +80,13 @@ const blocks = reference.themes.map((theme) => {
   return `${selector} {\n${declarations.join("\n")}\n}`;
 });
 const css = `/* SPDX-License-Identifier: Apache-2.0 */\n/* Generated from inspected episode 875 frames; run packages/ui/scripts/generate-episode-themes.ts. */\n${blocks.join("\n\n")}\n`;
-const file = Bun.file(new URL("../src/episode-themes.css", import.meta.url));
-if (Bun.argv.includes("--check")) {
-  if ((await file.text()) !== css) throw new Error("Episode color roles are stale");
-} else await Bun.write(file, css);
+const outputs = {
+  "episode-themes.css": css,
+  "episode-theme-palette.json": JSON.stringify(palette, null, 2) + "\n",
+};
+for (const [name, output] of Object.entries(outputs)) {
+  const file = Bun.file(new URL(`../src/${name}`, import.meta.url));
+  if (Bun.argv.includes("--check")) {
+    if ((await file.text()) !== output) throw new Error("Episode color roles are stale");
+  } else await Bun.write(file, output);
+}
