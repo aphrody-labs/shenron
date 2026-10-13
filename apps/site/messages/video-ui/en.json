@@ -14,6 +14,8 @@
   "playbackControls": "Playback controls",
   "playbackSettings": "Player settings",
   "playerFailed": "{version}Player “{name}” unavailable.",
+  "officialProviderNote": "This page opens on the official provider’s site. Playback and available languages depend on its service.",
+  "openOfficialProvider": "Open on {provider}",
   "sceneImageUrl": "Image or screenshot URL",
   "sceneImageUpload": "Choose or drop an image (JPEG, PNG, WebP, GIF, AVIF)",
   "sceneImageFile": "Select an image file",

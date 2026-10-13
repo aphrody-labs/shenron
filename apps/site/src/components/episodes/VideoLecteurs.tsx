@@ -7,6 +7,7 @@ import { probePlayerNetwork } from "@/lib/player-network";
 import { nextPlayerIndex, resolvePlayerIndex } from "@/lib/video-selection-state";
 import { useTranslations } from "next-intl";
 import { useVideoUIText } from "@/lib/video-ui-text";
+import { officialCrunchyrollWatchURL } from "@aphrody/shenron-config/video-providers";
 import { normalizeVideoPlayers } from "@aphrody/shenron-media/episode-playback";
 import {
   normalizeVideoLanguage,
@@ -46,8 +47,31 @@ function cleanName(name: string): string {
   return name.replace(/^\s*(VF|VOSTFR|VOST)\s*·\s*/i, "").trim();
 }
 
+function isCrunchyrollHost(value: string): boolean {
+  try {
+    const host = new URL(value).hostname;
+    return host === "crunchyroll.com" || host.endsWith(".crunchyroll.com");
+  } catch {
+    return false;
+  }
+}
+
+function officialWatchLink(value: string): string | null {
+  try {
+    const url = new URL(value);
+    if (url.port) return null;
+    // Never forward a stored tracking parameter or an expiring media token.
+    url.search = "";
+    url.hash = "";
+    return officialCrunchyrollWatchURL(url.href);
+  } catch {
+    return null;
+  }
+}
+
 /**
- * Sélecteur de « lecteurs » (sources de streaming externes) rendu en `<iframe>`.
+ * Sélecteur de « lecteurs » (sources de streaming externes). Les pages officielles
+ * Crunchyroll sont des liens sortants ; seuls les vrais lecteurs sont en `<iframe>`.
  * Notre player hls.js ne peut pas consommer ces embeds (pages-lecteur tierces à
  * token éphémère) → on les affiche en iframe.
  *
@@ -74,7 +98,13 @@ export function VideoLecteurs({
 }) {
   const t = useTranslations("mediaPlayback");
   const ui = useVideoUIText();
-  const players = useMemo(() => normalizeVideoPlayers(rawPlayers), [rawPlayers]);
+  const players = useMemo(
+    () =>
+      normalizeVideoPlayers(rawPlayers).filter(
+        (player) => !isCrunchyrollHost(player.embedUrl) || officialWatchLink(player.embedUrl),
+      ),
+    [rawPlayers],
+  );
   const langLabel = (value: string) => {
     switch (value) {
       case "vf":
@@ -131,6 +161,8 @@ export function VideoLecteurs({
 
   const safeActive = resolvePlayerIndex(active, list.length);
   const current = list[safeActive] ?? list[0];
+  const officialURL = current ? officialWatchLink(current.embedUrl) : null;
+  const officialPage = officialURL !== null;
   const enVo = modeVo && aVo;
   const voEchec = vo != null && failedVoSource === vo.src;
 
@@ -141,15 +173,15 @@ export function VideoLecteurs({
 
   // Réinitialise le statut de sonde à chaque changement de lecteur ou de langue
   useEffect(() => {
-    if (!enVo && current) {
+    if (!enVo && current && !officialPage) {
       setStatus("probing");
     }
-  }, [safeActive, current?.embedUrl, enVo]);
+  }, [safeActive, current?.embedUrl, enVo, officialPage]);
 
   // An iframe can emit load for its browser error document after a DNS failure.
   // Check the user's network independently; VPS reachability cannot establish it.
   useEffect(() => {
-    if (enVo || !current) return;
+    if (enVo || !current || officialPage) return;
     networkFailure.current = null;
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 8_000);
@@ -166,20 +198,20 @@ export function VideoLecteurs({
       controller.abort();
       window.clearTimeout(timeout);
     };
-  }, [current?.embedUrl, enVo, safeActive, list.length, probeAttempt]);
+  }, [current?.embedUrl, enVo, officialPage, safeActive, list.length, probeAttempt]);
 
   // Les embeds tiers ne permettent pas toujours un HEAD/CORS fiable. On sonde
   // le lecteur visible uniquement tant qu'il n'a pas confirmé son chargement (ready).
   // Dès que `onLoad` passe le statut à `ready`, ce timer est annulé et ne s'exécute pas.
   useEffect(() => {
-    if (enVo || !current || status === "ready") return;
+    if (enVo || !current || officialPage || status === "ready") return;
     const timeout = window.setTimeout(() => {
       const next = nextPlayerIndex(safeActive, list.length);
       if (next !== null) setActive(next);
       else setStatus("failed");
     }, 8_000);
     return () => window.clearTimeout(timeout);
-  }, [safeActive, current, enVo, list.length, status]);
+  }, [safeActive, current, enVo, officialPage, list.length, status]);
 
   // Choix de version : langues des lecteurs externes (ou « Lecteurs » s'ils ne
   // portent aucun tag), puis la VO quand elle existe.
@@ -209,7 +241,7 @@ export function VideoLecteurs({
       track("play_open", { entityType, entityId, lang: "vo", player: "hls-vostfr" });
       return;
     }
-    if (!current) return;
+    if (!current || officialPage) return;
     const cle = `${entityId}:${current.embedUrl}`;
     if (dejaEmis.current === cle) return;
     dejaEmis.current = cle;
@@ -221,7 +253,7 @@ export function VideoLecteurs({
       // c'est l'hébergeur qui tombe, pas le libellé.
       player: current.provider || current.name || undefined,
     });
-  }, [entityType, entityId, current, enVo]);
+  }, [entityType, entityId, current, enVo, officialPage]);
   if (!current) return null;
 
   const choisir = (c: string) => {
@@ -287,6 +319,18 @@ export function VideoLecteurs({
             onError={() => setFailedVoSource(vo.src)}
           />
         )
+      ) : officialURL ? (
+        <div className="shenron-video flex aspect-video w-full flex-col items-center justify-center gap-4 p-6 text-center">
+          <p className="text-sm">{ui("officialProviderNote")}</p>
+          <a
+            href={officialURL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-11 items-center rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground"
+          >
+            {ui("openOfficialProvider", { provider: current.provider })}
+          </a>
+        </div>
       ) : status === "failed" ? (
         <div
           className="shenron-video flex aspect-video w-full flex-col items-center justify-center gap-3 p-6 text-center text-sm"
@@ -323,24 +367,26 @@ export function VideoLecteurs({
           />
         </div>
       )}
-      <p className="text-xs text-muted-foreground" aria-live="polite">
-        {enVo && vo
-          ? t("voTracks", { tracks: vo.subtitles.map((track) => track.label).join(", ") })
-          : status === "failed"
-            ? ui("playerFailed", {
-                version: hasLangs ? `${langLabel(selectedLang)} · ` : "",
-                name: cleanName(current.name),
-              })
-            : status === "probing"
-              ? t("probing", {
+      {!officialPage && (
+        <p className="text-xs text-muted-foreground" aria-live="polite">
+          {enVo && vo
+            ? t("voTracks", { tracks: vo.subtitles.map((track) => track.label).join(", ") })
+            : status === "failed"
+              ? ui("playerFailed", {
                   version: hasLangs ? `${langLabel(selectedLang)} · ` : "",
                   name: cleanName(current.name),
                 })
-              : t("selected", {
-                  version: hasLangs ? `${langLabel(selectedLang)} · ` : "",
-                  name: cleanName(current.name),
-                })}
-      </p>
+              : status === "probing"
+                ? t("probing", {
+                    version: hasLangs ? `${langLabel(selectedLang)} · ` : "",
+                    name: cleanName(current.name),
+                  })
+                : t("selected", {
+                    version: hasLangs ? `${langLabel(selectedLang)} · ` : "",
+                    name: cleanName(current.name),
+                  })}
+        </p>
+      )}
     </div>
   );
 }

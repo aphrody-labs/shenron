@@ -14,6 +14,8 @@
   "playbackControls": "Commandes de lecture",
   "playbackSettings": "Réglages du lecteur",
   "playerFailed": "{version}Lecteur « {name} » indisponible.",
+  "officialProviderNote": "Cette fiche s’ouvre chez le fournisseur officiel. La lecture et les langues disponibles dépendent de son service.",
+  "openOfficialProvider": "Ouvrir sur {provider}",
   "sceneImageUrl": "URL d’une image ou capture",
   "sceneImageUpload": "Choisir ou déposer une image (JPEG, PNG, WebP, GIF, AVIF)",
   "sceneImageFile": "Sélectionner un fichier image",
