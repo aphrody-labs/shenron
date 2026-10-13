@@ -17,12 +17,12 @@ import { useLangue } from "@/lib/i18n/client";
  * - `sheet`   : bas de la feuille « Plus » — réglages, déconnexion, seule porte de ces
  *   actions sur mobile.
  *
- * Aucune entrée d'administration dans le shell public : l'admin a sa propre navigation.
+ * The administration entry follows the authenticated response from `/api/me`.
  */
 const FOCUS =
   "focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-dbz-orange";
 const ICON =
-  "grid h-10 w-10 shrink-0 place-items-center rounded-lg text-white/60 transition-colors hover:bg-white/[0.07] hover:text-white";
+  "grid h-11 w-11 shrink-0 place-items-center rounded-lg text-os/70 transition-colors hover:bg-os/[0.07] hover:text-os";
 
 function LogoutGlyph() {
   return (
@@ -54,16 +54,28 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
 
   if (variant === "compact") {
     return me.authenticated ? (
-      <Link
-        href="/dashboard"
-        aria-label={me.username ? `${dico.common.mySpace} — ${me.username}` : dico.common.mySpace}
-        className={`grid h-11 w-11 place-items-center rounded-full transition-colors hover:bg-white/[0.08] ${FOCUS}`}
-      >
-        <Avatar src={me.avatar} size={28} className="ring-1 ring-white/15" />
-      </Link>
+      <div className="flex shrink-0 items-center gap-1">
+        {me.isAdmin && (
+          <Link
+            href="/admin"
+            aria-label={dico.nav.admin}
+            title={dico.nav.admin}
+            className={`${ICON} ${FOCUS}`}
+          >
+            <Curseurs size={20} />
+          </Link>
+        )}
+        <Link
+          href="/dashboard"
+          aria-label={me.username ? `${dico.common.mySpace} — ${me.username}` : dico.common.mySpace}
+          className={`grid h-11 w-11 place-items-center rounded-full transition-colors hover:bg-os/[0.08] ${FOCUS}`}
+        >
+          <Avatar src={me.avatar} size={28} className="ring-1 ring-white/15" />
+        </Link>
+      </div>
     ) : (
       <SignInDiscord
-        className={`grid h-11 w-11 place-items-center rounded-full text-white/70 transition-colors hover:bg-white/[0.08] hover:text-white ${FOCUS}`}
+        className={`grid h-11 w-11 place-items-center rounded-full text-os/70 transition-colors hover:bg-os/[0.08] hover:text-os ${FOCUS}`}
       >
         <DragonBall size={20} />
         {/* `SignInDiscord` ne relaie pas `aria-label` : le nom vient du texte masqué. */}
@@ -83,9 +95,15 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
         </SignInDiscord>
       );
     }
-    const row = `flex min-h-12 items-center gap-3 rounded-xl px-4 font-display text-[0.875rem] font-semibold text-white/80 transition-colors hover:bg-white/[0.06] hover:text-white ${FOCUS}`;
+    const row = `flex min-h-12 items-center gap-3 rounded-xl px-4 font-display text-[0.875rem] font-semibold text-os/80 transition-colors hover:bg-os/[0.06] hover:text-os ${FOCUS}`;
     return (
       <div className="flex flex-col">
+        {me.isAdmin && (
+          <Link href="/admin" className={row}>
+            <Curseurs size={18} />
+            {dico.nav.admin}
+          </Link>
+        )}
         <Link href="/settings" className={row}>
           <Curseurs size={18} />
           {dico.mobileNav.accountSettings}
@@ -114,13 +132,23 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
       <Link
         href="/dashboard"
         title={me.username ? `${dico.common.mySpace} — ${me.username}` : dico.common.mySpace}
-        className={`flex min-h-11 min-w-0 flex-1 items-center gap-2.5 rounded-lg px-2 transition-colors hover:bg-white/[0.06] ${FOCUS}`}
+        className={`flex min-h-11 min-w-0 flex-1 items-center gap-2.5 rounded-lg px-2 transition-colors hover:bg-os/[0.06] ${FOCUS}`}
       >
         <Avatar src={me.avatar} size={28} className="shrink-0 ring-1 ring-white/15" />
-        <span className="min-w-0 truncate text-[0.8125rem] font-semibold text-white/85">
+        <span className="min-w-0 truncate text-[0.8125rem] font-semibold text-os/85">
           {me.username ?? dico.common.mySpace}
         </span>
       </Link>
+      {me.isAdmin && (
+        <Link
+          href="/admin"
+          aria-label={dico.nav.admin}
+          title={dico.nav.admin}
+          className={`${ICON} ${FOCUS}`}
+        >
+          <Curseurs size={18} />
+        </Link>
+      )}
       <Link
         href="/settings"
         aria-label={dico.common.settings}

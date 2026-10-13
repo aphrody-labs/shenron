@@ -9,6 +9,8 @@ import { isPathPublic } from "@/lib/wiki-launch";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { destinationsOf, type Journey } from "@/lib/site-map";
 import { nowDate } from "@/lib/clock";
+import { ShellFooterDetails } from "./ShellFooterDetails";
+import { FooterDestinationLabel } from "./FooterDestinationLabel";
 
 /**
  * Colonnes du pied de page — **dérivées** de la carte du site.
@@ -73,60 +75,66 @@ export async function SiteFooter() {
       {/* Sentinelle : efface les boutons flottants dès que le pied de page
 			    arrive, sinon ils recouvrent ses liens (cf. FooterFabGuard). */}
       <FooterFabGuard />
-      <div className="page-shell py-16 grid gap-10 lg:grid-cols-[1.4fr_3fr]">
-        <div>
-          <Link href="/" className="flex items-baseline select-none mb-5" aria-label="DBFR">
-            <span className="font-display font-bold text-[28px] tracking-[0.06em] text-white leading-none">
-              DB
-            </span>
-            <span className="font-display font-bold text-[28px] tracking-[0.06em] text-dbz-orange leading-none">
-              FR
-            </span>
-            {/* Boule décorative centrée sur le wordmark (leading-none 28px) sans
+      <ShellFooterDetails>
+        <div className="page-shell py-16 grid gap-10 lg:grid-cols-[1.4fr_3fr]">
+          <div>
+            <Link href="/" className="flex items-baseline select-none mb-5" aria-label="DBFR">
+              <span className="font-display font-bold text-[28px] tracking-[0.06em] text-os leading-none">
+                DB
+              </span>
+              <span className="font-display font-bold text-[28px] tracking-[0.06em] text-dbz-orange leading-none">
+                FR
+              </span>
+              {/* Boule décorative centrée sur le wordmark (leading-none 28px) sans
 						    grandir la flex-line → items-baseline garde le texte à sa place. */}
-            <span
-              aria-hidden
-              className="ml-2 inline-flex h-[28px] w-[20px] shrink-0 items-center justify-center self-center"
-            >
-              <DragonBall stars={4} size={20} />
-            </span>
-          </Link>
-          <p className="text-[14px] text-white/60 leading-relaxed max-w-sm">
-            <T k="footer.tagline" />
-          </p>
-        </div>
+              <span
+                aria-hidden
+                className="ml-2 inline-flex h-[28px] w-[20px] shrink-0 items-center justify-center self-center"
+              >
+                <DragonBall stars={4} size={20} />
+              </span>
+            </Link>
+            <p className="text-[14px] text-os/65 leading-relaxed max-w-sm">
+              <T k="footer.tagline" />
+            </p>
+          </div>
 
-        <div className="grid sm:grid-cols-3 gap-8">
-          {columns.map((col) => (
-            <div key={col.titleKey}>
-              <h4 className="font-display font-semibold text-[12px] tracking-[0.16em] uppercase text-dbz-orange mb-4">
-                <T k={col.titleKey} />
-              </h4>
-              <ul className="space-y-2.5">
-                {col.links.map((l) => (
-                  <li key={l.href}>
-                    <Link
-                      href={l.href}
-                      {...(l.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                      className="text-[14px] text-white/72 hover:text-white transition-colors"
-                    >
-                      {l.labelKey ? <T k={l.labelKey} /> : l.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div className="grid sm:grid-cols-3 gap-8">
+            {columns.map((col) => (
+              <div key={col.titleKey}>
+                <h4 className="font-display font-semibold text-[12px] tracking-[0.16em] uppercase text-dbz-orange mb-4">
+                  <T k={col.titleKey} />
+                </h4>
+                <ul className="space-y-2.5">
+                  {col.links.map((l) => (
+                    <li key={l.href}>
+                      <Link
+                        href={l.href}
+                        {...(l.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                        className="text-[14px] text-os/75 hover:text-os transition-colors"
+                      >
+                        {l.labelKey ? (
+                          <T k={l.labelKey} />
+                        ) : (
+                          <FooterDestinationLabel href={l.href} label={l.label ?? ""} />
+                        )}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      </ShellFooterDetails>
 
-      <div className="border-t border-white/[0.06]">
-        <div className="page-shell py-6 flex flex-wrap items-center justify-between gap-3 text-[12px] text-white/50">
+      <div className="border-t border-os/15">
+        <div className="shenron-footer-copyright page-shell flex flex-wrap items-center justify-between gap-3 text-[12px] text-os/65">
           <p className="leading-relaxed max-w-3xl">
             <T k="footer.copyright" values={{ year: nowDate().getFullYear() }} />{" "}
             <Link
               href="/credits"
-              className="underline decoration-white/30 hover:decoration-dbz-orange hover:text-white"
+              className="underline decoration-os/30 hover:decoration-dbz-orange hover:text-os"
             >
               <T k="footer.credits" />
             </Link>

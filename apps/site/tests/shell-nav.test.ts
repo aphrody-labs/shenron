@@ -1,6 +1,6 @@
 /**
- * The public shell never carries an administration entry nor an internal tool: the admin
- * has its own navigation (`AdminSidebar`), staff tools keep their own pages.
+ * Public navigation excludes administration and internal tools. The account island
+ * separately exposes administration to authenticated administrators (DOM role tests).
  */
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
@@ -35,11 +35,10 @@ describe("public shell navigation", () => {
     });
   }
 
-  test("the client shell and the account block add no admin entry", () => {
+  test("static shell navigation adds no admin entry", () => {
     for (const file of [
       "../src/components/SiteShell.tsx",
       "../src/components/SiteShellClient.tsx",
-      "../src/components/NavAuth.tsx",
     ]) {
       const code = source(file);
       expect(code).not.toMatch(/href=\{?["']\/admin|["']\/admin\//);

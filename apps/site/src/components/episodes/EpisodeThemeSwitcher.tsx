@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { Etoile } from "@aphrody/shenron-ui/toriyama/MotifsCouverture";
 import { useVideoUIText } from "@/lib/video-ui-text";
 import {
@@ -9,31 +9,44 @@ import {
   type EpisodeTheme,
 } from "@/lib/episode-theme";
 
-export function EpisodeThemeSwitcher() {
+function themeSnapshot() {
+  return resolveEpisodeTheme(document.documentElement.dataset.episodeTheme);
+}
+function subscribeTheme(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-episode-theme"],
+  });
+  const sync = (event: StorageEvent) => {
+    if (event.key === EPISODE_THEME_KEY) applyEpisodeTheme(resolveEpisodeTheme(event.newValue));
+  };
+  window.addEventListener("storage", sync);
+  return () => {
+    observer.disconnect();
+    window.removeEventListener("storage", sync);
+  };
+}
+const serverTheme = (): EpisodeTheme => "beerus";
+
+export function EpisodeThemeSwitcher({ compact = false }: { compact?: boolean }) {
   const t = useVideoUIText();
-  const [theme, setTheme] = useState<EpisodeTheme>("beerus");
+  const theme = useSyncExternalStore(subscribeTheme, themeSnapshot, serverTheme);
   useEffect(() => {
-    const current = resolveEpisodeTheme(document.documentElement.dataset.episodeTheme);
-    setTheme(current);
-    applyEpisodeTheme(current);
-    const sync = (event: StorageEvent) => {
-      if (event.key !== EPISODE_THEME_KEY) return;
-      const next = resolveEpisodeTheme(event.newValue);
-      setTheme(next);
-      applyEpisodeTheme(next);
-    };
-    window.addEventListener("storage", sync);
-    return () => window.removeEventListener("storage", sync);
-  }, []);
+    applyEpisodeTheme(theme);
+  }, [theme]);
   return (
-    <label className="shenron-theme-choice">
+    <label
+      className={`shenron-theme-choice ${compact ? "is-compact" : ""}`}
+      title={t("themeChoice")}
+    >
       <Etoile taille={18} decorative />
       <span className="sr-only">{t("themeChoice")}</span>
       <select
+        aria-label={t("themeChoice")}
         value={theme}
         onChange={(event) => {
           const next = resolveEpisodeTheme(event.target.value);
-          setTheme(next);
           applyEpisodeTheme(next);
           try {
             localStorage.setItem(EPISODE_THEME_KEY, next);

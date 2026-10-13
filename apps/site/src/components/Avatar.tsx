@@ -79,7 +79,7 @@ export function Avatar({
     if (fallback) return <>{fallback}</>;
     return (
       <span
-        className={cn("grid place-items-center bg-white/[0.07] text-white/35", base)}
+        className={cn("grid place-items-center bg-os/[0.07] text-os/65", base)}
         style={style}
         // `alt` vide est le cas NORMAL ici — le pseudo est presque toujours
         // écrit juste à côté. Or `role="img"` sans intitulé est une image sans

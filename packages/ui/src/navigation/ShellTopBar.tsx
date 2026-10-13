@@ -6,7 +6,7 @@
  * titre courant, recherche, compte. Sous Tauri, elle est la poignée de la fenêtre et porte
  * les contrôles de fenêtre quand la fenêtre n'a pas de décoration native.
  */
-import { useEffect, useState, type ReactNode } from "react";
+import { useSyncExternalStore, type ReactNode } from "react";
 import { ChevronGauche, Recherche } from "../icones";
 import type { ShellBrand, ShellCrumb, ShellLabels, ShellLinkComponent } from "./AppShell";
 import { WindowControls, useUndecoratedWindow } from "./WindowControls";
@@ -16,12 +16,12 @@ const ICON_BUTTON =
 const SITE_BRAND_FOCUS =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere";
 
+const subscribePlatform = () => () => {};
+const platformLabel = () =>
+  /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? "⌘K" : "Ctrl K";
+const serverPlatformLabel = () => "Ctrl K";
 function useModifierLabel(): string {
-  const [label, setLabel] = useState("Ctrl K");
-  useEffect(() => {
-    if (/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) setLabel("⌘K");
-  }, []);
-  return label;
+  return useSyncExternalStore(subscribePlatform, platformLabel, serverPlatformLabel);
 }
 
 export function ShellTopBar({
@@ -131,7 +131,7 @@ export function ShellTopBar({
         </button>
 
         {/* Titre courant (mobile) / fil complet (desktop). */}
-        <div data-tauri-drag-region className="min-w-0 flex-1 px-1">
+        <div data-tauri-drag-region data-shell-title className="min-w-0 flex-1 px-1">
           {current && (
             <p className="truncate font-display text-[0.9375rem] font-semibold text-os lg:hidden">
               {current.label}
@@ -143,7 +143,10 @@ export function ShellTopBar({
                 {trail.map((crumb, index) => {
                   const last = index === trail.length - 1;
                   return (
-                    <li key={index} className="flex min-w-0 items-center gap-x-2">
+                    <li
+                      key={crumb.href ?? String(crumb.label)}
+                      className="flex min-w-0 items-center gap-x-2"
+                    >
                       {index > 0 && (
                         <span aria-hidden className="text-os/25">
                           /
@@ -180,7 +183,7 @@ export function ShellTopBar({
             onFocus={onSearchIntent}
             aria-label={`${labels.search} (${shortcut})`}
             aria-keyshortcuts="Control+K Meta+K"
-            className="grid h-11 min-w-11 shrink-0 place-items-center rounded-xl text-os/70 transition-colors hover:bg-os/[0.07] hover:text-os focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-kinto-lumiere md:flex md:h-10 md:min-w-[15rem] md:items-center md:gap-2.5 md:border md:border-os/15 md:bg-os/[0.03] md:px-3 md:text-left md:text-os/50"
+            className="grid h-11 min-w-11 shrink-0 place-items-center rounded-xl text-os/70 transition-colors hover:bg-os/[0.07] hover:text-os focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-kinto-lumiere md:flex md:h-11 md:min-w-[15rem] md:items-center md:gap-2.5 md:border md:border-os/15 md:bg-os/[0.03] md:px-3 md:text-left md:text-os/50"
           >
             <Recherche size={18} className="shrink-0" />
             <span className="hidden flex-1 truncate text-[0.8125rem] md:inline">
@@ -192,7 +195,11 @@ export function ShellTopBar({
           </button>
         )}
 
-        {actions && <div className="flex shrink-0 items-center gap-1">{actions}</div>}
+        {actions && (
+          <div data-shell-actions className="flex min-w-0 shrink-0 items-center gap-1">
+            {actions}
+          </div>
+        )}
         {siteStyle && desktopAccount && (
           <div className="hidden shrink-0 lg:block">{desktopAccount}</div>
         )}

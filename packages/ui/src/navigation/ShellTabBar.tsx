@@ -32,7 +32,7 @@ function Indicator({ on, children }: { on: boolean; children: ReactNode }) {
     <span
       className={`grid h-8 w-14 place-items-center rounded-full transition-colors duration-200 motion-reduce:transition-none ${
         on
-          ? "bg-dbz-green/25 text-ecaille-claire ring-1 ring-dbz-green"
+          ? "bg-[var(--secondary)] text-[var(--secondary-foreground)] ring-1 ring-[var(--border)]"
           : "text-os/75 group-hover:bg-os/[0.08]"
       }`}
     >
@@ -93,7 +93,7 @@ export function ShellTabBar({
                   <Indicator on={on}>{on && tab.activeIcon ? tab.activeIcon : tab.icon}</Indicator>
                   <span
                     className={`max-w-full truncate px-1 text-[0.71875rem] leading-none ${
-                      on ? "font-bold text-ecaille-claire" : "font-semibold text-os/75"
+                      on ? "font-bold text-os" : "font-semibold text-os/75"
                     }`}
                   >
                     {tab.label}

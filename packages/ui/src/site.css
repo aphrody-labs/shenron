@@ -1,5 +1,6 @@
 @import "./episode-themes.css";
 @import "./video-player.css";
+@import "./shell-controls.css";
 
 @custom-variant dark (&:is(.dark *));
 

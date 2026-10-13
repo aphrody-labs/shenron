@@ -1,0 +1,137 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* Shell controls share the episode frame-derived semantic palette. */
+.shenron-language-trigger {
+  display: flex;
+  min-block-size: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding-inline: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.875rem;
+  background: var(--card);
+  color: var(--card-foreground);
+}
+.shenron-language-trigger.is-compact {
+  inline-size: 2.75rem;
+  padding-inline: 0;
+}
+.shenron-language-trigger:hover,
+.shenron-language-option:hover {
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+}
+.shenron-language-trigger:focus-visible,
+.shenron-language-option:focus-visible,
+.shenron-footer-details > summary:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.shenron-language-panel {
+  inline-size: 13rem;
+  max-inline-size: calc(100vw - 1rem);
+  padding: 0.375rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--popover);
+  color: var(--popover-foreground);
+  box-shadow: 0 12px 32px #0003;
+}
+.shenron-language-option {
+  display: flex;
+  inline-size: 100%;
+  min-block-size: 2.75rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-inline: 0.75rem;
+  border-radius: 0.75rem;
+  text-align: start;
+  font-size: 0.8125rem;
+}
+.shenron-language-option[aria-current="true"] {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 700;
+}
+.shenron-theme-choice.is-compact {
+  position: relative;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  flex-shrink: 0;
+  justify-content: center;
+  padding: 0;
+  border-radius: 0.875rem;
+}
+.shenron-theme-choice.is-compact select {
+  position: absolute;
+  inset: -1px;
+  inline-size: calc(100% + 2px);
+  block-size: calc(100% + 2px);
+  opacity: 0;
+  cursor: pointer;
+}
+.shenron-theme-choice.is-compact svg {
+  display: block;
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+.shenron-theme-choice.is-compact:focus-within {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.shenron-footer-details > summary {
+  display: none;
+  min-block-size: 2.75rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding-block: 0.5rem;
+  color: var(--foreground);
+  cursor: pointer;
+  font-weight: 700;
+}
+.shenron-footer-details[data-compact="true"] > summary {
+  display: flex;
+}
+.shenron-footer-details[data-compact="true"] > div.page-shell {
+  padding-block: 1.5rem;
+}
+.shenron-footer-details[data-compact="true"]:not([open]) > div.page-shell {
+  display: none;
+}
+[data-shell-footer] a {
+  display: inline-flex;
+  min-block-size: 2.75rem;
+  align-items: center;
+}
+[data-shell-footer],
+[data-shell-mobile-nav] {
+  background: var(--card);
+  color: var(--card-foreground);
+  border-color: var(--border);
+}
+[data-shell-header="site"] button[aria-keyshortcuts] {
+  color: var(--muted-foreground);
+}
+[data-shell-header="site"] button[aria-keyshortcuts] > :is(span, kbd) {
+  color: inherit;
+}
+[data-shell-footer] .shenron-footer-copyright {
+  padding-block: 1rem;
+}
+@media (max-width: 479px) {
+  [data-shell-header="site"] [data-shell-title] {
+    flex: 1 1 0;
+    inline-size: 0;
+    padding-inline: 0;
+  }
+  [data-shell-header="site"] [data-shell-title] > p {
+    display: none;
+  }
+}
+@media (display-mode: standalone) {
+  [data-shell-footer] .shenron-footer-copyright {
+    padding-block: 0.5rem;
+  }
+}
