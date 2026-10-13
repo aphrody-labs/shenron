@@ -20,6 +20,7 @@ test("global path repair discovers installed fork and cached runtime", () => {
   expect(script).toContain("merge-base --is-ancestor");
   expect(script).toContain("SetEnvironmentVariable('BUN_BIN', $InstalledBun, 'User')");
   expect(script).toContain("SetEnvironmentVariable('APHRODY_BUN_BIN_DIR', $InstallBin, 'User')");
+  expect(script).toContain("Sort-Object CommitTime -Descending");
 });
 
 test("global path repair removes only known build and legacy paths", () => {

@@ -57,6 +57,8 @@ function Get-FreshRuntime {
     if ($env:BUN_BIN) { $candidates += $env:BUN_BIN }
     $candidates += 'C:\bun\build\release\bun.exe'
     $candidates += $InstalledBun
+    $valid = @()
+    $checkout = if ($env:APHRODY_BUN_CHECKOUT) { $env:APHRODY_BUN_CHECKOUT } else { 'C:\bun' }
     foreach ($candidate in $candidates) {
         $path = Get-NormalizedPath $candidate
         $version = Get-Version $path
@@ -65,12 +67,22 @@ function Get-FreshRuntime {
             if ($LASTEXITCODE -eq 0) {
                 $revision = (& $path --revision | Out-String).Trim()
                 if (Test-PublishedMain $revision) {
-                    return [pscustomobject]@{ Path = $path; Version = $version; Revision = $revision }
+                    $sourceCommit = [regex]::Match($revision, '(?<sha>[0-9a-f]{9,40})$').Groups['sha'].Value
+                    $commitTime = (& git -C $checkout show -s --format=%ct $sourceCommit | Out-String).Trim()
+                    if ($LASTEXITCODE -eq 0 -and $commitTime -match '^\d+$') {
+                        $valid += [pscustomobject]@{
+                            Path = $path
+                            Version = $version
+                            Revision = $revision
+                            SourceCommit = $sourceCommit
+                            CommitTime = [long]$commitTime
+                        }
+                    }
                 }
             }
         }
     }
-    return $null
+    return $valid | Sort-Object CommitTime -Descending | Select-Object -First 1
 }
 
 function Test-LegacyPath([string]$Path) {
