@@ -93,6 +93,15 @@ fichiers encore présents sur ces hôtes au contrôle du 13 octobre. Le
 protégé jusqu'à qualification de sa provenance. Aucun de ces miroirs n'est
 promu comme nouveau writer PostgreSQL ni envoyé une seconde fois au cloud.
 
+Sur le poste propriétaire, `Shenron-Corpus-even` et `Shenron-Corpus-odd`
+reprennent au plus deux shards rsync toutes les 15 minutes, chaque tentative
+étant bornée à six heures. `Shenron-Corpus-Verify` contrôle les huit statuts,
+recalcule le manifeste local avec huit workers Bun, lance le hash distant dans
+tmux sur le VPS et compare les manifestes SHA-256 récupérés par rclone.
+Le reçu privé `var/reports/storage-cluster/beerus-transfer-verified.txt` n'est
+écrit qu'après égalité intégrale ; sa présence ne réalise pas le basculement
+du chemin local. Aucun effacement automatique n'est programmé.
+
 ## Placement exclusif
 
 PostgreSQL DBFR reste la source éditoriale. Aucune requête éditoriale n'est
