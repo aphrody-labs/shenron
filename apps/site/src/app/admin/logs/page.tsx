@@ -28,11 +28,11 @@ export default function Logs() {
       </div>
 
       <div className="card flex items-center gap-3">
-        <label htmlFor="page-lignes-affichees" className="text-sm text-zinc-400">
+        <label htmlFor="admin-log-lines" className="text-sm text-zinc-400">
           {t("lines")}
         </label>
         <select
-          id="page-lignes-affichees"
+          id="admin-log-lines"
           className="input w-32"
           value={lines}
           onChange={(e) => setLines(Number(e.target.value))}
