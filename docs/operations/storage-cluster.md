@@ -84,20 +84,25 @@ assets CDN publiables. Le propriétaire a arrêté le transfert des frames le
 13 octobre : les trois tâches `Shenron-Corpus-even`, `Shenron-Corpus-odd` et
 `Shenron-Corpus-Verify` sont désactivées et leurs processus rsync associés
 arrêtés. La copie partielle privée sur le VPS n'est pas un corpus vérifié.
-Le transfert média courant est une archive privée contenant la vidéo source de
+Le transfert média a livré une archive privée contenant la vidéo source de
 681 525 411 octets et les distributions complètes de `@aphrody/bun-video` et
 `@aphrody/bun-runtime-sdk`, directement vers DBFR par rsync reprenable. Son
 chemin cible est `/home/ubuntu/.aphrody/profiles/dbfr/video-handoff/beerus-01/beerus-video-sdk.tar`.
-Son manifeste contient les SHA-256 et indique `publicPublicationQualified=false`.
-Le transfert et le hash distant doivent être vérifiés avant toute extraction.
+Son SHA-256 distant `a91d9f4bb97fab834cc65883617b1507c2a91645112f18fa57049f2ba129af1e`
+égale celui de l'archive locale ; les trois contenus ont aussi passé leurs
+vérifications. Le manifeste historique indique encore
+`publicPublicationQualified=false` ; l'attestation ultérieure du propriétaire
+est conservée séparément dans le store privé.
 Aucune suppression locale n'a été effectuée.
 
 Les fichiers `.env` de Shenron, la base de cookies Crunchyroll et le HAR requis
 ont été copiés séparément dans les stores privés de DBFR, avec permissions 600
 et SHA-256 identiques à leurs sources. Les environnements locaux sont conservés
 comme imports, sans écraser la configuration de production. Le catalogue SQLite
-Bun Video et ses références privées sont transférés dans un dossier distinct ;
-sa migration Neon attend un instantané intégral et la qualification des writers.
+Bun Video et ses références privées ont été copiés dans un dossier distinct :
+deux SQLite intègres et 206 objets SHA-256, tous vérifiés avec permissions 600.
+Ce snapshot DBFR n'est pas un writer ; la bascule Neon attend l'arrêt contrôlé
+du site Bun Video local qui garde un handle SQLite ouvert.
 
 L'inventaire des fichiers SQLite sous `data/` (répertoires ignorés inclus)
 compte sept bases. Quatre sont des miroirs historiques du VPS et une est un
@@ -108,15 +113,17 @@ fichiers encore présents sur ces hôtes au contrôle du 13 octobre. Le
 protégé jusqu'à qualification de sa provenance. Aucun de ces miroirs n'est
 promu comme nouveau writer PostgreSQL ni envoyé une seconde fois au cloud.
 
-La pipeline privée `dbfr-private-pipeline.sh` accompagne l'archive sur DBFR.
-Après vérification du hash global et des trois contenus, elle crée un MP4
-720p H.264/AAC optimisé avec FFmpeg, sous priorité CPU et disque réduite.
-Les sorties et le SDK restent en mode 700/600 dans le profil privé. Aucune
-écriture CDN, PostgreSQL ou publication du site ne découle automatiquement de
-ce traitement. Le propriétaire a attesté un accord privé de diffusion dans
-`AGENTS.md` ; cette attestation n'a pas encore été rapprochée du manifeste de
-production, dont le champ `publicPublicationQualified` reste faux. Aucun
-effacement automatique n'est programmé.
+La pipeline privée `dbfr-private-pipeline.sh` a réussi sur DBFR : MP4 H.264/AAC
+1280×720 de 259 771 165 octets et 1 397,688 secondes, SHA-256
+`db34b27925caeb0f21b3b04aff71c1ce5e8bb544bdb479c0204591c30f13d473`,
+et poster WebP de 6 284 octets, SHA-256
+`d566c212b5849bb7c92307155cf9e349f360ddf4a8244833fbb5792b485d6768`.
+Le helper Infra a publié atomiquement ces deux seuls fichiers sur le disque
+public DBFR, avec empreintes égales. La route CDN et la nouvelle release du site
+ne sont pas encore actives : le HEAD public renvoie 404. Le propriétaire a
+attesté dans `AGENTS.md` la diffusion mondiale sans échéance connue de la vidéo
+complète et de ses versions compressées ; le texte privé n'a pas été vérifié
+indépendamment. Aucun effacement automatique n'est programmé.
 
 ## Placement exclusif
 
