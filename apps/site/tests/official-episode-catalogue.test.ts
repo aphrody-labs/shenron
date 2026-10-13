@@ -17,7 +17,7 @@ const episode = {
 test("the confirmed 2026 episode remains navigable without an editorial row", () => {
   const cards = officialEpisodeCatalogue("DBS_BEERUS", [], fallback);
   expect(cards).toHaveLength(1);
-  expect(cards[0]!.href).toBe("/wiki/episodes/series/DBS_BEERUS/1");
+  expect(cards[0]!.href).toBe("/wiki/episodes/875");
   expect(cards[0]!.playerCount).toBe(0);
   expect(officialEpisodeCatalogue("DBS", [], fallback)).toHaveLength(0);
 });

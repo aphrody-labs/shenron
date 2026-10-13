@@ -13,6 +13,7 @@ let locale: keyof typeof dictionaries = "fr";
 const translate = (key: string) =>
   createTranslator({ locale, messages: dictionaries[locale] })(key as never);
 mock.module("next-intl", () => ({
+  useLocale: () => locale,
   useTranslations: (namespace: string) =>
     createTranslator({ locale, messages: dictionaries[locale], namespace } as never),
 }));
@@ -44,7 +45,7 @@ describe("compact home", () => {
         expect(html).toContain(`href="${href}"`);
         expect(html).toContain(translate(key!));
       }
-      expect(html).toContain('href="https://dragonball-super.com/en/"');
+      expect(html).toContain(`href="https://dragonball-super.com/${locale === "ja" ? "" : "en/"}"`);
       expect(html).toContain(dictionaries[locale].dbsBeerus.watchEpisode);
       expect(html).toContain("home-wordmark");
       expect(html).toContain("kinto");
