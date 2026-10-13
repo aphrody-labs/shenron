@@ -6,7 +6,8 @@
  * Components (jeu 2048, carte profil, admin DB). Les y laisser ferait fuiter
  * `postgres`/`drizzle` dans le bundle client.
  */
-import { API_URL, ASSET_BASE } from "@/lib/config";
+import { canonicalDbzAssetUrl } from "@aphrody/shenron-config/public-urls";
+import { API_URL, ASSET_BASE, SITE_URL } from "@/lib/config";
 
 /**
  * Normalise un chemin d'asset DB (`./assets/...` ou `assets/...`) en URL
@@ -16,6 +17,8 @@ import { API_URL, ASSET_BASE } from "@/lib/config";
 export function assetUrl(path: string | null | undefined): string {
   const value = path?.trim();
   if (!value) return "";
+  const dbz = canonicalDbzAssetUrl(value, ASSET_BASE, API_URL, SITE_URL);
+  if (dbz) return dbz;
   if (/^https?:\/\//i.test(value)) return value;
   // Un chemin qui commence par « / » (et non « ./ ») est DÉJÀ une URL de ce
   // site — `/wiki/taopaipai.poster.webp`, servi par `public/`. Le préfixer de
