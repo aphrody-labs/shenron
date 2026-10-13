@@ -141,7 +141,7 @@ export function publicationPlan(
       "--per-host-delay",
       "1000",
       "--obey-robots",
-      "--sitemaps",
+      ...(limits.depth > 0 ? ["--sitemaps"] : []),
       "--json",
     ],
     requires: ["qualified Bun 1.4.4", "private job", "DBFR registry", "CDN publication owner"],

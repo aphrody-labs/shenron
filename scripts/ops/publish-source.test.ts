@@ -134,6 +134,13 @@ test("plans are deterministic, bounded and use the installed native crawl interf
   );
   expect(plan.crawl).toContain("--obey-robots");
   expect(plan.crawl).toContain("--sitemaps");
+  const singlePage = publicationPlan(plan.sourceUrl, plan.targetUrl, {
+    requests: 1,
+    depth: 0,
+    timeout: 90,
+  });
+  expect(singlePage.crawl).not.toContain("--sitemaps");
+  expect(singlePage.limits).toEqual({ requests: 1, depth: 0, timeout: 90 });
   expect(plan.canonicalPromotions).toBe(0);
   expect(() =>
     publicationPlan(plan.sourceUrl, plan.targetUrl, { requests: 257, depth: 5, timeout: 900 }),

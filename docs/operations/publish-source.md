@@ -18,7 +18,10 @@ ne lance aucun crawl, upload ou writer. `--apply` compare son contenu épinglé,
 refuse de réutiliser un job déjà commencé, puis appelle `aphrody web crawl`
 avec robots, sitemaps et domaine source unique. Options communes :
 `--max-requests 1..256` (256), `--max-depth 0..10` (5), `--timeout 1..1800`
-secondes (900). Une frontière restante ou une erreur interdit la publication.
+secondes (900). À profondeur0, la découverte des sitemaps est désactivée :
+la commande qualifie uniquement la page explicitement sélectionnée. La
+profondeur récursive par défaut5 conserve les sitemaps. Une frontière restante
+ou une erreur interdit la publication.
 « Complète » qualifie cette frontière bornée, pas toutes les API du fournisseur.
 
 Le job conserve SQLite, markdown, stderr et snapshots privés. Seuls les objets
