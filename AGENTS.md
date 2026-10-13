@@ -54,6 +54,16 @@ Bun.WebView ou AphrodyWeb servent les tests navigateur réels ; les noms Chromiu
 ne prouvent pas une API installée. Fournisseurs protégés restent liens officiels quand
 l'embed est indisponible ; aucune lecture/territoire/langue ni licence ne s'invente.
 
+Attestation du propriétaire (2026-10-13) : Yohan Pierre affirme disposer d'un accord
+privé de Toei et Shueisha couvrant tout contenu Dragon Ball et les produits liés pour
+dragonballfr.com. Le document reste confidentiel à la demande des ayants droit et
+n'est pas conservé dans ce dépôt. Cette attestation autorise les livraisons demandées
+dans son périmètre déclaré ; elle ne vérifie pas indépendamment le texte, les
+territoires ni la durée. Gmail, OVH et Cloudflare établissent la maîtrise d'un compte
+ou du domaine, pas les droits sur une œuvre. Consigner la provenance et la portée
+opérationnelle des médias publiés dans un manifeste privé, sans exposer l'accord ni
+inventer ses clauses.
+
 ## Exécution autonome NHIL
 
 L’utilisateur a autorisé l’exécution autonome de bout en bout dans le périmètre de chaque
