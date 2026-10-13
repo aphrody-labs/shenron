@@ -1,8 +1,5 @@
 /**
- * Contrat éditeur → rendu public des bannières.
- *
- * Un champ présent dans /admin/banners ne doit jamais être une commande
- * décorative : chaque clé de page doit être lue par la route publique annoncée.
+ * Public heroes use the quality selector; the episode catalogue starts with records.
  */
 import { describe, expect, test } from "bun:test";
 import { PAGE_HERO_KEYS } from "../src/lib/page-banners";
@@ -32,9 +29,14 @@ const routes: Record<(typeof PAGE_HERO_KEYS)[number], string> = {
 };
 
 describe("bannières configurées dans l'administration", () => {
-  test("chaque hero éditable est consommé par sa page publique", async () => {
+  test("public pages use qualified frames while episodes start directly with the catalogue", async () => {
     for (const key of PAGE_HERO_KEYS) {
       const source = await Bun.file(new URL(routes[key], import.meta.url)).text();
+      if (key === "episodes") {
+        expect(source).toContain("@/components/episodes/EpisodesCatalogue");
+        expect(source).not.toContain("<Billboard");
+        continue;
+      }
       expect(source).toContain('from "@/lib/banner-config"');
       expect(source).toContain(`pageHero("${key}")`);
     }

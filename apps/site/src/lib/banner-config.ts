@@ -14,7 +14,6 @@ import { createShenronApiClient } from "@aphrody/shenron-api/client";
 import { endpoints } from "@aphrody/shenron-api/contract";
 
 import { HostBannerError } from "./host-banner-error";
-import { dbUniverse } from "./db-universe";
 import { selectEpisodeFrameBanner, type BannerFrameScope } from "./episode-frame-banner";
 export { HostBannerError } from "./host-banner-error";
 
@@ -64,6 +63,7 @@ export async function savePageBanners(
 
 const frameBanner = unstable_cache(
   async (series: string | undefined, start: number | undefined, end: number | undefined) => {
+    const { dbUniverse } = await import("./db-universe");
     if (
       [start, end].some(
         (value) => value !== undefined && (!Number.isSafeInteger(value) || value < 0),

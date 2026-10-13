@@ -84,7 +84,11 @@ export async function measurePublicFrame(url: string): Promise<ImageMetadata | n
     } finally {
       reader.releaseLock();
     }
-    if (!length) return null;
+    if (
+      !length ||
+      (declared !== null && !response.headers.get("content-encoding") && length !== Number(declared))
+    )
+      return null;
     const bytes = new Uint8Array(length);
     let offset = 0;
     for (const chunk of chunks) {

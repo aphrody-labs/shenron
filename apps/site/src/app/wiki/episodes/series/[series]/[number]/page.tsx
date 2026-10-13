@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { JsonLd } from "@/components/JsonLd";
 import { T } from "@/components/T";
+import { PageShell } from "@/components/kit";
 import { BackgroundImage } from "@/components/media/BackgroundImage";
 import { getEpisodesCached } from "../../../_shared";
 import { EpisodeSeriesGrid } from "../EpisodeSeriesGrid";
@@ -84,7 +85,7 @@ export default async function OfficialBeerusEpisodePage({
         <BackgroundImage src={artwork} priority className="absolute inset-0 opacity-35" />
         <div className="absolute inset-0 bg-gradient-to-t from-dbz-bg via-dbz-bg/50 to-transparent" />
       </div>
-      <article className="relative mx-auto w-full max-w-[1180px] px-6 pb-20 pt-10 lg:px-10">
+      <PageShell as="article" rhythm="tight" className="relative">
         <Breadcrumbs
           className="mb-4"
           items={[
@@ -203,7 +204,7 @@ export default async function OfficialBeerusEpisodePage({
             </a>
           </footer>
         </div>
-      </article>
+      </PageShell>
     </main>
   );
 }

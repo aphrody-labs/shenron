@@ -21,6 +21,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/JsonLd";
 import type { CreativeWork, WithContext } from "schema-dts";
+import { bannerForSeries } from "@/lib/banner-config";
+import { BackgroundImage } from "@/components/media/BackgroundImage";
 
 export const revalidate = 3600;
 
@@ -71,6 +73,14 @@ export default async function SagaPage({ params }: { params: Promise<{ slug: str
   const saga = data;
   const arcs = data.arcs ?? [];
   const seriesLabel = SERIES_LABELS[saga.series] ?? saga.series;
+  const episodeNumbers = data.episodes.map((episode) => episode.number_in_series);
+  const heroFrame =
+    data.episodeSeries && episodeNumbers.length
+      ? await bannerForSeries(data.episodeSeries, {
+          episodeStart: Math.min(...episodeNumbers),
+          episodeEnd: Math.max(...episodeNumbers),
+        })
+      : "";
   const arcIds = arcs.map((a) => String(a.id));
   // `personnages` : lecture inverse de bot.db_character_variants — qui a été
   // relevé dans cette saga. Lancé avec les notes, jamais après : les trois
@@ -106,7 +116,12 @@ export default async function SagaPage({ params }: { params: Promise<{ slug: str
       </div>
 
       {/* Centered Hero Header - Toriyama Style */}
-      <header className="flex flex-col items-center justify-center text-center space-y-4 py-8">
+      <header className="relative isolate flex flex-col items-center justify-center text-center space-y-3 py-5">
+        {heroFrame ? (
+          <div className="absolute inset-x-0 top-0 -z-10 h-48 overflow-hidden rounded-lg">
+            <BackgroundImage src={heroFrame} overlay="full" priority />
+          </div>
+        ) : null}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-dbz-orange/15 border-2 border-black shadow-[2px_2px_0px_#000]">
           <span className="w-2 h-2 rounded-full bg-dbz-orange animate-pulse" />
           <span className="font-saiyan text-xs tracking-[0.2em] uppercase text-dbz-orange">
@@ -114,7 +129,7 @@ export default async function SagaPage({ params }: { params: Promise<{ slug: str
           </span>
         </div>
 
-        <h1 className="font-saiyan text-5xl sm:text-7xl md:text-8xl font-bold tracking-wider text-white drop-shadow-[0_4px_20px_rgba(255,107,0,0.35)]">
+        <h1 className="font-saiyan text-2xl sm:text-3xl md:text-4xl font-bold tracking-wider text-white">
           {saga.name}
         </h1>
 

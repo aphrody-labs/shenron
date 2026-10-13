@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import Link from "next/link";
+import { GatedWrap } from "@/components/GatedLink";
 import { T } from "@/components/T";
 import { ContributeRail } from "@/components/kit";
 import { ContinueRail } from "@/components/history/ContinueRail";
@@ -126,7 +127,7 @@ export default async function EpisodesCatalogue() {
               </h3>
               <StreamRail ariaLabel={SERIES_LABELS[group.series] ?? group.series}>
                 {group.sagas.map((saga) => (
-                  <Link
+                  <GatedWrap
                     key={saga.id}
                     href={`/wiki/sagas/${saga.slug}`}
                     className="block w-52 shrink-0 snap-start overflow-hidden rounded-lg border border-white/10 bg-white/[0.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
@@ -144,7 +145,7 @@ export default async function EpisodesCatalogue() {
                     <span className="block p-3 font-display text-sm font-semibold text-white">
                       {saga.name}
                     </span>
-                  </Link>
+                  </GatedWrap>
                 ))}
               </StreamRail>
             </div>

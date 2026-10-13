@@ -21,7 +21,7 @@ import { VideoSourceSummary } from "@/components/episodes/VideoSourceSummary";
 import { VideoUnavailableCard } from "@/components/episodes/VideoUnavailableCard";
 import { OffreLegale } from "@/components/episodes/OffreLegale";
 import { EpisodeDownload } from "@/components/episodes/EpisodeDownload";
-import { KenBurns } from "@aphrody/shenron-ui/cinematic/KenBurns";
+import { bannerForSeries } from "@/lib/banner-config";
 import { AnimatedMedia } from "@/components/media/AnimatedMedia";
 import { BackgroundImage } from "@/components/media/BackgroundImage";
 import { EpisodeScenes } from "./EpisodeScenes";
@@ -154,6 +154,13 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
   const youtubeId = getYoutubeId(ep.video_url);
   const seriesLabel = SERIES_LABELS[ep.series] ?? ep.series;
   const epNum = episodeNumberText(ep.number_in_series, true);
+  const heroFrame =
+    ep.number_in_series === null
+      ? ""
+      : await bannerForSeries(ep.series, {
+          episodeStart: ep.number_in_series,
+          episodeEnd: ep.number_in_series,
+        });
   const episodeTitle =
     ep.number_in_series === null ? ep.title : `Épisode ${ep.number_in_series} : ${ep.title}`;
   const episodeCaption =
@@ -264,9 +271,9 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
     <div className="relative">
       <JsonLd data={episodeSchema} />
       {/* === Backdrop cinématique plein cadre (vignette épisode floutée) === */}
-      <div className="absolute inset-x-0 top-0 h-[70vh] -z-0 overflow-hidden">
-        {ep.image ? (
-          <KenBurns src={assetUrl(ep.image)} variant="slow" overlay="full" blur />
+      <div className="absolute inset-x-0 top-0 h-64 sm:h-80 -z-0 overflow-hidden">
+        {heroFrame ? (
+          <BackgroundImage src={heroFrame} overlay="full" priority />
         ) : (
           <div className="absolute inset-0 aurora opacity-50" />
         )}

@@ -16,6 +16,7 @@ const records: Record<
   ],
 };
 let series = ["DB", "DBS_BEERUS"];
+let sagasOpen = true;
 mock.module("@/app/wiki/episodes/_shared", () => ({
   getEpisodeSeriesCached: async () =>
     series.map((code) => ({ series: code, count: records[code]?.length ?? 0 })),
@@ -47,6 +48,12 @@ mock.module("next/link", () => ({
   default: ({ href, children, ...props }: { href: string; children: ReactNode }) =>
     createElement("a", { href, ...props }, children),
 }));
+mock.module("@/components/GatedLink", () => ({
+  GatedWrap: ({ href, children, ...props }: { href: string; children: ReactNode }) =>
+    sagasOpen
+      ? createElement("a", { href, ...props }, children)
+      : createElement("div", { "aria-disabled": true, ...props }, children),
+}));
 mock.module("@/components/stream/StreamRail", () => ({
   StreamRail: ({ children }: { children: ReactNode }) => createElement("ul", null, children),
 }));
@@ -66,6 +73,7 @@ const { default: EpisodesCatalogue } = await import("../src/components/episodes/
 
 test("episodes and real sagas precede resume, with one series navigation and canonical Beerus links", async () => {
   series = ["DB", "DBS_BEERUS"];
+  sagasOpen = true;
   const html = renderToStaticMarkup(await EpisodesCatalogue());
   expect(html.match(/<nav\b/g)).toHaveLength(1);
   expect(html.match(/<h1\b/g)).toHaveLength(1);
@@ -76,6 +84,20 @@ test("episodes and real sagas precede resume, with one series navigation and can
   expect(html).not.toContain("/DBS_BEERUS/131");
   expect(html.indexOf("/wiki/sagas/pilaf")).toBeLessThan(html.indexOf('id="resume"'));
   expect(html.indexOf('id="resume"')).toBeLessThan(html.indexOf("/sources/dragon-ball"));
+});
+
+test("closed saga navigation keeps the editorial card visible through the canonical guard", async () => {
+  series = ["DB"];
+  sagasOpen = false;
+  try {
+    const html = renderToStaticMarkup(await EpisodesCatalogue());
+    expect(html).not.toContain('href="/wiki/sagas/pilaf"');
+    expect(html).toContain('aria-disabled="true"');
+    expect(html).toContain("Pilaf");
+    expect(html).toContain("/wiki/sagas/pilaf.webp");
+  } finally {
+    sagasOpen = true;
+  }
 });
 
 test("missing editorial series do not fabricate Beerus records", async () => {
