@@ -546,7 +546,8 @@ const ASSET_CONTENT_TYPES: Record<string, string> = {
 // Relaie le flux vidéo résolu (voir-anime → m3u8/segments) en injectant le
 // Referer côté serveur. CRITIQUE : le flux est lié à l'IP du résolveur (le VPS),
 // donc c'est le bot (même IP) qui doit fetch — pas Vercel. La map est écrite par
-// resolve-streams.ts dans data/streams.json. Signature HMAC anti open-proxy.
+// resolve-streams.ts dans data/streams.json. Les playlists publiques utilisent
+// des identifiants opaques temporaires, jamais les URL ou en-têtes amont.
 type HlsStream = { url: string; headers: Record<string, string>; type: string; at: number };
 let _hlsCache: { mtime: number; data: Record<string, HlsStream> } | null = null;
 const resolvedStreams = new Map<string, HlsStream>();
@@ -634,7 +635,7 @@ async function resolveArchiveMp4(identifier: string): Promise<string | null> {
 async function resolveMovieStream(rawId: string): Promise<HlsStream | null> {
   const movieId = Number(rawId);
   if (!Number.isInteger(movieId)) {
-    console.error(`[HLS] ID de film invalide : "${rawId}".`);
+    console.error("[HLS] ID de film invalide.");
     return null;
   }
   try {
@@ -702,8 +703,8 @@ async function resolveMovieStream(rawId: string): Promise<HlsStream | null> {
       `[HLS] Film ID ${movieId} sans source téléchargeable (players non direct / absents).`,
     );
     return null;
-  } catch (err) {
-    console.error(`[HLS] Erreur lors de la résolution du film "${rawId}" :`, err);
+  } catch {
+    console.error("[HLS] Erreur lors de la résolution du film.");
     return null;
   }
 }
@@ -722,12 +723,10 @@ async function resolveStreamOnDemand(id: string): Promise<HlsStream | null> {
       .query("SELECT series, number_in_series FROM db_episodes WHERE id = ?")
       .get(Number(mediaId)) as { series: string; number_in_series: number } | undefined;
     if (!row) {
-      console.error(`[HLS] Episode ID ${id} introuvable en base SQLite.`);
+      console.error("[HLS] Episode introuvable en base SQLite.");
       return null;
     }
-    console.log(
-      `[HLS] Résolution à la volée de l'épisode ${id} (${row.series} ${row.number_in_series})...`,
-    );
+    console.log("[HLS] Résolution à la volée d'un épisode.");
     const BXC_DIR = process.env.BXC_DIR ?? `${os.homedir()}/bxc`;
     const proc = Bun.spawn(
       [process.execPath, "scripts/resolve-episode.ts", row.series, String(row.number_in_series)],
@@ -759,14 +758,14 @@ async function resolveStreamOnDemand(id: string): Promise<HlsStream | null> {
           resolvedStreams.set(`${mediaId}-${variantLanguage}`, { ...variant, at: Date.now() });
       }
       // Upstream URLs and headers can contain short-lived credentials. Keep them in memory.
-      console.log(`[HLS] Résolution réussie pour l'épisode ${id}.`);
+      console.log("[HLS] Résolution réussie pour un épisode.");
       return entry;
     } else {
-      console.error(`[HLS] Échec de résolution pour l'épisode ${id} : ${res.error ?? "inconnu"}`);
+      console.error("[HLS] Résolution d'épisode indisponible.");
       return null;
     }
-  } catch (err) {
-    console.error(`[HLS] Erreur lors de la résolution de l'épisode ${id} :`, err);
+  } catch {
+    console.error("[HLS] Erreur lors de la résolution d'un épisode.");
     return null;
   }
 }
@@ -800,7 +799,7 @@ async function hlsMaster(req: Request, id: string): Promise<Response> {
   }
 
   if (!up || !up.ok) {
-    console.log(`[HLS] Flux expiré ou injoignable pour master ${id}, actualisation...`);
+    console.log("[HLS] Flux expiré ou injoignable, actualisation.");
     const newS = await resolveStreamOnDemand(streamId);
     if (newS) {
       s = newS;
