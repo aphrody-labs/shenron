@@ -13,7 +13,7 @@ describe("canonical public DBZ artwork", () => {
       "https://dragonballfr.com/assets/dbz/characters/bulma.webp",
     ])
       expect(assetUrl(`${source}?v=2#frame`)).toBe(
-        "https://cdn.dragonballfr.com/dbz/characters/bulma.webp?v=2#frame",
+        "https://cdn.dragonballfr.com/assets/dbz/characters/bulma.webp?v=2#frame",
       );
   });
   test("preserves wiki uploads, manga scans and foreign providers", () => {
