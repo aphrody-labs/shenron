@@ -12,7 +12,7 @@
  * Aucun défilement automatique : une page d'application ne change pas de
  * contenu sous le doigt du lecteur.
  */
-import { useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { BestOfSagaView } from "@/lib/home-bestof";
@@ -25,8 +25,10 @@ import { languageBadges, seriesLabel } from "@/components/stream/MediaCatalogRai
 import { yearOf } from "@/lib/epoch";
 import { isPathPublic, type AccessSnapshot } from "@/lib/wiki-launch";
 import { useT } from "@/components/T";
+import { matchesSeries, uniqueSagaMedia } from "@/lib/home-bestof-ui";
+import { useBestOfUIText } from "@/lib/home-bestof-ui-text";
 
-const PANNEAU_ID = "bestof-panneau";
+export { matchesSeries } from "@/lib/home-bestof-ui";
 
 // Les noms de séries sont des titres d'œuvre, pas de l'interface : ils ne se
 // traduisent pas. Seul « toutes » est une étiquette de filtre.
@@ -38,32 +40,6 @@ const SERIES_FILTERS: { id: string; label?: string; labelKey?: string }[] = [
   { id: "DBS", label: "Dragon Ball Super" },
   { id: "DB_DAIMA", label: "Daima" },
 ];
-
-/** La saga appartient-elle à la série filtrée ? (libellé de série → identifiant). */
-export function matchesSeries(seriesLabelText: string, filter: string): boolean {
-  if (filter === "ALL") return true;
-  const label = seriesLabelText.toUpperCase();
-  switch (filter) {
-    case "DB":
-      return (
-        label.includes("DRAGON BALL") &&
-        !label.includes("Z") &&
-        !label.includes("GT") &&
-        !label.includes("SUPER") &&
-        !label.includes("DAIMA")
-      );
-    case "DBZ":
-      return label.includes("Z");
-    case "DBGT":
-      return label.includes("GT");
-    case "DBS":
-      return label.includes("SUPER");
-    case "DB_DAIMA":
-      return label.includes("DAIMA");
-    default:
-      return false;
-  }
-}
 
 const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange";
@@ -78,49 +54,65 @@ export function SagaBestOf({
   access?: AccessSnapshot | null;
 }) {
   const t = useT();
+  const text = useBestOfUIText();
+  const id = useId();
+  const panelId = `${id}-panel`;
   const [series, setSeries] = useState("ALL");
-  const [sel, setSel] = useState(0);
+  const [selectedSlug, setSelectedSlug] = useState<string | undefined>(sagas[0]?.slug);
+  const [vertical, setVertical] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 1024px)");
+    const update = () => setVertical(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
 
   const filtered = useMemo(
     () => sagas.filter((s) => matchesSeries(s.seriesLabel, series)),
     [sagas, series],
   );
-  const index = Math.min(sel, Math.max(0, filtered.length - 1));
-  const saga = filtered[index] ?? sagas[0];
-  if (!saga) return null;
+  const saga = filtered.find((item) => item.slug === selectedSlug) ?? filtered[0];
 
   const stats = [
-    saga.stats.episodes > 0 && `${saga.stats.episodes} épisodes`,
-    saga.stats.films > 0 && `${saga.stats.films} film${saga.stats.films > 1 ? "s" : ""}`,
-    saga.stats.tomes > 0 && `${saga.stats.tomes} tome${saga.stats.tomes > 1 ? "s" : ""}`,
+    saga && saga.stats.episodes > 0 && text("episodes", { count: saga.stats.episodes }),
+    saga && saga.stats.films > 0 && text("films", { count: saga.stats.films }),
+    saga && saga.stats.tomes > 0 && text("tomes", { count: saga.stats.tomes }),
   ].filter(Boolean) as string[];
 
   const open = (href: string) => !access || isPathPublic(href, access);
-  const sagaEpisodes = saga.media.filter((m) => m.kind === "episode");
-  const sagaMovies = saga.media.filter((m) => m.kind === "film");
-  const sagaTomes = saga.media.filter((m) => m.kind === "tome");
-  const catalogEpisodes = catalog?.episodes ?? [];
-  const catalogMovies = catalog?.movies ?? [];
-  const catalogManga = catalog?.manga ?? [];
+  const media = uniqueSagaMedia(saga?.media ?? []).filter((item) => open(item.href));
+  const sagaEpisodes = media.filter((m) => m.kind === "episode");
+  const sagaMovies = media.filter((m) => m.kind === "film");
+  const sagaTomes = media.filter((m) => m.kind === "tome");
+  const curatedHrefs = new Set(media.map((item) => item.href));
+  const catalogEpisodes = (catalog?.episodes ?? []).filter(
+    (item) => !curatedHrefs.has(`/wiki/episodes/${item.id}`),
+  );
+  const catalogMovies = (catalog?.movies ?? []).filter(
+    (item) => !curatedHrefs.has(`/wiki/movies/${item.slug}`),
+  );
+  const catalogManga = (catalog?.manga ?? []).filter(
+    (item) => !curatedHrefs.has(`/wiki/manga/volume/${item.id}`),
+  );
   const catalogDatabooks = catalog?.databooks ?? [];
 
   return (
-    <div className="space-y-5">
-      <div
-        className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none]"
-        role="group"
-        aria-label={t("home.bestof.filterSeries")}
-      >
+    <div className="min-w-0 space-y-5">
+      <fieldset className="-mx-1 flex min-w-0 gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
+        <legend className="sr-only">{t("home.bestof.filterSeries")}</legend>
         {SERIES_FILTERS.map((f) => (
           <button
             key={f.id}
             type="button"
             aria-pressed={series === f.id}
+            disabled={!sagas.some((item) => matchesSeries(item.seriesLabel, f.id))}
             onClick={() => {
               setSeries(f.id);
-              setSel(0);
+              setSelectedSlug(sagas.find((item) => matchesSeries(item.seriesLabel, f.id))?.slug);
             }}
-            className={`min-h-11 shrink-0 rounded-full border px-4 font-display text-sm font-semibold transition-colors ${focus} ${
+            className={`min-h-11 shrink-0 rounded-full border px-4 font-display text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${focus} ${
               series === f.id
                 ? "border-dbz-orange bg-dbz-orange/15 text-white"
                 : "border-white/15 text-white/70 hover:border-dbz-gold hover:text-white"
@@ -129,112 +121,140 @@ export function SagaBestOf({
             {f.labelKey ? t(f.labelKey) : f.label}
           </button>
         ))}
-      </div>
+      </fieldset>
 
-      <div className="grid gap-4 lg:grid-cols-12 lg:gap-6">
-        {/* Liste des sagas : rail horizontal sur téléphone, colonne sur grand écran. */}
-        <div
-          role="tablist"
-          aria-label={t("home.bestof.chooseSaga")}
-          onKeyDown={onTablistKeyDown}
-          className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] lg:col-span-4 lg:mx-0 lg:max-h-[34rem] lg:flex-col lg:overflow-y-auto lg:overflow-x-visible lg:px-0 xl:col-span-3"
-        >
-          {filtered.map((s, i) => (
-            <button
-              key={s.slug}
-              id={`bestof-onglet-${s.slug}`}
-              type="button"
-              role="tab"
-              aria-selected={i === index}
-              aria-controls={PANNEAU_ID}
-              tabIndex={i === index ? 0 : -1}
-              onClick={() => setSel(i)}
-              className={`flex min-h-14 w-44 shrink-0 snap-start items-center gap-3 rounded-xl border p-2 text-left transition-colors lg:w-full ${focus} ${
-                i === index
-                  ? "border-dbz-orange bg-dbz-orange/10"
-                  : "border-white/[0.08] bg-dbz-card/80 hover:border-dbz-gold"
-              }`}
-            >
-              <span className="relative size-10 shrink-0 overflow-hidden rounded-lg bg-dbz-bg">
-                <Image
-                  src={s.image}
-                  alt=""
-                  fill
-                  sizes="40px"
-                  quality={70}
-                  className="object-cover"
-                />
-              </span>
-              <span className="min-w-0">
-                <span className="block truncate font-display text-sm font-bold text-white">
-                  {s.name}
+      {saga ? (
+        <div className="grid min-w-0 items-start gap-4 lg:grid-cols-12 lg:gap-6">
+          {/* Liste des sagas : rail horizontal sur téléphone, colonne sur grand écran. */}
+          <div
+            role="tablist"
+            tabIndex={-1}
+            aria-label={t("home.bestof.chooseSaga")}
+            aria-orientation={vertical ? "vertical" : "horizontal"}
+            onKeyDown={(event) => {
+              if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+              if (
+                vertical
+                  ? ["ArrowLeft", "ArrowRight"].includes(event.key)
+                  : ["ArrowUp", "ArrowDown"].includes(event.key)
+              )
+                return;
+              onTablistKeyDown(event);
+              if (event.defaultPrevented) {
+                const active = document.activeElement as HTMLElement | null;
+                active?.scrollIntoView({
+                  block: "nearest",
+                  inline: "nearest",
+                  behavior: "instant",
+                });
+              }
+            }}
+            className="-mx-1 flex min-w-0 snap-x gap-2 overflow-x-auto px-1 pb-1 lg:col-span-4 lg:mx-0 lg:max-h-[34rem] lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden lg:px-1 xl:col-span-3"
+          >
+            {filtered.map((s) => (
+              <button
+                key={s.slug}
+                id={`${id}-tab-${s.slug}`}
+                type="button"
+                role="tab"
+                aria-selected={s.slug === saga.slug}
+                aria-controls={panelId}
+                tabIndex={s.slug === saga.slug ? 0 : -1}
+                onClick={() => setSelectedSlug(s.slug)}
+                className={`flex min-h-14 w-44 shrink-0 snap-start items-center gap-3 rounded-xl border p-2 text-left transition-colors lg:w-full ${focus} ${
+                  s.slug === saga.slug
+                    ? "border-dbz-orange bg-dbz-orange/10"
+                    : "border-white/[0.08] bg-dbz-card/80 hover:border-dbz-gold"
+                }`}
+              >
+                <span className="relative size-10 shrink-0 overflow-hidden rounded-lg bg-dbz-bg">
+                  <Image
+                    src={s.image}
+                    alt=""
+                    fill
+                    sizes="40px"
+                    quality={70}
+                    className="object-cover"
+                  />
                 </span>
-                <span className="block truncate text-xs text-white/55">{s.seriesLabel}</span>
-              </span>
-            </button>
-          ))}
-        </div>
+                <span className="min-w-0">
+                  <span className="block break-words font-display text-sm font-bold text-white">
+                    {s.name}
+                  </span>
+                  <span className="block text-xs text-white/55">{s.seriesLabel}</span>
+                </span>
+              </button>
+            ))}
+          </div>
 
-        {/* Fiche de la saga sélectionnée. */}
-        <article
-          id={PANNEAU_ID}
-          role="tabpanel"
-          aria-labelledby={`bestof-onglet-${saga.slug}`}
-          className="grid overflow-hidden rounded-xl border border-white/[0.08] bg-dbz-card/80 md:grid-cols-5 lg:col-span-8 xl:col-span-9"
-        >
-          <div className="relative aspect-video md:col-span-2 md:aspect-auto md:min-h-72">
-            <Image
-              src={saga.image}
-              alt=""
-              fill
-              sizes="(min-width: 1280px) 30vw, (min-width: 768px) 40vw, 100vw"
-              quality={70}
-              className="object-cover object-top"
-            />
-          </div>
-          <div className="flex flex-col gap-3 p-4 sm:p-6 md:col-span-3">
-            <p className="text-sm text-white/60">
-              {saga.seriesLabel}
-              {saga.years ? `, ${saga.years}` : ""}
-            </p>
-            <h3 className="font-title text-2xl leading-tight text-white sm:text-3xl">
-              {saga.name}
-            </h3>
-            <p className="font-display text-base font-semibold text-dbz-orange">{saga.tagline}</p>
-            {saga.description && (
-              <p className="line-clamp-4 text-sm leading-relaxed text-white/70 lg:line-clamp-6">
-                {saga.description}
-              </p>
-            )}
-            {stats.length > 0 && (
-              <ul className="flex flex-wrap gap-2" aria-label={saga.name}>
-                {stats.map((s) => (
-                  <li
-                    key={s}
-                    className="rounded-full border border-white/12 px-3 py-1 font-scouter text-xs tabular-nums text-white/75"
-                  >
-                    {s}
-                  </li>
-                ))}
-              </ul>
-            )}
-            <div className="mt-auto flex flex-wrap gap-2 pt-2">
-              <Link
-                href={saga.watchHref}
-                className={`inline-flex min-h-11 items-center rounded-lg bg-dbz-orange px-5 font-display text-sm font-bold text-dbz-bg transition-colors hover:bg-dbz-gold ${focus}`}
-              >
-                {saga.watchLabel}
-              </Link>
-              <Link
-                href="/wiki/timeline"
-                className={`inline-flex min-h-11 items-center rounded-lg border border-white/15 px-5 font-display text-sm font-bold text-white transition-colors hover:border-dbz-gold hover:text-dbz-gold ${focus}`}
-              >
-                {t("home.bestof.fullTimeline")}
-              </Link>
+          {/* Fiche de la saga sélectionnée. */}
+          <article
+            id={panelId}
+            role="tabpanel"
+            aria-labelledby={`${id}-tab-${saga.slug}`}
+            tabIndex={0}
+            className={`grid min-w-0 overflow-hidden rounded-xl border border-white/[0.08] bg-dbz-card/80 md:grid-cols-5 lg:col-span-8 xl:col-span-9 ${focus}`}
+          >
+            <div className="relative aspect-video md:col-span-2 md:aspect-auto md:min-h-72">
+              <Image
+                src={saga.image}
+                alt=""
+                fill
+                sizes="(min-width: 1280px) 30vw, (min-width: 768px) 40vw, 100vw"
+                quality={70}
+                className="object-cover object-top"
+              />
             </div>
-          </div>
-        </article>
-      </div>
+            <div className="flex min-w-0 flex-col gap-3 p-4 sm:p-6 md:col-span-3">
+              <p className="text-sm text-white/60">
+                {saga.seriesLabel}
+                {saga.years ? `, ${saga.years}` : ""}
+              </p>
+              <h3 className="font-title text-2xl leading-tight text-white sm:text-3xl">
+                {saga.name}
+              </h3>
+              <p className="font-display text-base font-semibold text-dbz-orange">{saga.tagline}</p>
+              {saga.description && (
+                <p className="line-clamp-4 text-sm leading-relaxed text-white/70 lg:line-clamp-6">
+                  {saga.description}
+                </p>
+              )}
+              {stats.length > 0 && (
+                <ul className="flex flex-wrap gap-2" aria-label={saga.name}>
+                  {stats.map((s) => (
+                    <li
+                      key={s}
+                      className="rounded-full border border-white/12 px-3 py-1 font-scouter text-xs tabular-nums text-white/75"
+                    >
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div className="mt-auto flex flex-wrap gap-2 pt-2">
+                {open(saga.watchHref) && (
+                  <Link
+                    href={saga.watchHref}
+                    className={`inline-flex min-h-11 items-center rounded-lg bg-dbz-orange px-5 font-display text-sm font-bold text-dbz-bg transition-colors hover:bg-dbz-gold ${focus}`}
+                  >
+                    {saga.watchLabel}
+                  </Link>
+                )}
+                {open("/wiki/timeline") && (
+                  <Link
+                    href="/wiki/timeline"
+                    className={`inline-flex min-h-11 items-center rounded-lg border border-white/15 px-5 font-display text-sm font-bold text-white transition-colors hover:border-dbz-gold hover:text-dbz-gold ${focus}`}
+                  >
+                    {t("home.bestof.fullTimeline")}
+                  </Link>
+                )}
+              </div>
+            </div>
+          </article>
+        </div>
+      ) : (
+        <output className="block py-4 text-os/85">{text("empty")}</output>
+      )}
 
       {open("/wiki/episodes") && (sagaEpisodes.length > 0 || catalogEpisodes.length > 0) && (
         <StreamRow

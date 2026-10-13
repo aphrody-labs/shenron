@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { NextIntlClientProvider } from "next-intl";
 import { CanvasPublicExamples } from "../src/components/site/CanvasPublicExamples";
@@ -10,11 +9,9 @@ import ja from "../messages/canvas-ui/ja.json";
 
 test("public canvas examples do not load an arbitrary member and preserve both API cards", () => {
   const html = renderToStaticMarkup(
-    createElement(
-      NextIntlClientProvider,
-      { locale: "fr", messages: {} },
-      createElement(CanvasPublicExamples),
-    ),
+    <NextIntlClientProvider locale="fr" messages={{}}>
+      <CanvasPublicExamples />
+    </NextIntlClientProvider>,
   );
   expect(html).not.toContain("<img");
   expect(html).not.toContain("853295213473038376");
@@ -31,11 +28,9 @@ test("canvas states and descriptions are translated in every supported locale", 
     expect(Object.keys(dictionary).toSorted()).toEqual(Object.keys(fr).toSorted());
     expect(Object.values(dictionary).every((value) => value.trim().length > 0)).toBe(true);
     const html = renderToStaticMarkup(
-      createElement(
-        NextIntlClientProvider,
-        { locale, messages: {} },
-        createElement(CanvasPublicExamples),
-      ),
+      <NextIntlClientProvider locale={locale} messages={{}}>
+        <CanvasPublicExamples />
+      </NextIntlClientProvider>,
     );
     expect(html).toContain(dictionary.samples);
     expect(html).toContain(dictionary.empty);

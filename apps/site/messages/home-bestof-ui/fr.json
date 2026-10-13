@@ -1,0 +1,6 @@
+{
+  "empty": "Aucune saga disponible pour cette série.",
+  "episodes": "{count, plural, one {# épisode} other {# épisodes}}",
+  "films": "{count, plural, one {# film} other {# films}}",
+  "tomes": "{count, plural, one {# tome} other {# tomes}}"
+}
