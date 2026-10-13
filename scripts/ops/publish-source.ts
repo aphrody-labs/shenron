@@ -424,6 +424,34 @@ async function run() {
   )
     throw new Error("CDN configuration must be a protected regular file");
   const config = await Bun.file(configPath).json();
+  if (typeof config.stateDirectory !== "string" || !isAbsolute(config.stateDirectory))
+    throw new Error("CDN owner requires an absolute protected state directory");
+  const statePath = join(config.stateDirectory, "current-inventory.json");
+  if (await Bun.file(statePath).exists()) {
+    const stateInfo = await lstat(statePath);
+    if (
+      !stateInfo.isFile() ||
+      stateInfo.isSymbolicLink() ||
+      (process.platform !== "win32" && stateInfo.mode & 0o077)
+    )
+      throw new Error("CDN current inventory state is not protected");
+    const state = await Bun.file(statePath).json();
+    if (
+      !isAbsolute(state.inventoryPath ?? "") ||
+      !/^[a-f0-9]{64}$/.test(state.inventorySha256 ?? "") ||
+      typeof state.prefix !== "string" ||
+      typeof state.deploymentId !== "string" ||
+      !/^[a-f0-9]{64}$/.test(state.codeSha256 ?? "")
+    )
+      throw new Error("CDN current inventory state is unqualified");
+    Object.assign(config, {
+      previousInventory: state.inventoryPath,
+      previousInventorySha256: state.inventorySha256,
+      expectedPrefix: state.prefix,
+      expectedDeployment: state.deploymentId,
+      expectedCodeSha256: state.codeSha256,
+    });
+  }
   const sql = postgres(process.env.DATABASE_URL, {
     max: 1,
     prepare: false,
