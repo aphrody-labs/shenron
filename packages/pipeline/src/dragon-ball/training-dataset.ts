@@ -127,7 +127,7 @@ function splitRows(bytes: Buffer, sourceDigest: string): RowEvidence[] {
   const identities = new Set<string>();
   for (const line of text.split(/\r?\n/u)) {
     if (!line.trim()) continue;
-    if (Buffer.byteLength(line) > 1024 * 1024 || rows.length >= 50000)
+    if (new TextEncoder().encode(line).length > 1024 * 1024 || rows.length >= 50000)
       reject("training-dataset-file-too-large");
     let raw: unknown;
     try {
