@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { DBS_BEERUS_SERIES_CODE, dbsBeerusEpisodeCard } from "./episode-series-catalogue";
 
-export const BEERUS_CRUNCHYROLL_URL =
-  "https://www.crunchyroll.com/fr/watch/GE00389313JAJP/the-god-who-destroys";
-
 export interface CatalogueEpisode {
   id: number;
   number_in_series: number | null;

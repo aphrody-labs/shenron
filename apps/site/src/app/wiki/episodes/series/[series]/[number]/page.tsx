@@ -7,7 +7,10 @@ import { T } from "@/components/T";
 import { BackgroundImage } from "@/components/media/BackgroundImage";
 import { getEpisodesCached } from "../../../_shared";
 import { EpisodeSeriesGrid } from "../EpisodeSeriesGrid";
-import { BEERUS_CRUNCHYROLL_URL, officialEpisodeCatalogue } from "@/lib/official-episode-catalogue";
+import { officialEpisodeCatalogue } from "@/lib/official-episode-catalogue";
+import { VideoPlayer } from "@/components/episodes/VideoPlayer";
+import { VideoSourceSummary } from "@/components/episodes/VideoSourceSummary";
+import { assetUrl } from "@/lib/assets";
 import { EpisodeScenes } from "../../../[id]/EpisodeScenes";
 import { ShareButton } from "@/components/ShareButton";
 import { ogMeta } from "@/lib/og";
@@ -51,8 +54,10 @@ export default async function OfficialBeerusEpisodePage({
   const { series, number } = await params;
   if (series !== DBS_BEERUS_SERIES_CODE || number !== "1") notFound();
   const text = getDictionary().dbsBeerus;
-  const catalogue = await getEpisodesCached(series, 1000, 0).catch(() => null);
-  const cards = officialEpisodeCatalogue(series, catalogue?.episodes ?? [], {
+  const catalogue = await getEpisodesCached(series, 1000, 0);
+  const episode = catalogue.episodes.find((entry) => entry.number_in_series === Number(number));
+  if (!episode?.video_url) notFound();
+  const cards = officialEpisodeCatalogue(series, catalogue.episodes, {
     title: text.episodeTitle,
     synopsis: text.episodeSynopsis,
   });
@@ -105,19 +110,17 @@ export default async function OfficialBeerusEpisodePage({
           </p>
         </header>
         <div id="player" className="mb-8 space-y-4">
-          <section className="dbz-panel space-y-3 p-6">
-            <a
-              href={BEERUS_CRUNCHYROLL_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-11 items-center font-semibold text-dbz-orange underline underline-offset-4"
-            >
-              <T k="dbsBeerus.watchEpisode" />
-            </a>
-            <p className="text-sm leading-relaxed text-white/65">
-              <T k="dbsBeerus.episodeProviderNote" />
-            </p>
-          </section>
+          <VideoPlayer
+            src={episode.video_url}
+            title={episode.title}
+            poster={episode.image ? assetUrl(episode.image) : undefined}
+            subtitles={episode.subtitles ?? undefined}
+          />
+          <VideoSourceSummary
+            players={[{ name: episode.title, provider: "mugiwara", embedUrl: episode.video_url }]}
+            subtitles={episode.subtitles?.length ?? 0}
+            frames={episode.frames?.length ?? 0}
+          />
         </div>
         <div className="space-y-12">
           <section aria-labelledby="series-catalogue-title" className="space-y-5">
@@ -152,7 +155,7 @@ export default async function OfficialBeerusEpisodePage({
             </div>
           </section>
           <EpisodeScenes
-            frames={[]}
+            frames={episode.frames ?? []}
             title={text.episodeTitle}
             episodeNumber={1}
             series={DBS_BEERUS_SERIES_CODE}
