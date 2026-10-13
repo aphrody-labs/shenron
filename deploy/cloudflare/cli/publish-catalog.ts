@@ -28,6 +28,9 @@ export interface PublishCatalogOptions {
   sdkModule: string;
   workerOrigin: string;
   cdnOrigin: string;
+  /** Explicit native-origin qualification; the default still probes Worker + CDN. */
+  qualificationOrigins?: readonly [string, string];
+  qualificationService?: { serviceVersion: "shenron-cdn-origin/v1"; codeSha256: string };
   expectedDeployment: string;
   expectedCodeSha256: string;
   expectedPrefix: string;
@@ -85,6 +88,158 @@ const settingsKeys = [
   "keep_assets",
 ];
 const sha = (bytes: ArrayBuffer) => digest(new Uint8Array(bytes));
+export function qualificationOrigins(
+  options: Pick<
+    PublishCatalogOptions,
+    "workerOrigin" | "cdnOrigin" | "qualificationOrigins" | "qualificationService"
+  >,
+): readonly string[] {
+  if (!options.qualificationOrigins) {
+    if (options.qualificationService)
+      throw new Error("Native service requires explicit qualification origins");
+    return [options.workerOrigin, options.cdnOrigin];
+  }
+  if (
+    options.cdnOrigin !== "https://cdn.dragonballfr.com" ||
+    JSON.stringify(options.qualificationOrigins) !==
+      JSON.stringify([options.cdnOrigin, "https://origin-cdn.dragonballfr.com"]) ||
+    options.qualificationService?.serviceVersion !== "shenron-cdn-origin/v1" ||
+    !/^[a-f0-9]{64}$/.test(options.qualificationService.codeSha256)
+  )
+    throw new Error("Unreviewed qualification origin or service");
+  return [...options.qualificationOrigins];
+}
+
+type NativeOriginAttestation = {
+  backend: "native-manifest-origin";
+  serviceVersion: string;
+  codeSha256: string;
+  manifestPrefix: string;
+  inventorySha256: string;
+};
+
+/** Both public origins must attest the independently pinned native implementation and inventory. */
+export async function attestQualificationOrigins(
+  options: Pick<
+    PublishCatalogOptions,
+    "workerOrigin" | "cdnOrigin" | "qualificationOrigins" | "qualificationService"
+  >,
+  manifestPrefix: string,
+  inventorySha256: string,
+): Promise<NativeOriginAttestation | null> {
+  const origins = qualificationOrigins(options);
+  if (!options.qualificationOrigins) return null;
+  if (
+    !/^_migration\/manifests\/[a-z0-9-]+\/$/.test(manifestPrefix) ||
+    !/^[a-f0-9]{64}$/.test(inventorySha256)
+  )
+    throw new Error("Invalid native attestation inventory pin");
+  const expected: NativeOriginAttestation = {
+    backend: "native-manifest-origin",
+    serviceVersion: options.qualificationService!.serviceVersion,
+    codeSha256: options.qualificationService!.codeSha256,
+    manifestPrefix,
+    inventorySha256,
+  };
+  const results = await Promise.allSettled(
+    origins.map(async (origin) => {
+      const response = await fetch(new URL("/.well-known/shenron-cdn-origin.json", origin), {
+        redirect: "error",
+        credentials: "omit",
+        signal: AbortSignal.timeout(10000),
+        headers: { "Accept-Encoding": "identity", "Cache-Control": "no-cache" },
+      });
+      if (
+        response.status !== 200 ||
+        response.headers.get("cache-control") !== "no-store" ||
+        !/^application\/json(?:;|$)/i.test(response.headers.get("content-type") ?? "") ||
+        !response.body
+      ) {
+        await response.body?.cancel();
+        throw new Error("Native origin attestation unavailable");
+      }
+      const declared = response.headers.get("content-length");
+      if (
+        declared !== null &&
+        (!Number.isSafeInteger(Number(declared)) ||
+          Number(declared) < 1 ||
+          Number(declared) > 16384)
+      ) {
+        await response.body.cancel();
+        throw new Error("Native origin attestation exceeds bound");
+      }
+      const reader = response.body.getReader();
+      const chunks: Uint8Array[] = [];
+      let length = 0;
+      try {
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          length += value.byteLength;
+          if (length > 16384 || chunks.length >= 256)
+            throw new Error("Native origin attestation exceeds bound");
+          chunks.push(value);
+        }
+      } finally {
+        await reader.cancel();
+        reader.releaseLock();
+      }
+      if (
+        declared !== null &&
+        !response.headers.has("content-encoding") &&
+        Number(declared) !== length
+      )
+        throw new Error("Native origin attestation size differs");
+      const bytes = new Uint8Array(length);
+      let offset = 0;
+      for (const chunk of chunks) {
+        bytes.set(chunk, offset);
+        offset += chunk.length;
+      }
+      const actual = JSON.parse(new TextDecoder().decode(bytes));
+      if (Object.entries(expected).some(([key, value]) => actual[key] !== value))
+        throw new Error("Native origin attestation tuple differs");
+    }),
+  );
+  for (const result of results) if (result.status === "rejected") throw result.reason;
+  return expected;
+}
+
+export function assertQualificationReceipt(
+  options: Pick<
+    PublishCatalogOptions,
+    "workerOrigin" | "cdnOrigin" | "qualificationOrigins" | "qualificationService"
+  >,
+  receipt: {
+    qualificationOrigins?: string[];
+    workerPublicQualified?: boolean;
+    nativeOriginAttestation?: NativeOriginAttestation;
+    prefix: string;
+    inventorySha256: string;
+  },
+) {
+  const origins = qualificationOrigins(options);
+  if (
+    (receipt.qualificationOrigins !== undefined || options.qualificationOrigins) &&
+    JSON.stringify(receipt.qualificationOrigins) !== JSON.stringify(origins)
+  )
+    throw new Error("Qualified receipt origins differ");
+  if (options.qualificationOrigins) {
+    const proof = receipt.nativeOriginAttestation;
+    if (
+      !/^_migration\/manifests\/[a-z0-9-]+\/$/.test(receipt.prefix) ||
+      !/^[a-f0-9]{64}$/.test(receipt.inventorySha256) ||
+      receipt.workerPublicQualified !== false ||
+      !proof ||
+      proof.backend !== "native-manifest-origin" ||
+      proof.serviceVersion !== options.qualificationService!.serviceVersion ||
+      proof.codeSha256 !== options.qualificationService!.codeSha256 ||
+      proof.manifestPrefix !== receipt.prefix ||
+      proof.inventorySha256 !== receipt.inventorySha256
+    )
+      throw new Error("Qualified native receipt differs");
+  }
+}
 export function publicTarget(input: string): URL {
   const url = new URL(input);
   if (
@@ -343,13 +498,15 @@ export async function verifyQualifiedPublication(
   const text = await Bun.file(receiptPath).text();
   if (digest(text) !== receiptSha256) throw new Error("Qualified receipt changed");
   const qualified = JSON.parse(text);
+  const origins = qualificationOrigins(options);
+  assertQualificationReceipt(options, qualified);
   if (
     qualified.complete !== true ||
     qualified.apiMutations !== 0 ||
     qualified.registryMutations !== 0 ||
     !Number.isSafeInteger(qualified.publicFilesVerified) ||
     qualified.publicFilesVerified < 1 ||
-    qualified.actualGets !== 2 * qualified.publicFilesVerified ||
+    qualified.actualGets !== origins.length * qualified.publicFilesVerified ||
     !/^[a-f0-9]{64}$/.test(qualified.inventorySha256 ?? "") ||
     qualified.codeSha256 !== options.expectedCodeSha256
   )
@@ -413,6 +570,11 @@ export async function verifyQualifiedPublication(
       throw new Error("Qualified settings differ from original plan");
     const delta = (await Bun.file(qualified.inventoryPath).json()) as Delta;
     inventoryMatchesBindings(delta.entries, before.settings.bindings);
+    const nativeOriginAttestation = await attestQualificationOrigins(
+      options,
+      qualified.prefix,
+      qualified.inventorySha256,
+    );
     const target = publicTarget(options.targetUrl);
     if (target.origin !== "https://dragonballfr.com") throw new Error("Target site differs");
     const selected = Object.entries(delta.entries).filter(
@@ -421,12 +583,13 @@ export async function verifyQualifiedPublication(
     if (!selected.some(([path]) => path === target.pathname + "/index.json"))
       throw new Error("Qualified publication index missing");
     await parallel(selected, async ([path, entry]) => {
-      for (const origin of [options.workerOrigin, options.cdnOrigin]) {
+      for (const origin of origins) {
         const headers = await verifyPublic(new URL(path, origin), entry);
         if (path.endsWith("/index.json") && headers.get("cache-control") !== "no-store")
           throw new Error("Public index must be no-store");
       }
     });
+    await attestQualificationOrigins(options, qualified.prefix, qualified.inventorySha256);
     if (
       JSON.stringify(await owner.snapshot()) !== JSON.stringify(before) ||
       JSON.stringify(await Bun.file(join(stateDirectory, "current-inventory.json")).json()) !==
@@ -438,7 +601,11 @@ export async function verifyQualifiedPublication(
       indexSha256: delta.entries[target.pathname + "/index.json"]!.sha256,
       sourceBefore: before.codeSha256,
       sourceAfter: before.codeSha256,
-      freshPublicGetChecks: 2 * selected.length,
+      freshPublicGetChecks: origins.length * selected.length,
+      qualificationOrigins: origins,
+      workerPublicQualified: !options.qualificationOrigins,
+      nativeOriginAttestation,
+      attestationGetChecks: options.qualificationOrigins ? 2 * origins.length : 0,
       qualifiedReceiptSha256: receiptSha256,
       qualificationRecovery: true,
       urls: selected
@@ -557,7 +724,8 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
     }
     const manifest = (await Bun.file(options.manifest).json()) as Manifest;
     validateManifest(manifest);
-    for (const origin of [options.workerOrigin, options.cdnOrigin]) {
+    const origins = qualificationOrigins(options);
+    for (const origin of origins) {
       const url = new URL(origin);
       if (
         url.protocol !== "https:" ||
@@ -584,6 +752,11 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
       inventoryMatchesBindings(
         (await Bun.file(options.previousInventory).json()).entries,
         before.settings.bindings,
+      );
+      await attestQualificationOrigins(
+        options,
+        options.expectedPrefix,
+        options.previousInventorySha256,
       );
       const controls = before.settings.bindings.filter((binding) =>
         ["IMPORT_ENABLED", "VERIFY_UPLOADS"].includes(binding.name),
@@ -783,8 +956,14 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
         (path.startsWith("/catalog/assets/") && path.includes(delta.catalog.revision)) ||
         path === "/catalog/assets/index.json",
     );
+    const nativeOriginAttestation = await attestQualificationOrigins(
+      options,
+      plan.prefix,
+      plan.inventorySha256,
+    );
+    let actualGets = 0;
     await parallel(selected, async ([path, entry]) => {
-      for (const origin of [options.workerOrigin, options.cdnOrigin]) {
+      for (const origin of origins) {
         try {
           const headers = await verifyPublic(new URL(path, origin), entry);
           if (
@@ -793,6 +972,7 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
             headers.get("cache-control") !== "no-store"
           )
             throw new Error("Public index must be no-store");
+          actualGets++;
         } catch (error) {
           const message = error instanceof Error ? error.message : "",
             safe =
@@ -821,6 +1001,7 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
         }
       }
     });
+    await attestQualificationOrigins(options, plan.prefix, plan.inventorySha256);
     if (JSON.stringify(await owner.snapshot()) !== JSON.stringify(after))
       throw new Error("Worker drift during public qualification");
     const receipt = {
@@ -835,6 +1016,12 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
       objectsVerified: objects.length,
       shardsVerified: 256,
       publicFilesVerified: selected.length,
+      actualGets,
+      complete: actualGets === origins.length * selected.length,
+      qualificationOrigins: origins,
+      workerPublicQualified: !options.qualificationOrigins,
+      nativeOriginAttestation,
+      attestationGetChecks: options.qualificationOrigins ? 2 * origins.length : 0,
       sourceBefore: plan.before.codeSha256,
       sourceAfter: after.codeSha256,
       deploymentBefore: plan.before.deployment,
