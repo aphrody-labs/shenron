@@ -21,6 +21,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Agents & API" };
 
 const dateFormat = new Intl.DateTimeFormat("fr-FR", {
+  timeZone: "Europe/Paris",
   day: "2-digit",
   month: "short",
   hour: "2-digit",
