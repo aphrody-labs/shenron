@@ -11,7 +11,9 @@ bun scripts/ops/publish-source.ts --source https://publisher.example/guide --tar
 ```
 
 La cible accepte exclusivement `/publications/<slug>` sur dragonballfr.com :
-elle correspond à la route dynamique réelle, sans redéploiement Next. Le plan
+elle correspond à la route dynamique réelle. Son déploiement initial qualifié
+est nécessaire ; les publications suivantes réutilisent cette route sans
+nouveau build Next. Le plan
 ne lance aucun crawl, upload ou writer. `--apply` compare son contenu épinglé,
 refuse de réutiliser un job déjà commencé, puis appelle `aphrody web crawl`
 avec robots, sitemaps et domaine source unique. Options communes :
@@ -34,7 +36,11 @@ L’environnement privé existant fournit `DATABASE_URL`, `APHRODY_CLI` éventue
 (JSON régulier0600 contenant les chemins du contrat propriétaire :
 `previousInventory`, `previousInventorySha256`, `manifest`, `profile`,
 `tokenFile`, `sdkModule`, `stateDirectory`, `expectedDeployment`,
-`expectedCodeSha256`, `expectedPrefix`). Les identifiants restent dans les stores Infra ;
+`expectedCodeSha256`, `expectedPrefix`, `inventoryRoot`, `workerOrigin`,
+`cdnOrigin`). Le job CDN doit vivre sous le `inventoryRoot` privé déclaré ;
+`stateDirectory` est commun aux publications. Le module propriétaire relit
+son `current-inventory.json` qualifié pour la prochaine base, sans réutiliser
+un ancien préfixe actif. Les identifiants restent dans les stores Infra ;
 aucun secret n’est passé en argument ni affiché. Le runner se lance via Infra
 sur le contexte qui possède ces droits, jamais par import d’auth sur le poste.
 
@@ -43,7 +49,11 @@ puis active le nouvel index. Le wrapper prépare son plan CDN, épingle
 `planSha256`, puis applique uniquement cette identité. L’ingestion utilise `ingestNativeCrawl` et
 `createPostgresCrawlRegistry`, sans créer de schéma ni modifier le canon.
 `registry-before.json` sauvegarde les identités concernées ; la relecture
-contrôle leur cardinalité et leurs hashes. `receipt.json` distingue cible
+contrôle leur cardinalité et leurs hashes. Le wrapper conserve intégralement
+les notices déjà présentes : un shell HTML pauvre ne remplace pas leurs
+titres, extraits, classifications ou provenance éditoriale. Archive.org garde
+la classification `archive` pour les nouvelles identités. Une mise à jour de
+metadata existante exige son propriétaire explicite. `receipt.json` distingue cible
 demandée, URL réelle, documents, couverture médias et reçu CDN. Une erreur
 après une phase ne constitue pas un succès global : inspecter les reçus privés
 avant toute reprise ; aucun rollback ou replay implicite n’est exécuté.

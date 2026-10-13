@@ -10,10 +10,38 @@ import {
   createPostgresCrawlRegistry,
   projectNativeCrawl,
   crawlIngestPolicySchema,
+  type CrawlRegistryPort,
 } from "../../packages/pipeline/src/dragon-ball/crawl-ingest";
 
 export const digest = (body: string | Uint8Array) =>
   new Bun.CryptoHasher("sha256").update(body).digest("hex");
+export function publicationPolicy(sourceUrl: string) {
+  const domain = new URL(sourceUrl).hostname;
+  return crawlIngestPolicySchema.parse({
+    version: 1,
+    profile: "dbfr",
+    sources: [
+      {
+        domain,
+        kind: domain === "archive.org" ? "archive" : "reference",
+        reviewed: true,
+        evidence: sourceUrl,
+        rights: { ragPermitted: false, trainingPermitted: false, publicImagesPermitted: true },
+      },
+    ],
+  });
+}
+/** Generic publication adds new identities; existing editorial metadata needs an explicit update owner. */
+export function preserveExistingRegistry(
+  owner: CrawlRegistryPort,
+  identities: ReadonlySet<string>,
+): CrawlRegistryPort {
+  return {
+    assertReady: () => owner.assertReady(),
+    upsert: (record) =>
+      identities.has(record.url) ? Promise.resolve("protected") : owner.upsert(record),
+  };
+}
 export function publicSource(raw: string): URL {
   const url = new URL(raw);
   const host = url.hostname.toLowerCase();
@@ -202,7 +230,7 @@ async function run() {
   });
   if (values.help) {
     console.log(
-      `Usage: bun scripts/ops/publish-source.ts --source <public HTTPS URL> --target ${DEFAULT_PUBLIC_ORIGINS.site}/publications/<slug> [--job <absolute private directory>] [--apply]\nBudgets: --max-requests 1..256 (256), --max-depth 0..10 (5), --timeout 1..1800 (900 seconds).\nPlan pins plan.json in --job; --apply requires the identical plan and configured protected DBFR/CDN owners.`,
+      `Usage: bun scripts/ops/publish-source.ts --source <public HTTPS URL> --target ${DEFAULT_PUBLIC_ORIGINS.site}/publications/<slug> [--job <absolute private directory>] [--apply]\nBudgets: --max-requests 1..256 (256), --max-depth 0..10 (5), --timeout 1..1800 (900 seconds).\nPlan pins plan.json in --job; --apply requires the identical plan and configured protected DBFR/CDN owners.\nThe dynamic /publications routes require an initial qualified site deployment. Subsequent source publications reuse those routes without another Next build.`,
     );
     return;
   }
@@ -384,19 +412,7 @@ async function run() {
   if (new TextEncoder().encode(JSON.stringify(publication)).length > 2 * 1024 * 1024)
     throw new Error("Public index exceeds 2 MiB");
   await privateWrite(join(publicRoot, "publications", plan.slug, "index.json"), publication);
-  const policy = {
-    version: 1,
-    profile: "dbfr",
-    sources: [
-      {
-        domain: new URL(plan.sourceUrl).hostname,
-        kind: "reference",
-        reviewed: true,
-        evidence: plan.sourceUrl,
-        rights: { ragPermitted: false, trainingPermitted: false, publicImagesPermitted: true },
-      },
-    ],
-  };
+  const policy = publicationPolicy(plan.sourceUrl);
   const exports = pages.map((page) => nativePageExport(page, plan.sourceUrl));
   const expectedRecords = exports.flatMap((document) =>
     projectNativeCrawl(document, crawlIngestPolicySchema.parse(policy)),
@@ -494,19 +510,15 @@ async function run() {
       throw new Error("Registry optimistic snapshot changed during CDN publication");
     const result = await ingestNativeCrawl(
       { inputPath, policy, apply: true, maxDocuments: 256, signal },
-      registry,
+      preserveExistingRegistry(registry, new Set(before.map((row) => row.url))),
     );
     const after = await snapshot();
     if (!result.complete || after.length !== pages.length)
       throw new Error("Registry identity readback differs");
     for (const row of after) {
       const prior = before.find((entry) => entry.url === row.url);
-      const page = pages.find((entry) => entry.url === row.url)!;
       const expected = expectedRecords.find((entry) => entry.url === row.url)!;
-      if (
-        prior &&
-        (prior.canonical_eligible || new Date(prior.fetched_at).getTime() > page.fetched_at)
-      ) {
+      if (prior) {
         if (!Bun.deepEquals(prior, row)) throw new Error("Protected registry row changed");
       } else if (
         row.canonical_eligible ||

@@ -8,11 +8,45 @@ import {
   publicSource,
   publicationPlan,
   publicationTarget,
+  publicationPolicy,
+  preserveExistingRegistry,
 } from "./publish-source";
 import {
   crawlIngestPolicySchema,
   projectNativeCrawl,
 } from "../../packages/pipeline/src/dragon-ball/crawl-ingest";
+
+test("Archive publications retain their canonical classification and never replace existing rich notices", async () => {
+  const source = "https://archive.org/details/qualified-item";
+  expect(publicationPolicy(source).sources[0]!.kind).toBe("archive");
+  const record = projectNativeCrawl(
+    nativePageExport(
+      {
+        url: source,
+        title: "Generic HTML shell",
+        markdown: "Short shell",
+        content_hash: "",
+        fetched_at: 1791900000123,
+      },
+      source,
+    ),
+    publicationPolicy(source),
+  )[0]!;
+  let writes = 0;
+  const owner = {
+    assertReady: async () => {},
+    upsert: async () => {
+      writes++;
+      return "applied" as const;
+    },
+  };
+  const protectedOwner = preserveExistingRegistry(owner, new Set([source]));
+  expect(await protectedOwner.upsert(record)).toBe("protected");
+  expect(writes).toBe(0);
+  const newOwner = preserveExistingRegistry(owner, new Set<string>());
+  expect(await newOwner.upsert(record)).toBe("applied");
+  expect(writes).toBe(1);
+});
 
 test("registry expectations use canonical normalization while public objects retain exact captured bytes", () => {
   const page = {
