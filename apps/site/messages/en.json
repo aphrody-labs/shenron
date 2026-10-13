@@ -54,6 +54,9 @@
   "mangaCatalog": {
     "moreVolumes": "Show {count} more volumes",
     "dialogue": {
+      "chapter": "Chapter {number}",
+      "volume": "Volume {number}",
+      "colorVolume": "Color volume {number}",
       "title": "Find a line",
       "description": "Find French and Japanese manga dialogue. E.g. Kamehameha, Piccolo, 悟空.",
       "placeholder": "Search dialogue…",
@@ -1941,6 +1944,7 @@
     "botCounts": "{commands} command(s) · {guilds} server(s)",
     "details": {
       "response_ok": "Valid JSON response received",
+      "bot_offline": "The bot is disconnected from Discord",
       "invalid_response": "Response does not match the contract",
       "probe_unavailable": "HTTP probe unavailable or invalid response",
       "database_ok": "Website database SELECT 1 succeeded",
