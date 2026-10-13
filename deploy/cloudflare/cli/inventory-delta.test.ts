@@ -13,6 +13,26 @@ const old = (sourcePath: string): InventoryEntry => ({
   cacheControl: "public",
 });
 
+test("a recovered public R2 shard has no private filesystem source path", () => {
+  const previous: Record<string, InventoryEntry> = JSON.parse(
+    JSON.stringify({
+      "/_next/static/video.js": old("/active-cdn/_next/static/video.js"),
+      "/catalog/assets/index.json": old("/active-cdn/catalog/assets/index.json"),
+    }),
+    (key, value) => (key === "sourcePath" ? undefined : value),
+  );
+  const current = {
+    "/_next/static/video.js": {
+      ...old("/qualified-cdn/_next/static/video.js"),
+      sha256: digest("current video chunk"),
+    },
+  };
+  const merged = mergeEntries(previous, current);
+  expect(merged["/_next/static/video.js"]).toEqual(current["/_next/static/video.js"]);
+  expect(merged["/catalog/assets/index.json"]).toEqual(previous["/catalog/assets/index.json"]);
+  expect(Object.keys(merged)).toHaveLength(2);
+});
+
 test("delta pins the previous inventory and emits public shards without source paths", async () => {
   const dir = await mkdtemp(join(tmpdir(), "shenron-cdn-delta-"));
   try {
