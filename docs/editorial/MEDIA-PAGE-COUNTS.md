@@ -33,3 +33,21 @@ et préparer un nouveau plan frais, sans restaurer aveuglément l'ancienne table
 Le CLIops lance l'entrypoint typé `apps/site/scripts/repair-media-page-counts.ts`
 avec Bun et le tsconfig du site. Les aliases du site ne traversent pas le projet
 TypeScript des scriptsopérationnels.
+
+## Qualification du13octobre2026
+
+84compteursNULL ont été remplis depuis15900références uniques de chemins de
+pages, toutes présentes dans l'inventaireR2 contrôlé. La relecture indépendante
+confirme les84valeurs demandées et84révisionsCMS distinctes. Les autres champs
+des volumes restent inchangés par cette réparation. Trois sondes d'images
+existantes ont renvoyé200 avec leurs types et tailles attendus.
+
+La sauvegarde PostgreSQL hors hôte des tablesvolumes/chapitres fait75627octets,
+SHA256 `128ccf68f19d9989436c23ba261ccafd9f549d17e9bcc268b2b85840053e8a58`.
+Le reçu et ses84révisions restent protégés dans le job de réparation.
+
+L'attribution des éditions est une vérification séparée : une relecture plus
+récente classe les42noticesFullColor de DragonBall en français, avec7935pages
+déclarées pour cette édition. Le catalogue japonaisFullColor demandé n'est donc
+pas qualifié par ces pages françaises. La différence avec le total15900, portant
+sur84identités de volumes, ne justifie pas de réécrire les données concurrentes.
