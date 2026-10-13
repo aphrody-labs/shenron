@@ -16,6 +16,7 @@ services:
       - ${SHENRON_COMPUTE_CLIENT_ENV_FILE:-/etc/aphrody/shenron-compute-client.env}
     environment:
       SHENRON_HOME: /var/lib/shenron
+      A2A_COORD_DIR: /var/lib/shenron/data/a2a
       SHENRON_PROFILE: production
       SHENRON_FFI_LIB: /usr/local/lib/libshenron_ffi.so
       SHENRON_VFS_DB: /var/lib/shenron/data/shenron-vfs.sqlite

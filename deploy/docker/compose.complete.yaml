@@ -35,7 +35,16 @@ services:
     image: redis:7-alpine
     container_name: shenron-redis
     restart: unless-stopped
-    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "256mb", "--maxmemory-policy", "volatile-lru"]
+    command:
+      [
+        "redis-server",
+        "--appendonly",
+        "yes",
+        "--maxmemory",
+        "256mb",
+        "--maxmemory-policy",
+        "volatile-lru",
+      ]
     volumes:
       - redis_data:/data
     ports:
@@ -66,6 +75,7 @@ services:
       - ${SHENRON_COMPUTE_CLIENT_ENV_FILE:-./env/shenron-compute-client.env}
     environment:
       SHENRON_HOME: /var/lib/shenron
+      A2A_COORD_DIR: /var/lib/shenron/data/a2a
       SHENRON_PROFILE: production
       HOSTNAME: 0.0.0.0
       PORT: "5011"
