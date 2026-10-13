@@ -63,7 +63,16 @@ export function externalSourceUrlFromId(id: string): string | null {
     const url = Buffer.from(id, "base64url").toString("utf8");
     const parsed = new URL(url);
     if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return null;
-    return externalSourceId(parsed.href) === id ? parsed.href : null;
+    if (
+      parsed.username ||
+      parsed.password ||
+      url.trim() !== url ||
+      [...url].some((char) => char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127)
+    )
+      return null;
+    // The original URL is the registry primary key. URL.href rewrites Unicode,
+    // spaces, host casing, ports and trailing slashes, losing that exact key.
+    return externalSourceId(url) === id ? url : null;
   } catch {
     return null;
   }

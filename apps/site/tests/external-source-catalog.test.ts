@@ -29,7 +29,20 @@ describe("external source public identifiers", () => {
 
   test("rejects malformed identifiers and non-canonical encodings", () => {
     expect(externalSourceUrlFromId("../../etc-passwd")).toBeNull();
-    expect(externalSourceUrlFromId("aHR0cHM6Ly9leGFtcGxlLmNvbQ")).toBeNull();
+    expect(externalSourceUrlFromId(`${externalSourceId("https://example.com/")}=`)).toBeNull();
+    expect(
+      externalSourceUrlFromId(externalSourceId("https://user:password@example.com/")),
+    ).toBeNull();
+  });
+  test("retains the exact stored URL key when URL.href would normalize it", () => {
+    for (const url of [
+      "https://example.com/鳥山明",
+      "https://example.com/Dragon Ball.jpg",
+      "https://EXAMPLE.com:443/",
+      "https://example.com",
+    ]) {
+      expect(externalSourceUrlFromId(externalSourceId(url))).toBe(url);
+    }
   });
 });
 
