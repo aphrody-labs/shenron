@@ -135,6 +135,7 @@ export const WIKI_TABLE_SPECS: Record<string, WikiTableSpec> = {
       "videoUrl",
       "malId",
       "subtitles",
+      "frames",
       "players",
       "availability",
     ],

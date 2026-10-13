@@ -57,14 +57,14 @@ export const bot = pgSchema("bot");
  *  - `caption`/`tags` : métadonnées éditoriales optionnelles (légende, badges).
  */
 export type EpisodeFrame = {
-  /** Provenance : "ffmpeg" (vidéo locale). */
-  source: "ffmpeg";
+  /** Producer identity; native Bun Video must not be labelled as the legacy extractor. */
+  source: "ffmpeg" | "bun-video";
   /** Id stable côté source (ex. `ffmpeg:dbz:001:00042`). */
   sourceId: string;
   /** URL/chemin d'origine (page wiki, ou chemin de la vidéo source). */
   sourceUrl: string | null;
   /** Numéro d'épisode dans la série (= `db_episodes.number_in_series`). */
-  episodeNumber: number;
+  episodeNumber: number | null;
   /**
    * Chemin d'asset bot RELATIF (`./assets/ext/db_episodes_frames/...`) — servi
    * via `bot.dragonballfr.com/assets/...`. `null` pour un dry-run (frame non écrite).

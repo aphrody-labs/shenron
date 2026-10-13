@@ -5,12 +5,17 @@ import { validateCatalogEditorialBody } from "../src/lib/catalog-editorial-contr
 import { CatalogMediaConflictError } from "../src/lib/catalog-media-contracts";
 import { z } from "zod";
 import { DatabooksFrozenError } from "@aphrody/shenron-db/guards";
+import {
+  WikiUpdatePreconditionError,
+  wikiUpdateSnapshotHash,
+} from "../src/lib/wiki-update-precondition";
 
 let admin = true;
 let frozen = true;
 let writeError: Error | null = null;
 const writes: Array<{ table: string; body: Record<string, unknown> }> = [];
 const revisions: unknown[] = [];
+const preconditions: unknown[] = [];
 mock.module("@/lib/session", () => ({
   isCurrentUserAdmin: async () => admin,
   getCurrentUser: async () => null,
@@ -32,9 +37,15 @@ mock.module("@/lib/wiki-admin", () => ({
     writes.push({ table, body });
     return { id: 1, ...body };
   },
-  updateWiki: async (table: string, _id: string, body: Record<string, unknown>) => {
+  updateWiki: async (
+    table: string,
+    _id: string,
+    body: Record<string, unknown>,
+    options?: unknown,
+  ) => {
     if (writeError) throw writeError;
     writes.push({ table, body });
+    preconditions.push(options);
     return { id: 1, ...body };
   },
   deleteWiki: async () => {},
@@ -73,9 +84,94 @@ beforeEach(() => {
   writeError = null;
   writes.length = 0;
   revisions.length = 0;
+  preconditions.length = 0;
 });
 
+const nativeFrame = {
+  source: "bun-video",
+  sourceId: `bun-video:${"a".repeat(64)}:11`,
+  sourceUrl: "https://media.example.test/episode.mp4",
+  episodeNumber: null,
+  imagePath: "https://cdn.example.test/episode-875/frame-11.png",
+  timecodeSec: 11,
+  width: 1920,
+  height: 1080,
+  characterNames: [],
+  tags: [],
+  caption: null,
+  isNotable: false,
+  sortOrder: 0,
+};
+
 describe("catalogue editorial writes", () => {
+  test("qualified native PNG frames and full preconditions reach the canonical writer separately", async () => {
+    const expected = { id: 1, frames: null, durationSec: 1397 };
+    const expectedSha256 = wikiUpdateSnapshotHash(expected);
+    const response = await write("db_episodes", {
+      frames: JSON.stringify([nativeFrame]),
+      durationSec: 1397,
+      expected,
+      expectedSha256,
+    });
+    expect(response.status).toBe(200);
+    expect(writes[0]!.body).toEqual({ frames: [nativeFrame], durationSec: 1397 });
+    expect(preconditions[0]).toEqual({ expected, expectedSha256 });
+    expect(writes[0]!.body).not.toHaveProperty("expected");
+    expect(revisions).toHaveLength(1);
+  });
+  test("unprotected frame updates never reach CRUD", async () => {
+    expect((await write("db_episodes", { frames: [nativeFrame] })).status).toBe(400);
+    expect(writes).toHaveLength(0);
+    expect(revisions).toHaveLength(0);
+  });
+  test("a concurrent episode update returns 409 without a success revision or protected values", async () => {
+    writeError = new WikiUpdatePreconditionError();
+    const expected = { id: 1, frames: null };
+    const response = await write("db_episodes", {
+      frames: [],
+      expected,
+      expectedSha256: wikiUpdateSnapshotHash(expected),
+    });
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({ error: "wiki_update_precondition_changed" });
+    expect(writes).toHaveLength(0);
+    expect(revisions).toHaveLength(0);
+  });
+  test("native frame provenance and format are strict; the legacy frame shape remains accepted", () => {
+    expect(validateCatalogEditorialBody("db_episodes", { frames: [nativeFrame] }).ok).toBe(true);
+    expect(
+      validateCatalogEditorialBody("db_episodes", {
+        frames: [
+          {
+            ...nativeFrame,
+            source: "ffmpeg",
+            sourceId: "ffmpeg:dbs:001:11",
+            imagePath: "./assets/ext/db_episodes_frames/875/11.jpg",
+          },
+        ],
+      }).ok,
+    ).toBe(true);
+    for (const invalid of [
+      { ...nativeFrame, source: "invented" },
+      { ...nativeFrame, sourceId: `bun-video:${"a".repeat(64)}:12` },
+      { ...nativeFrame, sourceId: "bun-video:unqualified:11" },
+      { ...nativeFrame, imagePath: "https://cdn.example.test/frame.jpg" },
+      { ...nativeFrame, imagePath: "https://bucket.r2.dev/frame.png" },
+      { ...nativeFrame, imagePath: "https://cdn.example.test/frame.png?token=protected" },
+      { ...nativeFrame, sourceUrl: "C:/private/capture.mp4" },
+      { ...nativeFrame, width: null },
+      { ...nativeFrame, timecodeSec: Number.NaN },
+      { ...nativeFrame, privateHeaders: { authorization: "protected" } },
+    ])
+      expect(validateCatalogEditorialBody("db_episodes", { frames: [invalid] }).ok).toBe(false);
+    for (const body of [
+      { frames: "{invalid" },
+      { durationSec: 1397.688 },
+      { durationSec: -1 },
+      { hasVostfr: true },
+    ])
+      expect(validateCatalogEditorialBody("db_episodes", body).ok).toBe(false);
+  });
   for (const method of ["POST", "PATCH"] as const) {
     test(`${method} rejects frozen databook pages before CRUD or revision`, async () => {
       const response = await write("db_databooks", { pages: null, title: "Book" }, method);

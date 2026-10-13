@@ -40,7 +40,11 @@ import { wikiRevisions } from "@/db/schema";
 import * as botSchema from "@/db/bot-schema";
 import { resolveMediaEditionId } from "@/lib/media-edition-aliases";
 import { kindFromCategory } from "@/lib/databook-categories";
-import { assertWikiUpdatePrecondition } from "@/lib/wiki-update-precondition";
+import {
+  assertWikiUpdatePrecondition,
+  WikiUpdateRequestError,
+} from "@/lib/wiki-update-precondition";
+import { validateCatalogEditorialBody } from "@/lib/catalog-editorial-contracts";
 import {
   anyGapSql,
   countWhereSql,
@@ -192,7 +196,9 @@ function buildValues(spec: ResolvedTable, body: Row, { forInsert }: { forInsert:
     }
   }
   const selected = Object.fromEntries(Object.entries(body).filter(([key]) => allowed.has(key)));
-  const parsed = parseMediaCatalogBody(spec.name, selected, forInsert);
+  const editorial = validateCatalogEditorialBody(spec.name, selected, forInsert);
+  if (!editorial.ok) throw new WikiUpdateRequestError("Invalid editorial metadata");
+  const parsed = parseMediaCatalogBody(spec.name, editorial.value, forInsert);
   for (const key of allowed) {
     if (key in parsed) out[key] = coerceValue(spec, key, parsed[key]);
   }
@@ -552,7 +558,7 @@ export async function updateWiki(
   table: string,
   id: string,
   data: Row,
-  options: { expected?: Row } = {},
+  options: { expected?: Row; expectedSha256?: string } = {},
 ): Promise<Row> {
   const spec = getSpec(table);
   if (!spec) throw new Error(`Table inconnue: ${table}`);
@@ -562,6 +568,33 @@ export async function updateWiki(
     throw new Error("Aucune colonne mutable fournie.");
   }
   const cond = pkCondition(spec, id);
+  if (
+    table === "db_episodes" &&
+    (options.expected || options.expectedSha256 || Object.hasOwn(values, "frames"))
+  ) {
+    if (!options.expected || !options.expectedSha256) {
+      throw new WikiUpdateRequestError("Complete episode snapshot and SHA256 required");
+    }
+    return db.transaction(async (tx) => {
+      await tx.execute(
+        sql`SELECT pg_advisory_xact_lock(hashtext(${`shenron:wiki:${table}:${id}`}))`,
+      );
+      const [before] = (await tx
+        .select()
+        .from(spec.table)
+        .where(cond)
+        .limit(1)
+        .for("update")) as Row[];
+      if (!before) throw new Error(`Ligne introuvable: ${table}#${id}`);
+      assertWikiUpdatePrecondition(before, options.expected!, {
+        complete: true,
+        sha256: options.expectedSha256,
+      });
+      const [updated] = (await tx.update(spec.table).set(values).where(cond).returning()) as Row[];
+      if (!updated) throw new Error(`Ligne introuvable: ${table}#${id}`);
+      return updated;
+    });
+  }
   if (options.expected && !isMediaCatalogTable(table)) {
     throw new Error("Guarded wiki updates require the media catalog transaction owner");
   }

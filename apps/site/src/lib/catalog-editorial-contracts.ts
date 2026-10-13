@@ -57,8 +57,64 @@ const jsonInput = (schema: z.ZodType) =>
       return value;
     }
   }, schema);
+const episodeFrame = z
+  .object({
+    source: z.enum(["ffmpeg", "bun-video"]),
+    sourceId: z.string().min(1).max(512),
+    sourceUrl: z.string().max(4096).nullable(),
+    episodeNumber: z.number().int().nonnegative().nullable(),
+    imagePath: z.string().min(1).max(4096).nullable(),
+    timecodeSec: z.number().finite().min(0).max(86400).nullable(),
+    width: z.number().int().min(1).max(16384).nullable(),
+    height: z.number().int().min(1).max(16384).nullable(),
+    characterNames: z.array(z.string().max(200)).max(100),
+    tags: z.array(z.string().max(200)).max(100),
+    caption: z.string().max(4000).nullable(),
+    isNotable: z.boolean(),
+    sortOrder: z.number().int().nonnegative(),
+  })
+  .strict()
+  .superRefine((frame, ctx) => {
+    if (frame.source !== "bun-video") return;
+    const publicUrl = (value: string | null, png = false): boolean => {
+      if (!value || !URL.canParse(value)) return false;
+      const url = new URL(value);
+      return (
+        url.protocol === "https:" &&
+        !url.username &&
+        !url.password &&
+        !url.search &&
+        !url.hash &&
+        url.href === value &&
+        !url.hostname.endsWith(".r2.dev") &&
+        !url.hostname.endsWith(".r2.cloudflarestorage.com") &&
+        (!png || url.pathname.toLowerCase().endsWith(".png"))
+      );
+    };
+    const parts = frame.sourceId.match(/^bun-video:([a-f0-9]{64}):(.+)$/);
+    if (
+      !parts ||
+      frame.timecodeSec === null ||
+      parts[2] !== String(frame.timecodeSec) ||
+      frame.width === null ||
+      frame.height === null ||
+      !publicUrl(frame.sourceUrl) ||
+      !publicUrl(frame.imagePath, true)
+    ) {
+      ctx.addIssue({ code: "custom", message: "Invalid native frame source, timestamp or PNG" });
+    }
+  });
 const episodeMetadata = z
   .object({
+    durationSec: z.preprocess(
+      (value) => (typeof value === "string" && /^\d+$/.test(value) ? Number(value) : value),
+      z.number().int().min(0).max(86400).nullable().optional(),
+    ),
+    frames: jsonInput(z.array(episodeFrame).max(600).nullable()).optional(),
+    // Public language flags are derived from qualified offers, never stored columns.
+    hasVf: z.never().optional(),
+    hasVost: z.never().optional(),
+    hasVostfr: z.never().optional(),
     officialSourceUrl: z
       .union([httpUrl, z.literal("")])
       .nullable()

@@ -1,17 +1,81 @@
 // SPDX-License-Identifier: Apache-2.0
 
-/** Compare only explicit preconditions; error messages never echo row values. */
+export class WikiUpdatePreconditionError extends Error {
+  readonly code = "wiki_update_precondition_changed";
+  constructor() {
+    super("Wiki update precondition changed");
+  }
+}
+
+export class WikiUpdateRequestError extends Error {
+  readonly code = "invalid_wiki_update_precondition";
+}
+
+function canonical(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
+  if (value !== null && typeof value === "object") {
+    return `{${Object.keys(value)
+      .toSorted()
+      .map((key) => `${JSON.stringify(key)}:${canonical((value as Record<string, unknown>)[key])}`)
+      .join(",")}}`;
+  }
+  const encoded = JSON.stringify(value);
+  if (encoded === undefined) {
+    throw new WikiUpdateRequestError("Snapshot contains non-JSON values");
+  }
+  return encoded;
+}
+
+/** Hash the canonical administrative JSON snapshot, never a public projection. */
+export function wikiUpdateSnapshotHash(row: Record<string, unknown>): string {
+  return new Bun.CryptoHasher("sha256").update(canonical(row)).digest("hex");
+}
+
+/** Reserved HTTP preconditions are kept outside mutable column coercion. */
+export function parseEpisodeUpdateRequest(body: Record<string, unknown>): {
+  data: Record<string, unknown>;
+  expected?: Record<string, unknown>;
+  expectedSha256?: string;
+} {
+  const { expected, expectedSha256, ...data } = body;
+  const supplied = Object.hasOwn(body, "expected") || Object.hasOwn(body, "expectedSha256");
+  if (!supplied && !Object.hasOwn(data, "frames")) return { data };
+  if (
+    expected === null ||
+    typeof expected !== "object" ||
+    Array.isArray(expected) ||
+    Object.keys(expected).length === 0 ||
+    Object.keys(expected).length > 100 ||
+    JSON.stringify(expected).length > 4 * 1024 * 1024 ||
+    typeof expectedSha256 !== "string" ||
+    !/^[a-f0-9]{64}$/.test(expectedSha256)
+  ) {
+    throw new WikiUpdateRequestError("Complete expected snapshot and SHA256 required");
+  }
+  return { data, expected: expected as Record<string, unknown>, expectedSha256 };
+}
+
+/** Compare explicit or complete preconditions without echoing protected values. */
 export function assertWikiUpdatePrecondition(
   before: Record<string, unknown>,
   expected: Record<string, unknown>,
+  options: { complete?: boolean; sha256?: string } = {},
 ): void {
   const entries = Object.entries(expected);
   if (entries.length === 0 || entries.length > 100) {
     throw new Error("Wiki update precondition must contain bounded fields");
   }
+  if (
+    (options.complete && Object.keys(before).length !== entries.length) ||
+    (options.sha256 &&
+      (wikiUpdateSnapshotHash(expected) !== options.sha256 ||
+        wikiUpdateSnapshotHash(before) !== options.sha256))
+  ) {
+    throw new WikiUpdatePreconditionError();
+  }
   for (const [field, value] of entries) {
     if (!Object.hasOwn(before, field) || !Bun.deepEquals(before[field], value)) {
-      throw new Error("Wiki update precondition changed");
+      throw new WikiUpdatePreconditionError();
     }
   }
 }

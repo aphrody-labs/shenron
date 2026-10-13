@@ -50,6 +50,11 @@ import {
 } from "@/lib/catalog-editorial-contracts";
 import { databooksFreeze, DatabooksFrozenError } from "@/lib/databooks-freeze";
 import { CatalogMediaConflictError } from "@/lib/catalog-media-contracts";
+import {
+  parseEpisodeUpdateRequest,
+  WikiUpdatePreconditionError,
+  WikiUpdateRequestError,
+} from "@/lib/wiki-update-precondition";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -235,9 +240,19 @@ async function mutate(req: NextRequest, ctx: Ctx) {
   const body = await readJson(req);
   if (!body) return badRequest("JSON body requis");
   try {
-    const bodyError = databookPagesFreezeError(table, body);
+    if (
+      table !== "db_episodes" &&
+      (Object.hasOwn(body, "expected") || Object.hasOwn(body, "expectedSha256"))
+    ) {
+      throw new WikiUpdateRequestError("HTTP snapshot preconditions are episode-only");
+    }
+    const precondition =
+      table === "db_episodes"
+        ? parseEpisodeUpdateRequest(body)
+        : { data: body, expected: undefined, expectedSha256: undefined };
+    const bodyError = databookPagesFreezeError(table, precondition.data);
     if (bodyError) return bodyError;
-    const validated = validateCatalogEditorialBody(table, body);
+    const validated = validateCatalogEditorialBody(table, precondition.data);
     if (!validated.ok)
       return NextResponse.json(
         { error: "invalid_catalog_metadata", fields: validated.fields },
@@ -245,8 +260,11 @@ async function mutate(req: NextRequest, ctx: Ctx) {
       );
     const decoded = decodeURIComponent(id);
     // Snapshot AVANT pour la révision (diff avant/après + retour arrière).
-    const before = await getWikiRow(table, decoded).catch(() => null);
-    const row = await updateWiki(table, decoded, validated.value);
+    const before = precondition.expected ?? (await getWikiRow(table, decoded).catch(() => null));
+    const row = await updateWiki(table, decoded, validated.value, {
+      expected: precondition.expected,
+      expectedSha256: precondition.expectedSha256,
+    });
     revalidateWikiEntity(table, row);
     if (table === "db_wiki_sections") await revalidateSectionParent(row);
     await recordRevision({
@@ -300,6 +318,12 @@ export async function DELETE(req: NextRequest, ctx: Ctx) {
  * l'utilisateur et ne contiennent rien d'interne.
  */
 function writeFailed(context: string, err: unknown): NextResponse {
+  if (err instanceof WikiUpdatePreconditionError) {
+    return NextResponse.json({ error: err.code }, { status: 409 });
+  }
+  if (err instanceof WikiUpdateRequestError) {
+    return NextResponse.json({ error: err.code }, { status: 400 });
+  }
   if (err instanceof DatabooksFrozenError) {
     return NextResponse.json({ error: err.code, reason: err.freeze.reason }, { status: 423 });
   }

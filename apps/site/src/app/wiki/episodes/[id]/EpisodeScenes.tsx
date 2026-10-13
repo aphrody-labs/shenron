@@ -20,7 +20,7 @@ import { Film, RefreshCw, Scan, Search, Sparkles, Upload } from "lucide-react";
  * Réplique client-safe de `EpisodeFrame` (cf. `@/db/bot-schema`).
  */
 export type SceneFrame = {
-  source: "ffmpeg";
+  source: "ffmpeg" | "bun-video";
   sourceId: string;
   sourceUrl: string | null;
   episodeNumber: number | null;

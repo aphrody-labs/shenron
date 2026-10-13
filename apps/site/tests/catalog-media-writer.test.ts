@@ -7,6 +7,10 @@ import {
   isbnVariants,
   parseMediaCatalogBody,
 } from "../src/lib/catalog-media-contracts";
+import {
+  WikiUpdatePreconditionError,
+  wikiUpdateSnapshotHash,
+} from "../src/lib/wiki-update-precondition";
 
 type Row = Record<string, unknown>;
 const dialect = new PgDialect();
@@ -16,6 +20,7 @@ const updates: Row[] = [];
 const reads: Row[][] = [];
 let identityOverrides = 0;
 let databooksFrozen = false;
+const rowLocks: string[] = [];
 mock.module("@/lib/databooks-freeze", () => ({
   assertDatabooksWritable: () => {
     if (databooksFrozen) throw new Error("DATABOOKS_FROZEN");
@@ -35,6 +40,10 @@ function select() {
       return builder;
     },
     limit: () => builder,
+    for: (strength: string) => {
+      rowLocks.push(strength);
+      return builder;
+    },
   });
   return builder;
 }
@@ -83,9 +92,62 @@ beforeEach(() => {
   reads.length = 0;
   identityOverrides = 0;
   databooksFrozen = false;
+  rowLocks.length = 0;
 });
 
 describe("catalogue identities and editorial revisions", () => {
+  test("episode frame updates require complete preconditions in the owner writer", async () => {
+    await expect(updateWiki("db_episodes", "875", { frames: [] })).rejects.toThrow(
+      "snapshot and SHA256 required",
+    );
+    expect(updates).toHaveLength(0);
+    expect(queries).toHaveLength(0);
+    await expect(
+      updateWiki("db_episodes", "875", { durationSec: 1397 }, { expectedSha256: "0".repeat(64) }),
+    ).rejects.toThrow("snapshot and SHA256 required");
+    expect(updates).toHaveLength(0);
+    expect(queries).toHaveLength(0);
+  });
+  test("episode frames compare the locked complete row before updating", async () => {
+    const before = { id: 875, frames: null, durationSec: 1397, title: "Current" };
+    reads.push([before]);
+    await updateWiki(
+      "db_episodes",
+      "875",
+      { frames: [], durationSec: 1397 },
+      { expected: before, expectedSha256: wikiUpdateSnapshotHash(before) },
+    );
+    expect(queries[0]!.sql).toContain("pg_advisory_xact_lock");
+    expect(queries[0]!.params).toContain("shenron:wiki:db_episodes:875");
+    expect(rowLocks).toEqual(["update"]);
+    expect(updates).toEqual([{ frames: [], durationSec: 1397 }]);
+  });
+  test("concurrent source, frame or title changes prevent an episode write", async () => {
+    const expected = {
+      id: 875,
+      frames: null,
+      durationSec: 1397,
+      title: "Current",
+      videoUrl: "https://example.test/episode",
+    };
+    for (const changed of [
+      { ...expected, frames: [] },
+      { ...expected, title: "Concurrent" },
+      { ...expected, videoUrl: "https://example.test/changed" },
+    ]) {
+      reads.push([changed]);
+      await expect(
+        updateWiki(
+          "db_episodes",
+          "875",
+          { frames: [] },
+          { expected, expectedSha256: wikiUpdateSnapshotHash(expected) },
+        ),
+      ).rejects.toBeInstanceOf(WikiUpdatePreconditionError);
+    }
+    expect(rowLocks).toEqual(["update", "update", "update"]);
+    expect(updates).toHaveLength(0);
+  });
   test("blocks whole-page restoration in the owner writer during the databook freeze", async () => {
     databooksFrozen = true;
     await expect(updateWiki("db_databooks", "63", { pages: [] })).rejects.toThrow(
