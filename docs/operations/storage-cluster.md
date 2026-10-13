@@ -1,0 +1,119 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+# Répartition du stockage Shenron
+
+État vérifié le 13 octobre 2026. La demande porte sur le débordement de Shenron
+entre DBFR, Neon, Supabase et Cloudflare, sans doublons et sans abonnement payant.
+Le projet Neon est provisionné ; la répartition en production reste inactive.
+
+## Propriétaires et mesures
+
+| Service    | Rôle                                               | État vérifié                                                                                        |
+| ---------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| DBFR       | PostgreSQL éditorial, données privées, origine CDN | SSH Infra fonctionnel, PostgreSQL sain                                                              |
+| Neon       | SQL public explicitement détachable                | Projet dédié `patient-cloud-06530995`, `shenron-overflow`, organisation Aphrody gratuite, Francfort |
+| Supabase   | Débordement dédié Shenron                          | Organisation `lsfmulepkfwxyickybfl` gratuite, création bloquée                                      |
+| Cloudflare | Cache et stockage public R2 existants              | Compte `ca22c1a51a145f919b54afa18d936516`, bucket `shenron-cdn` existant                            |
+
+Neon : branche `br-noisy-voice-b9x9aubu` (`production`), PostgreSQL 18,
+base et rôle `shenron_overflow`. La requête réelle `SELECT current_database(),
+current_user, pg_database_size(current_database())` a réussi : 7 716 864 octets
+avant toute donnée applicative. Plafonds renvoyés par l'API :
+`logical_size_bytes=400000000`, `compute_time_seconds=288000`,
+`data_transfer_bytes=4000000000`, compute fixé à 0,25 CU.
+La suspension utilise le réglage imposé par le compte gratuit : la personnalisation
+de cet intervalle a été refusée, sans création du premier projet tenté.
+Ces plafonds concernent Neon uniquement, ils ne garantissent pas le coût des
+autres fournisseurs. Aucun secret Neon n'a été extrait ni injecté en production.
+
+DBFR : base `shenron_site` de 2 672 039 615 octets ; 14 connexions observées,
+`max_connections=40`. Relations par schéma : `bot` 290 004 992 octets,
+`public` 980 238 336, `chat` 172 032, `shenron_compute` 1 358 708 736,
+`drizzle` 65 536. Les tailles changent et ne prouvent pas une saturation.
+Le disque système dispose d'environ 23 Go libres ; ce chiffre ne constitue
+pas une allocation disponible pour copier le CDN ni un budget PostgreSQL.
+
+La santé publique et les deux index CDN répondent HTTP 200. Le catalogue servi
+annonce 110 782 fichiers et 54 011 802 453 octets logiques, observation du
+13 octobre à 11:49:57 UTC. Les alias peuvent partager des objets : ce total
+ne mesure pas les octets uniques facturés par R2 et ne prouve pas la lecture
+de chaque fichier. La consommation R2 globale reste inconnue.
+
+Les projets existants Neon `inagle` et Supabase `rg` restent affectés à leurs
+produits. Le propriétaire a choisi explicitement l'organisation Supabase
+`aphrody` pour un projet Shenron séparé. Les outils `get_cost` et `confirm_cost`
+renvoient `UNAVAILABLE`, « MCP tool … was not returned by tools/list ».
+Aucun projet Supabase Shenron ni bucket supplémentaire n'est créé.
+
+## Placement exclusif
+
+PostgreSQL DBFR reste la source éditoriale. Aucune requête éditoriale n'est
+envoyée aléatoirement à une autre base : sans les mêmes données, le résultat
+serait incomplet. Une réplique complète contredirait l'absence de doublons.
+Seuls de nouveaux jeux SQL publics, déclarés détachables par leur propriétaire,
+peuvent être placés sur Neon ou Supabase. Aucune table actuelle n'a été déclarée
+détachable par cet audit ; aucun DDL/DML ni transfert n'a été exécuté.
+
+Les objets publics utilisent une identité SHA-256 et un emplacement unique.
+L'emplacement déjà déclaré reste stable ; une panne ou un quota de lecture
+ne déclenche pas une copie automatique. Un nouvel objet va vers un propriétaire
+compatible avec une marge vérifiée. Une même empreinte avec une taille ou un
+propriétaire contradictoire provoque un refus. Les données privées restent
+dans leurs stores DBFR et ne sont jamais exportées implicitement.
+
+Le propriétaire de publication est `deploy/cloudflare/cli/publish-catalog.ts`
+avec son verrou partagé et ses clés `_objects/<sha256>`. Le repli Nginx vers
+`cdn-origin.ts` continue de lire R2/S3 : il couvre certaines erreurs Workers,
+mais ne couvre pas une indisponibilité ou un quota R2. Aucun second uploader,
+writer PostgreSQL ou fallback vers les projets d'autres produits n'est ajouté.
+
+## Gratuité et activation
+
+Les allocations gratuites sont des limites, pas une capacité illimitée :
+[R2 Standard](https://developers.cloudflare.com/r2/pricing/) inclut 10 GB-month,
+1 million d'opérations A et 10 millions B mensuelles ; son dépassement peut être
+facturé. Ces allocations sont partagées au niveau du compte avec les autres
+buckets, y compris les sauvegardes. [Workers Free](https://developers.cloudflare.com/workers/platform/limits/)
+inclut 100 000 requêtes quotidiennes par compte.
+[Supabase Free](https://supabase.com/pricing) inclut 500 Mo de base par projet,
+1 Go de fichiers, 5 Go de transfert non caché et 5 Go caché ; deux projets actifs
+au maximum. Neon expose les limites effectives du projet dans son API ;
+les annonces et anciennes pages peuvent différer de ces limites.
+
+Un préflight doit refuser de planifier une nouvelle allocation si la mesure
+de consommation est inconnue ou périmée. Les réservations du plan restent
+locales au calcul : elles ne sont pas des réservations transactionnelles
+entre plusieurs writers ni une protection de facturation active.
+
+Le préflight est `scripts/ops/storage-cluster-plan.ts`. Il lit un JSON contenant
+`observedAt`, `providers` (`dbfr`, `neon`, `supabase`, `r2`) et `inventory`.
+Chaque fournisseur décrit `enabled`, `health`, le périmètre de ses mesures,
+et les budgets `storageBytes` / `writeOperations` sous la forme
+`{used, limit, reserved}`. Les demandes explicites de transfert ou de calcul
+exigent aussi les mesures correspondantes. Les limites effectives doivent
+tenir compte des plafonds du projet et des consommations mutualisées.
+Les entrées décrivent uniquement `sha256`, `size`, `kind`, `public`,
+`detachable`, `owner` éventuel et les coûts attendus ; aucun contenu, chemin
+privé, URL signée ni identifiant secret n'est accepté.
+
+Exécution avec un dossier de rapport déjà créé :
+
+```sh
+bun scripts/ops/storage-cluster-plan.ts --input /chemin/prive/snapshot.json --out var/reports/storage-cluster/placement.json
+```
+
+Le rapport est créé exclusivement, sans écraser de fichier. Le code de sortie
+est 0 pour un plan possible, 2 pour des allocations sans capacité et 1 pour
+un préflight refusé. `active=false` et `reservationsAreGlobal=false` figurent
+toujours dans la sortie. Ce script ne modifie ni le service CDN, ni les bases,
+ni les comptes fournisseurs ; un plan possible ne garantit pas la disponibilité
+des placements conservés. `var/reports/storage-cluster/preflight.json`
+consigne les observations de cette session, sans servir de snapshot de capacité.
+
+L'activation exige encore : accès aux outils de création Supabase et
+vérification du coût nul, mesures fraîches globales R2 et des autres quotas,
+inventaire complet avec propriétaires exclusifs et données éligibles,
+registre de placement et budgets transactionnels dans le propriétaire
+canonique, routage des consommateurs, puis qualification d'écritures/lectures
+réelles avant l'activation par Infra. Aucun transfert massif, modification
+de DNS, abonnement ou déploiement n'a été effectué.
