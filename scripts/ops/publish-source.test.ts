@@ -1,5 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
+test("registry phase recovery accepts only the exact committed snapshot", () => {
+  const before = [],
+    after = [{ url: "https://publisher.example/", title: "Reviewed" }];
+  expect(() => assertFinalizationSnapshot(before, after, null)).toThrow();
+  expect(() => assertFinalizationSnapshot(before, after, { after })).not.toThrow();
+  expect(() =>
+    assertFinalizationSnapshot(before, [{ ...after[0], title: "Changed" }], { after }),
+  ).toThrow();
+});
 import {
   digest,
   nativePageExport,
@@ -15,7 +24,23 @@ import {
   reviewedProvenance,
   verifyReviewedImage,
   reviewedPublicationPages,
+  snapshotIdentity,
+  assertFinalizationSnapshot,
 } from "./publish-source";
+test("resumed registry comparison retains every field while normalizing serialized timestamps", () => {
+  const row = {
+    url: "https://publisher.example/interview",
+    updated_at: new Date("2026-10-13T07:00:00Z"),
+    provenance: { reviewed: true, rights: { ragPermitted: false, trainingPermitted: false } },
+    canonical_eligible: false,
+  };
+  const saved = JSON.parse(JSON.stringify([row]));
+  expect(snapshotIdentity([row])).toEqual(saved);
+  expect(snapshotIdentity([{ ...row, canonical_eligible: true }])).not.toEqual(saved);
+  expect(
+    snapshotIdentity([{ ...row, provenance: { ...row.provenance, reviewed: false } }]),
+  ).not.toEqual(saved);
+});
 
 const reviewedFixture = () => ({
   schema: "shenron-reviewed-transcription/v1",

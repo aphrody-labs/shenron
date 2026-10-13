@@ -35,6 +35,13 @@ export interface PublishCatalogOptions {
   inventoryRoot: string;
   apply?: boolean;
   planSha256?: string;
+  siteRelease?: {
+    siteRoot: string;
+    staticRoot: string;
+    releasePublicRoot: string;
+    archivePath: string;
+    archiveSha256: string;
+  };
 }
 interface Delta {
   entries: Record<string, InventoryEntry>;
@@ -91,6 +98,38 @@ export function publicTarget(input: string): URL {
   )
     throw new Error("Invalid public publication target");
   return url;
+}
+export function siteReleaseTarget(input: string): URL {
+  const url = new URL(input);
+  if (
+    url.origin !== "https://dragonballfr.com" ||
+    url.pathname !== "/" ||
+    url.username ||
+    url.password ||
+    url.search ||
+    url.hash
+  )
+    throw new Error("Site release target must be the canonical site root");
+  return url;
+}
+export function inputEntries(entries: Record<string, InventoryEntry>, roots: string[]) {
+  return Object.entries(entries).filter(
+    ([, entry]) =>
+      typeof entry.sourcePath === "string" && roots.some((root) => within(entry.sourcePath, root)),
+  );
+}
+export async function sealedArchiveSha256(path: string) {
+  const info = await lstat(path);
+  if (
+    !info.isFile() ||
+    info.isSymbolicLink() ||
+    info.size > 256 * 1024 * 1024 ||
+    (process.platform !== "win32" && (info.mode & 0o077 || info.uid !== process.getuid?.()))
+  )
+    throw new Error("Public archive must be protected regular file <=256 MiB");
+  const bytes = await Bun.file(path).bytes();
+  if (bytes.length !== info.size) throw new Error("Public archive size changed");
+  return digest(bytes);
 }
 export function pointerSettings(
   before: Settings,
@@ -275,9 +314,150 @@ export function inventoryMatchesBindings(
       throw new Error("Previous inventory differs from deployed manifest");
   }
 }
+/** Finish a previously activated, independently qualified immutable candidate; no upload or PATCH. */
+export async function verifyQualifiedPublication(
+  options: PublishCatalogOptions,
+  receiptPath: string,
+  receiptSha256: string,
+) {
+  const inventoryRoot = await realpath(options.inventoryRoot),
+    stateDirectory = await realpath(options.stateDirectory);
+  const directoryInfo = await lstat(options.stateDirectory);
+  if (
+    !directoryInfo.isDirectory() ||
+    directoryInfo.isSymbolicLink() ||
+    (process.platform !== "win32" &&
+      (directoryInfo.mode & 0o077 || directoryInfo.uid !== process.getuid?.()))
+  )
+    throw new Error("Qualification state directory is not private");
+  if (!within(stateDirectory, inventoryRoot) || !within(await realpath(receiptPath), inventoryRoot))
+    throw new Error("Qualification outside owner scope");
+  const info = await lstat(receiptPath);
+  if (
+    !info.isFile() ||
+    info.isSymbolicLink() ||
+    info.size > 32768 ||
+    (process.platform !== "win32" && (info.mode & 0o077 || info.uid !== process.getuid?.()))
+  )
+    throw new Error("Qualified receipt changed");
+  const text = await Bun.file(receiptPath).text();
+  if (digest(text) !== receiptSha256) throw new Error("Qualified receipt changed");
+  const qualified = JSON.parse(text);
+  if (
+    qualified.complete !== true ||
+    qualified.apiMutations !== 0 ||
+    qualified.registryMutations !== 0 ||
+    !Number.isSafeInteger(qualified.publicFilesVerified) ||
+    qualified.publicFilesVerified < 1 ||
+    qualified.actualGets !== 2 * qualified.publicFilesVerified ||
+    !/^[a-f0-9]{64}$/.test(qualified.inventorySha256 ?? "") ||
+    qualified.codeSha256 !== options.expectedCodeSha256
+  )
+    throw new Error("Qualification is incomplete");
+  await mkdir(join(stateDirectory, "publish.lock"), { mode: 0o700 });
+  try {
+    const stateInfo = await lstat(join(stateDirectory, "current-inventory.json")),
+      state = await Bun.file(join(stateDirectory, "current-inventory.json")).json();
+    if (
+      !stateInfo.isFile() ||
+      stateInfo.isSymbolicLink() ||
+      (process.platform !== "win32" &&
+        (stateInfo.mode & 0o077 || stateInfo.uid !== process.getuid?.())) ||
+      state.inventorySha256 !== qualified.inventorySha256 ||
+      state.inventoryPath !== qualified.inventoryPath ||
+      state.deploymentId !== qualified.deploymentId ||
+      state.prefix !== qualified.prefix ||
+      state.codeSha256 !== qualified.codeSha256
+    )
+      throw new Error("Qualified state differs");
+    if (
+      !within(await realpath(qualified.inventoryPath), inventoryRoot) ||
+      sha(await Bun.file(qualified.inventoryPath).arrayBuffer()) !== qualified.inventorySha256
+    )
+      throw new Error("Qualified inventory changed");
+    const manifest = (await Bun.file(options.manifest).json()) as Manifest;
+    validateManifest(manifest);
+    const owner = await api(options, manifest),
+      before = await owner.snapshot();
+    guard(before, {
+      ...options,
+      expectedDeployment: qualified.deploymentId,
+      expectedPrefix: qualified.prefix,
+      expectedCodeSha256: qualified.codeSha256,
+    });
+    const plan = (await Bun.file(join(options.job, "publication-plan.json")).json()) as Plan;
+    if (
+      plan.inventorySha256 !== qualified.inventorySha256 ||
+      plan.prefix !== qualified.prefix ||
+      plan.before.codeSha256 !== qualified.codeSha256 ||
+      sha(await Bun.file(options.manifest).arrayBuffer()) !== plan.manifestSha256 ||
+      sha(await Bun.file(options.sdkModule).arrayBuffer()) !== plan.sdkSha256
+    )
+      throw new Error("Original owner plan changed");
+    const actual: Json = {
+      bindings: before.settings.bindings,
+      annotations: Object.fromEntries(
+        Object.entries(before.settings.annotations ?? {}).filter(
+          ([key]) => key !== "workers/triggered_by",
+        ),
+      ),
+    };
+    for (const key of settingsKeys)
+      if (before.settings[key] !== undefined) actual[key] = before.settings[key];
+    if (
+      Object.keys(before.settings).some(
+        (key) => !["bindings", "annotations", ...settingsKeys].includes(key),
+      ) ||
+      JSON.stringify(actual) !== JSON.stringify(plan.settings)
+    )
+      throw new Error("Qualified settings differ from original plan");
+    const delta = (await Bun.file(qualified.inventoryPath).json()) as Delta;
+    inventoryMatchesBindings(delta.entries, before.settings.bindings);
+    const target = publicTarget(options.targetUrl);
+    if (target.origin !== "https://dragonballfr.com") throw new Error("Target site differs");
+    const selected = Object.entries(delta.entries).filter(
+      ([path]) => path.startsWith(target.pathname + "/") || path === "/catalog/assets/index.json",
+    );
+    if (!selected.some(([path]) => path === target.pathname + "/index.json"))
+      throw new Error("Qualified publication index missing");
+    await parallel(selected, async ([path, entry]) => {
+      for (const origin of [options.workerOrigin, options.cdnOrigin]) {
+        const headers = await verifyPublic(new URL(path, origin), entry);
+        if (path.endsWith("/index.json") && headers.get("cache-control") !== "no-store")
+          throw new Error("Public index must be no-store");
+      }
+    });
+    if (
+      JSON.stringify(await owner.snapshot()) !== JSON.stringify(before) ||
+      JSON.stringify(await Bun.file(join(stateDirectory, "current-inventory.json")).json()) !==
+        JSON.stringify(state)
+    )
+      throw new Error("Final qualified tuple drift");
+    return {
+      ...qualified,
+      indexSha256: delta.entries[target.pathname + "/index.json"]!.sha256,
+      sourceBefore: before.codeSha256,
+      sourceAfter: before.codeSha256,
+      freshPublicGetChecks: 2 * selected.length,
+      qualifiedReceiptSha256: receiptSha256,
+      qualificationRecovery: true,
+      urls: selected
+        .filter(([path]) => path.startsWith(target.pathname + "/"))
+        .map(([path, entry]) => ({
+          url: new URL(path, options.cdnOrigin).href,
+          sha256: entry.sha256,
+          size: entry.size,
+        })),
+    };
+  } finally {
+    await rmdir(join(stateDirectory, "publish.lock"));
+  }
+}
 export async function publishCatalog(inputOptions: PublishCatalogOptions) {
   let options = inputOptions;
-  const target = publicTarget(options.targetUrl);
+  const target = options.siteRelease
+    ? siteReleaseTarget(options.targetUrl)
+    : publicTarget(options.targetUrl);
   const root = await realpath(options.publicRoot);
   const job = resolve(options.job);
   const info = await stat(job).catch(() => undefined);
@@ -306,6 +486,31 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
       throw new Error("Publication state outside owner inventory root");
     if (!within(await realpath(job), inventoryRoot))
       throw new Error("Job outside owner inventory root");
+    let publicRoots = [root];
+    if (options.siteRelease) {
+      const release = options.siteRelease;
+      if (!/^[a-f0-9]{64}$/.test(release.archiveSha256))
+        throw new Error("Sealed public archive SHA required");
+      const archive = await realpath(release.archivePath);
+      if (
+        !within(root, inventoryRoot) ||
+        !within(archive, inventoryRoot) ||
+        (await lstat(options.publicRoot)).isSymbolicLink() ||
+        (await sealedArchiveSha256(release.archivePath)) !== release.archiveSha256
+      )
+        throw new Error("Sealed public archive outside protected scope or SHA differs");
+      publicRoots = await Promise.all(
+        [join(release.siteRoot, "public"), release.staticRoot, release.releasePublicRoot].map(
+          async (path) => {
+            const resolved = await realpath(path),
+              inputInfo = await lstat(path);
+            if (!within(resolved, root) || !inputInfo.isDirectory() || inputInfo.isSymbolicLink())
+              throw new Error("Site input outside sealed public root");
+            return resolved;
+          },
+        ),
+      );
+    }
     const statePath = join(stateDirectory, "current-inventory.json");
     const currentStateInfo = await lstat(statePath).catch((error: { code?: string }) => {
       if (error.code === "ENOENT") return undefined;
@@ -398,11 +603,11 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
         "--previous-sha256",
         options.previousInventorySha256,
         "--site",
-        emptySite,
+        options.siteRelease?.siteRoot ?? emptySite,
         "--static",
-        emptyStatic,
+        options.siteRelease?.staticRoot ?? emptyStatic,
         "--release-public",
-        root,
+        options.siteRelease?.releasePublicRoot ?? root,
         "--out",
         join(job, "delta"),
       ]);
@@ -412,12 +617,25 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
       >;
       const inventorySha256 = sha(await Bun.file(join(job, "delta/inventory.json")).arrayBuffer());
       const generated = (await Bun.file(join(job, "delta/inventory.json")).json()) as Delta;
-      const publicEntries = Object.entries(generated.entries).filter(([, entry]) =>
-        within(entry.sourcePath, root),
-      );
-      if (!publicEntries.some(([path]) => path === target.pathname + "/index.json"))
+      const publicEntries = inputEntries(generated.entries, publicRoots);
+      if (
+        options.siteRelease &&
+        publicEntries.some(
+          ([path]) =>
+            path.startsWith("/publications/") ||
+            path === "/catalog/assets" ||
+            path.startsWith("/catalog/assets/"),
+        )
+      )
+        throw new Error("Site inputs overlap source or generated catalogue namespace");
+      if (
+        !options.siteRelease &&
+        !publicEntries.some(([path]) => path === target.pathname + "/index.json")
+      )
         throw new Error("Publication index missing");
-      for (const [path, entry] of publicEntries) {
+      if (options.siteRelease && !publicEntries.length)
+        throw new Error("Empty sealed site publication");
+      for (const [path, entry] of options.siteRelease ? [] : publicEntries) {
         const suffix = path.slice(target.pathname.length);
         if (
           !path.startsWith(target.pathname + "/") ||
@@ -426,7 +644,11 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
         )
           throw new Error("Public root contains unrelated or non-addressed files");
       }
-      const prefix = "_migration/manifests/publication-" + inventorySha256.slice(0, 24) + "/";
+      const prefix =
+        "_migration/manifests/" +
+        (options.siteRelease ? "site-" : "publication-") +
+        inventorySha256.slice(0, 24) +
+        "/";
       const { settings, changedNames } = pointerSettings(before.settings, prefix, hashes);
       const { apply: _apply, planSha256: _planSha, ...pinnedOptions } = options;
       plan = {
@@ -478,7 +700,7 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
     if (JSON.stringify(current) !== JSON.stringify(plan.before))
       throw new Error("Concurrent Worker settings changed");
     const store = await objectStore(options.profile, manifest, options.sdkModule);
-    const roots = [root, await realpath(join(job, "delta/public-catalog"))];
+    const roots = [...publicRoots, await realpath(join(job, "delta/public-catalog"))];
     const objects = inventory(await Bun.file(join(job, "delta/delta-objects.json")).json());
     if (objects.length !== delta.addedObjects) throw new Error("Delta object count differs");
     await parallel(objects, async (entry) => {
@@ -539,17 +761,64 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
       JSON.stringify(actual) !== JSON.stringify(plan.settings)
     )
       throw new Error("Worker readback differs");
+    await writeFile(
+      join(job, "activation-receipt.json"),
+      JSON.stringify({
+        activatedAt: new Date().toISOString(),
+        deploymentId: after.deployment,
+        prefix: plan.prefix,
+        inventorySha256: plan.inventorySha256,
+        codeSha256: after.codeSha256,
+        settingsSha256: digest(JSON.stringify(actual)),
+        planSha256: options.planSha256,
+        publicQualificationComplete: false,
+      }),
+      { mode: 0o600, flag: "wx" },
+    );
     const selected = Object.entries(delta.entries).filter(
       ([path]) =>
-        path.startsWith(target.pathname + "/") ||
+        (options.siteRelease
+          ? inputEntries({ [path]: delta.entries[path]! }, publicRoots).length > 0
+          : path.startsWith(target.pathname + "/")) ||
         (path.startsWith("/catalog/assets/") && path.includes(delta.catalog.revision)) ||
         path === "/catalog/assets/index.json",
     );
     await parallel(selected, async ([path, entry]) => {
       for (const origin of [options.workerOrigin, options.cdnOrigin]) {
-        const headers = await verifyPublic(new URL(path, origin), entry);
-        if (path.endsWith("/index.json") && headers.get("cache-control") !== "no-store")
-          throw new Error("Public index must be no-store");
+        try {
+          const headers = await verifyPublic(new URL(path, origin), entry);
+          if (
+            (path === "/catalog/assets/index.json" ||
+              (!options.siteRelease && path === target.pathname + "/index.json")) &&
+            headers.get("cache-control") !== "no-store"
+          )
+            throw new Error("Public index must be no-store");
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "",
+            safe =
+              /^Public verification HTTP [0-9]{3}$/.test(message) ||
+              [
+                "Invalid public byte bound",
+                "Public body exceeds pinned size",
+                "Public bytes differ",
+                "Public index must be no-store",
+              ].includes(message)
+                ? message
+                : "Public request failed";
+          await writeFile(
+            join(job, "public-failure.json"),
+            JSON.stringify({
+              failedAt: new Date().toISOString(),
+              path,
+              origin,
+              expectedSha256: entry.sha256,
+              expectedSize: entry.size,
+              reason: safe,
+            }),
+            { mode: 0o600, flag: "wx" },
+          ).catch(() => {});
+          throw error;
+        }
       }
     });
     if (JSON.stringify(await owner.snapshot()) !== JSON.stringify(after))
@@ -559,7 +828,9 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
       inventoryPath: join(job, "delta/inventory.json"),
       inventorySha256: plan.inventorySha256,
       revision: delta.catalog.revision,
-      indexSha256: delta.entries[target.pathname + "/index.json"]!.sha256,
+      indexSha256: options.siteRelease
+        ? delta.catalog.indexSha256
+        : delta.entries[target.pathname + "/index.json"]!.sha256,
       catalogIndexSha256: delta.catalog.indexSha256,
       objectsVerified: objects.length,
       shardsVerified: 256,
@@ -573,7 +844,11 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
       beforeBindings: plan.before.settings.bindings.filter((b) => names.has(b.name)),
       afterBindings: after.settings.bindings.filter((b) => names.has(b.name)),
       urls: selected
-        .filter(([path]) => path.startsWith(target.pathname + "/"))
+        .filter(([path]) =>
+          options.siteRelease
+            ? inputEntries({ [path]: delta.entries[path]! }, publicRoots).length > 0
+            : path.startsWith(target.pathname + "/"),
+        )
         .map(([path, entry]) => ({
           url: new URL(path, options.cdnOrigin).href,
           sha256: entry.sha256,

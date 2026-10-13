@@ -106,3 +106,36 @@ Le statut OCR est `failed` si une tentative a réellement échoué, ou
 Les notices existantes restent protégées ; un refus de hash ou une capture
 incomplète interdit l’activation. Une transcription visuelle relue ne constitue
 pas une réussite OCR native.
+
+## Finalisation après une qualification CDN reprise
+
+Si l’activation est réelle mais qu’un GET de qualification a échoué, conserver
+le job et son échec. Ne pas relancer le crawl ni le lot d’uploads. Le propriétaire
+CDN qualifie intégralement le candidat actif, contrôle son code, ses settings,
+son déploiement et les empreintes, puis adopte cet état qualifié par comparaison
+optimiste. Le reçu de cette qualification reste privé et épinglé par SHA.
+
+Pour une transcription relue, la CLI peut ensuite terminer uniquement le writer :
+
+```sh
+publish-source --source <source-originale> --target <cible-originale> --job <job-original> --max-requests 1 --max-depth 0 --timeout 1800 --reviewed-input <JSON-original> --reviewed-sha256 <SHA-original> --plan-sha256 <SHA-plan-original> --finalize-qualified <recu-prive> --qualified-sha256 <SHA-recu> --original-export-sha256 <SHA-reviewed-export.jsonl> --registry-before-sha256 <SHA-registry-before.json> --apply
+```
+
+Cette opération exige `verifyQualifiedPublication` du propriétaire CDN installé.
+Elle vérifie les fichiers originaux, le texte, les neuf images ou le nombre
+épinglé, la provenance, le plan propriétaire, les empreintes du SDK et du
+manifest, la base active et le snapshot PostgreSQL avant toute écriture.
+Les objets publics et l’index no-store sont relus aux deux origines ; le tuple
+actif et l’état partagé restent stricts. Le writer canonique conserve les
+identités présentes, vérifie les champs et la provenance des nouveaux records,
+puis relit la qualification. `finalization-receipt.json` distingue cette reprise :
+zéro nouveau crawl, upload ou PATCH, aucune promotion canonique. Les traces
+`EXIT_CODE=1` originales restent intactes.
+
+Après la relecture PostgreSQL, `registry-after.json` et un reçu privé de phase
+conservent le résultat réel avant le dernier contrôle CDN. Si ce contrôle échoue,
+la même commande reprend sans écriture PostgreSQL, uniquement si le snapshot
+actuel correspond exactement au snapshot enregistré et aux empreintes originales.
+Une interruption entre le commit PostgreSQL et ce reçu de phase est refusée si
+le snapshot initial a changé : elle exige une qualification indépendante et ne
+se transforme jamais en succès implicite.

@@ -10,7 +10,40 @@ import {
   publishCatalog,
   parallel,
   verifyPublic,
+  siteReleaseTarget,
+  inputEntries,
+  sealedArchiveSha256,
+  verifyQualifiedPublication,
 } from "./publish-catalog";
+
+test("site release capability remains explicit and excludes private remote references from upload selection", async () => {
+  expect(siteReleaseTarget("https://dragonballfr.com").pathname).toBe("/");
+  for (const url of [
+    "https://other.example/",
+    "https://dragonballfr.com/admin",
+    "https://dragonballfr.com/?x=1",
+    "https://user:pass@dragonballfr.com/",
+  ])
+    expect(() => siteReleaseTarget(url)).toThrow();
+  expect(() => publicTarget("https://dragonballfr.com/")).toThrow();
+  const root = join(tmpdir(), "public-scope"),
+    entry = { sha256: digest("x"), size: 1, contentType: "text/plain", cacheControl: "public" };
+  const entries = {
+    "/remote.txt": entry,
+    "/new.txt": { ...entry, sourcePath: join(root, "new.txt") },
+    "/outside.txt": { ...entry, sourcePath: root + "-private/secret" },
+  } as unknown as Parameters<typeof inputEntries>[0];
+  expect(inputEntries(entries, [root]).map(([path]) => path)).toEqual(["/new.txt"]);
+  const job = await mkdtemp(join(tmpdir(), "sealed-public-"));
+  try {
+    const file = join(job, "public.tar.zst");
+    await Bun.write(file, "sealed public bytes");
+    await chmod(file, 0o600);
+    expect(await sealedArchiveSha256(file)).toBe(digest("sealed public bytes"));
+  } finally {
+    await rm(job, { recursive: true, force: true });
+  }
+});
 
 const hashes = Object.fromEntries(
   Array.from({ length: 256 }, (_, i) => [i.toString(16).padStart(2, "0"), digest(String(i))]),
@@ -263,6 +296,106 @@ test("prepare unions baseline generates catalog pins code and never remotely mut
     const nextPlan = await Bun.file(join(nextJob, "publication-plan.json")).json();
     expect(nextPlan.options.expectedDeployment).toBe(deploymentId);
     expect(nextPlan.stateSha256).toMatch(/^[a-f0-9]{64}$/);
+    const active = {
+      ...deployedBefore,
+      bindings: deployedBefore.bindings.map((binding) =>
+        binding.name === "MANIFEST_PREFIX"
+          ? Object.assign({}, binding, { text: JSON.parse(plan).prefix })
+          : binding.name.startsWith("MANIFEST_SHARD_HASHES_")
+            ? Object.assign({}, binding, {
+                json: Object.fromEntries(
+                  Object.entries(JSON.parse(plan).shardHashes).filter(
+                    ([key]) =>
+                      Math.floor(parseInt(key, 16) / 64) === Number(binding.name.slice(-1)),
+                  ),
+                ),
+              })
+            : binding,
+      ),
+    };
+    const activeState = {
+      inventoryPath: join(job, "delta/inventory.json"),
+      inventorySha256: result.inventorySha256,
+      prefix: JSON.parse(plan).prefix,
+      deploymentId,
+      codeSha256: codeSha,
+    };
+    await Bun.write(join(state, "current-inventory.json"), JSON.stringify(activeState));
+    await chmod(join(state, "current-inventory.json"), 0o600);
+    const qualified = {
+      ...activeState,
+      complete: true,
+      apiMutations: 0,
+      registryMutations: 0,
+      publicFilesVerified: delta.catalog.artifacts + 2,
+      actualGets: 2 * (delta.catalog.artifacts + 2),
+    };
+    const qualification = JSON.stringify(qualified),
+      qualifiedPath = join(job, "qualified.json");
+    await Bun.write(qualifiedPath, qualification);
+    await chmod(qualifiedPath, 0o600);
+    globalThis.fetch = (async (input: URL | string | Request, init?: RequestInit) => {
+      methods.push(init?.method ?? "GET");
+      const url = String(input);
+      if (url.endsWith("/settings")) return Response.json({ success: true, result: active });
+      if (url.endsWith("/deployments"))
+        return Response.json({ success: true, result: { deployments: [{ id: deploymentId }] } });
+      if (url.startsWith("https://worker.example/") || url.startsWith("https://cdn.example/")) {
+        const entry = delta.entries[new URL(url).pathname];
+        return new Response(await Bun.file(entry.sourcePath).bytes(), {
+          headers: { "cache-control": entry.cacheControl },
+        });
+      }
+      const form = new FormData();
+      form.set("worker.mjs", new Blob([code]), "worker.mjs");
+      return new Response(form);
+    }) as typeof fetch;
+    const recovery = await verifyQualifiedPublication(
+      options,
+      qualifiedPath,
+      digest(qualification),
+    );
+    expect(recovery.qualificationRecovery).toBe(true);
+    expect(recovery.freshPublicGetChecks).toBe(6);
+    expect(methods.every((method) => method === "GET")).toBe(true);
+    await expect(
+      verifyQualifiedPublication(options, qualifiedPath, "0".repeat(64)),
+    ).rejects.toThrow("receipt changed");
+    const sitePayload = join(root, "site-payload"),
+      siteRoot = join(sitePayload, "site"),
+      staticRoot = join(sitePayload, "static"),
+      releasePublicRoot = join(sitePayload, "release-public");
+    await mkdir(join(siteRoot, "public"), { recursive: true });
+    await mkdir(staticRoot);
+    await mkdir(releasePublicRoot);
+    await Bun.write(join(siteRoot, "public/logo.svg"), "<svg/>");
+    await Bun.write(join(staticRoot, "new.js"), "new static");
+    const archivePath = join(root, "public.tar.zst");
+    await Bun.write(archivePath, "sealed fixture");
+    await chmod(archivePath, 0o600);
+    const siteJob = join(root, "site-job"),
+      siteResult = await publishCatalog({
+        ...options,
+        publicRoot: sitePayload,
+        job: siteJob,
+        targetUrl: "https://dragonballfr.com",
+        siteRelease: {
+          siteRoot,
+          staticRoot,
+          releasePublicRoot,
+          archivePath,
+          archiveSha256: digest("sealed fixture"),
+        },
+      });
+    expect(siteResult.prepared).toBe(true);
+    expect(siteResult.prefix).toStartWith("_migration/manifests/site-");
+    const siteDelta = await Bun.file(join(siteJob, "delta/inventory.json")).json();
+    expect(siteDelta.entries["/publications/notice/index.json"].sha256).toBe(
+      delta.entries["/publications/notice/index.json"].sha256,
+    );
+    expect(siteDelta.entries["/_next/static/new.js"].sha256).toBe(digest("new static"));
+    expect(siteDelta.entries["/logo.svg"].sha256).toBe(digest("<svg/>"));
+    expect(methods.every((method) => method === "GET")).toBe(true);
   } finally {
     globalThis.fetch = original;
     await rm(root, { recursive: true, force: true });

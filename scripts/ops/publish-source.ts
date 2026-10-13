@@ -377,6 +377,251 @@ async function privateWrite(path: string, value: unknown) {
   await Bun.write(path, typeof value === "string" ? value : JSON.stringify(value, null, 2) + "\n");
   await chmod(path, 0o600);
 }
+export function snapshotIdentity(value: unknown) {
+  return JSON.parse(JSON.stringify(value));
+}
+export function assertFinalizationSnapshot(
+  before: unknown,
+  current: unknown,
+  phase: { after: unknown } | null,
+) {
+  if (!Bun.deepEquals(phase ? phase.after : before, snapshotIdentity(current)))
+    throw new Error("Original registry snapshot changed");
+}
+async function finalizeQualified(
+  root: string,
+  plan: ReturnType<typeof publicationPlan>,
+  reviewed: ReturnType<typeof reviewedTranscription>,
+  inputSha256: string,
+  receiptPath: string,
+  receiptSha256: string,
+  exportSha256: string,
+  beforeSha256: string,
+) {
+  if (await Bun.file(join(root, "finalization-receipt.json")).exists())
+    throw new Error("Registry finalization already complete");
+  const phasePath = join(root, "registry-finalization-phase.json");
+  let phase = null;
+  if (await Bun.file(phasePath).exists()) {
+    const phaseInfo = await lstat(phasePath);
+    if (
+      !phaseInfo.isFile() ||
+      phaseInfo.isSymbolicLink() ||
+      phaseInfo.size > 2 * 1024 * 1024 ||
+      (process.platform !== "win32" &&
+        (phaseInfo.mode & 0o077 || phaseInfo.uid !== process.getuid?.()))
+    )
+      throw new Error("Protected registry phase required");
+    phase = await Bun.file(phasePath).json();
+  }
+  if (
+    phase &&
+    (phase.schema !== "shenron-registry-finalization-phase/v1" ||
+      phase.qualifiedReceiptSha256 !== receiptSha256 ||
+      phase.originalExportSha256 !== exportSha256 ||
+      phase.beforeSnapshotSha256 !== beforeSha256 ||
+      phase.inputSha256 !== inputSha256 ||
+      !phase.result?.complete ||
+      phase.result.canonicalPromotions !== 0)
+  )
+    throw new Error("Registry finalization phase differs");
+  const indexPath = join(root, "public/publications", plan.slug, "index.json"),
+    publication = await Bun.file(indexPath).json(),
+    nativeBody = await Bun.file(join(root, "native-export.jsonl")).text(),
+    exportBody = await Bun.file(join(root, "reviewed-export.jsonl")).text();
+  const native = JSON.parse(nativeBody.trim()),
+    document = JSON.parse(exportBody.trim());
+  if (
+    digest(exportBody) !== exportSha256 ||
+    digest(await Bun.file(join(root, "registry-before.json")).bytes()) !== beforeSha256
+  )
+    throw new Error("Original export or snapshot SHA differs");
+  const provenance = {
+    ...reviewedProvenance(reviewed, inputSha256),
+    nativeCapture: {
+      sourceUrl: plan.sourceUrl,
+      httpStatus: 200,
+      sourceCaptureSha256: digest(nativeBody),
+      captureFormat: "native-export.jsonl",
+    },
+  };
+  const expectedDocument = Object.assign(
+    nativePageExport(
+      {
+        url: plan.sourceUrl,
+        title: reviewed.title,
+        markdown: reviewed.text,
+        content_hash: "",
+        fetched_at: Date.parse(native.timestamp_utc),
+      },
+      plan.sourceUrl,
+    ),
+    { category: "reviewed-visual-transcription", provenance },
+  );
+  if (
+    !Bun.deepEquals(publication.provenance, provenance) ||
+    !Bun.deepEquals(document, expectedDocument) ||
+    native.raw_checksum !== digest(native.payload.body_markdown)
+  )
+    throw new Error("Original export provenance differs");
+  if (
+    publication.sourceUrl !== plan.sourceUrl ||
+    publication.targetUrl !== plan.targetUrl ||
+    publication.documents.length !== 1 ||
+    publication.documents[0].sourceUrl !== plan.sourceUrl ||
+    publication.documents[0].body.path !==
+      plan.publicPrefix + "/objects/" + reviewed.textSha256 + ".md" ||
+    publication.documents[0].body.sha256 !== reviewed.textSha256 ||
+    digest(await Bun.file(join(root, "public", publication.documents[0].body.path)).bytes()) !==
+      reviewed.textSha256 ||
+    publication.provenance.inputSha256 !== inputSha256 ||
+    publication.provenance.nativeCapture.sourceCaptureSha256 !== digest(nativeBody) ||
+    native.canonical_url !== plan.sourceUrl ||
+    native.http_status !== 200 ||
+    document.canonical_url !== plan.sourceUrl ||
+    document.http_status !== 200 ||
+    document.category !== "reviewed-visual-transcription" ||
+    document.payload.body_markdown !== reviewed.text ||
+    document.raw_checksum !== reviewed.textSha256 ||
+    publication.documents[0].media.length !== reviewed.sourceImages.length ||
+    !reviewed.sourceImages.every((image) =>
+      publication.documents[0].media.some(
+        (media: { sha256: string }) => media.sha256 === image.sha256,
+      ),
+    )
+  )
+    throw new Error("Original reviewed publication artifacts differ");
+  const modulePath = process.env.SHENRON_SOURCE_CDN_MODULE,
+    configPath = process.env.SHENRON_SOURCE_CDN_CONFIG;
+  if (!modulePath || !configPath || !isAbsolute(modulePath) || !isAbsolute(configPath))
+    throw new Error("Configured owners required");
+  const configInfo = await lstat(configPath);
+  if (
+    !configInfo.isFile() ||
+    configInfo.isSymbolicLink() ||
+    (process.platform !== "win32" && configInfo.mode & 0o077)
+  )
+    throw new Error("Protected configuration required");
+  const owner = await import(modulePath),
+    config = await Bun.file(configPath).json();
+  if (typeof owner.verifyQualifiedPublication !== "function")
+    throw new Error("Owner qualified finalization capability required");
+  const policy = publicationPolicy(plan.sourceUrl),
+    expected = projectNativeCrawl(document, policy).map((record) =>
+      Object.assign({}, record, {
+        provenance: { ...record.provenance, reviewedPublication: publication.provenance },
+      }),
+    );
+  if (expected.length !== 1) throw new Error("Reviewed record cardinality differs");
+  const before = await Bun.file(join(root, "registry-before.json")).json(),
+    sql = postgres(process.env.DATABASE_URL!, {
+      max: 1,
+      prepare: false,
+      connection: { statement_timeout: 30000 },
+    });
+  try {
+    await sql`SELECT pg_advisory_lock(hashtext('shenron-source-publication'))`;
+    const registry = createPostgresCrawlRegistry(sql);
+    await registry.assertReady();
+    const snapshot = () =>
+      sql`SELECT r.*,p.provenance,p.updated_at AS provenance_updated_at FROM public.external_source_records r LEFT JOIN public.external_source_provenance p USING(url) WHERE r.url=${plan.sourceUrl} ORDER BY r.url`;
+    const current = snapshotIdentity(await snapshot());
+    assertFinalizationSnapshot(before, current, phase);
+    const cdnOptions = {
+      ...config,
+      publicRoot: join(root, "public"),
+      job: join(root, "cdn"),
+      targetUrl: plan.targetUrl,
+    };
+    const cdn = await owner.verifyQualifiedPublication(cdnOptions, receiptPath, receiptSha256);
+    if (cdn.indexSha256 !== digest(await Bun.file(indexPath).bytes()))
+      throw new Error("Qualified index differs");
+    const result = phase
+      ? phase.result
+      : await ingestNativeCrawl(
+          {
+            inputPath: join(root, "reviewed-export.jsonl"),
+            policy,
+            apply: true,
+            maxDocuments: 1,
+            signal: AbortSignal.timeout(plan.limits.timeout * 1000),
+          },
+          preserveExistingRegistry(
+            {
+              assertReady: () => registry.assertReady(),
+              upsert: (record) =>
+                registry.upsert({
+                  ...record,
+                  provenance: { ...record.provenance, reviewedPublication: publication.provenance },
+                }),
+            },
+            new Set(before.map((row: { url: string }) => row.url)),
+          ),
+        );
+    const after = snapshotIdentity(await snapshot());
+    if (!result.complete || result.canonicalPromotions !== 0 || after.length !== 1)
+      throw new Error("Canonical registry finalization incomplete");
+    for (const row of after) {
+      const prior = before.find((entry: { url: string }) => entry.url === row.url);
+      if (prior) {
+        if (!Bun.deepEquals(prior, row)) throw new Error("Protected registry changed");
+      } else if (
+        row.canonical_eligible ||
+        row.content_hash !== expected[0]!.contentHash ||
+        row.title !== expected[0]!.title ||
+        row.excerpt !== expected[0]!.excerpt ||
+        !Bun.deepEquals(row.provenance, expected[0]!.provenance)
+      )
+        throw new Error("Canonical registry readback differs");
+    }
+    await privateWrite(join(root, "registry-after.json"), after);
+    if (!phase)
+      await privateWrite(phasePath, {
+        schema: "shenron-registry-finalization-phase/v1",
+        registryQualifiedAt: new Date().toISOString(),
+        qualifiedReceiptSha256: receiptSha256,
+        originalExportSha256: exportSha256,
+        beforeSnapshotSha256: beforeSha256,
+        inputSha256,
+        result,
+        after,
+        publicFinalQualificationComplete: false,
+      });
+    await owner.verifyQualifiedPublication(cdnOptions, receiptPath, receiptSha256);
+    const receipt = {
+      schema: "shenron-source-publication-finalization/v1",
+      finishedAt: new Date().toISOString(),
+      actualPublicUrl: plan.targetUrl,
+      publicationSha256: cdn.indexSha256,
+      qualifiedReceiptSha256: receiptSha256,
+      originalReviewedExportSha256: digest(exportBody),
+      originalNativeExportSha256: digest(nativeBody),
+      cdn,
+      registry: result,
+      registryPhaseResumed: phase !== null,
+      registryWritesThisInvocation: phase ? 0 : result.applied,
+      documents: 1,
+      media: reviewed.sourceImages.length,
+      mediaCoverage: "pinned reviewed same-host source images; fresh HTTP200/PNG/SHA verified",
+      reviewedPublication: publication.provenance,
+      originalFailureTracePreserved: true,
+      newCrawlRequests: 0,
+      newUploads: 0,
+      newPointerMutations: 0,
+    };
+    await privateWrite(join(root, "finalization-receipt.json"), receipt);
+    console.log(
+      JSON.stringify({
+        actualPublicUrl: plan.targetUrl,
+        documents: 1,
+        receipt: join(root, "finalization-receipt.json"),
+      }),
+    );
+  } finally {
+    await sql`SELECT pg_advisory_unlock(hashtext('shenron-source-publication'))`.catch(() => {});
+    await sql.end({ timeout: 5 });
+  }
+}
 async function run() {
   const { values } = parseArgs({
     args: Bun.argv.slice(2),
@@ -390,6 +635,10 @@ async function run() {
       "reviewed-input": { type: "string" },
       "reviewed-sha256": { type: "string" },
       "plan-sha256": { type: "string" },
+      "finalize-qualified": { type: "string" },
+      "qualified-sha256": { type: "string" },
+      "original-export-sha256": { type: "string" },
+      "registry-before-sha256": { type: "string" },
       "max-requests": { type: "string", default: "256" },
       "max-depth": { type: "string", default: "5" },
       timeout: { type: "string", default: "900" },
@@ -405,6 +654,17 @@ async function run() {
     throw new Error(
       "Usage: publish-source --source <public URL> --target https://dragonballfr.com/publications/<slug> [--job <private directory>] [--apply]",
     );
+  if (values["finalize-qualified"] && !values.apply)
+    throw new Error("Finalization applies only to an existing qualified job");
+  if (
+    !values["finalize-qualified"] &&
+    [
+      values["qualified-sha256"],
+      values["original-export-sha256"],
+      values["registry-before-sha256"],
+    ].some(Boolean)
+  )
+    throw new Error("Finalization receipt path required");
   const basePlan = publicationPlan(values.source, values.target, {
     requests: Number(values["max-requests"]),
     depth: Number(values["max-depth"]),
@@ -470,6 +730,32 @@ async function run() {
     digest(await Bun.file(join(root, "plan.json")).bytes()) !== values["plan-sha256"]
   )
     throw new Error("Apply requires exact reviewed plan SHA");
+  if (values["finalize-qualified"]) {
+    if (
+      !reviewed ||
+      !isAbsolute(values["finalize-qualified"]) ||
+      ![
+        values["qualified-sha256"],
+        values["original-export-sha256"],
+        values["registry-before-sha256"],
+      ].every((value) => /^[a-f0-9]{64}$/.test(value ?? ""))
+    )
+      throw new Error(
+        "Finalization requires pinned reviewed input, qualified receipt, original export and snapshot",
+      );
+    await finalizeQualified(
+      root,
+      plan,
+      reviewed,
+      values["reviewed-sha256"]!,
+      values["finalize-qualified"],
+      values["qualified-sha256"]!,
+      values["original-export-sha256"]!,
+      values["registry-before-sha256"]!,
+    );
+    return;
+  }
+  if (values["qualified-sha256"]) throw new Error("Qualified receipt path required");
   if (await Bun.file(join(root, "crawl.json")).exists())
     throw new Error("Apply already started; inspect receipts before retrying");
   await assertPublicDns(new URL(plan.sourceUrl));
