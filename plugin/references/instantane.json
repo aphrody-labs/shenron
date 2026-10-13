@@ -1,6 +1,6 @@
 {
   "_genere": "Généré par scripts/plugin/build-references.ts — ne pas éditer. Registre des instantanés hors ligne du plugin.",
-  "bun": "1.4.4-debug",
+  "bun": "1.4.4",
   "sorties": {
     "plugin/skills/dragon-ball-canon/references/doctrine.md": {
       "revision": "db119c0f+modifications",
