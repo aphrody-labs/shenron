@@ -2,7 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Copy append-only bot runtime records into existing private PostgreSQL tables. */
 import { createHash } from "node:crypto";
-import { closeSync, openSync, readFileSync, renameSync, statSync, writeFileSync } from "node:fs";
+import {
+  chmodSync,
+  closeSync,
+  lstatSync,
+  openSync,
+  readFileSync,
+  renameSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { dirname, resolve } from "node:path";
 import { Database } from "bun:sqlite";
 import postgres from "postgres";
@@ -134,7 +143,16 @@ function saveCheckpoint(path: string, data: Checkpoint, create: boolean): void {
   if (process.platform === "linux" && (statSync(dirname(path)).mode & 0o077) !== 0)
     throw new Error("Checkpoint directory permissions must be 700");
   const target = create ? path : `${path}.next`;
-  const descriptor = openSync(target, "wx", 0o600);
+  if (!create) {
+    try {
+      if (!lstatSync(target).isFile()) throw new Error("Checkpoint staging path is not a file");
+      chmodSync(target, 0o600);
+    } catch (error) {
+      if (!(error instanceof Error) || !((error as NodeJS.ErrnoException).code === "ENOENT"))
+        throw error;
+    }
+  }
+  const descriptor = openSync(target, create ? "wx" : "w", 0o600);
   try {
     writeFileSync(descriptor, JSON.stringify(data) + "\n");
   } finally {
