@@ -45,8 +45,8 @@ import {
 import { join, resolve } from "node:path";
 import { nextCommand } from "@aphrody/next-bun/run";
 import { flattenStandalone } from "@aphrody/next-bun/standalone";
-import { prepareVendor } from "./prepare-vendor";
-import { stageHlsPublic } from "./hls-license";
+import { getHlsPublicAssets } from "@aphrody/bun-video/hls";
+import { stageVideoPublic } from "./video-assets";
 
 import { pack, publicVfsProblems } from "../../apps/server/src/payload";
 import { requireProductionVfs } from "./server-vfs-policy";
@@ -57,7 +57,7 @@ import { AGENT_HOME_DOCUMENTS } from "../../packages/db/src/agent-homes/types";
 import { syncUiAssets } from "../../packages/ui/scripts/sync-assets";
 
 const ROOT = resolve(import.meta.dir, "../..");
-const hlsVendor = prepareVendor(ROOT);
+const videoAssets = await getHlsPublicAssets();
 const args = process.argv.slice(2);
 const flag = (name: string) => args.includes(name);
 const option = (name: string, fallback: string) => {
@@ -166,7 +166,7 @@ cpSync(join(SITE, "public"), join(siteOut, "apps/site/public"), {
   recursive: true,
   dereference: true,
 });
-stageHlsPublic(hlsVendor.path, join(siteOut, "apps/site/public"));
+stageVideoPublic(videoAssets, join(siteOut, "apps/site/public"));
 cpSync(join(SITE, DIST_DIR, "static"), join(siteOut, "apps/site", DIST_DIR, "static"), {
   recursive: true,
 });
@@ -305,7 +305,7 @@ if (embed) {
 const cdn = join(ROOT, "dist/cdn");
 rmSync(cdn, { recursive: true, force: true });
 cpSync(join(SITE, "public"), join(cdn, "site"), { recursive: true, dereference: true });
-stageHlsPublic(hlsVendor.path, join(cdn, "site"));
+stageVideoPublic(videoAssets, join(cdn, "site"));
 cpSync(join(SITE, DIST_DIR, "static"), join(cdn, "_next/static"), { recursive: true });
 const buildId = readFileSync(join(SITE, DIST_DIR, "BUILD_ID"), "utf8").trim();
 writeFileSync(join(cdn, "BUILD_ID"), `${buildId}\n`);
