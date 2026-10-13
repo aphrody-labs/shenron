@@ -42,7 +42,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const tech = await getShenronTechnique(slug);
-  if (!tech) return { title: "Technique Dragon Ball" };
+  if (!tech) notFound();
   const description = tech.description ?? `Fiche détaillée de la technique ${tech.name}.`;
   const bestImage =
     pickBestImage([tech.image, tech.creatorImage]) ?? tech.image ?? tech.creatorImage;

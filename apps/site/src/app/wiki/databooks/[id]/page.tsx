@@ -153,7 +153,7 @@ export async function generateMetadata({
   if (n !== null && MIGRATED_BOOKS_TO_MANGA[n])
     permanentRedirect(`/wiki/manga/volume/${MIGRATED_BOOKS_TO_MANGA[n]}`);
   const book = n === null ? null : await dbUniverse.databook(n);
-  if (!book) return { title: "Databook introuvable", robots: { index: false, follow: true } };
+  if (!book) notFound();
   const description = book.description ? plainText(book.description) : descriptionDeRepli(book);
   const coverRaw = publicDatabookImage(book.cover);
   const cover = coverRaw ? assetUrl(coverRaw) : undefined;

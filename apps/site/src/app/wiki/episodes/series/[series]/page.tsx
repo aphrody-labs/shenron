@@ -49,6 +49,8 @@ export async function generateMetadata({
   params: Promise<{ series: string }>;
 }): Promise<Metadata> {
   const { series } = await params;
+  const available = await getEpisodesCached(series, 1, 0).catch(() => null);
+  if (available && available.episodes.length === 0 && series !== DBS_BEERUS_SERIES_CODE) notFound();
   const label = SERIES_LABELS[series] ?? series;
   const description = getDictionary().episodeSeries.description;
   // Cf. `@/lib/og` : un `alternates` seul laissait la page sans `og:image`.

@@ -1,4 +1,24 @@
 {
+  "gifLibrary": {
+    "title": "GIFs Dragon Ball",
+    "description": "Extraits animés des médias publics référencés dans notre catalogue. Les aperçus restent fixes ; lancez les animations à votre rythme.",
+    "clipAt": "Extrait à {time}",
+    "duration": "{seconds} s",
+    "animate": "Animer",
+    "pause": "Arrêter l’animation",
+    "download": "Télécharger le GIF",
+    "episode": "Fiche de l’épisode",
+    "search": "Rechercher par nom de fichier ou seconde",
+    "submit": "Rechercher",
+    "empty": "Aucun GIF public qualifié pour le moment.",
+    "noResults": "Aucun extrait ne correspond à cette recherche.",
+    "unavailable": "Le catalogue est temporairement indisponible.",
+    "count": "{count} extraits disponibles",
+    "pagination": "Pagination des GIFs",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page {page} sur {pages}"
+  },
   "mediaPlayback": {
     "episodeNavigation": "Navigation des épisodes",
     "previousEpisode": "Épisode précédent",

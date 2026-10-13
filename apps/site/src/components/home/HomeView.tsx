@@ -243,6 +243,12 @@ export function HomeView(rawProps: HomeViewProps) {
                 <T k="dbsBeerus.openLocalEpisode" />
               </Link>
               <Link
+                href="/wiki/gifs"
+                className="inline-flex min-h-11 items-center text-dbz-gold hover:underline"
+              >
+                <T k="gifLibrary.title" />
+              </Link>
+              <Link
                 href="/news/dragon-ball-super-beerus-adn-vostfr-18h-2026-10-11"
                 className="inline-flex min-h-11 items-center text-dbz-gold hover:underline"
               >

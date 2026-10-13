@@ -48,7 +48,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const data = await dbUniverse.saga(slug);
-  if (!data) return { title: "Saga" };
+  if (!data) notFound();
   // La description est du markdown (`**tomes 20 à 24**`, `*Dragon Ball Z*`) : la page la
   // rend avec `WikiMarkdown`, la balise meta et le JSON-LD n'en veulent que le texte.
   const description =

@@ -34,7 +34,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const data = await dbUniverse.arc(slug);
-  if (!data) return { title: "Arc" };
+  if (!data) notFound();
   // `ogMeta` plutôt qu'un `alternates` seul : déclarer `openGraph` sur une page
   // REMPLACE l'objet hérité du layout, image comprise. Sans ce passage, la
   // fiche d'arc ne servait AUCUN `og:image` — un partage Discord tombait sur

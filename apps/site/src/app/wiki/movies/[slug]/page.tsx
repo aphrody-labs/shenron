@@ -74,7 +74,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const m = await dbUniverse.movie(slug);
-  if (!m) return { title: "Film" };
+  if (!m) notFound();
   const nature = natureDe(m.series);
   const description = stripSourceTags(m.synopsis) ?? `${SERIES_LABELS[m.series] ?? nature}.`;
   return {

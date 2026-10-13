@@ -33,7 +33,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const resolved = resolveTransformationParam(slug);
   const t = await getShenronTransformation(resolved.id ?? resolved.canonicalSlug ?? slug);
-  if (!t) return { title: "Transformation Dragon Ball" };
+  if (!t) notFound();
   const qui = t.character ? ` de ${t.character.name}` : "";
   const description = `La transformation ${t.name}${qui} : origine, apparence et effets, d'après le manga et les databooks.`;
   return {
