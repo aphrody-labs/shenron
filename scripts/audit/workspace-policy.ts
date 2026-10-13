@@ -137,14 +137,58 @@ export function publicFileViolations(directory: string, files: readonly string[]
   return issues;
 }
 
+export type AphrodyArchivePin = {
+  name: string;
+  version: string;
+  source: string;
+  url: string;
+  sha256: string;
+  integrity: string;
+};
+
+const EXACT_VERSION = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/;
+
+/** Reviewed npm archives retain their package identity and content-addressed Infra delivery. */
+export function qualifiedAphrodyArchive(
+  name: string,
+  specifier: string,
+  pin: AphrodyArchivePin | undefined,
+): boolean {
+  if (
+    !pin ||
+    pin.name !== name ||
+    pin.url !== specifier ||
+    !EXACT_VERSION.test(pin.version) ||
+    !/^[a-f0-9]{40}$/.test(pin.source) ||
+    !/^[a-f0-9]{64}$/.test(pin.sha256) ||
+    !/^sha512-[A-Za-z0-9+/]{86}==$/.test(pin.integrity)
+  )
+    return false;
+  try {
+    const url = new URL(specifier);
+    return (
+      name.startsWith("@aphrody/") &&
+      url.origin === "https://dist.aphrody.app" &&
+      !url.username &&
+      !url.password &&
+      !url.search &&
+      !url.hash &&
+      url.href === specifier &&
+      url.pathname ===
+        `/packages/${name.slice("@aphrody/".length)}/${pin.version}/${pin.sha256}/package.tgz`
+    );
+  } catch {
+    return false;
+  }
+}
+
 export function pinnedAphrodyDependency(
   name: string,
   version: string,
   localIdentities: ReadonlySet<string>,
-  qualifiedHls: boolean,
+  archives: Readonly<Record<string, AphrodyArchivePin>> = {},
 ): boolean {
   if (version === "workspace:*")
     return name.startsWith("@aphrody/shenron-") && localIdentities.has(name);
-  if (name === "@aphrody/hls.js" && version === "file:vendor/hls.js") return qualifiedHls;
-  return /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.test(version);
+  return EXACT_VERSION.test(version) || qualifiedAphrodyArchive(name, version, archives[name]);
 }

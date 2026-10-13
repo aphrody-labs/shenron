@@ -2,11 +2,36 @@
 
 # Vidéo Shenron
 
-Le lecteur public utilise le fork [HLS Aphrody](https://github.com/aphrody-labs/hls.js),
-le cycle de vie `@aphrody/bun-runtime-sdk/video/hls` et les contrôles React de Shenron.
+Le lecteur public consomme `@aphrody/bun-video/playback` pour le cycle de vie,
+les pistes, le changement de source et la récupération réseau. Les contrôles,
+les traductions et la reprise restent dans Shenron. L'adaptateur navigateur utilise
+`@aphrody/bun-runtime-sdk/video/hls` ; `Bun.Video` est une capacité native du serveur
+et ne devient pas une API globale dans le navigateur.
 Le worker est servi sur la même origine avec sa licence Apache-2.0. Qualité, audio et
 sous-titres sont proposés selon les pistes réellement présentes. Les fournisseurs protégés
 conservent leur lecteur et leurs conditions ; HTTP200 et iframe.onload ne prouvent pas une lecture.
+
+## Paquet npm livré par archive immuable
+
+Le nom npm `@aphrody/bun-video` et sa version `1.4.4-video.1` sont conservés.
+La source relue est `8ae3009ee97d6768d58b0ff09e840ff68fb2e24c` dans le dépôt Bun.
+Cette livraison utilise une archive npm publique sur le CDN Infra, distincte
+du registry npm où cette version reste en staging. Elle ne prouve aucune publication registry.
+Le [gestionnaire de paquets Bun accepte les archives HTTPS](https://bun.com/docs/pm/cli/add#tarball-dependencies).
+
+Le catalogue racine porte l'URL complète avec SHA-256 dans son chemin ;
+`shenron.packageArchives` conserve identité, source, version et empreintes relues.
+`bun.lock` fixe cette même URL et son intégrité SHA-512. L'audit du workspace
+refuse un désaccord entre catalogue, provenance et verrou ; une URL mutable,
+un hôte étranger ou des identifiants dans l'URL sont refusés. Un install figé
+et une empreinte volontairement incorrecte ont été testés : le premier réussit,
+la seconde est rejetée avec `IntegrityCheckFailed`.
+
+L'archive contient uniquement les sources, types, outils et notices autorisés.
+Sessions, cookies, captures privées, bases et corpus en sont exclus. Le build
+prélève seulement `hls.worker.js` et la licence Apache-2.0 avec sa notice Dailymotion
+depuis le paquet installé. Il sert ces deux fichiers sous `/assets/bun-video/`.
+Une installation, un worker actif et une vraie lecture sont des qualifications séparées.
 
 ## Génération en qualification
 

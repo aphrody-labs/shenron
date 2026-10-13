@@ -19,12 +19,12 @@
 
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
-import { prepareVendor } from "../build/prepare-vendor";
 import {
   PUBLIC_LIBRARY_FILES,
   pinnedAphrodyDependency,
   publicationViolations,
   publicFileViolations,
+  type AphrodyArchivePin,
 } from "./workspace-policy";
 import {
   ASSET_CLASSES,
@@ -482,8 +482,8 @@ function checkTsconfig(name: string, dir: string): void {
       report(name, "tsconfig", "does not extend ../config/tsconfig/*.json");
     }
     const options = tsconfig.compilerOptions ?? {};
-    for (const option of ["baseUrl", "paths", "ignoreDeprecations"]) {
-      if (option in options) report(name, "tsconfig", `sets ${option}`);
+    for (const forbiddenOption of ["baseUrl", "paths", "ignoreDeprecations"]) {
+      if (forbiddenOption in options) report(name, "tsconfig", `sets ${forbiddenOption}`);
     }
     const resolution = options.moduleResolution;
     if (typeof resolution === "string" && /^(node|node10|classic)$/i.test(resolution)) {
@@ -563,14 +563,32 @@ function checkCycles(): void {
 }
 
 /**
- * Aphrody capabilities are consumed as published `@aphrody/*` packages, pinned exactly
+ * Aphrody capabilities are consumed as registry packages or reviewed immutable npm archives, pinned exactly
  * (bunfig.toml), directly or through the root `workspaces.catalog`; no manifest links an external Aphrody checkout or a path outside the repo.
  */
 function checkDependencyDirection(): void {
   const root = readJson<{
     workspaces?: { packages?: string[]; catalog?: Record<string, string> };
+    "shenron.packageArchives"?: Record<string, AphrodyArchivePin>;
   }>(join(ROOT, "package.json"));
   const catalog = root?.workspaces?.catalog ?? {};
+  const archives = root?.["shenron.packageArchives"] ?? {};
+  const lock = Bun.JSONC.parse(readFileSync(join(ROOT, "bun.lock"), "utf8")) as {
+    packages?: Record<string, unknown[]>;
+  };
+  for (const [name, pin] of Object.entries(archives)) {
+    const entry = lock.packages?.[name];
+    if (
+      catalog[name] !== pin.url ||
+      entry?.[0] !== `${name}@${pin.url}` ||
+      entry?.at(-1) !== pin.integrity
+    )
+      report(
+        "workspace",
+        "direction",
+        `${name} archive catalog, lock URL or SHA-512 integrity disagrees with the reviewed pin`,
+      );
+  }
   for (const workspace of root?.workspaces?.packages ?? []) {
     if (workspace.startsWith("../"))
       report("workspace", "direction", `workspace glob ${workspace} leaves the repository`);
@@ -589,19 +607,6 @@ function checkDependencyDirection(): void {
       return manifest?.name ? [manifest.name] : [];
     }),
   );
-  let qualifiedHls = false;
-  if (catalog["@aphrody/hls.js"] === "file:vendor/hls.js") {
-    try {
-      prepareVendor(ROOT);
-      qualifiedHls = true;
-    } catch (error) {
-      report(
-        "workspace",
-        "direction",
-        `controlled HLS gitlink qualification failed: ${error instanceof Error ? error.message : String(error)}`,
-      );
-    }
-  }
   for (const dir of directories) {
     const manifest = readJson<Manifest>(join(dir, "package.json"));
     const where = toPosix(relative(ROOT, dir)) || ".";
@@ -632,12 +637,7 @@ function checkDependencyDirection(): void {
         const pinned = version === "catalog:" ? (catalog[name] ?? version) : version;
         if (
           name.startsWith("@aphrody/") &&
-          !pinnedAphrodyDependency(
-            name,
-            pinned,
-            localIdentities,
-            qualifiedHls && (version === "catalog:" || dir === ROOT),
-          )
+          !pinnedAphrodyDependency(name, pinned, localIdentities, archives)
         )
           report(
             "workspace",

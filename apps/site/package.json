@@ -26,8 +26,8 @@
   },
   "dependencies": {
     "@aphrody/bun-runtime-sdk": "catalog:",
+    "@aphrody/bun-video": "catalog:",
     "@aphrody/discord-kit": "catalog:",
-    "@aphrody/hls.js": "catalog:",
     "@aphrody/messaging": "catalog:",
     "@aphrody/next-bun": "catalog:",
     "@aphrody/paths": "catalog:",
