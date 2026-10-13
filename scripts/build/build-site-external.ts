@@ -14,6 +14,7 @@ import { createRequire } from "node:module";
 
 import { emittedKoharuWasm, ensureKoharuWasm } from "./koharu-wasm.ts";
 import { artifactStore, artifactPath } from "./site-artifact-paths.ts";
+import { syncUiAssets } from "../../packages/ui/scripts/sync-assets";
 
 const releaseArgs = process.argv.slice(2);
 if (
@@ -30,6 +31,7 @@ if (
 
 const repo = join(import.meta.dir, "..", "..");
 const siteDir = join(repo, "apps", "site");
+await syncUiAssets(join(siteDir, "public"));
 const buildDir = join(siteDir, ".next-build");
 // Bun's isolated linker owns Next at the site dependency boundary, not a hoisted root.
 let nextBin: string;
