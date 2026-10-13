@@ -1852,7 +1852,7 @@
   },
   "adminLogs": {
     "title": "Bot logs",
-    "description": "Shenron process logs. Automatically refreshed every 10 seconds.",
+    "description": "Shenron process logs. Automatically refreshed every {seconds} seconds.",
     "lines": "Displayed lines",
     "refresh": "Refresh",
     "loading": "Loading logs…",

@@ -24,7 +24,7 @@ export default function Logs() {
           <Terminal className="h-5 w-5 text-brand-400" />
           <h2 className="text-lg font-semibold">{t("title")}</h2>
         </div>
-        <p className="mt-1 text-sm text-zinc-400">{t("description")}</p>
+        <p className="mt-1 text-sm text-zinc-400">{t("description", { seconds: 10 })}</p>
       </div>
 
       <div className="card flex items-center gap-3">

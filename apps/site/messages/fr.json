@@ -1852,7 +1852,7 @@
   },
   "adminLogs": {
     "title": "Journaux du bot",
-    "description": "Journaux du processus Shenron. Actualisation automatique toutes les 10 secondes.",
+    "description": "Journaux du processus Shenron. Actualisation automatique toutes les {seconds} secondes.",
     "lines": "Lignes affichées",
     "refresh": "Actualiser",
     "loading": "Chargement des journaux…",
