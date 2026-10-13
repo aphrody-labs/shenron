@@ -106,6 +106,7 @@ const episodeFrame = z
   });
 const episodeMetadata = z
   .object({
+    streamUrl: httpUrl.nullable().optional(),
     durationSec: z.preprocess(
       (value) => (typeof value === "string" && /^\d+$/.test(value) ? Number(value) : value),
       z.number().int().min(0).max(86400).nullable().optional(),
