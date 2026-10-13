@@ -52,6 +52,16 @@
     "videoKeyboardHelp": "Lecteur focalisé : espace/K lecture, J/L ±10 s, flèches ±5 s, M son, C sous-titres, F plein écran, P image dans l’image."
   },
   "mangaCatalog": {
+    "moreVolumes": "Afficher {count} tomes de plus",
+    "dialogue": {
+      "title": "Cherche une réplique",
+      "description": "Retrouve les dialogues français et japonais du manga. Ex. Kamehameha, Petit cœur, 悟空.",
+      "placeholder": "Rechercher un dialogue…",
+      "submit": "Chercher",
+      "error": "Recherche momentanément indisponible. Réessaie.",
+      "empty": "Aucune réplique trouvée pour « {query} ».",
+      "read": "Lire cette planche"
+    },
     "isbn": "ISBN",
     "catalogueData": "Données du catalogue (JSON)",
     "editionsForWork": "Éditions référencées — {title}",
