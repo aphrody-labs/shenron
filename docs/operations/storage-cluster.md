@@ -119,8 +119,10 @@ La pipeline privée `dbfr-private-pipeline.sh` a réussi sur DBFR : MP4 H.264/AA
 et poster WebP de 6 284 octets, SHA-256
 `d566c212b5849bb7c92307155cf9e349f360ddf4a8244833fbb5792b485d6768`.
 Le helper Infra a publié atomiquement ces deux seuls fichiers sur le disque
-public DBFR, avec empreintes égales. La route CDN et la nouvelle release du site
-ne sont pas encore actives : le HEAD public renvoie 404. Le propriétaire a
+public DBFR, avec empreintes égales. La release `9bd60d67c72abac7ea6f53f14c958a78073f0e41`
+a ensuite été vérifiée et activée par l'adaptateur Docker Infra officiel ; le
+site, le bot et la gateway sont `healthy`. Le MP4 public est vérifié par Range
+206 avec longueur et Content-Range cohérents. Le propriétaire a
 attesté dans `AGENTS.md` la diffusion mondiale sans échéance connue de la vidéo
 complète et de ses versions compressées ; le texte privé n'a pas été vérifié
 indépendamment. Aucun effacement automatique n'est programmé.
@@ -133,18 +135,17 @@ configuration Nginx en a relevé 45 de plus. Les 120 routes ont été testées.
 Leurs objets R2 existaient déjà et ont été vérifiés par taille, empreinte ou
 lecture intégrale ciblée : aucun nouvel upload n'était nécessaire. Les
 correctifs de la gateway Aphrody (`b3b9905966`, `3cbb0e8259`) couvrent les
-120 routes ; une configuration candidate a passé `nginx -t` dans l'image
-exacte, mais la release active monte encore l'ancienne configuration en
-lecture seule. Le rapport privé `var/reports/cdn-gap-fresh-20261013/summary.md`
-consigne les sondes et leurs limites.
+120 routes historiques. Après activation de la release `9bd60d67`, les 118
+routes toujours référencées répondent `200/118`. Les deux autres sont des
+anciens WASM non référencés par le code courant ; les nouveaux WASM de Shenron
+et Next répondent `200`. Le reçu détaillé est
+`var/reports/cdn-gap-fresh-20261013/current-assets-final.json`.
 
 La règle Cloudflare `aphrody-origin-cdn` a activé les requêtes Range vers
-l'origine. Une URL hors cache répond maintenant `206` avec `Content-Range` ;
-elle reste en transfert `chunked` sans `Content-Length` tant que le service
-DBFR n'intègre pas le correctif `5560a8cb`. Un ancien objet cache répond
-encore `200`. La release site/CDN et le service origine ont des revendications
-distinctes : vérifier les 120 HEAD, le MP4 Beerus et `Range` publiquement
-après leurs activations respectives.
+l'origine. Le service natif DBFR intègre `5560a8cb`; les contrôles publics Range
+de Bardock et Beerus renvoient `206`, `Content-Length: 1024` et le
+`Content-Range` attendu. La release site/CDN est active ; 118 routes courantes
+sur 118 passent le HEAD public.
 
 Le bot actif DBFR écrit encore certaines données runtime en SQLite. Un timer
 Infra actif, déclenché automatiquement et idempotent, réplique vers PostgreSQL
@@ -237,10 +238,11 @@ ni les comptes fournisseurs ; un plan possible ne garantit pas la disponibilité
 des placements conservés. `var/reports/storage-cluster/preflight.json`
 consigne les observations de cette session, sans servir de snapshot de capacité.
 
-L'activation exige encore : mesures fraîches de consommation mensuelle R2 et des autres quotas,
+La répartition du stockage entre DBFR, Neon et Supabase reste inactive : elle
+exige encore des mesures fraîches de consommation mensuelle R2 et des autres quotas,
 inventaire complet avec propriétaires exclusifs et données éligibles,
 registre de placement et budgets transactionnels dans le propriétaire
 canonique, routage des consommateurs, puis qualification d'écritures/lectures
 réelles avant l'activation par Infra. Les transferts privés ci-dessus ne sont
-pas une activation du cluster ; aucune modification de DNS, aucun abonnement
-ni déploiement n'a été effectué.
+pas une activation du cluster. La release Shenron `9bd60d67` est déployée, mais
+aucune bascule de données SQL vers Neon/Supabase ni modification DNS n'a eu lieu.
