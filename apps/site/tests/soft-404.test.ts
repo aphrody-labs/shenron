@@ -13,6 +13,12 @@ const categories = [
 ];
 const routeFile = (path: string) => Bun.file(new URL(`../src/app/wiki/${path}`, import.meta.url));
 
+test("arc details reach their own page instead of redirecting to the saga catalogue", async () => {
+  const config = await Bun.file(new URL("../next.config.ts", import.meta.url)).text();
+  expect(config).toContain('source: "/wiki/arcs", destination: "/wiki/sagas"');
+  expect(config).not.toContain('source: "/wiki/arcs/:path*"');
+});
+
 test("catalogue loading boundaries are isolated from entity details", async () => {
   for (const category of categories) {
     expect(await routeFile(`${category}/page.tsx`).exists()).toBe(false);

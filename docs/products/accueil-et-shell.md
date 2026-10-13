@@ -12,20 +12,24 @@ ci-dessous évitent que cela se reproduise. Système graphique : [`reference/DES
   surfaces sobres. Les anciens fonds `section.scene` ne sont plus montés, même si leur
   configuration est encore présente ; les portraits et vignettes éditoriales restent visibles.
 - La demande propriétaire du 13 octobre 2026 de restaurer le contenu perdu remplace
-  la composition compacte précédente. La recherche et les accès publics sont suivis
+  la composition compacte précédente. La recherche est suivie
   des sections activées dans `/admin/home` : personnages, sagas, best-of, classements,
   canonicité et contenus personnalisés. Les actualités puis les mini-jeux terminent la page.
 - Les sélections et les compteurs viennent de leurs lecteurs canoniques ; aucun nombre
   de références de secours n’est inventé. Les podiums sans votes suffisants et les sections
   éditoriales, communautaires ou personnalisées sans matière restent masqués.
+- Le dernier ajustement du propriétaire retire le menu d'ancrage, « Voyage à travers
+  l'univers » et ses compteurs, la reprise sur l'accueil et la présentation Beerus.
+  Leurs pages et l'historique personnel restent accessibles dans le shell. L'accueil
+  conserve un lien vers la bibliothèque de GIF ; les sept lectures de comptage propres
+  à l'ancien bloc univers sont retirées.
 - Le héros affiche au plus une frame d'épisode qualifiée par le propriétaire des bannières,
   ou un fond sobre si aucune ne convient. Les anciennes scènes Xenoverse et l'affiche Beerus
-  statique ne sont plus montées. La fiche Beerus et son annonce sont accessibles dans une
-  section textuelle, sans deuxième affiche identique.
+  statique ne sont plus montées. La fiche Beerus reste accessible par le catalogue des épisodes.
 - Les héros restent compacts : accueil de 240 à 288 px, catalogues de 256 à 320 px,
   bandeaux partagés de 180 à 240 px. Il s'agit de hauteurs minimales : les titres, synopsis
   et actions longs agrandissent leur bloc, sans être tronqués.
-- « Explorer aussi » retire les destinations déjà proposées par les sections visibles.
+- « Explorer aussi » retire les destinations déjà proposées par le shell et les sections visibles.
 
 ## Shell
 

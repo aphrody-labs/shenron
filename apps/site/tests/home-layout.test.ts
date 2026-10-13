@@ -9,7 +9,6 @@ import { NextIntlClientProvider } from "next-intl";
 import fr from "../messages/fr.json";
 import { DEFAULT_HOME_CONFIG } from "../src/lib/home-scenes";
 import { DEFAULT_CANON_CONFIG } from "../src/lib/canon-engine";
-import { EMPTY_WIKI_COUNTS } from "../src/components/home/types";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
@@ -93,7 +92,6 @@ describe("no placeholder data on the home", () => {
           topMembers: [],
           topMembersAvailable: false,
           presence: { total: 0, online: 0, members: [] },
-          wikiCounts: EMPTY_WIKI_COUNTS,
           characters: [
             {
               id: 1,
@@ -121,6 +119,13 @@ describe("no placeholder data on the home", () => {
     expect(html).toContain('id="jeux"');
     expect(html).not.toContain("official-beerus-logo");
     expect(html).not.toContain('class="home-hero__beerus"');
+    expect(html).not.toContain('id="universe"');
+    expect(html).not.toContain('id="beerus"');
+    expect(html).not.toContain('href="#hero"');
+    expect(html).not.toContain("dbsBeerus.openLocalEpisode");
+    expect(html).toContain('href="/wiki/gifs"');
+    expect(source("../src/components/home/HomeView.tsx")).not.toContain("ContinueRail");
+    expect(source("../src/app/page.tsx")).not.toContain("getWikiCounts");
     const covered = coveredDestinations(config, new Set(["personnages"]));
     expect(covered.filter((href) => href === "/wiki/characters")).toHaveLength(1);
     expect(covered).toContain("/games");

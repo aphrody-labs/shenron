@@ -1,28 +1,14 @@
 /**
- * L'accueil — une page d'entrée d'application, pensée pour le téléphone d'abord.
- *
- * Ordre de lecture (celui du DOM, donc celui du téléphone et du lecteur
- * d'écran) : le héros (wordmark de couverture, Kinto-Un, clips, recherche),
- * choisir une rubrique, reprendre, l'activité du serveur, les blocs éditoriaux
- * chacun sur son clip, « Explorer aussi », puis TOUT EN BAS les dernières
- * nouvelles et enfin les mini-jeux. Sur grand écran, la même séquence se pose
- * sur une grille de douze colonnes.
- *
- * Ce qui reste piloté par `/admin/home` : la phrase et le lien de l'en-tête,
- * l'activation, l'ordre, les titres et les textes des blocs éditoriaux, les
- * sections personnalisées, l'arbitre de canonicité et « Explorer aussi ».
- * Ce qui est fixe : la recherche, l'accès rapide, la reprise et les mini-jeux —
- * ce sont les fonctions de la page, pas des contenus.
- *
- * Composant SANS état : il se rend côté serveur, et tel quel dans les tests.
- * Les îlots client (recherche, direct, reprise, best-of, tops) se montent dedans.
+ * Compact homepage identity and configured editorial content.
+ * The shared shell provides catalogue navigation; the home omits its former
+ * anchor strip, universe counters, history rail and repeated Beerus promotion.
+ * News and mini-games remain at the bottom of the editorial flow.
  */
 import Link from "next/link";
 import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
 import { T } from "@/components/T";
 import { FeedLead, FeedStream } from "@/components/feed/FeedStream";
-import { ContinueRail } from "@/components/history/ContinueRail";
 import { CommunityTops } from "@/components/ratings/CommunityTops";
 import type { MediaCatalog } from "@/components/stream/MediaCatalogRails";
 import { WikiImg } from "@/components/wiki/WikiImg";
@@ -40,17 +26,15 @@ import {
   type HomeSectionId,
 } from "@/lib/home-scenes";
 import type { AccessSnapshot } from "@/lib/wiki-launch";
+import { publicShellJourneys } from "@/lib/shell-nav";
 import { HomeCanonArbitre } from "./HomeCanonArbitre";
 import { HOME_GAMES, HomeGames } from "./HomeGames";
 import { HomeHero } from "./HomeHero";
 import { HomeGuardians, HomeLivePanel, HomeLiveProvider, HomePantheon } from "./HomeLive";
 import { HomeMenuJourney } from "./HomeMenuJourney";
-import { HomeQuickAccess, QUICK_ACCESS } from "./HomeQuickAccess";
 import { HomeSection } from "./HomeSection";
-import { HomeSectionNavigation } from "./HomeSectionNavigation";
-import { DBS_BEERUS_EPISODE_HREF } from "@/lib/episode-series-catalogue";
 import { SagaBestOf } from "./SagaBestOf";
-import type { FeaturedCharacter, SagaTeaser, WikiCounts } from "./types";
+import type { FeaturedCharacter, SagaTeaser } from "./types";
 import type { BotStats, PersonaLive, PresenceState, TopMember } from "./useLiveBotState";
 
 export interface HomeViewProps {
@@ -62,7 +46,6 @@ export interface HomeViewProps {
   topMembers: TopMember[];
   topMembersAvailable: boolean;
   presence: PresenceState;
-  wikiCounts: WikiCounts;
   characters: FeaturedCharacter[];
   sagas: SagaTeaser[];
   bestof: BestOfSagaView[];
@@ -92,8 +75,9 @@ export function homeCommunityTops(tops: CommunityTopsPayload | null): CommunityT
   return boards.length > 0 ? { ...tops, boards } : null;
 }
 
-/** Blocs dont la place est fixe dans la page (fonctions, pas contenus). */
-const FIXED: ReadonlySet<string> = new Set(["universe", "news", "pantheon", "community"]);
+const OMITTED: ReadonlySet<string> = new Set(["universe"]);
+/** Sections rendered outside the ordered editorial flow. */
+const FIXED: ReadonlySet<string> = new Set(["news", "pantheon", "community"]);
 
 /** Largeur d'un bloc éditorial sur la grille de douze colonnes. */
 const SPAN: Record<string, string> = {
@@ -108,8 +92,6 @@ const SPAN: Record<string, string> = {
 const card =
   "rounded-xl border border-white/[0.08] bg-dbz-card/80 transition-colors hover:border-dbz-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange";
 
-const navigationLabel = (s: HomeSectionConfig) => s.navLabel.trim() || s.title.trim();
-
 const label = (s: HomeSectionConfig, fallback: string) =>
   s.title.trim() || s.navLabel.trim() || fallback;
 
@@ -117,9 +99,16 @@ const label = (s: HomeSectionConfig, fallback: string) =>
  * Destinations déjà ouvertes par un bloc de la page : « Explorer aussi » ne
  * les répète pas. Exporté pour les tests.
  */
-export function coveredDestinations(config: HomeConfig, shown: ReadonlySet<string>): string[] {
-  const covered = new Set<string>(QUICK_ACCESS.map((tile) => tile.href));
+export function coveredDestinations(
+  config: HomeConfig,
+  shown: ReadonlySet<string>,
+  access: AccessSnapshot | null = null,
+): string[] {
+  const covered = new Set<string>(
+    publicShellJourneys(access).flatMap((group) => group.items.map((item) => item.href)),
+  );
   covered.add("/wiki/search");
+  covered.add("/wiki/gifs");
   // Bloc fixe des mini-jeux.
   covered.add("/games");
   for (const game of HOME_GAMES) covered.add(game.href);
@@ -161,12 +150,13 @@ export function HomeView(rawProps: HomeViewProps) {
         return !s.isCustom || Boolean(s.body?.trim());
     }
   };
-  const shown = new Set(config.sections.filter((s) => s.enabled && hasMatter(s)).map((s) => s.id));
+  const shown = new Set(
+    config.sections.filter((s) => s.enabled && !OMITTED.has(s.id) && hasMatter(s)).map((s) => s.id),
+  );
   const flow = config.sections.filter((s) => shown.has(s.id) && !FIXED.has(s.id));
 
   const news = enabled.get("news");
   const pantheon = enabled.get("pantheon");
-  const universe = enabled.get("universe");
   const tops = flow.findIndex((s) => s.id === "tops");
   const canonAt = tops >= 0 ? tops + 1 : flow.length;
 
@@ -205,58 +195,10 @@ export function HomeView(rawProps: HomeViewProps) {
     >
       <HomeHero hero={config.hero} heroFrame={props.heroFrame} />
       <PageShell width="wide" rhythm="tight">
-        <HomeSectionNavigation
-          sections={[
-            { id: "universe", label: universe ? navigationLabel(universe) : "" },
-            ...(shown.has("community") ? [{ id: "community", label: "" }] : []),
-            ...(pantheon && shown.has("pantheon")
-              ? [{ id: "pantheon", label: navigationLabel(pantheon) }]
-              : []),
-            ...flow
-              .slice(0, canonAt)
-              .map((section) => ({ id: section.id, label: navigationLabel(section) })),
-            ...(config.canon.enabled ? [{ id: "canon", label: config.canon.title }] : []),
-            ...flow
-              .slice(canonAt)
-              .map((section) => ({ id: section.id, label: navigationLabel(section) })),
-            ...(news && shown.has("news")
-              ? [{ id: "actualites", label: navigationLabel(news) }]
-              : []),
-          ]}
-        />
+        <Link href="/wiki/gifs" className="dbz-button mb-4 inline-flex min-h-11 items-center">
+          <T k="gifLibrary.title" />
+        </Link>
         <div className="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-12 lg:gap-y-10">
-          <HomeQuickAccess
-            counts={props.wikiCounts}
-            access={access}
-            title={universe ? universe.title : undefined}
-            className="lg:col-span-12"
-          />
-
-          <ContinueRail wiki flush limit={16} className="min-w-0 lg:col-span-12" />
-
-          <HomeSection id="beerus" title={<T k="dbsBeerus.title" />} className="lg:col-span-12">
-            <p className="text-sm text-os/80">
-              <T k="dbsBeerus.episodeOne" />
-            </p>
-            <div className="flex flex-wrap gap-x-6 gap-y-2">
-              <Link href={DBS_BEERUS_EPISODE_HREF} className="dbz-button min-h-11">
-                <T k="dbsBeerus.openLocalEpisode" />
-              </Link>
-              <Link
-                href="/wiki/gifs"
-                className="inline-flex min-h-11 items-center text-dbz-gold hover:underline"
-              >
-                <T k="gifLibrary.title" />
-              </Link>
-              <Link
-                href="/news/dragon-ball-super-beerus-adn-vostfr-18h-2026-10-11"
-                className="inline-flex min-h-11 items-center text-dbz-gold hover:underline"
-              >
-                <T k="dbsBeerus.news" />
-              </Link>
-            </div>
-          </HomeSection>
-
           {shown.has("community") && (
             <HomeLivePanel
               showCommunity={shown.has("community")}
@@ -273,7 +215,7 @@ export function HomeView(rawProps: HomeViewProps) {
           <HomeMenuJourney
             access={access}
             config={config.journey}
-            covered={coveredDestinations(config, shown)}
+            covered={coveredDestinations(config, shown, access)}
             className="lg:col-span-12"
           />
 

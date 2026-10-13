@@ -250,7 +250,6 @@ const nextConfig: NextConfig = {
       // destinations autonomes. Les détails conservés restent accessibles aux
       // liens d'archives, mais les entrées publiques convergent vers leur hub.
       { source: "/wiki/arcs", destination: "/wiki/sagas", permanent: true },
-      { source: "/wiki/arcs/:path*", destination: "/wiki/sagas", permanent: true },
       // Routes en anglais : chaque ancien segment français (`/wiki/personnages`, `/jeux`,
       // `/wiki-bientot`…) répond un 308 vers son équivalent, sous-chemins et requête
       // conservés ; les rubriques retirées (combats, tournois, voix, romans, dragons,

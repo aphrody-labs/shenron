@@ -11,35 +11,15 @@ import { getCanonConfig, getCanonReferences } from "@/lib/canon-config";
 import { getHomeConfig } from "@/lib/home-config";
 import { getSagaBestOf } from "@/lib/home-bestof-data";
 import { getHomeCommunityTops } from "@/lib/community-tops-data";
-import {
-  botSagas,
-  botEpisodes,
-  botMovies,
-  botCharacters,
-  botPlanets,
-  botMangaChapters,
-  botDatabooks,
-} from "@/db/bot-schema";
-import { and, asc, eq, isNotNull, ne, sql } from "drizzle-orm";
+import { botSagas, botCharacters } from "@/db/bot-schema";
+import { and, asc, eq, isNotNull, ne } from "drizzle-orm";
 import { listFeed } from "@/lib/feed";
 import { ogMeta } from "@/lib/og";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { readMediaCatalog } from "@/lib/media-catalog";
 import { pageHero } from "@/lib/banner-config";
 
-/**
- * 15 minutes, et non 2.
- *
- * Ce que le rendu serveur fournit ici, ce sont des **compteurs** (personnages,
- * épisodes, films, chapitres) et une sélection éditoriale — des choses qui
- * bougent quelques fois par mois. Tout ce qui est réellement vivant (personas
- * en ligne, classement, présence) est repris côté client par `useLiveBotState`
- * dès l'hydratation, et remplace la valeur rendue.
- *
- * Revalider toutes les 2 minutes faisait donc rejouer sept requêtes de
- * comptage 720 fois par jour pour réécrire les mêmes nombres — et exposait la
- * page d'accueil à tout hoquet de la base, sept fois plus souvent.
- */
+/** Editorial selections use ISR; live community state refreshes after hydration. */
 export const revalidate = 900;
 
 export const metadata: Metadata = {
@@ -68,49 +48,6 @@ async function getHomeFeed() {
   } catch (e) {
     console.error("Failed to fetch home feed:", e);
     return [];
-  }
-}
-
-/**
- * Compteurs de l'univers.
- *
- * `visible = false` est la suppression LOGIQUE du wiki : une fiche masquée sort
- * des index publics (`dbUniverse.counts`, `/wiki/*`) mais restait comptée ici.
- * L'accueil annonçait donc plus d'entrées que les rubriques n'en montrent, et un
- * visiteur qui compare voyait le site se contredire.
- */
-async function getWikiCounts() {
-  const n = sql<number>`count(*)::int`;
-  try {
-    const [sagas, episodes, movies, characters, planets, chapters, databooks] = await Promise.all([
-      db.select({ count: n }).from(botSagas).where(eq(botSagas.visible, true)),
-      db.select({ count: n }).from(botEpisodes).where(eq(botEpisodes.visible, true)),
-      db.select({ count: n }).from(botMovies).where(eq(botMovies.visible, true)),
-      db.select({ count: n }).from(botCharacters).where(eq(botCharacters.visible, true)),
-      db.select({ count: n }).from(botPlanets).where(eq(botPlanets.visible, true)),
-      db.select({ count: n }).from(botMangaChapters).where(eq(botMangaChapters.visible, true)),
-      db.select({ count: n }).from(botDatabooks).where(eq(botDatabooks.visible, true)),
-    ]);
-    return {
-      sagas: sagas[0]?.count ?? 0,
-      episodes: episodes[0]?.count ?? 0,
-      movies: movies[0]?.count ?? 0,
-      characters: characters[0]?.count ?? 0,
-      planets: planets[0]?.count ?? 0,
-      chapters: chapters[0]?.count ?? 0,
-      databooks: databooks[0]?.count ?? 0,
-    };
-  } catch (e) {
-    console.error("Failed to fetch wiki counts:", e);
-    return {
-      sagas: 0,
-      episodes: 0,
-      movies: 0,
-      characters: 0,
-      planets: 0,
-      chapters: 0,
-      databooks: 0,
-    };
   }
 }
 
@@ -182,7 +119,6 @@ export default async function Home() {
     feed,
     personas,
     stats,
-    wikiCounts,
     characters,
     sagas,
     bestof,
@@ -201,7 +137,6 @@ export default async function Home() {
     // 15 min : ces valeurs ne servent qu'à peupler le premier rendu, le suivi
     // temps réel les remplace dès l'hydratation.
     getShenronStats(900),
-    getWikiCounts(),
     getFeaturedCharacters(),
     getSagas(),
     getSagaBestOf(),
@@ -234,10 +169,6 @@ export default async function Home() {
         avatar: p.avatar,
         online: p.online,
       }))}
-      wikiCounts={{
-        ...wikiCounts,
-        canonReferences: canonReferences.length,
-      }}
       characters={characters.map((c) => ({
         id: c.id,
         name: c.name,
