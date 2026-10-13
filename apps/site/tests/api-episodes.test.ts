@@ -2,6 +2,34 @@
 import { describe, expect, mock, test } from "bun:test";
 import { NextRequest } from "next/server";
 
+const nativeEpisode = {
+  id: 875,
+  series: "DBS_BEERUS",
+  number_in_series: 1,
+  title: "Le dieu de la Destruction",
+  title_ja: null,
+  air_date: null,
+  duration_sec: 1397,
+  image: null,
+  synopsis: null,
+  players: [],
+  stream_url: "https://27.mugiwara.one/dbs/dbs-1.mp4",
+  subtitles: [],
+  frames: [],
+  scene_preview: "https://cdn.dragonballfr.com/episodes/875/preview.mp4",
+  availability: [
+    {
+      provider: "crunchyroll",
+      label: "Crunchyroll",
+      url: "https://www.crunchyroll.com/series/observed",
+      langs: ["vostfr"],
+      available: true,
+      checkedAt: 1,
+    },
+  ],
+};
+let catalogueAvailable = true;
+
 // Mock server-only
 mock.module("server-only", () => ({}));
 
@@ -13,6 +41,7 @@ mock.module("@/lib/db-universe", () => ({
       { series: "DBZ", count: 291 },
     ],
     episodes: async (series?: string, limit = 50, offset = 0, query?: string) => {
+      if (!catalogueAvailable) return null;
       const rows = [
         {
           id: 1,
@@ -47,6 +76,7 @@ mock.module("@/lib/db-universe", () => ({
           synopsis: "Beerus arrive",
         },
         { ...first, id: 999, series: "SDBH", title: "Autre Beerus", synopsis: null },
+        nativeEpisode,
       ];
       const needle = query?.trim().toLowerCase();
       const matched = fixture.filter(
@@ -60,6 +90,7 @@ mock.module("@/lib/db-universe", () => ({
       return { total: matched.length, episodes: matched.slice(offset, offset + limit) };
     },
     episode: async (id: number) => {
+      if (id === 875) return nativeEpisode;
       if (id !== 1) return null;
       return {
         id: 1,
@@ -143,5 +174,51 @@ describe("API routes /api/episodes", () => {
     const req = new NextRequest("http://localhost:3000/api/episodes/99999");
     const res = await getEpisodeById(req, { params: Promise.resolve({ id: "99999" }) });
     expect(res.status).toBe(404);
+  });
+
+  test("native playback, official offers and series labels match between list and detail", async () => {
+    const list = await getEpisodes(
+      new NextRequest("http://localhost:3000/api/episodes?series=DBS_BEERUS"),
+    );
+    const detail = await getEpisodeById(new NextRequest("http://localhost:3000/api/episodes/875"), {
+      params: Promise.resolve({ id: "875" }),
+    });
+    const summary = (await list.json()).episodes[0];
+    const data = await detail.json();
+    for (const key of [
+      "players",
+      "versions",
+      "subtitles",
+      "availability",
+      "nativeSource",
+      "hlsMasterUrl",
+      "playerCount",
+      "hasVf",
+      "hasVostfr",
+      "hasVost",
+      "seriesLabel",
+      "durationSec",
+      "scenePreview",
+    ]) {
+      expect(data[key]).toEqual(summary[key]);
+    }
+    expect(data.nativeSource).toEqual({ src: "/api/episodes/875/video", type: "video/mp4" });
+    expect(data.hlsMasterUrl).toBeNull();
+    expect(data.seriesLabel).toBe("Dragon Ball Super: Beerus");
+    expect(data.hasVostfr).toBe(false);
+    expect(data.durationSec).toBe(1397);
+    expect(data.scenePreview).toBe(nativeEpisode.scene_preview);
+    expect(data.availability[0].langs).toEqual(["vostfr"]);
+  });
+
+  test("a missing catalogue is an uncached service failure instead of an empty success", async () => {
+    catalogueAvailable = false;
+    try {
+      const result = await getEpisodes(new NextRequest("http://localhost:3000/api/episodes"));
+      expect(result.status).toBe(503);
+      expect(result.headers.get("cache-control")).toBe("no-store");
+    } finally {
+      catalogueAvailable = true;
+    }
   });
 });

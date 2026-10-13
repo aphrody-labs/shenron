@@ -1,3 +1,6 @@
+@import "./episode-themes.css";
+@import "./video-player.css";
+
 @custom-variant dark (&:is(.dark *));
 
 html {
@@ -4683,11 +4686,11 @@ html[data-consent-open] body {
   --color-dbz-gold: var(--dbz-yellow, #ffde00);
   --color-dbz-purple: var(--dbz-purple, #7833ce);
   --color-os: var(--dbz-os, #e8e6db);
-  --color-primary: var(--color-dbz-yellow);
-  --color-primary-foreground: #080806;
-  --color-accent: var(--color-dbz-yellow);
-  --color-accent-foreground: #080806;
-  --color-ring: var(--color-dbz-yellow);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-ring: var(--ring);
   flex-direction: column;
   color: var(--foreground);
   background-color: var(--color-dbz-bg);

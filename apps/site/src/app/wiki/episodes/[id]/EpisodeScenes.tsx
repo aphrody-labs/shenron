@@ -15,6 +15,9 @@
 import { useCallback, useMemo, useState } from "react";
 import { assetUrl } from "@/lib/assets";
 import { Film, RefreshCw, Scan, Search, Sparkles, Upload } from "lucide-react";
+import { useVideoUIText } from "@/lib/video-ui-text";
+import { frameUploadError, resolveFrameSearchTarget } from "@/lib/frames-map-shared";
+import { Etoile } from "@aphrody/shenron-ui/toriyama/MotifsCouverture";
 
 /**
  * Réplique client-safe de `EpisodeFrame` (cf. `@/db/bot-schema`).
@@ -34,6 +37,7 @@ export type SceneFrame = {
   isNotable: boolean;
   sortOrder: number;
 };
+const NO_SCENE_FRAMES: SceneFrame[] = [];
 
 interface FrameSearchResult {
   title: string;
@@ -122,7 +126,7 @@ function loadFrameCanvas(src: string, width: number, height: number): Promise<HT
 }
 
 export function EpisodeScenes({
-  frames = [],
+  frames = NO_SCENE_FRAMES,
   title,
   episodeNumber,
   series,
@@ -136,6 +140,7 @@ export function EpisodeScenes({
   episodeId?: number;
   episodeImage?: string | null;
 }) {
+  const videoText = useVideoUIText();
   const renderable = useMemo(
     () =>
       (frames ?? [])
@@ -221,8 +226,10 @@ export function EpisodeScenes({
 
     try {
       const formData = new FormData();
-      const targetFile = overrideTarget?.file ?? uploadedFile;
-      const targetUrl = overrideTarget?.url ?? searchUrl;
+      const { file: targetFile, url: targetUrl } = resolveFrameSearchTarget(
+        { file: uploadedFile, url: searchUrl },
+        overrideTarget,
+      );
 
       if (targetFile) {
         formData.append("file", targetFile);
@@ -235,6 +242,7 @@ export function EpisodeScenes({
       const res = await fetch("/api/frames/search", {
         method: "POST",
         body: formData,
+        signal: AbortSignal.timeout(30_000),
       });
 
       const data = (await res.json()) as BxcApiResponse & { error?: string };
@@ -250,53 +258,61 @@ export function EpisodeScenes({
     }
   };
 
+  const submitImageFile = async (file: File) => {
+    if (scanning) return;
+    const error = await frameUploadError(file).catch(() => "invalid" as const);
+    if (error) {
+      setScanError(videoText(error === "tooLarge" ? "sceneImageTooLarge" : "sceneInvalidImage"));
+      return;
+    }
+    setUploadedFile(file);
+    await executeScan({ file });
+  };
+
   return (
-    <section className="space-y-6 reveal-up">
+    <section className="shenron-episode-scenes @container min-w-0 space-y-6">
       {/* En-tête de section avec navigation par onglets */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
+        <div className="flex min-w-0 items-center gap-3">
           <div className="grid h-8 w-8 place-items-center rounded-lg bg-dbz-orange/20 text-dbz-orange border border-dbz-orange/40">
-            <Film className="h-4 w-4" />
+            <Etoile taille={24} decorative className="text-primary" />
           </div>
-          <div>
-            <h2 className="font-display font-bold text-2xl text-white uppercase tracking-wider flex items-center gap-2">
-              Scènes &amp; Frames
-              <span className="rounded bg-gradient-to-r from-amber-500 to-dbz-orange px-2 py-0.5 text-[9px] font-mono font-black uppercase tracking-widest text-black">
-                bxc frames
-              </span>
+          <div className="min-w-0">
+            <h2 className="font-display font-bold text-xl text-foreground uppercase tracking-wide flex flex-wrap items-center gap-2">
+              {videoText("sceneTitle")}
             </h2>
-            <p className="text-[12px] text-white/50">
-              Extraction vidéo, analyse MPEG-7 ColorLayout et identification de scènes.
-            </p>
+            <p className="text-sm text-[var(--muted-foreground)]">{videoText("sceneIntro")}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 rounded-lg bg-black/40 p-1 border border-white/10">
+        <div className="shenron-video-selectors flex max-w-full flex-wrap items-center gap-2 rounded-full bg-card p-1 border border-border">
           {renderable.length > 0 && (
             <button
               type="button"
               onClick={() => setActiveTab("scenes")}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
+              aria-pressed={activeTab === "scenes"}
+              className={`flex min-h-11 items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
                 activeTab === "scenes"
-                  ? "bg-dbz-orange text-black font-bold shadow-sm"
-                  : "text-white/60 hover:text-white"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-foreground hover:text-primary"
               }`}
             >
               <Film className="h-3.5 w-3.5" />
-              Scènes ({renderable.length})
+              {videoText("sceneGallery", { count: renderable.length })}
             </button>
           )}
           <button
             type="button"
             onClick={() => setActiveTab("finder")}
-            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
+            aria-pressed={activeTab === "finder"}
+            className={`flex min-h-11 items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
               activeTab === "finder"
-                ? "bg-dbz-orange text-black font-bold shadow-sm"
-                : "text-white/60 hover:text-white"
+                ? "bg-primary text-primary-foreground"
+                : "text-foreground hover:text-primary"
             }`}
           >
             <Scan className="h-3.5 w-3.5" />
-            Frame Finder (bxc)
+            {videoText("sceneSearch")}
           </button>
         </div>
       </div>
@@ -304,14 +320,14 @@ export function EpisodeScenes({
       {/* Onglet 1 : Galerie de Scènes */}
       {activeTab === "scenes" && renderable.length > 0 && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between text-xs text-white/60">
-            <p>Sélectionnez plusieurs frames pour créer un GIF animé instantané.</p>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-[var(--muted-foreground)]">
+            <p>{videoText("sceneSelectHint")}</p>
             <span className="scouter-text text-dbz-orange">
-              {renderable.length} frame{renderable.length > 1 ? "s" : ""} indexée(s)
+              {videoText("sceneFrameCount", { count: renderable.length })}
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 @md:grid-cols-3 @3xl:grid-cols-4 gap-3">
             {renderable.map((f, i) => {
               const isSelected = selected.has(i);
               const order = isSelected ? orderedSelection.indexOf(i) + 1 : 0;
@@ -325,7 +341,7 @@ export function EpisodeScenes({
                     : `Scène de l'épisode ${episodeNumber}`);
               return (
                 <button
-                  key={`${f.imagePath}-${i}`}
+                  key={`${f.sourceId}:${f.timecodeSec}:${f.sortOrder}`}
                   type="button"
                   onClick={() => toggle(i)}
                   aria-pressed={isSelected}
@@ -389,28 +405,28 @@ export function EpisodeScenes({
 
           {/* Barre d'export GIF */}
           {selectionMode && (
-            <div className="flex flex-wrap items-center gap-4 dbz-panel p-4 mt-4">
-              <span className="text-sm text-white/70">
-                {selected.size} frame{selected.size > 1 ? "s" : ""} sélectionnée(s)
+            <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-border bg-card p-4 mt-4">
+              <span className="text-sm text-foreground">
+                {videoText("sceneSelection", { count: selected.size })}
               </span>
               <button
                 type="button"
                 onClick={exportGif}
                 disabled={busyGif}
-                className="rounded-lg bg-dbz-orange px-4 py-2 font-display font-semibold text-black text-sm transition-opacity disabled:opacity-50"
+                className="min-h-11 rounded-full bg-primary px-5 py-2 font-display font-semibold text-primary-foreground text-sm transition-opacity disabled:opacity-50"
               >
-                {busyGif ? "Encodage…" : "Exporter en GIF"}
+                {videoText(busyGif ? "sceneEncoding" : "sceneExport")}
               </button>
               <button
                 type="button"
                 onClick={clearSelection}
-                className="text-sm text-white/50 hover:text-white transition-colors underline"
+                className="min-h-11 px-3 text-sm text-foreground hover:text-primary transition-colors underline"
               >
-                Effacer
+                {videoText("sceneClear")}
               </button>
               {errorGif && <span className="text-sm text-dbz-red">{errorGif}</span>}
               {gifUrl && (
-                <figure className="flex items-center gap-3">
+                <figure className="flex min-w-0 flex-wrap items-center gap-3">
                   <img
                     src={gifUrl}
                     alt={`GIF de scènes — ${title}`}
@@ -421,9 +437,9 @@ export function EpisodeScenes({
                   <a
                     href={gifUrl}
                     download={`dbfr-ep${episodeNumber === null ? `id-${episodeId}` : String(episodeNumber).padStart(3, "0")}-scenes.gif`}
-                    className="text-sm text-dbz-orange underline"
+                    className="inline-flex min-h-11 items-center text-sm text-primary underline"
                   >
-                    Télécharger le GIF
+                    {videoText("sceneDownload")}
                   </a>
                 </figure>
               )}
@@ -435,18 +451,15 @@ export function EpisodeScenes({
       {/* Onglet 2 : Frame Finder & Reconnaissance bxc frames */}
       {activeTab === "finder" && (
         <div className="space-y-6">
-          <div className="rounded-xl border border-dbz-orange/30 bg-black/40 p-6 backdrop-blur">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+          <div className="rounded-2xl border border-border bg-card p-4 sm:p-6">
+            <div className="flex min-w-0 flex-col @3xl:flex-row items-start @3xl:items-center justify-between gap-4 mb-6">
               <div>
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-dbz-yellow" />
-                  Recherche &amp; Identification de Scène
+                  {videoText("sceneSearchTitle")}
                 </h3>
-                <p className="text-xs text-white/60 mt-1 max-w-2xl">
-                  Soumettez une capture d&apos;écran ou analysez la vignette officielle de
-                  l&apos;épisode. Le moteur <code>bxc frames</code> calcule le vecteur ColorLayout
-                  MPEG-7 et interroge la base neuronale pour retrouver l&apos;épisode et le timecode
-                  exacts.
+                <p className="mt-1 max-w-2xl text-sm text-[var(--muted-foreground)]">
+                  {videoText("sceneSearchNote")}
                 </p>
               </div>
 
@@ -455,64 +468,71 @@ export function EpisodeScenes({
                   type="button"
                   disabled={scanning}
                   onClick={() => executeScan({ url: assetUrl(episodeImage) })}
-                  className="shrink-0 inline-flex items-center gap-2 rounded-lg border border-dbz-orange/60 bg-dbz-orange/15 px-3.5 py-2 text-xs font-bold text-dbz-yellow transition-all hover:bg-dbz-orange hover:text-black focus:outline-none disabled:opacity-50"
+                  className="inline-flex min-h-11 max-w-full items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-50"
                 >
                   {scanning ? (
                     <RefreshCw className="h-3.5 w-3.5 animate-spin" />
                   ) : (
                     <Search className="h-3.5 w-3.5" />
                   )}
-                  Scanner la vignette de cet épisode
+                  {videoText("sceneScanThumbnail")}
                 </button>
               )}
             </div>
 
             {/* Formulaire de soumission d'image */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <span className="text-xs font-semibold text-white/70 block">
-                  URL d&apos;une image ou capture
+            <div className="grid grid-cols-1 @3xl:grid-cols-2 gap-4">
+              <div className="min-w-0 space-y-2">
+                <span className="block text-sm font-semibold text-foreground">
+                  {videoText("sceneImageUrl")}
                 </span>
                 <div className="flex gap-2">
                   <input
                     type="url"
-                    aria-label="URL de l'image ou capture d'écran"
+                    aria-label={videoText("sceneImageUrl")}
                     placeholder="https://..."
                     value={searchUrl}
                     onChange={(e) => setSearchUrl(e.target.value)}
-                    className="flex-1 rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-xs text-white placeholder-white/30 focus:border-dbz-orange focus:outline-none"
+                    className="min-h-11 min-w-0 flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-[var(--muted-foreground)] focus:border-primary"
                   />
                   <button
                     type="button"
                     disabled={scanning || !searchUrl.trim()}
-                    onClick={() => executeScan()}
-                    className="rounded-lg bg-dbz-orange px-4 py-2 text-xs font-bold text-black transition-opacity disabled:opacity-50"
+                    onClick={() => executeScan({ url: searchUrl })}
+                    className="min-h-11 shrink-0 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity disabled:opacity-50"
                   >
-                    {scanning ? "Analyse…" : "Analyser"}
+                    {videoText(scanning ? "sceneAnalyzing" : "sceneAnalyze")}
                   </button>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <span className="text-xs font-semibold text-white/70 block">
-                  Ou téléverser un fichier local
+              <div className="min-w-0 space-y-2">
+                <span className="block text-sm font-semibold text-foreground">
+                  {videoText("sceneUploadLabel")}
                 </span>
-                <label className="flex items-center justify-center gap-2 rounded-lg border border-dashed border-white/20 bg-black/30 p-2 text-xs text-white/60 hover:border-dbz-orange/50 hover:text-white cursor-pointer transition-colors">
+                <label className="relative flex min-h-11 items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-background p-3 text-sm text-foreground hover:border-primary cursor-pointer transition-colors focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ring">
                   <Upload className="h-3.5 w-3.5" />
-                  <span>
-                    {uploadedFile ? uploadedFile.name : "Glisser une capture (PNG, JPG, WebP)"}
+                  <span className="min-w-0 [overflow-wrap:anywhere]">
+                    {uploadedFile ? uploadedFile.name : videoText("sceneImageUpload")}
                   </span>
                   <input
                     type="file"
-                    aria-label="Sélectionner un fichier image de capture"
-                    accept="image/*"
-                    className="hidden"
+                    aria-label={videoText("sceneImageFile")}
+                    accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                    disabled={scanning}
+                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-wait"
+                    onDragOver={(event) => event.preventDefault()}
+                    onDrop={(event) => {
+                      event.preventDefault();
+                      const file = event.dataTransfer.files[0];
+                      if (file) void submitImageFile(file);
+                    }}
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) {
-                        setUploadedFile(file);
-                        executeScan({ file });
+                        void submitImageFile(file);
                       }
+                      e.target.value = "";
                     }}
                   />
                 </label>
@@ -520,7 +540,10 @@ export function EpisodeScenes({
             </div>
 
             {scanError && (
-              <div className="mt-4 rounded-lg bg-red-950/40 border border-red-500/40 p-3 text-xs text-red-300">
+              <div
+                role="alert"
+                className="mt-4 rounded-lg bg-red-950/40 border border-red-500/40 p-3 text-sm text-red-300"
+              >
                 {scanError}
               </div>
             )}
@@ -528,75 +551,79 @@ export function EpisodeScenes({
 
           {/* Résultats de l'analyse bxc frames */}
           {scanResults && (
-            <div className="rounded-xl border border-white/10 bg-black/60 p-6 space-y-6">
-              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
-                <div>
-                  <h4 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                    Résultats d&apos;analyse de scène
-                    <span className="text-xs font-mono text-dbz-orange">
-                      ({scanResults.matches.length} correspondance(s))
-                    </span>
-                  </h4>
-                  {scanResults.hash && (
-                    <p className="text-[11px] font-mono text-white/40 mt-1">
-                      Signature ColorLayout MPEG-7 : <code>{scanResults.hash}</code>
-                    </p>
-                  )}
-                  {scanResults.origin && scanResults.origin !== "none" && (
-                    <p className="mt-1 text-[11px] text-white/50">
-                      Source :{" "}
-                      {scanResults.origin === "local" ? (
-                        <strong className="text-emerald-400">
-                          index local des épisodes (frame par frame)
-                        </strong>
-                      ) : (
-                        <strong className="text-yellow-400">
-                          trace.moe — catalogue anime mondial, hors base DBFR
-                        </strong>
-                      )}
-                    </p>
+            <div className="rounded-2xl border border-border bg-card p-4 space-y-6 sm:p-6">
+              <h4 className="text-base font-bold text-foreground">
+                {videoText("sceneResults", { count: scanResults.matches.length })}
+              </h4>
+              <details className="rounded-xl border border-border p-3 text-foreground">
+                <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold">
+                  {videoText("sceneTechnical")}
+                </summary>
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    {scanResults.hash && (
+                      <p className="mt-1 font-mono text-xs text-[var(--muted-foreground)] [overflow-wrap:anywhere]">
+                        Signature ColorLayout MPEG-7 : <code>{scanResults.hash}</code>
+                      </p>
+                    )}
+                    {scanResults.origin && scanResults.origin !== "none" && (
+                      <p className="mt-1 text-xs text-[var(--muted-foreground)]">
+                        Source :{" "}
+                        {scanResults.origin === "local" ? (
+                          <strong className="text-foreground">
+                            index local des épisodes (frame par frame)
+                          </strong>
+                        ) : (
+                          <strong className="text-foreground">
+                            trace.moe — catalogue anime mondial, hors base DBFR
+                          </strong>
+                        )}
+                      </p>
+                    )}
+                  </div>
+
+                  {scanResults.vector.length > 0 && (
+                    <div className="flex max-w-full flex-wrap items-center gap-1 bg-background px-3 py-2 rounded-lg border border-border">
+                      <span className="text-xs text-[var(--muted-foreground)] mr-2 font-mono">
+                        DCT 33 Coeffs
+                      </span>
+                      <div className="flex items-end gap-0.5 h-4">
+                        {scanResults.vector.slice(0, 24).map((val, idx) => {
+                          const h = Math.min(100, Math.max(15, (val / 64) * 100));
+                          return (
+                            <div
+                              key={`dct-${idx}`}
+                              style={{ height: `${h}%` }}
+                              className={`w-1 rounded-t-sm ${
+                                idx < 8
+                                  ? "bg-dbz-orange"
+                                  : idx < 16
+                                    ? "bg-dbz-yellow"
+                                    : "bg-blue-400"
+                              }`}
+                              title={`Coeff ${idx}: ${val}`}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
                   )}
                 </div>
-
-                {scanResults.vector.length > 0 && (
-                  <div className="flex items-center gap-1 bg-black/40 px-3 py-1.5 rounded-lg border border-white/10">
-                    <span className="text-[10px] text-white/50 mr-2 font-mono">DCT 33 Coeffs</span>
-                    <div className="flex items-end gap-0.5 h-4">
-                      {scanResults.vector.slice(0, 24).map((val, idx) => {
-                        const h = Math.min(100, Math.max(15, (val / 64) * 100));
-                        return (
-                          <div
-                            key={idx}
-                            style={{ height: `${h}%` }}
-                            className={`w-1 rounded-t-sm ${
-                              idx < 8 ? "bg-dbz-orange" : idx < 16 ? "bg-dbz-yellow" : "bg-blue-400"
-                            }`}
-                            title={`Coeff ${idx}: ${val}`}
-                          />
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
+              </details>
 
               {scanResults.offUniverseOnly && scanResults.matches.length > 0 && (
-                <div className="rounded-lg border border-yellow-500/40 bg-yellow-950/20 p-3 text-xs text-yellow-200">
-                  Aucune de ces correspondances n&apos;appartient à Dragon Ball : trace.moe a
-                  rapproché la signature d&apos;autres anime. L&apos;index local frame par frame des
-                  épisodes DBFR n&apos;est pas encore constitué — jusque-là, ces résultats sont
-                  indicatifs et ne valent pas identification.
+                <div className="rounded-lg border border-primary/40 bg-primary/10 p-3 text-sm text-foreground">
+                  {videoText("sceneOtherAnime")}
                 </div>
               )}
 
               {scanResults.matches.length === 0 ? (
-                <p className="text-xs text-white/50 italic py-4 text-center">
-                  Aucune correspondance formelle trouvée pour cette image dans le catalogue
-                  Toei/Toriyama.
+                <p className="text-sm text-[var(--muted-foreground)] py-4 text-center">
+                  {videoText("sceneNoMatch")}
                 </p>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {scanResults.matches.map((m, idx) => {
+                <div className="grid grid-cols-1 @3xl:grid-cols-2 gap-4">
+                  {scanResults.matches.map((m) => {
                     // Un numéro d'épisode seul ne prouve rien : « One Piece 5 » et
                     // « DB 5 » partagent le même entier. La confirmation exige que la
                     // correspondance soit rattachée à CETTE fiche du site.
@@ -608,16 +635,16 @@ export function EpisodeScenes({
                           m.siteEpisode?.series === series));
                     return (
                       <div
-                        key={idx}
+                        key={`${m.anilist}:${m.episode}:${m.atMs}`}
                         className={`rounded-lg border p-4 transition-all ${
                           isCurrentEp
                             ? "border-emerald-500/50 bg-emerald-950/20"
                             : m.isFirm
-                              ? "border-dbz-orange/40 bg-black/40"
-                              : "border-white/10 bg-black/30"
+                              ? "border-primary/40 bg-primary/10"
+                              : "border-border bg-background"
                         }`}
                       >
-                        <div className="flex gap-3">
+                        <div className="flex min-w-0 flex-col gap-3 @lg:flex-row">
                           {m.preview?.video ? (
                             <div className="relative w-36 aspect-video shrink-0 overflow-hidden rounded bg-black">
                               <video
@@ -639,7 +666,9 @@ export function EpisodeScenes({
 
                           <div className="min-w-0 flex-1 space-y-1">
                             <div className="flex items-center justify-between gap-2">
-                              <p className="font-bold text-xs text-white truncate">{m.title}</p>
+                              <p className="font-semibold text-sm text-foreground truncate">
+                                {m.title}
+                              </p>
                               <span
                                 className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
                                   m.isFirm
@@ -653,7 +682,7 @@ export function EpisodeScenes({
                               </span>
                             </div>
 
-                            <div className="flex items-center gap-2 text-xs text-white/70">
+                            <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
                               <span>
                                 Épisode <strong>{m.episode ?? "?"}</strong>
                               </span>

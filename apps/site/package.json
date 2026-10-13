@@ -39,6 +39,7 @@
     "@aphrody/shenron-engine": "workspace:*",
     "@aphrody/shenron-images": "workspace:*",
     "@aphrody/shenron-lexicon": "workspace:*",
+    "@aphrody/shenron-media": "workspace:*",
     "@aphrody/shenron-pipeline": "workspace:*",
     "@aphrody/shenron-ui": "workspace:*",
     "@codemirror/lang-markdown": "catalog:",

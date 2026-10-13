@@ -1,0 +1,49 @@
+{
+  "owner": "@aphrody/m3-tokens/dynamic-color",
+  "variant": "vibrant",
+  "contrastLevel": 0.15,
+  "episodeId": 875,
+  "sources": [
+    {
+      "seconds": 285,
+      "sha256": "30e288f240f58b06b2e9cfc07ee1c75ac1717bc2ffbfed9fa25974d3a3b4435e",
+      "subject": "Goku Super Saiyan, golden aura"
+    },
+    {
+      "seconds": 434,
+      "subject": "Beerus close-up, shadowed purple face",
+      "sha256": "b3940b662d6ec9e804812ea3fb87ccbe28a7f06f0bf28de2e7ca85421d8771c0"
+    },
+    {
+      "seconds": 779,
+      "sha256": "4e7b95efa15fd6801ccd7f50b385e70c3fc1af4a22395c6d48217eff42129444",
+      "subject": "Beerus and Whis, violet skin, cyan clothing and gold"
+    }
+  ],
+  "sampling": {
+    "owner": "FFmpeg RGBA",
+    "buckets": 16,
+    "workingWidth": 1100,
+    "workingHeight": 618
+  },
+  "themes": [
+    {
+      "id": "beerus",
+      "dark": true,
+      "primary": "#a080b0",
+      "secondary": "#60c0f0",
+      "tertiary": "#e0e070",
+      "primaryRegion": [272, 69, 155, 205],
+      "primaryFrameSeconds": 779
+    },
+    {
+      "id": "goku",
+      "dark": false,
+      "primary": "#e0e070",
+      "secondary": "#60c0f0",
+      "tertiary": "#a080b0",
+      "primaryRegion": [355, 0, 340, 180],
+      "primaryFrameSeconds": 285
+    }
+  ]
+}

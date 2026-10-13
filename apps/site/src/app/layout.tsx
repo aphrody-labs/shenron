@@ -23,6 +23,7 @@ import { API_ORIGIN, ASSET_ORIGIN, CDN_ORIGIN, SITE_URL, STATIC_PREFIX } from "@
 import { env } from "@/lib/env";
 import { getSiteTheme } from "@/lib/theme-config";
 import { themeCssVars } from "@/lib/site-theme";
+import { EPISODE_THEME_BOOT } from "@/lib/episode-theme";
 
 // FAB Discord lazy : composant client gated par localStorage, jamais critical.
 const DiscordInviteFAB = dynamic(() =>
@@ -172,6 +173,7 @@ export default async function RootLayout({
         {/* Préférences du shell (barre latérale repliée, fenêtre Tauri) avant la première
 				    peinture : sans elles, la barre se déplierait puis se replierait. */}
         <ShellBoot />
+        <script dangerouslySetInnerHTML={{ __html: EPISODE_THEME_BOOT }} />
         {/* Initialisation par défaut du Consent Mode v2 de Google avant le chargement des scripts */}
         <script
           dangerouslySetInnerHTML={{

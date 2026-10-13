@@ -88,7 +88,7 @@ export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
   const imageCount = episodes.filter((episode) => episode.image).length;
 
   return (
-    <div className="space-y-6">
+    <div className="shenron-episode-series @container min-w-0 space-y-6">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-5" aria-label={labels("coverage")}>
         {[
           [labels("episodes"), episodes.length],
@@ -97,15 +97,19 @@ export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
           [t("vost"), vostCount],
           [labels("thumbnails"), imageCount],
         ].map(([label, value]) => (
-          <div key={label} className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3">
-            <div className="text-xl font-black tabular-nums text-white sm:text-2xl">{value}</div>
-            <div className="text-[10px] uppercase tracking-wide text-white/45">{label}</div>
+          <div key={label} className="min-w-0 rounded-2xl border border-border bg-card px-4 py-3">
+            <div className="text-xl font-bold tabular-nums text-card-foreground sm:text-2xl">
+              {value}
+            </div>
+            <div className="text-xs uppercase tracking-wide text-[var(--muted-foreground)] [overflow-wrap:anywhere]">
+              {label}
+            </div>
           </div>
         ))}
       </div>
       <p className="text-sm text-white/60">{labels("coverageNote")}</p>
       <div className="flex flex-wrap items-center gap-3">
-        <div className="relative min-w-[220px] flex-1 max-w-md">
+        <div className="relative min-w-0 basis-64 flex-1 max-w-md">
           <Recherche
             className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50"
             aria-hidden
@@ -119,21 +123,24 @@ export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
             }}
             aria-label={labels("searchLabel")}
             placeholder={labels("searchPlaceholder")}
-            className="h-10 w-full rounded-lg border border-dbz-border bg-dbz-bg/70 pl-9 pr-3 text-[14px] text-white outline-none placeholder:text-white/50 focus:border-dbz-orange"
+            className="min-h-11 w-full rounded-full border border-border bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-[var(--muted-foreground)] focus:border-primary"
           />
         </div>
         <a
           href="#episode-grid"
-          className="inline-flex min-h-10 items-center rounded-lg border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-white/70 hover:border-dbz-orange/50 hover:text-dbz-orange"
+          className="inline-flex min-h-11 items-center rounded-full border border-border bg-card px-4 text-sm font-semibold text-foreground hover:border-primary hover:text-primary"
         >
           {labels("jump")}
         </a>
-        <fieldset className="flex gap-2 overflow-x-auto pb-1" aria-label={labels("languageFilter")}>
+        <fieldset
+          className="shenron-video-selectors flex min-w-0 max-w-full flex-wrap gap-2"
+          aria-label={labels("languageFilter")}
+        >
           {(
             [
               ["all", labels("all")],
-              ["vf", `VF (${vfCount})`],
-              ["vostfr", `VOSTFR (${vostfrCount})`],
+              ["vf", `${t("vf")} (${vfCount})`],
+              ["vostfr", `${t("vostfr")} (${vostfrCount})`],
               ["vost", `${t("vost")} (${vostCount})`],
             ] as const
           ).map(([key, label]) => (
@@ -145,7 +152,7 @@ export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
                 setLimit(PAGE);
               }}
               aria-pressed={language === key}
-              className={`min-h-10 shrink-0 rounded-lg px-3 text-xs font-semibold transition ${language === key ? "bg-dbz-orange text-black" : "bg-white/[0.06] text-white/65 hover:bg-white/[0.12] hover:text-white"}`}
+              className={`min-h-11 shrink-0 rounded-full px-4 text-sm font-semibold transition-colors ${language === key ? "bg-primary text-primary-foreground" : "bg-card text-foreground hover:bg-primary/15"}`}
             >
               {label}
             </button>

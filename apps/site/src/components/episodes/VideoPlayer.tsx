@@ -11,6 +11,7 @@ import {
   isHlsSource,
 } from "@/lib/video-controls";
 import { nativeEpisodeVideoSource } from "@/lib/episode-video-source";
+import { useVideoUIText } from "@/lib/video-ui-text";
 
 export interface SubtitleTrack {
   lang: string;
@@ -36,7 +37,7 @@ function timeLabel(seconds: number): string {
   return `${Math.floor(value / 60)}:${String(value % 60).padStart(2, "0")}`;
 }
 
-/** Native controls stay available; HLS menus expose only observed renditions. */
+/** Native controls remain the pre-hydration fallback; one enhanced toolbar owns playback. */
 export function VideoPlayer({
   src,
   title,
@@ -47,6 +48,7 @@ export function VideoPlayer({
   onError,
 }: VideoPlayerProps) {
   const t = useTranslations("mediaPlayback");
+  const ui = useVideoUIText();
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const playbackSource = nativeEpisodeVideoSource(src);
@@ -75,6 +77,7 @@ export function VideoPlayer({
   const [muted, setMuted] = useState(false);
   const [theater, setTheater] = useState(false);
   const [waiting, setWaiting] = useState(false);
+  const [enhanced, setEnhanced] = useState(false);
   const syncTimeline = () => {
     const video = videoRef.current;
     if (!video) return;
@@ -89,6 +92,7 @@ export function VideoPlayer({
     setBuffered(end);
   };
   useEffect(() => {
+    setEnhanced(true);
     const tracks = videoRef.current?.textTracks;
     if (!tracks) return;
     const sync = () => {
@@ -126,6 +130,16 @@ export function VideoPlayer({
       Boolean(document.pictureInPictureEnabled && videoRef.current?.requestPictureInPicture),
     );
   }, [src]);
+
+  useEffect(() => {
+    if (!theater) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    containerRef.current?.focus();
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [theater]);
 
   const playPause = async () => {
     const video = videoRef.current;
@@ -190,6 +204,23 @@ export function VideoPlayer({
       return;
     }
     const target = event.target as HTMLElement;
+    if (theater && event.key === "Tab") {
+      const controls = Array.from(
+        containerRef.current?.querySelectorAll<HTMLElement>(
+          "button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), summary",
+        ) ?? [],
+      ).filter((element) => element.getClientRects().length > 0);
+      const first = controls[0];
+      const last = controls.at(-1);
+      if (event.shiftKey && (target === first || target === containerRef.current)) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && target === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+      return;
+    }
     if (target !== videoRef.current && target !== containerRef.current) return;
     const action = videoKeyAction(event.key, target.tagName, {
       editable: target.isContentEditable,
@@ -240,12 +271,13 @@ export function VideoPlayer({
       role="region"
       aria-label={title}
       onKeyDown={handleKeyDown}
-      className={`dbz-panel relative overflow-hidden rounded-xl border border-amber-500/30 bg-black p-0 shadow-lg focus-visible:outline-2 focus-visible:outline-amber-400 ${theater ? "left-1/2 w-[calc(100vw-3rem)] -translate-x-1/2" : ""}`}
+      className="shenron-video"
+      data-theater={theater}
     >
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-amber-500/20 px-4 py-3">
-        <p className="text-sm font-semibold text-white">{title}</p>
+      <header>
+        <p>{title}</p>
         {(previousEpisode || nextEpisode) && (
-          <nav aria-label={t("episodeNavigation")} className="flex gap-3 text-xs text-amber-300">
+          <nav aria-label={t("episodeNavigation")} className="flex gap-3 text-xs text-primary">
             {previousEpisode && (
               <Link
                 href={previousEpisode.href}
@@ -266,17 +298,17 @@ export function VideoPlayer({
             )}
           </nav>
         )}
-      </div>
+      </header>
       <video
         ref={videoRef}
         src={isHlsSource(playbackSource) ? undefined : playbackSource}
-        controls
+        controls={!enhanced}
         playsInline
         preload="metadata"
         crossOrigin="anonymous"
         poster={poster}
-        title={title}
-        className={`aspect-video w-full bg-black ${theater ? "max-h-[75dvh] object-contain" : "rounded-xl"}`}
+        aria-label={title}
+        tabIndex={0}
         onTimeUpdate={syncTimeline}
         onProgress={syncTimeline}
         onDurationChange={syncTimeline}
@@ -312,206 +344,192 @@ export function VideoPlayer({
           />
         ))}
       </video>
-      <div className="px-4 pt-3">
-        <div className="flex items-center justify-between gap-3 text-xs tabular-nums text-white/80">
-          <span>
-            {timeLabel(position)} / {timeLabel(duration)}
-          </span>
-          <span>{t("bufferedUntil", { time: timeLabel(buffered) })}</span>
+      <div hidden={!enhanced}>
+        <div className="shenron-video-timeline">
+          <div className="flex items-center justify-between gap-3">
+            <span>
+              {timeLabel(position)} / {timeLabel(duration)}
+            </span>
+            <span data-buffer-label>{t("bufferedUntil", { time: timeLabel(buffered) })}</span>
+          </div>
+          <div className="shenron-video-buffer" aria-hidden="true">
+            <div
+              style={{ width: `${duration ? Math.min(100, (buffered / duration) * 100) : 0}%` }}
+            />
+          </div>
+          <label className="block">
+            <span className="sr-only">{t("seekPosition")}</span>
+            <input
+              type="range"
+              min={0}
+              max={duration || 1}
+              step={0.1}
+              value={Math.min(position, duration || 1)}
+              disabled={!duration}
+              aria-valuetext={`${timeLabel(position)} / ${timeLabel(duration)}`}
+              onChange={(event) => {
+                if (videoRef.current) videoRef.current.currentTime = Number(event.target.value);
+                setPosition(Number(event.target.value));
+              }}
+              className="w-full"
+            />
+          </label>
         </div>
-        <div className="mt-2 h-1 overflow-hidden rounded bg-white/15" aria-hidden="true">
-          <div
-            className="h-full bg-white/40"
-            style={{ width: `${duration ? Math.min(100, (buffered / duration) * 100) : 0}%` }}
-          />
-        </div>
-        <label className="block">
-          <span className="sr-only">{t("seekPosition")}</span>
-          <input
-            type="range"
-            min={0}
-            max={duration || 1}
-            step={0.1}
-            value={Math.min(position, duration || 1)}
+        <div className="shenron-video-controls" role="group" aria-label={ui("playbackControls")}>
+          <button
+            type="button"
+            onClick={() => void playPause()}
+            disabled={status === "failed"}
+            data-primary
+          >
+            {paused ? t("play") : t("pause")}
+          </button>
+          <button
+            type="button"
+            onClick={() => seek(-10)}
             disabled={!duration}
-            aria-valuetext={`${timeLabel(position)} / ${timeLabel(duration)}`}
-            onChange={(event) => {
-              if (videoRef.current) videoRef.current.currentTime = Number(event.target.value);
-              setPosition(Number(event.target.value));
+            aria-label={ui("backward")}
+          >
+            {ui("backwardShort")}
+          </button>
+          <button
+            type="button"
+            onClick={() => seek(10)}
+            disabled={!duration}
+            aria-label={ui("forward")}
+          >
+            {ui("forwardShort")}
+          </button>
+          <button
+            type="button"
+            aria-pressed={muted}
+            onClick={() => {
+              if (videoRef.current) videoRef.current.muted = !videoRef.current.muted;
             }}
-            className="h-10 w-full cursor-pointer accent-dbz-orange focus-visible:outline-2 focus-visible:outline-amber-400"
-          />
-        </label>
+          >
+            {t(muted ? "unmute" : "mute")}
+          </button>
+          <label className="flex items-center gap-2">
+            <span className="sr-only">{t("volume")}</span>
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.05}
+              value={muted ? 0 : volume}
+              aria-valuetext={`${Math.round((muted ? 0 : volume) * 100)} %`}
+              onChange={(event) => {
+                const video = videoRef.current;
+                if (video) {
+                  video.volume = Number(event.target.value);
+                  video.muted = video.volume === 0;
+                }
+              }}
+              className="w-24"
+            />
+          </label>
+          <button type="button" aria-pressed={theater} onClick={() => setTheater(!theater)}>
+            {t(theater ? "exitTheater" : "theater")}
+          </button>
+          {fullscreenSupported && (
+            <button type="button" onClick={() => void fullscreen()}>
+              {t("fullscreen")}
+            </button>
+          )}
+          {pipSupported && (
+            <button
+              type="button"
+              onClick={() => void pictureInPicture()}
+              disabled={status !== "ready"}
+            >
+              {t("pictureInPicture")}
+            </button>
+          )}
+        </div>
+        <details>
+          <summary>{ui("playbackSettings")}</summary>
+          <div className="shenron-video-controls">
+            <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
+              {t("speed")}
+              <select
+                value={rate}
+                onChange={(event) => {
+                  if (videoRef.current) videoRef.current.playbackRate = Number(event.target.value);
+                }}
+              >
+                {VIDEO_PLAYBACK_RATES.map((value) => (
+                  <option key={value} value={value}>
+                    {value}×
+                  </option>
+                ))}
+              </select>
+            </label>
+            {levels.length > 1 && (
+              <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
+                {t("quality")}
+                <select
+                  value={quality}
+                  onChange={(event) => {
+                    const value = Number(event.target.value);
+                    selectQuality(value);
+                  }}
+                >
+                  <option value={-1}>{t("automatic")}</option>
+                  {levels.map((level) => (
+                    <option key={level.index} value={level.index}>
+                      {level.height > 0
+                        ? `${level.height}p`
+                        : t("bitrate", { rate: Math.round(level.bitrate / 1000) })}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            {audioTracks.length > 1 && (
+              <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
+                {t("audioTrack")}
+                <select
+                  value={audioTrack}
+                  onChange={(event) => {
+                    const value = Number(event.target.value);
+                    selectAudioTrack(value);
+                  }}
+                >
+                  {audioTracks.map((track) => (
+                    <option key={track.index} value={track.index}>
+                      {track.name || t("audioTrackNumber", { number: track.index + 1 })}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            {textTracks.length > 0 && (
+              <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
+                {t("captions")}
+                <select
+                  value={caption}
+                  onChange={(event) => selectCaption(Number(event.target.value))}
+                >
+                  <option value={-1}>{t("captionsOff")}</option>
+                  {textTracks.map((track) => (
+                    <option key={track.index} value={track.index}>
+                      {track.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+          </div>
+        </details>
       </div>
-      <div className="flex flex-wrap items-center gap-3 p-3 text-xs text-white">
-        <button
-          type="button"
-          onClick={() => void playPause()}
-          disabled={status === "failed"}
-          className="min-h-10 rounded border border-white/30 px-3"
-        >
-          {paused ? t("play") : t("pause")}
-        </button>
-        <button
-          type="button"
-          onClick={() => seek(-10)}
-          disabled={!duration}
-          className="min-h-10 rounded border border-white/30 px-3"
-        >
-          −10 s
-        </button>
-        <button
-          type="button"
-          onClick={() => seek(10)}
-          disabled={!duration}
-          className="min-h-10 rounded border border-white/30 px-3"
-        >
-          +10 s
-        </button>
-        <button
-          type="button"
-          aria-pressed={muted}
-          onClick={() => {
-            if (videoRef.current) videoRef.current.muted = !videoRef.current.muted;
-          }}
-          className="min-h-10 rounded border border-white/30 px-3"
-        >
-          {t(muted ? "unmute" : "mute")}
-        </button>
-        <label className="flex items-center gap-2">
-          <span className="sr-only">{t("volume")}</span>
-          <input
-            type="range"
-            min={0}
-            max={1}
-            step={0.05}
-            value={muted ? 0 : volume}
-            aria-valuetext={`${Math.round((muted ? 0 : volume) * 100)} %`}
-            onChange={(event) => {
-              const video = videoRef.current;
-              if (video) {
-                video.volume = Number(event.target.value);
-                video.muted = video.volume === 0;
-              }
-            }}
-            className="h-10 w-24 accent-dbz-orange"
-          />
-        </label>
-        <button
-          type="button"
-          aria-pressed={theater}
-          onClick={() => setTheater(!theater)}
-          className="min-h-10 rounded border border-white/30 px-3"
-        >
-          {t(theater ? "exitTheater" : "theater")}
-        </button>
-        <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
-          {t("speed")}
-          <select
-            value={rate}
-            onChange={(event) => {
-              if (videoRef.current) videoRef.current.playbackRate = Number(event.target.value);
-            }}
-            className="min-h-10 min-w-0 max-w-full rounded bg-zinc-900 p-2"
-          >
-            {VIDEO_PLAYBACK_RATES.map((value) => (
-              <option key={value} value={value}>
-                {value}×
-              </option>
-            ))}
-          </select>
-        </label>
-        {levels.length > 1 && (
-          <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
-            {t("quality")}
-            <select
-              value={quality}
-              onChange={(event) => {
-                const value = Number(event.target.value);
-                selectQuality(value);
-              }}
-              className="min-h-10 min-w-0 max-w-full rounded bg-zinc-900 p-2"
-            >
-              <option value={-1}>{t("automatic")}</option>
-              {levels.map((level) => (
-                <option key={level.index} value={level.index}>
-                  {level.height > 0
-                    ? `${level.height}p`
-                    : t("bitrate", { rate: Math.round(level.bitrate / 1000) })}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-        {audioTracks.length > 1 && (
-          <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
-            {t("audioTrack")}
-            <select
-              value={audioTrack}
-              onChange={(event) => {
-                const value = Number(event.target.value);
-                selectAudioTrack(value);
-              }}
-              className="min-h-10 min-w-0 max-w-full rounded bg-zinc-900 p-2"
-            >
-              {audioTracks.map((track) => (
-                <option key={track.index} value={track.index}>
-                  {track.name || t("audioTrackNumber", { number: track.index + 1 })}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-        {textTracks.length > 0 && (
-          <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
-            {t("captions")}
-            <select
-              value={caption}
-              onChange={(event) => selectCaption(Number(event.target.value))}
-              className="min-h-10 min-w-0 max-w-full rounded bg-zinc-900 p-2"
-            >
-              <option value={-1}>{t("captionsOff")}</option>
-              {textTracks.map((track) => (
-                <option key={track.index} value={track.index}>
-                  {track.label}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-        {fullscreenSupported && (
-          <button
-            type="button"
-            onClick={() => void fullscreen()}
-            className="min-h-10 rounded border border-white/30 px-3"
-          >
-            {t("fullscreen")}
-          </button>
-        )}
-        {pipSupported && (
-          <button
-            type="button"
-            onClick={() => void pictureInPicture()}
-            disabled={status !== "ready"}
-            className="min-h-10 rounded border border-white/30 px-3"
-          >
-            {t("pictureInPicture")}
-          </button>
-        )}
-        {status === "failed" && (
-          <button
-            type="button"
-            onClick={retry}
-            className="min-h-10 rounded bg-dbz-orange px-3 text-black"
-          >
+      {status === "failed" && (
+        <div className="shenron-video-controls">
+          <button type="button" onClick={retry} data-primary>
             {t("retryVideo")}
           </button>
-        )}
-      </div>
-      <p
-        role={status === "failed" ? "alert" : "status"}
-        className="px-3 pb-3 text-xs text-white/70"
-      >
+        </div>
+      )}
+      <p role={status === "failed" ? "alert" : "status"} className="shenron-video-status">
         {waiting && status !== "failed"
           ? t("videoBuffering")
           : t(
@@ -525,11 +543,11 @@ export function VideoPlayer({
             )}
       </p>
       {actionError && (
-        <p role="alert" className="px-3 pb-3 text-xs text-white/70">
+        <p role="alert" className="shenron-video-status">
           {t("videoActionUnavailable")}
         </p>
       )}
-      <p className="px-3 pb-3 text-[11px] text-white/50">{t("videoKeyboardHelp")}</p>
+      <p className="sr-only">{t("videoKeyboardHelp")}</p>
     </div>
   );
 }

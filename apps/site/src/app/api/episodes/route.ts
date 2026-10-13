@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
-import { assetUrl } from "@/lib/assets";
+import { episodeApiSummary, EPISODE_SERIES_LABELS } from "@/lib/episode-api";
 
 export const runtime = "nodejs";
 export const revalidate = 3600;
@@ -9,16 +9,6 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
-
-const SERIES_LABELS: Record<string, string> = {
-  DB: "Dragon Ball",
-  DBZ: "Dragon Ball Z",
-  DBZ_KAI: "Dragon Ball Z Kai",
-  DBZ_KAI_FINAL: "Dragon Ball Z Kai – Final Chapters",
-  DBGT: "Dragon Ball GT",
-  DBS: "Dragon Ball Super",
-  DB_DAIMA: "Dragon Ball Daima",
 };
 
 export function OPTIONS() {
@@ -35,49 +25,23 @@ export async function GET(req: Request) {
 
     const [seriesList, episodesResult] = await Promise.all([
       dbUniverse.episodeSeries().catch(() => []),
-      dbUniverse.episodes(seriesParam, limit, offset, q).catch(() => ({ episodes: [], total: 0 })),
+      dbUniverse.episodes(seriesParam, limit, offset, q),
     ]);
 
     const seriesSummary = (seriesList ?? []).map((s) => ({
       series: s.series,
-      label: SERIES_LABELS[s.series] ?? s.series,
+      label: EPISODE_SERIES_LABELS[s.series] ?? s.series,
       count: s.count,
     }));
 
-    const rawEpisodes = episodesResult?.episodes ?? [];
-    const total = episodesResult?.total ?? 0;
-
-    const episodes = rawEpisodes.map((ep) => {
-      const players = Array.isArray(ep.players) ? ep.players : [];
-      const hasVf = players.some((p) => p.lang === "vf");
-      const hasVostfr = players.some((p) => p.lang === "vostfr");
-      const hasVost = players.some((p) => p.lang === "vost");
-
-      return {
-        id: ep.id,
-        series: ep.series,
-        seriesLabel: SERIES_LABELS[ep.series] ?? ep.series,
-        numberInSeries: ep.number_in_series,
-        title: ep.title,
-        titleJa: ep.title_ja,
-        airDate: ep.air_date,
-        image: ep.image,
-        imageUrl: ep.image ? assetUrl(ep.image) : null,
-        synopsis: ep.synopsis,
-        playerCount: players.length,
-        hasVf,
-        hasVostfr,
-        hasVost,
-        players: players.map((p) => ({
-          name: p.name,
-          provider: p.provider,
-          lang: p.lang,
-          embedUrl: p.embedUrl,
-        })),
-        url: `/wiki/episodes/${ep.id}`,
-        downloadUrl: `/api/episodes/${ep.id}/download`,
-      };
-    });
+    if (!episodesResult) {
+      return NextResponse.json(
+        { error: "Episode catalogue unavailable" },
+        { status: 503, headers: { ...CORS_HEADERS, "Cache-Control": "no-store" } },
+      );
+    }
+    const total = episodesResult.total;
+    const episodes = episodesResult.episodes.map(episodeApiSummary);
 
     return NextResponse.json(
       {

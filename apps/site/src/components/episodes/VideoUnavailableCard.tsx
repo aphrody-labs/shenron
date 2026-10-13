@@ -1,28 +1,33 @@
-import Link from "next/link";
+"use client";
 
-/** État explicite lorsqu'aucun flux de lecture n'est présent dans la fiche. */
+import Link from "next/link";
+import { useVideoUIText } from "@/lib/video-ui-text";
+
+/** Keep the episode accessible while no verified playback source is present. */
 export function VideoUnavailableCard({ title, kind }: { title: string; kind: "episode" | "film" }) {
+  const t = useVideoUIText();
   return (
     <section
-      className="rounded-xl border border-dashed border-white/15 bg-white/[0.03] p-6 sm:p-8"
-      aria-label="Source vidéo indisponible"
+      className="@container min-w-0 rounded-2xl border border-dashed border-border bg-card p-6 text-card-foreground sm:p-8"
+      aria-label={t("unavailableLabel")}
     >
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/40">
-            Lecture non disponible
+      <div className="flex flex-col gap-4 @lg:flex-row @lg:items-center @lg:justify-between">
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--muted-foreground)]">
+            {t("unavailableHeading")}
           </p>
-          <h2 className="mt-1 text-lg font-bold text-white">Aucune source pour « {title} »</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/55">
-            La fiche et ses métadonnées restent consultables. Une source vidéo vérifiée sera
-            affichée dès qu’elle sera importée et contrôlée.
+          <h2 className="mt-1 text-lg font-bold [overflow-wrap:anywhere]">
+            {t("unavailableTitle", { title })}
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--muted-foreground)]">
+            {t("unavailableNote")}
           </p>
         </div>
         <Link
           href={`/wiki/contribute?type=${kind}`}
-          className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg border border-dbz-orange/40 bg-dbz-orange/10 px-4 text-xs font-bold text-dbz-orange transition hover:bg-dbz-orange hover:text-black"
+          className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-border px-5 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
-          Proposer une source
+          {t("contributeSource")}
         </Link>
       </div>
     </section>

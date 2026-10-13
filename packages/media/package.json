@@ -21,7 +21,8 @@
     "./sha256": "./src/sha256.ts",
     "./video-plan": "./src/video-plan.ts",
     "./episode-video-delivery": "./src/episode-video-delivery.ts",
-    "./episode-video-artifacts": "./src/episode-video-artifacts.ts"
+    "./episode-video-artifacts": "./src/episode-video-artifacts.ts",
+    "./episode-playback": "./src/episode-playback.ts"
   },
   "publishConfig": {
     "access": "public",
@@ -50,7 +51,8 @@
       "./sha256": "pure",
       "./video-plan": "pure",
       "./episode-video-delivery": "pure",
-      "./episode-video-artifacts": "bun"
+      "./episode-video-artifacts": "bun",
+      "./episode-playback": "pure"
     }
   }
 }

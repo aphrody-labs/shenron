@@ -41,6 +41,7 @@ import { MOBILE_PRIMARY_DESTINATIONS } from "@/lib/site-menu";
 import type { Journey } from "@/lib/site-map";
 import type { ShellJourney } from "@/lib/shell-nav";
 import { useMe } from "@/lib/use-me";
+import { EpisodeThemeSwitcher } from "@/components/episodes/EpisodeThemeSwitcher";
 
 export type { ShellJourney };
 
@@ -182,7 +183,12 @@ export function SiteShellClient({
       tabs={tabs}
       labels={labels}
       linkComponent={NavLink}
-      actions={<LanguageSwitcher variant="compact" />}
+      actions={
+        <div className="flex min-w-0 items-center gap-2">
+          <EpisodeThemeSwitcher />
+          <LanguageSwitcher variant="compact" />
+        </div>
+      }
       account={<NavAuth variant="sidebar" />}
       mobileAccount={<NavAuth variant="compact" />}
       sheetFooter={<NavAuth variant="sheet" />}

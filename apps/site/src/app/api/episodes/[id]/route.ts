@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
-import { assetUrl, hlsMasterUrl } from "@/lib/assets";
+import { episodeApiSummary } from "@/lib/episode-api";
 import { idDeFiche } from "../../../wiki/_id-fiche";
 
 export const runtime = "nodejs";
@@ -10,16 +10,6 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
-
-const SERIES_LABELS: Record<string, string> = {
-  DB: "Dragon Ball",
-  DBZ: "Dragon Ball Z",
-  DBZ_KAI: "Dragon Ball Z Kai",
-  DBZ_KAI_FINAL: "Dragon Ball Z Kai – Final Chapters",
-  DBGT: "Dragon Ball GT",
-  DBS: "Dragon Ball Super",
-  DB_DAIMA: "Dragon Ball Daima",
 };
 
 export function OPTIONS() {
@@ -54,38 +44,12 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
     const previous = nav?.prev ?? null;
     const next = nav?.next ?? null;
-    const players = Array.isArray(ep.players) ? ep.players : [];
-    const hasVf = players.some((p) => p.lang === "vf");
-    const hasVostfr = players.some((p) => p.lang === "vostfr");
-    const hasVost = players.some((p) => p.lang === "vost");
-
     return NextResponse.json(
       {
-        id: ep.id,
-        series: ep.series,
-        seriesLabel: SERIES_LABELS[ep.series] ?? ep.series,
-        numberInSeries: ep.number_in_series,
-        title: ep.title,
-        titleJa: ep.title_ja,
-        airDate: ep.air_date,
-        image: ep.image,
-        imageUrl: ep.image ? assetUrl(ep.image) : null,
-        synopsis: ep.synopsis,
+        ...episodeApiSummary(ep),
         synopsisFr: ep.synopsis,
         arcId: ep.arc_id,
         saga: saga ? { id: saga.id, name: saga.name, slug: saga.slug } : null,
-        hasVf,
-        hasVostfr,
-        hasVost,
-        playerCount: players.length,
-        players: players.map((p) => ({
-          name: p.name,
-          provider: p.provider,
-          lang: p.lang,
-          embedUrl: p.embedUrl,
-        })),
-        hlsMasterUrl: ep.stream_url ? hlsMasterUrl(ep.id) : null,
-        subtitles: ep.subtitles ?? [],
         framesCount: ep.frames?.length ?? 0,
         navigation: {
           prev: previous
@@ -105,8 +69,6 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
               }
             : null,
         },
-        url: `/wiki/episodes/${ep.id}`,
-        downloadUrl: `/api/episodes/${ep.id}/download`,
       },
       {
         status: 200,

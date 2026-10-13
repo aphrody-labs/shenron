@@ -1,6 +1,6 @@
 import { getTimelineItems, getTimelineEvents } from "./chronology-config";
 import { normalizeAvailability } from "./video-languages";
-import { episodeQueryPredicate } from "./episode-query";
+import { episodeIdentityPredicate, episodeQueryPredicate } from "./episode-query";
 /**
  * db-universe — accès au **wiki Dragon Ball** (schéma Neon `bot`, miroir du
  * SQLite du bot) via Drizzle, en LECTURE SEULE.
@@ -114,6 +114,7 @@ export type Episode = {
   title: string;
   title_ja: string | null;
   air_date: number | null;
+  duration_sec?: number | null;
   synopsis: string | null;
   official_source_url: string | null;
   image: string | null;
@@ -648,6 +649,7 @@ function toEpisode(r: typeof botEpisodes.$inferSelect): Episode {
     title: r.title ?? "",
     title_ja: r.titleJa,
     air_date: r.airDate,
+    duration_sec: r.durationSec ?? null,
     // FR-first : synopsis traduit (translate-synopsis-fr.ts), repli sur l'original.
     synopsis: r.synopsisFr ?? r.synopsis,
     official_source_url: r.officialSourceUrl ?? null,
@@ -1464,11 +1466,7 @@ export const dbUniverse = {
 
   episode: (id: number) =>
     safe(async () => {
-      const [e] = await db
-        .select()
-        .from(botEpisodes)
-        .where(and(eq(botEpisodes.id, id), eq(botEpisodes.visible, true)))
-        .limit(1);
+      const [e] = await db.select().from(botEpisodes).where(episodeIdentityPredicate(id)).limit(1);
       return e ? toEpisode(e) : null;
     }),
 
@@ -1481,7 +1479,7 @@ export const dbUniverse = {
           headers: botEpisodes.streamHeaders,
         })
         .from(botEpisodes)
-        .where(eq(botEpisodes.id, id))
+        .where(episodeIdentityPredicate(id))
         .limit(1);
       return e?.url ? { url: e.url, headers: e.headers ?? {} } : null;
     }),

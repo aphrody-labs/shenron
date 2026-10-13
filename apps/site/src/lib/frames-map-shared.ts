@@ -282,6 +282,22 @@ export function sniffImage(b: Uint8Array): ImageSniffResult | null {
   return null;
 }
 
+/** Validate browser uploads with the same byte limit and formats as the search API. */
+export async function frameUploadError(file: Blob): Promise<"invalid" | "tooLarge" | null> {
+  if (file.size === 0) return "invalid";
+  if (file.size > MAX_FRAME_IMAGE_BYTES) return "tooLarge";
+  const header = new Uint8Array(await file.slice(0, 32).arrayBuffer());
+  return sniffImage(header) ? null : "invalid";
+}
+
+/** An explicit thumbnail or URL selection must replace a previously uploaded file. */
+export function resolveFrameSearchTarget<TFile extends Blob>(
+  current: { file?: TFile | null; url?: string },
+  override?: { file?: TFile | null; url?: string },
+): { file?: TFile | null; url?: string } {
+  return override ?? current;
+}
+
 export type FrameImageValidationResult =
   | { ok: true; buffer: Uint8Array; mime: string; ext: "jpg" | "png" | "webp" | "gif" | "avif" }
   | { ok: false; error: string; status: number };

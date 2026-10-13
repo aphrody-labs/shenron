@@ -1,43 +1,40 @@
 import { afterEach, beforeEach, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
 import { generateLlmAnswer } from "../src/lib/llm";
+import { AI_ENV } from "@aphrody/shenron-pipeline/ai/config";
 
 // No address default since the AI env contract (aphrody-infra local-ai.json): the
 // tests pin the aphrody-ai-http origin through its canonical name.
-const savedAiHttpUrl = process.env.APHRODY_AI_HTTP_URL;
-const savedInference = process.env.APHRODY_SHENRON_INFERENCE;
+const environmentNames = [
+  "APHRODY_SHENRON_INFERENCE",
+  "RAG_BACKEND",
+  ...[AI_ENV.httpUrl, AI_ENV.httpToken, AI_ENV.chatBaseUrl, AI_ENV.chatModel].flatMap((setting) =>
+    Array.of<string>(setting.canonical).concat(setting.aliases.map((alias) => alias.name)),
+  ),
+];
+const savedEnvironment = Object.fromEntries(environmentNames.map((key) => [key, process.env[key]]));
 beforeEach(() => {
+  // These fixtures exercise the compute facade, never the workstation's direct chat server.
+  for (const key of environmentNames) delete process.env[key];
   process.env.APHRODY_SHENRON_INFERENCE = "http";
   process.env.APHRODY_AI_HTTP_URL = "http://127.0.0.1:8789";
+  process.env.APHRODY_AI_HTTP_TOKEN = "fixture-token-".padEnd(32, "x");
+  process.env.APHRODY_AI_CHAT_MODEL = "gemini-web/flash";
 });
 afterEach(() => {
-  if (savedInference === undefined) delete process.env.APHRODY_SHENRON_INFERENCE;
-  else process.env.APHRODY_SHENRON_INFERENCE = savedInference;
-  if (savedAiHttpUrl === undefined) delete process.env.APHRODY_AI_HTTP_URL;
-  else process.env.APHRODY_AI_HTTP_URL = savedAiHttpUrl;
-});
-
-const savedFetch = globalThis.fetch;
-const savedBackend = process.env.RAG_BACKEND;
-const savedToken = process.env.APHRODY_SHENRON_API_TOKEN;
-const savedModel = process.env.APHRODY_LLM_MODEL;
-
-afterEach(() => {
-  globalThis.fetch = savedFetch;
-  for (const [key, value] of Object.entries({
-    RAG_BACKEND: savedBackend,
-    APHRODY_SHENRON_API_TOKEN: savedToken,
-    APHRODY_LLM_MODEL: savedModel,
-  })) {
+  for (const [key, value] of Object.entries(savedEnvironment)) {
     if (value === undefined) delete process.env[key];
     else process.env[key] = value;
   }
 });
 
+const savedFetch = globalThis.fetch;
+afterEach(() => {
+  globalThis.fetch = savedFetch;
+});
+
 test("the same question only reuses a cached answer with the same evidence and model", async () => {
   process.env.RAG_BACKEND = "aphrody";
-  process.env.APHRODY_SHENRON_API_TOKEN = "fixture";
-  delete process.env.APHRODY_LLM_MODEL;
   const answers = new Map<string, string>();
   const scopes: string[] = [];
   const cache = {
@@ -88,7 +85,7 @@ test("the same question only reuses a cached answer with the same evidence and m
       "whis",
       { cache },
     );
-    process.env.APHRODY_LLM_MODEL = "gemini-web/pro";
+    process.env.APHRODY_AI_CHAT_MODEL = "gemini-web/pro";
     const changedModel = await generateLlmAnswer(
       db,
       "Où vivent les Nameks ?",
@@ -115,8 +112,6 @@ test("B7: the cache scope binds the model, PROMPT_VERSION and the evidence", asy
   const { semanticCacheScope } = await import("@aphrody/shenron-pipeline/ai/ports");
   const { PROMPT_VERSION } = await import("@aphrody/shenron-pipeline/ai/prompts");
   process.env.RAG_BACKEND = "aphrody";
-  process.env.APHRODY_SHENRON_API_TOKEN = "fixture";
-  delete process.env.APHRODY_LLM_MODEL;
   const scopes: string[] = [];
   const cache = {
     getSemanticCache: async (_query: string, _persona: string, scope: string) => {

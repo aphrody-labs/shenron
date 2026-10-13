@@ -6,6 +6,8 @@ import { track } from "@/lib/telemetry";
 import { probePlayerNetwork } from "@/lib/player-network";
 import { nextPlayerIndex, resolvePlayerIndex } from "@/lib/video-selection-state";
 import { useTranslations } from "next-intl";
+import { useVideoUIText } from "@/lib/video-ui-text";
+import { normalizeVideoPlayers } from "@aphrody/shenron-media/episode-playback";
 import {
   normalizeVideoLanguage,
   playersForVideoLanguage,
@@ -59,7 +61,7 @@ function cleanName(name: string): string {
  * « VO sous-titrée » s'ajoute (cf. `LecteurVo`). Il ne l'est jamais par défaut.
  */
 export function VideoLecteurs({
-  players,
+  players: rawPlayers,
   entityType,
   entityId,
   vo,
@@ -71,6 +73,8 @@ export function VideoLecteurs({
   vo?: LecteurVo;
 }) {
   const t = useTranslations("mediaPlayback");
+  const ui = useVideoUIText();
+  const players = useMemo(() => normalizeVideoPlayers(rawPlayers), [rawPlayers]);
   const langLabel = (value: string) => {
     switch (value) {
       case "vf":
@@ -242,21 +246,9 @@ export function VideoLecteurs({
     <div className="space-y-3">
       {/* Sélecteur de version — visible dès qu'il y a au moins deux choix. */}
       {choix.length > 1 && (
-        <div
-          role="group"
-          aria-label={t("versionChoice")}
-          className="inline-flex flex-wrap items-center gap-1 rounded-full bg-white/[0.06] p-1"
-        >
+        <div role="group" aria-label={t("versionChoice")} className="shenron-video-selectors">
           {choix.map((c) => (
-            <button
-              key={c}
-              type="button"
-              onClick={() => choisir(c)}
-              aria-pressed={estChoisi(c)}
-              className={`rounded-full px-4 py-1.5 text-[12px] font-display font-bold tracking-wide transition-colors ${
-                estChoisi(c) ? "bg-dbz-orange text-black" : "text-white/70 hover:text-white"
-              }`}
-            >
+            <button key={c} type="button" onClick={() => choisir(c)} aria-pressed={estChoisi(c)}>
               {langLabel(c)}
             </button>
           ))}
@@ -265,22 +257,13 @@ export function VideoLecteurs({
 
       {/* Sélecteur de lecteur dans la langue active. */}
       {!enVo && (
-        <div
-          role="group"
-          aria-label={t("playerChoice")}
-          className="flex flex-wrap items-center gap-2"
-        >
+        <div role="group" aria-label={t("playerChoice")} className="shenron-video-selectors">
           {list.map((p, i) => (
             <button
               key={`${p.provider}-${i}`}
               type="button"
               onClick={() => setActive(i)}
               aria-pressed={i === safeActive}
-              className={`rounded-full px-3.5 py-1.5 text-[12px] font-display font-semibold tracking-wide transition-colors ${
-                i === safeActive
-                  ? "bg-dbz-orange text-black"
-                  : "bg-white/[0.06] text-white/70 hover:bg-white/[0.12] hover:text-white"
-              }`}
               title={`${cleanName(p.name)} · ${p.provider}`}
             >
               {t("playerNumber", { number: i + 1 })}
@@ -291,7 +274,7 @@ export function VideoLecteurs({
 
       {enVo && vo ? (
         voEchec ? (
-          <div className="dbz-panel flex aspect-video w-full items-center justify-center rounded-lg border border-dbz-border bg-black p-6 text-center text-sm text-white/60">
+          <div className="shenron-video flex aspect-video w-full items-center justify-center p-6 text-center text-sm">
             {t("voUnavailable")}
           </div>
         ) : (
@@ -305,18 +288,17 @@ export function VideoLecteurs({
           />
         )
       ) : status === "failed" ? (
-        <div className="dbz-panel flex aspect-video w-full flex-col items-center justify-center gap-3 rounded-lg border border-dbz-border bg-black p-6 text-center text-sm text-white/60">
+        <div
+          className="shenron-video flex aspect-video w-full flex-col items-center justify-center gap-3 p-6 text-center text-sm"
+          role="alert"
+        >
           <p>{t("playersUnavailable", { count: list.length })}</p>
-          <button
-            type="button"
-            onClick={retry}
-            className="min-h-10 rounded-lg bg-dbz-orange px-4 text-xs font-bold text-black hover:bg-dbz-orange-dark"
-          >
+          <button type="button" onClick={retry} data-primary>
             {t("retry")}
           </button>
         </div>
       ) : (
-        <div className="dbz-panel overflow-hidden rounded-lg border border-dbz-border bg-black p-0">
+        <div className="shenron-video">
           {/* sandbox : autorise le player tiers (scripts + accès à SA propre
 					    origine, requis pour les tokens de flux) mais bloque popups et
 					    navigation du top-window → coupe popunders et hijack de l'onglet
@@ -325,7 +307,6 @@ export function VideoLecteurs({
             key={current.embedUrl}
             src={current.embedUrl}
             title={t("playerTitle", { number: safeActive + 1, name: cleanName(current.name) })}
-            className="aspect-video w-full rounded-lg bg-black"
             sandbox="allow-scripts allow-same-origin allow-presentation allow-forms"
             allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
             allowFullScreen
@@ -342,18 +323,23 @@ export function VideoLecteurs({
           />
         </div>
       )}
-      <p className="text-[11px] text-white/50" aria-live="polite">
+      <p className="text-xs text-muted-foreground" aria-live="polite">
         {enVo && vo
           ? t("voTracks", { tracks: vo.subtitles.map((track) => track.label).join(", ") })
-          : status === "probing"
-            ? t("probing", {
+          : status === "failed"
+            ? ui("playerFailed", {
                 version: hasLangs ? `${langLabel(selectedLang)} · ` : "",
                 name: cleanName(current.name),
               })
-            : t("selected", {
-                version: hasLangs ? `${langLabel(selectedLang)} · ` : "",
-                name: cleanName(current.name),
-              })}
+            : status === "probing"
+              ? t("probing", {
+                  version: hasLangs ? `${langLabel(selectedLang)} · ` : "",
+                  name: cleanName(current.name),
+                })
+              : t("selected", {
+                  version: hasLangs ? `${langLabel(selectedLang)} · ` : "",
+                  name: cleanName(current.name),
+                })}
       </p>
     </div>
   );

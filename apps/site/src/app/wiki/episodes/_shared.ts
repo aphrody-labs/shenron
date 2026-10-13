@@ -1,6 +1,8 @@
 import "server-only";
 import { dbUniverse } from "@/lib/db-universe";
 import { unstable_cache } from "next/cache";
+import { videoLanguages } from "@/lib/video-languages";
+import { EPISODE_SERIES_LABELS } from "@/lib/episode-api";
 
 /**
  * Helpers partagés entre la landing `/wiki/episodes` (statique) et la vue série
@@ -9,16 +11,7 @@ import { unstable_cache } from "next/cache";
  * modale (interception). Rendre la landing STATIQUE (plus de `searchParams`) est
  * ce qui débloque l'interception ET le cache CDN.
  */
-export const SERIES_LABELS: Record<string, string> = {
-  DB: "Dragon Ball",
-  DBZ: "Dragon Ball Z",
-  DBZ_KAI: "Dragon Ball Z Kai",
-  DBZ_KAI_FINAL: "Dragon Ball Z Kai – Final Chapters",
-  DBGT: "Dragon Ball GT",
-  DBS: "Dragon Ball Super",
-  DBS_BEERUS: "Dragon Ball Super: Beerus",
-  DB_DAIMA: "Dragon Ball Daima",
-};
+export const SERIES_LABELS = EPISODE_SERIES_LABELS;
 
 export const SERIES_YEARS: Record<string, string> = {
   DB: "1986-1989",
@@ -61,7 +54,7 @@ export const yearOf = (sec: number | null) => (sec ? new Date(sec * 1000).getFul
 export const hasLang = (
   players: { lang?: "vf" | "vostfr" | "vost" }[] | null,
   lang: "vf" | "vostfr" | "vost",
-): boolean => (Array.isArray(players) ? players : []).some((p) => p.lang === lang);
+): boolean => videoLanguages(players).includes(lang);
 
 export { stripSourceTags } from "@/lib/media";
 

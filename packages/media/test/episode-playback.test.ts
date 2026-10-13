@@ -1,0 +1,71 @@
+// SPDX-License-Identifier: Apache-2.0
+import { expect, test } from "bun:test";
+import {
+  episodePlaybackMetadata,
+  normalizeVideoPlayers,
+  normalizeVideoSubtitles,
+} from "../src/episode-playback";
+
+const vf = {
+  name: "VF · FHD1",
+  provider: "mailru",
+  embedUrl: "https://example.test/vf",
+  lang: "vf" as const,
+};
+test("malformed and duplicate players do not create phantom counts or video versions", () => {
+  const raw = [
+    vf,
+    { ...vf, name: "Duplicate" },
+    null,
+    "scalar",
+    {},
+    { ...vf, embedUrl: "javascript:alert(1)" },
+    { ...vf, embedUrl: "https://user:secret@example.test/vf" },
+    { ...vf, embedUrl: " " },
+    { ...vf, embedUrl: "https://example.test/unknown", lang: "ja" },
+  ];
+  expect(normalizeVideoPlayers(raw)).toEqual([
+    vf,
+    { name: vf.name, provider: vf.provider, embedUrl: "https://example.test/unknown" },
+  ]);
+  const metadata = episodePlaybackMetadata({ players: raw });
+  expect(metadata.playerCount).toBe(2);
+  expect(metadata.versions).toEqual(["vf"]);
+  expect(metadata.hasVostfr).toBe(false);
+});
+
+test("same source with explicitly different versions stays selectable", () => {
+  const metadata = episodePlaybackMetadata({ players: [vf, { ...vf, lang: "vostfr" }] });
+  expect(metadata.playerCount).toBe(2);
+  expect(metadata.versions).toEqual(["vf", "vostfr"]);
+});
+
+test("subtitle tracks remain separate from observed video versions", () => {
+  const track = { src: "./assets/subtitles/db_episodes/445/ja.srt", lang: "ja", label: "Japanese" };
+  const metadata = episodePlaybackMetadata({
+    players: [vf],
+    subtitles: [
+      track,
+      track,
+      null,
+      {},
+      { ...track, src: "javascript:bad" },
+      { ...track, src: "assets/subtitles/../../private.srt" },
+    ],
+  });
+  expect(metadata.subtitles).toEqual([track]);
+  expect(metadata.versions).toEqual(["vf"]);
+  expect(normalizeVideoSubtitles("corrupt-json")).toEqual([]);
+});
+
+test("empty native metadata never guesses a dubbed or subtitled version", () => {
+  expect(episodePlaybackMetadata({ players: null, subtitles: [] })).toEqual({
+    players: [],
+    subtitles: [],
+    versions: [],
+    playerCount: 0,
+    hasVf: false,
+    hasVostfr: false,
+    hasVost: false,
+  });
+});
