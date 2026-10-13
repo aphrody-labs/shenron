@@ -5,8 +5,9 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { JsonLd } from "@/components/JsonLd";
 import { T } from "@/components/T";
 import { BackgroundImage } from "@/components/media/BackgroundImage";
-import { VideoSourceSummary } from "@/components/episodes/VideoSourceSummary";
-import { VideoUnavailableCard } from "@/components/episodes/VideoUnavailableCard";
+import { getEpisodesCached } from "../../../_shared";
+import { EpisodeSeriesGrid } from "../EpisodeSeriesGrid";
+import { BEERUS_CRUNCHYROLL_URL, officialEpisodeCatalogue } from "@/lib/official-episode-catalogue";
 import { EpisodeScenes } from "../../../[id]/EpisodeScenes";
 import { ShareButton } from "@/components/ShareButton";
 import { ogMeta } from "@/lib/og";
@@ -50,6 +51,11 @@ export default async function OfficialBeerusEpisodePage({
   const { series, number } = await params;
   if (series !== DBS_BEERUS_SERIES_CODE || number !== "1") notFound();
   const text = getDictionary().dbsBeerus;
+  const catalogue = await getEpisodesCached(series, 1000, 0).catch(() => null);
+  const cards = officialEpisodeCatalogue(series, catalogue?.episodes ?? [], {
+    title: text.episodeTitle,
+    synopsis: text.episodeSynopsis,
+  });
   return (
     <main className="relative isolate min-w-0">
       <JsonLd
@@ -99,10 +105,27 @@ export default async function OfficialBeerusEpisodePage({
           </p>
         </header>
         <div id="player" className="mb-8 space-y-4">
-          <VideoUnavailableCard title={text.episodeTitle} kind="episode" />
-          <VideoSourceSummary players={[]} />
+          <section className="dbz-panel space-y-3 p-6">
+            <a
+              href={BEERUS_CRUNCHYROLL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center font-semibold text-dbz-orange underline underline-offset-4"
+            >
+              <T k="dbsBeerus.watchEpisode" />
+            </a>
+            <p className="text-sm leading-relaxed text-white/65">
+              <T k="dbsBeerus.episodeProviderNote" />
+            </p>
+          </section>
         </div>
         <div className="space-y-12">
+          <section aria-labelledby="series-catalogue-title" className="space-y-5">
+            <h2 id="series-catalogue-title" className="font-display text-2xl font-bold text-white">
+              <T k="episodeSeries.episodes" />
+            </h2>
+            <EpisodeSeriesGrid episodes={cards} />
+          </section>
           <section className="dbz-panel relative overflow-hidden p-6 sm:p-8">
             <div className="absolute inset-y-0 left-0 w-1 bg-dbz-orange" />
             <h2 className="mb-4 font-display text-xl font-bold text-dbz-orange">
