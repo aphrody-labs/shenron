@@ -159,10 +159,18 @@ PG demande un adaptateur avec idempotence des opérations Discord.
 Les 20 variantes locales de `economy_index`, `race_level_roles` et
 `card_themes` ont été archivées par empreinte dans une table PostgreSQL
 privée (`bot.sqlite_runtime_variants`), sans modifier les tables canoniques.
-Le rejeu n'a inséré aucun doublon. Les 29 fichiers `data/rag/raw` uniques
-(7 833 283 octets) sont archivés dans le store privé DBFR sous leurs
-SHA-256 ; les 314 fichiers byte-identiques au miroir local n'ont pas été
-transférés. Cette archive n'active aucun nouveau corpus RAG.
+Le rejeu n'a inséré aucun doublon. L'inventaire privé `data/home` et `data/rag`
+du 13 octobre à 17:44 UTC compte 1 044 fichiers et 710 SHA-256 distincts :
+640 empreintes existaient déjà dans les workspaces DBFR/VPS, 29 objets RAG
+étaient déjà archivés et ont été revérifiés, et 41 objets supplémentaires
+(102 254 637 octets), dont `aphrody.sqlite`, ont été transférés dans le store
+privé DBFR. Les 41 objets ont été relus par SHA-256, avec répertoire en mode
+700 et fichiers en mode 600 ; le reçu reste privé dans
+`var/reports/storage-cluster/private-home-rag-archive-20261013.json`.
+Les 314 fichiers `data/rag/raw/aphrody` identiques aux miroirs n'ont pas été
+recopiés. Ces archives n'activent aucun writer ni nouveau corpus RAG ; une
+modification ultérieure d'un fichier privé exige un nouveau contrôle de son
+empreinte.
 
 ## Placement exclusif
 
