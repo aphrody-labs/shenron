@@ -26,7 +26,7 @@ type ReviewedInput = {
   text: string;
   textSha256: string;
   sourceImages: { url: string; sha256: string }[];
-  nativeOcr: { qualified: false; status: "failed" };
+  nativeOcr: { qualified: false; status: "failed" | "not_requested" };
 };
 function exactKeys(value: unknown, keys: string[]): value is Record<string, unknown> {
   return (
@@ -77,7 +77,7 @@ function parseReviewedInput(value: unknown): ReviewedInput {
     ) ||
     !exactKeys(value.nativeOcr, ["qualified", "status"]) ||
     value.nativeOcr.qualified !== false ||
-    value.nativeOcr.status !== "failed"
+    !["failed", "not_requested"].includes(String(value.nativeOcr.status))
   )
     throw new Error("Invalid reviewed transcription schema");
   return value as unknown as ReviewedInput;
@@ -656,10 +656,11 @@ async function run() {
   );
   await privateWrite(join(root, "native-export.jsonl"), nativeExportBody);
   const inputPath = join(root, reviewed ? "reviewed-export.jsonl" : "native-export.jsonl");
-  await privateWrite(
-    inputPath,
-    exports.map((document) => JSON.stringify(document)).join("\n") + "\n",
-  );
+  if (reviewed)
+    await privateWrite(
+      inputPath,
+      exports.map((document) => JSON.stringify(document)).join("\n") + "\n",
+    );
   // The capability owner owns R2 credentials, uploads, index activation and independent byte verification.
   const modulePath = process.env.SHENRON_SOURCE_CDN_MODULE;
   if (!modulePath || !isAbsolute(modulePath))
@@ -784,7 +785,9 @@ async function run() {
       documents: documents.length,
       media: acquired.size,
       mediaBytes,
-      mediaCoverage: "same-domain Markdown images; foreign providers remain links",
+      mediaCoverage: reviewed
+        ? "pinned reviewed same-host source images; fresh HTTP200/PNG/SHA verified"
+        : "same-domain Markdown images; foreign providers remain links",
       boundedCrawlComplete: true,
       ...(reviewed ? { reviewedPublication: provenance } : {}),
     });

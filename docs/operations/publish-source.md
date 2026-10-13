@@ -101,6 +101,8 @@ répondre200 avec des octets PNG et le SHA épinglé, dans les budgets habituels
 L’index public v1 et la provenance du writer canonique identifient la méthode,
 la langue, les SHA originaux, l’empreinte de la capture native séparée et
 l’OCR natif non qualifié. Les droits RAG, entraînement et canon restent faux.
+Le statut OCR est `failed` si une tentative a réellement échoué, ou
+`not_requested` si aucune tentative n’a été effectuée ; jamais un succès implicite.
 Les notices existantes restent protégées ; un refus de hash ou une capture
 incomplète interdit l’activation. Une transcription visuelle relue ne constitue
 pas une réussite OCR native.

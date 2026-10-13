@@ -59,6 +59,13 @@ test("reviewed text is exact UTF-8 SHA pinned and cannot masquerade as qualified
   expect(provenance.method).toBe("direct_visual_transcription");
   expect(provenance.nativeCaptureSeparate).toBe(true);
   expect(provenance.nativeOcr.qualified).toBe(false);
+  expect(
+    reviewedTranscription(
+      { ...fixture, nativeOcr: { qualified: false, status: "not_requested" } },
+      fixture.sourceUrl,
+      fixture.targetUrl,
+    ).nativeOcr.status,
+  ).toBe("not_requested");
   expect([
     provenance.ragPermitted,
     provenance.trainingPermitted,
