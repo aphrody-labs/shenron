@@ -94,7 +94,7 @@ export async function JournalIndex({
     // pseudo et l'avatar sont écrits.
     db.query.posts.findMany({
       where: visible,
-      orderBy: [desc(postsTable.publishedAt)],
+      orderBy: [desc(postsTable.publishedAt), desc(postsTable.id)],
       limit: POSTS_PER_PAGE,
       offset,
       columns: {

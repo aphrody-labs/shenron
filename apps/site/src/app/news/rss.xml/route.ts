@@ -50,7 +50,7 @@ function xml(s: string): string {
 export async function GET() {
   const rows = await db.query.posts.findMany({
     where: publicPostFilter(),
-    orderBy: [desc(postsTable.publishedAt)],
+    orderBy: [desc(postsTable.publishedAt), desc(postsTable.id)],
     limit: 50,
     // `contentJson` (le document Tiptap) et `body` (le Markdown historique) ne
     // servent pas au flux : seul `contentHtml` y est publié.
