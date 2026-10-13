@@ -38,6 +38,10 @@ function render(
     botsMissing?: boolean;
     offline?: boolean;
     automationUnavailable?: boolean;
+    monitoringError?: boolean;
+    statsError?: boolean;
+    botsError?: boolean;
+    liveError?: boolean;
   } = {},
 ) {
   const client = new QueryClient({
@@ -68,6 +72,18 @@ function render(
     sampledAt: "2026-10-10T12:00:00Z",
     refreshAfterMs: 10000,
   });
+  for (const [key, failed] of [
+    ["dashboard-monitoring", options.monitoringError],
+    ["dashboard-totals", options.statsError],
+    ["dashboard-bots", options.botsError],
+    ["dashboard-live", options.liveError],
+  ] as const) {
+    if (failed)
+      client
+        .getQueryCache()
+        .find({ queryKey: ["admin", key] })
+        ?.setState({ status: "error", error: new Error("Probe failed") });
+  }
   try {
     return renderToStaticMarkup(
       <QueryClientProvider client={client}>
@@ -86,6 +102,23 @@ function render(
 }
 
 describe("admin dashboard rendered evidence", () => {
+  test("failed metric refreshes stop presenting cached values as current", () => {
+    const unavailableMonitoring = render("fr", { monitoringError: true });
+    expect(unavailableMonitoring).toContain(fr.adminDashboard.hostUnavailable);
+    expect(unavailableMonitoring).not.toContain("linux");
+    const stats = render("en", { statsError: true });
+    expect(stats).not.toContain("5,757");
+    const bots = render("fr", { botsError: true });
+    expect(bots).toContain(fr.adminDashboard.botsUnavailable);
+    expect(bots).not.toContain(fr.adminDashboard.operational);
+  });
+  test("failed live refresh hides cached service and agent evidence", () => {
+    const html = render("fr", { liveError: true });
+    expect(html).toContain(fr.adminDashboard.liveError);
+    expect(html).not.toContain(fr.adminDashboard.healthy);
+    expect(html).not.toContain(fr.adminDashboard.technical);
+    expect(html).not.toContain(fr.adminDashboard.agentsIdle);
+  });
   for (const locale of ["fr", "en", "ja"] as const) {
     test(`renders real metrics and all dictionary keys in ${locale}`, () => {
       const html = render(locale);

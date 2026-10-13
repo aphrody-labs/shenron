@@ -31,49 +31,69 @@ async function proxy(req: NextRequest, ctx: { params: Promise<{ path: string[] }
       : await req.text().catch(() => undefined);
 
   const accept = req.headers.get("accept") ?? "application/json";
-  const res = await fetch(url, {
-    method: req.method,
-    body,
-    headers: {
-      authorization: `Bearer ${TOKEN}`,
-      "content-type": req.headers.get("content-type") ?? "application/json",
-      accept,
-    },
-    cache: "no-store",
-    signal: req.signal,
-  });
-
-  const ct = res.headers.get("content-type") ?? "application/json";
-
-  // SSE / streaming : forward le body tel quel, headers no-buffer
-  if (ct.includes("text/event-stream") && res.body) {
-    return new NextResponse(res.body, {
-      status: res.status,
+  const deadline = new AbortController();
+  const timer = setTimeout(() => deadline.abort(), 15_000);
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      method: req.method,
+      body,
       headers: {
-        "content-type": "text/event-stream; charset=utf-8",
-        "cache-control": "no-cache, no-transform",
-        connection: "keep-alive",
-        "x-accel-buffering": "no",
+        authorization: `Bearer ${TOKEN}`,
+        "content-type": req.headers.get("content-type") ?? "application/json",
+        accept,
       },
+      cache: "no-store",
+      signal: AbortSignal.any([req.signal, deadline.signal]),
     });
-  }
+    // Fetch responses with these statuses cannot carry a response body.
+    if (res.status === 204 || res.status === 205 || res.status === 304 || req.method === "HEAD") {
+      return new NextResponse(null, {
+        status: res.status,
+        headers: { "cache-control": "no-store" },
+      });
+    }
 
-  // Binaire (images canvas WebP/PNG, assets) : NE PAS passer par res.text()
-  // qui décode les octets en UTF-8 et corrompt le fichier. Forward le buffer
-  // brut + préserve le Cache-Control (le canvas met en cache 60 s côté bot).
-  if (!ct.includes("application/json") && !ct.startsWith("text/")) {
-    const buf = await res.arrayBuffer();
-    const headers = new Headers({ "content-type": ct });
-    const cc = res.headers.get("cache-control");
-    if (cc) headers.set("cache-control", cc);
-    return new NextResponse(buf, { status: res.status, headers });
-  }
+    const ct = res.headers.get("content-type") ?? "application/json";
 
-  const text = await res.text();
-  return new NextResponse(text, {
-    status: res.status,
-    headers: { "content-type": ct },
-  });
+    // SSE / streaming : forward le body tel quel, headers no-buffer
+    if (ct.includes("text/event-stream") && res.body) {
+      return new NextResponse(res.body, {
+        status: res.status,
+        headers: {
+          "content-type": "text/event-stream; charset=utf-8",
+          "cache-control": "no-cache, no-transform",
+          connection: "keep-alive",
+          "x-accel-buffering": "no",
+        },
+      });
+    }
+
+    // Binaire (images canvas WebP/PNG, assets) : NE PAS passer par res.text()
+    // qui décode les octets en UTF-8 et corrompt le fichier. Forward le buffer
+    // brut + préserve le Cache-Control (le canvas met en cache 60 s côté bot).
+    if (!ct.includes("application/json") && !ct.startsWith("text/")) {
+      const buf = await res.arrayBuffer();
+      const headers = new Headers({ "content-type": ct });
+      const cc = res.headers.get("cache-control");
+      if (cc) headers.set("cache-control", cc);
+      return new NextResponse(buf, { status: res.status, headers });
+    }
+
+    const text = await res.text();
+    return new NextResponse(text, {
+      status: res.status,
+      headers: { "content-type": ct },
+    });
+  } catch {
+    return NextResponse.json(
+      { error: "Bot API unavailable" },
+      { status: 502, headers: { "cache-control": "no-store" } },
+    );
+  } finally {
+    // Reading finite bodies stays bounded; SSE continues after this return.
+    clearTimeout(timer);
+  }
 }
 
 export const GET = proxy;

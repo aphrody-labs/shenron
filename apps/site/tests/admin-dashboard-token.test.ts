@@ -23,7 +23,23 @@ mock.module("@/lib/a2a-hub", () => ({
 }));
 mock.module("@/lib/admin-dashboard-probes", () => ({ pingDashboardRedis: async () => {} }));
 
-globalThis.fetch = mock(async () => new Response(null, { status: 200 })) as unknown as typeof fetch;
+globalThis.fetch = mock(async (input: string | URL | Request) =>
+  Response.json(
+    String(input).endsWith("/health")
+      ? { status: "ok" }
+      : {
+          botStatus: { online: false, uptime: null },
+          pid: { cpu: 1, memory: 1, uptime: 1, rss: 1 },
+          host: {
+            cpu: { count: 1, usage: 1 },
+            memory: { total: 1, free: 0, used: 1, usage: 1 },
+            platform: "linux",
+            uptime: 1,
+          },
+          latency: { ws: -1, db: 1 },
+        },
+  ),
+) as unknown as typeof fetch;
 const { GET } = await import("../src/app/api/admin/dashboard-live/route");
 
 describe("sonde dashboard par jeton admin", () => {
@@ -35,5 +51,18 @@ describe("sonde dashboard par jeton admin", () => {
       }),
     );
     expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(payload.services.find((service: { id: string }) => service.id === "api").state).toBe(
+      "ok",
+    );
+    expect(
+      payload.services.find((service: { id: string }) => service.id === "backOffice"),
+    ).toMatchObject({
+      state: "degraded",
+      detail: "bot_offline",
+    });
+    expect(payload.agents.activeTasks).toBe(1);
+    expect(response.headers.get("cache-control")).toContain("private");
+    expect((await GET(new NextRequest("http://test/api/admin/dashboard-live"))).status).toBe(403);
   });
 });
