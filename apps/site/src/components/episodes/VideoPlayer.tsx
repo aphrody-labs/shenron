@@ -233,7 +233,7 @@ export function VideoPlayer({
       role="region"
       aria-label={title}
       onKeyDown={handleKeyDown}
-      className={`dbz-panel overflow-hidden border border-amber-500/30 bg-black p-0 shadow-lg focus-visible:outline-2 focus-visible:outline-amber-400 ${theater ? "fixed inset-0 z-50 flex flex-col justify-center" : "relative rounded-xl"}`}
+      className={`dbz-panel relative overflow-hidden rounded-xl border border-amber-500/30 bg-black p-0 shadow-lg focus-visible:outline-2 focus-visible:outline-amber-400 ${theater ? "left-1/2 w-[calc(100vw-3rem)] -translate-x-1/2" : ""}`}
     >
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-amber-500/20 px-4 py-3">
         <p className="text-sm font-semibold text-white">{title}</p>
