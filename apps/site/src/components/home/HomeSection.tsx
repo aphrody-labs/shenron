@@ -9,7 +9,7 @@
  */
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { FlecheDroite } from "@aphrody/shenron-ui/icones";
+import { ChevronBas, FlecheDroite } from "@aphrody/shenron-ui/icones";
 import { blockTitle, focusRing } from "./ui";
 
 export function HomeSection({
@@ -32,29 +32,37 @@ export function HomeSection({
   const titleId = `accueil-${id}-titre`;
   return (
     <section id={id} aria-labelledby={titleId} className={`min-w-0 scroll-mt-24 ${className}`}>
-      <div className="mb-3 flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
-        <div className="min-w-0">
-          <h2 id={titleId} className={blockTitle}>
-            {title}
-          </h2>
+      <div className="relative min-w-0">
+        <details name="dbfr-home-sections" className="group min-w-0">
+          <summary
+            className={`flex min-h-11 cursor-pointer list-none items-center gap-3 rounded-lg text-foreground [&::-webkit-details-marker]:hidden ${moreHref && moreLabel ? "pr-14" : ""} ${focusRing}`}
+          >
+            <h2 id={titleId} className={`min-w-0 flex-1 ${blockTitle}`}>
+              {title}
+            </h2>
+            <ChevronBas
+              size={22}
+              className="shrink-0 transition-transform group-open:rotate-180 motion-reduce:transition-none"
+            />
+          </summary>
           {subtitle ? (
             <p className="mt-1 max-w-[72ch] text-sm leading-relaxed text-muted-foreground">
               {subtitle}
             </p>
           ) : null}
-        </div>
+          <div className="pt-3">{children}</div>
+        </details>
         {moreHref && moreLabel ? (
           <Link
             href={moreHref}
             aria-describedby={titleId}
-            className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl text-primary transition-colors hover:bg-secondary hover:text-secondary-foreground ${focusRing}`}
+            className={`absolute right-0 top-0 grid h-11 w-11 shrink-0 place-items-center rounded-xl text-primary transition-colors hover:bg-secondary hover:text-secondary-foreground ${focusRing}`}
           >
             <FlecheDroite size={22} />
             <span className="sr-only">{moreLabel}</span>
           </Link>
         ) : null}
       </div>
-      {children}
     </section>
   );
 }
