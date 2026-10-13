@@ -1,16 +1,5 @@
 /** Données de l'accueil, telles que `app/page.tsx` les lit et les passe à `HomeView`. */
 
-export interface WikiCounts {
-  sagas: number;
-  episodes: number;
-  movies: number;
-  characters: number;
-  planets: number;
-  chapters: number;
-  databooks: number;
-  canonReferences?: number;
-}
-
 export interface FeaturedCharacter {
   id: number;
   name: string;
@@ -28,13 +17,3 @@ export interface SagaTeaser {
   description: string | null;
 }
 
-export const EMPTY_WIKI_COUNTS: WikiCounts = {
-  sagas: 0,
-  episodes: 0,
-  movies: 0,
-  characters: 0,
-  planets: 0,
-  chapters: 0,
-  databooks: 0,
-  canonReferences: 0,
-};
