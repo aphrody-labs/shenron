@@ -3,10 +3,13 @@ import { expect, test, mock } from "bun:test";
 import { approvedEpisodeVideoURL, nativeEpisodeVideoSource } from "../src/lib/episode-video-source";
 import { GET, HEAD } from "../src/app/api/media/video/route";
 const source = "https://27.mugiwara.one/dbs/dbs-1.mp4";
+const shenronSource = "https://cdn.dragonballfr.com/media/episodes/beerus-01/optimized-720p.mp4";
 test("approved MP4 uses the same-origin range transport while other sources retain their owner", () => {
   const local = nativeEpisodeVideoSource(source);
   expect(local.startsWith("/api/media/video?")).toBe(true);
   expect(new URL(local, "https://dragonballfr.com").searchParams.get("source")).toBe(source);
+  expect(approvedEpisodeVideoURL(shenronSource)?.href).toBe(shenronSource);
+  expect(nativeEpisodeVideoSource(shenronSource)).toBe(shenronSource);
   for (const url of [
     "/api/hls/1/master.m3u8",
     "https://cdn.dragonballfr.com/movie.mp4",
@@ -18,6 +21,8 @@ test("approved MP4 uses the same-origin range transport while other sources reta
     "https://user:pass@27.mugiwara.one/dbs/dbs-1.mp4",
     "https://27.mugiwara.one/../private",
     "https://foreign.example/dbs/dbs-1.mp4",
+    shenronSource + "?token=private",
+    "https://cdn.dragonballfr.com/media/episodes/beerus-01/source.mp4",
   ])
     expect(approvedEpisodeVideoURL(url)).toBeNull();
 });

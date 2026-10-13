@@ -11,6 +11,13 @@ test("episode 875 advertises its same-origin MP4 transport without inventing HLS
   expect(JSON.stringify(result)).not.toContain("mugiwara.one");
 });
 
+test("qualified Shenron CDN MP4 is played directly with byte ranges", () => {
+  const source = "https://cdn.dragonballfr.com/media/episodes/beerus-01/optimized-720p.mp4";
+  const result = episodePlayback({ id: 875, stream_url: source });
+  expect(result.nativeSource).toEqual({ src: source, type: "video/mp4" });
+  expect(result.hlsMasterUrl).toBeNull();
+});
+
 test("HLS metadata exposes the bot transport without leaking stored stream tokens", () => {
   const result = episodePlayback({
     id: 445,

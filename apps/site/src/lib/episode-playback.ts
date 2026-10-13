@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { episodePlaybackMetadata } from "@aphrody/shenron-media/episode-playback";
-import { approvedEpisodeVideoURL } from "./episode-video-source";
+import { approvedEpisodeVideoURL, isShenronEpisodeVideoURL } from "./episode-video-source";
 import { hlsMasterUrl } from "./assets";
 import { normalizeAvailability } from "./video-languages";
 
@@ -26,7 +26,12 @@ export function episodePlayback(input: EpisodePlaybackInput) {
       ? hlsMasterUrl(input.id)
       : null;
   const nativeSource = approvedMp4
-    ? { src: `/api/episodes/${input.id}/video`, type: "video/mp4" as const }
+    ? {
+        src: isShenronEpisodeVideoURL(approvedMp4)
+          ? approvedMp4.href
+          : `/api/episodes/${input.id}/video`,
+        type: "video/mp4" as const,
+      }
     : hlsUrl
       ? { src: hlsUrl, type: "application/vnd.apple.mpegurl" as const }
       : null;
