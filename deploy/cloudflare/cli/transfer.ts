@@ -69,6 +69,174 @@ export interface ObjectStore {
     contentType: string,
     cacheControl: string,
   ): Promise<void>;
+  attestStaged(
+    key: string,
+    entry: Pick<Entry, "sha256" | "size" | "contentType">,
+    budget?: StagedBudget,
+  ): Promise<StagedAttestation>;
+}
+export interface StagedBudget {
+  maxBytes: number;
+  timeoutMs: number;
+}
+export interface StagedAttestation {
+  key: string;
+  sha256: string;
+  size: number;
+  metadataUpdated: boolean;
+  actualGets: number;
+  budget: StagedBudget;
+  objectBytesUploaded: 0;
+}
+async function stagedBytes(response: Response, entry: Pick<Entry, "sha256" | "size">) {
+  if (response.status !== 200 || !response.body)
+    throw new Error("Staged GET HTTP " + response.status);
+  const reader = response.body.getReader(),
+    hash = new Bun.CryptoHasher("sha256");
+  let size = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > entry.size) {
+        await reader.cancel();
+        throw new Error("Staged bytes exceed pinned size");
+      }
+      hash.update(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  if (size !== entry.size || hash.digest("hex") !== entry.sha256)
+    throw new Error("Staged bytes SHA differs");
+}
+/** Qualify owner-staged CAS bytes and merge SHA metadata; never upload an object body. */
+export async function attestStagedObject(
+  signed: SignedClient,
+  url: string,
+  entry: Pick<Entry, "sha256" | "size" | "contentType">,
+  budget: StagedBudget = { maxBytes: 33 * 1024 * 1024, timeoutMs: 120000 },
+): Promise<StagedAttestation> {
+  entry = { sha256: entry.sha256, size: entry.size, contentType: entry.contentType };
+  budget = { maxBytes: budget.maxBytes, timeoutMs: budget.timeoutMs };
+  const target = new URL(url),
+    parts = target.pathname.split("/"),
+    bucket = parts[1],
+    key = "_objects/" + entry.sha256;
+  if (
+    target.protocol !== "https:" ||
+    !/^[a-f0-9]{32}\.r2\.cloudflarestorage\.com$/.test(target.hostname) ||
+    target.username ||
+    target.password ||
+    target.search ||
+    target.hash ||
+    target.port ||
+    !/^[a-z0-9][a-z0-9-]{1,62}$/.test(bucket ?? "") ||
+    target.pathname !== "/" + bucket + "/" + key ||
+    !/^[a-f0-9]{64}$/.test(entry.sha256) ||
+    !Number.isSafeInteger(entry.size) ||
+    entry.size < 0 ||
+    !Number.isSafeInteger(budget.maxBytes) ||
+    budget.maxBytes < 1 ||
+    budget.maxBytes > 128 * 1024 * 1024 ||
+    !Number.isSafeInteger(budget.timeoutMs) ||
+    budget.timeoutMs < 1 ||
+    budget.timeoutMs > 300000 ||
+    entry.size > budget.maxBytes ||
+    typeof entry.contentType !== "string" ||
+    entry.contentType.length > 128 ||
+    ![
+      "image/png",
+      "image/webp",
+      "image/jpeg",
+      "application/json",
+      "application/gzip",
+      "application/x-gzip",
+      "application/zstd",
+      "application/x-zstd",
+      "application/x-tar",
+    ].includes(entry.contentType)
+  )
+    throw new Error("Invalid staged CAS identity");
+  const cacheControl = "public, max-age=31536000, immutable";
+  metadataHeaders(entry.sha256, entry.contentType, cacheControl);
+  const request = (method: string, headers?: Record<string, string>) =>
+    signed.fetch(url, {
+      method,
+      headers,
+      signal: AbortSignal.timeout(budget.timeoutMs),
+      redirect: "error",
+    });
+  const before = await request("HEAD");
+  const etag = before.headers.get("etag");
+  if (
+    before.status !== 200 ||
+    before.headers.get("content-length") !== String(entry.size) ||
+    !etag ||
+    !/^"[a-zA-Z0-9-]+"$/.test(etag)
+  )
+    throw new Error("Staged HEAD differs");
+  await stagedBytes(await request("GET", { "If-Match": etag }), entry);
+  const metadataUpdated =
+    before.headers.get("x-amz-meta-sha256") !== entry.sha256 ||
+    before.headers.get("content-type") !== entry.contentType ||
+    before.headers.get("cache-control") !== cacheControl;
+  if (metadataUpdated) {
+    const copied = await request("PUT", {
+      "x-amz-copy-source": "/" + bucket + "/" + key,
+      "x-amz-copy-source-if-match": etag,
+      "cf-copy-destination-if-match": etag,
+      "x-amz-metadata-directive": "MERGE",
+      "x-amz-meta-sha256": entry.sha256,
+      "Content-Type": entry.contentType,
+      "Cache-Control": cacheControl,
+    });
+    if (copied.status !== 200 || !copied.body)
+      throw new Error("Staged CopyObject HTTP " + copied.status);
+    const reader = copied.body.getReader();
+    let size = 0;
+    const chunks: Uint8Array[] = [];
+    try {
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        size += value.length;
+        if (size > 8192) {
+          await reader.cancel();
+          throw new Error("Staged CopyObject receipt exceeds budget");
+        }
+        chunks.push(value);
+      }
+    } finally {
+      reader.releaseLock();
+    }
+    const xml = new TextDecoder().decode(Buffer.concat(chunks));
+    if (!xml.includes("<CopyObjectResult") || /<Error[\s>]/.test(xml))
+      throw new Error("Staged CopyObject failed");
+  }
+  const after = await request("HEAD"),
+    afterEtag = after.headers.get("etag");
+  if (
+    after.status !== 200 ||
+    after.headers.get("content-length") !== String(entry.size) ||
+    after.headers.get("x-amz-meta-sha256") !== entry.sha256 ||
+    after.headers.get("content-type") !== entry.contentType ||
+    after.headers.get("cache-control") !== cacheControl ||
+    !afterEtag ||
+    !/^"[a-zA-Z0-9-]+"$/.test(afterEtag)
+  )
+    throw new Error("Staged metadata readback differs");
+  await stagedBytes(await request("GET", { "If-Match": afterEtag }), entry);
+  return {
+    key,
+    sha256: entry.sha256,
+    size: entry.size,
+    metadataUpdated,
+    actualGets: 2,
+    budget,
+    objectBytesUploaded: 0,
+  };
 }
 export function metadataHeaders(sha256: string, contentType: string, cacheControl: string) {
   if (!/^[a-f0-9]{64}$/.test(sha256) || /[\r\n]/.test(contentType + cacheControl))
@@ -115,6 +283,21 @@ export async function objectStore(
     }
   }
   return {
+    async attestStaged(key, entry, budget) {
+      if (key !== "_objects/" + entry.sha256) throw new Error("Staged key differs");
+      await refresh();
+      return attestStagedObject(
+        {
+          async fetch(url, init) {
+            await refresh();
+            return signed.fetch(url, init);
+          },
+        },
+        endpoint + key,
+        entry,
+        budget,
+      );
+    },
     async put(key, body, sha256, contentType, cacheControl) {
       if (
         !/^(_objects\/[a-f0-9]{64}|_migration\/manifests\/[a-z0-9-]+\/[a-f0-9]{2}\.json)$/.test(

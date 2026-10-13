@@ -51,3 +51,21 @@ aux deux origines. L’état partagé n’avance qu’après qualification compl
 Un caller ne doit pas annoncer un succès depuis le seul checkpoint d’activation.
 Les credentials, le SDK installé, le runtime et les services ne sont pas copiés
 ou reconfigurés par cette publication.
+
+## Attester un staging CAS propriétaire
+
+`objectStore(profile, manifest, sdkModule).attestStaged(key, entry, budget)` qualifie
+des objets déjà stagés sous `_objects/<sha256>`, sans envoyer de corps PUT.
+`entry` contient seulement `sha256`, `size` et `contentType` ; `budget` déclare
+`maxBytes` (au plus 128MiB) et `timeoutMs` (au plus 300000). Le défaut 33MiB/120000
+reste adapté aux images. Une archive CORE épinglée peut déclarer 64MiB/300000.
+Les MIME admis sont PNG, WebP, JPEG, JSON, gzip, tar et Zstd.
+
+Le propriétaire relit les octets en flux avec taille exacte et SHA, puis emploie
+`CopyObject` sur la même clé avec `MERGE` et conditions ETag source/destination.
+Il préserve les autres métadonnées et relit SHA, taille, MIME et cache. Une réponse
+HTTP200 contenant une erreur XML n'est pas un succès. Le reçu distingue les deux
+GET réels de l'envoi de corps objet, toujours nul. Aucun manifeste, binding Worker
+ou état de publication ne change pendant cette attestation.
+
+Contrat primaire : [extensions R2 CopyObject](https://developers.cloudflare.com/r2/api/s3/extensions/).
