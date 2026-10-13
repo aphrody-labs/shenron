@@ -84,6 +84,15 @@ assets CDN publiables. Un transfert privé reprenable vers le profil `dbfr` du
 VPS est en cours ; ni son intégrité complète ni un basculement ne sont encore
 établis. Aucune suppression locale n'a été effectuée.
 
+L'inventaire des fichiers SQLite sous `data/` (répertoires ignorés inclus)
+compte sept bases. Quatre sont des miroirs historiques du VPS et une est un
+miroir `knowledge.db` de DBFR : leurs empreintes SHA-256 correspondent aux
+fichiers encore présents sur ces hôtes au contrôle du 13 octobre. Le
+`data/home/agent-home/db/aphrody.sqlite` local (1 441 792 octets, daté du
+7 octobre) n'a pas de correspondant actif confirmé sur DBFR ; il reste
+protégé jusqu'à qualification de sa provenance. Aucun de ces miroirs n'est
+promu comme nouveau writer PostgreSQL ni envoyé une seconde fois au cloud.
+
 ## Placement exclusif
 
 PostgreSQL DBFR reste la source éditoriale. Aucune requête éditoriale n'est
