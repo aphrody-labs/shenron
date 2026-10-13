@@ -4,6 +4,21 @@ import { handleCdn, type CdnBucket, type StoredObject } from "./cdn-worker";
 import { digest, validateManifest } from "./cli/cloudflare-ops";
 import { validateProfile } from "./cli/s3-profile";
 
+export const CDN_ORIGIN_SERVICE_VERSION = "shenron-cdn-origin/v1";
+
+export function originAttestation(
+  config: { manifestPrefix: string; inventorySha256: string },
+  codeSha256: string,
+) {
+  return {
+    backend: "native-manifest-origin",
+    serviceVersion: CDN_ORIGIN_SERVICE_VERSION,
+    codeSha256,
+    manifestPrefix: config.manifestPrefix,
+    inventorySha256: config.inventorySha256,
+  };
+}
+
 export function originObjectKeyAllowed(key: string) {
   return /^_objects\/[a-f0-9]{64}$/.test(key);
 }
@@ -52,6 +67,7 @@ export async function startCdnOrigin(configPath: string) {
   const configInfo = await stat(configPath);
   if (!originRootPrivate(configInfo)) throw Error("Origin configuration must be root private");
   const config = await Bun.file(configPath).json();
+  const codeSha256 = digest(await Bun.file(import.meta.path).bytes());
   if (
     config.hostname !== "127.0.0.1" ||
     config.port !== 9077 ||
@@ -119,6 +135,19 @@ export async function startCdnOrigin(configPath: string) {
     hostname: config.hostname,
     port: config.port,
     async fetch(request) {
+      if (
+        new URL(request.url).pathname === "/.well-known/shenron-cdn-origin.json" &&
+        ["GET", "HEAD"].includes(request.method)
+      ) {
+        const body = JSON.stringify(originAttestation(config, codeSha256));
+        return new Response(request.method === "HEAD" ? null : body, {
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "no-store",
+            "Access-Control-Allow-Origin": "*",
+          },
+        });
+      }
       return handleCdn(
         request,
         {

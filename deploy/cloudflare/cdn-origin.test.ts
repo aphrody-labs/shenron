@@ -4,9 +4,27 @@ import {
   assertFreshOriginProfile,
   assertOriginInventoryPin,
   originObjectKeyAllowed,
+  originAttestation,
   originRootPrivate,
   storedOriginObject,
 } from "./cdn-origin";
+
+test("origin attestation exposes pins without local paths or credentials", () => {
+  const value = originAttestation(
+    { manifestPrefix: "_migration/manifests/site-fixture/", inventorySha256: "a".repeat(64) },
+    "b".repeat(64),
+  );
+  expect(value.backend).toBe("native-manifest-origin");
+  expect(value.serviceVersion).toBe("shenron-cdn-origin/v1");
+  expect(value.codeSha256).toBe("b".repeat(64));
+  expect(Object.keys(value).sort()).toEqual([
+    "backend",
+    "codeSha256",
+    "inventorySha256",
+    "manifestPrefix",
+    "serviceVersion",
+  ]);
+});
 
 test("origin private configuration requires the root owner and private mode", () => {
   expect(originRootPrivate({ mode: 0o600, uid: 0 })).toBe(true);
