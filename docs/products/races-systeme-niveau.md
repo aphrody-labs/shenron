@@ -1,7 +1,8 @@
 # Races & système de niveau — référence factuelle Xenoverse 2
 
 > **Source** : données extraites du jeu **Dragon Ball Xenoverse 2** (Steam 454650,
-> v1.25.02.0) via le toolkit `dbxv2`. Tous les chiffres et libellés ci-dessous sont
+> v1.25.02.0). Les outils d'analyse et de formats sont désormais détenus par `shenron-re`.
+> Tous les chiffres et libellés ci-dessous sont
 > tirés des fichiers du jeu (cités en §6), pas d'estimations. Les descriptions de races
 > sont le **verbatim français** de l'écran de création de personnage
 > (`data1/data/msg/tribeselect_text_fr.msg`).
@@ -81,7 +82,7 @@ Libellés exacts (`data1/data/msg/customize_status_text_fr.msg`, idx 129-133 + k
 | STR        | **Super frappes**    | « Augmenter la puissance des attaques spéciales, ultimes et compétences d'évolution. » |
 | BLA        | **Super Kikohas**    | « Augmenter la puissance des super attaques de Ki. »                                   |
 
-> Le diagramme radar du menu d'état affiche ces 6 axes (cf. `docs/reference/DESIGN.md` du toolkit dbxv2).
+> Le diagramme radar du menu d'état affiche ces 6 axes ; les outils binaires et formats sont détenus par `shenron-re`.
 > 49 descriptions de **tendances de stats** (QQ Bang / équipement) existent dans le même
 > fichier (idx 211-259) — ex. _« Endurance élevée. Privilégie la puissance des attaques
 > normales, réduit les autres capacités. »_

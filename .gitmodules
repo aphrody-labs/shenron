@@ -1,12 +1,3 @@
-[submodule "dbxv2"]
-	path = vendor/dbxv2
-	url = https://github.com/aphrody-labs/dbxv2.git
-[submodule "vendor/codex"]
-	path = vendor/codex
-	url = https://github.com/openai/codex.git
-[submodule "vendor/hls.js"]
-	path = vendor/hls.js
-	url = https://github.com/aphrody-labs/hls.js.git
 [submodule "packages/config"]
 	path = packages/config
 	url = https://github.com/aphrody-labs/shenron-config.git

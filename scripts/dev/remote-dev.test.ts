@@ -33,7 +33,6 @@ describe("regenerablePaths", () => {
       "apps/site/src",
       "packages/ui/node_modules/x",
       "data/home/memory",
-      "vendor/codex/node_modules",
     ]);
     expect(
       regenerablePaths(root).map((p) => p.slice(root.length + 1).replaceAll(sep, "/")),

@@ -4,7 +4,7 @@
 
 ## Portée et entrées vérifiées
 
-Audit local en lecture seule du dépôt `aphrody-code/dbxv2`, sous-module initialisé à
+Audit local en lecture seule du dépôt `aphrody-code/dbxv2`, initialisé historiquement à
 `fabc19c0021e3e992786dc2a093a749c8a1c26f0`, comparé au code versionné de `shenron-re`
 et `@aphrody/shenron-pipeline`. La licence du projet source est `Proprietary`. Son README
 annonce 21 sous-commandes; son `pyproject.toml` déclare Python >=3.14. Le dépôt source
@@ -12,7 +12,7 @@ exclut explicitement `output/`, `.venv/`, `tools/` et les assets extraits de Git
 interdit de redistribuer les assets du jeu. Cet audit ne lit aucun fichier d'installation
 Steam, aucune sauvegarde, aucun jeton/identifiant, aucun dump mémoire et aucun asset.
 
-## État des commandes source
+## État des commandes source — relevé historique
 
 | Commande dbxv2 | État Shenron Rust/Bun constaté                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -38,8 +38,11 @@ Steam, aucune sauvegarde, aucun jeton/identifiant, aucun dump mémoire et aucun 
 | `setup`        | Absent : aucune installation/téléchargement d'outil tiers déclenché.                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `all`          | Absent : aucune orchestration globale ou extraction déclenchée.                                                                                                                                                                                                                                                                                                                                                                                                              |
 
-`shenron-re` fournit aujourd'hui des décodeurs CPK/CRILAYLA et des parseurs de formats
-Dimps listés plus haut, un scanner de manifests Steam explicitement fourni en entrée,
+Le dépôt source propriétaire n'est plus un sous-module ni une dépendance de Shenron.
+Les capacités entretenues appartiennent à `crates/shenron-re`; elles sont réimplémentées
+selon les formats documentés, sans copier de code propriétaire. `shenron-re` fournit des
+décodeurs CPK/CRILAYLA, des parseurs Dimps (BAC, BDM, CMS, CUS, EMB, EMD, EMM, ESK, MSG,
+moveset, PUP et SAV), un scanner de manifests Steam explicitement fourni en entrée,
 un catalogue et des bindings WASM. Le scan Steam ne lit que les manifests d'installation;
 il ne produit aucun flux d'événements temps réel et n'accède pas aux identifiants Steam.
 Le nouveau binaire `shenron-re map` sérialise la carte originale avec provenance;

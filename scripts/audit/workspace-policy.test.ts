@@ -101,9 +101,7 @@ test("external capabilities use exact registry pins and local links remain confi
   expect(pinnedAphrodyDependency("@aphrody/http", "^0.1.1", local)).toBe(false);
   expect(pinnedAphrodyDependency("@aphrody/http", "0.1.1", local)).toBe(true);
   expect(pinnedAphrodyDependency("@aphrody/http", "file:../aphrody", local)).toBe(false);
-  expect(pinnedAphrodyDependency("@aphrody/hls.js", "file:vendor/hls.js", local)).toBe(false);
   expect(pinnedAphrodyDependency("@aphrody/bun-video", "1.4.4-video.1", local)).toBe(true);
-  expect(pinnedAphrodyDependency("@aphrody/hls.js", "file:other/hls.js", local)).toBe(false);
 });
 
 test("the reviewed Bun Video npm archive requires its exact CDN identity, source and integrity", async () => {

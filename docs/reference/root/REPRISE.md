@@ -119,7 +119,8 @@ de la fiche épisode/source puis fabrique scellée, sans inventer la lecture fou
 
 ## Contrôle courant du 11 octobre 2026 à 16:08 UTC
 
-Lecteur HLS livré par3cd7e7f7, image scellée7483424f333b2e49421c326dc9c417275a65b3d93f60fb12a26f7c0b7fcf22ed,
+Historique du lecteur HLS avant migration vers `@aphrody/bun-video` : livré par3cd7e7f7,
+image scellée7483424f333b2e49421c326dc9c417275a65b3d93f60fb12a26f7c0b7fcf22ed,
 archive01b268810ac73455d44f4703fec63a2b42d49221ffae5db53978a3468482fa42,
 payload50d2ea50902cd9b9 et BUILD_IDifxzM_OA0JR-Ybu2lU__L. Activation et rollback
 docker-70taouw0 vérifiés. Linux3890tests+74ignorés préexistants, zéro échec ; scripts129tests.

@@ -1,7 +1,8 @@
 # Données Dragon Ball Xenoverse 2
 
-Assets et données extraits du jeu **Dragon Ball Xenoverse 2** (v1.25.02, FR) via le
-toolkit `dbxv2`, pour enrichir le wiki/économie de Shenron.
+Assets et données extraits du jeu **Dragon Ball Xenoverse 2** (v1.25.02, FR), utilisés
+par le wiki et l'économie de Shenron. Les parsers et outils détenus par Shenron vivent
+dans `crates/shenron-re` ; le dépôt propriétaire `dbxv2` n'est pas requis pour les builds.
 
 ## Contenu
 
@@ -44,7 +45,7 @@ Tous additifs/idempotents (dédup par nom canonique ; purge des lignes XV2 avant
 
 ## Régénérer depuis le jeu
 
-Côté toolkit `dbxv2` (jeu possédé légalement) :
+Côté outils d'extraction conservés hors de Shenron (jeu possédé légalement) :
 
 - `_bridge_portraits.py` → ré-extrait les portraits + manifest depuis `CHARA01.emb.unpacked`.
 - `_xv2_catalog.py` → ré-extrait `xv2-catalog.json` (parser `.msg` maison : clés + valeurs FR).

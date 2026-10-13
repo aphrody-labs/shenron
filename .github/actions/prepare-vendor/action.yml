@@ -1,8 +1,0 @@
-# SPDX-License-Identifier: Apache-2.0
-name: Prepare pinned HLS vendor
-description: Initializes only the owned HLS gitlink and verifies its committed distribution.
-runs:
-  using: composite
-  steps:
-    - shell: bash
-      run: bun scripts/build/prepare-vendor.ts --init

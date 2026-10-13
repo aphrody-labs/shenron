@@ -132,14 +132,10 @@ Graphe de code : Graphify (`uv tool install graphifyy`, skill `/graphify`) index
 
 ## Outils
 
-HLS : `vendor/hls.js` est le sous-module contrôlé `aphrody-labs/hls.js`, identité npm
-`@aphrody/hls.js`. Avant un install figé ou une fabrique, exécuter
-`bun scripts/build/prepare-vendor.ts --init` : uniquement ce gitlink, sans récursion,
-force ni nettoyage d'un arbre modifié. Le build exige une distribution complète commise,
-les types et le worker. Ne pas supprimer les notices Apache-2.0/Dailymotion ; le payload
-et le CDN copient seulement worker et notices explicitement autorisés. Les capacités
-réutilisables vivent dans le SDK vidéo du fork Bun ; Shenron possède contrôles, i18n et
-reprise. Tester le worker réellement actif et les changements de source. La demande
+HLS : le propriétaire est `@aphrody/bun-video` (`@aphrody/bun-video/hls`), consommé par Shenron ;
+aucun sous-module ni copie de hls.js dans ce dépôt. Le build ne publie que le worker same-origin
+et les notices Apache-2.0/Dailymotion explicitement exposés par ce paquet. Shenron possède
+contrôles, i18n et reprise. Tester le worker réellement actif et les changements de source. La demande
 propriétaire courante interdit les nouveaux contrôles de lecture sur média synthétique :
 qualifier un média réel autorisé, sans extraire de flux protégé ni contourner DRM.
 Les preuves historiques restent datées. Un build Bun plus récent ne prouve pas une accélération vidéo.

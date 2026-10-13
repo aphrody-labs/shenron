@@ -7,37 +7,17 @@ chantier demandé par le propriétaire : UI desktop, passerelle, chat CLI, MCP,
 serveur HTTP, mémoire et compactage. L'ajout de l'amont ne prouve pas leur
 compatibilité ni leur activation en production.
 
-## Amont officiel épinglé
+## Sources de contrat et propriétaires
 
-[`vendor/codex`](../../vendor/codex) est un sous-module de
-[`openai/codex`](https://github.com/openai/codex), épinglé au commit
-[`1199b3976277424fbc5035b55ca11ce69c860a69`](https://github.com/openai/codex/commit/1199b3976277424fbc5035b55ca11ce69c860a69).
-Ce commit de `main`, daté du 2026-10-07, porte le titre « Wait for helper completion
-in HTTP header cancellation tests (#51689) ». Le gitlink du dépôt Shenron fait
-autorité ; aucun suivi flottant de branche n'est configuré dans `.gitmodules`.
-Le sous-module DBXV2 préexistant garde son origine et son épingle.
-
-Les [licence Apache-2.0](../../vendor/codex/LICENSE) et
-[notices](../../vendor/codex/NOTICE) amont sont conservées intégralement. Codex
-reste un workspace indépendant : il n'est pas ajouté aux membres Cargo ou Bun
-de Shenron. Ses sources servent de référence de protocole et de qualification ;
-une intégration produit réutilise d'abord les capacités Aphrody.
-
-Pour matérialiser les sources d'un clone Shenron :
-
-```sh
-git submodule update --init --depth 1 -- vendor/codex
-git -C vendor/codex rev-parse HEAD
-git -C vendor/codex status --short
-```
-
-Les références locales stables sont les
-[types app-server générés](../../vendor/codex/codex-rs/app-server-protocol/schema/typescript),
-les [sources du protocole](../../vendor/codex/codex-rs/app-server-protocol/src/protocol),
-le [client HTTP Responses](../../vendor/codex/codex-rs/codex-api/src/endpoint/responses.rs)
-et les [requêtes Responses](../../vendor/codex/codex-rs/codex-api/src/requests/responses.rs).
-Une mise à jour exige une nouvelle épingle, une revue des licences et des
-schémas, puis les vérifications de compatibilité décrites ci-dessous.
+Shenron ne vendore ni ne construit le dépôt `openai/codex`. Les contrats
+Responses et app-server sont vérifiés contre la documentation officielle
+[Responses](https://developers.openai.com/api/reference/resources/responses)
+et [Codex app-server](https://developers.openai.com/codex/app-server), puis
+implémentés dans leurs propriétaires Aphrody (`aphrody-model-client`,
+`aphrody-gateway` et `aphrody-app-server`). Shenron consomme ces capacités et
+garde ses adaptations de domaine dans ses propres paquets; il ne copie ni les
+sources ni les types générés de Codex. Les validations restent versionnées dans
+la matrice ci-dessous et n'impliquent pas une activation en production.
 
 ## Trois contrats distincts
 
@@ -63,7 +43,7 @@ portes de leur propriétaire avant intégration.
 | Client OpenAI         | `crates/ai/model-client` : `aphrody-model-client`             | `OpenAiCompatClient`, `ProviderRuntime`, `OpenAiWire::Responses`, constructeurs et parseurs Responses existent. Vérifier préservation des items et capacités du modèle, pas seulement les deltas texte. |
 | Passerelle HTTP       | `crates/ai/gateway` : `aphrody-gateway`                       | `server::router` expose actuellement `/v1/models` et `/v1/chat/completions` ; `/v1/responses` et `/v1/responses/compact` restent absents de cette table de routes inspectée.                            |
 | Runtime d'agent       | `crates/ai/agent-runtime` : `aphrody-agent-runtime`           | `AgentRuntimeBuilder` possède modèle, historique, reprise, fork et outils ; `ModelChoice::local_responses` existe. Réutiliser la boucle, l'annulation et les appels d'outils.                           |
-| Protocole desktop/CLI | `crates/contracts/app-protocol` : `aphrody-app-protocol`      | Types de requêtes, notifications, items et threads existants ; vérifier par rapport aux types du Codex épinglé.                                                                                         |
+| Protocole desktop/CLI | `crates/contracts/app-protocol` : `aphrody-app-protocol`      | Types de requêtes, notifications, items et threads existants ; vérifier contre les schémas de la documentation officielle.                                                                               |
 | Serveur de sessions   | `crates/ai/app-server` : `aphrody-app-server`                 | `AppServer::with_home`, `handle`, `drain_notifications`, `serve_stdio_with` et les méthodes `thread/*` et `turn/*` existent. Leur présence ne prouve pas la parité du protocole.                        |
 | Historique durable    | `crates/ai/rollout` : `aphrody-rollout`                       | Réutiliser persistance et reprise des sessions ; qualifier la conservation des items natifs et les restaurations après compactage.                                                                      |
 | Home et mémoire       | `crates/ai/agent-home`, `crates/ai/memory`, `crates/ai/store` | Propriétaires `aphrody-agent-home`, `aphrody-memory`, `aphrody-store` : un home isolé par domaine et propriétaire, aucune copie de leurs moteurs dans Shenron.                                          |
@@ -142,9 +122,8 @@ supprimer silencieusement des items Responses qu'elle ne sait pas représenter.
   automatique et fenêtre canonique du endpoint autonome.
 - [Référence Responses](https://developers.openai.com/api/reference/resources/responses/methods/create)
   et [compact](https://developers.openai.com/api/reference/resources/responses/methods/compact).
-- [Documentation et notices Codex épinglées](../../vendor/codex/README.md).
+- [Dépôt officiel Codex](https://github.com/openai/codex) : référence amont, non vendored.
 
-Les documents web peuvent évoluer après cette inspection. Les références
-locales correspondent exactement au gitlink livré ; toute divergence exige
-une nouvelle qualification, sans transformer une intention ou un test
+Les documents web peuvent évoluer après cette inspection. Toute divergence
+exige une nouvelle qualification, sans transformer une intention ou un test
 synthétique en preuve d'activation.

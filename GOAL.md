@@ -19,12 +19,12 @@ l’historique sont dans [REPRISE.md](docs/reference/root/REPRISE.md) ; les inva
    budgets et couverture explicitement qualifiés.
 2. Livrer les lecteurs manga, databooks et vidéo avec tests navigateur réels ; distinguer
    chargement, disponibilité et lecture effective.
-3. Conserver le pipeline HLS dans `vendor/hls.js` et les capacités réutilisables dans Bun ;
-   respecter les licences, DRM et droits des fournisseurs.
+3. Consommer HLS depuis `@aphrody/bun-video`, sans vendoring local ; respecter les licences,
+   DRM et droits des fournisseurs.
 4. Maintenir les catalogues par writers transactionnels, snapshots JSON validés, sauvegarde,
    relecture et réplica ; aucune écriture implicite dans RAG, Redis ou PostgreSQL.
 5. Garder le monorepo modulaire : paquets `@aphrody/shenron-*`, apps privées, crates Rust
-   avec leurs noms publics, sous-modules et notices.
+   avec leurs noms publics et notices.
 6. Construire sur VPS, sceller l’artefact, activer via Aphrody Infra sur DBFR, puis vérifier
    les sondes publiques, CDN, MCP et lecteurs réellement servis.
 

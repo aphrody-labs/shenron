@@ -20,7 +20,6 @@ Les interfaces proposent le français, l'anglais et le japonais.
 | `crates/koharu-*`                                                   | Moteur de traduction manga ; Koharu reste un nom de code interne.                            |
 | `plugin/`                                                           | Compétences et manifestes Claude Code, Antigravity, Codex et ChatGPT.                        |
 | `deploy/cloudflare`                                                 | Worker CDN R2 et outils de transfert/qualification.                                          |
-| `vendor/hls.js`                                                     | Gitlink du fork Apache-2.0 `aphrody-labs/hls.js`, publié sous `@aphrody/hls.js`.             |
 
 Les paquets JavaScript du produit utilisent `@aphrody/shenron-*`. PostgreSQL
 est la source éditoriale ; SQLite est le réplica du bot. Les écritures passent
@@ -42,7 +41,6 @@ Le runtime est Bun 1.4.4 d'Aphrody ; Rust est épinglé dans `rust-toolchain.tom
 (actuellement 1.98.1), TypeScript local dans les dépendances (7.0.2).
 
 ```sh
-bun scripts/build/prepare-vendor.ts --init
 bun install --frozen-lockfile
 bun run typecheck
 bun run test
@@ -54,9 +52,8 @@ bun run test:rust
 ```
 
 Le lecteur vidéo sépare les contrôles React, la reprise propre à chaque source et
-l'adaptateur HLS réutilisable du SDK Bun. Le sous-module fournit sa distribution
-complète et son worker ; les builds contrôlent le gitlink et conservent la licence
-de Dailymotion dans les assets publics. Qualité et pistes viennent des médias réels.
+l'adaptateur HLS fourni par `@aphrody/bun-video`. Le build utilise les assets same-origin
+et notices explicitement exposés par ce propriétaire. Qualité et pistes viennent des médias réels.
 Les fonctions DRM requièrent une configuration autorisée du fournisseur.
 
 Les commandes natives du fork sont accessibles par `bun run check:native`,

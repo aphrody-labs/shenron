@@ -64,31 +64,6 @@ export async function run(): Promise<void> {
           : await lookup(registryUrl("npm", manifest.name, manifest.version)),
     });
   }
-  const hlsPath = "vendor/hls.js";
-  const hlsManifest = Bun.file(join(root, hlsPath, "package.json"));
-  if (await hlsManifest.exists()) {
-    const bytes = await hlsManifest.text();
-    const manifest = JSON.parse(bytes) as { name: string; version: string; private?: boolean };
-    if (manifest.name !== "@aphrody/hls.js") throw new Error("Unexpected HLS vendor identity");
-    const head = Bun.spawnSync(["git", "-C", hlsPath, "rev-parse", "HEAD"], { cwd: root });
-    const tree = Bun.spawnSync(["git", "ls-tree", "HEAD", "--", hlsPath], { cwd: root });
-    const gitlink = /^160000 commit ([a-f0-9]{40})\tvendor\/hls\.js$/.exec(
-      tree.stdout.toString().trim(),
-    );
-    vendors.push({
-      path: `${hlsPath}/package.json`,
-      name: manifest.name,
-      version: manifest.version,
-      sourceSha256: new Bun.CryptoHasher("sha256").update(bytes).digest("hex"),
-      commit: head.exitCode === 0 ? head.stdout.toString().trim() : null,
-      gitlink: gitlink?.[1] ?? null,
-      private: manifest.private === true,
-      registry:
-        manifest.private === true
-          ? { state: "private" }
-          : await lookup(registryUrl("npm", manifest.name, manifest.version)),
-    });
-  }
   const rootManifest = (await Bun.file(join(root, "package.json")).json()) as {
     workspaces?: { catalog?: Record<string, string> };
   };
@@ -100,6 +75,15 @@ export async function run(): Promise<void> {
       version: sdkVersion,
       source: "package.json#workspaces.catalog",
       registry: await lookup(registryUrl("npm", sdkName, sdkVersion)),
+    });
+  const videoPackage = "@aphrody/bun-video";
+  const videoVersion = rootManifest.workspaces?.catalog?.[videoPackage];
+  if (videoVersion && /^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$/.test(videoVersion))
+    integrations.push({
+      name: videoPackage,
+      version: videoVersion,
+      source: "package.json#workspaces.catalog",
+      registry: await lookup(registryUrl("npm", videoPackage, videoVersion)),
     });
   for (const folder of (await readdir(join(root, "crates"))).toSorted()) {
     const file = Bun.file(join(root, "crates", folder, "Cargo.toml"));

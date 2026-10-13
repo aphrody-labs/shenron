@@ -88,8 +88,8 @@ La cartographie native `aphrody-graph` unifie les quatre couches de la plateform
                                        │ Protocole App-Server (JSON-RPC 2.0)
                                        │ + Responses API (/v1/responses)
 ┌──────────────────────────────────────▼──────────────────────────────────────┐
-│                    2. COLONNE VERTÉBRALE NATIVE (CODEX)                     │
-│  Types [vendor/codex/app-server-protocol] · Cycles thread/turn · Compaction │
+│                     2. CONTRATS D'AGENT (OWNER APHRODY)                     │
+│  Contrats app-server · Cycles thread/turn · Compaction (owner Aphrody)      │
 └──────────────────────────────────────┬──────────────────────────────────────┘
                                        │ SAC (Stdio Async Channel) + bun:ffi (ABI 5)
 ┌──────────────────────────────────────▼──────────────────────────────────────┐

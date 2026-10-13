@@ -8,7 +8,8 @@ import { dbTechniques } from "~/db/schema";
 /**
  * Seed du catalogue de compétences Dragon Ball Xenoverse 2 dans db_techniques.
  *
- * Source : `assets/dbz/xv2-catalog.json` (noms FR extraits du jeu via dbxv2,
+ * Source : `assets/dbz/xv2-catalog.json` (noms FR extraits du jeu et catalogués par
+ * les outils RE Shenron,
  * fichiers `proper_noun_skill_*_name_fr.msg`). 4 catégories XV2 :
  *   super (compétences spéciales), ultimate (ultimes), awoken (transformations),
  *   evasive (esquives).

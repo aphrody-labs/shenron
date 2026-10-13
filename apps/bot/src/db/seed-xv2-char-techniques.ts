@@ -10,7 +10,8 @@ import { dbCharacterTechniques, dbCharacters, dbTechniques } from "~/db/schema";
  *
  * Source : `assets/dbz/xv2-skillsets.json` (code XV2 → loadout super/ultimate/
  * evasive/awoken), décodé depuis `system/custom_skill.cus` + `char_model_spec.cms`
- * côté dbxv2 (chaîne CMS→CUS→.msg validée : Goku ressort avec Kamehameha, Genkidama…).
+ * via les outils RE Shenron (chaîne CMS→CUS→.msg validée : Goku ressort avec
+ * Kamehameha, Genkidama…).
  *
  * Apparie le code au personnage shenron (via le catalogue + nom canonique) et
  * chaque nom de compétence à une ligne db_techniques. Idempotent : purge d'abord
