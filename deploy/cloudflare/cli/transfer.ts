@@ -89,8 +89,10 @@ export interface StagedAttestation {
   objectBytesUploaded: 0;
 }
 async function stagedBytes(response: Response, entry: Pick<Entry, "sha256" | "size">) {
-  if (response.status !== 200 || !response.body)
+  if (response.status !== 200 || !response.body) {
+    await response.body?.cancel();
     throw new Error("Staged GET HTTP " + response.status);
+  }
   const reader = response.body.getReader(),
     hash = new Bun.CryptoHasher("sha256");
   let size = 0;
@@ -136,7 +138,7 @@ export async function attestStagedObject(
     target.pathname !== "/" + bucket + "/" + key ||
     !/^[a-f0-9]{64}$/.test(entry.sha256) ||
     !Number.isSafeInteger(entry.size) ||
-    entry.size < 0 ||
+    entry.size <= 0 ||
     !Number.isSafeInteger(budget.maxBytes) ||
     budget.maxBytes < 1 ||
     budget.maxBytes > 128 * 1024 * 1024 ||
@@ -175,8 +177,10 @@ export async function attestStagedObject(
     before.headers.get("content-length") !== String(entry.size) ||
     !etag ||
     !/^"[a-zA-Z0-9-]+"$/.test(etag)
-  )
+  ) {
+    await before.body?.cancel();
     throw new Error("Staged HEAD differs");
+  }
   await stagedBytes(await request("GET", { "If-Match": etag }), entry);
   const metadataUpdated =
     before.headers.get("x-amz-meta-sha256") !== entry.sha256 ||
@@ -192,8 +196,10 @@ export async function attestStagedObject(
       "Content-Type": entry.contentType,
       "Cache-Control": cacheControl,
     });
-    if (copied.status !== 200 || !copied.body)
+    if (copied.status !== 200 || !copied.body) {
+      await copied.body?.cancel();
       throw new Error("Staged CopyObject HTTP " + copied.status);
+    }
     const reader = copied.body.getReader();
     let size = 0;
     const chunks: Uint8Array[] = [];
@@ -225,8 +231,10 @@ export async function attestStagedObject(
     after.headers.get("cache-control") !== cacheControl ||
     !afterEtag ||
     !/^"[a-zA-Z0-9-]+"$/.test(afterEtag)
-  )
+  ) {
+    await after.body?.cancel();
     throw new Error("Staged metadata readback differs");
+  }
   await stagedBytes(await request("GET", { "If-Match": afterEtag }), entry);
   return {
     key,

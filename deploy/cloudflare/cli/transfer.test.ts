@@ -207,6 +207,31 @@ test("caller mutation cannot alter pinned CAS identity or budgets in flight", as
   expect(result.sha256).toBe(originalSha);
   expect(result.budget).toEqual({ maxBytes: 33 * 1024 * 1024, timeoutMs: 120000 });
 });
+test("staged GET failure cancels its response body and zero-byte identities are refused", async () => {
+  const f = stagedFixture();
+  let cancelled = false;
+  const signed = {
+    async fetch(url: string, init: RequestInit) {
+      if (init.method === "GET")
+        return new Response(
+          new ReadableStream({
+            cancel() {
+              cancelled = true;
+            },
+          }),
+          { status: 403 },
+        );
+      return f.signed.fetch(url, init);
+    },
+  };
+  await expect(attestStagedObject(signed, f.url, f.entry)).rejects.toThrow("Staged GET HTTP 403");
+  expect(cancelled).toBe(true);
+  const empty = stagedFixture();
+  await expect(
+    attestStagedObject(empty.signed, empty.url, { ...empty.entry, size: 0 }),
+  ).rejects.toThrow();
+  expect(empty.calls).toEqual([]);
+});
 const entry = {
   path: "/assets/a.png",
   sha256: "a".repeat(64),
