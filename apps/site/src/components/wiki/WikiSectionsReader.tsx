@@ -192,13 +192,13 @@ export function WikiSectionsReader({
   // Rangée de pastilles : mobile toujours, desktop seulement sans colonne latérale.
   const rangee = avecSommaire && (
     <div
-      className={`sticky ${STICKY_TOP} z-20 -mx-[var(--shell-pad,1.25rem)] border-b border-os/12 bg-dbz-bg ${
+      className={`sticky ${STICKY_TOP} z-20 -mx-[var(--wiki-shell-pad,var(--shell-pad,1.25rem))] border-b border-os/12 bg-dbz-bg ${
         aside ? "lg:hidden" : ""
       }`}
     >
       <nav
         aria-label={titreSommaire}
-        className="flex snap-x gap-2 overflow-x-auto px-[var(--shell-pad,1.25rem)] py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex snap-x gap-2 overflow-x-auto px-[var(--wiki-shell-pad,var(--shell-pad,1.25rem))] py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <Pastille active={active === "all"} onClick={() => selectTop("all")}>
           {tout}
@@ -217,7 +217,7 @@ export function WikiSectionsReader({
       {activeGroup && activeChildren.length > 0 && (
         <nav
           aria-label={`${titreSommaire} — ${activeGroup}`}
-          className="flex snap-x gap-2 overflow-x-auto border-t border-os/[0.08] px-[var(--shell-pad,1.25rem)] py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x gap-2 overflow-x-auto border-t border-os/[0.08] px-[var(--wiki-shell-pad,var(--shell-pad,1.25rem))] py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           <Pastille active={subActive === "all"} onClick={() => selectSub("all")}>
             {tout}

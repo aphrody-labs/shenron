@@ -240,7 +240,12 @@ export function MangaVolumeGrid({
       else url.searchParams.set(key!, value!);
     }
     writeAvailability(url, chosen.availability);
-    window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+    const destination = `${url.pathname}${url.search}${url.hash}`;
+    const currentAddress = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    if (destination === currentAddress) return;
+    // Discrete navigation stays reversible; typing does not create an entry per keystroke.
+    if ("query" in next) window.history.replaceState(null, "", destination);
+    else window.history.pushState(null, "", destination);
   };
   const pagination = (
     <nav aria-label={ui("pagination")} className="flex flex-wrap items-center gap-2">
