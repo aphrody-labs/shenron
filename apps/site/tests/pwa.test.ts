@@ -113,11 +113,28 @@ describe("PWA delivery and offline behavior", () => {
   it("renders an offline document without Next chunks, CDN or images", () => {
     for (const lang of ["fr", "en", "ja"] as const) {
       const html = offlineDocument(lang);
-      expect(html).toContain(`<html lang="${lang}">`);
+      expect(html).toContain(`<html lang="${lang}" data-episode-theme="beerus">`);
       expect(html).not.toContain("_next");
       expect(html).not.toContain("https://");
       expect(html).toContain('onclick="location.reload()"');
     }
+  });
+  it("uses the chosen palette for the installed identity and offline document", async () => {
+    const value = await manifest(
+      new Request("https://dragonballfr.com/manifest.webmanifest?lang=fr&theme=goku"),
+    ).json();
+    expect(value.background_color).toBe("#fdfae3");
+    expect(value.theme_color).toBe("#fdfae3");
+    expect(offlineDocument("fr", "goku")).toContain("#1c1c0e");
+    const h = harness(async () => {
+      throw new TypeError("Offline");
+    });
+    await h.dispatch("install", {});
+    await h.dispatch("message", { data: { type: "DBFR_LOCALE", locale: "fr", theme: "goku" } });
+    await h.dispatch("message", { data: { type: "DBFR_LOCALE", locale: "en" } });
+    const response = await h.dispatch("fetch", { request: h.request("/wiki", "navigate") });
+    expect(response!.headers.get("X-DBFR-Theme")).toBe("goku");
+    expect(await response!.text()).toContain('<html lang="en" data-episode-theme="goku">');
   });
   it("provides a translated navigation fallback after a network outage", async () => {
     const h = harness(async () => {
@@ -125,12 +142,12 @@ describe("PWA delivery and offline behavior", () => {
     });
     await h.dispatch("install", {});
     await h.dispatch("activate", {});
-    await h.dispatch("message", { data: { type: "DBFR_LOCALE", locale: "ja" } });
+    await h.dispatch("message", { data: { type: "DBFR_LOCALE", locale: "ja", theme: "goku" } });
     const response = await h.dispatch("fetch", {
       request: h.request("/wiki/episodes/875", "navigate"),
     });
     expect(response!.status).toBe(200);
-    expect(await response!.text()).toContain('<html lang="ja">');
+    expect(await response!.text()).toContain('<html lang="ja" data-episode-theme="goku">');
     expect([...h.stores.values()][0]!.size).toBe(1);
   });
   it("does not intercept private, API, video, ranged, RSC or third party requests", async () => {
@@ -183,12 +200,12 @@ describe("PWA delivery and offline behavior", () => {
     expect(await (await h.dispatch("fetch", { request }))!.text()).toBe("icon-1");
     revision = 2;
     expect(await (await h.dispatch("fetch", { request }))!.text()).toBe("icon-2");
-    await h.dispatch("message", { data: { type: "DBFR_LOCALE", locale: "ja" } });
+    await h.dispatch("message", { data: { type: "DBFR_LOCALE", locale: "ja", theme: "goku" } });
     await h.dispatch("install", {});
     await h.dispatch("activate", {});
     const cache = [...h.stores.values()][0]!;
     expect(await cache.get("https://dragonballfr.com/__dbfr_offline__")!.text()).toContain(
-      '<html lang="ja">',
+      '<html lang="ja" data-episode-theme="goku">',
     );
   });
 });

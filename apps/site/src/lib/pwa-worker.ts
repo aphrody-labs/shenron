@@ -4,9 +4,15 @@ import { offlineDocument, type PwaLocale } from "./pwa";
 export function serviceWorkerSource(locale: PwaLocale, staticOrigin: string): string {
   const config = JSON.stringify({
     locale,
+    theme: "beerus",
     staticOrigin,
     offline: offlineDocument(locale),
-    documents: { fr: offlineDocument("fr"), en: offlineDocument("en"), ja: offlineDocument("ja") },
+    documents: Object.fromEntries(
+      (["fr", "en", "ja"] as const).map((lang) => [
+        lang,
+        { beerus: offlineDocument(lang, "beerus"), goku: offlineDocument(lang, "goku") },
+      ]),
+    ),
   });
   return String.raw`"use strict";
 const config = ${config};
@@ -14,7 +20,8 @@ const prefix = "dbfr-pwa-";
 const cacheName = prefix + "v1";
 const offlineUrl = new URL("/__dbfr_offline__", self.location.origin).href;
 const icons = new Set(["/icon-192.png", "/icon-512.png", "/icon-maskable-512.png", "/apple-touch-icon.png"]);
-const fallback = (locale = config.locale) => new Response(config.documents[locale] || config.offline, {headers: {"Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store", "X-DBFR-Locale": locale}});
+const fallback = (locale = config.locale, theme = config.theme) => new Response(config.documents[locale]?.[theme] || config.offline, {headers: {"Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store", "X-DBFR-Locale": locale, "X-DBFR-Theme": theme}});
+let documentUpdate = Promise.resolve();
 self.addEventListener("install", event => {
   event.waitUntil((async () => {
     const cache = await caches.open(cacheName);
@@ -28,14 +35,21 @@ self.addEventListener("activate", event => {
     const cache = await caches.open(cacheName);
     const previous = await cache.match(offlineUrl);
     const locale = previous?.headers.get("X-DBFR-Locale");
-    await cache.put(offlineUrl, fallback(Object.hasOwn(config.documents, locale) ? locale : config.locale));
+    const theme = previous?.headers.get("X-DBFR-Theme");
+    await cache.put(offlineUrl, fallback(Object.hasOwn(config.documents, locale) ? locale : config.locale, theme === "goku" ? "goku" : "beerus"));
     await self.clients.claim();
   })());
 });
 self.addEventListener("message", event => {
   if (event.data?.type === "DBFR_ACTIVATE_UPDATE") self.skipWaiting();
   if (event.data?.type === "DBFR_LOCALE" && Object.hasOwn(config.documents, event.data.locale)) {
-    event.waitUntil(caches.open(cacheName).then(cache => cache.put(offlineUrl, fallback(event.data.locale))));
+    documentUpdate = documentUpdate.catch(() => {}).then(async () => {
+      const cache = await caches.open(cacheName);
+      const previous = await cache.match(offlineUrl);
+      const theme = event.data.theme === "goku" || event.data.theme === "beerus" ? event.data.theme : previous?.headers.get("X-DBFR-Theme") || "beerus";
+      await cache.put(offlineUrl, fallback(event.data.locale, theme));
+    });
+    event.waitUntil(documentUpdate);
   }
 });
 self.addEventListener("fetch", event => {
@@ -59,7 +73,7 @@ self.addEventListener("fetch", event => {
     catch (error) { if (saved) return saved; throw error; }
     if (icon && !response.ok && saved) return saved;
     const control = response.headers.get("cache-control") || "";
-    if (response.ok && !response.redirected && response.type !== "opaque" && !/private|no-store/i.test(control) && !/cookie|authorization/i.test(response.headers.get("vary") || "")) {
+    if (response.ok && !response.redirected && response.type !== "opaque" && (icon || /immutable/i.test(control)) && !/private|no-store/i.test(control) && !/cookie|authorization/i.test(response.headers.get("vary") || "")) {
       event.waitUntil((async () => {
         const copy = response.clone();
         if ((await copy.clone().arrayBuffer()).byteLength > 2097152) return;

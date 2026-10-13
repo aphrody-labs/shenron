@@ -1,9 +1,12 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { useLangue } from "@/lib/i18n/client";
 import { pwaText } from "@/lib/pwa";
 import { isTauri } from "@aphrody/shenron-ui/studio/tauri-bridge";
+import { InstallDesktopIcon } from "@aphrody/shenron-ui/material-symbols";
+import { Rafraichir } from "@aphrody/shenron-ui/icones";
+import { resolveEpisodeTheme } from "@/lib/episode-theme";
 
 interface InstallEvent extends Event {
   prompt(): Promise<void>;
@@ -14,12 +17,22 @@ interface PwaState {
   waiting: ServiceWorker | null;
   offline: boolean;
   ios: boolean;
+  installed: boolean;
 }
-const PwaContext = createContext<PwaState>({
+interface PwaContextValue extends PwaState {
+  busy: boolean;
+  error: boolean;
+  requestInstall(): Promise<void>;
+}
+const PwaContext = createContext<PwaContextValue>({
   install: null,
   waiting: null,
   offline: false,
   ios: false,
+  installed: false,
+  busy: false,
+  error: false,
+  async requestInstall() {},
 });
 
 export function PwaProvider({ children }: { children: ReactNode }) {
@@ -29,9 +42,38 @@ export function PwaProvider({ children }: { children: ReactNode }) {
     waiting: null,
     offline: false,
     ios: false,
+    installed: false,
   });
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(false);
+  const installLock = useRef(false);
+  const requestInstall = async () => {
+    const install = state.install;
+    if (!install || installLock.current) return;
+    installLock.current = true;
+    setBusy(true);
+    setError(false);
+    try {
+      await install.prompt();
+      await install.userChoice;
+    } catch {
+      setError(true);
+    } finally {
+      installLock.current = false;
+      setBusy(false);
+      // A browser install event can be prompted only once across shell surfaces.
+      setState((current) => ({
+        ...current,
+        install: current.install === install ? null : current.install,
+      }));
+    }
+  };
   useEffect(() => {
-    if (isTauri() || !window.isSecureContext || !("serviceWorker" in navigator)) return;
+    if (isTauri()) {
+      setState((current) => ({ ...current, installed: true }));
+      return;
+    }
+    if (!window.isSecureContext || !("serviceWorker" in navigator)) return;
     let disposed = false;
     let registration: ServiceWorkerRegistration | undefined;
     let installing: ServiceWorker | null = null;
@@ -63,7 +105,8 @@ export function PwaProvider({ children }: { children: ReactNode }) {
       event.preventDefault();
       location.assign(target.href);
     };
-    const installed = () => setState((current) => ({ ...current, install: null, ios: false }));
+    const installed = () =>
+      setState((current) => ({ ...current, install: null, ios: false, installed: true }));
     const prompt = (event: Event) => {
       event.preventDefault();
       if (!standalone) setState((current) => ({ ...current, install: event as InstallEvent }));
@@ -81,6 +124,7 @@ export function PwaProvider({ children }: { children: ReactNode }) {
     online();
     setState((current) => ({
       ...current,
+      installed: standalone,
       ios:
         !standalone &&
         (/iPhone|iPad|iPod/.test(navigator.userAgent) ||
@@ -100,7 +144,12 @@ export function PwaProvider({ children }: { children: ReactNode }) {
         found();
         void registration.update().catch(() => {});
         void navigator.serviceWorker.ready.then((active) => {
-          if (!disposed) active.active?.postMessage({ type: "DBFR_LOCALE", locale });
+          if (!disposed)
+            active.active?.postMessage({
+              type: "DBFR_LOCALE",
+              locale,
+              theme: resolveEpisodeTheme(document.documentElement.dataset.episodeTheme),
+            });
         });
       })
       .catch(() => {});
@@ -117,48 +166,106 @@ export function PwaProvider({ children }: { children: ReactNode }) {
   }, [locale]);
   useEffect(() => {
     const manifest = document.querySelector<HTMLLinkElement>('link[rel="manifest"]');
-    if (manifest) manifest.href = `/manifest.webmanifest?lang=${locale}`;
+    if (manifest)
+      manifest.href = `/manifest.webmanifest?lang=${locale}&theme=${resolveEpisodeTheme(document.documentElement.dataset.episodeTheme)}`;
   }, [locale]);
-  return <PwaContext.Provider value={state}>{children}</PwaContext.Provider>;
+  return (
+    <PwaContext.Provider value={{ ...state, busy, error, requestInstall }}>
+      {children}
+    </PwaContext.Provider>
+  );
 }
 
-export function PwaControls() {
+export function PwaControls({ variant = "status" }: { variant?: "status" | "icon" }) {
   const { locale } = useLangue();
   const t = pwaText(locale);
-  const { install, waiting, offline, ios } = useContext(PwaContext);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState(false);
-  const [dismissed, setDismissed] = useState<InstallEvent | null>(null);
+  const { install, waiting, offline, ios, busy, error, requestInstall, installed } =
+    useContext(PwaContext);
+  const root = useRef<HTMLDivElement>(null);
+  const instructions = useRef<HTMLDetailsElement>(null);
+  const promptedHere = useRef(false);
+  useEffect(() => {
+    if (!install && promptedHere.current) {
+      promptedHere.current = false;
+      root.current?.querySelector<HTMLElement>("summary")?.focus();
+    }
+  }, [install]);
+  useEffect(() => {
+    const close = (event: PointerEvent) => {
+      if (
+        instructions.current?.open &&
+        event.target instanceof Node &&
+        !instructions.current.contains(event.target)
+      )
+        instructions.current.open = false;
+    };
+    document.addEventListener("pointerdown", close);
+    return () => document.removeEventListener("pointerdown", close);
+  }, []);
   const style =
-    "min-h-11 w-full rounded-xl border border-border px-3 py-2 text-sm font-medium text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
-  if (!install && !waiting && !offline && !ios && !error) return null;
+    "grid h-11 w-11 shrink-0 place-items-center rounded-xl text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60";
   return (
-    <div className="flex min-w-0 flex-col gap-2 px-2 py-2" data-pwa-controls>
-      {offline && <output className="text-sm text-muted-foreground">{t.offline}</output>}
-      {install && dismissed !== install && (
-        <button
-          className={style}
-          disabled={busy}
-          onClick={async () => {
-            setBusy(true);
-            setError(false);
-            try {
-              await install.prompt();
-              await install.userChoice;
-              setDismissed(install);
-            } catch {
-              setError(true);
-            } finally {
-              setBusy(false);
-            }
-          }}
-        >
-          {busy ? t.installing : t.install}
-        </button>
+    <div
+      ref={root}
+      className={
+        variant === "icon"
+          ? "relative flex shrink-0 items-center gap-1"
+          : "flex min-w-0 flex-wrap items-center gap-2 px-2 py-2"
+      }
+      data-pwa-controls
+    >
+      {offline && variant !== "icon" && (
+        <output className="text-sm text-muted-foreground">{t.offline}</output>
       )}
+      {!installed &&
+        (install ? (
+          <button
+            className={style}
+            disabled={busy}
+            type="button"
+            aria-label={busy ? t.installing : t.install}
+            title={busy ? t.installing : t.install}
+            data-pwa-install
+            onClick={() => {
+              promptedHere.current = true;
+              void requestInstall();
+            }}
+          >
+            <InstallDesktopIcon />
+          </button>
+        ) : (
+          <details
+            ref={instructions}
+            className="relative"
+            onKeyDown={(event) => {
+              if (event.key === "Escape" && instructions.current?.open) {
+                event.preventDefault();
+                instructions.current.open = false;
+                instructions.current.querySelector("summary")?.focus();
+              }
+            }}
+          >
+            <summary
+              className={`${style} list-none cursor-pointer [&::-webkit-details-marker]:hidden`}
+              aria-label={ios ? t.iosInstall : t.install}
+              title={ios ? t.iosInstall : t.install}
+            >
+              <InstallDesktopIcon />
+            </summary>
+            <p
+              className={`absolute top-full ${variant === "icon" ? "right-0" : "left-0"} z-50 mt-2 w-64 max-w-[calc(100vw-2rem)] rounded-xl border border-border bg-popover p-3 text-sm leading-relaxed text-popover-foreground shadow-lg`}
+            >
+              {error ? `${t.installError} ` : ""}
+              {ios ? t.iosHint : t.manualHint}
+            </p>
+          </details>
+        ))}
       {waiting && (
         <button
           className={style}
+          type="button"
+          aria-label={t.update}
+          title={t.update}
           onClick={() => {
             navigator.serviceWorker.addEventListener("controllerchange", () => location.reload(), {
               once: true,
@@ -166,16 +273,19 @@ export function PwaControls() {
             waiting.postMessage({ type: "DBFR_ACTIVATE_UPDATE" });
           }}
         >
-          {t.update}
+          <Rafraichir size={24} />
         </button>
       )}
-      {ios && (
-        <details>
-          <summary className={`${style} cursor-pointer`}>{t.iosInstall}</summary>
-          <p className="pt-2 text-sm text-muted-foreground">{t.iosHint}</p>
-        </details>
+      {error && variant !== "icon" && (
+        <output role="status" className="text-sm text-muted-foreground">
+          {t.installError}
+        </output>
       )}
-      {error && <output className="text-sm text-muted-foreground">{t.installError}</output>}
+      {error && variant === "icon" && (
+        <span role="status" className="sr-only">
+          {t.installError}
+        </span>
+      )}
     </div>
   );
 }

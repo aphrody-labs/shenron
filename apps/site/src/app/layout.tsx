@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pwaPalette } from "@/lib/pwa";
 import "./fonts.css";
 import "./globals.css";
 import { FONT_PRELOADS } from "@/lib/font-preloads";
@@ -113,7 +114,7 @@ export const metadata: Metadata = {
     : undefined,
   other: {
     // Tuile Windows : pas de browserconfig.xml, les deux meta suffisent.
-    "msapplication-TileColor": "#0a0a0a",
+    "msapplication-TileColor": pwaPalette.beerus.background,
     "msapplication-TileImage": "/mstile-150.png",
     ...(env.NEXT_PUBLIC_ADSENSE_CLIENT
       ? { "google-adsense-account": env.NEXT_PUBLIC_ADSENSE_CLIENT }
@@ -122,7 +123,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  themeColor: "#0a0a0a",
+  themeColor: pwaPalette.beerus.background,
   colorScheme: "dark light" as const,
   viewportFit: "cover" as const,
 };

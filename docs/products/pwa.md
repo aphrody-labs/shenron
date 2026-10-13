@@ -1,8 +1,10 @@
 # Application web DBFR
 
 Le manifeste conserve l’identité `/`, le périmètre du site et les icônes originales
-192/512 pixels, dont une icône maskable. Le menu du compte propose l’installation
-lorsque le navigateur fournit son invite ; sur iOS, il indique le parcours Safari.
+192/512 pixels, dont une icône maskable. La barre supérieure et la navigation proposent
+l’installation par une icône Material avec nom accessible. L’invite du navigateur
+est partagée entre ces contrôles et ne peut être utilisée qu’une fois. Sans invite,
+le contrôle affiche les instructions du navigateur ; sur iOS, le parcours Safari.
 La fenêtre Tauri conserve son propre cycle de vie.
 
 Le service worker `/sw.js` est servi avec `no-store`. Il prépare un
@@ -13,10 +15,11 @@ Les seuls assets mis en cache sont les icônes de l’application et les fichier
 statiques Next de l’origine déclarée : 60 fichiers maximum, 2 Mio par fichier.
 Les icônes sont revalidées sur le réseau et disponibles depuis le cache en cas
 de coupure ; les chunks immuables conservent leur nom fingerprinté. La langue
-de l’écran hors connexion est conservée pendant une mise à jour.
+et le thème Beerus/Goku de l’écran hors connexion sont conservés pendant une mise à jour.
+Le manifeste et la fenêtre installée utilisent la même palette que le site.
 Les anciennes caches de ce propriétaire sont supprimées à l’activation.
 
-Une nouvelle version attend le bouton Mettre à jour DBFR dans le menu du compte.
+Une nouvelle version attend l’icône Mettre à jour DBFR dans la navigation.
 Elle ne coupe pas une lecture en cours par un rechargement automatique. Les pages,
 planches et vidéos exigent une connexion ; l’installation ne promet aucun
 téléchargement de contenu.

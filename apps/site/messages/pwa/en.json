@@ -1,4 +1,5 @@
 {
+  "manualHint": "Open your browser menu, then choose Install DBFR or Add to Home Screen.",
   "install": "Install DBFR",
   "installing": "Installing…",
   "installError": "Installation did not finish. Try again from your browser’s menu.",

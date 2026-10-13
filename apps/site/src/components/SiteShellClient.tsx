@@ -188,6 +188,7 @@ export function SiteShellClient({
         <div className="flex min-w-0 items-center gap-1 sm:gap-2">
           <EpisodeThemeSwitcher compact />
           <LanguageSwitcher variant="compact" />
+          <PwaControls variant="icon" />
         </div>
       }
       account={
@@ -197,6 +198,7 @@ export function SiteShellClient({
         </>
       }
       mobileAccount={<NavAuth variant="compact" />}
+      desktopAccount={<NavAuth variant="compact" />}
       sheetFooter={
         <>
           <NavAuth variant="sheet" />
