@@ -67,7 +67,7 @@ function harness(fetcher: (request: Request) => Promise<Response>) {
     await Promise.all(jobs);
     return result;
   }
-  function request(
+  function makeRequest(
     path: string,
     mode = "cors",
     headers: Record<string, string> = {},
@@ -80,7 +80,7 @@ function harness(fetcher: (request: Request) => Promise<Response>) {
       headers: new Headers(headers),
     };
   }
-  return { stores, dispatch, request };
+  return { stores, dispatch, request: makeRequest };
 }
 
 describe("PWA delivery and offline behavior", () => {
@@ -157,7 +157,7 @@ describe("PWA delivery and offline behavior", () => {
       return new Response("content", {
         headers: {
           "cache-control": request.url.includes("private")
-            ? "private, no-store"
+            ? "Private, No-Store"
             : "public, immutable",
         },
       });
@@ -171,5 +171,24 @@ describe("PWA delivery and offline behavior", () => {
     expect(fetches).toBe(65);
     await h.dispatch("fetch", { request: h.request("/_next/static/private.js") });
     expect(cache.has("https://dragonballfr.com/_next/static/private.js")).toBe(false);
+  });
+  it("refreshes application icons and preserves the selected offline language during updates", async () => {
+    let revision = 1;
+    const h = harness(
+      async () =>
+        new Response(`icon-${revision}`, { headers: { "cache-control": "public, max-age=3600" } }),
+    );
+    await h.dispatch("install", {});
+    const request = h.request("/icon-192.png");
+    expect(await (await h.dispatch("fetch", { request }))!.text()).toBe("icon-1");
+    revision = 2;
+    expect(await (await h.dispatch("fetch", { request }))!.text()).toBe("icon-2");
+    await h.dispatch("message", { data: { type: "DBFR_LOCALE", locale: "ja" } });
+    await h.dispatch("install", {});
+    await h.dispatch("activate", {});
+    const cache = [...h.stores.values()][0]!;
+    expect(await cache.get("https://dragonballfr.com/__dbfr_offline__")!.text()).toContain(
+      '<html lang="ja">',
+    );
   });
 });

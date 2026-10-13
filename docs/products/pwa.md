@@ -11,6 +11,9 @@ réseau échouée affiche ce document avec Réessayer et les destinations princi
 Les pages, API, sessions, médias et requêtes de plage ne sont pas mis en cache.
 Les seuls assets mis en cache sont les icônes de l’application et les fichiers
 statiques Next de l’origine déclarée : 60 fichiers maximum, 2 Mio par fichier.
+Les icônes sont revalidées sur le réseau et disponibles depuis le cache en cas
+de coupure ; les chunks immuables conservent leur nom fingerprinté. La langue
+de l’écran hors connexion est conservée pendant une mise à jour.
 Les anciennes caches de ce propriétaire sont supprimées à l’activation.
 
 Une nouvelle version attend le bouton Mettre à jour DBFR dans le menu du compte.
