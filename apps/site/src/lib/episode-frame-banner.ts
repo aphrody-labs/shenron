@@ -86,7 +86,9 @@ export async function measurePublicFrame(url: string): Promise<ImageMetadata | n
     }
     if (
       !length ||
-      (declared !== null && !response.headers.get("content-encoding") && length !== Number(declared))
+      (declared !== null &&
+        !response.headers.get("content-encoding") &&
+        length !== Number(declared))
     )
       return null;
     const bytes = new Uint8Array(length);
