@@ -54,6 +54,9 @@
   "mangaCatalog": {
     "moreVolumes": "Afficher {count} tomes de plus",
     "dialogue": {
+      "chapter": "Chapitre {number}",
+      "volume": "Tome {number}",
+      "colorVolume": "Tome couleur {number}",
       "title": "Cherche une réplique",
       "description": "Retrouve les dialogues français et japonais du manga. Ex. Kamehameha, Petit cœur, 悟空.",
       "placeholder": "Rechercher un dialogue…",
@@ -1941,6 +1944,7 @@
     "botCounts": "{commands} commande(s) · {guilds} serveur(s)",
     "details": {
       "response_ok": "Réponse JSON conforme reçue",
+      "bot_offline": "Le bot est déconnecté de Discord",
       "invalid_response": "Réponse incompatible avec le contrat",
       "probe_unavailable": "Sonde HTTP indisponible ou réponse invalide",
       "database_ok": "SELECT 1 réussi sur la base du site",

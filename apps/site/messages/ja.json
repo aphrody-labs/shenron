@@ -54,6 +54,9 @@
   "mangaCatalog": {
     "moreVolumes": "さらに{count}巻を表示",
     "dialogue": {
+      "chapter": "第{number}話",
+      "volume": "第{number}巻",
+      "colorVolume": "カラー版 第{number}巻",
       "title": "セリフを探す",
       "description": "漫画のフランス語と日本語のセリフを検索。例：かめはめ波、ピッコロ、悟空。",
       "placeholder": "セリフを検索…",
@@ -1941,6 +1944,7 @@
     "botCounts": "コマンド{commands}件 · サーバー{guilds}件",
     "details": {
       "response_ok": "正しいJSON応答を受信しました",
+      "bot_offline": "ボットはDiscordに接続されていません",
       "invalid_response": "応答が契約と一致しません",
       "probe_unavailable": "HTTP監視が利用できないか、応答が無効です",
       "database_ok": "サイトのデータベースでSELECT 1が成功しました",

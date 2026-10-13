@@ -24,11 +24,11 @@ interface Result {
 type ApiResult = Omit<Result, "volume" | "page"> &
   Partial<Pick<Result, "volume" | "page">> & { tome?: string; planche?: number };
 
-function tomeLabel(tome: string): string {
+function tomeLabel(tome: string, t: ReturnType<typeof useT>): string {
   const n = tome.replace(/\D/g, "");
-  if (/^ch/i.test(tome)) return `Chapitre ${n}`;
-  if (/^vol/i.test(tome)) return `Tome ${n}`;
-  if (/^t/i.test(tome)) return `Tome couleur ${n}`;
+  if (/^ch/i.test(tome)) return t("mangaCatalog.dialogue.chapter", { number: n });
+  if (/^vol/i.test(tome)) return t("mangaCatalog.dialogue.volume", { number: n });
+  if (/^t/i.test(tome)) return t("mangaCatalog.dialogue.colorVolume", { number: n });
   return tome;
 }
 
@@ -110,7 +110,7 @@ export function MangaDialogueSearch() {
           e.preventDefault();
           void run(q);
         }}
-        className="flex gap-2"
+        className="flex flex-col gap-2 sm:flex-row"
         role="search"
       >
         <div className="relative min-w-0 flex-1">
@@ -125,7 +125,7 @@ export function MangaDialogueSearch() {
             onChange={(e) => setQ(e.target.value)}
             placeholder={t("mangaCatalog.dialogue.placeholder")}
             aria-label={t("mangaCatalog.dialogue.placeholder")}
-            className="h-11 w-full rounded-xl border border-white/10 bg-black/40 pl-10 pr-4 text-base text-white placeholder:text-white/50 focus:border-dbz-orange focus:outline-none sm:text-sm"
+            className="h-11 min-w-0 w-full rounded-xl border border-white/10 bg-black/40 pl-10 pr-4 text-base text-white placeholder:text-white/50 focus:border-dbz-orange focus:outline-none sm:text-sm"
           />
         </div>
         <button
@@ -133,7 +133,7 @@ export function MangaDialogueSearch() {
           disabled={loading || q.trim().length < 2}
           aria-label={t("mangaCatalog.dialogue.submit")}
           aria-busy={loading}
-          className="min-h-11 rounded-xl bg-dbz-orange px-5 text-sm font-bold text-black transition-opacity hover:opacity-90 disabled:opacity-40"
+          className="flex min-h-11 w-full shrink-0 items-center justify-center rounded-xl bg-dbz-orange px-5 text-sm font-bold text-black transition-opacity hover:opacity-90 disabled:opacity-40 sm:w-auto"
         >
           {loading ? (
             <DragonBallLoader size={18} stars={4} decorative />
@@ -167,7 +167,7 @@ export function MangaDialogueSearch() {
                   {r.series}
                 </span>
                 <span className="text-white/60">
-                  {tomeLabel(r.volume)}, <span className="tabular-nums">{r.page}</span>
+                  {tomeLabel(r.volume, t)}, <span className="tabular-nums">{r.page}</span>
                 </span>
                 {hasCjk(r.snippet) && (
                   <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-white/70">
