@@ -3,7 +3,7 @@ import { EmbedBuilder, MessageFlags, type StringSelectMenuInteraction } from "di
 import { inject, injectable } from "tsyringe";
 import { lireValeurEpisode, PREFIXE_MENU_EPISODES } from "~/lib/episode-menus";
 import { logger } from "~/lib/logger";
-import { EpisodesService, type LecteurEpisode } from "~/services/EpisodesService";
+import { EpisodesService } from "~/services/EpisodesService";
 
 /**
  * Le menu déroulant d'épisodes des fils du forum `🎬・animes-et-films`.
@@ -30,9 +30,6 @@ import { EpisodesService, type LecteurEpisode } from "~/services/EpisodesService
 const SITE = "https://dragonballfr.com";
 const ASSETS = "https://bot.dragonballfr.com";
 
-/** Priorité des hébergeurs : mesurée (cf. mémoire link-rot 2026-08), pas supposée. */
-const RANG_PROVIDER: Readonly<Record<string, number>> = { vidmoly: 0, yourupload: 1, mailru: 2 };
-
 /** Une description d'embed accepte 4 096 signes ; on garde de la marge. */
 const MAX_SYNOPSIS = 1_400;
 
@@ -45,25 +42,6 @@ function urlAsset(chemin: string | null): string | null {
 function coupe(texte: string, taille: number): string {
   const propre = texte.replace(/\s+/g, " ").trim();
   return propre.length <= taille ? propre : `${propre.slice(0, taille - 1).trimEnd()}…`;
-}
-
-/**
- * Les lecteurs d'une langue, du plus fiable au moins fiable.
- *
- * On les affiche TOUS (contrairement au fil, où la place manque) : quand
- * vidmoly tombe, le membre a besoin du repli sans redemander l'épisode.
- */
-export function lecteursParLangue(
-  players: readonly LecteurEpisode[],
-  langue: "vf" | "vostfr",
-): string | null {
-  const liste = players
-    .filter((p) => p.lang === langue && p.embedUrl)
-    .toSorted(
-      (a, b) => (RANG_PROVIDER[a.provider ?? ""] ?? 9) - (RANG_PROVIDER[b.provider ?? ""] ?? 9),
-    );
-  if (liste.length === 0) return null;
-  return liste.map((p) => `[${p.provider ?? "lecteur"}](${p.embedUrl})`).join(" · ");
 }
 
 @Discord()
@@ -119,16 +97,18 @@ export class ForumEpisodesComponents {
     if (episode.synopsis?.trim()) corps.push("", coupe(episode.synopsis, MAX_SYNOPSIS));
     embed.setDescription(corps.join("\n"));
 
-    const vf = lecteursParLangue(episode.players, "vf");
-    const vostfr = lecteursParLangue(episode.players, "vostfr");
-    if (vf) embed.addFields({ name: "🇫🇷 VF", value: coupe(vf, 1_024) });
-    if (vostfr) embed.addFields({ name: "🇯🇵 VOSTFR", value: coupe(vostfr, 1_024) });
-    if (!vf && !vostfr) {
-      // Un épisode sans lecteur est une information, pas un échec : le taire
-      // laisserait croire à une panne du menu.
+    if (episode.officialWatchUrl) {
+      const language = episode.officialLanguages.length
+        ? ` (${episode.officialLanguages.map((value) => value.toUpperCase()).join(" · ")})`
+        : "";
       embed.addFields({
-        name: "Lecteurs",
-        value: "Aucun lecteur en ligne pour cet épisode pour le moment.",
+        name: "Offre officielle",
+        value: `[Crunchyroll${language}](${episode.officialWatchUrl})`,
+      });
+    } else {
+      embed.addFields({
+        name: "Lecture",
+        value: `Consulte la [fiche de l'épisode](${SITE}/wiki/episodes/${episode.id}) pour les offres disponibles.`,
       });
     }
 

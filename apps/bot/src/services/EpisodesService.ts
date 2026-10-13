@@ -2,6 +2,7 @@ import type { SQL } from "bun";
 import { inject, singleton } from "tsyringe";
 import { PgService } from "~/db/pg";
 import { logger } from "~/lib/logger";
+import { officialCrunchyrollWatchURL } from "@aphrody/shenron-config/video-providers";
 
 /**
  * Épisodes — lecture des lecteurs VF/VOSTFR, côté PostgreSQL du site.
@@ -51,6 +52,8 @@ export interface EpisodeComplet {
   readonly synopsis: string | null;
   readonly image: string | null;
   readonly players: readonly LecteurEpisode[];
+  readonly officialWatchUrl: string | null;
+  readonly officialLanguages: readonly ("vf" | "vostfr")[];
 }
 
 /** Ligne brute : postgres-js/Bun rendent les `bigint` en chaînes. */
@@ -64,6 +67,7 @@ interface LigneEpisode {
   synopsis: string | null;
   image: string | null;
   players: unknown;
+  availability: unknown;
 }
 
 /** Assez long pour absorber une rafale de clics, assez court pour ne rien figer. */
@@ -112,6 +116,24 @@ export class EpisodesService {
             }
           })()
         : [];
+    const offers = Array.isArray(ligne.availability) ? ligne.availability : [];
+    const officialOffer = offers
+      .filter((item): item is Record<string, unknown> => !!item && typeof item === "object")
+      .filter((offer) => offer.provider === "crunchyroll")
+      .toSorted((a, b) => Number(b.checkedAt ?? 0) - Number(a.checkedAt ?? 0))[0];
+    const officialWatchUrl =
+      officialOffer?.available === true &&
+      typeof officialOffer.url === "string" &&
+      typeof officialOffer.checkedAt === "number" &&
+      Number.isFinite(officialOffer.checkedAt) &&
+      officialOffer.checkedAt > 0
+        ? officialCrunchyrollWatchURL(officialOffer.url)
+        : null;
+    const offerLanguages = officialOffer?.langs;
+    const officialLanguages =
+      officialWatchUrl && Array.isArray(offerLanguages)
+        ? (["vf", "vostfr"] as const).filter((language) => offerLanguages.includes(language))
+        : [];
     return {
       id: nombre(ligne.id) ?? 0,
       series: ligne.series,
@@ -122,6 +144,8 @@ export class EpisodesService {
       synopsis: ligne.synopsis,
       image: ligne.image,
       players: players.filter((p) => p && typeof p === "object"),
+      officialWatchUrl,
+      officialLanguages,
     };
   }
 
@@ -135,7 +159,7 @@ export class EpisodesService {
     try {
       const lignes = (await sql`
 				select id, series, number_in_series, title, title_ja, air_date,
-				       coalesce(synopsis_fr, synopsis) as synopsis, image, players
+		       coalesce(synopsis_fr, synopsis) as synopsis, image, players, availability
 				  from bot.db_episodes
 				 where id = ${id} and visible
 				 limit 1
