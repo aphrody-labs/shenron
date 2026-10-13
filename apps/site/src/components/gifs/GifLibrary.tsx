@@ -28,7 +28,7 @@ function GifCard({
         height={item.height}
         loading={first ? "eager" : "lazy"}
         fetchPriority={first ? "high" : undefined}
-        className="mx-auto aspect-video h-auto w-full max-w-[640px] object-contain"
+        className="mx-auto aspect-video h-auto w-auto max-w-full object-contain"
       />
       <div className="space-y-3 p-4">
         <h2 className="font-display text-lg text-os">{label}</h2>
