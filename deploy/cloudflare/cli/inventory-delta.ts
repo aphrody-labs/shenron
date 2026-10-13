@@ -95,6 +95,40 @@ export async function run(args: string[]) {
     ...(await scan(resolve(flag("--release-public")), "")),
   };
   const entries = mergeEntries(previous.entries, current);
+  const createdAt = new Date().toISOString();
+  const out = resolve(flag("--out"));
+  await mkdir(out, { recursive: true, mode: 0o700 });
+  const installedCatalog = join(import.meta.dir, "public-cdn-catalog.ts");
+  const modulePath = (await Bun.file(installedCatalog).exists())
+    ? installedCatalog
+    : resolve(import.meta.dir, "../../../scripts/ops/public-cdn-catalog.ts");
+  const { projectCatalog, catalogPrefix } = (await import(
+    modulePath
+  )) as typeof import("../../../scripts/ops/public-cdn-catalog");
+  const sourceEntries = Object.fromEntries(
+    Object.entries(entries).filter(
+      ([path]) => path !== catalogPrefix && !path.startsWith(catalogPrefix + "/"),
+    ),
+  );
+  const sourceInventory = JSON.stringify({ createdAt, entries: sourceEntries });
+  const sourceInventorySha256 = digest(sourceInventory);
+  const catalog = projectCatalog({ createdAt, entries: sourceEntries }, sourceInventorySha256);
+  const publicCatalogRoot = join(out, "public-catalog");
+  await mkdir(publicCatalogRoot, { mode: 0o700 });
+  for (const [path, body] of catalog.artifacts) {
+    const sourcePath = join(publicCatalogRoot, path.slice(1));
+    await mkdir(resolve(sourcePath, ".."), { recursive: true, mode: 0o700 });
+    await writeFile(sourcePath, body, { mode: 0o600, flag: "wx" });
+    entries[path] = {
+      sourcePath,
+      sha256: digest(body),
+      size: new TextEncoder().encode(body).byteLength,
+      contentType: "application/json",
+      cacheControl:
+        path === catalogPrefix + "/index.json" ? "no-store" : "public, max-age=31536000, immutable",
+    };
+  }
+  await writeFile(join(out, "source-inventory.json"), sourceInventory, { mode: 0o600, flag: "wx" });
   const unique = new Map<string, InventoryEntry & { path: string }>();
   const oldHashes = new Set(Object.values(previous.entries).map((entry) => entry.sha256));
   const shards: Record<string, Record<string, Omit<InventoryEntry, "sourcePath">>> = {};
@@ -104,7 +138,6 @@ export async function run(args: string[]) {
     (shards[shard] ??= {})[path] = entry;
     if (!unique.has(entry.sha256)) unique.set(entry.sha256, { path, sourcePath, ...entry });
   }
-  const out = resolve(flag("--out"));
   await mkdir(join(out, "shards"), { recursive: true, mode: 0o700 });
   const hashes: Record<string, string> = {};
   for (let i = 0; i < 256; i++) {
@@ -115,8 +148,20 @@ export async function run(args: string[]) {
   }
   const objects = [...unique.values()];
   const report = {
-    createdAt: new Date().toISOString(),
+    createdAt,
     previousSha256: digest(text),
+    sourceInventorySha256,
+    sourcePublicPaths: Object.keys(sourceEntries).length,
+    sourceAddedObjects: [
+      ...new Set(Object.values(sourceEntries).map((entry) => entry.sha256)),
+    ].filter((hash) => !oldHashes.has(hash)).length,
+    catalog: {
+      revision: catalog.index.revision,
+      indexPath: catalogPrefix + "/index.json",
+      indexSha256: digest(catalog.artifacts.get(catalogPrefix + "/index.json")!),
+      artifacts: catalog.artifacts.size,
+      pageSize: catalog.index.pageSize,
+    },
     publicPaths: Object.keys(entries).length,
     uniqueObjects: unique.size,
     addedObjects: objects.filter((entry) => !oldHashes.has(entry.sha256)).length,

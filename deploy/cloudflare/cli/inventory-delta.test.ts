@@ -46,12 +46,35 @@ test("delta pins the previous inventory and emits public shards without source p
     expect(await Bun.file(join(dir, "out/inventory.json")).exists()).toBe(false);
     await run(args);
     const report = await Bun.file(join(dir, "out/inventory.json")).json();
-    expect(report.publicPaths).toBe(3);
-    expect(report.addedObjects).toBe(2);
+    expect(report.sourcePublicPaths).toBe(3);
+    expect(report.sourceAddedObjects).toBe(2);
+    expect(report.publicPaths).toBe(3 + report.catalog.artifacts);
+    expect(report.addedObjects).toBeGreaterThan(2);
+    const indexEntry = report.entries["/catalog/assets/index.json"];
+    expect(indexEntry.cacheControl).toBe("no-store");
+    const index = await Bun.file(indexEntry.sourcePath).json();
+    expect(index.totalFiles).toBe(3);
+    expect(index.inventorySha256).toBe(report.sourceInventorySha256);
+    expect(indexEntry.sha256).toBe(report.catalog.indexSha256);
+    const sourceSnapshot = await Bun.file(join(dir, "out/source-inventory.json")).text();
+    expect(digest(sourceSnapshot)).toBe(report.sourceInventorySha256);
+    expect(Object.keys(JSON.parse(sourceSnapshot).entries)).toHaveLength(3);
     const shard = digest("/logo.svg").slice(0, 2);
     const rows = await Bun.file(join(dir, "out/shards", shard + ".json")).json();
     expect(rows["/logo.svg"].sha256).toBe(digest("new-logo"));
     expect(Object.hasOwn(rows["/logo.svg"], "sourcePath")).toBe(false);
+    const next = [...args];
+    const reportBytes = await Bun.file(join(dir, "out/inventory.json")).text();
+    next[1] = join(dir, "out/inventory.json");
+    next[3] = digest(reportBytes);
+    next[next.length - 1] = join(dir, "next-out");
+    await run(next);
+    const second = await Bun.file(join(dir, "next-out/inventory.json")).json();
+    expect(second.sourcePublicPaths).toBe(3);
+    expect(second.sourceAddedObjects).toBe(0);
+    expect(second.catalog.revision).toBe(report.catalog.revision);
+    expect(second.publicPaths).toBe(report.publicPaths);
+    expect(second.addedObjects).toBe(1);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
