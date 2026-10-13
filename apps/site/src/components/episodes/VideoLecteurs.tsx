@@ -98,13 +98,18 @@ export function VideoLecteurs({
 }) {
   const t = useTranslations("mediaPlayback");
   const ui = useVideoUIText();
-  const players = useMemo(
-    () =>
-      normalizeVideoPlayers(rawPlayers).filter(
-        (player) => !isCrunchyrollHost(player.embedUrl) || officialWatchLink(player.embedUrl),
-      ),
-    [rawPlayers],
-  );
+  const players = useMemo(() => {
+    const seen = new Set<string>();
+    return normalizeVideoPlayers(rawPlayers).flatMap((player) => {
+      if (!isCrunchyrollHost(player.embedUrl)) return [player];
+      const officialURL = officialWatchLink(player.embedUrl);
+      if (!officialURL) return [];
+      const key = `${player.lang ?? "unknown"}:${officialURL}`;
+      if (seen.has(key)) return [];
+      seen.add(key);
+      return [{ ...player, embedUrl: officialURL }];
+    });
+  }, [rawPlayers]);
   const langLabel = (value: string) => {
     switch (value) {
       case "vf":

@@ -58,6 +58,24 @@ test("official links drop stored query tokens and never embed them", () => {
   expect(html).not.toContain("<iframe");
 });
 
+test("tracking variants of the same watch page create one selector", () => {
+  const html = render("fr", [
+    {
+      name: "Episode",
+      provider: "Crunchyroll",
+      embedUrl: "https://www.crunchyroll.com/watch/G123?ref=a",
+    },
+    {
+      name: "Episode",
+      provider: "Crunchyroll",
+      embedUrl: "https://www.crunchyroll.com/watch/G123?ref=b",
+    },
+  ]);
+  expect(html.match(/href="https:\/\/www\.crunchyroll\.com\/watch\/G123"/g)).toHaveLength(1);
+  expect(html).not.toContain("ref=a");
+  expect(html).not.toContain("ref=b");
+});
+
 test("unqualified Crunchyroll destinations never become embeds or outbound links", () => {
   for (const embedUrl of [
     "http://www.crunchyroll.com/watch/GE00389313JAJP",
