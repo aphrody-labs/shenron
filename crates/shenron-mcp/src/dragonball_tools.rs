@@ -197,8 +197,27 @@ pub(crate) async fn site_get(path: &str, query: Query<'_>) -> Result<Value, Stri
 }
 
 fn admin_token(name: &str, label: &str) -> Result<String, String> {
-    process_env(name)
-        .ok_or_else(|| format!("The {label} upstream token is not configured (${name})"))
+    admin_token_with(name, label, &process_env)
+}
+
+fn admin_token_with(
+    name: &str,
+    label: &str,
+    get: &impl Fn(&str) -> Option<String>,
+) -> Result<String, String> {
+    let aliases: &[&str] = match name {
+        "SHENRON_DATABOOKS_API_TOKEN" => &[
+            "SHENRON_DATABOOKS_API_TOKEN",
+            "DATABOOKS_API_TOKEN",
+            "SHENRON_ADMIN_TOKEN",
+            "DBFR_TOKEN",
+        ],
+        "SHENRON_API_ADMIN_TOKEN" => &["SHENRON_API_ADMIN_TOKEN", "SHENRON_ADMIN_TOKEN"],
+        _ => &[name],
+    };
+    aliases.iter().find_map(|key| get(key).filter(|value| !value.trim().is_empty())).ok_or_else(
+        || format!("The {label} upstream token is not configured ({})", aliases.join(", ")),
+    )
 }
 
 // ---------------------------------------------------------------------------
@@ -1502,6 +1521,29 @@ pub(crate) async fn admin_service_action(r: AdminServiceActionRequest) -> CallTo
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn upstream_admin_tokens_accept_the_site_admin_alias_without_replacing_explicit_credentials() {
+        let site_only = |key: &str| (key == "SHENRON_ADMIN_TOKEN").then(|| "site-admin".to_owned());
+        assert_eq!(
+            admin_token_with("SHENRON_API_ADMIN_TOKEN", "admin", &site_only).unwrap(),
+            "site-admin"
+        );
+        assert_eq!(
+            admin_token_with("SHENRON_DATABOOKS_API_TOKEN", "databooks", &site_only).unwrap(),
+            "site-admin"
+        );
+        let explicit = |key: &str| Some(key.to_owned());
+        assert_eq!(
+            admin_token_with("SHENRON_API_ADMIN_TOKEN", "admin", &explicit).unwrap(),
+            "SHENRON_API_ADMIN_TOKEN"
+        );
+        assert_eq!(
+            admin_token_with("SHENRON_DATABOOKS_API_TOKEN", "databooks", &explicit).unwrap(),
+            "SHENRON_DATABOOKS_API_TOKEN"
+        );
+        assert!(admin_token_with("SHENRON_API_ADMIN_TOKEN", "admin", &|_| None).is_err());
+    }
 
     #[test]
     fn tome_ids_match_the_ocr_contract() {
