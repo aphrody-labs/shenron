@@ -24,6 +24,7 @@ import type { Database } from "bun:sqlite";
 import type { Client, User } from "discord.js";
 import { container } from "tsyringe";
 import { DatabaseService } from "~/db/index";
+import { PgService } from "~/db/pg";
 import { env } from "~/lib/env";
 import { logger } from "~/lib/logger";
 
@@ -39,6 +40,18 @@ type ProfileRow = {
   avatar_hash: string | null;
   updated_at: number;
 };
+
+function fromPostgres(row: Record<string, unknown>): ProfileRow {
+  const updatedAt = Number(row.updated_at);
+  if (!Number.isSafeInteger(updatedAt) || updatedAt < 0)
+    throw new Error("Invalid PostgreSQL profile timestamp");
+  return {
+    user_id: String(row.user_id),
+    username: row.username == null ? null : String(row.username),
+    avatar_hash: row.avatar_hash == null ? null : String(row.avatar_hash),
+    updated_at: updatedAt,
+  };
+}
 
 const MEMORY_TTL_MS = 5 * 60_000;
 const MEMORY_MAX = 1024;
@@ -65,7 +78,19 @@ function sqlite(): Database {
   return db;
 }
 
-function readPersisted(id: string): ProfileRow | null {
+async function readPersisted(id: string): Promise<ProfileRow | null> {
+  const pg = container.resolve(PgService).get();
+  if (pg) {
+    try {
+      const rows = await pg.sql`
+        SELECT user_id, username, avatar_hash, updated_at
+        FROM bot.discord_user_profiles WHERE user_id = ${id}
+      `;
+      if (rows.length) return fromPostgres(rows[0]);
+    } catch {
+      logger.warn({ userId: id }, "discord profile PostgreSQL read failed");
+    }
+  }
   try {
     return (
       (sqlite()
@@ -80,7 +105,45 @@ function readPersisted(id: string): ProfileRow | null {
   }
 }
 
-function persist(id: string, username: string | null, avatarHash: string | null): void {
+async function persist(
+  id: string,
+  username: string | null,
+  avatarHash: string | null,
+): Promise<ProfileRow> {
+  const updatedAt = Date.now();
+  let canonical: ProfileRow = {
+    user_id: id,
+    username,
+    avatar_hash: avatarHash,
+    updated_at: updatedAt,
+  };
+  const pg = container.resolve(PgService).get();
+  if (pg) {
+    try {
+      const saved = await pg.sql`
+        INSERT INTO bot.discord_user_profiles
+          (user_id, username, avatar_hash, updated_at, source_id)
+        VALUES (${id}, ${username}, ${avatarHash}, ${updatedAt}, 'shenron-bot')
+        ON CONFLICT (user_id) DO UPDATE SET
+          username = EXCLUDED.username,
+          avatar_hash = EXCLUDED.avatar_hash,
+          updated_at = EXCLUDED.updated_at,
+          source_id = EXCLUDED.source_id
+        WHERE bot.discord_user_profiles.updated_at < EXCLUDED.updated_at
+        RETURNING user_id, username, avatar_hash, updated_at
+      `;
+      if (saved.length) canonical = fromPostgres(saved[0]);
+      else {
+        const newer = await pg.sql`
+          SELECT user_id, username, avatar_hash, updated_at
+          FROM bot.discord_user_profiles WHERE user_id = ${id}
+        `;
+        if (newer.length) canonical = fromPostgres(newer[0]);
+      }
+    } catch {
+      logger.warn({ userId: id }, "discord profile PostgreSQL write failed; SQLite retry retained");
+    }
+  }
   try {
     sqlite()
       .query(
@@ -89,12 +152,14 @@ function persist(id: string, username: string | null, avatarHash: string | null)
 				 ON CONFLICT(user_id) DO UPDATE SET
 					username = excluded.username,
 					avatar_hash = excluded.avatar_hash,
-					updated_at = excluded.updated_at`,
+					updated_at = excluded.updated_at
+				 WHERE discord_user_profiles.updated_at <= excluded.updated_at`,
       )
-      .run(id, username, avatarHash, Date.now());
+      .run(canonical.user_id, canonical.username, canonical.avatar_hash, canonical.updated_at);
   } catch (err) {
     logger.warn({ err, userId: id }, "discord profile write failed");
   }
+  return canonical;
 }
 
 function remember(id: string, username: string | null, avatarHash: string | null): DiscordUserData {
@@ -152,15 +217,15 @@ async function restFetch(id: string): Promise<User | null> {
  * in-memory entry. Writes only when the stored values differ, so it is cheap
  * to call on every `guildMemberUpdate`.
  */
-export function recordDiscordProfile(
+export async function recordDiscordProfile(
   user: Pick<User, "id" | "username" | "avatar">,
-): DiscordUserData {
+): Promise<DiscordUserData> {
   const username = user.username ?? null;
   const avatarHash = user.avatar ?? null;
-  const stored = readPersisted(user.id);
+  const stored = await readPersisted(user.id);
   const changed = !stored || stored.username !== username || stored.avatar_hash !== avatarHash;
-  if (changed) persist(user.id, username, avatarHash);
-  return remember(user.id, username, avatarHash);
+  const current = changed ? await persist(user.id, username, avatarHash) : stored;
+  return remember(user.id, current!.username, current!.avatar_hash);
 }
 
 /** Username + avatar hash of a Discord user, freshest available source first. */
@@ -171,15 +236,15 @@ export async function fetchDiscordUserCached(id: string): Promise<DiscordUserDat
   const live = liveMemberUser(id);
   if (live) return recordDiscordProfile(live);
 
-  const stored = readPersisted(id);
+  const stored = await readPersisted(id);
   if (stored && Date.now() - stored.updated_at < PERSISTED_FRESH_MS) {
     return remember(id, stored.username, stored.avatar_hash);
   }
 
   const fetched = await restFetch(id);
   if (fetched) {
-    persist(id, fetched.username, fetched.avatar);
-    return remember(id, fetched.username, fetched.avatar);
+    const current = await persist(id, fetched.username, fetched.avatar);
+    return remember(id, current.username, current.avatar_hash);
   }
 
   // REST unavailable (timeout, unknown user): last known profile, else nothing.

@@ -19,7 +19,7 @@ import { recordDiscordProfile } from "~/lib/discord-profiles";
 @injectable()
 export class DiscordProfileSyncEvent {
   @On({ event: "userUpdate" })
-  onUserUpdate([oldUser, newUser]: ArgsOf<"userUpdate">) {
+  async onUserUpdate([oldUser, newUser]: ArgsOf<"userUpdate">) {
     if (newUser.partial || newUser.bot) return;
     if (
       !oldUser.partial &&
@@ -29,7 +29,7 @@ export class DiscordProfileSyncEvent {
       return;
     }
     try {
-      recordDiscordProfile(newUser);
+      await recordDiscordProfile(newUser);
     } catch (err) {
       logger.warn({ err, userId: newUser.id }, "discord profile sync (userUpdate) failed");
     }
@@ -38,12 +38,12 @@ export class DiscordProfileSyncEvent {
   // Serveur de production seulement, membres humains seulement.
   @On({ event: "guildMemberUpdate" })
   @Guard(createMonoGuildGuard(env.GUILD_ID), NotBot)
-  onGuildMemberUpdate([, newMember]: ArgsOf<"guildMemberUpdate">) {
+  async onGuildMemberUpdate([, newMember]: ArgsOf<"guildMemberUpdate">) {
     const user = newMember.user;
     if (user.partial) return;
     try {
       // Writes only when the stored username/avatar differ.
-      recordDiscordProfile(user);
+      await recordDiscordProfile(user);
     } catch (err) {
       logger.warn({ err, userId: user.id }, "discord profile sync (guildMemberUpdate) failed");
     }
