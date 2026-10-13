@@ -101,8 +101,8 @@ et SHA-256 identiques à leurs sources. Les environnements locaux sont conservé
 comme imports, sans écraser la configuration de production. Le catalogue SQLite
 Bun Video et ses références privées ont été copiés dans un dossier distinct :
 deux SQLite intègres et 206 objets SHA-256, tous vérifiés avec permissions 600.
-Ce snapshot DBFR n'est pas un writer ; la bascule Neon attend l'arrêt contrôlé
-du site Bun Video local qui garde un handle SQLite ouvert.
+Ce snapshot DBFR n'est pas un writer. Le site Bun Video local utilise désormais
+son catalogue Neon ; le consommateur DBFR n'a pas été basculé.
 
 L'inventaire des fichiers SQLite sous `data/` (répertoires ignorés inclus)
 compte sept bases. Quatre sont des miroirs historiques du VPS et une est un
@@ -124,6 +124,45 @@ ne sont pas encore actives : le HEAD public renvoie 404. Le propriétaire a
 attesté dans `AGENTS.md` la diffusion mondiale sans échéance connue de la vidéo
 complète et de ses versions compressées ; le texte privé n'a pas été vérifié
 indépendamment. Aucun effacement automatique n'est programmé.
+
+## Écarts vérifiés et transferts du 13 octobre
+
+Un audit HTTP des 151 routes audio/vidéo du catalogue a relevé 75 réponses
+`404` ; la comparaison des autres chemins avec le `public` scellé et la
+configuration Nginx en a relevé 45 de plus. Les 120 routes ont été testées.
+Leurs objets R2 existaient déjà et ont été vérifiés par taille, empreinte ou
+lecture intégrale ciblée : aucun nouvel upload n'était nécessaire. Les
+correctifs de la gateway Aphrody (`b3b9905966`, `3cbb0e8259`) couvrent les
+120 routes ; une configuration candidate a passé `nginx -t` dans l'image
+exacte, mais la release active monte encore l'ancienne configuration en
+lecture seule. Le rapport privé `var/reports/cdn-gap-fresh-20261013/summary.md`
+consigne les sondes et leurs limites.
+
+La règle Cloudflare `aphrody-origin-cdn` a activé les requêtes Range vers
+l'origine. Une URL hors cache répond maintenant `206` avec `Content-Range` ;
+elle reste en transfert `chunked` sans `Content-Length` tant que le service
+DBFR n'intègre pas le correctif `5560a8cb`. Un ancien objet cache répond
+encore `200`. La release site/CDN et le service origine ont des revendications
+distinctes : vérifier les 120 HEAD, le MP4 Beerus et `Range` publiquement
+après leurs activations respectives.
+
+Le bot actif DBFR écrit encore certaines données runtime en SQLite. Un timer
+Infra actif, déclenché automatiquement et idempotent, réplique vers PostgreSQL
+les journaux d'action, évaluations RAG, profils Discord, contacts et messages
+privés ainsi que les sanctions ; les identifiants en collision utilisent une
+provenance et des IDs négatifs stables. Au dernier contrôle, 343 profils
+Discord sont relus dans PostgreSQL après de nouveaux événements bot. Le
+writer PG prioritaire des profils est poussé (`cfd729ba`), mais attend une
+nouvelle image bot. Les writers DM et sanctions restent SQLite : leur passage
+PG demande un adaptateur avec idempotence des opérations Discord.
+
+Les 20 variantes locales de `economy_index`, `race_level_roles` et
+`card_themes` ont été archivées par empreinte dans une table PostgreSQL
+privée (`bot.sqlite_runtime_variants`), sans modifier les tables canoniques.
+Le rejeu n'a inséré aucun doublon. Les 29 fichiers `data/rag/raw` uniques
+(7 833 283 octets) sont archivés dans le store privé DBFR sous leurs
+SHA-256 ; les 314 fichiers byte-identiques au miroir local n'ont pas été
+transférés. Cette archive n'active aucun nouveau corpus RAG.
 
 ## Placement exclusif
 
