@@ -9,6 +9,7 @@
 !dist/bot/
 !dist/bot/linux-x64/
 !dist/bot/linux-x64/shenron-bot
+!dist/bot/linux-x64/skia.linux-x64-gnu.node
 !dist/bot/linux-x64/src/
 !dist/bot/linux-x64/src/db/
 !dist/bot/linux-x64/src/db/migrations/
