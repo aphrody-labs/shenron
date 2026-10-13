@@ -11,6 +11,23 @@ d'authentification administrateur existant. `?id=soshuhen` sélectionne une
 collection. Cette API ne sert aucune capture privée, transcription ou clé.
 Les lecteurs de contenu restent propriétaires des assets effectivement disponibles.
 
+`?coverage=live` relit les références du catalogue PostgreSQL par le propriétaire
+DB existant. Les volumes d'une édition, la pagination déclarée et les pages
+référencées restent distincts. Une collection sans correspondance configurée
+retourne un compte inconnu (`null`), pas une absence inventée. Une erreur DB
+renvoie503 ; aucun ancien snapshot ne remplace silencieusement cette lecture.
+
+Contrôle privé du13octobre2026 : PostgreSQL contient329volumes,24éditions,
+15900assets de pages et481databooks. Les48notices SDBH anime ne prouvent pas
+la lecture des vidéos. Les18notices Sōshūhen correspondent à381références pour
+le premier tome et une seule pour chaque tome2–18. L'inventaire R2 propriétaire
+de120577entrées confirme les mêmes381fichiers numérotés pour le tome1 et
+`001.jpg` seul pour chacun des17autres tomes. La notice DragonQuest486 n'a
+aucune page référencée. Aucun manga anglais n'est qualifié par une éditionen.
+Les42notices FullColor japonais ont une pagination déclarée nulle : ce nombre
+ne constitue pas une collection de42volumes lisibles. Aucun asset n'a été inventé
+pour combler ces différences. Les reçus détaillés restent dans `var/reports`.
+
 `bun scripts/ops/editorial-collection-catalog.ts` produit
 `var/reports/editorial-collections/inventory.json` : bibliographie locale,
 snapshot historique explicitement daté, intégrité SHA256 des manifestes et

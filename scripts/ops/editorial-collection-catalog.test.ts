@@ -2,6 +2,7 @@
 import { expect, test } from "bun:test";
 import {
   readEditorialCollections,
+  projectEditorialCoverage,
   validateJapaneseTranscriptEvidence,
 } from "../../apps/site/src/lib/editorial-collections";
 import { inventoryEditorialCollections } from "./editorial-collection-catalog";
@@ -27,6 +28,51 @@ test("all requested collections preserve language, edition and unverified availa
       expect(url.username).toBe("");
       expect(url.hostname).not.toContain("fandom");
     }
+  }
+});
+
+test("live coverage distinguishes edition references, covers and unknown unmapped collections", () => {
+  const result = projectEditorialCoverage({
+    volumeRows: [
+      { series: "SOSH", records: 18 },
+      { series: "DB", records: 42 },
+    ],
+    episodeRows: [{ series: "SDBH", records: 48 }],
+    editionRows: [
+      { series: "DB", language: "ja", edition: "full_color", volumes: 42, declared_pages: 0 },
+    ],
+    databookRows: [
+      {
+        id: 465,
+        title: "Dragon Ball Sōshūhen Vol. 1",
+        readable_page_references: 381,
+        privateRef: "/private/raw",
+      },
+      { id: 469, title: "Dragon Ball Sōshūhen Vol. 2", readable_page_references: 1 },
+      { id: 486, title: "Dragon Quest Illustrations", readable_page_references: 0 },
+    ],
+  });
+  expect(result.collections.find((row) => row.id === "sdbh-anime")?.catalogRecords).toBe(48);
+  expect(
+    result.collections.find((row) => row.id === "dragon-ball-full-color-ja")?.editions[0]
+      ?.declaredPages,
+  ).toBe(0);
+  expect(result.collections.find((row) => row.id === "dragon-ball-en")?.catalogRecords).toBe(0);
+  expect(
+    result.collections.find((row) => row.id === "japanese-interviews")?.catalogRecords,
+  ).toBeNull();
+  expect(
+    result.collections.find((row) => row.id === "soshuhen")?.readerEvidence[1]
+      ?.readablePageReferences,
+  ).toBe(1);
+  expect(
+    result.collections.find((row) => row.id === "dragon-quest-artbooks")?.readerEvidence[0]
+      ?.readablePageReferences,
+  ).toBe(0);
+  expect(JSON.stringify(result)).not.toContain("privateRef");
+  for (const row of result.collections) {
+    expect(row.mediaAvailability).toBe("not-qualified");
+    for (const evidence of row.readerEvidence) expect(evidence.complete).toBe(false);
   }
 });
 

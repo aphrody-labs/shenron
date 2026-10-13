@@ -52,3 +52,75 @@ export function validateJapaneseTranscriptEvidence(evidence: {
     complete: evidence.reviewStatus === "reviewed" && evidence.completeness === "complete",
   };
 }
+
+export interface EditorialCoverageRows {
+  volumeRows: Array<Record<string, unknown>>;
+  editionRows: Array<Record<string, unknown>>;
+  databookRows: Array<Record<string, unknown>>;
+  episodeRows: Array<Record<string, unknown>>;
+}
+
+/** Whitelists metadata; reference counts do not establish complete works. */
+export function projectEditorialCoverage(
+  { volumeRows, editionRows, databookRows, episodeRows }: EditorialCoverageRows,
+  id?: string,
+) {
+  const registry = readEditorialCollections(id);
+  return {
+    ...registry,
+    observedAt: new Date().toISOString(),
+    scope: "live-canonical-catalogue-reference-counts",
+    collections: registry.collections.map((collection) => {
+      const editions =
+        collection.kind === "manga"
+          ? editionRows.filter((row) =>
+              collection.id === "dragon-ball-full-color-ja"
+                ? row.edition === "full_color" &&
+                  row.language === "ja" &&
+                  ["DB", "DBJP"].includes(String(row.series))
+                : collection.matchSeries.includes(String(row.series)) &&
+                  collection.languages.includes(row.language as "ja" | "fr" | "en"),
+            )
+          : [];
+      return Object.assign({}, collection, {
+        catalogRecords:
+          collection.id === "dragon-ball-full-color-ja"
+            ? editions.reduce((count, row) => count + Number(row.volumes), 0)
+            : collection.matchSeries.length === 0
+              ? null
+              : (collection.kind === "anime" ? episodeRows : volumeRows)
+                  .filter((row) => collection.matchSeries.includes(String(row.series)))
+                  .reduce((count, row) => count + Number(row.records), 0),
+        editions: editions.map((row) => ({
+          language: row.language,
+          edition: row.edition,
+          volumes: Number(row.volumes),
+          declaredPages: Number(row.declared_pages),
+        })),
+        readerEvidence:
+          collection.id === "soshuhen" || collection.id === "dragon-quest-artbooks"
+            ? databookRows
+                .filter((row) =>
+                  collection.id === "soshuhen"
+                    ? /Sōshūhen/.test(String(row.title))
+                    : /Dragon Quest/i.test(String(row.title)),
+                )
+                .map((row) => ({
+                  id: Number(row.id),
+                  title: row.title,
+                  readablePageReferences: Number(row.readable_page_references),
+                  complete: false,
+                }))
+            : [],
+        mediaAvailability: "not-qualified",
+        publishingRights: "not-qualified",
+      });
+    }),
+    omissions: [
+      "R2 object readback and integrity",
+      "linguistic transcript review",
+      "media playback",
+      "publishing rights",
+    ],
+  };
+}
