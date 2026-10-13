@@ -82,7 +82,8 @@ mock.module("@/lib/cdn-catalog", () => ({
 }));
 const { CatalogAssetsNavigation } =
   await import("../src/components/catalog/CatalogAssetsNavigation");
-const { CatalogControls } = await import("../src/components/catalog/CatalogControls");
+const { CatalogControls, CATALOG_REFRESH_INTERVAL_MS } =
+  await import("../src/components/catalog/CatalogControls");
 const { CatalogCards, CatalogCategoryCards } =
   await import("../src/components/catalog/CatalogCards");
 const { default: CatalogError } = await import("../src/app/catalog/error");
@@ -122,7 +123,10 @@ test("catalogue controls keep a labelled search and the ancestor filter without 
   expect(html).toContain('value="Dragon &lt;Ball&gt;"');
   expect(html).toContain('name="parent" value="42"');
   expect(html).not.toContain('name="page"');
-  expect(html).toContain(dictionaries.fr.catalog.automatic);
+  expect(html).toContain(
+    translate("catalog.automatic", { seconds: CATALOG_REFRESH_INTERVAL_MS / 1000 }),
+  );
+  expect(html).not.toContain("{seconds}");
   expect(html).toContain("<output");
 });
 test("catalogue cards use public previews and every empty list has a way back", () => {

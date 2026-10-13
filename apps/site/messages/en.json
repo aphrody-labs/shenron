@@ -1989,7 +1989,7 @@
     "original": "Open the full record",
     "metadata": "Details",
     "refresh": "Refresh",
-    "automatic": "Refresh automatically every 15 seconds",
+    "automatic": "Refresh automatically every {seconds} seconds",
     "observed": "Viewed at {time}",
     "snapshot": "Media inventory observed at {time}",
     "unavailable": "The catalogue is temporarily unavailable.",

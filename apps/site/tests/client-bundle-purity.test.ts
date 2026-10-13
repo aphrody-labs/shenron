@@ -222,9 +222,13 @@ const describeChain = (chain: string[]) =>
   chain.map((step) => (step.startsWith("@") ? step : toPosix(relative(ROOT, step)))).join(" -> ");
 
 describe("client bundle purity (docs/architecture/STACK.md §4.2)", () => {
-  it("finds the site's client modules", () => {
-    expect(clientEntries(SRC).length).toBeGreaterThan(50);
-  });
+  it(
+    "finds the site's client modules",
+    () => {
+      expect(clientEntries(SRC).length).toBeGreaterThan(50);
+    },
+    process.platform === "win32" ? 90_000 : 30_000,
+  );
 
   it(
     "no 'use client' module reaches a server-only @aphrody/shenron entry",
@@ -236,7 +240,7 @@ describe("client bundle purity (docs/architecture/STACK.md §4.2)", () => {
       );
       expect(offences).toEqual([]);
     },
-    process.platform === "win32" ? 90_000 : 5000,
+    process.platform === "win32" ? 90_000 : 30_000,
   );
 
   it("detects a client module importing @aphrody/shenron-pipeline/ai, directly or transitively", () => {

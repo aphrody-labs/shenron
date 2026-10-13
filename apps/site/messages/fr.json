@@ -1989,7 +1989,7 @@
     "original": "Ouvrir la fiche complète",
     "metadata": "Repères",
     "refresh": "Actualiser",
-    "automatic": "Actualisation automatique toutes les 15 secondes",
+    "automatic": "Actualisation automatique toutes les {seconds} secondes",
     "observed": "Consulté à {time}",
     "snapshot": "Inventaire des médias observé à {time}",
     "unavailable": "Le catalogue est temporairement indisponible.",

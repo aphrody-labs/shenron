@@ -1989,7 +1989,7 @@
     "original": "詳細ページを開く",
     "metadata": "基本情報",
     "refresh": "更新",
-    "automatic": "15秒ごとに自動更新",
+    "automatic": "{seconds}秒ごとに自動更新",
     "observed": "確認時刻：{time}",
     "snapshot": "メディア一覧の確認時刻：{time}",
     "unavailable": "カタログを一時的に利用できません。",

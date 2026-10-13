@@ -4,6 +4,7 @@ import { useEffect, useSyncExternalStore, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useT } from "@/components/T";
 
+export const CATALOG_REFRESH_INTERVAL_MS = 15_000;
 const preferenceKey = "shenron:catalog:automatic";
 const preferenceEvent = "shenron:catalog-refresh-preference";
 let fallbackAutomatic = true;
@@ -42,7 +43,7 @@ export function CatalogControls({ search, parent }: { search?: string; parent?: 
     const refresh = () => {
       if (!document.hidden && navigator.onLine) startTransition(() => router.refresh());
     };
-    const timer = window.setInterval(refresh, 15_000);
+    const timer = window.setInterval(refresh, CATALOG_REFRESH_INTERVAL_MS);
     document.addEventListener("visibilitychange", refresh);
     window.addEventListener("online", refresh);
     return () => {
@@ -84,7 +85,7 @@ export function CatalogControls({ search, parent }: { search?: string; parent?: 
             setAutomatic(event.target.checked);
           }}
         />
-        {t("catalog.automatic")}
+        {t("catalog.automatic", { seconds: CATALOG_REFRESH_INTERVAL_MS / 1000 })}
       </label>
       <button
         type="button"

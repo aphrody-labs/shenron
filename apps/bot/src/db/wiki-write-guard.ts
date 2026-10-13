@@ -25,11 +25,14 @@
  */
 import { realpathSync } from "node:fs";
 import { resolve } from "node:path";
-import { isCompiledBinary } from "@aphrody/discord-kit";
 
 const entry = Bun.main ?? process.argv[1] ?? "";
 // Exécutable `bun build --compile` (shenron-bot) : seul le runtime du bot y est compilé.
-const isCompiled = isCompiledBinary();
+// Native standalone metadata is independent of a versioned runtime filename.
+const isCompiled =
+  typeof Bun.isStandaloneExecutable === "boolean"
+    ? Bun.isStandaloneExecutable
+    : import.meta.url.includes("$bunfs");
 // Runtime du bot = src/index.ts ou src/entry-standalone.ts → exempté (auto-seed légitime, idempotent).
 const isBotRuntime =
   isCompiled || /(?:^|[\\/])(?:src[\\/])?(?:index|entry-standalone)\.ts$/.test(entry);

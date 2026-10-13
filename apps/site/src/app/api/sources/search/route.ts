@@ -17,7 +17,15 @@ export async function GET(request: NextRequest) {
   const kind = params.get("kind") ?? "";
   const limit = Number(params.get("limit") ?? 24);
   const offset = Number(params.get("offset") ?? 0);
-  const payload = await searchExternalSources({ q, kind, limit, offset });
+  let payload;
+  try {
+    payload = await searchExternalSources({ q, kind, limit, offset, strict: true });
+  } catch {
+    return NextResponse.json(
+      { error: "sources_unavailable" },
+      { status: 503, headers: { "cache-control": "no-store" } },
+    );
+  }
   return NextResponse.json(
     {
       ...payload,
@@ -27,6 +35,6 @@ export async function GET(request: NextRequest) {
         : "",
       classifications: EXTERNAL_SOURCE_KINDS,
     },
-    { headers: { "cache-control": "public, max-age=60, stale-while-revalidate=300" } },
+    { headers: { "cache-control": "no-store" } },
   );
 }
