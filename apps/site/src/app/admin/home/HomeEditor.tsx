@@ -50,6 +50,7 @@ import {
 } from "@/lib/home-scenes";
 import { PlainField } from "@/components/editor/PlainField";
 import { errorMessageFromBody, seedConfig } from "./home-config-client";
+import { HomeThumbnail } from "./HomeThumbnail";
 
 interface LoadResponse {
   config: HomeConfig;
@@ -118,18 +119,10 @@ function ClipGrid({
                 : "border-zinc-700 hover:border-dbz-orange"
             }`}
           >
-            {c.poster ? (
-              <img
-                src={assetUrl(c.poster)}
-                alt=""
-                loading="lazy"
-                className="h-full w-full object-cover opacity-80 transition-opacity group-hover:opacity-100"
-              />
-            ) : (
-              <span className="flex h-full w-full items-center justify-center bg-zinc-900 text-[9px] text-zinc-500">
-                <Film className="h-4 w-4" />
-              </span>
-            )}
+            <HomeThumbnail
+              src={c.poster ? assetUrl(c.poster) : undefined}
+              className="opacity-80 transition-opacity group-hover:opacity-100"
+            />
             <span className="absolute inset-x-0 bottom-0 truncate bg-black/70 px-1 py-0.5 text-[8px] text-white/80">
               {c.id}
             </span>
@@ -159,9 +152,7 @@ function SceneBackground({
     <div>
       <div className="flex items-center gap-3">
         <span className="relative h-12 w-20 shrink-0 overflow-hidden rounded border border-zinc-700 bg-black/40">
-          {thumb ? (
-            <img src={assetUrl(thumb)} alt="" className="h-full w-full object-cover" />
-          ) : null}
+          <HomeThumbnail src={thumb ? assetUrl(thumb) : undefined} />
         </span>
         <div className="min-w-0 flex-1">
           <code className="block truncate text-[11px] text-zinc-400">{scene.video ?? "—"}</code>
