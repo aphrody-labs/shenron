@@ -67,7 +67,7 @@ jobs:
           fi
 
       - name: Upload binaries
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: shenron-${{ matrix.target }}
           path: release/*
@@ -129,7 +129,7 @@ jobs:
         run: |
           [ -n "$TAURI_SIGNING_PRIVATE_KEY" ] || unset TAURI_SIGNING_PRIVATE_KEY TAURI_SIGNING_PRIVATE_KEY_PASSWORD
           bun scripts/build/desktop.ts --target "${{ matrix.target }}" --skip-chat-model
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: shenron-studio-${{ matrix.target }}
           path: dist/desktop/${{ matrix.target }}/
