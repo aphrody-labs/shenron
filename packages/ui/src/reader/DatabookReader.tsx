@@ -315,8 +315,11 @@ export function DatabookReader({
     const onKey = (e: KeyboardEvent) => {
       const cible = e.target as HTMLElement | null;
       const tag = cible?.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || cible?.isContentEditable) return;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || cible?.isContentEditable)
+        return;
       if (e.altKey || e.ctrlKey || e.metaKey) return;
+      const root = containerRef.current;
+      if (!lightbox && !isFullscreen && !(root && cible && root.contains(cible))) return;
       switch (e.key) {
         case "Escape":
           if (lightbox) {
@@ -344,7 +347,7 @@ export function DatabookReader({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [lightbox, mode, total, current, goTo, step]);
+  }, [lightbox, isFullscreen, mode, total, current, goTo, step]);
 
   // Raccourcis du lecteur (F : plein écran, D : double page), seulement quand le focus est
   // dans le lecteur ou qu'il occupe l'écran : la lettre ne doit pas fuir vers la page.

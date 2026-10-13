@@ -132,7 +132,8 @@ async function MangaIndexContent() {
     title: ch.title,
     series: ch.series,
     cover: ch.cover,
-    pages: ch.pages,
+    // Cards only warm the first three images; the reader fetches the full chapter.
+    pages: ch.pages?.slice(0, 3),
     volume_id: ch.volume_id,
   }));
 

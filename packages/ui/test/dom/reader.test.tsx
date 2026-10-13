@@ -376,6 +376,27 @@ describe("DatabookReader on a phone", () => {
 });
 
 describe("DatabookReader on a desktop", () => {
+  test("paged navigation leaves keyboard events outside the reader alone", () => {
+    desktop = true;
+    render(
+      <>
+        <button type="button">Outside reader</button>
+        <select aria-label="Catalogue filter">
+          <option>Guide</option>
+        </select>
+        <DatabookReader pages={pages} title="Daizenshuu 2" />
+      </>,
+    );
+    const reader = screen.getByTestId("databook-reader");
+    const mode = within(reader).getByRole("button", { name: "Mode paginé" });
+    fireEvent.click(mode);
+    fireEvent.keyDown(screen.getByRole("button", { name: "Outside reader" }), { key: "End" });
+    fireEvent.keyDown(screen.getByRole("combobox"), { key: "ArrowRight" });
+    expect(badge(reader)).toBe("n° 1");
+    fireEvent.keyDown(mode, { key: "ArrowRight" });
+    expect(badge(reader)).toBe("n° 2");
+  });
+
   test("double page on lg+, toggled by its button and by D, arrows turn two pages", () => {
     desktop = true;
     render(<DatabookReader pages={pages} title="Daizenshuu 2" />);
@@ -386,7 +407,7 @@ describe("DatabookReader on a desktop", () => {
     fireEvent.click(spread);
     expect(spread.getAttribute("aria-pressed")).toBe("true");
     expect(reader.hasAttribute("data-spread")).toBe(true);
-    fireEvent.keyDown(window, { key: "ArrowRight" });
+    fireEvent.keyDown(spread, { key: "ArrowRight" });
     expect(badge(reader)).toBe("n° 3");
     // D ne s'applique qu'au lecteur qui a le focus.
     spread.focus();

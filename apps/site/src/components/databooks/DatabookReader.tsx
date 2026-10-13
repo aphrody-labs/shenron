@@ -49,6 +49,7 @@ export function DatabookReader({ pages, title, bookId }: DatabookReaderProps) {
   return (
     <div className="m3-reader--dragon-ball" data-koharu-canvas={canvasWarmup}>
       <BaseDatabookReader
+        key={bookId ?? title}
         pages={pages}
         title={title}
         resolveAssetUrl={resolveAssetUrl}

@@ -19,3 +19,17 @@ test("wiki image fallback does not intercept encyclopedia routes", () => {
   expect(config).toContain("location ^~ /wiki/media/ {");
   expect(config).toContain("location / {");
 });
+
+test("CDN quota failures use the private public-image origin without browser credentials", async () => {
+  for (const source of [
+    config,
+    await Bun.file(new URL("./cdn-dragonballfr-ssl.conf", import.meta.url)).text(),
+  ]) {
+    expect(source).toContain("error_page 404 429 500 502 503 504 = @cdn_public_origin;");
+    const origin = source.match(/location @cdn_public_origin \{([^}]+)\}/)?.[1];
+    expect(origin).toContain("proxy_pass_request_headers off;");
+    expect(origin).toContain("proxy_set_header Host shenron-cdn-origin.internal;");
+    expect(origin).not.toContain("$http_cookie");
+    expect(origin).not.toContain("$http_authorization");
+  }
+});

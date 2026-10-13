@@ -72,6 +72,19 @@
     "videoKeyboardHelp": "プレーヤーにフォーカス：スペース/Kで再生、J/Lで±10秒、矢印で±5秒、Mで消音、Cで字幕、Fで全画面、Pでピクチャーインピクチャー。"
   },
   "mangaCatalog": {
+    "moreVolumes": "さらに{count}巻を表示",
+    "dialogue": {
+      "chapter": "第{number}話",
+      "volume": "第{number}巻",
+      "colorVolume": "カラー版 第{number}巻",
+      "title": "セリフを探す",
+      "description": "漫画のフランス語と日本語のセリフを検索。例：かめはめ波、ピッコロ、悟空。",
+      "placeholder": "セリフを検索…",
+      "submit": "検索",
+      "error": "検索を一時的に利用できません。再試行してください。",
+      "empty": "「{query}」のセリフは見つかりませんでした。",
+      "read": "このページを読む"
+    },
     "isbn": "ISBN",
     "catalogueData": "目録データ（JSON）",
     "editionsForWork": "掲載版 — {title}",
@@ -1951,6 +1964,7 @@
     "botCounts": "コマンド{commands}件 · サーバー{guilds}件",
     "details": {
       "response_ok": "正しいJSON応答を受信しました",
+      "bot_offline": "ボットはDiscordに接続されていません",
       "invalid_response": "応答が契約と一致しません",
       "probe_unavailable": "HTTP監視が利用できないか、応答が無効です",
       "database_ok": "サイトのデータベースでSELECT 1が成功しました",
