@@ -78,6 +78,19 @@ export async function stageOwnedFile(
     files.some((p) => !/^(?:[a-f0-9]{64}\.blob|assets-[0-9]{4}\.tar\.gz)(?:\.part)?$/.test(p))
   )
     throw new Error("Rolling window exceeds two volumes");
+  let windowBytes = 0;
+  for (const name of files) {
+    const info = await lstat(join(root, name));
+    if (
+      !info.isFile() ||
+      info.isSymbolicLink() ||
+      (process.platform !== "win32" && (info.uid !== rootInfo.uid || info.mode & 0o077))
+    )
+      throw new Error("Rolling window file ownership differs");
+    windowBytes += info.size;
+    if (!Number.isSafeInteger(windowBytes) || windowBytes > 128 * 1024 * 1024)
+      throw new Error("Rolling window byte budget exceeded");
+  }
   const bytes = await Bun.file(input.input).bytes();
   if (bytes.length !== input.size || digest(bytes) !== input.sha256)
     throw new Error("Staged input bytes differ");
@@ -144,15 +157,32 @@ export async function stageOwnedFile(
   const body = JSON.stringify(receipt),
     receiptPath = join(receiptRoot, input.sha256 + ".json");
   await writeFile(receiptPath, body, { mode: 0o600, flag: "wx" });
-  const after = await lstat(input.input);
-  if (
-    after.ino !== fileInfo.ino ||
-    after.size !== fileInfo.size ||
-    after.mtimeMs !== fileInfo.mtimeMs ||
-    after.isSymbolicLink()
-  )
-    throw new Error("Input changed after staging; qualified receipt retained");
-  await unlink(input.input);
+  const sameFile = async () => {
+    const after = await lstat(input.input);
+    return (
+      after.isFile() &&
+      !after.isSymbolicLink() &&
+      after.dev === fileInfo.dev &&
+      after.ino === fileInfo.ino &&
+      after.uid === fileInfo.uid &&
+      after.size === fileInfo.size &&
+      after.mtimeMs === fileInfo.mtimeMs &&
+      (await realpath(input.input)) === join(root, filename)
+    );
+  };
+  let inputDeleted = false;
+  try {
+    if (await sameFile()) {
+      const current = await Bun.file(input.input).bytes();
+      if (current.length === input.size && digest(current) === input.sha256 && (await sameFile())) {
+        await unlink(input.input);
+        inputDeleted = true;
+      }
+    }
+  } catch {
+    /* The durable original qualification survives any input conflict. */
+  }
+
   return {
     qualified: true,
     key,
@@ -164,7 +194,8 @@ export async function stageOwnedFile(
     totalMs: receipt.totalMs,
     receiptPath,
     receiptSha256: digest(body),
-    inputDeleted: true,
+    inputDeleted,
+    inputConflict: !inputDeleted,
   };
 }
 export async function run(args: string[]) {
