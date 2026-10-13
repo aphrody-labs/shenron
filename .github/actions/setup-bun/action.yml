@@ -29,10 +29,33 @@ runs:
         [ "$("$native" --revision)" = '1.4.4+dfde053a3' ] || { echo "Factory Bun revision differs" >&2; exit 1; }
         echo "$(dirname "$native")" >> "$GITHUB_PATH"
         echo "SHENRON_BUN_EXECUTABLE=$native" >> "$GITHUB_ENV"
-    - uses: aphrody-labs/bun/.github/actions/setup-bun@main
+    - name: Download the exact public owner runtime
       if: runner.environment != 'self-hosted'
-      with:
-        bun-version: ${{ steps.fork.outputs.tag }}
+      shell: bash
+      env:
+        SHENRON_EXPECTED_BUN: ${{ steps.fork.outputs.tag }}
+      run: |
+        set -euo pipefail
+        case "$RUNNER_OS" in
+          Linux) os=linux;; macOS) os=darwin;; Windows) os=windows;;
+          *) echo "Unsupported native runtime platform" >&2; exit 1;;
+        esac
+        case "$RUNNER_ARCH" in
+          X64) arch=x64;; ARM64) arch=aarch64;;
+          *) echo "Unsupported native runtime architecture" >&2; exit 1;;
+        esac
+        [[ "$SHENRON_EXPECTED_BUN" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Invalid pinned runtime version" >&2; exit 1; }
+        asset="bun-$os-$arch"
+        stage="$RUNNER_TEMP/shenron-native-bun-$GITHUB_RUN_ID-$RUNNER_OS-$RUNNER_ARCH"
+        mkdir -p "$stage"
+        base="https://github.com/aphrody-labs/bun/releases/download/bun-v$SHENRON_EXPECTED_BUN"
+        curl -fsSL --retry 3 "$base/$asset.zip" -o "$stage/runtime.zip" || { echo "The exact public Aphrody runtime is unavailable" >&2; exit 1; }
+        curl -fsSL --retry 3 "$base/SHA256SUMS.txt" -o "$stage/SHA256SUMS.txt"
+        expected=$(awk -v name="$asset.zip" '$2 == name || $2 == "*" name { print $1 }' "$stage/SHA256SUMS.txt")
+        if command -v sha256sum >/dev/null; then actual=$(sha256sum "$stage/runtime.zip" | cut -d ' ' -f 1); else actual=$(shasum -a 256 "$stage/runtime.zip" | cut -d ' ' -f 1); fi
+        [[ "$expected" =~ ^[a-f0-9]{64}$ ]] && [ "$expected" = "$actual" ] || { echo "Owner runtime checksum differs" >&2; exit 1; }
+        unzip -q "$stage/runtime.zip" -d "$stage"
+        echo "$stage/$asset" >> "$GITHUB_PATH"
     - name: Verify the pinned native runtime
       shell: bash
       env:
