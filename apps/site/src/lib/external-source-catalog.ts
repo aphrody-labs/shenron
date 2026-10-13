@@ -123,8 +123,8 @@ export async function searchExternalSources({
 }: ExternalSourceSearch = {}): Promise<ExternalSourceCatalog> {
   const query = q.trim().slice(0, 120);
   const selectedKind = EXTERNAL_SOURCE_KINDS.includes(kind as ExternalSourceKind) ? kind : "";
-  const take = Math.max(1, Math.min(Math.trunc(limit), MAX_LIMIT));
-  const skip = Math.max(0, Math.min(Math.trunc(offset), 10_000));
+  const take = Number.isFinite(limit) ? Math.max(1, Math.min(Math.trunc(limit), MAX_LIMIT)) : 18;
+  const skip = Number.isSafeInteger(Math.trunc(offset)) ? Math.max(0, Math.trunc(offset)) : 0;
 
   try {
     const result = await db.execute(sql`

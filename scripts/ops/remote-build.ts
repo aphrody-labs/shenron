@@ -54,4 +54,3 @@ if (mode === "doctor") process.exit(0);
 const releaseArgs = mode === "build" ? ["--no-deploy"] : mode === "cdn" ? ["--cdn-only"] : [];
 const code = await run(process.execPath, ["scripts/ops/release.ts", ...releaseArgs]);
 process.exit(code);
-

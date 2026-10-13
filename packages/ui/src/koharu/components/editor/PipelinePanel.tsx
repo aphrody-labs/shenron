@@ -29,9 +29,7 @@ export function PipelinePanel() {
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-[11px] font-medium">{t("menu.process")}</p>
-          <p className="truncate text-[9px] text-muted-foreground">
-            {t("activity.title")}
-          </p>
+          <p className="truncate text-[9px] text-muted-foreground">{t("activity.title")}</p>
         </div>
         <ResourceMonitor />
       </div>
@@ -86,7 +84,9 @@ export function PipelinePanel() {
                     <LoaderCircle className="size-3.5 animate-spin text-primary motion-reduce:animate-none" />
                   )}
                   <span className="min-w-0 flex-1 truncate font-medium">
-                    {job.stage ? t(`phase.${job.stage}`, { defaultValue: job.stage }) : t("activity.processing")}
+                    {job.stage
+                      ? t(`phase.${job.stage}`, { defaultValue: job.stage })
+                      : t("activity.processing")}
                   </span>
                   {job.state === "running" ? (
                     <Button
@@ -108,13 +108,14 @@ export function PipelinePanel() {
                     className="mt-2 h-1 w-full accent-primary"
                   />
                 )}
-                {job.model ? <p className="mt-1 truncate text-[9px] text-muted-foreground">{job.model}</p> : null}
+                {job.model ? (
+                  <p className="mt-1 truncate text-[9px] text-muted-foreground">{job.model}</p>
+                ) : null}
               </div>
             ))}
           </div>
         )}
       </div>
-
     </div>
   );
 }

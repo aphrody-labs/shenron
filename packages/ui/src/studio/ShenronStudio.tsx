@@ -266,7 +266,11 @@ export function ShenronStudio() {
               title="Pipeline Aphrody natif"
               standfirst="Capacités réellement fournies par les sidecars locaux."
               actions={
-                <button type="button" className={primaryButtonClass} onClick={() => void nativeAi.openAdmin()}>
+                <button
+                  type="button"
+                  className={primaryButtonClass}
+                  onClick={() => void nativeAi.openAdmin()}
+                >
                   Ouvrir le cockpit
                 </button>
               }

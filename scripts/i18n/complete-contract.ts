@@ -55,7 +55,9 @@ const report = {
 };
 
 const missing = report.domains.flatMap((domain) =>
-  domain.locales.flatMap((locale) => locale.missing.map((key) => `${domain.domain}/${locale.locale}:${key}`)),
+  domain.locales.flatMap((locale) =>
+    locale.missing.map((key) => `${domain.domain}/${locale.locale}:${key}`),
+  ),
 );
 await mkdir(dirname(join(root, output)), { recursive: true });
 await Bun.write(join(root, output), `${JSON.stringify(report, null, 2)}\n`);
@@ -75,7 +77,8 @@ async function findJsonFiles(roots: string[]): Promise<string[]> {
   const found: string[] = [];
   for (const base of roots) {
     try {
-      for await (const entry of new Bun.Glob("**/*.json").scan({ cwd: base, absolute: true })) found.push(entry);
+      for await (const entry of new Bun.Glob("**/*.json").scan({ cwd: base, absolute: true }))
+        found.push(entry);
     } catch {
       // Un domaine absent reste documenté par les domaines présents.
     }
@@ -84,7 +87,10 @@ async function findJsonFiles(roots: string[]): Promise<string[]> {
 }
 
 function localeFromPath(path: string): string | undefined {
-  const name = path.split(/[\\/]/).at(-1)?.replace(/\.json$/, "");
+  const name = path
+    .split(/[\\/]/)
+    .at(-1)
+    ?.replace(/\.json$/, "");
   const directory = path.split(/[\\/]/).at(-2);
   if (directory && /^(?:[a-z]{2}(?:-[A-Z]{2})?)$/.test(directory)) return directory;
   return name && /^(?:[a-z]{2}(?:-[A-Z]{2})?)$/.test(name) ? name : undefined;
@@ -95,6 +101,9 @@ function domainFromPath(path: string): string {
 }
 
 function flattenKeys(value: Json, prefix = ""): string[] {
-  if (value === null || typeof value !== "object" || Array.isArray(value)) return prefix ? [prefix] : [];
-  return Object.entries(value).flatMap(([key, child]) => flattenKeys(child, prefix ? `${prefix}.${key}` : key));
+  if (value === null || typeof value !== "object" || Array.isArray(value))
+    return prefix ? [prefix] : [];
+  return Object.entries(value).flatMap(([key, child]) =>
+    flattenKeys(child, prefix ? `${prefix}.${key}` : key),
+  );
 }
