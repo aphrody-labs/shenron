@@ -4,7 +4,8 @@
  * (`APHRODY_A2A_COORD_API`, see `a2a-remote.ts`) is not configured.
  *
  * Directory: `SHENRON_A2A_STORE_DIR`, else, in production, `<A2A_COORD_DIR>/shenron-dragonball`
- * (the site and the bot share `A2A_COORD_DIR`). Otherwise the store is off and the hub stays in
+ * (the site and the bot share `A2A_COORD_DIR`), else `<SHENRON_HOME>/data/a2a/shenron-dragonball`.
+ * Otherwise the store is off and the hub stays in
  * memory: development and tests write no file unless they name the directory.
  *
  * Layout: one `tasks/<id>.json` per task (written to a temporary file then renamed, so a reader
@@ -27,7 +28,9 @@ export function fileStoreDir(source?: NodeJS.ProcessEnv): string | null {
   const explicit = env.SHENRON_A2A_STORE_DIR?.trim();
   if (explicit) return explicit;
   const coord = env.NODE_ENV === "production" ? env.A2A_COORD_DIR?.trim() : undefined;
-  return coord ? path.join(coord, AGENT) : null;
+  if (coord) return path.join(coord, AGENT);
+  const home = env.NODE_ENV === "production" ? env.SHENRON_HOME?.trim() : undefined;
+  return home ? path.join(home, "data", "a2a", AGENT) : null;
 }
 
 export function fileStoreEnabled(): boolean {
@@ -89,7 +92,7 @@ export async function listFileTasks(target?: A2ATarget): Promise<A2ATask[]> {
     return [];
   }
   // Ids start with `task-<epoch ms>`: a reverse sort reads the newest first.
-  const ordered = names.toSorted().reverse();
+  const ordered = names.toSorted().toReversed();
   const tasks: A2ATask[] = [];
   for (const name of ordered.slice(0, MAX_LISTED_TASKS)) {
     const task = await readTask(path.join(dir, name));
