@@ -5,6 +5,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { LOCALES_INFO, SUPPORTED_LOCALES, type SupportedLocale } from "@/lib/i18n";
 import { useLangue } from "@/lib/i18n/client";
 import { ChevronBas } from "@aphrody/shenron-ui/icones";
+import { TranslateIcon } from "@aphrody/shenron-ui/material-symbols";
 
 /**
  * Le code affiché dans le bouton. `ja` se dit « JP » pour un lecteur français,
@@ -74,9 +75,13 @@ export function LanguageSwitcher({
         aria-label={`${dico.common.language} : ${current.nativeName}`}
         className={`shenron-language-trigger ${variant === "compact" ? "is-compact" : ""}`}
       >
-        <span className="font-mono text-xs font-black uppercase tracking-wider">
-          {CODE_AFFICHE(current.code)}
-        </span>
+        {variant === "compact" ? (
+          <TranslateIcon size={22} />
+        ) : (
+          <span className="font-mono text-xs font-black uppercase tracking-wider">
+            {CODE_AFFICHE(current.code)}
+          </span>
+        )}
         {variant === "default" && (
           <ChevronBas
             className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`}
@@ -92,7 +97,9 @@ export function LanguageSwitcher({
             drop === "up" ? "bottom-full mb-2" : "top-full mt-2"
           }`}
         >
-          <div className="px-3 py-1.5 text-xs font-bold text-os/60">{dico.common.language}</div>
+          <div className="px-3 py-1.5 text-xs font-bold text-muted-foreground">
+            {dico.common.language}
+          </div>
           <ul className="flex flex-col gap-0.5">
             {SUPPORTED_LOCALES.map((code) => {
               const info = LOCALES_INFO[code];
@@ -111,7 +118,7 @@ export function LanguageSwitcher({
                     className="shenron-language-option"
                   >
                     <span lang={code}>{info.nativeName}</span>
-                    <span className="font-mono text-xs font-bold uppercase tracking-wider opacity-70">
+                    <span className="font-mono text-xs font-bold uppercase tracking-wider">
                       {CODE_AFFICHE(code)}
                     </span>
                   </button>
@@ -121,7 +128,7 @@ export function LanguageSwitcher({
           </ul>
           {/* Dire ce qui change vraiment. Le site a une doctrine : ne jamais
 					    présenter comme traduit ce qui ne l'est pas. */}
-          <p className="mt-1 border-t border-os/15 px-3 py-2 text-xs leading-relaxed text-os/65">
+          <p className="mt-1 border-t border-border px-3 py-2 text-xs leading-relaxed text-muted-foreground">
             {dico.common.uiOnly}
           </p>
         </div>

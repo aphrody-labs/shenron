@@ -9,6 +9,7 @@
  */
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { FlecheDroite } from "@aphrody/shenron-ui/icones";
 import { blockTitle, focusRing } from "./ui";
 
 export function HomeSection({
@@ -37,15 +38,19 @@ export function HomeSection({
             {title}
           </h2>
           {subtitle ? (
-            <p className="mt-1 max-w-[72ch] text-sm leading-relaxed text-os/70">{subtitle}</p>
+            <p className="mt-1 max-w-[72ch] text-sm leading-relaxed text-muted-foreground">
+              {subtitle}
+            </p>
           ) : null}
         </div>
         {moreHref && moreLabel ? (
           <Link
             href={moreHref}
-            className={`inline-flex min-h-11 items-center rounded-md text-sm font-semibold text-dbz-orange transition-colors hover:text-gi-clair ${focusRing}`}
+            aria-describedby={titleId}
+            className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl text-primary transition-colors hover:bg-secondary hover:text-secondary-foreground ${focusRing}`}
           >
-            {moreLabel}
+            <FlecheDroite size={22} />
+            <span className="sr-only">{moreLabel}</span>
           </Link>
         ) : null}
       </div>

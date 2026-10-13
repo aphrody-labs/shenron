@@ -25,6 +25,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
   type ComponentType,
   type MouseEvent,
   type ReactNode,
@@ -34,6 +35,7 @@ import { SHELL_SIDEBAR_ATTR, SHELL_SIDEBAR_KEY } from "./ShellBoot";
 import { ShellSidebar } from "./ShellSidebar";
 import { ShellTabBar } from "./ShellTabBar";
 import { ShellTopBar } from "./ShellTopBar";
+import { shellCrumbKey } from "./crumb-key";
 
 // ── Modèle ──────────────────────────────────────────────────────────────────
 
@@ -137,6 +139,8 @@ export interface AppShellProps {
   actions?: ReactNode;
   /** Bloc compte en pied de barre latérale (desktop). */
   account?: ReactNode;
+  /** Compact account action for the public desktop toolbar. */
+  desktopAccount?: ReactNode;
   /** Accès au compte dans la barre du haut (mobile). */
   mobileAccount?: ReactNode;
   /** Bas de la feuille mobile (paramètres, déconnexion…). */
@@ -226,6 +230,29 @@ function writeCollapsed(collapsed: boolean): void {
   }
 }
 
+function subscribeSidebar(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: [SHELL_SIDEBAR_ATTR],
+  });
+  const sync = (event: StorageEvent) => {
+    if (event.key !== SHELL_SIDEBAR_KEY) return;
+    if (event.newValue === "collapsed") {
+      document.documentElement.setAttribute(SHELL_SIDEBAR_ATTR, "collapsed");
+    } else {
+      document.documentElement.removeAttribute(SHELL_SIDEBAR_ATTR);
+    }
+  };
+  window.addEventListener("storage", sync);
+  return () => {
+    observer.disconnect();
+    window.removeEventListener("storage", sync);
+  };
+}
+const serverFalse = () => false;
+const subscribeRuntime = () => () => {};
+
 /** Le focus est-il dans un champ ou un éditeur riche (où ⌘B veut dire « gras ») ? */
 function editingText(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
@@ -244,6 +271,7 @@ export function AppShell({
   linkComponent = "a",
   actions,
   account,
+  desktopAccount,
   mobileAccount,
   sheetFooter,
   footer,
@@ -253,27 +281,21 @@ export function AppShell({
   siteStyle = false,
   children,
 }: AppShellProps) {
-  const [collapsed, setCollapsed] = useState(false);
+  const collapsed = useSyncExternalStore(subscribeSidebar, readCollapsed, serverFalse);
   const [commandOpen, setCommandOpen] = useState(false);
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [sheet, setSheet] = useState({ pathname, open: false });
+  const sheetOpen = sheet.pathname === pathname && sheet.open;
+  if (sheet.pathname !== pathname) setSheet({ pathname, open: false });
+  const setSheetOpen = useCallback((open: boolean) => setSheet({ pathname, open }), [pathname]);
   const [trails, setTrails] = useState<{ id: number; trail: readonly ShellCrumb[] }[]>([]);
   const [contextNavs, setContextNavs] = useState<{ id: number; nav: ShellContextNavValue }[]>([]);
-  const [tauri, setTauri] = useState(forcedTauri ?? false);
+  const detectedTauri = useSyncExternalStore(subscribeRuntime, isTauri, serverFalse);
+  const tauri = forcedTauri ?? detectedTauri;
   const nextId = useRef(0);
-
-  useEffect(() => {
-    setCollapsed(readCollapsed());
-    if (forcedTauri === undefined) setTauri(isTauri());
-  }, [forcedTauri]);
 
   useEffect(() => {
     document.documentElement.toggleAttribute("data-tauri", tauri);
   }, [tauri]);
-
-  // La feuille se referme sur navigation : un retour arrière la laisserait ouverte.
-  useEffect(() => {
-    setSheetOpen(false);
-  }, [pathname]);
 
   // CSS hides the mobile drawer on desktop; its modal state must close too,
   // otherwise focus and scroll remain trapped behind an invisible overlay.
@@ -286,18 +308,14 @@ export function AppShell({
     closeOnDesktop();
     desktop.addEventListener("change", closeOnDesktop);
     return () => desktop.removeEventListener("change", closeOnDesktop);
-  }, []);
+  }, [setSheetOpen]);
 
   const toggleSidebar = useCallback(() => {
-    setCollapsed((current) => {
-      writeCollapsed(!current);
-      return !current;
-    });
+    writeCollapsed(!readCollapsed());
   }, []);
 
   const expandSidebar = useCallback(() => {
     writeCollapsed(false);
-    setCollapsed(false);
   }, []);
 
   const hasCommand = renderCommand !== undefined;
@@ -363,7 +381,7 @@ export function AppShell({
       onSearchIntent={onCommandIntent}
       actions={actions}
       mobileAccount={mobileAccount}
-      desktopAccount={account}
+      desktopAccount={desktopAccount ?? account}
       siteStyle={siteStyle}
       tauri={tauri}
       labels={labels}
@@ -437,7 +455,7 @@ export function CrumbList({
         {items.map((crumb, index) => {
           const last = index === items.length - 1;
           return (
-            <li key={index} className="flex min-w-0 items-center gap-x-2">
+            <li key={shellCrumbKey(crumb)} className="flex min-w-0 items-center gap-x-2">
               {index > 0 && (
                 <span aria-hidden className="text-os/25">
                   /

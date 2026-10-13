@@ -92,10 +92,17 @@ test.skipIf(typeof document === "undefined")(
           </LocaleProvider>,
         ),
       );
-      expect(container!.querySelectorAll('a[href="/admin"]').length).toBe(expected);
-      expect(container!.querySelectorAll('a[href="/dashboard"]').length).toBe(
-        authenticated ? 1 : 0,
-      );
+      const trigger = container!.querySelector<HTMLButtonElement>(".shenron-account-trigger");
+      expect(container!.querySelectorAll("button").length).toBe(1);
+      if (trigger) await act(async () => trigger.click());
+      expect(document.querySelectorAll('a[href="/admin"]').length).toBe(expected);
+      expect(document.querySelectorAll('a[href="/dashboard"]').length).toBe(authenticated ? 1 : 0);
+      if (trigger) {
+        await act(async () =>
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true })),
+        );
+        expect(trigger.getAttribute("aria-expanded")).toBe("false");
+      }
     }
   },
 );

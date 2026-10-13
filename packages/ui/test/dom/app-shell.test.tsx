@@ -3,13 +3,16 @@
 // the click; nothing in the shell covers or disables the page.
 import { afterEach, describe, expect, test } from "bun:test";
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { useState, type MouseEvent } from "react";
+import { createContext, useContext, useState, type MouseEvent } from "react";
 import { AppShell, type ShellLinkProps, type ShellNavSection } from "../../src/navigation/AppShell";
+import { SHELL_SIDEBAR_ATTR, SHELL_SIDEBAR_KEY } from "../../src/navigation/ShellBoot";
 
 const originalMatchMedia = window.matchMedia;
 afterEach(() => {
   cleanup();
   window.matchMedia = originalMatchMedia;
+  document.documentElement.removeAttribute(SHELL_SIDEBAR_ATTR);
+  localStorage.removeItem(SHELL_SIDEBAR_KEY);
 });
 
 const sections: ShellNavSection[] = [
@@ -24,40 +27,93 @@ const sections: ShellNavSection[] = [
   },
 ];
 
-function Harness({ siteStyle = false }: { siteStyle?: boolean } = {}) {
-  const [pathname, setPathname] = useState("/");
-  const visited: string[] = [];
-  const Link = ({ href, children, onClick, ...rest }: ShellLinkProps) => (
+const NavigateContext = createContext<(pathname: string) => void>(() => {});
+function HarnessLink({ href, children, onClick, ...rest }: ShellLinkProps) {
+  const navigate = useContext(NavigateContext);
+  return (
     <a
       href={href}
       {...rest}
       onClick={(event: MouseEvent<HTMLAnchorElement>) => {
         onClick?.(event);
         event.preventDefault();
-        visited.push(href);
-        setPathname(href);
+        navigate(href);
       }}
     >
       {children}
     </a>
   );
+}
+function Harness({ siteStyle = false }: { siteStyle?: boolean } = {}) {
+  const [pathname, setPathname] = useState("/");
   return (
-    <AppShell
-      pathname={pathname}
-      siteStyle={siteStyle}
-      brand={{ href: "/", label: "Home page", mark: null, name: "Dragon Ball" }}
-      sections={sections}
-      tabs={[{ href: "/", label: "Home tab" }]}
-      linkComponent={Link}
-      tauri={false}
-    >
-      <p data-testid="path">{pathname}</p>
-      <Link href="/news">Latest news</Link>
-    </AppShell>
+    <NavigateContext.Provider value={setPathname}>
+      <AppShell
+        pathname={pathname}
+        siteStyle={siteStyle}
+        brand={{ href: "/", label: "Home page", mark: null, name: "Dragon Ball" }}
+        sections={sections}
+        tabs={[{ href: "/", label: "Home tab" }]}
+        linkComponent={HarnessLink}
+        tauri={false}
+      >
+        <p data-testid="path">{pathname}</p>
+        <HarnessLink href="/news">Latest news</HarnessLink>
+      </AppShell>
+    </NavigateContext.Provider>
   );
 }
 
 describe("AppShell clicks", () => {
+  test("route changes dismiss the sheet and back navigation does not reopen it", async () => {
+    const shell = (pathname: string) => (
+      <AppShell
+        pathname={pathname}
+        brand={{ href: "/", label: "Home page", name: "Dragon Ball", mark: null }}
+        sections={sections}
+        tabs={[]}
+        tauri={false}
+      >
+        <h1>{pathname}</h1>
+      </AppShell>
+    );
+    const { rerender } = render(shell("/"));
+    fireEvent.click(screen.getByRole("button", { name: "Plus" }));
+    await screen.findByRole("dialog");
+    rerender(shell("/wiki/characters"));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    rerender(shell("/"));
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(screen.getByRole("button", { name: "Plus" }).getAttribute("aria-expanded")).toBe(
+      "false",
+    );
+  });
+
+  test("sidebar follows its boot preference and storage changes", async () => {
+    document.documentElement.setAttribute(SHELL_SIDEBAR_ATTR, "collapsed");
+    render(<Harness />);
+    expect(
+      screen.getAllByRole("button", { name: "Déplier la barre latérale" }).length,
+    ).toBeGreaterThan(0);
+    await act(async () => {
+      window.dispatchEvent(
+        new StorageEvent("storage", { key: SHELL_SIDEBAR_KEY, newValue: "expanded" }),
+      );
+    });
+    expect(document.documentElement.hasAttribute(SHELL_SIDEBAR_ATTR)).toBe(false);
+    expect(
+      screen.getAllByRole("button", { name: "Replier la barre latérale" }).length,
+    ).toBeGreaterThan(0);
+    await act(async () => {
+      document.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "b", ctrlKey: true, bubbles: true }),
+      );
+    });
+    expect(localStorage.getItem(SHELL_SIDEBAR_KEY)).toBe("collapsed");
+    expect(
+      screen.getAllByRole("button", { name: "Déplier la barre latérale" }).length,
+    ).toBeGreaterThan(0);
+  });
   test("the public site uses a horizontal navigation without changing app navigation", async () => {
     const { container } = render(<Harness siteStyle />);
     const shell = container.querySelector('[data-shell-variant="site"]');

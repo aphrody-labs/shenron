@@ -14,6 +14,7 @@
 }
 .shenron-language-trigger.is-compact {
   inline-size: 2.75rem;
+  flex-shrink: 0;
   padding-inline: 0;
 }
 .shenron-language-trigger:hover,
@@ -62,6 +63,27 @@
   justify-content: center;
   padding: 0;
   border-radius: 0.875rem;
+  background: var(--card);
+  color: var(--card-foreground);
+}
+.shenron-theme-choice.is-compact:hover {
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+}
+.shenron-account-option {
+  display: flex;
+  min-block-size: 2.75rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding-inline: 0.75rem;
+  border-radius: 0.75rem;
+  color: var(--popover-foreground);
+  text-align: start;
+  font-weight: 600;
+}
+.shenron-account-option:hover {
+  background: var(--secondary);
+  color: var(--secondary-foreground);
 }
 .shenron-theme-choice.is-compact select {
   position: absolute;

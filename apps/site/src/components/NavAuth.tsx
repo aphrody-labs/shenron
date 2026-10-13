@@ -7,6 +7,7 @@ import { SignOut } from "@/components/SignOut";
 import { Curseurs, DragonBall } from "@aphrody/shenron-ui/icones";
 import { useMe } from "@/lib/use-me";
 import { useLangue } from "@/lib/i18n/client";
+import { Popover, PopoverPopup, PopoverTitle, PopoverTrigger } from "@aphrody/shenron-ui/popover";
 
 /**
  * Le compte dans le shell (îlot client). L'état d'auth vient de `/api/me` côté client : le
@@ -20,9 +21,9 @@ import { useLangue } from "@/lib/i18n/client";
  * The administration entry follows the authenticated response from `/api/me`.
  */
 const FOCUS =
-  "focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-dbz-orange";
+  "focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring";
 const ICON =
-  "grid h-11 w-11 shrink-0 place-items-center rounded-lg text-os/70 transition-colors hover:bg-os/[0.07] hover:text-os";
+  "grid h-11 w-11 shrink-0 place-items-center rounded-xl text-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground";
 
 function LogoutGlyph() {
   return (
@@ -54,29 +55,37 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
 
   if (variant === "compact") {
     return me.authenticated ? (
-      <div className="flex shrink-0 items-center gap-1">
-        {me.isAdmin && (
-          <Link
-            href="/admin"
-            aria-label={dico.nav.admin}
-            title={dico.nav.admin}
-            className={`${ICON} ${FOCUS}`}
-          >
-            <Curseurs size={20} />
-          </Link>
-        )}
-        <Link
-          href="/dashboard"
+      <Popover>
+        <PopoverTrigger
           aria-label={me.username ? `${dico.common.mySpace} — ${me.username}` : dico.common.mySpace}
-          className={`grid h-11 w-11 place-items-center rounded-full transition-colors hover:bg-os/[0.08] ${FOCUS}`}
+          className={`shenron-account-trigger ${ICON} ${FOCUS}`}
         >
-          <Avatar src={me.avatar} size={28} className="ring-1 ring-white/15" />
-        </Link>
-      </div>
+          <Avatar src={me.avatar} size={28} className="ring-1 ring-border" />
+        </PopoverTrigger>
+        <PopoverPopup variant="planche" align="end" className="w-60 max-w-[calc(100vw-1rem)] gap-1">
+          <PopoverTitle className="px-3 py-2">{me.username ?? dico.common.mySpace}</PopoverTitle>
+          <Link href="/dashboard" className={`shenron-account-option ${FOCUS}`}>
+            <DragonBall size={18} />
+            {dico.common.mySpace}
+          </Link>
+          {me.isAdmin && (
+            <Link href="/admin" className={`shenron-account-option ${FOCUS}`}>
+              <Curseurs size={18} />
+              {dico.nav.admin}
+            </Link>
+          )}
+          <Link href="/settings" className={`shenron-account-option ${FOCUS}`}>
+            <Curseurs size={18} />
+            {dico.mobileNav.accountSettings}
+          </Link>
+          <SignOut className={`shenron-account-option w-full disabled:opacity-50 ${FOCUS}`}>
+            <LogoutGlyph />
+            {dico.common.signOut}
+          </SignOut>
+        </PopoverPopup>
+      </Popover>
     ) : (
-      <SignInDiscord
-        className={`grid h-11 w-11 place-items-center rounded-full text-os/70 transition-colors hover:bg-os/[0.08] hover:text-os ${FOCUS}`}
-      >
+      <SignInDiscord className={`${ICON} ${FOCUS}`}>
         <DragonBall size={20} />
         {/* `SignInDiscord` ne relaie pas `aria-label` : le nom vient du texte masqué. */}
         <span className="sr-only">{dico.common.signInDiscord}</span>
@@ -88,14 +97,14 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
     if (!me.authenticated) {
       return (
         <SignInDiscord
-          className={`flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-dbz-orange font-display text-[0.875rem] font-bold text-black ${FOCUS}`}
+          className={`flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary font-display text-[0.875rem] font-bold text-primary-foreground ${FOCUS}`}
         >
           <DragonBall size={18} />
           {dico.common.signInDiscord}
         </SignInDiscord>
       );
     }
-    const row = `flex min-h-12 items-center gap-3 rounded-xl px-4 font-display text-[0.875rem] font-semibold text-os/80 transition-colors hover:bg-os/[0.06] hover:text-os ${FOCUS}`;
+    const row = `flex min-h-12 items-center gap-3 rounded-xl px-4 font-display text-[0.875rem] font-semibold text-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground ${FOCUS}`;
     return (
       <div className="flex flex-col">
         {me.isAdmin && (
@@ -120,7 +129,7 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
   if (!me.authenticated) {
     return (
       <SignInDiscord
-        className={`flex min-h-11 w-full items-center gap-3 rounded-lg border border-dbz-orange/50 bg-dbz-orange/10 px-3 font-display text-[0.8125rem] font-bold text-dbz-orange transition-colors hover:bg-dbz-orange hover:text-black ${FOCUS}`}
+        className={`flex min-h-11 w-full items-center gap-3 rounded-lg border border-border bg-secondary px-3 font-display text-[0.8125rem] font-bold text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground ${FOCUS}`}
       >
         <DragonBall size={18} />
         {dico.common.signInDiscord}
@@ -132,10 +141,10 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
       <Link
         href="/dashboard"
         title={me.username ? `${dico.common.mySpace} — ${me.username}` : dico.common.mySpace}
-        className={`flex min-h-11 min-w-0 flex-1 items-center gap-2.5 rounded-lg px-2 transition-colors hover:bg-os/[0.06] ${FOCUS}`}
+        className={`flex min-h-11 min-w-0 flex-1 items-center gap-2.5 rounded-lg px-2 text-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground ${FOCUS}`}
       >
-        <Avatar src={me.avatar} size={28} className="shrink-0 ring-1 ring-white/15" />
-        <span className="min-w-0 truncate text-[0.8125rem] font-semibold text-os/85">
+        <Avatar src={me.avatar} size={28} className="shrink-0 ring-1 ring-border" />
+        <span className="min-w-0 truncate text-[0.8125rem] font-semibold">
           {me.username ?? dico.common.mySpace}
         </span>
       </Link>

@@ -10,9 +10,10 @@ import { useSyncExternalStore, type ReactNode } from "react";
 import { ChevronGauche, Recherche } from "../icones";
 import type { ShellBrand, ShellCrumb, ShellLabels, ShellLinkComponent } from "./AppShell";
 import { WindowControls, useUndecoratedWindow } from "./WindowControls";
+import { shellCrumbKey } from "./crumb-key";
 
 const ICON_BUTTON =
-  "grid h-11 w-11 shrink-0 place-items-center rounded-xl text-os/70 transition-colors hover:bg-os/[0.07] hover:text-os focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-kinto-lumiere";
+  "grid h-11 w-11 shrink-0 place-items-center rounded-xl text-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring";
 const SITE_BRAND_FOCUS =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere";
 
@@ -86,7 +87,9 @@ export function ShellTopBar({
                 {brand.name}
               </span>
               {brand.tagline && (
-                <span className="mt-0.5 truncate text-[0.6875rem] text-os/55">{brand.tagline}</span>
+                <span className="mt-0.5 truncate text-[0.6875rem] text-muted-foreground">
+                  {brand.tagline}
+                </span>
               )}
             </span>
           </Link>
@@ -139,14 +142,11 @@ export function ShellTopBar({
           )}
           {trail.length > 0 && (
             <nav aria-label={labels.breadcrumb} className="hidden min-w-0 lg:block">
-              <ol className="flex min-w-0 items-center gap-x-2 text-[0.8125rem] text-os/55">
+              <ol className="flex min-w-0 items-center gap-x-2 text-[0.8125rem] text-muted-foreground">
                 {trail.map((crumb, index) => {
                   const last = index === trail.length - 1;
                   return (
-                    <li
-                      key={crumb.href ?? String(crumb.label)}
-                      className="flex min-w-0 items-center gap-x-2"
-                    >
+                    <li key={shellCrumbKey(crumb)} className="flex min-w-0 items-center gap-x-2">
                       {index > 0 && (
                         <span aria-hidden className="text-os/25">
                           /
@@ -155,14 +155,14 @@ export function ShellTopBar({
                       {crumb.href && !last ? (
                         <Link
                           href={crumb.href}
-                          className="max-w-[16rem] truncate rounded-sm transition-colors hover:text-kinto-lumiere focus-visible:outline-2 focus-visible:outline-kinto-lumiere"
+                          className="inline-flex min-h-11 min-w-11 max-w-[16rem] items-center truncate rounded-lg px-2 transition-colors hover:bg-secondary hover:text-secondary-foreground focus-visible:outline-2 focus-visible:outline-ring"
                         >
                           {crumb.label}
                         </Link>
                       ) : (
                         <span
                           aria-current={last ? "page" : undefined}
-                          className={`max-w-[28rem] truncate ${last ? "font-medium text-os/90" : ""}`}
+                          className={`max-w-[28rem] truncate ${last ? "font-medium text-foreground" : ""}`}
                         >
                           {crumb.label}
                         </span>
@@ -182,16 +182,25 @@ export function ShellTopBar({
             onPointerEnter={onSearchIntent}
             onFocus={onSearchIntent}
             aria-label={`${labels.search} (${shortcut})`}
+            title={`${labels.search} (${shortcut})`}
             aria-keyshortcuts="Control+K Meta+K"
-            className="grid h-11 min-w-11 shrink-0 place-items-center rounded-xl text-os/70 transition-colors hover:bg-os/[0.07] hover:text-os focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-kinto-lumiere md:flex md:h-11 md:min-w-[15rem] md:items-center md:gap-2.5 md:border md:border-os/15 md:bg-os/[0.03] md:px-3 md:text-left md:text-os/50"
+            className={
+              siteStyle
+                ? ICON_BUTTON
+                : "grid h-11 min-w-11 shrink-0 place-items-center rounded-xl text-os/70 transition-colors hover:bg-os/[0.07] hover:text-os focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring md:flex md:h-11 md:min-w-[15rem] md:items-center md:gap-2.5 md:border md:border-os/15 md:bg-os/[0.03] md:px-3 md:text-left md:text-os/50"
+            }
           >
             <Recherche size={18} className="shrink-0" />
-            <span className="hidden flex-1 truncate text-[0.8125rem] md:inline">
-              {labels.search}
-            </span>
-            <kbd className="hidden rounded border border-os/15 px-1.5 py-0.5 font-sans tabular-nums text-[0.6875rem] text-os/50 md:inline">
-              {shortcut}
-            </kbd>
+            {!siteStyle && (
+              <span className="hidden flex-1 truncate text-[0.8125rem] md:inline">
+                {labels.search}
+              </span>
+            )}
+            {!siteStyle && (
+              <kbd className="hidden rounded border border-os/15 px-1.5 py-0.5 font-sans tabular-nums text-[0.6875rem] text-os/50 md:inline">
+                {shortcut}
+              </kbd>
+            )}
           </button>
         )}
 
