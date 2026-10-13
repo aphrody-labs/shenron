@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { assetUrl } from "@/lib/assets";
@@ -20,6 +20,34 @@ import {
   type LibraryChapter,
   type LibraryVolume,
 } from "@/lib/manga-library";
+
+const LIBRARY_HISTORY_CHANGE = "dbfr:manga-library-history";
+function subscribeLibraryHistory(onChange: () => void) {
+  window.addEventListener("popstate", onChange);
+  window.addEventListener(LIBRARY_HISTORY_CHANGE, onChange);
+  return () => {
+    window.removeEventListener("popstate", onChange);
+    window.removeEventListener(LIBRARY_HISTORY_CHANGE, onChange);
+  };
+}
+function subscribeReadProgress(onChange: () => void) {
+  window.addEventListener("storage", onChange);
+  window.addEventListener("focus", onChange);
+  return () => {
+    window.removeEventListener("storage", onChange);
+    window.removeEventListener("focus", onChange);
+  };
+}
+function readProgressSnapshot() {
+  try {
+    return localStorage.getItem("dbfr_read_chapters") ?? "[]";
+  } catch {
+    return "[]";
+  }
+}
+const librarySearchSnapshot = () => window.location.search;
+const serverSearchSnapshot = () => "";
+const serverProgressSnapshot = () => "[]";
 
 export type Volume = LibraryVolume;
 interface MangaVolumeGridProps {
@@ -113,12 +141,32 @@ export function MangaVolumeGrid({
 }: MangaVolumeGridProps) {
   const ui = useMangaUIText();
   const t = useT();
-  const [collection, setCollection] = useState("all");
-  const [view, setView] = useState<"volumes" | "chapters">("volumes");
-  const [query, setQuery] = useState("");
-  const [availability, setAvailability] = useState<AvailabilityFilter>("all");
-  const [page, setPage] = useState(1);
-  const [readIds, setReadIds] = useState<number[]>(EMPTY_IDS);
+  const search = useSyncExternalStore(
+    subscribeLibraryHistory,
+    librarySearchSnapshot,
+    serverSearchSnapshot,
+  );
+  const params = new URLSearchParams(search);
+  const collection = params.get("collection") ?? "all";
+  const view = params.get("view") === "chapters" ? "chapters" : "volumes";
+  const query = params.get("q") ?? "";
+  const availability = readAvailability(search);
+  const page = Number(params.get("page")) || 1;
+  const savedProgress = useSyncExternalStore(
+    subscribeReadProgress,
+    readProgressSnapshot,
+    serverProgressSnapshot,
+  );
+  const readIds = useMemo(() => {
+    try {
+      const saved: unknown = JSON.parse(savedProgress);
+      return Array.isArray(saved)
+        ? [...new Set(saved.map(Number).filter((id) => Number.isSafeInteger(id) && id > 0))]
+        : EMPTY_IDS;
+    } catch {
+      return EMPTY_IDS;
+    }
+  }, [savedProgress]);
   const results = useRef<HTMLDivElement>(null);
   const volumes = useMemo(
     () =>
@@ -165,28 +213,6 @@ export function MangaVolumeGrid({
     (volume) => volume.series === "DBFC" || (volume.series === "DB" && colorIds.has(volume.id)),
   );
 
-  useEffect(() => {
-    const restore = () => {
-      const params = new URLSearchParams(window.location.search);
-      setCollection(params.get("collection") ?? "all");
-      setView(params.get("view") === "chapters" ? "chapters" : "volumes");
-      setQuery(params.get("q") ?? "");
-      setAvailability(readAvailability(window.location.search));
-      setPage(Number(params.get("page")) || 1);
-    };
-    restore();
-    window.addEventListener("popstate", restore);
-    try {
-      const saved: unknown = JSON.parse(localStorage.getItem("dbfr_read_chapters") ?? "[]");
-      if (Array.isArray(saved))
-        setReadIds([
-          ...new Set(saved.map(Number).filter((id) => Number.isSafeInteger(id) && id > 0)),
-        ]);
-    } catch {
-      /* Local progress can be unavailable while the catalogue remains usable. */
-    }
-    return () => window.removeEventListener("popstate", restore);
-  }, []);
   const selected =
     collection === "DBFC"
       ? COLOR_COLLECTION
@@ -224,11 +250,6 @@ export function MangaVolumeGrid({
     page?: number;
   }) => {
     const chosen = { collection: selected, view, query, availability, page: 1, ...next };
-    setCollection(chosen.collection);
-    setView(chosen.view);
-    setQuery(chosen.query);
-    setAvailability(chosen.availability);
-    setPage(chosen.page);
     const url = new URL(window.location.href);
     for (const [key, value, fallback] of [
       ["collection", chosen.collection, "all"],
@@ -246,6 +267,7 @@ export function MangaVolumeGrid({
     // Discrete navigation stays reversible; typing does not create an entry per keystroke.
     if ("query" in next) window.history.replaceState(null, "", destination);
     else window.history.pushState(null, "", destination);
+    window.dispatchEvent(new Event(LIBRARY_HISTORY_CHANGE));
   };
   const pagination = (
     <nav aria-label={ui("pagination")} className="flex flex-wrap items-center gap-2">
