@@ -10,9 +10,13 @@ export async function pingDashboardRedis(rawUrl: string, timeoutMs = 1_000): Pro
     `*${args.length}\r\n${args.map((arg) => `$${Buffer.byteLength(arg)}\r\n${arg}\r\n`).join("")}`;
   const password = decodeURIComponent(url.password);
   const username = decodeURIComponent(url.username);
-  const commands = password
-    ? [command(username ? ["AUTH", username, password] : ["AUTH", password]), command(["PING"])]
-    : [command(["PING"])];
+  const database = url.pathname.slice(1);
+  if (database && !/^\d+$/.test(database)) throw new Error("Invalid Redis database");
+  const commands: string[] = [];
+  if (password)
+    commands.push(command(username ? ["AUTH", username, password] : ["AUTH", password]));
+  if (database) commands.push(command(["SELECT", database]));
+  commands.push(command(["PING"]));
   await new Promise<void>((resolve, reject) => {
     const options = { host: url.hostname.replace(/^\[|\]$/g, ""), port: Number(url.port || 6379) };
     const socket = url.protocol === "rediss:" ? tls.connect(options) : net.connect(options);
@@ -40,7 +44,7 @@ export async function pingDashboardRedis(rawUrl: string, timeoutMs = 1_000): Pro
       while ((end = received.indexOf("\r\n")) >= 0) {
         const line = received.slice(0, end);
         received = received.slice(end + 2);
-        const expected = commands.length === 2 && responses === 0 ? "+OK" : "+PONG";
+        const expected = responses < commands.length - 1 ? "+OK" : "+PONG";
         if (line !== expected) return finish(new Error("Redis PING or authentication failed"));
         responses++;
         if (responses === commands.length) return finish();
