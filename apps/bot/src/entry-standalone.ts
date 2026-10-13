@@ -6,7 +6,7 @@ if (process.argv.includes("--help") || process.argv.includes("-h")) {
   console.log(`  -v, --version  Show version and runtime info`);
   console.log(`  --dry-run      Validate environment and exit without services or Discord login`);
   console.log(
-    `  --smoke        Load every command and event in this binary, without databases or Discord`,
+    `  --smoke        Render a native PNG and load commands/events without databases or Discord`,
   );
   process.exit(0);
 }
@@ -37,6 +37,8 @@ if (process.argv.includes("--smoke")) {
   // Load the canvas fallback before the command barrel: several command modules import
   // the native renderer during module evaluation, including the smoke path.
   await import("./lib/preload");
+  const { smokeCanvas } = await import("./lib/canvas-smoke");
+  const canvasPngBytes = await smokeCanvas();
   await import("reflect-metadata");
   const { MetadataStorage } = await import("discordx");
   const { getBotRuntimeInfo } = await import("@aphrody/discord-kit");
@@ -47,6 +49,7 @@ if (process.argv.includes("--smoke")) {
   console.log(
     JSON.stringify({
       smoke: "ok",
+      canvasPngBytes,
       runtime: `Bun ${runtime.bunVersion}`,
       platform: `${runtime.platform}-${runtime.arch}`,
       compiled: runtime.isCompiled,

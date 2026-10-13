@@ -8,8 +8,9 @@
  * The binary carries every command and event (static barrel src/_entries.ts) and its SQL
  * migrations; `shenron-bot --smoke` loads them all without databases or Discord.
  */
-import { cpSync, existsSync, mkdirSync, rmSync, statSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
+import { copyRuntimeDirectory, copyRuntimeFile } from "./bot-runtime-assets";
 
 const ROOT = resolve(import.meta.dir, "../..");
 const BOT = join(ROOT, "apps/bot");
@@ -64,10 +65,10 @@ if ((await child.exited) !== 0) throw new Error("bot compile failed");
 // Bun's compiled loader keeps the napi binding as a relative native require.
 // Keep the platform package beside the binary so the sealed image can copy it
 // into the runtime filesystem; this is required by Bun 1.4.4 as well as Linux.
-cpSync(canvasBinding, join(out, `skia.${canvasPlatform}.node`));
+copyRuntimeFile(canvasBinding, join(out, `skia.${canvasPlatform}.node`));
 // Migrations are read from disk by drizzle at boot: ship them beside the binary.
 const migrations = join(BOT, "src/db/migrations");
-if (existsSync(migrations)) cpSync(migrations, join(out, "src/db/migrations"), { recursive: true });
+if (existsSync(migrations)) copyRuntimeDirectory(migrations, join(out, "src/db/migrations"));
 console.log(
   JSON.stringify({ target, binary: exe, sizeMiB: Math.round(statSync(exe).size / 1048576) }),
 );
