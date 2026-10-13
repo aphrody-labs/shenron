@@ -19,8 +19,9 @@ import { type FormEvent, type ReactNode, useMemo, useState } from "react";
 import { Sketch } from "@uiw/react-color";
 import { api, proxyAsset } from "@/lib/admin-api";
 import { botAsset } from "@/lib/bot-assets";
-import { canvasPreviewParams } from "@/lib/canvas-preview";
+import { canvasPreviewParams, isCanvasMemberId } from "@/lib/canvas-preview";
 import { UserSelect } from "@/components/admin/UserSelect";
+import { CanvasPreviewImage } from "@/components/admin/CanvasPreviewImage";
 
 interface CanvasDef {
   id: string;
@@ -126,7 +127,7 @@ export default function CanvasPage() {
   const [selected, setSelected] = useState("profile");
 
   const sampleUserId = useMemo(
-    () => (members.data?.members ?? []).find((m) => !m.id.startsWith("0"))?.id ?? "",
+    () => canvasPreviewParams("profile", members.data?.members ?? []).userId ?? "",
     [members.data],
   );
 
@@ -375,9 +376,15 @@ function ThemeCard({
         <code className="ml-auto text-[10px] text-white/50">{theme.id}</code>
       </div>
       <div className="flex gap-1">
-        {[theme.accent, theme.aura, theme.bgGrad1, theme.bgGrad2, theme.bgGrad3].map((c, i) => (
+        {Object.entries({
+          accent: theme.accent,
+          aura: theme.aura,
+          bgGrad1: theme.bgGrad1,
+          bgGrad2: theme.bgGrad2,
+          bgGrad3: theme.bgGrad3,
+        }).map(([key, c]) => (
           <span
-            key={i}
+            key={key}
             className="h-4 flex-1 rounded-sm border border-black/30"
             style={{ background: c }}
             title={c}
@@ -385,11 +392,11 @@ function ThemeCard({
         ))}
       </div>
       {previewUrl && (
-        <img
+        <CanvasPreviewImage
           src={previewUrl}
           alt={theme.name}
+          profile
           className="w-full rounded border border-dbz-border"
-          loading="lazy"
         />
       )}
       <button
@@ -817,9 +824,10 @@ function ThemeEditor({
                   <Rafraichir className="h-3 w-3" /> Rafraîchir
                 </button>
               </div>
-              <img
+              <CanvasPreviewImage
                 src={previewUrl}
                 alt={draft.name}
+                profile
                 className="w-full rounded border border-dbz-border"
               />
               <p className="mt-1 text-[10px] text-white/50">
@@ -1230,7 +1238,7 @@ function CanvasPreview({ def, members }: { def: CanvasDef; members: DiscordMembe
         <h3 className="font-saiyan text-dbz-blue-light text-base uppercase mb-3">Aperçu</h3>
         <div className="flex items-center justify-center rounded border border-dbz-border bg-black/30 p-4 min-h-[200px]">
           {isValid ? (
-            <img src={url} alt={def.name} className="max-w-full rounded" loading="lazy" />
+            <CanvasPreviewImage src={url} alt={def.name} profile={def.id === "profile"} />
           ) : (
             <p className="text-sm text-white/50 text-center">
               Renseignez les paramètres à gauche pour afficher l&apos;aperçu.
@@ -1272,8 +1280,9 @@ function MemberField({
 }
 
 function paramsValid(def: CanvasDef, params: Record<string, string>): boolean {
-  if (def.id === "profile" || def.id === "scan" || def.id === "scouter") return !!params.userId;
-  if (def.id === "fusion") return !!params.a && !!params.b;
+  if (def.id === "profile" || def.id === "scan" || def.id === "scouter")
+    return isCanvasMemberId(params.userId);
+  if (def.id === "fusion") return isCanvasMemberId(params.a) && isCanvasMemberId(params.b);
   if (def.id === "leaderboard") return true;
   return false;
 }

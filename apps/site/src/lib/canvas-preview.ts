@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
+export function isCanvasMemberId(value: unknown): value is string {
+  return typeof value === "string" && /^[1-9]\d{16,19}$/.test(value);
+}
+
 export function canvasPreviewParams(
   id: string,
   members: readonly { id: string }[],
   overrides: Record<string, string> = {},
 ): Record<string, string> {
-  const validMembers = members.filter((member) => !member.id.startsWith("0"));
+  const validMembers = members.filter((member) => isCanvasMemberId(member.id));
   const firstMember = validMembers[0]?.id ?? "";
   let defaults: Record<string, string>;
   switch (id) {
