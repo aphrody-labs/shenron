@@ -49,29 +49,32 @@ async function probeHttp(
   try {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
-    const response = await (async () => {
+    const result = await (async () => {
       const response = await fetch(url, {
         cache: "no-store",
         headers,
         signal: controller.signal,
       });
-      if (!response.ok) return { valid: false, status: response.status };
+      if (!response.ok) return { valid: false, status: response.status, offline: false };
       const body = await response.json();
-      const valid =
-        id === "api" ? body?.status === "ok" : DashboardMonitoring.safeParse(body).success;
-      return { valid, status: response.status };
+      const monitoring = id === "backOffice" ? DashboardMonitoring.safeParse(body) : null;
+      const offline = monitoring?.success === true && !monitoring.data.botStatus.online;
+      const valid = id === "api" ? body?.status === "ok" : monitoring?.success === true;
+      return { valid, status: response.status, offline };
     })().finally(() => clearTimeout(timer));
     const latencyMs = Math.round(performance.now() - started);
     return {
       id,
       label,
-      state: response.valid ? "ok" : "degraded",
+      state: result.valid && !result.offline ? "ok" : "degraded",
       latencyMs,
-      detail: response.valid
-        ? "response_ok"
-        : response.status === 200
-          ? "invalid_response"
-          : `HTTP ${response.status}`,
+      detail: result.offline
+        ? "bot_offline"
+        : result.valid
+          ? "response_ok"
+          : result.status === 200
+            ? "invalid_response"
+            : `HTTP ${result.status}`,
     };
   } catch {
     return {
@@ -214,7 +217,7 @@ export async function GET(req: NextRequest) {
       recentActivity: parsedEnvelopes?.success ? recentEnvelopes.length : null,
       activeTasks,
       latestActivityAt:
-        recentEnvelopes.sort((a, b) => Date.parse(b.ts) - Date.parse(a.ts))[0]?.ts ?? null,
+        recentEnvelopes.toSorted((a, b) => Date.parse(b.ts) - Date.parse(a.ts))[0]?.ts ?? null,
     },
     sampledAt: new Date().toISOString(),
     refreshAfterMs: 10_000,
@@ -222,7 +225,7 @@ export async function GET(req: NextRequest) {
 
   cachedPayload = {
     data: payload,
-    expiresAt: now + CACHE_TTL_MS,
+    expiresAt: Date.now() + CACHE_TTL_MS,
   };
 
   return NextResponse.json(payload, {

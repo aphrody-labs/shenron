@@ -54,6 +54,7 @@ import { ensureKoharuWasm } from "./koharu-wasm.ts";
 import { privateFiles, stagePublicData } from "./server-data.ts";
 import { templateProblems } from "../../packages/db/src/agent-homes/template";
 import { AGENT_HOME_DOCUMENTS } from "../../packages/db/src/agent-homes/types";
+import { syncUiAssets } from "../../packages/ui/scripts/sync-assets";
 
 const ROOT = resolve(import.meta.dir, "../..");
 const hlsVendor = prepareVendor(ROOT);
@@ -129,6 +130,7 @@ async function measured(
 }
 
 // 1. Front app, without the editorial database and without a platform image optimizer.
+await syncUiAssets(join(SITE, "public"));
 if (!flag("--skip-site")) {
   ensureKoharuWasm();
   rmSync(join(SITE, DIST_DIR), { recursive: true, force: true });
