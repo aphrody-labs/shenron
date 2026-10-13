@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
 test("registry phase recovery accepts only the exact committed snapshot", () => {
-  const before = [],
-    after = [{ url: "https://publisher.example/", title: "Reviewed" }];
+  const before: unknown[] = [];
+  const after = [{ url: "https://publisher.example/", title: "Reviewed" }];
   expect(() => assertFinalizationSnapshot(before, after, null)).toThrow();
   expect(() => assertFinalizationSnapshot(before, after, { after })).not.toThrow();
   expect(() =>
