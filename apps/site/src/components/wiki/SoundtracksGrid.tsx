@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Soundtrack } from "@/lib/db-universe";
 import { useT } from "@/components/T";
 import { assetUrl } from "@/lib/assets";
+import { episodeSeriesHref } from "@/lib/episode-series-links";
 
 const OFFICIAL_YOUTUBE: Record<string, { id: string; label: string }> = {
   "genkai-toppa-survivor": { id: "S7QsHpLU1Sw", label: "Clip officiel Toei Animation" },
@@ -128,6 +129,7 @@ export function SoundtracksGrid({
           {filtered.map((track) => {
             const video = OFFICIAL_YOUTUBE[track.slug];
             const isOpen = playing === track.slug;
+            const seriesHref = episodeSeriesHref(track.series);
             return (
               <article
                 key={track.slug}
@@ -216,12 +218,18 @@ export function SoundtracksGrid({
                     >
                       ♫ Spotify
                     </a>
-                    <Link
-                      href={`/wiki/episodes/series/${track.series.toLowerCase()}`}
-                      className="ml-auto text-xs font-medium text-white/45 hover:text-orange-300"
-                    >
-                      {track.series} ↗
-                    </Link>
+                    {seriesHref ? (
+                      <Link
+                        href={seriesHref}
+                        className="ml-auto text-xs font-medium text-muted-foreground hover:text-primary"
+                      >
+                        {track.series} ↗
+                      </Link>
+                    ) : (
+                      <span className="ml-auto text-xs font-medium text-muted-foreground">
+                        {track.series}
+                      </span>
+                    )}
                   </div>
                 </div>
               </article>

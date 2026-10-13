@@ -2,17 +2,8 @@
 import type { Episode } from "./db-universe";
 import { assetUrl } from "./assets";
 import { episodePlayback } from "./episode-playback";
-
-export const EPISODE_SERIES_LABELS: Record<string, string> = {
-  DB: "Dragon Ball",
-  DBZ: "Dragon Ball Z",
-  DBZ_KAI: "Dragon Ball Z Kai",
-  DBZ_KAI_FINAL: "Dragon Ball Z Kai – Final Chapters",
-  DBGT: "Dragon Ball GT",
-  DBS: "Dragon Ball Super",
-  DBS_BEERUS: "Dragon Ball Super: Beerus",
-  DB_DAIMA: "Dragon Ball Daima",
-};
+import { EPISODE_SERIES_LABELS } from "./episode-series-links";
+export { EPISODE_SERIES_LABELS } from "./episode-series-links";
 
 /** The catalogue and detail endpoints share the same public media projection. */
 export function episodeApiSummary(ep: Episode) {
