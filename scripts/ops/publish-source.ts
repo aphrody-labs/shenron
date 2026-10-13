@@ -646,7 +646,7 @@ async function run() {
   });
   if (values.help) {
     console.log(
-      `Usage: bun scripts/ops/publish-source.ts --source <public HTTPS URL> --target ${DEFAULT_PUBLIC_ORIGINS.site}/publications/<slug> [--job <absolute private directory>] [--apply]\nBudgets: --max-requests 1..256 (256), --max-depth 0..10 (5), --timeout 1..1800 (900 seconds).\nReviewed visual input: --reviewed-input <private JSON> --reviewed-sha256 <SHA256>, requests1/depth0; apply additionally requires --plan-sha256 <physical plan SHA256>.\nPlan pins plan.json in --job; --apply requires the identical plan and configured protected DBFR/CDN owners.\nThe dynamic /publications routes require an initial qualified site deployment. Subsequent source publications reuse those routes without another Next build.`,
+      `Usage: bun scripts/ops/publish-source.ts --source <public HTTPS URL> --target ${DEFAULT_PUBLIC_ORIGINS.site}/publications/<slug> [--job <absolute private directory>] [--apply]\nBudgets: --max-requests 1..256 (256), --max-depth 0..10 (5), --timeout 1..1800 (900 seconds).\nReviewed visual input: --reviewed-input <private JSON> --reviewed-sha256 <SHA256>, requests1/depth0; apply additionally requires --plan-sha256 <physical plan SHA256>.\nQualified recovery: --finalize-qualified <private receipt> --qualified-sha256 <SHA256> --original-export-sha256 <SHA256> --registry-before-sha256 <SHA256>, with reviewed input, original plan pins and --apply; no new crawl, upload or pointer mutation.\nPlan pins plan.json in --job; --apply requires the identical plan and configured protected DBFR/CDN owners.\nThe dynamic /publications routes require an initial qualified site deployment. Subsequent source publications reuse those routes without another Next build.`,
     );
     return;
   }
