@@ -27,6 +27,20 @@ d'environnement documenté. Une interpolation d'environnement non supportée ne
 constitue pas une configuration authentifiée. Les manifestes OpenAI et AGY du
 plugin restent des manifestes publics ; l'élévation est propre au client installé.
 
+Codex accepte aussi `http_headers_helper` et Claude Code `headersHelper`
+([Codex](https://learn.chatgpt.com/docs/extend/mcp#streamable-http-servers),
+[Claude Code](https://code.claude.com/docs/en/mcp)). Ces commandes lisent le coffre
+privé et renvoient uniquement un objet JSON d'en-têtes au client. Sur Windows,
+le helper installé `~/.aphrody/bin/shenron-agent.ts --headers` lit
+`Bun.secrets` dans Windows Credential Manager (`shenron-mcp`, `owner-admin`).
+La configuration ne contient que son chemin absolu et celui du runtime Bun.
+
+Le client Aphrody utilise `bearer_token_env_var = "SHENRON_MCP_TOKEN"`.
+Le wrapper privé `shenron-agent.ts -- aphrody mcp …` injecte cette variable dans
+le seul processus enfant. Ne jamais lancer `--headers` dans un terminal interactif
+ni copier sa sortie dans un rapport. Une connexion rejetée doit être corrigée
+avant de déclarer l'accès administratif opérationnel.
+
 L'authentification entrante et l'authentification des API aval sont distinctes.
 Les commandes et services du bot préfèrent `SHENRON_API_ADMIN_TOKEN`, puis
 `SHENRON_ADMIN_TOKEN`. Les dépôts databooks préfèrent
