@@ -31,6 +31,8 @@ export interface PublishCatalogOptions {
   /** Explicit native-origin qualification; the default still probes Worker + CDN. */
   qualificationOrigins?: readonly [string, string];
   qualificationService?: { serviceVersion: "shenron-cdn-origin/v1"; codeSha256: string };
+  /** Read-only site recovery only; this is never a claim of full manifest qualification. */
+  qualificationScope?: { coverage: "explicit-paths"; paths: readonly string[] };
   expectedDeployment: string;
   expectedCodeSha256: string;
   expectedPrefix: string;
@@ -469,6 +471,67 @@ export function inventoryMatchesBindings(
       throw new Error("Previous inventory differs from deployed manifest");
   }
 }
+
+export function siteRecoveryScope(
+  options: Pick<
+    PublishCatalogOptions,
+    "siteRelease" | "qualificationScope" | "qualificationOrigins"
+  >,
+  receipt: {
+    qualificationScope?: PublishCatalogOptions["qualificationScope"];
+    scopeSha256?: string;
+    complete?: boolean;
+    completeScope?: boolean;
+    completeManifest?: boolean;
+    publicFilesVerified?: number;
+  },
+  entries: Record<string, InventoryEntry>,
+) {
+  const scope = options.qualificationScope;
+  if (
+    !options.siteRelease ||
+    !options.qualificationOrigins ||
+    scope?.coverage !== "explicit-paths" ||
+    !Array.isArray(scope.paths) ||
+    scope.paths.length < 1 ||
+    scope.paths.length > 2048
+  )
+    throw new Error("Site recovery requires an explicit bounded native scope");
+  const paths = scope.paths.toSorted();
+  if (
+    new Set(paths).size !== paths.length ||
+    paths.some(
+      (path) =>
+        typeof path !== "string" ||
+        path.length > 4096 ||
+        !/^\/(?:catalog\/assets\/|media\/episodes\/[1-9]\d*\/|_next\/static\/|publications\/[a-z0-9-]+\/)[a-zA-Z0-9_./-]+$/.test(
+          path,
+        ) ||
+        path.split("/").some((segment) => segment.startsWith(".")) ||
+        !Object.hasOwn(entries, path),
+    )
+  )
+    throw new Error("Site recovery path is private, unsafe or absent from the pinned inventory");
+  if (!paths.includes("/catalog/assets/index.json"))
+    throw new Error("Site recovery scope requires the canonical catalogue index");
+  const scopeSha256 = digest(JSON.stringify(paths));
+  if (
+    receipt.complete !== false ||
+    receipt.completeScope !== true ||
+    receipt.completeManifest !== false ||
+    receipt.publicFilesVerified !== paths.length ||
+    receipt.qualificationScope?.coverage !== scope.coverage ||
+    !Array.isArray(receipt.qualificationScope.paths) ||
+    JSON.stringify(receipt.qualificationScope.paths.toSorted()) !== JSON.stringify(paths) ||
+    receipt.scopeSha256 !== scopeSha256
+  )
+    throw new Error("Site recovery receipt scope differs or claims full coverage");
+  return {
+    qualificationScope: { coverage: "explicit-paths" as const, paths },
+    scopeSha256,
+    selected: paths.map((path) => [path, entries[path]!] as const),
+  };
+}
 /** Finish a previously activated, independently qualified immutable candidate; no upload or PATCH. */
 export async function verifyQualifiedPublication(
   options: PublishCatalogOptions,
@@ -501,7 +564,11 @@ export async function verifyQualifiedPublication(
   const origins = qualificationOrigins(options);
   assertQualificationReceipt(options, qualified);
   if (
-    qualified.complete !== true ||
+    (options.siteRelease
+      ? qualified.completeScope !== true ||
+        qualified.completeManifest !== false ||
+        qualified.complete !== false
+      : qualified.complete !== true) ||
     qualified.apiMutations !== 0 ||
     qualified.registryMutations !== 0 ||
     !Number.isSafeInteger(qualified.publicFilesVerified) ||
@@ -551,6 +618,16 @@ export async function verifyQualifiedPublication(
       sha(await Bun.file(options.sdkModule).arrayBuffer()) !== plan.sdkSha256
     )
       throw new Error("Original owner plan changed");
+    if (
+      options.siteRelease &&
+      (!plan.options.siteRelease ||
+        JSON.stringify(options.siteRelease) !== JSON.stringify(plan.options.siteRelease) ||
+        siteReleaseTarget(plan.options.targetUrl).href !==
+          siteReleaseTarget(options.targetUrl).href)
+    )
+      throw new Error("Original site release scope differs");
+    if (!options.siteRelease && options.qualificationScope)
+      throw new Error("Explicit recovery scope requires a site release");
     const actual: Json = {
       bindings: before.settings.bindings,
       annotations: Object.fromEntries(
@@ -575,12 +652,22 @@ export async function verifyQualifiedPublication(
       qualified.prefix,
       qualified.inventorySha256,
     );
-    const target = publicTarget(options.targetUrl);
+    const target = options.siteRelease
+      ? siteReleaseTarget(options.targetUrl)
+      : publicTarget(options.targetUrl);
     if (target.origin !== "https://dragonballfr.com") throw new Error("Target site differs");
-    const selected = Object.entries(delta.entries).filter(
-      ([path]) => path.startsWith(target.pathname + "/") || path === "/catalog/assets/index.json",
-    );
-    if (!selected.some(([path]) => path === target.pathname + "/index.json"))
+    const recoveryScope = options.siteRelease
+      ? siteRecoveryScope(options, qualified, delta.entries)
+      : null;
+    const selected =
+      recoveryScope?.selected ??
+      Object.entries(delta.entries).filter(
+        ([path]) => path.startsWith(target.pathname + "/") || path === "/catalog/assets/index.json",
+      );
+    if (
+      !options.siteRelease &&
+      !selected.some(([path]) => path === target.pathname + "/index.json")
+    )
       throw new Error("Qualified publication index missing");
     await parallel(selected, async ([path, entry]) => {
       for (const origin of origins) {
@@ -598,7 +685,20 @@ export async function verifyQualifiedPublication(
       throw new Error("Final qualified tuple drift");
     return {
       ...qualified,
-      indexSha256: delta.entries[target.pathname + "/index.json"]!.sha256,
+      indexSha256:
+        delta.entries[
+          options.siteRelease ? "/catalog/assets/index.json" : target.pathname + "/index.json"
+        ]?.sha256 ?? null,
+      ...(recoveryScope
+        ? {
+            qualificationScope: recoveryScope.qualificationScope,
+            scopeSha256: recoveryScope.scopeSha256,
+            complete: false,
+            completeScope: true,
+            completeManifest: false,
+            manifestPublicFiles: Object.keys(delta.entries).length,
+          }
+        : {}),
       sourceBefore: before.codeSha256,
       sourceAfter: before.codeSha256,
       freshPublicGetChecks: origins.length * selected.length,
@@ -609,7 +709,7 @@ export async function verifyQualifiedPublication(
       qualifiedReceiptSha256: receiptSha256,
       qualificationRecovery: true,
       urls: selected
-        .filter(([path]) => path.startsWith(target.pathname + "/"))
+        .filter(([path]) => options.siteRelease || path.startsWith(target.pathname + "/"))
         .map(([path, entry]) => ({
           url: new URL(path, options.cdnOrigin).href,
           sha256: entry.sha256,
@@ -621,6 +721,8 @@ export async function verifyQualifiedPublication(
   }
 }
 export async function publishCatalog(inputOptions: PublishCatalogOptions) {
+  if (inputOptions.qualificationScope)
+    throw new Error("Explicit qualification scopes are read-only recovery capabilities");
   let options = inputOptions;
   const target = options.siteRelease
     ? siteReleaseTarget(options.targetUrl)

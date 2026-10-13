@@ -17,6 +17,7 @@ import {
   qualificationOrigins,
   attestQualificationOrigins,
   assertQualificationReceipt,
+  siteRecoveryScope,
 } from "./publish-catalog";
 
 const nativeOptions = {
@@ -151,6 +152,78 @@ test("cached native receipts pin actual origins without claiming the Worker was 
       ...receipt,
       nativeOriginAttestation: { ...nativeProof, codeSha256: "c".repeat(64) },
     }),
+  ).toThrow();
+});
+
+test("site recovery explicitly qualifies a bounded public subset, never the historical manifest", () => {
+  const entry = {
+    sha256: "a".repeat(64),
+    size: 10,
+    contentType: "application/json",
+    cacheControl: "no-store",
+    sourcePath: "/private/inventory-artifact",
+  };
+  const entries = {
+    "/catalog/assets/index.json": entry,
+    "/media/episodes/875/source/frame.png": entry,
+    "/media/episodes/875/.env": entry,
+  };
+  const scope = {
+    coverage: "explicit-paths" as const,
+    paths: ["/media/episodes/875/source/frame.png", "/catalog/assets/index.json"],
+  };
+  const siteRelease = {
+    siteRoot: "/site",
+    staticRoot: "/static",
+    releasePublicRoot: "/release",
+    archivePath: "/private/public.zst",
+    archiveSha256: "a".repeat(64),
+  };
+  const options = { ...nativeOptions, siteRelease, qualificationScope: scope };
+  const receipt = {
+    qualificationScope: scope,
+    scopeSha256: digest(JSON.stringify(scope.paths.toSorted())),
+    complete: false,
+    completeScope: true,
+    completeManifest: false,
+    publicFilesVerified: 2,
+  };
+  expect(siteRecoveryScope(options, receipt, entries).selected).toHaveLength(2);
+  expect(() => siteRecoveryScope(options, { ...receipt, complete: true }, entries)).toThrow(
+    "full coverage",
+  );
+  expect(() =>
+    siteRecoveryScope(options, { ...receipt, completeManifest: true }, entries),
+  ).toThrow();
+  expect(() =>
+    siteRecoveryScope(options, { ...receipt, publicFilesVerified: 110000 }, entries),
+  ).toThrow();
+  expect(() =>
+    siteRecoveryScope(options, { ...receipt, scopeSha256: "b".repeat(64) }, entries),
+  ).toThrow();
+  expect(() =>
+    siteRecoveryScope(
+      { ...options, qualificationScope: { ...scope, paths: ["/media/episodes/875/.env"] } },
+      receipt,
+      entries,
+    ),
+  ).toThrow("private");
+  expect(() =>
+    siteRecoveryScope(
+      { ...options, qualificationScope: { ...scope, paths: ["/missing.png"] } },
+      receipt,
+      entries,
+    ),
+  ).toThrow();
+  expect(() =>
+    siteRecoveryScope(
+      { ...options, qualificationScope: { ...scope, paths: [scope.paths[0]!, scope.paths[0]!] } },
+      receipt,
+      entries,
+    ),
+  ).toThrow();
+  expect(() =>
+    siteRecoveryScope({ ...options, qualificationOrigins: undefined }, receipt, entries),
   ).toThrow();
 });
 
@@ -578,6 +651,86 @@ test("prepare unions baseline generates catalog pins code and never remotely mut
     );
     expect(siteDelta.entries["/_next/static/new.js"].sha256).toBe(digest("new static"));
     expect(siteDelta.entries["/logo.svg"].sha256).toBe(digest("<svg/>"));
+    expect(methods.every((method) => method === "GET")).toBe(true);
+    const sitePlan = await Bun.file(join(siteJob, "publication-plan.json")).json();
+    const siteState = {
+      inventoryPath: join(siteJob, "delta/inventory.json"),
+      inventorySha256: sitePlan.inventorySha256,
+      prefix: sitePlan.prefix,
+      deploymentId,
+      codeSha256: codeSha,
+    };
+    const siteStateText = JSON.stringify(siteState);
+    await Bun.write(join(state, "current-inventory.json"), siteStateText);
+    await chmod(join(state, "current-inventory.json"), 0o600);
+    const scope = {
+      coverage: "explicit-paths" as const,
+      paths: ["/_next/static/new.js", "/catalog/assets/index.json"],
+    };
+    const siteNativeProof = {
+      ...nativeProof,
+      manifestPrefix: siteState.prefix,
+      inventorySha256: siteState.inventorySha256,
+    };
+    const siteQualified = JSON.stringify({
+      ...siteState,
+      complete: false,
+      completeScope: true,
+      completeManifest: false,
+      qualificationScope: scope,
+      scopeSha256: digest(JSON.stringify(scope.paths.toSorted())),
+      apiMutations: 0,
+      registryMutations: 0,
+      publicFilesVerified: 2,
+      actualGets: 4,
+      qualificationOrigins: [...nativeOptions.qualificationOrigins],
+      workerPublicQualified: false,
+      nativeOriginAttestation: siteNativeProof,
+    });
+    const siteQualifiedPath = join(siteJob, "qualified-site-scope.json");
+    await Bun.write(siteQualifiedPath, siteQualified);
+    await chmod(siteQualifiedPath, 0o600);
+    let sitePublicGets = 0;
+    globalThis.fetch = (async (input: URL | string | Request, init?: RequestInit) => {
+      methods.push(init?.method ?? "GET");
+      const url = String(input);
+      if (url.endsWith("/settings"))
+        return Response.json({ success: true, result: sitePlan.settings });
+      if (url.endsWith("/deployments"))
+        return Response.json({ success: true, result: { deployments: [{ id: deploymentId }] } });
+      if (nativeOptions.qualificationOrigins.includes(new URL(url).origin as never)) {
+        const path = new URL(url).pathname;
+        if (path === "/.well-known/shenron-cdn-origin.json")
+          return Response.json(siteNativeProof, { headers: { "cache-control": "no-store" } });
+        sitePublicGets++;
+        const entry = siteDelta.entries[path];
+        return new Response(await Bun.file(entry.sourcePath).bytes(), {
+          headers: { "cache-control": entry.cacheControl },
+        });
+      }
+      const form = new FormData();
+      form.set("worker.mjs", new Blob([code]), "worker.mjs");
+      return new Response(form);
+    }) as unknown as typeof fetch;
+    const siteRecovery = await verifyQualifiedPublication(
+      {
+        ...sitePlan.options,
+        ...nativeOptions,
+        targetUrl: "https://dragonballfr.com/",
+        qualificationScope: scope,
+      },
+      siteQualifiedPath,
+      digest(siteQualified),
+    );
+    expect(siteRecovery.complete).toBe(false);
+    expect(siteRecovery.completeScope).toBe(true);
+    expect(siteRecovery.completeManifest).toBe(false);
+    expect(siteRecovery.publicFilesVerified).toBe(2);
+    expect(siteRecovery.manifestPublicFiles).toBeGreaterThan(2);
+    expect(siteRecovery.freshPublicGetChecks).toBe(4);
+    expect(sitePublicGets).toBe(4);
+    expect(siteRecovery.urls).toHaveLength(2);
+    expect(await Bun.file(join(state, "current-inventory.json")).text()).toBe(siteStateText);
     expect(methods.every((method) => method === "GET")).toBe(true);
   } finally {
     globalThis.fetch = original;
