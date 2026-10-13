@@ -1,4 +1,5 @@
 import { botOperationalLogs } from "../lib/operational-logs";
+import { readHlsSegment, registerHlsSegment } from "./hls-security";
 import { resolveApiUrl, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import { adminPipeline } from "./admin-pipeline";
 import os from "node:os";
@@ -547,8 +548,8 @@ const ASSET_CONTENT_TYPES: Record<string, string> = {
 // donc c'est le bot (même IP) qui doit fetch — pas Vercel. La map est écrite par
 // resolve-streams.ts dans data/streams.json. Signature HMAC anti open-proxy.
 type HlsStream = { url: string; headers: Record<string, string>; type: string; at: number };
-const HLS_SECRET = crypto.randomUUID();
 let _hlsCache: { mtime: number; data: Record<string, HlsStream> } | null = null;
+const resolvedStreams = new Map<string, HlsStream>();
 
 async function loadStreams(): Promise<Record<string, HlsStream>> {
   try {
@@ -557,14 +558,10 @@ async function loadStreams(): Promise<Record<string, HlsStream>> {
     if (!_hlsCache || _hlsCache.mtime !== mtime) {
       _hlsCache = { mtime, data: (await f.json()) as Record<string, HlsStream> };
     }
-    return _hlsCache.data;
+    return { ..._hlsCache.data, ...Object.fromEntries(resolvedStreams) };
   } catch {
-    return {};
+    return Object.fromEntries(resolvedStreams);
   }
-}
-
-function hlsSign(value: string): string {
-  return new Bun.CryptoHasher("sha256", HLS_SECRET).update(value).digest("hex").slice(0, 24);
 }
 
 function hlsRewrite(text: string, baseUrl: string, id: string, referer: string): string {
@@ -577,7 +574,7 @@ function hlsRewrite(text: string, baseUrl: string, id: string, referer: string):
   };
   const seg = (uri: string) => {
     const a = abs(uri);
-    return `/api/hls/${id}/seg?u=${encodeURIComponent(a)}&r=${encodeURIComponent(referer)}&sig=${hlsSign(`${a}|${referer}`)}`;
+    return `/api/hls/${id}/seg?token=${registerHlsSegment(a, referer)}`;
   };
   return text
     .split("\n")
@@ -756,13 +753,13 @@ async function resolveStreamOnDemand(id: string): Promise<HlsStream | null> {
         type: selected.type,
         at: Date.now(),
       };
-      const streams = await loadStreams();
-      streams[id] = entry;
+      resolvedStreams.set(id, entry);
       for (const [variantLanguage, variant] of Object.entries(res.variants ?? {})) {
-        if (variant?.url) streams[`${mediaId}-${variantLanguage}`] = { ...variant, at: Date.now() };
+        if (variant?.url)
+          resolvedStreams.set(`${mediaId}-${variantLanguage}`, { ...variant, at: Date.now() });
       }
-      await Bun.write("data/streams.json", JSON.stringify(streams));
-      console.log(`[HLS] Résolution réussie pour l'épisode ${id} : ${selected.url}`);
+      // Upstream URLs and headers can contain short-lived credentials. Keep them in memory.
+      console.log(`[HLS] Résolution réussie pour l'épisode ${id}.`);
       return entry;
     } else {
       console.error(`[HLS] Échec de résolution pour l'épisode ${id} : ${res.error ?? "inconnu"}`);
@@ -804,7 +801,7 @@ async function hlsMaster(req: Request, id: string): Promise<Response> {
 
   if (!up || !up.ok) {
     console.log(`[HLS] Flux expiré ou injoignable pour master ${id}, actualisation...`);
-    const newS = await resolveStreamOnDemand(id);
+    const newS = await resolveStreamOnDemand(streamId);
     if (newS) {
       s = newS;
       ref = s.headers?.Referer ?? s.headers?.referer ?? "";
@@ -845,11 +842,9 @@ async function hlsMaster(req: Request, id: string): Promise<Response> {
 
 async function hlsSeg(req: Request, id: string): Promise<Response> {
   const url = new URL(req.url);
-  const u = url.searchParams.get("u") ?? "";
-  const r = url.searchParams.get("r") ?? "";
-  const sig = url.searchParams.get("sig") ?? "";
-  if (!u || hlsSign(`${u}|${r}`) !== sig)
-    return new Response("signature invalide", { status: 403 });
+  const source = readHlsSegment(url.searchParams.get("token") ?? "");
+  if (!source) return new Response("segment indisponible", { status: 403 });
+  const { url: u, referer: r } = source;
   let up: Response;
   try {
     up = await fetch(u, { headers: r ? { Referer: r, Origin: new URL(r).origin } : {} });
@@ -904,153 +899,9 @@ async function currentEquipped(
   return byType[type] ?? null;
 }
 
-async function hlsDownload(req: Request, id: string): Promise<Response> {
-  const streamId = requestedStreamId(req, id);
-  // Nom de fichier lisible selon le type d'entité (`movie-<n>` → film).
-  const downloadName = id.startsWith("movie-")
-    ? `film-${id.slice("movie-".length)}.mp4`
-    : `episode-${id}.mp4`;
-  let s = (await loadStreams())[streamId];
-  if (!s?.url) {
-    const newS = await resolveStreamOnDemand(streamId);
-    if (!newS) return new Response("flux indisponible", { status: 404 });
-    s = newS;
-  }
-
-  let ref = s.headers?.Referer ?? s.headers?.referer ?? "";
-  let headers: Record<string, string> = {};
-  if (ref) {
-    headers["Referer"] = ref;
-    headers["Origin"] = new URL(ref).origin;
-  }
-
-  const isStale = Date.now() - (s.at ?? 0) > 8 * 3600 * 1000;
-  let up: Response | null = null;
-
-  if (!isStale) {
-    try {
-      up = await fetch(s.url, { headers });
-    } catch {
-      // Ignoré, retente
-    }
-  }
-
-  if (!up || !up.ok) {
-    console.log(`[HLS] Flux expiré ou injoignable pour download ${id}, actualisation...`);
-    const newS = await resolveStreamOnDemand(streamId);
-    if (newS) {
-      s = newS;
-      ref = s.headers?.Referer ?? s.headers?.referer ?? "";
-      headers = {};
-      if (ref) {
-        headers["Referer"] = ref;
-        headers["Origin"] = new URL(ref).origin;
-      }
-      try {
-        up = await fetch(s.url, { headers });
-      } catch {
-        return new Response("source injoignable après actualisation", { status: 502 });
-      }
-    }
-  }
-
-  if (!up || !up.ok) {
-    return new Response("source en erreur", { status: 502 });
-  }
-
-  if (s.type === "mp4") {
-    const contentType = up.headers.get("content-type") ?? "video/mp4";
-    const contentLength = up.headers.get("content-length");
-    const downloadHeaders: Record<string, string> = {
-      "Content-Type": contentType,
-      "Content-Disposition": `attachment; filename="${downloadName}"`,
-      "Cache-Control": "no-store",
-    };
-    if (contentLength) {
-      downloadHeaders["Content-Length"] = contentLength;
-    }
-    return new Response(up.body, {
-      headers: downloadHeaders,
-    });
-  }
-
-  let text = await up.text();
-  let mediaPlaylistUrl = s.url;
-
-  if (text.includes("#EXT-X-STREAM-INF")) {
-    const lines = text.split("\n");
-    let subUrl = "";
-    for (const line of lines) {
-      const l = line.trim();
-      if (l && !l.startsWith("#")) {
-        subUrl = l;
-        break;
-      }
-    }
-    if (subUrl) {
-      const resolvedSubUrl = new URL(subUrl, s.url).toString();
-      try {
-        const subUp = await fetch(resolvedSubUrl, { headers });
-        if (subUp.ok) {
-          text = await subUp.text();
-          mediaPlaylistUrl = resolvedSubUrl;
-        }
-      } catch {
-        // Fallback
-      }
-    }
-  }
-
-  const lines = text.split("\n");
-  const segmentUrls: string[] = [];
-  for (const line of lines) {
-    const l = line.trim();
-    if (l && !l.startsWith("#")) {
-      try {
-        segmentUrls.push(new URL(l, mediaPlaylistUrl).toString());
-      } catch {
-        segmentUrls.push(l);
-      }
-    }
-  }
-
-  if (segmentUrls.length === 0) {
-    return new Response("aucun segment trouve", { status: 400 });
-  }
-
-  const stream = new ReadableStream({
-    async start(controller) {
-      try {
-        for (let i = 0; i < segmentUrls.length; i++) {
-          const segUrl = segmentUrls[i];
-          const res = await fetch(segUrl, { headers });
-          if (!res.ok) {
-            console.error(`Failed to fetch HLS segment ${i}: ${segUrl}`);
-            continue;
-          }
-          if (res.body) {
-            const reader = res.body.getReader();
-            while (true) {
-              const { done, value } = await reader.read();
-              if (done) break;
-              controller.enqueue(value);
-            }
-          }
-        }
-        controller.close();
-      } catch (err) {
-        controller.error(err);
-      }
-    },
-  });
-
-  return new Response(stream, {
-    headers: {
-      "Content-Type": "video/mp4",
-      "Content-Disposition": `attachment; filename="${downloadName}"`,
-      "Cache-Control": "no-store",
-    },
-  });
+export function hlsDownload(): Response {
+  // The legacy streams cache cannot attest publication rights or CDN provenance.
+  return new Response("téléchargement indisponible", { status: 404 });
 }
 
 async function serveAsset(pathname: string, req?: Request): Promise<Response> {
@@ -2386,7 +2237,7 @@ export class ApiServer {
         // (le bot fetch depuis l'IP du VPS = IP de résolution → CDN OK).
         "/api/hls/:id/master.m3u8": (req) => hlsMaster(req, req.params.id),
         "/api/hls/:id/seg": (req) => hlsSeg(req, req.params.id),
-        "/api/hls/:id/download": (req) => hlsDownload(req, req.params.id),
+        "/api/hls/:id/download": () => hlsDownload(),
 
         "/api/public/wiki/movies": (req) =>
           publicCachedJson(req, 60 * 60_000, async () => {
