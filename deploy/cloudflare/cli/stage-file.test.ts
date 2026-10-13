@@ -1,6 +1,16 @@
 // SPDX-License-Identifier: Apache-2.0
 import { test, expect } from "bun:test";
-import { mkdtemp, mkdir, writeFile, readFile, access, rm } from "node:fs/promises";
+import {
+  mkdtemp,
+  mkdir,
+  writeFile,
+  readFile,
+  access,
+  rm,
+  truncate,
+  stat,
+  utimes,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import {
@@ -162,11 +172,58 @@ test("input changed after qualification keeps the durable receipt and file", asy
       await writeFile(f.input, new Uint8Array(sample.length + 1));
       return receipt;
     };
-    await expect(
-      stageOwnedFile({ ...spec, input: f.input }, f.window, f.receipts, f.store, async () => true),
-    ).rejects.toThrow("qualified receipt retained");
+    const result = await stageOwnedFile(
+      { ...spec, input: f.input },
+      f.window,
+      f.receipts,
+      f.store,
+      async () => true,
+    );
+    expect(result.inputDeleted).toBe(false);
+    expect(result.inputConflict).toBe(true);
     expect(await Bun.file(f.input).exists()).toBe(true);
     expect(await Bun.file(join(f.receipts, sha + ".json")).exists()).toBe(true);
+  } finally {
+    await f.cleanup();
+  }
+});
+
+test("aggregate bytes include partial files and reject two oversized volumes", async () => {
+  const f = await fixture(true);
+  try {
+    const part = join(f.window, "assets-0002.tar.gz.part");
+    await writeFile(part, sample, { mode: 0o600 });
+    await truncate(part, 128 * 1024 * 1024);
+    await expect(
+      stageOwnedFile({ ...spec, input: f.input }, f.window, f.receipts, f.store, async () => true),
+    ).rejects.toThrow("byte budget");
+    expect(f.attests()).toBe(0);
+  } finally {
+    await f.cleanup();
+  }
+});
+test("same-sized rewritten input with restored timestamp is never deleted", async () => {
+  const f = await fixture(true);
+  try {
+    const original = f.store.attestStaged;
+    const info = await stat(f.input);
+    f.store.attestStaged = async (...args) => {
+      const result = await original(...args);
+      await writeFile(f.input, new Uint8Array(sample.length));
+      await utimes(f.input, info.atime, info.mtime);
+      return result;
+    };
+    const result = await stageOwnedFile(
+      { ...spec, input: f.input },
+      f.window,
+      f.receipts,
+      f.store,
+      async () => true,
+    );
+    expect(result.inputDeleted).toBe(false);
+    expect(result.inputConflict).toBe(true);
+    expect(await Bun.file(f.input).exists()).toBe(true);
+    expect(await Bun.file(result.receiptPath).exists()).toBe(true);
   } finally {
     await f.cleanup();
   }
