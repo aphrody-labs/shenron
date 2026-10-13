@@ -6,7 +6,6 @@
  *
  * Server component; the clips, the cloud and the search are the client islands.
  */
-import Link from "next/link";
 import Image from "next/image";
 import {
   DragonBall,
@@ -20,7 +19,6 @@ import type { HomeConfig } from "@/lib/home-scenes";
 import { HomeHeroScenes } from "./HomeHeroScenes";
 import { HomeSearch } from "./HomeSearch";
 import { KintoUnVolant } from "./KintoUnVolant";
-import { focusRing } from "./ui";
 
 const BEERUS_ARTWORK = "/banners/dbs-beerus-2026.jpg";
 
@@ -32,7 +30,6 @@ export function HomeHero({
   className?: string;
 }) {
   const lede = hero.lede.trim();
-  const cta = hero.ctaLabel.trim() && hero.ctaHref.trim() ? hero : null;
   return (
     <header
       id="hero"
@@ -50,7 +47,7 @@ export function HomeHero({
         />
       </div>
       <KintoUnVolant />
-      <div className="page-shell relative z-[3] flex min-h-[clamp(26rem,72svh,46rem)] flex-col justify-end pt-[clamp(3rem,10vh,6rem)] pb-[clamp(2rem,6vh,3.5rem)]">
+      <div className="page-shell relative z-[3] flex min-h-[clamp(22rem,48svh,32rem)] flex-col justify-end pt-10 pb-6 sm:pt-14 sm:pb-8">
         {/* The wordmark IS the page title: one heading, drawn. A second visible title
             (« Dragon Ball, en français et sourcé ») repeated the wordmark and the lede word for
             word. Its text stays the accessible name of the h1. */}
@@ -58,7 +55,11 @@ export function HomeHero({
           <span className="sr-only">
             <T k="accueil.hero.title" />
           </span>
-          <span aria-hidden className="home-wordmark home-wordmark--stage">
+          <span
+            aria-hidden
+            className="home-wordmark"
+            style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)" }}
+          >
             <span className="home-wordmark__ligne">
               <span className="wordmark-manga">
                 <MotManga lettres={LETTRES_DRAGON_AVANT_BOULE} />
@@ -75,20 +76,11 @@ export function HomeHero({
           </span>
         </h1>
         {lede ? (
-          <p className="mt-5 max-w-[72ch] text-base leading-relaxed text-os/85 lg:text-[1.0625rem]">
+          <p className="mt-4 max-w-[56ch] text-sm leading-relaxed text-os/85 sm:text-base">
             {lede}
           </p>
         ) : null}
-        <HomeSearch className="mt-6 max-w-3xl">
-          {cta ? (
-            <Link
-              href={cta.ctaHref}
-              className={`inline-flex min-h-11 items-center rounded-md text-sm font-semibold text-dbz-orange transition-colors hover:text-gi-clair ${focusRing}`}
-            >
-              {cta.ctaLabel}
-            </Link>
-          ) : null}
-        </HomeSearch>
+        <HomeSearch className="mt-4 max-w-2xl" />
       </div>
     </header>
   );

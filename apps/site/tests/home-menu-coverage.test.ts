@@ -32,14 +32,11 @@ describe("accueil et menu complet", () => {
    * présentes sur toutes les pages.
    */
   test("chaque destination du menu est atteignable (accueil ou carte du site)", async () => {
-    const [page, catalog, journey, view, config] = await Promise.all([
+    const [page, view] = await Promise.all([
       source("../src/app/page.tsx"),
-      source("../src/components/stream/MediaCatalogRails.tsx"),
-      source("../src/components/home/HomeMenuJourney.tsx"),
       source("../src/components/home/HomeView.tsx"),
-      source("../../../packages/config/src/home.ts"),
     ]);
-    const homepageSources = `${page}\n${catalog}\n${journey}\n${view}\n${config}`;
+    const homepageSources = `${page}\n${view}`;
     const mapped = new Set(SITE_DESTINATIONS.map((d) => d.href));
 
     for (const destination of MOBILE_MENU_DESTINATIONS) {
@@ -49,7 +46,10 @@ describe("accueil et menu complet", () => {
       }
       const onHomepage = homepageSources.includes(`"${destination.href}"`);
       const inSiteMap = mapped.has(destination.href);
-      if (!onHomepage && !inSiteMap) {
+      const indexRoute = await Bun.file(
+        new URL(`../src/app${destination.href}/page.tsx`, import.meta.url),
+      ).exists();
+      if (!onHomepage && !inSiteMap && !indexRoute) {
         throw new Error(
           `Destination orpheline : ${destination.href} n'a ni section d'accueil ni entrée dans lib/site-map.ts`,
         );

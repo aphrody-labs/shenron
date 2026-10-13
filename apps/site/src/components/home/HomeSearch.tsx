@@ -1,34 +1,20 @@
 "use client";
 
-/**
- * La recherche de l'accueil — le premier geste de la page.
- *
- * Un `<form method="get">` vers `/wiki/search` : la navigation est faite par le
- * navigateur, le résultat est rendu côté serveur, l'URL se partage et tout
- * fonctionne sans JavaScript. Le composant n'est client que pour traduire le
- * texte indicatif et le nom accessible, qu'un composant serveur ne sait pas lire
- * dans le dictionnaire de la langue choisie, et pour porter la saisie vers
- * l'arbitre de canonicité.
- */
-import Link from "next/link";
+/** Native GET search remains usable without client navigation or JavaScript. */
 import { useState, type ReactNode } from "react";
-import { DragonRadar, Recherche } from "@aphrody/shenron-ui/icones";
+import { Recherche } from "@aphrody/shenron-ui/icones";
 import { useT } from "@/components/T";
-import { focusRing } from "./ui";
 
 export function HomeSearch({
   className = "",
   children,
 }: {
   className?: string;
-  /** Liens complémentaires posés à côté de « Vérifier si c'est canon ». */
+  /** Optional editorial link below the search. */
   children?: ReactNode;
 }) {
   const t = useT();
   const [q, setQ] = useState("");
-  const question = q.trim();
-  const canonHref =
-    question.length >= 2 ? `/wiki/canon?q=${encodeURIComponent(question)}` : "/wiki/canon";
 
   return (
     <div className={className}>
@@ -62,16 +48,7 @@ export function HomeSearch({
           </button>
         </div>
       </form>
-      <div className="mt-2 flex flex-wrap items-center gap-x-5">
-        <Link
-          href={canonHref}
-          className={`inline-flex min-h-11 items-center gap-2 rounded-md text-sm text-os/80 transition-colors hover:text-os ${focusRing}`}
-        >
-          <DragonRadar className="size-4 text-dbz-green" aria-hidden />
-          {t("accueil.search.canon")}
-        </Link>
-        {children}
-      </div>
+      {children ? <div className="mt-2 flex flex-wrap items-center gap-x-5">{children}</div> : null}
     </div>
   );
 }

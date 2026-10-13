@@ -11,8 +11,15 @@ ci-dessous évitent que cela se reproduise. Système graphique : [`reference/DES
 - Chaque section garde sa vidéo de fond, définie dans la configuration de l'accueil
   (`lib/home-config`, `lib/home-scenes`). Les vidéos sont chargées à l'approche de leur section,
   jamais toutes au premier rendu ; `prefers-reduced-motion` est respecté.
-- La recherche et la reprise (« continuer ») du nouvel accueil restent en haut.
-- « Les dernières nouvelles », puis les mini-jeux, sont tout en bas de la page.
+- La recherche reste dans un héros compact, suivie de quatre accès sans compteurs
+  (manga, databooks, épisodes, sources) et de la présentation officielle de Beerus.
+- Demande propriétaire du 13 octobre 2026 : retirer de l’accueil le direct, le panthéon,
+  les best-of et Top 3, l’arbitre de canonicité, les actualités, les mini-jeux,
+  le voyage dans l’univers et ses compteurs, la reprise, la présence et le classement
+  du serveur, ainsi que les sagas légendaires. Leurs rubriques restent accessibles
+  dans le shell ; aucun de ces widgets ni ses lectures serveur ne subsiste sur l’accueil.
+- Les sections personnalisées de l’ancienne composition ne sont pas montées.
+  La configuration conserve le héros et ses scènes, sans réactiver les widgets retirés.
 
 ## Shell
 
