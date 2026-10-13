@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: Apache-2.0
+[Unit]
+Description=Shenron public manifest origin for media and asset catalogues
+After=network-online.target shenron-cloudflare-s3-renew.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/home/ubuntu/.local/share/aphrody/cloudflare-cli/runtime/bun /etc/aphrody/cloudflare/cli/cdn-origin.mjs /etc/aphrody/cloudflare/origin-cdn.json
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=15
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryMax=512M
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

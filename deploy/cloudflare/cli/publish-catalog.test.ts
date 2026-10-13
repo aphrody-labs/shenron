@@ -14,7 +14,145 @@ import {
   inputEntries,
   sealedArchiveSha256,
   verifyQualifiedPublication,
+  qualificationOrigins,
+  attestQualificationOrigins,
+  assertQualificationReceipt,
 } from "./publish-catalog";
+
+const nativeOptions = {
+  workerOrigin: "https://worker.example",
+  cdnOrigin: "https://cdn.dragonballfr.com",
+  qualificationOrigins: [
+    "https://cdn.dragonballfr.com",
+    "https://origin-cdn.dragonballfr.com",
+  ] as const,
+  qualificationService: {
+    serviceVersion: "shenron-cdn-origin/v1" as const,
+    codeSha256: "a".repeat(64),
+  },
+};
+const nativeProof = {
+  backend: "native-manifest-origin" as const,
+  ...nativeOptions.qualificationService,
+  manifestPrefix: "_migration/manifests/site-new/",
+  inventorySha256: "b".repeat(64),
+};
+
+test("native qualification is an explicit exact allowlist with a separate code pin", () => {
+  expect(
+    qualificationOrigins({
+      workerOrigin: "https://worker.example",
+      cdnOrigin: "https://cdn.example",
+    }),
+  ).toEqual(["https://worker.example", "https://cdn.example"]);
+  expect(qualificationOrigins(nativeOptions)).toEqual([...nativeOptions.qualificationOrigins]);
+  for (const origins of [
+    ["https://origin-cdn.dragonballfr.com", "https://cdn.dragonballfr.com"],
+    ["https://cdn.dragonballfr.com", "https://evil.example"],
+    ["https://cdn.dragonballfr.com", "https://origin-cdn.dragonballfr.com/private"],
+    ["https://cdn.dragonballfr.com", "https://origin-cdn.dragonballfr.com/"],
+    ["https://cdn.dragonballfr.com", "https://user@origin-cdn.dragonballfr.com"],
+    [
+      "https://cdn.dragonballfr.com",
+      "https://origin-cdn.dragonballfr.com",
+      "https://worker.example",
+    ],
+  ])
+    expect(() =>
+      qualificationOrigins({
+        ...nativeOptions,
+        qualificationOrigins: origins as unknown as readonly [string, string],
+      }),
+    ).toThrow();
+  expect(() =>
+    qualificationOrigins({ ...nativeOptions, qualificationService: undefined }),
+  ).toThrow();
+  expect(() =>
+    qualificationOrigins({
+      ...nativeOptions,
+      qualificationService: { ...nativeOptions.qualificationService, codeSha256: "invalid" },
+    }),
+  ).toThrow();
+});
+
+test("both native origins must freshly attest the exact service, code, prefix and inventory tuple", async () => {
+  const original = globalThis.fetch;
+  const urls: string[] = [];
+  try {
+    globalThis.fetch = (async (url: URL, init?: RequestInit) => {
+      urls.push(String(url));
+      expect(init?.credentials).toBe("omit");
+      return Response.json(nativeProof, { headers: { "cache-control": "no-store" } });
+    }) as unknown as typeof fetch;
+    expect(
+      await attestQualificationOrigins(
+        nativeOptions,
+        nativeProof.manifestPrefix,
+        nativeProof.inventorySha256,
+      ),
+    ).toEqual(nativeProof);
+    expect(urls).toEqual(
+      nativeOptions.qualificationOrigins.map(
+        (origin) => `${origin}/.well-known/shenron-cdn-origin.json`,
+      ),
+    );
+    for (const drift of [
+      { codeSha256: "c".repeat(64) },
+      { serviceVersion: "other" },
+      { manifestPrefix: "_migration/manifests/old/" },
+      { inventorySha256: "c".repeat(64) },
+    ]) {
+      globalThis.fetch = (async () =>
+        Response.json(
+          { ...nativeProof, ...drift },
+          { headers: { "cache-control": "no-store" } },
+        )) as unknown as typeof fetch;
+      await expect(
+        attestQualificationOrigins(
+          nativeOptions,
+          nativeProof.manifestPrefix,
+          nativeProof.inventorySha256,
+        ),
+      ).rejects.toThrow("tuple differs");
+    }
+    globalThis.fetch = (async () => Response.json(nativeProof)) as unknown as typeof fetch;
+    await expect(
+      attestQualificationOrigins(
+        nativeOptions,
+        nativeProof.manifestPrefix,
+        nativeProof.inventorySha256,
+      ),
+    ).rejects.toThrow("unavailable");
+  } finally {
+    globalThis.fetch = original;
+  }
+});
+
+test("cached native receipts pin actual origins without claiming the Worker was publicly qualified", () => {
+  const receipt = {
+    qualificationOrigins: [...nativeOptions.qualificationOrigins],
+    workerPublicQualified: false,
+    nativeOriginAttestation: nativeProof,
+    prefix: nativeProof.manifestPrefix,
+    inventorySha256: nativeProof.inventorySha256,
+  };
+  expect(() => assertQualificationReceipt(nativeOptions, receipt)).not.toThrow();
+  expect(() =>
+    assertQualificationReceipt(nativeOptions, { ...receipt, workerPublicQualified: true }),
+  ).toThrow();
+  expect(() =>
+    assertQualificationReceipt(nativeOptions, {
+      ...receipt,
+      qualificationOrigins: [nativeOptions.workerOrigin, nativeOptions.cdnOrigin],
+    }),
+  ).toThrow();
+  expect(() =>
+    assertQualificationReceipt(nativeOptions, {
+      ...receipt,
+      nativeOriginAttestation: { ...nativeProof, codeSha256: "c".repeat(64) },
+    }),
+  ).toThrow();
+});
 
 test("site release capability remains explicit and excludes private remote references from upload selection", async () => {
   expect(siteReleaseTarget("https://dragonballfr.com").pathname).toBe("/");
@@ -358,6 +496,51 @@ test("prepare unions baseline generates catalog pins code and never remotely mut
     expect(recovery.qualificationRecovery).toBe(true);
     expect(recovery.freshPublicGetChecks).toBe(6);
     expect(methods.every((method) => method === "GET")).toBe(true);
+    const nativeRecoveryOptions = { ...options, ...nativeOptions };
+    await expect(
+      verifyQualifiedPublication(nativeRecoveryOptions, qualifiedPath, digest(qualification)),
+    ).rejects.toThrow("origins differ");
+    const pinnedNativeProof = {
+      ...nativeProof,
+      manifestPrefix: activeState.prefix,
+      inventorySha256: activeState.inventorySha256,
+    };
+    const nativeReceipt = JSON.stringify({
+      ...qualified,
+      qualificationOrigins: [...nativeOptions.qualificationOrigins],
+      workerPublicQualified: false,
+      nativeOriginAttestation: pinnedNativeProof,
+    });
+    const nativeReceiptPath = join(job, "qualified-native.json");
+    await Bun.write(nativeReceiptPath, nativeReceipt);
+    await chmod(nativeReceiptPath, 0o600);
+    const workerFetch = globalThis.fetch;
+    let nativeGets = 0;
+    globalThis.fetch = (async (input: URL | string | Request, init?: RequestInit) => {
+      const url = new URL(String(input));
+      if (nativeOptions.qualificationOrigins.includes(url.origin as never)) {
+        expect(init?.method ?? "GET").toBe("GET");
+        if (url.pathname === "/.well-known/shenron-cdn-origin.json")
+          return Response.json(pinnedNativeProof, { headers: { "cache-control": "no-store" } });
+        nativeGets++;
+        const entry = delta.entries[url.pathname];
+        return new Response(await Bun.file(entry.sourcePath).bytes(), {
+          headers: { "cache-control": entry.cacheControl },
+        });
+      }
+      return workerFetch(input, init);
+    }) as unknown as typeof fetch;
+    const nativeRecovery = await verifyQualifiedPublication(
+      nativeRecoveryOptions,
+      nativeReceiptPath,
+      digest(nativeReceipt),
+    );
+    expect(nativeRecovery.workerPublicQualified).toBe(false);
+    expect(nativeRecovery.qualificationOrigins).toEqual([...nativeOptions.qualificationOrigins]);
+    expect(nativeRecovery.freshPublicGetChecks).toBe(nativeGets);
+    expect(nativeGets).toBe(6);
+    expect(nativeRecovery.attestationGetChecks).toBe(4);
+    globalThis.fetch = workerFetch;
     await expect(
       verifyQualifiedPublication(options, qualifiedPath, "0".repeat(64)),
     ).rejects.toThrow("receipt changed");
@@ -400,4 +583,4 @@ test("prepare unions baseline generates catalog pins code and never remotely mut
     globalThis.fetch = original;
     await rm(root, { recursive: true, force: true });
   }
-});
+}, 20000);
