@@ -1,3 +1,4 @@
+// Keep the index loader scoped to the catalogue, not streamed detail routes.
 import { ContributeRail, DomainBar } from "@/components/kit";
 import { getShenronRaces, getShenronCharacterCards } from "@/lib/shenron";
 import { slugDeRace } from "@/lib/races-alias";

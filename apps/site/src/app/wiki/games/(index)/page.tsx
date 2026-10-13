@@ -1,3 +1,4 @@
+// Keep the index loader scoped to the catalogue, not streamed detail routes.
 import { ContributeRail, DomainBar } from "@/components/kit";
 import { SectionUnavailable } from "@/components/wiki/SectionUnavailable";
 import { dbUniverse } from "@/lib/db-universe";

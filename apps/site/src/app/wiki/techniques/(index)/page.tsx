@@ -1,3 +1,4 @@
+// Keep the index loader scoped to the catalogue, not streamed detail routes.
 import { ContributeRail, DomainBar } from "@/components/kit";
 import { getShenronTechniques } from "@/lib/shenron";
 import { Breadcrumbs } from "@/components/Breadcrumbs";

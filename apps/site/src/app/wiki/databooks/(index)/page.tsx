@@ -1,3 +1,4 @@
+// Keep the index loader scoped to the catalogue, not streamed detail routes.
 import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import { GatedLink } from "@/components/GatedLink";

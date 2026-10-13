@@ -1,3 +1,4 @@
+// Keep the index loader scoped to the catalogue, not streamed detail routes.
 // SPDX-License-Identifier: Apache-2.0
 import { ContributeRail } from "@/components/kit";
 import { GatedLink } from "@/components/GatedLink";
