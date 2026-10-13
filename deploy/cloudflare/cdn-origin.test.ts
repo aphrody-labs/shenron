@@ -6,8 +6,26 @@ import {
   originObjectKeyAllowed,
   originAttestation,
   originRootPrivate,
+  originResponse,
   storedOriginObject,
 } from "./cdn-origin";
+
+test("media and catalogue indexes remain fresh while image cache policy is preserved", () => {
+  for (const path of ["/media/episodes/875/source/gifs/index.json", "/catalog/assets/index.json"]) {
+    const response = new Response("{}", { headers: { "Cache-Control": "public, max-age=86400" } });
+    expect(
+      originResponse(new Request("https://cdn.dragonballfr.com" + path), response).headers.get(
+        "Cache-Control",
+      ),
+    ).toBe("no-store");
+  }
+  const image = new Response(null, { headers: { "Cache-Control": "public, max-age=86400" } });
+  expect(
+    originResponse(new Request("https://cdn.dragonballfr.com/media/frame.png"), image).headers.get(
+      "Cache-Control",
+    ),
+  ).toBe("public, max-age=86400");
+});
 
 test("origin attestation exposes pins without local paths or credentials", () => {
   const value = originAttestation(

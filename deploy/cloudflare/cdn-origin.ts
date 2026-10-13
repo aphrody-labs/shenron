@@ -148,7 +148,7 @@ export async function startCdnOrigin(configPath: string) {
           },
         });
       }
-      return handleCdn(
+      const response = await handleCdn(
         request,
         {
           CDN: bucket,
@@ -167,8 +167,15 @@ export async function startCdnOrigin(configPath: string) {
           });
         },
       );
+      return originResponse(request, response);
     },
   });
+}
+
+export function originResponse(request: Request, response: Response): Response {
+  if (new URL(request.url).pathname.endsWith("/index.json"))
+    response.headers.set("Cache-Control", "no-store");
+  return response;
 }
 
 if (import.meta.main)
