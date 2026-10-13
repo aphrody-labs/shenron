@@ -1850,6 +1850,10 @@
       "autre": "Autre"
     }
   },
+  "adminCanvas": {
+    "profileUnavailable": "Ce profil est indisponible.",
+    "previewUnavailable": "Impossible de charger cet aperçu."
+  },
   "adminLogs": {
     "title": "Journaux du bot",
     "description": "Journaux du processus Shenron. Actualisation automatique toutes les {seconds} secondes.",

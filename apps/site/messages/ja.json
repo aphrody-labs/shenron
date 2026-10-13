@@ -1850,6 +1850,10 @@
       "autre": "その他"
     }
   },
+  "adminCanvas": {
+    "profileUnavailable": "このプロフィールは利用できません。",
+    "previewUnavailable": "プレビューを読み込めません。"
+  },
   "adminLogs": {
     "title": "ボットのログ",
     "description": "Shenronプロセスのログです。{seconds}秒ごとに自動更新します。",
