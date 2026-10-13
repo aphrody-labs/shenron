@@ -2,7 +2,7 @@ import type { SQL } from "bun";
 import { inject, singleton } from "tsyringe";
 import { PgService } from "~/db/pg";
 import { logger } from "~/lib/logger";
-import { officialCrunchyrollWatchURL } from "@aphrody/shenron-config/video-providers";
+import { latestOfficialCrunchyrollWatchOffer } from "@aphrody/shenron-api/contract";
 
 /**
  * Épisodes — lecture des lecteurs VF/VOSTFR, côté PostgreSQL du site.
@@ -116,24 +116,11 @@ export class EpisodesService {
             }
           })()
         : [];
-    const offers = Array.isArray(ligne.availability) ? ligne.availability : [];
-    const officialOffer = offers
-      .filter((item): item is Record<string, unknown> => !!item && typeof item === "object")
-      .filter((offer) => offer.provider === "crunchyroll")
-      .toSorted((a, b) => Number(b.checkedAt ?? 0) - Number(a.checkedAt ?? 0))[0];
-    const officialWatchUrl =
-      officialOffer?.available === true &&
-      typeof officialOffer.url === "string" &&
-      typeof officialOffer.checkedAt === "number" &&
-      Number.isFinite(officialOffer.checkedAt) &&
-      officialOffer.checkedAt > 0
-        ? officialCrunchyrollWatchURL(officialOffer.url)
-        : null;
-    const offerLanguages = officialOffer?.langs;
-    const officialLanguages =
-      officialWatchUrl && Array.isArray(offerLanguages)
-        ? (["vf", "vostfr"] as const).filter((language) => offerLanguages.includes(language))
-        : [];
+    const officialOffer = latestOfficialCrunchyrollWatchOffer(ligne.availability);
+    const officialWatchUrl = officialOffer?.url ?? null;
+    const officialLanguages = officialOffer
+      ? (["vf", "vostfr"] as const).filter((language) => officialOffer.languages.includes(language))
+      : [];
     return {
       id: nombre(ligne.id) ?? 0,
       series: ligne.series,

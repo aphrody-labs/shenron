@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import type { Availability } from "@/db/bot-schema";
+import { latestOfficialCrunchyrollWatchOffer } from "@aphrody/shenron-api/contract";
+import { officialCrunchyrollWatchURL } from "@aphrody/shenron-config/video-providers";
 import { VIDEO_LANGUAGE_ORDER } from "@aphrody/shenron-media/episode-playback";
 export {
   VIDEO_LANGUAGE_ORDER,
@@ -13,6 +15,7 @@ export {
 /** Preserve provider observations without synthesizing a supplier or version. */
 export function normalizeAvailability(raw: unknown): Availability[] | null {
   if (!Array.isArray(raw)) return null;
+  const officialCrunchyroll = latestOfficialCrunchyrollWatchOffer(raw);
   const offers = new Map<string, Availability>();
   for (const item of raw) {
     if (!item || typeof item !== "object") continue;
@@ -21,9 +24,21 @@ export function normalizeAvailability(raw: unknown): Availability[] | null {
     if (typeof offer.provider !== "string" || !offer.provider.trim()) continue;
     if (typeof offer.label !== "string" || !offer.label.trim()) continue;
     if (typeof offer.url !== "string") continue;
+    const provider = offer.provider.trim();
+    if (provider === "crunchyroll") {
+      if (
+        !officialCrunchyroll ||
+        offer.checkedAt !== officialCrunchyroll.checkedAt ||
+        officialCrunchyrollWatchURL(offer.url) !== officialCrunchyroll.url
+      ) {
+        continue;
+      }
+    }
     let destination: URL;
     try {
-      destination = new URL(offer.url.trim());
+      destination = new URL(
+        provider === "crunchyroll" ? officialCrunchyroll!.url : offer.url.trim(),
+      );
     } catch {
       continue;
     }
@@ -33,7 +48,6 @@ export function normalizeAvailability(raw: unknown): Availability[] | null {
     const langs = Array.isArray(rawLangs)
       ? VIDEO_LANGUAGE_ORDER.filter((language) => rawLangs.includes(language))
       : [];
-    const provider = offer.provider.trim();
     const checkedAt =
       typeof offer.checkedAt === "number" &&
       Number.isFinite(offer.checkedAt) &&
@@ -48,7 +62,8 @@ export function normalizeAvailability(raw: unknown): Availability[] | null {
       provider,
       label: offer.label.trim(),
       url: destination.href,
-      embedUrl: typeof offer.embedUrl === "string" ? offer.embedUrl : null,
+      embedUrl:
+        provider !== "crunchyroll" && typeof offer.embedUrl === "string" ? offer.embedUrl : null,
       langs,
       available: offer.available,
       checkedAt,
