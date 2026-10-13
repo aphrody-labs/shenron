@@ -40,6 +40,7 @@ import { wikiRevisions } from "@/db/schema";
 import * as botSchema from "@/db/bot-schema";
 import { resolveMediaEditionId } from "@/lib/media-edition-aliases";
 import { kindFromCategory } from "@/lib/databook-categories";
+import { assertWikiUpdatePrecondition } from "@/lib/wiki-update-precondition";
 import {
   anyGapSql,
   countWhereSql,
@@ -353,6 +354,26 @@ export async function getWikiRow(table: string, id: string): Promise<Row | null>
   return row;
 }
 
+/** Read-only evidence for deriving missing media pagination; no page text or secrets. */
+export async function readMediaVolumePageReferenceInventory(): Promise<
+  Array<{
+    id: number;
+    pageCount: number | null;
+    chapters: Array<{ id: number; pages: string[] }>;
+  }>
+> {
+  const rows = await db.execute(sql`SELECT v.id,v.page_count AS "pageCount",
+    coalesce((SELECT json_agg(json_build_object('id',c.id,'pages',c.pages) ORDER BY c.id)
+    FROM bot.media_chapters c WHERE c.volume_id=v.id),'[]'::json) AS chapters
+    FROM bot.media_volumes v WHERE v.page_count IS NULL ORDER BY v.id`);
+  if (rows.length > 1000) throw new Error("Media page-reference inventory exceeds bounds");
+  return rows as unknown as Array<{
+    id: number;
+    pageCount: number | null;
+    chapters: Array<{ id: number; pages: string[] }>;
+  }>;
+}
+
 /**
  * Tables dont la pk est auto-générée par Postgres (IDENTITY / default) → ne
  * jamais injecter d'id à l'insert. Toutes les autres tables wiki à pk numérique
@@ -518,7 +539,12 @@ export async function insertWiki(
   return inserted[0] ?? values;
 }
 
-export async function updateWiki(table: string, id: string, data: Row): Promise<Row> {
+export async function updateWiki(
+  table: string,
+  id: string,
+  data: Row,
+  options: { expected?: Row } = {},
+): Promise<Row> {
   const spec = getSpec(table);
   if (!spec) throw new Error(`Table inconnue: ${table}`);
   const values = buildValues(spec, data, { forInsert: false });
@@ -527,6 +553,9 @@ export async function updateWiki(table: string, id: string, data: Row): Promise<
     throw new Error("Aucune colonne mutable fournie.");
   }
   const cond = pkCondition(spec, id);
+  if (options.expected && !isMediaCatalogTable(table)) {
+    throw new Error("Guarded wiki updates require the media catalog transaction owner");
+  }
   if (isMediaCatalogTable(table)) {
     return db.transaction(async (tx) => {
       await lockMediaCatalog(tx, table);
@@ -539,6 +568,7 @@ export async function updateWiki(table: string, id: string, data: Row): Promise<
       }
       const [before] = (await tx.select().from(spec.table).where(cond).limit(1)) as Row[];
       if (!before) throw new Error(`Ligne introuvable: ${table}#${id}`);
+      if (options.expected) assertWikiUpdatePrecondition(before, options.expected);
       // Existing duplicate notices still need metadata repairs without new identities.
       if (
         MEDIA_IDENTITY_FIELDS[table].some(
