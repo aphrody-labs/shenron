@@ -6,6 +6,7 @@ import { Info, Lecture } from "@aphrody/shenron-ui/icones";
 import { assetUrl } from "@/lib/assets";
 import { isEditableAsset } from "@/lib/images";
 import { BackgroundImage } from "@/components/media/BackgroundImage";
+import { canonicalFrameUrl } from "@/lib/episode-frame-banner";
 
 /**
  * Billboard — bannière héro « à la Netflix » en tête des catalogues (films,
@@ -56,9 +57,10 @@ export function Billboard({
 }) {
   const t = useTranslations("mediaPlayback");
   const metaParts = (meta ?? []).filter(Boolean) as ReactNode[];
+  const frame = canonicalFrameUrl(backdrop);
   return (
-    <section className="relative h-[70vh] max-h-[680px] min-h-[440px] w-full overflow-hidden border-b border-white/[0.08]">
-      <BackgroundImage src={backdrop} alt="" variant="kenburns" overlay="none" priority />
+    <section className="relative flex min-h-64 w-full flex-col justify-end overflow-hidden border-b border-white/[0.08] sm:min-h-80">
+      {frame && <BackgroundImage src={frame} alt="" variant="kenburns" overlay="none" priority />}
       {/* Fondus vers le fond de page pour un raccord invisible avec les rails */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-dbz-bg via-dbz-bg/45 to-dbz-bg/10" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-dbz-bg/95 via-dbz-bg/40 to-transparent" />
@@ -72,22 +74,22 @@ export function Billboard({
         className="speed-lines pointer-events-none absolute inset-0 opacity-[0.04]"
       />
 
-      <div className="relative z-10 mx-auto flex h-full max-w-[1400px] items-end px-6 pb-12 lg:px-10 lg:pb-16">
-        <div className="flex w-full items-end gap-8">
+      <div className="relative z-10 mx-auto flex max-w-[1400px] items-end px-6 py-5 lg:px-10 lg:py-6">
+        <div className="flex w-full items-end gap-6">
           {/* min-w-0 : sans ça, ce flex-1 ne descend pas sous la largeur de son
 					    contenu (min-width:auto) → titre/synopsis débordent sur mobile. */}
           <div className="reveal-up min-w-0 max-w-2xl flex-1">
-            <p className="mb-3 inline-flex items-center gap-3 font-display text-[12px] font-semibold uppercase tracking-[0.18em] text-dbz-orange">
+            <p className="mb-2 inline-flex items-center gap-3 font-display text-xs font-semibold text-dbz-orange">
               <span aria-hidden className="h-px w-7 bg-dbz-orange/70" />
               {eyebrow}
             </p>
-            <h1 className="title-gold mb-3 hyphens-auto break-words font-saiyan text-[27px] font-bold uppercase leading-[1.05] tracking-[0.01em] sm:text-[38px] sm:leading-[1.02] md:text-[56px]">
+            <h1 className="title-gold mb-2 hyphens-auto break-words font-saiyan text-2xl font-bold uppercase leading-tight sm:text-3xl md:text-4xl">
               {title}
             </h1>
-            {titleJa && <p className="mb-3 font-jp text-[15px] text-white/55">{titleJa}</p>}
+            {titleJa && <p className="mb-2 font-jp text-sm text-white/55">{titleJa}</p>}
 
             {(metaParts.length > 0 || hasVf || hasVostfr || hasVost) && (
-              <div className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px] font-display font-semibold uppercase tracking-wide text-white/70">
+              <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px] font-display font-semibold uppercase tracking-wide text-white/70">
                 {metaParts.map((m, i) => (
                   <span key={i} className="flex items-center gap-3">
                     {i > 0 && (
@@ -117,9 +119,7 @@ export function Billboard({
             )}
 
             {synopsis && (
-              <p className="mb-6 line-clamp-3 max-w-xl text-[15px] leading-relaxed text-white/80">
-                {synopsis}
-              </p>
+              <p className="mb-4 max-w-xl text-sm leading-relaxed text-white/80">{synopsis}</p>
             )}
 
             <div className="flex flex-wrap items-center gap-3">
@@ -156,12 +156,12 @@ export function Billboard({
 
           {poster && (
             <div className="hidden shrink-0 lg:block">
-              <div className="relative aspect-[2/3] w-44 overflow-hidden rounded-xl shadow-2xl ring-1 ring-white/10">
+              <div className="relative aspect-[2/3] w-32 overflow-hidden rounded-xl ring-1 ring-white/10">
                 <Image
                   src={assetUrl(poster)}
                   alt=""
                   fill
-                  sizes="176px"
+                  sizes="128px"
                   quality={70}
                   // Affiche téléversée depuis l'admin : servie telle quelle pour rester
                   // fraîche dès son remplacement (cf. lib/images.ts) — comme le font

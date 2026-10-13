@@ -73,12 +73,12 @@ describe("source features", () => {
     expect(page).toContain("CommunityTopsFull");
   });
 
-  test("rankings stay available after the home podium is removed", async () => {
+  test("home section tops branchée", async () => {
     const home = await Bun.file(
       new URL("../src/components/home/HomeView.tsx", import.meta.url),
     ).text();
-    expect(home).not.toContain('case "tops"');
-    expect(home).not.toContain("communityTops");
+    expect(home).toContain('case "tops"');
+    expect(home).toContain("communityTops");
 
     const scenes = await Bun.file(
       new URL("../../../packages/config/src/home.ts", import.meta.url),

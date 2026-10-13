@@ -8,18 +8,24 @@ ci-dessous évitent que cela se reproduise. Système graphique : [`reference/DES
 ## Accueil
 
 - Le hero garde le logo Dragon Ball au style Dragon Ball Super et le nuage Kinto'un animé.
-- Chaque section garde sa vidéo de fond, définie dans la configuration de l'accueil
-  (`lib/home-config`, `lib/home-scenes`). Les vidéos sont chargées à l'approche de leur section,
-  jamais toutes au premier rendu ; `prefers-reduced-motion` est respecté.
-- La recherche reste dans un héros compact, suivie de quatre accès sans compteurs
-  (manga, databooks, épisodes, sources) et de la présentation officielle de Beerus.
-- Demande propriétaire du 13 octobre 2026 : retirer de l’accueil le direct, le panthéon,
-  les best-of et Top 3, l’arbitre de canonicité, les actualités, les mini-jeux,
-  le voyage dans l’univers et ses compteurs, la reprise, la présence et le classement
-  du serveur, ainsi que les sagas légendaires. Leurs rubriques restent accessibles
-  dans le shell ; aucun de ces widgets ni ses lectures serveur ne subsiste sur l’accueil.
-- Les sections personnalisées de l’ancienne composition ne sont pas montées.
-  La configuration conserve le héros et ses scènes, sans réactiver les widgets retirés.
+- Les sections éditoriales gardent leur contenu et leur ordre de configuration sur des
+  surfaces sobres. Les anciens fonds `section.scene` ne sont plus montés, même si leur
+  configuration est encore présente ; les portraits et vignettes éditoriales restent visibles.
+- La demande propriétaire du 13 octobre 2026 de restaurer le contenu perdu remplace
+  la composition compacte précédente. La recherche et les accès publics sont suivis
+  des sections activées dans `/admin/home` : personnages, sagas, best-of, classements,
+  canonicité et contenus personnalisés. Les actualités puis les mini-jeux terminent la page.
+- Les sélections et les compteurs viennent de leurs lecteurs canoniques ; aucun nombre
+  de références de secours n’est inventé. Les podiums sans votes suffisants et les sections
+  éditoriales, communautaires ou personnalisées sans matière restent masqués.
+- Le héros affiche au plus une frame d'épisode qualifiée par le propriétaire des bannières,
+  ou un fond sobre si aucune ne convient. Les anciennes scènes Xenoverse et l'affiche Beerus
+  statique ne sont plus montées. La fiche Beerus et son annonce sont accessibles dans une
+  section textuelle, sans deuxième affiche identique.
+- Les héros restent compacts : accueil de 240 à 288 px, catalogues de 256 à 320 px,
+  bandeaux partagés de 180 à 240 px. Il s'agit de hauteurs minimales : les titres, synopsis
+  et actions longs agrandissent leur bloc, sans être tronqués.
+- « Explorer aussi » retire les destinations déjà proposées par les sections visibles.
 
 ## Shell
 

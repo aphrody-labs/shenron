@@ -1503,6 +1503,34 @@ export const dbUniverse = {
       return { episodes: rows.map(toEpisode), total: Number(n ?? 0) };
     }),
 
+  /** Public frame candidates only; bounded projection, series and saga filters before LIMIT. */
+  frameEpisodes: (series?: string, episodeStart?: number, episodeEnd?: number) =>
+    safe(async () => {
+      return db
+        .select({
+          series: botEpisodes.series,
+          number_in_series: botEpisodes.numberInSeries,
+          frames: sql<EpisodeFrame[]>`jsonb_path_query_array(${botEpisodes.frames}, '$[0 to 11]')`,
+        })
+        .from(botEpisodes)
+        .where(
+          and(
+            eq(botEpisodes.visible, true),
+            series ? eq(botEpisodes.series, series) : undefined,
+            episodeStart !== undefined
+              ? sql`${botEpisodes.numberInSeries} >= ${episodeStart}`
+              : undefined,
+            episodeEnd !== undefined
+              ? sql`${botEpisodes.numberInSeries} <= ${episodeEnd}`
+              : undefined,
+            sql`jsonb_typeof(${botEpisodes.frames}) = 'array'`,
+            sql`${botEpisodes.frames} <> '[]'::jsonb`,
+          ),
+        )
+        .orderBy(desc(botEpisodes.id))
+        .limit(12);
+    }),
+
   /**
    * Séries d'épisodes RÉELLEMENT présentes (avec compte), pour ne proposer
    * que des onglets accessibles (sinon une série à 0 épisode → 404).

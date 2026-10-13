@@ -9,7 +9,7 @@ for rel in manifest["files"]:
     dst = new / rel
     dst.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(old / rel, dst)
-compose = json.loads((new / "compose.yaml").read_text())
+compose = yaml.safe_load((new / "compose.yaml").read_text())
 override = yaml.safe_load(pathlib.Path("/srv/shenron/shared/debate/guild-admission.override.json").read_text())
 for name in ("site", "bot"):
     service = compose["services"][name]

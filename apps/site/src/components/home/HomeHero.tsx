@@ -1,10 +1,10 @@
 /**
  * The home hero: the cover wordmark (« DRAGON » with the one-star ball in its O, « BALL » in
- * red, as on the tankōbon and Dragon Ball Super covers), the flying Kinto-Un, the hero clips
- * behind, then the page title, the lede edited in `/admin/home` and the search — the first
+ * red, as on the tankōbon and Dragon Ball Super covers), the flying Kinto-Un, one qualified
+ * episode frame when available, then the lede edited in `/admin/home` and the search — the first
  * gesture of the page.
  *
- * Server component; the clips, the cloud and the search are the client islands.
+ * Server component; the cloud and the search are the client islands.
  */
 import Image from "next/image";
 import {
@@ -16,38 +16,40 @@ import {
 } from "@aphrody/shenron-ui/toriyama";
 import { T } from "@/components/T";
 import type { HomeConfig } from "@/lib/home-scenes";
-import { HomeHeroScenes } from "./HomeHeroScenes";
 import { HomeSearch } from "./HomeSearch";
 import { KintoUnVolant } from "./KintoUnVolant";
-
-const BEERUS_ARTWORK = "/banners/dbs-beerus-2026.jpg";
+import { canonicalFrameUrl } from "@/lib/episode-frame-banner";
 
 export function HomeHero({
   hero,
+  heroFrame,
   className = "",
 }: {
   hero: HomeConfig["hero"];
+  heroFrame?: string;
   className?: string;
 }) {
   const lede = hero.lede.trim();
+  const frame = canonicalFrameUrl(heroFrame ?? null);
   return (
     <header
       id="hero"
       className={`home-stage relative isolate min-w-0 overflow-hidden border-b border-white/[0.08] ${className}`}
     >
-      <HomeHeroScenes scenes={hero.scenes} />
-      <div className="home-hero__beerus" aria-hidden="true">
-        <Image
-          src={BEERUS_ARTWORK}
-          alt=""
-          fill
-          priority
-          sizes="(max-width: 767px) 100vw, 52vw"
-          className="object-cover object-center"
-        />
-      </div>
+      {frame && (
+        <div className="home-hero__beerus" aria-hidden="true">
+          <Image
+            src={frame}
+            alt=""
+            fill
+            priority
+            sizes="(max-width: 767px) 100vw, 52vw"
+            className="object-cover object-center"
+          />
+        </div>
+      )}
       <KintoUnVolant />
-      <div className="page-shell relative z-[3] flex min-h-[clamp(22rem,48svh,32rem)] flex-col justify-end pt-10 pb-6 sm:pt-14 sm:pb-8">
+      <div className="page-shell relative z-[3] flex min-h-60 flex-col justify-end py-5 sm:min-h-72 sm:py-6">
         {/* The wordmark IS the page title: one heading, drawn. A second visible title
             (« Dragon Ball, en français et sourcé ») repeated the wordmark and the lede word for
             word. Its text stays the accessible name of the h1. */}
@@ -58,7 +60,7 @@ export function HomeHero({
           <span
             aria-hidden
             className="home-wordmark"
-            style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)" }}
+            style={{ fontSize: "clamp(2rem, 4.5vw, 4rem)" }}
           >
             <span className="home-wordmark__ligne">
               <span className="wordmark-manga">
@@ -76,11 +78,9 @@ export function HomeHero({
           </span>
         </h1>
         {lede ? (
-          <p className="mt-4 max-w-[56ch] text-sm leading-relaxed text-os/85 sm:text-base">
-            {lede}
-          </p>
+          <p className="mt-3 max-w-[56ch] text-sm leading-relaxed text-os/85">{lede}</p>
         ) : null}
-        <HomeSearch className="mt-4 max-w-2xl" />
+        <HomeSearch className="mt-3 max-w-2xl" />
       </div>
     </header>
   );

@@ -2,10 +2,10 @@
 /** Request-cached banner adapter; only the Bun host owns storage. */
 import "server-only";
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { resolveHostUrl } from "@aphrody/shenron-config/public-urls";
 import {
   DEFAULT_PAGE_BANNERS,
-  resolveBannerUrl,
   resolvePageBanners,
   type PageBannersConfig,
   type PageHeroKey,
@@ -14,6 +14,8 @@ import { createShenronApiClient } from "@aphrody/shenron-api/client";
 import { endpoints } from "@aphrody/shenron-api/contract";
 
 import { HostBannerError } from "./host-banner-error";
+import { dbUniverse } from "./db-universe";
+import { selectEpisodeFrameBanner, type BannerFrameScope } from "./episode-frame-banner";
 export { HostBannerError } from "./host-banner-error";
 
 function hostBannerClient(host: string, requestHeaders?: Headers, adminToken?: string | null) {
@@ -60,15 +62,37 @@ export async function savePageBanners(
   return resolvePageBanners(result.value.banners);
 }
 
-/** URL affichable pour le hero d'une page (landing). */
-export async function pageHero(key: PageHeroKey): Promise<string> {
-  const cfg = await getPageBanners();
-  return resolveBannerUrl(cfg.pages[key], cfg.fallback);
+const frameBanner = unstable_cache(
+  async (series: string | undefined, start: number | undefined, end: number | undefined) => {
+    if (
+      [start, end].some(
+        (value) => value !== undefined && (!Number.isSafeInteger(value) || value < 0),
+      )
+    )
+      return "";
+    if (start !== undefined && end !== undefined && start > end) return "";
+    const catalogue = await dbUniverse.frameEpisodes(series, start, end);
+    if (!catalogue) return "";
+    return selectEpisodeFrameBanner(catalogue, {
+      series,
+      episodeStart: start,
+      episodeEnd: end,
+    });
+  },
+  ["canonical-frame-banner-v1"],
+  { revalidate: 3600, tags: ["episode-series", "episodes-by-series"] },
+);
+
+/** Public heroes use measured episode frames; unqualified artwork stays out. */
+export async function pageHero(_key: PageHeroKey, scope: BannerFrameScope = {}): Promise<string> {
+  if (!["episodes", "sagas", "arcs", "chronologie"].includes(_key) && !scope.series) return "";
+  return frameBanner(scope.series, scope.episodeStart, scope.episodeEnd).catch(() => "");
 }
 
 /** URL affichable pour la bannière d'une série (`DB`, `DBZ`, …). */
-export async function bannerForSeries(series: string): Promise<string> {
-  const cfg = await getPageBanners();
-  const raw = cfg.series[series] ?? cfg.fallback;
-  return resolveBannerUrl(raw, cfg.fallback);
+export async function bannerForSeries(
+  series: string,
+  scope: Omit<BannerFrameScope, "series"> = {},
+): Promise<string> {
+  return frameBanner(series, scope.episodeStart, scope.episodeEnd).catch(() => "");
 }

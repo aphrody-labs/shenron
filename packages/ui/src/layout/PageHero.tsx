@@ -41,11 +41,11 @@ export function PageHero({
 }) {
   const h = image
     ? height === "sm"
-      ? "h-[160px] md:h-[190px]"
+      ? "min-h-[160px] md:min-h-[180px] py-4 md:py-5"
       : height === "lg"
-        ? "h-[260px] md:h-[300px]"
-        : "h-[200px] md:h-[240px]"
-    : "min-h-[140px] md:min-h-[160px] py-8 md:py-10";
+        ? "min-h-[200px] md:min-h-[240px] py-5 md:py-6"
+        : "min-h-[180px] md:min-h-[220px] py-4 md:py-5"
+    : "min-h-[140px] md:min-h-[160px] py-5 md:py-6";
   const objPos =
     imagePosition === "top"
       ? "object-top"
@@ -54,7 +54,7 @@ export function PageHero({
         : "object-center";
   return (
     <section
-      className={`relative ${h} w-full overflow-hidden border-b-2 border-black/80 shadow-[0_2px_0px_rgba(231,130,32,0.3)] ${
+      className={`relative flex flex-col justify-center ${h} w-full overflow-hidden border-b-2 border-black/80 shadow-[0_2px_0px_rgba(231,130,32,0.3)] ${
         image ? "vignette film-grain" : ""
       }`}
     >
@@ -103,16 +103,11 @@ export function PageHero({
 
       <div
         className={`relative mx-auto max-w-[1280px] px-6 lg:px-10 flex ${
-          image ? "h-full items-end pb-6 md:pb-8" : "items-center"
+          image ? "items-end" : "items-center"
         }`}
       >
-        <div className="flex-1 max-w-2xl reveal-up">
-          <HeroTitles
-            eyebrow={eyebrow}
-            title={title}
-            lead={lead}
-            regime={image ? "image" : "plain"}
-          />
+        <div className="min-w-0 flex-1 max-w-2xl reveal-up">
+          <HeroTitles eyebrow={eyebrow} title={title} lead={lead} regime="compact" />
         </div>
         {right && <div className="shrink-0 ml-6 hidden md:block">{right}</div>}
       </div>
