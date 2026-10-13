@@ -507,6 +507,18 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
         "public, max-age=31536000, immutable",
       );
     });
+    await writeFile(
+      join(job, "upload-receipt.json"),
+      JSON.stringify({
+        finishedAt: new Date().toISOString(),
+        inventorySha256: plan.inventorySha256,
+        prefix: plan.prefix,
+        objectsVerified: objects.length,
+        shardsVerified: 256,
+        verificationScope: "S3 bytes SHA and metadata",
+      }),
+      { mode: 0o600, flag: "wx" },
+    );
     const last = await owner.snapshot();
     if (JSON.stringify(last) !== JSON.stringify(plan.before))
       throw new Error("Worker drift after staged upload");
@@ -540,6 +552,8 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
           throw new Error("Public index must be no-store");
       }
     });
+    if (JSON.stringify(await owner.snapshot()) !== JSON.stringify(after))
+      throw new Error("Worker drift during public qualification");
     const receipt = {
       finishedAt: new Date().toISOString(),
       inventoryPath: join(job, "delta/inventory.json"),
