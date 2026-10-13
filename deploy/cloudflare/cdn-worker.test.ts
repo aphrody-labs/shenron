@@ -393,9 +393,10 @@ describe("CDN manifest and import", () => {
       env,
       origin,
     );
-    expect(head.status).toBe(200);
+    expect(head.status).toBe(206);
+    expect(head.headers.get("Content-Length")).toBe("2");
+    expect(head.headers.get("Content-Range")).toBe(`bytes 0-1/${bytes.length}`);
     expect(head.headers.get("X-Content-SHA256")).toBe(sha256);
-    expect(head.headers.get("Content-Length")).toBe(String(bytes.length));
     expect(await head.text()).toBe("");
     const alias = await handleCdn(request("/fonts/alias.woff2", "HEAD"), env, origin);
     expect(alias.status).toBe(200);
@@ -483,5 +484,17 @@ describe("CDN manifest and import", () => {
         )
       ).status,
     ).toBe(200);
+  });
+
+  test("HEAD preserves bounded range metadata without reading a body", async () => {
+    const bucket = new Bucket();
+    bucket.objects.set(`_objects/${sha256}`, bytes);
+    const response = await handleCdn(request(undefined, "HEAD", { Range: "bytes=0-7" }), {
+      CDN: bucket,
+    });
+    expect(response.status).toBe(206);
+    expect(response.headers.get("Content-Length")).toBe("8");
+    expect(response.headers.get("Content-Range")).toBe(`bytes 0-7/${bytes.length}`);
+    expect(response.body).toBeNull();
   });
 });
