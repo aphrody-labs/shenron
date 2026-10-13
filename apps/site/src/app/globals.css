@@ -6,3 +6,4 @@
 @import "shadcn/tailwind.css";
 @import "@aphrody/shenron-ui/site.css";
 @import "@aphrody/shenron-ui/toriyama.css";
+@import "./frame-theme.css";

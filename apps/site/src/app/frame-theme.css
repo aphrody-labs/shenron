@@ -1,0 +1,80 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* Frame colors are projected by the consumer bridge; component and portal roles share them. */
+:root {
+  --background: var(--color-dbz-bg);
+  --foreground: var(--color-os);
+  --card: var(--color-dbz-card);
+  --card-foreground: var(--foreground);
+  --popover: var(--color-dbz-card);
+  --popover-foreground: var(--foreground);
+  --primary: var(--color-dbz-orange);
+  --primary-foreground: var(--frame-on-primary, #000000);
+  --secondary: var(--color-dbz-blue);
+  --secondary-foreground: var(--foreground);
+  --muted: var(--color-dbz-card);
+  --muted-foreground: var(--frame-on-surface-variant, var(--color-dbz-blue-light));
+  --accent: color-mix(in srgb, var(--color-dbz-orange) 14%, var(--color-dbz-card));
+  --accent-foreground: var(--foreground);
+  --border: var(--color-dbz-border);
+  --input: var(--color-dbz-border);
+  --ring: var(--color-dbz-orange);
+  --destructive: var(--color-dbz-red);
+  --destructive-foreground: var(--frame-on-error, #000000);
+
+  --toriyama-orange: var(--color-dbz-orange);
+  --toriyama-blue: var(--color-dbz-blue);
+  --toriyama-red: var(--color-dbz-red);
+  --toriyama-gold: var(--color-dbz-gold);
+  --toriyama-kinto: var(--color-kinto-lumiere);
+  --toriyama-shenron: var(--color-dbz-green);
+  --toriyama-capsule: var(--color-dbz-cyan);
+  --toriyama-capsule-dark: var(--color-dbz-blue);
+  --toriyama-namek: var(--color-dbz-purple);
+  --toriyama-majin: var(--color-dbz-pink);
+  --toriyama-scouter-green: var(--color-dbz-green);
+  --toriyama-scouter-red: var(--color-dbz-red);
+  --toriyama-scouter-blue: var(--color-dbz-ki);
+  --toriyama-mech-yellow: var(--color-dbz-yellow);
+  --toriyama-ink: var(--color-encre);
+  --toriyama-paper: var(--color-os);
+}
+
+@media (forced-colors: active) {
+  :root {
+    --background: Canvas;
+    --foreground: CanvasText;
+    --card: Canvas;
+    --card-foreground: CanvasText;
+    --popover: Canvas;
+    --popover-foreground: CanvasText;
+    --primary: Highlight;
+    --primary-foreground: HighlightText;
+    --border: CanvasText;
+    --ring: Highlight;
+  }
+}
+
+/* Qualified episode frame defaults. */
+/* Episode 875, frame 18702; source SHA256 db6b365d58a933a18176ffd848b23d79513acb899acf7b4a07bd35203949508e. */
+:root {
+  --dbz-bg: #131315;
+  --dbz-card: #1b1b1d;
+  --dbz-border: #45464d;
+  --dbz-orange: #bfc6e0;
+  --dbz-orange-dark: #bfc6e0;
+  --dbz-blue: #444650;
+  --dbz-blue-light: #c5c6d1;
+  --dbz-yellow: #e7bea6;
+  --dbz-red: #ffb4ab;
+  --dbz-purple: #e7bea6;
+  --dbz-gold: #e7bea6;
+  --dbz-cyan: #c5c6d1;
+  --dbz-ember: #bfc6e0;
+  --dbz-ki: #c5c6d1;
+  --dbz-amber: #e7bea6;
+  --dbz-encre: #000000;
+  --dbz-os: #e4e2e4;
+  --frame-on-primary: #293044;
+  --frame-on-surface-variant: #c6c6cd;
+  --frame-on-error: #690005;
+}
