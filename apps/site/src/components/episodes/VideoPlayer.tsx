@@ -282,6 +282,7 @@ export function VideoPlayer({
         onDurationChange={syncTimeline}
         onWaiting={() => setWaiting(true)}
         onPlaying={() => setWaiting(false)}
+        onCanPlay={() => setWaiting(false)}
         onSeeked={() => setWaiting(false)}
         onVolumeChange={(event) => {
           setVolume(event.currentTarget.volume);
@@ -511,7 +512,7 @@ export function VideoPlayer({
         role={status === "failed" ? "alert" : "status"}
         className="px-3 pb-3 text-xs text-white/70"
       >
-        {waiting
+        {waiting && status !== "failed"
           ? t("videoBuffering")
           : t(
               status === "loading"
