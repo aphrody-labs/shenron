@@ -1,15 +1,15 @@
 "use client";
 
 import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
-import { apiUrl } from "@/lib/config";
+import Link from "next/link";
+import { useT } from "@/components/T";
 import { DragonBallLoader } from "@aphrody/shenron-ui/toriyama";
 import { DragonRadar } from "@aphrody/shenron-ui/icones";
-import { useCallback, useId, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 /**
- * Recherche plein-texte dans les DIALOGUES du manga (transcriptions OCR auto,
- * bilingue FR + JP). Îlot client : appelle l'API publique du bot
- * `/api/public/manga/search` (CORS ouvert) → ne casse pas le cache CDN de la page.
+ * Search French and Japanese manga transcripts through the site's API,
+ * which joins OCR coordinates to real reader links.
  */
 interface Result {
   series: string;
@@ -17,6 +17,7 @@ interface Result {
   page: number;
   lang: string;
   snippet: string;
+  href?: string | null;
 }
 
 /** A row of the API: English fields, the former `tome`/`planche` as a fallback against an older bot. */
@@ -53,52 +54,55 @@ function Snippet({ text }: { text: string }) {
 }
 
 export function MangaDialogueSearch() {
+  const t = useT();
   const inputId = useId();
+  const pending = useRef<AbortController | null>(null);
+  useEffect(() => () => pending.current?.abort(), []);
   const [q, setQ] = useState("");
   const [results, setResults] = useState<Result[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
   const run = useCallback(async (query: string) => {
+    pending.current?.abort();
     if (query.trim().length < 2) {
       setResults(null);
       return;
     }
     setLoading(true);
     setError(false);
+    const controller = new AbortController();
+    pending.current = controller;
     try {
-      const res = await fetch(
-        apiUrl(`api/public/manga/search?q=${encodeURIComponent(query.trim())}&limit=24`),
-      );
+      const res = await fetch(`/api/manga/search?q=${encodeURIComponent(query.trim())}&limit=24`, {
+        signal: controller.signal,
+      });
       if (!res.ok) throw new Error(String(res.status));
       const data = (await res.json()) as { results?: ApiResult[] };
+      if (controller.signal.aborted) return;
       setResults(
         (data.results ?? []).map((r) =>
           Object.assign(r, { volume: r.volume ?? r.tome ?? "", page: r.page ?? r.planche ?? 0 }),
         ),
       );
     } catch {
+      if (controller.signal.aborted) return;
       setError(true);
       setResults([]);
     } finally {
-      setLoading(false);
+      if (!controller.signal.aborted) setLoading(false);
     }
   }, []);
 
   return (
-    <section className="my-10" aria-label="Recherche de répliques">
+    <section className="my-10" aria-label={t("mangaCatalog.dialogue.title")}>
       <SectionHeading
         id={`${inputId}-title`}
         level={2}
         rule={false}
         className="mb-4"
-        title="Cherche une réplique"
-        standfirst={
-          <>
-            Retrouve n’importe quelle ligne de dialogue du manga (transcriptions française et
-            japonaise). Ex. <em>Kamehameha</em>, <em>Petit cœur</em>, <em>悟空</em>.
-          </>
-        }
+        title={t("mangaCatalog.dialogue.title")}
+        standfirst={<>{t("mangaCatalog.dialogue.description")}</>}
       />
 
       <form
@@ -109,7 +113,7 @@ export function MangaDialogueSearch() {
         className="flex gap-2"
         role="search"
       >
-        <div className="relative flex-1">
+        <div className="relative min-w-0 flex-1">
           <DragonRadar
             className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50"
             aria-hidden="true"
@@ -119,31 +123,39 @@ export function MangaDialogueSearch() {
             type="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Rechercher un dialogue…"
-            aria-label="Rechercher un dialogue du manga"
+            placeholder={t("mangaCatalog.dialogue.placeholder")}
+            aria-label={t("mangaCatalog.dialogue.placeholder")}
             className="h-11 w-full rounded-xl border border-white/10 bg-black/40 pl-10 pr-4 text-base text-white placeholder:text-white/50 focus:border-dbz-orange focus:outline-none sm:text-sm"
           />
         </div>
         <button
           type="submit"
           disabled={loading || q.trim().length < 2}
-          aria-label="Chercher"
+          aria-label={t("mangaCatalog.dialogue.submit")}
           aria-busy={loading}
           className="min-h-11 rounded-xl bg-dbz-orange px-5 text-sm font-bold text-black transition-opacity hover:opacity-90 disabled:opacity-40"
         >
-          {loading ? <DragonBallLoader size={18} stars={4} decorative /> : "Chercher"}
+          {loading ? (
+            <DragonBallLoader size={18} stars={4} decorative />
+          ) : (
+            t("mangaCatalog.dialogue.submit")
+          )}
         </button>
       </form>
 
       {error && (
-        <p className="mt-4 text-sm text-red-400">Recherche momentanément indisponible. Réessaie.</p>
+        <p role="alert" className="mt-4 text-sm text-red-400">
+          {t("mangaCatalog.dialogue.error")}
+        </p>
       )}
       {results && !loading && results.length === 0 && !error && (
-        <p className="mt-4 text-sm text-white/50">Aucune réplique trouvée pour « {q} ».</p>
+        <p role="status" className="mt-4 text-sm text-white/50">
+          {t("mangaCatalog.dialogue.empty", { query: q })}
+        </p>
       )}
 
       {results && results.length > 0 && (
-        <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+        <ul aria-live="polite" aria-busy={loading} className="mt-6 grid gap-3 sm:grid-cols-2">
           {results.map((r, i) => (
             <li
               // oxlint-disable-next-line no-array-index-key
@@ -155,7 +167,7 @@ export function MangaDialogueSearch() {
                   {r.series}
                 </span>
                 <span className="text-white/60">
-                  {tomeLabel(r.volume)}, planche <span className="tabular-nums">{r.page}</span>
+                  {tomeLabel(r.volume)}, <span className="tabular-nums">{r.page}</span>
                 </span>
                 {hasCjk(r.snippet) && (
                   <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-white/70">
@@ -166,6 +178,14 @@ export function MangaDialogueSearch() {
               <p className="text-sm leading-relaxed text-white/80">
                 <Snippet text={r.snippet} />
               </p>
+              {r.href && (
+                <Link
+                  href={r.href}
+                  className="mt-2 inline-flex min-h-11 items-center font-semibold text-dbz-orange hover:text-white"
+                >
+                  {t("mangaCatalog.dialogue.read")}
+                </Link>
+              )}
             </li>
           ))}
         </ul>

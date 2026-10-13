@@ -52,6 +52,16 @@
     "videoKeyboardHelp": "Focus the player: space/K play, J/L ±10 s, arrows ±5 s, M mute, C captions, F fullscreen, P picture in picture."
   },
   "mangaCatalog": {
+    "moreVolumes": "Show {count} more volumes",
+    "dialogue": {
+      "title": "Find a line",
+      "description": "Find French and Japanese manga dialogue. E.g. Kamehameha, Piccolo, 悟空.",
+      "placeholder": "Search dialogue…",
+      "submit": "Search",
+      "error": "Search is temporarily unavailable. Try again.",
+      "empty": "No dialogue found for “{query}”.",
+      "read": "Read this page"
+    },
     "isbn": "ISBN",
     "catalogueData": "Catalogue data (JSON)",
     "editionsForWork": "Referenced editions — {title}",

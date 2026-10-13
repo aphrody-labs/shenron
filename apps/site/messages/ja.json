@@ -52,6 +52,16 @@
     "videoKeyboardHelp": "プレーヤーにフォーカス：スペース/Kで再生、J/Lで±10秒、矢印で±5秒、Mで消音、Cで字幕、Fで全画面、Pでピクチャーインピクチャー。"
   },
   "mangaCatalog": {
+    "moreVolumes": "さらに{count}巻を表示",
+    "dialogue": {
+      "title": "セリフを探す",
+      "description": "漫画のフランス語と日本語のセリフを検索。例：かめはめ波、ピッコロ、悟空。",
+      "placeholder": "セリフを検索…",
+      "submit": "検索",
+      "error": "検索を一時的に利用できません。再試行してください。",
+      "empty": "「{query}」のセリフは見つかりませんでした。",
+      "read": "このページを読む"
+    },
     "isbn": "ISBN",
     "catalogueData": "目録データ（JSON）",
     "editionsForWork": "掲載版 — {title}",

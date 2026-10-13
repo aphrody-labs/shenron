@@ -247,6 +247,7 @@ export function MangaVolumeGrid({
   const [searchQuery, setSearchQuery] = useState("");
   const [readChapterIds, setReadChapterIds] = useState<number[]>([]);
   const [availabilityFilter, setAvailabilityFilter] = useState<AvailabilityFilter>("all");
+  const [visibleVolumes, setVisibleVolumes] = useState<Record<string, number>>({});
 
   useEffect(() => {
     try {
@@ -470,7 +471,7 @@ export function MangaVolumeGrid({
               id: "full_color" as MangaTab,
               title: t("mangaCatalog.colorTabTitle"),
               desc: t("mangaCatalog.colorTabDescription"),
-              badge: `${colorVolumes.length || colorChapterCount || 520} tomes`,
+              badge: t("mangaCatalog.volumeCount", { count: colorVolumes.length }),
               icon: Palette,
             },
             {
@@ -591,7 +592,7 @@ export function MangaVolumeGrid({
           aria-labelledby="manga-tab-all"
           className="space-y-12"
         >
-          {allVolumeGroups.map(([series, volumes]) => (
+          {allVolumeGroups.map(([series, volumes], groupIndex) => (
             <section key={series} className="space-y-5" aria-labelledby={`manga-series-${series}`}>
               <div className="flex items-center gap-3">
                 <Livre className="h-5 w-5 text-dbz-orange" aria-hidden="true" />
@@ -604,17 +605,35 @@ export function MangaVolumeGrid({
                 <div className="h-px flex-1 bg-white/12" />
               </div>
               <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-                {volumes.map((vol, idx) => (
-                  <VignetteTome
-                    key={vol.id}
-                    volume={vol}
-                    href={`/wiki/manga/volume/${vol.id}`}
-                    idx={idx}
-                    priority={idx < 2}
-                    status={volumeIsAvailable(vol) ? "available" : "to-complete"}
-                  />
-                ))}
+                {volumes
+                  .slice(0, q ? volumes.length : (visibleVolumes[series] ?? 12))
+                  .map((vol, idx) => (
+                    <VignetteTome
+                      key={vol.id}
+                      volume={vol}
+                      href={`/wiki/manga/volume/${vol.id}`}
+                      idx={idx}
+                      priority={groupIndex === 0 && idx < 2}
+                      status={volumeIsAvailable(vol) ? "available" : "to-complete"}
+                    />
+                  ))}
               </div>
+              {!q && volumes.length > (visibleVolumes[series] ?? 12) && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setVisibleVolumes((current) => ({
+                      ...current,
+                      [series]: (current[series] ?? 12) + 12,
+                    }))
+                  }
+                  className="inline-flex min-h-11 items-center rounded-xl border border-white/15 px-4 font-semibold text-dbz-orange hover:border-dbz-orange"
+                >
+                  {t("mangaCatalog.moreVolumes", {
+                    count: Math.min(12, volumes.length - (visibleVolumes[series] ?? 12)),
+                  })}
+                </button>
+              )}
             </section>
           ))}
           {unattachedChapters.length > 0 && (
@@ -708,8 +727,8 @@ export function MangaVolumeGrid({
                   </h3>
                   <span className="text-[11px] px-2 py-0.5 rounded bg-fuchsia-500/15 text-fuchsia-300 font-bold border border-fuchsia-500/30">
                     {t("mangaCatalog.colorPanelCount", {
-                      volumes: colorVolumes.length || 42,
-                      chapters: colorChapterCount || 520,
+                      volumes: colorVolumes.length,
+                      chapters: colorChapterCount,
                     })}
                   </span>
                 </div>
