@@ -406,7 +406,6 @@ export async function handleCdn(
       headers.delete("Content-Length");
       return new Response(null, { status: 304, headers });
     }
-    if (request.method === "HEAD") return new Response(null, { headers });
     const rangeHeader = request.headers.get("Range");
     const ifRange = request.headers.get("If-Range");
     const useRange = rangeHeader && (!ifRange || ifRange === headers.get("ETag"));
@@ -415,6 +414,17 @@ export async function handleCdn(
       headers.set("Content-Range", `bytes */${entry.size}`);
       headers.delete("Content-Length");
       return new Response(null, { status: 416, headers });
+    }
+    if (request.method === "HEAD") {
+      if (range) {
+        headers.set("Content-Length", String(range.length));
+        headers.set(
+          "Content-Range",
+          `bytes ${range.offset}-${range.offset + range.length - 1}/${entry.size}`,
+        );
+        return new Response(null, { status: 206, headers });
+      }
+      return new Response(null, { headers });
     }
     const object = await env.CDN.get(key, range ? { range } : undefined);
     if (!verified(object, entry) || !object.body) return failure(503);
