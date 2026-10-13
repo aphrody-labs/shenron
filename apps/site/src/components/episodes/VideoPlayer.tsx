@@ -4,7 +4,13 @@ import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useVideoSource } from "./use-video-source";
-import { VIDEO_PLAYBACK_RATES, videoKeyAction, videoSeekTarget } from "@/lib/video-controls";
+import {
+  VIDEO_PLAYBACK_RATES,
+  videoKeyAction,
+  videoSeekTarget,
+  isHlsSource,
+} from "@/lib/video-controls";
+import { nativeEpisodeVideoSource } from "@/lib/episode-video-source";
 
 export interface SubtitleTrack {
   lang: string;
@@ -43,6 +49,7 @@ export function VideoPlayer({
   const t = useTranslations("mediaPlayback");
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const playbackSource = nativeEpisodeVideoSource(src);
   const {
     status,
     levels,
@@ -52,7 +59,7 @@ export function VideoPlayer({
     audioTrack,
     selectAudioTrack,
     retry,
-  } = useVideoSource(videoRef, src, onError);
+  } = useVideoSource(videoRef, playbackSource, onError);
   const rateRef = useRef(1);
   const [paused, setPaused] = useState(true);
   const [rate, setRate] = useState(1);
@@ -262,6 +269,7 @@ export function VideoPlayer({
       </div>
       <video
         ref={videoRef}
+        src={isHlsSource(playbackSource) ? undefined : playbackSource}
         controls
         playsInline
         preload="metadata"

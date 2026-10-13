@@ -1,21 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
+import { approvedEpisodeVideoURL } from "./episode-video-source";
+export { approvedEpisodeVideoURL } from "./episode-video-source";
 const MAX_VIDEO_BYTES = 2 * 1024 ** 3;
-
-/** The owner supplied this clear MP4 origin for the Beerus catalogue. */
-export function approvedEpisodeVideoURL(source: string | null): URL | null {
-  if (!source || !URL.canParse(source)) return null;
-  const url = new URL(source);
-  return url.protocol === "https:" &&
-    url.hostname === "27.mugiwara.one" &&
-    !url.port &&
-    !url.username &&
-    !url.password &&
-    !url.search &&
-    !url.hash &&
-    /^\/dbs\/dbs-[1-9]\d*\.mp4$/.test(url.pathname)
-    ? url
-    : null;
-}
 
 export function validEpisodeVideoRange(range: string | null): boolean {
   if (range === null) return true;
