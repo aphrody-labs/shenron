@@ -42,6 +42,7 @@ export type ExternalSourceSearch = {
   kind?: string;
   limit?: number;
   offset?: number;
+  strict?: boolean;
 };
 
 const MAX_LIMIT = 48;
@@ -120,6 +121,7 @@ export async function searchExternalSources({
   kind = "",
   limit = 18,
   offset = 0,
+  strict = false,
 }: ExternalSourceSearch = {}): Promise<ExternalSourceCatalog> {
   const query = q.trim().slice(0, 120);
   const selectedKind = EXTERNAL_SOURCE_KINDS.includes(kind as ExternalSourceKind) ? kind : "";
@@ -166,13 +168,17 @@ export async function searchExternalSources({
         }),
       ),
     };
-  } catch {
+  } catch (error) {
+    if (strict) throw error;
     return { total: 0, records: [] };
   }
 }
 
 /** Fetches one public, attributed source document for its dedicated UI page. */
-export async function readExternalSource(url: string): Promise<ExternalSourceRecord | null> {
+export async function readExternalSource(
+  url: string,
+  strict = false,
+): Promise<ExternalSourceRecord | null> {
   try {
     const result = await db.execute(sql`
 			SELECT
@@ -202,7 +208,8 @@ export async function readExternalSource(url: string): Promise<ExternalSourceRec
       score: Number(row.score),
       provenance: normalizeProvenance(row.provenance),
     });
-  } catch {
+  } catch (error) {
+    if (strict) throw error;
     return null;
   }
 }

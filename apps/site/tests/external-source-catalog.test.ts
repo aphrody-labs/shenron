@@ -2,6 +2,7 @@ import { describe, expect, mock, test } from "bun:test";
 import { PgDialect } from "drizzle-orm/pg-core";
 
 const executed: { params: unknown[] }[] = [];
+let unavailable = false;
 const dialect = new PgDialect();
 
 mock.module("server-only", () => ({}));
@@ -9,6 +10,7 @@ mock.module("@/lib/db", () => ({
   db: {
     execute: async (query: Parameters<PgDialect["sqlToQuery"]>[0]) => {
       executed.push(dialect.sqlToQuery(query));
+      if (unavailable) throw new Error("Source database unavailable");
       return [];
     },
   },
@@ -32,6 +34,17 @@ describe("external source public identifiers", () => {
 });
 
 describe("public crawl pagination", () => {
+  test("strict live catalogue reads report an unavailable database instead of an empty catalogue", async () => {
+    unavailable = true;
+    try {
+      await expect(searchExternalSources({ strict: true })).rejects.toThrow(
+        "Source database unavailable",
+      );
+      expect(await searchExternalSources()).toEqual({ total: 0, records: [] });
+    } finally {
+      unavailable = false;
+    }
+  });
   test("binds the requested late catalogue page instead of repeating offset 10000", async () => {
     await searchExternalSources({ limit: 18, offset: 45_918 });
     const query = executed.at(-1)!;

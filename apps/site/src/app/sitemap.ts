@@ -23,10 +23,6 @@ import { isPathPublic, type AccessSnapshot } from "@/lib/wiki-launch";
 import { sitemapDestinations } from "@/lib/site-map";
 import { isDatabookIndexable } from "@/lib/databooks-rules";
 import { formatCharacterSlug, formatTransformationSlug } from "@/lib/wiki-slugs";
-import {
-  externalSourceHref,
-  listExternalSourceSitemapRecords,
-} from "@/lib/external-source-catalog";
 
 export const revalidate = 86400; // Cache le sitemap pendant 24 heures
 
@@ -245,14 +241,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       return rows.map(
         (p) => [`/wiki/${p.slug}`, 0.7, p.updatedAt ? new Date(p.updatedAt) : new Date()] as const,
       );
-    }),
-    // Every successfully crawled, attributed document gets its own public
-    // detail page. The catalogue page alone is insufficient for discovery:
-    // these stable URLs let a visitor and a search engine reach the exact
-    // source while keeping its original URL and provenance visible.
-    block(entries, isPublic, async () => {
-      const rows = await listExternalSourceSitemapRecords();
-      return rows.map((record) => [externalSourceHref(record.url), 0.4, record.fetchedAt] as const);
     }),
   ]);
 

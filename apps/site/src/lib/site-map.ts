@@ -19,6 +19,7 @@
  * nav et le sitemap le font déjà.
  */
 import { ALL_ENTRIES, type LaunchCategory } from "@/lib/wiki-launch";
+import fr from "../../messages/fr.json";
 
 /**
  * Parcours du site — les grandes intentions d'un visiteur, dans l'ordre où on
@@ -124,6 +125,15 @@ const PARTICIPATION_KEYS = new Set(["modifications", "contribuer", "corriger", "
 
 /** Destinations hors registre : elles ne sont pas refermables, donc pas gatables. */
 const EXTRA_DESTINATIONS: readonly SiteDestination[] = [
+  {
+    href: "/catalog",
+    label: fr.catalog.title,
+    blurb: fr.catalog.description,
+    journey: "archives",
+    audience: "public",
+    priority: 0.7,
+    changeFrequency: "daily",
+  },
   {
     href: "/",
     label: "Accueil",
