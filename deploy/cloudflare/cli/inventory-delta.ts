@@ -61,9 +61,11 @@ async function scan(root: string, prefix: string): Promise<Record<string, Invent
         sha256: hash.digest("hex"),
         size: after.size,
         contentType: Bun.file(resolved).type || "application/octet-stream",
-        cacheControl: path.startsWith("/_next/static/")
-          ? "public, max-age=31536000, immutable"
-          : "public, max-age=86400, stale-while-revalidate=604800",
+        cacheControl: /^\/publications\/[^/]+\/index\.json$/.test(path)
+          ? "no-store"
+          : path.startsWith("/_next/static/")
+            ? "public, max-age=31536000, immutable"
+            : "public, max-age=86400, stale-while-revalidate=604800",
       };
     }
   }

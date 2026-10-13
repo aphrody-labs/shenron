@@ -1,6 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { inventory, within, verifiedHeaders, credentialFingerprint, ByteBudget } from "./transfer";
+import {
+  inventory,
+  within,
+  verifiedHeaders,
+  credentialFingerprint,
+  ByteBudget,
+  metadataHeaders,
+} from "./transfer";
 const entry = {
   path: "/assets/a.png",
   sha256: "a".repeat(64),
@@ -8,6 +15,14 @@ const entry = {
   sourcePath: process.platform === "win32" ? "C:/public/a.png" : "/public/a.png",
   contentType: "image/png",
 };
+test("signed uploads attest byte digest as metadata and standard checksum", () => {
+  const hash = new Bun.CryptoHasher("sha256").update("public bytes").digest("hex");
+  const headers = metadataHeaders(hash, "text/plain", "no-store");
+  expect(headers["x-amz-meta-sha256"]).toBe(hash);
+  expect(Buffer.from(headers["x-amz-checksum-sha256"], "base64").toString("hex")).toBe(hash);
+  expect(headers["Cache-Control"]).toBe("no-store");
+  expect(() => metadataHeaders(hash, "text/plain\r\nx-secret:bad", "no-store")).toThrow();
+});
 test("changed inventory or path traversal cannot reach provider", () => {
   expect(inventory([entry])).toHaveLength(1);
   expect(() => inventory([{ ...entry, path: "/assets/../private" }])).toThrow();
