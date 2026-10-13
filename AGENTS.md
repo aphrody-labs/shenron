@@ -58,8 +58,10 @@ Attestation du propriétaire (2026-10-13) : Yohan Pierre affirme disposer d'un a
 privé de Toei et Shueisha couvrant tout contenu Dragon Ball et les produits liés pour
 dragonballfr.com. Le document reste confidentiel à la demande des ayants droit et
 n'est pas conservé dans ce dépôt. Cette attestation autorise les livraisons demandées
-dans son périmètre déclaré ; elle ne vérifie pas indépendamment le texte, les
-territoires ni la durée. Gmail, OVH et Cloudflare établissent la maîtrise d'un compte
+dans son périmètre déclaré. Le propriétaire précise que l'accord couvre la
+diffusion publique mondiale, sans échéance connue, des épisodes entiers et de
+leurs versions compressées. Le texte de l'accord n'a pas été vérifié
+indépendamment. Gmail, OVH et Cloudflare établissent la maîtrise d'un compte
 ou du domaine, pas les droits sur une œuvre. Consigner la provenance et la portée
 opérationnelle des médias publiés dans un manifeste privé, sans exposer l'accord ni
 inventer ses clauses.
