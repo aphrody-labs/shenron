@@ -25,11 +25,16 @@ interface NativeObscura {
     options: { timeout: number; signal: AbortSignal },
   ): Promise<NativeConnection>;
 }
-const nativeSpecifier: string = "bun:obscura";
-const nativeModule = await import(nativeSpecifier);
-if (typeof nativeModule.connect !== "function" || typeof nativeModule.findExecutable !== "function")
-  throw new Error("Installed Bun has no qualified native Obscura exports");
-const obscura = nativeModule as NativeObscura;
+async function nativeBrowser(): Promise<NativeObscura> {
+  const nativeSpecifier: string = "bun:obscura";
+  const nativeModule = await import(nativeSpecifier);
+  if (
+    typeof nativeModule.connect !== "function" ||
+    typeof nativeModule.findExecutable !== "function"
+  )
+    throw new Error("Installed Bun has no qualified native Obscura exports");
+  return nativeModule as NativeObscura;
+}
 
 const hosts = new Set([
   "www.glenat.com",
@@ -477,6 +482,7 @@ export async function collect(options: Options) {
   )
     throw new Error("Unqualified native worker execution parameters");
   const sources = sourcePlan(options.sources);
+  const obscura = await nativeBrowser();
   const job = resolve(options.job);
   await mkdir(job, { recursive: true, mode: 0o700 });
   const info = await lstat(job);
