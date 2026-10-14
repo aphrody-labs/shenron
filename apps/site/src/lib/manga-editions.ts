@@ -94,7 +94,7 @@ export const EDITION_PAR_SERIE: Record<string, { langue: Langue; colorisation: C
   DBGT_ANIME_COMICS: { langue: "ja", colorisation: "couleur" },
   DBS_ANIME_COMICS: { langue: "ja", colorisation: "couleur" },
   DB_MOVIES: { langue: "ja", colorisation: "couleur" },
-  DB_LIGHT_NOVELS: { langue: "fr", colorisation: "nb" },
+  DB_LIGHT_NOVELS: { langue: "ja", colorisation: "nb" },
   ARALE: { langue: "ja", colorisation: "nb" },
   DB_SD: { langue: "ja", colorisation: "nb" },
   DB_GAIDEN_YAMCHA: { langue: "ja", colorisation: "nb" },

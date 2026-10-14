@@ -45,6 +45,11 @@ describe("langue", () => {
     expect(editionCompleteDe({ series: "DBFCJP" })).toBe("ja-couleur");
   });
 
+  test("les romans Mirai Bunko gardent la langue des éditions japonaises du catalogue", () => {
+    expect(langueDe({ series: "DB_LIGHT_NOVELS" })).toBe("ja");
+    expect(editionCompleteDe({ series: "DB_LIGHT_NOVELS" })).toBe("ja-nb");
+  });
+
   test("l'édition complète croise bien les deux dimensions", () => {
     expect(editionCompleteDe({ series: "DB" })).toBe("fr-nb");
     expect(editionCompleteDe({ series: "DBFC" })).toBe("fr-couleur");
