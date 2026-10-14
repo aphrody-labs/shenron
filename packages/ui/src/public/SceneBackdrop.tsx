@@ -24,7 +24,7 @@ const MOTION_ALLOWED = 4;
 function readPolicy(): number {
   const motion =
     !window.matchMedia("(prefers-reduced-motion: reduce)").matches && !connection()?.saveData;
-  const video = motion && !window.matchMedia("(max-width: 640px)").matches;
+  const video = motion;
   return (
     (video ? VIDEO_ALLOWED : 0) |
     (!document.hidden ? DOCUMENT_VISIBLE : 0) |
@@ -33,10 +33,7 @@ function readPolicy(): number {
 }
 
 function subscribePolicy(update: () => void) {
-  const queries = [
-    window.matchMedia("(prefers-reduced-motion: reduce)"),
-    window.matchMedia("(max-width: 640px)"),
-  ];
+  const queries = [window.matchMedia("(prefers-reduced-motion: reduce)")];
   const network = connection();
   for (const query of queries) query.addEventListener("change", update);
   network?.addEventListener?.("change", update);
@@ -89,7 +86,16 @@ export function SceneBackdrop({
 }: SceneBackdropProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [failedVideo, setFailedVideo] = useState<string | null>(null);
+  const [readyVideo, setReadyVideo] = useState<string | null>(null);
   const policy = useScenePlaybackPolicy();
+  const sourceKey = policy.allowVideo ? scene.video : undefined;
+  const [previousSource, setPreviousSource] = useState(sourceKey);
+  // Reset before committing a replacement video node, including policy remounts.
+  if (previousSource !== sourceKey) {
+    setPreviousSource(sourceKey);
+    setReadyVideo(null);
+    setFailedVideo(null);
+  }
   const hasVideo = Boolean(scene.video && policy.allowVideo && failedVideo !== scene.video);
   const shouldPlay = hasVideo && active && visible && policy.visible;
   useEffect(() => {
@@ -114,7 +120,7 @@ export function SceneBackdrop({
   }, [shouldPlay, scene.video]);
 
   const image: SceneImageProps = {
-    src: scene.image,
+    src: scene.poster ?? scene.image,
     alt: "",
     priority,
     className: `scene-img absolute inset-0 h-full w-full object-cover object-[center_12%] ${active && policy.motionAllowed && policy.visible ? "scene-img--live" : ""}`,
@@ -126,22 +132,7 @@ export function SceneBackdrop({
       className="scene-backdrop absolute inset-0 overflow-hidden"
       style={{ "--accent": scene.accent, opacity: visible ? 1 : 0 } as CSSProperties}
     >
-      {hasVideo ? (
-        <video
-          key={scene.video}
-          ref={videoRef}
-          src={scene.video}
-          poster={scene.poster ?? scene.image}
-          loop
-          muted
-          playsInline
-          preload={shouldPlay ? "auto" : "none"}
-          onError={() => {
-            if (scene.video) setFailedVideo(scene.video);
-          }}
-          className={`scene-img absolute inset-0 h-full w-full object-cover object-center transition-all duration-1000 ${active ? "scale-105 opacity-95" : "scale-100 opacity-20"}`}
-        />
-      ) : renderImage ? (
+      {renderImage ? (
         renderImage(image)
       ) : (
         <img
@@ -153,6 +144,25 @@ export function SceneBackdrop({
           decoding="async"
         />
       )}
+      {hasVideo ? (
+        <video
+          key={scene.video}
+          ref={videoRef}
+          src={scene.video}
+          poster={scene.poster ?? scene.image}
+          loop
+          muted
+          playsInline
+          width={1280}
+          height={720}
+          preload={shouldPlay ? "auto" : "none"}
+          onError={() => {
+            if (scene.video) setFailedVideo(scene.video);
+          }}
+          onLoadedData={() => setReadyVideo(scene.video ?? null)}
+          className={`scene-img absolute inset-0 h-full w-full object-cover object-center transition-[transform,opacity] duration-700 ${active ? "scale-105" : "scale-100"} ${readyVideo === scene.video ? "opacity-95" : "opacity-0"}`}
+        />
+      ) : null}
       <div className="scene-grade absolute inset-0" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-dbz-bg/85 via-dbz-bg/45 to-dbz-bg/10" />
       <div className="absolute inset-0 bg-gradient-to-t from-dbz-bg via-dbz-bg/25 to-transparent" />

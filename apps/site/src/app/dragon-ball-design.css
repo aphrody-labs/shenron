@@ -139,6 +139,9 @@ body {
   --home-panel-ink: var(--foreground);
   --home-panel-muted: var(--muted-foreground);
 }
+.home-screen-experience {
+  background: var(--background) url("/brand/home-beerus-goku.png") center / cover no-repeat;
+}
 .home-screen-content [class*="border-white"] {
   border-color: var(--border);
 }

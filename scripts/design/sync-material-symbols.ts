@@ -15,6 +15,8 @@ const names = [
   "gif",
   "keyboard_arrow_up",
   "keyboard_arrow_down",
+  "pause",
+  "play_arrow",
 ] as const;
 export async function materialSubset(owner: string) {
   const metadata = await Bun.file(`${owner}/package.json`).json();

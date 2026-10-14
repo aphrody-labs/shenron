@@ -46,6 +46,7 @@ describe("@aphrody/shenron-ui/icones", () => {
         (k) =>
           /^[A-Z]/.test(k) &&
           k !== "Glyphe" &&
+          k !== "MaterialSymbol" &&
           typeof (I as Record<string, unknown>)[k] === "function",
       )
       .toSorted();

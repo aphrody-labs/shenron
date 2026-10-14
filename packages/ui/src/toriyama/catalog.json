@@ -297,7 +297,9 @@
       "arrow_back",
       "gif",
       "keyboard_arrow_up",
-      "keyboard_arrow_down"
+      "keyboard_arrow_down",
+      "pause",
+      "play_arrow"
     ],
     "loading": "inline-svg-subset"
   },

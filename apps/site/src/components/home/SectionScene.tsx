@@ -9,15 +9,15 @@ import { SceneBackdrop } from "./SceneBackdrop";
  *
  * Lazy on two levels: the backdrop is only mounted once the block comes near the viewport
  * (nothing is requested for the blocks below the fold at first render), and its video only
- * plays while the block is on screen. `SceneBackdrop` keeps phones, reduced motion and data
- * saving on the still image.
+ * plays while the block is on screen, including phones. Reduced motion and data saving
+ * retain the still image, and document visibility pauses all decoding.
  */
 export function SectionScene({
   scene,
   className = "",
   children,
 }: {
-  scene: HomeScene;
+  scene?: HomeScene;
   className?: string;
   children: ReactNode;
 }) {
@@ -51,10 +51,10 @@ export function SectionScene({
   return (
     <div
       ref={ref}
-      style={{ "--accent": scene.accent } as CSSProperties}
-      className={`relative isolate min-w-0 overflow-hidden rounded-xl border border-white/[0.08] bg-dbz-card/60 ${className}`}
+      style={{ "--accent": scene?.accent } as CSSProperties}
+      className={`home-section-scene relative isolate min-w-0 overflow-hidden rounded-xl border border-border bg-card ${className}`}
     >
-      {near ? <SceneBackdrop scene={scene} active={active} /> : null}
+      {near && scene ? <SceneBackdrop scene={scene} active={active} /> : null}
       <div className="relative z-[3] p-4 sm:p-6">{children}</div>
     </div>
   );

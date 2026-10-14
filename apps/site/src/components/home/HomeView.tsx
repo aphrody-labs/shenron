@@ -32,6 +32,7 @@ import { HomeHero } from "./HomeHero";
 import { HomeGuardians, HomeLivePanel, HomeLiveProvider, HomePantheon } from "./HomeLive";
 import { HomeMenuJourney } from "./HomeMenuJourney";
 import { HomeSection } from "./HomeSection";
+import { SectionScene } from "./SectionScene";
 import { HomeScreenDeck } from "./HomeScreenDeck";
 import { SagaBestOf } from "./SagaBestOf";
 import type { FeaturedCharacter, SagaTeaser } from "./types";
@@ -157,6 +158,8 @@ export function HomeView(rawProps: HomeViewProps) {
 
   const news = enabled.get("news");
   const pantheon = enabled.get("pantheon");
+  const community = enabled.get("community");
+  const play = enabled.get("play");
   const tops = flow.findIndex((s) => s.id === "tops");
   const canonAt = tops >= 0 ? tops + 1 : flow.length;
   const covered = coveredDestinations(config, shown, access);
@@ -166,16 +169,11 @@ export function HomeView(rawProps: HomeViewProps) {
       (destination) => destination.enabled && !covered.includes(destination.href),
     );
 
-  // Editorial content stays on plain surfaces without unqualified legacy backdrops.
+  // Each editorial section keeps the real clip selected in the home configuration.
   const blocks = flow.map((s) => (
-    <div
-      key={s.id}
-      className={`relative isolate min-w-0 overflow-hidden rounded-xl border border-white/[0.08] bg-dbz-card/60 ${SPAN[s.id] ?? "lg:col-span-12"}`}
-    >
-      <div className="relative z-[3] p-4 sm:p-6">
-        <EditorialBlock section={s} {...props} className="" />
-      </div>
-    </div>
+    <SectionScene key={s.id} scene={s.scene} className={SPAN[s.id] ?? "lg:col-span-12"}>
+      <EditorialBlock section={s} {...props} className="" />
+    </SectionScene>
   ));
   if (config.canon.enabled) {
     blocks.splice(
@@ -201,15 +199,19 @@ export function HomeView(rawProps: HomeViewProps) {
     >
       <HomeScreenDeck>
         <HomeHero hero={config.hero} />
-        {shown.has("community") && (
-          <HomeLivePanel
-            showCommunity={shown.has("community")}
+        {community && shown.has("community") && (
+          <SectionScene
+            scene={community.scene}
             className={pantheon && shown.has("pantheon") ? "lg:col-span-8" : "lg:col-span-12"}
-          />
+          >
+            <HomeLivePanel showCommunity className="" />
+          </SectionScene>
         )}
 
         {pantheon && shown.has("pantheon") && (
-          <HomePantheon title={label(pantheon, "")} className="lg:col-span-4" />
+          <SectionScene scene={pantheon.scene} className="lg:col-span-4">
+            <HomePantheon title={label(pantheon, "")} className="" />
+          </SectionScene>
         )}
 
         {blocks}
@@ -225,19 +227,23 @@ export function HomeView(rawProps: HomeViewProps) {
 
         {/* Tout en bas, dans cet ordre : les dernières nouvelles, puis les mini-jeux. */}
         {news && shown.has("news") && (
-          <HomeSection
-            id="actualites"
-            title={label(news, "") || <T k="home.news.index.title" />}
-            subtitle={news.subtitle || undefined}
-            moreHref="/news"
-            moreLabel={<T k="home.news.all" />}
-            className="lg:col-span-12"
-          >
-            <HomeNews entries={feed} />
-          </HomeSection>
+          <SectionScene scene={news.scene} className="lg:col-span-12">
+            <HomeSection
+              id="actualites"
+              title={label(news, "") || <T k="home.news.index.title" />}
+              subtitle={news.subtitle || undefined}
+              moreHref="/news"
+              moreLabel={<T k="home.news.all" />}
+              className="lg:col-span-12"
+            >
+              <HomeNews entries={feed} />
+            </HomeSection>
+          </SectionScene>
         )}
 
-        <HomeGames className="lg:col-span-12" />
+        <SectionScene scene={play?.scene} className="lg:col-span-12">
+          <HomeGames />
+        </SectionScene>
       </HomeScreenDeck>
     </HomeLiveProvider>
   );

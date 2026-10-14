@@ -27,6 +27,7 @@ test("the screen deck preserves content order and filters absent sections", () =
   expect(html.match(/data-screen=/g)).toHaveLength(3);
   expect(html.indexOf("News")).toBeLessThan(html.indexOf("Games"));
   expect(html).toContain('aria-label="Suivant"');
+  expect(html).toContain('aria-label="Arrêter l’animation"');
   expect(html).toContain('href="/wiki/gifs"');
   expect(html).not.toContain("dbz-button");
 });

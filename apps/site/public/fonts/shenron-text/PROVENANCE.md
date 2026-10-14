@@ -50,10 +50,10 @@ disponibles et les tailles. Les tables de mise en forme sont adaptées par fontT
 au sous-ensemble ; les coordonnées des contours et métriques conservés sont
 vérifiées après décompression. Les notices restent intégrées et dans `OFL.txt`.
 
-| Face | TTF complet | WOFF2 web | Réduction |
-| --- | ---: | ---: | ---: |
-| Medium | 411 512 octets | 76 568 octets | 81,39 % |
-| Bold | 415 088 octets | 77 144 octets | 81,42 % |
+| Face   |    TTF complet |     WOFF2 web | Réduction |
+| ------ | -------------: | ------------: | --------: |
+| Medium | 411 512 octets | 76 568 octets |   81,39 % |
+| Bold   | 415 088 octets | 77 144 octets |   81,42 % |
 
 Qualification de décompression :
 `SHENRON_FONTTOOLS_VERIFY=1 bun test scripts/design/build-shenron-font.test.ts`.

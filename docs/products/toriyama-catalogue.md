@@ -15,7 +15,7 @@ bun scripts/design/build-dragon-wordmark.ts --check
 bun scripts/design/build-toriyama-catalog.ts --check
 ```
 
-Les 14 Material Symbols Rounded de 24 unités proviennent du catalogue propriétaire
+Les 16 Material Symbols Rounded de 24 unités proviennent du catalogue propriétaire
 `@aphrody/material-design-icons` version 1.0.0. Le snapshot consigne leurs empreintes
 et conserve la licence Apache-2.0. `MaterialSymbol` sert ces SVG inline depuis
 `@aphrody/shenron-ui/icones`, sans ligatures, requête de catalogue ni police
@@ -54,3 +54,13 @@ de couleurs forcées conserve les rôles système.
 La référence source est petite : cette reconstruction ne revendique pas une
 reproduction pixel à pixel du logo officiel. Les contrôles de composants dans
 Chrome à 1440, 390 et 320 px ne prouvent pas une activation en production.
+
+L'accueil reconnecte les clips des sections configurées sur leur origine CDN
+canonique. Chaque section occupe le viewport disponible ; le navigateur gère le
+scroll snap, la profondeur par timeline de défilement et la transition de vue
+entre deux écrans. Le passage émet une seule traînée d'énergie, par transform et
+opacité, sans animation de flou ni boucle JavaScript par frame. Les anciennes
+plateformes gardent la navigation native. Un bouton SVG permet de mettre les
+fonds en pause ; les vidéos hors écran ou dans un onglet masqué restent arrêtées.
+La préférence système de mouvement réduit et l'économie de données conservent
+le poster. L'animation complète est active par défaut.

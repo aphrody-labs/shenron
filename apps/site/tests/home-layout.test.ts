@@ -35,7 +35,8 @@ describe("home layout", () => {
     expect(hero).toContain("<KintoUnVolant");
     expect(hero).not.toContain("<HomeHeroScenes");
     expect(hero).toContain("heroFrame");
-    expect(view).not.toContain("<SectionScene");
+    expect(view).toContain("<SectionScene");
+    expect(view).toContain("scene={s.scene}");
     expect(view).not.toContain("<SceneBackdrop");
   });
 
@@ -45,7 +46,7 @@ describe("home layout", () => {
     expect(backdrop).toContain('preload={shouldPlay ? "auto" : "none"}');
     const scene = source("../src/components/home/SectionScene.tsx");
     expect(scene).toContain("IntersectionObserver");
-    expect(scene).toMatch(/near \? <SceneBackdrop/);
+    expect(scene).toMatch(/near && scene \? <SceneBackdrop/);
     const heroScenes = source("../src/components/home/HomeHeroScenes.tsx");
     expect(heroScenes).toContain("useScenePlaybackPolicy");
   });

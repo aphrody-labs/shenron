@@ -75,7 +75,7 @@ const change = (target: PolicyTarget, property: "matches" | "saveData", value: b
     target.dispatchEvent(new Event("change"));
   });
 
-test("live motion, network and phone preferences replace video with the still", () => {
+test("live motion and data saving replace video with its poster, including on phones", () => {
   const { container, unmount } = render(<SceneBackdrop scene={scene} active />);
   const first = container.querySelector("video")!;
   expect(first.preload).toBe("auto");
@@ -83,17 +83,37 @@ test("live motion, network and phone preferences replace video with the still", 
   for (const [target, property] of [
     [reduce, "matches"],
     [network, "saveData"],
-    [phone, "matches"],
   ] as const) {
     change(target, property, true);
     expect(container.querySelector("video")).toBeNull();
-    expect(container.querySelector("img")?.getAttribute("src")).toBe(scene.image);
+    expect(container.querySelector("img")?.getAttribute("src")).toBe(scene.poster);
     change(target, property, false);
     expect(container.querySelector("video")).not.toBeNull();
   }
   expect(paused).toContain(first);
+  change(phone, "matches", true);
+  expect(container.querySelector("video")).not.toBeNull();
   unmount();
   expect(reduce.listeners.size + phone.listeners.size + network.listeners.size).toBe(0);
+});
+
+test("the real poster remains visible until a frame is decoded and a source change hides stale frames", () => {
+  const { container, rerender } = render(<SceneBackdrop scene={scene} active />);
+  const video = container.querySelector("video")!;
+  expect(video.getAttribute("width")).toBe("1280");
+  expect(video.getAttribute("height")).toBe("720");
+  expect(video.muted).toBe(true);
+  expect(video.hasAttribute("playsinline")).toBe(true);
+  expect(video.className).toContain("opacity-0");
+  expect(container.querySelector("img")?.getAttribute("src")).toBe(scene.poster);
+  fireEvent.loadedData(video);
+  expect(video.className).toContain("opacity-95");
+  rerender(<SceneBackdrop scene={{ ...scene, video: "/next-real.mp4" }} active />);
+  expect(container.querySelector("video")?.className).toContain("opacity-0");
+  rerender(<SceneBackdrop scene={scene} active />);
+  expect(container.querySelector("video")?.className).toContain("opacity-0");
+  fireEvent.loadedData(container.querySelector("video")!);
+  expect(container.querySelector("video")?.className).toContain("opacity-95");
 });
 
 test("hidden documents pause without replacing the video, then resume on visibility", () => {

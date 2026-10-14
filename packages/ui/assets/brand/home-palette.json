@@ -10,23 +10,13 @@
     "beerus": {
       "hex": "#d55d9e",
       "pixels": 11,
-      "region": [
-        0,
-        0,
-        0.25,
-        1
-      ],
+      "region": [0, 0, 0.25, 1],
       "subject": "bright-magenta-aura"
     },
     "goku": {
       "hex": "#71b2e3",
       "pixels": 38,
-      "region": [
-        0.6,
-        0,
-        1,
-        0.58
-      ],
+      "region": [0.6, 0, 1, 0.58],
       "subject": "blue-energy-space"
     }
   },
