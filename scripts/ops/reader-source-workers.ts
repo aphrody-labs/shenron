@@ -255,7 +255,7 @@ export async function installedPublisher(
   if (!modulePath || !configPath) return undefined;
   if (
     !isAbsolute(modulePath) ||
-    !modulePath.replaceAll("\\", "/").endsWith("/deploy/cloudflare/cli/publish-catalog.ts") ||
+    !modulePath.replaceAll("\\", "/").endsWith("/cloudflare/cli/publish-catalog.ts") ||
     !isAbsolute(configPath)
   )
     throw Error("Publisher must use the installed canonical owner");
@@ -271,13 +271,27 @@ export async function installedPublisher(
   )
     throw Error("Unsupported publication target");
   const config = await Bun.file(configPath).json();
-  const owner = await import(modulePath);
+  const { canonicalPublisherSha256, nativeOriginPreparation, ...publisherConfig } = config;
+  const ownerInfo = await lstat(modulePath);
+  if (
+    !/^[a-f0-9]{64}$/.test(canonicalPublisherSha256 ?? "") ||
+    !ownerInfo.isFile() ||
+    ownerInfo.isSymbolicLink() ||
+    ownerInfo.size > 1024 * 1024 ||
+    (process.platform !== "win32" &&
+      (ownerInfo.mode & 0o022 || ownerInfo.uid !== process.getuid?.())) ||
+    hash(await Bun.file(modulePath).bytes()) !== canonicalPublisherSha256
+  )
+    throw Error("Canonical publisher capability changed");
+  const moduleUrl = Bun.pathToFileURL(modulePath);
+  moduleUrl.searchParams.set("sha256", canonicalPublisherSha256);
+  const owner = await import(moduleUrl.href);
   if (typeof owner.publishCatalog !== "function") throw Error("Canonical publisher export missing");
   const index = Bun.file(publicationIndexPath(publicRoot, target));
   if (index.size > 2 * 1024 * 1024) throw Error("Public index exceeds its qualified bound");
   const indexSha256 = hash(await index.bytes());
   const options = {
-    ...config,
+    ...publisherConfig,
     publicRoot: await realpath(publicRoot),
     targetUrl: url.href,
     job: join(job, "cdn"),
@@ -291,9 +305,39 @@ export async function installedPublisher(
   )
     throw Error("Unqualified public CDN origin");
   const indexUrl = new URL(url.pathname + "/index.json", cdn).href;
+  const publisher = lazyNativePublisher(options, owner, async () => {
+    if (!nativeOriginPreparation) return options;
+    const reference = nativeOriginPreparation;
+    if (!isAbsolute(reference.modulePath) || !/^[a-f0-9]{64}$/.test(reference.moduleSha256 ?? ""))
+      throw Error("Pinned native preparation capability required");
+    const preparationInfo = await lstat(reference.modulePath);
+    if (
+      !preparationInfo.isFile() ||
+      preparationInfo.isSymbolicLink() ||
+      preparationInfo.size > 1024 * 1024 ||
+      (process.platform !== "win32" &&
+        (preparationInfo.mode & 0o022 || preparationInfo.uid !== process.getuid?.())) ||
+      hash(await Bun.file(reference.modulePath).bytes()) !== reference.moduleSha256
+    )
+      throw Error("Native preparation capability changed");
+    if (
+      reference.input?.stateDirectory !== options.stateDirectory ||
+      reference.input?.inventoryRoot !== options.inventoryRoot
+    )
+      throw Error("Native preparation belongs to another publication state");
+    const preparationUrl = Bun.pathToFileURL(reference.modulePath);
+    preparationUrl.searchParams.set("sha256", reference.moduleSha256);
+    const preparationOwner = await import(preparationUrl.href);
+    if (typeof preparationOwner.prepareNativeOriginPublication !== "function")
+      throw Error("Native preparation capability unavailable");
+    const prepared = await preparationOwner.prepareNativeOriginPublication({
+      ...reference.input,
+      job: options.job,
+    });
+    return preparedPublicationOptions(options, reference.input, prepared);
+  });
   return {
-    plan: () => owner.publishCatalog({ ...options, apply: false }),
-    apply: (planSha256) => owner.publishCatalog({ ...options, apply: true, planSha256 }),
+    ...publisher,
     async readback(receipt) {
       if (!receipt || typeof receipt !== "object") return false;
       const value = receipt as Record<string, unknown>;
@@ -310,6 +354,101 @@ export async function installedPublisher(
       if (response.status !== 200) return false;
       const bytes = await response.bytes();
       return bytes.length <= 2 * 1024 * 1024 && hash(bytes) === indexSha256;
+    },
+  };
+}
+type PublisherOptions = Record<string, unknown>;
+export function preparedPublicationOptions(
+  options: PublisherOptions,
+  input: Record<string, unknown>,
+  prepared: Record<string, unknown>,
+): PublisherOptions {
+  const pins = prepared.configuration as Record<string, unknown> | undefined;
+  const names = [
+    "configSha256",
+    "consumerCodeSha256",
+    "unitSha256",
+    "inventoryRoot",
+    "backupReceipt",
+    "backupReceiptSha256",
+  ];
+  if (
+    prepared.schema !== "aphrody-origin-publication-preparation/v1" ||
+    !pins ||
+    Object.keys(pins).length !== names.length ||
+    names.some((key) => typeof pins[key] !== "string") ||
+    hash(JSON.stringify(pins)) !== prepared.configurationSha256 ||
+    prepared.modulePath !== input.activationModulePath ||
+    prepared.moduleSha256 !== input.activationModuleSha256 ||
+    pins.inventoryRoot !== options.inventoryRoot ||
+    pins.consumerCodeSha256 !== input.expectedConsumerCodeSha256 ||
+    pins.unitSha256 !== input.expectedUnitSha256 ||
+    !isAbsolute(String(pins.backupReceipt)) ||
+    !isAbsolute(String(prepared.previousInventory)) ||
+    !isAbsolute(String(prepared.preparationPath)) ||
+    !/^_migration\/manifests\/[a-z0-9-]+\/$/.test(String(prepared.expectedPrefix)) ||
+    !/^[a-f0-9-]{36}$/.test(String(prepared.expectedDeployment)) ||
+    [
+      prepared.previousInventorySha256,
+      prepared.expectedCodeSha256,
+      prepared.stateSha256,
+      pins.configSha256,
+      pins.backupReceiptSha256,
+    ].some((value) => !/^[a-f0-9]{64}$/.test(String(value)))
+  )
+    throw Error("Native publication preparation differs");
+  return {
+    ...options,
+    previousInventory: prepared.previousInventory,
+    previousInventorySha256: prepared.previousInventorySha256,
+    expectedPrefix: prepared.expectedPrefix,
+    expectedDeployment: prepared.expectedDeployment,
+    expectedCodeSha256: prepared.expectedCodeSha256,
+    nativeOriginActivation: {
+      modulePath: prepared.modulePath,
+      moduleSha256: prepared.moduleSha256,
+      configuration: pins,
+    },
+  };
+}
+/** A single immutable preparation serves plan and apply; it is never refreshed between them. */
+export function lazyNativePublisher(
+  initial: PublisherOptions,
+  owner: {
+    publishCatalog(options: PublisherOptions): Promise<{ planSha256?: string }>;
+    verifyUnchangedPublicInputs?: (options: PublisherOptions) => Promise<PublisherOptions | null>;
+  },
+  prepare: () => Promise<PublisherOptions>,
+) {
+  let options: Promise<PublisherOptions> | undefined;
+  let unchanged: PublisherOptions | null | undefined;
+  let plannedSha256: string | undefined;
+  const resolveOptions = () => (options ??= prepare());
+  return {
+    async plan() {
+      const pinned = await resolveOptions();
+      unchanged = (await owner.verifyUnchangedPublicInputs?.(pinned)) ?? null;
+      if (unchanged) {
+        plannedSha256 = hash(
+          JSON.stringify({
+            initial,
+            indexSha256: unchanged.indexSha256,
+            inventorySha256: unchanged.inventorySha256,
+          }),
+        );
+        return { planSha256: plannedSha256 };
+      }
+      const result = await owner.publishCatalog({ ...pinned, apply: false });
+      if (!/^[a-f0-9]{64}$/.test(result.planSha256 ?? ""))
+        throw Error("Canonical publisher plan identity missing");
+      plannedSha256 = result.planSha256;
+      return { planSha256: result.planSha256! };
+    },
+    async apply(planSha256: string) {
+      if (!plannedSha256 || planSha256 !== plannedSha256)
+        throw Error("The exact qualified publisher plan is required before apply");
+      if (unchanged) return unchanged;
+      return owner.publishCatalog({ ...(await resolveOptions()), apply: true, planSha256 });
     },
   };
 }

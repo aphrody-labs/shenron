@@ -10,6 +10,8 @@ import {
   verifyDom,
   publicationIndexPath,
   deadOwner,
+  lazyNativePublisher,
+  preparedPublicationOptions,
 } from "./reader-source-workers";
 const url = "https://www.shueisha.co.jp/books/items/contents_amp.html?isbn=978-4-08-851182-5";
 const source = {
@@ -35,6 +37,102 @@ test("sources require the exact independently captured primary URL", () => {
     sourcePlan([{ ...source, sourceUrl: "https://www.hanmoto.com/bd/isbn/9784088511825" }])[0]
       ?.sourceUrl,
   ).toContain("www.hanmoto.com/bd/");
+});
+
+test("native publication holds one preparation and rejects another apply identity", async () => {
+  let preparations = 0;
+  const calls: Record<string, unknown>[] = [];
+  const identity = hash("immutable-plan");
+  const publisher = lazyNativePublisher(
+    {},
+    {
+      publishCatalog: async (options) => {
+        calls.push(options);
+        return { planSha256: identity };
+      },
+    },
+    async () => ({ snapshot: ++preparations }),
+  );
+  await expect(publisher.apply(identity)).rejects.toThrow();
+  expect(await publisher.plan()).toEqual({ planSha256: identity });
+  await expect(publisher.apply(hash("different"))).rejects.toThrow();
+  await publisher.apply(identity);
+  expect(preparations).toBe(1);
+  expect(calls).toEqual([
+    { snapshot: 1, apply: false },
+    { snapshot: 1, apply: true, planSha256: identity },
+  ]);
+});
+
+test("unchanged publication never uploads and still pins its apply identity", async () => {
+  let writes = 0;
+  const receipt = {
+    noChange: true,
+    writes: 0,
+    indexSha256: hash("index"),
+    inventorySha256: hash("inventory"),
+  };
+  const publisher = lazyNativePublisher(
+    {},
+    {
+      verifyUnchangedPublicInputs: async () => receipt,
+      publishCatalog: async () => {
+        writes++;
+        return {};
+      },
+    },
+    async () => ({ snapshot: "current" }),
+  );
+  const plan = await publisher.plan();
+  await expect(publisher.apply(hash("wrong"))).rejects.toThrow();
+  expect(await publisher.apply(plan.planSha256)).toBe(receipt);
+  expect(writes).toBe(0);
+});
+
+test("native preparation rejects substituted pins and relative backup receipts", () => {
+  const input = {
+    activationModulePath: "/owner/module.mjs",
+    activationModuleSha256: hash("module"),
+    expectedConsumerCodeSha256: hash("consumer"),
+    expectedUnitSha256: hash("unit"),
+  };
+  const configuration = {
+    configSha256: hash("config"),
+    consumerCodeSha256: input.expectedConsumerCodeSha256,
+    unitSha256: input.expectedUnitSha256,
+    inventoryRoot: "/private/inventory",
+    backupReceipt: "/private/backup.json",
+    backupReceiptSha256: hash("backup"),
+  };
+  const prepared = {
+    schema: "aphrody-origin-publication-preparation/v1",
+    configuration,
+    configurationSha256: hash(JSON.stringify(configuration)),
+    modulePath: input.activationModulePath,
+    moduleSha256: input.activationModuleSha256,
+    previousInventory: "/private/current.json",
+    previousInventorySha256: hash("inventory"),
+    preparationPath: "/private/preparation.json",
+    expectedPrefix: "_migration/manifests/publication-qualified/",
+    expectedDeployment: "01234567-89ab-cdef-0123-456789abcdef",
+    expectedCodeSha256: hash("code"),
+    stateSha256: hash("state"),
+  };
+  const options = { inventoryRoot: configuration.inventoryRoot };
+  expect(preparedPublicationOptions(options, input, prepared).previousInventory).toBe(
+    prepared.previousInventory,
+  );
+  expect(() =>
+    preparedPublicationOptions(options, input, { ...prepared, moduleSha256: hash("substitute") }),
+  ).toThrow();
+  const relative = { ...configuration, backupReceipt: "relative.json" };
+  expect(() =>
+    preparedPublicationOptions(options, input, {
+      ...prepared,
+      configuration: relative,
+      configurationSha256: hash(JSON.stringify(relative)),
+    }),
+  ).toThrow();
 });
 test("Tokyo exit requires native country, city and exit proof", () => {
   expect(

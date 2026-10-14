@@ -148,11 +148,11 @@
     "typecheck:scripts": "bun check -p scripts",
     "i18n:contract": "bun scripts/i18n/complete-contract.ts",
     "check:native": "bun scripts/testing/native-quality.ts check",
-    "lint:native": "bun scripts/testing/native-quality.ts lint",
-    "format:native:check": "bun scripts/testing/native-quality.ts fmt --check",
+    "lint:native": "bun lint --no-n2b apps packages scripts",
+    "format:native:check": "bun fmt --check apps packages scripts",
     "test": "bun scripts/testing/workspace-gates.ts test",
-    "lint": "bun scripts/testing/native-quality.ts lint",
-    "format:check": "bun scripts/testing/native-quality.ts fmt --check",
+    "lint": "bun lint --no-n2b apps packages scripts",
+    "format:check": "bun fmt --check apps packages scripts",
     "build": "bun scripts/build/server.ts && bun scripts/build/bot.ts",
     "build:server": "bun scripts/build/server.ts",
     "build:bot": "bun scripts/build/bot.ts",
@@ -174,7 +174,7 @@
     "gates:remote": "bun scripts/dev/remote-dev.ts gates",
     "ship": "bun scripts/ops/ship.ts",
     "check": "bun check",
-    "fmt": "bun scripts/testing/native-quality.ts fmt"
+    "fmt": "bun fmt apps packages scripts"
   },
   "devDependencies": {
     "@aphrody/agent-browser": "catalog:",
