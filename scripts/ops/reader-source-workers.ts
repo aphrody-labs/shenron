@@ -139,6 +139,13 @@ export function frontier(database: Database, sources: Source[], identity: string
       if (provedDead) database.exec("UPDATE queue SET state='pending' WHERE state='running'");
       return rows.map((row) => row.url);
     },
+    finishStoppedRun() {
+      const rows = database
+        .query<{ url: string }, []>("SELECT url FROM queue WHERE state='running'")
+        .all();
+      database.exec("UPDATE queue SET state='pending' WHERE state='running'");
+      return rows.map((row) => row.url);
+    },
     rows() {
       return database
         .query<{ url: string; state: string; receipt_sha: string | null }, []>(
@@ -362,6 +369,7 @@ export async function collect(options: Options) {
   const database = new Database(databasePath, { create: true });
   await chmod(databasePath, 0o600);
   const queue = frontier(database, sources, identity);
+  let frontierReady = false;
   const journal = async (state: string, url: string, detail: string | null = null) => {
     const path = join(job, "journal.jsonl");
     await appendFile(
@@ -412,6 +420,7 @@ export async function collect(options: Options) {
   const processEnvPath = process.env.PATH;
   try {
     const recovered = queue.recoverInterrupted(recoveredPid !== null);
+    frontierReady = true;
     for (const url of recovered)
       await journal("interrupted-requeued", url, "Prior owner PID " + recoveredPid + " is absent");
     // Reuse only complete, byte-identical receipts. Interrupted/failed rows stay explicit.
@@ -583,6 +592,8 @@ export async function collect(options: Options) {
         }
       }),
     );
+    for (const url of queue.finishStoppedRun())
+      await journal("stopped-requeued", url, "All owned browser tasks have settled");
     const rows = queue.rows();
     const receipt = {
       schema: "shenron-reader-worker-run/v1",
@@ -612,6 +623,8 @@ export async function collect(options: Options) {
     signal.removeEventListener("abort", abort);
     abort();
     for (const process of processes) await process.exited;
+    // All owned browser tasks have settled; release only this run's unfinished claims.
+    if (frontierReady) queue.finishStoppedRun();
     database.close();
     await unlink(join(lock, "owner.json"));
     await rmdir(lock);

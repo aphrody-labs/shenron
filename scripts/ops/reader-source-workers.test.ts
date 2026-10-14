@@ -95,6 +95,28 @@ test("interrupted frontier resumes only after its exact owner is proved absent",
   expect(() => deadOwner(prior, hash("different"), "factory", () => false)).toThrow();
   expect(() => deadOwner(prior, hash("plan"), "another-host", () => false)).toThrow();
 });
+test("settled aborted workers leave unfinished URLs resumable and preserve terminal receipts", () => {
+  const db = new Database(":memory:");
+  const sources = [
+    source,
+    { ...source, sourceUrl: url + "&edition=2" },
+    { ...source, sourceUrl: url + "&edition=3" },
+  ];
+  try {
+    const q = frontier(db, sources, hash("stopped-run"));
+    q.complete(q.next()!, hash("verified-receipt"));
+    q.fail(q.next()!);
+    const unfinished = q.next()!;
+    expect(q.finishStoppedRun()).toEqual([unfinished]);
+    const resumed = frontier(db, sources, hash("stopped-run"));
+    expect(resumed.recoverInterrupted(false)).toEqual([]);
+    expect(resumed.next()).toBe(unfinished);
+    expect(resumed.rows()[0]?.receipt_sha).toBe(hash("verified-receipt"));
+    expect(resumed.rows()[1]?.state).toBe("failed");
+  } finally {
+    db.close();
+  }
+});
 test("publication uses the canonical nested public-root shape", () => {
   const root = "/qualified/public";
   const expected = publicationIndexPath(
