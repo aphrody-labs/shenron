@@ -1,15 +1,46 @@
-# Marque vectorielle Dragon Ball France — 14 octobre 2026
+# Marque vectorielle Dragon Ball France — référence HD, 14 octobre 2026
 
-Référence : image WebP fournie par le propriétaire, CDN Netflix `occ-0-7485-55.1.nflxso.net`, suffixe `AAAABS8uozXF7jRI5ZRiJmMJFi4ZrEI-7l4T4ljE7Z4sPgobMII80kTb68bvX0cDoknIuZwbDUtkm4yMxRj_9MCMq9e2ih3aBb3tuw.webp?r=70d`. Dimensions décodées par Bun.Image : **273 × 126 pixels**. La référence de travail reste dans `var/reports/dragon-ball-design-20261014/reference.webp` et ne fait pas partie du paquet public.
+Source visuelle inspectée : [logo officiel Dragon Ball Super](https://dragonball-super.com/img/logo_en.webp), **1233 × 563 pixels**, SHA-256 `395c6052200aff36709084dcdb72e31e6ace6a5d7a16a6174d5c268c56dd3140`. La référence privée de travail est `var/reports/beerus-official-assets-20261013/assets/logo_en.webp`. Elle remplace le précédent relevé Netflix de 273 × 126 pixels ; aucun raster n'est incorporé au livrable.
 
-Le logo de référence occupe approximativement x=8 à 264 et y=10 à 98. À la demande du propriétaire, la marque générale dit **Dragon Ball France** : ni sous-titre promotionnel violet ni intitulé Super. Le dessin couvre un viewBox 272 × 102 avec marge de protection. La différence entre largeur décodée et viewBox est intentionnelle : le viewBox décrit la géométrie reconstruite, pas le fichier original.
+Le propriétaire demande une adaptation publique **Dragon Ball France** : FRANCE remplace SUPER, le Kinto-Un remplace le cristal, le sous-titre promotionnel Beerus et les glyphes japonais de cette promotion sont exclus. L'éclair latéral est un dessin original. Ces adaptations ne sont pas présentées comme le logo officiel inchangé.
 
-Relevés visuels : lettres DRAGON jaunes, BALL rouges, cerne noir. Les coordonnées des lettres sont construites à la main depuis cette inspection. Le cristal de la référence est remplacé par le **Kinto-Un canonique** : `corpsNuage(KINTO_UN_ILLUSTRATION, prefix)`, transformé par translation (86,51) et échelle uniforme 0,031, sans recopier sa géométrie. Son ratio 1200/676, ses aplats manga et ses volutes restent ceux du propriétaire `toriyama-svg/kinto-un.ts`. Les instances React utilisent des identifiants de clip distincts ; l'asset autonome utilise un identifiant stable.
+## Contours mesurés
 
-La pointe latérale devient un éclair original ; le lettrage japonais de la référence est supprimé. Le cartouche **FRANCE** contient six glyphes originaux tracés à la main, hauteur de capitale 12 unités, contrepoinçons ouverts pour R et A, inclinaison −12 degrés. Ces tracés ne sont ni une police embarquée ni une reproduction d'un alphabet officiel.
+Bun.Image décode les pixels RGBA à leur résolution native. `scripts/design/trace-dragon-wordmark.ts` segmente les couleurs dans x=35…919, y=100…381 : jaune avec R>130, G>110, B<90 ; rouge avec R>80, G<70, B<90 et R>2G. Le cristal est exclu par une ellipse centrée sur (479,289), rayon 70 avec garde. Les contours de moins de 30 segments sont écartés. La frontière de cellules produit 15 contours, dont les contrepoinçons ; les contours d'une même couleur sont assemblés en chemin composé avec règle pair-impair.
 
-Palette du dessin : jaune `#fef102` et rouge `#e50113`, modes exacts des pixels opaques saturés de la référence (86 et 71 pixels), extraits par `bun scripts/design/extract-logo-colors.ts <référence>`. L'encre `#080808` est un choix de reconstruction visuelle. Le nuage conserve ses couleurs manga canoniques, jaune `#FCF03A`, ombre `#E4BE05`, encre `#1A1A1A`. Le WebP de petite taille limite la précision des courbes et des aplats. Ce livrable est une adaptation de marque demandée par le propriétaire, pas une reproduction pixel perfect indépendante du logo officiel.
+Simplification Douglas–Peucker : seuil 0,65 pixel ; maximum mesuré point→segment **0,6413 pixel**, 1947 sommets. Les raccords quadratiques enlèvent les petites marches du masque binaire. Les angles dont le déplacement du contrôle dépasse 0,85 pixel restent angulaires ; le déplacement propre au raccord est borné à 0,425 pixel. Cette borne de construction ne qualifie pas l'écart aux traits d'origine sous l'anticrénelage WebP. Les contours noirs sont reconstruits par cerne de 24 unités avec `paint-order="stroke fill"`, avec filet blanc extérieur de 6 unités pour les fonds sombres.
 
-Propriétaire unique de la géométrie : `packages/ui/src/toriyama-svg/wordmark.ts`. Le composant React `DragonBallWordmark` utilise ces mêmes tracés ; l'asset autonome est généré par `bun scripts/design/build-dragon-wordmark.ts`. `--check` vérifie l'égalité exacte de l'asset et du générateur.
+Le viewBox public est **20 90 1100 375**, ratio 2,9333. DRAGON et BALL gardent les coordonnées de la référence HD ; FRANCE est tracé en six glyphes originaux fermés dans un cartouche. Le corps de texte et les polices françaises, anglaises et japonaises du site restent sous leur propriétaire : aucune nouvelle fonte n'est publiée avec ce logo.
 
-Contrôles : SVG sans image incorporée ni texte dépendant d'une police ; absence de cercle et d'étoile ; présence de la silhouette et des volutes exactes du nuage canonique ; titres accessibles et clips uniques lors de plusieurs instances ; variante décorative muette. La capture Chrome headless à 600 × 250 `wordmark-france.png` a été inspectée : FRANCE lisible, nuage rendu, proportions conservées. Les contrôles multi-tailles et l'intégration sur fond clair et sombre sont réalisés par le lot d'intégration du site et doivent être qualifiés séparément.
+## Dégradés et couleurs
+
+Les médianes des pixels retenus par ligne fondent les dégradés SVG, en coordonnées natives :
+
+| Y   | Jaune DRAGON | Rouge BALL |
+| --- | ------------ | ---------- |
+| 125 | `#fef305`    | —          |
+| 205 | `#fef100`    | `#e70113`  |
+| 270 | `#fef100`    | `#e60113`  |
+| 320 | `#ddb800`    | `#b40f17`  |
+| 360 | `#bc8800`    | `#940d15`  |
+
+Ces dégradés linéaires restituent la progression vers l'or et le rouge sombre ; ils ne reproduisent pas chaque pixel du WebP. Les tokens jaunes `#fef102` et rouges `#e50113` de la première extraction sont conservés. Le cartouche et l'éclair utilisent le jaune de marque ; le nuage conserve ses aplats manga canoniques.
+
+## Nuage et sources uniques
+
+Le nuage vient uniquement de `corpsNuage(KINTO_UN_ILLUSTRATION, prefix)` dans `toriyama-svg/kinto-un.ts`, sans géométrie copiée : translation (402,248), échelle uniforme 0,13. Son ratio, ses ombres et ses volutes restent canoniques. Le module `wordmark.ts` possède tous les contours, dégradés et compositions ; React et l'asset autonome appellent le même `renderWordmarkArtwork`. `useId` isole titres, gradients et clips de chaque instance React. L'asset standalone utilise des identifiants stables.
+
+## Vérifications réelles
+
+Chrome headless a rasterisé l'art à l'échelle native dans `native-compare.png`. Bun.Image a comparé les masques de remplissage aux mêmes zones du WebP, hors ellipse de rayon 82 autour du cristal remplacé :
+
+| Zone         | Pixels référence | Pixels rendus | Intersection |          IoU |
+| ------------ | ---------------: | ------------: | -----------: | -----------: |
+| DRAGON jaune |            61336 |         61263 |        61259 | **99,868 %** |
+| BALL rouge   |            34444 |         34502 |        34437 | **99,791 %** |
+
+Ces nombres qualifient les masques colorés DRAGON/BALL, **pas** le cerne noir, le halo blanc, l'intégralité des couleurs ou les adaptations FRANCE/nuage/éclair. Aucun résultat ne prouve une égalité pixel à pixel du logo complet.
+
+La planche Chrome `hd-size-qa.png` a été ouverte et inspectée aux largeurs **320 et 144 pixels**, sur fonds clair et sombre : lettres complètes, FRANCE lisible, nuage rendu, filet blanc sur sombre, aucune coupure du dessin. Six tests vérifient l'asset reproductible, les contours fermés, les gradients, la géométrie canonique du nuage, les identifiants uniques et les titres accessibles. Format et lint natifs sont contrôlés sur les chemins du lot.
+
+Reproduction : `bun scripts/design/trace-dragon-wordmark.ts <reference.webp> --write`, puis `bun scripts/design/build-dragon-wordmark.ts`. La première commande exige la référence privée ; la seconde et son `--check` n'exigent ni réseau, ni bitmap, ni dépendance de police. Les masques, données de comparaison et captures restent dans `var/reports/dragon-ball-design-20261014/`.

@@ -3,6 +3,7 @@
 
 import { Children, isValidElement, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { flushSync } from "react-dom";
 import { MaterialSymbol } from "@aphrody/shenron-ui/icones";
 import { useT } from "@/components/T";
 import { HomeMotion } from "./HomeMotion";
@@ -73,11 +74,12 @@ export function HomeScreenDeck({ children }: { children: ReactNode }) {
     }
     transitionRef.current?.skipTransition();
     document.documentElement.dataset.homeTransition = "teleport";
-    const transition = document.startViewTransition(async () => {
-      move();
-      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    const transition = document.startViewTransition(() => {
+      flushSync(move);
     });
     transitionRef.current = transition;
+    void transition.ready.catch(() => {});
+    void transition.updateCallbackDone.catch(() => {});
     void transition.finished
       .catch(() => {})
       .finally(() => {

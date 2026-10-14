@@ -19,6 +19,15 @@ export const env = createEnv({
     BETTER_AUTH_URL: z.string().trim().url().optional(),
     DISCORD_CLIENT_ID: z.string().trim().min(10),
     DISCORD_CLIENT_SECRET: z.string().trim().min(10),
+    BUN_VIDEO_CRUNCHYROLL_ACCESS_TOKEN: z.string().trim().min(1).optional(),
+    BUN_VIDEO_CRUNCHYROLL_BASIC_AUTHORIZATION: z
+      .string()
+      .trim()
+      .regex(/^Basic [A-Za-z0-9+/]+=*$/)
+      .optional(),
+    BUN_VIDEO_CRUNCHYROLL_ACCOUNT_ID: z.string().trim().min(1).optional(),
+    CRUNCHYROLL_EMAIL: z.string().trim().email().optional(),
+    CRUNCHYROLL_PASSWORD: z.string().min(1).optional(),
     SHENRON_API_URL: z.string().trim().url().default(DEFAULT_PUBLIC_ORIGINS.api),
     // Read-only Shenron MCP server behind /mcp (shenron-mcp --http <addr> --public).
     // Hôte Bun (`shenron-server`) : si posée, il sert `/api/auth/*` (relais) et la session.

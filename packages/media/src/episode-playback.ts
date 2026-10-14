@@ -14,6 +14,21 @@ export interface VideoSubtitle {
   src: string;
 }
 
+/** BCP 47 language tags; the historical Japanese country-code alias is not a language. */
+export function normalizeSubtitleLanguage(value: unknown): string | null {
+  if (typeof value !== "string" || value.length > 64) return null;
+  const candidate = value
+    .trim()
+    .replace(/_/g, "-")
+    .replace(/^jp(?=-|$)/i, "ja");
+  if (!/^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/i.test(candidate)) return null;
+  try {
+    return Intl.getCanonicalLocales(candidate)[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export function normalizeVideoLanguage(value: unknown): VideoLanguage | null {
   return VIDEO_LANGUAGE_ORDER.find((language) => value === language) ?? null;
 }
@@ -78,8 +93,8 @@ export function normalizeVideoSubtitles(raw: unknown): VideoSubtitle[] {
   const subtitles: VideoSubtitle[] = [];
   for (const value of raw) {
     if (!value || typeof value !== "object" || typeof value.src !== "string") continue;
-    if (typeof value.lang !== "string" || !/^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/.test(value.lang))
-      continue;
+    const lang = normalizeSubtitleLanguage(value.lang);
+    if (!lang) continue;
     if (typeof value.label !== "string" || !value.label.trim()) continue;
     const src =
       publicMediaUrl(value.src) ??
@@ -88,10 +103,10 @@ export function normalizeVideoSubtitles(raw: unknown): VideoSubtitle[] {
         ? value.src.trim()
         : null);
     if (!src) continue;
-    const key = `${value.lang}:${src}`;
+    const key = `${lang}:${src}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    subtitles.push({ lang: value.lang, label: value.label.trim(), src });
+    subtitles.push({ lang, label: value.label.trim(), src });
   }
   return subtitles;
 }

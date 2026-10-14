@@ -1,75 +1,140 @@
 {
-  "schema": "shenron-home-palette/v1",
+  "schema": "shenron-home-palette/v2",
   "source": {
-    "asset": "brand/home-beerus-goku.png",
-    "width": 1279,
-    "height": 585,
-    "sha256": "9b5710d74427f91b2ea7bfe5a058f0643ec74d956cad9a50e6554b02128bd286"
+    "url": "https://dragonball-super.com/img/kv-2.webp",
+    "width": 2800,
+    "height": 3950,
+    "sha256": "12e1fc4845a0cd50e1d7f84450b19cf36d179aa623452f9defea582b8f331900"
   },
   "seeds": {
-    "beerus": {
-      "hex": "#d55d9e",
-      "pixels": 11,
-      "region": [0, 0, 0.25, 1],
-      "subject": "bright-magenta-aura"
+    "kamehameha": {
+      "hex": "#f6ffff",
+      "pixels": 6760,
+      "matchedPixels": 146923,
+      "region": [
+        0.45,
+        0.5,
+        0.72,
+        0.68
+      ]
+    },
+    "sun": {
+      "hex": "#fe8648",
+      "pixels": 37,
+      "matchedPixels": 58028,
+      "region": [
+        0.45,
+        0.23,
+        0.7,
+        0.36
+      ]
+    },
+    "freezer": {
+      "hex": "#d3bf69",
+      "pixels": 195,
+      "matchedPixels": 63692,
+      "region": [
+        0.52,
+        0.13,
+        0.76,
+        0.29
+      ]
+    },
+    "space": {
+      "hex": "#0e102b",
+      "pixels": 59835,
+      "matchedPixels": 453565,
+      "region": [
+        0.05,
+        0.55,
+        0.4,
+        0.95
+      ]
     },
     "goku": {
-      "hex": "#71b2e3",
-      "pixels": 38,
-      "region": [0.6, 0, 1, 0.58],
-      "subject": "blue-energy-space"
+      "hex": "#00acff",
+      "pixels": 106,
+      "matchedPixels": 42890,
+      "region": [
+        0.7,
+        0.42,
+        0.99,
+        0.8
+      ]
     }
+  },
+  "media": {
+    "surface": "#04050d",
+    "on-surface": "#feffff"
+  },
+  "brand": {
+    "yellow": "#fef102",
+    "red": "#e50113",
+    "blue": "#00acff",
+    "orange": "#fe8648",
+    "gold": "#d3bf69",
+    "ink": "#04050d",
+    "media-ink": "#ffffff",
+    "media-muted": "#feffff"
   },
   "themes": {
     "beerus": {
-      "background": "#1a0b13",
-      "surface": "#1a0b13",
-      "on-background": "#fbeff5",
-      "on-surface": "#fbeff5",
-      "surface-container-low": "#2b1320",
-      "surface-container": "#371829",
-      "surface-container-high": "#441e33",
-      "surface-container-highest": "#55253f",
-      "on-surface-variant": "#efc1da",
-      "outline": "#e496c0",
-      "outline-variant": "#6f3052",
-      "primary": "#e086b6",
-      "on-primary": "#211526",
-      "primary-container": "#4f223a",
-      "on-primary-container": "#f7eafb",
-      "secondary": "#98d3f3",
-      "on-secondary": "#10232e",
-      "secondary-container": "#3a192b",
-      "on-secondary-container": "#fbeff5",
-      "tertiary": "#ffd978",
-      "on-tertiary": "#362700",
-      "tertiary-container": "#49351b",
-      "on-tertiary-container": "#fff0c9"
+      "background": "#0a0b1e",
+      "surface": "#0a0b1e",
+      "on-background": "#feffff",
+      "on-surface": "#feffff",
+      "surface-container-low": "#0e1532",
+      "surface-container": "#0d1c3b",
+      "surface-container-high": "#0c2344",
+      "surface-container-highest": "#0b2c51",
+      "on-surface-variant": "#faffff",
+      "outline": "#78d3ff",
+      "outline-variant": "#52c7ff",
+      "primary": "#fe8648",
+      "on-primary": "#04050d",
+      "primary-container": "#472614",
+      "on-primary-container": "#ffe7da",
+      "secondary": "#73d1ff",
+      "on-secondary": "#04050d",
+      "secondary-container": "#0b325a",
+      "on-secondary-container": "#feffff",
+      "tertiary": "#d3bf69",
+      "on-tertiary": "#04050d",
+      "tertiary-container": "#3b351d",
+      "on-tertiary-container": "#f6f2e1",
+      "inverse-surface": "#feffff",
+      "inverse-on-surface": "#04050d",
+      "inverse-primary": "#004d73",
+      "scrim": "#04050d"
     },
     "goku": {
-      "background": "#f6fafd",
-      "surface": "#f6fafd",
-      "on-background": "#0e151b",
-      "on-surface": "#0e151b",
-      "surface-container-low": "#fcfdfe",
-      "surface-container": "#edf5fb",
-      "surface-container-high": "#e3f0f9",
-      "surface-container-highest": "#d7e9f7",
-      "on-surface-variant": "#283e4f",
-      "outline": "#395972",
-      "outline-variant": "#add2ef",
-      "primary": "#2d475b",
+      "background": "#feffff",
+      "surface": "#feffff",
+      "on-background": "#0b0c20",
+      "on-surface": "#0b0c20",
+      "surface-container-low": "#fafdff",
+      "surface-container": "#dbf3ff",
+      "surface-container-high": "#c4ecff",
+      "surface-container-highest": "#ade4ff",
+      "on-surface-variant": "#0d0f28",
+      "outline": "#005985",
+      "outline-variant": "#006ea3",
+      "primary": "#00537a",
       "on-primary": "#ffffff",
-      "primary-container": "#71b2e3",
-      "on-primary-container": "#10232e",
-      "secondary": "#405a72",
+      "primary-container": "#ffe3d5",
+      "on-primary-container": "#0b0c20",
+      "secondary": "#004d73",
       "on-secondary": "#ffffff",
-      "secondary-container": "#e0eef9",
-      "on-secondary-container": "#0e151b",
-      "tertiary": "#6b4210",
+      "secondary-container": "#ade4ff",
+      "on-secondary-container": "#0b0c20",
+      "tertiary": "#443d22",
       "on-tertiary": "#ffffff",
-      "tertiary-container": "#ffedbc",
-      "on-tertiary-container": "#362700"
+      "tertiary-container": "#f4f0db",
+      "on-tertiary-container": "#0b0c20",
+      "inverse-surface": "#04050d",
+      "inverse-on-surface": "#ffffff",
+      "inverse-primary": "#fe8648",
+      "scrim": "#04050d"
     }
   }
 }

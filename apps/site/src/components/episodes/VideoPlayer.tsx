@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { MaterialSymbol } from "@aphrody/shenron-ui/icones";
+import styles from "./video-player.module.css";
 import { useVideoSource } from "./use-video-source";
 import {
   VIDEO_PLAYBACK_RATES,
@@ -78,6 +80,21 @@ export function VideoPlayer({
   const [theater, setTheater] = useState(false);
   const [waiting, setWaiting] = useState(false);
   const [enhanced, setEnhanced] = useState(false);
+  const [controlsVisible, setControlsVisible] = useState(true);
+  const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pointerRevealOnly = useRef(false);
+  const revealControls = useCallback(() => {
+    setControlsVisible(true);
+    if (idleTimer.current) clearTimeout(idleTimer.current);
+    if (!paused && !waiting && status === "ready")
+      idleTimer.current = setTimeout(() => setControlsVisible(false), 2600);
+  }, [paused, waiting, status]);
+  useEffect(() => {
+    revealControls();
+    return () => {
+      if (idleTimer.current) clearTimeout(idleTimer.current);
+    };
+  }, [revealControls]);
   const syncTimeline = () => {
     const video = videoRef.current;
     if (!video) return;
@@ -198,6 +215,13 @@ export function VideoPlayer({
     setCaption(index);
   };
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const settings = containerRef.current?.querySelector<HTMLDetailsElement>("details[open]");
+    if (event.key === "Escape" && settings) {
+      event.preventDefault();
+      settings.open = false;
+      settings.querySelector<HTMLElement>("summary")?.focus();
+      return;
+    }
     if (event.key === "Escape" && theater) {
       event.preventDefault();
       setTheater(false);
@@ -271,10 +295,17 @@ export function VideoPlayer({
       role="region"
       aria-label={title}
       onKeyDown={handleKeyDown}
-      className="shenron-video"
+      onPointerMove={revealControls}
+      onPointerDown={(event) => {
+        pointerRevealOnly.current = event.pointerType !== "mouse" && !controlsVisible;
+        revealControls();
+      }}
+      onFocusCapture={revealControls}
+      className={`shenron-video ${styles.player}`}
       data-theater={theater}
+      data-controls-visible={controlsVisible}
     >
-      <header>
+      <header className={styles.heading}>
         <p>{title}</p>
         {(previousEpisode || nextEpisode) && (
           <nav aria-label={t("episodeNavigation")} className="flex gap-3 text-xs text-primary">
@@ -284,7 +315,8 @@ export function VideoPlayer({
                 title={previousEpisode.label}
                 className="rounded px-2 py-2 focus-visible:outline-2"
               >
-                {t("previousEpisode")}
+                <MaterialSymbol name="skip_previous" />
+                <span className="sr-only">{t("previousEpisode")}</span>
               </Link>
             )}
             {nextEpisode && (
@@ -293,7 +325,8 @@ export function VideoPlayer({
                 title={nextEpisode.label}
                 className="rounded px-2 py-2 focus-visible:outline-2"
               >
-                {t("nextEpisode")}
+                <MaterialSymbol name="skip_next" />
+                <span className="sr-only">{t("nextEpisode")}</span>
               </Link>
             )}
           </nav>
@@ -309,6 +342,13 @@ export function VideoPlayer({
         poster={poster}
         aria-label={title}
         tabIndex={0}
+        onClick={() => {
+          if (pointerRevealOnly.current) {
+            pointerRevealOnly.current = false;
+            return;
+          }
+          if (enhanced) void playPause();
+        }}
         onTimeUpdate={syncTimeline}
         onProgress={syncTimeline}
         onDurationChange={syncTimeline}
@@ -344,13 +384,15 @@ export function VideoPlayer({
           />
         ))}
       </video>
-      <div hidden={!enhanced}>
+      <div hidden={!enhanced} className={styles.overlay}>
         <div className="shenron-video-timeline">
           <div className="flex items-center justify-between gap-3">
             <span>
               {timeLabel(position)} / {timeLabel(duration)}
             </span>
-            <span data-buffer-label>{t("bufferedUntil", { time: timeLabel(buffered) })}</span>
+            <span className="sr-only" data-buffer-label>
+              {t("bufferedUntil", { time: timeLabel(buffered) })}
+            </span>
           </div>
           <div className="shenron-video-buffer" aria-hidden="true">
             <div
@@ -381,35 +423,39 @@ export function VideoPlayer({
             onClick={() => void playPause()}
             disabled={status === "failed"}
             data-primary
+            aria-label={paused ? t("play") : t("pause")}
           >
-            {paused ? t("play") : t("pause")}
+            <MaterialSymbol name={paused ? "play_arrow" : "pause"} size={28} />
           </button>
           <button
             type="button"
             onClick={() => seek(-10)}
             disabled={!duration}
             aria-label={ui("backward")}
+            className={styles.skip}
           >
-            {ui("backwardShort")}
+            <MaterialSymbol name="replay_10" />
           </button>
           <button
             type="button"
             onClick={() => seek(10)}
             disabled={!duration}
             aria-label={ui("forward")}
+            className={styles.skip}
           >
-            {ui("forwardShort")}
+            <MaterialSymbol name="forward_10" />
           </button>
           <button
             type="button"
             aria-pressed={muted}
+            aria-label={t(muted ? "unmute" : "mute")}
             onClick={() => {
               if (videoRef.current) videoRef.current.muted = !videoRef.current.muted;
             }}
           >
-            {t(muted ? "unmute" : "mute")}
+            <MaterialSymbol name={muted || volume === 0 ? "volume_off" : "volume_up"} />
           </button>
-          <label className="flex items-center gap-2">
+          <label className={styles.volume}>
             <span className="sr-only">{t("volume")}</span>
             <input
               type="range"
@@ -428,12 +474,17 @@ export function VideoPlayer({
               className="w-24"
             />
           </label>
-          <button type="button" aria-pressed={theater} onClick={() => setTheater(!theater)}>
-            {t(theater ? "exitTheater" : "theater")}
+          <button
+            type="button"
+            aria-pressed={theater}
+            aria-label={t(theater ? "exitTheater" : "theater")}
+            onClick={() => setTheater(!theater)}
+          >
+            <MaterialSymbol name="theaters" />
           </button>
           {fullscreenSupported && (
-            <button type="button" onClick={() => void fullscreen()}>
-              {t("fullscreen")}
+            <button type="button" aria-label={t("fullscreen")} onClick={() => void fullscreen()}>
+              <MaterialSymbol name="fullscreen" />
             </button>
           )}
           {pipSupported && (
@@ -441,14 +492,34 @@ export function VideoPlayer({
               type="button"
               onClick={() => void pictureInPicture()}
               disabled={status !== "ready"}
+              aria-label={t("pictureInPicture")}
             >
-              {t("pictureInPicture")}
+              <MaterialSymbol name="picture_in_picture_alt" />
             </button>
           )}
         </div>
-        <details>
-          <summary>{ui("playbackSettings")}</summary>
-          <div className="shenron-video-controls">
+        <details className={styles.settings}>
+          <summary aria-label={ui("playbackSettings")}>
+            <MaterialSymbol name="settings" />
+          </summary>
+          <div className={styles.settingsPanel}>
+            <label className={styles.mobileVolume}>
+              {t("volume")}
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={muted ? 0 : volume}
+                aria-valuetext={`${Math.round((muted ? 0 : volume) * 100)} %`}
+                onChange={(event) => {
+                  if (videoRef.current) {
+                    videoRef.current.volume = Number(event.target.value);
+                    videoRef.current.muted = Number(event.target.value) === 0;
+                  }
+                }}
+              />
+            </label>
             <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
               {t("speed")}
               <select
@@ -523,13 +594,16 @@ export function VideoPlayer({
         </details>
       </div>
       {status === "failed" && (
-        <div className="shenron-video-controls">
+        <div className={styles.failure}>
           <button type="button" onClick={retry} data-primary>
             {t("retryVideo")}
           </button>
         </div>
       )}
-      <p role={status === "failed" ? "alert" : "status"} className="shenron-video-status">
+      <p
+        role={status === "failed" ? "alert" : "status"}
+        className={status === "ready" && !waiting ? "sr-only" : styles.status}
+      >
         {waiting && status !== "failed"
           ? t("videoBuffering")
           : t(
@@ -543,7 +617,7 @@ export function VideoPlayer({
             )}
       </p>
       {actionError && (
-        <p role="alert" className="shenron-video-status">
+        <p role="alert" className={styles.status}>
           {t("videoActionUnavailable")}
         </p>
       )}

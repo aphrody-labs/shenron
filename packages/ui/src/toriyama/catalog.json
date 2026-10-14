@@ -299,7 +299,18 @@
       "keyboard_arrow_up",
       "keyboard_arrow_down",
       "pause",
-      "play_arrow"
+      "play_arrow",
+      "volume_up",
+      "volume_off",
+      "settings",
+      "fullscreen",
+      "fullscreen_exit",
+      "picture_in_picture_alt",
+      "theaters",
+      "replay_10",
+      "forward_10",
+      "skip_previous",
+      "skip_next"
     ],
     "loading": "inline-svg-subset"
   },
@@ -308,6 +319,10 @@
     "plain": "Shenron Text",
     "code": "JetBrains Mono",
     "japanese": "Noto Sans JP",
-    "m3Roles": ["--aphrody-font-brand", "--aphrody-font-plain", "--aphrody-font-code"]
+    "m3Roles": [
+      "--aphrody-font-brand",
+      "--aphrody-font-plain",
+      "--aphrody-font-code"
+    ]
   }
 }

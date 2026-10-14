@@ -15,7 +15,7 @@ bun scripts/design/build-dragon-wordmark.ts --check
 bun scripts/design/build-toriyama-catalog.ts --check
 ```
 
-Les 16 Material Symbols Rounded de 24 unités proviennent du catalogue propriétaire
+Les 27 Material Symbols Rounded de 24 unités proviennent du catalogue propriétaire
 `@aphrody/material-design-icons` version 1.0.0. Le snapshot consigne leurs empreintes
 et conserve la licence Apache-2.0. `MaterialSymbol` sert ces SVG inline depuis
 `@aphrody/shenron-ui/icones`, sans ligatures, requête de catalogue ni police
@@ -34,13 +34,20 @@ et la provenance restent disponibles pour la reproduction. Les rôles M3
 stacks du site. Le japonais utilise Noto Sans JP ; aucune police de lettrage Dragon
 Ball n'est imposée aux phrases ou aux commandes.
 
-Les thèmes sont dérivés de l'illustration Beerus/Goku fournie le 14 octobre 2026.
-Le thème sombre prend l'aura magenta lumineuse de Beerus (`#d55d9e`), et non sa
-peau violette. Le thème clair prend le bleu de l'énergie et de l'espace autour
-de Goku (`#71b2e3`), hors de sa tenue. Les rectangles normalisés, modes de pixels,
+Les thèmes sont mesurés sur le key visual officiel
+`https://dragonball-super.com/img/kv-2.webp` (2 800 × 3 950 pixels).
+Le sombre utilise l'espace bleu nuit (`#0e102b`), l'orange solaire (`#fe8648`)
+et l'or de Freezer (`#d3bf69`). Le clair utilise le blanc cyan du Kamehameha
+(`#f6ffff`) et le bleu de l'aura de Goku (`#00acff`). Les identifiants
+techniques `beerus` et `goku` restent compatibles avec les préférences existantes.
+Les rectangles normalisés, modes de pixels, nombres de pixels retenus,
 empreinte SHA-256 et rôles M3 dérivés sont dans `brand/home-palette.json`.
-`bun scripts/design/extract-home-palette.ts <illustration> --write` reproduit
-ces mesures avec Bun.Image ; les tests vérifient les paires de texte à 4,5:1.
+`bun scripts/design/extract-home-palette.ts <key-visual> --write` reproduit
+ces mesures avec Bun.Image, sous une limite de 16 millions de pixels.
+`bun packages/ui/scripts/generate-home-theme.ts` produit le snapshot CSS unique
+consommé par le site ; `--check` détecte la dérive. Les tests vérifient les
+paires de texte et de boutons à 4,5:1. Aucun rôle hex n'est recopié dans le
+CSS consommateur.
 L'image PNG de 1279 × 585 est conservée intacte dans le paquet UI puis synchronisée
 dans les assets publics. L'accueil l'utilise avec un voile adapté au thème ; le
 recadrage responsive ne modifie pas le fichier. Les anciens fonds d'épisode ne

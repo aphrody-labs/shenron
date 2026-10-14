@@ -4,6 +4,7 @@ import {
   episodePlaybackMetadata,
   normalizeVideoPlayers,
   normalizeVideoSubtitles,
+  normalizeSubtitleLanguage,
 } from "../src/episode-playback";
 
 const vf = {
@@ -32,6 +33,25 @@ test("malformed and duplicate players do not create phantom counts or video vers
   expect(metadata.playerCount).toBe(2);
   expect(metadata.versions).toEqual(["vf"]);
   expect(metadata.hasVostfr).toBe(false);
+});
+
+test("observed subtitle locales normalize provider casing and Japanese aliases", () => {
+  expect(normalizeSubtitleLanguage("fr_fr")).toBe("fr-FR");
+  expect(normalizeSubtitleLanguage("EN-us")).toBe("en-US");
+  expect(normalizeSubtitleLanguage("jp")).toBe("ja");
+  expect(normalizeSubtitleLanguage("JP_jp")).toBe("ja-JP");
+  expect(normalizeSubtitleLanguage("not-a-language")).toBeNull();
+  const src = "https://cdn.dragonballfr.com/media/episodes/875/ja.vtt";
+  expect(
+    normalizeVideoSubtitles([
+      { lang: "jp", label: "Japanese", src },
+      { lang: "ja", label: "Duplicate", src },
+      { lang: "FR_fr", label: "French", src: src.replace("ja.vtt", "fr.vtt") },
+    ]),
+  ).toEqual([
+    { lang: "ja", label: "Japanese", src },
+    { lang: "fr-FR", label: "French", src: src.replace("ja.vtt", "fr.vtt") },
+  ]);
 });
 
 test("same source with explicitly different versions stays selectable", () => {

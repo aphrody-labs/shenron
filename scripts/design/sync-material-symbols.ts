@@ -17,6 +17,17 @@ const names = [
   "keyboard_arrow_down",
   "pause",
   "play_arrow",
+  "volume_up",
+  "volume_off",
+  "settings",
+  "fullscreen",
+  "fullscreen_exit",
+  "picture_in_picture_alt",
+  "theaters",
+  "replay_10",
+  "forward_10",
+  "skip_previous",
+  "skip_next",
 ] as const;
 export async function materialSubset(owner: string) {
   const metadata = await Bun.file(`${owner}/package.json`).json();

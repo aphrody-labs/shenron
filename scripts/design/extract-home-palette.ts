@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-/** Measure the owner's unchanged illustration; derive bounded, readable surface tones. */
+/** Bounded pixel modes from the official key visual, with readable M3 tones. */
 export function mix(hex: string, target: string, amount: number): string {
   return (
     "#" +
@@ -15,101 +15,134 @@ export function mix(hex: string, target: string, amount: number): string {
       .join("")
   );
 }
-export function themeRoles(seed: string, dark: boolean) {
-  const tone = (amount: number) => mix(seed, dark ? "#000000" : "#ffffff", amount);
-  const ink = mix(seed, dark ? "#ffffff" : "#000000", dark ? 0.9 : 0.88);
+export const REGIONS = {
+  kamehameha: [0.45, 0.5, 0.72, 0.68],
+  sun: [0.45, 0.23, 0.7, 0.36],
+  freezer: [0.52, 0.13, 0.76, 0.29],
+  space: [0.05, 0.55, 0.4, 0.95],
+  goku: [0.7, 0.42, 0.99, 0.8],
+} as const;
+export type Seeds = Record<
+  keyof typeof REGIONS,
+  { hex: string; pixels: number; matchedPixels: number; region: readonly number[] }
+>;
+export function themeRoles(seeds: Seeds, dark: boolean) {
+  const space = seeds.space.hex,
+    cyan = seeds.kamehameha.hex,
+    blue = seeds.goku.hex,
+    orange = seeds.sun.hex,
+    gold = seeds.freezer.hex;
+  const ink = dark ? mix(cyan, "#ffffff", 0.92) : mix(space, "#000000", 0.25);
+  const background = dark ? mix(space, "#000000", 0.3) : mix(cyan, "#ffffff", 0.94);
+  const tone = (amount: number) => (dark ? mix(space, blue, amount) : mix(blue, "#ffffff", amount));
   return {
-    background: tone(dark ? 0.88 : 0.94),
-    surface: tone(dark ? 0.88 : 0.94),
+    background,
+    surface: background,
     "on-background": ink,
     "on-surface": ink,
-    "surface-container-low": tone(dark ? 0.8 : 0.98),
-    "surface-container": tone(dark ? 0.74 : 0.87),
-    "surface-container-high": tone(dark ? 0.68 : 0.8),
-    "surface-container-highest": tone(dark ? 0.6 : 0.72),
-    "on-surface-variant": mix(seed, dark ? "#ffffff" : "#000000", dark ? 0.62 : 0.65),
-    outline: mix(seed, dark ? "#ffffff" : "#000000", dark ? 0.35 : 0.5),
-    "outline-variant": tone(dark ? 0.48 : 0.42),
-    primary: dark ? mix(seed, "#ffffff", 0.25) : mix(seed, "#000000", 0.6),
-    "on-primary": dark ? "#211526" : "#ffffff",
-    "primary-container": mix(seed, "#000000", dark ? 0.63 : 0),
-    "on-primary-container": dark ? "#f7eafb" : "#10232e",
-    secondary: dark ? "#98d3f3" : "#405a72",
-    "on-secondary": dark ? "#10232e" : "#ffffff",
-    "secondary-container": tone(dark ? 0.73 : 0.78),
+    "surface-container-low": tone(dark ? 0.035 : 0.98),
+    "surface-container": tone(dark ? 0.075 : 0.86),
+    "surface-container-high": tone(dark ? 0.12 : 0.77),
+    "surface-container-highest": tone(dark ? 0.18 : 0.68),
+    "on-surface-variant": dark ? mix(cyan, "#ffffff", 0.45) : mix(space, "#000000", 0.08),
+    outline: dark ? mix(blue, "#ffffff", 0.47) : mix(blue, "#000000", 0.48),
+    "outline-variant": dark ? mix(blue, "#ffffff", 0.32) : mix(blue, "#000000", 0.36),
+    primary: dark ? orange : mix(blue, "#000000", 0.52),
+    "on-primary": dark ? inkDark(space) : "#ffffff",
+    "primary-container": dark ? mix(orange, "#000000", 0.72) : mix(orange, "#ffffff", 0.77),
+    "on-primary-container": dark ? mix(orange, "#ffffff", 0.8) : ink,
+    secondary: dark ? mix(blue, "#ffffff", 0.45) : mix(blue, "#000000", 0.55),
+    "on-secondary": dark ? inkDark(space) : "#ffffff",
+    "secondary-container": tone(dark ? 0.22 : 0.68),
     "on-secondary-container": ink,
-    tertiary: dark ? "#ffd978" : "#6b4210",
-    "on-tertiary": dark ? "#362700" : "#ffffff",
-    "tertiary-container": dark ? "#49351b" : "#ffedbc",
-    "on-tertiary-container": dark ? "#fff0c9" : "#362700",
+    tertiary: dark ? gold : mix(gold, "#000000", 0.68),
+    "on-tertiary": dark ? inkDark(space) : "#ffffff",
+    "tertiary-container": dark ? mix(gold, "#000000", 0.72) : mix(gold, "#ffffff", 0.76),
+    "on-tertiary-container": dark ? mix(gold, "#ffffff", 0.8) : ink,
+    "inverse-surface": dark ? mix(cyan, "#ffffff", 0.94) : inkDark(space),
+    "inverse-on-surface": dark ? inkDark(space) : "#ffffff",
+    "inverse-primary": dark ? mix(blue, "#000000", 0.55) : orange,
+    scrim: inkDark(space),
   };
+}
+function inkDark(space: string) {
+  return mix(space, "#000000", 0.7);
 }
 export async function extractHomePalette(path: string) {
   const file = Bun.file(path);
-  if (!(await file.exists()) || file.size > 8_000_000)
-    throw new Error("Invalid bounded illustration");
-  const image = new Bun.Image(path, { maxPixels: 2_000_000 }) as Bun.Image & {
+  if (!(await file.exists()) || file.size > 16_000_000)
+    throw new Error("Invalid bounded key visual");
+  const image = new Bun.Image(path, { maxPixels: 16_000_000 }) as Bun.Image & {
     rgba?: () => Promise<{ width: number; height: number; channels: number; data: Uint8Array }>;
   };
   if (typeof image.rgba !== "function") throw new Error("Qualified native Bun.Image.rgba required");
   const p = await image.rgba();
-  if (p.channels !== 4 || p.data.length !== p.width * p.height * 4)
-    throw new Error("Invalid RGBA frame");
+  if (
+    p.channels !== 4 ||
+    p.width * p.height > 16_000_000 ||
+    p.data.length !== p.width * p.height * 4
+  )
+    throw new Error("Invalid bounded RGBA image");
   const seeds = Object.fromEntries(
-    [
-      ["beerus", 0, 0.25, 1],
-      ["goku", 0.6, 1, 0.58],
-    ].map(([name, start, end, bottom]) => {
+    Object.entries(REGIONS).map(([name, region]) => {
       const histogram = new Map<string, number>();
-      for (let y = 0; y < p.height * Number(bottom); y++)
-        for (
-          let x = Math.floor(p.width * Number(start));
-          x < Math.floor(p.width * Number(end));
-          x++
-        ) {
+      let matchedPixels = 0;
+      for (let y = Math.floor(p.height * region[1]); y < Math.floor(p.height * region[3]); y++) {
+        for (let x = Math.floor(p.width * region[0]); x < Math.floor(p.width * region[2]); x++) {
           const n = (y * p.width + x) * 4;
           const r = p.data[n]!,
             g = p.data[n + 1]!,
             b = p.data[n + 2]!;
-          const matches =
-            name === "beerus"
-              ? r > 160 && b > 80 && r > b && r - b < 80 && g < r * 0.6 && b > g * 1.4
-              : b > 130 && g > 80 && b - r > 60 && g - r > 35;
-          if (p.data[n + 3]! < 200 || !matches) continue;
+          const match =
+            name === "kamehameha"
+              ? r > 150 && g > 220 && b > 230 && b > r + 8
+              : name === "sun"
+                ? r > 210 && g > 85 && g < 195 && b < 110
+                : name === "freezer"
+                  ? r > 155 && g > 120 && g < r && b < g * 0.72
+                  : name === "space"
+                    ? b > r + 3 && b > g + 3 && b < 45 && r < 30 && g < 30
+                    : b > 180 && g > 85 && g < 185 && r < 80;
+          if (p.data[n + 3]! < 200 || !match) continue;
           const hex = "#" + [r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("");
           histogram.set(hex, (histogram.get(hex) ?? 0) + 1);
+          matchedPixels++;
         }
-      const mode = [...histogram].toSorted((a, b) => b[1] - a[1])[0];
-      if (!mode) throw new Error(`Missing measured ${name} pixels`);
-      return [
-        String(name),
-        {
-          hex: mode[0],
-          pixels: mode[1],
-          region: [Number(start), 0, Number(end), Number(bottom)],
-          subject: name === "beerus" ? "bright-magenta-aura" : "blue-energy-space",
-        },
-      ];
+      }
+      const mode = [...histogram].toSorted((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0];
+      if (!mode || matchedPixels < 100) throw new Error(`Missing measured ${name} pixels`);
+      return [name, { hex: mode[0], pixels: mode[1], matchedPixels, region }];
     }),
-  );
+  ) as unknown as Seeds;
   return {
-    schema: "shenron-home-palette/v1",
+    schema: "shenron-home-palette/v2",
     source: {
-      asset: "brand/home-beerus-goku.png",
+      url: "https://dragonball-super.com/img/kv-2.webp",
       width: p.width,
       height: p.height,
       sha256: new Bun.CryptoHasher("sha256").update(await file.arrayBuffer()).digest("hex"),
     },
     seeds,
-    themes: {
-      beerus: themeRoles(seeds.beerus!.hex, true),
-      goku: themeRoles(seeds.goku!.hex, false),
+    media: {
+      surface: inkDark(seeds.space.hex),
+      "on-surface": mix(seeds.kamehameha.hex, "#ffffff", 0.85),
     },
+    brand: {
+      yellow: "#fef102",
+      red: "#e50113",
+      blue: seeds.goku.hex,
+      orange: seeds.sun.hex,
+      gold: seeds.freezer.hex,
+      ink: inkDark(seeds.space.hex),
+      "media-ink": "#ffffff",
+      "media-muted": mix(seeds.kamehameha.hex, "#ffffff", 0.85),
+    },
+    themes: { beerus: themeRoles(seeds, true), goku: themeRoles(seeds, false) },
   };
 }
 if (import.meta.main) {
   const path = Bun.argv[2];
-  if (!path) throw new Error("Usage: bun extract-home-palette.ts <illustration> [--write]");
+  if (!path) throw new Error("Usage: bun extract-home-palette.ts <key-visual> [--write]");
   const palette = await extractHomePalette(path);
   if (Bun.argv.includes("--write"))
     await Bun.write(

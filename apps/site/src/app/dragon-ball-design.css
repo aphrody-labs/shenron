@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
-/* Public product roles derived from the owner's Beerus/Goku illustration. */
+/* Public product roles consume the measured UI-owned key-visual palette. */
+@import "../../../../packages/ui/src/home-theme.generated.css";
 @font-face {
   font-family: "Shenron Text";
   src: url("/fonts/shenron-text/ShenronText-Medium.woff2") format("woff2");
@@ -14,72 +15,30 @@
   font-weight: 700;
   font-display: swap;
 }
+@font-face {
+  font-family: "Shenron Lettering";
+  src: url("/fonts/shenron-lettering/ShenronLettering-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+0020, U+0041-0047, U+004C, U+004E, U+0052;
+}
 html:root {
   --font-sans: "Shenron Text", "Google Sans Flex", system-ui, sans-serif;
   --font-display: var(--font-sans);
   --font-title: var(--font-sans);
+  --font-lettering: "Shenron Lettering", var(--font-sans);
   --aphrody-font-brand: var(--font-sans);
   --aphrody-font-plain: var(--font-sans);
   --aphrody-font-code: var(--font-mono-src), ui-monospace, monospace;
-  --brand-yellow: #fef102;
-  --brand-red: #e50113;
-  --brand-blue: #13648b;
   font-synthesis: none;
+}
+.shenron-lettering {
+  font-family: var(--font-lettering);
+  font-weight: 700;
 }
 html:root[lang="ja"] {
   --font-sans: var(--font-jp);
-}
-html:root:root:not([data-episode-theme="goku"]) {
-  color-scheme: dark;
-  --md-sys-color-background: #1a0b13;
-  --md-sys-color-surface: #1a0b13;
-  --md-sys-color-on-background: #fbeff5;
-  --md-sys-color-on-surface: #fbeff5;
-  --md-sys-color-surface-container-low: #2b1320;
-  --md-sys-color-surface-container: #371829;
-  --md-sys-color-surface-container-high: #441e33;
-  --md-sys-color-surface-container-highest: #55253f;
-  --md-sys-color-on-surface-variant: #efc1da;
-  --md-sys-color-outline: #e496c0;
-  --md-sys-color-outline-variant: #6f3052;
-  --md-sys-color-primary: #e086b6;
-  --md-sys-color-on-primary: #211526;
-  --md-sys-color-primary-container: #4f223a;
-  --md-sys-color-on-primary-container: #f7eafb;
-  --md-sys-color-secondary: #98d3f3;
-  --md-sys-color-on-secondary: #10232e;
-  --md-sys-color-secondary-container: #3a192b;
-  --md-sys-color-on-secondary-container: #fbeff5;
-  --md-sys-color-tertiary: #ffd978;
-  --md-sys-color-on-tertiary: #362700;
-  --md-sys-color-tertiary-container: #49351b;
-  --md-sys-color-on-tertiary-container: #fff0c9;
-}
-html:root:root[data-episode-theme="goku"] {
-  color-scheme: light;
-  --md-sys-color-background: #f6fafd;
-  --md-sys-color-surface: #f6fafd;
-  --md-sys-color-on-background: #0e151b;
-  --md-sys-color-on-surface: #0e151b;
-  --md-sys-color-surface-container-low: #fcfdfe;
-  --md-sys-color-surface-container: #edf5fb;
-  --md-sys-color-surface-container-high: #e3f0f9;
-  --md-sys-color-surface-container-highest: #d7e9f7;
-  --md-sys-color-on-surface-variant: #283e4f;
-  --md-sys-color-outline: #395972;
-  --md-sys-color-outline-variant: #add2ef;
-  --md-sys-color-primary: #2d475b;
-  --md-sys-color-on-primary: #ffffff;
-  --md-sys-color-primary-container: #71b2e3;
-  --md-sys-color-on-primary-container: #10232e;
-  --md-sys-color-secondary: #405a72;
-  --md-sys-color-on-secondary: #ffffff;
-  --md-sys-color-secondary-container: #e0eef9;
-  --md-sys-color-on-secondary-container: #0e151b;
-  --md-sys-color-tertiary: #6b4210;
-  --md-sys-color-on-tertiary: #ffffff;
-  --md-sys-color-tertiary-container: #ffedbc;
-  --md-sys-color-on-tertiary-container: #362700;
 }
 body {
   --dbz-bg: var(--md-sys-color-surface);
@@ -93,7 +52,7 @@ body {
   --dbz-gold: var(--md-sys-color-primary);
   --dbz-yellow: var(--brand-yellow);
   --dbz-red: var(--md-sys-color-tertiary);
-  --dbz-encre: #080b10;
+  --dbz-encre: var(--brand-ink);
   --color-dbz-bg: var(--dbz-bg);
   --color-dbz-card: var(--dbz-card);
   --color-dbz-border: var(--dbz-border);
@@ -152,8 +111,8 @@ body {
   color: var(--home-panel-muted);
 }
 .home-screen-content [class*="bg-gradient-to-t"] {
-  --home-panel-ink: #ffffff;
-  --home-panel-muted: #e5e7eb;
+  --home-panel-ink: var(--brand-media-ink);
+  --home-panel-muted: var(--brand-media-muted);
 }
 .home-screen-content .home-stage {
   min-height: calc(var(--home-screen-height) - 5rem);
@@ -194,7 +153,7 @@ body {
   display: block;
   width: clamp(15rem, 32vw, 30rem);
   max-width: 100%;
-  aspect-ratio: 272 / 102;
+  aspect-ratio: 1100 / 375;
   background: url("/brand/dragon-ball-wordmark.svg") center / contain no-repeat;
 }
 .home-screen-content .home-wordmark__ligne > * {
@@ -254,12 +213,28 @@ body {
 }
 @media (forced-colors: active) {
   html:root:root:root {
+    --md-sys-color-background: Canvas;
+    --md-sys-color-on-background: CanvasText;
     --md-sys-color-surface: Canvas;
     --md-sys-color-on-surface: CanvasText;
     --md-sys-color-on-surface-variant: CanvasText;
     --md-sys-color-surface-container-low: Canvas;
+    --md-sys-color-surface-container: Canvas;
+    --md-sys-color-surface-container-high: Canvas;
+    --md-sys-color-surface-container-highest: Canvas;
     --md-sys-color-primary: Highlight;
     --md-sys-color-on-primary: HighlightText;
+    --md-sys-color-primary-container: Canvas;
+    --md-sys-color-on-primary-container: CanvasText;
+    --md-sys-color-secondary: Highlight;
+    --md-sys-color-on-secondary: HighlightText;
+    --md-sys-color-secondary-container: Canvas;
+    --md-sys-color-on-secondary-container: CanvasText;
+    --md-sys-color-tertiary: Highlight;
+    --md-sys-color-on-tertiary: HighlightText;
+    --md-sys-color-tertiary-container: Canvas;
+    --md-sys-color-on-tertiary-container: CanvasText;
+    --md-sys-color-outline: CanvasText;
     --md-sys-color-outline-variant: CanvasText;
   }
 }

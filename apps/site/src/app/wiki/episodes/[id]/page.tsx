@@ -1,3 +1,4 @@
+import { WatchLayout, WatchStage, WatchColumns } from "@/components/episodes/WatchLayout";
 import { T } from "@/components/T";
 import { episodeNumberText } from "@/lib/episode-number";
 import { hasEditorialDatabase } from "@/lib/prerender";
@@ -21,7 +22,6 @@ import { VideoSourceSummary } from "@/components/episodes/VideoSourceSummary";
 import { VideoUnavailableCard } from "@/components/episodes/VideoUnavailableCard";
 import { OffreLegale } from "@/components/episodes/OffreLegale";
 import { EpisodeDownload } from "@/components/episodes/EpisodeDownload";
-import { bannerForSeries } from "@/lib/banner-config";
 import { AnimatedMedia } from "@/components/media/AnimatedMedia";
 import { BackgroundImage } from "@/components/media/BackgroundImage";
 import { EpisodeScenes } from "./EpisodeScenes";
@@ -154,13 +154,6 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
   const youtubeId = getYoutubeId(ep.video_url);
   const seriesLabel = SERIES_LABELS[ep.series] ?? ep.series;
   const epNum = episodeNumberText(ep.number_in_series, true);
-  const heroFrame =
-    ep.number_in_series === null
-      ? ""
-      : await bannerForSeries(ep.series, {
-          episodeStart: ep.number_in_series,
-          episodeEnd: ep.number_in_series,
-        });
   const episodeTitle =
     ep.number_in_series === null ? ep.title : `Épisode ${ep.number_in_series} : ${ep.title}`;
   const episodeCaption =
@@ -270,18 +263,7 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
   return (
     <div className="relative">
       <JsonLd data={episodeSchema} />
-      {/* === Backdrop cinématique plein cadre (vignette épisode floutée) === */}
-      <div className="absolute inset-x-0 top-0 h-64 sm:h-80 -z-0 overflow-hidden">
-        {heroFrame ? (
-          <BackgroundImage src={heroFrame} overlay="full" priority />
-        ) : (
-          <div className="absolute inset-0 aurora opacity-50" />
-        )}
-        {/* Fondu vers le fond de page */}
-        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-dbz-bg to-transparent" />
-      </div>
-
-      <div className="relative z-10 w-full mx-auto max-w-[1180px] px-6 lg:px-10 pt-10 pb-20">
+      <WatchLayout series={ep.series}>
         {/* Fil d'Ariane : remplace l'ancien lien « ← <série> » isolé (qui ne
 				    disait ni où l'on se trouve dans l'arborescence, ni comment remonter
 				    plus haut) et porte en même temps le balisage `BreadcrumbList`. */}
@@ -304,25 +286,30 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
             { label: ep.number_in_series === null ? ep.title : `Épisode ${ep.number_in_series}` },
           ]}
         />
+        <WatchStage>
+          {/* === Player === */}
+          {player && (
+            <div className="relative group/player">
+              {player}
+              {/* Téléchargement affiché uniquement quand une source est résoluble
+						    (résolution HLS on-demand côté bot), réservé aux membres connectés
+						    Discord. Masqué sur un fallback image seul → jamais de lien mort. */}
+              {canDownload && (
+                <div className="absolute top-3 right-3 z-20">
+                  <EpisodeDownload
+                    href={`/api/episodes/${ep.id}/download`}
+                    signinCallback={`/wiki/episodes/${ep.id}`}
+                    title={ep.title}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+          {!player && <VideoUnavailableCard title={ep.title} kind="episode" />}
+        </WatchStage>
         <WikiEditBar table="db_episodes" id={ep.id} indexHref="/wiki/episodes" label={ep.title} />
-        <div className="mb-10 flex flex-wrap items-center gap-3">
-          <FavoriteButton
-            kind="episode"
-            id={ep.id}
-            title={ep.title}
-            href={`/wiki/episodes/${ep.id}`}
-            image={ep.image}
-            caption={episodeCaption}
-          />
-          <ShareButton
-            title={`${ep.title} — ${seriesLabel}`}
-            text={episodeCaption}
-            path={`/wiki/episodes/${ep.id}`}
-          />
-        </div>
-
-        {/* === En-tête superposé au backdrop === */}
-        <header className="mb-8 reveal-up">
+        {/* Title and metadata stay outside the viewing stage. */}
+        <header className="mb-6">
           <div className="flex items-center gap-4 mb-4">
             <span className="scouter-text text-2xl text-dbz-orange drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
               {epNum === null ? <T k="mediaPlayback.numberUnverified" /> : `#${epNum}`}
@@ -359,174 +346,173 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
           </div>
         </header>
 
-        {/* === Player === */}
-        {player && (
-          <div className="reveal-up mb-12 shadow-2xl shadow-black/50 rounded-lg relative group/player">
-            {player}
-            {/* Téléchargement affiché uniquement quand une source est résoluble
-						    (résolution HLS on-demand côté bot), réservé aux membres connectés
-						    Discord. Masqué sur un fallback image seul → jamais de lien mort. */}
-            {canDownload && (
-              <div className="absolute top-3 right-3 z-20">
-                <EpisodeDownload
-                  href={`/api/episodes/${ep.id}/download`}
-                  signinCallback={`/wiki/episodes/${ep.id}`}
-                  title={ep.title}
-                />
-              </div>
-            )}
-          </div>
-        )}
-        {!player && <VideoUnavailableCard title={ep.title} kind="episode" />}
-        <VideoSourceSummary
-          players={ep.players ?? []}
-          subtitles={ep.subtitles?.length ?? 0}
-          frames={frames.length}
-        />
-
-        {/* === Offre légale (ADN…) ===
-				    Placée juste sous le player : c'est la même question (« où je
-				    regarde ? »), et le visiteur ne doit pas avoir à la chercher. */}
-        <div className="reveal-up mb-12">
-          <OffreLegale offres={ep.availability} />
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          <FavoriteButton
+            kind="episode"
+            id={ep.id}
+            title={ep.title}
+            href={`/wiki/episodes/${ep.id}`}
+            image={ep.image}
+            caption={episodeCaption}
+          />
+          <ShareButton
+            title={`${ep.title} — ${seriesLabel}`}
+            text={episodeCaption}
+            path={`/wiki/episodes/${ep.id}`}
+          />
         </div>
-
-        {/* === Aperçu animé de scène (montage MP4 / frame marquante) ===
-				    Affiché en complément du player s'il existe un montage ou des
-				    frames. Si aucun player n'existe par ailleurs, ce bloc tient
-				    lieu de visuel principal. */}
-        {sceneHero && (
-          <div className="reveal-up mb-12 shadow-2xl shadow-black/50 rounded-xl overflow-hidden">
-            {sceneHero}
-          </div>
-        )}
 
         <EpisodeAdminEditor episodeId={ep.id} videoUrl={ep.video_url} subtitles={ep.subtitles} />
 
-        {/* === Corps : synopsis + scènes + nav — notes tout en bas === */}
-        <div className="space-y-12">
-          {ep.synopsis && (
-            <section className="dbz-panel p-8 relative overflow-hidden reveal-up">
-              <div className="absolute top-0 left-0 w-1 h-full bg-dbz-orange" />
-              <h2 className="font-display font-bold text-xl text-dbz-orange mb-4 uppercase tracking-widest">
-                Synopsis
-              </h2>
-              <div className="prose prose-invert max-w-none wiki-content">
-                <WikiMarkdown body={ep.synopsis} />
-              </div>
-              {ep.official_source_url && (
-                <a
-                  href={ep.official_source_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-5 inline-block text-sm text-dbz-orange underline underline-offset-4"
-                >
-                  Source primaire : Toei Animation
-                </a>
-              )}
-            </section>
-          )}
-
-          {/* === Scènes & Frame Finder : moteur bxc frames MPEG-7 et scènes === */}
-          <EpisodeScenes
-            frames={frames}
-            title={ep.title}
-            episodeNumber={ep.number_in_series}
-            series={ep.series}
-            episodeId={ep.id}
-            episodeImage={ep.image}
-          />
-
-          {youtubeId && (
-            <section className="space-y-6 reveal-up">
-              <div className="flex items-center gap-6">
-                <h2 className="font-display font-bold text-2xl text-white uppercase tracking-widest whitespace-nowrap">
-                  Extrait vidéo
-                </h2>
-                <div className="h-px flex-1 bg-gradient-to-r from-dbz-red/50 to-transparent" />
-              </div>
-              <div className="dbz-panel p-2 aspect-video bg-black overflow-hidden">
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src={`https://www.youtube.com/embed/${youtubeId}`}
-                  title={`${ep.title} — extrait`}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="rounded-lg"
+        <WatchColumns
+          aside={
+            ep.players?.some((source) => source.embedUrl.trim()) ||
+            ep.subtitles?.length ||
+            ep.availability?.length ||
+            sceneHero ? (
+              <>
+                <VideoSourceSummary
+                  players={ep.players ?? []}
+                  subtitles={ep.subtitles?.length ?? 0}
+                  frames={frames.length}
                 />
-              </div>
-            </section>
-          )}
 
-          {/* === Navigation précédent / suivant === */}
-          {nav && (nav.prev || nav.next) && (
-            <nav className="flex flex-col sm:flex-row gap-4">
-              {nav.prev ? <NavCard ep={nav.prev} dir="prev" /> : <div className="flex-1" />}
-              {nav.next ? <NavCard ep={nav.next} dir="next" /> : <div className="flex-1" />}
-            </nav>
-          )}
+                <OffreLegale offres={ep.availability} />
 
-          {/* === Strip des épisodes voisins === */}
-          {nav && nav.around.length > 1 && (
-            <section>
-              <h2 className="font-display font-bold text-[12px] tracking-[0.3em] uppercase text-white/50 mb-4">
-                Dans {seriesLabel}
-              </h2>
-              <div className="flex gap-3 overflow-x-auto pb-3 -mx-1 px-1 [scrollbar-width:thin]">
-                {nav.around.map((e) => {
-                  const active = e.id === ep.id;
-                  return (
-                    <Link
-                      key={e.id}
-                      href={`/wiki/episodes/${e.id}`}
-                      className={`group relative w-40 shrink-0 dbz-panel overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange focus-visible:ring-offset-2 focus-visible:ring-offset-black ${active ? "ring-2 ring-dbz-orange" : ""}`}
-                    >
-                      <div className="relative aspect-video bg-dbz-bg overflow-hidden">
-                        {e.image ? (
-                          <img
-                            src={assetUrl(e.image)}
-                            alt=""
-                            aria-hidden
-                            className="h-full w-full object-cover opacity-75 group-hover:opacity-100 transition-opacity"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="grid h-full w-full place-items-center text-zinc-700 font-saiyan text-sm">
-                            {String(e.number_in_series).padStart(3, "0")}
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                        <span className="absolute top-1 left-1 scouter-text text-[9px] text-dbz-orange bg-black/60 px-1.5 py-0.5">
-                          #{String(e.number_in_series).padStart(3, "0")}
-                        </span>
-                      </div>
-                      <p className="p-2 font-display font-semibold text-[10px] text-white leading-tight line-clamp-2 group-hover:text-dbz-orange transition-colors">
-                        {e.title}
-                      </p>
-                    </Link>
-                  );
-                })}
-              </div>
-            </section>
-          )}
+                {/* === Aperçu animé de scène (montage MP4 / frame marquante) ===
+				    Affiché en complément du player s'il existe un montage ou des
+				    frames. Si aucun player n'existe par ailleurs, ce bloc tient
+				    lieu de visuel principal. */}
+                {sceneHero && <div className="rounded-xl overflow-hidden">{sceneHero}</div>}
+              </>
+            ) : null
+          }
+        >
+          {/* === Corps : synopsis + scènes + nav — notes tout en bas === */}
+          <div className="space-y-12">
+            {ep.synopsis && (
+              <section className="dbz-panel p-8 relative overflow-hidden reveal-up">
+                <div className="absolute top-0 left-0 w-1 h-full bg-dbz-orange" />
+                <h2 className="font-display font-bold text-xl text-dbz-orange mb-4 uppercase tracking-widest">
+                  Synopsis
+                </h2>
+                <div className="prose prose-invert max-w-none wiki-content">
+                  <WikiMarkdown body={ep.synopsis} />
+                </div>
+                {ep.official_source_url && (
+                  <a
+                    href={ep.official_source_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-5 inline-block text-sm text-dbz-orange underline underline-offset-4"
+                  >
+                    Source primaire : Toei Animation
+                  </a>
+                )}
+              </section>
+            )}
 
-          {/* Bannière display en fin de fiche — après le lecteur, le synopsis et
+            {/* === Scènes & Frame Finder : moteur bxc frames MPEG-7 et scènes === */}
+            <EpisodeScenes
+              frames={frames}
+              title={ep.title}
+              episodeNumber={ep.number_in_series}
+              series={ep.series}
+              episodeId={ep.id}
+              episodeImage={ep.image}
+            />
+
+            {youtubeId && (
+              <section className="space-y-6 reveal-up">
+                <div className="flex items-center gap-6">
+                  <h2 className="font-display font-bold text-2xl text-white uppercase tracking-widest whitespace-nowrap">
+                    Extrait vidéo
+                  </h2>
+                  <div className="h-px flex-1 bg-gradient-to-r from-dbz-red/50 to-transparent" />
+                </div>
+                <div className="dbz-panel p-2 aspect-video bg-black overflow-hidden">
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={`https://www.youtube.com/embed/${youtubeId}`}
+                    title={`${ep.title} — extrait`}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="rounded-lg"
+                  />
+                </div>
+              </section>
+            )}
+
+            {/* === Navigation précédent / suivant === */}
+            {nav && (nav.prev || nav.next) && (
+              <nav className="flex flex-col sm:flex-row gap-4">
+                {nav.prev ? <NavCard ep={nav.prev} dir="prev" /> : <div className="flex-1" />}
+                {nav.next ? <NavCard ep={nav.next} dir="next" /> : <div className="flex-1" />}
+              </nav>
+            )}
+
+            {/* === Strip des épisodes voisins === */}
+            {nav && nav.around.length > 1 && (
+              <section>
+                <h2 className="font-display font-bold text-[12px] tracking-[0.3em] uppercase text-white/50 mb-4">
+                  Dans {seriesLabel}
+                </h2>
+                <div className="flex gap-3 overflow-x-auto pb-3 -mx-1 px-1 [scrollbar-width:thin]">
+                  {nav.around.map((e) => {
+                    const active = e.id === ep.id;
+                    return (
+                      <Link
+                        key={e.id}
+                        href={`/wiki/episodes/${e.id}`}
+                        className={`group relative w-40 shrink-0 dbz-panel overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange focus-visible:ring-offset-2 focus-visible:ring-offset-black ${active ? "ring-2 ring-dbz-orange" : ""}`}
+                      >
+                        <div className="relative aspect-video bg-dbz-bg overflow-hidden">
+                          {e.image ? (
+                            <img
+                              src={assetUrl(e.image)}
+                              alt=""
+                              aria-hidden
+                              className="h-full w-full object-cover opacity-75 group-hover:opacity-100 transition-opacity"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="grid h-full w-full place-items-center text-zinc-700 font-saiyan text-sm">
+                              {String(e.number_in_series).padStart(3, "0")}
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                          <span className="absolute top-1 left-1 scouter-text text-[9px] text-dbz-orange bg-black/60 px-1.5 py-0.5">
+                            #{String(e.number_in_series).padStart(3, "0")}
+                          </span>
+                        </div>
+                        <p className="p-2 font-display font-semibold text-[10px] text-white leading-tight line-clamp-2 group-hover:text-dbz-orange transition-colors">
+                          {e.title}
+                        </p>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
+            {/* Bannière display en fin de fiche — après le lecteur, le synopsis et
 					    la navigation d'épisodes, jamais collée aux contrôles de lecture
 					    (les clics accidentels sont un motif de suspension AdSense). */}
-          <AdUnit placement="display" className="my-4" />
+            <AdUnit placement="display" className="my-4" />
 
-          {/* Notes & avis — dernier bloc (commentaires en fin de page) */}
-          <div className="reveal-up">
-            <EntityRating
-              targetType="episode"
-              targetId={ep.id}
-              signinCallback={`/wiki/episodes/${ep.id}`}
-              label="cet épisode"
-            />
+            {/* Notes & avis — dernier bloc (commentaires en fin de page) */}
+            <div className="reveal-up">
+              <EntityRating
+                targetType="episode"
+                targetId={ep.id}
+                signinCallback={`/wiki/episodes/${ep.id}`}
+                label="cet épisode"
+              />
+            </div>
           </div>
-        </div>
-      </div>
+        </WatchColumns>
+      </WatchLayout>
       <EntityParticipation
         kind="wiki"
         table="db_episodes"

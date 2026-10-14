@@ -16,6 +16,7 @@ import {
   advancedOptions,
   discordProvider,
   loggingOptions,
+  crunchyrollOAuthConfig,
 } from "@aphrody/shenron-auth/options";
 import { siteAllowedHosts, siteTrustedOrigins } from "@aphrody/shenron-auth/origins";
 import { type EnvSource, envString, isProduction } from "@aphrody/shenron-config/env";
@@ -33,6 +34,7 @@ import { betterAuth, type BetterAuthOptions } from "better-auth";
 import { APIError } from "better-auth/api";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { bearer } from "better-auth/plugins";
+import { genericOAuth } from "better-auth/plugins/generic-oauth";
 import type { BetterAuthPort, HostSession } from "../server";
 import { createAuthRateLimitStorage } from "./auth-rate-limit";
 import { buildAccountDeletionHooks } from "./account-deletion";
@@ -69,6 +71,11 @@ export function buildHostAuthOptions(
     return { reason: "BETTER_AUTH_SECRET absent ou trop court" };
   }
   const site = normalizeBaseUrl(resolveSiteUrl(env));
+  const crunchyroll = crunchyrollOAuthConfig({
+    clientId: envString(env, "CRUNCHYROLL_OAUTH_CLIENT_ID"),
+    clientSecret: envString(env, "CRUNCHYROLL_OAUTH_CLIENT_SECRET"),
+    discoveryUrl: envString(env, "CRUNCHYROLL_OAUTH_DISCOVERY_URL"),
+  });
   return {
     appName: "DBFR",
     baseURL: {
@@ -92,7 +99,8 @@ export function buildHostAuthOptions(
       expiresIn: 60 * 60 * 24 * 30,
       updateAge: 60 * 60 * 24,
     },
-    plugins: [bearer()],
+    plugins: [bearer(), ...(crunchyroll ? [genericOAuth({ config: [crunchyroll] })] : [])],
+    account: { encryptOAuthTokens: true },
     ...loggingOptions(production ? "production" : "development"),
     database,
     databaseHooks: {

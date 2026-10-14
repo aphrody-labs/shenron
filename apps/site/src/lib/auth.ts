@@ -215,6 +215,7 @@ export function buildAuthOptions(deps: SiteAuthDeps) {
       updateAge: 60 * 60 * 24, // 24 heures
     },
     plugins: [bearer()],
+    account: { encryptOAuthTokens: true },
     // Journal : en `debug`, Better Auth écrit le JETON DE SESSION EN CLAIR de
     // chaque visiteur connecté (constat du 2026-08-21, journal lisible par le
     // groupe `adm`). `loggingOptions` limite la production aux avertissements ;

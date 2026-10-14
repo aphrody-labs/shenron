@@ -10,7 +10,50 @@
  */
 import type { BetterAuthOptions } from "better-auth";
 import type { DiscordOptions } from "better-auth/social-providers";
+import type { GenericOAuthConfig } from "better-auth/plugins/generic-oauth";
 import { mapDiscordProfileEmail } from "./index";
+
+/** Registered provider credentials only; no consumer cookie or password becomes an OAuth application. */
+export function crunchyrollOAuthConfig(input: {
+  clientId?: string;
+  clientSecret?: string;
+  discoveryUrl?: string;
+}): GenericOAuthConfig | null {
+  if (!input.clientId || !input.discoveryUrl) return null;
+  let discovery: URL;
+  try {
+    discovery = new URL(input.discoveryUrl);
+  } catch {
+    return null;
+  }
+  if (
+    discovery.protocol !== "https:" ||
+    discovery.username ||
+    discovery.password ||
+    discovery.port ||
+    discovery.search ||
+    discovery.hash ||
+    !(
+      discovery.hostname === "crunchyroll.com" || discovery.hostname.endsWith(".crunchyroll.com")
+    ) ||
+    !discovery.pathname.endsWith("/.well-known/openid-configuration")
+  )
+    return null;
+  if (input.clientId.length > 1024 || /[\r\n\0]/.test(input.clientId)) return null;
+  return {
+    providerId: "crunchyroll",
+    name: "Crunchyroll",
+    clientId: input.clientId,
+    ...(input.clientSecret ? { clientSecret: input.clientSecret } : {}),
+    discoveryUrl: discovery.href,
+    scopes: ["openid", "profile", "email"],
+    pkce: true,
+    responseType: "code",
+    requireIdTokenVerification: true,
+    disableSignUp: true,
+    disableImplicitSignUp: true,
+  };
+}
 
 /** Scopes Better Auth already requests for Discord. */
 const IMPLICIT_DISCORD_SCOPES: ReadonlySet<string> = new Set(["identify", "email"]);

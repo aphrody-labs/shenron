@@ -86,9 +86,7 @@ test.skipIf(typeof document === "undefined")(
     root = createRoot(container);
     await act(async () => root!.render(player()));
     const previous = document.body.style.overflow;
-    const theater = Array.from(container.querySelectorAll("button")).find(
-      (b) => b.textContent === "Mode cinéma",
-    )!;
+    const theater = container.querySelector<HTMLButtonElement>('[aria-label="Mode cinéma"]')!;
     await act(async () => theater.click());
     expect(container.querySelector('[data-theater="true"]')).not.toBeNull();
     expect(document.body.style.overflow).toBe("hidden");
@@ -97,6 +95,31 @@ test.skipIf(typeof document === "undefined")(
       region.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true })),
     );
     expect(document.body.style.overflow).toBe(previous);
+    expect(container.querySelector('[data-theater="true"]')).toBeNull();
+  },
+);
+
+test.skipIf(typeof document === "undefined")(
+  "enhanced overlay exposes named icon controls and Escape closes its settings without changing playback",
+  async () => {
+    actEnvironment.IS_REACT_ACT_ENVIRONMENT = true;
+    container = document.createElement("div");
+    document.body.append(container);
+    root = createRoot(container);
+    await act(async () => root!.render(player()));
+    const group = container.querySelector('[aria-label="Commandes de lecture"]')!;
+    for (const button of group.querySelectorAll("button")) {
+      expect(button.getAttribute("aria-label")).toBeTruthy();
+      expect(button.querySelector("svg")).not.toBeNull();
+      expect(button.textContent?.trim()).toBe("");
+    }
+    const settings = container.querySelector("details")!;
+    settings.open = true;
+    await act(async () =>
+      settings.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true })),
+    );
+    expect(settings.open).toBe(false);
+    expect(document.activeElement).toBe(settings.querySelector("summary"));
     expect(container.querySelector('[data-theater="true"]')).toBeNull();
   },
 );
