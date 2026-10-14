@@ -210,7 +210,7 @@ async function claimRun(lock: string, identity: string) {
       !ownerInfo.isFile() ||
       (await realpath(lock)) !== lock
     )
-      throw Error("Invalid private worker claim");
+      throw Error("Invalid private worker claim", { cause: error });
     recoveredPid = deadOwner(await Bun.file(file).json(), identity, hostname(), (pid) => {
       try {
         process.kill(pid, 0);
@@ -425,7 +425,7 @@ export async function collect(options: Options) {
         throw new Error("Qualified frontier receipt changed");
     }
     await Promise.allSettled(
-      Array.from({ length: options.concurrency }, async (_, worker) => {
+      Array.from({ length: options.concurrency }, async (_slot, worker) => {
         let url: string | undefined;
         while (!signal.aborted && (url = queue.next())) {
           const source = url;
@@ -518,7 +518,7 @@ export async function collect(options: Options) {
               await connection.send("Page.enable", {}, sessionId);
               async function dom(address: string) {
                 const loaded = new Promise<boolean>((done) => {
-                  const off = connection!.on("Page.loadEventFired", (_, id) => {
+                  const off = connection!.on("Page.loadEventFired", (_event, id) => {
                     if (id === sessionId) {
                       off();
                       clearTimeout(timer);
@@ -662,6 +662,7 @@ if (import.meta.main) {
       .then((receipt) => {
         console.log(JSON.stringify(receipt));
         if (!receipt.complete) process.exitCode = 1;
+        return receipt;
       })
       .catch(() => {
         console.error("Native source worker failed; inspect private receipts");
