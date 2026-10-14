@@ -8,6 +8,7 @@ import {
   publicTarget,
   pointerSettings,
   publishCatalog,
+  resumeActivatedPublication,
   parallel,
   verifyPublic,
   siteReleaseTarget,
@@ -562,6 +563,68 @@ test("prepare unions baseline generates catalog pins code and never remotely mut
     const nextPlan = await Bun.file(join(nextJob, "publication-plan.json")).json();
     expect(nextPlan.options.expectedDeployment).toBe(deploymentId);
     expect(nextPlan.stateSha256).toMatch(/^[a-f0-9]{64}$/);
+    const nextDelta = await Bun.file(join(nextJob, "delta/inventory.json")).json();
+    const stagedStateText = await Bun.file(join(state, "current-inventory.json")).text();
+    await Bun.write(
+      join(nextJob, "upload-receipt.json"),
+      JSON.stringify({
+        inventorySha256: nextPlan.inventorySha256,
+        prefix: nextPlan.prefix,
+        objectsVerified: nextDelta.addedObjects,
+        shardsVerified: 256,
+        verificationScope: "S3 bytes SHA and metadata",
+      }),
+    );
+    await Bun.write(
+      join(nextJob, "activation-receipt.json"),
+      JSON.stringify({
+        inventorySha256: nextPlan.inventorySha256,
+        prefix: nextPlan.prefix,
+        planSha256: next.planSha256,
+        deploymentId,
+        codeSha256: codeSha,
+        settingsSha256: digest(JSON.stringify(nextPlan.settings)),
+        publicQualificationComplete: false,
+      }),
+    );
+    await chmod(join(nextJob, "upload-receipt.json"), 0o600);
+    await chmod(join(nextJob, "activation-receipt.json"), 0o600);
+    let publicReady = false;
+    globalThis.fetch = (async (input: URL | string | Request, init?: RequestInit) => {
+      methods.push(init?.method ?? "GET");
+      const url = String(input);
+      if (url.endsWith("/settings"))
+        return Response.json({ success: true, result: nextPlan.settings });
+      if (url.endsWith("/deployments"))
+        return Response.json({ success: true, result: { deployments: [{ id: deploymentId }] } });
+      if (url.startsWith("https://worker.example/") || url.startsWith("https://cdn.example/")) {
+        if (!publicReady) return new Response("warming", { status: 503 });
+        const entry = nextDelta.entries[new URL(url).pathname];
+        return new Response(await Bun.file(entry.sourcePath).bytes(), {
+          headers: { "cache-control": entry.cacheControl },
+        });
+      }
+      const form = new FormData();
+      form.set("worker.mjs", new Blob([code]), "worker.mjs");
+      return new Response(form);
+    }) as typeof fetch;
+    await expect(resumeActivatedPublication(nextPlan.options, next.planSha256!)).rejects.toThrow(
+      "Public verification HTTP 503",
+    );
+    expect(await Bun.file(join(state, "current-inventory.json")).text()).toBe(stagedStateText);
+    publicReady = true;
+    await Bun.write(join(state, "current-inventory.json"), stagedStateText + " ");
+    await expect(resumeActivatedPublication(nextPlan.options, next.planSha256!)).rejects.toThrow(
+      "state changed",
+    );
+    await Bun.write(join(state, "current-inventory.json"), stagedStateText);
+    const resumed = await resumeActivatedPublication(nextPlan.options, next.planSha256!);
+    expect(resumed.complete).toBe(true);
+    expect(resumed.actualGets).toBe(2 * (nextDelta.catalog.artifacts + 2));
+    expect(methods.every((method) => method === "GET")).toBe(true);
+    expect((await Bun.file(join(state, "current-inventory.json")).json()).inventorySha256).toBe(
+      nextPlan.inventorySha256,
+    );
     const active = {
       ...deployedBefore,
       bindings: deployedBefore.bindings.map((binding) =>

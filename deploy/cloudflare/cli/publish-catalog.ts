@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { mkdir, realpath, rmdir, stat, writeFile, rename, lstat } from "node:fs/promises";
 import { isAbsolute, join, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
 import { digest, readToken, validateManifest, type Manifest } from "./cloudflare-ops";
 import { run as generateInventory, type InventoryEntry } from "./inventory-delta";
 import { inventory, objectStore, within } from "./transfer";
@@ -98,7 +97,7 @@ export async function loadOriginInventoryActivation(
     digest(await Bun.file(activation.modulePath).bytes()) !== activation.moduleSha256
   )
     throw Error("Infra activation capability changed");
-  const url = pathToFileURL(activation.modulePath);
+  const url = Bun.pathToFileURL(activation.modulePath);
   url.searchParams.set("sha256", activation.moduleSha256);
   const module = await import(url.href);
   if (typeof module.createOriginInventoryActivation !== "function")
@@ -780,7 +779,54 @@ export async function verifyQualifiedPublication(
     await rmdir(join(stateDirectory, "publish.lock"));
   }
 }
-export async function publishCatalog(inputOptions: PublishCatalogOptions) {
+async function privatePublicationReceipt(path: string): Promise<Json> {
+  const info = await lstat(path);
+  if (
+    !info.isFile() ||
+    info.isSymbolicLink() ||
+    info.size > 2 * 1024 * 1024 ||
+    (process.platform !== "win32" && (info.uid !== process.getuid?.() || info.mode & 0o077))
+  )
+    throw Error("Owner publication receipt is not private");
+  return Bun.file(path).json();
+}
+export function assertActivatedPublicationResume(
+  plan: Pick<Plan, "inventorySha256" | "prefix" | "before" | "settings">,
+  planSha256: string,
+  upload: Json,
+  activated: Json,
+  current: Snapshot,
+  objects: number,
+) {
+  const actual: Json = {
+    bindings: current.settings.bindings,
+    annotations: Object.fromEntries(
+      Object.entries(current.settings.annotations ?? {}).filter(
+        ([key]) => key !== "workers/triggered_by",
+      ),
+    ),
+  };
+  for (const key of settingsKeys)
+    if (current.settings[key] !== undefined) actual[key] = current.settings[key];
+  if (
+    upload.inventorySha256 !== plan.inventorySha256 ||
+    upload.prefix !== plan.prefix ||
+    upload.objectsVerified !== objects ||
+    upload.shardsVerified !== 256 ||
+    upload.verificationScope !== "S3 bytes SHA and metadata" ||
+    activated.inventorySha256 !== plan.inventorySha256 ||
+    activated.prefix !== plan.prefix ||
+    activated.planSha256 !== planSha256 ||
+    activated.publicQualificationComplete !== false ||
+    activated.deploymentId !== current.deployment ||
+    activated.codeSha256 !== current.codeSha256 ||
+    current.codeSha256 !== plan.before.codeSha256 ||
+    activated.settingsSha256 !== digest(JSON.stringify(actual)) ||
+    JSON.stringify(actual) !== JSON.stringify(plan.settings)
+  )
+    throw Error("Activated publication receipts or live Worker differ");
+}
+async function publishCatalogCore(inputOptions: PublishCatalogOptions, resume = false) {
   if (inputOptions.qualificationScope)
     throw new Error("Explicit qualification scopes are read-only recovery capabilities");
   let options = inputOptions;
@@ -1032,56 +1078,68 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
     )
       throw new Error("Staged inventory changed");
     const current = await owner.snapshot();
-    guard(current, options);
-    if (JSON.stringify(current) !== JSON.stringify(plan.before))
-      throw new Error("Concurrent Worker settings changed");
-    const store = await objectStore(options.profile, manifest, options.sdkModule);
     const roots = [...publicRoots, await realpath(join(job, "delta/public-catalog"))];
     const objects = inventory(await Bun.file(join(job, "delta/delta-objects.json")).json());
     if (objects.length !== delta.addedObjects) throw new Error("Delta object count differs");
-    await parallel(objects, async (entry) => {
-      const path = await realpath(entry.sourcePath);
-      if (!roots.some((allowedRoot) => within(path, allowedRoot)))
-        throw new Error("Object outside public roots");
-      const bytes = new Uint8Array(await Bun.file(path).arrayBuffer());
-      if (bytes.length !== entry.size) throw new Error("Object size changed");
-      await store.put(
-        "_objects/" + entry.sha256,
-        bytes,
-        entry.sha256,
-        entry.contentType,
-        "public, max-age=31536000, immutable",
+    let after = current;
+    if (resume) {
+      assertActivatedPublicationResume(
+        plan,
+        options.planSha256!,
+        await privatePublicationReceipt(join(job, "upload-receipt.json")),
+        await privatePublicationReceipt(join(job, "activation-receipt.json")),
+        current,
+        objects.length,
       );
-    });
-    await parallel(Object.entries(plan.shardHashes), async ([key, hash]) => {
-      const bytes = new Uint8Array(
-        await Bun.file(join(job, "delta/shards/" + key + ".json")).arrayBuffer(),
+    } else {
+      guard(current, options);
+      if (JSON.stringify(current) !== JSON.stringify(plan.before))
+        throw new Error("Concurrent Worker settings changed");
+      const store = await objectStore(options.profile, manifest, options.sdkModule);
+      await parallel(objects, async (entry) => {
+        const path = await realpath(entry.sourcePath);
+        if (!roots.some((allowedRoot) => within(path, allowedRoot)))
+          throw new Error("Object outside public roots");
+        const bytes = new Uint8Array(await Bun.file(path).arrayBuffer());
+        if (bytes.length !== entry.size) throw new Error("Object size changed");
+        await store.put(
+          "_objects/" + entry.sha256,
+          bytes,
+          entry.sha256,
+          entry.contentType,
+          "public, max-age=31536000, immutable",
+        );
+      });
+      await parallel(Object.entries(plan.shardHashes), async ([key, hash]) => {
+        const bytes = new Uint8Array(
+          await Bun.file(join(job, "delta/shards/" + key + ".json")).arrayBuffer(),
+        );
+        await store.put(
+          plan.prefix + key + ".json",
+          bytes,
+          hash,
+          "application/json",
+          "public, max-age=31536000, immutable",
+        );
+      });
+      await writeFile(
+        join(job, "upload-receipt.json"),
+        JSON.stringify({
+          finishedAt: new Date().toISOString(),
+          inventorySha256: plan.inventorySha256,
+          prefix: plan.prefix,
+          objectsVerified: objects.length,
+          shardsVerified: 256,
+          verificationScope: "S3 bytes SHA and metadata",
+        }),
+        { mode: 0o600, flag: "wx" },
       );
-      await store.put(
-        plan.prefix + key + ".json",
-        bytes,
-        hash,
-        "application/json",
-        "public, max-age=31536000, immutable",
-      );
-    });
-    await writeFile(
-      join(job, "upload-receipt.json"),
-      JSON.stringify({
-        finishedAt: new Date().toISOString(),
-        inventorySha256: plan.inventorySha256,
-        prefix: plan.prefix,
-        objectsVerified: objects.length,
-        shardsVerified: 256,
-        verificationScope: "S3 bytes SHA and metadata",
-      }),
-      { mode: 0o600, flag: "wx" },
-    );
-    const last = await owner.snapshot();
-    if (JSON.stringify(last) !== JSON.stringify(plan.before))
-      throw new Error("Worker drift after staged upload");
-    await owner.patch(plan.settings);
-    const after = await owner.snapshot();
+      const last = await owner.snapshot();
+      if (JSON.stringify(last) !== JSON.stringify(plan.before))
+        throw new Error("Worker drift after staged upload");
+      await owner.patch(plan.settings);
+      after = await owner.snapshot();
+    }
     const actual: Json = {
       bindings: after.settings.bindings,
       annotations: Object.fromEntries(
@@ -1097,20 +1155,21 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
       JSON.stringify(actual) !== JSON.stringify(plan.settings)
     )
       throw new Error("Worker readback differs");
-    await writeFile(
-      join(job, "activation-receipt.json"),
-      JSON.stringify({
-        activatedAt: new Date().toISOString(),
-        deploymentId: after.deployment,
-        prefix: plan.prefix,
-        inventorySha256: plan.inventorySha256,
-        codeSha256: after.codeSha256,
-        settingsSha256: digest(JSON.stringify(actual)),
-        planSha256: options.planSha256,
-        publicQualificationComplete: false,
-      }),
-      { mode: 0o600, flag: "wx" },
-    );
+    if (!resume)
+      await writeFile(
+        join(job, "activation-receipt.json"),
+        JSON.stringify({
+          activatedAt: new Date().toISOString(),
+          deploymentId: after.deployment,
+          prefix: plan.prefix,
+          inventorySha256: plan.inventorySha256,
+          codeSha256: after.codeSha256,
+          settingsSha256: digest(JSON.stringify(actual)),
+          planSha256: options.planSha256,
+          publicQualificationComplete: false,
+        }),
+        { mode: 0o600, flag: "wx" },
+      );
     if (originActivation) {
       const receipt = await originActivation.activate({
         inventoryPath: join(job, "delta/inventory.json"),
@@ -1126,10 +1185,22 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
         receipt.writes !== (receipt.applied ? 1 : 0)
       )
         throw Error("Infra origin activation readback differs");
-      await writeFile(join(job, "origin-activation-receipt.json"), JSON.stringify(receipt), {
-        mode: 0o600,
-        flag: "wx",
-      });
+      const originReceiptPath = join(job, "origin-activation-receipt.json");
+      if (resume && (await Bun.file(originReceiptPath).exists())) {
+        const stored = await privatePublicationReceipt(originReceiptPath);
+        if (
+          stored.inventorySha256 !== receipt.inventorySha256 ||
+          typeof stored.applied !== "boolean" ||
+          typeof stored.replay !== "boolean" ||
+          stored.applied === stored.replay ||
+          stored.writes !== (stored.applied ? 1 : 0)
+        )
+          throw Error("Stored origin activation receipt differs");
+      } else
+        await writeFile(originReceiptPath, JSON.stringify(receipt), {
+          mode: 0o600,
+          flag: "wx",
+        });
     }
     const selected = Object.entries(delta.entries).filter(
       ([path]) =>
@@ -1187,6 +1258,21 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
     await attestQualificationOrigins(options, plan.prefix, plan.inventorySha256);
     if (JSON.stringify(await owner.snapshot()) !== JSON.stringify(after))
       throw new Error("Worker drift during public qualification");
+    const finalStateInfo = await lstat(statePath).catch((error: { code?: string }) => {
+      if (error.code === "ENOENT") return undefined;
+      throw error;
+    });
+    if (
+      finalStateInfo &&
+      (!finalStateInfo.isFile() ||
+        finalStateInfo.isSymbolicLink() ||
+        finalStateInfo.size > 16384 ||
+        (process.platform !== "win32" &&
+          (finalStateInfo.uid !== process.getuid?.() || finalStateInfo.mode & 0o077)))
+    )
+      throw Error("Publication state permissions changed during qualification");
+    if ((finalStateInfo ? sha(await Bun.file(statePath).arrayBuffer()) : null) !== stateSha256)
+      throw Error("Publication state changed during public qualification");
     const receipt = {
       finishedAt: new Date().toISOString(),
       inventoryPath: join(job, "delta/inventory.json"),
@@ -1226,7 +1312,13 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
         })),
     };
     const receiptPath = join(job, "publication-receipt.json");
-    await writeFile(receiptPath, JSON.stringify(receipt), { mode: 0o600, flag: "wx" });
+    if (resume && (await Bun.file(receiptPath).exists())) {
+      const stored = await privatePublicationReceipt(receiptPath);
+      const { finishedAt: _oldTime, ...oldProof } = stored;
+      const { finishedAt: _newTime, ...newProof } = receipt;
+      if (JSON.stringify(oldProof) !== JSON.stringify(newProof))
+        throw Error("Stored publication receipt differs");
+    } else await writeFile(receiptPath, JSON.stringify(receipt), { mode: 0o600, flag: "wx" });
     const stateNext = join(stateDirectory, "current-inventory.json.next");
     await writeFile(
       stateNext,
@@ -1245,6 +1337,19 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
   } finally {
     await rmdir(join(stateDirectory, "publish.lock"));
   }
+}
+export function publishCatalog(options: PublishCatalogOptions) {
+  return publishCatalogCore(options);
+}
+/** Finish the reviewed, already activated candidate without another upload or Worker mutation. */
+export async function resumeActivatedPublication(
+  options: PublishCatalogOptions,
+  planSha256: string,
+) {
+  const result = await publishCatalogCore({ ...options, apply: true, planSha256 }, true);
+  if (!("complete" in result))
+    throw Error("Activated publication cannot prepare another candidate");
+  return result;
 }
 if (import.meta.main) {
   const args = Bun.argv.slice(2);
