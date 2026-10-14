@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { mkdir, realpath, rmdir, stat, writeFile, rename, lstat } from "node:fs/promises";
-import { isAbsolute, join, resolve } from "node:path";
+import { isAbsolute, join, resolve, extname, dirname } from "node:path";
 import { digest, readToken, validateManifest, type Manifest } from "./cloudflare-ops";
 import { run as generateInventory, type InventoryEntry } from "./inventory-delta";
 import { inventory, objectStore, within } from "./transfer";
@@ -789,6 +789,220 @@ async function privatePublicationReceipt(path: string): Promise<Json> {
   )
     throw Error("Owner publication receipt is not private");
   return Bun.file(path).json();
+}
+/** Match public bytes before generating the timestamped catalogue. All writes stay in publishCatalog. */
+export async function verifyUnchangedPublicInputs(options: PublishCatalogOptions) {
+  if (options.siteRelease || options.qualificationScope) return null;
+  const target = publicTarget(options.targetUrl);
+  const inventoryRoot = await realpath(options.inventoryRoot);
+  const stateDirectory = await realpath(options.stateDirectory);
+  const root = await realpath(options.publicRoot);
+  const privateFile = async (path: string, bound: number) => {
+    const info = await lstat(path);
+    if (
+      !info.isFile() ||
+      info.isSymbolicLink() ||
+      info.size > bound ||
+      !within(await realpath(path), inventoryRoot) ||
+      (process.platform !== "win32" && (info.uid !== process.getuid?.() || info.mode & 0o077))
+    )
+      throw Error("Unchanged publication file is not private");
+    return Bun.file(path).bytes();
+  };
+  const stateInfo = await lstat(options.stateDirectory),
+    rootInfo = await lstat(options.publicRoot);
+  if (
+    !within(stateDirectory, inventoryRoot) ||
+    !stateInfo.isDirectory() ||
+    stateInfo.isSymbolicLink() ||
+    !within(root, inventoryRoot) ||
+    !rootInfo.isDirectory() ||
+    rootInfo.isSymbolicLink() ||
+    (process.platform !== "win32" &&
+      (stateInfo.uid !== process.getuid?.() || stateInfo.mode & 0o077))
+  )
+    throw Error("Unchanged publication scope is not private");
+  await mkdir(join(stateDirectory, "publish.lock"), { mode: 0o700 });
+  try {
+    const statePath = join(stateDirectory, "current-inventory.json");
+    const stateBytes = await privateFile(statePath, 16384),
+      stateSha256 = digest(stateBytes);
+    const state = JSON.parse(new TextDecoder().decode(stateBytes));
+    if (
+      !/^[a-f0-9]{64}$/.test(state.inventorySha256 ?? "") ||
+      !/^[a-f0-9]{64}$/.test(state.codeSha256 ?? "") ||
+      typeof state.receiptPath !== "string"
+    )
+      throw Error("Unchanged publication state is incomplete");
+    const inventoryBytes = await privateFile(state.inventoryPath, 256 * 1024 * 1024);
+    if (digest(inventoryBytes) !== state.inventorySha256)
+      throw Error("Current inventory SHA changed");
+    const delta = JSON.parse(new TextDecoder().decode(inventoryBytes)) as Delta;
+    const extensions = new Set(
+      "jpg jpeg png webp avif svg ico gif mp4 webm mp3 m4a ogg flac wav srt vtt woff woff2 ttf otf eot css js mjs json webmanifest html wasm br gz zip rar 7z pdf txt md wgsl".split(
+        " ",
+      ),
+    );
+    const paths: string[] = [];
+    // oxlint-disable no-await-in-loop -- Serial streams bound file handles and detect changes per file.
+    const scan = async () => {
+      const scanned: Record<string, InventoryEntry> = {};
+      for await (const local of new Bun.Glob("**/*").scan({
+        cwd: root,
+        dot: true,
+        onlyFiles: false,
+        followSymlinks: false,
+      })) {
+        const segments = local.replaceAll("\\", "/").split("/");
+        if (segments.some((part) => part.startsWith(".") && part !== ".well-known")) continue;
+        const source = join(root, local),
+          info = await lstat(source);
+        if (info.isSymbolicLink())
+          throw Error("Review public symlink before unchanged verification");
+        if (!info.isFile() || !extensions.has(extname(source).slice(1).toLowerCase())) continue;
+        if (!within(await realpath(source), root))
+          throw Error("Unchanged public input escaped scope");
+        const path = "/" + segments.join("/");
+        if (!path.startsWith(target.pathname + "/"))
+          throw Error("Unchanged input outside publication target");
+        const hasher = new Bun.CryptoHasher("sha256");
+        for await (const chunk of Bun.file(source).stream()) hasher.update(chunk);
+        const after = await lstat(source);
+        if (after.size !== info.size || after.mtimeMs !== info.mtimeMs || after.isSymbolicLink())
+          throw Error("Public input changed during unchanged verification");
+        scanned[path] = {
+          sourcePath: source,
+          sha256: hasher.digest("hex"),
+          size: info.size,
+          contentType: Bun.file(source).type || "application/octet-stream",
+          cacheControl: /^\/publications\/[^/]+\/index\.json$/.test(path)
+            ? "no-store"
+            : "public, max-age=86400, stale-while-revalidate=604800",
+        };
+      }
+      return scanned;
+    };
+    // oxlint-enable no-await-in-loop
+    const scanned = await scan();
+    for (const [path, entry] of Object.entries(scanned)) {
+      const prior = delta.entries[path];
+      if (
+        !prior ||
+        ["sha256", "size", "contentType", "cacheControl"].some(
+          (key) => entry[key as keyof InventoryEntry] !== prior[key as keyof InventoryEntry],
+        )
+      )
+        return null;
+      paths.push(path);
+    }
+    const indexPath = target.pathname + "/index.json";
+    if (!paths.includes(indexPath)) return null;
+    const receiptBytes = await privateFile(state.receiptPath, 2 * 1024 * 1024);
+    const receipt = JSON.parse(new TextDecoder().decode(receiptBytes));
+    const origins = qualificationOrigins(options);
+    if (
+      receipt.complete !== true ||
+      receipt.inventoryPath !== state.inventoryPath ||
+      receipt.inventorySha256 !== state.inventorySha256 ||
+      receipt.prefix !== state.prefix ||
+      receipt.deploymentId !== state.deploymentId ||
+      receipt.sourceAfter !== state.codeSha256 ||
+      receipt.actualGets !== origins.length * receipt.publicFilesVerified ||
+      !Number.isSafeInteger(receipt.publicFilesVerified) ||
+      receipt.publicFilesVerified < 1
+    )
+      throw Error("Current qualified receipt differs from state");
+    assertQualificationReceipt(options, receipt);
+    const plan = JSON.parse(
+      new TextDecoder().decode(
+        await privateFile(
+          join(dirname(state.receiptPath), "publication-plan.json"),
+          2 * 1024 * 1024,
+        ),
+      ),
+    ) as Plan;
+    if (
+      plan.inventorySha256 !== state.inventorySha256 ||
+      plan.prefix !== state.prefix ||
+      plan.before.codeSha256 !== state.codeSha256 ||
+      sha(await Bun.file(options.manifest).arrayBuffer()) !== plan.manifestSha256 ||
+      sha(await Bun.file(options.sdkModule).arrayBuffer()) !== plan.sdkSha256
+    )
+      throw Error("Qualified publication owner pins changed");
+    const manifest = await Bun.file(options.manifest).json();
+    validateManifest(manifest);
+    const owner = await api(options, manifest),
+      before = await owner.snapshot();
+    guard(before, {
+      ...options,
+      expectedDeployment: state.deploymentId,
+      expectedCodeSha256: state.codeSha256,
+      expectedPrefix: state.prefix,
+    });
+    inventoryMatchesBindings(delta.entries, before.settings.bindings);
+    const activation = await loadOriginInventoryActivation(options);
+    if (options.qualificationOrigins && !activation)
+      throw Error("Native unchanged verification requires pinned origin replay");
+    if (activation) {
+      const replay = await activation.activate({
+        inventoryPath: state.inventoryPath,
+        inventorySha256: state.inventorySha256,
+        manifestPrefix: state.prefix,
+        publisherLock: join(stateDirectory, "publish.lock"),
+      });
+      if (
+        replay.applied !== false ||
+        replay.replay !== true ||
+        replay.writes !== 0 ||
+        replay.inventorySha256 !== state.inventorySha256
+      )
+        throw Error("Unchanged native replay mutated state");
+    }
+    const nativeOriginAttestation = await attestQualificationOrigins(
+      options,
+      state.prefix,
+      state.inventorySha256,
+    );
+    await Promise.all(
+      origins.map((origin) => verifyPublic(new URL(indexPath, origin), scanned[indexPath]!)),
+    );
+    if (
+      JSON.stringify(await owner.snapshot()) !== JSON.stringify(before) ||
+      digest(await privateFile(statePath, 16384)) !== stateSha256 ||
+      digest(await privateFile(state.receiptPath, 2 * 1024 * 1024)) !== digest(receiptBytes) ||
+      !Bun.deepEquals(await scan(), scanned)
+    )
+      throw Error("Unchanged publication state or public inputs drifted");
+    return {
+      ...receipt,
+      noChange: true,
+      writes: 0,
+      apiMutations: 0,
+      registryMutations: 0,
+      nativeOriginReplay: activation !== null,
+      receiptPath: state.receiptPath,
+      qualifiedReceiptSha256: digest(receiptBytes),
+      stateSha256,
+      indexSha256: scanned[indexPath]!.sha256,
+      historicalPublicGetChecks: receipt.actualGets,
+      actualGets: origins.length,
+      freshPublicGetChecks: origins.length,
+      inputFilesCompared: paths.length,
+      nativeOriginAttestation,
+      freshChecks: {
+        indexPublicGets: origins.length,
+        nativeAttestationGets: options.qualificationOrigins ? origins.length : 0,
+        workerSnapshots: 2,
+      },
+      urls: paths.map((path) => ({
+        url: new URL(path, options.cdnOrigin).href,
+        sha256: scanned[path]!.sha256,
+        size: scanned[path]!.size,
+      })),
+    };
+  } finally {
+    await rmdir(join(stateDirectory, "publish.lock"));
+  }
 }
 export function assertActivatedPublicationResume(
   plan: Pick<Plan, "inventorySha256" | "prefix" | "before" | "settings">,

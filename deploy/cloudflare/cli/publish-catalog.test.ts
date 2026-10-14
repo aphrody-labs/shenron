@@ -9,6 +9,7 @@ import {
   pointerSettings,
   publishCatalog,
   resumeActivatedPublication,
+  verifyUnchangedPublicInputs,
   parallel,
   verifyPublic,
   siteReleaseTarget,
@@ -625,6 +626,29 @@ test("prepare unions baseline generates catalog pins code and never remotely mut
     expect((await Bun.file(join(state, "current-inventory.json")).json()).inventorySha256).toBe(
       nextPlan.inventorySha256,
     );
+    const unchanged = await verifyUnchangedPublicInputs(nextPlan.options);
+    expect(unchanged?.noChange).toBe(true);
+    expect(unchanged?.freshPublicGetChecks).toBe(2);
+    expect(unchanged?.actualGets).toBe(2);
+    expect(unchanged?.historicalPublicGetChecks).toBe(resumed.actualGets);
+    expect(unchanged?.inputFilesCompared).toBe(2);
+    expect((await verifyUnchangedPublicInputs(nextPlan.options))?.noChange).toBe(true);
+    expect(methods.every((method) => method === "GET")).toBe(true);
+    const unchangedStateText = await Bun.file(join(state, "current-inventory.json")).text();
+    const noticePath = join(publicRoot, "publications/notice/index.json");
+    const noticeBefore = await Bun.file(noticePath).text();
+    await Bun.write(noticePath, noticeBefore + " ");
+    expect(await verifyUnchangedPublicInputs(nextPlan.options)).toBeNull();
+    await Bun.write(noticePath, noticeBefore);
+    const unchangedFetch = globalThis.fetch;
+    globalThis.fetch = (async (input: URL | string | Request, init?: RequestInit) => {
+      if (String(input).startsWith("https://cdn.example/publications/notice/index.json"))
+        await Bun.write(join(state, "current-inventory.json"), unchangedStateText + " ");
+      return unchangedFetch(input, init);
+    }) as typeof fetch;
+    await expect(verifyUnchangedPublicInputs(nextPlan.options)).rejects.toThrow("drifted");
+    await Bun.write(join(state, "current-inventory.json"), unchangedStateText);
+    globalThis.fetch = unchangedFetch;
     const active = {
       ...deployedBefore,
       bindings: deployedBefore.bindings.map((binding) =>
