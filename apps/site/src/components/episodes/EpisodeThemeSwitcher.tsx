@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useSyncExternalStore } from "react";
-import { Etoile } from "@aphrody/shenron-ui/toriyama/MotifsCouverture";
-import { Palette } from "@aphrody/shenron-ui/icones";
+import { MaterialSymbol } from "@aphrody/shenron-ui/icones";
 import { useVideoUIText } from "@/lib/video-ui-text";
 import {
   EPISODE_THEME_KEY,
@@ -41,7 +40,7 @@ export function EpisodeThemeSwitcher({ compact = false }: { compact?: boolean })
       className={`shenron-theme-choice ${compact ? "is-compact" : ""}`}
       title={t("themeChoice")}
     >
-      {compact ? <Palette size={22} /> : <Etoile taille={18} decorative />}
+      <MaterialSymbol name={theme === "beerus" ? "dark_mode" : "light_mode"} size={22} />
       <span className="sr-only">{t("themeChoice")}</span>
       <select
         aria-label={t("themeChoice")}

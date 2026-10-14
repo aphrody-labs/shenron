@@ -3,7 +3,7 @@
 
 import { Children, isValidElement, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { ChevronBas, Lecture } from "@aphrody/shenron-ui/icones";
+import { MaterialSymbol } from "@aphrody/shenron-ui/icones";
 import { useT } from "@/components/T";
 import "./home-screen-deck.css";
 
@@ -77,7 +77,7 @@ export function HomeScreenDeck({ children }: { children: ReactNode }) {
       </section>
       <div className="home-screen-controls">
         <Link href="/wiki/gifs" aria-label={t("gifLibrary.title")} title={t("gifLibrary.title")}>
-          <Lecture size={22} />
+          <MaterialSymbol name="gif" size={24} />
         </Link>
         <button
           type="button"
@@ -85,7 +85,7 @@ export function HomeScreenDeck({ children }: { children: ReactNode }) {
           onClick={() => go(active - 1)}
           aria-label={t("gifLibrary.previous")}
         >
-          <ChevronBas size={22} className="rotate-180" />
+          <MaterialSymbol name="keyboard_arrow_up" size={24} />
         </button>
         <span aria-hidden="true" className="home-screen-count">
           {active + 1} / {screens.length}
@@ -96,7 +96,7 @@ export function HomeScreenDeck({ children }: { children: ReactNode }) {
           onClick={() => go(active + 1)}
           aria-label={t("gifLibrary.next")}
         >
-          <ChevronBas size={22} />
+          <MaterialSymbol name="keyboard_arrow_down" size={24} />
         </button>
       </div>
     </div>

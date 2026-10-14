@@ -2,7 +2,7 @@
 
 /** Native GET search remains usable without client navigation or JavaScript. */
 import { useState, type ReactNode } from "react";
-import { Recherche } from "@aphrody/shenron-ui/icones";
+import { MaterialSymbol } from "@aphrody/shenron-ui/icones";
 import { useT } from "@/components/T";
 
 export function HomeSearch({
@@ -43,7 +43,7 @@ export function HomeSearch({
               aria-label={t("accueil.search.submit")}
               className="grid min-h-14 w-14 shrink-0 place-items-center bg-primary text-primary-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-ring"
             >
-              <Recherche size={22} />
+              <MaterialSymbol name="search" size={22} />
             </button>
           </div>
         </form>

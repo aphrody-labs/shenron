@@ -1,0 +1,311 @@
+{
+  "schema": "shenron-toriyama-catalog/v1",
+  "components": [
+    {
+      "name": "BancNuages",
+      "module": "@aphrody/shenron-ui/toriyama/MotifsCouverture"
+    },
+    {
+      "name": "CadreCase",
+      "module": "@aphrody/shenron-ui/toriyama/MotifsCouverture"
+    },
+    {
+      "name": "DragonBall",
+      "module": "@aphrody/shenron-ui/toriyama/DragonBall"
+    },
+    {
+      "name": "DragonBallLoader",
+      "module": "@aphrody/shenron-ui/toriyama/DragonBall"
+    },
+    {
+      "name": "DragonBallSphere",
+      "module": "@aphrody/shenron-ui/toriyama/DragonBallSphere"
+    },
+    {
+      "name": "DragonBallWordmark",
+      "module": "@aphrody/shenron-ui/toriyama/DragonBallWordmark"
+    },
+    {
+      "name": "DragonRadarDisplay",
+      "module": "@aphrody/shenron-ui/toriyama/DragonRadarDisplay"
+    },
+    {
+      "name": "Etoile",
+      "module": "@aphrody/shenron-ui/toriyama/MotifsCouverture"
+    },
+    {
+      "name": "KiAura",
+      "module": "@aphrody/shenron-ui/toriyama/KiAura"
+    },
+    {
+      "name": "KintoUn",
+      "module": "@aphrody/shenron-ui/toriyama/KintoUn"
+    },
+    {
+      "name": "KintoUnCloud",
+      "module": "@aphrody/shenron-ui/toriyama/KintoUnCloud"
+    },
+    {
+      "name": "KintoUnLoader",
+      "module": "@aphrody/shenron-ui/toriyama/KintoUn"
+    },
+    {
+      "name": "MotManga",
+      "module": "@aphrody/shenron-ui/toriyama/MotManga"
+    },
+    {
+      "name": "PastilleTome",
+      "module": "@aphrody/shenron-ui/toriyama/MotifsCouverture"
+    },
+    {
+      "name": "PotaraEarrings",
+      "module": "@aphrody/shenron-ui/toriyama/PotaraEarrings"
+    },
+    {
+      "name": "ScouterHudOverlay",
+      "module": "@aphrody/shenron-ui/toriyama/ScouterHudOverlay"
+    },
+    {
+      "name": "SenzuBean",
+      "module": "@aphrody/shenron-ui/toriyama/SenzuBean"
+    },
+    {
+      "name": "ShenronSilhouette",
+      "module": "@aphrody/shenron-ui/toriyama/ShenronSilhouette"
+    },
+    {
+      "name": "ToriyamaEmblem",
+      "module": "@aphrody/shenron-ui/toriyama/ToriyamaEmblem"
+    }
+  ],
+  "artwork": [
+    {
+      "path": "brand/dragon-ball-wordmark.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "brand/home-beerus-goku.png",
+      "kind": "image"
+    },
+    {
+      "path": "brand/home-palette.json",
+      "kind": "palette"
+    },
+    {
+      "path": "dbz/marque/banc-nuage.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "dbz/kinto-un.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "dbz/kinto-un-icone.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "safari-pinned-tab.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "badges/badge-zeni.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "badges/badge-shenron.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "badges/badge-kame.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "badges/badge-kaio.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "favicon-16.png",
+      "kind": "image"
+    },
+    {
+      "path": "favicon-32.png",
+      "kind": "image"
+    },
+    {
+      "path": "favicon-48.png",
+      "kind": "image"
+    },
+    {
+      "path": "favicon-96.png",
+      "kind": "image"
+    },
+    {
+      "path": "favicon.ico",
+      "kind": "image"
+    },
+    {
+      "path": "apple-touch-icon.png",
+      "kind": "image"
+    },
+    {
+      "path": "icon-192.png",
+      "kind": "image"
+    },
+    {
+      "path": "icon-512.png",
+      "kind": "image"
+    },
+    {
+      "path": "icon-maskable-512.png",
+      "kind": "image"
+    },
+    {
+      "path": "mstile-150.png",
+      "kind": "image"
+    },
+    {
+      "path": "dbz/marque/avatar-1024-fond-sombre.png",
+      "kind": "image"
+    },
+    {
+      "path": "dbz/marque/avatar-1024-transparent.png",
+      "kind": "image"
+    },
+    {
+      "path": "dbz/marque/banniere-960x540.png",
+      "kind": "image"
+    },
+    {
+      "path": "dbz/marque/emoji-128.png",
+      "kind": "image"
+    },
+    {
+      "path": "dbz/marque/kinto-un-1024.png",
+      "kind": "image"
+    },
+    {
+      "path": "dbz/marque/kinto-un-2048.png",
+      "kind": "image"
+    }
+  ],
+  "glyphs": [
+    "chargement",
+    "croix",
+    "plus",
+    "coche",
+    "corbeille",
+    "enregistrer",
+    "alerte",
+    "lienExterne",
+    "recherche",
+    "chevronBas",
+    "chevronHaut",
+    "chevronDroite",
+    "chevronGauche",
+    "livre",
+    "oeil",
+    "etincelle",
+    "flecheGauche",
+    "flecheDroite",
+    "flecheHaut",
+    "flecheBas",
+    "flecheCoin",
+    "rafraichir",
+    "reinitialiser",
+    "historique",
+    "horloge",
+    "cocheCercle",
+    "alerteCercle",
+    "info",
+    "cadenas",
+    "bouclier",
+    "bouclierCoche",
+    "crayon",
+    "document",
+    "presse",
+    "copie",
+    "scan",
+    "loupeDoc",
+    "couches",
+    "baguette",
+    "lecture",
+    "film",
+    "tv",
+    "image",
+    "imageBarree",
+    "micro",
+    "bibliotheque",
+    "bulle",
+    "groupe",
+    "coeur",
+    "etoile",
+    "trophee",
+    "recompense",
+    "couronne",
+    "piece",
+    "sac",
+    "cadeau",
+    "drapeau",
+    "flamme",
+    "eclair",
+    "terminal",
+    "alimentation",
+    "alimentationCoupee",
+    "base",
+    "palette",
+    "curseurs",
+    "reglages",
+    "lien",
+    "envoyer",
+    "telecharger",
+    "oeilBarre",
+    "diese",
+    "tendance",
+    "activite",
+    "maison",
+    "maisonPleine",
+    "ellipse",
+    "dragonBall",
+    "dragonRadar",
+    "capsuleCorp",
+    "kame",
+    "scouter",
+    "kintoUn",
+    "senzu",
+    "potara",
+    "zSword",
+    "majin",
+    "shenron",
+    "rubanRouge",
+    "manga"
+  ],
+  "materialSymbols": {
+    "owner": "@aphrody/material-design-icons",
+    "version": "1.0.0",
+    "style": "rounded",
+    "names": [
+      "search",
+      "translate",
+      "install_desktop",
+      "light_mode",
+      "dark_mode",
+      "more_horiz",
+      "download",
+      "menu",
+      "close",
+      "arrow_forward",
+      "arrow_back",
+      "gif",
+      "keyboard_arrow_up",
+      "keyboard_arrow_down"
+    ],
+    "loading": "inline-svg-subset"
+  },
+  "typography": {
+    "brand": "Shenron Text",
+    "plain": "Shenron Text",
+    "code": "JetBrains Mono",
+    "japanese": "Noto Sans JP",
+    "m3Roles": ["--aphrody-font-brand", "--aphrody-font-plain", "--aphrody-font-code"]
+  }
+}

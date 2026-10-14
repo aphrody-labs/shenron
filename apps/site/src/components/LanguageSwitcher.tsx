@@ -4,8 +4,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { LOCALES_INFO, SUPPORTED_LOCALES, type SupportedLocale } from "@/lib/i18n";
 import { useLangue } from "@/lib/i18n/client";
-import { ChevronBas } from "@aphrody/shenron-ui/icones";
-import { TranslateIcon } from "@aphrody/shenron-ui/material-symbols";
+import { ChevronBas, MaterialSymbol } from "@aphrody/shenron-ui/icones";
 
 /**
  * Le code affiché dans le bouton. `ja` se dit « JP » pour un lecteur français,
@@ -76,7 +75,7 @@ export function LanguageSwitcher({
         className={`shenron-language-trigger ${variant === "compact" ? "is-compact" : ""}`}
       >
         {variant === "compact" ? (
-          <TranslateIcon size={22} />
+          <MaterialSymbol name="translate" size={22} />
         ) : (
           <span className="font-mono text-xs font-black uppercase tracking-wider">
             {CODE_AFFICHE(current.code)}

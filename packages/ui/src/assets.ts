@@ -1,5 +1,8 @@
 /** Relative paths preserved by the asset copy command. */
 export const uiAssetPaths = [
+  "brand/dragon-ball-wordmark.svg",
+  "brand/home-beerus-goku.png",
+  "brand/home-palette.json",
   "dbz/marque/banc-nuage.svg",
   "dbz/kinto-un.svg",
   "dbz/kinto-un-icone.svg",

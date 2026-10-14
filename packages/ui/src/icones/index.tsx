@@ -47,6 +47,7 @@ export {
 } from "./geometries";
 
 export { Glyphe } from "./glyphe";
+export { MaterialSymbol, type MaterialSymbolName } from "./MaterialSymbol";
 export type { ProprietesIcone } from "./glyphe";
 
 export const Chargement = (p: ProprietesIcone) => <Glyphe nom="chargement" {...p} />;

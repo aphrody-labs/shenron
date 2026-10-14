@@ -14,4 +14,6 @@ export * from "./PotaraEarrings";
 export * from "./KintoUn";
 export * from "./DragonBall";
 export * from "./MotManga";
+export * from "./DragonBallWordmark";
+export { default as TORIYAMA_CATALOG } from "./catalog.json";
 export * from "./MotifsCouverture";

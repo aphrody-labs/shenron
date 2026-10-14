@@ -200,7 +200,7 @@ export function HomeView(rawProps: HomeViewProps) {
       presence={props.presence}
     >
       <HomeScreenDeck>
-        <HomeHero hero={config.hero} heroFrame={props.heroFrame} />
+        <HomeHero hero={config.hero} />
         {shown.has("community") && (
           <HomeLivePanel
             showCommunity={shown.has("community")}

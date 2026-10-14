@@ -7,10 +7,11 @@
  * les contrôles de fenêtre quand la fenêtre n'a pas de décoration native.
  */
 import { useSyncExternalStore, type ReactNode } from "react";
-import { ChevronGauche, Recherche } from "../icones";
+import { ChevronGauche, MaterialSymbol } from "../icones";
 import type { ShellBrand, ShellCrumb, ShellLabels, ShellLinkComponent } from "./AppShell";
 import { WindowControls, useUndecoratedWindow } from "./WindowControls";
 import { shellCrumbKey } from "./crumb-key";
+import { DragonBallWordmark } from "../toriyama/DragonBallWordmark";
 
 const ICON_BUTTON =
   "grid h-11 w-11 shrink-0 place-items-center rounded-xl text-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring";
@@ -83,14 +84,8 @@ export function ShellTopBar({
               {brand.mark}
             </span>
             <span className="flex min-w-0 flex-col leading-none">
-              <span className="truncate font-display text-[0.9375rem] font-extrabold tracking-[-0.02em] text-os">
-                {brand.name}
-              </span>
-              {brand.tagline && (
-                <span className="mt-0.5 truncate text-[0.6875rem] text-muted-foreground">
-                  {brand.tagline}
-                </span>
-              )}
+              <span className="sr-only">{brand.name}</span>
+              <DragonBallWordmark decorative className="shell-wordmark" />
             </span>
           </Link>
         )}
@@ -190,7 +185,7 @@ export function ShellTopBar({
                 : "grid h-11 min-w-11 shrink-0 place-items-center rounded-xl text-os/70 transition-colors hover:bg-os/[0.07] hover:text-os focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring md:flex md:h-11 md:min-w-[15rem] md:items-center md:gap-2.5 md:border md:border-os/15 md:bg-os/[0.03] md:px-3 md:text-left md:text-os/50"
             }
           >
-            <Recherche size={18} className="shrink-0" />
+            <MaterialSymbol name="search" size={22} className="shrink-0" />
             {!siteStyle && (
               <span className="hidden flex-1 truncate text-[0.8125rem] md:inline">
                 {labels.search}

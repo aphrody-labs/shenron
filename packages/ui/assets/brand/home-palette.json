@@ -1,0 +1,85 @@
+{
+  "schema": "shenron-home-palette/v1",
+  "source": {
+    "asset": "brand/home-beerus-goku.png",
+    "width": 1279,
+    "height": 585,
+    "sha256": "9b5710d74427f91b2ea7bfe5a058f0643ec74d956cad9a50e6554b02128bd286"
+  },
+  "seeds": {
+    "beerus": {
+      "hex": "#d55d9e",
+      "pixels": 11,
+      "region": [
+        0,
+        0,
+        0.25,
+        1
+      ],
+      "subject": "bright-magenta-aura"
+    },
+    "goku": {
+      "hex": "#71b2e3",
+      "pixels": 38,
+      "region": [
+        0.6,
+        0,
+        1,
+        0.58
+      ],
+      "subject": "blue-energy-space"
+    }
+  },
+  "themes": {
+    "beerus": {
+      "background": "#1a0b13",
+      "surface": "#1a0b13",
+      "on-background": "#fbeff5",
+      "on-surface": "#fbeff5",
+      "surface-container-low": "#2b1320",
+      "surface-container": "#371829",
+      "surface-container-high": "#441e33",
+      "surface-container-highest": "#55253f",
+      "on-surface-variant": "#efc1da",
+      "outline": "#e496c0",
+      "outline-variant": "#6f3052",
+      "primary": "#e086b6",
+      "on-primary": "#211526",
+      "primary-container": "#4f223a",
+      "on-primary-container": "#f7eafb",
+      "secondary": "#98d3f3",
+      "on-secondary": "#10232e",
+      "secondary-container": "#3a192b",
+      "on-secondary-container": "#fbeff5",
+      "tertiary": "#ffd978",
+      "on-tertiary": "#362700",
+      "tertiary-container": "#49351b",
+      "on-tertiary-container": "#fff0c9"
+    },
+    "goku": {
+      "background": "#f6fafd",
+      "surface": "#f6fafd",
+      "on-background": "#0e151b",
+      "on-surface": "#0e151b",
+      "surface-container-low": "#fcfdfe",
+      "surface-container": "#edf5fb",
+      "surface-container-high": "#e3f0f9",
+      "surface-container-highest": "#d7e9f7",
+      "on-surface-variant": "#283e4f",
+      "outline": "#395972",
+      "outline-variant": "#add2ef",
+      "primary": "#2d475b",
+      "on-primary": "#ffffff",
+      "primary-container": "#71b2e3",
+      "on-primary-container": "#10232e",
+      "secondary": "#405a72",
+      "on-secondary": "#ffffff",
+      "secondary-container": "#e0eef9",
+      "on-secondary-container": "#0e151b",
+      "tertiary": "#6b4210",
+      "on-tertiary": "#ffffff",
+      "tertiary-container": "#ffedbc",
+      "on-tertiary-container": "#362700"
+    }
+  }
+}

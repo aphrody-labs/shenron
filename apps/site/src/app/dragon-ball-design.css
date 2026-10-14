@@ -1,0 +1,262 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* Public product roles derived from the owner's Beerus/Goku illustration. */
+@font-face {
+  font-family: "Shenron Text";
+  src: url("/fonts/shenron-text/ShenronText-Medium.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Shenron Text";
+  src: url("/fonts/shenron-text/ShenronText-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+html:root {
+  --font-sans: "Shenron Text", "Google Sans Flex", system-ui, sans-serif;
+  --font-display: var(--font-sans);
+  --font-title: var(--font-sans);
+  --aphrody-font-brand: var(--font-sans);
+  --aphrody-font-plain: var(--font-sans);
+  --aphrody-font-code: var(--font-mono-src), ui-monospace, monospace;
+  --brand-yellow: #fef102;
+  --brand-red: #e50113;
+  --brand-blue: #13648b;
+  font-synthesis: none;
+}
+html:root[lang="ja"] {
+  --font-sans: var(--font-jp);
+}
+html:root:root:not([data-episode-theme="goku"]) {
+  color-scheme: dark;
+  --md-sys-color-background: #1a0b13;
+  --md-sys-color-surface: #1a0b13;
+  --md-sys-color-on-background: #fbeff5;
+  --md-sys-color-on-surface: #fbeff5;
+  --md-sys-color-surface-container-low: #2b1320;
+  --md-sys-color-surface-container: #371829;
+  --md-sys-color-surface-container-high: #441e33;
+  --md-sys-color-surface-container-highest: #55253f;
+  --md-sys-color-on-surface-variant: #efc1da;
+  --md-sys-color-outline: #e496c0;
+  --md-sys-color-outline-variant: #6f3052;
+  --md-sys-color-primary: #e086b6;
+  --md-sys-color-on-primary: #211526;
+  --md-sys-color-primary-container: #4f223a;
+  --md-sys-color-on-primary-container: #f7eafb;
+  --md-sys-color-secondary: #98d3f3;
+  --md-sys-color-on-secondary: #10232e;
+  --md-sys-color-secondary-container: #3a192b;
+  --md-sys-color-on-secondary-container: #fbeff5;
+  --md-sys-color-tertiary: #ffd978;
+  --md-sys-color-on-tertiary: #362700;
+  --md-sys-color-tertiary-container: #49351b;
+  --md-sys-color-on-tertiary-container: #fff0c9;
+}
+html:root:root[data-episode-theme="goku"] {
+  color-scheme: light;
+  --md-sys-color-background: #f6fafd;
+  --md-sys-color-surface: #f6fafd;
+  --md-sys-color-on-background: #0e151b;
+  --md-sys-color-on-surface: #0e151b;
+  --md-sys-color-surface-container-low: #fcfdfe;
+  --md-sys-color-surface-container: #edf5fb;
+  --md-sys-color-surface-container-high: #e3f0f9;
+  --md-sys-color-surface-container-highest: #d7e9f7;
+  --md-sys-color-on-surface-variant: #283e4f;
+  --md-sys-color-outline: #395972;
+  --md-sys-color-outline-variant: #add2ef;
+  --md-sys-color-primary: #2d475b;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #71b2e3;
+  --md-sys-color-on-primary-container: #10232e;
+  --md-sys-color-secondary: #405a72;
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: #e0eef9;
+  --md-sys-color-on-secondary-container: #0e151b;
+  --md-sys-color-tertiary: #6b4210;
+  --md-sys-color-on-tertiary: #ffffff;
+  --md-sys-color-tertiary-container: #ffedbc;
+  --md-sys-color-on-tertiary-container: #362700;
+}
+body {
+  --dbz-bg: var(--md-sys-color-surface);
+  --dbz-card: var(--md-sys-color-surface-container-low);
+  --dbz-border: var(--md-sys-color-outline-variant);
+  --dbz-os: var(--md-sys-color-on-surface);
+  --dbz-orange: var(--md-sys-color-primary);
+  --dbz-orange-dark: var(--md-sys-color-primary);
+  --dbz-blue: var(--md-sys-color-secondary-container);
+  --dbz-blue-light: var(--md-sys-color-secondary);
+  --dbz-gold: var(--md-sys-color-primary);
+  --dbz-yellow: var(--brand-yellow);
+  --dbz-red: var(--md-sys-color-tertiary);
+  --dbz-encre: #080b10;
+  --color-dbz-bg: var(--dbz-bg);
+  --color-dbz-card: var(--dbz-card);
+  --color-dbz-border: var(--dbz-border);
+  --color-dbz-orange: var(--dbz-orange);
+  --color-dbz-orange-dark: var(--dbz-orange-dark);
+  --color-dbz-blue: var(--dbz-blue);
+  --color-dbz-blue-light: var(--dbz-blue-light);
+  --color-dbz-gold: var(--dbz-gold);
+  --color-dbz-yellow: var(--dbz-yellow);
+  --color-dbz-red: var(--dbz-red);
+  --color-os: var(--dbz-os);
+  --color-encre: var(--dbz-encre);
+  accent-color: var(--primary);
+}
+[data-shell-variant="site"] {
+  background: var(--background);
+}
+[data-shell-variant="site"] [data-shell-header="site"],
+[data-shell-variant="site"] > [data-shell-navigation="horizontal"] {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: none;
+  box-shadow: none;
+}
+[data-shell-variant="site"] [data-shell-header="site"]::after {
+  display: none;
+}
+[data-shell-variant="site"] :focus-visible {
+  outline-color: var(--ring);
+}
+[data-shell-variant="site"] :is(h1, h2, h3, h4) {
+  font-weight: 700;
+  font-variation-settings: normal;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+.shell-wordmark {
+  display: block;
+  width: 142px;
+  height: 46px;
+}
+.home-screen-content {
+  --home-panel-ink: var(--foreground);
+  --home-panel-muted: var(--muted-foreground);
+}
+.home-screen-content [class*="border-white"] {
+  border-color: var(--border);
+}
+.home-screen-content :is(.text-white, .text-os) {
+  color: var(--home-panel-ink);
+}
+.home-screen-content :is([class*="text-white/"], [class*="text-os/"]) {
+  color: var(--home-panel-muted);
+}
+.home-screen-content [class*="bg-gradient-to-t"] {
+  --home-panel-ink: #ffffff;
+  --home-panel-muted: #e5e7eb;
+}
+.home-screen-content .home-stage {
+  min-height: calc(var(--home-screen-height) - 5rem);
+  display: grid;
+  align-items: center;
+  background: var(--background) url("/brand/home-beerus-goku.png") center / cover no-repeat;
+  border: 0;
+}
+.home-screen-content .home-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--background) 96%, transparent),
+    color-mix(in srgb, var(--background) 90%, transparent) 40%,
+    transparent 78%
+  );
+  pointer-events: none;
+}
+.home-screen-content .home-stage > .page-shell {
+  padding-block: clamp(2rem, 7vh, 5rem);
+  width: 100%;
+}
+.home-screen-content .home-stage p {
+  max-width: min(56ch, 48%);
+  color: var(--foreground);
+}
+.home-screen-content .home-stage > .page-shell > div {
+  max-width: min(42rem, 48%);
+  width: 100%;
+}
+.home-screen-content .home-wordmark {
+  max-width: min(100%, 34rem);
+}
+.home-screen-content .home-wordmark__ligne {
+  display: block;
+  width: clamp(15rem, 32vw, 30rem);
+  max-width: 100%;
+  aspect-ratio: 272 / 102;
+  background: url("/brand/dragon-ball-wordmark.svg") center / contain no-repeat;
+}
+.home-screen-content .home-wordmark__ligne > * {
+  display: none;
+}
+.home-screen-content :is(.home-wordmark__ligne, .kt-volant__nuage) {
+  filter: none;
+}
+.home-screen-content .home-wordmark em {
+  display: none;
+}
+.home-screen-content .home-lede {
+  color: var(--muted-foreground);
+}
+.home-screen-content .home-hero__beerus {
+  opacity: 0.72;
+}
+.home-screen-content .home-hero__beerus::after {
+  background:
+    linear-gradient(90deg, var(--background), transparent 80%),
+    linear-gradient(0deg, var(--background), transparent 55%);
+}
+.home-screen-content search button {
+  border-inline-start: 1px solid var(--border);
+}
+.home-screen-content :is(.dbz-button, .home-cta) {
+  box-shadow: none;
+  text-shadow: none;
+}
+@media (max-width: 767px) {
+  .home-screen-content .home-stage {
+    background-position: 68% center;
+  }
+  .home-screen-content .home-stage::before {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--background) 25%, transparent),
+      color-mix(in srgb, var(--background) 94%, transparent) 35%,
+      color-mix(in srgb, var(--background) 95%, transparent) 70%,
+      color-mix(in srgb, var(--background) 35%, transparent)
+    );
+  }
+  .home-screen-content .home-stage p,
+  .home-screen-content .home-stage > .page-shell > div {
+    max-width: 100%;
+  }
+  [data-shell-header="site"] > div {
+    padding-inline: 0.5rem;
+    gap: 0.125rem;
+  }
+  [data-shell-header="site"] [data-shell-actions] {
+    gap: 0.125rem;
+  }
+  .home-screen-content .home-hero__beerus {
+    opacity: 0.28;
+  }
+}
+@media (forced-colors: active) {
+  html:root:root:root {
+    --md-sys-color-surface: Canvas;
+    --md-sys-color-on-surface: CanvasText;
+    --md-sys-color-on-surface-variant: CanvasText;
+    --md-sys-color-surface-container-low: Canvas;
+    --md-sys-color-primary: Highlight;
+    --md-sys-color-on-primary: HighlightText;
+    --md-sys-color-outline-variant: CanvasText;
+  }
+}
