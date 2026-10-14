@@ -18,6 +18,7 @@ import {
   attestQualificationOrigins,
   assertQualificationReceipt,
   siteRecoveryScope,
+  loadOriginInventoryActivation,
 } from "./publish-catalog";
 
 const nativeOptions = {
@@ -38,6 +39,60 @@ const nativeProof = {
   manifestPrefix: "_migration/manifests/site-new/",
   inventorySha256: "b".repeat(64),
 };
+
+test("native origin activation requires its qualified backend and an unchanged owner module", async () => {
+  const root = await mkdtemp(join(tmpdir(), "shenron-origin-capability-"));
+  try {
+    const modulePath = join(root, "owner.mjs");
+    const body = `export function createOriginInventoryActivation(configuration) {
+      if (configuration.pin !== 'reviewed') throw Error('Configuration refused');
+      return { async activate(candidate) {
+        return { applied: true, replay: false, writes: 1, inventorySha256: candidate.inventorySha256 };
+      } };
+    }`;
+    await Bun.write(modulePath, body);
+    await chmod(modulePath, 0o600);
+    const activation = {
+      modulePath,
+      moduleSha256: digest(body),
+      configuration: { pin: "reviewed" },
+    };
+    expect(await loadOriginInventoryActivation({})).toBeNull();
+    await expect(
+      loadOriginInventoryActivation({ nativeOriginActivation: activation }),
+    ).rejects.toThrow();
+    await expect(
+      loadOriginInventoryActivation({
+        ...nativeOptions,
+        nativeOriginActivation: { ...activation, moduleSha256: "f".repeat(64) },
+      }),
+    ).rejects.toThrow("Infra activation capability changed");
+    await expect(
+      loadOriginInventoryActivation({
+        ...nativeOptions,
+        nativeOriginActivation: { ...activation, configuration: { pin: "other" } },
+      }),
+    ).rejects.toThrow("Configuration refused");
+    const capability = await loadOriginInventoryActivation({
+      ...nativeOptions,
+      nativeOriginActivation: activation,
+    });
+    expect(
+      await capability!.activate({
+        inventoryPath: join(root, "candidate.json"),
+        inventorySha256: "b".repeat(64),
+        manifestPrefix: "_migration/manifests/publication-new/",
+        publisherLock: join(root, "publish.lock"),
+      }),
+    ).toEqual({ applied: true, replay: false, writes: 1, inventorySha256: "b".repeat(64) });
+    await Bun.write(modulePath, body + "\n// changed");
+    await expect(
+      loadOriginInventoryActivation({ ...nativeOptions, nativeOriginActivation: activation }),
+    ).rejects.toThrow("Infra activation capability changed");
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
 
 test("native qualification is an explicit exact allowlist with a separate code pin", () => {
   expect(

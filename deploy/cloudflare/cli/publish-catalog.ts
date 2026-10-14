@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { mkdir, realpath, rmdir, stat, writeFile, rename, lstat } from "node:fs/promises";
-import { join, resolve } from "node:path";
+import { isAbsolute, join, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { digest, readToken, validateManifest, type Manifest } from "./cloudflare-ops";
 import { run as generateInventory, type InventoryEntry } from "./inventory-delta";
 import { inventory, objectStore, within } from "./transfer";
@@ -31,6 +32,11 @@ export interface PublishCatalogOptions {
   /** Explicit native-origin qualification; the default still probes Worker + CDN. */
   qualificationOrigins?: readonly [string, string];
   qualificationService?: { serviceVersion: "shenron-cdn-origin/v1"; codeSha256: string };
+  nativeOriginActivation?: {
+    modulePath: string;
+    moduleSha256: string;
+    configuration: Record<string, string>;
+  };
   /** Read-only site recovery only; this is never a claim of full manifest qualification. */
   qualificationScope?: { coverage: "explicit-paths"; paths: readonly string[] };
   expectedDeployment: string;
@@ -47,6 +53,60 @@ export interface PublishCatalogOptions {
     archivePath: string;
     archiveSha256: string;
   };
+}
+
+interface OriginInventoryCandidate {
+  inventoryPath: string;
+  inventorySha256: string;
+  manifestPrefix: string;
+  publisherLock: string;
+}
+interface OriginInventoryActivation {
+  activate(candidate: OriginInventoryCandidate): Promise<{
+    applied: boolean;
+    replay: boolean;
+    writes: number;
+    inventorySha256: string;
+  }>;
+}
+
+/** Invoke only the pinned Infra owner for the separately qualified native backend. */
+export async function loadOriginInventoryActivation(
+  options: Pick<
+    PublishCatalogOptions,
+    "nativeOriginActivation" | "qualificationOrigins" | "qualificationService"
+  > &
+    Partial<Pick<PublishCatalogOptions, "workerOrigin" | "cdnOrigin">>,
+): Promise<OriginInventoryActivation | null> {
+  const activation = options.nativeOriginActivation;
+  if (!activation) return null;
+  qualificationOrigins({
+    ...options,
+    workerOrigin: options.workerOrigin ?? "",
+    cdnOrigin: options.cdnOrigin ?? "",
+  });
+  if (!options.qualificationOrigins || !options.qualificationService)
+    throw Error("Origin activation requires qualified native origins");
+  if (!isAbsolute(activation.modulePath) || !/^[a-f0-9]{64}$/.test(activation.moduleSha256))
+    throw Error("Pinned Infra activation module required");
+  const info = await lstat(activation.modulePath);
+  if (
+    !info.isFile() ||
+    info.isSymbolicLink() ||
+    info.size > 1024 * 1024 ||
+    (process.platform !== "win32" && (info.mode & 0o022 || info.uid !== process.getuid?.())) ||
+    digest(await Bun.file(activation.modulePath).bytes()) !== activation.moduleSha256
+  )
+    throw Error("Infra activation capability changed");
+  const url = pathToFileURL(activation.modulePath);
+  url.searchParams.set("sha256", activation.moduleSha256);
+  const module = await import(url.href);
+  if (typeof module.createOriginInventoryActivation !== "function")
+    throw Error("Infra activation capability unavailable");
+  const capability = await module.createOriginInventoryActivation(activation.configuration);
+  if (!capability || typeof capability.activate !== "function")
+    throw Error("Invalid Infra activation capability");
+  return capability;
 }
 interface Delta {
   entries: Record<string, InventoryEntry>;
@@ -827,6 +887,7 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
     const manifest = (await Bun.file(options.manifest).json()) as Manifest;
     validateManifest(manifest);
     const origins = qualificationOrigins(options);
+    const originActivation = await loadOriginInventoryActivation(options);
     for (const origin of origins) {
       const url = new URL(origin);
       if (
@@ -1050,6 +1111,26 @@ export async function publishCatalog(inputOptions: PublishCatalogOptions) {
       }),
       { mode: 0o600, flag: "wx" },
     );
+    if (originActivation) {
+      const receipt = await originActivation.activate({
+        inventoryPath: join(job, "delta/inventory.json"),
+        inventorySha256: plan.inventorySha256,
+        manifestPrefix: plan.prefix,
+        publisherLock: join(stateDirectory, "publish.lock"),
+      });
+      if (
+        receipt.inventorySha256 !== plan.inventorySha256 ||
+        typeof receipt.applied !== "boolean" ||
+        typeof receipt.replay !== "boolean" ||
+        receipt.applied === receipt.replay ||
+        receipt.writes !== (receipt.applied ? 1 : 0)
+      )
+        throw Error("Infra origin activation readback differs");
+      await writeFile(join(job, "origin-activation-receipt.json"), JSON.stringify(receipt), {
+        mode: 0o600,
+        flag: "wx",
+      });
+    }
     const selected = Object.entries(delta.entries).filter(
       ([path]) =>
         (options.siteRelease
