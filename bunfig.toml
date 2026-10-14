@@ -35,6 +35,7 @@ minimumReleaseAgeExcludes = [
   "@aphrody/m3-tokens",
   "@aphrody/mcp-ui",
   "@aphrody/next-bun",
+  "@aphrody/typesafe-sdk",
   "@aphrody/messaging",
   "@aphrody/paths",
   "@aphrody/plugin-opener",
