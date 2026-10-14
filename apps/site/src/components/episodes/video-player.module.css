@@ -1,0 +1,274 @@
+.player.player {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-width: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 12px;
+  background: var(--media-surface);
+  color: var(--media-on-surface);
+}
+.player.player > video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  object-fit: contain;
+  background: var(--media-surface);
+}
+.player.player[data-theater="true"] {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  width: 100%;
+  height: 100dvh;
+  border-radius: 0;
+}
+.player:fullscreen {
+  height: 100%;
+  border-radius: 0;
+}
+.heading.heading {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 2;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px 32px;
+  border: 0;
+  background: linear-gradient(
+    color-mix(in srgb, var(--media-surface) 73%, transparent),
+    transparent
+  );
+  color: var(--media-on-surface);
+  pointer-events: none;
+  transition: opacity 180ms;
+}
+.heading p {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 14px;
+}
+.heading nav {
+  pointer-events: auto;
+  color: var(--media-on-surface);
+}
+.overlay {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 3;
+  padding: 32px 12px 8px;
+  background: linear-gradient(
+    transparent,
+    color-mix(in srgb, var(--media-surface) 80%, transparent) 45%,
+    color-mix(in srgb, var(--media-surface) 93%, transparent)
+  );
+  color: var(--media-on-surface);
+  transition: opacity 180ms;
+}
+.overlay[hidden] {
+  display: none;
+}
+.player[data-controls-visible="false"] .overlay,
+.player[data-controls-visible="false"] .heading {
+  opacity: 0;
+  pointer-events: none;
+}
+.player[data-controls-visible="false"] .overlay:has(:focus-visible),
+.player[data-controls-visible="false"] .heading:has(:focus-visible),
+.player[data-controls-visible="false"]:focus-visible .overlay,
+.player[data-controls-visible="false"]:has(video:focus-visible) .overlay,
+.player[data-controls-visible="false"]:has(details[open]) .overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+.player.player :global(.shenron-video-timeline) {
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
+  color: var(--media-on-surface);
+}
+.player.player :global(.shenron-video-buffer) {
+  height: 3px;
+  margin: 4px 0 -3px;
+  background: color-mix(in srgb, var(--media-on-surface) 19%, transparent);
+  border-radius: 4px;
+}
+.player.player :global(.shenron-video-buffer) > div {
+  height: 100%;
+  background: color-mix(in srgb, var(--media-on-surface) 44%, transparent);
+}
+.player.player :global(.shenron-video-controls) {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 2px;
+  min-height: 44px;
+  padding: 0 44px 0 0;
+  margin: 0;
+  color: var(--media-on-surface);
+}
+.player.player button,
+.settings > summary {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--media-on-surface);
+  cursor: pointer;
+}
+.player.player button[data-primary] {
+  background: transparent;
+  color: var(--media-on-surface);
+}
+.player.player button:hover,
+.settings > summary:hover {
+  background: color-mix(in srgb, var(--media-on-surface) 15%, transparent);
+}
+.player.player button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.player.player :is(button, input, select, summary, a):focus-visible {
+  outline: 2px solid var(--media-on-surface);
+  outline-offset: 2px;
+}
+.player.player input[type="range"] {
+  display: block;
+  height: 24px;
+  margin: 0;
+  accent-color: var(--media-on-surface);
+  cursor: pointer;
+}
+.volume {
+  display: flex;
+  align-items: center;
+  width: 80px;
+  flex: 0 1 80px;
+  margin-right: auto;
+}
+.volume input {
+  width: 100%;
+  min-width: 0;
+}
+.settings {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  border: 0;
+  padding: 0;
+}
+.settings > summary {
+  list-style: none;
+}
+.settings > summary::-webkit-details-marker {
+  display: none;
+}
+.settingsPanel {
+  position: absolute;
+  right: 0;
+  bottom: 48px;
+  display: grid;
+  gap: 12px;
+  width: min(280px, calc(100vw - 40px));
+  max-height: min(320px, calc(100dvh - 140px));
+  overflow-y: auto;
+  padding: 16px;
+  border: 1px solid color-mix(in srgb, var(--media-on-surface) 25%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--media-surface) 96%, transparent);
+  color: var(--media-on-surface);
+  font-size: 13px;
+  box-shadow: 0 8px 30px color-mix(in srgb, var(--media-surface) 53%, transparent);
+}
+.settingsPanel label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.settingsPanel select {
+  min-width: 80px;
+  max-width: 160px;
+  border: 1px solid color-mix(in srgb, var(--media-on-surface) 32%, transparent);
+  border-radius: 6px;
+  padding: 6px;
+  background: color-mix(in srgb, var(--media-surface) 88%, var(--media-on-surface));
+  color: var(--media-on-surface);
+}
+.mobileVolume {
+  display: none !important;
+}
+.status {
+  position: absolute;
+  z-index: 2;
+  inset: 38% 16px auto;
+  padding: 10px;
+  text-align: center;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--media-surface) 73%, transparent);
+  color: var(--media-on-surface);
+  font-size: 13px;
+  pointer-events: none;
+}
+.failure {
+  position: absolute;
+  inset: 58% 0 auto;
+  z-index: 4;
+  display: flex;
+  justify-content: center;
+}
+.failure button {
+  width: auto !important;
+  padding: 8px 16px !important;
+  border-radius: 24px !important;
+  background: var(--media-on-surface) !important;
+  color: var(--media-surface) !important;
+}
+@media (max-width: 600px) {
+  .player.player .skip,
+  .volume {
+    display: none;
+  }
+  .mobileVolume {
+    display: flex !important;
+  }
+  .heading.heading {
+    padding: 8px 12px 24px;
+  }
+  .heading p {
+    font-size: 12px;
+  }
+  .overlay {
+    padding: 24px 8px 4px;
+  }
+  .settings {
+    right: 8px;
+    bottom: 6px;
+  }
+  .player.player :global(.shenron-video-controls) {
+    justify-content: space-between;
+  }
+  .settingsPanel {
+    max-height: 130px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .heading {
+    transition: none;
+  }
+}

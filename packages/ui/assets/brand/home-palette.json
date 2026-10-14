@@ -11,56 +11,31 @@
       "hex": "#f6ffff",
       "pixels": 6760,
       "matchedPixels": 146923,
-      "region": [
-        0.45,
-        0.5,
-        0.72,
-        0.68
-      ]
+      "region": [0.45, 0.5, 0.72, 0.68]
     },
     "sun": {
       "hex": "#fe8648",
       "pixels": 37,
       "matchedPixels": 58028,
-      "region": [
-        0.45,
-        0.23,
-        0.7,
-        0.36
-      ]
+      "region": [0.45, 0.23, 0.7, 0.36]
     },
     "freezer": {
       "hex": "#d3bf69",
       "pixels": 195,
       "matchedPixels": 63692,
-      "region": [
-        0.52,
-        0.13,
-        0.76,
-        0.29
-      ]
+      "region": [0.52, 0.13, 0.76, 0.29]
     },
     "space": {
       "hex": "#0e102b",
       "pixels": 59835,
       "matchedPixels": 453565,
-      "region": [
-        0.05,
-        0.55,
-        0.4,
-        0.95
-      ]
+      "region": [0.05, 0.55, 0.4, 0.95]
     },
     "goku": {
       "hex": "#00acff",
       "pixels": 106,
       "matchedPixels": 42890,
-      "region": [
-        0.7,
-        0.42,
-        0.99,
-        0.8
-      ]
+      "region": [0.7, 0.42, 0.99, 0.8]
     }
   },
   "media": {

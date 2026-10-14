@@ -1,0 +1,70 @@
+{
+  "schema": "shenron-lettering/v1",
+  "family": "Shenron Lettering",
+  "weight": 700,
+  "coverage": "ABCDEFGLNR",
+  "excludes": "O, lowercase, accents and every other unsupported character; the logo O is the canonical SVG cloud",
+  "unicodeRange": "U+0020,U+0041-0047,U+004C,U+004E,U+0052",
+  "source": {
+    "owner": "packages/ui/src/toriyama-svg/wordmark.ts",
+    "sha256": "6723721a17a8579ba745cb0f96a57c38263fd122f0d9458c6e14a60c235d0629"
+  },
+  "glyphs": {
+    "D": {
+      "advance": 504,
+      "bounds": [40, 0, 464, 800],
+      "contours": 2
+    },
+    "R": {
+      "advance": 478,
+      "bounds": [40, 0, 438, 800],
+      "contours": 2
+    },
+    "A": {
+      "advance": 523,
+      "bounds": [40, 0, 483, 800],
+      "contours": 2
+    },
+    "G": {
+      "advance": 639,
+      "bounds": [40, 0, 599, 800],
+      "contours": 1
+    },
+    "N": {
+      "advance": 603,
+      "bounds": [40, 0, 563, 800],
+      "contours": 1
+    },
+    "B": {
+      "advance": 589,
+      "bounds": [40, 0, 549, 801],
+      "contours": 3
+    },
+    "L": {
+      "advance": 424,
+      "bounds": [39, -1, 384, 800],
+      "contours": 1
+    },
+    "F": {
+      "advance": 680,
+      "bounds": [40, 0, 640, 800],
+      "contours": 1
+    },
+    "C": {
+      "advance": 680,
+      "bounds": [40, 0, 640, 800],
+      "contours": 1
+    },
+    "E": {
+      "advance": 680,
+      "bounds": [40, 0, 640, 800],
+      "contours": 1
+    }
+  },
+  "unitsPerEm": 1000,
+  "capHeight": 800,
+  "ascent": 850,
+  "descent": -150,
+  "ttfBytes": 9104,
+  "woff2Bytes": 3064
+}

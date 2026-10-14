@@ -56,7 +56,7 @@ export function SceneBackdrop({
           fill
           priority={imagePriority}
           sizes="100vw"
-          quality={75}
+          quality={70}
           unoptimized={isEditableAsset(scene.image)}
           className={className}
         />

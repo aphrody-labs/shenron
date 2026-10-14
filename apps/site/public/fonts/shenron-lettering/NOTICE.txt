@@ -1,0 +1,17 @@
+Shenron Lettering — adaptation de lettrage pour Dragon Ball France.
+
+L'artwork Dragon Ball conserve ses droits et notices :
+Bird Studio / Shueisha / Toei Animation.
+Source des formes : packages/ui/src/toriyama-svg/wordmark.ts,
+contours adaptés de la référence officielle fournie par le propriétaire.
+Les formes FRANCE viennent des glyphes de marque propres au projet.
+
+Cette police partielle n'est pas dérivée d'Inter. Aucune licence SIL OFL ni
+autorisation générale de redistribution de l'artwork n'est déclarée ici.
+L'usage demandé pour dragonballfr.com relève de l'attestation privée du
+propriétaire consignée dans les règles du dépôt. Le texte de cet accord
+n'a pas été vérifié indépendamment ; aucun de ses termes n'est reproduit
+ou inventé dans cette notice.
+
+Le code du générateur est sous Apache-2.0. Cette licence de code ne
+requalifie pas les droits de l'artwork ou des contours de lettrage.

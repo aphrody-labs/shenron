@@ -1,0 +1,125 @@
+.root {
+  position: relative;
+  isolation: isolate;
+  inline-size: 100%;
+  min-inline-size: 0;
+  padding: clamp(0.75rem, 1.5vw, 2rem);
+  padding-block-end: 4rem;
+  color: var(--foreground);
+  background: var(--background);
+}
+
+.artwork {
+  position: absolute;
+  z-index: -1;
+  inset-inline: 0;
+  inset-block-start: 0;
+  inline-size: 100%;
+  block-size: min(70rem, 100dvh);
+  object-fit: cover;
+  object-position: center top;
+  pointer-events: none;
+  opacity: 0.18;
+  mask-image: linear-gradient(black, transparent);
+}
+
+:global(html[data-episode-theme="goku"]) .artwork {
+  opacity: 0.08;
+}
+
+@media (forced-colors: active) {
+  .artwork {
+    display: none;
+  }
+}
+
+.stage {
+  position: relative;
+  inline-size: 100%;
+  min-inline-size: 0;
+  margin-block: 1rem 1.5rem;
+  border-radius: 1rem;
+}
+
+.stage > * {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(1.5rem, 2vw, 2.5rem);
+  align-items: start;
+}
+
+.article,
+.aside {
+  min-inline-size: 0;
+}
+
+.aside {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.aside > * {
+  min-inline-size: 0;
+}
+
+.root h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 1.1rem + 2vw, 3rem);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  text-shadow: none;
+  overflow-wrap: anywhere;
+}
+
+.root > header :global(.text-white),
+.article :global(.text-white),
+.aside :global(.text-white) {
+  color: var(--foreground);
+}
+
+.root > header :global(.text-white\/50),
+.root > header :global(.text-white\/55),
+.root > header :global(.text-white\/60),
+.article :global(.text-white\/50),
+.article :global(.text-white\/55),
+.article :global(.text-white\/60),
+.aside :global(.text-white\/50),
+.aside :global(.text-white\/55),
+.aside :global(.text-white\/60) {
+  color: var(--muted-foreground);
+}
+
+.root :global(.prose-invert) {
+  --tw-prose-body: var(--foreground);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-links: var(--primary);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-quotes: var(--foreground);
+  --tw-prose-code: var(--foreground);
+}
+
+@media (min-width: 64rem) {
+  .columns {
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 23rem);
+  }
+
+  .columns:not(:has(> .aside)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 30rem) {
+  .root {
+    padding-inline: 0.75rem;
+  }
+  .stage {
+    margin-inline: -0.75rem;
+    inline-size: calc(100% + 1.5rem);
+    border-radius: 0;
+  }
+}
