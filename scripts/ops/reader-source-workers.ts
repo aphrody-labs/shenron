@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Database } from "bun:sqlite";
-import { appendFile, chmod, mkdir, lstat, realpath, rmdir } from "node:fs/promises";
+import { appendFile, chmod, mkdir, lstat, realpath, rmdir, unlink } from "node:fs/promises";
 import { isAbsolute, join, resolve } from "node:path";
 import { parseArgs } from "node:util";
+import { hostname } from "node:os";
 
 // Installed runtime exports are qualified independently of its older published type package.
 interface NativeConnection {
@@ -30,7 +31,12 @@ if (typeof nativeModule.connect !== "function" || typeof nativeModule.findExecut
   throw new Error("Installed Bun has no qualified native Obscura exports");
 const obscura = nativeModule as NativeObscura;
 
-const hosts = new Set(["www.glenat.com", "www.shueisha.co.jp", "www.carddass.com"]);
+const hosts = new Set([
+  "www.glenat.com",
+  "www.shueisha.co.jp",
+  "www.carddass.com",
+  "www.hanmoto.com",
+]);
 export const hash = (bytes: string | Uint8Array) =>
   new Bun.CryptoHasher("sha256").update(bytes).digest("hex");
 export interface Source {
@@ -125,6 +131,14 @@ export function frontier(database: Database, sources: Source[], identity: string
     fail(url: string) {
       database.query("UPDATE queue SET state='failed' WHERE url=?").run(url);
     },
+    recoverInterrupted(provedDead: boolean) {
+      const rows = database
+        .query<{ url: string }, []>("SELECT url FROM queue WHERE state='running'")
+        .all();
+      if (rows.length && !provedDead) throw Error("Interrupted frontier lacks dead-owner proof");
+      if (provedDead) database.exec("UPDATE queue SET state='pending' WHERE state='running'");
+      return rows.map((row) => row.url);
+    },
     rows() {
       return database
         .query<{ url: string; state: string; receipt_sha: string | null }, []>(
@@ -147,6 +161,82 @@ export async function publishQualified(publisher: QualifiedPublisher) {
   const receipt = await publisher.apply(plan.planSha256);
   if (!(await publisher.readback(receipt))) throw new Error("Publisher live readback failed");
   return receipt;
+}
+export function publicationIndexPath(publicRoot: string, target: string) {
+  const url = new URL(target);
+  if (
+    url.origin !== "https://dragonballfr.com" ||
+    !/^\/publications\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(url.pathname) ||
+    url.search ||
+    url.hash
+  )
+    throw Error("Unsupported publication target");
+  return join(publicRoot, url.pathname.slice(1), "index.json");
+}
+export function deadOwner(
+  record: unknown,
+  identity: string,
+  host: string,
+  isAlive: (pid: number) => boolean,
+) {
+  if (!record || typeof record !== "object") throw Error("Incomplete worker claim; preserve it");
+  const prior = record as Record<string, unknown>;
+  if (
+    prior.schema !== "shenron-reader-worker-claim/v1" ||
+    prior.identity !== identity ||
+    prior.host !== host ||
+    typeof prior.pid !== "number" ||
+    !Number.isSafeInteger(prior.pid) ||
+    prior.pid < 1 ||
+    isAlive(prior.pid)
+  )
+    throw Error("Worker claim belongs to an active or unqualified owner");
+  return prior.pid;
+}
+async function claimRun(lock: string, identity: string) {
+  let recoveredPid: number | null = null;
+  try {
+    await mkdir(lock, { mode: 0o700 });
+  } catch (error) {
+    if ((error as { code?: string }).code !== "EEXIST") throw error;
+    const info = await lstat(lock),
+      file = join(lock, "owner.json"),
+      ownerInfo = await lstat(file);
+    if (
+      !info.isDirectory() ||
+      info.isSymbolicLink() ||
+      info.mode & 0o077 ||
+      ownerInfo.isSymbolicLink() ||
+      !ownerInfo.isFile() ||
+      (await realpath(lock)) !== lock
+    )
+      throw Error("Invalid private worker claim");
+    recoveredPid = deadOwner(await Bun.file(file).json(), identity, hostname(), (pid) => {
+      try {
+        process.kill(pid, 0);
+        return true;
+      } catch (e) {
+        if ((e as { code?: string }).code === "ESRCH") return false;
+        throw e;
+      }
+    });
+    await unlink(file);
+    await rmdir(lock);
+    await mkdir(lock, { mode: 0o700 });
+  }
+  const file = join(lock, "owner.json");
+  await Bun.write(
+    file,
+    JSON.stringify({
+      schema: "shenron-reader-worker-claim/v1",
+      identity,
+      pid: process.pid,
+      host: hostname(),
+      startedAt: new Date().toISOString(),
+    }),
+  );
+  await chmod(file, 0o600);
+  return recoveredPid;
 }
 export async function installedPublisher(
   publicRoot: string,
@@ -176,7 +266,7 @@ export async function installedPublisher(
   const config = await Bun.file(configPath).json();
   const owner = await import(modulePath);
   if (typeof owner.publishCatalog !== "function") throw Error("Canonical publisher export missing");
-  const index = Bun.file(join(publicRoot, "index.json"));
+  const index = Bun.file(publicationIndexPath(publicRoot, target));
   if (index.size > 2 * 1024 * 1024) throw Error("Public index exceeds its qualified bound");
   const indexSha256 = hash(await index.bytes());
   const options = {
@@ -259,7 +349,7 @@ export async function collect(options: Options) {
     }),
   );
   const lock = join(job, "run.lock");
-  await mkdir(lock, { mode: 0o700 });
+  const recoveredPid = await claimRun(lock, identity);
   const processes = new Set<Bun.Subprocess>();
   const abort = () => {
     for (const process of processes) process.kill();
@@ -321,6 +411,9 @@ export async function collect(options: Options) {
   }
   const processEnvPath = process.env.PATH;
   try {
+    const recovered = queue.recoverInterrupted(recoveredPid !== null);
+    for (const url of recovered)
+      await journal("interrupted-requeued", url, "Prior owner PID " + recoveredPid + " is absent");
     // Reuse only complete, byte-identical receipts. Interrupted/failed rows stay explicit.
     for (const row of queue.rows()) {
       if (row.state !== "qualified") continue;
@@ -520,6 +613,7 @@ export async function collect(options: Options) {
     abort();
     for (const process of processes) await process.exited;
     database.close();
+    await unlink(join(lock, "owner.json"));
     await rmdir(lock);
   }
 }
@@ -537,11 +631,13 @@ if (import.meta.main) {
       target: { type: "string" },
     },
   });
-  const sources = sourcePlan(await Bun.file(values.input ?? "").json());
+  if (!values.input || !values.job || !values.owner || !isAbsolute(values.owner))
+    throw Error("Explicit input, private job and qualified aphrody-web owner are required");
+  const sources = sourcePlan(await Bun.file(values.input).json());
   const options = {
     sources,
     job: resolve(values.job ?? ""),
-    owner: values.owner ?? obscura.findExecutable() ?? "",
+    owner: values.owner,
     proxy: values.proxy ?? "socks5://10.200.1.2:1080",
     concurrency: Number(values.concurrency),
     timeout: Number(values.timeout),

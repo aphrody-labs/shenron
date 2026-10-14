@@ -8,6 +8,8 @@ import {
   sourcePlan,
   tokyoExit,
   verifyDom,
+  publicationIndexPath,
+  deadOwner,
 } from "./reader-source-workers";
 const url = "https://www.shueisha.co.jp/books/items/contents_amp.html?isbn=978-4-08-851182-5";
 const source = {
@@ -29,6 +31,10 @@ test("sources require the exact independently captured primary URL", () => {
   }
   expect(() => sourcePlan([source, source])).toThrow();
   expect(() => sourcePlan([], 0)).toThrow();
+  expect(
+    sourcePlan([{ ...source, sourceUrl: "https://www.hanmoto.com/bd/isbn/9784088511825" }])[0]
+      ?.sourceUrl,
+  ).toContain("www.hanmoto.com/bd/");
 });
 test("Tokyo exit requires native country, city and exit proof", () => {
   expect(
@@ -66,6 +72,46 @@ test("frontier claims once, resumes terminal states and refuses a different plan
   } finally {
     db.close();
   }
+});
+test("interrupted frontier resumes only after its exact owner is proved absent", () => {
+  const db = new Database(":memory:");
+  try {
+    const q = frontier(db, [source], hash("plan"));
+    q.next();
+    expect(() => q.recoverInterrupted(false)).toThrow();
+    expect(q.recoverInterrupted(true)).toEqual([url]);
+    expect(q.next()).toBe(url);
+  } finally {
+    db.close();
+  }
+  const prior = {
+    schema: "shenron-reader-worker-claim/v1",
+    identity: hash("plan"),
+    host: "factory",
+    pid: 1234,
+  };
+  expect(deadOwner(prior, hash("plan"), "factory", () => false)).toBe(1234);
+  expect(() => deadOwner(prior, hash("plan"), "factory", () => true)).toThrow();
+  expect(() => deadOwner(prior, hash("different"), "factory", () => false)).toThrow();
+  expect(() => deadOwner(prior, hash("plan"), "another-host", () => false)).toThrow();
+});
+test("publication uses the canonical nested public-root shape", () => {
+  const root = "/qualified/public";
+  const expected = publicationIndexPath(
+    root,
+    "https://dragonballfr.com/publications/manga-catalogue",
+  ).replaceAll("\\", "/");
+  const fixture = new Map([
+    ["/qualified/public/index.json", "incorrect flat index"],
+    [
+      "/qualified/public/publications/manga-catalogue/index.json",
+      JSON.stringify({ schema: "qualified-index", sources: [source] }),
+    ],
+  ]);
+  expect(JSON.parse(fixture.get(expected)!).schema).toBe("qualified-index");
+  expect(() =>
+    publicationIndexPath(root, "https://dragonballfr.com/publications/../private"),
+  ).toThrow();
 });
 test("publisher pins the native plan and requires independent live readback", async () => {
   let calls = 0;
