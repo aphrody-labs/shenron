@@ -21,12 +21,18 @@ ci-dessous évitent que cela se reproduise. Système graphique : [`reference/DES
 - Le dernier ajustement du propriétaire retire le menu d'ancrage, « Voyage à travers
   l'univers » et ses compteurs, la reprise sur l'accueil et la présentation Beerus.
   Leurs pages et l'historique personnel restent accessibles dans le shell. L'accueil
-  conserve un lien vers la bibliothèque de GIF ; les sept lectures de comptage propres
+  conserve un accès par icône vers la bibliothèque de GIF ; les sept lectures de comptage propres
   à l'ancien bloc univers sont retirées.
 - Le héros affiche au plus une frame d'épisode qualifiée par le propriétaire des bannières,
   ou un fond sobre si aucune ne convient. Les anciennes scènes Xenoverse et l'affiche Beerus
   statique ne sont plus montées. La fiche Beerus reste accessible par le catalogue des épisodes.
-- Les héros restent compacts : accueil de 240 à 288 px, catalogues de 256 à 320 px,
+- La demande du 14 octobre remplace les accordéons de l'accueil par leur contenu ouvert,
+  dans des panneaux occupant la hauteur disponible sous le shell. Le défilement natif
+  passe d'un panneau au suivant avec snap et une brève apparition de téléportation ;
+  les boutons précédent/suivant déplacent aussi le focus. Le mode de mouvement réduit
+  désactive cet effet. Les panneaux longs restent entièrement lisibles, même avec zoom,
+  et la barre mobile est déduite de la hauteur disponible. Le bouton GIF violet est retiré.
+- Les héros des catalogues restent compacts : de 256 à 320 px,
   bandeaux partagés de 180 à 240 px. Il s'agit de hauteurs minimales : les titres, synopsis
   et actions longs agrandissent leur bloc, sans être tronqués.
 - « Explorer aussi » retire les destinations déjà proposées par le shell et les sections visibles.

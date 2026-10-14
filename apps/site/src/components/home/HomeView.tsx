@@ -5,7 +5,6 @@
  * News and mini-games remain at the bottom of the editorial flow.
  */
 import Link from "next/link";
-import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
 import { T } from "@/components/T";
 import { FeedLead, FeedStream } from "@/components/feed/FeedStream";
@@ -33,6 +32,7 @@ import { HomeHero } from "./HomeHero";
 import { HomeGuardians, HomeLivePanel, HomeLiveProvider, HomePantheon } from "./HomeLive";
 import { HomeMenuJourney } from "./HomeMenuJourney";
 import { HomeSection } from "./HomeSection";
+import { HomeScreenDeck } from "./HomeScreenDeck";
 import { SagaBestOf } from "./SagaBestOf";
 import type { FeaturedCharacter, SagaTeaser } from "./types";
 import type { BotStats, PersonaLive, PresenceState, TopMember } from "./useLiveBotState";
@@ -159,6 +159,12 @@ export function HomeView(rawProps: HomeViewProps) {
   const pantheon = enabled.get("pantheon");
   const tops = flow.findIndex((s) => s.id === "tops");
   const canonAt = tops >= 0 ? tops + 1 : flow.length;
+  const covered = coveredDestinations(config, shown, access);
+  const showJourney =
+    config.journey.enabled &&
+    config.journey.destinations.some(
+      (destination) => destination.enabled && !covered.includes(destination.href),
+    );
 
   // Editorial content stays on plain surfaces without unqualified legacy backdrops.
   const blocks = flow.map((s) => (
@@ -193,49 +199,46 @@ export function HomeView(rawProps: HomeViewProps) {
       topMembersAvailable={props.topMembersAvailable}
       presence={props.presence}
     >
-      <HomeHero hero={config.hero} heroFrame={props.heroFrame} />
-      <PageShell width="wide" rhythm="tight">
-        <Link href="/wiki/gifs" className="dbz-button mb-4 inline-flex min-h-11 items-center">
-          <T k="gifLibrary.title" />
-        </Link>
-        <div className="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-12 lg:gap-y-10">
-          {shown.has("community") && (
-            <HomeLivePanel
-              showCommunity={shown.has("community")}
-              className={pantheon && shown.has("pantheon") ? "lg:col-span-8" : "lg:col-span-12"}
-            />
-          )}
+      <HomeScreenDeck>
+        <HomeHero hero={config.hero} heroFrame={props.heroFrame} />
+        {shown.has("community") && (
+          <HomeLivePanel
+            showCommunity={shown.has("community")}
+            className={pantheon && shown.has("pantheon") ? "lg:col-span-8" : "lg:col-span-12"}
+          />
+        )}
 
-          {pantheon && shown.has("pantheon") && (
-            <HomePantheon title={label(pantheon, "")} className="lg:col-span-4" />
-          )}
+        {pantheon && shown.has("pantheon") && (
+          <HomePantheon title={label(pantheon, "")} className="lg:col-span-4" />
+        )}
 
-          {blocks}
+        {blocks}
 
+        {showJourney && (
           <HomeMenuJourney
             access={access}
             config={config.journey}
-            covered={coveredDestinations(config, shown, access)}
+            covered={covered}
             className="lg:col-span-12"
           />
+        )}
 
-          {/* Tout en bas, dans cet ordre : les dernières nouvelles, puis les mini-jeux. */}
-          {news && shown.has("news") && (
-            <HomeSection
-              id="actualites"
-              title={label(news, "") || <T k="home.news.index.title" />}
-              subtitle={news.subtitle || undefined}
-              moreHref="/news"
-              moreLabel={<T k="home.news.all" />}
-              className="lg:col-span-12"
-            >
-              <HomeNews entries={feed} />
-            </HomeSection>
-          )}
+        {/* Tout en bas, dans cet ordre : les dernières nouvelles, puis les mini-jeux. */}
+        {news && shown.has("news") && (
+          <HomeSection
+            id="actualites"
+            title={label(news, "") || <T k="home.news.index.title" />}
+            subtitle={news.subtitle || undefined}
+            moreHref="/news"
+            moreLabel={<T k="home.news.all" />}
+            className="lg:col-span-12"
+          >
+            <HomeNews entries={feed} />
+          </HomeSection>
+        )}
 
-          <HomeGames className="lg:col-span-12" />
-        </div>
-      </PageShell>
+        <HomeGames className="lg:col-span-12" />
+      </HomeScreenDeck>
     </HomeLiveProvider>
   );
 }
