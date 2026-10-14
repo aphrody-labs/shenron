@@ -223,6 +223,17 @@ export function MangaVolumeGrid({
     const key = `collections.${series}` as "collections.DB";
     return ui.has(key) ? ui(key) : libelleSerie(series);
   };
+  const collectionChoices = [
+    { id: "all", label: ui("allCollections"), count: volumes.length },
+    ...collections
+      .filter((series) => series !== "DBFC")
+      .map((series) => ({
+        id: series,
+        label: collectionLabel(series),
+        count: volumes.filter((volume) => volume.series === series).length,
+      })),
+    { id: COLOR_COLLECTION, label: ui("colorCollection"), count: colorVolumes.length },
+  ];
   const filteredVolumes = volumes.filter((volume) => {
     if (selected === COLOR_COLLECTION && !colorVolumes.some((entry) => entry.id === volume.id))
       return false;
@@ -306,30 +317,28 @@ export function MangaVolumeGrid({
       className="shenron-manga-library @container min-w-0 space-y-4"
       aria-label={ui("title")}
     >
+      <fieldset className="min-w-0 rounded-2xl border border-border bg-card p-3">
+        <legend className="px-1 text-sm font-semibold text-foreground">{ui("collection")}</legend>
+        <div
+          data-collection-navigation
+          className="flex gap-2 overflow-x-auto pb-2 lg:flex-wrap lg:overflow-visible"
+        >
+          {collectionChoices.map((choice) => (
+            <button
+              key={choice.id}
+              type="button"
+              data-collection={choice.id}
+              aria-pressed={selected === choice.id}
+              onClick={() => update({ collection: choice.id })}
+              className={`${CONTROL} inline-flex max-w-64 shrink-0 items-center gap-2 whitespace-normal text-start ${selected === choice.id ? "border-primary bg-primary text-primary-foreground" : "hover:border-primary"}`}
+            >
+              <span className="line-clamp-2">{choice.label}</span>
+              <span className="tabular-nums">{choice.count}</span>
+            </button>
+          ))}
+        </div>
+      </fieldset>
       <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-border bg-card p-3">
-        <label className="min-w-0 flex-1 basis-full @xl:basis-56 text-sm font-semibold text-foreground">
-          <span className="mb-1 block">{ui("collection")}</span>
-          <select
-            value={selected}
-            onChange={(event) => update({ collection: event.target.value })}
-            className={`${CONTROL} w-full`}
-          >
-            <option value="all">
-              {ui("allCollections")} · {volumes.length}
-            </option>
-            {collections
-              .filter((series) => series !== "DBFC")
-              .map((series) => (
-                <option key={series} value={series}>
-                  {collectionLabel(series)} ·{" "}
-                  {volumes.filter((volume) => volume.series === series).length}
-                </option>
-              ))}
-            <option value={COLOR_COLLECTION}>
-              {ui("colorCollection")} · {colorVolumes.length}
-            </option>
-          </select>
-        </label>
         <label className="min-w-0 flex-1 basis-32 @xl:basis-56 text-sm font-semibold text-foreground">
           <span className="mb-1 block">{ui("searchShort")}</span>
           <input

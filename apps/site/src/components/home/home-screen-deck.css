@@ -6,26 +6,14 @@
   background: var(--background);
 }
 .home-screen-deck {
-  --home-screen-height: calc(100svh - 8rem);
-  height: var(--home-screen-height);
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-snap-type: y mandatory;
-  scrollbar-width: none;
   position: relative;
-  overscroll-behavior-y: contain;
   view-transition-name: home-deck;
 }
-.home-screen-deck::-webkit-scrollbar {
-  display: none;
-}
 .home-screen {
-  min-height: var(--home-screen-height);
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
+  scroll-margin-top: 5rem;
   display: grid;
   align-content: center;
-  padding: clamp(1rem, 3vh, 2.5rem) var(--shell-pad, 1rem) 5rem;
+  padding: clamp(1rem, 3vh, 2.5rem) var(--shell-pad, 1rem);
   min-width: 0;
 }
 .home-screen-content {
@@ -36,13 +24,13 @@
   position: relative;
 }
 .home-screen:has(.home-section-scene) {
-  padding: 0 0 5rem;
+  padding: 0;
 }
 .home-screen-content:has(.home-section-scene) {
   max-width: none;
 }
 .home-screen .home-section-scene {
-  min-height: calc(var(--home-screen-height) - 5rem);
+  min-height: 20rem;
   border: 0;
   border-radius: 0;
   display: grid;
@@ -55,19 +43,21 @@
   padding: clamp(1.25rem, 4vw, 4rem);
 }
 .home-screen:first-child {
-  padding: 0 0 5rem;
+  padding: 0;
 }
 .home-screen .home-stage {
-  min-height: calc(var(--home-screen-height) - 5rem);
+  min-height: clamp(20rem, 44svh, 30rem);
 }
 .home-screen .home-stage > .page-shell {
   min-height: inherit;
   justify-content: center;
 }
 .home-screen-controls {
-  position: absolute;
-  right: var(--shell-pad, 1rem);
-  bottom: max(1rem, env(safe-area-inset-bottom));
+  position: sticky;
+  width: max-content;
+  margin: 1rem var(--shell-pad, 1rem) 1rem auto;
+  bottom: calc(4.5rem + env(safe-area-inset-bottom));
+  z-index: 10;
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -198,11 +188,8 @@ html[data-home-transition="teleport"]::view-transition-new(home-deck) {
     transform: none;
   }
 }
-@media (max-width: 767px) {
-  .home-screen {
-    padding-bottom: 6rem;
-  }
+@media (min-width: 768px) {
   .home-screen-controls {
-    bottom: max(1rem, env(safe-area-inset-bottom));
+    bottom: 1rem;
   }
 }

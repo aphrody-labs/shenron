@@ -17,12 +17,16 @@ describe("InterviewsExplorer et page /wiki/interviews", () => {
     expect(pageContent).toContain("<InterviewsExplorer groups={groups}");
   });
 
-  test("le composant InterviewsExplorer implémente la liste dépliable avec flèche", () => {
-    expect(explorerContent).toContain("openGroups");
-    expect(explorerContent).toContain("toggleGroup");
+  test("la galerie partage les miniatures du wiki et conserve un détail à la demande", () => {
+    expect(explorerContent).toContain("CharacterCardGrid");
+    expect(explorerContent).toContain("WikiImg");
+    expect(explorerContent).toContain("selectedDocument");
     expect(explorerContent).toContain("aria-expanded");
-    expect(explorerContent).toContain("Tout déplier");
-    expect(explorerContent).toContain("Tout replier");
+    expect(explorerContent).toContain("ClientGatedWrap");
+    expect(explorerContent).not.toContain('from "@/components/GatedLink"');
+    expect(pageContent).toContain("getLaunchConfig");
+    expect(pageContent).toContain("access={access}");
+    expect(explorerContent).toContain("useInterviewUIText");
   });
 
   test("le composant implémente le tri et la recherche", () => {
@@ -37,12 +41,11 @@ describe("InterviewsExplorer et page /wiki/interviews", () => {
   test("le composant supporte le filtrage par décennie", () => {
     expect(explorerContent).toContain("decadeFilter");
     expect(explorerContent).toContain("80s");
-    expect(explorerContent).toContain("Années 80 (1980-89)");
     expect(explorerContent).toContain("90s");
     expect(explorerContent).toContain("2000s");
     expect(explorerContent).toContain("2010s");
-    expect(explorerContent).toContain("aria-pressed={decadeFilter === pill.id}");
+    expect(explorerContent).toContain("aria-pressed={decadeFilter === id}");
     expect(explorerContent).toContain('aria-live="polite"');
-    expect(explorerContent).toContain("openGroupsInView");
+    expect(explorerContent).toContain("citationCount");
   });
 });

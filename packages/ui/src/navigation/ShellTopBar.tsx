@@ -11,7 +11,6 @@ import { ChevronGauche, MaterialSymbol } from "../icones";
 import type { ShellBrand, ShellCrumb, ShellLabels, ShellLinkComponent } from "./AppShell";
 import { WindowControls, useUndecoratedWindow } from "./WindowControls";
 import { shellCrumbKey } from "./crumb-key";
-import { DragonBallWordmark } from "../toriyama/DragonBallWordmark";
 
 const ICON_BUTTON =
   "grid h-11 w-11 shrink-0 place-items-center rounded-xl text-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring";
@@ -84,8 +83,14 @@ export function ShellTopBar({
               {brand.mark}
             </span>
             <span className="flex min-w-0 flex-col leading-none">
-              <span className="sr-only">{brand.name}</span>
-              <DragonBallWordmark decorative className="shell-wordmark" />
+              <span className="truncate font-display text-[0.9375rem] font-extrabold tracking-[-0.02em] text-os">
+                {brand.name}
+              </span>
+              {brand.tagline && (
+                <span className="mt-0.5 truncate text-[0.6875rem] text-muted-foreground">
+                  {brand.tagline}
+                </span>
+              )}
             </span>
           </Link>
         )}

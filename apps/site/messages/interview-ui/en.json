@@ -1,0 +1,25 @@
+{
+  "search": "Search interviews",
+  "placeholder": "Title, subject, year or keyword",
+  "sort": "Sort",
+  "sorts": {
+    "date-desc": "Newest first",
+    "date-asc": "Oldest first",
+    "count-desc": "Most quotations",
+    "title-asc": "Title (A–Z)"
+  },
+  "clear": "Clear",
+  "era": "Period",
+  "eras": { "all": "All", "80s": "1980s", "90s": "1990s", "2000s": "2000s", "2010s": "Since 2010" },
+  "results": "{documents} documents · {citations} quotations",
+  "gallery": "Interview and author statement documents",
+  "empty": "No documents match these filters.",
+  "unknownDate": "Date to document",
+  "citations": "{count} quotations",
+  "close": "Close",
+  "translated": "Translated from the Japanese original",
+  "untranscribed": "Document catalogued; its transcription is not yet available.",
+  "source": "View the source document",
+  "ragTitle": "RAG evidence linked to the canon corpus",
+  "ragLead": "These results help locate documents; editorial quotations remain attributed to the primary work."
+}

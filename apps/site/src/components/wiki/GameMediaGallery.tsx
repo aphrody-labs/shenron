@@ -1,32 +1,12 @@
 "use client";
 
-/**
- * Galerie médias des fiches jeu.
- *
- * **Scindée en deux sections** — « Vidéos » puis « Images » — au lieu d'un bloc
- * unique où une bande-annonce et une capture d'écran se disputaient la même
- * vignette : on ne savait pas ce qu'on allait ouvrir, et la section s'étirait
- * sur toute la hauteur de la fiche. Séparées, chacune respire et se parcourt
- * pour ce qu'elle est.
- *
- * **Défilement automatique** sur les images : la galerie avance seule toutes
- * les 5 s pour montrer ce que la fiche contient. Elle s'arrête dès qu'on
- * interagit (survol, focus, clic sur une vignette), quand l'onglet passe en
- * arrière-plan, et n'existe pas du tout si le visiteur a demandé moins
- * d'animations. Une vidéo ne défile jamais toute seule — on n'interrompt pas
- * une lecture en cours.
- *
- * **Vidéos retirées écartées** : une vidéo supprimée ou passée en privé sur
- * YouTube laissait une vignette grise et un lecteur « Vidéo non disponible ».
- * La base n'en sait rien (le lien reste valide) ; c'est la vignette qui le dit.
- * La vidéo disparaît alors de la galerie, et la section avec elle si c'était
- * la seule.
- */
+/** One compact preview and mixed thumbnail rail in editorial order. */
 import { Film, ImageIcon, Pause, Play } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useReglages } from "@/lib/use-capacites";
 import { assetUrl } from "@/lib/assets";
 import { youtubeEmbedUrl, youtubeThumbUrl } from "@/lib/youtube";
+import { useGameGalleryUIText } from "@/lib/game-gallery-ui-text";
 
 export type GalleryMedia = {
   type: "image" | "youtube";
@@ -111,22 +91,19 @@ export function GameMediaGallery({ media, title }: { media: GalleryMedia[]; titl
   );
 
   const indisponibles = useVideosIndisponibles(items);
-  const videos = useMemo(
-    () => items.filter((i) => i.kind === "youtube" && !indisponibles.has(i.key)),
+  const available = useMemo(
+    () => items.filter((i) => !indisponibles.has(i.key)),
     [items, indisponibles],
   );
-  const images = useMemo(() => items.filter((i) => i.kind === "image"), [items]);
-
-  if (videos.length === 0 && images.length === 0) return null;
+  if (available.length === 0) return null;
 
   return (
-    <div className="mb-12 space-y-10">
-      {videos.length > 0 && (
-        <Galerie titre="Vidéos" items={videos} title={title} autoplay={false} />
-      )}
-      {images.length > 0 && (
-        <Galerie titre="Images" items={images} title={title} autoplay={images.length > 1} />
-      )}
+    <div className="mb-8 min-w-0">
+      <Gallery
+        items={available}
+        title={title}
+        autoplay={available.length > 1 && available.every((item) => item.kind === "image")}
+      />
     </div>
   );
 }
@@ -140,18 +117,21 @@ type ItemResolu = GalleryMedia & {
 
 const DELAI_AUTO_MS = 5000;
 
-function Galerie({
-  titre,
+function Gallery({
   items,
   title,
   autoplay,
 }: {
-  titre: string;
   items: ItemResolu[];
   title: string;
   autoplay: boolean;
 }) {
-  const [active, setActive] = useState(0);
+  const t = useGameGalleryUIText();
+  const [activeKey, setActiveKey] = useState<string | null>(null);
+  const active = Math.max(
+    0,
+    items.findIndex((item) => item.key === activeKey),
+  );
   // `null` tant qu'on n'a pas interrogé les préférences système : on ne lance
   // rien avant de savoir si l'animation est la bienvenue.
   const [enMarche, setEnMarche] = useState<boolean | null>(null);
@@ -174,13 +154,19 @@ function Galerie({
       // L'onglet en arrière-plan continuerait d'avancer pour personne, et
       // laisserait le visiteur revenir sur une image qu'il n'a pas choisie.
       if (suspendu.current || document.hidden) return;
-      setActive((i) => (i + 1) % items.length);
+      setActiveKey((key) => {
+        const index = Math.max(
+          0,
+          items.findIndex((item) => item.key === key),
+        );
+        return items[(index + 1) % items.length]!.key;
+      });
     }, DELAI_AUTO_MS);
     return () => clearInterval(id);
-  }, [autoplay, enMarche, items.length]);
+  }, [autoplay, enMarche, items]);
 
-  const choisir = useCallback((i: number) => {
-    setActive(i);
+  const choisir = useCallback((key: string) => {
+    setActiveKey(key);
     // Un clic est une intention : on rend la main, on ne reprend pas la main
     // trois secondes plus tard sur une autre image.
     setEnMarche(false);
@@ -189,10 +175,10 @@ function Galerie({
   if (!current) return null;
 
   return (
-    <section aria-label={`${titre} — ${title}`}>
+    <section aria-label={`${t("heading")} — ${title}`} className="min-w-0">
       <div className="mb-4 flex items-center justify-between gap-4 border-b border-white/10 pb-2">
         <h2 className="font-display text-[20px] font-bold text-white">
-          {titre}
+          {t("heading")}
           <span className="ml-2 font-mono text-[13px] font-normal text-white/45">
             {items.length}
           </span>
@@ -201,11 +187,11 @@ function Galerie({
           <button
             type="button"
             onClick={() => setEnMarche((v) => !v)}
-            aria-label={enMarche ? "Arrêter le défilement" : "Reprendre le défilement"}
+            aria-label={t(enMarche ? "stopSlideshow" : "resumeSlideshow")}
             className="inline-flex items-center gap-1.5 rounded-full border border-white/12 px-3 py-1.5 text-[11px] font-semibold text-white/60 transition-colors hover:border-dbz-orange/50 hover:text-white"
           >
             {enMarche ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
-            {enMarche ? "Pause" : "Lecture"}
+            {t(enMarche ? "pause" : "play")}
           </button>
         )}
       </div>
@@ -223,7 +209,7 @@ function Galerie({
             <iframe
               key={current.key}
               src={current.src}
-              title={current.caption || `${title} — vidéo`}
+              title={current.caption || t("videoTitle", { title })}
               className="absolute inset-0 h-full w-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
@@ -234,10 +220,10 @@ function Galerie({
             <img
               key={current.key}
               src={current.src}
-              alt={current.caption || `${title} — capture`}
+              alt={current.caption || t("imageTitle", { title })}
               // `animate-[fadeIn]` : sans fondu, le passage automatique d'une
               // image à l'autre est un à-coup sec au milieu de la lecture.
-              className="absolute inset-0 h-full w-full animate-[fade-in_400ms_ease-out] object-contain"
+              className="absolute inset-0 h-full w-full motion-safe:animate-[fade-in_400ms_ease-out] object-contain"
             />
           )}
         </div>
@@ -257,12 +243,10 @@ function Galerie({
                 <button
                   key={item.key}
                   type="button"
-                  onClick={() => choisir(i)}
-                  aria-label={
-                    item.caption || (item.kind === "youtube" ? `Vidéo ${i + 1}` : `Image ${i + 1}`)
-                  }
+                  onClick={() => choisir(item.key)}
+                  aria-label={`${t(item.kind === "youtube" ? "video" : "image", { index: i + 1 })}${item.caption ? ` — ${item.caption}` : ""}`}
                   aria-current={isActive ? "true" : undefined}
-                  className={`relative h-16 w-28 shrink-0 overflow-hidden rounded-md border-2 transition-all ${
+                  className={`relative h-14 w-24 shrink-0 overflow-hidden rounded-md border-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
                     isActive
                       ? "border-dbz-orange shadow-[0_0_10px_rgba(255,178,0,0.35)]"
                       : "border-white/10 hover:border-white/30"
@@ -284,13 +268,18 @@ function Galerie({
                       )}
                     </span>
                   )}
-                  {item.kind === "youtube" && (
-                    <span className="absolute inset-0 flex items-center justify-center bg-black/35">
-                      <span className="rounded-full bg-black/70 p-1.5 text-white">
-                        <Film className="h-3.5 w-3.5" />
-                      </span>
+                  <span
+                    aria-hidden="true"
+                    className={`absolute ${item.kind === "youtube" ? "inset-0 flex items-center justify-center bg-black/35" : "bottom-1 right-1"}`}
+                  >
+                    <span className="rounded-full bg-black/70 p-1.5 text-white">
+                      {item.kind === "youtube" ? (
+                        <Play className="h-3.5 w-3.5" />
+                      ) : (
+                        <ImageIcon className="h-3 w-3" />
+                      )}
                     </span>
-                  )}
+                  </span>
                 </button>
               );
             })}

@@ -10,6 +10,7 @@ import { T } from "@/components/T";
 import { InterviewsExplorer } from "@/components/wiki/InterviewsExplorer";
 import { dbUniverse } from "@/lib/db-universe";
 import { GatedLink } from "@/components/GatedLink";
+import { getLaunchConfig } from "@/lib/wiki-launch-config";
 
 export const revalidate = 3600;
 
@@ -27,11 +28,12 @@ export const metadata: Metadata = {
 };
 
 export default async function InterviewsPage() {
-  const [{ groups, total, translated }, rag] = await Promise.all([
+  const [{ groups, total, translated }, rag, access] = await Promise.all([
     listToriyamaWords("interviews"),
     dbUniverse
       .rag("Akira Toriyama interview databook", 5, { lang: "fr", sourceId: "canon_references" })
       .catch(() => null),
+    getLaunchConfig().catch(() => null),
   ]);
 
   return (
@@ -81,7 +83,7 @@ export default async function InterviewsPage() {
             <T k="wiki.editorialNav.catalogue" />
           </GatedLink>
         </nav>
-        <InterviewsExplorer groups={groups} ragResults={rag?.results ?? []} />
+        <InterviewsExplorer groups={groups} access={access} ragResults={rag?.results ?? []} />
       </div>
     </div>
   );

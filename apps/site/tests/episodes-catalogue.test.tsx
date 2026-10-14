@@ -44,6 +44,24 @@ mock.module("@/lib/assets", () => ({
 }));
 mock.module("@/lib/chronology", () => ({ eraOf: () => "DB", ERA_ACCENT: { DB: "#ff9900" } }));
 mock.module("@/components/T", () => ({ T: ({ k }: { k: string }) => k }));
+mock.module("@/components/wiki/WikiPageShell", () => ({
+  WikiPageShell: ({
+    title,
+    lead,
+    children,
+  }: {
+    title: ReactNode;
+    lead: ReactNode;
+    children: ReactNode;
+  }) =>
+    createElement(
+      "main",
+      null,
+      createElement("h1", null, title),
+      createElement("p", null, lead),
+      children,
+    ),
+}));
 mock.module("next/link", () => ({
   default: ({ href, children, ...props }: { href: string; children: ReactNode }) =>
     createElement("a", { href, ...props }, children),

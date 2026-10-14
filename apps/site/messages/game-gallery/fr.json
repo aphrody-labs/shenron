@@ -1,0 +1,11 @@
+{
+  "heading": "Galerie",
+  "video": "Vidéo {index}",
+  "image": "Image {index}",
+  "videoTitle": "{title} — vidéo",
+  "imageTitle": "{title} — capture",
+  "pause": "Pause",
+  "play": "Lecture",
+  "stopSlideshow": "Arrêter le défilement",
+  "resumeSlideshow": "Reprendre le défilement"
+}

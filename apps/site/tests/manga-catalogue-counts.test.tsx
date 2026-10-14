@@ -42,8 +42,8 @@ function render(props: Parameters<typeof MangaVolumeGrid>[0], locale: "fr" | "en
 
 test("the color collection reports available volumes without inventing a catalogue on empty data", () => {
   const html = render({ dbVolumes: [], dbsVolumes: [], readableChapters: [] });
-  const badge = html.match(/<option value="color">[\s\S]*?<\/option>/)?.[0];
-  expect(badge).toContain("· 0");
+  const badge = html.match(/<button[^>]*data-collection="color"[\s\S]*?<\/button>/)?.[0];
+  expect(badge).toContain('tabular-nums">0</span>');
   expect(badge).not.toContain("520 tomes");
 });
 
@@ -55,9 +55,9 @@ test("the color badge counts volumes rather than chapters", () => {
     colorVolumeIds: [82],
     colorChapterCount: 15,
   });
-  const badge = html.match(/<option value="color">[\s\S]*?<\/option>/)?.[0];
-  expect(badge).toContain("· 1");
-  expect(badge).not.toContain("· 15");
+  const badge = html.match(/<button[^>]*data-collection="color"[\s\S]*?<\/button>/)?.[0];
+  expect(badge).toContain('tabular-nums">1</span>');
+  expect(badge).not.toContain('tabular-nums">15</span>');
 });
 
 test("the complete catalogue renders at most twelve covers across all collections", () => {
@@ -92,4 +92,33 @@ test("the compact catalogue controls use the active French, English and Japanese
       { fr: "Toutes les collections", en: "All collections", ja: "すべてのコレクション" }[locale],
     );
   }
+});
+
+test("every populated manga collection is visible before opening a menu, including recent editions", () => {
+  const volume = (id: number, series: string) => ({
+    id,
+    series,
+    volumeNumber: 1,
+    title: null,
+    cover: null,
+  });
+  const html = render({
+    dbVolumes: [volume(1, "DB")],
+    dbsVolumes: [volume(2, "DBS")],
+    kanzenbanVolumes: [volume(3, "DBKZ")],
+    dbjpVolumes: [volume(4, "DBJP")],
+    araleVolumes: [volume(5, "ARALE")],
+    otherVolumes: [volume(6, "DB_LIGHT_NOVELS")],
+    readableChapters: [],
+  });
+  for (const series of ["all", "DB", "DBS", "DBKZ", "DBJP", "ARALE", "DB_LIGHT_NOVELS", "color"]) {
+    const button = html.match(
+      new RegExp(`<button[^>]*data-collection="${series}"[\\s\\S]*?<\\/button>`),
+    )?.[0];
+    expect(button).toBeDefined();
+    expect(button).toContain("aria-pressed=");
+    expect(button).toContain("min-h-11");
+  }
+  expect(html).not.toContain('<option value="DB">');
+  expect(html).toContain('data-collection="all" aria-pressed="true"');
 });

@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable jsx-a11y/no-noninteractive-tabindex -- The named overflow region must support native keyboard scrolling. */
 
 import { Children, isValidElement, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
@@ -9,7 +8,7 @@ import { useT } from "@/components/T";
 import { HomeMotion } from "./HomeMotion";
 import "./home-screen-deck.css";
 
-/** Native snapping keeps touch, keyboard, links and oversized panels usable. */
+/** Document scrolling preserves compact sections and accessible panel navigation. */
 export function HomeScreenDeck({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
@@ -21,26 +20,13 @@ export function HomeScreenDeck({ children }: { children: ReactNode }) {
   useEffect(() => {
     const deck = ref.current;
     if (!deck) return;
-    const measure = () => {
-      const viewport = window.visualViewport?.height ?? window.innerHeight;
-      const top = Math.max(0, deck.getBoundingClientRect().top);
-      const mobileNav =
-        document.querySelector("[data-shell-mobile-nav]")?.getBoundingClientRect().height ?? 0;
-      deck.style.setProperty(
-        "--home-screen-height",
-        `${Math.max(240, viewport - top - mobileNav)}px`,
-      );
-    };
-    measure();
-    window.addEventListener("resize", measure);
-    window.visualViewport?.addEventListener("resize", measure);
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) setActive(Number((entry.target as HTMLElement).dataset.screen));
         }
       },
-      { root: deck, rootMargin: "-40% 0px -40% 0px", threshold: 0 },
+      { rootMargin: "-40% 0px -40% 0px", threshold: 0 },
     );
     for (const screen of deck.children) observer.observe(screen);
     return () => {
@@ -50,8 +36,6 @@ export function HomeScreenDeck({ children }: { children: ReactNode }) {
         delete document.documentElement.dataset.homeTransition;
       }
       observer.disconnect();
-      window.removeEventListener("resize", measure);
-      window.visualViewport?.removeEventListener("resize", measure);
     };
   }, []);
 
@@ -60,7 +44,7 @@ export function HomeScreenDeck({ children }: { children: ReactNode }) {
     const screen = deck?.children[index] as HTMLElement | undefined;
     if (!deck || !screen) return;
     const move = () => {
-      deck.scrollTo({ top: screen.offsetTop, behavior: "instant" });
+      screen.scrollIntoView({ block: "start", behavior: "instant" });
       setActive(index);
       screen.focus({ preventScroll: true });
     };
@@ -93,12 +77,7 @@ export function HomeScreenDeck({ children }: { children: ReactNode }) {
   return (
     <HomeMotion value={motion}>
       <div className="home-screen-experience" data-home-motion={motion ? "running" : "paused"}>
-        <section
-          ref={ref}
-          className="home-screen-deck"
-          aria-label={t("accueil.hero.title")}
-          tabIndex={0}
-        >
+        <section ref={ref} className="home-screen-deck" aria-label={t("accueil.hero.title")}>
           {screens.map((screen, index) => (
             <div
               key={isValidElement(screen) ? screen.key : String(screen)}

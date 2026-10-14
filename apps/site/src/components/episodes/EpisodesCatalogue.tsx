@@ -7,6 +7,7 @@ import { ContinueRail } from "@/components/history/ContinueRail";
 import { EpisodeCard } from "@/components/stream/EpisodeCard";
 import { StreamRail } from "@/components/stream/StreamRail";
 import { SectionUnavailable } from "@/components/wiki/SectionUnavailable";
+import { WikiPageShell } from "@/components/wiki/WikiPageShell";
 import { dbUniverse, type Episode, type Saga } from "@/lib/db-universe";
 import { assetUrl } from "@/lib/assets";
 import { ERA_ACCENT, eraOf } from "@/lib/chronology";
@@ -46,20 +47,20 @@ export default async function EpisodesCatalogue() {
   if (!present.length) return <SectionUnavailable title={<T k="wiki.episodes.unavailable" />} />;
 
   return (
-    <div className="wiki-container min-w-0">
-      <header className="mb-5 border-b border-white/10 pb-5">
-        <h1 className="font-display text-2xl font-bold text-white sm:text-3xl">
-          <T k="wiki.episodes.title" />
-        </h1>
-        <p className="mt-2 text-sm text-white/60">
+    <WikiPageShell
+      title={<T k="wiki.episodes.title" />}
+      lead={
+        <>
           <T
             k="wiki.episodes.metaEpisodes"
             values={{ count: present.reduce((sum, group) => sum + group.total, 0) }}
           />
           {" · "}
           <T k="wiki.episodes.metaSeries" values={{ count: present.length }} />
-        </p>
-      </header>
+        </>
+      }
+      className="min-w-0"
+    >
       <nav aria-labelledby="episode-series-navigation" className="mb-6">
         <span id="episode-series-navigation" className="sr-only">
           <T k="wiki.episodes.metaSeries" values={{ count: present.length }} />
@@ -121,33 +122,38 @@ export default async function EpisodesCatalogue() {
             ))}
           </StreamRail>
           {group.sagas.length > 0 && (
-            <div className="mt-5">
-              <h3 className="mb-3 font-display text-base font-semibold text-white/80">
+            <div className="mt-3">
+              <h3
+                id={`episode-sagas-${group.series}`}
+                className="mb-2 text-sm font-semibold text-white/70"
+              >
                 <T k="categories.sagas.label" />
               </h3>
-              <StreamRail ariaLabel={SERIES_LABELS[group.series] ?? group.series}>
+              <ul
+                className="flex flex-wrap gap-2"
+                aria-labelledby={`episode-sagas-${group.series}`}
+              >
                 {group.sagas.map((saga) => (
-                  <GatedWrap
-                    key={saga.id}
-                    href={`/wiki/sagas/${saga.slug}`}
-                    className="block w-52 shrink-0 snap-start overflow-hidden rounded-lg border border-white/10 bg-white/[0.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
-                  >
-                    {saga.image && (
-                      <img
-                        src={assetUrl(saga.image)}
-                        alt=""
-                        loading="lazy"
-                        width={208}
-                        height={117}
-                        className="aspect-video w-full object-cover"
-                      />
-                    )}
-                    <span className="block p-3 font-display text-sm font-semibold text-white">
-                      {saga.name}
-                    </span>
-                  </GatedWrap>
+                  <li key={saga.id} className="min-w-0 max-w-full">
+                    <GatedWrap
+                      href={`/wiki/sagas/${saga.slug}`}
+                      className="flex min-h-11 max-w-full items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-2 py-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
+                    >
+                      {saga.image && (
+                        <img
+                          src={assetUrl(saga.image)}
+                          alt=""
+                          loading="lazy"
+                          width={48}
+                          height={32}
+                          className="h-8 w-12 shrink-0 rounded object-cover"
+                        />
+                      )}
+                      <span className="min-w-0 text-sm font-medium text-white">{saga.name}</span>
+                    </GatedWrap>
+                  </li>
                 ))}
-              </StreamRail>
+              </ul>
             </div>
           )}
         </section>
@@ -162,6 +168,6 @@ export default async function EpisodesCatalogue() {
         </Link>
       </div>
       <ContributeRail className="mt-10" quoiKey="kit.contribute.what.episode" />
-    </div>
+    </WikiPageShell>
   );
 }

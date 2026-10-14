@@ -1,0 +1,11 @@
+{
+  "heading": "ギャラリー",
+  "video": "動画 {index}",
+  "image": "画像 {index}",
+  "videoTitle": "{title} — 動画",
+  "imageTitle": "{title} — スクリーンショット",
+  "pause": "一時停止",
+  "play": "再生",
+  "stopSlideshow": "スライドショーを停止",
+  "resumeSlideshow": "スライドショーを再開"
+}

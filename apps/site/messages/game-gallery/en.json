@@ -1,0 +1,11 @@
+{
+  "heading": "Gallery",
+  "video": "Video {index}",
+  "image": "Image {index}",
+  "videoTitle": "{title} — video",
+  "imageTitle": "{title} — screenshot",
+  "pause": "Pause",
+  "play": "Play",
+  "stopSlideshow": "Pause slideshow",
+  "resumeSlideshow": "Resume slideshow"
+}

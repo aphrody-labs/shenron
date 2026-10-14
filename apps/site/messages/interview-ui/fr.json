@@ -1,0 +1,31 @@
+{
+  "search": "Rechercher une interview",
+  "placeholder": "Titre, sujet, année ou mot-clé",
+  "sort": "Trier",
+  "sorts": {
+    "date-desc": "Plus récents",
+    "date-asc": "Plus anciens",
+    "count-desc": "Plus de citations",
+    "title-asc": "Titre (A–Z)"
+  },
+  "clear": "Effacer",
+  "era": "Époque",
+  "eras": {
+    "all": "Toutes",
+    "80s": "Années 80",
+    "90s": "Années 90",
+    "2000s": "Années 2000",
+    "2010s": "Depuis 2010"
+  },
+  "results": "{documents} documents · {citations} citations",
+  "gallery": "Documents d’interviews et prises de parole",
+  "empty": "Aucun document ne correspond à ces filtres.",
+  "unknownDate": "Date à documenter",
+  "citations": "{count} citations",
+  "close": "Fermer",
+  "translated": "Version originale japonaise traduite",
+  "untranscribed": "Document répertorié ; sa transcription n’est pas encore disponible.",
+  "source": "Voir le document source",
+  "ragTitle": "Preuves RAG reliées au corpus canon",
+  "ragLead": "Ces résultats aident à retrouver les documents ; la citation éditoriale reste celle de l’ouvrage primaire."
+}

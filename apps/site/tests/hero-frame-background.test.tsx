@@ -10,7 +10,7 @@ test("the home uses a single supplied frame instead of static legacy backgrounds
   const frame = "https://cdn.dragonballfr.com/media/episodes/875/source/frame.webp";
   const html = renderToStaticMarkup(
     <NextIntlClientProvider locale="fr" messages={fr} timeZone="UTC">
-      <HomeHero hero={DEFAULT_HOME_CONFIG.hero} heroFrame={frame} />
+      <HomeHero hero={{ ...DEFAULT_HOME_CONFIG.hero, scenes: [] }} heroFrame={frame} />
     </NextIntlClientProvider>,
   );
   expect(html.match(/class="home-hero__beerus"/g)).toHaveLength(1);

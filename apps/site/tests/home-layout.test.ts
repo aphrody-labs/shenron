@@ -33,7 +33,7 @@ describe("home layout", () => {
     const hero = source("../src/components/home/HomeHero.tsx");
     expect(hero).toContain("home-wordmark");
     expect(hero).toContain("<KintoUnVolant");
-    expect(hero).not.toContain("<HomeHeroScenes");
+    expect(hero).toContain("<HomeHeroScenes scenes={hero.scenes}");
     expect(hero).toContain("heroFrame");
     expect(view).toContain("<SectionScene");
     expect(view).toContain("scene={s.scene}");
