@@ -107,6 +107,59 @@ test("gallery thumbnails and titles use all locales without printing quotations 
   }
 });
 
+test("RAG titles with spaces or Japanese resolve to their rendered ASCII fragment targets", async () => {
+  const html = renderToStaticMarkup(
+    <NextIntlClientProvider locale="fr" messages={{}} timeZone="UTC">
+      <InterviewsExplorer
+        groups={[]}
+        ragResults={[
+          {
+            title: "Corpus proof with spaces",
+            url: "https://example.com/reference-one",
+            snippet: "private reference one",
+          },
+          {
+            title: "鳥山明 のインタビュー",
+            url: "https://example.com/reference-two",
+            snippet: "private reference two",
+          },
+          {
+            title: "Public document",
+            url: "/wiki/databooks/2",
+            snippet: "private document excerpt",
+          },
+        ]}
+      />
+    </NextIntlClientProvider>,
+  );
+  const targetIds = new Set<string>();
+  const hrefs: string[] = [];
+  await new HTMLRewriter()
+    .on("li[id]", {
+      element(element) {
+        targetIds.add(element.getAttribute("id")!);
+      },
+    })
+    .on("a[href]", {
+      element(element) {
+        hrefs.push(element.getAttribute("href")!);
+      },
+    })
+    .transform(new Response(html))
+    .text();
+  const fragments = hrefs.filter((href) => new URL(href, "https://dragonballfr.com").hash);
+  expect(fragments).toHaveLength(2);
+  for (const href of fragments) {
+    const target = decodeURIComponent(new URL(href, "https://dragonballfr.com").hash.slice(1));
+    expect(target).toMatch(/^interview-rag-\d+$/);
+    expect(targetIds.has(target)).toBe(true);
+  }
+  expect(hrefs).toContain("/wiki/databooks/2");
+  expect(html).not.toContain("private reference one");
+  expect(html).not.toContain("private reference two");
+  expect(html).not.toContain("private document excerpt");
+});
+
 test.skipIf(typeof document === "undefined")(
   "search, decade filtering and opening a source retain editorial quotations",
   async () => {

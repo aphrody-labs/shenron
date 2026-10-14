@@ -140,7 +140,8 @@ export default async function RootLayout({
   const themeCss = themeCssVars(await getSiteTheme());
 
   return (
-    <html lang="fr" className="dark">
+    // The bootstrap restores local theme attributes before hydration; children still hydrate normally.
+    <html lang="fr" className="dark" suppressHydrationWarning>
       <head>
         {/* Polices critiques depuis le CDN : même URL que celle que résout `fonts.css`. */}
         {FONT_PRELOADS.map((href) => (

@@ -219,17 +219,14 @@ export function InterviewsExplorer({ groups, access, ragResults = [] }: Intervie
           <h2 className="font-semibold">{ui("ragTitle")}</h2>
           <p className="mt-1 text-muted-foreground">{ui("ragLead")}</p>
           <ul className="mt-3 space-y-2">
-            {ragResults.slice(0, 5).map((result) => (
-              <li
-                key={`${result.url}-${result.title}`}
-                id={`rag-${encodeURIComponent(result.title)}`}
-              >
+            {ragResults.slice(0, 5).map((result, index) => (
+              <li key={`${result.url}-${result.title}`} id={`interview-rag-${index}`}>
                 <Link
                   className="text-primary underline-offset-4 hover:underline"
                   href={
                     result.url.startsWith("/") && !result.url.startsWith("//")
                       ? result.url
-                      : `/wiki/interviews#rag-${encodeURIComponent(result.title)}`
+                      : `/wiki/interviews#interview-rag-${index}`
                   }
                 >
                   {result.title}

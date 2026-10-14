@@ -20,22 +20,31 @@ export function HomeScreenDeck({ children }: { children: ReactNode }) {
   useEffect(() => {
     const deck = ref.current;
     if (!deck) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) setActive(Number((entry.target as HTMLElement).dataset.screen));
-        }
-      },
-      { rootMargin: "-40% 0px -40% 0px", threshold: 0 },
-    );
-    for (const screen of deck.children) observer.observe(screen);
+    let observer: IntersectionObserver | undefined;
+    const observe = () => {
+      observer?.disconnect();
+      const inset = Math.round(window.innerHeight * 0.4);
+      observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting)
+              setActive(Number((entry.target as HTMLElement).dataset.screen));
+          }
+        },
+        { rootMargin: `-${inset}px 0px -${inset}px 0px`, threshold: 0 },
+      );
+      for (const screen of deck.children) observer.observe(screen);
+    };
+    observe();
+    window.addEventListener("resize", observe);
     return () => {
       if (transitionRef.current) {
         transitionRef.current.skipTransition();
         transitionRef.current = null;
         delete document.documentElement.dataset.homeTransition;
       }
-      observer.disconnect();
+      observer?.disconnect();
+      window.removeEventListener("resize", observe);
     };
   }, []);
 

@@ -8,3 +8,12 @@ export function useInterviewUIText() {
   const locale = requested === "en" || requested === "ja" ? requested : "fr";
   return createTranslator({ locale, messages: { fr, en, ja }[locale] });
 }
+
+export function InterviewUIText({
+  name,
+}: {
+  name: "pageTitle" | "pageLead" | "editorialNavigation";
+}) {
+  const t = useInterviewUIText();
+  return t(name);
+}
