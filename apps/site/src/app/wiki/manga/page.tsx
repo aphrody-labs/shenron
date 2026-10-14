@@ -1,3 +1,4 @@
+import { mangaData } from "@/lib/manga-data";
 import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { JAPANESE_FULL_COLOR_CATALOGUE } from "@aphrody/shenron-config/manga-catalogue";
 import { MangaLibraryHeader, MangaLibraryStats } from "@/components/manga/MangaLibraryHeader";
@@ -62,18 +63,18 @@ async function MangaIndexContent() {
     readableData,
     mediaWorksList,
   ] = await Promise.all([
-    dbUniverse.mangaVolumes("DB"),
-    dbUniverse.mangaVolumes("DBS"),
-    dbUniverse.mangaVolumes("DBKZ"),
-    dbUniverse.mangaVolumes("SOSH"),
-    dbUniverse.mangaVolumes("DBZ_ANIME_COMICS"),
-    dbUniverse.mangaVolumes("DB_MOVIES"),
-    dbUniverse.mangaVolumes("DBGT_ANIME_COMICS"),
-    dbUniverse.mangaVolumes("DBS_ANIME_COMICS"),
-    dbUniverse.mangaVolumes("DBJP"),
-    dbUniverse.mangaVolumes("ARALE"),
-    dbUniverse.mangaCatalogVolumes(),
-    dbUniverse.readableMangaChapters(),
+    mangaData.mangaVolumes("DB"),
+    mangaData.mangaVolumes("DBS"),
+    mangaData.mangaVolumes("DBKZ"),
+    mangaData.mangaVolumes("SOSH"),
+    mangaData.mangaVolumes("DBZ_ANIME_COMICS"),
+    mangaData.mangaVolumes("DB_MOVIES"),
+    mangaData.mangaVolumes("DBGT_ANIME_COMICS"),
+    mangaData.mangaVolumes("DBS_ANIME_COMICS"),
+    mangaData.mangaVolumes("DBJP"),
+    mangaData.mangaVolumes("ARALE"),
+    mangaData.mangaCatalogVolumes(),
+    mangaData.readableMangaChapters(),
     dbUniverse.mediaWorks({ kind: "manga" }),
   ]);
 

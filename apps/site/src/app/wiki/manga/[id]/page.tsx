@@ -1,5 +1,6 @@
+import { mangaData } from "@/lib/manga-data";
 import { hasEditorialDatabase } from "@/lib/prerender";
-import { dbUniverse, assetUrl } from "@/lib/db-universe";
+import { assetUrl } from "@/lib/db-universe";
 import { MangaReader } from "@/components/manga/MangaReader";
 import { ogMeta } from "@/lib/og";
 import { notFound } from "next/navigation";
@@ -28,7 +29,7 @@ export const revalidate = 3600;
 export async function generateStaticParams() {
   if (!hasEditorialDatabase()) return [];
   if (process.env.SHENRON_BUILD_LOW_MEMORY === "1") return [];
-  const data = await dbUniverse.readableMangaChapters();
+  const data = await mangaData.readableMangaChapters();
   // Les éditions volumineuses (Full Color 520 chapitres, Kanzenban, Anime Comics, etc.)
   // sont volontairement exclues du pré-rendu pour éviter l'OOM au build Next 16.
   // `dynamicParams` restant à `true`, ces chapitres sont rendus à la demande puis mis en cache par l'ISR.
@@ -54,7 +55,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const numero = idDeFiche(id);
-  const chapter = numero === null ? null : await dbUniverse.mangaChapter(numero);
+  const chapter = numero === null ? null : await mangaData.mangaChapter(numero);
   if (!chapter) return { title: "Manga Dragon Ball" };
   const label = chapterTitle(chapter);
   // La description tenait en une phrase identique pour les 665 chapitres : même
@@ -86,7 +87,7 @@ export async function generateMetadata({
 export default async function MangaReaderPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const numero = idDeFiche(id);
-  const chapter = numero === null ? null : await dbUniverse.mangaChapter(numero);
+  const chapter = numero === null ? null : await mangaData.mangaChapter(numero);
 
   if (!chapter) notFound();
 
@@ -186,6 +187,7 @@ export default async function MangaReaderPage({ params }: { params: Promise<{ id
 
       <MangaReader
         pages={chapter.pages}
+        sourceKind={chapter.sourceKind}
         title={chapterTitle(chapter)}
         prevHref={chapter.prev ? `/wiki/manga/${chapter.prev}` : null}
         nextHref={chapter.next ? `/wiki/manga/${chapter.next}` : null}

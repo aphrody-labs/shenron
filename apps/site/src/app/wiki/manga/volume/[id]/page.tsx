@@ -1,8 +1,8 @@
+import { mangaData } from "@/lib/manga-data";
 import { hasEditorialDatabase } from "@/lib/prerender";
 import { JAPANESE_FULL_COLOR_CATALOGUE } from "@aphrody/shenron-config/manga-catalogue";
 import Image from "next/image";
 import { Suspense } from "react";
-import { dbUniverse } from "@/lib/db-universe";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
@@ -36,7 +36,7 @@ export const revalidate = 3600;
 export async function generateStaticParams() {
   if (!hasEditorialDatabase()) return [];
   if (process.env.SHENRON_BUILD_LOW_MEMORY === "1") return [];
-  const readable = await dbUniverse.readableMangaChapters();
+  const readable = await mangaData.readableMangaChapters();
   const volIds = new Set(
     (readable?.chapters ?? [])
       .filter((c) => c.series === "DB" || c.series === "DBS")
@@ -53,7 +53,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const numero = idDeFiche(id);
-  const volume = numero === null ? null : await dbUniverse.mangaVolume(numero);
+  const volume = numero === null ? null : await mangaData.mangaVolume(numero);
   if (!volume) return { title: "Volume Manga" };
   // Description écrite sur ce que la fiche contient RÉELLEMENT (titre du tome,
   // chapitres lisibles, planches, date) plutôt que le seul titre — qui, pour 41
@@ -96,10 +96,10 @@ export async function generateMetadata({
 export default async function MangaVolumePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const numero = idDeFiche(id);
-  const volume = numero === null ? null : await dbUniverse.mangaVolume(numero);
+  const volume = numero === null ? null : await mangaData.mangaVolume(numero);
   if (!volume) notFound();
 
-  const siblingVols = (await dbUniverse.mangaVolumes(volume.series))?.volumes ?? [];
+  const siblingVols = (await mangaData.mangaVolumes(volume.series))?.volumes ?? [];
   const curIdx = siblingVols.findIndex((v) => v.id === volume.id);
   const prevVolume = curIdx > 0 ? siblingVols[curIdx - 1] : null;
   const nextVolume =
@@ -276,7 +276,7 @@ export default async function MangaVolumePage({ params }: { params: Promise<{ id
                     <div className="aspect-[2/3] w-full max-w-md animate-pulse rounded-xl bg-white/[0.04]" />
                   }
                 >
-                  <UnifiedVolumeReader volume={volume} />
+                  <UnifiedVolumeReader volume={volume} sourceKind={volume.sourceKind} />
                 </Suspense>
               </section>
             )}

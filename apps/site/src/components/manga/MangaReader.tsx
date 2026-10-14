@@ -6,8 +6,7 @@ import {
   MangaReader as BaseMangaReader,
   type MangaReaderProps as ReaderProps,
 } from "@aphrody/shenron-ui/reader";
-import { readerAssetUrl } from "@/lib/reader-assets";
-import { API_ORIGIN, CDN_ORIGIN, SITE_URL } from "@/lib/config";
+import { mangaReaderAssetUrl } from "@/lib/manga-reader-assets";
 import { useKoharuCanvasWarmup } from "@aphrody/shenron-ui/reader";
 
 export type MangaReaderProps = Pick<
@@ -15,6 +14,7 @@ export type MangaReaderProps = Pick<
   "pages" | "title" | "direction" | "prevHref" | "nextHref" | "prevPages" | "nextPages"
 > & {
   chapterId?: number;
+  sourceKind?: "cdn" | "editorial";
 };
 
 const renderChapterLink: NonNullable<ReaderProps["renderChapterLink"]> = ({
@@ -28,7 +28,7 @@ const renderChapterLink: NonNullable<ReaderProps["renderChapterLink"]> = ({
   </Link>
 );
 
-export function MangaReader({ chapterId, ...props }: MangaReaderProps) {
+export function MangaReader({ chapterId, sourceKind, ...props }: MangaReaderProps) {
   const canvasWarmup = useKoharuCanvasWarmup();
   const [initialPage, setInitialPage] = useState(1);
   const [ready, setReady] = useState(false);
@@ -75,8 +75,8 @@ export function MangaReader({ chapterId, ...props }: MangaReaderProps) {
     [chapterId],
   );
   const resolveAssetUrl = useCallback(
-    (url: string) => readerAssetUrl(url, [CDN_ORIGIN, API_ORIGIN, SITE_URL]),
-    [],
+    (url: string) => mangaReaderAssetUrl(url, sourceKind),
+    [sourceKind],
   );
   return (
     <div className="m3-reader--dragon-ball" data-koharu-canvas={canvasWarmup}>

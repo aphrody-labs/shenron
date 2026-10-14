@@ -27,7 +27,13 @@ export interface VolumeData {
   chapters: ChapterItem[];
 }
 
-export function UnifiedVolumeReader({ volume }: { volume: VolumeData }) {
+export function UnifiedVolumeReader({
+  volume,
+  sourceKind,
+}: {
+  volume: VolumeData;
+  sourceKind?: "cdn" | "editorial";
+}) {
   const t = useT();
   const searchParams = useSearchParams();
   const chapters = useMemo(() => volume.chapters ?? [], [volume.chapters]);
@@ -114,6 +120,7 @@ export function UnifiedVolumeReader({ volume }: { volume: VolumeData }) {
             <MangaReader
               key={`${chapter.id}-${edition.id}`}
               pages={chapter.pages ?? []}
+              sourceKind={sourceKind}
               title={`${volume.title || `Tome ${volume.volume_number}`} — ${formatChapterTitle(chapter)}`}
               direction="rtl"
               chapterId={chapter.id}
