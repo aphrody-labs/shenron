@@ -7,6 +7,7 @@
 }
 .home-screen-deck {
   position: relative;
+  overflow-x: clip;
   view-transition-name: home-deck;
 }
 .home-screen {
