@@ -138,10 +138,11 @@ export interface CanonReference {
   visible?: boolean;
   /**
    * `updated_at` de la ligne `canon_references` au moment de la lecture (ISO).
-   * Jeton de concurrence optimiste : un geste n'est appliqué que si la ligne
-   * n'a pas changé depuis.
+   * Compatibility timestamp for display; exact concurrency uses version.
    */
   updatedAt?: string;
+  /** Opaque exact PostgreSQL row version; updatedAt is display-compatible only. */
+  version?: string;
 }
 
 export interface CanonAnalysisResult {
@@ -2887,6 +2888,9 @@ export function resolveCanonConfig(patch: unknown): CanonConfig {
           : {}),
         ...(typeof r.visible === "boolean" ? { visible: r.visible } : {}),
         ...(updatedAt ? { updatedAt } : {}),
+        ...(typeof r.version === "string" && /^[a-f0-9]{64}$/.test(r.version)
+          ? { version: r.version }
+          : {}),
       });
     }
   }

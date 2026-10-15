@@ -15,7 +15,7 @@
 import "server-only";
 import { createHash } from "node:crypto";
 import { cache } from "react";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, getTableColumns, inArray, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { canonConfig, canonReferences, wikiRevisions } from "@/db/schema";
 import {
@@ -63,14 +63,30 @@ function stableJson(value: unknown): string {
   return JSON.stringify(value) ?? "null";
 }
 
-function configurationSnapshot(row: typeof canonConfig.$inferSelect | undefined): string {
+const configurationColumns = {
+  ...getTableColumns(canonConfig),
+  updatedAtExact: sql<string>`${canonConfig.updatedAt}::text`,
+};
+const referenceColumns = {
+  ...getTableColumns(canonReferences),
+  updatedAtExact: sql<string>`${canonReferences.updatedAt}::text`,
+};
+type VersionedConfiguration = typeof canonConfig.$inferSelect & { updatedAtExact: string };
+type VersionedReference = typeof canonReferences.$inferSelect & { updatedAtExact: string };
+
+function referenceVersion(row: VersionedReference): string {
+  const { createdAt: _created, seenAt: _seen, updatedAt: _updated, ...state } = row;
+  return createHash("sha256").update(stableJson(state)).digest("hex");
+}
+
+function configurationSnapshot(row: VersionedConfiguration | undefined): string {
   return createHash("sha256")
     .update(
       stableJson(
         row
           ? {
               data: row.data,
-              updatedAt: row.updatedAt.toISOString(),
+              updatedAt: row.updatedAtExact,
             }
           : null,
       ),
@@ -79,7 +95,10 @@ function configurationSnapshot(row: typeof canonConfig.$inferSelect | undefined)
 }
 
 async function readReferences(client: CanonDatabase | typeof db): Promise<CanonReference[]> {
-  const rows = await client.select().from(canonReferences).where(eq(canonReferences.visible, true));
+  const rows = await client
+    .select(referenceColumns)
+    .from(canonReferences)
+    .where(eq(canonReferences.visible, true));
   return rows.map((r) =>
     Object.assign(
       {
@@ -101,6 +120,7 @@ async function readReferences(client: CanonDatabase | typeof db): Promise<CanonR
       },
       r.href ? { href: r.href } : {},
       r.updatedAt instanceof Date ? { updatedAt: r.updatedAt.toISOString() } : {},
+      { version: referenceVersion(r) },
     ),
   );
 }
@@ -108,7 +128,7 @@ async function readReferences(client: CanonDatabase | typeof db): Promise<CanonR
 /** Strict administration read: database failures must never become editable defaults. */
 export async function getCanonConfigSnapshot(): Promise<{ config: CanonConfig; expected: string }> {
   const [row] = await db
-    .select()
+    .select(configurationColumns)
     .from(canonConfig)
     .where(eq(canonConfig.id, SINGLETON_ID))
     .limit(1);
@@ -154,12 +174,14 @@ export interface LigneCitation {
   textFr: string | null;
   visible: boolean;
   updatedAt: Date;
+  updatedAtExact: string;
+  version: string;
 }
 
 /** Un geste à appliquer à UNE ligne, conditionné à la version lue (`lu`). */
 export interface GesteCitation {
   id: string;
-  lu: Date;
+  lu: string;
   /** Nouvelle traduction (`null` = effacée) ; absent = inchangée. */
   textFr?: string | null;
   /** Nouvelle visibilité ; absent = inchangée. */
@@ -180,8 +202,8 @@ export interface PlanCitations {
  *    une ligne (liste filtrée, client ancien, identifiant réécrit) n'est pas
  *    une demande de retrait ;
  *  - le retrait est un geste explicite (`visible: false`) ;
- *  - tout geste exige l'`updatedAt` lu : une ligne réécrite depuis (par
- *    l'ingestion ou un autre éditeur) est laissée telle quelle.
+ *  - each edit requires the exact opaque row version returned by the reader;
+ *    PostgreSQL microseconds must never be compared through a JavaScript Date.
  */
 export function planifierGestesCitations(
   demandes: readonly CanonReference[],
@@ -199,18 +221,13 @@ export function planifierGestesCitations(
     const changeTraduction = textFr !== (ligne.textFr ?? null);
     const changeVisibilite = typeof d.visible === "boolean" && d.visible !== ligne.visible;
     if (!changeTraduction && !changeVisibilite) continue;
-    const lu = d.updatedAt ? new Date(d.updatedAt) : null;
-    if (!lu || Number.isNaN(lu.getTime())) {
-      conflits.push({ id: d.id, raison: "version lue inconnue (updatedAt absent)" });
-      continue;
-    }
-    if (ligne.updatedAt.getTime() !== lu.getTime()) {
-      conflits.push({ id: d.id, raison: "citation modifiée depuis la lecture" });
+    if (!d.version || d.version !== ligne.version) {
+      conflits.push({ id: d.id, raison: "citation version missing or changed since read" });
       continue;
     }
     gestes.push({
       id: d.id,
-      lu,
+      lu: ligne.updatedAtExact,
       ...(changeTraduction ? { textFr } : {}),
       ...(changeVisibilite ? { visible: d.visible } : {}),
     });
@@ -271,7 +288,9 @@ async function appliquerGeste(
   const modifiees = await tx
     .update(canonReferences)
     .set(set)
-    .where(and(eq(canonReferences.id, geste.id), eq(canonReferences.updatedAt, geste.lu)))
+    .where(
+      and(eq(canonReferences.id, geste.id), eq(sql`${canonReferences.updatedAt}::text`, geste.lu)),
+    )
     .returning({ id: canonReferences.id });
   if (modifiees.length === 0) return false;
   const snapshot = (l: { textFr?: string | null; visible?: boolean }) => ({
@@ -311,13 +330,13 @@ export async function saveCanonConfig(
     ...brut,
     references: brut.references
       .filter((r) => r.provenance === "manuel" && r.visible !== false)
-      .map(({ visible: _visible, updatedAt: _updatedAt, ...r }) => r),
+      .map(({ visible: _visible, updatedAt: _updatedAt, version: _version, ...r }) => r),
   };
   const { auteur, updatedBy } = await auteurDeLaRequete(by);
 
   return db.transaction(async (tx) => {
     const [before] = await tx
-      .select()
+      .select(configurationColumns)
       .from(canonConfig)
       .where(eq(canonConfig.id, SINGLETON_ID))
       .limit(1);
@@ -333,16 +352,16 @@ export async function saveCanonConfig(
           .where(
             and(
               eq(canonConfig.id, SINGLETON_ID),
-              eq(canonConfig.updatedAt, before.updatedAt),
+              eq(sql`${canonConfig.updatedAt}::text`, before.updatedAtExact),
               eq(canonConfig.data, before.data),
             ),
           )
-          .returning()
+          .returning(configurationColumns)
       : await tx
           .insert(canonConfig)
           .values({ id: SINGLETON_ID, ...values })
           .onConflictDoNothing()
-          .returning();
+          .returning(configurationColumns);
     if (written.length !== 1)
       throw new CanonConfigWriteError("Configuration changed during save", 409);
     // L'éditeur peut retoucher une traduction, retirer ou rétablir une citation
@@ -353,16 +372,10 @@ export async function saveCanonConfig(
       const ids = [...new Set(ingerees.map((r) => r.id))];
       const lignes = new Map<string, LigneCitation>();
       for (const r of await tx
-        .select({
-          id: canonReferences.id,
-          subject: canonReferences.subject,
-          textFr: canonReferences.textFr,
-          visible: canonReferences.visible,
-          updatedAt: canonReferences.updatedAt,
-        })
+        .select(referenceColumns)
         .from(canonReferences)
         .where(inArray(canonReferences.id, ids))) {
-        lignes.set(r.id, r);
+        lignes.set(r.id, { ...r, version: referenceVersion(r) });
       }
       const { gestes, conflits } = planifierGestesCitations(ingerees, lignes);
       for (const geste of gestes) {
