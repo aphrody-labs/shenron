@@ -105,6 +105,9 @@ export async function GET(): Promise<Response> {
     // `/mcp` est réellement déployé (`SHENRON_MCP_URL`).
     `- [${SITE_URL}/api/search?q=](${SITE_URL}/api/search): cross-wiki search.`,
     `- [${SITE_URL}/api/canon](${SITE_URL}/api/canon): canon doctrine and evidence corpus; \`?q=\` returns a verdict.`,
+    "  If the response advertises `evidenceAssessmentEnabled: true`, an explicit",
+    "  `?q=<claim>&assessEvidence=1` request may suggest a citation from its references.",
+    "  The suggestion may abstain or be unavailable; it never changes the curated canon verdict.",
     `- [${SITE_URL}/api/databooks](${SITE_URL}/api/databooks): databooks, pages and transcriptions.`,
     `- [${SITE_URL}/api/manga](${SITE_URL}/api/manga): manga volumes, chapters and PAGES.`,
     "  Every page is addressable: `/api/manga/chapter/{id}/pages/{n}` returns its image,",

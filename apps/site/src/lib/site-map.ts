@@ -211,7 +211,7 @@ const EXTRA_DESTINATIONS: readonly SiteDestination[] = [
   },
   {
     href: "/sources/dragon-ball",
-    label: "Sources BXC & provenance",
+    label: "Sources et provenance",
     blurb: "Les éditeurs consultés et les métadonnées reçues par les campagnes en cours.",
     journey: "archives",
     audience: "public",
