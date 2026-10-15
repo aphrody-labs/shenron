@@ -824,6 +824,35 @@ bloquées; Xenoverse officiel n'étaye toujours pas les détails de
 exacts des volumes et une rétention/sauvegarde approuvée des snapshots
 existants; jusque-là aucune complétude manga/wiki ne peut être annoncée.
 
+### 2026-10-15 — Index des crates Rust Bun et bibliographie Shueisha
+
+Un index privé du fork Aphrody Bun a été construit depuis la révision Git
+`1988e4bae7b374810cacda67d52dfd08e26ea6b7`, avec le runtime qualifié Bun
+1.4.4 (`dfde053a3045d6076ad315b6f63160c4ced71513`). Le catalogue associe les
+237 manifestes Cargo de l'espace de travail à 129 snapshots de domaines, et
+les 1032 artefacts exportés ont passé la vérification taille/SHA-256. Le README
+et le JSON catalogue sont conservés dans le home privé local
+`/home/ubuntu/.aphrody/workspaces/aphrody/bun-graph/`; rien n'est publié depuis
+ce checkout. La couverture source se limite aux fichiers texte de `src/`,
+`packages/` et `crates/` : 13692 fichiers parsés nativement, 7543 non résolus,
+4273 présents en métadonnées seules. Le graphe relève 149 erreurs de parse,
+11 collisions d'identifiants et 168468 appels non résolus. 99 exports tronquent
+leurs tables à 128 lignes; les snapshots SQLite privés gardent les graphes
+complets. Ce résultat est un index de navigation, pas une analyse exhaustive
+du dépôt ni une qualification de build/test de chaque crate.
+
+La notice publique Shenron `manga/621` demeure sans chapitre lisible. La fiche
+officielle Shueisha correspondant à l'ISBN `978-4-08-881110-9` identifie
+*Super Dragon Ball Heroes: Dark Demon Realm Mission!* volume 1, YukI Nagayama,
+une parution papier au 2 mai 2017 et 176 pages annoncées. Un lien officiel
+d'aperçu existe, mais cette vérification ne compte ni ne capture ses planches;
+la notice bibliographique paraphrasée est seulement dans le RAG privé DBFR.
+La relecture API à 19:11:54 UTC confirme 329 notices, 222 volumes avec pages
+listées, 53304 pages annoncées, 110 volumes manquants/partiels et les deux
+indicateurs de pagination complète et disponibilité d'assets à `false`.
+L'article et ses sources sont toujours nuls pour `tournaments/11`; aucune
+écriture wiki ou publication de volume n'a suivi ces recherches.
+
 Complément de source primaire pour éviter une conflation : la page officielle
 Bandai Namco Europe de Xenoverse décrit séparément Tokitoki City comme hub de
 plus de 200 joueurs et le « World Tournament » comme événement en ligne
