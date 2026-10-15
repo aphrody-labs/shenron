@@ -10,7 +10,11 @@
  */
 import { existsSync, mkdirSync, rmSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { copyRuntimeDirectory, copyRuntimeFile } from "./bot-runtime-assets";
+import {
+  copyRuntimeDirectory,
+  copyRuntimeFile,
+  buildSourcePipelineAsset,
+} from "./bot-runtime-assets";
 
 const ROOT = resolve(import.meta.dir, "../..");
 const BOT = join(ROOT, "apps/bot");
@@ -70,6 +74,23 @@ copyRuntimeFile(canvasBinding, join(out, `skia.${canvasPlatform}.node`));
 // Migrations are read from disk by drizzle at boot: ship them beside the binary.
 const migrations = join(BOT, "src/db/migrations");
 if (existsSync(migrations)) copyRuntimeDirectory(migrations, join(out, "src/db/migrations"));
+const revision = Bun.spawn(["git", "rev-parse", "HEAD"], {
+  cwd: ROOT,
+  stdout: "pipe",
+  stderr: "ignore",
+});
+const sourceCommit = (await new Response(revision.stdout).text()).trim();
+if ((await revision.exited) !== 0) throw Error("Cannot pin bot source revision");
+const pipeline = await buildSourcePipelineAsset(
+  join(ROOT, "scripts/ops/bun-source-pipeline.ts"),
+  out,
+  sourceCommit,
+);
 console.log(
-  JSON.stringify({ target, binary: exe, sizeMiB: Math.round(statSync(exe).size / 1048576) }),
+  JSON.stringify({
+    target,
+    binary: exe,
+    sizeMiB: Math.round(statSync(exe).size / 1048576),
+    pipeline,
+  }),
 );

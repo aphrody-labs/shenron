@@ -42,3 +42,77 @@ test("sealed runtime payloads remain readable outside their build UID under a re
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+test("sealed pipeline bundle preserves collection exports without starting product or SQL on import", async () => {
+  const { buildSourcePipelineAsset } = await import("./bot-runtime-assets");
+  const root = mkdtempSync(join(tmpdir(), "shenron-pipeline-asset-"));
+  try {
+    const output = join(root, "dist");
+    mkdirSync(output);
+    const entry = join(import.meta.dir, "../ops/bun-source-pipeline.ts");
+    const receipt = await buildSourcePipelineAsset(entry, output, "a".repeat(40));
+    const hash = (bytes: string | Uint8Array) =>
+      new Bun.CryptoHasher("sha256").update(bytes).digest("hex");
+    expect(receipt.sourceEntrySha256).toBe(hash(await Bun.file(entry).bytes()));
+    expect(receipt.sha256).toBe(hash(await Bun.file(join(output, "pipeline.mjs")).bytes()));
+    expect(receipt.bytes).toBe(Bun.file(join(output, "pipeline.mjs")).size);
+    expect(await Bun.file(join(output, "pipeline-build-receipt.json")).json()).toEqual(receipt);
+    const owner = await import(join(output, "pipeline.mjs"));
+    expect(typeof owner.collectSourcePipeline).toBe("function");
+    expect(typeof owner.autoSourcePipeline).toBe("function");
+    const input = join(root, "export.jsonl"),
+      policy = join(root, "policy.json"),
+      config = join(root, "config.json"),
+      job = join(root, "job");
+    await Bun.write(
+      input,
+      JSON.stringify({
+        crawl_id: "asset-fixture",
+        document_uid: hash("fixture"),
+        canonical_url: "https://source.example/a",
+        source_domain: "source.example",
+        category: "reference",
+        http_status: 200,
+        raw_checksum: hash("fixture body"),
+        timestamp_utc: "2026-10-15T00:00:00Z",
+        payload: { title_raw: "Fixture", body_markdown: "fixture body", embedded_media: [] },
+      }) + "\n",
+    );
+    await Bun.write(
+      policy,
+      JSON.stringify({
+        version: 1,
+        profile: "dbfr",
+        sources: [
+          {
+            domain: "source.example",
+            kind: "reference",
+            reviewed: true,
+            evidence: "https://source.example/",
+            rights: { ragPermitted: false, trainingPermitted: false, publicImagesPermitted: false },
+          },
+        ],
+      }),
+    );
+    await Bun.write(
+      config,
+      JSON.stringify({ version: 1, input, policy, job, collectionIsolation: "required" }),
+    );
+    await expect(owner.autoSourcePipeline(config)).rejects.toThrow("controller required");
+    expect(await Bun.file(join(job, "checkpoint.sqlite")).exists()).toBe(false);
+    const collected = await owner.collectSourcePipeline(config, { isolatedCollection: true });
+    expect(collected.schema).toBe("shenron-source-collection/v1");
+    expect(collected.configSha256).toBe(hash(await Bun.file(config).bytes()));
+    const collectionPath = join(collected.pinnedConfigPath, "..", "collect.json");
+    expect(collected.collectionSha256).toBe(hash(await Bun.file(collectionPath).bytes()));
+    expect(await Bun.file(collectionPath).json()).toMatchObject({
+      complete: true,
+      documents: 1,
+      canonicalPromotions: 0,
+    });
+    if (process.platform !== "win32")
+      expect(statSync(join(output, "pipeline.mjs")).mode & 0o777).toBe(0o644);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});

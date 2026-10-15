@@ -161,3 +161,12 @@ Un objet ou reçu média absent ne déclenche aucun téléchargement de remplace
 sur l’hôte. Le bot peut recevoir ce port par sa factory de confiance ; aucune
 clé SSH ni commande Infra n’est introduite dans le bot. La présence du port ou
 de la configuration ne prouve pas l’activation d’un job VPN réel.
+
+Le propriétaire `scripts/build/bot.ts` produit aussi `pipeline.mjs` et
+`pipeline-build-receipt.json` dans `dist/bot/<target>`. Le reçu lie les octets et
+le SHA256 du bundle au commit source, au SHA256 du point d’entrée et au runtime
+constructeur. Le Dockerfile existant copie les deux fichiers sous
+`/usr/local/lib/shenron/`. L’import du module conserve `collectSourcePipeline`
+sans lancer la CLI. Le job fini doit vérifier le reçu et l’image scellée avant
+de monter ce module en lecture seule ; la présence d’un bundle non vérifié ne
+suffit pas à qualifier la collecte.
