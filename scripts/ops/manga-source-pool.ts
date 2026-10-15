@@ -1104,7 +1104,7 @@ async function servePool(options: {
   let lastEgress = Date.now();
   const projectionStop = new AbortController();
   let projection: Promise<void> | undefined;
-  let projectionPending = false;
+  let projectionPending = true;
   const progress = async () => {
     const counts = frontier.counts();
     const catalog = (frontier.meta("catalog") ?? {
@@ -1155,7 +1155,6 @@ async function servePool(options: {
       counts,
       capabilityDetails: options.capabilities,
     });
-    if (!stopping) projectionPending = true;
     if (!stopping && poolProjectionDue(projectionPending, Boolean(projection))) {
       projectionPending = false;
       projection = (async () => {
