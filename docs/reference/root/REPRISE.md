@@ -853,6 +853,35 @@ indicateurs de pagination complète et disponibilité d'assets à `false`.
 L'article et ses sources sont toujours nuls pour `tournaments/11`; aucune
 écriture wiki ou publication de volume n'a suivi ces recherches.
 
+### 2026-10-15 — Distinction Xenoverse 2 et écarts bibliographiques
+
+Une seconde source primaire Bandai Namco America, l'annonce de mise à jour du
+27 août 2020 (`https://www.bandainamcoent.com/news/dbx2-free-big-update`),
+nomme précisément le « Conton City World Tournament » de *Xenoverse 2*. Elle
+établit que c'est un événement récurrent, accessible après l'histoire
+principale, qui peut débloquer Supreme Kai of Time après complétion; elle ne
+donne ni vainqueur canonique ni finaliste. Réponse HTTP 200, corps SHA-256
+`43d023ce5f2a7a15bce2c8ca3a779ceec8ba63967f45b70994b55a768fcb4f3e`.
+Une notice paraphrasée a été ajoutée au RAG privé DBFR (1 fichier, 1 chunk,
+0 erreur; requête de relecture retrouvant cette notice). Cette preuve ne
+confirme pas que les champs « Toki Toki City », « Patrouilleur du Temps » et
+« Goku Xeno » de `tournaments/11` décrivent ce tournoi; l'entrée reste sans
+article et n'a pas été modifiée.
+
+La relecture ciblée des notices manga 719–721 a aussi trouvé deux écarts
+bibliographiques dans des volumes toujours dépourvus de pages. Shenron 719
+n'a pas d'ISBN public, alors que Shueisha référence *Dragon Ball Super Broly*
+— roman Mirai Bunko, 228 pages — sous l'ISBN `978-4-08-321475-2`. Pour
+Shenron 721, l'API affiche `978-4-08-321727-1`, mais la fiche officielle
+*Super Hero* donne `978-4-08-321721-0` et 228 pages. Les deux réponses éditeur
+sont HTTP 200; leurs SHA-256 sont consignés dans la note bibliographique
+privée `/home/ubuntu/.aphrody/workspace-shenron/private/web/official-manga-bibliography-20261015/volumes-719-721.md`,
+qui a été indexée au RAG DBFR et retrouvée par requête. Le volume 720 reste
+sans correspondance officielle exacte qualifiée lors de cette passe. Ces
+constats sont des propositions de correction, sans écriture à la base : les
+trois routes renvoient toujours zéro chapitre et une fiche papier ne prouve
+pas la disponibilité du contenu de lecture.
+
 Complément de source primaire pour éviter une conflation : la page officielle
 Bandai Namco Europe de Xenoverse décrit séparément Tokitoki City comme hub de
 plus de 200 joueurs et le « World Tournament » comme événement en ligne
