@@ -13,6 +13,7 @@ import {
   projectMangaCdn,
   collectPublicMangaSnapshot,
   stageMangaCdnProjection,
+  overlayMangaChapter,
 } from "./manga-cdn-projection";
 import type { PublishCatalogOptions } from "../../deploy/cloudflare/cli/publish-catalog";
 import { isMangaReaderExtent } from "../../apps/site/src/lib/manga-reader-extent";
@@ -253,7 +254,7 @@ export function mangaWorkerPorts(config: WorkerConfig, signal?: AbortSignal): Ma
         };
       const rasterInventory = JSON.stringify(inventory);
       await save(join(job, "raster-inventory.json"), inventory);
-      const snapshot = await collectPublicMangaSnapshot(origin);
+      let snapshot = await collectPublicMangaSnapshot(origin);
       // Fresh canonical row overlays the previous CDN publication; unchanged readers retain their exact publication.
       if (editorial) {
         const chapter = await api(`/api/wiki-admin/db_manga_chapters/${editorial.id}`);
@@ -272,15 +273,7 @@ export function mangaWorkerPorts(config: WorkerConfig, signal?: AbortSignal): Ma
           pages: pages.length,
           pageList: pages,
         };
-        snapshot.chapters = snapshot.chapters
-          .filter((entry) => entry.id !== chapter.id)
-          .concat(replacement);
-        const volume = snapshot.volumes.find((entry) => entry.id === bundle.volumeId);
-        if (!volume) throw Error("Canonical volume is absent from public catalogue");
-        volume.chapters = [
-          ...(volume.chapters ?? []).filter((entry: { id: number }) => entry.id !== chapter.id),
-          replacement,
-        ];
+        snapshot = overlayMangaChapter(snapshot, replacement);
       }
       const projection = projectMangaCdn(
         snapshot,

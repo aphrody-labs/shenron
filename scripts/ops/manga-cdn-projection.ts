@@ -28,6 +28,63 @@ const mimeExtensions: Record<string, string> = {
   "image/avif": "avif",
 };
 
+/** Overlay a freshly read canonical public chapter onto the previous CDN snapshot. */
+export function overlayMangaChapter(
+  snapshot: MangaPublicSnapshot,
+  chapter: Row,
+): MangaPublicSnapshot {
+  const volume = snapshot.volumes.find((row) => row.id === chapter.volume_id);
+  const previous = snapshot.chapters.find((row) => row.id === chapter.id);
+  if (
+    !Number.isSafeInteger(chapter.id) ||
+    chapter.id < 1 ||
+    !volume ||
+    volume.series !== chapter.series ||
+    (previous &&
+      (previous.series !== chapter.series || previous.volume_id !== chapter.volume_id)) ||
+    !Array.isArray(chapter.pageList) ||
+    !chapter.pageList.length ||
+    chapter.pages !== chapter.pageList.length
+  )
+    throw Error("Fresh chapter identity, volume or pagination differs");
+  const replacement = {
+    ...chapter,
+    reader_extent: mangaReaderExtent(chapter.readerExtent ?? chapter.reader_extent),
+  };
+  const chapters = snapshot.chapters.filter((row) => row.id !== chapter.id).concat(replacement);
+  const volumes = snapshot.volumes.map((row) =>
+    row.id === volume.id
+      ? {
+          ...row,
+          chapters: [
+            ...(row.chapters ?? []).filter((entry: Row) => entry.id !== chapter.id),
+            replacement,
+          ],
+        }
+      : row,
+  );
+  const affected = chapters.filter((row) => row.series === chapter.series);
+  const count = affected.length,
+    pages = affected.reduce((total, row) => total + row.pages, 0);
+  const existing = snapshot.declaredSeries.find((row) => row.series === chapter.series);
+  const volumeCount = volumes.filter((row) => row.series === chapter.series).length;
+  const declaration = {
+    ...(existing ?? { series: chapter.series, volumes: volumeCount, tomes: volumeCount }),
+    chapters: count,
+    pages,
+    chapitres: count,
+    planches: pages,
+  };
+  return {
+    ...snapshot,
+    chapters,
+    volumes,
+    declaredSeries: snapshot.declaredSeries
+      .filter((row) => row.series !== chapter.series)
+      .concat(declaration),
+  };
+}
+
 export function projectMangaCdn(
   snapshot: MangaPublicSnapshot,
   inventory: Record<string, Asset>,

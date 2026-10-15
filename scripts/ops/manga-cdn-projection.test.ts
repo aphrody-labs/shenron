@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { projectMangaCdn, mangaDigest, type MangaPublicSnapshot } from "./manga-cdn-projection";
+import {
+  projectMangaCdn,
+  overlayMangaChapter,
+  mangaDigest,
+  type MangaPublicSnapshot,
+} from "./manga-cdn-projection";
 import { validateMangaCdnIndex } from "../../apps/site/src/lib/manga-cdn-contract";
 
 export const indexUrl = "https://cdn.dragonballfr.com/publications/manga-catalogue/index.json";
@@ -51,6 +56,37 @@ export const snapshot: MangaPublicSnapshot = {
 };
 export const fixtureProjection = () =>
   projectMangaCdn(snapshot, inventory, "a".repeat(64), indexUrl);
+
+test("a fresh preview overlays the old CDN and declares a newly readable series without changing other readers", () => {
+  const before = structuredClone(snapshot);
+  before.volumes.push({ ...volume(620), series: "DB_GAIDEN_YAMCHA", chapters: [] });
+  const extent = {
+    kind: "preview" as const,
+    sourceUrl: "https://shonenjumpplus.com/volume/4856001361007401134/trial",
+    fullVolumePages: null,
+  };
+  const fresh = {
+    id: 36104,
+    series: "DB_GAIDEN_YAMCHA",
+    chapter_number: 1,
+    volume_id: 620,
+    pages: 32,
+    pageList: Array.from({ length: 32 }, () => ({ image: Object.keys(inventory)[0] })),
+    readerExtent: extent,
+  };
+  const overlaid = overlayMangaChapter(before, fresh);
+  const projection = projectMangaCdn(overlaid, inventory, "a".repeat(64), indexUrl);
+  expect(projection.index.chapters.find((row) => row.id === 36104)?.reader_extent).toEqual(extent);
+  expect(projection.index.volumeChapters["620"]).toEqual([36104]);
+  expect(overlaid.declaredSeries.find((row) => row.series === fresh.series)).toMatchObject({
+    chapters: 1,
+    pages: 32,
+  });
+  expect(overlaid.chapters.find((row) => row.id === 10)).toEqual(snapshot.chapters[0]);
+  expect(before.chapters).toHaveLength(1);
+  expect(overlayMangaChapter(overlaid, fresh).declaredSeries).toEqual(overlaid.declaredSeries);
+  expect(() => overlayMangaChapter(before, { ...fresh, volume_id: 1 })).toThrow("identity");
+});
 
 test("canonical image metadata retains one verified existing CDN image without exporting OCR or private properties", () => {
   const result = fixtureProjection();
