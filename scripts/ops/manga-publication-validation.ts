@@ -30,6 +30,16 @@ export async function pinnedFile(
 export async function qualifyBundle(value: unknown): Promise<MangaBundle> {
   const bundle = mangaBundleSchema.parse(value);
   if (
+    bundle.publicationExtent &&
+    (bundle.publicationExtent.sourceUrl !== bundle.source.documentUrl ||
+      (bundle.publicationExtent.kind === "full" &&
+        bundle.publicationExtent.fullVolumePages !== bundle.pages.length) ||
+      (bundle.publicationExtent.kind === "preview" &&
+        bundle.publicationExtent.fullVolumePages !== null &&
+        bundle.publicationExtent.fullVolumePages <= bundle.pages.length))
+  )
+    throw Error("Publication extent differs from the captured source or reviewed pagination");
+  if (
     wikiUpdateSnapshotHash(bundle.expectedVolume) !== bundle.expectedVolumeSha256 ||
     (bundle.expectedChapter !== null &&
       wikiUpdateSnapshotHash(bundle.expectedChapter) !== bundle.expectedChapterSha256)

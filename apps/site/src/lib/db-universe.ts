@@ -1,5 +1,6 @@
 import { getTimelineItems, getTimelineEvents } from "./chronology-config";
 import { normalizeAvailability } from "./video-languages";
+import { mangaReaderExtent, type MangaReaderExtent } from "./manga-reader-extent";
 import { episodeIdentityPredicate, episodeQueryPredicate } from "./episode-query";
 /**
  * db-universe — accès au **wiki Dragon Ball** (schéma Neon `bot`, miroir du
@@ -254,6 +255,7 @@ export type MangaChapter = {
   volume_id: number | null;
   cover: string | null;
   pages?: string[] | null;
+  reader_extent?: MangaReaderExtent | null;
 };
 
 /** Chapitre + ses pages, pour le lecteur de scan. `prev`/`next` = chapitres
@@ -876,6 +878,7 @@ function toMangaChapter(r: typeof botMangaChapters.$inferSelect): MangaChapter {
     volume_id: r.volumeId,
     cover: mangaCoverPath(r.series, r.chapterNumber ?? 0, r.cover),
     pages: publishedMangaPages(r.series, r.chapterNumber ?? 0, r.pages),
+    reader_extent: mangaReaderExtent(r.readerExtent),
   };
 }
 
@@ -1915,6 +1918,7 @@ export const dbUniverse = {
             title: botMangaChapters.title,
             volumeId: botMangaChapters.volumeId,
             cover: botMangaChapters.cover,
+            readerExtent: botMangaChapters.readerExtent,
             pages: sql<
               string[] | null
             >`jsonb_path_query_array(${botMangaChapters.pages}, '$[0 to 2]')`.as("pages"),
@@ -1937,6 +1941,7 @@ export const dbUniverse = {
           chapter_number: c.chapterNumber ?? 0,
           title: c.title,
           volume_id: c.volumeId,
+          reader_extent: mangaReaderExtent(c.readerExtent),
           cover: mangaCoverPath(c.series, c.chapterNumber ?? 0, c.cover),
           /** Aperçu : les 3 premières planches, pour le préchargement au survol. */
           pages: publishedMangaPages(c.series, c.chapterNumber ?? 0, c.pages, 3),

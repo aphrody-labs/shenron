@@ -96,7 +96,17 @@ export function createMangaCdnSource(
     async readableMangaChapters() {
       return {
         chapters: (await index()).chapters.map(
-          ({ id, series, chapter_number, title, volume_id, cover, previewPages, page_count }) => ({
+          ({
+            id,
+            series,
+            chapter_number,
+            title,
+            volume_id,
+            cover,
+            previewPages,
+            page_count,
+            reader_extent,
+          }) => ({
             id,
             series,
             chapter_number,
@@ -105,6 +115,7 @@ export function createMangaCdnSource(
             cover,
             pages: previewPages,
             page_count,
+            reader_extent,
           }),
         ),
       };

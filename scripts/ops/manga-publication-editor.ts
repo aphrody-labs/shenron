@@ -110,6 +110,8 @@ export async function prepareMangaEditorial(
 ) {
   await privateJob(job);
   const bundle = mangaBundleSchema.parse(value);
+  if (!bundle.publicationExtent)
+    throw Error("Explicit publication extent required before editorial intake");
   if (
     (bundle.chapterId === null) !== (bundle.expectedChapter === null) ||
     (bundle.expectedChapter === null) !== (bundle.expectedChapterSha256 === null) ||
@@ -153,6 +155,7 @@ export async function prepareMangaEditorial(
     pageCountEvidence: bundle.source.documentUrl,
     expectedPages: bundle.pages.length,
     review: "approved",
+    publicationExtent: bundle.publicationExtent,
     pages: bundle.pages.map((page, index) => ({
       number: index + 1,
       readerImage: new URL(page.publicPath, origin).href,

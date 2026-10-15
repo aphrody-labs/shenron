@@ -242,7 +242,13 @@ async function mutate(req: NextRequest, ctx: Ctx) {
   if (!body) return badRequest("JSON body requis");
   try {
     const precondition =
-      table === "db_episodes" ? parseEpisodeUpdateRequest(body) : parseWikiUpdateRequest(body);
+      table === "db_episodes"
+        ? parseEpisodeUpdateRequest(body)
+        : parseWikiUpdateRequest(
+            body,
+            table === "db_manga_chapters" &&
+              ["pages", "readerExtent", "visible"].some((key) => Object.hasOwn(body, key)),
+          );
     const bodyError = databookPagesFreezeError(table, precondition.data);
     if (bodyError) return bodyError;
     const validated = validateCatalogEditorialBody(table, precondition.data);

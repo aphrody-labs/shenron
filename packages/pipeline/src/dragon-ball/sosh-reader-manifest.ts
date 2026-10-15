@@ -22,11 +22,21 @@ const imageUrl = citation.refine((value) => {
       "bot.dragonballfr.com",
       "shenron-cdn.aphrody-labs.workers.dev",
     ].includes(url.hostname) &&
-    url.pathname.startsWith("/assets/") &&
+    (url.pathname.startsWith("/assets/") ||
+      /^\/publications\/[a-z0-9]+(?:-[a-z0-9]+)*\/(?:pages\/[0-9]+|objects\/[a-f0-9]{64})\.(?:png|jpg|jpeg|webp)$/.test(
+        url.pathname,
+      )) &&
     !url.search &&
     !url.hash
   );
 });
+export const readerPublicationExtentSchema = z
+  .object({
+    kind: z.enum(["preview", "full"]),
+    sourceUrl: citation,
+    fullVolumePages: z.number().int().positive().max(100000).nullable(),
+  })
+  .strict();
 export const soshReaderManifestSchema = z
   .object({
     version: z.literal(1),
@@ -45,6 +55,7 @@ export const soshReaderManifestSchema = z
             pageCountEvidence: citation,
             expectedPages: z.number().int().positive().max(2000),
             review: z.literal("approved"),
+            publicationExtent: readerPublicationExtentSchema.optional(),
             pages: z
               .array(
                 z
@@ -80,6 +91,7 @@ function validateReaderPages(manifest: {
     volumeId: number;
     chapterId: number | null;
     expectedPages: number;
+    publicationExtent?: z.infer<typeof readerPublicationExtentSchema>;
     pages: Array<{ number: number; readerImage: string }>;
   }>;
 }) {
@@ -93,6 +105,17 @@ function validateReaderPages(manifest: {
     if (volume.chapterId !== null) chapters.add(volume.chapterId);
     if (volume.pages.length !== volume.expectedPages)
       throw new Error("Incomplete page enumeration");
+    if (
+      volume.publicationExtent?.kind === "full" &&
+      volume.publicationExtent.fullVolumePages !== volume.pages.length
+    )
+      throw new Error("Full-volume extent requires an exact reviewed page enumeration");
+    if (
+      volume.publicationExtent?.kind === "preview" &&
+      volume.publicationExtent.fullVolumePages !== null &&
+      volume.publicationExtent.fullVolumePages <= volume.pages.length
+    )
+      throw new Error("Preview extent cannot establish complete volume pagination");
     let previous = -1;
     for (const page of volume.pages) {
       if (page.number <= previous || images.has(page.readerImage))
@@ -115,6 +138,7 @@ export const mangaReaderManifestSchema = soshReaderManifestSchema
             volumeNumber: z.number().int().positive(),
             chapterNumber: z.number().int().positive(),
             chapterId: z.number().int().positive().max(2147483647).nullable(),
+            publicationExtent: readerPublicationExtentSchema,
             series: z.string().regex(/^[A-Z][A-Z0-9_]{0,63}$/),
             titleJa: z.string().trim().min(1).max(500).nullable(),
             expectedVolumeTitle: z.string().trim().min(1).nullable(),

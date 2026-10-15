@@ -84,3 +84,22 @@ test("a partial inventory, foreign image or mismatched page count cannot masquer
   partial.chapters[0]!.pages = 2;
   expect(() => projectMangaCdn(partial, inventory, "a".repeat(64), indexUrl)).toThrow("Incomplete");
 });
+
+test("public catalogue pins explicit preview extent without promoting legacy unknown coverage", () => {
+  const partial = structuredClone(snapshot);
+  Object.assign(partial.chapters[0]!, {
+    reader_extent: {
+      kind: "preview",
+      sourceUrl: "https://publisher.example/trial",
+      fullVolumePages: null,
+    },
+  });
+  const result = projectMangaCdn(partial, inventory, "a".repeat(64), indexUrl);
+  expect(result.index.chapters[0]!.reader_extent).toEqual({
+    kind: "preview",
+    sourceUrl: "https://publisher.example/trial",
+    fullVolumePages: null,
+  });
+  expect(validateMangaCdnIndex(result.index, indexUrl)).toBe(result.index);
+  expect(fixtureProjection().index.chapters[0]!.reader_extent).toEqual({ kind: "unknown" });
+});

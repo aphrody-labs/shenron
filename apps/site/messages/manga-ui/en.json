@@ -87,6 +87,9 @@
   },
   "searchShort": "Search",
   "reader": {
+    "preview": "Official preview — {count} pages (incomplete volume)",
+    "previewNotice": "This official preview contains {count} pages from the volume.",
+    "previewSource": "View the official source",
     "scans": "Scanned pages",
     "empty": "The scanned pages for this volume are being acquired.",
     "contents": "Contents",

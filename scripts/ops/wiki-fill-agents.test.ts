@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
   DEFAULT_MODEL,
+  attachSectionContexts,
   FillQueue,
   candidateFor,
   codexArguments,
@@ -40,6 +41,56 @@ const row = {
   article: "Texte déjà établi",
 };
 const candidate = candidateFor("db_characters", row)!;
+
+test("section discovery resolves visible parent names without modifying the CAS row", () => {
+  const section = candidateFor("db_wiki_sections", {
+    id: 9,
+    entityType: "character",
+    entityId: 1,
+    key: "histoire",
+    label: "Histoire",
+    body: null,
+    visible: true,
+  })!;
+  const before = JSON.stringify(section.snapshot);
+  const [resolved] = attachSectionContexts([
+    section,
+    {
+      ...candidate,
+      snapshot: { ...candidate.snapshot, streamHeaders: { Authorization: "private-token" } },
+    },
+  ]);
+  expect(resolved!.snapshot).toBe(section.snapshot);
+  expect(JSON.stringify(resolved!.snapshot)).toBe(before);
+  expect(resolved!.sha256).toBe(section.sha256);
+  expect(resolved!.title).toBe("9");
+  expect(resolved!.discoveryContext?.parent.identity.nameJa).toBe("孫悟空");
+  expect(resolved!.discoveryContext?.section.label).toBe("Histoire");
+  expect(JSON.stringify(resolved!.discoveryContext)).not.toContain("private-token");
+  expect(attachSectionContexts([section])[0]!.discoveryContext).toBeUndefined();
+  const official = {
+    ...evidence[0]!,
+    kind: "official" as const,
+    identityQuote: "孫悟空 is the subject of this official character notice.",
+  };
+  expect(evidenceMatchesEntity(resolved!, official)).toBe(true);
+  expect(
+    evidenceMatchesEntity(resolved!, {
+      ...official,
+      identityQuote: "Vegeta is another character.",
+    }),
+  ).toBe(false);
+  expect(evidenceMatchesEntity(section, official)).toBe(false);
+});
+
+test("official Carddass anime routes cannot admit game cards or arbitrary subdomains", () => {
+  expect(isOfficialUrl("https://www.carddass.com/dbh/sdbh_bm/anime/movie.php")).toBe(true);
+  expect(isOfficialUrl("https://www.carddass.com/dbh/sdbh/prison_planet/")).toBe(true);
+  expect(isOfficialUrl("https://www.carddass.com/dbh/sdbh_bm/cardlist/")).toBe(false);
+  expect(isOfficialUrl("https://sec.carddass.com/dbh/sdbh_bm/anime/")).toBe(false);
+  expect(isOfficialUrl("https://www.carddass.com/dbh/sdbh_bm/anime/../../cardlist/")).toBe(false);
+  expect(isOfficialUrl("http://www.carddass.com/dbh/sdbh_bm/anime/")).toBe(false);
+});
 const source = {
   kind: "manga" as const,
   locator: { series: "DB", volume: "1", page: 1 },

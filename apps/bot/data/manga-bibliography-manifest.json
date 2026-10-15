@@ -1201,6 +1201,18 @@
       "publisher": "集英社",
       "publishedAt": null,
       "sourceUrl": "https://www.books.or.jp/book-details/9784081111824"
+    },
+    {
+      "legacyVolumeId": 620,
+      "work": "dragon_ball_gaiden_yamcha",
+      "edition": "shueisha_yamcha_print",
+      "title": "Dragon Ball Gaiden: That Time I Got Reincarnated as Yamcha",
+      "isbn": "978-4-08-881261-8",
+      "jdcn": null,
+      "language": "ja",
+      "publisher": "Shueisha",
+      "publishedAt": "2017-11-02",
+      "sourceUrl": "https://www.shueisha.co.jp/books/items/contents.html?isbn=978-4-08-881261-8"
     }
   ]
 }

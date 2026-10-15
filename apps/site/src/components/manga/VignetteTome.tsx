@@ -7,6 +7,7 @@ import { assetUrl } from "@/lib/assets";
 import { CadreCase, PastilleTome } from "@aphrody/shenron-ui/toriyama/MotifsCouverture";
 import { useMangaUIText } from "@/lib/manga-ui-text";
 import { useState } from "react";
+import { MangaPreviewBadge } from "./MangaPreviewNotice";
 
 export interface VignetteVolume {
   id: number;
@@ -35,6 +36,7 @@ export function VignetteTome({
   status,
   priority = false,
   compact = false,
+  previewPages,
 }: {
   volume: VignetteVolume;
   href: string;
@@ -42,7 +44,8 @@ export function VignetteTome({
   /** Édition couleur : accent fuchsia et badge. */
   couleur?: boolean;
   /** État éditorial mesuré par la présence de chapitres lisibles. */
-  status?: "available" | "to-complete";
+  status?: "available" | "to-complete" | "preview";
+  previewPages?: number;
   priority?: boolean;
   compact?: boolean;
 }) {
@@ -111,6 +114,7 @@ export function VignetteTome({
           </div>
         </CadreCase>
       </Link>
+      {status === "preview" && <MangaPreviewBadge count={previewPages ?? 0} />}
       {compact && (
         <div className="mt-2">
           <p className="line-clamp-2 text-xs font-semibold text-foreground">

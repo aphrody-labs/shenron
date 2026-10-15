@@ -572,7 +572,9 @@ export async function updateWiki(
     !isMediaCatalogTable(table) &&
     (options.expected ||
       options.expectedSha256 ||
-      (table === "db_episodes" && Object.hasOwn(values, "frames")))
+      (table === "db_episodes" && Object.hasOwn(values, "frames")) ||
+      (table === "db_manga_chapters" &&
+        ["pages", "readerExtent", "visible"].some((key) => Object.hasOwn(values, key))))
   ) {
     if (!options.expected || !options.expectedSha256) {
       throw new WikiUpdateRequestError("Complete wiki snapshot and SHA256 required");

@@ -64,7 +64,7 @@ export async function inspectBrowserSources(job: string, slot: number, urls: str
         const evaluated = await connection.send(
           "Runtime.evaluate",
           {
-            expression: `JSON.stringify({url:location.href,title:document.title,text:document.body?.innerText.slice(0,60000),links:[...document.querySelectorAll('a[href]')].map(a=>({url:a.href,text:a.textContent?.trim().slice(0,120)})).slice(0,500),frames:[...document.querySelectorAll('iframe[src]')].map(a=>a.src),images:[...document.images].slice(0,30).map(a=>({url:a.currentSrc||a.src,width:a.naturalWidth,height:a.naturalHeight}))})`,
+            expression: `JSON.stringify({url:location.href,title:document.title,text:document.body?.innerText.slice(0,60000),links:[...document.querySelectorAll('a[href]')].map(a=>({url:a.href,text:a.textContent?.trim().slice(0,120)})).slice(0,500),frames:[...document.querySelectorAll('iframe[src]')].map(a=>a.src),images:[...document.images].slice(0,30).map(a=>({url:a.currentSrc||a.src,width:a.naturalWidth,height:a.naturalHeight})),embeddedReaderData:[...document.querySelectorAll('[data-value]')].filter(e=>/episode|product|viewer|reader/i.test(e.id)).slice(0,5).map(e=>({id:e.id,value:e.getAttribute('data-value')?.slice(0,100000)}))})`,
             returnByValue: true,
           },
           sessionId,

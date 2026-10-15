@@ -156,6 +156,9 @@ export async function fixture() {
       current = {
         ...current,
         pages: requestedBundle.pages.map((page) => page.publicPath),
+        ...(requestedBundle.publicationExtent
+          ? { readerExtent: requestedBundle.publicationExtent }
+          : {}),
         visible: true,
       };
       patches++;
@@ -181,6 +184,7 @@ export async function fixture() {
     publications: () => publications,
     resumes,
     stages,
+    current: () => current,
     setCurrent: (row: Record<string, unknown>) => {
       current = row;
     },
@@ -334,4 +338,21 @@ test("real CLI finishes an empty handoff and candidate cycle without an initiali
     handoffs: [],
     completeCatalogue: false,
   });
+});
+test("explicit preview survives canonical editorial CAS without claiming complete pagination", async () => {
+  const f = await fixture();
+  f.bundle.publicationExtent = {
+    kind: "preview",
+    sourceUrl: f.bundle.source.documentUrl,
+    fullVolumePages: null,
+  };
+  const db = new Database(":memory:"),
+    q = new MangaPublicationQueue(db);
+  q.enqueue(f.bundle);
+  await consumeMangaBundle(q, q.next()!, join(f.root, "preview"), f.ports);
+  expect(f.current()).toMatchObject({
+    readerExtent: f.bundle.publicationExtent,
+  });
+  expect(q.next()).toBeNull();
+  db.close();
 });

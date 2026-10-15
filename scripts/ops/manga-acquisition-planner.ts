@@ -279,6 +279,11 @@ export async function planMangaAcquisition(
     chapterNumber: candidate.chapterNumber,
     isbn: candidate.isbn,
     activate: true,
+    publicationExtent: candidate.publicationExtent ?? {
+      kind: "preview",
+      sourceUrl: candidate.source.documentUrl,
+      fullVolumePages: null,
+    },
     expectedVolume: volume,
     expectedVolumeSha256: wikiUpdateSnapshotHash(volume),
     expectedChapter: chapter,

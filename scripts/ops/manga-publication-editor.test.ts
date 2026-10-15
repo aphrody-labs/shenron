@@ -90,6 +90,11 @@ test.skipIf(!url)(
         chapterNumber: chapterId ? 2 : 1,
         isbn: String(v.isbn),
         activate: true,
+        publicationExtent: {
+          kind: "preview",
+          sourceUrl: "https://publisher.example/observed-reader",
+          fullVolumePages: null,
+        },
         expectedVolume: v,
         expectedVolumeSha256: wikiUpdateSnapshotHash(v),
         expectedChapter: c,
@@ -120,6 +125,11 @@ test.skipIf(!url)(
       await sql`CREATE TABLE bot.db_manga_volumes (id integer PRIMARY KEY,series text,volume_number integer,visible boolean,title text,title_ja text,isbn text)`;
       await sql`CREATE TABLE bot.db_manga_chapters (id integer PRIMARY KEY,series text,chapter_number integer,volume_id integer REFERENCES bot.db_manga_volumes(id),title text,title_ja text,cover text,pages jsonb,visible boolean,editorial_note text)`;
       await sql`CREATE TABLE public.wiki_revisions (id text PRIMARY KEY,"tableName" text,"rowId" text,action text,label text,before jsonb,after jsonb,"editorName" text)`;
+      await sql.unsafe(
+        await Bun.file(
+          join(import.meta.dir, "../../apps/site/src/db/migrations/0023_manga_reader_extent.sql"),
+        ).text(),
+      );
       await sql`INSERT INTO bot.db_manga_volumes VALUES (740,'ARALE',1,true,'Docteur Slump perfect edition - Tome 01',null,'9782723472272'),(702,'SOSH',2,true,'Legend 2','超悟空伝 Legend 2','9784081111664')`;
       const b = await bundle(740, null),
         job = join(root, "create");
@@ -134,6 +144,7 @@ test.skipIf(!url)(
       const result = await applyMangaEditorial(prepared, options);
       expect(result.chapter.id).toBe(1);
       expect(result.chapter.visible).toBe(true);
+      expect(result.chapter.readerExtent).toEqual(b.publicationExtent);
       expect(result.chapter.pages).toEqual(
         b.pages.map((page) => "https://cdn.dragonballfr.com" + page.publicPath),
       );
@@ -142,7 +153,7 @@ test.skipIf(!url)(
       expect((await applyMangaEditorial(prepared, options)).chapter).toEqual(result.chapter);
       expect((await verifyMangaEditorial(prepared, options)).chapter).toEqual(result.chapter);
       expect(await sql`SELECT id FROM public.wiki_revisions`).toHaveLength(1);
-      await sql`INSERT INTO bot.db_manga_chapters VALUES (35002,'SOSH',2,702,'Pending','超悟空伝 Legend 2',null,'[]'::jsonb,false,'Preserve owner note')`;
+      await sql`INSERT INTO bot.db_manga_chapters (id,series,chapter_number,volume_id,title,title_ja,cover,pages,visible,editorial_note) VALUES (35002,'SOSH',2,702,'Pending','超悟空伝 Legend 2',null,'[]'::jsonb,false,'Preserve owner note')`;
       const stub = await prepareMangaEditorial(
         await bundle(702, 35002),
         join(root, "stub"),

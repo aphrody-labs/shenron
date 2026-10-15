@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
+import { isMangaReaderExtent } from "./manga-reader-extent";
 import { z } from "zod";
 import { parseMediaCatalogBody } from "./catalog-media-contracts";
 
@@ -139,6 +140,41 @@ export function validateCatalogEditorialBody(
       if (!(error instanceof z.ZodError)) throw error;
       return { ok: false as const, fields: error.issues.map((issue) => issue.path.join(".")) };
     }
+  }
+  if (table === "db_manga_chapters") {
+    const pages = body.pages;
+    const validPages =
+      pages === undefined ||
+      (Array.isArray(pages) &&
+        pages.length > 0 &&
+        pages.length <= 2500 &&
+        pages.every(
+          (value) =>
+            typeof value === "string" &&
+            (/^\/assets\/manga\/[A-Za-z0-9_./-]+$/.test(value) ||
+              /^\/publications\/[a-z0-9]+(?:-[a-z0-9]+)*\/(?:pages\/[0-9]+|objects\/[a-f0-9]{64})\.(?:png|jpg|jpeg|webp)$/.test(
+                value,
+              )) &&
+            !value.includes(".."),
+        ) &&
+        new Set(pages).size === pages.length);
+    const extent = body.readerExtent;
+    if (
+      !validPages ||
+      (extent !== undefined && !isMangaReaderExtent(extent)) ||
+      (body.visible !== undefined && typeof body.visible !== "boolean")
+    )
+      return { ok: false as const, fields: ["readerExtent", "pages", "visible"] };
+    if (
+      isMangaReaderExtent(extent) &&
+      Array.isArray(pages) &&
+      ((extent.kind === "full" && extent.fullVolumePages !== pages.length) ||
+        (extent.kind === "preview" &&
+          typeof extent.fullVolumePages === "number" &&
+          extent.fullVolumePages <= pages.length))
+    )
+      return { ok: false as const, fields: ["readerExtent"] };
+    return { ok: true as const, value: body };
   }
   if (table !== "db_episodes") return { ok: true as const, value: body };
   const parsed = episodeMetadata.safeParse(body);

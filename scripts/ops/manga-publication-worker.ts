@@ -253,6 +253,7 @@ export function mangaWorkerPorts(config: WorkerConfig, signal?: AbortSignal): Ma
           chapter_number: chapter.chapterNumber,
           title: chapter.title,
           volume_id: chapter.volumeId,
+          reader_extent: chapter.readerExtent ?? null,
           pages: pages.length,
           pageList: pages,
         };
@@ -309,6 +310,8 @@ export function mangaWorkerPorts(config: WorkerConfig, signal?: AbortSignal): Ma
           ...reference.input,
           job: options.job,
         });
+        if (prepared.previousInventorySha256 !== state.inventorySha256)
+          throw new Conflict("Publication state changed during snapshot staging");
         const { preparedPublicationOptions } = await import("./reader-source-workers");
         options = preparedPublicationOptions(
           options as unknown as Record<string, unknown>,
@@ -411,6 +414,7 @@ export function mangaWorkerPorts(config: WorkerConfig, signal?: AbortSignal): Ma
       if (!response.ok) throw Error("Public reader API unavailable");
       const chapter = await response.json();
       if (
+        (bundle.publicationExtent && !same(chapter.readerExtent, bundle.publicationExtent)) ||
         chapter.series !== bundle.series ||
         chapter.volume_id !== bundle.volumeId ||
         chapter.pageList?.length !== bundle.pages.length ||

@@ -87,6 +87,9 @@
   },
   "searchShort": "Recherche",
   "reader": {
+    "preview": "Extrait officiel — {count} pages (tome incomplet)",
+    "previewNotice": "Cet extrait officiel présente {count} pages et couvre seulement une partie du tome.",
+    "previewSource": "Consulter la source officielle",
     "scans": "Planches numérisées",
     "empty": "Les planches numérisées de ce volume sont en cours d’acquisition.",
     "contents": "Sommaire",

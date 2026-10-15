@@ -1,5 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Public manga projection: metadata and licensed image references, never OCR or private fields. */
+import {
+  isMangaReaderExtent,
+  mangaReaderExtent,
+  type MangaReaderExtent,
+} from "./manga-reader-extent";
 export type CdnMangaVolume = {
   id: number;
   series: string;
@@ -13,6 +18,7 @@ export type CdnMangaVolume = {
   source_label: string | null;
 };
 export type CdnMangaChapter = {
+  reader_extent?: MangaReaderExtent | null;
   id: number;
   series: string;
   chapter_number: number;
@@ -101,6 +107,12 @@ export function retainedMangaCdnImageUrl(value: unknown): string | null {
 }
 function chapterIdentity(row: Record<string, unknown>) {
   if (
+    row.reader_extent !== undefined &&
+    row.reader_extent !== null &&
+    !isMangaReaderExtent(row.reader_extent)
+  )
+    throw Error("Invalid public reader extent");
+  if (
     !id(row.id) ||
     typeof row.series !== "string" ||
     !/^[A-Z0-9_]+$/.test(row.series) ||
@@ -173,7 +185,14 @@ export function validateMangaCdnIndex(value: unknown, indexUrl: string): MangaCd
     volumes.add(volume.id);
   }
   for (const chapter of row.chapters) {
-    exactKeys(chapter, [...chapterKeys, "page_count", "previewPages", "url", "sha256"]);
+    exactKeys(chapter, [
+      ...chapterKeys,
+      "page_count",
+      "previewPages",
+      "url",
+      "sha256",
+      ...(Object.hasOwn(chapter, "reader_extent") ? ["reader_extent"] : []),
+    ]);
     chapterIdentity(chapter);
     if (
       chapters.has(chapter.id) ||
@@ -211,10 +230,16 @@ export function validateMangaCdnChapter(
     throw Error("Invalid manga CDN chapter object");
   const row = value as Record<string, unknown>;
   mangaPublicationRoot(indexUrl);
-  exactKeys(row, [...chapterKeys, "pages"]);
+  exactKeys(row, [
+    ...chapterKeys,
+    "pages",
+    ...(Object.hasOwn(row, "reader_extent") ? ["reader_extent"] : []),
+  ]);
   chapterIdentity(row);
   if (
     chapterKeys.some((key) => row[key] !== descriptor[key as keyof typeof descriptor]) ||
+    JSON.stringify(mangaReaderExtent(row.reader_extent)) !==
+      JSON.stringify(mangaReaderExtent(descriptor.reader_extent)) ||
     !Array.isArray(row.pages) ||
     row.pages.length !== descriptor.page_count ||
     !row.pages.every((url) => retainedMangaCdnImageUrl(url)) ||
