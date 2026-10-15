@@ -402,7 +402,7 @@ async function Resultat({ question }: { question: string }) {
         <h2
           id="canon-verdict-rang"
           tabIndex={-1}
-          className="text-2xl font-semibold tracking-tight text-white focus:outline-none"
+          className="text-2xl font-semibold tracking-tight text-white focus:outline-none!"
         >
           {illustration ? <T k={`canonExplorer.${illustration.label}`} /> : question}
         </h2>
