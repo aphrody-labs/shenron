@@ -18,7 +18,7 @@
       "@aphrody/inference": "0.1.1",
       "@aphrody/m3-ai": "3.3.11",
       "@aphrody/m3-primitives": "3.3.11",
-      "@aphrody/m3-reader": "3.3.11",
+      "@aphrody/m3-reader": "3.3.12",
       "@aphrody/m3-theme": "3.3.11",
       "@aphrody/m3-tokens": "3.3.11",
       "@aphrody/messaging": "0.1.1",
