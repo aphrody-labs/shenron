@@ -8,7 +8,34 @@ import {
   ByteBudget,
   metadataHeaders,
   attestStagedObject,
+  verifyStoredObject,
 } from "./transfer";
+
+test("remote CAS verifier compares MIME essences while preserving byte and checksum checks", async () => {
+  const bytes = new TextEncoder().encode("parameterized asset");
+  const sha256 = new Bun.CryptoHasher("sha256").update(bytes).digest("hex");
+  let badChecksum = false;
+  const signed = {
+    async fetch(_url: string, init: RequestInit) {
+      if (init.method === "GET") return new Response(bytes);
+      return new Response(null, {
+        headers: {
+          "content-type": "TEXT/JAVASCRIPT; charset=utf-8",
+          "x-amz-meta-sha256": sha256,
+          "x-amz-checksum-sha256": badChecksum
+            ? "wrong"
+            : Buffer.from(sha256, "hex").toString("base64"),
+        },
+      });
+    },
+  };
+  const entry = { sha256, size: bytes.length, contentType: " text/JavaScript;charset=utf-8 " };
+  await verifyStoredObject(signed, "https://example.test/object", entry);
+  badChecksum = true;
+  await expect(verifyStoredObject(signed, "https://example.test/object", entry)).rejects.toThrow(
+    "Remote CAS metadata differs",
+  );
+});
 function stagedFixture(
   options: {
     badBytes?: boolean;

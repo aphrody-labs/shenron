@@ -96,6 +96,8 @@ const schema = z.object({
     .optional(),
 
   DATABASE_PATH: z.string().default("./data/bot.db"),
+  SHENRON_SOURCE_PIPELINE_CONFIG: z.string().min(1).optional(),
+  SHENRON_SOURCE_PIPELINE_INTERVAL_MS: z.coerce.number().int().min(1000).max(86400000).optional(),
 
   LOG_MESSAGE_CHANNEL_ID: z.string().optional(),
   LOG_SANCTION_CHANNEL_ID: z.string().optional(),
