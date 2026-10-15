@@ -709,3 +709,13 @@ production activée avec DB est en cours ; ne pas relancer build ni activation.
 les planches 2–18, puis compléter l'acquisition, la relecture et l'import idempotent.
 Le claim d'activation wiki correspond maintenant à l'image active ; le vérifier
 avant toute activation ultérieure. Aucune disponibilité 18/18 n'est déclarée.
+
+Recherche e-book/bibliothèques bornée supplémentaire : 17 ISBN interrogés auprès
+des catalogues ciblés. Aucun aperçu avec une planche effectivement rendue, aucun
+tome intégral : Internet Archive 0 document exact, Google Books 429 (inconclusif,
+pas de retry), Shueisha/BookWalker sans galerie qualifiée. Reçus privés dans
+`var/reports/sosh-ebook-catalogues-20261015/` et
+`var/reports/sosh-ebook-catalogues-20261015/README.md` (SHA de l'audit
+`25051f9de41f3c3b3fbbd8d346955032ba6da023ccec83d7fa02e7cb5a28b599`). Une QA
+navigateur anonyme de la production avec DB est demandée; les réponses API seules
+confirment les stubs et ne prouvent pas le rendu des planches.
