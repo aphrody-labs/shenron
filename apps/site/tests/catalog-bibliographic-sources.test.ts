@@ -3,8 +3,8 @@ import { expect, test } from "bun:test";
 import manifest from "../../bot/data/manga-bibliography-manifest.json";
 import { mangaVolumeBibliographicSource } from "../src/lib/manga-source-registry";
 
-test("every imported publication resolves to its verified primary publisher", () => {
-  expect(manifest.records).toHaveLength(84);
+test("every imported publication resolves to its verified publisher bibliography", () => {
+  expect(manifest.records).toHaveLength(100);
   for (const record of manifest.records) {
     expect(
       mangaVolumeBibliographicSource({
@@ -14,7 +14,7 @@ test("every imported publication resolves to its verified primary publisher", ()
       }),
     ).toEqual({ url: record.sourceUrl, label: record.publisher, language: record.language });
     expect(new URL(record.sourceUrl).hostname).toMatch(
-      /^(?:(?:www\.)?(?:shueisha\.co\.jp|glenat\.com|hanmoto\.com)|books\.shueisha\.co\.jp|www\.dreamnews\.jp)$/,
+      /^(?:(?:www\.)?(?:shueisha\.co\.jp|glenat\.com|hanmoto\.com)|books\.shueisha\.co\.jp|www\.(?:dreamnews\.jp|books\.or\.jp))$/,
     );
   }
 });
@@ -30,6 +30,21 @@ test("French SD and Japanese SD never share a publisher URL by series and volume
   ).toBe(ja.sourceUrl);
   expect(fr.sourceUrl).not.toBe(ja.sourceUrl);
   expect(mangaVolumeBibliographicSource({ id: 99999, isbn: null, title: null })).toBeNull();
+});
+
+test("all eighteen Soshuhen ISBN notices retain bibliography while disputed release days stay unset", () => {
+  const volumes = manifest.records.filter((record) => record.edition === "soshuhen");
+  expect(volumes).toHaveLength(18);
+  expect(new Set(volumes.map((record) => record.isbn)).size).toBe(18);
+  expect(volumes.map((record) => record.legacyVolumeId)).toEqual(
+    Array.from({ length: 18 }, (_, index) => 701 + index),
+  );
+  expect(volumes.slice(0, 3).map((record) => record.publishedAt)).toEqual([
+    "2016-05-13",
+    "2016-05-13",
+    "2016-05-27",
+  ]);
+  expect(volumes.slice(3).every((record) => record.publishedAt === null)).toBe(true);
 });
 
 test("equivalent ISBN10 and ISBN13 identify one print publication", () => {

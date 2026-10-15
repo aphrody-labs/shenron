@@ -25,7 +25,7 @@ describe("manga source registry", () => {
     expect(mangaSourceLabel("DBKZ")).toBe("Catalogue bibliographique");
   });
 
-  test("binds the verified Soshuhen notices to their exact ISBN without extrapolating other volumes", () => {
+  test("binds the verified Soshuhen notices to their exact ISBN", () => {
     expect(
       mangaVolumeBibliographicSource({ id: 701, isbn: "978-4-08-111165-7", title: "Legend 1" }),
     ).toEqual({
@@ -42,6 +42,13 @@ describe("manga source registry", () => {
     });
     expect(
       mangaVolumeBibliographicSource({ id: 703, isbn: "978-4-08-111167-1", title: "Legend 3" }),
+    ).toEqual({
+      url: "https://www.books.or.jp/book-details/9784081111671",
+      label: "集英社",
+      language: "ja",
+    });
+    expect(
+      mangaVolumeBibliographicSource({ id: 719, isbn: "invalid", title: "Unknown" }),
     ).toBeNull();
   });
 });

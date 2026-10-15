@@ -4,6 +4,7 @@ import { cache } from "react";
 import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
 import { dbUniverse } from "./db-universe";
 import { createMangaCdnSource, mangaCdnWithFallback } from "./manga-cdn-source";
+import { mangaVolumeBibliographicSource } from "./manga-source-registry";
 
 export const MANGA_CATALOGUE_INDEX_URL = `${DEFAULT_PUBLIC_ORIGINS.cdn}/publications/manga-catalogue/index.json`;
 type EditorialManga = Pick<
@@ -15,6 +16,13 @@ type TaggedRead<K extends "mangaVolume" | "mangaChapter"> =
   | (NonNullable<Awaited<ReturnType<EditorialManga[K]>>> & { sourceKind: "cdn" | "editorial" })
   | null;
 const lifetime = 30000;
+
+function withBibliography<T extends { id: number; isbn?: string | null; title: string | null }>(
+  volume: T,
+): T {
+  const source = mangaVolumeBibliographicSource({ ...volume, isbn: volume.isbn ?? null });
+  return source ? { ...volume, source_url: source.url, source_label: source.label } : volume;
+}
 
 /** An owned, uncached digest header binds each short-lived reader to its exact index bytes. */
 export function createMangaData(
@@ -62,16 +70,20 @@ export function createMangaData(
     return pending;
   };
   return {
-    mangaCatalogVolumes: () =>
-      mangaCdnWithFallback(
+    mangaCatalogVolumes: async () => {
+      const result = await mangaCdnWithFallback(
         async () => (await source()).mangaCatalogVolumes(),
         () => editorial.mangaCatalogVolumes(),
-      ),
-    mangaVolumes: (series = "DB") =>
-      mangaCdnWithFallback(
+      );
+      return result ? { ...result, volumes: result.volumes.map(withBibliography) } : null;
+    },
+    mangaVolumes: async (series = "DB") => {
+      const result = await mangaCdnWithFallback(
         async () => (await source()).mangaVolumes(series),
         () => editorial.mangaVolumes(series),
-      ),
+      );
+      return result ? { ...result, volumes: result.volumes.map(withBibliography) } : null;
+    },
     readableMangaChapters: (series?: string) =>
       mangaCdnWithFallback(
         async () => {
@@ -88,11 +100,11 @@ export function createMangaData(
       mangaCdnWithFallback<TaggedRead<"mangaVolume">>(
         async () => {
           const result = await (await source()).mangaVolume(id);
-          return result ? { ...result, sourceKind: "cdn" as const } : null;
+          return result ? { ...withBibliography(result), sourceKind: "cdn" as const } : null;
         },
         async () => {
           const result = await editorial.mangaVolume(id);
-          return result ? { ...result, sourceKind: "editorial" as const } : null;
+          return result ? { ...withBibliography(result), sourceKind: "editorial" as const } : null;
         },
       ),
     mangaChapter: (id: number) =>
