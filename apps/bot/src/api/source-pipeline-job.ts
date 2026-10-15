@@ -96,11 +96,24 @@ export async function registerSourcePipelineJob(
     );
   }
   const configPath = await privateConfiguration(settings);
+  let collectCycle = ports.collectCycle;
+  if (!ports.run && !collectCycle) {
+    const info = await lstat(configPath);
+    if (info.size > 2 * 1024 * 1024) throw Error("Source configuration exceeds limit");
+    const config = await Bun.file(configPath).json();
+    if (config.collectionIsolation === "required") {
+      const { createSourceCollectionControl } = await import("./source-collection-control");
+      collectCycle = await createSourceCollectionControl({
+        dataRoot: settings.dataRoot,
+        configPath,
+      });
+    }
+  }
   const run =
     ports.run ??
     (async (path: string, signal: AbortSignal) => {
       const { autoSourcePipeline } = await import("../../../../scripts/ops/bun-source-pipeline");
-      return autoSourcePipeline(path, { signal, collectCycle: ports.collectCycle });
+      return autoSourcePipeline(path, { signal, collectCycle });
     });
   registry.register({
     name: JOB_NAME,

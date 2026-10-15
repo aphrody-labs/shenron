@@ -170,3 +170,18 @@ constructeur. Le Dockerfile existant copie les deux fichiers sous
 sans lancer la CLI. Le job fini doit vérifier le reçu et l’image scellée avant
 de monter ce module en lecture seule ; la présence d’un bundle non vérifié ne
 suffit pas à qualifier la collecte.
+
+Le job bot raccorde le mode obligatoire à la boîte de dépôt privée fixe
+`<dataRoot>/source-pipeline/control`, pour la configuration
+`<dataRoot>/source-pipeline/config.json`. La requête atomique
+`requests/<UUID>.json` ne contient que le schéma, l’identifiant et le chemin/SHA
+de configuration. Le contrôleur existant retourne `responses/<UUID>.json` avec
+l’identité correspondante, le reçu canonique ou un code d’échec fixe. Fichiers
+0600, répertoires0700, chemins canoniques sans symlink,128requêtes au maximum,
+sortie64Kio ; le bot attend au plus20minutes par défaut. Une annulation retire
+la requête, ce que le contrôleur observe pour arrêter le job fini. Les deux
+fichiers de transport sont nettoyés, le journal `control/jobs` reste conservé.
+Le contrôleur doit écrire sous l’UID propriétaire du volume pour préserver la
+lecture0600 par le bot. Aucun profil ou paramètre privé n’est activé par ce
+raccordement source ; qualifier le contrôleur, le runtime et l’image avant
+d’activer cette configuration en production.
