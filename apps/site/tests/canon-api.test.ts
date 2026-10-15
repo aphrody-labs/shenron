@@ -4,34 +4,94 @@ process.env.NEXT_PUBLIC_SHENRON_API_URL = "http://127.0.0.1:5006";
 import type { NextRequest as NextRequestType } from "next/server";
 import { describe, expect, test } from "bun:test";
 import { mock } from "bun:test";
-import { join } from "node:path";
-import { existsSync, readFileSync } from "node:fs";
+import { PgDialect } from "drizzle-orm/pg-core";
+import type { SQL } from "drizzle-orm";
+import { DEFAULT_CANON_CONFIG } from "../src/lib/canon-engine";
 
 // Mock server-only pour permettre l'import des handlers Next.js dans Bun test
 mock.module("server-only", () => ({}));
 
-// Chargement défensif de DATABASE_URL pour Bun test
-if (!process.env.DATABASE_URL) {
-  try {
-    const envPath = join(import.meta.dir, "..", ".env");
-    if (existsSync(envPath)) {
-      const text = readFileSync(envPath, "utf-8");
-      const line = text.split("\n").findLast((l) => l.startsWith("DATABASE_URL="));
-      if (line) {
-        process.env.DATABASE_URL = line
-          .slice("DATABASE_URL=".length)
-          .trim()
-          .replace(/^["']|["']$/g, "");
-      }
-    }
-  } catch {
-    // Repli sans base : les handlers retomberont sur la configuration par défaut
-  }
-}
-
-// Routage local ultra-rapide vers le service Shenron bot local (port 5006)
-process.env.SHENRON_API_URL = "http://127.0.0.1:5006";
-process.env.NEXT_PUBLIC_SHENRON_API_URL = "http://127.0.0.1:5006";
+// Hermetic route contract tests. Fixtures are test data, never editorial evidence.
+// The test never reads a local .env, opens PostgreSQL or calls a model/retrieval service.
+const fixtureReferences = [
+  {
+    id: "fixture-broly",
+    subject: "Broly fixture",
+    keywords: ["broly"],
+    text: "Test-only Broly record",
+    text_fr: null,
+    source: "Test fixture",
+    year: 2026,
+    document: "fixture",
+    lang: "en",
+    provenance: "databooks",
+    href: null,
+    updated_at: new Date("2026-10-15T00:00:00Z"),
+  },
+  {
+    id: "fixture-manga",
+    subject: "Manga fixture",
+    keywords: ["fixture"],
+    text: "Test-only record",
+    text_fr: null,
+    source: "Test fixture",
+    year: 2026,
+    document: "fixture",
+    lang: "en",
+    provenance: "manga",
+    href: null,
+    updated_at: new Date("2026-10-15T00:00:00Z"),
+  },
+];
+const dialect = new PgDialect();
+mock.module("@/lib/db", () => ({
+  db: {
+    execute: async (query: SQL) => {
+      const { sql, params } = dialect.sqlToQuery(query);
+      if (/insert into public.canon_verdicts/.test(sql)) return [];
+      if (!sql.includes("from public.canon_references"))
+        throw new Error("Unexpected SQL in hermetic canon contract suite");
+      let rows = [...fixtureReferences];
+      const provenance = params.find((value) =>
+        ["aphrody", "databooks", "manuel", "manga"].includes(String(value)),
+      );
+      if (provenance) rows = rows.filter((row) => row.provenance === provenance);
+      const pattern = params.find((value) => typeof value === "string" && value.startsWith("%"));
+      if (typeof pattern === "string")
+        rows = rows.filter((row) =>
+          (row.subject + " " + row.text + " " + row.keywords.join(" "))
+            .toLowerCase()
+            .includes(pattern.slice(1, -1).toLowerCase()),
+        );
+      if (/count\(\*\)/.test(sql)) return [{ total: rows.length }];
+      const integers = params.filter((value) => typeof value === "number") as number[];
+      return rows.slice(integers[1] ?? 0, (integers[1] ?? 0) + (integers[0] ?? 20));
+    },
+  },
+}));
+mock.module("@/lib/canon-config", () => ({
+  getCanonConfig: async () => structuredClone(DEFAULT_CANON_CONFIG),
+  getCanonReferences: async () => [],
+}));
+mock.module("@/lib/db-universe", () => ({
+  dbUniverse: { rag: async () => ({ results: [], mode: "fixture-empty" }) },
+}));
+const unexpectedEntityLookup = async () => {
+  throw new Error("No retrieval hit was supplied by this fixture");
+};
+mock.module("@/lib/shenron", () => ({
+  getShenronCharacter: unexpectedEntityLookup,
+  getShenronPlanet: unexpectedEntityLookup,
+  getShenronRace: unexpectedEntityLookup,
+  getShenronTechnique: unexpectedEntityLookup,
+  getShenronTransformation: unexpectedEntityLookup,
+}));
+mock.module("@/lib/canon-yolo-server", () => ({
+  isCanonEvidenceEnabled: () => false,
+  canonEvidenceDecision: async () => {
+    throw new Error("Evidence model calls are outside this hermetic route suite");
+  },
+}));
 
 const { NextRequest } = await import("next/server");
 const { GET: getCanon, OPTIONS: optionsCanon } = await import("../src/app/api/canon/route");
@@ -425,75 +485,63 @@ describe("API Canon References (/api/canon/references) — Corpus de preuves", (
     expect(res.headers.get("Access-Control-Allow-Origin")).toBe("*");
   });
 
-  test.skipIf(!process.env.DATABASE_URL?.trim())(
-    "GET /api/canon/references (liste paginée par défaut)",
-    async () => {
-      const req = createReq("/api/canon/references?limit=10&offset=0");
-      const res = await getCanonReferences(req);
-      expect(res.status).toBe(200);
+  test("GET /api/canon/references (liste paginée par défaut)", async () => {
+    const req = createReq("/api/canon/references?limit=10&offset=0");
+    const res = await getCanonReferences(req);
+    expect(res.status).toBe(200);
 
-      const data = await res.json();
-      expect(data.limit).toBe(10);
-      expect(data.offset).toBe(0);
-      expect(data.total).toBeNumber();
-      expect(data.items).toBeArray();
-      expect(data.items.length).toBeLessThanOrEqual(10);
+    const data = await res.json();
+    expect(data.limit).toBe(10);
+    expect(data.offset).toBe(0);
+    expect(data.total).toBeNumber();
+    expect(data.items).toBeArray();
+    expect(data.items.length).toBeLessThanOrEqual(10);
 
-      if (data.items.length > 0) {
-        const item = data.items[0];
-        expect(item.id).toBeString();
-        expect(item.subject).toBeString();
-        expect(item.text).toBeString();
-        expect(item.source).toBeString();
-        expect(item.provenance).toBeString();
-      }
-    },
-  );
+    if (data.items.length > 0) {
+      const item = data.items[0];
+      expect(item.id).toBeString();
+      expect(item.subject).toBeString();
+      expect(item.text).toBeString();
+      expect(item.source).toBeString();
+      expect(item.provenance).toBeString();
+    }
+  });
 
-  test.skipIf(!process.env.DATABASE_URL?.trim())(
-    "GET /api/canon/references avec filtre q=broly",
-    async () => {
-      const req = createReq("/api/canon/references?q=broly&limit=5");
-      const res = await getCanonReferences(req);
-      expect(res.status).toBe(200);
+  test("GET /api/canon/references avec filtre q=broly", async () => {
+    const req = createReq("/api/canon/references?q=broly&limit=5");
+    const res = await getCanonReferences(req);
+    expect(res.status).toBe(200);
 
-      const data = await res.json();
-      expect(data.q).toBe("broly");
-      expect(data.items).toBeArray();
-      for (const item of data.items) {
-        const contenu =
-          `${item.subject} ${item.text} ${item.textFr ?? ""} ${item.keywords.join(" ")}`.toLowerCase();
-        expect(contenu).toContain("broly");
-      }
-    },
-  );
+    const data = await res.json();
+    expect(data.q).toBe("broly");
+    expect(data.items).toBeArray();
+    for (const item of data.items) {
+      const contenu =
+        `${item.subject} ${item.text} ${item.textFr ?? ""} ${item.keywords.join(" ")}`.toLowerCase();
+      expect(contenu).toContain("broly");
+    }
+  });
 
-  test.skipIf(!process.env.DATABASE_URL?.trim())(
-    "GET /api/canon/references avec filtre provenance=databooks",
-    async () => {
-      const req = createReq("/api/canon/references?provenance=databooks&limit=5");
-      const res = await getCanonReferences(req);
-      expect(res.status).toBe(200);
+  test("GET /api/canon/references avec filtre provenance=databooks", async () => {
+    const req = createReq("/api/canon/references?provenance=databooks&limit=5");
+    const res = await getCanonReferences(req);
+    expect(res.status).toBe(200);
 
-      const data = await res.json();
-      expect(data.provenance).toBe("databooks");
-      for (const item of data.items) {
-        expect(item.provenance).toBe("databooks");
-      }
-    },
-  );
+    const data = await res.json();
+    expect(data.provenance).toBe("databooks");
+    for (const item of data.items) {
+      expect(item.provenance).toBe("databooks");
+    }
+  });
 
-  test.skipIf(!process.env.DATABASE_URL?.trim())(
-    "GET /api/canon/references avec provenance inconnue (repli propre)",
-    async () => {
-      const req = createReq("/api/canon/references?provenance=invalide&limit=5");
-      const res = await getCanonReferences(req);
-      expect(res.status).toBe(200);
+  test("GET /api/canon/references avec provenance inconnue (repli propre)", async () => {
+    const req = createReq("/api/canon/references?provenance=invalide&limit=5");
+    const res = await getCanonReferences(req);
+    expect(res.status).toBe(200);
 
-      const data = await res.json();
-      expect(data.provenance).toBeNull();
-    },
-  );
+    const data = await res.json();
+    expect(data.provenance).toBeNull();
+  });
 });
 
 describe("canonPreuves() — Agrégation des Preuves", () => {
