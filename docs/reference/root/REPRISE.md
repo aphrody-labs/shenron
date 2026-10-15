@@ -612,17 +612,41 @@ son installation résout toujours `@aphrody/m3-reader` 3.3.11 contre 3.3.12 au
 catalogue ; la page corrigée n’est pas déployée. Ne pas lancer un build ou une
 activation concurrente. Prod était b90 au dernier contrôle.
 
-### 2026-10-15 — Plan cible de 177 tomes SOSH
+### 2026-10-15 — Plan confirmé : 17 tomes manquants pour compléter 18
 
-Demande propriétaire : préparer la livraison en production de 177 tomes SOSH.
-Plan complet créé dans [SOSH-177-DELIVERY-PLAN.md](SOSH-177-DELIVERY-PLAN.md), relié
-à GOAL/TODO. Porte initiale explicite : la prod n’a aujourd’hui que 18 identités
-SOSH ; le contrat `sosh-reader-manifest.ts` borne également SOSH à 18 volumes/IDs
-701–718 (`id = 700 + volumeNumber`). Les 159 identités supplémentaires restent à
-réconcilier aux notices primaires, sans création spéculative. Le plan couvre
-contrat 177, sources/provenance, acquisition et revue privée, import CAS avec
-backup, CDN, invalidation ISR, vagues et rendu WebView de chaque tome. Après une
-livraison de code unique pour le contrat et l’invalidation runtime, les publications
-de données s’effectuent par worker/CDN/writer sans `next build` ou rebuild de
-l’image du site pour chaque tome ou vague. Aucun tome supplémentaire n’a été acquis
-ou publié dans le cadre de la rédaction du plan.
+Le propriétaire a clarifié «177» : il demande les 17 tomes SOSH manquants pour
+compléter les 18, pas 177 éditions. Le plan cd190462 est corrigé et renommé
+[SOSH-DELIVERY-PLAN.md](SOSH-DELIVERY-PLAN.md), relié à GOAL/TODO/indexdocs.
+Le communiqué Shueisha du 12 mai 2016 (DreamNews 0000131506) confirme 18 volumes.
+Les bornes SOSH 18/IDs 701–718 restent valides ; aucune généralisation 177 ni
+création 159 notices n’est requise. Le tome 1 conserve son audit intégral final.
+Le plan couvre provenance/pagination, acquisition/relecture, backup/CAS, CDN,
+invalidation runtime et rendu public. Après une livraison de code unique pour
+l’invalidation, les vagues de données passent par worker/CDN/writer sans
+`next build` ni rebuild d’image du site par tome.
+
+À 15:13, l’index CDN épinglé ece8c64a… expose 381 fichiers pour le tome 1 et un
+seul 001.jpg par dossier des 17 autres. SHA/taille des couvertures 2,3,18 vérifiés,
+images vues : couvertures, aucun intérieur. Ces 17 images ne sont pas 17 lecteurs.
+Preuves privées : `var/reports/sosh-source-discovery-20261015/`.
+
+### 2026-10-15 — Collecte corrigée et publication runtime préparée
+
+Le worker de collecte a été rechargé via Infra sur la fabrique à15:23,
+PID140289, egress Japan/Tokyo confirmé. Le correctif efb921af reconstruit
+uniquement les BOM dont taille et SHA correspondent au reçu original :
+241 captures reprojetées et réellement indexées au cycle15:25:08 ;
+23 captures EUC-JP altérées restent refusées. Aucun scan SOSH nouveau publié.
+Preuves privées : var/reports/sosh-source-discovery-20261015.
+
+La revalidation backend f5427c5b est implémentée et qualifiée
+(32tests/520assertions), mais attend encore l’image commune et son contrôle
+runtime. Le préparateur legacy trompeur est remplacé par l’audit canonique
+17bf0f7b. Les cinq erreurs de types du build sont corrigées jusqu’à805f6f59 ;
+140fichiers vérifiés et31tests/463assertions verts. Le propriétaire de livraison
+a reçu la demande de repin ; aucun build concurrent lancé.
+
+Nouvelle demande : installer Xenoverse2 avec DBX2 et Shenron RE. Cible
+configurée APHRODY Windows native joignable ; Steam et jeu absents au contrôle
+15:30. Installation officielle/outillage en cours, sans achat ni connexion
+inventée. Le CLI Shenron RE expose inventaire et lecture de formats, pas install.

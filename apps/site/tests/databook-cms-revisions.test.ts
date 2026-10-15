@@ -69,11 +69,7 @@ mock.module("@/lib/databook-pages", () => ({
   },
 }));
 // Only the Drizzle transport is replaced. CMS parsing, CRUD/CAS, journal and revert are real.
-const database = {
-  transaction: async <T>(fn: (tx: typeof database) => Promise<T>): Promise<T> => {
-    transactions++;
-    return fn(database);
-  },
+const databaseTransport = {
   execute: async () => [],
   select: () => {
     let table: unknown;
@@ -121,6 +117,13 @@ const database = {
       return { returning: async () => [{ id }] };
     },
   }),
+};
+const database = {
+  ...databaseTransport,
+  transaction: async <T>(fn: (tx: typeof databaseTransport) => Promise<T>): Promise<T> => {
+    transactions++;
+    return fn(databaseTransport);
+  },
 };
 mock.module("@/lib/db", () => ({ db: database }));
 const { wikiRevisions: revisionTable } = await import("../src/db/schema");

@@ -27,7 +27,7 @@ the root `AGENTS.md`.
 | Content enrichment session                                     | [`operations/content-session-pipeline.md`](operations/content-session-pipeline.md)                                                                  |
 | Bun agent persona                                              | [`operations/agent-home-bun.md`](operations/agent-home-bun.md)                                                                                      |
 | Master plan                                                    | [`reference/root/PLAN.md`](reference/root/PLAN.md)                                                                                                  |
-| SOSH 177-tome production delivery plan                          | [`reference/root/SOSH-177-DELIVERY-PLAN.md`](reference/root/SOSH-177-DELIVERY-PLAN.md)                                                              |
+| Livraison des 17 tomes SOSH manquants                           | [`reference/root/SOSH-DELIVERY-PLAN.md`](reference/root/SOSH-DELIVERY-PLAN.md)                                                                      |
 | Design system                                                  | [`reference/DESIGN.md`](reference/DESIGN.md)                                                                                                        |
 | Wiki editorial policy                                          | [`products/wiki-editorial.md`](products/wiki-editorial.md)                                                                                          |
 | Canon adjudication                                             | [`products/canon.md`](products/canon.md)                                                                                                            |
