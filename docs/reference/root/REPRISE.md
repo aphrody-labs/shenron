@@ -773,3 +773,9 @@ public a été actualisé tandis que l'horodatage de projection est resté incha
 Comparé aux ~12 s CPU/12 s observées sur l'image précédente, la projection répétée
 était bien une source majeure de charge idle. Le résultat ne mesure que ce service
 et cette fenêtre ; aucune complétude manga/wiki n'en découle.
+
+### 2026-10-15 — Source officielle Dragon Ball et état de reprise
+
+La page officielle Dragon Ball sur le volume 1 de *Super Dragon Ball Heroes: Ultra God Mission!!!!* a été vérifiée puis ajoutée comme notice paraphrasée au RAG privé Shenron : réponse HTTP 200, SHA-256 `dcf4e1d0dfe4c60773eb883141d542a2b897fae6f262edd0cff242f40cec4e4b`, 2 chunks retrouvés par une requête native. Elle étaye le contexte du Super Space-Time Tournament et Aeos, mais pas « Toki Toki City » pour la fiche `tournaments/11`; aucune écriture wiki n'a été faite.
+
+Le crawl Dragon Ball natif est toujours actif dans son répertoire protégé. Son état à la reprise indique 256 requêtes, 101 268 documents projetés et quota global atteint pour ce cycle; le statut n'est pas terminal. Je n'ai ni indexé ni modifié sa sortie. L'API manga publique relevée précédemment reste à 329 volumes dont 110 manquants ou partiels; les pages sources nécessaires aux tomes et les sources primaires requises pour les fiches wiki bloquées ne sont pas apparues. L'index RAG officiel complété ne signifie ni complétude du wiki ni publication publique.
