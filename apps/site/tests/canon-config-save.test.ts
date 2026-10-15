@@ -128,7 +128,8 @@ mock.module("@/lib/session", () => ({
   revisionActorOf: () => AUTOMATISATION,
 }));
 
-const { saveCanonConfig, getCanonReferences } = await import("../src/lib/canon-config");
+const { saveCanonConfig, getCanonReferences, getCanonConfig } =
+  await import("../src/lib/canon-config");
 const { DEFAULT_CANON_CONFIG } = await import("../src/lib/canon-engine");
 
 const T0 = new Date("2026-10-01T08:00:00.000Z");
@@ -277,5 +278,28 @@ describe("saveCanonConfig et citations ingérées", () => {
       before: { textFr: "Traduction relue", visible: true },
       after: { textFr: "Retouche de l'éditeur", visible: true },
     });
+  });
+});
+
+describe("getCanonConfig preserves editorial choices", () => {
+  test("a saved empty entry and heuristic list stays empty and disabled scaling stays disabled", async () => {
+    const saved = {
+      ...structuredClone(DEFAULT_CANON_CONFIG),
+      entries: [],
+      heuristics: [],
+      powerScaling: { ...DEFAULT_CANON_CONFIG.powerScaling, enabled: false },
+    };
+    await saveCanonConfig(saved, "x");
+    const read = await getCanonConfig();
+    expect(read.entries).toEqual([]);
+    expect(read.heuristics).toEqual([]);
+    expect(read.powerScaling.enabled).toBe(false);
+    expect(read.references).toHaveLength(corpus().length);
+  });
+  test("a missing singleton still uses repository defaults", async () => {
+    const read = await getCanonConfig();
+    expect(read.entries).toEqual(DEFAULT_CANON_CONFIG.entries);
+    expect(read.heuristics).toEqual(DEFAULT_CANON_CONFIG.heuristics);
+    expect(read.powerScaling).toEqual(DEFAULT_CANON_CONFIG.powerScaling);
   });
 });

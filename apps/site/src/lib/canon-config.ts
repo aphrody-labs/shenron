@@ -43,21 +43,6 @@ export const getCanonConfig = cache(async (): Promise<CanonConfig> => {
       .where(eq(canonConfig.id, SINGLETON_ID))
       .limit(1);
     const doctrine = row ? resolveCanonConfig(row.data) : structuredClone(DEFAULT_CANON_CONFIG);
-    const entryIds = new Set(doctrine.entries.map((e) => e.id));
-    const missingEntries = DEFAULT_CANON_CONFIG.entries.filter((e) => !entryIds.has(e.id));
-    if (missingEntries.length > 0) {
-      doctrine.entries = [...doctrine.entries, ...missingEntries];
-    }
-    const heuristicIds = new Set(doctrine.heuristics.map((h) => h.id));
-    const missingHeuristics = DEFAULT_CANON_CONFIG.heuristics.filter(
-      (h) => !heuristicIds.has(h.id),
-    );
-    if (missingHeuristics.length > 0) {
-      doctrine.heuristics = [...doctrine.heuristics, ...missingHeuristics];
-    }
-    if (!doctrine.powerScaling || !doctrine.powerScaling.enabled) {
-      doctrine.powerScaling = DEFAULT_CANON_CONFIG.powerScaling;
-    }
     // Le corpus de preuves vit en table (`canon_references`, alimentée 24h/24
     // par `scripts/canon-ingest.ts`) ; le blob ne garde que les saisies
     // manuelles de l'éditeur. Les deux se lisent ensemble.
