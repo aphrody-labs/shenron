@@ -104,3 +104,41 @@ test("pool adapter reads only matching acquired receipts and rejects mutated ori
     ports.acquire("https://publisher.example/absent.png", ["https://publisher.example"], 100),
   ).rejects.toThrow("no acquired bytes");
 });
+
+test("canonical locator represents an absent chapter without allocating an ID", async () => {
+  const previousFetch = globalThis.fetch,
+    previousToken = process.env.SHENRON_API_ADMIN_TOKEN;
+  const requests: string[] = [];
+  process.env.SHENRON_API_ADMIN_TOKEN = "isolated-fixture-token";
+  globalThis.fetch = Object.assign(
+    async (input: string | URL | Request) => {
+      const url = String(input);
+      requests.push(url);
+      if (url.endsWith("/api/manga"))
+        return Response.json({
+          catalog: [{ id: 740, series: "ARALE", number: 1, isbn: "9782723472272" }],
+        });
+      if (url.endsWith("/db_manga_volumes/740"))
+        return Response.json({ id: 740, series: "ARALE", volumeNumber: 1, isbn: "9782723472272" });
+      if (url.includes("as=byParent")) return Response.json({ rows: [], total: 0 });
+      throw Error("Unexpected identity request");
+    },
+    { preconnect: previousFetch.preconnect },
+  );
+  try {
+    const result = await nativeMangaPlannerPorts().locate({
+      series: "ARALE",
+      volumeNumber: 1,
+      chapterNumber: 1,
+      isbn: "9782723472272",
+    } as Parameters<MangaPlannerPorts["locate"]>[0]);
+    expect(result.chapter).toBeNull();
+    expect(result.volume.id).toBe(740);
+    expect(requests).toHaveLength(3);
+    expect(requests.some((url) => /\/db_manga_chapters\/\d/.test(url))).toBe(false);
+  } finally {
+    globalThis.fetch = previousFetch;
+    if (previousToken === undefined) delete process.env.SHENRON_API_ADMIN_TOKEN;
+    else process.env.SHENRON_API_ADMIN_TOKEN = previousToken;
+  }
+});

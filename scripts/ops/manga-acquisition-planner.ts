@@ -16,7 +16,7 @@ import type { SourcePipelineConfig } from "./bun-source-pipeline";
 
 type Row = Record<string, unknown>;
 export interface MangaPlannerPorts {
-  locate(candidate: MangaCandidate): Promise<{ volume: Row; chapter: Row }>;
+  locate(candidate: MangaCandidate): Promise<{ volume: Row; chapter: Row | null }>;
   acquire(url: string, allowedOrigins: string[], maxBytes: number): Promise<AcquiredSource>;
 }
 export const nativeMangaPlannerPorts = (
@@ -56,8 +56,11 @@ export const nativeMangaPlannerPorts = (
       (row: Row) =>
         row.series === candidate.series && row.chapterNumber === candidate.chapterNumber,
     );
-    if (slots.length !== 1) throw Error("Exact existing chapter slot is ambiguous or absent");
-    const chapter = await json("/api/wiki-admin/db_manga_chapters/" + slots[0].id, true);
+    if (slots.length > 1 || (slots.length === 0 && chapters.rows.length > 0))
+      throw Error("Exact chapter slot is ambiguous or another reader exists");
+    const chapter = slots.length
+      ? await json("/api/wiki-admin/db_manga_chapters/" + slots[0].id, true)
+      : null;
     return { volume, chapter };
   },
   acquire: async (url, allowedOrigins, maxBytes) => {
@@ -272,14 +275,14 @@ export async function planMangaAcquisition(
     series: candidate.series,
     volumeId: volume.id,
     volumeNumber: candidate.volumeNumber,
-    chapterId: chapter.id,
+    chapterId: chapter?.id ?? null,
     chapterNumber: candidate.chapterNumber,
     isbn: candidate.isbn,
     activate: true,
     expectedVolume: volume,
     expectedVolumeSha256: wikiUpdateSnapshotHash(volume),
     expectedChapter: chapter,
-    expectedChapterSha256: wikiUpdateSnapshotHash(chapter),
+    expectedChapterSha256: chapter ? wikiUpdateSnapshotHash(chapter) : null,
     source: { ...candidate.source, config, media },
     pages,
   });

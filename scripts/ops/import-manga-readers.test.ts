@@ -81,3 +81,13 @@ test("generic manifests cannot replace real pages with empty or estimated enumer
   count.volumes[0]!.expectedPages = 200;
   expect(() => validateMangaReaderManifest(count)).toThrow();
 });
+
+test("generic manifest carries explicit absence until the canonical transaction allocates an ID", () => {
+  const input = {
+    ...mangaFixture(),
+    volumes: [{ ...mangaFixture().volumes[0]!, chapterId: null }],
+  };
+  const manifest = validateMangaReaderManifest(input);
+  expect(manifest.volumes[0]!.chapterId).toBeNull();
+  expect(missingReaderChapters(manifest, snapshot())).toHaveLength(1);
+});
