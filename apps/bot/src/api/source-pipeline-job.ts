@@ -25,6 +25,7 @@ export interface SourcePipelineJobRegistry {
 
 export interface SourcePipelineJobPorts {
   run?: (configPath: string, signal: AbortSignal) => Promise<unknown>;
+  afterCycle?: () => Promise<unknown>;
 }
 
 function contained(root: string, path: string): boolean {
@@ -113,6 +114,7 @@ export async function registerSourcePipelineJob(
         await active;
       } finally {
         active = undefined;
+        if (!stopped) await ports.afterCycle?.();
       }
     },
   });

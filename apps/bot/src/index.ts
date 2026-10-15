@@ -25,6 +25,7 @@ import { runBootAudit } from "./lib/boot-audit";
 import { ApiServer } from "./api/server";
 import { CronRegistry } from "./api/cron-registry";
 import { registerSourcePipelineJob } from "./api/source-pipeline-job";
+import { registerVectorRefreshJob, VECTOR_REFRESH_JOB } from "./api/vector-refresh-job";
 import { dirname, resolve } from "node:path";
 import { assertRagEmbeddingSpace } from "./lib/rag";
 import { existsSync } from "node:fs";
@@ -36,6 +37,9 @@ import { CommandPermissions } from "./guards/CommandPermissions";
 
 // Migrations DB AVANT la création des clients (DatabaseService est singleton partagé)
 const dbService = container.resolve(DatabaseService);
+if (process.env.RAG_BACKEND === "bun") {
+  await (await import("./lib/bun-rag")).initializeBunRag();
+}
 if (existsSync("./src/db/migrations")) {
   try {
     migrate(dbService.db, { migrationsFolder: "./src/db/migrations" });
@@ -184,11 +188,24 @@ client.on("interactionCreate", async (interaction) => {
 // l'ordre, une étape en échec n'empêche pas les suivantes, et une échéance globale force la
 // sortie (code 1 si une étape a échoué). Chaque vidange garde son propre délai.
 const DRAIN_TIMEOUT_MS = 10_000;
-const sourcePipeline = await registerSourcePipelineJob(container.resolve(CronRegistry), {
-  configPath: env.SHENRON_SOURCE_PIPELINE_CONFIG,
-  intervalMs: env.SHENRON_SOURCE_PIPELINE_INTERVAL_MS,
-  dataRoot: dirname(resolve(env.DATABASE_PATH)),
-});
+const vectorRefresh = await registerVectorRefreshJob(
+  container.resolve(CronRegistry),
+  process.env.RAG_BACKEND === "bun",
+  Number(process.env.SHENRON_VECTOR_REFRESH_INTERVAL_MS),
+);
+const sourcePipeline = await registerSourcePipelineJob(
+  container.resolve(CronRegistry),
+  {
+    configPath: env.SHENRON_SOURCE_PIPELINE_CONFIG,
+    intervalMs: env.SHENRON_SOURCE_PIPELINE_INTERVAL_MS,
+    dataRoot: dirname(resolve(env.DATABASE_PATH)),
+  },
+  {
+    afterCycle: async () => {
+      if (vectorRefresh.enabled) await container.resolve(CronRegistry).run(VECTOR_REFRESH_JOB);
+    },
+  },
+);
 void sourcePipeline.initialRun.catch(() => {
   logger.warn(
     { subsystem: "source-pipeline" },
@@ -205,6 +222,7 @@ registerGracefulShutdown({
   },
   steps: [
     { name: "source pipeline", action: () => sourcePipeline.stop() },
+    { name: "vector refresh", action: () => vectorRefresh.stop() },
     {
       // Minuteries effacées, tâches actives attendues.
       name: "cron registry",
@@ -234,6 +252,17 @@ registerGracefulShutdown({
       name: "native inference",
       action: async () =>
         (await import("@aphrody/shenron-pipeline/ai/native")).closeNativeShenronInference(),
+    },
+    {
+      name: "Bun vector retrieval",
+      action: async () => (await import("./lib/bun-rag")).closeBunRag(),
+    },
+    {
+      name: "PostgreSQL",
+      action: async () => {
+        const { PgService } = await import("./db/pg");
+        await container.resolve(PgService).close();
+      },
     },
     { name: "databases", action: () => dbService.close() },
   ],

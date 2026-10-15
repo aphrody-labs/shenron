@@ -834,6 +834,9 @@ export async function hybridSearch(
   options?: SearchOptions,
 ): Promise<{ results: RagHit[]; mode: RagMode }> {
   const query = raw.trim();
+  if (process.env.RAG_BACKEND === "bun") {
+    return (await import("./bun-rag")).searchBunRag(query, limit, options);
+  }
   if (process.env.RAG_BACKEND === "aphrody" || process.env.RAG_BACKEND === "native") {
     if (!query) return { results: [], mode: "lexical" };
     if (
@@ -1250,7 +1253,7 @@ export async function buildRagContext(
   if (results.length === 0) return { q, mode, context: "", sources: [] };
 
   const contents = new Map<number, string>();
-  if (process.env.RAG_BACKEND !== "aphrody") {
+  if (process.env.RAG_BACKEND !== "aphrody" && process.env.RAG_BACKEND !== "bun") {
     if (!db) throw new Error("Local RAG context requires a database");
     const ph = results.map(() => "?").join(",");
     for (const row of db

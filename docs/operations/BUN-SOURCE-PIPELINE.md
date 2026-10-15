@@ -94,3 +94,53 @@ mapping UUID/clé et des vecteurs. Il ne copie pas les textes, ne recalcule pas
 les embeddings et n'active aucun lecteur. Un changement de génération invalide
 la projection. Le lecteur produit, ses filtres et son hydratation doivent être
 qualifiés avant tout basculement.
+
+Le lecteur bot optionnel `RAG_BACKEND=bun` conserve les filtres d’origine, le
+mapping UUID, l’hydratation PostgreSQL et la fusion RRF. Le modèle d’embedding
+reste celui du service HTTP configuré ; `Bun.VectorIndex` ne fournit pas cette
+inférence. Les variables `SHENRON_VECTOR_SIDECAR_*` épinglent le bootstrap ;
+`SHENRON_VECTOR_REFRESH_ROOT`, `SHENRON_VECTOR_REFRESH_INTERVAL_MS`,
+`SHENRON_VECTOR_REFRESH_MIN_FREE_BYTES` et
+`SHENRON_VECTOR_REFRESH_MAX_INDEX_BYTES` bornent explicitement le refresh.
+Le répertoire doit être privé, absolu et canonique. Aucun backend n’est activé
+par la livraison de ces sources.
+
+Le propriétaire Cron existant observe deux fois une génération stable, puis
+exporte par lots de128, construit dans le worker embarqué, vérifie et publie
+atomiquement le pointeur privé. Il partage le pool PostgreSQL existant et un
+verrou transactionnel ; il n’ajoute ni service ni minuteur récurrent. Une dérive
+de génération rend la recherche temporairement indisponible, sans repli périmé.
+Les requêtes déjà engagées libèrent leurs leases avant fermeture de l’ancien
+index. L’arrêt attend le worker et ses RPC PostgreSQL avant fermeture du pool.
+L’annulation reste coopérative pendant un appel natif synchrone.
+
+Avant activation, qualifier le binaire bot compilé et son worker avec le vrai
+snapshot, une reconstruction, une réouverture et une recherche filtrée. Mesurer
+le pic RSS/cgroup durant la coexistence ancien index + worker, puis ancien +
+nouveau lecteur : la limite de768MiB porte sur le fichier index, **pas** sur sa
+mémoire résidente. Le conteneur de3GiB ne constitue donc pas une preuve que le
+refresh tient en mémoire. Pour257386 vecteurs384D, l’export représente
+395344896octets de vecteurs et environ17,7Mo de mapping ; conserver une réserve
+disque d’au moins2GiB et mesurer aussi les métadonnées et buffers. Garder les
+reçus de génération, empreintes, pic mémoire et santé avant tout basculement.
+La rétention supprime uniquement les générations gérées et vérifiées hors
+current+previous ; le bootstrap externe et les artefacts sans reçu valide
+restent protégés et exigent une récupération propriétaire explicite.
+
+## Découverte Search optionnelle
+
+La configuration privée peut ajouter `search` avec `queries` (1–8 recherches),
+`domains` (1–8 domaines explicites), `count` (1–20), `cookieJar` (chemin absolu
+canonique, fichier privé) et `timeoutMs` (maximum120000). Le plan épingle cette
+entrée ; seul `collect` lance `bun search --json`. Chaque recherche ajoute les
+restrictions `site:` validées, refuse les résultats hors domaines et borne la
+sortie à256Kio. Le cookie jar passe par `APHRODY_GOOGLE_COOKIES_JSON`, jamais
+par les arguments ni les journaux. Le reçu privé et son empreinte sont repris
+par le journal existant ; un replay ne relance pas la recherche.
+
+Ces résultats sont uniquement des pistes de découverte avec provenance. Ils
+n’ajoutent aucune source autorisée au crawl, aucune entrée PostgreSQL, aucun
+canon ni publication. Le runtime doit réellement fournir la commande Search
+qualifiée ; une commande absente ou un refus d’authentification échoue sans
+repli. L’isolation VPN appartient au job hôte qualifié qui lance le pipeline :
+aucune option publique de commande shell ou namespace n’est acceptée ici.

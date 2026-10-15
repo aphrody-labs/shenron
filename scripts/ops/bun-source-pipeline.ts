@@ -27,6 +27,13 @@ import {
 } from "../../deploy/cloudflare/cli/publish-catalog";
 import { acquire, type AcquireDependencies } from "./lib/bun-source-http";
 
+import {
+  planSourceSearch,
+  collectSourceSearch,
+  type SourceSearchConfig,
+  type SearchRunner,
+} from "./lib/bun-source-search";
+
 export interface SourceMedia {
   url: string;
   sha256: string;
@@ -63,6 +70,7 @@ export interface SourcePipelineConfig {
   maxCycleBytes?: number;
   delivery?: SourceDeliveryConfig;
   crawl?: NativeSourceCampaign;
+  search?: SourceSearchConfig;
   media?: string;
   transport?: "fetch" | "curl";
   concurrency?: number;
@@ -87,6 +95,7 @@ export interface PipelineDatabase {
   close?(): Promise<void>;
 }
 export interface SourcePipelinePorts {
+  search?: SearchRunner;
   database?: PipelineDatabase;
   store?: ObjectStore;
   http?: AcquireDependencies;
@@ -456,6 +465,7 @@ async function executeSourcePipeline(
           ...(campaign.code ? { code: campaign.code } : {}),
         }
       : null,
+    discovery: config.search ? planSourceSearch(config.search) : null,
     media: media.length,
     nativeDatabase: true,
     publicActivation: !!config.publication,
@@ -751,6 +761,20 @@ async function executeSourcePipeline(
     if (action === "verify" && !quotaPending)
       checkpoint!.query("DELETE FROM completed WHERE id=?").run("verify-active");
     if (action === "collect") {
+      const discovery = config.search
+        ? await collectSourceSearch(config.search, config.job, ports.signal, ports.search)
+        : undefined;
+      if (discovery) {
+        const id = "search:" + discovery.inputSha256;
+        const prior = checkpoint!.query("SELECT digest FROM completed WHERE id=?").get(id) as {
+          digest: string;
+        } | null;
+        if (prior && prior.digest !== discovery.receiptSha256)
+          throw Error("Discovery journal differs");
+        checkpoint!
+          .query("INSERT OR REPLACE INTO completed VALUES (?, ?)")
+          .run(id, discovery.receiptSha256);
+      }
       const collection = config.crawl
         ? await (ports.campaign ?? nativeCampaign)(
             config.crawl,
@@ -766,6 +790,7 @@ async function executeSourcePipeline(
         cycleBytes,
         cycleFiles,
         campaign: collection ?? campaign,
+        ...(discovery ? { discovery } : {}),
         complete:
           !data.invalid.length &&
           !data.budgetExceeded &&
