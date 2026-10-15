@@ -117,3 +117,45 @@ test("preconditions compare explicit fields and do not surface protected values"
   }
   expect(row.pageCount).toBeNull();
 });
+
+test("PostgreSQL Dates compare and hash exactly as the administrative JSON wire", () => {
+  const row = {
+    id: 7,
+    createdAt: new Date("2026-10-15T11:00:00.123Z"),
+    updatedAt: new Date("2026-10-15T11:01:00.456Z"),
+    metadata: { checkedAt: new Date("2026-10-15T10:59:00.789Z"), flags: [null, false] },
+    synopsisFr: null,
+  };
+  const wire = JSON.parse(JSON.stringify(row));
+  const sha256 = wikiUpdateSnapshotHash(wire);
+  expect(wikiUpdateSnapshotHash(row)).toBe(sha256);
+  expect(() => assertWikiUpdatePrecondition(row, wire, { complete: true, sha256 })).not.toThrow();
+  for (const changed of [
+    { ...row, updatedAt: new Date("2026-10-15T11:01:00.457Z") },
+    { ...row, synopsisFr: "Concurrent editorial change" },
+    { ...row, metadata: { ...row.metadata, flags: [] } },
+    { ...row, createdAt: row.createdAt.getTime() },
+  ]) {
+    expect(() => assertWikiUpdatePrecondition(changed, wire, { complete: true, sha256 })).toThrow(
+      WikiUpdatePreconditionError,
+    );
+  }
+});
+
+test("exact timestamp strings remain exact and are never truncated by CAS normalization", () => {
+  const before = { id: 7, updatedAt: "2026-10-15 11:01:00.123456" };
+  const wire = JSON.parse(JSON.stringify(before));
+  const sha256 = wikiUpdateSnapshotHash(wire);
+  expect(() =>
+    assertWikiUpdatePrecondition(before, wire, { complete: true, sha256 }),
+  ).not.toThrow();
+  expect(() =>
+    assertWikiUpdatePrecondition({ ...before, updatedAt: "2026-10-15 11:01:00.123789" }, wire, {
+      complete: true,
+      sha256,
+    }),
+  ).toThrow(WikiUpdatePreconditionError);
+  expect(wikiUpdateSnapshotHash({ ...before, updatedAt: "2026-10-15 11:01:00.123789" })).not.toBe(
+    sha256,
+  );
+});
