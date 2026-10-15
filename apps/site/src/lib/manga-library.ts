@@ -21,8 +21,23 @@ export interface LibraryChapter {
   volume_id?: number | null;
 }
 
+/** Legacy imports use DB_SOSH for the same Sōshūhen collection. */
+export function canonicalMangaCollection(series: string): string {
+  return series === "DB_SOSH" ? "SOSH" : series;
+}
+
 export function uniqueLibraryVolumes(groups: readonly LibraryVolume[][]): LibraryVolume[] {
-  return [...new Map(groups.flat().map((volume) => [volume.id, volume])).values()];
+  const volumes = [...new Map(groups.flat().map((volume) => [volume.id, volume])).values()];
+  const collections = [
+    ...new Set(volumes.map((volume) => canonicalMangaCollection(volume.series))),
+  ];
+  return volumes.toSorted(
+    (a, b) =>
+      collections.indexOf(canonicalMangaCollection(a.series)) -
+        collections.indexOf(canonicalMangaCollection(b.series)) ||
+      a.volumeNumber - b.volumeNumber ||
+      a.id - b.id,
+  );
 }
 
 const fold = (value: string) =>

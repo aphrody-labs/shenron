@@ -51,6 +51,10 @@ test.skipIf(typeof document === "undefined")(
           <MangaVolumeGrid
             dbVolumes={[{ id: 1, series: "DB", volumeNumber: 1, title: "Goku", cover: null }]}
             dbsVolumes={[{ id: 2, series: "DBS", volumeNumber: 1, title: "Goku", cover: null }]}
+            soshuhenVolumes={[
+              { id: 4, series: "SOSH", volumeNumber: 2, title: "Digest 2", cover: null },
+              { id: 3, series: "DB_SOSH", volumeNumber: 1, title: "Digest 1", cover: null },
+            ]}
             readableChapters={[
               { id: 10, series: "DB", chapter_number: 1, title: "Goku", cover: null, volume_id: 1 },
               {
@@ -68,6 +72,14 @@ test.skipIf(typeof document === "undefined")(
                 title: "Goku",
                 cover: null,
                 volume_id: 1,
+              },
+              {
+                id: 40,
+                series: "DB_SOSH",
+                chapter_number: 1,
+                title: "Digest",
+                cover: null,
+                volume_id: 3,
               },
             ]}
             colorVolumeIds={[1]}
@@ -104,5 +116,25 @@ test.skipIf(typeof document === "undefined")(
     });
     expect(button("DBS").getAttribute("aria-pressed")).toBe("true");
     expect(container.querySelector('a[href="/wiki/manga/20"]')).not.toBeNull();
+
+    await act(async () => {
+      window.history.replaceState(null, "", "/wiki/manga?collection=DB_SOSH&view=chapters");
+      window.dispatchEvent(new Event("popstate"));
+    });
+    expect(button("SOSH").getAttribute("aria-pressed")).toBe("true");
+    expect(button("SOSH").textContent).toContain("2");
+    expect(button("DB_SOSH")).toBeNull();
+    expect(container.querySelector('a[href="/wiki/manga/40"]')).not.toBeNull();
+    expect(container.querySelector('a[href="/wiki/manga/20"]')).toBeNull();
+
+    await act(async () => {
+      window.history.replaceState(null, "", "/wiki/manga?collection=SOSH");
+      window.dispatchEvent(new Event("popstate"));
+    });
+    expect(
+      [...container.querySelectorAll('a[href^="/wiki/manga/volume/"]')].map((link) =>
+        link.getAttribute("href"),
+      ),
+    ).toEqual(["/wiki/manga/volume/3", "/wiki/manga/volume/4"]);
   },
 );
