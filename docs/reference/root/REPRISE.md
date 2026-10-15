@@ -688,19 +688,24 @@ intérieure, zéro candidat de publication. Le rendu BookWalker est `partial=fal
 avec une panne RefCell/délai ; aucun job automatique n'est laissé. Reçus et SHA :
 `var/reports/sosh-primary-incremental-20261015/`.
 
-L'image commune `16bddca0268f6136e972e58157a5924bcd17dab0` a été construite et
-scellée, puis son rendu candidat testé en runtime isolé sans identifiants ni base
-de production. Huit captures du navigateur : 0 exception, 0 crash, 0 débordement
-aux largeurs testées ; les 12 couvertures de grille chargent. Cela ne qualifie pas
-les lecteurs : le tome 701 a 11 images chargées sur 30 observées à 1280 et aucune
-à 390 dans la capture lecteur ; l'API du runtime isolé renvoie un catalogue vide
-faute de DB. Le candidat n'est pas activé en production ; le claim exclusif
-`wiki-release-activation.json` réserve cette activation à son détenteur. Prod
-reste sur `docker-b90f81052ef4ec7947dfea4f597eecf4f77e4811` au dernier relevé.
-Le runtime de test a été arrêté ; ne pas relancer la QA sans nouvelle image ou
-un contexte de données de test qualifié.
+L'image commune `16bddca0268f6136e972e58157a5924bcd17dab0` a été construite,
+scellée puis activée par le propriétaire via l'adaptateur canonique Infra à
+15:50:21 ; aucun second déploiement n'a été lancé. Le contrôle direct DBFR confirme
+`/srv/shenron/current` → `releases/docker-16bddca0268f6136e972e58157a5924bcd17dab0`
+et les conteneurs site/bot/gateway sains. `/api/health` répond 200. L'API manga
+publique répond 200, conserve 18 notices SOSH et un seul chapitre/381 pages :
+les ID 702–718 ont chacun zéro chapitre. La route 35001 annonce `readerExtent.kind`
+`unknown`, donc le tome 1 n'est pas encore qualifié complet.
+
+Avant l'activation, huit captures du navigateur candidat avaient 0 exception,
+0 crash et 0 débordement aux largeurs testées ; 12 couvertures de grille chargées.
+Ces captures ne qualifient pas les lecteurs : tome 701 avait 11 images chargées
+sur 30 observées à 1280 et aucune à 390 dans la capture lecteur. Le runtime
+isolé, sans DB, renvoyait un catalogue vide. Il a été arrêté proprement à 15:55:04
+(processus et conteneur absents, ports fermés). Une QA navigateur anonyme sur
+production activée avec DB est en cours ; ne pas relancer build ni activation.
 
 À reprendre : obtenir une source publique/autorisée ou des originaux exacts pour
 les planches 2–18, puis compléter l'acquisition, la relecture et l'import idempotent.
-Pour l'image commune, obtenir le handoff du détenteur du claim d'activation avant
-une activation Infra. Aucune disponibilité 18/18 n'est déclarée.
+Le claim d'activation wiki correspond maintenant à l'image active ; le vérifier
+avant toute activation ultérieure. Aucune disponibilité 18/18 n'est déclarée.
