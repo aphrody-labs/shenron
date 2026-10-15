@@ -280,7 +280,9 @@ export async function projectPoolReceipts(
       throw Error("Receipt outside pool owner directory");
     const file = Bun.file(row.receipt);
     if (file.size > 32 * 1024 * 1024) continue;
-    const receipt = await file.json();
+    const receiptBytes = await file.bytes();
+    const receiptSha256 = projectionDigest(receiptBytes);
+    const receipt = JSON.parse(new TextDecoder().decode(receiptBytes));
     if (receipt.state !== "done" || receipt.httpStatus !== 200) continue;
     if (["unsupported-text-charset", "lossy-text-decoding"].includes(receipt.textCaptureError)) {
       await save(join(quarantine, `${row.id}.json`), {
@@ -293,14 +295,37 @@ export async function projectPoolReceipts(
     }
     if (typeof receipt.body !== "string") continue;
     if (!/^(text\/|application\/json)/.test(receipt.contentType ?? "")) continue;
-    const raw = receipt.body;
-    if (projectionDigest(raw) !== receipt.sha256) {
+    let raw = receipt.body;
+    const originalBodySha256 = projectionDigest(raw);
+    let captureSha256 = originalBodySha256;
+    let reconstructed = false;
+    if (captureSha256 !== receipt.sha256 && Number.isSafeInteger(receipt.bytes)) {
+      const restored = "\uFEFF" + raw;
+      if (
+        Buffer.byteLength(restored, "utf8") === receipt.bytes &&
+        projectionDigest(restored) === receipt.sha256
+      ) {
+        raw = restored;
+        captureSha256 = receipt.sha256;
+        reconstructed = true;
+      }
+    }
+    if (captureSha256 !== receipt.sha256) {
       await save(join(quarantine, `${row.id}.json`), {
         reason: "capture-body-sha256-differs",
         task: row.id,
       });
       quarantined++;
       continue;
+    }
+    if (reconstructed) {
+      await save(join(output, `${row.id}.capture-proof.json`), {
+        schema: "shenron-manga-capture-reconstruction/v1",
+        method: "utf8-bom-prefix",
+        receipt: { path: row.receipt, sha256: receiptSha256 },
+        originalBodySha256,
+        reconstructed: { bytes: receipt.bytes, sha256: captureSha256 },
+      });
     }
     if (row.kind === "catalog" && Array.isArray(receipt.json?.catalog)) {
       catalog = receipt.json;
@@ -325,7 +350,7 @@ export async function projectPoolReceipts(
         canonical_eligible: false,
         provenance: {
           owner: "shenron-manga-source-pool",
-          receiptSha256: projectionDigest(await file.bytes()),
+          receiptSha256,
         },
         payload: {
           title_raw: title,

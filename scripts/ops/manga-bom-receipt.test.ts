@@ -4,10 +4,11 @@ import { Database } from "bun:sqlite";
 import { mkdtemp, mkdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { nativeDocumentSchema } from "../../packages/pipeline/src/dragon-ball/crawl-ingest";
 import { executeTask } from "./manga-source-pool";
 import { projectPoolReceipts, projectionDigest } from "./manga-source-pool-projection";
 
-test("BOM receipt reconstructs exact bytes through projection and keeps hash rejection", async () => {
+test("BOM projection restores legacy bytes only with exact size and SHA evidence", async () => {
   const job = await mkdtemp(join(tmpdir(), "manga-bom-"));
   try {
     await mkdir(join(job, "receipts"));
@@ -83,7 +84,31 @@ test("BOM receipt reconstructs exact bytes through projection and keeps hash rej
     const options = { indexer: async () => ({ indexed: 1 }), minimumFreeBytes: 0 };
     expect((await projectPoolReceipts(job, options)).projected).toBe(1);
     await Bun.write(path, JSON.stringify({ ...receipt, body: receipt.body.slice(1) }));
-    expect((await projectPoolReceipts(job, options)).projected).toBe(0);
+    const recovered = await projectPoolReceipts(job, options);
+    expect(recovered.projected).toBe(1);
+    expect(recovered.emitted).toBe(0);
+    const proof = await Bun.file(join(job, "derived", id + ".capture-proof.json")).json();
+    expect(proof).toMatchObject({
+      schema: "shenron-manga-capture-reconstruction/v1",
+      method: "utf8-bom-prefix",
+      receipt: { path, sha256: projectionDigest(await Bun.file(path).bytes()) },
+      originalBodySha256: projectionDigest(receipt.body.slice(1)),
+      reconstructed: { bytes: bytes.length, sha256: receipt.sha256 },
+    });
+    expect((await Bun.file(path).json()).body).toBe(receipt.body.slice(1));
+    const native = nativeDocumentSchema.parse(
+      JSON.parse(await Bun.file(join(job, "derived", id + ".native.jsonl")).text()),
+    );
+    expect(native.raw_checksum).toBe(receipt.sha256!);
+    expect(native.provenance).toMatchObject({ receiptSha256: proof.receipt.sha256 });
+    for (const invalid of [
+      { ...receipt, body: receipt.body.slice(1), bytes: bytes.length - 1 },
+      { ...receipt, body: receipt.body.slice(1), sha256: "0".repeat(64) },
+      { ...receipt, body: receipt.body.slice(1), bytes: undefined },
+    ]) {
+      await Bun.write(path, JSON.stringify(invalid));
+      expect((await projectPoolReceipts(job, options)).projected).toBe(0);
+    }
     const quarantine = await Bun.file(
       join(job, "derived", "candidate-quarantine", id + ".json"),
     ).json();
