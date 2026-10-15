@@ -471,3 +471,6 @@ Automatisation wiki10df5082 ajoute un rattachement explicite œuvre/épisode/éd
 Finalflash traité par le lot déjà relu sur scans. Aucune de ces propositions publiée
 à cette étape. Prochain travail : SHA commun vert, image scellée/activation Infra,
 reset neutre, contrôles navigateur puis écritures éditoriales protégées et RAG.
+
+
+Mise à jour du 2026-10-15 : livraison RAG terminée pour les 349 documents du lot reprojecté. Relecture PostgreSQL indépendante : 349 documents, 349 vecteurs, contenus et identités de provenance vérifiés, avec 349 recherches filtrées réussies. Répartition conservée : 199 communautaires et 150 références ; modèle `Xenova/multilingual-e5-small`, dimension 384. Reçu privé SHA-256 `d21f4ba9609078b3b8e8a7c627f7eba530343c8d7ca5efece12be0d7faed7a42`. Ingestion via Bun.fetch et propriétaire HTTP existant ; embeddings par le service externe existant. Cela ne constitue ni activation du sidecar Bun.VectorIndex, ni publication publique, ni promotion canonique, ni complétude du crawl et des médias.
