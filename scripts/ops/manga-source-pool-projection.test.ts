@@ -73,6 +73,26 @@ test("covers, missing identity, unobserved media and untyped DOM images stay qua
   delete dom.gallery;
   expect(acquisitionCandidate(dom, [volume], source).candidate).toBeUndefined();
 });
+test("publisher spacing preserves literal evidence without mixing volume numbers or ISBNs", () => {
+  const c = capture();
+  const canon = {
+    ...volume,
+    title: "Dragon Ball English",
+    titleJa: "DRAGON BALL 総集編 超悟空伝 Legend 2",
+  };
+  const result = acquisitionCandidate(c, [canon], source);
+  expect(result.candidate?.source.editionToken).toBe(c.document.payload.title_raw);
+  expect(result.candidate?.source.volumeToken).toBe(c.document.payload.title_raw);
+  expect(
+    acquisitionCandidate(c, [{ ...canon, titleJa: canon.titleJa.replace("2", "3") }], source)
+      .candidate,
+  ).toBeUndefined();
+  expect(
+    acquisitionCandidate(c, [{ ...canon, isbn: "9784081111671" }], source).candidate,
+  ).toBeUndefined();
+  c.document.payload.title_raw += "0";
+  expect(acquisitionCandidate(c, [canon], source).candidate).toBeUndefined();
+});
 test("native HTML extraction removes executable and shell text, preserving Japanese text", async () => {
   const result = await textFromPoolHtml(
     "<html><head><script>danger()</script><style>secret</style></head><body><nav>navigation</nav><main>超悟空伝<img src='/page.jpg'>本文</main></body></html>",

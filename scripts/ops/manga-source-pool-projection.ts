@@ -6,6 +6,14 @@ import { isAbsolute, join, relative, resolve } from "node:path";
 
 export const projectionDigest = (value: string | Uint8Array) =>
   new Bun.CryptoHasher("sha256").update(value).digest("hex");
+function literalTitle(text: string, title: string | undefined) {
+  if (!title || title.replace(/\s/gu, "").length < 2) return undefined;
+  const pattern = [...title.replace(/\s/gu, "")]
+    .map((character) => character.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+    .join("\\s*");
+  const suffix = /[0-9]$/.test(title.trim()) ? "(?![0-9])" : "";
+  return text.match(new RegExp(pattern + suffix, "iu"))?.[0];
+}
 interface PoolRow {
   id: string;
   url: string;
@@ -125,7 +133,7 @@ export function acquisitionCandidate(
     (v) =>
       v.isbn &&
       text.replaceAll("-", "").includes(v.isbn.replaceAll("-", "")) &&
-      [v.title, v.titleJa].some((title) => title && text.includes(title)),
+      [v.title, v.titleJa].some((title) => literalTitle(text, title)),
   );
   if (matches.length !== 1) return { reason: "exact-edition-isbn-volume-identity-required" };
   const volume = matches[0]!;
@@ -152,6 +160,7 @@ export function acquisitionCandidate(
       parsed.protocol !== "https:" ||
       parsed.username ||
       parsed.password ||
+      parsed.hash ||
       /(^|\.)fandom\.com$/i.test(parsed.hostname)
     )
       continue;
@@ -175,7 +184,7 @@ export function acquisitionCandidate(
     new Set(pages.map((p) => p.sourceUrl)).size !== pages.length
   )
     return { reason: "ordered-native-gallery-with-manga-pages-required" };
-  const title = [volume.title, volume.titleJa].find((t) => t && text.includes(t))!;
+  const title = [volume.title, volume.titleJa].map((t) => literalTitle(text, t)).find(Boolean)!;
   const isbnToken = text
     .match(/97[89](?:[- ]?[0-9]){10}/g)
     ?.find((s) => s.replaceAll(/[- ]/g, "") === volume.isbn!.replaceAll("-", ""));
