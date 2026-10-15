@@ -3,7 +3,7 @@
 <!-- Généré par scripts/plugin/build-references.ts — ne pas éditer. Sources : apps/bot/data/manga-spin-offs-manifest.json, apps/site/data/illustrations-lieux-objets.json, apps/site/scripts/_technique-lexicon.ts, apps/site/scripts/inventaires/canon-citations-fr.json, apps/site/src/lib/canon-engine.ts, data/ja-identities-2026-09-23.json, packages/config/src/aphrody-corpus.ts, packages/config/src/economy-canon.ts. -->
 
 > **Instantané hors ligne** — sources du dépôt Shenron (`apps/bot/data/manga-spin-offs-manifest.json`, `apps/site/data/illustrations-lieux-objets.json`, `apps/site/scripts/_technique-lexicon.ts`, `apps/site/scripts/inventaires/canon-citations-fr.json`, `apps/site/src/lib/canon-engine.ts`, `data/ja-identities-2026-09-23.json`, `packages/config/src/aphrody-corpus.ts`, `packages/config/src/economy-canon.ts`),
-> révision `db119c0f+modifications` du 2026-10-08. Citer cette révision et cette date avec toute
+> révision `aa6240b0` du 2026-10-15. Citer cette révision et cette date avec toute
 > réponse tirée d'ici ; une source vivante plus récente peut avoir changé.
 
 Chaque ligne cite sa source ; la données brute (avec citations et URL complètes) est dans

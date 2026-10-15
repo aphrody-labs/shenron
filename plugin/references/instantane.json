@@ -3,22 +3,22 @@
   "bun": "1.4.4",
   "sorties": {
     "plugin/skills/dragon-ball-canon/references/doctrine.md": {
-      "revision": "db119c0f+modifications",
-      "date": "2026-10-08",
+      "revision": "aa6240b0",
+      "date": "2026-10-15",
       "sources": {
-        "apps/site/src/lib/canon-engine.ts": "928dbca2a19601866e32a595b787ad05998fdc01313cac539a43a882dfb7b264",
-        "scripts/plugin/build-references.ts": "21a224675c955d8fba8b4082d17ba62cf90d36b38743bc037b1e7bb06ac1e0b7"
+        "apps/site/src/lib/canon-engine.ts": "64fe8f7f9092b4d46cd66c60d0e78a5c79a9676bb6d938b007cfdfa965ef5b5d",
+        "scripts/plugin/build-references.ts": "8a89a8f0ea4f00598c877eaad34d4bab49509db75987e173231572ebbbdfe1c3"
       },
-      "sha256": "fb3a6ee58f573ac87f4e545ad770b5decca79ec368d987c0870a54bd86568c1b"
+      "sha256": "3306d4d8fe78d1358edde4c0b725980fbddbd6483bb05eeb1e0ec68935d93281"
     },
     "plugin/skills/dragon-ball-canon/scripts/canon.js": {
-      "revision": "db119c0f+modifications",
-      "date": "2026-10-08",
+      "revision": "aa6240b0",
+      "date": "2026-10-15",
       "sources": {
-        "apps/site/src/lib/canon-engine.ts": "928dbca2a19601866e32a595b787ad05998fdc01313cac539a43a882dfb7b264",
+        "apps/site/src/lib/canon-engine.ts": "64fe8f7f9092b4d46cd66c60d0e78a5c79a9676bb6d938b007cfdfa965ef5b5d",
         "scripts/plugin/src/canon.ts": "27b192bebd46229b94b8c096154632e1723f424e4df1e523215936a4c270a5c4"
       },
-      "sha256": "6a901b2d547ea725a6cf6b708b2152ed06d2a5ffc4169e5cd932e37055f9176b",
+      "sha256": "f770848002c6604980c6611a59d12420510a267520de3d87a8e60d5ef9279a69",
       "paquet": true
     },
     "plugin/skills/dragon-ball-japonais/references/lexique-canonique.json": {
@@ -26,7 +26,7 @@
       "date": "2026-10-05",
       "sources": {
         "data/lexicon/terms.json": "f9d3f37e15c1830b0224f0a876d8843b2b724f379138f9353356d99a50433cc3",
-        "scripts/plugin/build-references.ts": "21a224675c955d8fba8b4082d17ba62cf90d36b38743bc037b1e7bb06ac1e0b7"
+        "scripts/plugin/build-references.ts": "8a89a8f0ea4f00598c877eaad34d4bab49509db75987e173231572ebbbdfe1c3"
       },
       "sha256": "0141fad4003863fa6814d28d410b436bb3946f80865e916cf3ca478b5e1a4cec"
     },
@@ -35,7 +35,7 @@
       "date": "2026-10-05",
       "sources": {
         "data/lexicon/terms.json": "f9d3f37e15c1830b0224f0a876d8843b2b724f379138f9353356d99a50433cc3",
-        "scripts/plugin/build-references.ts": "21a224675c955d8fba8b4082d17ba62cf90d36b38743bc037b1e7bb06ac1e0b7"
+        "scripts/plugin/build-references.ts": "8a89a8f0ea4f00598c877eaad34d4bab49509db75987e173231572ebbbdfe1c3"
       },
       "sha256": "9a30ca6ec3af5eecb56168b8d9e4a276781d5b83f3d24f9b7827b043149cdfd6"
     },
@@ -55,44 +55,44 @@
       "paquet": true
     },
     "plugin/skills/dragon-ball/references/faits.json": {
-      "revision": "db119c0f+modifications",
-      "date": "2026-10-08",
+      "revision": "aa6240b0",
+      "date": "2026-10-15",
       "sources": {
         "apps/bot/data/manga-spin-offs-manifest.json": "3f60e80771792afc426dce8a79dc2eb28c322d8b477e8e891446f05332d71b28",
         "apps/site/data/illustrations-lieux-objets.json": "742b9fbf223be6215658acf27d6c3592e6ec5d5fffe434e79cc4e006f75e48f2",
         "apps/site/scripts/_technique-lexicon.ts": "22197a5b8cd1a46861303ee9e25168da9192cd1e32ee8da69674284c1442d1d0",
         "apps/site/scripts/inventaires/canon-citations-fr.json": "616b0d3ea0f77c22835c557506f7989d3982bd7407a906d08ac85b329ed0c5d9",
-        "apps/site/src/lib/canon-engine.ts": "928dbca2a19601866e32a595b787ad05998fdc01313cac539a43a882dfb7b264",
+        "apps/site/src/lib/canon-engine.ts": "64fe8f7f9092b4d46cd66c60d0e78a5c79a9676bb6d938b007cfdfa965ef5b5d",
         "data/ja-identities-2026-09-23.json": "9c7025a2f3301c0bc0943f73ade56d7e96558f7fbc8b7b792bf4b7426bcf1b9a",
         "packages/config/src/aphrody-corpus.ts": "a5a6d7e3355ed5393c98e91ba662dbc010c9218b7dd870f7e2dd8562958ef95d",
         "packages/config/src/economy-canon.ts": "a7e66d707f8ca1730f3cd2a25ae27516eeeb46582add8859aeec9fbc7bac60cb",
         "scripts/plugin/faits.ts": "4b43483cf9142968c5b3f671cd72118c9ffbf0b480f46c8639ac915503ffbd74",
         "scripts/plugin/src/faits-sources.ts": "7efb804c5d3eef365583bdbd23f071f2ceeb6b41079f34f805e3787fbe9dfb5e"
       },
-      "sha256": "997ae56a831a302545dee913355c742118198a9ed42977455d7ead1339326df5"
+      "sha256": "8a5cd05458a75392c44c2f98fb6edb8db293ab05f7330bb64b4f38e5523d6e92"
     },
     "plugin/skills/dragon-ball/references/faits.md": {
-      "revision": "db119c0f+modifications",
-      "date": "2026-10-08",
+      "revision": "aa6240b0",
+      "date": "2026-10-15",
       "sources": {
         "apps/bot/data/manga-spin-offs-manifest.json": "3f60e80771792afc426dce8a79dc2eb28c322d8b477e8e891446f05332d71b28",
         "apps/site/data/illustrations-lieux-objets.json": "742b9fbf223be6215658acf27d6c3592e6ec5d5fffe434e79cc4e006f75e48f2",
         "apps/site/scripts/_technique-lexicon.ts": "22197a5b8cd1a46861303ee9e25168da9192cd1e32ee8da69674284c1442d1d0",
         "apps/site/scripts/inventaires/canon-citations-fr.json": "616b0d3ea0f77c22835c557506f7989d3982bd7407a906d08ac85b329ed0c5d9",
-        "apps/site/src/lib/canon-engine.ts": "928dbca2a19601866e32a595b787ad05998fdc01313cac539a43a882dfb7b264",
+        "apps/site/src/lib/canon-engine.ts": "64fe8f7f9092b4d46cd66c60d0e78a5c79a9676bb6d938b007cfdfa965ef5b5d",
         "data/ja-identities-2026-09-23.json": "9c7025a2f3301c0bc0943f73ade56d7e96558f7fbc8b7b792bf4b7426bcf1b9a",
         "packages/config/src/aphrody-corpus.ts": "a5a6d7e3355ed5393c98e91ba662dbc010c9218b7dd870f7e2dd8562958ef95d",
         "packages/config/src/economy-canon.ts": "a7e66d707f8ca1730f3cd2a25ae27516eeeb46582add8859aeec9fbc7bac60cb",
         "scripts/plugin/faits.ts": "4b43483cf9142968c5b3f671cd72118c9ffbf0b480f46c8639ac915503ffbd74"
       },
-      "sha256": "53d27dc22a755b7c3f520ecbd653160b472db3ecf158ccdca6941b4e877cb014"
+      "sha256": "b06f090ec520c25ceaa52100c825b026389b9b5ac53bd18a3f8947e874fb6ee4"
     },
     "plugin/skills/toriyama-svg/references/mesures/couverture-analyse-visuelle.md": {
       "revision": "f4579c5",
       "date": "2026-10-05",
       "sources": {
         "docs/reference/couverture-analyse-visuelle.md": "38a11f6bb5f98b508b99cce4cec9b3d66cb3792770c06f5358a84f3cd43f1a18",
-        "scripts/plugin/build-references.ts": "21a224675c955d8fba8b4082d17ba62cf90d36b38743bc037b1e7bb06ac1e0b7"
+        "scripts/plugin/build-references.ts": "8a89a8f0ea4f00598c877eaad34d4bab49509db75987e173231572ebbbdfe1c3"
       },
       "sha256": "70c654f6c570c920516ce53fae3f8d44b9103cd4789746fc6c8406ad387a77b7"
     },
@@ -101,7 +101,7 @@
       "date": "2026-10-05",
       "sources": {
         "docs/reference/kinto-un-analyse-visuelle.md": "ccbe45c00633f411035eaf1ebba6b70b8588f82a4d7bf83bed3fd0565b1932a4",
-        "scripts/plugin/build-references.ts": "21a224675c955d8fba8b4082d17ba62cf90d36b38743bc037b1e7bb06ac1e0b7"
+        "scripts/plugin/build-references.ts": "8a89a8f0ea4f00598c877eaad34d4bab49509db75987e173231572ebbbdfe1c3"
       },
       "sha256": "be1e0e7b28237fdbfc936119281e6df2b43e49bbfa9a99498c174f58481b3f5b"
     },
