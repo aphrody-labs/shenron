@@ -91,6 +91,8 @@
     "empty": "この巻のスキャン画像は準備中です。",
     "contents": "目次",
     "previous": "前の話",
-    "next": "次の話"
-  }
+    "next": "次の話",
+    "mixedScans": "白黒・一部カラー"
+  },
+  "mixedColorization": "白黒・一部カラー"
 }

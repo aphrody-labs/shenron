@@ -32,12 +32,23 @@ let chapters = new Map<number, ReturnType<typeof publication>>();
 mock.module("@/lib/manga-data", () => ({
   mangaData: { mangaChapter: async (id: number) => chapters.get(id) ?? null },
 }));
-const { chercherPlanches } = await import("../src/lib/manga-api");
+const { chercherPlanches, chapitreApi } = await import("../src/lib/manga-api");
 
 beforeEach(() => {
   results = [];
   queries = [];
   chapters = new Map();
+});
+
+test("SOSH API describes the mixed scan profile independently from reading variants", async () => {
+  chapters.set(35001, publication("SOSH", 35001));
+  results = [[]];
+  expect((await chapitreApi(35001))?.edition).toEqual({
+    language: "ja",
+    colorization: "mixed",
+    langue: "ja",
+    colorisation: "mixte",
+  });
 });
 
 test("SOSH and DB volume one resolve to their own published reader and file-numbered page", async () => {

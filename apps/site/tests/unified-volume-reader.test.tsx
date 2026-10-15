@@ -46,7 +46,7 @@ test("SOSH reading uses neutral source labels and localized controls in every su
       chapters: Array<{ label: string; id: number; pageCount: number }>;
     }>;
     expect(editions[0]?.label).toBe(
-      { fr: "Planches numérisées", en: "Scanned pages", ja: "スキャン画像" }[locale],
+      { fr: "N&B avec pages couleur", en: "B&W with colour pages", ja: "白黒・一部カラー" }[locale],
     );
     expect(editions[0]?.chapters).toEqual([
       { id: 35001, label: { fr: "Tome 1", en: "Volume 1", ja: "第1巻" }[locale], pageCount: 1 },

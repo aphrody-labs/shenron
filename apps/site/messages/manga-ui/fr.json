@@ -91,6 +91,8 @@
     "empty": "Les planches numérisées de ce volume sont en cours d’acquisition.",
     "contents": "Sommaire",
     "previous": "Chapitre précédent",
-    "next": "Chapitre suivant"
-  }
+    "next": "Chapitre suivant",
+    "mixedScans": "N&B avec pages couleur"
+  },
+  "mixedColorization": "N&B avec pages couleur"
 }

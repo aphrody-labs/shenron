@@ -11,3 +11,21 @@
   min-width: 0;
   max-width: 100%;
 }
+/* Keep long titles and page counts within the reader toolbar on narrow screens. */
+.m3-reader-hud > :first-child {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.m3-reader-hud > :first-child > :first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m3-reader-hud .m3-reader-badge {
+  flex-shrink: 0;
+  width: auto;
+  white-space: nowrap;
+}

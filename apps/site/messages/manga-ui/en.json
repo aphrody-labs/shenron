@@ -91,6 +91,8 @@
     "empty": "The scanned pages for this volume are being acquired.",
     "contents": "Contents",
     "previous": "Previous chapter",
-    "next": "Next chapter"
-  }
+    "next": "Next chapter",
+    "mixedScans": "B&W with colour pages"
+  },
+  "mixedColorization": "B&W with colour pages"
 }

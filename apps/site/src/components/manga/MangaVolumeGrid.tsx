@@ -8,7 +8,7 @@ import {
   writeAvailability,
   type AvailabilityFilter,
 } from "@/lib/availability-query";
-import { estChapitreCouleur, libelleSerie } from "@/lib/manga-editions";
+import { estChapitreCouleur, hasMixedColorization, libelleSerie } from "@/lib/manga-editions";
 import { useT } from "@/components/T";
 import { useMangaUIText } from "@/lib/manga-ui-text";
 import { VignetteTome } from "@/components/manga/VignetteTome";
@@ -115,7 +115,11 @@ function MangaChapterCard({ chapter }: { chapter: LibraryChapter }) {
       </div>
       <p className="mt-2 text-xs text-[var(--muted-foreground)]">
         {t("chapter", { number: chapter.chapter_number })}
-        {estChapitreCouleur(chapter) ? ` · ${t("color")}` : ""}
+        {hasMixedColorization(chapter)
+          ? ` · ${t("mixedColorization")}`
+          : estChapitreCouleur(chapter)
+            ? ` · ${t("color")}`
+            : ""}
       </p>
       <p className="line-clamp-2 text-sm font-semibold text-foreground">{title}</p>
     </Link>

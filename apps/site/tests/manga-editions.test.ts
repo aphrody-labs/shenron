@@ -7,6 +7,8 @@ import {
   editionPubliee,
   EDITIONS_PUBLIEES,
   estChapitreCouleur,
+  hasMixedColorization,
+  EDITION_PAR_SERIE,
   langueDe,
   libelleEdition,
   libelleSerie,
@@ -20,6 +22,15 @@ import {
  * qui n'ont jamais existé.
  */
 describe("colorisation", () => {
+  test("SOSH retains monochrome and original colour pages without claiming Full Color", () => {
+    for (const series of ["SOSH", "DB_SOSH"]) {
+      expect(hasMixedColorization({ series })).toBe(true);
+      expect(estChapitreCouleur({ series })).toBe(false);
+      expect(EDITION_PAR_SERIE[series]?.colorisation).toBe("mixte");
+      expect(langueDe({ series })).toBe("ja");
+    }
+    expect(hasMixedColorization({ series: "DBFC" })).toBe(false);
+  });
   test("la série tranche, pas le titre", () => {
     expect(estChapitreCouleur({ series: "DBFC", title: "Bulma et Son Goku" })).toBe(true);
     expect(estChapitreCouleur({ series: "DB", title: "Bulma et Son Goku" })).toBe(false);

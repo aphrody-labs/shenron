@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { CollectionReader, type ReaderCollectionEdition } from "@aphrody/shenron-ui/reader";
 import { MangaReader } from "./MangaReader";
 import { useT } from "@/components/T";
-import { colorisationDemandee } from "@/lib/manga-editions";
+import { colorisationDemandee, hasMixedColorization } from "@/lib/manga-editions";
 import { useMangaUIText } from "@/lib/manga-ui-text";
 
 export interface ChapterItem {
@@ -52,8 +52,9 @@ export function UnifiedVolumeReader({
     () => [
       {
         id: "nb",
-        label:
-          volume.series === "DB" || volume.series === "DBS"
+        label: hasMixedColorization({ series: volume.series })
+          ? ui("reader.mixedScans")
+          : volume.series === "DB" || volume.series === "DBS"
             ? t("mangaCatalog.frenchBlackWhiteScans")
             : ui("reader.scans"),
         chapters: chapters

@@ -62,11 +62,11 @@ export type PlancheApi = {
 /** Edition of a series: language and colorization, with the former names as duplicates. */
 export type EditionApi = {
   language: string;
-  /** `bw` ou `color`. */
+  /** Observed edition profile: `bw`, `color` or `mixed`. */
   colorization: string;
   /** @deprecated Former name of `language`. */
   langue: string;
-  /** @deprecated Former name of `colorization` (`nb` or `couleur`). */
+  /** @deprecated Former name of `colorization` (`nb`, `couleur` or `mixte`). */
   colorisation: string;
 };
 
@@ -221,7 +221,8 @@ function editionDe(series: string): EditionApi {
   const e = EDITION_PAR_SERIE[series] ?? { langue: "fr", colorisation: "nb" };
   return {
     language: e.langue,
-    colorization: e.colorisation === "couleur" ? "color" : "bw",
+    colorization:
+      e.colorisation === "mixte" ? "mixed" : e.colorisation === "couleur" ? "color" : "bw",
     langue: e.langue,
     colorisation: e.colorisation,
   };
