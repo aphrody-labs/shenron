@@ -9,6 +9,7 @@ import {
   regenerablePaths,
   remoteScript,
   shellQuote,
+  snapshotCheckoutCommands,
   vitalTarArgs,
 } from "./remote-dev.ts";
 
@@ -47,6 +48,45 @@ describe("regenerablePaths", () => {
       ),
     ).toEqual(["dist"]);
   });
+});
+
+test("a fresh remote snapshot restores its config workspace from the gitlink", () => {
+  const source = tree(["config", "project"]);
+  const config = join(source, "config");
+  const project = join(source, "project");
+  const checkout = join(source, "checkout");
+  const git = (cwd: string, args: string[]) => {
+    const child = Bun.spawnSync(
+      [
+        "git",
+        "-c",
+        "protocol.file.allow=always",
+        "-c",
+        "user.name=Fixture",
+        "-c",
+        "user.email=fixture@example.test",
+        ...args,
+      ],
+      { cwd, stdout: "pipe", stderr: "pipe" },
+    );
+    if (child.exitCode !== 0) throw new Error(new TextDecoder().decode(child.stderr));
+    return new TextDecoder().decode(child.stdout).trim();
+  };
+  git(config, ["init", "-q"]);
+  writeFileSync(join(config, "package.json"), JSON.stringify({ name: "@fixture/config" }));
+  git(config, ["add", "package.json"]);
+  git(config, ["commit", "-qm", "config fixture"]);
+  git(project, ["init", "-q"]);
+  git(project, ["submodule", "add", config, "packages/config"]);
+  git(project, ["commit", "-qam", "project fixture"]);
+  const sha = git(project, ["rev-parse", "HEAD"]);
+  git(source, ["clone", "-q", project, checkout]);
+  expect(Bun.file(join(checkout, "packages/config/package.json")).size).toBe(0);
+  for (const args of snapshotCheckoutCommands(sha)) git(checkout, args);
+  expect(Bun.file(join(checkout, "packages/config/package.json")).size).toBeGreaterThan(0);
+  expect(git(join(checkout, "packages/config"), ["rev-parse", "HEAD"])).toBe(
+    git(config, ["rev-parse", "HEAD"]),
+  );
 });
 
 describe("vitalTarArgs", () => {
