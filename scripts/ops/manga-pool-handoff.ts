@@ -83,87 +83,104 @@ export async function exportMangaHandoff(
     contents: Record<string, Uint8Array> = {};
   const candidates: MangaCandidate[] = [],
     images: Image[] = [];
-  let total = 0;
+  let total = 0,
+    inspected = 0;
+  await privateDir(join(out, "quarantine"));
   const database = new Database(join(pool, "frontier.sqlite"), { readonly: true });
   try {
     for await (const name of new Bun.Glob("*.json").scan({
       cwd: join(pool, "derived/candidate-inbox"),
       onlyFiles: true,
     })) {
+      if (++inspected > 5000) throw Error("Handoff source enumeration exceeds bound");
       if (candidates.length >= limits.candidates) break;
-      const candidate = mangaCandidateSchema.parse(
-        await Bun.file(join(pool, "derived/candidate-inbox", name)).json(),
-      );
-      const identity = mangaDigest(JSON.stringify(candidate));
-      const selected: Image[] = [];
-      for (const page of candidate.pages) {
-        const task = database
-          .query<{ receipt: string }, [string]>(
-            "SELECT receipt FROM pool_tasks WHERE kind='acquisition' AND state='done' AND url=?",
-          )
-          .get(page.sourceUrl);
-        if (!task) continue;
-        if (!inside(join(pool, "receipts"), task.receipt))
-          throw Error("Acquisition receipt escaped pool owner");
-        const receipt = await Bun.file(task.receipt).json();
-        if (
-          receipt.sourceUrl !== page.sourceUrl ||
-          receipt.httpStatus !== 200 ||
-          !sha(receipt.sha256) ||
-          !Number.isSafeInteger(receipt.bytes) ||
-          receipt.bytes < 1 ||
-          !inside(join(pool, "acquired"), receipt.assetPath)
-        )
-          throw Error("Pool acquisition receipt differs");
-        const image = {
-          url: page.sourceUrl,
-          sha256: receipt.sha256,
-          size: receipt.bytes,
-          contentType: String(receipt.contentType).split(";")[0]!.trim(),
-        };
-        selected.push(image);
-        if (sent.has(image.sha256) || contents[image.sha256]) continue;
-        if (total + image.size > limits.bytes) continue;
-        const body = await bytes(
-          { path: receipt.assetPath, sha256: image.sha256 },
-          33 * 1024 * 1024,
+      const priorFiles = new Set(Object.keys(contents)),
+        priorTotal = total;
+      try {
+        const candidate = mangaCandidateSchema.parse(
+          await Bun.file(join(pool, "derived/candidate-inbox", name)).json(),
         );
-        if (body.length !== image.size) throw Error("Pool acquisition size differs");
-        contents[image.sha256] = body;
-        total += body.length;
-      }
-      // Keep candidates with pending assets: the importer/consumer waits for the exact acquired bytes.
-      if (known.has(identity) && !selected.some((image) => contents[image.sha256])) continue;
-      for (const pin of [
-        candidate.source.config,
-        candidate.source.input,
-        candidate.source.policy,
-      ]) {
-        const body = await bytes(pin, 16 * 1024 * 1024);
-        if (total + body.length > limits.bytes)
-          throw Error("Source metadata exceeds handoff cycle budget");
-        contents[pin.sha256] = body;
-        total += body.length;
-      }
-      const config = JSON.parse(new TextDecoder().decode(contents[candidate.source.config.sha256]));
-      // Only path references to owner stores may travel, never credentials embedded in configuration.
-      if (
-        config.store &&
-        Object.keys(config.store).some(
-          (key) => !["manifest", "profile", "sdkModule", "consumerProfileRoot"].includes(key),
+        const identity = mangaDigest(JSON.stringify(candidate));
+        const selected: Image[] = [];
+        for (const page of candidate.pages) {
+          const task = database
+            .query<{ receipt: string }, [string]>(
+              "SELECT receipt FROM pool_tasks WHERE kind='acquisition' AND state='done' AND url=?",
+            )
+            .get(page.sourceUrl);
+          if (!task) continue;
+          if (!inside(join(pool, "receipts"), task.receipt))
+            throw Error("Acquisition receipt escaped pool owner");
+          const receipt = await Bun.file(task.receipt).json();
+          if (
+            receipt.sourceUrl !== page.sourceUrl ||
+            receipt.httpStatus !== 200 ||
+            !sha(receipt.sha256) ||
+            !Number.isSafeInteger(receipt.bytes) ||
+            receipt.bytes < 1 ||
+            !inside(join(pool, "acquired"), receipt.assetPath)
+          )
+            throw Error("Pool acquisition receipt differs");
+          const image = {
+            url: page.sourceUrl,
+            sha256: receipt.sha256,
+            size: receipt.bytes,
+            contentType: String(receipt.contentType).split(";")[0]!.trim(),
+          };
+          selected.push(image);
+          if (sent.has(image.sha256) || contents[image.sha256]) continue;
+          if (total + image.size > limits.bytes) continue;
+          const body = await bytes(
+            { path: receipt.assetPath, sha256: image.sha256 },
+            33 * 1024 * 1024,
+          );
+          if (body.length !== image.size) throw Error("Pool acquisition size differs");
+          contents[image.sha256] = body;
+          total += body.length;
+        }
+        // Keep candidates with pending assets: the importer/consumer waits for the exact acquired bytes.
+        if (known.has(identity) && !selected.some((image) => contents[image.sha256])) continue;
+        for (const pin of [
+          candidate.source.config,
+          candidate.source.input,
+          candidate.source.policy,
+        ]) {
+          const body = await bytes(pin, 16 * 1024 * 1024);
+          if (total + body.length > limits.bytes)
+            throw Error("Source metadata exceeds handoff cycle budget");
+          contents[pin.sha256] = body;
+          total += body.length;
+        }
+        const config = JSON.parse(
+          new TextDecoder().decode(contents[candidate.source.config.sha256]),
+        );
+        // Only path references to owner stores may travel, never credentials embedded in configuration.
+        if (
+          config.store &&
+          Object.keys(config.store).some(
+            (key) => !["manifest", "profile", "sdkModule", "consumerProfileRoot"].includes(key),
+          )
         )
-      )
-        throw Error("Source template contains unapproved store fields");
-      if (
-        JSON.stringify(config).match(
-          /"(?:secretAccessKey|sessionToken|accessKeyId|authorization|password)"\s*:/i,
+          throw Error("Source template contains unapproved store fields");
+        if (
+          JSON.stringify(config).match(
+            /"(?:secretAccessKey|sessionToken|accessKeyId|authorization|password)"\s*:/i,
+          )
         )
-      )
-        throw Error("Credentials cannot enter a handoff");
-      candidates.push(candidate);
-      images.push(
-        ...selected.filter((image) => !!contents[image.sha256] || sent.has(image.sha256)),
-      );
+          throw Error("Credentials cannot enter a handoff");
+        candidates.push(candidate);
+        images.push(
+          ...selected.filter((image) => !!contents[image.sha256] || sent.has(image.sha256)),
+        );
+      } catch {
+        for (const key of Object.keys(contents)) if (!priorFiles.has(key)) delete contents[key];
+        total = priorTotal;
+        await save(join(out, "quarantine", mangaDigest(name) + ".json"), {
+          candidateFileSha256: mangaDigest(name),
+          observedAt: new Date().toISOString(),
+          reason: "source-handoff-validation-failed",
+        });
+      }
     }
   } finally {
     database.close();

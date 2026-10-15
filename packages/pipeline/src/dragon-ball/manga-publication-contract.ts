@@ -25,15 +25,15 @@ export const mangaBundleSchema = z
     series: z.string().regex(/^[A-Z][A-Z0-9_]{0,63}$/),
     volumeId: positive,
     volumeNumber: positive,
-    chapterId: positive,
+    chapterId: positive.nullable(),
     chapterNumber: positive,
     isbn: z.string().min(10).max(32),
     activate: z.boolean(),
     publicationExtent: readerPublicationExtentSchema.optional(),
     expectedVolume: row,
     expectedVolumeSha256: digest,
-    expectedChapter: row,
-    expectedChapterSha256: digest,
+    expectedChapter: row.nullable(),
+    expectedChapterSha256: digest.nullable(),
     source: z
       .object({
         config: filePin,

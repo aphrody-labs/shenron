@@ -1,16 +1,20 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { mkdtemp, chmod, rm } from "node:fs/promises";
+import { mkdtemp, chmod, rm, unlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import postgres from "postgres";
-import { importSoshReaders, type SoshAssetFetcher } from "./import-sosh-readers";
+import {
+  importSoshReaders,
+  ReaderImportConflict,
+  readerWikiRow,
+  type SoshAssetFetcher,
+} from "./import-sosh-readers";
 import { importMangaReaders } from "./import-manga-readers";
 import {
   prepareMangaEditorial,
   applyMangaEditorial,
   verifyMangaEditorial,
-  mangaEditorialRow,
 } from "./manga-publication-editor";
 import { wikiUpdateSnapshotHash } from "../../apps/site/src/lib/wiki-update-precondition";
 import type { MangaBundle } from "../../packages/pipeline/src/dragon-ball/manga-publication-contract";
@@ -66,11 +70,11 @@ test.skipIf(!url)(
       const args = ["--job", directory, "--expected-sha", archiveDigest(body), ...extra];
       await (custom ? importMangaReaders : importSoshReaders)(args, fetcher);
       // A real pg_dump archive qualifies the backup bytes independently from the plan.
-      const process = Bun.spawn(
+      const dumpProcess = Bun.spawn(
         [
           "docker",
           "exec",
-          "shenron-sosh-import-fixture",
+          process.env.SOSH_IMPORT_PG_CONTAINER ?? "shenron-sosh-import-fixture",
           "pg_dump",
           "-U",
           "fixture",
@@ -81,8 +85,8 @@ test.skipIf(!url)(
         ],
         { stdout: "pipe", stderr: "pipe" },
       );
-      const backup = new Uint8Array(await new Response(process.stdout).arrayBuffer());
-      if (await process.exited) throw new Error(await new Response(process.stderr).text());
+      const backup = new Uint8Array(await new Response(dumpProcess.stdout).arrayBuffer());
+      if (await dumpProcess.exited) throw new Error(await new Response(dumpProcess.stderr).text());
       await Bun.write(join(directory, "catalog-before.dump"), backup);
       await Bun.write(
         join(directory, "backup.json"),
@@ -147,7 +151,7 @@ test.skipIf(!url)(
       const editedStub = await job(6, 35006, ["--publish-empty-hidden"]);
       await sql`UPDATE bot.db_manga_chapters SET editorial_note='Concurrent owner edit' WHERE id=35006`;
       await expect(importSoshReaders([...editedStub.args, "--apply"], fetcher)).rejects.toThrow(
-        "precondition",
+        ReaderImportConflict,
       );
       expect(
         (await sql`SELECT visible FROM bot.db_manga_chapters WHERE id=35006`)[0]!.visible,
@@ -178,6 +182,7 @@ test.skipIf(!url)(
         volumes: [
           {
             ...original.volumes[0],
+            chapterId: null,
             volumeId: 740,
             series: "ARALE",
             chapterNumber: 1,
@@ -198,9 +203,11 @@ test.skipIf(!url)(
         ],
       };
       const manga = await job(1, 45001, [], generic);
+      await importMangaReaders(manga.args, fetcher);
       await importMangaReaders([...manga.args, "--apply"], fetcher);
-      const [mangaRow] = await sql`SELECT * FROM bot.db_manga_chapters WHERE id=45001`;
+      const [mangaRow] = await sql`SELECT * FROM bot.db_manga_chapters WHERE volume_id=740`;
       expect(mangaRow!.series).toBe("ARALE");
+      expect(mangaRow!.id).toBe(35008);
       expect(mangaRow!.reader_extent).toEqual({
         kind: "preview",
         sourceUrl: source,
@@ -209,23 +216,39 @@ test.skipIf(!url)(
       expect(row!.reader_extent).toBeNull();
       await expect(
         (async () => {
-          await sql`UPDATE bot.db_manga_chapters SET reader_extent=${sql.json({ kind: "invented" })} WHERE id=45001`;
+          await sql`UPDATE bot.db_manga_chapters SET reader_extent=${sql.json({ kind: "invented" })} WHERE id=${mangaRow!.id}`;
         })(),
       ).rejects.toThrow();
       expect(mangaRow!.pages).toHaveLength(2);
+      // Simulate process death after SQL commit, before either file acknowledgement survives.
+      await unlink(join(manga.directory, "after.json"));
+      await unlink(join(manga.directory, "receipt.json"));
       await importMangaReaders([...manga.args, "--apply"], fetcher);
-      expect(await sql`SELECT id FROM public.wiki_revisions WHERE "rowId"='45001'`).toHaveLength(1);
+      await importMangaReaders([...manga.args, "--apply"], fetcher);
+      expect(
+        await sql`SELECT id FROM public.wiki_revisions WHERE "rowId"=${String(mangaRow!.id)}`,
+      ).toHaveLength(1);
+      expect(await sql`SELECT id FROM bot.db_manga_chapters WHERE volume_id=740`).toHaveLength(1);
+      await sql`UPDATE bot.db_manga_chapters SET editorial_note='Later owner edit' WHERE id=${mangaRow!.id}`;
+      await expect(importMangaReaders([...manga.args, "--apply"], fetcher)).rejects.toThrow(
+        "replay",
+      );
       const yamchaTitle = "Dragon Ball Gaiden: That Time I Got Reincarnated as Yamcha";
       await sql`INSERT INTO bot.db_manga_volumes(id,series,volume_number,visible,title,isbn) VALUES(620,'DB_GAIDEN_YAMCHA',1,true,${yamchaTitle},'978-4-08-881261-8')`;
       const [yamchaVolume] = await sql`SELECT * FROM bot.db_manga_volumes WHERE id=620`;
       const editorialJob = await mkdtemp(join(tmpdir(), "manga-editor-pg-"));
       jobs.push(editorialJob);
       await chmod(editorialJob, 0o700);
-      const bundle = {
+      const sourcePin = {
+        path: join(editorialJob, "fixture-source.json"),
+        sha256: archiveDigest("fixture"),
+      };
+      const bundle: MangaBundle = {
+        schema: "shenron-manga-publication-bundle/v1",
         series: "DB_GAIDEN_YAMCHA",
         volumeId: 620,
         volumeNumber: 1,
-        chapterId: 46001,
+        chapterId: null,
         chapterNumber: 1,
         isbn: "978-4-08-881261-8",
         activate: true,
@@ -234,16 +257,30 @@ test.skipIf(!url)(
           sourceUrl: "https://shonenjumpplus.com/volume/4856001361007401134/trial",
           fullVolumePages: null,
         },
-        expectedVolume: mangaEditorialRow(yamchaVolume!),
-        expectedVolumeSha256: wikiUpdateSnapshotHash(mangaEditorialRow(yamchaVolume!)),
+        expectedVolume: readerWikiRow(yamchaVolume!),
+        expectedVolumeSha256: wikiUpdateSnapshotHash(readerWikiRow(yamchaVolume!)),
         expectedChapter: null,
         expectedChapterSha256: null,
-        source: { documentUrl: "https://shonenjumpplus.com/volume/4856001361007401134/trial" },
+        source: {
+          config: sourcePin,
+          input: sourcePin,
+          policy: sourcePin,
+          media: sourcePin,
+          documentUrl: "https://shonenjumpplus.com/volume/4856001361007401134/trial",
+          editionToken: "Yamcha print edition",
+          volumeToken: "Volume 1",
+          isbnToken: "9784088812618",
+        },
         pages: [1, 2].map((number) => ({
+          sourceUrl: "https://publisher.example/yamcha/" + number + ".jpg",
           publicPath: "/assets/manga/YAMCHA/trial/" + number + ".jpg",
           sha256: archiveDigest(image),
+          size: image.length,
+          contentType: "image/jpeg",
+          kind: "manga",
+          printedPages: null,
         })),
-      } as unknown as MangaBundle;
+      };
       const prepared = await prepareMangaEditorial(bundle, editorialJob, {
         fetcher,
         backup: async (directory) => {
@@ -251,7 +288,7 @@ test.skipIf(!url)(
             [
               "docker",
               "exec",
-              "shenron-sosh-import-fixture",
+              process.env.SOSH_IMPORT_PG_CONTAINER ?? "shenron-sosh-import-fixture",
               "pg_dump",
               "-U",
               "fixture",
@@ -271,11 +308,13 @@ test.skipIf(!url)(
           );
         },
       });
-      const edited = await applyMangaEditorial(prepared);
-      expect(edited.chapter.id).toBe(46001);
+      const edited = await applyMangaEditorial(prepared, { fetcher });
+      expect(edited.chapter.id).toBe(35009);
       expect(edited.chapter.readerExtent).toEqual(bundle.publicationExtent);
-      await verifyMangaEditorial(prepared);
-      expect(await sql`SELECT id FROM public.wiki_revisions WHERE "rowId"='46001'`).toHaveLength(1);
+      await verifyMangaEditorial(prepared, { fetcher });
+      expect(
+        await sql`SELECT id FROM public.wiki_revisions WHERE "rowId"=${String(edited.chapter.id)}`,
+      ).toHaveLength(1);
     } finally {
       if (oldUrl === undefined) delete process.env.DATABASE_URL;
       else process.env.DATABASE_URL = oldUrl;

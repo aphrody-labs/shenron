@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Database } from "bun:sqlite";
 import { expect, test } from "bun:test";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, chmod } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import {
@@ -13,6 +13,9 @@ import {
   retryDelay,
   POOL_HOST_DELAY_MS,
   POOL_HOST_DAILY_LIMIT,
+  defaultPoolCapabilities,
+  loadPoolCapabilities,
+  executeTask,
 } from "./manga-source-pool";
 
 const volume = (id: number, series = "SOSH", readableHere = false) => ({
@@ -27,6 +30,77 @@ const task = (url = "https://dragonballfr.com/api/manga", kind = "catalog" as co
   depth: 0,
   series: null,
   volumeId: null,
+});
+
+test("an explicitly unavailable search capability is quarantined without network or CLI calls", async () => {
+  const capabilities = {
+    ...defaultPoolCapabilities,
+    search: {
+      ...defaultPoolCapabilities.search,
+      state: "unavailable" as const,
+      reason: "bun-search-cli-unsupported; native Google challenge retained",
+    },
+  };
+  let requests = 0;
+  const result = await executeTask(
+    {
+      ...task(),
+      id: "google",
+      kind: "google",
+      host: "www.google.com",
+      attempts: 1,
+      url: "https://www.google.com/search?q=dragonball",
+    },
+    "/tmp/unused-search-capability",
+    0,
+    (async () => {
+      requests++;
+      throw Error("Network forbidden");
+    }) as unknown as typeof fetch,
+    undefined,
+    capabilities,
+  );
+  expect(result.state).toBe("capability_unavailable");
+  expect("reason" in result && result.reason).toContain("unsupported");
+  expect(requests).toBe(0);
+  const db = new Database(":memory:");
+  const frontier = new MangaSourceFrontier(db);
+  try {
+    frontier.enqueue(
+      { ...task(), kind: "google", url: "https://www.google.com/search?q=dragonball" },
+      1,
+    );
+    const search = frontier.claim([], 1)!;
+    frontier.settle(search, "capability_unavailable", "receipt", capabilities.search.reason, 1);
+    frontier.enqueue(task(), 1);
+    expect(frontier.claim([], 2)?.kind).toBe("catalog");
+    expect(frontier.counts().capability_unavailable).toBe(1);
+  } finally {
+    db.close();
+  }
+});
+
+test("capability overrides pin the exact installed runtime and refuse public or changed configuration", async () => {
+  const root = await mkdtemp(join(tmpdir(), "manga-capabilities-"));
+  const path = join(root, "capabilities.json");
+  try {
+    await Bun.write(path, JSON.stringify(defaultPoolCapabilities));
+    await chmod(path, 0o600);
+    expect(await loadPoolCapabilities(path)).toEqual(defaultPoolCapabilities);
+    await chmod(path, 0o644);
+    await expect(loadPoolCapabilities(path)).rejects.toThrow("Private bounded");
+    await chmod(path, 0o600);
+    await Bun.write(
+      path,
+      JSON.stringify({
+        ...defaultPoolCapabilities,
+        runtime: { ...defaultPoolCapabilities.runtime, revision: "unqualified" },
+      }),
+    );
+    await expect(loadPoolCapabilities(path)).rejects.toThrow("exact qualified runtime");
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
 });
 
 test("durable frontier survives process restart and refuses recovery of live leases", async () => {
@@ -300,7 +374,6 @@ test("eight real Bun Workers load the pool entry exactly once and identify as wo
 test("a discovered scan writes actual bytes before producing pending canonical review evidence", async () => {
   const root = await mkdtemp(join(tmpdir(), "manga-acquisition-"));
   try {
-    const { executeTask } = await import("./manga-source-pool");
     const bytes = new Uint8Array([0xff, 0xd8, 0xff, 0xd9]);
     const fetcher = (async (input: URL | string) =>
       String(input).endsWith("/robots.txt")

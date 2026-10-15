@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Persistent public manga evidence acquisition. Publication uses the canonical editorial writers. */
 import { Database } from "bun:sqlite";
-import { mkdir, chmod, rename, unlink, statfs } from "node:fs/promises";
+import { mkdir, chmod, rename, unlink, statfs, lstat } from "node:fs/promises";
 import { isAbsolute, join } from "node:path";
 import { parseArgs } from "node:util";
 import { inspectBrowserSources } from "./sosh-browser-workers";
@@ -14,6 +14,41 @@ if (typeof Bun.isMainThread !== "boolean")
   throw Error("Runtime must expose qualified Bun.isMainThread before spawning workers");
 
 export const POOL_PROGRESS_SCHEMA = "shenron-manga-source-progress/v1";
+export interface PoolCapabilities {
+  schema: "shenron-manga-pool-capabilities/v1";
+  runtime: { executable: string; revision: string };
+  search: { owner: "bun-cli-search"; state: "available" | "unavailable"; reason: string };
+}
+export const defaultPoolCapabilities: PoolCapabilities = {
+  schema: "shenron-manga-pool-capabilities/v1",
+  runtime: { executable: process.execPath, revision: Bun.revision },
+  search: { owner: "bun-cli-search", state: "available", reason: "native-source-runtime" },
+};
+export async function loadPoolCapabilities(path?: string): Promise<PoolCapabilities> {
+  if (!path) return defaultPoolCapabilities;
+  const info = await lstat(path);
+  if (
+    !isAbsolute(path) ||
+    !info.isFile() ||
+    info.isSymbolicLink() ||
+    info.mode & 0o077 ||
+    info.size > 65536
+  )
+    throw Error("Private bounded capabilities file required");
+  const value = await Bun.file(path).json();
+  if (
+    value.schema !== defaultPoolCapabilities.schema ||
+    value.runtime?.executable !== process.execPath ||
+    value.runtime?.revision !== Bun.revision ||
+    value.search?.owner !== "bun-cli-search" ||
+    !["available", "unavailable"].includes(value.search?.state) ||
+    typeof value.search.reason !== "string" ||
+    value.search.reason.length < 2 ||
+    value.search.reason.length > 500
+  )
+    throw Error("Capabilities must describe the exact qualified runtime and explicit search owner");
+  return value;
+}
 type Kind =
   | "catalog"
   | "volume"
@@ -332,7 +367,7 @@ export class MangaSourceFrontier {
     return this.db.transaction(() => {
       const candidates = this.db
         .query<PoolTask, [number, number]>(
-          "SELECT id,kind,url,host,depth,attempts,series,volumeId FROM pool_tasks t WHERE state IN ('queued','retry','done','robots_refused','provider_blocked') AND nextAt<=? AND NOT EXISTS(SELECT 1 FROM pool_circuits c WHERE c.host=t.host AND c.untilAt>?) ORDER BY CASE kind WHEN 'catalog' THEN 0 WHEN 'volume' THEN 1 WHEN 'chapter' THEN 2 WHEN 'browser' THEN 3 ELSE 4 END,updatedAt LIMIT 512",
+          "SELECT id,kind,url,host,depth,attempts,series,volumeId FROM pool_tasks t WHERE state IN ('queued','retry','done','robots_refused','provider_blocked','capability_unavailable') AND nextAt<=? AND NOT EXISTS(SELECT 1 FROM pool_circuits c WHERE c.host=t.host AND c.untilAt>?) ORDER BY CASE kind WHEN 'catalog' THEN 0 WHEN 'volume' THEN 1 WHEN 'chapter' THEN 2 WHEN 'browser' THEN 3 ELSE 4 END,updatedAt LIMIT 512",
         )
         .all(now, now);
       const date = new Date(now).toISOString().slice(0, 10);
@@ -365,7 +400,7 @@ export class MangaSourceFrontier {
   }
   settle(
     task: PoolTask,
-    state: "done" | "retry" | "robots_refused" | "provider_blocked",
+    state: "done" | "retry" | "robots_refused" | "provider_blocked" | "capability_unavailable",
     receipt: string,
     error: string | null,
     now = Date.now(),
@@ -374,7 +409,9 @@ export class MangaSourceFrontier {
       now +
       (state === "retry"
         ? retryDelay(task.attempts)
-        : state === "provider_blocked" || state === "robots_refused"
+        : state === "provider_blocked" ||
+            state === "robots_refused" ||
+            state === "capability_unavailable"
           ? day
           : task.kind === "catalog"
             ? 3600000
@@ -571,9 +608,23 @@ export async function executeTask(
   slot: number,
   fetcher: typeof fetch = fetch,
   assetRoot = join(job, "acquired"),
+  capabilities: PoolCapabilities = defaultPoolCapabilities,
 ) {
   const url = poolUrl(task.url);
   const startedAt = new Date().toISOString();
+  if (task.kind === "google" && capabilities.search.state === "unavailable")
+    return {
+      state: "capability_unavailable",
+      taskId: task.id,
+      startedAt,
+      finishedAt: new Date().toISOString(),
+      capability: "google-search",
+      owner: capabilities.search.owner,
+      reason: capabilities.search.reason,
+      networkRequests: 0,
+      children: [],
+      candidates: [],
+    };
   if (task.kind === "browser" || task.kind === "acquisition")
     await mkdir(job, { recursive: true, mode: 0o700 });
   if (task.kind === "google") {
@@ -758,6 +809,7 @@ async function servePool(options: {
   interval: number;
   reconcile: number;
   publicProgressFile?: string;
+  capabilities: PoolCapabilities;
 }) {
   const { job } = options;
   await mkdir(job, { recursive: true, mode: 0o700 });
@@ -769,6 +821,7 @@ async function servePool(options: {
     throw Error("Manga pool already owned by live process");
   frontier.recover(!previous?.pid || !alive(previous.pid));
   frontier.meta("owner", { pid: process.pid, runtime: process.execPath, revision: Bun.revision });
+  frontier.meta("capabilities", options.capabilities);
   const egressResponse = await fetch("https://am.i.mullvad.net/json", {
     signal: AbortSignal.timeout(20000),
   });
@@ -885,6 +938,8 @@ async function servePool(options: {
       failed: counts.retry ?? 0,
       robotsRefused: counts.robots_refused ?? 0,
       providerBlocked: counts.provider_blocked ?? 0,
+      capabilityUnavailable: counts.capability_unavailable ?? 0,
+      capabilities: { search: options.capabilities.search.state },
       catalog: {
         ...catalog,
         verifiedAssets: db
@@ -908,6 +963,7 @@ async function servePool(options: {
       revision: Bun.revision,
       egress: frontier.meta("egress"),
       counts,
+      capabilityDetails: options.capabilities,
     });
     if (!stopping && !projection) {
       projection = (async () => {
@@ -947,7 +1003,12 @@ async function servePool(options: {
         const receipt = join(directory, `${task.id}.json`);
         await atomicJson(receipt, data.result);
         const result = data.result;
-        const state = ["done", "robots_refused", "provider_blocked"].includes(result.state)
+        const state = [
+          "done",
+          "robots_refused",
+          "provider_blocked",
+          "capability_unavailable",
+        ].includes(result.state)
           ? result.state
           : "retry";
         if (state === "done" && task.kind === "catalog")
@@ -1011,6 +1072,7 @@ async function servePool(options: {
             task,
             job: join(job, "attempts", `${task.id}-${Date.now()}`),
             assetRoot: join(job, "acquired"),
+            capabilities: options.capabilities,
             slot: slots.indexOf(entry),
           });
         }
@@ -1068,6 +1130,7 @@ export async function runMangaSourcePool(args = Bun.argv.slice(2)) {
       "interval-ms": { type: "string", default: "60000" },
       "reconcile-ms": { type: "string", default: "3600000" },
       "public-progress-file": { type: "string" },
+      "capabilities-file": { type: "string" },
     },
   });
   if (
@@ -1123,6 +1186,7 @@ export async function runMangaSourcePool(args = Bun.argv.slice(2)) {
     interval,
     reconcile,
     publicProgressFile: values["public-progress-file"],
+    capabilities: await loadPoolCapabilities(values["capabilities-file"]),
   });
 }
 if (!Bun.isMainThread) {
@@ -1135,7 +1199,14 @@ if (!Bun.isMainThread) {
   self.onmessage = async ({ data }) => {
     if (data.kind !== "task") return;
     try {
-      const result = await executeTask(data.task, data.job, data.slot, fetch, data.assetRoot);
+      const result = await executeTask(
+        data.task,
+        data.job,
+        data.slot,
+        fetch,
+        data.assetRoot,
+        data.capabilities,
+      );
       self.postMessage({ kind: "result", result });
     } catch (error) {
       self.postMessage({

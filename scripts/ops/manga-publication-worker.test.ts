@@ -303,6 +303,42 @@ test("one bounded worker cycle quarantines malformed inputs and completes an ind
   expect(f.patches()).toBe(1);
 });
 
+test("real CLI finishes an empty handoff and candidate cycle without an initialization cycle", async () => {
+  const f = await fixture();
+  const config = {
+    version: 1,
+    job: join(f.root, "runtime"),
+    outbox: join(f.root, "outbox"),
+    candidateInbox: join(f.root, "candidates"),
+    handoff: {
+      inbox: join(f.root, "incoming"),
+      root: join(f.root, "imported"),
+      configSha256: "a".repeat(64),
+      policySha256: "b".repeat(64),
+    },
+    allowedSeries: ["SOSH"],
+    replica: { kind: "local", hostname: "unused" },
+    publication: { targetUrl: "https://dragonballfr.com/publications/manga-catalogue" },
+  };
+  const path = join(f.root, "worker-config.json");
+  await Bun.write(path, JSON.stringify(config));
+  const child = Bun.spawn(
+    [process.execPath, join(import.meta.dir, "manga-publication-worker.ts"), "once", path],
+    { stdout: "pipe", stderr: "pipe", timeout: 10000 },
+  );
+  const [stdout, stderr, code] = await Promise.all([
+    new Response(child.stdout).text(),
+    new Response(child.stderr).text(),
+    child.exited,
+  ]);
+  expect({ code, stdout, stderr }).toEqual({ code: 0, stdout: "", stderr: "" });
+  expect(await Bun.file(join(config.job, "status.json")).json()).toMatchObject({
+    tasks: [],
+    candidates: [],
+    handoffs: [],
+    completeCatalogue: false,
+  });
+});
 test("explicit preview survives canonical editorial CAS without claiming complete pagination", async () => {
   const f = await fixture();
   f.bundle.publicationExtent = {

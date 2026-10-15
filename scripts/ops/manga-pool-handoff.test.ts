@@ -124,3 +124,30 @@ test("invalid handoff is quarantined visibly and cannot starve later valid descr
   expect(first.some((x) => "replay" in x && x.replay === false)).toBe(true);
   expect(await importPendingMangaHandoffs(f.config)).toEqual([]);
 });
+
+test("invalid source configurations cannot poison a healthy handoff or export embedded credentials", async () => {
+  const f = await poolFixture();
+  const bad = structuredClone(f.candidate),
+    body = JSON.stringify({
+      version: 1,
+      store: { secretAccessKey: "fixture-secret-never-export" },
+    });
+  bad.source.config = { path: join(f.pool, "bad-config.json"), sha256: mangaDigest(body) };
+  await Bun.write(bad.source.config.path, body);
+  await Bun.write(join(f.pool, "derived/candidate-inbox/bad.json"), JSON.stringify(bad));
+  const exported = await exportMangaHandoff(f.pool, f.out);
+  if (!exported.archivePath || !exported.descriptorPath)
+    throw Error("Healthy acquisition must progress");
+  expect(
+    new TextDecoder()
+      .decode(await Bun.file(exported.archivePath).bytes())
+      .includes("fixture-secret-never-export"),
+  ).toBe(false);
+  expect(await importMangaHandoff(exported.descriptorPath, f.config)).toMatchObject({
+    candidates: 1,
+    images: 2,
+  });
+  expect(
+    (await Array.fromAsync(new Bun.Glob("*.json").scan({ cwd: join(f.out, "quarantine") }))).length,
+  ).toBe(1);
+});
