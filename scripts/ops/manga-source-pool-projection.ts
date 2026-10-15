@@ -281,8 +281,17 @@ export async function projectPoolReceipts(
     const file = Bun.file(row.receipt);
     if (file.size > 32 * 1024 * 1024) continue;
     const receipt = await file.json();
-    if (receipt.state !== "done" || receipt.httpStatus !== 200 || typeof receipt.body !== "string")
+    if (receipt.state !== "done" || receipt.httpStatus !== 200) continue;
+    if (["unsupported-text-charset", "lossy-text-decoding"].includes(receipt.textCaptureError)) {
+      await save(join(quarantine, `${row.id}.json`), {
+        reason: receipt.textCaptureError,
+        encoding: receipt.textEncoding,
+        task: row.id,
+      });
+      quarantined++;
       continue;
+    }
+    if (typeof receipt.body !== "string") continue;
     if (!/^(text\/|application\/json)/.test(receipt.contentType ?? "")) continue;
     const raw = receipt.body;
     if (projectionDigest(raw) !== receipt.sha256) {
