@@ -8,7 +8,7 @@ import type {
   SourceDeliveryPorts,
 } from "./lib/bun-source-delivery";
 import { Database } from "bun:sqlite";
-import { chmod, lstat, mkdir, realpath, rmdir, rename } from "node:fs/promises";
+import { chmod, lstat, mkdir, realpath, rmdir, rename, unlink } from "node:fs/promises";
 import { isAbsolute, join, relative, resolve } from "node:path";
 import {
   crawlIngestPolicySchema,
@@ -142,9 +142,12 @@ function bounded(
   if (!Number.isSafeInteger(n) || n < min || n > max) throw new Error(`Invalid ${name}`);
   return n;
 }
-async function fileHash(path: string) {
+async function fileHash(path: string, signal?: AbortSignal) {
   const hasher = new Bun.CryptoHasher("sha256");
-  for await (const chunk of Bun.file(path).stream()) hasher.update(chunk);
+  for await (const chunk of Bun.file(path).stream()) {
+    signal?.throwIfAborted();
+    hasher.update(chunk);
+  }
   return hasher.digest("hex");
 }
 async function privateJob(path: string) {
@@ -177,6 +180,179 @@ async function jsonFile(path: string, max = 2 * 1024 * 1024) {
   if (!info.isFile() || info.isSymbolicLink() || info.size > max)
     throw new Error("Invalid bounded input file");
   return Bun.file(path).json();
+}
+export interface SourceBatchOptions {
+  snapshotSha256: string;
+  batchSize: number;
+  cursor?: number;
+  manifestSha256?: string;
+  signal?: AbortSignal;
+}
+
+/** Produce private artifacts only; export completion never authorizes delivery. */
+export async function prepareSourceBatches(configPath: string, options: SourceBatchOptions) {
+  const sha = /^[a-f0-9]{64}$/;
+  if (!sha.test(options.snapshotSha256)) throw Error("Explicit snapshot SHA-256 required");
+  const cursor = bounded(options.cursor, 0, 0, Number.MAX_SAFE_INTEGER, "document cursor");
+  if (cursor > 0 && !sha.test(options.manifestSha256 ?? ""))
+    throw Error("Resuming requires the membership manifest SHA-256");
+  options.signal?.throwIfAborted();
+  const configSha256 = await fileHash(configPath);
+  const config = (await jsonFile(configPath)) as SourcePipelineConfig;
+  if (config.version !== 1 || !isAbsolute(config.input ?? "") || !isAbsolute(config.policy ?? ""))
+    throw Error("Invalid source pipeline configuration");
+  const batchSize = bounded(options.batchSize, 10000, 1, 100000, "batch size");
+  if (batchSize > bounded(config.maxDocuments, 10000, 1, 100000, "document budget"))
+    throw Error("Batch size exceeds the document validation budget");
+  const sourceInfo = await lstat(config.input);
+  if (!sourceInfo.isFile() || sourceInfo.isSymbolicLink() || sourceInfo.size > 1024 ** 3)
+    throw Error("Invalid bounded source snapshot");
+  const policySha256 = await fileHash(config.policy);
+  crawlIngestPolicySchema.parse(await jsonFile(config.policy));
+  const assertSource = async () => {
+    options.signal?.throwIfAborted();
+    if (
+      (await fileHash(config.input, options.signal)) !== options.snapshotSha256 ||
+      (await fileHash(config.policy)) !== policySha256 ||
+      (await fileHash(configPath)) !== configSha256
+    )
+      throw Error("Source batch inputs changed");
+  };
+  await assertSource();
+  await privateJob(config.job);
+  const lock = join(config.job, ".pipeline-lock");
+  await mkdir(lock, { mode: 0o700 });
+  try {
+    // One source snapshot under this job has one policy/configuration and partition.
+    const root = join(config.job, "batches", options.snapshotSha256);
+    await privateJob(root);
+    const manifestPath = join(root, "membership.json");
+    if (cursor > 0 && !(await Bun.file(manifestPath).exists()))
+      throw Error("Source membership manifest missing for resume");
+    const pin = async (source: string, destination: string, expectedHash: string) => {
+      if (!(await Bun.file(destination).exists())) {
+        const temporary = destination + ".tmp";
+        try {
+          await Bun.write(temporary, Bun.file(source));
+          await chmod(temporary, 0o600);
+          if ((await fileHash(temporary, options.signal)) !== expectedHash)
+            throw Error("Snapshot copy changed");
+          await rename(temporary, destination);
+        } finally {
+          await unlink(temporary).catch((error: { code?: string }) => {
+            if (error.code !== "ENOENT") throw error;
+          });
+        }
+      }
+      const info = await lstat(destination);
+      if (!info.isFile() || info.isSymbolicLink() || (await fileHash(destination)) !== expectedHash)
+        throw Error("Pinned source batch artifact differs");
+    };
+    const snapshot = join(root, "snapshot.jsonl");
+    await pin(config.input, snapshot, options.snapshotSha256);
+    await pin(config.policy, join(root, "policy.json"), policySha256);
+    await pin(configPath, join(root, "original-config.json"), configSha256);
+    const membership = new Bun.CryptoHasher("sha256");
+    let totalDocuments = 0;
+    for await (const document of readNativeCrawlDocuments(snapshot, options.signal)) {
+      membership.update(JSON.stringify([totalDocuments++, hash(JSON.stringify(document))]) + "\n");
+    }
+    if (cursor > totalDocuments || (cursor % batchSize !== 0 && cursor !== totalDocuments))
+      throw Error("Cursor is outside the source partition");
+    const manifest = {
+      schema: "shenron-source-membership/v1",
+      sourceSha256: options.snapshotSha256,
+      sourceBytes: sourceInfo.size,
+      configSha256,
+      policySha256,
+      batchSize,
+      totalDocuments,
+      membershipSha256: membership.digest("hex"),
+      positionConvention: "zero-based yielded document; end exclusive",
+      campaign: config.crawl ?? null,
+    };
+    const manifestSha256 = hash(JSON.stringify(manifest, null, 2) + "\n");
+    if (options.manifestSha256 && options.manifestSha256 !== manifestSha256)
+      throw Error("Source membership manifest differs");
+    await assertSource();
+    if ((await fileHash(snapshot, options.signal)) !== options.snapshotSha256)
+      throw Error("Pinned source batch artifact differs");
+    if (await Bun.file(manifestPath).exists()) {
+      const info = await lstat(manifestPath);
+      if (!info.isFile() || info.isSymbolicLink())
+        throw Error("Invalid source membership manifest");
+    }
+    await save(manifestPath, manifest, true);
+    const nextCursor = Math.min(totalDocuments, cursor + batchSize);
+    const directory = join(root, `${cursor}-${nextCursor}`);
+    await privateJob(directory);
+    const exportPath = join(directory, "export.jsonl");
+    const temporary = exportPath + ".tmp";
+    try {
+      await Bun.write(temporary, "");
+      await chmod(temporary, 0o600);
+      const writer = Bun.file(temporary).writer();
+      const batchMembership = new Bun.CryptoHasher("sha256");
+      let position = 0;
+      try {
+        for await (const document of readNativeCrawlDocuments(snapshot, options.signal)) {
+          if (position >= nextCursor) break;
+          if (position >= cursor) {
+            const serialized = JSON.stringify(document);
+            writer.write(serialized + "\n");
+            batchMembership.update(JSON.stringify([position, hash(serialized)]) + "\n");
+            await writer.flush();
+          }
+          position++;
+        }
+      } finally {
+        await writer.end();
+      }
+      const exportSha256 = await fileHash(temporary, options.signal);
+      await assertSource();
+      if ((await fileHash(snapshot, options.signal)) !== options.snapshotSha256)
+        throw Error("Pinned source batch artifact differs");
+      if (await Bun.file(exportPath).exists()) {
+        const info = await lstat(exportPath);
+        if (
+          !info.isFile() ||
+          info.isSymbolicLink() ||
+          (await fileHash(exportPath)) !== exportSha256
+        )
+          throw Error("Pinned source batch export differs");
+      } else await rename(temporary, exportPath);
+      const receipt = {
+        schema: "shenron-source-batch/v1",
+        sourceSha256: options.snapshotSha256,
+        configSha256,
+        policySha256,
+        manifestPath,
+        manifestSha256,
+        cursor,
+        nextCursor,
+        count: nextCursor - cursor,
+        totalDocuments,
+        membershipSha256: batchMembership.digest("hex"),
+        exportPath,
+        exportSha256,
+        exportComplete: nextCursor === totalDocuments,
+        deliveryAuthorized: false,
+      };
+      const receiptPath = join(directory, "receipt.json");
+      if (await Bun.file(receiptPath).exists()) {
+        const info = await lstat(receiptPath);
+        if (!info.isFile() || info.isSymbolicLink()) throw Error("Invalid source batch receipt");
+      }
+      const receiptSha256 = await save(receiptPath, receipt, true);
+      return { ...receipt, receiptPath, receiptSha256 };
+    } finally {
+      await unlink(temporary).catch((error: { code?: string }) => {
+        if (error.code !== "ENOENT") throw error;
+      });
+    }
+  } finally {
+    await rmdir(lock);
+  }
 }
 function mediaList(value: unknown): SourceMedia[] {
   if (!Array.isArray(value) || value.length > 10000) throw new Error("Invalid media inventory");
@@ -1512,11 +1688,11 @@ async function main() {
   }
   if (!action || action === "--help") {
     console.log(
-      "bun-source-pipeline doctor | auto --config FILE [--watch] | plan|collect|apply|verify --config /private/config.json [--plan-sha256 HASH]. SQL credentials stay in DATABASE_URL; store credentials stay in the canonical profile. Invalid documents remain in the pinned export and are reported, never promoted.",
+      "bun-source-pipeline doctor | batch --config FILE --snapshot-sha256 HASH --batch-size COUNT [--cursor POSITION --manifest-sha256 HASH] | auto --config FILE [--watch] | plan|collect|apply|verify --config /private/config.json [--plan-sha256 HASH]. Batch produces private artifacts only; exportComplete is not delivery authorization. SQL credentials stay in DATABASE_URL; store credentials stay in the canonical profile. Invalid documents remain in the pinned export and are reported, never promoted.",
     );
     return;
   }
-  if (!["plan", "collect", "apply", "verify", "auto"].includes(action))
+  if (!["plan", "collect", "apply", "verify", "auto", "batch"].includes(action))
     throw new Error("Unknown source pipeline action");
   const flag = (name: string) => {
     const i = args.indexOf(name);
@@ -1524,6 +1700,19 @@ async function main() {
   };
   const config = flag("--config");
   if (!config) throw new Error("Explicit --config required");
+  if (action === "batch") {
+    console.log(
+      JSON.stringify(
+        await prepareSourceBatches(config, {
+          snapshotSha256: flag("--snapshot-sha256") ?? "",
+          batchSize: Number(flag("--batch-size")),
+          cursor: flag("--cursor") === undefined ? 0 : Number(flag("--cursor")),
+          manifestSha256: flag("--manifest-sha256"),
+        }),
+      ),
+    );
+    return;
+  }
   if (action === "auto") {
     if (args.includes("--watch")) {
       const controller = new AbortController();

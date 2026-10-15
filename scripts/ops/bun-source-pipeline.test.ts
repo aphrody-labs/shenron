@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterEach, expect, test } from "bun:test";
-import { mkdtemp, rm, chmod } from "node:fs/promises";
+import { mkdtemp, rm, chmod, lstat } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import {
   hash,
+  prepareSourceBatches,
   runSourcePipeline,
   type PipelineDatabase,
   type RegistryRow,
@@ -68,6 +69,226 @@ async function fixture(documents: unknown[] = [doc()], extra: Partial<SourcePipe
   await Bun.write(configPath, JSON.stringify(config));
   return { root, input, policy, config, configPath };
 }
+test("source batches resume disjoint ordered membership without authorizing delivery", async () => {
+  const documents = Array.from({ length: 7 }, (_, i) => doc(`https://source.example/${i}`));
+  documents[4] = documents[1]!;
+  const f = await fixture(documents, {
+    maxDocuments: 3,
+    crawl: { mode: "attach", config: "/private/campaign.json", output: "/private/crawl" },
+  });
+  const source = await Bun.file(f.input).text();
+  const first = await prepareSourceBatches(f.configPath, {
+    snapshotSha256: hash(source),
+    batchSize: 3,
+  });
+  const second = await prepareSourceBatches(f.configPath, {
+    snapshotSha256: hash(source),
+    batchSize: 3,
+    cursor: first.nextCursor,
+    manifestSha256: first.manifestSha256,
+  });
+  const third = await prepareSourceBatches(f.configPath, {
+    snapshotSha256: hash(source),
+    batchSize: 3,
+    cursor: second.nextCursor,
+    manifestSha256: first.manifestSha256,
+  });
+  expect(
+    [first, second, third].map(({ cursor, nextCursor, count, exportComplete }) => [
+      cursor,
+      nextCursor,
+      count,
+      exportComplete,
+    ]),
+  ).toEqual([
+    [0, 3, 3, false],
+    [3, 6, 3, false],
+    [6, 7, 1, true],
+  ]);
+  const recovered: unknown[] = [];
+  for (const batch of [first, second, third]) {
+    const body = await Bun.file(batch.exportPath).text();
+    expect(hash(body)).toBe(batch.exportSha256);
+    const members = body
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line));
+    const membership = members
+      .map((value, i) => JSON.stringify([batch.cursor + i, hash(JSON.stringify(value))]) + "\n")
+      .join("");
+    expect(hash(membership)).toBe(batch.membershipSha256);
+    expect(batch.deliveryAuthorized).toBe(false);
+    expect(hash(await Bun.file(batch.receiptPath).text())).toBe(batch.receiptSha256);
+    recovered.push(...members);
+  }
+  expect(recovered).toEqual(documents);
+  const manifest = await Bun.file(first.manifestPath).json();
+  expect(manifest.campaign).toEqual(f.config.crawl);
+  expect(manifest.totalDocuments).toBe(7);
+  expect(manifest.membershipSha256).toBe(
+    hash(
+      documents.map((value, i) => JSON.stringify([i, hash(JSON.stringify(value))]) + "\n").join(""),
+    ),
+  );
+  expect(hash(await Bun.file(first.manifestPath).text())).toBe(first.manifestSha256);
+  expect(await Bun.file(f.configPath).json()).toEqual(f.config);
+  expect(await Bun.file(f.policy).text()).toBe(
+    await Bun.file(join(f.config.job, "batches", hash(source), "policy.json")).text(),
+  );
+  for (const path of [first.exportPath, first.manifestPath, first.receiptPath]) {
+    if (process.platform !== "win32") expect((await lstat(path)).mode & 0o777).toBe(0o600);
+  }
+  const before = await lstat(second.exportPath);
+  expect(
+    await prepareSourceBatches(f.configPath, {
+      snapshotSha256: hash(source),
+      batchSize: 3,
+      cursor: 3,
+      manifestSha256: first.manifestSha256,
+    }),
+  ).toEqual(second);
+  expect((await lstat(second.exportPath)).mtimeMs).toBe(before.mtimeMs);
+  expect(await Bun.file(join(f.config.job, ".pipeline-lock")).exists()).toBe(false);
+  expect(await Bun.file(join(f.config.job, "plan.json")).exists()).toBe(false);
+  expect(await Bun.file(join(f.config.job, "checkpoint.sqlite")).exists()).toBe(false);
+});
+
+test.each(["input", "policy", "config"] as const)(
+  "source batch resume refuses %s drift",
+  async (kind) => {
+    const f = await fixture([doc(), doc("https://source.example/b")], { maxDocuments: 1 });
+    const snapshotSha256 = hash(await Bun.file(f.input).text());
+    const first = await prepareSourceBatches(f.configPath, { snapshotSha256, batchSize: 1 });
+    if (kind === "input")
+      await Bun.write(f.input, JSON.stringify(doc("https://source.example/changed")) + "\n");
+    if (kind === "policy") {
+      const policy = await Bun.file(f.policy).json();
+      policy.sources[0].rights.ragPermitted = true;
+      await Bun.write(f.policy, JSON.stringify(policy));
+    }
+    if (kind === "config")
+      await Bun.write(f.configPath, JSON.stringify({ ...f.config, maxRecords: 3 }));
+    await expect(
+      prepareSourceBatches(f.configPath, {
+        snapshotSha256,
+        batchSize: 1,
+        cursor: 1,
+        manifestSha256: first.manifestSha256,
+      }),
+    ).rejects.toThrow();
+    expect(
+      await Bun.file(join(f.config.job, "batches", snapshotSha256, "1-2", "receipt.json")).exists(),
+    ).toBe(false);
+    expect(await Bun.file(join(f.config.job, ".pipeline-lock")).exists()).toBe(false);
+  },
+);
+
+test.each(["snapshot.jsonl", "membership.json", "0-1/export.jsonl", "0-1/receipt.json"])(
+  "source batch replay refuses corrupted %s",
+  async (name) => {
+    const f = await fixture([doc(), doc("https://source.example/b")], { maxDocuments: 1 });
+    const snapshotSha256 = hash(await Bun.file(f.input).text());
+    const options = { snapshotSha256, batchSize: 1 };
+    const first = await prepareSourceBatches(f.configPath, options);
+    const path = join(f.config.job, "batches", snapshotSha256, name);
+    await Bun.write(path, "{}\n");
+    await expect(
+      prepareSourceBatches(f.configPath, { ...options, manifestSha256: first.manifestSha256 }),
+    ).rejects.toThrow();
+    expect(await Bun.file(path).text()).toBe("{}\n");
+    expect(await Bun.file(join(f.config.job, ".pipeline-lock")).exists()).toBe(false);
+    expect(await Bun.file(first.exportPath + ".tmp").exists()).toBe(false);
+  },
+);
+
+test("batch partition bounds are independent of the validation prefix budget", async () => {
+  const f = await fixture([doc(), { invalid: true }, doc("https://source.example/c")], {
+    maxDocuments: 2,
+  });
+  const snapshotSha256 = hash(await Bun.file(f.input).text());
+  await expect(
+    prepareSourceBatches(f.configPath, { snapshotSha256, batchSize: 3 }),
+  ).rejects.toThrow("validation budget");
+  await expect(
+    prepareSourceBatches(f.configPath, { snapshotSha256, batchSize: 100001 }),
+  ).rejects.toThrow("batch size");
+  const first = await prepareSourceBatches(f.configPath, { snapshotSha256, batchSize: 2 });
+  expect(
+    (await Bun.file(first.exportPath).text())
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line)),
+  ).toEqual([doc(), { invalid: true }]);
+  expect(first.exportComplete).toBe(false);
+  await expect(
+    prepareSourceBatches(f.configPath, { snapshotSha256, batchSize: 2, cursor: 2 }),
+  ).rejects.toThrow("manifest SHA-256");
+  for (const cursor of [1, 4, -1, 0.5]) {
+    await expect(
+      prepareSourceBatches(f.configPath, {
+        snapshotSha256,
+        batchSize: 2,
+        cursor,
+        manifestSha256: first.manifestSha256,
+      }),
+    ).rejects.toThrow();
+  }
+  await expect(
+    prepareSourceBatches(f.configPath, {
+      snapshotSha256,
+      batchSize: 1,
+      cursor: 2,
+      manifestSha256: first.manifestSha256,
+    }),
+  ).rejects.toThrow("manifest differs");
+  const plan = await runSourcePipeline("plan", f.configPath);
+  expect(plan).toMatchObject({ documents: 2, budgetExceeded: true, complete: false });
+  expect(plan.invalid).toHaveLength(1);
+});
+
+test("batch command emits private artifacts with no collection or delivery ports", async () => {
+  const f = await fixture([doc(), doc("https://source.example/b")], { maxDocuments: 1 });
+  const child = Bun.spawn(
+    [
+      process.execPath,
+      "--no-env-file",
+      join(import.meta.dir, "bun-source-pipeline.ts"),
+      "batch",
+      "--config",
+      f.configPath,
+      "--snapshot-sha256",
+      hash(await Bun.file(f.input).text()),
+      "--batch-size",
+      "1",
+    ],
+    { cwd: f.root, env: { PATH: process.env.PATH ?? "" }, stdout: "pipe", stderr: "pipe" },
+  );
+  const output = await new Response(child.stdout).text();
+  const error = await new Response(child.stderr).text();
+  expect(JSON.parse(output)).toMatchObject({
+    cursor: 0,
+    nextCursor: 1,
+    totalDocuments: 2,
+    exportComplete: false,
+    deliveryAuthorized: false,
+  });
+  expect(error).toBe("");
+  expect(await child.exited).toBe(0);
+});
+
+test("aborted batch preparation leaves no job artifacts", async () => {
+  const f = await fixture();
+  const controller = new AbortController();
+  controller.abort();
+  await expect(
+    prepareSourceBatches(f.configPath, {
+      snapshotSha256: hash(await Bun.file(f.input).text()),
+      batchSize: 1,
+      signal: controller.signal,
+    }),
+  ).rejects.toThrow();
+  expect(await Bun.file(join(f.config.job, "batches")).exists()).toBe(false);
+});
 const fakeFetch = (
   implementation: (...args: Parameters<typeof fetch>) => ReturnType<typeof fetch>,
 ): typeof fetch => Object.assign(implementation, { preconnect: fetch.preconnect });
