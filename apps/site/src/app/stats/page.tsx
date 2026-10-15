@@ -6,6 +6,9 @@ import { PageHeader } from "@/components/PageHeader";
 import { getShenronStats } from "@/lib/shenron";
 import { getPublicActivitySafe, prettyPath } from "@/lib/analytics";
 import { ogMeta } from "@/lib/og";
+import { T } from "@/components/T";
+import { PublicCorpusStats } from "@/components/wiki/PublicCorpusStats";
+import { getPublicCorpusStats } from "@/lib/public-corpus-stats";
 
 // `getShenronStats` (bot, live) → 30 s. La section audience (getPublicActivity)
 // n'expose que des agrégats NON-SENSIBLES → CDN/ISR-safe (aucun cookie/header,
@@ -28,7 +31,11 @@ export const metadata: Metadata = {
 const nf = new Intl.NumberFormat("fr-FR");
 
 export default async function StatsPage() {
-  const [stats, activity] = await Promise.all([getShenronStats(), getPublicActivitySafe()]);
+  const [stats, activity, corpusCounts] = await Promise.all([
+    getShenronStats(),
+    getPublicActivitySafe(),
+    getPublicCorpusStats(),
+  ]);
   const maxViews = Math.max(1, ...activity.popularPages.map((p) => p.views));
 
   return (
@@ -81,56 +88,10 @@ export default async function StatsPage() {
         </div>
       )}
 
-      {/* --- Corpus & Encyclopédie DBFR --- */}
       <h2 className="font-saiyan text-2xl text-dbz-orange uppercase mt-14 mb-2">
-        Corpus &amp; Base de Savoir DBFR
+        <T k="corpusStats.title" />
       </h2>
-      <p className="text-sm text-white/50 mb-5">
-        Volumétrie des sources primaires, databooks et connaissances vectorisées par l&apos;IA
-        Shenron.
-      </p>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard
-          label="Extraits RAG"
-          value={(241558).toLocaleString("fr-FR")}
-          color="text-emerald-400"
-        />
-        <StatCard
-          label="Articles &amp; Savoir"
-          value={(181636).toLocaleString("fr-FR")}
-          color="text-dbz-orange"
-        />
-        <StatCard
-          label="Planches Databooks"
-          value={(33738).toLocaleString("fr-FR")}
-          color="text-dbz-yellow"
-        />
-        <StatCard
-          label="Pages Manga"
-          value={(11213).toLocaleString("fr-FR")}
-          color="text-blue-400"
-        />
-        <StatCard
-          label="Citations Canon"
-          value={(6905).toLocaleString("fr-FR")}
-          color="text-dbz-orange"
-        />
-        <StatCard
-          label="Chapitres Reliés"
-          value={(922).toLocaleString("fr-FR")}
-          color="text-dbz-yellow"
-        />
-        <StatCard
-          label="Épisodes d'Anime"
-          value={(826).toLocaleString("fr-FR")}
-          color="text-blue-400"
-        />
-        <StatCard
-          label="Personnages Fichés"
-          value={(662).toLocaleString("fr-FR")}
-          color="text-emerald-400"
-        />
-      </div>
+      <PublicCorpusStats counts={corpusCounts} />
 
       {/* --- Activité du site (audience web, anonymisée) --- */}
       <h2 className="font-saiyan text-2xl text-dbz-orange uppercase mt-14 mb-2">

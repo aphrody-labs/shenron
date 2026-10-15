@@ -17,6 +17,7 @@ import { pickBestImage } from "@/lib/image-variants";
 import { ContentCoverage } from "@/components/wiki/ContentCoverage";
 import type { Metadata } from "next";
 import { T } from "@/components/T";
+import { getPublicCorpusStats } from "@/lib/public-corpus-stats";
 
 export const revalidate = 3600;
 
@@ -68,6 +69,7 @@ async function WikiIndexContent() {
     soundtracksData,
     dragonsData,
     itemsData,
+    corpusCounts,
   ] = await Promise.all([
     getShenronCharacterCards(),
     getShenronMovies(),
@@ -83,6 +85,7 @@ async function WikiIndexContent() {
     dbUniverse.soundtracks(),
     dbUniverse.dragons(),
     dbUniverse.items(),
+    getPublicCorpusStats(),
   ]);
 
   const c = (counts ?? {}) as Record<string, number>;
@@ -170,20 +173,22 @@ async function WikiIndexContent() {
             unit: "tomes",
           }}
           canon={{
-            label: "Canonicité & Preuves",
+            label: <T k="corpusStats.metrics.canonReferences" />,
             availableHref: "/wiki/canon",
-            available: 6905,
-            total: 6905,
-            unit: "citations & déclarations d'auteur",
-            badge: "Certifié Toriyama",
+            available: corpusCounts.canonReferences,
+            total: null,
+            unit: <T k="corpusStats.references" />,
+            badge: <T k="corpusStats.indexedRecords" />,
+            referenceOnly: true,
           }}
           rag={{
-            label: "Corpus & Savoir RAG",
+            label: <T k="corpusStats.metrics.ragChunks" />,
             availableHref: "/wiki/search",
-            available: 241558,
-            total: 241558,
-            unit: "extraits documentaires vectorisés",
-            badge: "Index Hybride",
+            available: corpusCounts.ragChunks,
+            total: null,
+            unit: <T k="corpusStats.references" />,
+            badge: <T k="corpusStats.indexedRecords" />,
+            referenceOnly: true,
           }}
         />
 

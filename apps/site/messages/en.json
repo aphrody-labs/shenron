@@ -2191,5 +2191,63 @@
       "onError": "Text on error"
     },
     "hexHint": "HEX color (3, 6 or 8 characters)"
+  },
+  "corpusStats": {
+    "title": "Referenced corpus",
+    "unavailable": "Unavailable",
+    "scope": "Counts come from public records and the active index. They do not establish complete works or reviewed transcriptions.",
+    "references": "references",
+    "indexedRecords": "Indexed records",
+    "recordScope": "in the available source.",
+    "metrics": {
+      "ragChunks": "Passages in the public index",
+      "canonReferences": "Canon references",
+      "databookPages": "Referenced databook pages",
+      "mangaPages": "Documented manga pages",
+      "mangaVolumes": "Referenced volumes",
+      "mangaChapters": "Referenced chapters",
+      "episodes": "Referenced episodes",
+      "characters": "Character records"
+    }
+  },
+  "canonEditorSync": {
+    "editorLabel": "Canon doctrine editor",
+    "reload": "Reload the saved version",
+    "baselineMissing": "Read the saved version before saving changes.",
+    "conflict": "The server doctrine changed. Your draft is preserved. Reload the saved version to continue from that version.",
+    "saved": "Doctrine saved. The public page uses this version.",
+    "saveFailed": "Unable to save. Your draft is preserved.",
+    "networkFailed": "Connection unavailable. Your draft is preserved.",
+    "loadFailed": "Unable to read the doctrine. Saving stays disabled until reading succeeds."
+  },
+  "canonExplorer": {
+    "title": "Canon",
+    "subtitle": "One question. One work. The sources.",
+    "question": "Your Dragon Ball question",
+    "placeholder": "Broly, Super Saiyan 4, Bardock…",
+    "search": "Search",
+    "searching": "Searching…",
+    "work": "Work",
+    "allWorks": "All works",
+    "language": "Interface language",
+    "examples": "Choose a topic",
+    "broly": "Broly",
+    "ssj4Gt": "SSJ4 · GT",
+    "ssj4Daima": "SSJ4 · DAIMA",
+    "gogeta": "Gogeta",
+    "bardock": "Bardock",
+    "workDBZ": "Dragon Ball Z",
+    "workGT": "Dragon Ball GT",
+    "workDBS": "Dragon Ball Super",
+    "workDAIMA": "Dragon Ball DAIMA",
+    "hint": "Choose a version: the same character can belong to several continuities.",
+    "emptyTitle": "Which version interests you?",
+    "emptyText": "Choose a card or ask your question. Read the answer, then open the documents to check its sources.",
+    "continuities": "Understanding continuities",
+    "method": "Method and references",
+    "sources": "View sources",
+    "evidence": "Documents and references",
+    "compareGt": "Compare with GT",
+    "details": "Answer details"
   }
 }

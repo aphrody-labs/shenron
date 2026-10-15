@@ -2191,5 +2191,63 @@
       "onError": "エラー上の文字"
     },
     "hexHint": "HEX色（3、6、8桁）"
+  },
+  "corpusStats": {
+    "title": "参照資料の件数",
+    "unavailable": "取得できません",
+    "scope": "公開レコードと現在の索引から集計しています。作品全体の収録や書き起こしの校閲完了を示すものではありません。",
+    "references": "参照",
+    "indexedRecords": "索引のレコード",
+    "recordScope": "（取得できる資料内）。",
+    "metrics": {
+      "ragChunks": "公開索引の文章",
+      "canonReferences": "正史判定の参照資料",
+      "databookPages": "データブックの参照ページ",
+      "mangaPages": "マンガの記録ページ",
+      "mangaVolumes": "登録された巻",
+      "mangaChapters": "登録された話",
+      "episodes": "登録されたエピソード",
+      "characters": "キャラクターの項目"
+    }
+  },
+  "canonEditorSync": {
+    "editorLabel": "正史方針エディター",
+    "reload": "保存済みの版を再読み込み",
+    "baselineMissing": "変更を保存する前に、保存済みの版を読み込んでください。",
+    "conflict": "サーバー上の方針が変更されました。下書きは保持されています。保存済みの版を再読み込みして続けてください。",
+    "saved": "方針を保存しました。公開ページにもこの版が反映されます。",
+    "saveFailed": "保存できませんでした。下書きは保持されています。",
+    "networkFailed": "接続できません。下書きは保持されています。",
+    "loadFailed": "方針を読み込めません。読み込みが成功するまで保存できません。"
+  },
+  "canonExplorer": {
+    "title": "正史",
+    "subtitle": "ひとつの質問。ひとつの作品。その出典。",
+    "question": "ドラゴンボールについての質問",
+    "placeholder": "ブロリー、超サイヤ人4、バーダック…",
+    "search": "検索",
+    "searching": "検索中…",
+    "work": "作品",
+    "allWorks": "すべての作品",
+    "language": "表示言語",
+    "examples": "話題を選ぶ",
+    "broly": "ブロリー",
+    "ssj4Gt": "超サイヤ人4 · GT",
+    "ssj4Daima": "超サイヤ人4 · DAIMA",
+    "gogeta": "ゴジータ",
+    "bardock": "バーダック",
+    "workDBZ": "ドラゴンボールZ",
+    "workGT": "ドラゴンボールGT",
+    "workDBS": "ドラゴンボール超",
+    "workDAIMA": "ドラゴンボールDAIMA",
+    "hint": "同じ人物でも作品によって設定が異なります。対象の作品を選んでください。",
+    "emptyTitle": "どの作品について知りたいですか？",
+    "emptyText": "カードを選ぶか、質問を入力してください。回答を読み、資料を開いて出典を確認できます。",
+    "continuities": "作品のつながりを理解する",
+    "method": "方法と参考資料",
+    "sources": "出典を見る",
+    "evidence": "資料と出典",
+    "compareGt": "GTと比較する",
+    "details": "回答の詳細"
   }
 }

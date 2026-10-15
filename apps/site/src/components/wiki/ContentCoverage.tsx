@@ -1,19 +1,23 @@
 import Link from "next/link";
 import { Bibliotheque, Livre } from "@aphrody/shenron-ui/icones";
+import type { ReactNode } from "react";
+import { T } from "@/components/T";
 
 export interface CoverageMetric {
-  label: string;
+  label: ReactNode;
   availableHref: string;
   missingHref?: string;
-  available: number;
-  total: number;
-  unit: string;
-  badge?: string;
+  available: number | null;
+  total: number | null;
+  unit: ReactNode;
+  badge?: ReactNode;
+  referenceOnly?: boolean;
 }
 
 function Metric({ metric }: { metric: CoverageMetric }) {
-  const missing = Math.max(0, metric.total - metric.available);
-  const complete = metric.total > 0 && missing === 0;
+  const known = metric.available !== null && metric.total !== null;
+  const missing = known ? Math.max(0, metric.total! - metric.available!) : null;
+  const complete = !metric.referenceOnly && known && metric.total! > 0 && missing === 0;
 
   return (
     <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5">
@@ -23,8 +27,12 @@ function Metric({ metric }: { metric: CoverageMetric }) {
             {metric.label}
           </p>
           <p className="mt-2 font-display text-2xl font-bold text-white tabular-nums">
-            {metric.available.toLocaleString("fr-FR")}{" "}
-            {metric.total > 0 && (
+            {metric.available === null ? (
+              <T k="corpusStats.unavailable" />
+            ) : (
+              metric.available.toLocaleString("fr-FR")
+            )}{" "}
+            {!metric.referenceOnly && metric.total !== null && metric.total > 0 && (
               <span className="text-base font-normal text-white/45">
                 / {metric.total.toLocaleString("fr-FR")}
               </span>
@@ -38,11 +46,27 @@ function Metric({ metric }: { metric: CoverageMetric }) {
               : "border-dbz-orange/30 bg-dbz-orange/10 text-dbz-orange"
           }`}
         >
-          {metric.badge ? metric.badge : complete ? "Complet" : `${missing} à compléter`}
+          {metric.badge ? (
+            metric.badge
+          ) : missing === null ? (
+            <T k="corpusStats.unavailable" />
+          ) : complete ? (
+            "Complet"
+          ) : (
+            `${missing} à compléter`
+          )}
         </span>
       </div>
       <p className="mt-1 text-xs text-white/50">
-        {metric.unit} avec du contenu réellement consultable.
+        {metric.unit}
+        {metric.referenceOnly ? (
+          <>
+            {" "}
+            <T k="corpusStats.recordScope" />
+          </>
+        ) : (
+          " avec du contenu réellement consultable."
+        )}
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
         <Link
@@ -51,7 +75,7 @@ function Metric({ metric }: { metric: CoverageMetric }) {
         >
           Voir les disponibles →
         </Link>
-        {missing > 0 && metric.missingHref && (
+        {missing !== null && missing > 0 && metric.missingHref && (
           <Link
             href={metric.missingHref}
             className="inline-flex min-h-11 items-center rounded-full border border-dbz-orange/30 px-4 font-display text-xs font-semibold text-dbz-orange transition-colors hover:border-dbz-orange hover:bg-dbz-orange/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
@@ -85,8 +109,7 @@ export function ContentCoverage({
           </h2>
         </div>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-white/55">
-          Un aperçu honnête des supports et savoirs déjà consultables. Les données proviennent
-          directement du moteur RAG et du corpus officiel validé de Dragon Ball France.
+          <T k="corpusStats.scope" />
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
