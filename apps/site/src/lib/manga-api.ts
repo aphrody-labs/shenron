@@ -26,7 +26,6 @@ import "server-only";
 
 import { sql, type SQL } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { assetUrl } from "@/lib/assets";
 import { API_URL as BOT_API_URL, SITE_URL } from "@/lib/config";
 import type { MangaVolume } from "@/lib/db-universe";
 import { mangaData } from "@/lib/manga-data";
@@ -107,7 +106,7 @@ function cleTomeOcr(chapter: {
   if (s === SERIE_COULEUR) return null;
   if (s === "DB") return { series: "DB", tome: `vol${chapter.chapter_number}` };
   if (s === "DBS") return { series: "DBS", tome: `ch${chapter.id}` };
-  if (["DBKZ", "SOSH", "DBJP", "DBZ_ANIME_COMICS", "DB_MOVIES", "ARALE"].includes(s)) {
+  if (["DBKZ", "SOSH", "DB_SOSH", "DBJP", "DBZ_ANIME_COMICS", "DB_MOVIES", "ARALE"].includes(s)) {
     return { series: s, tome: `vol${chapter.chapter_number}` };
   }
   return null;
@@ -550,43 +549,52 @@ export async function chercherPlanches(
     )
     .slice(offset, offset + max);
 
-  // Résolution des coordonnées OCR vers un chapitre du site : `vol{N}` → le
-  // chapitre DB de numéro N, `ch{id}` → le chapitre d'identifiant id.
-  const numerosDb = [
-    ...new Set(
-      classes
-        .filter((x) => x.r.series === "DB" && /^vol\d+$/.test(x.r.tome))
-        .map((x) => Number(x.r.tome.slice(3))),
-    ),
-  ];
-  const idsDbs = [
-    ...new Set(
-      classes.filter((x) => /^ch\d+$/.test(x.r.tome)).map((x) => Number(x.r.tome.slice(2))),
-    ),
-  ];
-  const chapitres = new Map<string, { id: number; pages: string[] }>();
-  if (numerosDb.length > 0 || idsDbs.length > 0) {
+  // Resolve every supported OCR edition, keeping series in the key so that
+  // equal volume numbers from distinct publications cannot share a reader URL.
+  const coordinates = new Map<string, SQL>();
+  for (const { r } of classes) {
+    const match = /^(vol|ch)(\d+)$/.exec(r.tome);
+    if (!match) continue;
+    const number = Number(match[2]);
+    if (!Number.isSafeInteger(number)) continue;
+    const reference = {
+      id: match[1] === "ch" ? number : 0,
+      series: r.series,
+      chapter_number: match[1] === "vol" ? number : 0,
+    };
+    if (cleTomeOcr(reference)?.tome !== r.tome) continue;
+    coordinates.set(
+      `${r.series}:${r.tome}`,
+      match[1] === "ch"
+        ? sql`(series = ${r.series} AND id = ${number})`
+        : sql`(series = ${r.series} AND chapter_number = ${number})`,
+    );
+  }
+  const chapitres = new Map<
+    string,
+    { id: number; pages: string[]; sourceKind: "cdn" | "editorial" }
+  >();
+  if (coordinates.size > 0) {
     const chaps = await db.execute<{
       id: number;
       series: string;
       chapter_number: number;
-      pages: string[] | null;
     }>(sql`
-			SELECT id, series, chapter_number, pages FROM bot.db_manga_chapters
-			WHERE (series = 'DB' AND chapter_number = ANY(${sql.raw(
-        `ARRAY[${numerosDb.join(",") || "NULL"}]::int[]`,
-      )}))
-			OR id = ANY(${sql.raw(`ARRAY[${idsDbs.join(",") || "NULL"}]::int[]`)})
+			SELECT id, series, chapter_number FROM bot.db_manga_chapters
+			WHERE visible IS NOT FALSE AND (${sql.join([...coordinates.values()], sql` OR `)})
 		`);
-    for (const c of chaps) {
-      const pages = Array.isArray(c.pages) ? c.pages : [];
-      const cle = c.series === "DB" ? `DB:vol${c.chapter_number}` : `ch${c.id}`;
-      chapitres.set(cle, { id: Number(c.id), pages });
+    // Read the same publication as the reader instead of linking stale raw DB assets.
+    for (const candidate of chaps) {
+      const chapter = await mangaData.mangaChapter(Number(candidate.id));
+      if (!chapter || chapter.series !== candidate.series) continue;
+      const key = cleTomeOcr(chapter);
+      if (!key) continue;
+      chapitres.set(`${key.series}:${key.tome}`, chapter);
     }
   }
 
   return classes.map(({ r, d }) => {
-    const cle = r.series === "DB" ? `DB:${r.tome}` : r.tome;
+    const cle = `${r.series}:${r.tome}`;
     const chap = chapitres.get(cle) ?? null;
     const numero = Number(r.planche);
     // Le numéro OCR est celui du FICHIER ; le lecteur parle en rang. On
@@ -610,10 +618,16 @@ export async function chercherPlanches(
       extrait: excerpt,
       snippet: extraitSurligne,
       chapter_id: chapterId,
-      href: chapterId ? `${SITE_URL}/wiki/manga/${chapterId}?page=${rang ?? numero}` : null,
-      api: chapterId ? `${SITE_URL}/api/manga/chapter/${chapterId}/pages/${rang ?? numero}` : null,
+      href: chapterId && rang !== null ? `${SITE_URL}/wiki/manga/${chapterId}?page=${rang}` : null,
+      api:
+        chapterId && rang !== null
+          ? `${SITE_URL}/api/manga/chapter/${chapterId}/pages/${rang}`
+          : null,
       score: d.score,
-      image: chap && idx >= 0 ? assetUrl(chap.pages[idx]!) : null,
+      image:
+        chap && idx >= 0
+          ? new URL(mangaReaderAssetUrl(chap.pages[idx]!, chap.sourceKind), SITE_URL).href
+          : null,
       index: rang,
       rang,
     };
