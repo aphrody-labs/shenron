@@ -155,6 +155,7 @@ export async function GET() {
   const license =
     "Catalogue, couvertures et ressources de lecture. Les droits et les statuts de publication restent attachés à chaque source.";
   const routes = {
+    coverage: `${SITE_URL}/api/manga/coverage`,
     volume: `${SITE_URL}/api/manga/volume/{id}`,
     chapter: `${SITE_URL}/api/manga/chapter/{id}`,
     page: `${SITE_URL}/api/manga/chapter/{id}/pages/{n}`,
