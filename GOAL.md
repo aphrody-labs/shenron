@@ -8,6 +8,13 @@ l’historique sont dans [REPRISE.md](docs/reference/root/REPRISE.md) ; les inva
 
 ## Priorités
 
+Demande active du 15 octobre : corriger les bugs et trous de données des pages manga,
+databooks et wiki, synchroniser l’IA et l’interface avec PostgreSQL, évaluer le RAG,
+et qualifier le crawl/rendu avec Bun WebView sur la fabrique. Le propriétaire ajoute :
+thème neutre, retrait des vidéos d’accueil, défilement stable et dashboard permettant
+la personnalisation complète du thème, avec persistance et relecture réelles.
+« star » reste à préciser ; aucun correctif arbitraire n’est déduit de ce mot.
+
 0. Demande propriétaire du 13 octobre livrée (contrôle du 15 octobre dans REPRISE) :
    accueil, catalogue épisodes/sagas, cinq GIF, aperçus et téléchargements servis par
    la release `88ac0d23`. La prochaine image commune reste coordonnée avec le dashboard.

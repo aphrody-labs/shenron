@@ -1,5 +1,51 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## Contrôle du 15 octobre 2026 — synchronisation lecteurs, thème et RAG en livraison
+
+Sources poussées : 2993ceb5 aligne les ressources manga des agents sur le lecteur et
+préserve les couvertures numérotées000 ; a831eaa4 conserve la page databook entre
+modes, y compris après mesure des images. Preuves Bun WebView sur pages2/10 à390/1280
+et reprise de la molette ; les31tests API/manga et22tests DOM lecteur sont verts.
+
+3266dc5d expose22couleurs et cinq réglages de thème, sauvegarde relue séparément ;
+PostgreSQL18 isolé qualifié. Contrat config792751f, intégrant le commit upstream
+Jev4dee0c0. a80541b4 remet le neutre, retire les vidéos de fond de l’accueil et les
+transitions de téléportation. Une boucle de variables M3/DBZ était réellement visible
+dans le navigateur ; le générateur réserve désormais Beerus à un choix explicite.
+Prévisualisation Next réelle sur fabrique,390/1280 :22tokens résolus, fond#101010,
+surface#191919, texte#ededed, zéro vidéo et zéro requête média parmi141requêtes ;
+molette et tactile fonctionnent, pas de débordement. Les panneaux dépendant de
+PostgreSQL sont absents de cette preview sans base : leur contenu n’est pas qualifié.
+Le parcours admin navigateur et le déploiement restent à terminer.
+
+RAG : f390898f fiabilise l’évaluateur ;52ce784f retire le contexte agent_home du
+retrieval public ;617e722f branche la recherche et le chat natifs sur le même index
+éditorial quand RAG_BACKEND=aphrody, avec injection au consommateur et profil offline
+conservé.368tests API/server verts,8ignorés explicitement. L’évaluation live initiale
+a20/20erreurs500 : compute8789 absent, aucune fidélité chat prouvée. Le corpus actif
+manga/databooks/wiki et ses vecteurs sont présents ; aucun rebuild aveugle exécuté.
+Restauration compute/E5 via Infra en cours, modèle E5 vérifié ; image attend le verrou
+de fabrique détenu par un travail Cargo actif, sans arrêt ni contournement.
+
+Audit :42URL crawlées ;2582pages HTTP contrôlées. Audit des68988images encore en
+cours ; ne pas convertir ces sondes en preuve de lecture.428notices databook API
+contre417dans la rubrique :11interviews/paroles sont exclues par politique, dont
+six ont des scans. Six ouvrages inclus restent sans scan ; ne pas confondre ces
+ensembles. La campagne officielle native rendue a paniqué chez Aphrody ; collecte
+Bun WebView privée et bornée en repli, sans publication ni indexation implicite.
+
+8a4f871e permet les snapshots SHA atomiques wiki ; trois descriptions encyclopédiques
+sourcées sont prêtes, non appliquées avant activation. ef1ca2b7 initialise les
+sousmodules avant installation distante ;221541b4 charge la configuration canonique
+du lint Bun. Le propriétaire impose bun check, bun lint, bun fmt et bun n2b ;
+tsc et oxlint sont bannis. Portes globales check/lint et dérives OpenAPI/tokens/IA
+vertes à ce stade. Réemploi natif de l’image active88ac qualifié par arbres Git
+identiques, SHA des artefacts et ABI5 stricte ; prochain build Next/Bun sur fabrique,
+image scellée puis activation Infra DBFR, avant toute annonce de livraison.
+
+Rapports privés : var/reports/readers-20261015/, reader-mode-preview/,
+wiki-fill-20261015/ et rag-audit-20261015/.
+
 ## Contrôle du 15 octobre 2026 — livraison accueil et GIF
 
 Release active DBFR `docker-88ac0d23`, qui contient `7bd95e65` ; `/api/health` 200.
