@@ -1,5 +1,30 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## 2026-10-15 — Canon et agent home DBFR
+
+Demande explicite : lire API canon, pages publique/admin, données et mémoire Aphrody
+agent home DBFR puis décider seul. Lecture de AGENTS/SOUL et notes de doctrine sous
+/home/ubuntu/.aphrody/workspaces/dbfr ; priorité confirmée manga, scans japonais et
+déclarations attribuées de Toriyama, aucune extrapolation. API : 4827 références
+visibles (877 manga, 3870 databooks, 80 Aphrody), 47 sujets avant correctif. Doctrine
+générale, libellés de rangs et fiches contradictoires ; pas de réécriture globale.
+e09b8fd3 respecte les suppressions admin et le power scaling désactivé (37 tests,
+154 assertions). b5b9cff4 distingue SSJ4 GT/DAIMA, notice officielle du 22 janvier 2026
+01_3980, sans classement de puissance universel (43 tests, 176 assertions). Source
+poussée, pas encore appliquée à la doctrine PostgreSQL. Sauvegarde optimiste et
+compteurs réellement mesurés en cours. Transcriptions suspectes 11-28, 4-104, 18-13 :
+lecture du scan nécessaire avant correction ; pas de substitution automatique.
+
+Compute/E5 restaurés via Infra, index actif intégralement vectorisé. Retrieval
+172 cas : Recall@5 78,49 % sous seuil 80 %, Recall@10 83,14 %. Doublage/lieux/musique
+attendus mais absents du retrieval sont masqués à la source et dans l’index ; ne pas
+les réactiver sans revue. Ancien chat non borné : 9 timeouts et un refus sur 10 cas,
+évaluateur arrêté seul. 29e37e3d transmet le budget public de 256 tokens au provider
+réel ; nouvelle image nécessaire avant évaluation. Build e09 sur fabrique en cours,
+aucune nouvelle activation annoncée. Rapports privés var/reports/readers-20261015/
+et rag-audit-20261015/. Prochaine étape : livraison puis relecture, lot canon protégé
+et corrections visuelles bornées.
+
 ## Contrôle du 15 octobre 2026 — synchronisation lecteurs, thème et RAG en livraison
 
 Sources poussées : 2993ceb5 aligne les ressources manga des agents sur le lecteur et

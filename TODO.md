@@ -13,14 +13,20 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
 
 - Qualifier au navigateur le thème neutre et l’accueil sans vidéo, puis la sauvegarde
   admin des couleurs et des réglages avec relecture PostgreSQL et rendu public.
-- Terminer la restauration Infra du compute/E5 et brancher la recherche publique
-  sur le backend éditorial explicitement configuré ; rejouer l’évaluation RAG réelle.
+- Rejouer l’évaluation chat après livraison du bornage à 256 tokens. Compute/E5
+  restaurés via Infra ; retrieval réel mesuré, Recall@5 à 78,49 % sous la porte de 80 %.
+  Les fiches masquées exclues de l’index ne sont pas des pertes de synchronisation.
 - Livrer l’image commune depuis la fabrique, activer via Infra, puis rejouer les
   parcours manga/databooks, les changements de mode et le défilement dans Bun WebView.
 - Appliquer après activation les trois corrections wiki préparées avec snapshots
   et comparaison atomique ; vérifier fiches et historique, poursuivre l’audit sourcé.
 - Terminer l’audit des 68 988 images et conserver séparément les preuves HTTP,
   les captures de rendu et les interactions de lecture.
+
+- Livrer le lot canon : compteurs réels, sauvegarde concurrente protégée, distinction
+  SSJ4 GT/DAIMA et relecture publique/admin. Conserver les autres données éditoriales.
+- Relire les trois scans signalés, corriger uniquement les défauts visuellement prouvés,
+  puis déposer par le writer canonique avec sauvegarde, gardes et révisions.
 
 - Reprendre uniquement les lots explicitement ouverts dans `GOAL.md`.
 - Qualifier séparément source, artefact, déploiement et comportement public.

@@ -12,7 +12,11 @@ Demande active du 15 octobre : corriger les bugs et trous de données des pages 
 databooks et wiki, synchroniser l’IA et l’interface avec PostgreSQL, évaluer le RAG,
 et qualifier le crawl/rendu avec Bun WebView sur la fabrique. Le propriétaire ajoute :
 thème neutre, retrait des vidéos d’accueil, défilement stable et dashboard permettant
-la personnalisation complète du thème, avec persistance et relecture réelles.
+la personnalisation complète du thème, avec persistance et relecture réelles. Il demande
+aussi la correction des transcriptions et la complétude du canon : lire API, écrans
+public/admin, données et mémoire Aphrody agent home sur DBFR, puis décider sans
+confirmation intermédiaire. Sources primaires prioritaires, œuvres et continuités
+explicitement attribuées ; aucun classement ou texte japonais inventé.
 « star » reste à préciser ; aucun correctif arbitraire n’est déduit de ce mot.
 
 0. Demande propriétaire du 13 octobre livrée (contrôle du 15 octobre dans REPRISE) :
@@ -38,7 +42,8 @@ la personnalisation complète du thème, avec persistance et relecture réelles.
 - Secrets, bases, corpus, modèles, captures complètes et cookies restent protégés.
 - Une annonce ne prouve pas une lecture ; un HTTP 200 ne prouve pas un rendu ou une lecture.
 - DNSSEC, délégation, TLS, cache et rollback sont des contrôles séparés.
-- Les gates du dépôt restent celles de [AGENTS.md](AGENTS.md).
+- Outils imposés par le propriétaire : `bun check`, `bun lint`, `bun fmt`, `bun n2b`
+  selon le besoin ; `tsc` et `oxlint` bannis, y compris par invocation indirecte.
 
 ## Prochain travail
 
