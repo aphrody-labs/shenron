@@ -749,7 +749,8 @@ async function servePool(options: {
     });
     if (!stopping && !projection) {
       projection = (async () => {
-        const template = process.env.SHENRON_MANGA_CANDIDATE_TEMPLATE;
+        const template =
+          process.env.SHENRON_MANGA_CANDIDATE_TEMPLATE ?? join(job, "candidate-template.json");
         await projectPoolReceipts(job, {
           signal: projectionStop.signal,
           templatePath: template && (await Bun.file(template).exists()) ? template : undefined,
