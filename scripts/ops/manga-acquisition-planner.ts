@@ -11,7 +11,7 @@ import { crawlIngestPolicySchema } from "../../packages/pipeline/src/dragon-ball
 import { acquire, type AcquiredSource } from "./lib/bun-source-http";
 import { mangaDigest } from "./manga-cdn-projection";
 import { wikiUpdateSnapshotHash } from "../../apps/site/src/lib/wiki-update-precondition";
-import { qualifyBundle } from "./manga-publication-worker";
+import { qualifyBundle } from "./manga-publication-validation";
 import type { SourcePipelineConfig } from "./bun-source-pipeline";
 
 type Row = Record<string, unknown>;
