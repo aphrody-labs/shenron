@@ -23,6 +23,9 @@ avec preuves primaires et relecture indépendante ; installer le plugin Aphrody
 et son MCP dans Codex. La demande explicite de synchronisation Git, merge, déploiement complet et
 mise à jour des paquets autorise la livraison site/bot via Infra et la publication
 des douze bibliothèques publiques auditées en version 1.4.6 ; les applications restent privées.
+Demandes ajoutées ensuite : trier `/catalog/archive_movies` et `/catalog/archive_images`
+avec une sélection Dragon Ball réellement qualifiée et des filtres cohérents, puis
+corriger les GitHub Actions et workflows depuis leurs échecs réels.
 « star » reste à préciser ; aucun correctif arbitraire n’est déduit de ce mot.
 
 0. Demande propriétaire du 13 octobre livrée (contrôle du 15 octobre dans REPRISE) :

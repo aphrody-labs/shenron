@@ -11,9 +11,11 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
 
 ## Actions ouvertes
 
-- Terminer la publication des douze bibliothèques 1.4.6, télécharger leurs archives npm
-  et comparer les empreintes et contenus aux artefacts audités. Vérifier séparément
-  la livraison site/bot et le comportement de la release réellement active.
+- Terminer la livraison site/bot et vérifier le comportement de la release réellement active.
+- Trier archive_movies/archive_images par sélection DragonBall qualifiée, avec compteurs,
+  pagination, détails et provenance cohérents ; conserver les éléments incertains hors sélection.
+- Corriger les workflows GitHub depuis les erreurs réelles ; distinguer la correction
+  du dépôt du blocage de compte Actions lié à la facturation.
 
 - Qualifier au navigateur le thème neutre et l’accueil sans vidéo, puis la sauvegarde
   admin des couleurs et des réglages avec relecture PostgreSQL et rendu public.

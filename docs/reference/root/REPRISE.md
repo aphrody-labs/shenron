@@ -459,7 +459,7 @@ Le crawl des 24 sources demeure partiel. La reprise doit conserver le collecteur
 ## 2026-10-15 — Accord complet de livraison et gates de préparation
 
 Le propriétaire autorise explicitement le déploiement complet. Les douze bibliothèques
-publics passent à1.4.6 (e3e6cf4d, config867a52b) ; archives initiales auditées sans
+publiques passent à1.4.6 (e3e6cf4d, config867a52b) ; archives initiales auditées sans
 anomalie, publication réelle engagée et relecture des empreintes en cours. Aucun
 résultat de publication globale ni nouvelle activation du site n’est encore annoncé.
 Le build6f88 a passé les suites paquets/site/DOM et check/lint, puis échoué avant Next
@@ -474,3 +474,28 @@ reset neutre, contrôles navigateur puis écritures éditoriales protégées et 
 
 
 Mise à jour du 2026-10-15 : livraison RAG terminée pour les 349 documents du lot reprojecté. Relecture PostgreSQL indépendante : 349 documents, 349 vecteurs, contenus et identités de provenance vérifiés, avec 349 recherches filtrées réussies. Répartition conservée : 199 communautaires et 150 références ; modèle `Xenova/multilingual-e5-small`, dimension 384. Reçu privé SHA-256 `d21f4ba9609078b3b8e8a7c627f7eba530343c8d7ca5efece12be0d7faed7a42`. Ingestion via Bun.fetch et propriétaire HTTP existant ; embeddings par le service externe existant. Cela ne constitue ni activation du sidecar Bun.VectorIndex, ni publication publique, ni promotion canonique, ni complétude du crawl et des médias.
+
+
+## 2026-10-15 — Publication npm qualifiée et demandes catalogues/Actions
+
+Douze bibliothèques @aphrody/shenron-*1.4.6 réellement publiées : script propriétaire
+terminal0, relecture identité/SHA1,12archives npm téléchargées indépendamment et
+SHA256 identiques, audit0anomalie ; installation isolée des12versions terminal0,
+scripts d’installation désactivés et identités relues. Les applications restent privées.
+Reçus privés var/reports/package-publication-20261015/. Reprise du writer durcie
+1d30672c : reçu upload accepté, vérification d’une version existante, propagation
+bornée15minutes ;5tests/14assertions verts. Cela ne constitue pas une activation du site.
+
+Demande d’autre fabrique : PCWindows sansDocker/Podman, Omar routesDNSindisponibles,
+DBFR manqueRAM/disque pourfullbuild ; GitHubhosted refusé avantdémarrage par
+facturation/plafondActions0$ (run38730977420). Aucun achat ni contournement de verrou.
+Le VPS a finalement libéré le verrou ; Python3.13.16/fontTools/Brotli par roues
+précompilées,2tests/54assertions verts. Build immuable340f317f lancé, checkglobal
+Bun vert et livraison Infra en cours ; aucune nouvelle activation encore annoncée.
+
+Le propriétaire ajoute le tri sélectif DragonBall des catalogues archive_movies et
+archive_images (8166/493éléments bruts avantfiltre), puis la réparation des Actions
+et workflowsGitHub. Lots disjoints délégués : filtre avantcompteurs/pagination/détails,
+provenance et vraisfichiers qualifiés ; workflows depuis erreurs réelles, sans prétendre
+lever le blocage financier par YAML. Ces lots suivants ne déplacent pas le SHA340f
+déjà construit.
