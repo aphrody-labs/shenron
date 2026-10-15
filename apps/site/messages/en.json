@@ -2119,5 +2119,77 @@
       "canon": "Continuity"
     },
     "refreshing": "Refreshing…"
+  },
+  "adminDesign": {
+    "title": "Design and theme",
+    "kicker": "Site customization",
+    "intro": "Adjust every theme color, typography and dimensions. Your draft stays private until you save it.",
+    "chooseColor": "Choose color: {color}",
+    "previewTitle": "Draft preview",
+    "previewKicker": "Dragon Ball France",
+    "previewHeading": "Your theme",
+    "previewIntro": "This preview and the public site use the same variables.",
+    "previewCard": "An interface of your own",
+    "previewBody": "Check surfaces, text and actions before saving.",
+    "primaryAction": "Primary action",
+    "secondaryAction": "Secondary action",
+    "saved": "Theme saved, verified and applied to the site.",
+    "saveFailed": "Saving or verification failed. Your draft has been preserved.",
+    "loadFailed": "Unable to load the saved theme.",
+    "retry": "Try again",
+    "loading": "Loading theme…",
+    "reset": "Neutral draft",
+    "discard": "Discard changes",
+    "saving": "Saving and verifying…",
+    "apply": "Apply to site",
+    "upToDate": "Up to date",
+    "layoutTitle": "Typography and dimensions",
+    "radius": "Corner radius",
+    "fontFamily": "Font family",
+    "fontScale": "Text size",
+    "contentWidth": "Maximum width",
+    "density": "Horizontal spacing",
+    "invalidColors": "A color is invalid. Use a 3, 6 or 8 character HEX value.",
+    "groups": {
+      "surfaces": "Surfaces and text",
+      "accents": "Accents",
+      "states": "States and contrast"
+    },
+    "fonts": {
+      "sans": "Site sans serif",
+      "system": "System font",
+      "serif": "Editorial serif",
+      "mono": "Monospace"
+    },
+    "densities": {
+      "compact": "Compact",
+      "comfortable": "Comfortable",
+      "spacious": "Spacious"
+    },
+    "colors": {
+      "bg": "Background",
+      "card": "Card surface",
+      "border": "Borders",
+      "orange": "Primary accent",
+      "orangeDark": "Pressed accent",
+      "blue": "Secondary surface",
+      "blueLight": "Secondary text",
+      "yellow": "Secondary accent",
+      "red": "Error",
+      "ember": "Ember",
+      "ki": "Energy",
+      "amber": "Amber",
+      "purple": "Purple",
+      "gold": "Gold",
+      "cyan": "Cyan",
+      "green": "Success",
+      "pink": "Pink",
+      "encre": "Ink",
+      "os": "Primary text",
+      "onPrimary": "Text on accent",
+      "onSurfaceVariant": "Muted text",
+      "onError": "Text on error"
+    },
+    "hexHint": "HEX color (3, 6 or 8 characters)"
   }
 }

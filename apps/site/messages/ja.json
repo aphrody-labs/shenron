@@ -2119,5 +2119,77 @@
       "canon": "連続性"
     },
     "refreshing": "更新中…"
+  },
+  "adminDesign": {
+    "title": "デザインとテーマ",
+    "kicker": "サイトのカスタマイズ",
+    "intro": "テーマの全配色、書体、寸法を調整できます。下書きは保存するまで公開されません。",
+    "chooseColor": "色を選択：{color}",
+    "previewTitle": "下書きのプレビュー",
+    "previewKicker": "Dragon Ball France",
+    "previewHeading": "あなたのテーマ",
+    "previewIntro": "プレビューと公開サイトで同じ変数を使用します。",
+    "previewCard": "自分らしいインターフェース",
+    "previewBody": "保存前に背景、文字、操作ボタンを確認してください。",
+    "primaryAction": "主な操作",
+    "secondaryAction": "補助の操作",
+    "saved": "テーマを保存し、再取得して確認し、サイトに適用しました。",
+    "saveFailed": "保存または確認に失敗しました。下書きは保持されています。",
+    "loadFailed": "保存済みテーマを読み込めませんでした。",
+    "retry": "再試行",
+    "loading": "テーマを読み込み中…",
+    "reset": "ニュートラルな下書き",
+    "discard": "変更を取り消す",
+    "saving": "保存・確認中…",
+    "apply": "サイトに適用",
+    "upToDate": "最新の状態",
+    "layoutTitle": "書体と寸法",
+    "radius": "角の丸み",
+    "fontFamily": "フォント",
+    "fontScale": "文字サイズ",
+    "contentWidth": "最大幅",
+    "density": "左右の余白",
+    "invalidColors": "無効な色があります。3、6、8桁のHEX値を入力してください。",
+    "groups": {
+      "surfaces": "背景と文字",
+      "accents": "アクセント",
+      "states": "状態とコントラスト"
+    },
+    "fonts": {
+      "sans": "サイトのゴシック体",
+      "system": "システムフォント",
+      "serif": "明朝体",
+      "mono": "等幅"
+    },
+    "densities": {
+      "compact": "コンパクト",
+      "comfortable": "標準",
+      "spacious": "ゆったり"
+    },
+    "colors": {
+      "bg": "背景",
+      "card": "カードの背景",
+      "border": "境界線",
+      "orange": "主アクセント",
+      "orangeDark": "押下時のアクセント",
+      "blue": "副背景",
+      "blueLight": "副テキスト",
+      "yellow": "副アクセント",
+      "red": "エラー",
+      "ember": "残り火",
+      "ki": "エネルギー",
+      "amber": "琥珀色",
+      "purple": "紫",
+      "gold": "金色",
+      "cyan": "シアン",
+      "green": "成功",
+      "pink": "ピンク",
+      "encre": "インク",
+      "os": "主テキスト",
+      "onPrimary": "アクセント上の文字",
+      "onSurfaceVariant": "控えめな文字",
+      "onError": "エラー上の文字"
+    },
+    "hexHint": "HEX色（3、6、8桁）"
   }
 }

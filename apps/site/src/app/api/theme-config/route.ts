@@ -20,7 +20,13 @@ const badRequest = (msg: string) => NextResponse.json({ error: msg }, { status: 
 
 export async function GET(req: NextRequest) {
   if (!(await isAdminOrToken(req))) return forbidden();
-  return NextResponse.json({ theme: await getSiteTheme() });
+  try {
+    return NextResponse.json({ theme: await getSiteTheme({ strict: true }) });
+  } catch (err) {
+    if (err instanceof HostThemeError)
+      return NextResponse.json({ error: err.message }, { status: err.status });
+    return NextResponse.json({ error: "theme_unavailable" }, { status: 502 });
+  }
 }
 
 export async function PUT(req: NextRequest) {
