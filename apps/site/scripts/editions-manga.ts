@@ -25,7 +25,7 @@ import {
   type CodeEdition,
   EDITION_PAR_SERIE,
   EDITIONS_PUBLIEES,
-  codeEdition,
+  editionCompleteDe,
   editionPubliee,
   libelleEdition,
   libelleSerie,
@@ -75,7 +75,7 @@ try {
   for (const l of lignes) {
     const edition = EDITION_PAR_SERIE[l.series];
     if (!edition) continue;
-    const cle = `${serieOeuvre(l.series)}|${codeEdition(edition.langue, edition.colorisation)}`;
+    const cle = `${serieOeuvre(l.series)}|${editionCompleteDe({ series: l.series })}`;
     const cumul = possede.get(cle) ?? { chapitres: 0, planches: 0, series: [] };
     cumul.chapitres += Number(l.chapitres);
     cumul.planches += Number(l.planches ?? 0);
