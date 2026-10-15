@@ -398,25 +398,21 @@ async function Resultat({ question }: { question: string }) {
             />
           </div>
         )}
-        <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <h2
-            id="canon-verdict-rang"
-            tabIndex={-1}
-            className="scroll-mt-36 font-display text-sm font-bold uppercase tracking-[0.14em]"
-            style={{ color: couleur }}
-          >
-            {verdict.tierLabel}
-          </h2>
-          {note && (
-            <p className="font-scouter text-sm tabular-nums text-white/75 font-semibold">
-              {verdict.score} / 100
-            </p>
-          )}
-        </div>
+        <h2
+          id="canon-verdict-rang"
+          tabIndex={-1}
+          className="scroll-mt-36 text-2xl font-semibold tracking-tight text-white"
+        >
+          {illustration ? <T k={`canonExplorer.${illustration.label}`} /> : question}
+        </h2>
+        {illustration && (
+          <p className="mt-1 text-xs text-white/60">
+            <T k={`canonExplorer.work${illustration.work}`} />
+          </p>
+        )}
         <p className="mt-3 text-xl sm:text-2xl leading-snug text-white font-semibold">
           {verdict.verdict}
         </p>
-        <p className="mt-4 text-sm leading-relaxed text-white/75">{verdict.explanation}</p>
         <CanonSourcesTrigger />
         {question.toLowerCase().includes("daima") && (
           <Link
@@ -431,6 +427,11 @@ async function Resultat({ question }: { question: string }) {
           <summary className="cursor-pointer text-xs text-white/65">
             <T k="canonExplorer.details" />
           </summary>
+          <p className="mt-4 text-xs font-medium" style={{ color: couleur }}>
+            {verdict.tierLabel}
+            {note ? ` · ${verdict.score} / 100` : ""}
+          </p>
+          <p className="mt-3 text-sm leading-relaxed text-white/75">{verdict.explanation}</p>
 
           {/* Ruled topics next to the question */}
           {suggestions.length > 0 && (
