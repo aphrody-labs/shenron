@@ -22,6 +22,76 @@ afterEach(async () => {
 });
 
 describe("official crawl migration", () => {
+  it.each([
+    new Error("observation timed out"),
+    Object.assign(new Error("server error"), { status: 503 }),
+  ])("preserves an existing job when status observation fails: %s", async (failure) => {
+    stateDir = await mkdtemp(join(tmpdir(), "shenron-official-crawl-"));
+    const planned = await runOfficialCrawl("dry-run", { capture, stateDir });
+    const state = {
+      schema: "shenron-official-aphrody-crawl/v1",
+      campaignId: planned.campaignId,
+      discovered: planned.discovered,
+      completedBatches: [],
+      jobs: [{ batch: 0, id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", status: "running" }],
+      updatedAt: new Date().toISOString(),
+    };
+    await Bun.write(planned.stateFile!, JSON.stringify(state));
+    let submitted = 0;
+    await expect(
+      runOfficialCrawl("apply", {
+        capture,
+        stateDir,
+        client: {
+          crawl: async () => {
+            submitted++;
+            throw new Error("duplicate job");
+          },
+          status: async () => {
+            throw failure;
+          },
+        },
+      }),
+    ).rejects.toThrow(failure.message);
+    expect(submitted).toBe(0);
+    const persisted = await Bun.file(planned.stateFile!).json();
+    expect(persisted.jobs).toEqual(state.jobs);
+    expect(persisted.completedBatches).toEqual([]);
+  });
+
+  it("replaces an existing job only after the owner reports it missing", async () => {
+    stateDir = await mkdtemp(join(tmpdir(), "shenron-official-crawl-"));
+    const planned = await runOfficialCrawl("dry-run", { capture, stateDir });
+    await Bun.write(
+      planned.stateFile!,
+      JSON.stringify({
+        schema: "shenron-official-aphrody-crawl/v1",
+        campaignId: planned.campaignId,
+        discovered: planned.discovered,
+        completedBatches: [],
+        jobs: [{ batch: 0, id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", status: "running" }],
+        updatedAt: new Date().toISOString(),
+      }),
+    );
+    let submitted = 0;
+    const result = await runOfficialCrawl("apply", {
+      capture,
+      stateDir,
+      client: {
+        status: async () => {
+          throw Object.assign(new Error("job missing"), { status: 404 });
+        },
+        crawl: async () => {
+          submitted++;
+          return { id: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", status: "completed", stats: {} };
+        },
+      },
+    });
+    expect(result.completedBatches).toBe(1);
+    expect(submitted).toBe(1);
+    expect((await Bun.file(planned.stateFile!).json()).jobs[0].status).toBe("lost");
+  });
+
   it("discovers only official page URLs through Aphrody sitemap capture", async () => {
     expect(await discoverOfficialPages(capture)).toEqual([
       "https://dragon-ball-official.com/news/1/",

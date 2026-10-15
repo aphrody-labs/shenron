@@ -556,7 +556,7 @@ export async function chercherPlanches(
     const match = /^(vol|ch)(\d+)$/.exec(r.tome);
     if (!match) continue;
     const number = Number(match[2]);
-    if (!Number.isSafeInteger(number)) continue;
+    if (!Number.isSafeInteger(number) || number <= 0) continue;
     const reference = {
       id: match[1] === "ch" ? number : 0,
       series: r.series,

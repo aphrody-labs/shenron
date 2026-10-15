@@ -1,0 +1,34 @@
+{
+  "$comment": "SOSH primary publisher discovery. Seeds are publisher URLs independently located on 2026-10-15; a seed is not acquisition or reading evidence. Keep captures private and preserve robots refusals. ISBN endpoints 1/18 originate from publisher citations, Legend2 was independently opened. Do not infer missing volumes from sequential ISBNs.",
+  "version": 1,
+  "respectRobots": true,
+  "userAgent": "ShenronSourceBot/1.0 (+https://dragonballfr.com; bounded publisher bibliography discovery)",
+  "defaults": {
+    "perHostDelayMs": 2000,
+    "maxInFlightPerHost": 1,
+    "maxConcurrency": 1,
+    "maxDepth": 2,
+    "maxPages": 64
+  },
+  "targets": [
+    {
+      "id": "shueisha-soshuhen",
+      "enabled": true,
+      "seeds": [
+        "https://books.shueisha.co.jp/items/contents.html?isbn=978-4-08-111165-7",
+        "https://books.shueisha.co.jp/items/contents.html?isbn=978-4-08-111166-4",
+        "https://books.shueisha.co.jp/items/contents.html?isbn=978-4-08-111182-4"
+      ],
+      "allowedDomains": ["books.shueisha.co.jp", "www.shueisha.co.jp"],
+      "includePatterns": [
+        "^https://(?:books\\.shueisha\\.co\\.jp/(?:items/contents(?:_amp)?\\.html|CGI/search/syousai_put\\.cgi)|www\\.shueisha\\.co\\.jp/books/items/contents\\.html)\\?(?:isbn|isbn_cd)=978-4-08-111(?:16[5-9]|17[0-9]|18[0-2])-[0-9](?:&mode=1)?$"
+      ],
+      "excludePatterns": [],
+      "sourceRefs": ["https://books.shueisha.co.jp/items/contents.html?isbn=978-4-08-111166-4"],
+      "lang": "ja",
+      "kind": "publisher",
+      "goal": "Discover and privately capture official SOSH bibliography; no claim of scan or 18-volume completeness",
+      "policy": "Private capture and agent-home indexing only; editorial publication and reader assets require their existing reviewed writers"
+    }
+  ]
+}

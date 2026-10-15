@@ -300,7 +300,10 @@ export class AphrodyWebClient {
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
       signal: AbortSignal.timeout(30_000),
     });
-    if (!response.ok) throw new Error(`Aphrody Web HTTP ${response.status} on ${url.pathname}`);
+    if (!response.ok)
+      throw Object.assign(new Error(`Aphrody Web HTTP ${response.status} on ${url.pathname}`), {
+        status: response.status,
+      });
     return (await response.json()) as { success?: unknown; job?: unknown };
   }
 

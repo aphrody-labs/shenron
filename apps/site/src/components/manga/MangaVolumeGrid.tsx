@@ -14,6 +14,7 @@ import { useMangaUIText } from "@/lib/manga-ui-text";
 import { VignetteTome } from "@/components/manga/VignetteTome";
 import { Etoile } from "@aphrody/shenron-ui/toriyama/MotifsCouverture";
 import {
+  canonicalMangaCollection,
   mangaLibraryPage,
   matchesLibrarySearch,
   uniqueLibraryVolumes,
@@ -148,7 +149,7 @@ export function MangaVolumeGrid({
     () => initialSearch,
   );
   const params = new URLSearchParams(search);
-  const collection = params.get("collection") ?? "all";
+  const collection = canonicalMangaCollection(params.get("collection") ?? "all");
   const view = params.get("view") === "chapters" ? "chapters" : "volumes";
   const query = params.get("q") ?? "";
   const availability = readAvailability(search);
@@ -202,8 +203,8 @@ export function MangaVolumeGrid({
   );
   const collections = [
     ...new Set([
-      ...volumes.map((volume) => volume.series),
-      ...readableChapters.map((chapter) => chapter.series),
+      ...volumes.map((volume) => canonicalMangaCollection(volume.series)),
+      ...readableChapters.map((chapter) => canonicalMangaCollection(chapter.series)),
     ]),
   ];
   const colorIds = new Set(colorVolumeIds);
@@ -231,14 +232,19 @@ export function MangaVolumeGrid({
       .map((series) => ({
         id: series,
         label: collectionLabel(series),
-        count: volumes.filter((volume) => volume.series === series).length,
+        count: volumes.filter((volume) => canonicalMangaCollection(volume.series) === series)
+          .length,
       })),
     { id: COLOR_COLLECTION, label: ui("colorCollection"), count: colorVolumes.length },
   ];
   const filteredVolumes = volumes.filter((volume) => {
     if (selected === COLOR_COLLECTION && !colorVolumes.some((entry) => entry.id === volume.id))
       return false;
-    if (selected !== "all" && selected !== COLOR_COLLECTION && volume.series !== selected)
+    if (
+      selected !== "all" &&
+      selected !== COLOR_COLLECTION &&
+      canonicalMangaCollection(volume.series) !== selected
+    )
       return false;
     if (availability === "available" && !isReadable(volume)) return false;
     if (availability === "incomplete" && isReadable(volume)) return false;
@@ -247,7 +253,11 @@ export function MangaVolumeGrid({
   const filteredChapters = readableChapters.filter((chapter) => {
     if (availability === "incomplete") return false;
     if (selected === COLOR_COLLECTION && chapter.series !== "DBFC") return false;
-    if (selected !== "all" && selected !== COLOR_COLLECTION && chapter.series !== selected)
+    if (
+      selected !== "all" &&
+      selected !== COLOR_COLLECTION &&
+      canonicalMangaCollection(chapter.series) !== selected
+    )
       return false;
     return matchesLibrarySearch(chapter.title, chapter.chapter_number, query);
   });

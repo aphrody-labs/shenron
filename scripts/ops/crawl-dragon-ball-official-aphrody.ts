@@ -157,8 +157,10 @@ export async function runOfficialCrawl(
     if (record) {
       try {
         job = await client.status(record.id);
-      } catch {
-        // The API keeps job status in memory; a server restart loses that ID.
+      } catch (error) {
+        // Only an authoritative missing-job response permits replacement.
+        // Timeouts, transport errors and server failures preserve the live handle.
+        if (!(error instanceof Error) || !("status" in error) || error.status !== 404) throw error;
         record.status = "lost";
         await save();
       }
