@@ -230,6 +230,9 @@ test("reconciliation covers every series, distinguishes missing volumes and pres
       volumes: 3,
       readableVolumes: 1,
       missingVolumeIds: [3, 701],
+      previewVolumeIds: [],
+      missingOrPartialVolumeIds: [3, 701],
+      coverageStatus: "unavailable",
       listedPages: 581,
     });
     const rows = db
@@ -440,4 +443,211 @@ test("archive and owned inventory recursion follow real returned identities and 
       "https://dragonballfr.com/api/catalog?category=assets&path=%2Fwiki%2Fdatabooks%2F",
     ),
   ).toEqual(["https://dragonballfr.com/assets/wiki/databooks/soshuhen-legend-02/001.jpg"]);
+});
+
+function coverageFixture(
+  volumes: Array<{
+    id: number;
+    series: string;
+    listedPages: number;
+    readerExtent: "preview" | "full" | "unknown";
+  }>,
+) {
+  const rows = volumes.map((row) => ({
+    ...row,
+    number: 1,
+    chapters: row.listedPages ? 1 : 0,
+    hasListedPages: row.listedPages > 0,
+  }));
+  return {
+    scope: "visible-catalogue-and-declared-page-references",
+    complete: false,
+    assetAvailabilityVerified: false,
+    fullEditionPaginationVerified: false,
+    totals: {
+      volumes: rows.length,
+      volumesWithListedPages: rows.filter((row) => row.hasListedPages).length,
+      listedPages: rows.reduce((sum, row) => sum + row.listedPages, 0),
+    },
+    volumes: rows,
+    previewVolumeIds: rows.filter((row) => row.readerExtent === "preview").map((row) => row.id),
+    missingReaderVolumeIds: rows.filter((row) => !row.hasListedPages).map((row) => row.id),
+    missingOrPartialReaderVolumeIds: rows
+      .filter((row) => !row.hasListedPages || row.readerExtent === "preview")
+      .map((row) => row.id),
+  };
+}
+
+test("coverage keeps previews in acquisition across CDN lag, restart and transient failure without mutating either HTTP receipt", async () => {
+  const root = await mkdtemp(join(tmpdir(), "manga-partial-"));
+  const catalogue = {
+    catalog: [
+      { ...volume(620, "DB_GAIDEN_YAMCHA", false), number: 1, isbn: "9784088812618" },
+      { ...volume(147, "DBS", true), number: 1, isbn: "9784088844930" },
+      { ...volume(2, "DB", true), number: 1, isbn: "9784088518312" },
+      { ...volume(3, "SOSH", false), number: 1 },
+    ],
+    series: [{ pages: 200 }],
+  };
+  const coverage = coverageFixture([
+    { id: 620, series: "DB_GAIDEN_YAMCHA", listedPages: 32, readerExtent: "preview" },
+    { id: 147, series: "DBS", listedPages: 32, readerExtent: "preview" },
+    { id: 2, series: "DB", listedPages: 200, readerExtent: "unknown" },
+    { id: 3, series: "SOSH", listedPages: 0, readerExtent: "unknown" },
+  ]);
+  const rawCatalog = JSON.stringify(catalogue),
+    rawCoverage = JSON.stringify(coverage);
+  let unavailable = false,
+    requests = 0;
+  const server = Bun.serve({
+    hostname: "127.0.0.1",
+    port: 0,
+    fetch(req) {
+      requests++;
+      return new Response(
+        new URL(req.url).pathname.endsWith("/coverage")
+          ? unavailable
+            ? "{}"
+            : rawCoverage
+          : rawCatalog,
+        {
+          status: unavailable && new URL(req.url).pathname.endsWith("/coverage") ? 503 : 200,
+          headers: { "content-type": "application/json" },
+        },
+      );
+    },
+  });
+  const fetcher = ((input: Parameters<typeof fetch>[0], init?: RequestInit) =>
+    fetch(new URL(new URL(String(input)).pathname, server.url), init)) as typeof fetch;
+  let db = new Database(join(root, "frontier.sqlite")),
+    frontier = new MangaSourceFrontier(db);
+  try {
+    const receipt = await executeTask(
+      { ...task(), id: "a".repeat(64), host: "dragonballfr.com", attempts: 1 },
+      root,
+      0,
+      fetcher,
+    );
+    if (!("coverage" in receipt) || receipt.coverage?.state !== "done")
+      throw Error("Missing distinct coverage evidence");
+    expect(receipt.body).toBe(rawCatalog);
+    expect(receipt.json).toEqual(catalogue);
+    expect(receipt.sha256).toBe(new Bun.CryptoHasher("sha256").update(rawCatalog).digest("hex"));
+    expect(receipt.coverage.body).toBe(rawCoverage);
+    expect(receipt.coverage.sha256).toBe(
+      new Bun.CryptoHasher("sha256").update(rawCoverage).digest("hex"),
+    );
+    expect(requests).toBe(2);
+    const result = reconcileMangaCatalog(receipt.json, frontier, 10, receipt.coverage.json);
+    expect(result).toMatchObject({
+      missingVolumeIds: [3],
+      previewVolumeIds: [147, 620],
+      missingOrPartialVolumeIds: [3, 147, 620],
+      readableVolumes: 3,
+      coverageStatus: "available",
+    });
+    expect(
+      db
+        .query<{ volumeId: number }, []>(
+          "SELECT volumeId FROM pool_tasks WHERE kind='discovery' AND volumeId IN (147,620) ORDER BY volumeId",
+        )
+        .all()
+        .map((row) => row.volumeId),
+    ).toEqual([147, 620]);
+    expect(
+      db.query("SELECT id FROM pool_tasks WHERE kind='discovery' AND volumeId=2").get(),
+    ).toBeNull();
+    db.close();
+    db = new Database(join(root, "frontier.sqlite"));
+    frontier = new MangaSourceFrontier(db);
+    unavailable = true;
+    const retry = await executeTask(
+      { ...task(), id: "a".repeat(64), host: "dragonballfr.com", attempts: 2 },
+      root,
+      0,
+      fetcher,
+    );
+    if (!("coverage" in retry)) throw Error("Missing coverage failure receipt");
+    expect(retry.coverage).toMatchObject({ state: "unavailable", httpStatus: 503 });
+    expect(reconcileMangaCatalog(retry.json, frontier, 20)).toMatchObject({
+      missingVolumeIds: [3],
+      previewVolumeIds: [147, 620],
+      missingOrPartialVolumeIds: [3, 147, 620],
+      coverageStatus: "unavailable",
+    });
+    const unknown = structuredClone(coverage);
+    unknown.volumes.find((row) => row.id === 147)!.readerExtent = "unknown";
+    unknown.previewVolumeIds = [620];
+    unknown.missingOrPartialReaderVolumeIds = [3, 620];
+    expect(reconcileMangaCatalog(catalogue, frontier, 30, unknown).previewVolumeIds).toEqual([
+      147, 620,
+    ]);
+    const full = structuredClone(unknown);
+    full.volumes.find((row) => row.id === 147)!.readerExtent = "full";
+    expect(reconcileMangaCatalog(catalogue, frontier, 40, full).previewVolumeIds).toEqual([620]);
+  } finally {
+    db.close();
+    server.stop(true);
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("malformed coverage cannot erase durable previews or mutate the catalogue frontier", () => {
+  const db = new Database(":memory:"),
+    frontier = new MangaSourceFrontier(db);
+  const catalogue = { catalog: [{ ...volume(702, "SOSH", true), number: 1 }], series: [] };
+  const coverage = coverageFixture([
+    { id: 702, series: "SOSH", listedPages: 1, readerExtent: "preview" },
+  ]);
+  try {
+    reconcileMangaCatalog(catalogue, frontier, 1, coverage);
+    const before = JSON.stringify(frontier.meta("catalog")),
+      count = db.query<{ n: number }, []>("SELECT count(*) n FROM pool_tasks").get()!.n;
+    for (const mutate of [
+      (p: typeof coverage) => {
+        p.volumes[0]!.series = "DBS";
+      },
+      (p: typeof coverage) => {
+        p.volumes[0]!.number = 2;
+      },
+      (p: typeof coverage) => {
+        p.volumes[0]!.hasListedPages = false;
+      },
+      (p: typeof coverage) => {
+        p.previewVolumeIds = [999];
+      },
+      (p: typeof coverage) => {
+        p.previewVolumeIds = [];
+      },
+      (p: typeof coverage) => {
+        p.missingOrPartialReaderVolumeIds = [];
+      },
+      (p: typeof coverage) => {
+        p.totals.volumes = 2;
+      },
+      (p: typeof coverage) => {
+        p.totals.listedPages = 999;
+      },
+      (p: typeof coverage) => {
+        p.totals.volumesWithListedPages = 0;
+      },
+      (p: typeof coverage) => {
+        p.volumes[0]!.chapters = 0;
+      },
+      (p: typeof coverage) => {
+        p.volumes.push({ ...p.volumes[0]! });
+      },
+    ]) {
+      const invalid = structuredClone(coverage);
+      mutate(invalid);
+      expect(() => reconcileMangaCatalog(catalogue, frontier, 2, invalid)).toThrow(
+        "Manga coverage",
+      );
+      expect(JSON.stringify(frontier.meta("catalog"))).toBe(before);
+      expect(db.query<{ n: number }, []>("SELECT count(*) n FROM pool_tasks").get()!.n).toBe(count);
+    }
+    expect(reconcileMangaCatalog(catalogue, frontier, 3).previewVolumeIds).toEqual([702]);
+  } finally {
+    db.close();
+  }
 });

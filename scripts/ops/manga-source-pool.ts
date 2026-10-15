@@ -457,32 +457,136 @@ export function reconcileMangaCatalog(
   value: unknown,
   frontier: MangaSourceFrontier,
   now = Date.now(),
+  coverage?: unknown,
 ) {
-  const body = value as { catalog?: unknown[]; series?: unknown[] };
+  type Volume = {
+    id: number;
+    series: string;
+    readableHere: boolean;
+    number?: number | null;
+    isbn?: string;
+  };
+  const body = value as { catalog?: Volume[]; series?: unknown[] };
   if (!Array.isArray(body?.catalog) || body.catalog.length < 1 || body.catalog.length > 5000)
     throw Error("Public manga catalogue is incomplete or malformed");
-  const missing: number[] = [];
-  let readable = 0;
-  for (const url of discoverMangaSources(value, mangaBibliography).seeds)
-    frontier.enqueue({ kind: "bibliography", url, depth: 0, series: null, volumeId: null }, now);
-  for (const item of body.catalog) {
-    const row = item as {
-      id: number;
-      series: string;
-      readableHere: boolean;
-      isbn?: string;
-      titleJa?: string;
-      title?: string;
-    };
+  const ids = new Map<number, Volume>();
+  for (const row of body.catalog) {
     if (
       !Number.isSafeInteger(row.id) ||
       row.id < 1 ||
       typeof row.series !== "string" ||
-      typeof row.readableHere !== "boolean"
+      !row.series ||
+      typeof row.readableHere !== "boolean" ||
+      ids.has(row.id)
     )
       throw Error("Manga volume identity is malformed");
-    if (row.readableHere) readable++;
-    else missing.push(row.id);
+    ids.set(row.id, row);
+  }
+  const known = (frontier.meta("previewReaderIdentities") ?? []) as Array<{
+    id: number;
+    series: string;
+  }>;
+  const previewIdentities = new Map(
+    known
+      .filter((row) => ids.get(row.id)?.series === row.series)
+      .map((row) => [row.id, row.series]),
+  );
+  let coveredMissing: number[] | undefined;
+  if (coverage !== undefined) {
+    const proof = coverage as {
+      scope?: string;
+      complete?: boolean;
+      assetAvailabilityVerified?: boolean;
+      fullEditionPaginationVerified?: boolean;
+      totals?: { volumes?: number; volumesWithListedPages?: number; listedPages?: number };
+      volumes?: Array<{
+        id: number;
+        series: string;
+        number?: number | null;
+        listedPages: number;
+        chapters: number;
+        hasListedPages: boolean;
+        readerExtent: string;
+      }>;
+      previewVolumeIds?: number[];
+      missingReaderVolumeIds?: number[];
+      missingOrPartialReaderVolumeIds?: number[];
+    };
+    if (
+      proof?.scope !== "visible-catalogue-and-declared-page-references" ||
+      proof.complete !== false ||
+      proof.assetAvailabilityVerified !== false ||
+      proof.fullEditionPaginationVerified !== false ||
+      proof.totals?.volumes !== ids.size ||
+      !Array.isArray(proof.volumes) ||
+      proof.volumes.length !== ids.size
+    )
+      throw Error("Manga coverage shape or catalogue identity differs");
+    const seen = new Set<number>(),
+      previews: number[] = [],
+      missing: number[] = [];
+    for (const row of proof.volumes) {
+      const volume = ids.get(row.id);
+      if (
+        !volume ||
+        seen.has(row.id) ||
+        row.series !== volume.series ||
+        (volume.number !== undefined && row.number !== volume.number) ||
+        !Number.isSafeInteger(row.listedPages) ||
+        row.listedPages < 0 ||
+        !Number.isSafeInteger(row.chapters) ||
+        row.chapters < 0 ||
+        row.hasListedPages !== row.listedPages > 0 ||
+        (row.hasListedPages && row.chapters < 1) ||
+        (row.readerExtent !== "unknown" && !row.hasListedPages) ||
+        !["preview", "full", "unknown"].includes(row.readerExtent) ||
+        (row.readerExtent === "preview" && (!row.hasListedPages || row.chapters < 1))
+      )
+        throw Error("Manga coverage volume identity or readability differs");
+      seen.add(row.id);
+      if (!row.hasListedPages) missing.push(row.id);
+      if (row.readerExtent === "preview") {
+        previews.push(row.id);
+        previewIdentities.set(row.id, row.series);
+      }
+      // Unknown legacy metadata never establishes that a previously partial edition is full.
+      if (row.readerExtent === "full" || !row.hasListedPages) previewIdentities.delete(row.id);
+    }
+    const sameIds = (actual: unknown, expected: number[]) =>
+      Array.isArray(actual) &&
+      actual.length === expected.length &&
+      new Set(actual).size === actual.length &&
+      actual.every((id) => Number.isSafeInteger(id) && ids.has(id)) &&
+      actual
+        .toSorted((a, b) => a - b)
+        .every((id, i) => id === expected.toSorted((a, b) => a - b)[i]);
+    if (
+      !sameIds(proof.previewVolumeIds, previews) ||
+      !sameIds(proof.missingReaderVolumeIds, missing) ||
+      !sameIds(proof.missingOrPartialReaderVolumeIds, [...missing, ...previews])
+    )
+      throw Error("Manga coverage summary differs from its rows");
+    if (
+      proof.totals.volumesWithListedPages !==
+        proof.volumes.filter((row) => row.hasListedPages).length ||
+      proof.totals.listedPages !== proof.volumes.reduce((sum, row) => sum + row.listedPages, 0)
+    )
+      throw Error("Manga coverage totals differ from its rows");
+    coveredMissing = missing;
+  }
+  const missing = (
+    coveredMissing ??
+    body.catalog
+      .filter((row) => !row.readableHere && !previewIdentities.has(row.id))
+      .map((row) => row.id)
+  ).toSorted((a, b) => a - b);
+  const previews = [...previewIdentities.keys()].toSorted((a, b) => a - b);
+  const missingOrPartial = [...new Set([...missing, ...previews])].toSorted((a, b) => a - b);
+  const acquisitionIds = new Set(missingOrPartial);
+  // Validate both source documents before mutating the durable frontier.
+  for (const url of discoverMangaSources(value, mangaBibliography).seeds)
+    frontier.enqueue({ kind: "bibliography", url, depth: 0, series: null, volumeId: null }, now);
+  for (const row of body.catalog) {
     frontier.enqueue(
       {
         kind: "volume",
@@ -493,7 +597,11 @@ export function reconcileMangaCatalog(
       },
       now,
     );
-    if (!row.readableHere && row.isbn && /^\d{10,13}$/.test(row.isbn.replaceAll("-", ""))) {
+    if (
+      acquisitionIds.has(row.id) &&
+      row.isbn &&
+      /^\d{10,13}$/.test(row.isbn.replaceAll("-", ""))
+    ) {
       frontier.enqueue(
         {
           kind: "bibliography",
@@ -524,11 +632,18 @@ export function reconcileMangaCatalog(
       )
     : 0;
   const catalog = {
-    volumes: body.catalog.length,
-    readableVolumes: readable,
-    missingVolumeIds: missing.toSorted((a, b) => a - b),
+    volumes: ids.size,
+    readableVolumes: ids.size - missing.length,
+    missingVolumeIds: missing,
+    previewVolumeIds: previews,
+    missingOrPartialVolumeIds: missingOrPartial,
+    coverageStatus: coverage === undefined ? "unavailable" : "available",
     listedPages,
   };
+  frontier.meta(
+    "previewReaderIdentities",
+    [...previewIdentities].map(([id, series]) => ({ id, series })),
+  );
   frontier.meta("catalog", catalog);
   frontier.meta("lastCatalogAt", new Date(now).toISOString());
   return catalog;
@@ -796,6 +911,48 @@ export async function executeTask(
         });
     }
   }
+  let coverage:
+    | {
+        state: string;
+        url: string;
+        httpStatus?: number;
+        body?: string;
+        json?: unknown;
+        bytes?: number;
+        sha256?: string;
+      }
+    | undefined;
+  if (task.kind === "catalog" && url.href === "https://dragonballfr.com/api/manga") {
+    const coverageUrl = "https://dragonballfr.com/api/manga/coverage";
+    try {
+      const coverageResponse = await fetcher(coverageUrl, {
+        redirect: "error",
+        credentials: "omit",
+        cache: "no-store",
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!coverageResponse.ok) {
+        await coverageResponse.body?.cancel();
+        coverage = { state: "unavailable", url: coverageUrl, httpStatus: coverageResponse.status };
+      } else {
+        if (!coverageResponse.headers.get("content-type")?.includes("application/json"))
+          throw Error("Coverage is not JSON");
+        const raw = await readBounded(coverageResponse, 2 * 1024 * 1024, true);
+        const text = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(raw.bytes);
+        coverage = {
+          state: "done",
+          url: coverageUrl,
+          httpStatus: coverageResponse.status,
+          body: text,
+          json: JSON.parse(text.replace(/^\uFEFF/, "")),
+          bytes: raw.size,
+          sha256: raw.sha256,
+        };
+      }
+    } catch {
+      coverage = { state: "unavailable", url: coverageUrl };
+    }
+  }
   return {
     state: "done",
     taskId: task.id,
@@ -807,6 +964,7 @@ export async function executeTask(
     sha256: capture.sha256,
     robots,
     body,
+    coverage,
     textCaptureError,
     textEncoding: task.kind !== "asset" ? declaredCharset : undefined,
     json,
@@ -947,6 +1105,9 @@ async function servePool(options: {
       volumes: 0,
       readableVolumes: 0,
       missingVolumeIds: [],
+      previewVolumeIds: [],
+      missingOrPartialVolumeIds: [],
+      coverageStatus: "unavailable",
       listedPages: 0,
     }) as Record<string, unknown>;
     const publicProgress = {
@@ -1035,7 +1196,12 @@ async function servePool(options: {
           ? result.state
           : "retry";
         if (state === "done" && task.kind === "catalog")
-          reconcileMangaCatalog(result.json, frontier);
+          reconcileMangaCatalog(
+            result.json,
+            frontier,
+            Date.now(),
+            result.coverage?.state === "done" ? result.coverage.json : undefined,
+          );
         frontier.settle(task, state, receipt, result.error ?? null);
         if (state === "done") {
           frontier.meta("lastSuccessfulTaskAt", new Date().toISOString());
