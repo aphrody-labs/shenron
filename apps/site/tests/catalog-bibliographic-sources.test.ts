@@ -4,7 +4,7 @@ import manifest from "../../bot/data/manga-bibliography-manifest.json";
 import { mangaVolumeBibliographicSource } from "../src/lib/manga-source-registry";
 
 test("every imported publication resolves to its verified primary publisher", () => {
-  expect(manifest.records).toHaveLength(82);
+  expect(manifest.records).toHaveLength(84);
   for (const record of manifest.records) {
     expect(
       mangaVolumeBibliographicSource({
@@ -14,7 +14,7 @@ test("every imported publication resolves to its verified primary publisher", ()
       }),
     ).toEqual({ url: record.sourceUrl, label: record.publisher, language: record.language });
     expect(new URL(record.sourceUrl).hostname).toMatch(
-      /^(www\.)?(shueisha\.co\.jp|glenat\.com|hanmoto\.com)$/,
+      /^(?:(?:www\.)?(?:shueisha\.co\.jp|glenat\.com|hanmoto\.com)|books\.shueisha\.co\.jp|www\.dreamnews\.jp)$/,
     );
   }
 });

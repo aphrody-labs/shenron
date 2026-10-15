@@ -985,6 +985,30 @@
       "publisher": "Shueisha",
       "publishedAt": "2013-04-04",
       "sourceUrl": "https://www.shueisha.co.jp/books/items/contents_amp.html?jdcn=08873825873825325501"
+    },
+    {
+      "legacyVolumeId": 701,
+      "work": "dragon_ball",
+      "edition": "soshuhen",
+      "title": "DRAGON BALL 総集編 超悟空伝 Legend 1",
+      "isbn": "9784081111657",
+      "jdcn": null,
+      "language": "ja",
+      "publisher": "集英社",
+      "publishedAt": "2016-05-13",
+      "sourceUrl": "https://www.dreamnews.jp/press/0000131506"
+    },
+    {
+      "legacyVolumeId": 702,
+      "work": "dragon_ball",
+      "edition": "soshuhen",
+      "title": "DRAGON BALL総集編 超悟空伝 Legend2",
+      "isbn": "9784081111664",
+      "jdcn": null,
+      "language": "ja",
+      "publisher": "集英社",
+      "publishedAt": "2016-05-13",
+      "sourceUrl": "https://books.shueisha.co.jp/items/contents.html?isbn=978-4-08-111166-4"
     }
   ]
 }
