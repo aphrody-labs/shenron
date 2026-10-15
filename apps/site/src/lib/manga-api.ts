@@ -32,6 +32,7 @@ import { mangaData } from "@/lib/manga-data";
 import { mangaReaderAssetUrl } from "@/lib/manga-reader-assets";
 import { SERIE_COULEUR } from "@/lib/manga-editions";
 import { mangaVolumeEdition } from "@/lib/manga-volume-edition";
+import { mangaReaderExtent, type MangaReaderExtent } from "@/lib/manga-reader-extent";
 import { resolveMangaPage } from "@/lib/manga-assets";
 import { estCjk, extraitAutour, normaliser, scorer } from "@/lib/manga-search-rules";
 import { sansAccents } from "@/lib/pg-unaccent";
@@ -72,6 +73,7 @@ export type EditionApi = {
 };
 
 export type ChapitreApi = {
+  readerExtent: MangaReaderExtent;
   id: number;
   series: string;
   chapter_number: number;
@@ -214,6 +216,7 @@ export async function chapitreApi(id: number): Promise<ChapitreApi | null> {
     title: chapter.title,
     volume_id: chapter.volume_id,
     edition: editionDe(chapter.series, publication),
+    readerExtent: mangaReaderExtent(chapter.reader_extent),
     pages: planches.length,
     transcribed,
     transcrites: transcribed,
@@ -277,6 +280,7 @@ export type TomeApi = MangaVolume & {
     title: string | null;
     series: string;
     pages: number;
+    readerExtent: MangaReaderExtent;
     href: string;
     api: string;
   }>;
@@ -300,6 +304,7 @@ export async function tomeApi(id: number): Promise<TomeApi | null> {
       title: c.title,
       series: c.series,
       pages: Array.isArray(c.pages) ? c.pages.length : 0,
+      readerExtent: mangaReaderExtent(c.reader_extent),
       href: `${SITE_URL}/wiki/manga/${c.id}`,
       api: `${SITE_URL}/api/manga/chapter/${c.id}`,
     })),

@@ -142,7 +142,12 @@ export async function fixture() {
     read: async (table) => (table === "db_manga_volumes" ? expectedVolume : current),
     patch: async (_id, body) => {
       expect(body.expectedSha256).toBe(hash(current));
-      current = { ...current, pages: body.pages, visible: body.visible };
+      current = {
+        ...current,
+        pages: body.pages,
+        visible: body.visible,
+        ...(body.readerExtent ? { readerExtent: body.readerExtent } : {}),
+      };
       patches++;
     },
     revision: async () => true,
@@ -254,4 +259,22 @@ test("one bounded worker cycle quarantines malformed inputs and completes an ind
   expect(status.tasks[0].phase).toBe("complete");
   expect(status.completeCatalogue).toBe(false);
   expect(f.patches()).toBe(1);
+});
+
+test("explicit preview survives canonical editorial CAS without claiming complete pagination", async () => {
+  const f = await fixture();
+  f.bundle.publicationExtent = {
+    kind: "preview",
+    sourceUrl: f.bundle.source.documentUrl,
+    fullVolumePages: null,
+  };
+  const db = new Database(":memory:"),
+    q = new MangaPublicationQueue(db);
+  q.enqueue(f.bundle);
+  await consumeMangaBundle(q, q.next()!, join(f.root, "preview"), f.ports);
+  expect(await f.ports.read("db_manga_chapters", f.bundle.chapterId)).toMatchObject({
+    readerExtent: f.bundle.publicationExtent,
+  });
+  expect(q.next()).toBeNull();
+  db.close();
 });

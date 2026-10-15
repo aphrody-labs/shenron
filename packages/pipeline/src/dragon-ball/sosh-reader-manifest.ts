@@ -27,6 +27,13 @@ const imageUrl = citation.refine((value) => {
     !url.hash
   );
 });
+export const readerPublicationExtentSchema = z
+  .object({
+    kind: z.enum(["preview", "full"]),
+    sourceUrl: citation,
+    fullVolumePages: z.number().int().positive().max(100000).nullable(),
+  })
+  .strict();
 export const soshReaderManifestSchema = z
   .object({
     version: z.literal(1),
@@ -45,6 +52,7 @@ export const soshReaderManifestSchema = z
             pageCountEvidence: citation,
             expectedPages: z.number().int().positive().max(2000),
             review: z.literal("approved"),
+            publicationExtent: readerPublicationExtentSchema.optional(),
             pages: z
               .array(
                 z
@@ -80,6 +88,7 @@ function validateReaderPages(manifest: {
     volumeId: number;
     chapterId: number;
     expectedPages: number;
+    publicationExtent?: z.infer<typeof readerPublicationExtentSchema>;
     pages: Array<{ number: number; readerImage: string }>;
   }>;
 }) {
@@ -93,6 +102,17 @@ function validateReaderPages(manifest: {
     chapters.add(volume.chapterId);
     if (volume.pages.length !== volume.expectedPages)
       throw new Error("Incomplete page enumeration");
+    if (
+      volume.publicationExtent?.kind === "full" &&
+      volume.publicationExtent.fullVolumePages !== volume.pages.length
+    )
+      throw new Error("Full-volume extent requires an exact reviewed page enumeration");
+    if (
+      volume.publicationExtent?.kind === "preview" &&
+      volume.publicationExtent.fullVolumePages !== null &&
+      volume.publicationExtent.fullVolumePages <= volume.pages.length
+    )
+      throw new Error("Preview extent cannot establish complete volume pagination");
     let previous = -1;
     for (const page of volume.pages) {
       if (page.number <= previous || images.has(page.readerImage))
@@ -114,6 +134,7 @@ export const mangaReaderManifestSchema = soshReaderManifestSchema
             volumeId: z.number().int().positive(),
             volumeNumber: z.number().int().positive(),
             chapterNumber: z.number().int().positive(),
+            publicationExtent: readerPublicationExtentSchema,
             series: z.string().regex(/^[A-Z][A-Z0-9_]{0,63}$/),
             titleJa: z.string().trim().min(1).max(500).nullable(),
             expectedVolumeTitle: z.string().trim().min(1).nullable(),

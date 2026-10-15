@@ -87,6 +87,16 @@ test.skipIf(!url)(
       await sql`CREATE SCHEMA IF NOT EXISTS bot`;
       await sql`CREATE TABLE bot.db_manga_volumes (id integer PRIMARY KEY, series text, volume_number integer, visible boolean, title text, isbn text)`;
       await sql`CREATE TABLE bot.db_manga_chapters (id integer PRIMARY KEY, series text, chapter_number integer, volume_id integer REFERENCES bot.db_manga_volumes(id), title text, title_ja text, cover text, pages jsonb, visible boolean)`;
+      for (let pass = 0; pass < 2; pass++)
+        for (const statement of (
+          await Bun.file(
+            new URL(
+              "../../apps/site/src/db/migrations/0023_manga_reader_extent.sql",
+              import.meta.url,
+            ),
+          ).text()
+        ).split("--> statement-breakpoint"))
+          await sql.unsafe(statement);
       await sql`CREATE TABLE public.wiki_revisions (id text PRIMARY KEY, "tableName" text NOT NULL, "rowId" text NOT NULL, action text NOT NULL, label text, before jsonb, after jsonb, "editorName" text, "createdAt" timestamp DEFAULT CURRENT_TIMESTAMP)`;
       await sql`INSERT INTO bot.db_manga_volumes (id,series,volume_number,visible) VALUES (702, 'SOSH', 2, true), (703, 'SOSH', 3, true), (704, 'SOSH', 4, true)`;
       const first = await job(2, 35002);
@@ -166,6 +176,7 @@ test.skipIf(!url)(
             title,
             titleJa: null,
             expectedVolumeTitle: title,
+            publicationExtent: { kind: "preview", sourceUrl: source, fullVolumePages: null },
             sourceUrl: source,
             pageCountEvidence: source,
             edition: {
@@ -182,6 +193,17 @@ test.skipIf(!url)(
       await importMangaReaders([...manga.args, "--apply"], fetcher);
       const [mangaRow] = await sql`SELECT * FROM bot.db_manga_chapters WHERE id=45001`;
       expect(mangaRow!.series).toBe("ARALE");
+      expect(mangaRow!.reader_extent).toEqual({
+        kind: "preview",
+        sourceUrl: source,
+        fullVolumePages: null,
+      });
+      expect(row!.reader_extent).toBeNull();
+      await expect(
+        (async () => {
+          await sql`UPDATE bot.db_manga_chapters SET reader_extent=${sql.json({ kind: "invented" })} WHERE id=45001`;
+        })(),
+      ).rejects.toThrow();
       expect(mangaRow!.pages).toHaveLength(2);
       await importMangaReaders([...manga.args, "--apply"], fetcher);
       expect(await sql`SELECT id FROM public.wiki_revisions WHERE "rowId"='45001'`).toHaveLength(1);

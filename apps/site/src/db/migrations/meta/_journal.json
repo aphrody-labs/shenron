@@ -106,6 +106,13 @@
       "when": 1791410000000,
       "tag": "0022_chat_conversations",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1792051200000,
+      "tag": "0023_manga_reader_extent",
+      "breakpoints": true
     }
   ]
 }

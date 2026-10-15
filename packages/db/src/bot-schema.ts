@@ -765,6 +765,11 @@ export const botContributorCredits = bot.table("contributor_credits", {
   ...visibleCol,
 });
 
+export type MangaReaderExtent = {
+  kind: "preview" | "full" | "unknown";
+  sourceUrl?: string;
+  fullVolumePages?: number | null;
+};
 export const botMangaChapters = bot.table("db_manga_chapters", {
   id: int("id").primaryKey(),
   series: text("series").notNull(),
@@ -778,6 +783,7 @@ export const botMangaChapters = bot.table("db_manga_chapters", {
   // Colonne Neon-only : le reverse-sync Neon→SQLite l'ignore (intersection de
   // colonnes), le bot n'en a pas besoin (seul le reader du site lit les pages).
   pages: jsonb("pages").$type<string[]>(),
+  readerExtent: jsonb("reader_extent").$type<MangaReaderExtent>(),
   ...visibleCol,
 });
 

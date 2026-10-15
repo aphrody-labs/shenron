@@ -6,6 +6,7 @@ import postgres from "postgres";
 import { archiveDigest } from "./apply-archive-catalog";
 import { mangaVolumeEdition } from "../../apps/site/src/lib/manga-volume-edition";
 import { mangaVolumeBibliographicRecord } from "../../apps/site/src/lib/manga-source-registry";
+import { mangaReaderExtent } from "../../apps/site/src/lib/manga-reader-extent";
 const seriesFor = (volume: ReaderManifest["volumes"][number]) =>
   "series" in volume ? volume.series : "SOSH";
 const chapterNumberFor = (volume: ReaderManifest["volumes"][number]) =>
@@ -136,7 +137,10 @@ export function missingReaderChapters(
       chapter.title_ja !== volume.titleJa ||
       JSON.stringify(chapter.pages) !==
         JSON.stringify(volume.pages.map((page) => page.readerImage)) ||
-      chapter.cover !== volume.pages[0]!.readerImage
+      chapter.cover !== volume.pages[0]!.readerImage ||
+      (volume.publicationExtent &&
+        JSON.stringify(mangaReaderExtent(chapter.reader_extent)) !==
+          JSON.stringify(mangaReaderExtent(volume.publicationExtent)))
     )
       throw new Error("Existing SOSH chapter differs; protected from overwrite");
     return false;
@@ -252,12 +256,13 @@ export async function importSoshReaders(
         throw new Error("SOSH catalogue changed after plan");
       for (const volume of missingSoshChapters(manifest, locked, options)) {
         const pages = volume.pages.map((page) => page.readerImage);
+        const extent = volume.publicationExtent ? tx.json(volume.publicationExtent) : null;
         const existingChapter = locked.chapters.find((row) => Number(row.id) === volume.chapterId);
         const written = existingChapter
-          ? await tx`UPDATE bot.db_manga_chapters SET title=${volume.title}, title_ja=${volume.titleJa}, cover=${pages[0]!}, pages=${tx.json(pages)}, visible=true
+          ? await tx`UPDATE bot.db_manga_chapters SET title=${volume.title}, title_ja=${volume.titleJa}, cover=${pages[0]!}, pages=${tx.json(pages)}, reader_extent=COALESCE(${extent},reader_extent), visible=true
               WHERE id=${volume.chapterId} AND visible=false AND pages='[]'::jsonb RETURNING *`
-          : await tx`INSERT INTO bot.db_manga_chapters (id, series, chapter_number, volume_id, title, title_ja, cover, pages, visible)
-              VALUES (${volume.chapterId}, ${seriesFor(volume)}, ${chapterNumberFor(volume)}, ${volume.volumeId}, ${volume.title}, ${volume.titleJa}, ${pages[0]!}, ${tx.json(pages)}, true) RETURNING *`;
+          : await tx`INSERT INTO bot.db_manga_chapters (id, series, chapter_number, volume_id, title, title_ja, cover, pages, reader_extent, visible)
+              VALUES (${volume.chapterId}, ${seriesFor(volume)}, ${chapterNumberFor(volume)}, ${volume.volumeId}, ${volume.title}, ${volume.titleJa}, ${pages[0]!}, ${tx.json(pages)}, ${extent}, true) RETURNING *`;
         if (written.length !== 1) throw new Error("SOSH chapter write precondition differs");
         const wikiRow = (row: Row): postgres.JSONValue =>
           JSON.parse(

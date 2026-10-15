@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { isAbsolute } from "node:path";
 import { z } from "zod";
+import { readerPublicationExtentSchema } from "./sosh-reader-manifest";
 const digest = z.string().regex(/^[a-f0-9]{64}$/);
 const positive = z.number().int().positive().max(2147483647);
 const url = z
@@ -28,6 +29,7 @@ export const mangaBundleSchema = z
     chapterNumber: positive,
     isbn: z.string().min(10).max(32),
     activate: z.boolean(),
+    publicationExtent: readerPublicationExtentSchema.optional(),
     expectedVolume: row,
     expectedVolumeSha256: digest,
     expectedChapter: row,

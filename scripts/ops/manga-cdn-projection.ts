@@ -2,6 +2,7 @@
 /** Deterministic image/metadata allowlist over the existing public manga API, not a second editor. */
 import { mkdir } from "node:fs/promises";
 import { join, resolve } from "node:path";
+import { mangaReaderExtent } from "../../apps/site/src/lib/manga-reader-extent";
 import {
   validateMangaCdnIndex,
   mangaPublicationRoot,
@@ -98,6 +99,7 @@ export function projectMangaCdn(
         volume_id: row.volume_id ?? null,
         cover: image(row.cover) ?? pages[0]!,
         pages: pages as string[],
+        reader_extent: mangaReaderExtent(row.readerExtent ?? row.reader_extent),
       };
     })
     .toSorted((a, b) => a.id - b.id);
@@ -121,6 +123,7 @@ export function projectMangaCdn(
       title: chapter.title,
       volume_id: chapter.volume_id,
       cover: chapter.cover,
+      reader_extent: chapter.reader_extent,
       page_count: chapter.pages.length,
       previewPages: chapter.pages.slice(0, 3),
       url,

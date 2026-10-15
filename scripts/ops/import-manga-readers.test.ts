@@ -20,6 +20,7 @@ export const mangaFixture = () => ({
       sourceUrl: source,
       pageCountEvidence: source,
       expectedPages: 1,
+      publicationExtent: { kind: "full", sourceUrl: source, fullVolumePages: 1 },
       review: "approved",
       edition: {
         isbn: "9782723472272",
@@ -80,4 +81,12 @@ test("generic manifests cannot replace real pages with empty or estimated enumer
   const count = mangaFixture();
   count.volumes[0]!.expectedPages = 200;
   expect(() => validateMangaReaderManifest(count)).toThrow();
+});
+
+test("full pagination requires exact known total; a preview remains explicit", () => {
+  const f = mangaFixture();
+  f.volumes[0]!.publicationExtent.fullVolumePages = 32;
+  expect(() => validateMangaReaderManifest(f)).toThrow();
+  Object.assign(f.volumes[0]!.publicationExtent, { kind: "preview", fullVolumePages: null });
+  expect(validateMangaReaderManifest(f).volumes[0]!.publicationExtent.kind).toBe("preview");
 });

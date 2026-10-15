@@ -83,6 +83,16 @@ async function save(path: string, value: unknown) {
 export async function qualifyBundle(value: unknown): Promise<MangaBundle> {
   const bundle = mangaBundleSchema.parse(value);
   if (
+    bundle.publicationExtent &&
+    (bundle.publicationExtent.sourceUrl !== bundle.source.documentUrl ||
+      (bundle.publicationExtent.kind === "full" &&
+        bundle.publicationExtent.fullVolumePages !== bundle.pages.length) ||
+      (bundle.publicationExtent.kind === "preview" &&
+        bundle.publicationExtent.fullVolumePages !== null &&
+        bundle.publicationExtent.fullVolumePages <= bundle.pages.length))
+  )
+    throw Error("Publication extent differs from the captured source or reviewed pagination");
+  if (
     wikiUpdateSnapshotHash(bundle.expectedVolume) !== bundle.expectedVolumeSha256 ||
     wikiUpdateSnapshotHash(bundle.expectedChapter) !== bundle.expectedChapterSha256
   )
@@ -267,6 +277,7 @@ export async function consumeMangaBundle(
     const before = bundle.expectedChapter;
     const changes = {
       pages: bundle.pages.map((page) => page.publicPath),
+      ...(bundle.publicationExtent ? { readerExtent: bundle.publicationExtent } : {}),
       ...(bundle.activate ? { visible: true } : {}),
     };
     const target = { ...before, ...changes };
@@ -391,6 +402,7 @@ export function mangaWorkerPorts(config: WorkerConfig, signal?: AbortSignal): Ma
         const chapter = await api(`/api/wiki-admin/db_manga_chapters/${bundle.chapterId}`);
         const expected = {
           ...bundle.expectedChapter,
+          ...(bundle.publicationExtent ? { readerExtent: bundle.publicationExtent } : {}),
           pages: bundle.pages.map((page) => page.publicPath),
           ...(bundle.activate ? { visible: true } : {}),
         };
@@ -405,6 +417,7 @@ export function mangaWorkerPorts(config: WorkerConfig, signal?: AbortSignal): Ma
           chapter_number: chapter.chapterNumber,
           title: chapter.title,
           volume_id: chapter.volumeId,
+          reader_extent: chapter.readerExtent ?? null,
           pages: pages.length,
           pageList: pages,
         };
@@ -482,6 +495,7 @@ export function mangaWorkerPorts(config: WorkerConfig, signal?: AbortSignal): Ma
       if (!response.ok) throw Error("Public reader API unavailable");
       const chapter = await response.json();
       if (
+        (bundle.publicationExtent && !same(chapter.readerExtent, bundle.publicationExtent)) ||
         chapter.series !== bundle.series ||
         chapter.volume_id !== bundle.volumeId ||
         chapter.pageList?.length !== bundle.pages.length ||
