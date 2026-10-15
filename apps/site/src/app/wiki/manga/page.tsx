@@ -39,15 +39,26 @@ export const metadata: Metadata = {
   }),
 };
 
-export default function MangaIndexPage() {
+type MangaSearchParams = Record<string, string | string[] | undefined>;
+
+export default function MangaIndexPage({
+  searchParams,
+}: {
+  searchParams: Promise<MangaSearchParams>;
+}) {
   return (
     <Suspense fallback={<IndexLoading />}>
-      <MangaIndexContent />
+      <MangaIndexContent searchParams={searchParams} />
     </Suspense>
   );
 }
 
-async function MangaIndexContent() {
+async function MangaIndexContent({ searchParams }: { searchParams: Promise<MangaSearchParams> }) {
+  const initialParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(await searchParams)) {
+    if (typeof value === "string") initialParams.set(key, value);
+    else if (Array.isArray(value)) value.forEach((entry) => initialParams.append(key, entry));
+  }
   const [
     dbVols,
     dbsVols,
@@ -175,6 +186,7 @@ async function MangaIndexContent() {
       <LibraryNav />
       <ContinueRail kinds={["chapter"]} titleKey="history.resumeReading" />
       <MangaVolumeGrid
+        initialSearch={initialParams.toString()}
         dbVolumes={dbVolumes}
         dbsVolumes={dbsVolumes}
         kanzenbanVolumes={kanzenbanVolumes}

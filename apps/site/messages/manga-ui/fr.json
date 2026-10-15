@@ -85,5 +85,12 @@
     "fullColor": "Full Color · Édition japonaise",
     "fullColorText": "Colorisation numérique officielle de Shueisha, organisée par sagas Saiyans, Freezer, Cell et Buu. L’édition papier et l’édition numérique ont des nombres de tomes distincts."
   },
-  "searchShort": "Recherche"
+  "searchShort": "Recherche",
+  "reader": {
+    "scans": "Planches numérisées",
+    "empty": "Les planches numérisées de ce volume sont en cours d’acquisition.",
+    "contents": "Sommaire",
+    "previous": "Chapitre précédent",
+    "next": "Chapitre suivant"
+  }
 }

@@ -122,3 +122,25 @@ test("every populated manga collection is visible before opening a menu, includi
   expect(html).not.toContain('<option value="DB">');
   expect(html).toContain('data-collection="all" aria-pressed="true"');
 });
+
+test("the server-rendered SOSH deep link respects its collection and page", () => {
+  const html = render({
+    initialSearch: "collection=SOSH&page=2",
+    dbVolumes: [{ id: 1, series: "DB", volumeNumber: 1, title: null, cover: null }],
+    dbsVolumes: [],
+    soshuhenVolumes: Array.from({ length: 18 }, (_, index) => ({
+      id: 701 + index,
+      series: "SOSH",
+      volumeNumber: index + 1,
+      title: `Legend ${index + 1}`,
+      cover: null,
+    })),
+    readableChapters: [],
+  });
+  expect(html).toContain('data-collection="SOSH" aria-pressed="true"');
+  expect(html).toContain("Page 2 sur 2");
+  expect(html).toContain('href="/wiki/manga/volume/713"');
+  expect(html).toContain('href="/wiki/manga/volume/718"');
+  expect(html).not.toContain('href="/wiki/manga/volume/701"');
+  expect(html).not.toContain('href="/wiki/manga/volume/1"');
+});

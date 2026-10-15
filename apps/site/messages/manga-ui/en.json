@@ -85,5 +85,12 @@
     "fullColor": "Full Color · Japanese edition",
     "fullColorText": "Shueisha’s official digital coloring, organized into the Saiyan, Freeza, Cell and Boo arcs. The print and digital editions have different volume counts."
   },
-  "searchShort": "Search"
+  "searchShort": "Search",
+  "reader": {
+    "scans": "Scanned pages",
+    "empty": "The scanned pages for this volume are being acquired.",
+    "contents": "Contents",
+    "previous": "Previous chapter",
+    "next": "Next chapter"
+  }
 }
