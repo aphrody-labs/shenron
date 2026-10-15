@@ -5,6 +5,7 @@ import { mkdir, chmod, rename, unlink, statfs } from "node:fs/promises";
 import { isAbsolute, join } from "node:path";
 import { parseArgs } from "node:util";
 import { inspectBrowserSources } from "./sosh-browser-workers";
+import { projectPoolReceipts } from "./manga-source-pool-projection";
 
 if (typeof Bun.isMainThread !== "boolean")
   throw Error("Runtime must expose qualified Bun.isMainThread before spawning workers");
@@ -40,6 +41,9 @@ const ownHosts = new Set([
   "shenron-cdn.aphrody-labs.workers.dev",
 ]);
 const sourceHosts = new Set([
+  "www.glenat.com",
+  "www.books.or.jp",
+  "www.piccolodamayonnaiz.com",
   "www.shueisha.co.jp",
   "books.shueisha.co.jp",
   "dragon-ball-official.com",
@@ -699,6 +703,8 @@ async function servePool(options: {
     [];
   let lastSnapshot = 0;
   let lastEgress = Date.now();
+  const projectionStop = new AbortController();
+  let projection: Promise<void> | undefined;
   const progress = async () => {
     const counts = frontier.counts();
     const catalog = (frontier.meta("catalog") ?? {
@@ -741,6 +747,25 @@ async function servePool(options: {
       egress: frontier.meta("egress"),
       counts,
     });
+    if (!stopping && !projection) {
+      projection = (async () => {
+        const template = process.env.SHENRON_MANGA_CANDIDATE_TEMPLATE;
+        await projectPoolReceipts(job, {
+          signal: projectionStop.signal,
+          templatePath: template && (await Bun.file(template).exists()) ? template : undefined,
+        });
+      })()
+        .catch(async (error) => {
+          await atomicJson(join(job, "projection-error.json"), {
+            at: new Date().toISOString(),
+            error: String(error),
+            publicWrites: 0,
+          });
+        })
+        .finally(() => {
+          projection = undefined;
+        });
+    }
   };
   for (let slot = 0; slot < options.workers; slot++) {
     const worker = new Worker(import.meta.url, { name: `manga-source-${slot}` });
@@ -854,6 +879,8 @@ async function servePool(options: {
       await Bun.sleep(250);
     }
   } finally {
+    projectionStop.abort();
+    await projection;
     for (const entry of slots) {
       await entry.worker.terminate();
       if (entry.task) frontier.settle(entry.task, "retry", "", "Pool stopped with active lease");
