@@ -4,6 +4,7 @@ import { useEffect, useSyncExternalStore, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useT } from "@/components/T";
 
+import { archiveOptions } from "@/lib/archive-catalog";
 export const CATALOG_REFRESH_INTERVAL_MS = 15_000;
 const preferenceKey = "shenron:catalog:automatic";
 const preferenceEvent = "shenron:catalog-refresh-preference";
@@ -33,7 +34,20 @@ function setAutomatic(enabled: boolean) {
   window.dispatchEvent(new Event(preferenceEvent));
 }
 
-export function CatalogControls({ search, parent }: { search?: string; parent?: string }) {
+export function CatalogControls({
+  search,
+  parent,
+  archiveCategory,
+  mediaLang = "",
+  series = "",
+}: {
+  search?: string;
+  parent?: string;
+  archiveCategory?: string;
+  mediaLang?: string;
+  series?: string;
+}) {
+  const options = archiveCategory ? archiveOptions(archiveCategory) : null;
   const t = useT();
   const router = useRouter();
   const automatic = useSyncExternalStore(subscribeAutomatic, automaticSnapshot, () => true);
@@ -70,6 +84,44 @@ export function CatalogControls({ search, parent }: { search?: string; parent?: 
               className="input min-w-0 flex-1"
               placeholder={t("catalog.search")}
             />
+            {options ? (
+              <>
+                <label className="flex min-w-0 flex-col gap-1 text-sm" htmlFor="archive-series">
+                  {t("catalog.archive.work")}
+                  <select
+                    id="archive-series"
+                    name="series"
+                    key={series}
+                    defaultValue={series}
+                    className="input max-w-full"
+                  >
+                    <option value="">{t("catalog.archive.allWorks")}</option>
+                    {options.series.map((value) => (
+                      <option key={value} value={value}>
+                        {t("catalog.archive.series." + value)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="flex min-w-0 flex-col gap-1 text-sm" htmlFor="archive-language">
+                  {t("catalog.archive.language")}
+                  <select
+                    id="archive-language"
+                    name="mediaLang"
+                    key={mediaLang}
+                    defaultValue={mediaLang}
+                    className="input max-w-full"
+                  >
+                    <option value="">{t("catalog.archive.allLanguages")}</option>
+                    {options.languages.map((value) => (
+                      <option key={value} value={value}>
+                        {t("catalog.archive.languages." + value)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </>
+            ) : null}
             {parent ? <input type="hidden" name="parent" value={parent} /> : null}
             <button className="dbz-button" type="submit">
               {t("catalog.submit")}

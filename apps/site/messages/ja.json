@@ -2118,7 +2118,44 @@
       "publishedAt": "出版日",
       "canon": "連続性"
     },
-    "refreshing": "更新中…"
+    "refreshing": "更新中…",
+    "archive": {
+      "selection": "{time}に確認した選定資料です。選定されたアーカイブのみ表示します。",
+      "count": "選定資料 {count} 件",
+      "work": "作品",
+      "allWorks": "すべての作品",
+      "language": "出典で申告された言語",
+      "allLanguages": "すべての言語",
+      "previewUnavailable": "プレビューを表示できません",
+      "source": "Internet Archive の資料情報",
+      "file": "参照されたメディアファイル",
+      "checked": "メタデータとファイルの応答確認：{time}",
+      "status": "外部アーカイブ・再生は未確認",
+      "provenance": "出典とファイル",
+      "series": {
+        "db": "ドラゴンボール",
+        "z": "ドラゴンボールZ",
+        "gt": "ドラゴンボールGT",
+        "super": "ドラゴンボール超",
+        "daima": "ドラゴンボールDAIMA",
+        "heroes": "ドラゴンボールヒーローズ",
+        "games": "ドラゴンボールのゲーム",
+        "mixed": "複数作品"
+      },
+      "languages": {
+        "fr": "フランス語",
+        "en": "英語",
+        "ja": "日本語",
+        "es": "スペイン語",
+        "pt": "ポルトガル語",
+        "pl": "ポーランド語",
+        "ca": "カタルーニャ語・バレンシア語",
+        "unknown": "記載なし",
+        "multiple": "複数言語",
+        "other": "その他の申告言語"
+      },
+      "metadataChecksum": "メタデータのSHA-256"
+    }
   },
   "adminDesign": {
     "title": "デザインとテーマ",
