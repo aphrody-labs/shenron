@@ -66,6 +66,8 @@ test("section discovery resolves visible parent names without modifying the CAS 
   expect(resolved!.title).toBe("9");
   expect(resolved!.discoveryContext?.parent.identity.nameJa).toBe("孫悟空");
   expect(resolved!.discoveryContext?.section.label).toBe("Histoire");
+  expect(resolved!.discoveryContext?.parent.expectedSha256).toBe(candidate.sha256);
+  expect(resolved!.discoveryContext?.parent.apiPath).toBe("/api/wiki-admin/db_characters/1");
   expect(JSON.stringify(resolved!.discoveryContext)).not.toContain("private-token");
   expect(attachSectionContexts([section])[0]!.discoveryContext).toBeUndefined();
   const official = {
@@ -304,6 +306,52 @@ test("an exhibition is not a book and a different ISBN is not the same edition",
     ),
   ).toThrow("as-of");
 });
+test("publisher registry binds the same ISBN in its route and verified body", async () => {
+  const book = candidateFor("db_databooks", {
+    id: 16,
+    title: "Dragon Ball Chozenshu 1",
+    titleJa: "ドラゴンボール超全集 1",
+    isbn: "978-4-08-782496-4",
+    visible: true,
+    description: null,
+  })!;
+  const url = "https://www.books.or.jp/book-details/9784087824964";
+  const quote = "『ドラゴンボール大全集』に新情報を追加してリニューアル!";
+  const identityQuote = `ドラゴンボール超全集 1 内容紹介 ${quote} ISBN：9784087824964 出版社：集英社`;
+  const qualified = await qualifyOfficialSource(
+    { url, title: "ドラゴンボール超全集 1", quote, identityQuote },
+    async () =>
+      new Response(`<title>ドラゴンボール超全集 1</title><p>${identityQuote}</p>`, {
+        headers: { "content-type": "text/html" },
+      }),
+  );
+  expect(qualified.evidence.document).toContain("JPO/JPRO Books publisher registry");
+  expect(evidenceMatchesEntity(book, qualified.evidence)).toBe(true);
+  expect(
+    evidenceMatchesEntity(
+      { ...book, snapshot: { ...book.snapshot, isbn: "9784087824971" } },
+      qualified.evidence,
+    ),
+  ).toBe(false);
+  expect(
+    evidenceMatchesEntity(book, {
+      ...qualified.evidence,
+      sourceUrl: url.replace("9784087824964", "9784087824971"),
+    }),
+  ).toBe(false);
+  expect(
+    evidenceMatchesEntity(book, {
+      ...qualified.evidence,
+      identityQuote: identityQuote.replace("9784087824964", "9784087824971"),
+    }),
+  ).toBe(false);
+  expect(
+    isOfficialUrl("https://www.books.or.jp/book-details/9784087824964?isbn=9784087824971"),
+  ).toBe(false);
+  expect(isOfficialUrl("https://www.books.or.jp/search?isbn=9784087824964")).toBe(false);
+  expect(isOfficialUrl("https://unknown.books.or.jp/book-details/9784087824964")).toBe(false);
+});
+
 test("persistent queue resumes leases, deduplicates snapshots and bounds failures", async () => {
   const { dir, db } = await queue();
   const key = db.enqueue(candidate, evidence, DEFAULT_MODEL);
@@ -329,6 +377,31 @@ test("persistent queue resumes leases, deduplicates snapshots and bounds failure
     expect(resumed.claim("fourth", 10000)).toBeNull();
   } finally {
     resumed.close();
+  }
+});
+
+test("a revised proposal preserves the previous quarantine and independent audit", async () => {
+  const { db } = await queue();
+  try {
+    const original = db.enqueue(candidate, evidence, DEFAULT_MODEL, "original-contract");
+    db.db
+      .query(
+        "UPDATE jobs SET status='quarantined',error='root-review: actor-ambiguity',draft=?,review=? WHERE key=?",
+      )
+      .run('{"decision":"propose"}', '{"decision":"approve"}', original);
+    const revised = db.enqueue(candidate, evidence, DEFAULT_MODEL, "literal-actor-contract");
+    expect(revised).not.toBe(original);
+    expect(
+      db.db.query("SELECT status,error,draft,review FROM jobs WHERE key=?").get(original),
+    ).toEqual({
+      status: "quarantined",
+      error: "root-review: actor-ambiguity",
+      draft: '{"decision":"propose"}',
+      review: '{"decision":"approve"}',
+    });
+    expect(db.claim("new-owner", 10000)!.key).toBe(revised);
+  } finally {
+    db.close();
   }
 });
 test("real queue executes independent writer/reviewer and never reruns an approved snapshot", async () => {
