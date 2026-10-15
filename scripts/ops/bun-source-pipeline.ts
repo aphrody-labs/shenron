@@ -8,7 +8,7 @@ import type {
   SourceDeliveryPorts,
 } from "./lib/bun-source-delivery";
 import { Database } from "bun:sqlite";
-import { chmod, lstat, mkdir, realpath, rmdir, rename, unlink } from "node:fs/promises";
+import { chmod, lstat, mkdir, realpath, rmdir, rename, unlink, open } from "node:fs/promises";
 import { isAbsolute, join, relative, resolve } from "node:path";
 import {
   crawlIngestPolicySchema,
@@ -229,24 +229,61 @@ export async function prepareSourceBatches(configPath: string, options: SourceBa
     const manifestPath = join(root, "membership.json");
     if (cursor > 0 && !(await Bun.file(manifestPath).exists()))
       throw Error("Source membership manifest missing for resume");
-    const pin = async (source: string, destination: string, expectedHash: string) => {
-      if (!(await Bun.file(destination).exists())) {
-        const temporary = destination + ".tmp";
+    const existingHash = async (path: string) => {
+      const info = await lstat(path).catch((error: { code?: string }) => {
+        if (error.code !== "ENOENT") throw error;
+        return null;
+      });
+      if (!info) return null;
+      if (!info.isFile() || info.isSymbolicLink()) throw Error("Invalid source batch artifact");
+      return fileHash(path, options.signal);
+    };
+    const temporaryFile = async <T>(
+      destination: string,
+      run: (path: string, fd: number) => Promise<T>,
+    ) => {
+      const path = destination + "." + crypto.randomUUID() + ".tmp";
+      const file = await open(path, "wx", 0o600);
+      try {
+        const result = await run(path, file.fd);
+        await file.sync();
+        return result;
+      } finally {
         try {
-          await Bun.write(temporary, Bun.file(source));
-          await chmod(temporary, 0o600);
-          if ((await fileHash(temporary, options.signal)) !== expectedHash)
-            throw Error("Snapshot copy changed");
-          await rename(temporary, destination);
+          await file.close();
         } finally {
-          await unlink(temporary).catch((error: { code?: string }) => {
+          await unlink(path).catch((error: { code?: string }) => {
             if (error.code !== "ENOENT") throw error;
           });
         }
       }
-      const info = await lstat(destination);
-      if (!info.isFile() || info.isSymbolicLink() || (await fileHash(destination)) !== expectedHash)
-        throw Error("Pinned source batch artifact differs");
+    };
+    const pin = async (source: string, destination: string, expectedHash: string) => {
+      const existing = await existingHash(destination);
+      if (existing !== null) {
+        if (existing !== expectedHash) throw Error("Pinned source batch artifact differs");
+        return;
+      }
+      await temporaryFile(destination, async (path, fd) => {
+        await Bun.write(Bun.file(fd), Bun.file(source));
+        if ((await fileHash(path, options.signal)) !== expectedHash)
+          throw Error("Snapshot copy changed");
+        await rename(path, destination);
+      });
+    };
+    const immutableJson = async (path: string, value: unknown) => {
+      const body = JSON.stringify(value, null, 2) + "\n";
+      const expectedHash = hash(body);
+      const existing = await existingHash(path);
+      if (existing !== null) {
+        if (existing !== expectedHash) throw Error("Pinned source batch receipt differs");
+        return expectedHash;
+      }
+      await temporaryFile(path, async (temporary, fd) => {
+        await Bun.write(Bun.file(fd), body);
+        await rename(temporary, path);
+      });
+      return expectedHash;
     };
     const snapshot = join(root, "snapshot.jsonl");
     await pin(config.input, snapshot, options.snapshotSha256);
@@ -262,7 +299,7 @@ export async function prepareSourceBatches(configPath: string, options: SourceBa
     const manifest = {
       schema: "shenron-source-membership/v1",
       sourceSha256: options.snapshotSha256,
-      sourceBytes: sourceInfo.size,
+      sourceBytes: (await lstat(snapshot)).size,
       configSha256,
       policySha256,
       batchSize,
@@ -277,31 +314,91 @@ export async function prepareSourceBatches(configPath: string, options: SourceBa
     await assertSource();
     if ((await fileHash(snapshot, options.signal)) !== options.snapshotSha256)
       throw Error("Pinned source batch artifact differs");
-    if (await Bun.file(manifestPath).exists()) {
-      const info = await lstat(manifestPath);
-      if (!info.isFile() || info.isSymbolicLink())
-        throw Error("Invalid source membership manifest");
-    }
-    await save(manifestPath, manifest, true);
+    await immutableJson(manifestPath, manifest);
     const nextCursor = Math.min(totalDocuments, cursor + batchSize);
     const directory = join(root, `${cursor}-${nextCursor}`);
     await privateJob(directory);
     const exportPath = join(directory, "export.jsonl");
-    const temporary = exportPath + ".tmp";
-    try {
-      await Bun.write(temporary, "");
-      await chmod(temporary, 0o600);
-      const writer = Bun.file(temporary).writer();
+    const receiptFor = (
+      start: number,
+      end: number,
+      membershipSha256: string,
+      exportSha256: string,
+    ) => ({
+      schema: "shenron-source-batch/v1",
+      sourceSha256: options.snapshotSha256,
+      configSha256,
+      policySha256,
+      manifestPath,
+      manifestSha256,
+      cursor: start,
+      nextCursor: end,
+      count: end - start,
+      totalDocuments,
+      membershipSha256,
+      exportPath: join(root, start + "-" + end, "export.jsonl"),
+      exportSha256,
+      exportComplete: end === totalDocuments,
+      deliveryAuthorized: false,
+    });
+    return await temporaryFile(exportPath, async (temporary, fd) => {
+      const bufferLimit = 1024 * 1024;
+      const writer = Bun.file(fd).writer({ highWaterMark: bufferLimit });
+      const encoder = new TextEncoder();
       const batchMembership = new Bun.CryptoHasher("sha256");
-      let position = 0;
+      let position = 0,
+        bufferedBytes = 0,
+        previousStart = 0;
+      let previousExport = new Bun.CryptoHasher("sha256");
+      let previousMembership = new Bun.CryptoHasher("sha256");
       try {
         for await (const document of readNativeCrawlDocuments(snapshot, options.signal)) {
           if (position >= nextCursor) break;
-          if (position >= cursor) {
-            const serialized = JSON.stringify(document);
-            writer.write(serialized + "\n");
-            batchMembership.update(JSON.stringify([position, hash(serialized)]) + "\n");
-            await writer.flush();
+          const serialized = JSON.stringify(document);
+          const member = JSON.stringify([position, hash(serialized)]) + "\n";
+          if (position < cursor) {
+            previousExport.update(serialized + "\n");
+            previousMembership.update(member);
+            const end = position + 1;
+            if (end % batchSize === 0 || end === totalDocuments) {
+              const expected = receiptFor(
+                previousStart,
+                end,
+                previousMembership.digest("hex"),
+                previousExport.digest("hex"),
+              );
+              const previousDirectory = join(root, previousStart + "-" + end);
+              const info = await lstat(previousDirectory);
+              if (
+                !info.isDirectory() ||
+                info.isSymbolicLink() ||
+                (await realpath(previousDirectory)) !== resolve(previousDirectory)
+              )
+                throw Error("Invalid preceding source batch directory");
+              if (
+                (await existingHash(expected.exportPath)) !== expected.exportSha256 ||
+                (await existingHash(join(previousDirectory, "receipt.json"))) !==
+                  hash(JSON.stringify(expected, null, 2) + "\n")
+              )
+                throw Error("Source batch cursor skips an unverified predecessor");
+              previousStart = end;
+              previousExport = new Bun.CryptoHasher("sha256");
+              previousMembership = new Bun.CryptoHasher("sha256");
+            }
+          } else {
+            const bytes = encoder.encode(serialized + "\n");
+            for (let offset = 0; offset < bytes.byteLength;) {
+              const chunk = bytes.subarray(offset, offset + bufferLimit - bufferedBytes);
+              const written = writer.write(chunk);
+              offset += chunk.byteLength;
+              bufferedBytes += chunk.byteLength;
+              if (typeof written !== "number") await written;
+              if (bufferedBytes === bufferLimit) {
+                await writer.flush();
+                bufferedBytes = 0;
+              }
+            }
+            batchMembership.update(member);
           }
           position++;
         }
@@ -312,44 +409,15 @@ export async function prepareSourceBatches(configPath: string, options: SourceBa
       await assertSource();
       if ((await fileHash(snapshot, options.signal)) !== options.snapshotSha256)
         throw Error("Pinned source batch artifact differs");
-      if (await Bun.file(exportPath).exists()) {
-        const info = await lstat(exportPath);
-        if (
-          !info.isFile() ||
-          info.isSymbolicLink() ||
-          (await fileHash(exportPath)) !== exportSha256
-        )
-          throw Error("Pinned source batch export differs");
+      const existing = await existingHash(exportPath);
+      if (existing !== null) {
+        if (existing !== exportSha256) throw Error("Pinned source batch export differs");
       } else await rename(temporary, exportPath);
-      const receipt = {
-        schema: "shenron-source-batch/v1",
-        sourceSha256: options.snapshotSha256,
-        configSha256,
-        policySha256,
-        manifestPath,
-        manifestSha256,
-        cursor,
-        nextCursor,
-        count: nextCursor - cursor,
-        totalDocuments,
-        membershipSha256: batchMembership.digest("hex"),
-        exportPath,
-        exportSha256,
-        exportComplete: nextCursor === totalDocuments,
-        deliveryAuthorized: false,
-      };
+      const receipt = receiptFor(cursor, nextCursor, batchMembership.digest("hex"), exportSha256);
       const receiptPath = join(directory, "receipt.json");
-      if (await Bun.file(receiptPath).exists()) {
-        const info = await lstat(receiptPath);
-        if (!info.isFile() || info.isSymbolicLink()) throw Error("Invalid source batch receipt");
-      }
-      const receiptSha256 = await save(receiptPath, receipt, true);
+      const receiptSha256 = await immutableJson(receiptPath, receipt);
       return { ...receipt, receiptPath, receiptSha256 };
-    } finally {
-      await unlink(temporary).catch((error: { code?: string }) => {
-        if (error.code !== "ENOENT") throw error;
-      });
-    }
+    });
   } finally {
     await rmdir(lock);
   }

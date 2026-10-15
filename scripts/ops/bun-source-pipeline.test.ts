@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterEach, expect, test } from "bun:test";
-import { mkdtemp, rm, chmod, lstat } from "node:fs/promises";
+import { mkdtemp, rm, chmod, lstat, mkdir, symlink } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import {
@@ -288,6 +288,88 @@ test("aborted batch preparation leaves no job artifacts", async () => {
     }),
   ).rejects.toThrow();
   expect(await Bun.file(join(f.config.job, "batches")).exists()).toBe(false);
+});
+
+test("batch completion requires a contiguous verified predecessor chain", async () => {
+  const documents = Array.from({ length: 5 }, (_, i) => doc(`https://source.example/${i}`));
+  const f = await fixture(documents, { maxDocuments: 2 });
+  const snapshotSha256 = hash(await Bun.file(f.input).text());
+  const first = await prepareSourceBatches(f.configPath, { snapshotSha256, batchSize: 2 });
+  const options = { snapshotSha256, batchSize: 2, manifestSha256: first.manifestSha256 };
+  await expect(prepareSourceBatches(f.configPath, { ...options, cursor: 4 })).rejects.toThrow();
+  expect(
+    await Bun.file(join(f.config.job, "batches", snapshotSha256, "4-5", "receipt.json")).exists(),
+  ).toBe(false);
+  const second = await prepareSourceBatches(f.configPath, { ...options, cursor: 2 });
+  const before = await Bun.file(first.exportPath).text();
+  await Bun.write(first.exportPath, JSON.stringify(doc("https://source.example/tampered")) + "\n");
+  await expect(prepareSourceBatches(f.configPath, { ...options, cursor: 4 })).rejects.toThrow(
+    "predecessor",
+  );
+  await Bun.write(first.exportPath, before);
+  const priorReceipt = await Bun.file(second.receiptPath).text();
+  await Bun.write(second.receiptPath, "{}\n");
+  await expect(prepareSourceBatches(f.configPath, { ...options, cursor: 4 })).rejects.toThrow(
+    "predecessor",
+  );
+  await Bun.write(second.receiptPath, priorReceipt);
+  const final = await prepareSourceBatches(f.configPath, { ...options, cursor: 4 });
+  expect(final).toMatchObject({
+    cursor: 4,
+    nextCursor: 5,
+    count: 1,
+    exportComplete: true,
+    deliveryAuthorized: false,
+  });
+  const terminal = await prepareSourceBatches(f.configPath, { ...options, cursor: 5 });
+  expect(terminal).toMatchObject({ count: 0, exportComplete: true });
+});
+
+test("batch temporary evidence and symlinks are preserved by exclusive unique files", async () => {
+  const f = await fixture();
+  const snapshotSha256 = hash(await Bun.file(f.input).text());
+  const root = join(f.config.job, "batches", snapshotSha256);
+  await mkdir(join(root, "0-1"), { recursive: true, mode: 0o700 });
+  const sentinel = join(f.root, "previous-evidence");
+  await Bun.write(sentinel, "protected evidence");
+  const paths = [
+    "snapshot.jsonl.tmp",
+    "policy.json.tmp",
+    "original-config.json.tmp",
+    "membership.json.tmp",
+    "0-1/export.jsonl.tmp",
+    "0-1/receipt.json.tmp",
+  ];
+  for (const [index, name] of paths.entries()) {
+    const path = join(root, name);
+    if (process.platform !== "win32" && index % 2) await symlink(sentinel, path);
+    else await Bun.write(path, "previous temporary evidence");
+  }
+  const batch = await prepareSourceBatches(f.configPath, { snapshotSha256, batchSize: 1 });
+  expect(batch.exportComplete).toBe(true);
+  expect(await Bun.file(sentinel).text()).toBe("protected evidence");
+  for (const [index, name] of paths.entries()) {
+    const path = join(root, name);
+    if (process.platform !== "win32" && index % 2)
+      expect((await lstat(path)).isSymbolicLink()).toBe(true);
+    else expect(await Bun.file(path).text()).toBe("previous temporary evidence");
+  }
+});
+
+test("batch buffered writer preserves UTF-8 bytes across its one MiB boundary", async () => {
+  const large = doc();
+  large.payload.body_markdown = "日".repeat(400000);
+  const documents = [large, doc("https://source.example/b")];
+  const f = await fixture(documents, { maxDocuments: 2 });
+  const snapshot = await Bun.file(f.input).text();
+  const batch = await prepareSourceBatches(f.configPath, {
+    snapshotSha256: hash(snapshot),
+    batchSize: 2,
+  });
+  expect(await Bun.file(batch.exportPath).text()).toBe(snapshot);
+  expect(batch.exportSha256).toBe(hash(snapshot));
+  expect(batch).toMatchObject({ count: 2, exportComplete: true });
+  expect((await Bun.file(batch.manifestPath).json()).sourceBytes).toBe(Buffer.byteLength(snapshot));
 });
 const fakeFetch = (
   implementation: (...args: Parameters<typeof fetch>) => ReturnType<typeof fetch>,
