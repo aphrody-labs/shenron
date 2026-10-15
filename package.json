@@ -86,7 +86,7 @@
       "graphql": "^16.14.2",
       "graphql-yoga": "^5.24.1",
       "@aphrody/bun-video": "https://dist.aphrody.app/packages/bun-video/1.4.4-video.1/db7590aff424cc85c783a316556b8552f780898f92d9765443092a5c69970056/package.tgz",
-      "@aphrody/bun-runtime-sdk": "1.4.5",
+      "@aphrody/bun-runtime-sdk": "1.4.10",
       "howler": "^2.2.4",
       "i18next": "^26.4.2",
       "i18next-browser-languagedetector": "^8.2.1",

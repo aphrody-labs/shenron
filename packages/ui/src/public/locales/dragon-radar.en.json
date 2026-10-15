@@ -34,5 +34,11 @@
   "episode": "Episode {number}",
   "ki": "Ki",
   "seriesFallback": "Dragon Ball",
-  "shortSeriesFallback": "DB"
+  "shortSeriesFallback": "DB",
+  "evidenceTitle": "Evidence selection help",
+  "evidenceAction": "Suggest evidence",
+  "evidenceLoading": "Assessing evidence…",
+  "evidenceSelected": "Read suggested evidence",
+  "evidenceAbstained": "No evidence stands out sufficiently. The verdict is unchanged.",
+  "evidenceUnavailable": "Evidence help unavailable. The verdict is unchanged."
 }

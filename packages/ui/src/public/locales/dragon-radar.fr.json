@@ -34,5 +34,11 @@
   "episode": "Épisode {number}",
   "ki": "Ki",
   "seriesFallback": "Dragon Ball",
-  "shortSeriesFallback": "DB"
+  "shortSeriesFallback": "DB",
+  "evidenceTitle": "Aide au choix d’une preuve",
+  "evidenceAction": "Proposer une preuve",
+  "evidenceLoading": "Recherche d’une preuve…",
+  "evidenceSelected": "Consulter la preuve proposée",
+  "evidenceAbstained": "Aucune preuve ne se distingue suffisamment. Le verdict reste inchangé.",
+  "evidenceUnavailable": "Aide indisponible. Le verdict reste inchangé."
 }

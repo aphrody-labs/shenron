@@ -542,18 +542,19 @@ async function Resultat({ question }: { question: string }) {
             <T k="wiki.canon.authorSays" />
           </h2>
           <div className="mt-5 space-y-6">
-            {verdict.references.map((r) => (
-              <Citation
-                key={r.id}
-                texte={r.text}
-                texteFr={r.textFr}
-                source={r.source}
-                href={r.href}
-                annee={r.year}
-                lang={r.lang}
-                sujet={r.subject}
-                provenance={r.provenance}
-              />
+            {verdict.references.map((r, index) => (
+              <div key={r.id} id={`canon-reference-${index}`}>
+                <Citation
+                  texte={r.text}
+                  texteFr={r.textFr}
+                  source={r.source}
+                  href={r.href}
+                  annee={r.year}
+                  lang={r.lang}
+                  sujet={r.subject}
+                  provenance={r.provenance}
+                />
+              </div>
             ))}
           </div>
         </section>

@@ -9,6 +9,14 @@ import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
  */
 export const env = createEnv({
   server: {
+    SHENRON_CANON_YOLO_ENABLED: z.enum(["0", "1"]).default("0"),
+    SHENRON_CANON_YOLO_MODEL: z.string().trim().min(1).max(256).optional(),
+    SHENRON_CANON_YOLO_MIN_CONFIDENCE: z.coerce.number().min(0).max(1).default(0.8),
+    SHENRON_CANON_YOLO_TIMEOUT_MS: z.coerce.number().int().min(250).max(10000).default(3000),
+    SHENRON_CANON_YOLO_PER_HOUR: z.coerce.number().int().min(1).max(60).default(30),
+    SHENRON_CANON_YOLO_PER_DAY: z.coerce.number().int().min(1).max(1440).default(120),
+    SHENRON_CANON_YOLO_MIN_SPACING_MS: z.coerce.number().int().min(1000).max(3600000).default(1000),
+    TYPESAFE_API_KEY: z.string().trim().min(1).optional(),
     // `.trim()` partout : les env Vercel sont régulièrement pollués par un
     // `\n` final (posées via echo au lieu de printf). Un client_secret Discord
     // avec newline → Discord renvoie invalid_client à l'échange de code → aucun

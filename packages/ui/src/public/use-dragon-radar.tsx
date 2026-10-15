@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export type SearchScope = "all" | "canon" | "manga" | "anime" | "lore";
 export interface RadarResults {
@@ -47,8 +47,19 @@ export interface RadarVerdict {
   score: number;
   color: string;
   sources?: string[];
+  evidenceAssessmentEnabled?: boolean;
 }
+export type RadarEvidence =
+  | {
+      status: "selected";
+      referenceId: string;
+      referenceIndex: number;
+      subject: string;
+      source: string;
+    }
+  | { status: "abstained" | "unavailable" };
 export interface RadarTransport {
+  assessEvidence?(query: string, signal: AbortSignal): Promise<RadarEvidence>;
   search(query: string, signal: AbortSignal): Promise<RadarResults>;
   canon(query: string, signal: AbortSignal): Promise<RadarVerdict | null>;
 }
@@ -120,6 +131,26 @@ export function useDragonRadar(
   timeoutMs = 10_000,
 ) {
   const [attempt, setAttempt] = useState(0);
+  const activeEvidence = useRef<AbortController | null>(null);
+  const [evidenceState, setEvidenceState] = useState<{
+    key: string;
+    source: RadarTransport;
+    loading: boolean;
+    decision: RadarEvidence | null;
+  } | null>(null);
+  const cancelEvidence = useCallback(() => {
+    activeEvidence.current?.abort();
+    activeEvidence.current = null;
+    setEvidenceState(null);
+  }, []);
+  useEffect(() => {
+    if (!query || query.length > 400 || scope !== "canon" || !transport.assessEvidence)
+      activeEvidence.current?.abort();
+    return () => {
+      activeEvidence.current?.abort();
+      activeEvidence.current = null;
+    };
+  }, [query, scope, transport]);
   const wantsCanon = scope === "canon";
   const key = JSON.stringify([query, attempt]);
   const canonKey = JSON.stringify([query, attempt, wantsCanon]);
@@ -173,13 +204,55 @@ export function useDragonRadar(
     canon.key === canonKey && canon.source === transport
       ? canon
       : emptyCanon(canonKey, transport, Boolean(query && wantsCanon));
+  const evidence =
+    evidenceState?.key === canonKey && evidenceState.source === transport ? evidenceState : null;
+  const requestEvidence = async () => {
+    if (
+      !query ||
+      query.length > 400 ||
+      !wantsCanon ||
+      !currentCanon.canonData?.evidenceAssessmentEnabled ||
+      !transport.assessEvidence ||
+      activeEvidence.current
+    )
+      return;
+    const controller = new AbortController();
+    activeEvidence.current = controller;
+    setEvidenceState({ key: canonKey, source: transport, loading: true, decision: null });
+    try {
+      const decision = await deadline(
+        (signal) => transport.assessEvidence!(query, signal),
+        controller.signal,
+        Number.isFinite(timeoutMs) && timeoutMs > 0 ? Math.min(timeoutMs, 10_000) : 10_000,
+      );
+      if (!controller.signal.aborted)
+        setEvidenceState({ key: canonKey, source: transport, loading: false, decision });
+    } catch {
+      if (!controller.signal.aborted)
+        setEvidenceState({
+          key: canonKey,
+          source: transport,
+          loading: false,
+          decision: { status: "unavailable" },
+        });
+    } finally {
+      if (activeEvidence.current === controller) activeEvidence.current = null;
+    }
+  };
   return {
+    evidence: evidence?.decision ?? null,
+    evidenceLoading: evidence?.loading ?? false,
+    requestEvidence,
+    cancelEvidence,
     results: currentSearch.results,
     isLoading: currentSearch.isLoading,
     error: currentSearch.error,
     canonData: wantsCanon ? currentCanon.canonData : null,
     canonLoading: wantsCanon && currentCanon.canonLoading,
     canonError: wantsCanon && currentCanon.canonError,
-    retry: () => setAttempt((value) => value + 1),
+    retry: () => {
+      cancelEvidence();
+      setAttempt((value) => value + 1);
+    },
   };
 }

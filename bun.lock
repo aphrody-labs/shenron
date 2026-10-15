@@ -396,7 +396,7 @@
     "@aphrody/bun": "3.3.13",
     "@aphrody/bun-plugin-tailwind": "0.1.0",
     "@aphrody/bun-runtime": "1.4.3-aphrody.2",
-    "@aphrody/bun-runtime-sdk": "1.4.5",
+    "@aphrody/bun-runtime-sdk": "1.4.10",
     "@aphrody/bun-test-dom": "0.1.1",
     "@aphrody/bun-video": "https://dist.aphrody.app/packages/bun-video/1.4.4-video.1/db7590aff424cc85c783a316556b8552f780898f92d9765443092a5c69970056/package.tgz",
     "@aphrody/discord-kit": "0.1.3",
@@ -562,7 +562,7 @@
 
     "@aphrody/bun-runtime-linux-x64": ["@aphrody/bun-runtime-linux-x64@1.4.3-aphrody.2", "", { "os": "linux", "cpu": "x64" }, "sha512-WM0w1Nmeb7BZugLaICD8mo0MkCTtF90AS7omf8/6gsBkfhzLySCS6oDSKeZkc7uQ6r0wLlaSlWgqxEM31VRjOA=="],
 
-    "@aphrody/bun-runtime-sdk": ["@aphrody/bun-runtime-sdk@1.4.5", "", {}, "sha512-NLl1O48SIwnkP3RHzT2aOTjiQkqpfKhBh5WBl7JRsnvO09Hbiw0I7wGnx33EEaOWKEErDxIzIKPHnXgULDmeEA=="],
+    "@aphrody/bun-runtime-sdk": ["@aphrody/bun-runtime-sdk@1.4.10", "", {}, "sha512-Zbltu8tR/UajI+NOnM4wXf+gXesHC4CRptCyp+nn4RkZqvoXsto8izdsHtUdEPH/BbmIq+BKq/1ModOBI2xSmw=="],
 
     "@aphrody/bun-runtime-windows-aarch64": ["@aphrody/bun-runtime-windows-aarch64@1.4.3-aphrody.2", "", { "os": "win32", "cpu": "arm64" }, "sha512-Wb3/lU4fE3PCojN1/qv9RrLsOUAhlyVn4hjVNh5d2e3Xz+QtOf4+zac0C115fdBMnfAYfJ0Ud7jCrxKxofXxWA=="],
 
@@ -2723,6 +2723,8 @@
     "@ai-sdk/openai-compatible/@ai-sdk/provider": ["@ai-sdk/provider@4.0.21", "", { "dependencies": { "json-schema": "^0.4.0" } }, "sha512-UpbC9C1oht8dhfKPbVXSLRZS3DI8uk8n5v2uMjBPNIYGsC2kL045ywq7D8Hh9KgnH9rP5W/GxQdYtWScRouqlA=="],
 
     "@ai-sdk/provider-utils/@ai-sdk/provider": ["@ai-sdk/provider@4.0.21", "", { "dependencies": { "json-schema": "^0.4.0" } }, "sha512-UpbC9C1oht8dhfKPbVXSLRZS3DI8uk8n5v2uMjBPNIYGsC2kL045ywq7D8Hh9KgnH9rP5W/GxQdYtWScRouqlA=="],
+
+    "@aphrody/bun-video/@aphrody/bun-runtime-sdk": ["@aphrody/bun-runtime-sdk@1.4.5", "", {}, "sha512-NLl1O48SIwnkP3RHzT2aOTjiQkqpfKhBh5WBl7JRsnvO09Hbiw0I7wGnx33EEaOWKEErDxIzIKPHnXgULDmeEA=="],
 
     "@aphrody/bun-video/react": ["react@19.2.0", "", {}, "sha512-tmbWg6W31tQLeB5cdIBOicJDJRR2KzXsV7uSK9iNfLWQ5bIZfxuPEHp7M8wiHyHnn0DD1i7w3Zmin0FtkrwoCQ=="],
 

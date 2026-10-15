@@ -14,7 +14,7 @@ const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL?.trim().replace(/\/+$/, "");
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   // Native SDK loading is deferred to the Bun host, outside Next's server bundle.
-  serverExternalPackages: ["@aphrody/bun"],
+  serverExternalPackages: ["@aphrody/bun", "@aphrody/bun-runtime-sdk"],
   // Repli documenté pour les VPS contraints : Webpack sans minification évite
   // le pic mémoire du minifieur lors d'un build à froid. L'option est activée
   // uniquement par la pipeline locale de secours et ne change pas les builds

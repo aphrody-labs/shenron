@@ -26,6 +26,7 @@ import { canonPreuves } from "@/lib/canon-preuves";
 import { canonEvidenceView } from "@/lib/canon-preuves-view";
 import { getCanonConfig, getCanonReferences } from "@/lib/canon-config";
 import { slugCanon } from "@/lib/canon-engine";
+import { canonEvidenceDecision, isCanonEvidenceEnabled } from "@/lib/canon-yolo-server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -61,7 +62,13 @@ async function compterQuestion(question: string, tier: string, score: number, or
 
 export async function GET(req: NextRequest) {
   const q = (req.nextUrl.searchParams.get("q") ?? "").trim().slice(0, QUESTION_MAX);
-  const headers = { ...CORS, "Cache-Control": "public, s-maxage=300, stale-while-revalidate=3600" };
+  const assessEvidence = req.nextUrl.searchParams.get("assessEvidence") === "1";
+  const headers = {
+    ...CORS,
+    "Cache-Control": assessEvidence
+      ? "no-store"
+      : "public, s-maxage=300, stale-while-revalidate=3600",
+  };
 
   if (!q) {
     const [config, references] = await Promise.all([getCanonConfig(), getCanonReferences()]);
@@ -99,10 +106,15 @@ export async function GET(req: NextRequest) {
 
   const preuves = await canonPreuves(q);
   const { verdict } = preuves;
+  const evidenceDecision = assessEvidence
+    ? await canonEvidenceDecision(q, verdict.references ?? [])
+    : null;
   void compterQuestion(q, verdict.tier, verdict.score, verdict.origine);
   return NextResponse.json(
     {
       question: q,
+      evidenceAssessmentEnabled: isCanonEvidenceEnabled(),
+      ...(evidenceDecision ? { evidenceDecision } : {}),
       verdict: {
         tier: verdict.tier,
         tierLabel: verdict.tierLabel,

@@ -34,5 +34,11 @@
   "episode": "第{number}話",
   "ki": "気",
   "seriesFallback": "ドラゴンボール",
-  "shortSeriesFallback": "DB"
+  "shortSeriesFallback": "DB",
+  "evidenceTitle": "証拠選択の補助",
+  "evidenceAction": "証拠を提案",
+  "evidenceLoading": "証拠を確認中…",
+  "evidenceSelected": "提案された証拠を見る",
+  "evidenceAbstained": "十分に有力な証拠を選べませんでした。判定は変わりません。",
+  "evidenceUnavailable": "証拠の補助は利用できません。判定は変わりません。"
 }

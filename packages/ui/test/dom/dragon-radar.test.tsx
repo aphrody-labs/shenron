@@ -252,6 +252,14 @@ test("HTTP transport rejects malformed and failed responses and preserves its ab
     status = 503;
     await expect(transport.search("x", controller.signal)).rejects.toThrow("Search unavailable");
     status = 200;
+    body = { verdict: editorialVerdict, evidenceAssessmentEnabled: true };
+    expect((await transport.canon("x", controller.signal))?.evidenceAssessmentEnabled).toBe(true);
+    body = { verdict: editorialVerdict, evidenceAssessmentEnabled: "true" };
+    await expect(transport.canon("x", controller.signal)).rejects.toThrow(
+      "Invalid evidence capability",
+    );
+    body = { verdict: editorialVerdict };
+    expect((await transport.canon("x", controller.signal))?.evidenceAssessmentEnabled).toBe(false);
     body = { verdict: null };
     expect(await transport.canon("x", controller.signal)).toBeNull();
     controller.abort();
@@ -259,4 +267,163 @@ test("HTTP transport rejects malformed and failed responses and preserves its ab
   } finally {
     server.stop(true);
   }
+});
+
+test("evidence HTTP action selects only references in its bounded response", async () => {
+  let body: unknown = {
+    evidenceDecision: { status: "selected", referenceId: "ref" },
+    references: [{ id: "ref", subject: "Interview", source: "Guide", href: "javascript:bad" }],
+  };
+  const requests: URL[] = [];
+  const server = Bun.serve({
+    hostname: "127.0.0.1",
+    port: 0,
+    fetch(request) {
+      requests.push(new URL(request.url));
+      return Response.json(body);
+    },
+  });
+  const transport = createDragonRadarHttpTransport(server.url.href, server.url.href + "?locale=fr");
+  try {
+    expect(await transport.assessEvidence!("Goku & Vegeta", new AbortController().signal)).toEqual({
+      status: "selected",
+      referenceId: "ref",
+      referenceIndex: 0,
+      subject: "Interview",
+      source: "Guide",
+    });
+    expect(requests[0]?.searchParams.get("assessEvidence")).toBe("1");
+    expect(requests[0]?.searchParams.get("q")).toBe("Goku & Vegeta");
+    body = { evidenceDecision: { status: "selected", referenceId: "unknown" }, references: [] };
+    await expect(transport.assessEvidence!("Goku", new AbortController().signal)).rejects.toThrow(
+      "Unknown evidence reference",
+    );
+    body = {};
+    expect(await transport.assessEvidence!("Goku", new AbortController().signal)).toEqual({
+      status: "unavailable",
+    });
+    const count = requests.length;
+    await expect(
+      transport.assessEvidence!("x".repeat(401), new AbortController().signal),
+    ).rejects.toThrow("Invalid evidence question");
+    expect(requests.length).toBe(count);
+  } finally {
+    server.stop(true);
+  }
+});
+const editorialVerdict: RadarVerdict = {
+  nature: "verdict",
+  verdict: "Curated verdict",
+  explanation: "Curated explanation",
+  tier: "A",
+  tierLabel: "Canon",
+  score: 100,
+  color: "#ffffff",
+  evidenceAssessmentEnabled: true,
+};
+
+test("evidence is explicit, singleflight and cancelled immediately on typing", async () => {
+  let calls = 0;
+  let signal: AbortSignal | undefined;
+  let finish!: (value: { status: "abstained" }) => void;
+  const transport: RadarTransport = {
+    search: async () => empty(),
+    canon: async () => editorialVerdict,
+    assessEvidence: (_query, currentSignal) => {
+      calls++;
+      signal = currentSignal;
+      return new Promise((resolve) => {
+        finish = resolve;
+      });
+    },
+  };
+  render(<DragonRadarSearch {...base} initialQuery="Goku" transport={transport} />);
+  await settle();
+  fireEvent.click(screen.getByRole("button", { name: base.messages.canon }));
+  await settle();
+  expect(calls).toBe(0);
+  const button = screen.getByRole("button", { name: base.messages.evidenceAction });
+  fireEvent.click(button);
+  fireEvent.click(button);
+  await settle();
+  expect(calls).toBe(1);
+  fireEvent.change(screen.getByRole("searchbox"), { target: { value: "Vegeta" } });
+  expect(signal?.aborted).toBe(true);
+  await act(async () => {
+    finish({ status: "abstained" });
+  });
+  expect(screen.queryByText(base.messages.evidenceAbstained)).toBeNull();
+});
+
+test("localized evidence links and abstention preserve the curated verdict", async () => {
+  for (const locale of ["fr", "en", "ja"]) {
+    const messages = getDragonRadarMessages(locale);
+    let selected = true;
+    const transport: RadarTransport = {
+      search: async () => empty(),
+      canon: async () => editorialVerdict,
+      assessEvidence: async () =>
+        selected
+          ? {
+              status: "selected",
+              referenceId: "ref",
+              referenceIndex: 2,
+              subject: "Interview",
+              source: "Guide",
+            }
+          : { status: "abstained" },
+    };
+    const view = render(
+      <DragonRadarSearch
+        {...base}
+        messages={messages}
+        initialQuery="Goku & Vegeta"
+        transport={transport}
+      />,
+    );
+    await settle();
+    fireEvent.click(screen.getByRole("button", { name: messages.canon }));
+    await settle();
+    fireEvent.click(screen.getByRole("button", { name: messages.evidenceAction }));
+    await settle();
+    expect(
+      screen
+        .getByRole("link", { name: new RegExp(messages.evidenceSelected) })
+        .getAttribute("href"),
+    ).toBe("/wiki/canon?q=Goku%20%26%20Vegeta#canon-reference-2");
+    selected = false;
+    fireEvent.click(screen.getByRole("button", { name: messages.evidenceAction }));
+    await settle();
+    expect(screen.getByText(messages.evidenceAbstained)).toBeTruthy();
+    expect(screen.getByText("Curated verdict")).toBeTruthy();
+    view.unmount();
+  }
+});
+
+test("unsupported capability hides action and unresponsive inference times out", async () => {
+  let enabled = false;
+  const transport: RadarTransport = {
+    search: async () => empty(),
+    canon: async () => ({ ...editorialVerdict, evidenceAssessmentEnabled: enabled }),
+    assessEvidence: () => new Promise(() => {}),
+  };
+  const view = render(
+    <DragonRadarSearch {...base} initialQuery="Goku" transport={transport} timeoutMs={20} />,
+  );
+  await settle();
+  fireEvent.click(screen.getByRole("button", { name: base.messages.canon }));
+  await settle();
+  expect(screen.queryByRole("button", { name: base.messages.evidenceAction })).toBeNull();
+  view.unmount();
+  enabled = true;
+  render(<DragonRadarSearch {...base} initialQuery="Goku" transport={transport} timeoutMs={20} />);
+  await settle();
+  fireEvent.click(screen.getByRole("button", { name: base.messages.canon }));
+  await settle();
+  fireEvent.click(screen.getByRole("button", { name: base.messages.evidenceAction }));
+  await act(async () => {
+    await Bun.sleep(35);
+  });
+  expect(screen.getByText(base.messages.evidenceUnavailable)).toBeTruthy();
+  expect(screen.getByText("Curated verdict")).toBeTruthy();
 });

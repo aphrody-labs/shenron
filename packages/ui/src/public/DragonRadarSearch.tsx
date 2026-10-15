@@ -36,15 +36,23 @@ export function DragonRadarSearch({
   const [scope, setScope] = useState<SearchScope>("all");
   const queryPending = query.trim() !== debouncedQ;
   const selectQuery = (value: string) => {
+    cancelEvidence();
     setQuery(value);
     setDebouncedQ(value.trim());
   };
-  const { results, canonData, isLoading, canonLoading, error, canonError, retry } = useDragonRadar(
-    debouncedQ,
-    scope,
-    transport,
-    timeoutMs,
-  );
+  const {
+    results,
+    canonData,
+    isLoading,
+    canonLoading,
+    error,
+    canonError,
+    retry,
+    evidence,
+    evidenceLoading,
+    requestEvidence,
+    cancelEvidence,
+  } = useDragonRadar(debouncedQ, scope, transport, timeoutMs);
   const t = (key: Parameters<typeof radarText>[1], values?: Record<string, string | number>) =>
     radarText(messages, key, values);
   useEffect(() => {
@@ -159,7 +167,10 @@ export function DragonRadarSearch({
                 id={inputId}
                 type="search"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  cancelEvidence();
+                  setQuery(e.target.value);
+                }}
                 placeholder={t("placeholder")}
                 className="w-full rounded-xl border-2 border-emerald-500/50 bg-black/80 py-3 pl-11 pr-10 text-sm font-bold text-emerald-300 placeholder-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.3)] focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-400/40"
               />
@@ -190,6 +201,7 @@ export function DragonRadarSearch({
               key={item.id}
               type="button"
               onClick={() => {
+                cancelEvidence();
                 setScope(item.id);
                 setDebouncedQ(query.trim());
               }}
@@ -282,6 +294,41 @@ export function DragonRadarSearch({
               </div>
             )}
 
+          {scope === "canon" &&
+            canonData?.evidenceAssessmentEnabled &&
+            transport.assessEvidence && (
+              <section
+                aria-label={t("evidenceTitle")}
+                className="rounded-2xl border border-white/20 p-5 space-y-3"
+              >
+                <p className="text-sm">{t("evidenceTitle")}</p>
+                <button
+                  type="button"
+                  disabled={evidenceLoading || debouncedQ.length > 400}
+                  onClick={() => void requestEvidence()}
+                  className="min-h-11 rounded-lg border border-amber-400 px-4 disabled:opacity-50"
+                >
+                  {t(evidenceLoading ? "evidenceLoading" : "evidenceAction")}
+                </button>
+                <output className="block" aria-live="polite">
+                  {evidence?.status === "selected" && (
+                    <Link
+                      href={
+                        "/wiki/canon?q=" +
+                        encodeURIComponent(debouncedQ) +
+                        "#canon-reference-" +
+                        evidence.referenceIndex
+                      }
+                      className="underline"
+                    >
+                      {t("evidenceSelected")}: {evidence.subject} — {evidence.source}
+                    </Link>
+                  )}
+                  {evidence?.status === "abstained" && <span>{t("evidenceAbstained")}</span>}
+                  {evidence?.status === "unavailable" && <span>{t("evidenceUnavailable")}</span>}
+                </output>
+              </section>
+            )}
           {/* 2. Manga & Scans (si scope = all ou manga) */}
           {(scope === "all" || scope === "manga") &&
             results &&
