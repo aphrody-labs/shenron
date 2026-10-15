@@ -44,14 +44,10 @@ export function mangaSourceLabel(series: string): string | null {
   return null;
 }
 
-/** A series reference alone cannot identify a volume's publication or language. */
-export function mangaVolumeBibliographicSource(row: {
-  id: number;
-  isbn: string | null;
-  title: string | null;
-}): { url: string; label: string; language: string | null } | null {
+type BibliographicVolumeIdentity = { id: number; isbn: string | null; title: string | null };
+function matchingMangaBibliography(row: BibliographicVolumeIdentity) {
   const variants = row.isbn ? isbnVariants(row.isbn) : [];
-  const matches = bibliographyManifest.records.filter((record) => {
+  return bibliographyManifest.records.filter((record) => {
     if (variants.length > 0 && record.isbn) {
       return isbnVariants(record.isbn).some((key) => variants.includes(key));
     }
@@ -63,6 +59,20 @@ export function mangaVolumeBibliographicSource(row: {
       record.title === row.title
     );
   });
+}
+export function mangaVolumeBibliographicRecord(row: BibliographicVolumeIdentity) {
+  const matches = matchingMangaBibliography(row);
+  return matches.length === 1 ? matches[0]! : null;
+}
+
+/** A series reference alone cannot identify a volume's publication or language. */
+export function mangaVolumeBibliographicSource(row: {
+  id: number;
+  isbn: string | null;
+  title: string | null;
+}): { url: string; label: string; language: string | null } | null {
+  const variants = row.isbn ? isbnVariants(row.isbn) : [];
+  const matches = matchingMangaBibliography(row);
   if (matches.length === 0 && variants.length > 0) {
     const legacy = (spinOffManifest.works as SpinOffSource[]).filter(
       (record) => record.isbn && isbnVariants(record.isbn).some((key) => variants.includes(key)),

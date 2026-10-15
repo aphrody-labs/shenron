@@ -4,17 +4,24 @@ import { isAbsolute, join } from "node:path";
 import { parseArgs } from "node:util";
 import postgres from "postgres";
 import { archiveDigest } from "./apply-archive-catalog";
+import { mangaVolumeEdition } from "../../apps/site/src/lib/manga-volume-edition";
+import { mangaVolumeBibliographicRecord } from "../../apps/site/src/lib/manga-source-registry";
+const seriesFor = (volume: ReaderManifest["volumes"][number]) =>
+  "series" in volume ? volume.series : "SOSH";
+const chapterNumberFor = (volume: ReaderManifest["volumes"][number]) =>
+  "chapterNumber" in volume ? volume.chapterNumber : volume.volumeNumber;
 
 export { validateSoshReaderManifest } from "../../packages/pipeline/src/dragon-ball/sosh-reader-manifest";
 import {
   validateSoshReaderManifest,
-  type SoshReaderManifest,
+  validateMangaReaderManifest,
+  type ReaderManifest,
 } from "../../packages/pipeline/src/dragon-ball/sosh-reader-manifest";
 
 /** Fetch the exact public object without redirecting to an unreviewed provider. */
 export type SoshAssetFetcher = (url: string, options: RequestInit) => Promise<Response>;
 export async function verifySoshReaderAssets(
-  manifest: SoshReaderManifest,
+  manifest: ReaderManifest,
   fetcher: SoshAssetFetcher = fetch,
 ) {
   let verified = 0;
@@ -59,8 +66,8 @@ export interface SoshSnapshot {
 }
 export const soshSnapshotDigest = (snapshot: SoshSnapshot) =>
   archiveDigest(JSON.stringify(snapshot));
-export function missingSoshChapters(
-  manifest: SoshReaderManifest,
+export function missingReaderChapters(
+  manifest: ReaderManifest,
   snapshot: SoshSnapshot,
   options: { publishEmptyHidden?: boolean } = {},
 ) {
@@ -68,11 +75,41 @@ export function missingSoshChapters(
     const storedVolume = snapshot.volumes.find((row) => Number(row.id) === volume.volumeId);
     if (
       !storedVolume ||
-      storedVolume.series !== "SOSH" ||
+      storedVolume.series !== seriesFor(volume) ||
       !storedVolume.visible ||
       Number(storedVolume.volume_number) !== volume.volumeNumber
     )
       throw new Error("SOSH volume identity or visibility differs");
+    if ("edition" in volume) {
+      const identity = {
+        id: Number(storedVolume.id),
+        isbn: typeof storedVolume.isbn === "string" ? storedVolume.isbn : null,
+        title: typeof storedVolume.title === "string" ? storedVolume.title : null,
+      };
+      const edition = mangaVolumeEdition(volume.series, identity);
+      const bibliography = mangaVolumeBibliographicRecord(identity);
+      if (!bibliography)
+        throw Error("Unambiguous publisher bibliography required for a generic manga import");
+      if (
+        edition.language !== volume.edition.language ||
+        edition.colorization !== volume.edition.colorization
+      )
+        throw Error("Manifest edition differs from the canonical reader publication");
+      if (bibliography && bibliography.sourceUrl !== volume.edition.identityEvidence)
+        throw Error("Primary edition evidence differs from the ISBN bibliography");
+      if ((bibliography.jdcn ? "digital" : "print") !== volume.edition.format)
+        throw Error("Source format differs from the canonical publication");
+      if (
+        storedVolume.title !== volume.expectedVolumeTitle ||
+        String(storedVolume.isbn ?? "")
+          .replaceAll("-", "")
+          .toUpperCase() !==
+          String(volume.edition.isbn ?? "")
+            .replaceAll("-", "")
+            .toUpperCase()
+      )
+        throw Error("Target volume title or ISBN differs from reviewed edition");
+    }
     const existing = snapshot.chapters.filter(
       (row) => Number(row.volume_id) === volume.volumeId || Number(row.id) === volume.chapterId,
     );
@@ -82,8 +119,8 @@ export function missingSoshChapters(
     if (
       Number(chapter.id) !== volume.chapterId ||
       Number(chapter.volume_id) !== volume.volumeId ||
-      chapter.series !== "SOSH" ||
-      Number(chapter.chapter_number) !== volume.volumeNumber
+      chapter.series !== seriesFor(volume) ||
+      Number(chapter.chapter_number) !== chapterNumberFor(volume)
     )
       throw new Error("Existing SOSH chapter identity differs; protected from overwrite");
     if (
@@ -106,10 +143,14 @@ export function missingSoshChapters(
   });
 }
 
+export const missingSoshChapters = missingReaderChapters;
+
 export async function importSoshReaders(
   args = Bun.argv.slice(2),
   fetcher: SoshAssetFetcher = fetch,
+  mode: "SOSH" | "MANGA" = "SOSH",
 ) {
+  const schemaPrefix = mode === "MANGA" ? "shenron-manga-reader" : "shenron-sosh-reader";
   const { values } = parseArgs({
     args,
     options: {
@@ -129,7 +170,10 @@ export async function importSoshReaders(
     throw new Error("Protected job directory required");
   const body = await Bun.file(join(root, "manifest.json")).text();
   if (archiveDigest(body) !== values["expected-sha"]) throw new Error("Pinned manifest differs");
-  const manifest = validateSoshReaderManifest(JSON.parse(body));
+  const manifest =
+    mode === "MANGA"
+      ? validateMangaReaderManifest(JSON.parse(body))
+      : validateSoshReaderManifest(JSON.parse(body));
   const options = { publishEmptyHidden: values["publish-empty-hidden"] };
   const verifiedAssets = await verifySoshReaderAssets(manifest, fetcher);
   if (!process.env.DATABASE_URL) throw new Error("Existing protected DATABASE_URL required");
@@ -160,7 +204,7 @@ export async function importSoshReaders(
     if (!values.apply) {
       await save("before.json", current);
       const plan = {
-        schema: "shenron-sosh-reader-plan/v1",
+        schema: schemaPrefix + "-plan/v1",
         manifestSha256: values["expected-sha"],
         beforeSha256: soshSnapshotDigest(current),
         newChapters: missing.length - updates.length,
@@ -190,7 +234,7 @@ export async function importSoshReaders(
     const before = await Bun.file(join(root, "before.json")).json();
     const backup = await Bun.file(join(root, "backup.json")).json();
     if (
-      plan.schema !== "shenron-sosh-reader-plan/v1" ||
+      plan.schema !== schemaPrefix + "-plan/v1" ||
       plan.manifestSha256 !== values["expected-sha"] ||
       plan.beforeSha256 !== soshSnapshotDigest(before) ||
       plan.beforeSha256 !== soshSnapshotDigest(current) ||
@@ -213,7 +257,7 @@ export async function importSoshReaders(
           ? await tx`UPDATE bot.db_manga_chapters SET title=${volume.title}, title_ja=${volume.titleJa}, cover=${pages[0]!}, pages=${tx.json(pages)}, visible=true
               WHERE id=${volume.chapterId} AND visible=false AND pages='[]'::jsonb RETURNING *`
           : await tx`INSERT INTO bot.db_manga_chapters (id, series, chapter_number, volume_id, title, title_ja, cover, pages, visible)
-              VALUES (${volume.chapterId}, 'SOSH', ${volume.volumeNumber}, ${volume.volumeId}, ${volume.title}, ${volume.titleJa}, ${pages[0]!}, ${tx.json(pages)}, true) RETURNING *`;
+              VALUES (${volume.chapterId}, ${seriesFor(volume)}, ${chapterNumberFor(volume)}, ${volume.volumeId}, ${volume.title}, ${volume.titleJa}, ${pages[0]!}, ${tx.json(pages)}, true) RETURNING *`;
         if (written.length !== 1) throw new Error("SOSH chapter write precondition differs");
         const wikiRow = (row: Row): postgres.JSONValue =>
           JSON.parse(
@@ -228,7 +272,7 @@ export async function importSoshReaders(
           );
         await tx`INSERT INTO public.wiki_revisions (id, "tableName", "rowId", action, label, before, after, "editorName")
           VALUES (${crypto.randomUUID()}, 'db_manga_chapters', ${String(volume.chapterId)}, ${existingChapter ? "update" : "create"}, ${volume.title}, ${existingChapter ? tx.json(wikiRow(existingChapter)) : null},
-          ${tx.json(wikiRow(written[0]!))}, 'sosh-reader-import')`;
+          ${tx.json(wikiRow(written[0]!))}, ${mode === "MANGA" ? "manga-reader-import" : "sosh-reader-import"})`;
       }
       const after = await snapshot(tx);
       if (missingSoshChapters(manifest, after).length)
@@ -242,7 +286,7 @@ export async function importSoshReaders(
     )
       throw new Error("Independent SOSH readback differs");
     const receipt = {
-      schema: "shenron-sosh-reader-receipt/v1",
+      schema: schemaPrefix + "-receipt/v1",
       manifestSha256: values["expected-sha"],
       beforeSha256: plan.beforeSha256,
       afterSha256: soshSnapshotDigest(after),

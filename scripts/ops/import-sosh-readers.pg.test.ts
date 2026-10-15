@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import postgres from "postgres";
 import { importSoshReaders, type SoshAssetFetcher } from "./import-sosh-readers";
+import { importMangaReaders } from "./import-manga-readers";
 import { archiveDigest } from "./apply-archive-catalog";
 
 const url = process.env.SOSH_IMPORT_PG_URL;
@@ -48,14 +49,14 @@ test.skipIf(!url)(
         },
       ],
     });
-    async function job(number: number, id: number, extra: string[] = []) {
+    async function job(number: number, id: number, extra: string[] = [], custom?: unknown) {
       const directory = await mkdtemp(join(tmpdir(), "sosh-import-pg-"));
       jobs.push(directory);
       await chmod(directory, 0o700);
-      const body = JSON.stringify(manifest(number, id));
+      const body = JSON.stringify(custom ?? manifest(number, id));
       await Bun.write(join(directory, "manifest.json"), body);
       const args = ["--job", directory, "--expected-sha", archiveDigest(body), ...extra];
-      await importSoshReaders(args, fetcher);
+      await (custom ? importMangaReaders : importSoshReaders)(args, fetcher);
       // A real pg_dump archive qualifies the backup bytes independently from the plan.
       const process = Bun.spawn(
         [
@@ -84,10 +85,10 @@ test.skipIf(!url)(
     try {
       process.env.DATABASE_URL = url;
       await sql`CREATE SCHEMA IF NOT EXISTS bot`;
-      await sql`CREATE TABLE bot.db_manga_volumes (id integer PRIMARY KEY, series text, volume_number integer, visible boolean)`;
+      await sql`CREATE TABLE bot.db_manga_volumes (id integer PRIMARY KEY, series text, volume_number integer, visible boolean, title text, isbn text)`;
       await sql`CREATE TABLE bot.db_manga_chapters (id integer PRIMARY KEY, series text, chapter_number integer, volume_id integer REFERENCES bot.db_manga_volumes(id), title text, title_ja text, cover text, pages jsonb, visible boolean)`;
       await sql`CREATE TABLE public.wiki_revisions (id text PRIMARY KEY, "tableName" text NOT NULL, "rowId" text NOT NULL, action text NOT NULL, label text, before jsonb, after jsonb, "editorName" text, "createdAt" timestamp DEFAULT CURRENT_TIMESTAMP)`;
-      await sql`INSERT INTO bot.db_manga_volumes VALUES (702, 'SOSH', 2, true), (703, 'SOSH', 3, true), (704, 'SOSH', 4, true)`;
+      await sql`INSERT INTO bot.db_manga_volumes (id,series,volume_number,visible) VALUES (702, 'SOSH', 2, true), (703, 'SOSH', 3, true), (704, 'SOSH', 4, true)`;
       const first = await job(2, 35002);
       await importSoshReaders([...first.args, "--apply"], fetcher);
       const [row] =
@@ -99,7 +100,7 @@ test.skipIf(!url)(
       expect(revisions[0]!.after.pages).toEqual(row!.pages);
       await importSoshReaders([...first.args, "--apply"], fetcher);
       expect(await sql`SELECT id FROM public.wiki_revisions`).toHaveLength(1);
-      await sql`INSERT INTO bot.db_manga_volumes VALUES (705, 'SOSH', 5, true), (706, 'SOSH', 6, true), (707, 'SOSH', 7, true)`;
+      await sql`INSERT INTO bot.db_manga_volumes (id,series,volume_number,visible) VALUES (705, 'SOSH', 5, true), (706, 'SOSH', 6, true), (707, 'SOSH', 7, true)`;
       await sql`ALTER TABLE bot.db_manga_chapters ADD COLUMN editorial_note text`;
       for (const number of [5, 6, 7])
         await sql`INSERT INTO bot.db_manga_chapters (id,series,chapter_number,volume_id,title,pages,visible,editorial_note) VALUES (${35000 + number},'SOSH',${number},${700 + number},'Pending','[]'::jsonb,false,'Preserve this note')`;
@@ -148,6 +149,42 @@ test.skipIf(!url)(
       await expect(importSoshReaders([...rollback.args, "--apply"], fetcher)).rejects.toThrow();
       expect(await sql`SELECT id FROM bot.db_manga_chapters WHERE id=35004`).toHaveLength(0);
       expect(await sql`SELECT id FROM public.wiki_revisions`).toHaveLength(2);
+      const title = "Docteur Slump perfect edition - Tome 01";
+      const source =
+        "https://www.glenat.com/glenat-manga/docteur-slump-perfect-edition-tome-01-9782723472272/";
+      await sql`INSERT INTO bot.db_manga_volumes (id,series,volume_number,visible,title,isbn) VALUES (740,'ARALE',1,true,${title},'9782723472272')`;
+      const original = manifest(1, 45001);
+      const generic = {
+        ...original,
+        collection: "MANGA",
+        volumes: [
+          {
+            ...original.volumes[0],
+            volumeId: 740,
+            series: "ARALE",
+            chapterNumber: 1,
+            title,
+            titleJa: null,
+            expectedVolumeTitle: title,
+            sourceUrl: source,
+            pageCountEvidence: source,
+            edition: {
+              isbn: "9782723472272",
+              language: "fr",
+              colorization: "bw",
+              format: "print",
+              identityEvidence: source,
+            },
+          },
+        ],
+      };
+      const manga = await job(1, 45001, [], generic);
+      await importMangaReaders([...manga.args, "--apply"], fetcher);
+      const [mangaRow] = await sql`SELECT * FROM bot.db_manga_chapters WHERE id=45001`;
+      expect(mangaRow!.series).toBe("ARALE");
+      expect(mangaRow!.pages).toHaveLength(2);
+      await importMangaReaders([...manga.args, "--apply"], fetcher);
+      expect(await sql`SELECT id FROM public.wiki_revisions WHERE "rowId"='45001'`).toHaveLength(1);
     } finally {
       if (oldUrl === undefined) delete process.env.DATABASE_URL;
       else process.env.DATABASE_URL = oldUrl;

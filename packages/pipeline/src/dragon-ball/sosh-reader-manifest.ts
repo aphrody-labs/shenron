@@ -68,15 +68,26 @@ export type SoshReaderManifest = z.infer<typeof soshReaderManifestSchema>;
 
 export function validateSoshReaderManifest(value: unknown): SoshReaderManifest {
   const manifest = soshReaderManifestSchema.parse(value);
+  for (const volume of manifest.volumes)
+    if (volume.volumeId !== 700 + volume.volumeNumber)
+      throw new Error("Inconsistent SOSH volume identity");
+  validateReaderPages(manifest);
+  return manifest;
+}
+
+function validateReaderPages(manifest: {
+  volumes: Array<{
+    volumeId: number;
+    chapterId: number;
+    expectedPages: number;
+    pages: Array<{ number: number; readerImage: string }>;
+  }>;
+}) {
   const ids = new Set<number>();
   const chapters = new Set<number>();
   const images = new Set<string>();
   for (const volume of manifest.volumes) {
-    if (
-      volume.volumeId !== 700 + volume.volumeNumber ||
-      ids.has(volume.volumeId) ||
-      chapters.has(volume.chapterId)
-    )
+    if (ids.has(volume.volumeId) || chapters.has(volume.chapterId))
       throw new Error("Duplicate or inconsistent SOSH identity");
     ids.add(volume.volumeId);
     chapters.add(volume.chapterId);
@@ -90,5 +101,45 @@ export function validateSoshReaderManifest(value: unknown): SoshReaderManifest {
       images.add(page.readerImage);
     }
   }
+  return manifest;
+}
+
+export const mangaReaderManifestSchema = soshReaderManifestSchema
+  .extend({
+    collection: z.literal("MANGA"),
+    volumes: z
+      .array(
+        soshReaderManifestSchema.shape.volumes.element
+          .extend({
+            volumeId: z.number().int().positive(),
+            volumeNumber: z.number().int().positive(),
+            chapterNumber: z.number().int().positive(),
+            series: z.string().regex(/^[A-Z][A-Z0-9_]{0,63}$/),
+            titleJa: z.string().trim().min(1).max(500).nullable(),
+            expectedVolumeTitle: z.string().trim().min(1).nullable(),
+            edition: z
+              .object({
+                isbn: z
+                  .string()
+                  .regex(/^[0-9Xx-]{10,17}$/)
+                  .nullable(),
+                language: z.enum(["ja", "fr", "en"]),
+                colorization: z.enum(["bw", "color"]),
+                format: z.enum(["print", "digital"]),
+                identityEvidence: citation,
+              })
+              .strict(),
+          })
+          .strict(),
+      )
+      .min(1)
+      .max(500),
+  })
+  .strict();
+export type MangaReaderManifest = z.infer<typeof mangaReaderManifestSchema>;
+export type ReaderManifest = SoshReaderManifest | MangaReaderManifest;
+export function validateMangaReaderManifest(value: unknown): MangaReaderManifest {
+  const manifest = mangaReaderManifestSchema.parse(value);
+  validateReaderPages(manifest);
   return manifest;
 }
