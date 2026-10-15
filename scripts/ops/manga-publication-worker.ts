@@ -15,6 +15,7 @@ import {
   stageMangaCdnProjection,
 } from "./manga-cdn-projection";
 import type { PublishCatalogOptions } from "../../deploy/cloudflare/cli/publish-catalog";
+import { isMangaReaderExtent } from "../../apps/site/src/lib/manga-reader-extent";
 
 type Row = Record<string, unknown>;
 export type WorkerConfig = {
@@ -60,6 +61,19 @@ export class Conflict extends Error {
   readonly code = "MANGA_CAS_CONFLICT";
 }
 const same = (a: Row, b: Row) => wikiUpdateSnapshotHash(a) === wikiUpdateSnapshotHash(b);
+/** Metadata extensions must be understood by the image actually serving readers. */
+export async function qualifyLiveMangaExtentApi(read: (path: string) => Promise<any>) {
+  const catalogue = await read("/api/manga");
+  const readable = catalogue.catalog?.find((volume: Row) => volume.readableHere === true);
+  if (!readable || !Number.isSafeInteger(readable.id))
+    throw Error("Live manga qualification reader missing");
+  const volume = await read("/api/manga/volume/" + readable.id);
+  const chapterId = volume.chapters?.[0]?.id;
+  if (!Number.isSafeInteger(chapterId)) throw Error("Live manga qualification chapter missing");
+  const chapter = await read("/api/manga/chapter/" + chapterId);
+  if (!Object.hasOwn(chapter, "readerExtent") || !isMangaReaderExtent(chapter.readerExtent))
+    throw Error("Live manga API does not yet support explicit reader extent");
+}
 async function privateDirectory(path: string) {
   if (!isAbsolute(path)) throw Error("Absolute private directory required");
   await mkdir(path, { recursive: true, mode: 0o700 });
@@ -212,6 +226,7 @@ export function mangaWorkerPorts(config: WorkerConfig, signal?: AbortSignal): Ma
   ) => {
     const job = join(parentJob, editorial ? "catalogue" : "assets");
     await privateDirectory(job);
+    await qualifyLiveMangaExtentApi(api);
     const owner = await import("../../deploy/cloudflare/cli/publish-catalog");
     const optionsFile = join(job, "publish-options.json");
     let options: PublishCatalogOptions;

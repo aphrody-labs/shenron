@@ -10,6 +10,7 @@ import {
   consumeMangaBundle,
   runMangaWorker,
   Conflict,
+  qualifyLiveMangaExtentApi,
   type WorkerConfig,
   type MangaBundle,
   type MangaWorkerPorts,
@@ -355,4 +356,33 @@ test("explicit preview survives canonical editorial CAS without claiming complet
   });
   expect(q.next()).toBeNull();
   db.close();
+});
+
+test("publication capability follows a live readable chapter and refuses an older API before public staging", async () => {
+  const calls: string[] = [];
+  let current: Record<string, unknown> = { id: 99 };
+  const read = async (path: string) => {
+    calls.push(path);
+    if (path === "/api/manga")
+      return {
+        catalog: [
+          { id: 1, readableHere: false },
+          { id: 2, readableHere: true },
+        ],
+      };
+    if (path === "/api/manga/volume/2") return { chapters: [{ id: 99 }] };
+    if (path === "/api/manga/chapter/99") return current;
+    throw Error("Unexpected route");
+  };
+  await expect(qualifyLiveMangaExtentApi(read)).rejects.toThrow("does not yet support");
+  current = { id: 99, readerExtent: { kind: "unknown" } };
+  await qualifyLiveMangaExtentApi(read);
+  expect(calls).toEqual([
+    "/api/manga",
+    "/api/manga/volume/2",
+    "/api/manga/chapter/99",
+    "/api/manga",
+    "/api/manga/volume/2",
+    "/api/manga/chapter/99",
+  ]);
 });
