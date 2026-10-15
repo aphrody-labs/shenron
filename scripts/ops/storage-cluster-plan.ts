@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { isAbsolute, relative, resolve } from "node:path";
+import { posix, relative, resolve, win32 } from "node:path";
 import { open, realpath } from "node:fs/promises";
 
 const providers = ["dbfr", "r2", "supabase", "neon"] as const;
@@ -258,10 +258,14 @@ export function planStorageCluster(input: unknown, now = Date.now()) {
 }
 
 export function reportPath(path: string, root = process.cwd()) {
-  const reports = resolve(root, "var/reports");
-  const target = resolve(root, path);
-  const child = relative(reports, target);
-  if (!child || child.startsWith("..") || isAbsolute(child) || !target.endsWith(".json"))
+  // Explicit drive and UNC roots retain their semantics on every planner host.
+  const paths = win32.parse(root).root.length > 1 ? win32 : posix;
+  if (paths === win32 && !paths.isAbsolute(root))
+    throw Error("Output must be a JSON file under var/reports");
+  const reports = paths.resolve(root, "var", "reports");
+  const target = paths.resolve(root, path);
+  const child = paths.relative(reports, target);
+  if (!child || child.startsWith("..") || paths.isAbsolute(child) || !target.endsWith(".json"))
     throw Error("Output must be a JSON file under var/reports");
   return target;
 }

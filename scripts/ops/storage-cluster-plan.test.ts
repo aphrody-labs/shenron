@@ -206,3 +206,45 @@ test("report output is confined to JSON under var/reports", () => {
   ])
     expect(() => reportPath(path, "C:/shenron")).toThrow("var/reports");
 });
+
+test("POSIX and Windows report roots preserve their own path semantics on every host", () => {
+  for (const [root, path, expected] of [
+    ["/srv/shenron", "var/reports/plan.json", "/srv/shenron/var/reports/plan.json"],
+    [
+      "/srv/shenron",
+      "/srv/shenron/var/reports/nested/plan.json",
+      "/srv/shenron/var/reports/nested/plan.json",
+    ],
+    [
+      "C:\\shenron",
+      "var\\reports\\nested\\plan.json",
+      "C:\\shenron\\var\\reports\\nested\\plan.json",
+    ],
+    ["C:/shenron", "c:/SHENRON/VAR/REPORTS/plan.json", "c:\\SHENRON\\VAR\\REPORTS\\plan.json"],
+    [
+      "\\\\server\\share\\shenron",
+      "var/reports/plan.json",
+      "\\\\server\\share\\shenron\\var\\reports\\plan.json",
+    ],
+    [
+      "//server/share/shenron",
+      "var/reports/plan.json",
+      "\\\\server\\share\\shenron\\var\\reports\\plan.json",
+    ],
+  ])
+    expect(reportPath(path!, root!)).toBe(expected!);
+});
+
+test("report confinement rejects sibling directories, traversal and foreign drives or shares", () => {
+  for (const [root, path] of [
+    ["/srv/shenron", "/srv/shenron/var/reports-other/plan.json"],
+    ["/srv/shenron", "var/reports/../../private.json"],
+    ["C:/shenron", "var\\reports\\..\\..\\private.json"],
+    ["C:/shenron", "C:/shenron/var/reports-other/plan.json"],
+    ["C:/shenron", "D:/shenron/var/reports/plan.json"],
+    ["\\\\server\\share\\shenron", "\\\\server\\other\\shenron\\var\\reports\\plan.json"],
+    ["\\\\server\\share\\shenron", "\\\\other\\share\\shenron\\var\\reports\\plan.json"],
+    ["C:", "var/reports/plan.json"],
+  ])
+    expect(() => reportPath(path!, root!)).toThrow("var/reports");
+});
