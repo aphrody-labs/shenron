@@ -1213,6 +1213,18 @@
       "publisher": "Shueisha",
       "publishedAt": "2017-11-02",
       "sourceUrl": "https://www.shueisha.co.jp/books/items/contents.html?isbn=978-4-08-881261-8"
+    },
+    {
+      "legacyVolumeId": 147,
+      "work": "dragon_ball_super",
+      "edition": "shueisha_super_print",
+      "title": "ドラゴンボール超 24",
+      "isbn": "9784088844930",
+      "jdcn": null,
+      "language": "ja",
+      "publisher": "Shueisha",
+      "publishedAt": "2025-04-04",
+      "sourceUrl": "https://www.shueisha.co.jp/books/items/contents.html?isbn=9784088844930"
     }
   ]
 }
