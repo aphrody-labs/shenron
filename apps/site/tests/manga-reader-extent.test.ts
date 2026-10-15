@@ -10,7 +10,7 @@ test("legacy extent remains unknown; explicit public preview is retained", () =>
     { kind: "unknown" },
   );
   const extent = {
-    kind: "preview",
+    kind: "preview" as const,
     sourceUrl: "https://publisher.example/trial",
     fullVolumePages: null,
   };
