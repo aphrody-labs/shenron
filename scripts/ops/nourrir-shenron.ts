@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * nourrir-shenron.ts — Ingestion des corpus Aphrody & Bxc pour enrichir Shenron :
+ * nourrir-shenron.ts — Ingestion des corpus et collecte native Bun pour enrichir Shenron :
  * 1. Intégration des documents de knowledge.db et fiches Toriyama dans la table RAG / wiki.
  * 2. Ingestion des transcriptions d'ocr/results.db dans bot.db_databooks (complétion OCR).
- * 3. Crawl & Extraction ciblée via bxc pour les nouvelles parutions et fiches officielles.
+ * 3. Collecte native Bun et livraison vérifiée DB/CDN/RAG via le pipeline partagé.
  */
 
 import {
@@ -159,13 +159,13 @@ async function ingererOcr(sql: postgres.Sql, ocrDb: Database) {
 }
 
 async function main() {
-  console.log("=== NOURRIR SHENRON : APHRODY + BXC ===");
+  console.log("=== NOURRIR SHENRON : BUN NATIF ===");
 
   const sql = await connecte();
-
-  // 1. Audit des Databooks en base PostgreSQL
-  console.log("\n--- 1. ÉTAT ACTUEL DES DATABOOKS (PostgreSQL) ---");
-  const stats = await sql`
+  try {
+    // 1. Audit des Databooks en base PostgreSQL
+    console.log("\n--- 1. ÉTAT ACTUEL DES DATABOOKS (PostgreSQL) ---");
+    const stats = await sql`
 		SELECT 
 			count(*) as total_livres,
 			sum(jsonb_array_length(pages)) as total_pages,
@@ -173,157 +173,153 @@ async function main() {
 			count(*) filter (where exists (select 1 from jsonb_array_elements(pages) p where (p->>'text_fr') is not null and length(p->>'text_fr') > 5)) as livres_avec_trad
 		FROM bot.db_databooks
 	`;
-  console.log("Stats Databooks :", stats[0]);
+    console.log("Stats Databooks :", stats[0]);
 
-  // 2. Vérification des planches manquantes d'OCR
-  const planchesManquantes = await sql`
+    // 2. Vérification des planches manquantes d'OCR
+    const planchesManquantes = await sql`
 		WITH pages_depliees AS (
 			SELECT d.id as book_id, d.title, (p.value->>'number')::int as page_num, p.value->>'image' as image, p.value->>'text' as texte
 			FROM bot.db_databooks d, jsonb_array_elements(d.pages) p
 		)
 		SELECT count(*) as count_sans_ocr FROM pages_depliees WHERE texte IS NULL OR length(texte) < 5
 	`;
-  console.log("Nombre de planches sans OCR en base :", planchesManquantes[0]?.count_sans_ocr);
+    console.log("Nombre de planches sans OCR en base :", planchesManquantes[0]?.count_sans_ocr);
 
-  // 3. Ingestion d'ocr/results.db (lecture seule, contrôlée)
-  const resultsDbPath = resolveOcrResultsPath();
-  if (existsSync(resultsDbPath)) {
-    console.log(`\n--- 2. INGESTION DES TRANSCRIPTIONS DEPUIS APHRODY (${resultsDbPath}) ---`);
-    // Lecture seule + `PRAGMA quick_check` : une base corrompue lève ici, AVANT
-    // toute écriture. Le 2026-09-14, l'ancienne version lisait une base dont
-    // l'`integrity_check` échouait et en recopiait le contenu en PostgreSQL.
-    let ocrDb: Database;
-    try {
-      ocrDb = openOcrResultsReadonly(resultsDbPath, "quick");
-    } catch (err) {
-      console.error(`✗ ${err instanceof Error ? err.message : err}`);
-      console.error("Ingestion OCR abandonnée : aucune écriture.");
-      await sql.end();
-      process.exit(1);
-    }
-    const bilan = await ingererOcr(sql, ocrDb);
-    ocrDb.close();
-    console.log(
-      `✓ Rapprochement : ${bilan.cibles} planches appariées exactement, ${bilan.ecrites} écrites` +
-        `${APPLIQUER ? "" : " (simulation — --appliquer pour écrire)"}, ${bilan.dejaTranscrites} déjà transcrites (jamais écrasées), ` +
-        `${bilan.nonAppariees} chemins sans appariement exact, ${bilan.ambigues} ambiguës, ${bilan.rejetees} rejetées, ${bilan.conflits} conflits.`,
-    );
-  } else {
-    console.log(`results.db introuvable (${resultsDbPath}).`);
-  }
-
-  // 4. Ingestion de Knowledge.db ou memory/ vers le Wiki / RAG de Shenron
-  const aphrodyWorkspace =
-    process.env.APHRODY_WORKSPACE?.trim() || join(homedir(), ".aphrody", "workspace");
-  const knowledgeDbPaths = [join(aphrodyWorkspace, "knowledge.db")];
-  const memoryDirs = [join(aphrodyWorkspace, "memory")];
-
-  const outDir = join(import.meta.dir, "..", "..", "apps", "bot", "data", "rag", "raw", "aphrody");
-  if (!existsSync(outDir)) {
-    const { mkdirSync } = await import("node:fs");
-    mkdirSync(outDir, { recursive: true });
-  }
-
-  let insertedDocs = 0;
-  let knowledgePath = knowledgeDbPaths.find((p) => existsSync(p));
-  if (knowledgePath) {
-    console.log(`\n--- 3. INGESTION DES DOCUMENTS KNOWLEDGE APHRODY (${knowledgePath}) ---`);
-    try {
-      const kDb = new Database(knowledgePath);
-      const hasDocsTable = kDb
-        .query("SELECT count(*) as c FROM sqlite_master WHERE type='table' AND name='documents'")
-        .get() as any;
-      if (hasDocsTable?.c > 0) {
-        const docs = kDb
-          .query(
-            "SELECT id, filename, category, title, content FROM documents WHERE LENGTH(content) > 50",
-          )
-          .all() as any[];
-        console.log(`Documents trouvés dans knowledge.db : ${docs.length}`);
-        for (const doc of docs) {
-          const outPath = join(outDir, `${doc.filename || `doc-${doc.id}`}.md`);
-          const header = `---\ntitle: "${doc.title?.replace(/"/g, '\\"') || doc.filename}"\ncategory: "${doc.category}"\nsource: "aphrody-knowledge"\n---\n\n`;
-          await Bun.write(outPath, header + doc.content);
-          insertedDocs++;
-        }
+    // 3. Ingestion d'ocr/results.db (lecture seule, contrôlée)
+    const resultsDbPath = resolveOcrResultsPath();
+    if (existsSync(resultsDbPath)) {
+      console.log(`\n--- 2. INGESTION DES TRANSCRIPTIONS DEPUIS APHRODY (${resultsDbPath}) ---`);
+      // Lecture seule + `PRAGMA quick_check` : une base corrompue lève ici, AVANT
+      // toute écriture. Le 2026-09-14, l'ancienne version lisait une base dont
+      // l'`integrity_check` échouait et en recopiait le contenu en PostgreSQL.
+      let ocrDb: Database;
+      try {
+        ocrDb = openOcrResultsReadonly(resultsDbPath, "quick");
+      } catch (err) {
+        console.error(`✗ ${err instanceof Error ? err.message : err}`);
+        console.error("Ingestion OCR abandonnée : aucune écriture.");
+        throw err;
       }
-    } catch (err: any) {
-      console.warn("Knowledge.db avertissement:", err?.message);
-    }
-  }
-
-  const memoryDir = memoryDirs.find((d) => existsSync(d));
-  if (memoryDir) {
-    const files = readdirSync(memoryDir).filter((f) => f.endsWith(".md"));
-    console.log(`Fichiers trouvés dans memory/ (${memoryDir}) : ${files.length}`);
-    for (const f of files) {
-      const content = readFileSync(join(memoryDir, f), "utf-8");
-      if (content.length > 50) {
-        const outPath = join(outDir, f);
-        if (!existsSync(outPath)) {
-          await Bun.write(outPath, content);
-          insertedDocs++;
-        }
-      }
-    }
-  }
-  console.log(
-    `✓ Synchronisé ${insertedDocs} documents Aphrody dans apps/bot/data/rag/raw/aphrody/`,
-  );
-
-  // 5. Extraction Bxc Web Crawl & Scraping
-  console.log("\n--- 4. EXTRACTION BXC (OFFICIAL DRAGON BALL NEWS & LORE) ---");
-  const bxcPaths = [process.env.BXC_BIN?.trim(), Bun.which("bxc")].filter((path): path is string =>
-    Boolean(path),
-  );
-  const bxcBin = bxcPaths.find((p) => existsSync(p));
-  if (bxcBin) {
-    console.log(`Bxc détecté : ${bxcBin}`);
-    try {
-      const outDir = join(import.meta.dir, "..", "..", "apps", "bot", "data", "rag", "raw", "bxc");
-      if (!existsSync(outDir)) {
-        const { mkdirSync } = await import("node:fs");
-        mkdirSync(outDir, { recursive: true });
-      }
-      const proc = Bun.spawn(
-        [bxcBin, "scrape", "https://fr.dragon-ball-official.com", "--markdown", "--quiet"],
-        {
-          stdout: "pipe",
-          stderr: "ignore",
-        },
+      const bilan = await ingererOcr(sql, ocrDb);
+      ocrDb.close();
+      console.log(
+        `✓ Rapprochement : ${bilan.cibles} planches appariées exactement, ${bilan.ecrites} écrites` +
+          `${APPLIQUER ? "" : " (simulation — --appliquer pour écrire)"}, ${bilan.dejaTranscrites} déjà transcrites (jamais écrasées), ` +
+          `${bilan.nonAppariees} chemins sans appariement exact, ${bilan.ambigues} ambiguës, ${bilan.rejetees} rejetées, ${bilan.conflits} conflits.`,
       );
-      const text = await new Response(proc.stdout).text();
-      await proc.exited;
-      if (text && text.length > 100) {
-        const filePath = join(outDir, "db-official-fr-homepage.md");
-        await Bun.write(
-          filePath,
-          `---\ntitle: "Dragon Ball Official FR"\nsource: "bxc-scrape"\nurl: "https://fr.dragon-ball-official.com"\n---\n\n` +
-            text,
-        );
-        console.log(
-          `✓ Scraped Dragon Ball Official FR (${text.length} chars) via bxc -> ${filePath}`,
-        );
-      }
-    } catch (e: any) {
-      console.warn("Bxc scrape avertissement:", e?.message);
+    } else {
+      console.log(`results.db introuvable (${resultsDbPath}).`);
     }
-  } else {
-    console.log("bxc introuvable dans les chemins standards.");
-  }
 
-  // 6. Exécution de canon-ingest pour matérialiser les preuves
-  console.log("\n--- 5. SYNCHRONISATION CANON_REFERENCES ---");
-  const { execSync } = await import("node:child_process");
-  try {
-    const out = execSync("bun apps/site/scripts/canon-ingest.ts", { encoding: "utf-8" });
-    console.log(out.trim());
-  } catch (e: any) {
-    console.warn("Avertissement canon-ingest:", e?.message);
-  }
+    // 4. Ingestion de Knowledge.db ou memory/ vers le Wiki / RAG de Shenron
+    const aphrodyWorkspace =
+      process.env.APHRODY_WORKSPACE?.trim() || join(homedir(), ".aphrody", "workspace");
+    const knowledgeDbPaths = [join(aphrodyWorkspace, "knowledge.db")];
+    const memoryDirs = [join(aphrodyWorkspace, "memory")];
 
-  await sql.end();
-  console.log("\n=== NUTRITION SHENRON COMPLÉTÉE AVEC SUCCÈS ===");
+    const outDir = join(
+      import.meta.dir,
+      "..",
+      "..",
+      "apps",
+      "bot",
+      "data",
+      "rag",
+      "raw",
+      "aphrody",
+    );
+    if (!existsSync(outDir)) {
+      const { mkdirSync } = await import("node:fs");
+      mkdirSync(outDir, { recursive: true });
+    }
+
+    let insertedDocs = 0;
+    let knowledgePath = knowledgeDbPaths.find((p) => existsSync(p));
+    if (knowledgePath) {
+      console.log(`\n--- 3. INGESTION DES DOCUMENTS KNOWLEDGE APHRODY (${knowledgePath}) ---`);
+      try {
+        const kDb = new Database(knowledgePath);
+        const hasDocsTable = kDb
+          .query("SELECT count(*) as c FROM sqlite_master WHERE type='table' AND name='documents'")
+          .get() as any;
+        if (hasDocsTable?.c > 0) {
+          const docs = kDb
+            .query(
+              "SELECT id, filename, category, title, content FROM documents WHERE LENGTH(content) > 50",
+            )
+            .all() as any[];
+          console.log(`Documents trouvés dans knowledge.db : ${docs.length}`);
+          for (const doc of docs) {
+            const outPath = join(outDir, `${doc.filename || `doc-${doc.id}`}.md`);
+            const header = `---\ntitle: "${doc.title?.replace(/"/g, '\\"') || doc.filename}"\ncategory: "${doc.category}"\nsource: "aphrody-knowledge"\n---\n\n`;
+            await Bun.write(outPath, header + doc.content);
+            insertedDocs++;
+          }
+        }
+      } catch (err: any) {
+        console.warn("Knowledge.db avertissement:", err?.message);
+      }
+    }
+
+    const memoryDir = memoryDirs.find((d) => existsSync(d));
+    if (memoryDir) {
+      const files = readdirSync(memoryDir).filter((f) => f.endsWith(".md"));
+      console.log(`Fichiers trouvés dans memory/ (${memoryDir}) : ${files.length}`);
+      for (const f of files) {
+        const content = readFileSync(join(memoryDir, f), "utf-8");
+        if (content.length > 50) {
+          const outPath = join(outDir, f);
+          if (!existsSync(outPath)) {
+            await Bun.write(outPath, content);
+            insertedDocs++;
+          }
+        }
+      }
+    }
+    console.log(
+      `✓ Synchronisé ${insertedDocs} documents Aphrody dans apps/bot/data/rag/raw/aphrody/`,
+    );
+
+    // Le même propriétaire assure collecte, reprise et vérification DB/CDN/RAG.
+    console.log("\n--- 4. COLLECTE NATIVE BUN ---");
+    const sourceConfig = process.env.SHENRON_SOURCE_PIPELINE_CONFIG?.trim();
+    if (sourceConfig) {
+      const { autoSourcePipeline, runSourcePipeline } = await import("./bun-source-pipeline");
+      if (APPLIQUER) {
+        const receipt = await autoSourcePipeline(sourceConfig);
+        console.log(JSON.stringify(receipt));
+      } else {
+        const plan = await runSourcePipeline("plan", sourceConfig);
+        console.log(JSON.stringify(plan));
+      }
+    } else {
+      console.log("Collecte non configurée : SHENRON_SOURCE_PIPELINE_CONFIG absent.");
+    }
+
+    // 6. Exécution de canon-ingest pour matérialiser les preuves
+    console.log("\n--- 5. SYNCHRONISATION CANON_REFERENCES ---");
+    try {
+      const proc = Bun.spawn([process.execPath, "apps/site/scripts/canon-ingest.ts"], {
+        cwd: join(import.meta.dir, "../.."),
+        stdout: "pipe",
+        stderr: "inherit",
+      });
+      const [out, code] = await Promise.all([new Response(proc.stdout).text(), proc.exited]);
+      if (code !== 0) throw new Error(`canon-ingest : code ${code}`);
+      console.log(out.trim());
+    } catch (e: any) {
+      console.warn("Avertissement canon-ingest:", e?.message);
+    }
+
+    console.log("\n=== NUTRITION SHENRON COMPLÉTÉE AVEC SUCCÈS ===");
+  } finally {
+    await sql.end();
+  }
 }
 
-main().catch(console.error);
+if (import.meta.main) {
+  main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}

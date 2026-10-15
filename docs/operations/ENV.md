@@ -198,6 +198,46 @@ Autres variables Aphrody :
 | `APHRODY_WEB_API_URL`, `APHRODY_BXC_API_TOKEN`        | API web/crawl d'Aphrody.                                                                    |
 | `APHRODY_BIN`                                         | Chemin du CLI `aphrody` quand il n'est pas sur le `PATH`.                                   |
 
+## Acquisition native des sources — bot Shenron
+
+Le bot peut exécuter le pipeline de sources Bun dans son registre de tâches existant.
+`SHENRON_SOURCE_PIPELINE_CONFIG` désigne un fichier privé régulier (permissions `0600`)
+sous le répertoire de `DATABASE_PATH`, donc `/app/data` dans le conteneur de production.
+`SHENRON_SOURCE_PIPELINE_INTERVAL_MS` fixe explicitement la cadence, entre 1 000 et
+86 400 000 ms ; les deux variables sont nécessaires pour activer le traitement.
+Sans configuration, aucune collecte ne démarre. Les variables restent dans le fichier
+Infra privé `/etc/rose-griffon/shenron-bot.env`, déjà injecté dans le conteneur.
+Le job `source-pipeline` effectue un premier cycle au démarrage, empêche les cycles
+concurrents et est annulé puis attendu avant la fermeture des bases. Chaque cycle
+utilise les sources et politiques épinglées du pipeline ; aucun contenu n'est promu
+implicitement au canon. Les fichiers de configuration et reçus restent privés.
+
+## Repérage des preuves Canon avec Bun Yolo
+
+`SHENRON_CANON_YOLO_ENABLED=1` active le bouton de suggestion de citation sur
+`/wiki/canon` et, à la demande, `/api/canon?q=…&assessEvidence=1`. La saisie et la
+consultation seules ne déclenchent aucune inférence. Il faut un runtime qualifié
+avec `bun:yolo`, le SDK `@aphrody/bun-runtime-sdk` avec son export `/yolo`, un
+`TYPESAFE_API_KEY` privé et `SHENRON_CANON_YOLO_MODEL` explicitement choisi.
+La clé reste exclusivement côté serveur dans la configuration Infra protégée.
+
+`SHENRON_CANON_YOLO_MIN_CONFIDENCE` vaut `0.8` par défaut ; l'abstention est
+calculée par le validateur natif. `SHENRON_CANON_YOLO_TIMEOUT_MS` vaut `3000`
+(250 à 10 000 ms), sans nouvelle tentative. Chaque demande utilise au plus
+16 citations visibles déjà présentes dans le corpus. Le serveur partage une
+inférence active et conserve au plus 32 résultats pendant une minute.
+Les nouvelles inférences utilisent les compteurs Redis atomiques existants, partagés
+entre instances : `SHENRON_CANON_YOLO_PER_HOUR` (défaut 30, maximum 60),
+`SHENRON_CANON_YOLO_PER_DAY` (défaut 120, maximum 1 440) et
+`SHENRON_CANON_YOLO_MIN_SPACING_MS` (défaut 1 000, minimum 1 000 ms).
+Ces réglages restent dans l'environnement serveur privé. Un compteur inaccessible
+refuse l'inférence ; une réponse en cache ne consomme aucun quota. Le délai couvre
+aussi l'admission et le chargement du fournisseur, sans annuler une demande partagée
+lorsqu'un seul visiteur ferme sa connexion.
+La doctrine curée demeure propriétaire des verdicts ; cette aide ne modifie ni
+les citations, ni leur visibilité, ni les rangs. Une dépendance indisponible
+laisse la consultation des preuves et le verdict fonctionner.
+
 ## Modèles de chat locaux (Shenron Studio) — `@aphrody/shenron-config/chat-model`, `apps/server/src/chat-model.ts`
 
 Dans le profil `desktop`, sans URL de chat déclarée (`APHRODY_AI_CHAT_BASE_URL`,

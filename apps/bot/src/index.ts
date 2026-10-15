@@ -24,6 +24,8 @@ import { loadLevelThresholds } from "./lib/level-thresholds";
 import { runBootAudit } from "./lib/boot-audit";
 import { ApiServer } from "./api/server";
 import { CronRegistry } from "./api/cron-registry";
+import { registerSourcePipelineJob } from "./api/source-pipeline-job";
+import { dirname, resolve } from "node:path";
 import { assertRagEmbeddingSpace } from "./lib/rag";
 import { existsSync } from "node:fs";
 import { PERSONAS, PERSONA_IDS, type PersonaId } from "./lib/personas";
@@ -182,6 +184,17 @@ client.on("interactionCreate", async (interaction) => {
 // l'ordre, une étape en échec n'empêche pas les suivantes, et une échéance globale force la
 // sortie (code 1 si une étape a échoué). Chaque vidange garde son propre délai.
 const DRAIN_TIMEOUT_MS = 10_000;
+const sourcePipeline = await registerSourcePipelineJob(container.resolve(CronRegistry), {
+  configPath: env.SHENRON_SOURCE_PIPELINE_CONFIG,
+  intervalMs: env.SHENRON_SOURCE_PIPELINE_INTERVAL_MS,
+  dataRoot: dirname(resolve(env.DATABASE_PATH)),
+});
+void sourcePipeline.initialRun.catch(() => {
+  logger.warn(
+    { subsystem: "source-pipeline" },
+    "Source pipeline startup failed; see private job receipt",
+  );
+});
 registerGracefulShutdown({
   // Deux vidanges de 10 s, puis Gateway, modèle natif et bases : marge comprise.
   timeoutMs: 2 * DRAIN_TIMEOUT_MS + 5_000,
@@ -191,6 +204,7 @@ registerGracefulShutdown({
     error: (msg, ...args) => logger.error({ args }, msg),
   },
   steps: [
+    { name: "source pipeline", action: () => sourcePipeline.stop() },
     {
       // Minuteries effacées, tâches actives attendues.
       name: "cron registry",

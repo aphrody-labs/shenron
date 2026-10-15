@@ -74,7 +74,7 @@ export const crawlIngestPolicySchema = z
   });
 export type CrawlIngestPolicy = z.infer<typeof crawlIngestPolicySchema>;
 
-const nativeDocumentSchema = z.object({
+export const nativeDocumentSchema = z.object({
   crawl_id: z.string().min(1).max(256),
   document_uid: z.string().min(1).max(256),
   canonical_url: sourceUrl,
@@ -219,6 +219,8 @@ async function* documents(path: string, signal?: AbortSignal): AsyncGenerator<un
   }
 }
 
+export { documents as readNativeCrawlDocuments };
+
 export async function ingestNativeCrawl(
   options: {
     inputPath: string;
@@ -266,11 +268,23 @@ export async function ingestNativeCrawl(
   return report;
 }
 
+type RegistryWriteResult = "applied" | "protected";
+type RegistryQuery = (
+  strings: TemplateStringsArray,
+  ...values: (string | number)[]
+) => PromiseLike<readonly Record<string, unknown>[]>;
+
+/** The tagged-query and transaction subset shared by Bun.SQL and postgres-js. */
+export interface CrawlRegistrySql {
+  query: RegistryQuery;
+  begin(work: (query: RegistryQuery) => Promise<RegistryWriteResult>): Promise<RegistryWriteResult>;
+}
+
 /** Uses already migrated tables; never creates schemas or touches editorial tables. */
-export function createPostgresCrawlRegistry(sql: postgres.Sql): CrawlRegistryPort {
+export function createSqlCrawlRegistry(sql: CrawlRegistrySql): CrawlRegistryPort {
   return {
     assertReady: async () => {
-      const rows = await sql`SELECT to_regclass('public.external_source_records') AS records,
+      const rows = await sql.query`SELECT to_regclass('public.external_source_records') AS records,
         to_regclass('public.external_source_provenance') AS provenance`;
       if (!rows[0]?.records || !rows[0]?.provenance)
         throw new Error("The DBFR source registry requires its existing Infra migration");
@@ -290,13 +304,30 @@ export function createPostgresCrawlRegistry(sql: postgres.Sql): CrawlRegistryPor
           AND (EXCLUDED.kind != 'media' OR public.external_source_records.http_status = 0)
         RETURNING url`;
         if (!rows.length) return "protected" as const;
+        // Infer a text parameter so Bun.SQL does not JSON-encode the serialized string again.
         await transaction`
         INSERT INTO public.external_source_provenance (url, provenance, updated_at)
-        VALUES (${record.url}, ${transaction.json(record.provenance as postgres.JSONValue)}, now())
+        VALUES (${record.url}, ${JSON.stringify(record.provenance)}::text::jsonb, now())
         ON CONFLICT (url) DO UPDATE SET provenance=EXCLUDED.provenance, updated_at=EXCLUDED.updated_at`;
         return "applied" as const;
       }),
   };
+}
+
+export function createBunSqlCrawlRegistry(sql: Bun.SQL): CrawlRegistryPort {
+  return createSqlCrawlRegistry({
+    query: (strings, ...values) => sql(strings, ...values),
+    begin: (work) =>
+      sql.begin((transaction) => work((strings, ...values) => transaction(strings, ...values))),
+  });
+}
+
+export function createPostgresCrawlRegistry(sql: postgres.Sql): CrawlRegistryPort {
+  return createSqlCrawlRegistry({
+    query: (strings, ...values) => sql(strings, ...values),
+    begin: (work) =>
+      sql.begin((transaction) => work((strings, ...values) => transaction(strings, ...values))),
+  });
 }
 
 /** Availability-only plan. Recovery needs a separately verified acquired file and CDN owner. */

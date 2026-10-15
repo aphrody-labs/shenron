@@ -5,6 +5,7 @@ import { mkdir, chmod, stat, realpath, rmdir } from "node:fs/promises";
 import { resolve, relative, isAbsolute, join } from "node:path";
 import { digest, validateManifest, type Manifest } from "./cloudflare-ops";
 import { validateProfile } from "./s3-profile";
+import { nativeS3Signer } from "./native-s3-signer";
 export interface Entry {
   path: string;
   sha256: string;
@@ -62,6 +63,8 @@ export interface SignedClient {
   fetch(url: string, init: RequestInit): Promise<Response>;
 }
 export interface ObjectStore {
+  /** Read current remote bytes and signed metadata without mutating them. */
+  verify?(key: string, entry: Pick<Entry, "sha256" | "size" | "contentType">): Promise<void>;
   put(
     key: string,
     body: Uint8Array,
@@ -276,15 +279,49 @@ export function metadataHeaders(sha256: string, contentType: string, cacheContro
     "x-amz-checksum-sha256": Buffer.from(sha256, "hex").toString("base64"),
   };
 }
-/** Existing owner SDK signs metadata unsupported by Bun.S3.write; read back real bytes. */
+/** Independent GET bytes and signed HEAD metadata; no upload or metadata mutation. */
+export async function verifyStoredObject(
+  signed: SignedClient,
+  url: string,
+  entry: Pick<Entry, "sha256" | "size" | "contentType">,
+) {
+  if (
+    !/^[a-f0-9]{64}$/.test(entry.sha256) ||
+    !Number.isSafeInteger(entry.size) ||
+    entry.size < 1 ||
+    entry.size > 33 * 1024 * 1024
+  )
+    throw new Error("Invalid remote CAS identity");
+  const response = await signed.fetch(url, { method: "GET", signal: AbortSignal.timeout(120000) });
+  await stagedBytes(response, entry);
+  const head = await signed.fetch(url, { method: "HEAD", signal: AbortSignal.timeout(30000) });
+  try {
+    if (
+      head.status !== 200 ||
+      head.headers.get("x-amz-meta-sha256") !== entry.sha256 ||
+      head.headers.get("x-amz-checksum-sha256") !==
+        Buffer.from(entry.sha256, "hex").toString("base64") ||
+      head.headers.get("content-type")?.split(";", 1)[0]?.trim().toLowerCase() !==
+        entry.contentType.split(";", 1)[0]?.trim().toLowerCase()
+    )
+      throw new Error("Remote CAS metadata differs");
+  } finally {
+    await head.body?.cancel();
+  }
+}
+/** Native Curl signs S3 metadata; an explicitly configured legacy SDK stays an explicit owner choice. */
 export async function objectStore(
   profile: string,
   manifest: Manifest,
-  sdkModule: string,
+  sdkModule?: string,
 ): Promise<ObjectStore> {
-  const sdk = (await import(await realpath(sdkModule))) as {
-    AwsClient: new (options: Record<string, string>) => SignedClient;
-  };
+  if (sdkModule !== undefined && (!sdkModule || !isAbsolute(sdkModule)))
+    throw new Error("Explicit S3 SDK path must be absolute");
+  const sdk = sdkModule
+    ? ((await import(await realpath(sdkModule))) as {
+        AwsClient: new (options: Record<string, string>) => SignedClient;
+      })
+    : undefined;
   let identity = "",
     signed: SignedClient,
     client: S3Client,
@@ -298,19 +335,35 @@ export async function objectStore(
     if (Date.parse(p.expiresAt) < Date.now() + 30000) throw new Error("Scoped credential expired");
     const next = credentialFingerprint(p);
     if (next !== identity) {
-      signed = new sdk.AwsClient({
-        accessKeyId: p.accessKeyId,
-        secretAccessKey: p.secretAccessKey,
-        sessionToken: p.sessionToken,
-        region: "auto",
-        service: "s3",
-      });
+      signed = sdk
+        ? new sdk.AwsClient({
+            accessKeyId: p.accessKeyId,
+            secretAccessKey: p.secretAccessKey,
+            sessionToken: p.sessionToken,
+            region: "auto",
+            service: "s3",
+          })
+        : nativeS3Signer(p);
       client = new S3Client(p);
       endpoint = p.endpoint + "/" + p.bucket + "/";
       identity = next;
     }
   }
   return {
+    async verify(key, entry) {
+      if (key !== "_objects/" + entry.sha256) throw new Error("Remote CAS key differs");
+      await refresh();
+      await verifyStoredObject(
+        {
+          async fetch(url, init) {
+            await refresh();
+            return signed.fetch(url, init);
+          },
+        },
+        endpoint + key,
+        entry,
+      );
+    },
     async attestStaged(key, entry, budget) {
       if (key !== "_objects/" + entry.sha256) throw new Error("Staged key differs");
       await refresh();

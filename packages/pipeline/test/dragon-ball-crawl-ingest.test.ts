@@ -3,6 +3,7 @@ import { afterEach, expect, test } from "bun:test";
 import { mkdtemp, realpath, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { isAbsolute, join, relative } from "node:path";
+import postgres from "postgres";
 import {
   crawlIngestPolicySchema,
   auditNativeCrawlMedia,
@@ -10,6 +11,10 @@ import {
   projectNativeCrawl,
   type CrawlRegistryPort,
   type ExternalCrawlRecord,
+  createBunSqlCrawlRegistry,
+  createPostgresCrawlRegistry,
+  createSqlCrawlRegistry,
+  type CrawlRegistrySql,
 } from "../src/dragon-ball/crawl-ingest";
 import {
   auditDatasetCoverage,
@@ -19,6 +24,109 @@ import {
 } from "../src/dragon-ball/source-coverage";
 
 const roots: string[] = [];
+
+test("registry binds JSON provenance as one parameter and leaves protected records untouched", async () => {
+  const provenance = { quoted: "'\\\"; SELECT 1; --", unicode: "悟空 🐉", nullable: null };
+  const calls: { text: string; values: (string | number)[] }[] = [];
+  let protectedRecord = false;
+  let transactions = 0;
+  const query: CrawlRegistrySql["query"] = async (strings, ...values) => {
+    const text = strings.join("?");
+    calls.push({ text, values });
+    if (text.includes("to_regclass")) return [{ records: "records", provenance: "provenance" }];
+    if (text.includes("RETURNING url")) return protectedRecord ? [] : [{ url: values[0] }];
+    return [];
+  };
+  const registry = createSqlCrawlRegistry({
+    query,
+    begin: async (work) => {
+      transactions++;
+      return work(query);
+    },
+  });
+  await registry.assertReady();
+  const record = { ...projectNativeCrawl(document(), policy)[0]!, provenance };
+  expect(await registry.upsert(record)).toBe("applied");
+  expect(transactions).toBe(1);
+  const write = calls.at(-1)!;
+  expect(write.text).toContain("?::text::jsonb");
+  expect(write.text).not.toContain(provenance.quoted);
+  expect(write.values).toEqual([record.url, JSON.stringify(provenance)]);
+  expect(JSON.parse(String(write.values[1]))).toEqual(provenance);
+  protectedRecord = true;
+  const before = calls.length;
+  expect(await registry.upsert(record)).toBe("protected");
+  expect(calls.length - before).toBe(1);
+});
+
+const crawlPgUrl = process.env.SHENRON_CRAWL_PG_URL;
+test.skipIf(!crawlPgUrl)(
+  "isolated PostgreSQL: both drivers preserve JSON, safeguards and rollback",
+  async () => {
+    const target = new URL(crawlPgUrl!);
+    if (
+      !["127.0.0.1", "localhost"].includes(target.hostname) ||
+      target.pathname !== "/shenron_crawl_fixture"
+    )
+      throw new Error("Isolated crawl fixture PostgreSQL URL required");
+    const sql = new Bun.SQL(crawlPgUrl!, { max: 1 });
+    const compatible = postgres(crawlPgUrl!, { max: 1, prepare: false });
+    let recordsCreated = false;
+    let provenanceCreated = false;
+    try {
+      await sql`CREATE TABLE public.external_source_records (
+      url text PRIMARY KEY, kind text NOT NULL, title text NOT NULL, excerpt text NOT NULL,
+      http_status integer NOT NULL, content_hash text NOT NULL, fetched_at timestamptz NOT NULL,
+      canonical_eligible boolean NOT NULL DEFAULT false)`;
+      recordsCreated = true;
+      await sql`CREATE TABLE public.external_source_provenance (
+      url text PRIMARY KEY REFERENCES public.external_source_records(url),
+      provenance jsonb NOT NULL CHECK (NOT provenance ? 'rejectFixture'), updated_at timestamptz NOT NULL)`;
+      provenanceCreated = true;
+      for (const registry of [
+        createBunSqlCrawlRegistry(sql),
+        createPostgresCrawlRegistry(compatible),
+      ]) {
+        await registry.assertReady();
+        const record = {
+          ...projectNativeCrawl(document(), policy)[0]!,
+          provenance: { quoted: "'\\\"; DROP TABLE x; --", unicode: "悟空 🐉", nullable: null },
+        };
+        expect(await registry.upsert(record)).toBe("applied");
+        const [stored] =
+          await sql`SELECT r.title, p.provenance FROM public.external_source_records r
+        JOIN public.external_source_provenance p USING(url) WHERE url=${record.url}`;
+        expect(stored.provenance).toEqual(record.provenance);
+        expect(stored.title).toBe(record.title);
+        const failed = { ...record, title: "Must roll back", provenance: { rejectFixture: true } };
+        await expect(registry.upsert(failed)).rejects.toThrow();
+        const [unchanged] =
+          await sql`SELECT r.title, p.provenance FROM public.external_source_records r
+        JOIN public.external_source_provenance p USING(url) WHERE url=${record.url}`;
+        expect(unchanged.title).toBe(record.title);
+        expect(unchanged.provenance).toEqual(record.provenance);
+        expect(await registry.upsert({ ...record, fetchedAt: "2020-01-01T00:00:00Z" })).toBe(
+          "protected",
+        );
+        expect(await registry.upsert({ ...record, kind: "media", httpStatus: 0 })).toBe(
+          "protected",
+        );
+        await sql`UPDATE public.external_source_records SET canonical_eligible=true WHERE url=${record.url}`;
+        expect(await registry.upsert(record)).toBe("protected");
+        await sql`DELETE FROM public.external_source_provenance`;
+        await sql`DELETE FROM public.external_source_records`;
+      }
+    } finally {
+      await compatible.end({ timeout: 5 });
+      try {
+        if (provenanceCreated) await sql`DROP TABLE public.external_source_provenance`;
+        if (recordsCreated) await sql`DROP TABLE public.external_source_records`;
+      } finally {
+        await sql.close();
+      }
+    }
+  },
+);
 afterEach(async () => {
   for (const root of roots.splice(0)) {
     const resolved = await realpath(root);
