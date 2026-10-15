@@ -90,3 +90,10 @@ test("full pagination requires exact known total; a preview remains explicit", (
   Object.assign(f.volumes[0]!.publicationExtent, { kind: "preview", fullVolumePages: null });
   expect(validateMangaReaderManifest(f).volumes[0]!.publicationExtent.kind).toBe("preview");
 });
+
+test("canonical published preview PNGs can enter the verified importer", () => {
+  const f = mangaFixture();
+  f.volumes[0]!.pages[0]!.readerImage =
+    "https://cdn.dragonballfr.com/publications/yamcha-official-preview/pages/001.png";
+  expect(validateMangaReaderManifest(f).volumes[0]!.pages).toHaveLength(1);
+});

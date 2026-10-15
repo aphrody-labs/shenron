@@ -151,7 +151,10 @@ export function validateCatalogEditorialBody(
         pages.every(
           (value) =>
             typeof value === "string" &&
-            /^\/assets\/manga\/[A-Za-z0-9_./-]+$/.test(value) &&
+            (/^\/assets\/manga\/[A-Za-z0-9_./-]+$/.test(value) ||
+              /^\/publications\/[a-z0-9]+(?:-[a-z0-9]+)*\/pages\/[0-9]+\.(?:png|jpg|jpeg|webp)$/.test(
+                value,
+              )) &&
             !value.includes(".."),
         ) &&
         new Set(pages).size === pages.length);

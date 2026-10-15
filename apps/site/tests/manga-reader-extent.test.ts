@@ -33,3 +33,17 @@ test("legacy extent remains unknown; explicit public preview is retained", () =>
     expect.arrayContaining(["pages", "readerExtent", "visible"]),
   );
 });
+
+test("canonical publication pages retain exact scoped paths", () => {
+  expect(
+    validateCatalogEditorialBody("db_manga_chapters", {
+      pages: ["/publications/yamcha-official-preview/pages/001.png"],
+    }).ok,
+  ).toBe(true);
+  for (const path of [
+    "/publications/yamcha-official-preview/index.json",
+    "/publications/yamcha-official-preview/pages/001.png?token=private",
+    "/publications/../../pages/001.png",
+  ])
+    expect(validateCatalogEditorialBody("db_manga_chapters", { pages: [path] }).ok).toBe(false);
+});
