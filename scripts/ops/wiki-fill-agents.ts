@@ -245,6 +245,23 @@ function decodeText(value: string): string {
     .trim();
 }
 type DiscoverySource = { url: string; title: string; quote: string; identityQuote?: string };
+export class WikiTransportError extends Error {}
+export function isWikiTransportFailure(error: unknown): boolean {
+  if (error instanceof WikiTransportError) return true;
+  if (!error || typeof error !== "object") return false;
+  const value = error as { name?: string; code?: string };
+  return (
+    ["TimeoutError", "AbortError"].includes(value.name ?? "") ||
+    [
+      "ECONNRESET",
+      "ECONNREFUSED",
+      "ETIMEDOUT",
+      "EHOSTUNREACH",
+      "ENETUNREACH",
+      "EAI_AGAIN",
+    ].includes(value.code ?? "")
+  );
+}
 export async function qualifyOfficialSource(
   source: DiscoverySource,
   fetcher: (url: string, init: RequestInit) => Promise<Response> = fetch,
@@ -256,6 +273,8 @@ export async function qualifyOfficialSource(
     signal: AbortSignal.timeout(20000),
     headers: { Accept: "text/html,text/plain" },
   });
+  if ([429, 500, 502, 503, 504].includes(response.status))
+    throw new WikiTransportError(`Official source transport HTTP ${response.status}`);
   if (!response.ok || !/text\/(html|plain)/i.test(response.headers.get("content-type") ?? ""))
     throw new Error("Official source unavailable or non-textual");
   const reader = response.body?.getReader();
@@ -597,11 +616,6 @@ export class FillQueue {
     this.db.exec(
       "CREATE TABLE IF NOT EXISTS source_bodies(job_key TEXT NOT NULL,url TEXT NOT NULL,body TEXT NOT NULL,receipt TEXT NOT NULL,PRIMARY KEY(job_key,url))",
     );
-    this.db
-      .query(
-        "UPDATE jobs SET status=CASE WHEN json_array_length(json_extract(payload,'$.candidate.fields'))>0 THEN 'queued' ELSE 'complete' END WHERE status='blocked' AND error='No eligible gaps or verified primary evidence'",
-      )
-      .run();
   }
   close() {
     this.db.close();
@@ -733,6 +747,8 @@ export async function executeJob(
           queue.receipt(job.key, "source-rejected", {
             url: source.url,
             reason: error instanceof Error ? error.message : "Source unavailable",
+            attempt: job.attempts,
+            transport: isWikiTransportFailure(error),
           });
         }
       }
@@ -816,6 +832,10 @@ export async function executeJob(
     });
     return status;
   } catch (error) {
+    queue.receipt(job.key, "execution-failure", {
+      attempt: job.attempts,
+      transport: isWikiTransportFailure(error),
+    });
     queue.finish(
       job.key,
       owner,
@@ -954,7 +974,8 @@ export function realRunner(
         eventsSha256: new Bun.CryptoHasher("sha256").update(stdout).digest("hex"),
         dir,
       });
-      if (exitCode !== 0 || timedOut)
+      if (timedOut) throw new WikiTransportError(`Codex ${role} transport deadline exceeded`);
+      if (exitCode !== 0)
         throw new Error(
           `Codex ${role} failed (exit=${exitCode}, timeout=${timedOut}); inspect private receipt`,
         );
@@ -1009,6 +1030,8 @@ export async function inventory(
           signal: AbortSignal.timeout(30000),
         },
       );
+      if ([429, 500, 502, 503, 504].includes(response.status))
+        throw new WikiTransportError(`Inventory transport HTTP ${response.status}`);
       if (!response.ok) throw new Error(`Inventory ${table} HTTP ${response.status}`);
       const body = (await response.json()) as { rows: Row[]; total: number };
       if (
@@ -1032,6 +1055,50 @@ export async function inventory(
     }
   }
   return attachSectionContexts(out);
+}
+
+export function approvedWikiOperations(queue: FillQueue) {
+  const jobs = queue.db
+    .query(
+      "SELECT jobs.* FROM jobs JOIN targets ON targets.job_key=jobs.key WHERE status='approved' ORDER BY jobs.key",
+    )
+    .all() as Job[];
+  return jobs.flatMap((job) => {
+    const { candidate, evidence } = JSON.parse(job.payload) as {
+      candidate: Candidate;
+      evidence: Evidence[];
+    };
+    let draft: Draft;
+    try {
+      draft = validateDraft(JSON.parse(job.draft!), candidate, evidence);
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : "Proposal validation failed";
+      queue.db
+        .query("UPDATE jobs SET status='quarantined',error=? WHERE key=? AND status='approved'")
+        .run(reason, job.key);
+      queue.receipt(job.key, "export-quarantine", { reason, expectedSha256: candidate.sha256 });
+      return [];
+    }
+    return [
+      {
+        status: "non exécuté — proposition",
+        key: job.key,
+        method: "PATCH",
+        path: `/api/wiki-admin/${candidate.table}/${encodeURIComponent(candidate.id)}`,
+        body: {
+          ...Object.fromEntries(draft.changes.map((c) => [c.field, c.value])),
+          expected: candidate.snapshot,
+          expectedSha256: candidate.sha256,
+        },
+        evidence,
+        ...(candidate.discoveryContext ? { discoveryContext: candidate.discoveryContext } : {}),
+        draft,
+        review: JSON.parse(job.review!),
+        verification:
+          "Refresh snapshot; compare all fields; authorized CAS writer; independently read row, public page and revision. Never reactivate hidden rows.",
+      },
+    ];
+  });
 }
 
 function option(name: string) {
@@ -1166,47 +1233,7 @@ async function main() {
       const out = option("out");
       if (!out || !resolve(out).startsWith(resolve("var/reports") + "/"))
         throw new Error("Private report output required");
-      const jobs = queue.db
-        .query(
-          "SELECT jobs.* FROM jobs JOIN targets ON targets.job_key=jobs.key WHERE status='approved' ORDER BY jobs.key",
-        )
-        .all() as Job[];
-      const operations = jobs.flatMap((job) => {
-        const { candidate, evidence } = JSON.parse(job.payload) as {
-          candidate: Candidate;
-          evidence: Evidence[];
-        };
-        let draft: Draft;
-        try {
-          draft = validateDraft(JSON.parse(job.draft!), candidate, evidence);
-        } catch (error) {
-          const reason = error instanceof Error ? error.message : "Proposal validation failed";
-          queue.db
-            .query("UPDATE jobs SET status='quarantined',error=? WHERE key=? AND status='approved'")
-            .run(reason, job.key);
-          queue.receipt(job.key, "export-quarantine", { reason, expectedSha256: candidate.sha256 });
-          return [];
-        }
-        return [
-          {
-            status: "non exécuté — proposition",
-            key: job.key,
-            method: "PATCH",
-            path: `/api/wiki-admin/${candidate.table}/${encodeURIComponent(candidate.id)}`,
-            body: {
-              ...Object.fromEntries(draft.changes.map((c) => [c.field, c.value])),
-              expected: candidate.snapshot,
-              expectedSha256: candidate.sha256,
-            },
-            evidence,
-            ...(candidate.discoveryContext ? { discoveryContext: candidate.discoveryContext } : {}),
-            draft,
-            review: JSON.parse(job.review!),
-            verification:
-              "Refresh snapshot; compare all fields; authorized CAS writer; independently read row, public page and revision. Never reactivate hidden rows.",
-          },
-        ];
-      });
+      const operations = approvedWikiOperations(queue);
       await Bun.write(out, JSON.stringify({ schemaVersion: 1, operations }, null, 2));
       await chmod(out, 0o600);
     } else if (command !== "status") throw new Error("Unknown command");

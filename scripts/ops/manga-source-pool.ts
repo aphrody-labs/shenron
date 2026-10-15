@@ -748,11 +748,27 @@ export async function executeTask(
       candidates: [],
     };
   }
-  // Keep the BOM in the receipt so its UTF-8 reconstruction retains the raw-byte digest.
-  const body =
-    task.kind !== "asset"
-      ? new TextDecoder("utf-8", { ignoreBOM: true }).decode(capture.bytes)
-      : undefined;
+  // Decode only lossless UTF-8; the receipt SHA always describes the captured bytes.
+  const declaredCharset = (
+    contentType.match(/charset\s*=\s*["']?([^\s;"'>]+)/i)?.[1] ??
+    new TextDecoder()
+      .decode(capture.bytes.subarray(0, 8192))
+      .match(/<meta[^>]+charset\s*=\s*["']?([^\s;"'>]+)/i)?.[1] ??
+    "utf-8"
+  ).toLowerCase();
+  let body: string | undefined;
+  let textCaptureError: string | undefined;
+  if (task.kind !== "asset") {
+    if (!["utf-8", "utf8", "us-ascii"].includes(declaredCharset)) {
+      textCaptureError = "unsupported-text-charset";
+    } else {
+      try {
+        body = new TextDecoder("utf-8", { ignoreBOM: true, fatal: true }).decode(capture.bytes);
+      } catch {
+        textCaptureError = "lossy-text-decoding";
+      }
+    }
+  }
   const json =
     body && contentType.includes("json") ? JSON.parse(body.replace(/^\uFEFF/, "")) : null;
   const children: Array<Omit<PoolTask, "id" | "host" | "attempts">> = [];
@@ -791,6 +807,8 @@ export async function executeTask(
     sha256: capture.sha256,
     robots,
     body,
+    textCaptureError,
+    textEncoding: task.kind !== "asset" ? declaredCharset : undefined,
     json,
     candidates:
       new URL(task.url).hostname === "shonenjumpplus.com"

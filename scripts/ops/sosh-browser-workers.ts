@@ -1,13 +1,34 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
 /** Private, bounded browser evidence. Run inside the already qualified Tokyo namespace. */
-import { mkdir, chmod } from "node:fs/promises";
+import { mkdir, chmod, readlink, realpath } from "node:fs/promises";
 import { isAbsolute, join } from "node:path";
 
 const targets = [
   ["https://books.shueisha.co.jp/items/contents.html?isbn=978-4-08-111166-4"],
   ["https://www.cdjapan.co.jp/product/NEOBK-2031986", "https://books.rakuten.co.jp/rb/14606453/"],
 ];
+
+export function browserProvenance(
+  version: Record<string, unknown>,
+  ownerEngine?: unknown,
+  provider?: unknown,
+) {
+  const observed = (value: unknown) =>
+    typeof value === "string" && value.length ? value : "unknown";
+  return {
+    provider: observed(provider),
+    ownerReportedEngine: observed(ownerEngine),
+    // CDP products and user agents may be emulated; they do not qualify an engine.
+    engine: "unknown",
+    browserVersion: Object.fromEntries(
+      ["product", "revision", "protocolVersion", "userAgent", "jsVersion"].map((key) => [
+        key,
+        observed(version[key]),
+      ]),
+    ),
+  };
+}
 
 export async function inspectBrowserSources(job: string, slot: number, urls: string[]) {
   if (
@@ -38,10 +59,24 @@ export async function inspectBrowserSources(job: string, slot: number, urls: str
     workers: 1,
     webgpu: false,
     timeout: 20000,
+    signal: AbortSignal.timeout(240000),
   });
   const connection = browser.connection;
   const observations: Record<string, unknown>[] = [];
   try {
+    const version = await connection.send("Browser.getVersion").catch(() => ({}));
+    const launcherExecutable = await realpath(executable).catch(() => "unknown");
+    const ownerExecutable = browser.process?.pid
+      ? await readlink(`/proc/${browser.process.pid}/exe`).catch(() => "unknown")
+      : "unknown";
+    const processes = await connection.send("SystemInfo.getProcessInfo").catch(() => ({}));
+    const browserPid = processes.processInfo?.find(
+      (entry: { type: string }) => entry.type === "browser",
+    )?.id;
+    const browserExecutable =
+      Number.isSafeInteger(browserPid) && browserPid > 0
+        ? await readlink(`/proc/${browserPid}/exe`).catch(() => "unknown")
+        : "unknown";
     const { targetId } = await connection.send("Target.createTarget", { url: "about:blank" });
     const { sessionId } = await connection.send("Target.attachToTarget", {
       targetId,
@@ -109,7 +144,8 @@ export async function inspectBrowserSources(job: string, slot: number, urls: str
           ],
           { stdout: Bun.file(file + ".stdout"), stderr: Bun.file(file + ".stderr") },
         );
-        const code = await crawler.exited;
+        const crawlDeadline = setTimeout(() => crawler.kill(), 45000);
+        const code = await crawler.exited.finally(() => clearTimeout(crawlDeadline));
         if (code) throw new Error(`Robots owner exit ${code}`);
         const crawl = await Bun.file(file).json();
         if (
@@ -123,7 +159,7 @@ export async function inspectBrowserSources(job: string, slot: number, urls: str
           status: "observed",
           page,
           previewCandidates: page.links.filter((link: { text: string; url: string }) =>
-            /試し読み|立ち読み|preview|sample|viewer|電子書籍|電子版|e-?book|(?:\/|[?&])read(?:\/|=)/i.test(
+            /試し読み|立ち読み|preview|sample|viewer|電子書籍|電子版|\be-?books?\b|(?:\/|[?&])read(?:\/|=)/i.test(
               link.text + " " + link.url,
             ),
           ),
@@ -135,8 +171,11 @@ export async function inspectBrowserSources(job: string, slot: number, urls: str
     }
     const receipt = {
       slot,
-      engine: browser.engine ?? "obscura-native",
+      ...browserProvenance(version, browser.engine, browser.provider),
       executable,
+      launcherExecutable,
+      ownerExecutable,
+      browserExecutable,
       runtime: Bun.revision,
       exit: { country: exit.country, city: exit.city, mullvadExit: true },
       observations,
