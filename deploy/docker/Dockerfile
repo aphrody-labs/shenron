@@ -30,6 +30,8 @@ RUN apt-get update \
 
 COPY --chown=10001:10001 --chmod=755 dist/server/linux-x64/shenron-server /usr/local/bin/shenron-server
 COPY --chown=10001:10001 --chmod=755 dist/bot/linux-x64/shenron-bot /usr/local/bin/shenron-bot
+COPY --chown=10001:10001 --chmod=644 dist/bot/linux-x64/pipeline.mjs /usr/local/lib/shenron/pipeline.mjs
+COPY --chown=10001:10001 --chmod=644 dist/bot/linux-x64/pipeline-build-receipt.json /usr/local/lib/shenron/pipeline-build-receipt.json
 COPY --chown=10001:10001 --chmod=644 dist/bot/linux-x64/skia.linux-x64-gnu.node /usr/local/bin/skia.linux-x64-gnu.node
 COPY --chown=10001:10001 --chmod=755 dist/mcp/linux-x64/shenron-mcp /usr/local/bin/shenron-mcp
 COPY --chown=10001:10001 --chmod=755 dist/server/linux-x64/native/libshenron_ffi.so /usr/local/lib/libshenron_ffi.so

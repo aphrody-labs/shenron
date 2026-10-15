@@ -6,6 +6,7 @@ import { isAbsolute, join } from "node:path";
 import { parseArgs } from "node:util";
 import { inspectBrowserSources } from "./sosh-browser-workers";
 import { projectPoolReceipts } from "./manga-source-pool-projection";
+import { jumpPublicReaderUrls } from "./jump-public-reader";
 
 if (typeof Bun.isMainThread !== "boolean")
   throw Error("Runtime must expose qualified Bun.isMainThread before spawning workers");
@@ -54,6 +55,8 @@ const sourceHosts = new Set([
   "api.openbd.jp",
   "ndlsearch.ndl.go.jp",
   "archive.org",
+  "shonenjumpplus.com",
+  "cdn-ak-img.shonenjumpplus.com",
 ]);
 const day = 86400000;
 export function poolUrl(value: string): URL {
@@ -106,6 +109,62 @@ export function discoveredPoolUrls(value: unknown, base: string): string[] {
   visit(value);
   return [...urls].slice(0, 150);
 }
+
+/** Follow identifiers and folder entries actually returned by their canonical owners. */
+export function structuredPoolUrls(value: unknown, base: string): string[] {
+  const url = new URL(base);
+  const body = value as Record<string, any> | null;
+  if (!body) return [];
+  const found = new Set<string>();
+  if (url.hostname === "archive.org") {
+    for (const row of body.response?.docs ?? []) {
+      if (
+        typeof row.identifier === "string" &&
+        /^[a-z0-9][a-z0-9._-]{0,199}$/i.test(row.identifier)
+      )
+        found.add("https://archive.org/metadata/" + encodeURIComponent(row.identifier));
+    }
+    if (url.pathname.startsWith("/metadata/") && !body.is_dark && !body.is_restricted) {
+      const identifier = url.pathname.slice("/metadata/".length);
+      for (const file of body.files ?? []) {
+        if (
+          typeof file.name !== "string" ||
+          [true, "true", "1"].includes(file.private) ||
+          !/\.(?:jpe?g|png|webp|jp2|pdf|cbz|zip)$/i.test(file.name)
+        )
+          continue;
+        found.add(
+          "https://archive.org/download/" + identifier + "/" + encodeURIComponent(file.name),
+        );
+      }
+    }
+  }
+  if (ownHosts.has(url.hostname) && url.pathname === "/api/catalog") {
+    for (const entry of body.page?.entries ?? []) {
+      if (
+        typeof entry.path !== "string" ||
+        !/^\/(?:manga\/|wiki\/databooks\/soshuhen-)/.test(entry.path)
+      )
+        continue;
+      if (entry.path.endsWith("/")) {
+        const next = new URL("https://dragonballfr.com/api/catalog?category=assets");
+        next.searchParams.set("path", entry.path);
+        found.add(next.href);
+      } else if (typeof entry.mime === "string" && entry.mime.startsWith("image/")) {
+        found.add(new URL("/assets" + entry.path, "https://dragonballfr.com").href);
+      }
+    }
+    const pages = Number(body.page?.totalPages);
+    if (Number.isSafeInteger(pages) && pages > 1 && pages < 2000 && !url.searchParams.has("page")) {
+      for (let page = 2; page <= pages; page++) {
+        const next = new URL(url);
+        next.searchParams.set("page", String(page));
+        found.add(next.href);
+      }
+    }
+  }
+  return [...found].slice(0, 150);
+}
 export function retainPoolCandidates(
   frontier: MangaSourceFrontier,
   parent: PoolTask,
@@ -148,14 +207,20 @@ export function retainPoolCandidates(
       continue;
     }
     if (parent.depth >= 2 || url!.hostname === "www.google.com") continue;
-    const scan = /\.(?:jpe?g|png|webp|jp2|pdf|cbz|zip)(?:$|\?)/i.test(url!.href);
-    const kind: Kind = scan
-      ? ownHosts.has(url!.hostname)
-        ? "asset"
-        : "acquisition"
-      : /試し読み|立ち読み|preview|sample|viewer/i.test(url!.href)
-        ? "browser"
-        : "discovery";
+    const scan =
+      /\.(?:jpe?g|png|webp|jp2|pdf|cbz|zip)(?:$|\?)/i.test(url!.href) ||
+      (url!.hostname === "cdn-ak-img.shonenjumpplus.com" &&
+        url!.pathname.startsWith("/public/page/"));
+    const kind: Kind =
+      ownHosts.has(url!.hostname) && url!.pathname === "/api/catalog"
+        ? "inventory"
+        : scan
+          ? ownHosts.has(url!.hostname)
+            ? "asset"
+            : "acquisition"
+          : /試し読み|立ち読み|preview|sample|viewer/i.test(url!.href)
+            ? "browser"
+            : "discovery";
     if (
       frontier.enqueue(
         {
@@ -369,10 +434,10 @@ export function reconcileMangaCatalog(
   return catalog;
 }
 
-async function atomicJson(path: string, value: unknown) {
+async function atomicJson(path: string, value: unknown, mode = 0o600) {
   const temp = path + ".next";
   await Bun.write(temp, JSON.stringify(value, null, 2) + "\n");
-  await chmod(temp, 0o600);
+  await chmod(temp, mode);
   await rename(temp, path);
 }
 async function readBounded(response: Response, max: number, retain: boolean) {
@@ -401,8 +466,8 @@ async function readBounded(response: Response, max: number, retain: boolean) {
   }
   return { bytes, size, sha256: hash.digest("hex") };
 }
-async function robotsAllows(url: URL) {
-  const response = await fetch(url.origin + "/robots.txt", {
+async function robotsAllows(url: URL, fetcher: typeof fetch = fetch) {
+  const response = await fetcher(url.origin + "/robots.txt", {
     redirect: "error",
     signal: AbortSignal.timeout(20000),
   });
@@ -437,9 +502,17 @@ async function robotsAllows(url: URL) {
   }
   return { allowed, status: response.status, sha256: raw.sha256 };
 }
-async function executeTask(task: PoolTask, job: string, slot: number) {
+export async function executeTask(
+  task: PoolTask,
+  job: string,
+  slot: number,
+  fetcher: typeof fetch = fetch,
+  assetRoot = join(job, "acquired"),
+) {
   const url = poolUrl(task.url);
   const startedAt = new Date().toISOString();
+  if (task.kind === "browser" || task.kind === "acquisition")
+    await mkdir(job, { recursive: true, mode: 0o700 });
   if (task.kind === "google") {
     const nativeSpecifier: string = "bun:google";
     const google = await import(nativeSpecifier);
@@ -483,7 +556,7 @@ async function executeTask(task: PoolTask, job: string, slot: number) {
   }
   const robots = ownHosts.has(url.hostname)
     ? { allowed: true, status: 200, basis: "first-party-authorized-public-resource" }
-    : await robotsAllows(url);
+    : await robotsAllows(url, fetcher);
   if (!robots.allowed)
     return { state: "robots_refused", taskId: task.id, robots, startedAt, children: [] };
   if (task.kind === "browser") {
@@ -499,7 +572,7 @@ async function executeTask(task: PoolTask, job: string, slot: number) {
       children: [],
     };
   }
-  const response = await fetch(url, {
+  const response = await fetcher(url, {
     redirect: "error",
     signal: AbortSignal.timeout(45000),
     headers: { "User-Agent": "DragonballfrSourceDiscovery/1.0 (+https://dragonballfr.com)" },
@@ -536,9 +609,12 @@ async function executeTask(task: PoolTask, job: string, slot: number) {
     task.kind !== "asset",
   );
   if (task.kind === "acquisition") {
-    const path = join(job, "acquired", capture.sha256);
-    await mkdir(join(job, "acquired"), { recursive: true, mode: 0o700 });
-    await Bun.write(path, capture.bytes);
+    const path = join(assetRoot, capture.sha256);
+    await mkdir(assetRoot, { recursive: true, mode: 0o700 });
+    if (await Bun.file(path).exists()) {
+      if (poolDigest(await Bun.file(path).bytes()) !== capture.sha256)
+        throw Error("Previously acquired asset integrity differs");
+    } else await Bun.write(path, capture.bytes);
     await chmod(path, 0o600);
     return {
       state: "done",
@@ -597,9 +673,17 @@ async function executeTask(task: PoolTask, job: string, slot: number) {
     robots,
     body,
     json,
-    candidates: ["discovery", "bibliography", "inventory"].includes(task.kind)
-      ? discoveredPoolUrls(json ?? body, task.url)
-      : [],
+    candidates:
+      new URL(task.url).hostname === "shonenjumpplus.com"
+        ? await jumpPublicReaderUrls(body ?? "", task.url)
+        : ["discovery", "bibliography", "inventory"].includes(task.kind)
+          ? task.kind === "inventory"
+            ? structuredPoolUrls(json, task.url)
+            : [
+                ...structuredPoolUrls(json, task.url),
+                ...discoveredPoolUrls(json ?? body, task.url),
+              ].slice(0, 150)
+          : [],
     children,
   };
 }
@@ -610,6 +694,7 @@ async function servePool(options: {
   workers: number;
   interval: number;
   reconcile: number;
+  publicProgressFile?: string;
 }) {
   const { job } = options;
   await mkdir(job, { recursive: true, mode: 0o700 });
@@ -685,6 +770,10 @@ async function servePool(options: {
     { kind: "bibliography", url: "https://api.openbd.jp/v1/get?isbn=9784081111664" },
     {
       kind: "discovery",
+      url: "https://shonenjumpplus.com/episode/10833497643049550354",
+    },
+    {
+      kind: "discovery",
       url:
         "https://ndlsearch.ndl.go.jp/api/opensearch?title=" +
         encodeURIComponent("超悟空伝") +
@@ -739,6 +828,8 @@ async function servePool(options: {
       nextReconcileAt: new Date(Date.now() + options.reconcile).toISOString(),
     };
     await atomicJson(join(job, "public-progress.json"), publicProgress);
+    if (options.publicProgressFile)
+      await atomicJson(options.publicProgressFile, publicProgress, 0o644);
     await atomicJson(join(job, "progress.json"), {
       ...publicProgress,
       pid: process.pid,
@@ -848,6 +939,7 @@ async function servePool(options: {
             kind: "task",
             task,
             job: join(job, "attempts", `${task.id}-${Date.now()}`),
+            assetRoot: join(job, "acquired"),
             slot: slots.indexOf(entry),
           });
         }
@@ -904,6 +996,7 @@ export async function runMangaSourcePool(args = Bun.argv.slice(2)) {
       daemon: { type: "boolean", default: false },
       "interval-ms": { type: "string", default: "60000" },
       "reconcile-ms": { type: "string", default: "3600000" },
+      "public-progress-file": { type: "string" },
     },
   });
   if (
@@ -913,6 +1006,8 @@ export async function runMangaSourcePool(args = Bun.argv.slice(2)) {
     !isAbsolute(values["pid-file"])
   )
     throw Error("Absolute --job and --pid-file are required");
+  if (values["public-progress-file"] && !isAbsolute(values["public-progress-file"]))
+    throw Error("Absolute --public-progress-file required");
   const workers = Number(values.workers),
     interval = Number(values["interval-ms"]),
     reconcile = Number(values["reconcile-ms"]);
@@ -950,7 +1045,14 @@ export async function runMangaSourcePool(args = Bun.argv.slice(2)) {
     child.kill();
     throw Error("Source pool readiness deadline");
   }
-  await servePool({ job: values.job, pidFile: values["pid-file"], workers, interval, reconcile });
+  await servePool({
+    job: values.job,
+    pidFile: values["pid-file"],
+    workers,
+    interval,
+    reconcile,
+    publicProgressFile: values["public-progress-file"],
+  });
 }
 if (!Bun.isMainThread) {
   self.postMessage({
@@ -962,7 +1064,7 @@ if (!Bun.isMainThread) {
   self.onmessage = async ({ data }) => {
     if (data.kind !== "task") return;
     try {
-      const result = await executeTask(data.task, data.job, data.slot);
+      const result = await executeTask(data.task, data.job, data.slot, fetch, data.assetRoot);
       self.postMessage({ kind: "result", result });
     } catch (error) {
       self.postMessage({

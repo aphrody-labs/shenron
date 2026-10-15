@@ -203,3 +203,75 @@ test("eight real Bun Workers load the pool entry exactly once and identify as wo
     for (const worker of workers) await worker.terminate();
   }
 }, 15000);
+
+test("a discovered scan writes actual bytes before producing pending canonical review evidence", async () => {
+  const root = await mkdtemp(join(tmpdir(), "manga-acquisition-"));
+  try {
+    const { executeTask } = await import("./manga-source-pool");
+    const bytes = new Uint8Array([0xff, 0xd8, 0xff, 0xd9]);
+    const fetcher = (async (input: URL | string) =>
+      String(input).endsWith("/robots.txt")
+        ? new Response("absent", { status: 404 })
+        : new Response(bytes, {
+            headers: { "content-type": "image/jpeg" },
+          })) as unknown as typeof fetch;
+    const result = await executeTask(
+      {
+        id: "scan",
+        kind: "acquisition",
+        url: "https://archive.org/download/reviewed-book/001.jpg",
+        host: "archive.org",
+        depth: 2,
+        attempts: 1,
+        series: "SOSH",
+        volumeId: 702,
+      },
+      join(root, "new", "attempt"),
+      0,
+      fetcher,
+    );
+    expect(result.state).toBe("done");
+    expect("publicationEligible" in result && result.publicationEligible).toBe(false);
+    expect("review" in result && result.review).toBe("pending");
+    const path = "assetPath" in result ? result.assetPath : null;
+    expect(typeof path).toBe("string");
+    expect(await Bun.file(path!).bytes()).toEqual(bytes);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("archive and owned inventory recursion follow real returned identities and refuse restricted archive files", async () => {
+  const { structuredPoolUrls } = await import("./manga-source-pool");
+  expect(
+    structuredPoolUrls(
+      { response: { docs: [{ identifier: "actual-sosh-scan" }] } },
+      "https://archive.org/advancedsearch.php?q=sosh",
+    ),
+  ).toEqual(["https://archive.org/metadata/actual-sosh-scan"]);
+  const files = { files: [{ name: "actual scan.pdf" }, { name: "secret.jpg", private: "true" }] };
+  expect(structuredPoolUrls(files, "https://archive.org/metadata/actual-sosh-scan")).toEqual([
+    "https://archive.org/download/actual-sosh-scan/actual%20scan.pdf",
+  ]);
+  expect(
+    structuredPoolUrls(
+      { ...files, is_restricted: true },
+      "https://archive.org/metadata/actual-sosh-scan",
+    ),
+  ).toEqual([]);
+  const entries = {
+    page: {
+      totalPages: 1,
+      entries: [
+        { path: "/wiki/databooks/soshuhen-legend-02/001.jpg", mime: "image/jpeg" },
+        { path: "/unrelated/movie.mp4", mime: "video/mp4" },
+      ],
+    },
+  };
+  expect(
+    structuredPoolUrls(
+      entries,
+      "https://dragonballfr.com/api/catalog?category=assets&path=%2Fwiki%2Fdatabooks%2F",
+    ),
+  ).toEqual(["https://dragonballfr.com/assets/wiki/databooks/soshuhen-legend-02/001.jpg"]);
+});
