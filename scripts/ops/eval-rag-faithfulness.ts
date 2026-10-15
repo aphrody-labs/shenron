@@ -249,7 +249,32 @@ export function summarize(scores: readonly CaseScore[]): Summary {
   };
 }
 
-async function ask(
+/** Check the wire shape before scoring; HTTP success alone is not an answer. */
+function isChatResponse(value: unknown): value is ChatResponse {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const body = value as Record<string, unknown>;
+  const optionalString = (item: unknown) => item === undefined || typeof item === "string";
+  const records = (items: unknown, fields: readonly string[]) =>
+    items === undefined ||
+    (Array.isArray(items) &&
+      items.every((item) => {
+        if (!item || typeof item !== "object" || Array.isArray(item)) return false;
+        const record = item as Record<string, unknown>;
+        return (
+          fields.every((field) => optionalString(record[field])) &&
+          (record.n === undefined || (Number.isSafeInteger(record.n) && Number(record.n) > 0))
+        );
+      }));
+  return (
+    optionalString(body.answer) &&
+    optionalString(body.error) &&
+    (body.refusal === undefined || typeof body.refusal === "boolean") &&
+    records(body.hits, ["title", "url", "sourceId", "kind", "snippet", "content"]) &&
+    records(body.citations, ["url", "title", "sourceId"])
+  );
+}
+
+export async function ask(
   url: string,
   item: EvalCase,
   persona: string,
@@ -259,16 +284,22 @@ async function ask(
   try {
     const res = await fetch(url, {
       method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ q: item.q, persona }),
+      headers: { "content-type": "application/json", "accept-language": item.lang },
+      body: JSON.stringify({ q: item.q, persona, lang: item.lang }),
       signal: AbortSignal.timeout(timeoutMs),
     });
-    const body = (await res.json().catch(() => ({}))) as ChatResponse;
+    const raw: unknown = await res.json().catch(() => null);
+    const body = isChatResponse(raw) ? raw : {};
+    const error = !res.ok
+      ? (body.error ?? `http_${res.status}`)
+      : !isChatResponse(raw) || !body.answer?.trim()
+        ? "invalid_chat_response"
+        : body.error;
     return {
       response: body,
       status: res.status,
       latencyMs: Math.round(performance.now() - started),
-      ...(res.ok ? {} : { error: body.error ?? `http_${res.status}` }),
+      ...(error ? { error } : {}),
     };
   } catch (error) {
     return {
@@ -303,15 +334,17 @@ async function main(): Promise<void> {
     const score = scoreCase(item, response, meta);
     scores.push(score);
     const verdict =
-      item.kind === "out_of_corpus"
-        ? score.refused
-          ? "refus"
-          : "INVENTE"
-        : score.refused
-          ? "REFUS A TORT"
-          : score.citationValid
-            ? "cite"
-            : "sans citation valide";
+      score.error || score.status !== 200
+        ? `ERREUR ${score.error ?? score.status}`
+        : item.kind === "out_of_corpus"
+          ? score.refused
+            ? "refus"
+            : "INVENTE"
+          : score.refused
+            ? "REFUS A TORT"
+            : score.citationValid
+              ? "cite"
+              : "sans citation valide";
     console.log(`${item.id.padEnd(30)} ${String(score.latencyMs).padStart(6)} ms  ${verdict}`);
   }
 
@@ -327,6 +360,7 @@ async function main(): Promise<void> {
   );
   console.log(JSON.stringify(summary, null, 2));
   console.log(`report: ${out}`);
+  if (summary.failedRequests > 0 || cases.length === 0) process.exitCode = 1;
 }
 
 if (import.meta.main) await main();

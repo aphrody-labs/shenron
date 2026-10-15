@@ -2,6 +2,7 @@
 import { describe, expect, it } from "bun:test";
 import {
   type EvalCase,
+  ask,
   inventedReferences,
   looksRefused,
   percentile,
@@ -142,5 +143,65 @@ describe("helpers", () => {
     expect(summary.answeredWithoutCitation).toBe(1);
     expect(summary.latencyMs).toEqual({ p50: 100, p95: 300, max: 300 });
     expect(percentile([5, 1, 3], 50)).toBe(3);
+  });
+});
+
+describe("chat transport qualification", () => {
+  it("sends the case language to retrieval and generation", async () => {
+    let received: unknown;
+    const observed: { language: string | null } = { language: null };
+    const server = Bun.serve({
+      port: 0,
+      fetch: async (request) => {
+        received = await request.json();
+        observed.language = request.headers.get("accept-language");
+        return Response.json({ answer: "悟空です。", hits: [], citations: [] });
+      },
+    });
+    try {
+      const result = await ask(server.url.href, { ...answerable, lang: "ja" }, "whis", 1000);
+      expect(received).toEqual({ q: answerable.q, persona: "whis", lang: "ja" });
+      expect(observed.language).toBe("ja");
+      expect(result.status).toBe(200);
+      expect(result.error).toBeUndefined();
+    } finally {
+      await server.stop(true);
+    }
+  });
+
+  it("counts empty, malformed and embedded-error HTTP 200 payloads as failures", async () => {
+    const bodies: unknown[] = [
+      null,
+      {},
+      { answer: "" },
+      { answer: "Goku", hits: [null] },
+      { answer: "Goku", citations: [{ n: "1" }] },
+      { answer: "Goku", error: "generation_failed" },
+    ];
+    const server = Bun.serve({ port: 0, fetch: () => Response.json(bodies.shift()) });
+    try {
+      for (let index = 0; index < 6; index++) {
+        const { response, ...requestMeta } = await ask(server.url.href, answerable, "whis", 1000);
+        expect(requestMeta.status).toBe(200);
+        expect(requestMeta.error).toBe(index === 5 ? "generation_failed" : "invalid_chat_response");
+        expect(summarize([scoreCase(answerable, response, requestMeta)]).failedRequests).toBe(1);
+      }
+    } finally {
+      await server.stop(true);
+    }
+  });
+
+  it("preserves HTTP failures independently of the JSON body", async () => {
+    const server = Bun.serve({
+      port: 0,
+      fetch: () => new Response("unavailable", { status: 503 }),
+    });
+    try {
+      const result = await ask(server.url.href, answerable, "whis", 1000);
+      expect(result.status).toBe(503);
+      expect(result.error).toBe("http_503");
+    } finally {
+      await server.stop(true);
+    }
   });
 });
