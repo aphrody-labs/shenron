@@ -2203,7 +2203,7 @@
       "ragChunks": "ローカル索引の文章数",
       "canonReferences": "正史判定の参照資料",
       "databookPages": "データブックの参照ページ",
-      "mangaPages": "マンガの記録ページ",
+      "mangaPages": "参照可能な漫画の文字起こし",
       "mangaVolumes": "登録された巻",
       "mangaChapters": "登録された話",
       "episodes": "登録されたエピソード",

@@ -101,7 +101,13 @@ export function CanonExplorer({ initialQuery }: { initialQuery: string }) {
             }}
           >
             <span className={styles.image}>
-              <Image src={item.image} alt="" fill sizes="(max-width: 640px) 140px, 190px" />
+              <Image
+                src={item.image}
+                alt=""
+                fill
+                loading={item.id === "broly" ? "eager" : "lazy"}
+                sizes="(max-width: 640px) 140px, 190px"
+              />
             </span>
             <span className={styles.exampleLabel}>
               {t(`canonExplorer.${item.label}`)}

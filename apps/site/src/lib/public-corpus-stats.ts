@@ -49,7 +49,14 @@ export const getPublicCorpusStats = cache(async (): Promise<PublicCorpusStats> =
               ) p WHERE b.visible AND
                 (length(trim(coalesce(p->>'image',''))) > 0 OR
                  length(trim(coalesce(p->>'text',''))) > 0)) AS "databookPages",
-            (SELECT count(*) FROM bot.db_manga_pages) AS "mangaPages",
+            (SELECT count(*) FROM bot.db_manga_pages p WHERE EXISTS (
+              SELECT 1 FROM bot.db_manga_chapters c
+              JOIN bot.db_manga_volumes v ON v.id = c.volume_id AND v.visible
+              WHERE c.visible AND p.series = c.series
+                AND c.series IN ('DB', 'DBS', 'DBKZ', 'SOSH', 'DBJP', 'DBZ_ANIME_COMICS', 'DB_MOVIES', 'ARALE')
+                AND p.tome = CASE WHEN c.series = 'DBS'
+                  THEN 'ch' || c.id ELSE 'vol' || c.chapter_number END
+            )) AS "mangaPages",
             (SELECT count(*) FROM bot.db_manga_volumes WHERE visible) AS "mangaVolumes",
             (SELECT count(*) FROM bot.db_manga_chapters WHERE visible) AS "mangaChapters",
             (SELECT count(*) FROM bot.db_episodes WHERE visible) AS "episodes",

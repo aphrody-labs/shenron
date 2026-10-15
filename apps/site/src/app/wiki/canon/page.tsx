@@ -392,6 +392,7 @@ async function Resultat({ question }: { question: string }) {
               src={illustration.image}
               alt=""
               fill
+              loading="eager"
               sizes="(max-width:640px) 100vw, 400px"
               className="object-contain"
             />
