@@ -57,6 +57,7 @@ test("Next reads and writes the hosted palette without resolving DB, while prese
   await expect(saveSiteTheme({ radius: 0 }, null)).rejects.toBeInstanceOf(HostThemeError);
   status = 503;
   expect(await getSiteTheme()).toEqual(DEFAULT_SITE_THEME);
+  await expect(getSiteTheme({ strict: true })).rejects.toBeInstanceOf(HostThemeError);
 });
 
 test("an absent host cannot reactivate Next database storage", async () => {

@@ -58,6 +58,10 @@ test("Bun serves live themes and restricts normalized writes to authenticated ad
       body: {
         colors: { orange: "#123456", red: "</style><script>bad</script>" },
         radius: 99,
+        fontFamily: "serif",
+        fontScale: 1.15,
+        contentWidth: 1280,
+        density: "compact",
         updatedBy: "forged",
       },
     });
@@ -69,6 +73,12 @@ test("Bun serves live themes and restricts normalized writes to authenticated ad
       },
     });
     expect(writes[0]?.by).toBe("discord:staff");
+    expect(writes[0]?.theme).toMatchObject({
+      fontFamily: "serif",
+      fontScale: 1.15,
+      contentWidth: 1280,
+      density: "compact",
+    });
     expect(themeCssVars(writes[0]!.theme)).not.toContain("<");
     expect(await guest.call(endpoints.siteTheme, {})).toMatchObject({
       ok: true,

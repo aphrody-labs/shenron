@@ -114,7 +114,7 @@ export const metadata: Metadata = {
     : undefined,
   other: {
     // Tuile Windows : pas de browserconfig.xml, les deux meta suffisent.
-    "msapplication-TileColor": pwaPalette.beerus.background,
+    "msapplication-TileColor": pwaPalette.neutral.background,
     "msapplication-TileImage": "/mstile-150.png",
     ...(env.NEXT_PUBLIC_ADSENSE_CLIENT
       ? { "google-adsense-account": env.NEXT_PUBLIC_ADSENSE_CLIENT }
@@ -123,7 +123,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  themeColor: pwaPalette.beerus.background,
+  themeColor: pwaPalette.neutral.background,
   colorScheme: "dark light" as const,
   viewportFit: "cover" as const,
 };
@@ -212,7 +212,7 @@ export default async function RootLayout({
       {env.NEXT_PUBLIC_ADSENSE_CLIENT && (
         <PublicAdsScript client={env.NEXT_PUBLIC_ADSENSE_CLIENT} />
       )}
-      <body className="antialiased min-h-screen relative flex flex-col font-sans bg-dbz-bg text-white">
+      <body className="antialiased min-h-screen relative flex flex-col font-sans bg-dbz-bg text-os">
         {/* GTM noscript — fallback sans JS, juste après l'ouverture de <body>. */}
         <noscript>
           <iframe

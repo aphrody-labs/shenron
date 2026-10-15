@@ -33,11 +33,21 @@ function hostThemeClient(host: string, requestHeaders?: Headers, adminToken?: st
   });
 }
 
-export const getSiteTheme = cache(async (): Promise<SiteTheme> => {
+export async function getStoredSiteTheme(): Promise<SiteTheme> {
   const host = resolveHostUrl(process.env);
-  if (!host) return DEFAULT_SITE_THEME;
+  if (!host) throw new HostThemeError(503);
   const result = await hostThemeClient(host).call(endpoints.siteTheme, {});
-  return result.ok ? resolveSiteTheme(result.value.theme) : DEFAULT_SITE_THEME;
+  if (!result.ok) throw new HostThemeError(result.kind === "http" ? result.status : 502);
+  return resolveSiteTheme(result.value.theme);
+}
+
+export const getSiteTheme = cache(async (options?: { strict?: boolean }): Promise<SiteTheme> => {
+  try {
+    return await getStoredSiteTheme();
+  } catch (error) {
+    if (options?.strict) throw error;
+    return DEFAULT_SITE_THEME;
+  }
 });
 
 export async function saveSiteTheme(

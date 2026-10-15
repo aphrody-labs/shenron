@@ -29,26 +29,23 @@ describe("home layout", () => {
     expect(view.indexOf("<HomeGames", games + 1)).toBe(-1);
   });
 
-  test("hero: wordmark, Kinto-Un and clips; blocks over their own clip", () => {
+  test("hero identity and editorial content stay visible without background videos", () => {
     const hero = source("../src/components/home/HomeHero.tsx");
     expect(hero).toContain("home-wordmark");
     expect(hero).toContain("<KintoUnVolant");
-    expect(hero).toContain("<HomeHeroScenes scenes={hero.scenes}");
+    expect(hero).not.toContain("<HomeHeroScenes");
+    expect(hero).not.toContain("<video");
     expect(hero).toContain("heroFrame");
     expect(view).toContain("<SectionScene");
     expect(view).toContain("scene={s.scene}");
     expect(view).not.toContain("<SceneBackdrop");
   });
 
-  test("clips stay lazy and respect reduced motion", () => {
-    const backdrop = source("../../../packages/ui/src/public/SceneBackdrop.tsx");
-    expect(backdrop).toContain("prefers-reduced-motion");
-    expect(backdrop).toContain('preload={shouldPlay ? "auto" : "none"}');
+  test("sections never mount video players or background requests", () => {
     const scene = source("../src/components/home/SectionScene.tsx");
-    expect(scene).toContain("IntersectionObserver");
-    expect(scene).toMatch(/near && scene \? <SceneBackdrop/);
-    const heroScenes = source("../src/components/home/HomeHeroScenes.tsx");
-    expect(heroScenes).toContain("useScenePlaybackPolicy");
+    expect(scene).not.toContain("SceneBackdrop");
+    expect(scene).not.toContain("<video");
+    expect(scene).not.toContain("IntersectionObserver");
   });
 
   test("the page keeps its ISR window", () => {

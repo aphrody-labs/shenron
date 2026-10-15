@@ -26,13 +26,14 @@ import {
 // par globals.css : le rendu du site est la concaténation des deux feuilles.
 const css = [
   await Bun.file(new URL("../src/app/globals.css", import.meta.url)).text(),
+  await Bun.file(new URL("../src/app/neutral-theme.css", import.meta.url)).text(),
   await Bun.file(new URL("../../../packages/ui/src/styles.css", import.meta.url)).text(),
 ].join("\n");
 const cles = Object.keys(THEME_COLOR_VARS) as ThemeColorKey[];
 
 describe("tokens de thème", () => {
   test("chaque variable proposée à l'édition est consommée par globals.css", () => {
-    const debranchees = cles.filter((k) => !css.includes(`var(${THEME_COLOR_VARS[k]},`));
+    const debranchees = cles.filter((k) => !css.includes(`var(${THEME_COLOR_VARS[k]}`));
     expect(debranchees).toEqual([]);
   });
 
@@ -43,11 +44,12 @@ describe("tokens de thème", () => {
     expect(THEME_COLORS.map((c) => c.key).toSorted()).toEqual([...cles].toSorted());
   });
 
-  test("les accents d'origine gardent leur valeur historique en défaut", () => {
-    // Le rendu doit être strictement inchangé tant qu'aucun thème n'est posé.
-    expect(DEFAULT_SITE_THEME.colors.ember).toBe("#ff6b1a");
-    expect(DEFAULT_SITE_THEME.colors.ki).toBe("#4ba8ff");
-    expect(DEFAULT_SITE_THEME.colors.amber).toBe("#ffd23f");
+  test("les surfaces et accents neutres restent distincts des états", () => {
+    expect(DEFAULT_SITE_THEME.colors.bg).toBe("#101010");
+    expect(DEFAULT_SITE_THEME.colors.card).toBe("#191919");
+    expect(DEFAULT_SITE_THEME.colors.os).toBe("#ededed");
+    expect(DEFAULT_SITE_THEME.colors.ember).toBe("#d4d4d4");
+    expect(DEFAULT_SITE_THEME.colors.red).not.toBe(DEFAULT_SITE_THEME.colors.orange);
   });
 
   test("aucun littéral de la palette héritée ne subsiste hors définition de token", () => {
@@ -77,8 +79,8 @@ describe("resolveSiteTheme", () => {
     expect(t.colors.amber).toBe("#123456");
   });
 
-  test("n'injecte rien quand le thème est celui par défaut", () => {
-    expect(themeCssVars(DEFAULT_SITE_THEME)).toBe("");
+  test("injecte aussi les défauts pour synchroniser aperçu et site", () => {
+    expect(themeCssVars(DEFAULT_SITE_THEME)).toContain("--dbz-bg:#101010");
   });
 
   test("injecte toutes les variables dès qu'une couleur change", () => {

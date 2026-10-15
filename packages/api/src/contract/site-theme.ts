@@ -8,6 +8,10 @@ export const SiteThemeSchema = z
     version: z.literal(1),
     colors: z.object(Object.fromEntries(Object.keys(THEME_COLOR_VARS).map((key) => [key, color]))),
     radius: z.number().min(0).max(2),
+    fontFamily: z.enum(["sans", "system", "serif", "mono"]),
+    fontScale: z.number().min(0.875).max(1.25),
+    contentWidth: z.number().min(960).max(1920),
+    density: z.enum(["compact", "comfortable", "spacious"]),
   })
   .meta({ id: "SiteTheme" });
 export const SiteThemeResponse = z
