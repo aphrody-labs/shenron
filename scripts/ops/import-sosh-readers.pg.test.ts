@@ -1,0 +1,120 @@
+// SPDX-License-Identifier: Apache-2.0
+import { expect, test } from "bun:test";
+import { mkdtemp, chmod, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import postgres from "postgres";
+import { importSoshReaders, type SoshAssetFetcher } from "./import-sosh-readers";
+import { archiveDigest } from "./apply-archive-catalog";
+
+const url = process.env.SOSH_IMPORT_PG_URL;
+const fixture = url ? new URL(url) : null;
+if (
+  fixture &&
+  (!["127.0.0.1", "localhost"].includes(fixture.hostname) ||
+    fixture.pathname !== "/shenron_sosh_fixture")
+)
+  throw new Error("SOSH tests require the isolated local fixture database");
+
+test.skipIf(!url)(
+  "PostgreSQL importer: real JSON arrays, revisions, optimistic conflicts, replay and rollback",
+  async () => {
+    const sql = postgres(url!, { max: 1, prepare: false });
+    const jobs: string[] = [];
+    const oldUrl = process.env.DATABASE_URL;
+    const image = new Uint8Array([0xff, 0xd8, 0xff, 0xd9]);
+    const fetcher: SoshAssetFetcher = async () =>
+      new Response(image, { headers: { "content-type": "image/jpeg" } });
+    const manifest = (number: number, id: number) => ({
+      version: 1,
+      collection: "SOSH",
+      rightsEvidence: "Fixture license evidence",
+      volumes: [
+        {
+          volumeId: 700 + number,
+          volumeNumber: number,
+          chapterId: id,
+          title: `Legend ${number}`,
+          titleJa: `超悟空伝 ${number}`,
+          sourceUrl: "https://www.shueisha.co.jp/books/",
+          pageCountEvidence: "https://www.shueisha.co.jp/books/",
+          expectedPages: 2,
+          review: "approved",
+          pages: [0, 1].map((page) => ({
+            number: page,
+            readerImage: `https://dragonballfr.com/assets/manga/SOSH/vol${number}/${page}.jpg`,
+            sha256: archiveDigest(image),
+          })),
+        },
+      ],
+    });
+    async function job(number: number, id: number) {
+      const directory = await mkdtemp(join(tmpdir(), "sosh-import-pg-"));
+      jobs.push(directory);
+      await chmod(directory, 0o700);
+      const body = JSON.stringify(manifest(number, id));
+      await Bun.write(join(directory, "manifest.json"), body);
+      const args = ["--job", directory, "--expected-sha", archiveDigest(body)];
+      await importSoshReaders(args, fetcher);
+      // A real pg_dump archive qualifies the backup bytes independently from the plan.
+      const process = Bun.spawn(
+        [
+          "docker",
+          "exec",
+          "shenron-sosh-import-fixture",
+          "pg_dump",
+          "-U",
+          "fixture",
+          "-p",
+          fixture!.port,
+          "-Fc",
+          "shenron_sosh_fixture",
+        ],
+        { stdout: "pipe", stderr: "pipe" },
+      );
+      const backup = new Uint8Array(await new Response(process.stdout).arrayBuffer());
+      if (await process.exited) throw new Error(await new Response(process.stderr).text());
+      await Bun.write(join(directory, "catalog-before.dump"), backup);
+      await Bun.write(
+        join(directory, "backup.json"),
+        JSON.stringify({ inventoryVerified: true, sha256: archiveDigest(backup) }),
+      );
+      return { directory, args };
+    }
+    try {
+      process.env.DATABASE_URL = url;
+      await sql`CREATE SCHEMA IF NOT EXISTS bot`;
+      await sql`CREATE TABLE bot.db_manga_volumes (id integer PRIMARY KEY, series text, volume_number integer, visible boolean)`;
+      await sql`CREATE TABLE bot.db_manga_chapters (id integer PRIMARY KEY, series text, chapter_number integer, volume_id integer REFERENCES bot.db_manga_volumes(id), title text, title_ja text, cover text, pages jsonb, visible boolean)`;
+      await sql`CREATE TABLE public.wiki_revisions (id text PRIMARY KEY, "tableName" text NOT NULL, "rowId" text NOT NULL, action text NOT NULL, label text, before jsonb, after jsonb, "editorName" text, "createdAt" timestamp DEFAULT CURRENT_TIMESTAMP)`;
+      await sql`INSERT INTO bot.db_manga_volumes VALUES (702, 'SOSH', 2, true), (703, 'SOSH', 3, true), (704, 'SOSH', 4, true)`;
+      const first = await job(2, 35002);
+      await importSoshReaders([...first.args, "--apply"], fetcher);
+      const [row] =
+        await sql`SELECT *, jsonb_typeof(pages) AS page_type FROM bot.db_manga_chapters WHERE id=35002`;
+      expect(row!.page_type).toBe("array");
+      expect(row!.pages).toHaveLength(2);
+      const revisions = await sql`SELECT * FROM public.wiki_revisions`;
+      expect(revisions).toHaveLength(1);
+      expect(revisions[0]!.after.pages).toEqual(row!.pages);
+      await importSoshReaders([...first.args, "--apply"], fetcher);
+      expect(await sql`SELECT id FROM public.wiki_revisions`).toHaveLength(1);
+      const conflict = await job(3, 35003);
+      await sql`UPDATE bot.db_manga_volumes SET visible=false WHERE id=703`;
+      await expect(importSoshReaders([...conflict.args, "--apply"], fetcher)).rejects.toThrow();
+      expect(await sql`SELECT id FROM bot.db_manga_chapters WHERE id=35003`).toHaveLength(0);
+      const rollback = await job(4, 35004);
+      await sql`ALTER TABLE public.wiki_revisions ADD CONSTRAINT reject_fixture_revision CHECK ("rowId" <> '35004')`;
+      await expect(importSoshReaders([...rollback.args, "--apply"], fetcher)).rejects.toThrow();
+      expect(await sql`SELECT id FROM bot.db_manga_chapters WHERE id=35004`).toHaveLength(0);
+      expect(await sql`SELECT id FROM public.wiki_revisions`).toHaveLength(1);
+    } finally {
+      if (oldUrl === undefined) delete process.env.DATABASE_URL;
+      else process.env.DATABASE_URL = oldUrl;
+      await sql`DROP TABLE IF EXISTS public.wiki_revisions, bot.db_manga_chapters, bot.db_manga_volumes`;
+      await sql.end({ timeout: 5 });
+      for (const directory of jobs) await rm(directory, { recursive: true, force: true });
+    }
+  },
+  30000,
+);
