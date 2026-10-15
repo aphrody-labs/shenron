@@ -104,13 +104,22 @@ function quantile(values: number[], q: number): number {
 
 async function main(): Promise<void> {
   const tag = arg("tag");
+  // Checked before reading: a missing gold must fail loudly, never measure nothing.
+  if (!(await Bun.file(GOLD).exists())) {
+    console.error(`✗ jeu doré absent (${GOLD}) — vérifier RAG_GOLD_PATH / RAG_GOLD.`);
+    process.exit(1);
+  }
   let gold = parseGold(await Bun.file(GOLD).text());
   if (tag) gold = gold.filter((c) => c.tags?.includes(tag));
   console.log(`→ jeu doré : ${gold.length} cas (${GOLD})${tag ? ` · tag=${tag}` : ""}`);
+  if (gold.length === 0) {
+    console.error("✗ jeu doré vide.");
+    process.exit(1);
+  }
 
   if (!(await Bun.file(DB).exists())) {
     console.log(`⚠ base SQLite absente (${DB}) — fournir RAG_DB.`);
-    return;
+    process.exit(flag("ci") ? 1 : 0);
   }
   const db = new Database(DB, { readonly: true });
   let chunkCount = 0;
