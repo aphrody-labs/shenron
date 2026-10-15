@@ -3,9 +3,11 @@
 import { chmod } from "node:fs/promises";
 import {
   candidateFor,
+  attachSectionContexts,
   qualifyOfficialSource,
   validateDraft,
   type Evidence,
+  type Candidate,
 } from "./wiki-fill-agents";
 import { wikiUpdateSnapshotHash } from "../../apps/site/src/lib/wiki-update-precondition";
 
@@ -18,6 +20,7 @@ export type Operation = {
   evidence: Evidence[];
   draft: unknown;
   review: { decision: string; reason: string };
+  discoveryContext?: Candidate["discoveryContext"];
 };
 export type Backup = { path: string; sha256: string; tables: string[]; pgRestoreVerified: boolean };
 type Requester = (path: string, init?: RequestInit) => Promise<Response>;
@@ -38,6 +41,7 @@ export function validateOperation(operation: Operation) {
     throw Error("Publication snapshot identity mismatch");
   if (operation.review?.decision !== "approve" || !operation.review.reason.trim())
     throw Error("Independent approval required");
+  if (table === "db_wiki_sections") candidate.discoveryContext = operation.discoveryContext;
   const draft = validateDraft(operation.draft, candidate, operation.evidence);
   const changes = Object.fromEntries(draft.changes.map((change) => [change.field, change.value]));
   const { expected: _snapshot, expectedSha256: _hash, ...supplied } = operation.body;
@@ -56,8 +60,31 @@ async function jsonResponse(response: Response) {
   return (await response.json()) as Row;
 }
 
+/** Resolve the section's parent again; exported identity is never sufficient authority. */
+export async function verifySectionContext(operation: Operation, request: Requester) {
+  if (!operation.path.startsWith("/api/wiki-admin/db_wiki_sections/")) return;
+  const supplied = operation.discoveryContext;
+  const parent = supplied?.parent;
+  if (
+    !parent ||
+    !/^db_[a-z_]+$/.test(parent.table) ||
+    parent.id !== String(operation.body.expected.entityId) ||
+    parent.apiPath !== `/api/wiki-admin/${parent.table}/${encodeURIComponent(parent.id)}`
+  )
+    throw Error("Canonical section parent reference required");
+  const row = await jsonResponse(await request(parent.apiPath));
+  const currentParent = candidateFor(parent.table, row);
+  const section = candidateFor("db_wiki_sections", operation.body.expected);
+  if (!currentParent || !section || currentParent.sha256 !== parent.expectedSha256)
+    throw Error("Section parent changed; regenerate proposal");
+  const observed = attachSectionContexts([section, currentParent])[0]?.discoveryContext;
+  if (!observed || wikiUpdateSnapshotHash(observed) !== wikiUpdateSnapshotHash(supplied!))
+    throw Error("Section context differs from its canonical parent");
+}
+
 export async function planOperation(operation: Operation, request: Requester) {
   const identity = validateOperation(operation);
+  await verifySectionContext(operation, request);
   const current = await jsonResponse(await request(operation.path));
   if (wikiUpdateSnapshotHash(current) !== operation.body.expectedSha256)
     throw Error("Administrative snapshot changed; regenerate proposal");
@@ -94,6 +121,7 @@ export async function probeCas(operation: Operation, request: Requester) {
 
 export async function applyOperation(operation: Operation, request: Requester, backup: Backup) {
   const { table, id, changes } = validateOperation(operation);
+  await verifySectionContext(operation, request);
   const bytes = await Bun.file(backup.path).bytes();
   if (
     !backup.pgRestoreVerified ||

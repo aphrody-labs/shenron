@@ -1,5 +1,11 @@
 import { expect, test } from "bun:test";
-import { validateOperation, probeCas, type Operation } from "./publish-wiki-proposals";
+import {
+  validateOperation,
+  probeCas,
+  verifySectionContext,
+  type Operation,
+} from "./publish-wiki-proposals";
+import { attachSectionContexts, candidateFor } from "./wiki-fill-agents";
 import { wikiUpdateSnapshotHash } from "../../apps/site/src/lib/wiki-update-precondition";
 
 const snapshot = { id: 15, slug: "jaco", title: "Jaco", visible: true, synopsisFr: "" };
@@ -64,4 +70,44 @@ test("live CAS probe never sends proposed content and rejects an ignoring server
   await expect(probeCas(operation, async () => Response.json({ ok: true }))).rejects.toThrow(
     "CAS enforcement",
   );
+});
+
+test("section publication resolves the actual visible parent and rejects drift or invented identity", async () => {
+  const parent = { id: 2, name: "Vegeta", nameRomaji: "Vegeta", visible: true };
+  const section = {
+    id: 13087,
+    entityType: "character",
+    entityId: 2,
+    key: "durabilite",
+    label: "Durabilité",
+    body: null,
+    visible: true,
+  };
+  const candidate = attachSectionContexts([
+    candidateFor("db_wiki_sections", section)!,
+    candidateFor("db_characters", parent)!,
+  ])[0]!;
+  const proposal: Operation = {
+    ...operation,
+    path: "/api/wiki-admin/db_wiki_sections/13087",
+    body: { body: "Vegeta est blessé.", expected: section, expectedSha256: candidate.sha256 },
+    discoveryContext: candidate.discoveryContext,
+  };
+  const fetchParent = async (path: string) => {
+    expect(path).toBe("/api/wiki-admin/db_characters/2");
+    return Response.json(parent);
+  };
+  await verifySectionContext(proposal, fetchParent);
+  await expect(
+    verifySectionContext(proposal, async () => Response.json({ ...parent, name: "Autre nom" })),
+  ).rejects.toThrow("parent changed");
+  const forged = structuredClone(proposal);
+  forged.discoveryContext!.parent.identity.name = "Goku";
+  await expect(verifySectionContext(forged, fetchParent)).rejects.toThrow("canonical parent");
+  const foreign = structuredClone(proposal);
+  foreign.discoveryContext!.parent.apiPath = "https://example.com/private";
+  await expect(verifySectionContext(foreign, fetchParent)).rejects.toThrow("reference");
+  await expect(
+    verifySectionContext(proposal, async () => Response.json({ ...parent, visible: false })),
+  ).rejects.toThrow("parent changed");
 });
