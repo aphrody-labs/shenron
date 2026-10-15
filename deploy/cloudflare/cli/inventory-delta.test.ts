@@ -79,6 +79,15 @@ test("delta pins the previous inventory and emits public shards without source p
     const sourceSnapshot = await Bun.file(join(dir, "out/source-inventory.json")).text();
     expect(digest(sourceSnapshot)).toBe(report.sourceInventorySha256);
     expect(Object.keys(JSON.parse(sourceSnapshot).entries)).toHaveLength(3);
+    const originalReport = await Bun.file(join(dir, "out/inventory.json")).text();
+    await rm(join(dir, "out/shards/ff.json"));
+    await run(args);
+    expect(await Bun.file(join(dir, "out/inventory.json")).text()).toBe(originalReport);
+    expect(await Bun.file(join(dir, "out/shards/ff.json")).exists()).toBe(true);
+    await Bun.write(join(site, "public/logo.svg"), "changed after preparation");
+    await expect(run(args)).rejects.toThrow("Immutable publication file differs");
+    expect(await Bun.file(join(dir, "out/source-inventory.json")).text()).toBe(sourceSnapshot);
+    await Bun.write(join(site, "public/logo.svg"), "new-logo");
     const shard = digest("/logo.svg").slice(0, 2);
     const rows = await Bun.file(join(dir, "out/shards", shard + ".json")).json();
     expect(rows["/logo.svg"].sha256).toBe(digest("new-logo"));

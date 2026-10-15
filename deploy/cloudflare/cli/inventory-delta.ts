@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-import { readdir, stat, realpath, mkdir, writeFile } from "node:fs/promises";
+import { readdir, stat, realpath, mkdir } from "node:fs/promises";
 import { join, relative, extname, resolve, sep } from "node:path";
 import { digest } from "./cloudflare-ops";
+import { privateDirectory, writeImmutablePrivate } from "./publication-state";
 
 export interface InventoryEntry {
   sha256: string;
@@ -97,9 +98,38 @@ export async function run(args: string[]) {
     ...(await scan(resolve(flag("--release-public")), "")),
   };
   const entries = mergeEntries(previous.entries, current);
-  const createdAt = new Date().toISOString();
   const out = resolve(flag("--out"));
-  await mkdir(out, { recursive: true, mode: 0o700 });
+  await privateDirectory(out);
+  const preparationPath = join(out, "preparation.json");
+  let preparation: {
+    createdAt: string;
+    previousSha256: string;
+    site: string;
+    static: string;
+    public: string;
+  };
+  try {
+    preparation = await Bun.file(preparationPath).json();
+  } catch (error) {
+    if ((error as { code?: string }).code !== "ENOENT") throw error;
+    preparation = {
+      createdAt: new Date().toISOString(),
+      previousSha256: digest(text),
+      site,
+      static: resolve(flag("--static")),
+      public: resolve(flag("--release-public")),
+    };
+  }
+  if (
+    preparation.previousSha256 !== digest(text) ||
+    preparation.site !== site ||
+    preparation.static !== resolve(flag("--static")) ||
+    preparation.public !== resolve(flag("--release-public")) ||
+    !Number.isFinite(Date.parse(preparation.createdAt))
+  )
+    throw Error("Inventory preparation inputs changed");
+  await writeImmutablePrivate(preparationPath, JSON.stringify(preparation));
+  const createdAt = preparation.createdAt;
   const installedCatalog = join(import.meta.dir, "public-cdn-catalog.ts");
   const modulePath = (await Bun.file(installedCatalog).exists())
     ? installedCatalog
@@ -114,13 +144,14 @@ export async function run(args: string[]) {
   );
   const sourceInventory = JSON.stringify({ createdAt, entries: sourceEntries });
   const sourceInventorySha256 = digest(sourceInventory);
+  await writeImmutablePrivate(join(out, "source-inventory.json"), sourceInventory);
   const catalog = projectCatalog({ createdAt, entries: sourceEntries }, sourceInventorySha256);
   const publicCatalogRoot = join(out, "public-catalog");
-  await mkdir(publicCatalogRoot, { mode: 0o700 });
+  await privateDirectory(publicCatalogRoot);
   for (const [path, body] of catalog.artifacts) {
     const sourcePath = join(publicCatalogRoot, path.slice(1));
     await mkdir(resolve(sourcePath, ".."), { recursive: true, mode: 0o700 });
-    await writeFile(sourcePath, body, { mode: 0o600, flag: "wx" });
+    await writeImmutablePrivate(sourcePath, body);
     entries[path] = {
       sourcePath,
       sha256: digest(body),
@@ -130,7 +161,6 @@ export async function run(args: string[]) {
         path === catalogPrefix + "/index.json" ? "no-store" : "public, max-age=31536000, immutable",
     };
   }
-  await writeFile(join(out, "source-inventory.json"), sourceInventory, { mode: 0o600, flag: "wx" });
   const unique = new Map<string, InventoryEntry & { path: string }>();
   const oldHashes = new Set(Object.values(previous.entries).map((entry) => entry.sha256));
   const shards: Record<string, Record<string, Omit<InventoryEntry, "sourcePath">>> = {};
@@ -146,7 +176,7 @@ export async function run(args: string[]) {
     const key = i.toString(16).padStart(2, "0");
     const body = JSON.stringify(shards[key] ?? {});
     hashes[key] = digest(body);
-    await writeFile(join(out, "shards", key + ".json"), body, { mode: 0o600, flag: "wx" });
+    await writeImmutablePrivate(join(out, "shards", key + ".json"), body);
   }
   const objects = [...unique.values()];
   const report = {
@@ -175,7 +205,7 @@ export async function run(args: string[]) {
     "delta-objects.json": objects.filter((entry) => !oldHashes.has(entry.sha256)),
     "shard-hashes.json": hashes,
   }))
-    await writeFile(join(out, name), JSON.stringify(value), { mode: 0o600, flag: "wx" });
+    await writeImmutablePrivate(join(out, name), JSON.stringify(value));
   console.log(JSON.stringify({ ...report, entries: undefined }));
 }
 if (import.meta.main)
