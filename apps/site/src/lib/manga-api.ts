@@ -30,7 +30,8 @@ import { API_URL as BOT_API_URL, SITE_URL } from "@/lib/config";
 import type { MangaVolume } from "@/lib/db-universe";
 import { mangaData } from "@/lib/manga-data";
 import { mangaReaderAssetUrl } from "@/lib/manga-reader-assets";
-import { EDITION_PAR_SERIE, SERIE_COULEUR } from "@/lib/manga-editions";
+import { SERIE_COULEUR } from "@/lib/manga-editions";
+import { mangaVolumeEdition } from "@/lib/manga-volume-edition";
 import { resolveMangaPage } from "@/lib/manga-assets";
 import { estCjk, extraitAutour, normaliser, scorer } from "@/lib/manga-search-rules";
 import { sansAccents } from "@/lib/pg-unaccent";
@@ -174,6 +175,14 @@ function decodeLignes(raw: string | null): string[] | null {
 export async function chapitreApi(id: number): Promise<ChapitreApi | null> {
   const chapter = await mangaData.mangaChapter(id);
   if (!chapter) return null;
+  let publication = null;
+  if (chapter.volume_id != null) {
+    try {
+      publication = (await mangaData.mangaVolume?.(chapter.volume_id)) ?? null;
+    } catch {
+      /* A publication mirror outage must not interrupt the existing reader. */
+    }
+  }
   const ocr = await ocrDuChapitre(chapter);
 
   const planches: PlancheApi[] = (chapter.pages ?? []).map((chemin, i) => {
@@ -204,7 +213,7 @@ export async function chapitreApi(id: number): Promise<ChapitreApi | null> {
     chapter_number: chapter.chapter_number,
     title: chapter.title,
     volume_id: chapter.volume_id,
-    edition: editionDe(chapter.series),
+    edition: editionDe(chapter.series, publication),
     pages: planches.length,
     transcribed,
     transcrites: transcribed,
@@ -217,15 +226,8 @@ export async function chapitreApi(id: number): Promise<ChapitreApi | null> {
   };
 }
 
-function editionDe(series: string): EditionApi {
-  const e = EDITION_PAR_SERIE[series] ?? { langue: "fr", colorisation: "nb" };
-  return {
-    language: e.langue,
-    colorization:
-      e.colorisation === "mixte" ? "mixed" : e.colorisation === "couleur" ? "color" : "bw",
-    langue: e.langue,
-    colorisation: e.colorisation,
-  };
+function editionDe(series: string, volume?: Parameters<typeof mangaVolumeEdition>[1]): EditionApi {
+  return mangaVolumeEdition(series, volume);
 }
 
 /** Une planche seule + ses voisines (navigation sans recharger le chapitre). */
@@ -265,6 +267,7 @@ export async function plancheApi(
 }
 
 export type TomeApi = MangaVolume & {
+  edition: EditionApi;
   href: string;
   api: string;
   cover_image: string | null;
@@ -285,6 +288,7 @@ export async function tomeApi(id: number): Promise<TomeApi | null> {
   if (!v) return null;
   return {
     ...v,
+    edition: editionDe(v.series, v),
     cover_image: v.cover
       ? new URL(mangaReaderAssetUrl(v.cover, v.sourceKind), SITE_URL).href
       : null,
