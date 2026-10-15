@@ -2,6 +2,12 @@
 import { describe, expect, test } from "bun:test";
 import { acquire, type AcquireOptions, type CurlProvider } from "./bun-source-http";
 
+function fetchMock(
+  handler: (...args: Parameters<typeof fetch>) => ReturnType<typeof fetch>,
+): typeof fetch {
+  return Object.assign(handler, { preconnect: () => {} });
+}
+
 function options(origin: string, overrides: Partial<AcquireOptions> = {}): AcquireOptions {
   return {
     transport: "fetch",
@@ -166,7 +172,7 @@ describe("bounded native source HTTP", () => {
     );
     await expect(
       acquire("https://source.test/", options("https://source.test", { maxBytes: 4 }), {
-        fetch: (async () => response) as typeof fetch,
+        fetch: fetchMock(async () => response),
       }),
     ).rejects.toMatchObject({ code: "ERR_SOURCE_TOO_LARGE" });
     expect(canceled).toBe(true);
@@ -248,10 +254,10 @@ describe("bounded native source HTTP", () => {
     await expect(
       acquire("https://source.test/", options("https://source.test", { transport: "curl" }), {
         curl: null,
-        fetch: (async () => {
+        fetch: fetchMock(async () => {
           fetchCalls++;
           return new Response("fallback");
-        }) as typeof fetch,
+        }),
       }),
     ).rejects.toMatchObject({ code: "ERR_CURL_PROVIDER_UNAVAILABLE" });
     expect(fetchCalls).toBe(0);
@@ -296,10 +302,10 @@ describe("bounded native source HTTP", () => {
   test("invalid settings and forbidden initial origin fail before network", async () => {
     let hits = 0;
     const dependencies = {
-      fetch: (async () => {
+      fetch: fetchMock(async () => {
         hits++;
         return new Response("unexpected");
-      }) as typeof fetch,
+      }),
     };
     await expect(
       acquire("https://forbidden.test/", options("https://source.test"), dependencies),
@@ -348,10 +354,10 @@ describe("bounded native source HTTP", () => {
         "https://source.test/",
         options("https://source.test", { signal: controller.signal }),
         {
-          fetch: (async () => {
+          fetch: fetchMock(async () => {
             calls++;
             return new Response("unexpected");
-          }) as typeof fetch,
+          }),
         },
       ),
     ).rejects.toBe(reason);
@@ -383,10 +389,10 @@ describe("bounded native source HTTP", () => {
     let attempts = 0;
     await expect(
       acquire("https://source.test/", options("https://source.test", { retries: 1 }), {
-        fetch: (async () => {
+        fetch: fetchMock(async () => {
           attempts++;
           throw original;
-        }) as typeof fetch,
+        }),
       }),
     ).rejects.toBe(original);
     expect(attempts).toBe(2);
