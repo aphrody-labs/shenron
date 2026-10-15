@@ -16,6 +16,7 @@
  * The caller passes the environment (`process.env` in an entry point): nothing is read at
  * module load. Variables are listed in docs/architecture/STACK.md §3.6.
  */
+import { createPublicRagPort } from "./rag";
 import { createHostFavorites } from "./favorites";
 import type { Database } from "bun:sqlite";
 import { existsSync, statSync } from "node:fs";
@@ -330,6 +331,8 @@ export function staticFileResponse(
 }
 
 export interface LocalApiOptions {
+  /** Canonical editorial retrieval assembled by the product when RAG_BACKEND=aphrody. */
+  rag?: RagPort | null;
   /** Qualified native capabilities injected by the product host. */
   web?: WebPort | null;
   service?: ShenronApiService;
@@ -553,8 +556,34 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
         agentHome: true,
       })
     : null;
+  const usesAphrodyRag = envString(env, "RAG_BACKEND") === "aphrody";
+  let rag: RagPort | null = null;
+  let ragReason = "aucun VFS Shenron installé";
+  if (usesAphrodyRag) {
+    rag = options.rag ? createPublicRagPort(options.rag) : null;
+    ragReason = "configuration du RAG Aphrody absente ou invalide";
+  } else if (opened) rag = createVfsRagPort(opened, embedder?.query ?? null);
   const engine = createChatEngine({
-    rag: opened?.rag ?? null,
+    rag: usesAphrodyRag ? null : (opened?.rag ?? null),
+    ...(usesAphrodyRag
+      ? {
+          retrieval: async (query, request) => {
+            if (!rag) throw new Error("RAG Aphrody indisponible");
+            const result = await rag.search({
+              q: query,
+              limit: 25,
+              ...(request.kinds?.length === 1 ? { kind: request.kinds[0] } : {}),
+            });
+            return {
+              mode: result.mode === "lexical" ? ("lexical" as const) : ("hybrid" as const),
+              hits: result.hits
+                .filter((hit) => !request.kinds?.length || request.kinds.includes(hit.kind))
+                .slice(0, request.limit)
+                .map((hit) => ({ ...hit, corpus: "shenron", content: hit.content ?? hit.snippet })),
+            };
+          },
+        }
+      : {}),
     embed: embedder?.query ?? null,
     embedderModel: embedModel,
     publicOnly,
@@ -620,7 +649,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
       siteTheme: siteTheme?.port,
       favorites: favorites?.port,
       wiki,
-      rag: opened ? createVfsRagPort(opened, embedder?.query ?? null) : null,
+      rag,
       chat,
       conversations,
       memory,
@@ -689,7 +718,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
   const groups: LocalApiGroups = {
     web: options.web ? available() : unavailable("capacités Web natives indisponibles"),
     wiki: wiki ? available() : unavailable(opened ? "wiki servi par le site" : vfsMissing),
-    rag: opened ? available() : unavailable(vfsMissing),
+    rag: rag ? available() : unavailable(ragReason),
     chat: chatGroup,
     conversations: store,
     sync: { ...store },

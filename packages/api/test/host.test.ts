@@ -10,6 +10,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { ShenronVfs, writeWikiRows } from "@aphrody/shenron-db/vfs";
 import { createRagWriter } from "@aphrody/shenron-db/vfs/build";
+import type { RagSearchQuery } from "../src/contract/schemas";
 import { LocalApiGroups } from "../src/contract/local";
 import { createLocalApi, type LocalApi, usableChatBackends } from "../src/host";
 
@@ -271,5 +272,108 @@ describe("public RAG boundary", () => {
     } finally {
       await server.stop(true);
     }
+  });
+});
+
+describe("live editorial RAG routing", () => {
+  test("search, context and chat use the injected current index without a VFS", async () => {
+    const calls: { sourceId?: string; lang?: string }[] = [];
+    const api = host(baseEnv({ RAG_BACKEND: "aphrody", SHENRON_CHAT_BACKENDS: "extractive" }), {
+      rag: {
+        async search(query: RagSearchQuery) {
+          calls.push(query);
+          return {
+            mode: "hybrid",
+            hits: [
+              {
+                rowid: 1,
+                title: "Home",
+                url: "",
+                kind: "home",
+                sourceId: "agent_home",
+                snippet: "private instructions",
+                score: 1,
+              },
+              {
+                rowid: 2,
+                title: "Manga current",
+                url: "https://dragonballfr.com/wiki/manga/1",
+                kind: "manga",
+                sourceId: "manga",
+                snippet: "Current manga",
+                content: "Current manga full passage",
+                lang: "fr",
+                score: 0.9,
+              },
+              {
+                rowid: 3,
+                title: "Databook current",
+                url: "https://dragonballfr.com/wiki/databooks/1",
+                kind: "databook",
+                sourceId: "databooks",
+                snippet: "Current databook",
+                content: "Current databook full passage",
+                lang: "fr",
+                score: 0.8,
+              },
+            ].filter((hit) => !query.sourceId || hit.sourceId === query.sourceId),
+          };
+        },
+      },
+    });
+    expect(api.groups.rag.available).toBe(true);
+    expect(api.groups.vfs.available).toBe(false);
+    const server = Bun.serve({ port: 0, hostname: "127.0.0.1", fetch: api.fetch });
+    try {
+      const search = await (
+        await fetch(new URL("/api/public/rag/search?q=Goku&lang=fr&sourceId=manga", server.url))
+      ).json();
+      expect(search.mode).toBe("hybrid");
+      expect(search.results.map((item: { title: string }) => item.title)).toEqual([
+        "Manga current",
+      ]);
+      expect(calls[0]!.sourceId).toBe("manga");
+      expect(calls[0]!.lang).toBe("fr");
+      const context = await (
+        await fetch(new URL("/api/public/rag/context?q=Goku", server.url))
+      ).json();
+      expect(context.context).toContain("Current manga full passage");
+      expect(context.context).toContain("Current databook full passage");
+      expect(context.context).not.toContain("private instructions");
+      const chat = await fetch(new URL("/api/v1/chat", server.url), {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ message: "Qui est Goku ?", stream: false, tools: false }),
+      });
+      expect(chat.status).toBe(200);
+      const answer = await chat.json();
+      expect(answer.done.citations.map((citation: { title: string }) => citation.title)).toEqual([
+        "Manga current",
+        "Databook current",
+      ]);
+      expect(JSON.stringify(answer)).not.toContain("private instructions");
+    } finally {
+      await server.stop(true);
+    }
+  });
+
+  test("an unavailable explicit live index never falls back to a stale VFS", async () => {
+    const api = host(baseEnv({ RAG_BACKEND: "aphrody" }), {
+      rag: {
+        search: async () => {
+          throw new Error("unavailable");
+        },
+      },
+      vfsDatabase: memoryVfs(),
+    });
+    const server = Bun.serve({ port: 0, hostname: "127.0.0.1", fetch: api.fetch });
+    try {
+      expect((await fetch(new URL("/api/public/rag/search?q=Goku", server.url))).status).toBe(503);
+    } finally {
+      await server.stop(true);
+    }
+    const invalid = host(baseEnv({ RAG_BACKEND: "aphrody" }), { vfsDatabase: memoryVfs() });
+    expect(invalid.groups.rag.available).toBe(false);
+    expect(invalid.handles("/api/public/rag/search")).toBe(false);
   });
 });
