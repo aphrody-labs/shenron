@@ -823,3 +823,14 @@ bloquées; Xenoverse officiel n'étaye toujours pas les détails de
 `tournaments/11`. La suite requiert un chemin autorisé vers les intérieurs
 exacts des volumes et une rétention/sauvegarde approuvée des snapshots
 existants; jusque-là aucune complétude manga/wiki ne peut être annoncée.
+
+Complément de source primaire pour éviter une conflation : la page officielle
+Bandai Namco Europe de Xenoverse décrit séparément Tokitoki City comme hub de
+plus de 200 joueurs et le « World Tournament » comme événement en ligne
+chronométré. Elle ne relie pas explicitement ce World Tournament à la notice
+Shenron `tournaments/11` (« Super Tournoi de l'Espace-Temps »), ni n'en donne
+vainqueur, finaliste ou règles. La page a répondu HTTP 200 le 2026-10-15,
+corps SHA-256 `0b4fdee3e82e588f4fc64237b870de359a2e96ddba7208043f087216def3de61`.
+Une paraphrase prudente a été indexée au RAG privé DBFR : 1 document, 1 chunk,
+0 erreur; la requête sur l'identité du tournoi retrouve cette source. Aucun
+article wiki n'a été écrit à partir de cette preuve partielle.
