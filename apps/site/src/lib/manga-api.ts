@@ -550,44 +550,43 @@ export async function chercherPlanches(
     )
     .slice(offset, offset + max);
 
-  // Résolution des coordonnées OCR vers un chapitre du site : `vol{N}` → le
-  // chapitre DB de numéro N, `ch{id}` → le chapitre d'identifiant id.
-  const numerosDb = [
-    ...new Set(
-      classes
-        .filter((x) => x.r.series === "DB" && /^vol\d+$/.test(x.r.tome))
-        .map((x) => Number(x.r.tome.slice(3))),
-    ),
-  ];
-  const idsDbs = [
-    ...new Set(
-      classes.filter((x) => /^ch\d+$/.test(x.r.tome)).map((x) => Number(x.r.tome.slice(2))),
-    ),
-  ];
+  // Resolve each OCR coordinate within its edition; volume numbers overlap across series.
+  const coordinates = new Map<string, SQL>();
+  for (const { r } of classes) {
+    const volume = /^vol(\d+)$/.exec(r.tome);
+    const chapter = /^ch(\d+)$/.exec(r.tome);
+    const number = Number(volume?.[1] ?? chapter?.[1]);
+    if (!Number.isSafeInteger(number) || number <= 0) continue;
+    if (volume) {
+      coordinates.set(
+        `${r.series}:${r.tome}`,
+        sql`(series = ${r.series} AND chapter_number = ${number})`,
+      );
+    } else if (chapter) {
+      coordinates.set(`${r.series}:${r.tome}`, sql`(series = ${r.series} AND id = ${number})`);
+    }
+  }
   const chapitres = new Map<string, { id: number; pages: string[] }>();
-  if (numerosDb.length > 0 || idsDbs.length > 0) {
+  if (coordinates.size > 0) {
     const chaps = await db.execute<{
       id: number;
       series: string;
       chapter_number: number;
       pages: string[] | null;
     }>(sql`
-			SELECT id, series, chapter_number, pages FROM bot.db_manga_chapters
-			WHERE (series = 'DB' AND chapter_number = ANY(${sql.raw(
-        `ARRAY[${numerosDb.join(",") || "NULL"}]::int[]`,
-      )}))
-			OR id = ANY(${sql.raw(`ARRAY[${idsDbs.join(",") || "NULL"}]::int[]`)})
-		`);
+      SELECT id, series, chapter_number, pages FROM bot.db_manga_chapters
+      WHERE ${sql.join([...coordinates.values()], sql` OR `)}
+    `);
     for (const c of chaps) {
       const pages = Array.isArray(c.pages) ? c.pages : [];
-      const cle = c.series === "DB" ? `DB:vol${c.chapter_number}` : `ch${c.id}`;
-      chapitres.set(cle, { id: Number(c.id), pages });
+      const coordinate = cleTomeOcr(c);
+      if (coordinate)
+        chapitres.set(`${coordinate.series}:${coordinate.tome}`, { id: Number(c.id), pages });
     }
   }
 
   return classes.map(({ r, d }) => {
-    const cle = r.series === "DB" ? `DB:${r.tome}` : r.tome;
-    const chap = chapitres.get(cle) ?? null;
+    const chap = chapitres.get(`${r.series}:${r.tome}`) ?? null;
     const numero = Number(r.planche);
     // Le numéro OCR est celui du FICHIER ; le lecteur parle en rang. On
     // retrouve le fichier pour produire une adresse qui tombe juste.
