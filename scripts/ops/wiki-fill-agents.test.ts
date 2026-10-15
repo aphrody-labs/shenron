@@ -285,4 +285,33 @@ test("Codex process has explicit model, read-only sandbox, disabled tools and no
   expect(args).toContain("--ignore-user-config");
   expect(args).toContain("shell_tool");
   expect(args).not.toContain("--dangerously-bypass-approvals-and-sandbox");
+  const discoveryArgs = codexArguments(
+    DEFAULT_MODEL,
+    "/tmp/job",
+    "/tmp/schema",
+    "/tmp/result",
+    true,
+  );
+  expect(discoveryArgs[discoveryArgs.indexOf("code_mode_host") - 1]).toBe("--enable");
+  expect(discoveryArgs[discoveryArgs.indexOf("shell_tool") - 1]).toBe("--disable");
+  expect(discoveryArgs).toContain('web_search="live"');
+});
+test("full administrative snapshots remain private while model prompts get only entity identity", async () => {
+  const { db } = await queue();
+  try {
+    const protectedCandidate = candidateFor("db_characters", {
+      ...row,
+      streamHeaders: { Authorization: "must-never-enter-model-context" },
+    })!;
+    db.enqueue(protectedCandidate, evidence, DEFAULT_MODEL);
+    const job = db.claim("owner", 10000)!;
+    expect(
+      await executeJob(db, job, "owner", async (...args) => {
+        expect(args[1]).not.toContain("must-never-enter-model-context");
+        return successfulRunner(...args);
+      }),
+    ).toBe("approved");
+  } finally {
+    db.close();
+  }
 });

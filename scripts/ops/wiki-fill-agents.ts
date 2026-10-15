@@ -650,7 +650,7 @@ export function codexArguments(
     "hooks",
     "--disable",
     "memories",
-    "--disable",
+    discovery ? "--enable" : "--disable",
     "code_mode_host",
     "--disable",
     "browser_use",
