@@ -262,3 +262,27 @@ test("legacy transcription and translation targets keep their existing restorati
     ["11", 28, null],
   ]);
 });
+
+test("revert rejects reordered scans with equal corrected text and replacement assets", async () => {
+  const pages = structuredClone(original.pages) as Row[];
+  pages[0]!.text = "Same corrected text";
+  pages[1]!.text = "Same corrected text";
+  expect((await patch(structuredClone(book), pages)).status).toBe(200);
+  const corrected = structuredClone(book);
+  const reordered = book.pages as Row[];
+  [reordered[0], reordered[1]] = [reordered[1]!, reordered[0]!];
+  const concurrentOrder = structuredClone(book);
+  await expect(revertRevision(String(revisions[0]!.id), null)).rejects.toBeInstanceOf(
+    WikiUpdatePreconditionError,
+  );
+  expect(book).toEqual(concurrentOrder);
+  expect(revisions).toHaveLength(1);
+  book = structuredClone(corrected);
+  (book.pages as Row[])[0]!.image = "replacement-scan.jpg";
+  const replacement = structuredClone(book);
+  await expect(revertRevision(String(revisions[0]!.id), null)).rejects.toBeInstanceOf(
+    WikiUpdatePreconditionError,
+  );
+  expect(book).toEqual(replacement);
+  expect(revisions).toHaveLength(1);
+});

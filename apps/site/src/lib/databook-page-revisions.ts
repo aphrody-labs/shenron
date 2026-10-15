@@ -88,6 +88,14 @@ export function restoreDatabookPageRevision(current: unknown, before: Row, after
       continue;
     }
     if (!isRow(actual)) throw new WikiUpdatePreconditionError();
+    // Equal OCR text does not establish scan identity after a reorder or asset replacement.
+    for (const field of ["number", "image"]) {
+      if (
+        Object.hasOwn(actual, field) !== Object.hasOwn(next.value, field) ||
+        !equal(actual[field], next.value[field])
+      )
+        throw new WikiUpdatePreconditionError();
+    }
     const restored = { ...actual };
     for (const field of new Set([...Object.keys(previous.value), ...Object.keys(next.value)])) {
       if (equal(previous.value[field], next.value[field])) continue;
