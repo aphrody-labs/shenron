@@ -29,6 +29,28 @@ function archive(entries: Record<string, string>): Uint8Array<ArrayBuffer> {
 }
 
 describe("publication archive boundary", () => {
+  test("allows slow propagation but stops after the bounded publication window", async () => {
+    let calls = 0;
+    const delayed = async () =>
+      ++calls < 16 ? new Response("", { status: 404 }) : Response.json({ version: "1.4.6" });
+    expect(await readPublishedVersion("fixture", "1.4.6", delayed, async () => {})).toEqual({
+      version: "1.4.6",
+    });
+    expect(calls).toBe(16);
+    calls = 0;
+    await expect(
+      readPublishedVersion(
+        "fixture",
+        "1.4.6",
+        async () => {
+          calls++;
+          return new Response("", { status: 404 });
+        },
+        async () => {},
+      ),
+    ).rejects.toThrow("HTTP 404");
+    expect(calls).toBe(91);
+  });
   test("retries only registry propagation and keeps authorization failures terminal", async () => {
     let calls = 0,
       pauses = 0;

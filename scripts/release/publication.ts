@@ -9,7 +9,7 @@ export async function readPublishedVersion(
   request: (url: string, options: RequestInit) => Promise<Response> = fetch,
   pause: (milliseconds: number) => Promise<unknown> = Bun.sleep,
 ) {
-  for (let attempt = 0; attempt < 13; attempt++) {
+  for (let attempt = 0; attempt < 91; attempt++) {
     const response = await request(
       "https://registry.npmjs.org/" +
         encodeURIComponent(name) +
@@ -24,7 +24,7 @@ export async function readPublishedVersion(
       },
     );
     if (response.ok) return response.json();
-    if (response.status !== 404 || attempt === 12)
+    if (response.status !== 404 || attempt === 90)
       throw new Error("Published version readback failed " + name + " HTTP " + response.status);
     await pause(10_000);
   }
@@ -206,7 +206,7 @@ if (import.meta.main) {
           versions.find((version) => Bun.semver.satisfies(version, range)) ?? null,
       });
     }
-    const response = await fetch(
+    let response = await fetch(
       "https://registry.npmjs.org/" +
         encodeURIComponent(source.name) +
         "/" +
@@ -217,6 +217,17 @@ if (import.meta.main) {
     );
     if (!response.ok && response.status !== 404)
       throw new Error("Registry lookup failed " + response.status);
+    const acceptedFile = Bun.file(join(out, folder + "-upload-receipt.json"));
+    if (publish && response.status === 404 && (await acceptedFile.exists())) {
+      const accepted = await acceptedFile.json();
+      if (
+        accepted.name !== source.name ||
+        accepted.version !== source.version ||
+        accepted.sha256 !== new Bun.CryptoHasher("sha256").update(bytes).digest("hex")
+      )
+        throw new Error("Accepted upload receipt differs from current archive: " + source.name);
+      response = Response.json(await readPublishedVersion(source.name, source.version));
+    }
     const result = {
       name: source.name,
       version: source.version,
@@ -280,6 +291,17 @@ if (import.meta.main) {
         throw new Error("Registry identity mismatch");
       if (remote.dist?.shasum !== new Bun.CryptoHasher("sha1").update(bytes).digest("hex"))
         throw new Error("Published archive digest mismatch");
+      result.published = true;
+      registryVersions.set(source.name, [
+        ...(registryVersions.get(source.name) ?? []),
+        source.version,
+      ]);
+    } else if (publish && response.ok) {
+      const remote = await response.json();
+      if (remote.name !== source.name || remote.version !== source.version)
+        throw new Error("Registry identity mismatch");
+      if (remote.dist?.shasum !== new Bun.CryptoHasher("sha1").update(bytes).digest("hex"))
+        throw new Error("Existing published archive digest mismatch: " + source.name);
       result.published = true;
       registryVersions.set(source.name, [
         ...(registryVersions.get(source.name) ?? []),
