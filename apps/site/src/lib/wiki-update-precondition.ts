@@ -12,6 +12,8 @@ export class WikiUpdateRequestError extends Error {
 }
 
 function canonical(value: unknown): string {
+  // PostgreSQL timestamps are Dates in Drizzle and ISO strings in the admin JSON response.
+  if (value instanceof Date) return JSON.stringify(value.toISOString());
   if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
   if (value !== null && typeof value === "object") {
     return `{${Object.keys(value)
@@ -81,7 +83,7 @@ export function assertWikiUpdatePrecondition(
     throw new WikiUpdatePreconditionError();
   }
   for (const [field, value] of entries) {
-    if (!Object.hasOwn(before, field) || !Bun.deepEquals(before[field], value)) {
+    if (!Object.hasOwn(before, field) || canonical(before[field]) !== canonical(value)) {
       throw new WikiUpdatePreconditionError();
     }
   }
