@@ -188,7 +188,13 @@ export function buildUnifiedStaffCatalog(
       studio: "audio_dub",
       studioLabel,
       keyWorks,
-      bioSummary: va.biography || "",
+      bioSummary: [
+        ...new Set(
+          [va.biography, va.article]
+            .filter((text): text is string => typeof text === "string" && text.trim().length > 0)
+            .map((text) => text.trim()),
+        ),
+      ].join("\n\n"),
       anecdote: ANECDOTES_MAP[va.slug],
       // `bot.db_voice_actors.image` peut être un chemin d'asset brut (portrait
       // téléversé à l'admin) : rendu tel quel, il se résolvait contre le site.
