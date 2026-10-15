@@ -97,6 +97,9 @@ const sourceHosts = new Set([
 ]);
 const day = 86400000;
 export const POOL_HOST_DELAY_MS = 2000;
+export const POOL_ACTIVE_POLL_MS = 250;
+export const poolPollingDelayMs = (activeWorkers: number) =>
+  activeWorkers > 0 ? POOL_ACTIVE_POLL_MS : POOL_HOST_DELAY_MS;
 export const POOL_HOST_DAILY_LIMIT = 2000;
 const discoveryLinkLimit = 150;
 const discoveryMediaLimit = 2500;
@@ -1296,7 +1299,7 @@ async function servePool(options: {
         });
         lastEgress = Date.now();
       }
-      await Bun.sleep(250);
+      await Bun.sleep(poolPollingDelayMs(slots.filter((slot) => slot.task).length));
     }
   } finally {
     projectionStop.abort();

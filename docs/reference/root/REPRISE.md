@@ -730,3 +730,16 @@ pas de retry), Shueisha/BookWalker sans galerie qualifiée. Reçus privés dans
 `25051f9de41f3c3b3fbbd8d346955032ba6da023ccec83d7fa02e7cb5a28b599`). La QA
 navigateur réelle est consignée ci-dessus ; les réponses API confirment aussi les
 stubs 702–718 et ne les font pas passer pour des lecteurs.
+
+### 2026-10-15 — Réduction du polling inactif du pool manga
+
+Le superviseur du pool sollicitait SQLite toutes les 250 ms même sans worker
+actif. Le délai d'attente suit maintenant le cooldown hôte déjà déclaré (2 s)
+quand aucun slot n'exécute de tâche, tout en conservant 250 ms dès qu'un worker
+est actif. Test ciblé : 15 tests / 134 assertions réussis ; `bun check` et
+`bun fmt --check` réussis, `bun lint` exit 0 avec avertissements préexistants.
+La mesure avant changement sur PID 602749, pool sans worker actif, a observé
+8,474 s CPU sur 12 s (70,6 % d'un cœur), un seul échantillon. Le push et la
+qualification après redémarrage restent à faire ; ce changement ne modifie ni
+les quotas, ni les 16 workers configurés. La collection conserve 110 notices
+incomplètes et le wiki ses entrées bloquées : aucun contenu n'a été inventé.

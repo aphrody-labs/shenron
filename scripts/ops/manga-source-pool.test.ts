@@ -12,6 +12,8 @@ import {
   poolUrl,
   retryDelay,
   POOL_HOST_DELAY_MS,
+  POOL_ACTIVE_POLL_MS,
+  poolPollingDelayMs,
   POOL_HOST_DAILY_LIMIT,
   defaultPoolCapabilities,
   loadPoolCapabilities,
@@ -30,6 +32,12 @@ const task = (url = "https://dragonballfr.com/api/manga", kind = "catalog" as co
   depth: 0,
   series: null,
   volumeId: null,
+});
+
+test("idle pool polling follows the per-host cooldown while active workers keep quick dispatch", () => {
+  expect(poolPollingDelayMs(0)).toBe(POOL_HOST_DELAY_MS);
+  expect(poolPollingDelayMs(1)).toBe(POOL_ACTIVE_POLL_MS);
+  expect(poolPollingDelayMs(16)).toBe(POOL_ACTIVE_POLL_MS);
 });
 
 test("an explicitly unavailable search capability is quarantined without network or CLI calls", async () => {
