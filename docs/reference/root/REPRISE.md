@@ -757,3 +757,19 @@ programme un cycle de rattrapage. Vérification : tests pool 16/137 et
 projection 6/29, `bun check`, `bun fmt --check`, `bun lint` (avertissements
 préexistants) et `git diff --check` verts. Pas encore déployé ni mesuré après
 activation. Le nombre de tomes lisibles et les lacunes wiki restent inchangés.
+
+### 2026-10-15 — Projection incrémentale activée sur la fabrique
+
+Le correctif est livré sur `origin/main` (`1db0aa867fb6ff6cd490ce5afe0c2181e6050dd7`)
+et le checkout VPS correspond à ce SHA. Les commits inclus corrigent le polling idle
+puis déclenchent la projection initialement et à la réception de résultats, jamais
+sur un simple snapshot périodique. Le service a été redémarré via l'adaptateur
+Infra à 18:22:01 UTC ; PID 764902, 16 workers prêts, Tokyo qualifié, aucune tâche
+active lors des mesures. Projection terminée à 18:22:41 : 3 966 reçus projetés,
+0 document modifié, 0 candidat, 3 989 quarantaines, 0 écriture publique/éditoriale.
+Sur 12 s après cette fin, CPU 35,888→36,117 s, soit 1,9 % d'un cœur. Sur le cycle
+suivant de snapshot (~61 s), 36,117→36,993 s, soit ~1,4 % d'un cœur ; le snapshot
+public a été actualisé tandis que l'horodatage de projection est resté inchangé.
+Comparé aux ~12 s CPU/12 s observées sur l'image précédente, la projection répétée
+était bien une source majeure de charge idle. Le résultat ne mesure que ce service
+et cette fenêtre ; aucune complétude manga/wiki n'en découle.
