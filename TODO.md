@@ -11,6 +11,10 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
 
 ## Actions ouvertes
 
+- Terminer la publication des douze bibliothèques 1.4.6, télécharger leurs archives npm
+  et comparer les empreintes et contenus aux artefacts audités. Vérifier séparément
+  la livraison site/bot et le comportement de la release réellement active.
+
 - Qualifier au navigateur le thème neutre et l’accueil sans vidéo, puis la sauvegarde
   admin des couleurs et des réglages avec relecture PostgreSQL et rendu public.
 - Rejouer l’évaluation chat après livraison du bornage à 256 tokens. Compute/E5

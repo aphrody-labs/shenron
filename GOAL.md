@@ -20,7 +20,9 @@ explicitement attribuées ; aucun classement ou texte japonais inventé.
 Demandes ajoutées : rendre `/wiki/canon` moins verbeux, plus illustré, simple et
 interactif ; automatiser le remplissage du wiki par sessions Codex `gpt-5.6-luna`
 avec preuves primaires et relecture indépendante ; installer le plugin Aphrody
-et son MCP dans Codex.
+et son MCP dans Codex. La demande explicite de synchronisation Git, merge, déploiement complet et
+mise à jour des paquets autorise la livraison site/bot via Infra et la publication
+des douze bibliothèques publiques auditées en version 1.4.6 ; les applications restent privées.
 « star » reste à préciser ; aucun correctif arbitraire n’est déduit de ce mot.
 
 0. Demande propriétaire du 13 octobre livrée (contrôle du 15 octobre dans REPRISE) :

@@ -454,3 +454,20 @@ SDK public `@aphrody/bun-runtime-sdk@1.4.10` publié et archive vérifiée ; exp
 Pipeline partagé DB/CDN/RAG ajouté avec plans épinglés, checkpoints et vérification des octets ; voir `docs/operations/BUN-SOURCE-PIPELINE.md`. Gates combinées : 78 tests réussis, 369 assertions, dont PostgreSQL réel ; un cas de persistance VectorIndex attend le nouveau runtime. Livraison SQL réelle : 349 documents et 4 312 médias de référence, sans promotion canon ; premier lot CAS vérifié de sept objets. Le RAG se livre par cycles bornés avec relecture de source, sans annoncer le corpus complet avant preuve.
 
 Le crawl des 24 sources demeure partiel. La reprise doit conserver le collecteur existant, les refus robots et les reçus par source ; un code zéro ne prouve pas la complétude. Le runtime natif et les exécutables compilés doivent passer leurs fixtures avant promotion. La fabrique Aphrody est épinglée avec une qualification bloquante ; le runtime installé ne la satisfait pas encore. Aucun basculement de lecteur vers VectorIndex ni activation Canon ne doit être déduit des seuls commits.
+
+
+## 2026-10-15 — Accord complet de livraison et gates de préparation
+
+Le propriétaire autorise explicitement le déploiement complet. Les douze bibliothèques
+publics passent à1.4.6 (e3e6cf4d, config867a52b) ; archives initiales auditées sans
+anomalie, publication réelle engagée et relecture des empreintes en cours. Aucun
+résultat de publication globale ni nouvelle activation du site n’est encore annoncé.
+Le build6f88 a passé les suites paquets/site/DOM et check/lint, puis échoué avant Next
+sur trois gates scripts : Python/Brotli, chemins Windows/Linux et références plugin.
+Correction plugin1b2f243f (20tests/1840assertions), stockage d814645f (18/64) ;
+qualification Python3.13 sur fabrique et correction CAS dates JSON/Drizzle en cours.
+Automatisation wiki10df5082 ajoute un rattachement explicite œuvre/épisode/édition :
+16propositions initiales restent archivées,8quarantaines,7nouvelles retenues et
+Finalflash traité par le lot déjà relu sur scans. Aucune de ces propositions publiée
+à cette étape. Prochain travail : SHA commun vert, image scellée/activation Infra,
+reset neutre, contrôles navigateur puis écritures éditoriales protégées et RAG.
