@@ -37,7 +37,10 @@ export function MediaPager({
 }) {
   if (!prev && !next) return null;
   return (
-    <nav aria-label={ariaLabel} className={`grid gap-3 sm:grid-cols-2 ${className}`}>
+    <nav
+      aria-label={ariaLabel}
+      className={`grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 ${className}`}
+    >
       {prev ? <PagerCard item={prev} dir="prev" ratio={ratio} /> : null}
       {next ? <PagerCard item={next} dir="next" ratio={ratio} /> : null}
     </nav>
@@ -58,7 +61,7 @@ function PagerCard({
     <Link
       href={item.href}
       rel={dir}
-      className={`group flex min-h-11 items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 transition-colors hover:border-dbz-orange/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange ${
+      className={`group flex min-h-11 min-w-0 items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 transition-colors hover:border-dbz-orange/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange ${
         dir === "next" ? "sm:col-start-2 sm:flex-row-reverse sm:text-right" : ""
       }`}
     >

@@ -11,6 +11,16 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
 
 ## Actions ouvertes
 
+- Compléter SOSH : corriger le filtre SSR et les libellés du lecteur, rattacher la
+  recherche API aux éditions, corriger la bibliographie sur preuves primaires,
+  acquérir les pages manquantes des tomes 2–18 puis vérifier lecture et pagination.
+- Reprendre les frontières japonaises privées Bun/Aphrody, qualifier le chemin VPN,
+  indexer les captures permises et mesurer les résultats réels ; conserver les refus
+  d’accès et distinguer notices collectées, scans disponibles et OCR relu.
+- Activer via Infra les workers permanents de découverte, acquisition et publication
+  des mangas : reprise après panne et redémarrage, cadence bornée, indexation réelle,
+  writers et relecture publique ; inclure tous les tomes manquants, dont SOSH 2–18.
+
 - Terminer la livraison site/bot et vérifier le comportement de la release réellement active.
 - Trier archive_movies/archive_images par sélection DragonBall qualifiée, avec compteurs,
   pagination, détails et provenance cohérents ; conserver les éléments incertains hors sélection.

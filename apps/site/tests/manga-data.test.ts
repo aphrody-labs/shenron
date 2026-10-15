@@ -6,7 +6,7 @@ const { createMangaData, MANGA_CATALOGUE_INDEX_URL } = await import("../src/lib/
 import { projectMangaCdn, mangaDigest } from "../../../scripts/ops/manga-cdn-projection";
 import { mangaReaderAssetUrl } from "../src/lib/manga-reader-assets";
 
-function projection(title = "Goku") {
+function projection(title = "Goku", isbn: string | null = null) {
   return projectMangaCdn(
     {
       observedAt: "2026-10-14T16:00:00.000Z",
@@ -17,6 +17,7 @@ function projection(title = "Goku") {
           series: "DB",
           volume_number: 1,
           title,
+          isbn,
           cover: null,
           chapters: [{ id: 10 }, { id: 11 }],
         },
@@ -85,8 +86,8 @@ function editorial() {
   };
   return { port, calls };
 }
-function transport() {
-  let current = projection();
+function transport(isbn: string | null = null) {
+  let current = projection("Goku", isbn);
   let failure: "head" | "digest" | "uri" | "size" | "cache" | "schema" | "stream" | "sha" | null =
     null;
   const calls: string[] = [];
@@ -140,7 +141,7 @@ function transport() {
       failure = value;
     },
     publish: (title: string) => {
-      current = projection(title);
+      current = projection(title, isbn);
     },
   };
 }
@@ -186,6 +187,28 @@ test("a new live digest replaces the shared source after thirty seconds without 
   time = 30000;
   expect((await data.mangaChapter(10))?.title).toBe("Gohan");
   expect(network.calls.filter((value) => value.startsWith("HEAD:"))).toHaveLength(2);
+});
+
+test("verified ISBN bibliography enriches the CDN hub and detail without replacing reader assets", async () => {
+  const network = transport("978-4-08-111166-4"),
+    fallback = editorial(),
+    data = createMangaData(fallback.port, network.fetcher);
+  const source = "https://books.shueisha.co.jp/items/contents.html?isbn=978-4-08-111166-4";
+  const [catalogue, volumes, volume] = await Promise.all([
+    data.mangaCatalogVolumes(),
+    data.mangaVolumes("DB"),
+    data.mangaVolume(1),
+  ]);
+  expect(catalogue?.volumes[0]?.source_url).toBe(source);
+  expect(volumes?.volumes[0]?.source_url).toBe(source);
+  expect(volume?.source_url).toBe(source);
+  expect(volume?.source_label).toBe("集英社");
+  expect(volume?.sourceKind).toBe("cdn");
+  expect(volume?.chapters[0]?.pages).toHaveLength(4);
+  expect(volume?.chapters[0]?.pages?.[0]).toBe(
+    "https://cdn.dragonballfr.com/assets/manga/DB/page.webp",
+  );
+  expect(fallback.calls).toEqual([]);
 });
 
 test("missing, foreign, oversized, cached or corrupt publication reads fall back and retry immediately", async () => {

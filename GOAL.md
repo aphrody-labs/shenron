@@ -28,6 +28,19 @@ avec une sélection Dragon Ball réellement qualifiée et des filtres cohérents
 corriger les GitHub Actions et workflows depuis leurs échecs réels.
 « star » reste à préciser ; aucun correctif arbitraire n’est déduit de ce mot.
 
+Demande courante : compléter de bout en bout `/wiki/manga?collection=SOSH`, son
+interface, ses données et son API ; collecter et indexer récursivement les sources
+japonaises avec Bun et Aphrody, en utilisant le VPN configuré lorsqu’il est qualifié.
+Les 18 notices ne prouvent pas la présence des 18 volumes lisibles : chaque tome
+doit disposer de ses vrais médias, d’une pagination vérifiée et d’une provenance.
+La collecte et l’indexation restent privées jusqu’à validation par leurs writers.
+Précision propriétaire : les 18 tomes doivent être réellement disponibles en lecture,
+puis des workers récursifs permanents, 24 h/24 et 7 j/7, doivent compléter les pages
+et tomes manquants de tout le catalogue manga et publier les ressources acquises.
+Les workers reprennent leurs frontières et files persistantes, respectent les budgets
+par source et publient par les propriétaires éditoriaux et CDN ; aucune notice ou
+page de remplacement ne vaut livraison d’un volume.
+
 0. Demande propriétaire du 13 octobre livrée (contrôle du 15 octobre dans REPRISE) :
    accueil, catalogue épisodes/sagas, cinq GIF, aperçus et téléchargements servis par
    la release `88ac0d23`. La prochaine image commune reste coordonnée avec le dashboard.
