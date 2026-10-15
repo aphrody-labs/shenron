@@ -31,6 +31,14 @@ corriger les GitHub Actions et workflows depuis leurs échecs réels.
 Demande courante : compléter de bout en bout `/wiki/manga?collection=SOSH`, son
 interface, ses données et son API ; collecter et indexer récursivement les sources
 japonaises avec Bun et Aphrody, en utilisant le VPN configuré lorsqu’il est qualifié.
+La cible propriétaire mise à jour est la livraison publique de 177 tomes SOSH.
+Le catalogue de production observé ne liste que 18 identités SOSH : concilier la
+cible des 177 avec les notices éditeur avant de créer des identités ou d’inventer
+des numéros/ISBN. Le plan de livraison et ses portes sont dans
+[`SOSH-177-DELIVERY-PLAN.md`](docs/reference/root/SOSH-177-DELIVERY-PLAN.md).
+Après l’unique livraison de code pour généraliser le contrat et invalider l’ISR,
+la publication de chaque vague doit passer par workers, writer et index CDN sans
+rebuild Next backend.
 Les 18 notices ne prouvent pas la présence des 18 volumes lisibles : chaque tome
 doit disposer de ses vrais médias, d’une pagination vérifiée et d’une provenance.
 La collecte et l’indexation restent privées jusqu’à validation par leurs writers.

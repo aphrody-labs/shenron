@@ -11,6 +11,18 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
 
 ## Actions ouvertes
 
+- Exécuter la livraison des 177 tomes SOSH selon
+  [le plan complet](docs/reference/root/SOSH-177-DELIVERY-PLAN.md). Porte de départ :
+  réconcilier les 177 éditions attendues avec les seules 18 identités SOSH actuellement
+  présentes en production ; aucune identité ne peut être extrapolée. Le contrat SOSH
+  borne aujourd’hui manifests/IDs à 18. À généraliser avant l’import à l’échelle cible.
+  Terminer ensuite un tome pilote, passer chaque vague par acquisition, relecture,
+  backup/CAS, CDN, API puis vérification visuelle réelle en production. Une fois le
+  contrat et l’invalidation runtime déployés, les vagues données passent par le
+  worker/CDN/writer sans rebuild Next par tome.
+  Réutiliser l’Aphrody Web crawl/scrape/indexeur et le pool Bun existants ; ne pas
+  ajouter un crawler concurrent. Le manque opérationnel est l’acquisition de pages
+  SOSH qualifiées et l’invalidation runtime des caches, pas l’absence de moteur web.
 - Livrer le correctif Studio `cad30390` dans l’image commune : régression DOM et
   contrôle isolé en 390/1280 verts ; vérifier ensuite `/studio` réellement déployé.
 - Compléter les 110 tomes manquants : 93 sans ligne chapitre et 17 stubs SOSH
