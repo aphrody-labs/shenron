@@ -1,15 +1,4 @@
 {
-  "enabledPlugins": {
-    "frontend-design@claude-plugins-official": false
-  },
-  "extraKnownMarketplaces": {
-    "nextjs": {
-      "source": {
-        "source": "github",
-        "repo": "vercel/next.js"
-      }
-    }
-  },
   "permissions": {
     "allow": [
       "Bash",
@@ -49,5 +38,9 @@
         ]
       }
     ]
-  }
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": false
+  },
+  "extraKnownMarketplaces": {}
 }
