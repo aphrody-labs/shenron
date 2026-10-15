@@ -743,3 +743,17 @@ La mesure avant changement sur PID 602749, pool sans worker actif, a observé
 qualification après redémarrage restent à faire ; ce changement ne modifie ni
 les quotas, ni les 16 workers configurés. La collection conserve 110 notices
 incomplètes et le wiki ses entrées bloquées : aucun contenu n'a été inventé.
+
+### 2026-10-15 — Projection déclenchée par les nouveaux reçus
+
+La mesure après le changement de délai idle a montré que le coût principal
+n'était pas le polling SQLite : à 0 tâche, le processus restait proche de 79 %
+d'un cœur. La cause était `progress()` : chaque snapshot, y compris chaque
+minute sans nouveau reçu, relançait `projectPoolReceipts`, qui reparcourt les
+reçus terminés et l'arbre dérivé. La projection est désormais déclenchée par
+l'arrivée d'un reçu (et au démarrage), tandis que les snapshots périodiques ne
+font que rafraîchir les compteurs ; un reçu arrivé pendant une projection
+programme un cycle de rattrapage. Vérification : tests pool 16/137 et
+projection 6/29, `bun check`, `bun fmt --check`, `bun lint` (avertissements
+préexistants) et `git diff --check` verts. Pas encore déployé ni mesuré après
+activation. Le nombre de tomes lisibles et les lacunes wiki restent inchangés.

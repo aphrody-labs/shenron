@@ -100,6 +100,8 @@ export const POOL_HOST_DELAY_MS = 2000;
 export const POOL_ACTIVE_POLL_MS = 250;
 export const poolPollingDelayMs = (activeWorkers: number) =>
   activeWorkers > 0 ? POOL_ACTIVE_POLL_MS : POOL_HOST_DELAY_MS;
+export const poolProjectionDue = (pending: boolean, projectionRunning: boolean) =>
+  pending && !projectionRunning;
 export const POOL_HOST_DAILY_LIMIT = 2000;
 const discoveryLinkLimit = 150;
 const discoveryMediaLimit = 2500;
@@ -1102,6 +1104,7 @@ async function servePool(options: {
   let lastEgress = Date.now();
   const projectionStop = new AbortController();
   let projection: Promise<void> | undefined;
+  let projectionPending = false;
   const progress = async () => {
     const counts = frontier.counts();
     const catalog = (frontier.meta("catalog") ?? {
@@ -1152,7 +1155,9 @@ async function servePool(options: {
       counts,
       capabilityDetails: options.capabilities,
     });
-    if (!stopping && !projection) {
+    if (!stopping) projectionPending = true;
+    if (!stopping && poolProjectionDue(projectionPending, Boolean(projection))) {
+      projectionPending = false;
       projection = (async () => {
         const template =
           process.env.SHENRON_MANGA_CANDIDATE_TEMPLATE ?? join(job, "candidate-template.json");
@@ -1170,6 +1175,10 @@ async function servePool(options: {
         })
         .finally(() => {
           projection = undefined;
+          if (projectionPending && !stopping)
+            queueMicrotask(() => {
+              void progress();
+            });
         });
     }
   };
@@ -1215,6 +1224,7 @@ async function servePool(options: {
         frontier.settle(task, "retry", "", String(error));
       } finally {
         entry.task = null;
+        projectionPending = true;
       }
     };
     worker.onerror = (event) => {

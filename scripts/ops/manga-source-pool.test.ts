@@ -14,6 +14,7 @@ import {
   POOL_HOST_DELAY_MS,
   POOL_ACTIVE_POLL_MS,
   poolPollingDelayMs,
+  poolProjectionDue,
   POOL_HOST_DAILY_LIMIT,
   defaultPoolCapabilities,
   loadPoolCapabilities,
@@ -38,6 +39,12 @@ test("idle pool polling follows the per-host cooldown while active workers keep 
   expect(poolPollingDelayMs(0)).toBe(POOL_HOST_DELAY_MS);
   expect(poolPollingDelayMs(1)).toBe(POOL_ACTIVE_POLL_MS);
   expect(poolPollingDelayMs(16)).toBe(POOL_ACTIVE_POLL_MS);
+});
+
+test("receipt projection is triggered by new work, not periodic status snapshots", () => {
+  expect(poolProjectionDue(false, false)).toBe(false);
+  expect(poolProjectionDue(true, false)).toBe(true);
+  expect(poolProjectionDue(true, true)).toBe(false);
 });
 
 test("an explicitly unavailable search capability is quarantined without network or CLI calls", async () => {
