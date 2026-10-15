@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
-import { afterEach, expect, test } from "bun:test";
+import { afterAll, afterEach, beforeAll, describe, expect, test } from "bun:test";
 import { mkdtemp, rm, chmod, lstat, mkdir, symlink } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import {
   hash,
   prepareSourceBatches,
+  validateSourceBatch,
+  aggregateSourceBatchValidation,
   runSourcePipeline,
   type PipelineDatabase,
   type RegistryRow,
@@ -28,9 +30,14 @@ const doc = (url = "https://source.example/a") => ({
   timestamp_utc: "2026-10-15T00:00:00Z",
   payload: { title_raw: "Fixture", body_markdown: "日本語 'quoted'", embedded_media: [] },
 });
-async function fixture(documents: unknown[] = [doc()], extra: Partial<SourcePipelineConfig> = {}) {
+async function fixture(
+  documents: unknown[] = [doc()],
+  extra: Partial<SourcePipelineConfig> = {},
+  ownRoot?: (root: string) => void,
+) {
   const root = await mkdtemp(join(tmpdir(), "bun-source-pipeline-"));
-  roots.push(root);
+  if (ownRoot) ownRoot(root);
+  else roots.push(root);
   await chmod(root, 0o700);
   const input = join(root, "export.jsonl"),
     policy = join(root, "policy.json"),
@@ -370,6 +377,307 @@ test("batch buffered writer preserves UTF-8 bytes across its one MiB boundary", 
   expect(batch.exportSha256).toBe(hash(snapshot));
   expect(batch).toMatchObject({ count: 2, exportComplete: true });
   expect((await Bun.file(batch.manifestPath).json()).sourceBytes).toBe(Buffer.byteLength(snapshot));
+});
+
+async function validationFixture(
+  documents: unknown[],
+  extra: Partial<SourcePipelineConfig> = {},
+  ownRoot?: (root: string) => void,
+) {
+  const f = await fixture(documents, { maxDocuments: 2, ...extra }, ownRoot);
+  const snapshotSha256 = hash(await Bun.file(f.input).text());
+  const first = await prepareSourceBatches(f.configPath, {
+    snapshotSha256,
+    batchSize: f.config.maxDocuments!,
+  });
+  const options = { snapshotSha256, manifestSha256: first.manifestSha256 };
+  const batches = [first];
+  while (!batches.at(-1)!.exportComplete) {
+    batches.push(
+      await prepareSourceBatches(f.configPath, {
+        ...options,
+        batchSize: f.config.maxDocuments!,
+        cursor: batches.at(-1)!.nextCursor,
+      }),
+    );
+  }
+  return { ...f, options, batches };
+}
+async function validateFixtureBatches(f: Awaited<ReturnType<typeof validationFixture>>) {
+  const receipts = [];
+  for (const batch of f.batches)
+    receipts.push(
+      await validateSourceBatch(f.configPath, {
+        ...f.options,
+        cursor: batch.cursor,
+        batchReceiptSha256: batch.receiptSha256,
+      }),
+    );
+  return receipts;
+}
+
+describe("batch validation over 100000 positions", () => {
+  let f: Awaited<ReturnType<typeof validationFixture>>;
+  let ownedRoot: string | undefined;
+  beforeAll(async () => {
+    const base = {
+      ...doc(),
+      crawl_id: "f",
+      category: "r",
+      raw_checksum: hash("x"),
+      payload: { title_raw: "T", body_markdown: "x", embedded_media: [] },
+    };
+    const documents = Array.from({ length: 100001 }, (_, i) => ({
+      ...base,
+      document_uid: String(i),
+      canonical_url: `https://source.example/${i}`,
+    }));
+    documents[100000] = documents[0]!;
+    f = await validationFixture(documents, { maxDocuments: 60000, maxRecords: 150000 }, (root) => {
+      ownedRoot = root;
+    });
+  }, 30000);
+  afterAll(async () => {
+    if (ownedRoot) await rm(ownedRoot, { recursive: true, force: true });
+  });
+  test("handles more than 100000 document positions without lifting per-batch limits", async () => {
+    const receipts = await validateFixtureBatches(f);
+    expect(receipts.map((r) => r.documents)).toEqual([60000, 40001]);
+    const result = await aggregateSourceBatchValidation(f.configPath, f.options);
+    expect(result).toMatchObject({
+      positions: 100001,
+      totalDocuments: 100001,
+      projectedRecords: 100001,
+      uniqueUrls: 100000,
+      validatedBatches: 2,
+      ragEligibleUrls: 0,
+      ragDeniedUrls: 100000,
+      cardinalityComplete: true,
+      validationComplete: true,
+      budgetExceeded: false,
+      complete: false,
+      deliveryAuthorized: false,
+    });
+    expect(hash(await Bun.file(result.reportPath).text())).toBe(result.reportSha256);
+    expect(receipts[1]!.previousValidationSha256).toBe(receipts[0]!.validationSha256);
+    expect((await Bun.file(f.configPath).json()).maxDocuments).toBe(60000);
+  }, 30000);
+});
+
+test("batch validation refuses missing validation ranges and replays immutable receipts", async () => {
+  const f = await validationFixture([
+    doc(),
+    doc("https://source.example/b"),
+    doc("https://source.example/c"),
+  ]);
+  const second = f.batches[1]!;
+  await expect(
+    validateSourceBatch(f.configPath, {
+      ...f.options,
+      cursor: 3,
+      batchReceiptSha256: second.receiptSha256,
+    }),
+  ).rejects.toThrow("Terminal source cursor");
+  await expect(
+    validateSourceBatch(f.configPath, {
+      ...f.options,
+      cursor: second.cursor,
+      batchReceiptSha256: second.receiptSha256,
+    }),
+  ).rejects.toThrow("validation chain");
+  const first = f.batches[0]!;
+  const options = { ...f.options, cursor: first.cursor, batchReceiptSha256: first.receiptSha256 };
+  const receipt = await validateSourceBatch(f.configPath, options);
+  const path = receipt.validationPath as string;
+  const before = await lstat(path);
+  expect(await validateSourceBatch(f.configPath, options)).toEqual(receipt);
+  expect((await lstat(path)).mtimeMs).toBe(before.mtimeMs);
+  await expect(aggregateSourceBatchValidation(f.configPath, f.options)).rejects.toThrow(
+    "validation chain",
+  );
+  await validateSourceBatch(f.configPath, {
+    ...f.options,
+    cursor: second.cursor,
+    batchReceiptSha256: second.receiptSha256,
+  });
+  await Bun.write(path, "{}\n");
+  await expect(aggregateSourceBatchValidation(f.configPath, f.options)).rejects.toThrow(
+    "validation chain",
+  );
+  expect(await Bun.file(join(f.config.job, ".pipeline-lock")).exists()).toBe(false);
+});
+
+test("cross-batch conflicting URL projections refuse validation before a receipt or delivery", async () => {
+  const changed = doc();
+  changed.payload.body_markdown = "Conflicting source content";
+  const f = await validationFixture([doc(), changed], { maxDocuments: 1 });
+  const first = f.batches[0]!,
+    second = f.batches[1]!;
+  await validateSourceBatch(f.configPath, {
+    ...f.options,
+    cursor: 0,
+    batchReceiptSha256: first.receiptSha256,
+  });
+  await expect(
+    validateSourceBatch(f.configPath, {
+      ...f.options,
+      cursor: 1,
+      batchReceiptSha256: second.receiptSha256,
+    }),
+  ).rejects.toMatchObject({ code: "ERR_SOURCE_BATCH_CONFLICT" });
+  expect(
+    await Bun.file(
+      join(f.config.job, "batches", f.options.snapshotSha256, "1-2", "validation.json"),
+    ).exists(),
+  ).toBe(false);
+  expect(await Bun.file(join(f.config.job, "checkpoint.sqlite")).exists()).toBe(false);
+});
+
+test("aggregation memory budget is separate from per-batch projection budgets and invalidity", async () => {
+  const f = await validationFixture(
+    [doc(), doc("https://source.example/b"), doc("https://source.example/c")],
+    { maxRecords: 2 },
+  );
+  const receipts = await validateFixtureBatches(f);
+  expect(receipts[1]).toMatchObject({
+    records: 1,
+    invalidCount: 0,
+    projectionBudgetExceeded: false,
+    aggregationIdentityBudget: 2,
+    aggregationBudgetExceeded: true,
+    budgetExceeded: true,
+    complete: false,
+  });
+  const result = await aggregateSourceBatchValidation(f.configPath, f.options);
+  expect(result).toMatchObject({
+    positions: 3,
+    invalidDocuments: 0,
+    projectionBudgetExceeded: false,
+    aggregationBudgetExceeded: true,
+    budgetExceeded: true,
+    cardinalityComplete: false,
+    uniqueUrls: 2,
+    validationComplete: false,
+    complete: false,
+    deliveryAuthorized: false,
+  });
+});
+
+test("projection budget exhaustion does not classify unvalidated documents as invalid", async () => {
+  const rich = {
+    ...doc(),
+    payload: {
+      ...doc().payload,
+      embedded_media: [{ url: "https://source.example/image.png", type: "image" as const }],
+    },
+  };
+  const f = await validationFixture([rich, { invalid: true }], { maxRecords: 1 });
+  await validateFixtureBatches(f);
+  const result = await aggregateSourceBatchValidation(f.configPath, f.options);
+  expect(result).toMatchObject({
+    positions: 2,
+    invalidDocuments: 0,
+    projectionBudgetExceeded: true,
+    invalidCountComplete: false,
+    cardinalityComplete: false,
+    budgetExceeded: true,
+    validationComplete: false,
+    complete: false,
+  });
+});
+
+test("batch validation keeps global invalid positions, rights and pending campaign without delivery", async () => {
+  const f = await validationFixture([doc(), { invalid: true }, doc("https://source.example/c")], {
+    crawl: { mode: "attach", config: "/private/campaign.json", output: "/private/crawl" },
+  });
+  const receipts = await validateFixtureBatches(f);
+  expect(receipts[0]).toMatchObject({
+    invalidCount: 1,
+    invalid: [{ position: 1 }],
+    validationComplete: false,
+  });
+  const phases: string[] = [];
+  const result = await aggregateSourceBatchValidation(f.configPath, f.options, {
+    campaign: async (campaign, phase) => {
+      expect(campaign).toEqual(f.config.crawl!);
+      phases.push(phase);
+      return { complete: false, pending: 3, errors: 0, sourcePlansSha256: hash("campaign") };
+    },
+  });
+  expect(phases).toEqual(["plan"]);
+  expect(result).toMatchObject({
+    positions: 3,
+    invalidDocuments: 1,
+    ragEligibleUrls: 0,
+    ragDeniedUrls: 2,
+    campaign: { complete: false, pending: 3 },
+    campaignComplete: false,
+    campaignExportBound: false,
+    validationComplete: false,
+    complete: false,
+    deliveryAuthorized: false,
+  });
+});
+
+test.each(["input", "policy", "config"] as const)(
+  "batch validation refuses %s drift",
+  async (kind) => {
+    const f = await validationFixture([doc()]);
+    const batch = f.batches[0]!;
+    if (kind === "input") await Bun.write(f.input, "{}\n");
+    if (kind === "policy") await Bun.write(f.policy, "{}\n");
+    if (kind === "config")
+      await Bun.write(f.configPath, JSON.stringify({ ...f.config, maxRecords: 1 }));
+    await expect(
+      validateSourceBatch(f.configPath, {
+        ...f.options,
+        cursor: 0,
+        batchReceiptSha256: batch.receiptSha256,
+      }),
+    ).rejects.toThrow();
+    expect(
+      await Bun.file(
+        join(f.config.job, "batches", f.options.snapshotSha256, "0-1", "validation.json"),
+      ).exists(),
+    ).toBe(false);
+  },
+);
+
+test("valid batch artifacts and permitted RAG rights never qualify a pending campaign or delivery", async () => {
+  const f = await fixture([doc(), doc("https://127.0.0.1/b")], {
+    maxDocuments: 2,
+    crawl: { mode: "attach", config: "/private/campaign.json", output: "/private/crawl" },
+  });
+  const policy = await Bun.file(f.policy).json();
+  policy.sources[1].rights.ragPermitted = true;
+  await Bun.write(f.policy, JSON.stringify(policy));
+  const snapshotSha256 = hash(await Bun.file(f.input).text());
+  const batch = await prepareSourceBatches(f.configPath, { snapshotSha256, batchSize: 2 });
+  const options = { snapshotSha256, manifestSha256: batch.manifestSha256 };
+  await validateSourceBatch(f.configPath, {
+    ...options,
+    cursor: 0,
+    batchReceiptSha256: batch.receiptSha256,
+  });
+  const result = await aggregateSourceBatchValidation(f.configPath, options, {
+    campaign: async () => ({
+      complete: false,
+      pending: 1,
+      errors: 0,
+      sourcePlansSha256: hash("campaign"),
+    }),
+  });
+  expect(result).toMatchObject({
+    validationComplete: true,
+    ragEligibleUrls: 1,
+    ragDeniedUrls: 1,
+    campaignComplete: false,
+    campaignExportBound: false,
+    complete: false,
+    deliveryAuthorized: false,
+  });
+  expect((await Bun.file(f.policy).json()).sources[0].rights.ragPermitted).toBe(false);
+  expect(await Bun.file(join(f.config.job, "checkpoint.sqlite")).exists()).toBe(false);
 });
 const fakeFetch = (
   implementation: (...args: Parameters<typeof fetch>) => ReturnType<typeof fetch>,

@@ -181,6 +181,49 @@ async function jsonFile(path: string, max = 2 * 1024 * 1024) {
     throw new Error("Invalid bounded input file");
   return Bun.file(path).json();
 }
+async function sourceBatchArtifactHash(path: string, signal?: AbortSignal) {
+  const info = await lstat(path).catch((error: { code?: string }) => {
+    if (error.code !== "ENOENT") throw error;
+    return null;
+  });
+  if (!info) return null;
+  if (!info.isFile() || info.isSymbolicLink()) throw Error("Invalid source batch artifact");
+  return fileHash(path, signal);
+}
+async function sourceBatchTemporary<T>(
+  destination: string,
+  run: (path: string, fd: number) => Promise<T>,
+) {
+  const path = destination + "." + crypto.randomUUID() + ".tmp";
+  const file = await open(path, "wx", 0o600);
+  try {
+    const result = await run(path, file.fd);
+    await file.sync();
+    return result;
+  } finally {
+    try {
+      await file.close();
+    } finally {
+      await unlink(path).catch((error: { code?: string }) => {
+        if (error.code !== "ENOENT") throw error;
+      });
+    }
+  }
+}
+async function saveSourceBatchJson(path: string, value: unknown, signal?: AbortSignal) {
+  const body = JSON.stringify(value, null, 2) + "\n";
+  const expectedHash = hash(body);
+  const existing = await sourceBatchArtifactHash(path, signal);
+  if (existing !== null) {
+    if (existing !== expectedHash) throw Error("Pinned source batch receipt differs");
+    return expectedHash;
+  }
+  await sourceBatchTemporary(path, async (temporary, fd) => {
+    await Bun.write(Bun.file(fd), body);
+    await rename(temporary, path);
+  });
+  return expectedHash;
+}
 export interface SourceBatchOptions {
   snapshotSha256: string;
   batchSize: number;
@@ -229,35 +272,8 @@ export async function prepareSourceBatches(configPath: string, options: SourceBa
     const manifestPath = join(root, "membership.json");
     if (cursor > 0 && !(await Bun.file(manifestPath).exists()))
       throw Error("Source membership manifest missing for resume");
-    const existingHash = async (path: string) => {
-      const info = await lstat(path).catch((error: { code?: string }) => {
-        if (error.code !== "ENOENT") throw error;
-        return null;
-      });
-      if (!info) return null;
-      if (!info.isFile() || info.isSymbolicLink()) throw Error("Invalid source batch artifact");
-      return fileHash(path, options.signal);
-    };
-    const temporaryFile = async <T>(
-      destination: string,
-      run: (path: string, fd: number) => Promise<T>,
-    ) => {
-      const path = destination + "." + crypto.randomUUID() + ".tmp";
-      const file = await open(path, "wx", 0o600);
-      try {
-        const result = await run(path, file.fd);
-        await file.sync();
-        return result;
-      } finally {
-        try {
-          await file.close();
-        } finally {
-          await unlink(path).catch((error: { code?: string }) => {
-            if (error.code !== "ENOENT") throw error;
-          });
-        }
-      }
-    };
+    const existingHash = (path: string) => sourceBatchArtifactHash(path, options.signal);
+    const temporaryFile = sourceBatchTemporary;
     const pin = async (source: string, destination: string, expectedHash: string) => {
       const existing = await existingHash(destination);
       if (existing !== null) {
@@ -271,20 +287,8 @@ export async function prepareSourceBatches(configPath: string, options: SourceBa
         await rename(path, destination);
       });
     };
-    const immutableJson = async (path: string, value: unknown) => {
-      const body = JSON.stringify(value, null, 2) + "\n";
-      const expectedHash = hash(body);
-      const existing = await existingHash(path);
-      if (existing !== null) {
-        if (existing !== expectedHash) throw Error("Pinned source batch receipt differs");
-        return expectedHash;
-      }
-      await temporaryFile(path, async (temporary, fd) => {
-        await Bun.write(Bun.file(fd), body);
-        await rename(temporary, path);
-      });
-      return expectedHash;
-    };
+    const immutableJson = (path: string, value: unknown) =>
+      saveSourceBatchJson(path, value, options.signal);
     const snapshot = join(root, "snapshot.jsonl");
     await pin(config.input, snapshot, options.snapshotSha256);
     await pin(config.policy, join(root, "policy.json"), policySha256);
@@ -422,6 +426,405 @@ export async function prepareSourceBatches(configPath: string, options: SourceBa
     await rmdir(lock);
   }
 }
+export interface SourceBatchValidationOptions {
+  snapshotSha256: string;
+  manifestSha256: string;
+  signal?: AbortSignal;
+}
+type ProducedSourceBatch = Awaited<ReturnType<typeof prepareSourceBatches>>;
+export interface SourceBatchValidationReceipt {
+  schema: "shenron-source-batch-validation/v1";
+  cursor: number;
+  nextCursor: number;
+  documents: number;
+  validatedDocuments: number;
+  records: number;
+  uniqueUrls: number;
+  invalidCount: number;
+  budgetExceeded: boolean;
+  projectionBudgetExceeded: boolean;
+  aggregationBudgetExceeded: boolean;
+  validationComplete: boolean;
+  previousValidationSha256: string | null;
+  validationPath: string;
+  validationSha256: string;
+  complete: false;
+  deliveryAuthorized: false;
+  [key: string]: unknown;
+}
+
+async function sourceBatchValidationContext(
+  configPath: string,
+  options: SourceBatchValidationOptions,
+) {
+  for (const pin of [options.snapshotSha256, options.manifestSha256])
+    if (!/^[a-f0-9]{64}$/.test(pin)) throw Error("Explicit source validation SHA-256 required");
+  options.signal?.throwIfAborted();
+  const config = (await jsonFile(configPath)) as SourcePipelineConfig;
+  if (config.version !== 1 || !isAbsolute(config.input ?? "") || !isAbsolute(config.policy ?? ""))
+    throw Error("Invalid source pipeline configuration");
+  await privateJob(config.job);
+  const root = join(config.job, "batches", options.snapshotSha256);
+  await lstat(root);
+  await privateJob(root);
+  const manifestPath = join(root, "membership.json");
+  if ((await sourceBatchArtifactHash(manifestPath, options.signal)) !== options.manifestSha256)
+    throw Error("Source validation membership differs");
+  const manifest = (await jsonFile(manifestPath)) as {
+    schema: string;
+    sourceSha256: string;
+    configSha256: string;
+    policySha256: string;
+    batchSize: number;
+    totalDocuments: number;
+    membershipSha256: string;
+    sourceBytes: number;
+    campaign: unknown;
+  };
+  bounded(manifest.batchSize, 10000, 1, 100000, "batch size");
+  bounded(manifest.totalDocuments, 0, 0, Number.MAX_SAFE_INTEGER, "snapshot document count");
+  const snapshotInfo = await lstat(join(root, "snapshot.jsonl"));
+  const inputInfo = await lstat(config.input);
+  if (
+    manifest.schema !== "shenron-source-membership/v1" ||
+    manifest.sourceSha256 !== options.snapshotSha256 ||
+    !/^[a-f0-9]{64}$/.test(manifest.membershipSha256) ||
+    snapshotInfo.size > 1024 ** 3 ||
+    inputInfo.size > 1024 ** 3 ||
+    manifest.sourceBytes !== snapshotInfo.size ||
+    manifest.batchSize > bounded(config.maxDocuments, 10000, 1, 100000, "document budget") ||
+    JSON.stringify(manifest.campaign) !== JSON.stringify(config.crawl ?? null)
+  )
+    throw Error("Source validation membership differs");
+  const pins = new Map<string, string>([
+    [configPath, manifest.configSha256],
+    [config.input, options.snapshotSha256],
+    [config.policy, manifest.policySha256],
+    [join(root, "snapshot.jsonl"), options.snapshotSha256],
+    [join(root, "original-config.json"), manifest.configSha256],
+    [join(root, "policy.json"), manifest.policySha256],
+    [manifestPath, options.manifestSha256],
+  ]);
+  const assertPins = async () => {
+    for (const [path, expected] of pins) {
+      options.signal?.throwIfAborted();
+      if ((await sourceBatchArtifactHash(path, options.signal)) !== expected)
+        throw Error("Source batch validation artifact changed");
+    }
+  };
+  await assertPins();
+  const policy = crawlIngestPolicySchema.parse(await jsonFile(config.policy));
+  const range = (cursor: number) => {
+    bounded(cursor, 0, 0, manifest.totalDocuments, "validation cursor");
+    if (manifest.totalDocuments > 0 && cursor === manifest.totalDocuments)
+      throw Error("Terminal source cursor has no validation batch");
+    if (cursor % manifest.batchSize && cursor !== manifest.totalDocuments)
+      throw Error("Source validation cursor is outside the partition");
+    return join(
+      root,
+      `${cursor}-${Math.min(cursor + manifest.batchSize, manifest.totalDocuments)}`,
+    );
+  };
+  const produced = async (cursor: number, expectedHash?: string) => {
+    const directory = range(cursor);
+    await lstat(directory);
+    await privateJob(directory);
+    const path = join(directory, "receipt.json");
+    const sha256 = await sourceBatchArtifactHash(path, options.signal);
+    if (!sha256 || (expectedHash && sha256 !== expectedHash))
+      throw Error("Source batch receipt differs");
+    const receipt = (await jsonFile(path)) as ProducedSourceBatch;
+    if (
+      receipt.schema !== "shenron-source-batch/v1" ||
+      receipt.sourceSha256 !== options.snapshotSha256 ||
+      receipt.configSha256 !== manifest.configSha256 ||
+      receipt.policySha256 !== manifest.policySha256 ||
+      receipt.manifestSha256 !== options.manifestSha256 ||
+      receipt.manifestPath !== manifestPath ||
+      receipt.cursor !== cursor ||
+      receipt.nextCursor !== Math.min(cursor + manifest.batchSize, manifest.totalDocuments) ||
+      receipt.count !== receipt.nextCursor - cursor ||
+      receipt.totalDocuments !== manifest.totalDocuments ||
+      receipt.exportPath !== join(directory, "export.jsonl") ||
+      receipt.deliveryAuthorized !== false ||
+      !/^[a-f0-9]{64}$/.test(receipt.exportSha256)
+    )
+      throw Error("Source batch receipt identity differs");
+    pins.set(path, sha256);
+    pins.set(receipt.exportPath, receipt.exportSha256);
+    if (
+      (await sourceBatchArtifactHash(receipt.exportPath, options.signal)) !== receipt.exportSha256
+    )
+      throw Error("Source batch export differs");
+    return { ...receipt, receiptPath: path, receiptSha256: sha256 };
+  };
+  return { config, manifest, policy, root, pins, assertPins, range, produced };
+}
+
+async function inspectSourceBatchValidations(
+  context: Awaited<ReturnType<typeof sourceBatchValidationContext>>,
+  options: SourceBatchValidationOptions,
+  lastCursor: number,
+  writeCurrent: boolean,
+) {
+  const { config, manifest, policy } = context;
+  const recordLimit = bounded(config.maxRecords, 100000, 1, 1000000, "record budget");
+  const identities = new Map<string, { digest: string; kind: string; rag: boolean }>();
+  let aggregationBudgetExceeded = false,
+    projectionBudgetExceeded = false,
+    invalidDocuments = 0;
+  let positions = 0,
+    projectedRecords = 0,
+    previousValidationSha256: string | null = null;
+  let lastValidation: SourceBatchValidationReceipt | undefined;
+  let pendingValidation: { path: string; value: unknown; sha256: string } | undefined;
+  let validatedBatches = 0;
+  const sourceDocuments = readNativeCrawlDocuments(
+    join(context.root, "snapshot.jsonl"),
+    options.signal,
+  );
+  const sourceMembership = new Bun.CryptoHasher("sha256");
+  try {
+    for (let cursor = 0; cursor <= lastCursor; cursor += manifest.batchSize) {
+      const batch = await context.produced(cursor);
+      const projection = new Bun.CryptoHasher("sha256"),
+        invalidDigest = new Bun.CryptoHasher("sha256");
+      const membership = new Bun.CryptoHasher("sha256");
+      const canonicalExport = new Bun.CryptoHasher("sha256");
+      const localUrls = new Set<string>();
+      const invalid: { position: number; sha256: string; code: string }[] = [];
+      let documents = 0,
+        validatedDocuments = 0,
+        records = 0,
+        invalidCount = 0,
+        budgetExceeded = false;
+      for await (const value of readNativeCrawlDocuments(batch.exportPath, options.signal)) {
+        const position = cursor + documents++;
+        const documentSha256 = hash(JSON.stringify(value));
+        const sourceDocument = await sourceDocuments.next();
+        if (sourceDocument.done || hash(JSON.stringify(sourceDocument.value)) !== documentSha256)
+          throw Error("Source batch does not match the snapshot position");
+        const member = JSON.stringify([position, documentSha256]) + "\n";
+        membership.update(member);
+        sourceMembership.update(member);
+        canonicalExport.update(JSON.stringify(value) + "\n");
+        if (documents > batch.count) throw Error("Source batch document count differs");
+        if (budgetExceeded) continue;
+        validatedDocuments++;
+        let projected: ExternalCrawlRecord[];
+        try {
+          projected = projectNativeCrawl(value, policy);
+        } catch (error) {
+          const entry = { position, sha256: documentSha256, code: safeCode(error) };
+          invalidDigest.update(JSON.stringify(entry) + "\n");
+          if (invalid.length < 128) invalid.push(entry);
+          invalidCount++;
+          continue;
+        }
+        if (records + projected.length > recordLimit) {
+          budgetExceeded = true;
+          continue;
+        }
+        records += projected.length;
+        for (const record of projected) {
+          const digest = hash(JSON.stringify(record));
+          projection.update(JSON.stringify([position, record.url, digest]) + "\n");
+          localUrls.add(record.url);
+          const prior = identities.get(record.url);
+          if (prior && prior.digest !== digest)
+            throw Object.assign(Error("Conflicting canonical URL projections"), {
+              code: "ERR_SOURCE_BATCH_CONFLICT",
+            });
+          if (!prior) {
+            if (identities.size >= recordLimit) aggregationBudgetExceeded = true;
+            else
+              identities.set(record.url, {
+                digest,
+                kind: record.kind,
+                rag:
+                  (record.provenance.rights as { ragPermitted?: boolean } | undefined)
+                    ?.ragPermitted === true,
+              });
+          }
+        }
+      }
+      if (
+        documents !== batch.count ||
+        membership.digest("hex") !== batch.membershipSha256 ||
+        canonicalExport.digest("hex") !== batch.exportSha256
+      )
+        throw Error("Source validation document membership differs");
+      positions += documents;
+      projectedRecords += records;
+      invalidDocuments += invalidCount;
+      projectionBudgetExceeded ||= budgetExceeded;
+      const validation = {
+        schema: "shenron-source-batch-validation/v1",
+        sourceSha256: options.snapshotSha256,
+        manifestSha256: options.manifestSha256,
+        configSha256: manifest.configSha256,
+        policySha256: manifest.policySha256,
+        batchReceiptSha256: batch.receiptSha256,
+        exportSha256: batch.exportSha256,
+        cursor,
+        nextCursor: batch.nextCursor,
+        documents,
+        validatedDocuments,
+        records,
+        uniqueUrls: localUrls.size,
+        projectionSha256: projection.digest("hex"),
+        invalidCount,
+        invalid,
+        invalidSha256: invalidDigest.digest("hex"),
+        invalidSampleTruncated: invalidCount > invalid.length,
+        documentBudget: config.maxDocuments ?? 10000,
+        projectionRecordBudget: recordLimit,
+        projectionBudgetExceeded: budgetExceeded,
+        budgetExceeded: budgetExceeded || aggregationBudgetExceeded,
+        invalidCountComplete: !budgetExceeded,
+        aggregationIdentityBudget: recordLimit,
+        aggregationBudgetExceeded,
+        observedPrefixPositions: positions,
+        observedPrefixUniqueUrls: identities.size,
+        cardinalityComplete: !aggregationBudgetExceeded && !projectionBudgetExceeded,
+        previousValidationSha256,
+        validationComplete: !invalidCount && !budgetExceeded && !aggregationBudgetExceeded,
+        complete: false,
+        deliveryAuthorized: false,
+      } as const;
+      const path = join(context.range(cursor), "validation.json");
+      const expectedHash = hash(JSON.stringify(validation, null, 2) + "\n");
+      if (writeCurrent && cursor === lastCursor) {
+        pendingValidation = { path, value: validation, sha256: expectedHash };
+      } else if ((await sourceBatchArtifactHash(path, options.signal)) !== expectedHash)
+        throw Error("Source batch validation chain is missing or changed");
+      else context.pins.set(path, expectedHash);
+      previousValidationSha256 = expectedHash;
+      lastValidation = { ...validation, validationPath: path, validationSha256: expectedHash };
+      validatedBatches++;
+      if (batch.nextCursor === manifest.totalDocuments) break;
+    }
+    if (
+      positions === manifest.totalDocuments &&
+      (!(await sourceDocuments.next()).done ||
+        sourceMembership.digest("hex") !== manifest.membershipSha256)
+    )
+      throw Error("Source validation total membership differs");
+  } finally {
+    await sourceDocuments.return(undefined);
+  }
+  await context.assertPins();
+  if (pendingValidation) {
+    await saveSourceBatchJson(pendingValidation.path, pendingValidation.value, options.signal);
+    context.pins.set(pendingValidation.path, pendingValidation.sha256);
+  }
+  let ragEligibleUrls = 0,
+    ragDeniedUrls = 0;
+  const identityDigest = new Bun.CryptoHasher("sha256");
+  for (const [url, record] of identities) {
+    identityDigest.update(JSON.stringify([hash(url), record.digest]) + "\n");
+    if (record.kind !== "media") {
+      if (record.rag) ragEligibleUrls++;
+      else ragDeniedUrls++;
+    }
+  }
+  return {
+    lastValidation,
+    validatedBatches,
+    positions,
+    projectedRecords,
+    invalidDocuments,
+    projectionBudgetExceeded,
+    aggregationBudgetExceeded,
+    aggregationIdentityBudget: recordLimit,
+    uniqueUrls: identities.size,
+    ragEligibleUrls,
+    ragDeniedUrls,
+    cardinalityComplete: !aggregationBudgetExceeded && !projectionBudgetExceeded,
+    identitiesSha256: identityDigest.digest("hex"),
+    validationChainSha256: previousValidationSha256,
+  };
+}
+
+/** Validate existing producer artifacts; never create a missing export here. */
+export async function validateSourceBatch(
+  configPath: string,
+  options: SourceBatchValidationOptions & { cursor: number; batchReceiptSha256: string },
+) {
+  if (!/^[a-f0-9]{64}$/.test(options.batchReceiptSha256))
+    throw Error("Explicit batch receipt SHA-256 required");
+  const before = await sourceBatchValidationContext(configPath, options);
+  await before.produced(options.cursor, options.batchReceiptSha256);
+  const lock = join(before.config.job, ".pipeline-lock");
+  await mkdir(lock, { mode: 0o700 });
+  try {
+    const context = await sourceBatchValidationContext(configPath, options);
+    await context.produced(options.cursor, options.batchReceiptSha256);
+    const result = await inspectSourceBatchValidations(context, options, options.cursor, true);
+    return result.lastValidation!;
+  } finally {
+    await rmdir(lock);
+  }
+}
+
+export async function aggregateSourceBatchValidation(
+  configPath: string,
+  options: SourceBatchValidationOptions,
+  ports: Pick<SourcePipelinePorts, "campaign"> = {},
+) {
+  const before = await sourceBatchValidationContext(configPath, options);
+  const lastCursor =
+    before.manifest.totalDocuments === 0
+      ? 0
+      : Math.floor((before.manifest.totalDocuments - 1) / before.manifest.batchSize) *
+        before.manifest.batchSize;
+  await before.produced(lastCursor);
+  const lock = join(before.config.job, ".pipeline-lock");
+  await mkdir(lock, { mode: 0o700 });
+  try {
+    const context = await sourceBatchValidationContext(configPath, options);
+    const result = await inspectSourceBatchValidations(context, options, lastCursor, false);
+    const campaign = context.config.crawl
+      ? await (ports.campaign ?? nativeCampaign)(
+          context.config.crawl,
+          "plan",
+          context.config.job,
+          options.signal,
+        )
+      : null;
+    await context.assertPins();
+    const report = {
+      schema: "shenron-source-batch-validation-summary/v1",
+      scope: "artifact-validation-only",
+      sourceSha256: options.snapshotSha256,
+      manifestSha256: options.manifestSha256,
+      configSha256: context.manifest.configSha256,
+      policySha256: context.manifest.policySha256,
+      ...result,
+      lastValidation: undefined,
+      totalDocuments: context.manifest.totalDocuments,
+      invalidCountComplete: !result.projectionBudgetExceeded,
+      budgetExceeded: result.projectionBudgetExceeded || result.aggregationBudgetExceeded,
+      validationComplete:
+        result.positions === context.manifest.totalDocuments &&
+        !result.invalidDocuments &&
+        !result.projectionBudgetExceeded &&
+        !result.aggregationBudgetExceeded,
+      campaign,
+      campaignComplete: campaign?.complete ?? null,
+      campaignExportBound: false,
+      complete: false,
+      deliveryAuthorized: false,
+    };
+    const reportSha256 = hash(JSON.stringify(report, null, 2) + "\n");
+    const reportPath = join(context.root, "validation-summary-" + reportSha256 + ".json");
+    await saveSourceBatchJson(reportPath, report, options.signal);
+    return { ...report, reportPath, reportSha256 };
+  } finally {
+    await rmdir(lock);
+  }
+}
+
 function mediaList(value: unknown): SourceMedia[] {
   if (!Array.isArray(value) || value.length > 10000) throw new Error("Invalid media inventory");
   const seenUrls = new Map<string, string>(),
