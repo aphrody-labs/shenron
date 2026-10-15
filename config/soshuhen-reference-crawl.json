@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "respectRobots": true,
+  "userAgent": "ShenronSourceBot/1.0 (+https://dragonballfr.com; bounded SOSH references)",
+  "defaults": {
+    "perHostDelayMs": 3000,
+    "maxInFlightPerHost": 1,
+    "maxConcurrency": 1,
+    "maxDepth": 1,
+    "maxPages": 96
+  },
+  "targets": [
+    {
+      "id": "kanzenshuu-soshuhen",
+      "enabled": true,
+      "seeds": [
+        "https://www.kanzenshuu.com/2017/01/23/final-dragon-ball-digest-edition-manga-release-contains-2004-updated-kanzenban-ending/",
+        "https://www.kanzenshuu.com/2017/01/06/dragon-ball-digest-edition-legend-18-cover-artwork-upcoming-preorders/",
+        "https://www.kanzenshuu.com/2016/12/26/dragon-ball-digest-edition-legend-17-cover-artwork-upcoming-preorders/",
+        "https://www.kanzenshuu.com/2016/12/09/dragon-ball-digest-edition-legend-16-cover-artwork-upcoming-preorders/",
+        "https://www.kanzenshuu.com/2016/11/18/dragon-ball-digest-edition-legend-15-cover-artwork-upcoming-preorders/",
+        "https://www.kanzenshuu.com/2016/11/07/dragon-ball-digest-edition-legend-14-cover-artwork-upcoming-preorders/",
+        "https://www.kanzenshuu.com/2016/10/28/dragon-ball-digest-edition-legend-13-cover-artwork-upcoming-preorders/",
+        "https://www.kanzenshuu.com/2016/10/07/dragon-ball-digest-edition-legend-12-cover-artwork-upcoming-preorders/",
+        "https://www.kanzenshuu.com/2016/09/30/dragon-ball-digest-edition-legend-11-cover-artwork-upcoming-preorders/",
+        "https://www.kanzenshuu.com/2016/09/05/dragon-ball-digest-edition-legend-10-cover-artwork-upcoming-preorders/",
+        "https://www.kanzenshuu.com/2016/08/19/dragon-ball-digest-edition-legend-9-cover-artwork-upcoming-preorders/",
+        "https://www.kanzenshuu.com/2016/07/26/dragon-ball-digest-edition-legend-8-release-updates/",
+        "https://www.kanzenshuu.com/2016/07/15/dragon-ball-digest-edition-legend-7-cover-artwork-upcoming-preorders/",
+        "https://www.kanzenshuu.com/2016/07/01/dragon-ball-digest-edition-legend-6-cover-artwork-upcoming-preorders/",
+        "https://www.kanzenshuu.com/2016/06/17/dragon-ball-digest-edition-legend-5-cover-artwork-upcoming-preorders/",
+        "https://www.kanzenshuu.com/2016/06/03/dragon-ball-digest-edition-legend-4-cover-artwork-upcoming-preorders/",
+        "https://www.kanzenshuu.com/2016/05/20/dragon-ball-digest-edition-legend-3-cover-artwork-upcoming-preorders/",
+        "https://www.kanzenshuu.com/2016/05/11/finalized-cover-art-unveiled-upcoming-dragon-ball-digest-edition-manga/",
+        "https://www.kanzenshuu.com/2016/04/04/dragon-ball-digest-edition-manga-re-release-announced-begin-may-2016/"
+      ],
+      "allowedDomains": ["www.kanzenshuu.com"],
+      "includePatterns": [
+        "^https://www\\.kanzenshuu\\.com/(?:tag/soshuhen/|[0-9]{4}/[0-9]{2}/[0-9]{2}/[^/]*(?:digest|soshuhen|goku)[^/]*/)$"
+      ],
+      "excludePatterns": ["/forum/"],
+      "sourceRefs": ["https://www.kanzenshuu.com/tag/soshuhen/"],
+      "lang": "en",
+      "kind": "reference",
+      "goal": "Privately capture SOSH release references and acquisition pointers; never replace Japanese scans or promote to canon"
+    }
+  ]
+}
