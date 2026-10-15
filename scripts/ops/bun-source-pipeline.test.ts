@@ -694,3 +694,131 @@ test("automatic media discovery resumes byte/file quotas without discarding prio
   expect(requests).toEqual(["one", "two"]);
   expect(await Bun.file(join(third.revision, "discovered-media.json")).json()).toHaveLength(2);
 });
+
+test("required collection delegates the entire campaign and acquisition once before local SQL", async () => {
+  const { collectSourcePipeline } = await import("./bun-source-pipeline");
+  const f = await fixture([doc()], {
+      collectionIsolation: "required",
+      crawl: {
+        mode: "run",
+        config: "/private/fixture-campaign.json",
+        output: "/private/fixture-campaign",
+      },
+    }),
+    db = database();
+  const jar = join(f.root, "search-jar.json");
+  await Bun.write(jar, "{}");
+  await chmod(jar, 0o600);
+  f.config.search = { queries: ["fixture"], domains: ["source.example"], count: 1, cookieJar: jar };
+  await Bun.write(f.configPath, JSON.stringify(f.config));
+  let searches = 0;
+  let delegated = 0,
+    inside = false,
+    networkCampaigns = 0;
+  const campaign = async (_campaign: unknown, phase: "collect" | "plan") => {
+    if (phase === "collect") {
+      expect(inside).toBe(true);
+      networkCampaigns++;
+    }
+    return { complete: true, pending: 0, errors: 0, sourcePlansSha256: hash("fixture-plan") };
+  };
+  const result = await autoSourcePipeline(f.configPath, {
+    database: db.port,
+    campaign,
+    search: async () => {
+      throw Error("host search forbidden");
+    },
+    collectCycle: async (request, signal) => {
+      delegated++;
+      expect(request.configSha256).toBe(hash(await Bun.file(f.configPath).text()));
+      expect(db.writes()).toBe(0);
+      inside = true;
+      try {
+        return await collectSourcePipeline(request.configPath, {
+          signal,
+          campaign,
+          isolatedCollection: true,
+          search: async (args) => {
+            expect(inside).toBe(true);
+            searches++;
+            return JSON.stringify({
+              query: args.at(-1),
+              authenticated: true,
+              transport: "fetch",
+              servedFromCache: false,
+              organic: [],
+            });
+          },
+        });
+      } finally {
+        inside = false;
+      }
+    },
+  });
+  expect(result.complete).toBe(true);
+  expect(delegated).toBe(1);
+  expect(networkCampaigns).toBe(2);
+  expect(searches).toBe(1);
+  expect(db.writes()).toBeGreaterThan(0);
+});
+test("required isolation and changed shared-volume receipts fail before database writes", async () => {
+  const { collectSourcePipeline } = await import("./bun-source-pipeline");
+  const f = await fixture([doc()], { collectionIsolation: "required" }),
+    db = database();
+  await expect(autoSourcePipeline(f.configPath, { database: db.port })).rejects.toThrow(
+    "controller required",
+  );
+  await expect(collectSourcePipeline(f.configPath)).rejects.toThrow(
+    "isolated collection owner required",
+  );
+  await expect(
+    autoSourcePipeline(f.configPath, {
+      database: db.port,
+      collectCycle: async (request) => {
+        const receipt = await collectSourcePipeline(request.configPath, {
+          isolatedCollection: true,
+        });
+        await Bun.write(join(receipt.pinnedConfigPath, "..", "collect.json"), "{}");
+        return receipt;
+      },
+    }),
+  ).rejects.toThrow("artifact differs");
+  expect(db.writes()).toBe(0);
+});
+test("isolated handoff never reacquires a missing media object on the controller", async () => {
+  const { collectSourcePipeline } = await import("./bun-source-pipeline");
+  const bytes = new TextEncoder().encode("private-media"),
+    source = doc();
+  source.payload.embedded_media = [
+    { url: "https://source.example/private.png", type: "image" },
+  ] as never[];
+  const f = await fixture([source], { collectionIsolation: "required" }),
+    db = database();
+  let requests = 0;
+  await expect(
+    autoSourcePipeline(f.configPath, {
+      database: db.port,
+      store: { put: async () => {}, verify: async () => {} } as unknown as ObjectStore,
+      http: {
+        fetch: fakeFetch(async () => {
+          throw Error("host acquisition forbidden");
+        }),
+      },
+      collectCycle: async (request) => {
+        const receipt = await collectSourcePipeline(request.configPath, {
+          isolatedCollection: true,
+          http: {
+            fetch: fakeFetch(async () => {
+              requests++;
+              return new Response(bytes, { headers: { "content-type": "image/png" } });
+            }),
+          },
+        });
+        await rm(join(receipt.pinnedConfigPath, "..", "objects", hash(bytes)));
+        return receipt;
+      },
+    }),
+  ).rejects.toThrow("collected object receipt missing");
+  expect(requests).toBe(1);
+  expect(db.writes()).toBe(0);
+});
