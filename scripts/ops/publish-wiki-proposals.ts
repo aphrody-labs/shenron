@@ -216,7 +216,7 @@ async function main() {
   }
 }
 if (import.meta.main)
-  main().catch(() => {
-    console.error("Wiki publication failed; inspect protected plan and receipts.");
+  main().catch((error: unknown) => {
+    console.error(error instanceof Error ? error.message : "Wiki publication failed");
     process.exitCode = 1;
   });
