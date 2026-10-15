@@ -1264,6 +1264,11 @@ async function servePool(options: {
             capabilities: options.capabilities,
             slot: slots.indexOf(entry),
           });
+        } else {
+          // claim() already considers every due, eligible task. Once it returns
+          // null, asking again for each remaining idle slot only repeats the
+          // same SQLite scan without making another task claimable.
+          break;
         }
       }
       for (const entry of slots)
