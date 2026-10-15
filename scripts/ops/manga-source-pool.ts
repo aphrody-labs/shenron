@@ -6,6 +6,7 @@ import { isAbsolute, join } from "node:path";
 import { parseArgs } from "node:util";
 import { inspectBrowserSources } from "./sosh-browser-workers";
 import { projectPoolReceipts } from "./manga-source-pool-projection";
+import { jumpPublicReaderUrls } from "./jump-public-reader";
 
 if (typeof Bun.isMainThread !== "boolean")
   throw Error("Runtime must expose qualified Bun.isMainThread before spawning workers");
@@ -54,6 +55,8 @@ const sourceHosts = new Set([
   "api.openbd.jp",
   "ndlsearch.ndl.go.jp",
   "archive.org",
+  "shonenjumpplus.com",
+  "cdn-ak-img.shonenjumpplus.com",
 ]);
 const day = 86400000;
 export function poolUrl(value: string): URL {
@@ -204,7 +207,10 @@ export function retainPoolCandidates(
       continue;
     }
     if (parent.depth >= 2 || url!.hostname === "www.google.com") continue;
-    const scan = /\.(?:jpe?g|png|webp|jp2|pdf|cbz|zip)(?:$|\?)/i.test(url!.href);
+    const scan =
+      /\.(?:jpe?g|png|webp|jp2|pdf|cbz|zip)(?:$|\?)/i.test(url!.href) ||
+      (url!.hostname === "cdn-ak-img.shonenjumpplus.com" &&
+        url!.pathname.startsWith("/public/page/"));
     const kind: Kind =
       ownHosts.has(url!.hostname) && url!.pathname === "/api/catalog"
         ? "inventory"
@@ -667,14 +673,17 @@ export async function executeTask(
     robots,
     body,
     json,
-    candidates: ["discovery", "bibliography", "inventory"].includes(task.kind)
-      ? task.kind === "inventory"
-        ? structuredPoolUrls(json, task.url)
-        : [
-            ...structuredPoolUrls(json, task.url),
-            ...discoveredPoolUrls(json ?? body, task.url),
-          ].slice(0, 150)
-      : [],
+    candidates:
+      new URL(task.url).hostname === "shonenjumpplus.com"
+        ? await jumpPublicReaderUrls(body ?? "", task.url)
+        : ["discovery", "bibliography", "inventory"].includes(task.kind)
+          ? task.kind === "inventory"
+            ? structuredPoolUrls(json, task.url)
+            : [
+                ...structuredPoolUrls(json, task.url),
+                ...discoveredPoolUrls(json ?? body, task.url),
+              ].slice(0, 150)
+          : [],
     children,
   };
 }
@@ -759,6 +768,10 @@ async function servePool(options: {
         "&fl[]=identifier&fl[]=title&rows=20&output=json",
     },
     { kind: "bibliography", url: "https://api.openbd.jp/v1/get?isbn=9784081111664" },
+    {
+      kind: "discovery",
+      url: "https://shonenjumpplus.com/episode/10833497643049550354",
+    },
     {
       kind: "discovery",
       url:
