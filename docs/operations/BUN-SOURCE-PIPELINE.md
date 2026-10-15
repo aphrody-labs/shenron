@@ -144,3 +144,20 @@ canon ni publication. Le runtime doit réellement fournir la commande Search
 qualifiée ; une commande absente ou un refus d’authentification échoue sans
 repli. L’isolation VPN appartient au job hôte qualifié qui lance le pipeline :
 aucune option publique de commande shell ou namespace n’est acceptée ici.
+
+La configuration `collectionIsolation: "required"` exige un contrôleur de
+collecte qualifié fourni par le port de confiance `collectCycle`, jamais une
+commande shell dans le JSON. Sans ce port, `auto` refuse avant le premier crawl.
+Le job hôte fini appelle uniquement `collectSourcePipeline` avec
+`isolatedCollection: true` après qualification de son namespace. Cette étape
+inclut le crawl initial, le snapshot de révision, Search et l’acquisition des
+médias. Elle retourne les empreintes de configuration, révision, reçu et
+inventaires. Les chemins logiques du volume privé doivent rester identiques
+entre le job et le contrôleur.
+
+Le contrôleur vérifie ces empreintes sur le volume partagé puis exécute les
+étapes existantes plan/apply/verify hors VPN, où PostgreSQL reste accessible.
+Un objet ou reçu média absent ne déclenche aucun téléchargement de remplacement
+sur l’hôte. Le bot peut recevoir ce port par sa factory de confiance ; aucune
+clé SSH ni commande Infra n’est introduite dans le bot. La présence du port ou
+de la configuration ne prouve pas l’activation d’un job VPN réel.

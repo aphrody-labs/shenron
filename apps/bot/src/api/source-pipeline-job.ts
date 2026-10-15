@@ -2,6 +2,8 @@
 import { lstat, realpath } from "node:fs/promises";
 import { isAbsolute, relative, resolve } from "node:path";
 
+import type { SourcePipelinePorts } from "../../../../scripts/ops/bun-source-pipeline";
+
 const JOB_NAME = "source-pipeline";
 
 export interface SourcePipelineJobSettings {
@@ -24,6 +26,7 @@ export interface SourcePipelineJobRegistry {
 }
 
 export interface SourcePipelineJobPorts {
+  collectCycle?: SourcePipelinePorts["collectCycle"];
   run?: (configPath: string, signal: AbortSignal) => Promise<unknown>;
   afterCycle?: () => Promise<unknown>;
 }
@@ -97,7 +100,7 @@ export async function registerSourcePipelineJob(
     ports.run ??
     (async (path: string, signal: AbortSignal) => {
       const { autoSourcePipeline } = await import("../../../../scripts/ops/bun-source-pipeline");
-      return autoSourcePipeline(path, { signal });
+      return autoSourcePipeline(path, { signal, collectCycle: ports.collectCycle });
     });
   registry.register({
     name: JOB_NAME,

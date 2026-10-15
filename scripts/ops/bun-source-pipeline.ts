@@ -71,6 +71,7 @@ export interface SourcePipelineConfig {
   delivery?: SourceDeliveryConfig;
   crawl?: NativeSourceCampaign;
   search?: SourceSearchConfig;
+  collectionIsolation?: "required";
   media?: string;
   transport?: "fetch" | "curl";
   concurrency?: number;
@@ -94,7 +95,21 @@ export interface PipelineDatabase {
   snapshot(urls: string[]): Promise<RegistrySnapshot>;
   close?(): Promise<void>;
 }
+export interface SourceCollectionReceipt {
+  schema: "shenron-source-collection/v1";
+  configSha256: string;
+  pinnedConfigPath: string;
+  pinnedConfigSha256: string;
+  collectionSha256: string;
+  artifactsSha256: string;
+  revisionIdentity: string;
+}
 export interface SourcePipelinePorts {
+  isolatedCollection?: boolean;
+  collectCycle?: (
+    request: { configPath: string; configSha256: string },
+    signal?: AbortSignal,
+  ) => Promise<SourceCollectionReceipt>;
   search?: SearchRunner;
   database?: PipelineDatabase;
   store?: ObjectStore;
@@ -220,6 +235,8 @@ async function inputs(configPath: string, signal?: AbortSignal) {
   if (config.version !== 1 || !isAbsolute(config.input ?? "") || !isAbsolute(config.policy ?? ""))
     throw new Error("Invalid source pipeline configuration");
   await privateJob(config.job);
+  if (config.collectionIsolation !== undefined && config.collectionIsolation !== "required")
+    throw Error("Invalid collection isolation");
   bounded(config.maxCycleFiles, 250, 1, 10000, "cycle file budget");
   bounded(config.maxCycleBytes, 256 * 1024 * 1024, 1, 4 * 1024 * 1024 * 1024, "cycle byte budget");
   bounded(config.concurrency, 2, 1, 8, "concurrency");
@@ -442,6 +459,12 @@ async function executeSourcePipeline(
 ) {
   const data = await inputs(configPath, ports.signal),
     { config, pins, records } = data;
+  if (
+    action === "collect" &&
+    config.collectionIsolation === "required" &&
+    !ports.isolatedCollection
+  )
+    throw Error("Qualified isolated collection owner required");
   let media = data.media;
   const campaign = config.crawl
     ? await (ports.campaign ?? nativeCampaign)(config.crawl, "plan", config.job, ports.signal)
@@ -682,6 +705,8 @@ async function executeSourcePipeline(
         if (bytes.length !== item.size || hash(bytes) !== item.sha256)
           throw new Error("Collected object changed");
       } else {
+        if (config.collectionIsolation === "required" && action !== "collect")
+          throw Error("Isolated collected object receipt missing");
         const fetched = await acquire(
           item.url,
           {
@@ -1269,8 +1294,47 @@ async function discoverMedia(data: Awaited<ReturnType<typeof inputs>>, ports: So
   });
   return media;
 }
-export async function autoSourcePipeline(configPath: string, ports: SourcePipelinePorts = {}) {
+function revisionConfiguration(config: SourcePipelineConfig, revision: string, identity: string) {
+  return {
+    ...config,
+    input: join(revision, "native-export.jsonl"),
+    policy: join(revision, "policy.json"),
+    job: revision,
+    autoMedia: !config.media,
+    ...(config.crawl ? { crawl: { ...config.crawl, mode: "attach" as const } } : {}),
+    ...(config.publication
+      ? {
+          publication: {
+            ...config.publication,
+            publicRoot: join(revision, "public"),
+            job: join(config.publication.job, identity),
+          },
+        }
+      : {}),
+  };
+}
+async function collectionArtifacts(config: SourcePipelineConfig, revision: string) {
+  const names = [
+    "discovered-media.json",
+    "discovery.json",
+    ...(config.search ? ["discovery-" + planSourceSearch(config.search).sha256 + ".json"] : []),
+  ];
+  const pins: Record<string, string> = {};
+  for (const name of names) {
+    const path = join(revision, name);
+    if (await Bun.file(path).exists()) {
+      await jsonFile(path);
+      pins[name] = await fileHash(path);
+    }
+  }
+  return hash(JSON.stringify(pins));
+}
+export async function collectSourcePipeline(configPath: string, ports: SourcePipelinePorts = {}) {
+  ports.signal?.throwIfAborted();
+  const configSha256 = await fileHash(configPath);
   const config = (await jsonFile(configPath)) as SourcePipelineConfig;
+  if (config.collectionIsolation === "required" && !ports.isolatedCollection)
+    throw Error("Qualified isolated collection owner required");
   await privateJob(config.job);
   if (config.crawl)
     await (ports.campaign ?? nativeCampaign)(config.crawl, "collect", config.job, ports.signal);
@@ -1303,26 +1367,78 @@ export async function autoSourcePipeline(configPath: string, ports: SourcePipeli
     (await fileHash(config.policy)) !== policySha
   )
     throw new Error("Automatic source changed during snapshot");
-  const next = {
-    ...config,
-    input,
-    policy,
-    job: revision,
-    autoMedia: !config.media,
-    ...(config.crawl ? { crawl: { ...config.crawl, mode: "attach" as const } } : {}),
-    ...(config.publication
-      ? {
-          publication: {
-            ...config.publication,
-            publicRoot: join(revision, "public"),
-            job: join(config.publication.job, identity),
-          },
-        }
-      : {}),
-  };
+  const next = revisionConfiguration(config, revision, identity);
   const pinnedConfig = join(revision, "config.json");
   await save(pinnedConfig, next, true);
   await runSourcePipeline("collect", pinnedConfig, {}, ports);
+  if ((await fileHash(configPath)) !== configSha256)
+    throw Error("Collection configuration changed");
+  return {
+    schema: "shenron-source-collection/v1" as const,
+    configSha256,
+    pinnedConfigPath: pinnedConfig,
+    pinnedConfigSha256: await fileHash(pinnedConfig),
+    collectionSha256: await fileHash(join(revision, "collect.json")),
+    revisionIdentity: identity,
+    artifactsSha256: await collectionArtifacts(config, revision),
+  };
+}
+export async function autoSourcePipeline(configPath: string, ports: SourcePipelinePorts = {}) {
+  const configSha256 = await fileHash(configPath);
+  const config = (await jsonFile(configPath)) as SourcePipelineConfig;
+  if (config.collectionIsolation === "required" && !ports.collectCycle)
+    throw Error("Qualified collection controller required");
+  ports.signal?.throwIfAborted();
+  const collection = ports.collectCycle
+    ? await ports.collectCycle({ configPath, configSha256 }, ports.signal)
+    : await collectSourcePipeline(configPath, ports);
+  ports.signal?.throwIfAborted();
+  if (
+    (await fileHash(configPath)) !== configSha256 ||
+    collection.schema !== "shenron-source-collection/v1" ||
+    collection.configSha256 !== configSha256
+  )
+    throw Error("Collection configuration receipt differs");
+  const identity = hash(
+    JSON.stringify([
+      configSha256,
+      await fileHash(config.input),
+      await fileHash(config.policy),
+      config.media ? await fileHash(config.media) : null,
+    ]),
+  );
+  const revision = join(config.job, "revisions", identity),
+    pinnedConfig = join(revision, "config.json");
+  if (
+    collection.revisionIdentity !== identity ||
+    collection.pinnedConfigPath !== pinnedConfig ||
+    !/^[a-f0-9]{64}$/.test(collection.pinnedConfigSha256) ||
+    !/^[a-f0-9]{64}$/.test(collection.collectionSha256)
+  )
+    throw Error("Collection revision receipt differs");
+  await privateJob(revision);
+  if (
+    (await fileHash(pinnedConfig)) !== collection.pinnedConfigSha256 ||
+    (await fileHash(join(revision, "collect.json"))) !== collection.collectionSha256
+  )
+    throw Error("Collected shared-volume artifact differs");
+  if (collection.artifactsSha256 !== (await collectionArtifacts(config, revision)))
+    throw Error("Collection discovery artifact differs");
+  const frozen = (await jsonFile(pinnedConfig)) as SourcePipelineConfig;
+  const expected = revisionConfiguration(config, revision, identity);
+  if (
+    JSON.stringify(frozen) !== JSON.stringify(expected) ||
+    (await fileHash(frozen.input)) !== (await fileHash(config.input)) ||
+    (await fileHash(frozen.policy)) !== (await fileHash(config.policy))
+  )
+    throw Error("Collected frozen source differs");
+  const collected = await jsonFile(join(revision, "collect.json"));
+  if (
+    collected.pins?.config !== collection.pinnedConfigSha256 ||
+    collected.pins?.input !== (await fileHash(frozen.input)) ||
+    collected.pins?.policy !== (await fileHash(frozen.policy))
+  )
+    throw Error("Collection provenance differs");
   const plan = await runSourcePipeline("plan", pinnedConfig, {}, ports);
   const result = await runSourcePipeline(
     "apply",
