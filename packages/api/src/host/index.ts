@@ -48,6 +48,7 @@ import {
   openShenronVfs,
   RAG_EMBED_MODEL,
 } from "@aphrody/shenron-db/vfs";
+import { isPublicRagRow } from "@aphrody/shenron-db/vfs/build";
 import { createChatEngine } from "../chat/engine";
 import { agentHomeFromDir, agentHomeFromVfs } from "../chat/home";
 import { backendsFromEnv, geminiCookieCandidates, type LlmBackend } from "../chat/llm";
@@ -209,17 +210,18 @@ export function hostCorsOrigins(env: EnvSource): string[] {
 export function createVfsRagPort(
   opened: OpenedVfs,
   embed: ((text: string) => Promise<Float32Array>) | null,
-  publicOnly: boolean,
 ): RagPort {
   return {
     async search(query: RagSearchQuery) {
       const result = await opened.rag.searchWith(query.q, query.lexicalOnly ? null : embed, {
-        limit: query.limit ?? 8,
+        // Public editorial filtering follows retrieval; keep a full candidate window.
+        limit: 50,
         ...(query.kind ? { kinds: [query.kind] } : {}),
-        publicOnly,
+        publicOnly: true,
       });
       const hits: RagHit[] = [];
       for (const hit of result.hits) {
+        if (!isPublicRagRow({ url: hit.url, metadata: { originSourceId: hit.sourceId } })) continue;
         if (query.lang && hit.lang !== query.lang) continue;
         if (query.sourceId && hit.sourceId !== query.sourceId) continue;
         hits.push({
@@ -236,7 +238,7 @@ export function createVfsRagPort(
       }
       return {
         mode: result.mode,
-        hits,
+        hits: hits.slice(0, query.limit ?? 8),
         ...(result.embedError ? { error: `embedder: ${result.embedError}` } : {}),
       };
     },
@@ -618,7 +620,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
       siteTheme: siteTheme?.port,
       favorites: favorites?.port,
       wiki,
-      rag: opened ? createVfsRagPort(opened, embedder?.query ?? null, publicOnly) : null,
+      rag: opened ? createVfsRagPort(opened, embedder?.query ?? null) : null,
       chat,
       conversations,
       memory,

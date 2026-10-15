@@ -9,6 +9,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { ShenronVfs, writeWikiRows } from "@aphrody/shenron-db/vfs";
+import { createRagWriter } from "@aphrody/shenron-db/vfs/build";
 import { LocalApiGroups } from "../src/contract/local";
 import { createLocalApi, type LocalApi, usableChatBackends } from "../src/host";
 
@@ -153,5 +154,122 @@ describe("usableChatBackends", () => {
     expect(usableChatBackends(env, dir)).toEqual([]);
     writeFileSync(join(dir, "cookies", "gemini-web.json"), "[]");
     expect(usableChatBackends(env, dir).map((b) => b.id)).toEqual(["gemini-web"]);
+  });
+});
+
+describe("public RAG boundary", () => {
+  test("search and context exclude private rows and agent-home templates on a full-profile host", async () => {
+    const db = memoryVfs();
+    const writer = createRagWriter(db, "none");
+    for (const row of [
+      { id: "home", source: "agent_home", kind: "home", visibility: "public", url: null },
+      {
+        id: "private",
+        source: "db_characters",
+        kind: "wiki",
+        visibility: "private",
+        url: "https://dragonballfr.com/wiki/characters/private",
+      },
+      {
+        id: "external",
+        source: "db_characters",
+        kind: "wiki",
+        visibility: "public",
+        url: "https://example.org/wiki/characters/goku",
+      },
+      {
+        id: "conversation",
+        source: "conversations",
+        kind: "conversation",
+        visibility: "public",
+        url: "https://dragonballfr.com/conversations/1",
+      },
+      {
+        id: "public",
+        source: "db_characters",
+        kind: "wiki",
+        visibility: "public",
+        url: "https://dragonballfr.com/wiki/characters/goku",
+      },
+      {
+        id: "manga",
+        source: "manga",
+        kind: "manga",
+        visibility: "public",
+        url: "https://dragonballfr.com/wiki/manga/1",
+      },
+      {
+        id: "databook",
+        source: "databooks",
+        kind: "databook",
+        visibility: "public",
+        url: "https://dragonballfr.com/wiki/databooks/1",
+      },
+      {
+        id: "wiki",
+        source: "wiki_pages",
+        kind: "wiki",
+        visibility: "public",
+        url: "https://dragonballfr.com/wiki/goku",
+      },
+    ] as const) {
+      writer.add(
+        {
+          corpus: row.kind === "home" ? "home" : "shenron",
+          entity_id: row.id + ":0",
+          title: row.id,
+          url: row.url,
+          content: "Goku Saiyan " + row.id,
+          metadata: { kind: row.kind, originSourceId: row.source, lang: "fr" },
+          updated_at: null,
+          embedding: null,
+          model: null,
+        },
+        row.visibility,
+      );
+    }
+    writer.finish();
+    const api = host(baseEnv({ SHENRON_PROFILE: "complet" }), { vfsDatabase: db });
+    const server = Bun.serve({ port: 0, hostname: "127.0.0.1", fetch: api.fetch });
+    try {
+      const search = await (
+        await fetch(new URL("/api/public/rag/search?q=Goku&limit=1", server.url))
+      ).json();
+      expect(search.results.map((hit: { title: string }) => hit.title)).toEqual(["public"]);
+      const context = await (
+        await fetch(new URL("/api/public/rag/context?q=Goku", server.url))
+      ).json();
+      expect(new Set(context.sources.map((hit: { title: string }) => hit.title))).toEqual(
+        new Set(["public", "manga", "databook", "wiki"]),
+      );
+      expect(context.context).not.toContain("private");
+      const homes = await (
+        await fetch(new URL("/api/public/rag/search?q=Goku&kind=home", server.url))
+      ).json();
+      expect(homes.results).toEqual([]);
+      for (const [sourceId, title] of [
+        ["manga", "manga"],
+        ["databooks", "databook"],
+        ["wiki_pages", "wiki"],
+      ]) {
+        const url = new URL("/api/public/rag/search?q=Goku&limit=1", server.url);
+        url.searchParams.set("sourceId", sourceId!);
+        const body = await (await fetch(url)).json();
+        expect(body.results.map((hit: { title: string }) => hit.title)).toEqual([title]);
+      }
+      for (const filter of [
+        "sourceId=agent_home",
+        "sourceId=conversations",
+        "kind=home&visibility=private",
+      ]) {
+        const body = await (
+          await fetch(new URL("/api/public/rag/search?q=Goku&" + filter, server.url))
+        ).json();
+        expect(body.results ?? []).toEqual([]);
+        expect(JSON.stringify(body)).not.toContain("Goku Saiyan private");
+      }
+    } finally {
+      await server.stop(true);
+    }
   });
 });
