@@ -48,13 +48,13 @@ test.skipIf(!url)(
         },
       ],
     });
-    async function job(number: number, id: number) {
+    async function job(number: number, id: number, extra: string[] = []) {
       const directory = await mkdtemp(join(tmpdir(), "sosh-import-pg-"));
       jobs.push(directory);
       await chmod(directory, 0o700);
       const body = JSON.stringify(manifest(number, id));
       await Bun.write(join(directory, "manifest.json"), body);
-      const args = ["--job", directory, "--expected-sha", archiveDigest(body)];
+      const args = ["--job", directory, "--expected-sha", archiveDigest(body), ...extra];
       await importSoshReaders(args, fetcher);
       // A real pg_dump archive qualifies the backup bytes independently from the plan.
       const process = Bun.spawn(
@@ -99,6 +99,46 @@ test.skipIf(!url)(
       expect(revisions[0]!.after.pages).toEqual(row!.pages);
       await importSoshReaders([...first.args, "--apply"], fetcher);
       expect(await sql`SELECT id FROM public.wiki_revisions`).toHaveLength(1);
+      await sql`INSERT INTO bot.db_manga_volumes VALUES (705, 'SOSH', 5, true), (706, 'SOSH', 6, true), (707, 'SOSH', 7, true)`;
+      await sql`ALTER TABLE bot.db_manga_chapters ADD COLUMN editorial_note text`;
+      for (const number of [5, 6, 7])
+        await sql`INSERT INTO bot.db_manga_chapters (id,series,chapter_number,volume_id,title,pages,visible,editorial_note) VALUES (${35000 + number},'SOSH',${number},${700 + number},'Pending','[]'::jsonb,false,'Preserve this note')`;
+      await expect(job(5, 35005)).rejects.toThrow("protected");
+      const stub = await job(5, 35005, ["--publish-empty-hidden"]);
+      // The opt-in is part of the reviewed plan and cannot be added only at apply time.
+      await expect(
+        importSoshReaders(
+          [...stub.args.filter((arg) => arg !== "--publish-empty-hidden"), "--apply"],
+          fetcher,
+        ),
+      ).rejects.toThrow();
+      await importSoshReaders([...stub.args, "--apply"], fetcher);
+      const [published] = await sql`SELECT * FROM bot.db_manga_chapters WHERE id=35005`;
+      expect(published!.visible).toBe(true);
+      expect(published!.pages).toHaveLength(2);
+      expect(published!.editorial_note).toBe("Preserve this note");
+      const [revision] = await sql`SELECT * FROM public.wiki_revisions WHERE "rowId"='35005'`;
+      expect(revision!.action).toBe("update");
+      expect(revision!.before.pages).toEqual([]);
+      expect(revision!.before.visible).toBe(false);
+      expect(revision!.after.pages).toEqual(published!.pages);
+      expect(revision!.after.editorialNote).toBe("Preserve this note");
+      await importSoshReaders([...stub.args, "--apply"], fetcher);
+      expect(await sql`SELECT id FROM public.wiki_revisions WHERE "rowId"='35005'`).toHaveLength(1);
+      const editedStub = await job(6, 35006, ["--publish-empty-hidden"]);
+      await sql`UPDATE bot.db_manga_chapters SET editorial_note='Concurrent owner edit' WHERE id=35006`;
+      await expect(importSoshReaders([...editedStub.args, "--apply"], fetcher)).rejects.toThrow(
+        "precondition",
+      );
+      expect(
+        (await sql`SELECT visible FROM bot.db_manga_chapters WHERE id=35006`)[0]!.visible,
+      ).toBe(false);
+      const rollbackStub = await job(7, 35007, ["--publish-empty-hidden"]);
+      await sql`ALTER TABLE public.wiki_revisions ADD CONSTRAINT reject_stub_revision CHECK ("rowId" <> '35007')`;
+      await expect(importSoshReaders([...rollbackStub.args, "--apply"], fetcher)).rejects.toThrow();
+      const [unchanged] = await sql`SELECT * FROM bot.db_manga_chapters WHERE id=35007`;
+      expect(unchanged!.pages).toEqual([]);
+      expect(unchanged!.visible).toBe(false);
       const conflict = await job(3, 35003);
       await sql`UPDATE bot.db_manga_volumes SET visible=false WHERE id=703`;
       await expect(importSoshReaders([...conflict.args, "--apply"], fetcher)).rejects.toThrow();
@@ -107,7 +147,7 @@ test.skipIf(!url)(
       await sql`ALTER TABLE public.wiki_revisions ADD CONSTRAINT reject_fixture_revision CHECK ("rowId" <> '35004')`;
       await expect(importSoshReaders([...rollback.args, "--apply"], fetcher)).rejects.toThrow();
       expect(await sql`SELECT id FROM bot.db_manga_chapters WHERE id=35004`).toHaveLength(0);
-      expect(await sql`SELECT id FROM public.wiki_revisions`).toHaveLength(1);
+      expect(await sql`SELECT id FROM public.wiki_revisions`).toHaveLength(2);
     } finally {
       if (oldUrl === undefined) delete process.env.DATABASE_URL;
       else process.env.DATABASE_URL = oldUrl;

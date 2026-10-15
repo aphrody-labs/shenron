@@ -146,3 +146,37 @@ test("exact replay has no inserts and protects existing chapters, visibility and
   duplicate.chapters.push({ ...duplicate.chapters[0], id: 35003 });
   expect(() => missingSoshChapters(manifest, duplicate)).toThrow();
 });
+
+test("publishing an existing empty hidden stub requires explicit opt-in and exact identity", () => {
+  const manifest = validateSoshReaderManifest(fixture());
+  const state = baseline();
+  state.chapters.push({
+    id: 35002,
+    volume_id: 702,
+    series: "SOSH",
+    chapter_number: 2,
+    visible: false,
+    pages: [],
+    title: "Pending",
+    editorial_note: "Keep this note",
+  });
+  const original = structuredClone(state);
+  expect(() => missingSoshChapters(manifest, state)).toThrow("protected");
+  expect(missingSoshChapters(manifest, state, { publishEmptyHidden: true })).toEqual(
+    manifest.volumes,
+  );
+  expect(state).toEqual(original);
+  for (const override of [
+    { visible: true },
+    { pages: null },
+    { pages: ["existing scan"] },
+    { series: "DB" },
+    { volume_id: 703 },
+    { chapter_number: 3 },
+    { id: 35003 },
+  ]) {
+    const changed = structuredClone(state);
+    Object.assign(changed.chapters[0]!, override);
+    expect(() => missingSoshChapters(manifest, changed, { publishEmptyHidden: true })).toThrow();
+  }
+});

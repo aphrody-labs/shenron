@@ -59,7 +59,11 @@ export interface SoshSnapshot {
 }
 export const soshSnapshotDigest = (snapshot: SoshSnapshot) =>
   archiveDigest(JSON.stringify(snapshot));
-export function missingSoshChapters(manifest: SoshReaderManifest, snapshot: SoshSnapshot) {
+export function missingSoshChapters(
+  manifest: SoshReaderManifest,
+  snapshot: SoshSnapshot,
+  options: { publishEmptyHidden?: boolean } = {},
+) {
   return manifest.volumes.filter((volume) => {
     const storedVolume = snapshot.volumes.find((row) => Number(row.id) === volume.volumeId);
     if (
@@ -79,7 +83,17 @@ export function missingSoshChapters(manifest: SoshReaderManifest, snapshot: Sosh
       Number(chapter.id) !== volume.chapterId ||
       Number(chapter.volume_id) !== volume.volumeId ||
       chapter.series !== "SOSH" ||
-      Number(chapter.chapter_number) !== volume.volumeNumber ||
+      Number(chapter.chapter_number) !== volume.volumeNumber
+    )
+      throw new Error("Existing SOSH chapter identity differs; protected from overwrite");
+    if (
+      options.publishEmptyHidden &&
+      chapter.visible === false &&
+      Array.isArray(chapter.pages) &&
+      chapter.pages.length === 0
+    )
+      return true;
+    if (
       !chapter.visible ||
       chapter.title !== volume.title ||
       chapter.title_ja !== volume.titleJa ||
@@ -102,6 +116,7 @@ export async function importSoshReaders(
       job: { type: "string" },
       "expected-sha": { type: "string" },
       apply: { type: "boolean", default: false },
+      "publish-empty-hidden": { type: "boolean", default: false },
     },
   });
   if (!values.job || !isAbsolute(values.job) || !values["expected-sha"])
@@ -115,6 +130,7 @@ export async function importSoshReaders(
   const body = await Bun.file(join(root, "manifest.json")).text();
   if (archiveDigest(body) !== values["expected-sha"]) throw new Error("Pinned manifest differs");
   const manifest = validateSoshReaderManifest(JSON.parse(body));
+  const options = { publishEmptyHidden: values["publish-empty-hidden"] };
   const verifiedAssets = await verifySoshReaderAssets(manifest, fetcher);
   if (!process.env.DATABASE_URL) throw new Error("Existing protected DATABASE_URL required");
   const sql = postgres(process.env.DATABASE_URL, {
@@ -137,14 +153,19 @@ export async function importSoshReaders(
   };
   try {
     const current = await snapshot(sql);
-    const missing = missingSoshChapters(manifest, current);
+    const missing = missingSoshChapters(manifest, current, options);
+    const updates = missing.filter((volume) =>
+      current.chapters.some((row) => Number(row.id) === volume.chapterId),
+    );
     if (!values.apply) {
       await save("before.json", current);
       const plan = {
         schema: "shenron-sosh-reader-plan/v1",
         manifestSha256: values["expected-sha"],
         beforeSha256: soshSnapshotDigest(current),
-        newChapters: missing.length,
+        newChapters: missing.length - updates.length,
+        publishedEmptyChapters: updates.length,
+        publishEmptyHidden: options.publishEmptyHidden,
         unchangedChapters: manifest.volumes.length - missing.length,
         verifiedAssets,
         observedAt: new Date().toISOString(),
@@ -173,6 +194,7 @@ export async function importSoshReaders(
       plan.manifestSha256 !== values["expected-sha"] ||
       plan.beforeSha256 !== soshSnapshotDigest(before) ||
       plan.beforeSha256 !== soshSnapshotDigest(current) ||
+      Boolean(plan.publishEmptyHidden) !== options.publishEmptyHidden ||
       !backup.inventoryVerified ||
       !/^[a-f0-9]{64}$/.test(backup.sha256) ||
       archiveDigest(await Bun.file(join(root, "catalog-before.dump")).bytes()) !== backup.sha256
@@ -184,22 +206,29 @@ export async function importSoshReaders(
       const locked = await snapshot(tx);
       if (soshSnapshotDigest(locked) !== plan.beforeSha256)
         throw new Error("SOSH catalogue changed after plan");
-      for (const volume of missingSoshChapters(manifest, locked)) {
+      for (const volume of missingSoshChapters(manifest, locked, options)) {
         const pages = volume.pages.map((page) => page.readerImage);
-        await tx`INSERT INTO bot.db_manga_chapters (id, series, chapter_number, volume_id, title, title_ja, cover, pages, visible)
-          VALUES (${volume.chapterId}, 'SOSH', ${volume.volumeNumber}, ${volume.volumeId}, ${volume.title}, ${volume.titleJa}, ${pages[0]!}, ${tx.json(pages)}, true)`;
+        const existingChapter = locked.chapters.find((row) => Number(row.id) === volume.chapterId);
+        const written = existingChapter
+          ? await tx`UPDATE bot.db_manga_chapters SET title=${volume.title}, title_ja=${volume.titleJa}, cover=${pages[0]!}, pages=${tx.json(pages)}, visible=true
+              WHERE id=${volume.chapterId} AND visible=false AND pages='[]'::jsonb RETURNING *`
+          : await tx`INSERT INTO bot.db_manga_chapters (id, series, chapter_number, volume_id, title, title_ja, cover, pages, visible)
+              VALUES (${volume.chapterId}, 'SOSH', ${volume.volumeNumber}, ${volume.volumeId}, ${volume.title}, ${volume.titleJa}, ${pages[0]!}, ${tx.json(pages)}, true) RETURNING *`;
+        if (written.length !== 1) throw new Error("SOSH chapter write precondition differs");
+        const wikiRow = (row: Row): postgres.JSONValue =>
+          JSON.parse(
+            JSON.stringify(
+              Object.fromEntries(
+                Object.entries(row).map(([key, value]) => [
+                  key.replace(/_([a-z])/g, (_match, letter: string) => letter.toUpperCase()),
+                  value,
+                ]),
+              ),
+            ),
+          );
         await tx`INSERT INTO public.wiki_revisions (id, "tableName", "rowId", action, label, before, after, "editorName")
-          VALUES (${crypto.randomUUID()}, 'db_manga_chapters', ${String(volume.chapterId)}, 'create', ${volume.title}, NULL,
-          ${tx.json({
-            series: "SOSH",
-            chapterNumber: volume.volumeNumber,
-            volumeId: volume.volumeId,
-            title: volume.title,
-            titleJa: volume.titleJa,
-            cover: pages[0]!,
-            pages,
-            visible: true,
-          })}, 'sosh-reader-import')`;
+          VALUES (${crypto.randomUUID()}, 'db_manga_chapters', ${String(volume.chapterId)}, ${existingChapter ? "update" : "create"}, ${volume.title}, ${existingChapter ? tx.json(wikiRow(existingChapter)) : null},
+          ${tx.json(wikiRow(written[0]!))}, 'sosh-reader-import')`;
       }
       const after = await snapshot(tx);
       if (missingSoshChapters(manifest, after).length)
@@ -217,7 +246,8 @@ export async function importSoshReaders(
       manifestSha256: values["expected-sha"],
       beforeSha256: plan.beforeSha256,
       afterSha256: soshSnapshotDigest(after),
-      insertedChapters: missing.length,
+      insertedChapters: missing.length - updates.length,
+      publishedEmptyChapters: updates.length,
       verifiedAssets,
       observedAt: new Date().toISOString(),
     };
