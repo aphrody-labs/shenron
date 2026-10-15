@@ -80,6 +80,7 @@ test("delta pins the previous inventory and emits public shards without source p
     expect(digest(sourceSnapshot)).toBe(report.sourceInventorySha256);
     expect(Object.keys(JSON.parse(sourceSnapshot).entries)).toHaveLength(3);
     const originalReport = await Bun.file(join(dir, "out/inventory.json")).text();
+    await rm(join(dir, "out/preparation.json"));
     await rm(join(dir, "out/shards/ff.json"));
     await run(args);
     expect(await Bun.file(join(dir, "out/inventory.json")).text()).toBe(originalReport);

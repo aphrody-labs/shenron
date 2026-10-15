@@ -112,8 +112,24 @@ export async function run(args: string[]) {
     preparation = await Bun.file(preparationPath).json();
   } catch (error) {
     if ((error as { code?: string }).code !== "ENOENT") throw error;
+    let createdAt = new Date().toISOString();
+    // Earlier jobs predate preparation.json; their emitted timestamp remains pinned.
+    for (const [path, field] of [
+      [join(out, "source-inventory.json"), "createdAt"],
+      [join(out, "public-catalog/catalog/assets/index.json"), "observedAt"],
+    ] as const) {
+      try {
+        const staged = await Bun.file(path).json();
+        if (typeof staged[field] !== "string" || !Number.isFinite(Date.parse(staged[field])))
+          throw Error("Legacy inventory timestamp differs");
+        createdAt = staged[field];
+        break;
+      } catch (legacyError) {
+        if ((legacyError as { code?: string }).code !== "ENOENT") throw legacyError;
+      }
+    }
     preparation = {
-      createdAt: new Date().toISOString(),
+      createdAt,
       previousSha256: digest(text),
       site,
       static: resolve(flag("--static")),
