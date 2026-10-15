@@ -128,3 +128,30 @@ La diffusion Dragon Ball est couverte par l'attestation propriétaire du
 approbation manuelle n'est ajoutée. Une source dont les droits sont refusés reste
 refusée. Les manques de scans, d'identité ou de capacités opérationnelles sont
 rapportés sans remplacer des pages par des notices ou du texte inventé.
+
+### Lire les compteurs sans les confondre avec des chapitres
+
+Le statut public du pool décrit sa file de recherche. Il conserve le sens
+historique de `catalog.verifiedAssets` ; ce nombre n'est pas une couverture
+éditoriale ni un total de nouvelles planches.
+
+| Observation                  | Preuve disponible                                                                                 | Limite                                                                                                                         |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `catalog.verifiedAssets`     | Nombre de tâches `kind='asset' AND state='done'` dans la frontière SQLite                         | Contrôle des références déjà connues du catalogue ; ne compte pas les nouveaux fichiers acquis                                 |
+| Acquisitions terminées       | Tâches `kind='acquisition' AND state='done'`, reçus HTTP, SHA, taille et fichier dans `acquired/` | Une acquisition peut être une couverture, un logo, un PDF institutionnel ou un doublon ; vérifier chaque octet et son identité |
+| Candidats de publication     | Candidats validés dans `derived/candidate-inbox/`                                                 | L'identité, la galerie ordonnée, les octets, les droits et l'étendue doivent encore traverser les propriétaires canoniques     |
+| Quarantaines                 | Reçus dans `derived/candidate-quarantine/` et rapport `derived/progress.json`                     | Le nombre de reçus conservés et le compte du dernier cycle peuvent différer ; une quarantaine n'est pas un chapitre            |
+| Chapitres réellement publiés | Reçus du writer canonique, historique, projection CDN et relecture de l'API                       | Ce résultat ne se déduit d'aucun des compteurs précédents ; un extrait reste `readerExtent.kind='preview'`                     |
+
+Un futur champ `acquiredFiles` devrait dédupliquer les SHA et vérifier leurs
+fichiers, plutôt que renommer le compteur des tâches. Un champ
+`qualifiedChapters` nécessite la preuve du propriétaire de publication ; le pool
+seul ne peut pas le calculer. Aucun de ces champs n'est inventé pour combler un
+manque de télémétrie.
+
+Le timer de handoff peut sortir avec succès sans transférer de données :
+`{"complete":true,"empty":true,"artifacts":0}` indique une file de candidats vide.
+Un transfert réel exige l'archive scellée, le descripteur prêt sur DBFR après les
+deux SFTP, puis l'accusé durable `export-state.json`. L'import crée ensuite son
+propre reçu dans `imports/`, et le consommateur produit un outbox validé. Un état
+systemd « success » ne remplace aucun de ces reçus.
