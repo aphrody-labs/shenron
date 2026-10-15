@@ -106,6 +106,8 @@ domTest("reading a preview does not complete a chapter in local progress", async
   expect(container!.querySelector("[data-reader-preview]")).toBeNull();
 });
 domTest("volume cards show the actual 32-page extent rather than three warmed pages", async () => {
+  await render(null);
+  localStorage.setItem("dbfr_read_chapters", "[620]");
   await render(
     <MangaVolumeGrid
       dbVolumes={[]}
@@ -130,6 +132,7 @@ domTest("volume cards show the actual 32-page extent rather than three warmed pa
   expect(container!.querySelector("[data-reader-preview]")?.textContent).toContain(
     "32 pages (tome incomplet)",
   );
+  expect(container!.textContent).toContain("0 chapitres lus sur cet appareil");
 });
 
 domTest("an old saved preview ID cannot show a completed volume in the contents", async () => {

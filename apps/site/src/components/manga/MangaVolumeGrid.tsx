@@ -169,14 +169,25 @@ export function MangaVolumeGrid({
   );
   const readIds = useMemo(() => {
     try {
+      const previewIds = new Set(
+        readableChapters
+          .filter((chapter) => chapter.reader_extent?.kind === "preview")
+          .map((chapter) => chapter.id),
+      );
       const saved: unknown = JSON.parse(savedProgress);
       return Array.isArray(saved)
-        ? [...new Set(saved.map(Number).filter((id) => Number.isSafeInteger(id) && id > 0))]
+        ? [
+            ...new Set(
+              saved
+                .map(Number)
+                .filter((id) => Number.isSafeInteger(id) && id > 0 && !previewIds.has(id)),
+            ),
+          ]
         : EMPTY_IDS;
     } catch {
       return EMPTY_IDS;
     }
-  }, [savedProgress]);
+  }, [savedProgress, readableChapters]);
   const results = useRef<HTMLDivElement>(null);
   const volumes = useMemo(
     () =>
