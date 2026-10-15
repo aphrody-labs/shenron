@@ -785,3 +785,41 @@ Le crawl Dragon Ball natif est toujours actif dans son répertoire protégé. So
 La fiche publique `/api/public/wiki/tournaments/11` confirme que l'entrée reste sans article. La page produit officielle Bandai Namco `https://www.bandainamcoent.com/games/dragon-ball-xenoverse` a été qualifiée par le garde-fou de sources officielles : HTTP 200, identité exacte `DRAGON BALL® XENOVERSE`, extrait textuel exact sur la ville futuriste et l'horloge qui redémarre, corps SHA-256 `71216f936286893a3c95f68ce1d9181a50f0e769289dfec80a3f7c4df55a7e01`. Une notice courte sans copie de page est indexée dans le profil RAG privé Shenron : 1 document, 1 chunk, 0 erreur; la requête « Dragon Ball Xenoverse mysterious city clock tournament official Bandai Namco » retrouve ce chunk.
 
 Cette page confirme le cadre général de Xenoverse, pas les participants, le vainqueur ni les règles du tournoi de la fiche. Aucun article wiki n'a été publié sur cette seule base. Le nouveau reçu est privé sous `/home/ubuntu/.aphrody/workspace-shenron/private/web/official-source-xenoverse-20261015/`.
+
+### 2026-10-15 — Reprise complète du crawl et blocage d'acquisition
+
+Le crawl natif privé `native-crawl-20261015` a progressé au-delà du dernier
+reçu documenté : tour 4 terminé avec code 0 pour les sources configurées,
+103 023 documents projetés; le tour 5 a ensuite terminé DBM français avec
+code 0, 103 840 documents, mais 2 849 URL encore en attente après son budget
+de 256 requêtes. À 18:53 UTC, `dbm-en` était lancé dans le même orchestrateur;
+la campagne globale reste `completed: false`. Sortie privée uniquement sous
+`/home/ubuntu/.aphrody/workspace-shenron/private/web/dragon-ball`; aucun index
+ni import de cette sortie n'a été fait.
+
+L'API manga live confirme 329 notices, 222 volumes avec pages listées,
+53 304 pages déclarées, 107 volumes sans aucune page et 110 manquants ou
+partiels au total. `fullEditionPaginationVerified` et
+`assetAvailabilityVerified` restent faux. Les notices 621 et 702 sont des
+fiches bibliographiques sans chapitres ni pages; aucune page de manga n'en a
+été inférée. Le pool privé de sources observe 16 workers configurés, zéro actif,
+51 544 tâches en attente et recherche indisponible (`bun-search-cli-unsupported`);
+augmenter ses workers ne rend donc pas l'acquisition productive.
+
+Tentative de débloquer la sauvegarde canonique du writer : DBFR avait 3,0 Gio
+libres. Inventaire Infra : racine ext4 `/dev/sda1`, `/boot` et `/boot/efi`,
+aucun build actif détecté, services de production et publication actifs. Le
+plan autorisé `aphrody infra reclaim --target dbfr --apply` a retiré 1,68 Gio
+de cache Bun régénérable; la racine avait alors 5,28 Gio libres. Le service
+`shenron-container-backup.service` a néanmoins refusé de produire une nouvelle
+copie, car ses instantanés protégés occupent 8,6 Gio pour une limite de 8 Gio.
+Le VPS hors site n'a pas le répertoire de réception attendu et son service est
+masqué. Aucun instantané protégé n'a été effacé, aucune base ni aucun writer
+wiki n'a été modifié. Le volume `/home/ubuntu/src` de la session VPS est aussi
+plein; le checkout et les données de crawl n'y ont pas été écrits.
+
+Le wiki reste sans source primaire qualifiée pour compléter les fiches
+bloquées; Xenoverse officiel n'étaye toujours pas les détails de
+`tournaments/11`. La suite requiert un chemin autorisé vers les intérieurs
+exacts des volumes et une rétention/sauvegarde approuvée des snapshots
+existants; jusque-là aucune complétude manga/wiki ne peut être annoncée.
