@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
+import type { MangaChapter } from "@/lib/db-universe";
 export const MANGA_LIBRARY_PAGE_SIZE = 12;
 
 export interface LibraryVolume {
@@ -19,6 +20,8 @@ export interface LibraryChapter {
   cover: string | null;
   pages?: string[] | null;
   volume_id?: number | null;
+  reader_extent?: MangaChapter["reader_extent"];
+  pageCount?: number;
 }
 
 /** Legacy imports use DB_SOSH for the same Sōshūhen collection. */

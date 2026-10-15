@@ -8,6 +8,7 @@ import {
 } from "@aphrody/shenron-ui/reader";
 import { mangaReaderAssetUrl } from "@/lib/manga-reader-assets";
 import { useKoharuCanvasWarmup } from "@aphrody/shenron-ui/reader";
+import { MangaPreviewNotice, type MangaReaderExtent } from "./MangaPreviewNotice";
 
 export type MangaReaderProps = Pick<
   ReaderProps,
@@ -15,6 +16,7 @@ export type MangaReaderProps = Pick<
 > & {
   chapterId?: number;
   sourceKind?: "cdn" | "editorial";
+  readerExtent?: MangaReaderExtent;
 };
 
 const renderChapterLink: NonNullable<ReaderProps["renderChapterLink"]> = ({
@@ -28,7 +30,7 @@ const renderChapterLink: NonNullable<ReaderProps["renderChapterLink"]> = ({
   </Link>
 );
 
-export function MangaReader({ chapterId, sourceKind, ...props }: MangaReaderProps) {
+export function MangaReader({ chapterId, sourceKind, readerExtent, ...props }: MangaReaderProps) {
   const canvasWarmup = useKoharuCanvasWarmup();
   const [initialPage, setInitialPage] = useState(1);
   const [ready, setReady] = useState(false);
@@ -44,7 +46,7 @@ export function MangaReader({ chapterId, sourceKind, ...props }: MangaReaderProp
     setReady(true);
   }, [chapterId]);
   useEffect(() => {
-    if (!chapterId) return;
+    if (!chapterId || readerExtent?.kind === "preview") return;
     try {
       const read = JSON.parse(localStorage.getItem("dbfr_read_chapters") ?? "[]");
       const ids: number[] = Array.isArray(read) ? read.map(Number) : [];
@@ -55,7 +57,7 @@ export function MangaReader({ chapterId, sourceKind, ...props }: MangaReaderProp
     } catch (error) {
       console.error("Failed to save read chapter", error);
     }
-  }, [chapterId]);
+  }, [chapterId, readerExtent?.kind]);
   const [currentPage, setCurrentPage] = useState(1);
   useEffect(() => setCurrentPage(initialPage), [initialPage, chapterId]);
   const onPageChange = useCallback(
@@ -80,6 +82,7 @@ export function MangaReader({ chapterId, sourceKind, ...props }: MangaReaderProp
   );
   return (
     <div className="m3-reader--dragon-ball" data-koharu-canvas={canvasWarmup}>
+      <MangaPreviewNotice extent={readerExtent} count={props.pages.length} />
       <BaseMangaReader
         key={`${chapterId ?? "ch"}-${initialPage}`}
         {...props}

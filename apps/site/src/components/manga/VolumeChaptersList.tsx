@@ -12,6 +12,7 @@ import {
   type Edition,
 } from "@/lib/manga-editions";
 import { Etoile } from "@aphrody/shenron-ui/toriyama/MotifsCouverture";
+import { MangaPreviewBadge, type MangaReaderExtent } from "./MangaPreviewNotice";
 
 interface Chapter {
   id: number;
@@ -20,6 +21,7 @@ interface Chapter {
   series: string;
   cover: string | null;
   pages?: string[] | null;
+  reader_extent?: MangaReaderExtent;
 }
 
 interface VolumeChaptersListProps {
@@ -67,10 +69,11 @@ export function VolumeChaptersList({ chapters }: VolumeChaptersListProps) {
     edition && parEdition[edition].length > 0 ? edition : (editionsPresentes[0] ?? "nb");
 
   const readableChapters = editionsPresentes.length ? parEdition[editionActive] : tousLisibles;
-  const readReadableChapters = readableChapters.filter((ch) => readChapterIds.includes(ch.id));
+  const progressChapters = readableChapters.filter((ch) => ch.reader_extent?.kind !== "preview");
+  const readReadableChapters = progressChapters.filter((ch) => readChapterIds.includes(ch.id));
   const progressPercent =
-    readableChapters.length > 0
-      ? Math.round((readReadableChapters.length / readableChapters.length) * 100)
+    progressChapters.length > 0
+      ? Math.round((readReadableChapters.length / progressChapters.length) * 100)
       : 0;
 
   return (
@@ -105,12 +108,12 @@ export function VolumeChaptersList({ chapters }: VolumeChaptersListProps) {
       )}
 
       {/* Barre de progression style Scouter Toriyama */}
-      {readableChapters.length > 0 && (
+      {progressChapters.length > 0 && (
         <div className="space-y-2 rounded-xl border border-white/12 p-4">
           <div className="flex items-center justify-between gap-3 text-sm">
             <span className="font-semibold text-white/80">Progression de lecture</span>
             <span className="tabular-nums text-white/70">
-              {readReadableChapters.length} sur {readableChapters.length} chapitres (
+              {readReadableChapters.length} sur {progressChapters.length} chapitres (
               {progressPercent} %)
             </span>
           </div>
@@ -132,7 +135,7 @@ export function VolumeChaptersList({ chapters }: VolumeChaptersListProps) {
 
       <div className="grid min-w-0 grid-cols-1 gap-3">
         {readableChapters.map((ch) => {
-          const isRead = readChapterIds.includes(ch.id);
+          const isRead = ch.reader_extent?.kind !== "preview" && readChapterIds.includes(ch.id);
           return (
             <Link
               key={ch.id}
@@ -154,7 +157,14 @@ export function VolumeChaptersList({ chapters }: VolumeChaptersListProps) {
                 <p className="font-display font-bold text-white group-hover:text-dbz-orange transition-colors flex items-center gap-2 truncate">
                   {/* Puce d'étoile : la ligne de titre du support s'ouvre ainsi. */}
                   <Etoile taille={10} className="text-[var(--color-logo-rouge)] shrink-0" />
-                  <span className="truncate">{ch.title || `Chapitre ${ch.chapter_number}`}</span>
+                  <span className="min-w-0">
+                    <span className="block truncate">
+                      {ch.title || `Chapitre ${ch.chapter_number}`}
+                    </span>
+                    {ch.reader_extent?.kind === "preview" && (
+                      <MangaPreviewBadge count={ch.pages?.length ?? 0} />
+                    )}
+                  </span>
                   {isRead && (
                     <span className="inline-flex shrink-0 items-center gap-1 text-[12px] text-emerald-400 font-bold bg-emerald-500/15 px-1.5 py-0.5 rounded border border-emerald-500/40">
                       <Coche className="w-2.5 h-2.5" /> Lu

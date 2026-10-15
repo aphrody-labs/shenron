@@ -12,6 +12,7 @@ import { estChapitreCouleur, hasMixedColorization, libelleSerie } from "@/lib/ma
 import { useT } from "@/components/T";
 import { useMangaUIText } from "@/lib/manga-ui-text";
 import { VignetteTome } from "@/components/manga/VignetteTome";
+import { MangaPreviewBadge } from "@/components/manga/MangaPreviewNotice";
 import { Etoile } from "@aphrody/shenron-ui/toriyama/MotifsCouverture";
 import {
   canonicalMangaCollection,
@@ -122,6 +123,9 @@ function MangaChapterCard({ chapter }: { chapter: LibraryChapter }) {
             : ""}
       </p>
       <p className="line-clamp-2 text-sm font-semibold text-foreground">{title}</p>
+      {chapter.reader_extent?.kind === "preview" && (
+        <MangaPreviewBadge count={chapter.pageCount ?? chapter.pages?.length ?? 0} />
+      )}
     </Link>
   );
 }
@@ -215,6 +219,25 @@ export function MangaVolumeGrid({
   const readableIds = new Set(readableChapters.map((chapter) => chapter.volume_id));
   const isReadable = (volume: Volume) =>
     readableIds.has(volume.id) || (volume.series === "DB" && colorIds.has(volume.id));
+  const previewPagesByVolume = useMemo(() => {
+    const counts = new Map<number, number>();
+    const otherReaders = new Set<number>();
+    for (const chapter of readableChapters) {
+      if (chapter.volume_id == null) continue;
+      if (chapter.reader_extent?.kind === "preview") {
+        counts.set(
+          chapter.volume_id,
+          Math.max(
+            counts.get(chapter.volume_id) ?? 0,
+            chapter.pageCount ?? chapter.pages?.length ?? 0,
+          ),
+        );
+      } else otherReaders.add(chapter.volume_id);
+    }
+    for (const id of otherReaders) counts.delete(id);
+    return counts;
+  }, [readableChapters]);
+  const previewPagesFor = (volume: Volume) => previewPagesByVolume.get(volume.id);
   const colorVolumes = volumes.filter(
     (volume) => volume.series === "DBFC" || (volume.series === "DB" && colorIds.has(volume.id)),
   );
@@ -430,7 +453,14 @@ export function MangaVolumeGrid({
                   idx={index}
                   compact
                   couleur={selected === COLOR_COLLECTION}
-                  status={isReadable(volume) ? "available" : "to-complete"}
+                  status={
+                    previewPagesFor(volume) !== undefined
+                      ? "preview"
+                      : isReadable(volume)
+                        ? "available"
+                        : "to-complete"
+                  }
+                  previewPages={previewPagesFor(volume)}
                   priority={index < 2}
                 />
               ))

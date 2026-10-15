@@ -87,6 +87,9 @@
   },
   "searchShort": "検索",
   "reader": {
+    "preview": "公式試し読み — {count}ページ（巻の一部）",
+    "previewNotice": "公式試し読みの{count}ページを掲載しています。収録範囲は巻の一部です。",
+    "previewSource": "公式の出典を確認",
     "scans": "スキャン画像",
     "empty": "この巻のスキャン画像は準備中です。",
     "contents": "目次",

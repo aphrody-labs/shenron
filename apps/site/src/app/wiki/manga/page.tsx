@@ -146,6 +146,8 @@ async function MangaIndexContent({ searchParams }: { searchParams: Promise<Manga
     // Cards only warm the first three images; the reader fetches the full chapter.
     pages: ch.pages?.slice(0, 3),
     volume_id: ch.volume_id,
+    reader_extent: ch.reader_extent,
+    pageCount: ch.pages?.length ?? 0,
   }));
 
   // L'éditeur des bannières pilote explicitement ce hero. Les couvertures restent

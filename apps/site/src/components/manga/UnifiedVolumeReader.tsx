@@ -7,6 +7,7 @@ import { MangaReader } from "./MangaReader";
 import { useT } from "@/components/T";
 import { colorisationDemandee, hasMixedColorization } from "@/lib/manga-editions";
 import { useMangaUIText } from "@/lib/manga-ui-text";
+import type { MangaReaderExtent } from "./MangaPreviewNotice";
 
 export interface ChapterItem {
   id: number;
@@ -16,6 +17,7 @@ export interface ChapterItem {
   volume_id?: number | null;
   cover?: string | null;
   pages?: string[] | null;
+  reader_extent?: MangaReaderExtent;
 }
 
 export interface VolumeData {
@@ -132,6 +134,7 @@ export function UnifiedVolumeReader({
               title={`${volume.title || ui("volume", { number: volume.volume_number })} — ${formatChapterTitle(chapter)}`}
               direction="rtl"
               chapterId={chapter.id}
+              readerExtent={chapter.reader_extent}
               prevHref={
                 previous ? `?chapter=${previous.chapter_number}&edition=${edition.id}` : null
               }

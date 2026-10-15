@@ -194,6 +194,7 @@ export default async function MangaReaderPage({ params }: { params: Promise<{ id
         prevPages={chapter.prevPages}
         nextPages={chapter.nextPages}
         chapterId={chapter.id}
+        readerExtent={chapter.reader_extent}
       />
 
       <AccesApi
