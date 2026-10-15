@@ -382,8 +382,9 @@ async function Resultat({ question }: { question: string }) {
       <CanonResultArrival />
       {/* ---- Le verdict, en une phrase ---------------------------------- */}
       <section
+        id="canon-result"
         aria-labelledby="canon-verdict-rang"
-        className="rounded-xl border border-white/15 bg-white/[0.03] p-6 sm:p-8"
+        className="scroll-mt-20 rounded-xl border border-white/15 bg-white/[0.03] p-6 sm:scroll-mt-32 sm:p-8"
         style={{ borderLeft: `4px solid ${couleur}` }}
       >
         {illustration && (
@@ -401,7 +402,7 @@ async function Resultat({ question }: { question: string }) {
         <h2
           id="canon-verdict-rang"
           tabIndex={-1}
-          className="scroll-mt-36 text-2xl font-semibold tracking-tight text-white"
+          className="text-2xl font-semibold tracking-tight text-white focus:outline-none"
         >
           {illustration ? <T k={`canonExplorer.${illustration.label}`} /> : question}
         </h2>

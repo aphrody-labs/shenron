@@ -148,7 +148,9 @@ export function CanonResultArrival() {
   useEffect(() => {
     const heading = document.getElementById("canon-verdict-rang");
     if (heading) {
-      heading.scrollIntoView({ block: "start", behavior: "instant" });
+      document
+        .getElementById("canon-result")
+        ?.scrollIntoView({ block: "start", behavior: "instant" });
       heading.focus({ preventScroll: true });
     }
   }, []);
