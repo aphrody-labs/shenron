@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Database } from "bun:sqlite";
 import { S3Client } from "bun";
-import { mkdir, chmod, stat, realpath, rmdir } from "node:fs/promises";
+import { mkdir, chmod, stat, realpath, rmdir, lstat } from "node:fs/promises";
 import { resolve, relative, isAbsolute, join } from "node:path";
 import { digest, validateManifest, type Manifest } from "./cloudflare-ops";
 import { validateProfile } from "./s3-profile";
@@ -310,10 +310,45 @@ export async function verifyStoredObject(
   }
 }
 /** Native Curl signs S3 metadata; an explicitly configured legacy SDK stays an explicit owner choice. */
+export async function validateProfileFile(profile: string, consumerProfileRoot?: string) {
+  const info = await lstat(profile);
+  if (!info.isFile() || info.isSymbolicLink()) throw new Error("Profile must be a regular file");
+  if (process.platform === "win32") return;
+  if (info.mode & 0o077) throw new Error("Profile permissions invalid");
+  if (info.uid === 0) return;
+  const uid = process.getuid?.();
+  if (
+    !uid ||
+    info.uid !== uid ||
+    !consumerProfileRoot ||
+    !isAbsolute(consumerProfileRoot) ||
+    !isAbsolute(profile)
+  )
+    throw new Error("Profile consumer owner is not trusted");
+  const root = resolve(consumerProfileRoot),
+    path = resolve(profile),
+    child = relative(root, path),
+    directory = await lstat(root);
+  if (
+    !child ||
+    isAbsolute(child) ||
+    child === ".." ||
+    child.startsWith("../") ||
+    !directory.isDirectory() ||
+    directory.isSymbolicLink() ||
+    directory.uid !== uid ||
+    (directory.mode & 0o777) !== 0o700 ||
+    (await realpath(root)) !== root ||
+    (await realpath(path)) !== path ||
+    (info.mode & 0o777) !== 0o400
+  )
+    throw new Error("Profile consumer boundary is not private");
+}
 export async function objectStore(
   profile: string,
   manifest: Manifest,
   sdkModule?: string,
+  options: { consumerProfileRoot?: string } = {},
 ): Promise<ObjectStore> {
   if (sdkModule !== undefined && (!sdkModule || !isAbsolute(sdkModule)))
     throw new Error("Explicit S3 SDK path must be absolute");
@@ -327,9 +362,7 @@ export async function objectStore(
     client: S3Client,
     endpoint = "";
   async function refresh() {
-    const info = await stat(profile);
-    if (process.platform !== "win32" && (info.mode & 0o077 || info.uid !== 0))
-      throw new Error("Profile permissions invalid");
+    await validateProfileFile(profile, options.consumerProfileRoot);
     const p = await Bun.file(profile).json();
     validateProfile(p, manifest);
     if (Date.parse(p.expiresAt) < Date.now() + 30000) throw new Error("Scoped credential expired");

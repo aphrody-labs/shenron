@@ -68,7 +68,7 @@ export interface SourcePipelineConfig {
   concurrency?: number;
   timeoutMs?: number;
   maxBytes?: number;
-  store?: { manifest: string; profile: string; sdkModule?: string };
+  store?: { manifest: string; profile: string; sdkModule?: string; consumerProfileRoot?: string };
   publication?: PublishCatalogOptions;
 }
 export interface RegistryRow {
@@ -609,6 +609,7 @@ async function executeSourcePipeline(
                 config.store.profile,
                 await jsonFile(join(config.job, "pinned-store-manifest.json")),
                 config.store.sdkModule,
+                { consumerProfileRoot: config.store.consumerProfileRoot },
               )
             : undefined))
         : undefined;
@@ -654,6 +655,7 @@ async function executeSourcePipeline(
                 config.store.profile,
                 await jsonFile(config.store.manifest),
                 config.store.sdkModule,
+                { consumerProfileRoot: config.store.consumerProfileRoot },
               )
             : undefined);
         if (!verifyStore?.verify) throw new Error("Canonical remote CAS verifier required");
