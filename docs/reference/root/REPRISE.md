@@ -650,3 +650,17 @@ Nouvelle demande : installer Xenoverse2 avec DBX2 et Shenron RE. Cible
 configurée APHRODY Windows native joignable ; Steam et jeu absents au contrôle
 15:30. Installation officielle/outillage en cours, sans achat ni connexion
 inventée. Le CLI Shenron RE expose inventaire et lecture de formats, pas install.
+
+### 2026-10-15 — Xenoverse 2 : Steam installé sur APHRODY
+
+Installation officielle via Infra sur Windows natif APHRODY, sans WSL.
+SteamSetup signé Valve Corp., Authenticode Valid, SHA256
+7d3654531c32d941b8cae81c4137fc542172bfa9635f169cb392f245a0a12bcb ;
+installation silencieuse terminée code 0 à 15:34:21. Steam.exe installé et signé.
+Le handler Steam est présent ; URI steam://install/454650 ouverte à 15:34:57.
+Aucun manifest 454650 présent à ce contrôle : téléchargement du jeu non prouvé.
+Session interactive/connexion au compte encore en vérification. Reçus privés
+Windows : C:\Users\aphro\AppData\Local\Aphrody\jobs\dbxv2-install-20261015.
+DBX2 et Shenron RE ne doivent pas être présentés comme installateurs du jeu :
+le CLI RE qualifié expose inventaire et formats. Aucun achat, modification de
+sauvegarde ou anti-cheat réalisé.
