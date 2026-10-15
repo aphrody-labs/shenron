@@ -8,12 +8,9 @@ l’historique sont dans [REPRISE.md](docs/reference/root/REPRISE.md) ; les inva
 
 ## Priorités
 
-0. Terminer la demande propriétaire du 13 octobre : accueil sans menu d'ancrage,
-   bloc univers/compteurs, reprise ni promotion Beerus ; catalogue épisodes/sagas
-   immédiatement accessible, héros compacts et frames HD qualifiées. Livrer les cinq
-   GIF et leurs aperçus via le catalogue public, puis vérifier page/API/téléchargements.
-   Les sources `7bd95e65` attendent la prochaine image commune avec les correctifs
-   dashboard/Canvas ; ne pas activer une ancienne image intermédiaire.
+0. Demande propriétaire du 13 octobre livrée (contrôle du 15 octobre dans REPRISE) :
+   accueil, catalogue épisodes/sagas, cinq GIF, aperçus et téléchargements servis par
+   la release `88ac0d23`. La prochaine image commune reste coordonnée avec le dashboard.
 
 1. Maintenir la collecte privée des sources officielles avec provenance, robots, sitemaps,
    budgets et couverture explicitement qualifiés.

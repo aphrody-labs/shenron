@@ -1,5 +1,16 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## Contrôle du 15 octobre 2026 — livraison accueil et GIF
+
+Release active DBFR `docker-88ac0d23`, qui contient `7bd95e65` ; `/api/health` 200.
+`/`, `/wiki/episodes`, `/wiki/sagas`, `/wiki/episodes/875` et `/wiki/gifs` en 200 ;
+`/wiki/arcs` 308 vers `/wiki/sagas` et un détail d'arc inconnu en 404. `/api/gifs` sert
+la révision `53dbaf71…` : cinq GIF ; les cinq aperçus correspondent à leur SHA, et les cinq
+téléchargements `/api/gifs/<clé>/download?revision=…` répondent 200 en GIF89a avec taille
+et SHA conformes. La page liste ces cinq liens. L'index `catalog/gifs/index.json` du CDN
+répond 404 ; le site lit l'index par épisode. La prochaine image commune reste coordonnée
+avec le Codex dashboard (revendication `dashboard-factory`) ; aucun build lancé.
+
 ## Contrôle du 13 octobre 2026 — accueil, frames et corpus vidéo
 
 Sources `7bd95e65` poussées : retrait demandé du menu d'ancrage, du bloc univers et
