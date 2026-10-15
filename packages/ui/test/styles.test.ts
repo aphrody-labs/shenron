@@ -8,7 +8,11 @@ const read = (p: string) => Bun.file(new URL(p, root)).text();
 
 const pkgCss = await Bun.file(new URL("../src/styles.css", import.meta.url)).text();
 const siteCss = await read("apps/site/src/app/globals.css");
-const combined = `${siteCss}\n${pkgCss}`;
+const themeAdapters = ["./frame-theme.css", "./neutral-theme.css"];
+const adapterCss = await Promise.all(
+  themeAdapters.map((path) => read(`apps/site/src/app/${path.slice(2)}`)),
+);
+const combined = [siteCss, pkgCss, ...adapterCss].join("\n").replace(/\/\*[\s\S]*?\*\//g, "");
 
 const themeVars = Object.values(THEME_COLOR_VARS);
 
@@ -33,10 +37,14 @@ function componentLayers(css: string): string[] {
 describe("styles.css", () => {
   test("the shared palette covers all editable color roles", () => {
     expect(themeVars.length).toBeGreaterThanOrEqual(12);
+    expect(new Set(themeVars).size).toBe(themeVars.length);
   });
 
-  test("every theme variable is consumed as var(--dbz-<x>, in the combined stylesheets", () => {
-    expect(themeVars.filter((v) => !combined.includes(`var(${v},`))).toEqual([]);
+  test("every editable color has a CSS consumer with a fallback in an imported theme layer", () => {
+    for (const adapter of themeAdapters) expect(siteCss).toContain(`@import "${adapter}";`);
+    expect(
+      themeVars.filter((variable) => !new RegExp(`var\\(\\s*${variable}\\s*,`).test(combined)),
+    ).toEqual([]);
   });
 
   test("globals.css imports the package stylesheet right after tailwindcss", () => {
