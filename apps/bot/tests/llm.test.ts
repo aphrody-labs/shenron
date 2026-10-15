@@ -189,3 +189,41 @@ describe("generateLlmAnswer — corps de requête (B17, bavardage sans récupér
     }
   });
 });
+
+describe("public RAG generation budget", () => {
+  it("sends the shared budget and an explicit override through the direct SDK transport", async () => {
+    const { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } =
+      await import("@aphrody/shenron-config/chat-model");
+    const originalFetch = globalThis.fetch;
+    process.env.APHRODY_AI_CHAT_BASE_URL = "http://127.0.0.1:8799/v1";
+    process.env.APHRODY_AI_CHAT_MODEL = "fixture";
+    const budgets: number[] = [];
+    globalThis.fetch = Object.assign(
+      async (input: Parameters<typeof fetch>[0], init?: RequestInit) => {
+        expect(new URL(String(input)).pathname).toBe("/v1/chat/completions");
+        expect(init?.signal).toBeInstanceOf(AbortSignal);
+        const body = JSON.parse(String(init?.body));
+        budgets.push(body.max_tokens);
+        return Response.json({
+          id: "bounded",
+          object: "chat.completion",
+          created: 1,
+          model: "fixture",
+          choices: [
+            { index: 0, message: { role: "assistant", content: "Salut." }, finish_reason: "stop" },
+          ],
+        });
+      },
+      { preconnect: originalFetch.preconnect },
+    ) as typeof fetch;
+    const db = new Database(":memory:");
+    try {
+      await generateLlmAnswer(db, "bonjour", [], "whis");
+      await generateLlmAnswer(db, "merci", [], "beerus", { maxTokens: 64 });
+      expect(budgets).toEqual([PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS, 64]);
+    } finally {
+      globalThis.fetch = originalFetch;
+      db.close();
+    }
+  });
+});

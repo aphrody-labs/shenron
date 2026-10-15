@@ -278,3 +278,16 @@ describe("generateGroundedAnswer — agent home and memories", () => {
     expect(JSON.stringify(user?.content)).toContain("j'adore Piccolo");
   });
 });
+
+test("the explicit sourced-answer budget reaches the SDK provider", async () => {
+  const model = okModel();
+  await generateGroundedAnswer({
+    model,
+    persona: "whis",
+    question: "Qui est Goku ?",
+    hits: HITS,
+    chunks,
+    maxOutputTokens: 160,
+  });
+  expect(model.doGenerateCalls[0]!.maxOutputTokens).toBe(160);
+});

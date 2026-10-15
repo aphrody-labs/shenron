@@ -13,12 +13,14 @@
  */
 import type { Database } from "bun:sqlite";
 import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
+import { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } from "@aphrody/shenron-config/chat-model";
+import { createOpenAICompatibleChat } from "@aphrody/shenron-pipeline/ai/provider";
 import { createAphrodyChatModel } from "@aphrody/shenron-pipeline/ai/chat";
-import { resolveChatModel, resolveDirectChat } from "@aphrody/shenron-pipeline/ai/config";
 import {
-  aphrodyComputeFromChat,
-  createOpenAiChat,
-} from "@aphrody/shenron-pipeline/aphrody/compute";
+  chatTimeoutMs,
+  resolveChatModel,
+  resolveDirectChat,
+} from "@aphrody/shenron-pipeline/ai/config";
 import {
   createNativeShenronChatModel,
   SHENRON_NATIVE_MODEL,
@@ -254,7 +256,7 @@ export async function generateLlmGrounded(
   const pid = resolvePersona(personaId);
   // Gemma réside dans le processus Bun et utilise le SOUL dbfr. Le transport HTTP
   // reste sélectionnable explicitement pour les installations distantes.
-  let model: ReturnType<typeof createAphrodyChatModel> | null = null;
+  let model: Parameters<typeof generateGroundedAnswer>[0]["model"] | null = null;
   try {
     const backend = process.env.APHRODY_SHENRON_INFERENCE ?? "native";
     if (backend === "native") {
@@ -269,17 +271,11 @@ export async function generateLlmGrounded(
       if (!direct.ok)
         throw new Error(direct.issues.map((i) => `${i.name} ${i.problem}`).join("; "));
       model = direct.value
-        ? createAphrodyChatModel(
-            aphrodyComputeFromChat(
-              createOpenAiChat(direct.value, {
-                ...(opts.timeoutMs ? { timeoutMs: opts.timeoutMs } : {}),
-                ...(opts.maxTokens ? { maxTokens: opts.maxTokens } : {}),
-              }),
-            ),
-            {
-              modelId: direct.value.model,
-            },
-          )
+        ? createOpenAICompatibleChat({
+            baseUrl: direct.value.baseUrl,
+            modelId: direct.value.model,
+            ...(direct.value.apiKey ? { token: direct.value.apiKey } : {}),
+          })
         : createAphrodyChatModel(new AphrodyComputeClient().compute, {
             modelId: aphrodyModel(),
           });
@@ -322,6 +318,7 @@ export async function generateLlmGrounded(
   }
   const result = await generateGroundedAnswer({
     model,
+    maxOutputTokens: opts.maxTokens ?? PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS,
     persona: pid,
     strict: true,
     question: query,
@@ -341,7 +338,12 @@ export async function generateLlmGrounded(
     ...(opts.homePersona ? { homePersona: opts.homePersona } : {}),
     ...(opts.systemNote ? { systemNote: opts.systemNote } : {}),
     ...(opts.memories ? { memories: opts.memories } : {}),
-    ...(opts.abortSignal ? { abortSignal: opts.abortSignal } : {}),
+    abortSignal: opts.abortSignal
+      ? AbortSignal.any([
+          opts.abortSignal,
+          AbortSignal.timeout(opts.timeoutMs ?? chatTimeoutMs(aphrodyModel())),
+        ])
+      : AbortSignal.timeout(opts.timeoutMs ?? chatTimeoutMs(aphrodyModel())),
     onError: (stage, err) => {
       const message = err instanceof Error ? err.message : String(err);
       if (stage === "generate") console.error("[LLM] Échec génération Aphrody:", message);
