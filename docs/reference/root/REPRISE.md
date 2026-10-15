@@ -664,3 +664,10 @@ Windows : C:\Users\aphro\AppData\Local\Aphrody\jobs\dbxv2-install-20261015.
 DBX2 et Shenron RE ne doivent pas être présentés comme installateurs du jeu :
 le CLI RE qualifié expose inventaire et formats. Aucun achat, modification de
 sauvegarde ou anti-cheat réalisé.
+
+Contrôle final : à15:35:23, aucun manifeste Steam454650 ni exécutable du jeu.
+Le premier lancement Steam en session0 s’est arrêté. Une tentative ponctuelle
+de lancement en session1 n’a pas été qualifiée ; ensuite Infra SSH vers APHRODY
+a échoué sur banner exchange. Le propriétaire doit ouvrir Steam sur son bureau,
+se connecter au compte possédant Xenoverse2 puis lancer son installation.
+Aucun binaire DBX2/Shenron RE Windows installé ou jeu téléchargé n’est déclaré.
