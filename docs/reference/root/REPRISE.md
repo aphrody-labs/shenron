@@ -11,6 +11,12 @@ et SHA conformes. La page liste ces cinq liens. L'index `catalog/gifs/index.json
 répond 404 ; le site lit l'index par épisode. La prochaine image commune reste coordonnée
 avec le Codex dashboard (revendication `dashboard-factory`) ; aucun build lancé.
 
+Rendu Bun.WebView 1280/390 sur `/`, `/wiki/episodes`, `/wiki/sagas` et `/wiki/episodes/875` :
+aucun débordement horizontal ni image cassée. Accueil sans menu d’ancrage, bloc univers,
+reprise ni promotion Beerus ; le héros tient au-dessus du serveur en direct. Hauteur du héros
+du catalogue : 375 px à 1280 et 220 px pour les sagas ; frame HD 1920×1080 et visuel
+3000×1681 rendus sur la fiche 875. Captures privées dans `var/reports/home-check-20261015/`.
+
 ## Contrôle du 13 octobre 2026 — accueil, frames et corpus vidéo
 
 Sources `7bd95e65` poussées : retrait demandé du menu d'ancrage, du bloc univers et
