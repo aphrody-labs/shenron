@@ -200,11 +200,13 @@ const nativeFactory: VectorFactory = (path, dimensions) => {
   return new constructor(path, { dimensions, metric: "l2" });
 };
 export async function buildVectorSidecar(
-  source: VectorSource,
+  source: Pick<VectorSource, "generation">,
   directory: string,
   expectedManifestSha256: string,
   factory: VectorFactory = nativeFactory,
+  signal?: AbortSignal,
 ) {
+  signal?.throwIfAborted();
   const manifestPath = join(directory, "manifest.json");
   if (
     !isAbsolute(directory) ||
@@ -245,6 +247,7 @@ export async function buildVectorSidecar(
   const read = async (consume: (key: bigint, value: Float32Array) => void) => {
     const file = Bun.file(join(directory, "vectors.f32"));
     for (let offset = 0; offset < manifest.count; offset += 128) {
+      signal?.throwIfAborted();
       const count = Math.min(128, manifest.count - offset),
         bytes = await file
           .slice(offset * bytesPerVector, (offset + count) * bytesPerVector)
