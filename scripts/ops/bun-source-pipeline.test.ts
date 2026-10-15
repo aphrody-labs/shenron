@@ -8,6 +8,8 @@ import {
   prepareSourceBatches,
   validateSourceBatch,
   aggregateSourceBatchValidation,
+  collectSourcePipeline,
+  autoSourcePipeline,
   runSourcePipeline,
   type PipelineDatabase,
   type RegistryRow,
@@ -679,6 +681,162 @@ test("valid batch artifacts and permitted RAG rights never qualify a pending cam
   expect((await Bun.file(f.policy).json()).sources[0].rights.ragPermitted).toBe(false);
   expect(await Bun.file(join(f.config.job, "checkpoint.sqlite")).exists()).toBe(false);
 });
+async function batchCollectionFixture(
+  documents: unknown[] = [doc(), doc("https://source.example/b"), doc("https://source.example/c")],
+) {
+  const f = await fixture(documents, {
+    maxDocuments: 2,
+    collectionIsolation: "required",
+    crawl: { mode: "attach", config: "/private/campaign.json", output: "/private/crawl" },
+    delivery: {
+      rag: {
+        productOrigin: "https://source.example",
+        probeQuery: "fixture",
+        expectedSourceUrl: "https://source.example/a",
+      },
+    },
+  });
+  f.config.batchCollection = {
+    version: 1,
+    snapshotSha256: hash(await Bun.file(f.input).text()),
+    batchSize: 2,
+    maxBatchesPerCycle: 1,
+  };
+  await Bun.write(f.configPath, JSON.stringify(f.config));
+  return f;
+}
+test("v2 collection processes at most one batch per tick and auto remains artifact-only", async () => {
+  const f = await batchCollectionFixture(),
+    db = database();
+  const ports = {
+    database: db.port,
+    campaign: async () => {
+      throw Error("Unexpected native campaign invocation");
+    },
+    publish: async () => {
+      throw Error("Unexpected publication");
+    },
+    delivery: {
+      run: async () => {
+        throw Error("Unexpected delivery");
+      },
+      compute: {
+        ragIngest: async () => {
+          throw Error("Unexpected RAG");
+        },
+      },
+    },
+    collectCycle: async (request: { configPath: string; configSha256: string }) => {
+      expect(request.configSha256).toBe(hash(await Bun.file(f.configPath).text()));
+      return collectSourcePipeline(request.configPath, { isolatedCollection: true });
+    },
+  };
+  const first = await autoSourcePipeline(f.configPath, ports);
+  expect(first).toMatchObject({
+    cursor: 0,
+    nextCursor: 2,
+    totalDocuments: 3,
+    exportComplete: false,
+    artifactOnly: true,
+    complete: false,
+    deliveryAuthorized: false,
+  });
+  const second = await autoSourcePipeline(f.configPath, ports);
+  expect(second).toMatchObject({
+    cursor: 2,
+    nextCursor: 3,
+    exportComplete: true,
+    validationComplete: true,
+    artifactOnly: true,
+    complete: false,
+    deliveryAuthorized: false,
+    campaignExportBound: false,
+  });
+  expect(await autoSourcePipeline(f.configPath, ports)).toEqual(second);
+  expect(db.writes()).toBe(0);
+  expect(db.snapshots()).toBe(0);
+  for (const name of [
+    "plan.json",
+    "checkpoint.sqlite",
+    "apply.json",
+    "delivery.json",
+    "collect.json",
+  ])
+    expect(await Bun.file(join(first.revision, name)).exists()).toBe(false);
+});
+test("lost v2 responses preserve immutable prefix and malformed handoffs cannot reach writers", async () => {
+  const f = await batchCollectionFixture(),
+    db = database();
+  const lost = await collectSourcePipeline(f.configPath, { isolatedCollection: true });
+  expect(lost.schema).toBe("shenron-source-collection/v2");
+  const next = await collectSourcePipeline(f.configPath, { isolatedCollection: true });
+  if (
+    next.schema !== "shenron-source-collection/v2" ||
+    lost.schema !== "shenron-source-collection/v2"
+  )
+    throw Error("fixture v2 required");
+  expect(next.batch.cursor).toBe(2);
+  expect(await collectSourcePipeline(f.configPath, { isolatedCollection: true })).toEqual(next);
+  expect(await Bun.file(lost.batch.validationPath).exists()).toBe(true);
+  const ports = { database: db.port, collectCycle: async () => next };
+  expect(await autoSourcePipeline(f.configPath, ports)).toMatchObject({
+    cursor: 2,
+    complete: false,
+  });
+  for (const receipt of [
+    { ...next, schema: "shenron-source-collection/v1" as const },
+    { ...next, artifactsSha256: hash("changed") },
+    { ...next, collectionPath: "/private/escape.json" },
+    { ...next, batch: { ...next.batch, validationSha256: hash("changed") } },
+    { ...next, batch: { ...next.batch, exportPath: "/private/escape.jsonl" } },
+  ])
+    await expect(
+      autoSourcePipeline(f.configPath, { ...ports, collectCycle: async () => receipt }),
+    ).rejects.toThrow();
+  expect(db.writes()).toBe(0);
+  expect(db.snapshots()).toBe(0);
+});
+test("incomplete v2 validation replays the same range and snapshot/config drift is refused", async () => {
+  const f = await batchCollectionFixture([
+    { invalid: true },
+    doc(),
+    doc("https://source.example/c"),
+  ]);
+  const first = await collectSourcePipeline(f.configPath, { isolatedCollection: true });
+  expect(first).toMatchObject({
+    schema: "shenron-source-collection/v2",
+    batch: { cursor: 0, validationComplete: false },
+  });
+  expect(await collectSourcePipeline(f.configPath, { isolatedCollection: true })).toEqual(first);
+  await Bun.write(f.input, JSON.stringify(doc()) + "\n");
+  await expect(collectSourcePipeline(f.configPath, { isolatedCollection: true })).rejects.toThrow(
+    "snapshot differs",
+  );
+});
+test("v2 collection refuses mutable campaigns, unqualified isolation and arbitrary batch options", async () => {
+  for (const change of [
+    { collectionIsolation: undefined },
+    { crawl: { mode: "run", config: "/private/campaign.json", output: "/private/crawl" } },
+    {
+      batchCollection: {
+        version: 1,
+        snapshotSha256: hash("fixture"),
+        batchSize: 1,
+        maxBatchesPerCycle: 2,
+      },
+    },
+    { batchCollection: { version: 1, snapshotSha256: hash("fixture"), maxBatchesPerCycle: 1 } },
+  ]) {
+    const f = await batchCollectionFixture();
+    await Bun.write(f.configPath, JSON.stringify({ ...f.config, ...change }));
+    await expect(collectSourcePipeline(f.configPath, { isolatedCollection: true })).rejects.toThrow(
+      "immutable batch collection",
+    );
+  }
+  const f = await batchCollectionFixture();
+  await expect(collectSourcePipeline(f.configPath)).rejects.toThrow("isolated collection");
+  await expect(autoSourcePipeline(f.configPath)).rejects.toThrow("collection controller");
+});
 const fakeFetch = (
   implementation: (...args: Parameters<typeof fetch>) => ReturnType<typeof fetch>,
 ): typeof fetch => Object.assign(implementation, { preconnect: fetch.preconnect });
@@ -935,7 +1093,7 @@ test("public activation is rejected without reviewed image rights", async () => 
 });
 
 import { SQL } from "bun";
-import { autoSourcePipeline, nativeDatabase } from "./bun-source-pipeline";
+import { nativeDatabase } from "./bun-source-pipeline";
 import { verifyStoredObject } from "../../deploy/cloudflare/cli/transfer";
 test("auto media discovery derives real hashes and immutable revision identity", async () => {
   const source = doc();
@@ -1307,7 +1465,6 @@ test("automatic media discovery resumes byte/file quotas without discarding prio
 });
 
 test("required collection delegates the entire campaign and acquisition once before local SQL", async () => {
-  const { collectSourcePipeline } = await import("./bun-source-pipeline");
   const f = await fixture([doc()], {
       collectionIsolation: "required",
       crawl: {
@@ -1373,7 +1530,6 @@ test("required collection delegates the entire campaign and acquisition once bef
   expect(db.writes()).toBeGreaterThan(0);
 });
 test("required isolation and changed shared-volume receipts fail before database writes", async () => {
-  const { collectSourcePipeline } = await import("./bun-source-pipeline");
   const f = await fixture([doc()], { collectionIsolation: "required" }),
     db = database();
   await expect(autoSourcePipeline(f.configPath, { database: db.port })).rejects.toThrow(
@@ -1397,7 +1553,6 @@ test("required isolation and changed shared-volume receipts fail before database
   expect(db.writes()).toBe(0);
 });
 test("isolated handoff never reacquires a missing media object on the controller", async () => {
-  const { collectSourcePipeline } = await import("./bun-source-pipeline");
   const bytes = new TextEncoder().encode("private-media"),
     source = doc();
   source.payload.embedded_media = [

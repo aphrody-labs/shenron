@@ -68,10 +68,13 @@ export async function createSourceCollectionControl(
   await ensureDirectory(responses);
   return async (request, signal) => {
     signal?.throwIfAborted();
+    const configuration = await readPrivate(settings.configPath, 2 * 1024 * 1024);
+    const batchMode =
+      JSON.parse(new TextDecoder().decode(configuration)).batchCollection !== undefined;
     if (
       request.configPath !== settings.configPath ||
       !sha(request.configSha256) ||
-      hash(await readPrivate(settings.configPath, 2 * 1024 * 1024)) !== request.configSha256
+      hash(configuration) !== request.configSha256
     )
       throw Error("Collection request configuration differs");
     await privateDirectory(control);
@@ -163,7 +166,8 @@ export async function createSourceCollectionControl(
           value.status !== "complete" ||
           value.errorCode !== undefined ||
           !collection ||
-          collection.schema !== "shenron-source-collection/v1" ||
+          collection.schema !==
+            (batchMode ? "shenron-source-collection/v2" : "shenron-source-collection/v1") ||
           collection.configSha256 !== request.configSha256 ||
           !sha(collection.pinnedConfigSha256) ||
           !sha(collection.collectionSha256) ||
@@ -176,6 +180,44 @@ export async function createSourceCollectionControl(
         const child = relative(root, collection.pinnedConfigPath);
         if (!child || child.startsWith("..") || isAbsolute(child))
           throw Error("Collection receipt leaves private volume");
+        if (collection.schema === "shenron-source-collection/v2") {
+          const batch = collection.batch;
+          if (
+            collection.artifactOnly !== true ||
+            collection.complete !== false ||
+            collection.deliveryAuthorized !== false ||
+            !batch ||
+            ![
+              batch.sourceSha256,
+              batch.manifestSha256,
+              batch.batchReceiptSha256,
+              batch.exportSha256,
+              batch.validationSha256,
+            ].every(sha) ||
+            ![batch.cursor, batch.nextCursor, batch.totalDocuments].every(Number.isSafeInteger) ||
+            batch.cursor < 0 ||
+            batch.nextCursor < batch.cursor ||
+            batch.nextCursor > batch.totalDocuments ||
+            batch.nextCursor - batch.cursor > 100000 ||
+            (batch.totalDocuments > 0 && batch.nextCursor === batch.cursor) ||
+            typeof batch.exportComplete !== "boolean" ||
+            typeof batch.validationComplete !== "boolean"
+          )
+            throw Error("Invalid versioned collection receipt");
+          for (const path of [
+            collection.collectionPath,
+            batch.manifestPath,
+            batch.batchReceiptPath,
+            batch.exportPath,
+            batch.validationPath,
+          ]) {
+            if (typeof path !== "string" || !isAbsolute(path) || resolve(path) !== path)
+              throw Error("Invalid versioned collection artifact path");
+            const artifactChild = relative(root, path);
+            if (!artifactChild || artifactChild.startsWith("..") || isAbsolute(artifactChild))
+              throw Error("Versioned collection artifact leaves private volume");
+          }
+        }
         bounded.throwIfAborted();
         return collection;
       }

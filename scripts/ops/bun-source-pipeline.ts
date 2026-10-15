@@ -72,6 +72,12 @@ export interface SourcePipelineConfig {
   crawl?: NativeSourceCampaign;
   search?: SourceSearchConfig;
   collectionIsolation?: "required";
+  batchCollection?: {
+    version: 1;
+    snapshotSha256: string;
+    batchSize: number;
+    maxBatchesPerCycle: 1;
+  };
   media?: string;
   transport?: "fetch" | "curl";
   concurrency?: number;
@@ -95,7 +101,7 @@ export interface PipelineDatabase {
   snapshot(urls: string[]): Promise<RegistrySnapshot>;
   close?(): Promise<void>;
 }
-export interface SourceCollectionReceipt {
+export interface SourceCollectionReceiptV1 {
   schema: "shenron-source-collection/v1";
   configSha256: string;
   pinnedConfigPath: string;
@@ -104,6 +110,31 @@ export interface SourceCollectionReceipt {
   artifactsSha256: string;
   revisionIdentity: string;
 }
+export interface SourceBatchHandoff {
+  sourceSha256: string;
+  manifestPath: string;
+  manifestSha256: string;
+  batchReceiptPath: string;
+  batchReceiptSha256: string;
+  exportPath: string;
+  exportSha256: string;
+  validationPath: string;
+  validationSha256: string;
+  cursor: number;
+  nextCursor: number;
+  totalDocuments: number;
+  exportComplete: boolean;
+  validationComplete: boolean;
+}
+export interface SourceCollectionReceiptV2 extends Omit<SourceCollectionReceiptV1, "schema"> {
+  schema: "shenron-source-collection/v2";
+  collectionPath: string;
+  batch: SourceBatchHandoff;
+  artifactOnly: true;
+  complete: false;
+  deliveryAuthorized: false;
+}
+export type SourceCollectionReceipt = SourceCollectionReceiptV1 | SourceCollectionReceiptV2;
 export interface SourcePipelinePorts {
   isolatedCollection?: boolean;
   collectCycle?: (
@@ -1960,6 +1991,270 @@ function revisionConfiguration(config: SourcePipelineConfig, revision: string, i
       : {}),
   };
 }
+function batchCollectionSettings(config: SourcePipelineConfig) {
+  const value = config.batchCollection;
+  if (value === undefined) return undefined;
+  if (
+    !value ||
+    config.collectionIsolation !== "required" ||
+    value.version !== 1 ||
+    value.maxBatchesPerCycle !== 1 ||
+    !Number.isSafeInteger(value.batchSize) ||
+    typeof value.snapshotSha256 !== "string" ||
+    !/^[a-f0-9]{64}$/.test(value.snapshotSha256) ||
+    Object.keys(value).some(
+      (key) => !["version", "snapshotSha256", "batchSize", "maxBatchesPerCycle"].includes(key),
+    ) ||
+    (config.crawl && config.crawl.mode !== "attach")
+  )
+    throw Error("Explicit immutable batch collection configuration required");
+  if (
+    bounded(value.batchSize, 10000, 1, 100000, "batch size") >
+    bounded(config.maxDocuments, 10000, 1, 100000, "document budget")
+  )
+    throw Error("Batch size exceeds the document validation budget");
+  return value;
+}
+function batchCollectionRecord(
+  configSha256: string,
+  pinnedConfigSha256: string,
+  revisionIdentity: string,
+  batch: SourceBatchHandoff,
+) {
+  return {
+    schema: "shenron-source-batch-collection/v1",
+    configSha256,
+    pinnedConfigSha256,
+    revisionIdentity,
+    batch,
+    artifactOnly: true,
+    complete: false,
+    deliveryAuthorized: false,
+  };
+}
+function batchCollectionArtifacts(
+  batch: SourceBatchHandoff,
+  collectionSha256: string,
+  pinnedConfigSha256: string,
+) {
+  return hash(JSON.stringify({ batch, collectionSha256, pinnedConfigSha256 }));
+}
+async function collectSourceBatchRevision(
+  pinnedConfig: string,
+  configSha256: string,
+  revisionIdentity: string,
+  signal?: AbortSignal,
+): Promise<SourceCollectionReceiptV2> {
+  const config = (await jsonFile(pinnedConfig)) as SourcePipelineConfig;
+  const settings = batchCollectionSettings(config)!;
+  const root = join(config.job, "batches", settings.snapshotSha256);
+  const manifestPath = join(root, "membership.json");
+  let manifestSha256 = (await sourceBatchArtifactHash(manifestPath, signal)) ?? undefined;
+  let cursor = 0,
+    previousCursor: number | undefined;
+  let existing: ProducedSourceBatch | undefined;
+  if (manifestSha256) {
+    const context = await sourceBatchValidationContext(pinnedConfig, {
+      snapshotSha256: settings.snapshotSha256,
+      manifestSha256,
+      signal,
+    });
+    let previousValidationSha256: string | null = null;
+    for (;;) {
+      const validationPath = join(context.range(cursor), "validation.json");
+      const validationSha256 = await sourceBatchArtifactHash(validationPath, signal);
+      if (!validationSha256) break;
+      const value = (await jsonFile(validationPath)) as SourceBatchValidationReceipt;
+      const produced = await context.produced(cursor);
+      if (
+        value.schema !== "shenron-source-batch-validation/v1" ||
+        value.cursor !== cursor ||
+        value.nextCursor !== produced.nextCursor ||
+        value.batchReceiptSha256 !== produced.receiptSha256 ||
+        value.manifestSha256 !== manifestSha256 ||
+        value.previousValidationSha256 !== previousValidationSha256 ||
+        value.complete !== false ||
+        value.deliveryAuthorized !== false
+      )
+        throw Error("Batch collection validation prefix differs");
+      if (!value.validationComplete || produced.nextCursor === context.manifest.totalDocuments) {
+        existing = produced;
+        break;
+      }
+      previousCursor = cursor;
+      previousValidationSha256 = validationSha256;
+      cursor = produced.nextCursor;
+    }
+    // A new range may be produced only after the prior validation chain is independently verified.
+    const verifyCursor = existing ? cursor : previousCursor;
+    if (verifyCursor !== undefined) {
+      const produced = await context.produced(verifyCursor);
+      await validateSourceBatch(pinnedConfig, {
+        snapshotSha256: settings.snapshotSha256,
+        manifestSha256,
+        cursor: verifyCursor,
+        batchReceiptSha256: produced.receiptSha256,
+        signal,
+      });
+    }
+  }
+  const produced =
+    existing ??
+    (await prepareSourceBatches(pinnedConfig, {
+      snapshotSha256: settings.snapshotSha256,
+      manifestSha256,
+      cursor,
+      batchSize: settings.batchSize,
+      signal,
+    }));
+  manifestSha256 = produced.manifestSha256;
+  const validation = await validateSourceBatch(pinnedConfig, {
+    snapshotSha256: settings.snapshotSha256,
+    manifestSha256,
+    cursor,
+    batchReceiptSha256: produced.receiptSha256,
+    signal,
+  });
+  const batch: SourceBatchHandoff = {
+    sourceSha256: settings.snapshotSha256,
+    manifestPath: produced.manifestPath,
+    manifestSha256,
+    batchReceiptPath: produced.receiptPath,
+    batchReceiptSha256: produced.receiptSha256,
+    exportPath: produced.exportPath,
+    exportSha256: produced.exportSha256,
+    validationPath: validation.validationPath,
+    validationSha256: validation.validationSha256,
+    cursor,
+    nextCursor: produced.nextCursor,
+    totalDocuments: produced.totalDocuments,
+    exportComplete: produced.exportComplete,
+    validationComplete: validation.validationComplete,
+  };
+  const pinnedConfigSha256 = await fileHash(pinnedConfig, signal);
+  const record = batchCollectionRecord(configSha256, pinnedConfigSha256, revisionIdentity, batch);
+  const directory = join(config.job, "batch-collections");
+  await privateJob(directory);
+  const collectionPath = join(directory, `${cursor}-${produced.nextCursor}.json`);
+  const collectionSha256 = await saveSourceBatchJson(collectionPath, record, signal);
+  return {
+    schema: "shenron-source-collection/v2",
+    configSha256,
+    pinnedConfigPath: pinnedConfig,
+    pinnedConfigSha256,
+    collectionPath,
+    collectionSha256,
+    revisionIdentity,
+    artifactsSha256: batchCollectionArtifacts(batch, collectionSha256, pinnedConfigSha256),
+    batch,
+    artifactOnly: true,
+    complete: false,
+    deliveryAuthorized: false,
+  };
+}
+
+async function verifySourceBatchCollection(
+  config: SourcePipelineConfig,
+  configPath: string,
+  collection: SourceCollectionReceiptV2,
+  signal?: AbortSignal,
+) {
+  const settings = batchCollectionSettings(config)!;
+  const configSha256 = await fileHash(configPath, signal);
+  const identity = hash(
+    JSON.stringify([
+      configSha256,
+      await fileHash(config.input, signal),
+      await fileHash(config.policy, signal),
+      config.media ? await fileHash(config.media, signal) : null,
+    ]),
+  );
+  const revision = join(config.job, "revisions", identity),
+    pinnedConfig = join(revision, "config.json");
+  if (
+    collection.configSha256 !== configSha256 ||
+    collection.revisionIdentity !== identity ||
+    collection.pinnedConfigPath !== pinnedConfig ||
+    collection.artifactOnly !== true ||
+    collection.complete !== false ||
+    collection.deliveryAuthorized !== false ||
+    collection.batch?.sourceSha256 !== settings.snapshotSha256 ||
+    (await fileHash(pinnedConfig, signal)) !== collection.pinnedConfigSha256
+  )
+    throw Error("Batch collection handoff identity differs");
+  const frozen = (await jsonFile(pinnedConfig)) as SourcePipelineConfig;
+  if (JSON.stringify(frozen) !== JSON.stringify(revisionConfiguration(config, revision, identity)))
+    throw Error("Batch collection pinned configuration differs");
+  const batch = collection.batch;
+  const context = await sourceBatchValidationContext(pinnedConfig, {
+    snapshotSha256: settings.snapshotSha256,
+    manifestSha256: batch.manifestSha256,
+    signal,
+  });
+  const produced = await context.produced(batch.cursor, batch.batchReceiptSha256);
+  if (
+    batch.manifestPath !== produced.manifestPath ||
+    batch.batchReceiptPath !== produced.receiptPath ||
+    batch.exportPath !== produced.exportPath ||
+    batch.exportSha256 !== produced.exportSha256 ||
+    batch.nextCursor !== produced.nextCursor ||
+    batch.totalDocuments !== produced.totalDocuments ||
+    batch.exportComplete !== produced.exportComplete ||
+    batch.validationPath !== join(context.range(batch.cursor), "validation.json")
+  )
+    throw Error("Batch collection artifact paths differ");
+  const priorValidationHash = await sourceBatchArtifactHash(batch.validationPath, signal);
+  if (priorValidationHash !== batch.validationSha256)
+    throw Error("Batch collection validation pin differs");
+  const validation = await validateSourceBatch(pinnedConfig, {
+    snapshotSha256: settings.snapshotSha256,
+    manifestSha256: batch.manifestSha256,
+    cursor: batch.cursor,
+    batchReceiptSha256: batch.batchReceiptSha256,
+    signal,
+  });
+  if (
+    validation.validationSha256 !== batch.validationSha256 ||
+    validation.validationComplete !== batch.validationComplete
+  )
+    throw Error("Batch collection validation receipt differs");
+  const collectionPath = join(
+    revision,
+    "batch-collections",
+    `${batch.cursor}-${batch.nextCursor}.json`,
+  );
+  const record = batchCollectionRecord(
+    configSha256,
+    collection.pinnedConfigSha256,
+    identity,
+    batch,
+  );
+  if (
+    collection.collectionPath !== collectionPath ||
+    collection.collectionSha256 !== hash(JSON.stringify(record, null, 2) + "\n") ||
+    (await sourceBatchArtifactHash(collectionPath, signal)) !== collection.collectionSha256 ||
+    collection.artifactsSha256 !==
+      batchCollectionArtifacts(batch, collection.collectionSha256, collection.pinnedConfigSha256)
+  )
+    throw Error("Batch collection immutable artifact differs");
+  if (
+    (await fileHash(configPath, signal)) !== configSha256 ||
+    (await fileHash(config.input, signal)) !== settings.snapshotSha256 ||
+    (await fileHash(config.policy, signal)) !== context.manifest.policySha256
+  )
+    throw Error("Batch collection source changed");
+  return {
+    schema: "shenron-source-artifact-progress/v1",
+    ...batch,
+    revision,
+    artifactOnly: true,
+    complete: false,
+    deliveryAuthorized: false,
+    canonicalPromotions: 0,
+    trainingEnabled: false,
+    campaignExportBound: false,
+  };
+}
 async function collectionArtifacts(config: SourcePipelineConfig, revision: string) {
   const names = [
     "discovered-media.json",
@@ -1976,14 +2271,28 @@ async function collectionArtifacts(config: SourcePipelineConfig, revision: strin
   }
   return hash(JSON.stringify(pins));
 }
-export async function collectSourcePipeline(configPath: string, ports: SourcePipelinePorts = {}) {
+export async function collectSourcePipeline(
+  configPath: string,
+  ports: SourcePipelinePorts = {},
+): Promise<SourceCollectionReceipt> {
   ports.signal?.throwIfAborted();
   const configSha256 = await fileHash(configPath);
   const config = (await jsonFile(configPath)) as SourcePipelineConfig;
   if (config.collectionIsolation === "required" && !ports.isolatedCollection)
     throw Error("Qualified isolated collection owner required");
   await privateJob(config.job);
-  if (config.crawl)
+  const batches = batchCollectionSettings(config);
+  if (batches) {
+    const info = await lstat(config.input);
+    if (
+      !info.isFile() ||
+      info.isSymbolicLink() ||
+      info.size > 1024 ** 3 ||
+      (await fileHash(config.input, ports.signal)) !== batches.snapshotSha256
+    )
+      throw Error("Immutable batch collection snapshot differs");
+  }
+  if (config.crawl && !batches)
     await (ports.campaign ?? nativeCampaign)(config.crawl, "collect", config.job, ports.signal);
   const inputSha = await fileHash(config.input),
     policySha = await fileHash(config.policy);
@@ -1999,6 +2308,37 @@ export async function collectSourcePipeline(configPath: string, ports: SourcePip
   await privateJob(revision);
   const input = join(revision, "native-export.jsonl"),
     policy = join(revision, "policy.json");
+  if (batches) {
+    for (const [source, destination, expected] of [
+      [config.input, input, inputSha],
+      [config.policy, policy, policySha],
+    ]) {
+      const existing = await sourceBatchArtifactHash(destination!, ports.signal);
+      if (existing !== null && existing !== expected)
+        throw Error("Batch revision snapshot differs");
+      if (existing === null)
+        await sourceBatchTemporary(destination!, async (temporary, fd) => {
+          await Bun.write(Bun.file(fd), Bun.file(source!));
+          if ((await fileHash(temporary, ports.signal)) !== expected)
+            throw Error("Batch revision copy changed");
+          await rename(temporary, destination!);
+        });
+    }
+    const pinned = join(revision, "config.json");
+    await saveSourceBatchJson(
+      pinned,
+      revisionConfiguration(config, revision, identity),
+      ports.signal,
+    );
+    const receipt = await collectSourceBatchRevision(pinned, configSha256, identity, ports.signal);
+    if (
+      (await fileHash(configPath, ports.signal)) !== configSha256 ||
+      (await fileHash(config.input, ports.signal)) !== inputSha ||
+      (await fileHash(config.policy, ports.signal)) !== policySha
+    )
+      throw Error("Batch collection source changed");
+    return receipt;
+  }
   if (!(await Bun.file(input).exists())) {
     await Bun.write(input, Bun.file(config.input));
     await chmod(input, 0o600);
@@ -2033,6 +2373,7 @@ export async function collectSourcePipeline(configPath: string, ports: SourcePip
 export async function autoSourcePipeline(configPath: string, ports: SourcePipelinePorts = {}) {
   const configSha256 = await fileHash(configPath);
   const config = (await jsonFile(configPath)) as SourcePipelineConfig;
+  const batches = batchCollectionSettings(config);
   if (config.collectionIsolation === "required" && !ports.collectCycle)
     throw Error("Qualified collection controller required");
   ports.signal?.throwIfAborted();
@@ -2040,6 +2381,13 @@ export async function autoSourcePipeline(configPath: string, ports: SourcePipeli
     ? await ports.collectCycle({ configPath, configSha256 }, ports.signal)
     : await collectSourcePipeline(configPath, ports);
   ports.signal?.throwIfAborted();
+  if ((await fileHash(configPath)) !== configSha256 || collection.configSha256 !== configSha256)
+    throw Error("Collection configuration receipt differs");
+  if (batches) {
+    if (collection.schema !== "shenron-source-collection/v2")
+      throw Error("Batch collection requires a v2 handoff");
+    return verifySourceBatchCollection(config, configPath, collection, ports.signal);
+  }
   if (
     (await fileHash(configPath)) !== configSha256 ||
     collection.schema !== "shenron-source-collection/v1" ||

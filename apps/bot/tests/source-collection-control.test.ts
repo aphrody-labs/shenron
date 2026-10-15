@@ -5,6 +5,10 @@ import { chmod, mkdir, mkdtemp, readdir, rename, rm, symlink } from "node:fs/pro
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { createSourceCollectionControl } from "../src/api/source-collection-control";
+import {
+  autoSourcePipeline,
+  collectSourcePipeline,
+} from "../../../scripts/ops/bun-source-pipeline";
 const digest = (s: string) => new Bun.CryptoHasher("sha256").update(s).digest("hex");
 async function fixture() {
   const dataRoot = await mkdtemp(join(tmpdir(), "shenron-control-")),
@@ -181,6 +185,173 @@ test("existing bot job binds required private collection and shutdown withdraws 
     expect(await readdir(join(f.root, "control", "requests"))).toEqual([]);
   } finally {
     await job?.stop();
+    await f.close();
+  }
+});
+
+test("v2 mailbox end-to-end fake collection preserves v1 request and never invokes delivery ports", async () => {
+  const f = await fixture();
+  try {
+    const input = join(f.root, "input.jsonl"),
+      policy = join(f.root, "policy.json");
+    const documents = ["a", "b", "c"].map((id) => ({
+      crawl_id: "fixture",
+      document_uid: id,
+      canonical_url: `https://source.example/${id}`,
+      source_domain: "source.example",
+      category: "reference",
+      http_status: 200,
+      raw_checksum: digest("body"),
+      timestamp_utc: "2026-10-15T00:00:00Z",
+      payload: { title_raw: id, body_markdown: "body", embedded_media: [] },
+    }));
+    const body = documents.map((doc) => JSON.stringify(doc)).join("\n") + "\n";
+    await Bun.write(input, body);
+    await chmod(input, 0o600);
+    await Bun.write(
+      policy,
+      JSON.stringify({
+        version: 1,
+        profile: "dbfr",
+        sources: [
+          {
+            domain: "source.example",
+            kind: "reference",
+            reviewed: true,
+            evidence: "https://source.example/",
+            rights: { ragPermitted: false, trainingPermitted: false, publicImagesPermitted: false },
+          },
+        ],
+      }),
+    );
+    await chmod(policy, 0o600);
+    await Bun.write(
+      f.configPath,
+      JSON.stringify({
+        version: 1,
+        input,
+        policy,
+        job: join(f.root, "job"),
+        maxDocuments: 2,
+        collectionIsolation: "required",
+        batchCollection: {
+          version: 1,
+          snapshotSha256: digest(body),
+          batchSize: 2,
+          maxBatchesPerCycle: 1,
+        },
+      }),
+    );
+    const callback = await createSourceCollectionControl(f);
+    let writes = 0;
+    const unexpected = async () => {
+      writes++;
+      throw Error("Delivery port called");
+    };
+    const ports = {
+      collectCycle: callback,
+      database: { registry: { assertReady: unexpected, upsert: unexpected }, snapshot: unexpected },
+      publish: unexpected,
+    };
+    for (const nextCursor of [2, 3, 3]) {
+      const work = autoSourcePipeline(f.configPath, ports);
+      const request = await pending(f.root);
+      expect(Object.keys(request).toSorted()).toEqual([
+        "configPath",
+        "configSha256",
+        "requestId",
+        "schema",
+      ]);
+      const handoff = await collectSourcePipeline(request.configPath, {
+        isolatedCollection: true,
+      });
+      expect(handoff.schema).toBe("shenron-source-collection/v2");
+      await respond(f, request, { status: "complete", collection: handoff });
+      expect(await work).toMatchObject({
+        nextCursor,
+        artifactOnly: true,
+        complete: false,
+        deliveryAuthorized: false,
+      });
+    }
+    expect(writes).toBe(0);
+  } finally {
+    await f.close();
+  }
+});
+
+test("v2 mailbox refuses schema downgrade and malformed or escaped artifact references", async () => {
+  const f = await fixture();
+  try {
+    await Bun.write(
+      f.configPath,
+      JSON.stringify({
+        version: 1,
+        collectionIsolation: "required",
+        batchCollection: {
+          version: 1,
+          snapshotSha256: "a".repeat(64),
+          batchSize: 1,
+          maxBatchesPerCycle: 1,
+        },
+      }),
+    );
+    const request = {
+      configPath: f.configPath,
+      configSha256: digest(await Bun.file(f.configPath).text()),
+    };
+    const base = collection(f);
+    base.configSha256 = request.configSha256;
+    const receipt = {
+      ...base,
+      schema: "shenron-source-collection/v2",
+      collectionPath: join(f.root, "collection.json"),
+      artifactOnly: true,
+      complete: false,
+      deliveryAuthorized: false,
+      batch: {
+        sourceSha256: "a".repeat(64),
+        manifestSha256: "b".repeat(64),
+        manifestPath: join(f.root, "membership.json"),
+        batchReceiptPath: join(f.root, "batch.json"),
+        batchReceiptSha256: "c".repeat(64),
+        exportPath: join(f.root, "export.jsonl"),
+        exportSha256: "d".repeat(64),
+        validationPath: join(f.root, "validation.json"),
+        validationSha256: "e".repeat(64),
+        cursor: 0,
+        nextCursor: 1,
+        totalDocuments: 2,
+        exportComplete: false,
+        validationComplete: true,
+      },
+    };
+    const callback = await createSourceCollectionControl(f);
+    for (const bad of [
+      base,
+      { ...receipt, complete: true },
+      { ...receipt, batch: { ...receipt.batch, manifestSha256: "bad" } },
+      { ...receipt, batch: { ...receipt.batch, validationPath: "/tmp/escape.json" } },
+    ]) {
+      const work = callback(request).catch((error) => error);
+      const sent = await pending(f.root);
+      await respond(f, sent, { status: "complete", collection: bad });
+      expect(await work).toBeInstanceOf(Error);
+    }
+    const old = await fixture();
+    try {
+      const reader = await createSourceCollectionControl(old);
+      const work = reader(old.request).catch((error) => error);
+      const sent = await pending(old.root);
+      await respond(old, sent, {
+        status: "complete",
+        collection: { ...receipt, configSha256: old.request.configSha256 },
+      });
+      expect(await work).toBeInstanceOf(Error);
+    } finally {
+      await old.close();
+    }
+  } finally {
     await f.close();
   }
 });
