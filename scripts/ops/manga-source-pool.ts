@@ -748,8 +748,13 @@ export async function executeTask(
       candidates: [],
     };
   }
-  const body = task.kind !== "asset" ? new TextDecoder().decode(capture.bytes) : undefined;
-  const json = body && contentType.includes("json") ? JSON.parse(body) : null;
+  // Keep the BOM in the receipt so its UTF-8 reconstruction retains the raw-byte digest.
+  const body =
+    task.kind !== "asset"
+      ? new TextDecoder("utf-8", { ignoreBOM: true }).decode(capture.bytes)
+      : undefined;
+  const json =
+    body && contentType.includes("json") ? JSON.parse(body.replace(/^\uFEFF/, "")) : null;
   const children: Array<Omit<PoolTask, "id" | "host" | "attempts">> = [];
   if (task.kind === "volume" && json) {
     for (const chapter of json.chapters ?? []) {
