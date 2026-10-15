@@ -671,8 +671,8 @@ const CANON_DATABASE: CanonTopicEntry[] = [
     id: "super-saiyan-4",
     title: "Super Saiyan 4 (SSJ4)",
     category: "form",
-    tier: "NON_CANON_DERIVE",
-    score: 15,
+    tier: "CANON_SUPERVISE",
+    score: 85,
     keywords: [
       "super saiyan 4",
       "ssj4",
@@ -683,26 +683,62 @@ const CANON_DATABASE: CanonTopicEntry[] = [
       "vegeta ssj4",
       "gogeta ssj4",
     ],
-    verdict: "Non-canonique. Conçu par Katsuyoshi Nakatsuru pour Dragon Ball GT.",
+    verdict:
+      "Le Super Saiyan 4 existe officiellement dans Dragon Ball GT et dans Dragon Ball DAIMA. Préciser la version permet de répondre sur sa continuité.",
     explanation:
-      "Le design emblématique du Super Saiyan 4 (fourrure rouge, queue de singe et cheveux noirs) a été créé par l'animateur en chef Katsuyoshi Nakatsuru chez Toei Animation pour Dragon Ball GT. Akira Toriyama a grandement apprécié ce design et en a dessiné sa propre version hommage pour la Dragon Box GT en 2005, mais a confirmé qu'il s'agissait d'une création de l'anime appartenant à une histoire parallèle (grand side-story).",
-    toriyamaQuote: {
-      text: "Le design du Super Saiyan 4 a été créé par Nakatsuru-kun de Toei Animation. J'ai été très impressionné par son idée de combiner l'Oozaru et le Super Saiyan, et je me suis amusé à le redessiner moi-même pour ce coffret.",
-      source: "Dragon Book (Dragon Box GT)",
-      year: 2005,
-    },
+      "Le site officiel distingue explicitement Son Goku Super Saiyan 4 — DAIMA. Son existence dans DAIMA ne suffit pas à intégrer rétroactivement les événements de GT dans cette série. Une appellation commune ne démontre ni une continuité narrative unique ni une égalité de puissance.",
     sources: [
-      "Dragon Box GT (2005)",
-      "Dragon Ball GT Perfect Files",
-      "Entretiens Akira Toriyama & Katsuyoshi Nakatsuru",
+      "https://en.dragon-ball-official.com/news/01_3980.html",
+      "https://dragon-ball-official.com/about/",
     ],
+  },
+  {
+    id: "super-saiyan-4-gt",
+    title: "Super Saiyan 4 — Dragon Ball GT",
+    category: "form",
+    tier: "NON_CANON_DERIVE",
+    score: 20,
+    keywords: [
+      "super saiyan 4 gt",
+      "ssj4 gt",
+      "goku ssj4 gt",
+      "vegeta ssj4 gt",
+      "gogeta ssj4 gt",
+      "super saiyan 4 dragon ball gt",
+    ],
+    verdict:
+      "Version officielle de Dragon Ball GT. Ses événements doivent être attribués à GT et distingués de la version DAIMA.",
+    explanation:
+      "Dragon Ball GT est présenté parmi les séries animées sur le site officiel. Le classement dérivé décrit ici sa relation au manga original ; il ne signifie pas que cette production serait une création de fans.",
+    sources: ["https://dragon-ball-official.com/about/", "Dragon Ball GT (Toei Animation)"],
+  },
+  {
+    id: "super-saiyan-4-daima",
+    title: "Super Saiyan 4 — Dragon Ball DAIMA",
+    category: "form",
+    tier: "CANON_SUPERVISE",
+    score: 85,
+    keywords: [
+      "super saiyan 4 daima",
+      "ssj4 daima",
+      "goku ssj4 daima",
+      "super saiyan 4 dans daima",
+      "ssj4 dans daima",
+      "super saiyan 4 de daima",
+      "ssj4 de daima",
+    ],
+    verdict:
+      "Version officielle attestée dans Dragon Ball DAIMA. Elle ne doit pas recevoir le verdict réservé à la version GT.",
+    explanation:
+      "La notice officielle du 22 janvier 2026 identifie Son Goku Super Saiyan 4 — DAIMA et le rattache explicitement à cet anime. Cette source confirme la version et son œuvre, sans établir un classement de puissance face au Super Saiyan God ni fusionner les continuités.",
+    sources: ["https://en.dragon-ball-official.com/news/01_3980.html"],
   },
   {
     id: "ssj4-vs-ssjg",
     title: "Super Saiyan 4 vs Super Saiyan God / Blue (Canonicité & Débat)",
     category: "form",
-    tier: "NON_CANON_DERIVE",
-    score: 25,
+    tier: "CANON_SUPERVISE",
+    score: 85,
     keywords: [
       "ssj4 vs ssjg",
       "ssj4 vs ssg",
@@ -714,14 +750,13 @@ const CANON_DATABASE: CanonTopicEntry[] = [
       "ssj god vs ssj4",
     ],
     verdict:
-      "Le Super Saiyan God est Canon Supervisé (Toriyama, 2013) ; le Super Saiyan 4 est Non-Canon Dérivé (GT / Nakatsuru, 1996).",
+      "Préciser la version GT ou DAIMA du Super Saiyan 4. Son statut officiel ne démontre pas un classement de puissance face au God ou au Blue.",
     explanation:
-      "Sur le plan de la canonicité, il n'y a pas d'ambiguïté : le Super Saiyan God et le Super Saiyan Blue sont nés de la plume d'Akira Toriyama pour Battle of Gods et La Résurrection de F, intégrés dans la continuité officielle de Dragon Ball Super. Le Super Saiyan 4 a été conçu par Katsuyoshi Nakatsuru pour Dragon Ball GT, une série que Toriyama qualifie de 'grand side-story' hors continuité. Toute comparaison de puissance entre les deux relève du crossover de jeux vidéo (SDBH/Heroes) et non de la chronologie canonique.",
+      "Le Super Saiyan 4 est attesté dans GT et DAIMA ; le God et le Blue apparaissent dans les productions Dragon Ball Super. Une comparaison exige une scène ou une déclaration primaire attribuée à une œuvre précise. Aucun résultat universel ne se déduit du seul nom des transformations.",
     sources: [
-      "Film Battle of Gods (2013)",
-      "Dragon Box GT (2005)",
-      "Manga DBS",
-      "Super Dragon Ball Heroes",
+      "https://en.dragon-ball-official.com/news/01_3980.html",
+      "Film Dragon Ball Z: Battle of Gods (2013)",
+      "Film Dragon Ball Z: La Résurrection de F (2015)",
     ],
   },
   {
