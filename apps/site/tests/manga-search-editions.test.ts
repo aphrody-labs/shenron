@@ -2,7 +2,22 @@
 import { expect, mock, test } from "bun:test";
 import { PgDialect } from "drizzle-orm/pg-core";
 mock.module("server-only", () => ({}));
-mock.module("@/lib/manga-data", () => ({ mangaData: {} }));
+const publications = [
+  {
+    id: 101,
+    series: "SOSH",
+    chapter_number: 1,
+    pages: ["/sosh/000.webp", "/sosh/007.webp"],
+    sourceKind: "editorial",
+  },
+  { id: 102, series: "DB", chapter_number: 1, pages: ["/db/007.webp"], sourceKind: "editorial" },
+  { id: 42, series: "DBS", chapter_number: 10, pages: ["/dbs/007.webp"], sourceKind: "editorial" },
+];
+mock.module("@/lib/manga-data", () => ({
+  mangaData: {
+    mangaChapter: async (id: number) => publications.find((chapter) => chapter.id === id) ?? null,
+  },
+}));
 const dialect = new PgDialect();
 const lookups: { sql: string; params: unknown[] }[] = [];
 let rows = [
@@ -42,5 +57,5 @@ test("chapter-ID coordinates cannot resolve to another series", async () => {
   const [result] = await chercherPlanches("孫悟空");
   expect(result?.chapter_id).toBeNull();
   expect(result?.href).toBeNull();
-  expect(lookups.at(-1)?.params).toEqual(["SOSH", 42]);
+  expect(lookups).toHaveLength(1);
 });

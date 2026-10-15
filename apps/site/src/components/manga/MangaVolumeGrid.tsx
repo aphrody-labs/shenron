@@ -47,11 +47,11 @@ function readProgressSnapshot() {
   }
 }
 const librarySearchSnapshot = () => window.location.search;
-const serverSearchSnapshot = () => "";
 const serverProgressSnapshot = () => "[]";
 
 export type Volume = LibraryVolume;
 interface MangaVolumeGridProps {
+  initialSearch?: string;
   dbVolumes: Volume[];
   dbsVolumes: Volume[];
   kanzenbanVolumes?: Volume[];
@@ -124,6 +124,7 @@ function MangaChapterCard({ chapter }: { chapter: LibraryChapter }) {
 
 /** One catalogue projection serves every collection, reading filter and bounded page. */
 export function MangaVolumeGrid({
+  initialSearch = "",
   dbVolumes,
   dbsVolumes,
   kanzenbanVolumes = EMPTY_VOLUMES,
@@ -145,7 +146,7 @@ export function MangaVolumeGrid({
   const search = useSyncExternalStore(
     subscribeLibraryHistory,
     librarySearchSnapshot,
-    serverSearchSnapshot,
+    () => initialSearch,
   );
   const params = new URLSearchParams(search);
   const collection = canonicalMangaCollection(params.get("collection") ?? "all");

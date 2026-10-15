@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
+import type { ArchiveEntry } from "./archive-catalog";
 export type CatalogCard = {
   category: string;
   id: string;
@@ -7,6 +8,7 @@ export type CatalogCard = {
   image: string | null;
   href: string;
   originalHref: string | null;
+  archive?: ArchiveEntry;
 };
 export type CatalogLink = { category: string; id: string; title: string; href: string };
 export type CatalogDetail = CatalogCard & {

@@ -2118,7 +2118,44 @@
       "publishedAt": "Publication",
       "canon": "Continuité"
     },
-    "refreshing": "Actualisation en cours…"
+    "refreshing": "Actualisation en cours…",
+    "archive": {
+      "selection": "Sélection contrôlée le {time}. Seules les archives retenues sont affichées.",
+      "count": "{count} archives retenues",
+      "work": "Œuvre",
+      "allWorks": "Toutes les œuvres",
+      "language": "Langue déclarée par la source",
+      "allLanguages": "Toutes les langues",
+      "previewUnavailable": "Aperçu indisponible",
+      "source": "Notice Internet Archive",
+      "file": "Fichier média référencé",
+      "checked": "Métadonnées et disponibilité du fichier contrôlées le {time}",
+      "status": "Archive externe · lecture non vérifiée",
+      "provenance": "Provenance et fichier",
+      "series": {
+        "db": "Dragon Ball",
+        "z": "Dragon Ball Z",
+        "gt": "Dragon Ball GT",
+        "super": "Dragon Ball Super",
+        "daima": "Dragon Ball DAIMA",
+        "heroes": "Dragon Ball Heroes",
+        "games": "Jeux Dragon Ball",
+        "mixed": "Plusieurs œuvres"
+      },
+      "languages": {
+        "fr": "Français",
+        "en": "Anglais",
+        "ja": "Japonais",
+        "es": "Espagnol",
+        "pt": "Portugais",
+        "pl": "Polonais",
+        "ca": "Catalan / valencien",
+        "unknown": "Non renseignée",
+        "multiple": "Plusieurs langues",
+        "other": "Autre langue déclarée"
+      },
+      "metadataChecksum": "SHA-256 des métadonnées"
+    }
   },
   "adminDesign": {
     "title": "Design et thème",

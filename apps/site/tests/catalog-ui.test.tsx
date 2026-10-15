@@ -160,6 +160,26 @@ test("catalogue cards use public previews and every empty list has a way back", 
   expect(categories).toContain(dictionaries.fr.catalog.categories.works);
   expect(categories).toContain("48 fiches");
 });
+test("archive filters expose only observed works and declared languages in all locales", () => {
+  for (locale of ["fr", "en", "ja"] as const) {
+    const html = renderToStaticMarkup(
+      createElement(CatalogControls, {
+        search: "",
+        archiveCategory: "archive_movies",
+        series: "gt",
+        mediaLang: "pt",
+      }),
+    );
+    expect(html).toContain('name="series"');
+    expect(html).toContain('name="mediaLang"');
+    expect(html).toContain('value="gt" selected=""');
+    expect(html).toContain(dictionaries[locale].catalog.archive.language);
+    expect(html).toContain(dictionaries[locale].catalog.archive.languages.unknown);
+    expect(html).not.toContain('name="page"');
+    expect(html).not.toContain('value="heroes"');
+  }
+  locale = "fr";
+});
 test("catalogue failures expose a retry and a public exit without infrastructure details", () => {
   const html = renderToStaticMarkup(createElement(CatalogError, { reset: mock() }));
   expect(html).toContain('role="alert"');

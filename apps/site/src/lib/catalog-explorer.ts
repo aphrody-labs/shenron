@@ -29,6 +29,10 @@ import {
   type CatalogSummary,
 } from "./catalog-explorer-contract";
 
+import { isArchiveCategory, selectedArchiveEntry } from "./archive-catalog";
+
+import { archiveFilter } from "./archive-catalog-query";
+
 type Extra = {
   table: PgTable;
   gate: string;
@@ -168,8 +172,12 @@ function card(category: string, row: Record<string, unknown>): CatalogCard {
           : category === "chapters" && row.legacyChapterId
             ? `/wiki/manga/${row.legacyChapterId}`
             : null;
-  let image = catalogPublicUrl(row.image ?? row.cover);
+  const archive = isArchiveCategory(category)
+    ? selectedArchiveEntry(category, String(row.url), String(row.title))
+    : undefined;
+  let image = archive?.preview ?? catalogPublicUrl(row.image ?? row.cover);
   if (
+    !archive &&
     sourceCategory(category) &&
     typeof row.url === "string" &&
     row.provenance &&
@@ -193,6 +201,7 @@ function card(category: string, row: Record<string, unknown>): CatalogCard {
     image,
     href: catalogHref(category, id),
     originalHref,
+    ...(archive ? { archive } : {}),
   };
 }
 function extraQuery(
@@ -244,7 +253,7 @@ function selected(cols: Record<string, PgColumn>) {
 }
 export async function readCatalogPage(
   category: string,
-  input: { page?: unknown; q?: string; parent?: string } = {},
+  input: { page?: unknown; q?: string; parent?: string; mediaLang?: string; series?: string } = {},
 ): Promise<CatalogPage | null> {
   if (!(await allowed(category))) return null;
   const page = catalogPageNumber(input.page);
@@ -261,6 +270,7 @@ export async function readCatalogPage(
         return null;
       const pattern = `%${escapeLike(q)}%`;
       const matching = and(
+        isArchiveCategory(category) ? archiveFilter(category, input) : undefined,
         parentUrl ? sql`p.provenance->>'parentUrl' = ${parentUrl}` : undefined,
         archiveCategories[category]
           ? sql`r.kind = 'archive' and p.provenance->>'category' = ${archiveCategories[category]}`
@@ -328,7 +338,14 @@ async function readRow(category: string, id: string): Promise<Record<string, unk
     const row = url ? await readExternalSource(url, true) : null;
     return row &&
       (!archiveCategories[category] ||
-        (row.kind === "archive" && row.provenance.category === archiveCategories[category]))
+        (row.kind === "archive" &&
+          row.provenance.category === archiveCategories[category] &&
+          row.httpStatus >= 200 &&
+          row.httpStatus < 300 &&
+          row.provenance.reviewed === true &&
+          (row.provenance.rights as Record<string, unknown> | undefined)?.publicImagesPermitted ===
+            true &&
+          !!selectedArchiveEntry(category, row.url, row.title)))
       ? row
       : null;
   }
@@ -416,7 +433,7 @@ export async function readCatalogSummary(): Promise<CatalogSummary> {
           let total: number;
           if (sourceCategory(category)) {
             const filter = archiveCategories[category]
-              ? sql`where r.kind='archive' and p.provenance->>'category'=${archiveCategories[category]}`
+              ? sql`where r.kind='archive' and p.provenance->>'category'=${archiveCategories[category]} and ${archiveFilter(category)}`
               : sql``;
             const counts = await db.execute(
               sql`select count(*)::int as total from public.external_source_records r left join public.external_source_provenance p on p.url=r.url ${filter}`,
