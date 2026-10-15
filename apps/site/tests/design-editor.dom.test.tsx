@@ -4,7 +4,12 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NextIntlClientProvider } from "next-intl";
-import { DEFAULT_SITE_THEME, THEME_COLOR_VARS, type SiteTheme } from "@/lib/site-theme";
+import {
+  DEFAULT_SITE_THEME,
+  THEME_COLOR_VARS,
+  resolveSiteTheme,
+  type SiteTheme,
+} from "@/lib/site-theme";
 import fr from "../messages/fr.json";
 
 let refreshes = 0;
@@ -76,7 +81,7 @@ test.skipIf(typeof document === "undefined")(
 test.skipIf(typeof document === "undefined")(
   "every control is editable, refetch preserves drafts and verified save refreshes the site",
   async () => {
-    let persisted: SiteTheme = structuredClone(DEFAULT_SITE_THEME);
+    let persisted: SiteTheme = resolveSiteTheme(DEFAULT_SITE_THEME);
     globalThis.fetch = Object.assign(
       async (_input: unknown, init?: RequestInit) => {
         if (init?.method === "PUT") {
@@ -89,6 +94,14 @@ test.skipIf(typeof document === "undefined")(
     ) as typeof fetch;
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     await render(client);
+    const reset = [...container!.querySelectorAll("button")].find((button) =>
+      button.textContent?.includes(fr.adminDesign.reset),
+    )!;
+    await act(async () => {
+      reset.click();
+    });
+    expect(container!.textContent).toContain(fr.adminDesign.upToDate);
+    expect(container!.textContent).not.toContain(fr.adminDesign.apply);
     expect(container!.querySelectorAll('input[type="color"]').length).toBe(
       Object.keys(THEME_COLOR_VARS).length,
     );

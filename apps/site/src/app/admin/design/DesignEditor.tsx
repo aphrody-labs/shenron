@@ -33,7 +33,17 @@ const GROUPS = {
   states: ["red", "green", "blueLight", "onPrimary", "onSurfaceVariant", "onError"],
 } as const satisfies Record<string, readonly ThemeColorKey[]>;
 const sameTheme = (a: SiteTheme | null, b: SiteTheme | null) =>
-  JSON.stringify(a) === JSON.stringify(b);
+  a === b ||
+  Boolean(
+    a &&
+    b &&
+    (["version", "radius", "fontFamily", "fontScale", "contentWidth", "density"] as const).every(
+      (key) => a[key] === b[key],
+    ) &&
+    (Object.keys(THEME_COLOR_VARS) as ThemeColorKey[]).every(
+      (key) => a.colors[key] === b.colors[key],
+    ),
+  );
 
 export async function loadTheme(): Promise<{ theme: SiteTheme }> {
   const response = await fetch("/api/theme-config", {

@@ -11,7 +11,7 @@
   position: relative;
   overflow: hidden;
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
   gap: 1rem;
   min-height: 10rem;
@@ -36,6 +36,7 @@
 }
 
 .mastheadCopy {
+  min-width: 0;
   position: relative;
   z-index: 1;
   max-width: 46rem;
@@ -65,9 +66,11 @@
   margin: 1rem 0 0;
   font-size: 0.9rem;
   line-height: 1.55;
+  overflow-wrap: anywhere;
 }
 
 .mastheadActions {
+  min-width: 0;
   position: relative;
   z-index: 1;
   display: flex;
@@ -84,11 +87,13 @@
 }
 
 .controls {
+  min-width: 0;
   display: grid;
   gap: 1rem;
 }
 
 .group {
+  min-inline-size: 0;
   margin: 0;
   padding: 0;
   border: 0;
@@ -128,8 +133,6 @@
   padding: 0.7rem 0.8rem;
   border-inline-start: 0.42rem solid var(--swatch);
   border-bottom: 0.0625rem solid var(--dbz-border);
-  content-visibility: auto;
-  contain-intrinsic-size: auto 4.7rem;
 }
 
 .colorRow:last-child {
@@ -177,6 +180,7 @@
 }
 
 .radiusPanel {
+  min-inline-size: 0;
   padding: 1rem;
   background: var(--dbz-card);
   border: 1px solid var(--dbz-border);
@@ -396,7 +400,7 @@
 
 @media (max-width: 68rem) {
   .layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .previewPane {
@@ -407,7 +411,7 @@
 
 @media (max-width: 40rem) {
   .masthead {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .mastheadActions {
@@ -415,7 +419,7 @@
   }
 
   .colorRow {
-    grid-template-columns: 2.7rem 1fr;
+    grid-template-columns: 2.7rem minmax(0, 1fr);
   }
 
   .hexInput {
@@ -449,12 +453,6 @@
   }
 }
 
-@supports not (content-visibility: auto) {
-  .colorRow {
-    contain: layout style paint;
-  }
-}
-
 .settingLabel {
   display: flex;
   justify-content: space-between;
@@ -477,6 +475,13 @@
 }
 .editor select {
   min-height: 2.75rem;
+}
+.mastheadActions > button {
+  max-width: 100%;
+  white-space: normal;
+}
+.colorRow > * {
+  min-width: 0;
 }
 .previewPane {
   min-width: 0;
