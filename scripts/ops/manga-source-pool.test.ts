@@ -164,6 +164,35 @@ test("recursive preview/media candidates are queued only on reviewed hosts and r
   }
 });
 
+test("catalogue reconciliation retains primary publisher seeds and Japanese bibliography for readable editions", () => {
+  const db = new Database(":memory:");
+  const frontier = new MangaSourceFrontier(db);
+  try {
+    reconcileMangaCatalog(
+      {
+        catalog: [volume(702, "SOSH", true), { ...volume(729, "DBSD"), isbn: "9782344012949" }],
+        series: [],
+      },
+      frontier,
+      10,
+    );
+    const urls = db
+      .query<{ url: string }, []>("SELECT url FROM pool_tasks")
+      .all()
+      .map((r) => r.url);
+    expect(urls).toContain(
+      "https://books.shueisha.co.jp/items/contents.html?isbn=978-4-08-111166-4",
+    );
+    expect(urls).toContain("https://www.books.or.jp/book-details/9784081111664");
+    expect(urls).toContain(
+      "https://www.glenat.com/glenat-manga/dragon-ball-sd-tome-02-9782344012949/",
+    );
+    expect(urls.some((url) => url.includes("book-details/9782344012949"))).toBe(false);
+  } finally {
+    db.close();
+  }
+});
+
 test("eight real Bun Workers load the pool entry exactly once and identify as workers", async () => {
   const workers: Worker[] = [];
   try {
