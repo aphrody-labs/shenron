@@ -65,7 +65,7 @@ export function planSourceSearch(config: SourceSearchConfig) {
 export const nativeSearch: SearchRunner = async (args, jar, signal, maxBytes) => {
   signal.throwIfAborted();
   const child = Bun.spawn([process.execPath, "search", ...args], {
-    env: { ...process.env, APHRODY_GOOGLE_COOKIES_JSON: jar },
+    env: { ...process.env, BUN_BE_BUN: "1", APHRODY_GOOGLE_COOKIES_JSON: jar },
     stdin: "ignore",
     stdout: "pipe",
     stderr: "ignore",
@@ -122,6 +122,28 @@ export async function collectSourceSearch(
     (await realpath(config.cookieJar)) !== resolve(config.cookieJar)
   )
     throw Error("Search requires canonical private cookie jar");
+  const validateOrganic = (organic: any) => {
+    if (!Array.isArray(organic) || organic.length > config.count)
+      throw Error("Invalid discovery organic results");
+    return organic.map((r: any) => {
+      const url = new URL(r.url);
+      if (
+        url.protocol !== "https:" ||
+        url.username ||
+        url.password ||
+        !config.domains.some((d) => url.hostname === d || url.hostname.endsWith("." + d)) ||
+        !Number.isSafeInteger(r.position) ||
+        r.position < 1 ||
+        r.position > 1000 ||
+        typeof r.title !== "string" ||
+        r.title.length > 4096 ||
+        typeof r.snippet !== "string" ||
+        r.snippet.length > 16384
+      )
+        throw Error("Discovery result outside explicit scope");
+      return { position: r.position, title: r.title, url: url.href, snippet: r.snippet };
+    });
+  };
   const path = join(job, "discovery-" + plan.sha256 + ".json");
   if (await Bun.file(path).exists()) {
     const savedInfo = await lstat(path);
@@ -136,9 +158,16 @@ export async function collectSourceSearch(
     if (
       saved.inputSha256 !== plan.sha256 ||
       saved.schema !== "shenron-source-discovery/v1" ||
-      !Array.isArray(saved.results)
+      !Array.isArray(saved.results) ||
+      saved.results.length !== config.queries.length ||
+      saved.discoveryOnly !== true
     )
       throw Error("Discovery receipt differs");
+    for (const [index, result] of saved.results.entries()) {
+      if (result.query !== config.queries[index] || typeof result.servedFromCache !== "boolean")
+        throw Error("Discovery receipt query differs");
+      validateOrganic(result.organic);
+    }
     return {
       inputSha256: plan.sha256,
       receiptSha256: digest(await Bun.file(path).text()),
@@ -179,24 +208,7 @@ export async function collectSourceSearch(
       value.organic.length > config.count
     )
       throw Error("Invalid native Search response");
-    const organic = value.organic.map((r: any) => {
-      const url = new URL(r.url);
-      if (
-        url.protocol !== "https:" ||
-        url.username ||
-        url.password ||
-        !config.domains.some((d) => url.hostname === d || url.hostname.endsWith("." + d)) ||
-        !Number.isSafeInteger(r.position) ||
-        r.position < 1 ||
-        r.position > 1000 ||
-        typeof r.title !== "string" ||
-        r.title.length > 4096 ||
-        typeof r.snippet !== "string" ||
-        r.snippet.length > 16384
-      )
-        throw Error("Discovery result outside explicit scope");
-      return { position: r.position, title: r.title, url: url.href, snippet: r.snippet };
-    });
+    const organic = validateOrganic(value.organic);
     results.push({ query, servedFromCache: value.servedFromCache, organic });
   }
   signal?.throwIfAborted();

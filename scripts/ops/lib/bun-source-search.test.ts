@@ -121,3 +121,31 @@ test("cancelled and oversized discovery never writes a successful receipt", asyn
     await rm(job, { recursive: true, force: true });
   }
 });
+test("native search dispatch enables runtime mode for a compiled product executable", async () => {
+  const { spyOn } = await import("bun:test");
+  const { nativeSearch } = await import("./bun-source-search");
+  const spawn = spyOn(Bun, "spawn").mockImplementation(() => {
+    throw Error("fixture spawn intercepted");
+  });
+  try {
+    await expect(
+      nativeSearch(
+        ["--json", "--", "fixture"],
+        "/private/jar.json",
+        new AbortController().signal,
+        1024,
+      ),
+    ).rejects.toThrow("intercepted");
+    expect(spawn).toHaveBeenCalledWith(
+      [process.execPath, "search", "--json", "--", "fixture"],
+      expect.objectContaining({
+        env: expect.objectContaining({
+          BUN_BE_BUN: "1",
+          APHRODY_GOOGLE_COOKIES_JSON: "/private/jar.json",
+        }),
+      }),
+    );
+  } finally {
+    spawn.mockRestore();
+  }
+});
