@@ -1,6 +1,6 @@
 {
   "name": "@aphrody/shenron-db",
-  "version": "1.4.4",
+  "version": "1.4.6",
   "private": false,
   "description": "PostgreSQL partagé Shenron : schéma Drizzle, pool postgres-js (Next) et driver Bun.SQL (scripts, API), indépendant du framework",
   "homepage": "https://dragonballfr.com",
