@@ -7,6 +7,8 @@ import { parseArgs } from "node:util";
 import { inspectBrowserSources } from "./sosh-browser-workers";
 import { projectPoolReceipts } from "./manga-source-pool-projection";
 import { jumpPublicReaderUrls } from "./jump-public-reader";
+import { discoverMangaSources } from "./manga-source-campaign-worker";
+import mangaBibliography from "../../apps/bot/data/manga-bibliography-manifest.json";
 
 if (typeof Bun.isMainThread !== "boolean")
   throw Error("Runtime must expose qualified Bun.isMainThread before spawning workers");
@@ -365,6 +367,8 @@ export function reconcileMangaCatalog(
     throw Error("Public manga catalogue is incomplete or malformed");
   const missing: number[] = [];
   let readable = 0;
+  for (const url of discoverMangaSources(value, mangaBibliography).seeds)
+    frontier.enqueue({ kind: "bibliography", url, depth: 0, series: null, volumeId: null }, now);
   for (const item of body.catalog) {
     const row = item as {
       id: number;
@@ -734,6 +738,14 @@ async function servePool(options: {
   });
   const seeds: Array<{ kind: Kind; url: string }> = [
     {
+      kind: "discovery",
+      url: "https://www.piccolodamayonnaiz.com/dragon-ball-soshuhen",
+    },
+    {
+      kind: "discovery",
+      url: "https://www.piccolodamayonnaiz.com/dragon-ball-soshuhen-1",
+    },
+    {
       kind: "google",
       url:
         "https://www.google.com/search?q=" +
@@ -840,7 +852,8 @@ async function servePool(options: {
     });
     if (!stopping && !projection) {
       projection = (async () => {
-        const template = process.env.SHENRON_MANGA_CANDIDATE_TEMPLATE;
+        const template =
+          process.env.SHENRON_MANGA_CANDIDATE_TEMPLATE ?? join(job, "candidate-template.json");
         await projectPoolReceipts(job, {
           signal: projectionStop.signal,
           templatePath: template && (await Bun.file(template).exists()) ? template : undefined,
