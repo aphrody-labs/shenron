@@ -67,9 +67,25 @@ interface Manifeste {
 
 const cache = new Map<string, string>();
 
-function git(args: string[]): { ok: boolean; sortie: string } {
-  const r = Bun.spawnSync(["git", ...args], { cwd: RACINE, stdout: "pipe", stderr: "pipe" });
+function git(args: string[], cwd = RACINE): { ok: boolean; sortie: string } {
+  const r = Bun.spawnSync(["git", ...args], { cwd, stdout: "pipe", stderr: "pipe" });
   return { ok: r.exitCode === 0, sortie: r.stdout.toString() };
+}
+
+/** Read committed content through a pinned submodule instead of treating its files as dirty. */
+function gitSource(path: string, revision: string): { ok: boolean; sortie: string } {
+  const direct = git(["show", revision + ":" + path]);
+  if (direct.ok) return direct;
+  const segments = path.split("/");
+  for (let length = 1; length < segments.length; length++) {
+    const prefix = segments.slice(0, length).join("/");
+    const entry = git(["ls-tree", revision, "--", prefix]);
+    const match = entry.sortie.match(/^160000 commit ([a-f0-9]+)\t/);
+    if (entry.ok && match) {
+      return git(["show", match[1] + ":" + segments.slice(length).join("/")], join(RACINE, prefix));
+    }
+  }
+  return direct;
 }
 
 /** Texte d'une source : arbre de travail, ou révision Git hors `scripts/plugin/`. */
@@ -79,7 +95,7 @@ export async function lire(chemin: string, o: Options): Promise<string> {
   if (connu !== undefined) return connu;
   let texte: string;
   if (o.depuis && !chemin.startsWith("scripts/plugin/")) {
-    const r = git(["show", `${o.depuis}:${chemin}`]);
+    const r = gitSource(chemin, o.depuis);
     if (!r.ok) throw new Error(`source absente de ${o.depuis} : ${chemin}`);
     texte = r.sortie;
   } else {
@@ -99,7 +115,7 @@ function revisionDe(donnees: string[], o: Options): { revision: string; date: st
   if (!revision) return { revision: "non commitée", date: "inconnue" };
   if (!o.depuis) {
     const modifie = donnees.some((d) => {
-      const tete = git(["show", `HEAD:${d}`]);
+      const tete = gitSource(d, "HEAD");
       return !tete.ok || tete.sortie !== cache.get(`:${d}`);
     });
     if (modifie) return { revision: `${revision}+modifications`, date: date ?? "inconnue" };
@@ -503,9 +519,14 @@ export async function generer(
             sources,
           ) && donnees.every((d) => d in e.sources),
       );
-      const rev = precedent
-        ? { revision: precedent.revision, date: precedent.date }
-        : revisionDe(donnees, o);
+      // A previously uncommitted snapshot can become a committed source without changing bytes.
+      const committed = precedent?.revision.endsWith("+modifications")
+        ? revisionDe(donnees, o)
+        : null;
+      const rev =
+        precedent && (!committed || committed.revision.endsWith("+modifications"))
+          ? { revision: precedent.revision, date: precedent.date }
+          : (committed ?? revisionDe(donnees, o));
       const c = { ...rev, sources: donnees.toSorted() };
       contextes.set(cle, c);
       return c;

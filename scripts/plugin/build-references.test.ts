@@ -4,7 +4,7 @@
  */
 import { describe, expect, test } from "bun:test";
 import { dirname, join, resolve } from "node:path";
-import { RACINE, verifier } from "./build-references";
+import { RACINE, lire, verifier } from "./build-references";
 
 const PLUGIN = join(RACINE, "plugin");
 
@@ -15,6 +15,12 @@ async function fichiers(motif: string): Promise<string[]> {
 }
 
 describe("instantanés du plugin", () => {
+  test("a pinned config submodule remains readable from the parent source revision", async () => {
+    const path = "packages/config/src/economy-canon.ts";
+    expect(await lire(path, { check: true, depuis: "HEAD" })).toBe(
+      await Bun.file(join(RACINE, path)).text(),
+    );
+  });
   test("aucune dérive entre le code du dépôt et plugin/", async () => {
     expect(await verifier({ check: true, depuis: null })).toEqual([]);
   }, 60_000);
@@ -94,6 +100,18 @@ const lancer = (cmd: string[], cwd: string) => {
 };
 
 describe("scripts embarqués", () => {
+  test("the standalone canon snapshot distinguishes GT and DAIMA", () => {
+    for (const [query, id] of [
+      ["Super Saiyan 4 GT", "super-saiyan-4-gt"],
+      ["Super Saiyan 4 DAIMA", "super-saiyan-4-daima"],
+    ]) {
+      const result = JSON.parse(
+        lancer(["scripts/canon.js", "--json", query!], skill("dragon-ball-canon")).sortie,
+      );
+      expect(result.verdict.origine).toBe("entry:" + id);
+    }
+  });
+
   test("canon.js rend le verdict d'un sujet tranché et avoue un fallback", () => {
     const broly = JSON.parse(
       lancer(["scripts/canon.js", "--json", "Broly est-il canon ?"], skill("dragon-ball-canon"))

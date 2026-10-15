@@ -3,7 +3,7 @@
 <!-- Généré par scripts/plugin/build-references.ts — ne pas éditer. Sources : apps/site/src/lib/canon-engine.ts. -->
 
 > **Instantané hors ligne** — sources du dépôt Shenron (`apps/site/src/lib/canon-engine.ts`),
-> révision `db119c0f+modifications` du 2026-10-08. Citer cette révision et cette date avec toute
+> révision `aa6240b0` du 2026-10-15. Citer cette révision et cette date avec toute
 > réponse tirée d'ici ; une source vivante plus récente peut avoir changé.
 
 Doctrine **livrée avec le dépôt** (défauts de `canon-engine.ts`). La doctrine de
@@ -121,7 +121,7 @@ Inclut (doctrine générale, à confronter au sujet tranché) :
 Rang `EXTENSION_OFFICIELLE`, score 50 : Affirmation nécessitant une vérification croisée dans les archives. Le sujet saisi ne correspond à aucun point de divergence répertorié. Dans la doctrine Shenron, une affirmation sans source manga, databook vérifié ou déclaration signée de Toriyama est considérée comme non établie.
 Un `fallback` n'établit aucun rang : répondre « non établi ».
 
-## Sujets tranchés (47)
+## Sujets tranchés (49)
 
 | Identifiant | Sujet | Catégorie | Rang | Score |
 | --- | --- | --- | --- | --- |
@@ -139,8 +139,10 @@ Un `fallback` n'établit aucun rang : répondre « non établi ».
 | `c17-lapis-c18-lazuli` | Noms civils de C-17 (Lapis) et C-18 (Lazuli) | lore | `CANON_ABSOLU` | 100 |
 | `mr-satan-mark` | Véritable nom de Mr. Satan (Mark) | lore | `CANON_ABSOLU` | 100 |
 | `db-gt` | Dragon Ball GT (SSJ4, Baby, Dragons) | work | `NON_CANON_DERIVE` | 15 |
-| `super-saiyan-4` | Super Saiyan 4 (SSJ4) | form | `NON_CANON_DERIVE` | 15 |
-| `ssj4-vs-ssjg` | Super Saiyan 4 vs Super Saiyan God / Blue (Canonicité & Débat) | form | `NON_CANON_DERIVE` | 25 |
+| `super-saiyan-4` | Super Saiyan 4 (SSJ4) | form | `CANON_SUPERVISE` | 85 |
+| `super-saiyan-4-gt` | Super Saiyan 4 — Dragon Ball GT | form | `NON_CANON_DERIVE` | 20 |
+| `super-saiyan-4-daima` | Super Saiyan 4 — Dragon Ball DAIMA | form | `CANON_SUPERVISE` | 85 |
+| `ssj4-vs-ssjg` | Super Saiyan 4 vs Super Saiyan God / Blue (Canonicité & Débat) | form | `CANON_SUPERVISE` | 85 |
 | `cooler` | Cooler & Metal Cooler | character | `NON_CANON_DERIVE` | 20 |
 | `janemba` | Janemba | character | `NON_CANON_DERIVE` | 20 |
 | `tapion-epee-trunks` | Tapion, Hildegarn et l'Épée de Trunks | character | `NON_CANON_DERIVE` | 20 |
@@ -345,27 +347,45 @@ Un `fallback` n'établit aucun rang : répondre « non établi ».
 
 ### Super Saiyan 4 (SSJ4)
 
-- Identifiant : `super-saiyan-4` · catégorie form · rang `NON_CANON_DERIVE` · score 15
-- Verdict : Non-canonique. Conçu par Katsuyoshi Nakatsuru pour Dragon Ball GT.
-- Explication : Le design emblématique du Super Saiyan 4 (fourrure rouge, queue de singe et cheveux noirs) a été créé par l'animateur en chef Katsuyoshi Nakatsuru chez Toei Animation pour Dragon Ball GT. Akira Toriyama a grandement apprécié ce design et en a dessiné sa propre version hommage pour la Dragon Box GT en 2005, mais a confirmé qu'il s'agissait d'une création de l'anime appartenant à une histoire parallèle (grand side-story).
-- Citation : « Le design du Super Saiyan 4 a été créé par Nakatsuru-kun de Toei Animation. J'ai été très impressionné par son idée de combiner l'Oozaru et le Super Saiyan, et je me suis amusé à le redessiner moi-même pour ce coffret. » — Dragon Book (Dragon Box GT), 2005
+- Identifiant : `super-saiyan-4` · catégorie form · rang `CANON_SUPERVISE` · score 85
+- Verdict : Le Super Saiyan 4 existe officiellement dans Dragon Ball GT et dans Dragon Ball DAIMA. Préciser la version permet de répondre sur sa continuité.
+- Explication : Le site officiel distingue explicitement Son Goku Super Saiyan 4 — DAIMA. Son existence dans DAIMA ne suffit pas à intégrer rétroactivement les événements de GT dans cette série. Une appellation commune ne démontre ni une continuité narrative unique ni une égalité de puissance.
 - Sources :
-  - Dragon Box GT (2005)
-  - Dragon Ball GT Perfect Files
-  - Entretiens Akira Toriyama & Katsuyoshi Nakatsuru
+  - https://en.dragon-ball-official.com/news/01_3980.html
+  - https://dragon-ball-official.com/about/
 - Mots-clés : super saiyan 4, ssj4, transformation ssj4, oozaru dore, katsuyoshi nakatsuru ssj4, goku ssj4, vegeta ssj4, gogeta ssj4
 - Page du site : https://dragonballfr.com/wiki/canon?q=Super%20Saiyan%204%20(SSJ4)
 
+### Super Saiyan 4 — Dragon Ball GT
+
+- Identifiant : `super-saiyan-4-gt` · catégorie form · rang `NON_CANON_DERIVE` · score 20
+- Verdict : Version officielle de Dragon Ball GT. Ses événements doivent être attribués à GT et distingués de la version DAIMA.
+- Explication : Dragon Ball GT est présenté parmi les séries animées sur le site officiel. Le classement dérivé décrit ici sa relation au manga original ; il ne signifie pas que cette production serait une création de fans.
+- Sources :
+  - https://dragon-ball-official.com/about/
+  - Dragon Ball GT (Toei Animation)
+- Mots-clés : super saiyan 4 gt, ssj4 gt, goku ssj4 gt, vegeta ssj4 gt, gogeta ssj4 gt, super saiyan 4 dragon ball gt
+- Page du site : https://dragonballfr.com/wiki/canon?q=Super%20Saiyan%204%20%E2%80%94%20Dragon%20Ball%20GT
+
+### Super Saiyan 4 — Dragon Ball DAIMA
+
+- Identifiant : `super-saiyan-4-daima` · catégorie form · rang `CANON_SUPERVISE` · score 85
+- Verdict : Version officielle attestée dans Dragon Ball DAIMA. Elle ne doit pas recevoir le verdict réservé à la version GT.
+- Explication : La notice officielle du 22 janvier 2026 identifie Son Goku Super Saiyan 4 — DAIMA et le rattache explicitement à cet anime. Cette source confirme la version et son œuvre, sans établir un classement de puissance face au Super Saiyan God ni fusionner les continuités.
+- Sources :
+  - https://en.dragon-ball-official.com/news/01_3980.html
+- Mots-clés : super saiyan 4 daima, ssj4 daima, goku ssj4 daima, super saiyan 4 dans daima, ssj4 dans daima, super saiyan 4 de daima, ssj4 de daima
+- Page du site : https://dragonballfr.com/wiki/canon?q=Super%20Saiyan%204%20%E2%80%94%20Dragon%20Ball%20DAIMA
+
 ### Super Saiyan 4 vs Super Saiyan God / Blue (Canonicité & Débat)
 
-- Identifiant : `ssj4-vs-ssjg` · catégorie form · rang `NON_CANON_DERIVE` · score 25
-- Verdict : Le Super Saiyan God est Canon Supervisé (Toriyama, 2013) ; le Super Saiyan 4 est Non-Canon Dérivé (GT / Nakatsuru, 1996).
-- Explication : Sur le plan de la canonicité, il n'y a pas d'ambiguïté : le Super Saiyan God et le Super Saiyan Blue sont nés de la plume d'Akira Toriyama pour Battle of Gods et La Résurrection de F, intégrés dans la continuité officielle de Dragon Ball Super. Le Super Saiyan 4 a été conçu par Katsuyoshi Nakatsuru pour Dragon Ball GT, une série que Toriyama qualifie de 'grand side-story' hors continuité. Toute comparaison de puissance entre les deux relève du crossover de jeux vidéo (SDBH/Heroes) et non de la chronologie canonique.
+- Identifiant : `ssj4-vs-ssjg` · catégorie form · rang `CANON_SUPERVISE` · score 85
+- Verdict : Préciser la version GT ou DAIMA du Super Saiyan 4. Son statut officiel ne démontre pas un classement de puissance face au God ou au Blue.
+- Explication : Le Super Saiyan 4 est attesté dans GT et DAIMA ; le God et le Blue apparaissent dans les productions Dragon Ball Super. Une comparaison exige une scène ou une déclaration primaire attribuée à une œuvre précise. Aucun résultat universel ne se déduit du seul nom des transformations.
 - Sources :
-  - Film Battle of Gods (2013)
-  - Dragon Box GT (2005)
-  - Manga DBS
-  - Super Dragon Ball Heroes
+  - https://en.dragon-ball-official.com/news/01_3980.html
+  - Film Dragon Ball Z: Battle of Gods (2013)
+  - Film Dragon Ball Z: La Résurrection de F (2015)
 - Mots-clés : ssj4 vs ssjg, ssj4 vs ssg, ssj4 vs ssgss, ssj4 vs ssj blue, super saiyan 4 vs super saiyan god, ssj4 vs god, ssj4 ou god, ssj god vs ssj4
 - Page du site : https://dragonballfr.com/wiki/canon?q=Super%20Saiyan%204%20vs%20Super%20Saiyan%20God%20%2F%20Blue%20(Canonicit%C3%A9%20%26%20D%C3%A9bat)
 

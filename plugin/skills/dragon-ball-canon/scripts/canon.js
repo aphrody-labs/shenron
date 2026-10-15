@@ -1,7 +1,7 @@
 // @bun
 // Généré par scripts/plugin/build-references.ts — ne pas éditer.
 // Sources : apps/site/src/lib/canon-engine.ts, scripts/plugin/src/canon.ts
-// Révision : db119c0f+modifications (2026-10-08)
+// Révision : aa6240b0 (2026-10-15)
 // apps/site/src/lib/canon-engine.ts
 var CANON_TIERS = [
   "CANON_ABSOLU",
@@ -396,8 +396,8 @@ var CANON_DATABASE = [
     id: "super-saiyan-4",
     title: "Super Saiyan 4 (SSJ4)",
     category: "form",
-    tier: "NON_CANON_DERIVE",
-    score: 15,
+    tier: "CANON_SUPERVISE",
+    score: 85,
     keywords: [
       "super saiyan 4",
       "ssj4",
@@ -408,25 +408,56 @@ var CANON_DATABASE = [
       "vegeta ssj4",
       "gogeta ssj4"
     ],
-    verdict: "Non-canonique. Con\xE7u par Katsuyoshi Nakatsuru pour Dragon Ball GT.",
-    explanation: "Le design embl\xE9matique du Super Saiyan 4 (fourrure rouge, queue de singe et cheveux noirs) a \xE9t\xE9 cr\xE9\xE9 par l'animateur en chef Katsuyoshi Nakatsuru chez Toei Animation pour Dragon Ball GT. Akira Toriyama a grandement appr\xE9ci\xE9 ce design et en a dessin\xE9 sa propre version hommage pour la Dragon Box GT en 2005, mais a confirm\xE9 qu'il s'agissait d'une cr\xE9ation de l'anime appartenant \xE0 une histoire parall\xE8le (grand side-story).",
-    toriyamaQuote: {
-      text: "Le design du Super Saiyan 4 a \xE9t\xE9 cr\xE9\xE9 par Nakatsuru-kun de Toei Animation. J'ai \xE9t\xE9 tr\xE8s impressionn\xE9 par son id\xE9e de combiner l'Oozaru et le Super Saiyan, et je me suis amus\xE9 \xE0 le redessiner moi-m\xEAme pour ce coffret.",
-      source: "Dragon Book (Dragon Box GT)",
-      year: 2005
-    },
+    verdict: "Le Super Saiyan 4 existe officiellement dans Dragon Ball GT et dans Dragon Ball DAIMA. Pr\xE9ciser la version permet de r\xE9pondre sur sa continuit\xE9.",
+    explanation: "Le site officiel distingue explicitement Son Goku Super Saiyan 4 \u2014 DAIMA. Son existence dans DAIMA ne suffit pas \xE0 int\xE9grer r\xE9troactivement les \xE9v\xE9nements de GT dans cette s\xE9rie. Une appellation commune ne d\xE9montre ni une continuit\xE9 narrative unique ni une \xE9galit\xE9 de puissance.",
     sources: [
-      "Dragon Box GT (2005)",
-      "Dragon Ball GT Perfect Files",
-      "Entretiens Akira Toriyama & Katsuyoshi Nakatsuru"
+      "https://en.dragon-ball-official.com/news/01_3980.html",
+      "https://dragon-ball-official.com/about/"
     ]
+  },
+  {
+    id: "super-saiyan-4-gt",
+    title: "Super Saiyan 4 \u2014 Dragon Ball GT",
+    category: "form",
+    tier: "NON_CANON_DERIVE",
+    score: 20,
+    keywords: [
+      "super saiyan 4 gt",
+      "ssj4 gt",
+      "goku ssj4 gt",
+      "vegeta ssj4 gt",
+      "gogeta ssj4 gt",
+      "super saiyan 4 dragon ball gt"
+    ],
+    verdict: "Version officielle de Dragon Ball GT. Ses \xE9v\xE9nements doivent \xEAtre attribu\xE9s \xE0 GT et distingu\xE9s de la version DAIMA.",
+    explanation: "Dragon Ball GT est pr\xE9sent\xE9 parmi les s\xE9ries anim\xE9es sur le site officiel. Le classement d\xE9riv\xE9 d\xE9crit ici sa relation au manga original ; il ne signifie pas que cette production serait une cr\xE9ation de fans.",
+    sources: ["https://dragon-ball-official.com/about/", "Dragon Ball GT (Toei Animation)"]
+  },
+  {
+    id: "super-saiyan-4-daima",
+    title: "Super Saiyan 4 \u2014 Dragon Ball DAIMA",
+    category: "form",
+    tier: "CANON_SUPERVISE",
+    score: 85,
+    keywords: [
+      "super saiyan 4 daima",
+      "ssj4 daima",
+      "goku ssj4 daima",
+      "super saiyan 4 dans daima",
+      "ssj4 dans daima",
+      "super saiyan 4 de daima",
+      "ssj4 de daima"
+    ],
+    verdict: "Version officielle attest\xE9e dans Dragon Ball DAIMA. Elle ne doit pas recevoir le verdict r\xE9serv\xE9 \xE0 la version GT.",
+    explanation: "La notice officielle du 22 janvier 2026 identifie Son Goku Super Saiyan 4 \u2014 DAIMA et le rattache explicitement \xE0 cet anime. Cette source confirme la version et son \u0153uvre, sans \xE9tablir un classement de puissance face au Super Saiyan God ni fusionner les continuit\xE9s.",
+    sources: ["https://en.dragon-ball-official.com/news/01_3980.html"]
   },
   {
     id: "ssj4-vs-ssjg",
     title: "Super Saiyan 4 vs Super Saiyan God / Blue (Canonicit\xE9 & D\xE9bat)",
     category: "form",
-    tier: "NON_CANON_DERIVE",
-    score: 25,
+    tier: "CANON_SUPERVISE",
+    score: 85,
     keywords: [
       "ssj4 vs ssjg",
       "ssj4 vs ssg",
@@ -437,13 +468,12 @@ var CANON_DATABASE = [
       "ssj4 ou god",
       "ssj god vs ssj4"
     ],
-    verdict: "Le Super Saiyan God est Canon Supervis\xE9 (Toriyama, 2013) ; le Super Saiyan 4 est Non-Canon D\xE9riv\xE9 (GT / Nakatsuru, 1996).",
-    explanation: "Sur le plan de la canonicit\xE9, il n'y a pas d'ambigu\xEFt\xE9 : le Super Saiyan God et le Super Saiyan Blue sont n\xE9s de la plume d'Akira Toriyama pour Battle of Gods et La R\xE9surrection de F, int\xE9gr\xE9s dans la continuit\xE9 officielle de Dragon Ball Super. Le Super Saiyan 4 a \xE9t\xE9 con\xE7u par Katsuyoshi Nakatsuru pour Dragon Ball GT, une s\xE9rie que Toriyama qualifie de 'grand side-story' hors continuit\xE9. Toute comparaison de puissance entre les deux rel\xE8ve du crossover de jeux vid\xE9o (SDBH/Heroes) et non de la chronologie canonique.",
+    verdict: "Pr\xE9ciser la version GT ou DAIMA du Super Saiyan 4. Son statut officiel ne d\xE9montre pas un classement de puissance face au God ou au Blue.",
+    explanation: "Le Super Saiyan 4 est attest\xE9 dans GT et DAIMA ; le God et le Blue apparaissent dans les productions Dragon Ball Super. Une comparaison exige une sc\xE8ne ou une d\xE9claration primaire attribu\xE9e \xE0 une \u0153uvre pr\xE9cise. Aucun r\xE9sultat universel ne se d\xE9duit du seul nom des transformations.",
     sources: [
-      "Film Battle of Gods (2013)",
-      "Dragon Box GT (2005)",
-      "Manga DBS",
-      "Super Dragon Ball Heroes"
+      "https://en.dragon-ball-official.com/news/01_3980.html",
+      "Film Dragon Ball Z: Battle of Gods (2013)",
+      "Film Dragon Ball Z: La R\xE9surrection de F (2015)"
     ]
   },
   {
@@ -2118,7 +2148,7 @@ var CATEGORIES = new Set([
 ]);
 
 // scripts/plugin/src/canon.ts
-var INSTANTANE = typeof { revision: "db119c0f+modifications", date: "2026-10-08", source: "apps/site/src/lib/canon-engine.ts" } === "undefined" ? { revision: "d\xE9p\xF4t", date: "courante", source: "apps/site/src/lib/canon-engine.ts" } : { revision: "db119c0f+modifications", date: "2026-10-08", source: "apps/site/src/lib/canon-engine.ts" };
+var INSTANTANE = typeof { revision: "aa6240b0", date: "2026-10-15", source: "apps/site/src/lib/canon-engine.ts" } === "undefined" ? { revision: "d\xE9p\xF4t", date: "courante", source: "apps/site/src/lib/canon-engine.ts" } : { revision: "aa6240b0", date: "2026-10-15", source: "apps/site/src/lib/canon-engine.ts" };
 var SITE = "https://dragonballfr.com";
 function statut(v) {
   const o = v.origine;
