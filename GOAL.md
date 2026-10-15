@@ -37,6 +37,9 @@ La collecte et l’indexation restent privées jusqu’à validation par leurs w
 Précision propriétaire : les 18 tomes doivent être réellement disponibles en lecture,
 puis des workers récursifs permanents, 24 h/24 et 7 j/7, doivent compléter les pages
 et tomes manquants de tout le catalogue manga et publier les ressources acquises.
+Extension propriétaire : compléter les 110 tomes manquants et le wiki ; établir la liste
+exacte des volumes et des pages absentes, traiter les éditions séparément et vérifier
+chaque publication publique par ses médias et son historique.
 Les workers reprennent leurs frontières et files persistantes, respectent les budgets
 par source et publient par les propriétaires éditoriaux et CDN ; aucune notice ou
 page de remplacement ne vaut livraison d’un volume.

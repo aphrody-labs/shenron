@@ -11,6 +11,9 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
 
 ## Actions ouvertes
 
+- Compléter les 110 tomes manquants : 93 sans ligne chapitre et 17 stubs SOSH
+  masqués vides, inventaire API/PostgreSQL rapproché sans divergence. Le writer doit
+  couvrir création avec comparaison d’absence et publication contrôlée des stubs.
 - Compléter SOSH : corriger le filtre SSR et les libellés du lecteur, rattacher la
   recherche API aux éditions, corriger la bibliographie sur preuves primaires,
   acquérir les pages manquantes des tomes 2–18 puis vérifier lecture et pagination.
