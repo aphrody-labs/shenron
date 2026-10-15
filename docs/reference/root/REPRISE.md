@@ -671,3 +671,36 @@ de lancement en session1 n’a pas été qualifiée ; ensuite Infra SSH vers APH
 a échoué sur banner exchange. Le propriétaire doit ouvrir Steam sur son bureau,
 se connecter au compte possédant Xenoverse2 puis lancer son installation.
 Aucun binaire DBX2/Shenron RE Windows installé ou jeu téléchargé n’est déclaré.
+
+### 2026-10-15 — Registre source, crawl japonais et candidat runtime SOSH
+
+Le registre privé 702–718 rapproche 17 ISBN valides et 17 chapitres invisibles à
+zéro image ; pagination bibliographique totale 8 080 pages (ce nombre n'est pas
+un compte de scans). Ses 39 corps source et 17 empreintes CAS ont été validés.
+Aucune écriture éditoriale n'a eu lieu. Reçu :
+`var/reports/sosh-17-register-20261015/README.md`, delta SHA
+`71d98d0a71b5c40571a7f07ba13dac9038d4c4c5c70f4ce557ef741640e2fa3f`.
+
+Le crawl natif borné (17 requêtes, VPN Japon, robots respectés) n'a obtenu que
+2 captures indexées / 3 fragments : Shueisha rend seulement une fiche Legend2,
+BookWalker renvoie 404 sur deux ISBN et zéro résultat pour 超悟空伝. Zéro page
+intérieure, zéro candidat de publication. Le rendu BookWalker est `partial=false`
+avec une panne RefCell/délai ; aucun job automatique n'est laissé. Reçus et SHA :
+`var/reports/sosh-primary-incremental-20261015/`.
+
+L'image commune `16bddca0268f6136e972e58157a5924bcd17dab0` a été construite et
+scellée, puis son rendu candidat testé en runtime isolé sans identifiants ni base
+de production. Huit captures du navigateur : 0 exception, 0 crash, 0 débordement
+aux largeurs testées ; les 12 couvertures de grille chargent. Cela ne qualifie pas
+les lecteurs : le tome 701 a 11 images chargées sur 30 observées à 1280 et aucune
+à 390 dans la capture lecteur ; l'API du runtime isolé renvoie un catalogue vide
+faute de DB. Le candidat n'est pas activé en production ; le claim exclusif
+`wiki-release-activation.json` réserve cette activation à son détenteur. Prod
+reste sur `docker-b90f81052ef4ec7947dfea4f597eecf4f77e4811` au dernier relevé.
+Le runtime de test a été arrêté ; ne pas relancer la QA sans nouvelle image ou
+un contexte de données de test qualifié.
+
+À reprendre : obtenir une source publique/autorisée ou des originaux exacts pour
+les planches 2–18, puis compléter l'acquisition, la relecture et l'import idempotent.
+Pour l'image commune, obtenir le handoff du détenteur du claim d'activation avant
+une activation Infra. Aucune disponibilité 18/18 n'est déclarée.
