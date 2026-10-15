@@ -35,6 +35,7 @@
  * and has no implicit loopback owner (nginx forwards every request from 127.0.0.1).
  * A missing capability never stops the server: its group reports why in `/api/local/health`.
  */
+import { createAphrodyRagPort } from "./editorial-rag";
 import { existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import {
@@ -327,11 +328,20 @@ export async function startBackend(
     }
   }
   const sidecarFailed = () => plan.mcpSidecar !== null && sidecarState === "failed";
+  let editorialRag: ReturnType<typeof createAphrodyRagPort> | null = null;
+  if (plan.env.RAG_BACKEND === "aphrody") {
+    try {
+      editorialRag = createAphrodyRagPort(plan.env);
+    } catch {
+      console.error(JSON.stringify({ event: "shenron.rag.configuration_unavailable" }));
+    }
+  }
   let host: HostApi | null = null;
   try {
     host = (o.createHost ?? createLocalApi)(plan.env, {
       service: profile === "desktop" ? "shenron-desktop" : "shenron-server",
       wiki: plan.wiki,
+      ...(plan.env.RAG_BACKEND === "aphrody" ? { rag: editorialRag } : {}),
       ...(chatModel ? { chatModels: chatModel.catalog } : {}),
       memory: nativeMemory(paths, plan.env),
       web: await createNativeWebPort(),

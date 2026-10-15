@@ -1,7 +1,7 @@
 /**
  * The home hero: the cover wordmark (« DRAGON » with the one-star ball in its O, « BALL » in
- * red, as on the tankōbon and Dragon Ball Super covers), the flying Kinto-Un, configured clips
- * with a qualified frame fallback, then the lede edited in `/admin/home` and the search — the first
+ * red, as on the tankōbon and Dragon Ball Super covers), the flying Kinto-Un,
+ * a qualified still frame, then the lede edited in `/admin/home` and the search — the first
  * gesture of the page.
  *
  * Server component; the cloud and the search are the client islands.
@@ -17,7 +17,6 @@ import {
 import { T } from "@/components/T";
 import type { HomeConfig } from "@/lib/home-scenes";
 import { HomeSearch } from "./HomeSearch";
-import { HomeHeroScenes } from "./HomeHeroScenes";
 import { KintoUnVolant } from "./KintoUnVolant";
 import { canonicalFrameUrl } from "@/lib/episode-frame-banner";
 
@@ -37,8 +36,7 @@ export function HomeHero({
       id="hero"
       className={`home-stage relative isolate min-w-0 overflow-hidden border-b border-white/[0.08] ${className}`}
     >
-      <HomeHeroScenes scenes={hero.scenes} />
-      {frame && hero.scenes.length === 0 && (
+      {frame && (
         <div className="home-hero__beerus" aria-hidden="true">
           <Image
             src={frame}

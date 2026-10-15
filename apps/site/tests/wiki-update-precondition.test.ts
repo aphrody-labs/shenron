@@ -3,9 +3,43 @@ import { expect, test } from "bun:test";
 import {
   assertWikiUpdatePrecondition,
   parseEpisodeUpdateRequest,
+  parseWikiUpdateRequest,
   WikiUpdatePreconditionError,
   wikiUpdateSnapshotHash,
 } from "../src/lib/wiki-update-precondition";
+
+test("editorial wiki updates carry complete snapshots without changing mutable fields", () => {
+  const expected = {
+    id: 188,
+    description: "Previous summary",
+    articleSources: [{ n: 1, label: "Primary source" }],
+    visible: true,
+  };
+  const expectedSha256 = wikiUpdateSnapshotHash(expected);
+  const parsed = parseWikiUpdateRequest({
+    description: "Reviewed summary",
+    expected,
+    expectedSha256,
+  });
+  expect(parsed.data).toEqual({ description: "Reviewed summary" });
+  expect(() =>
+    assertWikiUpdatePrecondition(expected, parsed.expected!, {
+      complete: true,
+      sha256: parsed.expectedSha256,
+    }),
+  ).not.toThrow();
+  expect(() =>
+    assertWikiUpdatePrecondition({ ...expected, visible: false }, expected, {
+      complete: true,
+      sha256: expectedSha256,
+    }),
+  ).toThrow(WikiUpdatePreconditionError);
+  expect(() => parseWikiUpdateRequest({ expected })).toThrow("snapshot and SHA256 required");
+  expect(() => parseWikiUpdateRequest({ expectedSha256 })).toThrow("snapshot and SHA256 required");
+  expect(parseWikiUpdateRequest({ description: "Manual edit" })).toEqual({
+    data: { description: "Manual edit" },
+  });
+});
 
 test("null and missing values cannot erase concurrent pagination", () => {
   expect(() =>

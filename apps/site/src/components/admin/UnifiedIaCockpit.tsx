@@ -54,6 +54,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@aphrody/shenron-ui/ca
 type IaDashboardData = IaCockpitReport & {
   canonConfig: CanonConfig;
   canonDefaults: CanonConfig;
+  canonExpected?: string;
   timestamp: string;
 };
 
@@ -1533,7 +1534,11 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
 			    ════════════════════════════════════════════════════════════════════════ */}
       {activeTab === "canon" && data?.canonConfig && (
         <div className="space-y-6">
-          <CanonEditor initial={data.canonConfig} defaults={data.canonDefaults} />
+          <CanonEditor
+            initial={data.canonConfig}
+            defaults={data.canonDefaults}
+            initialExpected={data.canonExpected}
+          />
         </div>
       )}
       {activeTab === "canon" && !data?.canonConfig && loadFailure && (

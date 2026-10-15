@@ -27,7 +27,7 @@ function subscribeTheme(onChange: () => void) {
     window.removeEventListener("storage", sync);
   };
 }
-const serverTheme = (): EpisodeTheme => "beerus";
+const serverTheme = (): EpisodeTheme => "neutral";
 
 export function EpisodeThemeSwitcher({ compact = false }: { compact?: boolean }) {
   const t = useVideoUIText();
@@ -40,7 +40,7 @@ export function EpisodeThemeSwitcher({ compact = false }: { compact?: boolean })
       className={`shenron-theme-choice ${compact ? "is-compact" : ""}`}
       title={t("themeChoice")}
     >
-      <MaterialSymbol name={theme === "beerus" ? "dark_mode" : "light_mode"} size={22} />
+      <MaterialSymbol name={theme !== "goku" ? "dark_mode" : "light_mode"} size={22} />
       <span className="sr-only">{t("themeChoice")}</span>
       <select
         aria-label={t("themeChoice")}
@@ -55,6 +55,7 @@ export function EpisodeThemeSwitcher({ compact = false }: { compact?: boolean })
           }
         }}
       >
+        <option value="neutral">{t("themeNeutral")}</option>
         <option value="beerus">{t("themeBeerus")}</option>
         <option value="goku">{t("themeGoku")}</option>
       </select>

@@ -7186,6 +7186,46 @@
               "amber": {
                 "type": "string",
                 "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "purple": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "gold": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "cyan": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "green": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "pink": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "encre": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "os": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "onPrimary": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "onSurfaceVariant": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "onError": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
               }
             },
             "required": [
@@ -7200,7 +7240,17 @@
               "red",
               "ember",
               "ki",
-              "amber"
+              "amber",
+              "purple",
+              "gold",
+              "cyan",
+              "green",
+              "pink",
+              "encre",
+              "os",
+              "onPrimary",
+              "onSurfaceVariant",
+              "onError"
             ],
             "additionalProperties": false
           },
@@ -7208,12 +7258,43 @@
             "type": "number",
             "minimum": 0,
             "maximum": 2
+          },
+          "fontFamily": {
+            "type": "string",
+            "enum": [
+              "sans",
+              "system",
+              "serif",
+              "mono"
+            ]
+          },
+          "fontScale": {
+            "type": "number",
+            "minimum": 0.875,
+            "maximum": 1.25
+          },
+          "contentWidth": {
+            "type": "number",
+            "minimum": 960,
+            "maximum": 1920
+          },
+          "density": {
+            "type": "string",
+            "enum": [
+              "compact",
+              "comfortable",
+              "spacious"
+            ]
           }
         },
         "required": [
           "version",
           "colors",
-          "radius"
+          "radius",
+          "fontFamily",
+          "fontScale",
+          "contentWidth",
+          "density"
         ],
         "additionalProperties": false
       },

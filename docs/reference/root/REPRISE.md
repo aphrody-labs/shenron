@@ -1,5 +1,107 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## 2026-10-15 — Refonte Canon, agents wiki et plugin Aphrody
+
+Le propriétaire ajoute une refonte Canon moins verbeuse, plus illustrée, facile et
+interactive, puis une automatisation du remplissage wiki avec de nombreuses sessions
+Codex gpt-5.6-luna et l’installation du plugin/MCP Aphrody. Catalogue modèle local
+daté : gpt-5.6-luna réellement disponible. Smoke réel sur Finalflash : deux sessions
+indépendantes writer/reviewer, modèle exact, sorties JSON validées ; proposition
+non publiée. Inventaire : 37 tables, 10754 lignes visibles, 108 contenus vides ou
+provisoires. Campagne bornée/reprenable et découverte de sources officielles en cours.
+
+Aphrody installé via marketplace privée aphrody-user, version2.2.1, activé,47skills.
+Le premier cache ne contenait que le manifeste : sousmodule source f5802d3a récupéré
+avec transport Git HTTPS authentifié puis installation refaite. MCP global aphrody
+stdio configuré ; initialize/tools-list réel341outils et appel aphrody_home_status
+profiledbfr isError=false. Aucun secret ajouté au dépôt. Reçus privés environment-20261015.
+
+Canon : sauvegarde admin stricte/CAS atomique et historique doctrine ; 0e8bf804,
+3d42549e, aa6240b0, fixturePG d4715a16. PostgreSQL18.1 isolé8tests/33assertions verts,
+concurrence, rollback et précisionmicroseconde réelle, sans toucher production.
+Nouvelle UI en revue finale avant image commune ; les captures preview ne qualifient
+pas PostgreSQL du site. Le SELECT readonly réel des compteurs donne4827références,
+15776planchesdatabooks,12199transcriptionsmangaréférencées visibles,329tomes,
+922chapitres,875épisodes,672personnages. VFSlocal explicitement distinct du RAGlive.
+
+Trois scans acquis :11-28/4-104 relus visuellement, deux bulles corrigées en seconde
+lecture indépendante ; JA et FR privés prêts.18-13 seulement452x640, lecturecorps
+non qualifiable, aucune réécriture. Dépôt des deux corrections attend image active,
+snapshots frais et CAS ; flags de vérification conservés, sfxillisible signalé�.
+Aucun OCR ni contenu wiki nouveau déclaré publié à ce stade.
+
+
+## 2026-10-15 — Canon et agent home DBFR
+
+Demande explicite : lire API canon, pages publique/admin, données et mémoire Aphrody
+agent home DBFR puis décider seul. Lecture de AGENTS/SOUL et notes de doctrine sous
+/home/ubuntu/.aphrody/workspaces/dbfr ; priorité confirmée manga, scans japonais et
+déclarations attribuées de Toriyama, aucune extrapolation. API : 4827 références
+visibles (877 manga, 3870 databooks, 80 Aphrody), 47 sujets avant correctif. Doctrine
+générale, libellés de rangs et fiches contradictoires ; pas de réécriture globale.
+e09b8fd3 respecte les suppressions admin et le power scaling désactivé (37 tests,
+154 assertions). b5b9cff4 distingue SSJ4 GT/DAIMA, notice officielle du 22 janvier 2026
+01_3980, sans classement de puissance universel (43 tests, 176 assertions). Source
+poussée, pas encore appliquée à la doctrine PostgreSQL. Sauvegarde optimiste et
+compteurs réellement mesurés en cours. Transcriptions suspectes 11-28, 4-104, 18-13 :
+lecture du scan nécessaire avant correction ; pas de substitution automatique.
+
+Compute/E5 restaurés via Infra, index actif intégralement vectorisé. Retrieval
+172 cas : Recall@5 78,49 % sous seuil 80 %, Recall@10 83,14 %. Doublage/lieux/musique
+attendus mais absents du retrieval sont masqués à la source et dans l’index ; ne pas
+les réactiver sans revue. Ancien chat non borné : 9 timeouts et un refus sur 10 cas,
+évaluateur arrêté seul. 29e37e3d transmet le budget public de 256 tokens au provider
+réel ; nouvelle image nécessaire avant évaluation. Build e09 sur fabrique en cours,
+aucune nouvelle activation annoncée. Rapports privés var/reports/readers-20261015/
+et rag-audit-20261015/. Prochaine étape : livraison puis relecture, lot canon protégé
+et corrections visuelles bornées.
+
+## Contrôle du 15 octobre 2026 — synchronisation lecteurs, thème et RAG en livraison
+
+Sources poussées : 2993ceb5 aligne les ressources manga des agents sur le lecteur et
+préserve les couvertures numérotées000 ; a831eaa4 conserve la page databook entre
+modes, y compris après mesure des images. Preuves Bun WebView sur pages2/10 à390/1280
+et reprise de la molette ; les31tests API/manga et22tests DOM lecteur sont verts.
+
+3266dc5d expose22couleurs et cinq réglages de thème, sauvegarde relue séparément ;
+PostgreSQL18 isolé qualifié. Contrat config792751f, intégrant le commit upstream
+Jev4dee0c0. a80541b4 remet le neutre, retire les vidéos de fond de l’accueil et les
+transitions de téléportation. Une boucle de variables M3/DBZ était réellement visible
+dans le navigateur ; le générateur réserve désormais Beerus à un choix explicite.
+Prévisualisation Next réelle sur fabrique,390/1280 :22tokens résolus, fond#101010,
+surface#191919, texte#ededed, zéro vidéo et zéro requête média parmi141requêtes ;
+molette et tactile fonctionnent, pas de débordement. Les panneaux dépendant de
+PostgreSQL sont absents de cette preview sans base : leur contenu n’est pas qualifié.
+Le parcours admin navigateur et le déploiement restent à terminer.
+
+RAG : f390898f fiabilise l’évaluateur ;52ce784f retire le contexte agent_home du
+retrieval public ;617e722f branche la recherche et le chat natifs sur le même index
+éditorial quand RAG_BACKEND=aphrody, avec injection au consommateur et profil offline
+conservé.368tests API/server verts,8ignorés explicitement. L’évaluation live initiale
+a20/20erreurs500 : compute8789 absent, aucune fidélité chat prouvée. Le corpus actif
+manga/databooks/wiki et ses vecteurs sont présents ; aucun rebuild aveugle exécuté.
+Restauration compute/E5 via Infra en cours, modèle E5 vérifié ; image attend le verrou
+de fabrique détenu par un travail Cargo actif, sans arrêt ni contournement.
+
+Audit :42URL crawlées ;2582pages HTTP contrôlées. Audit des68988images encore en
+cours ; ne pas convertir ces sondes en preuve de lecture.428notices databook API
+contre417dans la rubrique :11interviews/paroles sont exclues par politique, dont
+six ont des scans. Six ouvrages inclus restent sans scan ; ne pas confondre ces
+ensembles. La campagne officielle native rendue a paniqué chez Aphrody ; collecte
+Bun WebView privée et bornée en repli, sans publication ni indexation implicite.
+
+8a4f871e permet les snapshots SHA atomiques wiki ; trois descriptions encyclopédiques
+sourcées sont prêtes, non appliquées avant activation. ef1ca2b7 initialise les
+sousmodules avant installation distante ;221541b4 charge la configuration canonique
+du lint Bun. Le propriétaire impose bun check, bun lint, bun fmt et bun n2b ;
+tsc et oxlint sont bannis. Portes globales check/lint et dérives OpenAPI/tokens/IA
+vertes à ce stade. Réemploi natif de l’image active88ac qualifié par arbres Git
+identiques, SHA des artefacts et ABI5 stricte ; prochain build Next/Bun sur fabrique,
+image scellée puis activation Infra DBFR, avant toute annonce de livraison.
+
+Rapports privés : var/reports/readers-20261015/, reader-mode-preview/,
+wiki-fill-20261015/ et rag-audit-20261015/.
+
 ## Contrôle du 15 octobre 2026 — livraison accueil et GIF
 
 Release active DBFR `docker-88ac0d23`, qui contient `7bd95e65` ; `/api/health` 200.

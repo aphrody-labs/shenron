@@ -1,6 +1,6 @@
 {
   "name": "@aphrody/shenron-ui",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "private": false,
   "description": "Shenron's single UI layer: Dragon Ball design system, site components, readers, admin primitives, the Koharu manga editor and the desktop studio.",
   "homepage": "https://dragonballfr.com",

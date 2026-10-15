@@ -54,27 +54,26 @@
   }
 }
 
-/* Qualified episode frame defaults. */
-/* Episode 875, frame 18702; source SHA256 db6b365d58a933a18176ffd848b23d79513acb899acf7b4a07bd35203949508e. */
+/* Neutral fallback; the saved site theme owns runtime overrides. */
 :root {
-  --dbz-bg: #131315;
-  --dbz-card: #1b1b1d;
-  --dbz-border: #45464d;
-  --dbz-orange: #bfc6e0;
-  --dbz-orange-dark: #bfc6e0;
-  --dbz-blue: #444650;
-  --dbz-blue-light: #c5c6d1;
-  --dbz-yellow: #e7bea6;
+  --dbz-bg: #101010;
+  --dbz-card: #191919;
+  --dbz-border: #353535;
+  --dbz-orange: #d4d4d4;
+  --dbz-orange-dark: #d4d4d4;
+  --dbz-blue: #303030;
+  --dbz-blue-light: #b5b5b5;
+  --dbz-yellow: #c4c4c4;
   --dbz-red: #ffb4ab;
-  --dbz-purple: #e7bea6;
-  --dbz-gold: #e7bea6;
-  --dbz-cyan: #c5c6d1;
-  --dbz-ember: #bfc6e0;
-  --dbz-ki: #c5c6d1;
-  --dbz-amber: #e7bea6;
+  --dbz-purple: #c4c4c4;
+  --dbz-gold: #c4c4c4;
+  --dbz-cyan: #b5b5b5;
+  --dbz-ember: #d4d4d4;
+  --dbz-ki: #b5b5b5;
+  --dbz-amber: #c4c4c4;
   --dbz-encre: #000000;
-  --dbz-os: #e4e2e4;
-  --frame-on-primary: #293044;
-  --frame-on-surface-variant: #c6c6cd;
+  --dbz-os: #ededed;
+  --frame-on-primary: #161616;
+  --frame-on-surface-variant: #b5b5b5;
   --frame-on-error: #690005;
 }

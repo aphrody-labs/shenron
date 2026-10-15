@@ -32,14 +32,17 @@ export function wikiUpdateSnapshotHash(row: Record<string, unknown>): string {
 }
 
 /** Reserved HTTP preconditions are kept outside mutable column coercion. */
-export function parseEpisodeUpdateRequest(body: Record<string, unknown>): {
+export function parseWikiUpdateRequest(
+  body: Record<string, unknown>,
+  requireSnapshot = false,
+): {
   data: Record<string, unknown>;
   expected?: Record<string, unknown>;
   expectedSha256?: string;
 } {
   const { expected, expectedSha256, ...data } = body;
   const supplied = Object.hasOwn(body, "expected") || Object.hasOwn(body, "expectedSha256");
-  if (!supplied && !Object.hasOwn(data, "frames")) return { data };
+  if (!supplied && !requireSnapshot) return { data };
   if (
     expected === null ||
     typeof expected !== "object" ||
@@ -53,6 +56,10 @@ export function parseEpisodeUpdateRequest(body: Record<string, unknown>): {
     throw new WikiUpdateRequestError("Complete expected snapshot and SHA256 required");
   }
   return { data, expected: expected as Record<string, unknown>, expectedSha256 };
+}
+
+export function parseEpisodeUpdateRequest(body: Record<string, unknown>) {
+  return parseWikiUpdateRequest(body, Object.hasOwn(body, "frames"));
 }
 
 /** Compare explicit or complete preconditions without echoing protected values. */

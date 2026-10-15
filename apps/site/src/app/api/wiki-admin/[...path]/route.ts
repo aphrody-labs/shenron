@@ -52,6 +52,7 @@ import { databooksFreeze, DatabooksFrozenError } from "@/lib/databooks-freeze";
 import { CatalogMediaConflictError } from "@/lib/catalog-media-contracts";
 import {
   parseEpisodeUpdateRequest,
+  parseWikiUpdateRequest,
   WikiUpdatePreconditionError,
   WikiUpdateRequestError,
 } from "@/lib/wiki-update-precondition";
@@ -240,16 +241,8 @@ async function mutate(req: NextRequest, ctx: Ctx) {
   const body = await readJson(req);
   if (!body) return badRequest("JSON body requis");
   try {
-    if (
-      table !== "db_episodes" &&
-      (Object.hasOwn(body, "expected") || Object.hasOwn(body, "expectedSha256"))
-    ) {
-      throw new WikiUpdateRequestError("HTTP snapshot preconditions are episode-only");
-    }
     const precondition =
-      table === "db_episodes"
-        ? parseEpisodeUpdateRequest(body)
-        : { data: body, expected: undefined, expectedSha256: undefined };
+      table === "db_episodes" ? parseEpisodeUpdateRequest(body) : parseWikiUpdateRequest(body);
     const bodyError = databookPagesFreezeError(table, precondition.data);
     if (bodyError) return bodyError;
     const validated = validateCatalogEditorialBody(table, precondition.data);

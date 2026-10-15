@@ -4,13 +4,17 @@ import { offlineDocument, type PwaLocale } from "./pwa";
 export function serviceWorkerSource(locale: PwaLocale, staticOrigin: string): string {
   const config = JSON.stringify({
     locale,
-    theme: "beerus",
+    theme: "neutral",
     staticOrigin,
     offline: offlineDocument(locale),
     documents: Object.fromEntries(
       (["fr", "en", "ja"] as const).map((lang) => [
         lang,
-        { beerus: offlineDocument(lang, "beerus"), goku: offlineDocument(lang, "goku") },
+        {
+          neutral: offlineDocument(lang, "neutral"),
+          beerus: offlineDocument(lang, "beerus"),
+          goku: offlineDocument(lang, "goku"),
+        },
       ]),
     ),
   });
@@ -36,7 +40,7 @@ self.addEventListener("activate", event => {
     const previous = await cache.match(offlineUrl);
     const locale = previous?.headers.get("X-DBFR-Locale");
     const theme = previous?.headers.get("X-DBFR-Theme");
-    await cache.put(offlineUrl, fallback(Object.hasOwn(config.documents, locale) ? locale : config.locale, theme === "goku" ? "goku" : "beerus"));
+    await cache.put(offlineUrl, fallback(Object.hasOwn(config.documents, locale) ? locale : config.locale, theme === "goku" || theme === "beerus" ? theme : "neutral"));
     await self.clients.claim();
   })());
 });
@@ -46,7 +50,7 @@ self.addEventListener("message", event => {
     documentUpdate = documentUpdate.catch(() => {}).then(async () => {
       const cache = await caches.open(cacheName);
       const previous = await cache.match(offlineUrl);
-      const theme = event.data.theme === "goku" || event.data.theme === "beerus" ? event.data.theme : previous?.headers.get("X-DBFR-Theme") || "beerus";
+      const theme = ["neutral", "goku", "beerus"].includes(event.data.theme) ? event.data.theme : previous?.headers.get("X-DBFR-Theme") || "neutral";
       await cache.put(offlineUrl, fallback(event.data.locale, theme));
     });
     event.waitUntil(documentUpdate);

@@ -38,8 +38,22 @@ import { type McpClient, pickTools, toolItems } from "./mcp";
 import type { PluginPort } from "../plugin";
 import { extractFacts, memoryBlock, newFacts, rankMemories } from "./memory";
 
+export type GroundingHit = Pick<
+  VfsHit,
+  "title" | "url" | "kind" | "corpus" | "snippet" | "content" | "score"
+>;
+
 export interface ChatEngineDeps {
   rag: VfsRag | null;
+  /** Explicit live editorial retrieval takes precedence over the embedded offline snapshot. */
+  retrieval?: (
+    query: string,
+    options: { limit: number; kinds?: string[] },
+  ) => Promise<{
+    hits: GroundingHit[];
+    mode: "hybrid" | "lexical";
+    embedError?: string;
+  }>;
   embed?: QueryEmbedder | null;
   embedderModel?: string;
   /** Only public VFS rows (public server); default false. */
@@ -109,7 +123,7 @@ const MEMORY_SCAN = 200;
 
 const uid = (prefix: string) => `${prefix}-${Bun.randomUUIDv7()}`;
 
-function citationOf(hit: VfsHit, n: number): Citation {
+function citationOf(hit: GroundingHit, n: number): Citation {
   return {
     n,
     title: hit.title,
@@ -330,14 +344,19 @@ export function createChatEngine(deps: ChatEngineDeps) {
       .join("\n")
       .slice(0, 1200);
     let mode: "hybrid" | "lexical" | "none" = "none";
-    let hits: VfsHit[] = [];
+    let hits: GroundingHit[] = [];
     let embedError: string | undefined;
-    if (deps.rag && request.topK > 0 && !chitchat) {
-      const result = await deps.rag.searchWith(query, deps.embed ?? null, {
-        limit: request.topK,
-        ...(request.kinds?.length ? { kinds: request.kinds } : {}),
-        publicOnly: deps.publicOnly === true,
-      });
+    if ((deps.retrieval || deps.rag) && request.topK > 0 && !chitchat) {
+      const result = deps.retrieval
+        ? await deps.retrieval(query, {
+            limit: request.topK,
+            ...(request.kinds?.length ? { kinds: request.kinds } : {}),
+          })
+        : await deps.rag!.searchWith(query, deps.embed ?? null, {
+            limit: request.topK,
+            ...(request.kinds?.length ? { kinds: request.kinds } : {}),
+            publicOnly: deps.publicOnly === true,
+          });
       hits = result.hits;
       mode = result.mode;
       embedError = result.embedError;

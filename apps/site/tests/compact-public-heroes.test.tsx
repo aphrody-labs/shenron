@@ -15,9 +15,15 @@ test("home hero keeps identity and search within compact adaptive spacing", () =
   expect(html).toContain("min-h-60");
   expect(html).toContain("sm:min-h-72");
   expect(html).toContain("home-wordmark");
+  expect(html).toContain("wordmark-manga--rouge");
+  expect(html).toMatch(/class="wordmark-boule"><svg\b/);
+  expect(html).toMatch(/class="kt-volant__nuage"[^>]*><svg\b/);
+  expect(html).toContain(fr.home.kintoun.trick);
   expect(html).toContain('name="q"');
   expect(html).not.toContain("48svh");
-  expect(html).toContain("goku_normal");
+  expect(html).not.toMatch(/<video(?:\s|>)/);
+  expect(html).not.toMatch(/\.(?:mp4|webm)(?:[?"\s]|$)/);
+  expect(html).not.toContain("goku_normal");
   expect(html).not.toContain("dbs-beerus-2026.jpg");
 });
 

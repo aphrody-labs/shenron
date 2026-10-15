@@ -43,7 +43,10 @@ function row(entity: string, content: string, corpus = "shenron") {
     title: "Kamehameha",
     url: "https://dragonballfr.com/wiki/techniques/kamehameha",
     content,
-    metadata: { kind: "wiki" },
+    metadata: {
+      kind: "wiki",
+      originSourceId: corpus === "conversations" ? "conversations" : "wiki_pages",
+    },
     updated_at: null,
     embedding: null,
     model: null,

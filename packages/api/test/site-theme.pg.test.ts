@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
 import { createBunSql } from "@aphrody/shenron-db/bun-sql";
-import { DEFAULT_SITE_THEME } from "@aphrody/shenron-config/site-theme";
+import {
+  DEFAULT_SITE_THEME,
+  THEME_COLOR_VARS,
+  themeCssProperties,
+} from "@aphrody/shenron-config/site-theme";
 import { createHostSiteTheme } from "../src/host/site-theme";
 import { createShenronApiClient } from "../src/client";
 import { endpoints } from "../src/contract";
@@ -63,7 +67,16 @@ test.skipIf(!url)(
       });
       expect(
         await client.call(endpoints.siteThemeSave, {
-          body: { colors: { ki: "#123456" }, radius: 0.25 },
+          body: {
+            colors: Object.fromEntries(
+              Object.keys(THEME_COLOR_VARS).map((key) => [key, "#123456"]),
+            ),
+            radius: 0.25,
+            fontFamily: "mono",
+            fontScale: 1.1,
+            contentWidth: 1280,
+            density: "compact",
+          },
         }),
       ).toMatchObject({ ok: true });
       const rows = await sql.unsafe(
@@ -77,6 +90,17 @@ test.skipIf(!url)(
       });
       const stored = typeof rows[0]!.data === "string" ? JSON.parse(rows[0]!.data) : rows[0]!.data;
       expect(stored).toMatchObject({ radius: 0.25, colors: { ki: "#123456" } });
+      expect(stored).toMatchObject({
+        fontFamily: "mono",
+        fontScale: 1.1,
+        contentWidth: 1280,
+        density: "compact",
+      });
+      const variables = themeCssProperties(stored);
+      for (const variable of Object.values(THEME_COLOR_VARS))
+        expect(variables[variable]).toBe("#123456");
+      expect(variables["--shell-max"]).toBe("1280px");
+      expect(variables["--site-font-family"]).toContain("JetBrains Mono");
       expect(rows[0]?.updatedAt).toBeInstanceOf(Date);
       expect(await client.call(endpoints.siteTheme, {})).toMatchObject({
         ok: true,

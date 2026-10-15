@@ -222,15 +222,17 @@ describe("API Canon (/api/canon) — Requêtes Non-Canoniques & Fillers Toei", (
     expect(data.verdict.verdict).toContain("Non-canonique");
   });
 
-  test("Super Saiyan 4 -> NON_CANON_DERIVE (GT / Katsuyoshi Nakatsuru)", async () => {
+  test("Super Saiyan 4 identifies both official versions before choosing a continuity", async () => {
     const req = createReq("/api/canon?q=Super%20Saiyan%204");
     const res = await getCanon(req);
     expect(res.status).toBe(200);
 
     const data = await res.json();
-    expect(data.verdict.tier).toBe("NON_CANON_DERIVE");
-    expect(data.verdict.score).toBe(15);
-    expect(data.verdict.verdict).toContain("Katsuyoshi Nakatsuru");
+    expect(data.verdict.tier).toBe("CANON_SUPERVISE");
+    expect(data.verdict.origin).toBe("entry:super-saiyan-4");
+    expect(data.verdict.verdict).toContain("GT");
+    expect(data.verdict.verdict).toContain("DAIMA");
+    expect(data.verdict.sources).toContain("https://en.dragon-ball-official.com/news/01_3980.html");
   });
 
   test("Cooler -> NON_CANON_DERIVE (Films 5 et 6 Toei)", async () => {
@@ -321,15 +323,16 @@ describe("API Canon (/api/canon) — Retcons, Débats Complexes & Comparaisons",
     expect(data.verdict.verdict).toContain("Potaras");
   });
 
-  test("SSJ4 vs SSJG -> NON_CANON_DERIVE (Distingue Canon Supervisé et Hors Continuité)", async () => {
+  test("SSJ4 vs SSJG does not infer a power ranking from official status", async () => {
     const req = createReq("/api/canon?q=SSJ4%20vs%20SSJG");
     const res = await getCanon(req);
     expect(res.status).toBe(200);
 
     const data = await res.json();
-    expect(data.verdict.tier).toBe("NON_CANON_DERIVE");
+    expect(data.verdict.tier).toBe("CANON_SUPERVISE");
     expect(data.verdict.origin).toBe("entry:ssj4-vs-ssjg");
-    expect(data.verdict.verdict).toContain("Super Saiyan God est Canon Supervisé");
+    expect(data.verdict.verdict).toContain("GT ou DAIMA");
+    expect(data.verdict.verdict).toContain("ne démontre pas un classement de puissance");
   });
 });
 

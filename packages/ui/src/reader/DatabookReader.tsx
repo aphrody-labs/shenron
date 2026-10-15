@@ -21,7 +21,16 @@
 
 import type React from "react";
 import type { ReactNode } from "react";
-import { type ReactElement, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import {
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useFocusTrap } from "./use-focus-trap";
 import {
@@ -297,7 +306,57 @@ export function DatabookReader({
     [mode, total, virtualizer, swiperRef],
   );
 
-  useVerticalScrollSync(mode, scrollParentRef, virtualizer, setCurrent);
+  const previousMode = useRef(mode);
+  const restoringVerticalPage = useRef(false);
+  useLayoutEffect(() => {
+    const changed = previousMode.current !== mode;
+    previousMode.current = mode;
+    if (!changed || mode !== "vertical" || total === 0) return;
+    const viewport = scrollParentRef.current;
+    if (!viewport) return;
+
+    // Rows acquire their actual heights after mounting and image loading. Keep
+    // the selected page centered through those measurements, until the reader
+    // deliberately scrolls or navigates. A single estimated offset can land
+    // several pages away once the rows above it shrink.
+    restoringVerticalPage.current = true;
+    let frame = 0;
+    const restore = () => {
+      frame = 0;
+      if (restoringVerticalPage.current) virtualizer.scrollToIndex(current, { align: "center" });
+    };
+    const scheduleRestore = () => {
+      if (restoringVerticalPage.current && !frame) frame = requestAnimationFrame(restore);
+    };
+    const sizes = new ResizeObserver(scheduleRestore);
+    const observeRows = () => {
+      for (const row of viewport.querySelectorAll("[data-index]")) sizes.observe(row);
+      scheduleRestore();
+    };
+    const rows = new MutationObserver(observeRows);
+    rows.observe(viewport, { childList: true, subtree: true });
+    sizes.observe(viewport);
+    observeRows();
+    restore();
+
+    const release = () => {
+      restoringVerticalPage.current = false;
+      cancelAnimationFrame(frame);
+      rows.disconnect();
+      sizes.disconnect();
+    };
+    const intentions = ["wheel", "touchstart", "pointerdown", "keydown"] as const;
+    for (const event of intentions) viewport.addEventListener(event, release, { passive: true });
+    return () => {
+      release();
+      for (const event of intentions) viewport.removeEventListener(event, release);
+    };
+  }, [mode, current, total, virtualizer]);
+
+  const syncVerticalPage = useCallback((index: number) => {
+    if (!restoringVerticalPage.current) setCurrent(index);
+  }, []);
+  useVerticalScrollSync(mode, scrollParentRef, virtualizer, syncVerticalPage);
 
   // Navigation clavier des planches.
   //

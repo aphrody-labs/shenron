@@ -1,6 +1,6 @@
 {
   "name": "@aphrody/shenron-auth",
-  "version": "1.4.4",
+  "version": "1.4.6",
   "private": false,
   "description": "Briques Better Auth partagées (site Next, bot Bun, API) : secret, origines, cookies, fournisseur Discord, handler Request/Response",
   "homepage": "https://dragonballfr.com",

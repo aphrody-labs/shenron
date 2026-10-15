@@ -28,7 +28,9 @@ import { sql, type SQL } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { assetUrl } from "@/lib/assets";
 import { API_URL as BOT_API_URL, SITE_URL } from "@/lib/config";
-import { dbUniverse, type MangaChapterRead, type MangaVolume } from "@/lib/db-universe";
+import type { MangaVolume } from "@/lib/db-universe";
+import { mangaData } from "@/lib/manga-data";
+import { mangaReaderAssetUrl } from "@/lib/manga-reader-assets";
 import { EDITION_PAR_SERIE, SERIE_COULEUR } from "@/lib/manga-editions";
 import { resolveMangaPage } from "@/lib/manga-assets";
 import { estCjk, extraitAutour, normaliser, scorer } from "@/lib/manga-search-rules";
@@ -118,7 +120,7 @@ function numeroDePlanche(chemin: string, index: number): number {
   // doit rendre 152, pas 37.
   const groupes = fichier.replace(/\.[a-z0-9]+$/i, "").match(/\d+/g);
   const n = groupes?.length ? Number(groupes[groupes.length - 1]) : NaN;
-  return Number.isFinite(n) && n > 0 ? n : index + 1;
+  return Number.isSafeInteger(n) && n >= 0 ? n : index + 1;
 }
 
 type LigneOcr = {
@@ -171,7 +173,7 @@ function decodeLignes(raw: string | null): string[] | null {
 
 /** Chapitre complet, planches adressables comprises. */
 export async function chapitreApi(id: number): Promise<ChapitreApi | null> {
-  const chapter = (await dbUniverse.mangaChapter(id)) as MangaChapterRead | null;
+  const chapter = await mangaData.mangaChapter(id);
   if (!chapter) return null;
   const ocr = await ocrDuChapitre(chapter);
 
@@ -182,7 +184,7 @@ export async function chapitreApi(id: number): Promise<ChapitreApi | null> {
       index: i + 1,
       page: numero,
       planche: numero,
-      image: assetUrl(chemin),
+      image: new URL(mangaReaderAssetUrl(chemin, chapter.sourceKind), SITE_URL).href,
       text: t?.text?.trim() ? t.text : null,
       lines: decodeLignes(t?.lines ?? null),
       lang: t?.lang ?? null,
@@ -279,11 +281,13 @@ export type TomeApi = MangaVolume & {
 
 /** Tome + ses chapitres, chacun avec son adresse d'API. */
 export async function tomeApi(id: number): Promise<TomeApi | null> {
-  const v = await dbUniverse.mangaVolume(id);
+  const v = await mangaData.mangaVolume(id);
   if (!v) return null;
   return {
     ...v,
-    cover_image: v.cover ? assetUrl(v.cover) : null,
+    cover_image: v.cover
+      ? new URL(mangaReaderAssetUrl(v.cover, v.sourceKind), SITE_URL).href
+      : null,
     href: `${SITE_URL}/wiki/manga/volume/${v.id}`,
     api: `${SITE_URL}/api/manga/volume/${v.id}`,
     chapters: (v.chapters ?? []).map((c) => ({

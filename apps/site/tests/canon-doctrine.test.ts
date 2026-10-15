@@ -300,3 +300,34 @@ describe("identifiants et mots-clés", () => {
     }
   });
 });
+
+describe("Super Saiyan 4 continuity", () => {
+  test.each([
+    "Super Saiyan 4 DAIMA",
+    "SSJ4 dans DAIMA",
+    "Goku SSJ4 DAIMA",
+    "Super Saiyan 4 de DAIMA",
+  ])("DAIMA is identified independently: %s", (query) => {
+    const result = analyzeCanon(query, DEFAULT_CANON_CONFIG);
+    expect(result.origine).toBe("entry:super-saiyan-4-daima");
+    expect(result.tier).toBe("CANON_SUPERVISE");
+    expect(result.sources).toContain("https://en.dragon-ball-official.com/news/01_3980.html");
+  });
+  test.each(["SSJ4 GT", "Goku SSJ4 GT", "Super Saiyan 4 Dragon Ball GT"])(
+    "GT retains its own attribution: %s",
+    (query) => {
+      expect(analyzeCanon(query, DEFAULT_CANON_CONFIG).origine).toBe("entry:super-saiyan-4-gt");
+    },
+  );
+  test("an unspecified version does not exclude DAIMA", () => {
+    const result = analyzeCanon("Super Saiyan 4", DEFAULT_CANON_CONFIG);
+    expect(result.verdict).toContain("DAIMA");
+    expect(result.verdict).toContain("GT");
+    expect(result.toriyamaQuote).toBeUndefined();
+  });
+  test("a power comparison does not infer strength from official status", () => {
+    const result = analyzeCanon("Super Saiyan 4 vs Super Saiyan God", DEFAULT_CANON_CONFIG);
+    expect(result.origine).toBe("entry:ssj4-vs-ssjg");
+    expect(result.verdict).toContain("ne démontre pas");
+  });
+});

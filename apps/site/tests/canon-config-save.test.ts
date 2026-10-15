@@ -18,6 +18,8 @@ import type { CanonReference } from "../src/lib/canon-engine";
 type Ligne = Record<string, unknown>;
 
 const tables = new Map<string, Ligne[]>();
+let unavailable = false;
+let raceSingleton = false;
 const dialect = new PgDialect();
 
 function colonnes(table: Table): Map<string, string> {
@@ -27,24 +29,31 @@ function colonnes(table: Table): Map<string, string> {
 /** Valeur comparable (les dates arrivent en ISO depuis le pilote simulé). */
 function comparable(v: unknown): unknown {
   if (v instanceof Date) return v.getTime();
+  if (v && typeof v === "object") return JSON.stringify(v);
   if (typeof v === "string" && /^\d{4}-\d{2}-\d{2}T/.test(v)) return Date.parse(v);
   return v;
 }
 
 /** Interprète `"t"."c" = $n`, `"t"."c" in ($n, …)` et leurs conjonctions `and`. */
+function exactTimestamp(row: Ligne): string {
+  return typeof row.updatedAtExact === "string"
+    ? row.updatedAtExact
+    : (row.updatedAt as Date).toISOString().replace("T", " ").replace(/Z$/, "");
+}
+
 function predicat(table: Table, condition: SQL | undefined): (l: Ligne) => boolean {
   if (!condition) return () => true;
   const { sql, params } = dialect.sqlToQuery(condition);
   const noms = colonnes(table);
   const termes = sql.replace(/^\((.*)\)$/, "$1").split(" and ");
   const tests = termes.map((terme) => {
-    const m = terme.match(/^"\w+"\."(\w+)" (=|in) (.+)$/);
+    const m = terme.match(/^"\w+"\."(\w+)"(::text)? (=|in) (.+)$/);
     if (!m) throw new Error(`condition non simulée : ${terme}`);
     const cle = noms.get(m[1]!)!;
     const valeurs = new Set(
-      [...m[3]!.matchAll(/\$(\d+)/g)].map((x) => comparable(params[Number(x[1]) - 1])),
+      [...m[4]!.matchAll(/\$(\d+)/g)].map((x) => comparable(params[Number(x[1]) - 1])),
     );
-    return (l: Ligne) => valeurs.has(comparable(l[cle]));
+    return (l: Ligne) => valeurs.has(comparable(m[2] ? exactTimestamp(l) : l[cle]));
   });
   return (l) => tests.every((t) => t(l));
 }
@@ -55,9 +64,11 @@ function lignes(table: Table): Ligne[] {
   return tables.get(nom)!;
 }
 
-function projeter(l: Ligne, champs?: Record<string, { name: string }>): Ligne {
+function projeter(l: Ligne, champs?: Record<string, unknown>): Ligne {
   if (!champs) return { ...l };
-  return Object.fromEntries(Object.keys(champs).map((k) => [k, l[k]]));
+  return Object.fromEntries(
+    Object.keys(champs).map((k) => [k, k === "updatedAtExact" ? exactTimestamp(l) : l[k]]),
+  );
 }
 
 /**
@@ -69,23 +80,33 @@ function promesse<T, E extends object>(valeur: T, extra: E): Promise<T> & E {
 }
 
 const fauxDb = {
-  select: (champs?: Record<string, { name: string }>) => ({
-    from: (table: Table) => ({
-      where: (condition?: SQL) => {
-        const lues = lignes(table)
-          .filter(predicat(table, condition))
-          .map((l) => projeter(l, champs));
-        return promesse(lues, { limit: async (n: number) => lues.slice(0, n) });
-      },
-    }),
-  }),
+  select: (champs?: Record<string, unknown>) => {
+    if (unavailable) throw new Error("database unavailable");
+    return {
+      from: (table: Table) => ({
+        where: (condition?: SQL) => {
+          const lues = lignes(table)
+            .filter(predicat(table, condition))
+            .map((l) => projeter(l, champs));
+          return promesse(lues, { limit: async (n: number) => lues.slice(0, n) });
+        },
+      }),
+    };
+  },
   update: (table: Table) => ({
     set: (valeurs: Ligne) => ({
       where: (condition?: SQL) => {
+        if (raceSingleton && getTableName(table) === "CanonConfig") {
+          raceSingleton = false;
+          lignes(table)[0]!.updatedAt = new Date("2099-01-01T00:00:00Z");
+        }
         const touchees = lignes(table).filter(predicat(table, condition));
-        for (const l of touchees) Object.assign(l, valeurs);
+        for (const l of touchees) {
+          if (valeurs.updatedAt) delete l.updatedAtExact;
+          Object.assign(l, valeurs);
+        }
         return promesse(touchees, {
-          returning: async (champs?: Record<string, { name: string }>) =>
+          returning: async (champs?: Record<string, unknown>) =>
             touchees.map((l) => projeter(l, champs)),
         });
       },
@@ -97,9 +118,10 @@ const fauxDb = {
         valeurs.id === undefined ? undefined : lignes(table).find((l) => l.id === valeurs.id);
       if (!existante) lignes(table).push({ ...valeurs });
       return promesse([valeurs], {
-        onConflictDoUpdate: async ({ set }: { set: Ligne }) => {
-          if (existante) Object.assign(existante, set);
-        },
+        onConflictDoNothing: () => ({
+          returning: async (champs?: Record<string, unknown>) =>
+            existante ? [] : [projeter(valeurs, champs)],
+        }),
         returning: async () => [valeurs],
       });
     },
@@ -108,8 +130,15 @@ const fauxDb = {
 };
 
 /** Une transaction simulée rejoue le même faux client. */
-function transaction<T>(fn: (tx: unknown) => Promise<T>): Promise<T> {
-  return fn(fauxDb);
+async function transaction<T>(fn: (tx: unknown) => Promise<T>): Promise<T> {
+  const before = structuredClone(tables);
+  try {
+    return await fn(fauxDb);
+  } catch (error) {
+    tables.clear();
+    for (const [key, values] of before) tables.set(key, values);
+    throw error;
+  }
 }
 
 const AUTOMATISATION = { id: "api-token", name: "Jeton API (automatisation)" };
@@ -128,8 +157,18 @@ mock.module("@/lib/session", () => ({
   revisionActorOf: () => AUTOMATISATION,
 }));
 
-const { saveCanonConfig, getCanonReferences } = await import("../src/lib/canon-config");
+const {
+  saveCanonConfig: saveVersionedCanonConfig,
+  getCanonReferences,
+  getCanonConfig,
+  getCanonConfigSnapshot,
+} = await import("../src/lib/canon-config");
 const { DEFAULT_CANON_CONFIG } = await import("../src/lib/canon-engine");
+
+async function saveCanonConfig(patch: unknown, by: string) {
+  const { expected } = await getCanonConfigSnapshot();
+  return (await saveVersionedCanonConfig(patch, by, expected)).config;
+}
 
 const T0 = new Date("2026-10-01T08:00:00.000Z");
 
@@ -172,7 +211,7 @@ function ligne(id: string): Ligne {
 }
 
 function revisions(): Ligne[] {
-  return tables.get("wiki_revisions") ?? [];
+  return (tables.get("wiki_revisions") ?? []).filter((row) => row.tableName === "canon_references");
 }
 
 /** Ce que l'éditeur lit (GET) : la doctrine du dépôt et le corpus visible. */
@@ -182,6 +221,8 @@ async function lecture(): Promise<CanonReference[]> {
 
 beforeEach(() => {
   tables.clear();
+  unavailable = false;
+  raceSingleton = false;
   tables.set(
     "canon_references",
     [
@@ -246,7 +287,9 @@ describe("saveCanonConfig et citations ingérées", () => {
     const references = lu.map((r) =>
       r.id === "planche-12-34" ? Object.assign({}, r, { visible: false }) : r,
     );
-    await saveCanonConfig({ ...DEFAULT_CANON_CONFIG, references }, "x");
+    await expect(
+      saveCanonConfig({ ...DEFAULT_CANON_CONFIG, references }, "x"),
+    ).rejects.toMatchObject({ status: 409 });
     expect(ligne("planche-12-34").visible).toBe(true);
     expect(revisions()).toHaveLength(0);
   });
@@ -260,7 +303,9 @@ describe("saveCanonConfig et citations ingérées", () => {
     const references = lu.map((r) =>
       r.id === "planche-12-34" ? Object.assign({}, r, { textFr: "Retouche de l'éditeur" }) : r,
     );
-    await saveCanonConfig({ ...DEFAULT_CANON_CONFIG, references }, "x");
+    await expect(
+      saveCanonConfig({ ...DEFAULT_CANON_CONFIG, references }, "x"),
+    ).rejects.toMatchObject({ status: 409 });
     expect(ligne("planche-12-34").textFr).toBe("Traduction réingérée");
   });
 
@@ -277,5 +322,165 @@ describe("saveCanonConfig et citations ingérées", () => {
       before: { textFr: "Traduction relue", visible: true },
       after: { textFr: "Retouche de l'éditeur", visible: true },
     });
+  });
+});
+
+describe("getCanonConfig preserves editorial choices", () => {
+  test("a saved empty entry and heuristic list stays empty and disabled scaling stays disabled", async () => {
+    const saved = {
+      ...structuredClone(DEFAULT_CANON_CONFIG),
+      entries: [],
+      heuristics: [],
+      powerScaling: { ...DEFAULT_CANON_CONFIG.powerScaling, enabled: false },
+    };
+    await saveCanonConfig(saved, "x");
+    const read = await getCanonConfig();
+    expect(read.entries).toEqual([]);
+    expect(read.heuristics).toEqual([]);
+    expect(read.powerScaling.enabled).toBe(false);
+    expect(read.references).toHaveLength(corpus().length);
+  });
+  test("a missing singleton still uses repository defaults", async () => {
+    const read = await getCanonConfig();
+    expect(read.entries).toEqual(DEFAULT_CANON_CONFIG.entries);
+    expect(read.heuristics).toEqual(DEFAULT_CANON_CONFIG.heuristics);
+    expect(read.powerScaling).toEqual(DEFAULT_CANON_CONFIG.powerScaling);
+  });
+});
+
+describe("strict canon snapshots and atomic saves", () => {
+  test("admin failure throws while public reads keep the fallback", async () => {
+    unavailable = true;
+    await expect(getCanonConfigSnapshot()).rejects.toThrow("database unavailable");
+    expect(await getCanonConfig()).toEqual(DEFAULT_CANON_CONFIG);
+    expect(await getCanonReferences()).toEqual([]);
+  });
+  test("missing precondition never writes", async () => {
+    await expect(
+      saveVersionedCanonConfig(DEFAULT_CANON_CONFIG, "x", undefined),
+    ).rejects.toMatchObject({ status: 428 });
+    expect(tables.get("CanonConfig")).toEqual([]);
+  });
+  test("a stale absent singleton cannot replace the first writer", async () => {
+    const { expected } = await getCanonConfigSnapshot();
+    const first = await saveVersionedCanonConfig(
+      { ...DEFAULT_CANON_CONFIG, entries: [] },
+      "x",
+      expected,
+    );
+    expect(first.expected).not.toBe(expected);
+    await expect(
+      saveVersionedCanonConfig(DEFAULT_CANON_CONFIG, "y", expected),
+    ).rejects.toMatchObject({ status: 409 });
+    expect((await getCanonConfigSnapshot()).config.entries).toEqual([]);
+  });
+  test("compare and swap detects a write between read and update", async () => {
+    await saveCanonConfig(DEFAULT_CANON_CONFIG, "x");
+    const before = await getCanonConfigSnapshot();
+    raceSingleton = true;
+    await expect(
+      saveVersionedCanonConfig({ ...before.config, entries: [] }, "x", before.expected),
+    ).rejects.toMatchObject({ status: 409 });
+  });
+  test("one stale reference rolls back doctrine and earlier reference revisions", async () => {
+    const before = await getCanonConfigSnapshot();
+    const references = before.config.references.map((r) => ({ ...r, visible: false }));
+    ligne("planche-12-34").updatedAt = new Date("2026-10-02T00:00:00Z");
+    await expect(
+      saveVersionedCanonConfig({ ...before.config, entries: [], references }, "x", before.expected),
+    ).rejects.toMatchObject({ status: 409 });
+    expect(tables.get("CanonConfig")).toEqual([]);
+    expect(corpus().every((r) => r.visible)).toBe(true);
+    expect(revisions()).toEqual([]);
+  });
+});
+
+test("snapshot includes data even if an external writer preserves the timestamp", async () => {
+  await saveCanonConfig(DEFAULT_CANON_CONFIG, "x");
+  const before = await getCanonConfigSnapshot();
+  tables.get("CanonConfig")![0]!.data = { ...DEFAULT_CANON_CONFIG, entries: [] };
+  await expect(saveVersionedCanonConfig(before.config, "x", before.expected)).rejects.toMatchObject(
+    { status: 409 },
+  );
+  expect((await getCanonConfigSnapshot()).config.entries).toEqual([]);
+});
+
+test("doctrine changes have a signed reversible revision in the same transaction", async () => {
+  const snapshot = await getCanonConfigSnapshot();
+  await saveVersionedCanonConfig(
+    { ...snapshot.config, entries: [] },
+    "token-admin",
+    snapshot.expected,
+  );
+  const history = (tables.get("wiki_revisions") ?? []).filter(
+    (row) => row.tableName === "CanonConfig",
+  );
+  expect(history).toHaveLength(1);
+  expect(history[0]).toMatchObject({
+    rowId: "default",
+    action: "update",
+    before: null,
+    editorId: "api-token",
+    editorName: "Jeton API (automatisation)",
+  });
+  expect((history[0]!.after as { entries: unknown[] }).entries).toEqual([]);
+  const unchanged = await getCanonConfigSnapshot();
+  await saveVersionedCanonConfig(unchanged.config, "token-admin", unchanged.expected);
+  expect(
+    (tables.get("wiki_revisions") ?? []).filter((row) => row.tableName === "CanonConfig"),
+  ).toHaveLength(1);
+});
+
+describe("exact PostgreSQL row versions", () => {
+  test("a microsecond reference remains editable with an ISO display timestamp", async () => {
+    const row = ligne("planche-12-34");
+    row.updatedAt = new Date("2026-10-01T08:00:00.123Z");
+    row.updatedAtExact = "2026-10-01 08:00:00.123456";
+    const read = await getCanonConfigSnapshot();
+    const ref = read.config.references.find((r) => r.id === row.id)!;
+    expect(ref.updatedAt).toBe("2026-10-01T08:00:00.123Z");
+    expect(ref.version).toMatch(/^[a-f0-9]{64}$/);
+    ref.textFr = "Reviewed";
+    await saveVersionedCanonConfig(read.config, "x", read.expected);
+    expect(ligne("planche-12-34").textFr).toBe("Reviewed");
+  });
+  test("a reference update within the same millisecond conflicts and rolls back", async () => {
+    ligne("planche-12-34").updatedAtExact = "2026-10-01 08:00:00.123456";
+    const read = await getCanonConfigSnapshot();
+    ligne("planche-12-34").updatedAtExact = "2026-10-01 08:00:00.123789";
+    read.config.references.find((r) => r.id === "planche-12-34")!.visible = false;
+    await expect(saveVersionedCanonConfig(read.config, "x", read.expected)).rejects.toMatchObject({
+      status: 409,
+    });
+    expect(ligne("planche-12-34").visible).toBe(true);
+    expect(tables.get("CanonConfig")).toEqual([]);
+  });
+  test("a microsecond singleton round trips without a false conflict", async () => {
+    await saveCanonConfig(DEFAULT_CANON_CONFIG, "x");
+    tables.get("CanonConfig")![0]!.updatedAtExact = "2026-10-01 08:00:00.123456";
+    const read = await getCanonConfigSnapshot();
+    read.config.entries = [];
+    const saved = await saveVersionedCanonConfig(read.config, "x", read.expected);
+    expect(saved.config.entries).toEqual([]);
+    expect(saved.expected).toBe((await getCanonConfigSnapshot()).expected);
+  });
+  test("a singleton update within the same millisecond invalidates the opaque token", async () => {
+    await saveCanonConfig(DEFAULT_CANON_CONFIG, "x");
+    tables.get("CanonConfig")![0]!.updatedAtExact = "2026-10-01 08:00:00.123456";
+    const read = await getCanonConfigSnapshot();
+    tables.get("CanonConfig")![0]!.updatedAtExact = "2026-10-01 08:00:00.123789";
+    await expect(saveVersionedCanonConfig(read.config, "x", read.expected)).rejects.toMatchObject({
+      status: 409,
+    });
+  });
+  test("legacy millisecond-only reference edits fail closed until refreshed", async () => {
+    const read = await getCanonConfigSnapshot();
+    const ref = read.config.references.find((r) => r.id === "planche-12-34")!;
+    delete ref.version;
+    ref.visible = false;
+    await expect(saveVersionedCanonConfig(read.config, "x", read.expected)).rejects.toMatchObject({
+      status: 409,
+    });
+    expect(ligne("planche-12-34").visible).toBe(true);
   });
 });

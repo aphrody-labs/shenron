@@ -200,13 +200,21 @@ async function sync(config: RemoteDevConfig): Promise<string> {
   const checkout = [
     "set -e",
     `cd "$HOME/${config.workspace}"`,
-    `git -c advice.detachedHead=false checkout -q -f --detach ${sha}`,
-    // Untracked leftovers of an older snapshot go; ignored outputs (node_modules, target, .next-dev) stay warm.
-    "git clean -fdq",
+    ...snapshotCheckoutCommands(sha).map((args) => ["git", ...args].map(shellQuote).join(" ")),
   ].join("\n");
   if ((await ssh(config, checkout)) !== 0) throw new Error("remote checkout failed");
   console.log(`remote-dev: ${config.host}:~/${config.workspace} at ${sha.slice(0, 12)}`);
   return sha;
+}
+
+/** Restore gitlink workspaces before Bun resolves their workspace dependencies. */
+export function snapshotCheckoutCommands(sha: string): string[][] {
+  return [
+    ["-c", "advice.detachedHead=false", "checkout", "-q", "-f", "--detach", sha],
+    ["submodule", "update", "--init", "--recursive"],
+    // Keep ignored build caches while discarding leftovers from an older snapshot.
+    ["clean", "-fdq"],
+  ];
 }
 
 async function run(config: RemoteDevConfig, command: string): Promise<number> {

@@ -14,7 +14,8 @@
  * doctrine avant de l'enregistrer.
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useT } from "@/components/T";
 import {
   Alerte,
   Chargement,
@@ -254,18 +255,36 @@ function Section({
 export default function CanonEditor({
   initial,
   defaults,
+  initialExpected,
 }: {
   initial: CanonConfig;
   defaults: CanonConfig;
+  initialExpected?: string;
 }) {
+  const translate = useT();
   const [config, setConfig] = useState<CanonConfig>(initial);
+  const [expected, setExpected] = useState<string | null>(initialExpected ?? null);
+  const sourceVersion = useRef(initialExpected);
   const [saving, setSaving] = useState(false);
+  const [reloading, setReloading] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [essai, setEssai] = useState("");
   const [filtreRef, setFiltreRef] = useState("");
   const [toutesRefs, setToutesRefs] = useState(false);
   /** Modifications en attente d'enregistrement — la page en fait 8 000 px. */
   const [modifie, setModifie] = useState(false);
+
+  useEffect(() => {
+    if (sourceVersion.current === initialExpected) return;
+    sourceVersion.current = initialExpected;
+    if (modifie) {
+      setExpected(null);
+      setMsg({ ok: false, text: translate("canonEditorSync.conflict") });
+      return;
+    }
+    setConfig(initial);
+    setExpected(initialExpected ?? null);
+  }, [initial, initialExpected, modifie, translate]);
 
   const patch = (p: Partial<CanonConfig>) => {
     setConfig((c) => ({ ...c, ...p }));
@@ -291,29 +310,62 @@ export default function CanonEditor({
   );
 
   async function enregistrer() {
+    if (!expected) {
+      setMsg({ ok: false, text: translate("canonEditorSync.baselineMissing") });
+      return;
+    }
     setSaving(true);
     setMsg(null);
     try {
       const res = await fetch("/api/canon-config", {
         method: "PUT",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify(config),
+        body: JSON.stringify({ config, expected }),
       });
       const data = (await res.json()) as {
         ok?: boolean;
         config?: CanonConfig;
+        expected?: string;
         error?: string;
       };
-      if (res.ok && data.ok && data.config) {
+      if (res.ok && data.config && typeof data.expected === "string") {
         setConfig(data.config);
-        setMsg({ ok: true, text: "Doctrine enregistrée — /wiki/canon l'applique immédiatement." });
+        setExpected(data.expected);
+        setModifie(false);
+        setMsg({ ok: true, text: translate("canonEditorSync.saved") });
       } else {
-        setMsg({ ok: false, text: data.error ?? "Échec de l'enregistrement." });
+        if (res.status === 409 || res.status === 428) setExpected(null);
+        setMsg({
+          ok: false,
+          text:
+            res.status === 409
+              ? translate("canonEditorSync.conflict")
+              : translate("canonEditorSync.saveFailed"),
+        });
       }
     } catch {
-      setMsg({ ok: false, text: "Erreur réseau." });
+      setMsg({ ok: false, text: translate("canonEditorSync.networkFailed") });
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function reloadSaved() {
+    setReloading(true);
+    try {
+      const response = await fetch("/api/canon-config", { cache: "no-store" });
+      const data = await response.json();
+      if (!response.ok || !data.config || typeof data.expected !== "string")
+        throw new Error("Unavailable snapshot");
+      setConfig(data.config);
+      setExpected(data.expected);
+      setModifie(false);
+      setMsg(null);
+    } catch {
+      setExpected(null);
+      setMsg({ ok: false, text: translate("canonEditorSync.loadFailed") });
+    } finally {
+      setReloading(false);
     }
   }
 
@@ -360,7 +412,11 @@ export default function CanonEditor({
     patch({ heuristics: config.heuristics.map((h, index) => (index === i ? { ...h, ...p } : h)) });
 
   return (
-    <div className="space-y-4 pb-24">
+    <fieldset
+      disabled={saving || reloading}
+      aria-label={translate("canonEditorSync.editorLabel")}
+      className="min-w-0 border-0 p-0 space-y-4 pb-24"
+    >
       {/* Barre d'action ------------------------------------------------- */}
       {/*
        * Le `sticky` porte sur l'enveloppe et non sur le panneau : `.dbz-panel`
@@ -389,11 +445,20 @@ export default function CanonEditor({
               )}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={reloadSaved}
+              disabled={saving || reloading}
+              className="dbz-button disabled:opacity-50"
+            >
+              {translate("canonEditorSync.reload")}
+            </button>
             <button
               type="button"
               onClick={() => {
                 setConfig(structuredClone(defaults));
+                setModifie(true);
                 setMsg({
                   ok: true,
                   text: "Doctrine du dépôt rechargée — rien n'est enregistré tant que tu ne cliques pas sur Enregistrer.",
@@ -407,7 +472,7 @@ export default function CanonEditor({
             <button
               type="button"
               onClick={enregistrer}
-              disabled={saving}
+              disabled={saving || reloading || !expected || !modifie}
               className="dbz-button gap-2 disabled:opacity-50"
             >
               {saving ? (
@@ -1372,6 +1437,6 @@ export default function CanonEditor({
           </div>
         )}
       </Section>
-    </div>
+    </fieldset>
   );
 }

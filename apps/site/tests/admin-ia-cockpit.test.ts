@@ -18,6 +18,7 @@ import {
 // runs on the preloaded Shenron PostgreSQL/E5/Redis services.
 
 mock.module("server-only", () => ({}));
+mock.module("next/cache", () => ({ revalidatePath: () => {} }));
 
 type Caller = "admin" | "member" | "anonymous";
 let caller: Caller = "admin";
@@ -51,9 +52,24 @@ mock.module("@/lib/session", () => ({
 }));
 
 const canonConfig = { tiers: [], rules: [] };
+class FakeCanonConfigWriteError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+  ) {
+    super(message);
+  }
+}
+
 mock.module("@/lib/canon-config", () => ({
+  CanonConfigWriteError: FakeCanonConfigWriteError,
+  getCanonConfigSnapshot: async () => ({ config: canonConfig, expected: "a".repeat(64) }),
   getCanonConfig: async () => canonConfig,
-  saveCanonConfig: async (patch: unknown) => patch,
+  saveCanonConfig: async (patch: unknown, _by: unknown, expected: unknown) => {
+    if (!expected) throw new FakeCanonConfigWriteError("snapshot required", 428);
+    if (expected !== "a".repeat(64)) throw new FakeCanonConfigWriteError("snapshot changed", 409);
+    return { config: patch, expected: "b".repeat(64) };
+  },
 }));
 mock.module("@/lib/canon-preuves", () => ({ canonPreuves: async () => ({ references: [] }) }));
 mock.module("@/lib/admin-lab", () => ({
@@ -227,6 +243,7 @@ describe("Cockpit Admin IA — route /api/admin/ai", () => {
     expect(json.summary.mode).toBeNull();
     expect(json.summary.goldCases).toBe(3);
     expect(json.canonConfig).toEqual(canonConfig);
+    expect(json.canonExpected).toBe("a".repeat(64));
     expect(json.canonDefaults).toBeDefined();
     // Legacy fields that hid failures behind zeros are gone.
     expect(json.stats).toBeUndefined();
@@ -355,5 +372,23 @@ describe("Cockpit Admin IA — route /api/admin/ai", () => {
 
   test("action inconnue", async () => {
     expect((await post({ action: "drop_everything" })).status).toBe(400);
+  });
+});
+
+test("save_canon requires the same snapshot as the dedicated editor endpoint", async () => {
+  expect((await post({ action: "save_canon", config: canonConfig })).status).toBe(428);
+  expect(
+    (await post({ action: "save_canon", config: canonConfig, expected: "stale" })).status,
+  ).toBe(409);
+  const response = await post({
+    action: "save_canon",
+    config: canonConfig,
+    expected: "a".repeat(64),
+  });
+  expect(response.status).toBe(200);
+  expect(await response.json()).toEqual({
+    ok: true,
+    config: canonConfig,
+    expected: "b".repeat(64),
   });
 });

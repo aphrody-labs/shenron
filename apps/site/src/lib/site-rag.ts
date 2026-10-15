@@ -1,6 +1,8 @@
 import "server-only";
+import { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } from "@aphrody/shenron-config/chat-model";
 import {
   AiConfigError,
+  chatTimeoutMs,
   resolveChatModel,
   resolveDirectChat,
 } from "@aphrody/shenron-pipeline/ai/config";
@@ -9,10 +11,12 @@ import {
   aphrodyComputeFromChat,
   type AphrodyRagHit,
   type ChatFn,
-  createOpenAiChat,
 } from "@aphrody/shenron-pipeline/aphrody/compute";
 import { buildGroundingInstructions, resolvePersona } from "@aphrody/shenron-pipeline/ai/prompts";
-import { createShenronProvider } from "@aphrody/shenron-pipeline/ai/provider";
+import {
+  createOpenAICompatibleChat,
+  createShenronProvider,
+} from "@aphrody/shenron-pipeline/ai/provider";
 import { generateText } from "ai";
 
 export function usesAphrodyRag(): boolean {
@@ -45,17 +49,6 @@ function chatProvider(chat: ChatFn, chatModel: string) {
   );
 }
 
-/** Chat function and model id: the direct server when declared, else the facade. */
-function chatRoute(client: Pick<AphrodyComputeClient, "chat">): { chat: ChatFn; model: string } {
-  const direct = resolveDirectChat(process.env);
-  if (!direct.ok) throw new AiConfigError("direct chat server", direct.issues);
-  if (direct.value) return { chat: createOpenAiChat(direct.value), model: direct.value.model };
-  return {
-    chat: (messages, model) => client.chat(messages, model),
-    model: resolveChatModel(process.env),
-  };
-}
-
 export async function chatAphrodyRag(
   query: string,
   persona: string,
@@ -80,11 +73,26 @@ export async function chatAphrodyRag(
     : sources;
   // Serveur direct déclaré (APHRODY_AI_CHAT_BASE_URL), sinon aphrody-ai-http ; modèle :
   // `APHRODY_AI_CHAT_MODEL`, puis les alias hérités (résolveur unique @aphrody/shenron-pipeline/ai/config).
-  const route = chatRoute(client);
+  const direct = resolveDirectChat(process.env);
+  if (!direct.ok) throw new AiConfigError("direct chat server", direct.issues);
+  const model = direct.value
+    ? createOpenAICompatibleChat({
+        baseUrl: direct.value.baseUrl,
+        modelId: direct.value.model,
+        ...(direct.value.apiKey ? { token: direct.value.apiKey } : {}),
+      })
+    : chatProvider(
+        (messages, id) => client.chat(messages, id),
+        resolveChatModel(process.env),
+      ).languageModel("chat");
   const pid = resolvePersona(persona);
   const instructions = buildGroundingInstructions(pid, "site-short");
   const { text } = await generateText({
-    model: chatProvider(route.chat, route.model).languageModel("chat"),
+    model,
+    maxOutputTokens: PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS,
+    abortSignal: AbortSignal.timeout(
+      chatTimeoutMs(direct.value?.model ?? resolveChatModel(process.env)),
+    ),
     instructions,
     messages: [{ role: "user", content: `Sources :\n${context}\n\nQuestion : ${query}` }],
     maxRetries: 0,

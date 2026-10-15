@@ -122,3 +122,32 @@ describe("chat grounding guard", () => {
     expect(system).not.toContain(STRICT_GROUNDING_RULE);
   });
 });
+
+test("explicit live retrieval supplies current sources instead of the embedded snapshot", async () => {
+  const b = backend();
+  let liveReads = 0;
+  let snapshotReads = 0;
+  const engine = createChatEngine({
+    rag: {
+      searchWith: async () => {
+        snapshotReads++;
+        return { hits: [], mode: "lexical" };
+      },
+    } as never,
+    retrieval: async () => {
+      liveReads++;
+      return { hits: [{ ...hit, content: "Fresh canonical editorial passage." }], mode: "hybrid" };
+    },
+    backends: [b.backend],
+    home,
+  });
+  const result = await turn(engine, "Qui est Vegeta ?");
+  expect(liveReads).toBe(1);
+  expect(snapshotReads).toBe(0);
+  expect(result.events.find((event) => event.type === "meta")?.data.retrieval.mode).toBe("hybrid");
+  expect(
+    b.calls[0]!.messages.some((message) =>
+      message.content.includes("Fresh canonical editorial passage."),
+    ),
+  ).toBe(true);
+});

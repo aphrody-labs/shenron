@@ -28,11 +28,22 @@ afterEach(async () => {
   actEnvironment.IS_REACT_ACT_ENVIRONMENT = original;
 });
 
-test("only the two public themes can be selected or restored", () => {
+test("neutral is the default and episode palettes require an explicit selection", () => {
   expect(resolveEpisodeTheme("goku")).toBe("goku");
+  expect(resolveEpisodeTheme("beerus")).toBe("beerus");
   for (const value of [null, undefined, "legacy", "<script>"])
-    expect(resolveEpisodeTheme(value)).toBe("beerus");
+    expect(resolveEpisodeTheme(value)).toBe("neutral");
 });
+
+test.skipIf(typeof document === "undefined")(
+  "a fresh visit restores the neutral site theme before hydration",
+  () => {
+    localStorage.removeItem(EPISODE_THEME_KEY);
+    new Function(EPISODE_THEME_BOOT)();
+    expect(document.documentElement.dataset.episodeTheme).toBe("neutral");
+    expect(document.documentElement.classList.contains("dark")).toBe(true);
+  },
+);
 
 test.skipIf(typeof document === "undefined")(
   "the saved light palette is applied before hydration",

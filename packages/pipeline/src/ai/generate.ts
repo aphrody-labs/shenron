@@ -89,6 +89,8 @@ export interface GroundedAnswerInput {
   concurrency?: ConcurrencyPort;
   sessionId?: string;
   abortSignal?: AbortSignal;
+  /** Explicit generation budget, forwarded unchanged to the model provider. */
+  maxOutputTokens?: number;
   contextLimits?: Partial<ContextLimits>;
   historyTurns?: number;
   /**
@@ -313,6 +315,7 @@ export async function generateGroundedAnswer(i: GroundedAnswerInput): Promise<Gr
         instructions,
         messages,
         maxRetries: 0,
+        ...(i.maxOutputTokens !== undefined ? { maxOutputTokens: i.maxOutputTokens } : {}),
         ...(i.abortSignal ? { abortSignal: i.abortSignal } : {}),
       });
       return result.text.trim();

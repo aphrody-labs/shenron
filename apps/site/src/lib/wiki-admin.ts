@@ -569,11 +569,13 @@ export async function updateWiki(
   }
   const cond = pkCondition(spec, id);
   if (
-    table === "db_episodes" &&
-    (options.expected || options.expectedSha256 || Object.hasOwn(values, "frames"))
+    !isMediaCatalogTable(table) &&
+    (options.expected ||
+      options.expectedSha256 ||
+      (table === "db_episodes" && Object.hasOwn(values, "frames")))
   ) {
     if (!options.expected || !options.expectedSha256) {
-      throw new WikiUpdateRequestError("Complete episode snapshot and SHA256 required");
+      throw new WikiUpdateRequestError("Complete wiki snapshot and SHA256 required");
     }
     return db.transaction(async (tx) => {
       await tx.execute(
@@ -595,9 +597,6 @@ export async function updateWiki(
       return updated;
     });
   }
-  if (options.expected && !isMediaCatalogTable(table)) {
-    throw new Error("Guarded wiki updates require the media catalog transaction owner");
-  }
   if (isMediaCatalogTable(table)) {
     return db.transaction(async (tx) => {
       await lockMediaCatalog(tx, table);
@@ -610,7 +609,14 @@ export async function updateWiki(
       }
       const [before] = (await tx.select().from(spec.table).where(cond).limit(1)) as Row[];
       if (!before) throw new Error(`Ligne introuvable: ${table}#${id}`);
-      if (options.expected) assertWikiUpdatePrecondition(before, options.expected);
+      if (options.expected) {
+        assertWikiUpdatePrecondition(before, options.expected, {
+          complete: Boolean(options.expectedSha256),
+          sha256: options.expectedSha256,
+        });
+      } else if (options.expectedSha256) {
+        throw new WikiUpdateRequestError("Complete wiki snapshot and SHA256 required");
+      }
       // Existing duplicate notices still need metadata repairs without new identities.
       if (
         MEDIA_IDENTITY_FIELDS[table].some(

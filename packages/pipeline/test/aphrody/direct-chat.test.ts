@@ -79,3 +79,28 @@ test("SDK provider generates and streams vLLM-compatible replies through the con
   for await (const part of result.textStream) text += part;
   expect(text).toBe("龍");
 });
+
+test("the native direct provider forwards SDK output budgets into the actual HTTP request", async () => {
+  const env = upstream(async (request) => {
+    const input = (await request.json()) as { max_tokens?: number };
+    expect(input.max_tokens).toBe(160);
+    return Response.json({
+      id: "bounded",
+      object: "chat.completion",
+      created: 1,
+      model,
+      choices: [
+        { index: 0, message: { role: "assistant", content: "Goku [1]." }, finish_reason: "stop" },
+      ],
+    });
+  });
+  const cfg = resolveAiConfig(env);
+  if (!cfg.ok) throw new Error("AI configuration invalid");
+  const provider = createShenronProvider(cfg.config, { compute: null });
+  await generateText({
+    model: provider.languageModel("chat"),
+    prompt: "Qui est Goku ?",
+    maxOutputTokens: 160,
+    maxRetries: 0,
+  });
+});

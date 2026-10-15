@@ -14,6 +14,8 @@ import { join } from "node:path";
 mock.module("server-only", () => ({}));
 mock.module("@/lib/config", () => ({
   API_URL: "http://bot.test",
+  CDN_ORIGIN: "https://cdn.dragonballfr.com",
+  API_ORIGIN: "http://bot.test",
   ASSET_BASE: "http://bot.test/assets",
   SITE_URL: "https://dragonballfr.com",
 }));
@@ -85,6 +87,14 @@ mock.module("@/lib/db-universe", () => ({
         href: "/wiki/episodes/5",
       },
     ],
+  },
+}));
+mock.module("@/lib/manga-data", () => ({
+  mangaData: {
+    mangaChapter: async (id: number) => {
+      const { dbUniverse } = await import("../src/lib/db-universe");
+      return dbUniverse.mangaChapter(id);
+    },
   },
 }));
 mock.module("@/lib/chronology-config", () => ({ getChronologyConfig: async () => ({}) }));
