@@ -126,3 +126,21 @@ reçus de génération, empreintes, pic mémoire et santé avant tout basculemen
 La rétention supprime uniquement les générations gérées et vérifiées hors
 current+previous ; le bootstrap externe et les artefacts sans reçu valide
 restent protégés et exigent une récupération propriétaire explicite.
+
+## Découverte Search optionnelle
+
+La configuration privée peut ajouter `search` avec `queries` (1–8 recherches),
+`domains` (1–8 domaines explicites), `count` (1–20), `cookieJar` (chemin absolu
+canonique, fichier privé) et `timeoutMs` (maximum120000). Le plan épingle cette
+entrée ; seul `collect` lance `bun search --json`. Chaque recherche ajoute les
+restrictions `site:` validées, refuse les résultats hors domaines et borne la
+sortie à256Kio. Le cookie jar passe par `APHRODY_GOOGLE_COOKIES_JSON`, jamais
+par les arguments ni les journaux. Le reçu privé et son empreinte sont repris
+par le journal existant ; un replay ne relance pas la recherche.
+
+Ces résultats sont uniquement des pistes de découverte avec provenance. Ils
+n’ajoutent aucune source autorisée au crawl, aucune entrée PostgreSQL, aucun
+canon ni publication. Le runtime doit réellement fournir la commande Search
+qualifiée ; une commande absente ou un refus d’authentification échoue sans
+repli. L’isolation VPN appartient au job hôte qualifié qui lance le pipeline :
+aucune option publique de commande shell ou namespace n’est acceptée ici.
