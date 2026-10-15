@@ -72,6 +72,8 @@ export async function exportMangaHandoff(
 ) {
   await privateDir(out);
   await privateDir(join(pool, "derived/candidate-inbox"));
+  if (!(await Bun.file(join(pool, "frontier.sqlite")).exists()))
+    return { complete: true, empty: true, artifacts: 0, waiting: "source-pool-frontier" };
   const statePath = join(out, "export-state.json");
   const state = (await Bun.file(statePath).exists())
     ? ((await Bun.file(statePath).json()) as { sent: string[]; metadata: string[] })
