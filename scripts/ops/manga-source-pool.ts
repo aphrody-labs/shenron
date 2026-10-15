@@ -61,6 +61,40 @@ const sourceHosts = new Set([
   "cdn-ak-img.shonenjumpplus.com",
 ]);
 const day = 86400000;
+export const POOL_HOST_DELAY_MS = 2000;
+export const POOL_HOST_DAILY_LIMIT = 2000;
+const discoveryLinkLimit = 150;
+const discoveryMediaLimit = 2500;
+const discoveryTotalLimit = discoveryLinkLimit + discoveryMediaLimit;
+const isMediaObject = (value: string) => {
+  const url = new URL(value);
+  return (
+    /\.(?:jpe?g|png|webp|jp2|pdf|cbz|zip)(?:$|\?)/i.test(url.href) ||
+    (url.hostname === "cdn-ak-img.shonenjumpplus.com" && url.pathname.startsWith("/public/page/"))
+  );
+};
+function boundedPoolCandidates(values: Iterable<string>) {
+  const found: string[] = [];
+  const seen = new Set<string>();
+  let links = 0,
+    media = 0;
+  for (const value of values) {
+    if (seen.has(value)) continue;
+    seen.add(value);
+    let scan = false;
+    try {
+      scan = isMediaObject(value);
+    } catch {
+      continue;
+    }
+    if (scan ? media >= discoveryMediaLimit : links >= discoveryLinkLimit) continue;
+    if (scan) media++;
+    else links++;
+    found.push(value);
+    if (found.length >= discoveryTotalLimit) break;
+  }
+  return found;
+}
 export function poolUrl(value: string): URL {
   const url = new URL(value);
   if (
@@ -81,35 +115,44 @@ export function poolUrl(value: string): URL {
 /** Keep unapproved hosts as review evidence; only reviewed providers enter recursive queues. */
 export function discoveredPoolUrls(value: unknown, base: string): string[] {
   const urls = new Set<string>();
+  let links = 0,
+    media = 0,
+    visited = 0;
   const add = (candidate: string) => {
     try {
       const url = new URL(candidate.replaceAll("&amp;", "&"), base);
       if (url.protocol === "https:" && !url.username && !url.password && !url.port) {
         url.hash = "";
+        if (urls.has(url.href)) return;
+        const scan = isMediaObject(url.href);
+        if (scan ? media >= discoveryMediaLimit : links >= discoveryLinkLimit) return;
+        if (scan) media++;
+        else links++;
         urls.add(url.href);
       }
     } catch {}
   };
   const visit = (item: unknown, depth = 0) => {
-    if (depth > 8 || urls.size >= 150) return;
+    if (depth > 8 || urls.size >= discoveryTotalLimit || ++visited > 20000) return;
     if (typeof item === "string") {
       if (item.startsWith("https://")) add(item);
       for (const match of item.matchAll(/https:\/\/[^\s"'<>\\]+/g)) {
         add(match[0]);
-        if (urls.size >= 150) break;
+        if (urls.size >= discoveryTotalLimit) break;
       }
       for (const match of item.matchAll(/(?:href|src)=["']([^"']+)["']/gi)) {
         add(match[1]!);
-        if (urls.size >= 150) break;
+        if (urls.size >= discoveryTotalLimit) break;
       }
-    } else if (Array.isArray(item)) for (const child of item.slice(0, 500)) visit(child, depth + 1);
+    } else if (Array.isArray(item))
+      for (const child of item.slice(0, discoveryTotalLimit)) visit(child, depth + 1);
     else if (item && typeof item === "object")
       for (const [key, child] of Object.entries(item)) {
         if (!["robots", "nativeGoogle"].includes(key)) visit(child, depth + 1);
       }
   };
   visit(value);
-  return [...urls].slice(0, 150);
+  return [...urls];
 }
 
 /** Follow identifiers and folder entries actually returned by their canonical owners. */
@@ -165,7 +208,7 @@ export function structuredPoolUrls(value: unknown, base: string): string[] {
       }
     }
   }
-  return [...found].slice(0, 150);
+  return boundedPoolCandidates(found);
 }
 export function retainPoolCandidates(
   frontier: MangaSourceFrontier,
@@ -175,7 +218,7 @@ export function retainPoolCandidates(
 ) {
   let queued = 0,
     review = 0;
-  for (const value of urls.slice(0, 150)) {
+  for (const value of boundedPoolCandidates(urls)) {
     let approved = false,
       reason = "provider-review-required",
       url: URL;
@@ -209,10 +252,7 @@ export function retainPoolCandidates(
       continue;
     }
     if (parent.depth >= 2 || url!.hostname === "www.google.com") continue;
-    const scan =
-      /\.(?:jpe?g|png|webp|jp2|pdf|cbz|zip)(?:$|\?)/i.test(url!.href) ||
-      (url!.hostname === "cdn-ak-img.shonenjumpplus.com" &&
-        url!.pathname.startsWith("/public/page/"));
+    const scan = isMediaObject(url!.href);
     const kind: Kind =
       ownHosts.has(url!.hostname) && url!.pathname === "/api/catalog"
         ? "inventory"
@@ -274,6 +314,7 @@ export class MangaSourceFrontier {
     const url = poolUrl(task.url);
     if (task.depth > 3) return false;
     const id = poolDigest(task.kind + "\n" + url.href);
+    if (this.db.query("SELECT 1 FROM pool_tasks WHERE id=?").get(id)) return false;
     const count = this.db
       .query<{ total: number }, []>("SELECT count(*) AS total FROM pool_tasks")
       .get()!.total;
@@ -294,8 +335,26 @@ export class MangaSourceFrontier {
           "SELECT id,kind,url,host,depth,attempts,series,volumeId FROM pool_tasks t WHERE state IN ('queued','retry','done','robots_refused','provider_blocked') AND nextAt<=? AND NOT EXISTS(SELECT 1 FROM pool_circuits c WHERE c.host=t.host AND c.untilAt>?) ORDER BY CASE kind WHEN 'catalog' THEN 0 WHEN 'volume' THEN 1 WHEN 'chapter' THEN 2 WHEN 'browser' THEN 3 ELSE 4 END,updatedAt LIMIT 512",
         )
         .all(now, now);
-      const row = candidates.find((task) => !excludedHosts.includes(task.host));
+      const date = new Date(now).toISOString().slice(0, 10);
+      const row = candidates.find((task) => {
+        if (excludedHosts.includes(task.host)) return false;
+        const used = Number(this.meta(`host-budget:${task.host}:${date}`) ?? 0);
+        if (used < POOL_HOST_DAILY_LIMIT) return true;
+        this.db
+          .query(
+            "INSERT INTO pool_circuits VALUES (?,?) ON CONFLICT(host) DO UPDATE SET untilAt=MAX(untilAt,excluded.untilAt)",
+          )
+          .run(task.host, Date.parse(date) + day);
+        return false;
+      });
       if (!row) return null;
+      const budgetKey = `host-budget:${row.host}:${date}`;
+      this.meta(budgetKey, Number(this.meta(budgetKey) ?? 0) + 1);
+      this.db
+        .query(
+          "INSERT INTO pool_circuits VALUES (?,?) ON CONFLICT(host) DO UPDATE SET untilAt=MAX(untilAt,excluded.untilAt)",
+        )
+        .run(row.host, now + POOL_HOST_DELAY_MS);
       this.db
         .query(
           "UPDATE pool_tasks SET state='running',attempts=attempts+1,leaseAt=?,updatedAt=? WHERE id=?",
@@ -683,10 +742,10 @@ export async function executeTask(
         : ["discovery", "bibliography", "inventory"].includes(task.kind)
           ? task.kind === "inventory"
             ? structuredPoolUrls(json, task.url)
-            : [
+            : boundedPoolCandidates([
                 ...structuredPoolUrls(json, task.url),
                 ...discoveredPoolUrls(json ?? body, task.url),
-              ].slice(0, 150)
+              ])
           : [],
     children,
   };

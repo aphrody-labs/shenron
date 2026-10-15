@@ -11,6 +11,8 @@ import {
   retainPoolCandidates,
   poolUrl,
   retryDelay,
+  POOL_HOST_DELAY_MS,
+  POOL_HOST_DAILY_LIMIT,
 } from "./manga-source-pool";
 
 const volume = (id: number, series = "SOSH", readableHere = false) => ({
@@ -43,15 +45,77 @@ test("durable frontier survives process restart and refuses recovery of live lea
     frontier = new MangaSourceFrontier(db);
     expect(() => frontier.recover(false)).toThrow("Live owner");
     expect(frontier.recover(true)).toBe(1);
-    const resumed = frontier.claim([], 200)!;
+    expect(frontier.claim([], 200)).toBeNull();
+    const resumed = frontier.claim([], 100 + POOL_HOST_DELAY_MS)!;
     expect(resumed.id).toBe(claimed.id);
     expect(resumed.attempts).toBe(2);
-    frontier.settle(resumed, "done", "receipt.json", null, 200);
-    expect(frontier.claim([], 201)).toBeNull();
+    frontier.settle(resumed, "done", "receipt.json", null, 2200);
+    expect(frontier.claim([], 2201)).toBeNull();
     expect(frontier.counts().done).toBe(1);
   } finally {
     db.close();
     await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("host cooldown and daily reservations survive restart and reset only at the UTC day boundary", () => {
+  const db = new Database(":memory:");
+  let frontier = new MangaSourceFrontier(db);
+  try {
+    const start = Date.parse("2026-10-15T01:00:00Z");
+    frontier.enqueue(task(), start);
+    frontier.enqueue({ ...task(), url: "https://dragonballfr.com/api/manga/volume/701" }, start);
+    frontier.meta("host-budget:dragonballfr.com:2026-10-15", POOL_HOST_DAILY_LIMIT - 1);
+    const last = frontier.claim([], start)!;
+    frontier.settle(last, "done", "receipt", null, start);
+    frontier = new MangaSourceFrontier(db);
+    expect(frontier.claim([], start + 1)).toBeNull();
+    expect(frontier.claim([], start + POOL_HOST_DELAY_MS)).toBeNull();
+    const tomorrow = frontier.claim([], Date.parse("2026-10-16T00:00:00Z"));
+    expect(tomorrow?.host).toBe("dragonballfr.com");
+    expect(frontier.meta("host-budget:dragonballfr.com:2026-10-16")).toBe(1);
+  } finally {
+    db.close();
+  }
+});
+
+test("full volume media exceed the navigation budget without losing order or permitting unbounded recursion", () => {
+  const db = new Database(":memory:");
+  const frontier = new MangaSourceFrontier(db);
+  try {
+    frontier.enqueue(
+      { ...task(), kind: "discovery", url: "https://archive.org/metadata/volume" },
+      1,
+    );
+    const parent = frontier.claim([], 1)!;
+    const links = Array.from(
+      { length: 300 },
+      (_, n) => `<a href='/metadata/nav-${n}'>next</a>`,
+    ).join("");
+    const images = Array.from(
+      { length: 512 },
+      (_, n) => `<img src='/download/volume/${n + 1}.jpg'>`,
+    ).join("");
+    const urls = discoveredPoolUrls(links + images, parent.url);
+    expect(urls.filter((url) => url.endsWith(".jpg"))).toHaveLength(512);
+    expect(urls.filter((url) => !url.endsWith(".jpg"))).toHaveLength(150);
+    const result = retainPoolCandidates(frontier, parent, urls, 2);
+    expect(result.queued).toBe(662);
+    const tasks = db
+      .query<{ url: string }, []>(
+        "SELECT url FROM pool_tasks WHERE kind='acquisition' ORDER BY rowid",
+      )
+      .all();
+    expect(tasks).toHaveLength(512);
+    expect(tasks.at(-1)?.url).toBe("https://archive.org/download/volume/512.jpg");
+    expect(
+      discoveredPoolUrls(
+        Array.from({ length: 3000 }, (_, n) => `https://archive.org/download/volume/${n}.jpg`),
+        parent.url,
+      ),
+    ).toHaveLength(2500);
+  } finally {
+    db.close();
   }
 });
 
