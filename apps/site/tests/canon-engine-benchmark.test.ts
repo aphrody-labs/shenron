@@ -194,11 +194,13 @@ describe("Doctrine de canonicité — Précision sur les cas réels", () => {
     expect(r.toriyamaQuote?.source).toContain("Dragon Box GT");
   });
 
-  test("Non-Canon Dérivé : Super Saiyan 4", () => {
+  test("Super Saiyan 4 requires attribution to GT or DAIMA", () => {
     const r = analyzeCanon("Le Super Saiyan 4 de Goku et Vegeta est-il canonique ?");
-    expect(r.tier).toBe("NON_CANON_DERIVE");
-    expect(r.score).toBe(15);
-    expect(r.explanation).toContain("Nakatsuru");
+    expect(r.tier).toBe("CANON_SUPERVISE");
+    expect(r.verdict).toContain("GT");
+    expect(r.verdict).toContain("DAIMA");
+    expect(r.explanation).toContain("ne suffit pas à intégrer rétroactivement");
+    expect(r.toriyamaQuote).toBeUndefined();
   });
 
   test("Non-Canon Dérivé : Cooler", () => {
