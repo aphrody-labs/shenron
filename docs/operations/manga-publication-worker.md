@@ -112,8 +112,55 @@ n'empêche pas les candidats suivants de progresser.
    écraser un lecteur existant. La projection superpose ensuite le chapitre relu
    au catalogue public. Les deux étapes CDN ont leurs plans persistés distincts ;
    le propriétaire réconcilie l'état actif avant toute reprise.
-4. Le writer du réplica de production est exécuté, puis relu. L'API publique doit
-   enfin exposer exactement l'identité et les images du lot.
+4. Le writer du réplica de production est exécuté, puis relu. Le consommateur
+   demande ensuite la revalidation runtime décrite ci-dessous, avant de relire
+   l'identité, l'étendue et les images exactes dans l'API publique du chapitre.
+
+### Revalidation runtime des lecteurs
+
+Une image contenant `POST /api/admin/manga/revalidate` doit être livrée une fois.
+Les lots suivants utilisent cette route sans reconstruire Next. Avant toute
+écriture d'un lot, le consommateur vérifie la capacité `readerExtent` de l'API et
+interroge cette route avec
+`{"schema":"shenron-manga-revalidation/v1","action":"capabilities"}`.
+Un ancien serveur ou une capacité incompatible arrête le lot avant les writers.
+La route réutilise la garde administrative existante : session administrateur ou
+token `SHENRON_API_ADMIN_TOKEN`, transmis uniquement à l'origine canonique.
+
+La demande d'invalidation contient exactement `schema`, `action:"revalidate"`,
+`volumeId`, `chapterId`, `pageCount`, `pagesSha256` et `indexSha256`. Le chapitre
+est celui relu par l'importer, y compris son identifiant alloué lors d'une création.
+`pagesSha256` est le SHA256 de `JSON.stringify` du tableau ordonné des URL HTTPS
+absolues des images publiques ; `indexSha256` vient du reçu complet du writer CDN.
+Les identifiants sont des entiers positifs, le compte est borné à 2500 images,
+le corps JSON à 1024 octets effectivement lus. Aucun chemin n'est accepté.
+
+La route oublie le cache source local de 30 secondes et charge à nouveau la
+projection CDN qualifiée, sans repli vers la base éditoriale. Elle exige le digest
+d'index demandé, l'appartenance exacte chapitre/tome/édition et le compte et
+digest des URL de lecture avant toute invalidation. Elle marque seulement les
+chemins littéraux manga : index, recherche API, tome, lecteur, voisins réellement
+présents et API des pages du chapitre. Le writer actuel remplit une absence ou
+un chapitre vide ; il ne remplace pas une plage existante plus longue.
+
+Le reçu privé `revalidation.json` accompagne `publication.json`. La phase reste
+`replicated` jusqu'à la relecture publique réussie. Une réponse perdue ou une API
+encore ancienne provoque une nouvelle invalidation et relecture, sans rejouer
+les écritures, l'upload ni le réplica. Dès qu'un lot dépasse `queued`, il garde
+l'exclusivité du catalogue, y compris pendant son délai de reprise : un second
+lot ne peut pas remplacer son index global avant sa qualification. Un changement
+concurrent de l'index par un autre propriétaire reste une erreur de digest
+visible ; aucun nouveau plan ni acquittement n'est inventé.
+
+Selon la [documentation Next de revalidatePath](https://nextjs.org/docs/app/api-reference/functions/revalidatePath),
+un Route Handler programme la régénération à la prochaine visite. Ce reçu ne
+prouve pas un rendu navigateur. Il ne purge ni un CDN externe ni les caches des
+navigateurs ; les en-têtes HTTP existants conservent leur portée. Le cache source
+est local au processus : une autre instance peut garder son ancienne source
+jusqu'à 30 secondes, puis doit être régénérée. Les reprises répètent le marquage
+si la relecture publique demeure ancienne. Les caches externes restent soumis à
+leur propre expiration ou invalidation propriétaire ; le reçu expose explicitement
+`edgeCacheInvalidated:false`. Aucun rebuild par lot ne remplace ces contrôles.
 
 `status.json`, les snapshots et les manifestes privés permettent la surveillance.
 Une file vide signifie attente d'acquisitions, pas catalogue complet. La présence

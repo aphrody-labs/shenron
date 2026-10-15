@@ -11,12 +11,18 @@ import {
   runMangaWorker,
   Conflict,
   qualifyLiveMangaExtentApi,
+  postMangaRevalidation,
   type WorkerConfig,
   type MangaBundle,
   type MangaWorkerPorts,
 } from "./manga-publication-worker";
 import { mangaDigest } from "./manga-cdn-projection";
 import { wikiUpdateSnapshotHash as hash } from "../../apps/site/src/lib/wiki-update-precondition";
+import {
+  MANGA_REVALIDATION_CAPABILITIES,
+  MANGA_REVALIDATION_SCHEMA,
+  type MangaRevalidation,
+} from "../../apps/site/src/lib/manga-publication-revalidate";
 const roots: string[] = [];
 afterEach(async () => {
   for (const path of roots.splice(0)) await rm(path, { recursive: true, force: true });
@@ -141,7 +147,13 @@ export async function fixture() {
   const resumes: boolean[] = [];
   const stages: string[] = [];
   const ports: MangaWorkerPorts = {
-    source: async () => ({ complete: true, publicActivation: false, revision: root }),
+    qualify: async () => {
+      stages.push("qualify");
+    },
+    source: async () => {
+      stages.push("source");
+      return { complete: true, publicActivation: false, revision: root };
+    },
     assets: async () => {
       stages.push("assets");
       return { complete: true };
@@ -170,10 +182,19 @@ export async function fixture() {
       resumes.push(resume);
       publications++;
       stages.push("catalogue");
-      return { complete: true };
+      return { complete: true, indexSha256: "d".repeat(64) };
     },
-    replica: async () => {},
+    replica: async () => {
+      stages.push("replica");
+    },
+    revalidate: async (_bundle, chapter, indexSha256) => {
+      stages.push("revalidate");
+      expect(chapter.id).toBe(current.id);
+      expect(indexSha256).toBe("d".repeat(64));
+      return { schema: MANGA_REVALIDATION_SCHEMA, action: "revalidated" };
+    },
     verify: async () => {
+      stages.push("verify");
       expect(current.visible).toBe(true);
     },
   };
@@ -213,12 +234,163 @@ test("publication traverses canonical CAS, complete backup, readback, replica an
   expect(f.patches()).toBe(1);
   expect(f.publications()).toBe(1);
   expect(q.next()).toBeNull();
-  expect(f.stages).toEqual(["assets", "edit", "catalogue"]);
+  expect(f.stages).toEqual([
+    "qualify",
+    "source",
+    "assets",
+    "edit",
+    "catalogue",
+    "replica",
+    "revalidate",
+    "verify",
+  ]);
   expect(await Bun.file(join(f.root, id, "editorial/before.json")).json()).toEqual([
     f.bundle.expectedVolume,
     f.bundle.expectedChapter,
   ]);
   db.close();
+});
+
+test("a reader awaiting qualification retains the catalogue across backoff before the next bundle", async () => {
+  const a = await fixture(),
+    b = await fixture(),
+    db = new Database(":memory:"),
+    q = new MangaPublicationQueue(db);
+  const first = q.enqueue(a.bundle),
+    second = q.enqueue(b.bundle);
+  const verify = a.ports.verify;
+  a.ports.verify = async () => {
+    throw Error("Reader still cached");
+  };
+  const task = q.next()!;
+  await expect(consumeMangaBundle(q, task, join(a.root, first), a.ports)).rejects.toThrow("cached");
+  const now = Date.now();
+  q.fail(task, Error("Reader still cached"), now);
+  expect(q.rows()[0]).toMatchObject({ phase: "replicated" });
+  expect(q.next(now)).toBeNull();
+  expect(b.publications()).toBe(0);
+  const resumed = q.next(now + 30001)!;
+  expect(resumed.id).toBe(first);
+  a.ports.verify = verify;
+  await consumeMangaBundle(q, resumed, join(a.root, first), a.ports);
+  expect(a.publications()).toBe(1);
+  expect(a.patches()).toBe(1);
+  expect(a.stages.filter((stage) => stage === "revalidate")).toHaveLength(2);
+  expect(q.next(now + 30001)!.id).toBe(second);
+  db.close();
+});
+
+test("missing runtime capability prevents even the private source writer and public assets", async () => {
+  const f = await fixture(),
+    db = new Database(":memory:"),
+    q = new MangaPublicationQueue(db);
+  const id = q.enqueue(f.bundle);
+  f.ports.qualify = async () => {
+    throw Error("Old site image");
+  };
+  await expect(consumeMangaBundle(q, q.next()!, join(f.root, id), f.ports)).rejects.toThrow(
+    "Old site image",
+  );
+  expect(f.stages).toEqual([]);
+  expect(q.next()!.phase).toBe("queued");
+  expect(f.patches()).toBe(0);
+  expect(f.publications()).toBe(0);
+  db.close();
+});
+
+test("lost revalidation acknowledgement resumes without another upload, edit or replica mutation", async () => {
+  const f = await fixture(),
+    db = new Database(":memory:"),
+    q = new MangaPublicationQueue(db);
+  const id = q.enqueue(f.bundle),
+    revalidate = f.ports.revalidate;
+  f.ports.revalidate = async (...args) => {
+    await revalidate(...args);
+    throw Error("Lost invalidation ACK");
+  };
+  await expect(consumeMangaBundle(q, q.next()!, join(f.root, id), f.ports)).rejects.toThrow();
+  expect(q.next()!.phase).toBe("replicated");
+  expect(f.stages).not.toContain("verify");
+  f.ports.revalidate = revalidate;
+  await consumeMangaBundle(q, q.next()!, join(f.root, id), f.ports);
+  expect(q.next()).toBeNull();
+  expect(f.patches()).toBe(1);
+  expect(f.publications()).toBe(1);
+  expect(f.stages.filter((stage) => stage === "replica")).toHaveLength(1);
+  expect(f.stages.filter((stage) => stage === "revalidate")).toHaveLength(2);
+  db.close();
+});
+
+test("stale final reader retries invalidation rather than completing or republishing", async () => {
+  const f = await fixture(),
+    db = new Database(":memory:"),
+    q = new MangaPublicationQueue(db);
+  const id = q.enqueue(f.bundle),
+    verify = f.ports.verify;
+  f.ports.verify = async () => {
+    throw Error("Old reader from another process or edge");
+  };
+  await expect(consumeMangaBundle(q, q.next()!, join(f.root, id), f.ports)).rejects.toThrow();
+  expect(q.next()!.phase).toBe("replicated");
+  f.ports.verify = verify;
+  await consumeMangaBundle(q, q.next()!, join(f.root, id), f.ports);
+  expect(f.stages.filter((stage) => stage === "revalidate")).toHaveLength(2);
+  expect(f.patches()).toBe(1);
+  expect(f.publications()).toBe(1);
+  expect(q.next()).toBeNull();
+  db.close();
+});
+
+test("runtime protocol uses a fixed authenticated POST and rejects stale capability or incorrect digest ACK", async () => {
+  const calls: RequestInit[] = [];
+  let reply: unknown = MANGA_REVALIDATION_CAPABILITIES,
+    status = 200;
+  const fetcher = Object.assign(
+    async (url: Parameters<typeof fetch>[0], init?: RequestInit) => {
+      expect(url).toBe("https://dragonballfr.com/api/admin/manga/revalidate");
+      calls.push(init!);
+      return Response.json(reply, { status });
+    },
+    { preconnect: fetch.preconnect },
+  );
+  const probe = { schema: MANGA_REVALIDATION_SCHEMA, action: "capabilities" } as const;
+  await postMangaRevalidation(probe, "existing-token", fetcher);
+  expect(calls[0]).toMatchObject({
+    method: "POST",
+    redirect: "error",
+    cache: "no-store",
+    credentials: "omit",
+  });
+  expect(new Headers(calls[0]!.headers).get("authorization")).toBe("Bearer existing-token");
+  expect(JSON.parse(calls[0]!.body as string)).toEqual(probe);
+  reply = { ...MANGA_REVALIDATION_CAPABILITIES, edgeCacheInvalidated: true };
+  await expect(postMangaRevalidation(probe, "existing-token", fetcher)).rejects.toThrow(
+    "capability differs",
+  );
+  const input: MangaRevalidation = {
+    schema: MANGA_REVALIDATION_SCHEMA,
+    action: "revalidate" as const,
+    volumeId: 702,
+    chapterId: 35002,
+    pageCount: 2,
+    pagesSha256: "a".repeat(64),
+    indexSha256: "b".repeat(64),
+  };
+  reply = {
+    ...input,
+    action: "revalidated",
+    regeneration: "next-visit",
+    localSourceCache: "refreshed",
+    edgeCacheInvalidated: false,
+    indexSha256: "c".repeat(64),
+  };
+  await expect(postMangaRevalidation(input, "existing-token", fetcher)).rejects.toThrow(
+    "acknowledgement differs",
+  );
+  status = 404;
+  await expect(postMangaRevalidation(probe, "existing-token", fetcher)).rejects.toThrow(
+    "unavailable",
+  );
 });
 test("lost public acknowledgement resumes its existing owner and never repeats the canonical edit", async () => {
   const f = await fixture(),

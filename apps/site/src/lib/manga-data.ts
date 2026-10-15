@@ -31,7 +31,7 @@ export function createMangaData(
   now: () => number = Date.now,
 ) {
   let current: { expires: number; source: Promise<Source> } | undefined;
-  const source = () => {
+  const source = (expectedSha256?: string) => {
     if (current && now() < current.expires) return current.source;
     const pending = (async () => {
       const response = await fetcher(MANGA_CATALOGUE_INDEX_URL, {
@@ -58,6 +58,8 @@ export function createMangaData(
           (!/^\d+$/.test(length) || Number(length) < 1 || Number(length) > 2 * 1024 * 1024))
       )
         throw Error("Unqualified manga catalogue header");
+      if (expectedSha256 && sha !== expectedSha256)
+        throw Error("Manga publication digest differs from revalidation request");
       const qualified = createMangaCdnSource(MANGA_CATALOGUE_INDEX_URL, sha, fetcher);
       await qualified.mangaCatalogVolumes();
       return qualified;
@@ -70,6 +72,12 @@ export function createMangaData(
     return pending;
   };
   return {
+    refreshPublication: (expectedSha256: string) => {
+      if (!/^[a-f0-9]{64}$/.test(expectedSha256))
+        throw Error("Qualified manga publication digest required");
+      current = undefined;
+      return source(expectedSha256);
+    },
     mangaCatalogVolumes: async () => {
       const result = await mangaCdnWithFallback(
         async () => (await source()).mangaCatalogVolumes(),
@@ -122,6 +130,8 @@ export function createMangaData(
 }
 
 const shared = createMangaData(dbUniverse);
+/** A runtime publication hook bypasses this process's thirty-second source cache. */
+export const refreshMangaPublication = shared.refreshPublication;
 /** React deduplicates metadata and page reads within a render; the shared publication expires separately. */
 export const mangaData = {
   mangaCatalogVolumes: cache(shared.mangaCatalogVolumes),

@@ -28,6 +28,7 @@ describe("colorisation", () => {
       expect(estChapitreCouleur({ series })).toBe(false);
       expect(EDITION_PAR_SERIE[series]?.colorisation).toBe("mixte");
       expect(langueDe({ series })).toBe("ja");
+      expect(editionCompleteDe({ series })).toBe("ja-nb");
     }
     expect(hasMixedColorization({ series: "DBFC" })).toBe(false);
   });

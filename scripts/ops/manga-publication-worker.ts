@@ -17,6 +17,12 @@ import {
 } from "./manga-cdn-projection";
 import type { PublishCatalogOptions } from "../../deploy/cloudflare/cli/publish-catalog";
 import { isMangaReaderExtent } from "../../apps/site/src/lib/manga-reader-extent";
+import {
+  MANGA_REVALIDATION_CAPABILITIES,
+  MANGA_REVALIDATION_SCHEMA,
+  mangaPublicationPagesDigest,
+  type MangaRevalidation,
+} from "../../apps/site/src/lib/manga-publication-revalidate";
 
 type Row = Record<string, unknown>;
 export type WorkerConfig = {
@@ -43,6 +49,7 @@ export type WorkerConfig = {
   intervalMs?: number;
 };
 export interface MangaWorkerPorts {
+  qualify(): Promise<void>;
   source(
     bundle: MangaBundle,
   ): Promise<{ complete: boolean; publicActivation: boolean; revision: string }>;
@@ -53,8 +60,9 @@ export interface MangaWorkerPorts {
     job: string,
     resume: boolean,
     chapter: Row,
-  ): Promise<{ complete: boolean }>;
+  ): Promise<{ complete: boolean; indexSha256: string }>;
   replica(): Promise<void>;
+  revalidate(bundle: MangaBundle, chapter: Row, indexSha256: string): Promise<Row>;
   verify(bundle: MangaBundle, chapter: Row): Promise<void>;
   signal?: AbortSignal;
 }
@@ -62,6 +70,43 @@ export class Conflict extends Error {
   readonly code = "MANGA_CAS_CONFLICT";
 }
 const same = (a: Row, b: Row) => wikiUpdateSnapshotHash(a) === wikiUpdateSnapshotHash(b);
+
+/** Credentials are scoped to this fixed same-site owner route; redirects are refused. */
+export async function postMangaRevalidation(
+  input: MangaRevalidation | { schema: typeof MANGA_REVALIDATION_SCHEMA; action: "capabilities" },
+  token: string,
+  fetcher: typeof fetch = fetch,
+  signal?: AbortSignal,
+) {
+  if (!token) throw Error("Authorized editorial API credential missing");
+  const response = await fetcher("https://dragonballfr.com/api/admin/manga/revalidate", {
+    method: "POST",
+    cache: "no-store",
+    redirect: "error",
+    credentials: "omit",
+    headers: { authorization: "Bearer " + token, "content-type": "application/json" },
+    body: JSON.stringify(input),
+    signal: AbortSignal.any([AbortSignal.timeout(45000), ...(signal ? [signal] : [])]),
+  });
+  if (!response.ok) throw Error("Manga runtime revalidation unavailable");
+  const result = await response.json();
+  if (input.action === "capabilities") {
+    if (
+      !result ||
+      Object.entries(MANGA_REVALIDATION_CAPABILITIES).some(([key, value]) => result[key] !== value)
+    )
+      throw Error("Manga runtime revalidation capability differs");
+  } else if (
+    !result ||
+    Object.entries(input).some(([key, value]) => key !== "action" && result[key] !== value) ||
+    result.action !== "revalidated" ||
+    result.regeneration !== "next-visit" ||
+    result.localSourceCache !== "refreshed" ||
+    result.edgeCacheInvalidated !== false
+  )
+    throw Error("Manga runtime revalidation acknowledgement differs");
+  return result;
+}
 /** Metadata extensions must be understood by the image actually serving readers. */
 export async function qualifyLiveMangaExtentApi(read: (path: string) => Promise<any>) {
   const catalogue = await read("/api/manga");
@@ -109,9 +154,16 @@ export class MangaPublicationQueue {
     return id;
   }
   next(now = Date.now()) {
+    // A committed owner stage keeps the global catalogue until final reader qualification.
+    const active = this.database
+      .query<Task & { next_at: number }, []>(
+        "SELECT id,body,phase,attempts,next_at FROM manga_publication WHERE phase NOT IN ('queued','complete','conflict') ORDER BY rowid LIMIT 1",
+      )
+      .get();
+    if (active) return active.next_at <= now ? active : null;
     return this.database
       .query<Task, [number]>(
-        "SELECT id,body,phase,attempts FROM manga_publication WHERE phase NOT IN ('complete','conflict') AND next_at<=? ORDER BY rowid LIMIT 1",
+        "SELECT id,body,phase,attempts FROM manga_publication WHERE phase='queued' AND next_at<=? ORDER BY rowid LIMIT 1",
       )
       .get(now);
   }
@@ -163,6 +215,7 @@ export async function consumeMangaBundle(
     phase = next;
   };
   ports.signal?.throwIfAborted();
+  if (phase !== "complete") await ports.qualify();
   if (phase === "queued") {
     const receipt = await ports.source(bundle);
     if (!receipt.complete || receipt.publicActivation)
@@ -198,6 +251,11 @@ export async function consumeMangaBundle(
     advance("replicated");
   }
   if (phase === "replicated") {
+    const publication = await Bun.file(join(job, "publication.json")).json();
+    if (publication.complete !== true || !/^[a-f0-9]{64}$/.test(publication.indexSha256))
+      throw Error("Qualified manga publication digest missing");
+    const receipt = await ports.revalidate(bundle, await editorial(), publication.indexSha256);
+    await save(join(job, "revalidation.json"), receipt);
     await ports.verify(bundle, await editorial());
     advance("complete");
   }
@@ -330,11 +388,25 @@ export function mangaWorkerPorts(config: WorkerConfig, signal?: AbortSignal): Ma
       await save(optionsFile, options);
     }
     const receipt = await owner.reconcileCatalogPublication(options);
-    if (!("complete" in receipt)) throw Error("Canonical CDN owner returned no receipt");
+    if (
+      !("complete" in receipt) ||
+      !("indexSha256" in receipt) ||
+      typeof receipt.indexSha256 !== "string"
+    )
+      throw Error("Canonical CDN owner returned no indexed receipt");
     return receipt;
   };
   return {
     signal,
+    qualify: async () => {
+      await qualifyLiveMangaExtentApi(api);
+      await postMangaRevalidation(
+        { schema: MANGA_REVALIDATION_SCHEMA, action: "capabilities" },
+        process.env.SHENRON_API_ADMIN_TOKEN ?? "",
+        fetch,
+        signal,
+      );
+    },
     source: async (bundle) => {
       const { autoSourcePipeline } = await import("./bun-source-pipeline");
       const receipt = await autoSourcePipeline(bundle.source.config.path, { signal });
@@ -413,6 +485,25 @@ export function mangaWorkerPorts(config: WorkerConfig, signal?: AbortSignal): Ma
         0
       )
         throw Error("Replica readback failed");
+    },
+    revalidate: (bundle, chapter, indexSha256) => {
+      if (!Number.isSafeInteger(chapter.id)) throw Error("Canonical chapter ID missing");
+      return postMangaRevalidation(
+        {
+          schema: MANGA_REVALIDATION_SCHEMA,
+          action: "revalidate",
+          volumeId: bundle.volumeId,
+          chapterId: chapter.id as number,
+          pageCount: bundle.pages.length,
+          pagesSha256: mangaPublicationPagesDigest(
+            bundle.pages.map((page) => "https://cdn.dragonballfr.com" + page.publicPath),
+          ),
+          indexSha256,
+        },
+        process.env.SHENRON_API_ADMIN_TOKEN ?? "",
+        fetch,
+        signal,
+      );
     },
     verify: async (bundle, editorial) => {
       const response = await fetch(`${origin}/api/manga/chapter/${editorial.id}`, {

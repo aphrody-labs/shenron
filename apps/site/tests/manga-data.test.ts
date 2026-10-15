@@ -51,6 +51,7 @@ function editorial() {
     chapter_number: 99,
     title: "Fresh",
     volume_id: 99,
+    reader_extent: { kind: "unknown" as const },
     cover: null,
     pages: ["/assets/manga/fresh.webp"],
   };
@@ -187,6 +188,25 @@ test("a new live digest replaces the shared source after thirty seconds without 
   time = 30000;
   expect((await data.mangaChapter(10))?.title).toBe("Gohan");
   expect(network.calls.filter((value) => value.startsWith("HEAD:"))).toHaveLength(2);
+});
+
+test("runtime refresh bypasses the thirty-second cache and returns only the exact qualified CDN reader", async () => {
+  const network = transport(),
+    fallback = editorial(),
+    data = createMangaData(fallback.port, network.fetcher, () => 0);
+  expect((await data.mangaChapter(10))?.title).toBe("Goku");
+  network.publish("Gohan");
+  const refreshed = await data.refreshPublication(projection("Gohan").indexSha256);
+  expect((await refreshed.mangaChapter(10))?.title).toBe("Gohan");
+  expect((await data.mangaChapter(10))?.title).toBe("Gohan");
+  expect(fallback.calls).toEqual([]);
+  await expect(data.refreshPublication("b".repeat(64))).rejects.toThrow("digest differs");
+  expect(fallback.calls).toEqual([]);
+  network.fail("head");
+  await expect(data.refreshPublication(projection("Gohan").indexSha256)).rejects.toThrow(
+    "Unqualified",
+  );
+  expect(fallback.calls).toEqual([]);
 });
 
 test("verified ISBN bibliography enriches the CDN hub and detail without replacing reader assets", async () => {

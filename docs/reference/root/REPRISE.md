@@ -578,3 +578,51 @@ qualifiée ; aucun store, volume Docker ou fichier partagé purgé.
 Prochaine étape : image commune incluant cad30390, portes et espace qualifiés
 par son propriétaire, activation Infra puis contrôle réel de Studio et des six
 articles de comédiens. Wiki entier et volumes manquants restent inachevés.
+
+### 2026-10-15 — Audit SOSH public et état du pool
+
+Audit API public à 14:56: 18 lignes de tomes, un seul chapitre lisible (tome 1,
+381 pages listées), tomes 2–18 sans chapitre ; aucune des 381 URLs d’image listées
+n’a échoué en HEAD. Le lecteur réel, la pagination complète et le décodage des
+images ne sont pas qualifiés par cet audit. Reçu privé sur la fabrique :
+`/home/ubuntu/.aphrody/profiles/dbfr/jobs/sosh-availability-audit-20261015/public-readers.json`,
+SHA-256 `2b97fc90bec95c2f5efab3dc6a0ff92f8338f6b0f5d50d6a4cbb67a39dce2138`.
+
+Le service usine `shenron-manga-workers` est actif/activé avec une capacité de
+16 workers (1 travailleur actif au snapshot 15:01) ; son timer
+de handoff est actif. Pool à 15:01 : 160 fichiers privés (154 images, 6 PDF),
+7 589 431 octets, tous vérifiés par SHA/taille ; aucun n’est qualifié comme page
+SOSH. Les 144 fichiers Shueisha sont des ressources d’éditeur sans preuve de page
+de tome. Boîte de publication vide. « asset done » vérifie les URLs publiques et
+conserve des reçus, sans acquérir de nouveaux scans. Les 17 statuts
+`robots_refused` SOSH702–718 sont des refus du catalogue bibliographique NDL
+(robots HTTP200, SHA `02cc67318f936a34778ebaeb11d6d3776b9aa64a5d53fdbe3e72a4dd6f49b6e7`),
+pas des refus de pages ; aucun corps NDL n’a été demandé après ces refus. Les 17
+ISBN ont une notice OpenBD reçue. Index privé : 3 580 documents, 24 131 chunks,
+0 vecteur, 0 candidat dans l’inbox, 0 chunk orphelin. Les candidats `approved`
+sont des observations parent×URL, pas des médias validés ; 264 captures ont été
+mises en quarantaine sur divergence de SHA, cause non déterminée. Rapports privés :
+`var/reports/sosh-availability-audit-20261015/public-audit-summary.json` et
+`var/reports/sosh-worker-output-audit-20261015/summary.md`.
+
+Le but SOSH reste incomplet : obtenir et qualifier des scans/pages autorisés, les
+importer avec les writers canoniques puis vérifier le rendu public. Studio : le
+build commun du propriétaire a démarré à 15:02 et ses gates ciblées avancent, mais
+son installation résout toujours `@aphrody/m3-reader` 3.3.11 contre 3.3.12 au
+catalogue ; la page corrigée n’est pas déployée. Ne pas lancer un build ou une
+activation concurrente. Prod était b90 au dernier contrôle.
+
+### 2026-10-15 — Plan cible de 177 tomes SOSH
+
+Demande propriétaire : préparer la livraison en production de 177 tomes SOSH.
+Plan complet créé dans [SOSH-177-DELIVERY-PLAN.md](SOSH-177-DELIVERY-PLAN.md), relié
+à GOAL/TODO. Porte initiale explicite : la prod n’a aujourd’hui que 18 identités
+SOSH ; le contrat `sosh-reader-manifest.ts` borne également SOSH à 18 volumes/IDs
+701–718 (`id = 700 + volumeNumber`). Les 159 identités supplémentaires restent à
+réconcilier aux notices primaires, sans création spéculative. Le plan couvre
+contrat 177, sources/provenance, acquisition et revue privée, import CAS avec
+backup, CDN, invalidation ISR, vagues et rendu WebView de chaque tome. Après une
+livraison de code unique pour le contrat et l’invalidation runtime, les publications
+de données s’effectuent par worker/CDN/writer sans `next build` ou rebuild de
+l’image du site pour chaque tome ou vague. Aucun tome supplémentaire n’a été acquis
+ou publié dans le cadre de la rédaction du plan.

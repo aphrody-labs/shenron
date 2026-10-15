@@ -168,7 +168,7 @@ export function postgresBunRagSource(sql: Bun.SQL): BunRagSource {
 /** Only model inference uses HTTP. Search, filtering and hydration never call the HTTP RAG owner. */
 export function directBunQueryEmbedder(
   env: Record<string, string | undefined>,
-  fetcher: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response> = fetch,
+  fetcher: (input: Parameters<typeof fetch>[0], init?: RequestInit) => Promise<Response> = fetch,
 ) {
   const url = new URL(SHENRON_ROUTES.embed.path, requireAiHttpUrl(env)),
     token = requireAiHttpToken(env);
