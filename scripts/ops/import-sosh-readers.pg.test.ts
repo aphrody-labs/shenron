@@ -6,6 +6,14 @@ import { join } from "node:path";
 import postgres from "postgres";
 import { importSoshReaders, type SoshAssetFetcher } from "./import-sosh-readers";
 import { importMangaReaders } from "./import-manga-readers";
+import {
+  prepareMangaEditorial,
+  applyMangaEditorial,
+  verifyMangaEditorial,
+  mangaEditorialRow,
+} from "./manga-publication-editor";
+import { wikiUpdateSnapshotHash } from "../../apps/site/src/lib/wiki-update-precondition";
+import type { MangaBundle } from "../../packages/pipeline/src/dragon-ball/manga-publication-contract";
 import { archiveDigest } from "./apply-archive-catalog";
 
 const url = process.env.SOSH_IMPORT_PG_URL;
@@ -207,6 +215,67 @@ test.skipIf(!url)(
       expect(mangaRow!.pages).toHaveLength(2);
       await importMangaReaders([...manga.args, "--apply"], fetcher);
       expect(await sql`SELECT id FROM public.wiki_revisions WHERE "rowId"='45001'`).toHaveLength(1);
+      const yamchaTitle = "Dragon Ball Gaiden: That Time I Got Reincarnated as Yamcha";
+      await sql`INSERT INTO bot.db_manga_volumes(id,series,volume_number,visible,title,isbn) VALUES(620,'DB_GAIDEN_YAMCHA',1,true,${yamchaTitle},'978-4-08-881261-8')`;
+      const [yamchaVolume] = await sql`SELECT * FROM bot.db_manga_volumes WHERE id=620`;
+      const editorialJob = await mkdtemp(join(tmpdir(), "manga-editor-pg-"));
+      jobs.push(editorialJob);
+      await chmod(editorialJob, 0o700);
+      const bundle = {
+        series: "DB_GAIDEN_YAMCHA",
+        volumeId: 620,
+        volumeNumber: 1,
+        chapterId: 46001,
+        chapterNumber: 1,
+        isbn: "978-4-08-881261-8",
+        activate: true,
+        publicationExtent: {
+          kind: "preview",
+          sourceUrl: "https://shonenjumpplus.com/volume/4856001361007401134/trial",
+          fullVolumePages: null,
+        },
+        expectedVolume: mangaEditorialRow(yamchaVolume!),
+        expectedVolumeSha256: wikiUpdateSnapshotHash(mangaEditorialRow(yamchaVolume!)),
+        expectedChapter: null,
+        expectedChapterSha256: null,
+        source: { documentUrl: "https://shonenjumpplus.com/volume/4856001361007401134/trial" },
+        pages: [1, 2].map((number) => ({
+          publicPath: "/assets/manga/YAMCHA/trial/" + number + ".jpg",
+          sha256: archiveDigest(image),
+        })),
+      } as unknown as MangaBundle;
+      const prepared = await prepareMangaEditorial(bundle, editorialJob, {
+        fetcher,
+        backup: async (directory) => {
+          const child = Bun.spawn(
+            [
+              "docker",
+              "exec",
+              "shenron-sosh-import-fixture",
+              "pg_dump",
+              "-U",
+              "fixture",
+              "-p",
+              fixture!.port,
+              "-Fc",
+              "shenron_sosh_fixture",
+            ],
+            { stdout: "pipe", stderr: "pipe" },
+          );
+          const bytes = new Uint8Array(await new Response(child.stdout).arrayBuffer());
+          if (await child.exited) throw Error("Fixture backup failed");
+          await Bun.write(join(directory, "catalog-before.dump"), bytes);
+          await Bun.write(
+            join(directory, "backup.json"),
+            JSON.stringify({ inventoryVerified: true, sha256: archiveDigest(bytes) }),
+          );
+        },
+      });
+      const edited = await applyMangaEditorial(prepared);
+      expect(edited.chapter.id).toBe(46001);
+      expect(edited.chapter.readerExtent).toEqual(bundle.publicationExtent);
+      await verifyMangaEditorial(prepared);
+      expect(await sql`SELECT id FROM public.wiki_revisions WHERE "rowId"='46001'`).toHaveLength(1);
     } finally {
       if (oldUrl === undefined) delete process.env.DATABASE_URL;
       else process.env.DATABASE_URL = oldUrl;

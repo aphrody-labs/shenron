@@ -31,8 +31,18 @@ export type WorkerConfig = {
   outbox: string;
   candidateInbox?: string;
   sourcePoolJob?: string;
-  replica: { kind: "infra"; command: string } | { kind: "local"; hostname: string };
+  handoff?: import("./manga-pool-handoff").HandoffImport;
+  replica:
+    | { kind: "infra"; command: string }
+    | { kind: "infra-container" }
+    | { kind: "local"; hostname: string };
   publication: PublishCatalogOptions;
+  nativeOriginPreparation?: {
+    modulePath: string;
+    moduleSha256: string;
+    input: Record<string, string>;
+  };
+  editorialBackup?: { modulePath: string; moduleSha256: string; input: { inventoryRoot: string } };
   allowedSeries: string[];
   maxItemsPerCycle?: number;
   maxOutboxFiles?: number;
@@ -42,15 +52,21 @@ export interface MangaWorkerPorts {
   source(
     bundle: MangaBundle,
   ): Promise<{ complete: boolean; publicActivation: boolean; revision: string }>;
-  read(table: "db_manga_volumes" | "db_manga_chapters", id: number): Promise<Row>;
-  patch(id: number, body: Row): Promise<void>;
-  revision(id: number, before: Row, after: Row): Promise<boolean>;
-  publish(bundle: MangaBundle, job: string, resume: boolean): Promise<{ complete: boolean }>;
+  assets(bundle: MangaBundle, job: string, resume: boolean): Promise<{ complete: boolean }>;
+  edit(bundle: MangaBundle, job: string): Promise<Row>;
+  publish(
+    bundle: MangaBundle,
+    job: string,
+    resume: boolean,
+    chapter: Row,
+  ): Promise<{ complete: boolean }>;
   replica(): Promise<void>;
-  verify(bundle: MangaBundle): Promise<void>;
+  verify(bundle: MangaBundle, chapter: Row): Promise<void>;
   signal?: AbortSignal;
 }
-class Conflict extends Error {}
+export class Conflict extends Error {
+  readonly code = "MANGA_CAS_CONFLICT";
+}
 const isbn = (value: unknown) => String(value ?? "").replace(/[-\s]/g, "");
 const same = (a: Row, b: Row) => wikiUpdateSnapshotHash(a) === wikiUpdateSnapshotHash(b);
 async function privateDirectory(path: string) {
@@ -94,7 +110,8 @@ export async function qualifyBundle(value: unknown): Promise<MangaBundle> {
     throw Error("Publication extent differs from the captured source or reviewed pagination");
   if (
     wikiUpdateSnapshotHash(bundle.expectedVolume) !== bundle.expectedVolumeSha256 ||
-    wikiUpdateSnapshotHash(bundle.expectedChapter) !== bundle.expectedChapterSha256
+    (bundle.expectedChapter !== null &&
+      wikiUpdateSnapshotHash(bundle.expectedChapter) !== bundle.expectedChapterSha256)
   )
     throw Error("Complete administrative snapshot hash differs");
   const v = bundle.expectedVolume,
@@ -105,15 +122,19 @@ export async function qualifyBundle(value: unknown): Promise<MangaBundle> {
     v.volumeNumber !== bundle.volumeNumber ||
     isbn(v.isbn) !== isbn(bundle.isbn) ||
     !/^\d{13}$/.test(isbn(bundle.isbn)) ||
-    c.id !== bundle.chapterId ||
-    c.series !== bundle.series ||
-    c.volumeId !== bundle.volumeId ||
-    c.chapterNumber !== bundle.chapterNumber ||
-    (!c.visible && !bundle.activate) ||
+    (c === null
+      ? bundle.chapterId !== null || bundle.expectedChapterSha256 !== null || !bundle.activate
+      : bundle.chapterId === null ||
+        bundle.expectedChapterSha256 === null ||
+        c.id !== bundle.chapterId ||
+        c.series !== bundle.series ||
+        c.volumeId !== bundle.volumeId ||
+        c.chapterNumber !== bundle.chapterNumber ||
+        (!c.visible && !bundle.activate)) ||
     v.visible !== true
   )
     throw Error("Manga publication identity or visibility differs");
-  if (c.visible === false && Array.isArray(c.pages) && c.pages.length > 0)
+  if (c && c.visible === false && Array.isArray(c.pages) && c.pages.length > 0)
     throw Error("An existing hidden reader requires its editorial visibility owner");
   const paths = new Set<string>(),
     sources = new Set<string>();
@@ -224,7 +245,9 @@ export class MangaPublicationQueue {
       .run(phase, id);
   }
   fail(task: Task, error: unknown, now = Date.now()) {
-    const conflict = error instanceof Conflict;
+    const conflict =
+      error instanceof Conflict ||
+      (error instanceof Error && "code" in error && error.code === "MANGA_CAS_CONFLICT");
     this.database
       .query(
         "UPDATE manga_publication SET phase=CASE WHEN ? THEN 'conflict' ELSE phase END, attempts=attempts+1, next_at=?, error=? WHERE id=?",
@@ -271,47 +294,25 @@ export async function consumeMangaBundle(
     await save(join(job, "source.json"), receipt);
     advance("acquired");
   }
-  if (phase === "acquired" || phase === "editing") {
-    const volume = await ports.read("db_manga_volumes", bundle.volumeId);
-    if (!same(volume, bundle.expectedVolume)) throw new Conflict("Volume snapshot changed");
-    const before = bundle.expectedChapter;
-    const changes = {
-      pages: bundle.pages.map((page) => page.publicPath),
-      ...(bundle.publicationExtent ? { readerExtent: bundle.publicationExtent } : {}),
-      ...(bundle.activate ? { visible: true } : {}),
-    };
-    const target = { ...before, ...changes };
-    const current = await ports.read("db_manga_chapters", bundle.chapterId);
-    if (!same(current, before) && !same(current, target))
-      throw new Conflict("Chapter snapshot changed");
-    const backup = join(job, "before.json");
-    if (!(await Bun.file(backup).exists())) await save(backup, [bundle.expectedVolume, before]);
-    if (!Array.isArray(await Bun.file(backup).json()))
-      throw Error("Invalid complete JSON array backup");
+  if (phase === "acquired" || phase === "assets-publishing") {
+    const resume = phase === "assets-publishing";
+    advance("assets-publishing");
+    const receipt = await ports.assets(bundle, job, resume);
+    if (!receipt.complete) throw Error("Public assets are not independently qualified");
+    await save(join(job, "assets-publication.json"), receipt);
+    advance("assets-published");
+  }
+  if (phase === "assets-published" || phase === "editing") {
     advance("editing");
-    if (!same(current, target))
-      await ports.patch(bundle.chapterId, {
-        ...changes,
-        expected: before,
-        expectedSha256: bundle.expectedChapterSha256,
-      });
-    const after = await ports.read("db_manga_chapters", bundle.chapterId);
-    if (
-      !same(after, target) ||
-      (!same(before, target) && !(await ports.revision(bundle.chapterId, before, after)))
-    )
-      throw Error("Canonical readback or editorial revision missing");
-    await save(join(job, "editorial.json"), {
-      beforeSha256: wikiUpdateSnapshotHash(before),
-      afterSha256: wikiUpdateSnapshotHash(after),
-      independentReadback: true,
-    });
+    const chapter = await ports.edit(bundle, join(job, "editorial"));
+    await save(join(job, "editorial.json"), { chapter, independentReadback: true });
     advance("edited");
   }
+  const editorial = async () => (await Bun.file(join(job, "editorial.json")).json()).chapter as Row;
   if (phase === "edited" || phase === "publishing") {
     const resume = phase === "publishing";
     advance("publishing");
-    const receipt = await ports.publish(bundle, job, resume);
+    const receipt = await ports.publish(bundle, job, resume, await editorial());
     if (!receipt.complete) throw Error("Public projection readback incomplete");
     await save(join(job, "publication.json"), receipt);
     advance("published");
@@ -321,18 +322,18 @@ export async function consumeMangaBundle(
     advance("replicated");
   }
   if (phase === "replicated") {
-    await ports.verify(bundle);
+    await ports.verify(bundle, await editorial());
     advance("complete");
   }
 }
 
 export function mangaWorkerPorts(config: WorkerConfig, signal?: AbortSignal): MangaWorkerPorts {
   const origin = "https://dragonballfr.com";
-  const api = async (path: string, method = "GET", body?: Row) => {
+  const api = async (path: string) => {
     const token = process.env.SHENRON_API_ADMIN_TOKEN;
     if (!token) throw Error("Authorized editorial API credential missing");
     const response = await fetch(origin + path, {
-      ...(method === "PATCH" ? { method: "PATCH", body: JSON.stringify(body) } : { method: "GET" }),
+      method: "GET",
       redirect: "error",
       cache: "no-store",
       headers: { authorization: "Bearer " + token, "content-type": "application/json" },
@@ -342,71 +343,45 @@ export function mangaWorkerPorts(config: WorkerConfig, signal?: AbortSignal): Ma
     if (!response.ok) throw Error("Canonical API unavailable");
     return response.json();
   };
-  return {
-    signal,
-    source: async (bundle) => {
-      const { autoSourcePipeline } = await import("./bun-source-pipeline");
-      const receipt = await autoSourcePipeline(bundle.source.config.path, { signal });
-      return {
-        complete: receipt.complete,
-        publicActivation:
-          (receipt as unknown as { publicActivation?: boolean }).publicActivation === true,
-        revision: receipt.revision,
-      };
-    },
-    read: (table, id) => api(`/api/wiki-admin/${table}/${id}`),
-    patch: async (id, body) => {
-      const saved = await api(`/api/wiki-admin/db_manga_chapters/${id}`, "PATCH", body);
-      if (saved.ok !== true) throw Error("Writer did not confirm mutation");
-    },
-    revision: async (id, before, after) => {
-      const history = await api(`/api/wiki-history?table=db_manga_chapters&rowId=${id}&limit=20`);
-      return (
-        history.rows?.some(
-          (entry: { action: string; before: Row; after: Row }) =>
-            entry.action === "update" && same(entry.before, before) && same(entry.after, after),
-        ) === true
-      );
-    },
-    publish: async (bundle, job, _resume) => {
-      const owner = await import("../../deploy/cloudflare/cli/publish-catalog");
-      const optionsFile = join(job, "publish-options.json");
-      let options: PublishCatalogOptions;
-      if (await Bun.file(optionsFile).exists()) {
-        options = await Bun.file(optionsFile).json();
-      } else {
-        const stateFile = Bun.file(
-          join(config.publication.stateDirectory, "current-inventory.json"),
-        );
-        const state = (await stateFile.exists())
-          ? await stateFile.json()
-          : {
-              inventoryPath: config.publication.previousInventory,
-              inventorySha256: config.publication.previousInventorySha256,
-            };
-        const inventoryBytes = await pinnedFile(
-          { path: state.inventoryPath, sha256: state.inventorySha256 },
-          256 * 1024 * 1024,
-        );
-        const inventory = JSON.parse(new TextDecoder().decode(inventoryBytes));
-        for (const page of bundle.pages)
-          inventory.entries[page.publicPath] = {
-            sha256: page.sha256,
-            size: page.size,
-            contentType: page.contentType,
+  const publishStage = async (
+    bundle: MangaBundle,
+    parentJob: string,
+    _resume: boolean,
+    editorial?: Row,
+  ) => {
+    const job = join(parentJob, editorial ? "catalogue" : "assets");
+    await privateDirectory(job);
+    const owner = await import("../../deploy/cloudflare/cli/publish-catalog");
+    const optionsFile = join(job, "publish-options.json");
+    let options: PublishCatalogOptions;
+    if (await Bun.file(optionsFile).exists()) {
+      options = await Bun.file(optionsFile).json();
+    } else {
+      const stateFile = Bun.file(join(config.publication.stateDirectory, "current-inventory.json"));
+      const state = (await stateFile.exists())
+        ? await stateFile.json()
+        : {
+            inventoryPath: config.publication.previousInventory,
+            inventorySha256: config.publication.previousInventorySha256,
           };
-        const rasterInventory = JSON.stringify(inventory);
-        await save(join(job, "raster-inventory.json"), inventory);
-        const snapshot = await collectPublicMangaSnapshot(origin);
-        // Fresh canonical row overlays the previous CDN publication; unchanged readers retain their exact publication.
-        const chapter = await api(`/api/wiki-admin/db_manga_chapters/${bundle.chapterId}`);
-        const expected = {
-          ...bundle.expectedChapter,
-          ...(bundle.publicationExtent ? { readerExtent: bundle.publicationExtent } : {}),
-          pages: bundle.pages.map((page) => page.publicPath),
-          ...(bundle.activate ? { visible: true } : {}),
+      const inventoryBytes = await pinnedFile(
+        { path: state.inventoryPath, sha256: state.inventorySha256 },
+        256 * 1024 * 1024,
+      );
+      const inventory = JSON.parse(new TextDecoder().decode(inventoryBytes));
+      for (const page of bundle.pages)
+        inventory.entries[page.publicPath] = {
+          sha256: page.sha256,
+          size: page.size,
+          contentType: page.contentType,
         };
-        if (!same(chapter, expected))
+      const rasterInventory = JSON.stringify(inventory);
+      await save(join(job, "raster-inventory.json"), inventory);
+      const snapshot = await collectPublicMangaSnapshot(origin);
+      // Fresh canonical row overlays the previous CDN publication; unchanged readers retain their exact publication.
+      if (editorial) {
+        const chapter = await api(`/api/wiki-admin/db_manga_chapters/${editorial.id}`);
+        if (!same(chapter, editorial))
           throw new Conflict("Editorial row changed before public projection");
         const pages = bundle.pages.map((page) => ({
           image: "https://cdn.dragonballfr.com" + page.publicPath,
@@ -422,47 +397,128 @@ export function mangaWorkerPorts(config: WorkerConfig, signal?: AbortSignal): Ma
           pageList: pages,
         };
         snapshot.chapters = snapshot.chapters
-          .filter((entry) => entry.id !== bundle.chapterId)
+          .filter((entry) => entry.id !== chapter.id)
           .concat(replacement);
         const volume = snapshot.volumes.find((entry) => entry.id === bundle.volumeId);
         if (!volume) throw Error("Canonical volume is absent from public catalogue");
         volume.chapters = [
-          ...(volume.chapters ?? []).filter(
-            (entry: { id: number }) => entry.id !== bundle.chapterId,
-          ),
+          ...(volume.chapters ?? []).filter((entry: { id: number }) => entry.id !== chapter.id),
           replacement,
         ];
-        const projection = projectMangaCdn(
-          snapshot,
-          inventory.entries,
-          mangaDigest(rasterInventory),
-          "https://cdn.dragonballfr.com/publications/manga-catalogue/index.json",
-        );
-        const publicRoot = join(job, "public");
-        // No owner mutation can precede the durable options file. Retain interrupted local staging.
-        if (await lstat(publicRoot).catch(() => null))
-          await rename(publicRoot, publicRoot + ".interrupted-" + crypto.randomUUID());
-        await stageMangaCdnProjection(projection, publicRoot);
-        const sourceReceipt = await Bun.file(join(job, "source.json")).json();
-        for (const page of bundle.pages) {
-          const bytes = await Bun.file(
-            join(sourceReceipt.revision, "objects", page.sha256),
-          ).bytes();
-          if (bytes.length !== page.size || mangaDigest(bytes) !== page.sha256)
-            throw Error("Pinned source CAS bytes changed before publication");
-          const target = join(publicRoot, page.publicPath.slice(1));
-          await mkdir(resolve(target, ".."), { recursive: true, mode: 0o700 });
-          await Bun.write(target, bytes);
-          await chmod(target, 0o600);
-        }
-        options = { ...config.publication, publicRoot, job: join(job, "cdn") };
-        await save(optionsFile, options);
       }
-      const receipt = await owner.reconcileCatalogPublication(options);
-      if (!("complete" in receipt)) throw Error("Canonical CDN owner returned no receipt");
-      return receipt;
+      const projection = projectMangaCdn(
+        snapshot,
+        inventory.entries,
+        mangaDigest(rasterInventory),
+        "https://cdn.dragonballfr.com/publications/manga-catalogue/index.json",
+      );
+      const publicRoot = join(job, "public");
+      // No owner mutation can precede the durable options file. Retain interrupted local staging.
+      if (await lstat(publicRoot).catch(() => null))
+        await rename(publicRoot, publicRoot + ".interrupted-" + crypto.randomUUID());
+      await stageMangaCdnProjection(projection, publicRoot);
+      const sourceReceipt = await Bun.file(join(parentJob, "source.json")).json();
+      for (const page of bundle.pages) {
+        const bytes = await Bun.file(join(sourceReceipt.revision, "objects", page.sha256)).bytes();
+        if (bytes.length !== page.size || mangaDigest(bytes) !== page.sha256)
+          throw Error("Pinned source CAS bytes changed before publication");
+        const target = join(publicRoot, page.publicPath.slice(1));
+        await mkdir(resolve(target, ".."), { recursive: true, mode: 0o700 });
+        await Bun.write(target, bytes);
+        await chmod(target, 0o600);
+      }
+      options = { ...config.publication, publicRoot, job: join(job, "cdn") };
+      if (config.nativeOriginPreparation) {
+        const reference = config.nativeOriginPreparation;
+        await privateDirectory(options.job);
+        const info = await lstat(reference.modulePath);
+        if (
+          !isAbsolute(reference.modulePath) ||
+          !info.isFile() ||
+          info.isSymbolicLink() ||
+          info.mode & 0o022 ||
+          mangaDigest(await Bun.file(reference.modulePath).bytes()) !== reference.moduleSha256
+        )
+          throw Error("Qualified native origin preparation capability changed");
+        const module = await import(
+          Bun.pathToFileURL(reference.modulePath).href + "?sha256=" + reference.moduleSha256
+        );
+        if (typeof module.prepareNativeOriginPublication !== "function")
+          throw Error("Native origin preparation owner unavailable");
+        const prepared = await module.prepareNativeOriginPublication({
+          ...reference.input,
+          job: options.job,
+        });
+        const { preparedPublicationOptions } = await import("./reader-source-workers");
+        options = preparedPublicationOptions(
+          options as unknown as Record<string, unknown>,
+          reference.input,
+          prepared,
+        ) as unknown as PublishCatalogOptions;
+      }
+      await save(optionsFile, options);
+    }
+    const receipt = await owner.reconcileCatalogPublication(options);
+    if (!("complete" in receipt)) throw Error("Canonical CDN owner returned no receipt");
+    return receipt;
+  };
+  return {
+    signal,
+    source: async (bundle) => {
+      const { autoSourcePipeline } = await import("./bun-source-pipeline");
+      const receipt = await autoSourcePipeline(bundle.source.config.path, { signal });
+      return {
+        complete: receipt.complete,
+        publicActivation:
+          (receipt as unknown as { publicActivation?: boolean }).publicActivation === true,
+        revision: receipt.revision,
+      };
     },
+    edit: async (bundle, job) => {
+      const owner = await import("./manga-publication-editor");
+      const reference = config.editorialBackup;
+      if (!reference) throw Error("Editorial backup owner capability missing");
+      const backup = async (directory: string) => {
+        const info = await lstat(reference.modulePath);
+        if (
+          !isAbsolute(reference.modulePath) ||
+          !info.isFile() ||
+          info.isSymbolicLink() ||
+          info.mode & 0o022 ||
+          mangaDigest(await Bun.file(reference.modulePath).bytes()) !== reference.moduleSha256
+        )
+          throw Error("Editorial backup owner capability changed");
+        const module = await import(
+          Bun.pathToFileURL(reference.modulePath).href + "?sha256=" + reference.moduleSha256
+        );
+        if (typeof module.prepareMangaEditorialBackup !== "function")
+          throw Error("Editorial backup owner unavailable");
+        await module.prepareMangaEditorialBackup({ ...reference.input, job: directory });
+      };
+      const prepared = await owner.prepareMangaEditorial(bundle, job, { backup });
+      const result = await owner.applyMangaEditorial(prepared);
+      await owner.verifyMangaEditorial(prepared);
+      return result.chapter;
+    },
+    assets: (bundle, job, resume) => publishStage(bundle, job, resume),
+    publish: (bundle, job, resume, chapter) => publishStage(bundle, job, resume, chapter),
     replica: async () => {
+      if (config.replica?.kind === "infra-container") {
+        const { runDeliveryOwner } = await import("./lib/bun-source-delivery");
+        for (const dry of [false, true]) {
+          const command =
+            "sudo -n docker exec aphrody-bot-1 /usr/local/bin/shenron-bot --replica-sync " +
+            (dry ? "--dry-run " : "") +
+            "--tables db_manga_volumes,db_manga_chapters";
+          const text = await runDeliveryOwner(
+            ["infra", "ssh", "exec", "--host", "dbfr", "-c", command],
+            { signal, timeoutMs: 300000 },
+          );
+          if (JSON.parse(text).ok !== true)
+            throw Error("Canonical production container replica readback failed");
+        }
+        return;
+      }
       if (config.replica?.kind === "infra") {
         if (!/^\/usr\/local\/sbin\/[a-z0-9-]{1,100}$/.test(config.replica.command))
           throw Error("Pinned Infra replica owner command required");
@@ -487,8 +543,8 @@ export function mangaWorkerPorts(config: WorkerConfig, signal?: AbortSignal): Ma
       )
         throw Error("Replica readback failed");
     },
-    verify: async (bundle) => {
-      const response = await fetch(`${origin}/api/manga/chapter/${bundle.chapterId}`, {
+    verify: async (bundle, editorial) => {
+      const response = await fetch(`${origin}/api/manga/chapter/${editorial.id}`, {
         cache: "no-store",
         signal: AbortSignal.timeout(30000),
       });
@@ -548,6 +604,9 @@ export async function runMangaWorker(
   await privateDirectory(join(config.job, "quarantine"));
   try {
     do {
+      const handoffs = config.handoff
+        ? await (await import("./manga-pool-handoff")).importPendingMangaHandoffs(config.handoff)
+        : [];
       const candidates = [];
       if (config.candidateInbox) {
         await privateDirectory(config.candidateInbox);
@@ -638,6 +697,7 @@ export async function runMangaWorker(
         observedAt: new Date().toISOString(),
         tasks: queue.rows(),
         candidates,
+        handoffs,
         completeCatalogue: false,
       });
       if (once || ports.signal?.aborted) break;
@@ -681,7 +741,7 @@ if (import.meta.main) {
         "75",
         join(config.job, "worker.flock"),
         process.execPath,
-        import.meta.path,
+        ...(import.meta.path.startsWith("/$bunfs/") ? [] : [import.meta.path]),
         mode!,
         path,
         "--locked",

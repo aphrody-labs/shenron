@@ -161,7 +161,9 @@ export async function exportMangaHandoff(
       )
         throw Error("Credentials cannot enter a handoff");
       candidates.push(candidate);
-      images.push(...selected.filter((image) => !!contents[image.sha256]));
+      images.push(
+        ...selected.filter((image) => !!contents[image.sha256] || sent.has(image.sha256)),
+      );
     }
   } finally {
     database.close();
