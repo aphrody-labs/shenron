@@ -2195,12 +2195,12 @@
   "corpusStats": {
     "title": "Le corpus référencé",
     "unavailable": "Indisponible",
-    "scope": "Comptes issus des fiches publiques et de l’index actif. Ils ne prouvent ni la complétude des œuvres ni la validation de leurs transcriptions.",
+    "scope": "Fiches publiques en base et passages de l’index local du serveur, distinct de l’index de recherche éditorial. Ces comptes ne prouvent ni la complétude des œuvres ni la validation des transcriptions.",
     "references": "références",
     "indexedRecords": "Références indexées",
     "recordScope": "dans la source disponible.",
     "metrics": {
-      "ragChunks": "Passages dans l’index public",
+      "ragChunks": "Passages de l’index local",
       "canonReferences": "Références de canonicité",
       "databookPages": "Planches databooks référencées",
       "mangaPages": "Planches manga documentées",

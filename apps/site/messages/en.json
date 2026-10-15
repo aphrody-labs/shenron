@@ -2195,12 +2195,12 @@
   "corpusStats": {
     "title": "Referenced corpus",
     "unavailable": "Unavailable",
-    "scope": "Counts come from public records and the active index. They do not establish complete works or reviewed transcriptions.",
+    "scope": "Public database records and passages in the server’s local index, separate from the editorial search index. These counts do not establish complete works or verified transcriptions.",
     "references": "references",
     "indexedRecords": "Indexed records",
     "recordScope": "in the available source.",
     "metrics": {
-      "ragChunks": "Passages in the public index",
+      "ragChunks": "Local index passages",
       "canonReferences": "Canon references",
       "databookPages": "Referenced databook pages",
       "mangaPages": "Documented manga pages",
