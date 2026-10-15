@@ -17,6 +17,10 @@ aussi la correction des transcriptions et la complétude du canon : lire API, é
 public/admin, données et mémoire Aphrody agent home sur DBFR, puis décider sans
 confirmation intermédiaire. Sources primaires prioritaires, œuvres et continuités
 explicitement attribuées ; aucun classement ou texte japonais inventé.
+Demandes ajoutées : rendre `/wiki/canon` moins verbeux, plus illustré, simple et
+interactif ; automatiser le remplissage du wiki par sessions Codex `gpt-5.6-luna`
+avec preuves primaires et relecture indépendante ; installer le plugin Aphrody
+et son MCP dans Codex.
 « star » reste à préciser ; aucun correctif arbitraire n’est déduit de ce mot.
 
 0. Demande propriétaire du 13 octobre livrée (contrôle du 15 octobre dans REPRISE) :

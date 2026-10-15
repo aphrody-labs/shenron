@@ -1,5 +1,36 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## 2026-10-15 — Refonte Canon, agents wiki et plugin Aphrody
+
+Le propriétaire ajoute une refonte Canon moins verbeuse, plus illustrée, facile et
+interactive, puis une automatisation du remplissage wiki avec de nombreuses sessions
+Codex gpt-5.6-luna et l’installation du plugin/MCP Aphrody. Catalogue modèle local
+daté : gpt-5.6-luna réellement disponible. Smoke réel sur Finalflash : deux sessions
+indépendantes writer/reviewer, modèle exact, sorties JSON validées ; proposition
+non publiée. Inventaire : 37 tables, 10754 lignes visibles, 108 contenus vides ou
+provisoires. Campagne bornée/reprenable et découverte de sources officielles en cours.
+
+Aphrody installé via marketplace privée aphrody-user, version2.2.1, activé,47skills.
+Le premier cache ne contenait que le manifeste : sousmodule source f5802d3a récupéré
+avec transport Git HTTPS authentifié puis installation refaite. MCP global aphrody
+stdio configuré ; initialize/tools-list réel341outils et appel aphrody_home_status
+profiledbfr isError=false. Aucun secret ajouté au dépôt. Reçus privés environment-20261015.
+
+Canon : sauvegarde admin stricte/CAS atomique et historique doctrine ; 0e8bf804,
+3d42549e, aa6240b0, fixturePG d4715a16. PostgreSQL18.1 isolé8tests/33assertions verts,
+concurrence, rollback et précisionmicroseconde réelle, sans toucher production.
+Nouvelle UI en revue finale avant image commune ; les captures preview ne qualifient
+pas PostgreSQL du site. Le SELECT readonly réel des compteurs donne4827références,
+15776planchesdatabooks,12199transcriptionsmangaréférencées visibles,329tomes,
+922chapitres,875épisodes,672personnages. VFSlocal explicitement distinct du RAGlive.
+
+Trois scans acquis :11-28/4-104 relus visuellement, deux bulles corrigées en seconde
+lecture indépendante ; JA et FR privés prêts.18-13 seulement452x640, lecturecorps
+non qualifiable, aucune réécriture. Dépôt des deux corrections attend image active,
+snapshots frais et CAS ; flags de vérification conservés, sfxillisible signalé�.
+Aucun OCR ni contenu wiki nouveau déclaré publié à ce stade.
+
+
 ## 2026-10-15 — Canon et agent home DBFR
 
 Demande explicite : lire API canon, pages publique/admin, données et mémoire Aphrody

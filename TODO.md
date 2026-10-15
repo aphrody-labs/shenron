@@ -28,6 +28,10 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
 - Relire les trois scans signalés, corriger uniquement les défauts visuellement prouvés,
   puis déposer par le writer canonique avec sauvegarde, gardes et révisions.
 
+- Qualifier puis exécuter la file de remplissage wiki `gpt-5.6-luna` : 37 tables,
+  10 754 lignes visibles auditées, 108 contenus vides/provisoires ; découverte
+  officielle, validation des preuves, rédaction/relecture distinctes et publication CAS.
+
 - Reprendre uniquement les lots explicitement ouverts dans `GOAL.md`.
 - Qualifier séparément source, artefact, déploiement et comportement public.
 - Construire sur VPS, transférer des artefacts scellés vers DBFR via Infra.
