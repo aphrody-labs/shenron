@@ -26,6 +26,13 @@ import {
   numeroDeTraduction,
 } from "@/lib/databook-pages-shared";
 import { ecrireTraduction, ecrireTranscription } from "@/lib/databook-pages";
+import {
+  databookPageRevisionSnapshots,
+  isDatabookPageRevisionTarget,
+  isDatabookPageSnapshot,
+  restoreDatabookPageRevision,
+} from "@/lib/databook-page-revisions";
+import { wikiUpdateSnapshotHash } from "@/lib/wiki-update-precondition";
 import { WIKI_TABLE_SPECS } from "@/lib/wiki-tables";
 import {
   deleteWiki,
@@ -84,6 +91,10 @@ function deriveLabel(row: Row | null | undefined): string | null {
  * `null`) : c'est le texte de LA planche visée, pas le tableau `pages` entier —
  * en journaliser 313 à chaque dépôt noierait l'historique et pèserait des
  * centaines de Ko par révision.
+ *
+ * Generic CMS page-array edits additionally retain versioned page snapshots:
+ * only changed pages, including original JA/FR wrappers and verification flags.
+ * Their revert merges the recorded field delta into the current array under CAS.
  */
 function snapshot(table: string, row: Row | null | undefined): Row | null {
   if (!row) return null;
@@ -103,6 +114,10 @@ function snapshot(table: string, row: Row | null | undefined): Row | null {
   // sur la ligne d'origine.
   for (const [k, v] of Object.entries(row)) {
     if (k in out) continue;
+    if (isDatabookPageRevisionTarget(table, k, v)) {
+      out[k] = v;
+      continue;
+    }
     if (!estCibleJsonbPlanche(table, k)) continue;
     if (v === null || typeof v === "string") out[k] = v;
   }
@@ -154,6 +169,11 @@ export async function recordRevision(input: {
   try {
     const before = snapshot(input.table, input.before);
     const after = snapshot(input.table, input.after);
+    if (input.table === "db_databooks" && before && after) {
+      const pages = databookPageRevisionSnapshots(input.before ?? null, input.after ?? null);
+      Object.assign(before, pages.before);
+      Object.assign(after, pages.after);
+    }
     const rowId =
       input.id ??
       (input.after
@@ -320,9 +340,9 @@ export async function revertRevision(
   // Sans instantané (table au-delà du plafond de capture), on bascule la table
   // à l'inverse de ce qui avait été demandé — le mieux qu'on puisse garantir.
   if (rev.action === "visibility-all" && hasVisibility(table)) {
-    const before = (rev.before as { rows?: VisibilityState[] } | null) ?? null;
+    const bulkBefore = (rev.before as { rows?: VisibilityState[] } | null) ?? null;
     const after = (rev.after as { visible?: boolean } | null) ?? null;
-    const rows = Array.isArray(before?.rows) ? before.rows : [];
+    const rows = Array.isArray(bulkBefore?.rows) ? bulkBefore.rows : [];
     let restored: number;
     if (rows.length > 0) {
       restored = await restoreWikiVisibility(table, rows);
@@ -359,6 +379,7 @@ export async function revertRevision(
 
   let mode: "restore" | "reinsert" | "delete";
   let resultRow: Row | null = null;
+  let restoredPageSnapshots = false;
 
   if (before == null) {
     // La ligne a été créée par cette révision → revert = suppression.
@@ -371,6 +392,7 @@ export async function revertRevision(
     // réécriture du tableau `pages`, qui écraserait les dépôts concurrents.
     const planches = Object.entries(before).filter(([k]) => estCiblePlanche(table, k));
     for (const [cle, valeur] of planches) {
+      if (isDatabookPageSnapshot(valeur)) continue;
       const numero = numeroDePlanche(cle);
       if (numero === null) continue;
       // `null` = la planche n'avait pas de texte avant : on rétablit le vide,
@@ -389,11 +411,37 @@ export async function revertRevision(
     // contient QUE des cibles de planche, on n'appelle pas `updateWiki` : il
     // n'aurait rien à écrire et rejetterait la clé inconnue.
     const colonnes = Object.fromEntries(
-      Object.entries(before).filter(([k]) => !estCibleJsonbPlanche(table, k)),
+      Object.entries(before).filter(
+        ([k, value]) =>
+          !estCibleJsonbPlanche(table, k) && !isDatabookPageRevisionTarget(table, k, value),
+      ),
     );
+    const hasPageSnapshots =
+      table === "db_databooks" && Object.values(before).some(isDatabookPageSnapshot);
+    if (hasPageSnapshots) {
+      restoredPageSnapshots = true;
+      const after = (rev.after as Row | null) ?? {};
+      // Unchanged metadata is not part of a page correction and must survive its revert.
+      for (const key of Object.keys(colonnes)) {
+        if (
+          Object.hasOwn(after, key) &&
+          wikiUpdateSnapshotHash({ value: before[key] }) ===
+            wikiUpdateSnapshotHash({ value: after[key] })
+        )
+          delete colonnes[key];
+      }
+      colonnes.pages = restoreDatabookPageRevision(current.pages, before, after);
+    }
     resultRow =
       Object.keys(colonnes).length > 0
-        ? await updateWiki(table, rowId, colonnes)
+        ? await updateWiki(
+            table,
+            rowId,
+            colonnes,
+            hasPageSnapshots
+              ? { expected: current, expectedSha256: wikiUpdateSnapshotHash(current) }
+              : {},
+          )
         : ((await getWikiRow(table, rowId).catch(() => null)) ?? current);
     mode = "restore";
   } else {
@@ -418,7 +466,7 @@ export async function revertRevision(
     id: rowId,
     action: "revert",
     before: current,
-    after: mode === "delete" ? null : before,
+    after: mode === "delete" ? null : restoredPageSnapshots ? resultRow : before,
     actor,
   });
 
