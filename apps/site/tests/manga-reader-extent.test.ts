@@ -47,3 +47,16 @@ test("canonical publication pages retain exact scoped paths", () => {
   ])
     expect(validateCatalogEditorialBody("db_manga_chapters", { pages: [path] }).ok).toBe(false);
 });
+
+test("canonical immutable objects require64 hex SHA", () => {
+  expect(
+    validateCatalogEditorialBody("db_manga_chapters", {
+      pages: ["/publications/yamcha-official-preview/objects/" + "a".repeat(64) + ".png"],
+    }).ok,
+  ).toBe(true);
+  expect(
+    validateCatalogEditorialBody("db_manga_chapters", {
+      pages: ["/publications/yamcha-official-preview/objects/short.png"],
+    }).ok,
+  ).toBe(false);
+});

@@ -152,7 +152,7 @@ export function validateCatalogEditorialBody(
           (value) =>
             typeof value === "string" &&
             (/^\/assets\/manga\/[A-Za-z0-9_./-]+$/.test(value) ||
-              /^\/publications\/[a-z0-9]+(?:-[a-z0-9]+)*\/pages\/[0-9]+\.(?:png|jpg|jpeg|webp)$/.test(
+              /^\/publications\/[a-z0-9]+(?:-[a-z0-9]+)*\/(?:pages\/[0-9]+|objects\/[a-f0-9]{64})\.(?:png|jpg|jpeg|webp)$/.test(
                 value,
               )) &&
             !value.includes(".."),

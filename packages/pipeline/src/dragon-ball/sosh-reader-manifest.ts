@@ -23,7 +23,7 @@ const imageUrl = citation.refine((value) => {
       "shenron-cdn.aphrody-labs.workers.dev",
     ].includes(url.hostname) &&
     (url.pathname.startsWith("/assets/") ||
-      /^\/publications\/[a-z0-9]+(?:-[a-z0-9]+)*\/pages\/[0-9]+\.(?:png|jpg|jpeg|webp)$/.test(
+      /^\/publications\/[a-z0-9]+(?:-[a-z0-9]+)*\/(?:pages\/[0-9]+|objects\/[a-f0-9]{64})\.(?:png|jpg|jpeg|webp)$/.test(
         url.pathname,
       )) &&
     !url.search &&
