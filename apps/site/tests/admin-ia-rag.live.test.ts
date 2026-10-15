@@ -43,6 +43,13 @@ mock.module("@/lib/session", () => ({
   requireAdmin: async () => {},
 }));
 mock.module("@/lib/canon-config", () => ({
+  CanonConfigWriteError: class extends Error {
+    status = 409;
+  },
+  getCanonConfigSnapshot: async () => ({
+    config: { tiers: [], rules: [] },
+    expected: "a".repeat(64),
+  }),
   getCanonConfig: async () => ({ tiers: [], rules: [] }),
   saveCanonConfig: async (patch: unknown) => patch,
 }));

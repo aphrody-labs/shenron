@@ -56,11 +56,15 @@ mock.module("@/lib/db-universe", () => ({
   dbUniverse: { timeline: async () => [] },
 }));
 mock.module("@/lib/canon-config", () => ({
+  CanonConfigWriteError: class extends Error {
+    status = 409;
+  },
+  getCanonConfigSnapshot: async () => ({ config: { version: 1 }, expected: "a".repeat(64) }),
   getCanonConfig: async () => ({ version: 1 }),
   getCanonReferences: async () => [],
   saveCanonConfig: async (patch: unknown, by?: string | null) => {
     writes.push({ kind: "canon", patch, by });
-    return patch;
+    return { config: patch, expected: "b".repeat(64) };
   },
 }));
 mock.module("@/lib/wiki-launch-config", () => ({
@@ -184,7 +188,10 @@ describe("API de configuration du dashboard — Better Auth + persistance", () =
 
     for (const item of cases) {
       const response = await item.route.PUT(
-        tokenRequest(`http://test/api/${item.url}`, item.patch),
+        tokenRequest(
+          `http://test/api/${item.url}`,
+          item.kind === "canon" ? { config: item.patch, expected: "a".repeat(64) } : item.patch,
+        ),
       );
       expect(response.status).toBe(200);
       expect(writes).toContainEqual({ kind: item.kind, patch: item.patch, by: "token-admin" });

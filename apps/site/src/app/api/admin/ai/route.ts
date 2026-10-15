@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { getCanonConfig, saveCanonConfig } from "@/lib/canon-config";
+import {
+  CanonConfigWriteError,
+  getCanonConfig,
+  getCanonConfigSnapshot,
+  saveCanonConfig,
+} from "@/lib/canon-config";
 import { DEFAULT_CANON_CONFIG, analyzeCanon } from "@/lib/canon-engine";
 import { canonPreuves } from "@/lib/canon-preuves";
 import { canonEvidenceView } from "@/lib/canon-preuves-view";
@@ -44,12 +49,13 @@ export async function GET() {
     const backend = currentRagBackend();
     const [cockpit, canonConfig] = await Promise.all([
       collectIaCockpit(createIaCockpitFetchers(), backend),
-      getCanonConfig(),
+      getCanonConfigSnapshot(),
     ]);
     return NextResponse.json(
       {
         ...cockpit,
-        canonConfig,
+        canonConfig: canonConfig.config,
+        canonExpected: canonConfig.expected,
         canonDefaults: DEFAULT_CANON_CONFIG,
         timestamp: new Date().toISOString(),
       },
@@ -196,13 +202,13 @@ export async function POST(req: NextRequest) {
     // ── Canon doctrine (PostgreSQL public."CanonConfig") ──────────────────
     if (action === "save_canon") {
       const config = body.config;
-      if (!config || typeof config !== "object") {
+      if (!config || typeof config !== "object" || Array.isArray(config)) {
         return NextResponse.json({ error: "Configuration canon requise." }, { status: 400 });
       }
-      const saved = await saveCanonConfig(config, me.discordId || me.user.id);
+      const saved = await saveCanonConfig(config, me.discordId || me.user.id, body.expected);
       revalidatePath("/wiki/canon");
       revalidatePath("/admin/ai");
-      return NextResponse.json({ ok: true, config: saved });
+      return NextResponse.json({ ok: true, ...saved });
     }
 
     // ── Admin lab Discord channel ─────────────────────────────────────────
@@ -247,6 +253,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ error: "Action non reconnue." }, { status: 400 });
   } catch (error) {
+    if (error instanceof CanonConfigWriteError) {
+      return NextResponse.json({ ok: false, error: error.message }, { status: error.status });
+    }
     if (error instanceof CockpitActionError) {
       return NextResponse.json({ ok: false, error: error.message }, { status: error.status });
     }

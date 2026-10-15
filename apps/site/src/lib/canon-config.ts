@@ -13,6 +13,7 @@
  * elle qui promet de ne rien inventer.
  */
 import "server-only";
+import { createHash } from "node:crypto";
 import { cache } from "react";
 import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
@@ -35,59 +36,111 @@ export const CANON_REFERENCES_TABLE = "canon_references";
  * Mémoïsée par requête : la page publique l'appelle pour le verdict et pour
  * l'affichage des règles, `canon-preuves` aussi — une seule lecture suffit.
  */
+type CanonDatabase = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+export class CanonConfigWriteError extends Error {
+  constructor(
+    message: string,
+    public readonly status: 409 | 428,
+  ) {
+    super(message);
+    this.name = "CanonConfigWriteError";
+  }
+}
+
+function stableJson(value: unknown): string {
+  if (Array.isArray(value)) return "[" + value.map(stableJson).join(",") + "]";
+  if (value && typeof value === "object") {
+    return (
+      "{" +
+      Object.entries(value)
+        .toSorted(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+        .map(([key, item]) => JSON.stringify(key) + ":" + stableJson(item))
+        .join(",") +
+      "}"
+    );
+  }
+  return JSON.stringify(value) ?? "null";
+}
+
+function configurationSnapshot(row: typeof canonConfig.$inferSelect | undefined): string {
+  return createHash("sha256")
+    .update(
+      stableJson(
+        row
+          ? {
+              data: row.data,
+              updatedAt: row.updatedAt.toISOString(),
+            }
+          : null,
+      ),
+    )
+    .digest("hex");
+}
+
+async function readReferences(client: CanonDatabase | typeof db): Promise<CanonReference[]> {
+  const rows = await client.select().from(canonReferences).where(eq(canonReferences.visible, true));
+  return rows.map((r) =>
+    Object.assign(
+      {
+        id: r.id,
+        subject: r.subject,
+        keywords: Array.isArray(r.keywords) ? r.keywords : [],
+        text: r.text,
+      },
+      r.textFr ? { textFr: r.textFr } : {},
+      { source: r.source },
+      r.year ? { year: r.year } : {},
+      {
+        document: r.document,
+        lang: r.lang === "en" || r.lang === "ja" ? r.lang : "fr",
+        provenance:
+          r.provenance === "aphrody" || r.provenance === "databooks" || r.provenance === "manga"
+            ? r.provenance
+            : "manuel",
+      },
+      r.href ? { href: r.href } : {},
+      r.updatedAt instanceof Date ? { updatedAt: r.updatedAt.toISOString() } : {},
+    ),
+  );
+}
+
+/** Strict administration read: database failures must never become editable defaults. */
+export async function getCanonConfigSnapshot(): Promise<{ config: CanonConfig; expected: string }> {
+  const [row] = await db
+    .select()
+    .from(canonConfig)
+    .where(eq(canonConfig.id, SINGLETON_ID))
+    .limit(1);
+  if (row && (!row.data || typeof row.data !== "object" || Array.isArray(row.data))) {
+    throw new Error("Invalid canon configuration document");
+  }
+  const doctrine = row ? resolveCanonConfig(row.data) : structuredClone(DEFAULT_CANON_CONFIG);
+  const references = await readReferences(db);
+  return {
+    config: {
+      ...doctrine,
+      references: [...doctrine.references.filter((r) => r.provenance === "manuel"), ...references],
+    },
+    expected: configurationSnapshot(row),
+  };
+}
+
+/** Public reads remain available when the editorial database is unavailable. */
 export const getCanonConfig = cache(async (): Promise<CanonConfig> => {
   try {
-    const [row] = await db
-      .select()
-      .from(canonConfig)
-      .where(eq(canonConfig.id, SINGLETON_ID))
-      .limit(1);
-    const doctrine = row ? resolveCanonConfig(row.data) : structuredClone(DEFAULT_CANON_CONFIG);
-    // Le corpus de preuves vit en table (`canon_references`, alimentée 24h/24
-    // par `scripts/canon-ingest.ts`) ; le blob ne garde que les saisies
-    // manuelles de l'éditeur. Les deux se lisent ensemble.
-    const manuelles = doctrine.references.filter((r) => r.provenance === "manuel");
-    return { ...doctrine, references: [...manuelles, ...(await getCanonReferences())] };
-  } catch (e) {
-    console.error("[canon-config] lecture échouée, repli sur la doctrine du dépôt :", e);
+    return (await getCanonConfigSnapshot()).config;
+  } catch (error) {
+    console.error("[canon-config] public doctrine fallback:", error);
     return structuredClone(DEFAULT_CANON_CONFIG);
   }
 });
 
-/**
- * Le corpus ingéré, visible, typé comme le moteur l'attend. Ne throw jamais.
- *
- * `updatedAt` accompagne chaque citation : l'éditeur le renvoie tel quel et
- * c'est lui qui garantit qu'un geste ne s'applique qu'à la version lue.
- */
 export const getCanonReferences = cache(async (): Promise<CanonReference[]> => {
   try {
-    const rows = await db.select().from(canonReferences).where(eq(canonReferences.visible, true));
-    return rows.map((r) =>
-      Object.assign(
-        {
-          id: r.id,
-          subject: r.subject,
-          keywords: Array.isArray(r.keywords) ? r.keywords : [],
-          text: r.text,
-        },
-        r.textFr ? { textFr: r.textFr } : {},
-        { source: r.source },
-        r.year ? { year: r.year } : {},
-        {
-          document: r.document,
-          lang: r.lang === "en" || r.lang === "ja" ? r.lang : "fr",
-          provenance:
-            r.provenance === "aphrody" || r.provenance === "databooks" || r.provenance === "manga"
-              ? r.provenance
-              : "manuel",
-        },
-        r.href ? { href: r.href } : {},
-        r.updatedAt instanceof Date ? { updatedAt: r.updatedAt.toISOString() } : {},
-      ),
-    );
-  } catch (e) {
-    console.error("[canon-config] corpus canon_references illisible :", e);
+    return await readReferences(db);
+  } catch (error) {
+    console.error("[canon-config] public references unavailable:", error);
     return [];
   }
 });
@@ -210,40 +263,46 @@ async function appliquerGeste(
   geste: GesteCitation,
   avant: LigneCitation,
   auteur: Auteur,
+  tx: CanonDatabase,
 ): Promise<boolean> {
-  return db.transaction(async (tx) => {
-    const set: Partial<typeof canonReferences.$inferInsert> = { updatedAt: new Date() };
-    if ("textFr" in geste) set.textFr = geste.textFr ?? null;
-    if (typeof geste.visible === "boolean") set.visible = geste.visible;
-    const modifiees = await tx
-      .update(canonReferences)
-      .set(set)
-      .where(and(eq(canonReferences.id, geste.id), eq(canonReferences.updatedAt, geste.lu)))
-      .returning({ id: canonReferences.id });
-    if (modifiees.length === 0) return false;
-    const snapshot = (l: { textFr?: string | null; visible?: boolean }) => ({
-      ...("textFr" in geste ? { textFr: l.textFr ?? null } : {}),
-      visible: l.visible,
-    });
-    await tx.insert(wikiRevisions).values({
-      tableName: CANON_REFERENCES_TABLE,
-      rowId: geste.id,
-      action: typeof geste.visible === "boolean" ? "visibility" : "update",
-      label: avant.subject.slice(0, 200),
-      before: snapshot(avant),
-      after: snapshot({
-        textFr: "textFr" in geste ? geste.textFr : avant.textFr,
-        visible: geste.visible ?? avant.visible,
-      }),
-      editorId: auteur?.id ?? null,
-      editorName: auteur?.name ?? null,
-    });
-    return true;
+  const set: Partial<typeof canonReferences.$inferInsert> = { updatedAt: new Date() };
+  if ("textFr" in geste) set.textFr = geste.textFr ?? null;
+  if (typeof geste.visible === "boolean") set.visible = geste.visible;
+  const modifiees = await tx
+    .update(canonReferences)
+    .set(set)
+    .where(and(eq(canonReferences.id, geste.id), eq(canonReferences.updatedAt, geste.lu)))
+    .returning({ id: canonReferences.id });
+  if (modifiees.length === 0) return false;
+  const snapshot = (l: { textFr?: string | null; visible?: boolean }) => ({
+    ...("textFr" in geste ? { textFr: l.textFr ?? null } : {}),
+    visible: l.visible,
   });
+  await tx.insert(wikiRevisions).values({
+    tableName: CANON_REFERENCES_TABLE,
+    rowId: geste.id,
+    action: typeof geste.visible === "boolean" ? "visibility" : "update",
+    label: avant.subject.slice(0, 200),
+    before: snapshot(avant),
+    after: snapshot({
+      textFr: "textFr" in geste ? geste.textFr : avant.textFr,
+      visible: geste.visible ?? avant.visible,
+    }),
+    editorId: auteur?.id ?? null,
+    editorName: auteur?.name ?? null,
+  });
+  return true;
 }
 
 /** Upsert du singleton (on stocke le document déjà résolu) → doctrine résolue. */
-export async function saveCanonConfig(patch: unknown, by?: string | null): Promise<CanonConfig> {
+export async function saveCanonConfig(
+  patch: unknown,
+  by: string | null | undefined,
+  expected: unknown,
+): Promise<{ config: CanonConfig; expected: string }> {
+  if (typeof expected !== "string" || !/^[a-f0-9]{64}$/.test(expected)) {
+    throw new CanonConfigWriteError("A current configuration snapshot is required", 428);
+  }
   const brut = resolveCanonConfig(patch);
   // Seules les citations saisies à la main s'enregistrent dans le blob : les
   // autres viennent de la table et y retournent au prochain passage du service.
@@ -256,48 +315,70 @@ export async function saveCanonConfig(patch: unknown, by?: string | null): Promi
   };
   const { auteur, updatedBy } = await auteurDeLaRequete(by);
 
-  // L'éditeur peut retoucher une traduction, retirer ou rétablir une citation
-  // ingérée : ces gestes s'appliquent à la table, ligne par ligne, jamais par
-  // différence avec ce qui manque au document.
-  const ingerees = brut.references.filter((r) => r.provenance !== "manuel");
-  if (ingerees.length > 0) {
-    const ids = [...new Set(ingerees.map((r) => r.id))];
-    const lignes = new Map<string, LigneCitation>();
-    for (const r of await db
-      .select({
-        id: canonReferences.id,
-        subject: canonReferences.subject,
-        textFr: canonReferences.textFr,
-        visible: canonReferences.visible,
-        updatedAt: canonReferences.updatedAt,
-      })
-      .from(canonReferences)
-      .where(inArray(canonReferences.id, ids))) {
-      lignes.set(r.id, r);
-    }
-    const { gestes, conflits } = planifierGestesCitations(ingerees, lignes);
-    for (const geste of gestes) {
-      if (!(await appliquerGeste(geste, lignes.get(geste.id)!, auteur))) {
-        conflits.push({ id: geste.id, raison: "citation modifiée pendant l'enregistrement" });
+  return db.transaction(async (tx) => {
+    const [before] = await tx
+      .select()
+      .from(canonConfig)
+      .where(eq(canonConfig.id, SINGLETON_ID))
+      .limit(1);
+    if (configurationSnapshot(before) !== expected)
+      throw new CanonConfigWriteError("Configuration changed since it was read", 409);
+    const data = resolved as unknown as Record<string, unknown>;
+    const updatedAt = new Date(Math.max(Date.now(), (before?.updatedAt.getTime() ?? 0) + 1));
+    const values = { data, updatedBy, updatedAt };
+    const written = before
+      ? await tx
+          .update(canonConfig)
+          .set(values)
+          .where(
+            and(
+              eq(canonConfig.id, SINGLETON_ID),
+              eq(canonConfig.updatedAt, before.updatedAt),
+              eq(canonConfig.data, before.data),
+            ),
+          )
+          .returning()
+      : await tx
+          .insert(canonConfig)
+          .values({ id: SINGLETON_ID, ...values })
+          .onConflictDoNothing()
+          .returning();
+    if (written.length !== 1)
+      throw new CanonConfigWriteError("Configuration changed during save", 409);
+    // L'éditeur peut retoucher une traduction, retirer ou rétablir une citation
+    // ingérée : ces gestes s'appliquent à la table, ligne par ligne, jamais par
+    // différence avec ce qui manque au document.
+    const ingerees = brut.references.filter((r) => r.provenance !== "manuel");
+    if (ingerees.length > 0) {
+      const ids = [...new Set(ingerees.map((r) => r.id))];
+      const lignes = new Map<string, LigneCitation>();
+      for (const r of await tx
+        .select({
+          id: canonReferences.id,
+          subject: canonReferences.subject,
+          textFr: canonReferences.textFr,
+          visible: canonReferences.visible,
+          updatedAt: canonReferences.updatedAt,
+        })
+        .from(canonReferences)
+        .where(inArray(canonReferences.id, ids))) {
+        lignes.set(r.id, r);
+      }
+      const { gestes, conflits } = planifierGestesCitations(ingerees, lignes);
+      for (const geste of gestes) {
+        if (!(await appliquerGeste(geste, lignes.get(geste.id)!, auteur, tx))) {
+          conflits.push({ id: geste.id, raison: "citation modifiée pendant l'enregistrement" });
+        }
+      }
+      if (conflits.length > 0) {
+        throw new CanonConfigWriteError("One or more references changed since they were read", 409);
       }
     }
-    if (conflits.length > 0) {
-      console.warn(
-        `[canon-config] ${conflits.length} geste(s) sur des citations ignoré(s) :`,
-        conflits.slice(0, 20),
-      );
-    }
-  }
 
-  // La colonne jsonb est typée Record<string, unknown> ; CanonConfig est
-  // structurellement du JSON → cast localisé (cf. chronology-config.ts).
-  const data = resolved as unknown as Record<string, unknown>;
-  await db
-    .insert(canonConfig)
-    .values({ id: SINGLETON_ID, data, updatedBy, updatedAt: new Date() })
-    .onConflictDoUpdate({
-      target: canonConfig.id,
-      set: { data, updatedBy, updatedAt: new Date() },
-    });
-  return { ...resolved, references: [...resolved.references, ...(await getCanonReferences())] };
+    const references = await readReferences(tx);
+    return {
+      config: { ...resolved, references: [...resolved.references, ...references] },
+      expected: configurationSnapshot(written[0]),
+    };
+  });
 }

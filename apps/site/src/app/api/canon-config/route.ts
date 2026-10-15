@@ -9,7 +9,7 @@
  * users.roleAdmin), comme /api/timeline-config.
  */
 import { adminUserOrToken, isAdminOrToken } from "@/lib/admin-guard";
-import { getCanonConfig, saveCanonConfig } from "@/lib/canon-config";
+import { CanonConfigWriteError, getCanonConfigSnapshot, saveCanonConfig } from "@/lib/canon-config";
 import { DEFAULT_CANON_CONFIG } from "@/lib/canon-engine";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
@@ -25,8 +25,15 @@ const MAX_CORPS = 16 * 1024 * 1024;
 
 export async function GET(req: NextRequest) {
   if (!(await isAdminOrToken(req))) return forbidden();
-  const config = await getCanonConfig();
-  return NextResponse.json({ config, defaults: DEFAULT_CANON_CONFIG });
+  try {
+    return NextResponse.json(
+      { ...(await getCanonConfigSnapshot()), defaults: DEFAULT_CANON_CONFIG },
+      { headers: { "Cache-Control": "no-store" } },
+    );
+  } catch (error) {
+    console.error("[api/canon-config] read failed:", error);
+    return NextResponse.json({ error: "Canon configuration unavailable" }, { status: 503 });
+  }
 }
 
 export async function PUT(req: NextRequest) {
@@ -50,10 +57,20 @@ export async function PUT(req: NextRequest) {
     return badRequest("Le document de doctrine doit être un objet JSON");
 
   try {
-    const config = await saveCanonConfig(body, me?.discordId || me?.user?.id || "token-admin");
+    const input = body as Record<string, unknown>;
+    if (!input.config || typeof input.config !== "object" || Array.isArray(input.config))
+      return badRequest("Configuration document required");
+    const saved = await saveCanonConfig(
+      input.config,
+      me?.discordId || me?.user?.id || "token-admin",
+      input.expected,
+    );
     revalidatePath("/wiki/canon");
-    return NextResponse.json({ ok: true, config });
+    return NextResponse.json({ ok: true, ...saved });
   } catch (err) {
-    return badRequest(err instanceof Error ? err.message : "erreur");
+    if (err instanceof CanonConfigWriteError)
+      return NextResponse.json({ error: err.message }, { status: err.status });
+    console.error("[api/canon-config] save failed:", err);
+    return NextResponse.json({ error: "Canon configuration unavailable" }, { status: 503 });
   }
 }

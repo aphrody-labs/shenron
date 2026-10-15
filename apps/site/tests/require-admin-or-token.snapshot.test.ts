@@ -95,6 +95,10 @@ mock.module("@/lib/chronology-config", () => ({
 }));
 mock.module("@/lib/db-universe", () => ({ dbUniverse: { timeline: async () => [] } }));
 mock.module("@/lib/canon-config", () => ({
+  CanonConfigWriteError: class extends Error {
+    status = 409;
+  },
+  getCanonConfigSnapshot: async () => ({ config: { version: 1 }, expected: "a".repeat(64) }),
   getCanonConfig: async () => ({ version: 1 }),
   getCanonReferences: async () => [],
   saveCanonConfig: async (patch: unknown, by?: string | null) => ({ patch, by }),
