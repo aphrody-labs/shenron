@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Generated from inspected episode 875 frames; run packages/ui/scripts/generate-episode-themes.ts. */
-:root:root:not([data-episode-theme="goku"]) {
+:root:root[data-episode-theme="beerus"] {
   color-scheme: dark;
   --md-sys-color-background: #17111a;
   --md-sys-color-on-background: #ebdeec;

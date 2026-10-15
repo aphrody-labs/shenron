@@ -113,7 +113,7 @@ describe("PWA delivery and offline behavior", () => {
   it("renders an offline document without Next chunks, CDN or images", () => {
     for (const lang of ["fr", "en", "ja"] as const) {
       const html = offlineDocument(lang);
-      expect(html).toContain(`<html lang="${lang}" data-episode-theme="beerus">`);
+      expect(html).toContain(`<html lang="${lang}" data-episode-theme="neutral">`);
       expect(html).not.toContain("_next");
       expect(html).not.toContain("https://");
       expect(html).toContain('onclick="location.reload()"');

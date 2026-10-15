@@ -61,7 +61,7 @@ const blocks = reference.themes.map((theme) => {
   }
   const selector =
     theme.id === "beerus"
-      ? ':root:root:not([data-episode-theme="goku"])'
+      ? ':root:root[data-episode-theme="beerus"]'
       : ':root[data-episode-theme="goku"]';
   palette[theme.id] = Object.fromEntries(
     Object.entries({

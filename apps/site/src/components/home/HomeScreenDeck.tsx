@@ -2,7 +2,6 @@
 
 import { Children, isValidElement, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { flushSync } from "react-dom";
 import { MaterialSymbol } from "@aphrody/shenron-ui/icones";
 import { useT } from "@/components/T";
 import { HomeMotion } from "./HomeMotion";
@@ -13,7 +12,6 @@ export function HomeScreenDeck({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
   const [motion, setMotion] = useState(true);
-  const transitionRef = useRef<ViewTransition | null>(null);
   const t = useT();
   const screens = Children.toArray(children);
 
@@ -38,11 +36,6 @@ export function HomeScreenDeck({ children }: { children: ReactNode }) {
     observe();
     window.addEventListener("resize", observe);
     return () => {
-      if (transitionRef.current) {
-        transitionRef.current.skipTransition();
-        transitionRef.current = null;
-        delete document.documentElement.dataset.homeTransition;
-      }
       observer?.disconnect();
       window.removeEventListener("resize", observe);
     };
@@ -52,35 +45,13 @@ export function HomeScreenDeck({ children }: { children: ReactNode }) {
     const deck = ref.current;
     const screen = deck?.children[index] as HTMLElement | undefined;
     if (!deck || !screen) return;
-    const move = () => {
-      screen.scrollIntoView({ block: "start", behavior: "instant" });
-      setActive(index);
-      screen.focus({ preventScroll: true });
-    };
-    if (
-      !motion ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
-      typeof document.startViewTransition !== "function"
-    ) {
-      move();
-      return;
-    }
-    transitionRef.current?.skipTransition();
-    document.documentElement.dataset.homeTransition = "teleport";
-    const transition = document.startViewTransition(() => {
-      flushSync(move);
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    screen.scrollIntoView({
+      block: "start",
+      behavior: reducedMotion || !motion ? "instant" : "smooth",
     });
-    transitionRef.current = transition;
-    void transition.ready.catch(() => {});
-    void transition.updateCallbackDone.catch(() => {});
-    void transition.finished
-      .catch(() => {})
-      .finally(() => {
-        if (transitionRef.current === transition) {
-          transitionRef.current = null;
-          delete document.documentElement.dataset.homeTransition;
-        }
-      });
+    setActive(index);
+    screen.focus({ preventScroll: true });
   };
 
   return (

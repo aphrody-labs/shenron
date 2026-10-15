@@ -28,14 +28,20 @@ ci-dessous évitent que cela se reproduise. Système graphique : [`reference/DES
   statique ne sont plus montées. La fiche Beerus reste accessible par le catalogue des épisodes.
 - La demande du 14 octobre remplace les accordéons de l'accueil par leur contenu ouvert,
   dans des panneaux occupant la hauteur disponible sous le shell. Le défilement natif
-  passe d'un panneau au suivant avec snap et une brève apparition de téléportation ;
-  les boutons précédent/suivant déplacent aussi le focus. Le mode de mouvement réduit
-  désactive cet effet. Les panneaux longs restent entièrement lisibles, même avec zoom,
+  reste continu, sans snap ni animation de téléportation ;
+  les boutons précédent/suivant déplacent aussi le focus. Le mode de mouvement réduit désactive le défilement animé des boutons. Les panneaux longs restent entièrement lisibles, même avec zoom,
   et la barre mobile est déduite de la hauteur disponible. Le bouton GIF violet est retiré.
 - Les héros des catalogues restent compacts : de 256 à 320 px,
   bandeaux partagés de 180 à 240 px. Il s'agit de hauteurs minimales : les titres, synopsis
   et actions longs agrandissent leur bloc, sans être tronqués.
 - « Explorer aussi » retire les destinations déjà proposées par le shell et les sections visibles.
+
+La demande du 15 octobre 2026 retire les vidéos de fond de l’accueil : le héros
+conserve le logo, Kinto’un et une frame fixe qualifiée ; les sections utilisent les
+surfaces du thème global. Les scènes stockées restent disponibles dans la configuration,
+sans monter de lecteur vidéo sur l’accueil. Le thème neutre devient le défaut ; les
+palettes d’épisode restent des choix explicites. Le thème enregistré par l’admin pilote
+les surfaces publiques, les portails, les couleurs de texte et les réglages de mise en page.
 
 ## Shell
 

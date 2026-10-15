@@ -1,0 +1,62 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* Neutral roles consume the same editable tokens as site components and portals. */
+html:root:root {
+  font-size: var(--site-font-size, 100%);
+  --font-sans: var(
+    --site-font-family,
+    "Google Sans Flex",
+    "Google Sans Flex Fallback",
+    system-ui,
+    sans-serif
+  );
+}
+
+html:root:root:not([data-episode-theme="beerus"]):not([data-episode-theme="goku"]) {
+  color-scheme: dark;
+  --md-sys-color-background: var(--dbz-bg, #101010);
+  --md-sys-color-surface: var(--dbz-bg, #101010);
+  --md-sys-color-on-background: var(--dbz-os, #ededed);
+  --md-sys-color-on-surface: var(--dbz-os, #ededed);
+  --md-sys-color-surface-container-low: var(--dbz-card, #191919);
+  --md-sys-color-surface-container: var(--dbz-card, #191919);
+  --md-sys-color-surface-container-high: var(--dbz-card, #191919);
+  --md-sys-color-surface-container-highest: var(--dbz-card, #191919);
+  --md-sys-color-on-surface-variant: var(--frame-on-surface-variant, #b5b5b5);
+  --md-sys-color-outline: var(--dbz-border, #353535);
+  --md-sys-color-outline-variant: var(--dbz-border, #353535);
+  --md-sys-color-primary: var(--dbz-orange, #d4d4d4);
+  --md-sys-color-on-primary: var(--frame-on-primary, #161616);
+  --md-sys-color-primary-container: var(--dbz-blue, #303030);
+  --md-sys-color-on-primary-container: var(--dbz-os, #ededed);
+  --md-sys-color-secondary: var(--frame-on-surface-variant, #b5b5b5);
+  --md-sys-color-on-secondary: var(--frame-on-primary, #161616);
+  --md-sys-color-secondary-container: var(--dbz-blue, #303030);
+  --md-sys-color-on-secondary-container: var(--dbz-os, #ededed);
+  --md-sys-color-tertiary: var(--dbz-gold, #c4c4c4);
+  --md-sys-color-on-tertiary: var(--frame-on-primary, #161616);
+  --md-sys-color-tertiary-container: var(--dbz-blue, #303030);
+  --md-sys-color-on-tertiary-container: var(--dbz-os, #ededed);
+  --md-sys-color-error: var(--dbz-red, #ffb4ab);
+  --md-sys-color-on-error: var(--frame-on-error, #690005);
+  --md-sys-color-inverse-surface: var(--dbz-os, #ededed);
+  --md-sys-color-inverse-on-surface: var(--dbz-bg, #101010);
+  --md-sys-color-inverse-primary: var(--dbz-orange-dark, #737373);
+  --md-sys-color-scrim: var(--dbz-encre, #000000);
+}
+
+[data-shell-variant="site"] {
+  background-image: none;
+}
+
+@media (forced-colors: active) {
+  html:root:root:not([data-episode-theme="beerus"]):not([data-episode-theme="goku"]) {
+    --md-sys-color-background: Canvas;
+    --md-sys-color-surface: Canvas;
+    --md-sys-color-on-background: CanvasText;
+    --md-sys-color-on-surface: CanvasText;
+    --md-sys-color-primary: Highlight;
+    --md-sys-color-on-primary: HighlightText;
+    --md-sys-color-outline: CanvasText;
+    --md-sys-color-outline-variant: CanvasText;
+  }
+}
