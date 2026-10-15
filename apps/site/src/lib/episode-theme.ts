@@ -16,10 +16,15 @@ export function applyEpisodeTheme(theme: EpisodeTheme) {
     .querySelector('meta[name="color-scheme"]')
     ?.setAttribute("content", theme !== "goku" ? "dark" : "light");
   const manifest = document.querySelector<HTMLLinkElement>('link[rel="manifest"]');
-  if (manifest) {
-    const url = new URL(manifest.href);
-    url.searchParams.set("theme", theme);
-    manifest.href = url.href;
+  const manifestHref = manifest?.getAttribute("href");
+  if (manifest && manifestHref) {
+    try {
+      const url = new URL(manifestHref, document.baseURI);
+      url.searchParams.set("theme", theme);
+      manifest.setAttribute("href", url.href);
+    } catch {
+      // An optional malformed manifest must not interrupt the page's theme hydration.
+    }
   }
   if ("serviceWorker" in navigator)
     navigator.serviceWorker.controller?.postMessage({
