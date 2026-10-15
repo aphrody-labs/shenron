@@ -9,6 +9,7 @@ import {
   codexArguments,
   codexEnvironment,
   eligibleFields,
+  evidenceMatchesEntity,
   executeJob,
   inventory,
   isOfficialUrl,
@@ -16,6 +17,7 @@ import {
   validateDraft,
   verifiedEvidence,
   type EvidenceInput,
+  type Evidence,
   type Runner,
 } from "./wiki-fill-agents";
 
@@ -141,6 +143,115 @@ test("strict model output cannot overwrite existing fields, visibility or unsupp
     ),
   ).toThrow();
   expect(() => validateDraft({ ...draft, decision: "abstain" }, candidate, evidence)).toThrow();
+});
+test("one game quotation cannot qualify two different anime episodes", () => {
+  const shared: Evidence = {
+    ...evidence[0]!,
+    kind: "official",
+    document: "Big Bang Mission 11 game cards",
+    sourceUrl: "https://dragon-ball-official.com/news/01_661.html",
+    excerpt: "プロモーションアニメ最新話で爆誕したゴジータ:ゼノ",
+    identityQuote: "プロモーションアニメ最新話で爆誕したゴジータ:ゼノ",
+  };
+  for (const [id, title] of [
+    [854, "【SDBH★BM11話】宇宙創成のゆくえ 新たなる世界の誕生！"],
+    [847, "【SDBH★新時空大戦編7話】立ちはだかるフューの脅威！奇跡の最強コンビ誕生！"],
+  ] as const) {
+    const episode = candidateFor("db_episodes", {
+      id,
+      title,
+      series: "SDBH",
+      visible: true,
+      synopsis: null,
+    })!;
+    expect(evidenceMatchesEntity(episode, shared)).toBe(false);
+    expect(() =>
+      validateDraft(
+        {
+          ...draft,
+          changes: [
+            {
+              field: "synopsis",
+              value: "Gogeta apparaît.",
+              claims: [{ evidenceId: shared.id, quote: shared.excerpt, text: "Apparition" }],
+            },
+          ],
+        },
+        episode,
+        [shared],
+      ),
+    ).toThrow("identity");
+  }
+});
+test("episode evidence needs its exact title, numbered arc and anime medium in the fact passage", () => {
+  const episode = candidateFor("db_episodes", {
+    id: 1,
+    title: "【SDBH★BM11話】宇宙創成のゆくえ",
+    series: "SDBH",
+    visible: true,
+    synopsis: null,
+  })!;
+  const linked: Evidence = {
+    ...evidence[0]!,
+    kind: "official",
+    excerpt: "悟空とベジータが戦う。",
+    identityQuote: "プロモーションアニメBM第11話「宇宙創成のゆくえ」。悟空とベジータが戦う。",
+  };
+  expect(evidenceMatchesEntity(episode, linked)).toBe(true);
+  expect(
+    evidenceMatchesEntity(episode, {
+      ...linked,
+      identityQuote: linked.identityQuote!.replace("第11話", "第111話"),
+    }),
+  ).toBe(false);
+  expect(
+    evidenceMatchesEntity(episode, {
+      ...linked,
+      identityQuote: linked.identityQuote!.replace("BM", "別の編"),
+    }),
+  ).toBe(false);
+  expect(
+    evidenceMatchesEntity(episode, { ...linked, excerpt: "A different unrelated scene" }),
+  ).toBe(false);
+});
+test("an exhibition is not a book and a different ISBN is not the same edition", () => {
+  const book = candidateFor("db_databooks", {
+    id: 40,
+    title: "Akira Toriyama The World",
+    titleJa: "鳥山明 THE WORLD",
+    isbn: null,
+    visible: true,
+    description: null,
+  })!;
+  const official: Evidence = {
+    ...evidence[0]!,
+    kind: "official",
+    document: "鳥山明 THE WORLD/鳥山 明 | 集英社",
+    sourceUrl: "https://books.shueisha.co.jp/items/contents.html?isbn=4-08-858130-X",
+  };
+  expect(evidenceMatchesEntity(book, official)).toBe(true);
+  expect(
+    evidenceMatchesEntity(book, {
+      ...official,
+      sourceUrl: "https://dragon-ball-official.com/news/exhibition.html",
+    }),
+  ).toBe(false);
+  expect(
+    evidenceMatchesEntity(
+      { ...book, snapshot: { ...book.snapshot, isbn: "978-4-08-000000-0" } },
+      official,
+    ),
+  ).toBe(false);
+  expect(() =>
+    validateDraft(
+      {
+        ...draft,
+        changes: [{ ...draft.changes[0], value: "Dans le dernier épisode, Goku rencontre Bulma." }],
+      },
+      candidate,
+      evidence,
+    ),
+  ).toThrow("as-of");
 });
 test("persistent queue resumes leases, deduplicates snapshots and bounds failures", async () => {
   const { dir, db } = await queue();
