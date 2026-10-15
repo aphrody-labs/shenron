@@ -12,11 +12,14 @@ on:
 permissions:
   contents: write
 
+env:
+  SHENRON_RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+
 jobs:
   build:
     name: Compile (${{ matrix.target }})
     # Bun compile en croisé : les deux cibles se construisent sur Linux.
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -40,7 +43,7 @@ jobs:
         run: bun ci
 
       - name: Verify the one release version
-        run: bun scripts/release/check-version.ts "${{ github.event.inputs.tag || github.ref_name }}"
+        run: bun scripts/release/check-version.ts "$SHENRON_RELEASE_TAG"
 
       # Le WASM de crates/koharu-canvas est suivi par Git (packages/koharu/src/wasm/, contrôlé
       # par rust.yml) : aucun outillage Rust pour le site.
@@ -120,7 +123,7 @@ jobs:
       - name: Install exact dependencies
         run: bun ci
       - name: Verify the one release version
-        run: bun scripts/release/check-version.ts "${{ github.event.inputs.tag || github.ref_name }}"
+        run: bun scripts/release/check-version.ts "$SHENRON_RELEASE_TAG"
       - name: Build Shenron Studio
         shell: bash
         env:
@@ -139,7 +142,7 @@ jobs:
   release:
     name: Create GitHub Release (draft)
     needs: [build, desktop]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
         with:
@@ -162,7 +165,7 @@ jobs:
       - name: Extract changelog
         id: changelog
         run: |
-          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          TAG="$SHENRON_RELEASE_TAG"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           {
             echo "changelog<<__EOF__"

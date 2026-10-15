@@ -13,7 +13,8 @@ permissions:
 jobs:
   bun-update:
     name: bun update + PR
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
     env:
       DISCORD_TOKEN: test-token
       GUILD_ID: "1497167233280118896"
@@ -37,9 +38,12 @@ jobs:
           bun packages/api/scripts/openapi.ts --check
           bun packages/ui/scripts/generate-tokens.ts --check
           bun packages/pipeline/scripts/ai/check-contracts.ts
-          bun run typecheck
-          bun run lint
+          bun scripts/plugin/sync.ts --check
+          bun check
+          bun lint --no-n2b -c .oxlintrc.json apps packages scripts
+          bun fmt --check apps packages scripts
           bun run test
+          bun run test:scripts
 
       - name: Diff
         id: diff
