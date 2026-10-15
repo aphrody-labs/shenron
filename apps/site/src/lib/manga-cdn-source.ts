@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import "server-only";
+import { sameMangaReaderChain } from "./manga-reader-neighbors";
 import {
   mangaPublicationRoot,
   validateMangaCdnChapter,
@@ -136,7 +137,7 @@ export function createMangaCdnSource(
         current = await chapter(id);
       if (!current) return null;
       const ordered = catalogue.chapters
-          .filter((row) => row.series === current.series)
+          .filter((row) => sameMangaReaderChain(current, row))
           .toSorted((a, b) => a.chapter_number - b.chapter_number || a.id - b.id),
         at = ordered.findIndex((row) => row.id === id);
       const prev = ordered[at - 1]?.id ?? null,

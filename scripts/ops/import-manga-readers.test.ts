@@ -56,6 +56,52 @@ test("generic import accepts exact French publication sharing a Japanese-default
   const manifest = validateMangaReaderManifest(mangaFixture());
   expect(missingReaderChapters(manifest, snapshot())).toHaveLength(1);
 });
+test("DBS24 preview binds the exact Japanese print ISBN and rejects another publication", () => {
+  const f = mangaFixture();
+  Object.assign(f.volumes[0]!, {
+    volumeId: 147,
+    volumeNumber: 24,
+    series: "DBS",
+    title: "Extrait officiel — 1 page (tome incomplet)",
+    expectedVolumeTitle: "Dragon Ball Super Vol. 24",
+    sourceUrl: "https://www.shueisha.co.jp/books/reader/main.php?cid=9784088844930",
+    pageCountEvidence: "https://www.shueisha.co.jp/books/reader/main.php?cid=9784088844930",
+    publicationExtent: {
+      kind: "preview",
+      sourceUrl: "https://www.shueisha.co.jp/books/reader/main.php?cid=9784088844930",
+      fullVolumePages: null,
+    },
+    edition: {
+      isbn: "9784088844930",
+      language: "ja",
+      colorization: "bw",
+      format: "print",
+      identityEvidence: "https://www.shueisha.co.jp/books/items/contents.html?isbn=9784088844930",
+    },
+  });
+  const s = {
+    volumes: [
+      {
+        id: 147,
+        series: "DBS",
+        volume_number: 24,
+        title: "Dragon Ball Super Vol. 24",
+        isbn: "978-4-08-884493-0",
+        visible: true,
+      },
+    ],
+    chapters: [],
+  };
+  expect(missingReaderChapters(validateMangaReaderManifest(f), s)).toHaveLength(1);
+  expect(() =>
+    missingReaderChapters(validateMangaReaderManifest(f), {
+      ...s,
+      volumes: [{ ...s.volumes[0]!, isbn: "9782344005547" }],
+    }),
+  ).toThrow();
+  f.volumes[0]!.edition.language = "fr";
+  expect(() => missingReaderChapters(validateMangaReaderManifest(f), s)).toThrow();
+});
 test("generic import rejects opposite language, wrong physical format, ISBN, target title and publisher evidence", () => {
   for (const override of [
     { language: "ja" },

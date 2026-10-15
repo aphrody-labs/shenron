@@ -1,3 +1,4 @@
+import { sameMangaReaderChain } from "./manga-reader-neighbors";
 import { getTimelineItems, getTimelineEvents } from "./chronology-config";
 import { normalizeAvailability } from "./video-languages";
 import { mangaReaderExtent, type MangaReaderExtent } from "./manga-reader-extent";
@@ -1972,6 +1973,8 @@ export const dbUniverse = {
           id: botMangaChapters.id,
           chapterNumber: botMangaChapters.chapterNumber,
           pages: botMangaChapters.pages,
+          volumeId: botMangaChapters.volumeId,
+          readerExtent: botMangaChapters.readerExtent,
         })
         .from(botMangaChapters)
         .where(
@@ -1987,6 +1990,8 @@ export const dbUniverse = {
           id: botMangaChapters.id,
           chapterNumber: botMangaChapters.chapterNumber,
           pages: botMangaChapters.pages,
+          volumeId: botMangaChapters.volumeId,
+          readerExtent: botMangaChapters.readerExtent,
         })
         .from(botMangaChapters)
         .where(
@@ -1999,10 +2004,20 @@ export const dbUniverse = {
         .orderBy(asc(botMangaChapters.chapterNumber));
       const prev = previous.find(
         (candidate) =>
+          sameMangaReaderChain(chapter, {
+            series: c.series,
+            volume_id: candidate.volumeId,
+            reader_extent: mangaReaderExtent(candidate.readerExtent),
+          }) &&
           publishedMangaPages(c.series, candidate.chapterNumber ?? 0, candidate.pages).length > 0,
       );
       const next = following.find(
         (candidate) =>
+          sameMangaReaderChain(chapter, {
+            series: c.series,
+            volume_id: candidate.volumeId,
+            reader_extent: mangaReaderExtent(candidate.readerExtent),
+          }) &&
           publishedMangaPages(c.series, candidate.chapterNumber ?? 0, candidate.pages).length > 0,
       );
       return {
