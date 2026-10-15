@@ -7,7 +7,7 @@
  * `/wiki/canon` lit ici la doctrine effective et la passe à `analyzeCanon` ;
  * l'éditeur `/admin/ai?tab=canon` l'écrit via `/api/canon-config`.
  *
- * Toute lecture est enveloppée et ne throw jamais : table absente, base
+ * La lecture publique est enveloppée et ne throw jamais : table absente, base
  * indisponible ou document invalide ⇒ doctrine livrée avec le dépôt. La page de
  * canonicité doit répondre même quand la base ne répond pas — c'est justement
  * elle qui promet de ne rien inventer.
@@ -373,6 +373,19 @@ export async function saveCanonConfig(
       if (conflits.length > 0) {
         throw new CanonConfigWriteError("One or more references changed since they were read", 409);
       }
+    }
+
+    if (!before || stableJson(before.data) !== stableJson(data)) {
+      await tx.insert(wikiRevisions).values({
+        tableName: "CanonConfig",
+        rowId: SINGLETON_ID,
+        action: "update",
+        label: "Canon doctrine",
+        before: before?.data ?? null,
+        after: data,
+        editorId: auteur?.id ?? null,
+        editorName: auteur?.name ?? null,
+      });
     }
 
     const references = await readReferences(tx);

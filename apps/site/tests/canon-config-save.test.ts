@@ -29,6 +29,7 @@ function colonnes(table: Table): Map<string, string> {
 /** Valeur comparable (les dates arrivent en ISO depuis le pilote simulé). */
 function comparable(v: unknown): unknown {
   if (v instanceof Date) return v.getTime();
+  if (v && typeof v === "object") return JSON.stringify(v);
   if (typeof v === "string" && /^\d{4}-\d{2}-\d{2}T/.test(v)) return Date.parse(v);
   return v;
 }
@@ -196,7 +197,7 @@ function ligne(id: string): Ligne {
 }
 
 function revisions(): Ligne[] {
-  return tables.get("wiki_revisions") ?? [];
+  return (tables.get("wiki_revisions") ?? []).filter((row) => row.tableName === "canon_references");
 }
 
 /** Ce que l'éditeur lit (GET) : la doctrine du dépôt et le corpus visible. */
@@ -388,4 +389,26 @@ test("snapshot includes data even if an external writer preserves the timestamp"
     { status: 409 },
   );
   expect((await getCanonConfigSnapshot()).config.entries).toEqual([]);
+});
+
+test("doctrine changes have a signed reversible revision in the same transaction", async () => {
+  const snapshot = await getCanonConfigSnapshot();
+  await saveVersionedCanonConfig({ ...snapshot.config, entries: [] }, "token-admin", snapshot.expected);
+  const history = (tables.get("wiki_revisions") ?? []).filter(
+    (row) => row.tableName === "CanonConfig",
+  );
+  expect(history).toHaveLength(1);
+  expect(history[0]).toMatchObject({
+    rowId: "default",
+    action: "update",
+    before: null,
+    editorId: "api-token",
+    editorName: "Jeton API (automatisation)",
+  });
+  expect((history[0]!.after as { entries: unknown[] }).entries).toEqual([]);
+  const unchanged = await getCanonConfigSnapshot();
+  await saveVersionedCanonConfig(unchanged.config, "token-admin", unchanged.expected);
+  expect(
+    (tables.get("wiki_revisions") ?? []).filter((row) => row.tableName === "CanonConfig"),
+  ).toHaveLength(1);
 });
