@@ -44,6 +44,12 @@ Les workers reprennent leurs frontières et files persistantes, respectent les b
 par source et publient par les propriétaires éditoriaux et CDN ; aucune notice ou
 page de remplacement ne vaut livraison d’un volume.
 
+Dernière demande propriétaire : corriger Shenron Studio sur le site. Le correctif
+doit être reproduit, testé en navigateur mobile et bureau, inclus dans l’image
+commune puis vérifié sur la page réellement servie. Le moteur local et ses gardes
+restent sous leur propriétaire ; la demande ne permet pas de déduire une nouvelle
+architecture distante multi-utilisateur.
+
 0. Demande propriétaire du 13 octobre livrée (contrôle du 15 octobre dans REPRISE) :
    accueil, catalogue épisodes/sagas, cinq GIF, aperçus et téléchargements servis par
    la release `88ac0d23`. La prochaine image commune reste coordonnée avec le dashboard.

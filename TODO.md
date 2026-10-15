@@ -11,6 +11,8 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
 
 ## Actions ouvertes
 
+- Livrer le correctif Studio `cad30390` dans l’image commune : régression DOM et
+  contrôle isolé en 390/1280 verts ; vérifier ensuite `/studio` réellement déployé.
 - Compléter les 110 tomes manquants : 93 sans ligne chapitre et 17 stubs SOSH
   masqués vides, inventaire API/PostgreSQL rapproché sans divergence. Le writer doit
   couvrir création avec comparaison d’absence et publication contrôlée des stubs.
@@ -20,9 +22,10 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
 - Reprendre les frontières japonaises privées Bun/Aphrody, qualifier le chemin VPN,
   indexer les captures permises et mesurer les résultats réels ; conserver les refus
   d’accès et distinguer notices collectées, scans disponibles et OCR relu.
-- Activer via Infra les workers permanents de découverte, acquisition et publication
-  des mangas : reprise après panne et redémarrage, cadence bornée, indexation réelle,
-  writers et relecture publique ; inclure tous les tomes manquants, dont SOSH 2–18.
+- Vérifier la publication de bout en bout des workers permanents, actifs via Infra :
+  16 slots de collecte sur la fabrique et consommateur DBFR persistant. Le prévol
+  attend le contrat `readerExtent` de la prochaine image ; aucune acquisition ne
+  vaut livraison avant vérification des vraies pages, dont SOSH 2–18.
 
 - Terminer la livraison site/bot et vérifier le comportement de la release réellement active.
 - Trier archive_movies/archive_images par sélection DragonBall qualifiée, avec compteurs,
