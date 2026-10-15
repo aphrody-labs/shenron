@@ -702,8 +702,19 @@ Avant l'activation, huit captures du navigateur candidat avaient 0 exception,
 Ces captures ne qualifient pas les lecteurs : tome 701 avait 11 images chargées
 sur 30 observées à 1280 et aucune à 390 dans la capture lecteur. Le runtime
 isolé, sans DB, renvoyait un catalogue vide. Il a été arrêté proprement à 15:55:04
-(processus et conteneur absents, ports fermés). Une QA navigateur anonyme sur
-production activée avec DB est en cours ; ne pas relancer build ni activation.
+(processus et conteneur absents, ports fermés). La QA directe en production est
+terminée : collection, volume702, lecteur35001 et route publique Studio à390/1280,
+sans exception, erreur critique ni débordement. La collection charge12 couvertures
+puis ses6 entrées suivantes ; le tome702 affiche explicitement qu'il n'est pas
+lisible, avec ses liens voisins. Sur le tome1, la pagination avance réellement
+de1 à2/381 ; les pages001 (2070px naturelles) et002 (6088px) se décodent avec une
+largeur positive aux deux viewports. Pagination verticale et intégralité des381
+pages non qualifiées ; `readerExtent.kind` reste `unknown`. Studio est vérifié
+comme page publique, pas comme session d'édition locale. Reçu/SHA et limites :
+`var/reports/sosh-live-reader-20261015/PRODUCTION-REVIEW.md`,
+`bbac1dcf6e4b1356cf292429e118e51e78442c1bd348c5321f054186ae2b0b2e`.
+Navigateur/tmux fermés, suites exit0. Aucun ACK dédié de handoff wiki trouvé ;
+claim exclusif laissé intact. Ne pas relancer build ni activation.
 
 À reprendre : obtenir une source publique/autorisée ou des originaux exacts pour
 les planches 2–18, puis compléter l'acquisition, la relecture et l'import idempotent.
@@ -716,6 +727,6 @@ tome intégral : Internet Archive 0 document exact, Google Books 429 (inconclusi
 pas de retry), Shueisha/BookWalker sans galerie qualifiée. Reçus privés dans
 `var/reports/sosh-ebook-catalogues-20261015/` et
 `var/reports/sosh-ebook-catalogues-20261015/README.md` (SHA de l'audit
-`25051f9de41f3c3b3fbbd8d346955032ba6da023ccec83d7fa02e7cb5a28b599`). Une QA
-navigateur anonyme de la production avec DB est demandée; les réponses API seules
-confirment les stubs et ne prouvent pas le rendu des planches.
+`25051f9de41f3c3b3fbbd8d346955032ba6da023ccec83d7fa02e7cb5a28b599`). La QA
+navigateur réelle est consignée ci-dessus ; les réponses API confirment aussi les
+stubs 702–718 et ne les font pas passer pour des lecteurs.
