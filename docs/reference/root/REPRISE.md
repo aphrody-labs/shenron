@@ -525,3 +525,56 @@ Fusion36fb4616 poussée : publication transactionnelle des chapitres absents et 
 Sur demande explicite, dix archives de livraison hors des répertoires de production ont été transférées vers le stockage privé du VPS ; SHA-256 relus indépendamment à destination, puis copies DBFR supprimées après contrôle identité et absence de références ouvertes. Avec les duplicatas du lot b90,4,13Go libérés ; DBFR dispose de5,73Go, contre1,63Go avant opération. Release active b90 et rollback préservés ; aucune purge Docker, base ou média. Reçus privés dbfr-offload-20261015 et wiki-import-pg-20261015/offload-complete.json. Le stockage commun existe sur la fabrique, pas encore sous le même chemin sur DBFR.
 
 Omar et PC propriétaire joignables par Infra sous Windows natif. Premier lot privé de notes Codex/Claude du PC propriétaire :155 documents et952 chunks indexés dans le home DBFR ;153 notes suspectes en quarantaine, sans document indexé. Filtre propriétaire et adaptateur privé4tests/28assertions verts, manifestes et empreintes vérifiés, recherche privée exacte et replay sans nouvelle indexation. Données historiques explicitement non fiables, sans publication ni entraînement ; les sessions volumineuses et mémoires Omar ne sont pas encore ingérées.
+
+## 2026-10-15 — Studio du site et progression wiki vérifiée
+
+Demande propriétaire : « fix shenron studio du site ». Crash reproduit après
+hydratation dans Bun/Obscura installé : HTMLLinkElement.href reste relatif,
+new URL sans base lève Invalid scheme. Le correctif cad30390, poussé sur main,
+lit l’attribut href, résout avec document.baseURI et isole un manifeste invalide.
+Régression avant correction : 4 tests passent, 2 échouent ; après : 6/25 assertions.
+Thème/PWA : 15/119 assertions ; bun check du site : 1455 fichiers, zéro erreur ;
+bun lint et bun fmt ciblés verts. Aucun tsc/oxlint. QA isolée : vrais 390/1280,
+page présente, aucune erreur console ni écran critique ; thème neutre/Goku/neutre,
+fond, classe dark et manifeste vérifiés. Root a inspecté deux captures.
+Un seul bloc du bundle CDN épinglé a été remplacé, sans modifier le DOM.
+Ce contrôle ne prouve pas encore le déploiement ; image active b90 au contrôle.
+Le crash observé concerne le DOM installé, sans extrapolation Chrome/Safari.
+Preuve privée : var/reports/studio-site-fix-20261015/browser/isolated-fix-qa.json,
+SHA256 68b79c0791896fa69950cad25e36c4343ec6801c2db295b719a91f49ddd3b67c.
+
+La page publique est actuellement une présentation ; le moteur est local et
+désactivé en production. Ni import, OCR, traduction, sauvegarde ni export distants
+qualifiés. Clarification facultative posée sur le parcours attendu, sans réponse
+à ce stade. Demande de repin de l’image commune envoyée à son propriétaire :
+activation exclusive wiki/Infra, pas de second build. Notre ancien job d879
+a été annulé uniquement pendant son attente du verrou ; aucun build d879 exécuté.
+
+Wiki : 84 fiches distinctes écrites par ce root, sauvegardes complètes, CAS,
+relecture et révisions signées vérifiées ; 78 textes publics exacts. Six articles
+de comédiens (9–14) attendent le correctif d’affichage 9a dans l’image commune.
+Les 48 synopsis français SDBH reposent sur les synopsis officiels de l’anime,
+identité YouTube et deux images par épisode vérifiées ; aucune vidéo annoncée vue.
+Dix corrections lexicales Fû ont leur propre révision et ne comptent pas comme
+nouvelles fiches. Les champs synopsis originaux restent nuls ; le détecteur de
+champs manquants ne mesure donc pas à lui seul l’absence de texte public.
+Dernier lot de sept : guides29/41/42 et comédiens11–14. ISBN29 corrigé sur le
+colophon réel et la notice ISBN concordante ; les descriptions n’inventent ni
+lecture intégrale ni contenu absent. Pas d’écriture OCR pendant ce lot.
+Reçus privés : var/reports/wiki-root-delivery-20261015/delivery.json et
+wiki-final-reviewed7-20261015/plans/2026-10-15T14-42-47-814Z.
+
+Les 110 tomes complets manquants restent à acquérir ; aucune nouvelle livraison
+intégrale déclarée. Pool fabrique 16 slots et consommateur DBFR persistants ;
+prévol consommateur attend readerExtent de la prochaine image. Dates SOSH702/703
+publiées et relues : 13/27 mai2016, publication/réconciliation terminales zéro,
+5905 fichiers vérifiés, sans prétendre avoir acquis les pages2–18.
+Stockage commun /home/ubuntu/build/storage annoncé qualifié par le propriétaire :
+58 empreintes et huit contrôles ne sont pas revendiqués comme testés par nous.
+Chemin absent sur DBFR, présent sur la fabrique. DBFR conserve environ1,26GB
+disponible au dernier contrôle, insuffisant pour prétendre la porte d’activation
+qualifiée ; aucun store, volume Docker ou fichier partagé purgé.
+
+Prochaine étape : image commune incluant cad30390, portes et espace qualifiés
+par son propriétaire, activation Infra puis contrôle réel de Studio et des six
+articles de comédiens. Wiki entier et volumes manquants restent inachevés.
