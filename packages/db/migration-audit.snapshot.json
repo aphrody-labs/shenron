@@ -1,7 +1,7 @@
 {
   "journal": {
-    "entries": 15,
-    "files": 23,
+    "entries": 16,
+    "files": 24,
     "journaled": [
       "0000_dark_johnny_blaze",
       "0001_natural_switch",
@@ -17,7 +17,8 @@
       "0017_wiki_media_publications",
       "0020_chat_agent_homes",
       "0021_ba_account_provider_unique",
-      "0022_chat_conversations"
+      "0022_chat_conversations",
+      "0023_manga_reader_extent"
     ],
     "unjournaled": [
       "0007_post_cms",
@@ -120,6 +121,12 @@
         "tag": "0022_chat_conversations",
         "when": 1791410000000,
         "breakpoints": true
+      },
+      {
+        "idx": 15,
+        "tag": "0023_manga_reader_extent",
+        "when": 1792051200000,
+        "breakpoints": true
       }
     ]
   },
@@ -158,7 +165,8 @@
     "0011_technique_image",
     "0017_wiki_media_publications",
     "0018_media_works_and_editions",
-    "0019_narrative_graph_and_contributors"
+    "0019_narrative_graph_and_contributors",
+    "0023_manga_reader_extent"
   ],
   "hashes": {
     "0000_dark_johnny_blaze": "4acfbb67d895cfc6d575f03198d0f353e688c5c918bc7c1f29e82de7707b5636",
@@ -183,6 +191,7 @@
     "0019_narrative_graph_and_contributors": "000efc01951e6932946fe147dd8839ae4f2ba335a97bce5420d8b836e12341eb",
     "0020_chat_agent_homes": "26ac2ce54873a510db43f3e7efaf09fa5a3f4912d8bff7f2eba1411c82e0a6e7",
     "0021_ba_account_provider_unique": "0d032590e10c47c2fde0a45c36cc2d8a1eacd4c26af4ad222ef07782960b0536",
-    "0022_chat_conversations": "a7b524ace2c8e3fbc1166af56837533f5abaedfde2e9999a8dec117d41cf59c8"
+    "0022_chat_conversations": "a7b524ace2c8e3fbc1166af56837533f5abaedfde2e9999a8dec117d41cf59c8",
+    "0023_manga_reader_extent": "fdfc79162f3ee7f8337326cdfec4877681e758bc60f52d676737642a390c1cac"
   }
 }
