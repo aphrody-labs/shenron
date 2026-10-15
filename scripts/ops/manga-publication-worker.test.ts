@@ -9,6 +9,7 @@ import {
   qualifyBundle,
   consumeMangaBundle,
   runMangaWorker,
+  Conflict,
   type WorkerConfig,
   type MangaBundle,
   type MangaWorkerPorts,
@@ -137,18 +138,34 @@ export async function fixture() {
     patches = 0,
     publications = 0;
   const resumes: boolean[] = [];
+  const stages: string[] = [];
   const ports: MangaWorkerPorts = {
     source: async () => ({ complete: true, publicActivation: false, revision: root }),
-    read: async (table) => (table === "db_manga_volumes" ? expectedVolume : current),
-    patch: async (_id, body) => {
-      expect(body.expectedSha256).toBe(hash(current));
-      current = { ...current, pages: body.pages, visible: body.visible };
-      patches++;
+    assets: async () => {
+      stages.push("assets");
+      return { complete: true };
     },
-    revision: async () => true,
+    edit: async (requestedBundle, job) => {
+      if (hash(current) !== requestedBundle.expectedChapterSha256) throw new Conflict("Staff edit");
+      const { mkdir } = await import("node:fs/promises");
+      await mkdir(job, { recursive: true, mode: 0o700 });
+      await Bun.write(
+        join(job, "before.json"),
+        JSON.stringify([requestedBundle.expectedVolume, requestedBundle.expectedChapter]),
+      );
+      current = {
+        ...current,
+        pages: requestedBundle.pages.map((page) => page.publicPath),
+        visible: true,
+      };
+      patches++;
+      stages.push("edit");
+      return current;
+    },
     publish: async (_b, _j, resume) => {
       resumes.push(resume);
       publications++;
+      stages.push("catalogue");
       return { complete: true };
     },
     replica: async () => {},
@@ -163,6 +180,7 @@ export async function fixture() {
     patches: () => patches,
     publications: () => publications,
     resumes,
+    stages,
     setCurrent: (row: Record<string, unknown>) => {
       current = row;
     },
@@ -190,7 +208,8 @@ test("publication traverses canonical CAS, complete backup, readback, replica an
   expect(f.patches()).toBe(1);
   expect(f.publications()).toBe(1);
   expect(q.next()).toBeNull();
-  expect(await Bun.file(join(f.root, id, "before.json")).json()).toEqual([
+  expect(f.stages).toEqual(["assets", "edit", "catalogue"]);
+  expect(await Bun.file(join(f.root, id, "editorial/before.json")).json()).toEqual([
     f.bundle.expectedVolume,
     f.bundle.expectedChapter,
   ]);
@@ -210,6 +229,30 @@ test("lost public acknowledgement resumes its existing owner and never repeats t
   f.ports.publish = publish;
   await consumeMangaBundle(q, q.next()!, join(f.root, id), f.ports);
   expect(f.resumes).toEqual([false, true]);
+  expect(f.patches()).toBe(1);
+  expect(q.next()).toBeNull();
+  db.close();
+});
+test("lost assets acknowledgement resumes assets before any editorial mutation", async () => {
+  const f = await fixture(),
+    db = new Database(":memory:"),
+    q = new MangaPublicationQueue(db),
+    id = q.enqueue(f.bundle);
+  const assets = f.ports.assets,
+    resumes: boolean[] = [];
+  f.ports.assets = async (bundle, job, resume) => {
+    resumes.push(resume);
+    await assets(bundle, job, resume);
+    throw Error("lost assets acknowledgement");
+  };
+  await expect(consumeMangaBundle(q, q.next()!, join(f.root, id), f.ports)).rejects.toThrow();
+  expect(f.patches()).toBe(0);
+  f.ports.assets = async (bundle, job, resume) => {
+    resumes.push(resume);
+    return assets(bundle, job, resume);
+  };
+  await consumeMangaBundle(q, q.next()!, join(f.root, id), f.ports);
+  expect(resumes).toEqual([false, true]);
   expect(f.patches()).toBe(1);
   expect(q.next()).toBeNull();
   db.close();

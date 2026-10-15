@@ -1,4 +1,5 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # Consommateur permanent des acquisitions manga
 
 `scripts/ops/manga-publication-worker.ts` consomme les acquisitions du propriétaire
@@ -26,17 +27,24 @@ La configuration privée `WorkerConfig` contient :
 - `candidateInbox` : candidats produits depuis les captures structurées du pool ;
 - `sourcePoolJob` : foyer du pool sur la même machine. Le planner lit uniquement
   son `frontier.sqlite`, les reçus `acquisition/done` et les originaux `acquired/` ;
+- `handoff` : inbox des archives scellées reçues du VPS, dossier d'import privé
+  et SHA du modèle et de la politique. DBFR reconstruit seulement le sous-ensemble
+  acquis référencé ; ni credentials ni corpus brut ne circulent ;
 - `allowedSeries` : codes exacts des éditions autorisées ;
 - `publication` : options du writer CDN, avec son état partagé et ses capacités
   Infra réellement qualifiées. La cible est
   `https://dragonballfr.com/publications/manga-catalogue`, l'index lecteur est
   `https://cdn.dragonballfr.com/publications/manga-catalogue/index.json` ;
+- `nativeOriginPreparation` et `editorialBackup` : capacités Infra épinglées par
+  SHA. La première prépare l'activation CDN depuis son état courant ; la seconde
+  produit un dump PostgreSQL complet et vérifie son inventaire ;
 - `replica` : `{kind:"infra",command:"/usr/local/sbin/<writer-proprietaire>"}`
   pour appeler sur DBFR, via Aphrody Infra, les modes `apply` puis `verify`
   produisant chacun `{"ok":true}`. Le wrapper utilise le binaire canonique du
   bot avec `--replica-sync` et les seules tables manga. Un mode
   `{kind:"local",hostname:"<hote-production-qualifie>"}` existe pour un service
-  installé directement sur DBFR ; il refuse un autre hostname ;
+  installé directement sur DBFR ; il refuse un autre hostname. `DATABASE_PATH`
+  désigne alors le réplica partagé réel du bot ;
 - `maxItemsPerCycle` (défaut 2, maximum 32), `maxOutboxFiles` (défaut 5000,
   maximum 10000), `intervalMs` (défaut 60000).
 
@@ -70,11 +78,11 @@ Un candidat `shenron-manga-acquisition-candidate/v1` fournit :
   `printedPages` (une ou deux pages imprimées, ou `null`).
 
 Toutes les URL image doivent être réellement présentes dans les médias embarqués
-de la capture native épinglée. Une notice seule, deux couvertures, un ISBN ambigu,
-un slot de chapitre absent ou un format non pris en charge restent en quarantaine.
-Le planner recherche l'unique notice existante correspondant à l'ISBN, la série
-et le numéro, puis son slot de chapitre. Ce lot ne crée aucune nouvelle édition
-ni identité de tome ; un catalogue sans slot nécessite son writer d'identité.
+de la capture native épinglée. Une notice seule, deux couvertures, un ISBN ambigu
+ou un format non pris en charge restent en quarantaine. Le planner recherche
+l'unique volume existant correspondant à l'ISBN, la série et le numéro.
+L'absence de chapitre est conservée comme telle ; le writer manga canonique
+alloue son identifiant sous verrou au commit. Aucun volume ni édition n'est créé.
 
 Le planner vérifie octets, SHA, taille, MIME et signature raster des reçus du pool.
 Il conserve une reprise par fichier, avec un budget de 100 nouveaux fichiers et
@@ -85,7 +93,8 @@ sans relancer un crawl ou fabriquer de nouvelle image.
 
 ## Effets et reprise
 
-Les phases persistées sont `queued`, `acquired`, `editing`, `edited`,
+Les phases persistées sont `queued`, `acquired`, `assets-publishing`,
+`assets-published`, `editing`, `edited`,
 `publishing`, `published`, `replicated`, `complete` ; un conflit éditorial devient
 `conflict`. Les erreurs de disponibilité gardent leur phase avec un délai de
 reprise croissant, plafonné à une heure. La file déduplique le SHA du lot.
@@ -95,15 +104,14 @@ n'empêche pas les candidats suivants de progresser.
 1. Le pipeline `autoSourcePipeline` possède l'acquisition, le CAS distant,
    sa relecture et la provenance PostgreSQL. Cette étape ne publie pas de média,
    n'active ni entraînement, ni canon, ni indexation implicite.
-2. Le consommateur sauvegarde un tableau JSON complet volume/chapitre et utilise
-   `PATCH /api/wiki-admin/db_manga_chapters/:id` avec `expected` et
-   `expectedSha256`. Il ne modifie que `pages` et, si le lot le demande,
-   `visible`. Il relit indépendamment le chapitre et sa révision. Un acquittement
-   perdu ne provoque pas une seconde modification si le résultat exact est déjà là.
-3. La projection `manga-cdn-projection.ts` superpose le chapitre relu au snapshot
-   public, conserve les autres lecteurs, puis remet ensemble images qualifiées
-   et index au writer CDN. Le propriétaire réconcilie ses checkpoints et l'état
-   réellement actif avant toute reprise de publication.
+2. Le writer CDN publie d'abord les images réelles, en conservant le catalogue
+   courant. L'importer peut ainsi vérifier les octets publics avant sa transaction.
+3. `manga-publication-editor.ts` délègue au writer manga canonique avec snapshot
+   complet, dump frais vérifié, comparaison optimiste, révision et relecture.
+   Il remplit un placeholder vide ou crée un chapitre réellement absent, sans
+   écraser un lecteur existant. La projection superpose ensuite le chapitre relu
+   au catalogue public. Les deux étapes CDN ont leurs plans persistés distincts ;
+   le propriétaire réconcilie l'état actif avant toute reprise.
 4. Le writer du réplica de production est exécuté, puis relu. L'API publique doit
    enfin exposer exactement l'identité et les images du lot.
 
