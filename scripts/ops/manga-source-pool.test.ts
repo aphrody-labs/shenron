@@ -444,6 +444,12 @@ test("archive and owned inventory recursion follow real returned identities and 
   ]);
   expect(
     structuredPoolUrls(
+      { files: [{ name: "volume.pdf" }, { name: "volume_jp2.zip" }, { name: "volume_daisy.zip" }] },
+      "https://archive.org/metadata/actual-sosh-scan",
+    ),
+  ).toEqual(["https://archive.org/download/actual-sosh-scan/volume_jp2.zip"]);
+  expect(
+    structuredPoolUrls(
       { ...files, is_restricted: true },
       "https://archive.org/metadata/actual-sosh-scan",
     ),

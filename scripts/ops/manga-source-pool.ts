@@ -211,11 +211,18 @@ export function structuredPoolUrls(value: unknown, base: string): string[] {
     }
     if (url.pathname.startsWith("/metadata/") && !body.is_dark && !body.is_restricted) {
       const identifier = url.pathname.slice("/metadata/".length);
-      for (const file of body.files ?? []) {
+      const files = (body.files ?? []).filter(
+        (file: any) =>
+          typeof file.name === "string" &&
+          ![true, "true", "1"].includes(file.private) &&
+          /\.(?:jpe?g|png|webp|jp2|pdf|cbz|zip)$/i.test(file.name),
+      );
+      const hasPageArchive = files.some((file: any) => /(?:_jp2\.zip|\.cbz)$/i.test(file.name));
+      for (const file of files) {
         if (
-          typeof file.name !== "string" ||
-          [true, "true", "1"].includes(file.private) ||
-          !/\.(?:jpe?g|png|webp|jp2|pdf|cbz|zip)$/i.test(file.name)
+          hasPageArchive &&
+          !/\.(?:jpe?g|png|webp|jp2|cbz)$/i.test(file.name) &&
+          !/(?:_jp2)\.zip$/i.test(file.name)
         )
           continue;
         found.add(
