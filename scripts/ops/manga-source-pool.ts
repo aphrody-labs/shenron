@@ -1077,6 +1077,22 @@ async function servePool(options: {
         encodeURIComponent("title:(Dragon Ball Soshuhen)") +
         "&fl[]=identifier&fl[]=title&rows=20&output=json",
     },
+    {
+      kind: "discovery",
+      url: "https://archive.org/metadata/dragon-ball-full-color",
+    },
+    {
+      kind: "discovery",
+      url: "https://archive.org/metadata/dragon-ball-z-v-1-full-color-edition",
+    },
+    {
+      kind: "discovery",
+      url: "https://archive.org/metadata/dragon-ball-z-v-26_202607",
+    },
+    {
+      kind: "discovery",
+      url: "https://archive.org/metadata/dragon-ball-super_202607",
+    },
     { kind: "bibliography", url: "https://api.openbd.jp/v1/get?isbn=9784081111664" },
     {
       kind: "discovery",
