@@ -16,9 +16,9 @@
       "date": "2026-10-15",
       "sources": {
         "apps/site/src/lib/canon-engine.ts": "64fe8f7f9092b4d46cd66c60d0e78a5c79a9676bb6d938b007cfdfa965ef5b5d",
-        "scripts/plugin/src/canon.ts": "27b192bebd46229b94b8c096154632e1723f424e4df1e523215936a4c270a5c4"
+        "scripts/plugin/src/canon.ts": "cb45d2b0a2d7710eceb86e5d1ca5cd0adda6a42236734ec20402e045f8012c18"
       },
-      "sha256": "f770848002c6604980c6611a59d12420510a267520de3d87a8e60d5ef9279a69",
+      "sha256": "505933afdcf66b3380561890ca0455b0a23e7bde0a03166a310737f2f40163e1",
       "paquet": true
     },
     "plugin/skills/dragon-ball-japonais/references/lexique-canonique.json": {

@@ -66,7 +66,7 @@ const publicRecord = {
 };
 let pageRequest: { category: string; input: Record<string, unknown> } | undefined;
 mock.module("@/lib/catalog-explorer", () => ({
-  readCatalogSummary: async () => ({categories:[],observedAt:"2026-10-14"}),
+  readCatalogSummary: async () => ({ categories: [], observedAt: "2026-10-14" }),
   readCatalogDetail: async () => publicRecord,
   readCatalogPage: async (category: string, input: Record<string, unknown>) => {
     pageRequest = { category, input };

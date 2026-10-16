@@ -21,12 +21,15 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "react": ["./node_modules/@types/react"],
+      "react/*": ["./node_modules/@types/react/*"]
     },
     "types": ["bun"]
   },
   "include": [
     "next-env.d.ts",
+    "../../packages/pipeline/src/ai/bun-yolo.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",

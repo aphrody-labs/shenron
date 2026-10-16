@@ -95,9 +95,9 @@ export function createCanonJudgmentPort(provider: Provider): CanonJudgmentPort {
 }
 
 /** No provider sessions or arbitrary credential files are searched. Keys never enter a request. */
-export async function configuredCanonJudgment(
+export async function configuredProvider(
   env: Readonly<Record<string, string | undefined>>,
-): Promise<CanonJudgmentPort | null> {
+): Promise<Provider | null> {
   if (env.SHENRON_JEV === "off") return null;
   const key =
     env.TYPESAFE_API_KEY?.trim() ||
@@ -109,5 +109,12 @@ export async function configuredCanonJudgment(
     retry: { maxRetries: 0 },
     logLevel: "off",
   });
-  return createCanonJudgmentPort(createTypesafeProvider(client));
+  return createTypesafeProvider(client);
+}
+
+export async function configuredCanonJudgment(
+  env: Readonly<Record<string, string | undefined>>,
+): Promise<CanonJudgmentPort | null> {
+  const provider = await configuredProvider(env);
+  return provider ? createCanonJudgmentPort(provider) : null;
 }

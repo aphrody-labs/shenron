@@ -2148,7 +2148,14 @@ var CATEGORIES = new Set([
 ]);
 
 // scripts/plugin/src/canon.ts
-var INSTANTANE = typeof { revision: "aa6240b0", date: "2026-10-15", source: "apps/site/src/lib/canon-engine.ts" } === "undefined" ? { revision: "d\xE9p\xF4t", date: "courante", source: "apps/site/src/lib/canon-engine.ts" } : { revision: "aa6240b0", date: "2026-10-15", source: "apps/site/src/lib/canon-engine.ts" };
+function instantane() {
+  try {
+    return { revision: "aa6240b0", date: "2026-10-15", source: "apps/site/src/lib/canon-engine.ts" };
+  } catch {
+    return { revision: "d\xE9p\xF4t", date: "courante", source: "apps/site/src/lib/canon-engine.ts" };
+  }
+}
+var INSTANTANE = instantane();
 var SITE = "https://dragonballfr.com";
 function statut(v) {
   const o = v.origine;

@@ -26,10 +26,16 @@ export { CANON_TIERS, DEFAULT_CANON_CONFIG, analyzeCanon };
 
 declare const __INSTANTANE__: { revision: string; date: string; source: string };
 
-const INSTANTANE =
-  typeof __INSTANTANE__ === "undefined"
-    ? { revision: "dépôt", date: "courante", source: "apps/site/src/lib/canon-engine.ts" }
-    : __INSTANTANE__;
+/** `__INSTANTANE__` est substitué au build ; hors build, l'identifiant n'existe pas. */
+function instantane(): { revision: string; date: string; source: string } {
+  try {
+    return __INSTANTANE__;
+  } catch {
+    return { revision: "dépôt", date: "courante", source: "apps/site/src/lib/canon-engine.ts" };
+  }
+}
+
+const INSTANTANE = instantane();
 
 const SITE = "https://dragonballfr.com";
 

@@ -5,6 +5,13 @@
     "noEmit": true,
     "types": ["bun"]
   },
-  "include": ["tests/**/*.ts", "tests/**/*.tsx", "scripts/**/*.ts", "src/**/*.ts", "src/**/*.tsx"],
+  "include": [
+    "../../packages/pipeline/src/ai/bun-yolo.d.ts",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "scripts/**/*.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
   "exclude": ["node_modules"]
 }

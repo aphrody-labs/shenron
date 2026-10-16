@@ -271,92 +271,95 @@ async function illustrerFiche(
   }
 }
 
-export const canonPreuves = cache(async (question: string, continuity?: CanonContinuity): Promise<CanonPreuves> => {
-  const verdict = analyzeCanon(question, await getCanonConfig());
-  const suggestions = verdict.suggestions.map((titre) => ({
-    titre,
-    href: `/wiki/canon?q=${encodeURIComponent(titre)}`,
-  }));
-  // A troll or empty input gets no evidence: searching the corpus for « Goku vs Superman »
-  // would surface Goku pages and lend the question a seriousness it lacks.
-  if (verdict.nature === "troll" || verdict.nature === "empty") {
-    return { verdict, planches: [], fiches: [], mode: null, suggestions };
-  }
-  const requete = requetePreuves(question, verdict.matchedKeywords);
-
-  // Deux recherches quand la reformulation diffère : la question sert les
-  // fiches (elle porte l'intention), les mots-clés servent les planches (ils
-  // portent le sujet). Une seule quand elles coïncident.
-  const [parQuestion, parMotsCles] = await Promise.all([
-    dbUniverse.rag(question, 14, { lexicalOnly: true }).catch(() => null),
-    requete === question
-      ? Promise.resolve(null)
-      : dbUniverse.rag(requete, 14, { lexicalOnly: true }).catch(() => null),
-  ]);
-  const hits = [...(parMotsCles?.results ?? []), ...(parQuestion?.results ?? [])];
-
-  const refs: { id: number; numero: number; score: number }[] = [];
-  // Curated visible references also carry primary plate links when retrieval misses them.
-  for (const reference of verdict.references ?? []) {
-    if (reference.provenance !== "databooks" || !reference.href) continue;
-    const ref = refPlanche(reference.href);
-    if (ref && !refs.some((r) => r.id === ref.id && r.numero === ref.numero)) refs.push({ ...ref, score: 1 });
-  }
-  const fiches: FichePreuve[] = [];
-  const vues = new Set<string>();
-  for (const h of hits) {
-    const href = routeInterne(h.url);
-    if (!href || vues.has(href)) continue;
-    vues.add(href);
-    if (h.kind === "databook") {
-      const ref = refPlanche(href);
-      if (ref) refs.push({ ...ref, score: h.score ?? 0 });
-      continue;
+export const canonPreuves = cache(
+  async (question: string, continuity?: CanonContinuity): Promise<CanonPreuves> => {
+    const verdict = analyzeCanon(question, await getCanonConfig());
+    const suggestions = verdict.suggestions.map((titre) => ({
+      titre,
+      href: `/wiki/canon?q=${encodeURIComponent(titre)}`,
+    }));
+    // A troll or empty input gets no evidence: searching the corpus for « Goku vs Superman »
+    // would surface Goku pages and lend the question a seriousness it lacks.
+    if (verdict.nature === "troll" || verdict.nature === "empty") {
+      return { verdict, planches: [], fiches: [], mode: null, suggestions };
     }
-    // Surpondération de véracité : fiches encyclopédiques canoniques et manga > épisodes dérivés
-    const isCanonCore = [
-      "character",
-      "technique",
-      "transformation",
-      "planet",
-      "race",
-      "manga_chapter",
-      "manga_volume",
-      "source",
-    ].includes(h.kind);
-    fiches.push({
-      kind: h.kind,
-      titre: h.title,
-      extrait: h.snippet,
-      href,
-      score: (h.score ?? 0) * (isCanonCore ? 1.3 : 1.0),
-      image: null,
-      nameJa: null,
-    });
-  }
+    const requete = requetePreuves(question, verdict.matchedKeywords);
 
-  const retenues = fiches.toSorted((a, b) => b.score - a.score).slice(0, 6);
-  const planchesCandidats = refs.toSorted((a, b) => b.score - a.score).slice(0, 6);
-  const [planches, illustrations] = await Promise.all([
-    resoudrePlanches(planchesCandidats).catch(() => [] as PlanchePreuve[]),
-    Promise.all(retenues.map((f) => illustrerFiche(f.href))),
-  ]);
-  const judgment = await judgeCanonPlates(question, planches, continuity);
-  const support = new Map(judgment.evidence.map((entry) => [entry.evidenceId, entry.relation]));
-  // A refutation belongs beside supporting evidence; uncertainty leaves the original order intact.
-  const rankedPlates = planches.toSorted((a, b) => {
-    const relevant = (p: PlanchePreuve) => {
-      const relation = support.get(`databook:${p.databookId}:${p.numero}`);
-      return relation === "supported" || relation === "contradicted" ? 1 : 0;
+    // Deux recherches quand la reformulation diffère : la question sert les
+    // fiches (elle porte l'intention), les mots-clés servent les planches (ils
+    // portent le sujet). Une seule quand elles coïncident.
+    const [parQuestion, parMotsCles] = await Promise.all([
+      dbUniverse.rag(question, 14, { lexicalOnly: true }).catch(() => null),
+      requete === question
+        ? Promise.resolve(null)
+        : dbUniverse.rag(requete, 14, { lexicalOnly: true }).catch(() => null),
+    ]);
+    const hits = [...(parMotsCles?.results ?? []), ...(parQuestion?.results ?? [])];
+
+    const refs: { id: number; numero: number; score: number }[] = [];
+    // Curated visible references also carry primary plate links when retrieval misses them.
+    for (const reference of verdict.references ?? []) {
+      if (reference.provenance !== "databooks" || !reference.href) continue;
+      const ref = refPlanche(reference.href);
+      if (ref && !refs.some((r) => r.id === ref.id && r.numero === ref.numero))
+        refs.push({ ...ref, score: 1 });
+    }
+    const fiches: FichePreuve[] = [];
+    const vues = new Set<string>();
+    for (const h of hits) {
+      const href = routeInterne(h.url);
+      if (!href || vues.has(href)) continue;
+      vues.add(href);
+      if (h.kind === "databook") {
+        const ref = refPlanche(href);
+        if (ref) refs.push({ ...ref, score: h.score ?? 0 });
+        continue;
+      }
+      // Surpondération de véracité : fiches encyclopédiques canoniques et manga > épisodes dérivés
+      const isCanonCore = [
+        "character",
+        "technique",
+        "transformation",
+        "planet",
+        "race",
+        "manga_chapter",
+        "manga_volume",
+        "source",
+      ].includes(h.kind);
+      fiches.push({
+        kind: h.kind,
+        titre: h.title,
+        extrait: h.snippet,
+        href,
+        score: (h.score ?? 0) * (isCanonCore ? 1.3 : 1.0),
+        image: null,
+        nameJa: null,
+      });
+    }
+
+    const retenues = fiches.toSorted((a, b) => b.score - a.score).slice(0, 6);
+    const planchesCandidats = refs.toSorted((a, b) => b.score - a.score).slice(0, 6);
+    const [planches, illustrations] = await Promise.all([
+      resoudrePlanches(planchesCandidats).catch(() => [] as PlanchePreuve[]),
+      Promise.all(retenues.map((f) => illustrerFiche(f.href))),
+    ]);
+    const judgment = await judgeCanonPlates(question, planches, continuity);
+    const support = new Map(judgment.evidence.map((entry) => [entry.evidenceId, entry.relation]));
+    // A refutation belongs beside supporting evidence; uncertainty leaves the original order intact.
+    const rankedPlates = planches.toSorted((a, b) => {
+      const relevant = (p: PlanchePreuve) => {
+        const relation = support.get(`databook:${p.databookId}:${p.numero}`);
+        return relation === "supported" || relation === "contradicted" ? 1 : 0;
+      };
+      return relevant(b) - relevant(a);
+    });
+    return {
+      verdict,
+      planches: rankedPlates.slice(0, 4),
+      fiches: retenues.map((f, i) => Object.assign(f, illustrations[i]!)),
+      mode: parQuestion?.mode ?? parMotsCles?.mode ?? null,
+      suggestions,
+      judgment,
     };
-    return relevant(b) - relevant(a);
-  });
-  return {
-    verdict,
-    planches: rankedPlates.slice(0, 4),
-    fiches: retenues.map((f, i) => Object.assign(f, illustrations[i]!)),
-    mode: parQuestion?.mode ?? parMotsCles?.mode ?? null,
-    suggestions,
-    judgment,
-  };
-});
+  },
+);
