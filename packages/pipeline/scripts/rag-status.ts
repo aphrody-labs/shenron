@@ -19,12 +19,11 @@ import { tempPath } from "@aphrody/paths";
 import { Database } from "bun:sqlite";
 import { existsSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { fileURLToPath } from "node:url";
 import * as sqliteVec from "sqlite-vec";
 import { AphrodyComputeClient, ShenronEmbeddingsClient } from "@aphrody/shenron-pipeline/aphrody";
 import { requireAphrodyApiUrl } from "./lib/script-env";
 
-const ROOT = fileURLToPath(new URL("../../../", import.meta.url));
+const ROOT = Bun.fileURLToPath(new URL("../../../", import.meta.url));
 const DB_PROD = process.env.RAG_DB ?? join(ROOT, "apps/bot/data/bot.db");
 const DB_TMP = tempPath("rag.db");
 

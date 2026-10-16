@@ -1,9 +1,8 @@
 import { expect, test } from "bun:test";
 import { readFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
 
 const script = await readFile(
-  fileURLToPath(new URL("./fix-global-paths.ps1", import.meta.url)),
+  Bun.fileURLToPath(new URL("./fix-global-paths.ps1", import.meta.url)),
   "utf8",
 );
 

@@ -4,7 +4,6 @@
 // engine channel never comes from the Tauri-only module.
 import { cleanup, render, renderHook, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "bun:test";
-import { fileURLToPath } from "node:url";
 
 import { StartupView } from "@aphrody/shenron-ui/koharu/components/app/StartupView";
 import { WindowControls } from "@aphrody/shenron-ui/koharu/components/app/WindowChrome";
@@ -102,7 +101,7 @@ describe("product name", () => {
   it("never takes the engine channel from the Tauri-only module", async () => {
     const files = [
       ...new Bun.Glob("src/koharu/**/*.{ts,tsx}").scanSync(
-        fileURLToPath(new URL("../../../", import.meta.url)),
+        Bun.fileURLToPath(new URL("../../../", import.meta.url)),
       ),
     ];
     const hits: string[] = [];

@@ -6,7 +6,6 @@
  */
 import { describe, expect, test } from "bun:test";
 import { Glob } from "bun";
-import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 import { createElement as h } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -19,7 +18,7 @@ import {
 } from "../src/components/accordion";
 import { Tabs, TabsList, TabsPanel, TabsTab } from "../src/components/tabs";
 
-const srcDir = fileURLToPath(new URL("../src/", import.meta.url));
+const srcDir = Bun.fileURLToPath(new URL("../src/", import.meta.url));
 
 describe("Base UI 1.8 selectors", () => {
   test("no data-[expanded] or data-[selected] in packages/ui/src", async () => {

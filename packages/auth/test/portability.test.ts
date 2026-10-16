@@ -1,7 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { fileURLToPath } from "node:url";
 
 import {
   checkBrowserBundles,
@@ -11,7 +10,7 @@ import {
   listExportEntries,
 } from "@aphrody/shenron-config/guards";
 
-const pkgDir = fileURLToPath(new URL("..", import.meta.url));
+const pkgDir = Bun.fileURLToPath(new URL("..", import.meta.url));
 
 /** docs/architecture/STACK.md §3.3. */
 const EXPECTED: Record<string, string> = {

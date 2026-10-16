@@ -4,9 +4,8 @@
  *
  * Usage : bun scripts/merge-corpus-shards.ts /tmp/shard-*.json
  */
-import { fileURLToPath } from "node:url";
 
-const CORPUS = fileURLToPath(new URL("../data/rag/corpus.json", import.meta.url));
+const CORPUS = Bun.fileURLToPath(new URL("../data/rag/corpus.json", import.meta.url));
 
 interface Doc {
   id: string;

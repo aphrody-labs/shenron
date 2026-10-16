@@ -1,8 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { fileURLToPath } from "node:url";
 import { staffLegacyRedirect } from "../src/lib/legacy-routes";
 
-const siteRoot = fileURLToPath(new URL("..", import.meta.url));
+const siteRoot = Bun.fileURLToPath(new URL("..", import.meta.url));
 const sidebar = await Bun.file(
   new URL("../src/components/admin/AdminSidebar.tsx", import.meta.url),
 ).text();

@@ -7,7 +7,6 @@
  * de `document.activeElement` et de `focus()`/`click()`.
  */
 import { afterAll, beforeEach, describe, expect, test } from "bun:test";
-import { fileURLToPath } from "node:url";
 import { onTablistKeyDown } from "../src/lib/tablist-keys";
 
 interface FauxOnglet {
@@ -133,7 +132,7 @@ describe("onTablistKeyDown", () => {
 describe("câblage des jeux d'onglets", () => {
   test("chaque tablist du site écoute le clavier", async () => {
     const { Glob } = await import("bun");
-    const racine = fileURLToPath(new URL("../src/", import.meta.url));
+    const racine = Bun.fileURLToPath(new URL("../src/", import.meta.url));
     const muets: string[] = [];
     for await (const rel of new Glob("**/*.tsx").scan({ cwd: racine })) {
       const src = await Bun.file(`${racine}${rel}`).text();
@@ -145,7 +144,7 @@ describe("câblage des jeux d'onglets", () => {
 
   test('aucun role="tab" ne vit hors d\'un tablist', async () => {
     const { Glob } = await import("bun");
-    const racine = fileURLToPath(new URL("../src/", import.meta.url));
+    const racine = Bun.fileURLToPath(new URL("../src/", import.meta.url));
     const orphelins: string[] = [];
     for await (const rel of new Glob("**/*.tsx").scan({ cwd: racine })) {
       const src = sansCommentaires(await Bun.file(`${racine}${rel}`).text());

@@ -9,7 +9,6 @@
 import { Database } from "bun:sqlite";
 import { mkdirSync, writeFileSync, existsSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
-import { fileURLToPath } from "node:url";
 import { homedir } from "node:os";
 import {
   aphrodyWebCrawl,
@@ -20,8 +19,8 @@ import {
 import { aphrodyWebMirror } from "@aphrody/shenron-pipeline/aphrody/mirror";
 
 // Paths
-const DB_PATH = fileURLToPath(new URL("../data/bot.db", import.meta.url));
-const OUT_RAW = fileURLToPath(new URL("../data/rag/raw/", import.meta.url));
+const DB_PATH = Bun.fileURLToPath(new URL("../data/bot.db", import.meta.url));
+const OUT_RAW = Bun.fileURLToPath(new URL("../data/rag/raw/", import.meta.url));
 
 // CLI Arguments Parser
 const args = process.argv.slice(2);

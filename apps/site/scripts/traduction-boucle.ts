@@ -46,7 +46,6 @@
  *   bun apps/site/scripts/traduction-boucle.ts --moteur google --lots 0 --appliquer  # jusqu'à épuisement
  */
 import postgres from "postgres";
-import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { arretSiGel, jugerTraduction } from "./_databooks-base";
@@ -58,7 +57,7 @@ import { contientJaponais } from "../src/lib/ja/normalisation";
 // .coord/FREEZE-databooks.json existe.
 arretSiGel("traduction-boucle");
 
-const RACINE = fileURLToPath(new URL("..", import.meta.url)); // apps/site/
+const RACINE = Bun.fileURLToPath(new URL("..", import.meta.url)); // apps/site/
 const DEPOT = join(RACINE, "..", "..");
 
 const args = process.argv.slice(2);

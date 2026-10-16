@@ -23,7 +23,6 @@
  */
 import { Database } from "bun:sqlite";
 import { join } from "node:path";
-import { fileURLToPath } from "node:url";
 import postgres from "postgres";
 import { classerDefaut, type Defaut } from "@aphrody/shenron-config/databooks-defauts";
 import { urlBase } from "./_databooks-base";
@@ -35,7 +34,7 @@ const opt = (n: string, defaut?: string) => {
   return i !== -1 && args[i + 1] && !args[i + 1]!.startsWith("--") ? args[i + 1]! : defaut;
 };
 
-const RACINE = join(fileURLToPath(new URL("../../..", import.meta.url)));
+const RACINE = join(Bun.fileURLToPath(new URL("../../..", import.meta.url)));
 const BASE = opt("base", join(RACINE, "apps", "bot", "data", "bot.db"))!;
 const SERIE = opt("serie");
 const EXEMPLES = Number(opt("exemples", "3"));

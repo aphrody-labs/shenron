@@ -28,9 +28,8 @@ import { tempPath } from "@aphrody/paths";
  */
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { fileURLToPath } from "node:url";
 
-const RACINE = fileURLToPath(new URL("..", import.meta.url));
+const RACINE = Bun.fileURLToPath(new URL("..", import.meta.url));
 const args = process.argv.slice(2);
 const commande = args[0] ?? "";
 const flag = (n: string) => args.includes(`--${n}`);

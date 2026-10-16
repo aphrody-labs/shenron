@@ -1,10 +1,9 @@
 import { describe, expect, it } from "bun:test";
 import { readFileSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 
 describe("Sprint 4 — Contributor Detail Pages & Wiring", () => {
   it("la page index /wiki/contributors redirige vers /wiki/staff", () => {
-    const filePath = fileURLToPath(
+    const filePath = Bun.fileURLToPath(
       new URL("../src/app/wiki/contributors/page.tsx", import.meta.url),
     );
     expect(existsSync(filePath)).toBe(true);
@@ -13,7 +12,7 @@ describe("Sprint 4 — Contributor Detail Pages & Wiring", () => {
   });
 
   it("la page de détail /wiki/contributors/[slug] existe et intègre les composants canoniques", () => {
-    const filePath = fileURLToPath(
+    const filePath = Bun.fileURLToPath(
       new URL("../src/app/wiki/contributors/[slug]/page.tsx", import.meta.url),
     );
     expect(existsSync(filePath)).toBe(true);
@@ -28,7 +27,7 @@ describe("Sprint 4 — Contributor Detail Pages & Wiring", () => {
   });
 
   it("le hub staff rend le catalogue unifié et intègre le casting dans le hub", () => {
-    const filePath = fileURLToPath(new URL("../src/app/wiki/staff/page.tsx", import.meta.url));
+    const filePath = Bun.fileURLToPath(new URL("../src/app/wiki/staff/page.tsx", import.meta.url));
     const content = readFileSync(filePath, "utf-8");
     expect(content).toContain("buildUnifiedStaffCatalog");
     expect(content).toContain("UnifiedStaffExplorer");

@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test";
-import { fileURLToPath } from "node:url";
 import {
   LIBRARY_TABS,
   WORKSHOP_TABS,
@@ -10,7 +9,7 @@ import {
 import { staffLegacyRedirect } from "../src/lib/legacy-routes";
 import { ALL_ENTRIES } from "../src/lib/wiki-launch";
 
-const siteRoot = fileURLToPath(new URL("..", import.meta.url));
+const siteRoot = Bun.fileURLToPath(new URL("..", import.meta.url));
 
 /** Route publique d'un `page.tsx` : groupes `(…)` retirés, segments dynamiques gardés. */
 const routeOf = (file: string) =>

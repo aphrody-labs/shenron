@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 // bun:test shares one module registry per process, so mock.module() overrides leak between
 // files. Each Koharu editor suite runs in its own `bun test` process with the DOM preloads.
-import { fileURLToPath } from "node:url";
 
-const root = fileURLToPath(new URL("../../", import.meta.url));
+const root = Bun.fileURLToPath(new URL("../../", import.meta.url));
 const files = [...new Bun.Glob("test/koharu/**/*.test.{ts,tsx}").scanSync(root)].toSorted();
 const extra = Bun.argv.slice(2);
 // Windows debug cold renders and the 10-second async wait need room inside the test deadline.

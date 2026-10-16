@@ -3,7 +3,6 @@ import { afterAll, describe, expect, test } from "bun:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { fileURLToPath } from "node:url";
 import {
   AdminReportGoalService,
   isBunTestRunner,
@@ -164,7 +163,7 @@ describe("AdminReportGoalService — garde-fou bun test contre la production", (
   });
 
   test("refuse la base runtime apps/bot/data/bot.db", async () => {
-    const prodDb = fileURLToPath(new URL("../data/bot.db", import.meta.url));
+    const prodDb = Bun.fileURLToPath(new URL("../data/bot.db", import.meta.url));
     const dbs = DatabaseService.forPath(prodDb);
     const service = AdminReportGoalService.create(dbs, { docsDir, notify });
     const before = sent.length;

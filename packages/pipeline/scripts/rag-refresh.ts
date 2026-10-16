@@ -23,9 +23,7 @@ import { copyFileSync, existsSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import * as sqliteVec from "sqlite-vec";
 
-import { fileURLToPath } from "node:url";
-
-const ROOT = fileURLToPath(new URL("../../../", import.meta.url));
+const ROOT = Bun.fileURLToPath(new URL("../../../", import.meta.url));
 const BOT_DIR = join(ROOT, "apps/bot");
 const DB_PROD = join(BOT_DIR, "data/bot.db");
 import os from "node:os";

@@ -13,10 +13,9 @@
 import { Glob } from "bun";
 import { Database } from "bun:sqlite";
 import { writeFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 
-const ROOT = fileURLToPath(new URL("..", import.meta.url)); // apps/bot/
+const ROOT = Bun.fileURLToPath(new URL("..", import.meta.url)); // apps/bot/
 const MANGA = join(ROOT, "assets", "manga");
 const OUT = join(ROOT, "data", "manga-visual-map.json");
 const ASSET_BASE = process.env.ASSET_BASE ?? "https://bot.dragonballfr.com";

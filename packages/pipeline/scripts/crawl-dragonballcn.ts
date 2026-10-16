@@ -27,12 +27,11 @@
  *   bun apps/bot/scripts/crawl-dragonballcn.ts --force              # ignore le cache disque
  */
 
-import { fileURLToPath } from "node:url";
 import { scrapeWithAphrody } from "./lib/aphrody-web-scrape.ts";
 import { parseGalleryListing, parseGalleryTitle } from "../src/dragonballcn-gallery.ts";
 
 const RACINE = "https://comic.dragonballcn.com";
-const DOSSIER_SORTIE = fileURLToPath(new URL("../data/catalogues/", import.meta.url));
+const DOSSIER_SORTIE = Bun.fileURLToPath(new URL("../data/catalogues/", import.meta.url));
 const DOSSIER_CACHE = `${DOSSIER_SORTIE}.cache-dragonballcn/`;
 
 /** Pages d'édition connues, dans l'ordre où le site les présente. */

@@ -37,7 +37,6 @@ import { randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import type { RemoteInput, RemoteOutput } from "./_aphrody-translate-remote";
 import {
   type TranslatedPage,
@@ -79,7 +78,7 @@ const workDir = resolve(
 );
 const CANDIDATES = join(workDir, "candidats.jsonl");
 const RESULTS = join(workDir, "resultats.jsonl");
-const scriptsDir = fileURLToPath(new URL(".", import.meta.url));
+const scriptsDir = Bun.fileURLToPath(new URL(".", import.meta.url));
 
 function readJsonl<T>(path: string): T[] {
   return readFileSync(path, "utf8")

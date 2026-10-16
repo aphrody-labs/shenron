@@ -35,7 +35,6 @@ import { createHash, randomUUID } from "node:crypto";
 import { existsSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import postgres from "postgres";
 import {
   HTML_ENTITY_SQL_PATTERN,
@@ -74,7 +73,7 @@ if (applying && rehearsing) throw new Error("--appliquer et --repetition sont ex
 if (applying && !snapshotArg)
   throw new Error("--appliquer exige --instantane <fichier.jsonl.gz> hors du dépôt.");
 
-const repositoryRoot = fileURLToPath(new URL("../../../", import.meta.url));
+const repositoryRoot = Bun.fileURLToPath(new URL("../../../", import.meta.url));
 const snapshotPath = snapshotArg ? resolve(snapshotArg) : undefined;
 if (snapshotPath) {
   if (snapshotPath.toLowerCase().startsWith(repositoryRoot.toLowerCase()))

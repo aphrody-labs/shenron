@@ -5,7 +5,6 @@
  * Only the exported resolver is exercised; the script is never executed.
  */
 import { describe, expect, it } from "bun:test";
-import { fileURLToPath } from "node:url";
 import {
   MissingEnvError,
   repoRootFromScript,
@@ -40,7 +39,7 @@ describe("resolveLexiquePath (B6)", () => {
 
   it("matches the file the bot reads in this checkout", () => {
     const scriptUrl = new URL("../scripts/rag-lexique.ts", import.meta.url).href;
-    const botReads = fileURLToPath(
+    const botReads = Bun.fileURLToPath(
       new URL("../../../apps/bot/data/rag/lexique-requetes.json", import.meta.url),
     );
     expect(resolveLexiquePath(scriptUrl, {})).toBe(botReads);

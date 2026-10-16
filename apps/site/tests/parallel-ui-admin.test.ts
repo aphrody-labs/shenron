@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
 import { existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import {
   EMPTY_RETRIEVAL_NOTICE,
   IA_COCKPIT_TABS,
@@ -14,7 +13,7 @@ import {
   splitMarkedExcerpt,
 } from "../src/components/admin/ia-cockpit-view";
 
-const siteRoot = fileURLToPath(new URL("..", import.meta.url));
+const siteRoot = Bun.fileURLToPath(new URL("..", import.meta.url));
 const adminSrc = (file: string) =>
   Bun.file(new URL(`../src/components/admin/${file}`, import.meta.url)).text();
 

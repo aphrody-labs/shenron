@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { fileURLToPath } from "node:url";
 import {
   normalizeText,
   segmentHashes,
@@ -26,7 +25,7 @@ test("historical normalization stays NFC and compatibility checks are opt-in", (
 
 test("shared hash helpers bundle for a browser without Bun or Node runtime globals", async () => {
   const built = await Bun.build({
-    entrypoints: [fileURLToPath(new URL("../../src/ai/training-hashes.ts", import.meta.url))],
+    entrypoints: [Bun.fileURLToPath(new URL("../../src/ai/training-hashes.ts", import.meta.url))],
     target: "browser",
     write: false,
   });

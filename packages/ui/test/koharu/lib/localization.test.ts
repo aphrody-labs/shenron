@@ -1,10 +1,9 @@
 import { describe, expect, it } from "bun:test";
-import { fileURLToPath } from "node:url";
 
 import { resources, supportedLanguages } from "@aphrody/shenron-ui/koharu/lib/i18n";
 import { orderedLanguageChoices } from "@aphrody/shenron-ui/koharu/lib/translation";
 
-const localesDir = fileURLToPath(new URL("../../../src/koharu/locales/", import.meta.url));
+const localesDir = Bun.fileURLToPath(new URL("../../../src/koharu/locales/", import.meta.url));
 
 function keys(value: object, prefix = ""): string[] {
   return Object.entries(value).flatMap(([key, item]) => {
@@ -64,7 +63,7 @@ describe("editor localization", () => {
   });
 
   it("keeps the code name out of the visible text of the sources", async () => {
-    const root = fileURLToPath(new URL("../../../src/koharu/", import.meta.url));
+    const root = Bun.fileURLToPath(new URL("../../../src/koharu/", import.meta.url));
     const hits: string[] = [];
     for (const file of new Bun.Glob("**/*.{ts,tsx}").scanSync(root)) {
       const text = (await Bun.file(`${root}${file}`).text())

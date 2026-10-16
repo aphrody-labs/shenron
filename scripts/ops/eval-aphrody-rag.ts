@@ -13,7 +13,6 @@ import { createReadStream } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { realpath } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
 import { AphrodyComputeClient } from "../../packages/pipeline/src/aphrody/compute";
 import {
   aggregate,
@@ -25,7 +24,7 @@ import {
 import { requireAiHttpUrl } from "../../packages/pipeline/src/ai/config";
 import { resolveDataPath } from "../../packages/config/src/paths";
 
-const REPO_ROOT = fileURLToPath(new URL("../../", import.meta.url));
+const REPO_ROOT = Bun.fileURLToPath(new URL("../../", import.meta.url));
 const COMPUTE_SERVICES = ["aphrody-shenron-embed", "aphrody-ai-http"];
 
 const sha256 = (bytes: string | Uint8Array): string =>

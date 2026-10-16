@@ -4,9 +4,8 @@
  */
 import { describe, expect, it } from "bun:test";
 import { existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 
-const CLI = fileURLToPath(new URL("../src/cli.ts", import.meta.url));
+const CLI = Bun.fileURLToPath(new URL("../src/cli.ts", import.meta.url));
 async function runCli(command: string) {
   const proc = Bun.spawn([process.execPath, CLI, command, "--dry-run"], {
     stdout: "pipe",
@@ -32,7 +31,9 @@ describe("pipeline translate", () => {
   }
 
   it("exports the unified translation runner", async () => {
-    expect(existsSync(fileURLToPath(new URL("../src/workflows.ts", import.meta.url)))).toBe(true);
+    expect(existsSync(Bun.fileURLToPath(new URL("../src/workflows.ts", import.meta.url)))).toBe(
+      true,
+    );
     const mod = (await import("../src/index")) as Record<string, unknown>;
     expect("runTranslation" in mod).toBe(true);
   });

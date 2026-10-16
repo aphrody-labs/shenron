@@ -18,10 +18,9 @@
  */
 import { describe, expect, test } from "bun:test";
 import { Glob } from "bun";
-import { fileURLToPath } from "node:url";
 
 const BASE = process.env.SITE_URL ?? "https://dragonballfr.com";
-const racine = fileURLToPath(new URL("..", import.meta.url));
+const racine = Bun.fileURLToPath(new URL("..", import.meta.url));
 
 /** Valeurs réelles pour les segments dynamiques — une page 404 ne prouverait rien. */
 const ECHANTILLONS: Record<string, string> = {

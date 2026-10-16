@@ -20,7 +20,6 @@
  */
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
-import { fileURLToPath } from "node:url";
 import {
   COLLECTED_MARKER,
   fold,
@@ -28,7 +27,7 @@ import {
 } from "../../packages/pipeline/src/ai/grounding";
 import { isNotEstablishedAnswer } from "../../packages/pipeline/src/ai/prompts";
 
-const REPO_ROOT = fileURLToPath(new URL("../../", import.meta.url));
+const REPO_ROOT = Bun.fileURLToPath(new URL("../../", import.meta.url));
 const DATASET = join(REPO_ROOT, "packages/pipeline/test/ai/fixtures/eval/rag-faithfulness.json");
 export const DEFAULT_URL = "https://bot.dragonballfr.com/api/public/rag/chat";
 

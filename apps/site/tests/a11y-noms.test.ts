@@ -13,12 +13,11 @@
  */
 import { describe, expect, test } from "bun:test";
 import { Glob } from "bun";
-import { fileURLToPath } from "node:url";
 
 /** Primitives génériques : c'est l'appelant qui fournit le nom, par les props. */
 const PRIMITIVES = new Set(["src/components/ui/input.tsx", "src/components/ui/textarea.tsx"]);
 
-const racine = fileURLToPath(new URL("..", import.meta.url));
+const racine = Bun.fileURLToPath(new URL("..", import.meta.url));
 
 /**
  * Composants du dépôt qui rendent eux-mêmes un `<label>` autour de ce qu'on

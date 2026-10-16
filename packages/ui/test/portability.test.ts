@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
-import { fileURLToPath } from "node:url";
 
 import {
   checkNoEscapingImports,
@@ -8,7 +7,7 @@ import {
   listExportEntries,
 } from "@aphrody/shenron-config/guards";
 
-const pkgDir = fileURLToPath(new URL("..", import.meta.url));
+const pkgDir = Bun.fileURLToPath(new URL("..", import.meta.url));
 const WRAPPERS = [
   "accordion",
   "alert-dialog",

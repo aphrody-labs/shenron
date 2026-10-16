@@ -7,9 +7,8 @@
 import { describe, expect, it } from "bun:test";
 import { existsSync, readdirSync, statSync } from "node:fs";
 import { join, relative, sep } from "node:path";
-import { fileURLToPath } from "node:url";
 
-const PKG = fileURLToPath(new URL("..", import.meta.url));
+const PKG = Bun.fileURLToPath(new URL("..", import.meta.url));
 
 /** Upper bound: every entry excluded when the gate was introduced. */
 const BASELINE = [

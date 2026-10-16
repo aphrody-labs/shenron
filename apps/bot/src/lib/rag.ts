@@ -19,7 +19,6 @@
  */
 import type { Database } from "bun:sqlite";
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import * as sqliteVec from "sqlite-vec";
 import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
 import { aphrodyNative, isNativeAvailable } from "@aphrody/shenron-pipeline/aphrody/native";
@@ -531,7 +530,7 @@ export function createQueryExpander(groups: string[][]): (raw: string) => string
 
 const LEXIQUE_PATH =
   process.env.RAG_LEXIQUE ??
-  fileURLToPath(new URL("../../data/rag/lexique-requetes.json", import.meta.url));
+  Bun.fileURLToPath(new URL("../../data/rag/lexique-requetes.json", import.meta.url));
 let expandQuery: (raw: string) => string[] = () => [];
 if (process.env.RAG_QUERY_EXPANSION !== "0") {
   try {
