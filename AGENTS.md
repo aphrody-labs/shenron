@@ -142,8 +142,8 @@ Les preuves historiques restent datées. Un build Bun plus récent ne prouve pas
 
 Bun (`bun`, `bun -e`, Bun Shell, `bun test`, `bun build --compile`) et Rust (`cargo`, via
 `~/aphrody/scripts/build/rust/cargo-serial.sh` sur les machines Aphrody). Recherche : `rg`,
-`fd`. Pas de node/npm/npx/bunx ni d'utilitaires GNU pour le travail d'agent ; oxlint/oxfmt via
-`bun $(which oxlint)`. Le `tsc` local (TypeScript 7.0.2) fait seul foi.
+`fd`. Pas de node/npm/npx/bunx ni d'utilitaires GNU pour le travail d'agent ; qualité par
+`bun check`, `bun lint`, `bun fmt` natifs (ni tsc, tsgo, oxlint, oxfmt, eslint).
 Rust : `just` (tâches Bun et Rust, `just --list`), alias Cargo de `.cargo/config.toml`
 (`cargo ck|lint|t|koharu|wasm`), cargo-nextest, cargo-deny ; référence `docs/development/rust.md`.
 
@@ -156,10 +156,10 @@ Rust : `just` (tâches Bun et Rust, `just --list`), alias Cargo de `.cargo/confi
 
 ```sh
 bun install --frozen-lockfile          # ou bun ci
-bun run typecheck                      # tsc 7 : les 13 paquets, puis scripts/ (scripts/tsconfig.json)
-bun run lint                           # oxlint (.oxlintrc.json) sur apps packages scripts
+bun run typecheck                      # bun check : les 13 paquets, puis scripts/ (scripts/tsconfig.json)
+bun run lint                           # bun lint (.oxlintrc.json) sur apps packages scripts
 bun run test                           # bun test de chaque paquet, *.live.test.ts exclus
-bun run format:check                   # oxfmt
+bun run format:check                   # bun fmt
 bun run --filter @aphrody/shenron-db test      # un seul paquet
 cd packages/db && bun test test/vfs-data.test.ts -t "motif"   # un fichier, un test
 cd apps/site && bun test --isolate tests/<fichier>.test.ts    # apps site et bot : --isolate
@@ -207,7 +207,7 @@ de réutiliser les chemins distants ; cette date ne garantit pas leur disponibil
    Databooks : `packages/ui/src/reader/DatabookReader.tsx`, pas la distribution M3 installée.
 3. Valider les chemins modifiés et les comportements concernés. Depuis `apps/site`, utiliser
    `bun test --isolate tests/<fichier>.test.ts` ; `bun --cwd apps/site test ...` peut lancer
-   le script du paquet et toute la suite. Depuis la racine : `bun run oxfmt --write <chemins>`.
+   le script du paquet et toute la suite. Depuis la racine : `bun fmt <chemins>`.
    Pour une modification documentaire seule : contrôle du diff et des liens, sans build moteur.
 4. Relire le diff, commiter uniquement les chemins possédés, puis `git fetch origin` et
    `git merge-base --is-ancestor origin/main HEAD` avant le push normal. Si la vérification

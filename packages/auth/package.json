@@ -49,8 +49,7 @@
     "better-auth": "catalog:",
     "drizzle-orm": "catalog:",
     "next": "catalog:",
-    "react": "catalog:",
-    "typescript": "catalog:"
+    "react": "catalog:"
   },
   "peerDependencies": {
     "better-auth": "1.7.6",

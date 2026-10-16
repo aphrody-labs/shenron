@@ -34,6 +34,6 @@ description: Tailwind CSS v4 conventions for the Shenron site (CSS-first config 
 
 ## Validation
 
-`cd apps/site && bun x tsc --noEmit`, `bun run lint`, and check the page in the dev server
+`cd apps/site && bun check`, `bun run lint`, and check the page in the dev server
 (`bun run dev`). For deeper Tailwind recipes use the `aphrody:tailwindcss*` skills; for
 current API facts query the Tailwind docs (Context7 `/tailwindlabs/tailwindcss.com`).

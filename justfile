@@ -22,11 +22,11 @@ alias fmt-rust := rust-fmt-check
 default:
     @just --list --unsorted
 
-# Type-check everything: tsc 7 (packages and scripts), then cargo check (all crates and targets)
+# Type-check everything: native bun check (packages and scripts), then cargo check (all crates and targets)
 [group('all')]
 check: typecheck rust-check
 
-# Lint everything: oxlint, then clippy with warnings denied
+# Lint everything: native bun lint, then clippy with warnings denied
 [group('all')]
 lint: bun-lint rust-lint
 
@@ -34,7 +34,7 @@ lint: bun-lint rust-lint
 [group('all')]
 test: bun-test test-scripts rust-test
 
-# Check formatting: oxfmt, then rustfmt
+# Check formatting: native bun fmt, then rustfmt
 [group('all')]
 format-check: bun-format-check rust-fmt-check
 
@@ -55,12 +55,12 @@ ci: drift typecheck bun-lint bun-test test-scripts rust-fmt-check rust-lint koha
 install:
     bun install --frozen-lockfile
 
-# tsc 7 on the 13 packages, then scripts/
+# bun check on the 13 packages, then scripts/
 [group('bun')]
 typecheck:
     bun run typecheck
 
-# oxlint on apps, packages and scripts
+# bun lint on apps, packages and scripts
 [group('bun')]
 bun-lint:
     bun run lint
@@ -80,7 +80,7 @@ test-scripts:
 test-live:
     bun run test:live
 
-# oxfmt --check on apps, packages and scripts
+# bun fmt --check on apps, packages and scripts
 [group('bun')]
 bun-format-check:
     bun run format:check

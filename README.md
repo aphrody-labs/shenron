@@ -62,7 +62,7 @@ courant, ou le chemin absolu `SHENRON_BUN_EXECUTABLE`, placé en tête du PATH e
 Sur Windows, définir cette variable dans PowerShell ; sur le VPS, la fournir au
 job Infra avec le chemin de l'artefact qualifié. Le PATH existant, dont Cargo, est
 conservé. Bun 1.4.4 intègre OXC ; le format natif ne remplace pas encore la porte
-oxfmt complète. Les portes TypeScript 7 et les contrôles canoniques restent requis.
+`bun fmt` complet. Les portes `bun check` et les contrôles canoniques restent requis.
 
 Les suites live nécessitent leurs services réels. Les gates ne prouvent pas un
 déploiement. Les builds lourds passent par la fabrique VPS ; l'Infra Aphrody
