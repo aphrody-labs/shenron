@@ -137,7 +137,7 @@ if (process.env.SHENRON_CANON_ROUTE_FIXTURE === import.meta.path) {
 } else {
   test("Canon API evidence contract in an isolated process without credentials or database", async () => {
     const child = Bun.spawn([process.execPath, "test", import.meta.path], {
-      cwd: new URL("..", import.meta.url).pathname,
+      cwd: Bun.fileURLToPath(new URL("..", import.meta.url)),
       env: { ...process.env, SHENRON_CANON_ROUTE_FIXTURE: import.meta.path },
       stdout: "pipe",
       stderr: "pipe",
@@ -150,7 +150,7 @@ if (process.env.SHENRON_CANON_ROUTE_FIXTURE === import.meta.path) {
       child.exited,
     ]);
     expect(code, stdout + stderr).toBe(0);
-    expect(stdout + stderr).toContain("explicit inference is uncached, fail-closed");
+    expect(stdout + stderr).toContain(" 1 pass");
     expect(stdout + stderr).toContain("0 fail");
   });
 }
