@@ -369,7 +369,7 @@ export function createChatEngine(deps: ChatEngineDeps) {
     // Never send home, history, OCR or memories to the remote judgment owner.
     if (deps.jev && !chitchat && hits.length > 0) {
       const t0 = performance.now();
-      let indexed = new Map<string, VfsHit>();
+      let indexed = new Map<string, GroundingHit>();
       try {
         const publicHits =
           deps.publicOnly === true
@@ -381,9 +381,11 @@ export function createChatEngine(deps: ChatEngineDeps) {
                   publicOnly: true,
                 })
               ).hits;
-        const publicRows = new Map(publicHits.map((hit) => [`${hit.docId}:${hit.chunkId}`, hit]));
+        const hitKey = (hit: GroundingHit) =>
+          JSON.stringify([hit.corpus, hit.kind, hit.url, hit.title]);
+        const publicRows = new Map(publicHits.map((hit) => [hitKey(hit), hit]));
         const candidates = hits.filter((hit) => {
-          const proven = publicRows.get(`${hit.docId}:${hit.chunkId}`);
+          const proven = publicRows.get(hitKey(hit));
           return (
             hit.corpus !== "home" &&
             hit.corpus !== "conversations" &&
