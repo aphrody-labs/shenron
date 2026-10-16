@@ -8,9 +8,8 @@
 use std::sync::Arc;
 use thiserror::Error;
 use wgpu::{
-    Adapter, Backends, Device, DeviceDescriptor, Features, Instance, InstanceDescriptor,
-    Limits, PowerPreference, Queue, RequestAdapterOptions,
-    TextureFormat, TextureUsages,
+    Adapter, Backends, Device, DeviceDescriptor, Features, Instance, InstanceDescriptor, Limits,
+    PowerPreference, Queue, RequestAdapterOptions, TextureFormat, TextureUsages,
 };
 
 /// Errors encountered during GPU initialization.
@@ -62,7 +61,8 @@ impl GpuContext {
             .map_err(|_| GpuError::AdapterNotFound)?;
 
         let supported_features = adapter.features();
-        let supports_multi_draw_indirect = supported_features.contains(Features::MULTI_DRAW_INDIRECT_COUNT);
+        let supports_multi_draw_indirect =
+            supported_features.contains(Features::MULTI_DRAW_INDIRECT_COUNT);
         let supports_bindless = supported_features.contains(Features::TEXTURE_BINDING_ARRAY);
 
         let mut required_features = Features::empty();
@@ -71,15 +71,13 @@ impl GpuContext {
         }
 
         let (device, queue) = adapter
-            .request_device(
-                &DeviceDescriptor {
-                    label: Some("ShenronEngine_Device"),
-                    required_features,
-                    required_limits: Limits::default(),
-                    memory_hints: wgpu::MemoryHints::Performance,
-                    ..Default::default()
-                },
-            )
+            .request_device(&DeviceDescriptor {
+                label: Some("ShenronEngine_Device"),
+                required_features,
+                required_limits: Limits::default(),
+                memory_hints: wgpu::MemoryHints::Performance,
+                ..Default::default()
+            })
             .await?;
 
         Ok(Self {
@@ -93,7 +91,9 @@ impl GpuContext {
     }
 
     /// Initializes a GPU context with a custom `DeviceRequest` (compatible with aphrody-gpu-backend).
-    pub async fn new_with_request(request: super::gpu_backend::DeviceRequest<'_>) -> Result<Self, GpuError> {
+    pub async fn new_with_request(
+        request: super::gpu_backend::DeviceRequest<'_>,
+    ) -> Result<Self, GpuError> {
         let instance = Instance::new(InstanceDescriptor {
             backends: Backends::PRIMARY,
             ..InstanceDescriptor::new_without_display_handle()
@@ -110,14 +110,15 @@ impl GpuContext {
             .map_err(|_| GpuError::AdapterNotFound)?;
 
         let supported_features = adapter.features();
-        let supports_multi_draw_indirect = supported_features.contains(Features::MULTI_DRAW_INDIRECT_COUNT);
+        let supports_multi_draw_indirect =
+            supported_features.contains(Features::MULTI_DRAW_INDIRECT_COUNT);
         let supports_bindless = supported_features.contains(Features::TEXTURE_BINDING_ARRAY);
 
         let required_limits = match request.limits {
             super::gpu_backend::DeviceLimits::Adapter => adapter.limits(),
             super::gpu_backend::DeviceLimits::DownlevelWithAdapterResolution => {
                 Limits::downlevel_defaults().using_resolution(adapter.limits())
-            }
+            },
         };
 
         let mut required_features = Features::empty();

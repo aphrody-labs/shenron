@@ -6,7 +6,7 @@
 //! ensuring SIMD vectorization, fast archetype matching, and multithreaded
 //! system scheduling.
 
-use std::any::{type_name, Any, TypeId};
+use std::any::{Any, TypeId, type_name};
 use std::collections::{BTreeSet, HashMap};
 use std::sync::atomic::{AtomicU32, Ordering};
 
@@ -88,12 +88,8 @@ impl Column {
     fn push<T: Component>(&mut self, value: T) {
         assert_eq!(TypeId::of::<T>(), self.type_id);
         let mut value = std::mem::ManuallyDrop::new(value);
-        let bytes = unsafe {
-            std::slice::from_raw_parts(
-                &raw mut *value as *const u8,
-                self.element_size,
-            )
-        };
+        let bytes =
+            unsafe { std::slice::from_raw_parts(&raw mut *value as *const u8, self.element_size) };
         self.data.extend_from_slice(bytes);
     }
 
@@ -147,11 +143,7 @@ pub struct Archetype {
 
 impl Archetype {
     fn new(signature: ArchetypeSignature) -> Self {
-        Self {
-            signature,
-            entities: Vec::new(),
-            columns: HashMap::new(),
-        }
+        Self { signature, entities: Vec::new(), columns: HashMap::new() }
     }
 
     /// Number of entities in this archetype.
@@ -180,10 +172,7 @@ impl Archetype {
     pub fn get_slice<T: Component>(&self) -> Option<&[T]> {
         let col = self.columns.get(&T::id())?;
         unsafe {
-            Some(std::slice::from_raw_parts(
-                col.data.as_ptr() as *const T,
-                self.entities.len(),
-            ))
+            Some(std::slice::from_raw_parts(col.data.as_ptr() as *const T, self.entities.len()))
         }
     }
 
@@ -192,12 +181,7 @@ impl Archetype {
     pub fn get_slice_mut<T: Component>(&mut self) -> Option<&mut [T]> {
         let count = self.entities.len();
         let col = self.columns.get_mut(&T::id())?;
-        unsafe {
-            Some(std::slice::from_raw_parts_mut(
-                col.data.as_mut_ptr() as *mut T,
-                count,
-            ))
-        }
+        unsafe { Some(std::slice::from_raw_parts_mut(col.data.as_mut_ptr() as *mut T, count)) }
     }
 }
 
@@ -280,10 +264,8 @@ impl World {
             // Update moved entity location
             if loc.row != last_idx {
                 let moved_entity = arch.entities[loc.row];
-                self.locations[moved_entity.index() as usize] = Some(EntityLocation {
-                    archetype_id: loc.archetype_id,
-                    row: loc.row,
-                });
+                self.locations[moved_entity.index() as usize] =
+                    Some(EntityLocation { archetype_id: loc.archetype_id, row: loc.row });
             }
         }
 
@@ -331,10 +313,7 @@ impl World {
         new_arch.entities.push(entity);
         new_arch.columns.get_mut(&comp_id).unwrap().push(component);
 
-        self.locations[idx] = Some(EntityLocation {
-            archetype_id: new_arch_id,
-            row: new_row,
-        });
+        self.locations[idx] = Some(EntityLocation { archetype_id: new_arch_id, row: new_row });
     }
 
     /// Retrieves an immutable reference to a component on an entity.
@@ -369,17 +348,13 @@ impl World {
     /// Retrieves an immutable reference to a global resource.
     #[must_use]
     pub fn get_resource<R: 'static + Send + Sync>(&self) -> Option<&R> {
-        self.resources
-            .get(&TypeId::of::<R>())
-            .and_then(|boxed| boxed.downcast_ref::<R>())
+        self.resources.get(&TypeId::of::<R>()).and_then(|boxed| boxed.downcast_ref::<R>())
     }
 
     /// Retrieves a mutable reference to a global resource.
     #[must_use]
     pub fn get_resource_mut<R: 'static + Send + Sync>(&mut self) -> Option<&mut R> {
-        self.resources
-            .get_mut(&TypeId::of::<R>())
-            .and_then(|boxed| boxed.downcast_mut::<R>())
+        self.resources.get_mut(&TypeId::of::<R>()).and_then(|boxed| boxed.downcast_mut::<R>())
     }
 
     /// Iterates over all entities and contiguous slices of components matching an archetype.
@@ -433,9 +408,7 @@ impl SystemScheduler {
     /// Creates a new system scheduler.
     #[must_use]
     pub fn new() -> Self {
-        Self {
-            systems: Vec::new(),
-        }
+        Self { systems: Vec::new() }
     }
 
     /// Adds a system to the schedule.

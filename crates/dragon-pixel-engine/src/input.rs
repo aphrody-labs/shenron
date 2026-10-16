@@ -24,19 +24,11 @@ pub struct EngineInput {
 
 impl EngineInput {
     pub fn is_moving_forward(&self, facing: f32) -> bool {
-        if facing > 0.0 {
-            self.right
-        } else {
-            self.left
-        }
+        if facing > 0.0 { self.right } else { self.left }
     }
 
     pub fn is_moving_backward(&self, facing: f32) -> bool {
-        if facing > 0.0 {
-            self.left
-        } else {
-            self.right
-        }
+        if facing > 0.0 { self.left } else { self.right }
     }
 
     pub fn horizontal_axis(&self) -> f32 {
@@ -90,16 +82,8 @@ pub fn parse_standard_gamepad(
     let raw_stick_x = if !axes.is_empty() { axes[0] } else { 0.0 };
     let raw_stick_y = if axes.len() > 1 { axes[1] } else { 0.0 };
 
-    let stick_x = if raw_stick_x.abs() > deadzone {
-        raw_stick_x
-    } else {
-        0.0
-    };
-    let stick_y = if raw_stick_y.abs() > deadzone {
-        raw_stick_y
-    } else {
-        0.0
-    };
+    let stick_x = if raw_stick_x.abs() > deadzone { raw_stick_x } else { 0.0 };
+    let stick_y = if raw_stick_y.abs() > deadzone { raw_stick_y } else { 0.0 };
 
     // D-Pad standard buttons: 12 (up), 13 (down), 14 (left), 15 (right)
     let dpad_up = buttons.get(12).copied().unwrap_or(false);

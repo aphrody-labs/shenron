@@ -91,20 +91,11 @@ impl BeamClashState {
 
         // Win conditions: threshold reached or timer expired with dominance
         if dominance >= 0.95 || (self.frames_remaining == 0 && dominance > 0.0) {
-            BeamClashResult::Player1Win {
-                clash_point,
-                damage_to_p2: self.p1_beam_damage * 1.5,
-            }
+            BeamClashResult::Player1Win { clash_point, damage_to_p2: self.p1_beam_damage * 1.5 }
         } else if dominance <= -0.95 || (self.frames_remaining == 0 && dominance < 0.0) {
-            BeamClashResult::Player2Win {
-                clash_point,
-                damage_to_p1: self.p2_beam_damage * 1.5,
-            }
+            BeamClashResult::Player2Win { clash_point, damage_to_p1: self.p2_beam_damage * 1.5 }
         } else {
-            BeamClashResult::Ongoing {
-                clash_point,
-                dominance,
-            }
+            BeamClashResult::Ongoing { clash_point, dominance }
         }
     }
 }

@@ -30,12 +30,7 @@ pub fn couleur_fond(y: u32, h: u32) -> [u8; 4] {
         return [24, 28, 40, 255];
     }
     let t = y as f32 / h as f32;
-    [
-        (24.0 + 26.0 * t) as u8,
-        (28.0 + 30.0 * t) as u8,
-        (40.0 + 34.0 * t) as u8,
-        255,
-    ]
+    [(24.0 + 26.0 * t) as u8, (28.0 + 30.0 * t) as u8, (40.0 + 34.0 * t) as u8, 255]
 }
 
 /// Rotates vector around Y axis by `angle` (turntable) then tilts around X axis.
@@ -101,7 +96,10 @@ pub fn render_model_cpu(model: &Model, angle: f32, width: u32, height: u32) -> V
         let texture = prim.texture.and_then(|idx| model.textures.get(idx));
         for tri in prim.indices.chunks_exact(3) {
             let (ia, ib, ic) = (tri[0] as usize, tri[1] as usize, tri[2] as usize);
-            if ia >= prim.positions.len() || ib >= prim.positions.len() || ic >= prim.positions.len() {
+            if ia >= prim.positions.len()
+                || ib >= prim.positions.len()
+                || ic >= prim.positions.len()
+            {
                 continue;
             }
 
@@ -163,8 +161,14 @@ pub fn render_model_cpu(model: &Model, angle: f32, width: u32, height: u32) -> V
                             let inv_zc = 1.0 / c.2;
 
                             let interp_inv_z = w0 * inv_za + w1 * inv_zb + w2 * inv_zc;
-                            let u = (w0 * uva[0] * inv_za + w1 * uvb[0] * inv_zb + w2 * uvc[0] * inv_zc) / interp_inv_z;
-                            let v = (w0 * uva[1] * inv_za + w1 * uvb[1] * inv_zb + w2 * uvc[1] * inv_zc) / interp_inv_z;
+                            let u = (w0 * uva[0] * inv_za
+                                + w1 * uvb[0] * inv_zb
+                                + w2 * uvc[0] * inv_zc)
+                                / interp_inv_z;
+                            let v = (w0 * uva[1] * inv_za
+                                + w1 * uvb[1] * inv_zb
+                                + w2 * uvc[1] * inv_zc)
+                                / interp_inv_z;
 
                             let base_color = if let Some(tex) = texture {
                                 tex.sample_bilinear(u, v)
@@ -203,21 +207,14 @@ mod tests {
     #[test]
     fn test_cpu_rasterizer_model() {
         let tri_prim = Primitive {
-            positions: vec![
-                [-1.0, -1.0, 0.0],
-                [1.0, -1.0, 0.0],
-                [0.0, 1.0, 0.0],
-            ],
+            positions: vec![[-1.0, -1.0, 0.0], [1.0, -1.0, 0.0], [0.0, 1.0, 0.0]],
             normals: vec![[0.0, 0.0, 1.0]; 3],
             uv: vec![[0.0, 0.0], [1.0, 0.0], [0.5, 1.0]],
             indices: vec![0, 1, 2],
             texture: None,
         };
 
-        let model = Model {
-            primitives: vec![tri_prim],
-            textures: Vec::new(),
-        };
+        let model = Model { primitives: vec![tri_prim], textures: Vec::new() };
 
         let img = render_model_cpu(&model, 0.0, 64, 64);
         assert_eq!(img.len(), 64 * 64 * 4);

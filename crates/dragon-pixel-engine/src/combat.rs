@@ -3,8 +3,8 @@
 
 use crate::beam_clash::{BeamClashResult, BeamClashState};
 use crate::frame_data::{
-    calculate_world_hitbox, calculate_world_hurtbox, get_default_move_data, get_fighter_hurtbox,
-    MoveKind, MovePhase,
+    MoveKind, MovePhase, calculate_world_hitbox, calculate_world_hurtbox, get_default_move_data,
+    get_fighter_hurtbox,
 };
 use crate::haptics::HapticTrigger;
 use crate::input::EngineInput;
@@ -12,7 +12,7 @@ use crate::render_packet::{
     ArenaRenderData, BeamClashRenderData, CameraData, FighterRenderData, ParticleRenderData,
     ProjectileRenderData, UiOverlayData, WebGpuRenderPacket,
 };
-use crate::roster::{get_fighter_def, get_story_chapters, FighterDefinition};
+use crate::roster::{FighterDefinition, get_fighter_def, get_story_chapters};
 use crate::types::{
     ArenaId, AudioEvent, AuraType, FighterId, FighterStyle, GameMode, HapticEvent, Rect,
 };
@@ -178,10 +178,7 @@ impl DragonPixelEngineCore {
 
         // Pré-transformation si demandé par le chapitre
         if mode == GameMode::Story {
-            let chap = chapters
-                .iter()
-                .find(|c| c.id == chapter_id)
-                .unwrap_or(&chapters[0]);
+            let chap = chapters.iter().find(|c| c.id == chapter_id).unwrap_or(&chapters[0]);
             if let Some(target_form) = chap.target_transformation {
                 if target_form > 0 {
                     player.form_level = target_form;
@@ -245,15 +242,18 @@ impl DragonPixelEngineCore {
 
             if let Some(res) = result {
                 match res {
-                    BeamClashResult::PlayerWon {
-                        damage_to_enemy,
-                        clash_point,
-                    } => {
+                    BeamClashResult::PlayerWon { damage_to_enemy, clash_point } => {
                         self.enemy.hp = (self.enemy.hp - damage_to_enemy).max(0.0);
                         self.enemy.hitstun_remaining = 35;
                         self.enemy.knockdown_remaining = 25;
                         self.enemy.flash_timer = 0.3;
-                        Self::spawn_explosion_particles(&mut self.particles, clash_point.0, clash_point.1, [0.0, 0.8, 1.0, 1.0], 40);
+                        Self::spawn_explosion_particles(
+                            &mut self.particles,
+                            clash_point.0,
+                            clash_point.1,
+                            [0.0, 0.8, 1.0, 1.0],
+                            40,
+                        );
                         self.trauma = 1.0;
                         self.haptic_queue.push(HapticTrigger::KnockdownKO.to_event());
                         self.audio_queue.push(AudioEvent {
@@ -265,16 +265,19 @@ impl DragonPixelEngineCore {
                         if self.enemy.hp <= 0.0 {
                             self.status = "won".into();
                         }
-                    }
-                    BeamClashResult::EnemyWon {
-                        damage_to_player,
-                        clash_point,
-                    } => {
+                    },
+                    BeamClashResult::EnemyWon { damage_to_player, clash_point } => {
                         self.player.hp = (self.player.hp - damage_to_player).max(0.0);
                         self.player.hitstun_remaining = 35;
                         self.player.knockdown_remaining = 25;
                         self.player.flash_timer = 0.3;
-                        Self::spawn_explosion_particles(&mut self.particles, clash_point.0, clash_point.1, [1.0, 0.2, 0.2, 1.0], 40);
+                        Self::spawn_explosion_particles(
+                            &mut self.particles,
+                            clash_point.0,
+                            clash_point.1,
+                            [1.0, 0.2, 0.2, 1.0],
+                            40,
+                        );
                         self.trauma = 1.0;
                         self.haptic_queue.push(HapticTrigger::KnockdownKO.to_event());
                         self.audio_queue.push(AudioEvent {
@@ -285,7 +288,7 @@ impl DragonPixelEngineCore {
                         if self.player.hp <= 0.0 {
                             self.status = "lost".into();
                         }
-                    }
+                    },
                 }
             } else {
                 self.clash = Some(clash);
@@ -472,7 +475,9 @@ impl DragonPixelEngineCore {
                     source_is_player: true,
                     duration: 2.0,
                 });
-            } else if current_move == MoveKind::BeamSpecial && p.frame_in_move == mdata.startup_frames {
+            } else if current_move == MoveKind::BeamSpecial
+                && p.frame_in_move == mdata.startup_frames
+            {
                 self.projectiles.push(Projectile {
                     x: p.x + p.facing * 50.0,
                     y: p.y - 32.0,
@@ -504,13 +509,9 @@ impl DragonPixelEngineCore {
                         );
 
                         if w_hit.intersects(&w_hurt) && self.enemy.flash_timer <= 0.0 {
-                            let is_blocking = self.enemy.is_guarding
-                                && (self.enemy.facing * p.facing < 0.0);
-                            let dmg = if is_blocking {
-                                hitbox.chip_damage
-                            } else {
-                                hitbox.damage
-                            };
+                            let is_blocking =
+                                self.enemy.is_guarding && (self.enemy.facing * p.facing < 0.0);
+                            let dmg = if is_blocking { hitbox.chip_damage } else { hitbox.damage };
 
                             self.enemy.hp = (self.enemy.hp - dmg).max(0.0);
                             self.enemy.flash_timer = 0.15;
@@ -633,13 +634,9 @@ impl DragonPixelEngineCore {
                         );
 
                         if w_hit.intersects(&w_hurt) && self.player.flash_timer <= 0.0 {
-                            let is_blocking = self.player.is_guarding
-                                && (self.player.facing * e.facing < 0.0);
-                            let dmg = if is_blocking {
-                                hitbox.chip_damage
-                            } else {
-                                hitbox.damage
-                            };
+                            let is_blocking =
+                                self.player.is_guarding && (self.player.facing * e.facing < 0.0);
+                            let dmg = if is_blocking { hitbox.chip_damage } else { hitbox.damage };
 
                             self.player.hp = (self.player.hp - dmg).max(0.0);
                             self.player.flash_timer = 0.15;
@@ -675,14 +672,8 @@ impl DragonPixelEngineCore {
         }
 
         // DÉTECTION MAJEURE DU BEAM CLASH : Deux rayons opposés se percutent !
-        let player_beam = self
-            .projectiles
-            .iter()
-            .find(|p| p.source_is_player && p.is_beam);
-        let enemy_beam = self
-            .projectiles
-            .iter()
-            .find(|p| !p.source_is_player && p.is_beam);
+        let player_beam = self.projectiles.iter().find(|p| p.source_is_player && p.is_beam);
+        let enemy_beam = self.projectiles.iter().find(|p| !p.source_is_player && p.is_beam);
 
         if let (Some(pb), Some(eb)) = (player_beam, enemy_beam) {
             if (pb.x - eb.x).abs() < 120.0 {
@@ -717,21 +708,18 @@ impl DragonPixelEngineCore {
             let mut consumed = false;
             if proj.source_is_player {
                 let e_hurt = get_fighter_hurtbox(false, self.enemy.is_airborne);
-                let w_hurt = calculate_world_hurtbox(
-                    self.enemy.x,
-                    self.enemy.y,
-                    self.enemy.facing,
-                    &e_hurt,
+                let w_hurt =
+                    calculate_world_hurtbox(self.enemy.x, self.enemy.y, self.enemy.facing, &e_hurt);
+                let p_rect = Rect::new(
+                    proj.x - proj.width * 0.5,
+                    proj.y - proj.height * 0.5,
+                    proj.width,
+                    proj.height,
                 );
-                let p_rect = Rect::new(proj.x - proj.width * 0.5, proj.y - proj.height * 0.5, proj.width, proj.height);
 
                 if p_rect.intersects(&w_hurt) {
                     let is_blocking = self.enemy.is_guarding;
-                    let dmg = if is_blocking {
-                        proj.chip_damage
-                    } else {
-                        proj.damage
-                    };
+                    let dmg = if is_blocking { proj.chip_damage } else { proj.damage };
                     self.enemy.hp = (self.enemy.hp - dmg).max(0.0);
                     self.enemy.flash_timer = 0.2;
                     self.trauma = (self.trauma + if proj.is_beam { 0.4 } else { 0.2 }).min(1.0);
@@ -748,15 +736,16 @@ impl DragonPixelEngineCore {
                     self.player.facing,
                     &p_hurt,
                 );
-                let p_rect = Rect::new(proj.x - proj.width * 0.5, proj.y - proj.height * 0.5, proj.width, proj.height);
+                let p_rect = Rect::new(
+                    proj.x - proj.width * 0.5,
+                    proj.y - proj.height * 0.5,
+                    proj.width,
+                    proj.height,
+                );
 
                 if p_rect.intersects(&w_hurt) {
                     let is_blocking = self.player.is_guarding;
-                    let dmg = if is_blocking {
-                        proj.chip_damage
-                    } else {
-                        proj.damage
-                    };
+                    let dmg = if is_blocking { proj.chip_damage } else { proj.damage };
                     self.player.hp = (self.player.hp - dmg).max(0.0);
                     self.player.flash_timer = 0.2;
                     self.trauma = (self.trauma + if proj.is_beam { 0.4 } else { 0.2 }).min(1.0);
@@ -844,12 +833,7 @@ impl DragonPixelEngineCore {
         }
     }
 
-    fn spawn_transformation_burst(
-        particles: &mut Vec<Particle>,
-        x: f32,
-        y: f32,
-        color: [f32; 4],
-    ) {
+    fn spawn_transformation_burst(particles: &mut Vec<Particle>, x: f32, y: f32, color: [f32; 4]) {
         for i in 0..32 {
             let angle = (i as f32) * (std::f32::consts::PI * 2.0 / 32.0);
             let speed = 220.0;
@@ -1045,8 +1029,10 @@ impl DragonPixelEngineCore {
             .map(|c| c.title.clone())
             .unwrap_or_else(|| "Dragon Pixel Arena".into());
 
-        let p_idx = (self.player.form_level as usize).min(self.player_def.forms.len().saturating_sub(1));
-        let e_idx = (self.enemy.form_level as usize).min(self.enemy_def.forms.len().saturating_sub(1));
+        let p_idx =
+            (self.player.form_level as usize).min(self.player_def.forms.len().saturating_sub(1));
+        let e_idx =
+            (self.enemy.form_level as usize).min(self.enemy_def.forms.len().saturating_sub(1));
 
         let ui = UiOverlayData {
             player_hp_ratio: (self.player.hp / self.player.max_hp).clamp(0.0, 1.0),

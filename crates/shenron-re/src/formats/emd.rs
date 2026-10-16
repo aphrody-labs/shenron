@@ -95,10 +95,7 @@ impl EmdFile {
     /// Parses an EMD model file from binary data.
     pub fn parse(buffer: &[u8]) -> Result<Self> {
         if buffer.len() < 16 {
-            return Err(ReError::BufferTooSmall {
-                required: 16,
-                available: buffer.len(),
-            });
+            return Err(ReError::BufferTooSmall { required: 16, available: buffer.len() });
         }
 
         if &buffer[0..4] != EMD_MAGIC {
@@ -116,9 +113,12 @@ impl EmdFile {
         if model_table_offset > 0 && model_table_offset + model_count * 4 <= buffer.len() {
             for i in 0..model_count {
                 let off = model_table_offset + i * 4;
-                let part_offset = u32::from_le_bytes(buffer[off..off + 4].try_into().unwrap()) as usize;
-                if part_offset > 0 && part_offset < buffer.len()
-                    && let Ok(part) = parse_model_part(buffer, part_offset, i) {
+                let part_offset =
+                    u32::from_le_bytes(buffer[off..off + 4].try_into().unwrap()) as usize;
+                if part_offset > 0
+                    && part_offset < buffer.len()
+                    && let Ok(part) = parse_model_part(buffer, part_offset, i)
+                {
                     parts.push(part);
                 }
             }
@@ -130,10 +130,7 @@ impl EmdFile {
             parts.push(part);
         }
 
-        Ok(Self {
-            name: "DBXV2_Model".into(),
-            parts,
-        })
+        Ok(Self { name: "DBXV2_Model".into(), parts })
     }
 
     /// Creates a mock DBXV2 EMD binary buffer for testing and mock asset pipelines.
@@ -244,10 +241,7 @@ fn write_vertex(buf: &mut Vec<u8>, pos: [f32; 3], normal: [f32; 3], uv: [f32; 2]
 
 fn parse_model_part(buffer: &[u8], offset: usize, idx: usize) -> Result<EmdModelPart> {
     if offset + 12 > buffer.len() {
-        return Err(ReError::BufferTooSmall {
-            required: offset + 12,
-            available: buffer.len(),
-        });
+        return Err(ReError::BufferTooSmall { required: offset + 12, available: buffer.len() });
     }
 
     let name_off = u32::from_le_bytes(buffer[offset..offset + 4].try_into().unwrap()) as usize;
@@ -257,16 +251,21 @@ fn parse_model_part(buffer: &[u8], offset: usize, idx: usize) -> Result<EmdModel
         format!("Part_{idx}")
     };
 
-    let mesh_count = u16::from_le_bytes(buffer[offset + 4..offset + 6].try_into().unwrap()) as usize;
-    let mesh_table_off = u32::from_le_bytes(buffer[offset + 8..offset + 12].try_into().unwrap()) as usize;
+    let mesh_count =
+        u16::from_le_bytes(buffer[offset + 4..offset + 6].try_into().unwrap()) as usize;
+    let mesh_table_off =
+        u32::from_le_bytes(buffer[offset + 8..offset + 12].try_into().unwrap()) as usize;
 
     let mut meshes = Vec::with_capacity(mesh_count);
     if mesh_table_off > 0 && mesh_table_off + mesh_count * 4 <= buffer.len() {
         for i in 0..mesh_count {
             let m_off = mesh_table_off + i * 4;
-            let mesh_offset = u32::from_le_bytes(buffer[m_off..m_off + 4].try_into().unwrap()) as usize;
-            if mesh_offset > 0 && mesh_offset < buffer.len()
-                && let Ok(mesh) = parse_mesh(buffer, mesh_offset, i) {
+            let mesh_offset =
+                u32::from_le_bytes(buffer[m_off..m_off + 4].try_into().unwrap()) as usize;
+            if mesh_offset > 0
+                && mesh_offset < buffer.len()
+                && let Ok(mesh) = parse_mesh(buffer, mesh_offset, i)
+            {
                 meshes.push(mesh);
             }
         }
@@ -277,22 +276,23 @@ fn parse_model_part(buffer: &[u8], offset: usize, idx: usize) -> Result<EmdModel
 
 fn parse_mesh(buffer: &[u8], offset: usize, idx: usize) -> Result<EmdMesh> {
     if offset + 8 > buffer.len() {
-        return Err(ReError::BufferTooSmall {
-            required: offset + 8,
-            available: buffer.len(),
-        });
+        return Err(ReError::BufferTooSmall { required: offset + 8, available: buffer.len() });
     }
 
     let submesh_count = u16::from_le_bytes(buffer[offset..offset + 2].try_into().unwrap()) as usize;
-    let submesh_table_off = u32::from_le_bytes(buffer[offset + 4..offset + 8].try_into().unwrap()) as usize;
+    let submesh_table_off =
+        u32::from_le_bytes(buffer[offset + 4..offset + 8].try_into().unwrap()) as usize;
 
     let mut submeshes = Vec::with_capacity(submesh_count);
     if submesh_table_off > 0 && submesh_table_off + submesh_count * 4 <= buffer.len() {
         for i in 0..submesh_count {
             let s_off = submesh_table_off + i * 4;
-            let submesh_offset = u32::from_le_bytes(buffer[s_off..s_off + 4].try_into().unwrap()) as usize;
-            if submesh_offset > 0 && submesh_offset < buffer.len()
-                && let Ok(sub) = parse_submesh(buffer, submesh_offset, i) {
+            let submesh_offset =
+                u32::from_le_bytes(buffer[s_off..s_off + 4].try_into().unwrap()) as usize;
+            if submesh_offset > 0
+                && submesh_offset < buffer.len()
+                && let Ok(sub) = parse_submesh(buffer, submesh_offset, i)
+            {
                 submeshes.push(sub);
             }
         }
@@ -308,10 +308,7 @@ fn parse_mesh(buffer: &[u8], offset: usize, idx: usize) -> Result<EmdMesh> {
 
 fn parse_submesh(buffer: &[u8], offset: usize, idx: usize) -> Result<EmdSubmesh> {
     if offset + 20 > buffer.len() {
-        return Err(ReError::BufferTooSmall {
-            required: offset + 20,
-            available: buffer.len(),
-        });
+        return Err(ReError::BufferTooSmall { required: offset + 20, available: buffer.len() });
     }
 
     let mat_name_off = u32::from_le_bytes(buffer[offset..offset + 4].try_into().unwrap()) as usize;
@@ -321,10 +318,14 @@ fn parse_submesh(buffer: &[u8], offset: usize, idx: usize) -> Result<EmdSubmesh>
         format!("Material_{idx}")
     };
 
-    let vertex_count = u32::from_le_bytes(buffer[offset + 4..offset + 8].try_into().unwrap()) as usize;
-    let index_count = u32::from_le_bytes(buffer[offset + 8..offset + 12].try_into().unwrap()) as usize;
-    let vertex_off = u32::from_le_bytes(buffer[offset + 12..offset + 16].try_into().unwrap()) as usize;
-    let index_off = u32::from_le_bytes(buffer[offset + 16..offset + 20].try_into().unwrap()) as usize;
+    let vertex_count =
+        u32::from_le_bytes(buffer[offset + 4..offset + 8].try_into().unwrap()) as usize;
+    let index_count =
+        u32::from_le_bytes(buffer[offset + 8..offset + 12].try_into().unwrap()) as usize;
+    let vertex_off =
+        u32::from_le_bytes(buffer[offset + 12..offset + 16].try_into().unwrap()) as usize;
+    let index_off =
+        u32::from_le_bytes(buffer[offset + 16..offset + 20].try_into().unwrap()) as usize;
 
     let mut vertices = Vec::with_capacity(vertex_count);
     let stride = 32; // standard pos(12) + normal(12) + uv(8)

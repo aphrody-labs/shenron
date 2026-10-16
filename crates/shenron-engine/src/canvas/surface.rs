@@ -46,11 +46,7 @@ impl CanvasSurface {
     #[must_use]
     pub fn new(width: u32, height: u32) -> Self {
         let size = (width as usize) * (height as usize) * 4;
-        Self {
-            width,
-            height,
-            pixels: vec![0; size],
-        }
+        Self { width, height, pixels: vec![0; size] }
     }
 
     /// Surface width.
@@ -171,7 +167,13 @@ impl CanvasSurface {
     }
 
     /// Draws text with typesetting layout.
-    pub fn draw_text(&mut self, text: &str, pos: Vec2, config: &TextLayoutConfig, color: ColorRgba) {
+    pub fn draw_text(
+        &mut self,
+        text: &str,
+        pos: Vec2,
+        config: &TextLayoutConfig,
+        color: ColorRgba,
+    ) {
         let glyphs = TextLayout::layout(text, pos, config);
         for glyph in glyphs {
             // Draw simple character bounding block for raster verification

@@ -3,10 +3,7 @@
 //!
 //! Exposes the pure Rust reverse engineering engine to Bun (`bun:ffi`), C, and foreign runtimes.
 
-#![allow(
-    clippy::missing_safety_doc,
-    reason = "C ABI FFI boundary with explicit safety contracts"
-)]
+#![allow(clippy::missing_safety_doc, reason = "C ABI FFI boundary with explicit safety contracts")]
 
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
@@ -15,12 +12,7 @@ use std::slice;
 
 use crate::catalog::get_dragon_ball_catalog;
 use crate::formats::{
-    bac::BacFile,
-    bdm::BdmFile,
-    cus::CusFile,
-    msg::MsgFile,
-    pup::PupFile,
-    sav::Dxbv2Save,
+    bac::BacFile, bdm::BdmFile, cus::CusFile, msg::MsgFile, pup::PupFile, sav::Dxbv2Save,
 };
 use crate::fs::cpk::CpkArchive;
 use crate::live::process::WineProcessMemory;
@@ -38,7 +30,7 @@ fn to_c_string<T: serde::Serialize>(val: &T) -> *mut c_char {
         Err(e) => {
             let err_json = format!(r#"{{"error":"{}"}}"#, e);
             CString::new(err_json).map(|c| c.into_raw()).unwrap_or(ptr::null_mut())
-        }
+        },
     }
 }
 
@@ -90,7 +82,10 @@ pub unsafe extern "C" fn shenron_re_triage_json(data: *const u8, len: usize) -> 
     let slice = unsafe { slice::from_raw_parts(data, len) };
     let is_pe = slice.starts_with(b"MZ");
     let is_cpk = slice.starts_with(b"CPK ");
-    let is_sav = slice.starts_with(b"#SAV") || (slice.len() >= 4 && u32::from_le_bytes([slice[0], slice[1], slice[2], slice[3]]) == crate::formats::sav::ENCRYPTED_SAV_SIGNATURE);
+    let is_sav = slice.starts_with(b"#SAV")
+        || (slice.len() >= 4
+            && u32::from_le_bytes([slice[0], slice[1], slice[2], slice[3]])
+                == crate::formats::sav::ENCRYPTED_SAV_SIGNATURE);
 
     #[derive(serde::Serialize)]
     struct TriageReport {
@@ -100,12 +95,7 @@ pub unsafe extern "C" fn shenron_re_triage_json(data: *const u8, len: usize) -> 
         is_sav: bool,
     }
 
-    to_c_string(&TriageReport {
-        size_bytes: len,
-        is_pe,
-        is_cpk,
-        is_sav,
-    })
+    to_c_string(&TriageReport { size_bytes: len, is_pe, is_cpk, is_sav })
 }
 
 /// Lists all files in a CPK archive as a JSON array of entries.
@@ -154,7 +144,7 @@ pub unsafe extern "C" fn shenron_re_cpk_extract(
                 *out_len = len;
             }
             raw_ptr
-        }
+        },
         Err(_) => ptr::null_mut(),
     }
 }
@@ -247,7 +237,9 @@ pub extern "C" fn shenron_re_catalog_json() -> *mut c_char {
 /// Finds a running process by name (e.g. "DBXV2.exe") and inspects its Wine memory maps.
 /// Returns JSON with { found: bool, pid?: u32, base_address?: string, regions_count?: usize }.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn shenron_re_live_process_find(process_name_ptr: *const c_char) -> *mut c_char {
+pub unsafe extern "C" fn shenron_re_live_process_find(
+    process_name_ptr: *const c_char,
+) -> *mut c_char {
     if process_name_ptr.is_null() {
         return err_to_c_string("Process name pointer is null");
     }
@@ -409,7 +401,17 @@ mod tests {
     #[test]
     fn test_ffi_unified_state_empty() {
         let c_str_ptr = unsafe {
-            shenron_re_unified_state_json(ptr::null(), 0, ptr::null(), 0, ptr::null(), 0, ptr::null(), 0, 0)
+            shenron_re_unified_state_json(
+                ptr::null(),
+                0,
+                ptr::null(),
+                0,
+                ptr::null(),
+                0,
+                ptr::null(),
+                0,
+                0,
+            )
         };
         assert!(!c_str_ptr.is_null());
         let res_str = unsafe { CStr::from_ptr(c_str_ptr) }.to_str().unwrap();

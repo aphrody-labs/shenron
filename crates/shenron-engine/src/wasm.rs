@@ -2,7 +2,9 @@
 
 //! WebAssembly bindings for browser WebGPU canvas and JS game loops.
 
-use crate::canvas::{BubbleKind, CanvasSurface, ColorRgba, SpeechBubble, TextLayoutConfig, WritingDirection};
+use crate::canvas::{
+    BubbleKind, CanvasSurface, ColorRgba, SpeechBubble, TextLayoutConfig, WritingDirection,
+};
 use crate::game::{
     ArenaId, DragonPixelEngineCore, FighterId, FighterInput, GameMode, WebGpuRenderPacket,
 };
@@ -21,12 +23,7 @@ pub struct ShenronEngineWasm {
 impl ShenronEngineWasm {
     /// Creates a new match between two fighters by string name.
     #[must_use]
-    pub fn new(
-        p1_name: &str,
-        p2_name: &str,
-        arena_name: &str,
-        mode_name: &str,
-    ) -> Self {
+    pub fn new(p1_name: &str, p2_name: &str, arena_name: &str, mode_name: &str) -> Self {
         let p1_id = match p1_name.to_lowercase().as_str() {
             "vegeta" => FighterId::Vegeta,
             "gohan" => FighterId::Gohan,
@@ -67,9 +64,7 @@ impl ShenronEngineWasm {
             _ => GameMode::Versus,
         };
 
-        Self {
-            core: DragonPixelEngineCore::new(p1_id, p2_id, arena, mode),
-        }
+        Self { core: DragonPixelEngineCore::new(p1_id, p2_id, arena, mode) }
     }
 
     /// Advances the simulation by 1 frame with raw boolean input flags.
@@ -197,9 +192,7 @@ impl CanvasEngineWasm {
     /// Creates a new WASM canvas surface.
     #[must_use]
     pub fn new(width: u32, height: u32) -> Self {
-        Self {
-            surface: CanvasSurface::new(width, height),
-        }
+        Self { surface: CanvasSurface::new(width, height) }
     }
 
     /// Clears the canvas with an RGBA color.
@@ -271,8 +264,8 @@ mod tests {
         assert_eq!(engine.p2_hp(), 9500.0);
 
         engine.tick_raw(
-            false, true, false, false, true, false, false, false, false,
-            false, false, false, false, false, false, false, false, false,
+            false, true, false, false, true, false, false, false, false, false, false, false,
+            false, false, false, false, false, false,
         );
 
         let packet_json = engine.get_render_packet_json();

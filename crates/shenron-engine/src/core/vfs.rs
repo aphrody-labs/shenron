@@ -188,7 +188,10 @@ impl<'a> AssetStreamReader<'a> {
     }
 
     /// Reads a contiguous slice of typed POD structures without copying.
-    pub fn read_slice<T: bytemuck::Pod>(&mut self, count: usize) -> Result<&'a [T], std::io::Error> {
+    pub fn read_slice<T: bytemuck::Pod>(
+        &mut self,
+        count: usize,
+    ) -> Result<&'a [T], std::io::Error> {
         let byte_len = count.checked_mul(std::mem::size_of::<T>()).ok_or_else(|| {
             std::io::Error::new(std::io::ErrorKind::InvalidInput, "Size arithmetic overflow")
         })?;
@@ -231,11 +234,7 @@ impl VirtualFileSystem {
     /// Creates a new empty virtual filesystem.
     #[must_use]
     pub fn new() -> Self {
-        Self {
-            mounts: HashMap::new(),
-            cache: RwLock::new(HashMap::new()),
-            xenoverse_vfs: None,
-        }
+        Self { mounts: HashMap::new(), cache: RwLock::new(HashMap::new()), xenoverse_vfs: None }
     }
 
     /// Mounts a virtual prefix (e.g. `assets://`) to a physical directory path.
@@ -245,24 +244,31 @@ impl VirtualFileSystem {
     }
 
     /// Mounts a Dragon Ball Xenoverse 2 game directory with CPK archives and loose file overlay.
-    pub fn mount_xenoverse<P: AsRef<Path>>(&mut self, game_dir: P) -> Result<usize, std::io::Error> {
+    pub fn mount_xenoverse<P: AsRef<Path>>(
+        &mut self,
+        game_dir: P,
+    ) -> Result<usize, std::io::Error> {
         let mut vfs = XenoverseVfs::new();
-        let count = vfs.mount_game_dir(game_dir).map_err(|e| {
-            std::io::Error::other(e.to_string())
-        })?;
+        let count =
+            vfs.mount_game_dir(game_dir).map_err(|e| std::io::Error::other(e.to_string()))?;
         self.xenoverse_vfs = Some(Arc::new(Mutex::new(vfs)));
         Ok(count)
     }
 
     /// Mounts an in-memory CPK buffer into the underlying Xenoverse archive manager.
-    pub fn mount_cpk_memory(&mut self, archive_name: &str, buffer: Vec<u8>) -> Result<usize, std::io::Error> {
+    pub fn mount_cpk_memory(
+        &mut self,
+        archive_name: &str,
+        buffer: Vec<u8>,
+    ) -> Result<usize, std::io::Error> {
         if self.xenoverse_vfs.is_none() {
             self.xenoverse_vfs = Some(Arc::new(Mutex::new(XenoverseVfs::new())));
         }
         let xv_vfs = self.xenoverse_vfs.as_ref().unwrap();
-        xv_vfs.lock().mount_cpk_memory(archive_name, buffer).map_err(|e| {
-            std::io::Error::other(e.to_string())
-        })
+        xv_vfs
+            .lock()
+            .mount_cpk_memory(archive_name, buffer)
+            .map_err(|e| std::io::Error::other(e.to_string()))
     }
 
     /// Returns a reference to the mounted Xenoverse VFS if initialized.
@@ -336,10 +342,7 @@ impl VirtualFileSystem {
         // SAFETY: Memory mapping is read-only.
         let mmap = unsafe { Mmap::map(&file)? };
 
-        let handle = AssetHandle {
-            path: uri.to_string(),
-            data: Arc::new(AssetData::Mmap(mmap)),
-        };
+        let handle = AssetHandle { path: uri.to_string(), data: Arc::new(AssetData::Mmap(mmap)) };
 
         self.cache.write().insert(uri.to_string(), handle.clone());
         Ok(handle)
@@ -352,15 +355,12 @@ impl VirtualFileSystem {
         })?;
 
         let xv = xv_arc.lock();
-        let bytes = xv.read_file(&full_path).map_err(|e| {
-            std::io::Error::new(std::io::ErrorKind::NotFound, e.to_string())
-        })?;
+        let bytes = xv
+            .read_file(&full_path)
+            .map_err(|e| std::io::Error::new(std::io::ErrorKind::NotFound, e.to_string()))?;
 
         let uri = format!("chara://{subpath}");
-        let handle = AssetHandle {
-            path: uri.clone(),
-            data: Arc::new(AssetData::Memory(bytes)),
-        };
+        let handle = AssetHandle { path: uri.clone(), data: Arc::new(AssetData::Memory(bytes)) };
         self.cache.write().insert(uri, handle.clone());
         Ok(handle)
     }

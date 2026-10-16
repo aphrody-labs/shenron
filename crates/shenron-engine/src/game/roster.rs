@@ -76,7 +76,7 @@ pub fn get_fighter_def(id: FighterId) -> FighterDefinition {
             dash_speed: 14.0,
             jump_power: 17.5,
             damage_multiplier: 1.18,
-            aura_color: [1.0, 0.9, 0.1, 0.9], // Golden Lightning
+            aura_color: [1.0, 0.9, 0.1, 0.9],  // Golden Lightning
             beam_color: [1.0, 0.85, 0.2, 1.0], // Father-Son Kamehameha
             signature_beam: "Father-Son Kamehameha".into(),
         },

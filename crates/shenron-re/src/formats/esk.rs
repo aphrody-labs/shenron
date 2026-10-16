@@ -67,10 +67,7 @@ impl EskFile {
     /// Parses an ESK skeleton from binary data.
     pub fn parse(buffer: &[u8]) -> Result<Self> {
         if buffer.len() < 16 {
-            return Err(ReError::BufferTooSmall {
-                required: 16,
-                available: buffer.len(),
-            });
+            return Err(ReError::BufferTooSmall { required: 16, available: buffer.len() });
         }
 
         if &buffer[0..4] != ESK_MAGIC {
@@ -98,10 +95,7 @@ impl EskFile {
             }
         }
 
-        Ok(Self {
-            name: "DBXV2_Skeleton".into(),
-            bones,
-        })
+        Ok(Self { name: "DBXV2_Skeleton".into(), bones })
     }
 
     /// Creates a mock DBXV2 ESK binary buffer for testing.

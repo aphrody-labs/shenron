@@ -12,7 +12,7 @@ use thiserror::Error;
 
 const GLTF_MAGIC: u32 = 0x4654_6C67; // "glTF"
 const JSON_CHUNK: u32 = 0x4E4F_534A; // "JSON"
-const BIN_CHUNK: u32 = 0x004E_4942;  // "BIN\0"
+const BIN_CHUNK: u32 = 0x004E_4942; // "BIN\0"
 
 /// Errors encountered while parsing a GLB file.
 #[derive(Debug, Error)]
@@ -90,7 +90,11 @@ pub fn parse_glb(data: &[u8]) -> Result<Model, GlbError> {
                 if let Some(img_bytes) = get_buffer_view_slice(&json, bin_bytes, bv_idx as usize) {
                     if let Ok(dyn_img) = image::load_from_memory(img_bytes) {
                         let rgba = dyn_img.to_rgba8();
-                        model.textures.push(Texture::new(rgba.width(), rgba.height(), rgba.into_raw()));
+                        model.textures.push(Texture::new(
+                            rgba.width(),
+                            rgba.height(),
+                            rgba.into_raw(),
+                        ));
                         continue;
                     }
                 }
@@ -133,10 +137,16 @@ pub fn parse_glb(data: &[u8]) -> Result<Model, GlbError> {
                             if let Some(mat_val) = materials.get(mat_idx as usize) {
                                 if let Some(pbr) = mat_val.get("pbrMetallicRoughness") {
                                     if let Some(tex) = pbr.get("baseColorTexture") {
-                                        if let Some(t_idx) = tex.get("index").and_then(Value::as_u64) {
-                                            if let Some(textures) = json.get("textures").and_then(Value::as_array) {
+                                        if let Some(t_idx) =
+                                            tex.get("index").and_then(Value::as_u64)
+                                        {
+                                            if let Some(textures) =
+                                                json.get("textures").and_then(Value::as_array)
+                                            {
                                                 if let Some(t_val) = textures.get(t_idx as usize) {
-                                                    if let Some(src) = t_val.get("source").and_then(Value::as_u64) {
+                                                    if let Some(src) =
+                                                        t_val.get("source").and_then(Value::as_u64)
+                                                    {
                                                         tex_index = Some(src as usize);
                                                     }
                                                 }
@@ -249,7 +259,7 @@ fn read_indices_accessor(json: &Value, bin: &[u8], acc_idx: usize) -> Result<Vec
             for &b in bytes {
                 out.push(b as u32);
             }
-        }
+        },
         5123 => {
             // UNSIGNED_SHORT
             let total_bytes = count * 2;
@@ -257,7 +267,7 @@ fn read_indices_accessor(json: &Value, bin: &[u8], acc_idx: usize) -> Result<Vec
             for chunk in bytes.chunks_exact(2) {
                 out.push(u16::from_le_bytes([chunk[0], chunk[1]]) as u32);
             }
-        }
+        },
         5125 => {
             // UNSIGNED_INT
             let total_bytes = count * 4;
@@ -265,7 +275,7 @@ fn read_indices_accessor(json: &Value, bin: &[u8], acc_idx: usize) -> Result<Vec
             for chunk in bytes.chunks_exact(4) {
                 out.push(u32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]));
             }
-        }
+        },
         _ => return Err(GlbError::CorruptChunks),
     }
 

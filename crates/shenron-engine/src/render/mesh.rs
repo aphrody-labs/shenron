@@ -5,11 +5,11 @@
 //! Bridges procedural geometry generation from `aphrody-render::mesh3d` and
 //! textured game model representation from `aphrody-nie-render3d::glb`.
 
+use glam::{Mat4, Vec3};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 use std::sync::Arc;
-use glam::{Mat4, Vec3};
-use serde::{Deserialize, Serialize};
 
 /// Maximum segments allowed for procedural tessellation.
 pub const MAX_SEGMENTS: u32 = 512;
@@ -32,11 +32,7 @@ impl Texture {
     /// Creates a monochrome 1x1 texture.
     #[must_use]
     pub fn solid(r: u8, g: u8, b: u8, a: u8) -> Self {
-        Self {
-            width: 1,
-            height: 1,
-            rgba: vec![r, g, b, a],
-        }
+        Self { width: 1, height: 1, rgba: vec![r, g, b, a] }
     }
 
     /// Sample the texture using nearest-neighbor filtering with normalized UVs [0.0, 1.0].
@@ -60,7 +56,10 @@ impl Texture {
     /// Sample the texture using bilinear interpolation with normalized UVs [0.0, 1.0].
     #[must_use]
     pub fn sample_bilinear(&self, u: f32, v: f32) -> [u8; 4] {
-        if self.width <= 1 || self.height <= 1 || self.rgba.len() < (self.width * self.height * 4) as usize {
+        if self.width <= 1
+            || self.height <= 1
+            || self.rgba.len() < (self.width * self.height * 4) as usize
+        {
             return self.sample_nearest(u, v);
         }
         let u_clamped = u.rem_euclid(1.0) * (self.width - 1) as f32;
@@ -134,11 +133,7 @@ impl Model {
             return ([0.0, 0.0, 0.0], 1.0);
         }
 
-        let center = [
-            (min[0] + max[0]) * 0.5,
-            (min[1] + max[1]) * 0.5,
-            (min[2] + max[2]) * 0.5,
-        ];
+        let center = [(min[0] + max[0]) * 0.5, (min[1] + max[1]) * 0.5, (min[2] + max[2]) * 0.5];
         let c = Vec3::from_array(center);
         let mut max_dist = 0.0f32;
 
@@ -162,17 +157,9 @@ pub enum Geometry {
     /// Box centered at origin.
     Box { size: [f32; 3] },
     /// Rounded box with spherical corners.
-    RoundedBox {
-        size: [f32; 3],
-        radius: f32,
-        segments: u32,
-    },
+    RoundedBox { size: [f32; 3], radius: f32, segments: u32 },
     /// UV Sphere centered at origin.
-    Sphere {
-        radius: f32,
-        width_segments: u32,
-        height_segments: u32,
-    },
+    Sphere { radius: f32, width_segments: u32, height_segments: u32 },
     /// Flat plane in XY facing +Z.
     Plane { size: [f32; 2] },
     /// Cylinder along Y axis.
@@ -184,12 +171,7 @@ pub enum Geometry {
         open_ended: bool,
     },
     /// Torus in XY plane around Z axis.
-    Torus {
-        radius: f32,
-        tube: f32,
-        radial_segments: u32,
-        tubular_segments: u32,
-    },
+    Torus { radius: f32, tube: f32, radial_segments: u32, tubular_segments: u32 },
     /// Explicit mesh.
     Mesh {
         positions: Vec<[f32; 3]>,
@@ -259,7 +241,7 @@ impl Geometry {
                 for v in size {
                     v.to_bits().hash(&mut h);
                 }
-            }
+            },
             Self::RoundedBox { size, radius, segments } => {
                 1u8.hash(&mut h);
                 for v in size {
@@ -267,18 +249,18 @@ impl Geometry {
                 }
                 radius.to_bits().hash(&mut h);
                 segments.hash(&mut h);
-            }
+            },
             Self::Sphere { radius, width_segments, height_segments } => {
                 2u8.hash(&mut h);
                 radius.to_bits().hash(&mut h);
                 width_segments.hash(&mut h);
                 height_segments.hash(&mut h);
-            }
+            },
             Self::Plane { size } => {
                 3u8.hash(&mut h);
                 size[0].to_bits().hash(&mut h);
                 size[1].to_bits().hash(&mut h);
-            }
+            },
             Self::Cylinder { radius_top, radius_bottom, height, radial_segments, open_ended } => {
                 4u8.hash(&mut h);
                 radius_top.to_bits().hash(&mut h);
@@ -286,19 +268,19 @@ impl Geometry {
                 height.to_bits().hash(&mut h);
                 radial_segments.hash(&mut h);
                 open_ended.hash(&mut h);
-            }
+            },
             Self::Torus { radius, tube, radial_segments, tubular_segments } => {
                 5u8.hash(&mut h);
                 radius.to_bits().hash(&mut h);
                 tube.to_bits().hash(&mut h);
                 radial_segments.hash(&mut h);
                 tubular_segments.hash(&mut h);
-            }
+            },
             Self::Mesh { positions, indices, .. } => {
                 6u8.hash(&mut h);
                 positions.len().hash(&mut h);
                 indices.len().hash(&mut h);
-            }
+            },
         }
         h.finish()
     }
@@ -309,17 +291,23 @@ impl Geometry {
             Self::Box { size } => Ok(tessellate_box(*size)),
             Self::Sphere { radius, width_segments, height_segments } => {
                 Ok(tessellate_sphere(*radius, *width_segments, *height_segments))
-            }
+            },
             Self::Plane { size } => Ok(tessellate_plane(*size)),
             Self::RoundedBox { size, radius: _, segments: _ } => {
                 Ok(tessellate_box(*size)) // Safe fallback for base geometry
-            }
+            },
             Self::Cylinder { radius_top, radius_bottom, height, radial_segments, open_ended } => {
-                Ok(tessellate_cylinder(*radius_top, *radius_bottom, *height, *radial_segments, *open_ended))
-            }
+                Ok(tessellate_cylinder(
+                    *radius_top,
+                    *radius_bottom,
+                    *height,
+                    *radial_segments,
+                    *open_ended,
+                ))
+            },
             Self::Torus { radius, tube: _, radial_segments, tubular_segments } => {
                 Ok(tessellate_sphere(*radius, *radial_segments, *tubular_segments))
-            }
+            },
             Self::Mesh { positions, normals, uvs, indices } => {
                 let n = normals.clone().unwrap_or_else(|| vec![[0.0, 1.0, 0.0]; positions.len()]);
                 let u = uvs.clone().unwrap_or_else(|| vec![[0.0, 0.0]; positions.len()]);
@@ -331,9 +319,13 @@ impl Geometry {
                         max[k] = max[k].max(p[k]);
                     }
                 }
-                let center = [(min[0] + max[0]) * 0.5, (min[1] + max[1]) * 0.5, (min[2] + max[2]) * 0.5];
+                let center =
+                    [(min[0] + max[0]) * 0.5, (min[1] + max[1]) * 0.5, (min[2] + max[2]) * 0.5];
                 let c = Vec3::from_array(center);
-                let radius = positions.iter().map(|p| (Vec3::from_array(*p) - c).length()).fold(0.0f32, f32::max);
+                let radius = positions
+                    .iter()
+                    .map(|p| (Vec3::from_array(*p) - c).length())
+                    .fold(0.0f32, f32::max);
                 Ok(MeshData {
                     positions: positions.clone(),
                     normals: n,
@@ -342,7 +334,7 @@ impl Geometry {
                     bounds_center: center,
                     bounds_radius: radius,
                 })
-            }
+            },
         }
     }
 }
@@ -376,14 +368,7 @@ fn tessellate_box(size: [f32; 3]) -> MeshData {
     }
 
     let r = (hx * hx + hy * hy + hz * hz).sqrt();
-    MeshData {
-        positions,
-        normals,
-        uvs,
-        indices,
-        bounds_center: [0.0, 0.0, 0.0],
-        bounds_radius: r,
-    }
+    MeshData { positions, normals, uvs, indices, bounds_center: [0.0, 0.0, 0.0], bounds_radius: r }
 }
 
 fn tessellate_plane(size: [f32; 2]) -> MeshData {
@@ -450,7 +435,13 @@ fn tessellate_sphere(radius: f32, width_segs: u32, height_segs: u32) -> MeshData
     }
 }
 
-fn tessellate_cylinder(r_top: f32, r_bottom: f32, height: f32, radial: u32, _open: bool) -> MeshData {
+fn tessellate_cylinder(
+    r_top: f32,
+    r_bottom: f32,
+    height: f32,
+    radial: u32,
+    _open: bool,
+) -> MeshData {
     let rad = radial.clamp(3, MAX_SEGMENTS);
     let half_h = height * 0.5;
     let mut positions = Vec::new();
@@ -569,10 +560,7 @@ impl Camera3d {
         let far_clip = inv_vp.project_point3(Vec3::new(ndc_x, ndc_y, 1.0));
         let dir = (far_clip - near_clip).normalize_or_zero();
 
-        Ray3d {
-            origin: near_clip,
-            direction: dir,
-        }
+        Ray3d { origin: near_clip, direction: dir }
     }
 }
 
@@ -610,11 +598,7 @@ impl Ray3d {
         }
 
         let t = f * edge2.dot(q);
-        if t > 1e-6 {
-            Some(t)
-        } else {
-            None
-        }
+        if t > 1e-6 { Some(t) } else { None }
     }
 }
 
@@ -658,16 +642,12 @@ mod tests {
         let v1 = Vec3::new(1.0, 0.0, 0.0);
         let v2 = Vec3::new(0.0, 1.0, 0.0);
 
-        let ray_hit = Ray3d {
-            origin: Vec3::new(0.0, 0.5, 5.0),
-            direction: Vec3::new(0.0, 0.0, -1.0),
-        };
+        let ray_hit =
+            Ray3d { origin: Vec3::new(0.0, 0.5, 5.0), direction: Vec3::new(0.0, 0.0, -1.0) };
         assert!(ray_hit.intersect_triangle(v0, v1, v2).is_some());
 
-        let ray_miss = Ray3d {
-            origin: Vec3::new(5.0, 5.0, 5.0),
-            direction: Vec3::new(0.0, 0.0, -1.0),
-        };
+        let ray_miss =
+            Ray3d { origin: Vec3::new(5.0, 5.0, 5.0), direction: Vec3::new(0.0, 0.0, -1.0) };
         assert!(ray_miss.intersect_triangle(v0, v1, v2).is_none());
     }
 }

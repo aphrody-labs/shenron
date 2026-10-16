@@ -7,9 +7,9 @@
 //! Only `steamapps/appmanifest_*.acf` metadata and local directories are read.
 //! Account credentials, tokens, and client configuration are never accessed.
 
+use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
-use serde::{Deserialize, Serialize};
 
 /// Steam App ID for Dragon Ball Xenoverse 2 (Dimps / Bandai Namco).
 pub const STEAM_APP_ID_DBXV2: u32 = 454650;
@@ -60,11 +60,7 @@ pub struct SteamPlanningLimits {
 
 impl Default for SteamPlanningLimits {
     fn default() -> Self {
-        Self {
-            max_depots: 1024,
-            max_manifest_entries: 250_000,
-            max_collisions: 2048,
-        }
+        Self { max_depots: 1024, max_manifest_entries: 250_000, max_collisions: 2048 }
     }
 }
 

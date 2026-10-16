@@ -167,22 +167,15 @@ pub fn decompress_crilayla_raw(input: &[u8], expected_size: usize) -> Result<Vec
 /// Helper compressor that emits a valid CRILAYLA compressed stream (using literal backwards LZSS).
 /// Useful for creating synthetic CRILAYLA payloads for unit tests and WASM verification.
 pub fn compress_crilayla_mock(uncompressed: &[u8]) -> Vec<u8> {
-    let uncompressed_size = if uncompressed.len() >= 0x100 {
-        uncompressed.len() - 0x100
-    } else {
-        0
-    };
+    let uncompressed_size =
+        if uncompressed.len() >= 0x100 { uncompressed.len() - 0x100 } else { 0 };
 
     let mut bitstream = Vec::new();
     let mut bit_pool = 0u64;
     let mut bits_in_pool = 0usize;
 
     // We write from uncompressed.len() down to 0x100
-    let payload = if uncompressed.len() > 0x100 {
-        &uncompressed[0x100..]
-    } else {
-        &[]
-    };
+    let payload = if uncompressed.len() > 0x100 { &uncompressed[0x100..] } else { &[] };
 
     // Pack bits backwards: each symbol is flag=1 (1 bit) + byte (8 bits) = 9 bits
     for &byte in payload.iter().rev() {

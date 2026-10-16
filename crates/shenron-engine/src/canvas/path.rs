@@ -117,11 +117,11 @@ impl Path2D {
                 PathCommand::MoveTo(p) => {
                     curr = p;
                     points.push(p);
-                }
+                },
                 PathCommand::LineTo(p) => {
                     curr = p;
                     points.push(p);
-                }
+                },
                 PathCommand::QuadTo { ctrl, to } => {
                     let steps = (curr.distance(ctrl) + ctrl.distance(to)) / tolerance.max(1.0);
                     let n = (steps as usize).clamp(4, 32);
@@ -132,7 +132,7 @@ impl Path2D {
                         points.push(p);
                     }
                     curr = to;
-                }
+                },
                 PathCommand::CubicTo { ctrl1, ctrl2, to } => {
                     let steps = (curr.distance(ctrl1) + ctrl1.distance(ctrl2) + ctrl2.distance(to))
                         / tolerance.max(1.0);
@@ -147,12 +147,12 @@ impl Path2D {
                         points.push(p);
                     }
                     curr = to;
-                }
+                },
                 PathCommand::Close => {
                     if let Some(&first) = points.first() {
                         points.push(first);
                     }
-                }
+                },
             }
         }
 

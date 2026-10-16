@@ -153,7 +153,8 @@ impl CascadedShadowMaps {
             let p = (i + 1) as f32 / self.num_cascades as f32;
             let log_split = camera_near * (camera_far / camera_near).powf(p);
             let uniform_split = camera_near + (camera_far - camera_near) * p;
-            self.split_distances[i] = self.split_lambda * log_split + (1.0 - self.split_lambda) * uniform_split;
+            self.split_distances[i] =
+                self.split_lambda * log_split + (1.0 - self.split_lambda) * uniform_split;
         }
 
         // 2. Compute orthographic projection per cascade with texel stabilization
@@ -205,8 +206,10 @@ impl CascadedShadowMaps {
 
             // Snap center to texel grid in light space
             let mut center_light_space = light_view.transform_point3(frustum_center);
-            center_light_space.x = (center_light_space.x / world_units_per_texel).floor() * world_units_per_texel;
-            center_light_space.y = (center_light_space.y / world_units_per_texel).floor() * world_units_per_texel;
+            center_light_space.x =
+                (center_light_space.x / world_units_per_texel).floor() * world_units_per_texel;
+            center_light_space.y =
+                (center_light_space.y / world_units_per_texel).floor() * world_units_per_texel;
 
             let light_proj = Mat4::orthographic_rh(
                 -sphere_radius,

@@ -17,11 +17,13 @@ pub mod triage;
 pub use disasm::{DisasmInsn, disassemble_x86_64};
 pub use encode::{encode, encode_at};
 pub use insn::{
-    Alu, Cond, Insn, Mem, Reg, RepOp, Rm, Seg, ShiftOp, Size, SseOp, UnOp, VexOp, Xmm, XmmRm,
-    Ymm, YmmRm,
+    Alu, Cond, Insn, Mem, Reg, RepOp, Rm, Seg, ShiftOp, Size, SseOp, UnOp, VexOp, Xmm, XmmRm, Ymm,
+    YmmRm,
 };
 pub use text::{ParseError, parse_insn, parse_line, to_line};
-pub use triage::{BinaryFormat, SectionInfo, TriageReport, extract_strings, shannon_entropy, triage_binary};
+pub use triage::{
+    BinaryFormat, SectionInfo, TriageReport, extract_strings, shannon_entropy, triage_binary,
+};
 
 /// Assembles a slice of instructions into machine code.
 #[must_use]
@@ -66,7 +68,10 @@ impl AsmTriageHelper {
     }
 
     /// Scans a byte buffer for an Array-of-Bytes (AOB) wildcard pattern (e.g. `48 89 ?? 24`).
-    pub fn scan_pattern(bytes: &[u8], pattern: &str) -> Result<Vec<usize>, shenron_re::error::ReError> {
+    pub fn scan_pattern(
+        bytes: &[u8],
+        pattern: &str,
+    ) -> Result<Vec<usize>, shenron_re::error::ReError> {
         let aob = AobPattern::parse(pattern)?;
         Ok(aob.scan_all(bytes, usize::MAX))
     }
@@ -79,7 +84,8 @@ mod tests {
     #[test]
     fn test_asm_triage_helper_full_cycle() {
         // 1. Text to assembly
-        let code = AsmTriageHelper::assemble_text("mov al, 1 ; ret", 0x140000000).expect("assemble");
+        let code =
+            AsmTriageHelper::assemble_text("mov al, 1 ; ret", 0x140000000).expect("assemble");
         assert_eq!(code, vec![0xB0, 0x01, 0xC3]);
 
         // 2. Disassembly

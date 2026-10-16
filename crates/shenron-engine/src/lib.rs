@@ -32,12 +32,12 @@ pub mod wasm;
 
 // High-level re-exports for easy consumer adoption
 pub use asm::{
-    AsmTriageHelper, BinaryFormat, DisasmInsn, Insn, Reg, Size, TriageReport,
-    assemble, disassemble, triage_binary,
+    AsmTriageHelper, BinaryFormat, DisasmInsn, Insn, Reg, Size, TriageReport, assemble,
+    disassemble, triage_binary,
 };
 pub use canvas::{
-    BubbleKind, BubbleTail, CanvasSurface, ColorRgba, Path2D, SpeechBubble,
-    TextLayout, TextLayoutConfig, WritingDirection,
+    BubbleKind, BubbleTail, CanvasSurface, ColorRgba, Path2D, SpeechBubble, TextLayout,
+    TextLayoutConfig, WritingDirection,
 };
 pub use core::vfs::{AssetData, AssetHandle, AssetStreamReader, VirtualFileSystem};
 pub use render::{

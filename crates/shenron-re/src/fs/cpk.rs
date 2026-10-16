@@ -60,24 +60,48 @@ impl CpkArchive {
             has_utf_table = true;
             match parse_utf_table(&buffer[hdr_utf_pos..]) {
                 Ok(hdr_table) => {
-                    let toc_offset = hdr_table.get_u64("TocOffset").or_else(|| hdr_table.get_u32("TocOffset").map(|v| v as u64));
-                    let content_offset = hdr_table.get_u64("ContentOffset").or_else(|| hdr_table.get_u32("ContentOffset").map(|v| v as u64)).unwrap_or(0);
+                    let toc_offset = hdr_table
+                        .get_u64("TocOffset")
+                        .or_else(|| hdr_table.get_u32("TocOffset").map(|v| v as u64));
+                    let content_offset = hdr_table
+                        .get_u64("ContentOffset")
+                        .or_else(|| hdr_table.get_u32("ContentOffset").map(|v| v as u64))
+                        .unwrap_or(0);
 
-                if let Some(toc_pos) = toc_offset {
-                    let toc_pos_usize = toc_pos as usize;
-                    if toc_pos_usize < buffer.len() && buffer.len() - toc_pos_usize >= 16 {
-                        let toc_slice = &buffer[toc_pos_usize..];
-                        if toc_slice.starts_with(UTF_MAGIC)
-                            && let Ok(toc_table) = parse_utf_table(toc_slice)
-                        {
+                    if let Some(toc_pos) = toc_offset {
+                        let toc_pos_usize = toc_pos as usize;
+                        if toc_pos_usize < buffer.len() && buffer.len() - toc_pos_usize >= 16 {
+                            let toc_slice = &buffer[toc_pos_usize..];
+                            if toc_slice.starts_with(UTF_MAGIC)
+                                && let Ok(toc_table) = parse_utf_table(toc_slice)
+                            {
                                 for (i, row) in toc_table.rows.iter().enumerate() {
-                                    let name = row.get("FileName").cloned().unwrap_or_else(|| format!("file_{i}"));
+                                    let name = row
+                                        .get("FileName")
+                                        .cloned()
+                                        .unwrap_or_else(|| format!("file_{i}"));
                                     let dir_name = row.get("DirName").cloned();
-                                    let file_size = row.get("FileSize").and_then(|v| v.parse::<u64>().ok()).unwrap_or(0);
-                                    let extract_size = row.get("ExtractSize").and_then(|v| v.parse::<u64>().ok()).unwrap_or(file_size);
-                                    let rel_offset = row.get("FileOffset").and_then(|v| v.parse::<u64>().ok()).unwrap_or(0);
-                                    let abs_offset = if content_offset > 0 { content_offset + rel_offset } else { rel_offset };
-                                    let id = row.get("ID").and_then(|v| v.parse::<u32>().ok()).unwrap_or(i as u32);
+                                    let file_size = row
+                                        .get("FileSize")
+                                        .and_then(|v| v.parse::<u64>().ok())
+                                        .unwrap_or(0);
+                                    let extract_size = row
+                                        .get("ExtractSize")
+                                        .and_then(|v| v.parse::<u64>().ok())
+                                        .unwrap_or(file_size);
+                                    let rel_offset = row
+                                        .get("FileOffset")
+                                        .and_then(|v| v.parse::<u64>().ok())
+                                        .unwrap_or(0);
+                                    let abs_offset = if content_offset > 0 {
+                                        content_offset + rel_offset
+                                    } else {
+                                        rel_offset
+                                    };
+                                    let id = row
+                                        .get("ID")
+                                        .and_then(|v| v.parse::<u32>().ok())
+                                        .unwrap_or(i as u32);
 
                                     let is_compressed = extract_size > file_size;
 
@@ -94,40 +118,52 @@ impl CpkArchive {
                                     entries.push(entry);
                                 }
                             }
-                    }
-                }
-
-                // If TOC didn't populate entries, check if header table itself contains files
-                if entries.is_empty() {
-                    for (i, row) in hdr_table.rows.iter().enumerate() {
-                        if let Some(name) = row.get("FileName") {
-                            let dir_name = row.get("DirName").cloned();
-                            let file_size = row.get("FileSize").and_then(|v| v.parse::<u64>().ok()).unwrap_or(0);
-                            let extract_size = row.get("ExtractSize").and_then(|v| v.parse::<u64>().ok()).unwrap_or(file_size);
-                            let file_offset = row.get("FileOffset").and_then(|v| v.parse::<u64>().ok()).unwrap_or(0);
-                            let id = row.get("ID").and_then(|v| v.parse::<u32>().ok()).unwrap_or(i as u32);
-                            let is_compressed = extract_size > file_size;
-
-                            let entry = CpkEntry {
-                                id,
-                                name: name.clone(),
-                                dir_name,
-                                file_size,
-                                extract_size,
-                                file_offset,
-                                is_compressed,
-                            };
-                            file_map.insert(name.clone(), entries.len());
-                            entries.push(entry);
                         }
                     }
-                }
-            }
-            Err(e) => {
-                println!("hdr_table parse error: {:?}", e);
+
+                    // If TOC didn't populate entries, check if header table itself contains files
+                    if entries.is_empty() {
+                        for (i, row) in hdr_table.rows.iter().enumerate() {
+                            if let Some(name) = row.get("FileName") {
+                                let dir_name = row.get("DirName").cloned();
+                                let file_size = row
+                                    .get("FileSize")
+                                    .and_then(|v| v.parse::<u64>().ok())
+                                    .unwrap_or(0);
+                                let extract_size = row
+                                    .get("ExtractSize")
+                                    .and_then(|v| v.parse::<u64>().ok())
+                                    .unwrap_or(file_size);
+                                let file_offset = row
+                                    .get("FileOffset")
+                                    .and_then(|v| v.parse::<u64>().ok())
+                                    .unwrap_or(0);
+                                let id = row
+                                    .get("ID")
+                                    .and_then(|v| v.parse::<u32>().ok())
+                                    .unwrap_or(i as u32);
+                                let is_compressed = extract_size > file_size;
+
+                                let entry = CpkEntry {
+                                    id,
+                                    name: name.clone(),
+                                    dir_name,
+                                    file_size,
+                                    extract_size,
+                                    file_offset,
+                                    is_compressed,
+                                };
+                                file_map.insert(name.clone(), entries.len());
+                                entries.push(entry);
+                            }
+                        }
+                    }
+                },
+                Err(e) => {
+                    println!("hdr_table parse error: {:?}", e);
+                },
             }
         }
-    }
 
         // If no file entries were parsed from @UTF tables, keep root fallback
         if entries.is_empty() {
@@ -166,7 +202,9 @@ impl CpkArchive {
         if entry.is_compressed || (slice.len() >= 8 && &slice[0..8] == b"CRILAYLA") {
             return Err(ReError::ParseError {
                 context: "cpk_extract_slice",
-                details: format!("File `{file_name}` is CRILAYLA compressed, zero-copy slice not possible"),
+                details: format!(
+                    "File `{file_name}` is CRILAYLA compressed, zero-copy slice not possible"
+                ),
             });
         }
 
@@ -215,7 +253,8 @@ impl CpkArchive {
             let is_crilayla = data.starts_with(b"CRILAYLA");
             let file_size = data.len() as u64;
             let extract_size = if is_crilayla && data.len() >= 12 {
-                let uncompressed = u32::from_le_bytes(data[8..12].try_into().unwrap_or([0; 4])) as u64;
+                let uncompressed =
+                    u32::from_le_bytes(data[8..12].try_into().unwrap_or([0; 4])) as u64;
                 uncompressed + 0x100
             } else {
                 file_size
@@ -306,11 +345,7 @@ fn parse_utf_table(data: &[u8]) -> Result<UtfParsedTable> {
     let row_length = u16::from_be_bytes(data[24..26].try_into().unwrap()) as usize;
     let num_rows = u32::from_be_bytes(data[26..30].try_into().unwrap()) as usize;
 
-    let strings_pool = if strings_offset < data.len() {
-        &data[strings_offset..]
-    } else {
-        &[]
-    };
+    let strings_pool = if strings_offset < data.len() { &data[strings_offset..] } else { &[] };
 
     let mut cursor = 30;
     let mut columns = Vec::with_capacity(num_columns);
@@ -321,7 +356,8 @@ fn parse_utf_table(data: &[u8]) -> Result<UtfParsedTable> {
         }
         let flag = data[cursor];
         cursor += 1;
-        let name_str_offset = u32::from_be_bytes(data[cursor..cursor + 4].try_into().unwrap()) as usize;
+        let name_str_offset =
+            u32::from_be_bytes(data[cursor..cursor + 4].try_into().unwrap()) as usize;
         cursor += 4;
         let col_name = read_null_terminated_string(strings_pool, name_str_offset);
 
@@ -353,7 +389,8 @@ fn parse_utf_table(data: &[u8]) -> Result<UtfParsedTable> {
                 row_data.insert(col_name.clone(), val.clone());
             } else if (*flag & 0x30) != 0 || (*flag & 0x70) != 0 {
                 if col_cursor < row_slice.len() {
-                    let (val, read_bytes) = read_utf_value(&row_slice[col_cursor..], *type_id, strings_pool);
+                    let (val, read_bytes) =
+                        read_utf_value(&row_slice[col_cursor..], *type_id, strings_pool);
                     row_data.insert(col_name.clone(), val);
                     col_cursor += read_bytes;
                 }
@@ -382,41 +419,47 @@ fn read_utf_value(slice: &[u8], type_id: u8, strings_pool: &[u8]) -> (String, us
     match type_id {
         0 => (slice.first().copied().unwrap_or(0).to_string(), 1), // u8
         1 => (slice.first().map(|&b| b as i8).unwrap_or(0).to_string(), 1), // i8
-        2 => { // u16
+        2 => {
+            // u16
             if slice.len() >= 2 {
                 (u16::from_be_bytes(slice[0..2].try_into().unwrap()).to_string(), 2)
             } else {
                 ("0".into(), slice.len())
             }
-        }
-        4 => { // u32
+        },
+        4 => {
+            // u32
             if slice.len() >= 4 {
                 (u32::from_be_bytes(slice[0..4].try_into().unwrap()).to_string(), 4)
             } else {
                 ("0".into(), slice.len())
             }
-        }
-        6 => { // u64
+        },
+        6 => {
+            // u64
             if slice.len() >= 8 {
                 (u64::from_be_bytes(slice[0..8].try_into().unwrap()).to_string(), 8)
             } else {
                 ("0".into(), slice.len())
             }
-        }
-        0x0A => { // String (u32 offset into string pool)
+        },
+        0x0A => {
+            // String (u32 offset into string pool)
             if slice.len() >= 4 {
                 let off = u32::from_be_bytes(slice[0..4].try_into().unwrap()) as usize;
                 (read_null_terminated_string(strings_pool, off), 4)
             } else {
                 (String::new(), slice.len())
             }
-        }
-        0x0B => { // Data blob (u32 offset + u32 size)
+        },
+        0x0B => {
+            // Data blob (u32 offset + u32 size)
             (String::new(), 8.min(slice.len()))
-        }
-        _ => { // Fallback 4 bytes
+        },
+        _ => {
+            // Fallback 4 bytes
             ("0".into(), 4.min(slice.len()))
-        }
+        },
     }
 }
 

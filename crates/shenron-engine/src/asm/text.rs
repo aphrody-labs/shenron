@@ -27,8 +27,12 @@ pub fn to_line(insn: &Insn) -> String {
         Insn::MovRegImm8(r, imm) => format!("mov {}, 0x{imm:x}", reg_name(*r, Size::B)),
         Insn::MovRegImm32(r, imm) => format!("mov {}, 0x{imm:x}", reg_name(*r, Size::D)),
         Insn::MovRegImm64(r, imm) => format!("mov {}, 0x{imm:x}", reg_name(*r, Size::Q)),
-        Insn::MovRR(sz, dst, src) => format!("mov {}, {}", reg_name(*dst, *sz), reg_name(*src, *sz)),
-        Insn::MovRRm(sz, dst, src) => format!("mov {}, {}", reg_name(*src, *sz), reg_name(*dst, *sz)),
+        Insn::MovRR(sz, dst, src) => {
+            format!("mov {}, {}", reg_name(*dst, *sz), reg_name(*src, *sz))
+        },
+        Insn::MovRRm(sz, dst, src) => {
+            format!("mov {}, {}", reg_name(*src, *sz), reg_name(*dst, *sz))
+        },
         Insn::Load(sz, dst, mem) => format!("mov {}, {}", reg_name(*dst, *sz), format_mem(mem)),
         Insn::Store(sz, mem, src) => format!("mov {}, {}", format_mem(mem), reg_name(*src, *sz)),
         Insn::StoreImm32(_sz, mem, imm) => format!("mov {}, 0x{imm:x}", format_mem(mem)),
@@ -36,31 +40,39 @@ pub fn to_line(insn: &Insn) -> String {
         Insn::AluRR(op, sz, dst, src) => {
             let op_str = alu_name(*op);
             format!("{op_str} {}, {}", reg_name(*dst, *sz), reg_name(*src, *sz))
-        }
+        },
         Insn::AluRRm(op, sz, dst, src) => {
             let op_str = alu_name(*op);
             format!("{op_str} {}, {}", reg_name(*src, *sz), reg_name(*dst, *sz))
-        }
+        },
         Insn::AluRM(op, sz, dst, mem) => {
             let op_str = alu_name(*op);
             format!("{op_str} {}, {}", reg_name(*dst, *sz), format_mem(mem))
-        }
+        },
         Insn::AluMR(op, sz, mem, src) => {
             let op_str = alu_name(*op);
             format!("{op_str} {}, {}", format_mem(mem), reg_name(*src, *sz))
-        }
+        },
         Insn::AluRI(op, sz, dst, imm, _) => {
             let op_str = alu_name(*op);
             format!("{op_str} {}, 0x{imm:x}", reg_name(*dst, *sz))
-        }
-        Insn::TestRR(sz, dst, src) => format!("test {}, {}", reg_name(*dst, *sz), reg_name(*src, *sz)),
+        },
+        Insn::TestRR(sz, dst, src) => {
+            format!("test {}, {}", reg_name(*dst, *sz), reg_name(*src, *sz))
+        },
         Insn::Shift(op, sz, r, imm) => {
             let op_str = shift_name(*op);
             format!("{op_str} {}, 0x{imm:x}", reg_name(*r, *sz))
-        }
-        Insn::MovzxR(sz, dst, src) => format!("movzx {}, {}", reg_name(*dst, Size::D), reg_name(*src, *sz)),
-        Insn::MovzxM(_sz, dst, mem) => format!("movzx {}, {}", reg_name(*dst, Size::D), format_mem(mem)),
-        Insn::Movsxd(dst, src) => format!("movsxd {}, {}", reg_name(*dst, Size::Q), reg_name(*src, Size::D)),
+        },
+        Insn::MovzxR(sz, dst, src) => {
+            format!("movzx {}, {}", reg_name(*dst, Size::D), reg_name(*src, *sz))
+        },
+        Insn::MovzxM(_sz, dst, mem) => {
+            format!("movzx {}, {}", reg_name(*dst, Size::D), format_mem(mem))
+        },
+        Insn::Movsxd(dst, src) => {
+            format!("movsxd {}, {}", reg_name(*dst, Size::Q), reg_name(*src, Size::D))
+        },
         Insn::Setcc(cond, r) => format!("set{} {}", cond_name(*cond), reg_name(*r, Size::B)),
         Insn::Un(op, sz, rm) => {
             let op_str = unop_name(*op);
@@ -68,7 +80,7 @@ pub fn to_line(insn: &Insn) -> String {
                 Rm::R(r) => format!("{op_str} {}", reg_name(*r, *sz)),
                 Rm::M(m) => format!("{op_str} {}", format_mem(m)),
             }
-        }
+        },
         Insn::Call(tgt) => format!("call 0x{tgt:x}"),
         Insn::Jmp(tgt) => format!("jmp 0x{tgt:x}"),
         Insn::JmpShort(disp) => format!("jmp.s {disp}"),
@@ -80,11 +92,11 @@ pub fn to_line(insn: &Insn) -> String {
                 XmmRm::X(x) => format!("{op_str} xmm{}, xmm{}", dst.0, x.0),
                 XmmRm::M(m) => format!("{op_str} xmm{}, {}", dst.0, format_mem(m)),
             }
-        }
+        },
         Insn::SseStore(op, mem, src) => {
             let op_str = sse_name(*op);
             format!("{op_str} {}, xmm{}", format_mem(mem), src.0)
-        }
+        },
     }
 }
 
@@ -113,23 +125,23 @@ pub fn parse_insn(line: &str) -> Result<Insn, ParseError> {
         "ret" => {
             let imm = parse_imm(operands)? as u16;
             Ok(Insn::RetImm(imm))
-        }
+        },
         "push" => {
             let r = parse_reg(operands)?;
             Ok(Insn::Push(r, false))
-        }
+        },
         "pop" => {
             let r = parse_reg(operands)?;
             Ok(Insn::Pop(r, false))
-        }
+        },
         "call" => {
             let tgt = parse_imm(operands)? as u64;
             Ok(Insn::Call(tgt))
-        }
+        },
         "jmp" => {
             let tgt = parse_imm(operands)? as u64;
             Ok(Insn::Jmp(tgt))
-        }
+        },
         "mov" => {
             let ops: Vec<&str> = operands.split(',').map(|s| s.trim()).collect();
             if ops.len() != 2 {
@@ -139,7 +151,9 @@ pub fn parse_insn(line: &str) -> Result<Insn, ParseError> {
                 if let Ok(imm) = parse_imm(ops[1]) {
                     match sz {
                         Size::B => Ok(Insn::MovRegImm8(dst_r, imm as u8)),
-                        Size::Q if (imm as u64) > u32::MAX as u64 => Ok(Insn::MovRegImm64(dst_r, imm as u64)),
+                        Size::Q if (imm as u64) > u32::MAX as u64 => {
+                            Ok(Insn::MovRegImm64(dst_r, imm as u64))
+                        },
                         _ => Ok(Insn::MovRegImm32(dst_r, imm as u32)),
                     }
                 } else if let Ok((src_r, _)) = parse_reg_size(ops[1]) {
@@ -153,7 +167,7 @@ pub fn parse_insn(line: &str) -> Result<Insn, ParseError> {
                 let (src_r, sz) = parse_reg_size(ops[1])?;
                 Ok(Insn::Store(sz, mem, src_r))
             }
-        }
+        },
         _ => Err(ParseError(format!("Unrecognized instruction mnemonic: {mnemonic}"))),
     }
 }
@@ -176,10 +190,10 @@ fn parse_reg_size(s: &str) -> Result<(Reg, Size), ParseError> {
     let size = match lower.as_str() {
         "al" | "cl" | "dl" | "bl" | "spl" | "bpl" | "sil" | "dil" | "r8b" | "r9b" | "r10b"
         | "r11b" | "r12b" | "r13b" | "r14b" | "r15b" | "ah" | "ch" | "dh" | "bh" => Size::B,
-        "ax" | "cx" | "dx" | "bx" | "sp" | "bp" | "si" | "di" | "r8w" | "r9w" | "r10w"
-        | "r11w" | "r12w" | "r13w" | "r14w" | "r15w" => Size::W,
-        "eax" | "ecx" | "edx" | "ebx" | "esp" | "ebp" | "esi" | "edi" | "r8d" | "r9d"
-        | "r10d" | "r11d" | "r12d" | "r13d" | "r14d" | "r15d" => Size::D,
+        "ax" | "cx" | "dx" | "bx" | "sp" | "bp" | "si" | "di" | "r8w" | "r9w" | "r10w" | "r11w"
+        | "r12w" | "r13w" | "r14w" | "r15w" => Size::W,
+        "eax" | "ecx" | "edx" | "ebx" | "esp" | "ebp" | "esi" | "edi" | "r8d" | "r9d" | "r10d"
+        | "r11d" | "r12d" | "r13d" | "r14d" | "r15d" => Size::D,
         _ => Size::Q,
     };
     Ok((reg, size))
@@ -211,7 +225,6 @@ fn parse_reg(s: &str) -> Result<Reg, ParseError> {
     }
 }
 
-
 fn parse_imm(s: &str) -> Result<i64, ParseError> {
     let clean = s.trim().trim_start_matches('+');
     if let Some(hex) = clean.strip_prefix("0x").or_else(|| clean.strip_prefix("0X")) {
@@ -233,11 +246,7 @@ fn parse_mem(s: &str) -> Result<Mem, ParseError> {
     }
 
     let base_reg = parse_reg(parts[0])?;
-    let disp = if parts.len() > 1 {
-        parse_imm(parts[1])? as i32
-    } else {
-        0
-    };
+    let disp = if parts.len() > 1 { parse_imm(parts[1])? as i32 } else { 0 };
 
     Ok(Mem::base_disp(base_reg, disp))
 }
@@ -247,11 +256,7 @@ fn format_mem(m: &Mem) -> String {
         return format!("[rip + 0x{target:x}]");
     }
     let base_name = m.base.map_or("0".to_string(), |r| reg_name(r, Size::Q).to_string());
-    if m.disp != 0 {
-        format!("[{base_name} + 0x{:x}]", m.disp)
-    } else {
-        format!("[{base_name}]")
-    }
+    if m.disp != 0 { format!("[{base_name} + 0x{:x}]", m.disp) } else { format!("[{base_name}]") }
 }
 
 fn reg_name(r: Reg, sz: Size) -> &'static str {

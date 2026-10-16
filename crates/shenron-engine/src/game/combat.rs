@@ -6,8 +6,10 @@
 //! particle dynamics, beam clashes, and audio/haptics event dispatching.
 
 use super::beam_clash::{BeamClashResult, BeamClashState};
-use super::frame_data::{get_default_move_data, get_fighter_hurtbox, MoveFrameData, MoveKind, MovePhase};
-use super::roster::{get_fighter_def, FighterDefinition};
+use super::frame_data::{
+    MoveFrameData, MoveKind, MovePhase, get_default_move_data, get_fighter_hurtbox,
+};
+use super::roster::{FighterDefinition, get_fighter_def};
 use super::types::{ArenaId, AudioEvent, FighterId, GameMode, HapticEvent, Rect};
 use serde::{Deserialize, Serialize};
 
@@ -242,19 +244,29 @@ impl DragonPixelEngineCore {
                     self.spawn_clash_particles(clash_point.0, clash_point.1);
                     self.haptic_events.push(HapticEvent::ClashPulse);
                     self.beam_clash = Some(clash);
-                }
+                },
                 BeamClashResult::Player1Win { clash_point, damage_to_p2 } => {
-                    self.spawn_explosion_particles(clash_point.0, clash_point.1, [0.2, 0.7, 1.0, 1.0], 50);
+                    self.spawn_explosion_particles(
+                        clash_point.0,
+                        clash_point.1,
+                        [0.2, 0.7, 1.0, 1.0],
+                        50,
+                    );
                     self.apply_damage(false, damage_to_p2, 45, [18.0, -8.0]);
                     self.p1.state = CombatState::Idle;
                     self.p2.state = CombatState::KnockedDown;
-                }
+                },
                 BeamClashResult::Player2Win { clash_point, damage_to_p1 } => {
-                    self.spawn_explosion_particles(clash_point.0, clash_point.1, [0.8, 0.3, 1.0, 1.0], 50);
+                    self.spawn_explosion_particles(
+                        clash_point.0,
+                        clash_point.1,
+                        [0.8, 0.3, 1.0, 1.0],
+                        50,
+                    );
                     self.apply_damage(true, damage_to_p1, 45, [-18.0, -8.0]);
                     self.p2.state = CombatState::Idle;
                     self.p1.state = CombatState::KnockedDown;
-                }
+                },
             }
             return;
         }
@@ -286,11 +298,8 @@ impl DragonPixelEngineCore {
     }
 
     fn update_fighter(&mut self, is_p1: &mut bool, input: FighterInput) {
-        let (fighter, other_x) = if *is_p1 {
-            (&mut self.p1, self.p2.x)
-        } else {
-            (&mut self.p2, self.p1.x)
-        };
+        let (fighter, other_x) =
+            if *is_p1 { (&mut self.p1, self.p2.x) } else { (&mut self.p2, self.p1.x) };
 
         // Auto-face opponent when neutral
         if fighter.state == CombatState::Idle || fighter.state == CombatState::Walking {
@@ -324,20 +333,30 @@ impl DragonPixelEngineCore {
             } else if input.ultimate && fighter.ki >= 100.0 {
                 fighter.ki -= 100.0;
                 fighter.state = CombatState::Attacking;
-                fighter.current_move = Some(get_default_move_data(MoveKind::UltimateBeam, fighter.def.damage_multiplier));
+                fighter.current_move = Some(get_default_move_data(
+                    MoveKind::UltimateBeam,
+                    fighter.def.damage_multiplier,
+                ));
                 fighter.move_frame = 0;
             } else if input.special && fighter.ki >= 30.0 {
                 fighter.ki -= 30.0;
                 fighter.state = CombatState::Attacking;
-                fighter.current_move = Some(get_default_move_data(MoveKind::BeamSpecial, fighter.def.damage_multiplier));
+                fighter.current_move = Some(get_default_move_data(
+                    MoveKind::BeamSpecial,
+                    fighter.def.damage_multiplier,
+                ));
                 fighter.move_frame = 0;
             } else if input.heavy_attack {
                 fighter.state = CombatState::Attacking;
-                fighter.current_move = Some(get_default_move_data(MoveKind::HeavyPunch, fighter.def.damage_multiplier));
+                fighter.current_move = Some(get_default_move_data(
+                    MoveKind::HeavyPunch,
+                    fighter.def.damage_multiplier,
+                ));
                 fighter.move_frame = 0;
             } else if input.light_attack {
                 fighter.state = CombatState::Attacking;
-                fighter.current_move = Some(get_default_move_data(MoveKind::LightJab, fighter.def.damage_multiplier));
+                fighter.current_move =
+                    Some(get_default_move_data(MoveKind::LightJab, fighter.def.damage_multiplier));
                 fighter.move_frame = 0;
             } else if input.up && fighter.is_grounded {
                 fighter.vy = -fighter.def.jump_power;
@@ -552,10 +571,7 @@ mod tests {
 
         let initial_p1_x = engine.p1.x;
         // Step with forward movement
-        engine.tick(
-            FighterInput { right: true, ..Default::default() },
-            FighterInput::default(),
-        );
+        engine.tick(FighterInput { right: true, ..Default::default() }, FighterInput::default());
 
         assert!(engine.p1.x > initial_p1_x);
         assert_eq!(engine.frame_count, 1);

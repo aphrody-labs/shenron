@@ -88,7 +88,9 @@ impl TextLayout {
                     }
 
                     let advance = Self::char_advance(ch, config.font_size) + config.letter_spacing;
-                    if cursor_x + advance > start_pos.x + config.max_extent && cursor_x > start_pos.x {
+                    if cursor_x + advance > start_pos.x + config.max_extent
+                        && cursor_x > start_pos.x
+                    {
                         // Word/character wrap to next line
                         cursor_x = start_pos.x;
                         cursor_y += line_step;
@@ -102,7 +104,7 @@ impl TextLayout {
 
                     cursor_x += advance;
                 }
-            }
+            },
             WritingDirection::VerticalRtl => {
                 let mut cursor_x = start_pos.x;
                 let mut cursor_y = start_pos.y;
@@ -115,7 +117,9 @@ impl TextLayout {
                     }
 
                     let advance = config.font_size + config.letter_spacing;
-                    if cursor_y + advance > start_pos.y + config.max_extent && cursor_y > start_pos.y {
+                    if cursor_y + advance > start_pos.y + config.max_extent
+                        && cursor_y > start_pos.y
+                    {
                         // Wrap to next vertical column to the left
                         cursor_y = start_pos.y;
                         cursor_x -= line_step;
@@ -129,7 +133,7 @@ impl TextLayout {
 
                     cursor_y += advance;
                 }
-            }
+            },
         }
 
         glyphs
@@ -142,15 +146,12 @@ mod tests {
 
     #[test]
     fn test_horizontal_wrapping() {
-        let config = TextLayoutConfig {
-            font_size: 20.0,
-            max_extent: 100.0,
-            ..Default::default()
-        };
+        let config = TextLayoutConfig { font_size: 20.0, max_extent: 100.0, ..Default::default() };
         let glyphs = TextLayout::layout("Hello World from Shenron", Vec2::ZERO, &config);
         assert!(!glyphs.is_empty());
         // Verify multiline wrapping occurred
-        let y_coords: std::collections::HashSet<i32> = glyphs.iter().map(|g| g.position.y as i32).collect();
+        let y_coords: std::collections::HashSet<i32> =
+            glyphs.iter().map(|g| g.position.y as i32).collect();
         assert!(y_coords.len() > 1);
     }
 

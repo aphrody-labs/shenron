@@ -109,11 +109,19 @@ impl MeshletBuilder {
 
                 // Check if adding this triangle exceeds max vertices
                 let mut needed = 0;
-                if !local_vertices.contains(&i0) { needed += 1; }
-                if !local_vertices.contains(&i1) { needed += 1; }
-                if !local_vertices.contains(&i2) { needed += 1; }
+                if !local_vertices.contains(&i0) {
+                    needed += 1;
+                }
+                if !local_vertices.contains(&i1) {
+                    needed += 1;
+                }
+                if !local_vertices.contains(&i2) {
+                    needed += 1;
+                }
 
-                if local_vertices.len() + needed > MESHLET_MAX_VERTICES && !local_vertices.is_empty() {
+                if local_vertices.len() + needed > MESHLET_MAX_VERTICES
+                    && !local_vertices.is_empty()
+                {
                     break;
                 }
 

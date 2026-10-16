@@ -122,12 +122,6 @@ impl BeamClashState {
 /// Résultat d'un affrontement de Kikōha.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum BeamClashResult {
-    PlayerWon {
-        damage_to_enemy: f32,
-        clash_point: (f32, f32),
-    },
-    EnemyWon {
-        damage_to_player: f32,
-        clash_point: (f32, f32),
-    },
+    PlayerWon { damage_to_enemy: f32, clash_point: (f32, f32) },
+    EnemyWon { damage_to_player: f32, clash_point: (f32, f32) },
 }

@@ -5,8 +5,8 @@
 //! Powered by `rayon` with explicit dependency tracking, synchronization barriers,
 //! and lock-free thread notification primitives.
 
-use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 
 /// A handle to an asynchronously scheduled task.
 #[derive(Clone)]
@@ -18,9 +18,7 @@ impl JobHandle {
     /// Creates a new unfinished job handle.
     #[must_use]
     pub fn new() -> Self {
-        Self {
-            completed: Arc::new(AtomicBool::new(false)),
-        }
+        Self { completed: Arc::new(AtomicBool::new(false)) }
     }
 
     /// Checks if the job has finished executing.
@@ -82,11 +80,7 @@ impl JobGraph {
         F: Fn() + 'static + Send + Sync,
     {
         let id = self.nodes.len();
-        self.nodes.push(JobNode {
-            id,
-            dependencies: Vec::new(),
-            task: Box::new(task),
-        });
+        self.nodes.push(JobNode { id, dependencies: Vec::new(), task: Box::new(task) });
         id
     }
 
@@ -96,11 +90,7 @@ impl JobGraph {
         F: Fn() + 'static + Send + Sync,
     {
         let id = self.nodes.len();
-        self.nodes.push(JobNode {
-            id,
-            dependencies: vec![depends_on],
-            task: Box::new(task),
-        });
+        self.nodes.push(JobNode { id, dependencies: vec![depends_on], task: Box::new(task) });
         id
     }
 
@@ -110,19 +100,14 @@ impl JobGraph {
             return;
         }
 
-        let handles: Vec<JobHandle> = (0..self.nodes.len())
-            .map(|_| JobHandle::new())
-            .collect();
+        let handles: Vec<JobHandle> = (0..self.nodes.len()).map(|_| JobHandle::new()).collect();
 
         rayon::scope(|s| {
             for (idx, node) in self.nodes.iter().enumerate() {
                 let node_task = &node.task;
                 let handle = handles[idx].clone();
-                let deps: Vec<JobHandle> = node
-                    .dependencies
-                    .iter()
-                    .map(|&dep_idx| handles[dep_idx].clone())
-                    .collect();
+                let deps: Vec<JobHandle> =
+                    node.dependencies.iter().map(|&dep_idx| handles[dep_idx].clone()).collect();
 
                 s.spawn(move |_| {
                     for dep in deps {
@@ -146,10 +131,7 @@ impl JobBarrier {
     /// Creates a new barrier for `target` participants.
     #[must_use]
     pub fn new(target: usize) -> Self {
-        Self {
-            counter: Arc::new(AtomicUsize::new(0)),
-            target,
-        }
+        Self { counter: Arc::new(AtomicUsize::new(0)), target }
     }
 
     /// Increments the barrier count and waits until all participants have arrived.

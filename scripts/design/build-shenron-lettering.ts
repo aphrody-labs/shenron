@@ -98,8 +98,7 @@ json.dump({'glyphs':details,'unitsPerEm':1000,'capHeight':800,'ascent':850,'desc
 export async function buildLettering(output: string) {
   const child = Bun.spawn(
     [
-      process.execPath,
-      "uv",
+      ...(Bun.which("uv") ? [Bun.which("uv")!] : [process.execPath, "uv"]),
       "run",
       "--quiet",
       "--no-project",

@@ -50,10 +50,7 @@ impl CharacterMoveset {
             moves.push(fd);
         }
 
-        Self {
-            character_code: character_code.to_string(),
-            moves,
-        }
+        Self { character_code: character_code.to_string(), moves }
     }
 
     /// Finds a move by its ID.

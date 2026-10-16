@@ -4,13 +4,13 @@
 //! Provides process discovery, memory map inspection (`/proc/[pid]/maps`),
 //! arbitrary virtual memory reading (`/proc/[pid]/mem`), and AOB pattern scanning.
 
+use serde::{Deserialize, Serialize};
 use std::fs::{self, File};
 use std::io::{Read, Seek, SeekFrom};
 use std::path::Path;
-use serde::{Deserialize, Serialize};
 
-use crate::error::{ReError, Result};
 use super::aob::AobPattern;
+use crate::error::{ReError, Result};
 
 /// A mapped virtual memory region of a target process.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -101,11 +101,9 @@ impl WineProcessMemory {
     /// Attaches to a process PID and parses its virtual memory mapping.
     pub fn attach(pid: u32, process_name: &str) -> Result<Self> {
         let maps_path = format!("/proc/{pid}/maps");
-        let content = fs::read_to_string(&maps_path).map_err(|e| {
-            ReError::ParseError {
-                context: "process_attach",
-                details: format!("Failed to read {maps_path}: {e}"),
-            }
+        let content = fs::read_to_string(&maps_path).map_err(|e| ReError::ParseError {
+            context: "process_attach",
+            details: format!("Failed to read {maps_path}: {e}"),
         })?;
 
         let mut regions = Vec::new();
@@ -128,12 +126,7 @@ impl WineProcessMemory {
             base_address = regions[0].start;
         }
 
-        Ok(Self {
-            pid,
-            process_name: process_name.to_string(),
-            base_address,
-            regions,
-        })
+        Ok(Self { pid, process_name: process_name.to_string(), base_address, regions })
     }
 
     /// Reads `len` bytes from virtual memory at `address`.
@@ -238,15 +231,7 @@ fn parse_maps_line(line: &str) -> Option<MemoryRegion> {
     let is_writable = perms.contains('w');
     let is_executable = perms.contains('x');
 
-    Some(MemoryRegion {
-        start,
-        end,
-        is_readable,
-        is_writable,
-        is_executable,
-        offset,
-        pathname,
-    })
+    Some(MemoryRegion { start, end, is_readable, is_writable, is_executable, offset, pathname })
 }
 
 #[cfg(test)]

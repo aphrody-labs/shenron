@@ -150,4 +150,3 @@ mod tests {
         assert_eq!(parsed.skills[707].id, 1707);
     }
 }
-

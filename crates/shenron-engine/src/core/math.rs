@@ -5,9 +5,7 @@
 //! Aligned to 16-byte boundaries for direct SIMD saturation (SSE/AVX/NEON)
 //! and zero-overhead GPU buffer uploads.
 
-pub use glam::{
-    Affine3A, EulerRot, Mat3, Mat4, Quat, Vec2, Vec3, Vec3A, Vec4,
-};
+pub use glam::{Affine3A, EulerRot, Mat3, Mat4, Quat, Vec2, Vec3, Vec3A, Vec4};
 
 /// 3D Axis-Aligned Bounding Box with 16-byte aligned SIMD extrema.
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -27,10 +25,8 @@ impl Default for Aabb {
 
 impl Aabb {
     /// An empty, inverted bounding box suitable for expansion.
-    pub const EMPTY: Self = Self {
-        min: Vec3A::splat(f32::INFINITY),
-        max: Vec3A::splat(f32::NEG_INFINITY),
-    };
+    pub const EMPTY: Self =
+        Self { min: Vec3A::splat(f32::INFINITY), max: Vec3A::splat(f32::NEG_INFINITY) };
 
     /// Creates a new AABB from minimum and maximum extents.
     #[inline]
@@ -43,10 +39,7 @@ impl Aabb {
     #[inline]
     #[must_use]
     pub fn from_center_half_size(center: Vec3A, half_size: Vec3A) -> Self {
-        Self {
-            min: center - half_size,
-            max: center + half_size,
-        }
+        Self { min: center - half_size, max: center + half_size }
     }
 
     /// Computes the center of the bounding box.
@@ -87,10 +80,7 @@ impl Aabb {
     /// Expands this bounding box to include another AABB.
     #[inline]
     pub fn union(&self, other: &Self) -> Self {
-        Self {
-            min: self.min.min(other.min),
-            max: self.max.max(other.max),
-        }
+        Self { min: self.min.min(other.min), max: self.max.max(other.max) }
     }
 
     /// Checks if a 3D point is contained within the bounding box.
@@ -124,10 +114,7 @@ impl Aabb {
         let z = m.z_axis.abs() * half_size.z;
         let new_half_size = x + y + z;
 
-        Self {
-            min: center - new_half_size,
-            max: center + new_half_size,
-        }
+        Self { min: center - new_half_size, max: center + new_half_size }
     }
 }
 
@@ -147,11 +134,7 @@ impl Sphere {
     #[inline]
     #[must_use]
     pub fn new(center: Vec3A, radius: f32) -> Self {
-        Self {
-            center,
-            radius,
-            _pad: [0.0; 3],
-        }
+        Self { center, radius, _pad: [0.0; 3] }
     }
 
     /// Checks if a 3D point is inside the sphere.
@@ -198,17 +181,9 @@ impl Plane {
         let len = normal.length();
         if len > 1e-6 {
             let inv = 1.0 / len;
-            Self {
-                normal: normal * inv,
-                distance: distance * inv,
-                _pad: [0.0; 3],
-            }
+            Self { normal: normal * inv, distance: distance * inv, _pad: [0.0; 3] }
         } else {
-            Self {
-                normal: Vec3A::Y,
-                distance,
-                _pad: [0.0; 3],
-            }
+            Self { normal: Vec3A::Y, distance, _pad: [0.0; 3] }
         }
     }
 
@@ -252,9 +227,7 @@ impl Frustum {
         // Far plane: row3 - row2
         let far = row3 - row2;
 
-        let extract = |v: Vec4| -> Plane {
-            Plane::new(Vec3A::new(v.x, v.y, v.z), v.w)
-        };
+        let extract = |v: Vec4| -> Plane { Plane::new(Vec3A::new(v.x, v.y, v.z), v.w) };
 
         Self {
             planes: [
@@ -322,11 +295,7 @@ impl Ray {
             if dir.y != 0.0 { 1.0 / dir.y } else { f32::INFINITY },
             if dir.z != 0.0 { 1.0 / dir.z } else { f32::INFINITY },
         );
-        Self {
-            origin,
-            direction: dir,
-            inv_direction,
-        }
+        Self { origin, direction: dir, inv_direction }
     }
 
     /// Computes intersection distance `t` with an AABB using the branchless slab test.
@@ -345,11 +314,7 @@ impl Ray {
         let tmin = tmin_v.x.max(tmin_v.y).max(tmin_v.z);
         let tmax = tmax_v.x.min(tmax_v.y).min(tmax_v.z);
 
-        if tmax >= tmin && tmax >= 0.0 {
-            Some(if tmin < 0.0 { 0.0 } else { tmin })
-        } else {
-            None
-        }
+        if tmax >= tmin && tmax >= 0.0 { Some(if tmin < 0.0 { 0.0 } else { tmin }) } else { None }
     }
 
     /// Computes intersection with a sphere.
@@ -382,12 +347,7 @@ impl Ray {
     ///
     /// Returns `Some((t, u, v))` where `t` is distance, and `(u, v)` are barycentrics.
     #[must_use]
-    pub fn intersect_triangle(
-        &self,
-        v0: Vec3A,
-        v1: Vec3A,
-        v2: Vec3A,
-    ) -> Option<(f32, f32, f32)> {
+    pub fn intersect_triangle(&self, v0: Vec3A, v1: Vec3A, v2: Vec3A) -> Option<(f32, f32, f32)> {
         const EPSILON: f32 = 1e-7;
         let edge1 = v1 - v0;
         let edge2 = v2 - v0;
@@ -412,11 +372,7 @@ impl Ray {
         }
 
         let t = f * edge2.dot(q);
-        if t > EPSILON {
-            Some((t, u, v))
-        } else {
-            None
-        }
+        if t > EPSILON { Some((t, u, v)) } else { None }
     }
 }
 
@@ -433,10 +389,7 @@ pub fn pack_octahedral_normal(normal: Vec3A) -> [i16; 2] {
         ox = (1.0 - oy.abs()) * if ox >= 0.0 { 1.0 } else { -1.0 };
         oy = (1.0 - n.x.abs()) * if oy >= 0.0 { 1.0 } else { -1.0 };
     }
-    [
-        (ox.clamp(-1.0, 1.0) * 32767.0) as i16,
-        (oy.clamp(-1.0, 1.0) * 32767.0) as i16,
-    ]
+    [(ox.clamp(-1.0, 1.0) * 32767.0) as i16, (oy.clamp(-1.0, 1.0) * 32767.0) as i16]
 }
 
 /// Unpacks a 32-bit octahedrally encoded normal back into a normalized `Vec3A`.

@@ -5,7 +5,7 @@
 //! Provides zero-allocation scratch memory per frame, handle-based generational
 //! pools, and GPU-aligned staging ring buffers.
 
-use std::alloc::{alloc, dealloc, Layout};
+use std::alloc::{Layout, alloc, dealloc};
 use std::cell::UnsafeCell;
 use std::marker::PhantomData;
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -36,11 +36,7 @@ impl FrameArena {
         let memory = unsafe { alloc(layout) };
         assert!(!memory.is_null(), "Failed to allocate FrameArena memory");
 
-        Self {
-            memory,
-            capacity,
-            offset: AtomicUsize::new(0),
-        }
+        Self { memory, capacity, offset: AtomicUsize::new(0) }
     }
 
     /// Resets the bump pointer to zero.
@@ -131,11 +127,7 @@ impl<T> PoolHandle<T> {
     #[inline]
     #[must_use]
     pub fn new(index: u32, generation: u32) -> Self {
-        Self {
-            index,
-            generation,
-            _marker: PhantomData,
-        }
+        Self { index, generation, _marker: PhantomData }
     }
 }
 
@@ -161,11 +153,7 @@ impl<T> PoolAllocator<T> {
     /// Creates a new empty pool allocator.
     #[must_use]
     pub fn new() -> Self {
-        Self {
-            slots: Vec::new(),
-            free_head: None,
-            active_count: 0,
-        }
+        Self { slots: Vec::new(), free_head: None, active_count: 0 }
     }
 
     /// Allocates a value in the pool and returns its generational handle.
@@ -179,7 +167,7 @@ impl<T> PoolAllocator<T> {
                     self.free_head = *next_free;
                     *slot = Slot::Occupied { value, generation: gen_val };
                     PoolHandle::new(index, gen_val)
-                }
+                },
                 Slot::Occupied { .. } => unreachable!("free_head pointed to occupied slot"),
             }
         } else {
@@ -216,19 +204,12 @@ impl<T> PoolAllocator<T> {
                 let next_gen = generation.wrapping_add(1);
                 let old_slot = std::mem::replace(
                     slot,
-                    Slot::Free {
-                        next_free: self.free_head,
-                        generation: next_gen,
-                    },
+                    Slot::Free { next_free: self.free_head, generation: next_gen },
                 );
                 self.free_head = Some(handle.index);
                 self.active_count -= 1;
-                if let Slot::Occupied { value, .. } = old_slot {
-                    Some(value)
-                } else {
-                    None
-                }
-            }
+                if let Slot::Occupied { value, .. } = old_slot { Some(value) } else { None }
+            },
             _ => None,
         }
     }
@@ -268,12 +249,7 @@ impl<T: Copy + Default> StagingRingBuffer<T> {
         for _ in 0..capacity {
             buffer.push(UnsafeCell::new(T::default()));
         }
-        Self {
-            buffer,
-            capacity,
-            head: AtomicUsize::new(0),
-            tail: AtomicUsize::new(0),
-        }
+        Self { buffer, capacity, head: AtomicUsize::new(0), tail: AtomicUsize::new(0) }
     }
 
     /// Pushes an item into the ring buffer. Returns false if the buffer is full.

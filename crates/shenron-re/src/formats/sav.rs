@@ -4,8 +4,8 @@
 //! Provides inspection of Xenoverse 2 save containers, player Create-a-Character (CaC)
 //! rosters, level, attribute allocations, Zeni, and TP Medals.
 
-use serde::{Deserialize, Serialize};
 use crate::error::{ReError, Result};
+use serde::{Deserialize, Serialize};
 
 /// Encrypted container magic: `0x4C018948`.
 pub const ENCRYPTED_SAV_SIGNATURE: u32 = 0x4C018948;
@@ -67,10 +67,7 @@ impl Dxbv2Save {
     /// Parse a decrypted DBXV2 savegame body (beginning with `#SAV`).
     pub fn parse_decrypted(data: &[u8]) -> Result<Self> {
         if data.len() < 0x20000 {
-            return Err(ReError::BufferTooSmall {
-                required: 0x20000,
-                available: data.len(),
-            });
+            return Err(ReError::BufferTooSmall { required: 0x20000, available: data.len() });
         }
 
         if data[0..4] != DECRYPTED_SAV_MAGIC {
@@ -173,17 +170,9 @@ fn parse_cac_slot(slot: usize, buf: &[u8]) -> Option<Dxbv2Cac> {
 
 fn read_u32_le(data: &[u8], offset: usize) -> Result<u32> {
     if offset + 4 > data.len() {
-        return Err(ReError::BufferTooSmall {
-            required: offset + 4,
-            available: data.len(),
-        });
+        return Err(ReError::BufferTooSmall { required: offset + 4, available: data.len() });
     }
-    Ok(u32::from_le_bytes([
-        data[offset],
-        data[offset + 1],
-        data[offset + 2],
-        data[offset + 3],
-    ]))
+    Ok(u32::from_le_bytes([data[offset], data[offset + 1], data[offset + 2], data[offset + 3]]))
 }
 
 #[cfg(test)]

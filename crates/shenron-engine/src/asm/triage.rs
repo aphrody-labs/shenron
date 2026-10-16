@@ -139,7 +139,8 @@ pub fn triage_binary(bytes: &[u8]) -> TriageReport {
 
         let entry_point = if is_64 && bytes.len() >= 32 {
             Some(u64::from_le_bytes([
-                bytes[24], bytes[25], bytes[26], bytes[27], bytes[28], bytes[29], bytes[30], bytes[31],
+                bytes[24], bytes[25], bytes[26], bytes[27], bytes[28], bytes[29], bytes[30],
+                bytes[31],
             ]))
         } else if bytes.len() >= 28 {
             Some(u32::from_le_bytes([bytes[24], bytes[25], bytes[26], bytes[27]]) as u64)
@@ -160,11 +161,14 @@ pub fn triage_binary(bytes: &[u8]) -> TriageReport {
 
     // 2. Detect PE
     if bytes.len() >= 64 && bytes.starts_with(b"MZ") {
-        let e_lfanew = u32::from_le_bytes([bytes[0x3C], bytes[0x3D], bytes[0x3E], bytes[0x3F]]) as usize;
+        let e_lfanew =
+            u32::from_le_bytes([bytes[0x3C], bytes[0x3D], bytes[0x3E], bytes[0x3F]]) as usize;
         if e_lfanew + 24 <= bytes.len() && &bytes[e_lfanew..e_lfanew + 4] == b"PE\0\0" {
             let machine = u16::from_le_bytes([bytes[e_lfanew + 4], bytes[e_lfanew + 5]]);
-            let num_sections = u16::from_le_bytes([bytes[e_lfanew + 6], bytes[e_lfanew + 7]]) as usize;
-            let opt_header_size = u16::from_le_bytes([bytes[e_lfanew + 20], bytes[e_lfanew + 21]]) as usize;
+            let num_sections =
+                u16::from_le_bytes([bytes[e_lfanew + 6], bytes[e_lfanew + 7]]) as usize;
+            let opt_header_size =
+                u16::from_le_bytes([bytes[e_lfanew + 20], bytes[e_lfanew + 21]]) as usize;
 
             let opt_magic_offset = e_lfanew + 24;
             let is_64 = if opt_magic_offset + 2 <= bytes.len() {
@@ -195,9 +199,7 @@ pub fn triage_binary(bytes: &[u8]) -> TriageReport {
                     break;
                 }
                 let name_raw = &bytes[sec_offset..sec_offset + 8];
-                let name = String::from_utf8_lossy(name_raw)
-                    .trim_end_matches('\0')
-                    .to_string();
+                let name = String::from_utf8_lossy(name_raw).trim_end_matches('\0').to_string();
                 let vaddr = u32::from_le_bytes([
                     bytes[sec_offset + 12],
                     bytes[sec_offset + 13],
@@ -223,12 +225,7 @@ pub fn triage_binary(bytes: &[u8]) -> TriageReport {
                     0.0
                 };
 
-                sections.push(SectionInfo {
-                    name,
-                    vaddr,
-                    size: raw_size,
-                    entropy,
-                });
+                sections.push(SectionInfo { name, vaddr, size: raw_size, entropy });
 
                 sec_offset += 40;
             }

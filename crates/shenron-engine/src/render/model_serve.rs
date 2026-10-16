@@ -157,11 +157,7 @@ impl GpuCharacterModel {
                 let pos = prim.positions[i];
                 let norm = prim.normals.get(i).copied().unwrap_or([0.0, 1.0, 0.0]);
                 let uv = prim.uv.get(i).copied().unwrap_or([0.0, 0.0]);
-                vertices.push(ModelVertex {
-                    position: pos,
-                    normal: norm,
-                    uv,
-                });
+                vertices.push(ModelVertex { position: pos, normal: norm, uv });
             }
 
             let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
@@ -207,10 +203,7 @@ impl GpuCharacterModel {
             });
         }
 
-        Self {
-            name: model.name.clone(),
-            primitives: gpu_prims,
-        }
+        Self { name: model.name.clone(), primitives: gpu_prims }
     }
 }
 
@@ -287,7 +280,10 @@ impl ModelServePipeline {
 
         let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
             label: Some("model_pipeline_layout"),
-            bind_group_layouts: &[Some(&uniform_bind_group_layout), Some(&material_bind_group_layout)],
+            bind_group_layouts: &[
+                Some(&uniform_bind_group_layout),
+                Some(&material_bind_group_layout),
+            ],
             immediate_size: 0,
         });
 
@@ -331,21 +327,11 @@ impl ModelServePipeline {
             cache: None,
         });
 
-        Self {
-            pipeline,
-            uniform_buffer,
-            uniform_bind_group,
-            material_bind_group_layout,
-        }
+        Self { pipeline, uniform_buffer, uniform_bind_group, material_bind_group_layout }
     }
 
     /// Updates uniform buffer with camera and anime lighting state.
-    pub fn update_camera(
-        &self,
-        queue: &wgpu::Queue,
-        camera: &TurntableCamera,
-        model_matrix: Mat4,
-    ) {
+    pub fn update_camera(&self, queue: &wgpu::Queue, camera: &TurntableCamera, model_matrix: Mat4) {
         let uniforms = ModelUniforms {
             view_proj: camera.view_proj_matrix().to_cols_array_2d(),
             model: model_matrix.to_cols_array_2d(),
@@ -429,11 +415,7 @@ fn create_solid_texture(
         queue,
         &wgpu::TextureDescriptor {
             label: Some("solid_texture"),
-            size: wgpu::Extent3d {
-                width: 1,
-                height: 1,
-                depth_or_array_layers: 1,
-            },
+            size: wgpu::Extent3d { width: 1, height: 1, depth_or_array_layers: 1 },
             mip_level_count: 1,
             sample_count: 1,
             dimension: wgpu::TextureDimension::D2,

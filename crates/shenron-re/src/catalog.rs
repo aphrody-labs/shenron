@@ -4,8 +4,8 @@
 //! Provides metadata, engines, asset formats, canonical status, save locations,
 //! and discovery/detection methods across PC/Steam and Android filesystems.
 
-use std::path::PathBuf;
 use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
 
 /// Target gaming platform.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -581,25 +581,19 @@ pub fn find_game_by_steam_app_id(app_id: u32) -> Option<DragonBallGame> {
 
 /// Find a Dragon Ball game in the catalog by an Android package / application ID.
 pub fn find_game_by_android_package(package_id: &str) -> Option<DragonBallGame> {
-    get_dragon_ball_catalog().into_iter().find(|g| {
-        g.android_package_ids.iter().any(|pkg| pkg.eq_ignore_ascii_case(package_id))
-    })
+    get_dragon_ball_catalog()
+        .into_iter()
+        .find(|g| g.android_package_ids.iter().any(|pkg| pkg.eq_ignore_ascii_case(package_id)))
 }
 
 /// Filter games by platform (Steam, Android, etc.).
 pub fn filter_by_platform(platform: Platform) -> Vec<DragonBallGame> {
-    get_dragon_ball_catalog()
-        .into_iter()
-        .filter(|g| g.platforms.contains(&platform))
-        .collect()
+    get_dragon_ball_catalog().into_iter().filter(|g| g.platforms.contains(&platform)).collect()
 }
 
 /// Filter games by engine (Carrot2, Unreal Engine 4/5, Unity, Cocos2dx...).
 pub fn filter_by_engine(engine: &GameEngine) -> Vec<DragonBallGame> {
-    get_dragon_ball_catalog()
-        .into_iter()
-        .filter(|g| &g.engine == engine)
-        .collect()
+    get_dragon_ball_catalog().into_iter().filter(|g| &g.engine == engine).collect()
 }
 
 /// Search games matching a freeform query against id, title, developer, or package ids.
@@ -660,39 +654,43 @@ pub fn scan_installed_steam_games(libraries: &[PathBuf]) -> std::io::Result<Vec<
                     Err(_) => continue,
                 };
 
-                let app_id = match parse_vdf_key(&content, "appid").and_then(|v| v.parse::<u32>().ok()) {
-                    Some(id) => id,
-                    None => continue,
-                };
+                let app_id =
+                    match parse_vdf_key(&content, "appid").and_then(|v| v.parse::<u32>().ok()) {
+                        Some(id) => id,
+                        None => continue,
+                    };
 
                 let name = parse_vdf_key(&content, "name").unwrap_or_default();
                 let install_dir = parse_vdf_key(&content, "installdir").unwrap_or_default();
 
                 // Match by Steam AppID first, then by title
-                let matched_game = catalog.iter().find(|g| g.steam_app_id == Some(app_id)).cloned().or_else(|| {
-                    if name.to_ascii_lowercase().contains("dragon ball") {
-                        Some(make_game(
-                            &format!("steam_{app_id}"),
-                            &name,
-                            None,
-                            &[Platform::Steam, Platform::Windows],
-                            Some(app_id),
-                            &[],
-                            "Bandai Namco",
-                            "Bandai Namco Entertainment",
-                            None,
-                            GameEngine::Custom("Unknown".into()),
-                            None,
-                            &[],
-                            CANON_STATUS_DERIVED_GAME,
-                            &[],
-                            &[&install_dir],
-                            Some("Discovered via Steam app manifest scan"),
-                        ))
-                    } else {
-                        None
-                    }
-                });
+                let matched_game =
+                    catalog.iter().find(|g| g.steam_app_id == Some(app_id)).cloned().or_else(
+                        || {
+                            if name.to_ascii_lowercase().contains("dragon ball") {
+                                Some(make_game(
+                                    &format!("steam_{app_id}"),
+                                    &name,
+                                    None,
+                                    &[Platform::Steam, Platform::Windows],
+                                    Some(app_id),
+                                    &[],
+                                    "Bandai Namco",
+                                    "Bandai Namco Entertainment",
+                                    None,
+                                    GameEngine::Custom("Unknown".into()),
+                                    None,
+                                    &[],
+                                    CANON_STATUS_DERIVED_GAME,
+                                    &[],
+                                    &[&install_dir],
+                                    Some("Discovered via Steam app manifest scan"),
+                                ))
+                            } else {
+                                None
+                            }
+                        },
+                    );
 
                 if let Some(game) = matched_game {
                     let install_path = steamapps.join("common").join(&install_dir);
@@ -740,7 +738,8 @@ pub fn scan_installed_android_packages(roots: &[PathBuf]) -> std::io::Result<Vec
                 let dir_str = file_name.to_string_lossy();
 
                 for game in &catalog {
-                    if game.android_package_ids.iter().any(|pkg| pkg.eq_ignore_ascii_case(&dir_str)) {
+                    if game.android_package_ids.iter().any(|pkg| pkg.eq_ignore_ascii_case(&dir_str))
+                    {
                         let path = entry.path();
                         let is_installed = path.is_dir();
                         detected.push(DetectedGame {

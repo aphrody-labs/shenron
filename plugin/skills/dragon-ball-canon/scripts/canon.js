@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-unused-vars -- reviewed: legacy patterns, behavior preserved */
 // @bun
 // Généré par scripts/plugin/build-references.ts — ne pas éditer.
 // Sources : apps/site/src/lib/canon-engine.ts, scripts/plugin/src/canon.ts

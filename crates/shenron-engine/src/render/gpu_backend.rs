@@ -9,13 +9,13 @@
 //! - GPU adapter inspection reports and compute limits
 //! - Headless WGSL compute shader job execution
 
-use std::fmt;
 use serde::Serialize;
+use std::fmt;
 use wgpu::{
-    Adapter, Backends, CompositeAlphaMode, Device, DeviceDescriptor, Features,
-    Instance, InstanceDescriptor, Limits, MemoryHints,
-    PresentMode, Queue, RequestAdapterError, RequestAdapterOptions, RequestDeviceError,
-    SurfaceCapabilities, SurfaceColorSpace, SurfaceConfiguration, TextureFormat, TextureUsages,
+    Adapter, Backends, CompositeAlphaMode, Device, DeviceDescriptor, Features, Instance,
+    InstanceDescriptor, Limits, MemoryHints, PresentMode, Queue, RequestAdapterError,
+    RequestAdapterOptions, RequestDeviceError, SurfaceCapabilities, SurfaceColorSpace,
+    SurfaceConfiguration, TextureFormat, TextureUsages,
 };
 
 /// NVIDIA PCI Vendor ID for vendor identification.
@@ -86,7 +86,7 @@ pub async fn request_device(
         DeviceLimits::Adapter => adapter.limits(),
         DeviceLimits::DownlevelWithAdapterResolution => {
             Limits::downlevel_defaults().using_resolution(adapter.limits())
-        }
+        },
     };
 
     let descriptor = DeviceDescriptor {
@@ -149,7 +149,7 @@ pub fn surface_configuration(
             .or_else(|| capabilities.formats.first().copied()),
         SurfaceFormat::Require(preferred) => {
             capabilities.formats.iter().copied().find(|fmt| preferred.contains(fmt))
-        }
+        },
     }?;
 
     let present_mode = request
@@ -347,10 +347,7 @@ pub fn run_wgsl_compute(
     });
 
     device
-        .poll(wgpu::PollType::Wait {
-            submission_index: Some(submission),
-            timeout: None,
-        })
+        .poll(wgpu::PollType::Wait { submission_index: Some(submission), timeout: None })
         .map_err(|e| GpuBackendError::ExecutionError(e.to_string()))?;
 
     receiver

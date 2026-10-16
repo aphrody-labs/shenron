@@ -78,12 +78,7 @@ impl AssembledCharacterModel {
             }
         }
 
-        Self {
-            name: character_name.to_string(),
-            primitives,
-            textures,
-            skeleton: esk.cloned(),
-        }
+        Self { name: character_name.to_string(), primitives, textures, skeleton: esk.cloned() }
     }
 
     /// Total vertices in the assembled model.
@@ -259,9 +254,8 @@ impl AssembledCharacterModel {
         }
 
         // Build nodes referencing each mesh
-        let nodes: Vec<_> = (0..meshes.len())
-            .map(|i| json!({ "name": format!("Node_{i}"), "mesh": i }))
-            .collect();
+        let nodes: Vec<_> =
+            (0..meshes.len()).map(|i| json!({ "name": format!("Node_{i}"), "mesh": i })).collect();
         let scene_nodes: Vec<_> = (0..meshes.len()).collect();
 
         // Build glTF JSON object
@@ -361,7 +355,8 @@ mod tests {
         let esk_bytes = EskFile::create_mock();
         let esk = EskFile::parse(&esk_bytes).expect("parse ESK");
 
-        let assembled = AssembledCharacterModel::assemble("GOK", &emd, Some(&emb), Some(&esk), None);
+        let assembled =
+            AssembledCharacterModel::assemble("GOK", &emd, Some(&emb), Some(&esk), None);
         assert_eq!(assembled.total_vertices(), 3);
         assert_eq!(assembled.total_triangles(), 1);
 

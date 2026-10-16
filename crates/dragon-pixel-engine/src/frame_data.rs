@@ -219,26 +219,11 @@ pub fn get_default_move_data(kind: MoveKind, power_mult: f32) -> MoveFrameData {
 /// Hurtbox standard d'un combattant selon sa posture.
 pub fn get_fighter_hurtbox(is_crouching: bool, is_airborne: bool) -> Hurtbox {
     if is_crouching {
-        Hurtbox {
-            offset_x: -18.0,
-            offset_y: -36.0,
-            width: 36.0,
-            height: 36.0,
-        }
+        Hurtbox { offset_x: -18.0, offset_y: -36.0, width: 36.0, height: 36.0 }
     } else if is_airborne {
-        Hurtbox {
-            offset_x: -16.0,
-            offset_y: -54.0,
-            width: 32.0,
-            height: 50.0,
-        }
+        Hurtbox { offset_x: -16.0, offset_y: -54.0, width: 32.0, height: 50.0 }
     } else {
-        Hurtbox {
-            offset_x: -18.0,
-            offset_y: -64.0,
-            width: 36.0,
-            height: 64.0,
-        }
+        Hurtbox { offset_x: -18.0, offset_y: -64.0, width: 36.0, height: 64.0 }
     }
 }
 

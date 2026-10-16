@@ -98,11 +98,7 @@ impl WebGpuRenderPacket {
             shake_offset_y: 0.0,
         };
 
-        let arena = ArenaRenderData {
-            arena_id: core.arena,
-            width: 1000,
-            height: 600,
-        };
+        let arena = ArenaRenderData { arena_id: core.arena, width: 1000, height: 600 };
 
         let build_fighter = |f: &super::combat::FighterEntity| -> FighterRenderData {
             FighterRenderData {
@@ -124,12 +120,7 @@ impl WebGpuRenderPacket {
         let particles = core
             .particles
             .iter()
-            .map(|p| ParticleRenderData {
-                x: p.x,
-                y: p.y,
-                size: p.size,
-                color: p.color,
-            })
+            .map(|p| ParticleRenderData { x: p.x, y: p.y, size: p.size, color: p.color })
             .collect();
 
         let beam_clash = core.beam_clash.as_ref().map(|c| {
@@ -155,13 +146,6 @@ impl WebGpuRenderPacket {
             winner: core.winner,
         };
 
-        Self {
-            camera,
-            arena,
-            fighters,
-            particles,
-            beam_clash,
-            ui,
-        }
+        Self { camera, arena, fighters, particles, beam_clash, ui }
     }
 }

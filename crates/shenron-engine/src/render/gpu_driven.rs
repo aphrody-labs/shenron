@@ -107,11 +107,7 @@ impl IndirectDrawBuffer {
             mapped_at_creation: false,
         });
 
-        Self {
-            buffer,
-            capacity,
-            count: 0,
-        }
+        Self { buffer, capacity, count: 0 }
     }
 
     /// Uploads CPU-culled or initial indirect draw commands into the GPU buffer.

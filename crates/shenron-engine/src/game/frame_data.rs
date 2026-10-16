@@ -226,15 +226,9 @@ pub fn get_default_move_data(kind: MoveKind, damage_mult: f32) -> MoveFrameData 
 #[must_use]
 pub fn get_fighter_hurtbox(is_crouching: bool) -> Hurtbox {
     if is_crouching {
-        Hurtbox {
-            offset: Rect::new(-25.0, 0.0, 50.0, 65.0),
-            is_invulnerable: false,
-        }
+        Hurtbox { offset: Rect::new(-25.0, 0.0, 50.0, 65.0), is_invulnerable: false }
     } else {
-        Hurtbox {
-            offset: Rect::new(-25.0, -45.0, 50.0, 110.0),
-            is_invulnerable: false,
-        }
+        Hurtbox { offset: Rect::new(-25.0, -45.0, 50.0, 110.0), is_invulnerable: false }
     }
 }
 
@@ -248,7 +242,7 @@ pub fn from_xenoverse_move(xv: &shenron_re::formats::MoveFrameData) -> MoveFrame
             } else {
                 MoveKind::BeamSpecial
             }
-        }
+        },
         shenron_re::formats::DamageType::HeavyStrike => MoveKind::HeavyPunch,
         _ => {
             if xv.startup_frames <= 6 {
@@ -258,7 +252,7 @@ pub fn from_xenoverse_move(xv: &shenron_re::formats::MoveFrameData) -> MoveFrame
             } else {
                 MoveKind::ForwardKick
             }
-        }
+        },
     };
 
     let hitstun = (xv.recovery_frames as i16 + xv.hit_advantage).max(1) as u32;
@@ -295,7 +289,9 @@ pub fn from_xenoverse_move(xv: &shenron_re::formats::MoveFrameData) -> MoveFrame
 }
 
 /// Converts an entire character moveset into engine combat moves.
-pub fn map_xenoverse_moveset(xv_moveset: &shenron_re::formats::CharacterMoveset) -> Vec<MoveFrameData> {
+pub fn map_xenoverse_moveset(
+    xv_moveset: &shenron_re::formats::CharacterMoveset,
+) -> Vec<MoveFrameData> {
     xv_moveset.moves.iter().map(from_xenoverse_move).collect()
 }
 
@@ -335,4 +331,3 @@ mod tests {
         assert_eq!(hit.blockstun, 11); // 15 - 4 = 11
     }
 }
-

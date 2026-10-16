@@ -12,14 +12,16 @@ pub mod wasm;
 
 pub use beam_clash::{BeamClashResult, BeamClashState};
 pub use combat::{DragonPixelEngineCore, FighterEntity, Particle, Projectile};
-pub use frame_data::{get_default_move_data, get_fighter_hurtbox, MoveFrameData, MoveKind, MovePhase};
+pub use frame_data::{
+    MoveFrameData, MoveKind, MovePhase, get_default_move_data, get_fighter_hurtbox,
+};
 pub use haptics::HapticTrigger;
-pub use input::{parse_standard_gamepad, EngineInput, GamepadType};
+pub use input::{EngineInput, GamepadType, parse_standard_gamepad};
 pub use render_packet::{
     ArenaRenderData, BeamClashRenderData, CameraData, FighterRenderData, ParticleRenderData,
     ProjectileRenderData, UiOverlayData, WebGpuRenderPacket,
 };
-pub use roster::{get_fighter_def, get_story_chapters, FighterDefinition, StoryChapter};
+pub use roster::{FighterDefinition, StoryChapter, get_fighter_def, get_story_chapters};
 pub use types::{
     ArenaId, AudioEvent, AuraType, FighterId, FighterStyle, GameMode, HapticEvent, Hitbox, Hurtbox,
     Rect,
@@ -32,12 +34,8 @@ mod tests {
 
     #[test]
     fn test_engine_initialization() {
-        let engine = DragonPixelEngineCore::new(
-            FighterId::Goku,
-            GameMode::Story,
-            1,
-            ArenaId::Paozu,
-        );
+        let engine =
+            DragonPixelEngineCore::new(FighterId::Goku, GameMode::Story, 1, ArenaId::Paozu);
         assert_eq!(engine.player.id, FighterId::Goku);
         assert_eq!(engine.player.hp, 100.0);
         assert_eq!(engine.enemy.id, FighterId::Yamcha);
@@ -61,13 +59,8 @@ mod tests {
 
     #[test]
     fn test_beam_clash_struggle() {
-        let mut clash = BeamClashState::new(
-            160.0,
-            800.0,
-            300.0,
-            [0.0, 0.7, 1.0, 1.0],
-            [1.0, 0.2, 0.2, 1.0],
-        );
+        let mut clash =
+            BeamClashState::new(160.0, 800.0, 300.0, [0.0, 0.7, 1.0, 1.0], [1.0, 0.2, 0.2, 1.0]);
         assert!(clash.active);
         assert_eq!(clash.tension, 0.0);
 
@@ -88,20 +81,13 @@ mod tests {
 
     #[test]
     fn test_transformation_and_aura() {
-        let mut engine = DragonPixelEngineCore::new(
-            FighterId::Goku,
-            GameMode::Arcade,
-            1,
-            ArenaId::Wasteland,
-        );
+        let mut engine =
+            DragonPixelEngineCore::new(FighterId::Goku, GameMode::Arcade, 1, ArenaId::Wasteland);
         assert_eq!(engine.player.form_level, 0);
 
         // Give Ki and trigger transformation
         engine.player.ki = 100.0;
-        let input = EngineInput {
-            transform: true,
-            ..EngineInput::default()
-        };
+        let input = EngineInput { transform: true, ..EngineInput::default() };
         engine.step(input, 0.016);
 
         assert_eq!(engine.player.form_level, 1);

@@ -30,11 +30,7 @@ pub fn encode_at(insns: &[Insn], mut ip: u64) -> Vec<u8> {
 
 fn emit_rex(out: &mut Vec<u8>, w: bool, r: u8, x: u8, b: u8, force: bool) {
     if w || r != 0 || x != 0 || b != 0 || force {
-        let byte = 0x40
-            | (if w { 8 } else { 0 })
-            | ((r & 1) << 2)
-            | ((x & 1) << 1)
-            | (b & 1);
+        let byte = 0x40 | (if w { 8 } else { 0 }) | ((r & 1) << 2) | ((x & 1) << 1) | (b & 1);
         out.push(byte);
     }
 }
@@ -85,7 +81,7 @@ fn emit_modrm_sib_disp(out: &mut Vec<u8>, reg_digit: u8, m: Mem, next_ip: u64) {
     match disp_len {
         1 => out.push(m.disp as u8),
         4 => out.extend_from_slice(&(m.disp as u32).to_le_bytes()),
-        _ => {}
+        _ => {},
     }
 }
 
@@ -95,44 +91,42 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
         Insn::RetImm(imm) => {
             out.push(0xC2);
             out.extend_from_slice(&imm.to_le_bytes());
-        }
+        },
         Insn::Int3 => out.push(0xCC),
-        Insn::Nop(len) => {
-            match len {
-                0 | 1 => out.push(0x90),
-                2 => out.extend_from_slice(&[0x66, 0x90]),
-                3 => out.extend_from_slice(&[0x0F, 0x1F, 0x00]),
-                4 => out.extend_from_slice(&[0x0F, 0x1F, 0x40, 0x00]),
-                _ => {
-                    for _ in 0..len {
-                        out.push(0x90);
-                    }
+        Insn::Nop(len) => match len {
+            0 | 1 => out.push(0x90),
+            2 => out.extend_from_slice(&[0x66, 0x90]),
+            3 => out.extend_from_slice(&[0x0F, 0x1F, 0x00]),
+            4 => out.extend_from_slice(&[0x0F, 0x1F, 0x40, 0x00]),
+            _ => {
+                for _ in 0..len {
+                    out.push(0x90);
                 }
-            }
-        }
+            },
+        },
         Insn::Push(reg, force_rex) => {
             emit_rex(out, false, 0, 0, reg.hi(), force_rex);
             out.push(0x50 + reg.lo());
-        }
+        },
         Insn::Pop(reg, force_rex) => {
             emit_rex(out, false, 0, 0, reg.hi(), force_rex);
             out.push(0x58 + reg.lo());
-        }
+        },
         Insn::MovRegImm8(reg, imm) => {
             emit_rex(out, false, 0, 0, reg.hi(), false);
             out.push(0xB0 + reg.lo());
             out.push(imm);
-        }
+        },
         Insn::MovRegImm32(reg, imm) => {
             emit_rex(out, false, 0, 0, reg.hi(), false);
             out.push(0xB8 + reg.lo());
             out.extend_from_slice(&imm.to_le_bytes());
-        }
+        },
         Insn::MovRegImm64(reg, imm) => {
             emit_rex(out, true, 0, 0, reg.hi(), false);
             out.push(0xB8 + reg.lo());
             out.extend_from_slice(&imm.to_le_bytes());
-        }
+        },
         Insn::MovRR(size, dst, src) => {
             if size == Size::W {
                 out.push(0x66);
@@ -140,7 +134,7 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
             emit_rex(out, size.rex_w(), dst.hi(), 0, src.hi(), false);
             out.push(if size == Size::B { 0x8A } else { 0x8B });
             out.push(0xC0 | (dst.lo() << 3) | src.lo());
-        }
+        },
         Insn::MovRRm(size, dst, src) => {
             if size == Size::W {
                 out.push(0x66);
@@ -148,7 +142,7 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
             emit_rex(out, size.rex_w(), src.hi(), 0, dst.hi(), false);
             out.push(if size == Size::B { 0x88 } else { 0x89 });
             out.push(0xC0 | (src.lo() << 3) | dst.lo());
-        }
+        },
         Insn::Load(size, dst, mem) => {
             if let Some(seg) = mem.seg {
                 out.push(seg.prefix());
@@ -163,7 +157,7 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
             // Calculate next IP after this instruction (approximate 5-7 bytes for rip-relative)
             let insn_len = 1 + (if size == Size::W { 1 } else { 0 }) + 1 + 1 + 4;
             emit_modrm_sib_disp(out, dst.lo(), mem, ip.wrapping_add(insn_len));
-        }
+        },
         Insn::Store(size, mem, src) => {
             if let Some(seg) = mem.seg {
                 out.push(seg.prefix());
@@ -177,7 +171,7 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
             out.push(if size == Size::B { 0x88 } else { 0x89 });
             let insn_len = 1 + (if size == Size::W { 1 } else { 0 }) + 1 + 1 + 4;
             emit_modrm_sib_disp(out, src.lo(), mem, ip.wrapping_add(insn_len));
-        }
+        },
         Insn::StoreImm32(size, mem, imm) => {
             if let Some(seg) = mem.seg {
                 out.push(seg.prefix());
@@ -189,7 +183,7 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
             let insn_len = 1 + 1 + 1 + 4 + 4;
             emit_modrm_sib_disp(out, 0, mem, ip.wrapping_add(insn_len));
             out.extend_from_slice(&(imm as u32).to_le_bytes());
-        }
+        },
         Insn::Lea(dst, mem) => {
             if let Some(seg) = mem.seg {
                 out.push(seg.prefix());
@@ -200,7 +194,7 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
             out.push(0x8D);
             let insn_len = 2 + 1 + 4;
             emit_modrm_sib_disp(out, dst.lo(), mem, ip.wrapping_add(insn_len));
-        }
+        },
         Insn::AluRR(op, size, dst, src) => {
             if size == Size::W {
                 out.push(0x66);
@@ -209,7 +203,7 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
             let base_op = op.digit() * 8 + 3;
             out.push(if size == Size::B { base_op - 1 } else { base_op });
             out.push(0xC0 | (dst.lo() << 3) | src.lo());
-        }
+        },
         Insn::AluRRm(op, size, dst, src) => {
             if size == Size::W {
                 out.push(0x66);
@@ -218,7 +212,7 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
             let base_op = op.digit() * 8 + 1;
             out.push(if size == Size::B { base_op - 1 } else { base_op });
             out.push(0xC0 | (src.lo() << 3) | dst.lo());
-        }
+        },
         Insn::AluRM(op, size, dst, mem) => {
             if let Some(seg) = mem.seg {
                 out.push(seg.prefix());
@@ -233,7 +227,7 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
             out.push(if size == Size::B { base_op - 1 } else { base_op });
             let insn_len = 1 + (if size == Size::W { 1 } else { 0 }) + 1 + 1 + 4;
             emit_modrm_sib_disp(out, dst.lo(), mem, ip.wrapping_add(insn_len));
-        }
+        },
         Insn::AluMR(op, size, mem, src) => {
             if let Some(seg) = mem.seg {
                 out.push(seg.prefix());
@@ -248,7 +242,7 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
             out.push(if size == Size::B { base_op - 1 } else { base_op });
             let insn_len = 1 + (if size == Size::W { 1 } else { 0 }) + 1 + 1 + 4;
             emit_modrm_sib_disp(out, src.lo(), mem, ip.wrapping_add(insn_len));
-        }
+        },
         Insn::AluRI(op, size, dst, imm, force_long) => {
             if size == Size::W {
                 out.push(0x66);
@@ -268,7 +262,7 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
                 out.push(0xC0 | (op.digit() << 3) | dst.lo());
                 out.extend_from_slice(&(imm as u32).to_le_bytes());
             }
-        }
+        },
         Insn::TestRR(size, dst, src) => {
             if size == Size::W {
                 out.push(0x66);
@@ -276,7 +270,7 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
             emit_rex(out, size.rex_w(), src.hi(), 0, dst.hi(), false);
             out.push(if size == Size::B { 0x84 } else { 0x85 });
             out.push(0xC0 | (src.lo() << 3) | dst.lo());
-        }
+        },
         Insn::Shift(op, size, reg, imm) => {
             if size == Size::W {
                 out.push(0x66);
@@ -290,13 +284,13 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
                 out.push(0xC0 | (op.digit() << 3) | reg.lo());
                 out.push(imm);
             }
-        }
+        },
         Insn::MovzxR(size, dst, src) => {
             emit_rex(out, false, dst.hi(), 0, src.hi(), false);
             out.push(0x0F);
             out.push(if size == Size::B { 0xB6 } else { 0xB7 });
             out.push(0xC0 | (dst.lo() << 3) | src.lo());
-        }
+        },
         Insn::MovzxM(size, dst, mem) => {
             if let Some(seg) = mem.seg {
                 out.push(seg.prefix());
@@ -308,18 +302,18 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
             out.push(if size == Size::B { 0xB6 } else { 0xB7 });
             let insn_len = 3 + 1 + 4;
             emit_modrm_sib_disp(out, dst.lo(), mem, ip.wrapping_add(insn_len));
-        }
+        },
         Insn::Movsxd(dst, src) => {
             emit_rex(out, true, dst.hi(), 0, src.hi(), false);
             out.push(0x63);
             out.push(0xC0 | (dst.lo() << 3) | src.lo());
-        }
+        },
         Insn::Setcc(cond, reg) => {
             emit_rex(out, false, 0, 0, reg.hi(), reg.num() >= 4);
             out.push(0x0F);
             out.push(0x90 + cond.code());
             out.push(0xC0 | reg.lo());
-        }
+        },
         Insn::Un(op, size, rm) => {
             let is_f7 = op.is_f7();
             let base_opcode = if is_f7 {
@@ -336,7 +330,7 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
                     emit_rex(out, size.rex_w(), 0, 0, reg.hi(), false);
                     out.push(base_opcode);
                     out.push(0xC0 | (op.digit() << 3) | reg.lo());
-                }
+                },
                 Rm::M(mem) => {
                     if let Some(seg) = mem.seg {
                         out.push(seg.prefix());
@@ -350,36 +344,36 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
                     out.push(base_opcode);
                     let insn_len = 1 + (if size == Size::W { 1 } else { 0 }) + 1 + 1 + 4;
                     emit_modrm_sib_disp(out, op.digit(), mem, ip.wrapping_add(insn_len));
-                }
+                },
             }
-        }
+        },
         Insn::Call(target) => {
             out.push(0xE8);
             let next_ip = ip.wrapping_add(5);
             let disp = (target as i64).wrapping_sub(next_ip as i64) as i32;
             out.extend_from_slice(&disp.to_le_bytes());
-        }
+        },
         Insn::Jmp(target) => {
             out.push(0xE9);
             let next_ip = ip.wrapping_add(5);
             let disp = (target as i64).wrapping_sub(next_ip as i64) as i32;
             out.extend_from_slice(&disp.to_le_bytes());
-        }
+        },
         Insn::JmpShort(disp) => {
             out.push(0xEB);
             out.push(disp as u8);
-        }
+        },
         Insn::Jcc(cond, target) => {
             out.push(0x0F);
             out.push(0x80 + cond.code());
             let next_ip = ip.wrapping_add(6);
             let disp = (target as i64).wrapping_sub(next_ip as i64) as i32;
             out.extend_from_slice(&disp.to_le_bytes());
-        }
+        },
         Insn::JccShort(cond, disp) => {
             out.push(0x70 + cond.code());
             out.push(disp as u8);
-        }
+        },
         Insn::Sse(op, dst, src) => {
             let (pfx, opcode) = sse_op_encoding(op);
             if let Some(p) = pfx {
@@ -391,7 +385,7 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
                     out.push(0x0F);
                     out.push(opcode);
                     out.push(0xC0 | (dst.lo() << 3) | x.lo());
-                }
+                },
                 XmmRm::M(mem) => {
                     if let Some(seg) = mem.seg {
                         out.push(seg.prefix());
@@ -403,9 +397,9 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
                     out.push(opcode);
                     let insn_len = 1 + (if pfx.is_some() { 1 } else { 0 }) + 2 + 1 + 4;
                     emit_modrm_sib_disp(out, dst.lo(), mem, ip.wrapping_add(insn_len));
-                }
+                },
             }
-        }
+        },
         Insn::SseStore(op, mem, src) => {
             let (pfx, _) = sse_op_encoding(op);
             let store_opcode = match op {
@@ -428,7 +422,7 @@ fn encode_one(out: &mut Vec<u8>, insn: Insn, ip: u64) {
             out.push(store_opcode);
             let insn_len = 1 + (if pfx.is_some() { 1 } else { 0 }) + 2 + 1 + 4;
             emit_modrm_sib_disp(out, src.lo(), mem, ip.wrapping_add(insn_len));
-        }
+        },
     }
 }
 
