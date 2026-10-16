@@ -372,7 +372,7 @@ export class MangaSourceFrontier {
     return this.db.transaction(() => {
       const candidates = this.db
         .query<PoolTask, [number, number]>(
-          "SELECT id,kind,url,host,depth,attempts,series,volumeId FROM pool_tasks t WHERE state IN ('queued','retry','done','robots_refused','provider_blocked','capability_unavailable') AND nextAt<=? AND NOT EXISTS(SELECT 1 FROM pool_circuits c WHERE c.host=t.host AND c.untilAt>?) ORDER BY CASE kind WHEN 'catalog' THEN 0 WHEN 'volume' THEN 1 WHEN 'chapter' THEN 2 WHEN 'browser' THEN 3 ELSE 4 END,updatedAt LIMIT 512",
+          "SELECT id,kind,url,host,depth,attempts,series,volumeId FROM pool_tasks t WHERE state IN ('queued','retry','done','robots_refused','provider_blocked','capability_unavailable') AND nextAt<=? AND NOT EXISTS(SELECT 1 FROM pool_circuits c WHERE c.host=t.host AND c.untilAt>?) ORDER BY CASE kind WHEN 'catalog' THEN 0 WHEN 'volume' THEN 1 WHEN 'chapter' THEN 2 WHEN 'acquisition' THEN 3 WHEN 'browser' THEN 4 ELSE 5 END,updatedAt LIMIT 512",
         )
         .all(now, now);
       const date = new Date(now).toISOString().slice(0, 10);
