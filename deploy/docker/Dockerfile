@@ -21,7 +21,7 @@ ENV SHENRON_HOME=/var/lib/shenron \
     NEXT_TELEMETRY_DISABLED=1
 
 RUN apt-get update \
- && apt-get install -y --no-install-recommends --allow-remove-essential coreutils-from-gnu coreutils-from-uutils- ca-certificates curl jq libgcc-s1 libsqlite3-0 \
+ && apt-get install -y --no-install-recommends ca-certificates curl jq libgcc-s1 libsqlite3-0 \
  && rm -rf /var/lib/apt/lists/* \
  && groupadd --gid 10001 shenron \
  && useradd --uid 10001 --gid 10001 --home-dir /var/lib/shenron --no-create-home --shell /usr/sbin/nologin shenron \
