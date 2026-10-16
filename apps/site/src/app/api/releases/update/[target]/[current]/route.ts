@@ -6,6 +6,7 @@
  */
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { SITE_URL } from "@/lib/config";
 import { assetUrl, compareVersions, latestRelease, releasesDir } from "@/lib/releases";
 
 export const runtime = "nodejs";
@@ -14,7 +15,7 @@ export const dynamic = "force-dynamic";
 const TARGET_OS = { "windows-x86_64": "windows", "linux-x86_64": "linux" } as const;
 type Context = { params: Promise<{ target: string; current: string }> };
 
-export async function GET(request: Request, { params }: Context): Promise<Response> {
+export async function GET(_request: Request, { params }: Context): Promise<Response> {
   const { target, current } = await params;
   const os = TARGET_OS[target as keyof typeof TARGET_OS];
   const manifest = await latestRelease();
@@ -29,7 +30,7 @@ export async function GET(request: Request, { params }: Context): Promise<Respon
     {
       version: manifest.version,
       pub_date: manifest.publishedAt,
-      url: new URL(assetUrl(asset.name), request.url).toString(),
+      url: new URL(assetUrl(asset.name), SITE_URL).toString(),
       signature: signature.trim(),
     },
     { headers: { "cache-control": "public, max-age=60" } },
