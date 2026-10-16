@@ -208,7 +208,8 @@
   },
   "packageManager": "bun@1.4.4",
   "patchedDependencies": {
-    "@discordjs/rest@2.6.3": "patches/@discordjs%2Frest@2.6.3.patch"
+    "@discordjs/rest@2.6.3": "patches/@discordjs%2Frest@2.6.3.patch",
+    "swiper@14.3.0": "patches/swiper@14.3.0.patch"
   },
   "shenron.packageArchives": {
     "@aphrody/bun-video": {

@@ -375,6 +375,7 @@
   ],
   "patchedDependencies": {
     "@discordjs/rest@2.6.3": "patches/@discordjs%2Frest@2.6.3.patch",
+    "swiper@14.3.0": "patches/swiper@14.3.0.patch",
   },
   "overrides": {
     "@next/env": "file:vendor/next-fork/next-env-16.5.0-canary.5-dac376c6fe-f32e63fa.tgz",
