@@ -8,6 +8,8 @@ import ja from "../messages/ja.json";
 
 let locale: "fr" | "en" | "ja" = "fr";
 const dictionaries = { fr, en, ja };
+const intl = await import("next-intl");
+mock.module("next-intl", () => ({ ...intl, useLocale: () => locale }));
 function translate(key: string, values?: Record<string, string | number>) {
   const value = key
     .split(".")
@@ -62,7 +64,22 @@ const publicRecord = {
   children: [],
   assets: ["https://publisher.example/cover.jpg"],
 };
-mock.module("@/lib/catalog-explorer", () => ({ readCatalogDetail: async () => publicRecord }));
+let pageRequest: { category: string; input: Record<string, unknown> } | undefined;
+mock.module("@/lib/catalog-explorer", () => ({
+  readCatalogSummary: async () => ({categories:[],observedAt:"2026-10-14"}),
+  readCatalogDetail: async () => publicRecord,
+  readCatalogPage: async (category: string, input: Record<string, unknown>) => {
+    pageRequest = { category, input };
+    return {
+      category,
+      total: 120,
+      page: 1,
+      pageSize: 48,
+      items: [{ ...publicRecord, category }],
+      observedAt: "2026-10-14",
+    };
+  },
+}));
 mock.module("@/lib/cdn-catalog", () => ({
   readCdnPage: async () => ({
     index: { totalFiles: 200, observedAt: "2026-10-13T12:00:00Z", revision: "a".repeat(64) },
@@ -207,4 +224,63 @@ test("CDN files retain complete pagination while lazy previews are bounded to th
   expect(html).toContain('href="https://cdn.dragonballfr.com/public/cover-199.jpg"');
   expect(html).toContain('href="/catalog/assets?path=%2F&amp;page=2&amp;all=1"');
   expect(html).not.toContain("/_next/image");
+});
+
+const { catalogSourceFilters } = await import("../src/lib/catalog-source-query");
+test("source filters expose all notices and factual sorting in every locale without catalogue hydration", () => {
+  for (locale of ["fr", "en", "ja"] as const) {
+    for (const category of ["sources", "archive_movies", "archive_images"]) {
+      const html = renderToStaticMarkup(
+        createElement(CatalogControls, {
+          search: "Dragon Ball",
+          category,
+          source: catalogSourceFilters(category),
+        }),
+      );
+      expect(html).toContain('name="order"');
+      expect(html).toContain('name="focus"');
+      expect(html).toContain('value="all"');
+      expect(html).toContain('name="domain"');
+      expect(html.includes('name="kind"')).toBe(category === "sources");
+      expect(html).not.toContain('name="page"');
+    }
+  }
+  locale = "fr";
+});
+
+const { default: CatalogCategory } = await import("../src/app/catalog/[category]/page");
+const { GET: getCatalog } = await import("../src/app/api/catalog/route");
+test("all three catalogue routes preserve filter state in their server read and next page", async () => {
+  for (const category of ["sources", "archive_movies", "archive_images"]) {
+    const input = {
+      q: "Dragon Ball",
+      order: "oldest",
+      focus: "all",
+      domain: "archive.org",
+      kind: "archive",
+    };
+    const html = renderToStaticMarkup(
+      await CatalogCategory({
+        params: Promise.resolve({ category }),
+        searchParams: Promise.resolve(input),
+      }),
+    );
+    expect(pageRequest).toEqual({ category, input });
+    expect(html).toContain("page=2");
+    expect(html).toContain("focus=all");
+    expect(html).toContain("order=oldest");
+    expect(html).toContain("domain=archive.org");
+    const response = await getCatalog(
+      new Request(
+        "https://dragonballfr.com/api/catalog?category=" +
+          category +
+          "&" +
+          new URLSearchParams(input),
+      ),
+    );
+    expect(response.status).toBe(200);
+    expect(pageRequest?.input.order).toBe("oldest");
+    expect(pageRequest?.input.focus).toBe("all");
+    expect(pageRequest?.input.domain).toBe("archive.org");
+  }
 });

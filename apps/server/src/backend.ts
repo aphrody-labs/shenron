@@ -58,6 +58,7 @@ import { koharuBridge, type KoharuBridge } from "./koharu";
 import { libraryPath } from "./local-api";
 import { nativeMemory } from "./memory";
 import { createNativeWebPort } from "./web";
+import { nativeChatJev } from "./jev";
 
 export const VFS_FILE = "shenron-vfs.sqlite";
 /** Canonical lexicon shipped in the payload (`data/`, scripts/build/server-data.ts). */
@@ -344,6 +345,7 @@ export async function startBackend(
       ...(plan.env.RAG_BACKEND === "aphrody" ? { rag: editorialRag } : {}),
       ...(chatModel ? { chatModels: chatModel.catalog } : {}),
       memory: nativeMemory(paths, plan.env),
+      jev: nativeChatJev(plan.env, libraryPath(paths, plan.env)),
       web: await createNativeWebPort(),
       ...(o.betterAuth !== undefined ? { betterAuth: o.betterAuth } : {}),
       ...(agentHomes

@@ -3,6 +3,12 @@
 import { useEffect, useSyncExternalStore, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useT } from "@/components/T";
+import { useCatalogUIText } from "@/lib/catalog-ui-text";
+import {
+  CATALOG_SOURCE_KINDS,
+  CATALOG_SOURCE_ORDERS,
+  type CatalogSourceFilters,
+} from "@/lib/catalog-source-query";
 
 import { archiveOptions } from "@/lib/archive-catalog";
 export const CATALOG_REFRESH_INTERVAL_MS = 15_000;
@@ -40,15 +46,20 @@ export function CatalogControls({
   archiveCategory,
   mediaLang = "",
   series = "",
+  source,
+  category,
 }: {
   search?: string;
   parent?: string;
   archiveCategory?: string;
   mediaLang?: string;
   series?: string;
+  source?: CatalogSourceFilters;
+  category?: string;
 }) {
   const options = archiveCategory ? archiveOptions(archiveCategory) : null;
   const t = useT();
+  const labels = useCatalogUIText();
   const router = useRouter();
   const automatic = useSyncExternalStore(subscribeAutomatic, automaticSnapshot, () => true);
   const [pending, startTransition] = useTransition();
@@ -69,7 +80,7 @@ export function CatalogControls({
   return (
     <div className="my-6 flex min-w-0 flex-wrap items-center gap-4" data-testid="catalog-controls">
       {search !== undefined ? (
-        <search className="w-full min-w-0 sm:w-auto">
+        <search className="w-full min-w-0">
           <form method="get" className="flex w-full min-w-0 flex-wrap gap-2">
             <label className="sr-only" htmlFor="catalog-search">
               {t("catalog.search")}
@@ -123,6 +134,56 @@ export function CatalogControls({
               </>
             ) : null}
             {parent ? <input type="hidden" name="parent" value={parent} /> : null}
+            {source ? (
+              <div
+                className="grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
+                key={`${source.order}:${source.focus}:${source.kind}:${source.domain}`}
+              >
+                <label className="grid min-w-0 gap-1 text-sm">
+                  {labels("sort")}
+                  <select className="input w-full min-w-0" name="order" defaultValue={source.order}>
+                    {CATALOG_SOURCE_ORDERS.map((value) => (
+                      <option key={value} value={value}>
+                        {labels(value)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="grid min-w-0 gap-1 text-sm">
+                  {labels("focus")}
+                  <select className="input w-full min-w-0" name="focus" defaultValue={source.focus}>
+                    <option value="dragon-ball">{labels("dragonBall")}</option>
+                    <option value="all">{labels("all")}</option>
+                  </select>
+                </label>
+                {category === "sources" ? (
+                  <label className="grid min-w-0 gap-1 text-sm">
+                    {labels("classification")}
+                    <select className="input w-full min-w-0" name="kind" defaultValue={source.kind}>
+                      <option value="">{labels("allKinds")}</option>
+                      {CATALOG_SOURCE_KINDS.map((value) => (
+                        <option key={value} value={value}>
+                          {labels(`kinds.${value}`)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ) : null}
+                <label className="grid min-w-0 gap-1 text-sm">
+                  {labels("domain")}
+                  <input
+                    className="input w-full min-w-0"
+                    name="domain"
+                    type="text"
+                    defaultValue={source.domain}
+                    maxLength={253}
+                    placeholder={labels("anyDomain")}
+                    autoCapitalize="none"
+                    spellCheck={false}
+                  />
+                </label>
+              </div>
+            ) : null}
             <button className="dbz-button" type="submit">
               {t("catalog.submit")}
             </button>

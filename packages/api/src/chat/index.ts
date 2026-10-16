@@ -6,3 +6,4 @@ export * from "./llm";
 export * from "./mcp";
 export * from "./memory";
 export * from "./ocr";
+export * from "./jev";

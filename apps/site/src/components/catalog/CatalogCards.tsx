@@ -5,6 +5,8 @@ import { MangaCard } from "@aphrody/shenron-ui/public/MangaCard";
 import { EmptyState } from "@/components/kit/EmptyState";
 import { T } from "@/components/T";
 import type { CatalogCard, CatalogSummary } from "@/lib/catalog-explorer-contract";
+import { CatalogUIText } from "@/lib/catalog-ui-text";
+import { CATALOG_SOURCE_KINDS } from "@/lib/catalog-source-query";
 
 import { ArchivePreview } from "./ArchivePreview";
 
@@ -34,12 +36,30 @@ export function CatalogCards({ items }: { items: CatalogCard[] }) {
                 ? (props) => <ArchivePreview src={props.src} alt={item.title} />
                 : undefined
             }
+            ratio={item.category === "archive_images" ? "square" : "wide"}
             meta={
-              item.archive ? (
+              item.archive || item.source ? (
                 <>
-                  <T k={"catalog.archive.series." + item.archive.series} />
-                  <span aria-hidden> · </span>
-                  <T k={"catalog.archive.languages." + item.archive.language} />
+                  {item.archive ? (
+                    <>
+                      <T k={"catalog.archive.series." + item.archive.series} />
+                      <span aria-hidden> · </span>
+                      <T k={"catalog.archive.languages." + item.archive.language} />
+                    </>
+                  ) : null}
+                  {item.source ? (
+                    <>
+                      {item.archive ? <span aria-hidden> · </span> : null}
+                      <span>{item.source.host}</span>
+                      {CATALOG_SOURCE_KINDS.includes(
+                        item.source.kind as (typeof CATALOG_SOURCE_KINDS)[number],
+                      ) ? (
+                        <CatalogUIText
+                          name={`kinds.${item.source.kind as (typeof CATALOG_SOURCE_KINDS)[number]}`}
+                        />
+                      ) : null}
+                    </>
+                  ) : null}
                 </>
               ) : undefined
             }

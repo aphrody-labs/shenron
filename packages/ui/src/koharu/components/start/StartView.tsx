@@ -8,6 +8,7 @@ import { call } from "../../lib/backend";
 import { pageKey, pagesKey, projectKey, refresh } from "../../lib/queries";
 import { useKoharuStore } from "../../lib/store";
 import { commands, type ProjectSummary } from "@aphrody/shenron-koharu/protocol";
+import { usesHostedStudio } from "@aphrody/shenron-koharu/canvas";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -161,7 +162,7 @@ export function StartView() {
                 </form>
 
                 <p className="mt-auto pt-8 text-[10px] leading-4 text-muted-foreground">
-                  {t("start.storageHint")}
+                  {t(usesHostedStudio() ? "start.browserStorageHint" : "start.storageHint")}
                 </p>
               </aside>
 

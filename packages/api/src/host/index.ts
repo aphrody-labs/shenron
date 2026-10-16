@@ -51,6 +51,8 @@ import {
 } from "@aphrody/shenron-db/vfs";
 import { isPublicRagRow } from "@aphrody/shenron-db/vfs/build";
 import { createChatEngine } from "../chat/engine";
+import { createChatJevPort, ChatJevUnavailable, type ChatJevPort } from "../chat/jev";
+import { resolveJev } from "@aphrody/shenron-config/jev";
 import { agentHomeFromDir, agentHomeFromVfs } from "../chat/home";
 import { backendsFromEnv, geminiCookieCandidates, type LlmBackend } from "../chat/llm";
 import { createStdioMcpClient } from "../chat/mcp";
@@ -333,6 +335,8 @@ export function staticFileResponse(
 export interface LocalApiOptions {
   /** Canonical editorial retrieval assembled by the product when RAG_BACKEND=aphrody. */
   rag?: RagPort | null;
+  /** Native public-corpus Jev judgments supplied by the product backend. */
+  jev?: ChatJevPort | null;
   /** Qualified native capabilities injected by the product host. */
   web?: WebPort | null;
   service?: ShenronApiService;
@@ -528,14 +532,14 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     try {
       const defaultDb = memorySettings.dbPath;
       const location = options.memoryLocation ?? null;
-      const opened = options.memory({
+      const openedMemory = options.memory({
         agentId: chatMemoryAgentId,
         dbPath: (agentId) => location?.(agentId) ?? defaultDb,
         aliases: (agentId) => options.memoryAliases?.(agentId) ?? [],
         legacy: { dbPath: defaultDb, agentId: legacyChatMemoryAgentId },
       });
-      if ("port" in opened) memory = opened.port;
-      else memoryReason = opened.reason;
+      if ("port" in openedMemory) memory = openedMemory.port;
+      else memoryReason = openedMemory.reason;
     } catch (error) {
       // The cause (path, library error) stays in the log.
       console.error(
@@ -564,6 +568,12 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     ragReason = "configuration du RAG Aphrody absente ou invalide";
   } else if (opened) rag = createVfsRagPort(opened, embedder?.query ?? null);
   const engine = createChatEngine({
+    jev:
+      options.jev === undefined && resolveJev(env).enabled
+        ? createChatJevPort(async () => {
+            throw new ChatJevUnavailable();
+          })
+        : options.jev,
     rag: usesAphrodyRag ? null : (opened?.rag ?? null),
     ...(usesAphrodyRag
       ? {
@@ -741,8 +751,8 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
       isAuthPath(pathname) || isDesktopLink(pathname) || isAsset(pathname) || api.handles(pathname),
     async fetch(request, server) {
       mark(request, server);
-      const unavailable = unavailableAuth(request);
-      if (unavailable) return unavailable;
+      const authUnavailable = unavailableAuth(request);
+      if (authUnavailable) return authUnavailable;
       const method = request.method;
       if (isDesktopLink(new URL(request.url).pathname)) return desktopLink(request);
       if (isAsset(new URL(request.url).pathname) && (method === "GET" || method === "HEAD"))
@@ -771,8 +781,8 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
         websocket: api.websocket,
         fetch: (request: Request, server: Bun.Server<ChatSocketData>) => {
           mark(request, server);
-          const unavailable = unavailableAuth(request);
-          if (unavailable) return unavailable;
+          const authUnavailable = unavailableAuth(request);
+          if (authUnavailable) return authUnavailable;
           if (isDesktopLink(new URL(request.url).pathname)) return desktopLink(request);
           return api.fetch(request, server);
         },

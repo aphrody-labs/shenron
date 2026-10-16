@@ -85,7 +85,13 @@ export async function GET(req: NextRequest) {
 
   try {
     if (usesAphrodyRag()) {
-      const result = await chatAphrodyRag(q, persona, { context, lang, entity, sourceId });
+      const result = await chatAphrodyRag(q, persona, {
+        context,
+        lang,
+        entity,
+        sourceId,
+        signal: req.signal,
+      });
       return NextResponse.json(result, { headers: { "Cache-Control": "private, no-store" } });
     }
     let botUrl =
@@ -142,8 +148,8 @@ export async function POST(req: NextRequest) {
   } else if (typeof body.prompt === "string") {
     q = body.prompt.trim();
   } else if (Array.isArray(body.messages)) {
-    const lastUser = [...body.messages]
-      .reverse()
+    const lastUser = body.messages
+      .toReversed()
       .find(
         (m: unknown) =>
           typeof m === "object" && m !== null && (m as { role?: string }).role === "user",
@@ -179,7 +185,13 @@ export async function POST(req: NextRequest) {
 
   try {
     if (usesAphrodyRag()) {
-      const result = await chatAphrodyRag(q, persona, { context, lang, entity, sourceId });
+      const result = await chatAphrodyRag(q, persona, {
+        context,
+        lang,
+        entity,
+        sourceId,
+        signal: req.signal,
+      });
       return NextResponse.json(
         {
           answer: result.answer,

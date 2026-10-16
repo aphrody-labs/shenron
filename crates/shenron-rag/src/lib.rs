@@ -9,6 +9,7 @@
 
 pub mod corpus;
 pub mod dragonball;
+pub mod jev;
 
 pub use corpus::{
     ShenronCorpusDoc, ShenronIngestOptions, ShenronIngestStats, ingest_shenron_docs,

@@ -5,6 +5,8 @@ import { db } from "@/lib/db";
 import { dbUniverse } from "@/lib/db-universe";
 import { analyzeCanon, type CanonAnalysisResult } from "@/lib/canon-engine";
 import { getCanonConfig } from "@/lib/canon-config";
+import { judgeCanonPlates } from "./canon-judgment";
+import type { CanonContinuity, CanonJudgment } from "@aphrody/shenron-pipeline/ai/canon-judgment";
 import {
   getShenronCharacter,
   getShenronPlanet,
@@ -61,6 +63,8 @@ export interface CanonPreuves {
   mode: string | null;
   /** Ruled topics close to the question, as ready-to-ask links. */
   suggestions: { titre: string; href: string }[];
+  /** Typed evidence support; it cannot replace the editor's curated canon tier. */
+  judgment?: CanonJudgment;
 }
 
 /**
@@ -267,7 +271,7 @@ async function illustrerFiche(
   }
 }
 
-export const canonPreuves = cache(async (question: string): Promise<CanonPreuves> => {
+export const canonPreuves = cache(async (question: string, continuity?: CanonContinuity): Promise<CanonPreuves> => {
   const verdict = analyzeCanon(question, await getCanonConfig());
   const suggestions = verdict.suggestions.map((titre) => ({
     titre,
@@ -292,6 +296,12 @@ export const canonPreuves = cache(async (question: string): Promise<CanonPreuves
   const hits = [...(parMotsCles?.results ?? []), ...(parQuestion?.results ?? [])];
 
   const refs: { id: number; numero: number; score: number }[] = [];
+  // Curated visible references also carry primary plate links when retrieval misses them.
+  for (const reference of verdict.references ?? []) {
+    if (reference.provenance !== "databooks" || !reference.href) continue;
+    const ref = refPlanche(reference.href);
+    if (ref && !refs.some((r) => r.id === ref.id && r.numero === ref.numero)) refs.push({ ...ref, score: 1 });
+  }
   const fiches: FichePreuve[] = [];
   const vues = new Set<string>();
   for (const h of hits) {
@@ -331,11 +341,22 @@ export const canonPreuves = cache(async (question: string): Promise<CanonPreuves
     resoudrePlanches(planchesCandidats).catch(() => [] as PlanchePreuve[]),
     Promise.all(retenues.map((f) => illustrerFiche(f.href))),
   ]);
+  const judgment = await judgeCanonPlates(question, planches, continuity);
+  const support = new Map(judgment.evidence.map((entry) => [entry.evidenceId, entry.relation]));
+  // A refutation belongs beside supporting evidence; uncertainty leaves the original order intact.
+  const rankedPlates = planches.toSorted((a, b) => {
+    const relevant = (p: PlanchePreuve) => {
+      const relation = support.get(`databook:${p.databookId}:${p.numero}`);
+      return relation === "supported" || relation === "contradicted" ? 1 : 0;
+    };
+    return relevant(b) - relevant(a);
+  });
   return {
     verdict,
-    planches: planches.slice(0, 4),
+    planches: rankedPlates.slice(0, 4),
     fiches: retenues.map((f, i) => Object.assign(f, illustrations[i]!)),
     mode: parQuestion?.mode ?? parMotsCles?.mode ?? null,
     suggestions,
+    judgment,
   };
 });

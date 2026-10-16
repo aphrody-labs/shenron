@@ -1,0 +1,30 @@
+{
+  "browse": "Browse",
+  "sources": "Sources",
+  "movies": "Video archives",
+  "images": "Image archives",
+  "sort": "Sort by",
+  "source": "Type and source",
+  "title": "Title A–Z",
+  "recent": "Recently collected",
+  "oldest": "Oldest collected",
+  "relevance": "Search relevance",
+  "classification": "Source type",
+  "allKinds": "All types",
+  "focus": "Title scope",
+  "all": "All records",
+  "dragonBall": "Dragon Ball / DBZ in title",
+  "domain": "Source domain",
+  "anyDomain": "All domains",
+  "clear": "Clear filters",
+  "filtered": "Filters applied",
+  "kinds": {
+    "publisher": "Publisher",
+    "reference": "Reference",
+    "archive": "Archive",
+    "wayback": "Archived page",
+    "encyclopedia": "Encyclopedia",
+    "statistics": "Statistics",
+    "media": "Media"
+  }
+}

@@ -16,6 +16,7 @@ use clap::{Parser, Subcommand};
 
 mod chat;
 pub mod config;
+mod jev;
 mod manga_cmd;
 #[cfg(feature = "koharu")]
 mod manga_settings_cmd;
@@ -36,6 +37,11 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
+    /// Typed decisions and public source reranking through Bun Jev.
+    Jev {
+        #[command(subcommand)]
+        action: jev::JevAction,
+    },
     /// Chat with Shenron using the same sources, tools and memory as the desktop.
     Chat(chat::ChatArgs),
     /// List the server's selectable chat models.
@@ -81,6 +87,7 @@ where
         },
     };
     let outcome = match cli.command {
+        Command::Jev { action } => jev::run(action).await,
         Command::Chat(args) => chat::run(args).await,
         Command::Models(connection) => connection.report("/api/v1/models", &[]).await,
         Command::Conversations { action } => chat::conversations(action).await,

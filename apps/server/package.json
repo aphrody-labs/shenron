@@ -21,6 +21,7 @@
     "@aphrody/shenron-auth": "workspace:*",
     "@aphrody/shenron-config": "workspace:*",
     "@aphrody/shenron-db": "workspace:*",
+    "@aphrody/shenron-koharu": "workspace:*",
     "@aphrody/shenron-native": "workspace:*",
     "@aphrody/shenron-pipeline": "workspace:*"
   },

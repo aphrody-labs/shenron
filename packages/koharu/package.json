@@ -16,6 +16,8 @@
   ],
   "type": "module",
   "exports": {
+    "./web-server": "./src/web-server.ts",
+    "./transport": "./src/transport.ts",
     "./native": "./src/native.ts",
     "./canvas": "./src/canvas.ts",
     "./protocol": "./src/protocol.ts"
@@ -43,6 +45,8 @@
   },
   "shenron": {
     "runtime": {
+      "./web-server": "bun",
+      "./transport": "pure",
       "./native": "bun",
       "./canvas": "react",
       "./protocol": "pure"

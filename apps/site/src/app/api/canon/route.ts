@@ -13,8 +13,8 @@
  *
  * Lecture seule, CORS ouvert, sans authentification : c'est la surface que
  * consomment le MCP (`canon_check`), la skill du plugin et tout outil externe.
- * Le verdict est celui de `canon-engine` (table curée, déterministe) et les
- * preuves viennent de nos propres bases — rien d'Internet, rien d'un modèle.
+ * The curated canon tier remains editorial. Jev assesses explicitly public source excerpts
+ * through a typed judgment, with provenance and abstention, and never publishes canon.
  *
  * Chaque question posée est comptée dans `canon_verdicts` (la mémoire de
  * l'arbitre) ; l'échec de ce compteur n'empêche jamais la réponse.
@@ -27,6 +27,7 @@ import { canonEvidenceView } from "@/lib/canon-preuves-view";
 import { getCanonConfig, getCanonReferences } from "@/lib/canon-config";
 import { slugCanon } from "@/lib/canon-engine";
 import { canonEvidenceDecision, isCanonEvidenceEnabled } from "@/lib/canon-yolo-server";
+import type { CanonContinuity } from "@aphrody/shenron-pipeline/ai/canon-judgment";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -104,7 +105,12 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const preuves = await canonPreuves(q);
+  const requestedContinuity = req.nextUrl.searchParams.get("continuity");
+  const continuities = ["original_manga", "super", "anime", "gt", "daima", "unspecified"] as const;
+  const continuity = continuities.includes(requestedContinuity as CanonContinuity)
+    ? (requestedContinuity as CanonContinuity)
+    : undefined;
+  const preuves = await canonPreuves(q, continuity);
   const { verdict } = preuves;
   const evidenceDecision = assessEvidence
     ? await canonEvidenceDecision(q, verdict.references ?? [])

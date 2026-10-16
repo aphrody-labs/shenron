@@ -74,6 +74,7 @@
         "@aphrody/shenron-auth": "workspace:*",
         "@aphrody/shenron-config": "workspace:*",
         "@aphrody/shenron-db": "workspace:*",
+        "@aphrody/shenron-koharu": "workspace:*",
         "@aphrody/shenron-native": "workspace:*",
         "@aphrody/shenron-pipeline": "workspace:*",
       },
@@ -100,8 +101,10 @@
         "@aphrody/shenron-db": "workspace:*",
         "@aphrody/shenron-engine": "workspace:*",
         "@aphrody/shenron-images": "workspace:*",
+        "@aphrody/shenron-koharu": "workspace:*",
         "@aphrody/shenron-lexicon": "workspace:*",
         "@aphrody/shenron-media": "workspace:*",
+        "@aphrody/shenron-native": "workspace:*",
         "@aphrody/shenron-pipeline": "workspace:*",
         "@aphrody/shenron-ui": "workspace:*",
         "@codemirror/lang-markdown": "catalog:",
@@ -312,6 +315,7 @@
         "@aphrody/shenron-lexicon": "workspace:*",
         "@aphrody/shenron-media": "workspace:*",
         "@aphrody/shenron-native": "workspace:*",
+        "@aphrody/typesafe-sdk": "catalog:",
         "ai": "catalog:",
         "postgres": "catalog:",
         "sharp": "catalog:",
@@ -413,6 +417,7 @@
     "@aphrody/plugin-opener": "3.0.0-alpha.5",
     "@aphrody/runtime-sdk": "0.1.4",
     "@aphrody/sql": "0.1.2",
+    "@aphrody/typesafe-sdk": "0.6.2",
     "@aphrody/update": "0.1.5",
     "@aphrody/web-test": "0.2.8",
     "@base-ui/react": "^1.8.0",
@@ -637,6 +642,8 @@
     "@aphrody/shenron-ui": ["@aphrody/shenron-ui@workspace:packages/ui"],
 
     "@aphrody/sql": ["@aphrody/sql@0.1.2", "", { "dependencies": { "sqlite-vec": "^0.1.9" } }, "sha512-/lqD1x0YxRhYZZIScyukPDXyX9PVKeo9TC/p0BLxsZ1y9ppzaoIhqZWlNfhVB8F9NUIRKxeXB6YbbPWJdZLT3Q=="],
+
+    "@aphrody/typesafe-sdk": ["@aphrody/typesafe-sdk@0.6.2", "", {}, "sha512-Pnj7gUKWCcTjztzmMBVLX7FNGJVlJKfrwuE3pLDnjGABlZHW7/wb6SakGllIAz65Qjx7+oYd+MYxWbxEpGyVRw=="],
 
     "@aphrody/update": ["@aphrody/update@0.1.5", "", { "dependencies": { "@aphrody/paths": "0.1.3" } }, "sha512-MqYzyRdZ8hRFrEuV3RhKUguBPUP0T4M4ZDK68+k0HMqcAEWySb9MjrsodXYghW566ldCcjtZMoJI6n5M3c2KWw=="],
 

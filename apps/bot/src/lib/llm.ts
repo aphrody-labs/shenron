@@ -53,9 +53,12 @@ import { createResilientRedis, type ResilientRedis } from "@aphrody/shenron-db/r
 import type { HomePersona } from "@aphrody/shenron-pipeline/ai/prompts";
 import type { RagHit } from "./rag";
 import { resolveRedisUrl } from "@aphrody/shenron-config/services";
+import { judgePublicChatHits, jevSourceKind, type ChatJevPort } from "@aphrody/shenron-api/chat";
+import { botChatJev } from "./jev";
 
 /** Options of one generation; the DM relay adds the user's agent home and bounds. */
 export interface LlmOptions {
+  jev?: ChatJevPort | null;
   sessionId?: string;
   cache?: SemanticCachePort;
   lang?: string;
@@ -254,6 +257,26 @@ export async function generateLlmGrounded(
   opts: LlmOptions = {},
 ): Promise<GroundedAnswer> {
   const pid = resolvePersona(personaId);
+  const jev = opts.jev === undefined ? botChatJev(process.env) : opts.jev;
+  if (jev && !isChitchat(query)) {
+    const judged = await judgePublicChatHits(
+      query,
+      hits,
+      (hit, index) => ({
+        id: String(index),
+        text: hit.content || hit.snippet,
+        source_kind: jevSourceKind(hit.kind),
+        // Legacy rag_chunks have no visibility proof: keep their passages local.
+        public: false,
+        url: hit.url,
+        retrieval_score: hit.score,
+      }),
+      jev,
+      opts.abortSignal ?? new AbortController().signal,
+    );
+    hits = judged.hits;
+    console.error(JSON.stringify({ event: "shenron.chat.jev", ...judged.tool }));
+  }
   // Gemma réside dans le processus Bun et utilise le SOUL dbfr. Le transport HTTP
   // reste sélectionnable explicitement pour les installations distantes.
   let model: Parameters<typeof generateGroundedAnswer>[0]["model"] | null = null;

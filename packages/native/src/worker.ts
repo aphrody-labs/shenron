@@ -32,6 +32,21 @@ import {
 } from "./engine";
 import { SHENRON_STATUS, SYMBOLS } from "./generated/symbols";
 import type {
+  JevDecision,
+  ShenronJevDecideRequest,
+  ShenronJevRerankRequest,
+  ShenronJevRerankResult,
+} from "./jev";
+export type {
+  JevAnswer,
+  JevDecision,
+  JevRequest,
+  ShenronJevDecideRequest,
+  ShenronJevPassage,
+  ShenronJevRerankRequest,
+  ShenronJevRerankResult,
+} from "./jev";
+import type {
   CapturedResult,
   JobOutcome,
   LlamaProgress,
@@ -207,6 +222,28 @@ export class ShenronWorkerPool {
       checkText(question, "question");
       return { op: "persona_ask", args: [question] };
     }, options.signal);
+  }
+
+  /** Judge explicitly public state through the canonical Jev owner off the event loop. */
+  jevDecide(
+    request: ShenronJevDecideRequest,
+    options: NativeCallOptions = {},
+  ): Promise<JevDecision> {
+    return this.#call(() => {
+      if (request.public !== true) throw new TypeError("Jev requires explicitly public state");
+      return { op: "jev_decide", args: [JSON.stringify(request)] };
+    }, options.signal);
+  }
+
+  /** Judge public excerpts off the event loop, retaining source hierarchy and corrections. */
+  jevRerank(
+    request: ShenronJevRerankRequest,
+    options: NativeCallOptions = {},
+  ): Promise<ShenronJevRerankResult> {
+    return this.#call(
+      () => ({ op: "jev_rerank", args: [JSON.stringify(request)] }),
+      options.signal,
+    );
   }
 
   /** Diagnostic: hold a worker `ms` milliseconds in the library (no I/O); resolves with `ms`. */

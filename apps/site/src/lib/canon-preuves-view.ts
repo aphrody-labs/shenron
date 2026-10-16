@@ -7,7 +7,7 @@ import type { CanonPreuves } from "@/lib/canon-preuves";
  * `numero`, `texte`, `texteFr`, `verifiee`, `databookTitre`, `titre`, `extrait` on their items).
  */
 export function canonEvidenceView(
-  evidence: Pick<CanonPreuves, "planches" | "fiches" | "suggestions" | "mode">,
+  evidence: Pick<CanonPreuves, "planches" | "fiches" | "suggestions" | "mode" | "judgment">,
 ) {
   const plates = evidence.planches.map((plate) => ({
     databookId: plate.databookId,
@@ -45,6 +45,7 @@ export function canonEvidenceView(
     titre: suggestion.titre,
   }));
   return {
+    ...(evidence.judgment ? { judgment: evidence.judgment } : {}),
     plates,
     records,
     suggestions,

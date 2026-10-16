@@ -15,6 +15,7 @@
 //!   `aphrody-llama-server` local chat in process ([`llama`]).
 //! - ABI 5 keeps every ABI 4 symbol unchanged and adds the source-attributed Xenoverse 3
 //!   prototype map from `shenron-re`.
+//! - ABI 6 adds cancellable public Jev decisions and evidence reranking through Bun.
 //!
 //! Memory: an owned string is allocated here by the Rust global allocator and released by the
 //! caller, exactly once, with `shenron_string_free` (from any thread); static strings are never
@@ -810,6 +811,56 @@ mod native {
             let question =
                 unsafe { required_str(question, "question") }.map_err(JobError::Usage)?;
             run_captured_job(job, vec!["persona".into(), "ask".into(), question.into()])
+        }))
+    }
+
+    /// Typed public Jev decision as a cancellable job.
+    ///
+    /// # Safety
+    /// `request` is a valid NUL-terminated JSON string; `job` is single-use.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub unsafe extern "C" fn shenron_jev_decide_job(
+        job: u64,
+        request: *const c_char,
+    ) -> *mut c_char {
+        string_to_c(jobs::run(job, "shenron_jev_decide_job", |job| {
+            let text = unsafe { required_str(request, "request") }.map_err(JobError::Usage)?;
+            if text.len() > 256 * 1024 {
+                return Err(JobError::Usage("Jev input exceeds 256 KiB".into()));
+            }
+            let request: shenron_rag::jev::DecideRequest =
+                serde_json::from_str(text).map_err(|e| JobError::Usage(e.to_string()))?;
+            let router = shenron_rag::jev::configured_router()
+                .map_err(|e| JobError::Failed(shenron_rag::jev::client_error(&e).into()))?;
+            job.block_on(|| shenron_rag::jev::decide(&router, &request))
+                .ok_or(JobError::Cancelled)?
+                .map_err(|e| JobError::Failed(shenron_rag::jev::client_error(&e).into()))
+        }))
+    }
+
+    /// Rank public source passages as a cancellable Jev job.
+    ///
+    /// # Safety
+    /// `request` is a valid NUL-terminated JSON string; `job` is single-use.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub unsafe extern "C" fn shenron_jev_rerank_job(
+        job: u64,
+        request: *const c_char,
+    ) -> *mut c_char {
+        string_to_c(jobs::run(job, "shenron_jev_rerank_job", |job| {
+            let text = unsafe { required_str(request, "request") }.map_err(JobError::Usage)?;
+            if text.len() > 256 * 1024 {
+                return Err(JobError::Usage("Jev input exceeds 256 KiB".into()));
+            }
+            let request: shenron_rag::jev::RerankRequest =
+                serde_json::from_str(text).map_err(|e| JobError::Usage(e.to_string()))?;
+            let router = shenron_rag::jev::configured_router()
+                .map_err(|e| JobError::Failed(shenron_rag::jev::client_error(&e).into()))?;
+            job.block_on(|| shenron_rag::jev::rerank(&router, &request))
+                .ok_or(JobError::Cancelled)?
+                .map_err(|e| JobError::Failed(shenron_rag::jev::client_error(&e).into()))
         }))
     }
 

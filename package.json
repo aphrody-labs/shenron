@@ -137,7 +137,8 @@
       "@aphrody/update": "0.1.5",
       "@aphrody/next-bun": "0.2.0",
       "@aphrody/bun-runtime": "1.4.3-aphrody.2",
-      "@aphrody/bun-plugin-tailwind": "0.1.0"
+      "@aphrody/bun-plugin-tailwind": "0.1.0",
+      "@aphrody/typesafe-sdk": "0.6.2"
     }
   },
   "type": "module",

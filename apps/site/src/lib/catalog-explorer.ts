@@ -32,6 +32,7 @@ import {
 import { isArchiveCategory, selectedArchiveEntry } from "./archive-catalog";
 
 import { archiveFilter } from "./archive-catalog-query";
+import { catalogSourceFilters, catalogSourceHost } from "./catalog-source-query";
 
 type Extra = {
   table: PgTable;
@@ -253,7 +254,17 @@ function selected(cols: Record<string, PgColumn>) {
 }
 export async function readCatalogPage(
   category: string,
-  input: { page?: unknown; q?: string; parent?: string; mediaLang?: string; series?: string } = {},
+  input: {
+    page?: unknown;
+    q?: string;
+    parent?: string;
+    mediaLang?: string;
+    series?: string;
+    order?: string;
+    focus?: string;
+    kind?: string;
+    domain?: string;
+  } = {},
 ): Promise<CatalogPage | null> {
   if (!(await allowed(category))) return null;
   const page = catalogPageNumber(input.page);
@@ -261,6 +272,7 @@ export async function readCatalogPage(
   const offset = (page - 1) * CATALOG_PAGE_SIZE;
   let rows: Record<string, unknown>[], total: number;
   if (sourceCategory(category)) {
+    const filters = catalogSourceFilters(category, input);
     if (input.parent !== undefined || archiveCategories[category]) {
       const parentUrl = input.parent !== undefined ? externalSourceUrlFromId(input.parent) : null;
       if (
@@ -269,17 +281,36 @@ export async function readCatalogPage(
       )
         return null;
       const pattern = `%${escapeLike(q)}%`;
+      const host = sql`lower(regexp_replace(split_part(split_part(r.url, '://', 2), '/', 1), '^www\\.', ''))`;
+      const titleOrder = sql`lower(coalesce(nullif(r.title, ''), r.url)) asc, r.url asc`;
+      const ordering =
+        filters.order === "source"
+          ? sql`r.kind asc, ${host} asc, ${titleOrder}`
+          : filters.order === "title"
+            ? titleOrder
+            : filters.order === "oldest"
+              ? sql`r.fetched_at asc, ${titleOrder}`
+              : filters.order === "recent"
+                ? sql`r.fetched_at desc, ${titleOrder}`
+                : sql`case when ${q} = '' then 0 else ts_rank_cd(r.search_vector, websearch_to_tsquery('simple', ${q})) end desc, r.fetched_at desc, r.url asc`;
       const matching = and(
         isArchiveCategory(category) ? archiveFilter(category, input) : undefined,
+        filters.kind
+          ? sql`case when r.kind = 'official' then 'reference' else r.kind end = ${filters.kind}`
+          : undefined,
+        filters.domain ? sql`${host} = ${filters.domain}` : undefined,
+        filters.focus === "dragon-ball"
+          ? sql`r.title ~* ${"dragon[[:space:]_-]*ball|\\m(dbz|dbs|dbgt)\\M|ドラゴンボール|七龍珠|七龙珠|드래곤볼"}`
+          : undefined,
         parentUrl ? sql`p.provenance->>'parentUrl' = ${parentUrl}` : undefined,
         archiveCategories[category]
           ? sql`r.kind = 'archive' and p.provenance->>'category' = ${archiveCategories[category]}`
           : undefined,
-        sql`(${q} = '' or r.title ilike ${pattern} or r.excerpt ilike ${pattern})`,
+        sql`(${q} = '' or r.search_vector @@ websearch_to_tsquery('simple', ${q}) or r.title ilike ${pattern} or r.excerpt ilike ${pattern})`,
       );
       const [records, totals] = await Promise.all([
         db.execute(
-          sql`select r.url, r.title, r.excerpt, r.kind, p.provenance from public.external_source_records r join public.external_source_provenance p on p.url=r.url where ${matching} order by r.url asc limit ${CATALOG_PAGE_SIZE} offset ${offset}`,
+          sql`select r.url, r.title, r.excerpt, r.kind, p.provenance from public.external_source_records r join public.external_source_provenance p on p.url=r.url where ${matching} order by ${ordering} limit ${CATALOG_PAGE_SIZE} offset ${offset}`,
         ),
         db.execute(
           sql`select count(*)::int as total from public.external_source_records r join public.external_source_provenance p on p.url=r.url where ${matching}`,
@@ -289,6 +320,7 @@ export async function readCatalogPage(
       total = Number((totals as unknown as { total: number }[])[0]?.total ?? 0);
     } else {
       const result = await searchExternalSources({
+        ...filters,
         q,
         limit: CATALOG_PAGE_SIZE,
         offset,
@@ -327,7 +359,14 @@ export async function readCatalogPage(
     total,
     page,
     pageSize: CATALOG_PAGE_SIZE,
-    items: rows.map((row) => card(category, row)),
+    items: rows.map((row) => {
+      const item = card(category, row);
+      if (sourceCategory(category)) {
+        item.description = item.description.slice(0, 280);
+        item.source = { host: catalogSourceHost(row.url), kind: String(row.kind ?? "") };
+      }
+      return item;
+    }),
     observedAt: new Date().toISOString(),
   };
 }

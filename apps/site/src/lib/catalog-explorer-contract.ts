@@ -9,6 +9,7 @@ export type CatalogCard = {
   href: string;
   originalHref: string | null;
   archive?: ArchiveEntry;
+  source?: { host: string; kind: string };
 };
 export type CatalogLink = { category: string; id: string; title: string; href: string };
 export type CatalogDetail = CatalogCard & {

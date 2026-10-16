@@ -15,6 +15,22 @@ Règles :
 - Nom canonique d'abord ; les noms historiques restent acceptés en lecture. Quand plusieurs
   noms sont posés, la première valeur non vide dans l'ordre de lecture l'emporte.
 
+## Décisions Jev — `@aphrody/shenron-config/jev`
+
+Le résolveur `resolveJev` active Jev si `SHENRON_JEV=on` ou si le backend reçoit
+`TYPESAFE_API_KEY`. `SHENRON_JEV=off` le désactive explicitement. La clé reste
+dans le fichier d'environnement protégé injecté par Infra, jamais dans une
+variable `NEXT_PUBLIC_*`, un bundle, une réponse HTTP ou une image.
+
+Les décisions, la validation et le transport appartiennent au crate
+`aphrody-jev` du dépôt Bun, partagé avec `bun:yolo`. Le chat Shenron ne transmet
+que la question courante et les extraits dont la visibilité publique est
+établie. Les conversations, souvenirs, profils et pièces OCR restent locaux.
+Les sources sans preuve de visibilité sont conservées par le chemin local et
+signalées comme non évaluées. Une panne Jev exclut les extraits publics concernés
+et conserve les erreurs expurgées. La hiérarchie éditoriale est appliquée en code ;
+une source réfutant une prémisse fausse reste recevable.
+
 ## Origines publiques — `@aphrody/shenron-config/public-urls`
 
 Résolveurs `resolveSiteUrl`, `resolveApiUrl`, `resolveAssetsUrl`, table `PUBLIC_URL_ENV`.

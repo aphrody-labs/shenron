@@ -37,6 +37,7 @@ import { BackendUnavailable, type LlmBackend, type LlmMessage } from "./llm";
 import { type McpClient, pickTools, toolItems } from "./mcp";
 import type { PluginPort } from "../plugin";
 import { extractFacts, memoryBlock, newFacts, rankMemories } from "./memory";
+import { type ChatJevPort, jevSourceKind } from "./jev";
 
 export type GroundingHit = Pick<
   VfsHit,
@@ -44,6 +45,8 @@ export type GroundingHit = Pick<
 >;
 
 export interface ChatEngineDeps {
+  /** Public corpus relevance/injection judgments; absent leaves retrieval unchanged. */
+  jev?: ChatJevPort | null;
   rag: VfsRag | null;
   /** Explicit live editorial retrieval takes precedence over the embedded offline snapshot. */
   retrieval?: (
@@ -360,6 +363,104 @@ export function createChatEngine(deps: ChatEngineDeps) {
       hits = result.hits;
       mode = result.mode;
       embedError = result.embedError;
+    }
+
+    // A second public-only read proves visibility without removing private local context.
+    // Never send home, history, OCR or memories to the remote judgment owner.
+    if (deps.jev && !chitchat && hits.length > 0) {
+      const t0 = performance.now();
+      let indexed = new Map<string, VfsHit>();
+      try {
+        const publicHits =
+          deps.publicOnly === true
+            ? hits
+            : (
+                await deps.rag!.searchWith(query, deps.embed ?? null, {
+                  limit: request.topK,
+                  ...(request.kinds?.length ? { kinds: request.kinds } : {}),
+                  publicOnly: true,
+                })
+              ).hits;
+        const publicRows = new Map(publicHits.map((hit) => [`${hit.docId}:${hit.chunkId}`, hit]));
+        const candidates = hits.filter((hit) => {
+          const proven = publicRows.get(`${hit.docId}:${hit.chunkId}`);
+          return (
+            hit.corpus !== "home" &&
+            hit.corpus !== "conversations" &&
+            proven?.content === hit.content &&
+            proven?.url === hit.url &&
+            proven?.kind === hit.kind &&
+            proven?.corpus === hit.corpus
+          );
+        });
+        indexed = new Map(candidates.map((hit, index) => [String(index), hit]));
+        if (indexed.size === 0) {
+          tools.push({
+            name: "jev:skipped-private",
+            ok: true,
+            ms: Math.round(performance.now() - t0),
+            hits: 0,
+          });
+        } else {
+          const result = await deps.jev.rerank(
+            {
+              query: request.message,
+              passages: Array.from(indexed, ([id, hit]) => ({
+                id,
+                text: hit.content,
+                source_kind: jevSourceKind(hit.kind),
+                public: true,
+                ...(hit.url ? { url: hit.url } : {}),
+                retrieval_score: hit.score,
+              })),
+              limit: request.topK,
+            },
+            signal,
+          );
+          const unjudged = hits.filter((hit) => !candidates.includes(hit));
+          hits = [
+            ...result.passages.flatMap(({ passage }) => indexed.get(passage.id) ?? []),
+            ...unjudged,
+          ];
+          tools.push({
+            name: "jev:rerank",
+            ok: true,
+            ms: Math.round(performance.now() - t0),
+            hits: hits.length,
+          });
+        }
+      } catch {
+        const eligible = new Set(indexed.values());
+        hits = hits.filter((hit) => !eligible.has(hit));
+        tools.push({
+          name: "jev:rerank",
+          ok: false,
+          ms: Math.round(performance.now() - t0),
+          error: "Jev source judgment unavailable",
+        });
+      }
+    }
+    if (signal.aborted) {
+      yield {
+        type: "done",
+        data: {
+          replyId,
+          conversationId,
+          backend: "none",
+          model: null,
+          fallbacks: [],
+          citations: [],
+          usage: {
+            promptTokens: null,
+            completionTokens: null,
+            ms: Math.round(performance.now() - started),
+            firstTokenMs: null,
+          },
+          finishReason: "aborted",
+          stored: false,
+        },
+      };
+      return;
     }
 
     // 3. MCP tools, in parallel, bounded.

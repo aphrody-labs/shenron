@@ -4,12 +4,15 @@ ABI C de Shenron (`libshenron_ffi`) pour `bun:ffi` (`@aphrody/shenron-native`) e
 commande `shenron` en processus, la recherche RAG, le corpus local, le découpage Markdown, la
 persona, la présence des identifiants, depuis l'ABI 2 des tâches annulables, depuis l'ABI 3
 la mémoire persistante du chat (`aphrody-memory`), depuis l'ABI 4 les modèles de chat locaux
-(`aphrody-llama-server`), et depuis l'ABI 5 la carte prototype Xenoverse 3 avec ses sources.
+(`aphrody-llama-server`), depuis l'ABI 5 la carte prototype Xenoverse 3 avec ses sources,
+et depuis l'ABI 6 les décisions Jev typées et le reclassement de passages publics.
 
 ## Versions
 
-- `shenron_abi_version()` vaut `abi::ABI_VERSION` (**5**). L'ABI 5 garde tous les symboles de
-  l'ABI 4 et ajoute `shenron_re_xenoverse3_map`, qui rend le graphe cartographique AGE 1000
+- `shenron_abi_version()` vaut `abi::ABI_VERSION` (**6**). L'ABI 6 garde tous les symboles de
+  l'ABI 5 et ajoute `shenron_jev_decide_job` et `shenron_jev_rerank_job` : décisions typées
+  et reclassement des passages publics, hors du thread principal et annulables.
+- L'ABI 5 ajoute `shenron_re_xenoverse3_map`, qui rend le graphe cartographique AGE 1000
   original sous forme de JSON possédé. La géométrie est schématique et les lieux publiés
   incluent leur provenance officielle.
 - L'ABI 4 garde tous les symboles de

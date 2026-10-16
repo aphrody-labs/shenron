@@ -10,6 +10,8 @@ import type { JobOutcome } from "./generated/types";
 
 /** One long call, run by a worker through its `shenron_*_job` export. */
 export type JobCall =
+  | { op: "jev_decide"; args: [requestJson: string] }
+  | { op: "jev_rerank"; args: [requestJson: string] }
   | { op: "run_captured"; args: [argsJson: string] }
   | { op: "rag_search"; args: [query: string, limit: number, kind: string | null] }
   | { op: "rag_stats"; args: [] }

@@ -21,7 +21,8 @@
 ///   Aphrody's `aphrody-llama-server`. Every revision-3 symbol is unchanged.
 /// - 5: adds `shenron_re_xenoverse3_map`, the source-attributed Shenron RE prototype map.
 ///   Every revision-4 symbol is unchanged.
-pub const ABI_VERSION: u32 = 5;
+/// - 6: adds cancellable typed Jev decision and public evidence reranking.
+pub const ABI_VERSION: u32 = 6;
 
 /// Status codes set by the boundary: `JobOutcome.status`, and the `code` of a captured result
 /// when the call fails before the command runs. A wrapped command may return any exit code.
@@ -272,6 +273,10 @@ ffi_table! {
     [2] fn shenron_local_search_job(job: u64, query: cstr, limit: i32, kind: cstr) -> owned_str;
     /// Ask the persona as a job: owned `JobOutcome<CapturedResult>` JSON.
     [2] fn shenron_persona_ask_job(job: u64, question: cstr) -> owned_str;
+    /// Public typed Jev decision as a cancellable job: owned JSON envelope.
+    [6] fn shenron_jev_decide_job(job: u64, request: cstr) -> owned_str;
+    /// Public evidence reranking as a cancellable job: owned JSON envelope.
+    [6] fn shenron_jev_rerank_job(job: u64, request: cstr) -> owned_str;
     /// Diagnostic: hold a job for `ms` milliseconds without I/O: owned `JobOutcome<number>` JSON.
     [2] fn shenron_sleep_job(job: u64, ms: u32) -> owned_str;
     /// Store one memory in the SQLite memory at `db_path` (created on first use, mode 600):

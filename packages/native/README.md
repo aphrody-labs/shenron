@@ -32,6 +32,11 @@ import { shenronWorkerPool, closeShenronWorkerPool } from "@aphrody/shenron-nati
 
 const pool = shenronWorkerPool({ path, size: 2 }); // ouvre et vérifie la bibliothèque ici
 const answer = await pool.localSearch("Son Goku", { limit: 8, signal: request.signal });
+// ABI 6 : jugement typé, filtrage et reclassement des seuls extraits publics.
+const ranked = await pool.jevRerank({
+  query: "Son Goku est-il humain ?",
+  passages: [{ id: "manga-1", text: "Son Goku est un Saiyan.", source_kind: "manga", public: true }],
+}, { signal: request.signal });
 await closeShenronWorkerPool();
 ```
 

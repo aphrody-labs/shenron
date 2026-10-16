@@ -528,6 +528,7 @@
     "projectName": "Nom du projet",
     "projectNamePlaceholder": "Mon nouveau projet",
     "storageHint": "Les projets sont stockés localement sur cet appareil.",
+    "browserStorageHint": "Vos projets sont enregistrés dans votre espace privé sur DBFR. Importez vos fichiers et téléchargez les planches exportées.",
     "title": "Projets",
     "yourProjects": "Vos projets"
   },

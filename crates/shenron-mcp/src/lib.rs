@@ -18,6 +18,7 @@ pub mod dbfr_tools;
 pub mod dragonball_tools;
 pub mod guide;
 pub mod http;
+pub mod jev_tools;
 pub mod lexicon_tools;
 pub mod site_tools;
 pub mod video_tools;
@@ -36,7 +37,9 @@ const SCANLATION_TOOLS: [&str; 2] = ["dragonball.manga_scanlate", "dragonball.da
 
 /// Read tools that use a server-side credential or expose non-public data: elevated only, even
 /// though they do not write.
-const ELEVATED_READS: [&str; 6] = [
+const ELEVATED_READS: [&str; 8] = [
+    "dragonball.jev_decide",
+    "dragonball.jev_rerank",
     "dragonball.databook_anomalies",
     "dragonball.databook_ocr_review",
     "dragonball.databook_relecture_ocr",
@@ -84,6 +87,7 @@ impl ShenronMcp {
         router += Self::dragonball_router();
         router += Self::site_router();
         router += Self::video_router();
+        router += Self::jev_router();
         #[cfg(not(feature = "koharu"))]
         for name in SCANLATION_TOOLS {
             router.remove_route(name);
@@ -109,6 +113,38 @@ impl ShenronMcp {
 
     fn tools(&self) -> ToolRouter<Self> {
         if self.public { Self::public_tools() } else { Self::all_tools() }
+    }
+}
+
+#[tool_router(router = jev_router)]
+impl ShenronMcp {
+    #[tool(
+        name = "dragonball.jev_decide",
+        description = "Elevated only. Typed Jev Noul/Choice/Score decisions over explicitly public state. No private chat memory is loaded; credentials stay server-side. Returns model, answers and routing evidence.",
+        annotations(read_only_hint = true, destructive_hint = false, open_world_hint = true)
+    )]
+    async fn dragonball_jev_decide(
+        &self,
+        Parameters(input): Parameters<jev_tools::JevInput>,
+    ) -> rmcp::model::CallToolResult {
+        if self.public {
+            return dragonball_tools::err("Jev requires elevated access");
+        }
+        dragonball_tools::done(jev_tools::decide(input).await)
+    }
+    #[tool(
+        name = "dragonball.jev_rerank",
+        description = "Elevated only. Judge public retrieved excerpts for relevance and prompt injection in one Jev call. Preserves evidence refuting false premises and the manga/Toriyama/databook hierarchy. Private and Fandom sources never enter the request.",
+        annotations(read_only_hint = true, destructive_hint = false, open_world_hint = true)
+    )]
+    async fn dragonball_jev_rerank(
+        &self,
+        Parameters(input): Parameters<jev_tools::JevInput>,
+    ) -> rmcp::model::CallToolResult {
+        if self.public {
+            return dragonball_tools::err("Jev requires elevated access");
+        }
+        dragonball_tools::done(jev_tools::rerank(input).await)
     }
 }
 
@@ -1848,6 +1884,8 @@ mod tests {
         }
         for name in [
             "dbfr_deposit",
+            "dragonball.jev_decide",
+            "dragonball.jev_rerank",
             "dragonball.admin_databooks_deposit",
             "dragonball.admin_bot_command_execute",
             "dragonball.admin_service_action",
@@ -1939,7 +1977,7 @@ mod tests {
                 names.len()
                     + SITE_PUBLIC_TOOLS.len()
                     + SITE_ELEVATED_TOOLS.len()
-                    + 2
+                    + 4
                     + if cfg!(feature = "koharu") { SCANLATION_TOOLS.len() } else { 0 },
                 "unexpected dragonball.* tool count"
             );

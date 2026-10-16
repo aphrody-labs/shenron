@@ -3,16 +3,13 @@ import "server-only";
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { decodeHtmlEntitiesPlain, markdownToPlainText } from "@/lib/markdown-plain";
+import {
+  CATALOG_SOURCE_KINDS,
+  CATALOG_SOURCE_ORDERS,
+  type CatalogSourceOrder,
+} from "@/lib/catalog-source-query";
 
-export const EXTERNAL_SOURCE_KINDS = [
-  "publisher",
-  "reference",
-  "archive",
-  "wayback",
-  "encyclopedia",
-  "statistics",
-  "media",
-] as const;
+export const EXTERNAL_SOURCE_KINDS = CATALOG_SOURCE_KINDS;
 
 type ExternalSourceKind = (typeof EXTERNAL_SOURCE_KINDS)[number];
 
@@ -43,6 +40,11 @@ export type ExternalSourceSearch = {
   limit?: number;
   offset?: number;
   strict?: boolean;
+  order?: CatalogSourceOrder;
+  focus?: "all" | "dragon-ball";
+  domain?: string;
+  archiveCategory?: string;
+  parentUrl?: string;
 };
 
 const MAX_LIMIT = 48;
@@ -131,11 +133,30 @@ export async function searchExternalSources({
   limit = 18,
   offset = 0,
   strict = false,
+  order = "relevance",
+  focus = "all",
+  domain = "",
+  archiveCategory = "",
+  parentUrl = "",
 }: ExternalSourceSearch = {}): Promise<ExternalSourceCatalog> {
   const query = q.trim().slice(0, 120);
   const selectedKind = EXTERNAL_SOURCE_KINDS.includes(kind as ExternalSourceKind) ? kind : "";
   const take = Number.isFinite(limit) ? Math.max(1, Math.min(Math.trunc(limit), MAX_LIMIT)) : 18;
   const skip = Number.isSafeInteger(Math.trunc(offset)) ? Math.max(0, Math.trunc(offset)) : 0;
+  const selectedOrder = CATALOG_SOURCE_ORDERS.includes(order) ? order : "relevance";
+  const host = sql`lower(regexp_replace(split_part(split_part(records.url, '://', 2), '/', 1), '^www\\.', ''))`;
+  const titleOrder = sql`lower(coalesce(nullif(records.title, ''), records.url)) ASC, records.url ASC`;
+  const ordering =
+    selectedOrder === "source"
+      ? sql`kind ASC, ${host} ASC, ${titleOrder}`
+      : selectedOrder === "title"
+        ? titleOrder
+        : selectedOrder === "oldest"
+          ? sql`"fetchedAt" ASC, ${titleOrder}`
+          : selectedOrder === "recent"
+            ? sql`"fetchedAt" DESC, ${titleOrder}`
+            : sql`score DESC, "fetchedAt" DESC, records.url ASC`;
+  const pattern = `%${query.replace(/[\\%_]/g, "\\$&")}%`;
 
   try {
     const result = await db.execute(sql`
@@ -152,13 +173,17 @@ export async function searchExternalSources({
 			FROM public.external_source_records AS records
 			LEFT JOIN public.external_source_provenance AS provenance ON provenance.url = records.url
 			WHERE (${selectedKind} = '' OR CASE WHEN records.kind = 'official' THEN 'reference' ELSE records.kind END = ${selectedKind})
+                AND (${archiveCategory} = '' OR (records.kind = 'archive' AND provenance.provenance->>'category' = ${archiveCategory}))
+                AND (${parentUrl} = '' OR provenance.provenance->>'parentUrl' = ${parentUrl})
+                AND (${domain} = '' OR ${host} = ${domain})
+                AND (${focus !== "dragon-ball"} OR records.title ~* ${"dragon[[:space:]_-]*ball|\\m(dbz|dbs|dbgt)\\M|ドラゴンボール|七龍珠|七龙珠|드래곤볼"})
 				AND (
 					${query} = ''
 					OR records.search_vector @@ websearch_to_tsquery('simple', ${query})
-					OR title ILIKE '%' || ${query} || '%'
-					OR excerpt ILIKE '%' || ${query} || '%'
+					OR records.title ILIKE ${pattern}
+					OR records.excerpt ILIKE ${pattern}
 				)
-			ORDER BY score DESC, "fetchedAt" DESC, records.url ASC
+			ORDER BY ${ordering}
 			LIMIT ${take} OFFSET ${skip}
 		`);
     const rows = result as unknown as (ExternalSourceRecord & {

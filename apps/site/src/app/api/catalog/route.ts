@@ -24,6 +24,10 @@ export async function GET(request: Request) {
                 parent: query.get("parent") ?? undefined,
                 mediaLang: query.get("mediaLang") ?? undefined,
                 series: query.get("series") ?? undefined,
+                order: query.get("order") ?? undefined,
+                focus: query.get("focus") ?? undefined,
+                kind: query.get("kind") ?? undefined,
+                domain: query.get("domain") ?? undefined,
               });
     return NextResponse.json(data ?? { error: "not_found" }, {
       status: data ? 200 : 404,

@@ -42,6 +42,7 @@ export const env = createEnv({
     SHENRON_HOST_URL: z.string().trim().url().optional(),
     SHENRON_MCP_URL: z.string().trim().url().optional(),
     SHENRON_ADMIN_TOKEN: z.string().trim().min(16).optional(),
+    TYPESAFE_API_KEY: z.string().trim().min(1).optional(),
     // Adresses ou CIDR d'administration (`@/lib/admin-ip`) : staff sans session ni jeton.
     SHENRON_ADMIN_IPS: z.string().trim().optional(),
     SHENRON_USER_SECRET: z.string().trim().min(32).optional(),

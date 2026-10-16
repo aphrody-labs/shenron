@@ -1,16 +1,37 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import { afterEach, describe, expect, test } from "bun:test";
 
-import { Channel, KOHARU_SESSION_HEADER, KoharuBridge, invoke } from "../src/transport.ts";
+import {
+  Channel,
+  KOHARU_SESSION_HEADER,
+  KoharuBridge,
+  invoke,
+  configureKoharuBridge,
+  koharuBridge,
+} from "../src/transport.ts";
 
 const realFetch = globalThis.fetch;
 const realEventSource = (globalThis as { EventSource?: unknown }).EventSource;
 
 afterEach(() => {
+  configureKoharuBridge("/api/local/koharu");
   globalThis.fetch = realFetch;
   delete (globalThis as { window?: unknown }).window;
   (globalThis as { EventSource?: unknown }).EventSource = realEventSource;
   delete (globalThis as { __TAURI_INTERNALS__?: unknown }).__TAURI_INTERNALS__;
+});
+
+test("hosted mode pins commands and channels to one same-origin authenticated bridge", async () => {
+  (globalThis as { EventSource?: unknown }).EventSource = FakeEventSource;
+  const calls = fakeFetch(() => Response.json({ result: { name: "staff-project" } }));
+  configureKoharuBridge("/api/studio", true);
+  expect(koharuBridge().browserFiles).toBe(true);
+  expect(await invoke("get_project")).toEqual({ name: "staff-project" });
+  expect(calls[0]!.url).toBe("/api/studio/invoke");
+  expect(FakeEventSource.last!.url).toStartWith("/api/studio/events?");
+  expect(() => configureKoharuBridge("https://other.example/api/studio")).toThrow();
+  expect(() => configureKoharuBridge("//other.example/api/studio")).toThrow();
+  expect(() => configureKoharuBridge("/api/studio?token=private")).toThrow();
 });
 
 class FakeEventSource {
@@ -101,6 +122,7 @@ describe("outside Tauri", () => {
     expect(calls[0]!.url).toBe("/api/local/koharu/invoke");
 
     FakeEventSource.last!.emit({ channel: channel.id, message: 7 });
+    // oxlint-disable-next-line unicorn/prefer-add-event-listener -- Protocol channels are not DOM event targets.
     channel.onmessage = (value) => values.push(value * 10);
     FakeEventSource.last!.emit({ channel: channel.id, message: 2 });
     expect(values).toEqual([7, 20]);

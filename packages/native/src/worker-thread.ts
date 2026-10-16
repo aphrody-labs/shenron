@@ -31,6 +31,10 @@ function invoke(lib: Library, request: CallRequest): Pointer | bigint | null {
   const native = lib.symbols;
   const job = request.job;
   switch (request.op) {
+    case "jev_decide":
+      return native.shenron_jev_decide_job(job, cstr(request.args[0]));
+    case "jev_rerank":
+      return native.shenron_jev_rerank_job(job, cstr(request.args[0]));
     case "run_captured":
       return native.shenron_run_captured_job(job, cstr(request.args[0]));
     case "rag_search": {

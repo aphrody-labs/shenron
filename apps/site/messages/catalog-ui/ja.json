@@ -1,0 +1,30 @@
+{
+  "browse": "カタログを見る",
+  "sources": "出典",
+  "movies": "動画アーカイブ",
+  "images": "画像アーカイブ",
+  "sort": "並び順",
+  "source": "種類・出典順",
+  "title": "タイトル順",
+  "recent": "収集日時の新しい順",
+  "oldest": "収集日時の古い順",
+  "relevance": "検索との関連度",
+  "classification": "出典の種類",
+  "allKinds": "すべての種類",
+  "focus": "タイトルの範囲",
+  "all": "すべての資料",
+  "dragonBall": "タイトルにドラゴンボール・DBZを含む",
+  "domain": "出典ドメイン",
+  "anyDomain": "すべてのドメイン",
+  "clear": "絞り込みを解除",
+  "filtered": "絞り込み中",
+  "kinds": {
+    "publisher": "出版社",
+    "reference": "参考資料",
+    "archive": "アーカイブ",
+    "wayback": "保存されたページ",
+    "encyclopedia": "百科事典",
+    "statistics": "統計",
+    "media": "メディア"
+  }
+}

@@ -9,7 +9,7 @@
 import { FFIType } from "bun:ffi";
 
 /** ABI revision of this table: `shenron_abi_version()` of a compatible library. */
-export const SHENRON_FFI_ABI = 5;
+export const SHENRON_FFI_ABI = 6;
 
 /** Version of the shenron-ffi crate the table was generated from (the workspace version). */
 export const SHENRON_FFI_VERSION = "1.4.4";
@@ -176,6 +176,18 @@ export const SYMBOLS = {
    * `shenron_persona_ask_job(job: u64, question: cstr) -> owned_str`, since ABI 2.
    */
   shenron_persona_ask_job: { args: [FFIType.u64, FFIType.cstring], returns: FFIType.ptr },
+  /**
+   * Public typed Jev decision as a cancellable job: owned JSON envelope.
+   *
+   * `shenron_jev_decide_job(job: u64, request: cstr) -> owned_str`, since ABI 6.
+   */
+  shenron_jev_decide_job: { args: [FFIType.u64, FFIType.cstring], returns: FFIType.ptr },
+  /**
+   * Public evidence reranking as a cancellable job: owned JSON envelope.
+   *
+   * `shenron_jev_rerank_job(job: u64, request: cstr) -> owned_str`, since ABI 6.
+   */
+  shenron_jev_rerank_job: { args: [FFIType.u64, FFIType.cstring], returns: FFIType.ptr },
   /**
    * Diagnostic: hold a job for `ms` milliseconds without I/O: owned `JobOutcome<number>` JSON.
    *

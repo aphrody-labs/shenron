@@ -86,7 +86,10 @@
     "./ai/training-hashes": "./src/ai/training-hashes.ts",
     "./re-wasm": "./src/re-wasm.ts",
     "./re-wasm-web": "./src/re-wasm-web.ts",
-    "./runtime/python": "./src/runtime/python.ts"
+    "./runtime/python": "./src/runtime/python.ts",
+    "./ai/canon-judgment": "./src/ai/canon-judgment.ts",
+    "./ai/jev-provider": "./src/ai/jev-provider.ts",
+    "./ai/canon-eval": "./src/ai/canon-eval.ts"
   },
   "publishConfig": {
     "access": "public",
@@ -118,7 +121,8 @@
     "postgres": "catalog:",
     "sharp": "catalog:",
     "sqlite-vec": "catalog:",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "@aphrody/typesafe-sdk": "catalog:"
   },
   "engines": {
     "bun": ">=1.4.3"
@@ -191,7 +195,10 @@
       "./ai/training-hashes": "pure",
       "./re-wasm": "bun",
       "./re-wasm-web": "pure",
-      "./runtime/python": "bun"
+      "./runtime/python": "bun",
+      "./ai/canon-judgment": "pure",
+      "./ai/jev-provider": "bun",
+      "./ai/canon-eval": "pure"
     }
   }
 }

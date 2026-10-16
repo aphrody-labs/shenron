@@ -1,6 +1,7 @@
 "use client";
 
 import { commands, type CanvasPagePreparation, type Point, type TransformFrame } from "./protocol";
+export { usesHostedStudio } from "./transport";
 
 export type CanvasColor = [number, number, number, number];
 export type CanvasStrokeKind = "paint" | "erase" | "inpaint";

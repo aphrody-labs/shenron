@@ -35,7 +35,15 @@ import { TooltipProvider } from "@aphrody/m3-primitives";
 const STARTUP_TIMEOUT_MS = 30_000;
 
 /** `locale`: the site locale (`fr | en | ja`) the editor speaks; unset, it keeps its detected language. */
-export function Providers({ children, locale }: { children: ReactNode; locale?: string }) {
+export function Providers({
+  children,
+  locale,
+  embedded = false,
+}: {
+  children: ReactNode;
+  locale?: string;
+  embedded?: boolean;
+}) {
   useSiteLocale(locale);
   const runtime = useRef({ active: false, bound: false });
 
@@ -124,7 +132,7 @@ export function Providers({ children, locale }: { children: ReactNode; locale?: 
       <I18nextProvider i18n={i18n}>
         <TooltipProvider delay={0}>
           <ClientOnly>
-            <StartupBoundary>{children}</StartupBoundary>
+            <StartupBoundary embedded={embedded}>{children}</StartupBoundary>
             <Toaster />
           </ClientOnly>
         </TooltipProvider>
@@ -133,9 +141,9 @@ export function Providers({ children, locale }: { children: ReactNode; locale?: 
   );
 }
 
-function StartupBoundary({ children }: { children: ReactNode }) {
+function StartupBoundary({ children, embedded }: { children: ReactNode; embedded: boolean }) {
   const initialized = useKoharuStore((state) => state.initialized);
-  return initialized ? <>{children}</> : <StartupView />;
+  return initialized ? <>{children}</> : <StartupView embedded={embedded} />;
 }
 
 export default Providers;

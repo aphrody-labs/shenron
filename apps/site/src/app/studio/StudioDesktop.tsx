@@ -13,15 +13,21 @@ import { DesktopStudioShell } from "./DesktopStudioShell";
  */
 export default function StudioDesktop({ embedded = false }: { embedded?: boolean }) {
   const { locale } = useLangue();
-  return (
-    <DesktopStudioShell>
-      <div className="flex min-h-0 flex-1" data-koharu-host>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Providers locale={locale}>
-            <KoharuApp embedded />
-          </Providers>
-        </ThemeProvider>
-      </div>
-    </DesktopStudioShell>
+  const editor = (
+    <div
+      className={
+        embedded
+          ? "flex h-[calc(100dvh-8rem)] min-h-[440px] w-full min-w-0 overflow-hidden"
+          : "flex min-h-0 flex-1"
+      }
+      data-koharu-host
+    >
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <Providers locale={locale} embedded>
+          <KoharuApp embedded />
+        </Providers>
+      </ThemeProvider>
+    </div>
   );
+  return embedded ? editor : <DesktopStudioShell>{editor}</DesktopStudioShell>;
 }

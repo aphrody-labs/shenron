@@ -18,6 +18,8 @@ import {
   createShenronProvider,
 } from "@aphrody/shenron-pipeline/ai/provider";
 import { generateText } from "ai";
+import { judgePublicChatHits, jevSourceKind } from "@aphrody/shenron-api/chat";
+import { siteChatJev } from "./jev";
 
 export function usesAphrodyRag(): boolean {
   return process.env.RAG_BACKEND === "aphrody";
@@ -52,14 +54,41 @@ function chatProvider(chat: ChatFn, chatModel: string) {
 export async function chatAphrodyRag(
   query: string,
   persona: string,
-  options: { context?: string; lang?: string; entity?: string; sourceId?: string } = {},
+  options: {
+    context?: string;
+    lang?: string;
+    entity?: string;
+    sourceId?: string;
+    signal?: AbortSignal;
+  } = {},
   client = aphrodyRagClient(),
 ): Promise<{ answer: string; hits: AphrodyRagHit[]; mode: string }> {
-  const { results: hits, mode } = await client.ragSearchWithMode(query, 5, {
+  const { results, mode } = await client.ragSearchWithMode(query, 5, {
     lang: options.lang,
     entity: options.entity,
     sourceId: options.sourceId,
   });
+  let hits = results;
+  const jev = siteChatJev(process.env);
+  if (jev) {
+    const judged = await judgePublicChatHits(
+      query,
+      hits,
+      (hit, index) => ({
+        id: String(index),
+        text: hit.content || hit.snippet,
+        source_kind: jevSourceKind(hit.kind),
+        // The existing remote RAG wire carries no public visibility evidence.
+        public: false,
+        url: hit.url,
+        retrieval_score: hit.score,
+      }),
+      jev,
+      options.signal ?? new AbortController().signal,
+    );
+    hits = judged.hits;
+    console.error(JSON.stringify({ event: "shenron.chat.jev", ...judged.tool }));
+  }
   if (hits.length === 0 && !options.context?.trim()) return { answer: "", hits, mode };
   const sources = hits
     .slice(0, 5)
@@ -90,9 +119,10 @@ export async function chatAphrodyRag(
   const { text } = await generateText({
     model,
     maxOutputTokens: PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS,
-    abortSignal: AbortSignal.timeout(
-      chatTimeoutMs(direct.value?.model ?? resolveChatModel(process.env)),
-    ),
+    abortSignal: AbortSignal.any([
+      AbortSignal.timeout(chatTimeoutMs(direct.value?.model ?? resolveChatModel(process.env))),
+      ...(options.signal ? [options.signal] : []),
+    ]),
     instructions,
     messages: [{ role: "user", content: `Sources :\n${context}\n\nQuestion : ${query}` }],
     maxRetries: 0,
