@@ -19,7 +19,7 @@ jobs:
   build:
     name: Compile (${{ matrix.target }})
     # Bun compile en croisé : les deux cibles se construisent sur Linux.
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -85,7 +85,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { target: linux-x64, os: ubuntu-22.04 }
+          - { target: linux-x64, os: ubuntu-26.04 }
           - { target: windows-x64, os: windows-latest }
     steps:
       - uses: actions/checkout@v7
@@ -142,7 +142,7 @@ jobs:
   release:
     name: Create GitHub Release (draft)
     needs: [build, desktop]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         with:
