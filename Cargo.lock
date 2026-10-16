@@ -432,6 +432,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "aphrody-jev"
+version = "1.4.4"
+source = "git+https://github.com/aphrody-labs/bun?rev=892ea1ae93820a9ea839027ff466f44f732ccfa8#892ea1ae93820a9ea839027ff466f44f732ccfa8"
+dependencies = [
+ "futures",
+ "reqwest",
+ "rustls",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
 name = "aphrody-llama"
 version = "0.83.5"
 source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
@@ -9782,8 +9798,10 @@ name = "shenron-rag"
 version = "1.4.4"
 dependencies = [
  "aphrody-config",
+ "aphrody-jev",
  "aphrody-rag",
  "aphrody-rag-core",
+ "axum",
  "blake3",
  "dirs 7.0.0",
  "reqwest",

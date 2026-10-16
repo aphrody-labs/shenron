@@ -173,6 +173,7 @@ tauri-plugin-log = { git = "https://github.com/aphrody-labs/aphrody", rev = "7da
 tauri-plugin-opener = { git = "https://github.com/aphrody-labs/aphrody", rev = "7daf113b06c0c86dded6ec8ca5a7fe1971b1febf", package = "aphrody-tauri-plugin-opener", version = "=3.0.0-alpha.2" }
 tauri-plugin-process = { git = "https://github.com/aphrody-labs/aphrody", rev = "7daf113b06c0c86dded6ec8ca5a7fe1971b1febf", package = "aphrody-tauri-plugin-process", version = "=3.0.0-alpha.2" }
 tauri-plugin-single-instance = { git = "https://github.com/aphrody-labs/aphrody", rev = "7daf113b06c0c86dded6ec8ca5a7fe1971b1febf", package = "aphrody-tauri-plugin-single-instance", version = "=3.0.0-alpha.2" }
+tauri-plugin-updater = { git = "https://github.com/aphrody-labs/aphrody", rev = "7daf113b06c0c86dded6ec8ca5a7fe1971b1febf", package = "aphrody-tauri-plugin-updater", version = "=3.0.0-alpha.2" }
 tauri-plugin-window-state = { git = "https://github.com/aphrody-labs/aphrody", rev = "7daf113b06c0c86dded6ec8ca5a7fe1971b1febf", package = "aphrody-tauri-plugin-window-state", version = "=3.0.0-alpha.2" }
 tauri-runtime-cef = { git = "https://github.com/aphrody-labs/aphrody", rev = "7daf113b06c0c86dded6ec8ca5a7fe1971b1febf", package = "aphrody-tauri-runtime-cef", version = "=3.0.0-alpha.5" }
 tempfile = "3.27.0"

@@ -63,6 +63,7 @@ fn main() {
         )
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(server::LocalServer::default())
         .setup(|app| {
             let window = tauri::WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
@@ -104,6 +105,8 @@ fn main() {
                     None
                 },
             };
+            let updater = app.handle().clone();
+            tauri::async_runtime::spawn(async move { update_in_background(updater).await });
             let handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
                 let target = match server::start(&handle).await {
@@ -186,4 +189,27 @@ fn main() {
             app.state::<server::LocalServer>().stop();
         }
     });
+}
+
+/// Checks the release feed once at startup and installs a newer signed build, then restarts.
+/// Every failure (offline, no release, bad signature) only logs: the app keeps running.
+async fn update_in_background(handle: tauri::AppHandle) {
+    use tauri_plugin_updater::UpdaterExt;
+    // Let the window and the local server come up first.
+    tokio::time::sleep(std::time::Duration::from_secs(20)).await;
+    let update = match handle.updater() {
+        Ok(updater) => updater.check().await,
+        Err(error) => Err(error),
+    };
+    match update {
+        Ok(Some(update)) => {
+            log::info!("update {} available, installing", update.version);
+            match update.download_and_install(|_, _| {}, || {}).await {
+                Ok(()) => handle.restart(),
+                Err(error) => log::warn!("update install failed: {error}"),
+            }
+        },
+        Ok(None) => log::info!("Shenron Studio is up to date"),
+        Err(error) => log::warn!("update check failed: {error}"),
+    }
 }
