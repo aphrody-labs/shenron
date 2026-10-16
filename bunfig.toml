@@ -1,5 +1,8 @@
+telemetry = false
+
 [install]
 linker = "isolated"
+globalStore = true
 hoist = true
 # Only react and react-dom are reachable from the store fallback: swiper (and other packages
 # importing react without declaring the peer) resolve them; everything else stays strict.
@@ -60,6 +63,7 @@ minimumReleaseAgeExcludes = [
 [run]
 # `bun run` exécute toujours Bun, même quand un script ou un binaire déclare un shebang `node`.
 bun = true
+noOrphans = true
 
 [jsx]
 runtime = "automatic"
@@ -70,3 +74,6 @@ config = ".oxlintrc.json"
 
 [fmt]
 config = ".oxfmtrc.json"
+
+[test]
+onlyFailures = true
