@@ -53,14 +53,16 @@ try {
     60_000,
   );
   await run(["scp", "-q", "-r", ...SSH, ".", `${host}:${fresh}/`], 3_600_000, stage);
+  // The site container bind-mounts REMOTE: update it in place (a directory swap would leave the
+  // mount on the removed inode). Binaries first, the manifest last, so readers never see a gap.
   await run(
     [
       "ssh",
       ...SSH,
       host,
-      `sudo chmod -R a+rX ${fresh} && sudo rm -rf ${REMOTE}.old && { [ ! -d ${REMOTE} ] || sudo mv ${REMOTE} ${REMOTE}.old; } && sudo mv ${fresh} ${REMOTE} && sudo rm -rf ${REMOTE}.old`,
+      `sudo chmod -R a+rX ${fresh} && sudo install -d -m 755 -o ubuntu ${REMOTE} && cd ${fresh} && for f in $(ls | grep -v -e '^latest.json$' -e '^SHA256SUMS$'); do sudo mv -f $f ${REMOTE}/$f; done && sudo mv -f SHA256SUMS ${REMOTE}/SHA256SUMS && sudo mv -f latest.json ${REMOTE}/latest.json && cd / && sudo rm -rf ${fresh} && cd ${REMOTE} && for f in $(ls | grep -v -e '^latest.json$' -e '^SHA256SUMS$'); do grep -q " ${"$"}f$" SHA256SUMS || sudo rm -f ${"$"}f; done`,
     ],
-    120_000,
+    300_000,
   );
   console.log(JSON.stringify({ host, version, remote: REMOTE }));
 } finally {
