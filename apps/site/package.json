@@ -1,6 +1,6 @@
 {
   "name": "@aphrody/shenron-site",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "private": true,
   "exports": {
     "./lib/wiki-slugs": "./src/lib/wiki-slugs.ts",

@@ -1,6 +1,6 @@
 {
   "name": "@aphrody/shenron-server",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "private": true,
   "description": "shenron-server: the Shenron front app (Next 16 standalone), the Shenron API and the local APIs in one autonomous Bun binary.",
   "license": "Apache-2.0",

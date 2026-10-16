@@ -1,6 +1,6 @@
 {
   "name": "@aphrody/shenron",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "private": true,
   "description": "Shenron (dragonballfr.com): Dragon Ball site, Discord bot, editorial pipeline, Koharu manga translation and the Shenron agent tooling, built on published Aphrody packages.",
   "workspaces": {

@@ -936,6 +936,38 @@ dependencies = [
 ]
 
 [[package]]
+name = "aphrody-tauri-plugin-updater"
+version = "3.0.0-alpha.2"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
+dependencies = [
+ "aphrody-tauri",
+ "aphrody-tauri-plugin",
+ "base64 0.22.1",
+ "dirs 6.0.0",
+ "flate2",
+ "futures-util",
+ "http",
+ "infer",
+ "log",
+ "minisign-verify",
+ "osakit",
+ "percent-encoding",
+ "reqwest",
+ "rustls",
+ "semver",
+ "serde",
+ "serde_json",
+ "tar",
+ "tempfile",
+ "thiserror 2.0.21",
+ "time",
+ "tokio",
+ "url",
+ "windows-sys 0.60.2",
+ "zip",
+]
+
+[[package]]
 name = "aphrody-tauri-plugin-window-state"
 version = "3.0.0-alpha.2"
 source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
@@ -3185,7 +3217,7 @@ dependencies = [
 
 [[package]]
 name = "dragon-pixel-engine"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "js-sys",
  "serde",
@@ -5540,7 +5572,7 @@ checksum = "e2db585e1d738fc771bf08a151420d3ed193d9d895a36df7f6f8a9456b911ddc"
 
 [[package]]
 name = "koharu-agent"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "anyhow",
  "aphrody-ml-config",
@@ -5561,7 +5593,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-app"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "anyhow",
  "aphrody-tauri",
@@ -5583,7 +5615,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-canvas"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "futures-channel",
  "js-sys",
@@ -5598,7 +5630,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-desktop"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "anyhow",
  "koharu-rasterizer",
@@ -5614,7 +5646,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-library"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "alphanumeric-sort",
  "anyhow",
@@ -5665,7 +5697,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-ml"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "ab_glyph",
  "anyhow",
@@ -5697,7 +5729,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-pipeline"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "anyhow",
  "aphrody-ml-config",
@@ -5727,7 +5759,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-psd"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "image",
  "koharu-rasterizer",
@@ -5740,7 +5772,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-rasterizer"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "anyhow",
  "blake3",
@@ -5756,7 +5788,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-renderer"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "anyhow",
  "aphrody-ml-config",
@@ -5791,7 +5823,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-scene"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "blake3",
  "bytes",
@@ -5813,7 +5845,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-secrets"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "anyhow",
  "keyring",
@@ -5825,7 +5857,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-storage"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "anyhow",
  "blake3",
@@ -5846,7 +5878,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-translator"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "anyhow",
  "aphrody-ml-config",
@@ -6393,6 +6425,12 @@ name = "minimal-lexical"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a"
+
+[[package]]
+name = "minisign-verify"
+version = "0.2.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "22f9645cb765ea72b8111f36c522475d2daa0d22c957a9826437e97534bc4e9e"
 
 [[package]]
 name = "miniz_oxide"
@@ -6945,6 +6983,7 @@ checksum = "e3e0adef53c21f888deb4fa59fc59f7eb17404926ee8a6f59f5df0fd7f9f3272"
 dependencies = [
  "bitflags 2.13.2",
  "block2",
+ "libc",
  "objc2",
  "objc2-core-foundation",
 ]
@@ -6979,6 +7018,18 @@ dependencies = [
  "bitflags 2.13.2",
  "block2",
  "objc2",
+ "objc2-foundation",
+]
+
+[[package]]
+name = "objc2-osa-kit"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f112d1746737b0da274ef79a23aac283376f335f4095a083a267a082f21db0c0"
+dependencies = [
+ "bitflags 2.13.2",
+ "objc2",
+ "objc2-app-kit",
  "objc2-foundation",
 ]
 
@@ -7161,6 +7212,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2355d85b9a3786f481747ced0e0ff2ba35213a1f9bd406ed906554d7af805a1"
 dependencies = [
  "memchr",
+]
+
+[[package]]
+name = "osakit"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "732c71caeaa72c065bb69d7ea08717bd3f4863a4f451402fc9513e29dbd5261b"
+dependencies = [
+ "objc2",
+ "objc2-foundation",
+ "objc2-osa-kit",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -9641,7 +9706,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-cli"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "aphrody-agent-home",
  "aphrody-config",
@@ -9666,7 +9731,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-desktop"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "aphrody-tauri",
  "aphrody-tauri-build",
@@ -9674,6 +9739,7 @@ dependencies = [
  "aphrody-tauri-plugin-opener",
  "aphrody-tauri-plugin-process",
  "aphrody-tauri-plugin-single-instance",
+ "aphrody-tauri-plugin-updater",
  "aphrody-tauri-plugin-window-state",
  "aphrody-tauri-runtime-cef",
  "koharu-app",
@@ -9686,7 +9752,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-engine"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "bytemuck",
  "bytes",
@@ -9712,7 +9778,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-ffi"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "aphrody-agent-home",
  "aphrody-backend",
@@ -9735,7 +9801,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-gpu"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "log",
  "pollster 1.0.1",
@@ -9748,7 +9814,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-lexicon"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "serde",
  "serde_json",
@@ -9757,7 +9823,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-manga"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "aphrody-ocr-core",
  "image",
@@ -9775,7 +9841,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-mcp"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "axum",
  "reqwest",
@@ -9795,7 +9861,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-rag"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "aphrody-config",
  "aphrody-jev",
@@ -9816,7 +9882,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-re"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "bytes",
  "js-sys",
@@ -9832,7 +9898,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-studio"
-version = "1.4.4"
+version = "1.4.5"
 dependencies = [
  "aphrody-llama-server",
  "aphrody-tauri",
