@@ -52,10 +52,7 @@ try {
     ["ssh", ...SSH, host, `sudo rm -rf ${fresh} && sudo install -d -m 755 -o ubuntu ${fresh}`],
     60_000,
   );
-  await run(
-    ["scp", "-q", ...SSH, `${stage}/.`.replace(/\/\.$/, "/*"), `${host}:${fresh}/`],
-    3_600_000,
-  );
+  await run(["scp", "-q", "-r", ...SSH, ".", `${host}:${fresh}/`], 3_600_000, stage);
   await run(
     [
       "ssh",
