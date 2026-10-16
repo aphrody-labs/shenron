@@ -220,9 +220,9 @@ const artifacts: string[] = [];
 for (const kind of readdirSync(bundleDir)) {
   for (const file of readdirSync(join(bundleDir, kind))) {
     const path = join(bundleDir, kind, file);
-    if (!statSync(path).isFile() || !/\.(exe|msi|deb|AppImage|rpm)$/.test(file)) continue;
-    copyFileSync(path, join(out, file));
-    artifacts.push(file);
+    if (!statSync(path).isFile() || !/\.(exe|msi|deb|AppImage|rpm)(.sig)?$/.test(file)) continue;
+    copyFileSync(path, join(out, file.replaceAll(" ", "-")));
+    artifacts.push(file.replaceAll(" ", "-"));
   }
 }
 const sums: string[] = [];

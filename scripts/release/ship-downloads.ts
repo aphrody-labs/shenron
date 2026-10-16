@@ -60,7 +60,7 @@ try {
       "ssh",
       ...SSH,
       host,
-      `sudo chmod -R a+rX ${fresh} && sudo install -d -m 755 -o ubuntu ${REMOTE} && cd ${fresh} && for f in $(ls | grep -v -e '^latest.json$' -e '^SHA256SUMS$'); do sudo mv -f $f ${REMOTE}/$f; done && sudo mv -f SHA256SUMS ${REMOTE}/SHA256SUMS && sudo mv -f latest.json ${REMOTE}/latest.json && cd / && sudo rm -rf ${fresh} && cd ${REMOTE} && for f in $(ls | grep -v -e '^latest.json$' -e '^SHA256SUMS$'); do grep -q " ${"$"}f$" SHA256SUMS || sudo rm -f ${"$"}f; done`,
+      `sudo chmod -R a+rX ${fresh} && sudo install -d -m 755 -o ubuntu ${REMOTE} && cd ${fresh} && for f in $(ls | grep -v -e '^latest.json$' -e '^SHA256SUMS$'); do sudo mv -f $f ${REMOTE}/$f; done && sudo mv -f SHA256SUMS ${REMOTE}/SHA256SUMS && sudo mv -f latest.json ${REMOTE}/latest.json && cd / && sudo rm -rf ${fresh} && cd ${REMOTE} && for f in $(ls | grep -v -e '^latest.json$' -e '^SHA256SUMS$'); do grep -q " ${"$"}{f%.sig}$" SHA256SUMS || sudo rm -f ${"$"}f; done`,
     ],
     300_000,
   );
