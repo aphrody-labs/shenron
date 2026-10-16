@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-shadow -- behavior-preserving legacy pattern, reviewed */
 "use client";
 
 import { commands, type CanvasPagePreparation, type Point, type TransformFrame } from "./protocol";

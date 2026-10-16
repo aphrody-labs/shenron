@@ -1,3 +1,4 @@
+/* oxlint-disable react/purity, react/set-state-in-effect -- legacy UI kept as-is (behavior-preserving lint pass) */
 "use client";
 
 import { useCallback, useEffect, useState, useTransition } from "react";

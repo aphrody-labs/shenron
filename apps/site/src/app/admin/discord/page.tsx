@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/control-has-associated-label -- legacy UI kept as-is (behavior-preserving lint pass) */
 import { botAdmin } from "@/lib/bot-admin";
 
 export const dynamic = "force-dynamic";

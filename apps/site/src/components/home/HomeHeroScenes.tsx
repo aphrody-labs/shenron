@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable react/no-array-index-key -- reviewed: legacy patterns, behavior preserved */
 
 import { useEffect, useRef, useState } from "react";
 import type { HomeScene } from "@/lib/home-scenes";

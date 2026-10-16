@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-shadow -- behavior-preserving legacy pattern, reviewed */
 // SPDX-License-Identifier: MIT OR Apache-2.0
 import { afterAll, describe, expect, test } from "bun:test";
 import { existsSync } from "node:fs";

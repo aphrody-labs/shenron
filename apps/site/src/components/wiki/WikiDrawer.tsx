@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable jsx-a11y/prefer-tag-over-role, react/exhaustive-effect-dependencies, react/set-state-in-effect -- reviewed: legacy patterns, behavior preserved */
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";

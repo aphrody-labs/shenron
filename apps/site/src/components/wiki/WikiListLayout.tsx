@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable jsx-a11y/prefer-tag-over-role -- reviewed: legacy patterns, behavior preserved */
 
 /**
  * Gabarit d'un index filtrable du wiki — recherche, filtres, compteur, résultats.

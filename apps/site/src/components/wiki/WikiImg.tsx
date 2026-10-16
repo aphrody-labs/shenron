@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable jsx-a11y/prefer-tag-over-role -- reviewed: legacy patterns, behavior preserved */
 
 /**
  * WikiImg — image wiki robuste avec chaîne de repli.

@@ -1,3 +1,4 @@
+/* oxlint-disable import/no-named-as-default-member -- behavior-preserving legacy pattern, reviewed */
 /**
  * Proves that the site stylesheet compiles to the same CSS before and after a
  * change of `apps/site/src/app/globals.css` / `packages/ui/src/styles.css`

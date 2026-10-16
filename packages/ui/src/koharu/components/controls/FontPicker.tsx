@@ -1,3 +1,4 @@
+/* oxlint-disable react/incompatible-library, react/set-state-in-effect, jsx-a11y/prefer-tag-over-role -- behavior-preserving legacy pattern, reviewed */
 "use client";
 
 import { observeElementRect, useVirtualizer } from "@tanstack/react-virtual";

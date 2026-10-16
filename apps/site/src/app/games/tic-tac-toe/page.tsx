@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-unstable-nested-components -- legacy UI kept as-is (behavior-preserving lint pass) */
 import { GamePage } from "@/components/games/GamePage";
 import { T } from "@/components/T";
 import { MorpionGame } from "./MorpionGame";

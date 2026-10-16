@@ -12,6 +12,7 @@ const rows = [
   { id: 36105, chapter_number: 101, volume_id: 147, reader_extent: preview },
 ];
 async function fixture(extra: typeof rows = []) {
+  // oxlint-disable-next-line oxc/no-map-spread -- immutable copy intended
   const chapters = [...rows, ...extra].map((row) => ({
     ...row,
     series: "DBS",

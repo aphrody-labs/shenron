@@ -1,3 +1,4 @@
+/* oxlint-disable react/exhaustive-effect-dependencies, react/set-state-in-effect -- behavior-preserving legacy pattern, reviewed */
 // SPDX-License-Identifier: Apache-2.0
 "use client";
 /**

@@ -17,6 +17,7 @@ function render(
       locale,
       messages: { fr, en, ja }[locale],
       timeZone: "UTC",
+      // oxlint-disable-next-line react/no-children-prop -- test fixture passes children explicitly
       children: createElement(VideoSourceSummary, props),
     }),
   );

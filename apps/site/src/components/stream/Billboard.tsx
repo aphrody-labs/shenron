@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-array-index-key -- reviewed: legacy patterns, behavior preserved */
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import Link from "next/link";

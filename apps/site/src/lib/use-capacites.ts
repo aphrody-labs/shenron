@@ -115,6 +115,7 @@ function useCapacites(): CapacitesClient {
 
   useEffect(() => {
     if (cache) {
+      // oxlint-disable-next-line react/set-state-in-effect -- sync with external source on mount
       setEtat(cache);
     } else {
       enCours ??= calculer();

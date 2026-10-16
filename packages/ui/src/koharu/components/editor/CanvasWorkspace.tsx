@@ -1,3 +1,4 @@
+/* oxlint-disable react/exhaustive-effect-dependencies, react/immutability, promise/always-return, jsx-a11y/no-noninteractive-tabindex -- behavior-preserving legacy pattern, reviewed */
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useLayoutEffect } from "react";

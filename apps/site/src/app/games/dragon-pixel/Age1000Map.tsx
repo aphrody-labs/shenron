@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/prefer-tag-over-role -- legacy UI kept as-is (behavior-preserving lint pass) */
 // SPDX-License-Identifier: Apache-2.0
 import { AGE1000_MAP } from "./age1000-map";
 

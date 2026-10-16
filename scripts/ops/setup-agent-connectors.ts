@@ -145,7 +145,7 @@ http_headers = { "Authorization" = "Bearer ${token}" }
 `;
 }
 
-export async function testEndpointsStatus(tokens: ConnectorTokens): Promise<void> {
+export async function testEndpointsStatus(_tokens: ConnectorTokens): Promise<void> {
   console.log("--> Test des endpoints distants et locaux :\n");
 
   const endpoints = [
@@ -193,9 +193,9 @@ export async function testEndpointsStatus(tokens: ConnectorTokens): Promise<void
 }
 
 if (import.meta.main) {
-  const args = process.argv.slice(2);
-  const shouldWrite = args.includes("--write");
-  const checkStatus = args.includes("--status");
+  const args = new Set(process.argv.slice(2));
+  const shouldWrite = args.has("--write");
+  const checkStatus = args.has("--status");
 
   const tokens = loadAphrodyTokens();
 

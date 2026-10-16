@@ -41,6 +41,7 @@ export function visiblePageClip(images: Image[], width = 1200, height = 1200) {
     const key = Math.round(i.rect.x);
     groups.set(key, [...(groups.get(key) ?? []), i]);
   }
+  // oxlint-disable-next-line unicorn/no-array-sort -- array is a local copy or sorted in place on purpose
   for (const group of [...groups.values()].sort(
     (a, b) =>
       Math.abs(a[0]!.rect.x + a[0]!.rect.width / 2 - width / 2) -
@@ -233,6 +234,7 @@ export async function captureShueishaPreview(
       const s = await state();
       if (ordinal === total) {
         const diagnostic = await cmd("Page.captureScreenshot", { format: "png" });
+        // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
         const path = join(job, "terminal-diagnostic.png");
         await Bun.write(path, Buffer.from(diagnostic.data, "base64"));
         receipt.terminalDiagnostic = {
@@ -263,6 +265,7 @@ export async function captureShueishaPreview(
       if (bytes.length > 8 * 1024 * 1024) throw Error("Raster budget exceeded");
       const sha256 = new Bun.CryptoHasher("sha256").update(bytes).digest("hex");
       if (pages.some((p) => p.sha256 === sha256)) throw Error("Duplicate raster requires review");
+      // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
       const path = join(job, `position-${String(ordinal).padStart(3, "0")}.png`);
       await Bun.write(path, bytes);
       await chmod(path, 0o600);

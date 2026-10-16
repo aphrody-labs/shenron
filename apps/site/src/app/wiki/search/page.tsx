@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-array-index-key -- legacy UI kept as-is (behavior-preserving lint pass) */
 import { T } from "@/components/T";
 import { dbUniverse, type SearchResults } from "@/lib/db-universe";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";

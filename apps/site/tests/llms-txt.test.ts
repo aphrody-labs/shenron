@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, mock, test } from "bun:test";
-import { AI_CRAWLERS, PUBLIC_API_PREFIXES } from "@/lib/ai-access";
+import { PUBLIC_API_PREFIXES } from "@/lib/ai-access";
 import robots from "@/app/robots";
 
 mock.module("server-only", () => ({}));

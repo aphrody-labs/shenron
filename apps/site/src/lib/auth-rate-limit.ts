@@ -113,6 +113,7 @@ function siteRateLimitRedis(): Promise<RateLimitRedis | null> {
         enableOfflineQueue: false,
         connectionTimeout: 1000,
       });
+      // oxlint-disable-next-line unicorn/prefer-add-event-listener -- single handler assignment is intended
       c.onclose = () => {
         if (client === c) client = null;
         loading = null;

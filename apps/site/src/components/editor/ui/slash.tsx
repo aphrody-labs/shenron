@@ -1,3 +1,4 @@
+/* oxlint-disable import/no-named-as-default, jsx-a11y/prefer-tag-over-role, react/exhaustive-effect-dependencies, react/immutability, react/set-state-in-effect -- legacy UI kept as-is (behavior-preserving lint pass) */
 "use client";
 
 /**

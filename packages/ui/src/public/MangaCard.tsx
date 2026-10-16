@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-object-type-as-default-prop -- behavior-preserving legacy pattern, reviewed */
 /**
  * MangaCard — la carte de contenu du site, en une seule implémentation.
  *

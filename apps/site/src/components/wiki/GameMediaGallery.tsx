@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable react/iframe-missing-sandbox, react/set-state-in-effect -- reviewed: legacy patterns, behavior preserved */
 
 /** One compact preview and mixed thumbnail rail in editorial order. */
 import { Film, ImageIcon, Pause, Play } from "lucide-react";

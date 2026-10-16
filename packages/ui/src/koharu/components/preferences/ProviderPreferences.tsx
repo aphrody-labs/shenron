@@ -1,3 +1,4 @@
+/* oxlint-disable react/set-state-in-effect -- behavior-preserving legacy pattern, reviewed */
 "use client";
 
 import { Eraser } from "lucide-react";

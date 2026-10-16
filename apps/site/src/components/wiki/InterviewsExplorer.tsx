@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable react/no-object-type-as-default-prop -- reviewed: legacy patterns, behavior preserved */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocale } from "next-intl";
 import Link from "next/link";

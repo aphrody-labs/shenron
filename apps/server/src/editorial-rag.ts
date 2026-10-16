@@ -37,6 +37,7 @@ export function createAphrodyRagPort(env: EnvSource, fetcher?: typeof fetch): Ra
             (hit) => !query.sourceId || (hit.originSourceId ?? hit.sourceId) === query.sourceId,
           )
           .slice(0, query.limit ?? 8)
+          // oxlint-disable-next-line oxc/no-map-spread -- immutable copy intended
           .map((hit) => ({
             // Legacy numeric document IDs retain their identity. Opaque PostgreSQL IDs have
             // no SQLite rowid: use the bot compatibility sentinel, never a ranking ordinal.

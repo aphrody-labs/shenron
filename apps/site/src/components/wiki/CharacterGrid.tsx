@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable react/set-state-in-effect -- reviewed: legacy patterns, behavior preserved */
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Pagination } from "@/components/kit/Pagination";

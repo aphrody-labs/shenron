@@ -1185,6 +1185,7 @@ async function servePool(options: {
     const worker = new Worker(import.meta.url, { name: `manga-source-${slot}` });
     const entry = { worker, task: null as PoolTask | null, started: 0, online: false };
     slots.push(entry);
+    // oxlint-disable-next-line unicorn/prefer-add-event-listener -- single handler assignment is intended
     worker.onmessage = async ({ data }) => {
       if (data.kind === "online") {
         entry.online = true;
@@ -1226,6 +1227,7 @@ async function servePool(options: {
         projectionPending = true;
       }
     };
+    // oxlint-disable-next-line unicorn/prefer-add-event-listener -- single handler assignment is intended
     worker.onerror = (event) => {
       if (entry.task) {
         frontier.settle(entry.task, "retry", "", String(event.message));
@@ -1275,6 +1277,7 @@ async function servePool(options: {
             assetRoot: join(job, "acquired"),
             capabilities: options.capabilities,
             slot: slots.indexOf(entry),
+            // oxlint-disable-next-line unicorn/require-post-message-target-origin -- worker postMessage has no targetOrigin
           });
         } else {
           // claim() already considers every due, eligible task. Once it returns
@@ -1401,7 +1404,9 @@ if (!Bun.isMainThread) {
     runtime: process.execPath,
     revision: Bun.revision,
     isMainThread: Bun.isMainThread,
+    // oxlint-disable-next-line unicorn/require-post-message-target-origin -- worker postMessage has no targetOrigin
   });
+  // oxlint-disable-next-line unicorn/prefer-add-event-listener -- single handler assignment is intended
   self.onmessage = async ({ data }) => {
     if (data.kind !== "task") return;
     try {
@@ -1413,6 +1418,7 @@ if (!Bun.isMainThread) {
         data.assetRoot,
         data.capabilities,
       );
+      // oxlint-disable-next-line unicorn/require-post-message-target-origin -- worker postMessage has no targetOrigin
       self.postMessage({ kind: "result", result });
     } catch (error) {
       self.postMessage({
@@ -1423,6 +1429,7 @@ if (!Bun.isMainThread) {
           error: String(error).slice(0, 2000),
           children: [],
         },
+        // oxlint-disable-next-line unicorn/require-post-message-target-origin -- worker postMessage has no targetOrigin
       });
     }
   };

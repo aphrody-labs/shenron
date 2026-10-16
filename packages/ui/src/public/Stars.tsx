@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/prefer-tag-over-role -- behavior-preserving legacy pattern, reviewed */
 /**
  * Affichage / saisie d'étoiles 1–5 (SVG). Présentation pure + mode interactif.
  */

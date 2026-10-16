@@ -315,6 +315,7 @@ for await (const line of streamLines()) {
       seen.set(fp, { issue: issue.number, count: 1, lastAt: Date.now() });
       console.log(`[create] #${issue.number} · fp=${fp} · ${issue.html_url}`);
     }
+    // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
   } catch (err) {
     console.error(`[error] GitHub API : ${err}`);
   }

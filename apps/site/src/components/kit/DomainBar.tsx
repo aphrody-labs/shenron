@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable react/no-object-type-as-default-prop -- reviewed: legacy patterns, behavior preserved */
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";

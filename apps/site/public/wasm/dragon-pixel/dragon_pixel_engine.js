@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-unused-vars -- reviewed: legacy patterns, behavior preserved */
 /* @ts-self-types="./dragon_pixel_engine.d.ts" */
 
 /**

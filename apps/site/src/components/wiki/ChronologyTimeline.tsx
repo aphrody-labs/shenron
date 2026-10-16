@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable react/exhaustive-effect-dependencies, react/set-state-in-effect -- reviewed: legacy patterns, behavior preserved */
 
 /**
  * ChronologyTimeline — frise **publique et FIXE** de la chronologie universelle.

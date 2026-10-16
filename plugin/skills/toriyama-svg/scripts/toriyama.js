@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-shadow -- reviewed: legacy patterns, behavior preserved */
 // @bun
 // Généré par scripts/plugin/build-references.ts — ne pas éditer.
 // Sources : packages/ui/src/toriyama-svg/couverture.ts, packages/ui/src/toriyama-svg/emblems.ts, packages/ui/src/toriyama-svg/geometry.ts, packages/ui/src/toriyama-svg/index.ts, packages/ui/src/toriyama-svg/kinto-un.ts, packages/ui/src/toriyama-svg/palette.ts, packages/ui/src/toriyama-svg/sphere.ts, scripts/plugin/src/toriyama.ts

@@ -74,6 +74,7 @@ test("official offers use observed localized versions and render each provider d
         locale,
         messages: dictionaries[locale],
         timeZone: "UTC",
+        // oxlint-disable-next-line react/no-children-prop -- test fixture passes children explicitly
         children: createElement(OffreLegale, { offres: offers }),
       }),
     );
@@ -89,6 +90,7 @@ test("official offers use observed localized versions and render each provider d
       locale,
       messages: dictionaries[locale],
       timeZone: "UTC",
+      // oxlint-disable-next-line react/no-children-prop -- test fixture passes children explicitly
       children: createElement(OffreLegale, { offres: [] }),
     }),
   );
@@ -103,6 +105,7 @@ test("unavailable playback keeps localized episode and film contribution routes"
           locale,
           messages: dictionaries[locale],
           timeZone: "UTC",
+          // oxlint-disable-next-line react/no-children-prop -- test fixture passes children explicitly
           children: createElement(VideoUnavailableCard, { kind, title: "Observed title" }),
         }),
       );
@@ -122,6 +125,7 @@ test("scene upload and typed URL controls use the current locale on cached episo
         locale,
         messages: dictionaries[locale],
         timeZone: "UTC",
+        // oxlint-disable-next-line react/no-children-prop -- test fixture passes children explicitly
         children: createElement(EpisodeScenes, { episodeNumber: 1, title: "Observed episode" }),
       }),
     );

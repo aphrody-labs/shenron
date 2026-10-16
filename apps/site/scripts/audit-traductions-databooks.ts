@@ -161,6 +161,7 @@ try {
   console.log(
     `${lignes.length} planche(s) traduite(s) auditée(s) — seuils : suspect ≥ ${SEUIL_SUSPECT}, corrompu ≥ ${SEUIL_CORROMPU} ou signal certain.\n`,
   );
+  // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
   for (const [w, b] of [...parEcrivain].toSorted((a, b) => b[1].audites - a[1].audites)) {
     console.log(
       `  ${w.padEnd(36)} ${String(b.audites).padStart(5)} auditées  ${String(b.suspects).padStart(4)} suspectes  ${String(b.corrompus).padStart(4)} corrompues`,
@@ -201,6 +202,7 @@ try {
       after: Record<string, unknown> | null;
     }[];
     const historique = new Map<string, { editeur: string; valeur: string; le: Date }[]>();
+    // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
     const note = (cle: string, editeur: string, valeur: unknown, le: Date) => {
       if (typeof valeur !== "string" || !valeur.trim()) return;
       historique.set(cle, [...(historique.get(cle) ?? []), { editeur, valeur, le }]);

@@ -1,3 +1,4 @@
+/* oxlint-disable import/no-named-as-default, eslint/no-shadow, unicorn/prefer-add-event-listener -- behavior-preserving legacy pattern, reviewed */
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { createElement, StrictMode } from "react";
 import { beforeEach, describe, expect, it, vi, mock } from "bun:test";

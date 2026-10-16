@@ -94,6 +94,7 @@ async function withTabs(
     // Flight delivers already rendered server slots, never the Markdown parser.
     const result = serverResult(access);
     const summaryNodes = result.props.summaryNodes.map((node: ReactNode, index: number) => (
+      // oxlint-disable-next-line react/no-array-index-key -- static list without stable ids
       <div key={index} dangerouslySetInnerHTML={{ __html: renderToStaticMarkup(node) }} />
     ));
     await act(async () =>

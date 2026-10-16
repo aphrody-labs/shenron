@@ -660,6 +660,7 @@ if (import.meta.main) {
     process.on("SIGINT", () => {
       stop = true;
     });
+    // oxlint-disable-next-line eslint/no-unmodified-loop-condition -- condition changes via async/external state
     while (!stop) {
       await Bun.sleep(INTERVALLE * 1000);
       if (stop) break;

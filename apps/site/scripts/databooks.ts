@@ -164,6 +164,7 @@ async function cmdEtat(): Promise<void> {
     console.log("\nles 20 ouvrages qui restent le plus à faire :");
     console.log("   id  planches  transcrites  fautives  traduites  titre");
     for (const e of etats
+      // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
       .filter((e) => e.transcrites < e.planches)
       .toSorted((a, b) => b.planches - b.transcrites - (a.planches - a.transcrites))
       .slice(0, 20)) {

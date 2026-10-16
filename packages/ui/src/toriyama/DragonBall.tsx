@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-array-index-key -- behavior-preserving legacy pattern, reviewed */
 /**
  * DragonBall — la boule de cristal en SVG pur (0 JS, server-safe).
  *

@@ -369,10 +369,12 @@ test("eight real Bun Workers load the pool entry exactly once and identify as wo
                 () => reject(Error("Actual worker readiness deadline")),
                 10000,
               );
+              // oxlint-disable-next-line unicorn/prefer-add-event-listener -- single handler assignment is intended
               worker.onmessage = ({ data }) => {
                 clearTimeout(timer);
                 resolve(data);
               };
+              // oxlint-disable-next-line unicorn/prefer-add-event-listener -- single handler assignment is intended
               worker.onerror = (event) => {
                 clearTimeout(timer);
                 reject(Error(event.message));

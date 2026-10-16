@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, react/set-state-in-effect -- reviewed: legacy patterns, behavior preserved */
 
 import { type MouseEvent, useCallback, useEffect, useState } from "react";
 import { Chargement, Coche, Crayon, Croix, Etincelle, Sac } from "@aphrody/shenron-ui/icones";

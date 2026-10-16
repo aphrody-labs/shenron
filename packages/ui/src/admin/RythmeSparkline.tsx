@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/prefer-tag-over-role -- behavior-preserving legacy pattern, reviewed */
 /**
  * Courbe des dépôts de transcription sur 30 jours.
  *

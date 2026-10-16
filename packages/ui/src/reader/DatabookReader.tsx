@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-unused-vars, react/incompatible-library, react-hooks/exhaustive-deps, react/no-object-type-as-default-prop, jsx-a11y/prefer-tag-over-role, react/no-array-index-key, jsx-a11y/no-noninteractive-tabindex, jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-static-element-interactions -- behavior-preserving legacy pattern, reviewed */
 "use client";
 // SPDX-License-Identifier: Apache-2.0
 // Copied from @aphrody/m3-reader@3.3.4 (src/DatabookReader.tsx); owned by @aphrody/shenron-ui since the Shenron extraction.

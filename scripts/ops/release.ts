@@ -185,7 +185,6 @@ async function cdn(release?: string): Promise<void> {
 async function probes(): Promise<void> {
   const config = releaseConfig();
   const site = config.siteUrl;
-  const cdn = config.cdnUrl;
   const failures: string[] = [];
   const unknownMangaPath = "/wiki/manga/__release-not-found-probe__";
   const unknownManga = await fetch(site + unknownMangaPath, { redirect: "manual" }).catch(
@@ -226,6 +225,7 @@ async function probes(): Promise<void> {
 
 /** Vérifie le WASM Xenoverse servi avec le type, le cache et CORS attendus. */
 async function xenoverseWasmProbe(): Promise<string[]> {
+  // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
   const { siteUrl: site, cdnUrl: cdn } = releaseConfig();
   const html = await fetch(`${site}/games/xenoverse-2`)
     .then((response) => (response.ok ? response.text() : ""))
@@ -298,6 +298,7 @@ async function ragProbe(): Promise<string[]> {
  * (URL résolue par le navigateur) et depuis le CDN (miroir de `_next/static`, CORS ouvert).
  */
 async function koharuWasmProbe(): Promise<string[]> {
+  // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
   const { siteUrl: site, cdnUrl: cdn } = releaseConfig();
   const html = await fetch(`${site}/studio`)
     .then((r) => (r.ok ? r.text() : ""))

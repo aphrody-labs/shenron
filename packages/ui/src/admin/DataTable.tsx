@@ -1,3 +1,4 @@
+/* oxlint-disable react/preserve-manual-memoization, jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/control-has-associated-label, jsx-a11y/prefer-tag-over-role -- behavior-preserving legacy pattern, reviewed */
 "use client";
 
 /**

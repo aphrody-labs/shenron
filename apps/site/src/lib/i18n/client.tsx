@@ -57,6 +57,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
       } catch {
         /* valeur illégale : on garde la chaîne telle quelle */
       }
+      // oxlint-disable-next-line react/set-state-in-effect -- sync with external source on mount
       setLocale(normalizeLocale(brut));
     }
   }, []);

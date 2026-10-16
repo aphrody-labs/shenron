@@ -73,6 +73,7 @@ async function redis(): Promise<ClientRedis | null> {
       // Client jetable : à la fermeture, la commande suivante en rebâtit un.
       // (Le singleton `bun.redis` abandonne définitivement après `maxRetries` —
       // panne vécue côté bot le 2026-08-21, 8 500 erreurs en douze heures.)
+      // oxlint-disable-next-line unicorn/prefer-add-event-listener -- single handler assignment is intended
       c.onclose = () => {
         if (client === c) client = null;
         chargement = null;

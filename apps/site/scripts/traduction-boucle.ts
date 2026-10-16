@@ -477,6 +477,7 @@ let deposees = 0;
 let refusees = 0;
 let echecs = 0;
 
+// oxlint-disable-next-line eslint/no-unmodified-loop-condition -- condition changes via async/external state
 while (LOTS === 0 || lot < LOTS) {
   lot++;
   const fichierLot = join(tmpdir(), `traduction-boucle-${WORKER_ID}-lot-${lot}.json`);

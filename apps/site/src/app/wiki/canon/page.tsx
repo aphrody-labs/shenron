@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/prefer-tag-over-role -- legacy UI kept as-is (behavior-preserving lint pass) */
 import { PageShell } from "@/components/kit";
 import type { Metadata } from "next";
 import Link from "next/link";

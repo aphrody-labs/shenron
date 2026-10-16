@@ -278,7 +278,7 @@ if (!skip.has("assets")) {
       storage,
       visibility: "public",
     });
-    embeddedMap = { ...embeddedMap, ...result.embedded };
+    Object.assign(embeddedMap, result.embedded);
     assets.push({
       dir: tree.dir.replace(ROOT, "."),
       prefix: tree.prefix,

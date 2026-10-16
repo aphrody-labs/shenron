@@ -191,16 +191,18 @@ export async function inspectBrowserSources(job: string, slot: number, urls: str
 }
 
 if (!Bun.isMainThread && process.env.SOSH_BROWSER_WORKER_ENTRY === "1") {
-  self.onmessage = async ({ data }) => {
+  self.addEventListener("message", async ({ data }: MessageEvent) => {
     try {
       self.postMessage({
         ok: true,
         receipt: await inspectBrowserSources(data.job, data.slot, data.urls),
+        // oxlint-disable-next-line unicorn/require-post-message-target-origin -- worker postMessage has no targetOrigin
       });
     } catch (error) {
+      // oxlint-disable-next-line unicorn/require-post-message-target-origin -- worker postMessage has no targetOrigin
       self.postMessage({ ok: false, slot: data.slot, error: String(error) });
     }
-  };
+  });
 } else if (Bun.isMainThread && import.meta.main) {
   const job = process.argv[2];
   if (!job || !isAbsolute(job)) throw new Error("An absolute private job directory is required");
@@ -217,16 +219,17 @@ if (!Bun.isMainThread && process.env.SOSH_BROWSER_WORKER_ENTRY === "1") {
             worker.terminate();
             resolve({ ok: false, slot, error: "Worker deadline exceeded" });
           }, 180000);
-          worker.onmessage = ({ data }) => {
+          worker.addEventListener("message", ({ data }) => {
             clearTimeout(timer);
             worker.terminate();
             resolve(data);
-          };
-          worker.onerror = (error) => {
+          });
+          worker.addEventListener("error", (error) => {
             clearTimeout(timer);
             worker.terminate();
             resolve({ ok: false, slot, error: error.message });
-          };
+          });
+          // oxlint-disable-next-line unicorn/require-post-message-target-origin -- worker postMessage has no targetOrigin
           worker.postMessage({ job, slot, urls });
         }),
     ),

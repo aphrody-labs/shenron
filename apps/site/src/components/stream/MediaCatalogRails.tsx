@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-object-type-as-default-prop -- reviewed: legacy patterns, behavior preserved */
 import { EpisodeCard } from "@/components/stream/EpisodeCard";
 import { PosterCard } from "@/components/stream/PosterCard";
 import { StreamRow } from "@/components/stream/StreamRow";

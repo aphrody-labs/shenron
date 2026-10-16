@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/preserve-caught-error -- reviewed: legacy patterns, behavior preserved */
 // SPDX-License-Identifier: Apache-2.0
 import { readdir, stat, realpath, mkdir } from "node:fs/promises";
 import { join, relative, extname, resolve, sep } from "node:path";

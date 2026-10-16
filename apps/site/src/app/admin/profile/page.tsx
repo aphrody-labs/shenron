@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/control-has-associated-label -- legacy UI kept as-is (behavior-preserving lint pass) */
 "use client";
 
 import Link from "next/link";

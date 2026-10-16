@@ -1,3 +1,4 @@
+/* oxlint-disable react/set-state-in-effect, react/no-array-index-key -- behavior-preserving legacy pattern, reviewed */
 // SPDX-License-Identifier: Apache-2.0
 // Shenron studio of the desktop app: one page, four tabs over the Studio commands that
 // shenron-desktop registers (crates/shenron-studio, logic owned by shenron-cli::shenron_cmd):

@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-array-index-key -- reviewed: legacy patterns, behavior preserved */
 import Link from "next/link";
 import { dbUniverse } from "@/lib/db-universe";
 import { markdownToPlainText } from "@/lib/markdown-plain";

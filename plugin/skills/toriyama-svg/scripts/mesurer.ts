@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+/* oxlint-disable oxc/no-map-spread -- reviewed: legacy patterns, behavior preserved */
 /**
  * Mesure une forme dans une image de référence : boîte, ratio, palette, tons,
  * profil de silhouette, épaisseur du trait. C'est l'étape qui remplace « à peu

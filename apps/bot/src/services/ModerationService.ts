@@ -39,6 +39,7 @@ export class ModerationService {
   async removeLastWarn(userId: string): Promise<boolean> {
     const w = await this.db.query.warns.findFirst({
       where: and(eq(warns.userId, userId), eq(warns.active, true)),
+      // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
       orderBy: (t, { desc }) => desc(t.createdAt),
     });
     if (!w) return false;
@@ -140,6 +141,7 @@ export class ModerationService {
   ): Promise<boolean> {
     const j = await this.db.query.jails.findFirst({
       where: and(eq(jails.userId, userId), isNull(jails.releasedAt)),
+      // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
       orderBy: (t, { desc }) => desc(t.createdAt),
     });
     const member = await guild.members.fetch(userId).catch(() => null);
@@ -180,6 +182,7 @@ export class ModerationService {
   async getActiveJail(userId: string) {
     return this.db.query.jails.findFirst({
       where: and(eq(jails.userId, userId), isNull(jails.releasedAt)),
+      // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
       orderBy: (t, { desc }) => desc(t.createdAt),
     });
   }
@@ -234,6 +237,7 @@ export class ModerationService {
   async getActiveBan(userId: string) {
     return this.db.query.bans.findFirst({
       where: and(eq(bans.userId, userId), eq(bans.active, true)),
+      // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
       orderBy: (t, { desc }) => desc(t.createdAt),
     });
   }

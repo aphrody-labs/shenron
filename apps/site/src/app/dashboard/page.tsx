@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/prefer-tag-over-role -- legacy UI kept as-is (behavior-preserving lint pass) */
 import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";

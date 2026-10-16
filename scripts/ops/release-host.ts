@@ -117,6 +117,7 @@ export function envValue(text: string, name: string): string | undefined {
 export function siteBuildEnv(envText: string): Record<string, string> {
   const database = envValue(envText, "DATABASE_URL");
   if (!database) throw new Error("DATABASE_URL introuvable dans l'environnement du site");
+  // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
   const cdn = envValue(envText, "NEXT_PUBLIC_CDN_URL");
   return { SITE_BUILD_DATABASE_URL: database, ...(cdn ? { NEXT_PUBLIC_CDN_URL: cdn } : {}) };
 }

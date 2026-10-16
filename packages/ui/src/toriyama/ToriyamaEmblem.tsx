@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-array-index-key -- behavior-preserving legacy pattern, reviewed */
 /**
  * ToriyamaEmblem — Official Dragon Ball Kanji & Faction Insignias in Pure SVG.
  */

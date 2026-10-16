@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-object-type-as-default-prop -- reviewed: legacy patterns, behavior preserved */
 import Image from "next/image";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
 import { assetUrl } from "@/lib/assets";

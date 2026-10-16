@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-shadow -- behavior-preserving legacy pattern, reviewed */
 // SPDX-License-Identifier: Apache-2.0
 import { afterEach, describe, expect, test } from "bun:test";
 import { join } from "node:path";

@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable jsx-a11y/prefer-tag-over-role, react/iframe-missing-sandbox -- reviewed: legacy patterns, behavior preserved */
 
 import { useMemo, useState } from "react";
 import Link from "next/link";

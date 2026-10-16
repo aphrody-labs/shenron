@@ -167,9 +167,11 @@ async function main(): Promise<void> {
     // jsonb via sql.json() (JAMAIS JSON.stringify::jsonb → scalaire string).
     // La copie en littéral d'objet donne à chaque frame la signature d'index que
     // l'interface EpisodeFrame n'a pas : tsc vérifie alors chaque champ contre JSONValue.
+    // oxlint-disable-next-line oxc/no-map-spread -- copy gives plain JSON-typed objects
+    const framesJson = frames.map((f) => ({ ...f }));
     const rows = await sql<{ id: number }[]>`
       UPDATE bot.db_episodes
-         SET frames = ${sql.json(frames.map((f) => ({ ...f })))},
+         SET frames = ${sql.json(framesJson)},
              -- Un jeu de données sans montage (captures de frames-depuis-lecteur.ts)
              -- ne doit pas effacer l'aperçu posé ensuite par build-scene-previews.ts.
              scene_preview = coalesce(${scenePreview}, scene_preview)

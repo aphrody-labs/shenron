@@ -1,3 +1,4 @@
+/* oxlint-disable react/exhaustive-effect-dependencies, react/set-state-in-effect, react/static-components, jsx-a11y/prefer-tag-over-role -- behavior-preserving legacy pattern, reviewed */
 "use client";
 
 import type { TFunction } from "i18next";

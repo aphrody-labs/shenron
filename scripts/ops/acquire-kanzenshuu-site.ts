@@ -140,6 +140,7 @@ for (const type of itemTypes) {
     }
     const year = item.date.slice(0, 4) || "undated";
     const section =
+      // oxlint-disable-next-line unicorn/prefer-array-find -- kept for explicit empty-array semantics
       type === "pages" ? (url.pathname.split("/").filter(Boolean)[0] ?? "root") : null;
     rawByYear.set(year, [...(rawByYear.get(year) ?? []), item]);
     catalogueRecords.push({

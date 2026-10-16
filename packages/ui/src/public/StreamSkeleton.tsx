@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-array-index-key -- behavior-preserving legacy pattern, reviewed */
 /**
  * Squelettes de chargement « façon streaming » — servis par les `loading.tsx`
  * (frontière Suspense de Next : affichés INSTANTANÉMENT pendant le rendu async de

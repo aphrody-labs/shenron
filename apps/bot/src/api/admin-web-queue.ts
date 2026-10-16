@@ -142,6 +142,7 @@ export class AdminWebQueue {
       "SELECT * FROM admin_web_jobs ORDER BY startedAt DESC LIMIT 50",
     ).all();
     return Promise.all(
+      // oxlint-disable-next-line oxc/no-map-spread -- immutable copy intended
       rows.map(async (row) => {
         let receipt = queue.get(row.id);
         if (receipt && !["succeeded", "failed", "cancelled"].includes(receipt.state)) {

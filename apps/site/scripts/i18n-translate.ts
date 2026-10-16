@@ -70,6 +70,7 @@ const lire = async (fichier: string): Promise<Arbre> =>
 /** `{ nav: { wiki: "Wiki" } }` → `{ "nav.wiki": "Wiki" }`. */
 function aplatir(arbre: Arbre, prefixe = ""): Map<string, string> {
   const plat = new Map<string, string>();
+  // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
   for (const [cle, valeur] of Object.entries(arbre)) {
     const chemin = prefixe ? `${prefixe}.${cle}` : cle;
     if (typeof valeur === "string") plat.set(chemin, valeur);
@@ -92,6 +93,7 @@ function poser(arbre: Arbre, chemin: string, texte: string): void {
 /** Reorders a tree to follow the reference, so the files stay comparable. */
 function ordonner(reference: Arbre, cible: Arbre): Arbre {
   const sortie: Arbre = {};
+  // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
   for (const [cle, valeur] of Object.entries(reference)) {
     const equivalent = cible[cle];
     if (typeof valeur === "string") {

@@ -52,6 +52,7 @@ function deps(overrides: Partial<IaCockpitDeps["training"]> = {}) {
   const value: IaCockpitDeps = {
     goals,
     training: {
+      // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
       addGoldCase: async (q, expect, userId = "system", userTag = "admin") => {
         gold.push({ q, expect, userId, userTag });
         return true;

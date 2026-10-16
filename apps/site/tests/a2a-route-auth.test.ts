@@ -165,6 +165,7 @@ describe("proxy amont", () => {
     const bad = await POST(new Request(URL_BASE, { method: "POST", body: "{" }));
     expect(bad.status).toBe(400);
     expect((await bad.json()).error.code).toBe(-32700);
+    // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
     const saved = process.env.APHRODY_A2A_URL;
     process.env.APHRODY_A2A_URL = "http://127.0.0.1:1";
     try {

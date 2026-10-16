@@ -15,6 +15,7 @@ test("index retirement waits for query leases while new queries use replacement"
     },
   });
   let release!: () => void;
+  // oxlint-disable-next-line oxc/no-async-endpoint-handlers -- Bun.serve handler, not Express
   const held = leases.use(async (r) => {
     await new Promise<void>((resolve) => (release = resolve));
     return r.id;
@@ -26,6 +27,7 @@ test("index retirement waits for query leases while new queries use replacement"
     },
   });
   expect(closed).toEqual([]);
+  // oxlint-disable-next-line oxc/no-async-endpoint-handlers -- Bun.serve handler, not Express
   expect(await leases.use(async (r) => r.id)).toBe(2);
   release();
   expect(await held).toBe(1);
@@ -33,6 +35,7 @@ test("index retirement waits for query leases while new queries use replacement"
   expect(closed).toEqual([1]);
   await leases.close();
   expect(closed).toEqual([1, 2]);
+  // oxlint-disable-next-line oxc/no-async-endpoint-handlers -- Bun.serve handler, not Express
   await expect(leases.use(async (r) => r.id)).rejects.toThrow("temporarily unavailable");
 });
 test.skipIf(process.platform === "win32")(

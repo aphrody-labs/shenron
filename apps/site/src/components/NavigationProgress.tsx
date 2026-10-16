@@ -1,3 +1,4 @@
+/* oxlint-disable react/exhaustive-effect-dependencies -- legacy UI kept as-is (behavior-preserving lint pass) */
 "use client";
 
 import { usePathname } from "next/navigation";

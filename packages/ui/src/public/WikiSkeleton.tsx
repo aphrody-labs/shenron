@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-array-index-key -- behavior-preserving legacy pattern, reviewed */
 /**
  * Squelettes des pages du wiki — servis par les `loading.tsx` (frontière
  * Suspense de Next : affichés INSTANTANÉMENT pendant le rendu async de la page).

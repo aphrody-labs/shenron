@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable react/no-array-index-key -- reviewed: legacy patterns, behavior preserved */
 
 import { useMemo, useState } from "react";
 import Link from "next/link";

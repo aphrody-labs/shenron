@@ -1,3 +1,4 @@
+/* oxlint-disable react-hooks/exhaustive-deps -- behavior-preserving legacy pattern, reviewed */
 // SPDX-License-Identifier: Apache-2.0
 // Copied from @aphrody/m3-reader@3.3.4 (src/use-reader-core.ts); owned by @aphrody/shenron-ui since the Shenron extraction
 // (Tauri fullscreen, pinned fallback and media queries are Shenron additions).

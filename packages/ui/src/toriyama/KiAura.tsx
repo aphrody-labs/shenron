@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-array-index-key -- behavior-preserving legacy pattern, reviewed */
 /**
  * KiAura — Super Saiyan & Ki Energy Aura Effect in Pure SVG.
  * Features radiating energy flares, crackling lightning sparks, and comic speedlines.

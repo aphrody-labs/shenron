@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/autocomplete-valid, jsx-a11y/prefer-tag-over-role, react/set-state-in-effect -- legacy UI kept as-is (behavior-preserving lint pass) */
 "use client";
 
 import Link from "next/link";

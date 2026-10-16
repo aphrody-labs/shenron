@@ -31,11 +31,14 @@ export async function buildWithVectorWorker(
       if (m?.kind === "generation") {
         if (!Number.isInteger(m.id) || m.id < 1 || m.id > 4 || ++requests > 4) {
           failure = true;
+          // oxlint-disable-next-line unicorn/require-post-message-target-origin -- worker postMessage has no targetOrigin
           worker.postMessage({ kind: "abort" });
           return;
         }
         const query = generation().then(
+          // oxlint-disable-next-line unicorn/require-post-message-target-origin -- worker postMessage has no targetOrigin
           (value) => worker.postMessage({ kind: "generation-result", id: m.id, generation: value }),
+          // oxlint-disable-next-line unicorn/require-post-message-target-origin -- worker postMessage has no targetOrigin
           () => worker.postMessage({ kind: "generation-result", id: m.id, failed: true }),
         );
         pending.add(query);
@@ -48,9 +51,11 @@ export async function buildWithVectorWorker(
       }
     });
   });
+  // oxlint-disable-next-line unicorn/require-post-message-target-origin -- worker postMessage has no targetOrigin
   const abort = () => worker.postMessage({ kind: "abort" });
   signal.addEventListener("abort", abort, { once: true });
   try {
+    // oxlint-disable-next-line unicorn/require-post-message-target-origin -- worker postMessage has no targetOrigin
     worker.postMessage({ kind: "build", directory, manifestSha256 });
     await stopped;
     signal.throwIfAborted();

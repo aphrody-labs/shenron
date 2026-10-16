@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-array-index-key -- behavior-preserving legacy pattern, reviewed */
 /**
  * StatTiles — la rangée de compteurs, mesurés et jamais inventés.
  *

@@ -1,3 +1,4 @@
+/* oxlint-disable import/no-named-as-default-member -- behavior-preserving legacy pattern, reviewed */
 // SPDX-License-Identifier: Apache-2.0
 import { beforeAll, describe, expect, test } from "bun:test";
 import { join } from "node:path";

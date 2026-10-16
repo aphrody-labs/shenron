@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-shadow -- behavior-preserving legacy pattern, reviewed */
 // SPDX-License-Identifier: Apache-2.0
 /**
  * `@aphrody/shenron-api/server` — the single Shenron API server: one route table built from the

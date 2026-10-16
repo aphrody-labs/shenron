@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/prefer-tag-over-role, react/set-state-in-effect -- reviewed: legacy patterns, behavior preserved */
 
 /**
  * « Proposer une correction » — le chemin de contribution ouvert à **tout

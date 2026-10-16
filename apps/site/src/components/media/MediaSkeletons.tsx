@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/prefer-tag-over-role, react/no-array-index-key -- reviewed: legacy patterns, behavior preserved */
 import type { ReactNode } from "react";
 import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 

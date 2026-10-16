@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable jsx-a11y/prefer-tag-over-role -- reviewed: legacy patterns, behavior preserved */
 
 /**
  * Modal — coquille de fenêtre « aperçu rapide » façon Netflix, montée par une

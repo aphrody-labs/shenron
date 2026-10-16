@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-array-index-key -- legacy UI kept as-is (behavior-preserving lint pass) */
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";

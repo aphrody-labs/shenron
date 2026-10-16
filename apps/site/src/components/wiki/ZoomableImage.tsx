@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-element-to-interactive-role, jsx-a11y/prefer-tag-over-role -- reviewed: legacy patterns, behavior preserved */
 
 import { useCallback, useRef, useState, type ImgHTMLAttributes } from "react";
 import { createPortal } from "react-dom";

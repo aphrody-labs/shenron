@@ -78,6 +78,7 @@ const candidates = [...archiveHtml.matchAll(/<li class=["']item["']>([\s\S]*?)<\
       return [];
     return [
       {
+        // oxlint-disable-next-line unicorn/prefer-array-find -- kept for explicit empty-array semantics
         id: url.pathname.split("/").filter(Boolean).at(-1)!,
         url: url.href,
         title: field(block, "title") ?? "Untitled interview",

@@ -227,6 +227,7 @@ export class MessageXPEvent {
     if (res.levelUp) {
       // Fallback : si message.member est null (intent GuildMembers pas encore
       // hydraté, cache miss), fetch côté Discord avant de poser le rôle.
+      // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
       const member =
         message.member ??
         (message.guild ? await message.guild.members.fetch(userId).catch(() => null) : null);

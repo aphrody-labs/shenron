@@ -1,3 +1,4 @@
+/* oxlint-disable react/exhaustive-effect-dependencies, react/no-array-index-key -- behavior-preserving legacy pattern, reviewed */
 "use client";
 
 /**

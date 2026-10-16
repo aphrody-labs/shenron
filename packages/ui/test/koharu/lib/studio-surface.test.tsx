@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-unused-vars -- behavior-preserving legacy pattern, reviewed */
 // SPDX-License-Identifier: MIT OR Apache-2.0
 // The editor is Shenron Studio in a browser tab: no native window controls outside Tauri, the
 // site locale drives its language, no visible text names the internal code name, and the

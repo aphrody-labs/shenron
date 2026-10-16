@@ -1,3 +1,4 @@
+/* oxlint-disable import/no-named-as-default-member, eslint/no-shadow -- behavior-preserving legacy pattern, reviewed */
 /**
  * Generates `packages/ui/src/tokens.ts` from `packages/ui/src/styles.css`.
  *

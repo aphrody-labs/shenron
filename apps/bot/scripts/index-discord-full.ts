@@ -199,6 +199,7 @@ async function indexMessages(msgs: any[]): Promise<void> {
     if (aliasRegex) {
       const matches = normContent.match(aliasRegex);
       if (matches) {
+        // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
         for (const m of matches) {
           const canonical = aliasMap[m.toLowerCase()]?.canonical;
           if (canonical) {

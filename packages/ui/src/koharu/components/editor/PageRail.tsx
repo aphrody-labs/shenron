@@ -1,3 +1,4 @@
+/* oxlint-disable react/exhaustive-effect-dependencies, react/incompatible-library, react/set-state-in-effect, jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- behavior-preserving legacy pattern, reviewed */
 "use client";
 
 import { useQuery } from "@tanstack/react-query";

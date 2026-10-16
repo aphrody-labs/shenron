@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+/* oxlint-disable oxc/no-map-spread -- reviewed: legacy patterns, behavior preserved */
 /**
  * Interroge hors ligne la référence publique sourcée du plugin
  * (`../references/faits.json`, instantané généré depuis le dépôt Shenron).

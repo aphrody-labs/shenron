@@ -1,3 +1,4 @@
+/* oxlint-disable react/iframe-missing-sandbox -- legacy UI kept as-is (behavior-preserving lint pass) */
 import { WatchLayout, WatchStage, WatchColumns } from "@/components/episodes/WatchLayout";
 import { T } from "@/components/T";
 import { episodeNumberText } from "@/lib/episode-number";

@@ -46,6 +46,7 @@ export function useMe(): Me | undefined {
   const [me, setMe] = useState<Me | undefined>(undefined);
   useEffect(() => {
     if (cache) {
+      // oxlint-disable-next-line react/set-state-in-effect -- sync with external source on mount
       setMe(cache);
       return;
     }

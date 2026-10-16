@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-object-type-as-default-prop -- reviewed: legacy patterns, behavior preserved */
 /**
  * Assemble les sections de contenu d'une entité wiki en un sélecteur de
  * catégories (`WikiSectionsReader`). Combine, dans l'ordre :

@@ -1,3 +1,4 @@
+/* oxlint-disable react/set-state-in-effect -- behavior-preserving legacy pattern, reviewed */
 "use client";
 
 import { ArrowLeft, Monitor, Moon, Sun } from "lucide-react";

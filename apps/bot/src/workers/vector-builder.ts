@@ -39,6 +39,7 @@ self.addEventListener("message", (event) => {
           return;
         }
         queries.set(request, { resolve, reject });
+        // oxlint-disable-next-line unicorn/require-post-message-target-origin -- worker postMessage has no targetOrigin
         self.postMessage({ kind: "generation", id: request });
       }),
   };
@@ -50,10 +51,13 @@ self.addEventListener("message", (event) => {
     controller.signal,
   )
     .then(
+      // oxlint-disable-next-line unicorn/require-post-message-target-origin -- worker postMessage has no targetOrigin
       (receipt) => self.postMessage({ kind: "done", receipt }),
+      // oxlint-disable-next-line unicorn/require-post-message-target-origin -- worker postMessage has no targetOrigin
       () => self.postMessage({ kind: "failed" }),
     )
     .finally(() => {
+      // oxlint-disable-next-line unicorn/require-post-message-target-origin -- worker postMessage has no targetOrigin
       self.postMessage({ kind: "stopped" });
       process.exit(0);
     });

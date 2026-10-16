@@ -33,6 +33,7 @@ async function redis(): Promise<RedisClient> {
       maxRetries: 2,
       enableOfflineQueue: false,
     });
+    // oxlint-disable-next-line unicorn/prefer-add-event-listener -- single handler assignment is intended
     value.onclose = () => {
       if (client === value) client = null;
     };

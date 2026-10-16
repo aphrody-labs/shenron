@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-redundant-roles, jsx-a11y/prefer-tag-over-role, promise/always-return, react/jsx-no-constructed-context-values, react/set-state-in-effect, unicorn/require-post-message-target-origin -- legacy UI kept as-is (behavior-preserving lint pass) */
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";

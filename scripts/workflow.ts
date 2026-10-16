@@ -347,7 +347,7 @@ async function mangaTasks(): Promise<Task[]> {
   const map = JSON.parse(await readFile(mapPath, "utf8")) as { tomes?: MangaVisualTome[] };
   const tomes = map.tomes ?? [];
   return Array.from({ length: 8 }, (_, shardIndex) => {
-    const shardTomes = tomes.filter((_, index) => index % 8 === shardIndex);
+    const shardTomes = tomes.filter((_tome, index) => index % 8 === shardIndex);
     const selected: { tome: MangaVisualTome; page: MangaVisualPage; image: string }[] = [];
     for (const tome of shardTomes) {
       const candidates = tome.pages.filter((page) => {

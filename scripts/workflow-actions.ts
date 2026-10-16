@@ -63,20 +63,20 @@ async function run(
   return { exitCode, stdout, stderr };
 }
 
-async function cleanupRemoteStaging(remotePath: string, logName: string): Promise<void> {
-  if (!remotePath.startsWith("/tmp/shenron-") || remotePath.includes("..")) {
-    throw new Error(`chemin de staging distant refusé: ${remotePath}`);
+async function cleanupRemoteStaging(stagingPath: string, logName: string): Promise<void> {
+  if (!stagingPath.startsWith("/tmp/shenron-") || stagingPath.includes("..")) {
+    throw new Error(`chemin de staging distant refusé: ${stagingPath}`);
   }
   const result = await run(
     [
       "ssh",
       sshHost(),
-      `rm -rf -- ${shellQuote(remotePath)} && test ! -e ${shellQuote(remotePath)}`,
+      `rm -rf -- ${shellQuote(stagingPath)} && test ! -e ${shellQuote(stagingPath)}`,
     ],
     { log: join(actionDir, logName) },
   );
   if (result.exitCode !== 0) {
-    console.warn(`nettoyage du staging distant en échec: ${remotePath}`);
+    console.warn(`nettoyage du staging distant en échec: ${stagingPath}`);
     return;
   }
   console.log("✓ staging distant nettoyé");
@@ -497,7 +497,7 @@ async function wiki(): Promise<void> {
           "--label",
           shellQuote(proposal.section_label),
         ].join(" ");
-    const command = [
+    const remoteCommand = [
       "sudo systemd-run --wait --collect --pipe",
       `-p EnvironmentFile=${remoteHome()}/.shenron-neon.env`,
       `-p Environment=PATH=${remotePath()}`,
@@ -509,7 +509,7 @@ async function wiki(): Promise<void> {
       "--sources",
       shellQuote(`${directory}/sources.json`),
     ].join(" ");
-    const simulation = await run(["ssh", sshHost(), command], {
+    const simulation = await run(["ssh", sshHost(), remoteCommand], {
       log: join(actionDir, `wiki-simulation-${String(index + 1).padStart(4, "0")}.log`),
     });
     if (simulation.exitCode !== 0)
@@ -527,7 +527,7 @@ async function wiki(): Promise<void> {
       continue;
     }
     report.simulated.push(proposal.target);
-    eligible.push({ proposal, command });
+    eligible.push({ proposal, command: remoteCommand });
   }
   console.log(
     `✓ ${eligible.length}/${consensus.length} proposition(s) wiki simulée(s) et préconditions validées`,

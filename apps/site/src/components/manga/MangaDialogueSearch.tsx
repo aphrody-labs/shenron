@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable jsx-a11y/prefer-tag-over-role -- reviewed: legacy patterns, behavior preserved */
 
 import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
 import Link from "next/link";

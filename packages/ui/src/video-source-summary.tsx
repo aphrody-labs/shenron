@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-object-type-as-default-prop -- behavior-preserving legacy pattern, reviewed */
 import type { ReactElement } from "react";
 
 /** Minimal playback-source contract. Providers and playback remain host concerns. */

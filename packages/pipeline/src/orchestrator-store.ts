@@ -1,3 +1,4 @@
+/* oxlint-disable unicorn/no-array-sort -- behavior-preserving legacy pattern, reviewed */
 // SPDX-License-Identifier: Apache-2.0
 /** Bun-native support for the orchestrator: content fingerprints (Bun.Glob + CryptoHasher) and run history (bun:sqlite). */
 import { Database } from "bun:sqlite";

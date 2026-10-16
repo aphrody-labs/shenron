@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-object-type-as-default-prop, react/no-array-index-key -- behavior-preserving legacy pattern, reviewed */
 /**
  * DragonRadarDisplay — Bulma's Official Dragon Radar in Pure SVG.
  * Features CRT scanline grid, concentric distance rings, blinking target blips, and direction arrow.

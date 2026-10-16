@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-object-type-as-default-prop -- behavior-preserving legacy pattern, reviewed */
 /**
  * EmptyState — ce qu'on affiche quand il n'y a rien, sans laisser le lecteur
  * dans un cul-de-sac.

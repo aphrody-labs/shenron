@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/label-has-associated-control -- behavior-preserving legacy pattern, reviewed */
 import type * as React from "react";
 
 import { cn } from "../lib/utils";

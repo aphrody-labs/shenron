@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+/* oxlint-disable oxc/no-map-spread -- behavior-preserving legacy pattern, reviewed */
 /**
  * **Arbitrage des planches manga par agents, en deux temps.**
  *

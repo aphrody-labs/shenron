@@ -70,6 +70,7 @@ test("the complete catalogue renders at most twelve covers across all collection
   }));
   const html = render({
     dbVolumes: volumes,
+    // oxlint-disable-next-line oxc/no-map-spread -- immutable copy intended
     dbsVolumes: volumes.map((volume) => ({ ...volume, id: volume.id + 100, series: "DBS" })),
     readableChapters: [],
   });

@@ -1,3 +1,4 @@
+/* oxlint-disable unicorn/no-array-sort -- reviewed: legacy patterns, behavior preserved */
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Reads the rustdoc JSON (format 61, nightly) of `wgpu`, `wgpu-types` and `naga` and exposes the

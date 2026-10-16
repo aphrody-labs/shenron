@@ -86,7 +86,7 @@ export function provedTransportFailure(queue: FillQueue, row: QueueRow): boolean
     )
     .all(row.key) as Array<{ role: string; receipt: string }>;
   const current = receipts
-    .map((r) => ({ role: r.role, ...JSON.parse(r.receipt) }))
+    .map((r) => Object.assign({ role: r.role }, JSON.parse(r.receipt)))
     .filter((r) => r.attempt === row.attempts);
   const execution = current.find((r) => r.role === "execution-failure");
   if (execution) return execution.transport === true;
@@ -323,7 +323,7 @@ export async function immutableApprovedExport(queue: FillQueue, job: string) {
     }
   } catch (error) {
     if ((error as { code?: string }).code !== "EEXIST" || (await Bun.file(path).text()) !== payload)
-      throw Error("Immutable proposal export failed");
+      throw Error("Immutable proposal export failed", { cause: error });
   }
   return path;
 }
@@ -449,7 +449,9 @@ async function main() {
         result = await superviseCandidates(queue, contract, runner, { now });
       } catch (error) {
         if (!isWikiTransportFailure(error))
-          throw Error("Canonical inventory or proposal pass failed; inspect private state");
+          throw Error("Canonical inventory or proposal pass failed; inspect private state", {
+            cause: error,
+          });
         const failures = Math.min(circuit.failures + 1, 3);
         queue.db
           .query("INSERT OR REPLACE INTO wiki_supervisor_state VALUES('inventory',?)")

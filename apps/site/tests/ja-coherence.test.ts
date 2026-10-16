@@ -163,6 +163,7 @@ describe("DIVERGENCES_CORPUS_WIKI", () => {
   });
 
   test("les cas wiki-bug-espacement ont bien 0 occurrence côté wiki et une majorité corpus claire", () => {
+    // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
     for (const d of DIVERGENCES_CORPUS_WIKI.filter((d) => d.nature === "wiki-bug-espacement")) {
       expect(d.occWiki).toBe(0);
       expect(d.occCorpus).toBeGreaterThan(0);

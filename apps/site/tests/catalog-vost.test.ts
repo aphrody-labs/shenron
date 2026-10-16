@@ -103,8 +103,11 @@ describe("observed VOST versions", () => {
     expect(normalizeAvailability([{ ...offer, langs: ["ja"] }])?.[0]?.langs).toEqual([]);
   });
   test("all playback keys and VOST labels exist in the three dictionaries", () => {
+    // oxlint-disable-next-line unicorn/no-array-sort -- array is a local copy or sorted in place on purpose
     const keys = Object.keys(fr.mediaPlayback).sort();
+    // oxlint-disable-next-line unicorn/no-array-sort -- array is a local copy or sorted in place on purpose
     expect(Object.keys(en.mediaPlayback).sort()).toEqual(keys);
+    // oxlint-disable-next-line unicorn/no-array-sort -- array is a local copy or sorted in place on purpose
     expect(Object.keys(ja.mediaPlayback).sort()).toEqual(keys);
     for (const messages of [fr, en, ja]) {
       expect(messages.mediaPlayback.vost.length).toBeGreaterThan(0);

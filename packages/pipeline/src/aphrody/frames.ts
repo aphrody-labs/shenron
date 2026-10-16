@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-shadow -- behavior-preserving legacy pattern, reviewed */
 // SPDX-License-Identifier: Apache-2.0
 /** Shenron consumer for Aphrody's Rust MPEG-7 frame index and search. */
 import { runAphrodyCli, type AphrodyCliOptions } from "./cli";

@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-array-index-key -- reviewed: legacy patterns, behavior preserved */
 /**
  * Cartes « pages wiki affiliées » d'une section : chaque lien renvoie vers une
  * autre fiche wiki avec sa photo (ex. affilier des personnages à une catégorie

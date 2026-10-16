@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-unused-vars, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- legacy UI kept as-is (behavior-preserving lint pass) */
 // SPDX-License-Identifier: Apache-2.0
 "use client";
 

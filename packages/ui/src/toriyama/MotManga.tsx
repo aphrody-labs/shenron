@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-array-index-key -- behavior-preserving legacy pattern, reviewed */
 /**
  * MotManga — les lettres du wordmark de couverture, à leur hauteur MESURÉE.
  *

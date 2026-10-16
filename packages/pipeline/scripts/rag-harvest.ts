@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+/* oxlint-disable eslint/no-shadow, oxc/no-map-spread -- behavior-preserving legacy pattern, reviewed */
 /**
  * rag-harvest.ts — Orchestre la récolte RAG Dragon Ball through Aphrody Web.
  * Recursive site mirrors use the Aphrody Web Rust owner.

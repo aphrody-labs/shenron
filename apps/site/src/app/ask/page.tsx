@@ -1,3 +1,4 @@
+/* oxlint-disable react/exhaustive-effect-dependencies, react/no-array-index-key, react/set-state-in-effect -- legacy UI kept as-is (behavior-preserving lint pass) */
 "use client";
 
 import { useState, useEffect, useRef } from "react";

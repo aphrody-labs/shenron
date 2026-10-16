@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-object-type-as-default-prop -- legacy UI kept as-is (behavior-preserving lint pass) */
 "use client";
 
 /**

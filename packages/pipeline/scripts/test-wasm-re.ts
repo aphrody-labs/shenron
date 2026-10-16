@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+/* oxlint-disable eslint/no-unused-vars, unicorn/no-array-sort -- behavior-preserving legacy pattern, reviewed */
 // SPDX-License-Identifier: Apache-2.0
 /**
  * End-to-end integration and validation test for the `shenron-re` WASM engine.

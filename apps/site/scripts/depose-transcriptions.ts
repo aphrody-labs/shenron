@@ -158,6 +158,7 @@ async function depose(
     const texte = await r.text();
     if (r.ok) return { ok: true, corps: texte };
     if (r.status < 500 || essai === 2) return { ok: false, corps: `HTTP ${r.status} ${texte}` };
+    // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
     await new Promise((r) => setTimeout(r, 30_000));
   }
   return { ok: false, corps: "inatteignable" };

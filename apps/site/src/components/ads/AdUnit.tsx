@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable react/exhaustive-effect-dependencies -- reviewed: legacy patterns, behavior preserved */
 
 /**
  * AdUnit — bloc AdSense manuel, sûr pour un App Router.

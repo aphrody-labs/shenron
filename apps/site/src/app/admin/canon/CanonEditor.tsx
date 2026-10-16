@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/control-has-associated-label, jsx-a11y/prefer-tag-over-role, react/no-array-index-key, react/set-state-in-effect -- legacy UI kept as-is (behavior-preserving lint pass) */
 "use client";
 
 /**

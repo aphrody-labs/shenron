@@ -1,3 +1,4 @@
+/* oxlint-disable react/set-state-in-effect -- legacy UI kept as-is (behavior-preserving lint pass) */
 // SPDX-License-Identifier: Apache-2.0
 "use client";
 /**

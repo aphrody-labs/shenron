@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-unexpected-multiline -- behavior-preserving legacy pattern, reviewed */
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
 import type { ChatEvent } from "../src/contract";

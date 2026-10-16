@@ -513,6 +513,7 @@ try {
     { id: number; series: string; number_in_series: number | null; title: string | null }[]
   >`select id, series, number_in_series, title from bot.db_episodes
 	  where title is not null and number_in_series is not null`;
+  // oxlint-disable-next-line oxc/no-map-spread -- immutable copy intended
   const corpusTitres = titres.map((e) => ({
     // `id` en plus du numéro : c'est lui qui permet de lier la fiche à
     // `/wiki/episodes/<id>`. Le numéro seul ne suffit pas, il repart à 1 par série.

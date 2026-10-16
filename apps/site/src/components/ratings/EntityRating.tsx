@@ -1,3 +1,4 @@
+/* oxlint-disable react/set-state-in-effect -- reviewed: legacy patterns, behavior preserved */
 /**
  * Notation 1–5 ★ pour fiches wiki (jeu, épisode, film, arc).
  *

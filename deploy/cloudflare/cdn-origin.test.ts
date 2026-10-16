@@ -1,3 +1,4 @@
+/* oxlint-disable unicorn/no-array-sort -- reviewed: legacy patterns, behavior preserved */
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
 import {

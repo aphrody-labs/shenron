@@ -1,3 +1,4 @@
+/* oxlint-disable typescript/no-extraneous-class -- behavior-preserving legacy pattern, reviewed */
 // SPDX-License-Identifier: Apache-2.0
 /**
  * a2a.ts — Hub et Protocole Standard Agent-to-Agent (A2A) pour Shenron & Aphrody.

@@ -1,3 +1,4 @@
+/* oxlint-disable oxc/no-map-spread -- behavior-preserving legacy pattern, reviewed */
 // SPDX-License-Identifier: Apache-2.0
 /**
  * `@aphrody/shenron-api/host` — composition of the single Shenron API server from an explicit

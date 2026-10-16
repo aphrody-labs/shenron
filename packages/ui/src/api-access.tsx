@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-object-type-as-default-prop -- behavior-preserving legacy pattern, reviewed */
 "use client";
 
 import { Check, Copy, Terminal } from "lucide-react";

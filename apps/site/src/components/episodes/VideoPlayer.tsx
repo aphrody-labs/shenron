@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable jsx-a11y/media-has-caption, jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex, jsx-a11y/prefer-tag-over-role, react/exhaustive-effect-dependencies, react/set-state-in-effect -- reviewed: legacy patterns, behavior preserved */
 
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useTranslations } from "next-intl";

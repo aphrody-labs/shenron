@@ -105,6 +105,7 @@ function openSqliteReadOnly(path: string): {
     if (typeof (globalThis as unknown as { Bun?: unknown }).Bun !== "undefined") {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { Database } = require("bun:sqlite");
+      // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
       const db = new Database(path, { readonly: true });
       return {
         query: (sqlStr: string) => ({ get: () => db.query(sqlStr).get() }),
@@ -125,6 +126,7 @@ function openSqliteReadOnly(path: string): {
       }
     ).getBuiltinModule?.("node:sqlite");
     if (nodeSqlite) {
+      // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
       const db = new nodeSqlite.DatabaseSync(path, { readOnly: true });
       return {
         query: (sqlStr: string) => ({

@@ -38,16 +38,22 @@ for (const entry of entries) {
 
 const report = {
   generatedAt: new Date().toISOString(),
+  // oxlint-disable-next-line unicorn/no-array-sort -- array is a local copy or sorted in place on purpose
   locales: [...new Set(entries.map((entry) => entry.locale))].sort(),
+  // oxlint-disable-next-line unicorn/no-array-sort -- array is a local copy or sorted in place on purpose
   domains: [...domains.entries()].sort().map(([domain, locales]) => {
+    // oxlint-disable-next-line oxc/no-map-spread -- immutable copy intended
     const union = new Set([...locales.values()].flatMap((keys) => [...keys]));
     return {
       domain,
       keys: union.size,
+      // oxlint-disable-next-line unicorn/no-array-sort -- array is a local copy or sorted in place on purpose
       locales: [...locales.entries()].sort().map(([locale, keys]) => ({
         locale,
         keys: keys.size,
+        // oxlint-disable-next-line unicorn/no-array-sort -- array is a local copy or sorted in place on purpose
         missing: [...union].filter((key) => !keys.has(key)).sort(),
+        // oxlint-disable-next-line unicorn/no-array-sort -- array is a local copy or sorted in place on purpose
         extra: [...keys].filter((key) => !union.has(key)).sort(),
       })),
     };
@@ -83,6 +89,7 @@ async function findJsonFiles(roots: string[]): Promise<string[]> {
       // Un domaine absent reste documenté par les domaines présents.
     }
   }
+  // oxlint-disable-next-line unicorn/no-array-sort -- array is a local copy or sorted in place on purpose
   return found.sort();
 }
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+/* oxlint-disable eslint/no-unused-vars -- reviewed: legacy patterns, behavior preserved */
 // SPDX-License-Identifier: Apache-2.0
 /**
  * inspecter-manga-anime.ts

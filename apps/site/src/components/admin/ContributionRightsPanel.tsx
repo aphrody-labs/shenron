@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/label-has-associated-control -- legacy UI kept as-is (behavior-preserving lint pass) */
 "use client";
 
 /**

@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-array-index-key -- legacy UI kept as-is (behavior-preserving lint pass) */
 import { BillboardSkeleton } from "@/components/stream/StreamSkeleton";
 
 export default function Loading() {

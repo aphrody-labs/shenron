@@ -35,6 +35,7 @@ test("capture uses only a whole visible rendered page and rejects partial or und
   const bands = [image(0, 408), image(400, 408), image(800, 400)];
   expect(visiblePageClip(bands)).toEqual({ x: 218, y: 0, width: 764, height: 1200, scale: 1 });
   expect(() => visiblePageClip(bands.slice(0, 2))).toThrow();
+  // oxlint-disable-next-line oxc/no-map-spread -- immutable copy intended
   expect(() => visiblePageClip(bands.map((i) => ({ ...i, w: 0 })))).toThrow();
   expect(() =>
     visiblePageClip([image(0, 408, -200), image(400, 408, -200), image(800, 400, -200)]),

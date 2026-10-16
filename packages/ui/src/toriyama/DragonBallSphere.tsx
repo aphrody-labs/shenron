@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-array-index-key -- behavior-preserving legacy pattern, reviewed */
 /**
  * DragonBallSphere — variante interactive de `<DragonBall>` (halo, survol).
  * Même géométrie, même palette : tout vient de `toriyama-svg/sphere`.

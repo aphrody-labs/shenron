@@ -57,6 +57,7 @@ function ico(images: { cote: number; png: Buffer }[]): Buffer {
   tete.writeUInt16LE(images.length, 4);
   const entrees: Buffer[] = [];
   let decalage = 6 + 16 * images.length;
+  // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
   for (const { cote, png } of images) {
     const e = Buffer.alloc(16);
     e.writeUInt8(cote >= 256 ? 0 : cote, 0);

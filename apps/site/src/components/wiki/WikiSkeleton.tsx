@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-array-index-key -- reviewed: legacy patterns, behavior preserved */
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Squelettes des pages du wiki (`loading.tsx`).

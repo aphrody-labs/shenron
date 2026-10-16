@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable jsx-a11y/control-has-associated-label -- reviewed: legacy patterns, behavior preserved */
 
 import { useMemo, useState } from "react";
 

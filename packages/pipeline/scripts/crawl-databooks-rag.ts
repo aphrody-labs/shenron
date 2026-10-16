@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-shadow -- behavior-preserving legacy pattern, reviewed */
 /**
  * crawl-databooks-rag.ts — Crawl de sources AUTORITAIRES de databooks/guidebooks
  * Dragon Ball traduits vers un shard RAG : Kanzentai (archives Wayback, trad.

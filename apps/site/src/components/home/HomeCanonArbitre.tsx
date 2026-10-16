@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/prefer-tag-over-role -- reviewed: legacy patterns, behavior preserved */
 import Link from "next/link";
 import type { HomeCanonConfig } from "@/lib/home-scenes";
 import type { CanonConfig } from "@/lib/canon-engine";

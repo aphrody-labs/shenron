@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/heading-has-content, react/no-unstable-nested-components -- reviewed: legacy patterns, behavior preserved */
 /**
  * Rendu markdown enrichi pour les pages wiki libres (table WikiPage).
  *

@@ -18,7 +18,7 @@
  * - Error rate & Uptime
  */
 import { mkdir, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { dirname } from "node:path";
 import { parseArgs } from "node:util";
 
 export interface RagTestCase {

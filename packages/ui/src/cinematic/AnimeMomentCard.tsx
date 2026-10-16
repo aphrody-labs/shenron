@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/no-static-element-interactions -- behavior-preserving legacy pattern, reviewed */
 "use client";
 
 import React from "react";

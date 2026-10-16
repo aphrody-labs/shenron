@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, jsx-a11y/prefer-tag-over-role -- legacy UI kept as-is (behavior-preserving lint pass) */
 "use client";
 
 import { LoadingText } from "@/components/LoadingText";

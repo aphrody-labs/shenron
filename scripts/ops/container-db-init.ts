@@ -70,6 +70,7 @@ export async function runPostgresMigrations(
     // 2. Read migration files
     if (existsSync(SITE_MIGRATIONS_DIR)) {
       const entries = await readdir(SITE_MIGRATIONS_DIR);
+      // oxlint-disable-next-line unicorn/no-array-sort -- array is a local copy or sorted in place on purpose
       const sqlFiles = entries.filter((f) => f.endsWith(".sql")).sort();
 
       for (const file of sqlFiles) {
@@ -127,6 +128,7 @@ export async function runSqliteMigrations(
 
     if (existsSync(BOT_MIGRATIONS_DIR)) {
       const entries = await readdir(BOT_MIGRATIONS_DIR);
+      // oxlint-disable-next-line unicorn/no-array-sort -- array is a local copy or sorted in place on purpose
       const sqlFiles = entries.filter((f) => f.endsWith(".sql")).sort();
 
       for (const file of sqlFiles) {

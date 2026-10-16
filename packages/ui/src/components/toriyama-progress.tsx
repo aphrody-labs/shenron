@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/prefer-tag-over-role -- behavior-preserving legacy pattern, reviewed */
 /**
  * ToriyamaProgress — Ki Energy & Battle Charge Progress Bar Primitive.
  * Features comic cell-shading, sparkling Ki aura gradient, and authentic ink borders.

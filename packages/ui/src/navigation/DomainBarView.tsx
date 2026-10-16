@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-object-type-as-default-prop -- behavior-preserving legacy pattern, reviewed */
 import type { UiLinkComponent } from "./link";
 
 export type DomainAction = { href: string; label: string };

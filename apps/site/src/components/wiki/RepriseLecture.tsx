@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable react/no-deriving-state-in-effects, react/set-state-in-effect -- reviewed: legacy patterns, behavior preserved */
 
 /**
  * « Reprendre » — les dernières fiches consultées sur cet appareil.

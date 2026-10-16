@@ -1,3 +1,4 @@
+/* oxlint-disable react/no-array-index-key -- behavior-preserving legacy pattern, reviewed */
 /**
  * LinkPager — pagination **en liens**, pour les listes rendues côté serveur.
  *

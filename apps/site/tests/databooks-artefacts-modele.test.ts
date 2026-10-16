@@ -356,6 +356,7 @@ describe("normaliserEllipsesNakaguro", () => {
     // #12 p.172 et #53 : les 18 runs de longueur 2 du corpus ont été lus un
     // par un, aucun n'est une ellipse.
     const source =
+      // oxlint-disable-next-line eslint/no-useless-concat -- line-length split kept
       "サヤ人・・宇宙人の・外の世界" + "\n" + "・オーブングランデー・・本編前半・・本編後半";
     expect(normaliserEllipsesNakaguro(source)).toEqual({ texte: source, corrections: 0 });
   });

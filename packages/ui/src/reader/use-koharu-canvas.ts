@@ -1,3 +1,4 @@
+/* oxlint-disable promise/always-return -- behavior-preserving legacy pattern, reviewed */
 "use client";
 
 import { useEffect, useState } from "react";

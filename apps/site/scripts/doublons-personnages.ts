@@ -321,6 +321,7 @@ try {
     if (!x || !y) return false;
     if (x === y || x.includes(y) || y.includes(x)) return true;
     const d: number[][] = Array.from({ length: x.length + 1 }, (_, i) =>
+      // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
       Array.from({ length: y.length + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0)),
     );
     for (let i = 1; i <= x.length; i++) {

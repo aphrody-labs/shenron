@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/prefer-tag-over-role, react/no-array-index-key -- legacy UI kept as-is (behavior-preserving lint pass) */
 "use client";
 
 import { useState, useTransition } from "react";

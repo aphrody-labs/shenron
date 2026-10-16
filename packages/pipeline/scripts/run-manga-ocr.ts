@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+/* oxlint-disable eslint/no-shadow -- behavior-preserving legacy pattern, reviewed */
 /**
  * Exécute les lots manga avec un pipeline hybride traçable :
  *   1. PP-OCRv5 détecte les zones et fournit des candidats géométriques ;
