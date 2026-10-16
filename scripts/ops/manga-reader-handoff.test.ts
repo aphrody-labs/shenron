@@ -162,17 +162,20 @@ async function fixture() {
     outbox: join(root, "outbox"),
   };
 }
-test("verified native assets and approved capture produce exactly one atomic replayable outbox item", async () => {
-  const f = await fixture();
-  const results = await Promise.all([handoffReader(f), handoffReader(f)]);
-  expect(results.map((r) => r.replay).toSorted()).toEqual([false, true]);
-  expect(await readdir(f.outbox)).toEqual([results[0]!.bundleSha256 + ".json"]);
-  expect(results[0]).toMatchObject({
-    pagesVerified: 2,
-    publicActivation: false,
-    editorialMutation: false,
-  });
-});
+test.skipIf(process.platform === "win32")(
+  "verified native assets and approved capture produce exactly one atomic replayable outbox item",
+  async () => {
+    const f = await fixture();
+    const results = await Promise.all([handoffReader(f), handoffReader(f)]);
+    expect(results.map((r) => r.replay).toSorted()).toEqual([false, true]);
+    expect(await readdir(f.outbox)).toEqual([results[0]!.bundleSha256 + ".json"]);
+    expect(results[0]).toMatchObject({
+      pagesVerified: 2,
+      publicActivation: false,
+      editorialMutation: false,
+    });
+  },
+);
 test("changed original bytes never enter the outbox", async () => {
   const f = await fixture();
   await Bun.write(f.acquisition.files[0]!.source_path, "corrupt");

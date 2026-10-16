@@ -186,37 +186,40 @@ test("unfinished recursive frontiers resume without force; only a proved complet
   expect(calls[1]).not.toContain("--force");
   expect(calls[2]).toContain("--force");
 });
-test("kernel flock excludes concurrent owners and releases after process death without a stale file claim", async () => {
-  const c = await config();
-  const lock = join(c.job, "kernel.flock");
-  const first = Bun.spawn(
-    [
-      "flock",
-      "-n",
-      "-F",
-      lock,
-      process.execPath,
-      "-e",
-      "console.log('ready'); await new Promise(()=>{})",
-    ],
-    { stdout: "pipe" },
-  );
-  const reader = first.stdout.getReader();
-  await reader.read();
-  reader.releaseLock();
-  const second = Bun.spawn(
-    ["flock", "-n", "-E", "75", lock, process.execPath, "-e", "process.exit(0)"],
-    { stdout: "ignore", stderr: "ignore" },
-  );
-  expect(await second.exited).toBe(75);
-  first.kill("SIGKILL");
-  await first.exited;
-  const recovered = Bun.spawn(
-    ["flock", "-n", "-E", "75", lock, process.execPath, "-e", "process.exit(0)"],
-    { stdout: "ignore", stderr: "ignore" },
-  );
-  expect(await recovered.exited).toBe(0);
-});
+test.skipIf(process.platform === "win32")(
+  "kernel flock excludes concurrent owners and releases after process death without a stale file claim",
+  async () => {
+    const c = await config();
+    const lock = join(c.job, "kernel.flock");
+    const first = Bun.spawn(
+      [
+        "flock",
+        "-n",
+        "-F",
+        lock,
+        process.execPath,
+        "-e",
+        "console.log('ready'); await new Promise(()=>{})",
+      ],
+      { stdout: "pipe" },
+    );
+    const reader = first.stdout.getReader();
+    await reader.read();
+    reader.releaseLock();
+    const second = Bun.spawn(
+      ["flock", "-n", "-E", "75", lock, process.execPath, "-e", "process.exit(0)"],
+      { stdout: "ignore", stderr: "ignore" },
+    );
+    expect(await second.exited).toBe(75);
+    first.kill("SIGKILL");
+    await first.exited;
+    const recovered = Bun.spawn(
+      ["flock", "-n", "-E", "75", lock, process.execPath, "-e", "process.exit(0)"],
+      { stdout: "ignore", stderr: "ignore" },
+    );
+    expect(await recovered.exited).toBe(0);
+  },
+);
 test("an invalid checkpoint is preserved instead of resetting its daily request budget", async () => {
   const c = await config();
   const path = join(c.job, "state.json");

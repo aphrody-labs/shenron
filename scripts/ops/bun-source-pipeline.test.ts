@@ -1464,71 +1464,79 @@ test("automatic media discovery resumes byte/file quotas without discarding prio
   expect(await Bun.file(join(third.revision, "discovered-media.json")).json()).toHaveLength(2);
 });
 
-test("required collection delegates the entire campaign and acquisition once before local SQL", async () => {
-  const f = await fixture([doc()], {
-      collectionIsolation: "required",
-      crawl: {
-        mode: "run",
-        config: "/private/fixture-campaign.json",
-        output: "/private/fixture-campaign",
-      },
-    }),
-    db = database();
-  const jar = join(f.root, "search-jar.json");
-  await Bun.write(jar, "{}");
-  await chmod(jar, 0o600);
-  f.config.search = { queries: ["fixture"], domains: ["source.example"], count: 1, cookieJar: jar };
-  await Bun.write(f.configPath, JSON.stringify(f.config));
-  let searches = 0;
-  let delegated = 0,
-    inside = false,
-    networkCampaigns = 0;
-  const campaign = async (_campaign: unknown, phase: "collect" | "plan") => {
-    if (phase === "collect") {
-      expect(inside).toBe(true);
-      networkCampaigns++;
-    }
-    return { complete: true, pending: 0, errors: 0, sourcePlansSha256: hash("fixture-plan") };
-  };
-  const result = await autoSourcePipeline(f.configPath, {
-    database: db.port,
-    campaign,
-    search: async () => {
-      throw Error("host search forbidden");
-    },
-    collectCycle: async (request, signal) => {
-      delegated++;
-      expect(request.configSha256).toBe(hash(await Bun.file(f.configPath).text()));
-      expect(db.writes()).toBe(0);
-      inside = true;
-      try {
-        return await collectSourcePipeline(request.configPath, {
-          signal,
-          campaign,
-          isolatedCollection: true,
-          search: async (args) => {
-            expect(inside).toBe(true);
-            searches++;
-            return JSON.stringify({
-              query: args.at(-1),
-              authenticated: true,
-              transport: "fetch",
-              servedFromCache: false,
-              organic: [],
-            });
-          },
-        });
-      } finally {
-        inside = false;
+test.skipIf(process.platform === "win32")(
+  "required collection delegates the entire campaign and acquisition once before local SQL",
+  async () => {
+    const f = await fixture([doc()], {
+        collectionIsolation: "required",
+        crawl: {
+          mode: "run",
+          config: "/private/fixture-campaign.json",
+          output: "/private/fixture-campaign",
+        },
+      }),
+      db = database();
+    const jar = join(f.root, "search-jar.json");
+    await Bun.write(jar, "{}");
+    await chmod(jar, 0o600);
+    f.config.search = {
+      queries: ["fixture"],
+      domains: ["source.example"],
+      count: 1,
+      cookieJar: jar,
+    };
+    await Bun.write(f.configPath, JSON.stringify(f.config));
+    let searches = 0;
+    let delegated = 0,
+      inside = false,
+      networkCampaigns = 0;
+    const campaign = async (_campaign: unknown, phase: "collect" | "plan") => {
+      if (phase === "collect") {
+        expect(inside).toBe(true);
+        networkCampaigns++;
       }
-    },
-  });
-  expect(result.complete).toBe(true);
-  expect(delegated).toBe(1);
-  expect(networkCampaigns).toBe(2);
-  expect(searches).toBe(1);
-  expect(db.writes()).toBeGreaterThan(0);
-});
+      return { complete: true, pending: 0, errors: 0, sourcePlansSha256: hash("fixture-plan") };
+    };
+    const result = await autoSourcePipeline(f.configPath, {
+      database: db.port,
+      campaign,
+      search: async () => {
+        throw Error("host search forbidden");
+      },
+      collectCycle: async (request, signal) => {
+        delegated++;
+        expect(request.configSha256).toBe(hash(await Bun.file(f.configPath).text()));
+        expect(db.writes()).toBe(0);
+        inside = true;
+        try {
+          return await collectSourcePipeline(request.configPath, {
+            signal,
+            campaign,
+            isolatedCollection: true,
+            search: async (args) => {
+              expect(inside).toBe(true);
+              searches++;
+              return JSON.stringify({
+                query: args.at(-1),
+                authenticated: true,
+                transport: "fetch",
+                servedFromCache: false,
+                organic: [],
+              });
+            },
+          });
+        } finally {
+          inside = false;
+        }
+      },
+    });
+    expect(result.complete).toBe(true);
+    expect(delegated).toBe(1);
+    expect(networkCampaigns).toBe(2);
+    expect(searches).toBe(1);
+    expect(db.writes()).toBeGreaterThan(0);
+  },
+);
 test("required isolation and changed shared-volume receipts fail before database writes", async () => {
   const f = await fixture([doc()], { collectionIsolation: "required" }),
     db = database();

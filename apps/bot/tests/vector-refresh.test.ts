@@ -35,91 +35,94 @@ test("index retirement waits for query leases while new queries use replacement"
   expect(closed).toEqual([1, 2]);
   await expect(leases.use(async (r) => r.id)).rejects.toThrow("temporarily unavailable");
 });
-test("quiet generations build once, pin pointer, retain previous, and reject drift", async () => {
-  const base = await mkdtemp(join(tmpdir(), "shenron-refresh-"));
-  try {
-    const root = join(base, "generations");
-    await mkdir(root, { mode: 0o700 });
-    let revision = 1,
-      builds = 0,
-      drift = false;
-    const closed: number[] = [];
-    const generation = () => ({ epoch, revision: String(revision) });
-    async function artifact(directory: string, rev = revision) {
-      await mkdir(directory, { mode: 0o700 });
-      const manifest = JSON.stringify({ generation: { epoch, revision: String(rev) } }),
-        index = "native-fixture";
-      const receipt = JSON.stringify({
-        schema: "shenron-vector-sidecar-build/v1",
-        fullReadbackVerified: true,
-        manifestSha256: digest(manifest),
-        indexSha256: digest(index),
-      });
-      await Bun.write(join(directory, "manifest.json"), manifest);
-      await Bun.write(join(directory, "index.bin"), index);
-      await Bun.write(join(directory, "build-receipt.json"), receipt);
-      return {
-        directory,
-        manifestSha256: digest(manifest),
-        receiptSha256: digest(receipt),
-        generation: { epoch, revision: String(rev) },
-      };
+test.skipIf(process.platform === "win32")(
+  "quiet generations build once, pin pointer, retain previous, and reject drift",
+  async () => {
+    const base = await mkdtemp(join(tmpdir(), "shenron-refresh-"));
+    try {
+      const root = join(base, "generations");
+      await mkdir(root, { mode: 0o700 });
+      let revision = 1,
+        builds = 0,
+        drift = false;
+      const closed: number[] = [];
+      const generation = () => ({ epoch, revision: String(revision) });
+      async function artifact(directory: string, rev = revision) {
+        await mkdir(directory, { mode: 0o700 });
+        const manifest = JSON.stringify({ generation: { epoch, revision: String(rev) } }),
+          index = "native-fixture";
+        const receipt = JSON.stringify({
+          schema: "shenron-vector-sidecar-build/v1",
+          fullReadbackVerified: true,
+          manifestSha256: digest(manifest),
+          indexSha256: digest(index),
+        });
+        await Bun.write(join(directory, "manifest.json"), manifest);
+        await Bun.write(join(directory, "index.bin"), index);
+        await Bun.write(join(directory, "build-receipt.json"), receipt);
+        return {
+          directory,
+          manifestSha256: digest(manifest),
+          receiptSha256: digest(receipt),
+          generation: { epoch, revision: String(rev) },
+        };
+      }
+      const anchor = await artifact(join(base, "bootstrap"));
+      const manager = await createVectorRefresh(
+        { root, intervalMs: 30000, minFreeBytes: 2 * 1024 ** 3, maxIndexBytes: 1024 },
+        anchor,
+        {
+          generation: async () => generation(),
+          freeBytes: async () => 4 * 1024 ** 3,
+          lock: async (run) => run(),
+          open: async (config) => {
+            const m = await Bun.file(join(config.directory, "manifest.json")).json();
+            if (m.generation.revision !== String(revision)) throw Error("RAG generation differs");
+            return {
+              close() {
+                closed.push(Number(m.generation.revision));
+              },
+            };
+          },
+          build: async (directory) => {
+            builds++;
+            const result = await artifact(directory);
+            if (drift) revision++;
+            return result;
+          },
+        },
+      );
+      revision = 2;
+      expect(await manager.tick()).toMatchObject({ quietWindow: true });
+      expect(builds).toBe(0);
+      expect(await manager.tick()).toMatchObject({ refreshed: true });
+      expect(builds).toBe(1);
+      const first = manager.pointer.current.directory;
+      expect(manager.pointer.previous?.directory).toBe(anchor.directory);
+      expect((await Bun.file(join(root, "active.json")).json()).current.manifestSha256).toBe(
+        manager.pointer.current.manifestSha256,
+      );
+      revision = 3;
+      await manager.tick();
+      await manager.tick();
+      expect(manager.pointer.previous?.directory).toBe(first);
+      revision = 4;
+      await manager.tick();
+      await manager.tick();
+      expect(await Bun.file(join(first, "manifest.json")).exists()).toBe(false);
+      const pinned = manager.pointer.current.directory;
+      revision = 5;
+      drift = true;
+      await manager.tick();
+      await expect(manager.tick()).rejects.toThrow("generation changed");
+      expect(manager.pointer.current.directory).toBe(pinned);
+      await manager.stop();
+      expect(closed).toEqual([1, 2, 3, 4]);
+    } finally {
+      await rm(base, { recursive: true, force: true });
     }
-    const anchor = await artifact(join(base, "bootstrap"));
-    const manager = await createVectorRefresh(
-      { root, intervalMs: 30000, minFreeBytes: 2 * 1024 ** 3, maxIndexBytes: 1024 },
-      anchor,
-      {
-        generation: async () => generation(),
-        freeBytes: async () => 4 * 1024 ** 3,
-        lock: async (run) => run(),
-        open: async (config) => {
-          const m = await Bun.file(join(config.directory, "manifest.json")).json();
-          if (m.generation.revision !== String(revision)) throw Error("RAG generation differs");
-          return {
-            close() {
-              closed.push(Number(m.generation.revision));
-            },
-          };
-        },
-        build: async (directory) => {
-          builds++;
-          const result = await artifact(directory);
-          if (drift) revision++;
-          return result;
-        },
-      },
-    );
-    revision = 2;
-    expect(await manager.tick()).toMatchObject({ quietWindow: true });
-    expect(builds).toBe(0);
-    expect(await manager.tick()).toMatchObject({ refreshed: true });
-    expect(builds).toBe(1);
-    const first = manager.pointer.current.directory;
-    expect(manager.pointer.previous?.directory).toBe(anchor.directory);
-    expect((await Bun.file(join(root, "active.json")).json()).current.manifestSha256).toBe(
-      manager.pointer.current.manifestSha256,
-    );
-    revision = 3;
-    await manager.tick();
-    await manager.tick();
-    expect(manager.pointer.previous?.directory).toBe(first);
-    revision = 4;
-    await manager.tick();
-    await manager.tick();
-    expect(await Bun.file(join(first, "manifest.json")).exists()).toBe(false);
-    const pinned = manager.pointer.current.directory;
-    revision = 5;
-    drift = true;
-    await manager.tick();
-    await expect(manager.tick()).rejects.toThrow("generation changed");
-    expect(manager.pointer.current.directory).toBe(pinned);
-    await manager.stop();
-    expect(closed).toEqual([1, 2, 3, 4]);
-  } finally {
-    await rm(base, { recursive: true, force: true });
-  }
-});
+  },
+);
 test("refresh job belongs to existing registry and stop drains its owner", async () => {
   const { registerVectorRefreshJob, VECTOR_REFRESH_JOB } =
     await import("../src/api/vector-refresh-job");
@@ -159,67 +162,70 @@ test("worker reports invalid build without leaving shutdown pending", async () =
     ),
   ).rejects.toThrow("not qualified");
 });
-test("overlapping ticks are skipped and shutdown joins the cancelled build", async () => {
-  const base = await mkdtemp(join(tmpdir(), "shenron-refresh-stop-"));
-  try {
-    const directory = join(base, "bootstrap");
-    await mkdir(directory, { mode: 0o700 });
-    const manifest = JSON.stringify({ generation: { epoch, revision: "1" } }),
-      receipt = "fixture";
-    await Bun.write(join(directory, "manifest.json"), manifest);
-    await Bun.write(join(directory, "build-receipt.json"), receipt);
-    let revision = "1",
-      builds = 0,
-      cancelled = false,
-      closed = 0,
-      entered!: () => void;
-    const started = new Promise<void>((resolve) => (entered = resolve));
-    const manager = await createVectorRefresh(
-      {
-        root: join(base, "generations"),
-        intervalMs: 30000,
-        minFreeBytes: 2 * 1024 ** 3,
-        maxIndexBytes: 1024,
-      },
-      { directory, manifestSha256: digest(manifest), receiptSha256: digest(receipt) },
-      {
-        generation: async () => ({ epoch, revision }),
-        open: async () => ({
-          close() {
-            closed++;
-          },
-        }),
-        lock: async (run) => run(),
-        freeBytes: async () => 4 * 1024 ** 3,
-        build: async (_directory, signal) => {
-          builds++;
-          entered();
-          return new Promise((_, reject) =>
-            signal.addEventListener(
-              "abort",
-              () => {
-                cancelled = true;
-                reject(Error("cancelled"));
-              },
-              { once: true },
-            ),
-          );
+test.skipIf(process.platform === "win32")(
+  "overlapping ticks are skipped and shutdown joins the cancelled build",
+  async () => {
+    const base = await mkdtemp(join(tmpdir(), "shenron-refresh-stop-"));
+    try {
+      const directory = join(base, "bootstrap");
+      await mkdir(directory, { mode: 0o700 });
+      const manifest = JSON.stringify({ generation: { epoch, revision: "1" } }),
+        receipt = "fixture";
+      await Bun.write(join(directory, "manifest.json"), manifest);
+      await Bun.write(join(directory, "build-receipt.json"), receipt);
+      let revision = "1",
+        builds = 0,
+        cancelled = false,
+        closed = 0,
+        entered!: () => void;
+      const started = new Promise<void>((resolve) => (entered = resolve));
+      const manager = await createVectorRefresh(
+        {
+          root: join(base, "generations"),
+          intervalMs: 30000,
+          minFreeBytes: 2 * 1024 ** 3,
+          maxIndexBytes: 1024,
         },
-      },
-    );
-    revision = "2";
-    await manager.tick();
-    const active = manager.tick();
-    const rejected = active.catch((error) => error);
-    await started;
-    expect(await manager.tick()).toBeUndefined();
-    expect(builds).toBe(1);
-    await manager.stop();
-    expect((await rejected).message).toBe("cancelled");
-    expect(cancelled).toBe(true);
-    expect(closed).toBe(1);
-    expect(manager.pointer.current.directory).toBe(directory);
-  } finally {
-    await rm(base, { recursive: true, force: true });
-  }
-});
+        { directory, manifestSha256: digest(manifest), receiptSha256: digest(receipt) },
+        {
+          generation: async () => ({ epoch, revision }),
+          open: async () => ({
+            close() {
+              closed++;
+            },
+          }),
+          lock: async (run) => run(),
+          freeBytes: async () => 4 * 1024 ** 3,
+          build: async (_directory, signal) => {
+            builds++;
+            entered();
+            return new Promise((_, reject) =>
+              signal.addEventListener(
+                "abort",
+                () => {
+                  cancelled = true;
+                  reject(Error("cancelled"));
+                },
+                { once: true },
+              ),
+            );
+          },
+        },
+      );
+      revision = "2";
+      await manager.tick();
+      const active = manager.tick();
+      const rejected = active.catch((error) => error);
+      await started;
+      expect(await manager.tick()).toBeUndefined();
+      expect(builds).toBe(1);
+      await manager.stop();
+      expect((await rejected).message).toBe("cancelled");
+      expect(cancelled).toBe(true);
+      expect(closed).toBe(1);
+      expect(manager.pointer.current.directory).toBe(directory);
+    } finally {
+      await rm(base, { recursive: true, force: true });
+    }
+  },
+);

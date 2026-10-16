@@ -134,64 +134,76 @@ async function fixture() {
     },
   };
 }
-test("reader prefilters native candidates, hydrates UUIDs and fuses lexical/vector ranks", async () => {
-  const f = await fixture(),
-    reader = await createBunVectorReader(f.config, f.ports);
-  const result = await reader.search("goku", 2);
-  expect(result.mode).toBe("hybrid");
-  expect(result.results.map((x) => x.id)).toEqual([id(1), id(2)]);
-  expect(result.results[0]!.sourceId).toBe("db_characters");
-  expect(result.results[1]!.kind).toBe("community");
-  expect(f.nativeCalls[0]).toEqual([1n, 2n]);
-  expect(result.results.every((x) => x.id !== id(3))).toBe(true);
-  reader.close();
-  reader.close();
-  expect(f.closes).toBe(1);
-});
-test("origin/lang/kind/entity filters apply before native top-k and lexicalOnly performs no inference", async () => {
-  const f = await fixture(),
-    reader = await createBunVectorReader(f.config, f.ports);
-  const result = await reader.search("fixture", 5, {
-    sourceId: "native-community",
-    kind: "community",
-    lang: "en",
-    entity: "goku",
-  });
-  expect(result.results.map((x) => x.id)).toEqual([id(2)]);
-  expect(f.nativeCalls[0]).toEqual([2n]);
-  const before = f.embeddings;
-  const lexical = await reader.search("fixture", 5, { lexicalOnly: true });
-  expect(lexical.mode).toBe("lexical");
-  expect(f.embeddings).toBe(before);
-  reader.close();
-});
-test("generation drift before or during search fails closed without retrieval fallback", async () => {
-  const f = await fixture(),
-    reader = await createBunVectorReader(f.config, f.ports);
-  f.drift();
-  await expect(reader.search("fixture", 2)).rejects.toThrow("generation differs");
-  expect(f.embeddings).toBe(0);
-  reader.close();
-  const g = await fixture();
-  g.ports.embed = async () => {
-    g.drift();
-    return new Float32Array(384);
-  };
-  const second = await createBunVectorReader(g.config, g.ports);
-  await expect(second.search("fixture", 2)).rejects.toThrow("generation changed");
-  second.close();
-});
-test("changed index bytes and missing qualification cannot open native resources", async () => {
-  const f = await fixture();
-  await Bun.write(join(f.config.directory, "index.bin"), "changed");
-  await expect(createBunVectorReader(f.config, f.ports)).rejects.toThrow("bytes differ");
-  expect(f.closes).toBe(0);
-  const g = await fixture();
-  await expect(
-    createBunVectorReader({ ...g.config, receiptSha256: "0".repeat(64) }, g.ports),
-  ).rejects.toThrow("receipt pin differs");
-  expect(g.closes).toBe(0);
-});
+test.skipIf(process.platform === "win32")(
+  "reader prefilters native candidates, hydrates UUIDs and fuses lexical/vector ranks",
+  async () => {
+    const f = await fixture(),
+      reader = await createBunVectorReader(f.config, f.ports);
+    const result = await reader.search("goku", 2);
+    expect(result.mode).toBe("hybrid");
+    expect(result.results.map((x) => x.id)).toEqual([id(1), id(2)]);
+    expect(result.results[0]!.sourceId).toBe("db_characters");
+    expect(result.results[1]!.kind).toBe("community");
+    expect(f.nativeCalls[0]).toEqual([1n, 2n]);
+    expect(result.results.every((x) => x.id !== id(3))).toBe(true);
+    reader.close();
+    reader.close();
+    expect(f.closes).toBe(1);
+  },
+);
+test.skipIf(process.platform === "win32")(
+  "origin/lang/kind/entity filters apply before native top-k and lexicalOnly performs no inference",
+  async () => {
+    const f = await fixture(),
+      reader = await createBunVectorReader(f.config, f.ports);
+    const result = await reader.search("fixture", 5, {
+      sourceId: "native-community",
+      kind: "community",
+      lang: "en",
+      entity: "goku",
+    });
+    expect(result.results.map((x) => x.id)).toEqual([id(2)]);
+    expect(f.nativeCalls[0]).toEqual([2n]);
+    const before = f.embeddings;
+    const lexical = await reader.search("fixture", 5, { lexicalOnly: true });
+    expect(lexical.mode).toBe("lexical");
+    expect(f.embeddings).toBe(before);
+    reader.close();
+  },
+);
+test.skipIf(process.platform === "win32")(
+  "generation drift before or during search fails closed without retrieval fallback",
+  async () => {
+    const f = await fixture(),
+      reader = await createBunVectorReader(f.config, f.ports);
+    f.drift();
+    await expect(reader.search("fixture", 2)).rejects.toThrow("generation differs");
+    expect(f.embeddings).toBe(0);
+    reader.close();
+    const g = await fixture();
+    g.ports.embed = async () => {
+      g.drift();
+      return new Float32Array(384);
+    };
+    const second = await createBunVectorReader(g.config, g.ports);
+    await expect(second.search("fixture", 2)).rejects.toThrow("generation changed");
+    second.close();
+  },
+);
+test.skipIf(process.platform === "win32")(
+  "changed index bytes and missing qualification cannot open native resources",
+  async () => {
+    const f = await fixture();
+    await Bun.write(join(f.config.directory, "index.bin"), "changed");
+    await expect(createBunVectorReader(f.config, f.ports)).rejects.toThrow("bytes differ");
+    expect(f.closes).toBe(0);
+    const g = await fixture();
+    await expect(
+      createBunVectorReader({ ...g.config, receiptSha256: "0".repeat(64) }, g.ports),
+    ).rejects.toThrow("receipt pin differs");
+    expect(g.closes).toBe(0);
+  },
+);
 test("query embedding uses only existing model HTTP route and rejects a different vector space", async () => {
   const calls: URL[] = [];
   const env = {
@@ -207,27 +219,33 @@ test("query embedding uses only existing model HTTP route and rejects a differen
   expect(calls.map((x) => x.pathname)).toEqual(["/api/v1/shenron/embed"]);
 });
 
-test("native provider cannot return hidden keys or positive L2 scores", async () => {
-  for (const hit of [
-    { key: 3n, score: -0.1 },
-    { key: 1n, score: 0.5 },
-  ]) {
+test.skipIf(process.platform === "win32")(
+  "native provider cannot return hidden keys or positive L2 scores",
+  async () => {
+    for (const hit of [
+      { key: 3n, score: -0.1 },
+      { key: 1n, score: 0.5 },
+    ]) {
+      const f = await fixture(),
+        open = f.ports.openIndex;
+      f.ports.openIndex = () => ({ ...open(), search: () => [hit] });
+      const reader = await createBunVectorReader(f.config, f.ports);
+      await expect(reader.search("fixture", 3)).rejects.toThrow(
+        "Native filter or negative L2 score differs",
+      );
+      reader.close();
+    }
+  },
+);
+test.skipIf(process.platform === "win32")(
+  "cancelled product query performs no inference",
+  async () => {
     const f = await fixture(),
-      open = f.ports.openIndex;
-    f.ports.openIndex = () => ({ ...open(), search: () => [hit] });
-    const reader = await createBunVectorReader(f.config, f.ports);
-    await expect(reader.search("fixture", 3)).rejects.toThrow(
-      "Native filter or negative L2 score differs",
-    );
+      reader = await createBunVectorReader(f.config, f.ports),
+      controller = new AbortController();
+    controller.abort();
+    await expect(reader.search("fixture", 3, { signal: controller.signal })).rejects.toThrow();
+    expect(f.embeddings).toBe(0);
     reader.close();
-  }
-});
-test("cancelled product query performs no inference", async () => {
-  const f = await fixture(),
-    reader = await createBunVectorReader(f.config, f.ports),
-    controller = new AbortController();
-  controller.abort();
-  await expect(reader.search("fixture", 3, { signal: controller.signal })).rejects.toThrow();
-  expect(f.embeddings).toBe(0);
-  reader.close();
-});
+  },
+);

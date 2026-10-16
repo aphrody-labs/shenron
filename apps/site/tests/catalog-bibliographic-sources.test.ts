@@ -4,7 +4,7 @@ import manifest from "../../bot/data/manga-bibliography-manifest.json";
 import { mangaVolumeBibliographicSource } from "../src/lib/manga-source-registry";
 
 test("every imported publication resolves to its verified publisher bibliography", () => {
-  expect(manifest.records).toHaveLength(100);
+  expect(manifest.records).toHaveLength(102);
   for (const record of manifest.records) {
     expect(
       mangaVolumeBibliographicSource({

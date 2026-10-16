@@ -128,50 +128,53 @@ test("provider-declared chapter pages reach acquisition candidates while generic
   expect(result.candidate?.pages.map((p) => p.sourceUrl).join(" ")).not.toContain("logo");
   expect(result.candidate?.pages[2]?.printedPages).toBeNull();
 });
-test("pool receipts project incrementally into one private index, never publishing a landing page", async () => {
-  const job = await mkdtemp(join(tmpdir(), "manga-pool-projection-"));
-  temporary.push(job);
-  await mkdir(join(job, "receipts"), { mode: 0o700 });
-  const db = new Database(join(job, "frontier.sqlite"));
-  db.exec(
-    "CREATE TABLE pool_tasks(id TEXT,url TEXT,kind TEXT,series TEXT,volumeId INTEGER,receipt TEXT,state TEXT)",
-  );
-  const id = "c".repeat(64),
-    path = join(job, "receipts", id + ".json"),
-    body = "<html><title>超悟空伝</title><body>ISBN 9784081111664</body></html>";
-  await Bun.write(
-    path,
-    JSON.stringify({
-      state: "done",
-      httpStatus: 200,
-      contentType: "text/html",
-      body,
-      sha256: projectionDigest(body),
-      finishedAt: new Date().toISOString(),
-    }),
-  );
-  await chmod(path, 0o600);
-  db.query("INSERT INTO pool_tasks VALUES(?,?,?,?,?,?,?)").run(
-    id,
-    "https://publisher.example/volume-2",
-    "bibliography",
-    "SOSH",
-    702,
-    path,
-    "done",
-  );
-  db.close();
-  let indexes = 0;
-  const indexer = async () => {
-    indexes++;
-    return { indexed: 1 };
-  };
-  const first = await projectPoolReceipts(job, { indexer, minimumFreeBytes: 0 });
-  const replay = await projectPoolReceipts(job, { indexer, minimumFreeBytes: 0 });
-  expect(first.changed).toBe(1);
-  expect(first.emitted).toBe(0);
-  expect(first.quarantined).toBe(1);
-  expect(replay.changed).toBe(0);
-  expect(indexes).toBe(1);
-  expect(replay.publicWrites).toBe(0);
-});
+test.skipIf(process.platform === "win32")(
+  "pool receipts project incrementally into one private index, never publishing a landing page",
+  async () => {
+    const job = await mkdtemp(join(tmpdir(), "manga-pool-projection-"));
+    temporary.push(job);
+    await mkdir(join(job, "receipts"), { mode: 0o700 });
+    const db = new Database(join(job, "frontier.sqlite"));
+    db.exec(
+      "CREATE TABLE pool_tasks(id TEXT,url TEXT,kind TEXT,series TEXT,volumeId INTEGER,receipt TEXT,state TEXT)",
+    );
+    const id = "c".repeat(64),
+      path = join(job, "receipts", id + ".json"),
+      body = "<html><title>超悟空伝</title><body>ISBN 9784081111664</body></html>";
+    await Bun.write(
+      path,
+      JSON.stringify({
+        state: "done",
+        httpStatus: 200,
+        contentType: "text/html",
+        body,
+        sha256: projectionDigest(body),
+        finishedAt: new Date().toISOString(),
+      }),
+    );
+    await chmod(path, 0o600);
+    db.query("INSERT INTO pool_tasks VALUES(?,?,?,?,?,?,?)").run(
+      id,
+      "https://publisher.example/volume-2",
+      "bibliography",
+      "SOSH",
+      702,
+      path,
+      "done",
+    );
+    db.close();
+    let indexes = 0;
+    const indexer = async () => {
+      indexes++;
+      return { indexed: 1 };
+    };
+    const first = await projectPoolReceipts(job, { indexer, minimumFreeBytes: 0 });
+    const replay = await projectPoolReceipts(job, { indexer, minimumFreeBytes: 0 });
+    expect(first.changed).toBe(1);
+    expect(first.emitted).toBe(0);
+    expect(first.quarantined).toBe(1);
+    expect(replay.changed).toBe(0);
+    expect(indexes).toBe(1);
+    expect(replay.publicWrites).toBe(0);
+  },
+);

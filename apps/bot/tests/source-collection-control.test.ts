@@ -70,191 +70,13 @@ async function respond(
   await chmod(path + ".tmp", 0o600);
   await rename(path + ".tmp", path);
 }
-test("private mailbox carries only pinned configuration and consumes canonical receipt", async () => {
-  const f = await fixture();
-  try {
-    const callback = await createSourceCollectionControl(f);
-    const work = callback(f.request);
-    const request = await pending(f.root);
-    expect(Object.keys(request).toSorted()).toEqual([
-      "configPath",
-      "configSha256",
-      "requestId",
-      "schema",
-    ]);
-    expect(request.schema).toBe("shenron-source-request/v1");
-    const receipt = collection(f);
-    await respond(f, request, { status: "complete", collection: receipt });
-    expect(await work).toEqual(receipt);
-    expect(await readdir(join(f.root, "control", "requests"))).toEqual([]);
-    expect(await readdir(join(f.root, "control", "responses"))).toEqual([]);
-  } finally {
-    await f.close();
-  }
-});
-test("abort removes pending request to cancel host work and timeout is finite", async () => {
-  const f = await fixture();
-  try {
-    const controller = new AbortController();
-    const callback = await createSourceCollectionControl(f);
-    const work = callback(f.request, controller.signal).catch((error) => error);
-    await pending(f.root);
-    controller.abort();
-    expect((await work).name).toBe("AbortError");
-    expect(await readdir(join(f.root, "control", "requests"))).toEqual([]);
-    const deadline = new AbortController();
-    const timed = await createSourceCollectionControl(f, {
-      deadline: (milliseconds) => {
-        expect(milliseconds).toBe(20 * 60 * 1000);
-        return deadline.signal;
-      },
-    });
-    const timeout = timed(f.request).catch((error) => error);
-    await pending(f.root);
-    deadline.abort(new DOMException("deadline", "TimeoutError"));
-    expect((await timeout).name).toBe("TimeoutError");
-    expect(await readdir(join(f.root, "control", "requests"))).toEqual([]);
-  } finally {
-    await f.close();
-  }
-});
-test("wrong identity, unsafe failure and unpinned collection fail closed", async () => {
-  const f = await fixture();
-  try {
-    const callback = await createSourceCollectionControl(f);
-    for (const response of [
-      { status: "complete", requestId: crypto.randomUUID(), collection: collection(f) },
-      { status: "failed", errorCode: "arbitrary private text" },
-      { status: "complete", collection: { ...collection(f), artifactsSha256: "bad" } },
-    ]) {
-      const work = callback(f.request).catch((error) => error),
-        request = await pending(f.root);
-      await respond(f, request, response);
-      expect(await work).toBeInstanceOf(Error);
-    }
-    const work = callback(f.request).catch((error) => error),
-      request = await pending(f.root);
-    await respond(f, request, { status: "failed", errorCode: "ERR_SOURCE_JOB_STATE_UNCERTAIN" });
-    expect((await work).code).toBe("ERR_SOURCE_JOB_STATE_UNCERTAIN");
-  } finally {
-    await f.close();
-  }
-});
-test("configuration hash, symlink and privacy failures never publish a request", async () => {
-  const f = await fixture();
-  try {
-    const callback = await createSourceCollectionControl(f);
-    await expect(callback({ ...f.request, configSha256: "0".repeat(64) })).rejects.toThrow(
-      "configuration differs",
-    );
-    await chmod(join(f.root, "control", "requests"), 0o755);
-    await expect(callback(f.request)).rejects.toThrow("Private canonical");
-    await chmod(join(f.root, "control", "requests"), 0o700);
-    await rm(join(f.root, "control", "responses"), { recursive: true });
-    await symlink(join(f.root, "control", "requests"), join(f.root, "control", "responses"));
-    await expect(callback(f.request)).rejects.toThrow("Private canonical");
-    expect(await readdir(join(f.root, "control", "requests"))).toEqual([]);
-  } finally {
-    await f.close();
-  }
-});
-
-test("existing bot job binds required private collection and shutdown withdraws its request", async () => {
-  const { registerSourcePipelineJob } = await import("../src/api/source-pipeline-job");
-  const f = await fixture();
-  let task: (() => Promise<void>) | undefined;
-  let job: Awaited<ReturnType<typeof registerSourcePipelineJob>> | undefined;
-  try {
-    job = await registerSourcePipelineJob(
-      {
-        register(value) {
-          task = value.fn;
-        },
-        async run() {
-          await task!();
-        },
-      },
-      { dataRoot: f.dataRoot, configPath: f.configPath, intervalMs: 60000 },
-    );
-    const initial = job.initialRun.catch((error) => error);
-    const request = await pending(f.root);
-    expect(request.configSha256).toBe(f.request.configSha256);
-    expect(request.configPath).toBe(f.configPath);
-    await job.stop();
-    expect(await initial).toMatchObject({ name: "AbortError" });
-    expect(await readdir(join(f.root, "control", "requests"))).toEqual([]);
-  } finally {
-    await job?.stop();
-    await f.close();
-  }
-});
-
-test("v2 mailbox end-to-end fake collection preserves v1 request and never invokes delivery ports", async () => {
-  const f = await fixture();
-  try {
-    const input = join(f.root, "input.jsonl"),
-      policy = join(f.root, "policy.json");
-    const documents = ["a", "b", "c"].map((id) => ({
-      crawl_id: "fixture",
-      document_uid: id,
-      canonical_url: `https://source.example/${id}`,
-      source_domain: "source.example",
-      category: "reference",
-      http_status: 200,
-      raw_checksum: digest("body"),
-      timestamp_utc: "2026-10-15T00:00:00Z",
-      payload: { title_raw: id, body_markdown: "body", embedded_media: [] },
-    }));
-    const body = documents.map((doc) => JSON.stringify(doc)).join("\n") + "\n";
-    await Bun.write(input, body);
-    await chmod(input, 0o600);
-    await Bun.write(
-      policy,
-      JSON.stringify({
-        version: 1,
-        profile: "dbfr",
-        sources: [
-          {
-            domain: "source.example",
-            kind: "reference",
-            reviewed: true,
-            evidence: "https://source.example/",
-            rights: { ragPermitted: false, trainingPermitted: false, publicImagesPermitted: false },
-          },
-        ],
-      }),
-    );
-    await chmod(policy, 0o600);
-    await Bun.write(
-      f.configPath,
-      JSON.stringify({
-        version: 1,
-        input,
-        policy,
-        job: join(f.root, "job"),
-        maxDocuments: 2,
-        collectionIsolation: "required",
-        batchCollection: {
-          version: 1,
-          snapshotSha256: digest(body),
-          batchSize: 2,
-          maxBatchesPerCycle: 1,
-        },
-      }),
-    );
-    const callback = await createSourceCollectionControl(f);
-    let writes = 0;
-    const unexpected = async () => {
-      writes++;
-      throw Error("Delivery port called");
-    };
-    const ports = {
-      collectCycle: callback,
-      database: { registry: { assertReady: unexpected, upsert: unexpected }, snapshot: unexpected },
-      publish: unexpected,
-    };
-    for (const nextCursor of [2, 3, 3]) {
-      const work = autoSourcePipeline(f.configPath, ports);
+test.skipIf(process.platform === "win32")(
+  "private mailbox carries only pinned configuration and consumes canonical receipt",
+  async () => {
+    const f = await fixture();
+    try {
+      const callback = await createSourceCollectionControl(f);
+      const work = callback(f.request);
       const request = await pending(f.root);
       expect(Object.keys(request).toSorted()).toEqual([
         "configPath",
@@ -262,96 +84,302 @@ test("v2 mailbox end-to-end fake collection preserves v1 request and never invok
         "requestId",
         "schema",
       ]);
-      const handoff = await collectSourcePipeline(request.configPath, {
-        isolatedCollection: true,
+      expect(request.schema).toBe("shenron-source-request/v1");
+      const receipt = collection(f);
+      await respond(f, request, { status: "complete", collection: receipt });
+      expect(await work).toEqual(receipt);
+      expect(await readdir(join(f.root, "control", "requests"))).toEqual([]);
+      expect(await readdir(join(f.root, "control", "responses"))).toEqual([]);
+    } finally {
+      await f.close();
+    }
+  },
+);
+test.skipIf(process.platform === "win32")(
+  "abort removes pending request to cancel host work and timeout is finite",
+  async () => {
+    const f = await fixture();
+    try {
+      const controller = new AbortController();
+      const callback = await createSourceCollectionControl(f);
+      const work = callback(f.request, controller.signal).catch((error) => error);
+      await pending(f.root);
+      controller.abort();
+      expect((await work).name).toBe("AbortError");
+      expect(await readdir(join(f.root, "control", "requests"))).toEqual([]);
+      const deadline = new AbortController();
+      const timed = await createSourceCollectionControl(f, {
+        deadline: (milliseconds) => {
+          expect(milliseconds).toBe(20 * 60 * 1000);
+          return deadline.signal;
+        },
       });
-      expect(handoff.schema).toBe("shenron-source-collection/v2");
-      await respond(f, request, { status: "complete", collection: handoff });
-      expect(await work).toMatchObject({
-        nextCursor,
+      const timeout = timed(f.request).catch((error) => error);
+      await pending(f.root);
+      deadline.abort(new DOMException("deadline", "TimeoutError"));
+      expect((await timeout).name).toBe("TimeoutError");
+      expect(await readdir(join(f.root, "control", "requests"))).toEqual([]);
+    } finally {
+      await f.close();
+    }
+  },
+);
+test.skipIf(process.platform === "win32")(
+  "wrong identity, unsafe failure and unpinned collection fail closed",
+  async () => {
+    const f = await fixture();
+    try {
+      const callback = await createSourceCollectionControl(f);
+      for (const response of [
+        { status: "complete", requestId: crypto.randomUUID(), collection: collection(f) },
+        { status: "failed", errorCode: "arbitrary private text" },
+        { status: "complete", collection: { ...collection(f), artifactsSha256: "bad" } },
+      ]) {
+        const work = callback(f.request).catch((error) => error),
+          request = await pending(f.root);
+        await respond(f, request, response);
+        expect(await work).toBeInstanceOf(Error);
+      }
+      const work = callback(f.request).catch((error) => error),
+        request = await pending(f.root);
+      await respond(f, request, { status: "failed", errorCode: "ERR_SOURCE_JOB_STATE_UNCERTAIN" });
+      expect((await work).code).toBe("ERR_SOURCE_JOB_STATE_UNCERTAIN");
+    } finally {
+      await f.close();
+    }
+  },
+);
+test.skipIf(process.platform === "win32")(
+  "configuration hash, symlink and privacy failures never publish a request",
+  async () => {
+    const f = await fixture();
+    try {
+      const callback = await createSourceCollectionControl(f);
+      await expect(callback({ ...f.request, configSha256: "0".repeat(64) })).rejects.toThrow(
+        "configuration differs",
+      );
+      await chmod(join(f.root, "control", "requests"), 0o755);
+      await expect(callback(f.request)).rejects.toThrow("Private canonical");
+      await chmod(join(f.root, "control", "requests"), 0o700);
+      await rm(join(f.root, "control", "responses"), { recursive: true });
+      await symlink(join(f.root, "control", "requests"), join(f.root, "control", "responses"));
+      await expect(callback(f.request)).rejects.toThrow("Private canonical");
+      expect(await readdir(join(f.root, "control", "requests"))).toEqual([]);
+    } finally {
+      await f.close();
+    }
+  },
+);
+
+test.skipIf(process.platform === "win32")(
+  "existing bot job binds required private collection and shutdown withdraws its request",
+  async () => {
+    const { registerSourcePipelineJob } = await import("../src/api/source-pipeline-job");
+    const f = await fixture();
+    let task: (() => Promise<void>) | undefined;
+    let job: Awaited<ReturnType<typeof registerSourcePipelineJob>> | undefined;
+    try {
+      job = await registerSourcePipelineJob(
+        {
+          register(value) {
+            task = value.fn;
+          },
+          async run() {
+            await task!();
+          },
+        },
+        { dataRoot: f.dataRoot, configPath: f.configPath, intervalMs: 60000 },
+      );
+      const initial = job.initialRun.catch((error) => error);
+      const request = await pending(f.root);
+      expect(request.configSha256).toBe(f.request.configSha256);
+      expect(request.configPath).toBe(f.configPath);
+      await job.stop();
+      expect(await initial).toMatchObject({ name: "AbortError" });
+      expect(await readdir(join(f.root, "control", "requests"))).toEqual([]);
+    } finally {
+      await job?.stop();
+      await f.close();
+    }
+  },
+);
+
+test.skipIf(process.platform === "win32")(
+  "v2 mailbox end-to-end fake collection preserves v1 request and never invokes delivery ports",
+  async () => {
+    const f = await fixture();
+    try {
+      const input = join(f.root, "input.jsonl"),
+        policy = join(f.root, "policy.json");
+      const documents = ["a", "b", "c"].map((id) => ({
+        crawl_id: "fixture",
+        document_uid: id,
+        canonical_url: `https://source.example/${id}`,
+        source_domain: "source.example",
+        category: "reference",
+        http_status: 200,
+        raw_checksum: digest("body"),
+        timestamp_utc: "2026-10-15T00:00:00Z",
+        payload: { title_raw: id, body_markdown: "body", embedded_media: [] },
+      }));
+      const body = documents.map((doc) => JSON.stringify(doc)).join("\n") + "\n";
+      await Bun.write(input, body);
+      await chmod(input, 0o600);
+      await Bun.write(
+        policy,
+        JSON.stringify({
+          version: 1,
+          profile: "dbfr",
+          sources: [
+            {
+              domain: "source.example",
+              kind: "reference",
+              reviewed: true,
+              evidence: "https://source.example/",
+              rights: {
+                ragPermitted: false,
+                trainingPermitted: false,
+                publicImagesPermitted: false,
+              },
+            },
+          ],
+        }),
+      );
+      await chmod(policy, 0o600);
+      await Bun.write(
+        f.configPath,
+        JSON.stringify({
+          version: 1,
+          input,
+          policy,
+          job: join(f.root, "job"),
+          maxDocuments: 2,
+          collectionIsolation: "required",
+          batchCollection: {
+            version: 1,
+            snapshotSha256: digest(body),
+            batchSize: 2,
+            maxBatchesPerCycle: 1,
+          },
+        }),
+      );
+      const callback = await createSourceCollectionControl(f);
+      let writes = 0;
+      const unexpected = async () => {
+        writes++;
+        throw Error("Delivery port called");
+      };
+      const ports = {
+        collectCycle: callback,
+        database: {
+          registry: { assertReady: unexpected, upsert: unexpected },
+          snapshot: unexpected,
+        },
+        publish: unexpected,
+      };
+      for (const nextCursor of [2, 3, 3]) {
+        const work = autoSourcePipeline(f.configPath, ports);
+        const request = await pending(f.root);
+        expect(Object.keys(request).toSorted()).toEqual([
+          "configPath",
+          "configSha256",
+          "requestId",
+          "schema",
+        ]);
+        const handoff = await collectSourcePipeline(request.configPath, {
+          isolatedCollection: true,
+        });
+        expect(handoff.schema).toBe("shenron-source-collection/v2");
+        await respond(f, request, { status: "complete", collection: handoff });
+        expect(await work).toMatchObject({
+          nextCursor,
+          artifactOnly: true,
+          complete: false,
+          deliveryAuthorized: false,
+        });
+      }
+      expect(writes).toBe(0);
+    } finally {
+      await f.close();
+    }
+  },
+);
+
+test.skipIf(process.platform === "win32")(
+  "v2 mailbox refuses schema downgrade and malformed or escaped artifact references",
+  async () => {
+    const f = await fixture();
+    try {
+      await Bun.write(
+        f.configPath,
+        JSON.stringify({
+          version: 1,
+          collectionIsolation: "required",
+          batchCollection: {
+            version: 1,
+            snapshotSha256: "a".repeat(64),
+            batchSize: 1,
+            maxBatchesPerCycle: 1,
+          },
+        }),
+      );
+      const request = {
+        configPath: f.configPath,
+        configSha256: digest(await Bun.file(f.configPath).text()),
+      };
+      const base = collection(f);
+      base.configSha256 = request.configSha256;
+      const receipt = {
+        ...base,
+        schema: "shenron-source-collection/v2",
+        collectionPath: join(f.root, "collection.json"),
         artifactOnly: true,
         complete: false,
         deliveryAuthorized: false,
-      });
-    }
-    expect(writes).toBe(0);
-  } finally {
-    await f.close();
-  }
-});
-
-test("v2 mailbox refuses schema downgrade and malformed or escaped artifact references", async () => {
-  const f = await fixture();
-  try {
-    await Bun.write(
-      f.configPath,
-      JSON.stringify({
-        version: 1,
-        collectionIsolation: "required",
-        batchCollection: {
-          version: 1,
-          snapshotSha256: "a".repeat(64),
-          batchSize: 1,
-          maxBatchesPerCycle: 1,
+        batch: {
+          sourceSha256: "a".repeat(64),
+          manifestSha256: "b".repeat(64),
+          manifestPath: join(f.root, "membership.json"),
+          batchReceiptPath: join(f.root, "batch.json"),
+          batchReceiptSha256: "c".repeat(64),
+          exportPath: join(f.root, "export.jsonl"),
+          exportSha256: "d".repeat(64),
+          validationPath: join(f.root, "validation.json"),
+          validationSha256: "e".repeat(64),
+          cursor: 0,
+          nextCursor: 1,
+          totalDocuments: 2,
+          exportComplete: false,
+          validationComplete: true,
         },
-      }),
-    );
-    const request = {
-      configPath: f.configPath,
-      configSha256: digest(await Bun.file(f.configPath).text()),
-    };
-    const base = collection(f);
-    base.configSha256 = request.configSha256;
-    const receipt = {
-      ...base,
-      schema: "shenron-source-collection/v2",
-      collectionPath: join(f.root, "collection.json"),
-      artifactOnly: true,
-      complete: false,
-      deliveryAuthorized: false,
-      batch: {
-        sourceSha256: "a".repeat(64),
-        manifestSha256: "b".repeat(64),
-        manifestPath: join(f.root, "membership.json"),
-        batchReceiptPath: join(f.root, "batch.json"),
-        batchReceiptSha256: "c".repeat(64),
-        exportPath: join(f.root, "export.jsonl"),
-        exportSha256: "d".repeat(64),
-        validationPath: join(f.root, "validation.json"),
-        validationSha256: "e".repeat(64),
-        cursor: 0,
-        nextCursor: 1,
-        totalDocuments: 2,
-        exportComplete: false,
-        validationComplete: true,
-      },
-    };
-    const callback = await createSourceCollectionControl(f);
-    for (const bad of [
-      base,
-      { ...receipt, complete: true },
-      { ...receipt, batch: { ...receipt.batch, manifestSha256: "bad" } },
-      { ...receipt, batch: { ...receipt.batch, validationPath: "/tmp/escape.json" } },
-    ]) {
-      const work = callback(request).catch((error) => error);
-      const sent = await pending(f.root);
-      await respond(f, sent, { status: "complete", collection: bad });
-      expect(await work).toBeInstanceOf(Error);
-    }
-    const old = await fixture();
-    try {
-      const reader = await createSourceCollectionControl(old);
-      const work = reader(old.request).catch((error) => error);
-      const sent = await pending(old.root);
-      await respond(old, sent, {
-        status: "complete",
-        collection: { ...receipt, configSha256: old.request.configSha256 },
-      });
-      expect(await work).toBeInstanceOf(Error);
+      };
+      const callback = await createSourceCollectionControl(f);
+      for (const bad of [
+        base,
+        { ...receipt, complete: true },
+        { ...receipt, batch: { ...receipt.batch, manifestSha256: "bad" } },
+        { ...receipt, batch: { ...receipt.batch, validationPath: "/tmp/escape.json" } },
+      ]) {
+        const work = callback(request).catch((error) => error);
+        const sent = await pending(f.root);
+        await respond(f, sent, { status: "complete", collection: bad });
+        expect(await work).toBeInstanceOf(Error);
+      }
+      const old = await fixture();
+      try {
+        const reader = await createSourceCollectionControl(old);
+        const work = reader(old.request).catch((error) => error);
+        const sent = await pending(old.root);
+        await respond(old, sent, {
+          status: "complete",
+          collection: { ...receipt, configSha256: old.request.configSha256 },
+        });
+        expect(await work).toBeInstanceOf(Error);
+      } finally {
+        await old.close();
+      }
     } finally {
-      await old.close();
+      await f.close();
     }
-  } finally {
-    await f.close();
-  }
-});
+  },
+);

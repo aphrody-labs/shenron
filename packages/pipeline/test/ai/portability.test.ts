@@ -27,6 +27,8 @@ const SUBPATHS = [
     "eval",
     "ports",
     "training-hashes",
+    "canon-judgment",
+    "canon-eval",
   ].map((name) => `./ai/${name}`),
 ];
 
@@ -36,8 +38,9 @@ describe("@aphrody/shenron-pipeline/ai manifest", () => {
       Object.keys(manifest.exports)
         .filter((key) => key === "./ai" || key.startsWith("./ai/"))
         .toSorted(),
-    ).toEqual([...SUBPATHS, "./ai/native"].toSorted());
+    ).toEqual([...SUBPATHS, "./ai/native", "./ai/jev-provider"].toSorted());
     expect(manifest.shenron.runtime["./ai/native"]).toBe("bun");
+    expect(manifest.shenron.runtime["./ai/jev-provider"]).toBe("bun");
     // These three load the `ai` runtime, whose @ai-sdk/provider-utils bundle carries a
     // guarded `process.getBuiltinModule("node:module")` string that the browser-purity
     // check rejects. They are server-only targets (Next server, bot, scripts) anyway;

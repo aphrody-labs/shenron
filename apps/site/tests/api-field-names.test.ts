@@ -1157,8 +1157,6 @@ const FORMER_NAMES: Record<string, readonly string[]> = {
     "planche",
     "transcrites",
     "planches",
-    "langue",
-    "colorisation",
     "extrait",
     "rang",
   ],

@@ -95,28 +95,31 @@ test("an explicitly unavailable search capability is quarantined without network
   }
 });
 
-test("capability overrides pin the exact installed runtime and refuse public or changed configuration", async () => {
-  const root = await mkdtemp(join(tmpdir(), "manga-capabilities-"));
-  const path = join(root, "capabilities.json");
-  try {
-    await Bun.write(path, JSON.stringify(defaultPoolCapabilities));
-    await chmod(path, 0o600);
-    expect(await loadPoolCapabilities(path)).toEqual(defaultPoolCapabilities);
-    await chmod(path, 0o644);
-    await expect(loadPoolCapabilities(path)).rejects.toThrow("Private bounded");
-    await chmod(path, 0o600);
-    await Bun.write(
-      path,
-      JSON.stringify({
-        ...defaultPoolCapabilities,
-        runtime: { ...defaultPoolCapabilities.runtime, revision: "unqualified" },
-      }),
-    );
-    await expect(loadPoolCapabilities(path)).rejects.toThrow("exact qualified runtime");
-  } finally {
-    await rm(root, { recursive: true, force: true });
-  }
-});
+test.skipIf(process.platform === "win32")(
+  "capability overrides pin the exact installed runtime and refuse public or changed configuration",
+  async () => {
+    const root = await mkdtemp(join(tmpdir(), "manga-capabilities-"));
+    const path = join(root, "capabilities.json");
+    try {
+      await Bun.write(path, JSON.stringify(defaultPoolCapabilities));
+      await chmod(path, 0o600);
+      expect(await loadPoolCapabilities(path)).toEqual(defaultPoolCapabilities);
+      await chmod(path, 0o644);
+      await expect(loadPoolCapabilities(path)).rejects.toThrow("Private bounded");
+      await chmod(path, 0o600);
+      await Bun.write(
+        path,
+        JSON.stringify({
+          ...defaultPoolCapabilities,
+          runtime: { ...defaultPoolCapabilities.runtime, revision: "unqualified" },
+        }),
+      );
+      await expect(loadPoolCapabilities(path)).rejects.toThrow("exact qualified runtime");
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+);
 
 test("durable frontier survives process restart and refuses recovery of live leases", async () => {
   const root = await mkdtemp(join(tmpdir(), "manga-pool-"));

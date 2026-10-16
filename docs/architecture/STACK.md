@@ -959,19 +959,22 @@ SDK, doctrine éditoriale (personas, ancrage, garde anti-injection),
 génération ancrée derrière des ports, métriques d'évaluation. Tout calcul
 lourd reste chez Aphrody.
 
-| Sous-chemin    | Contenu                                                                             | Classe |
-| -------------- | ----------------------------------------------------------------------------------- | ------ |
-| `<repo>`       | constantes et types (`SHENRON_E5`, `PROMPT_VERSION`)                                | pure   |
-| `./config`     | `resolveAiConfig`                                                                   | pure   |
-| `./wire`       | miroirs zod de `aphrody-ai/crates/aphrody-mcp/src/http_rest.rs` et `APHRODY_LIMITS` | pure   |
-| `./aphrody`    | `createAphrodyCompute`                                                              | pure   |
-| `./embeddings` | modèles E5 et aides du chemin chaud                                                 | pure   |
-| `./chat`       | `createAphrodyChatModel`                                                            | pure   |
-| `./provider`   | `createShenronProvider`                                                             | pure   |
-| `./prompts`    | personas, ancrage, garde, bloc de sources                                           | pure   |
-| `./generate`   | `generateGroundedAnswer`                                                            | pure   |
-| `./eval`       | jeu d'or, Recall@k, MRR, nDCG                                                       | pure   |
-| `./ports`      | ports de stockage                                                                   | pure   |
+| Sous-chemin        | Contenu                                                                             | Classe |
+| ------------------ | ----------------------------------------------------------------------------------- | ------ |
+| `<repo>`           | constantes et types (`SHENRON_E5`, `PROMPT_VERSION`)                                | pure   |
+| `./config`         | `resolveAiConfig`                                                                   | pure   |
+| `./wire`           | miroirs zod de `aphrody-ai/crates/aphrody-mcp/src/http_rest.rs` et `APHRODY_LIMITS` | pure   |
+| `./aphrody`        | `createAphrodyCompute`                                                              | pure   |
+| `./embeddings`     | modèles E5 et aides du chemin chaud                                                 | pure   |
+| `./chat`           | `createAphrodyChatModel`                                                            | pure   |
+| `./provider`       | `createShenronProvider`                                                             | pure   |
+| `./prompts`        | personas, ancrage, garde, bloc de sources                                           | pure   |
+| `./generate`       | `generateGroundedAnswer`                                                            | pure   |
+| `./eval`           | jeu d'or, Recall@k, MRR, nDCG                                                       | pure   |
+| `./ports`          | ports de stockage                                                                   | pure   |
+| `./canon-judgment` | jugement de canon (politique, critères, preuves publiques)                          | pure   |
+| `./canon-eval`     | évaluation du jugement de canon                                                     | pure   |
+| `./jev-provider`   | fournisseur TypeSafe du noyau de décision `bun:yolo`                                | bun    |
 
 ```ts
 // ./config  (aucune URL par défaut)

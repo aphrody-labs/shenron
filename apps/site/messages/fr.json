@@ -2154,7 +2154,7 @@
         "multiple": "Plusieurs langues",
         "other": "Autre langue déclarée"
       },
-      "metadataChecksum": "SHA-256 des métadonnées"
+      "metadataChecksum": "Somme de contrôle des métadonnées (SHA-256)"
     }
   },
   "adminDesign": {

@@ -46,22 +46,25 @@ function fixture(options: { drift?: boolean; wrongModel?: boolean } = {}): Vecto
 }
 const digest = async (p: string) =>
   new Bun.CryptoHasher("sha256").update(await Bun.file(p).bytes()).digest("hex");
-test("export pins generation and UUID mapping without source text and rejects overwrite", async () => {
-  const dir = await target();
-  const manifest = await exportVectorSidecar(fixture(), dir);
-  expect(manifest.count).toBe(3);
-  expect(manifest.activated).toBe(false);
-  expect(Bun.file(join(dir, "vectors.f32")).size).toBe(3 * 384 * 4);
-  const mapping = (await Bun.file(join(dir, "mapping.jsonl")).text())
-    .trim()
-    .split("\n")
-    .map((line) => JSON.parse(line));
-  expect(mapping.map((x) => x.key)).toEqual(["1", "2", "3"]);
-  expect(Object.keys(mapping[0]).toSorted()).toEqual(["documentId", "key"]);
-  expect((await stat(join(dir, "vectors.f32"))).mode & 0o777).toBe(0o600);
-  await expect(exportVectorSidecar(fixture(), dir)).rejects.toThrow();
-  expect(await digest(join(dir, "vectors.f32"))).toBe(manifest.vectorsSha256);
-});
+test.skipIf(process.platform === "win32")(
+  "export pins generation and UUID mapping without source text and rejects overwrite",
+  async () => {
+    const dir = await target();
+    const manifest = await exportVectorSidecar(fixture(), dir);
+    expect(manifest.count).toBe(3);
+    expect(manifest.activated).toBe(false);
+    expect(Bun.file(join(dir, "vectors.f32")).size).toBe(3 * 384 * 4);
+    const mapping = (await Bun.file(join(dir, "mapping.jsonl")).text())
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line));
+    expect(mapping.map((x) => x.key)).toEqual(["1", "2", "3"]);
+    expect(Object.keys(mapping[0]).toSorted()).toEqual(["documentId", "key"]);
+    expect((await stat(join(dir, "vectors.f32"))).mode & 0o777).toBe(0o600);
+    await expect(exportVectorSidecar(fixture(), dir)).rejects.toThrow();
+    expect(await digest(join(dir, "vectors.f32"))).toBe(manifest.vectorsSha256);
+  },
+);
 test("generation drift and wrong embedding space leave no export receipt or partial directory", async () => {
   for (const source of [fixture({ drift: true }), fixture({ wrongModel: true })]) {
     const dir = await target();

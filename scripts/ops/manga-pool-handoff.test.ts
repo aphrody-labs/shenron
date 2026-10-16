@@ -74,80 +74,93 @@ async function poolFixture() {
   };
 }
 
-test("sealed pool handoff imports exact acquired bytes, rebases pins, and replays without duplicates", async () => {
-  const f = await poolFixture(),
-    exported = await exportMangaHandoff(f.pool, f.out);
-  if (!exported.descriptorPath) throw Error("Expected archive");
-  expect(await importMangaHandoff(exported.descriptorPath, f.config)).toMatchObject({
-    replay: false,
-    candidates: 1,
-    images: 2,
-  });
-  expect(await importMangaHandoff(exported.descriptorPath, f.config)).toMatchObject({
-    replay: true,
-  });
-  const names = await Array.fromAsync(
-    new Bun.Glob("*.json").scan({ cwd: join(f.root, "derived/candidate-inbox") }),
-  );
-  const candidate = await Bun.file(join(f.root, "derived/candidate-inbox", names[0]!)).json();
-  expect(candidate.source.input.path.startsWith(join(f.root, "inputs"))).toBe(true);
-  expect(mangaDigest(await Bun.file(candidate.source.input.path).bytes())).toBe(
-    candidate.source.input.sha256,
-  );
-  await exported.ack?.();
-  expect(await exportMangaHandoff(f.pool, f.out)).toMatchObject({ empty: true });
-});
-
-test("handoff owner pins reject before acquisition state and archive tampering cannot import", async () => {
-  const f = await poolFixture(),
-    exported = await exportMangaHandoff(f.pool, f.out);
-  if (!exported.descriptorPath || !exported.archivePath) throw Error("Expected archive");
-  await expect(
-    importMangaHandoff(exported.descriptorPath, { ...f.config, configSha256: "0".repeat(64) }),
-  ).rejects.toThrow("owner pins");
-  expect(await Bun.file(join(f.root, "frontier.sqlite")).exists()).toBe(false);
-  await Bun.write(exported.archivePath, "tampered");
-  await expect(importMangaHandoff(exported.descriptorPath, f.config)).rejects.toThrow(
-    "SHA differs",
-  );
-});
-
-test("invalid handoff is quarantined visibly and cannot starve later valid descriptors", async () => {
-  const f = await poolFixture(),
-    exported = await exportMangaHandoff(f.pool, f.out);
-  if (!exported.descriptorPath) throw Error("Expected archive");
-  const bad = join(f.out, "0".repeat(64) + ".handoff.json");
-  await Bun.write(bad, "{}");
-  await chmod(bad, 0o600);
-  const first = await importPendingMangaHandoffs(f.config);
-  expect(first.some((x) => "reason" in x)).toBe(true);
-  expect(first.some((x) => "replay" in x && x.replay === false)).toBe(true);
-  expect(await importPendingMangaHandoffs(f.config)).toEqual([]);
-});
-
-test("invalid source configurations cannot poison a healthy handoff or export embedded credentials", async () => {
-  const f = await poolFixture();
-  const bad = structuredClone(f.candidate),
-    body = JSON.stringify({
-      version: 1,
-      store: { secretAccessKey: "fixture-secret-never-export" },
+test.skipIf(process.platform === "win32")(
+  "sealed pool handoff imports exact acquired bytes, rebases pins, and replays without duplicates",
+  async () => {
+    const f = await poolFixture(),
+      exported = await exportMangaHandoff(f.pool, f.out);
+    if (!exported.descriptorPath) throw Error("Expected archive");
+    expect(await importMangaHandoff(exported.descriptorPath, f.config)).toMatchObject({
+      replay: false,
+      candidates: 1,
+      images: 2,
     });
-  bad.source.config = { path: join(f.pool, "bad-config.json"), sha256: mangaDigest(body) };
-  await Bun.write(bad.source.config.path, body);
-  await Bun.write(join(f.pool, "derived/candidate-inbox/bad.json"), JSON.stringify(bad));
-  const exported = await exportMangaHandoff(f.pool, f.out);
-  if (!exported.archivePath || !exported.descriptorPath)
-    throw Error("Healthy acquisition must progress");
-  expect(
-    new TextDecoder()
-      .decode(await Bun.file(exported.archivePath).bytes())
-      .includes("fixture-secret-never-export"),
-  ).toBe(false);
-  expect(await importMangaHandoff(exported.descriptorPath, f.config)).toMatchObject({
-    candidates: 1,
-    images: 2,
-  });
-  expect(
-    (await Array.fromAsync(new Bun.Glob("*.json").scan({ cwd: join(f.out, "quarantine") }))).length,
-  ).toBe(1);
-});
+    expect(await importMangaHandoff(exported.descriptorPath, f.config)).toMatchObject({
+      replay: true,
+    });
+    const names = await Array.fromAsync(
+      new Bun.Glob("*.json").scan({ cwd: join(f.root, "derived/candidate-inbox") }),
+    );
+    const candidate = await Bun.file(join(f.root, "derived/candidate-inbox", names[0]!)).json();
+    expect(candidate.source.input.path.startsWith(join(f.root, "inputs"))).toBe(true);
+    expect(mangaDigest(await Bun.file(candidate.source.input.path).bytes())).toBe(
+      candidate.source.input.sha256,
+    );
+    await exported.ack?.();
+    expect(await exportMangaHandoff(f.pool, f.out)).toMatchObject({ empty: true });
+  },
+);
+
+test.skipIf(process.platform === "win32")(
+  "handoff owner pins reject before acquisition state and archive tampering cannot import",
+  async () => {
+    const f = await poolFixture(),
+      exported = await exportMangaHandoff(f.pool, f.out);
+    if (!exported.descriptorPath || !exported.archivePath) throw Error("Expected archive");
+    await expect(
+      importMangaHandoff(exported.descriptorPath, { ...f.config, configSha256: "0".repeat(64) }),
+    ).rejects.toThrow("owner pins");
+    expect(await Bun.file(join(f.root, "frontier.sqlite")).exists()).toBe(false);
+    await Bun.write(exported.archivePath, "tampered");
+    await expect(importMangaHandoff(exported.descriptorPath, f.config)).rejects.toThrow(
+      "SHA differs",
+    );
+  },
+);
+
+test.skipIf(process.platform === "win32")(
+  "invalid handoff is quarantined visibly and cannot starve later valid descriptors",
+  async () => {
+    const f = await poolFixture(),
+      exported = await exportMangaHandoff(f.pool, f.out);
+    if (!exported.descriptorPath) throw Error("Expected archive");
+    const bad = join(f.out, "0".repeat(64) + ".handoff.json");
+    await Bun.write(bad, "{}");
+    await chmod(bad, 0o600);
+    const first = await importPendingMangaHandoffs(f.config);
+    expect(first.some((x) => "reason" in x)).toBe(true);
+    expect(first.some((x) => "replay" in x && x.replay === false)).toBe(true);
+    expect(await importPendingMangaHandoffs(f.config)).toEqual([]);
+  },
+);
+
+test.skipIf(process.platform === "win32")(
+  "invalid source configurations cannot poison a healthy handoff or export embedded credentials",
+  async () => {
+    const f = await poolFixture();
+    const bad = structuredClone(f.candidate),
+      body = JSON.stringify({
+        version: 1,
+        store: { secretAccessKey: "fixture-secret-never-export" },
+      });
+    bad.source.config = { path: join(f.pool, "bad-config.json"), sha256: mangaDigest(body) };
+    await Bun.write(bad.source.config.path, body);
+    await Bun.write(join(f.pool, "derived/candidate-inbox/bad.json"), JSON.stringify(bad));
+    const exported = await exportMangaHandoff(f.pool, f.out);
+    if (!exported.archivePath || !exported.descriptorPath)
+      throw Error("Healthy acquisition must progress");
+    expect(
+      new TextDecoder()
+        .decode(await Bun.file(exported.archivePath).bytes())
+        .includes("fixture-secret-never-export"),
+    ).toBe(false);
+    expect(await importMangaHandoff(exported.descriptorPath, f.config)).toMatchObject({
+      candidates: 1,
+      images: 2,
+    });
+    expect(
+      (await Array.fromAsync(new Bun.Glob("*.json").scan({ cwd: join(f.out, "quarantine") })))
+        .length,
+    ).toBe(1);
+  },
+);

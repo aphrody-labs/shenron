@@ -205,22 +205,25 @@ test("only current-attempt proven transport retries after six hours, preserving 
     q.close();
   }
 });
-test("exports are immutable private artifacts and credential parsing is redacted", async () => {
-  const { q, dir } = await fixture();
-  try {
-    const first = await immutableApprovedExport(q, dir);
-    expect(await immutableApprovedExport(q, dir)).toBe(first);
-    expect((await stat(first)).mode & 0o777).toBe(0o600);
-    expect(await Bun.file(first).json()).toEqual({ schemaVersion: 1, operations: [] });
-    expect(
-      protectedAdminToken(
-        JSON.stringify([{ Config: { Env: ["API_ADMIN_TOKEN=secret=with-equals"] } }]),
-      ),
-    ).toBe("secret=with-equals");
-    expect(() => protectedAdminToken("secret-invalid-json")).toThrow(
-      "Protected credential owner malformed",
-    );
-  } finally {
-    q.close();
-  }
-});
+test.skipIf(process.platform === "win32")(
+  "exports are immutable private artifacts and credential parsing is redacted",
+  async () => {
+    const { q, dir } = await fixture();
+    try {
+      const first = await immutableApprovedExport(q, dir);
+      expect(await immutableApprovedExport(q, dir)).toBe(first);
+      expect((await stat(first)).mode & 0o777).toBe(0o600);
+      expect(await Bun.file(first).json()).toEqual({ schemaVersion: 1, operations: [] });
+      expect(
+        protectedAdminToken(
+          JSON.stringify([{ Config: { Env: ["API_ADMIN_TOKEN=secret=with-equals"] } }]),
+        ),
+      ).toBe("secret=with-equals");
+      expect(() => protectedAdminToken("secret-invalid-json")).toThrow(
+        "Protected credential owner malformed",
+      );
+    } finally {
+      q.close();
+    }
+  },
+);
