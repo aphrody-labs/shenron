@@ -17,7 +17,7 @@
 
 use std::{path::PathBuf, sync::Arc, time::Duration};
 
-use anyhow::{Context as _, Result};
+use anyhow::{Context as _, Result, bail};
 use async_trait::async_trait;
 use base64::{Engine as _, engine::general_purpose::STANDARD};
 use clap::Parser;
@@ -44,6 +44,10 @@ struct Arguments {
     /// Shenron's home (`SHENRON_HOME`, `data/koharu/projects`).
     #[arg(long)]
     root: Option<PathBuf>,
+
+    /// Browser import/export selections must stay inside this isolated IO directory.
+    #[arg(long)]
+    web_io_root: Option<PathBuf>,
 
     /// Run the models on the CPU.
     #[arg(long)]
@@ -79,6 +83,9 @@ impl Drop for ChannelEnd {
 
 struct StdioBridge {
     output: Output,
+    web_io_root: Option<PathBuf>,
+    import_selection: Option<Vec<PathBuf>>,
+    export_selection: Option<PathBuf>,
 }
 
 #[async_trait]
@@ -97,10 +104,24 @@ impl Bridge for StdioBridge {
         source: PageImportSource,
         extensions: &[&'static str],
     ) -> Result<Option<Vec<PathBuf>>> {
+        if self.web_io_root.is_some() {
+            return self
+                .import_selection
+                .clone()
+                .map(Some)
+                .context("browser import selection missing");
+        }
         pickers::import(source, extensions).await
     }
 
     async fn pick_export(&self, format: ExportFormat, project: &str) -> Result<Option<PathBuf>> {
+        if self.web_io_root.is_some() {
+            return self
+                .export_selection
+                .clone()
+                .map(Some)
+                .context("browser export selection missing");
+        }
         pickers::export(format, project).await
     }
 }
@@ -181,7 +202,12 @@ mod pickers {
 async fn command(editor: Editor, bridge: Arc<StdioBridge>, id: Value, request: Value) {
     let name = request.get("command").and_then(Value::as_str).unwrap_or("");
     let args = request.get("args").cloned().unwrap_or(Value::Null);
-    let response = match dispatch(&editor, bridge.as_ref(), name, args).await {
+    let selected = browser_selection(bridge.as_ref(), name, &args);
+    let result = match selected {
+        Ok(selected) => dispatch(&editor, &selected, name, args).await,
+        Err(error) => Err(error),
+    };
+    let response = match result {
         Ok(Reply::Json(result)) => json!({"id": id, "result": result}),
         Ok(Reply::Bytes(bytes)) => {
             json!({"id": id, "result": {"$bytes": STANDARD.encode(bytes)}})
@@ -189,6 +215,111 @@ async fn command(editor: Editor, bridge: Arc<StdioBridge>, id: Value, request: V
         Err(error) => json!({"id": id, "error": format!("{error:#}")}),
     };
     bridge.output.send(response);
+}
+
+/// Browser paths are selected by the authenticated host, then checked independently here.
+fn browser_selection(bridge: &StdioBridge, command: &str, args: &Value) -> Result<StdioBridge> {
+    let mut selected = StdioBridge {
+        output: bridge.output.clone(),
+        web_io_root: bridge.web_io_root.clone(),
+        import_selection: None,
+        export_selection: None,
+    };
+    let Some(root) = &bridge.web_io_root else { return Ok(selected) };
+    if command == "import" {
+        let paths =
+            args.get("_webImport").and_then(Value::as_array).context("browser files missing")?;
+        if paths.is_empty() || paths.len() > 100 {
+            bail!("invalid browser file count")
+        }
+        let uploads = root.join("uploads").canonicalize()?;
+        let mut files = Vec::with_capacity(paths.len());
+        for path in paths {
+            let path = PathBuf::from(path.as_str().context("invalid browser file")?);
+            if path.symlink_metadata()?.file_type().is_symlink() {
+                bail!("browser file is a symlink")
+            }
+            let path = path.canonicalize()?;
+            if path.parent() != Some(uploads.as_path()) || !path.is_file() {
+                bail!("browser file outside uploads")
+            }
+            files.push(path);
+        }
+        selected.import_selection = Some(files);
+    }
+    if command == "export" {
+        let path = PathBuf::from(
+            args.get("_webExport")
+                .and_then(Value::as_str)
+                .context("browser destination missing")?,
+        );
+        let exports = root.join("exports").canonicalize()?;
+        if path.parent().context("invalid browser destination")?.canonicalize()? != exports
+            || path.file_name().is_none()
+            || path.exists()
+        {
+            bail!("browser destination outside exports or already exists")
+        }
+        selected.export_selection = Some(path);
+    }
+    Ok(selected)
+}
+
+#[cfg(test)]
+mod browser_tests {
+    use super::*;
+
+    fn bridge(root: PathBuf) -> StdioBridge {
+        let (sender, _receiver) = mpsc::unbounded_channel();
+        StdioBridge {
+            output: Output(sender),
+            web_io_root: Some(root),
+            import_selection: None,
+            export_selection: None,
+        }
+    }
+
+    #[test]
+    fn imports_only_files_directly_inside_uploads() -> Result<()> {
+        let temp = tempfile::tempdir()?;
+        let uploads = temp.path().join("uploads");
+        std::fs::create_dir(&uploads)?;
+        let page = uploads.join("page.png");
+        std::fs::write(&page, b"page")?;
+        let bridge = bridge(temp.path().to_owned());
+        let selected = browser_selection(&bridge, "import", &json!({ "_webImport": [page] }))?;
+        assert_eq!(selected.import_selection.unwrap(), vec![page.canonicalize()?]);
+        let outside = temp.path().join("other.png");
+        std::fs::write(&outside, b"other")?;
+        assert!(browser_selection(&bridge, "import", &json!({ "_webImport": [outside] })).is_err());
+        assert!(browser_selection(&bridge, "import", &json!({})).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn exports_only_new_destinations_inside_exports() -> Result<()> {
+        let temp = tempfile::tempdir()?;
+        let exports = temp.path().join("exports");
+        std::fs::create_dir(&exports)?;
+        let bridge = bridge(temp.path().to_owned());
+        let target = exports.join("new.cbz");
+        assert_eq!(
+            browser_selection(&bridge, "export", &json!({ "_webExport": target }))?
+                .export_selection,
+            Some(target.clone())
+        );
+        std::fs::write(&target, b"existing")?;
+        assert!(browser_selection(&bridge, "export", &json!({ "_webExport": target })).is_err());
+        assert!(
+            browser_selection(
+                &bridge,
+                "export",
+                &json!({ "_webExport": temp.path().join("../escaped.cbz") })
+            )
+            .is_err()
+        );
+        Ok(())
+    }
 }
 
 #[tokio::main]
@@ -211,7 +342,13 @@ async fn main() -> Result<()> {
         None => Editor::from_roots(&Roots::from_env()?, args.cpu)?,
     };
     editor.set_toolbox(Some(Arc::new(ShenronKnowledge::new(args.shenron_url))));
-    let bridge = Arc::new(StdioBridge { output: output.clone() });
+    let web_io_root = args.web_io_root.map(|root| root.canonicalize()).transpose()?;
+    let bridge = Arc::new(StdioBridge {
+        output: output.clone(),
+        web_io_root,
+        import_selection: None,
+        export_selection: None,
+    });
     let mut service = Service::new(editor.clone(), output.0.clone());
 
     let mut lines = BufReader::new(tokio::io::stdin()).lines();

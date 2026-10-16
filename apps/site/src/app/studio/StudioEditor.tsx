@@ -40,17 +40,33 @@ export function StudioEditor({ fallback }: { fallback: ReactNode }) {
   // The server and the hydration pass render the presentation; the client snapshot then
   // switches to the editor inside Tauri. Being in Tauri never changes during a session.
   const desktop = useSyncExternalStore(noSubscription, isTauri, notDesktop);
-  const [bridge, setBridge] = useState(false);
+  const [bridge, setBridge] = useState<"local" | "hosted" | null>(null);
   const [linked, setLinked] = useState<boolean | null>(null);
   const [loginPending, setLoginPending] = useState(false);
 
   useEffect(() => {
     if (desktop) return;
     const controller = new AbortController();
-    void localEngine(controller.signal).then((available) => {
-      if (available) setBridge(true);
-      return undefined;
-    });
+    void localEngine(controller.signal)
+      .then(async (available) => {
+        if (controller.signal.aborted) return;
+        if (available) {
+          setBridge("local");
+          return;
+        }
+        const response = await fetch("/api/studio/health", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (!response.ok || (await response.json()).available !== true || controller.signal.aborted)
+          return;
+        const transport = await import("@aphrody/shenron-koharu/transport");
+        if (controller.signal.aborted) return;
+        transport.configureKoharuBridge("/api/studio", true);
+        setBridge("hosted");
+        return undefined;
+      })
+      .catch(() => undefined);
     return () => controller.abort();
   }, [desktop]);
 

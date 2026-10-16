@@ -67,7 +67,10 @@ export class KoharuBridge {
   #events: EventSourceLike | null = null;
   #next = 1;
 
-  constructor(base = KOHARU_BRIDGE_PATH) {
+  constructor(
+    base = KOHARU_BRIDGE_PATH,
+    readonly browserFiles = false,
+  ) {
     this.#base = base.replace(/\/+$/, "");
   }
 
@@ -109,6 +112,9 @@ export class KoharuBridge {
 
   async invoke<T>(command: string, args: Record<string, unknown> = {}): Promise<T> {
     this.#connect();
+    if (this.browserFiles && command === "import")
+      return this.#importFiles<T>(args.source === "folder");
+    if (this.browserFiles && command === "export") return this.#exportFiles<T>(args.format);
     const response = await fetch(`${this.#base}/invoke`, {
       method: "POST",
       headers: { "content-type": "application/json", [KOHARU_SESSION_HEADER]: this.session },
@@ -124,6 +130,41 @@ export class KoharuBridge {
     return body.result as T;
   }
 
+  async #importFiles<T>(folder: boolean): Promise<T> {
+    const files = await selectBrowserFiles(folder);
+    if (files.length === 0) return null as T;
+    const form = new FormData();
+    for (const file of files) form.append("files", file, file.name);
+    const response = await fetch(`${this.#base}/import`, {
+      method: "POST",
+      headers: { [KOHARU_SESSION_HEADER]: this.session },
+      body: form,
+    });
+    const body: unknown = await response.json().catch(() => null);
+    if (!response.ok || !body || typeof body !== "object" || !("result" in body))
+      throw new Error(errorMessage(body, response.status));
+    return body.result as T;
+  }
+
+  async #exportFiles<T>(format: unknown): Promise<T> {
+    const response = await fetch(`${this.#base}/export`, {
+      method: "POST",
+      headers: { "content-type": "application/json", [KOHARU_SESSION_HEADER]: this.session },
+      body: JSON.stringify({ format }),
+    });
+    if (!response.ok)
+      throw new Error(errorMessage(await response.json().catch(() => null), response.status));
+    const url = URL.createObjectURL(await response.blob());
+    const link = browserDocument().createElement("a");
+    link.href = url;
+    link.download = format === "cbz" ? "studio.cbz" : `studio-${String(format)}.tar.gz`;
+    browserDocument().body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 30_000);
+    return null as T;
+  }
+
   /** Close the event stream (channels stop receiving). */
   close(): void {
     this.#events?.close();
@@ -133,10 +174,47 @@ export class KoharuBridge {
 
 let shared: KoharuBridge | null = null;
 
+/** Selected only after the host has authenticated and qualified its real engine. */
+export function configureKoharuBridge(base: string, browserFiles = false): void {
+  if (!base.startsWith("/") || base.startsWith("//") || /[?#]/.test(base))
+    throw new Error("Studio bridge must be same-origin");
+  shared?.close();
+  shared = new KoharuBridge(base, browserFiles);
+}
+
+function selectBrowserFiles(folder: boolean): Promise<File[]> {
+  return new Promise((resolve) => {
+    const input = browserDocument().createElement("input");
+    input.type = "file";
+    input.multiple = true;
+    input.accept = ".png,.jpg,.jpeg,.webp,.bmp,.tif,.tiff,.gif,.pdf,.cbz,.zip";
+    if (folder) input.setAttribute("webkitdirectory", "");
+    input.hidden = true;
+    const finish = (files: File[]) => {
+      input.remove();
+      resolve(files);
+    };
+    input.addEventListener("change", () => finish(Array.from(input.files ?? [])), { once: true });
+    input.addEventListener("cancel", () => finish([]), { once: true });
+    browserDocument().body.append(input);
+    input.click();
+  });
+}
+
 /** The bridge of this page, created on first use. */
 export function koharuBridge(): KoharuBridge {
   shared ??= new KoharuBridge();
   return shared;
+}
+
+export function usesHostedStudio(): boolean {
+  return shared?.browserFiles === true;
+}
+
+function browserDocument(): Document {
+  const document = globalThis.document;
+  if (!document) throw new Error("Studio file selection requires a browser");
+  return document;
 }
 
 const handlers = new WeakMap<object, (message: unknown) => void>();

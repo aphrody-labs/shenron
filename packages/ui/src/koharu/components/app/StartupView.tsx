@@ -15,13 +15,15 @@ function logDir(): string {
   return `~/.local/share/${id}/logs`;
 }
 
-export function StartupView() {
+export function StartupView({ embedded = false }: { embedded?: boolean } = {}) {
   const { t } = useTranslation();
   const macOS = useMacOS();
   const error = useKoharuStore((state) => state.startupError);
 
   return (
-    <div className="relative flex h-screen w-screen flex-col overflow-hidden bg-[var(--surface-titlebar)] text-foreground">
+    <div
+      className={`relative flex flex-col overflow-hidden bg-[var(--surface-titlebar)] text-foreground ${embedded ? "h-full min-h-0 w-full" : "h-screen w-screen"}`}
+    >
       <header
         data-tauri-drag-region="deep"
         className="grid h-10 shrink-0 grid-cols-[132px_1fr_132px] items-center border-b border-border/80 bg-[var(--surface-titlebar)] shadow-[var(--shadow-titlebar)]"

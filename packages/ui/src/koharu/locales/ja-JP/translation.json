@@ -528,6 +528,7 @@
     "projectName": "プロジェクト名",
     "projectNamePlaceholder": "新しいプロジェクト",
     "storageHint": "プロジェクトはこのデバイスのローカルに保存されます。",
+    "browserStorageHint": "プロジェクトはDBFRの個人用ワークスペースに保存されます。ファイルを読み込み、書き出したページをダウンロードできます。",
     "title": "プロジェクト",
     "yourProjects": "プロジェクト一覧"
   },

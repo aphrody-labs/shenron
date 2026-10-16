@@ -11,12 +11,15 @@
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { AccountSessionResponse } from "@aphrody/shenron-api/contract";
+import { resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 
 import { type Backend, startBackend } from "./backend";
 import type { ServerPaths } from "./config";
 import { type FrontHost, freePort, serveFront } from "./front";
 import { localApi } from "./local-api";
 import { startNextStandalone, stopStandaloneChild } from "./next-startup";
+import { createStudioRuntime } from "./studio";
 
 export interface SiteLayout {
   /** Standalone root (contains `apps/site/server.js` and the traced `node_modules`). */
@@ -88,6 +91,11 @@ export async function serveSite(
   const layout = locateSite(paths);
   const nextPort = freePort();
   const backend = await startBackend(paths, process.env, { payloadDir: options.payloadDir });
+  const studio = createStudioRuntime({
+    binary: process.env.SHENRON_STUDIO_SDK_BIN,
+    home: process.env.SHENRON_STUDIO_HOME,
+    origin: resolveSiteUrl(process.env),
+  });
   const base = localApi(
     paths,
     () => ({ site: true, buildId: layout.buildId, groups: backend.groups() }),
@@ -97,8 +105,26 @@ export async function serveSite(
     backend.chatModel,
   );
   // `/api/local/agent-home*` (the agent homes of this machine) before the other local APIs.
-  const api: typeof base = async (request, url, isReady, peer) =>
-    (await backend.agentHomes?.handle(request, url, peer)) ?? base(request, url, isReady, peer);
+  const api: typeof base = async (request, url, isReady, peer) => {
+    if (url.pathname.startsWith("/api/studio/")) {
+      const auth = new Request(new URL("/api/v1/account/session", url).href, {
+        headers: {
+          cookie: request.headers.get("cookie") ?? "",
+          authorization: request.headers.get("authorization") ?? "",
+        },
+        signal: request.signal,
+      });
+      const response = await backend.host?.api.fetch(auth);
+      const parsed = AccountSessionResponse.safeParse(
+        response?.ok ? await response.json().catch(() => null) : null,
+      );
+      const account = parsed.success ? parsed.data : null;
+      return studio.handle(request, account?.user?.roleAdmin ? account.sessionUserId : null);
+    }
+    return (
+      (await backend.agentHomes?.handle(request, url, peer)) ?? base(request, url, isReady, peer)
+    );
+  };
   let ready = false;
   const front = serveFront({
     hostname: options.hostname,
@@ -118,7 +144,7 @@ export async function serveSite(
       SHENRON_HOST_URL: `http://127.0.0.1:${front.port}`,
     });
   } catch (error) {
-    await Promise.allSettled([front.stop(true), backend.stop()]);
+    await Promise.allSettled([front.stop(true), backend.stop(), studio.stop()]);
     throw error;
   }
   ready = true;
@@ -150,6 +176,7 @@ export async function serveSite(
           stopStandaloneChild(next),
           front.stop(true),
           backend.stop(),
+          studio.stop(),
         ]);
         const errors = results.flatMap((result) =>
           result.status === "rejected" ? [result.reason] : [],

@@ -528,6 +528,7 @@
     "projectName": "Project name",
     "projectNamePlaceholder": "My new project",
     "storageHint": "Projects are stored locally on this device.",
+    "browserStorageHint": "Your projects are saved in your private DBFR workspace. Import your files and download exported pages.",
     "title": "Projects",
     "yourProjects": "Your projects"
   },
