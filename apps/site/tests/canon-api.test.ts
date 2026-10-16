@@ -1,3 +1,4 @@
+process.env.SKIP_ENV_VALIDATION = "1";
 process.env.SHENRON_API_URL = "http://127.0.0.1:5006";
 process.env.NEXT_PUBLIC_SHENRON_API_URL = "http://127.0.0.1:5006";
 
