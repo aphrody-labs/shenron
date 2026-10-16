@@ -31,7 +31,12 @@ type ChapterEvidence = {
   contiguous: boolean;
   unavailable: Array<{ page: number; status?: number; error?: string }>;
 };
-const rows: Array<{ id: number; number: number; chapters: ChapterEvidence[] }> = [];
+const rows: Array<{
+  id: number;
+  number: number;
+  readableHere: boolean;
+  chapters: ChapterEvidence[];
+}> = [];
 for (const volume of volumes) {
   const detail = await json(`/api/manga/volume/${volume.id}`);
   const chapters: ChapterEvidence[] = [];
@@ -67,13 +72,20 @@ for (const volume of volumes) {
       unavailable,
     });
   }
-  rows.push({ id: volume.id, number: volume.number, chapters });
+  rows.push({
+    id: volume.id,
+    number: volume.number,
+    readableHere: volume.readableHere === true,
+    chapters,
+  });
 }
 rows.sort((a, b) => a.number - b.number);
 const missingVolumes = Array.from({ length: 18 }, (_, index) => index + 1).filter(
   (number) => !rows.some((row) => row.number === number),
 );
-const unreadableVolumes = rows.filter((row) => !row.chapters.length).map((row) => row.number);
+const unreadableVolumes = rows
+  .filter((row) => row.readableHere && !row.chapters.length)
+  .map((row) => row.number);
 const report = {
   observedAt: new Date().toISOString(),
   origin,
