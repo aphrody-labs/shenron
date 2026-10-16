@@ -6,6 +6,7 @@ import { join } from "node:path";
 import {
   pipelineExitCode,
   planWaves,
+  bunStageRunner,
   runPipeline,
   selectStages,
   type Stage,
@@ -40,7 +41,16 @@ test("default stages form an acyclic DAG covering every domain", () => {
       .flat()
       .map((s) => s.id)
       .sort(),
-  ).toEqual(["agent-home", "canon", "dataset", "decision", "plugin", "rag", "wiki"]);
+  ).toEqual([
+    "agent-home",
+    "canon",
+    "dataset",
+    "decision",
+    "decision-probe",
+    "plugin",
+    "rag",
+    "wiki",
+  ]);
   expect(waves[0]!.map((s) => s.id)).toEqual(["dataset"]);
 });
 
@@ -124,4 +134,11 @@ test("unchanged input fingerprint yields a cache hit and history is recorded in 
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
+});
+
+test("decision probe runs bun:yolo in process through the default runner", async () => {
+  const probe = DEFAULT_STAGES.find((s) => s.id === "decision-probe")!;
+  const result = await bunStageRunner(probe, ".");
+  expect(result.code).toBe(0);
+  expect(result.output).toContain("ok");
 });

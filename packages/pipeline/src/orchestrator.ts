@@ -23,6 +23,8 @@ export interface Stage {
   optional?: boolean;
   /** Globs (relative to cwd) hashed into a fingerprint; an unchanged one reuses the last success. */
   inputs?: readonly string[];
+  /** In-process probe run instead of `argv` (Bun APIs called directly, no subprocess). */
+  run?: () => Promise<{ ok: boolean; output: string }>;
 }
 
 export interface StageRecord {
@@ -66,6 +68,19 @@ export interface RunOptions {
 const TAIL_CHARS = 2000;
 
 export const bunStageRunner: StageRunner = async (stage, cwd) => {
+  if (stage.run) {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timeout = new Promise<"timeout">((resolve) => {
+      timer = setTimeout(() => resolve("timeout"), stage.timeoutMs);
+    });
+    try {
+      const outcome = await Promise.race([stage.run(), timeout]);
+      if (outcome === "timeout") return { code: null, output: "", timedOut: true };
+      return { code: outcome.ok ? 0 : 1, output: outcome.output, timedOut: false };
+    } finally {
+      clearTimeout(timer);
+    }
+  }
   const child = Bun.spawn([...stage.argv], {
     cwd,
     stdin: "ignore",

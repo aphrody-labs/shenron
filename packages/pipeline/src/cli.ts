@@ -764,7 +764,7 @@ Modules unifiés (exécutables hors du VPS principal) :
   crawl        Exécute le module Dragon Ball natif d'Aphrody Web (guides, databooks, official, kanzenshuu, dragonballcn, universal, custom)
   dragon-ball  Module natif FFI ; coverage vérifie les datasets, ingest-crawl classe les exports natifs, automate reprend les étapes
   unify        Ingère les exports Aphrody Web dans le store Aphrody RAG
-  run          Pipeline unifiée dataset > canon/rag > decision > wiki/agent-home > plugin (--only, --resume, --dry-run)
+  run          Pipeline unifiée dataset > canon/rag > decision > wiki/agent-home > plugin (--only, --resume, --dry-run, --force)
   plan         Affiche l'ordre d'exécution sans rien lancer
   status       Dernier état enregistré (var/reports/pipeline/last-run.json)
 `);

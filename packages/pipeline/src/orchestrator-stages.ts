@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import type { Stage } from "./orchestrator";
+import { decisionProbe } from "./orchestrator-probes";
 
 const MINUTE = 60_000;
 
@@ -79,9 +80,22 @@ export const DEFAULT_STAGES: readonly Stage[] = [
     ],
   },
   {
+    id: "decision-probe",
+    title: "Decision: in-process bun:yolo typed batch (public excerpts only)",
+    needs: ["decision"],
+    argv: ["bun:yolo", "decide"],
+    inputs: [
+      "packages/pipeline/src/ai/jev-provider.ts",
+      "packages/pipeline/src/orchestrator-probes.ts",
+    ],
+    run: decisionProbe,
+    timeoutMs: MINUTE,
+    retries: 0,
+  },
+  {
     id: "wiki",
     title: "Wiki: review-only page candidates",
-    needs: ["canon", "decision"],
+    needs: ["canon", "decision-probe"],
     argv: ["bun", "test", "scripts/audit/wiki-page-builder.test.ts"],
     timeoutMs: 2 * MINUTE,
     retries: 0,

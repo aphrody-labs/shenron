@@ -682,9 +682,11 @@ function checkApps(): void {
     const source = readFileSync(file, "utf8");
     const rel = toPosix(relative(ROOT, file));
     const isClient = /^\s*(?:(?:\/\/[^\n]*|\/\*[\s\S]*?\*\/)\s*)*["']use client["']/.test(source);
+    const isServerOnly = /^\s*import\s+["']server-only["']/m.test(source);
     for (const { specifier } of importSpecifiers(source)) {
       if (!specifier.startsWith("@aphrody/shenron-")) continue;
-      if (runtimeOf(specifier) === "bun")
+      // A `server-only` module runs inside the Bun-hosted site (Jev, RAG chat, canon judgment).
+      if (runtimeOf(specifier) === "bun" && !isServerOnly)
         report("apps/site", "boundary", `${rel} imports bun-class ${specifier}`);
       if (
         isClient &&
