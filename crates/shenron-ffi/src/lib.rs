@@ -1083,7 +1083,7 @@ mod tests {
     #[test]
     fn shenron_abi_and_version_are_valid() {
         assert_eq!(shenron_abi_version(), abi::ABI_VERSION);
-        assert_eq!(abi::ABI_VERSION, 5);
+        assert_eq!(abi::ABI_VERSION, 6);
         let ptr = shenron_version();
         assert!(!ptr.is_null());
         let text = unsafe { CStr::from_ptr(ptr) }.to_str().unwrap();
