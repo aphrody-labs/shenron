@@ -31,21 +31,19 @@ export async function renderTemplateModule(root = ROOT): Promise<string> {
   return lines.join("\n");
 }
 
-/** The module as the repository formatter writes it (oxfmt, Rust, on PATH like `format:check`). */
+/** The module as the repository formatter writes it (native `bun fmt`, like `format:check`). */
 async function formatted(source: string): Promise<string> {
-  const oxfmt = Bun.which("oxfmt");
-  if (!oxfmt) throw new Error("oxfmt not found on PATH");
-  // Keep the candidate beside the output so oxfmt resolves the same repository config.
-  // oxfmt 0.72 supports file formatting but has no --stdin-filepath option.
+  // Keep the candidate beside the output so the formatter resolves the same repository config.
   const dir = mkdtempSync(join(dirname(OUT), ".agent-home-template-"));
   const candidate = join(dir, basename(OUT));
   try {
     await Bun.write(candidate, source);
-    const child = Bun.spawnSync([oxfmt, "--write", candidate], {
+    const child = Bun.spawnSync([process.execPath, "fmt", candidate], {
+      cwd: ROOT,
       stdout: "ignore",
       stderr: "inherit",
     });
-    if (child.exitCode !== 0) throw new Error("oxfmt failed");
+    if (child.exitCode !== 0) throw new Error("bun fmt failed");
     return await Bun.file(candidate).text();
   } finally {
     rmSync(dir, { recursive: true, force: true });

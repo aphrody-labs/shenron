@@ -421,7 +421,7 @@ async function probeOcrHeartbeat(coordDir: string): Promise<HeartbeatState> {
   for (const file of files) {
     const full = path.join(coordDir, file);
     try {
-      const content = (await Bun.file(full).text()).trim();
+      const content = fs.readFileSync(full, "utf8").trim();
       const parsed = Date.parse(content);
       const at = Number.isFinite(parsed) ? parsed : fs.statSync(full).mtimeMs;
       const peer = file.slice("heartbeat-".length, -".txt".length);

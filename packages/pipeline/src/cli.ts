@@ -308,6 +308,42 @@ async function main() {
     }
     return;
   }
+  if (command === "run" || command === "plan" || command === "status") {
+    const { values } = parseArgs({
+      args,
+      strict: true,
+      options: {
+        only: { type: "string", multiple: true },
+        resume: { type: "boolean", default: false },
+        "dry-run": { type: "boolean", default: false },
+        concurrency: { type: "string", default: "4" },
+        json: { type: "boolean", default: false },
+      },
+    });
+    const { DEFAULT_STAGES } = await import("./orchestrator-stages");
+    const orchestrator = await import("./orchestrator");
+    const root = resolve(import.meta.dir, "../../..");
+    const stateFile = orchestrator.defaultStateFile(root);
+    if (command === "status") {
+      const state = await orchestrator.readState(stateFile);
+      console.log(state ? JSON.stringify(state, null, 2) : "no pipeline run recorded");
+      return;
+    }
+    const only = values.only?.flatMap((id) => id.split(","));
+    const selected = orchestrator.selectStages(DEFAULT_STAGES, only);
+    const state = await orchestrator.runPipeline(DEFAULT_STAGES, {
+      cwd: root,
+      stateFile,
+      only,
+      resume: values.resume,
+      dryRun: command === "plan" || values["dry-run"],
+      concurrency: Number(values.concurrency),
+      log: (line) => console.error(line),
+    });
+    if (values.json) console.log(JSON.stringify(state, null, 2));
+    process.exitCode = orchestrator.pipelineExitCode(state, selected);
+    return;
+  }
   if (command === "unify") {
     const { values } = parseArgs({
       args,
@@ -719,6 +755,9 @@ Modules unifiés (exécutables hors du VPS principal) :
   crawl        Exécute le module Dragon Ball natif d'Aphrody Web (guides, databooks, official, kanzenshuu, dragonballcn, universal, custom)
   dragon-ball  Module natif FFI ; coverage vérifie les datasets, ingest-crawl classe les exports natifs, automate reprend les étapes
   unify        Ingère les exports Aphrody Web dans le store Aphrody RAG
+  run          Pipeline unifiée dataset > canon/rag > decision > wiki/agent-home > plugin (--only, --resume, --dry-run)
+  plan         Affiche l'ordre d'exécution sans rien lancer
+  status       Dernier état enregistré (var/reports/pipeline/last-run.json)
 `);
       process.exit(command ? 1 : 0);
   }

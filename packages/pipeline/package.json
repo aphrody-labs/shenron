@@ -117,12 +117,12 @@
     "@aphrody/shenron-lexicon": "workspace:*",
     "@aphrody/shenron-media": "workspace:*",
     "@aphrody/shenron-native": "workspace:*",
+    "@aphrody/typesafe-sdk": "catalog:",
     "ai": "catalog:",
     "postgres": "catalog:",
     "sharp": "catalog:",
     "sqlite-vec": "catalog:",
-    "zod": "catalog:",
-    "@aphrody/typesafe-sdk": "catalog:"
+    "zod": "catalog:"
   },
   "engines": {
     "bun": ">=1.4.3"

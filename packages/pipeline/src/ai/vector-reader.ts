@@ -2,7 +2,7 @@
 /** Explicit Bun retrieval over a verified offline index and the existing PostgreSQL corpus. */
 import { lstat } from "node:fs/promises";
 import { isAbsolute, join } from "node:path";
-import { ftsQuery } from "../../../db/src/vfs/rag";
+import { ftsQuery } from "@aphrody/shenron-db/vfs";
 import { requireAiHttpToken, requireAiHttpUrl, SHENRON_RAG_INDEX } from "./config";
 import { EmbedResponse, SHENRON_ROUTES } from "./wire";
 import type { VectorGeneration } from "./vector-sidecar";

@@ -68,3 +68,13 @@ de dépôt propres aux databooks. L'ancien démon Google/BXC du processus Shenro
 n'est plus utilisé par ce flux. Voir
 [`docs/guides/TRADUCTION-DATABOOKS.md`](../../docs/guides/TRADUCTION-DATABOOKS.md) pour les
 compteurs et le protocole d'arrêt/reprise.
+
+## Pipeline unifiée
+
+`bun run pipeline run` enchaîne dataset, canon et RAG, décision (`bun:yolo`), wiki et agent home,
+puis plugin, comme un DAG (`src/orchestrator-stages.ts`) : étapes parallèles par vague,
+timeouts, reprises avec backoff, étapes dépendantes sautées après un échec. L'état est écrit
+atomiquement dans `var/reports/pipeline/last-run.json`.
+
+- `plan` : ordre d'exécution sans rien lancer ; `status` : dernier état.
+- `run --only rag,wiki` (dépendances incluses), `--resume` (saute les étapes `ok`), `--concurrency N`, `--json`.

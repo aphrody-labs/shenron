@@ -144,6 +144,8 @@ const EDGE_SUBPATHS: Readonly<Record<string, Readonly<Record<string, readonly st
       "@aphrody/shenron-db/env",
       "@aphrody/shenron-db/guards",
       "@aphrody/shenron-db/redis",
+      // Pure FTS query builder shared with the VFS retrieval (vector-reader).
+      "@aphrody/shenron-db/vfs",
     ],
     // The koharu-sdk JSON Lines transport.
     "@aphrody/shenron-koharu": ["@aphrody/shenron-koharu/native"],

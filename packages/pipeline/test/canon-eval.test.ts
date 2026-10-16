@@ -1,8 +1,35 @@
 import { expect, test } from "bun:test";
-import { aggregateCanonEvaluation, baselineCanonEvaluation, evaluatedCanonJudgment, type CanonEvalCase } from "../src/ai/canon-eval";
+import {
+  aggregateCanonEvaluation,
+  baselineCanonEvaluation,
+  evaluatedCanonJudgment,
+  type CanonEvalCase,
+} from "../src/ai/canon-eval";
 import { emptyCanonJudgment } from "../src/ai/canon-judgment";
 
-const gold: CanonEvalCase = { id: "counterexample", input: { question: "Goku is human", evidence: [{ id: "source", publicExcerpt: "Goku is a Saiyan, not a human.", url: "https://dragonballfr.com/wiki/databooks/9#planche-10", sourceKind: "databook", visibility: "public", providerUseAllowed: true }] }, expected: "contradicted", relevantEvidenceIds: ["source"], groundTruth: { sourceUrl: "https://dragonballfr.com/wiki/databooks/9#planche-10", excerptSha256: "fixture", reviewedBy: "test-fixture" } };
+const gold: CanonEvalCase = {
+  id: "counterexample",
+  input: {
+    question: "Goku is human",
+    evidence: [
+      {
+        id: "source",
+        publicExcerpt: "Goku is a Saiyan, not a human.",
+        url: "https://dragonballfr.com/wiki/databooks/9#planche-10",
+        sourceKind: "databook",
+        visibility: "public",
+        providerUseAllowed: true,
+      },
+    ],
+  },
+  expected: "contradicted",
+  relevantEvidenceIds: ["source"],
+  groundTruth: {
+    sourceUrl: "https://dragonballfr.com/wiki/databooks/9#planche-10",
+    excerptSha256: "fixture",
+    reviewedBy: "test-fixture",
+  },
+};
 
 test("existing lexical verifier is measured without pretending it can detect contradiction", () => {
   const baseline = baselineCanonEvaluation(gold);
