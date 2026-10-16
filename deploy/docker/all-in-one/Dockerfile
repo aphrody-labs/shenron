@@ -34,8 +34,10 @@ ENV DEBIAN_FRONTEND=noninteractive \
     NEXT_TELEMETRY_DISABLED=1
 
 # Install system dependencies, PostgreSQL, Redis, Nginx and utilities
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends --allow-remove-essential \
+    coreutils-from-uutils- \
     ca-certificates \
+    coreutils-from-gnu \
     curl \
     jq \
     libgcc-s1 \
