@@ -20,6 +20,7 @@ if [ -d "$W/.git" ] || [ -f "$W/.git" ]; then
 else
   git -C "$SOURCE" worktree add -f --detach "$W" origin/main
 fi
+git -C "$W" submodule update --init --recursive --force
 cd "$W"; SHA=$(git rev-parse HEAD); echo "== commit $SHA"
 echo "== bun install"; bun install --frozen-lockfile
 echo "== cargo"; nice -n 5 cargo build --release -p shenron-mcp; nice -n 5 cargo build --release -p shenron-ffi --lib
