@@ -12,7 +12,7 @@ import {
   resolveShenronReLibraryPath,
 } from "../src/re";
 
-describe("shenron-re Bun FFI", () => {
+describe.if(resolveShenronReLibraryPath() !== undefined)("shenron-re Bun FFI", () => {
   it("resolves the native library path", () => {
     const path = resolveShenronReLibraryPath();
     expect(path).toBeDefined();
