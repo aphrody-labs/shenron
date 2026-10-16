@@ -16,23 +16,27 @@ git -C "$SOURCE" fetch -q origin
 git -C "$SOURCE" worktree prune
 if [ -d "$W/.git" ] || [ -f "$W/.git" ]; then
   git -C "$W" checkout -q -f --detach origin/main
-  git -C "$W" clean -ffdq -e target -e node_modules
+  git -C "$W" clean -ffdq -e target -e node_modules -e '.next*' -e .cache -e .turbo
 else
   git -C "$SOURCE" worktree add -f --detach "$W" origin/main
 fi
 git -C "$W" submodule update --init --recursive --force
 cd "$W"; SHA=$(git rev-parse HEAD); echo "== commit $SHA"
 echo "== bun install"; bun install --frozen-lockfile
-echo "== cargo"; nice -n 5 cargo build --release -p shenron-mcp; nice -n 5 cargo build --release -p shenron-ffi --lib
-echo "== wasm"; bun packages/koharu/scripts/build-wasm.ts; bun packages/pipeline/scripts/build-re-wasm.ts
-echo "== vfs"; mkdir -p dist/vfs; scp -q dbfr:/home/ubuntu/apps/shenron/shared/server/data/7b26187/shenron-vfs.public.sqlite dist/vfs/shenron-vfs.public.sqlite
-echo "== bot"; bun scripts/build/bot.ts --target linux-x64
+echo "== parallel: cargo | wasm | vfs | bot"
+pids=()
+( nice -n 5 cargo build --release -p shenron-mcp -p shenron-ffi ) & pids+=($!)
+( bun packages/koharu/scripts/build-wasm.ts & bun packages/pipeline/scripts/build-re-wasm.ts & wait -n; wait ) & pids+=($!)
+( mkdir -p dist/vfs; scp -q dbfr:/home/ubuntu/apps/shenron/shared/server/data/7b26187/shenron-vfs.public.sqlite dist/vfs/shenron-vfs.public.sqlite ) & pids+=($!)
+( bun scripts/build/bot.ts --target linux-x64 ) & pids+=($!)
+for p in "${pids[@]}"; do wait "$p"; done
 echo "== server"; bun scripts/build/server.ts --flavor production --target linux-x64
 install -D -m 0755 target/release/shenron-mcp dist/mcp/linux-x64/shenron-mcp
 install -D -m 0755 target/release/libshenron_ffi.so dist/server/linux-x64/native/libshenron_ffi.so
 echo "== image"; docker build -q -f deploy/docker/Dockerfile --build-arg SHENRON_REVISION="$SHA" -t "localhost/shenron:$SHA" -t localhost/shenron:local .
-docker run --rm "localhost/shenron:$SHA" version
-docker run --rm --entrypoint /usr/local/bin/shenron-bot "localhost/shenron:$SHA" --smoke
+docker run --rm "localhost/shenron:$SHA" version &
+docker run --rm --entrypoint /usr/local/bin/shenron-bot "localhost/shenron:$SHA" --smoke &
+wait
 # Keep the current image plus the three newest previous revisions; never touch volumes.
 docker image ls --format '{{.Repository}}:{{.Tag}}' 'localhost/shenron:*' \
   | grep -v -F -e "localhost/shenron:$SHA" -e 'localhost/shenron:local' \
