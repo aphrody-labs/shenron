@@ -243,12 +243,38 @@ const EVOLUTION_TREES: EvolutionTree[] = [
         canonRank: "non_canon",
       },
       {
-        name: "Super Saiyan 4",
+        name: "Super Saiyan 4 (GT)",
         stage: "Maîtrise de la Bête",
         description:
           "Design iconique de Katsuyoshi Nakatsuru avec fourrure écarlate et chevelure noire. Fusion de l'humain et du singe légendaire.",
         users: ["Goku", "Vegeta", "Gogeta"],
         canonRank: "non_canon",
+      },
+    ],
+  },
+  {
+    id: "daima_canon",
+    title: "7. Ère DAIMA — Métamorphoses Mini & Canoniques",
+    lineage: "Akira Toriyama (Dragon Ball DAIMA, 2024)",
+    color: "from-cyan-950/40 via-blue-950/20 to-black",
+    borderColor: "border-cyan-500/40",
+    badgeColor: "border-cyan-500/30 bg-cyan-950/60 text-cyan-300",
+    nodes: [
+      {
+        name: "Goku (Mini) — Super Saiyan",
+        stage: "Rétrécissement du Royaume des Démons",
+        description:
+          "Sous le sortilège de rajeunissement du Roi Gomah, Goku conserve sa capacité à canaliser la colère du Super Saiyan tout en s'adaptant à sa petite taille et au Nyoibo.",
+        users: ["Goku (Mini)", "Vegeta (Mini)"],
+        canonRank: "supervised",
+      },
+      {
+        name: "Super Saiyan 2 & 3 (Mini)",
+        stage: "Puissance Brute Condensée",
+        description:
+          "Déploiement des éclairs du SSJ2 et de la longue crinière du SSJ3 face aux créatures du Troisième Monde Démoniaque.",
+        users: ["Goku (Mini)"],
+        canonRank: "supervised",
       },
     ],
   },
