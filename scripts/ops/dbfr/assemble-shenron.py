@@ -17,6 +17,11 @@ for name in ("site", "bot"):
     service["image"] = image
     extra = ((override.get("services") or {}).get(name) or {}).get("environment") or {}
     service.setdefault("environment", {}).update({k: str(v) for k, v in extra.items()})
+site = compose["services"]["site"]
+site.setdefault("environment", {})["SHENRON_RELEASES_DIR"] = "/srv/shenron/shared/releases"
+mounts = site.setdefault("volumes", [])
+if not any(m.get("target") == "/srv/shenron/shared/releases" for m in mounts):
+    mounts.append({"type": "bind", "source": str(pathlib.Path("/srv/shenron/shared/releases").resolve()), "target": "/srv/shenron/shared/releases", "read_only": True})
 text = (json.dumps(compose, indent=2) + "\n").replace(old.name, new.name)
 (new / "compose.yaml").write_text(text)
 print(json.dumps({"old": old.name, "new": str(new), "images": manifest["images"], "vfs": manifest["publicVfs"]["path"]}))
