@@ -122,8 +122,18 @@ export function parseRange(
 
 /** Streams one file, with `Range` support so an interrupted download resumes. */
 export async function servePrivateDownload(request: Request, name: string): Promise<Response> {
-  if (!hasValidApiToken(request) || !isServableName(name)) return notFound();
-  const dir = privateDownloadsDir().path;
+  if (!hasValidApiToken(request)) return notFound();
+  return serveSumsFile(request, name, privateDownloadsDir().path, noStore());
+}
+
+/** Streams <dir>/<name> when listed in <dir>/SHA256SUMS; `cache` headers are caller-owned. */
+export async function serveSumsFile(
+  request: Request,
+  name: string,
+  dir: string,
+  cache: Record<string, string>,
+): Promise<Response> {
+  if (!isServableName(name)) return notFound();
   const sums = await readSums(dir);
   const sha256 = sums.get(name);
   if (!sha256) return notFound();
@@ -133,7 +143,7 @@ export async function servePrivateDownload(request: Request, name: string): Prom
   const size = info.size;
   const kind = contentTypeOf(name);
   const headers: Record<string, string> = {
-    ...noStore(),
+    ...cache,
     "accept-ranges": "bytes",
     "content-type": kind.type,
     "content-disposition": `${kind.inline ? "inline" : "attachment"}; filename="${name}"`,

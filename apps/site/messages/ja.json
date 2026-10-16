@@ -2286,5 +2286,28 @@
     "evidence": "資料と出典",
     "compareGt": "GTと比較する",
     "details": "回答の詳細"
+  },
+  "releases": {
+    "title": "Shenron をダウンロード",
+    "subtitle": "Windows と Linux 向けのアプリとバイナリ。",
+    "button": "{os} 版をダウンロード",
+    "latest": "バージョン {version} · {date}",
+    "otherOs": "その他のプラットフォーム",
+    "os": {
+      "windows": "Windows",
+      "linux": "Linux"
+    },
+    "kind": {
+      "studio": "Shenron Studio",
+      "server": "サーバー",
+      "cli": "CLI",
+      "mcp": "MCP",
+      "bot": "ボット"
+    },
+    "size": "{size} MB",
+    "sha": "SHA-256",
+    "autoUpdate": "自動更新：Studio は起動時に新しいバージョンを確認してインストールします。",
+    "manual": "その他のバイナリは、このページから再ダウンロードして更新します。",
+    "empty": "公開されたリリースはまだありません。"
   }
 }

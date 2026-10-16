@@ -2286,5 +2286,28 @@
     "evidence": "Documents and references",
     "compareGt": "Compare with GT",
     "details": "Answer details"
+  },
+  "releases": {
+    "title": "Download Shenron",
+    "subtitle": "Apps and binaries for Windows and Linux.",
+    "button": "Download for {os}",
+    "latest": "Version {version} · {date}",
+    "otherOs": "Other platforms",
+    "os": {
+      "windows": "Windows",
+      "linux": "Linux"
+    },
+    "kind": {
+      "studio": "Shenron Studio",
+      "server": "Server",
+      "cli": "CLI",
+      "mcp": "MCP",
+      "bot": "Bot"
+    },
+    "size": "{size} MB",
+    "sha": "SHA-256",
+    "autoUpdate": "Automatic updates: Studio checks for and installs new versions on launch.",
+    "manual": "Other binaries update by downloading from this page again.",
+    "empty": "No release published yet."
   }
 }
