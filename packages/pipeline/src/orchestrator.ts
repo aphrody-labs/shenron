@@ -6,8 +6,9 @@
  */
 import { mkdir, rename } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import { lastOkFingerprint, recordRun, stageFingerprint } from "./orchestrator-store";
 
-export type StageStatus = "pending" | "ok" | "failed" | "skipped" | "planned";
+export type StageStatus = "pending" | "ok" | "cached" | "failed" | "skipped" | "planned";
 
 export interface Stage {
   id: string;
@@ -20,6 +21,8 @@ export interface Stage {
   retries: number;
   /** A failed optional stage does not skip its dependents. */
   optional?: boolean;
+  /** Globs (relative to cwd) hashed into a fingerprint; an unchanged one reuses the last success. */
+  inputs?: readonly string[];
 }
 
 export interface StageRecord {
@@ -29,6 +32,7 @@ export interface StageRecord {
   exitCode: number | null;
   tail: string;
   startedAt?: string;
+  fingerprint?: string | null;
 }
 
 export interface PipelineState {
@@ -53,6 +57,10 @@ export interface RunOptions {
   runner?: StageRunner;
   backoffMs?: number;
   log?: (line: string) => void;
+  /** bun:sqlite history file; enables cross-run cache hits and `status` history. */
+  historyFile?: string;
+  /** Ignore fingerprint cache hits. */
+  force?: boolean;
 }
 
 const TAIL_CHARS = 2000;
@@ -152,13 +160,13 @@ export async function runPipeline(
   const previous = options.resume ? await readState(options.stateFile) : null;
   const state: PipelineState = {
     schema: "shenron-pipeline-run/v1",
-    runId: previous?.runId ?? options.runId ?? new Date().toISOString().replace(/[:.]/g, "-"),
+    runId: previous?.runId ?? options.runId ?? Bun.randomUUIDv7(),
     stages: {},
   };
   for (const stage of stages) {
     const earlier = previous?.stages[stage.id];
     state.stages[stage.id] =
-      earlier?.status === "ok"
+      earlier?.status === "ok" || earlier?.status === "cached"
         ? earlier
         : { status: "pending", attempts: 0, durationMs: 0, exitCode: null, tail: "" };
   }
@@ -168,15 +176,27 @@ export async function runPipeline(
     stage.needs.some((need) => {
       if (byId.get(need)!.optional) return false;
       const status = state.stages[need]!.status;
-      return status !== "ok" && status !== "planned";
+      return status !== "ok" && status !== "cached" && status !== "planned";
     });
 
   const execute = async (stage: Stage) => {
     const record = state.stages[stage.id]!;
-    if (record.status === "ok") return log(`= ${stage.id} (resumed)`);
+    if (record.status === "ok" || record.status === "cached") return log(`= ${stage.id} (resumed)`);
     if (blocked(stage)) {
       record.status = "skipped";
       return log(`- ${stage.id} skipped: dependency failed`);
+    }
+    const fingerprint = await stageFingerprint(stage, options.cwd);
+    record.fingerprint = fingerprint;
+    if (
+      fingerprint &&
+      !options.force &&
+      !options.dryRun &&
+      options.historyFile &&
+      lastOkFingerprint(options.historyFile, stage.id) === fingerprint
+    ) {
+      record.status = "cached";
+      return log(`~ ${stage.id} cached (inputs unchanged)`);
     }
     if (options.dryRun) {
       record.status = "planned";
@@ -185,17 +205,17 @@ export async function runPipeline(
     for (let attempt = 0; attempt <= stage.retries; attempt++) {
       record.attempts = attempt + 1;
       record.startedAt = new Date().toISOString();
-      const started = performance.now();
+      const started = Bun.nanoseconds();
       const result = await runner(stage, options.cwd).catch((error: unknown) => ({
         code: null,
         output: String(error),
         timedOut: false,
       }));
-      record.durationMs = Math.round(performance.now() - started);
+      record.durationMs = Math.round((Bun.nanoseconds() - started) / 1e6);
       record.exitCode = result.code;
       record.tail =
         (result.timedOut ? `timeout ${stage.timeoutMs}ms\n` : "") +
-        result.output.slice(-TAIL_CHARS);
+        Bun.stripANSI(result.output).slice(-TAIL_CHARS);
       if (result.code === 0) {
         record.status = "ok";
         return log(`+ ${stage.id} ok (${record.durationMs}ms)`);
@@ -213,6 +233,7 @@ export async function runPipeline(
     }
   }
   await writeState(options.stateFile, state);
+  if (options.historyFile && !options.dryRun) recordRun(options.historyFile, state);
   return state;
 }
 
@@ -223,6 +244,10 @@ export function pipelineExitCode(state: PipelineState, stages: readonly Stage[])
   )
     ? 1
     : 0;
+}
+
+export function defaultHistoryFile(root: string): string {
+  return join(root, "var", "reports", "pipeline", "history.sqlite");
 }
 
 export function defaultStateFile(root: string): string {

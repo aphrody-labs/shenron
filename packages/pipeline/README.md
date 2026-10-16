@@ -76,5 +76,6 @@ puis plugin, comme un DAG (`src/orchestrator-stages.ts`) : étapes parallèles p
 timeouts, reprises avec backoff, étapes dépendantes sautées après un échec. L'état est écrit
 atomiquement dans `var/reports/pipeline/last-run.json`.
 
+- Chaque étape déclare des globs `inputs` : empreinte SHA-256 (`Bun.Glob` + `Bun.CryptoHasher`) ; inchangée depuis le dernier succès, l'étape est `cached` (`--force` l'ignore). L'historique des runs vit dans `var/reports/pipeline/history.sqlite` (`bun:sqlite`, affiché par `status`). Identifiants `Bun.randomUUIDv7`, durées `Bun.nanoseconds`, sorties nettoyées par `Bun.stripANSI`.
 - `plan` : ordre d'exécution sans rien lancer ; `status` : dernier état.
 - `run --only rag,wiki` (dépendances incluses), `--resume` (saute les étapes `ok`), `--concurrency N`, `--json`.

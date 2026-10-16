@@ -318,6 +318,7 @@ async function main() {
         "dry-run": { type: "boolean", default: false },
         concurrency: { type: "string", default: "4" },
         json: { type: "boolean", default: false },
+        force: { type: "boolean", default: false },
       },
     });
     const { DEFAULT_STAGES } = await import("./orchestrator-stages");
@@ -326,7 +327,13 @@ async function main() {
     const stateFile = orchestrator.defaultStateFile(root);
     if (command === "status") {
       const state = await orchestrator.readState(stateFile);
-      console.log(state ? JSON.stringify(state, null, 2) : "no pipeline run recorded");
+      const { recentRuns } = await import("./orchestrator-store");
+      const history = (await Bun.file(orchestrator.defaultHistoryFile(root)).exists())
+        ? recentRuns(orchestrator.defaultHistoryFile(root))
+        : [];
+      console.log(
+        state ? JSON.stringify({ ...state, history }, null, 2) : "no pipeline run recorded",
+      );
       return;
     }
     const only = values.only?.flatMap((id) => id.split(","));
@@ -334,6 +341,8 @@ async function main() {
     const state = await orchestrator.runPipeline(DEFAULT_STAGES, {
       cwd: root,
       stateFile,
+      historyFile: orchestrator.defaultHistoryFile(root),
+      force: values.force,
       only,
       resume: values.resume,
       dryRun: command === "plan" || values["dry-run"],

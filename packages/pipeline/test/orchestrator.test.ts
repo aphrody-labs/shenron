@@ -11,6 +11,7 @@ import {
   type Stage,
   type StageRunner,
 } from "../src/orchestrator";
+import { recentRuns } from "../src/orchestrator-store";
 import { DEFAULT_STAGES } from "../src/orchestrator-stages";
 
 const stage = (id: string, needs: string[] = [], extra: Partial<Stage> = {}): Stage => ({
@@ -91,4 +92,36 @@ test("resume skips stages already ok and dry-run executes nothing", async () => 
     expect(count).toBe(2);
     expect(planned.stages.a!.status).toBe("planned");
   });
+});
+
+test("unchanged input fingerprint yields a cache hit and history is recorded in sqlite", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "pipeline-cache-"));
+  try {
+    await Bun.write(join(dir, "src", "a.txt"), "one");
+    let count = 0;
+    const runner: StageRunner = async () => {
+      count++;
+      return { code: 0, output: "\u001b[32mok\u001b[0m", timedOut: false };
+    };
+    const stages = [stage("a", [], { inputs: ["src/*.txt"] })];
+    const options = {
+      cwd: dir,
+      stateFile: join(dir, "state.json"),
+      historyFile: join(dir, "history.sqlite"),
+      runner,
+    };
+    const first = await runPipeline(stages, options);
+    expect(first.stages.a!.status).toBe("ok");
+    expect(first.stages.a!.tail).toBe("ok");
+    const second = await runPipeline(stages, options);
+    expect(second.stages.a!.status).toBe("cached");
+    expect(count).toBe(1);
+    await Bun.write(join(dir, "src", "a.txt"), "two");
+    expect((await runPipeline(stages, options)).stages.a!.status).toBe("ok");
+    expect(count).toBe(2);
+    expect((await runPipeline(stages, { ...options, force: true })).stages.a!.status).toBe("ok");
+    expect(recentRuns(options.historyFile).length).toBeGreaterThanOrEqual(3);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
 });

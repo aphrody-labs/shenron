@@ -22,6 +22,11 @@ export const DEFAULT_STAGES: readonly Stage[] = [
     ],
     timeoutMs: 3 * MINUTE,
     retries: 1,
+    inputs: [
+      "packages/pipeline/src/dragon-ball-*.ts",
+      "packages/pipeline/src/ai/training-*.ts",
+      "packages/pipeline/test/dragon-ball-*.ts",
+    ],
   },
   {
     id: "canon",
@@ -35,6 +40,7 @@ export const DEFAULT_STAGES: readonly Stage[] = [
     ],
     timeoutMs: 2 * MINUTE,
     retries: 0,
+    inputs: ["packages/pipeline/src/ai/canon-*.ts", "packages/pipeline/test/canon-*.ts"],
   },
   {
     id: "rag",
@@ -49,6 +55,10 @@ export const DEFAULT_STAGES: readonly Stage[] = [
     ],
     timeoutMs: 3 * MINUTE,
     retries: 1,
+    inputs: [
+      "packages/pipeline/src/ai/{grounding,eval,vector-reader,wire,config}.ts",
+      "packages/pipeline/test/ai/*.ts",
+    ],
   },
   {
     id: "decision",
@@ -62,6 +72,11 @@ export const DEFAULT_STAGES: readonly Stage[] = [
     ],
     timeoutMs: 2 * MINUTE,
     retries: 0,
+    inputs: [
+      "packages/pipeline/src/ai/jev-provider.ts",
+      "packages/api/src/chat/**/*.ts",
+      "packages/api/test/chat-jev.test.ts",
+    ],
   },
   {
     id: "wiki",
@@ -70,6 +85,7 @@ export const DEFAULT_STAGES: readonly Stage[] = [
     argv: ["bun", "test", "scripts/audit/wiki-page-builder.test.ts"],
     timeoutMs: 2 * MINUTE,
     retries: 0,
+    inputs: ["scripts/audit/wiki-page-builder*.ts"],
   },
   {
     id: "agent-home",
@@ -78,6 +94,7 @@ export const DEFAULT_STAGES: readonly Stage[] = [
     argv: ["bun", "packages/db/scripts/agent-home-template.ts", "--check"],
     timeoutMs: 2 * MINUTE,
     retries: 0,
+    inputs: ["packages/db/scripts/agent-home-template.ts"],
   },
   {
     id: "plugin",

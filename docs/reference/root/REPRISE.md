@@ -892,3 +892,8 @@ corps SHA-256 `0b4fdee3e82e588f4fc64237b870de359a2e96ddba7208043f087216def3de61`
 Une paraphrase prudente a été indexée au RAG privé DBFR : 1 document, 1 chunk,
 0 erreur; la requête sur l'identité du tournoi retrouve cette source. Aucun
 article wiki n'a été écrit à partir de cette preuve partielle.
+
+
+## Pipeline unifiée (2026-10-16)
+
+`bun packages/pipeline/src/cli.ts run` orchestre dataset > canon/rag > decision > wiki/agent-home > plugin (cache par empreinte, historique `var/reports/pipeline/history.sqlite`). Reste : 4 violations `apps/site boundary` (jev.ts, canon-judgment.ts, site-rag.ts) à router par une façade server-class.
