@@ -8,15 +8,16 @@
 // already verified locally (raw `ssh cat`, streamed and hashed against its VERIFIED.json), then writes
 // `.offsite-verified`. `--restore-check` restores its PostgreSQL dump into a disposable
 // pgvector/pgvector:0.8.1-pg18 container, checks the SQLite copies with `PRAGMA quick_check`, and writes
-// `.restore-verified`. Existing local snapshots are preserved as rollback evidence while the owner resolves the
-// conflicting retention policies. Fails when the newest DBFR snapshot is older than 36 h (stalled producer). Runs daily on the VPS
+// `.restore-verified`. Retention (owner policy): once the newest snapshot is verified locally (and restored with
+// `--restore-check`), older local snapshots are deleted, so only the last verified backup stays off host.
+// Fails when the newest DBFR snapshot is older than 36 h (stalled producer). Runs daily on the VPS
 // (tools/config/host/systemd/shenron/shenron-offsite-backup.{service,timer}).
 //
 // Environment: SHENRON_OFFSITE_DIR (default /home/ubuntu/archive/dbfr/backups/shenron), SHENRON_OFFSITE_HOST (SSH alias,
 // default dbfr), SHENRON_REMOTE_HOME (default: the remote $HOME).
 // oxlint-disable no-await-in-loop -- one SSH transfer at a time bounds DBFR load and local disk writes.
 import { Database } from "bun:sqlite";
-import { appendFileSync, existsSync, mkdirSync, renameSync, rmSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readdirSync, renameSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
 
 export type Verified = { files: Record<string, string> };
@@ -46,6 +47,11 @@ export function snapshotsToCopy(listing: string, all: boolean): string[] {
     .filter((name) => stampTime(name) !== null)
     .toSorted();
   return all ? snapshots : snapshots.slice(-1);
+}
+
+/** Local snapshot directories to delete once `keep` is verified: every other snapshot-named entry. */
+export function snapshotsToPrune(entries: string[], keep: string): string[] {
+  return entries.filter((name) => name !== keep && stampTime(name) !== null).toSorted();
 }
 
 /** Parses a snapshot VERIFIED.json strictly: relative names without `..`, SHA-256 digests, the PostgreSQL dump. */
@@ -294,8 +300,12 @@ export async function main(argv = Bun.argv.slice(2)): Promise<number> {
     log(`restore-verified=${newest} ${JSON.stringify(report)}`);
     console.log(`Restore check ${newest}: ${JSON.stringify(report)}`);
   }
-  // Preserve historical verified snapshots until the owner resolves the conflicting
-  // one/two/three-copy retention policies. Never delete backup evidence implicitly.
+  // Keep only the last verified backup: prune older copies after the newest one re-verifies.
+  if (await verifyLocal(join(dest, newest)))
+    for (const old of snapshotsToPrune(readdirSync(dest), newest)) {
+      rmSync(join(dest, old), { recursive: true, force: true });
+      log(`pruned=${old}`);
+    }
   const ageHours = (Date.now() - stampTime(newest)!) / 3_600_000;
   log(`complete pulled=${pulled} newest=${newest} age=${ageHours.toFixed(1)}h`);
   console.log(`Off-host Shenron snapshot kept: ${newest} (pulled ${pulled}).`);

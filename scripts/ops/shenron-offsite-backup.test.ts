@@ -1,7 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
 
-import { parseVerified, remoteRoot, snapshotsToCopy, stampTime } from "./shenron-offsite-backup.ts";
+import {
+  parseVerified,
+  remoteRoot,
+  snapshotsToCopy,
+  snapshotsToPrune,
+  stampTime,
+} from "./shenron-offsite-backup.ts";
 
 const sum = "a".repeat(64);
 
@@ -27,6 +33,20 @@ test("offsite history seed selects all published timestamps; regular runs select
     "20261011T030730863287Z",
   ]);
   expect(snapshotsToCopy(listing, false)).toEqual(["20261011T030730863287Z"]);
+});
+
+test("retention prunes every other snapshot but keeps logs and partial stages", () => {
+  const entries = [
+    "20261016T145640286738Z",
+    "pull-status.log",
+    "20261011T030730863287Z",
+    ".20261012T030000000000Z.partial",
+    "20261001T030000000000Z",
+  ];
+  expect(snapshotsToPrune(entries, "20261016T145640286738Z")).toEqual([
+    "20261001T030000000000Z",
+    "20261011T030730863287Z",
+  ]);
 });
 
 test("VERIFIED.json is parsed strictly", () => {
