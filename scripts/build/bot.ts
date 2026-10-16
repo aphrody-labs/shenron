@@ -3,7 +3,7 @@
 /**
  * Build the autonomous `shenron-bot` binary (Discord bot + public API) with bun build --compile.
  *
- *   bun scripts/build/bot.ts [--target linux-x64|windows-x64]
+ *   bun scripts/build/bot.ts [--target linux-x64|linux-x64-musl|windows-x64]
  *
  * The binary carries every command and event (static barrel src/_entries.ts) and its SQL
  * migrations; `shenron-bot --smoke` loads them all without databases or Discord.
@@ -22,9 +22,13 @@ const args = process.argv.slice(2);
 const index = args.indexOf("--target");
 const target = (
   index >= 0 ? args[index + 1] : process.platform === "win32" ? "windows-x64" : "linux-x64"
-) as "linux-x64" | "windows-x64";
-const bunTarget = { "linux-x64": "bun-linux-x64", "windows-x64": "bun-windows-x64" }[target];
-if (!bunTarget) throw new Error("--target linux-x64|windows-x64");
+) as "linux-x64" | "linux-x64-musl" | "windows-x64";
+const bunTarget = {
+  "linux-x64": "bun-linux-x64",
+  "linux-x64-musl": "bun-linux-x64-musl",
+  "windows-x64": "bun-windows-x64",
+}[target];
+if (!bunTarget) throw new Error("--target linux-x64|linux-x64-musl|windows-x64");
 const out = join(ROOT, "dist/bot", target);
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
@@ -32,7 +36,11 @@ const exe = join(out, target === "windows-x64" ? "shenron-bot.exe" : "shenron-bo
 // The canvas loader uses dynamic require(), so Bun cannot discover its native addon.
 // Resolve from the package itself to respect the isolated dependency linker.
 const canvas = Bun.resolveSync("@napi-rs/canvas", BOT);
-const canvasPlatform = target === "windows-x64" ? "win32-x64-msvc" : "linux-x64-gnu";
+const canvasPlatform = {
+  "linux-x64": "linux-x64-gnu",
+  "linux-x64-musl": "linux-x64-musl",
+  "windows-x64": "win32-x64-msvc",
+}[target];
 const canvasBinding = Bun.resolveSync(`@napi-rs/canvas-${canvasPlatform}`, dirname(canvas));
 const child = Bun.spawn(
   [

@@ -3,7 +3,7 @@
 /**
  * Build the autonomous `shenron-server` binary (front app + local APIs) and its CDN tree.
  *
- *   bun scripts/build/server.ts [--target linux-x64|windows-x64] [--flavor desktop|production]
+ *   bun scripts/build/server.ts [--target linux-x64|linux-x64-musl|windows-x64] [--flavor desktop|production]
  *                               [--skip-site] [--no-embed] [--vfs FILE | --no-vfs]
  *
  * Flavors: `desktop` (default; the desktop app and the public release) loads every asset from
@@ -69,6 +69,12 @@ const TARGETS = {
     bun: "bun-linux-x64",
     exe: "shenron-server",
     rust: "x86_64-unknown-linux-gnu",
+    lib: "libshenron_ffi.so",
+  },
+  "linux-x64-musl": {
+    bun: "bun-linux-x64-musl",
+    exe: "shenron-server",
+    rust: "x86_64-unknown-linux-musl",
     lib: "libshenron_ffi.so",
   },
   "windows-x64": {
