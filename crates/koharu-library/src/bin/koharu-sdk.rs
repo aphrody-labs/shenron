@@ -265,63 +265,6 @@ fn browser_selection(bridge: &StdioBridge, command: &str, args: &Value) -> Resul
     Ok(selected)
 }
 
-#[cfg(test)]
-mod browser_tests {
-    use super::*;
-
-    fn bridge(root: PathBuf) -> StdioBridge {
-        let (sender, _receiver) = mpsc::unbounded_channel();
-        StdioBridge {
-            output: Output(sender),
-            web_io_root: Some(root),
-            import_selection: None,
-            export_selection: None,
-        }
-    }
-
-    #[test]
-    fn imports_only_files_directly_inside_uploads() -> Result<()> {
-        let temp = tempfile::tempdir()?;
-        let uploads = temp.path().join("uploads");
-        std::fs::create_dir(&uploads)?;
-        let page = uploads.join("page.png");
-        std::fs::write(&page, b"page")?;
-        let bridge = bridge(temp.path().to_owned());
-        let selected = browser_selection(&bridge, "import", &json!({ "_webImport": [page] }))?;
-        assert_eq!(selected.import_selection.unwrap(), vec![page.canonicalize()?]);
-        let outside = temp.path().join("other.png");
-        std::fs::write(&outside, b"other")?;
-        assert!(browser_selection(&bridge, "import", &json!({ "_webImport": [outside] })).is_err());
-        assert!(browser_selection(&bridge, "import", &json!({})).is_err());
-        Ok(())
-    }
-
-    #[test]
-    fn exports_only_new_destinations_inside_exports() -> Result<()> {
-        let temp = tempfile::tempdir()?;
-        let exports = temp.path().join("exports");
-        std::fs::create_dir(&exports)?;
-        let bridge = bridge(temp.path().to_owned());
-        let target = exports.join("new.cbz");
-        assert_eq!(
-            browser_selection(&bridge, "export", &json!({ "_webExport": target }))?
-                .export_selection,
-            Some(target.clone())
-        );
-        std::fs::write(&target, b"existing")?;
-        assert!(browser_selection(&bridge, "export", &json!({ "_webExport": target })).is_err());
-        assert!(
-            browser_selection(
-                &bridge,
-                "export",
-                &json!({ "_webExport": temp.path().join("../escaped.cbz") })
-            )
-            .is_err()
-        );
-        Ok(())
-    }
-}
-
 #[tokio::main]
 async fn main() -> Result<()> {
     let args = Arguments::parse();
@@ -396,5 +339,62 @@ async fn main() -> Result<()> {
     match tokio::time::timeout(Duration::from_secs(2), writer).await {
         Ok(written) => written.context("the output writer stopped")?,
         Err(_) => Ok(()),
+    }
+}
+
+#[cfg(test)]
+mod browser_tests {
+    use super::*;
+
+    fn bridge(root: PathBuf) -> StdioBridge {
+        let (sender, _receiver) = mpsc::unbounded_channel();
+        StdioBridge {
+            output: Output(sender),
+            web_io_root: Some(root),
+            import_selection: None,
+            export_selection: None,
+        }
+    }
+
+    #[test]
+    fn imports_only_files_directly_inside_uploads() -> Result<()> {
+        let temp = tempfile::tempdir()?;
+        let uploads = temp.path().join("uploads");
+        std::fs::create_dir(&uploads)?;
+        let page = uploads.join("page.png");
+        std::fs::write(&page, b"page")?;
+        let bridge = bridge(temp.path().to_owned());
+        let selected = browser_selection(&bridge, "import", &json!({ "_webImport": [page] }))?;
+        assert_eq!(selected.import_selection.unwrap(), vec![page.canonicalize()?]);
+        let outside = temp.path().join("other.png");
+        std::fs::write(&outside, b"other")?;
+        assert!(browser_selection(&bridge, "import", &json!({ "_webImport": [outside] })).is_err());
+        assert!(browser_selection(&bridge, "import", &json!({})).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn exports_only_new_destinations_inside_exports() -> Result<()> {
+        let temp = tempfile::tempdir()?;
+        let exports = temp.path().join("exports");
+        std::fs::create_dir(&exports)?;
+        let bridge = bridge(temp.path().to_owned());
+        let target = exports.join("new.cbz");
+        assert_eq!(
+            browser_selection(&bridge, "export", &json!({ "_webExport": target }))?
+                .export_selection,
+            Some(target.clone())
+        );
+        std::fs::write(&target, b"existing")?;
+        assert!(browser_selection(&bridge, "export", &json!({ "_webExport": target })).is_err());
+        assert!(
+            browser_selection(
+                &bridge,
+                "export",
+                &json!({ "_webExport": temp.path().join("../escaped.cbz") })
+            )
+            .is_err()
+        );
+        Ok(())
     }
 }

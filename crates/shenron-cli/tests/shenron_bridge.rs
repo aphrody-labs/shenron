@@ -96,7 +96,7 @@ fn shenron_persona_prompt_output() {
         .success()
         .stdout(predicate::str::contains("Akira Toriyama"))
         .stdout(predicate::str::contains("Dragon Sacré"))
-        .stdout(predicate::str::contains("Daizenshuu"));
+        .stdout(predicate::str::contains("Hiérarchie et Priorité des Sources"));
 }
 
 #[test]
