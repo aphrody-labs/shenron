@@ -57,7 +57,7 @@ import type {
 } from "./generated/types";
 // Bun's `text` loader gives the file's source, embedded by `bun build --compile` too; TypeScript
 // only sees the module's string default export.
-import workerThreadSource from "./worker-thread" with { type: "text" };
+import workerThreadSource from "./worker-thread.ts" with { type: "text" };
 import type { JobCall, JobOperation, WorkerRequest, WorkerResponse } from "./worker-protocol";
 
 export type { CapturedResult, LocalSearchResponse, RagSearchResponse, RagStats };
