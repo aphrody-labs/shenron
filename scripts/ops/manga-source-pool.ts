@@ -814,7 +814,7 @@ export async function executeTask(
     };
   }
   const response = await fetcher(url, {
-    redirect: "error",
+    redirect: task.kind === "acquisition" && url.hostname === "archive.org" ? "follow" : "error",
     signal: AbortSignal.timeout(45000),
     headers: { "User-Agent": "DragonballfrSourceDiscovery/1.0 (+https://dragonballfr.com)" },
   });
@@ -843,7 +843,9 @@ export async function executeTask(
   const capture = await readBounded(
     response,
     task.kind === "acquisition"
-      ? 64 * 1024 * 1024
+      ? url.hostname === "archive.org"
+        ? 256 * 1024 * 1024
+        : 64 * 1024 * 1024
       : task.kind === "asset"
         ? 32 * 1024 * 1024
         : 16 * 1024 * 1024,
