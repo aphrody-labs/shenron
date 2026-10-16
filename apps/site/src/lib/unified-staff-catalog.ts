@@ -34,6 +34,8 @@ const ANECDOTES_MAP: Record<string, string> = {
     "Directeur de l'animation sur Dragon Ball Super: Super Hero, réputé pour la séquence d'ouverture 2D époustouflante résumant la saga du Ruban Rouge.",
   "takao-koyama":
     "Scénariste principal de DBZ (épisodes 1 à 291) et des 13 premiers films. C'est à sa plume que l'on doit les créations mythiques de Broly, Cooler, Bojack et Janemba.",
+  "katsuyoshi-nakatsuru":
+    "Directeur d'animation vedette adoubé par Akira Toriyama, qui admirait sa fidélité parfaite à son style au point de confondre parfois ses propres dessins avec ceux de Nakatsuru. Créateur des designs de Bardock et du Super Saiyan 4.",
   "shunsuke-kikuchi":
     "A composé plus de 400 morceaux symphoniques pour Dragon Ball et DBZ, tous enregistrés en prises directes avec un grand orchestre de cuivres et de cordes.",
   "hironobu-kageyama":
@@ -72,6 +74,8 @@ const ANECDOTES_MAP: Record<string, string> = {
     "A immortalisé Trunks du futur en VF dès son arrivée face à Mecha Freezer, avec une classe et un sens du drame inoubliables.",
   "frederic-bouraly":
     "Comédien emblématique ayant prêté sa verve comique inimitable à Mr. Satan (Hercule) dans la saga Majin Buu.",
+  "gilbert-levy":
+    "Figure majeure du doublage français (également Moe dans Les Simpson), il a prêté sa gouaille et sa voix inimitable à Tortue Géniale (Maître Roshi) et Dendé.",
   "bruno-magne":
     "Interprète magistral de Beerus en VF depuis Battle of Gods et Dragon Ball Super, dosant avec brio flegme félin et puissance cosmique.",
   "stephane-ronchewski":
@@ -92,6 +96,8 @@ const ANECDOTES_MAP: Record<string, string> = {
     "Voix officielle de Krillin et Bardock aux États-Unis, apportant un humour touchant et une grande humanité à ces combattants.",
   "eric-vale":
     "Interprète américain historique de Trunks du futur depuis l'arc des Cyborgs jusqu'à l'arc Goku Black dans Dragon Ball Super.",
+  "kyle-hebert":
+    "Voix américaine iconique du narrateur de Dragon Ball Z et de Son Gohan adulte (Great Saiyaman, Ultimate Gohan) chez Funimation.",
   "monica-rial":
     "Voix américaine majeure de Bulma chez Funimation/Crunchyroll depuis Dragon Ball Z Kai, succédant avec brio à Tiffany Vollmer.",
   "colleen-clinkenbeard":
@@ -153,6 +159,8 @@ const PORTRAITS_MAP: Record<string, string> = {
     "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/55/C%C3%A9line_Monsarrat_2023.jpg/330px-C%C3%A9line_Monsarrat_2023.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
   "frederic-bouraly":
     "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e9/Fr%C3%A9d%C3%A9ric_Bouraly.jpg/330px-Fr%C3%A9d%C3%A9ric_Bouraly.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  "gilbert-levy":
+    "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/Gilbert_L%C3%A9vy_2023.jpg/330px-Gilbert_L%C3%A9vy_2023.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
   "stephane-ronchewski":
     "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/74/Stephane-ronchewski.jpg/330px-Stephane-ronchewski.jpg?utm_source=fr.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
 
@@ -171,6 +179,8 @@ const PORTRAITS_MAP: Record<string, string> = {
     "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d4/Sonny_Strait_GalaxyCon_Raleigh_July%2C_25%2C_2026_316.jpg/330px-Sonny_Strait_GalaxyCon_Raleigh_July%2C_25%2C_2026_316.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
   "eric-vale":
     "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6e/686-8x10.jpg/330px-686-8x10.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  "kyle-hebert":
+    "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1b/Kyle_Hebert_%2838122864326%29.jpg/330px-Kyle_Hebert_%2838122864326%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
   "monica-rial":
     "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/Monica_Rial_GalaxyCon_Des_Moines_September%2C12%2C2026_1776.jpg/330px-Monica_Rial_GalaxyCon_Des_Moines_September%2C12%2C2026_1776.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
   "colleen-clinkenbeard":
@@ -303,6 +313,32 @@ const EXTENDED_STAFF: UnifiedStaffMember[] = [
     ],
   },
   {
+    id: "gilbert-levy",
+    slug: "gilbert-levy",
+    nameFr: "Gilbert Lévy",
+    tier: "voice_fr",
+    tierLabel: "Doublage Français (VF)",
+    subRole: "Voix de Tortue Géniale & Dendé",
+    period: "1990 — Présent",
+    eras: ["db", "dbz", "dbs"],
+    studio: "audio_dub",
+    studioLabel: "Doublage Français (AB Productions / Chinkel)",
+    keyWorks: ["Tortue Géniale (Maître Roshi)", "Dendé (adulte)"],
+    bioSummary:
+      "Comédien emblématique du doublage français (également voix de Moe Szyslak dans Les Simpson), il a prêté son timbre rocailleux et son humour décapant à Tortue Géniale.",
+    anecdote: ANECDOTES_MAP["gilbert-levy"],
+    image: PORTRAITS_MAP["gilbert-levy"],
+    wikiLink: "/wiki/staff#gilbert-levy",
+    roles: [
+      {
+        characterName: "Tortue Géniale",
+        series: "DB, DBZ, DBS",
+        notes: "Maître des arts martiaux.",
+      },
+      { characterName: "Dendé (adulte)", series: "DBZ", notes: "Tout-Puissant de la Terre." },
+    ],
+  },
+  {
     id: "bruno-magne",
     slug: "bruno-magne",
     nameFr: "Bruno Magne",
@@ -398,6 +434,32 @@ const EXTENDED_STAFF: UnifiedStaffMember[] = [
         series: "DBZ, DBS",
         notes: "Voix anglophone principale.",
       },
+    ],
+  },
+  {
+    id: "kyle-hebert",
+    slug: "kyle-hebert",
+    nameFr: "Kyle Hebert",
+    tier: "voice_en",
+    tierLabel: "Doublage Anglais (VA)",
+    subRole: "Voix du narrateur & Gohan adulte",
+    period: "2000 — Présent",
+    eras: ["dbz", "dbs"],
+    studio: "audio_dub",
+    studioLabel: "Funimation / Crunchyroll (USA)",
+    keyWorks: ["Son Gohan (Adulte)", "Narrateur DBZ"],
+    bioSummary:
+      "Voix officielle américaine de Son Gohan adulte (Great Saiyaman, Ultimate Gohan) et narrateur emblématique de Dragon Ball Z (« Last time on Dragon Ball Z... »).",
+    anecdote: ANECDOTES_MAP["kyle-hebert"],
+    image: PORTRAITS_MAP["kyle-hebert"],
+    wikiLink: "/wiki/staff#kyle-hebert",
+    roles: [
+      {
+        characterName: "Son Gohan (Adulte)",
+        series: "DBZ, DBS",
+        notes: "Great Saiyaman / Guerrier ultime.",
+      },
+      { characterName: "Narrateur", series: "DBZ", notes: "Voix d'ouverture culte." },
     ],
   },
   {
@@ -544,6 +606,26 @@ const EXTENDED_STAFF: UnifiedStaffMember[] = [
         notes: "Hakaishin de l'Univers 7.",
       },
     ],
+  },
+
+  // --- Animation & Chara Design de Légende ---
+  {
+    id: "katsuyoshi-nakatsuru",
+    slug: "katsuyoshi-nakatsuru",
+    nameFr: "Katsuyoshi Nakatsuru",
+    nameJa: "中鶴勝祥",
+    tier: "production",
+    tierLabel: "Animation & Direction",
+    subRole: "Directeur de l'animation & Chara-designer",
+    period: "1986 — 2008",
+    eras: ["db", "dbz", "gt"],
+    studio: "toei",
+    studioLabel: "Toei Animation",
+    keyWorks: ["Bardock (design)", "Super Saiyan 4", "DBZ OAVs", "DBGT"],
+    bioSummary:
+      "L'un des plus illustres directeurs d'animation de l'histoire de Toei Animation. Admiré personnellement par Akira Toriyama pour sa capacité phénoménale à reproduire et enrichir son style graphique. On lui doit notamment la conception visuelle originelle de Bardock et de ses compagnons, ainsi que le design légendaire du Super Saiyan 4 dans Dragon Ball GT.",
+    anecdote: ANECDOTES_MAP["katsuyoshi-nakatsuru"],
+    wikiLink: "/wiki/staff#katsuyoshi-nakatsuru",
   },
 ];
 

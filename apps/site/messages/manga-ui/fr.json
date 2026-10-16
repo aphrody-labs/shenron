@@ -52,7 +52,15 @@
     "DBJP": "Dragon Ball · Japonais",
     "ARALE": "Dr. Slump",
     "DBFC": "Dragon Ball · Couleur (scan-db)",
-    "DB_LIGHT_NOVELS": "Dragon Ball · Romans"
+    "DB_LIGHT_NOVELS": "Dragon Ball · Romans",
+    "DB_SD": "Dragon Ball SD",
+    "DB_GAIDEN_YAMCHA": "Dragon Ball Gaiden · Yamcha",
+    "SDBH_DARK_DEMON_REALM": "Super Dragon Ball Heroes · Dark Demon Realm",
+    "SDBH_UNIVERSE": "Super Dragon Ball Heroes · Universe Mission",
+    "SDBH_BIG_BANG": "Super Dragon Ball Heroes · Big Bang Mission",
+    "SDBH_ULTRA_GOD": "Super Dragon Ball Heroes · Ultra God Mission",
+    "SDBH_METEOR": "Super Dragon Ball Heroes · Meteor Mission",
+    "SDBH_AVATARS": "Super Dragon Ball Heroes · Avatars!!"
   },
   "coverage": "Couverture du catalogue",
   "catalogued": "Tomes référencés",
