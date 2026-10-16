@@ -23,6 +23,7 @@ services:
       HOSTNAME: 127.0.0.1
       PORT: "5011"
       NEXT_TELEMETRY_DISABLED: "1"
+      SHENRON_RELEASES_DIR: /srv/shenron/shared/releases
     network_mode: host
     user: "${SHENRON_UID:-1000}:${SHENRON_GID:-1000}"
     init: true
@@ -35,6 +36,10 @@ services:
       - type: bind
         source: ${SHENRON_SHARED_ROOT:-/srv/shenron/shared}/server
         target: /var/lib/shenron
+      - type: bind
+        source: ${SHENRON_SHARED_ROOT:-/srv/shenron/shared}/releases
+        target: /srv/shenron/shared/releases
+        read_only: true
     healthcheck:
       test:
         - CMD-SHELL

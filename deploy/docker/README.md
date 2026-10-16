@@ -1,4 +1,5 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # Shenron Docker production release
 
 One immutable image contains the Next.js 16 standalone server, Discord bot, MCP
