@@ -6,6 +6,8 @@ import { EmptyState } from "@/components/kit/EmptyState";
 import { T } from "@/components/T";
 import type { CatalogCard, CatalogSummary } from "@/lib/catalog-explorer-contract";
 
+import { ArchivePreview } from "./ArchivePreview";
+
 function CatalogCardLink(props: ComponentProps<typeof Link>) {
   return <Link {...props} prefetch={false} />;
 }
@@ -25,8 +27,22 @@ export function CatalogCards({ items }: { items: CatalogCard[] }) {
           <MangaCard
             href={item.href}
             title={item.title}
-            excerpt={item.description}
+            excerpt={item.archive ? undefined : item.description}
             image={item.image}
+            renderImage={
+              item.archive
+                ? (props) => <ArchivePreview src={props.src} alt={item.title} />
+                : undefined
+            }
+            meta={
+              item.archive ? (
+                <>
+                  <T k={"catalog.archive.series." + item.archive.series} />
+                  <span aria-hidden> · </span>
+                  <T k={"catalog.archive.languages." + item.archive.language} />
+                </>
+              ) : undefined
+            }
             className="h-full break-words"
             linkComponent={CatalogCardLink}
           />

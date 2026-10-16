@@ -2118,7 +2118,44 @@
       "publishedAt": "Publication",
       "canon": "Continuité"
     },
-    "refreshing": "Actualisation en cours…"
+    "refreshing": "Actualisation en cours…",
+    "archive": {
+      "selection": "Sélection contrôlée le {time}. Seules les archives retenues sont affichées.",
+      "count": "{count} archives retenues",
+      "work": "Œuvre",
+      "allWorks": "Toutes les œuvres",
+      "language": "Langue déclarée par la source",
+      "allLanguages": "Toutes les langues",
+      "previewUnavailable": "Aperçu indisponible",
+      "source": "Notice Internet Archive",
+      "file": "Fichier média référencé",
+      "checked": "Métadonnées et disponibilité du fichier contrôlées le {time}",
+      "status": "Archive externe · lecture non vérifiée",
+      "provenance": "Provenance et fichier",
+      "series": {
+        "db": "Dragon Ball",
+        "z": "Dragon Ball Z",
+        "gt": "Dragon Ball GT",
+        "super": "Dragon Ball Super",
+        "daima": "Dragon Ball DAIMA",
+        "heroes": "Dragon Ball Heroes",
+        "games": "Jeux Dragon Ball",
+        "mixed": "Plusieurs œuvres"
+      },
+      "languages": {
+        "fr": "Français",
+        "en": "Anglais",
+        "ja": "Japonais",
+        "es": "Espagnol",
+        "pt": "Portugais",
+        "pl": "Polonais",
+        "ca": "Catalan / valencien",
+        "unknown": "Non renseignée",
+        "multiple": "Plusieurs langues",
+        "other": "Autre langue déclarée"
+      },
+      "metadataChecksum": "SHA-256 des métadonnées"
+    }
   },
   "adminDesign": {
     "title": "Design et thème",
@@ -2191,5 +2228,63 @@
       "onError": "Texte sur erreur"
     },
     "hexHint": "Couleur HEX (3, 6 ou 8 caractères)"
+  },
+  "corpusStats": {
+    "title": "Le corpus référencé",
+    "unavailable": "Indisponible",
+    "scope": "Fiches publiques en base et passages de l’index local du serveur, distinct de l’index de recherche éditorial. Ces comptes ne prouvent ni la complétude des œuvres ni la validation des transcriptions.",
+    "references": "références",
+    "indexedRecords": "Références indexées",
+    "recordScope": "dans la source disponible.",
+    "metrics": {
+      "ragChunks": "Passages de l’index local",
+      "canonReferences": "Références de canonicité",
+      "databookPages": "Planches databooks référencées",
+      "mangaPages": "Transcriptions manga référencées",
+      "mangaVolumes": "Tomes référencés",
+      "mangaChapters": "Chapitres référencés",
+      "episodes": "Épisodes référencés",
+      "characters": "Fiches personnages"
+    }
+  },
+  "canonEditorSync": {
+    "editorLabel": "Éditeur de la doctrine de canonicité",
+    "reload": "Recharger la version enregistrée",
+    "baselineMissing": "La version enregistrée doit être relue avant tout enregistrement.",
+    "conflict": "La doctrine a changé sur le serveur. Votre brouillon est conservé. Rechargez la version enregistrée pour reprendre sur cette version.",
+    "saved": "Doctrine enregistrée. La page publique utilise cette version.",
+    "saveFailed": "Enregistrement impossible. Le brouillon est conservé.",
+    "networkFailed": "Connexion indisponible. Le brouillon est conservé.",
+    "loadFailed": "Lecture de la doctrine impossible. Aucun enregistrement n’est autorisé tant que la lecture échoue."
+  },
+  "canonExplorer": {
+    "title": "Canon",
+    "subtitle": "Une question. Une œuvre. Les sources.",
+    "question": "Votre question sur Dragon Ball",
+    "placeholder": "Broly, Super Saiyan 4, Bardock…",
+    "search": "Rechercher",
+    "searching": "Recherche en cours…",
+    "work": "Œuvre",
+    "allWorks": "Toutes les œuvres",
+    "language": "Langue de l’interface",
+    "examples": "Choisir un sujet",
+    "broly": "Broly",
+    "ssj4Gt": "SSJ4 · GT",
+    "ssj4Daima": "SSJ4 · DAIMA",
+    "gogeta": "Gogeta",
+    "bardock": "Bardock",
+    "workDBZ": "Dragon Ball Z",
+    "workGT": "Dragon Ball GT",
+    "workDBS": "Dragon Ball Super",
+    "workDAIMA": "Dragon Ball DAIMA",
+    "hint": "Choisissez une version : un même personnage peut appartenir à plusieurs continuités.",
+    "emptyTitle": "Quelle version vous intéresse ?",
+    "emptyText": "Choisissez une carte ou posez votre question. Retrouvez la réponse, puis ouvrez les documents qui permettent de la vérifier.",
+    "continuities": "Comprendre les continuités",
+    "method": "Méthode et références",
+    "sources": "Voir les sources",
+    "evidence": "Documents et références",
+    "compareGt": "Comparer avec GT",
+    "details": "Détails de la réponse"
   }
 }

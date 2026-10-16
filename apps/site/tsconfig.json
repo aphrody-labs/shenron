@@ -3,7 +3,11 @@
     "target": "ESNext",
     "moduleDetection": "force",
     "allowImportingTsExtensions": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -21,9 +25,16 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@aphrody/m3-reader/source": [
+        "/home/ubuntu/shenron-dev/var/private/material-reader/src/index.ts"
+      ]
     },
-    "types": ["bun"]
+    "types": [
+      "bun"
+    ]
   },
   "include": [
     "next-env.d.ts",
@@ -40,5 +51,9 @@
     ".next-qualification/types/**/*.ts",
     ".next-qualification/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "tests", "scripts"]
+  "exclude": [
+    "node_modules",
+    "tests",
+    "scripts"
+  ]
 }

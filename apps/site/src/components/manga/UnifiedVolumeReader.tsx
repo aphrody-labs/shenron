@@ -5,7 +5,8 @@ import { useSearchParams } from "next/navigation";
 import { CollectionReader, type ReaderCollectionEdition } from "@aphrody/shenron-ui/reader";
 import { MangaReader } from "./MangaReader";
 import { useT } from "@/components/T";
-import { colorisationDemandee } from "@/lib/manga-editions";
+import { colorisationDemandee, hasMixedColorization } from "@/lib/manga-editions";
+import { useMangaUIText } from "@/lib/manga-ui-text";
 
 export interface ChapterItem {
   id: number;
@@ -35,22 +36,29 @@ export function UnifiedVolumeReader({
   sourceKind?: "cdn" | "editorial";
 }) {
   const t = useT();
+  const ui = useMangaUIText();
   const searchParams = useSearchParams();
   const chapters = useMemo(() => volume.chapters ?? [], [volume.chapters]);
   const formatChapterTitle = useCallback(
     (chapter: ChapterItem) =>
-      chapter.title && !/^tome\s*\d+$/i.test(chapter.title.trim())
-        ? `Ch. ${chapter.chapter_number} — ${chapter.title}`
-        : `Chapitre ${chapter.chapter_number}`,
-    [],
+      chapter.title?.trim()
+        ? /^(?:tome|volume)\s*\d+$/i.test(chapter.title.trim())
+          ? ui("volume", { number: chapter.chapter_number })
+          : `${ui("chapter", { number: chapter.chapter_number })} — ${chapter.title}`
+        : ui("chapter", { number: chapter.chapter_number }),
+    [ui],
   );
   const editions = useMemo<ReaderCollectionEdition[]>(
     () => [
       {
         id: "nb",
-        label: t("mangaCatalog.frenchBlackWhiteScans"),
+        label: hasMixedColorization(volume)
+          ? ui("reader.mixedScans")
+          : volume.series === "DB" || volume.series === "DBS"
+            ? t("mangaCatalog.frenchBlackWhiteScans")
+            : ui("reader.scans"),
         chapters: chapters
-          .filter((chapter) => chapter.series !== "DBFC")
+          .filter((chapter) => chapter.series !== "DBFC" && chapter.pages?.length)
           .toSorted((a, b) => a.chapter_number - b.chapter_number)
           .map((chapter) => ({
             id: chapter.id,
@@ -62,7 +70,7 @@ export function UnifiedVolumeReader({
         id: "color",
         label: t("mangaCatalog.frenchColorScans"),
         chapters: chapters
-          .filter((chapter) => chapter.series === "DBFC")
+          .filter((chapter) => chapter.series === "DBFC" && chapter.pages?.length)
           .toSorted((a, b) => a.chapter_number - b.chapter_number)
           .map((chapter) => ({
             id: chapter.id,
@@ -71,7 +79,7 @@ export function UnifiedVolumeReader({
           })),
       },
     ],
-    [chapters, formatChapterTitle, t],
+    [chapters, formatChapterTitle, t, ui, volume.series],
   );
   const initialEdition =
     colorisationDemandee(searchParams?.get("edition")) === "couleur" ? "color" : "nb";
@@ -100,14 +108,14 @@ export function UnifiedVolumeReader({
   return (
     <div className="m3-reader--dragon-ball">
       <CollectionReader
-        title={volume.title || `Tome ${volume.volume_number}`}
+        title={volume.title || ui("volume", { number: volume.volume_number })}
         editions={editions}
         initialEdition={initialEdition}
         initialChapter={initialChapter}
-        emptyLabel="Les planches numérisées de ce volume sont en cours d’acquisition."
-        contentsLabel="Sommaire"
-        previousLabel="Chapitre précédent"
-        nextLabel="Chapitre suivant"
+        emptyLabel={ui("reader.empty")}
+        contentsLabel={ui("reader.contents")}
+        previousLabel={ui("reader.previous")}
+        nextLabel={ui("reader.next")}
         onSelectionChange={onSelectionChange}
         renderChapter={(edition, selected, index) => {
           const chapter = chapters.find((item) => item.id === selected.id);
@@ -121,7 +129,7 @@ export function UnifiedVolumeReader({
               key={`${chapter.id}-${edition.id}`}
               pages={chapter.pages ?? []}
               sourceKind={sourceKind}
-              title={`${volume.title || `Tome ${volume.volume_number}`} — ${formatChapterTitle(chapter)}`}
+              title={`${volume.title || ui("volume", { number: volume.volume_number })} — ${formatChapterTitle(chapter)}`}
               direction="rtl"
               chapterId={chapter.id}
               prevHref={

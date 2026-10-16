@@ -79,7 +79,10 @@ export const SERIE_COULEUR = "DBFC";
  * ici pour que l'ingest du jour où ait une place déterminée, plutôt qu'une
  * convention réinventée sur le moment.
  */
-export const EDITION_PAR_SERIE: Record<string, { langue: Langue; colorisation: Colorisation }> = {
+export const EDITION_PAR_SERIE: Record<
+  string,
+  { langue: Langue; colorisation: Colorisation | "mixte" }
+> = {
   DB: { langue: "fr", colorisation: "nb" },
   DBS: { langue: "fr", colorisation: "nb" },
   DBZ: { langue: "fr", colorisation: "nb" },
@@ -88,8 +91,8 @@ export const EDITION_PAR_SERIE: Record<string, { langue: Langue; colorisation: C
   DBSJP: { langue: "ja", colorisation: "nb" },
   DBFCJP: { langue: "ja", colorisation: "couleur" },
   DBKZ: { langue: "ja", colorisation: "couleur" },
-  SOSH: { langue: "ja", colorisation: "couleur" },
-  DB_SOSH: { langue: "ja", colorisation: "couleur" },
+  SOSH: { langue: "ja", colorisation: "mixte" },
+  DB_SOSH: { langue: "ja", colorisation: "mixte" },
   DBZ_ANIME_COMICS: { langue: "ja", colorisation: "couleur" },
   DBGT_ANIME_COMICS: { langue: "ja", colorisation: "couleur" },
   DBS_ANIME_COMICS: { langue: "ja", colorisation: "couleur" },
@@ -110,6 +113,11 @@ export const EDITION_PAR_SERIE: Record<string, { langue: Langue; colorisation: C
 export interface ChapitreEdition {
   readonly series: string;
   readonly title?: string | null;
+}
+
+/** The original monochrome reading family can retain its printed colour pages. */
+export function hasMixedColorization(chapter: ChapitreEdition): boolean {
+  return EDITION_PAR_SERIE[chapter.series]?.colorisation === "mixte";
 }
 
 /** Vrai si le chapitre relève d'une édition en couleur. La série seule tranche. */

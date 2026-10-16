@@ -503,7 +503,7 @@ export default withBun(nextConfig, {
   // next-intl : son plugin ne fait, pour cette configuration, que poser cet alias ; il chargeait
   // en plus `@swc/core` (addon natif de 30 Mio) et `@parcel/watcher` dans chaque processus qui lit
   // la config. À revérifier à chaque montée de next-intl.
-  alias: { "next-intl/config": "./src/i18n/request.ts" },
+  alias: { "next-intl/config": "./src/i18n/request.ts", "@aphrody/m3-reader/source": "/home/ubuntu/shenron-dev/var/private/material-reader/src/index.ts" },
   // Une seule copie pour l'éditeur (Tiptap) et ses extensions.
   dedupe: ["prosemirror-transform"],
 });

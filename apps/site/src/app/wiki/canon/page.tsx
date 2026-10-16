@@ -1,5 +1,4 @@
-import { DomainBar, PageShell } from "@/components/kit";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
+import { PageShell } from "@/components/kit";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -11,7 +10,12 @@ import { chercherPlanches, type ResultatPlanche } from "@/lib/manga-api";
 import { chercherScenes, type SceneTrouvee } from "@/lib/frames-map";
 import { unstable_cache } from "next/cache";
 import { ogMeta } from "@/lib/og";
-import { DragonRadarSearch } from "@/components/wiki/DragonRadarSearch";
+import {
+  CanonExplorer,
+  CanonSourcesTrigger,
+  CanonResultArrival,
+} from "@/components/wiki/CanonExplorer";
+import { CANON_EXAMPLES } from "@/lib/canon-examples";
 
 /**
  * La page est dynamique (la question vit dans l'URL) : sans cache, chaque vue
@@ -29,6 +33,8 @@ const scenesEnCache = unstable_cache((q: string) => chercherScenes(q, 6), ["cano
 import { getCanonConfig } from "@/lib/canon-config";
 import type { CanonConfig, CanonReference } from "@/lib/canon-engine";
 import { T } from "@/components/T";
+import { PublicCorpusStats } from "@/components/wiki/PublicCorpusStats";
+import { getPublicCorpusStats } from "@/lib/public-corpus-stats";
 
 // Rendu à la demande, toujours : la page lit `?q=` (API dynamique) ET la
 // doctrine en base, qui s'édite dans /admin/ai?tab=canon. Un prérendu figerait la
@@ -47,23 +53,23 @@ export async function generateMetadata({
   const q = (await searchParams).q?.trim() ?? "";
   if (!q) {
     return {
-      title: "Dragon Radar — Recherche Globale & Canonicité Dragon Ball",
+      title: "Canon Dragon Ball — Œuvres et sources",
       description:
-        "Le Dragon Radar centralise la recherche de tout le site : épisodes, chapitres, informations canoniques et fiches de lore de l'univers Dragon Ball.",
+        "Explorez les continuités de Dragon Ball : une question, une œuvre, puis les documents et références pour vérifier la réponse.",
       ...ogMeta({
-        title: "Dragon Radar — Recherche Globale & Canonicité DBFR",
+        title: "Canon Dragon Ball — Œuvres et sources",
         description:
-          "Interface interactive Dragon Radar : recherchez épisodes, tomes, chapitres et interrogez l'arbitre officiel de canonicité.",
+          "Explorez les œuvres Dragon Ball et retrouvez les sources derrière chaque réponse.",
         canonical: "/wiki/canon",
       }),
     };
   }
   return {
-    title: `${q} — Dragon Radar & Arbitre Canon`,
-    description: `Verdict officiel pour « ${q} » : rang de canonicité, preuves manga et citations d'Akira Toriyama.`,
+    title: `${q} — Canon Dragon Ball`,
+    description: `Réponse pour « ${q} » : continuité, documents du corpus et références disponibles.`,
     ...ogMeta({
-      title: `${q} — Dragon Radar & Arbitre Canon`,
-      description: `Verdict officiel pour « ${q} » : rang de canonicité, preuves manga et citations d'Akira Toriyama.`,
+      title: `${q} — Canon Dragon Ball`,
+      description: `Réponse pour « ${q} » : continuité, documents du corpus et références disponibles.`,
       canonical: `/wiki/canon?q=${encodeURIComponent(q)}`,
     }),
   };
@@ -75,110 +81,14 @@ export default async function CanonPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const q = (await searchParams).q?.trim() ?? "";
-  const config = await getCanonConfig();
+  const [config, corpusCounts] = await Promise.all([getCanonConfig(), getPublicCorpusStats()]);
 
   return (
-    <PageShell width="narrow" rhythm="loose" wikiDecorative>
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <DomainBar domain="canon" />
-        <WikiDrawer />
-      </div>
-      <header className="mb-8 space-y-3">
-        <p className="font-display text-xs font-bold uppercase tracking-[0.2em] text-emerald-400">
-          Dragon Radar · Recherche Globale &amp; Canonicité
-        </p>
-        <h1 className="font-saiyan text-4xl sm:text-5xl text-white tracking-wide">
-          Le Dragon Radar
-        </h1>
-        <p className="text-sm sm:text-base leading-relaxed text-white/80 max-w-2xl">
-          Interface de détection et d&apos;arbitrage officielle : recherchez simultanément les
-          épisodes d&apos;animés, chapitres du manga, informations canoniques et fiches
-          encyclopédiques de l&apos;univers Dragon Ball.
-        </p>
-      </header>
-
-      {/* Télémétrie en direct du corpus DBFR */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3.5 text-center sm:text-left transition-colors hover:border-emerald-500/40">
-          <p className="font-scouter text-[10px] uppercase tracking-wider text-emerald-400">
-            Extraits RAG
-          </p>
-          <p className="font-display text-xl sm:text-2xl font-bold text-white tabular-nums">
-            241 558
-          </p>
-          <p className="text-[11px] text-white/50">Vectorisés &amp; sourcés</p>
-        </div>
-        <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3.5 text-center sm:text-left transition-colors hover:border-dbz-orange/40">
-          <p className="font-scouter text-[10px] uppercase tracking-wider text-dbz-orange">
-            Citations Canon
-          </p>
-          <p className="font-display text-xl sm:text-2xl font-bold text-white tabular-nums">
-            6 905
-          </p>
-          <p className="text-[11px] text-white/50">Toriyama &amp; guides</p>
-        </div>
-        <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3.5 text-center sm:text-left transition-colors hover:border-dbz-gold/40">
-          <p className="font-scouter text-[10px] uppercase tracking-wider text-dbz-gold">
-            Planches Databooks
-          </p>
-          <p className="font-display text-xl sm:text-2xl font-bold text-white tabular-nums">
-            33 738
-          </p>
-          <p className="text-[11px] text-white/50">Daizenshuu &amp; SEG</p>
-        </div>
-        <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3.5 text-center sm:text-left transition-colors hover:border-blue-400/40">
-          <p className="font-scouter text-[10px] uppercase tracking-wider text-blue-400">
-            Pages Manga
-          </p>
-          <p className="font-display text-xl sm:text-2xl font-bold text-white tabular-nums">
-            11 213
-          </p>
-          <p className="text-[11px] text-white/50">922 chapitres · 254 tomes</p>
-        </div>
-      </div>
-
-      <DragonRadarSearch initialQuery={q} />
-      {config.intro && (
-        <p id="canon-intro" className="mt-4 text-sm leading-relaxed text-white/75">
-          {config.intro}
-        </p>
-      )}
-      <p className="mt-3 text-xs sm:text-sm text-white/70">
-        <Link
-          href="/wiki/toriyama"
-          className="text-dbz-orange font-medium underline-offset-4 hover:underline"
-        >
-          <T k="wiki.canon.readToriyama" />
-        </Link>{" "}
-        <T k="wiki.canon.readToriyamaAfter" />
-      </p>
-      <div className="mt-5 flex flex-wrap items-center gap-2">
-        <span className="text-xs font-bold uppercase tracking-[0.1em] text-white/70">
-          <T k="wiki.canon.examples" />
-        </span>
-        {[
-          "Broly",
-          "Gogeta",
-          "Vegetto",
-          "Super Saiyan 4",
-          "Dragon Ball GT",
-          "Bardock",
-          "Dragon Ball Daima",
-          "Gine",
-          "Uub",
-          "C-16",
-          "Kid Buu vs Buuhan",
-          "Goku SSJ3 vs Gohan Ultime",
-        ].map((ex) => (
-          <Link
-            key={ex}
-            href={`/wiki/canon?q=${encodeURIComponent(ex)}`}
-            className="rounded-full border border-white/20 bg-white/[0.05] px-3.5 py-1 text-xs text-white/90 transition-colors hover:border-dbz-gold hover:text-white"
-          >
-            {ex}
-          </Link>
-        ))}
-      </div>
+    <PageShell width="default" rhythm="tight" wikiDecorative>
+      <Link href="/wiki" className="text-xs text-white/60 hover:text-white">
+        ← <T k="nav.wiki" />
+      </Link>
+      <CanonExplorer key={q} initialQuery={q} />
       {q ? (
         <>
           {/* Région live STABLE : elle est rendue par la coquille de la page,
@@ -196,8 +106,48 @@ export default async function CanonPage({
           </Suspense>
         </>
       ) : (
-        <Doctrine config={config} />
+        <div className="mt-8 rounded-2xl border border-white/15 bg-white/[0.025] p-6 sm:p-8">
+          <h2 className="text-xl font-semibold">
+            <T k="canonExplorer.emptyTitle" />
+          </h2>
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/65">
+            <T k="canonExplorer.emptyText" />
+          </p>
+        </div>
       )}
+      <details className="mt-8 rounded-xl border border-white/15 p-5">
+        <summary className="cursor-pointer text-sm font-semibold">
+          <T k="canonExplorer.continuities" />
+        </summary>
+        <Doctrine config={config} />
+      </details>
+      <details className="mt-3 rounded-xl border border-white/15 p-5">
+        <summary className="cursor-pointer text-sm font-semibold">
+          <T k="canonExplorer.method" />
+        </summary>
+        <p className="mt-5 text-sm leading-relaxed text-white/70">{config.intro}</p>
+        <PublicCorpusStats counts={corpusCounts} compact />
+        <div className="mt-6 space-y-3">
+          {config.entries.map((entry) => (
+            <details key={entry.id} className="border-t border-white/10 pt-3">
+              <summary className="cursor-pointer text-sm">{entry.title}</summary>
+              <p className="mt-3 text-sm">{entry.verdict}</p>
+              <p className="mt-2 text-sm text-white/65">{entry.explanation}</p>
+              <ul className="mt-2 text-xs text-white/60">
+                {entry.sources.map((source) => (
+                  <li key={source}>{source}</li>
+                ))}
+              </ul>
+            </details>
+          ))}
+        </div>
+        <Link
+          href="/wiki/toriyama"
+          className="mt-6 inline-block text-sm underline underline-offset-4"
+        >
+          <T k="wiki.canon.readToriyama" />
+        </Link>
+      </details>
     </PageShell>
   );
 }
@@ -423,223 +373,265 @@ async function Resultat({ question }: { question: string }) {
   // A troll or an open question has no score: printing « 0 / 100 » would rank
   // something the doctrine explicitly refused to rank.
   const note = verdict.nature === "verdict";
+  const illustration = CANON_EXAMPLES.find(
+    (item) => item.query.toLowerCase() === question.toLowerCase(),
+  );
 
   return (
-    <div className="mt-12 space-y-12">
+    <div className="mt-8 space-y-5">
+      <CanonResultArrival />
       {/* ---- Le verdict, en une phrase ---------------------------------- */}
       <section
+        id="canon-result"
         aria-labelledby="canon-verdict-rang"
-        className="rounded-xl border border-white/15 bg-white/[0.03] p-6 sm:p-8"
+        className="scroll-mt-20 rounded-xl border border-white/15 bg-white/[0.03] p-6 sm:scroll-mt-32 sm:p-8"
         style={{ borderLeft: `4px solid ${couleur}` }}
       >
-        <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <h2
-            id="canon-verdict-rang"
-            className="font-display text-sm font-bold uppercase tracking-[0.14em]"
-            style={{ color: couleur }}
-          >
-            {verdict.tierLabel}
-          </h2>
-          {note && (
-            <p className="font-scouter text-sm tabular-nums text-white/75 font-semibold">
-              {verdict.score} / 100
-            </p>
-          )}
-        </div>
-        <p className="mt-3 text-2xl sm:text-3xl leading-snug text-white font-semibold">
-          {verdict.verdict}
-        </p>
-        <p className="mt-4 text-base leading-relaxed text-white/85">{verdict.explanation}</p>
-
-        {/* Ruled topics next to the question */}
-        {suggestions.length > 0 && (
-          <div className="mt-5 flex flex-wrap items-center gap-2">
-            <span className="text-xs uppercase tracking-[0.12em] text-white/70 font-semibold">
-              <T
-                k={verdict.nature === "verdict" ? "wiki.canon.seeAlso" : "wiki.canon.nearbyTopics"}
-              />
-            </span>
-            {suggestions.map((s) => (
-              <Link
-                key={s.href}
-                href={s.href}
-                className="rounded-full border border-white/20 bg-white/[0.05] px-3.5 py-1 text-xs text-white/85 transition-colors hover:border-dbz-gold hover:text-white"
-              >
-                {s.titre}
-              </Link>
-            ))}
-          </div>
-        )}
-
-        {verdict.toriyamaQuote && (
-          <div className="mt-6">
-            <Citation
-              texte={verdict.toriyamaQuote.text}
-              source={verdict.toriyamaQuote.source}
-              annee={verdict.toriyamaQuote.year}
-              auteur="Akira Toriyama"
-              provenance="aphrody"
+        {illustration && (
+          <div className="relative mb-6 h-56 overflow-hidden rounded-xl bg-black/20 sm:float-left sm:mb-0 sm:mr-8 sm:h-72 sm:w-[38%]">
+            <Image
+              src={illustration.image}
+              alt=""
+              fill
+              loading="eager"
+              sizes="(max-width:640px) 100vw, 400px"
+              className="object-contain"
             />
           </div>
         )}
-
-        {verdict.sources.length > 0 && (
-          <ul className="mt-6 flex flex-wrap gap-2 border-t border-white/10 pt-4">
-            {verdict.sources.map((s) => (
-              <li
-                key={s}
-                className="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1 text-xs text-white/80"
-              >
-                {s}
-              </li>
-            ))}
-          </ul>
+        <h2
+          id="canon-verdict-rang"
+          tabIndex={-1}
+          className="text-2xl font-semibold tracking-tight text-white focus:outline-none!"
+        >
+          {illustration ? <T k={`canonExplorer.${illustration.label}`} /> : question}
+        </h2>
+        {illustration && (
+          <p className="mt-1 text-xs text-white/60">
+            <T k={`canonExplorer.work${illustration.work}`} />
+          </p>
         )}
+        <p className="mt-3 text-xl sm:text-2xl leading-snug text-white font-semibold">
+          {verdict.verdict}
+        </p>
+        <CanonSourcesTrigger />
+        {question.toLowerCase().includes("daima") && (
+          <Link
+            href="/wiki/canon?q=Super%20Saiyan%204%20GT"
+            className="ml-3 mt-3 inline-block text-sm underline underline-offset-4"
+          >
+            <T k="canonExplorer.compareGt" />
+          </Link>
+        )}
+        <div className="clear-both" />
+        <details className="mt-5 border-t border-white/10 pt-4">
+          <summary className="cursor-pointer text-xs text-white/65">
+            <T k="canonExplorer.details" />
+          </summary>
+          <p className="mt-4 text-xs font-medium" style={{ color: couleur }}>
+            {verdict.tierLabel}
+            {note ? ` · ${verdict.score} / 100` : ""}
+          </p>
+          <p className="mt-3 text-sm leading-relaxed text-white/75">{verdict.explanation}</p>
 
-        {/* Sur quoi le verdict se base */}
-        {(verdict.tierDefinition || (verdict.doctrineRules?.length ?? 0) > 0) && (
-          <details className="group mt-6 border-t border-white/10 pt-4">
-            <summary className="cursor-pointer list-none text-xs uppercase tracking-[0.12em] text-white/70 transition-colors hover:text-white font-semibold">
-              <T k="wiki.canon.basis" />
-              <span
-                aria-hidden="true"
-                className="ml-2 inline-block transition-transform group-open:rotate-90"
-              >
-                ›
+          {/* Ruled topics next to the question */}
+          {suggestions.length > 0 && (
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              <span className="text-xs uppercase tracking-[0.12em] text-white/70 font-semibold">
+                <T
+                  k={
+                    verdict.nature === "verdict" ? "wiki.canon.seeAlso" : "wiki.canon.nearbyTopics"
+                  }
+                />
               </span>
-            </summary>
-            {verdict.tierDefinition && (
-              <p className="mt-4 text-sm sm:text-base leading-relaxed text-white/85">
-                <span className="font-semibold" style={{ color: couleur }}>
-                  {verdict.tierLabel}
-                </span>{" "}
-                — {verdict.tierDefinition}
-              </p>
-            )}
-            {verdict.doctrineRules && verdict.doctrineRules.length > 0 && (
-              <ul className="mt-4 space-y-2">
-                {verdict.doctrineRules.map((r) => (
-                  <li
-                    key={r}
-                    className="flex gap-2.5 text-xs sm:text-sm leading-relaxed text-white/80"
-                  >
-                    <span aria-hidden className="text-dbz-orange font-bold">
-                      •
-                    </span>
-                    <span>{r}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </details>
-        )}
+              {suggestions.map((s) => (
+                <Link
+                  key={s.href}
+                  href={s.href}
+                  className="rounded-full border border-white/20 bg-white/[0.05] px-3.5 py-1 text-xs text-white/85 transition-colors hover:border-dbz-gold hover:text-white"
+                >
+                  {s.titre}
+                </Link>
+              ))}
+            </div>
+          )}
+
+          {verdict.toriyamaQuote && (
+            <div className="mt-6">
+              <Citation
+                texte={verdict.toriyamaQuote.text}
+                source={verdict.toriyamaQuote.source}
+                annee={verdict.toriyamaQuote.year}
+                auteur="Akira Toriyama"
+                provenance="aphrody"
+              />
+            </div>
+          )}
+
+          {verdict.sources.length > 0 && (
+            <ul className="mt-6 flex flex-wrap gap-2 border-t border-white/10 pt-4">
+              {verdict.sources.map((s) => (
+                <li
+                  key={s}
+                  className="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1 text-xs text-white/80"
+                >
+                  {s}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {/* Sur quoi le verdict se base */}
+          {(verdict.tierDefinition || (verdict.doctrineRules?.length ?? 0) > 0) && (
+            <details className="group mt-6 border-t border-white/10 pt-4">
+              <summary className="cursor-pointer list-none text-xs uppercase tracking-[0.12em] text-white/70 transition-colors hover:text-white font-semibold">
+                <T k="wiki.canon.basis" />
+                <span
+                  aria-hidden="true"
+                  className="ml-2 inline-block transition-transform group-open:rotate-90"
+                >
+                  ›
+                </span>
+              </summary>
+              {verdict.tierDefinition && (
+                <p className="mt-4 text-sm sm:text-base leading-relaxed text-white/85">
+                  <span className="font-semibold" style={{ color: couleur }}>
+                    {verdict.tierLabel}
+                  </span>{" "}
+                  — {verdict.tierDefinition}
+                </p>
+              )}
+              {verdict.doctrineRules && verdict.doctrineRules.length > 0 && (
+                <ul className="mt-4 space-y-2">
+                  {verdict.doctrineRules.map((r) => (
+                    <li
+                      key={r}
+                      className="flex gap-2.5 text-xs sm:text-sm leading-relaxed text-white/80"
+                    >
+                      <span aria-hidden className="text-dbz-orange font-bold">
+                        •
+                      </span>
+                      <span>{r}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </details>
+          )}
+        </details>
       </section>
 
-      {/* ---- Ce que l'auteur en a dit ------------------------------------ */}
-      {verdict.references && verdict.references.length > 0 && (
-        <section>
-          <h2 className="font-display text-[12px] font-bold uppercase tracking-[0.16em] text-dbz-orange">
-            <T k="wiki.canon.authorSays" />
-          </h2>
-          <div className="mt-5 space-y-6">
-            {verdict.references.map((r) => (
-              <Citation
-                key={r.id}
-                texte={r.text}
-                texteFr={r.textFr}
-                source={r.source}
-                href={r.href}
-                annee={r.year}
-                lang={r.lang}
-                sujet={r.subject}
-                provenance={r.provenance}
-              />
-            ))}
-          </div>
-        </section>
-      )}
+      <details id="canon-evidence" className="rounded-xl border border-white/15 p-5 open:space-y-8">
+        <summary className="cursor-pointer text-sm font-semibold">
+          <T k="canonExplorer.evidence" /> (
+          {(verdict.references?.length ?? 0) + planches.length + fiches.length})
+        </summary>
+        {/* ---- Ce que l'auteur en a dit ------------------------------------ */}
+        {verdict.references && verdict.references.length > 0 && (
+          <section>
+            <h2 className="font-display text-[12px] font-bold uppercase tracking-[0.16em] text-dbz-orange">
+              <T k="wiki.canon.authorSays" />
+            </h2>
+            <div className="mt-5 space-y-6">
+              {verdict.references.map((r) => (
+                <Citation
+                  key={r.id}
+                  texte={r.text}
+                  texteFr={r.textFr}
+                  source={r.source}
+                  href={r.href}
+                  annee={r.year}
+                  lang={r.lang}
+                  sujet={r.subject}
+                  provenance={r.provenance}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
-      {/* ---- Les planches, avec image et transcription ------------------- */}
-      {planches.length > 0 && (
-        <section>
-          <h2 className="font-display text-[12px] font-bold uppercase tracking-[0.16em] text-dbz-orange">
-            <T k="wiki.canon.inDatabooks" />
-          </h2>
-          <div className="mt-5 space-y-4">
-            {planches.map((p) => (
-              <Planche key={p.href} planche={p} />
-            ))}
-          </div>
-        </section>
-      )}
+        {/* ---- Les planches, avec image et transcription ------------------- */}
+        {planches.length > 0 && (
+          <section>
+            <h2 className="font-display text-[12px] font-bold uppercase tracking-[0.16em] text-dbz-orange">
+              <T k="wiki.canon.inDatabooks" />
+            </h2>
+            <div className="mt-5 space-y-4">
+              {planches.map((p) => (
+                <Planche key={p.href} planche={p} />
+              ))}
+            </div>
+          </section>
+        )}
 
-      {/* ---- Le manga et les épisodes : la recherche inverse -------------- */}
-      {/* Leur propre frontière : 700 ms de trigrammes sur 12 593 planches ne
+        {/* ---- Le manga et les épisodes : la recherche inverse -------------- */}
+        {/* Leur propre frontière : 700 ms de trigrammes sur 12 593 planches ne
 			    doivent pas retenir le verdict, déjà rendu au-dessus. */}
-      <Suspense fallback={<div className="h-40 animate-pulse rounded-xl bg-white/[0.03]" />}>
-        <MangaEtScenes question={question} />
-      </Suspense>
+        <Suspense fallback={<div className="h-40 animate-pulse rounded-xl bg-white/[0.03]" />}>
+          <MangaEtScenes question={question} />
+        </Suspense>
 
-      {/* ---- Les fiches du wiki ----------------------------------------- */}
-      {fiches.length > 0 && (
-        <section>
-          <h2 className="font-display text-[12px] font-bold uppercase tracking-[0.16em] text-dbz-orange">
-            <T k="wiki.canon.inWiki" />
-          </h2>
-          {/* A card with the entity's own picture when the page has one: a
+        {/* ---- Les fiches du wiki ----------------------------------------- */}
+        {fiches.length > 0 && (
+          <section>
+            <h2 className="font-display text-[12px] font-bold uppercase tracking-[0.16em] text-dbz-orange">
+              <T k="wiki.canon.inWiki" />
+            </h2>
+            {/* A card with the entity's own picture when the page has one: a
 					    preview of where the link goes, not decoration. Text-only rows
 					    keep the same card so the grid stays even. */}
-          <ul className="mt-5 grid gap-3 sm:grid-cols-2">
-            {fiches.map((f) => {
-              const src = f.image ? assetUrl(f.image) : "";
-              return (
-                <li key={f.href}>
-                  <Link
-                    href={f.href}
-                    className="group flex h-full gap-4 overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] transition-colors hover:border-dbz-gold/60"
-                  >
-                    {src && (
-                      <Image
-                        src={src}
-                        alt=""
-                        width={160}
-                        height={160}
-                        sizes="96px"
-                        className="h-auto w-24 shrink-0 self-stretch object-cover"
-                      />
-                    )}
-                    <span className={`min-w-0 py-3 pr-4${src ? "" : " pl-4"}`}>
-                      <span className="font-scouter block text-[10px] uppercase tracking-[0.1em] text-white/50">
-                        {f.kind}
+            <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+              {fiches.map((f) => {
+                const src = f.image ? assetUrl(f.image) : "";
+                return (
+                  <li key={f.href}>
+                    <Link
+                      href={f.href}
+                      className="group flex h-full gap-4 overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] transition-colors hover:border-dbz-gold/60"
+                    >
+                      {src && (
+                        <Image
+                          src={src}
+                          alt=""
+                          width={160}
+                          height={160}
+                          sizes="96px"
+                          className="h-auto w-24 shrink-0 self-stretch object-cover"
+                        />
+                      )}
+                      <span className={`min-w-0 py-3 pr-4${src ? "" : " pl-4"}`}>
+                        <span className="font-scouter block text-[10px] uppercase tracking-[0.1em] text-white/50">
+                          {f.kind}
+                        </span>
+                        <span className="mt-0.5 block text-[15px] font-semibold text-white transition-colors group-hover:text-dbz-orange">
+                          {f.titre}
+                          {f.nameJa && (
+                            <span
+                              lang="ja"
+                              className="ml-2 font-jp text-[12px] font-normal text-white/50"
+                            >
+                              {f.nameJa}
+                            </span>
+                          )}
+                        </span>
+                        <span className="mt-1 block line-clamp-3 text-[13px] leading-relaxed text-white/60">
+                          {f.extrait}
+                        </span>
                       </span>
-                      <span className="mt-0.5 block text-[15px] font-semibold text-white transition-colors group-hover:text-dbz-orange">
-                        {f.titre}
-                        {f.nameJa && (
-                          <span
-                            lang="ja"
-                            className="ml-2 font-jp text-[12px] font-normal text-white/50"
-                          >
-                            {f.nameJa}
-                          </span>
-                        )}
-                      </span>
-                      <span className="mt-1 block line-clamp-3 text-[13px] leading-relaxed text-white/60">
-                        {f.extrait}
-                      </span>
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      )}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
 
-      {planches.length === 0 && fiches.length === 0 && verdict.nature !== "troll" && (
-        <p className="text-[14px] text-white/60">
-          <T k="wiki.canon.noEvidence" />
-        </p>
-      )}
+        {planches.length === 0 && fiches.length === 0 && verdict.nature !== "troll" && (
+          <p className="text-[14px] text-white/60">
+            <T k="wiki.canon.noEvidence" />
+          </p>
+        )}
+      </details>
     </div>
   );
 }

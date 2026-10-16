@@ -1,6 +1,6 @@
 "use client";
 // SPDX-License-Identifier: Apache-2.0
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -33,7 +33,17 @@ const GROUPS = {
   states: ["red", "green", "blueLight", "onPrimary", "onSurfaceVariant", "onError"],
 } as const satisfies Record<string, readonly ThemeColorKey[]>;
 const sameTheme = (a: SiteTheme | null, b: SiteTheme | null) =>
-  JSON.stringify(a) === JSON.stringify(b);
+  a === b ||
+  Boolean(
+    a &&
+    b &&
+    (["version", "radius", "fontFamily", "fontScale", "contentWidth", "density"] as const).every(
+      (key) => a[key] === b[key],
+    ) &&
+    (Object.keys(THEME_COLOR_VARS) as ThemeColorKey[]).every(
+      (key) => a.colors[key] === b.colors[key],
+    ),
+  );
 
 export async function loadTheme(): Promise<{ theme: SiteTheme }> {
   const response = await fetch("/api/theme-config", {
@@ -183,21 +193,37 @@ function Preview({ theme }: { theme: SiteTheme }) {
 
 export default function DesignEditor() {
   const t = useTranslations("adminDesign");
-  const router = useRouter();
-  const queryClient = useQueryClient();
   const query = useQuery({
     queryKey: ["theme-config"],
     queryFn: loadTheme,
     refetchOnWindowFocus: false,
   });
-  const [theme, setTheme] = useState<SiteTheme | null>(null);
-  const [savedTheme, setSavedTheme] = useState<SiteTheme | null>(null);
+  if (query.isError && !query.data)
+    return (
+      <div role="alert" className={styles.invalidNotice}>
+        <p>{t("loadFailed")}</p>
+        <button type="button" className="btn" onClick={() => query.refetch()}>
+          {t("retry")}
+        </button>
+      </div>
+    );
+  if (!query.data)
+    return (
+      <output className="flex items-center gap-3">
+        <DragonBallLoader size={28} />
+        {t("loading")}
+      </output>
+    );
+  return <DesignEditorForm initialTheme={query.data.theme} />;
+}
+
+function DesignEditorForm({ initialTheme }: { initialTheme: SiteTheme }) {
+  const t = useTranslations("adminDesign");
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [theme, setTheme] = useState<SiteTheme>(() => structuredClone(initialTheme));
+  const [savedTheme, setSavedTheme] = useState<SiteTheme>(() => structuredClone(initialTheme));
   const [toast, setToast] = useState<{ type: "success" | "error"; msg: string } | null>(null);
-  useEffect(() => {
-    if (!query.data?.theme) return;
-    setTheme((current) => current ?? structuredClone(query.data.theme));
-    setSavedTheme((current) => current ?? structuredClone(query.data.theme));
-  }, [query.data]);
   const save = useMutation({
     mutationFn: saveTheme,
     onSuccess: (result) => {
@@ -215,33 +241,17 @@ export default function DesignEditor() {
   );
   const valid =
     theme !== null && Object.values(theme.colors).every((value) => HEX.test(value.trim()));
-  if (query.isError && !theme)
-    return (
-      <div role="alert" className={styles.invalidNotice}>
-        <p>{t("loadFailed")}</p>
-        <button type="button" className="btn" onClick={() => query.refetch()}>
-          {t("retry")}
-        </button>
-      </div>
-    );
-  if (query.isLoading || !theme)
-    return (
-      <div role="status" className="flex items-center gap-3">
-        <DragonBallLoader size={28} />
-        {t("loading")}
-      </div>
-    );
   const update = <K extends keyof SiteTheme>(key: K, value: SiteTheme[K]) =>
     setTheme((current) => (current ? { ...current, [key]: value } : current));
   return (
     <main className={styles.editor}>
       {toast && (
-        <div
-          role={toast.type === "error" ? "alert" : "status"}
+        <output
+          role={toast.type === "error" ? "alert" : undefined}
           className={toast.type === "error" ? styles.invalidNotice : styles.saveNotice}
         >
           {toast.msg}
-        </div>
+        </output>
       )}
       <header className={styles.masthead}>
         <div className={styles.mastheadCopy}>

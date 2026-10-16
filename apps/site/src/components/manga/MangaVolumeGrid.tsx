@@ -8,12 +8,13 @@ import {
   writeAvailability,
   type AvailabilityFilter,
 } from "@/lib/availability-query";
-import { estChapitreCouleur, libelleSerie } from "@/lib/manga-editions";
+import { estChapitreCouleur, hasMixedColorization, libelleSerie } from "@/lib/manga-editions";
 import { useT } from "@/components/T";
 import { useMangaUIText } from "@/lib/manga-ui-text";
 import { VignetteTome } from "@/components/manga/VignetteTome";
 import { Etoile } from "@aphrody/shenron-ui/toriyama/MotifsCouverture";
 import {
+  canonicalMangaCollection,
   mangaLibraryPage,
   matchesLibrarySearch,
   uniqueLibraryVolumes,
@@ -46,11 +47,11 @@ function readProgressSnapshot() {
   }
 }
 const librarySearchSnapshot = () => window.location.search;
-const serverSearchSnapshot = () => "";
 const serverProgressSnapshot = () => "[]";
 
 export type Volume = LibraryVolume;
 interface MangaVolumeGridProps {
+  initialSearch?: string;
   dbVolumes: Volume[];
   dbsVolumes: Volume[];
   kanzenbanVolumes?: Volume[];
@@ -114,7 +115,11 @@ function MangaChapterCard({ chapter }: { chapter: LibraryChapter }) {
       </div>
       <p className="mt-2 text-xs text-[var(--muted-foreground)]">
         {t("chapter", { number: chapter.chapter_number })}
-        {estChapitreCouleur(chapter) ? ` · ${t("color")}` : ""}
+        {hasMixedColorization(chapter)
+          ? ` · ${t("mixedColorization")}`
+          : estChapitreCouleur(chapter)
+            ? ` · ${t("color")}`
+            : ""}
       </p>
       <p className="line-clamp-2 text-sm font-semibold text-foreground">{title}</p>
     </Link>
@@ -123,6 +128,7 @@ function MangaChapterCard({ chapter }: { chapter: LibraryChapter }) {
 
 /** One catalogue projection serves every collection, reading filter and bounded page. */
 export function MangaVolumeGrid({
+  initialSearch = "",
   dbVolumes,
   dbsVolumes,
   kanzenbanVolumes = EMPTY_VOLUMES,
@@ -144,10 +150,10 @@ export function MangaVolumeGrid({
   const search = useSyncExternalStore(
     subscribeLibraryHistory,
     librarySearchSnapshot,
-    serverSearchSnapshot,
+    () => initialSearch,
   );
   const params = new URLSearchParams(search);
-  const collection = params.get("collection") ?? "all";
+  const collection = canonicalMangaCollection(params.get("collection") ?? "all");
   const view = params.get("view") === "chapters" ? "chapters" : "volumes";
   const query = params.get("q") ?? "";
   const availability = readAvailability(search);
@@ -201,8 +207,8 @@ export function MangaVolumeGrid({
   );
   const collections = [
     ...new Set([
-      ...volumes.map((volume) => volume.series),
-      ...readableChapters.map((chapter) => chapter.series),
+      ...volumes.map((volume) => canonicalMangaCollection(volume.series)),
+      ...readableChapters.map((chapter) => canonicalMangaCollection(chapter.series)),
     ]),
   ];
   const colorIds = new Set(colorVolumeIds);
@@ -230,14 +236,19 @@ export function MangaVolumeGrid({
       .map((series) => ({
         id: series,
         label: collectionLabel(series),
-        count: volumes.filter((volume) => volume.series === series).length,
+        count: volumes.filter((volume) => canonicalMangaCollection(volume.series) === series)
+          .length,
       })),
     { id: COLOR_COLLECTION, label: ui("colorCollection"), count: colorVolumes.length },
   ];
   const filteredVolumes = volumes.filter((volume) => {
     if (selected === COLOR_COLLECTION && !colorVolumes.some((entry) => entry.id === volume.id))
       return false;
-    if (selected !== "all" && selected !== COLOR_COLLECTION && volume.series !== selected)
+    if (
+      selected !== "all" &&
+      selected !== COLOR_COLLECTION &&
+      canonicalMangaCollection(volume.series) !== selected
+    )
       return false;
     if (availability === "available" && !isReadable(volume)) return false;
     if (availability === "incomplete" && isReadable(volume)) return false;
@@ -246,7 +257,11 @@ export function MangaVolumeGrid({
   const filteredChapters = readableChapters.filter((chapter) => {
     if (availability === "incomplete") return false;
     if (selected === COLOR_COLLECTION && chapter.series !== "DBFC") return false;
-    if (selected !== "all" && selected !== COLOR_COLLECTION && chapter.series !== selected)
+    if (
+      selected !== "all" &&
+      selected !== COLOR_COLLECTION &&
+      canonicalMangaCollection(chapter.series) !== selected
+    )
       return false;
     return matchesLibrarySearch(chapter.title, chapter.chapter_number, query);
   });
