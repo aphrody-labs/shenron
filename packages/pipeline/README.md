@@ -79,3 +79,14 @@ atomiquement dans `var/reports/pipeline/last-run.json`.
 - Chaque étape déclare des globs `inputs` : empreinte SHA-256 (`Bun.Glob` + `Bun.CryptoHasher`) ; inchangée depuis le dernier succès, l'étape est `cached` (`--force` l'ignore). L'historique des runs vit dans `var/reports/pipeline/history.sqlite` (`bun:sqlite`, affiché par `status`). Identifiants `Bun.randomUUIDv7`, durées `Bun.nanoseconds`, sorties nettoyées par `Bun.stripANSI`.
 - `plan` : ordre d'exécution sans rien lancer ; `status` : dernier état.
 - `run --only rag,wiki` (dépendances incluses), `--resume` (saute les étapes `ok`), `--concurrency N`, `--json`.
+
+## Chaîne automatisée (`auto`)
+
+`bun packages/pipeline/src/cli.ts auto --seed <url> --allow <hôte> [--out dir] [--max-pages n] [--skip-eval]` :
+crawl allowlisté (`Bun.FetchSession` si présent, robots.txt respecté, Fandom refusé, captures complètes privées
+sous `var/reports/auto/crawl`) → passages JSONL (cible `Bun.VectorIndex` si disponible) → brouillons wiki
+concurrents par runner (`src/auto/workers.ts` : Haiku 5.5 via `ANTHROPIC_API_KEY`, Luna via
+`SHENRON_WIKI_LUNA_MODEL` + `SHENRON_OPENAI_API_KEY`, `SHENRON_WIKI_LUNA_HOST=dbfr` pour le mux, effort `low`) →
+arbitrage `bun:yolo` (Jev/TypeSafe, abstention sous 0,6) → `wiki-candidates.jsonl` en review-only, sans écriture en
+base ; puis évaluation (étapes `rag`, `canon`, `decision-probe`). Sondes de capacités : `src/auto/capabilities.ts`
+(`Bun.Crawl`, `Bun.VectorIndex`, `bun:adblock`, `bun vpn` sont absents du runtime local : repli documenté).

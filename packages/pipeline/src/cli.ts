@@ -308,6 +308,52 @@ async function main() {
     }
     return;
   }
+  if (command === "auto") {
+    const { values } = parseArgs({
+      args,
+      strict: true,
+      options: {
+        seed: { type: "string", multiple: true },
+        allow: { type: "string", multiple: true },
+        out: { type: "string" },
+        "max-pages": { type: "string", default: "50" },
+        "skip-eval": { type: "boolean", default: false },
+      },
+    });
+    if (!values.seed?.length || !values.allow?.length)
+      throw new Error("auto requires --seed and --allow (allowlisted hosts)");
+    const root = resolve(import.meta.dir, "../../..");
+    const { runAuto } = await import("./auto");
+    const { runnersFromEnv } = await import("./auto/workers");
+    const { configuredProvider } = await import("./ai/jev-provider");
+    const report = await runAuto({
+      seeds: values.seed,
+      allowHosts: values.allow,
+      out: values.out ?? resolve(root, "var/reports/auto"),
+      maxPages: Number(values["max-pages"]),
+      runners: runnersFromEnv(process.env),
+      provider: await configuredProvider(process.env),
+      log: (line) => console.error(line),
+    });
+    console.log(JSON.stringify(report, null, 2));
+    if (!values["skip-eval"]) {
+      const orchestrator = await import("./orchestrator");
+      const { DEFAULT_STAGES } = await import("./orchestrator-stages");
+      const only = ["rag", "canon", "decision-probe"];
+      const state = await orchestrator.runPipeline(DEFAULT_STAGES, {
+        cwd: root,
+        stateFile: orchestrator.defaultStateFile(root),
+        historyFile: orchestrator.defaultHistoryFile(root),
+        only,
+        log: (line) => console.error(line),
+      });
+      process.exitCode = orchestrator.pipelineExitCode(
+        state,
+        orchestrator.selectStages(DEFAULT_STAGES, only),
+      );
+    }
+    return;
+  }
   if (command === "run" || command === "plan" || command === "status") {
     const { values } = parseArgs({
       args,
