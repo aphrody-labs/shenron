@@ -14,6 +14,7 @@ import { and, asc, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { botSagas, botEpisodes, botMovies, botMangaVolumes } from "@/db/bot-schema";
 import { assetUrl } from "@/lib/assets";
+import { markdownToPlainText } from "@/lib/markdown-plain";
 import {
   BESTOF_CURATION,
   BESTOF_EPISODES_PER_SAGA,
@@ -181,7 +182,8 @@ export async function getSagaBestOf(): Promise<BestOfSagaView[]> {
           : "Film Dragon Ball Super",
         years: seriesCode ? (BESTOF_SERIES_YEARS[seriesCode] ?? null) : null,
         tagline: cur.tagline,
-        description: saga.description,
+        // A text slot: the column is markdown (`*Super Exciting Guide*` reached the reader).
+        description: saga.description ? markdownToPlainText(saga.description) : null,
         image: assetUrl(saga.image),
         era: cur.era,
         accent: bestofAccent(cur.era),
