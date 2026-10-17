@@ -1,0 +1,91 @@
+{
+  "title": "DBXV2 イマーシブ（非公開）",
+  "lede": "所有者専用のエクスプローラー。ゲームのデータベースと、テクスチャ・音・動画・モデルのプレビュー。公開もバージョン管理もされません。",
+  "nav": "エクスプローラーのセクション",
+  "disabled": {
+    "title": "ツールは無効です",
+    "public": "公開レンダリングではこれらのツールを読み込みません。",
+    "production": "これらのツールは本番環境では動作しません。",
+    "unconfigured": "このマシンでは非公開サーバーが設定されていません。",
+    "unavailable": "非公開サーバーまたはデータベースが応答しません。"
+  },
+  "tabs": {
+    "search": "検索",
+    "files": "ファイル",
+    "messages": "メッセージ",
+    "immersion": "イマーシブ"
+  },
+  "stats": "ファイル {files} 件、キャラクター {characters} 件、メッセージ {messages} 件",
+  "search": {
+    "query": "検索（フランス語・英語・日本語）",
+    "lang": "言語",
+    "anyLang": "すべて",
+    "submit": "検索",
+    "mode": "モード：{mode}",
+    "results": "{count, plural, =0 {結果なし} other {# 件の結果}}",
+    "empty": "2 文字以上入力してください。"
+  },
+  "files": {
+    "query": "パスの絞り込み",
+    "format": "形式",
+    "cpk": "アーカイブ (CPK)",
+    "submit": "一覧表示",
+    "results": "{count, plural, =0 {ファイルなし} other {# 件のファイル}}",
+    "preview": "プレビュー",
+    "noPreview": "この形式のプレビューはありません。",
+    "size": "{size} バイト"
+  },
+  "messages": {
+    "key": "メッセージキー (name_id)",
+    "submit": "表示",
+    "none": "このキーのテキストはありません。"
+  },
+  "characters": {
+    "title": "キャラクター",
+    "count": "{count} 人のキャラクター"
+  },
+  "preview": {
+    "title": "{ref} のプレビュー",
+    "index": "テクスチャ番号",
+    "cue": "音声キュー",
+    "close": "プレビューを閉じる",
+    "expires": "署名付きリンクは {seconds} 秒間有効で、トークンを含みません。",
+    "image": "テクスチャ {ref}",
+    "audio": "サウンド {ref}",
+    "video": "動画 {ref}",
+    "model": "モデル {ref}"
+  },
+  "immersion": {
+    "title": "Dragon Pixel のイマーシブ",
+    "lede": "所有者だけがゲームのリソースに結び付けた名前付きスロット。公開ゲームは変わりません。",
+    "none": "スロットがありません。var/dbxv2/immersion.json を作成してください（Git では無視されます）。",
+    "slot": "スロット {name}"
+  },
+  "errors": {
+    "disabled": "ツールは無効です。",
+    "unavailable": "非公開サーバーに接続できません。",
+    "invalid": "無効なリクエストです。",
+    "unsupported": "未対応の形式です。",
+    "failed": "操作に失敗しました。"
+  },
+  "viewer": {
+    "loading": "読み込み中…",
+    "error": "リソースを読み込めませんでした。",
+    "retry": "再試行",
+    "scale": "倍率 ×{scale}",
+    "audioUnsupported": "ここでは音声を再生できません。",
+    "videoUnsupported": "ここでは動画を再生できません。",
+    "modelLoading": "モデルを読み込み中…",
+    "modelError": "モデルを読み込めませんでした。",
+    "modelNoRenderer": "3D レンダラーがないため、モデルの概要を表示しています。",
+    "modelNoWebgpu": "WebGPU が使えないため、モデルの概要を表示しています。",
+    "meshes": "メッシュ",
+    "primitives": "プリミティブ",
+    "nodes": "ノード",
+    "materials": "マテリアル",
+    "textures": "テクスチャ",
+    "animations": "アニメーション",
+    "skins": "スキン",
+    "size": "サイズ"
+  }
+}

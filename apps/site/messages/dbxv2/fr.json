@@ -1,0 +1,91 @@
+{
+  "title": "Immersion DBXV2 (privé)",
+  "lede": "Explorateur réservé au propriétaire : base du jeu, aperçus de textures, sons, vidéos et modèles. Rien n'est public, rien n'est versionné.",
+  "nav": "Sections de l'explorateur",
+  "disabled": {
+    "title": "Outils désactivés",
+    "public": "Le rendu public ne charge jamais ces outils.",
+    "production": "Ces outils ne tournent pas en production.",
+    "unconfigured": "Le serveur privé n'est pas configuré sur ce poste.",
+    "unavailable": "Le serveur ou la base privée ne répond pas."
+  },
+  "tabs": {
+    "search": "Recherche",
+    "files": "Fichiers",
+    "messages": "Messages",
+    "immersion": "Immersion"
+  },
+  "stats": "{files} fichiers, {characters} personnages, {messages} messages",
+  "search": {
+    "query": "Recherche (français, anglais, japonais)",
+    "lang": "Langue",
+    "anyLang": "Toutes",
+    "submit": "Rechercher",
+    "mode": "Mode : {mode}",
+    "results": "{count, plural, =0 {Aucun résultat} one {# résultat} other {# résultats}}",
+    "empty": "Saisissez au moins deux caractères."
+  },
+  "files": {
+    "query": "Filtre de chemin",
+    "format": "Format",
+    "cpk": "Archive (CPK)",
+    "submit": "Lister",
+    "results": "{count, plural, =0 {Aucun fichier} one {# fichier} other {# fichiers}}",
+    "preview": "Aperçu",
+    "noPreview": "Pas d'aperçu pour ce format.",
+    "size": "{size} octets"
+  },
+  "messages": {
+    "key": "Clé de message (name_id)",
+    "submit": "Afficher",
+    "none": "Aucun texte pour cette clé."
+  },
+  "characters": {
+    "title": "Personnages",
+    "count": "{count} personnages"
+  },
+  "preview": {
+    "title": "Aperçu de {ref}",
+    "index": "Indice de texture",
+    "cue": "Repère audio",
+    "close": "Fermer l'aperçu",
+    "expires": "Lien signé valable {seconds} s, ne contient aucun jeton.",
+    "image": "Texture {ref}",
+    "audio": "Son {ref}",
+    "video": "Vidéo {ref}",
+    "model": "Modèle {ref}"
+  },
+  "immersion": {
+    "title": "Immersion de Dragon Pixel",
+    "lede": "Emplacements nommés reliés aux ressources du jeu pour le propriétaire seulement. Le jeu public reste inchangé.",
+    "none": "Aucun emplacement : créez le fichier var/dbxv2/immersion.json (ignoré par Git).",
+    "slot": "Emplacement {name}"
+  },
+  "errors": {
+    "disabled": "Outils désactivés.",
+    "unavailable": "Serveur privé injoignable.",
+    "invalid": "Requête invalide.",
+    "unsupported": "Format non pris en charge.",
+    "failed": "L'opération a échoué."
+  },
+  "viewer": {
+    "loading": "Chargement…",
+    "error": "La ressource n'a pas pu être chargée.",
+    "retry": "Réessayer",
+    "scale": "Échelle ×{scale}",
+    "audioUnsupported": "La lecture audio n'est pas prise en charge ici.",
+    "videoUnsupported": "La lecture vidéo n'est pas prise en charge ici.",
+    "modelLoading": "Chargement du modèle…",
+    "modelError": "Le modèle n'a pas pu être chargé.",
+    "modelNoRenderer": "Aucun moteur 3D disponible : résumé du modèle.",
+    "modelNoWebgpu": "WebGPU indisponible : résumé du modèle.",
+    "meshes": "Maillages",
+    "primitives": "Primitives",
+    "nodes": "Nœuds",
+    "materials": "Matériaux",
+    "textures": "Textures",
+    "animations": "Animations",
+    "skins": "Squelettes",
+    "size": "Taille"
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "title": "DBXV2 immersion (private)",
+  "lede": "Owner-only explorer: game database, texture, sound, video and model previews. Nothing is public, nothing is versioned.",
+  "nav": "Explorer sections",
+  "disabled": {
+    "title": "Tools disabled",
+    "public": "A public render never loads these tools.",
+    "production": "These tools do not run in production.",
+    "unconfigured": "The private server is not configured on this machine.",
+    "unavailable": "The private server or database is not responding."
+  },
+  "tabs": {
+    "search": "Search",
+    "files": "Files",
+    "messages": "Messages",
+    "immersion": "Immersion"
+  },
+  "stats": "{files} files, {characters} characters, {messages} messages",
+  "search": {
+    "query": "Search (French, English, Japanese)",
+    "lang": "Language",
+    "anyLang": "All",
+    "submit": "Search",
+    "mode": "Mode: {mode}",
+    "results": "{count, plural, =0 {No result} one {# result} other {# results}}",
+    "empty": "Enter at least two characters."
+  },
+  "files": {
+    "query": "Path filter",
+    "format": "Format",
+    "cpk": "Archive (CPK)",
+    "submit": "List",
+    "results": "{count, plural, =0 {No file} one {# file} other {# files}}",
+    "preview": "Preview",
+    "noPreview": "No preview for this format.",
+    "size": "{size} bytes"
+  },
+  "messages": {
+    "key": "Message key (name_id)",
+    "submit": "Show",
+    "none": "No text for this key."
+  },
+  "characters": {
+    "title": "Characters",
+    "count": "{count} characters"
+  },
+  "preview": {
+    "title": "Preview of {ref}",
+    "index": "Texture index",
+    "cue": "Audio cue",
+    "close": "Close the preview",
+    "expires": "Signed link valid for {seconds} s, carries no token.",
+    "image": "Texture {ref}",
+    "audio": "Sound {ref}",
+    "video": "Video {ref}",
+    "model": "Model {ref}"
+  },
+  "immersion": {
+    "title": "Dragon Pixel immersion",
+    "lede": "Named slots linked to game resources, for the owner only. The public game is unchanged.",
+    "none": "No slot: create var/dbxv2/immersion.json (ignored by Git).",
+    "slot": "Slot {name}"
+  },
+  "errors": {
+    "disabled": "Tools disabled.",
+    "unavailable": "Private server unreachable.",
+    "invalid": "Invalid request.",
+    "unsupported": "Unsupported format.",
+    "failed": "The operation failed."
+  },
+  "viewer": {
+    "loading": "Loading…",
+    "error": "The resource could not be loaded.",
+    "retry": "Retry",
+    "scale": "Scale ×{scale}",
+    "audioUnsupported": "Audio playback is not supported here.",
+    "videoUnsupported": "Video playback is not supported here.",
+    "modelLoading": "Loading the model…",
+    "modelError": "The model could not be loaded.",
+    "modelNoRenderer": "No 3D renderer is available: model summary.",
+    "modelNoWebgpu": "WebGPU is unavailable: model summary.",
+    "meshes": "Meshes",
+    "primitives": "Primitives",
+    "nodes": "Nodes",
+    "materials": "Materials",
+    "textures": "Textures",
+    "animations": "Animations",
+    "skins": "Skins",
+    "size": "Size"
+  }
+}

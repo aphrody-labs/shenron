@@ -1,0 +1,94 @@
+/* Private DBXV2 viewers. Pixel-perfect rasters, announced states, forced-colors, reduced motion. */
+.dbxv2-image {
+  margin: 0;
+}
+.dbxv2-image__box {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  background-color: rgb(128 128 128 / 0.08);
+}
+.dbxv2-image__box img {
+  transition: opacity 120ms linear;
+}
+.dbxv2-image[data-phase="loading"] img {
+  opacity: 0;
+}
+.dbxv2-image__state,
+.dbxv2-model__state,
+.dbxv2-media__state {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+.dbxv2-image__state {
+  position: absolute;
+  inset: 0;
+  justify-content: center;
+}
+.dbxv2-image__caption {
+  font-size: 0.75rem;
+  opacity: 0.75;
+  margin-top: 0.25rem;
+}
+.dbxv2-model__canvas {
+  display: block;
+  width: 100%;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+}
+.dbxv2-model__summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+  gap: 0.5rem;
+  margin: 0.5rem 0 0;
+}
+.dbxv2-model__summary dt {
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+.dbxv2-model__summary dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.dbxv2-media audio,
+.dbxv2-media video {
+  width: 100%;
+  max-width: 100%;
+}
+.dbxv2-image button,
+.dbxv2-model button,
+.dbxv2-media button {
+  min-height: 2rem;
+  padding: 0 0.75rem;
+  cursor: pointer;
+}
+.dbxv2-image button:focus-visible,
+.dbxv2-model button:focus-visible,
+.dbxv2-media button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dbxv2-image__box img {
+    transition: none;
+  }
+}
+@media (forced-colors: active) {
+  .dbxv2-image__box {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+  .dbxv2-model__canvas {
+    border-color: CanvasText;
+  }
+  .dbxv2-image__state,
+  .dbxv2-model__state,
+  .dbxv2-media__state {
+    color: CanvasText;
+    background: Canvas;
+  }
+}

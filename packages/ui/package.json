@@ -73,6 +73,10 @@
     "./chat": "./src/chat/index.ts",
     "./chat/model": "./src/chat/model.ts",
     "./chat.css": "./src/chat/chat.css",
+    "./dbxv2": "./src/dbxv2/index.ts",
+    "./dbxv2/glb": "./src/dbxv2/glb.ts",
+    "./dbxv2/pixel": "./src/dbxv2/pixel.ts",
+    "./dbxv2.css": "./src/dbxv2/dbxv2.css",
     "./*": "./src/components/*.tsx",
     "./video/ShenronComposition": "./src/video/ShenronComposition.tsx"
   },
@@ -197,6 +201,10 @@
       "./chat": "react",
       "./chat/model": "pure",
       "./chat.css": "css",
+      "./dbxv2": "react",
+      "./dbxv2/glb": "pure",
+      "./dbxv2/pixel": "pure",
+      "./dbxv2.css": "css",
       "./*": "react",
       "./video/ShenronComposition": "pure"
     }
