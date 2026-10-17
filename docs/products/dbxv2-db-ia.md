@@ -42,7 +42,7 @@ flock ~/build/locks/heavy.lock bun scripts/data/build-dbxv2-db.ts embed --batch 
 
 ## Limites
 
-- Les lecteurs MSG et CMS de `bun_re` (`summarize`) sont des maquettes ; `msg.ts` et `decodeCms` lisent les vrais layouts en attendant leur correction.
+- Les lecteurs MSG et CMS de `bun_re` (`summarize`, `game/formats/msg.rs`) restent des maquettes (chaînes terminées par NUL, identifiants `MSG_<i>`, aucune table de noms ni de lignes). `msg.ts` et `decodeCms` ne peuvent donc pas être remplacés par les lecteurs de `@shenron/dbxv2` : ils restent la seule lecture des vrais layouts, à retirer quand `bun_re` décodera les tables `{offset, chars, bytes}`.
 - CUS, BAC, BCM et moveset ne sont pas encore décodés fiablement : seuls le format et la catégorie sont indexés.
-- Certaines clés de messages (`lobby_text`, `qs_*`) sont lues en UTF-16 puis décodées comme CJK (identifiants illisibles) : le décodage de clés de `msg.ts` reste à corriger ; le texte des valeurs est correct.
+- Enregistrement de chaîne MSG `{offset, chars, bytes}` : UTF-16LE quand `bytes == chars*2 + 2`, UTF-8 quand `bytes == chars + 1` (la plupart des clés, quelques lignes). Lire ces dernières en UTF-16 produisait des identifiants CJK illisibles et perdait des entrées ; corrigé dans `msg.ts` (base reconstruite, voir le journal de build).
 - sha256 calculé pour les genres `text` et `data` uniquement.

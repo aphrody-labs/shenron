@@ -19,7 +19,7 @@ import {
 const enc = new TextEncoder();
 
 /** Synthetic `#MSG` in the real layout: names, entry pairs, line records, UTF-16LE strings. */
-function makeMsg(entries: [string, string[]][]): Uint8Array {
+function makeMsg(entries: [string, string[]][], utf8 = false): Uint8Array {
   const count = entries.length;
   const names = 0x20;
   const entryTable = names + count * 16 + count * 4;
@@ -34,6 +34,15 @@ function makeMsg(entries: [string, string[]][]): Uint8Array {
   view.setUint32(0x14, entryTable, true);
   view.setUint32(0x1c, lineRecords, true);
   const put = (record: number, text: string): void => {
+    if (utf8) {
+      const raw = enc.encode(text);
+      view.setUint32(record, strings, true);
+      view.setUint32(record + 4, raw.length, true);
+      view.setUint32(record + 8, raw.length + 1, true);
+      buf.set(raw, strings);
+      strings += raw.length + 1;
+      return;
+    }
     view.setUint32(record, strings, true);
     view.setUint32(record + 4, text.length, true);
     view.setUint32(record + 8, text.length * 2 + 2, true);
@@ -124,6 +133,31 @@ describe("DBXV2 decoders", () => {
       { id: 0, nameId: "A_1", lines: ["x", "y"] },
       { id: 1, nameId: "A_2", lines: ["z"] },
     ]);
+  });
+  it("decodes UTF-8 keys and lines (bytes == chars + 1) instead of reading them as UTF-16", () => {
+    expect(
+      decodeMsg(
+        makeMsg(
+          [
+            ["lobby_text_01", ["héllo", "x"]],
+            ["qs_02", ["y"]],
+          ],
+          true,
+        ),
+      ),
+    ).toEqual([
+      { id: 0, nameId: "lobby_text_01", lines: ["héllo", "x"] },
+      { id: 1, nameId: "qs_02", lines: ["y"] },
+    ]);
+  });
+  it("mixes UTF-8 keys with UTF-16 lines in one file", () => {
+    const buf = makeMsg([["K_1", ["abcd"]]]);
+    const view = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+    const rec = view.getUint32(0x0c, true);
+    const at = view.getUint32(rec, true);
+    buf.set(enc.encode("K_1"), at);
+    view.setUint32(rec + 8, 4, true);
+    expect(decodeMsg(buf)).toEqual([{ id: 0, nameId: "K_1", lines: ["abcd"] }]);
   });
   it("rejects truncated or foreign buffers", () => {
     expect(decodeMsg(new Uint8Array(8))).toEqual([]);

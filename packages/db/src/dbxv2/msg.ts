@@ -18,11 +18,16 @@ export interface CmsEntry {
 }
 
 const utf16 = new TextDecoder("utf-16le");
+const utf8 = new TextDecoder("utf-8");
 
 /**
  * `#MSG` (UTF-16LE): header `u32 count @8`, `u32 names @0x0c` (count 16-byte records
  * `{offset, chars, bytes, 0}`), `u32 entries @0x14` (count `{lines, offset}` pairs) and
  * `u32 lineRecords @0x1c` (same record shape as the names). Entry `i` is `names[i]`.
+ *
+ * A record's string is UTF-16LE when `bytes == chars * 2 + 2` (code units plus the NUL unit) and
+ * UTF-8 when `bytes == chars + 1` (`chars` bytes plus the NUL byte); keys such as `lobby_text`
+ * or `qs_*` use the second form. Any other record is read as UTF-16LE over `chars` units.
  */
 export function decodeMsg(bytes: Uint8Array): MsgEntry[] {
   if (bytes.length < 0x20 || bytes[0] !== 0x23 || bytes[1] !== 0x4d || bytes[2] !== 0x53) return [];
@@ -36,7 +41,13 @@ export function decodeMsg(bytes: Uint8Array): MsgEntry[] {
   const text = (record: number): string | null => {
     const at = u32(record);
     const chars = u32(record + 4);
-    if (at < 0 || chars < 0 || chars > 0x100000 || at + chars * 2 > bytes.length) return null;
+    const size = u32(record + 8);
+    if (at < 0 || chars < 0 || chars > 0x100000) return null;
+    if (size === chars + 1) {
+      if (at + chars > bytes.length) return null;
+      return utf8.decode(bytes.subarray(at, at + chars));
+    }
+    if (at + chars * 2 > bytes.length) return null;
     return utf16.decode(bytes.subarray(at, at + chars * 2));
   };
   const out: MsgEntry[] = [];
