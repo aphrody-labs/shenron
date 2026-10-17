@@ -25,6 +25,8 @@ test("home hero keeps identity and search within compact adaptive spacing", () =
   expect(html).not.toMatch(/\.(?:mp4|webm)(?:[?"\s]|$)/);
   expect(html).not.toContain("goku_normal");
   expect(html).not.toContain("dbs-beerus-2026.jpg");
+  // Without a qualified frame, the right half carries the 3D ball, hidden from AT.
+  expect(html).toMatch(/class="home-hero__ball[^"]*"[^>]*aria-hidden="true"><canvas\b/);
 });
 
 test("catalogue billboard grows for complete synopsis and keeps both navigation actions", () => {
