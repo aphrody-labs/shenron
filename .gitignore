@@ -99,3 +99,6 @@ test-teacher.ts
 /data/rag/
 /data/catalogues/.cache-dragonballcn/
 apps/site/.next-ui-preview/
+
+# Reference screenshots of third-party originals (never shipped)
+/replica/screens/
