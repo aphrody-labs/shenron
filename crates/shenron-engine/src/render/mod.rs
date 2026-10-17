@@ -12,6 +12,7 @@ pub mod kinto_un;
 pub mod lighting;
 pub mod manga_scene;
 pub mod mesh;
+pub mod model_adapter;
 pub mod model_serve;
 pub mod postprocess;
 pub mod raster3d;
