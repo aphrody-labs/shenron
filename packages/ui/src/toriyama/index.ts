@@ -4,6 +4,7 @@
 
 export * from "./ToriyamaEmblem";
 export * from "./DragonBallSphere";
+export * from "./DragonBall3D";
 export * from "./DragonRadarDisplay";
 export * from "./ScouterHudOverlay";
 export * from "./KintoUnCloud";
