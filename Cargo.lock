@@ -12170,6 +12170,7 @@ version = "1.4.5"
 dependencies = [
  "bytemuck",
  "bytes",
+ "dragon-pixel",
  "glam 0.30.10",
  "image",
  "js-sys",
