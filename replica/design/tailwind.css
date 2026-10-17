@@ -1,0 +1,24 @@
+/* Tailwind v4 mapping: components use `bg-work-surface text-work-muted`, never raw hex. */
+@import "./tokens.css";
+
+@theme inline {
+  --color-work-bg: var(--work-bg);
+  --color-work-surface: var(--work-surface);
+  --color-work-border: var(--work-border);
+  --color-work-border-input: var(--work-border-input);
+  --color-work-text: var(--work-text);
+  --color-work-muted: var(--work-text-muted);
+  --color-work-accent: var(--work-accent);
+  --color-work-on-accent: var(--work-on-accent);
+  --color-work-danger: var(--work-danger);
+  --color-work-success: var(--work-success);
+  --color-work-warning: var(--work-warning);
+  --color-work-ring: var(--work-focus-ring);
+
+  --radius-work-sm: var(--work-radius-sm);
+  --radius-work-md: var(--work-radius-md);
+  --radius-work-lg: var(--work-radius-lg);
+  --shadow-work-card: var(--work-shadow-card);
+  --shadow-work-pop: var(--work-shadow-pop);
+  --ease-work: var(--work-ease);
+}

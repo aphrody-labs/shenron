@@ -1,0 +1,39 @@
+/*
+ * Roles of the "work page" template (replica/design/tokens.json).
+ * Each role reads the existing DBFR token (runtime-overridable by /admin/design)
+ * and falls back to the measured value. Prefixed `--work-*` so it never shadows
+ * the shared `--color-primary|accent|success|warning` of @aphrody/shenron-ui.
+ */
+:root {
+  --work-bg: var(--color-dbz-bg, #0a0a0a);
+  --work-surface: var(--color-dbz-card, #141410);
+  --work-border: var(--color-dbz-border, #2a2a26);
+  --work-border-input: #8a8a7e;
+  --work-text: var(--color-os, #efe9d8);
+  --work-text-muted: #a8a393;
+  --work-accent: var(--color-dbz-orange, #e78220);
+  --work-on-accent: #0a0a0a;
+  --work-danger: var(--color-dbz-red, #f10c3b);
+  --work-success: var(--color-dbz-green, #2e9b41);
+  --work-warning: var(--color-dbz-amber, #ffd23f);
+  --work-focus-ring: var(--color-dbz-yellow, #fefd03);
+
+  --work-radius-sm: 6px;
+  --work-radius-md: 10px;
+  --work-radius-lg: 16px;
+  --work-shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 1px 3px rgb(0 0 0 / 0.5);
+  --work-shadow-pop: 0 12px 32px rgb(0 0 0 / 0.6);
+  --work-motion-fast: 120ms;
+  --work-motion-base: 200ms;
+  --work-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --work-content-max: 1200px;
+  --work-header-height: 56px;
+  --work-touch-target: 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --work-motion-fast: 0ms;
+    --work-motion-base: 0ms;
+  }
+}
