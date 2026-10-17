@@ -12,7 +12,8 @@ ni palette. Tout tient dans cette skill : Bun suffit, sans `sharp`, Python ni d�
 1. **Sourcer** : [hiérarchie des sources](references/sources.md). Le manga au trait
    fonde la forme, l'édition couleur la palette ; signaler toute contradiction.
    Mesures déjà faites (embarquées) : [Kinto-Un](references/mesures/kinto-un-analyse-visuelle.md),
-   [couverture de tankōbon et Dragon Ball](references/mesures/couverture-analyse-visuelle.md).
+   [couverture de tankōbon et Dragon Ball](references/mesures/couverture-analyse-visuelle.md),
+   [senzu](references/mesures/senzu-analyse-visuelle.md), [Potara, sans crochet](references/mesures/potara-analyse-visuelle.md).
 2. **Inspecter & Mesurer** :
    - **Visuellement via l'outil image (`view_file`)** : inspecter directement les planches de tomes manga (`apps/bot/assets/manga/...` ou scans) et les photogrammes d'animé pour relever la composition, l'angle des cases (_koma_), le calibre de plume G (_G-pen_), les mèches et la décomposition multicouche de celluloïd ([protocole complet d'inspection](references/manga-anime-inspection.md)).
    - **Numériquement par script** : `bun scripts/inspecter-manga-anime.ts image.png --mode manga|anime` ou `bun scripts/mesurer.ts image.png --teinte 40 70 --sat 0.3` (ou `--sombre` pour l'encre). Les références PNG (même entrelacées), JPEG, WebP, GIF et BMP sont décodées par `Bun.Image`, sans ImageMagick ni ffmpeg. Regarder `masque.png` et `decoupe.png` avant d'accepter les nombres. Sans outil ni image exploitable, consigner les mesures faites à la main et le contrôle non effectué.

@@ -185,3 +185,33 @@ export function radialSpeedlines(
 
   return lines;
 }
+
+const OVALE_PAS = 12; // un point tous les 30° sur l'ovale
+
+/** Points de l'ovale (sens horaire à l'écran) et flèche de chaque arc, mesurée sur l'ellipse. */
+export function ovale(
+  cx: number,
+  cy: number,
+  a: number,
+  b: number,
+): { pts: Point[]; fleches: number[] } {
+  const at = (t: number): Point => [cx + a * Math.cos(t), cy + b * Math.sin(t)];
+  const pts: Point[] = [];
+  const fleches: number[] = [];
+  for (let i = 0; i < OVALE_PAS; i++) {
+    const t0 = (i / OVALE_PAS) * 2 * Math.PI;
+    const t1 = ((i + 1) / OVALE_PAS) * 2 * Math.PI;
+    const p0 = at(t0);
+    const p1 = at(t1);
+    const [dx, dy] = [p1[0] - p0[0], p1[1] - p0[1]];
+    const l = Math.hypot(dx, dy);
+    let h = 0;
+    for (let k = 1; k < 16; k++) {
+      const [x, y] = at(t0 + ((t1 - t0) * k) / 16);
+      h = Math.max(h, Math.abs((x - p0[0]) * dy - (y - p0[1]) * dx) / l);
+    }
+    pts.push(p0);
+    fleches.push(h);
+  }
+  return { pts, fleches };
+}

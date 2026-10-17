@@ -1,11 +1,14 @@
 /**
  * Toriyama SVG Engine — Official Color Palette Tokens.
  *
- * Seules les entrées `dragonBall` (couverture du tome 1, cf. `./sphere`) et le
- * Kinto-Un (`./kinto-un`, `KINTO_UN_COULEURS`) sont mesurées et documentées dans
+ * Seules les entrées `dragonBall` (couverture du tome 1, cf. `./sphere`), `senzu`,
+ * `potara` (édition couleur, cf. `docs/reference/{senzu,potara}-analyse-visuelle.md`)
+ * et le Kinto-Un (`./kinto-un`, `KINTO_UN_COULEURS`) sont mesurées et documentées dans
  * `docs/reference/*-analyse-visuelle.md`. Les autres valeurs n'ont pas de relevé
  * consigné : à mesurer sur l'édition couleur avant tout nouvel usage.
  */
+import { POTARA_COULEURS } from "./potara";
+import { SENZU_COULEURS } from "./senzu";
 import { SPHERE_DEGRADE, SPHERE_ENCRE, SPHERE_ROUGE_ETOILE } from "./sphere";
 
 export const TORIYAMA_PALETTE = {
@@ -74,6 +77,12 @@ export const TORIYAMA_PALETTE = {
     starRed: SPHERE_ROUGE_ETOILE,
     inkRing: SPHERE_ENCRE,
   },
+
+  /** Haricot magique : mesuré sur l'édition couleur (`./senzu`). */
+  senzu: { ...SENZU_COULEURS },
+
+  /** Pendant Potara : sphère, fentes et encre mesurées, crochet non relevé (`./potara`). */
+  potara: { ...POTARA_COULEURS },
 
   /** Dragon Radar */
   radar: {

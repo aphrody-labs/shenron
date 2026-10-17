@@ -1,7 +1,7 @@
 // @bun
 // Généré par scripts/plugin/build-references.ts — ne pas éditer.
-// Sources : packages/ui/src/toriyama-svg/couverture.ts, packages/ui/src/toriyama-svg/emblems.ts, packages/ui/src/toriyama-svg/geometry.ts, packages/ui/src/toriyama-svg/index.ts, packages/ui/src/toriyama-svg/kinto-un.ts, packages/ui/src/toriyama-svg/model3d.ts, packages/ui/src/toriyama-svg/palette.ts, packages/ui/src/toriyama-svg/sphere.ts, scripts/plugin/src/toriyama.ts
-// Révision : aef851fe+modifications (2026-10-05)
+// Sources : packages/ui/src/toriyama-svg/couverture.ts, packages/ui/src/toriyama-svg/emblems.ts, packages/ui/src/toriyama-svg/geometry.ts, packages/ui/src/toriyama-svg/index.ts, packages/ui/src/toriyama-svg/kinto-un.ts, packages/ui/src/toriyama-svg/model3d.ts, packages/ui/src/toriyama-svg/palette.ts, packages/ui/src/toriyama-svg/potara.ts, packages/ui/src/toriyama-svg/senzu.ts, packages/ui/src/toriyama-svg/sphere.ts, scripts/plugin/src/toriyama.ts
+// Révision : 086e9d4c+modifications (2026-10-17)
 var __defProp = Object.defineProperty;
 var __returnValue = (v) => v;
 function __exportSetter(name, newValue) {
@@ -17,6 +17,27 @@ var __export = (target, all) => {
     });
 };
 
+// packages/ui/src/toriyama-svg/potara.ts
+var exports_potara = {};
+__export(exports_potara, {
+  POTARA_COULEURS: () => POTARA_COULEURS,
+  POTARA_MESURES: () => POTARA_MESURES,
+  corpsPotara: () => corpsPotara,
+  svgIcone: () => svgIcone,
+  svgIllustration: () => svgIllustration
+});
+
+// packages/ui/src/toriyama-svg/senzu.ts
+var exports_senzu = {};
+__export(exports_senzu, {
+  SENZU_COULEURS: () => SENZU_COULEURS,
+  SENZU_MESURES: () => SENZU_MESURES,
+  corpsIcone: () => corpsIcone,
+  corpsSenzu: () => corpsSenzu,
+  svgIcone: () => svgIcone2,
+  svgIllustration: () => svgIllustration2
+});
+
 // packages/ui/src/toriyama-svg/kinto-un.ts
 var exports_kinto_un = {};
 __export(exports_kinto_un, {
@@ -24,11 +45,11 @@ __export(exports_kinto_un, {
   KINTO_UN_ICONE: () => KINTO_UN_ICONE,
   KINTO_UN_ILLUSTRATION: () => KINTO_UN_ILLUSTRATION,
   arcs: () => arcs,
-  corpsIcone: () => corpsIcone,
+  corpsIcone: () => corpsIcone2,
   corpsNuage: () => corpsNuage,
   lobesIcone: () => lobesIcone,
-  svgIcone: () => svgIcone,
-  svgIllustration: () => svgIllustration,
+  svgIcone: () => svgIcone3,
+  svgIllustration: () => svgIllustration3,
   svgMonochrome: () => svgMonochrome,
   volute: () => volute
 });
@@ -148,6 +169,154 @@ function radialSpeedlines(cx, cy, innerRadius, outerRadius, count = 24) {
   }
   return lines;
 }
+var OVALE_PAS = 12;
+function ovale(cx, cy, a, b) {
+  const at = (t) => [cx + a * Math.cos(t), cy + b * Math.sin(t)];
+  const pts = [];
+  const fleches = [];
+  for (let i = 0;i < OVALE_PAS; i++) {
+    const t0 = i / OVALE_PAS * 2 * Math.PI;
+    const t1 = (i + 1) / OVALE_PAS * 2 * Math.PI;
+    const p0 = at(t0);
+    const p1 = at(t1);
+    const [dx, dy] = [p1[0] - p0[0], p1[1] - p0[1]];
+    const l = Math.hypot(dx, dy);
+    let h = 0;
+    for (let k = 1;k < 16; k++) {
+      const [x, y] = at(t0 + (t1 - t0) * k / 16);
+      h = Math.max(h, Math.abs((x - p0[0]) * dy - (y - p0[1]) * dx) / l);
+    }
+    pts.push(p0);
+    fleches.push(h);
+  }
+  return { pts, fleches };
+}
+// packages/ui/src/toriyama-svg/potara.ts
+var POTARA_MESURES = {
+  ratio: 1,
+  trait: 3.5 / 46.5,
+  ceinture: 10.5 / 47,
+  ceintureSurTrait: 2 / 3.5,
+  fentes: [
+    { x: -0.4, y: 0.01, long: 0.34, large: 0.19, angle: -49 },
+    { x: -0.01, y: 0.31, long: 0.29, large: 0.17, angle: -41 }
+  ],
+  tigeLarge: 0.16,
+  tigeLong: 0.6
+};
+var POTARA_COULEURS = {
+  sphere: "#ebc442",
+  fente: "#beb7b3",
+  encre: "#180c00"
+};
+function corpsPotara(cx, cy, D, id = "potara") {
+  const m = POTARA_MESURES;
+  const c = POTARA_COULEURS;
+  const s = D * m.trait;
+  const R = D / 2;
+  const r = R - s / 2;
+  const sil = ovale(cx, cy, r, r);
+  const silhouette = arcs(sil.pts, sil.fleches);
+  const yC = cy - R + m.ceinture * D;
+  const ceinture = `M${roundTo(cx - R)} ${roundTo(yC)}H${roundTo(cx + R)}`;
+  const fentes = m.fentes.map((f) => {
+    const o = ovale(cx + f.x * R, cy + f.y * R, f.long * D / 2, f.large * D / 2);
+    return `<path d="${arcs(o.pts, o.fleches)}" transform="rotate(${f.angle} ${roundTo(cx + f.x * R)} ${roundTo(cy + f.y * R)})" fill="${c.fente}" stroke="${c.encre}" stroke-width="${roundTo(s * m.ceintureSurTrait, 2)}"/>`;
+  }).join("");
+  const yTige = cy - R - m.tigeLong * D;
+  const tige = `<path d="M${roundTo(cx)} ${roundTo(cy - R + s / 2)}V${roundTo(yTige)}" stroke="${c.encre}" stroke-width="${roundTo(m.tigeLarge * D, 2)}" stroke-linecap="round"/>`;
+  const defs = `<clipPath id="${id}-sil"><path d="${silhouette}"/></clipPath>`;
+  const dessin = [
+    tige,
+    `<path d="${silhouette}" fill="${c.sphere}"/>`,
+    `<path d="${ceinture}" stroke="${c.encre}" stroke-width="${roundTo(s * m.ceintureSurTrait, 2)}" clip-path="url(#${id}-sil)"/>`,
+    `<g clip-path="url(#${id}-sil)">${fentes}</g>`,
+    `<path d="${silhouette}" fill="none" stroke="${c.encre}" stroke-width="${roundTo(s, 2)}"/>`
+  ].join("");
+  return { defs, dessin };
+}
+function svgIllustration(D = 320, marge = 16) {
+  const m = POTARA_MESURES;
+  const haut = D * (1 + m.tigeLong) + m.tigeLarge * D / 2;
+  const vw = Math.round(D + 2 * marge);
+  const vh = Math.round(haut + 2 * marge);
+  const { defs, dessin } = corpsPotara(vw / 2, vh - marge - D / 2, D);
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${vw} ${vh}" width="${vw}" height="${vh}" role="img" aria-label="Potara"><defs>${defs}</defs>${dessin}</svg>
+`;
+}
+function svgIcone(cote = 512, occupation = 0.88) {
+  const m = POTARA_MESURES;
+  const haut = cote * occupation;
+  const D = haut / (1 + m.tigeLong + m.tigeLarge / 2);
+  const bas = (cote + haut) / 2;
+  const { defs, dessin } = corpsPotara(cote / 2, bas - D / 2, D, "potara-icone");
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${cote} ${cote}" width="${cote}" height="${cote}" role="img" aria-label="Potara"><defs>${defs}</defs>${dessin}</svg>
+`;
+}
+
+// packages/ui/src/toriyama-svg/senzu.ts
+var SENZU_MESURES = {
+  ratio: 1.435,
+  traitSurLongueur: 3 / 31.75,
+  hilePosition: 0.28,
+  hileEtendue: 0.5,
+  hileSurTrait: 2 / 3,
+  angleIcone: -31.6
+};
+var SENZU_COULEURS = {
+  clair: "#bed37e",
+  calotte: "#a8b26c",
+  encre: "#180c00"
+};
+function corpsSenzu(cx, cy, L, id = "senzu") {
+  const m = SENZU_MESURES;
+  const c = SENZU_COULEURS;
+  const W = L / m.ratio;
+  const s = L * m.traitSurLongueur;
+  const a = (L - s) / 2;
+  const b = (W - s) / 2;
+  const { pts, fleches } = ovale(cx, cy, a, b);
+  const silhouette = arcs(pts, fleches);
+  const xh = cx - L / 2 + m.hilePosition * L;
+  const y = m.hileEtendue * W / 2;
+  const hile = `M${roundTo(xh)} ${roundTo(cy + y)}L${roundTo(xh)} ${roundTo(cy - y)}`;
+  const clair = `M${roundTo(xh)} ${roundTo(cy - W)}H${roundTo(cx + L)}V${roundTo(cy + W)}H${roundTo(xh)}Z`;
+  const defs = `<clipPath id="${id}-sil"><path d="${silhouette}"/></clipPath>`;
+  const dessin = [
+    `<path d="${silhouette}" fill="${c.calotte}"/>`,
+    `<path d="${clair}" fill="${c.clair}" clip-path="url(#${id}-sil)"/>`,
+    `<path d="${hile}" fill="none" stroke="${c.encre}" stroke-width="${roundTo(s * m.hileSurTrait, 2)}" stroke-linecap="round"/>`,
+    `<path d="${silhouette}" fill="none" stroke="${c.encre}" stroke-width="${roundTo(s, 2)}" stroke-linejoin="round"/>`
+  ].join("");
+  return { defs, dessin };
+}
+function svgIllustration2(L = 480, marge = 16) {
+  const W = L / SENZU_MESURES.ratio;
+  const vw = Math.round(L + 2 * marge);
+  const vh = Math.round(W + 2 * marge);
+  const { defs, dessin } = corpsSenzu(vw / 2, vh / 2, L, "senzu");
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${vw} ${vh}" width="${vw}" height="${vh}" role="img" aria-label="Senzu"><defs>${defs}</defs>${dessin}</svg>
+`;
+}
+function corpsIcone(cote = 512, occupation = 0.88, id = "senzu-icone") {
+  const m = SENZU_MESURES;
+  const t = Math.abs(m.angleIcone) * Math.PI / 180;
+  const enveloppe = (L) => {
+    const A = L / 2;
+    const B = L / m.ratio / 2;
+    return 2 * Math.max(Math.hypot(A * Math.cos(t), B * Math.sin(t)), Math.hypot(A * Math.sin(t), B * Math.cos(t)));
+  };
+  const L = cote * occupation / (enveloppe(1) || 1);
+  const c = cote / 2;
+  const { defs, dessin } = corpsSenzu(c, c, L, id);
+  return { defs, dessin: `<g transform="rotate(${m.angleIcone} ${c} ${c})">${dessin}</g>` };
+}
+function svgIcone2(cote = 512, occupation = 0.88) {
+  const { defs, dessin } = corpsIcone(cote, occupation);
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${cote} ${cote}" width="${cote}" height="${cote}" role="img" aria-label="Senzu"><defs>${defs}</defs>${dessin}</svg>
+`;
+}
+
 // packages/ui/src/toriyama-svg/sphere.ts
 var SPHERE_BOITE = 512;
 var SPHERE_R_EXT = 256;
@@ -282,6 +451,8 @@ var TORIYAMA_PALETTE = {
     starRed: SPHERE_ROUGE_ETOILE,
     inkRing: SPHERE_ENCRE
   },
+  senzu: { ...SENZU_COULEURS },
+  potara: { ...POTARA_COULEURS },
   radar: {
     bodyGreen: "#2ec4b6",
     screenDark: "#0b2528",
@@ -636,7 +807,7 @@ ${volutesSvg}</g>
 <path d="${n.silhouette}" fill="none" stroke="${c.encre}" stroke-width="${n.traits.encre}" stroke-linejoin="round"/>`;
 }
 var DESC = "Le Kinto-Un, nuage magique de Son Goku : lobes jaune citron finis en volutes, ombre dor\xE9e sur la face inf\xE9rieure, trait d'encre.";
-function svgIllustration() {
+function svgIllustration3() {
   const n = KINTO_UN_ILLUSTRATION;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${n.largeur} ${n.hauteur}" role="img" aria-labelledby="kt-t">
 <title id="kt-t">Kinto-Un</title>
@@ -645,7 +816,7 @@ ${corpsNuage(n, "kt")}
 </svg>
 `;
 }
-function corpsIcone({
+function corpsIcone2({
   pastille = KINTO_UN_COULEURS.pastille,
   coins = 0.22,
   echelle = 1,
@@ -660,12 +831,12 @@ function corpsIcone({
 ${corpsNuage(n, "kti", avecVolutes)}
 </g>`;
 }
-function svgIcone(options = {}) {
+function svgIcone3(options = {}) {
   const n = KINTO_UN_ICONE;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${n.largeur} ${n.hauteur}" role="img" aria-labelledby="kti-t">
 <title id="kti-t">Kinto-Un</title>
 <desc>${DESC}</desc>
-${corpsIcone(options)}
+${corpsIcone2(options)}
 </svg>
 `;
 }
@@ -924,13 +1095,13 @@ function dessiner(args) {
     case "kinto-un":
       switch (variante ?? "illustration") {
         case "illustration":
-          return svgIllustration();
+          return svgIllustration3();
         case "icone":
-          return svgIcone();
+          return svgIcone3();
         case "icone-petite":
-          return svgIcone({ volutes: false });
+          return svgIcone3({ volutes: false });
         case "maskable":
-          return svgIcone({ coins: 0, echelle: 0.8 });
+          return svgIcone3({ coins: 0, echelle: 0.8 });
         case "monochrome":
           return svgMonochrome();
         default:
@@ -990,10 +1161,13 @@ export {
   mirrorX,
   modelParams,
   nombreEtoiles,
+  ovale,
   planDombre,
+  exports_potara as potara,
   radialSpeedlines,
   roundTo,
   scouterBrackets,
+  exports_senzu as senzu,
   starPoints,
   svgEtoile,
   svgSphere,
