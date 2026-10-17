@@ -18,7 +18,7 @@
  */
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
-import { dimensionsSvg, imbriquable, outilSvg, svgVersPng } from "./raster";
+import { dimensionsSvg, fermerRaster, imbriquable, outilSvg, svgVersPng } from "./raster";
 import { encoderPng } from "./png";
 
 /** Variante carrée : fond optionnel, dessin mis à l'échelle autour du centre. */
@@ -116,6 +116,7 @@ if (import.meta.main) {
     fichiers["favicon.ico"] = ico(
       [16, 32, 48].map((cote) => ({ cote, png: fichiers[`favicon-${cote}.png`]! })),
     );
+    await fermerRaster();
   }
   fichiers["favicon.svg"] = new TextEncoder().encode(svg);
 
@@ -135,7 +136,7 @@ if (import.meta.main) {
     console.log(`  ${nom.padEnd(24)} ${contenu.length} o`);
   if (!outil) {
     console.log(
-      "⚠ aucun rastériseur (resvg, rsvg-convert, magick/convert, inkscape) : PNG et ICO NON produits.\n" +
+      "⚠ aucun rastériseur (Bun.WebView avec Chrome/Edge, resvg, rsvg-convert, magick/convert, inkscape) : PNG et ICO NON produits.\n" +
         "  Les variantes SVG (opaque, maskable 80 %) sont écrites ; les rastériser ailleurs avant livraison.",
     );
   } else console.log(`rastériseur : ${outil}`);

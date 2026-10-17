@@ -25,7 +25,8 @@ ni palette. Tout tient dans cette skill : Bun suffit, sans `sharp`, Python ni d�
    automatiquement.
 5. **Rendre** avec `bun scripts/rendu.ts dessin.svg --compare reference.png` (512, 128,
    64, 32, 16 px, fonds clair et sombre), puis **ouvrir** les planches. Rastérisation
-   par `resvg`, `rsvg-convert`, ImageMagick ou Inkscape s'il en existe un ; sinon
+   par `Bun.WebView` (Chrome ou Edge installé, fond transparent ; Edge suffit sous Windows),
+   sinon `resvg`, `rsvg-convert`, ImageMagick ou Inkscape (`TORIYAMA_RASTER=<outil>` pour en forcer un) ; sinon
    `planche.svg` vectorielle seulement, et le contrôle des pixels est déclaré non
    effectué. Le code seul ne qualifie aucun rendu.
 6. **Icônes** : variante carrée dédiée, puis `bun scripts/icones.ts icone.svg --sortie DIR`

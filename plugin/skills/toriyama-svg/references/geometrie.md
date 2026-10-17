@@ -31,21 +31,31 @@ Généré depuis `packages/ui/src/toriyama-svg/` du dépôt Shenron (révision e
 l'en-tête du fichier). Bibliothèque ESM :
 
 ```ts
-import { arcs, volute, meche, planDombre, inkStroke, mirrorX, svgSphere, kintoUn, couverture } from "./toriyama.js";
+import {
+  arcs,
+  volute,
+  meche,
+  planDombre,
+  inkStroke,
+  mirrorX,
+  svgSphere,
+  kintoUn,
+  couverture,
+} from "./toriyama.js";
 ```
 
-| Export | Usage |
-| --- | --- |
-| `arcs(points, fleches, ferme?)` | chaîne d'arcs de cercle entre creux ; flèche > demi-corde = lobe pincé |
-| `volute(depart, vers, r, tours?, sens?)` | spirale rentrante des lobes (Kinto-Un, nuages) |
-| `meche(base, pointe, largeur, courbure?)` | mèche pleine effilée, jamais un trait constant |
-| `planDombre(contour, decalage, largeur, attenuation?)` | ombre = contour décalé, découpé par la silhouette |
-| `inkStroke(largeurSujet, pct?)` | trait en % de la largeur du sujet (0,8 % par défaut) |
-| `mirrorX(points, axe)`, `starPoints`, `scouterBrackets`, `radialSpeedlines` | symétrie et motifs |
-| `svgSphere(n)`, `SPHERE_*`, `etoilesSphere` | Dragon Ball mesurée (étoile unique mesurée ; disposition 2 à 7 non sourcée) |
-| `kintoUn.*` | `svgIllustration`, `svgIcone({volutes, echelle, coins, pastille})`, `svgMonochrome`, `KINTO_UN_COULEURS` |
-| `couverture.*` | cadre de case, banc de nuages, pastille de tome, étoile r/R = 0,45 |
-| `TORIYAMA_PALETTE`, `EMBLEMS` | palette et emblèmes du site : vérifier leur mesure pour le sujet avant usage |
+| Export                                                                      | Usage                                                                                                    |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `arcs(points, fleches, ferme?)`                                             | chaîne d'arcs de cercle entre creux ; flèche > demi-corde = lobe pincé                                   |
+| `volute(depart, vers, r, tours?, sens?)`                                    | spirale rentrante des lobes (Kinto-Un, nuages)                                                           |
+| `meche(base, pointe, largeur, courbure?)`                                   | mèche pleine effilée, jamais un trait constant                                                           |
+| `planDombre(contour, decalage, largeur, attenuation?)`                      | ombre = contour décalé, découpé par la silhouette                                                        |
+| `inkStroke(largeurSujet, pct?)`                                             | trait en % de la largeur du sujet (0,8 % par défaut)                                                     |
+| `mirrorX(points, axe)`, `starPoints`, `scouterBrackets`, `radialSpeedlines` | symétrie et motifs                                                                                       |
+| `svgSphere(n)`, `SPHERE_*`, `etoilesSphere`                                 | Dragon Ball mesurée (étoile unique mesurée ; disposition 2 à 7 non sourcée)                              |
+| `kintoUn.*`                                                                 | `svgIllustration`, `svgIcone({volutes, echelle, coins, pastille})`, `svgMonochrome`, `KINTO_UN_COULEURS` |
+| `couverture.*`                                                              | cadre de case, banc de nuages, pastille de tome, étoile r/R = 0,45                                       |
+| `TORIYAMA_PALETTE`, `EMBLEMS`                                               | palette et emblèmes du site : vérifier leur mesure pour le sujet avant usage                             |
 
 Ligne de commande :
 

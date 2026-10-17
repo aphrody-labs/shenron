@@ -51,12 +51,19 @@ function luminance(r: number, g: number, b: number): number {
 }
 
 function rvbVersHex(r: number, g: number, b: number): string {
-  const h = (v: number) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0");
+  const h = (v: number) =>
+    Math.max(0, Math.min(255, Math.round(v)))
+      .toString(16)
+      .padStart(2, "0");
   return `#${h(r)}${h(g)}${h(b)}`;
 }
 
 // Conversion RGB linéaire vers OKLab / OKLCH
-function rvbVersOklab(r: number, g: number, b: number): { L: number; a: number; bOklab: number; C: number; h: number } {
+function rvbVersOklab(
+  r: number,
+  g: number,
+  b: number,
+): { L: number; a: number; bOklab: number; C: number; h: number } {
   const srgbToLinear = (c: number) => {
     const v = c / 255;
     return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
@@ -73,9 +80,9 @@ function rvbVersOklab(r: number, g: number, b: number): { L: number; a: number; 
   const m_ = Math.cbrt(m);
   const s_ = Math.cbrt(s);
 
-  const L = 0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_;
-  const a = 1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_;
-  const bOklab = 0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_;
+  const L = 0.2104542553 * l_ + 0.793617785 * m_ - 0.0040720468 * s_;
+  const a = 1.9779984951 * l_ - 2.428592205 * m_ + 0.4505937099 * s_;
+  const bOklab = 0.0259040371 * l_ + 0.7827717662 * m_ - 0.808675766 * s_;
 
   const C = Math.hypot(a, bOklab);
   let h = (Math.atan2(bOklab, a) * 180) / Math.PI;
@@ -177,7 +184,9 @@ export async function analyserImage(
 
   // 4 itérations de k-means suffisent pour un profil cel shading franc
   for (let iter = 0; iter < 4; iter++) {
-    const sommes: Array<[number, number, number, number]> = Array.from({ length: k }, () => [0, 0, 0, 0]);
+    const sommes: Array<[number, number, number, number]> = Array.from({ length: k }, () => [
+      0, 0, 0, 0,
+    ]);
     for (const [r, g, b] of echantillonsCouleurs) {
       let meilleurD = Infinity;
       let meilleurK = 0;
@@ -311,7 +320,10 @@ Options :
     const rapport = await analyserImage(imagePath, options);
     if (options.sortie) {
       await mkdir(options.sortie, { recursive: true });
-      await writeFile(join(options.sortie, "rapport-inspection.json"), JSON.stringify(rapport, null, 2));
+      await writeFile(
+        join(options.sortie, "rapport-inspection.json"),
+        JSON.stringify(rapport, null, 2),
+      );
     }
 
     if (options.jsonSeul) {
@@ -319,16 +331,26 @@ Options :
     } else {
       console.log(`\n=== RAPPORT D'INSPECTION TORIYAMA ===`);
       console.log(`Fichier source    : ${rapport.source}`);
-      console.log(`Dimensions        : ${rapport.dimensions.largeur} × ${rapport.dimensions.hauteur} px`);
+      console.log(
+        `Dimensions        : ${rapport.dimensions.largeur} × ${rapport.dimensions.hauteur} px`,
+      );
       console.log(`Mode détecté      : ${rapport.modeDetecte.toUpperCase()}`);
       console.log(`Ratio d'aspect    : ${rapport.ratioAspect}`);
-      console.log(`Encre & Beta      : Trait ${(rapport.statistiquesEncre.proportionTrait * 100).toFixed(1)}% | Beta-nuri ${(rapport.statistiquesEncre.proportionBetaNuri * 100).toFixed(1)}%`);
-      console.log(`Calibre du trait  : ${rapport.statistiquesEncre.epaisseurMedianTraitEstimeePx} px (${rapport.statistiquesEncre.epaisseurTraitPctSujet}% de la boîte)`);
+      console.log(
+        `Encre & Beta      : Trait ${(rapport.statistiquesEncre.proportionTrait * 100).toFixed(1)}% | Beta-nuri ${(rapport.statistiquesEncre.proportionBetaNuri * 100).toFixed(1)}%`,
+      );
+      console.log(
+        `Calibre du trait  : ${rapport.statistiquesEncre.epaisseurMedianTraitEstimeePx} px (${rapport.statistiquesEncre.epaisseurTraitPctSujet}% de la boîte)`,
+      );
       console.log(`\n--- Couches Cel Shading Détectées ---`);
       for (const couche of rapport.couchesCel) {
-        console.log(`  [${couche.role.padEnd(8)}] ${couche.hex} (OKLCH: L=${couche.oklab.L} C=${couche.oklab.C} h=${couche.oklab.h}°)`);
+        console.log(
+          `  [${couche.role.padEnd(8)}] ${couche.hex} (OKLCH: L=${couche.oklab.L} C=${couche.oklab.C} h=${couche.oklab.h}°)`,
+        );
       }
-      console.log(`\nRecommandation Toriyama.js : inkStroke(${rapport.recommandationsGeometrie.inkStrokePct}%), arcs flèche=${rapport.recommandationsGeometrie.arcsFlecheBase}, plan d'ombre=${rapport.recommandationsGeometrie.planDombreDecalagePx}px`);
+      console.log(
+        `\nRecommandation Toriyama.js : inkStroke(${rapport.recommandationsGeometrie.inkStrokePct}%), arcs flèche=${rapport.recommandationsGeometrie.arcsFlecheBase}, plan d'ombre=${rapport.recommandationsGeometrie.planDombreDecalagePx}px`,
+      );
     }
   } catch (err: any) {
     console.error(`Erreur d'inspection : ${err.message}`);

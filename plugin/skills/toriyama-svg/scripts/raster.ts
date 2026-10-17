@@ -2,8 +2,10 @@
  * Rastérisation optionnelle : SVG → PNG et image quelconque → PNG, par l'outil
  * local disponible. Aucun appel réseau, aucune dépendance npm.
  *
- * Ordre de préférence : `resvg` (Rust), `rsvg-convert`, `magick`/`convert`
- * (ImageMagick), `inkscape`. Une référence raster (PNG, y compris entrelacé,
+ * Ordre de préférence : `Bun.WebView` (moteur Chrome/Edge du runtime, fond
+ * transparent par CDP, aucun outil à installer sous Windows), puis `resvg`
+ * (Rust), `rsvg-convert`, `magick`/`convert` (ImageMagick), `inkscape`.
+ * `TORIYAMA_RASTER=<outil>` en force un, `aucun` les coupe. Une référence raster (PNG, y compris entrelacé,
  * JPEG, WebP, GIF, BMP) est décodée par `Bun.Image`, sans outil externe ;
  * ImageMagick puis `ffmpeg` ne servent que si `Bun.Image` est absent ou échoue.
  * Si aucun rastériseur SVG n'est installé, `outilSvg()` rend `null` et l'appelant
@@ -13,7 +15,45 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { decoderPng, estPng, type ImageRGBA } from "./png";
 
-export type OutilSvg = "resvg" | "rsvg-convert" | "magick" | "convert" | "inkscape";
+export type OutilSvg = "webview" | "resvg" | "rsvg-convert" | "magick" | "convert" | "inkscape";
+
+interface VueCdp {
+  navigate(url: string): Promise<void>;
+  cdp(methode: string, params?: object): Promise<unknown>;
+  screenshot(options: { format: "png"; encoding: "buffer" }): Promise<Uint8Array>;
+}
+
+let vue: Promise<VueCdp> | null = null;
+
+/** Une seule vue Chrome par processus, réutilisée : les appels de rendu sont séquentiels. */
+function vueWebView(): Promise<VueCdp> {
+  vue ??= (async () => {
+    const WebView = (Bun as unknown as { WebView?: new (o: object) => VueCdp }).WebView;
+    if (typeof WebView !== "function") throw new Error("Bun.WebView indisponible");
+    const v = new WebView({ backend: { type: "chrome", url: false } });
+    await v.navigate("about:blank");
+    await v.cdp("Emulation.setDefaultBackgroundColorOverride", {
+      color: { r: 0, g: 0, b: 0, a: 0 },
+    });
+    return v;
+  })();
+  return vue;
+}
+
+async function svgParWebView(svg: string, largeur: number, hauteur: number): Promise<ImageRGBA> {
+  const v = await vueWebView();
+  await v.cdp("Emulation.setDeviceMetricsOverride", {
+    width: largeur,
+    height: hauteur,
+    deviceScaleFactor: 1,
+    mobile: false,
+  });
+  const page = `<!doctype html><style>html,body{margin:0;background:transparent;overflow:hidden}svg{display:block;width:${largeur}px;height:${hauteur}px}</style>${svg}`;
+  await v.navigate(`data:text/html;base64,${Buffer.from(page).toString("base64")}`);
+  const image = await lireAvecBun(await v.screenshot({ format: "png", encoding: "buffer" }));
+  if (!image) throw new Error("capture Bun.WebView illisible");
+  return image;
+}
 
 let sonde: Promise<OutilSvg | null> | null = null;
 
@@ -26,10 +66,10 @@ export function outilSvg(): Promise<OutilSvg | null> {
   sonde ??= (async () => {
     const force = process.env.TORIYAMA_RASTER;
     if (force === "aucun") return null;
-    const ordre: OutilSvg[] = ["resvg", "rsvg-convert", "magick", "convert", "inkscape"];
+    const ordre: OutilSvg[] = ["webview", "resvg", "rsvg-convert", "magick", "convert", "inkscape"];
     const essai = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4"><rect width="4" height="4" fill="#f00"/></svg>`;
     for (const outil of force ? ordre.filter((o) => o === force) : ordre) {
-      if (!Bun.which(outil)) continue;
+      if (outil !== "webview" && !Bun.which(outil)) continue;
       try {
         const image = await svgVersPng(essai, 4, 4, outil);
         if (image.largeur === 4 && image.pixels[0] === 255) return outil;
@@ -62,6 +102,7 @@ export async function svgVersPng(
   hauteur: number,
   outil: OutilSvg,
 ): Promise<ImageRGBA> {
+  if (outil === "webview") return svgParWebView(svg, largeur, hauteur);
   const entree = temporaire("svg");
   const sortie = temporaire("png");
   await Bun.write(entree, svg);
@@ -181,4 +222,12 @@ export function imbriquable(svg: string): { viewBox: string; interieur: string }
   const debut = svg.indexOf(">", svg.search(/<svg[\s>]/i)) + 1;
   const fin = svg.lastIndexOf("</svg>");
   return { viewBox: vb, interieur: svg.slice(debut, fin) };
+}
+
+/** Ferme la vue `Bun.WebView` partagée : sans cela, le processus Chrome garde le script en vie. */
+export async function fermerRaster(): Promise<void> {
+  if (!vue) return;
+  const v = await vue.catch(() => null);
+  vue = null;
+  (v as { close?: () => void } | null)?.close?.();
 }

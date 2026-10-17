@@ -22,7 +22,14 @@ import { mkdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { agrandir, aHauteur, encoderPng, imageUnie, poser, type ImageRGBA } from "./png";
-import { dimensionsSvg, imbriquable, lireImage, outilSvg, svgVersPng } from "./raster";
+import {
+  dimensionsSvg,
+  fermerRaster,
+  imbriquable,
+  lireImage,
+  outilSvg,
+  svgVersPng,
+} from "./raster";
 
 const CIBLE = 220;
 const MARGE = 12;
@@ -107,8 +114,8 @@ if (import.meta.main) {
   console.log(`${sortie}/planche.svg (vectorielle, clair puis sombre)`);
   if (!outil) {
     console.log(
-      "⚠ aucun rastériseur (resvg, rsvg-convert, magick/convert, inkscape) : contrôle des pixels NON effectué.\n" +
-        "  Ouvrir planche.svg dans un navigateur, ou installer resvg puis relancer.",
+      "⚠ aucun rastériseur (Bun.WebView avec Chrome/Edge, resvg, rsvg-convert, magick/convert, inkscape) : contrôle des pixels NON effectué.\n" +
+        "  Ouvrir planche.svg dans un navigateur, ou installer Chrome/Edge ou resvg puis relancer.",
     );
     process.exit(0);
   }
@@ -137,6 +144,7 @@ if (import.meta.main) {
     await Bun.write(join(sortie, "comparaison.png"), encoderPng(image));
     console.log(`${sortie}/comparaison.png`);
   }
+  await fermerRaster();
   console.log(
     "→ ouvrir ces planches avec l'outil de lecture d'image AVANT de conclure quoi que ce soit.",
   );
