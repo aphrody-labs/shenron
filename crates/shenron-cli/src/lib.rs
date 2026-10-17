@@ -25,6 +25,7 @@ mod ocr_dbfr;
 #[cfg(feature = "ocr")]
 mod ocr_shenron;
 mod output;
+mod panels_cmd;
 pub mod shenron_cmd;
 
 /// Shenron (dragonballfr.com): Dragon Ball knowledge, databooks and manga tooling.
@@ -64,6 +65,8 @@ enum Command {
         #[command(subcommand)]
         action: ocr_dbfr::DbfrAction,
     },
+    /// Manga panels: detect every panel of a page and export each as PNG, SVG and GIF.
+    Panels(panels_cmd::PanelsArgs),
     /// Manga pages: detection, cleanup, scanlation and layered PSD export.
     Manga {
         #[command(subcommand)]
@@ -95,6 +98,7 @@ where
         Command::Shenron(action) => shenron_cmd::run(action).await,
         #[cfg(feature = "ocr")]
         Command::Dbfr { action } => ocr_dbfr::run(action).await,
+        Command::Panels(args) => panels_cmd::run(args).await,
         Command::Manga { action } => manga_cmd::run(action).await,
     };
     match outcome {
