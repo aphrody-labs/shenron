@@ -106,19 +106,20 @@
       "sha256": "be1e0e7b28237fdbfc936119281e6df2b43e49bbfa9a99498c174f58481b3f5b"
     },
     "plugin/skills/toriyama-svg/scripts/toriyama.js": {
-      "revision": "aef851f",
+      "revision": "aef851fe+modifications",
       "date": "2026-10-05",
       "sources": {
         "packages/ui/src/toriyama-svg/couverture.ts": "36bb1c785adc37ba09c7d516d8ec8845ffb97de4f1f940cb3db530a6b78978c6",
         "packages/ui/src/toriyama-svg/emblems.ts": "c9ff5f5cc92b213f57b0320ad4e37605f4d1cfef6efc770e6f2aa2e5f6f0025f",
         "packages/ui/src/toriyama-svg/geometry.ts": "63fbd6ee0ea51b9dd0cdd7e00550c9b9febb4fc3e212db37ec51421e7c3c22db",
-        "packages/ui/src/toriyama-svg/index.ts": "a8b7a77110cb06b98dc5df6d8926aa0078017bbe102a70b93e44e1623ea43e71",
-        "packages/ui/src/toriyama-svg/kinto-un.ts": "68f6c646bc11b07ca2e3a86c34547d5521e3220de855b1561533ef69966de78a",
+        "packages/ui/src/toriyama-svg/index.ts": "a7ecb660efb16f444f444c34f8fa696d478d5fd5b540be8940ac1dfd54d78609",
+        "packages/ui/src/toriyama-svg/kinto-un.ts": "0087873f1f8c867321038c1edb6f57496c883454dba7ba179104ae2bb9a61305",
+        "packages/ui/src/toriyama-svg/model3d.ts": "90ae7b1f6d121f3302a582dc7e3ebe60a3638f5db5f482613d9ac179909fa179",
         "packages/ui/src/toriyama-svg/palette.ts": "a9242c11f704ce3756c8aa18b105a46df8fdbb693bc993a8f848b7570ec6bdc9",
         "packages/ui/src/toriyama-svg/sphere.ts": "7feed0aba0942253273204814be68bcfad44cbd1f64897f1d45eadf18959b8df",
         "scripts/plugin/src/toriyama.ts": "e2870b41b11957f2b8713c1c9aa93bdc206f3e85cc4d85dc42a39d0967849360"
       },
-      "sha256": "3c77d85d072f34d35960a13c0e4439fd0e4ccfefa5deecdfceaabf532fb5ee74",
+      "sha256": "f424d4f7ccc663ac9e16099b573cad23453dd7f4aec49a12b8706ab49b680f94",
       "paquet": true
     }
   }

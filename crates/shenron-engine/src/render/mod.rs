@@ -3,18 +3,22 @@
 //! Modern Unified Rendering Pipeline: GPU backend abstraction, 3D meshes & procedural geometry,
 //! CPU & GPU rasterization, GLB parsing, clustered lighting, and virtual geometry.
 
+pub mod dragon_ball;
 pub mod glb;
 pub mod gpu_backend;
 pub mod gpu_context;
 pub mod gpu_driven;
+pub mod kinto_un;
 pub mod lighting;
 pub mod mesh;
 pub mod model_serve;
 pub mod postprocess;
 pub mod raster3d;
 pub mod shaders;
+pub mod toriyama3d;
 pub mod virtual_geometry;
 
+pub use dragon_ball::{DRAGON_BALL_WGSL, DragonBallUniforms};
 pub use glb::{GlbError, parse_glb};
 pub use gpu_backend::{
     AdapterReport, ComputeLimits, DeviceLimits, DeviceRequest, GpuBackendError, GpuDevice,
@@ -26,6 +30,7 @@ pub use gpu_driven::{
     DrawIndexedIndirectArgs, DrawIndirectArgs, GpuInstanceData, IndirectDrawBuffer,
     InstanceStorageBuffer,
 };
+pub use kinto_un::{KINTO_UN_WGSL, KintoUnUniforms};
 pub use lighting::{CascadedShadowMaps, ClusterGrid, GpuLight, VoxelVolumeUniforms};
 pub use mesh::{
     Camera3d, Geometry, MeshCache, MeshData, MeshError, Model, Primitive, Ray3d, Texture,
@@ -37,6 +42,7 @@ pub use model_serve::{
 };
 pub use postprocess::{HaltonSequence, PostProcessUniforms};
 pub use raster3d::{DISTANCE_CAMERA, FOCALE, TILT, couleur_fond, render_model_cpu};
+pub use toriyama3d::{ToriyamaModel, ToriyamaPipeline, ToriyamaUniforms};
 pub use virtual_geometry::{
     HiZCulling, Meshlet, MeshletBounds, MeshletBuilder, pack_visibility_id, unpack_visibility_id,
 };

@@ -1,7 +1,7 @@
 // @bun
 // Généré par scripts/plugin/build-references.ts — ne pas éditer.
-// Sources : packages/ui/src/toriyama-svg/couverture.ts, packages/ui/src/toriyama-svg/emblems.ts, packages/ui/src/toriyama-svg/geometry.ts, packages/ui/src/toriyama-svg/index.ts, packages/ui/src/toriyama-svg/kinto-un.ts, packages/ui/src/toriyama-svg/palette.ts, packages/ui/src/toriyama-svg/sphere.ts, scripts/plugin/src/toriyama.ts
-// Révision : aef851f (2026-10-05)
+// Sources : packages/ui/src/toriyama-svg/couverture.ts, packages/ui/src/toriyama-svg/emblems.ts, packages/ui/src/toriyama-svg/geometry.ts, packages/ui/src/toriyama-svg/index.ts, packages/ui/src/toriyama-svg/kinto-un.ts, packages/ui/src/toriyama-svg/model3d.ts, packages/ui/src/toriyama-svg/palette.ts, packages/ui/src/toriyama-svg/sphere.ts, scripts/plugin/src/toriyama.ts
+// Révision : aef851fe+modifications (2026-10-05)
 var __defProp = Object.defineProperty;
 var __returnValue = (v) => v;
 function __exportSetter(name, newValue) {
@@ -26,6 +26,7 @@ __export(exports_kinto_un, {
   arcs: () => arcs,
   corpsIcone: () => corpsIcone,
   corpsNuage: () => corpsNuage,
+  lobesIcone: () => lobesIcone,
   svgIcone: () => svgIcone,
   svgIllustration: () => svgIllustration,
   svgMonochrome: () => svgMonochrome,
@@ -600,6 +601,26 @@ var KINTO_UN_ICONE = {
   interieurs: [],
   traits: { encre: 12, volute: 9 }
 };
+function lobesIcone() {
+  const n = CONTOUR_ICONE.length;
+  const cx = CONTOUR_ICONE.reduce((s, p) => s + p[0], 0) / n;
+  const cy = CONTOUR_ICONE.reduce((s, p) => s + p[1], 0) / n;
+  return CONTOUR_ICONE.map((a, i) => {
+    const b = CONTOUR_ICONE[(i + 1) % n];
+    const h = FLECHES_ICONE[i];
+    const corde = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    const r = rayonLobe(corde, h);
+    const mx = (a[0] + b[0]) / 2;
+    const my = (a[1] + b[1]) / 2;
+    let nx = -(b[1] - a[1]) / corde;
+    let ny = (b[0] - a[0]) / corde;
+    if (nx * (mx - cx) + ny * (my - cy) < 0)
+      [nx, ny] = [-nx, -ny];
+    const ox = mx + nx * (h - r);
+    const oy = my + ny * (h - r);
+    return { x: (ox - 256) / 256, y: (256 - oy) / 256, r: r / 256 };
+  });
+}
 function corpsNuage(n, prefixe = "kt", avecVolutes = true) {
   const c = KINTO_UN_COULEURS;
   const volutesSvg = avecVolutes ? `<g fill="none" stroke="${c.encre}" stroke-width="${n.traits.volute}" stroke-linecap="round" stroke-linejoin="round">
@@ -785,6 +806,62 @@ function etoileViewBox(R = 50) {
     cy
   };
 }
+// packages/ui/src/toriyama-svg/model3d.ts
+var DRAGON_BALL_PARAM_LEN = 31;
+var KINTO_UN_PARAM_LEN = 66;
+var rgb = (hex) => {
+  const n = Number.parseInt(hex.slice(1), 16);
+  return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255];
+};
+function dragonBallParams(stars) {
+  const scale = SPHERE_BOITE / SPHERE_R_INT;
+  const positions = SPHERE_ETOILES[stars].flatMap(([x, y]) => [x * scale, -y * scale]);
+  const p = [
+    SPHERE_CERNE / SPHERE_R_EXT,
+    SPHERE_R_ETOILE[stars],
+    SPHERE_ETOILES[stars].length,
+    (SPHERE_FOYER.x - SPHERE_R_EXT) / SPHERE_R_INT,
+    -(SPHERE_FOYER.y - SPHERE_R_EXT) / SPHERE_R_INT,
+    ...rgb(SPHERE_DEGRADE[0][1]),
+    ...rgb(SPHERE_DEGRADE[5][1]),
+    ...rgb(SPHERE_DEGRADE.at(-1)[1]),
+    ...rgb(SPHERE_ROUGE_ETOILE),
+    ...positions
+  ];
+  while (p.length < DRAGON_BALL_PARAM_LEN)
+    p.push(0);
+  return Float32Array.from(p);
+}
+function kintoUnParams() {
+  const lobes = lobesIcone();
+  const xs = lobes.map((l) => l.x);
+  const ys = lobes.map((l) => l.y);
+  const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
+  const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+  const rx = (Math.max(...xs) - Math.min(...xs)) / 2;
+  const ry = (Math.max(...ys) - Math.min(...ys)) / 2;
+  const p = [
+    12 / 256,
+    lobes.length,
+    0.035,
+    cx,
+    cy,
+    rx,
+    ry,
+    Math.min(rx, ry) * 0.55,
+    0.12,
+    ...rgb(KINTO_UN_COULEURS.lumiere),
+    ...rgb(KINTO_UN_COULEURS.ombre),
+    ...rgb(KINTO_UN_COULEURS.encre),
+    ...lobes.flatMap((l) => [l.x, l.y, l.r])
+  ];
+  while (p.length < KINTO_UN_PARAM_LEN)
+    p.push(0);
+  return Float32Array.from(p);
+}
+function modelParams(model, stars = 4) {
+  return model === "dragon-ball" ? dragonBallParams(stars) : kintoUnParams();
+}
 // scripts/plugin/src/toriyama.ts
 function svgSphere(n) {
   const k = nombreEtoiles(n);
@@ -887,7 +964,9 @@ if (import.meta.main) {
     process.stdout.write(contenu);
 }
 export {
+  DRAGON_BALL_PARAM_LEN,
   EMBLEMS,
+  KINTO_UN_PARAM_LEN,
   SPHERE_BOITE,
   SPHERE_CERNE,
   SPHERE_DEGRADE,
@@ -901,12 +980,15 @@ export {
   TORIYAMA_PALETTE,
   arcs,
   exports_couverture as couverture,
+  dragonBallParams,
   etoilesSphere,
   inkStroke,
   exports_kinto_un as kintoUn,
+  kintoUnParams,
   meche,
   mesures,
   mirrorX,
+  modelParams,
   nombreEtoiles,
   planDombre,
   radialSpeedlines,

@@ -7,17 +7,20 @@
 //! integrated with `shenron-re`.
 
 use std::collections::HashMap;
+#[cfg(not(target_arch = "wasm32"))]
 use std::fs::File;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+#[cfg(not(target_arch = "wasm32"))]
 use memmap2::Mmap;
 use parking_lot::{Mutex, RwLock};
 use shenron_re::fs::XenoverseVfs;
 
 /// Represents a loaded asset slice backed by either a memory-mapped file or in-memory bytes.
 pub enum AssetData {
-    /// Zero-copy memory-mapped file view.
+    /// Zero-copy memory-mapped file view (native only: wasm32 has no mmap).
+    #[cfg(not(target_arch = "wasm32"))]
     Mmap(Mmap),
     /// In-memory byte buffer for embedded or procedural assets.
     Memory(Vec<u8>),
@@ -26,6 +29,7 @@ pub enum AssetData {
 impl AsRef<[u8]> for AssetData {
     fn as_ref(&self) -> &[u8] {
         match self {
+            #[cfg(not(target_arch = "wasm32"))]
             Self::Mmap(m) => m.as_ref(),
             Self::Memory(v) => v.as_slice(),
         }
@@ -338,11 +342,16 @@ impl VirtualFileSystem {
             )
         })?;
 
-        let file = File::open(&physical_path)?;
-        // SAFETY: Memory mapping is read-only.
-        let mmap = unsafe { Mmap::map(&file)? };
+        #[cfg(not(target_arch = "wasm32"))]
+        let data = {
+            let file = File::open(&physical_path)?;
+            // SAFETY: Memory mapping is read-only.
+            AssetData::Mmap(unsafe { Mmap::map(&file)? })
+        };
+        #[cfg(target_arch = "wasm32")]
+        let data = AssetData::Memory(std::fs::read(&physical_path)?);
 
-        let handle = AssetHandle { path: uri.to_string(), data: Arc::new(AssetData::Mmap(mmap)) };
+        let handle = AssetHandle { path: uri.to_string(), data: Arc::new(data) };
 
         self.cache.write().insert(uri.to_string(), handle.clone());
         Ok(handle)

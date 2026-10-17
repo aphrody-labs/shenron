@@ -15,7 +15,7 @@
     },
     {
       "name": "DragonBall3D",
-      "module": "@aphrody/shenron-ui/toriyama/DragonBall3D"
+      "module": "@aphrody/shenron-ui/toriyama/Toriyama3D"
     },
     {
       "name": "DragonBallLoader",
@@ -44,6 +44,10 @@
     {
       "name": "KintoUn",
       "module": "@aphrody/shenron-ui/toriyama/KintoUn"
+    },
+    {
+      "name": "KintoUn3D",
+      "module": "@aphrody/shenron-ui/toriyama/Toriyama3D"
     },
     {
       "name": "KintoUnCloud",
@@ -76,6 +80,10 @@
     {
       "name": "ShenronSilhouette",
       "module": "@aphrody/shenron-ui/toriyama/ShenronSilhouette"
+    },
+    {
+      "name": "Toriyama3D",
+      "module": "@aphrody/shenron-ui/toriyama/Toriyama3D"
     },
     {
       "name": "ToriyamaEmblem",

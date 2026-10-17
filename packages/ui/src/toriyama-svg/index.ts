@@ -8,3 +8,4 @@ export * from "./emblems";
 export * from "./sphere";
 export * as kintoUn from "./kinto-un";
 export * as couverture from "./couverture";
+export * from "./model3d";

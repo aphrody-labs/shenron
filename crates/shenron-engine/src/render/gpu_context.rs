@@ -42,6 +42,9 @@ pub struct GpuContext {
     pub supports_bindless: bool,
 }
 
+// On wasm32 the WebGPU handles are neither Send nor Sync: the `Arc` only shares them inside the
+// single browser thread, which is what the context is used for there.
+#[cfg_attr(target_arch = "wasm32", expect(clippy::arc_with_non_send_sync))]
 impl GpuContext {
     /// Initializes a headless or compute-focused GPU context.
     pub async fn new_headless() -> Result<Self, GpuError> {

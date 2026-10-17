@@ -168,6 +168,42 @@ export const KINTO_UN_ICONE: Nuage = {
   traits: { encre: 12, volute: 9 },
 };
 
+// ──────────────────────────── Modèle 3D ──────────────────────────────────
+
+/** Une sphère par lobe du contour : centre et rayon de l'arc tendu sur sa corde. */
+export interface Lobe3D {
+  x: number;
+  y: number;
+  r: number;
+}
+
+/**
+ * Lobes de l'icône, dans l'espace du modèle 3D (`render::kinto_un` de shenron-engine) :
+ * origine au centre de la boîte 512, y vers le haut, unité = demi-côté (256 px). Chaque lobe
+ * est le cercle de l'arc dessiné par `arcs()` entre deux points du contour, côté intérieur.
+ */
+export function lobesIcone(): Lobe3D[] {
+  const n = CONTOUR_ICONE.length;
+  const cx = CONTOUR_ICONE.reduce((s, p) => s + p[0], 0) / n;
+  const cy = CONTOUR_ICONE.reduce((s, p) => s + p[1], 0) / n;
+  return CONTOUR_ICONE.map((a, i) => {
+    const b = CONTOUR_ICONE[(i + 1) % n]!;
+    const h = FLECHES_ICONE[i]!;
+    const corde = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    const r = rayonLobe(corde, h);
+    const mx = (a[0] + b[0]) / 2;
+    const my = (a[1] + b[1]) / 2;
+    // Normale de la corde orientée vers l'extérieur (à l'opposé du centre de gravité).
+    let nx = -(b[1] - a[1]) / corde;
+    let ny = (b[0] - a[0]) / corde;
+    if (nx * (mx - cx) + ny * (my - cy) < 0) [nx, ny] = [-nx, -ny];
+    // Le sommet de l'arc est à mi-corde + h vers l'extérieur ; le centre, à r en deçà.
+    const ox = mx + nx * (h - r);
+    const oy = my + ny * (h - r);
+    return { x: (ox - 256) / 256, y: (256 - oy) / 256, r: r / 256 };
+  });
+}
+
 // ──────────────────────────── Sérialisation ────────────────────────────────
 
 /**

@@ -19,7 +19,7 @@ workspace = true
 [features]
 default = ["vello"]
 vello = ["dep:vello"]
-wasm = ["dep:wasm-bindgen", "dep:serde-wasm-bindgen", "dep:js-sys", "dep:web-sys"]
+wasm = ["dep:wasm-bindgen", "dep:wasm-bindgen-futures", "dep:serde-wasm-bindgen", "dep:js-sys", "dep:web-sys"]
 
 [dependencies]
 # Math, memory and core
@@ -43,6 +43,7 @@ image = { workspace = true }
 
 # WASM optional/conditional
 wasm-bindgen = { workspace = true, optional = true }
+wasm-bindgen-futures = { workspace = true, optional = true }
 serde-wasm-bindgen = { workspace = true, optional = true }
 js-sys = { workspace = true, optional = true }
 web-sys = { workspace = true, optional = true, features = [
@@ -56,6 +57,7 @@ pollster = { workspace = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = { workspace = true }
+wasm-bindgen-futures = { workspace = true }
 serde-wasm-bindgen = { workspace = true }
 js-sys = { workspace = true }
 web-sys = { workspace = true, features = [
@@ -64,5 +66,6 @@ web-sys = { workspace = true, features = [
 ] }
 
 [dev-dependencies]
+naga = { version = "30.0.1", features = ["wgsl-in"] }
 pollster = { workspace = true }
 serde_json = { workspace = true }

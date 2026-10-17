@@ -1,7 +1,7 @@
 /**
  * The home hero: the cover wordmark (« DRAGON » with the one-star ball in its O, « BALL » in
  * red, as on the tankōbon and Dragon Ball Super covers), the flying Kinto-Un,
- * a qualified still frame (or, without one, the four-star ball in real-time 3D), then the lede edited in `/admin/home` and the search — the first
+ * a qualified still frame (or, without one, the four-star ball in real-time 3D, wgpu on WebGPU), then the lede edited in `/admin/home` and the search — the first
  * gesture of the page.
  *
  * Server component; the cloud and the search are the client islands.
@@ -9,7 +9,6 @@
 import Image from "next/image";
 import {
   DragonBall,
-  DragonBall3D,
   LETTRES_BALL,
   LETTRES_DRAGON_APRES_BOULE,
   LETTRES_DRAGON_AVANT_BOULE,
@@ -17,6 +16,7 @@ import {
 } from "@aphrody/shenron-ui/toriyama";
 import { T } from "@/components/T";
 import type { HomeConfig } from "@/lib/home-scenes";
+import { HeroBall3D } from "./HeroBall3D";
 import { HomeSearch } from "./HomeSearch";
 import { KintoUnVolant } from "./KintoUnVolant";
 import { canonicalFrameUrl } from "@/lib/episode-frame-banner";
@@ -54,7 +54,7 @@ export function HomeHero({
           className="home-hero__ball pointer-events-none absolute right-[7%] top-1/2 z-[2] hidden -translate-y-1/2 md:block"
           aria-hidden="true"
         >
-          <DragonBall3D stars={4} size="clamp(11rem, 22vw, 20rem)" decorative />
+          <HeroBall3D size="clamp(11rem, 22vw, 20rem)" />
         </div>
       )}
       <KintoUnVolant />

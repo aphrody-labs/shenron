@@ -9761,6 +9761,7 @@ dependencies = [
  "js-sys",
  "log",
  "memmap2",
+ "naga",
  "parking_lot",
  "pollster 1.0.1",
  "rayon",
@@ -9772,6 +9773,7 @@ dependencies = [
  "thiserror 2.0.21",
  "vello",
  "wasm-bindgen",
+ "wasm-bindgen-futures",
  "web-sys",
  "wgpu",
 ]
