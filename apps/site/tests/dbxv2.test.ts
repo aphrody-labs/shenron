@@ -11,7 +11,10 @@ const { createDbxv2Service, previewKindOf, Dbxv2SiteError } = await import("../s
 const { ImmersionMapSchema } = await import("../src/lib/dbxv2-immersion");
 
 const TOKEN = "t".repeat(32);
-const ENV = { DBXV2_SERVER_URL: "http://127.0.0.1:9", DBXV2_TOKEN: TOKEN } as NodeJS.ProcessEnv;
+const ENV = {
+  DBXV2_SERVER_URL: "http://127.0.0.1:9",
+  DBXV2_TOKEN: TOKEN,
+} as unknown as NodeJS.ProcessEnv;
 
 describe("garde du site", () => {
   test("désactivé par défaut", () => {
