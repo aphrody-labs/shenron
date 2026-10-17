@@ -4,7 +4,7 @@
  * build-dbxv2-db.ts — builds the PRIVATE DBXV2 database (SQLite) on the build host.
  *
  *   bun scripts/data/build-dbxv2-db.ts build [--assets DIR] [--cpk-index FILE] [--out FILE]
- *   bun scripts/data/build-dbxv2-db.ts embed [--db FILE] [--embed-url URL] [--batch N] [--limit N]
+ *   bun scripts/data/build-dbxv2-db.ts embed [--db FILE] [--embed-url URL] [--batch N=16] [--limit N]
  *   bun scripts/data/build-dbxv2-db.ts plan  [--db FILE]
  *
  * Game data (Bandai Namco / Dimps) never enters Git, the public VFS, a build artifact or the
@@ -44,7 +44,7 @@ const { positionals, values } = parseArgs({
     out: { type: "string", default: join(HOME, "var/dbxv2-db/dbxv2.sqlite") },
     db: { type: "string" },
     "embed-url": { type: "string", default: "http://127.0.0.1:18795/v1" },
-    batch: { type: "string", default: "64" },
+    batch: { type: "string", default: "16" },
     limit: { type: "string" },
   },
 });
@@ -123,7 +123,7 @@ if (command === "build") {
   } else lines.push(`no database at ${dbPath}`);
   lines.push(
     "# tmux (fabrique), verrou lourd, journal durable :",
-    `tmux new-session -d -s dbxv2-embed 'aphrody-embed serve --port 18795 & sleep 20; flock ${lock} bun scripts/data/build-dbxv2-db.ts embed > ~/var/dbxv2-db/embed.log 2>&1; echo EXIT_CODE=$? >> ~/var/dbxv2-db/embed.log'`,
+    `tmux new-session -d -s dbxv2-embed 'aphrody-embed serve --port 18795 --model-dir $HOME/var/models & sleep 25; flock ${lock} bun scripts/data/build-dbxv2-db.ts embed --batch 16 > ~/var/dbxv2-db/embed.log 2>&1; echo EXIT_CODE=$? >> ~/var/dbxv2-db/embed.log'`,
   );
   console.log(lines.join("\n"));
 } else {

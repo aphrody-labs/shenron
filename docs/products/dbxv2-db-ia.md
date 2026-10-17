@@ -23,8 +23,26 @@ bun scripts/data/build-dbxv2-db.ts plan       # volumes + commande tmux d'embedd
 
 L'embedding utilise `aphrody-embed serve` local, sous `flock ~/build/locks/heavy.lock`, dans tmux. Jamais `rag:build` sur le bot de production.
 
+Procédure exacte (qualifiée le 2026-10-18, 15578 chunks en environ 51 min) :
+
+```sh
+# 1. serveur : --model-dir obligatoire (modèle e5 dans ~/var/models), attendre ~25 s
+aphrody-embed serve --port 18795 --model-dir $HOME/var/models &
+# 2. embedding : lots de 16 au plus (au-delà, le serveur répond 400), défaut du script
+flock ~/build/locks/heavy.lock bun scripts/data/build-dbxv2-db.ts embed --batch 16   --embed-url http://127.0.0.1:18795/v1 > ~/var/dbxv2-db/embed.log 2>&1
+```
+
+`--batch` vaut 16 par défaut ; `plan` imprime la commande tmux complète. La reprise est idempotente (`pendingChunks`).
+
+## Validation de la recherche hybride (2026-10-18)
+
+- Nombre de vecteurs int8 = nombre de chunks = 15578 (aucun chunk sans vecteur).
+- Requêtes « Kamehameha », « Genkidama » (fr/en) et « かめはめ波 » (ja) via `openDbxv2Db(path, { embedder: "http://127.0.0.1:18795/v1" })` : `mode: "hybrid"`, 8 résultats ; sans embedder `mode: "lexical"`.
+- L'hybride recoupe 4 à 5 résultats sur 8 avec le lexical et fait remonter des passages sémantiquement proches (par exemple la phase Genki pour « Genkidama ») que la correspondance de termes seule manque.
+
 ## Limites
 
 - Les lecteurs MSG et CMS de `bun_re` (`summarize`) sont des maquettes ; `msg.ts` et `decodeCms` lisent les vrais layouts en attendant leur correction.
 - CUS, BAC, BCM et moveset ne sont pas encore décodés fiablement : seuls le format et la catégorie sont indexés.
+- Certaines clés de messages (`lobby_text`, `qs_*`) sont lues en UTF-16 puis décodées comme CJK (identifiants illisibles) : le décodage de clés de `msg.ts` reste à corriger ; le texte des valeurs est correct.
 - sha256 calculé pour les genres `text` et `data` uniquement.
