@@ -19,8 +19,8 @@
 //!   Japanese vertical typesetting (Tatechūyoko), and software rasterizer.
 //! - [`asm`]: Canonical MSVC-dialect x86-64 machine code encoder, disassembler,
 //!   binary format triage (PE/ELF, Shannon entropy), and memory pattern scanning.
-//! - [`game`]: Deterministic fighting game simulation core, rollback netcode,
-//!   hitboxes/hurtboxes, beam clashes, and WebGPU render packets.
+//! - [`game`]: Facade over `dragon-pixel` (the game logic owner) plus the Xenoverse bridge:
+//!   combat, frame data, roster, and WebGPU render packets.
 //! - [`wasm`]: WebAssembly bindings for browser canvas and WebGPU engines.
 
 pub mod asm;

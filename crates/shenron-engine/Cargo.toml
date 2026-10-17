@@ -35,6 +35,7 @@ bytes = { workspace = true }
 sha2 = { workspace = true }
 shenron-panels = { workspace = true }
 shenron-re = { path = "../shenron-re", version = "1.4.4" }
+dragon-pixel = { path = "../dragon-pixel" }
 
 # GPU & Graphics
 wgpu = { workspace = true }
