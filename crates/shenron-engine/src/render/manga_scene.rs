@@ -41,6 +41,16 @@ pub struct SegmentOptions {
     pub min_panel: f32,
     /// Recursion depth of the XY-cut.
     pub max_depth: u32,
+    /// Weaker paper share accepted when both ends of the line are paper: an onomatopoeia may
+    /// cross a gutter, but a line through a panel always ends on its ink borders.
+    pub sfx_ratio: f32,
+    /// Length of each end checked by `sfx_ratio`, as a fraction of the line.
+    pub end_margin: f32,
+    /// A part smaller than this share of the page is merged into its neighbour: letters of a
+    /// logo or a title line are not panels (the smallest real panels measured are 3.5 %).
+    pub min_part_area: f32,
+    /// Parts below this share of the page are specks, left to the size filter.
+    pub negligible_area: f32,
 }
 
 impl Default for SegmentOptions {
@@ -51,6 +61,10 @@ impl Default for SegmentOptions {
             min_gutter: 0.003,
             min_panel: 0.06,
             max_depth: 5,
+            sfx_ratio: 0.95,
+            end_margin: 0.02,
+            min_part_area: 0.02,
+            negligible_area: 0.002,
         }
     }
 }
@@ -102,7 +116,18 @@ fn gutters(page: &Page<'_>, area: Area, rows: bool, opts: &SegmentOptions) -> Ve
                 }
             })
             .count();
-        let gutter = paper as f32 >= opts.gutter_ratio * span as f32;
+        let at = |j: usize| {
+            if rows {
+                page.paper(area.x0 + j, area.y0 + i)
+            } else {
+                page.paper(area.x0 + i, area.y0 + j)
+            }
+        };
+        let ends = ((opts.end_margin * span as f32).ceil() as usize).clamp(2, span.max(2));
+        let open_ends =
+            || (0..ends.min(span)).all(&at) && (span.saturating_sub(ends)..span).all(&at);
+        let gutter = paper as f32 >= opts.gutter_ratio * span as f32
+            || (paper as f32 >= opts.sfx_ratio * span as f32 && open_ends());
         match (gutter, start) {
             (true, None) => start = Some(i),
             (false, Some(s)) => {
@@ -157,6 +182,34 @@ fn trim(page: &Page<'_>, area: Area) -> Option<Area> {
     (x0 < x1 && y0 < y1).then_some(Area { x0, y0, x1, y1 })
 }
 
+/// Merges every part too small to be a panel into its neighbour along the cut, so that a title
+/// line joins its logo and the letters of a logo stay together, instead of being dropped.
+fn merge_fragments(page: &Page<'_>, mut parts: Vec<Area>, opts: &SegmentOptions) -> Vec<Area> {
+    let page_area = (page.width * page.height) as f32;
+    let fragment = |part: Area| {
+        trim(page, part).is_some_and(|t| {
+            let share = ((t.x1 - t.x0) * (t.y1 - t.y0)) as f32 / page_area;
+            share > opts.negligible_area && share < opts.min_part_area
+        })
+    };
+    let union = |a: Area, b: Area| Area {
+        x0: a.x0.min(b.x0),
+        y0: a.y0.min(b.y0),
+        x1: a.x1.max(b.x1),
+        y1: a.y1.max(b.y1),
+    };
+    while parts.len() > 1 {
+        let Some(i) = parts.iter().position(|&p| fragment(p)) else { break };
+        // Prefer the preceding part: a title line sits under its logo, over its first panel.
+        let j = if i > 0 { i - 1 } else { i + 1 };
+        let merged = union(parts[i], parts[j]);
+        let keep = i.min(j);
+        parts[keep] = merged;
+        parts.remove(i.max(j));
+    }
+    parts
+}
+
 fn cut(
     page: &Page<'_>,
     area: Area,
@@ -173,7 +226,7 @@ fn cut(
     }
     if depth < opts.max_depth {
         for axis in [rows, !rows] {
-            let parts = bands(page, area, axis, opts);
+            let parts = merge_fragments(page, bands(page, area, axis, opts), opts);
             if parts.len() > 1 {
                 for part in parts {
                     cut(page, part, !axis, depth + 1, opts, out);
@@ -210,13 +263,30 @@ pub fn segment_panels(
             h: (a.y1 - a.y0) as f32 / h,
         })
         .collect();
-    // Reading order: a panel comes first when it is above (no vertical overlap) or, on the same
-    // tier, to the right.
-    panels.sort_by(|a, b| {
-        let same_tier = a.y < b.y + b.h * 0.5 && b.y < a.y + a.h * 0.5;
-        if same_tier { (b.x + b.w).total_cmp(&(a.x + a.w)) } else { a.y.total_cmp(&b.y) }
-    });
+    reading_order(&mut panels);
     panels
+}
+
+/// Japanese reading order, as a total order: panels are grouped in tiers (a panel joins the
+/// current tier when it starts above the middle of the tier's shortest panel), tiers top to
+/// bottom, panels right to left within a tier. A pairwise "same tier" comparator is not
+/// transitive (L-shaped layouts) and may make `sort_by` panic.
+fn reading_order(panels: &mut Vec<PanelRect>) {
+    panels.sort_by(|a, b| a.y.total_cmp(&b.y));
+    let mut tiers: Vec<Vec<PanelRect>> = Vec::new();
+    for p in panels.drain(..) {
+        let bound = tiers
+            .last()
+            .map(|tier| tier.iter().map(|q| q.y + q.h * 0.5).fold(f32::INFINITY, f32::min));
+        match (tiers.last_mut(), bound) {
+            (Some(tier), Some(bound)) if p.y < bound => tier.push(p),
+            _ => tiers.push(vec![p]),
+        }
+    }
+    for mut tier in tiers {
+        tier.sort_by(|a, b| (b.x + b.w).total_cmp(&(a.x + a.w)));
+        panels.extend(tier);
+    }
 }
 
 /// Box-filters `rgba` (`width × height`) so that its longer side is at most `max_side`.
@@ -638,6 +708,53 @@ mod tests {
         assert_eq!(&out[4..8], &[255, 255, 255, 255]);
         let (same, w, h) = downsample(&rgba, 4, 2, 8);
         assert_eq!((w, h, same.len()), (4, 2, rgba.len()));
+    }
+
+    #[test]
+    fn an_onomatopoeia_across_a_gutter_does_not_merge_the_tiers() {
+        // Two tiers; a 3 % wide blot crosses the gutter in the middle, the ends stay paper.
+        let rgba = page(400, 600, &[(10, 10, 390, 290), (10, 310, 390, 590), (190, 280, 202, 320)]);
+        let panels = segment_panels(&rgba, 400, 600, &SegmentOptions::default());
+        assert_eq!(panels.len(), 2, "{panels:?}");
+    }
+
+    #[test]
+    fn a_line_through_a_panel_is_not_a_gutter() {
+        // One panel with a near-white inner row (95 % paper) that ends on the ink borders.
+        let mut rgba = page(400, 600, &[(10, 10, 390, 590)]);
+        for y in 298..304 {
+            for x in 20..380 {
+                let i = (y * 400 + x) * 4;
+                rgba[i..i + 3].copy_from_slice(&[255, 255, 255]);
+            }
+        }
+        let panels = segment_panels(&rgba, 400, 600, &SegmentOptions::default());
+        assert_eq!(panels.len(), 1, "{panels:?}");
+    }
+
+    #[test]
+    fn logo_letters_stay_one_block() {
+        // A title line of five letters 8 px apart over a full-width panel.
+        let mut boxes: Vec<(usize, usize, usize, usize)> =
+            (0..5).map(|k| (40 + k * 60, 20, 92 + k * 60, 80)).collect();
+        boxes.push((10, 120, 390, 590));
+        let rgba = page(400, 600, &boxes);
+        let panels = segment_panels(&rgba, 400, 600, &SegmentOptions::default());
+        assert_eq!(panels.len(), 2, "logo kept whole: {panels:?}");
+        assert!(panels[0].w > 0.7);
+    }
+
+    #[test]
+    fn an_l_shaped_layout_sorts_without_panic() {
+        let mut panels = vec![
+            PanelRect { x: 0.5, y: 0.0, w: 0.5, h: 1.0 },
+            PanelRect { x: 0.0, y: 0.0, w: 0.5, h: 0.3 },
+            PanelRect { x: 0.0, y: 0.32, w: 0.5, h: 0.3 },
+            PanelRect { x: 0.0, y: 0.64, w: 0.5, h: 0.36 },
+        ];
+        reading_order(&mut panels);
+        assert_eq!(panels.len(), 4);
+        assert_eq!(panels[0].x, 0.5, "the tall right panel reads first");
     }
 
     #[test]
