@@ -48,6 +48,7 @@ const BASELINE_FILE = join(import.meta.dir, "check-workspace-packages.baseline.j
 const PACKAGES: Readonly<Record<string, string>> = {
   "@aphrody/shenron-config": "packages/config",
   "@aphrody/shenron-db": "packages/db",
+  "@aphrody/shenron-dbxv2": "packages/dbxv2",
   "@aphrody/shenron-auth": "packages/auth",
 
   "@aphrody/shenron-api": "packages/api",
@@ -77,6 +78,8 @@ const ALLOWED_EDGES: Readonly<
   "@aphrody/shenron-config": { runtime: [], dev: [] },
   "@aphrody/shenron-db": { runtime: ["@aphrody/shenron-config"], dev: [] },
   "@aphrody/shenron-auth": { runtime: ["@aphrody/shenron-config"], dev: ["@aphrody/shenron-db"] },
+  // Private DBXV2 access: reads the private database through the db subpath only (never public).
+  "@aphrody/shenron-dbxv2": { runtime: ["@aphrody/shenron-db"], dev: [] },
 
   "@aphrody/shenron-api": {
     runtime: [
@@ -117,6 +120,7 @@ const ALLOWED_EDGES: Readonly<
 
 /** Subpath restrictions on allowed package edges. */
 const EDGE_SUBPATHS: Readonly<Record<string, Readonly<Record<string, readonly string[]>>>> = {
+  "@aphrody/shenron-dbxv2": { "@aphrody/shenron-db": ["@aphrody/shenron-db/dbxv2"] },
   // Chat engine doctrine only (§4.1): personas and the agent home, never the pipeline runtime.
   "@aphrody/shenron-api": {
     "@aphrody/shenron-pipeline": [

@@ -29,6 +29,9 @@
       "path": "packages/db/tsconfig.json"
     },
     {
+      "path": "packages/dbxv2/tsconfig.json"
+    },
+    {
       "path": "packages/engine/tsconfig.json"
     },
     {

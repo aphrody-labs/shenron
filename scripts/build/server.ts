@@ -51,6 +51,7 @@ import { stageVideoPublic } from "./video-assets";
 import { pack, publicVfsProblems } from "../../apps/server/src/payload";
 import { requireProductionVfs } from "./server-vfs-policy";
 import { ensureKoharuWasm } from "./koharu-wasm.ts";
+import { findDbxv2Leaks } from "../../packages/dbxv2/src/guard.ts";
 import { privateFiles, stagePublicData } from "./server-data.ts";
 import { templateProblems } from "../../packages/db/src/agent-homes/template";
 import { AGENT_HOME_DOCUMENTS } from "../../packages/db/src/agent-homes/types";
@@ -247,6 +248,13 @@ cpSync(join(ROOT, "plugin"), pluginOut, { recursive: true });
 const pluginLeaks = privateFiles(pluginOut);
 if (pluginLeaks.length)
   throw new Error(`private files in plugin/: ${pluginLeaks.slice(0, 10).join(", ")}`);
+
+// DBXV2 is private (Bandai Namco / Dimps): no generated module, declaration or marker may ship.
+const dbxv2Leaks = findDbxv2Leaks(OUT);
+if (dbxv2Leaks.length)
+  throw new Error(
+    `DBXV2 private modules in the release tree: ${dbxv2Leaks.slice(0, 10).join(", ")}`,
+  );
 
 // 3c. Public editorial data: only the listed, checked files of data/ (never data/home/ or a base).
 const dataOut = join(OUT, "data");

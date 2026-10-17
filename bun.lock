@@ -26,7 +26,7 @@
     },
     "apps/bot": {
       "name": "@aphrody/shenron-bot",
-      "version": "1.4.4",
+      "version": "1.4.5",
       "dependencies": {
         "@aphrody/discord-kit": "catalog:",
         "@aphrody/messaging": "catalog:",
@@ -64,7 +64,7 @@
     },
     "apps/server": {
       "name": "@aphrody/shenron-server",
-      "version": "1.4.4",
+      "version": "1.4.5",
       "bin": {
         "shenron-server": "./src/cli.ts",
       },
@@ -84,7 +84,7 @@
     },
     "apps/site": {
       "name": "@aphrody/shenron-site",
-      "version": "1.4.4",
+      "version": "1.4.5",
       "dependencies": {
         "@aphrody/bun-runtime-sdk": "catalog:",
         "@aphrody/bun-video": "catalog:",
@@ -235,6 +235,17 @@
         "@paralleldrive/cuid2": "catalog:",
         "drizzle-orm": "catalog:",
         "postgres": "catalog:",
+      },
+    },
+    "packages/dbxv2": {
+      "name": "@aphrody/shenron-dbxv2",
+      "version": "1.4.6",
+      "dependencies": {
+        "@aphrody/shenron-db": "workspace:*",
+        "zod": "catalog:",
+      },
+      "devDependencies": {
+        "@types/bun": "catalog:",
       },
     },
     "packages/engine": {
@@ -612,6 +623,8 @@
     "@aphrody/shenron-config": ["@aphrody/shenron-config@workspace:packages/config"],
 
     "@aphrody/shenron-db": ["@aphrody/shenron-db@workspace:packages/db"],
+
+    "@aphrody/shenron-dbxv2": ["@aphrody/shenron-dbxv2@workspace:packages/dbxv2"],
 
     "@aphrody/shenron-engine": ["@aphrody/shenron-engine@workspace:packages/engine"],
 

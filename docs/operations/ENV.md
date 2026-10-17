@@ -103,6 +103,20 @@ fois par processus.
 | `SITE_BUILD_DATABASE_URL` | Base de lecture d'un build du site qui en a besoin ; le build public de `shenron-server` compile le site sans base. |
 | `DATABASE_PATH`           | Fichier SQLite du bot (runtime + réplica wiki).                                                                     |
 
+## DBXV2 (privé) — `@aphrody/shenron-dbxv2`
+
+Données Bandai Namco / Dimps : jamais publiques, jamais dans Git, le VFS ou un artefact de build.
+Désactivé par défaut ; `isDbxv2Enabled(env)` exige l'URL et le jeton, et reste faux pour
+`NODE_ENV=production`, `SHENRON_PROFILE=public`, `SHENRON_PUBLIC_RENDER=1` ou `SHENRON_PUBLIC_BUILD=1`.
+
+| Variable           | Rôle                                                                                                              |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `DBXV2_SERVER_URL` | Origine http(s) du serveur privé `scripts/ops/dbxv2-serve.ts` (mesh ou loopback), sans identifiants ni `0.0.0.0`. |
+| `DBXV2_TOKEN`      | Jeton Bearer du serveur (16 caractères minimum), transmis en en-tête, jamais en URL ni journalisé.                |
+| `DBXV2_DB_PATH`    | Fichier SQLite de la base privée DBXV2 (`packages/db/src/dbxv2`), ouvert en lecture seule.                        |
+
+Usage : [`docs/products/dbxv2-plugin.md`](../products/dbxv2-plugin.md).
+
 ## Authentification — `@aphrody/shenron-auth`
 
 | Variable                                                                                  | Rôle                                                                                                                                                                                                                                                                                                                                                                                    |
