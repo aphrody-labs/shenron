@@ -3,7 +3,9 @@
   "sources": [
     {
       "root": ".",
-      "evidence": ["references/instantane.json"]
+      "evidence": [
+        "references/instantane.json"
+      ]
     }
   ],
   "knowledge": [
@@ -35,6 +37,7 @@
     "skills/dragon-ball/references/mcp-graphql.md",
     "skills/publish-source/SKILL.md",
     "skills/shenron-admin/SKILL.md",
+    "skills/shenron-design/SKILL.md",
     "skills/source-of-truth/SKILL.md",
     "skills/toei-animation/SKILL.md",
     "skills/toei-animation/references/workflow.md",
