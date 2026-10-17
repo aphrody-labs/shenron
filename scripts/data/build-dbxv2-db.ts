@@ -74,7 +74,7 @@ if (command === "build") {
     };
   };
   const api = loadDbxv2Ffi(process.env.SHENRON_DBXV2_LIB);
-  const empty = new Uint8Array(0);
+  const empty = new Uint8Array(4);
   const assets = parseJsonl<AssetRow>(
     readFileSync(join(values.assets!, "meta/index.jsonl"), "utf8"),
   );
