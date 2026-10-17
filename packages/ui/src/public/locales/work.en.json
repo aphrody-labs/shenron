@@ -1,0 +1,13 @@
+{
+  "carouselPrevious": "Previous",
+  "carouselNext": "Next",
+  "carouselPosition": "{current} of {total}",
+  "carouselRoleDescription": "carousel",
+  "slideRoleDescription": "slide",
+  "voiceActor": "Voice",
+  "upcoming": "Upcoming",
+  "ended": "Ended",
+  "timeZone": "Time zone: {zone}",
+  "opensInNewTab": "(opens in a new tab)",
+  "noPlatform": "No platform announced for this region."
+}

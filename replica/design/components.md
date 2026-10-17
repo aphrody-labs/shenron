@@ -29,7 +29,7 @@ Carte vidéo                                                          [Existant 
   a11y      <button> nommé « Lire : <titre> », iframe titrée, jamais d'autolecture
   used on   S01, S04
 
-Carrousel                                                                       [À construire]
+Carrousel                                         [Construit : @aphrody/shenron-ui/public Carousel]
   variants  visuels (1 slide), personnages (N slides)
   states    default, premier/dernier, pause, focus-visible, reduced-motion (pas de défilement auto)
   tokens    flèches surface/accent, points work-border
@@ -37,14 +37,14 @@ Carrousel                                                                       
             tabulation dans les slides visibles seulement
   used on   S04, S10
 
-Fiche personnage                                                                [À construire]
+Fiche personnage                             [Construit : @aphrody/shenron-ui/public CharacterCard]
   variants  compacte (nom + doubleur), détaillée
   states    default, hover, focus-visible, image absente (silhouette Toriyama)
   tokens    surface work-surface, radius md, nom type lg
   a11y      <article>, nom en titre, portrait alt = nom
   used on   S01, S04
 
-Bloc diffusion                                                                  [À construire]
+Bloc diffusion                           [Construit : @aphrody/shenron-ui/public BroadcastSchedule]
   variants  créneau (jour, heure, chaîne), grille de plateformes groupée par région
   states    default, à venir, terminé, lien externe (icône + rel="noopener")
   tokens    surface, texte muted pour l'heure, accent pour « à venir »

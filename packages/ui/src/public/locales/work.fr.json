@@ -1,0 +1,13 @@
+{
+  "carouselPrevious": "Précédent",
+  "carouselNext": "Suivant",
+  "carouselPosition": "{current} sur {total}",
+  "carouselRoleDescription": "carrousel",
+  "slideRoleDescription": "diapositive",
+  "voiceActor": "Voix",
+  "upcoming": "À venir",
+  "ended": "Terminé",
+  "timeZone": "Fuseau : {zone}",
+  "opensInNewTab": "(nouvel onglet)",
+  "noPlatform": "Aucune plateforme annoncée pour cette région."
+}

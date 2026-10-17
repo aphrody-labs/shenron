@@ -1,0 +1,13 @@
+{
+  "carouselPrevious": "前へ",
+  "carouselNext": "次へ",
+  "carouselPosition": "{total}件中{current}件目",
+  "carouselRoleDescription": "カルーセル",
+  "slideRoleDescription": "スライド",
+  "voiceActor": "声",
+  "upcoming": "放送予定",
+  "ended": "放送終了",
+  "timeZone": "タイムゾーン：{zone}",
+  "opensInNewTab": "（新しいタブで開く）",
+  "noPlatform": "この地域で発表された配信先はありません。"
+}
