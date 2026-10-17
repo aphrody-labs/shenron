@@ -43,7 +43,7 @@ const { positionals, values } = parseArgs({
     },
     out: { type: "string", default: join(HOME, "var/dbxv2-db/dbxv2.sqlite") },
     db: { type: "string" },
-    "embed-url": { type: "string", default: "http://127.0.0.1:8795/v1" },
+    "embed-url": { type: "string", default: "http://127.0.0.1:18795/v1" },
     batch: { type: "string", default: "64" },
     limit: { type: "string" },
   },
@@ -123,7 +123,7 @@ if (command === "build") {
   } else lines.push(`no database at ${dbPath}`);
   lines.push(
     "# tmux (fabrique), verrou lourd, journal durable :",
-    `tmux new-session -d -s dbxv2-embed 'aphrody-embed serve --port 8795 & sleep 20; flock ${lock} bun scripts/data/build-dbxv2-db.ts embed > ~/var/dbxv2-db/embed.log 2>&1; echo EXIT_CODE=$? >> ~/var/dbxv2-db/embed.log'`,
+    `tmux new-session -d -s dbxv2-embed 'aphrody-embed serve --port 18795 & sleep 20; flock ${lock} bun scripts/data/build-dbxv2-db.ts embed > ~/var/dbxv2-db/embed.log 2>&1; echo EXIT_CODE=$? >> ~/var/dbxv2-db/embed.log'`,
   );
   console.log(lines.join("\n"));
 } else {
