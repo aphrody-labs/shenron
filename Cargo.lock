@@ -9769,6 +9769,7 @@ dependencies = [
  "serde-wasm-bindgen",
  "serde_json",
  "sha2 0.11.0",
+ "shenron-panels",
  "shenron-re",
  "thiserror 2.0.21",
  "vello",
@@ -9859,6 +9860,15 @@ dependencies = [
  "tower-http 0.7.1",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "shenron-panels"
+version = "1.4.5"
+dependencies = [
+ "base64 0.23.1",
+ "image",
+ "thiserror 2.0.21",
 ]
 
 [[package]]

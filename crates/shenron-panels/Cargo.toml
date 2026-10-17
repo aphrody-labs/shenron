@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: Apache-2.0
+[package]
+name = "shenron-panels"
+description = "Panel (koma) detection of manga pages and extraction of each panel as PNG, SVG and animated GIF; pure Rust, native and wasm32."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
+publish = true
+include = ["src/**", "tests/**", "Cargo.toml", "LICENSE", "README.md"]
+
+[lints]
+workspace = true
+
+[dependencies]
+base64 = { workspace = true }
+image = { workspace = true, features = ["gif", "jpeg", "png"] }
+thiserror = { workspace = true }
