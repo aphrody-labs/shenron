@@ -15,15 +15,15 @@ export interface ToriyamaPanelProps {
 
 const PANEL_STYLES = {
   standard:
-    "bg-[var(--color-card,#18181b)] border-2 border-[var(--color-toriyama-ink,#121417)] shadow-[4px_4px_0px_var(--color-toriyama-ink,#121417)] rounded-none",
+    "bg-[var(--color-card,#18181b)] border-2 border-[var(--color-toriyama-ink,#050508)] shadow-[4px_4px_0px_var(--color-toriyama-ink,#050508)] rounded-none",
   slanted:
-    "bg-[var(--color-card,#18181b)] border-2 border-[var(--color-toriyama-ink,#121417)] shadow-[4px_4px_0px_var(--color-toriyama-ink,#121417)] -skew-x-2 rounded-none",
+    "bg-[var(--color-card,#18181b)] border-2 border-[var(--color-toriyama-ink,#050508)] shadow-[4px_4px_0px_var(--color-toriyama-ink,#050508)] -skew-x-2 rounded-none",
   action:
-    "bg-[var(--color-card,#18181b)] border-3 border-[var(--color-toriyama-orange,#f85b1a)] shadow-[5px_5px_0px_var(--color-toriyama-ink,#121417)] toriyama-speedlines",
+    "bg-[var(--color-card,#18181b)] border-3 border-[var(--color-toriyama-orange,#ff5e00)] shadow-[5px_5px_0px_var(--color-toriyama-ink,#050508)] toriyama-speedlines",
   scouter:
-    "bg-[#0b2528] border-2 border-[var(--color-toriyama-scouter-green,#00ff66)] shadow-[0_0_12px_rgba(0,255,102,0.3)] font-mono rounded-md",
+    "bg-[#0b2528] border-2 border-[var(--color-toriyama-scouter-green,#22c55e)] shadow-[0_0_12px_rgba(0,255,102,0.3)] font-mono rounded-md",
   capsule:
-    "bg-[var(--color-card,#18181b)] border-2 border-[var(--color-toriyama-capsule,#00b4d8)] shadow-[4px_4px_0px_var(--color-toriyama-ink,#121417)] rounded-2xl",
+    "bg-[var(--color-card,#18181b)] border-2 border-[var(--color-toriyama-capsule,#00bcd4)] shadow-[4px_4px_0px_var(--color-toriyama-ink,#050508)] rounded-2xl",
 };
 
 export function ToriyamaPanel({
@@ -40,7 +40,7 @@ export function ToriyamaPanel({
       {/* Sound Effect (SFX / Onomatopoeia) Top Badge */}
       {sfx && (
         <span
-          className="absolute -top-3.5 -right-2 px-2.5 py-0.5 bg-[var(--color-toriyama-red,#de1b22)] text-white text-xs font-black tracking-widest uppercase border-2 border-[var(--color-toriyama-ink,#121417)] shadow-[2px_2px_0px_var(--color-toriyama-ink,#121417)] rotate-3 select-none"
+          className="absolute -top-3.5 -right-2 px-2.5 py-0.5 bg-[var(--color-toriyama-red,#e51c23)] text-white text-xs font-black tracking-widest uppercase border-2 border-[var(--color-toriyama-ink,#050508)] shadow-[2px_2px_0px_var(--color-toriyama-ink,#050508)] rotate-3 select-none"
           aria-hidden
         >
           {sfx}
@@ -51,7 +51,7 @@ export function ToriyamaPanel({
       {title && (
         <div className="mb-3 pb-2 border-b-2 border-dashed border-[var(--color-border)] flex items-center justify-between">
           <h3 className="font-bold uppercase tracking-wider text-sm flex items-center gap-2">
-            <span className="inline-block w-2.5 h-2.5 bg-[var(--color-toriyama-orange,#f85b1a)] border border-black" />
+            <span className="inline-block w-2.5 h-2.5 bg-[var(--color-toriyama-orange,#ff5e00)] border border-black" />
             {title}
           </h3>
         </div>

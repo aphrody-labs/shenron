@@ -55,7 +55,7 @@ export function ToriyamaSlider({
       {label && (
         <div className="flex justify-between items-center text-xs font-bold uppercase tracking-wider text-[var(--color-muted-foreground)]">
           <span>{label}</span>
-          <span className="font-mono text-sm text-[var(--color-toriyama-orange,#f85b1a)]">
+          <span className="font-mono text-sm text-[var(--color-toriyama-orange,#ff5e00)]">
             {mode === "dragonball" ? `${stars} ★` : `BP: ${safeValue}`}
           </span>
         </div>
@@ -63,12 +63,12 @@ export function ToriyamaSlider({
 
       <div className="relative flex items-center w-full h-10">
         {/* Background track */}
-        <div className="absolute w-full h-3 bg-[#18181b] border-2 border-[var(--color-toriyama-ink,#121417)] shadow-[2px_2px_0px_var(--color-toriyama-ink,#121417)] rounded-full overflow-hidden">
+        <div className="absolute w-full h-3 bg-[#18181b] border-2 border-[var(--color-toriyama-ink,#050508)] shadow-[2px_2px_0px_var(--color-toriyama-ink,#050508)] rounded-full overflow-hidden">
           <div
             className={`h-full transition-all duration-75 ${
               mode === "dragonball"
-                ? "bg-gradient-to-r from-[var(--color-toriyama-orange,#f85b1a)] to-[var(--color-toriyama-gold,#ffd700)]"
-                : "bg-[var(--color-toriyama-scouter-green,#00ff66)]"
+                ? "bg-gradient-to-r from-[var(--color-toriyama-orange,#ff5e00)] to-[var(--color-toriyama-gold,#fef200)]"
+                : "bg-[var(--color-toriyama-scouter-green,#22c55e)]"
             }`}
             style={{ width: `${percentage}%` }}
           />
@@ -82,8 +82,8 @@ export function ToriyamaSlider({
           {mode === "dragonball" ? (
             <DragonBallSphere stars={stars} size={34} glow decorative />
           ) : (
-            <div className="w-8 h-8 rounded-full border-2 border-[var(--color-toriyama-scouter-green,#00ff66)] bg-[#0b2528] flex items-center justify-center shadow-[0_0_8px_#00ff66]">
-              <span className="text-[9px] font-mono text-[var(--color-toriyama-scouter-green,#00ff66)] font-black">
+            <div className="w-8 h-8 rounded-full border-2 border-[var(--color-toriyama-scouter-green,#22c55e)] bg-[#0b2528] flex items-center justify-center shadow-[0_0_8px_#00ff66]">
+              <span className="text-[9px] font-mono text-[var(--color-toriyama-scouter-green,#22c55e)] font-black">
                 {safeValue}
               </span>
             </div>

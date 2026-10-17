@@ -15,14 +15,14 @@ export interface ToriyamaProgressProps {
 
 const PROGRESS_STYLES = {
   ki: {
-    bar: "bg-gradient-to-r from-[var(--color-toriyama-orange,#f85b1a)] via-[var(--color-toriyama-gold,#ffd700)] to-white",
+    bar: "bg-gradient-to-r from-[var(--color-toriyama-orange,#ff5e00)] via-[var(--color-toriyama-gold,#fef200)] to-white",
     glow: "shadow-[0_0_10px_rgba(255,215,0,0.6)]",
-    text: "text-[var(--color-toriyama-gold,#ffd700)]",
+    text: "text-[var(--color-toriyama-gold,#fef200)]",
   },
   scouter: {
-    bar: "bg-[var(--color-toriyama-scouter-green,#00ff66)]",
+    bar: "bg-[var(--color-toriyama-scouter-green,#22c55e)]",
     glow: "shadow-[0_0_10px_rgba(0,255,102,0.6)]",
-    text: "text-[var(--color-toriyama-scouter-green,#00ff66)]",
+    text: "text-[var(--color-toriyama-scouter-green,#22c55e)]",
   },
   majin: {
     bar: "bg-gradient-to-r from-[#5a189a] via-[#f72585] to-white",
@@ -30,9 +30,9 @@ const PROGRESS_STYLES = {
     text: "text-[#f72585]",
   },
   capsule: {
-    bar: "bg-gradient-to-r from-[var(--color-toriyama-blue,#0077b6)] to-[var(--color-toriyama-capsule,#00b4d8)]",
+    bar: "bg-gradient-to-r from-[var(--color-toriyama-blue,#1a3568)] to-[var(--color-toriyama-capsule,#00bcd4)]",
     glow: "shadow-[0_0_10px_rgba(0,180,216,0.6)]",
-    text: "text-[var(--color-toriyama-capsule,#00b4d8)]",
+    text: "text-[var(--color-toriyama-capsule,#00bcd4)]",
   },
 };
 
@@ -58,7 +58,7 @@ export function ToriyamaProgress({
         </div>
       )}
       <div
-        className="w-full h-4 bg-[#18181b] border-2 border-[var(--color-toriyama-ink,#121417)] shadow-[2px_2px_0px_var(--color-toriyama-ink,#121417)] p-0.5 overflow-hidden"
+        className="w-full h-4 bg-[#18181b] border-2 border-[var(--color-toriyama-ink,#050508)] shadow-[2px_2px_0px_var(--color-toriyama-ink,#050508)] p-0.5 overflow-hidden"
         role="progressbar"
         aria-label={label}
         aria-valuenow={clamped}
