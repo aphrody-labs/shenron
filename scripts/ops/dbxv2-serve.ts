@@ -7,33 +7,37 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import { existsSync } from "node:fs";
 import { mkdir, readdir, rename, rm, stat, utimes } from "node:fs/promises";
 import { homedir } from "node:os";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
+import { Worker } from "node:worker_threads";
+import {
+  loadBackend,
+  runJob,
+  WorkError,
+  type BackendSpec,
+  type Dbxv2Backend,
+  type IndexEntry,
+  type Job,
+  type JobResult,
+} from "./dbxv2-worker.ts";
 
-/** Sous-ensemble du paquet @shenron/dbxv2 utilise ici (voir son types.ts). */
-export interface IndexEntry {
-  cpk: string;
-  path: string;
-  offset: number;
-  size: number;
-  extract_size: number;
-  compressed: boolean;
-}
-export interface Dbxv2Backend {
-  cpkFind(cpkPath: string, query?: string): IndexEntry[];
-  cpkRead(cpkPath: string, entry: string, range?: { start: number; length: number }): Uint8Array;
-  embToPng(bytes: Uint8Array, index: number): Uint8Array;
-  audioToWav(bytes: Uint8Array): Uint8Array[];
-  usmToVideo(bytes: Uint8Array): Uint8Array;
-  modelJson(name: string, emd: Uint8Array, emb?: Uint8Array, esk?: Uint8Array): unknown;
-  modelGlb(name: string, emd: Uint8Array, emb?: Uint8Array, esk?: Uint8Array): Uint8Array;
-}
+export { loadBackend };
+export type { BackendSpec, Dbxv2Backend, IndexEntry };
 
 export interface ServeOptions {
   token: string;
   cpkDir: string;
   cacheDir: string;
   cacheMaxBytes: number;
-  backend: Dbxv2Backend;
+  /** Execution dans un pool de Bun Workers (production). */
+  backendSpec?: BackendSpec;
+  /** Execution en ligne dans le fil HTTP (tests uniquement). */
+  backend?: Dbxv2Backend;
+  /** Taille du pool, 1..16 (defaut 4). */
+  workers?: number;
+  /** Taches en attente au-dela desquelles on repond 503 (defaut 256). */
+  maxQueue?: number;
+  /** Delai maximal d'une conversion avant 504 et remplacement du worker (defaut 120 s). */
+  jobTimeoutMs?: number;
   hostname?: string;
   port?: number;
 }
@@ -101,19 +105,34 @@ export function parseRange(
   return { start, end };
 }
 
+/** `If-None-Match` : liste, `*` et validateurs faibles. */
+export function etagMatches(header: string | null, etag: string): boolean {
+  if (!header) return false;
+  if (header.trim() === "*") return true;
+  const strip = (v: string) => v.trim().replace(/^W\//, "");
+  return header.split(",").some((v) => strip(v) === etag);
+}
+
+type Slice = (
+  start: number,
+  endExclusive: number,
+) => Blob | Uint8Array | Promise<Blob | Uint8Array>;
+
 /** Reponse a Range sur une source arbitraire : `slice(start, endExclusive)` renvoie les octets. */
-function rangedResponse(
+async function rangedResponse(
   req: Request,
   size: number,
   etag: string,
   type: string,
-  slice: (start: number, endExclusive: number) => Blob | Uint8Array,
-): Response {
+  slice: Slice,
+): Promise<Response> {
   const headers = baseHeaders({ "Content-Type": type, "Accept-Ranges": "bytes", ETag: etag });
-  if (req.headers.get("if-none-match") === etag)
+  if (etagMatches(req.headers.get("if-none-match"), etag))
     return new Response(null, { status: 304, headers });
   const rangeHeader = req.headers.get("range");
-  const range = rangeHeader ? parseRange(rangeHeader, size) : "none";
+  const ifRange = req.headers.get("if-range");
+  const range =
+    rangeHeader && (!ifRange || ifRange.trim() === etag) ? parseRange(rangeHeader, size) : "none";
   if (range === null) {
     return new Response(null, {
       status: 416,
@@ -126,14 +145,15 @@ function rangedResponse(
   headers["Content-Length"] = String(length);
   if (status === 206) headers["Content-Range"] = `bytes ${start}-${end}/${size}`;
   if (length === 0) return new Response(null, { status: 200, headers });
-  if (length <= CHUNK) return new Response(slice(start, end + 1) as BodyInit, { status, headers });
+  if (length <= CHUNK)
+    return new Response((await slice(start, end + 1)) as BodyInit, { status, headers });
   // Gros fichier : flux par fenetres, jamais l'entree entiere en memoire.
   let cursor = start;
   const stream = new ReadableStream<Uint8Array>({
     async pull(controller) {
       if (cursor > end) return controller.close();
       const next = Math.min(cursor + CHUNK, end + 1);
-      const part = slice(cursor, next);
+      const part = await slice(cursor, next);
       controller.enqueue(
         part instanceof Uint8Array ? part : new Uint8Array(await part.arrayBuffer()),
       );
@@ -141,6 +161,105 @@ function rangedResponse(
     },
   });
   return new Response(stream, { status, headers });
+}
+
+/** Pool borne de Bun Workers : les appels natifs synchrones ne bloquent jamais le fil HTTP. */
+export class WorkerPool {
+  #slots: { worker: Worker | null; busy: Pending | null }[];
+  #queue: Pending[] = [];
+  #next = 1;
+  #closed = false;
+  constructor(
+    private readonly spec: BackendSpec,
+    size: number,
+    private readonly maxQueue: number,
+    private readonly timeoutMs: number,
+  ) {
+    this.#slots = Array.from({ length: size }, () => ({ worker: null, busy: null }));
+  }
+  get size(): number {
+    return this.#slots.length;
+  }
+  run(job: Job): Promise<JobResult> {
+    if (this.#closed) return Promise.reject(new HttpError(503, "shutting down"));
+    if (this.#queue.length >= this.maxQueue)
+      return Promise.reject(new HttpError(503, "busy: queue full"));
+    return new Promise((resolve, reject) => {
+      this.#queue.push({ id: this.#next++, job, resolve, reject, timer: undefined });
+      this.#pump();
+    });
+  }
+  #spawn(slot: { worker: Worker | null; busy: Pending | null }): Worker {
+    const worker = new Worker(new URL("./dbxv2-worker.ts", import.meta.url), {
+      workerData: { spec: this.spec },
+    });
+    worker.on(
+      "message",
+      (m: {
+        id: number;
+        bytes?: Uint8Array;
+        entries?: IndexEntry[];
+        error?: { status?: number; message: string };
+      }) => {
+        const p = slot.busy;
+        if (!p || p.id !== m.id) return;
+        clearTimeout(p.timer);
+        slot.busy = null;
+        if (m.error) p.reject(new WorkError(m.error.status ?? 0, m.error.message));
+        else p.resolve((m.bytes ?? m.entries) as JobResult);
+        this.#pump();
+      },
+    );
+    const lost = (reason: string) => {
+      if (slot.worker !== worker) return;
+      slot.worker = null;
+      const p = slot.busy;
+      slot.busy = null;
+      if (p) {
+        clearTimeout(p.timer);
+        p.reject(
+          new HttpError(
+            p.timedOut ? 504 : 500,
+            p.timedOut ? "conversion timeout" : "decode failed",
+          ),
+        );
+      }
+      if (!this.#closed) console.error(`[dbxv2-serve] worker replaced (${reason})`);
+      this.#pump();
+    };
+    worker.on("error", (e) => lost(String(e?.message ?? e)));
+    worker.on("exit", (code) => lost(`exit ${code}`));
+    slot.worker = worker;
+    return worker;
+  }
+  #pump(): void {
+    for (const slot of this.#slots) {
+      if (slot.busy) continue;
+      const p = this.#queue.shift();
+      if (!p) return;
+      const worker = slot.worker ?? this.#spawn(slot);
+      slot.busy = p;
+      p.timer = setTimeout(() => {
+        p.timedOut = true;
+        void worker.terminate();
+      }, this.timeoutMs);
+      worker.postMessage({ id: p.id, job: p.job });
+    }
+  }
+  async close(): Promise<void> {
+    this.#closed = true;
+    for (const p of this.#queue.splice(0)) p.reject(new HttpError(503, "shutting down"));
+    await Promise.all(this.#slots.map((s) => s.worker?.terminate()));
+  }
+}
+
+interface Pending {
+  id: number;
+  job: Job;
+  resolve(v: JobResult): void;
+  reject(e: unknown): void;
+  timer: ReturnType<typeof setTimeout> | undefined;
+  timedOut?: boolean;
 }
 
 /** Cache disque borne (eviction du plus ancien acces), ecriture atomique. */
@@ -211,6 +330,7 @@ const decode = (s: string): string => {
 
 const nativeErrorStatus = (error: unknown): HttpError => {
   if (error instanceof HttpError) return error;
+  if (error instanceof WorkError && error.status) return new HttpError(error.status, error.message);
   const msg = String((error as Error)?.message ?? error);
   console.error(`[dbxv2-serve] ${msg}`);
   return /not found|no such|missing/i.test(msg)
@@ -218,14 +338,29 @@ const nativeErrorStatus = (error: unknown): HttpError => {
     : new HttpError(500, "decode failed");
 };
 
+const FIND_MEMO_MAX = 512;
+
 export function createDbxv2Server(opts: ServeOptions) {
   if (opts.token.length < MIN_TOKEN)
     throw new Error(`DBXV2_TOKEN must hold at least ${MIN_TOKEN} characters`);
   const hostname = opts.hostname ?? "127.0.0.1";
   if (isWildcardHost(hostname))
     throw new Error("wildcard bind refused: use loopback or a mesh address");
-  const { backend } = opts;
+  if (!opts.backendSpec && !opts.backend) throw new Error("backendSpec or backend required");
   const cache = new DiskCache(opts.cacheDir, opts.cacheMaxBytes);
+  const pool = opts.backendSpec
+    ? new WorkerPool(
+        opts.backendSpec,
+        Math.min(Math.max(opts.workers ?? 4, 1), 16),
+        opts.maxQueue ?? 256,
+        opts.jobTimeoutMs ?? 120_000,
+      )
+    : null;
+  const exec = async (job: Job): Promise<JobResult> => {
+    if (pool) return pool.run(job);
+    await Promise.resolve(); // meme asynchronisme qu'avec le pool
+    return runJob(opts.backend!, job);
+  };
 
   const cpkPath = async (name: string): Promise<{ file: string; stamp: string }> => {
     if (!/^[A-Za-z0-9_]+$/.test(name)) throw new HttpError(404, "unknown cpk");
@@ -235,8 +370,22 @@ export function createDbxv2Server(opts: ServeOptions) {
     return { file, stamp: `${s.size}-${Math.floor(s.mtimeMs)}` };
   };
 
-  const findOne = (file: string, path: string): IndexEntry => {
-    const hit = backend.cpkFind(file, path).find((e) => e.path === path);
+  // Index memoise par (cpk, version, requete) : un TOC n'est lu qu'une fois, requetes concurrentes fusionnees.
+  const findMemo = new Map<string, Promise<IndexEntry[]>>();
+  const find = (file: string, stamp: string, query: string): Promise<IndexEntry[]> => {
+    const key = `${file}|${stamp}|${query}`;
+    let hit = findMemo.get(key);
+    if (!hit) {
+      hit = exec({ op: "find", file, query }) as Promise<IndexEntry[]>;
+      hit.catch(() => findMemo.delete(key));
+      findMemo.set(key, hit);
+      if (findMemo.size > FIND_MEMO_MAX) findMemo.delete(findMemo.keys().next().value!);
+    }
+    return hit;
+  };
+
+  const findOne = async (file: string, stamp: string, path: string): Promise<IndexEntry> => {
+    const hit = (await find(file, stamp, path)).find((e) => e.path === path);
     if (!hit) throw new HttpError(404, "entry not found");
     return hit;
   };
@@ -244,28 +393,45 @@ export function createDbxv2Server(opts: ServeOptions) {
   const etagOf = (stamp: string, entry: IndexEntry, variant = "") =>
     `"${createHash("sha1").update(`${stamp}|${entry.path}|${entry.offset}|${entry.size}|${variant}`).digest("hex").slice(0, 24)}"`;
 
-  /** Calcule une fois, sert depuis le cache disque ensuite (Range compris). */
+  // Conversions en cours : les requetes identiques concurrentes partagent un seul calcul.
+  const inflight = new Map<string, Promise<{ path: string } | { bytes: Uint8Array }>>();
+  const produce = (key: string, job: Job) => {
+    let p = inflight.get(key);
+    if (!p) {
+      p = (async () => {
+        const bytes = (await exec(job)) as Uint8Array;
+        if (bytes.byteLength > opts.cacheMaxBytes) return { bytes };
+        return { path: await cache.put(key, bytes) };
+      })();
+      inflight.set(key, p);
+      p.finally(() => inflight.delete(key)).catch(() => {});
+    }
+    return p;
+  };
+
+  /** Calcule une fois (worker), sert depuis le cache disque ensuite (Range compris). */
   const converted = async (
     req: Request,
     key: string,
     etag: string,
     typeOf: string | ((head: Uint8Array) => string),
-    make: () => Uint8Array,
+    job: Job,
   ): Promise<Response> => {
     const typed = (b: Uint8Array) =>
       typeof typeOf === "string" ? typeOf : typeOf(b.subarray(0, 16));
-    if (req.headers.get("if-none-match") === etag) {
+    if (etagMatches(req.headers.get("if-none-match"), etag)) {
       return new Response(null, { status: 304, headers: baseHeaders({ ETag: etag }) });
     }
     let p = await cache.has(key);
     if (!p) {
-      const bytes = make();
-      if (bytes.byteLength > opts.cacheMaxBytes) {
+      const made = await produce(key, job);
+      if ("bytes" in made) {
+        const bytes = made.bytes;
         return rangedResponse(req, bytes.byteLength, etag, typed(bytes), (a, b) =>
           bytes.subarray(a, b),
         );
       }
-      p = await cache.put(key, bytes);
+      p = made.path;
     }
     const file = Bun.file(p);
     const type =
@@ -276,13 +442,15 @@ export function createDbxv2Server(opts: ServeOptions) {
   };
 
   const handle = async (req: Request): Promise<Response> => {
+    const url = new URL(req.url);
+    // Sonde de vie : aucune donnee, aucun acces natif.
+    if (url.pathname === "/health") return json({ ok: true });
     if (!tokenOk(req.headers.get("authorization"), opts.token)) {
       return json({ error: "unauthorized" }, 401, { "WWW-Authenticate": 'Bearer realm="dbxv2"' });
     }
-    if (req.method !== "GET") throw new HttpError(405, "method not allowed");
-    const url = new URL(req.url);
+    if (req.method !== "GET" && req.method !== "HEAD")
+      throw new HttpError(405, "method not allowed");
     const parts = url.pathname.split("/").filter(Boolean);
-    if (parts[0] === "health") return json({ ok: true });
     if (parts[0] !== "cpk") throw new HttpError(404, "not found");
 
     if (parts.length === 1) {
@@ -308,57 +476,54 @@ export function createDbxv2Server(opts: ServeOptions) {
         FIND_LIMIT_MAX,
       );
       const offset = Math.max(Number(url.searchParams.get("offset") ?? 0) || 0, 0);
-      const all = backend.cpkFind(file, q);
+      const all = await find(file, stamp, q);
       return json({ total: all.length, offset, limit, entries: all.slice(offset, offset + limit) });
     }
     if (!rest) throw new HttpError(404, "missing entry path");
 
     if (action === "raw") {
-      const entry = findOne(file, rest);
-      const size = entry.extract_size;
-      return rangedResponse(req, size, etagOf(stamp, entry), "application/octet-stream", (a, b) =>
-        backend.cpkRead(file, rest, { start: a, length: b - a }),
+      const entry = await findOne(file, stamp, rest);
+      return rangedResponse(
+        req,
+        entry.extract_size,
+        etagOf(stamp, entry),
+        "application/octet-stream",
+        async (a, b) =>
+          (await exec({
+            op: "read",
+            file,
+            path: rest,
+            range: { start: a, length: b - a },
+          })) as Uint8Array,
       );
     }
 
-    const read = (path: string) => backend.cpkRead(file, path);
-
     if (action === "png") {
-      const entry = findOne(file, rest);
+      const entry = await findOne(file, stamp, rest);
       const index = Number(url.searchParams.get("index") ?? 0) || 0;
       return converted(
         req,
-        `png|${opts.cpkDir}|${parts[1]}|${stamp}|${rest}|${index}`,
+        `png|${parts[1]}|${stamp}|${rest}|${index}`,
         etagOf(stamp, entry, `png${index}`),
         "image/png",
-        () => backend.embToPng(read(rest), index),
+        { op: "png", file, path: rest, index },
       );
     }
 
     if (action === "wav") {
-      const entry = findOne(file, rest);
+      const entry = await findOne(file, stamp, rest);
       const cue = Number(url.searchParams.get("cue") ?? 0) || 0;
-      const make = () => {
-        const waves = backend.audioToWav(read(rest));
-        const wave = waves[cue];
-        if (!wave)
-          throw new HttpError(
-            404,
-            waves.length === 0 ? "streamed ACB: no embedded waveform" : "cue out of range",
-          );
-        return wave;
-      };
       return converted(
         req,
         `wav|${parts[1]}|${stamp}|${rest}|${cue}`,
         etagOf(stamp, entry, `wav${cue}`),
         "audio/wav",
-        make,
+        { op: "wav", file, path: rest, cue },
       );
     }
 
     if (action === "video") {
-      const entry = findOne(file, rest);
+      const entry = await findOne(file, stamp, rest);
       const sniff = (b: Uint8Array) =>
         b[4] === 0x66 && b[5] === 0x74 && b[6] === 0x79 && b[7] === 0x70
           ? "video/mp4"
@@ -370,7 +535,7 @@ export function createDbxv2Server(opts: ServeOptions) {
         `video|${parts[1]}|${stamp}|${rest}`,
         etagOf(stamp, entry, "video"),
         sniff,
-        () => backend.usmToVideo(read(rest)),
+        { op: "video", file, path: rest },
       );
     }
 
@@ -378,64 +543,53 @@ export function createDbxv2Server(opts: ServeOptions) {
       const m = /^(.*)\.(json|glb)$/.exec(rest);
       if (!m) throw new HttpError(404, "model path must end with .json or .glb");
       const emdPath = m[1]!;
-      const kind = m[2]!;
-      const entry = findOne(file, emdPath);
-      const stem = emdPath.replace(/\.[^./]+$/, "");
-      const sibling = (param: string, ext: string): Uint8Array | undefined => {
-        const path = url.searchParams.get(param) ?? `${stem}.${ext}`;
-        const hit = backend.cpkFind(file, path).find((e) => e.path === path);
-        return hit ? read(path) : undefined;
-      };
-      const name = emdPath
-        .split("/")
-        .pop()!
-        .replace(/\.[^.]+$/, "");
-      const make = () => {
-        const emd = read(emdPath);
-        const emb = sibling("emb", "emb");
-        const esk = sibling("esk", "esk");
-        return kind === "glb"
-          ? backend.modelGlb(name, emd, emb, esk)
-          : new TextEncoder().encode(JSON.stringify(backend.modelJson(name, emd, emb, esk)));
-      };
-      const variant = `${kind}|${url.searchParams.get("emb") ?? ""}|${url.searchParams.get("esk") ?? ""}`;
+      const kind = m[2] as "json" | "glb";
+      const entry = await findOne(file, stamp, emdPath);
+      const emb = url.searchParams.get("emb") ?? undefined;
+      const esk = url.searchParams.get("esk") ?? undefined;
+      const variant = `${kind}|${emb ?? ""}|${esk ?? ""}`;
       return converted(
         req,
         `model|${parts[1]}|${stamp}|${emdPath}|${variant}`,
         etagOf(stamp, entry, `model${variant}`),
         kind === "glb" ? "model/gltf-binary" : "application/json",
-        make,
+        { op: "model", file, path: emdPath, kind, emb, esk },
       );
     }
 
     throw new HttpError(404, "not found");
   };
 
-  return Bun.serve({
+  const server = Bun.serve({
     hostname,
     port: opts.port ?? 8788,
     async fetch(req) {
+      const started = performance.now();
+      let res: Response;
       try {
-        return await handle(req);
+        res = await handle(req);
       } catch (error) {
         const e = nativeErrorStatus(error);
-        return json({ error: e.message }, e.status);
+        res = json({ error: e.message }, e.status);
       }
+      const path = new URL(req.url).pathname;
+      if (path !== "/health") {
+        // Journal sans jeton ni requete : methode, chemin, statut, duree.
+        console.log(
+          `${req.method} ${path} ${res.status} ${Math.round(performance.now() - started)}ms`,
+        );
+      }
+      return req.method === "HEAD"
+        ? new Response(null, { status: res.status, headers: res.headers })
+        : res;
     },
   });
-}
-
-/** Charge le paquet @shenron/dbxv2 par chemin et ouvre la bibliotheque native. */
-export async function loadBackend(
-  pkgDir: string,
-  lib?: string,
-): Promise<Dbxv2Backend & { close(): void }> {
-  const entry = join(resolve(pkgDir), "src", "index.ts");
-  if (!existsSync(entry)) throw new Error(`DBXV2_PKG_DIR invalid: ${entry} not found`);
-  const mod = (await import(entry)) as {
-    loadDbxv2Ffi(libraryPath?: string): Dbxv2Backend & { close(): void };
-  };
-  return mod.loadDbxv2Ffi(lib);
+  const stop = server.stop.bind(server);
+  server.stop = ((force?: boolean) => {
+    void pool?.close();
+    return stop(force);
+  }) as typeof server.stop;
+  return server;
 }
 
 if (import.meta.main) {
@@ -447,20 +601,19 @@ if (import.meta.main) {
   }
   const pkgDir = env.DBXV2_PKG_DIR ?? join(homedir(), "src/bun-os/packages/shenron-dbxv2");
   const cpkDir = env.DBXV2_CPK_DIR ?? "/games/SteamLibrary/steamapps/common/DB Xenoverse 2/cpk";
-  const backend = await loadBackend(pkgDir, env.DBXV2_LIB);
   const server = createDbxv2Server({
     token,
     cpkDir,
     cacheDir: env.DBXV2_CACHE_DIR ?? join(homedir(), ".cache/shenron/dbxv2-serve"),
     cacheMaxBytes: Number(env.DBXV2_CACHE_MAX_MB ?? 4096) * 1024 * 1024,
-    backend,
+    backendSpec: { pkgDir, lib: env.DBXV2_LIB },
+    workers: Number(env.DBXV2_WORKERS ?? 4),
     hostname: env.DBXV2_HOST ?? "127.0.0.1",
     port: Number(env.DBXV2_PORT ?? 8788),
   });
   console.log(`dbxv2-serve on http://${server.hostname}:${server.port} (private, bearer token)`);
   process.on("SIGTERM", () => {
-    server.stop();
-    backend.close();
+    server.stop(true);
     process.exit(0);
   });
 }

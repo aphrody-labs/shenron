@@ -184,6 +184,120 @@ describe("server with a stub backend", () => {
   });
 });
 
+/** Pool de Bun Workers : appels natifs bloquants, deduplication, charge mixte, /health toujours libre. */
+describe("worker pool", () => {
+  setDefaultTimeout(60_000);
+  let dir: string;
+  let base: string;
+  let stop: () => void;
+  beforeAll(async () => {
+    dir = await mkdtemp(join(tmpdir(), "dbxv2-pool-"));
+    await writeFile(join(dir, "demo.cpk"), "x");
+    // Backend factice charge dans chaque worker : conversion bloquante de 400 ms (appel natif synchrone).
+    await writeFile(
+      join(dir, "backend.ts"),
+      `
+      const block = (ms: number) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+      const payload = Uint8Array.from({ length: 256 }, (_, i) => i);
+      export function createBackend() {
+        return {
+          cpkFind: (_f: string, q?: string) => [{ cpk: "demo", path: q && !q.includes("*") && !q.startsWith("ext:") ? q : "a/b.emb", offset: 1, size: 256, extract_size: 256, compressed: false }],
+          cpkRead: (_f: string, _e: string, r?: { start: number; length: number }) => payload.slice(r?.start ?? 0, r ? r.start + r.length : undefined),
+          embToPng: (_b: Uint8Array, i: number) => { block(400); return Uint8Array.of(0x89, 0x50, 0x4e, 0x47, i); },
+          audioToWav: () => [Uint8Array.of(1, 2, 3)],
+          usmToVideo: () => { block(400); return Uint8Array.of(0, 0, 0, 0, 0x66, 0x74, 0x79, 0x70); },
+          modelJson: (name: string) => ({ name }),
+          modelGlb: () => Uint8Array.of(0x67, 0x6c, 0x54, 0x46),
+        };
+      }`,
+    );
+    const server = createDbxv2Server({
+      token: TOKEN,
+      cpkDir: dir,
+      cacheDir: join(dir, "cache"),
+      cacheMaxBytes: 1 << 20,
+      backendSpec: { module: join(dir, "backend.ts") },
+      workers: 3,
+      port: 0,
+    });
+    base = `http://127.0.0.1:${server.port}`;
+    stop = () => server.stop(true);
+  });
+  afterAll(async () => {
+    stop();
+    await rm(dir, { recursive: true, force: true });
+  });
+
+  test("health is open, carries no data, and auth is enforced elsewhere", async () => {
+    const h = await fetch(`${base}/health`);
+    expect(h.status).toBe(200);
+    expect(await h.json()).toEqual({ ok: true });
+    expect((await fetch(`${base}/cpk`)).status).toBe(401);
+    expect((await fetch(`${base}/cpk`, { headers: { Authorization: "Bearer x" } })).status).toBe(
+      401,
+    );
+  });
+
+  test("20 mixed concurrent requests; /health never waits on a conversion", async () => {
+    const get = (path: string, headers: Record<string, string> = {}) =>
+      fetch(`${base}${path}`, { headers: { ...auth, ...headers } });
+    const jobs: Promise<Response>[] = [];
+    for (let i = 0; i < 8; i++) jobs.push(get(`/cpk/demo/png/a/b.emb?index=${i}`)); // 8 conversions distinctes
+    for (let i = 0; i < 4; i++) jobs.push(get("/cpk/demo/video/x.usm")); // 4 requetes identiques -> 1 calcul
+    for (let i = 0; i < 4; i++) jobs.push(get("/cpk/demo/raw/a/b.emb", { Range: "bytes=0-9" }));
+    for (let i = 0; i < 2; i++) jobs.push(get("/cpk/demo/find?q=ext:emb"));
+    for (let i = 0; i < 2; i++) jobs.push(get("/cpk/demo/model/c/x.emd.glb"));
+    const t0 = performance.now();
+    const latencies: number[] = [];
+    for (let i = 0; i < 6; i++) {
+      await Bun.sleep(30);
+      const t = performance.now();
+      expect((await fetch(`${base}/health`)).status).toBe(200);
+      latencies.push(performance.now() - t);
+    }
+    const res = await Promise.all(jobs);
+    expect(res.every((r) => r.status === 200 || r.status === 206)).toBe(true);
+    await Promise.all(res.map((r) => r.arrayBuffer()));
+    // Conversions de 400 ms bloquantes en natif : le fil HTTP reste libre.
+    expect(Math.max(...latencies)).toBeLessThan(150);
+    // 8 png / 3 workers + 1 video : borne bien inferieure a une execution serielle (>= 3,6 s).
+    expect(performance.now() - t0).toBeLessThan(3500);
+  });
+
+  test("identical concurrent requests share one conversion (cache hit afterwards)", async () => {
+    const t = performance.now();
+    const rs = await Promise.all(
+      Array.from({ length: 6 }, () =>
+        fetch(`${base}/cpk/demo/png/a/b.emb?index=99`, { headers: auth }),
+      ),
+    );
+    await Promise.all(rs.map((r) => r.arrayBuffer()));
+    expect(performance.now() - t).toBeLessThan(900); // un seul calcul de 400 ms, pas six
+  });
+
+  test("ETag list / weak validators give 304; If-Range mismatch gives the full body", async () => {
+    const first = await fetch(`${base}/cpk/demo/raw/a/b.emb`, { headers: auth });
+    const etag = first.headers.get("etag")!;
+    await first.arrayBuffer();
+    const list = await fetch(`${base}/cpk/demo/raw/a/b.emb`, {
+      headers: { ...auth, "If-None-Match": `"zzz", W/${etag}` },
+    });
+    expect(list.status).toBe(304);
+    const mismatch = await fetch(`${base}/cpk/demo/raw/a/b.emb`, {
+      headers: { ...auth, Range: "bytes=0-9", "If-Range": '"other"' },
+    });
+    expect(mismatch.status).toBe(200);
+    expect((await mismatch.arrayBuffer()).byteLength).toBe(256);
+    const head = await fetch(`${base}/cpk/demo/raw/a/b.emb`, { method: "HEAD", headers: auth });
+    expect(head.status).toBe(200);
+    expect(head.headers.get("content-length")).toBe("256");
+  });
+
+  test("POST is refused", async () => {
+    expect((await fetch(`${base}/cpk`, { method: "POST", headers: auth })).status).toBe(405);
+  });
+});
+
 /** Echantillon reel de chaque format : DBXV2_LIVE=1 (+ DBXV2_CPK_DIR, DBXV2_PKG_DIR) sur la fabrique. */
 const live = process.env.DBXV2_LIVE === "1";
 describe.if(live)("live: one real sample per format", () => {
