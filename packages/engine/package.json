@@ -24,7 +24,8 @@
     "./wasm": "./src/wasm.ts",
     "./unified_canvas": "./src/unified_canvas.ts",
     "./types": "./src/types.ts",
-    "./toriyama3d": "./src/toriyama3d.ts"
+    "./toriyama3d": "./src/toriyama3d.ts",
+    "./manga-scene": "./src/manga-scene.ts"
   },
   "publishConfig": {
     "access": "public",

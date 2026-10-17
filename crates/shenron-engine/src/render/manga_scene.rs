@@ -1,0 +1,719 @@
+// SPDX-License-Identifier: Apache-2.0
+
+//! A manga page (planche) staged as a 3D scene on wgpu.
+//!
+//! [`segment_panels`] finds the panels (koma) of a page by recursive XY-cut on its white
+//! gutters: a row or a column is a gutter when nearly all of its pixels are paper. The scene
+//! then lays the page as a receding backdrop and lifts every panel towards the camera at its own
+//! depth, with an ink border and a hard drop shadow, under a perspective camera that follows
+//! the pointer: the parallax between panels is what reads as depth.
+//!
+//! The page pixels are the caller's (an authorised scan); nothing is drawn or invented over
+//! them, the scene only re-arranges the panels in space.
+
+use bytemuck::{Pod, Zeroable};
+use glam::{Mat4, Vec3};
+
+/// A panel in normalised page coordinates (`0..1`, origin top-left).
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct PanelRect {
+    /// Left edge.
+    pub x: f32,
+    /// Top edge.
+    pub y: f32,
+    /// Width.
+    pub w: f32,
+    /// Height.
+    pub h: f32,
+}
+
+/// Tuning of [`segment_panels`].
+#[derive(Clone, Copy, Debug)]
+pub struct SegmentOptions {
+    /// Luma (0–255) from which a pixel counts as paper.
+    pub paper_luma: u8,
+    /// Share of paper pixels that makes a row or a column a gutter.
+    pub gutter_ratio: f32,
+    /// Smallest gutter, as a fraction of the page side. Scans narrow the white of a gutter:
+    /// JPEG ringing around the panel borders eats a few pixels on each side.
+    pub min_gutter: f32,
+    /// Smallest panel side, as a fraction of the page side.
+    pub min_panel: f32,
+    /// Recursion depth of the XY-cut.
+    pub max_depth: u32,
+}
+
+impl Default for SegmentOptions {
+    fn default() -> Self {
+        Self {
+            paper_luma: 225,
+            gutter_ratio: 0.985,
+            min_gutter: 0.003,
+            min_panel: 0.06,
+            max_depth: 5,
+        }
+    }
+}
+
+struct Page<'a> {
+    rgba: &'a [u8],
+    width: usize,
+    height: usize,
+    paper: u8,
+}
+
+impl Page<'_> {
+    fn paper(&self, x: usize, y: usize) -> bool {
+        let i = (y * self.width + x) * 4;
+        let [r, g, b, a] = [self.rgba[i], self.rgba[i + 1], self.rgba[i + 2], self.rgba[i + 3]];
+        // Transparent pixels are paper; otherwise BT.601 luma.
+        a < 16
+            || (u32::from(r) * 299 + u32::from(g) * 587 + u32::from(b) * 114) / 1000
+                >= u32::from(self.paper)
+    }
+}
+
+#[derive(Clone, Copy)]
+struct Area {
+    x0: usize,
+    y0: usize,
+    x1: usize,
+    y1: usize,
+}
+
+/// Runs of gutter lines along one axis of `area`, as `(start, end)` offsets.
+fn gutters(page: &Page<'_>, area: Area, rows: bool, opts: &SegmentOptions) -> Vec<(usize, usize)> {
+    let (len, span) = if rows {
+        (area.y1 - area.y0, area.x1 - area.x0)
+    } else {
+        (area.x1 - area.x0, area.y1 - area.y0)
+    };
+    let side = if rows { page.height } else { page.width };
+    let min_run = ((opts.min_gutter * side as f32).ceil() as usize).max(1);
+    let mut runs = Vec::new();
+    let mut start = None;
+    for i in 0..len {
+        let paper = (0..span)
+            .filter(|&j| {
+                if rows {
+                    page.paper(area.x0 + j, area.y0 + i)
+                } else {
+                    page.paper(area.x0 + i, area.y0 + j)
+                }
+            })
+            .count();
+        let gutter = paper as f32 >= opts.gutter_ratio * span as f32;
+        match (gutter, start) {
+            (true, None) => start = Some(i),
+            (false, Some(s)) => {
+                if i - s >= min_run {
+                    runs.push((s, i));
+                }
+                start = None;
+            },
+            _ => {},
+        }
+    }
+    if let Some(s) = start {
+        if len - s >= min_run {
+            runs.push((s, len));
+        }
+    }
+    runs
+}
+
+/// Splits `area` between its gutters; empty bands (all paper) are dropped.
+fn bands(page: &Page<'_>, area: Area, rows: bool, opts: &SegmentOptions) -> Vec<Area> {
+    let runs = gutters(page, area, rows, opts);
+    let len = if rows { area.y1 - area.y0 } else { area.x1 - area.x0 };
+    let mut out = Vec::new();
+    let mut cursor = 0;
+    for &(s, e) in runs.iter().chain(std::iter::once(&(len, len))) {
+        if s > cursor {
+            out.push(if rows {
+                Area { y0: area.y0 + cursor, y1: area.y0 + s, ..area }
+            } else {
+                Area { x0: area.x0 + cursor, x1: area.x0 + s, ..area }
+            });
+        }
+        cursor = e;
+    }
+    out
+}
+
+/// Shrinks `area` to its ink bounding box (drops the paper margins).
+fn trim(page: &Page<'_>, area: Area) -> Option<Area> {
+    let (mut x0, mut y0, mut x1, mut y1) = (usize::MAX, usize::MAX, 0, 0);
+    for y in area.y0..area.y1 {
+        for x in area.x0..area.x1 {
+            if !page.paper(x, y) {
+                x0 = x0.min(x);
+                y0 = y0.min(y);
+                x1 = x1.max(x + 1);
+                y1 = y1.max(y + 1);
+            }
+        }
+    }
+    (x0 < x1 && y0 < y1).then_some(Area { x0, y0, x1, y1 })
+}
+
+fn cut(
+    page: &Page<'_>,
+    area: Area,
+    rows: bool,
+    depth: u32,
+    opts: &SegmentOptions,
+    out: &mut Vec<Area>,
+) {
+    let Some(area) = trim(page, area) else { return };
+    let min_w = (opts.min_panel * page.width as f32) as usize;
+    let min_h = (opts.min_panel * page.height as f32) as usize;
+    if area.x1 - area.x0 < min_w || area.y1 - area.y0 < min_h {
+        return;
+    }
+    if depth < opts.max_depth {
+        for axis in [rows, !rows] {
+            let parts = bands(page, area, axis, opts);
+            if parts.len() > 1 {
+                for part in parts {
+                    cut(page, part, !axis, depth + 1, opts, out);
+                }
+                return;
+            }
+        }
+    }
+    out.push(area);
+}
+
+/// Finds the panels of a page (`rgba`, `width × height`), in Japanese reading order: tiers top
+/// to bottom, panels right to left within a tier. An empty result means no gutter was found.
+#[must_use]
+pub fn segment_panels(
+    rgba: &[u8],
+    width: usize,
+    height: usize,
+    opts: &SegmentOptions,
+) -> Vec<PanelRect> {
+    if width == 0 || height == 0 || rgba.len() < width * height * 4 {
+        return Vec::new();
+    }
+    let page = Page { rgba, width, height, paper: opts.paper_luma };
+    let mut areas = Vec::new();
+    cut(&page, Area { x0: 0, y0: 0, x1: width, y1: height }, true, 0, opts, &mut areas);
+    let (w, h) = (width as f32, height as f32);
+    let mut panels: Vec<PanelRect> = areas
+        .into_iter()
+        .map(|a| PanelRect {
+            x: a.x0 as f32 / w,
+            y: a.y0 as f32 / h,
+            w: (a.x1 - a.x0) as f32 / w,
+            h: (a.y1 - a.y0) as f32 / h,
+        })
+        .collect();
+    // Reading order: a panel comes first when it is above (no vertical overlap) or, on the same
+    // tier, to the right.
+    panels.sort_by(|a, b| {
+        let same_tier = a.y < b.y + b.h * 0.5 && b.y < a.y + a.h * 0.5;
+        if same_tier { (b.x + b.w).total_cmp(&(a.x + a.w)) } else { a.y.total_cmp(&b.y) }
+    });
+    panels
+}
+
+/// Box-filters `rgba` (`width × height`) so that its longer side is at most `max_side`.
+///
+/// Segmentation needs the full resolution (a scaled gutter blurs into the art); the texture
+/// does not: a 2560 px scan minified to a 600 px canvas by a bilinear sampler aliases its
+/// screentones into moiré. Each output pixel averages the source pixels it covers.
+#[must_use]
+pub fn downsample(rgba: &[u8], width: u32, height: u32, max_side: u32) -> (Vec<u8>, u32, u32) {
+    let longer = width.max(height);
+    if longer <= max_side || max_side == 0 {
+        return (rgba.to_vec(), width, height);
+    }
+    let scale = f64::from(max_side) / f64::from(longer);
+    let (ow, oh) = (
+        ((f64::from(width) * scale).round() as u32).max(1),
+        ((f64::from(height) * scale).round() as u32).max(1),
+    );
+    let mut out = vec![0_u8; (ow * oh * 4) as usize];
+    for oy in 0..oh {
+        let y0 = (u64::from(oy) * u64::from(height) / u64::from(oh)) as u32;
+        let y1 = ((u64::from(oy + 1) * u64::from(height) / u64::from(oh)) as u32).max(y0 + 1);
+        for ox in 0..ow {
+            let x0 = (u64::from(ox) * u64::from(width) / u64::from(ow)) as u32;
+            let x1 = ((u64::from(ox + 1) * u64::from(width) / u64::from(ow)) as u32).max(x0 + 1);
+            let mut sum = [0_u32; 4];
+            for y in y0..y1 {
+                for x in x0..x1 {
+                    let i = ((y * width + x) * 4) as usize;
+                    for c in 0..4 {
+                        sum[c] += u32::from(rgba[i + c]);
+                    }
+                }
+            }
+            let n = (y1 - y0) * (x1 - x0);
+            let o = ((oy * ow + ox) * 4) as usize;
+            for c in 0..4 {
+                out[o + c] = ((sum[c] + n / 2) / n) as u8;
+            }
+        }
+    }
+    (out, ow, oh)
+}
+
+/// Depth of the `index`-th panel: varied but deterministic, so neighbours separate.
+#[must_use]
+pub fn panel_depth(index: usize) -> f32 {
+    0.10 + 0.06 * ((index * 5 + 2) % 4) as f32 / 3.0
+}
+
+/// Uniform block of [`MANGA_SCENE_WGSL`].
+#[repr(C)]
+#[derive(Clone, Copy, Debug, PartialEq, Pod, Zeroable)]
+pub struct SceneUniforms {
+    /// Column-major view-projection matrix.
+    pub view_proj: [[f32; 4]; 4],
+    /// `page aspect (w / h), backdrop dimming, ink border (uv), 0`.
+    pub params: [f32; 4],
+}
+
+/// One quad of the scene: `rect` in page uv, `depth`, `kind` (0 page, 1 shadow, 2 panel).
+#[repr(C)]
+#[derive(Clone, Copy, Debug, PartialEq, Pod, Zeroable)]
+pub struct SceneQuad {
+    /// `x, y, w, h` in page uv.
+    pub rect: [f32; 4],
+    /// `depth, kind, 0, 0`.
+    pub meta: [f32; 4],
+}
+
+/// Back-to-front quads of a page and its panels (drawn without a depth buffer).
+#[must_use]
+pub fn scene_quads(panels: &[PanelRect]) -> Vec<SceneQuad> {
+    let mut quads = vec![SceneQuad { rect: [0.0, 0.0, 1.0, 1.0], meta: [0.0, 0.0, 0.0, 0.0] }];
+    let mut order: Vec<(usize, f32)> =
+        panels.iter().enumerate().map(|(i, _)| (i, panel_depth(i))).collect();
+    order.sort_by(|a, b| a.1.total_cmp(&b.1));
+    for (i, depth) in order {
+        let p = panels[i];
+        quads.push(SceneQuad { rect: [p.x, p.y, p.w, p.h], meta: [depth - 0.004, 1.0, 0.0, 0.0] });
+        quads.push(SceneQuad { rect: [p.x, p.y, p.w, p.h], meta: [depth, 2.0, 0.0, 0.0] });
+    }
+    quads
+}
+
+/// View-projection of the scene: a perspective camera orbiting the page centre.
+#[must_use]
+pub fn scene_camera(
+    canvas_aspect: f32,
+    page_aspect: f32,
+    time: f32,
+    tilt_x: f32,
+    tilt_y: f32,
+) -> Mat4 {
+    let fov = 30_f32.to_radians();
+    // Fit the page (height 2, width 2 × aspect) in the view, with a margin for the parallax.
+    let fit_h = 1.0_f32;
+    let fit_w = page_aspect / canvas_aspect.max(0.01);
+    let distance = fit_h.max(fit_w) * 1.12 / (fov / 2.0).tan();
+    let yaw = tilt_y * 0.45 + 0.07 * (time * 0.31).sin();
+    let pitch = tilt_x * 0.3 + 0.04 * (time * 0.23).sin();
+    let eye = Vec3::new(yaw.sin() * pitch.cos(), pitch.sin(), yaw.cos() * pitch.cos()) * distance;
+    let view = Mat4::look_at_rh(eye, Vec3::ZERO, Vec3::Y);
+    let proj = Mat4::perspective_rh(fov, canvas_aspect.max(0.01), 0.1, distance * 4.0);
+    proj * view
+}
+
+/// Shader of the scene: instanced quads sampling the page texture.
+pub const MANGA_SCENE_WGSL: &str = r"
+struct Scene {
+  view_proj: mat4x4<f32>,
+  params: vec4<f32>,
+};
+@group(0) @binding(0) var<uniform> scene: Scene;
+@group(0) @binding(1) var page: texture_2d<f32>;
+@group(0) @binding(2) var page_sampler: sampler;
+
+struct VsOut {
+  @builtin(position) position: vec4<f32>,
+  @location(0) uv: vec2<f32>,
+  @location(1) local: vec2<f32>,
+  @location(2) @interpolate(flat) kind: f32,
+  @location(3) @interpolate(flat) size: vec2<f32>,
+};
+
+@vertex
+fn vs_main(@builtin(vertex_index) v: u32, @location(0) rect: vec4<f32>, @location(1) info: vec4<f32>) -> VsOut {
+  var corners = array<vec2<f32>, 6>(
+    vec2<f32>(0.0, 0.0), vec2<f32>(1.0, 0.0), vec2<f32>(0.0, 1.0),
+    vec2<f32>(0.0, 1.0), vec2<f32>(1.0, 0.0), vec2<f32>(1.0, 1.0),
+  );
+  let c = corners[v];
+  let uv = rect.xy + c * rect.zw;
+  let aspect = scene.params.x;
+  // Shadows fall down-right of their panel.
+  let shadow = select(vec2<f32>(0.0), vec2<f32>(0.018, -0.018), info.y == 1.0);
+  let world = vec3<f32>((uv.x - 0.5) * 2.0 * aspect + shadow.x, (0.5 - uv.y) * 2.0 + shadow.y, info.x);
+  var out: VsOut;
+  out.position = scene.view_proj * vec4<f32>(world, 1.0);
+  out.uv = uv;
+  out.local = c * rect.zw;
+  out.kind = info.y;
+  out.size = rect.zw;
+  return out;
+}
+
+@fragment
+fn fs_main(in: VsOut) -> @location(0) vec4<f32> {
+  // Derivatives and the sample stay in uniform control flow (WGSL uniformity rules).
+  let texel = textureSample(page, page_sampler, in.uv).rgb;
+  // Ink border of a lifted panel: distance to the nearest edge, in page uv.
+  let d = min(min(in.local.x, in.local.y), min(in.size.x - in.local.x, in.size.y - in.local.y));
+  let aa = fwidth(d);
+  if (in.kind == 1.0) {
+    return vec4<f32>(0.0, 0.0, 0.0, 0.55);
+  }
+  if (in.kind == 0.0) {
+    // The page recedes: dimmed, the panels lifted from it read in front.
+    return vec4<f32>(texel * scene.params.y, 1.0);
+  }
+  let ink = 1.0 - smoothstep(scene.params.z - aa, scene.params.z + aa, d);
+  return vec4<f32>(mix(texel, vec3<f32>(0.0), ink), 1.0);
+}
+";
+
+/// GPU side of the scene: the page texture, the quads and the pipeline.
+pub struct MangaScenePipeline {
+    pipeline: wgpu::RenderPipeline,
+    uniforms: wgpu::Buffer,
+    quads: wgpu::Buffer,
+    quad_count: u32,
+    bind_group: wgpu::BindGroup,
+    page_aspect: f32,
+}
+
+impl MangaScenePipeline {
+    /// Uploads the page (`rgba`, `width × height`) and the quads of `panels`.
+    #[must_use]
+    pub fn new(
+        device: &wgpu::Device,
+        queue: &wgpu::Queue,
+        format: wgpu::TextureFormat,
+        rgba: &[u8],
+        width: u32,
+        height: u32,
+        panels: &[PanelRect],
+    ) -> Self {
+        let size = wgpu::Extent3d { width, height, depth_or_array_layers: 1 };
+        let texture = device.create_texture(&wgpu::TextureDescriptor {
+            label: Some("manga page"),
+            size,
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: wgpu::TextureDimension::D2,
+            format: wgpu::TextureFormat::Rgba8UnormSrgb,
+            usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
+            view_formats: &[],
+        });
+        queue.write_texture(
+            wgpu::TexelCopyTextureInfo {
+                texture: &texture,
+                mip_level: 0,
+                origin: wgpu::Origin3d::ZERO,
+                aspect: wgpu::TextureAspect::All,
+            },
+            rgba,
+            wgpu::TexelCopyBufferLayout {
+                offset: 0,
+                bytes_per_row: Some(width * 4),
+                rows_per_image: Some(height),
+            },
+            size,
+        );
+        let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
+        let sampler = device.create_sampler(&wgpu::SamplerDescriptor {
+            label: Some("manga page"),
+            mag_filter: wgpu::FilterMode::Linear,
+            min_filter: wgpu::FilterMode::Linear,
+            ..Default::default()
+        });
+        let uniforms = device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("manga scene uniforms"),
+            size: size_of::<SceneUniforms>() as u64,
+            usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
+        let quad_data = scene_quads(panels);
+        let quads = device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("manga scene quads"),
+            size: (quad_data.len() * size_of::<SceneQuad>()) as u64,
+            usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
+        queue.write_buffer(&quads, 0, bytemuck::cast_slice(&quad_data));
+        let layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+            label: Some("manga scene"),
+            entries: &[
+                wgpu::BindGroupLayoutEntry {
+                    binding: 0,
+                    visibility: wgpu::ShaderStages::VERTEX_FRAGMENT,
+                    ty: wgpu::BindingType::Buffer {
+                        ty: wgpu::BufferBindingType::Uniform,
+                        has_dynamic_offset: false,
+                        min_binding_size: None,
+                    },
+                    count: None,
+                },
+                wgpu::BindGroupLayoutEntry {
+                    binding: 1,
+                    visibility: wgpu::ShaderStages::FRAGMENT,
+                    ty: wgpu::BindingType::Texture {
+                        sample_type: wgpu::TextureSampleType::Float { filterable: true },
+                        view_dimension: wgpu::TextureViewDimension::D2,
+                        multisampled: false,
+                    },
+                    count: None,
+                },
+                wgpu::BindGroupLayoutEntry {
+                    binding: 2,
+                    visibility: wgpu::ShaderStages::FRAGMENT,
+                    ty: wgpu::BindingType::Sampler(wgpu::SamplerBindingType::Filtering),
+                    count: None,
+                },
+            ],
+        });
+        let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
+            label: Some("manga scene"),
+            layout: &layout,
+            entries: &[
+                wgpu::BindGroupEntry { binding: 0, resource: uniforms.as_entire_binding() },
+                wgpu::BindGroupEntry {
+                    binding: 1,
+                    resource: wgpu::BindingResource::TextureView(&view),
+                },
+                wgpu::BindGroupEntry {
+                    binding: 2,
+                    resource: wgpu::BindingResource::Sampler(&sampler),
+                },
+            ],
+        });
+        let module = device.create_shader_module(wgpu::ShaderModuleDescriptor {
+            label: Some("manga scene"),
+            source: wgpu::ShaderSource::Wgsl(MANGA_SCENE_WGSL.into()),
+        });
+        let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+            label: Some("manga scene"),
+            bind_group_layouts: &[Some(&layout)],
+            immediate_size: 0,
+        });
+        const ATTRIBUTES: [wgpu::VertexAttribute; 2] =
+            wgpu::vertex_attr_array![0 => Float32x4, 1 => Float32x4];
+        let pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+            label: Some("manga scene"),
+            layout: Some(&pipeline_layout),
+            vertex: wgpu::VertexState {
+                module: &module,
+                entry_point: Some("vs_main"),
+                compilation_options: wgpu::PipelineCompilationOptions::default(),
+                buffers: &[Some(wgpu::VertexBufferLayout {
+                    array_stride: size_of::<SceneQuad>() as u64,
+                    step_mode: wgpu::VertexStepMode::Instance,
+                    attributes: &ATTRIBUTES,
+                })],
+            },
+            fragment: Some(wgpu::FragmentState {
+                module: &module,
+                entry_point: Some("fs_main"),
+                compilation_options: wgpu::PipelineCompilationOptions::default(),
+                targets: &[Some(wgpu::ColorTargetState {
+                    format,
+                    blend: Some(wgpu::BlendState::PREMULTIPLIED_ALPHA_BLENDING),
+                    write_mask: wgpu::ColorWrites::ALL,
+                })],
+            }),
+            primitive: wgpu::PrimitiveState::default(),
+            depth_stencil: None,
+            multisample: wgpu::MultisampleState::default(),
+            multiview_mask: None,
+            cache: None,
+        });
+        Self {
+            pipeline,
+            uniforms,
+            quads,
+            quad_count: quad_data.len() as u32,
+            bind_group,
+            page_aspect: width as f32 / height as f32,
+        }
+    }
+
+    /// Records one frame into `view`; `canvas_aspect` is the target width / height.
+    pub fn draw(
+        &self,
+        queue: &wgpu::Queue,
+        encoder: &mut wgpu::CommandEncoder,
+        view: &wgpu::TextureView,
+        canvas_aspect: f32,
+        time: f32,
+        tilt: (f32, f32),
+    ) {
+        let camera = scene_camera(canvas_aspect, self.page_aspect, time, tilt.0, tilt.1);
+        let uniforms = SceneUniforms {
+            view_proj: camera.to_cols_array_2d(),
+            params: [self.page_aspect, 0.38, 0.0035, 0.0],
+        };
+        queue.write_buffer(&self.uniforms, 0, bytemuck::bytes_of(&uniforms));
+        let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+            label: Some("manga scene"),
+            color_attachments: &[Some(wgpu::RenderPassColorAttachment {
+                view,
+                depth_slice: None,
+                resolve_target: None,
+                ops: wgpu::Operations {
+                    load: wgpu::LoadOp::Clear(wgpu::Color::TRANSPARENT),
+                    store: wgpu::StoreOp::Store,
+                },
+            })],
+            depth_stencil_attachment: None,
+            timestamp_writes: None,
+            occlusion_query_set: None,
+            multiview_mask: None,
+        });
+        pass.set_pipeline(&self.pipeline);
+        pass.set_bind_group(0, &self.bind_group, &[]);
+        pass.set_vertex_buffer(0, self.quads.slice(..));
+        pass.draw(0..6, 0..self.quad_count);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// White page with black rectangles at the given pixel boxes.
+    fn page(width: usize, height: usize, boxes: &[(usize, usize, usize, usize)]) -> Vec<u8> {
+        let mut rgba = vec![255; width * height * 4];
+        for &(x0, y0, x1, y1) in boxes {
+            for y in y0..y1 {
+                for x in x0..x1 {
+                    let i = (y * width + x) * 4;
+                    rgba[i..i + 3].copy_from_slice(&[20, 20, 20]);
+                }
+            }
+        }
+        rgba
+    }
+
+    #[test]
+    fn a_wide_panel_over_three_finds_four_in_reading_order() {
+        // Tier 1: one wide panel. Tier 2: three panels, read right to left.
+        let rgba = page(
+            200,
+            300,
+            &[(10, 10, 190, 140), (10, 160, 60, 290), (75, 160, 125, 290), (140, 160, 190, 290)],
+        );
+        let panels = segment_panels(&rgba, 200, 300, &SegmentOptions::default());
+        assert_eq!(panels.len(), 4);
+        assert!((panels[0].w - 0.9).abs() < 0.01, "wide panel first: {:?}", panels[0]);
+        assert!(
+            panels[1].x > panels[2].x && panels[2].x > panels[3].x,
+            "right to left: {panels:?}"
+        );
+        assert!((panels[3].x - 0.05).abs() < 0.01);
+    }
+
+    #[test]
+    fn downsample_averages_the_covered_pixels() {
+        // 4 × 2 page: left half black, right half white → 2 × 1 at max side 2.
+        let mut rgba = vec![255_u8; 4 * 2 * 4];
+        for y in 0..2 {
+            for x in 0..2 {
+                let i = (y * 4 + x) * 4;
+                rgba[i..i + 3].copy_from_slice(&[0, 0, 0]);
+            }
+        }
+        let (out, w, h) = downsample(&rgba, 4, 2, 2);
+        assert_eq!((w, h), (2, 1));
+        assert_eq!(&out[0..4], &[0, 0, 0, 255]);
+        assert_eq!(&out[4..8], &[255, 255, 255, 255]);
+        let (same, w, h) = downsample(&rgba, 4, 2, 8);
+        assert_eq!((w, h, same.len()), (4, 2, rgba.len()));
+    }
+
+    #[test]
+    fn a_narrow_gutter_still_splits_a_tier() {
+        // 1000 px wide page, panels 5 px apart (0.5 % of the width).
+        let rgba = page(1000, 600, &[(20, 20, 490, 580), (495, 20, 980, 580)]);
+        let panels = segment_panels(&rgba, 1000, 600, &SegmentOptions::default());
+        assert_eq!(panels.len(), 2, "{panels:?}");
+        assert!(panels[0].x > panels[1].x, "right panel first");
+    }
+
+    #[test]
+    fn a_page_without_gutter_is_one_panel_and_a_blank_page_none() {
+        let full = page(100, 140, &[(0, 0, 100, 140)]);
+        assert_eq!(segment_panels(&full, 100, 140, &SegmentOptions::default()).len(), 1);
+        let blank = page(100, 140, &[]);
+        assert!(segment_panels(&blank, 100, 140, &SegmentOptions::default()).is_empty());
+        assert!(segment_panels(&[], 0, 0, &SegmentOptions::default()).is_empty());
+    }
+
+    #[test]
+    fn specks_smaller_than_a_panel_are_dropped() {
+        let rgba = page(200, 300, &[(10, 10, 190, 290), (195, 5, 197, 7)]);
+        let panels = segment_panels(&rgba, 200, 300, &SegmentOptions::default());
+        assert_eq!(panels.len(), 1);
+    }
+
+    #[test]
+    fn quads_are_back_to_front_with_one_shadow_per_panel() {
+        let panels = [
+            PanelRect { x: 0.1, y: 0.1, w: 0.8, h: 0.3 },
+            PanelRect { x: 0.1, y: 0.5, w: 0.35, h: 0.4 },
+            PanelRect { x: 0.55, y: 0.5, w: 0.35, h: 0.4 },
+        ];
+        let quads = scene_quads(&panels);
+        assert_eq!(quads.len(), 1 + 2 * panels.len());
+        assert_eq!(quads[0].meta[1], 0.0);
+        let depths: Vec<f32> = quads.iter().map(|q| q.meta[0]).collect();
+        assert!(depths.windows(2).all(|w| w[0] <= w[1]), "{depths:?}");
+        assert_eq!(size_of::<SceneUniforms>(), 80);
+        assert_eq!(size_of::<SceneQuad>(), 32);
+    }
+
+    #[test]
+    fn the_camera_keeps_the_page_centre_in_view() {
+        let m = scene_camera(1662.0 / 2560.0, 1662.0 / 2560.0, 0.0, 0.0, 0.0);
+        let clip = m * glam::Vec4::new(0.0, 0.0, 0.0, 1.0);
+        let ndc = clip / clip.w;
+        assert!(ndc.x.abs() < 1e-4 && ndc.y.abs() < 1e-4 && (0.0..1.0).contains(&ndc.z));
+        // The page corners stay inside the frame.
+        let corner = m * glam::Vec4::new(1662.0 / 2560.0, 1.0, 0.0, 1.0);
+        assert!((corner.x / corner.w).abs() < 1.0 && (corner.y / corner.w).abs() < 1.0);
+    }
+
+    #[test]
+    fn the_shader_is_valid_wgsl() {
+        crate::render::toriyama3d::validate_wgsl(MANGA_SCENE_WGSL);
+    }
+
+    /// Qualification on an authorised scan kept outside the repository:
+    /// `SHENRON_MANGA_PAGE=page.jpg cargo test -p shenron-engine real_page -- --ignored --nocapture`.
+    #[test]
+    #[ignore = "needs SHENRON_MANGA_PAGE, an authorised scan outside the repository"]
+    fn real_page() {
+        let path = std::env::var("SHENRON_MANGA_PAGE").expect("SHENRON_MANGA_PAGE");
+        let image = image::open(path).expect("page decodes").to_rgba8();
+        let (w, h) = image.dimensions();
+        let panels =
+            segment_panels(image.as_raw(), w as usize, h as usize, &SegmentOptions::default());
+        for p in &panels {
+            println!("panel x={:.3} y={:.3} w={:.3} h={:.3}", p.x, p.y, p.w, p.h);
+        }
+        let expected: usize =
+            std::env::var("SHENRON_MANGA_PANELS").ok().and_then(|n| n.parse().ok()).unwrap_or(0);
+        if expected > 0 {
+            assert_eq!(panels.len(), expected);
+        }
+    }
+}

@@ -2,6 +2,7 @@
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
 export const __wbg_canvasenginewasm_free: (a: number, b: number) => void;
+export const __wbg_mangascenewasm_free: (a: number, b: number) => void;
 export const __wbg_shenronenginewasm_free: (a: number, b: number) => void;
 export const __wbg_toriyamamodelwasm_free: (a: number, b: number) => void;
 export const canvasenginewasm_clear: (a: number, b: number, c: number, d: number, e: number) => void;
@@ -10,7 +11,12 @@ export const canvasenginewasm_draw_text: (a: number, b: number, c: number, d: nu
 export const canvasenginewasm_fill_rect: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
 export const canvasenginewasm_get_pixel_data: (a: number) => [number, number];
 export const canvasenginewasm_new: (a: number, b: number) => number;
+export const createMangaScene: (a: any, b: number, c: number, d: number, e: number, f: number) => any;
 export const createToriyamaModel: (a: any, b: number, c: number, d: number, e: number) => any;
+export const mangascenewasm_frame: (a: number, b: number, c: number, d: number) => number;
+export const mangascenewasm_isLost: (a: number) => number;
+export const mangascenewasm_panels: (a: number) => [number, number];
+export const mangascenewasm_resize: (a: number, b: number, c: number) => void;
 export const shenronenginewasm_get_audio_events_json: (a: number) => [number, number];
 export const shenronenginewasm_get_haptic_events_json: (a: number) => [number, number];
 export const shenronenginewasm_get_render_packet_json: (a: number) => [number, number];
@@ -58,8 +64,8 @@ export const wasm_triage_cpk: (a: number, b: number) => [number, number, number]
 export const wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___js_sys_eb92dcb4f6145e43___Function_fn_wasm_bindgen_3017951c9ae318c7___JsValue_____wasm_bindgen_3017951c9ae318c7___sys__Undefined___js_sys_eb92dcb4f6145e43___Function_fn_wasm_bindgen_3017951c9ae318c7___JsValue_____wasm_bindgen_3017951c9ae318c7___sys__Undefined_______true_: (a: number, b: number, c: any, d: any) => void;
 export const wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___JsValue__core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true_: (a: number, b: number, c: any) => [number, number];
 export const wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true_: (a: number, b: number, c: any) => [number, number];
-export const wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__38: (a: number, b: number, c: any) => [number, number];
-export const wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__39: (a: number, b: number, c: any) => [number, number];
+export const wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__43: (a: number, b: number, c: any) => [number, number];
+export const wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__44: (a: number, b: number, c: any) => [number, number];
 export const wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuDeviceLostInfo__GpuDeviceLostInfo______true_: (a: number, b: number, c: any) => void;
 export const __wbindgen_malloc: (a: number, b: number) => number;
 export const __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;

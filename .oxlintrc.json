@@ -90,6 +90,7 @@
     "**/__snapshots__/**",
     "**/out/**",
     "packages/koharu/src/wasm/**",
+    "packages/engine/src/wasm/**",
     "packages/pipeline/src/wasm/**",
     "crates/shenron-re/pkg/**",
     "packages/koharu/src/protocol.ts",

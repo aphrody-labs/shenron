@@ -35,6 +35,31 @@ export class CanvasEngineWasm {
 }
 
 /**
+ * Browser WebGPU renderer of a manga page staged in 3D (`render::manga_scene`).
+ */
+export class MangaSceneWasm {
+    private constructor();
+    free(): void;
+    [Symbol.dispose](): void;
+    /**
+     * Draws one frame at `time` seconds with the pointer `tilt`; `false` once the device is lost.
+     */
+    frame(time: number, tilt_x: number, tilt_y: number): boolean;
+    /**
+     * Whether the WebGPU device was lost.
+     */
+    isLost(): boolean;
+    /**
+     * Detected panels, flat `x, y, w, h` in page uv, in reading order.
+     */
+    panels(): Float32Array;
+    /**
+     * Reconfigures the surface after the canvas backing size changed.
+     */
+    resize(width: number, height: number): void;
+}
+
+/**
  * WebAssembly wrapper around the deterministic game simulation core.
  */
 export class ShenronEngineWasm {
@@ -91,8 +116,7 @@ export class ShenronEngineWasm {
  * Browser WebGPU renderer of a Toriyama 3D model (`render::toriyama3d`).
  *
  * JavaScript owns the frame loop (visibility, reduced motion, pointer); each `frame` call
- * draws one image. There is no WebGL path: without WebGPU, `createToriyamaModel` rejects and the
- * caller keeps its SVG.
+ * draws one image. Without WebGPU, `createToriyamaModel` rejects and the caller keeps its SVG.
  */
 export class ToriyamaModelWasm {
     private constructor();
@@ -100,7 +124,7 @@ export class ToriyamaModelWasm {
     [Symbol.dispose](): void;
     /**
      * Draws one frame at `time` seconds with the pointer `tilt`. Returns `false` once the
-     * device is lost or the surface cannot present: the caller then falls back.
+     * device is lost: the caller then falls back.
      */
     frame(time: number, tilt_x: number, tilt_y: number): boolean;
     /**
@@ -112,6 +136,13 @@ export class ToriyamaModelWasm {
      */
     resize(width: number, height: number): void;
 }
+
+/**
+ * Segments the page (`rgba`, `width × height`, an authorised scan, full resolution) into panels,
+ * box-filters its texture to `texture_side` pixels and opens its 3D scene on `canvas`. Without
+ * WebGPU it rejects and the caller keeps the flat page.
+ */
+export function createMangaScene(canvas: HTMLCanvasElement, rgba: Uint8Array, width: number, height: number, texture_side: number): Promise<MangaSceneWasm>;
 
 /**
  * Opens a WebGPU device on `canvas` and prepares `model` (`dragon-ball` or `kinto-un`) from its
@@ -190,6 +221,7 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 export interface InitOutput {
     readonly memory: WebAssembly.Memory;
     readonly __wbg_canvasenginewasm_free: (a: number, b: number) => void;
+    readonly __wbg_mangascenewasm_free: (a: number, b: number) => void;
     readonly __wbg_shenronenginewasm_free: (a: number, b: number) => void;
     readonly __wbg_toriyamamodelwasm_free: (a: number, b: number) => void;
     readonly canvasenginewasm_clear: (a: number, b: number, c: number, d: number, e: number) => void;
@@ -198,7 +230,12 @@ export interface InitOutput {
     readonly canvasenginewasm_fill_rect: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
     readonly canvasenginewasm_get_pixel_data: (a: number) => [number, number];
     readonly canvasenginewasm_new: (a: number, b: number) => number;
+    readonly createMangaScene: (a: any, b: number, c: number, d: number, e: number, f: number) => any;
     readonly createToriyamaModel: (a: any, b: number, c: number, d: number, e: number) => any;
+    readonly mangascenewasm_frame: (a: number, b: number, c: number, d: number) => number;
+    readonly mangascenewasm_isLost: (a: number) => number;
+    readonly mangascenewasm_panels: (a: number) => [number, number];
+    readonly mangascenewasm_resize: (a: number, b: number, c: number) => void;
     readonly shenronenginewasm_get_audio_events_json: (a: number) => [number, number];
     readonly shenronenginewasm_get_haptic_events_json: (a: number) => [number, number];
     readonly shenronenginewasm_get_render_packet_json: (a: number) => [number, number];
@@ -246,8 +283,8 @@ export interface InitOutput {
     readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___js_sys_eb92dcb4f6145e43___Function_fn_wasm_bindgen_3017951c9ae318c7___JsValue_____wasm_bindgen_3017951c9ae318c7___sys__Undefined___js_sys_eb92dcb4f6145e43___Function_fn_wasm_bindgen_3017951c9ae318c7___JsValue_____wasm_bindgen_3017951c9ae318c7___sys__Undefined_______true_: (a: number, b: number, c: any, d: any) => void;
     readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___JsValue__core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true_: (a: number, b: number, c: any) => [number, number];
     readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true_: (a: number, b: number, c: any) => [number, number];
-    readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__38: (a: number, b: number, c: any) => [number, number];
-    readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__39: (a: number, b: number, c: any) => [number, number];
+    readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__43: (a: number, b: number, c: any) => [number, number];
+    readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__44: (a: number, b: number, c: any) => [number, number];
     readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuDeviceLostInfo__GpuDeviceLostInfo______true_: (a: number, b: number, c: any) => void;
     readonly __wbindgen_malloc: (a: number, b: number) => number;
     readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;

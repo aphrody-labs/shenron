@@ -15,19 +15,15 @@
  * Only the Dragon Ball and the Kinto-Un have measured references (`toriyama-svg/palette.ts`):
  * they are the two 3D models. The other emblems stay vectors until they are measured.
  */
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useRef, useState, type CSSProperties } from "react";
+import { useGpuLoop, type GpuLoopRenderer } from "../lib/use-gpu-loop";
 import { modelParams, type ToriyamaModelName } from "../toriyama-svg/model3d";
 import type { DragonBallStars } from "../toriyama-svg/sphere";
 import { DragonBallSphere } from "./DragonBallSphere";
 import { KintoUn } from "./KintoUn";
 
 /** One live model on a canvas (the wasm `ToriyamaModelWasm`). */
-export interface ToriyamaRenderer {
-  /** Draws one frame; `false` once the device is lost. */
-  frame(time: number, tiltX: number, tiltY: number): boolean;
-  resize(width: number, height: number): void;
-  free(): void;
-}
+export type ToriyamaRenderer = GpuLoopRenderer;
 
 /** Opens a renderer on `canvas`, or rejects (no WebGPU, no adapter, invalid parameters). */
 export type ToriyamaRendererFactory = (
@@ -90,86 +86,15 @@ export function Toriyama3D(props: Toriyama3DProps) {
   } = props;
   const canvas = useRef<HTMLCanvasElement>(null);
   const [fallback, setFallback] = useState(!renderer);
-
-  useEffect(() => {
-    const el = canvas.current;
-    const gpu = typeof navigator === "undefined" ? undefined : (navigator as { gpu?: unknown }).gpu;
-    if (!el || !renderer || !gpu) {
-      setFallback(true);
-      return;
-    }
-    let disposed = false;
-    let live: ToriyamaRenderer | null = null;
-    let frame = 0;
-    let visible = true;
-    const reduced = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
-    const tilt = { x: 0, y: 0, tx: 0, ty: 0 };
-    const start = performance.now();
-    const backing = () => {
-      const dpr = Math.min(globalThis.devicePixelRatio || 1, 2);
-      return Math.max(1, Math.round(el.clientWidth * dpr));
-    };
-    const draw = () => {
-      if (!live) return;
-      const w = backing();
-      if (el.width !== w) {
-        el.width = w;
-        el.height = w;
-        live.resize(w, w);
-      }
-      tilt.x += (tilt.tx - tilt.x) * (reduced ? 1 : 0.08);
-      tilt.y += (tilt.ty - tilt.y) * (reduced ? 1 : 0.08);
-      const t = reduced ? 0 : (performance.now() - start) / 1000;
-      if (!live.frame(t, tilt.x, tilt.y)) {
-        live.free();
-        live = null;
-        setFallback(true);
-      }
-    };
-    const loop = () => {
-      draw();
-      frame = live && visible && !reduced ? requestAnimationFrame(loop) : 0;
-    };
-    const observer = new IntersectionObserver(([entry]) => {
-      visible = entry?.isIntersecting ?? true;
-      if (visible && !frame && !reduced && live) frame = requestAnimationFrame(loop);
-    });
-    const onPointer = (event: PointerEvent) => {
-      const box = el.getBoundingClientRect();
-      tilt.ty = ((event.clientX - box.left) / box.width - 0.5) * 0.9;
-      tilt.tx = ((event.clientY - box.top) / box.height - 0.5) * 0.9;
-      if (reduced) draw();
-    };
-
-    el.width = backing();
-    el.height = el.width;
-    const open = async () => {
-      let opened: ToriyamaRenderer;
-      try {
-        opened = await renderer(el, model, modelParams(model, stars));
-      } catch {
-        if (!disposed) setFallback(true);
-        return;
-      }
-      if (disposed) {
-        opened.free();
-        return;
-      }
-      live = opened;
-      observer.observe(el);
-      if (interactive) globalThis.addEventListener("pointermove", onPointer, { passive: true });
-      loop();
-    };
-    void open();
-    return () => {
-      disposed = true;
-      cancelAnimationFrame(frame);
-      observer.disconnect();
-      globalThis.removeEventListener("pointermove", onPointer);
-      live?.free();
-      live = null;
-    };
-  }, [renderer, model, stars, interactive]);
+  useGpuLoop(
+    canvas,
+    {
+      open: renderer ? (el) => renderer(el, model, modelParams(model, stars)) : null,
+      onFallback: () => setFallback(true),
+      interactive,
+    },
+    [renderer, model, stars, interactive],
+  );
 
   if (fallback) return <Fallback {...props} stars={stars} size={size} title={title} />;
   const style: CSSProperties = { width: size, height: size };

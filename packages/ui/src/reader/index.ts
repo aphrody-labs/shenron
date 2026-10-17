@@ -3,6 +3,12 @@
 // and collection readers stay in @aphrody/m3-reader. The manga reader is wrapped only to make
 // its fullscreen cover the whole desktop window under Tauri.
 export { DatabookReader } from "./DatabookReader";
+export {
+  MangaPage3D,
+  type MangaPage3DProps,
+  type MangaSceneRenderer,
+  type MangaSceneRendererFactory,
+} from "./MangaPage3D";
 export type {
   DatabookReaderPage,
   DatabookReaderProps,

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Materialize acquired Archive JP2 packages into a private, hashed page bundle. */
 import { Database } from "bun:sqlite";
-import { chmod, lstat, mkdir, readdir, rm, statfs } from "node:fs/promises";
-import { basename, join, relative, resolve } from "node:path";
+import { chmod, lstat, mkdir, rm, statfs } from "node:fs/promises";
+import { join, relative, resolve } from "node:path";
 
 const digest = (value: string | Uint8Array) =>
   new Bun.CryptoHasher("sha256").update(value).digest("hex");
@@ -56,7 +56,7 @@ function pagesFromListing(text: string) {
     .split(/\r?\nPath = /u)
     .map((part) => part.split(/\r?\n/u, 1)[0]!)
     .filter((path) => /\.jp2$/iu.test(path))
-    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    .toSorted((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 }
 async function json(path: string, value: unknown) {
   await Bun.write(path, JSON.stringify(value, null, 2) + "\n");

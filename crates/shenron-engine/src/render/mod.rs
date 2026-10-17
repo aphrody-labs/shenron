@@ -10,6 +10,7 @@ pub mod gpu_context;
 pub mod gpu_driven;
 pub mod kinto_un;
 pub mod lighting;
+pub mod manga_scene;
 pub mod mesh;
 pub mod model_serve;
 pub mod postprocess;
@@ -32,6 +33,10 @@ pub use gpu_driven::{
 };
 pub use kinto_un::{KINTO_UN_WGSL, KintoUnUniforms};
 pub use lighting::{CascadedShadowMaps, ClusterGrid, GpuLight, VoxelVolumeUniforms};
+pub use manga_scene::{
+    MANGA_SCENE_WGSL, MangaScenePipeline, PanelRect, SceneQuad, SceneUniforms, SegmentOptions,
+    scene_camera, scene_quads, segment_panels,
+};
 pub use mesh::{
     Camera3d, Geometry, MeshCache, MeshData, MeshError, Model, Primitive, Ray3d, Texture,
     pick_triangle,

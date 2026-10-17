@@ -247,26 +247,116 @@ impl CanvasEngineWasm {
     }
 }
 
-/// Browser WebGPU renderer of a Toriyama 3D model (`render::toriyama3d`).
-///
-/// JavaScript owns the frame loop (visibility, reduced motion, pointer); each `frame` call
-/// draws one image. There is no WebGL path: without WebGPU, `createToriyamaModel` rejects and the
-/// caller keeps its SVG.
+/// A browser canvas presented by wgpu on WebGPU (no WebGL backend is compiled in).
 #[cfg(all(feature = "wasm", target_arch = "wasm32"))]
-#[wasm_bindgen]
-pub struct ToriyamaModelWasm {
+struct WebGpuCanvas {
     device: wgpu::Device,
     queue: wgpu::Queue,
     surface: wgpu::Surface<'static>,
     config: wgpu::SurfaceConfiguration,
-    pipeline: crate::render::ToriyamaPipeline,
-    uniforms: crate::render::ToriyamaUniforms,
     lost: std::sync::Arc<std::sync::atomic::AtomicBool>,
 }
 
 #[cfg(all(feature = "wasm", target_arch = "wasm32"))]
 fn js_error(error: impl std::fmt::Display) -> JsValue {
     JsValue::from_str(&error.to_string())
+}
+
+#[cfg(all(feature = "wasm", target_arch = "wasm32"))]
+impl WebGpuCanvas {
+    async fn open(canvas: web_sys::HtmlCanvasElement, label: &str) -> Result<Self, JsValue> {
+        let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
+            backends: wgpu::Backends::BROWSER_WEBGPU,
+            ..wgpu::InstanceDescriptor::new_without_display_handle()
+        });
+        let width = canvas.width().max(1);
+        let height = canvas.height().max(1);
+        let surface =
+            instance.create_surface(wgpu::SurfaceTarget::Canvas(canvas)).map_err(js_error)?;
+        let adapter = instance
+            .request_adapter(&wgpu::RequestAdapterOptions {
+                power_preference: wgpu::PowerPreference::LowPower,
+                force_fallback_adapter: false,
+                compatible_surface: Some(&surface),
+                apply_limit_buckets: false,
+            })
+            .await
+            .map_err(js_error)?;
+        let (device, queue) = adapter
+            .request_device(&wgpu::DeviceDescriptor { label: Some(label), ..Default::default() })
+            .await
+            .map_err(js_error)?;
+        let mut config = surface
+            .get_default_config(&adapter, width, height)
+            .ok_or_else(|| js_error("WebGPU adapter cannot present to the canvas"))?;
+        // The shaders write premultiplied colour; every WebGPU canvas supports "premultiplied"
+        // (GPUCanvasAlphaMode), whatever the reported capability list holds.
+        config.alpha_mode = wgpu::CompositeAlphaMode::PreMultiplied;
+        surface.configure(&device, &config);
+        let lost = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let flag = std::sync::Arc::clone(&lost);
+        device.set_device_lost_callback(move |_, _| {
+            flag.store(true, std::sync::atomic::Ordering::Relaxed);
+        });
+        Ok(Self { device, queue, surface, config, lost })
+    }
+
+    fn is_lost(&self) -> bool {
+        self.lost.load(std::sync::atomic::Ordering::Relaxed)
+    }
+
+    /// Records one frame with `record` and presents it. `false` once the device is lost.
+    fn frame(
+        &mut self,
+        record: impl FnOnce(&wgpu::Queue, &mut wgpu::CommandEncoder, &wgpu::TextureView, f32),
+    ) -> bool {
+        if self.is_lost() {
+            return false;
+        }
+        let (texture, suboptimal) = match self.surface.get_current_texture() {
+            wgpu::CurrentSurfaceTexture::Success(texture) => (texture, false),
+            wgpu::CurrentSurfaceTexture::Suboptimal(texture) => (texture, true),
+            wgpu::CurrentSurfaceTexture::Outdated | wgpu::CurrentSurfaceTexture::Lost => {
+                self.surface.configure(&self.device, &self.config);
+                return true;
+            },
+            _ => return true,
+        };
+        let view = texture.texture.create_view(&wgpu::TextureViewDescriptor::default());
+        let aspect = self.config.width as f32 / self.config.height.max(1) as f32;
+        let mut encoder = self.device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+            label: Some("shenron frame"),
+        });
+        record(&self.queue, &mut encoder, &view, aspect);
+        self.queue.submit([encoder.finish()]);
+        // wgpu 30: presentation moved from `SurfaceTexture::present` to `Queue::present`.
+        self.queue.present(texture);
+        if suboptimal {
+            self.surface.configure(&self.device, &self.config);
+        }
+        true
+    }
+
+    fn resize(&mut self, width: u32, height: u32) {
+        let (width, height) = (width.max(1), height.max(1));
+        if (width, height) != (self.config.width, self.config.height) {
+            self.config.width = width;
+            self.config.height = height;
+            self.surface.configure(&self.device, &self.config);
+        }
+    }
+}
+
+/// Browser WebGPU renderer of a Toriyama 3D model (`render::toriyama3d`).
+///
+/// JavaScript owns the frame loop (visibility, reduced motion, pointer); each `frame` call
+/// draws one image. Without WebGPU, `createToriyamaModel` rejects and the caller keeps its SVG.
+#[cfg(all(feature = "wasm", target_arch = "wasm32"))]
+#[wasm_bindgen]
+pub struct ToriyamaModelWasm {
+    gpu: WebGpuCanvas,
+    pipeline: crate::render::ToriyamaPipeline,
+    uniforms: crate::render::ToriyamaUniforms,
 }
 
 /// Opens a WebGPU device on `canvas` and prepares `model` (`dragon-ball` or `kinto-un`) from its
@@ -282,94 +372,108 @@ pub async fn create_toriyama_model(
         .ok_or_else(|| js_error(format!("unknown Toriyama model {model}")))?;
     let uniforms =
         model.uniforms(&params).ok_or_else(|| js_error("invalid Toriyama model parameters"))?;
-    let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
-        backends: wgpu::Backends::BROWSER_WEBGPU,
-        ..wgpu::InstanceDescriptor::new_without_display_handle()
-    });
-    let width = canvas.width().max(1);
-    let height = canvas.height().max(1);
-    let surface = instance.create_surface(wgpu::SurfaceTarget::Canvas(canvas)).map_err(js_error)?;
-    let adapter = instance
-        .request_adapter(&wgpu::RequestAdapterOptions {
-            power_preference: wgpu::PowerPreference::LowPower,
-            force_fallback_adapter: false,
-            compatible_surface: Some(&surface),
-            apply_limit_buckets: false,
-        })
-        .await
-        .map_err(js_error)?;
-    let (device, queue) = adapter
-        .request_device(&wgpu::DeviceDescriptor {
-            label: Some("shenron toriyama 3d"),
-            ..Default::default()
-        })
-        .await
-        .map_err(js_error)?;
-    let mut config = surface
-        .get_default_config(&adapter, width, height)
-        .ok_or_else(|| js_error("WebGPU adapter cannot present to the canvas"))?;
-    // The shaders write premultiplied colour; every WebGPU canvas supports "premultiplied"
-    // (GPUCanvasAlphaMode), whatever the reported capability list holds.
-    config.alpha_mode = wgpu::CompositeAlphaMode::PreMultiplied;
-    surface.configure(&device, &config);
-    let lost = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
-    let flag = std::sync::Arc::clone(&lost);
-    device.set_device_lost_callback(move |_, _| {
-        flag.store(true, std::sync::atomic::Ordering::Relaxed)
-    });
+    let gpu = WebGpuCanvas::open(canvas, "shenron toriyama 3d").await?;
     let size = uniforms.bytes().len() as u64;
-    let pipeline = crate::render::ToriyamaPipeline::new(&device, config.format, model, size);
-    Ok(ToriyamaModelWasm { device, queue, surface, config, pipeline, uniforms, lost })
+    let pipeline =
+        crate::render::ToriyamaPipeline::new(&gpu.device, gpu.config.format, model, size);
+    Ok(ToriyamaModelWasm { gpu, pipeline, uniforms })
 }
 
 #[cfg(all(feature = "wasm", target_arch = "wasm32"))]
 #[wasm_bindgen]
 impl ToriyamaModelWasm {
     /// Draws one frame at `time` seconds with the pointer `tilt`. Returns `false` once the
-    /// device is lost or the surface cannot present: the caller then falls back.
+    /// device is lost: the caller then falls back.
     pub fn frame(&mut self, time: f32, tilt_x: f32, tilt_y: f32) -> bool {
-        if self.lost.load(std::sync::atomic::Ordering::Relaxed) {
-            return false;
-        }
-        let (texture, suboptimal) = match self.surface.get_current_texture() {
-            wgpu::CurrentSurfaceTexture::Success(texture) => (texture, false),
-            wgpu::CurrentSurfaceTexture::Suboptimal(texture) => (texture, true),
-            wgpu::CurrentSurfaceTexture::Outdated | wgpu::CurrentSurfaceTexture::Lost => {
-                self.surface.configure(&self.device, &self.config);
-                return true;
-            },
-            _ => return true,
-        };
-        let view = texture.texture.create_view(&wgpu::TextureViewDescriptor::default());
         self.uniforms.set_frame(time, tilt_x, tilt_y);
-        let mut encoder = self
-            .device
-            .create_command_encoder(&wgpu::CommandEncoderDescriptor { label: Some("toriyama 3d") });
-        self.pipeline.draw(&self.queue, &mut encoder, &view, self.uniforms.bytes());
-        self.queue.submit([encoder.finish()]);
-        // wgpu 30: presentation moved from `SurfaceTexture::present` to `Queue::present`.
-        self.queue.present(texture);
-        if suboptimal {
-            self.surface.configure(&self.device, &self.config);
-        }
-        true
+        let (pipeline, uniforms) = (&self.pipeline, &self.uniforms);
+        self.gpu
+            .frame(|queue, encoder, view, _| pipeline.draw(queue, encoder, view, uniforms.bytes()))
     }
 
     /// Reconfigures the surface after the canvas backing size changed.
     pub fn resize(&mut self, width: u32, height: u32) {
-        let (width, height) = (width.max(1), height.max(1));
-        if (width, height) == (self.config.width, self.config.height) {
-            return;
-        }
-        self.config.width = width;
-        self.config.height = height;
-        self.surface.configure(&self.device, &self.config);
+        self.gpu.resize(width, height);
     }
 
     /// Whether the WebGPU device was lost.
     #[wasm_bindgen(js_name = isLost)]
     pub fn is_lost(&self) -> bool {
-        self.lost.load(std::sync::atomic::Ordering::Relaxed)
+        self.gpu.is_lost()
+    }
+}
+
+/// Browser WebGPU renderer of a manga page staged in 3D (`render::manga_scene`).
+#[cfg(all(feature = "wasm", target_arch = "wasm32"))]
+#[wasm_bindgen]
+pub struct MangaSceneWasm {
+    gpu: WebGpuCanvas,
+    pipeline: crate::render::MangaScenePipeline,
+    panels: Vec<crate::render::PanelRect>,
+}
+
+/// Segments the page (`rgba`, `width × height`, an authorised scan, full resolution) into panels,
+/// box-filters its texture to `texture_side` pixels and opens its 3D scene on `canvas`. Without
+/// WebGPU it rejects and the caller keeps the flat page.
+#[cfg(all(feature = "wasm", target_arch = "wasm32"))]
+#[wasm_bindgen(js_name = createMangaScene)]
+pub async fn create_manga_scene(
+    canvas: web_sys::HtmlCanvasElement,
+    rgba: Vec<u8>,
+    width: u32,
+    height: u32,
+    texture_side: u32,
+) -> Result<MangaSceneWasm, JsValue> {
+    if width == 0 || height == 0 || rgba.len() != (width * height * 4) as usize {
+        return Err(js_error("page pixels do not match width × height × 4"));
+    }
+    let panels = crate::render::segment_panels(
+        &rgba,
+        width as usize,
+        height as usize,
+        &crate::render::SegmentOptions::default(),
+    );
+    let (texture, tw, th) =
+        crate::render::manga_scene::downsample(&rgba, width, height, texture_side);
+    drop(rgba);
+    let gpu = WebGpuCanvas::open(canvas, "shenron manga scene").await?;
+    let pipeline = crate::render::MangaScenePipeline::new(
+        &gpu.device,
+        &gpu.queue,
+        gpu.config.format,
+        &texture,
+        tw,
+        th,
+        &panels,
+    );
+    Ok(MangaSceneWasm { gpu, pipeline, panels })
+}
+
+#[cfg(all(feature = "wasm", target_arch = "wasm32"))]
+#[wasm_bindgen]
+impl MangaSceneWasm {
+    /// Draws one frame at `time` seconds with the pointer `tilt`; `false` once the device is lost.
+    pub fn frame(&mut self, time: f32, tilt_x: f32, tilt_y: f32) -> bool {
+        let pipeline = &self.pipeline;
+        self.gpu.frame(|queue, encoder, view, aspect| {
+            pipeline.draw(queue, encoder, view, aspect, time, (tilt_x, tilt_y));
+        })
+    }
+
+    /// Reconfigures the surface after the canvas backing size changed.
+    pub fn resize(&mut self, width: u32, height: u32) {
+        self.gpu.resize(width, height);
+    }
+
+    /// Detected panels, flat `x, y, w, h` in page uv, in reading order.
+    pub fn panels(&self) -> Vec<f32> {
+        self.panels.iter().flat_map(|p| [p.x, p.y, p.w, p.h]).collect()
+    }
+
+    /// Whether the WebGPU device was lost.
+    #[wasm_bindgen(js_name = isLost)]
+    pub fn is_lost(&self) -> bool {
+        self.gpu.is_lost()
     }
 }
 
