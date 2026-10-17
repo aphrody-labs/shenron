@@ -227,7 +227,7 @@ export class WorkerPool {
       if (!this.#closed) console.error(`[dbxv2-serve] worker replaced (${reason})`);
       this.#pump();
     };
-    worker.on("error", (e) => lost(String(e?.message ?? e)));
+    worker.on("error", (e) => lost(e instanceof Error ? e.message : String(e)));
     worker.on("exit", (code) => lost(`exit ${code}`));
     slot.worker = worker;
     return worker;
