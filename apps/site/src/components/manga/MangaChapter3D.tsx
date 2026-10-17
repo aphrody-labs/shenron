@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { MangaPage3D } from "@aphrody/shenron-ui/reader";
 import { createMangaSceneRenderer } from "@aphrody/shenron-engine/manga-scene";
+import { sfx } from "@/lib/sfx";
 
 export function MangaChapter3D({ pages }: { pages: readonly string[] }) {
   const t = useTranslations("mangaScene3d");
@@ -19,6 +20,8 @@ export function MangaChapter3D({ pages }: { pages: readonly string[] }) {
   const button =
     "cible-44 rounded-full border border-dbz-border bg-dbz-card px-4 py-2 text-sm text-os transition-colors hover:border-dbz-orange focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-yellow disabled:pointer-events-none disabled:opacity-40";
   const go = (next: number) => {
+    // The shared pack of public/sfx, on the user gesture only; it honours the site mute setting.
+    sfx.whoosh();
     setPanels(null);
     setIndex(next);
   };
