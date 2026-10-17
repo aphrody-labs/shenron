@@ -16,6 +16,7 @@ import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import { idDeFiche } from "../../_id-fiche";
 import { JsonLd } from "@/components/JsonLd";
 import { AccesApi } from "@/components/manga/AccesApi";
+import { MangaChapter3D } from "@/components/manga/MangaChapter3D";
 import { SITE_URL } from "@/lib/config";
 import { readingLabel, readingTitle } from "@/lib/manga-reader-title";
 import type { ComicStory, WithContext } from "schema-dts";
@@ -196,6 +197,8 @@ export default async function MangaReaderPage({ params }: { params: Promise<{ id
         chapterId={chapter.id}
         readerExtent={chapter.reader_extent}
       />
+
+      {chapter.pages?.length ? <MangaChapter3D pages={chapter.pages} /> : null}
 
       <AccesApi
         className="mt-8"

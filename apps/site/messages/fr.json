@@ -2309,5 +2309,14 @@
     "autoUpdate": "Mise à jour automatique : Studio cherche et installe les nouvelles versions au lancement.",
     "manual": "Les autres binaires se mettent à jour en retéléchargeant cette page.",
     "empty": "Aucune version publiée pour le moment."
+  },
+  "mangaScene3d": {
+    "title": "La planche en 3D",
+    "lede": "Les cases de la planche se détachent de la page et suivent le pointeur. Rendu par le moteur Rust de Shenron sur WebGPU ; sans WebGPU, la planche reste à plat.",
+    "alt": "Planche {page} en relief",
+    "panels": "{count, plural, one {# case mise en relief} other {# cases mises en relief}}",
+    "previous": "Planche précédente",
+    "next": "Planche suivante",
+    "position": "Planche {page} sur {total}"
   }
 }

@@ -30,9 +30,9 @@ export interface MangaPage3DProps {
   src: string;
   /** Alternative text of the page (also the accessible name of the scene). */
   alt: string;
-  /** Intrinsic size of the page, for a layout without shift. */
-  width: number;
-  height: number;
+  /** Intrinsic size of the page, for a layout without shift; read from the decoded page when absent. */
+  width?: number;
+  height?: number;
   renderer?: MangaSceneRendererFactory;
   interactive?: boolean;
   className?: string;
@@ -60,10 +60,18 @@ export function MangaPage3D({
 }: MangaPage3DProps) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const [flat, setFlat] = useState(!renderer);
+  const [size, setSize] = useState(width && height ? { width, height } : null);
   useGpuLoop<MangaSceneRenderer>(
     canvas,
     {
-      open: renderer ? async (el) => renderer(el, await decode(src)) : null,
+      open: renderer
+        ? async (el) => {
+            const image = await decode(src);
+            if (!width || !height)
+              setSize({ width: image.naturalWidth, height: image.naturalHeight });
+            return renderer(el, image);
+          }
+        : null,
       onFallback: () => setFlat(true),
       onReady: (scene) => {
         const count = scene.panels().length / 4;
@@ -72,14 +80,14 @@ export function MangaPage3D({
         onPanels?.(count);
       },
       interactive,
-      ratio: height / width,
+      ratio: size ? size.height / size.width : 1.5,
     },
     [renderer, src, interactive, width, height],
   );
 
   const box = `block h-auto w-full max-w-full ${className}`;
   if (flat) {
-    return <img src={src} alt={alt} width={width} height={height} className={box} />;
+    return <img src={src} alt={alt} width={size?.width} height={size?.height} className={box} />;
   }
   return (
     <canvas
@@ -87,7 +95,7 @@ export function MangaPage3D({
       // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- a WebGPU canvas cannot be an <img>
       role="img"
       aria-label={alt}
-      style={{ aspectRatio: `${width} / ${height}` }}
+      style={{ aspectRatio: size ? `${size.width} / ${size.height}` : "2 / 3" }}
       className={box}
     />
   );

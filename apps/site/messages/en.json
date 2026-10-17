@@ -2309,5 +2309,14 @@
     "autoUpdate": "Automatic updates: Studio checks for and installs new versions on launch.",
     "manual": "Other binaries update by downloading from this page again.",
     "empty": "No release published yet."
+  },
+  "mangaScene3d": {
+    "title": "The page in 3D",
+    "lede": "The panels lift from the page and follow the pointer. Rendered by the Shenron Rust engine on WebGPU; without WebGPU the page stays flat.",
+    "alt": "Page {page} in relief",
+    "panels": "{count, plural, one {# panel lifted} other {# panels lifted}}",
+    "previous": "Previous page",
+    "next": "Next page",
+    "position": "Page {page} of {total}"
   }
 }

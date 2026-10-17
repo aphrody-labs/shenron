@@ -26,7 +26,7 @@ export interface GpuLoopOptions<R extends GpuLoopRenderer> {
   onReady?: (renderer: R) => void;
   /** Follow the pointer with a slight tilt. */
   interactive?: boolean;
-  /** Backing height over width; 1 for a square model. */
+  /** Backing height over width when the canvas has no CSS height yet; 1 for a square model. */
   ratio?: number;
 }
 
@@ -52,7 +52,9 @@ export function useGpuLoop<R extends GpuLoopRenderer>(
     const backing = (): [number, number] => {
       const dpr = Math.min(globalThis.devicePixelRatio || 1, 2);
       const w = Math.max(1, Math.round(el.clientWidth * dpr));
-      return [w, Math.max(1, Math.round(w * ratio))];
+      // The CSS box (aspect-ratio) decides the height once laid out; `ratio` covers the first frame.
+      const h = el.clientHeight > 0 ? el.clientHeight * dpr : w * ratio;
+      return [w, Math.max(1, Math.round(h))];
     };
     const draw = () => {
       if (!live) return;
