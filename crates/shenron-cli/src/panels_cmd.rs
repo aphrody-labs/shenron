@@ -9,8 +9,8 @@ use clap::Args;
 use miette::{IntoDiagnostic, Result};
 use shenron_manga::MangaCdnClient;
 use shenron_panels::{
-    GifOptions, SegmentOptions, crop_panel, ken_burns_gif, page_layout_svg, panel_svg, reveal_gif,
-    segment_panels,
+    GifOptions, SegmentOptions, SheetOptions, build_sheet, crop_panel, ken_burns_gif,
+    page_layout_svg, panel_svg, reveal_gif, segment_panels,
 };
 
 /// Where the page comes from: exactly one of `IMAGE`, `--cdn` or `--chapter` + `--page`.
@@ -49,9 +49,37 @@ pub(crate) struct PanelsArgs {
     /// Keep only the panels of this 1-based index (repeatable); default: all.
     #[arg(long = "only")]
     only: Vec<usize>,
+    /// Largest gutter tilt tried, in degrees (0 = straight gutters only).
+    #[arg(long, default_value_t = 10.0)]
+    max_skew: f32,
+    /// Write one sprite sheet (PNG + layout.json, for Bevy `TextureAtlasLayout::from_grid`) of the
+    /// selected panels, in `--only` order, instead of the per-panel files.
+    #[arg(long)]
+    sheet: bool,
+    /// Sheet tile size `WxH` in pixels (default: mean panel aspect, longer side `--tile-side`).
+    #[arg(long, value_parser = parse_tile, requires = "sheet")]
+    tile: Option<(u32, u32)>,
+    /// Longer side of the derived sheet tile.
+    #[arg(long, default_value_t = 256, requires = "sheet")]
+    tile_side: u32,
+    /// Sheet columns (0 = square-ish grid).
+    #[arg(long, default_value_t = 0, requires = "sheet")]
+    columns: u32,
+    /// Gap between sheet tiles, in pixels.
+    #[arg(long, default_value_t = 0, requires = "sheet")]
+    padding: u32,
+    /// Playback rate recorded in layout.json.
+    #[arg(long, default_value_t = 8.0, requires = "sheet")]
+    fps: f32,
     /// Print the summary as JSON.
     #[arg(long)]
     json: bool,
+}
+
+fn parse_tile(raw: &str) -> Result<(u32, u32), String> {
+    let (w, h) = raw.split_once(['x', 'X']).ok_or("expected WxH, e.g. 256x192")?;
+    let side = |v: &str| v.trim().parse::<u32>().map_err(|e| e.to_string());
+    Ok((side(w)?, side(h)?))
 }
 
 fn write(path: &Path, bytes: impl AsRef<[u8]>) -> Result<()> {
@@ -87,16 +115,11 @@ pub(crate) async fn run(args: PanelsArgs) -> Result<()> {
     let decoded = shenron_manga::image::load_from_memory(&bytes).into_diagnostic()?.to_rgba8();
     let (width, height) = decoded.dimensions();
     let rgba = decoded.as_raw();
-    let mut panels =
-        segment_panels(rgba, width as usize, height as usize, &SegmentOptions::default());
+    let opts = SegmentOptions { max_skew_deg: args.max_skew, ..SegmentOptions::default() };
+    let mut panels = segment_panels(rgba, width as usize, height as usize, &opts);
     if !args.only.is_empty() {
-        let keep = args.only.clone();
-        panels = panels
-            .into_iter()
-            .enumerate()
-            .filter(|(i, _)| keep.contains(&(i + 1)))
-            .map(|(_, p)| p)
-            .collect();
+        // Keep the order of `--only`: it is the frame order of a sheet.
+        panels = args.only.iter().filter_map(|&n| panels.get(n.checked_sub(1)?).copied()).collect();
     }
     if panels.is_empty() {
         return Err(miette::miette!(
@@ -104,6 +127,9 @@ pub(crate) async fn run(args: PanelsArgs) -> Result<()> {
         ));
     }
     std::fs::create_dir_all(&args.output).into_diagnostic()?;
+    if args.sheet {
+        return write_sheet(&args, &label, rgba, (width, height), &panels);
+    }
     let gif = GifOptions { max_side: args.gif_side, ..GifOptions::default() };
     let mut files = Vec::new();
     for (i, rect) in panels.iter().enumerate() {
@@ -152,5 +178,47 @@ pub(crate) async fn run(args: PanelsArgs) -> Result<()> {
             args.output.display()
         );
     }
+    Ok(())
+}
+
+/// `--sheet`: crops the panels, normalises them on one grid and writes the PNG and its layout.
+fn write_sheet(
+    args: &PanelsArgs,
+    label: &str,
+    rgba: &[u8],
+    (width, height): (u32, u32),
+    panels: &[shenron_panels::PanelRect],
+) -> Result<()> {
+    let crops = panels
+        .iter()
+        .enumerate()
+        .map(|(i, rect)| {
+            crop_panel(rgba, width, height, *rect, args.margin)
+                .map_err(|e| miette::miette!("panel {}: {e}", i + 1))
+        })
+        .collect::<Result<Vec<_>>>()?;
+    let opts = SheetOptions {
+        tile: args.tile,
+        tile_side: args.tile_side,
+        columns: args.columns,
+        padding: args.padding,
+        fps: args.fps,
+        ..SheetOptions::default()
+    };
+    let sheet = build_sheet(&crops, &opts).into_diagnostic()?;
+    let image_name = format!("{label}-sheet.png");
+    let layout_name = format!("{label}-sheet.layout.json");
+    write(&args.output.join(&image_name), sheet.png().into_diagnostic()?)?;
+    write(&args.output.join(&layout_name), sheet.layout_json(&image_name))?;
+    println!(
+        "{label}: sheet {}×{} px, {} frame(s) of {}×{} ({} col × {} row) → {image_name}, {layout_name}",
+        sheet.image.width(),
+        sheet.image.height(),
+        crops.len(),
+        sheet.tile.0,
+        sheet.tile.1,
+        sheet.columns,
+        sheet.rows
+    );
     Ok(())
 }

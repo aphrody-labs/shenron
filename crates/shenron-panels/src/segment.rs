@@ -39,6 +39,11 @@ pub struct SegmentOptions {
     pub min_part_area: f32,
     /// Parts below this share of the page are specks, left to the size filter.
     pub negligible_area: f32,
+    /// Largest gutter tilt tried, in degrees, when no straight gutter splits an area (`0` keeps
+    /// straight gutters only). A tilted gutter must keep both its ends on paper.
+    pub max_skew_deg: f32,
+    /// Step between the tilts tried, in degrees; each step is tried on both sides.
+    pub skew_step_deg: f32,
 }
 
 impl Default for SegmentOptions {
@@ -53,6 +58,8 @@ impl Default for SegmentOptions {
             end_margin: 0.02,
             min_part_area: 0.02,
             negligible_area: 0.002,
+            max_skew_deg: 10.0,
+            skew_step_deg: 2.0,
         }
     }
 }
@@ -83,8 +90,36 @@ struct Area {
     y1: usize,
 }
 
-/// Runs of gutter lines along one axis of `area`, as `(start, end)` offsets.
-fn gutters(page: &Page<'_>, area: Area, rows: bool, opts: &SegmentOptions) -> Vec<(usize, usize)> {
+/// Slopes (`tan` of the tilt) tried in order: the straight cut, then ±step, ±2·step… up to
+/// `max_skew_deg`.
+fn shears(opts: &SegmentOptions) -> Vec<f32> {
+    let mut out = vec![0.0];
+    if opts.skew_step_deg > 0.0 {
+        let mut k = 1.0_f32;
+        while k * opts.skew_step_deg <= opts.max_skew_deg + 1e-3 {
+            let t = (k * opts.skew_step_deg).to_radians().tan();
+            out.extend([t, -t]);
+            k += 1.0;
+        }
+    }
+    out
+}
+
+/// Half of the drift of a line of slope `shear` over `span` pixels.
+fn drift(shear: f32, span: usize) -> usize {
+    (shear.abs() * span as f32 / 2.0).ceil() as usize
+}
+
+/// Runs of gutter lines along one axis of `area`, as `(start, end)` offsets measured where the
+/// line crosses the middle of the area. A line of slope `shear` drifts by `shear` pixels per
+/// pixel along its length; only lines that stay inside `area` count.
+fn gutters(
+    page: &Page<'_>,
+    area: Area,
+    rows: bool,
+    shear: f32,
+    opts: &SegmentOptions,
+) -> Vec<(usize, usize)> {
     let (len, span) = if rows {
         (area.y1 - area.y0, area.x1 - area.x0)
     } else {
@@ -92,30 +127,32 @@ fn gutters(page: &Page<'_>, area: Area, rows: bool, opts: &SegmentOptions) -> Ve
     };
     let side = if rows { page.height } else { page.width };
     let min_run = ((opts.min_gutter * side as f32).ceil() as usize).max(1);
+    let d = drift(shear, span);
+    let ends = ((opts.end_margin * span as f32).ceil() as usize).clamp(2, span.max(2));
     let mut runs = Vec::new();
     let mut start = None;
     for i in 0..len {
-        let paper = (0..span)
-            .filter(|&j| {
+        let gutter = if shear != 0.0 && (i < d || i + d >= len) {
+            false
+        } else {
+            let at = |j: usize| {
+                let off = (i as f32 + shear * (j as f32 - span as f32 / 2.0)).round() as usize;
                 if rows {
-                    page.paper(area.x0 + j, area.y0 + i)
+                    page.paper(area.x0 + j, area.y0 + off)
                 } else {
-                    page.paper(area.x0 + i, area.y0 + j)
+                    page.paper(area.x0 + off, area.y0 + j)
                 }
-            })
-            .count();
-        let at = |j: usize| {
-            if rows {
-                page.paper(area.x0 + j, area.y0 + i)
+            };
+            let paper = (0..span).filter(|&j| at(j)).count();
+            let open_ends =
+                || (0..ends.min(span)).all(&at) && (span.saturating_sub(ends)..span).all(&at);
+            if shear == 0.0 {
+                paper as f32 >= opts.gutter_ratio * span as f32
+                    || (paper as f32 >= opts.sfx_ratio * span as f32 && open_ends())
             } else {
-                page.paper(area.x0 + i, area.y0 + j)
+                paper as f32 >= opts.gutter_ratio * span as f32 && open_ends()
             }
         };
-        let ends = ((opts.end_margin * span as f32).ceil() as usize).clamp(2, span.max(2));
-        let open_ends =
-            || (0..ends.min(span)).all(&at) && (span.saturating_sub(ends)..span).all(&at);
-        let gutter = paper as f32 >= opts.gutter_ratio * span as f32
-            || (paper as f32 >= opts.sfx_ratio * span as f32 && open_ends());
         match (gutter, start) {
             (true, None) => start = Some(i),
             (false, Some(s)) => {
@@ -135,21 +172,35 @@ fn gutters(page: &Page<'_>, area: Area, rows: bool, opts: &SegmentOptions) -> Ve
     runs
 }
 
-/// Splits `area` between its gutters; empty bands (all paper) are dropped.
-fn bands(page: &Page<'_>, area: Area, rows: bool, opts: &SegmentOptions) -> Vec<Area> {
-    let runs = gutters(page, area, rows, opts);
-    let len = if rows { area.y1 - area.y0 } else { area.x1 - area.x0 };
+/// Splits `area` between its gutters; empty bands (all paper) are dropped. Around a tilted
+/// gutter each band stops at the nearest point of the line, so that it never holds ink of its
+/// neighbour (a wedge of the band along the tilted edge is lost).
+fn bands(page: &Page<'_>, area: Area, rows: bool, shear: f32, opts: &SegmentOptions) -> Vec<Area> {
+    let runs = gutters(page, area, rows, shear, opts);
+    let (len, span) = if rows {
+        (area.y1 - area.y0, area.x1 - area.x0)
+    } else {
+        (area.x1 - area.x0, area.y1 - area.y0)
+    };
+    let d = drift(shear, span);
+    let band = |from: usize, to: usize| {
+        if rows {
+            Area { y0: area.y0 + from, y1: area.y0 + to, ..area }
+        } else {
+            Area { x0: area.x0 + from, x1: area.x0 + to, ..area }
+        }
+    };
     let mut out = Vec::new();
     let mut cursor = 0;
-    for &(s, e) in runs.iter().chain(std::iter::once(&(len, len))) {
-        if s > cursor {
-            out.push(if rows {
-                Area { y0: area.y0 + cursor, y1: area.y0 + s, ..area }
-            } else {
-                Area { x0: area.x0 + cursor, x1: area.x0 + s, ..area }
-            });
+    for &(s, e) in &runs {
+        let end = s.saturating_sub(d);
+        if end > cursor {
+            out.push(band(cursor, end));
         }
-        cursor = e;
+        cursor = (e + d).min(len);
+    }
+    if len > cursor {
+        out.push(band(cursor, len));
     }
     out
 }
@@ -213,13 +264,15 @@ fn cut(
         return;
     }
     if depth < opts.max_depth {
-        for axis in [rows, !rows] {
-            let parts = merge_fragments(page, bands(page, area, axis, opts), opts);
-            if parts.len() > 1 {
-                for part in parts {
-                    cut(page, part, !axis, depth + 1, opts, out);
+        for shear in shears(opts) {
+            for axis in [rows, !rows] {
+                let parts = merge_fragments(page, bands(page, area, axis, shear, opts), opts);
+                if parts.len() > 1 {
+                    for part in parts {
+                        cut(page, part, !axis, depth + 1, opts, out);
+                    }
+                    return;
                 }
-                return;
             }
         }
     }
@@ -443,6 +496,65 @@ mod tests {
         let rgba = page(200, 300, &[(10, 10, 190, 290), (195, 5, 197, 7)]);
         let panels = segment_panels(&rgba, 200, 300, &SegmentOptions::default());
         assert_eq!(panels.len(), 1);
+    }
+
+    /// White page with ink wherever `ink(x, y)` holds.
+    fn painted(width: usize, height: usize, ink: impl Fn(f32, f32) -> bool) -> Vec<u8> {
+        let mut rgba = vec![255; width * height * 4];
+        for y in 0..height {
+            for x in 0..width {
+                if ink(x as f32, y as f32) {
+                    let i = (y * width + x) * 4;
+                    rgba[i..i + 3].copy_from_slice(&[20, 20, 20]);
+                }
+            }
+        }
+        rgba
+    }
+
+    #[test]
+    fn a_tilted_horizontal_gutter_splits_the_tiers() {
+        let slope = 5.0_f32.to_radians().tan();
+        // Gutter centre line y = 300 + slope · (x − 200), 20 px thick.
+        let line = move |x: f32| 300.0 + slope * (x - 200.0);
+        let rgba = painted(400, 600, |x, y| {
+            (10.0..390.0).contains(&x)
+                && ((10.0..line(x) - 10.0).contains(&y) || (line(x) + 10.0..590.0).contains(&y))
+        });
+        let panels = segment_panels(&rgba, 400, 600, &SegmentOptions::default());
+        assert_eq!(panels.len(), 2, "{panels:?}");
+        assert!(panels[0].y + panels[0].h <= panels[1].y + 1e-3, "no overlap: {panels:?}");
+        let straight = SegmentOptions { max_skew_deg: 0.0, ..SegmentOptions::default() };
+        assert_eq!(segment_panels(&rgba, 400, 600, &straight).len(), 1, "needs the skew");
+    }
+
+    #[test]
+    fn a_tilted_vertical_gutter_splits_a_tier_in_both_directions() {
+        for deg in [-6.0_f32, 3.0, 9.0] {
+            let slope = deg.to_radians().tan();
+            let line = move |y: f32| 200.0 + slope * (y - 150.0);
+            let rgba = painted(400, 300, |x, y| {
+                (10.0..290.0).contains(&y)
+                    && ((10.0..line(y) - 8.0).contains(&x) || (line(y) + 8.0..390.0).contains(&x))
+            });
+            let panels = segment_panels(&rgba, 400, 300, &SegmentOptions::default());
+            assert_eq!(panels.len(), 2, "{deg}°: {panels:?}");
+            assert!(panels[0].x > panels[1].x, "{deg}°: right panel first");
+        }
+    }
+
+    #[test]
+    fn a_tilt_beyond_the_limit_or_a_solid_panel_is_not_split() {
+        let slope = 16.0_f32.to_radians().tan();
+        let line = move |x: f32| 300.0 + slope * (x - 200.0);
+        let rgba = painted(400, 600, |x, y| {
+            (10.0..390.0).contains(&x)
+                && ((10.0..line(x) - 10.0).contains(&y) || (line(x) + 10.0..590.0).contains(&y))
+        });
+        assert_eq!(segment_panels(&rgba, 400, 600, &SegmentOptions::default()).len(), 1);
+        let solid =
+            painted(400, 600, |x, y| (10.0..390.0).contains(&x) && (10.0..590.0).contains(&y));
+        assert_eq!(segment_panels(&solid, 400, 600, &SegmentOptions::default()).len(), 1);
     }
 
     /// Qualification on an authorised scan kept outside the repository:

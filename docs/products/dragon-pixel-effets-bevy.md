@@ -60,14 +60,26 @@ que le dépôt fournit déjà. Sources : exemples officiels de Bevy (`play_sound
 Chaîne proposée, chaque étape produisant un fichier relisible :
 
 1. **Cases** : `shenron panels --chapter <id> --page <n> -o <dossier>` (rectangles et PNG par case).
+   Les gouttières inclinées sont détectées (projections cisaillées de ±2° à ±10°, `--max-skew`,
+   `0` = droites seulement) ; une case adjacente à une gouttière inclinée perd un coin de bord
+   plutôt que d'embarquer sa voisine. Qualifié sur DBFC ch516 : planche 002, 2 cases → 5 sur 6.
 2. **Sélection** : l'éditeur choisit les cases d'une action (garde d'Aoi, coup de poing, Kamehameha)
    dans l'ordre de lecture ; un fichier `sequence.json` liste `{ chapitre, page, case }`.
 3. **Normalisation** : toutes les cases sont recadrées sur le même cadre (taille de cellule
    commune, personnage aligné sur son point d'appui, fond transparent seulement si le détourage
    est fiable) puis assemblées en grille.
-4. **Feuille** : PNG de grille + `layout.json` (`tile`, `colonnes`, `lignes`, `fps`, `bornes`).
-5. **Bevy** : `TextureAtlasLayout::from_grid` lit `layout.json` ; l'animation reprend le patron
-   de `sprite_animation`.
+4. **Feuille** : `shenron panels … --sheet --only 3 --only 1 … [--tile 256x192 --columns 3
+   --padding 0 --fps 8]` écrit `<page>-sheet.png` et `<page>-sheet.layout.json` ; les cases
+   suivent l'ordre de `--only` (celui de l'animation), cadrées en lettrebox centré dans une
+   cellule commune (fond blanc papier), grille ≤ 8192 px.
+   `layout.json` (version 1) : `image`, `size`, `tile` `[w,h]`, `columns`, `rows`,
+   `padding` `[p,p]`, `offset` `[0,0]`, `fps`, `frame_count` et `frames[]` avec
+   `bounds` (cellule, px feuille), `content` (image cadrée), `source` (taille du recadrage)
+   et `panel` (position sur la planche, uv).
+5. **Bevy** : lire `layout.json`, puis
+   `TextureAtlasLayout::from_grid(UVec2::from(tile), columns, rows, Some(padding), Some(offset))` ;
+   l'animation avance un `TextureAtlas.index` de 0 à `frame_count - 1` à `fps` (patron de
+   `sprite_animation`).
 
 Limites à garder en tête : une case de manga est un dessin fixe, pas une image d'animation ; la
 feuille obtenue est un **découpage animé** (type « motion comic »), pas une animation intermédiaire.

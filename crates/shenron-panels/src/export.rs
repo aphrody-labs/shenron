@@ -27,6 +27,12 @@ pub enum ExportError {
     /// The panel has no pixel once clamped to the page.
     #[error("the panel is empty once clamped to the page")]
     EmptyPanel,
+    /// A sheet needs at least one panel.
+    #[error("a sheet needs at least one panel")]
+    NoPanels,
+    /// The sheet tile or grid is degenerate (zero side) or exceeds the image limits.
+    #[error("invalid sheet geometry: {0}")]
+    BadSheet(String),
     /// Image encoding failed.
     #[error("image encoding failed: {0}")]
     Encode(#[from] image::ImageError),
