@@ -1,0 +1,49 @@
+# SPDX-License-Identifier: Apache-2.0
+[package]
+name = "dragon-pixel"
+description = "Dragon Pixel, the one fighting-game crate of Shenron: deterministic combat engine, arcade simulation, WebGPU render packets, multiplayer room service and Bevy WebGPU view."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "dragon-pixel-server"
+path = "src/bin/dragon-pixel-server.rs"
+required-features = ["server"]
+
+[features]
+default = []
+# Multiplayer room service (axum, WebSocket): the `dragon-pixel-server` binary and `server`.
+server = ["dep:axum", "dep:futures-util", "dep:tokio", "dep:uuid"]
+# Bevy 3D view of the arcade simulation in the browser (wasm32 + WebGPU only).
+bevy = ["dep:bevy", "dep:bevy_ecs"]
+
+[lints]
+workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+wasm-bindgen = { workspace = true }
+axum = { workspace = true, optional = true, features = ["ws"] }
+futures-util = { workspace = true, optional = true }
+tokio = { workspace = true, optional = true, features = ["full"] }
+uuid = { workspace = true, optional = true }
+bevy = { workspace = true, optional = true }
+bevy_ecs = { workspace = true, optional = true }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+serde-wasm-bindgen = { workspace = true }
+js-sys = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+tokio = { workspace = true, features = ["full"] }
+tokio-tungstenite = { workspace = true }

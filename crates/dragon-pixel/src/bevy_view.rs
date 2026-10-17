@@ -2,7 +2,7 @@
 //! Bevy scene adapter for the browser combat snapshot.
 use std::cell::RefCell;
 
-use aphrody_dragon_pixel_core::{Game, Shot};
+use crate::arcade::{Game, Shot};
 use bevy::{prelude::*, window::WindowPlugin};
 use serde::Deserialize;
 use wasm_bindgen::JsValue;

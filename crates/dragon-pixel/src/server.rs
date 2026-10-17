@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 use std::{collections::HashMap, sync::Arc, time::Duration};
 
-use aphrody_dragon_pixel_core::{Game, Input};
+use crate::arcade::{Game, Input};
 use axum::{
     Json, Router,
     extract::{

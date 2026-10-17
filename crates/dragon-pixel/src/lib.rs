@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
+pub mod arcade;
 pub mod beam_clash;
 pub mod combat;
 pub mod frame_data;
@@ -7,8 +8,14 @@ pub mod haptics;
 pub mod input;
 pub mod render_packet;
 pub mod roster;
+#[cfg(feature = "server")]
+pub mod server;
+pub mod session;
 pub mod types;
 pub mod wasm;
+
+#[cfg(all(feature = "bevy", target_arch = "wasm32"))]
+mod bevy_view;
 
 pub use beam_clash::{BeamClashResult, BeamClashState};
 pub use combat::{DragonPixelEngineCore, FighterEntity, Particle, Projectile};

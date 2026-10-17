@@ -2,7 +2,7 @@
 
 # Dragon Pixel : SFX, VFX et sprite sheets avec Bevy
 
-Recherche du 2026-10-17 sur Bevy 0.19 (celui de `crates/dragon-pixel-wasm`, hors workspace) et sur ce
+Recherche du 2026-10-17 sur Bevy 0.19 (celui de `crates/dragon-pixel`, feature `bevy`) et sur ce
 que le dépôt fournit déjà. Sources : exemples officiels de Bevy (`play_sound_effect`,
 `spatial_audio_2d`, `sprite_animation`, `animated_mesh_events`), documentation de `bevy_hanabi`.
 
@@ -48,8 +48,8 @@ que le dépôt fournit déjà. Sources : exemples officiels de Bevy (`play_sound
 
 | Besoin                        | État actuel                                                                                                                                                        |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Boucle de combat déterministe | `dragon-pixel-engine` (`combat.rs`, 1 065 lignes), particules CPU `Particle` et `ParticleRenderData` dans le paquet de rendu                                       |
-| Rendu Bevy dans le navigateur | `dragon-pixel-wasm/src/renderer.rs` (features `3d`, `web`, `webgpu`)                                                                                               |
+| Boucle de combat déterministe | `dragon-pixel` (`combat.rs`, 1 065 lignes), particules CPU `Particle` et `ParticleRenderData` dans le paquet de rendu                                              |
+| Rendu Bevy dans le navigateur | `dragon-pixel/src/bevy_view.rs` (feature `bevy` ; Bevy `3d`, `web`, `webgpu`)                                                                                      |
 | Pack de sons du site          | `apps/site/public/sfx/` (52 fichiers, MyInstants, droits déclarés par l'équipe) lus par `apps/site/src/lib/sfx.ts` (Howler) ; **aucun son n'est branché sur Bevy** |
 | Sprites                       | `apps/site/public/dbz/characters/` (artworks, pas de feuilles de sprites) ; aucun `TextureAtlas` dans les crates                                                   |
 | Découpe de planches           | `shenron-panels` (cases, PNG, SVG, GIF)                                                                                                                            |

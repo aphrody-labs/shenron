@@ -42,6 +42,7 @@ d'Aphrody : on les consomme, on ne les copie pas.
 | `shenron-studio`    | Commandes Tauri du studio : santé, RAG, corpus, modèles locaux, moteur Koharu en processus                                                                                                                                                                        | —                                                 | natif                 |
 | `shenron-desktop`   | Application Tauri 3 : le site, l'éditeur et le studio dans une fenêtre, `shenron-server` en sidecar                                                                                                                                                               | `koharu` (défaut), `custom-protocol`              | Windows (NSIS), Linux |
 | `shenron-engine`    | Moteur 2D/3D wgpu : modèles Toriyama 3D (`render::toriyama3d`, Dragon Ball, Kinto-Un), planche manga en scène 3D (`render::manga_scene`), canevas vectoriel, VFS ; WASM WebGPU (`createToriyamaModel`, `createMangaScene`) livré dans `packages/engine/src/wasm/` | `wasm` (navigateur, sans Vello), `vello` (défaut) | natif, wasm32         |
+| `dragon-pixel`      | Jeu Dragon Pixel : moteur de combat déterministe, simulation arcade, paquets de rendu WebGPU, service de salles multijoueur, vue Bevy                                                                                                                             | `server`, `bevy` (aucune par défaut)              | natif, wasm32         |
 | `shenron-gpu`       | Seul propriétaire de wgpu (adaptateur, device, cibles, présentation, Vello)                                                                                                                                                                                       | `vello` (défaut), `testing`                       | natif, wasm32         |
 | `shenron-lexicon`   | Lexique ja/fr/en unique (données embarquées), lu par `shenron-mcp` et `koharu-translator`                                                                                                                                                                         | —                                                 | natif                 |
 | `shenron-re`        | Parseurs Dragon Ball Xenoverse 2 (CPK, EMB, EMD/ESK/EMM, BAC…), CLI `shenron-re`, WASM web de l'explorateur `/games/xenoverse-2`                                                                                                                                  | —                                                 | natif, wasm32         |
@@ -60,9 +61,11 @@ d'Aphrody : on les consomme, on ne les copie pas.
 | `koharu-agent`      | Agent Codex en processus (OAuth)                                                                                                                                                                                                                                  | —                                                 | natif                 |
 | `koharu-secrets`    | Secrets dans le trousseau du système                                                                                                                                                                                                                              | —                                                 | natif                 |
 
-Hors workspace (leur propre `Cargo.lock`, pile Bevy) : `dragon-pixel-core`, `dragon-pixel-engine`,
-`dragon-pixel-server`, `dragon-pixel-wasm` (jeu Dragon Pixel). `bun scripts/build/rust/test.ts --list`
-donne la liste réelle des membres (`cargo metadata`).
+`dragon-pixel` est la crate unique du jeu Dragon Pixel (membre du workspace, un seul `Cargo.lock`) :
+moteur de combat (`combat`, `frame_data`, `roster`, `render_packet`, `beam_clash`), simulation arcade
+(`arcade`), pont navigateur (`wasm`, `session`), service de salles (`server`, feature `server`,
+binaire `dragon-pixel-server`) et vue Bevy WebGPU (`bevy_view`, feature `bevy`, wasm32 seulement).
+`bun scripts/build/rust/test.ts --list` donne la liste réelle des membres (`cargo metadata`).
 Les cibles natives sont Linux x64 et Windows x64 ; les binaires livrés (`shenron`,
 `shenron-mcp`, `shenron-desktop`, `libshenron_ffi`) sont décrits dans
 [`architecture/RUNTIME.md`](../architecture/RUNTIME.md).
