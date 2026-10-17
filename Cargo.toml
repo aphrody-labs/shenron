@@ -7,6 +7,8 @@
 [workspace]
 resolver = "3"
 members = ["crates/*"]
+# Standalone Bevy/axum game stack with its own Cargo.lock: kept out of the workspace lock.
+exclude = ["crates/dragon-pixel-core", "crates/dragon-pixel-server", "crates/dragon-pixel-wasm"]
 
 [workspace.package]
 version = "1.4.5"
