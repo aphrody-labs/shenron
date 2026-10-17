@@ -94,25 +94,37 @@ pub fn crop_panel(
     })
 }
 
-fn png_data_uri(image: &RgbaImage) -> Result<String, ExportError> {
+/// JPEG data URI (quality 90): a scan is a photograph of ink on paper, and the same panel weighs
+/// about a tenth of its PNG, which keeps an SVG shareable.
+fn image_data_uri(image: &RgbaImage) -> Result<String, ExportError> {
+    let rgb = DynamicImage::ImageRgba8(image.clone()).to_rgb8();
     let mut out = Cursor::new(Vec::new());
-    image.write_to(&mut out, ImageFormat::Png)?;
-    Ok(format!("data:image/png;base64,{}", STANDARD.encode(out.into_inner())))
+    image::codecs::jpeg::JpegEncoder::new_with_quality(&mut out, 90).encode_image(&rgb)?;
+    Ok(format!("data:image/jpeg;base64,{}", STANDARD.encode(out.into_inner())))
 }
 
 /// An SVG of one panel: a vector frame (ink border, hard drop shadow, clip) around the embedded
 /// scan crop. The scan pixels are embedded, not traced.
 ///
-/// `title` becomes the accessible name (`<title>`), XML-escaped.
+/// `title` becomes the accessible name (`<title>`), XML-escaped. `max_side` caps the longer side
+/// of the embedded raster (the frame scales with it; `0` keeps the original size): a 1700 px
+/// panel base64-embedded weighs several MB, and an SVG is meant to scale, not to archive.
 ///
 /// # Errors
 /// Fails when the PNG encoder does.
-pub fn panel_svg(panel: &Panel, title: &str) -> Result<String, ExportError> {
-    let (w, h) = panel.image.dimensions();
+pub fn panel_svg(panel: &Panel, title: &str, max_side: u32) -> Result<String, ExportError> {
+    let scaled;
+    let image = if max_side == 0 {
+        &panel.image
+    } else {
+        scaled = fit(&panel.image, max_side);
+        &scaled
+    };
+    let (w, h) = image.dimensions();
     let border = (w.max(h) as f32 * 0.008).max(2.0);
     let shadow = border * 2.5;
     let pad = border / 2.0;
-    let uri = png_data_uri(&panel.image)?;
+    let uri = image_data_uri(image)?;
     let total_w = w as f32 + shadow + border;
     let total_h = h as f32 + shadow + border;
     Ok(format!(
@@ -368,14 +380,27 @@ mod tests {
     #[test]
     fn the_panel_svg_frames_the_scan_and_escapes_its_title() {
         let panel = crop_panel(&page(200, 300), 200, 300, RECT, 0.0).expect("crop");
-        let svg = panel_svg(&panel, "Chapitre 516 <p.1> & \"case\" 2").expect("svg");
+        let svg = panel_svg(&panel, "Chapitre 516 <p.1> & \"case\" 2", 0).expect("svg");
         assert!(svg.starts_with("<svg "));
-        assert!(svg.contains("data:image/png;base64,"));
+        assert!(svg.contains("data:image/jpeg;base64,"));
         assert!(svg.contains("clip-path=\"url(#c)\""));
         assert!(svg.contains("Chapitre 516 &lt;p.1&gt; &amp; &quot;case&quot; 2"));
         assert!(svg.contains("role=\"img\"") && svg.ends_with("</svg>"));
         // Well-formed enough: every opened tag family is closed.
         assert_eq!(svg.matches("<g ").count(), svg.matches("</g>").count());
+    }
+
+    #[test]
+    fn the_svg_raster_is_capped_by_max_side() {
+        let panel = crop_panel(&page(200, 300), 200, 300, RECT, 0.0).expect("crop");
+        let full = panel_svg(&panel, "t", 0).expect("svg");
+        let small = panel_svg(&panel, "t", 60).expect("svg");
+        assert!(full.contains("width=\"180\" height=\"110\""));
+        assert!(
+            small.contains("width=\"60\" height=\"37\"")
+                || small.contains("width=\"60\" height=\"36\"")
+        );
+        assert!(small.len() < full.len());
     }
 
     #[test]
