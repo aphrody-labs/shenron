@@ -138,8 +138,13 @@ l'exécution mais ne sont pas typés par les modules ambiants (un seul `*` par m
    transforme rien : UV, ordre des sommets et indices, normales et squelette sont ceux du serveur.
    Le glTF binaire est servi tel quel.
 5. **Vérification** : mêmes octets d'entrée ⇒ même `sha256` (test d'invariance), dimensions du
-   PNG = en-tête. Le hash de référence côté jeu reste à comparer sur la fabrique avec
-   `DBXV2_LIVE=1`.
+   PNG = en-tête. Test réel `packages/dbxv2/test/texture.live.test.ts` (`DBXV2_LIVE=1`, `DBXV2_SERVER_URL`,
+   `DBXV2_TOKEN`, exécuté sur la fabrique, échantillon tiré par `find`) : sha256 du client = `node:crypto` sur un
+   `fetch` direct ; largeur/hauteur = en-tête DDS lu dans les octets `raw` de l'EMB ; deux requêtes identiques
+   (octets, sha256, ETag) ; PNG 8 bits RGB/RGBA décodé indépendamment. Mesuré le 2026-10-18 sur 12 textures
+   (DXT1 ×5, DXT5 ×7) : tout passe. Reste **supposé** : `colorSpace = srgb` (aucun indicateur dans DDS ni PNG) ;
+   `alpha = straight` n'est réfuté que si aucune texture semi-transparente n'a de canal couleur > alpha (5 sur 6
+   en ont : prémultiplié exclu ; 1 est compatible avec les deux).
 
 ## Tests
 

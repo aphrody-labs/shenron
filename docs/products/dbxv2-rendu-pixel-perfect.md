@@ -32,7 +32,11 @@ fournit les PNG (endpoint `/png`) à l'exécution ; les tests génèrent des mot
   pixels destination, mélange en octets arrondi au plus proche, exact pour alpha 0 et 255).
 - `tests/pixel_perfect_golden.rs` compare octet à octet à un attendu calculé par formule indépendante
   (PNG synthétique → cadrage → pixels) ; le test GPU (`render_sprite_rgba`, wgpu headless, quad aligné,
-  lecture avec pitch de 256 octets) est comparé au même attendu et s'ignore, avec message, sans adaptateur wgpu.
+  lecture avec pitch de 256 octets) est comparé au même attendu. Sans adaptateur wgpu il s'ignore avec message,
+  sauf si `SHENRON_REQUIRE_GPU=1` (obligatoire sur la fabrique) : il échoue alors, un skip ne vaut plus succès.
+  L'adaptateur détecté est toujours imprimé (`--nocapture`).
+- `gpu_translucent_blend_within_documented_bound` : alpha semi-transparent (1..254), Linear/Srgb × droit/prémultiplié,
+  comparé à la formule exacte (Linear : octets ; Srgb : lumière linéaire, décodage à l'échantillonnage, encodage à l'écriture).
 - Tests unitaires : aller-retour PNG exact, refus 16 bits, contrat sampler/format/blend, cadrage dpr/overflow,
   alpha droit/prémultiplié, adaptateur.
 
@@ -43,8 +47,12 @@ flock ~/build/locks/heavy.lock cargo nextest run -p shenron-engine
 
 ## Limites
 
-- Le mélange CPU opère sur les octets encodés (pas de linéarisation) ; la comparaison GPU exacte porte sur
-  des pixels opaques ou transparents. Un mélange sRGB semi-transparent GPU peut différer d'un octet.
+- Le mélange CPU (`Framebuffer`) opère sur les octets encodés (pas de linéarisation) : il n'est la référence GPU que
+  pour des pixels opaques ou transparents. Pour un alpha semi-transparent, la référence est la formule du test GPU.
+- Mesure (fabrique, llvmpipe LLVM 22.1.8, Vulkan, type CPU, 2026-10-18) : Linear droit/prémultiplié et Srgb prémultiplié
+  exacts à l'octet ; Srgb droit : écart maximal 1 (90 octets sur 2400, arrondi du mélange flottant). Borne
+  `MAX_BLEND_DELTA = 1` assertée ; un GPU matériel peut arrondir autrement, l'exactitude ne vaut que pour l'opaque
+  et le transparent.
 - `EmbRgbaTexture` ne porte ni espace colorimétrique ni alpha : `ModelServePipeline` suppose `Rgba8UnormSrgb`
   pour les textures de modèle ; le mode alpha se choisit à la création du pipeline.
-- Le hash de référence côté jeu se compare sur la fabrique avec `DBXV2_LIVE=1` (hors du moteur).
+- Hash et dimensions des PNG réels : `packages/dbxv2/test/texture.live.test.ts` (`DBXV2_LIVE=1`, voir [dbxv2-plugin.md](dbxv2-plugin.md)).
