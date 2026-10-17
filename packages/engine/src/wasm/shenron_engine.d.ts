@@ -35,6 +35,47 @@ export class CanvasEngineWasm {
 }
 
 /**
+ * Pont d'intégration WebAssembly pour le moteur Dragon Pixel.
+ */
+export class DragonPixelEngineWasm {
+    free(): void;
+    [Symbol.dispose](): void;
+    /**
+     * Récupère le paquet de rendu complet formaté pour les pipelines WebGPU (WGSL).
+     */
+    get_render_packet_json(): string;
+    /**
+     * Renvoie le statut actuel du jeu ("playing", "won", "lost").
+     */
+    get_status(): string;
+    constructor(fighter_id: string, mode_str: string, chapter_id: number, arena_str: string);
+    /**
+     * Draine et renvoie les événements audio déclenchés.
+     */
+    poll_audio_events_json(): string;
+    /**
+     * Draine et renvoie les événements de secousse haptique pour la manette physique.
+     */
+    poll_haptic_events_json(): string;
+    /**
+     * Réinitialise le combat en cours.
+     */
+    restart(): void;
+    /**
+     * Modifie le chapitre du Mode Histoire en cours.
+     */
+    set_chapter(chapter_id: number): void;
+    /**
+     * Modifie le combattant sélectionné.
+     */
+    set_fighter(fighter_id: string): void;
+    /**
+     * Exécute un pas de simulation déterministe avec les entrées utilisateur.
+     */
+    step(input_json: string, dt: number): string;
+}
+
+/**
  * Browser WebGPU renderer of a manga page staged in 3D (`render::manga_scene`).
  */
 export class MangaSceneWasm {
@@ -59,57 +100,14 @@ export class MangaSceneWasm {
     resize(width: number, height: number): void;
 }
 
-/**
- * WebAssembly wrapper around the deterministic game simulation core.
- */
-export class ShenronEngineWasm {
-    private constructor();
+export class Session {
     free(): void;
     [Symbol.dispose](): void;
+    constructor(style: string);
     /**
-     * Returns JSON array of audio events triggered in the current frame.
+     * Advance the Rust simulation with a JSON input object and return the updated state as JSON.
      */
-    get_audio_events_json(): string;
-    /**
-     * Returns JSON array of haptic events triggered in the current frame.
-     */
-    get_haptic_events_json(): string;
-    /**
-     * Returns the WebGPU render packet serialized as a JSON string.
-     */
-    get_render_packet_json(): string;
-    /**
-     * Checks if the match has concluded.
-     */
-    is_match_over(): boolean;
-    /**
-     * Creates a new match between two fighters by string name.
-     */
-    static new(p1_name: string, p2_name: string, arena_name: string, mode_name: string): ShenronEngineWasm;
-    /**
-     * Returns Player 1's current HP.
-     */
-    p1_hp(): number;
-    /**
-     * Returns Player 1's current Ki.
-     */
-    p1_ki(): number;
-    /**
-     * Returns Player 2's current HP.
-     */
-    p2_hp(): number;
-    /**
-     * Returns Player 2's current Ki.
-     */
-    p2_ki(): number;
-    /**
-     * Advances the simulation by 1 frame with raw boolean input flags.
-     */
-    tick_raw(p1_left: boolean, p1_right: boolean, p1_up: boolean, p1_down: boolean, p1_light: boolean, p1_heavy: boolean, p1_special: boolean, p1_ultimate: boolean, p1_block: boolean, p2_left: boolean, p2_right: boolean, p2_up: boolean, p2_down: boolean, p2_light: boolean, p2_heavy: boolean, p2_special: boolean, p2_ultimate: boolean, p2_block: boolean): void;
-    /**
-     * Returns winner index (1 = P1, 2 = P2, 0 = Draw, None = In Progress).
-     */
-    winner(): number | undefined;
+    step(input_json: string, dt: number): string;
 }
 
 /**
@@ -221,8 +219,9 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 export interface InitOutput {
     readonly memory: WebAssembly.Memory;
     readonly __wbg_canvasenginewasm_free: (a: number, b: number) => void;
+    readonly __wbg_dragonpixelenginewasm_free: (a: number, b: number) => void;
     readonly __wbg_mangascenewasm_free: (a: number, b: number) => void;
-    readonly __wbg_shenronenginewasm_free: (a: number, b: number) => void;
+    readonly __wbg_session_free: (a: number, b: number) => void;
     readonly __wbg_toriyamamodelwasm_free: (a: number, b: number) => void;
     readonly canvasenginewasm_clear: (a: number, b: number, c: number, d: number, e: number) => void;
     readonly canvasenginewasm_draw_speech_bubble: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
@@ -232,21 +231,21 @@ export interface InitOutput {
     readonly canvasenginewasm_new: (a: number, b: number) => number;
     readonly createMangaScene: (a: any, b: number, c: number, d: number, e: number, f: number) => any;
     readonly createToriyamaModel: (a: any, b: number, c: number, d: number, e: number) => any;
+    readonly dragonpixelenginewasm_get_render_packet_json: (a: number) => [number, number];
+    readonly dragonpixelenginewasm_get_status: (a: number) => [number, number];
+    readonly dragonpixelenginewasm_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => number;
+    readonly dragonpixelenginewasm_poll_audio_events_json: (a: number) => [number, number];
+    readonly dragonpixelenginewasm_poll_haptic_events_json: (a: number) => [number, number];
+    readonly dragonpixelenginewasm_restart: (a: number) => void;
+    readonly dragonpixelenginewasm_set_chapter: (a: number, b: number) => void;
+    readonly dragonpixelenginewasm_set_fighter: (a: number, b: number, c: number) => void;
+    readonly dragonpixelenginewasm_step: (a: number, b: number, c: number, d: number) => [number, number];
     readonly mangascenewasm_frame: (a: number, b: number, c: number, d: number) => number;
     readonly mangascenewasm_isLost: (a: number) => number;
     readonly mangascenewasm_panels: (a: number) => [number, number];
     readonly mangascenewasm_resize: (a: number, b: number, c: number) => void;
-    readonly shenronenginewasm_get_audio_events_json: (a: number) => [number, number];
-    readonly shenronenginewasm_get_haptic_events_json: (a: number) => [number, number];
-    readonly shenronenginewasm_get_render_packet_json: (a: number) => [number, number];
-    readonly shenronenginewasm_is_match_over: (a: number) => number;
-    readonly shenronenginewasm_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => number;
-    readonly shenronenginewasm_p1_hp: (a: number) => number;
-    readonly shenronenginewasm_p1_ki: (a: number) => number;
-    readonly shenronenginewasm_p2_hp: (a: number) => number;
-    readonly shenronenginewasm_p2_ki: (a: number) => number;
-    readonly shenronenginewasm_tick_raw: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number, o: number, p: number, q: number, r: number, s: number) => void;
-    readonly shenronenginewasm_winner: (a: number) => number;
+    readonly session_new: (a: number, b: number) => number;
+    readonly session_step: (a: number, b: number, c: number, d: number) => [number, number, number, number];
     readonly toriyamamodelwasm_frame: (a: number, b: number, c: number, d: number) => number;
     readonly toriyamamodelwasm_isLost: (a: number) => number;
     readonly toriyamamodelwasm_resize: (a: number, b: number, c: number) => void;

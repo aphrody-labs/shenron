@@ -96,6 +96,147 @@ export class CanvasEngineWasm {
 if (Symbol.dispose) CanvasEngineWasm.prototype[Symbol.dispose] = CanvasEngineWasm.prototype.free;
 
 /**
+ * Pont d'intégration WebAssembly pour le moteur Dragon Pixel.
+ */
+export class DragonPixelEngineWasm {
+    __destroy_into_raw() {
+        const ptr = this.__wbg_ptr;
+        this.__wbg_ptr = 0;
+        DragonPixelEngineWasmFinalization.unregister(this);
+        return ptr;
+    }
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_dragonpixelenginewasm_free(ptr, 0);
+    }
+    /**
+     * Récupère le paquet de rendu complet formaté pour les pipelines WebGPU (WGSL).
+     * @returns {string}
+     */
+    get_render_packet_json() {
+        let deferred1_0;
+        let deferred1_1;
+        try {
+            const ret = wasm.dragonpixelenginewasm_get_render_packet_json(this.__wbg_ptr);
+            deferred1_0 = ret[0];
+            deferred1_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+        }
+    }
+    /**
+     * Renvoie le statut actuel du jeu ("playing", "won", "lost").
+     * @returns {string}
+     */
+    get_status() {
+        let deferred1_0;
+        let deferred1_1;
+        try {
+            const ret = wasm.dragonpixelenginewasm_get_status(this.__wbg_ptr);
+            deferred1_0 = ret[0];
+            deferred1_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+        }
+    }
+    /**
+     * @param {string} fighter_id
+     * @param {string} mode_str
+     * @param {number} chapter_id
+     * @param {string} arena_str
+     */
+    constructor(fighter_id, mode_str, chapter_id, arena_str) {
+        const ptr0 = passStringToWasm0(fighter_id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passStringToWasm0(mode_str, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len1 = WASM_VECTOR_LEN;
+        const ptr2 = passStringToWasm0(arena_str, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len2 = WASM_VECTOR_LEN;
+        const ret = wasm.dragonpixelenginewasm_new(ptr0, len0, ptr1, len1, chapter_id, ptr2, len2);
+        this.__wbg_ptr = ret;
+        DragonPixelEngineWasmFinalization.register(this, this.__wbg_ptr, this);
+        return this;
+    }
+    /**
+     * Draine et renvoie les événements audio déclenchés.
+     * @returns {string}
+     */
+    poll_audio_events_json() {
+        let deferred1_0;
+        let deferred1_1;
+        try {
+            const ret = wasm.dragonpixelenginewasm_poll_audio_events_json(this.__wbg_ptr);
+            deferred1_0 = ret[0];
+            deferred1_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+        }
+    }
+    /**
+     * Draine et renvoie les événements de secousse haptique pour la manette physique.
+     * @returns {string}
+     */
+    poll_haptic_events_json() {
+        let deferred1_0;
+        let deferred1_1;
+        try {
+            const ret = wasm.dragonpixelenginewasm_poll_haptic_events_json(this.__wbg_ptr);
+            deferred1_0 = ret[0];
+            deferred1_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+        }
+    }
+    /**
+     * Réinitialise le combat en cours.
+     */
+    restart() {
+        wasm.dragonpixelenginewasm_restart(this.__wbg_ptr);
+    }
+    /**
+     * Modifie le chapitre du Mode Histoire en cours.
+     * @param {number} chapter_id
+     */
+    set_chapter(chapter_id) {
+        wasm.dragonpixelenginewasm_set_chapter(this.__wbg_ptr, chapter_id);
+    }
+    /**
+     * Modifie le combattant sélectionné.
+     * @param {string} fighter_id
+     */
+    set_fighter(fighter_id) {
+        const ptr0 = passStringToWasm0(fighter_id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.dragonpixelenginewasm_set_fighter(this.__wbg_ptr, ptr0, len0);
+    }
+    /**
+     * Exécute un pas de simulation déterministe avec les entrées utilisateur.
+     * @param {string} input_json
+     * @param {number} dt
+     * @returns {string}
+     */
+    step(input_json, dt) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input_json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.dragonpixelenginewasm_step(this.__wbg_ptr, ptr0, len0, dt);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+        }
+    }
+}
+if (Symbol.dispose) DragonPixelEngineWasm.prototype[Symbol.dispose] = DragonPixelEngineWasm.prototype.free;
+
+/**
  * Browser WebGPU renderer of a manga page staged in 3D (`render::manga_scene`).
  */
 export class MangaSceneWasm {
@@ -155,168 +296,56 @@ export class MangaSceneWasm {
 }
 if (Symbol.dispose) MangaSceneWasm.prototype[Symbol.dispose] = MangaSceneWasm.prototype.free;
 
-/**
- * WebAssembly wrapper around the deterministic game simulation core.
- */
-export class ShenronEngineWasm {
-    static __wrap(ptr) {
-        const obj = Object.create(ShenronEngineWasm.prototype);
-        obj.__wbg_ptr = ptr;
-        ShenronEngineWasmFinalization.register(obj, obj.__wbg_ptr, obj);
-        return obj;
-    }
+export class Session {
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
-        ShenronEngineWasmFinalization.unregister(this);
+        SessionFinalization.unregister(this);
         return ptr;
     }
     free() {
         const ptr = this.__destroy_into_raw();
-        wasm.__wbg_shenronenginewasm_free(ptr, 0);
+        wasm.__wbg_session_free(ptr, 0);
     }
     /**
-     * Returns JSON array of audio events triggered in the current frame.
-     * @returns {string}
+     * @param {string} style
      */
-    get_audio_events_json() {
-        let deferred1_0;
-        let deferred1_1;
-        try {
-            const ret = wasm.shenronenginewasm_get_audio_events_json(this.__wbg_ptr);
-            deferred1_0 = ret[0];
-            deferred1_1 = ret[1];
-            return getStringFromWasm0(ret[0], ret[1]);
-        } finally {
-            wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
-        }
-    }
-    /**
-     * Returns JSON array of haptic events triggered in the current frame.
-     * @returns {string}
-     */
-    get_haptic_events_json() {
-        let deferred1_0;
-        let deferred1_1;
-        try {
-            const ret = wasm.shenronenginewasm_get_haptic_events_json(this.__wbg_ptr);
-            deferred1_0 = ret[0];
-            deferred1_1 = ret[1];
-            return getStringFromWasm0(ret[0], ret[1]);
-        } finally {
-            wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
-        }
-    }
-    /**
-     * Returns the WebGPU render packet serialized as a JSON string.
-     * @returns {string}
-     */
-    get_render_packet_json() {
-        let deferred1_0;
-        let deferred1_1;
-        try {
-            const ret = wasm.shenronenginewasm_get_render_packet_json(this.__wbg_ptr);
-            deferred1_0 = ret[0];
-            deferred1_1 = ret[1];
-            return getStringFromWasm0(ret[0], ret[1]);
-        } finally {
-            wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
-        }
-    }
-    /**
-     * Checks if the match has concluded.
-     * @returns {boolean}
-     */
-    is_match_over() {
-        const ret = wasm.shenronenginewasm_is_match_over(this.__wbg_ptr);
-        return ret !== 0;
-    }
-    /**
-     * Creates a new match between two fighters by string name.
-     * @param {string} p1_name
-     * @param {string} p2_name
-     * @param {string} arena_name
-     * @param {string} mode_name
-     * @returns {ShenronEngineWasm}
-     */
-    static new(p1_name, p2_name, arena_name, mode_name) {
-        const ptr0 = passStringToWasm0(p1_name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    constructor(style) {
+        const ptr0 = passStringToWasm0(style, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
-        const ptr1 = passStringToWasm0(p2_name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len1 = WASM_VECTOR_LEN;
-        const ptr2 = passStringToWasm0(arena_name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len2 = WASM_VECTOR_LEN;
-        const ptr3 = passStringToWasm0(mode_name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len3 = WASM_VECTOR_LEN;
-        const ret = wasm.shenronenginewasm_new(ptr0, len0, ptr1, len1, ptr2, len2, ptr3, len3);
-        return ShenronEngineWasm.__wrap(ret);
+        const ret = wasm.session_new(ptr0, len0);
+        this.__wbg_ptr = ret;
+        SessionFinalization.register(this, this.__wbg_ptr, this);
+        return this;
     }
     /**
-     * Returns Player 1's current HP.
-     * @returns {number}
+     * Advance the Rust simulation with a JSON input object and return the updated state as JSON.
+     * @param {string} input_json
+     * @param {number} dt
+     * @returns {string}
      */
-    p1_hp() {
-        const ret = wasm.shenronenginewasm_p1_hp(this.__wbg_ptr);
-        return ret;
-    }
-    /**
-     * Returns Player 1's current Ki.
-     * @returns {number}
-     */
-    p1_ki() {
-        const ret = wasm.shenronenginewasm_p1_ki(this.__wbg_ptr);
-        return ret;
-    }
-    /**
-     * Returns Player 2's current HP.
-     * @returns {number}
-     */
-    p2_hp() {
-        const ret = wasm.shenronenginewasm_p2_hp(this.__wbg_ptr);
-        return ret;
-    }
-    /**
-     * Returns Player 2's current Ki.
-     * @returns {number}
-     */
-    p2_ki() {
-        const ret = wasm.shenronenginewasm_p2_ki(this.__wbg_ptr);
-        return ret;
-    }
-    /**
-     * Advances the simulation by 1 frame with raw boolean input flags.
-     * @param {boolean} p1_left
-     * @param {boolean} p1_right
-     * @param {boolean} p1_up
-     * @param {boolean} p1_down
-     * @param {boolean} p1_light
-     * @param {boolean} p1_heavy
-     * @param {boolean} p1_special
-     * @param {boolean} p1_ultimate
-     * @param {boolean} p1_block
-     * @param {boolean} p2_left
-     * @param {boolean} p2_right
-     * @param {boolean} p2_up
-     * @param {boolean} p2_down
-     * @param {boolean} p2_light
-     * @param {boolean} p2_heavy
-     * @param {boolean} p2_special
-     * @param {boolean} p2_ultimate
-     * @param {boolean} p2_block
-     */
-    tick_raw(p1_left, p1_right, p1_up, p1_down, p1_light, p1_heavy, p1_special, p1_ultimate, p1_block, p2_left, p2_right, p2_up, p2_down, p2_light, p2_heavy, p2_special, p2_ultimate, p2_block) {
-        wasm.shenronenginewasm_tick_raw(this.__wbg_ptr, p1_left, p1_right, p1_up, p1_down, p1_light, p1_heavy, p1_special, p1_ultimate, p1_block, p2_left, p2_right, p2_up, p2_down, p2_light, p2_heavy, p2_special, p2_ultimate, p2_block);
-    }
-    /**
-     * Returns winner index (1 = P1, 2 = P2, 0 = Draw, None = In Progress).
-     * @returns {number | undefined}
-     */
-    winner() {
-        const ret = wasm.shenronenginewasm_winner(this.__wbg_ptr);
-        return ret === 0xFFFFFF ? undefined : ret;
+    step(input_json, dt) {
+        let deferred3_0;
+        let deferred3_1;
+        try {
+            const ptr0 = passStringToWasm0(input_json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.session_step(this.__wbg_ptr, ptr0, len0, dt);
+            var ptr2 = ret[0];
+            var len2 = ret[1];
+            if (ret[3]) {
+                ptr2 = 0; len2 = 0;
+                throw takeFromExternrefTable0(ret[2]);
+            }
+            deferred3_0 = ptr2;
+            deferred3_1 = len2;
+            return getStringFromWasm0(ptr2, len2);
+        } finally {
+            wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
+        }
     }
 }
-if (Symbol.dispose) ShenronEngineWasm.prototype[Symbol.dispose] = ShenronEngineWasm.prototype.free;
+if (Symbol.dispose) Session.prototype[Symbol.dispose] = Session.prototype.free;
 
 /**
  * Browser WebGPU renderer of a Toriyama 3D model (`render::toriyama3d`).
@@ -1457,27 +1486,27 @@ function __wbg_get_imports() {
             arg0.writeTexture(arg1, getArrayU8FromWasm0(arg2, arg3), arg4, arg5);
         }, arguments); },
         __wbindgen_generic_0000000000000001: function(arg0, arg1) {
-            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [Externref], shim_idx: 149, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
+            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [Externref], shim_idx: 148, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
             const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___JsValue__core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true_);
             return ret;
         },
         __wbindgen_generic_0000000000000002: function(arg0, arg1) {
-            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("GPUDevice")], shim_idx: 59, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
+            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("GPUDevice")], shim_idx: 58, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
             const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true_);
             return ret;
         },
         __wbindgen_generic_0000000000000003: function(arg0, arg1) {
-            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("GPUDeviceLostInfo")], shim_idx: 62, ret: Unit, inner_ret: Some(Unit) }, mutable: true }) -> Externref`.
+            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("GPUDeviceLostInfo")], shim_idx: 61, ret: Unit, inner_ret: Some(Unit) }, mutable: true }) -> Externref`.
             const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuDeviceLostInfo__GpuDeviceLostInfo______true_);
             return ret;
         },
         __wbindgen_generic_0000000000000004: function(arg0, arg1) {
-            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("any")], shim_idx: 59, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
+            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("any")], shim_idx: 58, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
             const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__43);
             return ret;
         },
         __wbindgen_generic_0000000000000005: function(arg0, arg1) {
-            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("undefined")], shim_idx: 59, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
+            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("undefined")], shim_idx: 58, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
             const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__44);
             return ret;
         },
@@ -1634,12 +1663,15 @@ const __wbindgen_enum_GpuVertexStepMode = ["vertex", "instance"];
 const CanvasEngineWasmFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_canvasenginewasm_free(ptr, 1));
+const DragonPixelEngineWasmFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_dragonpixelenginewasm_free(ptr, 1));
 const MangaSceneWasmFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_mangascenewasm_free(ptr, 1));
-const ShenronEngineWasmFinalization = (typeof FinalizationRegistry === 'undefined')
+const SessionFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_shenronenginewasm_free(ptr, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_session_free(ptr, 1));
 const ToriyamaModelWasmFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_toriyamamodelwasm_free(ptr, 1));
