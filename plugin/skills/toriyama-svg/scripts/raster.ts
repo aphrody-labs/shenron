@@ -3,8 +3,10 @@
  * local disponible. Aucun appel réseau, aucune dépendance npm.
  *
  * Ordre de préférence : `resvg` (Rust), `rsvg-convert`, `magick`/`convert`
- * (ImageMagick), `inkscape`. Pour une référence JPEG/WebP : ImageMagick, puis
- * `ffmpeg`. Si rien n'est installé, `outilSvg()` rend `null` et l'appelant
+ * (ImageMagick), `inkscape`. Une référence raster (PNG, y compris entrelacé,
+ * JPEG, WebP, GIF, BMP) est décodée par `Bun.Image`, sans outil externe ;
+ * ImageMagick puis `ffmpeg` ne servent que si `Bun.Image` est absent ou échoue.
+ * Si aucun rastériseur SVG n'est installé, `outilSvg()` rend `null` et l'appelant
  * se replie sur une planche SVG pure en signalant le contrôle non effectué.
  */
 import { tmpdir } from "node:os";
@@ -105,9 +107,25 @@ export async function svgVersPng(
   }
 }
 
-/** Lit une image en RVBA : PNG directement, autre format via ImageMagick ou ffmpeg. */
+/** Décode en RVBA 8 bits par `Bun.Image` (format sniffé sur les octets, pas l'extension). */
+async function lireAvecBun(octets: Uint8Array): Promise<ImageRGBA | null> {
+  if (typeof Bun.Image !== "function") return null;
+  try {
+    const decodeur = new Bun.Image(octets) as unknown as {
+      rgba(): Promise<{ width: number; height: number; data: Uint8Array }>;
+    };
+    const { width, height, data } = await decodeur.rgba();
+    return { largeur: width, hauteur: height, pixels: new Uint8Array(data) };
+  } catch {
+    return null;
+  }
+}
+
+/** Lit une image en RVBA : `Bun.Image` d'abord, puis le PNG interne, ImageMagick ou ffmpeg. */
 export async function lireImage(chemin: string): Promise<ImageRGBA> {
   const octets = await Bun.file(chemin).bytes();
+  const natif = await lireAvecBun(octets);
+  if (natif) return natif;
   if (estPng(octets)) {
     try {
       return decoderPng(octets);
