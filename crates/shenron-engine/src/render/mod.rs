@@ -14,6 +14,8 @@ pub mod manga_scene;
 pub mod mesh;
 pub mod model_adapter;
 pub mod model_serve;
+pub mod pixel_perfect;
+pub mod pixel_sprite;
 pub mod postprocess;
 pub mod raster3d;
 pub mod shaders;
@@ -46,6 +48,12 @@ pub use model_serve::{
     GpuCharacterModel, GpuPrimitive, ModelServePipeline, ModelUniforms, ModelVertex,
     TurntableCamera,
 };
+pub use pixel_perfect::{
+    AlphaMode, ColorSpace, Framebuffer, PixelBox, PixelError, PixelTexture, blend_state,
+    nearest_sampler_descriptor, pixel_perfect_box, pixel_rect_to_clip, snap_sprite_position,
+    snapped_ortho, texel_center_uv,
+};
+pub use pixel_sprite::{SpriteGpuError, render_sprite_rgba};
 pub use postprocess::{HaltonSequence, PostProcessUniforms};
 pub use raster3d::{DISTANCE_CAMERA, FOCALE, TILT, couleur_fond, render_model_cpu};
 pub use toriyama3d::{ToriyamaModel, ToriyamaPipeline, ToriyamaUniforms};

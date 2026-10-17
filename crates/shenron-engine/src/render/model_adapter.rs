@@ -4,10 +4,13 @@
 //! `scripts/ops/dbxv2-serve.ts` at `/cpk/<name>/model/<emd>.json`) to the
 //! [`AssembledCharacterModel`] consumed by [`super::model_serve`].
 //!
-//! The JSON carries geometry and texture metadata only (no pixels): textures are either supplied
-//! by the caller (decoded from the `/png` endpoint) or replaced by a neutral grey placeholder of
-//! the declared size, so the primitives' `textureIndex` stays valid.
+//! The JSON carries geometry and texture metadata only (no pixels): textures are supplied by the
+//! caller, either as PNG bytes from the `/png` endpoint ([`model_from_json_with_pngs`], lossless,
+//! native size, checked against the declared size) or already decoded ([`model_from_json`]).
+//! Without textures a neutral grey placeholder of the declared size keeps `textureIndex` valid.
+//! UVs, vertex order and indices are never transformed.
 
+use super::pixel_perfect::{AlphaMode, ColorSpace, PixelError, PixelTexture};
 use serde::Deserialize;
 use shenron_re::formats::{
     AssembledCharacterModel, EmbRgbaTexture, EskFile, ModelPrimitive, TexturePixelFormat,
@@ -22,6 +25,10 @@ pub enum ModelAdapterError {
     Json(#[from] serde_json::Error),
     #[error("primitive {primitive}: {what}")]
     Invalid { primitive: usize, what: &'static str },
+    #[error("texture: {0}")]
+    Texture(#[from] PixelError),
+    #[error("model declares {declared} textures, caller supplied {supplied} PNGs")]
+    TextureCount { declared: usize, supplied: usize },
 }
 
 #[derive(Debug, Deserialize)]
@@ -130,6 +137,44 @@ pub fn model_from_json(
     Ok(AssembledCharacterModel { name: parsed.name, primitives, textures, skeleton })
 }
 
+/// Converts `ModelJson` text using the caller's real PNG textures (one per declared texture, in
+/// order). Each PNG is decoded losslessly at its native size and must match the declared size.
+pub fn model_from_json_with_pngs(
+    json: &str,
+    pngs: &[&[u8]],
+    color_space: ColorSpace,
+    alpha: AlphaMode,
+) -> Result<AssembledCharacterModel, ModelAdapterError> {
+    let parsed: ModelJson = serde_json::from_str(json)?;
+    if pngs.len() != parsed.textures.len() {
+        return Err(ModelAdapterError::TextureCount {
+            declared: parsed.textures.len(),
+            supplied: pngs.len(),
+        });
+    }
+    let mut textures = Vec::with_capacity(pngs.len());
+    for (index, (bytes, declared)) in pngs.iter().zip(&parsed.textures).enumerate() {
+        let t = PixelTexture::decode_png(bytes, color_space, alpha)?;
+        if (t.width, t.height) != (declared.width, declared.height) {
+            return Err(PixelError::DeclaredSizeMismatch {
+                index,
+                got_w: t.width,
+                got_h: t.height,
+                want_w: declared.width,
+                want_h: declared.height,
+            }
+            .into());
+        }
+        textures.push(EmbRgbaTexture {
+            width: t.width,
+            height: t.height,
+            format: TexturePixelFormat::Rgba8,
+            rgba: t.rgba,
+        });
+    }
+    model_from_json(json, Some(textures))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -193,5 +238,45 @@ mod tests {
         };
         let m = model_from_json(SYNTHETIC, Some(vec![tex])).unwrap();
         assert_eq!(m.textures[0].rgba, vec![1, 2, 3, 4]);
+    }
+
+    fn png(w: u32, h: u32, rgba: Vec<u8>) -> Vec<u8> {
+        let mut out = Vec::new();
+        image::RgbaImage::from_raw(w, h, rgba)
+            .unwrap()
+            .write_to(&mut std::io::Cursor::new(&mut out), image::ImageFormat::Png)
+            .unwrap();
+        out
+    }
+
+    #[test]
+    fn real_pngs_replace_grey_without_touching_geometry() {
+        let rgba: Vec<u8> = (0..4 * 2 * 4).map(|i| (i * 7 + 1) as u8).collect();
+        let bytes = png(4, 2, rgba.clone());
+        let m =
+            model_from_json_with_pngs(SYNTHETIC, &[&bytes], ColorSpace::Srgb, AlphaMode::Straight)
+                .unwrap();
+        assert_eq!(m.textures[0].rgba, rgba);
+        assert_eq!((m.textures[0].width, m.textures[0].height), (4, 2));
+        // UV and vertex order are exactly those of the JSON.
+        assert_eq!(m.primitives[0].uv, vec![[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]]);
+        assert_eq!(m.primitives[0].indices, vec![0, 1, 2]);
+        assert_eq!(
+            m.primitives[0].positions,
+            vec![[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]]
+        );
+    }
+
+    #[test]
+    fn png_size_and_count_are_checked() {
+        let wrong = png(2, 2, vec![0; 16]);
+        assert!(matches!(
+            model_from_json_with_pngs(SYNTHETIC, &[&wrong], ColorSpace::Srgb, AlphaMode::Straight),
+            Err(ModelAdapterError::Texture(PixelError::DeclaredSizeMismatch { .. }))
+        ));
+        assert!(matches!(
+            model_from_json_with_pngs(SYNTHETIC, &[], ColorSpace::Srgb, AlphaMode::Straight),
+            Err(ModelAdapterError::TextureCount { declared: 1, supplied: 0 })
+        ));
     }
 }

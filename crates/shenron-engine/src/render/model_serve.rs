@@ -11,6 +11,7 @@
 //! - Turntable orbit camera controls (`TurntableCamera`)
 //! - Off-screen headless rendering and pixel readback (`render_offscreen_rgba`)
 
+use super::pixel_perfect::{AlphaMode, blend_state, nearest_sampler_descriptor};
 use bytemuck::{Pod, Zeroable};
 use glam::{Mat4, Vec3};
 use shenron_re::formats::AssembledCharacterModel;
@@ -130,17 +131,13 @@ impl GpuCharacterModel {
         // Create default 1x1 white texture for untextured materials
         let default_texture = create_solid_texture(device, queue, [220, 220, 220, 255]);
         let default_view = default_texture.create_view(&wgpu::TextureViewDescriptor::default());
-        let default_sampler = device.create_sampler(&wgpu::SamplerDescriptor {
-            address_mode_u: wgpu::AddressMode::ClampToEdge,
-            address_mode_v: wgpu::AddressMode::ClampToEdge,
-            mag_filter: wgpu::FilterMode::Linear,
-            min_filter: wgpu::FilterMode::Linear,
-            ..Default::default()
-        });
+        // Pixel perfect contract: nearest, no mip, clamp to edge.
+        let default_sampler = device.create_sampler(&nearest_sampler_descriptor());
 
         // Upload textures
         let mut texture_views = Vec::new();
         for tex in &model.textures {
+            // Native size, single mip level, `Rgba8UnormSrgb` (EMB color data).
             let gpu_tex = upload_rgba_texture(device, queue, tex.width, tex.height, &tex.rgba);
             let view = gpu_tex.create_view(&wgpu::TextureViewDescriptor::default());
             texture_views.push(view);
@@ -218,6 +215,15 @@ pub struct ModelServePipeline {
 impl ModelServePipeline {
     /// Compiles the WGSL cel-shading pipeline.
     pub fn new(device: &wgpu::Device, target_format: wgpu::TextureFormat) -> Self {
+        Self::with_alpha(device, target_format, AlphaMode::Straight)
+    }
+
+    /// Same as [`Self::new`] with the blend state of the declared texture alpha mode.
+    pub fn with_alpha(
+        device: &wgpu::Device,
+        target_format: wgpu::TextureFormat,
+        alpha: AlphaMode,
+    ) -> Self {
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("cel_shading_shader"),
             source: wgpu::ShaderSource::Wgsl(CEL_SHADING_WGSL.into()),
@@ -263,7 +269,7 @@ impl ModelServePipeline {
                         binding: 0,
                         visibility: wgpu::ShaderStages::FRAGMENT,
                         ty: wgpu::BindingType::Texture {
-                            sample_type: wgpu::TextureSampleType::Float { filterable: true },
+                            sample_type: wgpu::TextureSampleType::Float { filterable: false },
                             view_dimension: wgpu::TextureViewDimension::D2,
                             multisampled: false,
                         },
@@ -272,7 +278,7 @@ impl ModelServePipeline {
                     wgpu::BindGroupLayoutEntry {
                         binding: 1,
                         visibility: wgpu::ShaderStages::FRAGMENT,
-                        ty: wgpu::BindingType::Sampler(wgpu::SamplerBindingType::Filtering),
+                        ty: wgpu::BindingType::Sampler(wgpu::SamplerBindingType::NonFiltering),
                         count: None,
                     },
                 ],
@@ -301,7 +307,7 @@ impl ModelServePipeline {
                 entry_point: Some("fs_main"),
                 targets: &[Some(wgpu::ColorTargetState {
                     format: target_format,
-                    blend: Some(wgpu::BlendState::ALPHA_BLENDING),
+                    blend: Some(blend_state(alpha)),
                     write_mask: wgpu::ColorWrites::ALL,
                 })],
                 compilation_options: Default::default(),
@@ -385,7 +391,7 @@ fn vs_main(in: VertexInput) -> VertexOutput {
 
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
-    let base_color = textureSample(t_diffuse, s_diffuse, in.uv);
+    let base_color = textureSampleLevel(t_diffuse, s_diffuse, in.uv, 0.0);
 
     // Anime 2-tone Cel Shading ramp
     let n_dot_l = dot(in.world_normal, normalize(u.light_dir));
