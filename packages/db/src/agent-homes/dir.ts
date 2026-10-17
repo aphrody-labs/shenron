@@ -116,7 +116,7 @@ export class DirAgentHomeStore implements AgentHomeStore {
     const target = this.dirOf(to);
     if (!existsSync(source) || existsSync(target)) return false;
     mkdirSync(this.root, { recursive: true });
-    renameSync(source, target);
+    renameWithRetry(source, target);
     return true;
   }
 
@@ -125,9 +125,23 @@ export class DirAgentHomeStore implements AgentHomeStore {
   }
 }
 
+/** Rename, retrying the transient EPERM/EBUSY/EACCES a Windows scanner or indexer causes on a fresh directory. */
+function renameWithRetry(from: string, to: string): void {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      renameSync(from, to);
+      return;
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (attempt >= 20 || (code !== "EPERM" && code !== "EBUSY" && code !== "EACCES")) throw error;
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 25 * (attempt + 1));
+    }
+  }
+}
+
 /** Write through a temporary file and a rename (no half-written document on a crash). */
 export function writeAtomicSync(path: string, text: string): void {
   const tmp = `${path}.${process.pid}.tmp`;
   writeFileSync(tmp, text);
-  renameSync(tmp, path);
+  renameWithRetry(tmp, path);
 }
