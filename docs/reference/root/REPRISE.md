@@ -20,8 +20,10 @@ la production tourne sous `~/apps/shenron` (Docker), et `shenron-auto-deploy` é
 qualifié (`bun:yolo`, Curl, Crawl, VectorIndex), d'après le rapport de `agent-fix`. Levée ensuite : build puis livraison par les scripts versionnés
 `scripts/ops/vps/` (les copies `~/` avaient disparu) ; release active `docker-0bb23354` (image
 `sha256:447673fa`), conteneurs gateway/site/bot sains, sondes publiques 200, rollback
-`deploy-backups/docker-1uzluncu`. `release.ts` (disposition systemd `/srv/shenron/current`) reste à
-réaligner ; `format:check` passe via `--ignore-pattern` (29e36e5c). Non faits : migration SQL (Infra) et envoi de données, sans lot désigné.
+`deploy-backups/docker-1uzluncu`. `release.ts` (disposition systemd `/srv/shenron/current`) échoue désormais d'emblée
+sans `SHENRON_RELEASE_LEGACY=1` ; la publication CDN avant bascule n'existe pas dans le parcours Docker.
+Migrations : la production a les 16 entrées du journal Drizzle appliquées (dernière `0023`), rien en attente.
+ `format:check` passe via `--ignore-pattern` (29e36e5c). Non faits : migration SQL (Infra) et envoi de données, sans lot désigné.
 
 ## 2026-10-15 — Refonte Canon, agents wiki et plugin Aphrody
 
