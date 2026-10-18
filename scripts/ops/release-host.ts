@@ -94,7 +94,7 @@ function inBuildImage(label: string, cmd: string[], env: Record<string, string> 
   const forward = Object.keys(env).flatMap((name) => ["--env", name]);
   // Bun consumes the first `--` while parsing its own CLI. Pass a second one so
   // container.ts receives its command separator in process.argv.
-  return step(label, ["bun", "scripts/build/container.ts", ...forward, "--", "--", ...cmd], env);
+  return step(label, ["bun", "scripts/build/container.ts", "--", ...forward, "--", ...cmd], env);
 }
 
 /**
