@@ -3033,6 +3033,7 @@ export const dbUniverse = {
         birth_date: r.birthDate,
         death_date: r.deathDate,
         biography_fr: r.biographyFr,
+        image: r.image,
         spotlight_rank: r.spotlightRank,
       }));
     }),
@@ -3066,6 +3067,7 @@ export const dbUniverse = {
         birth_date: r.birthDate,
         death_date: r.deathDate,
         biography_fr: r.biographyFr,
+        image: r.image,
         spotlight_rank: r.spotlightRank,
         credits: credits.map((c) => ({
           id: Number(c.id),

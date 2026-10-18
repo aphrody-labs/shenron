@@ -744,6 +744,7 @@ export const botContributors = bot.table("contributors", {
   birthDate: text("birth_date"),
   deathDate: text("death_date"),
   biographyFr: text("biography_fr"),
+  image: text("image"),
   spotlightRank: integer("spotlight_rank"),
   sourceId: text("source_id"),
   ...visibleCol,
