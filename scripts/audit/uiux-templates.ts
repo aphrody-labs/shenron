@@ -72,7 +72,10 @@ async function main() {
     issues: UiuxIssue[];
     rendered: Record<string, UiuxIssue[]>;
   }[] = [];
-  const entries = [...groups].toSorted((a, b) => b[1].length - a[1].length);
+  const limit = Number(option("--templates", "0"));
+  const entries = [...groups]
+    .toSorted((a, b) => b[1].length - a[1].length)
+    .slice(0, limit > 0 ? limit : undefined);
 
   await pool(entries, async ([template, members]) => {
     const issues = new Map<string, UiuxIssue>();
