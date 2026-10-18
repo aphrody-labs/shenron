@@ -124,6 +124,13 @@ export async function auditHtml(html: string): Promise<UiuxIssue[]> {
         if (open) open.text += chunk.text;
       },
     })
+    // React streams a Suspense boundary as <template> placeholders: the name arrives later in
+    // the page, so a link holding one is not nameless.
+    .on("a template, button template", {
+      element() {
+        if (open) open.named = true;
+      },
+    })
     .on("a *, button *", {
       element(el) {
         if (open && (el.getAttribute("aria-label")?.trim() || el.tagName === "title"))
