@@ -125,8 +125,9 @@ export function crunchyrollOffer(row: ShenronEpisodeRow): CrunchyrollOffer | nul
   const entry = row.availability?.find(
     (offer) => offer.provider === "crunchyroll" && offer.available !== false && offer.url,
   );
-  const id = entry?.url && WATCH_ID.exec(new URL(entry.url).pathname)?.[1];
-  if (!entry || !id || new URL(entry.url).hostname !== "www.crunchyroll.com") return null;
+  if (!entry?.url) return null;
+  const id = WATCH_ID.exec(new URL(entry.url).pathname)?.[1];
+  if (!id || new URL(entry.url).hostname !== "www.crunchyroll.com") return null;
   return {
     episodeId: row.id,
     series: row.series,

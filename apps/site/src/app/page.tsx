@@ -18,6 +18,9 @@ import { ogMeta } from "@/lib/og";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { readMediaCatalog } from "@/lib/media-catalog";
 import { pageHero } from "@/lib/banner-config";
+import type { BeerusFeature } from "@/components/home/HomeBeerusFeature";
+import { getEpisodesCached } from "@/app/wiki/episodes/_shared";
+import { DBS_BEERUS_SERIES_CODE } from "@/lib/episode-series-catalogue";
 
 /** Editorial selections use ISR; live community state refreshes after hydration. */
 export const revalidate = 900;
@@ -118,11 +121,25 @@ async function getSagas() {
 async function getBeerusFeature(): Promise<BeerusFeature | null> {
   try {
     const data = await getEpisodesCached(DBS_BEERUS_SERIES_CODE, 200, 0);
-    const aired = data.episodes.filter((episode) => !episode.air_date || episode.air_date * 1000 <= Date.now());
+    const aired = data.episodes
+      .filter(
+        (episode: { air_date?: number | null }) =>
+          !episode.air_date || episode.air_date * 1000 <= Date.now(),
+      )
+      .map((ep: any) => ({
+        id: ep.id,
+        number: ep.number_in_series,
+        title: ep.title,
+        titleJa: ep.title_ja ?? ep.titleJa,
+        airDate: ep.air_date ?? ep.airDate,
+        duration: ep.duration,
+        image: ep.image || "/banners/dbs-beerus-2026.jpg",
+      }));
     const latest = aired.at(-1) ?? null;
     return {
       total: aired.length,
-      latest: latest ? { id: latest.id, number: latest.number_in_series, title: latest.title } : null,
+      latest,
+      episodes: aired,
     };
   } catch {
     return null;
@@ -181,13 +198,13 @@ export default async function Home() {
       beerus={beerus}
       access={access}
       stats={stats}
-      personas={personas.map((p) => ({
+      personas={personas.map((p: any) => ({
         id: p.id,
         name: p.name,
         avatar: p.avatar,
         online: p.online,
       }))}
-      characters={characters.map((c) => ({
+      characters={characters.map((c: any) => ({
         id: c.id,
         name: c.name,
         nameJa: c.nameJa,
@@ -195,7 +212,7 @@ export default async function Home() {
         ki: c.ki,
         image: c.image,
       }))}
-      sagas={sagas.map((s) => ({
+      sagas={sagas.map((s: any) => ({
         id: s.id,
         slug: s.slug,
         name: s.name,
@@ -205,7 +222,7 @@ export default async function Home() {
       bestof={bestof}
       communityTops={communityTops}
       feed={feed}
-      topMembers={leaderboard.entries.map((m) => ({
+      topMembers={leaderboard.entries.map((m: any) => ({
         rank: m.rank,
         discordId: m.discordId,
         username: m.username,

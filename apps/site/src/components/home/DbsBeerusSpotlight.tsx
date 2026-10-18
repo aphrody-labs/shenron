@@ -64,14 +64,12 @@ export function DbsBeerusSpotlight({
         ) : null}
         <p className="m-0 text-sm font-semibold text-white sm:text-base">{t("episodeOne")}</p>
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold">
-          <a
-            className="inline-flex min-h-11 items-center text-dbz-orange underline-offset-4 hover:underline"
-            href="https://www.crunchyroll.com/fr/watch/GE00389313JAJP/the-god-who-destroys"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            className="inline-flex min-h-11 items-center font-bold text-dbz-orange underline-offset-4 hover:underline"
+            href={DBS_BEERUS_EPISODE_HREF}
           >
             {t("watchEpisode")}
-          </a>
+          </Link>
           <Link
             className="inline-flex min-h-11 items-center text-white/75 underline-offset-4 hover:text-white hover:underline"
             href="/news/dragon-ball-super-beerus-adn-vostfr-18h-2026-10-11"
