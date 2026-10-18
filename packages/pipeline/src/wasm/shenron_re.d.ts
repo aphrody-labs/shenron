@@ -4,10 +4,7 @@
 /**
  * Decompress a CRILAYLA compressed buffer into raw uncompressed bytes.
  */
-export function wasm_decompress_crilayla(
-  compressed: Uint8Array,
-  uncompressed_size: number,
-): Uint8Array;
+export function wasm_decompress_crilayla(compressed: Uint8Array, uncompressed_size: number): Uint8Array;
 
 /**
  * Extract a single file from a CPK archive by name (transparently decompressing CRILAYLA if needed).
@@ -73,45 +70,43 @@ export function wasm_triage_cpk(bytes: Uint8Array): any;
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
-  readonly memory: WebAssembly.Memory;
-  readonly wasm_decompress_crilayla: (
-    a: number,
-    b: number,
-    c: number,
-  ) => [number, number, number, number];
-  readonly wasm_extract_cpk_file: (
-    a: number,
-    b: number,
-    c: number,
-    d: number,
-  ) => [number, number, number, number];
-  readonly wasm_extract_msg_text: (
-    a: number,
-    b: number,
-    c: number,
-    d: number,
-  ) => [number, number, number];
-  readonly wasm_get_dragon_ball_catalog: () => [number, number, number];
-  readonly wasm_get_xenoverse3_prototype_map: () => [number, number, number];
-  readonly wasm_parse_bac: (a: number, b: number) => [number, number, number];
-  readonly wasm_parse_bdm: (a: number, b: number) => [number, number, number];
-  readonly wasm_parse_cus: (a: number, b: number) => [number, number, number];
-  readonly wasm_parse_emb: (a: number, b: number) => [number, number, number];
-  readonly wasm_parse_msg: (a: number, b: number) => [number, number, number];
-  readonly wasm_parse_pup: (a: number, b: number) => [number, number, number];
-  readonly wasm_scan_aob: (
-    a: number,
-    b: number,
-    c: number,
-    d: number,
-  ) => [number, number, number, number];
-  readonly wasm_triage_cpk: (a: number, b: number) => [number, number, number];
-  readonly __wbindgen_malloc: (a: number, b: number) => number;
-  readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
-  readonly __wbindgen_externrefs: WebAssembly.Table;
-  readonly __externref_table_dealloc: (a: number) => void;
-  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
-  readonly __wbindgen_start: () => void;
+    readonly memory: WebAssembly.Memory;
+    readonly shenron_re_abi_version: () => number;
+    readonly shenron_re_bac_parse_json: (a: number, b: number) => number;
+    readonly shenron_re_bdm_parse_json: (a: number, b: number) => number;
+    readonly shenron_re_catalog_json: () => number;
+    readonly shenron_re_cpk_extract: (a: number, b: number, c: number, d: number) => number;
+    readonly shenron_re_cpk_list_json: (a: number, b: number) => number;
+    readonly shenron_re_cus_parse_json: (a: number, b: number) => number;
+    readonly shenron_re_free_bytes: (a: number, b: number) => void;
+    readonly shenron_re_free_string: (a: number) => void;
+    readonly shenron_re_live_battle_read: (a: number, b: bigint) => number;
+    readonly shenron_re_live_process_find: (a: number) => number;
+    readonly shenron_re_msg_parse_json: (a: number, b: number) => number;
+    readonly shenron_re_pup_parse_json: (a: number, b: number) => number;
+    readonly shenron_re_sav_parse_json: (a: number, b: number) => number;
+    readonly shenron_re_triage_json: (a: number, b: number) => number;
+    readonly shenron_re_unified_state_json: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => number;
+    readonly shenron_re_version: () => number;
+    readonly wasm_decompress_crilayla: (a: number, b: number, c: number) => [number, number, number, number];
+    readonly wasm_extract_cpk_file: (a: number, b: number, c: number, d: number) => [number, number, number, number];
+    readonly wasm_extract_msg_text: (a: number, b: number, c: number, d: number) => [number, number, number];
+    readonly wasm_get_dragon_ball_catalog: () => [number, number, number];
+    readonly wasm_get_xenoverse3_prototype_map: () => [number, number, number];
+    readonly wasm_parse_bac: (a: number, b: number) => [number, number, number];
+    readonly wasm_parse_bdm: (a: number, b: number) => [number, number, number];
+    readonly wasm_parse_cus: (a: number, b: number) => [number, number, number];
+    readonly wasm_parse_emb: (a: number, b: number) => [number, number, number];
+    readonly wasm_parse_msg: (a: number, b: number) => [number, number, number];
+    readonly wasm_parse_pup: (a: number, b: number) => [number, number, number];
+    readonly wasm_scan_aob: (a: number, b: number, c: number, d: number) => [number, number, number, number];
+    readonly wasm_triage_cpk: (a: number, b: number) => [number, number, number];
+    readonly __wbindgen_malloc: (a: number, b: number) => number;
+    readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
+    readonly __wbindgen_externrefs: WebAssembly.Table;
+    readonly __externref_table_dealloc: (a: number) => void;
+    readonly __wbindgen_free: (a: number, b: number, c: number) => void;
+    readonly __wbindgen_start: () => void;
 }
 
 export type SyncInitInput = BufferSource | WebAssembly.Module;
@@ -134,9 +129,4 @@ export function initSync(module: { module: SyncInitInput } | SyncInitInput): Ini
  *
  * @returns {Promise<InitOutput>}
  */
-export default function __wbg_init(
-  module_or_path?:
-    | { module_or_path: InitInput | Promise<InitInput> }
-    | InitInput
-    | Promise<InitInput>,
-): Promise<InitOutput>;
+export default function __wbg_init (module_or_path?: { module_or_path: InitInput | Promise<InitInput> } | InitInput | Promise<InitInput>): Promise<InitOutput>;
