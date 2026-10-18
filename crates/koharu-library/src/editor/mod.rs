@@ -117,7 +117,7 @@ pub struct Editor {
 impl Editor {
     /// An editor on a project library. `cpu` pins the model device to the CPU. Must run in a
     /// Tokio runtime (the renderer and the download relay start here); the model runtime only
-    /// starts on [`Editor::warm_up`], the first subscription or the first processing request.
+    /// starts on [`Editor::warm_up`] or the first explicit processing request.
     pub fn new(projects: ProjectLibrary, cpu: bool) -> Result<Self> {
         let inner = Arc::new(Inner {
             projects,
@@ -209,9 +209,9 @@ impl Editor {
 
     // ── Subscription ────────────────────────────────────────────────────────────────────
 
-    /// Bind a window's receivers once the runtime is ready and return its startup state.
+    /// Bind a window's receivers without installing or loading optional ML runtimes.
+    /// Editing and imports stay available before an explicit processing request.
     pub async fn subscribe(&self, subscription: Subscription) -> Result<StartupState> {
-        self.runtime().await?;
         let inner = &self.inner;
         inner.canvas.set(subscription.canvas);
         inner.job.set(subscription.job);
