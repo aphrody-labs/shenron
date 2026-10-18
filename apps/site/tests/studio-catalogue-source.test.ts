@@ -27,6 +27,7 @@ describe("Studio catalogue handoff", () => {
       "/api/private/a.png",
       "https://user:pass@dragonballfr.com/wiki/a.png",
       "/wiki/a.svg",
+      "/wiki/a.avif",
     ])
       expect(() => studioSourceImage(url, "https://dragonballfr.com")).toThrow();
     expect(studioSourceImage("/assets/wiki/a.jpg", "https://dragonballfr.com")).toBe(

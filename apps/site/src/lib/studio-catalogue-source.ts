@@ -24,7 +24,7 @@ export function studioSourceImage(value: string, origin: string): string {
     url.password ||
     url.hash ||
     !/^\/(?:assets|wiki|media)\//.test(url.pathname) ||
-    !/\.(?:png|jpe?g|webp|avif)$/i.test(url.pathname)
+    !/\.(?:png|jpe?g|webp)$/i.test(url.pathname)
   )
     throw Error("Unapproved catalogue image");
   return url.href;
@@ -58,11 +58,7 @@ export function studioSourceRecord(source: StudioSource, value: unknown, origin:
 export async function studioSourceFile(url: string, signal: AbortSignal): Promise<File> {
   const response = await fetch(url, { signal, credentials: "omit", redirect: "error" });
   const mime = response.headers.get("content-type")?.split(";")[0] ?? "";
-  if (
-    !response.ok ||
-    !response.body ||
-    !["image/png", "image/jpeg", "image/webp", "image/avif"].includes(mime)
-  )
+  if (!response.ok || !response.body || !["image/png", "image/jpeg", "image/webp"].includes(mime))
     throw Error("Catalogue image unavailable");
   const limit = 96 * 1024 * 1024;
   if (Number(response.headers.get("content-length")) > limit)

@@ -82,7 +82,7 @@ export function StudioCatalogueImport() {
           source,
           sha256,
           bytes: file.size,
-          importedAt: new Date().toISOString(),
+          preparedAt: new Date().toISOString(),
           candidateOnly: true,
           editorialBinding: null,
         },
@@ -93,7 +93,6 @@ export function StudioCatalogueImport() {
       localStorage.setItem(`shenron:studio-source:${name.trim()}`, record);
       setProvenance(record);
       await backend.call(commands.createProject, name.trim());
-      await backend.call(commands.openProject, name.trim());
       await importStudioFiles(
         [new File([file], `${source.name}.${file.name.split(".").pop()}`, { type: file.type })],
         controller.signal,
