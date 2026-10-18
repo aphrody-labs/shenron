@@ -5,6 +5,7 @@ import styles from "./HomeHero.module.css";
 import { ArrowRight, Play } from "lucide-react";
 import { CadreCase } from "@aphrody/shenron-ui/toriyama";
 import { HOME_HERO_FRAMES } from "@/lib/home-hero-frames";
+import { HomeBeerusLogo } from "./HomeBeerusLogo";
 export interface BeerusEpisodeSummary {
   id: number;
   number: number | null;
@@ -27,9 +28,10 @@ export function HomeBeerusFeature({ beerus }: { beerus: BeerusFeature }) {
       <p className={styles.eyebrow}>
         <T k="accueil.hero.featureEyebrow" />
       </p>
-      <h2 className={styles.title}>
+      <h2 className="sr-only">
         <T k="dbsBeerus.title" />
       </h2>
+      <HomeBeerusLogo />
       {latest && <p className={styles.episodeTitle}>{latest.title}</p>}
       <div className={styles.actions}>
         {latest && (

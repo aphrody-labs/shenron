@@ -43,7 +43,7 @@
       color-mix(in srgb, var(--background) 90%, transparent) 30%,
       transparent 85%
     ),
-    linear-gradient(0deg, var(--background), transparent 80%);
+    linear-gradient(0deg, var(--background), transparent 45%);
 }
 .frame {
   position: absolute;
@@ -63,9 +63,11 @@
   z-index: 4;
   right: 1.5rem;
   top: 1.5rem;
-  min-height: 44px;
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 0.25rem;
+  border: 2px solid var(--border);
+  box-shadow: 0 2px 0 var(--foreground);
   border-radius: 999px;
   background: var(--background);
   color: var(--foreground);
@@ -82,16 +84,8 @@
   font-weight: 800;
   margin: 0 0 0.8rem;
 }
-.title {
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 3.6vw, 3.25rem);
-  line-height: 1.04;
-  letter-spacing: -0.035em;
-  text-wrap: balance;
-  margin: 0;
-}
-.episodeTitle,
-.lede {
+
+.episodeTitle {
   font-size: clamp(1rem, 1.6vw, 1.15rem);
   line-height: 1.5;
   margin: 0.75rem 0;
@@ -115,14 +109,18 @@
   padding: 0.7rem 1.2rem;
   font-weight: 750;
   font-size: 0.9rem;
-  border-radius: 0.5rem;
+  border: 2px solid var(--color-encre);
+  border-radius: 999px;
+  box-shadow: 0 3px 0 var(--color-encre);
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
 }
 .primary {
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: var(--color-logo-jaune);
+  color: var(--color-encre);
 }
 .secondary {
-  border: 1px solid var(--border);
   background: var(--background);
   color: var(--foreground);
 }
@@ -180,7 +178,7 @@
     flex: none;
   }
   .frameStack::after {
-    background: linear-gradient(0deg, var(--background) 4%, transparent 100%);
+    background: linear-gradient(0deg, var(--background) 4%, transparent 45%);
   }
   .frame {
     object-position: 70% top;
@@ -191,9 +189,7 @@
   .identity {
     margin-bottom: 1rem;
   }
-  .title {
-    font-size: 2.5rem;
-  }
+
   .search {
     padding: 0 1.25rem 2rem;
   }
@@ -210,15 +206,13 @@
     transition: none;
   }
 }
-.motionControl {
-  display: flex;
-  align-items: center;
-  padding: 0 0.25rem;
-}
+
 .motionControl button {
-  min-height: 44px;
-  min-width: 44px;
+  min-height: 48px;
+  min-width: 48px;
   padding: 0.5rem;
+  display: grid;
+  place-items: center;
 }
 .editorialLink {
   display: inline-flex;
@@ -232,23 +226,7 @@
 }
 
 /* The physical controls are original UI; the thumbnail rings use measured CadreCase geometry. */
-.primary,
-.secondary {
-  border: 2px solid var(--color-encre, var(--foreground));
-  border-radius: 999px;
-  box-shadow: 0 3px 0 var(--color-encre, var(--foreground));
-  transition:
-    transform 0.15s,
-    box-shadow 0.15s;
-}
-.primary::before {
-  content: "";
-  width: 4px;
-  height: 20px;
-  border-radius: 999px;
-  background: currentColor;
-  opacity: 0.35;
-}
+
 .primary:active,
 .secondary:active {
   transform: translateY(1px);
@@ -272,21 +250,7 @@
 .episode > svg {
   flex: none;
 }
-.lede {
-  font-size: 0.85rem;
-  max-width: 45ch;
-  line-height: 1.45;
-}
-.motionControl {
-  border: 2px solid var(--border);
-  box-shadow: 0 2px 0 var(--foreground);
-}
-.motionControl button {
-  min-height: 48px;
-  min-width: 48px;
-  display: grid;
-  place-items: center;
-}
+
 .search :global(search) {
   max-width: 38rem;
 }
@@ -303,4 +267,16 @@
   .secondary {
     transition: none;
   }
+}
+.lede {
+  font-size: 0.85rem;
+  max-width: 45ch;
+  line-height: 1.45;
+  color: var(--muted-foreground);
+  margin: 0.75rem 0;
+}
+.seriesLogo {
+  width: min(18rem, 100%);
+  height: auto;
+  display: block;
 }
