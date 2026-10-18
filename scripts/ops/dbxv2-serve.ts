@@ -429,14 +429,18 @@ export function createDbxv2Server(opts: ServeOptions) {
       } catch {
         throw new HttpError(503, "transcoder unavailable");
       }
-      const timer = setTimeout(() => proc.kill(), opts.transcodeTimeoutMs ?? 300_000);
+      let timedOut = false;
+      const timer = setTimeout(() => {
+        timedOut = true;
+        proc.kill();
+      }, opts.transcodeTimeoutMs ?? 300_000);
       const [out, err, code] = await Promise.all([
         new Response(proc.stdout as ReadableStream).bytes(),
         new Response(proc.stderr as ReadableStream).text(),
         proc.exited,
       ]);
       clearTimeout(timer);
-      if (proc.killed) throw new HttpError(504, "transcode timeout");
+      if (timedOut) throw new HttpError(504, "transcode timeout");
       if (code !== 0) {
         console.error(`[dbxv2-serve] shenron-video exit ${code}: ${err.slice(0, 500)}`);
         throw new HttpError(500, "transcode failed");
