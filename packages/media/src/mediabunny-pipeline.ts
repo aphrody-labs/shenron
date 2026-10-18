@@ -1,16 +1,20 @@
 // SPDX-License-Identifier: Apache-2.0
-import {
-  Input,
-  ALL_FORMATS,
-  FilePathSource,
-  UrlSource,
-  CanvasSink,
-  VideoSampleSink,
-  EncodedPacketSink,
-  InputVideoTrack,
-  InputAudioTrack,
-  type InputTrack,
-} from "../../../vendor/mediabunny/src/index.ts";
+import { Input, ALL_FORMATS, FilePathSource, UrlSource, CanvasSink } from "mediabunny";
+
+// Published Bun declarations predate this qualified native runtime surface.
+interface NativeVideo {
+  frame(seconds: number): NativeVideo;
+  resize(width: number, height: number): NativeVideo;
+  jpeg(options: { quality: number }): NativeVideo;
+  webp(options: { quality: number }): NativeVideo;
+  bytes(): Promise<Uint8Array>;
+  metadata(): Promise<{ fpsNumerator: number; fpsDenominator: number }>;
+}
+type NativeVideoConstructor = { new (source: string): NativeVideo; readonly available: boolean };
+const Video =
+  typeof Bun === "undefined"
+    ? undefined
+    : (Bun as typeof Bun & { Video?: NativeVideoConstructor }).Video;
 
 export interface StreamTrackInfo {
   id: number;
@@ -76,9 +80,12 @@ export async function inspectStreamTracks(url: string): Promise<StreamInspection
     const inspectedVideo: StreamTrackInfo[] = [];
     for (const track of videoTracks) {
       const codec = await track.getCodec().catch(() => null);
-      const codecString = await track.getCodecParameterString?.().catch(() => null) ?? null;
-      const bitrate = (await track.getBitrate?.().catch(() => null)) ?? (await track.getAverageBitrate?.().catch(() => null)) ?? null;
-      const trackDuration = await track.computeDuration?.().catch(() => null) ?? null;
+      const codecString = (await track.getCodecParameterString?.().catch(() => null)) ?? null;
+      const bitrate =
+        (await track.getBitrate?.().catch(() => null)) ??
+        (await track.getAverageBitrate?.().catch(() => null)) ??
+        null;
+      const trackDuration = (await track.computeDuration?.().catch(() => null)) ?? null;
       const codedWidth = await track.getCodedWidth?.().catch(() => null);
       const codedHeight = await track.getCodedHeight?.().catch(() => null);
 
@@ -101,9 +108,12 @@ export async function inspectStreamTracks(url: string): Promise<StreamInspection
     const inspectedAudio: StreamTrackInfo[] = [];
     for (const track of audioTracks) {
       const codec = await track.getCodec().catch(() => null);
-      const codecString = await track.getCodecParameterString?.().catch(() => null) ?? null;
-      const bitrate = (await track.getBitrate?.().catch(() => null)) ?? (await track.getAverageBitrate?.().catch(() => null)) ?? null;
-      const trackDuration = await track.computeDuration?.().catch(() => null) ?? null;
+      const codecString = (await track.getCodecParameterString?.().catch(() => null)) ?? null;
+      const bitrate =
+        (await track.getBitrate?.().catch(() => null)) ??
+        (await track.getAverageBitrate?.().catch(() => null)) ??
+        null;
+      const trackDuration = (await track.computeDuration?.().catch(() => null)) ?? null;
 
       inspectedAudio.push({
         id: track.id,
@@ -157,8 +167,14 @@ export async function extractVideoFrame(
       throw new Error(`No video track found in source: ${source}`);
     }
 
-    const width = options.width ?? videoTrack.displayWidth;
-    const height = options.height ?? videoTrack.displayHeight;
+    const sourceWidth = await videoTrack.getDisplayWidth();
+    const sourceHeight = await videoTrack.getDisplayHeight();
+    const width =
+      options.width ??
+      (options.height ? Math.round((sourceWidth * options.height) / sourceHeight) : sourceWidth);
+    const height =
+      options.height ??
+      (options.width ? Math.round((sourceHeight * options.width) / sourceWidth) : sourceHeight);
 
     // In browser or environments with Canvas / OffscreenCanvas:
     if (typeof OffscreenCanvas !== "undefined" || typeof document !== "undefined") {
@@ -179,7 +195,10 @@ export async function extractVideoFrame(
       if ("convertToBlob" in canvas && typeof canvas.convertToBlob === "function") {
         const blob = await canvas.convertToBlob({ type: mimeType, quality });
         buffer = new Uint8Array(await blob.arrayBuffer());
-      } else if ("toDataURL" in canvas && typeof (canvas as HTMLCanvasElement).toDataURL === "function") {
+      } else if (
+        "toDataURL" in canvas &&
+        typeof (canvas as HTMLCanvasElement).toDataURL === "function"
+      ) {
         const dataUrl = (canvas as HTMLCanvasElement).toDataURL(mimeType, quality);
         const base64 = dataUrl.split(",")[1];
         buffer = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
@@ -197,27 +216,24 @@ export async function extractVideoFrame(
       };
     }
 
-    // In server/CLI environments without WebCodecs or Canvas:
-    const packetSink = new EncodedPacketSink(videoTrack);
-    const keyPacket = await packetSink.getKeyPacket(timestampSeconds).catch(() => null);
-    const packet = keyPacket ?? (await packetSink.getFirstPacket());
-
-    const duration = await videoTrack.computeDuration().catch(() => 0);
-    const header =
-      chosenFormat === "jpeg"
-        ? new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01])
-        : new Uint8Array([
-            0x52, 0x49, 0x46, 0x46, 0x20, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50, 0x56, 0x50, 0x38,
-            0x4c,
-          ]);
-
+    // Server decoding uses the native owner; encoded packets alone are not images.
+    if (!Video?.available) throw new Error("Native video decoding is unavailable");
+    const video = new Video(source);
+    const frame = video.frame(timestampSeconds);
+    if (options.width || options.height) frame.resize(width, height);
+    const encoding = { quality: Math.round(quality * 100) };
+    const data = await (
+      chosenFormat === "jpeg" ? frame.jpeg(encoding) : frame.webp(encoding)
+    ).bytes();
+    const image = await new Bun.Image(data).metadata();
+    const metadata = await video.metadata();
     return {
-      timestampSeconds: packet?.timestamp ?? timestampSeconds,
-      durationSeconds: packet?.duration ?? (duration || 0.04),
-      width: width || 640,
-      height: height || 360,
+      timestampSeconds,
+      durationSeconds: metadata.fpsDenominator / metadata.fpsNumerator,
+      width: image.width,
+      height: image.height,
       format: chosenFormat,
-      data: header,
+      data,
     };
   } finally {
     input.dispose();

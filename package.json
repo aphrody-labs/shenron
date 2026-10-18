@@ -94,6 +94,7 @@
       "kysely": "^0.29.6",
       "lucide-react": "^1.48.0",
       "marked": "^18.0.14",
+      "mediabunny": "1.61.5",
       "modern-gif": "^2.1.0",
       "motion": "^13.4.4",
       "next": "16.5.0-canary.5",

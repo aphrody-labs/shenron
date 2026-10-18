@@ -35,7 +35,8 @@
     "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src"
   },
   "dependencies": {
-    "@aphrody/http": "catalog:"
+    "@aphrody/http": "catalog:",
+    "mediabunny": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "catalog:"
