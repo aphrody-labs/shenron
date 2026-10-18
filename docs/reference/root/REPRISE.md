@@ -17,8 +17,11 @@ dans tmux `rust-gates` : check, clippy et 669 tests Rust verts (22 ignorés). Li
 `~/shenron-docker-build.sh` et `~/ship-shenron.sh` n'existent plus sur la fabrique (le lancement a
 écrasé `~/shenron-build.log`), `scripts/ops/release.ts` vise encore `/srv/shenron/current` alors que
 la production tourne sous `~/apps/shenron` (Docker), et `shenron-auto-deploy` échoue faute de runtime
-qualifié (`bun:yolo`, Curl, Crawl, VectorIndex), d'après le rapport de `agent-fix`. Production inchangée :
-release active `docker-974e4137`. Non faits : migration SQL (Infra) et envoi de données, sans lot désigné.
+qualifié (`bun:yolo`, Curl, Crawl, VectorIndex), d'après le rapport de `agent-fix`. Levée ensuite : build puis livraison par les scripts versionnés
+`scripts/ops/vps/` (les copies `~/` avaient disparu) ; release active `docker-0bb23354` (image
+`sha256:447673fa`), conteneurs gateway/site/bot sains, sondes publiques 200, rollback
+`deploy-backups/docker-1uzluncu`. `release.ts` (disposition systemd `/srv/shenron/current`) reste à
+réaligner ; `format:check` passe via `--ignore-pattern` (29e36e5c). Non faits : migration SQL (Infra) et envoi de données, sans lot désigné.
 
 ## 2026-10-15 — Refonte Canon, agents wiki et plugin Aphrody
 

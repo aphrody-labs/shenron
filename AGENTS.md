@@ -246,8 +246,8 @@ de réutiliser les chemins distants ; cette date ne garantit pas leur disponibil
 1. Vérifier les rôles avec `aphrody infra ssh exec --host vps -c 'hostname'` et l'équivalent
    `--host dbfr`. Au contrôle du 2026-10-10 : fabrique `vps-203bea89`, production `vps-6732365f`.
    `scripts/ops/release.ts` utilise un ancien contexte : inspecter son routage avant usage.
-2. Sur la fabrique, inspecter les helpers installés `~/shenron-docker-build.sh` et
-   `~/ship-shenron.sh`, le checkout et le verrou de build. Lancer le build dans tmux,
+2. Sur la fabrique, inspecter les helpers versionnés `scripts/ops/vps/shenron-docker-build.sh` et
+   `scripts/ops/vps/ship-shenron.sh`, le checkout et le verrou de build. Lancer le build dans tmux,
    journal durable avec statut terminal explicite, puis attendre son succès. Le helper
    utilise actuellement `~/build/transient/shenron-docker` et sérialise Cargo par le verrou lourd.
 3. Vérifier le SHA du worktree, l'image correspondante, `version` et le bot `--smoke`.
@@ -262,8 +262,8 @@ Après inspection des helpers, commandes à exécuter dans le shell Bash de la f
 (attendre `EXIT_CODE=0` du build avant de lancer la livraison) :
 
 ```bash
-tmux new-session -d -s shenron-build 'bash "$HOME/shenron-docker-build.sh" > "$HOME/shenron-build.log" 2>&1; code=$?; printf "EXIT_CODE=%s\n" "$code" >> "$HOME/shenron-build.log"'
-tmux new-session -d -s shenron-ship 'bash "$HOME/ship-shenron.sh" > "$HOME/shenron-ship.log" 2>&1; code=$?; printf "EXIT_CODE=%s\n" "$code" >> "$HOME/shenron-ship.log"'
+tmux new-session -d -s shenron-build 'bash "$HOME/src/shenron/scripts/ops/vps/shenron-docker-build.sh" > "$HOME/shenron-build.log" 2>&1; code=$?; printf "EXIT_CODE=%s\n" "$code" >> "$HOME/shenron-build.log"'
+tmux new-session -d -s shenron-ship 'bash "$HOME/src/shenron/scripts/ops/vps/ship-shenron.sh" > "$HOME/shenron-ship.log" 2>&1; code=$?; printf "EXIT_CODE=%s\n" "$code" >> "$HOME/shenron-ship.log"'
 ```
 
 En cas d'échec, lire la dernière étape et le code de sortie avant de relancer. Pour `ENOSPC`,
