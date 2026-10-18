@@ -2328,5 +2328,12 @@
     "previous": "Previous page",
     "next": "Next page",
     "position": "Page {page} of {total}"
+  },
+  "episodePage": {
+    "officialSource": "Official source",
+    "synopsis": "Synopsis",
+    "timelineAction": "Timeline and GIF",
+    "firstBroadcast": "First aired",
+    "inSeries": "More from {series}"
   }
 }

@@ -1,6 +1,10 @@
 /* oxlint-disable react/iframe-missing-sandbox -- legacy UI kept as-is (behavior-preserving lint pass) */
 import { WatchLayout, WatchStage, WatchColumns } from "@/components/episodes/WatchLayout";
 import { T } from "@/components/T";
+import { ArrowLeft, ArrowRight, Film } from "lucide-react";
+import { HOME_HERO_FRAMES } from "@/lib/home-hero-frames";
+import { EpisodeAirDate } from "@/components/episodes/EpisodeAirDate";
+import detailStyles from "./episode-detail.module.css";
 import { episodeNumberText } from "@/lib/episode-number";
 import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
@@ -104,36 +108,35 @@ function getYoutubeId(url: string | null): string | null {
 
 /** Carte de navigation épisode précédent / suivant. */
 function NavCard({ ep, dir }: { ep: EpisodeNavItem; dir: "prev" | "next" }) {
+  const image =
+    HOME_HERO_FRAMES.find((frame) => frame.episodeId === ep.id)?.src ??
+    (ep.image ? assetUrl(ep.image) : null);
   return (
-    <Link
-      href={`/wiki/episodes/${ep.id}`}
-      className={`group flex items-center gap-4 dbz-panel p-3 flex-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange focus-visible:ring-offset-2 focus-visible:ring-offset-black ${dir === "next" ? "flex-row-reverse text-right" : ""}`}
-    >
-      <div className="relative w-28 aspect-video shrink-0 overflow-hidden rounded-md bg-dbz-bg">
-        {ep.image ? (
-          <img
-            src={assetUrl(ep.image)}
-            alt=""
-            aria-hidden
-            className="h-full w-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-            loading="lazy"
-          />
+    <Link href={`/wiki/episodes/${ep.id}`} className={detailStyles.navCard}>
+      <div className={detailStyles.navImage}>
+        {image ? (
+          <img src={image} alt="" aria-hidden loading="lazy" />
         ) : (
-          <div className="grid h-full w-full place-items-center text-zinc-700 font-saiyan">
-            {String(ep.number_in_series).padStart(3, "0")}
+          <div className={detailStyles.navPlaceholder}>
+            {ep.number_in_series === null ? (
+              <Film size={24} aria-hidden="true" />
+            ) : (
+              ep.number_in_series
+            )}
           </div>
         )}
       </div>
-      <div className="min-w-0">
-        <p className="font-display font-bold text-[10px] tracking-[0.3em] uppercase text-dbz-orange/80">
-          {dir === "prev" ? "← Précédent" : "Suivant →"}
+      <div className={detailStyles.navText}>
+        <p className={detailStyles.navDirection}>
+          {dir === "prev" ? (
+            <ArrowLeft size={15} aria-hidden="true" />
+          ) : (
+            <ArrowRight size={15} aria-hidden="true" />
+          )}
+          <T k={dir === "prev" ? "mediaPlayback.previousEpisode" : "mediaPlayback.nextEpisode"} />
+          {ep.number_in_series}
         </p>
-        <p className="scouter-text text-sm text-white/50">
-          #{String(ep.number_in_series).padStart(3, "0")}
-        </p>
-        <p className="font-display font-semibold text-[13px] text-white leading-snug line-clamp-2 group-hover:text-dbz-orange transition-colors">
-          {ep.title}
-        </p>
+        <p className={detailStyles.navTitle}>{ep.title}</p>
       </div>
     </Link>
   );
@@ -367,36 +370,20 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
           }
         >
           {/* Title and metadata stay outside the viewing stage. */}
-          <header className="mb-6">
-            <div className="flex items-center gap-4 mb-4">
-              <span className="scouter-text text-2xl text-dbz-orange drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
+          <header className={detailStyles.heading}>
+            <div className={detailStyles.kicker}>
+              <span className={detailStyles.number}>
                 {epNum === null ? <T k="mediaPlayback.numberUnverified" /> : `#${epNum}`}
               </span>
-              <div className="h-px w-12 bg-dbz-orange/40" />
-              <p className="font-display font-semibold text-[12px] tracking-[0.3em] uppercase text-white/60">
-                {seriesLabel}
-              </p>
+              <p>{seriesLabel}</p>
             </div>
 
-            <h1 className="font-display font-bold text-4xl lg:text-6xl text-white leading-[1.02] tracking-tight mb-4 max-w-3xl drop-shadow-[0_4px_28px_rgba(0,0,0,0.65)]">
-              {ep.title}
-            </h1>
+            <h1 className={detailStyles.title}>{ep.title}</h1>
 
-            {ep.title_ja && (
-              <p className="font-jp text-xl lg:text-2xl text-dbz-orange/85 mb-4">{ep.title_ja}</p>
-            )}
+            {ep.title_ja && <p className={detailStyles.japanese}>{ep.title_ja}</p>}
 
-            <div className="flex flex-wrap items-center gap-4">
-              {ep.air_date && (
-                <p className="text-[13px] font-display tracking-widest uppercase text-white/55">
-                  Première diffusion —{" "}
-                  {new Date(ep.air_date * 1000).toLocaleDateString("fr-FR", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </p>
-              )}
+            <div className={detailStyles.metadata}>
+              {ep.air_date && <EpisodeAirDate seconds={ep.air_date} />}
               <div className="flex flex-wrap items-center gap-2">
                 <EntityRatingSummary targetType="episode" targetId={ep.id} />
                 <CommunityRankBadge kind="episode" targetId={ep.id} />
@@ -404,7 +391,7 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
             </div>
           </header>
 
-          <div className="mb-4 flex flex-wrap items-center gap-3">
+          <div className={detailStyles.actions}>
             <FavoriteButton
               kind="episode"
               id={ep.id}
@@ -412,12 +399,20 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
               href={`/wiki/episodes/${ep.id}`}
               image={ep.image}
               caption={episodeCaption}
+              className={detailStyles.action}
             />
             <ShareButton
               title={`${ep.title} — ${seriesLabel}`}
               text={episodeCaption}
               path={`/wiki/episodes/${ep.id}`}
+              className={detailStyles.action}
             />
+            {cdnOnly && cdnSource && (
+              <a href="#episode-timeline" className={detailStyles.action}>
+                <Film size={17} aria-hidden="true" />
+                <T k="episodePage.timelineAction" />
+              </a>
+            )}
           </div>
 
           <EpisodeAdminEditor episodeId={ep.id} videoUrl={ep.video_url} subtitles={ep.subtitles} />
@@ -425,10 +420,9 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
           {/* === Corps : synopsis + scènes + nav — notes tout en bas === */}
           <div className="space-y-12">
             {ep.synopsis && (
-              <section className="dbz-panel p-8 relative overflow-hidden reveal-up">
-                <div className="absolute top-0 left-0 w-1 h-full bg-dbz-orange" />
-                <h2 className="font-display font-bold text-xl text-dbz-orange mb-4 uppercase tracking-widest">
-                  Synopsis
+              <section className={detailStyles.synopsis}>
+                <h2>
+                  <T k="episodePage.synopsis" />
                 </h2>
                 <div className="prose prose-invert max-w-none wiki-content">
                   <WikiMarkdown body={ep.synopsis} />
@@ -438,9 +432,9 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
                     href={ep.official_source_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="mt-5 inline-block text-sm text-dbz-orange underline underline-offset-4"
+                    className={detailStyles.source}
                   >
-                    Source primaire : Toei Animation
+                    <T k="episodePage.officialSource" />
                   </a>
                 )}
               </section>
@@ -449,7 +443,9 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
             {/* === Scènes & Frame Finder : moteur bxc frames MPEG-7 et scènes === */}
             {cdnOnly ? (
               cdnSource ? (
-                <EpisodeTimeline episodeId={ep.id} />
+                <div id="episode-timeline" className={detailStyles.timeline}>
+                  <EpisodeTimeline episodeId={ep.id} />
+                </div>
               ) : null
             ) : (
               <EpisodeScenes
@@ -495,7 +491,7 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
             {nav && nav.around.length > 1 && (
               <section>
                 <h2 className="font-display font-bold text-[12px] tracking-[0.3em] uppercase text-white/50 mb-4">
-                  Dans {seriesLabel}
+                  <T k="episodePage.inSeries" values={{ series: seriesLabel }} />
                 </h2>
                 <div className="flex gap-3 overflow-x-auto pb-3 -mx-1 px-1 [scrollbar-width:thin]">
                   {nav.around.map((e) => {

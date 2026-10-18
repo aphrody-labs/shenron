@@ -171,6 +171,7 @@
       },
       "devDependencies": {
         "@aphrody/bun-plugin-tailwind": "catalog:",
+        "@aphrody/bun-test-dom": "catalog:",
         "@huggingface/transformers": "catalog:",
         "@types/howler": "catalog:",
         "@types/react": "catalog:",

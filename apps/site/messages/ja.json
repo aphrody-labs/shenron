@@ -2328,5 +2328,12 @@
     "previous": "前のページ",
     "next": "次のページ",
     "position": "{total}ページ中{page}ページ"
+  },
+  "episodePage": {
+    "officialSource": "公式情報",
+    "synopsis": "あらすじ",
+    "timelineAction": "タイムラインとGIF",
+    "firstBroadcast": "初放送",
+    "inSeries": "{series}のエピソード"
   }
 }

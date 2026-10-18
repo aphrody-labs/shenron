@@ -15,6 +15,7 @@
     "start": "next-bun start",
     "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src",
     "test": "bun test --isolate --path-ignore-patterns='**/*.live.test.ts' tests/",
+    "test:dom": "bun test --isolate --preload ./tests/dom-preload.ts tests/video-player.dom.test.tsx tests/video-select.dom.test.tsx",
     "type-check:tests": "bun check -p tsconfig.tests.json",
     "wiki:repair-interviews": "bun scripts/repair-interview-databook-links.ts",
     "manga:populate": "bun scripts/populate-manga-pages.ts",
@@ -110,6 +111,7 @@
   },
   "devDependencies": {
     "@aphrody/bun-plugin-tailwind": "catalog:",
+    "@aphrody/bun-test-dom": "catalog:",
     "@huggingface/transformers": "catalog:",
     "@types/howler": "catalog:",
     "@types/react": "catalog:",

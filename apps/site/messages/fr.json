@@ -2328,5 +2328,12 @@
     "previous": "Planche précédente",
     "next": "Planche suivante",
     "position": "Planche {page} sur {total}"
+  },
+  "episodePage": {
+    "officialSource": "Source officielle",
+    "synopsis": "Synopsis",
+    "timelineAction": "Timeline et GIF",
+    "firstBroadcast": "Première diffusion",
+    "inSeries": "Dans {series}"
   }
 }
