@@ -2,6 +2,9 @@ import Link from "next/link";
 import { T } from "@/components/T";
 import { DBS_BEERUS_SERIES_CODE } from "@/lib/episode-series-catalogue";
 import styles from "./HomeHero.module.css";
+import { ArrowRight, Play } from "lucide-react";
+import { CadreCase } from "@aphrody/shenron-ui/toriyama";
+import { HOME_HERO_FRAMES } from "@/lib/home-hero-frames";
 export interface BeerusEpisodeSummary {
   id: number;
   number: number | null;
@@ -31,26 +34,36 @@ export function HomeBeerusFeature({ beerus }: { beerus: BeerusFeature }) {
       <div className={styles.actions}>
         {latest && (
           <Link href={`/wiki/episodes/${latest.id}`} className={styles.primary}>
-            <span aria-hidden="true">▶</span>
+            <Play size={19} fill="currentColor" aria-hidden="true" />
             <T k="accueil.hero.watchEpisode" values={{ number: latest.number ?? "" }} />
           </Link>
         )}
         <Link href={`/wiki/episodes/series/${DBS_BEERUS_SERIES_CODE}`} className={styles.secondary}>
+          <ArrowRight size={19} aria-hidden="true" />
           <T k="dbsBeerus.heroAll" />
-          <span aria-hidden="true">→</span>
         </Link>
       </div>
       {episodes.length > 0 && (
         <div className={styles.episodeRail}>
-          {episodes.map((ep) => (
-            <Link key={ep.id} href={`/wiki/episodes/${ep.id}`} className={styles.episode}>
-              <span className={styles.episodeNumber}>
-                <T k="accueil.hero.episodeNumber" values={{ number: ep.number ?? "" }} />
-              </span>
-              <span>{ep.title}</span>
-              <span aria-hidden="true">↗</span>
-            </Link>
-          ))}
+          {episodes.map((ep) => {
+            const frame = HOME_HERO_FRAMES.find((item) => item.episodeId === ep.id);
+            return (
+              <Link key={ep.id} href={`/wiki/episodes/${ep.id}`} className={styles.episode}>
+                {frame && (
+                  <CadreCase largeur={80} className={styles.thumbnail}>
+                    <img src={frame.src} alt="" width={80} height={45} loading="lazy" />
+                  </CadreCase>
+                )}
+                <span className={styles.episodeCopy}>
+                  <span className={styles.episodeNumber}>
+                    <T k="accueil.hero.episodeNumber" values={{ number: ep.number ?? "" }} />
+                  </span>
+                  <span>{ep.title}</span>
+                </span>
+                <ArrowRight size={17} aria-hidden="true" />
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>

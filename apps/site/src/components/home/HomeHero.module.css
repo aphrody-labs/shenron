@@ -2,7 +2,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  min-height: clamp(34rem, 72svh, 49rem);
+  min-height: clamp(31rem, 70svh, 44rem);
   display: flex;
   flex-direction: column;
   justify-content: end;
@@ -12,15 +12,15 @@
 .content {
   position: relative;
   z-index: 3;
-  padding: clamp(2rem, 5vw, 5rem);
-  padding-bottom: 2rem;
-  max-width: 53rem;
+  padding: clamp(1.5rem, 3.5vw, 3rem);
+  padding-bottom: 1.25rem;
+  max-width: 56rem;
 }
 .identity {
-  margin: 0 0 2.5rem;
+  margin: 0 0 1rem;
 }
 .identity :global(.home-wordmark) {
-  font-size: clamp(2.6rem, 5vw, 4.7rem);
+  font-size: clamp(2.3rem, 3.8vw, 3.25rem);
 }
 .frames {
   position: absolute;
@@ -72,7 +72,7 @@
   font-size: 0.75rem;
 }
 .feature {
-  max-width: 42rem;
+  max-width: 48rem;
 }
 .eyebrow {
   text-transform: uppercase;
@@ -84,7 +84,7 @@
 }
 .title {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4.5vw, 4.2rem);
+  font-size: clamp(2rem, 3.6vw, 3.25rem);
   line-height: 1.04;
   letter-spacing: -0.035em;
   text-wrap: balance;
@@ -94,7 +94,7 @@
 .lede {
   font-size: clamp(1rem, 1.6vw, 1.15rem);
   line-height: 1.5;
-  margin: 1.25rem 0;
+  margin: 0.75rem 0;
   max-width: 45ch;
   color: var(--muted-foreground);
 }
@@ -103,7 +103,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-top: 1.75rem;
+  margin-top: 1.1rem;
 }
 .primary,
 .secondary {
@@ -130,23 +130,22 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
-  margin-top: 2rem;
+  margin-top: 1.25rem;
 }
 .episode {
   min-width: 0;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0.4rem 0.75rem;
-  padding: 0.85rem 1rem;
-  border: 1px solid var(--border);
-  border-radius: 0.6rem;
-  background: color-mix(in srgb, var(--background) 86%, transparent);
-  font-size: 0.8rem;
-  line-height: 1.45;
-  transition: border-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 0.35rem;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  border-bottom: 1px solid var(--border);
+  transition: color 0.2s;
 }
 .episodeNumber {
-  grid-column: 1/-1;
+  display: block;
+  margin-bottom: 0.25rem;
   color: var(--primary);
   font-size: 0.7rem;
   font-weight: 800;
@@ -160,7 +159,7 @@
 .search {
   position: relative;
   z-index: 3;
-  padding: 0 clamp(2rem, 5vw, 5rem) 2rem;
+  padding: 0 clamp(1.5rem, 3.5vw, 3rem) 1.5rem;
   max-width: 47rem;
   width: 100%;
 }
@@ -190,7 +189,7 @@
     padding: 1rem 1.25rem 1.5rem;
   }
   .identity {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
   }
   .title {
     font-size: 2.5rem;
@@ -230,4 +229,78 @@
   font-size: 0.85rem;
   text-decoration: underline;
   text-underline-offset: 4px;
+}
+
+/* The physical controls are original UI; the thumbnail rings use measured CadreCase geometry. */
+.primary,
+.secondary {
+  border: 2px solid var(--color-encre, var(--foreground));
+  border-radius: 999px;
+  box-shadow: 0 3px 0 var(--color-encre, var(--foreground));
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
+}
+.primary::before {
+  content: "";
+  width: 4px;
+  height: 20px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.35;
+}
+.primary:active,
+.secondary:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 0 var(--color-encre, var(--foreground));
+}
+.thumbnail {
+  width: 80px;
+  height: 45px;
+  flex: none;
+}
+.thumbnail img {
+  display: block;
+  width: 80px;
+  height: 45px;
+  object-fit: cover;
+}
+.episodeCopy {
+  flex: 1;
+  min-width: 0;
+}
+.episode > svg {
+  flex: none;
+}
+.lede {
+  font-size: 0.85rem;
+  max-width: 45ch;
+  line-height: 1.45;
+}
+.motionControl {
+  border: 2px solid var(--border);
+  box-shadow: 0 2px 0 var(--foreground);
+}
+.motionControl button {
+  min-height: 48px;
+  min-width: 48px;
+  display: grid;
+  place-items: center;
+}
+.search :global(search) {
+  max-width: 38rem;
+}
+.search :global(search button) {
+  min-height: 48px;
+  width: 48px;
+}
+.search :global(search input) {
+  padding-block: 0.65rem;
+  font-size: 0.9rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .primary,
+  .secondary {
+    transition: none;
+  }
 }

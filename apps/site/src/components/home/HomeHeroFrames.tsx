@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useT } from "@/components/T";
 import { useHomeMotion } from "./HomeMotion";
 import styles from "./HomeHero.module.css";
+import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 
 /** Only qualified HD stills are animated; no episode player is mounted here. */
 export function HomeHeroFrames({ frames }: { frames: readonly string[] }) {
@@ -72,10 +73,17 @@ export function HomeHeroFrames({ frames }: { frames: readonly string[] }) {
               setIndex((value) => (value - 1 + count) % count);
             }}
           >
-            ←
+            <ChevronLeft size={20} aria-hidden="true" />
           </button>
           <button type="button" aria-pressed={paused} onClick={() => setPaused((value) => !value)}>
-            {t(paused ? "accueil.hero.resumeFrames" : "accueil.hero.pauseFrames")}
+            {paused ? (
+              <Play size={18} aria-hidden="true" />
+            ) : (
+              <Pause size={18} aria-hidden="true" />
+            )}
+            <span className="sr-only">
+              {t(paused ? "accueil.hero.resumeFrames" : "accueil.hero.pauseFrames")}
+            </span>
           </button>
           <button
             type="button"
@@ -85,7 +93,7 @@ export function HomeHeroFrames({ frames }: { frames: readonly string[] }) {
               setIndex((value) => (value + 1) % count);
             }}
           >
-            →
+            <ChevronRight size={20} aria-hidden="true" />
           </button>
         </div>
       )}

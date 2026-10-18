@@ -45,13 +45,6 @@
 .home-screen:first-child {
   padding: 0;
 }
-.home-screen .home-stage {
-  min-height: clamp(20rem, 44svh, 30rem);
-}
-.home-screen .home-stage > .page-shell {
-  min-height: inherit;
-  justify-content: center;
-}
 .home-screen-controls {
   position: sticky;
   width: max-content;
