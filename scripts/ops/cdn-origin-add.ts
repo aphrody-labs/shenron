@@ -22,7 +22,7 @@ const service = "shenron-cdn-origin.service";
 const config = await Bun.file(configPath).json();
 const entries = (await Bun.file(entriesPath).json()) as Record<string, Record<string, unknown>>;
 for (const [path, entry] of Object.entries(entries)) {
-  if (!/^\/(assets|wasm)\//.test(path) || !/^[a-f0-9]{64}$/.test(String(entry.sha256)) || !Number.isSafeInteger(entry.size))
+  if (!/^\/(assets|wasm|media)\//.test(path) || !/^[a-f0-9]{64}$/.test(String(entry.sha256)) || !Number.isSafeInteger(entry.size))
     throw new Error(`invalid entry ${path}`);
 }
 const inventory = JSON.parse(await Bun.file(config.inventoryPath).text());
