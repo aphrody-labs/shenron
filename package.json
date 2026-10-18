@@ -166,6 +166,7 @@
     "audit:assets": "bun scripts/audit/assets-dedup.ts",
     "crawl:site": "bun scripts/ops/crawl-site.ts",
     "audit:uiux": "bun scripts/audit/uiux-audit.ts",
+    "capture:page": "bun scripts/ops/capture-page.ts",
     "test:scripts": "bun test --path-ignore-patterns='**/*.live.test.ts' ./scripts",
     "test:live:ai": "cd apps/site && SHENRON_LIVE=1 bun test --isolate tests/ai-layer-gemini.live.test.ts",
     "test:integration": "bun scripts/testing/integration/run.ts",

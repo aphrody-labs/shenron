@@ -50,6 +50,14 @@ describe("uiux static rules", () => {
     ).not.toContain("aria-labels");
   });
 
+  test("absolutely positioned fill images do not shift layout", async () => {
+    const fill =
+      '<img src="/f.png" alt="" data-nimg="fill" style="position:absolute;height:100%;width:100%">';
+    expect(await rules(GOOD.replace("</main>", `${fill}</main>`))).not.toContain(
+      "image-dimensions",
+    );
+  });
+
   test("form controls need a label", async () => {
     expect(await rules(GOOD.replace('<label for="q">Recherche</label>', ""))).toContain(
       "form-labels",

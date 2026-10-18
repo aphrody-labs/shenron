@@ -79,7 +79,12 @@ export async function auditHtml(html: string): Promise<UiuxIssue[]> {
       element(el) {
         const alt = el.getAttribute("alt");
         if (alt === null && el.getAttribute("role") !== "presentation") counts.missingAlt++;
+        // next/image `fill` is absolutely positioned in a sized box: it cannot shift layout.
+        const fill =
+          el.getAttribute("data-nimg") === "fill" ||
+          /position:\s*absolute/.test(el.getAttribute("style") ?? "");
         if (
+          !fill &&
           !el.getAttribute("width") &&
           !el.getAttribute("height") &&
           !el.getAttribute("style")?.includes("aspect-ratio")

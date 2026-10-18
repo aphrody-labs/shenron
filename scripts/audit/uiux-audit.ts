@@ -3,9 +3,9 @@
  * UI/UX Pro Max audit of every page found by scripts/ops/crawl-site.ts.
  *
  * Static layer: fetches each crawled HTML page and applies scripts/audit/uiux-rules.ts.
- * Rendered layer (--render): drives Bun.WebView at 1280 and 390 px on a sample per route family
- * and checks horizontal overflow, touch targets (44 px), image decoding and the focus ring.
- * Needs a Chrome-family browser (BUN_CHROME_PATH) — run it on a host that has one.
+ * Rendered layer (--render): drives Obscura (`aphrody-web launch`, see scripts/testing/obscura.ts)
+ * at 1280 and 390 px on a sample per route family: horizontal overflow, small targets, image
+ * decoding, and a PNG per family in <out>/shots.
  *
  * Usage: bun scripts/audit/uiux-audit.ts [--origin URL] [--frontier FILE] [--out DIR]
  *        [--concurrency N] [--limit N] [--render] [--sample N] [--fail-on critical|high|none]
@@ -13,6 +13,7 @@
 import { Database } from "bun:sqlite";
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
+import { setViewport, VIEWPORTS, withObscura, type ObscuraSession } from "../testing/obscura";
 import { auditHtml, type Severity, type UiuxIssue } from "./uiux-rules";
 
 const option = (name: string, fallback: string) => {
@@ -56,42 +57,63 @@ async function pool<T>(items: T[], run: (item: T) => Promise<void>) {
   );
 }
 
-async function renderCheck(url: string): Promise<UiuxIssue[]> {
+async function renderCheck(
+  session: ObscuraSession,
+  url: string,
+  family: string,
+): Promise<UiuxIssue[]> {
   const issues: UiuxIssue[] = [];
-  for (const width of [1280, 390]) {
-    await using view = new Bun.WebView({ width, height: 900, backend: "chrome" });
-    await view.navigate(url);
-    const state = await view.evaluate<{
-      overflow: number;
-      small: number;
-      broken: number;
-    }>(`(() => {
-      const interactive = [...document.querySelectorAll("a[href], button, input:not([type=hidden]), select, textarea, [role=button]")];
-      const visible = interactive.filter(el => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0; });
-      return {
-        overflow: document.documentElement.scrollWidth - innerWidth,
-        small: visible.filter(el => { const r = el.getBoundingClientRect(); return (r.width < 24 || r.height < 24); }).length,
-        broken: [...document.images].filter(img => img.complete && img.naturalWidth === 0 && img.currentSrc).length,
+  const target = new URL(url);
+  for (const viewport of VIEWPORTS) {
+    const page = await session.page(target.origin);
+    try {
+      await setViewport(page, viewport);
+      await page.goto(`${target.pathname}${target.search}`);
+      const state = await page.raw.evaluate<{
+        overflow: number;
+        small: number;
+        broken: number;
+      }>(`(() => {
+        const interactive = [...document.querySelectorAll("a[href], button, input:not([type=hidden]), select, textarea, [role=button]")];
+        const visible = interactive.filter(el => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0; });
+        return {
+          overflow: document.documentElement.scrollWidth - innerWidth,
+          small: visible.filter(el => { const r = el.getBoundingClientRect(); return r.width < 24 || r.height < 24; }).length,
+          broken: [...document.images].filter(img => img.complete && img.naturalWidth === 0 && img.currentSrc).length,
+        };
+      })()`);
+      if (state.overflow > 1)
+        issues.push({
+          rule: "no-horizontal-scroll",
+          severity: "high",
+          detail: `${viewport.width}px: ${state.overflow}px overflow`,
+        });
+      if (viewport.mobile && state.small > 0)
+        issues.push({
+          rule: "web-target-size",
+          severity: "medium",
+          detail: `${state.small} interactive elements under 24px at ${viewport.width}px`,
+        });
+      if (state.broken > 0)
+        issues.push({
+          rule: "images-load",
+          severity: "high",
+          detail: `${viewport.width}px: ${state.broken} images failed to decode`,
+        });
+      const shot = (await page.raw.cdp("Page.captureScreenshot", { format: "png" })) as {
+        data: string;
       };
-    })()`);
-    if (state.overflow > 1)
-      issues.push({
-        rule: "no-horizontal-scroll",
-        severity: "high",
-        detail: `${width}px: ${state.overflow}px overflow`,
-      });
-    if (width === 390 && state.small > 0)
-      issues.push({
-        rule: "touch-target",
-        severity: "medium",
-        detail: `${state.small} interactive elements under 24px at 390px`,
-      });
-    if (state.broken > 0)
-      issues.push({
-        rule: "images-load",
-        severity: "high",
-        detail: `${width}px: ${state.broken} images failed to decode`,
-      });
+      await Bun.write(
+        join(
+          out,
+          "shots",
+          `${family === "/" ? "home" : family.slice(1).replaceAll("/", "-")}-${viewport.name}.png`,
+        ),
+        Buffer.from(shot.data, "base64"),
+      );
+    } finally {
+      await page.close();
+    }
   }
   return issues;
 }
@@ -142,14 +164,23 @@ async function main() {
       const list = perFamily.get(family) ?? [];
       if (list.length < sample) perFamily.set(family, [...list, result]);
     }
-    for (const result of [...perFamily.values()].flat()) {
-      try {
-        result.rendered = await renderCheck(result.url);
-      } catch (error) {
-        result.rendered = [{ rule: "render-failed", severity: "high", detail: String(error) }];
+    await mkdir(join(out, "shots"), { recursive: true });
+    await withObscura(async (session) => {
+      for (const [family, list] of perFamily) {
+        for (const [index, result] of list.entries()) {
+          try {
+            // One screenshot per family (the first sampled page); the others only feed the checks.
+            result.rendered = await renderCheck(
+              session,
+              result.url,
+              index === 0 ? family : `${family}-${index}`,
+            );
+          } catch (error) {
+            result.rendered = [{ rule: "render-failed", severity: "high", detail: String(error) }];
+          }
+        }
       }
-    }
-    Bun.WebView.closeAll();
+    });
   }
 
   const byRule = new Map<string, { severity: Severity; pages: number; examples: string[] }>();
