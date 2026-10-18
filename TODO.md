@@ -15,12 +15,13 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
   qualifiés : publication CDN avec SHA-256 et lecture partielle, ajout du lecteur
   Shenron par writer administratif avec snapshot complet, backup et CAS, puis
   lecture réelle des deux épisodes après activation de l’image.
-- Réaliser la timeline complète et les GIF côté serveur avec Bun.Video selon
+- Activer et qualifier publiquement la timeline et les GIF serveur du lot
+  `b6aaa492` avec Bun.Video selon
   [le lot vidéo du plan](docs/reference/root/PLAN.md#timeline-vidéo-et-gif--demande-du-18-octobre-2026).
-  Indexer toutes les images avec cadence et timecodes réels, servir la timeline
-  par pages, puis générer les aperçus et GIF à la demande dans des jobs bornés.
-  Réutiliser le producteur Bun et son cache ; remplacer l’encodage GIF navigateur
-  seulement après qualification serveur et du parcours public.
+  L’index complet, la pagination, les aperçus et les GIF à la demande sont codés,
+  avec file bornée, cache et intégrité de source ; tests et navigateur local sur
+  le MP4 réel sont verts. Terminer les uploads CDN 875/876, les writers et
+  l’activation scellée ; tester lecture, seek et GIF publics en 390/1280.
 
 - Exécuter la livraison des 17 tomes SOSH manquants pour compléter 18 selon
   [le plan confirmé](docs/reference/root/SOSH-DELIVERY-PLAN.md). Conserver les

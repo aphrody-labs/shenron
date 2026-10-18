@@ -24,9 +24,14 @@ par Bun.Video. Shenron possède le catalogue, les routes, l’interface et la pu
 Bun possède le décodage, les images et l’encodage. Les sources, secrets et fichiers
 de travail restent dans les stores privés ; seuls les médias autorisés sont publiés.
 
-État relu : `EpisodeScenes.tsx` encode les images sélectionnées dans le navigateur,
-en 480 × 270 avec un délai fixe de 400 ms. Les routes d’épisode ne fournissent
-actuellement aucun endpoint de génération de frame ou de GIF. Le contrat de remise
+État implémenté : `EpisodeTimeline.tsx` parcourt l’index complet, avec un curseur,
+des pages de douze aperçus (5 s, 1 s ou chaque frame) et le déplacement du lecteur.
+`GET /api/episodes/{875|876}/timeline` fournit les métadonnées ; `kind=frame&index=N`
+génère un WebP 320 × 180 et `kind=gif&index=N` un GIF de deux secondes, 6 images/s.
+Les fichiers CDN sont vérifiés par SHA-256 ; deux traitements et douze attentes,
+déduplication, cache mémoire 32 Mio et purge des anciennes sources bornent le service.
+`EpisodeScenes.tsx` conserve séparément son export historique des images éditoriales
+dans le navigateur, en 480 × 270 avec un délai fixe de 400 ms. Le contrat de remise
 `packages/media/src/episode-video-delivery.ts` borne les lots à 600 images ; leur
 vérification agrégée est limitée à 128 Mio. Ce contrat ne représente pas une timeline
 exhaustive. Le MP4 local de la fiche 875 contient 33 511 images selon les métadonnées
@@ -56,7 +61,14 @@ Bun.Video relues le 18 octobre ; ce décompte ne prouve pas leur publication.
    les médias réels, puis lecture et export en 390/1280 après livraison scellée
    par la fabrique et activation Infra.
 
-La génération serveur complète et son activation restent à livrer. Les reçus
+Qualification locale du lot `b6aaa492` : 26 tests passent, quatre tests DOM sont
+ignorés ; types, lint et formatage ciblés passent. Sur le MP4 réel 876 : 33 512 frames,
+WebP 118–143 ms et GIF deux secondes environ 2,7 s (mesures Windows, pas un engagement
+de latence en production). Le navigateur a chargé treize aperçus et un GIF 320 × 180,
+déplacé le lecteur à 30,03 s et atteint la frame 33 512. Le rendu local utilise le
+composant et le handler réels avec un chemin de source local injecté pour ce test.
+Publication CDN, activation et vérification du parcours public restent à terminer.
+Le fork Bun a été exploré et testé, sans modification native nécessaire. Les reçus
 techniques privés du lot Beerus sont dans `var/reports/beerus-876-owner/` ; une
 métadonnée ou une image extraite ne vaut pas lecture publique de l’épisode.
 
