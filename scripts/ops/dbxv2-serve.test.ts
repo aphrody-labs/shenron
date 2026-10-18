@@ -69,6 +69,7 @@ describe("server with a stub backend", () => {
   let base: string;
   let stop: () => void;
   let pngCalls = 0;
+  let transcodes = 0;
   const payload = Uint8Array.from({ length: 256 }, (_, i) => i);
   const entry = (path: string): IndexEntry => ({
     cpk: "demo",
@@ -103,6 +104,28 @@ describe("server with a stub backend", () => {
       cacheMaxBytes: 1 << 20,
       backend: stub,
       port: 0,
+      transcoder: async (input, output) => {
+        transcodes += 1;
+        const source = new Uint8Array(await Bun.file(input).arrayBuffer());
+        await Bun.write(
+          output,
+          Uint8Array.from([
+            0,
+            0,
+            0,
+            0x18,
+            0x66,
+            0x74,
+            0x79,
+            0x70,
+            0x69,
+            0x73,
+            0x6f,
+            0x6d,
+            source.length & 0xff,
+          ]),
+        );
+      },
     });
     base = `http://127.0.0.1:${server.port}`;
     stop = () => server.stop(true);
@@ -110,6 +133,24 @@ describe("server with a stub backend", () => {
   afterAll(async () => {
     stop();
     await rm(dir, { recursive: true, force: true });
+  });
+
+  test("mp4: transcodage web a la demande, cache disque, auth, Range, aucun fichier temporaire", async () => {
+    expect((await fetch(`${base}/cpk/demo/mp4/x.usm`)).status).toBe(401);
+    const res = await fetch(`${base}/cpk/demo/mp4/x.usm`, { headers: auth });
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toBe("video/mp4");
+    expect(res.headers.get("cache-control")).toContain("private");
+    const bytes = new Uint8Array(await res.arrayBuffer());
+    expect(new TextDecoder().decode(bytes.subarray(4, 8))).toBe("ftyp");
+    const again = await fetch(`${base}/cpk/demo/mp4/x.usm`, {
+      headers: { ...auth, Range: "bytes=4-7" },
+    });
+    expect(again.status).toBe(206);
+    await again.arrayBuffer();
+    expect(transcodes).toBe(1);
+    const work = join(dir, "cache", "transcode-work");
+    expect(await Array.fromAsync(new Bun.Glob("*").scan(work))).toEqual([]);
   });
 
   test("401 without a token, with a wrong token, or a non-bearer scheme", async () => {
@@ -386,5 +427,89 @@ describe.if(live)("live: one real sample per format", () => {
     const glb = await get(`/cpk/${s!.cpk}/model/${enc(s!.path)}.glb`);
     expect(glb.status).toBe(200);
     expect(new TextDecoder().decode((await glb.arrayBuffer()).slice(0, 4))).toBe("glTF");
+  });
+});
+
+const FFMPEG = (() => {
+  const bin = Bun.which("ffmpeg");
+  if (!bin) return null;
+  try {
+    const probe = Bun.spawnSync([bin, "-hide_banner", "-encoders"]);
+    return probe.exitCode === 0 && probe.stdout.toString().includes("libx264") ? bin : null;
+  } catch {
+    return null;
+  }
+})();
+
+/** Transcodage reel : un MPEG-2 genere par ffmpeg ressort en MP4 H.264 + AAC. */
+describe.skipIf(!FFMPEG)("mp4 transcoding with the real ffmpeg", () => {
+  setDefaultTimeout(60_000);
+  let dir: string;
+  let stop: () => void;
+  let base: string;
+  beforeAll(async () => {
+    dir = await mkdtemp(join(tmpdir(), "dbxv2-ffmpeg-"));
+    await writeFile(join(dir, "demo.cpk"), "x");
+    const m2v = join(dir, "src.m2v");
+    const gen = Bun.spawnSync([
+      FFMPEG!,
+      "-v",
+      "error",
+      "-y",
+      "-f",
+      "lavfi",
+      "-i",
+      "testsrc=size=161x121:rate=10:duration=1",
+      "-c:v",
+      "mpeg2video",
+      "-f",
+      "mpeg2video",
+      m2v,
+    ]);
+    expect(gen.exitCode).toBe(0);
+    const source = new Uint8Array(await Bun.file(m2v).arrayBuffer());
+    const entry: IndexEntry = {
+      cpk: "demo",
+      path: "a.usm",
+      offset: 1,
+      size: 1,
+      extract_size: 1,
+      compressed: false,
+    };
+    const backend = {
+      cpkFind: () => [entry],
+      cpkRead: () => new Uint8Array(1),
+      embToPng: () => new Uint8Array(1),
+      audioToWav: () => [],
+      usmToVideo: () => source,
+      modelJson: () => ({}),
+      modelGlb: () => new Uint8Array(1),
+    } as Dbxv2Backend;
+    const server = createDbxv2Server({
+      token: TOKEN,
+      cpkDir: dir,
+      cacheDir: join(dir, "cache"),
+      cacheMaxBytes: 64 << 20,
+      backend,
+      port: 0,
+      ffmpeg: FFMPEG!,
+    });
+    base = `http://127.0.0.1:${server.port}`;
+    stop = () => server.stop(true);
+  });
+  afterAll(async () => {
+    stop();
+    await rm(dir, { recursive: true, force: true });
+  });
+  test("mpeg-2 in, h264 mp4 out", async () => {
+    const raw = await fetch(`${base}/cpk/demo/video/a.usm`, { headers: auth });
+    expect(raw.headers.get("content-type")).toBe("video/mpeg");
+    await raw.arrayBuffer();
+    const res = await fetch(`${base}/cpk/demo/mp4/a.usm`, { headers: auth });
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toBe("video/mp4");
+    const bytes = Buffer.from(await res.arrayBuffer());
+    expect(bytes.subarray(4, 8).toString()).toBe("ftyp");
+    expect(bytes.includes("avc1")).toBe(true);
   });
 });

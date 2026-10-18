@@ -94,6 +94,8 @@ export function resource(
         return client.wav(ref, { cue: params.cue, signal });
       case "video":
         return client.video(ref, { signal });
+      case "mp4":
+        return client.mp4(ref, { signal });
       case "model.json":
         return {
           bytes: new TextEncoder().encode(

@@ -6,6 +6,7 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { existsSync } from "node:fs";
 import { mkdir, readdir, rename, rm, stat, utimes } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { Worker } from "node:worker_threads";
@@ -40,6 +41,14 @@ export interface ServeOptions {
   jobTimeoutMs?: number;
   hostname?: string;
   port?: number;
+  /** Binaire ffmpeg du transcodage web (`/mp4/`), defaut `ffmpeg` du PATH. */
+  ffmpeg?: string;
+  /** Transcodages simultanes maximum (defaut 2). */
+  transcodeConcurrency?: number;
+  /** Delai maximal d'un transcodage avant 504 (defaut 300 s). */
+  transcodeTimeoutMs?: number;
+  /** Remplace ffmpeg (tests) : lit `input`, ecrit le MP4 dans `output`. */
+  transcoder?: (input: string, output: string) => Promise<void>;
 }
 
 const CACHE_CONTROL = "private, max-age=3600, must-revalidate";
@@ -340,6 +349,57 @@ const nativeErrorStatus = (error: unknown): HttpError => {
 
 const FIND_MEMO_MAX = 512;
 
+/** Arguments ffmpeg : MP4 H.264 (yuv420p, dimensions paires) + AAC, lisible par tous les navigateurs. */
+export function ffmpegMp4Args(input: string, output: string): string[] {
+  return [
+    "-nostdin",
+    "-v",
+    "error",
+    "-y",
+    "-i",
+    input,
+    "-c:v",
+    "libx264",
+    "-preset",
+    "veryfast",
+    "-crf",
+    "23",
+    "-pix_fmt",
+    "yuv420p",
+    "-vf",
+    "scale=trunc(iw/2)*2:trunc(ih/2)*2",
+    "-c:a",
+    "aac",
+    "-b:a",
+    "128k",
+    "-movflags",
+    "+faststart",
+    "-f",
+    "mp4",
+    output,
+  ];
+}
+
+/** Limite de concurrence simple (file FIFO). */
+class Semaphore {
+  #free: number;
+  #waiters: (() => void)[] = [];
+  constructor(n: number) {
+    this.#free = Math.max(1, n);
+  }
+  async use<T>(fn: () => Promise<T>): Promise<T> {
+    if (this.#free > 0) this.#free--;
+    else await new Promise<void>((resolve) => this.#waiters.push(resolve));
+    try {
+      return await fn();
+    } finally {
+      const next = this.#waiters.shift();
+      if (next) next();
+      else this.#free++;
+    }
+  }
+}
+
 export function createDbxv2Server(opts: ServeOptions) {
   if (opts.token.length < MIN_TOKEN)
     throw new Error(`DBXV2_TOKEN must hold at least ${MIN_TOKEN} characters`);
@@ -356,6 +416,46 @@ export function createDbxv2Server(opts: ServeOptions) {
         opts.jobTimeoutMs ?? 120_000,
       )
     : null;
+  const workDir = join(opts.cacheDir, "transcode-work");
+  const transcodeGate = new Semaphore(opts.transcodeConcurrency ?? 2);
+  /** Transcode des octets video (MPEG-2, WebM, MP4) en MP4 H.264+AAC via fichiers temporaires hors depot. */
+  const transcodeToMp4 = (source: Uint8Array): Promise<Uint8Array> =>
+    transcodeGate.use(async () => {
+      await mkdir(workDir, { recursive: true });
+      const id = randomUUID();
+      const input = join(workDir, `${id}.in.tmp`);
+      const output = join(workDir, `${id}.out.tmp`);
+      try {
+        await Bun.write(input, source);
+        if (opts.transcoder) await opts.transcoder(input, output);
+        else {
+          let proc: ReturnType<typeof Bun.spawn>;
+          try {
+            proc = Bun.spawn([opts.ffmpeg ?? "ffmpeg", ...ffmpegMp4Args(input, output)], {
+              stdin: "ignore",
+              stdout: "ignore",
+              stderr: "pipe",
+            });
+          } catch {
+            throw new HttpError(503, "transcoder unavailable");
+          }
+          const timer = setTimeout(() => proc.kill(), opts.transcodeTimeoutMs ?? 300_000);
+          const code = await proc.exited;
+          clearTimeout(timer);
+          if (proc.killed) throw new HttpError(504, "transcode timeout");
+          if (code !== 0) {
+            const err = await new Response(proc.stderr as ReadableStream).text();
+            console.error(`[dbxv2-serve] ffmpeg exit ${code}: ${err.slice(0, 500)}`);
+            throw new HttpError(500, "transcode failed");
+          }
+        }
+        return new Uint8Array(await Bun.file(output).arrayBuffer());
+      } finally {
+        await rm(input, { force: true });
+        await rm(output, { force: true });
+      }
+    });
+
   const exec = async (job: Job): Promise<JobResult> => {
     if (pool) return pool.run(job);
     await Promise.resolve(); // meme asynchronisme qu'avec le pool
@@ -395,11 +495,11 @@ export function createDbxv2Server(opts: ServeOptions) {
 
   // Conversions en cours : les requetes identiques concurrentes partagent un seul calcul.
   const inflight = new Map<string, Promise<{ path: string } | { bytes: Uint8Array }>>();
-  const produce = (key: string, job: Job) => {
+  const produce = (key: string, job: Job | (() => Promise<Uint8Array>)) => {
     let p = inflight.get(key);
     if (!p) {
       p = (async () => {
-        const bytes = (await exec(job)) as Uint8Array;
+        const bytes = typeof job === "function" ? await job() : ((await exec(job)) as Uint8Array);
         if (bytes.byteLength > opts.cacheMaxBytes) return { bytes };
         return { path: await cache.put(key, bytes) };
       })();
@@ -415,7 +515,7 @@ export function createDbxv2Server(opts: ServeOptions) {
     key: string,
     etag: string,
     typeOf: string | ((head: Uint8Array) => string),
-    job: Job,
+    job: Job | (() => Promise<Uint8Array>),
   ): Promise<Response> => {
     const typed = (b: Uint8Array) =>
       typeof typeOf === "string" ? typeOf : typeOf(b.subarray(0, 16));
@@ -539,6 +639,25 @@ export function createDbxv2Server(opts: ServeOptions) {
       );
     }
 
+    if (action === "mp4") {
+      // Format web : le serveur natif rend du MPEG-2 (.m2v) que Chrome ne lit pas ; transcodage a la
+      // demande en H.264+AAC, resultat dans le cache disque borne (jamais dans le depot).
+      const entry = await findOne(file, stamp, rest);
+      const sourceKey = `video|${parts[1]}|${stamp}|${rest}`;
+      return converted(
+        req,
+        `mp4|${parts[1]}|${stamp}|${rest}`,
+        etagOf(stamp, entry, "mp4"),
+        "video/mp4",
+        async () => {
+          const made = await produce(sourceKey, { op: "video", file, path: rest });
+          const source =
+            "bytes" in made ? made.bytes : new Uint8Array(await Bun.file(made.path).arrayBuffer());
+          return transcodeToMp4(source);
+        },
+      );
+    }
+
     if (action === "model") {
       const m = /^(.*)\.(json|glb)$/.exec(rest);
       if (!m) throw new HttpError(404, "model path must end with .json or .glb");
@@ -608,6 +727,8 @@ if (import.meta.main) {
     cacheMaxBytes: Number(env.DBXV2_CACHE_MAX_MB ?? 4096) * 1024 * 1024,
     backendSpec: { pkgDir, lib: env.DBXV2_LIB },
     workers: Number(env.DBXV2_WORKERS ?? 4),
+    ffmpeg: env.DBXV2_FFMPEG,
+    transcodeConcurrency: Number(env.DBXV2_TRANSCODE_CONCURRENCY ?? 2),
     hostname: env.DBXV2_HOST ?? "127.0.0.1",
     port: Number(env.DBXV2_PORT ?? 8788),
   });

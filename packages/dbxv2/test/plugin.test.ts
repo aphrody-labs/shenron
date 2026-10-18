@@ -219,6 +219,23 @@ describe("declarations", () => {
     expect(findDbxv2Leaks(join(dir, "var"))).toEqual([`dbxv2/${DBXV2_DECLARATIONS_FILE}`]);
   });
 
+  test("the guard scans wasm and binary assets for the marker and private references", () => {
+    const folder = join(dir, "public-bin");
+    mkdirSync(join(folder, "wasm"), { recursive: true });
+    const wasm = (extra: string) =>
+      Buffer.concat([Buffer.from([0, 0x61, 0x73, 0x6d, 1, 0, 0, 0]), Buffer.from(extra, "latin1")]);
+    writeFileSync(join(folder, "wasm", "clean.wasm"), wasm("neutral names only"));
+    writeFileSync(join(folder, "wasm", "marked.wasm"), wasm(`x${DBXV2_MARKER}y`));
+    writeFileSync(join(folder, "wasm", "relay.wasm"), wasm("/admin/dbxv2/media/CHARA"));
+    writeFileSync(join(folder, "tex.png"), Buffer.from(`PNG${DBXV2_MARKER}`, "latin1"));
+    writeFileSync(join(folder, "ok.png"), Buffer.from("PNG clean", "latin1"));
+    expect(findDbxv2Leaks(folder).toSorted()).toEqual([
+      "tex.png",
+      "wasm/marked.wasm",
+      "wasm/relay.wasm",
+    ]);
+  });
+
   test("the generated declarations type-check a consumer", async () => {
     const folder = join(dir, "tc");
     mkdirSync(folder, { recursive: true });

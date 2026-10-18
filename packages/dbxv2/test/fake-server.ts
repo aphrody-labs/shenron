@@ -154,7 +154,7 @@ export function startFakeServer(entries: readonly FakeEntry[]): FakeServer {
           "image/png",
         );
       if (action === "wav") return ranged(req, key, bytes, "audio/wav");
-      if (action === "video") return ranged(req, key, bytes, "video/mp4");
+      if (action === "video" || action === "mp4") return ranged(req, key, bytes, "video/mp4");
       if (modelMatch) {
         if (modelMatch[2] === "glb") return ranged(req, key, bytes, "model/gltf-binary");
         const body = new TextEncoder().encode(

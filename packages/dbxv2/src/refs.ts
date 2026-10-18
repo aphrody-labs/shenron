@@ -9,7 +9,14 @@ export interface Dbxv2Ref {
 
 export type Dbxv2RefInput = Dbxv2Ref | string;
 
-export type Dbxv2ResourceKind = "raw" | "png" | "wav" | "video" | "model.json" | "model.glb";
+export type Dbxv2ResourceKind =
+  | "raw"
+  | "png"
+  | "wav"
+  | "video"
+  | "mp4"
+  | "model.json"
+  | "model.glb";
 
 export interface Dbxv2ResourceParams {
   /** `png`: entry index inside the EMB. */
@@ -26,6 +33,7 @@ export const DBXV2_RESOURCE_KINDS: readonly Dbxv2ResourceKind[] = [
   "png",
   "wav",
   "video",
+  "mp4",
   "model.json",
   "model.glb",
 ];
@@ -94,6 +102,8 @@ export function resourcePath(kind: Dbxv2ResourceKind, input: Dbxv2RefInput): str
       return `${base}/wav/${encodePath(path)}`;
     case "video":
       return `${base}/video/${encodePath(path)}`;
+    case "mp4":
+      return `${base}/mp4/${encodePath(path)}`;
     case "model.json":
       return `${base}/model/${encodePath(path)}.json`;
     case "model.glb":

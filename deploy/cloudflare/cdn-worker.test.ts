@@ -315,7 +315,7 @@ describe("CDN manifest and import", () => {
       ...entry,
       contentType: "application/javascript",
     };
-    bucket.entries["/games/dragon-pixel/portraits/_QA.png"] = {
+    bucket.entries["/games/dragon-pixel/art/_QA.png"] = {
       ...entry,
       contentType: "image/png",
     };
@@ -324,7 +324,7 @@ describe("CDN manifest and import", () => {
       "/_next/static/chunks/artifact.js",
       "/.well-known/agent-card.json",
       "/_next/static/build/_buildManifest.js",
-      "/games/dragon-pixel/portraits/_QA.png",
+      "/games/dragon-pixel/art/_QA.png",
     ]) {
       const response = await handleCdn(request(path), { CDN: bucket });
       expect(response.status).toBe(200);

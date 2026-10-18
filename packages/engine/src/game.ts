@@ -46,7 +46,7 @@ export function getFighterDef(id: FighterId): FighterDefinition {
         auraColor: [0.1, 0.6, 1.0, 0.8],
         beamColor: [0.2, 0.7, 1.0, 1.0],
         signatureBeam: "Kamehameha",
-        portraitUrl: "/games/dragon-pixel/portraits/GOK.png",
+        portraitUrl: "/dbz/characters/goku.webp",
       };
     case "vegeta":
       return {
@@ -63,7 +63,7 @@ export function getFighterDef(id: FighterId): FighterDefinition {
         auraColor: [0.6, 0.2, 0.9, 0.8],
         beamColor: [0.8, 0.3, 1.0, 1.0],
         signatureBeam: "Galick Gun",
-        portraitUrl: "/games/dragon-pixel/portraits/VGT.png",
+        portraitUrl: "/dbz/characters/vegeta.webp",
       };
     case "gohan":
       return {
@@ -80,7 +80,7 @@ export function getFighterDef(id: FighterId): FighterDefinition {
         auraColor: [1.0, 0.9, 0.1, 0.9],
         beamColor: [1.0, 0.85, 0.2, 1.0],
         signatureBeam: "Father-Son Kamehameha",
-        portraitUrl: "/games/dragon-pixel/portraits/GHF.png",
+        portraitUrl: "/dbz/characters/gohan.webp",
       };
     case "piccolo":
       return {
@@ -97,7 +97,7 @@ export function getFighterDef(id: FighterId): FighterDefinition {
         auraColor: [0.7, 0.9, 0.2, 0.8],
         beamColor: [1.0, 0.9, 0.1, 1.0],
         signatureBeam: "Special Beam Cannon (Makankosappo)",
-        portraitUrl: "/games/dragon-pixel/portraits/PIC.png",
+        portraitUrl: "/dbz/characters/piccolo.webp",
       };
     case "frieza":
       return {
@@ -114,7 +114,7 @@ export function getFighterDef(id: FighterId): FighterDefinition {
         auraColor: [0.8, 0.1, 0.8, 0.8],
         beamColor: [0.9, 0.1, 0.3, 1.0],
         signatureBeam: "Death Beam",
-        portraitUrl: "/games/dragon-pixel/portraits/FRZ.png",
+        portraitUrl: "/dbz/characters/freezer.webp",
       };
     case "cell":
       return {
@@ -131,7 +131,7 @@ export function getFighterDef(id: FighterId): FighterDefinition {
         auraColor: [0.2, 0.8, 0.3, 0.8],
         beamColor: [1.0, 0.8, 0.1, 1.0],
         signatureBeam: "Solar Kamehameha",
-        portraitUrl: "/games/dragon-pixel/portraits/CL4.png",
+        portraitUrl: "/dbz/characters/celula.webp",
       };
     case "buu":
       return {
@@ -148,7 +148,7 @@ export function getFighterDef(id: FighterId): FighterDefinition {
         auraColor: [1.0, 0.4, 0.7, 0.8],
         beamColor: [1.0, 0.2, 0.6, 1.0],
         signatureBeam: "Planet Burst",
-        portraitUrl: "/games/dragon-pixel/portraits/BUU.png",
+        portraitUrl: "/dbz/characters/majin-buu.webp",
       };
     case "trunks":
       return {
@@ -165,7 +165,7 @@ export function getFighterDef(id: FighterId): FighterDefinition {
         auraColor: [0.9, 0.8, 0.1, 0.8],
         beamColor: [1.0, 0.7, 0.1, 1.0],
         signatureBeam: "Burning Attack",
-        portraitUrl: "/games/dragon-pixel/portraits/TRX.png",
+        portraitUrl: "/dbz/characters/trunks.webp",
       };
     case "yamcha":
       return {
@@ -182,7 +182,7 @@ export function getFighterDef(id: FighterId): FighterDefinition {
         auraColor: [0.8, 0.5, 0.2, 0.7],
         beamColor: [1.0, 0.5, 0.0, 1.0],
         signatureBeam: "Sokidan (Spirit Ball)",
-        portraitUrl: "/games/dragon-pixel/portraits/YMC.png",
+        portraitUrl: "/dbz/characters/yamcha.webp",
       };
   }
 }

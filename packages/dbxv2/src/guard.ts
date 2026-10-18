@@ -50,11 +50,28 @@ export function assertDbxv2BuildAllowed(
   }
 }
 
+/**
+ * Binary public assets (WebAssembly, images, audio, video, models) are scanned too: the marker,
+ * the private relay/serve names and the private-store references must not appear in them.
+ */
+const BINARY_SCANNED =
+  /\.(?:wasm|png|webp|avif|jpe?g|gif|ico|mp3|ogg|wav|mp4|m2v|webm|glb|gltf|bin)$/i;
+const MAX_BINARY = 256 * 1024 * 1024;
+
+/** Byte strings that identify the private DBXV2 store or its relays inside a binary asset. */
+export const DBXV2_BINARY_REFERENCES: readonly string[] = [
+  DBXV2_MARKER,
+  "admin/dbxv2/media",
+  "dbxv2-serve",
+  "DBXV2_SERVER_URL",
+  "DBXV2_DB_PATH",
+];
+
 const SCANNED = /\.(?:m?js|cjs|ts|mts|cts|d\.ts|map|json|html)$/i;
 const MAX_FILE = 16 * 1024 * 1024;
 
 /**
- * Files under `dir` that carry the DBXV2 marker or are the generated declarations (paths relative
+ * Files under `dir` that carry the DBXV2 marker (text or binary: wasm, images, media) or are the generated declarations (paths relative
  * to `dir`). `node_modules` are not skipped: a leak there ships as well.
  */
 export function findDbxv2Leaks(dir: string): string[] {
@@ -70,6 +87,16 @@ export function findDbxv2Leaks(dir: string): string[] {
       if (!entry.isFile()) continue;
       if (entry.name === DBXV2_DECLARATIONS_FILE) {
         leaks.push(rel);
+        continue;
+      }
+      if (BINARY_SCANNED.test(entry.name)) {
+        try {
+          if (statSync(full).size > MAX_BINARY) continue;
+          const bytes = readFileSync(full);
+          if (DBXV2_BINARY_REFERENCES.some((needle) => bytes.includes(needle))) leaks.push(rel);
+        } catch {
+          // unreadable file: nothing to scan
+        }
         continue;
       }
       if (!SCANNED.test(entry.name)) continue;

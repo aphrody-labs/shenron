@@ -47,6 +47,8 @@ export interface Dbxv2UrlBuilders {
   png(ref: Dbxv2RefInput, params?: { readonly index?: number }): string;
   audio(ref: Dbxv2RefInput, params?: { readonly cue?: number }): string;
   video(ref: Dbxv2RefInput): string;
+  /** Web MP4 (H.264 + AAC) transcoded on demand by the server: the format browsers can play. */
+  mp4(ref: Dbxv2RefInput): string;
   modelJson(ref: Dbxv2RefInput, params?: { readonly emb?: string; readonly esk?: string }): string;
   modelGlb(ref: Dbxv2RefInput, params?: { readonly emb?: string; readonly esk?: string }): string;
 }
@@ -217,6 +219,7 @@ export function createDbxv2Proxy(options: Dbxv2ProxyOptions): Dbxv2Proxy {
       png: (ref, params) => sign("png", ref, params),
       audio: (ref, params) => sign("wav", ref, params),
       video: (ref) => sign("video", ref),
+      mp4: (ref) => sign("mp4", ref),
       modelJson: (ref, params) => sign("model.json", ref, params),
       modelGlb: (ref, params) => sign("model.glb", ref, params),
     },

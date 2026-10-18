@@ -64,7 +64,7 @@ export interface Dbxv2ProxyLike {
   /** Loopback origin of the signing proxy (`http://127.0.0.1:<port>`). */
   readonly origin?: string;
   sign(
-    kind: PreviewKind,
+    kind: PreviewKind | "mp4",
     ref: { cpk: string; path: string },
     params?: { index?: number; cue?: number },
     ttlSeconds?: number,
@@ -202,7 +202,13 @@ export function createDbxv2Service(
           : kind === "wav" && cue !== undefined
             ? { cue }
             : undefined;
-      const signed = proxy.sign(kind, parsed, params, SIGNED_TTL_SECONDS);
+      // Browsers cannot play the native MPEG-2: the video preview goes through the web MP4 route.
+      const signed = proxy.sign(
+        kind === "video" ? "mp4" : kind,
+        parsed,
+        params,
+        SIGNED_TTL_SECONDS,
+      );
       const { pathname, search } = new URL(signed);
       // `/r/<kind>/…` of the proxy becomes `MEDIA_BASE/<kind>/…`: same origin, same signature.
       return {

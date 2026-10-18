@@ -146,6 +146,8 @@ describe("binary endpoints", () => {
     expect(server.requests.at(-1)?.path).toContain("index=1");
     expect((await client.wav("BGM/theme.acb", { cue: 2 })).contentType).toBe("audio/wav");
     expect((await client.video("BGM/clip.usm")).contentType).toBe("video/mp4");
+    expect((await client.mp4("BGM/clip.usm")).contentType).toBe("video/mp4");
+    expect(server.requests.at(-1)?.path).toContain("/mp4/");
     const model = await client.modelJson("CHARA/a/model.emd", { emb: "a/one.emb" });
     expect(model.primitives[0]?.indices).toEqual([0, 1, 2]);
     expect(server.requests.at(-1)?.path).toContain("emb=a%2Fone.emb");

@@ -73,4 +73,6 @@ dans le chunk JSON du GLB), `Dbxv2UiProvider` (libellés, contexte React sans mo
 
 Pas de moteur GLB wgpu dans `shenron-engine` : sans fabrique injectée, le modèle est résumé.
 Contrôlé le 2026-10-18 dans Chrome réel contre le serveur privé de la fabrique (tunnel SSH). Le flux
-USM est du MPEG-2 (`video/mpeg`), non lisible par Chrome : l'alerte avec réessai s'affiche.
+USM natif est du MPEG-2 (`video/mpeg`), non lisible par Chrome : les aperçus vidéo passent désormais par
+`/mp4/` (transcodage H.264+AAC à la demande, voir `docs/operations/dbxv2-serve.md`) ; l'alerte avec réessai
+reste affichée si le transcodage échoue. Non revalidé dans Chrome depuis ce changement.

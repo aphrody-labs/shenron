@@ -18,12 +18,12 @@ describe("@aphrody/shenron-engine — Unified Full-Stack Game Engine", () => {
     const goku = getFighterDef("goku");
     expect(goku.name).toBe("Son Goku");
     expect(goku.signatureBeam).toBe("Kamehameha");
-    expect(goku.portraitUrl).toBe("/games/dragon-pixel/portraits/GOK.png");
+    expect(goku.portraitUrl).toBe("/dbz/characters/goku.webp");
 
     const vegeta = getFighterDef("vegeta");
     expect(vegeta.name).toBe("Vegeta");
     expect(vegeta.signatureBeam).toBe("Galick Gun");
-    expect(vegeta.portraitUrl).toBe("/games/dragon-pixel/portraits/VGT.png");
+    expect(vegeta.portraitUrl).toBe("/dbz/characters/vegeta.webp");
   });
 
   it("provides canonical 42-volume manga story chapters", () => {

@@ -50,21 +50,24 @@ const TRANSFORMATION_FULL_ASSETS: Record<FighterId, string> = {
 };
 
 /**
- * Official Square Portraits for HUD and Manga Koma Cut-Ins.
+ * Square HUD / cut-in portraits reuse the authorised full-body artwork, cropped to the face at draw time.
  */
-const PORTRAIT_ASSETS: Record<FighterId, string> = {
-  goku: "/games/dragon-pixel/portraits/GOK.png",
-  vegeta: "/games/dragon-pixel/portraits/VGT.png",
-  gohan: "/games/dragon-pixel/portraits/GOH.png",
-  piccolo: "/games/dragon-pixel/portraits/PIC.png",
-  trunks: "/games/dragon-pixel/portraits/TRF.png",
-  frieza: "/games/dragon-pixel/portraits/FRZ.png",
-  cell: "/games/dragon-pixel/portraits/CEL.png",
-  buu: "/games/dragon-pixel/portraits/BUU.png",
-  beerus: "/games/dragon-pixel/portraits/BLS.png",
-  broly: "/games/dragon-pixel/portraits/BRL.png",
-  jiren: "/games/dragon-pixel/portraits/JRN.png",
-};
+const PORTRAIT_ASSETS: Record<FighterId, string> = CHARACTER_FULL_ASSETS;
+
+/** Draws the top square (head and shoulders) of a full-body artwork into a square box. */
+function drawFaceCrop(
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  x: number,
+  y: number,
+  size: number,
+): void {
+  const w = img.naturalWidth;
+  const h = img.naturalHeight;
+  if (!w || !h) return;
+  const side = Math.min(w, h);
+  ctx.drawImage(img, (w - side) / 2, 0, side, side, x, y, size, size);
+}
 
 /**
  * Official Backdrops and Celestial Planets.
@@ -702,7 +705,7 @@ export default function DragonPixelGame() {
       // Portrait gros plan du visage / yeux
       const portrait = getImage(PORTRAIT_ASSETS[cut.fighterId]);
       if (portrait) {
-        ctx.drawImage(portrait, 140, 240, 240, 240);
+        drawFaceCrop(ctx, portrait, 140, 240, 240);
       }
 
       // Calligraphie japonaise de la technique en lettres géantes
@@ -1023,7 +1026,7 @@ export default function DragonPixelGame() {
     // Portrait Joueur
     const pThumb = getImage(PORTRAIT_ASSETS[p.fighterId]);
     if (pThumb) {
-      ctx.drawImage(pThumb, 30, 22, 60, 60);
+      drawFaceCrop(ctx, pThumb, 30, 22, 60);
     }
     ctx.restore();
 
@@ -1049,7 +1052,7 @@ export default function DragonPixelGame() {
 
       const eThumb = getImage(PORTRAIT_ASSETS[enemy.fighterId ?? "piccolo"]);
       if (eThumb) {
-        ctx.drawImage(eThumb, 1188, 22, 60, 60);
+        drawFaceCrop(ctx, eThumb, 1188, 22, 60);
       }
       ctx.restore();
     }

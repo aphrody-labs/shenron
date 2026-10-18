@@ -93,7 +93,12 @@ jeton, l'import échoue avec la raison et les variables à poser.
 **Garde de build.** `Bun.build` avec le plugin est refusé (`Dbxv2BuildRefusedError`) en build
 public/production : `NODE_ENV=production`, profil public, `minify`, `define` de production.
 `scripts/build/server.ts` échoue si l'arbre de release contient un module généré, le marqueur ou
-`dbxv2.d.ts` (`findDbxv2Leaks`).
+`dbxv2.d.ts` (`findDbxv2Leaks`). La garde scanne aussi les `.wasm` et les assets binaires (images, audio,
+vidéo, modèles) : marqueur, `admin/dbxv2/media`, `dbxv2-serve`, `DBXV2_SERVER_URL`, `DBXV2_DB_PATH`.
+Le wasm public `shenron_re` ne contient que des noms de formats et un catalogue de jeux (identifiants Steam,
+chemins de sauvegarde) : aucune donnée ni référence au stockage privé ; les neutraliser exigerait une
+reconstruction du wasm, non faite. Les portraits de Dragon Pixel venaient de Xenoverse 2 : retirés (le jeu
+utilise désormais `/dbz/characters/*.webp`).
 
 ## Déclarations typées (`./declarations`)
 
