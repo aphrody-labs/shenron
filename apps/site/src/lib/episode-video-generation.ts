@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { mkdir, rename } from "node:fs/promises";
+import { mkdir, rename, readdir } from "node:fs/promises";
 import { isShenronEpisodeVideoURL } from "./episode-video-source";
 
 type Player = { embedUrl: string };
@@ -46,6 +46,32 @@ type Dependencies = {
   image(path: string, kind: Kind, index: number, metadata: Metadata): Promise<Uint8Array>;
 };
 class BusyError extends Error {}
+const sourceDirectory = join(tmpdir(), "shenron-episode-video");
+const leases = new Map<string, number>();
+const currentPaths = new Map<number, string>();
+
+async function purgeOldSources(id: number) {
+  const current = currentPaths.get(id);
+  if (!current) return;
+  for (const name of await readdir(sourceDirectory).catch(() => [] as string[])) {
+    if (!new RegExp(`^${id}-[a-f0-9]{64}\\.mp4$`).test(name)) continue;
+    const path = join(sourceDirectory, name);
+    if (path !== currentPaths.get(id) && !leases.has(path))
+      await Bun.file(path)
+        .delete()
+        .catch(() => {});
+  }
+}
+
+function retainSource(path: string, id: number) {
+  leases.set(path, (leases.get(path) ?? 0) + 1);
+  return async () => {
+    const remaining = (leases.get(path) ?? 1) - 1;
+    if (remaining) leases.set(path, remaining);
+    else leases.delete(path);
+    await purgeOldSources(id);
+  };
+}
 
 /** Only immutable, owner-published episode sources can enter the decoder. */
 export function episodeTimelineSource(id: number, players: readonly Player[] | null): URL | null {
@@ -68,25 +94,41 @@ async function digestFile(path: string): Promise<string> {
   return hasher.digest("hex");
 }
 
-async function downloadSource(url: URL, id: number, hash: string): Promise<string> {
-  const destination = join(tmpdir(), "shenron-episode-video", `${id}-${hash}.mp4`);
+export async function downloadEpisodeVideoSource(
+  url: URL,
+  id: number,
+  hash: string,
+  fetcher: typeof fetch = fetch,
+): Promise<string> {
+  if (episodeTimelineSource(id, [{ embedUrl: url.href }])?.pathname.split("/")[4] !== hash)
+    throw new Error("invalid_source");
+  const destination = join(sourceDirectory, `${id}-${hash}.mp4`);
   const existing = Bun.file(destination);
   if (await existing.exists()) {
     if (existing.size <= 1024 ** 3 && (await digestFile(destination)) === hash) return destination;
     await existing.delete();
   }
-  const response = await fetch(url, {
+  const response = await fetcher(url, {
     redirect: "error",
     credentials: "omit",
     signal: AbortSignal.timeout(120_000),
   });
-  const declared = Number(response.headers.get("content-length"));
-  if (!response.ok || !response.body || declared > 1024 ** 3) {
+  const length = response.headers.get("content-length");
+  const declared = length === null ? null : Number(length);
+  if (
+    response.status !== 200 ||
+    !response.body ||
+    (length !== null &&
+      (!/^\d+$/.test(length) ||
+        !Number.isSafeInteger(declared) ||
+        declared! <= 0 ||
+        declared! > 1024 ** 3))
+  ) {
     await response.body?.cancel();
     throw new Error("source_unavailable");
   }
   const temporary = `${destination}.${crypto.randomUUID()}.partial`;
-  await mkdir(join(tmpdir(), "shenron-episode-video"), { recursive: true });
+  await mkdir(sourceDirectory, { recursive: true });
   const writer = Bun.file(temporary).writer();
   const hasher = new Bun.CryptoHasher("sha256");
   let total = 0;
@@ -101,9 +143,13 @@ async function downloadSource(url: URL, id: number, hash: string): Promise<strin
     }
     await writer.end();
     ended = true;
-    if (!total || hasher.digest("hex") !== hash) throw new Error("source_integrity_failed");
+    if (!total || (declared !== null && total !== declared) || hasher.digest("hex") !== hash)
+      throw new Error("source_integrity_failed");
     await rename(temporary, destination);
     return destination;
+  } catch (error) {
+    await response.body.cancel().catch(() => {});
+    throw error;
   } finally {
     if (!ended) await Promise.resolve(writer.end()).catch(() => {});
     await Bun.file(temporary)
@@ -114,7 +160,7 @@ async function downloadSource(url: URL, id: number, hash: string): Promise<strin
 
 const nativeDependencies: Dependencies = {
   available: () => typeof Video === "function" && Video.available,
-  source: downloadSource,
+  source: downloadEpisodeVideoSource,
   async metadata(path) {
     if (!Video) throw new Error("video_unavailable");
     const value = await new Video(path).metadata();
@@ -219,7 +265,14 @@ export function createEpisodeTimelineHandler(overrides: Partial<Dependencies> = 
         for (const key of sources.keys()) if (key.startsWith(`${id}-`)) sources.delete(key);
         source = schedule(async () => {
           const path = await dependencies.source(url, id, hash);
-          return { path, metadata: await dependencies.metadata(path) };
+          const release = retainSource(path, id);
+          try {
+            const metadata = await dependencies.metadata(path);
+            if (path === join(sourceDirectory, `${id}-${hash}.mp4`)) currentPaths.set(id, path);
+            return { path, metadata };
+          } finally {
+            await release();
+          }
         }, request.signal);
         sources.set(sourceKey, source);
         source.catch(() => sources.delete(sourceKey));
@@ -238,7 +291,11 @@ export function createEpisodeTimelineHandler(overrides: Partial<Dependencies> = 
       } else {
         let image = pending.get(key);
         if (!image) {
-          image = schedule(() => dependencies.image(path, kind, index, metadata), request.signal);
+          const release = retainSource(path, id);
+          image = schedule(
+            () => dependencies.image(path, kind, index, metadata),
+            request.signal,
+          ).finally(release);
           pending.set(key, image);
           image
             .then(

@@ -3,7 +3,10 @@ import { expect, test } from "bun:test";
 import {
   createEpisodeTimelineHandler,
   episodeTimelineSource,
+  downloadEpisodeVideoSource,
 } from "../src/lib/episode-video-generation";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 const players = [
   { embedUrl: `https://cdn.dragonballfr.com/media/episodes/876/${"a".repeat(64)}/source.mp4` },
@@ -168,4 +171,68 @@ test("byte LRU evicts images beyond its 32 MiB budget", async () => {
     await response.body?.cancel();
   }
   expect(images).toBe(3);
+});
+
+test("download verifies status, exact length and hash before exposing the cache file", async () => {
+  const bytes = new TextEncoder().encode(`episode-test-${crypto.randomUUID()}`);
+  const hash = new Bun.CryptoHasher("sha256").update(bytes).digest("hex");
+  const url = new URL(`https://cdn.dragonballfr.com/media/episodes/876/${hash}/source.mp4`);
+  const path = join(tmpdir(), "shenron-episode-video", `876-${hash}.mp4`);
+  const fetcher = (response: Response) =>
+    (async (_input: unknown, init?: RequestInit) => {
+      expect(init?.credentials).toBe("omit");
+      expect(init?.redirect).toBe("error");
+      return response;
+    }) as unknown as typeof fetch;
+  try {
+    for (const response of [
+      new Response(bytes, { status: 206 }),
+      new Response(bytes, { headers: { "content-length": "NaN" } }),
+      new Response(bytes, { headers: { "content-length": "-1" } }),
+      new Response(bytes, { headers: { "content-length": String(bytes.length + 1) } }),
+      new Response(new Uint8Array([1]), { headers: { "content-length": "1" } }),
+    ]) {
+      await expect(downloadEpisodeVideoSource(url, 876, hash, fetcher(response))).rejects.toThrow();
+      expect(await Bun.file(path).exists()).toBe(false);
+    }
+    expect(
+      await downloadEpisodeVideoSource(
+        url,
+        876,
+        hash,
+        fetcher(new Response(bytes, { headers: { "content-length": String(bytes.length) } })),
+      ),
+    ).toBe(path);
+    expect(await Bun.file(path).bytes()).toEqual(bytes);
+    expect(
+      await downloadEpisodeVideoSource(url, 876, hash, (async () => {
+        throw new Error("cache avoids network");
+      }) as unknown as typeof fetch),
+    ).toBe(path);
+  } finally {
+    await Bun.file(path)
+      .delete()
+      .catch(() => {});
+  }
+});
+
+test("a failed download stream leaves no completed source", async () => {
+  const hash = "f".repeat(64);
+  const url = new URL(`https://cdn.dragonballfr.com/media/episodes/876/${hash}/source.mp4`);
+  const stream = new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.error(new Error("broken network"));
+    },
+  });
+  await expect(
+    downloadEpisodeVideoSource(
+      url,
+      876,
+      hash,
+      (async () => new Response(stream)) as unknown as typeof fetch,
+    ),
+  ).rejects.toThrow();
+  expect(await Bun.file(join(tmpdir(), "shenron-episode-video", `876-${hash}.mp4`)).exists()).toBe(
+    false,
+  );
 });
