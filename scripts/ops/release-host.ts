@@ -90,10 +90,11 @@ function syncOrigin(ref = "origin/main"): string {
 }
 
 /** Une étape dans l'image de build d'Aphrody (`scripts/build/container.ts` du commit construit). */
-function inBuildImage(label: string, cmd: string[]): string {
+function inBuildImage(label: string, cmd: string[], env: Record<string, string> = {}): string {
+  const forward = Object.keys(env).flatMap((name) => ["--env", name]);
   // Bun consumes the first `--` while parsing its own CLI. Pass a second one so
   // container.ts receives its command separator in process.argv.
-  return step(label, ["bun", "scripts/build/container.ts", "--", "--", ...cmd]);
+  return step(label, ["bun", "scripts/build/container.ts", ...forward, "--", "--", ...cmd], env);
 }
 
 /**
@@ -127,7 +128,10 @@ export function siteBuildEnv(envText: string): Record<string, string> {
 
 /** Bot compilé, site (base lue dans l'environnement du site) et emballage : `artifacts/releases/<sha>`. */
 function bundleSite(commit: string, systemdDir?: string): string {
-  inBuildImage("bot", ["bun", "scripts/build/bot.ts", "--target", "linux-x64"]);
+  // Le `.git` du worktree pointe vers le checkout source, absent du conteneur : le commit est transmis.
+  inBuildImage("bot", ["bun", "scripts/build/bot.ts", "--target", "linux-x64"], {
+    SHENRON_REVISION: commit,
+  });
   const envFile = Bun.spawnSync(["sudo", "-n", "cat", "/etc/rose-griffon/shenron-site.env"]);
   const buildEnv = siteBuildEnv(envFile.stdout.toString());
   const release = join("artifacts", "releases", commit);

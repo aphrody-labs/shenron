@@ -82,13 +82,20 @@ copyRuntimeFile(canvasBinding, join(out, `skia.${canvasPlatform}.node`));
 // Migrations are read from disk by drizzle at boot: ship them beside the binary.
 const migrations = join(BOT, "src/db/migrations");
 if (existsSync(migrations)) copyRuntimeDirectory(migrations, join(out, "src/db/migrations"));
-const revision = Bun.spawn(["git", "rev-parse", "HEAD"], {
-  cwd: ROOT,
-  stdout: "pipe",
-  stderr: "ignore",
-});
-const sourceCommit = (await new Response(revision.stdout).text()).trim();
-if ((await revision.exited) !== 0) throw Error("Cannot pin bot source revision");
+// A release worktree's `.git` points outside the build container: the caller passes the commit.
+const sourceCommit = process.env.SHENRON_REVISION ?? (await gitHead());
+if (!/^[0-9a-f]{40}$/.test(sourceCommit)) throw Error("Cannot pin bot source revision");
+
+async function gitHead(): Promise<string> {
+  const revision = Bun.spawn(["git", "rev-parse", "HEAD"], {
+    cwd: ROOT,
+    stdout: "pipe",
+    stderr: "ignore",
+  });
+  const head = (await new Response(revision.stdout).text()).trim();
+  if ((await revision.exited) !== 0) throw Error("Cannot pin bot source revision");
+  return head;
+}
 const pipeline = await buildSourcePipelineAsset(
   join(ROOT, "scripts/ops/bun-source-pipeline.ts"),
   out,
