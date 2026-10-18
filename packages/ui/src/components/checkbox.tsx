@@ -14,7 +14,7 @@ function Checkbox({ className, ...props }: React.ComponentProps<typeof CheckboxP
         "hover:border-dbz-orange hover:shadow-[3px_3px_0px_#000]",
         "active:translate-x-px active:translate-y-px active:shadow-none",
         "data-[checked]:bg-dbz-orange data-[checked]:text-black data-[checked]:border-black",
-        "focus-visible:ring-2 focus-visible:ring-dbz-orange/40",
+        "focus-visible:ring-2 focus-visible:ring-dbz-orange",
         className,
       )}
       {...props}

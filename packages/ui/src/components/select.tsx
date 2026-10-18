@@ -45,7 +45,7 @@ function SelectTrigger({
             ]
           : [
               "inline-flex w-full items-center justify-between rounded-xl border-2 border-black bg-[#121218] font-semibold uppercase tracking-wider text-gray-100 shadow-[2.5px_2.5px_0px_#000] outline-none transition-all",
-              "hover:border-dbz-orange/70 hover:shadow-[3.5px_3.5px_0px_#000] active:translate-x-px active:translate-y-px active:shadow-none focus-visible:border-dbz-orange focus-visible:ring-2 focus-visible:ring-dbz-orange/30",
+              "hover:border-dbz-orange/70 hover:shadow-[3.5px_3.5px_0px_#000] active:translate-x-px active:translate-y-px active:shadow-none focus-visible:border-dbz-orange focus-visible:ring-2 focus-visible:ring-dbz-orange",
               sm ? "h-8 gap-1.5 px-2.5 py-1 text-[11px]" : "h-10 px-3.5 py-2 text-xs",
             ],
         className,

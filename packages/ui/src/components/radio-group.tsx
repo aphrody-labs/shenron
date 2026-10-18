@@ -22,7 +22,7 @@ function RadioItem({
         "hover:border-dbz-orange",
         "active:translate-x-px active:translate-y-px",
         "data-[checked]:border-dbz-orange data-[checked]:bg-black",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange/40",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange",
         className,
       )}
       {...props}

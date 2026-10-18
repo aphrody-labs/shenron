@@ -34,7 +34,7 @@ function AccordionTrigger({
       <AccordionPrimitive.Trigger
         className={cn(
           "flex flex-1 items-center justify-between px-5 py-4 text-left font-sans text-sm font-extrabold uppercase tracking-wider text-white transition-all select-none outline-none cursor-pointer",
-          "hover:text-dbz-orange",
+          "hover:text-dbz-orange focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-dbz-orange",
           "[&[data-panel-open]>svg]:rotate-180",
           className,
         )}

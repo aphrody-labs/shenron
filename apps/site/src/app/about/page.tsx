@@ -118,7 +118,7 @@ export default function AboutPage() {
                   <Bouclier className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-display font-bold text-white">Rigueur Canonique</h4>
+                  <h3 className="text-sm font-display font-bold text-white">Rigueur Canonique</h3>
                   <p className="text-xs text-white/75 font-sans mt-0.5">
                     Toutes nos fiches et informations sont sourcées depuis les 42 tomes du manga et
                     les guides officiels.
@@ -130,7 +130,7 @@ export default function AboutPage() {
                   <Bulle className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-display font-bold text-white">Entraide & Partage</h4>
+                  <h3 className="text-sm font-display font-bold text-white">Entraide & Partage</h3>
                   <p className="text-xs text-white/75 font-sans mt-0.5">
                     Une documentation collaborative ouverte aux relectures et aux contributions des
                     membres.
@@ -142,9 +142,9 @@ export default function AboutPage() {
                   <Recompense className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-display font-bold text-white">
+                  <h3 className="text-sm font-display font-bold text-white">
                     Recherche & Preuves Documentées
-                  </h4>
+                  </h3>
                   <p className="text-xs text-white/75 font-sans mt-0.5">
                     Outils d&apos;indexation et de consultation pour retrouver instantanément les
                     citations et planches originales.

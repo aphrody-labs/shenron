@@ -14,7 +14,7 @@ function Toggle({ className, ...props }: React.ComponentProps<typeof TogglePrimi
         "hover:border-dbz-orange hover:text-white",
         "active:translate-x-px active:translate-y-px",
         "data-[pressed]:bg-dbz-orange data-[pressed]:text-black data-[pressed]:border-black",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange/40",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange",
         className,
       )}
       {...props}
