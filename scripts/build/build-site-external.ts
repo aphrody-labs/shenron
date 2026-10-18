@@ -132,7 +132,9 @@ delete buildEnv.ALL_PROXY;
 // Usine de build déclarée par l'Infra (config/build-factory.json, absente hors usine) : défauts sinon.
 const factoryPath = join(repo, "config/build-factory.json");
 const factory = existsSync(factoryPath) ? await Bun.file(factoryPath).json() : {};
-const nodeImage = factory.next?.image ?? "node:22-bookworm-slim";
+// `SHENRON_NEXT_IMAGE` : image du compilateur choisie par l'appelant (la release prend
+// l'image de build Ubuntu pour le runtime Bun, dont la glibc dépasse celle de bookworm).
+const nodeImage = process.env.SHENRON_NEXT_IMAGE ?? factory.next?.image ?? "node:22-bookworm-slim";
 const memoryMiB = factory.next?.maxOldSpaceSizeMiB ?? 8192;
 const containerMemoryMiB = factory.next?.memoryMiB ?? 16384;
 const cpus = factory.next?.cpus ?? 6;

@@ -180,8 +180,8 @@ function bundleSite(commit: string, systemdDir?: string): string {
       ...(systemdDir ? ["--systemd-dir", systemdDir] : []),
     ],
     // Le site sert sous `bun --bun next start` et charge `bun:ffi` : Node 22 ne peut pas en
-    // collecter les données de page.
-    { SHENRON_NEXT_RUNTIME: "bun", ...buildEnv },
+    // collecter les données de page. Le bun de l'hôte exige la glibc de l'image de build (Ubuntu).
+    { SHENRON_NEXT_RUNTIME: "bun", SHENRON_NEXT_IMAGE: "aphrody-build:latest", ...buildEnv },
   );
   return release;
 }
