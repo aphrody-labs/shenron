@@ -30,8 +30,67 @@ s'appliquent plus au hero. Sur mobile, une image 16:9 précède le texte. Quatre
 suivant ; la rotation s'arrête au focus, hors écran, onglet masqué et mouvement réduit.
 `home-hero-frames.ts` référence uniquement des objets CDN immuables relus par SHA-256.
 Le CTA de lecture dépend des lignes canoniques 875/876 avec source CDN qualifiée.
-Portes locales cumulées : 46 tests passent, quatre DOM ignorés, 332 assertions ;
-types, lint et formatage ciblés verts. Livraison et rendu navigateur restent à qualifier.
+Le lot `8a70c39f` ajoute le lettrage officiel Beerus, des capsules encrées et deux
+vraies vignettes dans les cadres mesurés `CadreCase` ; les anciennes règles CSS
+du hero sont retirées. Portes cumulées : 52 tests passent, zéro ignoré, 368 assertions,
+avec un environnement DOM HTTP réel ; types, lint et formatage ciblés verts.
+L'image active `1e9193db` a été contrôlée dans Chrome en 1440/390 : quatre images HD
+chargées, logo réel, précédent/suivant, pause et image mobile 16:9 sans débordement.
+
+## Assets manga Rust/WASM — demande du 18 octobre 2026
+
+Le propriétaire `shenron-panels` exporte une vraie planche locale en découpes,
+atlas PNG normalisé, manifeste et GIF séquentiel. Le lot `e1218daa`, corrigé par
+`6f7c48dd` pour la CLI, conserve l'ordre demandé et borne les dimensions/cadences.
+25 tests natifs, Clippy, compilation wasm32 et contrôle CLI corrigée passent.
+Le consommateur Canvas `1e9193db` passe 16 tests et 71 assertions, types/lint/formatage.
+L'exemple réel produit
+cinq segments (quatre cases et le titre), un atlas 784 × 520 et cinq images GIF
+à 500 ms. Les médias et reçus restent dans `var/reports/engine-assets/`.
+
+Le consommateur `packages/engine/src/sprite-atlas.ts` relie ce manifeste à Canvas 2D.
+Chrome a dessiné les tuiles 1, 2 et 5 et comparé chaque octet RGBA à la tuile source :
+égalité complète. Cette séquence de dessins fixes ne crée pas de poses nouvelles.
+Le SVG courant contient le scan raster dans un cadre vectoriel ; le renderer wgpu
+place des cases texturées en parallaxe. Aucun de ces deux chemins ne constitue une
+vectorisation du trait ou une reconstruction de personnages en maillage 3D.
+
+L'interface Studio importe maintenant manifeste et PNG, vérifie empreinte du scan,
+dimensions et empreinte PNG, puis propose pause/reprise et sélection d'image.
+La CLI release `b1122fb2` a aussi été exécutée sur une vraie page du chapitre 516 :
+atlas 784 × 520, GIF cinq images 256 × 256/500 ms, égalité des empreintes relues,
+rejet de `--only 0` ; sorties terminales compilation et preuve à zéro.
+
+Suite bornée : qualifier cette interface sur le moteur hébergé,
+relier l'atlas au consommateur Dragon Pixel existant, puis qualifier séparément GPU, VFX et
+animation 2D sur leurs vrais rendus. La conversion de traits en icônes SVG et de
+personnages en modèles 3D demande des producteurs et des preuves distincts ; elle
+reste ouverte, sans promettre qu'un simple changement de format la réalise.
+
+## Studio web et administration — extension du 18 octobre 2026
+
+L'upstream Koharu est conservé hors dépôt pour l'audit, au commit
+`85d6de339ee7d486fe381249205126d944d40bb7`. Les 39 composants, sept outils,
+historique, import/export et pipeline sont rapprochés des propriétaires actuels.
+Le diamètre de pinceau adaptatif réellement perdu a été restauré (`e3682dc1`).
+Les captures de la documentation officielle constituent une référence visuelle ;
+le Next upstream local échoue sur une dépendance SWC et ne vaut pas une
+exécution native de l'application.
+
+Le cadre commun admin `aafa7c8b` conserve les 64 liens, les gardes et les formulaires
+réels. Explorateur filtrable, onglets conservant les paramètres, palette Ctrl/Maj/P,
+contexte et composants partagés remplacent la composition CMS. Trois tests DOM
+du cadre et 23 tests de navigation/primitives passent. Chrome sur fixture confirme
+filtre, recherche, Échap/focus et largeur 390 avec texte 200 %, sans débordement.
+Ce contrôle ne remplace pas le parcours admin authentifié en production.
+
+`koharu-library` reste l'unique état éditorial, derrière Tauri sur bureau et le
+même SDK sur le web. Le lot `71e79fc9` emballe le SDK et isole home, projets et
+service de credentials par identité authentifiée. Les deux tests Rust du namespace
+passent ; compilation SDK et smoke réel restent à terminer avant livraison.
+L'abonnement UI est découplé de l'installation ML implicite (`76b8fe03`) ; les
+actions explicites de traitement gardent l'initialisation native. Le responsive
+conserve un Canvas unique avec panneaux Pages/Outils réutilisés et retour de focus.
 
 ## Timeline vidéo et GIF — demande du 18 octobre 2026
 
@@ -98,9 +157,16 @@ seul lecteur vidéo CDN, zéro iframe et zéro ancien sélecteur. L'export publi
 3 s / 12 images/s / 480 px produit pour chaque épisode 36 images, 480 × 270 et
 3,00 s vérifiées dans la structure GIF. Le défaut Range CDN 876 est corrigé :
 réponses 206 début/fin depuis PC et DBFR, octets identiques au MP4 local.
-Portes ciblées : 28 tests passent, quatre DOM ignorés,
-158 assertions ; types/lint/formatage verts. Le navigateur de cette session est
-devenu indisponible : rendu et interactions du dernier lot restent à requalifier.
+Chrome a ensuite qualifié la lecture publique 875 (0,112 → 4,129 s) et 876
+(25,355 → 29,026 s), le seek à 30,03 s et à la dernière frame 33 512, treize
+aperçus réels et le GIF 3 s / 12 images/s / 480 px. À 390 px, aucun débordement
+et le GIF est affiché à 348 px (source 480 px). Les faux liens « source primaire
+Toei » des deux fiches ont été retirés par writer canonique, avec CAS/relecture.
+Le lot `8a70c39f` remplace les menus natifs du lecteur et de la timeline par Base UI,
+avec clavier et portails plein écran, progression fusionnée et aperçu réel au survol.
+Les fiches reçoivent une hiérarchie plus compacte et des actions de 48 px.
+Portes cumulées : 52 tests, zéro échec/ignoré, 368 assertions ; types/lint/formatage
+verts. Le rendu du dernier lot reste à vérifier après activation.
 Le fork Bun a été exploré et testé, sans modification native nécessaire. Les reçus
 techniques privés du lot Beerus sont dans `var/reports/beerus-876-owner/` ; une
 métadonnée ou une image extraite ne vaut pas lecture publique de l’épisode.

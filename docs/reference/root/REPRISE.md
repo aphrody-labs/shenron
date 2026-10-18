@@ -955,3 +955,45 @@ article wiki n'a été écrit à partir de cette preuve partielle.
 ## Pipeline unifiée (2026-10-16)
 
 `bun packages/pipeline/src/cli.ts run` orchestre dataset > canon/rag > decision > wiki/agent-home > plugin (cache par empreinte, historique `var/reports/pipeline/history.sqlite`). Reste : 4 violations `apps/site boundary` (jev.ts, canon-judgment.ts, site-rag.ts) à router par une façade server-class.
+
+## 2026-10-19 — Studio, administration et hero : qualification en cours
+
+Demande active : fusion fonctionnelle Koharu/Shenron Studio sur web, bureau et mobile,
+admin refondu en atelier, lecteur CDN Beerus et frames/GIF réels. Dernière correction
+propriétaire : hero sur toute la largeur, composition répartie et retrait du logo
+Dragon Ball France répété ; seul le logo officiel Beerus reste dans le hero (031e755b).
+
+L'image publique vérifiée reste 1e9193db, image Docker
+sha256:8bcfdfaa985340db1dcfe1f6bfa55f55348a845fda81aa13fa38fe5ec89025d9.
+Chrome réel : lecture 876 avance, seek slider et frame 721 à 30,03 s, GIF réel
+320 x 180, hero 1440/390 et absence de débordement. Le correctif des menus Base UI
+hors plein écran bad52271 attend l'image suivante ; plein écran réel non qualifié.
+
+Admin : cadre commun aafa7c8b, dashboard opérationnel 134a7507 ; 64 liens conservés,
+explorateur, onglets, palette, contexte, responsive. Fixture réelle Chrome : recherche,
+Échap et focus corrects, viewport 390/document 375 à texte 200 %. Capture de référence
+privée var/reports/admin-studio/workspace-desktop-final.png. L'autorisation Discord a
+été explicitement accordée par le propriétaire ; connexion réelle réussie après
+renouvellement d'un état OAuth expiré. /admin/dashboard authentifié s'ouvre sur l'image
+ancienne ; retour profil 281114294152724491?member=1 rencontré en 404, correction déléguée.
+Aucun cookie ou token exporté. Nouvelle UI non déclarée déployée.
+
+Studio : pinceau adaptatif upstream restauré, Canvas unique et panneaux mobiles avec
+retour de focus, outils tactiles 44 px. Import catalogue avec provenance candidate,
+atlas source/PNG contrôlés. CLI release b1122fb2 exécutée sur une vraie planche du
+chapitre 516 : atlas 784 x 520 et GIF cinq images 256 x 256/500 ms, empreintes relues,
+rejet --only 0 ; compilation et preuve EXIT_CODE=0. SVG raster et parallaxe texturée
+restent distincts de trait vectorisé et maillage 3D reconstruit.
+
+Moteur hébergé 71e79fc9 : SDK dans l'image, home et credentials isolés par compte.
+Deux tests Rust de namespace passent ; build SDK sur la fabrique en cours, smoke
+get_preferences/subscribe/import/hash encore attendu. Subscribe n'installe plus les
+runtimes ML implicitement (76b8fe03) ; les traitements explicites gardent leur moteur.
+
+Bun check global : 6462 fichiers/20 projets sans erreur. OpenAPI, tokens et 12 contrats
+pipeline sans dérive. Réparation média aa8851fc : paquet Mediabunny admissible 1.61.5,
+faux en-têtes image remplacés par décodage réel Bun.Video ; tests décodage JPEG/WebP.
+Suite workspace encore en cours ; lint global sans erreur mais 19 warnings en cours
+de correction coordonnée. Prochaine étape : smoke natif, gates finaux, push normal,
+image scellée et contrôles Chrome authentifiés. Compiler release qualifié fabrique :
+~/build/out/bun/release-1.4.6/bun, révision fd9d7a224b83d1763721e409ca98e06a16df1f43.

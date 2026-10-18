@@ -8,6 +8,25 @@ l’historique sont dans [REPRISE.md](docs/reference/root/REPRISE.md) ; les inva
 
 ## Priorités
 
+Demande propriétaire du 18 octobre : réunir le parcours manga de Shenron et
+Shenron Studio (Koharu), afin d'exploiter les capacités communes de lecture,
+édition, cases, atlas, Canvas et scènes 3D. Conserver `koharu-library` comme
+propriétaire de l'état éditorial, les transports existants et les producteurs
+Rust/Bun ; raccorder les capacités plutôt que dupliquer moteurs et applications.
+Chaque capacité exposée doit fonctionner sur une vraie page autorisée et être
+qualifiée séparément ; SVG raster, trait vectoriel et modèles 3D restent distincts.
+La modernisation des fiches épisodes, du lecteur CDN, du hero et de la timeline
+GIF continue jusqu'au contrôle de l'image publique activée.
+
+Extension du même lot : restaurer les fonctions réellement perdues de l'upstream
+Koharu dans Shenron Studio, avec un seul moteur et des parcours site, bureau et
+mobile. Le site propose des espaces personnels authentifiés et isolés ; les
+writes éditoriaux restent sous leur garde admin. L'administration entière partage
+un atelier Studio moderne (explorateur, onglets, commandes, contexte), puis son
+tableau de bord reprend les données et actions réelles dans cette composition.
+Qualifier séparément parité source, compilation native/WASM, import réel,
+responsive, image scellée et comportement de production.
+
 Demande active du 15 octobre : corriger les bugs et trous de données des pages manga,
 databooks et wiki, synchroniser l’IA et l’interface avec PostgreSQL, évaluer le RAG,
 et qualifier le crawl/rendu avec Bun WebView sur la fabrique. Le propriétaire ajoute :

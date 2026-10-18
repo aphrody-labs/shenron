@@ -15,6 +15,25 @@ Règles :
 - Nom canonique d'abord ; les noms historiques restent acceptés en lecture. Quand plusieurs
   noms sont posés, la première valeur non vide dans l'ordre de lecture l'emporte.
 
+## Moteur Studio hébergé
+
+`apps/server/src/site.ts` monte le moteur canonique pour un compte authentifié.
+Le rôle admin reste requis pour les routes de publication du catalogue ; un projet
+Studio personnel ne donne pas ce rôle.
+
+| Variable                  | Propriétaire              | Contrat                                                                                                                                                               |
+| ------------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SHENRON_STUDIO_SDK_BIN`  | Serveur / image scellée   | Chemin absolu du `koharu-sdk` qualifié et livré dans l'image. Sans binaire, la capacité reste indisponible.                                                           |
+| `SHENRON_STUDIO_HOME`     | Infra / volume protégé    | Racine privée des espaces de travail ; chaque identité reçoit un sous-dossier nommé par son SHA-256, créé en mode 0700.                                               |
+| `KOHARU_SECRET_NAMESPACE` | Runtime Studio uniquement | SHA-256 de l'identité, transmis au processus enfant pour isoler son service de trousseau. Non modifiable par un argument du navigateur ; valeur non conforme refusée. |
+| `APHRODY_CARGO_SERIAL`    | Fabrique                  | Surcharge explicite du chemin du propriétaire Cargo pour le helper d'image. Le verrou lourd réel doit être hérité.                                                    |
+| `APHRODY_SOURCE_REPO`     | Fabrique                  | Checkout Aphrody contenant ce propriétaire ; résolu par configuration, sinon voisin du checkout source Shenron de la fabrique.                                        |
+
+L'environnement des processus Studio est reconstruit depuis une liste limitée :
+aucune clé de fournisseur, base de données ou session d'opérateur n'est héritée.
+Les modèles ne sont pas embarqués par le build de ce moteur ; leur activation reste
+une opération explicite du compte dans son espace isolé.
+
 ## Décisions Jev — `@aphrody/shenron-config/jev`
 
 Le résolveur `resolveJev` active Jev si `SHENRON_JEV=on` ou si le backend reçoit
