@@ -56,6 +56,9 @@ pub(crate) struct PanelsArgs {
     /// selected panels, in `--only` order, instead of the per-panel files.
     #[arg(long)]
     sheet: bool,
+    /// Also encode the sheet tiles, in their chosen order, as a looping cut-out GIF.
+    #[arg(long, requires = "sheet")]
+    sheet_gif: bool,
     /// Sheet tile size `WxH` in pixels (default: mean panel aspect, longer side `--tile-side`).
     #[arg(long, value_parser = parse_tile, requires = "sheet")]
     tile: Option<(u32, u32)>,
@@ -119,7 +122,15 @@ pub(crate) async fn run(args: PanelsArgs) -> Result<()> {
     let mut panels = segment_panels(rgba, width as usize, height as usize, &opts);
     if !args.only.is_empty() {
         // Keep the order of `--only`: it is the frame order of a sheet.
-        panels = args.only.iter().filter_map(|&n| panels.get(n.checked_sub(1)?).copied()).collect();
+        panels = args
+            .only
+            .iter()
+            .map(|&n| {
+                n.checked_sub(1).and_then(|index| panels.get(index)).copied().ok_or_else(|| {
+                    miette::miette!("panel index {n} is outside 1..={}", panels.len())
+                })
+            })
+            .collect::<Result<Vec<_>>>()?;
     }
     if panels.is_empty() {
         return Err(miette::miette!(
@@ -210,6 +221,28 @@ fn write_sheet(
     let layout_name = format!("{label}-sheet.layout.json");
     write(&args.output.join(&image_name), sheet.png().into_diagnostic()?)?;
     write(&args.output.join(&layout_name), sheet.layout_json(&image_name))?;
+    let mut files = vec![image_name.clone(), layout_name];
+    if args.sheet_gif {
+        let gif_name = format!("{label}-sheet.gif");
+        write(&args.output.join(&gif_name), sheet.gif().into_diagnostic()?)?;
+        files.push(gif_name);
+    }
+    if args.json {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&serde_json::json!({
+                "page": label,
+                "width": width,
+                "height": height,
+                "panels": panels.iter().map(|p| [p.x, p.y, p.w, p.h]).collect::<Vec<_>>(),
+                "files": files,
+                "sheet": serde_json::from_str::<serde_json::Value>(&sheet.layout_json(&image_name))
+                    .into_diagnostic()?,
+            }))
+            .into_diagnostic()?
+        );
+        return Ok(());
+    }
     println!(
         "{label}: sheet {}×{} px, {} frame(s) of {}×{} ({} col × {} row) → {image_name}, {layout_name}",
         sheet.image.width(),
