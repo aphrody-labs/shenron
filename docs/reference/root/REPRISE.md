@@ -2,6 +2,10 @@
 
 ## 2026-10-18 — Intégration Mediabunny (submodule + n2b), Parité Catalogue Vidéo 100% et Watchlist
 
+- Intégration multi-lecteurs pour l'Épisode 876 :
+  - Intégration et validation en production des sources fournies (myTV / voembed, MOON / mfw09, VOE, Stape / streamtape) aux côtés de Crunchyroll HD.
+  - Nettoyage des doublons éventuels en base (`number_in_series = 2`, `visible = true`).
+  - Validation sur dragonballfr.com/api/episodes/876 (HTTP 200, 5 lecteurs VOSTFR opérationnels).
 - Intégration Mediabunny (`vendor/mediabunny`) :
   - Dépôt cloné en sous-module Git (`git submodule add https://github.com/Vanilagy/mediabunny.git vendor/mediabunny`).
   - Migration agressive Node → Bun appliquée avec succès via `aphrody n2b vendor/mediabunny --ignore "test/**" --aggressive` (remplacement fs synchrone par `Bun.file().text()`, `Bun.write()`, `Bun.sleep()`, typage Uint8Array et ESM `import.meta.dir`).
