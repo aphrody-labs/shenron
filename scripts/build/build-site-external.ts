@@ -220,7 +220,15 @@ const buildProc = Bun.spawn(
     `${repo}:${repo}`,
     "--workdir",
     siteDir,
-    ...(runtime === "bun" ? ["--volume", `${process.execPath}:/usr/local/bin/bun:ro`] : []),
+    // Turbopack lance `node` pour les loaders (PostCSS) : en mode Bun, bun répond sous ce nom.
+    ...(runtime === "bun"
+      ? [
+          "--volume",
+          `${process.execPath}:/usr/local/bin/bun:ro`,
+          "--volume",
+          `${process.execPath}:/usr/local/bin/node:ro`,
+        ]
+      : []),
     ...dockerEnvironment,
     imageId,
     ...(runtime === "bun" ? ["/usr/local/bin/bun", "--bun"] : ["node"]),
