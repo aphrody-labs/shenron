@@ -179,7 +179,9 @@ function bundleSite(commit: string, systemdDir?: string): string {
       release,
       ...(systemdDir ? ["--systemd-dir", systemdDir] : []),
     ],
-    buildEnv,
+    // Le site sert sous `bun --bun next start` et charge `bun:ffi` : Node 22 ne peut pas en
+    // collecter les données de page.
+    { SHENRON_NEXT_RUNTIME: "bun", ...buildEnv },
   );
   return release;
 }
