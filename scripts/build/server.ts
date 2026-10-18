@@ -182,6 +182,8 @@ for (const map of new Bun.Glob("**/*.map").scanSync({ cwd: siteOut, dot: true })
   rmSync(join(siteOut, map));
 // Next file tracing may copy the repository dist/ (staged VFS, earlier releases); the VFS ships separately.
 rmSync(join(siteOut, "dist"), { recursive: true, force: true });
+// The private DBXV2 package is loaded by a runtime path: file tracing copies its sources; never ship them.
+rmSync(join(siteOut, "packages/dbxv2"), { recursive: true, force: true });
 // Nothing private may ship: no database, env file or key.
 const leaks = privateFiles(siteOut);
 if (leaks.length)
