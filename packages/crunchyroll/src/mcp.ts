@@ -6,7 +6,7 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
   ListPromptsRequestSchema,
-  GetPromptRequestSchema
+  GetPromptRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { CrunchyrollClient } from "./client";
 
@@ -22,7 +22,7 @@ const server = new Server(
       tools: {},
       prompts: {},
     },
-  }
+  },
 );
 
 // 1. Tool Listing
@@ -31,7 +31,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     tools: [
       {
         name: "crunchyroll_auth_status",
-        description: "Check the current Crunchyroll session, cookies profile, and bearer token authentication state.",
+        description:
+          "Check the current Crunchyroll session, cookies profile, and bearer token authentication state.",
         inputSchema: {
           type: "object",
           properties: {},
@@ -53,13 +54,15 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "crunchyroll_get_series",
-        description: "Get detailed metadata for a Crunchyroll anime series (seasons, episodes, description).",
+        description:
+          "Get detailed metadata for a Crunchyroll anime series (seasons, episodes, description).",
         inputSchema: {
           type: "object",
           properties: {
             seriesId: {
               type: "string",
-              description: "The Crunchyroll series ID (e.g. GT00389311) or Shenron series key (e.g. DBS_BEERUS).",
+              description:
+                "The Crunchyroll series ID (e.g. GT00389311) or Shenron series key (e.g. DBS_BEERUS).",
             },
           },
           required: ["seriesId"],
@@ -67,7 +70,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "crunchyroll_get_episode",
-        description: "Get episode metadata including title, runtime, audio/subtitle languages, and canonical watch URL.",
+        description:
+          "Get episode metadata including title, runtime, audio/subtitle languages, and canonical watch URL.",
         inputSchema: {
           type: "object",
           properties: {
@@ -81,7 +85,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "crunchyroll_resolve_offer",
-        description: "Resolve verified legal watch offers and streaming destinations for an anime episode.",
+        description:
+          "Resolve verified legal watch offers and streaming destinations for an anime episode.",
         inputSchema: {
           type: "object",
           properties: {
@@ -165,7 +170,8 @@ server.setRequestHandler(ListPromptsRequestSchema, async () => {
     prompts: [
       {
         name: "crunchyroll_align_episode",
-        description: "Align an episode in Shenron with official Crunchyroll metadata and legal offers.",
+        description:
+          "Align an episode in Shenron with official Crunchyroll metadata and legal offers.",
       },
     ],
   };

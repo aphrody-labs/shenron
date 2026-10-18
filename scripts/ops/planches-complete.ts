@@ -597,7 +597,10 @@ export async function stageImage(
 }
 
 /** robots.txt is never read; the checker is kept so cascade callers keep one signature. */
-export function makeRobotsChecker(_fetchText?: (url: string) => Promise<string | null>, _ownHosts = OWN_HOSTS) {
+export function makeRobotsChecker(
+  _fetchText?: (url: string) => Promise<string | null>,
+  _ownHosts = OWN_HOSTS,
+) {
   return async (_url: string): Promise<boolean> => true;
 }
 

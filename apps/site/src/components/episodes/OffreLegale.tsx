@@ -21,9 +21,7 @@ export function OffreLegale({ offres }: { offres: Availability[] | null | undefi
   const langs = VIDEO_LANGUAGE_ORDER.filter((l) => toutes.has(l));
 
   const filteredList =
-    selectedLang === "all"
-      ? list
-      : list.filter((o) => o.langs?.includes(selectedLang as any));
+    selectedLang === "all" ? list : list.filter((o) => o.langs?.includes(selectedLang as any));
 
   return (
     <section
@@ -33,7 +31,9 @@ export function OffreLegale({ offres }: { offres: Availability[] | null | undefi
       {/* Glow d'ambiance */}
       <div
         className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full opacity-15 blur-2xl"
-        style={{ background: "radial-gradient(circle, var(--color-dbz-orange, #ff6600), transparent 70%)" }}
+        style={{
+          background: "radial-gradient(circle, var(--color-dbz-orange, #ff6600), transparent 70%)",
+        }}
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3">

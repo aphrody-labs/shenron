@@ -9,12 +9,18 @@ async function main() {
 
   switch (command) {
     case "status": {
-      console.log(JSON.stringify({
-        authenticated: client.isAuthenticated(),
-        hasCookies: client.hasCookies(),
-        hasToken: !!client.getBearerToken(),
-        accountId: client.getAccountId() || null
-      }, null, 2));
+      console.log(
+        JSON.stringify(
+          {
+            authenticated: client.isAuthenticated(),
+            hasCookies: client.hasCookies(),
+            hasToken: !!client.getBearerToken(),
+            accountId: client.getAccountId() || null,
+          },
+          null,
+          2,
+        ),
+      );
       break;
     }
     case "search": {
@@ -63,7 +69,7 @@ Usage:
   }
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error("Error:", err.message);
   process.exit(1);
 });

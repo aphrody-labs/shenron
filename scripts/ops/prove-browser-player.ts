@@ -9,17 +9,21 @@ try {
   const states: string[] = [];
   const playback = createVideoPlayback(video, {
     src: "/clip.mp4",
-    onState: state => states.push(`${state.status}:${state.backend ?? "-"}`),
+    onState: (state) => states.push(`${state.status}:${state.backend ?? "-"}`),
     onError: () => (out.error = "playback error"),
   });
   await new Promise<void>((resolve, reject) => {
     video.addEventListener("loadeddata", () => resolve(), { once: true });
-    video.addEventListener("error", () => reject(new Error(video.error?.message ?? "media error")), { once: true });
+    video.addEventListener(
+      "error",
+      () => reject(new Error(video.error?.message ?? "media error")),
+      { once: true },
+    );
     setTimeout(() => reject(new Error("timeout waiting for loadeddata")), 15000);
   });
   await video.play();
   const start = video.currentTime;
-  await new Promise(resolve => setTimeout(resolve, 1200));
+  await new Promise((resolve) => setTimeout(resolve, 1200));
   Object.assign(out, {
     ready: video.readyState,
     width: video.videoWidth,

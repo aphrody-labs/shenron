@@ -90,7 +90,9 @@ async function main() {
     const report = await new Response(child.stdout).text();
     const code = await child.exited;
     if (code !== 0) {
-      console.error(JSON.stringify({ batch: run + 1, skipped: true, code, report: report.slice(0, 400) }));
+      console.error(
+        JSON.stringify({ batch: run + 1, skipped: true, code, report: report.slice(0, 400) }),
+      );
       await Bun.sleep(2000);
       continue;
     }

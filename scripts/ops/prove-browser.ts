@@ -16,7 +16,7 @@
 import { join } from "node:path";
 
 const root = join(import.meta.dir, "..", "..");
-const want = new Set(process.argv.slice(2).filter(a => !a.startsWith("-")));
+const want = new Set(process.argv.slice(2).filter((a) => !a.startsWith("-")));
 const run = (name: string) => want.size === 0 || want.has(name);
 const GPU_ARGS = [
   "--no-sandbox",
@@ -56,7 +56,11 @@ if (run("dbxv2")) {
     return { wasm, shows708: /708/.test(document.body.innerText), text: document.body.innerText.split("\\n").filter(l => /708|cus|CUS/.test(l)).slice(0, 4) };
   })()`);
   const d = detail as { wasm?: { status: number }[]; shows708?: boolean };
-  record("dbxv2-wasm", !!d.shows708 && !!d.wasm?.length && d.wasm.every(w => w.status === 200), detail);
+  record(
+    "dbxv2-wasm",
+    !!d.shows708 && !!d.wasm?.length && d.wasm.every((w) => w.status === 200),
+    detail,
+  );
 }
 
 if (run("koharu")) {
@@ -91,14 +95,20 @@ if (run("koharu")) {
       const file = Bun.file(join(dir, path.slice(1)));
       if (!(await file.exists()) || path.includes("..")) return new Response(null, { status: 404 });
       return new Response(file, {
-        headers: { "content-type": path.endsWith(".wasm") ? "application/wasm" : "text/javascript" },
+        headers: {
+          "content-type": path.endsWith(".wasm") ? "application/wasm" : "text/javascript",
+        },
       });
     },
   });
   // The first Chrome of a process sometimes starts without a WebGPU adapter: retry with a fresh view.
   let detail: any;
   for (let attempt = 0; attempt < 4 && !detail?.adapter; attempt++) {
-    await using view = new (Bun as any).WebView({ width: 400, height: 400, backend: chrome(GPU_ARGS) });
+    await using view = new (Bun as any).WebView({
+      width: 400,
+      height: 400,
+      backend: chrome(GPU_ARGS),
+    });
     await view.navigate(`http://localhost:${server.port}/`);
     detail = undefined;
     for (let i = 0; i < 60 && !detail; i++) {
@@ -106,10 +116,20 @@ if (run("koharu")) {
       detail = await view.evaluate("window.__result ?? null");
     }
   }
-  record("koharu-wasm", !!detail?.adapter && !!detail?.init && !detail?.error && detail.sample?.[0] === 26 && detail.sample?.[3] === 255, {
-    ...detail,
-    note: detail?.adapter ? "WebGPU canvas created, rendered and read back" : "no WebGPU adapter after 4 attempts: canvas not created",
-  });
+  record(
+    "koharu-wasm",
+    !!detail?.adapter &&
+      !!detail?.init &&
+      !detail?.error &&
+      detail.sample?.[0] === 26 &&
+      detail.sample?.[3] === 255,
+    {
+      ...detail,
+      note: detail?.adapter
+        ? "WebGPU canvas created, rendered and read back"
+        : "no WebGPU adapter after 4 attempts: canvas not created",
+    },
+  );
 }
 
 if (run("player")) {
@@ -153,11 +173,16 @@ if (run("player")) {
     fetch(request) {
       const path = new URL(request.url).pathname;
       if (path === "/")
-        return new Response(`<video id=v muted playsinline></video><script type=module src=/player.js></script>`, {
-          headers: { "content-type": "text/html" },
-        });
-      if (path === "/player.js") return new Response(script, { headers: { "content-type": "text/javascript" } });
-      if (path === "/clip.mp4") return new Response(Bun.file(clip), { headers: { "content-type": "video/mp4" } });
+        return new Response(
+          `<video id=v muted playsinline></video><script type=module src=/player.js></script>`,
+          {
+            headers: { "content-type": "text/html" },
+          },
+        );
+      if (path === "/player.js")
+        return new Response(script, { headers: { "content-type": "text/javascript" } });
+      if (path === "/clip.mp4")
+        return new Response(Bun.file(clip), { headers: { "content-type": "video/mp4" } });
       return new Response(null, { status: 404 });
     },
   });
@@ -176,4 +201,4 @@ if (run("player")) {
   );
 }
 
-process.exit(results.every(r => r.ok) ? 0 : 1);
+process.exit(results.every((r) => r.ok) ? 0 : 1);

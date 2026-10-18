@@ -46,15 +46,18 @@ const WATCHLIST_STORAGE: Array<{
 ];
 
 export async function GET() {
-  return NextResponse.json({
-    total: WATCHLIST_STORAGE.length,
-    items: WATCHLIST_STORAGE,
-  }, {
-    headers: {
-      "Cache-Control": "private, no-cache",
-      "Content-Type": "application/json",
+  return NextResponse.json(
+    {
+      total: WATCHLIST_STORAGE.length,
+      items: WATCHLIST_STORAGE,
     },
-  });
+    {
+      headers: {
+        "Cache-Control": "private, no-cache",
+        "Content-Type": "application/json",
+      },
+    },
+  );
 }
 
 export async function POST(request: NextRequest) {

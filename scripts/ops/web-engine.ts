@@ -42,7 +42,12 @@ export function parseArgs(argv: string[]) {
     }
   }
   const one = (name: string, fallback: string) => flags.get(name)?.at(-1) ?? fallback;
-  return { flags, bare, one, num: (name: string, fallback: number) => Number(one(name, String(fallback))) };
+  return {
+    flags,
+    bare,
+    one,
+    num: (name: string, fallback: number) => Number(one(name, String(fallback))),
+  };
 }
 
 export function openDb(home: string): Database {
@@ -80,14 +85,18 @@ export function claim(db: Database, n: number, perHost: number) {
   return db.transaction(() => {
     const busy = new Map<string, number>(
       (
-        db.query("SELECT host, count(*) c FROM frontier WHERE state='running' GROUP BY host").all() as {
+        db
+          .query("SELECT host, count(*) c FROM frontier WHERE state='running' GROUP BY host")
+          .all() as {
           host: string;
           c: number;
         }[]
-      ).map(r => [r.host, r.c]),
+      ).map((r) => [r.host, r.c]),
     );
     const rows = db
-      .query("SELECT url, host, depth FROM frontier WHERE state='pending' ORDER BY depth, rowid LIMIT ?1")
+      .query(
+        "SELECT url, host, depth FROM frontier WHERE state='pending' ORDER BY depth, rowid LIMIT ?1",
+      )
       .all(n * 8) as { url: string; host: string; depth: number }[];
     const out: typeof rows = [];
     for (const row of rows) {
@@ -165,7 +174,11 @@ export async function fetchTier(tier: Tier, url: string, timeoutMs = 30_000): Pr
     return { tier, status: response.status, html: await response.text() };
   }
   if (tier === "lightpanda")
-    return { tier, status: 200, html: await spawnText(["lightpanda", "fetch", "--dump", "html", url], timeoutMs) };
+    return {
+      tier,
+      status: 200,
+      html: await spawnText(["lightpanda", "fetch", "--dump", "html", url], timeoutMs),
+    };
   if (tier === "obscura")
     return {
       tier,
@@ -176,7 +189,8 @@ export async function fetchTier(tier: Tier, url: string, timeoutMs = 30_000): Pr
 }
 
 export function extract(html: string, base: string) {
-  const title = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(html)?.[1]?.replace(/\s+/g, " ").trim() ?? "";
+  const title =
+    /<title[^>]*>([\s\S]*?)<\/title>/i.exec(html)?.[1]?.replace(/\s+/g, " ").trim() ?? "";
   const text = html
     .replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<!--[\s\S]*?-->/g, " ")
     .replace(/<[^>]+>/g, " ")
@@ -191,7 +205,9 @@ export function extract(html: string, base: string) {
     } catch {}
   }
   const assets = new Map<string, string>();
-  for (const m of html.matchAll(/<(?:img|source|video)\s[^>]*(?:src|data-src)=["']([^"']+)["']/gi)) {
+  for (const m of html.matchAll(
+    /<(?:img|source|video)\s[^>]*(?:src|data-src)=["']([^"']+)["']/gi,
+  )) {
     try {
       const href = new URL(m[1]!, base).href;
       const kind = /\.(mp4|webm|m3u8)(\?|$)/i.test(href)
@@ -205,7 +221,10 @@ export function extract(html: string, base: string) {
   return { title, text, links: [...links], assets: [...assets] };
 }
 
-export async function fetchLadder(url: string, tiers: Tier[]): Promise<{ result?: Fetched; notes: string[] }> {
+export async function fetchLadder(
+  url: string,
+  tiers: Tier[],
+): Promise<{ result?: Fetched; notes: string[] }> {
   const notes: string[] = [];
   for (const tier of tiers) {
     try {
@@ -236,7 +255,14 @@ export async function fetchLadder(url: string, tiers: Tier[]): Promise<{ result?
 async function worker(
   db: Database,
   id: number,
-  opts: { tiers: Tier[]; perHost: number; delay: number; maxDepth: number; allow: Set<string>; stop: () => boolean },
+  opts: {
+    tiers: Tier[];
+    perHost: number;
+    delay: number;
+    maxDepth: number;
+    allow: Set<string>;
+    stop: () => boolean;
+  },
 ) {
   const done = db.prepare(
     "UPDATE frontier SET state=?2, tier=?3, status=?4, note=?5, attempts=attempts+1 WHERE url=?1",
@@ -249,7 +275,8 @@ async function worker(
   while (!opts.stop()) {
     const [job] = claim(db, 1, opts.perHost);
     if (!job) {
-      if (!db.query("SELECT 1 FROM frontier WHERE state IN ('pending','running') LIMIT 1").get()) return;
+      if (!db.query("SELECT 1 FROM frontier WHERE state IN ('pending','running') LIMIT 1").get())
+        return;
       await Bun.sleep(250 + id * 7);
       continue;
     }
@@ -280,7 +307,7 @@ async function worker(
       if (job.depth < opts.maxDepth)
         enqueue(
           db,
-          page.links.filter(l => opts.allow.has(new URL(l).host)),
+          page.links.filter((l) => opts.allow.has(new URL(l).host)),
           job.depth + 1,
         );
     } catch (error) {
@@ -301,7 +328,7 @@ export async function seedSitemaps(db: Database, origin: string) {
       const xml = await (
         await fetch(url, { headers: { "user-agent": UA }, signal: AbortSignal.timeout(60_000) })
       ).text();
-      const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]!.trim());
+      const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]!.trim());
       if (/<sitemapindex/i.test(xml)) queue.push(...locs);
       else enqueue(db, locs, 1);
     } catch {}
@@ -312,49 +339,115 @@ export async function publish(db: Database, limit: number) {
   const { mintClient, publishItems, livePrefix } = await import("./web-engine-cdn");
   const s3 = await mintClient();
   const prefix = await livePrefix();
-  const rows = db.query("SELECT url, page FROM assets WHERE state='new' AND kind='image' LIMIT ?1").all(limit || 1_000_000) as { url: string; page: string }[];
-  const update = db.prepare("UPDATE assets SET state=?2, sha256=?3, bytes=?4, cdn_path=?5, note=?6 WHERE url=?1");
+  const rows = db
+    .query("SELECT url, page FROM assets WHERE state='new' AND kind='image' LIMIT ?1")
+    .all(limit || 1_000_000) as { url: string; page: string }[];
+  const update = db.prepare(
+    "UPDATE assets SET state=?2, sha256=?3, bytes=?4, cdn_path=?5, note=?6 WHERE url=?1",
+  );
   const seen = new Set<string>();
-  let skipped = 0, uploaded = 0;
+  let skipped = 0,
+    uploaded = 0;
   for (let at = 0; at < rows.length; at += 200) {
     const batch = rows.slice(at, at + 200);
     const items: import("./web-engine-cdn").CdnItem[] = [];
     const byPath = new Map<string, string>();
     let next = 0;
-    await Promise.all(Array.from({ length: 8 }, async () => {
-      while (next < batch.length) {
-        const row = batch[next++]!;
-        try {
-          const response = await fetch(row.url, { headers: { "user-agent": UA, referer: row.page }, signal: AbortSignal.timeout(60_000) });
-          const bytes = new Uint8Array(await response.arrayBuffer());
-          const type = response.headers.get("content-type")?.split(";")[0] ?? "";
-          const ext = ({ "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/gif": "gif", "image/avif": "avif" } as Record<string, string>)[type];
-          if (!response.ok || !ext || bytes.length < 2048) { update.run(row.url, "skipped", null, bytes.length, null, `${response.status} ${type}`); skipped++; continue; }
-          const sha = new Bun.CryptoHasher("sha256").update(bytes).digest("hex");
-          const path = `/assets/crawl/${new URL(row.url).host}/${sha.slice(0, 2)}/${sha}.${ext}`;
-          if (seen.has(path)) { update.run(row.url, "duplicate", sha, bytes.length, path, null); skipped++; continue; }
-          seen.add(path);
-          byPath.set(path, row.url);
-          items.push({ path, sha256: sha, bytes, contentType: type });
-        } catch (error) {
-          update.run(row.url, "skipped", null, null, null, String((error as Error).message).slice(0, 120));
-          skipped++;
+    await Promise.all(
+      Array.from({ length: 8 }, async () => {
+        while (next < batch.length) {
+          const row = batch[next++]!;
+          try {
+            const response = await fetch(row.url, {
+              headers: { "user-agent": UA, referer: row.page },
+              signal: AbortSignal.timeout(60_000),
+            });
+            const bytes = new Uint8Array(await response.arrayBuffer());
+            const type = response.headers.get("content-type")?.split(";")[0] ?? "";
+            const ext = (
+              {
+                "image/png": "png",
+                "image/jpeg": "jpg",
+                "image/webp": "webp",
+                "image/gif": "gif",
+                "image/avif": "avif",
+              } as Record<string, string>
+            )[type];
+            if (!response.ok || !ext || bytes.length < 2048) {
+              update.run(
+                row.url,
+                "skipped",
+                null,
+                bytes.length,
+                null,
+                `${response.status} ${type}`,
+              );
+              skipped++;
+              continue;
+            }
+            const sha = new Bun.CryptoHasher("sha256").update(bytes).digest("hex");
+            const path = `/assets/crawl/${new URL(row.url).host}/${sha.slice(0, 2)}/${sha}.${ext}`;
+            if (seen.has(path)) {
+              update.run(row.url, "duplicate", sha, bytes.length, path, null);
+              skipped++;
+              continue;
+            }
+            seen.add(path);
+            byPath.set(path, row.url);
+            items.push({ path, sha256: sha, bytes, contentType: type });
+          } catch (error) {
+            update.run(
+              row.url,
+              "skipped",
+              null,
+              null,
+              null,
+              String((error as Error).message).slice(0, 120),
+            );
+            skipped++;
+          }
         }
-      }
-    }));
+      }),
+    );
     const result = await publishItems(s3, items, prefix);
-    for (const path of result.live) { const item = items.find(i => i.path === path)!; update.run(byPath.get(path)!, "uploaded", item.sha256, item.bytes.length, path, null); uploaded++; }
-    for (const f of result.failed) { update.run(byPath.get(f.path)!, "skipped", null, null, null, f.error); skipped++; }
+    for (const path of result.live) {
+      const item = items.find((i) => i.path === path)!;
+      update.run(byPath.get(path)!, "uploaded", item.sha256, item.bytes.length, path, null);
+      uploaded++;
+    }
+    for (const f of result.failed) {
+      update.run(byPath.get(f.path)!, "skipped", null, null, null, f.error);
+      skipped++;
+    }
   }
   return { uploaded, skipped, considered: rows.length };
 }
 
 /** Manifest entries of every uploaded asset, for cdn-origin-add.ts. */
 export function cdnEntries(db: Database) {
-  const types: Record<string, string> = { png: "image/png", jpg: "image/jpeg", webp: "image/webp", gif: "image/gif", avif: "image/avif" };
-  const out: Record<string, { path: string; sha256: string; size: number; contentType: string; cacheControl: string }> = {};
-  for (const row of db.query("SELECT cdn_path p, sha256 h, bytes b FROM assets WHERE state='uploaded' AND cdn_path IS NOT NULL").all() as { p: string; h: string; b: number }[]) {
-    out[row.p] = { path: row.p, sha256: row.h, size: row.b, contentType: types[row.p.split(".").at(-1)!] ?? "application/octet-stream", cacheControl: "public, max-age=31536000, immutable" };
+  const types: Record<string, string> = {
+    png: "image/png",
+    jpg: "image/jpeg",
+    webp: "image/webp",
+    gif: "image/gif",
+    avif: "image/avif",
+  };
+  const out: Record<
+    string,
+    { path: string; sha256: string; size: number; contentType: string; cacheControl: string }
+  > = {};
+  for (const row of db
+    .query(
+      "SELECT cdn_path p, sha256 h, bytes b FROM assets WHERE state='uploaded' AND cdn_path IS NOT NULL",
+    )
+    .all() as { p: string; h: string; b: number }[]) {
+    out[row.p] = {
+      path: row.p,
+      sha256: row.h,
+      size: row.b,
+      contentType: types[row.p.split(".").at(-1)!] ?? "application/octet-stream",
+      cacheControl: "public, max-age=31536000, immutable",
+    };
   }
   return out;
 }
@@ -378,13 +471,21 @@ if (import.meta.main) {
     const { mintClient, repairObject } = await import("./web-engine-cdn");
     const s3 = await mintClient();
     const entries = Object.values(cdnEntries(db));
-    let fixed = 0, failed = 0, next = 0;
-    await Promise.all(Array.from({ length: 8 }, async () => {
-      while (next < entries.length) {
-        const e = entries[next++]!;
-        try { if (await repairObject(s3, e)) fixed++; } catch { failed++; }
-      }
-    }));
+    let fixed = 0,
+      failed = 0,
+      next = 0;
+    await Promise.all(
+      Array.from({ length: 8 }, async () => {
+        while (next < entries.length) {
+          const e = entries[next++]!;
+          try {
+            if (await repairObject(s3, e)) fixed++;
+          } catch {
+            failed++;
+          }
+        }
+      }),
+    );
     console.log(JSON.stringify({ checked: entries.length, fixed, failed }));
   } else if (command === "export-cdn") console.log(JSON.stringify(cdnEntries(db)));
   else if (command === "publish") {
@@ -394,26 +495,35 @@ if (import.meta.main) {
       const entries = join(home, "cdn-entries.json");
       await Bun.write(entries, JSON.stringify(cdnEntries(db)));
       const script = join(import.meta.dir, "cdn-origin-add.ts");
-      const run = async (cmd: string[]) => { const p = Bun.spawn(cmd, { stdout: "inherit", stderr: "inherit" }); if (await p.exited) throw new Error(`${cmd[0]} failed`); };
+      const run = async (cmd: string[]) => {
+        const p = Bun.spawn(cmd, { stdout: "inherit", stderr: "inherit" });
+        if (await p.exited) throw new Error(`${cmd[0]} failed`);
+      };
       await run(["scp", "-q", entries, script, "dbfr:/tmp/"]);
-      await run(["ssh", "dbfr", "sudo -n \"$(command -v bun || echo $HOME/.bun/bin/bun)\" /tmp/cdn-origin-add.ts /tmp/cdn-entries.json"]);
+      await run([
+        "ssh",
+        "dbfr",
+        'sudo -n "$(command -v bun || echo $HOME/.bun/bin/bun)" /tmp/cdn-origin-add.ts /tmp/cdn-entries.json',
+      ]);
     }
-  }
-  else if (command === "run") {
+  } else if (command === "run") {
     const seeds = args.flags.get("seed") ?? ["https://dragonballfr.com"];
     const tiers = args
       .one("tiers", TIER_NAMES.join(","))
       .split(",")
       .filter((t): t is Tier => (TIER_NAMES as readonly string[]).includes(t));
     const allow = new Set([
-      ...seeds.map(s => new URL(s).host),
+      ...seeds.map((s) => new URL(s).host),
       ...args.one("allow-host", "").split(",").filter(Boolean),
     ]);
     db.exec("UPDATE frontier SET state='pending' WHERE state='running'");
     enqueue(db, seeds, 0);
-    if (args.bare.has("sitemap")) for (const seed of seeds) await seedSitemaps(db, new URL(seed).origin);
+    if (args.bare.has("sitemap"))
+      for (const seed of seeds) await seedSitemaps(db, new URL(seed).origin);
     const maxPages = args.num("max-pages", 0);
-    const stop = () => maxPages > 0 && (db.query("SELECT count(*) n FROM pages").get() as { n: number }).n >= maxPages;
+    const stop = () =>
+      maxPages > 0 &&
+      (db.query("SELECT count(*) n FROM pages").get() as { n: number }).n >= maxPages;
     const options = {
       tiers,
       perHost: args.num("per-host", 4),
@@ -422,7 +532,9 @@ if (import.meta.main) {
       allow,
       stop,
     };
-    await Promise.all(Array.from({ length: args.num("workers", 24) }, (_, id) => worker(db, id, options)));
+    await Promise.all(
+      Array.from({ length: args.num("workers", 24) }, (_, id) => worker(db, id, options)),
+    );
     console.log(JSON.stringify(stats(db)));
     if (args.bare.has("publish")) console.log(JSON.stringify(await publish(db, 0)));
   } else throw new Error(`unknown command ${command}`);

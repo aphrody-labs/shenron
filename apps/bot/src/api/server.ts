@@ -1389,11 +1389,26 @@ export class ApiServer {
           const crunchyroll = params.get("crunchyroll") ?? undefined;
           const service = container.resolve(EpisodesService);
           const scope = series ? [series] : Object.keys(CRUNCHYROLL_SERIES_BY_SHENRON);
-          const rows = (await Promise.all(scope.map((s) => service.parSerie(s)))).flat().filter((r): r is ShenronEpisodeRow => r !== null);
-          const query = Number.isSafeInteger(episode) && episode > 0 ? { episode } : series && Number.isSafeInteger(number) ? { series, number } : crunchyroll ? { crunchyroll } : null;
-          if (!query) return Response.json({ error: "episode, series+number or crunchyroll is required" }, { status: 400 });
+          const rows = (await Promise.all(scope.map((s) => service.parSerie(s))))
+            .flat()
+            .filter((r): r is ShenronEpisodeRow => r !== null);
+          const query =
+            Number.isSafeInteger(episode) && episode > 0
+              ? { episode }
+              : series && Number.isSafeInteger(number)
+                ? { series, number }
+                : crunchyroll
+                  ? { crunchyroll }
+                  : null;
+          if (!query)
+            return Response.json(
+              { error: "episode, series+number or crunchyroll is required" },
+              { status: 400 },
+            );
           const offer = resolveCrunchyroll(rows, query);
-          return offer ? Response.json(offer) : Response.json({ error: "no_crunchyroll_offer" }, { status: 404 });
+          return offer
+            ? Response.json(offer)
+            : Response.json({ error: "no_crunchyroll_offer" }, { status: 404 });
         },
 
         // ── Health admin ──────────────────────────────────────────────

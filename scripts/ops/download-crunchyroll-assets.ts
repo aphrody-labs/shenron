@@ -6,11 +6,18 @@ const summary = await Bun.file("var/reports/crunchyroll-recon-875/summary.json")
 const outDir = join(process.cwd(), "var", "reports", "crunchyroll-recon-875", "assets");
 mkdirSync(outDir, { recursive: true });
 
-const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36";
+const UA =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36";
 
 console.log(`[Asset-Downloader] Starting download of CSS, JS and Fonts...`);
 
-const manifest: Array<{ url: string; localPath: string; size: number; status: number; contentType: string }> = [];
+const manifest: Array<{
+  url: string;
+  localPath: string;
+  size: number;
+  status: number;
+  contentType: string;
+}> = [];
 
 // 1. CSS
 for (const cssPath of summary.stylesheets) {
@@ -66,7 +73,7 @@ const keyChunks = [
   "main-app-f7395f44f3a8e745.js",
   "app/layout-f4abbe64e8810fc5.js",
   "app/%5Blocale%5D/layout-687a87cf967079a9.js",
-  "app/%5Blocale%5D/%5B%5B...pathname%5D%5D/loading-b418f7c2afb6c349.js"
+  "app/%5Blocale%5D/%5B%5B...pathname%5D%5D/loading-b418f7c2afb6c349.js",
 ];
 
 for (const chunk of keyChunks) {
@@ -92,5 +99,9 @@ for (const chunk of keyChunks) {
   }
 }
 
-writeFileSync(join(process.cwd(), "var", "reports", "crunchyroll-recon-875", "manifest.json"), JSON.stringify(manifest, null, 2), "utf8");
+writeFileSync(
+  join(process.cwd(), "var", "reports", "crunchyroll-recon-875", "manifest.json"),
+  JSON.stringify(manifest, null, 2),
+  "utf8",
+);
 console.log(`[Asset-Downloader] All key assets saved to disk! Total assets: ${manifest.length}`);

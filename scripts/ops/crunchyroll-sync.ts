@@ -18,7 +18,11 @@
  * « not configured » and exits 0, so the timer that runs it is harmless until the credentials exist.
  */
 import { createCrunchyrollClient } from "@aphrody/bun-video/crunchyroll";
-import { CRUNCHYROLL_SERIES_BY_SHENRON, mapCrunchyrollEpisodes, type CrunchyrollEpisode } from "../../packages/media/src/crunchyroll-mapping";
+import {
+  CRUNCHYROLL_SERIES_BY_SHENRON,
+  mapCrunchyrollEpisodes,
+  type CrunchyrollEpisode,
+} from "../../packages/media/src/crunchyroll-mapping";
 
 const arg = (name: string, fallback: string) => {
   const i = process.argv.indexOf(`--${name}`);
@@ -30,35 +34,66 @@ const apply = process.argv.includes("--apply");
 const crunchyrollSeries = CRUNCHYROLL_SERIES_BY_SHENRON[series];
 if (!crunchyrollSeries) throw new Error(`No Crunchyroll series is mapped for ${series}`);
 
-const fromFile = process.argv.includes("--from-file") ? process.argv[process.argv.indexOf("--from-file") + 1] : undefined;
+const fromFile = process.argv.includes("--from-file")
+  ? process.argv[process.argv.indexOf("--from-file") + 1]
+  : undefined;
 const env = process.env;
 const accessToken = env.BUN_VIDEO_CRUNCHYROLL_ACCESS_TOKEN;
 const basicAuthorization = env.BUN_VIDEO_CRUNCHYROLL_BASIC_AUTHORIZATION;
-if (!fromFile && !accessToken && !(basicAuthorization && env.CRUNCHYROLL_EMAIL && env.CRUNCHYROLL_PASSWORD)) {
-  console.log(JSON.stringify({ configured: false, series, crunchyrollSeries, note: "Crunchyroll credentials are not configured" }));
+if (
+  !fromFile &&
+  !accessToken &&
+  !(basicAuthorization && env.CRUNCHYROLL_EMAIL && env.CRUNCHYROLL_PASSWORD)
+) {
+  console.log(
+    JSON.stringify({
+      configured: false,
+      series,
+      crunchyrollSeries,
+      note: "Crunchyroll credentials are not configured",
+    }),
+  );
   process.exit(0);
 }
 
 const episodes: CrunchyrollEpisode[] = [];
 let seasonCount = 0;
 if (fromFile) {
-  const catalog = (await Bun.file(fromFile).json()) as { episodes?: CrunchyrollEpisode[]; seasons?: unknown[] };
+  const catalog = (await Bun.file(fromFile).json()) as {
+    episodes?: CrunchyrollEpisode[];
+    seasons?: unknown[];
+  };
   episodes.push(...(catalog.episodes ?? []));
   seasonCount = catalog.seasons?.length ?? 0;
 } else {
-const client = createCrunchyrollClient({ accessToken, basicAuthorization, accountId: env.BUN_VIDEO_CRUNCHYROLL_ACCOUNT_ID, locale });
-const login = accessToken ? await client.loginWithAccessToken() : await client.login(env.CRUNCHYROLL_EMAIL!, env.CRUNCHYROLL_PASSWORD!);
-if (!login.success) throw new Error("Crunchyroll authentication failed");
+  const client = createCrunchyrollClient({
+    accessToken,
+    basicAuthorization,
+    accountId: env.BUN_VIDEO_CRUNCHYROLL_ACCOUNT_ID,
+    locale,
+  });
+  const login = accessToken
+    ? await client.loginWithAccessToken()
+    : await client.login(env.CRUNCHYROLL_EMAIL!, env.CRUNCHYROLL_PASSWORD!);
+  if (!login.success) throw new Error("Crunchyroll authentication failed");
 
-const seasons = (await client.getSeasons(crunchyrollSeries)) as { items?: { id: string }[]; data?: { id: string }[] };
-for (const season of seasons.items ?? seasons.data ?? []) {
-  const page = (await client.getEpisodes(season.id)) as { items?: CrunchyrollEpisode[]; data?: CrunchyrollEpisode[] };
-  episodes.push(...(page.items ?? page.data ?? []));
-}
-seasonCount = (seasons.items ?? seasons.data ?? []).length;
+  const seasons = (await client.getSeasons(crunchyrollSeries)) as {
+    items?: { id: string }[];
+    data?: { id: string }[];
+  };
+  for (const season of seasons.items ?? seasons.data ?? []) {
+    const page = (await client.getEpisodes(season.id)) as {
+      items?: CrunchyrollEpisode[];
+      data?: CrunchyrollEpisode[];
+    };
+    episodes.push(...(page.items ?? page.data ?? []));
+  }
+  seasonCount = (seasons.items ?? seasons.data ?? []).length;
 }
 const mapped = mapCrunchyrollEpisodes(episodes);
-console.log(JSON.stringify({ series, crunchyrollSeries, seasons: seasonCount, episodes: mapped.length }));
+console.log(
+  JSON.stringify({ series, crunchyrollSeries, seasons: seasonCount, episodes: mapped.length }),
+);
 if (!apply || !mapped.length) process.exit(0);
 
 const lit = (value: string) => `$q$${value}$q$`;
@@ -70,6 +105,13 @@ const sql = [
   ),
   "COMMIT;",
 ].join("\n");
-const p = Bun.spawn(["ssh", "dbfr", "sudo -n docker exec -i shenron-postgres psql -U postgres -d shenron_site -v ON_ERROR_STOP=1 -At"], { stdin: new Blob([sql]), stdout: "inherit", stderr: "inherit" });
+const p = Bun.spawn(
+  [
+    "ssh",
+    "dbfr",
+    "sudo -n docker exec -i shenron-postgres psql -U postgres -d shenron_site -v ON_ERROR_STOP=1 -At",
+  ],
+  { stdin: new Blob([sql]), stdout: "inherit", stderr: "inherit" },
+);
 if (await p.exited) throw new Error("database update failed");
 console.log(`availability refreshed for ${mapped.length} episodes`);

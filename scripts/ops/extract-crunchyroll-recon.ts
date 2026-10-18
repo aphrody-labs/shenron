@@ -8,8 +8,10 @@ async function main() {
 
   const res = await fetch(url, {
     headers: {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
-      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
+      Accept:
+        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
       "Accept-Language": "fr-FR,fr;q=0.9,ja-JP;q=0.8,en-US;q=0.7",
       "Cache-Control": "no-cache",
     },
@@ -44,7 +46,7 @@ async function main() {
     const srcMatch = attrs.match(/src=["']([^"']+)["']/i);
     if (srcMatch) {
       externalScripts.push(srcMatch[1]);
-    } else if (attrs.includes('application/ld+json')) {
+    } else if (attrs.includes("application/ld+json")) {
       try {
         jsonLdScripts.push(JSON.parse(content));
       } catch {
@@ -134,8 +136,14 @@ async function main() {
 
   if (nextDataMatch) {
     try {
-      writeFileSync(join(outDir, "next_data.json"), JSON.stringify(JSON.parse(nextDataMatch[1]), null, 2), "utf8");
-      console.log(`[Recon] Extracted Next.js __NEXT_DATA__ JSON (${nextDataMatch[1].length} bytes)!`);
+      writeFileSync(
+        join(outDir, "next_data.json"),
+        JSON.stringify(JSON.parse(nextDataMatch[1]), null, 2),
+        "utf8",
+      );
+      console.log(
+        `[Recon] Extracted Next.js __NEXT_DATA__ JSON (${nextDataMatch[1].length} bytes)!`,
+      );
     } catch {
       writeFileSync(join(outDir, "next_data.raw.txt"), nextDataMatch[1], "utf8");
     }
