@@ -1,3 +1,9 @@
 [submodule "packages/config"]
 	path = packages/config
 	url = https://github.com/aphrody-labs/shenron-config.git
+[submodule "packages/filmcraft"]
+	path = packages/filmcraft
+	url = https://github.com/aphrody-labs/filmcraft
+[submodule "vendor/ui-ux-pro-max-skill"]
+	path = vendor/ui-ux-pro-max-skill
+	url = https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
