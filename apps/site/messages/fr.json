@@ -2335,5 +2335,22 @@
     "timelineAction": "Timeline et GIF",
     "firstBroadcast": "Première diffusion",
     "inSeries": "Dans {series}"
+  },
+  "StudioSource": {
+    "import": "Créer le projet et importer",
+    "openProject": "Fermez le projet ouvert dans Studio avant de créer ce projet.",
+    "candidate": "Source conservée avec son empreinte SHA-256. Aucun rattachement éditorial automatique.",
+    "error": "Import impossible : vérifiez la source, les droits et le nom du projet.",
+    "imported": "Page importée",
+    "provenance": "Télécharger la provenance",
+    "cancel": "Annuler",
+    "open": "Ouvrir la page {page} dans Studio",
+    "destination": "Nouveau projet",
+    "importing": "Importation…",
+    "preview": "Aperçu de la page {page}",
+    "chapter": "Chapitre",
+    "selected": "{kind} {id} · page {page}",
+    "databook": "Databook",
+    "title": "Importer depuis la bibliothèque"
   }
 }

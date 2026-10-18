@@ -2335,5 +2335,22 @@
     "timelineAction": "タイムラインとGIF",
     "firstBroadcast": "初放送",
     "inSeries": "{series}のエピソード"
+  },
+  "StudioSource": {
+    "import": "プロジェクトを作成してインポート",
+    "openProject": "新しいプロジェクトを作成する前に、開いているプロジェクトを閉じてください。",
+    "candidate": "ソースとSHA-256を保存します。編集上の関連付けは別途確認が必要です。",
+    "error": "インポートできません。ソース、権限、プロジェクト名を確認してください。",
+    "imported": "ページをインポートしました",
+    "provenance": "来歴をダウンロード",
+    "cancel": "キャンセル",
+    "open": "ページ {page} をStudioで開く",
+    "destination": "新しいプロジェクト",
+    "importing": "インポート中…",
+    "preview": "ページ {page} のプレビュー",
+    "chapter": "章",
+    "selected": "{kind} {id} · ページ {page}",
+    "databook": "データブック",
+    "title": "ライブラリからインポート"
   }
 }

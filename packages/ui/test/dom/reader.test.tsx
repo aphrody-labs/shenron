@@ -217,6 +217,27 @@ describe("useTauriFullscreen", () => {
 });
 
 describe("DatabookReader on a phone", () => {
+  test("catalogue handoff follows printed page numbers across navigation modes", () => {
+    const selected: number[] = [];
+    render(
+      <DatabookReader
+        pages={[
+          { number: 7, image: "/wiki/7.jpg" },
+          { number: 42, image: "/wiki/42.jpg" },
+        ]}
+        title="Guide"
+        onPageChange={(number) => selected.push(number)}
+      />,
+    );
+    const reader = screen.getByTestId("databook-reader");
+    expect(selected.at(-1)).toBe(7);
+    const mode = within(reader).getByRole("button", { name: "Mode paginé" });
+    fireEvent.click(mode);
+    fireEvent.keyDown(mode, { key: "ArrowRight" });
+    expect(selected.at(-1)).toBe(42);
+    fireEvent.click(within(reader).getByRole("button", { name: /Mode vertical/ }));
+    expect(selected.at(-1)).toBe(42);
+  });
   function openViewer() {
     render(<DatabookReader pages={pages} title="Daizenshuu 2" />);
     const reader = screen.getByTestId("databook-reader");

@@ -2335,5 +2335,22 @@
     "timelineAction": "Timeline and GIF",
     "firstBroadcast": "First aired",
     "inSeries": "More from {series}"
+  },
+  "StudioSource": {
+    "import": "Create project and import",
+    "openProject": "Close the open Studio project before creating this project.",
+    "candidate": "The source is retained with its SHA-256 digest. Editorial links require a separate review.",
+    "error": "Import failed: check the source, permissions and project name.",
+    "imported": "Page imported",
+    "provenance": "Download provenance",
+    "cancel": "Cancel",
+    "open": "Open page {page} in Studio",
+    "destination": "New project",
+    "importing": "Importing…",
+    "preview": "Page {page} preview",
+    "chapter": "Chapter",
+    "selected": "{kind} {id} · page {page}",
+    "databook": "Databook",
+    "title": "Import from the library"
   }
 }
