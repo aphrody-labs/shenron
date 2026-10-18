@@ -388,7 +388,7 @@ export function VideoLecteurs({
           />
         </div>
       )}
-      {!officialPage && (
+      {!officialPage && (!nativeSource || enVo) && (
         <p className="text-xs text-muted-foreground" aria-live="polite">
           {enVo && vo
             ? t("voTracks", { tracks: vo.subtitles.map((track) => track.label).join(", ") })

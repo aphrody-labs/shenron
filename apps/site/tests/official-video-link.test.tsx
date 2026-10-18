@@ -55,6 +55,7 @@ test("a published Shenron MP4 renders native video and preserves alternate sourc
   expect(html).toContain(source);
   expect(html).not.toContain("<iframe");
   expect(html).toContain("Alternate");
+  expect(html).not.toContain("Vérification du lecteur");
 });
 
 test("official links drop stored query tokens and never embed them", () => {
