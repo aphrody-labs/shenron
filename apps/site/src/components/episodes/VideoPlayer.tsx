@@ -534,12 +534,7 @@ export function VideoPlayer({
           >
             <MaterialSymbol name="forward_10" />
           </button>
-          <button
-            type="button"
-            aria-pressed={muted}
-            aria-label={t(muted ? "unmute" : "mute")}
-            onClick={toggleMute}
-          >
+          <button type="button" aria-pressed={muted} aria-label={t("mute")} onClick={toggleMute}>
             <MaterialSymbol name={muted || volume === 0 ? "volume_off" : "volume_up"} />
           </button>
           <label className={styles.volume}>
