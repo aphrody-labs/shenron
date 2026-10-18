@@ -133,15 +133,39 @@ let modulePromise: Promise<CanvasGlue> | null = null;
 let activeCanvas: Canvas | null = null;
 let prefetchGeneration = 0;
 
+export interface PreloadCanvasModuleOptions {
+  /**
+   * Ne rien télécharger hors de l'origine de la page : un CDN sans `Access-Control-Allow-Origin`
+   * bloque le fetch et journalise une erreur console. Le résultat est alors `false`.
+   */
+  sameOriginOnly?: boolean;
+}
+
 /**
  * Lance le téléchargement et la compilation du module WASM avant l'ouverture de l'éditeur.
  * Ne rejette jamais : un échec est relevé (et retenté) par `createCanvas`.
  */
-export function preloadCanvasModule(): Promise<boolean> {
+export function preloadCanvasModule(options: PreloadCanvasModuleOptions = {}): Promise<boolean> {
+  if (options.sameOriginOnly && canvasModuleIsCrossOrigin()) return Promise.resolve(false);
   return loadCanvasModule().then(
     () => true,
     () => false,
   );
+}
+
+/**
+ * Vrai quand le WASM du canevas est servi depuis une autre origine que la page (CDN d'actifs) :
+ * son fetch exige alors CORS.
+ */
+export function canvasModuleIsCrossOrigin(
+  pageOrigin: string | undefined = globalThis.location?.origin,
+): boolean {
+  if (pageOrigin === undefined) return false;
+  return canvasWasmUrl().origin !== pageOrigin;
+}
+
+function canvasWasmUrl(): URL {
+  return new URL("./wasm/koharu_canvas_bg.wasm", import.meta.url);
 }
 
 export async function createCanvas(
@@ -272,7 +296,7 @@ function importCanvasGlue(): Promise<CanvasGlue> {
  * serveur qui ne l'annonce pas en `application/wasm` passe par la compilation en mémoire.
  */
 async function compileCanvasModule(): Promise<WebAssembly.Module> {
-  const url = new URL("./wasm/koharu_canvas_bg.wasm", import.meta.url);
+  const url = canvasWasmUrl();
   const response = await fetch(url);
   if (!response.ok) throw new Error(`HTTP ${response.status} pour ${url.pathname}`);
   const type = response.headers.get("content-type")?.split(";", 1)[0]?.trim().toLowerCase();
