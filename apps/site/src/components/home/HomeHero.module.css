@@ -221,3 +221,13 @@
   min-width: 44px;
   padding: 0.5rem;
 }
+.editorialLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 1rem;
+  color: var(--primary);
+  font-size: 0.85rem;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}

@@ -13,6 +13,7 @@ import { KintoUnVolant } from "./KintoUnVolant";
 import { HomeBeerusFeature, type BeerusFeature } from "./HomeBeerusFeature";
 import { HomeHeroFrames } from "./HomeHeroFrames";
 import styles from "./HomeHero.module.css";
+import Link from "next/link";
 
 const EMPTY_FRAMES: readonly string[] = [];
 
@@ -56,11 +57,13 @@ export function HomeHero({
             <em>France</em>
           </span>
         </h1>
-        {beerus?.latest ? (
-          <HomeBeerusFeature beerus={beerus} />
-        ) : hero.lede.trim() ? (
-          <p className={styles.lede}>{hero.lede.trim()}</p>
-        ) : null}
+        {hero.lede.trim() && <p className={styles.lede}>{hero.lede.trim()}</p>}
+        {beerus?.latest && <HomeBeerusFeature beerus={beerus} />}
+        {hero.ctaLabel.trim() && hero.ctaHref.trim() && (
+          <Link href={hero.ctaHref.trim()} className={styles.editorialLink}>
+            {hero.ctaLabel.trim()}
+          </Link>
+        )}
       </div>
       <div className={styles.search}>
         <HomeSearch />
