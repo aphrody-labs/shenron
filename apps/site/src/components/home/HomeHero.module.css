@@ -171,11 +171,14 @@
 @media (max-width: 767px) {
   .hero {
     min-height: 0;
-    padding-top: 12rem;
+    padding-top: 0;
   }
   .frames {
-    bottom: auto;
-    height: 25rem;
+    position: relative;
+    inset: auto;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    flex: none;
   }
   .frameStack::after {
     background: linear-gradient(0deg, var(--background) 4%, transparent 100%);
@@ -184,7 +187,7 @@
     object-position: 70% top;
   }
   .content {
-    padding: 2rem 1.25rem 1.5rem;
+    padding: 1rem 1.25rem 1.5rem;
   }
   .identity {
     margin-bottom: 2rem;

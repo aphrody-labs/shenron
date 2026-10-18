@@ -71,15 +71,14 @@ test("exact episode search excludes numbered titles and unestablished numbers", 
   expect(filterSeriesEpisodes(episodes, "破壊神", "all").map((e) => e.id)).toEqual([900]);
 });
 
-test("the 2026 page separates the original 131 episodes and links the new episode to its official listing", () => {
+test("the 2026 page separates the original catalogue and opens its local episode player", () => {
   for (locale of ["fr", "en", "ja"] as const) {
     const html = renderToStaticMarkup(createElement(DbsBeerusSpotlight, { catalogue: true }));
     expect(html).toContain(dictionaries[locale].dbsBeerus.title);
     expect(html).toContain(dictionaries[locale].dbsBeerus.catalogueNote);
     expect(html).toContain(dictionaries[locale].dbsBeerus.episodeOne);
-    expect(html).toContain(
-      'href="https://www.crunchyroll.com/fr/watch/GE00389313JAJP/the-god-who-destroys"',
-    );
+    expect(html).toContain('href="/wiki/episodes/875"');
+    expect(html).not.toContain('href="https://www.crunchyroll.com/fr/watch/');
     expect(html).toContain(dictionaries[locale].dbsBeerus.watchEpisode);
     expect(html).toContain(dictionaries[locale].dbsBeerus.openLocalEpisode);
     expect(html).toContain("/news/dragon-ball-super-beerus-adn-vostfr-18h-2026-10-11");
