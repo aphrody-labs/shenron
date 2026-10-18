@@ -11,17 +11,15 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
 
 ## Actions ouvertes
 
-- Livrer les épisodes Beerus 1 et 2 (fiches 875 et 876) depuis les MP4 locaux
-  qualifiés : publication CDN avec SHA-256 et lecture partielle, ajout du lecteur
-  Shenron par writer administratif avec snapshot complet, backup et CAS, puis
-  lecture réelle des deux épisodes après activation de l’image.
-- Activer et qualifier publiquement la timeline et les GIF serveur du lot
-  `b6aaa492` avec Bun.Video selon
+- Terminer la qualification navigateur du lecteur CDN unique Beerus 1 et 2
+  (875/876), de la timeline et du générateur GIF du lot `114a2829`, selon
   [le lot vidéo du plan](docs/reference/root/PLAN.md#timeline-vidéo-et-gif--demande-du-18-octobre-2026).
-  L’index complet, la pagination, les aperçus et les GIF à la demande sont codés,
-  avec file bornée, cache et intégrité de source ; tests et navigateur local sur
-  le MP4 réel sont verts. Terminer les uploads CDN 875/876, les writers et
-  l’activation scellée ; tester lecture, seek et GIF publics en 390/1280.
+  Sources CDN et writers livrés ; metadata, WebP et GIF publics qualifiés sous
+  `ea8ad532`. Le lot final ajoute le filmstrip et les réglages durée/FPS/largeur ;
+  28 tests ciblés passent. Vérifier la lecture et le seek publics en 390/1280
+  dès que le navigateur de contrôle redevient disponible ; celui-ci ne présente
+  actuellement aucun navigateur connecté. Suivre aussi le correctif Infra du
+  cache CDN 876 pour garantir les réponses Range 206 sur toutes les régions.
 
 - Exécuter la livraison des 17 tomes SOSH manquants pour compléter 18 selon
   [le plan confirmé](docs/reference/root/SOSH-DELIVERY-PLAN.md). Conserver les

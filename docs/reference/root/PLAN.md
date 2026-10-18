@@ -27,9 +27,13 @@ de travail restent dans les stores privés ; seuls les médias autorisés sont p
 État implémenté : `EpisodeTimeline.tsx` parcourt l’index complet, avec un curseur,
 des pages de douze aperçus (5 s, 1 s ou chaque frame) et le déplacement du lecteur.
 `GET /api/episodes/{875|876}/timeline` fournit les métadonnées ; `kind=frame&index=N`
-génère un WebP 320 × 180 et `kind=gif&index=N` un GIF de deux secondes, 6 images/s.
+génère un WebP 320 × 180. `kind=gif&index=N` encode un extrait réel configurable :
+`duration=1..5`, `fps=6|12|24`, `width=320|480|640` (défauts 2 s, 6 images/s, 320 px).
+La durée effective est limitée à la fin de la vidéo ; le cache distingue ces profils.
 Les fichiers CDN sont vérifiés par SHA-256 ; deux traitements et douze attentes,
 déduplication, cache mémoire 32 Mio et purge des anciennes sources bornent le service.
+Les fiches 875/876 affichent un seul lecteur CDN et cette timeline ; leurs anciennes
+galeries éditoriales et sélecteurs externes sont retirés du parcours. Sur les autres fiches,
 `EpisodeScenes.tsx` conserve séparément son export historique des images éditoriales
 dans le navigateur, en 480 × 270 avec un délai fixe de 400 ms. Le contrat de remise
 `packages/media/src/episode-video-delivery.ts` borne les lots à 600 images ; leur
@@ -67,7 +71,14 @@ WebP 118–143 ms et GIF deux secondes environ 2,7 s (mesures Windows, pas un en
 de latence en production). Le navigateur a chargé treize aperçus et un GIF 320 × 180,
 déplacé le lecteur à 30,03 s et atteint la frame 33 512. Le rendu local utilise le
 composant et le handler réels avec un chemin de source local injecté pour ce test.
-Publication CDN, activation et vérification du parcours public restent à terminer.
+Publication CDN et writers 875/876 terminés : SHA-256, snapshot complet, sauvegarde,
+CAS, relecture et replay refusé en 409. L’image `ea8ad532` activée par Infra sert les
+métadonnées, WebP et GIF publics des deux sources ; le cache persistant a survécu au
+redéploiement. La lecture publique 875 a progressé de 0,149 à 2,982 s en navigateur.
+Le lot `114a2829` ajoute le lecteur unique, le filmstrip et les réglages GIF ; sa
+livraison est en cours. Portes ciblées : 28 tests passent, quatre DOM ignorés,
+158 assertions ; types/lint/formatage verts. Le navigateur de cette session est
+devenu indisponible : rendu et interactions du dernier lot restent à requalifier.
 Le fork Bun a été exploré et testé, sans modification native nécessaire. Les reçus
 techniques privés du lot Beerus sont dans `var/reports/beerus-876-owner/` ; une
 métadonnée ou une image extraite ne vaut pas lecture publique de l’épisode.
