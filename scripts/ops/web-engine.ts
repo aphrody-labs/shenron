@@ -349,6 +349,16 @@ export async function publish(db: Database, limit: number) {
   return { uploaded, skipped, considered: rows.length };
 }
 
+/** Manifest entries of every uploaded asset, for cdn-origin-add.ts. */
+export function cdnEntries(db: Database) {
+  const types: Record<string, string> = { png: "image/png", jpg: "image/jpeg", webp: "image/webp", gif: "image/gif", avif: "image/avif" };
+  const out: Record<string, { sha256: string; size: number; contentType: string; cacheControl: string }> = {};
+  for (const row of db.query("SELECT cdn_path p, sha256 h, bytes b FROM assets WHERE state='uploaded' AND cdn_path IS NOT NULL").all() as { p: string; h: string; b: number }[]) {
+    out[row.p] = { sha256: row.h, size: row.b, contentType: types[row.p.split(".").at(-1)!] ?? "application/octet-stream", cacheControl: "public, max-age=31536000, immutable" };
+  }
+  return out;
+}
+
 export function stats(db: Database) {
   return {
     frontier: db.query("SELECT state, count(*) n FROM frontier GROUP BY state").all(),
@@ -364,7 +374,31 @@ if (import.meta.main) {
   const home = resolve(args.one("home", join(homedir(), "apps/shenron-engine")));
   const db = openDb(home);
   if (command === "stats") console.log(JSON.stringify(stats(db)));
-  else if (command === "publish") console.log(JSON.stringify(await publish(db, args.num("limit", 0))));
+  else if (command === "repair-cdn") {
+    const { mintClient, repairObject } = await import("./web-engine-cdn");
+    const s3 = await mintClient();
+    const entries = Object.values(cdnEntries(db));
+    let fixed = 0, failed = 0, next = 0;
+    await Promise.all(Array.from({ length: 8 }, async () => {
+      while (next < entries.length) {
+        const e = entries[next++]!;
+        try { if (await repairObject(s3, e)) fixed++; } catch { failed++; }
+      }
+    }));
+    console.log(JSON.stringify({ checked: entries.length, fixed, failed }));
+  } else if (command === "export-cdn") console.log(JSON.stringify(cdnEntries(db)));
+  else if (command === "publish") {
+    console.log(JSON.stringify(await publish(db, args.num("limit", 0))));
+    if (args.bare.has("deploy")) {
+      // Hand the manifest entries to the CDN origin on dbfr (see cdn-origin-add.ts); it restarts only when entries are new.
+      const entries = join(home, "cdn-entries.json");
+      await Bun.write(entries, JSON.stringify(cdnEntries(db)));
+      const script = join(import.meta.dir, "cdn-origin-add.ts");
+      const run = async (cmd: string[]) => { const p = Bun.spawn(cmd, { stdout: "inherit", stderr: "inherit" }); if (await p.exited) throw new Error(`${cmd[0]} failed`); };
+      await run(["scp", "-q", entries, script, "dbfr:/tmp/"]);
+      await run(["ssh", "dbfr", "sudo -n \"$(command -v bun || echo $HOME/.bun/bin/bun)\" /tmp/cdn-origin-add.ts /tmp/cdn-entries.json"]);
+    }
+  }
   else if (command === "run") {
     const seeds = args.flags.get("seed") ?? ["https://dragonballfr.com"];
     const tiers = args
