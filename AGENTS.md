@@ -251,7 +251,7 @@ de réutiliser les chemins distants ; cette date ne garantit pas leur disponibil
    journal durable avec statut terminal explicite, puis attendre son succès. Le helper
    utilise actuellement `~/build/transient/shenron-docker` et sérialise Cargo par le verrou lourd.
 3. Vérifier le SHA du worktree, l'image correspondante, `version` et le bot `--smoke`.
-   Lancer ensuite `~/ship-shenron.sh` dans tmux et attendre son succès : il capture le SHA
+   Lancer ensuite `scripts/ops/vps/ship-shenron.sh` dans tmux et attendre son succès : il capture le SHA
    du worktree au lancement. Ne pas lancer un nouveau build qui déplace ce HEAD pendant
    la livraison. DBFR charge l'image, assemble/scelle/vérifie puis active via Infra.
 4. Vérifier la release active (`readlink -f /srv/shenron/current`), les conteneurs, la santé
