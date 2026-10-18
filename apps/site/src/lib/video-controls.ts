@@ -1,15 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 export const VIDEO_PLAYBACK_RATES = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] as const;
-export function isHlsSource(source: string): boolean {
-  try {
-    const url = new URL(source, "https://relative.invalid");
-    return (
-      ["https:", "http:"].includes(url.protocol) && url.pathname.toLowerCase().endsWith(".m3u8")
-    );
-  } catch {
-    return false;
-  }
-}
+// One owner for the HLS test: Bun Video decides which sources it attaches hls.js to.
+export { isHlsSource } from "@aphrody/bun-video/playback";
 export type VideoKeyAction =
   | "play"
   | "backward"

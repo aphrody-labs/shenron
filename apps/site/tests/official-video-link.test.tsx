@@ -89,3 +89,39 @@ test("unqualified Crunchyroll destinations never become embeds or outbound links
     expect(html).not.toContain("href=");
   }
 });
+
+test("external embeds are sandboxed without popups or top navigation and keep an accessible name", () => {
+  const html = render("fr", [
+    { name: "VF · Lecteur", provider: "vidmoly", embedUrl: "https://vidmoly.example/embed/1" },
+  ]);
+  const sandbox = /sandbox="([^"]*)"/.exec(html)?.[1] ?? "";
+  expect(sandbox.split(" ")).toEqual(
+    expect.arrayContaining(["allow-scripts", "allow-same-origin", "allow-presentation"]),
+  );
+  expect(sandbox).not.toContain("allow-popups");
+  expect(sandbox).not.toContain("allow-top-navigation");
+  expect(html).toMatch(/<iframe[^>]*title="[^"]+"/);
+  expect(html).toContain('aria-live="polite"');
+});
+
+test("plain http embeds never reach an iframe on the https site", () => {
+  const html = render("fr", [
+    { name: "Lecteur", provider: "video", embedUrl: "http://player.example/embed/1" },
+  ]);
+  expect(html).not.toContain("<iframe");
+});
+
+test("the language and player selectors are pressed-state button groups", () => {
+  const html = render("fr", [
+    { name: "VF 1", provider: "vidmoly", embedUrl: "https://a.example/1", lang: "vf" } as Player,
+    {
+      name: "VOSTFR 1",
+      provider: "vidmoly",
+      embedUrl: "https://a.example/2",
+      lang: "vostfr",
+    } as Player,
+  ]);
+  expect((html.match(/role="group"/g) ?? []).length).toBeGreaterThanOrEqual(2);
+  expect(html).toContain('aria-pressed="true"');
+  expect(html).toContain('aria-pressed="false"');
+});

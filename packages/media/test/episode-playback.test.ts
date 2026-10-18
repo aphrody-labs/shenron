@@ -89,3 +89,10 @@ test("empty native metadata never guesses a dubbed or subtitled version", () => 
     hasVost: false,
   });
 });
+
+test("plain http embeds and tracks are dropped because the https page would block them", () => {
+  expect(normalizeVideoPlayers([{ ...vf, embedUrl: "http://example.test/vf" }, vf])).toEqual([vf]);
+  expect(
+    normalizeVideoSubtitles([{ lang: "ja", label: "Japanese", src: "http://example.test/ja.vtt" }]),
+  ).toEqual([]);
+});
