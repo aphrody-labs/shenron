@@ -94,13 +94,53 @@ pub fn delete(key: &str) -> anyhow::Result<()> {
 }
 
 fn entry(key: &str) -> anyhow::Result<Entry> {
+    let namespace = match std::env::var("KOHARU_SECRET_NAMESPACE") {
+        Ok(value) => Some(value),
+        Err(std::env::VarError::NotPresent) => None,
+        Err(_) => anyhow::bail!("invalid credential namespace"),
+    };
+    let service = service_name(namespace.as_deref())?;
     match &*CREDENTIAL_STORE {
         Ok(()) => {},
         Err(error) => anyhow::bail!("failed to initialize Linux Keyutils: {error}"),
     }
     #[cfg(target_os = "linux")]
-    let entry = Entry::new(SERVICE, key)?;
+    let entry = Entry::new(&service, key)?;
     #[cfg(not(target_os = "linux"))]
-    let entry = keyring::Entry::new(SERVICE, key)?.inner;
+    let entry = keyring::Entry::new(&service, key)?.inner;
     Ok(entry)
+}
+
+// Hosted identities share an OS account but never a credential service.
+fn service_name(namespace: Option<&str>) -> anyhow::Result<String> {
+    let Some(namespace) = namespace else {
+        return Ok(SERVICE.to_owned());
+    };
+    anyhow::ensure!(
+        namespace.len() == 64
+            && namespace.bytes().all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase()),
+        "invalid credential namespace"
+    );
+    Ok(format!("{SERVICE}:{namespace}"))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::service_name;
+
+    #[test]
+    fn hosted_identities_have_distinct_credential_services() {
+        let alice = "a".repeat(64);
+        let bob = "b".repeat(64);
+        assert_ne!(service_name(Some(&alice)).unwrap(), service_name(Some(&bob)).unwrap());
+        assert_ne!(service_name(Some(&alice)).unwrap(), service_name(None).unwrap());
+        assert_eq!(service_name(None).unwrap(), "koharu");
+    }
+
+    #[test]
+    fn invalid_hosted_namespaces_never_fall_back_to_the_shared_service() {
+        for namespace in ["", "../other", "alice", &"A".repeat(64), &"g".repeat(64)] {
+            assert!(service_name(Some(namespace)).is_err());
+        }
+    }
 }

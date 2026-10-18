@@ -17,11 +17,13 @@ ENV SHENRON_HOME=/var/lib/shenron \
     API_HOST=127.0.0.1 \
     DATABASE_PATH=/app/data/bot.db \
     SHENRON_FFI_LIB=/usr/local/lib/libshenron_ffi.so \
+    SHENRON_STUDIO_SDK_BIN=/usr/local/bin/koharu-sdk \
+    SHENRON_STUDIO_HOME=/var/lib/shenron/data/studio \
     NAPI_RS_NATIVE_LIBRARY_PATH=/usr/local/bin/skia.linux-x64-gnu.node \
     NEXT_TELEMETRY_DISABLED=1
 
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates curl jq libgcc-s1 libsqlite3-0 \
+ && apt-get install -y --no-install-recommends ca-certificates curl jq libgcc-s1 libsqlite3-0 libvulkan1 mesa-vulkan-drivers \
  && rm -rf /var/lib/apt/lists/* \
  && groupadd --gid 10001 shenron \
  && useradd --uid 10001 --gid 10001 --home-dir /var/lib/shenron --no-create-home --shell /usr/sbin/nologin shenron \
@@ -35,6 +37,7 @@ COPY --chown=10001:10001 --chmod=644 dist/bot/linux-x64/pipeline-build-receipt.j
 COPY --chown=10001:10001 --chmod=644 dist/bot/linux-x64/skia.linux-x64-gnu.node /usr/local/bin/skia.linux-x64-gnu.node
 COPY --chown=10001:10001 --chmod=755 dist/mcp/linux-x64/shenron-mcp /usr/local/bin/shenron-mcp
 COPY --chown=10001:10001 --chmod=755 dist/server/linux-x64/native/libshenron_ffi.so /usr/local/lib/libshenron_ffi.so
+COPY --chown=10001:10001 --chmod=755 dist/server/linux-x64/native/koharu-sdk /usr/local/bin/koharu-sdk
 COPY --chown=10001:10001 --chmod=755 dist/bot/linux-x64/src/db/migrations /app/src/db/migrations
 
 WORKDIR /app

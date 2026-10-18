@@ -46,7 +46,7 @@ function json(body: unknown, status = 200): Response {
   return Response.json(body, { status, headers: PRIVATE });
 }
 
-/** Staff editor state belongs to one identity, never to the site's database or provider home. */
+/** Editor state and credentials belong to one authenticated identity. */
 export function createStudioRuntime(options: StudioOptions) {
   const engines = new Map<string, Promise<Engine>>();
   const now = options.now ?? Date.now;
@@ -106,6 +106,7 @@ export function createStudioRuntime(options: StudioOptions) {
           XDG_DATA_HOME: join(canonical, "data"),
           XDG_CACHE_HOME: join(canonical, "cache"),
           SHENRON_HOME: canonical,
+          KOHARU_SECRET_NAMESPACE: identity,
           TMPDIR: join(canonical, "tmp"),
           TEMP: join(canonical, "tmp"),
           TMP: join(canonical, "tmp"),
@@ -147,7 +148,7 @@ export function createStudioRuntime(options: StudioOptions) {
   return {
     async handle(request: Request, owner: string | null) {
       const url = new URL(request.url);
-      if (!owner) return json({ error: "Studio staff authentication required" }, 401);
+      if (!owner) return json({ error: "Studio authentication required" }, 401);
       const origin = request.headers.get("origin");
       if (
         (origin && origin !== (options.origin ?? url.origin)) ||

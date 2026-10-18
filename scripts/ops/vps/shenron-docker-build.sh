@@ -5,6 +5,12 @@ export PATH="$HOME/.bun/bin:$HOME/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
 SOURCE=${SHENRON_SOURCE_REPO:-$HOME/src/shenron}
 W=${SHENRON_BUILD_REPO:-$HOME/build/transient/shenron-docker}
 LOCK=${SHENRON_BUILD_LOCK:-$HOME/build/locks/heavy.lock}
+APHRODY_SOURCE=${APHRODY_SOURCE_REPO:-$(dirname "$SOURCE")/aphrody}
+CARGO_SERIAL=${APHRODY_CARGO_SERIAL:-$APHRODY_SOURCE/scripts/build/rust/cargo-serial.sh}
+test -f "$CARGO_SERIAL" || { echo "Aphrody Cargo owner is unavailable" >&2; exit 1; }
+export APHRODY_BUILD_HOST=vps
+export APHRODY_FACTORY_RESOURCE="$W"
+export APHRODY_FACTORY_LOCK_PATH="$LOCK"
 # A compiled production binary must embed a self-contained release runtime.
 export SHENRON_COMPILE_BUN=${SHENRON_COMPILE_BUN:-$(command -v bun)}
 COMPILE_BUN_VERSION=$("$SHENRON_COMPILE_BUN" --version)
@@ -32,7 +38,7 @@ cd "$W"; SHA=$(git rev-parse HEAD); echo "== commit $SHA"
 echo "== bun install"; bun install --frozen-lockfile
 echo "== parallel: cargo | wasm | vfs | bot"
 pids=()
-( nice -n 5 cargo build --release -p shenron-mcp -p shenron-ffi ) & pids+=($!)
+( bash "$CARGO_SERIAL" build --release --locked -p shenron-mcp -p shenron-ffi && bash "$CARGO_SERIAL" build --release --locked -p koharu-library --bin koharu-sdk ) & pids+=($!)
 ( bun packages/koharu/scripts/build-wasm.ts & bun packages/pipeline/scripts/build-re-wasm.ts & wait -n; wait ) & pids+=($!)
 ( mkdir -p dist/vfs; scp -q dbfr:/home/ubuntu/apps/shenron/shared/server/data/7b26187/shenron-vfs.public.sqlite dist/vfs/shenron-vfs.public.sqlite ) & pids+=($!)
 ( bun scripts/build/bot.ts --target linux-x64 ) & pids+=($!)
@@ -40,9 +46,11 @@ for p in "${pids[@]}"; do wait "$p"; done
 echo "== server"; bun scripts/build/server.ts --flavor production --target linux-x64
 install -D -m 0755 target/release/shenron-mcp dist/mcp/linux-x64/shenron-mcp
 install -D -m 0755 target/release/libshenron_ffi.so dist/server/linux-x64/native/libshenron_ffi.so
+install -D -m 0755 target/release/koharu-sdk dist/server/linux-x64/native/koharu-sdk
 echo "== image"; docker build -q -f deploy/docker/Dockerfile --build-arg SHENRON_REVISION="$SHA" -t "localhost/shenron:$SHA" -t localhost/shenron:local .
 timeout 60 docker run --rm "localhost/shenron:$SHA" version
 timeout 60 docker run --rm --entrypoint /usr/local/bin/shenron-bot "localhost/shenron:$SHA" --smoke
+timeout 60 docker run --rm --entrypoint /usr/local/bin/koharu-sdk "localhost/shenron:$SHA" --help
 # Keep the current image plus the three newest previous revisions; never touch volumes.
 docker image ls --format '{{.Repository}}:{{.Tag}}' 'localhost/shenron:*' \
   | grep -v -F -e "localhost/shenron:$SHA" -e 'localhost/shenron:local' \

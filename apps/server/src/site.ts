@@ -119,7 +119,7 @@ export async function serveSite(
         response?.ok ? await response.json().catch(() => null) : null,
       );
       const account = parsed.success ? parsed.data : null;
-      return studio.handle(request, account?.user?.roleAdmin ? account.sessionUserId : null);
+      return studio.handle(request, account?.sessionUserId ?? null);
     }
     return (
       (await backend.agentHomes?.handle(request, url, peer)) ?? base(request, url, isReady, peer)
