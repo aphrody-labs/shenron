@@ -16,6 +16,23 @@ La délégation DNS et la preuve DS/TTL restent nécessaires avant la route CDN 
 
 # PLAN.md — Plan Directeur Unifié de Shenron
 
+## Hero d'accueil — demande du 18 octobre 2026
+
+Composition restaurée depuis les idées des commits `78044090` (ampleur, identité,
+CTA), `3cf6e3b1` (image dominante et fondu) et `41952ee5` (mouvement suspendu).
+Le propriétaire demande une adaptation inspirée de Crunchyroll avec de vraies
+frames d'épisodes. Le composant conserve logo, Kinto'un, introduction et lien
+éditorial CMS, recherche et accès aux deux épisodes. Les sections restent ordonnées.
+
+`HomeHero.module.css` possède le rendu ; les anciennes règles `.home-stage` ne
+s'appliquent plus au hero. Sur mobile, une image 16:9 précède le texte. Quatre frames
+1440 × 810, extraites avec Bun.Video, alternent par fondu avec pause, précédent et
+suivant ; la rotation s'arrête au focus, hors écran, onglet masqué et mouvement réduit.
+`home-hero-frames.ts` référence uniquement des objets CDN immuables relus par SHA-256.
+Le CTA de lecture dépend des lignes canoniques 875/876 avec source CDN qualifiée.
+Portes locales cumulées : 46 tests passent, quatre DOM ignorés, 332 assertions ;
+types, lint et formatage ciblés verts. Livraison et rendu navigateur restent à qualifier.
+
 ## Timeline vidéo et GIF — demande du 18 octobre 2026
 
 Objectif autorisé : les épisodes Beerus 1 et 2, puis les épisodes disposant d’une
@@ -75,8 +92,13 @@ Publication CDN et writers 875/876 terminés : SHA-256, snapshot complet, sauveg
 CAS, relecture et replay refusé en 409. L’image `ea8ad532` activée par Infra sert les
 métadonnées, WebP et GIF publics des deux sources ; le cache persistant a survécu au
 redéploiement. La lecture publique 875 a progressé de 0,149 à 2,982 s en navigateur.
-Le lot `114a2829` ajoute le lecteur unique, le filmstrip et les réglages GIF ; sa
-livraison est en cours. Portes ciblées : 28 tests passent, quatre DOM ignorés,
+Le lot `114a2829` ajoute le lecteur unique, le filmstrip et les réglages GIF ;
+il est activé via Infra (image `fea4c75e`). Les deux HTML publics contiennent un
+seul lecteur vidéo CDN, zéro iframe et zéro ancien sélecteur. L'export public
+3 s / 12 images/s / 480 px produit pour chaque épisode 36 images, 480 × 270 et
+3,00 s vérifiées dans la structure GIF. Le défaut Range CDN 876 est corrigé :
+réponses 206 début/fin depuis PC et DBFR, octets identiques au MP4 local.
+Portes ciblées : 28 tests passent, quatre DOM ignorés,
 158 assertions ; types/lint/formatage verts. Le navigateur de cette session est
 devenu indisponible : rendu et interactions du dernier lot restent à requalifier.
 Le fork Bun a été exploré et testé, sans modification native nécessaire. Les reçus

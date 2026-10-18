@@ -43,6 +43,15 @@ sans monter de lecteur vidéo sur l’accueil. Le thème neutre devient le défa
 palettes d’épisode restent des choix explicites. Le thème enregistré par l’admin pilote
 les surfaces publiques, les portails, les couleurs de texte et les réglages de mise en page.
 
+La demande du 18 octobre 2026 remplace la limite d'une frame fixe dans le hero :
+restaurer la composition immersive des anciens commits et l'associer à une lecture
+éditoriale inspirée de Crunchyroll. Le hero utilise plusieurs vraies frames HD des
+épisodes qualifiés, extraites par Bun.Video et publiées sur le CDN ; aucun lecteur
+vidéo de fond n'est nécessaire. Le logo et Kinto'un restent, avec une action de
+lecture principale et les épisodes disponibles. Les frames alternent par fondu lent,
+avec pause explicite, suspension au focus/hors écran/onglet masqué et image fixe en
+mouvement réduit. Les sections existantes et leur ordre restent conservés.
+
 ## Shell
 
 - On garde le shell unique (`packages/ui/src/navigation` : barre latérale, barre d'onglets

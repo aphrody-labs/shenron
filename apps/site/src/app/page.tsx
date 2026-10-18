@@ -21,6 +21,7 @@ import { pageHero } from "@/lib/banner-config";
 import type { BeerusFeature } from "@/components/home/HomeBeerusFeature";
 import { getEpisodesCached } from "@/app/wiki/episodes/_shared";
 import { DBS_BEERUS_SERIES_CODE } from "@/lib/episode-series-catalogue";
+import { isShenronEpisodeVideoURL } from "@/lib/episode-video-source";
 
 /** Editorial selections use ISR; live community state refreshes after hydration. */
 export const revalidate = 900;
@@ -123,16 +124,24 @@ async function getBeerusFeature(): Promise<BeerusFeature | null> {
     const data = await getEpisodesCached(DBS_BEERUS_SERIES_CODE, 200, 0);
     const aired = data.episodes
       .filter(
-        (episode: { air_date?: number | null }) =>
-          !episode.air_date || episode.air_date * 1000 <= Date.now(),
+        (episode) =>
+          (!episode.air_date || episode.air_date * 1000 <= Date.now()) &&
+          (episode.id === 875 || episode.id === 876) &&
+          episode.players?.some((player) => {
+            if (!URL.canParse(player.embedUrl)) return false;
+            const url = new URL(player.embedUrl);
+            return (
+              isShenronEpisodeVideoURL(url) &&
+              url.pathname.startsWith(`/media/episodes/${episode.id}/`)
+            );
+          }),
       )
-      .map((ep: any) => ({
+      .map((ep) => ({
         id: ep.id,
         number: ep.number_in_series,
         title: ep.title,
-        titleJa: ep.title_ja ?? ep.titleJa,
-        airDate: ep.air_date ?? ep.airDate,
-        duration: ep.duration,
+        titleJa: ep.title_ja,
+        airDate: ep.air_date,
         image: ep.image || "/banners/dbs-beerus-2026.jpg",
       }));
     const latest = aired.at(-1) ?? null;

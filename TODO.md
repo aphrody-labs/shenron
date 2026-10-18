@@ -11,15 +11,19 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
 
 ## Actions ouvertes
 
+- Livrer le nouveau hero immersif : quatre frames HD CDN, logo/Kinto'un,
+  introduction CMS, lecteur Beerus et recherche. Qualifier l'image active et le
+  rendu 1440/390 lorsque le navigateur de contrôle est disponible.
+
 - Terminer la qualification navigateur du lecteur CDN unique Beerus 1 et 2
   (875/876), de la timeline et du générateur GIF du lot `114a2829`, selon
   [le lot vidéo du plan](docs/reference/root/PLAN.md#timeline-vidéo-et-gif--demande-du-18-octobre-2026).
-  Sources CDN et writers livrés ; metadata, WebP et GIF publics qualifiés sous
-  `ea8ad532`. Le lot final ajoute le filmstrip et les réglages durée/FPS/largeur ;
+  Sources CDN et writers livrés ; lecteur unique, metadata, WebP et GIF publics
+  qualifiés sous `114a2829` (36 images / 3 s / 480 px pour chaque GIF testé) ;
   28 tests ciblés passent. Vérifier la lecture et le seek publics en 390/1280
   dès que le navigateur de contrôle redevient disponible ; celui-ci ne présente
-  actuellement aucun navigateur connecté. Suivre aussi le correctif Infra du
-  cache CDN 876 pour garantir les réponses Range 206 sur toutes les régions.
+  actuellement aucun navigateur connecté. Le cache CDN 876 est corrigé et les
+  réponses Range 206 début/fin sont vérifiées depuis PC et DBFR.
 
 - Exécuter la livraison des 17 tomes SOSH manquants pour compléter 18 selon
   [le plan confirmé](docs/reference/root/SOSH-DELIVERY-PLAN.md). Conserver les

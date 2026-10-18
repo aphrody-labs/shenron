@@ -111,3 +111,17 @@ Application DBFR : conserver le shell et les couleurs du site, réserver le rati
 les informations avec une colonne de navigation sur desktop et empiler sur mobile. Les épisodes
 Beerus 875 et 876 utilisent leur seul média CDN autorisé. La timeline et les GIF proviennent
 du décodage serveur de ce média, avec index complet et aperçus générés à la demande.
+
+## 12. Refonte du hero DBFR (2026-10-18)
+
+La demande propriétaire réintroduit une composition immersive et un mélange de vraies frames.
+Sources Git : 78044090 (ampleur et identité), 3cf6e3b1 (image dominante à droite),
+41952ee5 (arrêt du mouvement hors écran), 7258b8e3 (titre accessible unique).
+Le GET public Crunchyroll /fr/ ne livre qu'une coquille client ; aucune nouvelle
+observation visuelle de son accueil n'est revendiquée. La capture du lecteur fournie
+par le propriétaire guide la hiérarchie image, titre et action.
+
+DBFR conserve ses tokens, logo, Kinto'un et textes CMS. Quatre stills réels HD
+immuables alternent avec pause et navigation ; mobile en 16:9 au-dessus du texte.
+Les six extractions qualifiées et leurs preuves SHA-256 restent dans le manifeste
+privé var/reports/beerus-876-owner/hero/manifest.private.json.
