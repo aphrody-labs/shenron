@@ -12,8 +12,13 @@ Typecheck, lint (zéro erreur), tests et dérives OpenAPI/tokens/contrats verts 
 `document` : aucune lecture réelle qualifiée.
 Fabrique `vps-203bea89` : release `974e4137` déployée (`EXIT_CODE=0`, santé publique ok) ; aucun crawl
 en cours (seuls `dbxv2-serve.ts`, des serveurs codex et la session `agent-fix`). Portes Rust lancées
-dans tmux `rust-gates` (journal `~/rust-gates.log`), résultat non encore lu. Non faits : migration SQL
-et envoi de données, sans lot ni runbook désigné.
+dans tmux `rust-gates` : check, clippy et 669 tests Rust verts (22 ignorés). Lint à zéro avertissement
+(795c0828), plugin resynchronisé (ef2decfe). Livraison des correctifs vidéo bloquée : les helpers
+`~/shenron-docker-build.sh` et `~/ship-shenron.sh` n'existent plus sur la fabrique (le lancement a
+écrasé `~/shenron-build.log`), `scripts/ops/release.ts` vise encore `/srv/shenron/current` alors que
+la production tourne sous `~/apps/shenron` (Docker), et `shenron-auto-deploy` échoue faute de runtime
+qualifié (`bun:yolo`, Curl, Crawl, VectorIndex), d'après le rapport de `agent-fix`. Production inchangée :
+release active `docker-974e4137`. Non faits : migration SQL (Infra) et envoi de données, sans lot désigné.
 
 ## 2026-10-15 — Refonte Canon, agents wiki et plugin Aphrody
 
