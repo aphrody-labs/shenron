@@ -132,13 +132,35 @@ export class KoharuBridge {
 
   async #importFiles<T>(folder: boolean): Promise<T> {
     const files = await selectBrowserFiles(folder);
+    return this.importFiles<T>(files);
+  }
+
+  /** Import browser files through the authenticated hosted bridge, without opening a picker. */
+  async importFiles<T = null>(files: readonly File[], signal?: AbortSignal): Promise<T> {
+    if (!this.browserFiles || isTauriHost())
+      throw new Error("Studio file upload requires the hosted browser bridge");
     if (files.length === 0) return null as T;
+    if (files.length > 100) throw new Error("Studio accepts at most 100 import files");
+    let total = 0;
+    for (const file of files) {
+      if (
+        !(file instanceof File) ||
+        !/\.(?:png|jpe?g|webp|bmp|tiff?|gif|pdf|cbz|zip)$/i.test(file.name)
+      )
+        throw new Error("Unsupported Studio import file");
+      total += file.size;
+      if (total > 96 * 1024 * 1024) throw new Error("Studio import exceeds 96 MiB");
+    }
+    signal?.throwIfAborted();
+    this.#connect();
     const form = new FormData();
     for (const file of files) form.append("files", file, file.name);
     const response = await fetch(`${this.#base}/import`, {
       method: "POST",
       headers: { [KOHARU_SESSION_HEADER]: this.session },
       body: form,
+      credentials: "same-origin",
+      signal,
     });
     const body: unknown = await response.json().catch(() => null);
     if (!response.ok || !body || typeof body !== "object" || !("result" in body))
@@ -209,6 +231,16 @@ export function koharuBridge(): KoharuBridge {
 
 export function usesHostedStudio(): boolean {
   return shared?.browserFiles === true;
+}
+
+/** Public catalogue handoff uses the already authenticated hosted editor session only. */
+export async function importStudioFiles<T = null>(
+  files: readonly File[],
+  signal?: AbortSignal,
+): Promise<T> {
+  if (!usesHostedStudio() || isTauriHost())
+    throw new Error("Studio catalogue import requires the hosted browser editor");
+  return koharuBridge().importFiles<T>(files, signal);
 }
 
 function browserDocument(): Document {
