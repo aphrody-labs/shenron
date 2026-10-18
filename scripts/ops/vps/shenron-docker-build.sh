@@ -11,6 +11,7 @@ COMPILE_BUN_VERSION=$("$SHENRON_COMPILE_BUN" --version)
 case "$COMPILE_BUN_VERSION" in
   *debug*) echo "Refusing a debug runtime for production compilation" >&2; exit 1 ;;
 esac
+bun() { "$SHENRON_COMPILE_BUN" "$@"; }
 mkdir -p "$(dirname "$W")" "$(dirname "$LOCK")"
 exec 9>"$LOCK"
 flock -n 9 || { echo "shenron build already running" >&2; exit 75; }
