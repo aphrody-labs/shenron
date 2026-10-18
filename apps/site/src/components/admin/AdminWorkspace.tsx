@@ -18,7 +18,7 @@ import { ADMIN_FAMILIES, ADMIN_PAGES, adminPageForPath, type AdminFamily } from 
 import styles from "./AdminWorkspace.module.css";
 
 const EXTRA_ROUTE_LABELS: Record<string, string> = {
-  "/admin/dbxv2": "dbxv2",
+  "/admin/dbxv2": "gameCatalogue",
   "/workshop/translation": "translation",
   "/workshop/transcription": "transcription",
 };

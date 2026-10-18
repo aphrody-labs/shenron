@@ -2380,11 +2380,11 @@
     "navigationNote": "ワークスペースとツールを選択します。",
     "filter": "ワークスペースを絞り込む",
     "editor": "ページエディター",
-    "dbxv2Title": "ドラゴンボール ゼノバース2",
+    "gameCatalogueTitle": "ドラゴンボール ゼノバース2",
     "translationTitle": "翻訳ワークショップ",
     "transcriptionDescription": "ページの文章を文字起こしして確認します。",
     "translationDescription": "カタログのページを翻訳して確認します。",
-    "dbxv2Description": "ゲームのキャラクター、技、アイテムのカタログ。",
+    "gameCatalogueDescription": "ゲームのキャラクター、技、アイテムのカタログ。",
     "transcriptionTitle": "文字起こしワークショップ"
   }
 }

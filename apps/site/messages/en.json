@@ -2380,11 +2380,11 @@
     "navigationNote": "Choose a workspace and a tool.",
     "filter": "Filter workspaces",
     "editor": "Page editor",
-    "dbxv2Title": "Dragon Ball Xenoverse 2",
+    "gameCatalogueTitle": "Dragon Ball Xenoverse 2",
     "translationTitle": "Translation workshop",
     "transcriptionDescription": "Transcribe and review page text.",
     "translationDescription": "Translate and review catalogue pages.",
-    "dbxv2Description": "Game characters, skills and item catalogue.",
+    "gameCatalogueDescription": "Game characters, skills and item catalogue.",
     "transcriptionTitle": "Transcription workshop"
   }
 }

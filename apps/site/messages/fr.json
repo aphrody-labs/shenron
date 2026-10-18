@@ -2380,11 +2380,11 @@
     "navigationNote": "Choisir un espace puis un outil.",
     "filter": "Filtrer les espaces",
     "editor": "Éditeur de planches",
-    "dbxv2Title": "Dragon Ball Xenoverse 2",
+    "gameCatalogueTitle": "Dragon Ball Xenoverse 2",
     "translationTitle": "Atelier de traduction",
     "transcriptionDescription": "Transcrire et relire le texte des pages.",
     "translationDescription": "Traduire et relire les pages du catalogue.",
-    "dbxv2Description": "Catalogue des personnages, compétences et objets du jeu.",
+    "gameCatalogueDescription": "Catalogue des personnages, compétences et objets du jeu.",
     "transcriptionTitle": "Atelier de transcription"
   }
 }

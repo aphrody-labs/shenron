@@ -15,7 +15,9 @@ const SRC = join(SITE, "src");
 const allowed = (rel: string): boolean =>
   rel.startsWith(`app${sep}admin${sep}dbxv2${sep}`) ||
   /^lib[\\/]dbxv2[^\\/]*\.ts$/.test(rel) ||
-  rel === join("components", "admin", "AdminSidebar.tsx");
+  // Both navigation surfaces are mounted exclusively behind the admin layout guard.
+  rel === join("components", "admin", "AdminSidebar.tsx") ||
+  rel === join("components", "admin", "AdminWorkspace.tsx");
 
 function* walk(dir: string): Generator<string> {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -56,6 +58,9 @@ describe("pages publiques", () => {
     const page = readFileSync(join(SRC, "app/admin/dbxv2/page.tsx"), "utf8");
     const actions = readFileSync(join(SRC, "app/admin/dbxv2/_actions.ts"), "utf8");
     expect(page).toContain("requireAdmin()");
+    const layout = readFileSync(join(SRC, "app/admin/layout.tsx"), "utf8");
+    expect(layout).toContain("await requireAdmin()");
+    expect(layout).toContain("<AdminWorkspace>");
     expect(actions.match(/requireAdmin\(\)/g)?.length).toBeGreaterThanOrEqual(5);
     expect(readFileSync(join(SRC, "proxy.ts"), "utf8")).toContain('pathname.startsWith("/admin/")');
   });
