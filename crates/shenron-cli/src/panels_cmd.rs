@@ -221,7 +221,7 @@ fn write_sheet(
     let layout_name = format!("{label}-sheet.layout.json");
     write(&args.output.join(&image_name), sheet.png().into_diagnostic()?)?;
     write(&args.output.join(&layout_name), sheet.layout_json(&image_name))?;
-    let mut files = vec![image_name.clone(), layout_name];
+    let mut files = vec![image_name.clone(), layout_name.clone()];
     if args.sheet_gif {
         let gif_name = format!("{label}-sheet.gif");
         write(&args.output.join(&gif_name), sheet.gif().into_diagnostic()?)?;
