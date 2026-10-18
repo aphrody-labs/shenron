@@ -30,6 +30,8 @@ import {
 } from "@aphrody/shenron-koharu/protocol";
 import { Toaster } from "@aphrody/m3-primitives";
 import { TooltipProvider } from "@aphrody/m3-primitives";
+import { AtlasPreviewContext, type AtlasPreviewFactory } from "./lib/atlas-preview";
+export type { AtlasPreviewFactory } from "./lib/atlas-preview";
 
 /** How long the editor waits for the engine's startup state before showing an error. */
 const STARTUP_TIMEOUT_MS = 30_000;
@@ -39,10 +41,12 @@ export function Providers({
   children,
   locale,
   embedded = false,
+  atlasRenderer = null,
 }: {
   children: ReactNode;
   locale?: string;
   embedded?: boolean;
+  atlasRenderer?: AtlasPreviewFactory | null;
 }) {
   useSiteLocale(locale);
   const runtime = useRef({ active: false, bound: false });
@@ -128,16 +132,18 @@ export function Providers({
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <I18nextProvider i18n={i18n}>
-        <TooltipProvider delay={0}>
-          <ClientOnly>
-            <StartupBoundary embedded={embedded}>{children}</StartupBoundary>
-            <Toaster />
-          </ClientOnly>
-        </TooltipProvider>
-      </I18nextProvider>
-    </QueryClientProvider>
+    <AtlasPreviewContext.Provider value={atlasRenderer}>
+      <QueryClientProvider client={queryClient}>
+        <I18nextProvider i18n={i18n}>
+          <TooltipProvider delay={0}>
+            <ClientOnly>
+              <StartupBoundary embedded={embedded}>{children}</StartupBoundary>
+              <Toaster />
+            </ClientOnly>
+          </TooltipProvider>
+        </I18nextProvider>
+      </QueryClientProvider>
+    </AtlasPreviewContext.Provider>
   );
 }
 

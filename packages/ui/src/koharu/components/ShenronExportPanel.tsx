@@ -12,6 +12,7 @@ import {
   type MangaCandidateBinding,
 } from "@aphrody/shenron-pipeline/koharu";
 import { parseKoharuCandidateReceipt } from "../lib/export-receipt";
+import { ShenronAtlasPanel } from "./ShenronAtlasPanel";
 
 /** @deprecated Ignored: the panel speaks the editor commands. Kept while hosts still pass it. */
 export interface ShenronExportHost {
@@ -252,6 +253,7 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-2.5 text-[11px]">
+      <ShenronAtlasPanel />
       <p className="rounded border border-border/80 bg-muted/20 p-2 text-[10px] leading-4 text-muted-foreground">
         {t("shenronExport.localDescription")}
       </p>

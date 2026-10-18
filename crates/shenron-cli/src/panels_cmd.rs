@@ -7,7 +7,7 @@ use std::path::{Path, PathBuf};
 
 use clap::Args;
 use miette::{IntoDiagnostic, Result};
-use shenron_manga::MangaCdnClient;
+use shenron_manga::{MangaCdnClient, sha256_hex};
 use shenron_panels::{
     GifOptions, SegmentOptions, SheetOptions, build_sheet, crop_panel, ken_burns_gif,
     page_layout_svg, panel_svg, reveal_gif, segment_panels,
@@ -139,7 +139,7 @@ pub(crate) async fn run(args: PanelsArgs) -> Result<()> {
     }
     std::fs::create_dir_all(&args.output).into_diagnostic()?;
     if args.sheet {
-        return write_sheet(&args, &label, rgba, (width, height), &panels);
+        return write_sheet(&args, &label, rgba, (width, height), &panels, &sha256_hex(&bytes));
     }
     let gif = GifOptions { max_side: args.gif_side, ..GifOptions::default() };
     let mut files = Vec::new();
@@ -199,6 +199,7 @@ fn write_sheet(
     rgba: &[u8],
     (width, height): (u32, u32),
     panels: &[shenron_panels::PanelRect],
+    source_sha256: &str,
 ) -> Result<()> {
     let crops = panels
         .iter()
@@ -220,7 +221,14 @@ fn write_sheet(
     let image_name = format!("{label}-sheet.png");
     let layout_name = format!("{label}-sheet.layout.json");
     write(&args.output.join(&image_name), sheet.png().into_diagnostic()?)?;
-    write(&args.output.join(&layout_name), sheet.layout_json(&image_name))?;
+    let mut layout: serde_json::Value =
+        serde_json::from_str(&sheet.layout_json(&image_name)).into_diagnostic()?;
+    layout["source"] = serde_json::json!({
+        "sha256": source_sha256,
+        "width": width,
+        "height": height,
+    });
+    write(&args.output.join(&layout_name), serde_json::to_vec_pretty(&layout).into_diagnostic()?)?;
     let mut files = vec![image_name.clone(), layout_name.clone()];
     if args.sheet_gif {
         let gif_name = format!("{label}-sheet.gif");
@@ -236,8 +244,7 @@ fn write_sheet(
                 "height": height,
                 "panels": panels.iter().map(|p| [p.x, p.y, p.w, p.h]).collect::<Vec<_>>(),
                 "files": files,
-                "sheet": serde_json::from_str::<serde_json::Value>(&sheet.layout_json(&image_name))
-                    .into_diagnostic()?,
+                "sheet": layout,
             }))
             .into_diagnostic()?
         );

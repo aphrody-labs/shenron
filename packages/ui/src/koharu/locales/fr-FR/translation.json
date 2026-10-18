@@ -566,5 +566,22 @@
     "maximize": "Agrandir",
     "minimize": "Réduire",
     "restore": "Restaurer"
+  },
+  "atlasPreview": {
+    "title": "Animation de cases",
+    "description": "Importez l’atlas PNG et son manifeste produits depuis cette planche. Les fichiers restent sur cet appareil.",
+    "emptyPage": "Ouvrez une planche dans le projet.",
+    "manifest": "Manifeste de l’atlas (JSON)",
+    "image": "Atlas de cases (PNG)",
+    "open": "Ouvrir l’atlas",
+    "loading": "Chargement…",
+    "sourceMismatch": "Le hash ou les dimensions de cet atlas ne correspondent pas à la planche ouverte.",
+    "failed": "L’atlas ne peut pas être ouvert. Vérifiez les fichiers et réessayez.",
+    "sourceMatched": "Source vérifiée : {{label}}",
+    "frame": "Image {{index}} sur {{count}}",
+    "previous": "Image précédente",
+    "next": "Image suivante",
+    "play": "Lire",
+    "pause": "Pause"
   }
 }

@@ -233,6 +233,23 @@ export async function loadSpriteAtlas(manifestUrl: string | URL, signal?: AbortS
     await fetch(new URL(player.atlas.image, url), options),
     64 * 1024 * 1024,
   );
+  return decodeSpriteAtlas(player, data, signal);
+}
+
+/** Opens an explicitly selected local atlas without uploading its source files. */
+export async function openSpriteAtlas(manifest: unknown, png: Blob, signal?: AbortSignal) {
+  signal?.throwIfAborted();
+  if (png.size > 64 * 1024 * 1024) throw new Error("Sprite asset exceeds its byte limit");
+  const player = new SpriteAtlasPlayer(manifest);
+  return decodeSpriteAtlas(player, new Uint8Array(await png.arrayBuffer()), signal);
+}
+
+async function decodeSpriteAtlas(
+  player: SpriteAtlasPlayer,
+  data: Uint8Array<ArrayBuffer>,
+  signal?: AbortSignal,
+) {
+  signal?.throwIfAborted();
   const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
   if (
     data.length < 24 ||

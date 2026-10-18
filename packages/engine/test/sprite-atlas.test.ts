@@ -1,7 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { describe, expect, spyOn, test } from "bun:test";
-import { SpriteAtlasPlayer, loadSpriteAtlas, parseSpriteAtlas } from "../src/sprite-atlas";
+import {
+  SpriteAtlasPlayer,
+  loadSpriteAtlas,
+  openSpriteAtlas,
+  parseSpriteAtlas,
+} from "../src/sprite-atlas";
 
 function manifest() {
   return {
@@ -26,6 +31,20 @@ function manifest() {
 }
 
 describe("Rust panel atlas consumer", () => {
+  test("local Studio imports reject wrong PNG headers without uploading", async () => {
+    const fetcher = spyOn(globalThis, "fetch");
+    try {
+      await expect(openSpriteAtlas(manifest(), new Blob([new Uint8Array(24)]))).rejects.toThrow(
+        "Sprite PNG dimensions differ",
+      );
+      expect(fetcher).not.toHaveBeenCalled();
+      const controller = new AbortController();
+      controller.abort();
+      await expect(openSpriteAtlas(manifest(), new Blob(), controller.signal)).rejects.toThrow();
+    } finally {
+      fetcher.mockRestore();
+    }
+  });
   test("loads only sibling assets without credentials and rejects a mismatched PNG before decoding", async () => {
     const fetcher = spyOn(globalThis, "fetch")
       .mockResolvedValueOnce(Response.json(manifest()))
