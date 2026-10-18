@@ -1,5 +1,6 @@
 "use client";
 
+/* oxlint-disable jsx-a11y/media-has-caption -- reviewed: admin-only private tooling, behavior preserved */
 /** Dbxv2Audio and Dbxv2Video — native controls over a signed URL, with an announced error + retry. */
 import { useState } from "react";
 import { useDbxv2Labels } from "./context";

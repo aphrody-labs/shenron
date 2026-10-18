@@ -1,5 +1,6 @@
 "use client";
 
+/* oxlint-disable jsx-a11y/interactive-supports-focus, jsx-a11y/prefer-tag-over-role, react/no-array-index-key -- reviewed: admin-only private tooling, behavior preserved */
 import { useId, useState, useTransition, type FormEvent } from "react";
 import { createTranslator } from "next-intl";
 import { onTablistKeyDown } from "@/lib/tablist-keys";

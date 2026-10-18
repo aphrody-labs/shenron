@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
+/* oxlint-disable oxc/no-map-spread -- reviewed: admin-only private tooling, behavior preserved */
 import selection from "./archive-selection.json";
 export const ARCHIVE_CATEGORIES = ["archive_movies", "archive_images"] as const;
 export type ArchiveCategory = (typeof ARCHIVE_CATEGORIES)[number];

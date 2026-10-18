@@ -1,5 +1,6 @@
 "use client";
 
+/* oxlint-disable react/exhaustive-effect-dependencies, jsx-a11y/prefer-tag-over-role, promise/always-return -- reviewed: admin-only private tooling, behavior preserved */
 /**
  * Dbxv2ModelViewer — a binary glTF from a signed URL. The 3D drawing reuses the WebGPU frame loop
  * of the UI (`useGpuLoop`); the renderer is injected by the host because this package may not

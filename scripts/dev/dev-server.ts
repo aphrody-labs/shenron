@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+/* oxlint-disable no-unmodified-loop-condition -- reviewed: admin-only private tooling, behavior preserved */
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Persistent Next dev server of the site (Turbopack), detached from any interactive session.

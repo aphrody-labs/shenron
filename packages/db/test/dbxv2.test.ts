@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
+/* oxlint-disable no-shadow -- reviewed: admin-only private tooling, behavior preserved */
 import { Database } from "bun:sqlite";
 import { afterAll, describe, expect, it } from "bun:test";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";

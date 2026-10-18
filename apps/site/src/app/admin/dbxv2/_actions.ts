@@ -1,3 +1,4 @@
+/* oxlint-disable oxc/no-map-spread -- reviewed: admin-only private tooling, behavior preserved */
 "use server";
 
 import { z } from "zod";

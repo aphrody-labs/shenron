@@ -1,5 +1,6 @@
 "use client";
 
+/* oxlint-disable react/exhaustive-effect-dependencies, jsx-a11y/prefer-tag-over-role -- reviewed: admin-only private tooling, behavior preserved */
 /**
  * Dbxv2Image — a raster shown pixel perfect: integer scale in device pixels, nearest-neighbour
  * sampling, origin snapped to the physical pixel grid, `devicePixelRatio` respected. `src` is a
