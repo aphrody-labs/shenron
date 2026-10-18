@@ -14,11 +14,11 @@ import type { UiLinkComponent } from "../navigation/link";
 export type MetricTone = "default" | "success" | "warning" | "danger" | "accent";
 
 const VALUE_TONE: Record<MetricTone, string> = {
-  default: "text-os",
+  default: "text-foreground",
   success: "text-green-300",
   warning: "text-dbz-amber",
   danger: "text-red-300",
-  accent: "text-dbz-orange",
+  accent: "text-primary",
 };
 
 export function MetricGrid({
@@ -65,23 +65,23 @@ export function Metric({
   // et le nom accessible du lien reste l'intitulé du compteur.
   return (
     <div
-      className={`relative min-w-0 rounded-xl border border-os/12 bg-dbz-card/70 p-3.5 sm:p-4 ${href ? "transition-colors hover:border-dbz-orange/60 focus-within:border-kinto-lumiere" : ""} ${className}`}
+      className={`relative min-w-0 rounded-xl border border-border bg-card p-3.5 sm:p-4 ${href ? "transition-colors hover:border-primary focus-within:ring-2 focus-within:ring-ring" : ""} ${className}`}
     >
-      <dt className="flex min-w-0 items-center gap-2 text-xs font-medium text-os/55">
+      <dt className="flex min-w-0 items-start gap-2 text-xs font-medium text-muted-foreground">
         {icon && (
-          <span aria-hidden className="shrink-0 text-os/45 [&_svg]:h-4 [&_svg]:w-4">
+          <span aria-hidden className="shrink-0 text-muted-foreground [&_svg]:h-4 [&_svg]:w-4">
             {icon}
           </span>
         )}
         {href ? (
           <Link
             href={href}
-            className="truncate outline-none after:absolute after:inset-0 after:rounded-xl hover:text-os"
+            className="break-words outline-none after:absolute after:inset-0 after:rounded-xl hover:text-foreground"
           >
             {label}
           </Link>
         ) : (
-          <span className="truncate">{label}</span>
+          <span className="min-w-0 break-words">{label}</span>
         )}
       </dt>
       <dd
@@ -89,7 +89,7 @@ export function Metric({
       >
         {value ?? "—"}
       </dd>
-      {hint && <dd className="mt-1.5 text-xs text-os/40">{hint}</dd>}
+      {hint && <dd className="mt-1.5 text-xs text-muted-foreground">{hint}</dd>}
     </div>
   );
 }

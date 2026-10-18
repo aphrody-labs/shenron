@@ -1680,7 +1680,11 @@
       "desktopAuthWaiting": "ブラウザーでアカウント連携を完了してください。Shenron Studio は自動的に更新されます。",
       "desktopAuthRetry": "ログイン画面を再度開く",
       "desktopAuthError": "アカウント連携を開始できませんでした。Shenron のローカルサーバーを確認して、もう一度お試しください。",
-      "workshopLink": "翻訳の進捗を見る"
+      "workshopLink": "翻訳の進捗を見る",
+      "webTitle": "Studioワークスペース",
+      "webUnavailable": "ワークスペースは一時的に利用できません。プロジェクトは保持されています。",
+      "webSignIn": "Studioを開く",
+      "webText": "ログインして個人プロジェクトを作成し、ページを読み込んで翻訳ツールを利用できます。"
     }
   },
   "desktop": {
@@ -2352,5 +2356,30 @@
     "selected": "{kind} {id} · ページ {page}",
     "databook": "データブック",
     "title": "ライブラリからインポート"
+  },
+  "AdminWorkspace": {
+    "commands": "コマンドを検索",
+    "commandNote": "現在のデータを変更せずにツールを開きます。",
+    "inspector": "コンテキスト",
+    "status": "権限と操作はサーバーで確認されます",
+    "noResults": "該当するツールがありません。",
+    "close": "閉じる",
+    "contextNote": "データと操作は中央パネルにあります。ここには現在のページの情報を表示します。",
+    "results": "利用可能なツール",
+    "explorer": "エクスプローラー",
+    "title": "Shenron Studio · 管理",
+    "group": "ワークスペース",
+    "tabs": "開いているワークスペース",
+    "commandPlaceholder": "ページ、ツール、グループを検索…",
+    "related": "このワークスペース内",
+    "navigationNote": "ワークスペースとツールを選択します。",
+    "filter": "ワークスペースを絞り込む",
+    "editor": "ページエディター",
+    "dbxv2Title": "ドラゴンボール ゼノバース2",
+    "translationTitle": "翻訳ワークショップ",
+    "transcriptionDescription": "ページの文章を文字起こしして確認します。",
+    "translationDescription": "カタログのページを翻訳して確認します。",
+    "dbxv2Description": "ゲームのキャラクター、技、アイテムのカタログ。",
+    "transcriptionTitle": "文字起こしワークショップ"
   }
 }

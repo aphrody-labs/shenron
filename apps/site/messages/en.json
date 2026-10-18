@@ -1680,7 +1680,11 @@
       "desktopAuthWaiting": "Finish linking your account in the browser. Shenron Studio will update automatically.",
       "desktopAuthRetry": "Reopen sign-in",
       "desktopAuthError": "Could not start account linking. Check that the local Shenron server is responding, then try again.",
-      "workshopLink": "See the translation progress"
+      "workshopLink": "See the translation progress",
+      "webTitle": "Your Studio workspace",
+      "webUnavailable": "The workspace is temporarily unavailable. Your projects are preserved.",
+      "webSignIn": "Open my Studio",
+      "webText": "Sign in to create a personal project, import your pages, and use the translation tools."
     }
   },
   "desktop": {
@@ -2352,5 +2356,30 @@
     "selected": "{kind} {id} · page {page}",
     "databook": "Databook",
     "title": "Import from the library"
+  },
+  "AdminWorkspace": {
+    "commands": "Find a command",
+    "commandNote": "Open a tool without modifying current data.",
+    "inspector": "Context",
+    "status": "Server-verified actions and permissions",
+    "noResults": "No matching tools.",
+    "close": "Close",
+    "contextNote": "Data and actions remain in the central panel. This context follows the active page.",
+    "results": "Available tools",
+    "explorer": "Explorer",
+    "title": "Shenron Studio · Administration",
+    "group": "Workspace",
+    "tabs": "Open workspaces",
+    "commandPlaceholder": "Search pages, tools or groups…",
+    "related": "In this workspace",
+    "navigationNote": "Choose a workspace and a tool.",
+    "filter": "Filter workspaces",
+    "editor": "Page editor",
+    "dbxv2Title": "Dragon Ball Xenoverse 2",
+    "translationTitle": "Translation workshop",
+    "transcriptionDescription": "Transcribe and review page text.",
+    "translationDescription": "Translate and review catalogue pages.",
+    "dbxv2Description": "Game characters, skills and item catalogue.",
+    "transcriptionTitle": "Transcription workshop"
   }
 }

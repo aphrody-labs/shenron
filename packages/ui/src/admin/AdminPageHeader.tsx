@@ -1,16 +1,14 @@
 /**
  * En-tête et sections d’une page d’administration.
  *
- * L’en-tête est le `PageHeader` du site en régime compact : l’admin n’a plus sa
- * propre typographie (`font-saiyan` orange en capitales, `text-lg` gris,
- * `text-4xl`… selon la page). La rubrique de la navigation sert de surtitre, les
- * actions s’alignent à droite sur desktop et passent sous le titre sur mobile.
+ * L’en-tête compact appartient à l’atelier : titre lisible, description et actions
+ * tactiles, sans la mise en scène des pages publiques. La rubrique vient de la
+ * navigation et les actions restent celles du consommateur.
  *
  * Aucun conteneur de largeur ici : le cadre (`AdminFrame`) la porte déjà.
  * Server component.
  */
 import type { ReactNode } from "react";
-import { PageHeader } from "../layout/PageHeader";
 
 export function AdminPageHeader({
   eyebrow,
@@ -18,7 +16,7 @@ export function AdminPageHeader({
   description,
   meta,
   actions,
-  className = "mb-6 md:mb-8",
+  className = "mb-5",
 }: {
   /** Rubrique de la navigation admin (« Encyclopédie », « Communauté »…). */
   eyebrow?: ReactNode;
@@ -30,23 +28,25 @@ export function AdminPageHeader({
   className?: string;
 }) {
   return (
-    <div data-admin-page-header="">
-      <PageHeader
-        size="md"
-        eyebrow={eyebrow}
-        title={title}
-        subtitle={
-          description || meta ? (
-            <>
+    <header data-admin-page-header="" className={`border-b border-border pb-5 ${className}`}>
+      <div className="flex min-w-0 flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+        <div className="min-w-0 space-y-2">
+          {eyebrow && <p className="text-xs font-medium text-muted-foreground">{eyebrow}</p>}
+          <h1 className="break-words text-2xl font-semibold leading-tight tracking-tight text-foreground">
+            {title}
+          </h1>
+          {description && (
+            <div className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
               {description}
-              {meta && <span className="mt-2 block text-xs tabular-nums text-os/45">{meta}</span>}
-            </>
-          ) : undefined
-        }
-        actions={actions}
-        className={className}
-      />
-    </div>
+            </div>
+          )}
+          {meta && <div className="text-xs tabular-nums text-muted-foreground">{meta}</div>}
+        </div>
+        {actions && (
+          <div className="flex min-w-0 flex-wrap items-center gap-2 [&>*]:min-h-12">{actions}</div>
+        )}
+      </div>
+    </header>
   );
 }
 
@@ -76,15 +76,15 @@ export function AdminSection({
   return (
     <section
       id={id}
-      className={`rounded-xl border border-os/12 bg-dbz-card/60 ${flush ? "" : "p-4 sm:p-5"} ${className}`}
+      className={`min-w-0 rounded-xl border border-border bg-card text-card-foreground ${flush ? "" : "p-4 sm:p-5"} ${className}`}
     >
       {head && (
         <div
           className={`flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between ${flush ? "p-4 sm:p-5" : "mb-4"}`}
         >
           <div className="min-w-0">
-            {title && <h2 className="text-base font-semibold leading-snug text-os">{title}</h2>}
-            {description && <p className="mt-1 text-sm text-os/55">{description}</p>}
+            {title && <h2 className="break-words text-base font-semibold leading-snug">{title}</h2>}
+            {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
           </div>
           {actions && (
             <div className="flex flex-wrap items-center gap-2 sm:shrink-0">{actions}</div>

@@ -5,12 +5,15 @@
 import type { ReactNode } from "react";
 
 export const panelClass =
-  "flex flex-col gap-3 rounded-lg border border-os/12 p-5 text-[16px] leading-[1.55] text-os";
+  "flex min-w-0 flex-col gap-3 rounded-xl border border-border bg-card p-5 text-sm leading-relaxed text-card-foreground";
 export const rowClass =
-  "flex items-center justify-between gap-3 rounded-lg border border-os/12 p-3 text-[16px] text-os";
-export const primaryButtonClass = "btn btn-primary min-h-11";
-export const ghostButtonClass = "btn btn-ghost min-h-11";
-export const fieldClass = "input min-h-11 text-[16px]";
+  "flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-lg border border-border p-3 text-sm text-foreground";
+export const primaryButtonClass =
+  "inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-transparent bg-primary px-4 hover:bg-primary/90 text-sm font-semibold text-primary-foreground disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
+export const ghostButtonClass =
+  "inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 hover:bg-muted text-sm text-foreground disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
+export const fieldClass =
+  "min-h-12 min-w-0 w-full max-w-full rounded-lg border border-input bg-background px-3 py-2 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
 export function StatusChip({ ok, children }: { ok: boolean; children: ReactNode }) {
   return (

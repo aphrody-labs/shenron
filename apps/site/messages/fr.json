@@ -1680,7 +1680,11 @@
       "desktopAuthWaiting": "Terminez la connexion dans le navigateur. Shenron Studio se mettra à jour automatiquement.",
       "desktopAuthRetry": "Rouvrir la connexion",
       "desktopAuthError": "Impossible de démarrer la liaison du compte. Vérifiez que le serveur local Shenron répond, puis réessayez.",
-      "workshopLink": "Voir l'avancement de la traduction"
+      "workshopLink": "Voir l'avancement de la traduction",
+      "webTitle": "Votre atelier Studio",
+      "webUnavailable": "L’atelier est temporairement indisponible. Vos projets restent conservés.",
+      "webSignIn": "Ouvrir mon Studio",
+      "webText": "Connectez-vous pour créer un projet personnel, importer vos planches et utiliser les outils de traduction."
     }
   },
   "desktop": {
@@ -2352,5 +2356,30 @@
     "selected": "{kind} {id} · page {page}",
     "databook": "Databook",
     "title": "Importer depuis la bibliothèque"
+  },
+  "AdminWorkspace": {
+    "commands": "Rechercher une commande",
+    "commandNote": "Ouvrir un outil sans modifier les données en cours.",
+    "inspector": "Contexte",
+    "status": "Actions et droits vérifiés par le serveur",
+    "noResults": "Aucun outil correspondant.",
+    "close": "Fermer",
+    "contextNote": "Les données et les actions restent dans le panneau central. Ce contexte suit la page active.",
+    "results": "Outils disponibles",
+    "explorer": "Explorateur",
+    "title": "Shenron Studio · Administration",
+    "group": "Espace de travail",
+    "tabs": "Espaces ouverts",
+    "commandPlaceholder": "Rechercher une page, un outil ou une rubrique…",
+    "related": "Dans cet espace",
+    "navigationNote": "Choisir un espace puis un outil.",
+    "filter": "Filtrer les espaces",
+    "editor": "Éditeur de planches",
+    "dbxv2Title": "Dragon Ball Xenoverse 2",
+    "translationTitle": "Atelier de traduction",
+    "transcriptionDescription": "Transcrire et relire le texte des pages.",
+    "translationDescription": "Traduire et relire les pages du catalogue.",
+    "dbxv2Description": "Catalogue des personnages, compétences et objets du jeu.",
+    "transcriptionTitle": "Atelier de transcription"
   }
 }
