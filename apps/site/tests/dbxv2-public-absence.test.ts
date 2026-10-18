@@ -57,6 +57,13 @@ describe("pages publiques", () => {
     expect(actions.match(/requireAdmin\(\)/g)?.length).toBeGreaterThanOrEqual(5);
     expect(readFileSync(join(SRC, "proxy.ts"), "utf8")).toContain('pathname.startsWith("/admin/")');
   });
+
+  test("le relais des médias est fermé sans porte ouverte ni session admin", () => {
+    const relay = readFileSync(join(SRC, "app/admin/dbxv2/media/[...path]/route.ts"), "utf8");
+    expect(relay).toContain("dbxv2SiteGate().enabled");
+    expect(relay).toContain("isCurrentUserAdmin()");
+    expect(relay).toContain("status: 404");
+  });
 });
 
 describe("garde de build", () => {

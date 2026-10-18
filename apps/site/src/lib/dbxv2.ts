@@ -6,7 +6,7 @@ import "server-only";
  * import: the bundler never sees it, so no build artifact contains it, and a production or public
  * runtime cannot load it at all.
  *
- * The browser only ever receives short-lived signed URLs of the loopback proxy, never the token.
+ * The browser only ever receives short-lived signed same-origin URLs (relayed), never the token.
  */
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
@@ -61,6 +61,8 @@ export interface Dbxv2FileLike {
 }
 
 export interface Dbxv2ProxyLike {
+  /** Loopback origin of the signing proxy (`http://127.0.0.1:<port>`). */
+  readonly origin?: string;
   sign(
     kind: PreviewKind,
     ref: { cpk: string; path: string },
@@ -122,13 +124,35 @@ export interface Dbxv2Service {
   }): Dbxv2FileLike[];
   characters(): { cpk: string; id: number; shortName: string }[];
   messages(nameId: string): { lang: string; text: string }[];
-  /** Signed, short-lived loopback URL for one resource. */
+  /**
+   * Signed, short-lived URL of one resource, SAME-ORIGIN with the site (`MEDIA_BASE`): a browser
+   * refuses a cross-port loopback proxy (CORP `NotSameSite`, no CORS for `fetch`), so the admin
+   * route relays it. The signature is still checked by the proxy.
+   */
   preview(input: { ref: string; kind: PreviewKind; index?: number; cue?: number }): {
     kind: PreviewKind;
     url: string;
     expiresInSeconds: number;
   };
+  /** Relays one signed resource (`<kind>/<cpk>/<path>?exp&sig`) from the loopback proxy. */
+  relay(
+    segments: readonly string[],
+    search: string,
+    request: { method: string; headers: Headers; signal?: AbortSignal },
+  ): Promise<Response>;
 }
+
+/** Same-origin prefix of the admin media relay (route `admin/dbxv2/media/[...path]`). */
+export const MEDIA_BASE = "/admin/dbxv2/media";
+
+const RELAY_REQUEST = ["range", "if-range", "if-none-match"] as const;
+const RELAY_RESPONSE = [
+  "content-type",
+  "content-length",
+  "content-range",
+  "accept-ranges",
+  "etag",
+] as const;
 
 /** Builds the service on an already loaded module; exported for tests. */
 export function createDbxv2Service(
@@ -178,11 +202,63 @@ export function createDbxv2Service(
           : kind === "wav" && cue !== undefined
             ? { cue }
             : undefined;
+      const signed = proxy.sign(kind, parsed, params, SIGNED_TTL_SECONDS);
+      const { pathname, search } = new URL(signed);
+      // `/r/<kind>/…` of the proxy becomes `MEDIA_BASE/<kind>/…`: same origin, same signature.
       return {
         kind,
-        url: proxy.sign(kind, parsed, params, SIGNED_TTL_SECONDS),
+        url: `${MEDIA_BASE}${pathname.replace(/^\/r(?=\/)/, "")}${search}`,
         expiresInSeconds: SIGNED_TTL_SECONDS,
       };
+    },
+    async relay(segments, search, request) {
+      if (request.method !== "GET" && request.method !== "HEAD")
+        return new Response(null, { status: 405 });
+      const origin = proxy.origin;
+      if (!origin || segments.length < 3) return new Response(null, { status: 404 });
+      const path = segments.map((part) => encodeURIComponent(part)).join("/");
+      const headers = new Headers();
+      for (const name of RELAY_REQUEST) {
+        const value = request.headers.get(name);
+        if (value) headers.set(name, value);
+      }
+      const target = `${origin}/r/${path}${search}`;
+      const get = () =>
+        fetch(target, {
+          method: request.method,
+          headers,
+          redirect: "error",
+          signal: request.signal,
+        });
+      // The loopback proxy reaches the private server over a long-lived connection that the
+      // server may have closed while idle: its first attempt then answers 502. The request is
+      // idempotent (GET/HEAD, signed), so one retry is safe and hides that race from the page.
+      let upstream: Response;
+      try {
+        upstream = await get();
+        if (upstream.status === 502) {
+          void upstream.body?.cancel();
+          upstream = await get();
+        }
+      } catch {
+        return new Response(null, { status: 502 });
+      }
+      if (upstream.status >= 400)
+        return new Response(null, { status: upstream.status === 401 ? 502 : upstream.status });
+      const out = new Headers({
+        "Cache-Control": "private, no-store",
+        "X-Content-Type-Options": "nosniff",
+        "Cross-Origin-Resource-Policy": "same-origin",
+        "Referrer-Policy": "no-referrer",
+      });
+      for (const name of RELAY_RESPONSE) {
+        const value = upstream.headers.get(name);
+        if (value) out.set(name, value);
+      }
+      return new Response(request.method === "HEAD" ? null : upstream.body, {
+        status: upstream.status,
+        headers: out,
+      });
     },
   };
 }

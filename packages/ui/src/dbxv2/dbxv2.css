@@ -9,7 +9,13 @@
   border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
   background-color: rgb(128 128 128 / 0.08);
 }
+.dbxv2-image__box[data-overflow] {
+  overflow: auto;
+}
+/* Framework resets cap images at 100% of the box: that would squeeze the raster off its integer scale. */
 .dbxv2-image__box img {
+  max-width: none;
+  max-height: none;
   transition: opacity 120ms linear;
 }
 .dbxv2-image[data-phase="loading"] img {

@@ -66,6 +66,15 @@ export function Dbxv2Image({
     setPhase("loading");
   }, [src, attempt]);
 
+  const lastSrc = useRef(src);
+  useEffect(() => {
+    // A different source may have other dimensions: never lay it out with the previous size.
+    if (lastSrc.current === src) return;
+    lastSrc.current = src;
+    // oxlint-disable-next-line react/set-state-in-effect -- reset on external input change
+    setNatural(width && height ? { w: width, h: height } : null);
+  }, [src, width, height]);
+
   let placement: PixelPlacement | null = null;
   if (natural && size.w > 0) {
     placement = placePixels(
@@ -79,8 +88,9 @@ export function Dbxv2Image({
   const imgStyle: CSSProperties = placement
     ? {
         position: "absolute",
-        left: placement.cssX,
-        top: placement.cssY,
+        // Larger than the box: shown 1:1 from the top-left corner and scrolled, never cropped or squeezed.
+        left: placement.overflow ? 0 : placement.cssX,
+        top: placement.overflow ? 0 : placement.cssY,
         width: placement.cssWidth,
         height: placement.cssHeight,
         imageRendering: "pixelated",
@@ -89,7 +99,15 @@ export function Dbxv2Image({
 
   return (
     <figure className={`dbxv2-image ${className}`} data-phase={phase}>
-      <div ref={box} className="dbxv2-image__box" style={{ height: boxHeight }}>
+      <div
+        ref={box}
+        className="dbxv2-image__box"
+        style={{ height: boxHeight }}
+        data-overflow={placement?.overflow ? "true" : undefined}
+        tabIndex={placement?.overflow ? 0 : undefined}
+        role={placement?.overflow ? "group" : undefined}
+        aria-label={placement?.overflow && !decorative ? alt : undefined}
+      >
         {phase !== "error" && (
           // oxlint-disable-next-line next/no-img-element -- exact device pixels, no resampling
           <img
@@ -103,7 +121,7 @@ export function Dbxv2Image({
             onLoad={(event) => {
               const img = event.currentTarget;
               if (img.naturalWidth > 0 && img.naturalHeight > 0)
-                setNatural((prev) => prev ?? { w: img.naturalWidth, h: img.naturalHeight });
+                setNatural({ w: img.naturalWidth, h: img.naturalHeight });
               setPhase("ready");
             }}
             onError={() => setPhase("error")}

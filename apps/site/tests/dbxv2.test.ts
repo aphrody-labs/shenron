@@ -50,6 +50,7 @@ function fakeModule(enabled = true) {
       stats: () => ({ files: 1, characters: 2, messages: 3 }),
     }),
     createDbxv2Proxy: () => ({
+      origin: PROXY_ORIGIN,
       sign: (kind: string, ref: { cpk: string; path: string }) =>
         `http://127.0.0.1:5555/r/${kind}/${ref.cpk}/${ref.path}?exp=1&sig=ab`,
     }),
@@ -62,16 +63,112 @@ function fakeModule(enabled = true) {
   };
 }
 
+let PROXY_ORIGIN = "http://127.0.0.1:5555";
+
 describe("service", () => {
   test("refuse un module désactivé", () => {
     expect(() => createDbxv2Service(fakeModule(false), ENV)).toThrow(Dbxv2SiteError);
   });
-  test("l'aperçu est une URL signée du proxy, sans jeton", () => {
+  test("l'aperçu est une URL signée de même origine, sans jeton ni proxy", () => {
     const service = createDbxv2Service(fakeModule(), ENV);
     const preview = service.preview({ ref: "CHARA/a/b.emb", kind: "png", index: 0 });
-    expect(preview.url.startsWith("http://127.0.0.1:")).toBe(true);
+    expect(preview.url).toBe("/admin/dbxv2/media/png/CHARA/a/b.emb?exp=1&sig=ab");
+    expect(preview.url).not.toContain("127.0.0.1");
     expect(JSON.stringify(preview)).not.toContain(TOKEN);
     expect(preview.expiresInSeconds).toBeLessThanOrEqual(3600);
+  });
+  test("le relais transmet Range, filtre les en-têtes amont et refuse le reste", async () => {
+    const seen: { url: string; range: string | null; auth: string | null }[] = [];
+    const upstream = Bun.serve({
+      hostname: "127.0.0.1",
+      port: 0,
+      fetch(req) {
+        const u = new URL(req.url);
+        seen.push({
+          url: u.pathname + u.search,
+          range: req.headers.get("range"),
+          auth: req.headers.get("authorization"),
+        });
+        if (u.pathname.includes("missing")) return new Response("x", { status: 404 });
+        return new Response("DATA", {
+          status: 206,
+          headers: {
+            "content-type": "audio/wav",
+            "content-range": "bytes 0-3/10",
+            "accept-ranges": "bytes",
+            "set-cookie": "leak=1",
+            "x-secret": "no",
+          },
+        });
+      },
+    });
+    PROXY_ORIGIN = `http://127.0.0.1:${upstream.port}`;
+    try {
+      const service = createDbxv2Service(fakeModule(), ENV);
+      const headers = new Headers({ range: "bytes=0-3", cookie: "dbfr_admin=s" });
+      const res = await service.relay(["wav", "CHARA", "a", "b é.acb"], "?exp=1&sig=ab", {
+        method: "GET",
+        headers,
+      });
+      expect(res.status).toBe(206);
+      expect(await res.text()).toBe("DATA");
+      expect(res.headers.get("content-range")).toBe("bytes 0-3/10");
+      expect(res.headers.get("set-cookie")).toBeNull();
+      expect(res.headers.get("x-secret")).toBeNull();
+      expect(res.headers.get("cross-origin-resource-policy")).toBe("same-origin");
+      expect(res.headers.get("cache-control")).toBe("private, no-store");
+      expect(seen[0]).toEqual({
+        url: "/r/wav/CHARA/a/b%20%C3%A9.acb?exp=1&sig=ab",
+        range: "bytes=0-3",
+        auth: null,
+      });
+      expect((await service.relay(["wav", "x"], "", { method: "GET", headers })).status).toBe(404);
+      const post = await service.relay(["wav", "CHARA", "missing"], "", {
+        method: "POST",
+        headers,
+      });
+      expect(post.status).toBe(405);
+      const missing = await service.relay(["wav", "CHARA", "missing"], "", {
+        method: "GET",
+        headers,
+      });
+      expect(missing.status).toBe(404);
+      expect(JSON.stringify([...res.headers])).not.toContain(TOKEN);
+    } finally {
+      void upstream.stop(true);
+      PROXY_ORIGIN = "http://127.0.0.1:5555";
+    }
+  });
+  test("le relais retente une fois un 502 du proxy, pas un 403", async () => {
+    let calls = 0;
+    const upstream = Bun.serve({
+      hostname: "127.0.0.1",
+      port: 0,
+      fetch(req) {
+        calls += 1;
+        if (new URL(req.url).pathname.includes("forbidden"))
+          return new Response("x", { status: 403 });
+        return calls === 1
+          ? new Response("x", { status: 502 })
+          : new Response("OK", { status: 200 });
+      },
+    });
+    PROXY_ORIGIN = `http://127.0.0.1:${upstream.port}`;
+    try {
+      const service = createDbxv2Service(fakeModule(), ENV);
+      const request = { method: "GET", headers: new Headers() };
+      const ok = await service.relay(["png", "CHARA", "a"], "", request);
+      expect(ok.status).toBe(200);
+      expect(await ok.text()).toBe("OK");
+      expect(calls).toBe(2);
+      calls = 10;
+      const denied = await service.relay(["png", "CHARA", "forbidden"], "", request);
+      expect(denied.status).toBe(403);
+      expect(calls).toBe(11);
+    } finally {
+      void upstream.stop(true);
+      PROXY_ORIGIN = "http://127.0.0.1:5555";
+    }
   });
   test("référence invalide et recherche trop courte : code stable", async () => {
     const service = createDbxv2Service(fakeModule(), ENV);

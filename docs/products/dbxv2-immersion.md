@@ -23,10 +23,13 @@ artefact de build. Désactivé par défaut.
 le déclare pas dans son `package.json` et ne l'importe jamais statiquement : aucun bundle ne le
 contient. Runtime Bun requis ; sans lui, l'espace affiche « serveur indisponible ».
 
-Le navigateur ne reçoit que des **URL signées du proxy loopback** (`http://127.0.0.1:<port>/r/…`,
-HMAC, 300 s), jamais le jeton. Le proxy envoie `Cross-Origin-Resource-Policy: same-site` : ouvrir le
-site en `127.0.0.1` (ou `localhost` avec un proxy `localhost`) pour que le navigateur charge les
-ressources. Le poste doit être celui du serveur privé.
+Le navigateur ne reçoit que des **URL signées de même origine**
+(`/admin/dbxv2/media/<type>/<cpk>/<chemin>?exp&sig`, HMAC, 300 s), jamais le jeton ni l'adresse du
+proxy. La route `app/admin/dbxv2/media/[...path]` (404 sans porte ouverte ou sans session admin)
+relaie vers le proxy loopback du site, qui vérifie signature et expiration, et transmet `Range`
+(lecture son/vidéo). Un proxy sur un autre port est cross-origin : Chrome le refuse (CORP
+`NotSameSite`, pas de CORS pour `fetch`), d'où le relais. Le poste doit être celui du serveur privé
+ou joindre son serveur par tunnel.
 
 ## Espace admin
 
@@ -68,5 +71,6 @@ dans le chunk JSON du GLB), `Dbxv2UiProvider` (libellés, contexte React sans mo
 
 ## Limites
 
-Pas de moteur GLB wgpu dans `shenron-engine` : sans fabrique injectée, le modèle est résumé. Aucun
-contrôle navigateur réel contre un serveur DBXV2 (données privées absentes de la fabrique).
+Pas de moteur GLB wgpu dans `shenron-engine` : sans fabrique injectée, le modèle est résumé.
+Contrôlé le 2026-10-18 dans Chrome réel contre le serveur privé de la fabrique (tunnel SSH). Le flux
+USM est du MPEG-2 (`video/mpeg`), non lisible par Chrome : l'alerte avec réessai s'affiche.
