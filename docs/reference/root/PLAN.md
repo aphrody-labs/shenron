@@ -16,6 +16,50 @@ La délégation DNS et la preuve DS/TTL restent nécessaires avant la route CDN 
 
 # PLAN.md — Plan Directeur Unifié de Shenron
 
+## Timeline vidéo et GIF — demande du 18 octobre 2026
+
+Objectif autorisé : les épisodes Beerus 1 et 2, puis les épisodes disposant d’une
+source qualifiée, proposent une timeline complète et des GIF générés côté serveur
+par Bun.Video. Shenron possède le catalogue, les routes, l’interface et la publication ;
+Bun possède le décodage, les images et l’encodage. Les sources, secrets et fichiers
+de travail restent dans les stores privés ; seuls les médias autorisés sont publiés.
+
+État relu : `EpisodeScenes.tsx` encode les images sélectionnées dans le navigateur,
+en 480 × 270 avec un délai fixe de 400 ms. Les routes d’épisode ne fournissent
+actuellement aucun endpoint de génération de frame ou de GIF. Le contrat de remise
+`packages/media/src/episode-video-delivery.ts` borne les lots à 600 images ; leur
+vérification agrégée est limitée à 128 Mio. Ce contrat ne représente pas une timeline
+exhaustive. Le MP4 local de la fiche 875 contient 33 511 images selon les métadonnées
+Bun.Video relues le 18 octobre ; ce décompte ne prouve pas leur publication.
+
+1. Qualifier les MP4 locaux 875/876 : SHA-256, octets, durée, cadence rationnelle,
+   dimensions, pistes audio et images décodées. Publier les sources par le propriétaire
+   CDN et relire les réponses complètes et partielles. Relier les lecteurs par le
+   writer canonique avec sauvegarde, snapshot complet, CAS, relecture et historique.
+2. Réutiliser les capacités du producteur Bun pour indexer chaque image et son
+   horodatage réel. Garder un index complet séparé des petits lots éditoriaux ;
+   exposer sa pagination et sa couverture sans charger toutes les images dans le
+   HTML ou la colonne JSONB `frames`. Distinguer indexation et décodage effectif.
+3. Ajouter des requêtes serveur bornées par épisode et temps : source locale
+   autorisée résolue par identifiant, jamais une URL ou un chemin libre. Réutiliser
+   le cache par empreinte de source et paramètres ; limiter concurrence, durée,
+   mémoire et nombre d’images. Dédupliquer les demandes identiques, annuler les
+   jobs abandonnés et relire les artefacts avant publication.
+4. Générer les GIF sur une plage réelle de la vidéo, avec timecodes et cadence
+   conservés. Les limites natives des lots restent explicites : au plus 64 images
+   et 64 Mio pour `frames`, cinq secondes, 120 images, 640 × 360 et 32 Mio pour
+   `gif`. Un export plus long requiert un contrat producteur qualifié ; aucune
+   extraction exhaustive non bornée dans une requête HTTP.
+5. Relier la timeline paginée au lecteur et à la sélection de plage GIF ; afficher
+   progression, état vide et erreurs en français, anglais et japonais. Vérifier
+   timecodes fractionnaires, extrémités, seek lointain, cache et concurrence sur
+   les médias réels, puis lecture et export en 390/1280 après livraison scellée
+   par la fabrique et activation Infra.
+
+La génération serveur complète et son activation restent à livrer. Les reçus
+techniques privés du lot Beerus sont dans `var/reports/beerus-876-owner/` ; une
+métadonnée ou une image extraite ne vaut pas lecture publique de l’épisode.
+
 > **Autorité opérationnelle unique** — Relevé consolidé au `2026-10-07T18:36:38Z`.
 > Synthèse unifiée absorbant `PLAN.md`, `REPRISE.md`, `PLAN-SHENRON-RE.md` et la cartographie du graphe monorepo (23 607 nœuds, 62 707 arêtes).
 
