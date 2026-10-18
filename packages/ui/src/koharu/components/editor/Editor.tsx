@@ -1,7 +1,7 @@
 "use client";
 
 import { PanelsRightBottom, PanelLeft } from "lucide-react";
-import { useState, useSyncExternalStore } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 import type { RightSidebarPanel } from "../../navigation";
 import { Button } from "../../../components/button";
@@ -31,6 +31,7 @@ export function Editor() {
   const compact = useSyncExternalStore(subscribeViewport, compactViewport, desktopViewport);
   const [panel, setPanel] = useState<"pages" | "tools" | null>(null);
   const [activePanel, setActivePanel] = useState<RightSidebarPanel>("properties");
+  const panelTrigger = useRef<HTMLButtonElement | null>(null);
   return (
     <ColorSamplingProvider>
       <div data-koharu-ui className="relative flex min-h-0 min-w-0 flex-1 flex-col bg-transparent">
@@ -44,7 +45,10 @@ export function Editor() {
               <Button
                 className="min-h-11 flex-1"
                 variant="secondary"
-                onClick={() => setPanel("pages")}
+                onClick={(event) => {
+                  panelTrigger.current = event.currentTarget;
+                  setPanel("pages");
+                }}
               >
                 <PanelLeft aria-hidden="true" />
                 {t("responsive.pages")}
@@ -52,7 +56,10 @@ export function Editor() {
               <Button
                 className="min-h-11 flex-1"
                 variant="secondary"
-                onClick={() => setPanel("tools")}
+                onClick={(event) => {
+                  panelTrigger.current = event.currentTarget;
+                  setPanel("tools");
+                }}
               >
                 <PanelsRightBottom aria-hidden="true" />
                 {t("responsive.tools")}
@@ -68,6 +75,7 @@ export function Editor() {
               }}
             >
               <DialogPopup
+                finalFocus={panelTrigger}
                 closeLabel={t("window.close")}
                 className="flex h-[min(86dvh,800px)] min-h-0 min-w-0 flex-col overflow-hidden p-0"
               >

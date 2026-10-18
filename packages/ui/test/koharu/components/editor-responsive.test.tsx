@@ -52,4 +52,7 @@ test("compact workspace keeps one canvas while pages and tools open, and restore
   fireEvent.click(screen.getByRole("button", { name: "Tools" }));
   expect(await screen.findByRole("button", { name: "shenron" })).toBeInTheDocument();
   expect(document.querySelectorAll("canvas")).toHaveLength(1);
+  fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape", code: "Escape" });
+  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  await waitFor(() => expect(screen.getByRole("button", { name: "Tools" })).toHaveFocus());
 }, 15000);
