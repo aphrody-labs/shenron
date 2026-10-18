@@ -504,6 +504,9 @@
     "s9": "9. Modifications"
   },
   "profile": {
+    "communityMissingTitle": "Profil communautaire non créé",
+    "communityMissingMessage": "Votre compte est connecté. Aucun profil communautaire Shenron n’est encore associé à ce compte Discord. Votre bibliothèque personnelle reste disponible.",
+    "accountLink": "Ouvrir mon espace",
     "unavailableTitle": "Profil temporairement indisponible",
     "unavailableMessage": "Le service des profils ne répond pas. Réessaie dans un instant — rien n'est perdu.",
     "leaderboardLink": "Le classement",

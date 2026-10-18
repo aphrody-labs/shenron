@@ -504,6 +504,9 @@
     "s9": "9. Modifications"
   },
   "profile": {
+    "communityMissingTitle": "Community profile not created",
+    "communityMissingMessage": "Your account is signed in. No Shenron community profile is associated with this Discord account yet. Your personal library remains available.",
+    "accountLink": "Open my account",
     "unavailableTitle": "Profile temporarily unavailable",
     "unavailableMessage": "The profiles service is not responding. Try again in a moment — nothing is lost.",
     "leaderboardLink": "The ranking",

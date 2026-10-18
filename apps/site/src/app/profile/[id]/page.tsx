@@ -92,7 +92,40 @@ export default async function ProfilePage({
       </PageShell>
     );
   }
-  if (result.status === "absent") notFound();
+  if (result.status === "absent") {
+    if (!ownProfile || !viewer?.user) notFound();
+    return (
+      <PageShell rhythm="tight">
+        <div>
+          <UserNav />
+          <h1 className="mt-6 break-words text-3xl font-semibold">{viewer.user.username}</h1>
+          <section
+            className="mt-6 rounded-2xl border border-border bg-card p-5"
+            aria-labelledby="community-profile-status"
+          >
+            <h2 id="community-profile-status" className="font-semibold">
+              <T k="profile.communityMissingTitle" />
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              <T k="profile.communityMissingMessage" />
+            </p>
+            <Link
+              href="/dashboard"
+              className="mt-4 inline-flex min-h-11 items-center rounded-md border border-border px-4 text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              <T k="profile.accountLink" />
+            </Link>
+          </section>
+          <ContinueRail
+            titleKey="history.resumeWith"
+            titleValues={{ name: viewer.user.username }}
+            className="mt-8"
+          />
+          <MemberLibrary />
+        </div>
+      </PageShell>
+    );
+  }
   const user = result.user;
   const username = user.username || "Guerrier inconnu";
   // Sans avatar personnalisé, Discord affiche l'avatar par défaut du membre,

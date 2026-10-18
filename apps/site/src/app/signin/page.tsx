@@ -37,7 +37,7 @@ const ERROR_LABELS: Record<string, string> = {
 export default function SignInPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [callbackURL, setCallbackURL] = useState("/profile/me");
+  const [callbackURL, setCallbackURL] = useState("/dashboard");
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);

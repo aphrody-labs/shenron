@@ -504,6 +504,9 @@
     "s9": "9. Modifications"
   },
   "profile": {
+    "communityMissingTitle": "コミュニティプロフィールは未作成です",
+    "communityMissingMessage": "ログイン済みです。このDiscordアカウントにはまだShenronのコミュニティプロフィールがありません。個人ライブラリは引き続き利用できます。",
+    "accountLink": "マイページを開く",
     "unavailableTitle": "プロファイルは一時的に利用できません",
     "unavailableMessage": "プロファイル サービスが応答していません。しばらくしてからもう一度お試しください。何も失われません。",
     "leaderboardLink": "ランキング",
