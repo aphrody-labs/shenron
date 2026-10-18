@@ -11,6 +11,9 @@ import {
   VIDEO_PLAYBACK_RATES,
   videoKeyAction,
   videoSeekTarget,
+  videoResumeKey,
+  videoResumePosition,
+  videoVolumeStep,
   isHlsSource,
 } from "@/lib/video-controls";
 import { nativeEpisodeVideoSource } from "@/lib/episode-video-source";
@@ -34,6 +37,21 @@ function trackUrl(src: string): string {
   return /^https?:\/\//i.test(src)
     ? src
     : `/api/subtitles?src=${encodeURIComponent(src.replace(/^\.?\/*/, ""))}`;
+}
+function readResume(key: string): number {
+  try {
+    return Number(localStorage.getItem(key)) || 0;
+  } catch {
+    return 0;
+  }
+}
+function writeResume(key: string, seconds: number | null) {
+  try {
+    if (seconds === null) localStorage.removeItem(key);
+    else localStorage.setItem(key, String(Math.floor(seconds)));
+  } catch {
+    // Storage can be blocked (private window); resume is a convenience only.
+  }
 }
 function timeLabel(seconds: number): string {
   const value = Math.max(0, Math.floor(Number.isFinite(seconds) ? seconds : 0));
@@ -66,12 +84,15 @@ export function VideoPlayer({
     retry,
   } = useVideoSource(videoRef, playbackSource, onError);
   const rateRef = useRef(1);
+  const resumeKey = videoResumeKey(playbackSource);
+  const lastSaved = useRef(0);
   const [paused, setPaused] = useState(true);
   const [rate, setRate] = useState(1);
   const [caption, setCaption] = useState(-1);
   const [textTracks, setTextTracks] = useState<{ index: number; label: string }[]>([]);
   const [fullscreenSupported, setFullscreenSupported] = useState(false);
   const [pipSupported, setPipSupported] = useState(false);
+  const [isIosFullscreen, setIsIosFullscreen] = useState(false);
   const [actionError, setActionError] = useState(false);
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -144,10 +165,36 @@ export function VideoPlayer({
     setFullscreenSupported(
       Boolean(document.fullscreenEnabled && containerRef.current?.requestFullscreen),
     );
+    setIsIosFullscreen(
+      Boolean(
+        !document.fullscreenEnabled &&
+        (videoRef.current as { webkitEnterFullscreen?: unknown } | null)?.webkitEnterFullscreen,
+      ),
+    );
     setPipSupported(
       Boolean(document.pictureInPictureEnabled && videoRef.current?.requestPictureInPicture),
     );
   }, [src]);
+
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  useEffect(() => {
+    const sync = () => setIsFullscreen(document.fullscreenElement === containerRef.current);
+    document.addEventListener("fullscreenchange", sync);
+    return () => document.removeEventListener("fullscreenchange", sync);
+  }, []);
+  useEffect(() => {
+    const video = videoRef.current;
+    const save = () => {
+      if (!video) return;
+      const resume = videoResumePosition(video.currentTime, video.duration);
+      if (resume !== null) writeResume(resumeKey, resume);
+    };
+    window.addEventListener("pagehide", save);
+    return () => {
+      window.removeEventListener("pagehide", save);
+      save();
+    };
+  }, [resumeKey]);
 
   useEffect(() => {
     if (!theater) return;
@@ -186,7 +233,14 @@ export function VideoPlayer({
     if (target !== null) video.currentTime = target;
   };
   const fullscreen = async () => {
-    if (!fullscreenSupported) return;
+    if (!fullscreenSupported) {
+      // iOS Safari only fullscreens the video element itself.
+      const video = videoRef.current as
+        | (HTMLVideoElement & { webkitEnterFullscreen?: () => void })
+        | null;
+      video?.webkitEnterFullscreen?.();
+      return;
+    }
     try {
       if (document.fullscreenElement === containerRef.current) await document.exitFullscreen();
       else await containerRef.current?.requestFullscreen();
@@ -214,6 +268,13 @@ export function VideoPlayer({
       track.mode = i === index ? "showing" : "disabled";
     });
     setCaption(index);
+  };
+  const toggleMute = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = !video.muted;
+    // Unmuting a zero volume would stay silent.
+    if (!video.muted && video.volume === 0) video.volume = 0.5;
   };
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     const settings = containerRef.current?.querySelector<HTMLDetailsElement>("details[open]");
@@ -259,7 +320,7 @@ export function VideoPlayer({
     if (
       !action ||
       (action === "captions" && textTracks.length === 0) ||
-      (action === "fullscreen" && !fullscreenSupported) ||
+      (action === "fullscreen" && !fullscreenSupported && !isIosFullscreen) ||
       (action === "pip" && !pipSupported)
     )
       return;
@@ -275,7 +336,15 @@ export function VideoPlayer({
         seek(event.key.toLowerCase() === "l" ? 10 : 5);
         break;
       case "mute":
-        if (videoRef.current) videoRef.current.muted = !videoRef.current.muted;
+        toggleMute();
+        break;
+      case "volumeUp":
+      case "volumeDown":
+        if (videoRef.current) {
+          const video = videoRef.current;
+          video.volume = videoVolumeStep(video.volume, action === "volumeUp" ? 0.1 : -0.1);
+          video.muted = video.volume === 0;
+        }
         break;
       case "fullscreen":
         void fullscreen();
@@ -339,7 +408,7 @@ export function VideoPlayer({
         controls={!enhanced}
         playsInline
         preload="metadata"
-        crossOrigin="anonymous"
+        crossOrigin={subtitles?.length ? "anonymous" : undefined}
         poster={poster}
         aria-label={title}
         tabIndex={0}
@@ -350,7 +419,18 @@ export function VideoPlayer({
           }
           if (enhanced) void playPause();
         }}
-        onTimeUpdate={syncTimeline}
+        onTimeUpdate={(event) => {
+          syncTimeline();
+          const video = event.currentTarget;
+          if (Math.abs(video.currentTime - lastSaved.current) < 5) return;
+          lastSaved.current = video.currentTime;
+          const resume = videoResumePosition(video.currentTime, video.duration);
+          if (resume !== null) writeResume(resumeKey, resume);
+        }}
+        onEnded={() => {
+          writeResume(resumeKey, null);
+          lastSaved.current = 0;
+        }}
         onProgress={syncTimeline}
         onDurationChange={syncTimeline}
         onWaiting={() => setWaiting(true)}
@@ -364,7 +444,15 @@ export function VideoPlayer({
         onPlay={(event) => setPaused(event.currentTarget.paused)}
         onPause={(event) => setPaused(event.currentTarget.paused)}
         onLoadedMetadata={() => {
-          if (videoRef.current) videoRef.current.playbackRate = rateRef.current;
+          const video = videoRef.current;
+          if (video) {
+            video.playbackRate = rateRef.current;
+            const resume = videoResumePosition(readResume(resumeKey), video.duration);
+            if (resume !== null && video.currentTime < 1) {
+              video.currentTime = resume;
+              lastSaved.current = resume;
+            }
+          }
           syncTimeline();
         }}
         onRateChange={() => {
@@ -450,9 +538,7 @@ export function VideoPlayer({
             type="button"
             aria-pressed={muted}
             aria-label={t(muted ? "unmute" : "mute")}
-            onClick={() => {
-              if (videoRef.current) videoRef.current.muted = !videoRef.current.muted;
-            }}
+            onClick={toggleMute}
           >
             <MaterialSymbol name={muted || volume === 0 ? "volume_off" : "volume_up"} />
           </button>
@@ -483,8 +569,13 @@ export function VideoPlayer({
           >
             <MaterialSymbol name="theaters" />
           </button>
-          {fullscreenSupported && (
-            <button type="button" aria-label={t("fullscreen")} onClick={() => void fullscreen()}>
+          {(fullscreenSupported || isIosFullscreen) && (
+            <button
+              type="button"
+              aria-pressed={isFullscreen}
+              aria-label={t("fullscreen")}
+              onClick={() => void fullscreen()}
+            >
               <MaterialSymbol name="fullscreen" />
             </button>
           )}
