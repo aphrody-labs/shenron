@@ -1548,7 +1548,12 @@
   },
   "accueil": {
     "hero": {
-      "title": "Dragon Ball, en français et sourcé"
+      "title": "Dragon Ball, en français et sourcé",
+      "featureEyebrow": "À l’affiche",
+      "watchEpisode": "Voir l’épisode {number}",
+      "episodeNumber": "Épisode {number}",
+      "pauseFrames": "Mettre les images en pause",
+      "resumeFrames": "Animer les images"
     },
     "search": {
       "label": "Rechercher dans l'encyclopédie",

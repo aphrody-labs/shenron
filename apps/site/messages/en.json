@@ -1548,7 +1548,12 @@
   },
   "accueil": {
     "hero": {
-      "title": "Dragon Ball, in French and sourced"
+      "title": "Dragon Ball, in French and sourced",
+      "featureEyebrow": "Now showing",
+      "watchEpisode": "Watch episode {number}",
+      "episodeNumber": "Episode {number}",
+      "pauseFrames": "Pause images",
+      "resumeFrames": "Animate images"
     },
     "search": {
       "label": "Search the encyclopedia",
