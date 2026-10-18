@@ -89,8 +89,11 @@ async function main() {
     const child = Bun.spawn(["aphrody", ...args], { stdout: "pipe", stderr: "inherit" });
     const report = await new Response(child.stdout).text();
     const code = await child.exited;
-    if (code !== 0)
-      throw new Error(`aphrody web crawl exited with ${code}: ${report.slice(0, 400)}`);
+    if (code !== 0) {
+      console.error(JSON.stringify({ batch: run + 1, skipped: true, code, report: report.slice(0, 400) }));
+      await Bun.sleep(2000);
+      continue;
+    }
     stats = frontierStats(frontier);
     console.log(JSON.stringify({ batch: run + 1, ...stats }));
   }
