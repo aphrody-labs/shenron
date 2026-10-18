@@ -5,6 +5,12 @@ export PATH="$HOME/.bun/bin:$HOME/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
 SOURCE=${SHENRON_SOURCE_REPO:-$HOME/src/shenron}
 W=${SHENRON_BUILD_REPO:-$HOME/build/transient/shenron-docker}
 LOCK=${SHENRON_BUILD_LOCK:-$HOME/build/locks/heavy.lock}
+# A compiled production binary must embed a self-contained release runtime.
+export SHENRON_COMPILE_BUN=${SHENRON_COMPILE_BUN:-$(command -v bun)}
+COMPILE_BUN_VERSION=$("$SHENRON_COMPILE_BUN" --version)
+case "$COMPILE_BUN_VERSION" in
+  *debug*) echo "Refusing a debug runtime for production compilation" >&2; exit 1 ;;
+esac
 mkdir -p "$(dirname "$W")" "$(dirname "$LOCK")"
 exec 9>"$LOCK"
 flock -n 9 || { echo "shenron build already running" >&2; exit 75; }
@@ -34,9 +40,8 @@ echo "== server"; bun scripts/build/server.ts --flavor production --target linux
 install -D -m 0755 target/release/shenron-mcp dist/mcp/linux-x64/shenron-mcp
 install -D -m 0755 target/release/libshenron_ffi.so dist/server/linux-x64/native/libshenron_ffi.so
 echo "== image"; docker build -q -f deploy/docker/Dockerfile --build-arg SHENRON_REVISION="$SHA" -t "localhost/shenron:$SHA" -t localhost/shenron:local .
-docker run --rm "localhost/shenron:$SHA" version &
-docker run --rm --entrypoint /usr/local/bin/shenron-bot "localhost/shenron:$SHA" --smoke &
-wait
+timeout 60 docker run --rm "localhost/shenron:$SHA" version
+timeout 60 docker run --rm --entrypoint /usr/local/bin/shenron-bot "localhost/shenron:$SHA" --smoke
 # Keep the current image plus the three newest previous revisions; never touch volumes.
 docker image ls --format '{{.Repository}}:{{.Tag}}' 'localhost/shenron:*' \
   | grep -v -F -e "localhost/shenron:$SHA" -e 'localhost/shenron:local' \
