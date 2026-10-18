@@ -25,6 +25,7 @@ export interface SubtitleTrack {
   src: string;
 }
 export interface VideoPlayerProps {
+  episodeId?: string | number;
   src: string;
   title: string;
   poster?: string;
@@ -60,6 +61,7 @@ function timeLabel(seconds: number): string {
 
 /** Native controls remain the pre-hydration fallback; one enhanced toolbar owns playback. */
 export function VideoPlayer({
+  episodeId,
   src,
   title,
   poster,
@@ -403,6 +405,7 @@ export function VideoPlayer({
         )}
       </header>
       <video
+        data-episode-id={episodeId}
         ref={videoRef}
         src={isHlsSource(playbackSource) ? undefined : playbackSource}
         controls={!enhanced}

@@ -26,6 +26,7 @@ import { EpisodeDownload } from "@/components/episodes/EpisodeDownload";
 import { AnimatedMedia } from "@/components/media/AnimatedMedia";
 import { BackgroundImage } from "@/components/media/BackgroundImage";
 import { EpisodeScenes } from "./EpisodeScenes";
+import { isShenronEpisodeVideoURL } from "@/lib/episode-video-source";
 import { EntityRating, EntityRatingSummary } from "@/components/ratings/EntityRating";
 import { CommunityRankBadge } from "@/components/ratings/CommunityRankBadge";
 import { JsonLd } from "@/components/JsonLd";
@@ -421,6 +422,13 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
               series={ep.series}
               episodeId={ep.id}
               episodeImage={ep.image}
+              timelineAvailable={
+                ep.players?.some(
+                  (entry) =>
+                    URL.canParse(entry.embedUrl) &&
+                    isShenronEpisodeVideoURL(new URL(entry.embedUrl)),
+                ) ?? false
+              }
             />
 
             {youtubeId && (

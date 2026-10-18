@@ -330,6 +330,7 @@ export function VideoLecteurs({
         )
       ) : nativeSource && status !== "failed" ? (
         <VideoPlayer
+          episodeId={entityType === "episode" ? entityId : undefined}
           key={nativeSource}
           src={nativeSource}
           title={cleanName(current.name)}
