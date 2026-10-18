@@ -197,7 +197,9 @@ function build(): void {
   step("image de build", ["bun", "scripts/build/container.ts", "--check"]);
   inBuildImage("bun install", ["bun", "install", "--frozen-lockfile"]);
   cargoProducts();
-  assemble(bundleSite(commit, join(CURRENT, "systemd")), commit);
+  // Première release de l'hôte : pas d'unités installées, elles sont composées depuis le dépôt.
+  const installed = join(CURRENT, "systemd");
+  assemble(bundleSite(commit, existsSync(installed) ? installed : undefined), commit);
 }
 
 /** Arbre publié par `cdn` : une release assemblée sous /srv/shenron/releases, sinon l'active. */
