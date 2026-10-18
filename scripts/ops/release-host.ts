@@ -126,6 +126,39 @@ export function siteBuildEnv(envText: string): Record<string, string> {
   return { SITE_BUILD_DATABASE_URL: database, ...(cdn ? { NEXT_PUBLIC_CDN_URL: cdn } : {}) };
 }
 
+/**
+ * Relais SSH vers PostgreSQL de dbfr, le temps du build du site : le tunnel permanent
+ * `shenron-pg-tunnel` est retiré depuis le 2026-10-09, mais le build lit encore la base de
+ * production sur `127.0.0.1:15433`. Sans effet si le port local répond déjà.
+ */
+function databaseRelay(url: string): Disposable {
+  const port = new URL(url).port;
+  const listening = () =>
+    Bun.spawnSync(["bash", "-c", `exec 3<>/dev/tcp/127.0.0.1/${port}`]).exitCode === 0;
+  if (new URL(url).hostname !== "127.0.0.1" || listening()) return { [Symbol.dispose]() {} };
+  console.log(`== relais base dbfr (${port})`);
+  const ssh = Bun.spawn(
+    [
+      "ssh",
+      "-N",
+      "-o",
+      "BatchMode=yes",
+      "-o",
+      "ExitOnForwardFailure=yes",
+      "-L",
+      `${port}:127.0.0.1:5432`,
+      process.env.SHENRON_DB_HOST ?? "dbfr",
+    ],
+    { stdio: ["ignore", "inherit", "inherit"] },
+  );
+  for (let i = 0; i < 50 && !listening(); i++) Bun.sleepSync(200);
+  if (!listening()) {
+    ssh.kill();
+    throw new Error(`relais base dbfr : 127.0.0.1:${port} injoignable`);
+  }
+  return { [Symbol.dispose]: () => ssh.kill() };
+}
+
 /** Bot compilé, site (base lue dans l'environnement du site) et emballage : `artifacts/releases/<sha>`. */
 function bundleSite(commit: string, systemdDir?: string): string {
   // Le `.git` du worktree pointe vers le checkout source, absent du conteneur : le commit est transmis.
@@ -136,6 +169,7 @@ function bundleSite(commit: string, systemdDir?: string): string {
   const buildEnv = siteBuildEnv(envFile.stdout.toString());
   const release = join("artifacts", "releases", commit);
   step("site", ["rm", "-rf", release, `${release}.staging`]);
+  using _relay = databaseRelay(buildEnv.SITE_BUILD_DATABASE_URL);
   step(
     "site + emballage",
     [
