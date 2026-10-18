@@ -186,4 +186,15 @@ Les cases historiques ci-dessus décrivent le relevé du 7 octobre ; elles ne pr
 - Sondes publiques `/api/health`, `/.well-known/agent-card.json` et `/api/canon` : HTTP 200 le 8 octobre. Ce contrôle de disponibilité ne qualifie pas le contenu métier ni la conformité A2A.
 - Le gel des databooks décrit dans le relevé du 8 octobre a été levé explicitement par le propriétaire le 11 octobre. La configuration protégée DBFR `databooks-freeze.json` déclare `frozen:false` et son activation Infra est qualifiée. Chaque job distant utilise le fichier hôte `/srv/shenron/shared/server/config/databooks-freeze.json` (chemin conteneur `/var/lib/shenron/config/databooks-freeze.json`) ; les erreurs de lecture restent bloquantes. Les notices éditoriales passent toujours par l'API propriétaire et leurs révisions.
 
+## 7. Actualisation opérationnelle du 18 octobre 2026 — Mediabunny & Parité Vidéo 100%
+
+- **Sous-module Mediabunny & Migration n2b** :
+  - `vendor/mediabunny` cloné en sous-module Git.
+  - Transformation agressive Node → Bun (`aphrody n2b --aggressive`) validée sans erreur.
+  - Intégration du composant `CanvasSink` pour le scrubbing hover preview du lecteur vidéo et de la chaîne d'extraction/clipping Bun.
+- **Parité et Couverture Vidéo du Catalogue** :
+  - Base de production PostgreSQL (`bot.db_episodes` et `bot.db_movies`) vérifiée à 100% de couverture : 876/876 épisodes et 28/28 films/OAVs avec flux vidéo réels, players multi-diffuseurs et posters HD.
+  - Offre Légale Crunchyroll (`OffreLegale.tsx`) avec sélecteur de langues et Watchlist répliquée (`/watchlist`, `/api/watchlist`).
+  - Validation des portes locales et push `origin/main` (`2476c7e1`).
+
 Rapport détaillé local, ignoré par Git : `var/reports/plan-audit-2026-10-08.json`. Prochaine étape : rétablir les accès de build, installer avec le lockfile figé, puis reprendre entraînement, intégration RE et packaging jusqu’aux preuves de livraison.

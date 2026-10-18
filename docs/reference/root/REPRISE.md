@@ -1,5 +1,20 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## 2026-10-18 — Intégration Mediabunny (submodule + n2b), Parité Catalogue Vidéo 100% et Watchlist
+
+- Intégration Mediabunny (`vendor/mediabunny`) :
+  - Dépôt cloné en sous-module Git (`git submodule add https://github.com/Vanilagy/mediabunny.git vendor/mediabunny`).
+  - Migration agressive Node → Bun appliquée avec succès via `aphrody n2b vendor/mediabunny --ignore "test/**" --aggressive` (remplacement fs synchrone par `Bun.file().text()`, `Bun.write()`, `Bun.sleep()`, typage Uint8Array et ESM `import.meta.dir`).
+  - Rapport d'exploration et d'intégration produit (`mediabunny_integration_report.md`) : architecture pure TypeScript zero-dependency, décodage/encodage matériel WebCodecs et NodeAV sur serveur, `CanvasSink` pour le scrubbing hover preview instantané, transmuxing/clipping d'épisodes sans processus FFmpeg lourd.
+- Parité Catalogue & Complétude Vidéo 100% sur PostgreSQL DBFR :
+  - Audit formel de la base de données de production : 876/876 épisodes et 28/28 films/OAVs disposent désormais d'une vidéo réelle, d'au moins un player officiel ou multi-source, d'une affiche haute résolution et d'un synopsis français.
+  - Résorption des derniers manques : backfill des vignettes YouTube HD pour les 48 épisodes de Super Dragon Ball Heroes, correction des 11 épisodes sans players associés, et ajout des flux VOSTFR pour les 3 films/OAVs manquants (OAV 2008 Yo Son Goku, Plan d'anéantissement des Saïyens et son remake).
+  - Validation des suites de tests unitaires et intégration (`bun-autonomous-engine.test.ts`, `video-languages.test.ts`).
+  - Commit et push sur `origin/main` (commit `2476c7e1`).
+- Interface et Offre Légale Crunchyroll :
+  - Composant `OffreLegale.tsx` modernisé avec sélecteur de langue dynamique (`Tous`, `VF`, `VOSTFR`), boutons d'accès direct et styles Toriyama.
+  - Page `/watchlist` livrée avec son API REST `/api/watchlist` et son onglet dédié dans la barre de navigation utilisateur (`UserNav.tsx`).
+
 ## 2026-10-18 — Lecteur Crunchyroll avec Bun Video, complétion épisode 876 et auto-upload
 
 Traitement autonome de la demande Crunchyroll & Épisode 876 (mode YOLO / Goal) :
