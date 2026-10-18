@@ -583,5 +583,11 @@
     "next": "次の画像",
     "play": "再生",
     "pause": "一時停止"
+  },
+  "responsive": {
+    "navigation": "作業パネル",
+    "pages": "ページ",
+    "tools": "ツール",
+    "description": "このパネルでプロジェクトのページとツールを使用できます。"
   }
 }

@@ -10,13 +10,18 @@ import { Inspector } from "./Inspector";
 import { rightSidebarPanels, type RightSidebarPanel } from "../../navigation";
 import { Button } from "../../../components/button";
 
-export function RightSidebar() {
+export function RightSidebar({
+  activePanel,
+  onPanelChange,
+}: { activePanel?: RightSidebarPanel; onPanelChange?: (panel: RightSidebarPanel) => void } = {}) {
   const { t } = useTranslation();
-  const [panel, setPanel] = useState<RightSidebarPanel>("properties");
+  const [localPanel, setLocalPanel] = useState<RightSidebarPanel>("properties");
+  const panel = activePanel ?? localPanel;
+  const setPanel = onPanelChange ?? setLocalPanel;
 
   return (
     <aside className="flex h-full min-h-0 flex-col bg-[var(--surface-panel)]">
-      <div className="flex h-10 shrink-0 items-center gap-1 border-b border-border/80 px-2.5">
+      <div className="flex min-h-11 shrink-0 items-center gap-1 overflow-x-auto border-b border-border/80 px-2.5 lg:h-10 lg:min-h-10">
         {rightSidebarPanels.map(({ id, icon: Icon, label }) => (
           <Button
             key={id}

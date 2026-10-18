@@ -583,5 +583,11 @@
     "next": "Next frame",
     "play": "Play",
     "pause": "Pause"
+  },
+  "responsive": {
+    "navigation": "Workspace panels",
+    "pages": "Pages",
+    "tools": "Tools",
+    "description": "Use the same project pages and tools in this panel."
   }
 }

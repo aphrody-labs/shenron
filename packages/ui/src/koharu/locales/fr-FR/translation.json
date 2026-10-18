@@ -583,5 +583,11 @@
     "next": "Image suivante",
     "play": "Lire",
     "pause": "Pause"
+  },
+  "responsive": {
+    "navigation": "Panneaux de travail",
+    "pages": "Pages",
+    "tools": "Outils",
+    "description": "Retrouvez les mêmes pages et outils du projet dans ce panneau."
   }
 }
