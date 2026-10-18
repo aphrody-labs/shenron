@@ -5,7 +5,10 @@
  * The frontier lives in var/reports/site-crawl/frontier.sqlite and survives interruptions: each
  * batch drains up to --batch pending requests, so the script can be killed and relaunched.
  * Sitemaps seed the frontier on the first batch only (seeding ~25k URLs takes minutes); admin,
- * API and profile routes are excluded, as in robots.txt. Run it in tmux on long crawls.
+ * API, admin and profile routes are excluded for privacy (they are not public content).
+ * This crawler targets dragonballfr.com, owned by the operator: it does not obey the site's
+ * own robots.txt (owner decision, 2026-10-18). Third-party sources keep their robots checks.
+ * Run it in tmux on long crawls.
  *
  * Usage: bun scripts/ops/crawl-site.ts [--origin URL] [--out DIR] [--batch N] [--max-batches N]
  *        [--concurrency N] [--delay MS] [--max-depth N]
@@ -80,7 +83,6 @@ async function main() {
       String(delay),
       "--max-retries",
       "3",
-      "--obey-robots",
       "--json",
     ];
     if (!seeded && run === 0) args.push("--sitemaps", "--max-sitemaps", "25");

@@ -79,6 +79,12 @@ ci-dessus. Règles d'application :
   la chaîne de livraison (fabrique, image scellée, Infra), jamais à la main.
 - Ce qui ne peut pas être produit par le code (posters absents, couverture manga
   incomplète) reste un manque de données à signaler, pas à masquer.
+- Crawl de notre propre site (dragonballfr.com) : le crawler n'obéit pas au robots.txt du
+  site (décision du propriétaire, 2026-10-18) ; /api, /admin et /profile restent exclus pour
+  la confidentialité. Cloudflare doit laisser passer ce crawler par une allowlist posée par
+  l'Infra, jamais par un contournement dans le code.
+- Sites tiers (sources, pools de mangas, lecteurs publics) : robots.txt reste respecté et
+  aucune protection anti-bot n'est contournée ; cette règle ne change pas.
 
 ## Exécution autonome NHIL
 
