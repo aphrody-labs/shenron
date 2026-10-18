@@ -56,11 +56,20 @@
   "timelinePreviousPage": "前のプレビュー",
   "timelineNextPage": "次のプレビュー",
   "timelineFrame": "{time}のフレーム{frame}",
-  "timelineGif": "ここから2秒間のGIFを作成",
+  "timelineGif": "GIFを生成",
   "timelineGifFailed": "GIFを生成できませんでした。再試行してください。",
   "timelineGifPreview": "生成したGIFのプレビュー",
   "themeChoice": "テーマを選択",
   "themeBeerus": "ビルス・ダーク",
   "themeGoku": "超サイヤ人悟空・ライト",
-  "themeNeutral": "ニュートラル"
+  "themeNeutral": "ニュートラル",
+  "timelineSeconds": "{count} 秒",
+  "timelineGifDuration": "長さ",
+  "timelineGifSettings": "GIFクリップを作成",
+  "timelineGifFps": "フレームレート",
+  "timelinePixels": "{count} px",
+  "timelineGifCancel": "キャンセル",
+  "timelineGifWidth": "幅",
+  "timelineClipRange": "{start} → {end} · {duration} 秒",
+  "timelineFrameFailed": "プレビューを読み込めませんでした。別のフレームを選択してください。"
 }

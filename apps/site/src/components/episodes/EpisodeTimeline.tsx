@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useVideoUIText } from "@/lib/video-ui-text";
+import styles from "./EpisodeTimeline.module.css";
 
 interface TimelineMetadata {
   durationSeconds: number;
@@ -27,19 +28,38 @@ export function EpisodeTimeline({ episodeId }: { episodeId: number }) {
   const [gif, setGif] = useState<string | null>(null);
   const [gifBusy, setGifBusy] = useState(false);
   const [gifFailed, setGifFailed] = useState(false);
+  const [duration, setDuration] = useState(2);
+  const [gifFps, setGifFps] = useState(6);
+  const [gifWidth, setGifWidth] = useState(320);
+  const [previewFailed, setPreviewFailed] = useState(false);
   const gifRequest = useRef<AbortController | null>(null);
   const base = `/api/episodes/${episodeId}/timeline`;
 
   useEffect(() => {
     const controller = new AbortController();
+    gifRequest.current?.abort();
     const load = async () => {
       try {
         const response = await fetch(base, { signal: controller.signal });
         if (!response.ok) throw new Error("timeline_unavailable");
         const value: TimelineMetadata = await response.json();
-        if (!Number.isSafeInteger(value.frameCount) || value.frameCount < 1 || !(value.fps > 0))
+        if (
+          !Number.isSafeInteger(value.frameCount) ||
+          value.frameCount < 1 ||
+          !Number.isFinite(value.fps) ||
+          !(value.fps > 0) ||
+          !Number.isFinite(value.durationSeconds) ||
+          value.durationSeconds <= 0
+        )
           throw new Error("invalid_timeline");
-        if (!controller.signal.aborted) setMetadata(value);
+        if (!controller.signal.aborted) {
+          setMetadata(value);
+          setFailed(false);
+          setFrame(0);
+          setPreviewFrame(0);
+          setGif(null);
+          setGifBusy(false);
+        }
       } catch {
         if (!controller.signal.aborted) setFailed(true);
       }
@@ -49,7 +69,10 @@ export function EpisodeTimeline({ episodeId }: { episodeId: number }) {
   }, [base]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setPreviewFrame(frame), 180);
+    const timer = setTimeout(() => {
+      setPreviewFailed(false);
+      setPreviewFrame(frame);
+    }, 180);
     return () => clearTimeout(timer);
   }, [frame]);
 
@@ -70,16 +93,21 @@ export function EpisodeTimeline({ episodeId }: { episodeId: number }) {
   };
 
   const exportGif = async () => {
+    gifRequest.current?.abort();
     const controller = new AbortController();
     gifRequest.current = controller;
     setGifBusy(true);
     setGifFailed(false);
     try {
-      const response = await fetch(`${base}?kind=gif&index=${frame}`, {
-        signal: controller.signal,
-      });
+      const response = await fetch(
+        `${base}?kind=gif&index=${frame}&duration=${duration}&fps=${gifFps}&width=${gifWidth}`,
+        {
+          signal: controller.signal,
+        },
+      );
       if (!response.ok) throw new Error("gif_unavailable");
       const blob = await response.blob();
+      if (blob.type !== "image/gif") throw new Error("invalid_gif");
       if (!controller.signal.aborted) setGif(URL.createObjectURL(blob));
     } catch {
       if (!controller.signal.aborted) setGifFailed(true);
@@ -98,12 +126,11 @@ export function EpisodeTimeline({ episodeId }: { episodeId: number }) {
   const indices = Array.from({ length: 12 }, (_, index) => start + index * stride).filter(
     (index) => index <= last,
   );
+  const clipStart = selected / metadata.fps;
+  const clipDuration = Math.max(0, Math.min(duration, metadata.durationSeconds - clipStart));
 
   return (
-    <section
-      className="min-w-0 space-y-4 rounded-xl border border-border p-4"
-      aria-label={t("timelineTitle")}
-    >
+    <section className={styles.root} aria-label={t("timelineTitle")}>
       <h3 className="font-display text-lg font-bold">{t("timelineTitle")}</h3>
       <p className="text-sm text-muted-foreground">
         {t("timelineCount", { count: metadata.frameCount })}
@@ -113,6 +140,8 @@ export function EpisodeTimeline({ episodeId }: { episodeId: number }) {
           {t("timelinePosition", { frame: selected + 1, time: timeLabel(selected / metadata.fps) })}
         </span>
         <input
+          className={styles.scrubber}
+          aria-valuetext={timeLabel(selected / metadata.fps)}
           type="range"
           min={0}
           max={last}
@@ -120,6 +149,11 @@ export function EpisodeTimeline({ episodeId }: { episodeId: number }) {
           value={selected}
           onChange={(event) => selectFrame(Number(event.target.value))}
         />
+        <span className={styles.ruler} aria-hidden="true">
+          <span>0:00</span>
+          <span>{timeLabel(metadata.durationSeconds / 2)}</span>
+          <span>{timeLabel(metadata.durationSeconds)}</span>
+        </span>
       </label>
       <div className="flex flex-wrap items-center gap-3">
         <label className="flex items-center gap-2">
@@ -154,13 +188,15 @@ export function EpisodeTimeline({ episodeId }: { episodeId: number }) {
       <img
         className="aspect-video w-full max-w-2xl rounded bg-black object-contain"
         src={`${base}?kind=frame&index=${preview}`}
+        onError={() => setPreviewFailed(true)}
         alt={t("timelineFrame", { frame: preview + 1, time: timeLabel(preview / metadata.fps) })}
       />
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+      {previewFailed && <p role="alert">{t("timelineFrameFailed")}</p>}
+      <div className={styles.filmstrip} aria-label={t("timelineStep")}>
         {indices.map((index) => (
           <button
             type="button"
-            className="min-w-0 rounded border border-border p-1"
+            className={styles.thumbnail}
             key={index}
             onClick={() => selectFrame(index)}
             aria-pressed={index === selected}
@@ -175,10 +211,9 @@ export function EpisodeTimeline({ episodeId }: { episodeId: number }) {
           </button>
         ))}
       </div>
-      <div className="flex flex-wrap gap-3">
+      <div className={styles.controls}>
         <button
           type="button"
-          className="min-h-11 rounded border border-border px-3"
           disabled={start === 0}
           onClick={() => selectFrame(Math.max(0, start - 12 * stride))}
         >
@@ -186,21 +221,77 @@ export function EpisodeTimeline({ episodeId }: { episodeId: number }) {
         </button>
         <button
           type="button"
-          className="min-h-11 rounded border border-border px-3"
           disabled={start + 12 * stride > last}
           onClick={() => selectFrame(Math.min(last, start + 12 * stride))}
         >
           {t("timelineNextPage")}
         </button>
-        <button
-          type="button"
-          className="min-h-11 rounded bg-primary px-3 text-primary-foreground"
-          disabled={gifBusy}
-          onClick={() => void exportGif()}
-        >
-          {t(gifBusy ? "sceneEncoding" : "timelineGif")}
-        </button>
       </div>
+      <fieldset className={styles.generator} disabled={gifBusy}>
+        <legend>{t("timelineGifSettings")}</legend>
+        <p>
+          {t("timelineClipRange", {
+            start: timeLabel(clipStart),
+            end: timeLabel(clipStart + clipDuration),
+            duration: clipDuration.toFixed(2),
+          })}
+        </p>
+        <div className={styles.controls}>
+          <label>
+            {t("timelineGifDuration")}
+            <select value={duration} onChange={(event) => setDuration(Number(event.target.value))}>
+              {[1, 2, 3, 4, 5].map((value) => (
+                <option key={value} value={value}>
+                  {t("timelineSeconds", { count: value })}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            {t("timelineGifFps")}
+            <select value={gifFps} onChange={(event) => setGifFps(Number(event.target.value))}>
+              {[6, 12, 24].map((value) => (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            {t("timelineGifWidth")}
+            <select value={gifWidth} onChange={(event) => setGifWidth(Number(event.target.value))}>
+              {[320, 480, 640].map((value) => (
+                <option key={value} value={value}>
+                  {t("timelinePixels", { count: value })}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            className="min-h-11 rounded bg-primary px-3 text-primary-foreground"
+            disabled={gifBusy || clipDuration <= 0}
+            onClick={() => void exportGif()}
+          >
+            {t(gifBusy ? "sceneEncoding" : "timelineGif")}
+          </button>
+        </div>
+      </fieldset>
+      {gifBusy && (
+        <output className={styles.busy}>
+          <progress aria-label={t("sceneEncoding")} />
+          <span>{t("sceneEncoding")}</span>
+          <button
+            type="button"
+            onClick={() => {
+              gifRequest.current?.abort();
+              setGifBusy(false);
+            }}
+          >
+            {t("timelineGifCancel")}
+          </button>
+        </output>
+      )}
       {gifFailed && <p role="alert">{t("timelineGifFailed")}</p>}
       {gif && (
         <div className="space-y-2">

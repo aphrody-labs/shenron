@@ -56,11 +56,20 @@
   "timelinePreviousPage": "Aperçus précédents",
   "timelineNextPage": "Aperçus suivants",
   "timelineFrame": "Frame {frame} à {time}",
-  "timelineGif": "Créer un GIF de 2 secondes ici",
+  "timelineGif": "Générer le GIF",
   "timelineGifFailed": "Le GIF n’a pas pu être généré. Réessayez.",
   "timelineGifPreview": "Aperçu du GIF généré",
   "themeChoice": "Choisir le thème",
   "themeBeerus": "Beerus · Sombre",
   "themeGoku": "Goku SSJ · Clair",
-  "themeNeutral": "Neutre"
+  "themeNeutral": "Neutre",
+  "timelineSeconds": "{count} s",
+  "timelineGifDuration": "Durée",
+  "timelineGifSettings": "Créer un extrait GIF",
+  "timelineGifFps": "Images par seconde",
+  "timelinePixels": "{count} px",
+  "timelineGifCancel": "Annuler",
+  "timelineGifWidth": "Largeur",
+  "timelineClipRange": "{start} → {end} · {duration} s",
+  "timelineFrameFailed": "Cet aperçu est indisponible. Sélectionnez une autre frame."
 }
