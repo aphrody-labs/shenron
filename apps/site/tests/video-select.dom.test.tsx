@@ -38,6 +38,26 @@ test("the public selector has a named combobox and its selected value in SSR", (
   expect(html).toContain("6 fps");
 });
 test.skipIf(typeof document === "undefined")(
+  "the options render in the document outside fullscreen",
+  async () => {
+    actEnvironment.IS_REACT_ACT_ENVIRONMENT = true;
+    host = document.createElement("div");
+    document.body.append(host);
+    Object.defineProperty(document, "fullscreenElement", { configurable: true, value: null });
+    root = createRoot(host);
+    await act(async () => root!.render(selector(() => {})));
+    await act(async () => {
+      host!.querySelector<HTMLButtonElement>('[role="combobox"]')!.click();
+      await new Promise((resolve) => setTimeout(resolve, 40));
+    });
+    const listbox = document.querySelector('[role="listbox"]');
+    expect(listbox).not.toBeNull();
+    expect(document.body.contains(listbox)).toBe(true);
+    expect(document.querySelectorAll('[role="option"]').length).toBe(2);
+  },
+);
+
+test.skipIf(typeof document === "undefined")(
   "the options stay inside fullscreen and preserve selection",
   async () => {
     actEnvironment.IS_REACT_ACT_ENVIRONMENT = true;

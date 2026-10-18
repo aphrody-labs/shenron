@@ -133,7 +133,7 @@ function SelectPopup({
   const resolved = variant ?? surface.variant ?? "toriyama";
   const planche = resolved === "planche";
   return (
-    <SelectPortal container={portalContainer}>
+    <SelectPortal container={portalContainer ?? undefined}>
       <SelectPrimitive.Positioner
         data-slot="select-positioner"
         side={side}
