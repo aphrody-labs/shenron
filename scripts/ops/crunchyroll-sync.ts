@@ -3,11 +3,15 @@
 /**
  * crunchyroll-sync: maps a Shenron series onto its Crunchyroll series and refreshes episode availability.
  *
- *   bun scripts/ops/crunchyroll-sync.ts [--series DBS_BEERUS] [--locale fr-FR] [--apply]
+ *   bun scripts/ops/crunchyroll-sync.ts [--series DBS_BEERUS] [--locale fr-FR] [--from-file catalog.json] [--apply]
  *
  * Reads seasons and episodes through the Bun Video Crunchyroll client with the owner's credentials, maps them with
  * @aphrody/shenron-media/crunchyroll-mapping and, with --apply, writes bot.db_episodes.availability (and the
  * duration when empty) for the matching episode numbers. Metadata only; nothing is downloaded or decrypted.
+ *
+ * --from-file ingests a catalogue exported from the owner's own signed-in browser ({ episodes: [...] } with the fields of
+ * CrunchyrollEpisode) instead of calling the provider: Crunchyroll answers automated clients, even from the owner's
+ * network, with a Cloudflare challenge that this tool does not try to bypass.
  *
  * Credentials (protected env, never printed): BUN_VIDEO_CRUNCHYROLL_ACCESS_TOKEN, or CRUNCHYROLL_EMAIL +
  * CRUNCHYROLL_PASSWORD + BUN_VIDEO_CRUNCHYROLL_BASIC_AUTHORIZATION. Without them the script reports
@@ -26,26 +30,35 @@ const apply = process.argv.includes("--apply");
 const crunchyrollSeries = CRUNCHYROLL_SERIES_BY_SHENRON[series];
 if (!crunchyrollSeries) throw new Error(`No Crunchyroll series is mapped for ${series}`);
 
+const fromFile = process.argv.includes("--from-file") ? process.argv[process.argv.indexOf("--from-file") + 1] : undefined;
 const env = process.env;
 const accessToken = env.BUN_VIDEO_CRUNCHYROLL_ACCESS_TOKEN;
 const basicAuthorization = env.BUN_VIDEO_CRUNCHYROLL_BASIC_AUTHORIZATION;
-if (!accessToken && !(basicAuthorization && env.CRUNCHYROLL_EMAIL && env.CRUNCHYROLL_PASSWORD)) {
+if (!fromFile && !accessToken && !(basicAuthorization && env.CRUNCHYROLL_EMAIL && env.CRUNCHYROLL_PASSWORD)) {
   console.log(JSON.stringify({ configured: false, series, crunchyrollSeries, note: "Crunchyroll credentials are not configured" }));
   process.exit(0);
 }
 
+const episodes: CrunchyrollEpisode[] = [];
+let seasonCount = 0;
+if (fromFile) {
+  const catalog = (await Bun.file(fromFile).json()) as { episodes?: CrunchyrollEpisode[]; seasons?: unknown[] };
+  episodes.push(...(catalog.episodes ?? []));
+  seasonCount = catalog.seasons?.length ?? 0;
+} else {
 const client = createCrunchyrollClient({ accessToken, basicAuthorization, accountId: env.BUN_VIDEO_CRUNCHYROLL_ACCOUNT_ID, locale });
 const login = accessToken ? await client.loginWithAccessToken() : await client.login(env.CRUNCHYROLL_EMAIL!, env.CRUNCHYROLL_PASSWORD!);
 if (!login.success) throw new Error("Crunchyroll authentication failed");
 
 const seasons = (await client.getSeasons(crunchyrollSeries)) as { items?: { id: string }[]; data?: { id: string }[] };
-const episodes: CrunchyrollEpisode[] = [];
 for (const season of seasons.items ?? seasons.data ?? []) {
   const page = (await client.getEpisodes(season.id)) as { items?: CrunchyrollEpisode[]; data?: CrunchyrollEpisode[] };
   episodes.push(...(page.items ?? page.data ?? []));
 }
+seasonCount = (seasons.items ?? seasons.data ?? []).length;
+}
 const mapped = mapCrunchyrollEpisodes(episodes);
-console.log(JSON.stringify({ series, crunchyrollSeries, seasons: (seasons.items ?? seasons.data ?? []).length, episodes: mapped.length }));
+console.log(JSON.stringify({ series, crunchyrollSeries, seasons: seasonCount, episodes: mapped.length }));
 if (!apply || !mapped.length) process.exit(0);
 
 const lit = (value: string) => `$q$${value}$q$`;
