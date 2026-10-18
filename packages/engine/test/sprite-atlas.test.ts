@@ -31,6 +31,13 @@ function manifest() {
 }
 
 describe("Rust panel atlas consumer", () => {
+  test("rejects a different PNG payload before browser decoding", async () => {
+    const atlas = { ...manifest(), image_sha256: "0".repeat(64) };
+    await expect(openSpriteAtlas(atlas, new Blob([new Uint8Array(24)]))).rejects.toThrow(
+      "Sprite PNG digest differs",
+    );
+    expect(() => parseSpriteAtlas({ ...atlas, image_sha256: "invalid" })).toThrow();
+  });
   test("local Studio imports reject wrong PNG headers without uploading", async () => {
     const fetcher = spyOn(globalThis, "fetch");
     try {

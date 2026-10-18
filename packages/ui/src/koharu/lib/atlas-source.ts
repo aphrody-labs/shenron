@@ -7,7 +7,10 @@ export function atlasMatchesPage(
   size: { width: number; height: number },
 ): boolean {
   if (!manifest || typeof manifest !== "object" || Array.isArray(manifest)) return false;
-  const source = (manifest as { source?: unknown }).source;
+  const atlas = manifest as { source?: unknown; image_sha256?: unknown };
+  if (typeof atlas.image_sha256 !== "string" || !/^[a-f0-9]{64}$/u.test(atlas.image_sha256))
+    return false;
+  const source = atlas.source;
   if (!source || typeof source !== "object" || Array.isArray(source)) return false;
   const metadata = source as { sha256?: unknown; width?: unknown; height?: unknown };
   return (

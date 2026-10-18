@@ -220,7 +220,8 @@ fn write_sheet(
     let sheet = build_sheet(&crops, &opts).into_diagnostic()?;
     let image_name = format!("{label}-sheet.png");
     let layout_name = format!("{label}-sheet.layout.json");
-    write(&args.output.join(&image_name), sheet.png().into_diagnostic()?)?;
+    let image = sheet.png().into_diagnostic()?;
+    write(&args.output.join(&image_name), &image)?;
     let mut layout: serde_json::Value =
         serde_json::from_str(&sheet.layout_json(&image_name)).into_diagnostic()?;
     layout["source"] = serde_json::json!({
@@ -228,6 +229,7 @@ fn write_sheet(
         "width": width,
         "height": height,
     });
+    layout["image_sha256"] = serde_json::json!(sha256_hex(&image));
     write(&args.output.join(&layout_name), serde_json::to_vec_pretty(&layout).into_diagnostic()?)?;
     let mut files = vec![image_name.clone(), layout_name.clone()];
     if args.sheet_gif {

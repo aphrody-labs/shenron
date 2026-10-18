@@ -11,6 +11,7 @@ export interface SpriteAtlasFrame {
 
 export interface SpriteAtlas {
   readonly image: string;
+  readonly imageSha256?: string;
   readonly size: readonly [number, number];
   readonly tile: readonly [number, number];
   readonly fps: number;
@@ -57,6 +58,12 @@ export function parseSpriteAtlas(input: unknown): SpriteAtlas {
     throw new Error("Invalid sprite atlas version or image name");
   }
   const size = tuple(value.size, 2);
+  if (
+    value.image_sha256 !== undefined &&
+    (typeof value.image_sha256 !== "string" || !/^[a-f0-9]{64}$/u.test(value.image_sha256))
+  ) {
+    throw new Error("Invalid sprite atlas image digest");
+  }
   const tile = tuple(value.tile, 2);
   const padding = tuple(value.padding, 2);
   const offset = tuple(value.offset, 2);
@@ -122,6 +129,7 @@ export function parseSpriteAtlas(input: unknown): SpriteAtlas {
   });
   return Object.freeze({
     image: value.image,
+    imageSha256: value.image_sha256 as string | undefined,
     size,
     tile,
     fps: value.fps,
@@ -250,6 +258,15 @@ async function decodeSpriteAtlas(
   signal?: AbortSignal,
 ) {
   signal?.throwIfAborted();
+  if (player.atlas.imageSha256) {
+    const hash = await crypto.subtle.digest("SHA-256", data);
+    signal?.throwIfAborted();
+    const digest = Array.from(new Uint8Array(hash), (part) =>
+      part.toString(16).padStart(2, "0"),
+    ).join("");
+    if (digest !== player.atlas.imageSha256)
+      throw new Error("Sprite PNG digest differs from the manifest");
+  }
   const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
   if (
     data.length < 24 ||

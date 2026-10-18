@@ -37,7 +37,10 @@ function setup() {
       </AtlasPreviewContext.Provider>
     </QueryClientProvider>,
   );
-  const source = JSON.stringify({ source: { sha256: hash, ...page.size } });
+  const source = JSON.stringify({
+    source: { sha256: hash, ...page.size },
+    image_sha256: "c".repeat(64),
+  });
   fireEvent.change(screen.getByLabelText("Atlas manifest (JSON)"), {
     target: { files: [new File([source], "sheet.layout.json", { type: "application/json" })] },
   });
