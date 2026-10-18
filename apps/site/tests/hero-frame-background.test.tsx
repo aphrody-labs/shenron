@@ -51,3 +51,24 @@ test("a catalogue without a qualified frame keeps its title and action without a
   expect(html).toContain("Catalogue");
   expect(html).toContain('href="/wiki/episodes"');
 });
+
+test("the homepage keeps one official series logo and both episode destinations", () => {
+  const episodes = [875, 876].map((id, index) => ({
+    id,
+    number: index + 1,
+    title: `Episode ${index + 1}`,
+  }));
+  const html = renderToStaticMarkup(
+    <NextIntlClientProvider locale="fr" messages={fr} timeZone="UTC">
+      <HomeHero
+        hero={{ ...DEFAULT_HOME_CONFIG.hero, lede: "Présentation éditoriale" }}
+        beerus={{ total: 2, latest: episodes[1]!, episodes }}
+      />
+    </NextIntlClientProvider>,
+  );
+  expect(html.match(/src="\/official\/beerus\/logo-en.webp"/g)).toHaveLength(1);
+  expect(html).not.toContain("home-wordmark");
+  expect(html).toContain("Présentation éditoriale");
+  expect(html).toContain('href="/wiki/episodes/875"');
+  expect(html).toContain('href="/wiki/episodes/876"');
+});

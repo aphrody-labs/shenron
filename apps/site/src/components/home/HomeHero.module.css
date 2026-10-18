@@ -14,14 +14,9 @@
   z-index: 3;
   padding: clamp(1.5rem, 3.5vw, 3rem);
   padding-bottom: 1.25rem;
-  max-width: 56rem;
+  width: 100%;
 }
-.identity {
-  margin: 0 0 1rem;
-}
-.identity :global(.home-wordmark) {
-  font-size: clamp(2.3rem, 3.8vw, 3.25rem);
-}
+
 .frames {
   position: absolute;
   inset: 0;
@@ -74,7 +69,14 @@
   font-size: 0.75rem;
 }
 .feature {
-  max-width: 48rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(20rem, 0.8fr);
+  align-items: end;
+  gap: clamp(2rem, 8vw, 10rem);
+  width: 100%;
+}
+.featureMain {
+  min-width: 0;
 }
 .eyebrow {
   text-transform: uppercase;
@@ -126,7 +128,7 @@
 }
 .episodeRail {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.75rem;
   margin-top: 1.25rem;
 }
@@ -135,7 +137,8 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.6rem 0.35rem;
+  padding: 0.85rem;
+  background: color-mix(in srgb, var(--background) 88%, transparent);
   font-size: 0.75rem;
   line-height: 1.35;
   border-bottom: 1px solid var(--border);
@@ -158,7 +161,7 @@
   position: relative;
   z-index: 3;
   padding: 0 clamp(1.5rem, 3.5vw, 3rem) 1.5rem;
-  max-width: 47rem;
+  max-width: none;
   width: 100%;
 }
 .hero :is(a, button):focus-visible {
@@ -186,12 +189,13 @@
   .content {
     padding: 1rem 1.25rem 1.5rem;
   }
-  .identity {
-    margin-bottom: 1rem;
-  }
 
   .search {
     padding: 0 1.25rem 2rem;
+  }
+  .feature {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
   }
   .episodeRail {
     grid-template-columns: minmax(0, 1fr);
@@ -252,7 +256,7 @@
 }
 
 .search :global(search) {
-  max-width: 38rem;
+  max-width: none;
 }
 .search :global(search button) {
   min-height: 48px;

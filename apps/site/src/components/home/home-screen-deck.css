@@ -26,7 +26,8 @@
 .home-screen:has(.home-section-scene) {
   padding: 0;
 }
-.home-screen-content:has(.home-section-scene) {
+.home-screen-content:has(.home-section-scene),
+.home-screen-content:has(#hero) {
   max-width: none;
 }
 .home-screen .home-section-scene {

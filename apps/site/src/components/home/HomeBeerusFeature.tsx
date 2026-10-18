@@ -25,25 +25,30 @@ export function HomeBeerusFeature({ beerus }: { beerus: BeerusFeature }) {
   const latest = episodes.at(-1);
   return (
     <div className={styles.feature}>
-      <p className={styles.eyebrow}>
-        <T k="accueil.hero.featureEyebrow" />
-      </p>
-      <h2 className="sr-only">
-        <T k="dbsBeerus.title" />
-      </h2>
-      <HomeBeerusLogo />
-      {latest && <p className={styles.episodeTitle}>{latest.title}</p>}
-      <div className={styles.actions}>
-        {latest && (
-          <Link href={`/wiki/episodes/${latest.id}`} className={styles.primary}>
-            <Play size={19} fill="currentColor" aria-hidden="true" />
-            <T k="accueil.hero.watchEpisode" values={{ number: latest.number ?? "" }} />
+      <div className={styles.featureMain}>
+        <p className={styles.eyebrow}>
+          <T k="accueil.hero.featureEyebrow" />
+        </p>
+        <h2 className="sr-only">
+          <T k="dbsBeerus.title" />
+        </h2>
+        <HomeBeerusLogo />
+        {latest && <p className={styles.episodeTitle}>{latest.title}</p>}
+        <div className={styles.actions}>
+          {latest && (
+            <Link href={`/wiki/episodes/${latest.id}`} className={styles.primary}>
+              <Play size={19} fill="currentColor" aria-hidden="true" />
+              <T k="accueil.hero.watchEpisode" values={{ number: latest.number ?? "" }} />
+            </Link>
+          )}
+          <Link
+            href={`/wiki/episodes/series/${DBS_BEERUS_SERIES_CODE}`}
+            className={styles.secondary}
+          >
+            <ArrowRight size={19} aria-hidden="true" />
+            <T k="dbsBeerus.heroAll" />
           </Link>
-        )}
-        <Link href={`/wiki/episodes/series/${DBS_BEERUS_SERIES_CODE}`} className={styles.secondary}>
-          <ArrowRight size={19} aria-hidden="true" />
-          <T k="dbsBeerus.heroAll" />
-        </Link>
+        </div>
       </div>
       {episodes.length > 0 && (
         <div className={styles.episodeRail}>
