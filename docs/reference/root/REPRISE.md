@@ -1,5 +1,20 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## 2026-10-18 — Portes, lecteur vidéo et état de la fabrique
+
+Poste : `vps-6732365f` (DBFR, sans cargo). Sous-module `packages/config` initialisé,
+`bun install --frozen-lockfile --ignore-scripts` (le postinstall de `@parcel/watcher` exige node).
+Typecheck, lint (zéro erreur), tests et dérives OpenAPI/tokens/contrats verts ; 7d097153 corrige
+`dev-server.ts`, formate les scripts de build et autorise `AdminSidebar.tsx` dans la garde dbxv2.
+`bun fmt --check` : les fichiers wasm générés de `packages/pipeline` sont désormais ignorés.
+47286ffc : reprise de lecture (localStorage), volume au clavier, retour du son à volume 0, plein écran iOS,
+`crossOrigin` seulement avec sous-titres ; détails dans `docs/video/README.md`. Tests DOM ignorés sans
+`document` : aucune lecture réelle qualifiée.
+Fabrique `vps-203bea89` : release `974e4137` déployée (`EXIT_CODE=0`, santé publique ok) ; aucun crawl
+en cours (seuls `dbxv2-serve.ts`, des serveurs codex et la session `agent-fix`). Portes Rust lancées
+dans tmux `rust-gates` (journal `~/rust-gates.log`), résultat non encore lu. Non faits : migration SQL
+et envoi de données, sans lot ni runbook désigné.
+
 ## 2026-10-15 — Refonte Canon, agents wiki et plugin Aphrody
 
 Le propriétaire ajoute une refonte Canon moins verbeuse, plus illustrée, facile et
