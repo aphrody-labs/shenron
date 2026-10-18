@@ -4,6 +4,24 @@ import { approvedEpisodeVideoURL, nativeEpisodeVideoSource } from "../src/lib/ep
 import { GET, HEAD } from "../src/app/api/media/video/route";
 const source = "https://27.mugiwara.one/dbs/dbs-1.mp4";
 const shenronSource = "https://cdn.dragonballfr.com/media/episodes/beerus-01/optimized-720p.mp4";
+
+test("published Beerus sources use immutable episode-specific paths", () => {
+  const hash = "a".repeat(64);
+  for (const id of [875, 876]) {
+    const url = `https://cdn.dragonballfr.com/media/episodes/${id}/${hash}/source.mp4`;
+    expect(approvedEpisodeVideoURL(url)?.href).toBe(url);
+    expect(nativeEpisodeVideoSource(url)).toBe(url);
+    expect(approvedEpisodeVideoURL(url + "?token=private")).toBeNull();
+  }
+  for (const path of [
+    `877/${hash}/source.mp4`,
+    "876/not-a-hash/source.mp4",
+    `876/${hash}/other.mp4`,
+  ])
+    expect(
+      approvedEpisodeVideoURL(`https://cdn.dragonballfr.com/media/episodes/${path}`),
+    ).toBeNull();
+});
 test("approved MP4 uses the same-origin range transport while other sources retain their owner", () => {
   const local = nativeEpisodeVideoSource(source);
   expect(local.startsWith("/api/media/video?")).toBe(true);

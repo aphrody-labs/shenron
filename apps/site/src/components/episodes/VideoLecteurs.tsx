@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { type SubtitleTrack, VideoPlayer } from "@/components/episodes/VideoPlayer";
 import { track } from "@/lib/telemetry";
 import { probePlayerNetwork } from "@/lib/player-network";
+import { isShenronEpisodeVideoURL } from "@/lib/episode-video-source";
 import { nextPlayerIndex, resolvePlayerIndex } from "@/lib/video-selection-state";
 import { useTranslations } from "next-intl";
 import { useVideoUIText } from "@/lib/video-ui-text";
@@ -169,6 +170,8 @@ export function VideoLecteurs({
   const current = list[safeActive] ?? list[0];
   const officialURL = current ? officialWatchLink(current.embedUrl) : null;
   const officialPage = officialURL !== null;
+  const nativeSource =
+    current && isShenronEpisodeVideoURL(new URL(current.embedUrl)) ? current.embedUrl : null;
   const enVo = modeVo && aVo;
   const voEchec = vo != null && failedVoSource === vo.src;
 
@@ -187,7 +190,7 @@ export function VideoLecteurs({
   // An iframe can emit load for its browser error document after a DNS failure.
   // Check the user's network independently; VPS reachability cannot establish it.
   useEffect(() => {
-    if (enVo || !current || officialPage) return;
+    if (enVo || !current || officialPage || nativeSource) return;
     networkFailure.current = null;
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 8_000);
@@ -204,20 +207,20 @@ export function VideoLecteurs({
       controller.abort();
       window.clearTimeout(timeout);
     };
-  }, [current?.embedUrl, enVo, officialPage, safeActive, list.length, probeAttempt]);
+  }, [current?.embedUrl, enVo, officialPage, nativeSource, safeActive, list.length, probeAttempt]);
 
   // Les embeds tiers ne permettent pas toujours un HEAD/CORS fiable. On sonde
   // le lecteur visible uniquement tant qu'il n'a pas confirmé son chargement (ready).
   // Dès que `onLoad` passe le statut à `ready`, ce timer est annulé et ne s'exécute pas.
   useEffect(() => {
-    if (enVo || !current || officialPage || status === "ready") return;
+    if (enVo || !current || officialPage || nativeSource || status === "ready") return;
     const timeout = window.setTimeout(() => {
       const next = nextPlayerIndex(safeActive, list.length);
       if (next !== null) setActive(next);
       else setStatus("failed");
     }, 8_000);
     return () => window.clearTimeout(timeout);
-  }, [safeActive, current, enVo, officialPage, list.length, status]);
+  }, [safeActive, current, enVo, officialPage, nativeSource, list.length, status]);
 
   // Choix de version : langues des lecteurs externes (ou « Lecteurs » s'ils ne
   // portent aucun tag), puis la VO quand elle existe.
@@ -325,6 +328,17 @@ export function VideoLecteurs({
             onError={() => setFailedVoSource(vo.src)}
           />
         )
+      ) : nativeSource && status !== "failed" ? (
+        <VideoPlayer
+          key={nativeSource}
+          src={nativeSource}
+          title={cleanName(current.name)}
+          onError={() => {
+            const next = nextPlayerIndex(safeActive, list.length);
+            if (next !== null) setActive(next);
+            else setStatus("failed");
+          }}
+        />
       ) : officialURL ? (
         <div className="shenron-video flex aspect-video w-full flex-col items-center justify-center gap-4 p-6 text-center">
           <p className="text-sm">{ui("officialProviderNote")}</p>

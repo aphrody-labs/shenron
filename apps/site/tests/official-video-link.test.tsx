@@ -45,6 +45,18 @@ test("an actual external embed keeps the existing iframe path", () => {
   expect(html).not.toContain(videoFr.officialProviderNote);
 });
 
+test("a published Shenron MP4 renders native video and preserves alternate sources", () => {
+  const source = `https://cdn.dragonballfr.com/media/episodes/876/${"a".repeat(64)}/source.mp4`;
+  const html = render("fr", [
+    { name: "Shenron", provider: "shenron", embedUrl: source },
+    { name: "Alternate", provider: "vidmoly", embedUrl: "https://vidmoly.example/embed/1" },
+  ]);
+  expect(html).toContain("<video");
+  expect(html).toContain(source);
+  expect(html).not.toContain("<iframe");
+  expect(html).toContain("Alternate");
+});
+
 test("official links drop stored query tokens and never embed them", () => {
   const html = render("fr", [
     {
