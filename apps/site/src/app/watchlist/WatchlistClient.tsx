@@ -1,9 +1,8 @@
 "use client";
 
 // SPDX-License-Identifier: Apache-2.0
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useMe } from "@/lib/use-me";
 import { assetUrl } from "@/lib/assets";
 
 export interface WatchlistEntry {
@@ -54,7 +53,7 @@ const DEFAULT_WATCHLIST: WatchlistEntry[] = [
     episodeNumber: 1,
     episodeTitle: "Le prix de la paix : À qui reviennent les 100 millions de zénis ?",
     thumbnailUrl: "/wiki/media/episodes/dbs-001.webp",
-    watchUrl: "/wiki/episodes/676",
+    watchUrl: "/wiki/episodes/445",
     durationMinutes: 23,
     progressPercent: 100,
     availableLangs: ["vf", "vostfr"],
@@ -67,7 +66,7 @@ const DEFAULT_WATCHLIST: WatchlistEntry[] = [
     episodeNumber: 1,
     episodeTitle: "Conspiration",
     thumbnailUrl: "/wiki/media/episodes/daima-001.webp",
-    watchUrl: "/wiki/episodes/877",
+    watchUrl: "/wiki/episodes/545",
     durationMinutes: 32,
     progressPercent: 10,
     availableLangs: ["vostfr"],
@@ -76,12 +75,12 @@ const DEFAULT_WATCHLIST: WatchlistEntry[] = [
 ];
 
 export function WatchlistClient() {
-  const me = useMe();
   const [filter, setFilter] = useState<"all" | "in-progress" | "completed">("all");
-  const [entries, setEntries] = useState<WatchlistEntry[]>(DEFAULT_WATCHLIST);
+  const entries = DEFAULT_WATCHLIST;
 
   const filteredEntries = entries.filter((e) => {
-    if (filter === "in-progress") return (e.progressPercent ?? 0) > 0 && (e.progressPercent ?? 0) < 95;
+    if (filter === "in-progress")
+      return (e.progressPercent ?? 0) > 0 && (e.progressPercent ?? 0) < 95;
     if (filter === "completed") return (e.progressPercent ?? 0) >= 95;
     return true;
   });
