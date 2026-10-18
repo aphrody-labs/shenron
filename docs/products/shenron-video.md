@@ -44,3 +44,17 @@ USM `movie/D02_L00M.usm` (1280x720, 62 images) : 1,4 s, 0,46 Mo.
 
 Limite : le débit est inférieur au temps réel en 1080p ; le serveur borne donc un segment à
 `DBXV2_MP4_MAX_SECONDS` (90 s) et met le résultat en cache.
+
+## Qualification (2026-10-18)
+
+- `Bun.Video.metadata()` sur la sortie de `D02_L00M.usm` : H.264 (High), 1280x720, 30000/1001, 62 images, sans
+  piste audio ; `frame(0.5).rgba()` décode 1280x720 (3 686 400 octets).
+- Chrome réel (Windows, headless, service de la fabrique par relais temporaire qui porte le jeton) :
+  `D02_L00M.usm` (1280x720) : `canplay`, `videoWidth` 1280, lecture jusqu'à la fin (2,07 s) ;
+  `D09_A01.usm?t=20&d=8` (1920x1080) : `canplay`, `videoWidth` 1920, `currentTime` 3,05 -> 6,05 sur 3 s.
+
+## Reste à faire
+
+Enveloppe TypeScript `packages/video` (`@aphrody/shenron-video`), pont wasm navigateur, AV1 (encodage),
+WebM, extraction audio, GIF animé, entrées H.264/MP4 (décodage), cache de segments par plage côté lecteur.
+Le crate doit rejoindre le workspace racine quand la révision Bun OS portant FilmCraft sera publiée.
