@@ -104,6 +104,7 @@ describe("build tree", () => {
     expect(again.map((cmd) => cmd.slice(3, 5).join(" "))).toEqual([
       "fetch -q",
       "checkout -q",
+      "submodule update",
       "clean -ffdq",
     ]);
     expect(again.flat()).not.toContain("merge");

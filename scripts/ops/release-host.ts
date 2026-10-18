@@ -66,12 +66,15 @@ function step(label: string, cmd: string[], env: Record<string, string> = {}, cw
  * des modifications locales non commitées y faisaient échouer `merge --ff-only` (release du
  * 2026-10-07 : `== EXIT 1`). Le worktree détaché dédié est forcé sur `ref` et nettoyé des fichiers
  * non suivis (les ignorés — node_modules, target, caches — restent pour le build incrémental).
+ * Les sous-modules (`packages/config`) suivent le commit construit : sans eux, `bun install` refuse
+ * le lockfile (release du 2026-10-18).
  */
 export function syncCommands(source: string, repo: string, ref: string, exists: boolean) {
   return [
     ["git", "-C", source, "fetch", "-q", "origin"],
     ...(exists ? [] : [["git", "-C", source, "worktree", "add", "-q", "--detach", repo, ref]]),
     ["git", "-C", repo, "checkout", "-q", "-f", "--detach", ref],
+    ["git", "-C", repo, "submodule", "update", "--init", "--recursive", "--force", "-q"],
     ["git", "-C", repo, "clean", "-ffdq"],
   ];
 }
