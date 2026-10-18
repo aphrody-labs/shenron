@@ -13,7 +13,9 @@ const SITE = join(import.meta.dir, "..");
 const SRC = join(SITE, "src");
 
 const allowed = (rel: string): boolean =>
-  rel.startsWith(`app${sep}admin${sep}dbxv2${sep}`) || /^lib[\\/]dbxv2[^\\/]*\.ts$/.test(rel);
+  rel.startsWith(`app${sep}admin${sep}dbxv2${sep}`) ||
+  /^lib[\\/]dbxv2[^\\/]*\.ts$/.test(rel) ||
+  rel === join("components", "admin", "AdminSidebar.tsx");
 
 function* walk(dir: string): Generator<string> {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {

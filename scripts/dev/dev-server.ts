@@ -16,7 +16,14 @@
  * factory server over the WireGuard mesh; when the mesh is unreachable the supervisor opens an
  * `ssh -N -L` tunnel through the `vps` alias instead. Runbook: docs/development/dev-server.md.
  */
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync, appendFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+  appendFileSync,
+} from "node:fs";
 import { join, resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dir, "../..");
@@ -33,13 +40,19 @@ const log = (m: string) => appendFileSync(LOG, `${new Date().toISOString()} ${m}
 function readToken(): string {
   const file = join(ROOT, "var/dbxv2/token.line");
   if (!existsSync(file)) return "";
-  return readFileSync(file, "utf8").trim().replace(/^DBXV2_TOKEN=/, "");
+  return readFileSync(file, "utf8")
+    .trim()
+    .replace(/^DBXV2_TOKEN=/, "");
 }
 
 /** Throwaway admin token of the local dev server, kept in the git-ignored var/dev. */
 function adminToken(): string {
   const file = join(VAR, "admin-token.txt");
-  if (!existsSync(file)) writeFileSync(file, crypto.randomUUID().replaceAll("-", "") + crypto.randomUUID().replaceAll("-", ""));
+  if (!existsSync(file))
+    writeFileSync(
+      file,
+      crypto.randomUUID().replaceAll("-", "") + crypto.randomUUID().replaceAll("-", ""),
+    );
   return readFileSync(file, "utf8").trim();
 }
 
@@ -80,7 +93,7 @@ async function run() {
   const cleanup = () => {
     stopping = true;
     if (tunnel) killTree(tunnel.pid);
-    child?.pid && killTree(child.pid);
+    if (child?.pid) killTree(child.pid);
     rmSync(PID_FILE, { force: true });
   };
   process.on("SIGINT", () => (cleanup(), process.exit(0)));
@@ -94,7 +107,17 @@ async function run() {
       if (!tunnel || tunnel.exitCode !== null) {
         log(`mesh ${MESH_URL} unreachable, opening ssh tunnel on ${TUNNEL_PORT}`);
         tunnel = Bun.spawn(
-          ["ssh", "-N", "-o", "ExitOnForwardFailure=yes", "-o", "ServerAliveInterval=30", "-L", `127.0.0.1:${TUNNEL_PORT}:10.200.77.1:8788`, "vps"],
+          [
+            "ssh",
+            "-N",
+            "-o",
+            "ExitOnForwardFailure=yes",
+            "-o",
+            "ServerAliveInterval=30",
+            "-L",
+            `127.0.0.1:${TUNNEL_PORT}:10.200.77.1:8788`,
+            "vps",
+          ],
           { stdout: "ignore", stderr: "ignore" },
         );
         await Bun.sleep(3000);
@@ -119,7 +142,11 @@ async function run() {
     const pump = async (s: ReadableStream<Uint8Array>) => {
       for await (const c of s) appendFileSync(LOG, c);
     };
-    await Promise.all([pump(child.stdout as ReadableStream<Uint8Array>), pump(child.stderr as ReadableStream<Uint8Array>), child.exited]);
+    await Promise.all([
+      pump(child.stdout as ReadableStream<Uint8Array>),
+      pump(child.stderr as ReadableStream<Uint8Array>),
+      child.exited,
+    ]);
     log(`next dev exited (${child.exitCode}); restart in 5 s`);
     if (!stopping) await Bun.sleep(5000);
   }
@@ -131,7 +158,11 @@ if (cmd === "run") {
 } else if (cmd === "install") {
   const bun = process.execPath;
   const tr = `"${bun}" "${join(ROOT, "scripts/dev/dev-server.ts")}" run`;
-  console.log(out(sh(["schtasks", "/Create", "/F", "/SC", "ONLOGON", "/RL", "LIMITED", "/TN", TASK, "/TR", tr])));
+  console.log(
+    out(
+      sh(["schtasks", "/Create", "/F", "/SC", "ONLOGON", "/RL", "LIMITED", "/TN", TASK, "/TR", tr]),
+    ),
+  );
 } else if (cmd === "start") {
   console.log(out(sh(["schtasks", "/Run", "/TN", TASK])));
 } else if (cmd === "stop" || cmd === "restart") {
