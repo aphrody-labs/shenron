@@ -66,9 +66,13 @@ export function NativePipelinePanel({
   onWasm: () => void;
 }) {
   return (
-    <section className="dbz-panel space-y-4 p-4" aria-label={labels.title}>
+    <section
+      className="min-w-0 space-y-4 rounded-xl border border-border bg-card p-4 text-card-foreground"
+      aria-label={labels.title}
+    >
       <h2 className="text-lg font-semibold">{labels.title}</h2>
-      <p className="text-sm text-white/60">{labels.description}</p>
+      <p className="text-sm text-muted-foreground">{labels.description}</p>
+      {pending && <progress className="w-full" aria-label={labels.refresh} />}
       <div className="flex flex-wrap gap-3">
         <Button variant="tonal" disabled={pending} onClick={onRefresh}>
           {labels.refresh}
@@ -91,9 +95,12 @@ export function NativePipelinePanel({
             <p>{labels.ragCounts(snapshot.native.rag.chunks, snapshot.native.rag.vectors)}</p>
           )}
           {!snapshot.actions.length && <p>{labels.empty}</p>}
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-3">
             {snapshot.actions.map((action) => (
-              <div key={action.id} className="min-w-0 rounded border border-white/10 p-3">
+              <div
+                key={action.id}
+                className="min-w-0 space-y-2 rounded-lg border border-border p-3"
+              >
                 <p>
                   {labels.categories[action.category]} · <code>{action.target}</code>
                 </p>
@@ -113,9 +120,9 @@ export function NativePipelinePanel({
               </div>
             ))}
           </div>
-          <ul className="space-y-2">
+          <ul className="divide-y divide-border">
             {snapshot.jobs.map((job) => (
-              <li key={job.id} className="flex min-w-0 flex-wrap items-center gap-3">
+              <li key={job.id} className="flex min-w-0 flex-wrap items-center gap-3 py-3">
                 <code className="break-all text-xs">{job.action}</code>
                 <span role="status">{labels.states[job.state] ?? labels.unavailable}</span>
                 {job.code !== null && <code>{job.code}</code>}

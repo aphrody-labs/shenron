@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Activity,
   ArrowUpRight,
@@ -17,6 +17,7 @@ import {
   RefreshCw,
   Server,
   Settings,
+  PanelsTopLeft,
   Shield,
   TrendingUp,
   Users,
@@ -24,6 +25,8 @@ import {
 import { api } from "@/lib/admin-api";
 import { formatBytes } from "@/lib/admin-format";
 import { type BotSummary } from "@/components/admin/BotSelector";
+import { AdminPageHeader } from "@aphrody/shenron-ui/admin";
+import styles from "./Dashboard.module.css";
 import { NativePipelinePanel } from "@/components/admin/NativePipelinePanel";
 
 import {
@@ -57,6 +60,12 @@ function formatDuration(ms: number, locale: string): string {
 }
 
 const QUICK_ACTIONS = [
+  {
+    href: "/studio",
+    label: "studio",
+    description: "studioDescription",
+    icon: PanelsTopLeft,
+  },
   {
     href: "/admin/wiki",
     label: "wiki",
@@ -109,6 +118,7 @@ const SERVICE_COPY: Record<LiveService["id"], { label: string; description: stri
 };
 
 export default function DashboardPage() {
+  const queryClient = useQueryClient();
   const t = useTranslations("adminDashboard");
   const locale = useLocale();
   const bots = useQuery({
@@ -164,6 +174,7 @@ export default function DashboardPage() {
     liveData?.agents.recentActivity !== null &&
     monitoringData?.botStatus.online === true;
   const refresh = () => {
+    void queryClient.invalidateQueries({ queryKey: ["admin", "native-pipeline"] });
     void bots.refetch();
     void health.refetch();
     void stats.refetch();
@@ -171,38 +182,38 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="mx-auto max-w-[1440px] space-y-8 pb-8">
-      <NativePipelinePanel />
-      <header className="flex flex-col gap-5 rounded-2xl border border-white/10 bg-white/[0.035] p-4 shadow-sm md:flex-row md:items-center md:justify-between md:p-6">
-        <div>
-          <p className="text-xs font-medium text-white/55">{t("admin")}</p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-white md:text-3xl">
-            {t("title")}
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">{t("intro")}</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            href="/admin/live"
-            className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-blue-500 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300"
-          >
-            {t("liveLink")}
-            <ArrowUpRight className="h-4 w-4" />
-          </Link>
-          <Link
-            href="/admin/console"
-            className="inline-flex min-h-12 items-center gap-2 rounded-xl px-4 text-sm font-medium text-white/80 transition-colors hover:bg-white/[.08] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-          >
-            <Command className="h-4 w-4" />
-            {t("console")}
-          </Link>
-        </div>
-      </header>
-
+    <div className={styles.dashboard} data-admin-dashboard>
+      <AdminPageHeader
+        title={t("title")}
+        description={t("intro")}
+        actions={
+          <>
+            <button
+              type="button"
+              onClick={refresh}
+              className={styles.toolbarButton}
+              aria-busy={
+                bots.isFetching || health.isFetching || stats.isFetching || live.isFetching
+              }
+            >
+              <RefreshCw className="h-4 w-4" aria-hidden="true" />
+              {t("nativePipeline.refresh")}
+            </button>
+            <Link href="/admin/live" className={styles.toolbarButton}>
+              {t("liveLink")}
+              <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+            <Link href="/admin/console" className={styles.toolbarButton}>
+              <Command className="h-4 w-4" aria-hidden="true" />
+              {t("console")}
+            </Link>
+          </>
+        }
+      />
       {hasError && (
         <div
           role="alert"
-          className="flex flex-col gap-3 rounded-xl border border-amber-300/25 bg-amber-300/[.08] p-4 text-sm text-amber-100 sm:flex-row sm:items-center sm:justify-between"
+          className="flex flex-col gap-3 rounded-xl border border-amber-300/25 bg-amber-300/[.08] p-4 text-sm text-foreground sm:flex-row sm:items-center sm:justify-between"
         >
           <p className="flex items-start gap-2">
             <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" />
@@ -219,101 +230,20 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <section
-        aria-labelledby="live-operations-title"
-        className="rounded-2xl border border-white/10 bg-white/[0.035] p-4 md:p-6"
-      >
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-[0.12em] text-blue-300">
-              {t("automatic")}
-            </p>
-            <h2 id="live-operations-title" className="mt-1 text-lg font-semibold text-white">
-              {t("healthTitle")}
-            </h2>
-            <p className="mt-1 text-sm text-white/50">{t("healthDescription")}</p>
-          </div>
-          <div className="flex items-center gap-2 text-xs text-white/45">
-            <Radio
-              className={`h-3.5 w-3.5 ${live.isFetching ? "animate-pulse text-blue-300" : ""}`}
-            />
-            {liveData
-              ? t("sampledAt", { time: new Date(liveData.sampledAt).toLocaleTimeString(locale) })
-              : t("probeLoading")}
-          </div>
-        </div>
-        {live.isError ? (
-          <p
-            role="alert"
-            className="mt-4 rounded-xl border border-amber-300/25 bg-amber-300/[.08] p-3 text-sm text-amber-100"
-          >
-            {t("liveError")}
-          </p>
-        ) : (
-          <>
-            <LiveSummary
-              healthy={allLiveServicesHealthy}
-              unavailableCount={unavailableServices.length}
-              loading={!liveData}
-            />
-            <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              {liveData?.services.map((service) => (
-                <LiveServiceCard key={service.id} service={service} />
-              )) ??
-                Array.from({ length: 4 }, (_, index) => (
-                  <div key={index} className="h-28 animate-pulse rounded-xl bg-white/[.04]" />
-                ))}
-            </div>
-            <AgentActivity agents={liveData?.agents} />
-          </>
-        )}
-      </section>
-
-      <section aria-labelledby="quick-actions-title">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 id="quick-actions-title" className="text-lg font-semibold text-white">
-              {t("quickTitle")}
-            </h2>
-            <p className="mt-1 text-sm text-white/50">{t("quickDescription")}</p>
-          </div>
-          <span className="hidden text-sm text-white/45 sm:inline-flex sm:items-center sm:gap-1">
-            {t("shortcuts", { count: QUICK_ACTIONS.length })} <ArrowUpRight className="h-4 w-4" />
-          </span>
-        </div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {QUICK_ACTIONS.map(({ href, label, description, icon: Icon }) => (
-            <Link
-              key={href}
-              href={href}
-              className="group flex min-h-24 items-center gap-4 rounded-xl border border-white/10 bg-white/[.025] p-4 transition-colors hover:bg-white/[.07] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300"
-            >
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/[.08] text-blue-300">
-                <Icon className="h-5 w-5" />
-              </span>
-              <div className="min-w-0">
-                <p className="font-medium text-white">{t(label)}</p>
-                <p className="mt-1 text-sm leading-5 text-white/55">{t(description)}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
       <section aria-labelledby="system-health-title">
         <div className="mb-4 flex items-end justify-between">
           <div>
-            <h2 id="system-health-title" className="text-lg font-semibold text-white">
+            <h2 id="system-health-title" className="text-lg font-semibold text-foreground">
               {t("communityTitle")}
             </h2>
-            <p className="mt-1 text-sm text-white/50">{t("communityDescription")}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{t("communityDescription")}</p>
           </div>
-          <span className="inline-flex items-center gap-1.5 text-xs text-white/45">
+          <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
             <RefreshCw className="h-3.5 w-3.5" />
             {t("autoUpdate")}
           </span>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className={styles.metricGrid}>
           <KpiCard label={t("onlineBots")} icon={<Server className="h-5 w-5" />}>
             <Metric
               value={botData ? onlineCount : "—"}
@@ -353,51 +283,141 @@ export default function DashboardPage() {
           </KpiCard>
         </div>
       </section>
-
-      <section aria-labelledby="bots-title">
-        <h2 id="bots-title" className="text-lg font-semibold text-white">
-          {t("botsTitle")}
-        </h2>
-        <p className="mt-1 text-sm text-white/50">{t("botsDescription")}</p>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {bots.isPending ? (
-            Array.from({ length: 3 }, (_, index) => (
-              <div key={index} className="h-28 animate-pulse rounded-xl bg-white/[.04]" />
-            ))
-          ) : bots.isError ? (
-            <EmptyState text={t("botsUnavailable")} />
-          ) : botData?.bots.length ? (
-            botData.bots.map((bot) => <BotCard key={bot.id} bot={bot} />)
-          ) : (
-            <EmptyState text={t("botsEmpty")} />
-          )}
+      <div className={styles.workbench}>
+        <div className={styles.operations}>
+          <NativePipelinePanel />
+          <section aria-labelledby="quick-actions-title">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 id="quick-actions-title" className="text-lg font-semibold text-foreground">
+                  {t("quickTitle")}
+                </h2>
+                <p className="mt-1 text-sm text-muted-foreground">{t("quickDescription")}</p>
+              </div>
+              <span className="hidden text-sm text-muted-foreground sm:inline-flex sm:items-center sm:gap-1">
+                {t("shortcuts", { count: QUICK_ACTIONS.length })}{" "}
+                <ArrowUpRight className="h-4 w-4" />
+              </span>
+            </div>
+            <div className={styles.tools}>
+              {QUICK_ACTIONS.map(({ href, label, description, icon: Icon }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="group flex min-h-12 items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                >
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-muted text-primary">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="font-medium text-foreground">{t(label)}</p>
+                    <p className="mt-1 text-sm leading-5 text-muted-foreground">{t(description)}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+          <section aria-labelledby="bots-title">
+            <h2 id="bots-title" className="text-lg font-semibold text-foreground">
+              {t("botsTitle")}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">{t("botsDescription")}</p>
+            <div className={styles.botGrid}>
+              {bots.isPending ? (
+                Array.from({ length: 3 }, (_, index) => (
+                  <div key={index} className="h-28 animate-pulse rounded-xl bg-muted" />
+                ))
+              ) : bots.isError ? (
+                <EmptyState text={t("botsUnavailable")} />
+              ) : botData?.bots.length ? (
+                botData.bots.map((bot) => <BotCard key={bot.id} bot={bot} />)
+              ) : (
+                <EmptyState text={t("botsEmpty")} />
+              )}
+            </div>
+          </section>
         </div>
-      </section>
-
-      <section
-        aria-labelledby="host-title"
-        className="rounded-xl border border-white/10 bg-white/[.025] p-4 md:p-6"
-      >
-        <h2 id="host-title" className="text-lg font-semibold text-white">
-          {t("hostTitle")}
-        </h2>
-        {monitoringData ? (
-          <dl className="mt-4 grid gap-x-8 sm:grid-cols-2">
-            <HostMetric label={t("os")} value={monitoringData.host.platform} />
-            <HostMetric label={t("cores")} value={monitoringData.host.cpu.count} />
-            <HostMetric
-              label={t("memory")}
-              value={`${formatBytes(monitoringData.host.memory.used)} / ${formatBytes(monitoringData.host.memory.total)} (${monitoringData.host.memory.usage} %)`}
-            />
-            <HostMetric
-              label={t("uptime")}
-              value={formatDuration(monitoringData.pid.uptime, locale)}
-            />
-          </dl>
-        ) : (
-          <p className="mt-4 text-sm text-white/50">{t("hostUnavailable")}</p>
-        )}
-      </section>
+        <aside className={styles.observability} aria-label={t("healthTitle")}>
+          <section
+            aria-labelledby="live-operations-title"
+            className="rounded-xl border border-border bg-card p-4"
+          >
+            <div className="flex flex-col gap-3">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-[0.12em] text-primary">
+                  {t("automatic")}
+                </p>
+                <h2
+                  id="live-operations-title"
+                  className="mt-1 text-lg font-semibold text-foreground"
+                >
+                  {t("healthTitle")}
+                </h2>
+                <p className="mt-1 text-sm text-muted-foreground">{t("healthDescription")}</p>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Radio
+                  className={`h-3.5 w-3.5 ${live.isFetching ? "animate-pulse text-primary" : ""}`}
+                />
+                {liveData
+                  ? t("sampledAt", {
+                      time: new Date(liveData.sampledAt).toLocaleTimeString(locale),
+                    })
+                  : t("probeLoading")}
+              </div>
+            </div>
+            {live.isError ? (
+              <p
+                role="alert"
+                className="mt-4 rounded-xl border border-amber-300/25 bg-amber-300/[.08] p-3 text-sm text-foreground"
+              >
+                {t("liveError")}
+              </p>
+            ) : (
+              <>
+                <LiveSummary
+                  healthy={allLiveServicesHealthy}
+                  unavailableCount={unavailableServices.length}
+                  loading={!liveData}
+                />
+                <div className={styles.serviceGrid}>
+                  {liveData?.services.map((service) => (
+                    <LiveServiceCard key={service.id} service={service} />
+                  )) ??
+                    Array.from({ length: 4 }, (_, index) => (
+                      <div key={index} className="h-28 animate-pulse rounded-xl bg-muted" />
+                    ))}
+                </div>
+                <AgentActivity agents={liveData?.agents} />
+              </>
+            )}
+          </section>
+          <section
+            aria-labelledby="host-title"
+            className="rounded-xl border border-border bg-card p-4"
+          >
+            <h2 id="host-title" className="text-lg font-semibold text-foreground">
+              {t("hostTitle")}
+            </h2>
+            {monitoringData ? (
+              <dl className={styles.hostMetrics}>
+                <HostMetric label={t("os")} value={monitoringData.host.platform} />
+                <HostMetric label={t("cores")} value={monitoringData.host.cpu.count} />
+                <HostMetric
+                  label={t("memory")}
+                  value={`${formatBytes(monitoringData.host.memory.used)} / ${formatBytes(monitoringData.host.memory.total)} (${monitoringData.host.memory.usage} %)`}
+                />
+                <HostMetric
+                  label={t("uptime")}
+                  value={formatDuration(monitoringData.pid.uptime, locale)}
+                />
+              </dl>
+            ) : (
+              <p className="mt-4 text-sm text-muted-foreground">{t("hostUnavailable")}</p>
+            )}
+          </section>
+        </aside>
+      </div>
     </div>
   );
 }
@@ -412,9 +432,9 @@ function KpiCard({
   children: React.ReactNode;
 }) {
   return (
-    <article className="rounded-xl border border-white/10 bg-white/[.025] p-4 md:p-5">
-      <div className="flex items-center gap-3 text-white/60">
-        <span className="text-blue-300">{icon}</span>
+    <article className="rounded-xl border border-border bg-card p-4 md:p-5">
+      <div className="flex items-center gap-3 text-muted-foreground">
+        <span className="text-primary">{icon}</span>
         <h3 className="text-sm font-medium">{label}</h3>
       </div>
       <div className="mt-5">{children}</div>
@@ -424,29 +444,29 @@ function KpiCard({
 
 function Metric({ value, suffix = "" }: { value: string | number; suffix?: string }) {
   return (
-    <p className="font-mono text-3xl font-semibold tracking-tight text-white tabular-nums">
+    <p className="font-mono text-3xl font-semibold tracking-tight text-foreground tabular-nums">
       {value}
-      <span className="text-base font-normal text-white/45">{suffix}</span>
+      <span className="text-base font-normal text-muted-foreground">{suffix}</span>
     </p>
   );
 }
 
 function MetricHelp({ children }: { children: React.ReactNode }) {
-  return <p className="mt-2 text-sm leading-5 text-white/50">{children}</p>;
+  return <p className="mt-2 text-sm leading-5 text-muted-foreground">{children}</p>;
 }
 
 function HostMetric({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex items-baseline justify-between gap-4 border-t border-white/10 py-3 text-sm">
-      <dt className="text-white/50">{label}</dt>
-      <dd className="text-right font-medium text-white/85">{value}</dd>
+    <div className="flex items-baseline justify-between gap-4 border-t border-border py-3 text-sm">
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className="text-right font-medium text-foreground">{value}</dd>
     </div>
   );
 }
 
 function EmptyState({ text }: { text: string }) {
   return (
-    <p className="rounded-xl border border-dashed border-white/10 p-5 text-sm text-white/50">
+    <p className="rounded-xl border border-dashed border-border p-5 text-sm text-muted-foreground">
       {text}
     </p>
   );
@@ -462,7 +482,7 @@ function LiveSummary({
   loading: boolean;
 }) {
   const t = useTranslations("adminDashboard");
-  if (loading) return <div className="mt-4 h-12 animate-pulse rounded-xl bg-white/[.04]" />;
+  if (loading) return <div className="mt-4 h-12 animate-pulse rounded-xl bg-muted" />;
   const message = healthy
     ? t("healthy")
     : unavailableCount > 0
@@ -470,7 +490,7 @@ function LiveSummary({
       : t("checking");
   return (
     <p
-      className={`mt-4 flex items-start gap-2 rounded-xl p-3 text-sm ${healthy ? "bg-emerald-400/10 text-emerald-100" : "bg-amber-300/[.08] text-amber-100"}`}
+      className={`mt-4 flex items-start gap-2 rounded-xl p-3 text-sm ${healthy ? "bg-emerald-400/10 text-foreground" : "bg-amber-300/[.08] text-foreground"}`}
     >
       <span
         className={`mt-1 h-2 w-2 shrink-0 rounded-full ${healthy ? "bg-emerald-400" : "bg-amber-300"}`}
@@ -486,7 +506,7 @@ function LiveServiceCard({ service }: { service: LiveService }) {
     ok: "bg-emerald-400",
     degraded: "bg-amber-300",
     down: "bg-rose-400",
-    unknown: "bg-white/35",
+    unknown: "bg-muted-foreground",
   }[service.state];
   const icon =
     service.id === "database" || service.id === "redis" ? (
@@ -502,18 +522,18 @@ function LiveServiceCard({ service }: { service: LiveService }) {
   }[service.state];
   const copy = SERVICE_COPY[service.id];
   return (
-    <article className="rounded-xl border border-white/10 bg-black/10 p-4">
+    <article className="rounded-xl border border-border bg-card p-4">
       <div className="flex items-start justify-between gap-2">
-        <span className="text-blue-300">{icon}</span>
-        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-white/70">
+        <span className="text-primary">{icon}</span>
+        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
           <span className={`h-2 w-2 rounded-full ${stateStyle}`} />
           {t(stateLabel)}
         </span>
       </div>
-      <h3 className="mt-4 text-sm font-medium text-white">{t(copy.label)}</h3>
-      <p className="mt-1 text-sm leading-5 text-white/50">{t(copy.description)}</p>
-      <details className="mt-3 text-xs text-white/45">
-        <summary className="cursor-pointer text-white/60 hover:text-white">
+      <h3 className="mt-4 text-sm font-medium text-foreground">{t(copy.label)}</h3>
+      <p className="mt-1 text-sm leading-5 text-muted-foreground">{t(copy.description)}</p>
+      <details className="mt-3 text-xs text-muted-foreground">
+        <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
           {t("technical")}
         </summary>
         <p className="mt-2 break-words">
@@ -530,14 +550,14 @@ function LiveServiceCard({ service }: { service: LiveService }) {
 function AgentActivity({ agents }: { agents: LiveDashboardResponse["agents"] | undefined }) {
   const t = useTranslations("adminDashboard");
   return (
-    <div className="mt-4 flex flex-col gap-3 rounded-xl border border-white/10 bg-black/10 p-4 lg:flex-row lg:items-center lg:justify-between">
+    <div className={styles.agentActivity}>
       <div className="flex items-start gap-3">
-        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-400/10 text-blue-300">
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
           <Radio className="h-5 w-5" />
         </span>
         <div>
-          <h3 className="text-sm font-medium text-white">{t("agentsTitle")}</h3>
-          <p className="mt-1 text-sm text-white/50">
+          <h3 className="text-sm font-medium text-foreground">{t("agentsTitle")}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
             {agents?.activeTasks === null || agents?.recentActivity === null
               ? t("agentsUnavailable")
               : agents
@@ -557,14 +577,18 @@ function AgentActivity({ agents }: { agents: LiveDashboardResponse["agents"] | u
           agents.activePeers.map((peer) => (
             <span
               key={peer}
-              className="rounded-lg bg-white/[.08] px-2.5 py-1 text-xs text-white/70"
+              className="rounded-lg bg-muted px-2.5 py-1 text-xs text-muted-foreground"
             >
               {peer}
             </span>
           ))
         ) : (
-          <span className="text-sm text-white/45">
-            {agents?.recentActivity === null ? t("agentsUnavailable") : t("noActivity")}
+          <span className="text-sm text-muted-foreground">
+            {!agents
+              ? t("agentsLoading")
+              : agents.recentActivity === null
+                ? t("agentsUnavailable")
+                : t("noActivity")}
           </span>
         )}
       </div>
@@ -577,7 +601,7 @@ function BotCard({ bot }: { bot: BotSummary }) {
   const locale = useLocale();
   return (
     <article
-      className={`flex min-h-28 gap-3 rounded-xl border border-white/10 bg-white/[.025] p-4 ${bot.online ? "" : "opacity-60"}`}
+      className={`flex min-h-28 gap-3 rounded-xl border border-border bg-card p-4 ${bot.online ? "" : "opacity-60"}`}
       title={bot.username ?? bot.name}
     >
       {bot.avatar ? (
@@ -591,13 +615,13 @@ function BotCard({ bot }: { bot: BotSummary }) {
       )}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <h3 className="truncate font-medium text-white">{bot.name}</h3>
+          <h3 className="truncate font-medium text-foreground">{bot.name}</h3>
           <span
             className={`h-2 w-2 shrink-0 rounded-full ${bot.online ? "bg-emerald-400" : "bg-rose-400"}`}
             title={bot.online ? t("online") : t("offline")}
           />
         </div>
-        <p className="mt-1 text-sm text-white/50">
+        <p className="mt-1 text-sm text-muted-foreground">
           {bot.online ? (
             <>
               {t("botLatency", {
@@ -609,7 +633,7 @@ function BotCard({ bot }: { bot: BotSummary }) {
             t("offline")
           )}
         </p>
-        <p className="mt-2 text-sm text-white/65">
+        <p className="mt-2 text-sm text-muted-foreground">
           {t("botCounts", { commands: bot.commandCount, guilds: bot.guildCount })}
         </p>
       </div>

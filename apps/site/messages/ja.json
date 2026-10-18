@@ -1906,8 +1906,8 @@
       }
     },
     "admin": "管理",
-    "title": "管理ダッシュボードへようこそ",
-    "intro": "サービスの状態、確認が必要な項目、操作を確認できます。",
+    "title": "運用ワークスペース",
+    "intro": "編集作業を実行し、ツールを開いて、サービスの実測状況を確認します。",
     "liveLink": "現在の活動を見る",
     "console": "コンソールを開く",
     "metricsError": "一部の指標を取得できません。欠損値はゼロとして扱いません。",
@@ -1995,7 +1995,9 @@
       "redis_failed": "Redisの接続、認証、またはPINGが失敗しました",
       "admin_unconfigured": "ボット管理トークンが設定されていません"
     },
-    "httpFailure": "HTTP応答 {status}"
+    "httpFailure": "HTTP応答 {status}",
+    "studio": "自分のStudio",
+    "studioDescription": "個人ワークスペースでページを読み込み、翻訳して書き出します。"
   },
   "dbsBeerus": {
     "trailer": "予告編",

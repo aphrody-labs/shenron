@@ -1906,8 +1906,8 @@
       }
     },
     "admin": "Administration",
-    "title": "Bonjour, voici votre espace de pilotage",
-    "intro": "Retrouvez ici ce qui fonctionne, ce qui mérite votre attention et les actions les plus utiles.",
+    "title": "Atelier de pilotage",
+    "intro": "Exécutez les opérations éditoriales, ouvrez vos outils et suivez les mesures réelles des services.",
     "liveLink": "Voir l’activité en direct",
     "console": "Ouvrir la console",
     "metricsError": "Certains indicateurs ne répondent pas. Les valeurs manquantes ne sont pas interprétées comme des zéros.",
@@ -1995,7 +1995,9 @@
       "redis_failed": "Connexion, authentification ou PING Redis en échec",
       "admin_unconfigured": "Jeton d’administration du bot non configuré"
     },
-    "httpFailure": "Réponse HTTP {status}"
+    "httpFailure": "Réponse HTTP {status}",
+    "studio": "Mon atelier Studio",
+    "studioDescription": "Importer, traduire et exporter des planches dans votre espace personnel."
   },
   "dbsBeerus": {
     "trailer": "Bande-annonce",

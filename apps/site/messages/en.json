@@ -1906,8 +1906,8 @@
       }
     },
     "admin": "Administration",
-    "title": "Welcome to your dashboard",
-    "intro": "Review service availability, issues and useful actions.",
+    "title": "Operations workspace",
+    "intro": "Run editorial operations, open your tools, and follow measured service health.",
     "liveLink": "View live activity",
     "console": "Open console",
     "metricsError": "Some metrics are unavailable. Missing values are not treated as zero.",
@@ -1995,7 +1995,9 @@
       "redis_failed": "Redis connection, authentication or PING failed",
       "admin_unconfigured": "Bot administration token is not configured"
     },
-    "httpFailure": "HTTP response {status}"
+    "httpFailure": "HTTP response {status}",
+    "studio": "My Studio workspace",
+    "studioDescription": "Import, translate, and export pages in your personal workspace."
   },
   "dbsBeerus": {
     "trailer": "Trailer",
