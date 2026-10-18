@@ -71,7 +71,6 @@ export async function capturePublicReaderTrial(job: string, sourceUrl: string, m
       "1",
       "--concurrency",
       "1",
-      "--obey-robots",
       "--delay-ms",
       "2000",
       "--timeout",

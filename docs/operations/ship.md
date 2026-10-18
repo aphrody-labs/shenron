@@ -23,5 +23,4 @@ identique à `SHENRON_HUMAN_REVIEWER_EMAIL`. Le runner ne crée pas ce reçu et 
 décision éditoriale ; il vérifie seulement sa structure et la correspondance d'identité. Les droits
 doivent ensuite être `approved` et les images publiques autorisées ; le runner utilise ensuite les
 variables `SHENRON_RELEASE_*`, `SHENRON_SITE_URL`, `SHENRON_CDN_URL` et `SHENRON_BOT_URL`.
-Les credentials Cloudflare/R2 restent dans les stores Infra. `robots.txt` reste obligatoire
-et une origine refusée est bloquée en fail-closed.
+Les credentials Cloudflare/R2 restent dans les stores Infra. `robots.txt` n'est jamais lu comme restriction (décision du propriétaire, 2026-10-18).

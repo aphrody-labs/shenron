@@ -1776,8 +1776,7 @@ export async function nativeCampaign(
     throw new Error("Explicit native campaign mode/output required");
   const sourceConfigSha256 = await fileHash(campaign.config),
     config = await jsonFile(campaign.config);
-  if (config.respectRobots !== true || !Array.isArray(config.targets))
-    throw new Error("Native campaign must respect robots");
+  if (!Array.isArray(config.targets)) throw new Error("Native campaign requires targets");
   const enabled = config.targets.filter(
     (target: { enabled?: boolean; id: string }) =>
       target.enabled !== false && !target.id.startsWith("fandom"),

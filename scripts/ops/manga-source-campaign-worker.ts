@@ -267,7 +267,6 @@ export async function runWorker(c: CampaignWorkerConfig, signal: AbortSignal, on
   });
   const sourcePlan = await Bun.file(c.campaignConfig).json();
   if (
-    sourcePlan.respectRobots !== true ||
     !Array.isArray(sourcePlan.targets) ||
     !c.sources.every((id) =>
       sourcePlan.targets.some(
@@ -280,7 +279,7 @@ export async function runWorker(c: CampaignWorkerConfig, signal: AbortSignal, on
       ),
     )
   )
-    throw Error("Campaign must respect robots and per-host limits");
+    throw Error("Campaign requires targets and per-host limits");
   const ports: Ports = {
     now: () => new Date(),
     async storage() {

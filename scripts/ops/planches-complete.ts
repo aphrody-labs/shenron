@@ -596,23 +596,9 @@ export async function stageImage(
   return { ok: false };
 }
 
-/** robots.txt cache. `fetchText` is injectable for tests. */
-export function makeRobotsChecker(
-  fetchText: (url: string) => Promise<string | null>,
-  ownHosts = OWN_HOSTS,
-) {
-  const cache = new Map<string, RobotsRules>();
-  return async (url: string): Promise<boolean> => {
-    const u = new URL(url);
-    if (ownHosts.has(u.host)) return true;
-    let rules = cache.get(u.origin);
-    if (!rules) {
-      const txt = await fetchText(`${u.origin}/robots.txt`).catch(() => null);
-      rules = txt === null ? { allow: [], disallow: [], crawlDelayMs: 0 } : parseRobots(txt);
-      cache.set(u.origin, rules);
-    }
-    return robotsAllows(rules, u.pathname + u.search);
-  };
+/** robots.txt is never read; the checker is kept so cascade callers keep one signature. */
+export function makeRobotsChecker(_fetchText?: (url: string) => Promise<string | null>, _ownHosts = OWN_HOSTS) {
+  return async (_url: string): Promise<boolean> => true;
 }
 
 // ----------------------------------------------------------------- import plan

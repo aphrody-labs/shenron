@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Allowlisted crawl. Full captures stay private under `store`; only passages (bounded excerpts
- * with provenance) feed RAG. Fandom is refused; robots.txt is honoured; no challenge bypass.
+ * with provenance) feed RAG. Fandom is refused; robots.txt is not read; no challenge bypass.
  */
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
@@ -36,18 +36,6 @@ const FORBIDDEN = /(^|\.)fandom\.com$|(^|\.)wikia\.(com|org)$/i;
 export function hostAllowed(url: URL, allow: readonly string[]): boolean {
   if (!/^https?:$/.test(url.protocol) || FORBIDDEN.test(url.hostname)) return false;
   return allow.some((h) => url.hostname === h || url.hostname.endsWith(`.${h}`));
-}
-
-export function robotsDisallows(robots: string, path: string): boolean {
-  let applies = false;
-  for (const raw of robots.split(/\r?\n/)) {
-    const line = raw.replace(/#.*/, "").trim();
-    const [key = "", ...rest] = line.split(":");
-    const value = rest.join(":").trim();
-    if (/^user-agent$/i.test(key)) applies = value === "*";
-    else if (applies && /^disallow$/i.test(key) && value && path.startsWith(value)) return true;
-  }
-  return false;
 }
 
 async function extract(html: string, base: string) {
@@ -87,7 +75,6 @@ export async function crawl(options: CrawlOptions): Promise<CrawlResult> {
   const skipped: CrawlResult["skipped"] = [];
   const queue: string[] = [];
   const seen = new Set<string>();
-  const robots = new Map<string, Promise<string>>();
   const passages: CrawlPassage[] = [];
   const enqueue = (raw: string) => {
     let url: URL;
@@ -107,15 +94,6 @@ export async function crawl(options: CrawlOptions): Promise<CrawlResult> {
 
   const visit = async (href: string) => {
     const url = new URL(href);
-    if (!robots.has(url.origin))
-      robots.set(
-        url.origin,
-        fetcher(`${url.origin}/robots.txt`)
-          .then((r) => (r.ok ? r.text() : ""))
-          .catch(() => ""),
-      );
-    if (robotsDisallows(await robots.get(url.origin)!, url.pathname))
-      return void skipped.push({ url: href, reason: "robots" });
     const response = await fetcher(href, { headers: { accept: "text/html" } }).catch(() => null);
     if (!response?.ok || !/html/i.test(response.headers.get("content-type") ?? "html"))
       return void skipped.push({ url: href, reason: `status:${response?.status ?? "error"}` });

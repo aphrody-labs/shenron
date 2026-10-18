@@ -159,7 +159,7 @@ describe("helpers", () => {
 });
 
 describe("cascade against a local server", () => {
-  test("discovers, stages, dedupes by hash, skips robots and fakes", async () => {
+  test("discovers, stages, dedupes by hash, ignores robots and skips fakes", async () => {
     const db = openStagingDb(join(dir, "s.sqlite"));
     const ctx: CascadeCtx = {
       db,
@@ -182,7 +182,7 @@ describe("cascade against a local server", () => {
     const row = db.query("SELECT path FROM assets LIMIT 1").get() as { path: string };
     expect(await Bun.file(join(dir, "assets", row.path)).exists()).toBe(true);
     const fails = db.query("SELECT detail FROM attempts WHERE ok=0").all() as { detail: string }[];
-    expect(fails.some((f) => f.detail.includes("robots"))).toBe(true);
+    expect(fails.some((f) => f.detail.includes("robots"))).toBe(false);
     expect(
       fails.some((f) => f.detail.includes("not decodable") || f.detail.includes("too small")),
     ).toBe(true);

@@ -296,7 +296,6 @@ export function publicationPlan(
       "2",
       "--per-host-delay",
       "1000",
-      "--obey-robots",
       ...(limits.depth > 0 ? ["--sitemaps"] : []),
       "--json",
     ],
