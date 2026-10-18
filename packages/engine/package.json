@@ -25,7 +25,8 @@
     "./unified_canvas": "./src/unified_canvas.ts",
     "./types": "./src/types.ts",
     "./toriyama3d": "./src/toriyama3d.ts",
-    "./manga-scene": "./src/manga-scene.ts"
+    "./manga-scene": "./src/manga-scene.ts",
+    "./sprite-atlas": "./src/sprite-atlas.ts"
   },
   "publishConfig": {
     "access": "public",
@@ -50,7 +51,8 @@
       "./render": "pure",
       "./wasm": "pure",
       "./unified_canvas": "pure",
-      "./types": "pure"
+      "./types": "pure",
+      "./sprite-atlas": "pure"
     }
   }
 }

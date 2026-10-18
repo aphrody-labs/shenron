@@ -14,3 +14,4 @@ export * from "./canvas";
 export * from "./render";
 export * from "./wasm";
 export * from "./unified_canvas";
+export * from "./sprite-atlas";
