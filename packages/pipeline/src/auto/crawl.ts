@@ -93,7 +93,6 @@ export async function crawl(options: CrawlOptions): Promise<CrawlResult> {
   };
 
   const visit = async (href: string) => {
-    const url = new URL(href);
     const response = await fetcher(href, { headers: { accept: "text/html" } }).catch(() => null);
     if (!response?.ok || !/html/i.test(response.headers.get("content-type") ?? "html"))
       return void skipped.push({ url: href, reason: `status:${response?.status ?? "error"}` });

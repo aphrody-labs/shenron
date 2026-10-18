@@ -3,8 +3,6 @@ import type { CrunchyrollSeriesMeta, CrunchyrollEpisodeMeta } from "./types";
 import { CRUNCHYROLL_SERIES_BY_SHENRON } from "../../media/src/crunchyroll-mapping";
 import { readFileSync, existsSync } from "node:fs";
 
-const CR_BASE = "https://www.crunchyroll.com";
-
 export interface CrunchyrollAuthOptions {
   token?: string;
   cookiesFile?: string;
@@ -69,10 +67,12 @@ export class CrunchyrollClient {
         id: "GT00389311",
         title: "Dragon Ball Super: Beerus",
         slugTitle: "dragon-ball-super-beerus",
-        description: "Après la défaite de Majin Buu, Goku et ses compagnons coulent des jours paisibles jusqu'au réveil du Dieu de la Destruction, Beerus.",
+        description:
+          "Après la défaite de Majin Buu, Goku et ses compagnons coulent des jours paisibles jusqu'au réveil du Dieu de la Destruction, Beerus.",
         episodeCount: 14,
         seasonCount: 1,
-        imageUrl: "https://www.crunchyroll.com/imgsrv/display/thumbnail/1200x675/catalog/crunchyroll/beerus.jpg"
+        imageUrl:
+          "https://www.crunchyroll.com/imgsrv/display/thumbnail/1200x675/catalog/crunchyroll/beerus.jpg",
       };
     }
     return null;
@@ -93,10 +93,11 @@ export class CrunchyrollClient {
         durationMs: 1397000,
         audioLocale: "ja-JP",
         subtitleLocales: ["fr-FR"],
-        description: "Quatre ans après la défaite de Majin Buu, Goku travaille comme fermier mais aspire à s'entraîner. Beerus se réveille.",
+        description:
+          "Quatre ans après la défaite de Majin Buu, Goku travaille comme fermier mais aspire à s'entraîner. Beerus se réveille.",
         airDate: "2026-10-11T00:00:00Z",
         isPremiumOnly: false,
-        watchUrl: "https://www.crunchyroll.com/fr/watch/GE00389313JAJP/the-god-who-destroys"
+        watchUrl: "https://www.crunchyroll.com/fr/watch/GE00389313JAJP/the-god-who-destroys",
       };
     }
     return null;

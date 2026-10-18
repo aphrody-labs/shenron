@@ -1,6 +1,5 @@
 ﻿// SPDX-License-Identifier: Apache-2.0
 import { CrunchyrollClient } from "./client";
-import { openIndex } from "../../../scripts/ops/crunchyroll-service";
 import { join } from "node:path";
 import { homedir } from "node:os";
 
@@ -13,7 +12,11 @@ export class CrunchyrollService {
     this.dbPath = join(homedir(), "apps", "shenron-crunchyroll", "index.sqlite");
   }
 
-  async resolveWatchUrl(params: { series?: string; number?: number; episodeId?: string }): Promise<string | null> {
+  async resolveWatchUrl(params: {
+    series?: string;
+    number?: number;
+    episodeId?: string;
+  }): Promise<string | null> {
     if (params.episodeId) {
       const ep = await this.client.getEpisode(params.episodeId);
       return ep?.watchUrl || null;

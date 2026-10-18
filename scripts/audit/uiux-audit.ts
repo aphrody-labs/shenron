@@ -201,7 +201,7 @@ async function main() {
   }
   const rank: Record<Severity, number> = { critical: 0, high: 1, medium: 2 };
   const rules = [...byRule.entries()]
-    .map(([rule, entry]) => ({ rule, ...entry }))
+    .map(([rule, entry]) => Object.assign({ rule }, entry))
     .toSorted((a, b) => rank[a.severity] - rank[b.severity] || b.pages - a.pages);
   const report = {
     origin,

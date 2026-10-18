@@ -88,7 +88,7 @@ export function mapCrunchyrollEpisodes(
       },
     });
   }
-  return [...byNumber.values()].sort((a, b) => a.number - b.number);
+  return [...byNumber.values()].toSorted((a, b) => a.number - b.number);
 }
 
 // --- Resolver layer: Shenron episode rows <-> Crunchyroll ids and watch links -----------------------------------------

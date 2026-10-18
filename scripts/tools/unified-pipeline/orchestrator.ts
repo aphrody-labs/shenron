@@ -1,5 +1,4 @@
 ﻿// SPDX-License-Identifier: Apache-2.0
-import { spawn } from "node:child_process";
 import { promisify } from "node:util";
 import { exec as execCb } from "node:child_process";
 import { join } from "node:path";
@@ -36,7 +35,9 @@ export interface PipelineReport {
  */
 export async function runReaProbe(targetPath?: string): Promise<any> {
   try {
-    const cmd = targetPath ? `rea probe "${targetPath}" --format json` : `rea providers --format json`;
+    const cmd = targetPath
+      ? `rea probe "${targetPath}" --format json`
+      : `rea providers --format json`;
     const { stdout } = await exec(cmd, { windowsHide: true });
     return JSON.parse(stdout);
   } catch (err: any) {
@@ -65,9 +66,10 @@ export async function runFilmcraftInspect(seconds: number = 2.0, outFrame?: stri
   try {
     const cli = "filmcraft-cli";
     const inspectRes = await exec(`${cli} --demo inspect`, { windowsHide: true });
-    let renderRes = null;
     if (outFrame) {
-      renderRes = await exec(`${cli} --demo render --seconds ${seconds} --out "${outFrame}"`, { windowsHide: true });
+      await exec(`${cli} --demo render --seconds ${seconds} --out "${outFrame}"`, {
+        windowsHide: true,
+      });
     }
     return {
       sequence: JSON.parse(inspectRes.stdout),

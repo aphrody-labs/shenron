@@ -38,7 +38,9 @@ mkdirSync(join(dir, "frames"), { recursive: true });
 const token = process.env.SHENRON_ADMIN_TOKEN;
 if (!token) throw new Error("SHENRON_ADMIN_TOKEN is not set");
 const row = (await (
-  await fetch(`${BOT}/api/database/db_episodes/${id}`, { headers: { authorization: `Bearer ${token}` } })
+  await fetch(`${BOT}/api/database/db_episodes/${id}`, {
+    headers: { authorization: `Bearer ${token}` },
+  })
 ).json()) as Record<string, any>;
 await Bun.write(join(dir, "row-before.json"), JSON.stringify(row, null, 1));
 const existing: any[] = Array.isArray(row.frames) ? row.frames : [];
@@ -46,7 +48,9 @@ const existing: any[] = Array.isArray(row.frames) ? row.frames : [];
 // 2. Source file (first-party) and Bun Video metadata.
 const sourcePath = join(dir, "source.mp4");
 if (!(await Bun.file(sourcePath).exists())) {
-  const p = Bun.spawn(["curl", "-sf", "-o", sourcePath, `${SITE}/api/episodes/${id}/video`], { stderr: "inherit" });
+  const p = Bun.spawn(["curl", "-sf", "-o", sourcePath, `${SITE}/api/episodes/${id}/video`], {
+    stderr: "inherit",
+  });
   if (await p.exited) throw new Error("source download failed");
 }
 const sourceBytesHasher = new Bun.CryptoHasher("sha256");
@@ -62,16 +66,18 @@ console.log(JSON.stringify({ sourceSha, sourceSize, duration, width, height }));
 const knownSha = existing[0]?.imagePath?.match(/episodes\/\d+\/([a-f0-9]{64})\//)?.[1];
 
 // 3. Frames at new timecodes (existing ones are kept as they are).
-const have = existing.map(f => f.timecodeSec as number);
+const have = existing.map((f) => f.timecodeSec as number);
 const times: number[] = [];
 const step = (duration - 60) / frameTarget;
 for (let i = 0; i < frameTarget; i++) {
   const t = Math.round((30 + step * (i + 0.5)) * 1000) / 1000;
-  if (!have.some(h => Math.abs(h - t) < 8)) times.push(t);
+  if (!have.some((h) => Math.abs(h - t) < 8)) times.push(t);
 }
 const decoder = { bunVideo: 0, ffmpeg: 0, cached: 0 };
 const cachePath = join(dir, "frames", "index.json");
-const cache: Record<string, string> = (await Bun.file(cachePath).exists()) ? await Bun.file(cachePath).json() : {};
+const cache: Record<string, string> = (await Bun.file(cachePath).exists())
+  ? await Bun.file(cachePath).json()
+  : {};
 const newFrames: { t: number; sha: string; bytes: Uint8Array }[] = [];
 let nextFrame = 0;
 await Promise.all(
@@ -80,7 +86,13 @@ await Promise.all(
       const t = times[nextFrame++]!;
       const cachedSha = cache[String(t)];
       if (cachedSha && (await Bun.file(join(dir, "frames", `${cachedSha}.png`)).exists())) {
-        newFrames.push({ t, sha: cachedSha, bytes: new Uint8Array(await Bun.file(join(dir, "frames", `${cachedSha}.png`)).arrayBuffer()) });
+        newFrames.push({
+          t,
+          sha: cachedSha,
+          bytes: new Uint8Array(
+            await Bun.file(join(dir, "frames", `${cachedSha}.png`)).arrayBuffer(),
+          ),
+        });
         decoder.cached++;
         continue;
       }
@@ -90,9 +102,28 @@ await Promise.all(
         bytes = new Uint8Array(await new (Bun as any).Video(sourcePath).frame(t).png().bytes());
         decoder.bunVideo++;
       } catch {
-        const p = Bun.spawn(["ffmpeg", "-v", "error", "-ss", String(t), "-i", sourcePath, "-frames:v", "1", "-f", "image2pipe", "-vcodec", "png", "-"], { stdout: "pipe", stderr: "ignore" });
+        const p = Bun.spawn(
+          [
+            "ffmpeg",
+            "-v",
+            "error",
+            "-ss",
+            String(t),
+            "-i",
+            sourcePath,
+            "-frames:v",
+            "1",
+            "-f",
+            "image2pipe",
+            "-vcodec",
+            "png",
+            "-",
+          ],
+          { stdout: "pipe", stderr: "ignore" },
+        );
         bytes = new Uint8Array(await new Response(p.stdout).arrayBuffer());
-        if ((await p.exited) || bytes.length < 1000) throw new Error(`frame ${t} could not be extracted`);
+        if ((await p.exited) || bytes.length < 1000)
+          throw new Error(`frame ${t} could not be extracted`);
         decoder.ffmpeg++;
       }
       newFrames.push({ t, sha: sha256(bytes), bytes });
@@ -103,34 +134,48 @@ await Promise.all(
   }),
 );
 newFrames.sort((a, b) => a.t - b.t);
-console.log(`frames: ${existing.length} existing + ${newFrames.length} new (${JSON.stringify(decoder)})`);
+console.log(
+  `frames: ${existing.length} existing + ${newFrames.length} new (${JSON.stringify(decoder)})`,
+);
 
 // 4. Embedded subtitle track (text only), as WebVTT.
 const subtitleTracks: { language: string; label: string; vtt: string }[] = [];
 {
   const srt = join(dir, "embedded.srt");
-  const p = Bun.spawn(["ffmpeg", "-v", "error", "-y", "-i", sourcePath, "-map", "0:s:0?", "-c:s", "srt", srt], {
-    stderr: "ignore",
-  });
+  const p = Bun.spawn(
+    ["ffmpeg", "-v", "error", "-y", "-i", sourcePath, "-map", "0:s:0?", "-c:s", "srt", srt],
+    {
+      stderr: "ignore",
+    },
+  );
   await p.exited;
   const text = (await Bun.file(srt).exists()) ? await Bun.file(srt).text() : "";
-  const cues = [...text.matchAll(/(\d\d:\d\d:\d\d),(\d{3}) --> (\d\d:\d\d:\d\d),(\d{3})\n([\s\S]*?)(?:\n\n|$)/g)];
+  const cues = [
+    ...text.matchAll(
+      /(\d\d:\d\d:\d\d),(\d{3}) --> (\d\d:\d\d:\d\d),(\d{3})\n([\s\S]*?)(?:\n\n|$)/g,
+    ),
+  ];
   if (cues.length) {
     const vtt =
-      "WEBVTT\n\n" + cues.map(m => `${m[1]}.${m[2]} --> ${m[3]}.${m[4]}\n${m[5]!.trim()}`).join("\n\n") + "\n";
+      "WEBVTT\n\n" +
+      cues.map((m) => `${m[1]}.${m[2]} --> ${m[3]}.${m[4]}\n${m[5]!.trim()}`).join("\n\n") +
+      "\n";
     subtitleTracks.push({ language: "en", label: "Anglais (piste intégrée)", vtt });
   }
   console.log(`subtitles: ${cues.length} cues in the embedded track`);
 }
 
 // 5. Crawl: official site (JA) and Wikipedia (EN).
-const ua = { "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/155 Safari/537.36 Shenron/1.0" };
+const ua = {
+  "user-agent":
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/155 Safari/537.36 Shenron/1.0",
+};
 const official = await (await fetch("https://dragonball-super.com/", { headers: ua })).text();
 const officialText = official
   .replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, " ")
   .replace(/<[^>]+>/g, "\n")
   .split("\n")
-  .map(l => l.trim())
+  .map((l) => l.trim())
   .filter(Boolean);
 const storyAt = officialText.indexOf("STORY");
 const episodeNumber = row.numberInSeries as number;
@@ -154,10 +199,16 @@ while (cursor < onAir && names.length < 24) {
 }
 const cast: { characterJa: string; voiceActorJa: string; descriptionJa: string }[] = [];
 for (let i = cursor; i + 2 < onAir; i += 3)
-  cast.push({ characterJa: officialText[i]!, voiceActorJa: officialText[i + 1]!, descriptionJa: officialText[i + 2]! });
-const stillUrls = [...new Set([...official.matchAll(/img\/story\/(st\d\d-\d\d\.jpg)/g)].map(m => m[1]!))]
-  .filter(n => n.startsWith(`st${String(episodeNumber).padStart(2, "0")}-`))
-  .map(n => `https://dragonball-super.com/img/story/${n}`);
+  cast.push({
+    characterJa: officialText[i]!,
+    voiceActorJa: officialText[i + 1]!,
+    descriptionJa: officialText[i + 2]!,
+  });
+const stillUrls = [
+  ...new Set([...official.matchAll(/img\/story\/(st\d\d-\d\d\.jpg)/g)].map((m) => m[1]!)),
+]
+  .filter((n) => n.startsWith(`st${String(episodeNumber).padStart(2, "0")}-`))
+  .map((n) => `https://dragonball-super.com/img/story/${n}`);
 
 const wiki = (await (
   await fetch(
@@ -166,7 +217,10 @@ const wiki = (await (
   )
 ).json()) as any;
 const wikitext: string = wiki.parse.wikitext["*"];
-const block = new RegExp(`\\| EpisodeNumber\\s*= ${episodeNumber}\\n([\\s\\S]*?)\\n\\}\\}`).exec(wikitext)?.[1] ?? "";
+const block =
+  new RegExp(`\\| EpisodeNumber\\s*= ${episodeNumber}\\n([\\s\\S]*?)\\n\\}\\}`).exec(
+    wikitext,
+  )?.[1] ?? "";
 const field = (name: string) =>
   new RegExp(`\\| ${name}\\s*= (.*)`)
     .exec(block)?.[1]
@@ -195,7 +249,7 @@ console.log(
 // 6. Stage and plan.
 const frameObjects = [
   ...existing,
-  ...newFrames.map(f => ({
+  ...newFrames.map((f) => ({
     tags: [],
     width,
     height,
@@ -211,10 +265,10 @@ const frameObjects = [
     characterNames: [],
   })),
 ]
-  .sort((a, b) => a.timecodeSec - b.timecodeSec)
-  .map((f, i) => ({ ...f, sortOrder: i }));
+  .toSorted((a, b) => a.timecodeSec - b.timecodeSec)
+  .map((f, i) => Object.assign({}, f, { sortOrder: i }));
 
-const subtitleObjects = subtitleTracks.map(t => ({
+const subtitleObjects = subtitleTracks.map((t) => ({
   lang: t.language,
   label: t.label,
   src: `${CDN}/media/episodes/${id}/${sourceSha}/${sha256(t.vtt)}.vtt`,
@@ -237,14 +291,17 @@ const officialMetadata = {
   },
   correspondsToDbsEpisodes: "1-2",
   cast,
-  stills: stillUrls.map(u => `${CDN}/assets/crawl/dragon-ball-super.com/${u.split("/").pop()}`),
+  stills: stillUrls.map((u) => `${CDN}/assets/crawl/dragon-ball-super.com/${u.split("/").pop()}`),
   sources: [
     { name: "Site officiel (ja)", url: "https://dragonball-super.com/#story" },
     {
       name: "Wikipedia (en), Dragon Ball Super: Beerus",
       url: "https://en.wikipedia.org/wiki/Dragon_Ball_Super:_Beerus",
     },
-    { name: "Crunchyroll", url: row.availability?.[0]?.url ?? "https://www.crunchyroll.com/series/GT00389311/" },
+    {
+      name: "Crunchyroll",
+      url: row.availability?.[0]?.url ?? "https://www.crunchyroll.com/series/GT00389311/",
+    },
   ],
   video: {
     sha256: sourceSha,
@@ -265,7 +322,9 @@ await Bun.write(
   ),
 );
 if (knownSha && knownSha !== sourceSha)
-  console.warn(`WARNING: existing frames came from source ${knownSha}, this file hashes to ${sourceSha}`);
+  console.warn(
+    `WARNING: existing frames came from source ${knownSha}, this file hashes to ${sourceSha}`,
+  );
 if (!apply) {
   console.log(`staged in ${dir} (plan.json); pass --apply to publish`);
   process.exit(0);
@@ -285,13 +344,13 @@ for (const url of stillUrls) {
   });
 }
 const items: CdnItem[] = [
-  ...newFrames.map(f => ({
+  ...newFrames.map((f) => ({
     path: `/media/episodes/${id}/${sourceSha}/${f.sha}.png`,
     sha256: f.sha,
     bytes: f.bytes,
     contentType: "image/png",
   })),
-  ...subtitleTracks.map(t => ({
+  ...subtitleTracks.map((t) => ({
     path: `/media/episodes/${id}/${sourceSha}/${sha256(t.vtt)}.vtt`,
     sha256: sha256(t.vtt),
     bytes: new TextEncoder().encode(t.vtt),
@@ -300,11 +359,13 @@ const items: CdnItem[] = [
   ...stills,
 ];
 const s3 = await mintClient();
-const published = await publishItems(s3, items, await livePrefix(), message => console.log(message));
+const published = await publishItems(s3, items, await livePrefix(), (message) =>
+  console.log(message),
+);
 console.log(JSON.stringify({ live: published.live.length, failed: published.failed }));
 if (published.failed.length) throw new Error("some objects failed to publish");
 const entries = Object.fromEntries(
-  items.map(i => [
+  items.map((i) => [
     i.path,
     {
       sha256: i.sha256,
@@ -316,10 +377,20 @@ const entries = Object.fromEntries(
 );
 await Bun.write(join(dir, "cdn-entries.json"), JSON.stringify(entries));
 const run = async (cmd: string[], stdin?: string) => {
-  const p = Bun.spawn(cmd, { stdin: stdin ? new Blob([stdin]) : "ignore", stdout: "inherit", stderr: "inherit" });
+  const p = Bun.spawn(cmd, {
+    stdin: stdin ? new Blob([stdin]) : "ignore",
+    stdout: "inherit",
+    stderr: "inherit",
+  });
   if (await p.exited) throw new Error(`${cmd[0]} failed`);
 };
-await run(["scp", "-q", join(dir, "cdn-entries.json"), join(import.meta.dir, "cdn-origin-add.ts"), "dbfr:/tmp/"]);
+await run([
+  "scp",
+  "-q",
+  join(dir, "cdn-entries.json"),
+  join(import.meta.dir, "cdn-origin-add.ts"),
+  "dbfr:/tmp/",
+]);
 await run([
   "ssh",
   "dbfr",
@@ -328,7 +399,9 @@ await run([
 
 // 8. Database: back up the row, then update it in one transaction.
 const q = (value: unknown) =>
-  value === null || value === undefined ? "NULL" : `$j$${typeof value === "string" ? value : JSON.stringify(value)}$j$`;
+  value === null || value === undefined
+    ? "NULL"
+    : `$j$${typeof value === "string" ? value : JSON.stringify(value)}$j$`;
 const sql = `\\set ON_ERROR_STOP on
 BEGIN;
 CREATE TABLE IF NOT EXISTS bot.db_episodes_backup_completion AS SELECT now() AS saved_at, * FROM bot.db_episodes WHERE false;
@@ -348,7 +421,11 @@ SELECT id, title_ja, title_romaji, arc_id, jsonb_array_length(frames) AS frames,
 `;
 await Bun.write(join(dir, "update.sql"), sql);
 await run(
-  ["ssh", "dbfr", "sudo -n docker exec -i shenron-postgres psql -U postgres -d shenron_site -v ON_ERROR_STOP=1"],
+  [
+    "ssh",
+    "dbfr",
+    "sudo -n docker exec -i shenron-postgres psql -U postgres -d shenron_site -v ON_ERROR_STOP=1",
+  ],
   sql,
 );
 console.log("database updated; row backup in bot.db_episodes_backup_completion");

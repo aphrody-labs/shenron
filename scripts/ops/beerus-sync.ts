@@ -22,7 +22,10 @@ const crawl = process.argv.includes("--crawl");
 const SERIES = "DBS_BEERUS";
 const ARC_ID = 18;
 const SITE = "https://dragonballfr.com";
-const ua = { "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/155 Safari/537.36 Shenron/1.0" };
+const ua = {
+  "user-agent":
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/155 Safari/537.36 Shenron/1.0",
+};
 const run = async (cmd: string[], stdin?: string) => {
   const p = Bun.spawn(cmd, {
     stdin: stdin === undefined ? "ignore" : new Blob([stdin]),
@@ -35,10 +38,15 @@ const run = async (cmd: string[], stdin?: string) => {
 };
 const psql = (sql: string) =>
   run(
-    ["ssh", "dbfr", "sudo -n docker exec -i shenron-postgres psql -U postgres -d shenron_site -v ON_ERROR_STOP=1 -At"],
+    [
+      "ssh",
+      "dbfr",
+      "sudo -n docker exec -i shenron-postgres psql -U postgres -d shenron_site -v ON_ERROR_STOP=1 -At",
+    ],
     sql,
   );
-const lit = (value: unknown) => (value === null || value === undefined ? "NULL" : `$q$${String(value)}$q$`);
+const lit = (value: unknown) =>
+  value === null || value === undefined ? "NULL" : `$q$${String(value)}$q$`;
 
 export interface AnnouncedEpisode {
   number: number;
@@ -60,7 +68,8 @@ const clean = (value: string | undefined) =>
 export function parseWikipediaEpisodes(wikitext: string): AnnouncedEpisode[] {
   const episodes: AnnouncedEpisode[] = [];
   for (const block of wikitext.split(/\{\{\^?\|?Episode list\b/).slice(1)) {
-    const field = (name: string) => clean(new RegExp(`\\|[ \\t]*${name}[ \\t]*=[ \\t]*([^\\n]*)`).exec(block)?.[1]);
+    const field = (name: string) =>
+      clean(new RegExp(`\\|[ \\t]*${name}[ \\t]*=[ \\t]*([^\\n]*)`).exec(block)?.[1]);
     const number = Number(field("EpisodeNumber"));
     if (!Number.isSafeInteger(number)) continue;
     const date = /Start date\|(\d{4})\|(\d{1,2})\|(\d{1,2})/.exec(block);
@@ -69,17 +78,20 @@ export function parseWikipediaEpisodes(wikitext: string): AnnouncedEpisode[] {
       titleEn: field("Title"),
       titleRomaji: field("TranslitTitle"),
       titleJa: field("NativeTitle"),
-      airDate: date ? Math.floor(Date.UTC(Number(date[1]), Number(date[2]) - 1, Number(date[3])) / 1000) : null,
+      airDate: date
+        ? Math.floor(Date.UTC(Number(date[1]), Number(date[2]) - 1, Number(date[3])) / 1000)
+        : null,
       summaryEn: field("ShortSummary"),
     });
   }
-  return episodes.sort((a, b) => a.number - b.number);
+  return episodes.toSorted((a, b) => a.number - b.number);
 }
 
 /** French working title when the French broadcaster has not published one: a plain translation, flagged as such. */
 const FRENCH_TITLES: Record<string, string> = {
   "The God Who Destroys": "Le dieu de la Destruction",
-  "The God of Destruction Heads to the Planet of the Kai": "Le dieu de la Destruction se rend sur la planète de Kaïo",
+  "The God of Destruction Heads to the Planet of the Kai":
+    "Le dieu de la Destruction se rend sur la planète de Kaïo",
 };
 
 if (import.meta.main) {
@@ -89,7 +101,7 @@ if (import.meta.main) {
       { headers: ua },
     )
   ).json()) as any;
-  const announced = parseWikipediaEpisodes(wiki.parse.wikitext["*"]).filter(e => e.titleEn);
+  const announced = parseWikipediaEpisodes(wiki.parse.wikitext["*"]).filter((e) => e.titleEn);
 
   // The official page lists each episode as « NN / Japanese title / synopsis ».
   const official = await (await fetch("https://dragonball-super.com/", { headers: ua })).text();
@@ -97,7 +109,7 @@ if (import.meta.main) {
     .replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, " ")
     .replace(/<[^>]+>/g, "\n")
     .split("\n")
-    .map(l => l.trim())
+    .map((l) => l.trim())
     .filter(Boolean);
   const officialJa = new Map<number, string>();
   for (let i = 0; i < lines.length - 2; i++) {
@@ -113,13 +125,15 @@ if (import.meta.main) {
     .trim()
     .split("\n")
     .filter(Boolean)
-    .map(l => l.split("|").map(Number));
+    .map((l) => l.split("|").map(Number));
   const have = new Map(rows.map(([id, n]) => [n!, id!]));
   const statements: string[] = ["BEGIN;"];
   let nextId = Number((await psql("select max(id) from bot.db_episodes")).trim()) + 1;
   for (const e of announced) {
-    const official = officialJa.get(e.number);
-    const ja = e.titleJa ?? (official && /[\u3040-\u30ff\u4e00-\u9fff]/.test(official) ? official : null);
+    const officialTitle = officialJa.get(e.number);
+    const ja =
+      e.titleJa ??
+      (officialTitle && /[\u3040-\u30ff\u4e00-\u9fff]/.test(officialTitle) ? officialTitle : null);
     const titleFr = e.titleEn ? (FRENCH_TITLES[e.titleEn] ?? e.titleEn) : null;
     if (!have.has(e.number)) {
       statements.push(
@@ -133,10 +147,11 @@ if (import.meta.main) {
   }
   statements.push("COMMIT;");
   console.log(
-    `announced: ${announced.map(e => e.number).join(",") || "none"}; in database: ${[...have.keys()].join(",") || "none"}`,
+    `announced: ${announced.map((e) => e.number).join(",") || "none"}; in database: ${[...have.keys()].join(",") || "none"}`,
   );
   if (!apply) console.log(statements.join("\n"));
-  else if (statements.length > 2) console.log((await psql(statements.join("\n"))).trim() || "database updated");
+  else if (statements.length > 2)
+    console.log((await psql(statements.join("\n"))).trim() || "database updated");
 
   if (complete) {
     const current = (
@@ -147,9 +162,12 @@ if (import.meta.main) {
       .trim()
       .split("\n")
       .filter(Boolean)
-      .map(l => l.split("|").map(Number));
+      .map((l) => l.split("|").map(Number));
     for (const [id, frames] of current) {
-      const head = await fetch(`${SITE}/api/episodes/${id}/video`, { method: "HEAD", headers: ua }).catch(() => null);
+      const head = await fetch(`${SITE}/api/episodes/${id}/video`, {
+        method: "HEAD",
+        headers: ua,
+      }).catch(() => null);
       if (!head?.ok || (frames ?? 0) >= 20) continue;
       console.log(`completing episode ${id} (${frames} frames)`);
       const exitCode = await Bun.spawn(
@@ -164,7 +182,10 @@ if (import.meta.main) {
         ],
         { stdout: "inherit", stderr: "inherit" },
       ).exited;
-      if (exitCode) console.error(`episode ${id}: complete-episode exited ${exitCode}; the next run retries it`);
+      if (exitCode)
+        console.error(
+          `episode ${id}: complete-episode exited ${exitCode}; the next run retries it`,
+        );
     }
   }
 
@@ -192,9 +213,12 @@ if (import.meta.main) {
       { stdout: "inherit", stderr: "inherit" },
     ).exited;
     if (apply)
-      await Bun.spawn([process.execPath, engine, "publish", "--limit", "500", "--deploy", "--home", home], {
-        stdout: "inherit",
-        stderr: "inherit",
-      }).exited;
+      await Bun.spawn(
+        [process.execPath, engine, "publish", "--limit", "500", "--deploy", "--home", home],
+        {
+          stdout: "inherit",
+          stderr: "inherit",
+        },
+      ).exited;
   }
 }

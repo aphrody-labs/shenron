@@ -81,8 +81,10 @@ export class BunVideoAutonomousEngine {
    */
   async probeVideoPage(targetUrl: string, userAgent?: string): Promise<VideoMetadataProbe> {
     const headers: Record<string, string> = {
-      "User-Agent": userAgent || "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
-      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "User-Agent":
+        userAgent ||
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
+      Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
       "Accept-Language": "fr-FR,fr;q=0.9,ja-JP;q=0.8,en-US;q=0.7",
     };
 
@@ -94,7 +96,7 @@ export class BunVideoAutonomousEngine {
 
       const text = await res.text();
       const isM3u8 = text.includes("#EXTM3U") || targetUrl.toLowerCase().endsWith(".m3u8");
-      
+
       let title: string | undefined;
       const titleMatch = text.match(/<title>([^<]+)<\/title>/i);
       if (titleMatch) title = titleMatch[1].trim();
@@ -102,7 +104,9 @@ export class BunVideoAutonomousEngine {
       // Scan JSON-LD pour les fiches TVEpisode
       let langs: string[] = [];
       if (text.includes("application/ld+json")) {
-        const jsonLdMatch = text.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/i);
+        const jsonLdMatch = text.match(
+          /<script type="application\/ld\+json">([\s\S]*?)<\/script>/i,
+        );
         if (jsonLdMatch) {
           try {
             const data = JSON.parse(jsonLdMatch[1]);
@@ -123,7 +127,7 @@ export class BunVideoAutonomousEngine {
         availableLangs: langs,
         resolvedWatchUrl: res.url,
       };
-    } catch (err: unknown) {
+    } catch {
       return {
         url: targetUrl,
         status: 0,
