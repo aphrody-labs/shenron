@@ -5,6 +5,7 @@ import { useT } from "@/components/T";
 import { useHomeMotion } from "./HomeMotion";
 import styles from "./HomeHero.module.css";
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
+import { HomeSoundCue } from "./HomeSoundCue";
 
 /** Only qualified HD stills are animated; no episode player is mounted here. */
 export function HomeHeroFrames({ frames }: { frames: readonly string[] }) {
@@ -95,6 +96,7 @@ export function HomeHeroFrames({ frames }: { frames: readonly string[] }) {
           >
             <ChevronRight size={20} aria-hidden="true" />
           </button>
+          <HomeSoundCue />
         </div>
       )}
     </div>
