@@ -1,4 +1,5 @@
 import { hasEditorialDatabase } from "@/lib/prerender";
+import { Xenoverse2Runtime } from "@/components/games/Xenoverse2Runtime";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
 import { GameMediaGallery } from "@/components/wiki/GameMediaGallery";
@@ -111,6 +112,8 @@ export default async function GamePage({ params }: { params: Promise<{ slug: str
           </div>
         </div>
       </header>
+
+      {slug === "xenoverse-2" && <Xenoverse2Runtime wiki />}
 
       <dl className="grid sm:grid-cols-2 gap-6 mb-12 p-6 rounded-xl bg-white/[0.04] border border-white/[0.06]">
         {g.release_date && (
