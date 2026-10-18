@@ -47,7 +47,7 @@ export interface Dbxv2UrlBuilders {
   png(ref: Dbxv2RefInput, params?: { readonly index?: number }): string;
   audio(ref: Dbxv2RefInput, params?: { readonly cue?: number }): string;
   video(ref: Dbxv2RefInput): string;
-  /** Web MP4 (H.264 + AAC) transcoded on demand by the server: the format browsers can play. */
+  /** Web fragmented MP4 (H.264, no audio) transcoded on demand by the server: the format browsers can play. */
   mp4(ref: Dbxv2RefInput): string;
   modelJson(ref: Dbxv2RefInput, params?: { readonly emb?: string; readonly esk?: string }): string;
   modelGlb(ref: Dbxv2RefInput, params?: { readonly emb?: string; readonly esk?: string }): string;

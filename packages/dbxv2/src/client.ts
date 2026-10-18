@@ -276,9 +276,12 @@ export class Dbxv2Client {
     return this.#binary("video", ref, {}, options, "video/");
   }
 
-  /** A USM transcoded on demand to web MP4 (H.264 + AAC), playable in every browser. */
-  async mp4(ref: Dbxv2RefInput, options: RequestOptions = {}): Promise<Dbxv2Binary> {
-    return this.#binary("mp4", ref, {}, options, "video/mp4");
+  /** A USM segment (`t`, `d`) transcoded on demand to web fragmented MP4 (H.264, no audio), playable in every browser. */
+  async mp4(
+    ref: Dbxv2RefInput,
+    options: RequestOptions & { readonly t?: number; readonly d?: number } = {},
+  ): Promise<Dbxv2Binary> {
+    return this.#binary("mp4", ref, { t: options.t, d: options.d }, options, "video/mp4");
   }
 
   /** Assembled EMD metadata, validated. */

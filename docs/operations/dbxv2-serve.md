@@ -25,18 +25,19 @@ Shenron ne dépend pas de bun-distribution. La bibliothèque native est `libshen
 
 ## Configuration
 
-| Variable | Défaut |
-| --- | --- |
-| `DBXV2_TOKEN` | obligatoire |
-| `DBXV2_PKG_DIR` | `~/src/bun-os/packages/shenron-dbxv2` |
-| `DBXV2_LIB` | `target/release/libshenron_dbxv2.so` du paquet (ou `SHENRON_DBXV2_LIB`) |
-| `DBXV2_CPK_DIR` | `/games/SteamLibrary/steamapps/common/DB Xenoverse 2/cpk` (fabrique) |
-| `DBXV2_HOST` / `DBXV2_PORT` | `127.0.0.1` / `8788` |
-| `DBXV2_WORKERS` | `4` (1 à 16) |
-| `DBXV2_CACHE_DIR` | `~/.cache/shenron/dbxv2-serve` (hors dépôt) |
-| `DBXV2_CACHE_MAX_MB` | `4096` |
-| `DBXV2_FFMPEG` | `ffmpeg` du PATH (fabrique) |
-| `DBXV2_TRANSCODE_CONCURRENCY` | `2` transcodages simultanés |
+| Variable                      | Défaut                                                                  |
+| ----------------------------- | ----------------------------------------------------------------------- |
+| `DBXV2_TOKEN`                 | obligatoire                                                             |
+| `DBXV2_PKG_DIR`               | `~/src/bun-os/packages/shenron-dbxv2`                                   |
+| `DBXV2_LIB`                   | `target/release/libshenron_dbxv2.so` du paquet (ou `SHENRON_DBXV2_LIB`) |
+| `DBXV2_CPK_DIR`               | `/games/SteamLibrary/steamapps/common/DB Xenoverse 2/cpk` (fabrique)    |
+| `DBXV2_HOST` / `DBXV2_PORT`   | `127.0.0.1` / `8788`                                                    |
+| `DBXV2_WORKERS`               | `4` (1 à 16)                                                            |
+| `DBXV2_CACHE_DIR`             | `~/.cache/shenron/dbxv2-serve` (hors dépôt)                             |
+| `DBXV2_CACHE_MAX_MB`          | `4096`                                                                  |
+| `DBXV2_VIDEO_BIN`             | `shenron-video` du PATH (`~/.local/bin` sur la fabrique)                |
+| `DBXV2_MP4_MAX_SECONDS`       | `90` (durée maximale d'un segment `/mp4/`)                              |
+| `DBXV2_TRANSCODE_CONCURRENCY` | `2` transcodages simultanés                                             |
 
 ## Routes (GET, HEAD)
 
@@ -47,8 +48,10 @@ Shenron ne dépend pas de bun-distribution. La bibliothèque native est `libshen
 - `/cpk/:name/png/*path?index=N` : entrée d'un EMB en PNG.
 - `/cpk/:name/wav/*path?cue=N` : sous-son d'un ACB en WAV (404 pour un ACB en flux, forme d'onde dans l'AWB voisin).
 - `/cpk/:name/video/*path` : USM en MP4, WebM ou MPEG-2 (type déduit du contenu).
-- `/cpk/:name/mp4/*path` : le même USM transcodé à la demande en MP4 H.264 (yuv420p) + AAC, `faststart`,
-  `Range` compris. C'est le format web : `/video/` rend le flux natif (souvent du MPEG-2, illisible dans Chrome).
+- `/cpk/:name/mp4/*path?t=S&d=S` : segment du même USM transcodé à la demande en MP4 fragmenté H.264 High
+  (yuv420p), sans audio (l'USM n'expose pas son audio), `Range` compris. `t` = début (s, défaut 0), `d` = durée
+  (plafonnée à `DBXV2_MP4_MAX_SECONDS`). C'est le format web : `/video/` rend le flux natif (MPEG-1/2, illisible
+  dans Chrome). Un USM déjà en MP4 est servi tel quel.
 - `/cpk/:name/model/*path.json|.glb` : EMD assemblé ; EMB et ESK frères de même nom, ou `?emb=&esk=`.
 
 ## Fonctionnement
@@ -60,10 +63,11 @@ Shenron ne dépend pas de bun-distribution. La bibliothèque native est `libshen
   un worker qui plante est remplacé, la requête fautive reçoit 500.
 - Les requêtes identiques concurrentes partagent un seul calcul ; le résultat va au cache disque borné
   (éviction du plus ancien accès) puis est servi avec `Range`. Les index (TOC) sont mémoïsés par version de CPK.
-- Transcodage `/mp4/` : le flux natif (`video`, mis en cache) est écrit dans `DBXV2_CACHE_DIR/transcode-work`
-  (hors dépôt, fichiers `.tmp` supprimés après usage), converti par ffmpeg (`libx264 -preset veryfast -crf 23`,
-  dimensions paires, `aac 128k`), puis le MP4 entre dans le même cache disque borné. Concurrence limitée
-  (file FIFO), délai 300 s (504), ffmpeg absent : 503, échec : 500 (stderr au journal seul).
+- Transcodage `/mp4/` : binaire Rust pur `shenron-video` (crate `crates/shenron-video` : décodeur MPEG-1/2
+  `filmcraft-mpeg2v`, encodeur H.264 `filmcraft-h264enc`, muxeur fMP4 `filmcraft-isobmff`), sans ffmpeg ni C.
+  Octets par stdin/stdout, aucun fichier de travail ; le décodage démarre à l'image intra précédant `t`. Le segment
+  entre dans le cache disque borné (clé = USM + `t` + `d`). Concurrence limitée (file FIFO), délai 300 s (504),
+  binaire absent : 503, échec : 500 (stderr au journal seul). Débit mesuré : voir `docs/products/shenron-video.md`.
 - Journal : `MÉTHODE chemin statut durée`, sans jeton ni paramètres de requête.
 - Erreurs : 404 (inconnu), 500 (échec natif, détail dans le journal seul), 503 (file pleine), 504 (délai).
 
@@ -114,8 +118,8 @@ Récupération :
 
 `bun test scripts/ops/dbxv2-serve.test.ts` : authentification, Range/If-Range, ETag, HEAD, cache, pool de
 workers avec un backend factice bloquant (20 requêtes mixtes concurrentes, `/health` < 150 ms pendant les
-conversions, déduplication), transcodage `/mp4/` (cache, Range, nettoyage ; test ffmpeg réel ignoré si
-l'installation n'a pas `libx264`). `DBXV2_LIVE=1` ajoute un échantillon réel par format sur la fabrique.
+conversions, déduplication), transcodage `/mp4/` (segments, plafond de durée, cache, Range, transcodeur factice). Le codec Rust se teste par
+`cargo test -p shenron-video` sur la fabrique. `DBXV2_LIVE=1` ajoute un échantillon réel par format sur la fabrique.
 
 ## Adaptateur moteur
 

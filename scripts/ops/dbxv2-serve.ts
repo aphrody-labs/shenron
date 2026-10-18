@@ -6,7 +6,6 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { existsSync } from "node:fs";
 import { mkdir, readdir, rename, rm, stat, utimes } from "node:fs/promises";
-import { randomUUID } from "node:crypto";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { Worker } from "node:worker_threads";
@@ -41,14 +40,22 @@ export interface ServeOptions {
   jobTimeoutMs?: number;
   hostname?: string;
   port?: number;
-  /** Binaire ffmpeg du transcodage web (`/mp4/`), defaut `ffmpeg` du PATH. */
-  ffmpeg?: string;
+  /** Transcodeur natif Rust (`shenron-video`) du format web `/mp4/`, defaut le PATH. */
+  videoBin?: string;
   /** Transcodages simultanes maximum (defaut 2). */
   transcodeConcurrency?: number;
   /** Delai maximal d'un transcodage avant 504 (defaut 300 s). */
   transcodeTimeoutMs?: number;
-  /** Remplace ffmpeg (tests) : lit `input`, ecrit le MP4 dans `output`. */
-  transcoder?: (input: string, output: string) => Promise<void>;
+  /** Remplace le transcodeur natif (tests) : octets MPEG en entree, MP4 en sortie. */
+  transcoder?: (source: Uint8Array, segment: Mp4Segment) => Promise<Uint8Array>;
+  /** Duree maximale d'un segment `/mp4/` en secondes (defaut 90). */
+  mp4MaxSeconds?: number;
+}
+
+/** Segment demande d'une video web : debut et duree en secondes. */
+export interface Mp4Segment {
+  start: number;
+  duration: number;
 }
 
 const CACHE_CONTROL = "private, max-age=3600, must-revalidate";
@@ -349,37 +356,6 @@ const nativeErrorStatus = (error: unknown): HttpError => {
 
 const FIND_MEMO_MAX = 512;
 
-/** Arguments ffmpeg : MP4 H.264 (yuv420p, dimensions paires) + AAC, lisible par tous les navigateurs. */
-export function ffmpegMp4Args(input: string, output: string): string[] {
-  return [
-    "-nostdin",
-    "-v",
-    "error",
-    "-y",
-    "-i",
-    input,
-    "-c:v",
-    "libx264",
-    "-preset",
-    "veryfast",
-    "-crf",
-    "23",
-    "-pix_fmt",
-    "yuv420p",
-    "-vf",
-    "scale=trunc(iw/2)*2:trunc(ih/2)*2",
-    "-c:a",
-    "aac",
-    "-b:a",
-    "128k",
-    "-movflags",
-    "+faststart",
-    "-f",
-    "mp4",
-    output,
-  ];
-}
-
 /** Limite de concurrence simple (file FIFO). */
 class Semaphore {
   #free: number;
@@ -416,45 +392,58 @@ export function createDbxv2Server(opts: ServeOptions) {
         opts.jobTimeoutMs ?? 120_000,
       )
     : null;
-  const workDir = join(opts.cacheDir, "transcode-work");
   const transcodeGate = new Semaphore(opts.transcodeConcurrency ?? 2);
-  /** Transcode des octets video (MPEG-2, WebM, MP4) en MP4 H.264+AAC via fichiers temporaires hors depot. */
-  const transcodeToMp4 = (source: Uint8Array): Promise<Uint8Array> =>
-    transcodeGate.use(async () => {
-      await mkdir(workDir, { recursive: true });
-      const id = randomUUID();
-      const input = join(workDir, `${id}.in.tmp`);
-      const output = join(workDir, `${id}.out.tmp`);
+  /**
+   * Flux MPEG-1/2 de l'USM vers MP4 fragmente H.264 (Chrome ne lit pas MPEG). Transcodeur Rust pur
+   * (decodeur MPEG, encodeur H.264, muxeur fMP4) : octets par stdin/stdout, aucun fichier de travail.
+   * Un MP4 deja lisible est servi tel quel.
+   */
+  const transcodeToMp4 = (source: Uint8Array, segment: Mp4Segment): Promise<Uint8Array> => {
+    if (
+      !opts.transcoder &&
+      source[4] === 0x66 &&
+      source[5] === 0x74 &&
+      source[6] === 0x79 &&
+      source[7] === 0x70
+    )
+      return Promise.resolve(source);
+    return transcodeGate.use(async () => {
+      if (opts.transcoder) return opts.transcoder(source, segment);
+      let proc: ReturnType<typeof Bun.spawn>;
       try {
-        await Bun.write(input, source);
-        if (opts.transcoder) await opts.transcoder(input, output);
-        else {
-          let proc: ReturnType<typeof Bun.spawn>;
-          try {
-            proc = Bun.spawn([opts.ffmpeg ?? "ffmpeg", ...ffmpegMp4Args(input, output)], {
-              stdin: "ignore",
-              stdout: "ignore",
-              stderr: "pipe",
-            });
-          } catch {
-            throw new HttpError(503, "transcoder unavailable");
-          }
-          const timer = setTimeout(() => proc.kill(), opts.transcodeTimeoutMs ?? 300_000);
-          const code = await proc.exited;
-          clearTimeout(timer);
-          if (proc.killed) throw new HttpError(504, "transcode timeout");
-          if (code !== 0) {
-            const err = await new Response(proc.stderr as ReadableStream).text();
-            console.error(`[dbxv2-serve] ffmpeg exit ${code}: ${err.slice(0, 500)}`);
-            throw new HttpError(500, "transcode failed");
-          }
-        }
-        return new Uint8Array(await Bun.file(output).arrayBuffer());
-      } finally {
-        await rm(input, { force: true });
-        await rm(output, { force: true });
+        proc = Bun.spawn(
+          [
+            opts.videoBin ?? "shenron-video",
+            "mp4",
+            "--start",
+            String(segment.start),
+            "--duration",
+            String(segment.duration),
+          ],
+          {
+            stdin: source as unknown as Blob,
+            stdout: "pipe",
+            stderr: "pipe",
+          },
+        );
+      } catch {
+        throw new HttpError(503, "transcoder unavailable");
       }
+      const timer = setTimeout(() => proc.kill(), opts.transcodeTimeoutMs ?? 300_000);
+      const [out, err, code] = await Promise.all([
+        new Response(proc.stdout as ReadableStream).bytes(),
+        new Response(proc.stderr as ReadableStream).text(),
+        proc.exited,
+      ]);
+      clearTimeout(timer);
+      if (proc.killed) throw new HttpError(504, "transcode timeout");
+      if (code !== 0) {
+        console.error(`[dbxv2-serve] shenron-video exit ${code}: ${err.slice(0, 500)}`);
+        throw new HttpError(500, "transcode failed");
+      }
+      return out;
     });
+  };
 
   const exec = async (job: Job): Promise<JobResult> => {
     if (pool) return pool.run(job);
@@ -640,20 +629,31 @@ export function createDbxv2Server(opts: ServeOptions) {
     }
 
     if (action === "mp4") {
-      // Format web : le serveur natif rend du MPEG-2 (.m2v) que Chrome ne lit pas ; transcodage a la
-      // demande en H.264+AAC, resultat dans le cache disque borne (jamais dans le depot).
+      // Format web : le serveur natif rend du MPEG-1/2 (.m2v) que Chrome ne lit pas ; transcodage a la
+      // demande en H.264 (fMP4, sans audio : l'USM n'expose pas son audio), resultat dans le cache disque borne (jamais dans le depot).
       const entry = await findOne(file, stamp, rest);
       const sourceKey = `video|${parts[1]}|${stamp}|${rest}`;
+      // Segment `t` (debut) + `d` (duree), duree plafonnee : un USM entier depasse le delai raisonnable.
+      const maxSeconds = opts.mp4MaxSeconds ?? 90;
+      const num = (k: string, dflt: number) => {
+        const v = Number(url.searchParams.get(k));
+        return Number.isFinite(v) && url.searchParams.has(k) && v >= 0 ? v : dflt;
+      };
+      const segment: Mp4Segment = {
+        start: Math.floor(num("t", 0) * 100) / 100,
+        duration: Math.min(num("d", maxSeconds), maxSeconds) || maxSeconds,
+      };
+      const tag = `${segment.start}-${segment.duration}`;
       return converted(
         req,
-        `mp4|${parts[1]}|${stamp}|${rest}`,
-        etagOf(stamp, entry, "mp4"),
+        `mp4|${parts[1]}|${stamp}|${rest}|${tag}`,
+        etagOf(stamp, entry, `mp4${tag}`),
         "video/mp4",
         async () => {
           const made = await produce(sourceKey, { op: "video", file, path: rest });
           const source =
             "bytes" in made ? made.bytes : new Uint8Array(await Bun.file(made.path).arrayBuffer());
-          return transcodeToMp4(source);
+          return transcodeToMp4(source, segment);
         },
       );
     }
@@ -727,7 +727,7 @@ if (import.meta.main) {
     cacheMaxBytes: Number(env.DBXV2_CACHE_MAX_MB ?? 4096) * 1024 * 1024,
     backendSpec: { pkgDir, lib: env.DBXV2_LIB },
     workers: Number(env.DBXV2_WORKERS ?? 4),
-    ffmpeg: env.DBXV2_FFMPEG,
+    videoBin: env.DBXV2_VIDEO_BIN,
     transcodeConcurrency: Number(env.DBXV2_TRANSCODE_CONCURRENCY ?? 2),
     hostname: env.DBXV2_HOST ?? "127.0.0.1",
     port: Number(env.DBXV2_PORT ?? 8788),

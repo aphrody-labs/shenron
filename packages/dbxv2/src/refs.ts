@@ -23,6 +23,9 @@ export interface Dbxv2ResourceParams {
   readonly index?: number;
   /** `wav`: sub-sound index inside the ACB. */
   readonly cue?: number;
+  /** `mp4`: segment start and length in seconds (server caps the length). */
+  readonly t?: number;
+  readonly d?: number;
   /** `model.*`: explicit sibling EMB / ESK paths. */
   readonly emb?: string;
   readonly esk?: string;
@@ -66,6 +69,13 @@ export function formatRef(ref: Dbxv2Ref): string {
 
 const encodePath = (path: string): string => path.split("/").map(encodeURIComponent).join("/");
 
+const secondsParam = (name: string, value: number | undefined, query: URLSearchParams): void => {
+  if (value === undefined) return;
+  if (!Number.isFinite(value) || value < 0)
+    throw new Dbxv2ConfigError(`${name} must be a non-negative number`);
+  query.set(name, String(value));
+};
+
 const intParam = (name: string, value: number | undefined, query: URLSearchParams): void => {
   if (value === undefined) return;
   if (!Number.isInteger(value) || value < 0)
@@ -81,6 +91,10 @@ export function resourceQuery(
   const query = new URLSearchParams();
   if (kind === "png") intParam("index", params.index, query);
   if (kind === "wav") intParam("cue", params.cue, query);
+  if (kind === "mp4") {
+    secondsParam("t", params.t, query);
+    secondsParam("d", params.d, query);
+  }
   if (kind === "model.json" || kind === "model.glb") {
     if (params.emb !== undefined) query.set("emb", params.emb);
     if (params.esk !== undefined) query.set("esk", params.esk);
