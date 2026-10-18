@@ -18,26 +18,29 @@ async function freePort(): Promise<number> {
   return port;
 }
 
-export async function withObscura<T>(run: (session: ObscuraSession) => Promise<T>): Promise<T> {
-  const binary = process.env.APHRODY_WEB_BIN ?? Bun.which("aphrody-web");
-  if (!binary) throw new Error("aphrody-web not found; run `aphrody package install`");
+/** Spawns a CDP server, waits for `/json/version`, runs the callback, then stops the server. */
+export async function withCdpServer<T>(
+  command: (port: number) => string[],
+  run: (session: ObscuraSession) => Promise<T>,
+): Promise<T> {
   const port = await freePort();
-  const child = Bun.spawn([binary, "launch", "--port", String(port)], {
-    stdout: "ignore",
-    stderr: "ignore",
-  });
+  const child = Bun.spawn(command(port), { stdout: "ignore", stderr: "ignore" });
   try {
     const deadline = Date.now() + 15_000;
-    for (;;) {
+    let cdpUrl = "";
+    while (!cdpUrl) {
       try {
-        if ((await fetch(`http://127.0.0.1:${port}/json/version`)).ok) break;
+        const response = await fetch(`http://127.0.0.1:${port}/json/version`);
+        if (response.ok)
+          cdpUrl = ((await response.json()) as { webSocketDebuggerUrl: string })
+            .webSocketDebuggerUrl;
       } catch {
         // server not listening yet
       }
-      if (Date.now() > deadline) throw new Error("aphrody-web did not open its CDP port in 15s");
-      await Bun.sleep(100);
+      if (!cdpUrl && Date.now() > deadline)
+        throw new Error(`CDP server did not open port ${port} in 15s`);
+      if (!cdpUrl) await Bun.sleep(100);
     }
-    const cdpUrl = `ws://127.0.0.1:${port}/devtools/browser`;
     return await run({
       cdpUrl,
       page: (baseURL) => TestPage.create({ cdpUrl, baseURL }),
@@ -46,6 +49,12 @@ export async function withObscura<T>(run: (session: ObscuraSession) => Promise<T
     child.kill();
     await child.exited;
   }
+}
+
+export async function withObscura<T>(run: (session: ObscuraSession) => Promise<T>): Promise<T> {
+  const binary = process.env.APHRODY_WEB_BIN ?? Bun.which("aphrody-web");
+  if (!binary) throw new Error("aphrody-web not found; run `aphrody package install`");
+  return withCdpServer((port) => [binary, "launch", "--port", String(port)], run);
 }
 
 export const VIEWPORTS = [

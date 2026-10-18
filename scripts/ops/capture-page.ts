@@ -1,13 +1,16 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Captures a page of the site at desktop and mobile widths through Obscura.
+ * Captures a page of the site at desktop and mobile widths.
  *
  * Usage: bun scripts/ops/capture-page.ts [path=/] [--origin URL] [--out DIR]
- * Writes <out>/<slug>-<viewport>.png plus a layout summary on stdout.
+ *        [--engine chrome|obscura|lightpanda]
+ * Writes <out>/<slug>-<viewport>.png (not with lightpanda) plus a layout summary on stdout.
+ * Chrome is the reference for visual calls: Obscura approximates fonts and transforms.
  */
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
-import { setViewport, VIEWPORTS, withObscura } from "../testing/obscura";
+import { VIEWPORTS } from "../testing/obscura";
+import { parseEngine, withEngine } from "../testing/render-engine";
 
 const option = (name: string, fallback: string) => {
   const index = Bun.argv.indexOf(name);
@@ -16,16 +19,16 @@ const option = (name: string, fallback: string) => {
 const route = Bun.argv[2]?.startsWith("/") ? Bun.argv[2] : "/";
 const origin = new URL(option("--origin", "https://dragonballfr.com")).origin;
 const out = option("--out", "var/reports/captures");
+const engine = parseEngine(option("--engine", "chrome"));
 const slug = route === "/" ? "home" : route.slice(1).replaceAll("/", "-");
 
 await mkdir(out, { recursive: true });
-await withObscura(async (session) => {
+await withEngine(engine, async (session) => {
   for (const viewport of VIEWPORTS) {
-    const page = await session.page(origin);
+    const page = await session.open(origin, viewport);
     try {
-      await setViewport(page, viewport);
       await page.goto(route);
-      const summary = await page.raw.evaluate<Record<string, number | string>>(`({
+      const summary = await page.evaluate<Record<string, number | string>>(`({
         width: innerWidth,
         scrollWidth: document.documentElement.scrollWidth,
         scrollHeight: document.documentElement.scrollHeight,
@@ -33,12 +36,12 @@ await withObscura(async (session) => {
         decoded: [...document.images].filter(i => i.naturalWidth > 0).length,
         title: document.title
       })`);
-      const shot = (await page.raw.cdp("Page.captureScreenshot", { format: "png" })) as {
-        data: string;
-      };
-      const file = join(out, `${slug}-${viewport.name}.png`);
-      await Bun.write(file, Buffer.from(shot.data, "base64"));
-      console.log(JSON.stringify({ viewport: viewport.name, file, ...summary }));
+      let file: string | null = null;
+      if (engine !== "lightpanda") {
+        file = join(out, `${slug}-${engine}-${viewport.name}.png`);
+        await Bun.write(file, await page.screenshot());
+      }
+      console.log(JSON.stringify({ engine, viewport: viewport.name, file, ...summary }));
     } finally {
       await page.close();
     }

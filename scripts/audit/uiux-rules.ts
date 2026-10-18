@@ -44,6 +44,7 @@ export async function auditHtml(html: string): Promise<UiuxIssue[]> {
   const labelledIds = new Set<string>();
   const controls: { id: string | null; named: boolean }[] = [];
   let open: { named: boolean; text: string } | null = null;
+  let labelDepth = 0;
 
   const rewriter = new HTMLRewriter()
     .on("html", {
@@ -107,7 +108,9 @@ export async function auditHtml(html: string): Promise<UiuxIssue[]> {
           named: Boolean(
             el.getAttribute("aria-label")?.trim() ||
             el.getAttribute("aria-labelledby") ||
-            el.getAttribute("title")?.trim(),
+            el.getAttribute("title")?.trim() ||
+            // Hidden duplicates (image links with tabindex=-1) are not exposed to assistive tech.
+            el.getAttribute("aria-hidden") === "true",
           ),
           text: "",
         };
@@ -131,6 +134,11 @@ export async function auditHtml(html: string): Promise<UiuxIssue[]> {
       element(el) {
         const target = el.getAttribute("for");
         if (target) labelledIds.add(target);
+        // A control wrapped in <label> is labelled without `for`.
+        labelDepth++;
+        el.onEndTag(() => {
+          labelDepth--;
+        });
       },
     })
     .on("input, select, textarea", {
@@ -139,11 +147,13 @@ export async function auditHtml(html: string): Promise<UiuxIssue[]> {
         if (["hidden", "submit", "button", "reset", "image"].includes(type)) return;
         controls.push({
           id: el.getAttribute("id"),
-          named: Boolean(
-            el.getAttribute("aria-label")?.trim() ||
-            el.getAttribute("aria-labelledby") ||
-            el.getAttribute("title"),
-          ),
+          named:
+            labelDepth > 0 ||
+            Boolean(
+              el.getAttribute("aria-label")?.trim() ||
+              el.getAttribute("aria-labelledby") ||
+              el.getAttribute("title"),
+            ),
         });
       },
     })

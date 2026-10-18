@@ -3,7 +3,8 @@
  * UI/UX Pro Max audit of every page found by scripts/ops/crawl-site.ts.
  *
  * Static layer: fetches each crawled HTML page and applies scripts/audit/uiux-rules.ts.
- * Rendered layer (--render): drives Obscura (`aphrody-web launch`, see scripts/testing/obscura.ts)
+ * Rendered layer (--render, --engine chrome|obscura|lightpanda; default chrome through playwright-core,
+ * see scripts/testing/render-engine.ts) drives the engine
  * at 1280 and 390 px on a sample per route family: horizontal overflow, small targets, image
  * decoding, and a PNG per family in <out>/shots.
  *
@@ -13,7 +14,8 @@
 import { Database } from "bun:sqlite";
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
-import { setViewport, VIEWPORTS, withObscura, type ObscuraSession } from "../testing/obscura";
+import { VIEWPORTS } from "../testing/obscura";
+import { parseEngine, withEngine, type RenderSession } from "../testing/render-engine";
 import { auditHtml, type Severity, type UiuxIssue } from "./uiux-rules";
 
 const option = (name: string, fallback: string) => {
@@ -26,6 +28,7 @@ const frontier = option("--frontier", "var/reports/site-crawl/frontier.sqlite");
 const concurrency = Number(option("--concurrency", "6"));
 const limit = Number(option("--limit", "0"));
 const sample = Number(option("--sample", "3"));
+const engine = parseEngine(option("--engine", "chrome"));
 const failOn = option("--fail-on", "critical") as Severity | "none";
 if (!Number.isSafeInteger(concurrency) || concurrency < 1 || concurrency > 12)
   throw new Error("--concurrency must be in 1..12");
@@ -58,24 +61,32 @@ async function pool<T>(items: T[], run: (item: T) => Promise<void>) {
 }
 
 async function renderCheck(
-  session: ObscuraSession,
+  session: RenderSession,
   url: string,
   family: string,
 ): Promise<UiuxIssue[]> {
   const issues: UiuxIssue[] = [];
   const target = new URL(url);
   for (const viewport of VIEWPORTS) {
-    const page = await session.page(target.origin);
+    const page = await session.open(target.origin, viewport);
     try {
-      await setViewport(page, viewport);
       await page.goto(`${target.pathname}${target.search}`);
-      const state = await page.raw.evaluate<{
+      // Scroll through the page so lazy images load, then let client-side fallbacks (avatar 404 →
+      // default avatar) settle before measuring.
+      const state = await page.evaluate<{
         overflow: number;
         small: number;
         broken: number;
-      }>(`(() => {
+      }>(`(async () => {
+        for (let y = 0; y < document.documentElement.scrollHeight; y += 700) {
+          scrollTo(0, y);
+          await new Promise(r => setTimeout(r, 60));
+        }
+        scrollTo(0, 0);
+        await new Promise(r => setTimeout(r, 1500));
         const interactive = [...document.querySelectorAll("a[href], button, input:not([type=hidden]), select, textarea, [role=button]")];
-        const visible = interactive.filter(el => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0; });
+        // WCAG 2.2 SC 2.5.8 exempts targets inline in a sentence.
+        const visible = interactive.filter(el => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(el).display !== "inline"; });
         return {
           overflow: document.documentElement.scrollWidth - innerWidth,
           small: visible.filter(el => { const r = el.getBoundingClientRect(); return r.width < 24 || r.height < 24; }).length,
@@ -100,17 +111,13 @@ async function renderCheck(
           severity: "high",
           detail: `${viewport.width}px: ${state.broken} images failed to decode`,
         });
-      const shot = (await page.raw.cdp("Page.captureScreenshot", { format: "png" })) as {
-        data: string;
-      };
-      await Bun.write(
-        join(
-          out,
-          "shots",
-          `${family === "/" ? "home" : family.slice(1).replaceAll("/", "-")}-${viewport.name}.png`,
-        ),
-        Buffer.from(shot.data, "base64"),
-      );
+      if (session.engine !== "lightpanda") {
+        const name = family === "/" ? "home" : family.slice(1).replaceAll("/", "-");
+        await Bun.write(
+          join(out, "shots", `${name}-${session.engine}-${viewport.name}.png`),
+          await page.screenshot(),
+        );
+      }
     } finally {
       await page.close();
     }
@@ -165,7 +172,7 @@ async function main() {
       if (list.length < sample) perFamily.set(family, [...list, result]);
     }
     await mkdir(join(out, "shots"), { recursive: true });
-    await withObscura(async (session) => {
+    await withEngine(engine, async (session) => {
       for (const [family, list] of perFamily) {
         for (const [index, result] of list.entries()) {
           try {

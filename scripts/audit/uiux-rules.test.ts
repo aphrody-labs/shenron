@@ -58,6 +58,16 @@ describe("uiux static rules", () => {
     );
   });
 
+  test("controls wrapped in a label and aria-hidden duplicate links are not flagged", async () => {
+    const wrapped = GOOD.replace(
+      "</main>",
+      '<label><input type="checkbox">Auto</label><a href="/x" tabindex="-1" aria-hidden="true"><img src="/i.png" alt="" data-nimg="fill"></a></main>',
+    );
+    const found = await rules(wrapped);
+    expect(found).not.toContain("form-labels");
+    expect(found).not.toContain("aria-labels");
+  });
+
   test("form controls need a label", async () => {
     expect(await rules(GOOD.replace('<label for="q">Recherche</label>', ""))).toContain(
       "form-labels",
