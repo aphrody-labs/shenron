@@ -587,6 +587,7 @@ export function VideoPlayer({
             <span className="sr-only">{t("seekPosition")}</span>
             <input
               type="range"
+              aria-label={t("seekPosition")}
               min={0}
               max={duration || 1}
               step={0.1}
