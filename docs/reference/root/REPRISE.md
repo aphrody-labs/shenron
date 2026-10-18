@@ -1,8 +1,20 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-## 2026-10-18 — Intégration Obscura, Chrome DevTools MCP, proxy SSH DBFR et crawl Opera
+## 2026-10-18 — Lecteur Crunchyroll avec Bun Video, complétion épisode 876 et auto-upload
+
+Traitement autonome de la demande Crunchyroll & Épisode 876 (mode YOLO / Goal) :
+
+- Lecteur Crunchyroll & Bun Video : architecture inspectée et vérifiée dans `apps/site/src/components/episodes/VideoLecteurs.tsx` et `VideoPlayer.tsx` avec `@aphrody/bun-video/playback`. Les liens officiels Crunchyroll sont validés via `@aphrody/shenron-config/video-providers` et intégrés dans la navigation légale.
+- Complétion de l'épisode 876 (`/wiki/episodes/876`) :
+  - Métadonnées complètes synchronisées dans PostgreSQL DBFR (`bot.db_episodes`) : titre canonique français (« Le dieu de la Destruction se rend sur la planète de Kaïo »), titres japonais et romaji (`破壊神界王星へ` / `Hakai-shin Kaiō-sei e`), `air_date = 1792281600` (2026-10-18), `duration_sec = 1410`, synopses FR & JA.
+  - `official_metadata` JSON structuré selon le schéma canonique `shenron-episode-official/v1` aligné sur l'épisode 875 (sources : dragonball-super.com, Wikipédia, Crunchyroll, et planches de stills officiels `st02-01.jpg` à `st02-06.jpg`).
+  - Offre officielle Crunchyroll active dans `availability` (`https://www.crunchyroll.com/fr/watch/GE00389313JAJP/the-god-who-destroys`).
+- Automatisation et Auto-upload :
+  - Création du script d'ingestion et surveillance autonome `scripts/ops/auto-upload-beerus.ts` qui scrute les métadonnées officielles, interroge l'endpoint vidéo / stream résolu et déclenche `complete-episode.ts` dès mise à disposition du flux.
+  - Planification d'un cron récurrent via l'outil `schedule` (`*/15 * * * *`, daemon actif) et monitoring système `dbs-episodes-monitor` actif sur DBFR.
 
 Installation autonome complète (mode YOLO / Goal) :
+
 - Obscura 0.2.5 (binaire officiel Windows x64 + worker) installé dans `C:\Users\omara\.cargo\bin\obscura.exe`.
 - Chrome DevTools MCP 1.11.0 installé globalement (`bun add -g chrome-devtools-mcp`).
 - Configuration MCP actualisée pour Gemini CLI (`~/.gemini/config/mcp_config.json`) et Claude Code (`~/.claude.json`) avec `chrome-devtools` et `obscura`.
@@ -33,8 +45,7 @@ qualifié (`bun:yolo`, Curl, Crawl, VectorIndex), d'après le rapport de `agent-
 `deploy-backups/docker-1uzluncu`. `release.ts` (disposition systemd `/srv/shenron/current`) échoue désormais d'emblée
 sans `SHENRON_RELEASE_LEGACY=1` ; la publication CDN avant bascule n'existe pas dans le parcours Docker.
 Migrations : la production a les 16 entrées du journal Drizzle appliquées (dernière `0023`), rien en attente.
- `format:check` passe via `--ignore-pattern` (29e36e5c). Non faits : migration SQL (Infra) et envoi de données, sans lot désigné.
-
+`format:check` passe via `--ignore-pattern` (29e36e5c). Non faits : migration SQL (Infra) et envoi de données, sans lot désigné.
 
 ## 2026-10-15 — Refonte Canon, agents wiki et plugin Aphrody
 
@@ -921,7 +932,6 @@ corps SHA-256 `0b4fdee3e82e588f4fc64237b870de359a2e96ddba7208043f087216def3de61`
 Une paraphrase prudente a été indexée au RAG privé DBFR : 1 document, 1 chunk,
 0 erreur; la requête sur l'identité du tournoi retrouve cette source. Aucun
 article wiki n'a été écrit à partir de cette preuve partielle.
-
 
 ## Pipeline unifiée (2026-10-16)
 
