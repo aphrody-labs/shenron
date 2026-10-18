@@ -779,7 +779,7 @@ export function buildUnifiedStaffCatalog(
       ].join("\n\n"),
       anecdote: ANECDOTES_MAP[va.slug],
       image: PORTRAITS_MAP[va.slug] || (va.image ? assetUrl(va.image) : null),
-      wikiLink: `/wiki/staff#${va.slug}`,
+      wikiLink: `/wiki/contributors/${va.slug}`,
       roles: parsedRoles,
     });
   }
