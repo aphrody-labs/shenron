@@ -26,7 +26,7 @@ const GPU_ARGS = [
   "--use-webgpu-adapter=swiftshader",
   "--ignore-gpu-blocklist",
 ];
-const chrome = (argv = ["--no-sandbox"]) => ({ type: "chrome", url: false, argv });
+const chrome = (argv = GPU_ARGS) => ({ type: "chrome", url: false, argv });
 const results: { proof: string; ok: boolean; detail: unknown }[] = [];
 const record = (proof: string, ok: boolean, detail: unknown) => {
   results.push({ proof, ok, detail });
@@ -95,18 +95,20 @@ if (run("koharu")) {
       });
     },
   });
-  await using view = new (Bun as any).WebView({ width: 400, height: 400, backend: chrome(GPU_ARGS) });
-  await view.navigate(`http://localhost:${server.port}/`);
+  // The first Chrome of a process sometimes starts without a WebGPU adapter: retry with a fresh view.
   let detail: any;
-  for (let i = 0; i < 60 && !detail; i++) {
-    await Bun.sleep(500);
-    detail = await view.evaluate("window.__result ?? null");
+  for (let attempt = 0; attempt < 4 && !detail?.adapter; attempt++) {
+    await using view = new (Bun as any).WebView({ width: 400, height: 400, backend: chrome(GPU_ARGS) });
+    await view.navigate(`http://localhost:${server.port}/`);
+    detail = undefined;
+    for (let i = 0; i < 60 && !detail; i++) {
+      await Bun.sleep(500);
+      detail = await view.evaluate("window.__result ?? null");
+    }
   }
-  record("koharu-wasm", !!detail?.init && !detail?.error && (!detail?.adapter || (detail.sample?.[0] === 26 && detail.sample?.[3] === 255)), {
+  record("koharu-wasm", !!detail?.adapter && !!detail?.init && !detail?.error && detail.sample?.[0] === 26 && detail.sample?.[3] === 255, {
     ...detail,
-    note: detail?.adapter
-      ? "WebGPU canvas created"
-      : "no WebGPU adapter on this host: module loaded and instantiated, canvas not created",
+    note: detail?.adapter ? "WebGPU canvas created, rendered and read back" : "no WebGPU adapter after 4 attempts: canvas not created",
   });
 }
 
