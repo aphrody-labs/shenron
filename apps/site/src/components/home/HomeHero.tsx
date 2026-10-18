@@ -20,14 +20,17 @@ import { HeroBall3D } from "./HeroBall3D";
 import { HomeSearch } from "./HomeSearch";
 import { KintoUnVolant } from "./KintoUnVolant";
 import { canonicalFrameUrl } from "@/lib/episode-frame-banner";
+import { HomeBeerusFeature, type BeerusFeature } from "./HomeBeerusFeature";
 
 export function HomeHero({
   hero,
   heroFrame,
+  beerus,
   className = "",
 }: {
   hero: HomeConfig["hero"];
   heroFrame?: string;
+  beerus?: BeerusFeature | null;
   className?: string;
 }) {
   const lede = hero.lede.trim();
@@ -89,6 +92,7 @@ export function HomeHero({
         {lede ? (
           <p className="mt-3 max-w-[56ch] text-sm leading-relaxed text-os/85">{lede}</p>
         ) : null}
+        {beerus ? <HomeBeerusFeature beerus={beerus} /> : null}
         <HomeSearch className="mt-3 max-w-2xl" />
       </div>
     </header>

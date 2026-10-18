@@ -69,13 +69,21 @@ for (let i = 0; i < frameTarget; i++) {
   const t = Math.round((30 + step * (i + 0.5)) * 1000) / 1000;
   if (!have.some(h => Math.abs(h - t) < 8)) times.push(t);
 }
-const decoder = { bunVideo: 0, ffmpeg: 0 };
+const decoder = { bunVideo: 0, ffmpeg: 0, cached: 0 };
+const cachePath = join(dir, "frames", "index.json");
+const cache: Record<string, string> = (await Bun.file(cachePath).exists()) ? await Bun.file(cachePath).json() : {};
 const newFrames: { t: number; sha: string; bytes: Uint8Array }[] = [];
 let nextFrame = 0;
 await Promise.all(
   Array.from({ length: 2 }, async () => {
     while (nextFrame < times.length) {
       const t = times[nextFrame++]!;
+      const cachedSha = cache[String(t)];
+      if (cachedSha && (await Bun.file(join(dir, "frames", `${cachedSha}.png`)).exists())) {
+        newFrames.push({ t, sha: cachedSha, bytes: new Uint8Array(await Bun.file(join(dir, "frames", `${cachedSha}.png`)).arrayBuffer()) });
+        decoder.cached++;
+        continue;
+      }
       // Bun Video first; its bounded seek can refuse a far target, then ffmpeg extracts that one frame.
       let bytes: Uint8Array;
       try {
@@ -89,6 +97,8 @@ await Promise.all(
       }
       newFrames.push({ t, sha: sha256(bytes), bytes });
       await Bun.write(join(dir, "frames", `${sha256(bytes)}.png`), bytes);
+      cache[String(t)] = sha256(bytes);
+      await Bun.write(cachePath, JSON.stringify(cache));
     }
   }),
 );
@@ -132,7 +142,8 @@ const titleJa = (() => {
   return at >= 0 ? officialText[at + 1]! : null;
 })();
 const synopsisJa = titleJa ? (officialText[officialText.indexOf(titleJa) + 1] ?? null) : null;
-const castAt = officialText.indexOf("CHARACTER", storyAt);
+// The page lists every episode; the cast block that belongs to this one follows its synopsis.
+const castAt = officialText.indexOf("CHARACTER", titleJa ? officialText.indexOf(titleJa) : storyAt);
 const onAir = officialText.indexOf("ON AIR", castAt);
 const names: string[] = [];
 let cursor = castAt + 1;
@@ -159,7 +170,8 @@ const block = new RegExp(`\\| EpisodeNumber\\s*= ${episodeNumber}\\n([\\s\\S]*?)
 const field = (name: string) =>
   new RegExp(`\\| ${name}\\s*= (.*)`)
     .exec(block)?.[1]
-    ?.replace(/\{\{[^}]*\}\}|\[\[(?:[^|\]]*\|)?([^\]]*)\]\]/g, "$1")
+    ?.replace(/\{\{Ill\|([^|}]*)[^}]*\}\}/g, "$1")
+    .replace(/\{\{[^}]*\}\}|\[\[(?:[^|\]]*\|)?([^\]]*)\]\]/g, "$1")
     .replace(/''/g, "")
     .trim() || null;
 const wikiEpisode = {

@@ -2002,7 +2002,7 @@
     "episodeTitle": "Le dieu de la Destruction",
     "episodeSynopsis": "Après le combat contre Majin Boo, Goku vit paisiblement sur Terre. Sur une planète lointaine, Beerus, Dieu de la Destruction, se réveille d’un long sommeil.",
     "episodeContinuity": "Cette édition enrichie reprend le début de Dragon Ball Super et le récit de Beerus après Majin Boo. Elle ne prolonge pas la numérotation de la série de 2015–2018, qui garde son catalogue propre.",
-    "episodeCountOne": "1 épisode officiellement présenté",
+    "episodeCountOne": "Série en cours de diffusion",
     "openEpisode": "Ouvrir la fiche de l’épisode",
     "openLocalEpisode": "Fiche DBFR de l’épisode 1",
     "originalCatalogue": "Catalogue original · 2015–2018",
@@ -2011,7 +2011,11 @@
     "episodeReleaseDate": "Première diffusion au Japon : 11 octobre 2026",
     "watchEpisode": "Ouvrir la fiche officielle Crunchyroll",
     "originalVideo": "Vidéo officielle",
-    "originalVideoNote": "Consultez la fiche du diffuseur officiel."
+    "originalVideoNote": "Consultez la fiche du diffuseur officiel.",
+    "heroEyebrow": "Nouvelle série · chaque dimanche",
+    "heroLatest": "Dernier épisode",
+    "heroAll": "Tous les épisodes",
+    "heroCount": "{count} épisodes déjà diffusés"
   },
   "episodeSeries": {
     "coverage": "Couverture de la série",

@@ -7,7 +7,6 @@ import {
 } from "@aphrody/shenron-config/public-urls";
 import { sitePublicRedirects } from "@aphrody/shenron-images/resolve";
 import { PUBLIC_ROUTE_RENAMES, nextApiRewrites, nextRedirectsOf } from "./src/lib/legacy-routes";
-import { DBS_BEERUS_REDIRECTS } from "./src/lib/episode-series-catalogue";
 
 const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL?.trim().replace(/\/+$/, "");
 
@@ -238,7 +237,6 @@ const nextConfig: NextConfig = {
   // client 200 à cause du layout /wiki force-dynamic qui flush en streaming).
   async redirects() {
     return [
-      ...DBS_BEERUS_REDIRECTS,
       // Copies binaires dédoublonnées de `public/` (manifeste
       // `@aphrody/shenron-images/asset-aliases.json`) : l'ancienne URL garde sa réponse.
       ...sitePublicRedirects().map(([source, destination]) => ({

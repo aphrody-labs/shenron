@@ -2011,7 +2011,11 @@
     "episodeReleaseDate": "日本初回放送：2026年10月11日",
     "watchEpisode": "Crunchyroll公式ページを開く",
     "originalVideo": "公式動画",
-    "originalVideoNote": "公式配信元のページをご確認ください。"
+    "originalVideoNote": "公式配信元のページをご確認ください。",
+    "heroEyebrow": "新シリーズ・毎週日曜",
+    "heroLatest": "最新話",
+    "heroAll": "全エピソード",
+    "heroCount": "放送済み {count} 話"
   },
   "episodeSeries": {
     "coverage": "シリーズの収録状況",

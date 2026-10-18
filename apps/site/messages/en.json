@@ -2011,7 +2011,11 @@
     "episodeReleaseDate": "Japanese premiere: October 11, 2026",
     "watchEpisode": "Open official Crunchyroll listing",
     "originalVideo": "Official video",
-    "originalVideoNote": "Open the official distributor's listing."
+    "originalVideoNote": "Open the official distributor's listing.",
+    "heroEyebrow": "New series · every Sunday",
+    "heroLatest": "Latest episode",
+    "heroAll": "All episodes",
+    "heroCount": "{count} episodes aired so far"
   },
   "episodeSeries": {
     "coverage": "Series coverage",

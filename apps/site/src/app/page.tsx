@@ -114,6 +114,21 @@ async function getSagas() {
   }
 }
 
+/** Newest Beerus episode and the aired count, for the hero; null when the series cannot be read. */
+async function getBeerusFeature(): Promise<BeerusFeature | null> {
+  try {
+    const data = await getEpisodesCached(DBS_BEERUS_SERIES_CODE, 200, 0);
+    const aired = data.episodes.filter((episode) => !episode.air_date || episode.air_date * 1000 <= Date.now());
+    const latest = aired.at(-1) ?? null;
+    return {
+      total: aired.length,
+      latest: latest ? { id: latest.id, number: latest.number_in_series, title: latest.title } : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export default async function Home() {
   const [
     feed,
@@ -131,6 +146,7 @@ export default async function Home() {
     canonDoctrine,
     canonReferences,
     heroFrame,
+    beerus,
   ] = await Promise.all([
     getHomeFeed(),
     getShenronPersonas(900).catch(() => []),
@@ -155,12 +171,14 @@ export default async function Home() {
     getCanonConfig(),
     getCanonReferences(),
     pageHero("episodes").catch(() => ""),
+    getBeerusFeature(),
   ]);
 
   return (
     <HomeView
       config={config}
       heroFrame={heroFrame}
+      beerus={beerus}
       access={access}
       stats={stats}
       personas={personas.map((p) => ({

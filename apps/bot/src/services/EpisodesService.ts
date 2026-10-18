@@ -3,6 +3,7 @@ import { inject, singleton } from "tsyringe";
 import { PgService } from "~/db/pg";
 import { logger } from "~/lib/logger";
 import { latestOfficialCrunchyrollWatchOffer } from "@aphrody/shenron-api/contract";
+import type { ShenronEpisodeRow } from "../../../../packages/media/src/crunchyroll-mapping";
 
 /**
  * Épisodes — lecture des lecteurs VF/VOSTFR, côté PostgreSQL du site.
@@ -134,6 +135,24 @@ export class EpisodesService {
       officialWatchUrl,
       officialLanguages,
     };
+  }
+
+  /** Les épisodes visibles d'une série avec leur disponibilité, pour la couche Crunchyroll. */
+  async parSerie(series: string): Promise<ShenronEpisodeRow[] | null> {
+    const sql = this.connexion();
+    if (!sql) return null;
+    try {
+      return (await sql`
+        select id, series, number_in_series, title, availability
+          from bot.db_episodes
+         where series = ${series} and visible
+         order by number_in_series
+         limit 1000
+      `) as ShenronEpisodeRow[];
+    } catch (e) {
+      logger.warn({ err: e, series }, "[episodes] lecture de la série en échec");
+      return null;
+    }
   }
 
   /** Un épisode par son identifiant, `null` s'il est inconnu ou masqué. */

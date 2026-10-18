@@ -21,6 +21,7 @@
     "./sha256": "./src/sha256.ts",
     "./video-plan": "./src/video-plan.ts",
     "./episode-video-delivery": "./src/episode-video-delivery.ts",
+    "./crunchyroll-mapping": "./src/crunchyroll-mapping.ts",
     "./episode-video-artifacts": "./src/episode-video-artifacts.ts",
     "./episode-playback": "./src/episode-playback.ts"
   },

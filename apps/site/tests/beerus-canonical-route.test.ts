@@ -1,20 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { DBS_BEERUS_REDIRECTS, DBS_BEERUS_EPISODE_HREF } from "../src/lib/episode-series-catalogue";
+import * as catalogue from "../src/lib/episode-series-catalogue";
 
-test("former Beerus landings converge before rendering without intercepting later episodes", () => {
-  expect(DBS_BEERUS_REDIRECTS).toEqual([
-    {
-      source: "/wiki/episodes/series/DBS_BEERUS",
-      destination: "/wiki/episodes/875",
-      permanent: true,
-    },
-    {
-      source: "/wiki/episodes/series/DBS_BEERUS/1",
-      destination: "/wiki/episodes/875",
-      permanent: true,
-    },
-  ]);
-  expect(DBS_BEERUS_REDIRECTS.some(({ source }) => source.endsWith("/2"))).toBe(false);
-  expect(DBS_BEERUS_REDIRECTS.some(({ source }) => source === DBS_BEERUS_EPISODE_HREF)).toBe(false);
+test("Beerus is a series: its landing page is not redirected to a single episode", () => {
+  expect("DBS_BEERUS_REDIRECTS" in catalogue).toBe(false);
+  expect(catalogue.DBS_BEERUS_SERIES_CODE).toBe("DBS_BEERUS");
+  expect(catalogue.DBS_BEERUS_EPISODE_HREF).toBe("/wiki/episodes/875");
 });

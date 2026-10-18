@@ -165,6 +165,13 @@ import { ADMIN_ROUTES, dashboardRedirect } from "@aphrody/shenron-config/admin";
 import { handleBetterAuthRequest, getBetterAuthSession } from "~/lib/better-auth";
 import { EventBusService } from "~/services/EventBusService";
 import { PgService } from "~/db/pg";
+import { EpisodesService } from "~/services/EpisodesService";
+import {
+  CRUNCHYROLL_SERIES_BY_SHENRON,
+  crunchyrollSeriesSummary,
+  resolveCrunchyroll,
+  type ShenronEpisodeRow,
+} from "../../../../packages/media/src/crunchyroll-mapping";
 import {
   botConversationStore,
   createBotShenronApi,
@@ -1363,6 +1370,31 @@ export class ApiServer {
             server.requestIP(req)?.address,
           ),
         "/api/health": () => Response.json({ status: "ok" }),
+
+        // ── Couche Crunchyroll : offres stockées sur les épisodes (lecture seule, sans jeton) ──
+        "/api/crunchyroll/series/:series": async (req) => {
+          const series = req.params.series.toUpperCase();
+          if (!CRUNCHYROLL_SERIES_BY_SHENRON[series])
+            return Response.json({ error: "series_not_mapped" }, { status: 404 });
+          const rows = await container.resolve(EpisodesService).parSerie(series);
+          return rows
+            ? Response.json(crunchyrollSeriesSummary(series, rows))
+            : Response.json({ error: "catalogue_unavailable" }, { status: 503 });
+        },
+        "/api/crunchyroll/resolve": async (req) => {
+          const params = new URL(req.url).searchParams;
+          const series = params.get("series")?.toUpperCase();
+          const number = Number(params.get("number"));
+          const episode = Number(params.get("episode"));
+          const crunchyroll = params.get("crunchyroll") ?? undefined;
+          const service = container.resolve(EpisodesService);
+          const scope = series ? [series] : Object.keys(CRUNCHYROLL_SERIES_BY_SHENRON);
+          const rows = (await Promise.all(scope.map((s) => service.parSerie(s)))).flat().filter((r): r is ShenronEpisodeRow => r !== null);
+          const query = Number.isSafeInteger(episode) && episode > 0 ? { episode } : series && Number.isSafeInteger(number) ? { series, number } : crunchyroll ? { crunchyroll } : null;
+          if (!query) return Response.json({ error: "episode, series+number or crunchyroll is required" }, { status: 400 });
+          const offer = resolveCrunchyroll(rows, query);
+          return offer ? Response.json(offer) : Response.json({ error: "no_crunchyroll_offer" }, { status: 404 });
+        },
 
         // ── Health admin ──────────────────────────────────────────────
         "/api/health/usage": admin(async () => Response.json(await this.stats.getPidUsage())),
