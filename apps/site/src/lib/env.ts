@@ -9,6 +9,7 @@ import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
  */
 export const env = createEnv({
   server: {
+    SHENRON_HOME: z.string().trim().min(1).optional(),
     SHENRON_CANON_YOLO_ENABLED: z.enum(["0", "1"]).default("0"),
     SHENRON_CANON_YOLO_MODEL: z.string().trim().min(1).max(256).optional(),
     SHENRON_CANON_YOLO_MIN_CONFIDENCE: z.coerce.number().min(0).max(1).default(0.8),

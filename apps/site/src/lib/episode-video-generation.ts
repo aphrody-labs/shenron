@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { mkdir, rename, readdir } from "node:fs/promises";
 import { isShenronEpisodeVideoURL } from "./episode-video-source";
 
@@ -53,9 +53,10 @@ const currentPaths = new Map<number, string>();
 async function purgeOldSources(id: number) {
   const current = currentPaths.get(id);
   if (!current) return;
-  for (const name of await readdir(sourceDirectory).catch(() => [] as string[])) {
+  const directory = dirname(current);
+  for (const name of await readdir(directory).catch(() => [] as string[])) {
     if (!new RegExp(`^${id}-[a-f0-9]{64}\\.mp4$`).test(name)) continue;
-    const path = join(sourceDirectory, name);
+    const path = join(directory, name);
     if (path !== currentPaths.get(id) && !leases.has(path))
       await Bun.file(path)
         .delete()
@@ -99,10 +100,11 @@ export async function downloadEpisodeVideoSource(
   id: number,
   hash: string,
   fetcher: typeof fetch = fetch,
+  directory = sourceDirectory,
 ): Promise<string> {
   if (episodeTimelineSource(id, [{ embedUrl: url.href }])?.pathname.split("/")[4] !== hash)
     throw new Error("invalid_source");
-  const destination = join(sourceDirectory, `${id}-${hash}.mp4`);
+  const destination = join(directory, `${id}-${hash}.mp4`);
   const existing = Bun.file(destination);
   if (await existing.exists()) {
     if (existing.size <= 1024 ** 3 && (await digestFile(destination)) === hash) return destination;
@@ -128,7 +130,7 @@ export async function downloadEpisodeVideoSource(
     throw new Error("source_unavailable");
   }
   const temporary = `${destination}.${crypto.randomUUID()}.partial`;
-  await mkdir(sourceDirectory, { recursive: true });
+  await mkdir(directory, { recursive: true });
   const writer = Bun.file(temporary).writer();
   const hasher = new Bun.CryptoHasher("sha256");
   let total = 0;
@@ -191,8 +193,16 @@ const nativeDependencies: Dependencies = {
 };
 
 /** Shared bounded scheduler and byte LRU; no caller-controlled filesystem paths. */
-export function createEpisodeTimelineHandler(overrides: Partial<Dependencies> = {}) {
-  const dependencies = { ...nativeDependencies, ...overrides };
+export function createEpisodeTimelineHandler(
+  overrides: Partial<Dependencies> = {},
+  directory = sourceDirectory,
+) {
+  const dependencies = {
+    ...nativeDependencies,
+    source: (url: URL, id: number, hash: string) =>
+      downloadEpisodeVideoSource(url, id, hash, fetch, directory),
+    ...overrides,
+  };
   const sources = new Map<string, Promise<{ path: string; metadata: Metadata }>>();
   const pending = new Map<string, Promise<Uint8Array>>();
   const cache = new Map<string, Uint8Array>();
@@ -268,7 +278,7 @@ export function createEpisodeTimelineHandler(overrides: Partial<Dependencies> = 
           const release = retainSource(path, id);
           try {
             const metadata = await dependencies.metadata(path);
-            if (path === join(sourceDirectory, `${id}-${hash}.mp4`)) currentPaths.set(id, path);
+            if (path === join(directory, `${id}-${hash}.mp4`)) currentPaths.set(id, path);
             return { path, metadata };
           } finally {
             await release();
@@ -322,5 +332,3 @@ export function createEpisodeTimelineHandler(overrides: Partial<Dependencies> = 
     }
   };
 }
-
-export const episodeTimeline = createEpisodeTimelineHandler();

@@ -1,6 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 import { dbUniverse } from "@/lib/db-universe";
-import { episodeTimeline } from "@/lib/episode-video-generation";
+import { createEpisodeTimelineHandler } from "@/lib/episode-video-generation";
+import { env } from "@/lib/env";
+import { join } from "node:path";
+
+const episodeTimeline = createEpisodeTimelineHandler(
+  {},
+  env.SHENRON_HOME ? join(env.SHENRON_HOME, "cache", "episode-video") : undefined,
+);
 
 export const dynamic = "force-dynamic";
 type Context = { params: Promise<{ id: string }> };

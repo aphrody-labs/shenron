@@ -7,6 +7,7 @@ import {
 } from "../src/lib/episode-video-generation";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { rmdir } from "node:fs/promises";
 
 const players = [
   { embedUrl: `https://cdn.dragonballfr.com/media/episodes/876/${"a".repeat(64)}/source.mp4` },
@@ -235,4 +236,29 @@ test("a failed download stream leaves no completed source", async () => {
   expect(await Bun.file(join(tmpdir(), "shenron-episode-video", `876-${hash}.mp4`)).exists()).toBe(
     false,
   );
+});
+
+test("source storage can use the persistent volume instead of the container tmpfs", async () => {
+  const bytes = new TextEncoder().encode(`persistent-${crypto.randomUUID()}`);
+  const hash = new Bun.CryptoHasher("sha256").update(bytes).digest("hex");
+  const url = new URL(`https://cdn.dragonballfr.com/media/episodes/876/${hash}/source.mp4`);
+  const directory = join(tmpdir(), `shenron-persistent-test-${crypto.randomUUID()}`);
+  const path = join(directory, `876-${hash}.mp4`);
+  try {
+    expect(
+      await downloadEpisodeVideoSource(
+        url,
+        876,
+        hash,
+        (async () => new Response(bytes)) as typeof fetch,
+        directory,
+      ),
+    ).toBe(path);
+    expect(await Bun.file(path).bytes()).toEqual(bytes);
+  } finally {
+    await Bun.file(path)
+      .delete()
+      .catch(() => {});
+    await rmdir(directory);
+  }
 });
