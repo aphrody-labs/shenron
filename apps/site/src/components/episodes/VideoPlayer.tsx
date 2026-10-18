@@ -4,7 +4,21 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { MaterialSymbol } from "@aphrody/shenron-ui/icones";
+import {
+  Play,
+  Pause,
+  SkipBack,
+  SkipForward,
+  RotateCcw,
+  RotateCw,
+  VolumeX,
+  Volume2,
+  RectangleHorizontal,
+  Maximize,
+  PictureInPicture2,
+  Settings,
+} from "lucide-react";
+import { VideoSelect } from "./VideoSelect";
 import styles from "./video-player.module.css";
 import { useVideoSource } from "./use-video-source";
 import {
@@ -105,6 +119,41 @@ export function VideoPlayer({
   const [waiting, setWaiting] = useState(false);
   const [enhanced, setEnhanced] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
+  const [previewMetadata, setPreviewMetadata] = useState<{
+    fps: number;
+    frameCount: number;
+  } | null>(null);
+  const [hoverPreview, setHoverPreview] = useState<{
+    index: number;
+    seconds: number;
+    left: number;
+  } | null>(null);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    const controller = new AbortController();
+    setPreviewMetadata(null);
+    setHoverPreview(null);
+    if (episodeId === 875 || episodeId === 876 || episodeId === "875" || episodeId === "876") {
+      void fetch(`/api/episodes/${episodeId}/timeline`, { signal: controller.signal })
+        .then(async (response) => {
+          if (!response.ok) return null;
+          const value = await response.json();
+          if (
+            !controller.signal.aborted &&
+            value.fps > 0 &&
+            Number.isSafeInteger(value.frameCount) &&
+            value.frameCount > 0
+          )
+            setPreviewMetadata(value);
+          return null;
+        })
+        .catch(() => {});
+    }
+    return () => {
+      controller.abort();
+      if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    };
+  }, [episodeId, src]);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pointerRevealOnly = useRef(false);
   const revealControls = useCallback(() => {
@@ -279,6 +328,7 @@ export function VideoPlayer({
     if (!video.muted && video.volume === 0) video.volume = 0.5;
   };
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.defaultPrevented) return;
     const settings = containerRef.current?.querySelector<HTMLDetailsElement>("details[open]");
     if (event.key === "Escape" && settings) {
       event.preventDefault();
@@ -387,7 +437,7 @@ export function VideoPlayer({
                 title={previousEpisode.label}
                 className="rounded px-2 py-2 focus-visible:outline-2"
               >
-                <MaterialSymbol name="skip_previous" />
+                <SkipBack size={22} aria-hidden="true" />
                 <span className="sr-only">{t("previousEpisode")}</span>
               </Link>
             )}
@@ -397,7 +447,7 @@ export function VideoPlayer({
                 title={nextEpisode.label}
                 className="rounded px-2 py-2 focus-visible:outline-2"
               >
-                <MaterialSymbol name="skip_next" />
+                <SkipForward size={22} aria-hidden="true" />
                 <span className="sr-only">{t("nextEpisode")}</span>
               </Link>
             )}
@@ -491,7 +541,49 @@ export function VideoPlayer({
               style={{ width: `${duration ? Math.min(100, (buffered / duration) * 100) : 0}%` }}
             />
           </div>
-          <label className="block">
+          <label
+            className={styles.progress}
+            onPointerLeave={() => {
+              if (hoverTimer.current) clearTimeout(hoverTimer.current);
+              setHoverPreview(null);
+            }}
+            onPointerMove={(event) => {
+              if (event.pointerType !== "mouse" || !previewMetadata || !duration) return;
+              const bounds = event.currentTarget.getBoundingClientRect();
+              const fraction = Math.max(
+                0,
+                Math.min(1, (event.clientX - bounds.left) / bounds.width),
+              );
+              if (hoverTimer.current) clearTimeout(hoverTimer.current);
+              hoverTimer.current = setTimeout(
+                () =>
+                  setHoverPreview({
+                    index: Math.min(
+                      previewMetadata.frameCount - 1,
+                      Math.floor(fraction * duration * previewMetadata.fps),
+                    ),
+                    seconds: fraction * duration,
+                    left: fraction * 100,
+                  }),
+                160,
+              );
+            }}
+          >
+            {hoverPreview && (
+              <span
+                className={styles.hoverPreview}
+                style={{ left: `clamp(84px, ${hoverPreview.left}%, calc(100% - 84px))` }}
+              >
+                <img
+                  src={`/api/episodes/${episodeId}/timeline?kind=frame&index=${hoverPreview.index}`}
+                  width={160}
+                  height={90}
+                  alt=""
+                  onError={() => setHoverPreview(null)}
+                />
+                <span>{timeLabel(hoverPreview.seconds)}</span>
+              </span>
+            )}
             <span className="sr-only">{t("seekPosition")}</span>
             <input
               type="range"
@@ -506,6 +598,12 @@ export function VideoPlayer({
                 setPosition(Number(event.target.value));
               }}
               className="w-full"
+              style={
+                {
+                  "--played": `${duration ? (position / duration) * 100 : 0}%`,
+                  "--buffered": `${duration ? (buffered / duration) * 100 : 0}%`,
+                } as React.CSSProperties
+              }
             />
           </label>
         </div>
@@ -517,7 +615,11 @@ export function VideoPlayer({
             data-primary
             aria-label={paused ? t("play") : t("pause")}
           >
-            <MaterialSymbol name={paused ? "play_arrow" : "pause"} size={28} />
+            {paused ? (
+              <Play size={27} fill="currentColor" aria-hidden="true" />
+            ) : (
+              <Pause size={27} fill="currentColor" aria-hidden="true" />
+            )}
           </button>
           <button
             type="button"
@@ -526,7 +628,7 @@ export function VideoPlayer({
             aria-label={ui("backward")}
             className={styles.skip}
           >
-            <MaterialSymbol name="replay_10" />
+            <RotateCcw size={22} aria-hidden="true" />
           </button>
           <button
             type="button"
@@ -535,10 +637,14 @@ export function VideoPlayer({
             aria-label={ui("forward")}
             className={styles.skip}
           >
-            <MaterialSymbol name="forward_10" />
+            <RotateCw size={22} aria-hidden="true" />
           </button>
           <button type="button" aria-pressed={muted} aria-label={t("mute")} onClick={toggleMute}>
-            <MaterialSymbol name={muted || volume === 0 ? "volume_off" : "volume_up"} />
+            {muted || volume === 0 ? (
+              <VolumeX size={22} aria-hidden="true" />
+            ) : (
+              <Volume2 size={22} aria-hidden="true" />
+            )}
           </button>
           <label className={styles.volume}>
             <span className="sr-only">{t("volume")}</span>
@@ -565,7 +671,7 @@ export function VideoPlayer({
             aria-label={t(theater ? "exitTheater" : "theater")}
             onClick={() => setTheater(!theater)}
           >
-            <MaterialSymbol name="theaters" />
+            <RectangleHorizontal size={22} aria-hidden="true" />
           </button>
           {(fullscreenSupported || isIosFullscreen) && (
             <button
@@ -574,7 +680,7 @@ export function VideoPlayer({
               aria-label={t("fullscreen")}
               onClick={() => void fullscreen()}
             >
-              <MaterialSymbol name="fullscreen" />
+              <Maximize size={22} aria-hidden="true" />
             </button>
           )}
           {pipSupported && (
@@ -584,13 +690,13 @@ export function VideoPlayer({
               disabled={status !== "ready"}
               aria-label={t("pictureInPicture")}
             >
-              <MaterialSymbol name="picture_in_picture_alt" />
+              <PictureInPicture2 size={22} aria-hidden="true" />
             </button>
           )}
         </div>
         <details className={styles.settings}>
           <summary aria-label={ui("playbackSettings")}>
-            <MaterialSymbol name="settings" />
+            <Settings size={22} aria-hidden="true" />
           </summary>
           <div className={styles.settingsPanel}>
             <label className={styles.mobileVolume}>
@@ -612,7 +718,9 @@ export function VideoPlayer({
             </label>
             <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
               {t("speed")}
-              <select
+              <VideoSelect
+                cinema
+                aria-label={t("speed")}
                 value={rate}
                 onChange={(event) => {
                   if (videoRef.current) videoRef.current.playbackRate = Number(event.target.value);
@@ -623,12 +731,14 @@ export function VideoPlayer({
                     {value}×
                   </option>
                 ))}
-              </select>
+              </VideoSelect>
             </label>
             {levels.length > 1 && (
               <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
                 {t("quality")}
-                <select
+                <VideoSelect
+                  cinema
+                  aria-label={t("quality")}
                   value={quality}
                   onChange={(event) => {
                     const value = Number(event.target.value);
@@ -643,13 +753,15 @@ export function VideoPlayer({
                         : t("bitrate", { rate: Math.round(level.bitrate / 1000) })}
                     </option>
                   ))}
-                </select>
+                </VideoSelect>
               </label>
             )}
             {audioTracks.length > 1 && (
               <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
                 {t("audioTrack")}
-                <select
+                <VideoSelect
+                  cinema
+                  aria-label={t("audioTrack")}
                   value={audioTrack}
                   onChange={(event) => {
                     const value = Number(event.target.value);
@@ -661,13 +773,15 @@ export function VideoPlayer({
                       {track.name || t("audioTrackNumber", { number: track.index + 1 })}
                     </option>
                   ))}
-                </select>
+                </VideoSelect>
               </label>
             )}
             {textTracks.length > 0 && (
               <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
                 {t("captions")}
-                <select
+                <VideoSelect
+                  cinema
+                  aria-label={t("captions")}
                   value={caption}
                   onChange={(event) => selectCaption(Number(event.target.value))}
                 >
@@ -677,7 +791,7 @@ export function VideoPlayer({
                       {track.label}
                     </option>
                   ))}
-                </select>
+                </VideoSelect>
               </label>
             )}
           </div>

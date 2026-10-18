@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useVideoUIText } from "@/lib/video-ui-text";
+import { VideoSelect } from "./VideoSelect";
 import styles from "./EpisodeTimeline.module.css";
+import { ChevronLeft, ChevronRight, Clapperboard, Download, Film } from "lucide-react";
 
 interface TimelineMetadata {
   durationSeconds: number;
@@ -77,6 +79,12 @@ export function EpisodeTimeline({ episodeId }: { episodeId: number }) {
   }, [frame]);
 
   useEffect(() => () => gifRequest.current?.abort(), []);
+  const resetGif = () => {
+    gifRequest.current?.abort();
+    setGifBusy(false);
+    setGif(null);
+    setGifFailed(false);
+  };
 
   useEffect(
     () => () => {
@@ -86,6 +94,7 @@ export function EpisodeTimeline({ episodeId }: { episodeId: number }) {
   );
 
   const selectFrame = (index: number) => {
+    resetGif();
     setFrame(index);
     const video = document.querySelector<HTMLVideoElement>(`video[data-episode-id="${episodeId}"]`);
     if (video && metadata && Number.isFinite(video.duration))
@@ -131,7 +140,10 @@ export function EpisodeTimeline({ episodeId }: { episodeId: number }) {
 
   return (
     <section className={styles.root} aria-label={t("timelineTitle")}>
-      <h3 className="font-display text-lg font-bold">{t("timelineTitle")}</h3>
+      <h3 className={styles.title}>
+        <Clapperboard size={21} aria-hidden="true" />
+        {t("timelineTitle")}
+      </h3>
       <p className="text-sm text-muted-foreground">
         {t("timelineCount", { count: metadata.frameCount })}
       </p>
@@ -158,15 +170,15 @@ export function EpisodeTimeline({ episodeId }: { episodeId: number }) {
       <div className="flex flex-wrap items-center gap-3">
         <label className="flex items-center gap-2">
           {t("timelineStep")}
-          <select
-            className="rounded border border-border bg-background p-2"
+          <VideoSelect
+            aria-label={t("timelineStep")}
             value={stepSeconds}
             onChange={(event) => setStepSeconds(Number(event.target.value))}
           >
             <option value={5}>{t("timelineFiveSeconds")}</option>
             <option value={1}>{t("timelineOneSecond")}</option>
             <option value={0}>{t("timelineEveryFrame")}</option>
-          </select>
+          </VideoSelect>
         </label>
         <button
           type="button"
@@ -174,6 +186,7 @@ export function EpisodeTimeline({ episodeId }: { episodeId: number }) {
           disabled={selected === 0}
           onClick={() => selectFrame(selected - 1)}
         >
+          <ChevronLeft size={18} aria-hidden="true" />
           {t("timelinePreviousFrame")}
         </button>
         <button
@@ -182,11 +195,12 @@ export function EpisodeTimeline({ episodeId }: { episodeId: number }) {
           disabled={selected === last}
           onClick={() => selectFrame(selected + 1)}
         >
+          <ChevronRight size={18} aria-hidden="true" />
           {t("timelineNextFrame")}
         </button>
       </div>
       <img
-        className="aspect-video w-full max-w-2xl rounded bg-black object-contain"
+        className={styles.preview}
         src={`${base}?kind=frame&index=${preview}`}
         onError={() => setPreviewFailed(true)}
         alt={t("timelineFrame", { frame: preview + 1, time: timeLabel(preview / metadata.fps) })}
@@ -239,33 +253,54 @@ export function EpisodeTimeline({ episodeId }: { episodeId: number }) {
         <div className={styles.controls}>
           <label>
             {t("timelineGifDuration")}
-            <select value={duration} onChange={(event) => setDuration(Number(event.target.value))}>
+            <VideoSelect
+              aria-label={t("timelineGifDuration")}
+              value={duration}
+              onChange={(event) => {
+                resetGif();
+                setDuration(Number(event.target.value));
+              }}
+            >
               {[1, 2, 3, 4, 5].map((value) => (
                 <option key={value} value={value}>
                   {t("timelineSeconds", { count: value })}
                 </option>
               ))}
-            </select>
+            </VideoSelect>
           </label>
           <label>
             {t("timelineGifFps")}
-            <select value={gifFps} onChange={(event) => setGifFps(Number(event.target.value))}>
+            <VideoSelect
+              aria-label={t("timelineGifFps")}
+              value={gifFps}
+              onChange={(event) => {
+                resetGif();
+                setGifFps(Number(event.target.value));
+              }}
+            >
               {[6, 12, 24].map((value) => (
                 <option key={value} value={value}>
                   {value}
                 </option>
               ))}
-            </select>
+            </VideoSelect>
           </label>
           <label>
             {t("timelineGifWidth")}
-            <select value={gifWidth} onChange={(event) => setGifWidth(Number(event.target.value))}>
+            <VideoSelect
+              aria-label={t("timelineGifWidth")}
+              value={gifWidth}
+              onChange={(event) => {
+                resetGif();
+                setGifWidth(Number(event.target.value));
+              }}
+            >
               {[320, 480, 640].map((value) => (
                 <option key={value} value={value}>
                   {t("timelinePixels", { count: value })}
                 </option>
               ))}
-            </select>
+            </VideoSelect>
           </label>
           <button
             type="button"
@@ -273,6 +308,7 @@ export function EpisodeTimeline({ episodeId }: { episodeId: number }) {
             disabled={gifBusy || clipDuration <= 0}
             onClick={() => void exportGif()}
           >
+            <Film size={18} aria-hidden="true" />
             {t(gifBusy ? "sceneEncoding" : "timelineGif")}
           </button>
         </div>
@@ -301,6 +337,7 @@ export function EpisodeTimeline({ episodeId }: { episodeId: number }) {
             href={gif}
             download={`episode-${episodeId}.gif`}
           >
+            <Download size={18} aria-hidden="true" />
             {t("sceneDownload")}
           </a>
         </div>

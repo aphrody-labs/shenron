@@ -118,6 +118,7 @@ function SelectPopup({
   sideOffset = 6,
   alignOffset,
   alignItemWithTrigger,
+  portalContainer,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Popup> &
   Pick<
@@ -125,12 +126,14 @@ function SelectPopup({
     "side" | "align" | "sideOffset" | "alignOffset" | "alignItemWithTrigger"
   > & {
     variant?: SurfaceVariant;
+    /** Keep public media menus inside the browser's fullscreen element. */
+    portalContainer?: HTMLElement | null;
   }) {
   const surface = useSurface();
   const resolved = variant ?? surface.variant ?? "toriyama";
   const planche = resolved === "planche";
   return (
-    <SelectPortal>
+    <SelectPortal container={portalContainer}>
       <SelectPrimitive.Positioner
         data-slot="select-positioner"
         side={side}
