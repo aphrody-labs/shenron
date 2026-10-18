@@ -1,0 +1,24 @@
+{
+    "scripts":  {
+                    "test":  "bun test",
+                    "cli":  "bun src/cli.ts",
+                    "build":  "bun build src/cli.ts --compile --outfile bin/crunchyroll-cli",
+                    "mcp":  "bun src/mcp.ts"
+                },
+    "description":  "Crunchyroll headless CLI, MCP server, and AI service provider for Shenron.",
+    "type":  "module",
+    "version":  "1.0.0",
+    "dependencies":  {
+                         "zod":  "^3.24.0",
+                         "@aphrody/shenron-config":  "workspace:*",
+                         "@aphrody/shenron-media":  "workspace:*",
+                         "@modelcontextprotocol/sdk":  "^1.5.0"
+                     },
+    "name":  "@aphrody/shenron-crunchyroll",
+    "bin":  {
+                "crunchyroll-mcp":  "./src/mcp.ts",
+                "crunchyroll-cli":  "./src/cli.ts"
+            },
+    "main":  "./src/index.ts",
+    "license":  "Apache-2.0"
+}

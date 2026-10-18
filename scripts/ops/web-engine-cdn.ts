@@ -59,7 +59,7 @@ export async function putObject(s3: Bun.S3Client, key: string, bytes: Uint8Array
   const signingKey = hmac(hmac(hmac(hmac(`AWS4${creds.secretAccessKey}`, day), "auto"), "s3"), "aws4_request");
   const signature = createHmac("sha256", signingKey).update(toSign).digest("hex");
   const { host: _host, ...send } = all;
-  const response = await fetch(url, { method: "PUT", body, headers: { ...send, authorization: `AWS4-HMAC-SHA256 Credential=${creds.accessKeyId}/${scope}, SignedHeaders=${names.join(";")}, Signature=${signature}` }, signal: AbortSignal.timeout(120_000) });
+  const response = await fetch(url, { method: "PUT", body: body as unknown as BodyInit, headers: { ...send, authorization: `AWS4-HMAC-SHA256 Credential=${creds.accessKeyId}/${scope}, SignedHeaders=${names.join(";")}, Signature=${signature}` }, signal: AbortSignal.timeout(120_000) });
   if (!response.ok) throw new Error(`put ${key}: ${response.status} ${(await response.text()).slice(0, 80)}`);
 }
 

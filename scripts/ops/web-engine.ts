@@ -352,9 +352,9 @@ export async function publish(db: Database, limit: number) {
 /** Manifest entries of every uploaded asset, for cdn-origin-add.ts. */
 export function cdnEntries(db: Database) {
   const types: Record<string, string> = { png: "image/png", jpg: "image/jpeg", webp: "image/webp", gif: "image/gif", avif: "image/avif" };
-  const out: Record<string, { sha256: string; size: number; contentType: string; cacheControl: string }> = {};
+  const out: Record<string, { path: string; sha256: string; size: number; contentType: string; cacheControl: string }> = {};
   for (const row of db.query("SELECT cdn_path p, sha256 h, bytes b FROM assets WHERE state='uploaded' AND cdn_path IS NOT NULL").all() as { p: string; h: string; b: number }[]) {
-    out[row.p] = { sha256: row.h, size: row.b, contentType: types[row.p.split(".").at(-1)!] ?? "application/octet-stream", cacheControl: "public, max-age=31536000, immutable" };
+    out[row.p] = { path: row.p, sha256: row.h, size: row.b, contentType: types[row.p.split(".").at(-1)!] ?? "application/octet-stream", cacheControl: "public, max-age=31536000, immutable" };
   }
   return out;
 }
