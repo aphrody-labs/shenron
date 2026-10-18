@@ -7,8 +7,8 @@
  * - in a browser on a site served by `shenron-server`, when `/api/local/health` reports the
  *   `koharu` group: the engine is a `koharu-sdk` child reached through `/api/local/koharu`.
  *
- * Elsewhere (dragonballfr.com) the server-rendered presentation (`fallback`) stays: it is also
- * what the first paint shows, and the editor bundle is only fetched once an engine is found.
+ * - on the public site, an authenticated account owns an isolated engine through `/api/studio`.
+ * The first paint shows the presentation; the editor is fetched once an engine is available.
  */
 import dynamic from "next/dynamic";
 import { type ReactNode, useEffect, useState, useSyncExternalStore } from "react";

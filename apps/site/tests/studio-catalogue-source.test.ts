@@ -57,16 +57,21 @@ describe("Studio catalogue handoff", () => {
   });
   test("rejects non-image responses and oversized downloads", async () => {
     const saved = globalThis.fetch;
-    globalThis.fetch = async () =>
-      new Response("<html>", { headers: { "content-type": "text/html" } });
+    globalThis.fetch = Object.assign(
+      async () => new Response("<html>", { headers: { "content-type": "text/html" } }),
+      { preconnect: saved.preconnect },
+    );
     try {
       await expect(
         studioSourceFile("https://dragonballfr.com/wiki/a.jpg", new AbortController().signal),
       ).rejects.toThrow();
-      globalThis.fetch = async () =>
-        new Response(new Uint8Array([1]), {
-          headers: { "content-type": "image/png", "content-length": String(97 * 1024 * 1024) },
-        });
+      globalThis.fetch = Object.assign(
+        async () =>
+          new Response(new Uint8Array([1]), {
+            headers: { "content-type": "image/png", "content-length": String(97 * 1024 * 1024) },
+          }),
+        { preconnect: saved.preconnect },
+      );
       await expect(
         studioSourceFile("https://dragonballfr.com/wiki/a.png", new AbortController().signal),
       ).rejects.toThrow("too large");
