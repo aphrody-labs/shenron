@@ -122,6 +122,7 @@ export function Providers({
   }, []);
 
   useEffect(() => {
+    if (embedded) return;
     // Prevent the host webview from applying browser zoom; keep Ctrl+wheel for app handlers.
     const preventViewportScaling = (event: WheelEvent) => {
       if (event.ctrlKey) event.preventDefault();
@@ -129,7 +130,7 @@ export function Providers({
 
     window.addEventListener("wheel", preventViewportScaling, { capture: true, passive: false });
     return () => window.removeEventListener("wheel", preventViewportScaling, { capture: true });
-  }, []);
+  }, [embedded]);
 
   return (
     <AtlasPreviewContext.Provider value={atlasRenderer}>
