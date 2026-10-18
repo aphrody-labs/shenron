@@ -2,6 +2,7 @@
 
 import { useId, useState, useTransition, type FormEvent } from "react";
 import { createTranslator } from "next-intl";
+import { onTablistKeyDown } from "@/lib/tablist-keys";
 import {
   Dbxv2Audio,
   Dbxv2Image,
@@ -120,7 +121,12 @@ export function Explorer({ locale, messages, stats }: ExplorerProps) {
   return (
     <Dbxv2UiProvider labels={messages.viewer}>
       <p>{t("stats", stats)}</p>
-      <div role="tablist" aria-label={t("nav")} className="my-4 flex flex-wrap gap-2">
+      <div
+        role="tablist"
+        aria-label={t("nav")}
+        onKeyDown={onTablistKeyDown}
+        className="my-4 flex flex-wrap gap-2"
+      >
         {tabs.map((name) => (
           <button
             key={name}

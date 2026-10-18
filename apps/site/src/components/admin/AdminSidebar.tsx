@@ -316,6 +316,13 @@ const ADMIN_LINKS: AdminLink[] = [
     section: "encyclopedie",
   },
   {
+    href: "/admin/dbxv2",
+    label: "Ressources DBXV2",
+    description: "Explorateur des textures, modèles et médias DBXV2",
+    icon: <Gamepad2 className="h-4 w-4" />,
+    section: "encyclopedie",
+  },
+  {
     href: "/admin/db-universe/databooks",
     label: "Databooks & interviews",
     description: "Guides officiels, artbooks et interviews (triables par date)",

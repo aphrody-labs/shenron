@@ -23,7 +23,20 @@ export type ArchiveFilters = { mediaLang?: string; series?: string };
 export function isArchiveCategory(category: string): category is ArchiveCategory {
   return ARCHIVE_CATEGORIES.some((value) => value === category);
 }
-export const archiveEntries = selection.entries as ArchiveEntry[];
+const ISO_639_1: Record<string, string> = {
+  eng: "en",
+  ita: "it",
+  fra: "fr",
+  jpn: "ja",
+  spa: "es",
+  por: "pt",
+  pol: "pl",
+  cat: "ca",
+};
+export const archiveEntries = (selection.entries as ArchiveEntry[]).map((entry) => ({
+  ...entry,
+  language: ISO_639_1[entry.language] ?? entry.language,
+}));
 export function archiveOptions(category: string) {
   const entries = archiveEntries.filter((item) => item.category === category);
   return {

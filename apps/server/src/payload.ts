@@ -138,10 +138,25 @@ export async function extract(
     offset += entry.size;
   }
   writeFileSync(join(temporary, ".complete"), `${new Date().toISOString()}\n`);
-  rmSync(dir, { recursive: true, force: true });
-  renameSync(temporary, dir);
+  swapIntoPlace(temporary, dir);
   writeStamp(dir);
   return { dir, extracted: true, ms: Math.round(performance.now() - started) };
+}
+
+/** Replaces `dir` by `temporary`; Windows may transiently refuse (EPERM/EBUSY/ENOTEMPTY) while a scanner holds a file. */
+function swapIntoPlace(temporary: string, dir: string): void {
+  const retryable = new Set(["EPERM", "EBUSY", "ENOTEMPTY", "EACCES"]);
+  for (let attempt = 0; ; attempt++) {
+    try {
+      rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
+      renameSync(temporary, dir);
+      return;
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code ?? "";
+      if (attempt >= 20 || !retryable.has(code)) throw error;
+      Bun.sleepSync(50 * (attempt + 1));
+    }
+  }
 }
 
 /**

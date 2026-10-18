@@ -1,0 +1,251 @@
+# syntax=docker/dockerfile:1.14
+# SPDX-License-Identifier: Apache-2.0
+#
+# Local build of every Shenron deliverable (Linux and Windows), on the owner workstation.
+# Reproduces ~/shenron-docker-build.sh of the build factory (scripts/ops/vps/) inside BuildKit.
+# Driver: `bun scripts/build/local.ts <site|bot|server|cli|mcp|desktop|all>`; targets: docker-bake.hcl.
+# Context filter: Dockerfile.build.dockerignore (allow-list, no private data), checked by
+# `bun scripts/build/local-guard.ts`. Runbook: docs/operations/build-local.md.
+#
+# Secrets (never baked in a layer):
+#   gitconfig   git config rewriting https://github.com/ with a token (aphrody-labs/aphrody is private)
+#   tauri_key   optional Tauri updater private key (an ephemeral one is generated without it)
+#   sign_pfx    optional Windows code-signing certificate (unused here: see local-windows.ps1)
+
+ARG BASE_IMAGE=ubuntu:26.10
+ARG RUST_VERSION=1.98.1
+ARG BUN_RUNTIME_VERSION=1.4.3-aphrody.2
+ARG BUN_RUNTIME_LINUX_INTEGRITY=sha512-WM0w1Nmeb7BZugLaICD8mo0MkCTtF90AS7omf8/6gsBkfhzLySCS6oDSKeZkc7uQ6r0wLlaSlWgqxEM31VRjOA==
+ARG BUN_RUNTIME_WINDOWS_INTEGRITY=sha512-VKXaQ+8q63VkGFASjQT+j1yfKKJOL28pvBHtVJeBzsbY2nBF95j/bct405cZGbKhe2FWW9FEAQrdUjQXJ4y4Rg==
+ARG SCCACHE_VERSION=0.18.0
+ARG CARGO_XWIN_VERSION=0.23.1
+ARG TAURI_CLI_VERSION=3.0.0-alpha.4
+
+# ---------------------------------------------------------------- context dump (guard only)
+FROM scratch AS context-dump
+COPY . /
+
+# ---------------------------------------------------------------- base: pinned OS + system packages
+FROM ${BASE_IMAGE} AS base
+ENV DEBIAN_FRONTEND=noninteractive LANG=C.UTF-8
+RUN rm -f /etc/apt/apt.conf.d/docker-clean \
+ && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
+      ca-certificates curl git jq unzip xz-utils zstd tar \
+      build-essential pkg-config cmake clang lld llvm libssl-dev libsqlite3-dev \
+      nsis nsis-pluginapi \
+ && (id ubuntu >/dev/null 2>&1 && userdel -r ubuntu || true) \
+ && groupadd --gid 10001 builder \
+ && useradd --uid 10001 --gid 10001 --create-home --shell /bin/bash builder \
+ && install -d -o 10001 -g 10001 /work /out /opt/tools /opt/bun
+
+# ---------------------------------------------------------------- toolchain: rust, sccache, xwin, bun
+FROM base AS toolchain
+ARG RUST_VERSION
+ARG BUN_RUNTIME_VERSION
+ARG BUN_RUNTIME_LINUX_INTEGRITY
+ARG BUN_RUNTIME_WINDOWS_INTEGRITY
+ARG SCCACHE_VERSION
+ARG CARGO_XWIN_VERSION
+USER 10001:10001
+ENV CARGO_HOME=/home/builder/.cargo RUSTUP_HOME=/home/builder/.rustup \
+    PATH=/home/builder/.cargo/bin:/opt/tools/bin:/opt/bun/bin:/usr/local/bin:/usr/bin:/bin
+RUN curl -fsSL https://sh.rustup.rs | sh -s -- -y --no-modify-path --profile minimal \
+      --default-toolchain ${RUST_VERSION} \
+      -t x86_64-unknown-linux-gnu -t x86_64-pc-windows-msvc -t wasm32-unknown-unknown \
+      -c rustfmt -c clippy
+RUN set -eux; mkdir -p /opt/tools/bin; cd /tmp \
+ && curl -fsSL "https://github.com/mozilla/sccache/releases/download/v${SCCACHE_VERSION}/sccache-v${SCCACHE_VERSION}-x86_64-unknown-linux-musl.tar.gz" | tar xz \
+ && install -m0755 sccache-*/sccache /opt/tools/bin/sccache \
+ && curl -fsSL "https://github.com/rust-cross/cargo-xwin/releases/download/v${CARGO_XWIN_VERSION}/cargo-xwin-v${CARGO_XWIN_VERSION}.x86_64-unknown-linux-musl.tar.gz" | tar xz \
+ && install -m0755 cargo-xwin /opt/tools/bin/cargo-xwin \
+ && rm -rf /tmp/*
+# Aphrody Bun runtime (Linux: the build runtime; Windows: base of `bun build --compile --target windows-x64`),
+# fetched from the public npm registry and checked against a pinned SRI digest.
+RUN set -eux; cd /tmp; \
+  fetch() { \
+    url="https://registry.npmjs.org/@aphrody/bun-runtime-$1/-/bun-runtime-$1-${BUN_RUNTIME_VERSION}.tgz"; \
+    curl -fsSL -o "$1.tgz" "$url"; \
+    got="sha512-$(openssl dgst -sha512 -binary "$1.tgz" | base64 -w0)"; \
+    [ "$got" = "$2" ] || { echo "digest mismatch for $1: $got" >&2; exit 1; }; \
+  }; \
+  fetch linux-x64 "${BUN_RUNTIME_LINUX_INTEGRITY}"; fetch windows-x64 "${BUN_RUNTIME_WINDOWS_INTEGRITY}"; \
+  mkdir -p /opt/bun/bin /opt/bun/windows; \
+  tar xzf linux-x64.tgz && cp "$(find package -type f -name bun | head -1)" /opt/bun/bin/bun && chmod +x /opt/bun/bin/bun && rm -rf package; \
+  tar xzf windows-x64.tgz && cp "$(find package -type f -name 'bun*.exe' | head -1)" /opt/bun/windows/bun.exe && rm -rf package *.tgz; \
+  bun --version
+ENV SHENRON_COMPILE_BUN_WINDOWS=/opt/bun/windows/bun.exe \
+    SHENRON_CARGO_REMOTE=off RUSTC_WRAPPER=sccache SCCACHE_DIR=/home/builder/.cache/sccache \
+    SCCACHE_CACHE_SIZE=20G CARGO_INCREMENTAL=0 CARGO_TERM_COLOR=never \
+    XWIN_ACCEPT_LICENSE=1 XWIN_CACHE_DIR=/home/builder/.cache/xwin \
+    NEXT_TELEMETRY_DISABLED=1 CI=1
+WORKDIR /work
+
+# ---------------------------------------------------------------- tauri-cli (desktop bundles only)
+FROM toolchain AS tauri-cli
+ARG TAURI_CLI_VERSION
+RUN --mount=type=cache,target=/home/builder/.cargo/registry,uid=10001,id=shenron-cargo-registry \
+    --mount=type=cache,target=/home/builder/.cache/sccache,uid=10001,id=shenron-sccache \
+    --mount=type=cache,target=/tmp/tauri-target,uid=10001,id=shenron-tauri-cli-target \
+    CARGO_TARGET_DIR=/tmp/tauri-target cargo install tauri-cli --version "${TAURI_CLI_VERSION}" --locked --root /opt/tools
+
+# ---------------------------------------------------------------- sources + JS dependencies
+FROM toolchain AS src
+COPY --chown=10001:10001 . /work
+RUN --mount=type=cache,target=/home/builder/.bun/install/cache,uid=10001,id=shenron-bun \
+    bun install --frozen-lockfile
+
+# ---------------------------------------------------------------- Rust, Linux (what the factory builds + the CLI)
+FROM src AS rust-linux-x64
+RUN --mount=type=secret,id=gitconfig,target=/run/secrets/gitconfig,uid=10001 \
+    --mount=type=cache,target=/home/builder/.cargo/registry,uid=10001,id=shenron-cargo-registry \
+    --mount=type=cache,target=/home/builder/.cargo/git,uid=10001,id=shenron-cargo-git \
+    --mount=type=cache,target=/home/builder/.cache/sccache,uid=10001,id=shenron-sccache \
+    --mount=type=cache,target=/work/target,uid=10001,id=shenron-target-linux \
+    set -eux; export GIT_CONFIG_GLOBAL=/run/secrets/gitconfig; \
+    cargo build --release --locked -p shenron-cli --bin shenron -p shenron-mcp --bin shenron-mcp \
+      -p shenron-ffi --lib; \
+    mkdir -p /out; \
+    install -m0755 target/release/shenron target/release/shenron-mcp target/release/libshenron_ffi.so /out/; \
+    sccache --show-stats || true
+
+# ---------------------------------------------------------------- Rust, Windows (MSVC through cargo-xwin)
+FROM src AS rust-windows-x64
+RUN --mount=type=secret,id=gitconfig,target=/run/secrets/gitconfig,uid=10001 \
+    --mount=type=cache,target=/home/builder/.cargo/registry,uid=10001,id=shenron-cargo-registry \
+    --mount=type=cache,target=/home/builder/.cargo/git,uid=10001,id=shenron-cargo-git \
+    --mount=type=cache,target=/home/builder/.cache/sccache,uid=10001,id=shenron-sccache \
+    --mount=type=cache,target=/home/builder/.cache/xwin,uid=10001,id=shenron-xwin \
+    --mount=type=cache,target=/work/target,uid=10001,id=shenron-target-windows \
+    set -eux; export GIT_CONFIG_GLOBAL=/run/secrets/gitconfig; \
+    cargo xwin build --release --locked --target x86_64-pc-windows-msvc \
+      -p shenron-cli --bin shenron -p shenron-mcp --bin shenron-mcp -p shenron-ffi --lib \
+      --config 'env.CFLAGS.value="-msse4.1"' --config env.CFLAGS.force=true; \
+    d=target/x86_64-pc-windows-msvc/release; mkdir -p /out; \
+    install -m0755 $d/shenron.exe $d/shenron-mcp.exe $d/shenron_ffi.dll /out/; \
+    sccache --show-stats || true
+
+# ---------------------------------------------------------------- koharu-canvas WASM (tracked; rebuilt when stale)
+FROM src AS wasm
+RUN --mount=type=secret,id=gitconfig,target=/run/secrets/gitconfig,uid=10001 \
+    --mount=type=cache,target=/home/builder/.cargo/registry,uid=10001,id=shenron-cargo-registry \
+    --mount=type=cache,target=/home/builder/.cargo/git,uid=10001,id=shenron-cargo-git \
+    --mount=type=cache,target=/home/builder/.cache/sccache,uid=10001,id=shenron-sccache \
+    --mount=type=cache,target=/work/target,uid=10001,id=shenron-target-wasm \
+    export GIT_CONFIG_GLOBAL=/run/secrets/gitconfig; \
+    bun packages/koharu/scripts/build-wasm.ts \
+ && mkdir -p /out && cp -r packages/koharu/src/wasm/. /out/
+
+# ---------------------------------------------------------------- bot
+FROM src AS bot-linux-x64
+RUN bun scripts/build/bot.ts --target linux-x64 && mkdir -p /out && cp -r dist/bot/linux-x64/. /out/
+FROM src AS bot-windows-x64
+RUN SHENRON_COMPILE_BUN="$SHENRON_COMPILE_BUN_WINDOWS" bun scripts/build/bot.ts --target windows-x64 \
+ && mkdir -p /out && cp -r dist/bot/windows-x64/. /out/
+
+# ---------------------------------------------------------------- server (Next standalone + compiled binary + CDN tree)
+# The public VFS is an optional named context (--build-context vfs=<dir>): required for the production flavor.
+FROM scratch AS vfs-empty
+FROM vfs-empty AS vfs
+FROM src AS server-linux-x64
+ARG FLAVOR=desktop
+ARG ALLOW_NO_VFS=
+COPY --from=rust-linux-x64 --chown=10001:10001 /out/libshenron_ffi.so /work/target/x86_64-unknown-linux-gnu/release/libshenron_ffi.so
+COPY --from=vfs --chown=10001:10001 / /work/dist/vfs/
+RUN --mount=type=cache,target=/work/apps/site/.next-cache,uid=10001,id=shenron-next \
+    set -eux; \
+    vfs=--no-vfs; [ -f dist/vfs/shenron-vfs.public.sqlite ] && vfs=; \
+    if [ "$FLAVOR" = production ] && [ -n "$vfs" ] && [ -z "$ALLOW_NO_VFS" ]; then echo "production flavor needs --build-context vfs=<dir with shenron-vfs.public.sqlite>" >&2; exit 1; fi; \
+    bun scripts/build/server.ts --flavor "$FLAVOR" --target linux-x64 $vfs \
+ && mkdir -p /out/server /out/cdn && cp -r dist/server/linux-x64/. /out/server/ && cp -r dist/cdn/. /out/cdn/ \
+ && ( [ ! -f dist/vfs/shenron-vfs.public.sqlite ] || echo "vfs: included" > /out/VFS )
+FROM src AS server-windows-x64
+ARG FLAVOR=desktop
+COPY --from=rust-windows-x64 --chown=10001:10001 /out/shenron_ffi.dll /work/target/x86_64-pc-windows-msvc/release/shenron_ffi.dll
+COPY --from=vfs --chown=10001:10001 / /work/dist/vfs/
+RUN set -eux; \
+    vfs=--no-vfs; [ -f dist/vfs/shenron-vfs.public.sqlite ] && vfs=; \
+    SHENRON_COMPILE_BUN="$SHENRON_COMPILE_BUN_WINDOWS" bun scripts/build/server.ts --flavor "$FLAVOR" --target windows-x64 $vfs \
+ && mkdir -p /out/server && cp -r dist/server/windows-x64/. /out/server/
+
+# ---------------------------------------------------------------- Shenron Studio (Tauri 3, NSIS) cross-built for Windows
+# scripts/build/desktop.ts installs a WSL makensis shim on every non-Windows host; in the container the
+# NSIS toolset is native, so that single block is switched off for this build only (the repo file is untouched).
+FROM src AS desktop-windows-x64
+COPY --from=tauri-cli /opt/tools/bin/cargo-tauri /opt/tools/bin/cargo-tauri
+ARG DESKTOP_ARGS="--skip-chat-model"
+RUN --mount=type=secret,id=gitconfig,target=/run/secrets/gitconfig,uid=10001 \
+    --mount=type=secret,id=tauri_key,target=/run/secrets/tauri_key,uid=10001,required=false \
+    --mount=type=cache,target=/home/builder/.cargo/registry,uid=10001,id=shenron-cargo-registry \
+    --mount=type=cache,target=/home/builder/.cargo/git,uid=10001,id=shenron-cargo-git \
+    --mount=type=cache,target=/home/builder/.cache/sccache,uid=10001,id=shenron-sccache \
+    --mount=type=cache,target=/home/builder/.cache/xwin,uid=10001,id=shenron-xwin \
+    --mount=type=cache,target=/home/builder/.cache/tauri,uid=10001,id=shenron-tauri \
+    --mount=type=cache,target=/work/target,uid=10001,id=shenron-target-windows \
+    set -eux; export GIT_CONFIG_GLOBAL=/run/secrets/gitconfig; \
+    mkdir -p /tmp/desktop-build && cp scripts/build/desktop.ts /tmp/desktop-build/desktop.orig.ts; \
+    sed 's/if (target === "windows-x64" \&\& process.platform !== "win32")/if (false)/' scripts/build/desktop.ts > /tmp/patched.ts; \
+    if cmp -s /tmp/patched.ts scripts/build/desktop.ts; then echo "desktop.ts: makensis shim block not found, update Dockerfile.build" >&2; exit 1; fi; \
+    cp /tmp/patched.ts scripts/build/desktop.local.ts; \
+    if [ -s /run/secrets/tauri_key ]; then export TAURI_SIGNING_PRIVATE_KEY="$(cat /run/secrets/tauri_key)"; \
+    else cargo tauri signer generate --ci -p "" -w /tmp/ephemeral.key >/dev/null; \
+         export TAURI_SIGNING_PRIVATE_KEY="$(cat /tmp/ephemeral.key)"; echo ephemeral > /tmp/updater-key-kind; fi; \
+    export TAURI_SIGNING_PRIVATE_KEY_PASSWORD=""; \
+    SHENRON_COMPILE_BUN="$SHENRON_COMPILE_BUN_WINDOWS" bun scripts/build/desktop.local.ts --target windows-x64 ${DESKTOP_ARGS}; \
+    mkdir -p /out && cp -r dist/desktop/windows-x64/. /out/ && cp /tmp/updater-key-kind /out/UPDATER_KEY_KIND 2>/dev/null || echo provided > /out/UPDATER_KEY_KIND
+
+# ---------------------------------------------------------------- release-linux: sealed runtime image
+# Same contents and ENV as deploy/docker/Dockerfile (the factory image), assembled from the stages above.
+FROM ${BASE_IMAGE} AS release-linux
+ARG SHENRON_REVISION=unknown
+LABEL org.opencontainers.image.title="Shenron" \
+      org.opencontainers.image.description="Shenron site/server and Discord bot runtime (local build)" \
+      org.opencontainers.image.revision="$SHENRON_REVISION" \
+      org.opencontainers.image.source="https://github.com/aphrody-labs/shenron"
+ENV SHENRON_HOME=/var/lib/shenron SHENRON_PROFILE=production PORT=5011 HOSTNAME=127.0.0.1 \
+    API_PORT=5006 API_HOST=127.0.0.1 DATABASE_PATH=/app/data/bot.db \
+    SHENRON_FFI_LIB=/usr/local/lib/libshenron_ffi.so \
+    NAPI_RS_NATIVE_LIBRARY_PATH=/usr/local/bin/skia.linux-x64-gnu.node NEXT_TELEMETRY_DISABLED=1
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends ca-certificates curl jq libgcc-s1 libsqlite3-0 \
+ && rm -rf /var/lib/apt/lists/* \
+ && (id ubuntu >/dev/null 2>&1 && userdel -r ubuntu || true) \
+ && groupadd --gid 10001 shenron \
+ && useradd --uid 10001 --gid 10001 --home-dir /var/lib/shenron --no-create-home --shell /usr/sbin/nologin shenron \
+ && install -d -o 10001 -g 10001 /app/data /app/assets /var/lib/shenron /usr/local/lib/shenron \
+ && install -d -o 10001 -g 10001 /var/lib/shenron/config /var/lib/shenron/cache /var/lib/shenron/data /var/lib/shenron/logs
+COPY --from=server-linux-x64 --chown=10001:10001 --chmod=755 /out/server/shenron-server /usr/local/bin/shenron-server
+COPY --from=server-linux-x64 --chown=10001:10001 --chmod=755 /out/server/native/libshenron_ffi.so /usr/local/lib/libshenron_ffi.so
+COPY --from=bot-linux-x64 --chown=10001:10001 --chmod=755 /out/shenron-bot /usr/local/bin/shenron-bot
+COPY --from=bot-linux-x64 --chown=10001:10001 --chmod=644 /out/pipeline.mjs /usr/local/lib/shenron/pipeline.mjs
+COPY --from=bot-linux-x64 --chown=10001:10001 --chmod=644 /out/pipeline-build-receipt.json /usr/local/lib/shenron/pipeline-build-receipt.json
+COPY --from=bot-linux-x64 --chown=10001:10001 --chmod=644 /out/skia.linux-x64-gnu.node /usr/local/bin/skia.linux-x64-gnu.node
+COPY --from=bot-linux-x64 --chown=10001:10001 --chmod=755 /out/src/db/migrations /app/src/db/migrations
+COPY --from=rust-linux-x64 --chown=10001:10001 --chmod=755 /out/shenron-mcp /usr/local/bin/shenron-mcp
+COPY --from=rust-linux-x64 --chown=10001:10001 --chmod=755 /out/shenron /usr/local/bin/shenron
+WORKDIR /app
+USER 10001:10001
+EXPOSE 5011 5006
+STOPSIGNAL SIGTERM
+ENTRYPOINT ["/usr/local/bin/shenron-server"]
+CMD ["version"]
+
+# ---------------------------------------------------------------- scratch export stages (--output type=local)
+FROM scratch AS out-rust-linux-x64
+COPY --from=rust-linux-x64 /out/ /
+FROM scratch AS out-rust-windows-x64
+COPY --from=rust-windows-x64 /out/ /
+FROM scratch AS out-wasm
+COPY --from=wasm /out/ /
+FROM scratch AS out-bot-linux-x64
+COPY --from=bot-linux-x64 /out/ /
+FROM scratch AS out-bot-windows-x64
+COPY --from=bot-windows-x64 /out/ /
+FROM scratch AS out-server-linux-x64
+COPY --from=server-linux-x64 /out/ /
+FROM scratch AS out-server-windows-x64
+COPY --from=server-windows-x64 /out/ /
+FROM scratch AS out-desktop-windows-x64
+COPY --from=desktop-windows-x64 /out/ /

@@ -53,7 +53,7 @@ ci: drift typecheck bun-lint bun-test test-scripts rust-fmt-check rust-lint koha
 # Install the Bun dependencies from the lockfile
 [group('bun')]
 install:
-    bun install --frozen-lockfile
+    BUN_INSTALL_GLOBAL_STORE=0 bun install --frozen-lockfile
 
 # bun check on the 13 packages, then scripts/
 [group('bun')]
@@ -265,3 +265,29 @@ setup-connectors:
 connectors-status:
     bun scripts/ops/setup-agent-connectors.ts --status
 
+
+# Local Docker build into dist/local/ (site|bot|server|cli|mcp|desktop|wasm|image|all; --target linux-x64|windows-x64)
+[group('build-local')]
+build-local component="all" *args="":
+    bun scripts/build/local.ts {{ component }} {{ args }}
+
+# Local build: CLI and MCP for linux-x64 and windows-x64
+[group('build-local')]
+build-local-cli *args="":
+    bun scripts/build/local.ts cli {{ args }}
+    bun scripts/build/local.ts mcp {{ args }}
+
+# Local build: Windows installer (Shenron Studio, NSIS) cross-built in Docker
+[group('build-local')]
+build-local-desktop *args="":
+    bun scripts/build/local.ts desktop --target windows-x64 {{ args }}
+
+# Private-data guard of the local build (--static --context --artifacts <dir>)
+[group('build-local')]
+build-local-guard *args="--static --context":
+    bun scripts/build/local-guard.ts {{ args }}
+
+# Native Windows steps (signing, NSIS on the host): pwsh scripts/build/local-windows.ps1
+[group('build-local')]
+build-local-windows *args="":
+    pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/build/local-windows.ps1 {{ args }}

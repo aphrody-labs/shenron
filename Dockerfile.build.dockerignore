@@ -1,0 +1,81 @@
+# Context filter of Dockerfile.build (BuildKit reads <dockerfile>.dockerignore first).
+# Allow-list: nothing enters the build context unless it is named below. The runtime-image filter
+# of deploy/docker/Dockerfile stays in .dockerignore. Checked by `bun scripts/build/local-guard.ts`.
+**
+
+# Workspace manifests and toolchain pins
+!/package.json
+!/bun.lock
+!/bunfig.toml
+!/tsconfig.json
+!/Cargo.toml
+!/Cargo.lock
+!/rust-toolchain.toml
+!/rustfmt.toml
+!/clippy.toml
+!/deny.toml
+!/.cargo/
+!/.config/
+!/.oxlintrc.json
+!/.oxfmtrc.json
+
+# Sources
+!/apps/
+!/packages/
+!/crates/
+!/scripts/
+!/templates/
+!/patches/
+!/config/
+!/plugin/
+!/vendor/
+!/docs/
+
+# Public data only (the canonical lexicon is the one file the server payload ships)
+!/data/
+/data/**
+!/data/lexique-db-canonique.json
+
+# Never, whatever the allow-list above matched
+**/node_modules
+**/target
+**/.git
+**/.next
+**/.next-*
+**/.cache
+**/.turbo
+**/.build
+**/*.bun-build
+**/*.tsbuildinfo
+**/*.log
+**/.env
+**/.env.*
+**/*.env
+**/*.pem
+**/*.key
+**/*.pfx
+**/*.p12
+**/id_*
+**/*.sqlite
+**/*.sqlite-*
+**/*.db
+**/*.db-*
+**/*.cpk
+**/*.afs
+**/*.gguf
+**/*.safetensors
+**/dist
+**/.coord
+**/.claude
+**/.codex
+**/.agents
+/var
+/data/home
+**/dbxv2-data
+**/.dbxv2*
+**/dbxv2.d.ts
+/crates/*/binaries
+/crates/*/gen
+**/tauri.bundle.json
+**/desktop.local.ts
+**/AGENTS.md.local

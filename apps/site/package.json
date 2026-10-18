@@ -8,9 +8,9 @@
     "./scripts/aphrody-corpus": "./scripts/_aphrody-corpus.ts"
   },
   "scripts": {
-    "predev": "bun ../../packages/ui/scripts/sync-assets.ts --to public",
+    "predev": "bun ../../scripts/dev/check-node-modules.ts && bun ../../packages/ui/scripts/sync-assets.ts --to public",
     "dev": "NEXT_DIST_DIR=.next-dev next-bun dev",
-    "prebuild": "bun ../../packages/ui/scripts/sync-assets.ts --to public",
+    "prebuild": "bun ../../scripts/dev/check-node-modules.ts && bun ../../packages/ui/scripts/sync-assets.ts --to public",
     "build": "NEXT_DIST_DIR=.next-build next-bun build",
     "start": "next-bun start",
     "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src",
@@ -28,6 +28,7 @@
     "@aphrody/bun-runtime-sdk": "catalog:",
     "@aphrody/bun-video": "catalog:",
     "@aphrody/discord-kit": "catalog:",
+    "@aphrody/http": "catalog:",
     "@aphrody/messaging": "catalog:",
     "@aphrody/next-bun": "catalog:",
     "@aphrody/paths": "catalog:",
@@ -115,7 +116,8 @@
     "@types/react-dom": "catalog:",
     "drizzle-kit": "catalog:",
     "schema-dts": "catalog:",
-    "tailwindcss": "catalog:"
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:"
   },
   "engines": {
     "bun": ">=1.4.3"
