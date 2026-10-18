@@ -18,7 +18,9 @@ import {
   Building2,
   ArrowLeft,
   CheckCircle2,
+  Quote,
 } from "lucide-react";
+import { ANECDOTES_MAP } from "@/lib/unified-staff-catalog";
 
 export const revalidate = 3600;
 
@@ -184,13 +186,22 @@ export default async function ContributorDetailPage({ params }: ContributorPageP
         <header className="rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-black/80 to-black p-6 sm:p-10 backdrop-blur-2xl shadow-2xl">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-              {contributor.image && (
+              {contributor.image && !contributor.image.includes(".svg") ? (
                 <div className="relative h-28 w-28 sm:h-32 sm:w-32 shrink-0 overflow-hidden rounded-2xl border-2 border-orange-500/30 bg-black/60 shadow-xl">
                   <img
                     src={contributor.image}
                     alt={contributor.name}
                     className="h-full w-full object-cover object-top"
                   />
+                </div>
+              ) : (
+                <div
+                  aria-hidden="true"
+                  className="relative flex h-28 w-28 sm:h-32 sm:w-32 shrink-0 items-center justify-center rounded-2xl border-2 border-orange-500/30 bg-gradient-to-br from-orange-950/40 via-black to-neutral-900 shadow-xl"
+                >
+                  <span className="font-saiyan text-4xl sm:text-5xl font-bold text-orange-400">
+                    {contributor.name.slice(0, 1).toUpperCase()}
+                  </span>
                 </div>
               )}
               <div className="space-y-3">
@@ -263,6 +274,19 @@ export default async function ContributorDetailPage({ params }: ContributorPageP
                   "Notice encyclopédique en cours de documentation vérifiée."}
               </p>
             </div>
+
+            {/* Anecdote de production sourcée */}
+            {ANECDOTES_MAP[slug] && (
+              <div className="rounded-2xl border border-amber-500/30 bg-amber-950/20 p-6 backdrop-blur-md space-y-3">
+                <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
+                  <Quote className="h-4 w-4 shrink-0 text-amber-400" />
+                  <span>Anecdote de Production &amp; Témoignage</span>
+                </div>
+                <p className="text-sm leading-relaxed text-amber-200/90 italic">
+                  &laquo; {ANECDOTES_MAP[slug]} &raquo;
+                </p>
+              </div>
+            )}
 
             {/* Crédits officiels */}
             {contributor.credits.length > 0 && (

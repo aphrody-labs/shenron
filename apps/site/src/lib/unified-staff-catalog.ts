@@ -6,7 +6,7 @@ import type {
   UnifiedStaffMember,
 } from "@/components/wiki/UnifiedStaffExplorer";
 
-const ANECDOTES_MAP: Record<string, string> = {
+export const ANECDOTES_MAP: Record<string, string> = {
   // --- Créateurs & Éditeurs ---
   "kazuhiko-torishima":
     "A rejeté plus de 500 pages de Toriyama avant Dr. Slump. Il a poussé l'auteur vers les arts martiaux et a inspiré directement les visages du Dr. Mashirito et du Roi Démon Piccolo.",
