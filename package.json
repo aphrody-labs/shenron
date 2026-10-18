@@ -199,7 +199,7 @@
     "@next/env": "file:vendor/next-fork/next-env-16.5.0-canary.5-dac376c6fe-f32e63fa.tgz",
     "@next/third-parties": "file:vendor/next-fork/next-third-parties-16.5.0-canary.5-dac376c6fe-14a34de8.tgz",
     "axios": "^1.20.0",
-    "next": "file:vendor/next-fork/next-16.5.0-canary.5-dac376c6fe-80cae9ab.tgz",
+    "next": "file:vendor/next-fork/next-16.5.0-canary.5-dac376c6fe-ffbf5f76.tgz",
     "qs": "^6.16.0",
     "undici": "^7.30.0"
   },

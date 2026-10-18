@@ -3,13 +3,13 @@
   "producer": "aphrody-labs/next.js",
   "revision": "dac376c6feaa9eda6a1b68210e8905c51d4c0003",
   "dirty": false,
-  "note": "Build local du fork (bun run build dans packages/next, next-env et third-parties, puis bun pm pack). Le manifeste de next reçoit les optionalDependencies @next/swc-* de la même version : binaires prébuilt npm upstream, le build natif Turbopack du fork n est pas fait.",
+  "note": "Build local du fork (bun run build dans packages/next, next-env et third-parties, puis bun pm pack). Le manifeste de next reçoit les optionalDependencies @next/swc-* de la même version : binaires prébuilt npm upstream, le build natif Turbopack du fork n est pas fait. Le tarball next est normalisé pour Linux (2026-10-18) : les 374 require(\"next\\\\dist\\\\…\") produits par le build Windows du fork sont réécrits en require(\"next/dist/…\") ; aucune autre modification.",
   "packages": [
     {
       "name": "next",
       "version": "16.5.0-canary.5",
-      "archive": "next-16.5.0-canary.5-dac376c6fe-80cae9ab.tgz",
-      "sha256": "80cae9ab8b4d4fe1b80d912bb6a10e4a378980deea340e29ac63f2b838aff7c0"
+      "archive": "next-16.5.0-canary.5-dac376c6fe-ffbf5f76.tgz",
+      "sha256": "ffbf5f764c058d6950642c8a9958592ffca94b74761ecc861daa78efd7718967"
     },
     {
       "name": "@next/env",
