@@ -13,6 +13,7 @@ import type {
   Stage,
   StartupState,
   ModelResources,
+  PageSize,
 } from "@aphrody/shenron-koharu/protocol";
 // The editor mounts the @aphrody/m3-primitives Toaster (providers.tsx): notices go straight to it.
 import { toast } from "@aphrody/m3-primitives";
@@ -21,7 +22,11 @@ import i18n from "./i18n";
 
 export type CanvasTool = "select" | "text" | "draw" | "eraser" | "color_picker" | "remove" | "pan";
 export const MIN_BRUSH_DIAMETER = 1;
-export const MAX_BRUSH_DIAMETER = 128;
+/** Preserve the upstream brush scale for high-resolution manga and databook scans. */
+export function maxBrushDiameter(size: PageSize): number {
+  const width = Number.isFinite(size.width) && size.width > 0 ? size.width : 2048;
+  return Math.round(Math.max(width / 2048, 1) * 128);
+}
 
 export function isBrushTool(tool: CanvasTool): boolean {
   return tool === "draw" || tool === "eraser" || tool === "remove";

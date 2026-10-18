@@ -17,7 +17,7 @@ import { ColorWell } from "../controls/ColorWell";
 import { usePage } from "../../lib/queries";
 import {
   isBrushTool,
-  MAX_BRUSH_DIAMETER,
+  maxBrushDiameter,
   MIN_BRUSH_DIAMETER,
   useKoharuStore,
   type CanvasTool,
@@ -104,6 +104,8 @@ export function ToolBar() {
 function BrushSize({ value, onChange }: { value: number; onChange: (value: number) => void }) {
   const { t } = useTranslation();
   const roundedValue = Math.round(value);
+  const page = usePage().data;
+  const maxSize = maxBrushDiameter(page?.size ?? { width: 2048, height: 2048 });
 
   return (
     <Popover>
@@ -139,12 +141,12 @@ function BrushSize({ value, onChange }: { value: number; onChange: (value: numbe
           <PopoverTitle className="text-[11px]">{t("tools.brushSize")}</PopoverTitle>
           <NumberField
             min={MIN_BRUSH_DIAMETER}
-            max={MAX_BRUSH_DIAMETER}
+            max={maxSize}
             step={1}
             value={roundedValue}
             className="w-20"
             onValueChange={(next) => {
-              if (next !== null) onChange(clamp(next, MIN_BRUSH_DIAMETER, MAX_BRUSH_DIAMETER));
+              if (next !== null) onChange(clamp(next, MIN_BRUSH_DIAMETER, maxSize));
             }}
           >
             <NumberFieldGroup className="h-7">
@@ -161,7 +163,7 @@ function BrushSize({ value, onChange }: { value: number; onChange: (value: numbe
         <Slider
           aria-label={t("tools.brushSize")}
           min={MIN_BRUSH_DIAMETER}
-          max={MAX_BRUSH_DIAMETER}
+          max={maxSize}
           step={1}
           value={value}
           className="py-1 [&_[data-slot=slider-thumb]]:size-2.5"

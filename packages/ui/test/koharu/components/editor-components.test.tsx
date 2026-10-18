@@ -780,6 +780,23 @@ describe("greenfield editor", () => {
     expect(useKoharuStore.getState().brush.diameter).toBe(49);
   });
 
+  it("keeps a large page brush adjustable beyond the old 128 pixel ceiling", async () => {
+    const user = userEvent.setup();
+    installProject();
+    const page = queryClient.getQueryData<Record<string, unknown>>(pageKey)!;
+    queryClient.setQueryData(pageKey, { ...page, size: { width: 4096, height: 6144 } });
+    useKoharuStore.setState({ tool: "draw", brush: { diameter: 128, color: "#FFFFFF" } });
+    render(
+      <TooltipProvider>
+        <ToolBar />
+      </TooltipProvider>,
+    );
+    await user.click(screen.getByRole("button", { name: "Brush size: 128 pixels" }));
+    await user.click(screen.getByRole("button", { name: "Increase brush size" }));
+    expect(useKoharuStore.getState().brush.diameter).toBe(129);
+    expect(screen.getByRole("slider", { name: "Brush size" }).getAttribute("max")).toBe("256");
+  });
+
   it("uses the border color well to enable and disable the border", async () => {
     const user = userEvent.setup();
     installProject();
