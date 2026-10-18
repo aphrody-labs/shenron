@@ -99,3 +99,15 @@ chargées par DBFR), aucun visuel ni hex de marque repris.
 - Daima met la déclaration de Toriyama dans une modale dédiée ; DBFR a déjà `toriyama-interviews`.
 - Bandai : sélecteur de langues explicite et newsletter à consentement séparé.
 - S12 : le titre est incrusté dans l'image ; le texte de planche n'est pas indexable sans la transcription OCR tenue côté DBFR.
+
+## 11. Lecteur Crunchyroll → épisodes Beerus (2026-10-18)
+
+Périmètre : page publique française fournie par le propriétaire, capture desktop de l'épisode 2.
+Observation visuelle : scène vidéo noire pleine largeur sous le shell, informations centrées sous
+la scène, titre et métadonnées à gauche, épisode précédent à droite. La capture ne prouve pas
+la lecture du fournisseur. Aucun flux protégé ni endpoint privé n'a été utilisé.
+
+Application DBFR : conserver le shell et les couleurs du site, réserver le ratio vidéo, centrer
+les informations avec une colonne de navigation sur desktop et empiler sur mobile. Les épisodes
+Beerus 875 et 876 utilisent leur seul média CDN autorisé. La timeline et les GIF proviennent
+du décodage serveur de ce média, avec index complet et aperçus générés à la demande.

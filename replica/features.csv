@@ -23,3 +23,7 @@ Droits de diffusion des séries,rights,skip,yes,no,skip : appartient à Toei/Shu
 Vidéos YouTube et visuels officiels,rights,skip,yes,no,skip : contenu des éditeurs
 Compte Club! Bandai et boutiques,network,skip,yes,no,skip : service tiers
 Prix et éditions Xenoverse 3,data,skip,no,no,skip : non publiés
+Scène vidéo pleine largeur,watch,must,yes,yes,Capture propriétaire Crunchyroll épisode 2 du 2026-10-18
+Informations et épisode précédent en colonnes,watch,must,yes,yes,Empilement responsive DBFR
+Timeline complète du média CDN,video,must,no,yes,Index natif et images décodées à la demande
+GIF depuis un extrait réel,video,must,no,yes,Durée FPS largeur bornés côté serveur

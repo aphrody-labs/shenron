@@ -51,11 +51,49 @@ test("query and frame bounds reject invalid work without decoding", async () => 
     "?index=1",
     "?path=secret",
     "?kind=frame&kind=gif&index=0",
+    "?kind=frame&index=0&duration=2",
+    "?kind=gif&index=0&duration=6",
+    "?kind=gif&index=0&duration=0",
+    "?kind=gif&index=0&fps=60",
+    "?kind=gif&index=0&width=1920",
+    "?kind=gif&index=0&fps=6&fps=24",
   ]) {
     expect((await handler(request(query), 876, players)).status).toBe(400);
   }
   expect(images).toBe(0);
   expect(await (await handler(request(), 876, players)).json()).toEqual(metadata);
+});
+
+test("GIF settings reach the encoder and distinct profiles never reuse another clip", async () => {
+  const profiles: unknown[] = [];
+  const handler = createEpisodeTimelineHandler(
+    fixture({
+      image: async (
+        _path: string,
+        _kind: string,
+        _index: number,
+        _metadata: unknown,
+        settings: unknown,
+      ) => {
+        profiles.push(settings);
+        return new Uint8Array([profiles.length]);
+      },
+    }),
+  );
+  const defaults = await handler(request("?kind=gif&index=0"), 876, players);
+  expect(defaults.headers.get("content-type")).toBe("image/gif");
+  expect(await defaults.bytes()).toEqual(new Uint8Array([1]));
+  const custom = await handler(
+    request("?kind=gif&index=0&duration=5&fps=24&width=640"),
+    876,
+    players,
+  );
+  expect(await custom.bytes()).toEqual(new Uint8Array([2]));
+  await handler(request("?kind=gif&index=0"), 876, players);
+  expect(profiles).toEqual([
+    { duration: 2, fps: 6, width: 320 },
+    { duration: 5, fps: 24, width: 640 },
+  ]);
 });
 
 test("source and generated images are deduplicated and images cached", async () => {
@@ -250,7 +288,7 @@ test("source storage can use the persistent volume instead of the container tmpf
         url,
         876,
         hash,
-        (async () => new Response(bytes)) as typeof fetch,
+        (async () => new Response(bytes)) as unknown as typeof fetch,
         directory,
       ),
     ).toBe(path);

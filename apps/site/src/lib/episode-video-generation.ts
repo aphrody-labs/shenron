@@ -13,6 +13,7 @@ type Metadata = {
   height: number;
 };
 type Kind = "frame" | "gif";
+type GifSettings = { duration: number; fps: number; width: number };
 // The workspace's published Bun declarations predate the native Video surface.
 interface NativeVideo {
   metadata(): Promise<{
@@ -43,7 +44,13 @@ type Dependencies = {
   available(): boolean;
   source(url: URL, id: number, hash: string): Promise<string>;
   metadata(path: string): Promise<Metadata>;
-  image(path: string, kind: Kind, index: number, metadata: Metadata): Promise<Uint8Array>;
+  image(
+    path: string,
+    kind: Kind,
+    index: number,
+    metadata: Metadata,
+    settings: GifSettings,
+  ): Promise<Uint8Array>;
 };
 class BusyError extends Error {}
 const sourceDirectory = join(tmpdir(), "shenron-episode-video");
@@ -177,7 +184,7 @@ const nativeDependencies: Dependencies = {
       height: value.height,
     };
   },
-  async image(path, kind, index, metadata) {
+  async image(path, kind, index, metadata, settings) {
     const start = index / metadata.fps;
     if (!Video) throw new Error("video_unavailable");
     const video = new Video(path);
@@ -185,9 +192,9 @@ const nativeDependencies: Dependencies = {
       ? video.frame(start).resize(320, 180).webp({ quality: 75 }).bytes()
       : video.gif({
           start,
-          duration: Math.min(2, metadata.durationSeconds - start),
-          fps: 6,
-          width: 320,
+          duration: Math.min(settings.duration, metadata.durationSeconds - start),
+          fps: settings.fps,
+          width: settings.width,
         });
   },
 };
@@ -254,14 +261,28 @@ export function createEpisodeTimelineHandler(
     const query = new URL(request.url).searchParams;
     const kind = query.get("kind");
     const rawIndex = query.get("index");
+    const optionKeys = ["duration", "fps", "width"];
     if (
-      [...query.keys()].some((key) => key !== "kind" && key !== "index") ||
+      [...query.keys()].some(
+        (key) => key !== "kind" && key !== "index" && !optionKeys.includes(key),
+      ) ||
+      optionKeys.some(
+        (key) => query.getAll(key).length > 1 || (query.has(key) && kind !== "gif"),
+      ) ||
+      (query.has("duration") && !/^[1-5]$/.test(query.get("duration")!)) ||
+      (query.has("fps") && !["6", "12", "24"].includes(query.get("fps")!)) ||
+      (query.has("width") && !["320", "480", "640"].includes(query.get("width")!)) ||
       query.getAll("kind").length > 1 ||
       query.getAll("index").length > 1 ||
       (kind !== null && kind !== "frame" && kind !== "gif") ||
       (kind === null ? rawIndex !== null : !rawIndex || !/^(0|[1-9]\d{0,8})$/.test(rawIndex))
     )
       return fail("invalid_request", 400);
+    const settings = {
+      duration: Number(query.get("duration") ?? 2),
+      fps: Number(query.get("fps") ?? 6),
+      width: Number(query.get("width") ?? 320),
+    };
     const url = episodeTimelineSource(id, players);
     if (!url) return fail("source_not_found", 404);
     if (!dependencies.available()) return fail("video_unavailable", 503);
@@ -293,7 +314,7 @@ export function createEpisodeTimelineHandler(
         return Response.json(metadata, { headers: { "Cache-Control": "public, max-age=60" } });
       const index = Number(rawIndex);
       if (index >= metadata.frameCount) return fail("invalid_request", 400);
-      const key = `${sourceKey}-${kind}-${index}`;
+      const key = `${sourceKey}-${kind}-${index}-${settings.duration}-${settings.fps}-${settings.width}`;
       let bytes = cache.get(key);
       if (bytes) {
         cache.delete(key);
@@ -303,7 +324,7 @@ export function createEpisodeTimelineHandler(
         if (!image) {
           const release = retainSource(path, id);
           image = schedule(
-            () => dependencies.image(path, kind, index, metadata),
+            () => dependencies.image(path, kind, index, metadata, settings),
             request.signal,
           ).finally(release);
           pending.set(key, image);
