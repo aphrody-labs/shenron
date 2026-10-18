@@ -15,6 +15,7 @@ import { type ReactNode, useEffect, useState, useSyncExternalStore } from "react
 import { useTranslations } from "next-intl";
 import type { LocalHealthResponse } from "@aphrody/shenron-api/contract";
 import { isTauri } from "@aphrody/shenron-ui/studio/tauri-bridge";
+import { SignInDiscord } from "@/components/SignInDiscord";
 
 const StudioDesktop = dynamic(() => import("./StudioDesktop"), { ssr: false });
 
@@ -43,6 +44,7 @@ export function StudioEditor({ fallback }: { fallback: ReactNode }) {
   const [bridge, setBridge] = useState<"local" | "hosted" | null>(null);
   const [linked, setLinked] = useState<boolean | null>(null);
   const [loginPending, setLoginPending] = useState(false);
+  const [webStatus, setWebStatus] = useState<"signIn" | "unavailable" | null>(null);
 
   useEffect(() => {
     if (desktop) return;
@@ -58,15 +60,24 @@ export function StudioEditor({ fallback }: { fallback: ReactNode }) {
           cache: "no-store",
           signal: controller.signal,
         });
-        if (!response.ok || (await response.json()).available !== true || controller.signal.aborted)
+        if (controller.signal.aborted) return;
+        if (response.status === 401) {
+          setWebStatus("signIn");
           return;
+        }
+        if (!response.ok || (await response.json()).available !== true) {
+          setWebStatus("unavailable");
+          return;
+        }
         const transport = await import("@aphrody/shenron-koharu/transport");
         if (controller.signal.aborted) return;
         transport.configureKoharuBridge("/api/studio", true);
         setBridge("hosted");
         return undefined;
       })
-      .catch(() => undefined);
+      .catch(() => {
+        if (!controller.signal.aborted) setWebStatus("unavailable");
+      });
     return () => controller.abort();
   }, [desktop]);
 
@@ -122,7 +133,39 @@ export function StudioEditor({ fallback }: { fallback: ReactNode }) {
   if (desktop && linked !== true)
     return <DesktopAuthGate pending={loginPending} onPendingChange={setLoginPending} />;
   if (desktop) return <StudioDesktop />;
-  return bridge ? <StudioDesktop embedded /> : fallback;
+  return bridge ? (
+    <StudioDesktop embedded />
+  ) : (
+    <>
+      {webStatus && <WebAccess status={webStatus} />}
+      {fallback}
+    </>
+  );
+}
+
+function WebAccess({ status }: { status: "signIn" | "unavailable" }) {
+  const t = useTranslations("library.studio");
+  const returnPath =
+    typeof window === "undefined" ? "/studio" : window.location.pathname + window.location.search;
+  return (
+    <section className="mx-auto my-6 w-[calc(100%-2rem)] max-w-6xl rounded-2xl border border-border bg-card p-5 text-card-foreground">
+      <h2 className="text-lg font-semibold">{t("webTitle")}</h2>
+      <p
+        role={status === "unavailable" ? "status" : undefined}
+        className="mt-2 text-sm text-muted-foreground"
+      >
+        {t(status === "signIn" ? "webText" : "webUnavailable")}
+      </p>
+      {status === "signIn" && (
+        <SignInDiscord
+          callbackURL={returnPath}
+          className="mt-4 inline-flex min-h-12 items-center rounded-xl bg-primary px-5 font-semibold text-primary-foreground"
+        >
+          {t("webSignIn")}
+        </SignInDiscord>
+      )}
+    </section>
+  );
 }
 
 function DesktopAuthGate({
