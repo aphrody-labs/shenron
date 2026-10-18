@@ -103,7 +103,13 @@ export default async function CommandsPage({
             }`}
           >
             {p.avatar && (
-              <img src={p.avatar} alt="" className="w-5 h-5 rounded-full border border-current" />
+              <img
+                src={p.avatar}
+                alt=""
+                width={20}
+                height={20}
+                className="w-5 h-5 rounded-full border border-current"
+              />
             )}
             {PERSONA_LABELS[p.id] ?? p.id} ({p.commandCount})
           </a>

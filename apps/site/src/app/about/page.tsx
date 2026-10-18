@@ -38,7 +38,7 @@ export default function AboutPage() {
             </div>
             <Link
               href="/wiki"
-              className="text-xs font-bold text-dbz-orange uppercase tracking-wider mt-6 inline-flex items-center gap-1"
+              className="text-xs font-bold text-dbz-orange uppercase tracking-wider mt-6 inline-flex min-h-6 items-center gap-1"
             >
               Explorer la base →
             </Link>
@@ -59,7 +59,7 @@ export default function AboutPage() {
             </div>
             <Link
               href="/personas"
-              className="text-xs font-bold text-purple-300 uppercase tracking-wider mt-6 inline-flex items-center gap-1 hover:underline"
+              className="text-xs font-bold text-purple-300 uppercase tracking-wider mt-6 inline-flex min-h-6 items-center gap-1 hover:underline"
             >
               Consulter les Gardiens →
             </Link>
@@ -82,7 +82,7 @@ export default function AboutPage() {
               href={DISCORD_INVITE}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs font-bold text-cyan-300 uppercase tracking-wider mt-6 inline-flex items-center gap-1 hover:underline"
+              className="text-xs font-bold text-cyan-300 uppercase tracking-wider mt-6 inline-flex min-h-6 items-center gap-1 hover:underline"
             >
               Rejoindre le serveur →
             </a>

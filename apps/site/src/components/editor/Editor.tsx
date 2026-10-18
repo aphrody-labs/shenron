@@ -104,6 +104,18 @@ export type ShenronEditorProps = {
 
 export type EditorStats = { words: number; characters: number };
 
+/** Dimensions intrinsèques d'un fichier image, ou `null` si le navigateur ne sait pas les lire. */
+async function measureImage(file: File): Promise<{ width: number; height: number } | null> {
+  try {
+    const bitmap = await createImageBitmap(file);
+    const size = { width: bitmap.width, height: bitmap.height };
+    bitmap.close();
+    return size;
+  } catch {
+    return null;
+  }
+}
+
 const DEFAULT_CONTENT_CLASS: Record<EditorFormat, string> = {
   doc: "ed-prose",
   markdown: "wiki-content prose prose-invert max-w-none",
@@ -213,9 +225,13 @@ export function ShenronEditor({
   const insertImages = useCallback(
     async (target: Editor, files: File[]) => {
       const paths = await uploader.uploadAll(files);
-      for (const src of paths) {
-        if (target.schema.nodes.figure) target.chain().focus().insertFigure({ src, alt: "" }).run();
-        else target.chain().focus().setImage({ src, alt: "" }).run();
+      // Mesurées avant l'envoi : l'image insérée garde ses dimensions, donc sa place.
+      const sizes = await Promise.all(files.map(measureImage));
+      for (const [index, src] of paths.entries()) {
+        const { width, height } = sizes[index] ?? {};
+        if (target.schema.nodes.figure)
+          target.chain().focus().insertFigure({ src, alt: "", width, height }).run();
+        else target.chain().focus().setImage({ src, alt: "", width, height }).run();
       }
     },
     [uploader],

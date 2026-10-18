@@ -48,6 +48,8 @@ declare module "@tiptap/core" {
         alt?: string;
         placement?: FigurePlacement;
         size?: FigureSize;
+        width?: number | null;
+        height?: number | null;
       }) => ReturnType;
       setFigureLayout: (attrs: { placement?: FigurePlacement; size?: FigureSize }) => ReturnType;
     };
@@ -260,6 +262,12 @@ const PLACEMENT_CLASS: Record<FigurePlacement, string> = {
   right: "wiki-float-right",
 };
 
+/** Dimension intrinsèque valide (entier positif), ou `null` si absente ou douteuse. */
+export function intrinsicSize(value: string | number | null | undefined): number | null {
+  const n = typeof value === "number" ? value : Number.parseInt(value ?? "", 10);
+  return Number.isSafeInteger(n) && n > 0 ? n : null;
+}
+
 export const Figure = Node.create({
   name: "figure",
   group: "block",
@@ -273,6 +281,10 @@ export const Figure = Node.create({
       alt: { default: "" },
       placement: { default: "center" as FigurePlacement },
       size: { default: "md" as FigureSize },
+      // Dimensions intrinsèques : sans elles le navigateur ne réserve pas la place de
+      // l'image et la page saute à son chargement (CLS).
+      width: { default: null as number | null },
+      height: { default: null as number | null },
     };
   },
 
@@ -298,6 +310,8 @@ export const Figure = Node.create({
             alt: img.getAttribute("alt") ?? "",
             placement,
             size: (sizeMatch?.[1] as FigureSize) ?? "md",
+            width: intrinsicSize(img.getAttribute("width")),
+            height: intrinsicSize(img.getAttribute("height")),
           };
         },
         // La légende est le contenu du nœud : on ne parse QUE le <figcaption>.
@@ -312,16 +326,22 @@ export const Figure = Node.create({
   },
 
   renderHTML({ node }) {
-    const { src, alt, placement, size } = node.attrs as {
+    const { src, alt, placement, size, width, height } = node.attrs as {
       src: string;
       alt: string;
       placement: FigurePlacement;
       size: FigureSize;
+      width: number | null;
+      height: number | null;
+    };
+    const dimensions = {
+      ...(width ? { width: String(width) } : {}),
+      ...(height ? { height: String(height) } : {}),
     };
     return [
       "figure",
       { class: `${PLACEMENT_CLASS[placement] ?? "wiki-img"} wiki-size-${size}` },
-      ["img", { src, alt, loading: "lazy", decoding: "async" }],
+      ["img", { src, alt, ...dimensions, loading: "lazy", decoding: "async" }],
       ["figcaption", {}, 0],
     ];
   },
