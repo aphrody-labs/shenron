@@ -77,12 +77,14 @@ function run(cmd: string[], cwd = repo): string {
   return result.stdout.toString();
 }
 
-/** CLI hôte qui compose unités et fragments : Aphrody (`APHRODY_ROOT`, `~/aphrody`), sinon yolo. */
+/** CLI hôte qui compose unités et fragments : `APHRODY_ROOT`, sinon `~/src/bun-os`, `~/aphrody` ou yolo. */
 function hostCli(): { root: string; cli: string } {
   const explicit = process.env.APHRODY_ROOT?.trim();
   const candidates = explicit
     ? [{ root: explicit, cli: join(explicit, "packages/engine/core/src/host/cli.ts") }]
     : [
+        // Disposition à plat de bun-distribution (branche `os`), checkout de l'usine VPS.
+        { root: join(homedir(), "src", "bun-os"), cli: "packages/yolo-core/src/host/cli.ts" },
         { root: join(homedir(), "aphrody"), cli: "packages/engine/core/src/host/cli.ts" },
         {
           root: process.env.YOLO_ROOT?.trim() || join(homedir(), "yolo"),
