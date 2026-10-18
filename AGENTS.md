@@ -66,6 +66,20 @@ ou du domaine, pas les droits sur une œuvre. Consigner la provenance et la port
 opérationnelle des médias publiés dans un manifeste privé, sans exposer l'accord ni
 inventer ses clauses.
 
+Directive de publication (propriétaire, 2026-10-18) : accord total pour publier sur
+dragonballfr.com l'ensemble des données, épisodes, planches, médias et exports du
+catalogue (films, épisodes, tomes manga, databooks), dans le périmètre de l'attestation
+ci-dessus. Règles d'application :
+- Aucune page publique ne doit rester sans donnée, média, épisode ou planche. Une page
+  sans contenu réel ne se publie pas : elle reste masquée ou répond un état vide explicite
+  (jamais une erreur 503 ni une coquille vide indexable). Les manques se listent dans
+  `var/reports/content-gaps/`, mis à jour à chaque lot.
+- Les garde-fous restent : aucun secret, donnée privée, `.env` ni `data/home/` dans Git ;
+  aucune écriture en production hors runbook Infra ; pas de `db:push` ; déploiement par
+  la chaîne de livraison (fabrique, image scellée, Infra), jamais à la main.
+- Ce qui ne peut pas être produit par le code (posters absents, couverture manga
+  incomplète) reste un manque de données à signaler, pas à masquer.
+
 ## Exécution autonome NHIL
 
 L’utilisateur a autorisé l’exécution autonome de bout en bout dans le périmètre de chaque
