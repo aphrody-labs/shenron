@@ -180,8 +180,8 @@ cpSync(join(SITE, DIST_DIR, "static"), join(siteOut, "apps/site", DIST_DIR, "sta
 // Server source maps only weigh the payload: drop them.
 for (const map of new Bun.Glob("**/*.map").scanSync({ cwd: siteOut, dot: true }))
   rmSync(join(siteOut, map));
-// Next file tracing may copy the staged public VFS; it ships separately as the VFS payload.
-rmSync(join(siteOut, "dist/vfs"), { recursive: true, force: true });
+// Next file tracing may copy the repository dist/ (staged VFS, earlier releases); the VFS ships separately.
+rmSync(join(siteOut, "dist"), { recursive: true, force: true });
 // Nothing private may ship: no database, env file or key.
 const leaks = privateFiles(siteOut);
 if (leaks.length)
