@@ -59,38 +59,52 @@ async function cycle(): Promise<void> {
   if (apply) syncArgs.push("--apply");
   await runStep("beerus-sync", syncArgs);
 
-  // 2. Query target episode (876) status
+  // 2. Query announced episodes in series (e.g. 875, 876, and upcoming)
   try {
-    const res = await fetch(`${SITE}/api/episodes/876`, { headers: ua });
-    if (res.ok) {
+    const listRes = await fetch(`${SITE}/api/episodes?series=DBS_BEERUS&limit=50`, { headers: ua });
+    const episodesToCheck: number[] = [];
+    if (listRes.ok) {
+      const data = (await listRes.json()) as {
+        episodes?: Array<{ id: number; framesCount?: number }>;
+      };
+      for (const ep of data.episodes ?? []) {
+        if ((ep.framesCount ?? 0) < 20) episodesToCheck.push(ep.id);
+      }
+    }
+    if (!episodesToCheck.includes(876)) episodesToCheck.push(876);
+
+    for (const epId of episodesToCheck) {
+      const res = await fetch(`${SITE}/api/episodes/${epId}`, { headers: ua });
+      if (!res.ok) continue;
       const ep = (await res.json()) as Record<string, any>;
       console.log(
-        `[auto-upload] Episode 876 state: title="${ep.title}", airDate=${ep.airDate}, hasCrunchyroll=${Boolean(ep.availability?.length)}, frames=${ep.framesCount}`,
+        `[auto-upload] Episode ${epId} state: title="${ep.title}", airDate=${ep.airDate}, hasCrunchyroll=${Boolean(ep.availability?.length)}, frames=${ep.framesCount}`,
       );
 
       // If video endpoint responds 200 and frames are missing, run complete-episode
-      const videoHead = await fetch(`${SITE}/api/episodes/876/video`, {
+      const videoHead = await fetch(`${SITE}/api/episodes/${epId}/video`, {
         method: "HEAD",
         headers: ua,
       }).catch(() => null);
+
       if (videoHead && videoHead.status === 200 && (ep.framesCount ?? 0) < 20) {
         console.log(
-          `[auto-upload] Episode 876 video is ready! Ingesting with complete-episode.ts...`,
+          `[auto-upload] Episode ${epId} video is ready! Ingesting with complete-episode.ts...`,
         );
         const completeArgs = [
           "bun",
           join(import.meta.dir, "complete-episode.ts"),
           "--id",
-          "876",
+          String(epId),
           "--arc-id",
           "18",
         ];
         if (apply) completeArgs.push("--apply");
-        await runStep("complete-episode-876", completeArgs);
+        await runStep(`complete-episode-${epId}`, completeArgs);
       }
     }
   } catch (err) {
-    console.warn(`[auto-upload] Notice: unable to fetch episode 876 API:`, err);
+    console.warn(`[auto-upload] Notice: unable to fetch episodes API:`, err);
   }
 
   console.log(`=== [auto-upload] cycle finished at ${new Date().toISOString()} ===\n`);

@@ -3,6 +3,8 @@
 
 export const CRUNCHYROLL_SERIES_BY_SHENRON: Readonly<Record<string, string>> = {
   DBS_BEERUS: "GT00389311",
+  DBS: "G63VGG2NY",
+  DB_DAIMA: "GR243XG4R",
 };
 
 /** The fields of a Crunchyroll episode this mapping reads (the bridge's public-metadata allowlist). */
@@ -40,7 +42,10 @@ const ID = /^[A-Z0-9]{6,16}$/;
 
 export function crunchyrollWatchUrl(id: string, slug: string | undefined, locale = "fr"): string {
   if (!ID.test(id)) throw new Error("Invalid Crunchyroll episode id");
-  const safeSlug = (slug ?? "").toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "");
+  const safeSlug = (slug ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
   return `https://www.crunchyroll.com/${locale}/watch/${id}${safeSlug ? `/${safeSlug}` : ""}`;
 }
 
@@ -93,7 +98,13 @@ export interface ShenronEpisodeRow {
   series: string;
   number_in_series: number | null;
   title: string;
-  availability?: Array<{ provider?: string; url?: string; langs?: string[]; available?: boolean; checkedAt?: number }> | null;
+  availability?: Array<{
+    provider?: string;
+    url?: string;
+    langs?: string[];
+    available?: boolean;
+    checkedAt?: number;
+  }> | null;
 }
 
 export interface CrunchyrollOffer {
@@ -111,7 +122,9 @@ const WATCH_ID = /\/watch\/([A-Z0-9]{6,16})(?:\/|$)/;
 
 /** The Crunchyroll offer of a row, or null when it has none: only the stored, normalized watch URL is trusted. */
 export function crunchyrollOffer(row: ShenronEpisodeRow): CrunchyrollOffer | null {
-  const entry = row.availability?.find((offer) => offer.provider === "crunchyroll" && offer.available !== false && offer.url);
+  const entry = row.availability?.find(
+    (offer) => offer.provider === "crunchyroll" && offer.available !== false && offer.url,
+  );
   const id = entry?.url && WATCH_ID.exec(new URL(entry.url).pathname)?.[1];
   if (!entry || !id || new URL(entry.url).hostname !== "www.crunchyroll.com") return null;
   return {
@@ -134,12 +147,16 @@ export interface ResolveQuery {
 }
 
 /** Resolves a Shenron episode (id, or series + number) or a Crunchyroll id to its offer. */
-export function resolveCrunchyroll(rows: readonly ShenronEpisodeRow[], query: ResolveQuery): CrunchyrollOffer | null {
+export function resolveCrunchyroll(
+  rows: readonly ShenronEpisodeRow[],
+  query: ResolveQuery,
+): CrunchyrollOffer | null {
   const row = rows.find((candidate) => {
     if (query.episode !== undefined) return candidate.id === query.episode;
     if (query.series !== undefined && query.number !== undefined)
       return candidate.series === query.series && candidate.number_in_series === query.number;
-    if (query.crunchyroll !== undefined) return crunchyrollOffer(candidate)?.crunchyrollId === query.crunchyroll;
+    if (query.crunchyroll !== undefined)
+      return crunchyrollOffer(candidate)?.crunchyrollId === query.crunchyroll;
     return false;
   });
   return row ? crunchyrollOffer(row) : null;
@@ -152,7 +169,9 @@ export function crunchyrollSeriesSummary(series: string, rows: readonly ShenronE
   return {
     series,
     crunchyrollSeries,
-    crunchyrollUrl: crunchyrollSeries ? `https://www.crunchyroll.com/fr/series/${crunchyrollSeries}` : null,
+    crunchyrollUrl: crunchyrollSeries
+      ? `https://www.crunchyroll.com/fr/series/${crunchyrollSeries}`
+      : null,
     episodes: offers.length,
     mapped: mapped.length,
     offers: mapped,
