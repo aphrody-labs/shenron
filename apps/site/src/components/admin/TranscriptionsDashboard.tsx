@@ -152,13 +152,19 @@ export function TranscriptionsDashboard({
     <div className="space-y-6">
       {/* Subnav Tabs */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
-        <div className="flex flex-wrap items-center gap-2">
+        <div
+          role="tablist"
+          aria-label="Sections du suivi des transcriptions"
+          className="flex flex-wrap items-center gap-2"
+        >
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "vue-globale"}
             onClick={() => setActiveTab("vue-globale")}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
+            className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
               activeTab === "vue-globale"
-                ? "bg-dbz-orange text-black"
+                ? "bg-dbz-orange text-black shadow-sm"
                 : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
             }`}
           >
@@ -167,10 +173,12 @@ export function TranscriptionsDashboard({
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "lots-gpu"}
             onClick={() => setActiveTab("lots-gpu")}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
+            className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
               activeTab === "lots-gpu"
-                ? "bg-dbz-orange text-black"
+                ? "bg-dbz-orange text-black shadow-sm"
                 : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
             }`}
           >
@@ -179,10 +187,12 @@ export function TranscriptionsDashboard({
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "traduction-vps"}
             onClick={() => setActiveTab("traduction-vps")}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
+            className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
               activeTab === "traduction-vps"
-                ? "bg-dbz-orange text-black"
+                ? "bg-dbz-orange text-black shadow-sm"
                 : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
             }`}
           >
@@ -191,10 +201,12 @@ export function TranscriptionsDashboard({
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "lexique"}
             onClick={() => setActiveTab("lexique")}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
+            className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
               activeTab === "lexique"
-                ? "bg-dbz-orange text-black"
+                ? "bg-dbz-orange text-black shadow-sm"
                 : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
             }`}
           >
@@ -203,10 +215,12 @@ export function TranscriptionsDashboard({
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "databooks"}
             onClick={() => setActiveTab("databooks")}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
+            className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
               activeTab === "databooks"
-                ? "bg-dbz-orange text-black"
+                ? "bg-dbz-orange text-black shadow-sm"
                 : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
             }`}
           >
@@ -215,10 +229,12 @@ export function TranscriptionsDashboard({
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "manga"}
             onClick={() => setActiveTab("manga")}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
+            className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
               activeTab === "manga"
-                ? "bg-dbz-orange text-black"
+                ? "bg-dbz-orange text-black shadow-sm"
                 : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
             }`}
           >
@@ -227,10 +243,12 @@ export function TranscriptionsDashboard({
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "arbitrage"}
             onClick={() => setActiveTab("arbitrage")}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
+            className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 ${
               activeTab === "arbitrage"
-                ? "bg-amber-400 text-black font-bold"
+                ? "bg-amber-400 text-black font-bold shadow-sm"
                 : "bg-amber-400/10 text-amber-300 border border-amber-400/20 hover:bg-amber-400/20"
             }`}
           >
