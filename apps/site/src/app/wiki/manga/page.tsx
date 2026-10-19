@@ -204,14 +204,16 @@ async function MangaIndexContent({ searchParams }: { searchParams: Promise<Manga
         colorVolumeIds={colorVolumeIds}
         colorChapterCount={colorChapters.length}
       />
-      <details className="mt-4 rounded-xl border border-border bg-card p-3">
-        <summary className="min-h-11 cursor-pointer py-2 font-semibold text-foreground">
+      <details className="mt-4 rounded-xl border border-border bg-card p-4 transition-colors hover:border-border/80">
+        <summary className="flex min-h-11 cursor-pointer select-none items-center font-semibold text-foreground transition-colors hover:text-dbz-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-lg">
           <MangaUIText name="dialogue" />
         </summary>
-        <MangaDialogueSearch />
+        <div className="pt-2">
+          <MangaDialogueSearch />
+        </div>
       </details>
-      <details className="mt-4 rounded-xl border border-border bg-card p-3">
-        <summary className="min-h-11 cursor-pointer py-2 font-semibold text-foreground">
+      <details className="mt-4 rounded-xl border border-border bg-card p-4 transition-colors hover:border-border/80">
+        <summary className="flex min-h-11 cursor-pointer select-none items-center font-semibold text-foreground transition-colors hover:text-dbz-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-lg">
           <MangaUIText name="details" />
         </summary>
         <PageBanner src={heroImage} alt="" position="top" className="mt-3" priority={false} />

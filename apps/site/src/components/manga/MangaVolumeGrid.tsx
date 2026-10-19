@@ -97,7 +97,7 @@ function MangaChapterCard({ chapter }: { chapter: LibraryChapter }) {
       href={`/wiki/manga/${chapter.id}`}
       onMouseEnter={warm}
       onTouchStart={warm}
-      className="group min-w-0 rounded-lg border border-border bg-card p-2 focus-visible:outline-2 focus-visible:outline-ring"
+      className="group min-w-0 rounded-lg border border-border bg-card p-2 transition duration-200 hover:border-dbz-orange/60 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange focus-visible:ring-offset-2 focus-visible:ring-offset-background"
     >
       <div className="relative aspect-[2/3] overflow-hidden rounded bg-background">
         {image ? (
