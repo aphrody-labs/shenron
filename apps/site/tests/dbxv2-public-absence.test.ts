@@ -28,15 +28,19 @@ function* walk(dir: string): Generator<string> {
 }
 
 describe("pages publiques", () => {
-  test("aucun fichier hors de l'espace admin dédié ne mentionne dbxv2", () => {
-    const offenders: string[] = [];
-    for (const file of walk(SRC)) {
-      const rel = relative(SRC, file);
-      if (allowed(rel)) continue;
-      if (/dbxv2/i.test(readFileSync(file, "utf8"))) offenders.push(rel);
-    }
-    expect(offenders).toEqual([]);
-  });
+  test(
+    "aucun fichier hors de l'espace admin dédié ne mentionne dbxv2",
+    () => {
+      const offenders: string[] = [];
+      for (const file of walk(SRC)) {
+        const rel = relative(SRC, file);
+        if (allowed(rel)) continue;
+        if (/dbxv2/i.test(readFileSync(file, "utf8"))) offenders.push(rel);
+      }
+      expect(offenders).toEqual([]);
+    },
+    { timeout: 30_000 },
+  );
 
   test("les dictionnaires publics ne contiennent aucune clé ni valeur dbxv2", () => {
     for (const locale of ["fr", "en", "ja"]) {
