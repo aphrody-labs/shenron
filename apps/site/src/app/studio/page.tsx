@@ -84,12 +84,20 @@ function StudioPresentation({ source }: { source: StudioSource | null }) {
         <p className="mt-2 max-w-3xl text-[15px] text-white/75">
           <T k="library.studio.desktopText" />
         </p>
-        <Link
-          href="/workshop"
-          className="mt-4 inline-flex min-h-11 items-center font-semibold text-dbz-orange hover:text-white"
-        >
-          <T k="library.studio.workshopLink" />
-        </Link>
+        <div className="mt-4 flex flex-wrap gap-4">
+          <Link
+            href="/workshop"
+            className="inline-flex min-h-11 items-center font-semibold text-dbz-orange hover:text-white"
+          >
+            <T k="library.studio.workshopLink" />
+          </Link>
+          <Link
+            href="/studio/video"
+            className="inline-flex min-h-11 items-center px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 font-semibold text-white transition shadow-[0_0_12px_rgba(168,85,247,0.3)]"
+          >
+            Ouvrir Shenron Video Studio (FilmCraft NLE)
+          </Link>
+        </div>
       </section>
     </PageShell>
   );
