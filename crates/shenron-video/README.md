@@ -49,6 +49,9 @@ l'archive à 2 Gio. Il impose `RAYON_NUM_THREADS=1` au processus d'encodage et
 contrôle codec, dimensions, cadence, durée et nombre d'images avec Bun Video.
 Les autres chemins propriétaires restent `SHENRON_VIDEO_OUTPUT_HOME`,
 `SHENRON_VIDEO_RENDERER_HOME` et `SHENRON_VIDEO_CHROME`.
+`SHENRON_VIDEO_RENDERER_HOME` désigne la racine du paquet propriétaire Bun Video,
+qui fournit `src/hyperframes-native.ts`. Le reçu conserve l'empreinte de ce
+module, celle de l'encodeur et la révision du runtime.
 
 La compilation ne suffit pas à qualifier les codecs : contrôler aussi une
 entrée réelle autorisée, les métadonnées, les images décodées et la lecture du
@@ -67,6 +70,15 @@ Trois images réelles autorisées de l'épisode Beerus, aux temps 30, 31 et
 Bun Video relit trois images et une durée de trois secondes ; chaque image a
 été redécodée en PNG puis inspectée visuellement. L'erreur RGB absolue moyenne
 mesurée par image est de 2,03, 3,01 et 3,33 sur 255, sans prétention d'égalité
-avec les pixels sources. Cette qualification couvre l'encodeur Linux et ne
-constitue pas un test complet du navigateur de composition ni des autres
-plateformes.
+avec les pixels sources. Cette qualification couvre l'encodeur Linux ; les
+autres plateformes demandent leurs propres contrôles.
+
+Le pipeline complet de composition a également été exécuté sur la fabrique :
+la chronologie publique réelle alimente le SSR React, Chrome est piloté par
+Bun.WebView, puis Bun Video capture quatre PNG exacts et FilmCraft écrit un
+MP4 H.264 High de deux secondes à 640 × 360, deux images/seconde. Les images
+archivées et deux images redécodées du MP4 ont été inspectées visuellement.
+Le reçu porte le hash du module de capture propriétaire, celui du binaire
+qualifié et la révision du runtime ; le navigateur et ses processus sont
+fermés à la fin du rendu. L'encodeur reste configuré explicitement pour ce
+job : ce contrôle n'installe aucun service global.

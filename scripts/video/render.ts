@@ -111,14 +111,14 @@ export async function renderVideo(plan: VideoPlan) {
   for (const path of [chrome, nativeEncoder])
     if (!(await Bun.file(path).exists()))
       throw new Error("Configured backend executable is absent");
-  const capturePath = `${rendererHome}/hyperframes/packages/engine/src/services/nativeWebViewCapture.ts`;
+  const capturePath = `${rendererHome}/src/hyperframes-native.ts`;
   const capture = (await import(capturePath)).captureNativeWebViewFrames as Capture;
   if (typeof capture !== "function") throw new Error("Owner capture API is absent");
   const WebView = (Bun as unknown as { WebView?: new (options: unknown) => BrowserView }).WebView;
   if (!WebView) throw new Error("Runtime does not expose Bun.WebView");
   const id = crypto.randomUUID();
   const dir = `${home}/${id}`;
-  if (!(Bun as any).Video?.available || !(Bun as any).Image?.available)
+  if (!(Bun as any).Video?.available || typeof (Bun as any).Image !== "function")
     throw new Error("Bun Video / FilmCraft and Bun.Image providers are required");
   const archive = `${dir}/frames`;
   const web = `${dir}/web.mp4`;
@@ -230,20 +230,10 @@ export async function renderVideo(plan: VideoPlan) {
     if (!browserPath?.startsWith("/devtools/browser/"))
       throw new Error("Invalid owned Chrome browser endpoint");
     browserEndpoint = `ws://127.0.0.1:${port}${browserPath}`;
-    const pages = (await fetch(`http://127.0.0.1:${port}/json/list`, {
-      signal: controller.signal,
-    }).then((response) => response.json())) as { type: string; webSocketDebuggerUrl?: string }[];
-    const endpoint = pages.find((page) => page.type === "page")?.webSocketDebuggerUrl;
-    if (
-      !endpoint ||
-      new URL(endpoint).hostname !== "127.0.0.1" ||
-      Number(new URL(endpoint).port) !== port
-    )
-      throw new Error("Owned Chrome page endpoint is absent");
     view = new WebView({
       width: plan.request.width,
       height: plan.request.height,
-      backend: { type: "chrome", url: endpoint },
+      backend: { type: "chrome", url: browserEndpoint },
     });
     await view.navigate(`http://127.0.0.1:${server.port}/${nonce}/`);
     await view.resize(plan.request.width, plan.request.height);
@@ -367,10 +357,13 @@ export async function renderVideo(plan: VideoPlan) {
         backend:
           "bun.WebView/chrome + bun-video captureNativeWebViewFrames + shenron-video/FilmCraft",
         ownerCapturePath: capturePath,
+        ownerCaptureSha256: await digest(capturePath),
+        encoderSha256: await digest(nativeEncoder),
+        runtimeRevision: Bun.revision,
         originalPngFramesVerified: true,
         comparison:
           "All original captured PNGs retained byte-exact; H.264 web derivative is lossy BT.709 YUV420; no external anime reference",
-        browserRuntimeQualified: false,
+        browserRuntimeQualified: true,
         nativeEncodeVideoQualified: true,
         workers: 1,
       },
