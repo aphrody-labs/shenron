@@ -184,7 +184,7 @@
     },
     "packages/api": {
       "name": "@aphrody/shenron-api",
-      "version": "1.4.6",
+      "version": "1.4.7",
       "dependencies": {
         "@aphrody/http": "catalog:",
         "@aphrody/shenron-auth": "workspace:*",
@@ -199,7 +199,7 @@
     },
     "packages/auth": {
       "name": "@aphrody/shenron-auth",
-      "version": "1.4.6",
+      "version": "1.4.7",
       "dependencies": {
         "@aphrody/shenron-config": "workspace:*",
       },
@@ -223,7 +223,7 @@
     },
     "packages/config": {
       "name": "@aphrody/shenron-config",
-      "version": "1.4.6",
+      "version": "1.4.7",
       "dependencies": {
         "@aphrody/paths": "catalog:",
         "zod": "catalog:",
@@ -245,7 +245,7 @@
     },
     "packages/db": {
       "name": "@aphrody/shenron-db",
-      "version": "1.4.6",
+      "version": "1.4.7",
       "dependencies": {
         "@aphrody/shenron-config": "workspace:*",
         "@aphrody/sql": "catalog:",
@@ -267,21 +267,21 @@
     },
     "packages/engine": {
       "name": "@aphrody/shenron-engine",
-      "version": "1.4.6",
+      "version": "1.4.7",
       "devDependencies": {
         "@types/bun": "catalog:",
       },
     },
     "packages/images": {
       "name": "@aphrody/shenron-images",
-      "version": "1.4.6",
+      "version": "1.4.7",
       "dependencies": {
         "sharp": "catalog:",
       },
     },
     "packages/koharu": {
       "name": "@aphrody/shenron-koharu",
-      "version": "1.4.6",
+      "version": "1.4.7",
       "dependencies": {
         "@aphrody/api": "catalog:",
       },
@@ -291,14 +291,14 @@
     },
     "packages/lexicon": {
       "name": "@aphrody/shenron-lexicon",
-      "version": "1.4.6",
+      "version": "1.4.7",
       "devDependencies": {
         "@types/bun": "catalog:",
       },
     },
     "packages/media": {
       "name": "@aphrody/shenron-media",
-      "version": "1.4.6",
+      "version": "1.4.7",
       "dependencies": {
         "@aphrody/http": "catalog:",
         "mediabunny": "catalog:",
@@ -309,7 +309,7 @@
     },
     "packages/native": {
       "name": "@aphrody/shenron-native",
-      "version": "1.4.6",
+      "version": "1.4.7",
       "dependencies": {
         "@aphrody/bun": "catalog:",
       },
@@ -319,7 +319,7 @@
     },
     "packages/pipeline": {
       "name": "@aphrody/shenron-pipeline",
-      "version": "1.4.6",
+      "version": "1.4.7",
       "bin": {
         "pipeline": "./src/cli.ts",
       },
@@ -346,7 +346,7 @@
     },
     "packages/ui": {
       "name": "@aphrody/shenron-ui",
-      "version": "1.4.6",
+      "version": "1.4.7",
       "dependencies": {
         "@aphrody/api": "catalog:",
         "@aphrody/m3-ai": "catalog:",

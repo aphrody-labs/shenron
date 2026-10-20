@@ -1,6 +1,6 @@
 {
   "name": "@aphrody/shenron-koharu",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "private": false,
   "description": "Koharu manga translation engine client for Shenron: typed IPC protocol generated from koharu-app (Tauri Specta), the koharu-sdk JSON Lines transport and the wasm canvas.",
   "homepage": "https://dragonballfr.com",

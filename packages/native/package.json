@@ -1,6 +1,6 @@
 {
   "name": "@aphrody/shenron-native",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "private": false,
   "description": "Bun FFI binding of the Shenron native library (shenron-ffi): shenron commands, RAG/persona helpers, and a worker pool for the long calls (promises, AbortSignal).",
   "homepage": "https://dragonballfr.com",
