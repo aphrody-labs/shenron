@@ -66,6 +66,7 @@ async function fixture() {
   };
   await mkdir(join(options.repoRoot, "docs/reference/root"), { recursive: true });
   await mkdir(join(options.repoRoot, ".coord"));
+  await writeFile(options.freezeFile, '{"frozen":false}');
   await mkdir(options.manifestRoot);
   await mkdir(options.assetRoot);
   await writeFile(join(options.assetRoot, "source.bin"), "source bytes");

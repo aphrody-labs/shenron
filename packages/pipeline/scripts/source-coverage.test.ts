@@ -42,8 +42,10 @@ test("freeze reads doctrine, fails closed, and applies only to databook writes",
   await writeFile(plan, '```json\n{"freeze":{"databooks":true}}\n```');
   expect(await databooksFrozen(root)).toBe(true);
   await writeFile(plan, '```json\n{"freeze":{"databooks":false}}\n```');
-  expect(await databooksFrozen(root)).toBe(false);
+  expect(await databooksFrozen(root)).toBe(true);
   await mkdir(join(root, ".coord"), { recursive: true });
+  await writeFile(join(root, ".coord/FREEZE-databooks.json"), '{"frozen":false}');
+  expect(await databooksFrozen(root)).toBe(false);
   await writeFile(join(root, ".coord/FREEZE-databooks.json"), "unreadable state");
   expect(await databooksFrozen(root)).toBe(true);
 });
