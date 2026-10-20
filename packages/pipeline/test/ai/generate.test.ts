@@ -94,10 +94,25 @@ describe("generateGroundedAnswer", () => {
       content: [
         {
           type: "text",
-          text: "Contexte (faits Dragon Ball, à reformuler) :\n[1] Son Goku : Héros de Dragon Ball.\n[2] Vegeta : Prince des Saiyans.\n\nMessage de l'utilisateur : Qui est Goku ?",
+          text: "Contexte (faits Dragon Ball, à reformuler) :\n<sources>\n[1] Son Goku : Héros de Dragon Ball.\n[2] Vegeta : Prince des Saiyans.\n</sources>\n\nMessage de l'utilisateur : Qui est Goku ?",
         },
       ],
     });
+  });
+
+  test("source identity stays in verified citations without consuming model context", async () => {
+    const model = okModel("Goku est le héros de Dragon Ball [1].");
+    const out = await generateGroundedAnswer({
+      model,
+      persona: "whis",
+      strict: true,
+      question: "Qui est Goku ?",
+      hits: [{ ...HITS[0]!, sourceId: "internal-index-id" }],
+      chunks,
+    });
+    expect(JSON.stringify(model.doGenerateCalls[0]?.prompt)).not.toContain("internal-index-id");
+    expect(out.citations[0]?.sourceId).toBe("internal-index-id");
+    expect(out.citations[0]?.url).toBe(HITS[0]!.url);
   });
 
   test("the fallback is never cached; a success is cached then served", async () => {
@@ -245,7 +260,7 @@ describe("generateGroundedAnswer", () => {
       chunks,
     });
     const prompt = model.doGenerateCalls[0]?.prompt ?? [];
-    expect(String(prompt[0]?.content)).toContain("4. C'est un simple bavardage");
+    expect(String(prompt[0]?.content)).toContain("Simple bavardage");
     expect(prompt[1]).toMatchObject({ role: "user", content: [{ type: "text", text: "Bonjour" }] });
   });
 });
