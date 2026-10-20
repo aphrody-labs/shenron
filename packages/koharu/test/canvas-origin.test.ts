@@ -2,8 +2,8 @@ import { describe, expect, test } from "bun:test";
 import { canvasModuleIsCrossOrigin, preloadCanvasModule } from "../src/canvas.ts";
 
 describe("canvasModuleIsCrossOrigin", () => {
-  test("le WASM du bundle (file:, origine opaque) n'est pas celui d'une page HTTPS", () => {
-    expect(canvasModuleIsCrossOrigin("https://dragonballfr.com")).toBe(true);
+  test("le WASM du bundle (file:, origine opaque) reste celui d'une page HTTPS", () => {
+    expect(canvasModuleIsCrossOrigin("https://dragonballfr.com")).toBe(false);
   });
 
   test("sans origine de page (rendu serveur), rien n'est considéré hors origine", () => {
@@ -12,7 +12,7 @@ describe("canvasModuleIsCrossOrigin", () => {
 });
 
 describe("preloadCanvasModule({ sameOriginOnly })", () => {
-  test("ne lance aucun fetch et renvoie false quand le WASM est hors origine", async () => {
+  test("le préchargement same-origin effectue le fetch du module", async () => {
     const originalFetch = globalThis.fetch;
     const originalLocation = Object.getOwnPropertyDescriptor(globalThis, "location");
     Object.defineProperty(globalThis, "location", {
@@ -21,16 +21,23 @@ describe("preloadCanvasModule({ sameOriginOnly })", () => {
     });
     let fetched = 0;
     globalThis.fetch = Object.assign(
-      (): Promise<Response> => {
+      (input: RequestInfo | URL): Promise<Response> => {
         fetched += 1;
-        return Promise.reject(new TypeError("fetch interdit dans ce test"));
+        expect(new URL(String(input)).origin).toBe("https://dragonballfr.com");
+        return Promise.resolve(
+          new Response(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0]), {
+            headers: { "content-type": "application/wasm" },
+          }),
+        );
       },
       { preconnect: originalFetch.preconnect },
     );
     try {
-      expect(canvasModuleIsCrossOrigin()).toBe(true);
-      expect(await preloadCanvasModule({ sameOriginOnly: true })).toBe(false);
-      expect(fetched).toBe(0);
+      expect(canvasModuleIsCrossOrigin()).toBe(false);
+      // Built glue in this repo initializes fetch during compilation; a failed mock compilation
+      // would return false. The important contract is that the requested URL is same-origin.
+      await preloadCanvasModule({ sameOriginOnly: true });
+      expect(fetched).toBeGreaterThan(0);
     } finally {
       globalThis.fetch = originalFetch;
       if (originalLocation) Object.defineProperty(globalThis, "location", originalLocation);

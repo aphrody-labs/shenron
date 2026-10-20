@@ -154,58 +154,35 @@ export function preloadCanvasModule(options: PreloadCanvasModuleOptions = {}): P
 }
 
 /**
- * Vrai quand le WASM du canevas est servi depuis une autre origine que la page (CDN d'actifs) :
- * son fetch exige alors CORS.
+ * Le WASM du canevas reste sur l'origine de la page, même lorsque les chunks Next utilisent le CDN.
  */
 export function canvasModuleIsCrossOrigin(
   pageOrigin: string | undefined = globalThis.location?.origin,
 ): boolean {
   if (pageOrigin === undefined) return false;
-  return canvasWasmUrl().origin !== pageOrigin;
+  return canvasWasmUrl(pageOrigin).origin !== pageOrigin;
 }
 
-function canvasWasmUrl(): URL {
+function canvasWasmUrl(pageOrigin = globalThis.location?.origin): URL {
   const asset = new URL("./wasm/koharu_canvas_bg.wasm", import.meta.url);
-  const pageOrigin = globalThis.location?.origin;
-  if (!pageOrigin || typeof document === "undefined") return asset;
+  if (!pageOrigin) return asset;
 
-  // Turbopack turns `new URL(asset, import.meta.url)` into a root-relative asset URL. Unlike
-  // Next's script and stylesheet loader, that path does not receive `assetPrefix`; the browser
-  // would request it from the page origin, where production intentionally does not serve
-  // `/_next/static`. Reuse the prefix of a loaded Next chunk so WASM follows the same CDN route.
-  return resolveCanvasWasmAssetUrl(
-    asset,
-    pageOrigin,
-    Array.from(document.scripts, (script) => script.src),
-  );
+  // Turbopack emits a root-relative, hashed asset URL. Keep that path on the site origin:
+  // the CDN does not send Access-Control-Allow-Origin for this WASM asset.
+  return resolveCanvasWasmAssetUrl(asset, pageOrigin, [], true);
 }
 
-/** Resolve Turbopack's root-relative WASM asset through the same Next asset prefix as its chunks. */
+/** Resolve Turbopack's root-relative WASM asset on the page origin, independently of the CDN. */
 export function resolveCanvasWasmAssetUrl(
   asset: URL,
   pageOrigin: string,
-  scriptUrls: readonly string[],
+  _scriptUrls: readonly string[] = [],
+  forcePageOrigin = false,
 ): URL {
   const page = new URL(pageOrigin);
+  if (!forcePageOrigin && asset.protocol !== "http:" && asset.protocol !== "https:") return asset;
   const resolvedAsset = new URL(asset.href, page);
-  const mediaPath = "/_next/static/media/";
-  if (!resolvedAsset.pathname.includes(mediaPath)) return resolvedAsset;
-
-  const chunkPath = "/_next/static/chunks/";
-  for (const source of scriptUrls) {
-    let script: URL;
-    try {
-      script = new URL(source, page);
-    } catch {
-      continue;
-    }
-    const chunkIndex = script.pathname.indexOf(chunkPath);
-    if (chunkIndex < 0) continue;
-    const assetPrefix = script.pathname.slice(0, chunkIndex);
-    const pathname = `${assetPrefix}${resolvedAsset.pathname}`;
-    return new URL(`${pathname}${resolvedAsset.search}${resolvedAsset.hash}`, script.origin);
-  }
-  return resolvedAsset;
+  return new URL(`${resolvedAsset.pathname}${resolvedAsset.search}${resolvedAsset.hash}`, page);
 }
 
 export async function createCanvas(

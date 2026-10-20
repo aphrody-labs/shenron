@@ -37,7 +37,7 @@ interface Glue {
 }
 
 describe("module WASM de koharu-canvas (WebAssembly natif de Bun)", () => {
-  test("résout le chemin Turbopack avec le préfixe CDN des chunks Next", () => {
+  test("garde le WASM Turbopack sur l'origine du site malgré les chunks Next sur CDN", () => {
     const asset = new URL(
       "/_next/static/media/koharu_canvas_bg.abc123.wasm",
       "https://dragonballfr.com",
@@ -46,19 +46,20 @@ describe("module WASM de koharu-canvas (WebAssembly natif de Bun)", () => {
       "https://cdn.dragonballfr.com/_next/static/chunks/app.js",
     ]);
     expect(url.href).toBe(
-      "https://cdn.dragonballfr.com/_next/static/media/koharu_canvas_bg.abc123.wasm",
+      "https://dragonballfr.com/_next/static/media/koharu_canvas_bg.abc123.wasm",
     );
   });
 
-  test("préserve un préfixe de chemin CDN et reste sur l'origine sans chunk Next", () => {
+  test("préserve le chemin haché, la requête et l'ancre sans suivre un préfixe CDN", () => {
     const asset = new URL("/_next/static/media/canvas.wasm", "https://dragonballfr.com");
     expect(
       resolveCanvasWasmAssetUrl(asset, "https://dragonballfr.com", [
         "https://cdn.example.test/site/_next/static/chunks/app.js",
       ]).href,
-    ).toBe("https://cdn.example.test/site/_next/static/media/canvas.wasm");
-    expect(resolveCanvasWasmAssetUrl(asset, "https://dragonballfr.com", []).href).toBe(
-      "https://dragonballfr.com/_next/static/media/canvas.wasm",
+    ).toBe("https://dragonballfr.com/_next/static/media/canvas.wasm");
+    const versioned = new URL("/_next/static/media/canvas.abc123.wasm?v=4#module", asset);
+    expect(resolveCanvasWasmAssetUrl(versioned, "https://dragonballfr.com").href).toBe(
+      "https://dragonballfr.com/_next/static/media/canvas.abc123.wasm?v=4#module",
     );
   });
 
