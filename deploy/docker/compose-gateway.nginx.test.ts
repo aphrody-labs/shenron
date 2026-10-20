@@ -35,8 +35,13 @@ test("CDN quota failures use the private public-image origin without browser cre
 });
 
 test("missing CDN assets fall through to the Shenron VFS without exposing its database", () => {
-  const origin = config.match(/location @cdn_public_origin \{([^}]+)\}/)?.[1] ?? "";
+  const assetsRoute = config.match(/location \/assets\/ \{([^}]+)\}/)?.[1] ?? "";
+  const assetsWorker = config.match(/location @cdn_worker_assets \{([^}]+)\}/)?.[1] ?? "";
+  const origin = config.match(/location @cdn_public_origin_assets \{([^}]+)\}/)?.[1] ?? "";
   const vfs = config.match(/location @vfs_asset \{([^}]+)\}/)?.[1] ?? "";
+  const genericOrigin = config.match(/location @cdn_public_origin \{([^}]+)\}/)?.[1] ?? "";
+  expect(assetsRoute).toContain("try_files $uri @cdn_worker_assets;");
+  expect(assetsWorker).toContain("error_page 404 429 500 502 503 504 = @cdn_public_origin_assets;");
   expect(origin).toContain("proxy_intercept_errors on;");
   expect(origin).toContain("error_page 404 = @vfs_asset;");
   expect(vfs).toContain("proxy_pass http://upstream_site;");
@@ -44,6 +49,7 @@ test("missing CDN assets fall through to the Shenron VFS without exposing its da
   expect(vfs).not.toContain("shenron-vfs.sqlite");
   expect(vfs).not.toContain("$http_cookie");
   expect(vfs).not.toContain("$http_authorization");
+  expect(genericOrigin).not.toContain("@vfs_asset");
   expect(config).not.toContain("/var/lib/shenron/data");
 });
 
