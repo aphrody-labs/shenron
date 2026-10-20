@@ -1,42 +1,18 @@
 #!/usr/bin/env bun
 /**
- * extract-dbz-frames.ts — Extraction FRAME-PAR-FRAME d'un épisode DBZ depuis une
- * VIDÉO LOCALE via Bun Video / FilmCraft (cadence régulière), sortie webp.
+ * Extract periodic episode frames from an authorized local video through Bun Video / FilmCraft.
+ * Bun.Image encodes WebP assets; the dataset writer never replaces existing data with an empty set.
+ * Database ingestion is separate. No external media executable is launched.
  *
- * Réplique l'esprit du pipeline « frames d'anime » rpbey (cf.
- * apps/web/scripts/scrape-anime-frames.ts), mais adapté à la SOURCE shenron :
- * rpbey scrape des galeries de screencaps existantes ; côté DBZ, l'ayant droit dispose des MASTERS VIDÉO → on génère nos
- * propres captures HQ localement (pas de dépendance à un wiki tiers).
+ * bun apps/bot/scripts/extract-dbz-frames.ts --series DBS --ep 1
+ *   [--input <local video>] [--period 6] [--quality 82] [--max 600] [--dry-run]
  *
- *   Source d'entrée : un fichier vidéo d'épisode (mp4/mkv/...) ou un dossier.
- *   Méthode : échantillonnage périodique natif, borné avant décodage par --max.
- *     La détection des changements de plan n'est pas exposée par Bun.Video :
- *     --scene non nul échoue explicitement au lieu de changer de décodeur.
- *   Sortie : webp (qualité réglable) dans
- *     apps/bot/assets/ext/db_episodes_frames/<series>/ep<NNN>/frame-<NNNNN>.webp
- *     + dataset JSON apps/bot/data/dbz-frames/<series>-ep<NNN>.json (contrat
- *     frames-common.ts). AUCUNE écriture DB (ingestion séparée, gardée).
- *
- * Bun.Video décode ; Bun.Image encode les WebP. Aucun exécutable média externe.
- *
- * ── Où déposer les vidéos sources ────────────────────────────────────────────
- *   apps/bot/data/dbz-sources/<series>/<numberInSeries>.<ext>
- *   ex. apps/bot/data/dbz-sources/DBZ/1.mkv  (l'épisode 1 de DBZ)
- *   (ou passer --input <chemin> pour un fichier hors arborescence.)
- *
- * ── Usage ────────────────────────────────────────────────────────────────────
- *   bun apps/bot/scripts/extract-dbz-frames.ts --series DBZ --ep 1 \
- *       [--input <video>] [--scene 0] [--period 6] [--quality 82] \
- *       [--max 400] [--dry-run]
- *
- *   --series   série db_episodes (DB|DBZ|DBGT|DBS|DB_DAIMA|DBZ_KAI). défaut DBZ
- *   --ep       numberInSeries (obligatoire)
- *   --input    chemin vidéo explicite (sinon résolu dans dbz-sources/)
- *   --scene    0 uniquement ; la sélection par coupe reste indisponible
- *   --period   1 frame régulière toutes N secondes (défaut 6 ; strictement positif)
- *   --quality  qualité webp 0..100 (défaut 82)
- *   --max      cap de frames gardées après extraction (défaut 600)
- *   --dry-run  n'écrit ni webp ni dataset : compte seulement les frames candidates
+ * Sources default to apps/bot/data/dbz-sources/<series>/<episode>.<extension>.
+ * Outputs use assets/ext/db_episodes_frames/<series>/ep<NNN> and data/dbz-frames/.
+ * --max bounds work before decoding (1..600); --period must be positive.
+ * Native scene-cut selection is not exposed: --scene accepts only 0 and fails otherwise.
+ * A dry run extracts temporary PNGs but writes no persistent assets or dataset.
+ * Existing historical producer identities remain unchanged; new frames identify bun-video.
  */
 import { mkdir, readdir, stat, rm, mkdtemp } from "node:fs/promises";
 import { join, resolve, sep } from "node:path";
