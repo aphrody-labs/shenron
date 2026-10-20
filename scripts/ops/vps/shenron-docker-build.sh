@@ -9,7 +9,6 @@ APHRODY_SOURCE=${APHRODY_SOURCE_REPO:-$(dirname "$SOURCE")/aphrody}
 CARGO_SERIAL=${APHRODY_CARGO_SERIAL:-$APHRODY_SOURCE/scripts/build/rust/cargo-serial.sh}
 test -f "$CARGO_SERIAL" || { echo "Aphrody Cargo owner is unavailable" >&2; exit 1; }
 export APHRODY_BUILD_HOST=vps
-export APHRODY_FACTORY_RESOURCE="$W"
 export APHRODY_FACTORY_LOCK_PATH="$LOCK"
 # A compiled production binary must embed a self-contained release runtime.
 export SHENRON_COMPILE_BUN=${SHENRON_COMPILE_BUN:-$(command -v bun)}
@@ -18,6 +17,9 @@ case "$COMPILE_BUN_VERSION" in
   *debug*) echo "Refusing a debug runtime for production compilation" >&2; exit 1 ;;
 esac
 bun() { "$SHENRON_COMPILE_BUN" "$@"; }
+# The factory lease covers its declared transient root, not this build's child worktree.
+export APHRODY_FACTORY_RESOURCE
+APHRODY_FACTORY_RESOURCE=$(bun -e 'const config = await Bun.file(process.argv[1]).json(); if (!config.cleanup?.transientRoot) throw new Error("Factory transient resource is not configured"); console.log(config.cleanup.transientRoot);' "$APHRODY_SOURCE/tools/config/build-factory.json")
 mkdir -p "$(dirname "$W")" "$(dirname "$LOCK")"
 exec 9>"$LOCK"
 flock -n 9 || { echo "shenron build already running" >&2; exit 75; }
