@@ -186,9 +186,13 @@ installés dans `~/` proviennent de `scripts/ops/dbfr/` (`deploy-shenron-image.s
    ```
 
    `--build-only`, `--ship-only`, `--revision <sha>`, `SHENRON_SOURCE_REPO`,
-   `SHENRON_BUILD_REPO`, `SHENRON_BUILD_LOCK` et `APHRODY_CARGO_JOBS` permettent de
-   reprendre une phase, figer une révision ou isoler le worktree et le nombre de tâches Cargo.
-   La fabrique VPS reste l'hôte Linux qualifié; tout nouvel hôte doit être déclaré par Aphrody Infra.
+   `SHENRON_BUILD_REPO`, `SHENRON_BUILD_LOCK`, `SHENRON_DEPLOY_HOST`,
+   `APHRODY_BUILD_HOST` et `APHRODY_CARGO_JOBS` permettent de reprendre une phase,
+   choisir le checkout, l'hôte builder déclaré, la cible SSH et le nombre de tâches Cargo.
+   Le script peut tourner sur n'importe quel Linux qui possède le toolchain Bun/Rust/Docker,
+   les helpers Aphrody et le bail de fabrique de cet hôte. Le VPS reste le défaut historique ;
+   pour un autre builder, utiliser son identifiant de fabrique et son catalogue local au lieu
+   des valeurs par défaut. Aphrody Infra garde la déclaration des hôtes éligibles et des baux.
 2. Pour une reprise séparée, le build écrit `localhost/shenron:<sha>` dans le worktree
    indiqué par `SHENRON_BUILD_REPO`. `ship-shenron.sh` exécute `docker save | zstd`,
    `scp` vers dbfr, puis `~/deploy-shenron-image.sh <sha> <tar>` sur dbfr. Ce script charge l'image,

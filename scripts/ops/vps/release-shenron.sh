@@ -5,6 +5,7 @@ set -euo pipefail
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 SOURCE=${SHENRON_SOURCE_REPO:-$HOME/src/shenron}
 BUILD_REPO=${SHENRON_BUILD_REPO:-$HOME/build/transient/shenron-docker}
+DEPLOY_HOST=${SHENRON_DEPLOY_HOST:-dbfr}
 MODE=all
 REVISION=${SHENRON_BUILD_REVISION:-}
 
@@ -13,9 +14,11 @@ usage() {
 Usage: release-shenron.sh [--revision <git-revision>] [--build-only | --ship-only]
 
 Builds and verifies an immutable Shenron image, then ships that exact revision to DBFR.
-The default mode uses the canonical VPS factory lease and serialized Cargo wrapper.
-Set SHENRON_SOURCE_REPO, SHENRON_BUILD_REPO, SHENRON_BUILD_LOCK, and
-APHRODY_CARGO_JOBS to select the source, isolated worktree, lock, and bounded Cargo fan-out.
+Run this script on the Linux builder you choose. It defaults to the canonical VPS paths,
+but accepts another builder with the same Bun/Rust/Docker/Aphrody toolchain and valid factory
+lease. Set SHENRON_SOURCE_REPO, SHENRON_BUILD_REPO, SHENRON_BUILD_LOCK,
+SHENRON_DEPLOY_HOST, and APHRODY_CARGO_JOBS to select source, worktree, lock, target,
+and bounded Cargo fan-out.
 EOF
 }
 
@@ -77,4 +80,4 @@ echo "== qualified image $IMAGE ($IMAGE_ID)"
 if [[ "$MODE" == build ]]; then
   exit 0
 fi
-bash "$SCRIPT_DIR/ship-shenron.sh"
+SHENRON_DEPLOY_HOST="$DEPLOY_HOST" bash "$SCRIPT_DIR/ship-shenron.sh"
