@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { mkdir } from "node:fs/promises";
 import { Database } from "bun:sqlite";
 import { readerAssetUrl } from "../../apps/site/src/lib/reader-assets";
+import { openReaderAuditCheckpoint } from "./audit-readers-checkpoint";
 
 type Item = Record<string, unknown>;
 type Failure = { url: string; kind: string; status?: number; detail?: string };
@@ -19,6 +20,11 @@ export async function auditReaders() {
     throw new Error("--concurrency must be in 1..8");
   }
   await mkdir(output, { recursive: true });
+  using observations = openReaderAuditCheckpoint(
+    join(output, "audit.sqlite"),
+    origin,
+    Bun.argv.includes("--resume"),
+  );
   const pages = new Set<string>();
   const assets = new Set<string>();
   const embeds = new Set<string>();
@@ -34,10 +40,13 @@ export async function auditReaders() {
     checkedAssets: 0,
     checkedEmbeds: 0,
   };
-  const startedAt = new Date().toISOString();
+  const startedAt = observations.startedAt;
+  let resumedChecks = 0;
   const report = () => ({
     origin,
     startedAt,
+    runId: observations.runId,
+    resumedChecks,
     updatedAt: new Date().toISOString(),
     counts,
     discovered: { pages: pages.size, assets: assets.size, embeds: embeds.size },
@@ -175,21 +184,28 @@ export async function auditReaders() {
   console.log(JSON.stringify({ stage: "catalogues", ...report() }));
   await checkpoint();
   async function check(target: string, kind: "page" | "asset" | "embed") {
-    try {
-      const response = await request(target, kind === "asset" ? "HEAD" : "GET");
-      const type = response.headers.get("content-type") ?? "";
-      if (!response.ok || (kind === "asset" && !type.startsWith("image/")))
-        failures.push({ url: target, kind, status: response.status, detail: type });
-      if (kind === "page" && !type.includes("text/html"))
-        failures.push({
-          url: target,
-          kind: "page-content-type",
-          status: response.status,
-          detail: type,
-        });
-      await response.body?.cancel();
-    } catch (error) {
-      failures.push({ url: target, kind, detail: String(error) });
+    const checkFailures: Failure[] = [];
+    if (observations.has(kind, target)) resumedChecks++;
+    else
+      try {
+        const response = await request(target, kind === "asset" ? "HEAD" : "GET");
+        const type = response.headers.get("content-type") ?? "";
+        if (!response.ok || (kind === "asset" && !type.startsWith("image/")))
+          checkFailures.push({ url: target, kind, status: response.status, detail: type });
+        if (kind === "page" && !type.includes("text/html"))
+          checkFailures.push({
+            url: target,
+            kind: "page-content-type",
+            status: response.status,
+            detail: type,
+          });
+        await response.body?.cancel();
+      } catch (error) {
+        checkFailures.push({ url: target, kind, detail: String(error) });
+      }
+    if (!observations.has(kind, target)) {
+      observations.record(kind, target, checkFailures.length === 0);
+      failures.push(...checkFailures);
     }
     if (kind === "page") counts.checkedPages++;
     else if (kind === "asset") counts.checkedAssets++;
@@ -214,7 +230,7 @@ export async function auditReaders() {
 if (import.meta.main) {
   if (Bun.argv.includes("--help"))
     console.log(
-      "bun scripts/ops/audit-readers.ts [--origin URL] [--out DIR] [--frontier SQLITE] [--concurrency 1..8] [--embeds]",
+      "bun scripts/ops/audit-readers.ts [--origin URL] [--out DIR] [--frontier SQLITE] [--concurrency 1..8] [--embeds] [--resume]",
     );
   else await auditReaders();
 }
