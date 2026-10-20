@@ -3,20 +3,26 @@
 /**
  * Real-browser proof (Google Chrome through Bun.WebView) of the three WASM/video surfaces:
  *
- *   bun scripts/ops/prove-browser.ts [koharu|dbxv2|player]...   (default: all)
+ *   bun scripts/ops/prove-browser.ts [koharu|dbxv2|player]... --media <authorized-real-video.mp4>
  *
  *   dbxv2   production https://dragonballfr.com/games/xenoverse-2: a synthetic #CUS file is handed to the page's
  *           file input; the page must load shenron_re from the CDN, parse 708 records and show them.
  *   koharu  the repository's koharu-canvas module served locally: init, WebGPU adapter, createCanvas, resize, clear.
  *   player  the Shenron player stack (@aphrody/bun-video/playback, as used by VideoPlayer) bundled and run in a
- *           <video> against a local MP4: it must reach HAVE_ENOUGH_DATA, report the size and advance currentTime.
+ *           <video> against an explicitly supplied real local MP4: native FilmCraft metadata must match
+ *           the browser dimensions, and currentTime must advance. No synthetic clip is generated.
  *
  * Prints one JSON object per proof and exits 1 if any fails. Nothing is written to the site.
  */
 import { join } from "node:path";
 
 const root = join(import.meta.dir, "..", "..");
-const want = new Set(process.argv.slice(2).filter((a) => !a.startsWith("-")));
+const argv = process.argv.slice(2);
+const mediaIndex = argv.indexOf("--media");
+const mediaPath = mediaIndex >= 0 ? argv[mediaIndex + 1] : process.env.SHENRON_VIDEO_PROOF_MEDIA;
+const want = new Set(
+  argv.filter((a, i) => !a.startsWith("-") && (mediaIndex < 0 || i !== mediaIndex + 1)),
+);
 const run = (name: string) => want.size === 0 || want.has(name);
 const GPU_ARGS = [
   "--no-sandbox",
@@ -26,7 +32,7 @@ const GPU_ARGS = [
   "--use-webgpu-adapter=swiftshader",
   "--ignore-gpu-blocklist",
 ];
-const chrome = (argv = GPU_ARGS) => ({ type: "chrome", url: false, argv });
+const chrome = (browserArgs = GPU_ARGS) => ({ type: "chrome", url: false, argv: browserArgs });
 const results: { proof: string; ok: boolean; detail: unknown }[] = [];
 const record = (proof: string, ok: boolean, detail: unknown) => {
   results.push({ proof, ok, detail });
@@ -133,34 +139,14 @@ if (run("koharu")) {
 }
 
 if (run("player")) {
-  const clip = "/tmp/shenron-proof-clip.mp4";
-  if (!(await Bun.file(clip).exists())) {
-    const p = Bun.spawn([
-      "ffmpeg",
-      "-v",
-      "error",
-      "-y",
-      "-f",
-      "lavfi",
-      "-i",
-      "testsrc=size=320x180:rate=24:duration=3",
-      "-f",
-      "lavfi",
-      "-i",
-      "sine=frequency=440:duration=3",
-      "-c:v",
-      "libx264",
-      "-pix_fmt",
-      "yuv420p",
-      "-c:a",
-      "aac",
-      "-shortest",
-      "-movflags",
-      "+faststart",
-      clip,
-    ]);
-    if (await p.exited) throw new Error("ffmpeg could not build the proof clip");
-  }
+  if (!mediaPath || !(await Bun.file(mediaPath).exists()))
+    throw new Error("Player proof requires --media <authorized real local MP4>");
+  if (!(Bun as any).Video?.available)
+    throw new Error("Player proof requires the native Bun Video / FilmCraft provider");
+  const clip = mediaPath;
+  const metadata = await new (Bun as any).Video(clip).metadata();
+  if (!(metadata.width > 0 && metadata.height > 0 && metadata.duration > 2))
+    throw new Error("Real video metadata must establish dimensions and at least two seconds");
   const bundle = await Bun.build({
     entrypoints: [join(import.meta.dir, "prove-browser-player.ts")],
     root,
@@ -196,8 +182,20 @@ if (run("player")) {
   }
   record(
     "player-video",
-    !!detail?.done && detail.ready >= 3 && detail.width === 320 && detail.advanced && !detail.error,
-    detail,
+    !!detail?.done &&
+      detail.ready >= 3 &&
+      detail.width === metadata.width &&
+      detail.height === metadata.height &&
+      detail.advanced &&
+      !detail.error,
+    {
+      ...detail,
+      native: {
+        decoder: (Bun as any).Video.decoder,
+        width: metadata.width,
+        height: metadata.height,
+      },
+    },
   );
 }
 

@@ -4,10 +4,12 @@
  * complete-episode: fills a wiki episode with everything that can be established about it.
  *
  *   bun scripts/ops/complete-episode.ts --id 875 [--dir /tmp/ep875] [--frames 36] [--apply]
+ *     [--subtitle-vtt <reviewed.vtt> --subtitle-language <en|fr|ja> --subtitle-label <label>]
  *
  * Sources combined:
  *   - Shenron: the live row (bot API), its first-party MP4 (/api/episodes/<id>/video) and existing frames;
- *   - Bun Video: metadata, original-resolution PNG frames (Bun.Video), the embedded subtitle track;
+ *   - Bun Video / FilmCraft: metadata and original-resolution PNG frames;
+ *   - explicit reviewed WebVTT: optional subtitle input; existing subtitles are otherwise preserved;
  *   - web crawl: the official site (dragonball-super.com, Japanese story, cast and stills) and the English
  *     Wikipedia episode table (native, romanized and English titles, staff, summary).
  * Without --apply it stops after staging everything under --dir and writes plan.json. With --apply it publishes the
@@ -57,6 +59,7 @@ const sourceBytesHasher = new Bun.CryptoHasher("sha256");
 for await (const chunk of Bun.file(sourcePath).stream()) sourceBytesHasher.update(chunk);
 const sourceSha = sourceBytesHasher.digest("hex");
 const sourceSize = Bun.file(sourcePath).size;
+if (!(Bun as any).Video?.available) throw new Error("Bun Video / FilmCraft provider unavailable");
 const video = new (Bun as any).Video(sourcePath);
 const meta = await video.metadata();
 const duration: number = meta.duration ?? meta.durationSeconds;
@@ -73,7 +76,7 @@ for (let i = 0; i < frameTarget; i++) {
   const t = Math.round((30 + step * (i + 0.5)) * 1000) / 1000;
   if (!have.some((h) => Math.abs(h - t) < 8)) times.push(t);
 }
-const decoder = { bunVideo: 0, ffmpeg: 0, cached: 0 };
+const decoder = { bunVideo: 0, cached: 0 };
 const cachePath = join(dir, "frames", "index.json");
 const cache: Record<string, string> = (await Bun.file(cachePath).exists())
   ? await Bun.file(cachePath).json()
@@ -96,35 +99,13 @@ await Promise.all(
         decoder.cached++;
         continue;
       }
-      // Bun Video first; its bounded seek can refuse a far target, then ffmpeg extracts that one frame.
+      // An unsupported codec or seek is a failed native extraction, never a substituted decoder.
       let bytes: Uint8Array;
       try {
         bytes = new Uint8Array(await new (Bun as any).Video(sourcePath).frame(t).png().bytes());
         decoder.bunVideo++;
-      } catch {
-        const p = Bun.spawn(
-          [
-            "ffmpeg",
-            "-v",
-            "error",
-            "-ss",
-            String(t),
-            "-i",
-            sourcePath,
-            "-frames:v",
-            "1",
-            "-f",
-            "image2pipe",
-            "-vcodec",
-            "png",
-            "-",
-          ],
-          { stdout: "pipe", stderr: "ignore" },
-        );
-        bytes = new Uint8Array(await new Response(p.stdout).arrayBuffer());
-        if ((await p.exited) || bytes.length < 1000)
-          throw new Error(`frame ${t} could not be extracted`);
-        decoder.ffmpeg++;
+      } catch (cause) {
+        throw new Error(`Bun Video / FilmCraft could not extract frame at ${t}s`, { cause });
       }
       newFrames.push({ t, sha: sha256(bytes), bytes });
       await Bun.write(join(dir, "frames", `${sha256(bytes)}.png`), bytes);
@@ -138,32 +119,28 @@ console.log(
   `frames: ${existing.length} existing + ${newFrames.length} new (${JSON.stringify(decoder)})`,
 );
 
-// 4. Embedded subtitle track (text only), as WebVTT.
+// 4. Reviewed WebVTT input. Native embedded-subtitle extraction is not exposed by this provider.
 const subtitleTracks: { language: string; label: string; vtt: string }[] = [];
-{
-  const srt = join(dir, "embedded.srt");
-  const p = Bun.spawn(
-    ["ffmpeg", "-v", "error", "-y", "-i", sourcePath, "-map", "0:s:0?", "-c:s", "srt", srt],
-    {
-      stderr: "ignore",
-    },
-  );
-  await p.exited;
-  const text = (await Bun.file(srt).exists()) ? await Bun.file(srt).text() : "";
-  const cues = [
-    ...text.matchAll(
-      /(\d\d:\d\d:\d\d),(\d{3}) --> (\d\d:\d\d:\d\d),(\d{3})\n([\s\S]*?)(?:\n\n|$)/g,
-    ),
-  ];
-  if (cues.length) {
-    const vtt =
-      "WEBVTT\n\n" +
-      cues.map((m) => `${m[1]}.${m[2]} --> ${m[3]}.${m[4]}\n${m[5]!.trim()}`).join("\n\n") +
-      "\n";
-    subtitleTracks.push({ language: "en", label: "Anglais (piste intégrée)", vtt });
-  }
-  console.log(`subtitles: ${cues.length} cues in the embedded track`);
+const subtitlePath = arg("subtitle-vtt");
+if (subtitlePath) {
+  const language = arg("subtitle-language");
+  const label = arg("subtitle-label");
+  if (!language || !/^[a-z]{2,3}(?:-[A-Za-z0-9]+)*$/.test(language) || !label?.trim())
+    throw new Error("Reviewed subtitles require --subtitle-language and --subtitle-label");
+  const file = Bun.file(subtitlePath);
+  if (file.size > 8 * 1024 * 1024) throw new Error("Reviewed WebVTT exceeds 8 MiB");
+  const vtt = (await file.text()).replace(/^\uFEFF/, "").replaceAll("\r\n", "\n");
+  if (!/^WEBVTT(?:[ \t].*)?\n/.test(vtt) || !vtt.includes(" --> ") || vtt.includes("\0"))
+    throw new Error("Reviewed subtitle input must contain actual WebVTT cues");
+  subtitleTracks.push({ language, label: label.trim(), vtt });
 }
+const subtitleExtraction = {
+  embedded: "unavailable",
+  reason: "Bun Video / FilmCraft exposes no embedded subtitle extraction API",
+  input: subtitlePath ? "reviewed-webvtt" : "none",
+  preserveExisting: true,
+};
+console.log(`subtitles: ${JSON.stringify(subtitleExtraction)}`);
 
 // 5. Crawl: official site (JA) and Wikipedia (EN).
 const ua = {
@@ -268,11 +245,16 @@ const frameObjects = [
   .toSorted((a, b) => a.timecodeSec - b.timecodeSec)
   .map((f, i) => Object.assign({}, f, { sortOrder: i }));
 
-const subtitleObjects = subtitleTracks.map((t) => ({
-  lang: t.language,
-  label: t.label,
-  src: `${CDN}/media/episodes/${id}/${sourceSha}/${sha256(t.vtt)}.vtt`,
-}));
+const subtitleObjects = [
+  ...(Array.isArray(row.subtitles) ? row.subtitles : []).filter(
+    (track: { lang?: string }) => !subtitleTracks.some((input) => input.language === track.lang),
+  ),
+  ...subtitleTracks.map((t) => ({
+    lang: t.language,
+    label: t.label,
+    src: `${CDN}/media/episodes/${id}/${sourceSha}/${sha256(t.vtt)}.vtt`,
+  })),
+];
 const synopsisFr: string | null = arg("synopsis-fr") ?? null;
 const officialMetadata = {
   schema: "shenron-episode-official/v1",
@@ -316,7 +298,14 @@ const officialMetadata = {
 await Bun.write(
   join(dir, "plan.json"),
   JSON.stringify(
-    { id, frames: frameObjects.length, subtitles: subtitleObjects, officialMetadata, wikiEpisode },
+    {
+      id,
+      frames: frameObjects.length,
+      subtitles: subtitleObjects,
+      subtitleExtraction,
+      officialMetadata,
+      wikiEpisode,
+    },
     null,
     1,
   ),
