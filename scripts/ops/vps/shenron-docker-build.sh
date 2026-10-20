@@ -21,8 +21,10 @@ bun() { "$SHENRON_COMPILE_BUN" "$@"; }
 export APHRODY_FACTORY_RESOURCE
 APHRODY_FACTORY_RESOURCE=$(bun -e 'const config = await Bun.file(process.argv[1]).json(); if (!config.cleanup?.transientRoot) throw new Error("Factory transient resource is not configured"); console.log(config.cleanup.transientRoot);' "$APHRODY_SOURCE/tools/config/build-factory.json")
 mkdir -p "$(dirname "$W")" "$(dirname "$LOCK")"
-exec 9>"$LOCK"
-flock -n 9 || { echo "shenron build already running" >&2; exit 75; }
+# Keep the flock owner alive in the process ancestry so Infra can verify the lease.
+if ! bun "$APHRODY_SOURCE/packages/infra/workspace/src/build-factory-cleanup.ts" --held "$APHRODY_SOURCE/tools/config/build-factory.json"; then
+  exec flock --exclusive --timeout "${SHENRON_BUILD_LOCK_TIMEOUT_SECS:-3600}" "$LOCK" bash "$0" "$@"
+fi
 cleanup() {
   git -C "$SOURCE" worktree prune >/dev/null 2>&1 || true
 }
