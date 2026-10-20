@@ -1,5 +1,28 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## 2026-10-20 — VFS derrière NGINX et état persistant Steam
+
+- L’API publique de production répond 200 sur `/api/v1/vfs` et `/api/v1/vfs/list?path=/` ; le
+  snapshot est monté (cinq racines publiques) et les routes de lecture appliquent le filtre
+  public. `/assets` existe mais est actuellement vide dans ce snapshot. Le fichier SQLite reste
+  dans le volume serveur, sans route de fichier brut.
+- La passerelle Compose a un repli CDN → origine → serveur Shenron pour `/assets/*` uniquement.
+  Les pages, médias wiki et chunks restent sur leur chaîne CDN ; NGINX ne transmet pas cookies,
+  autorisation ni chemin du SQLite à ce fallback. Commit `4e0e61a0`, resserré par `a366f845`.
+  Cinq tests NGINX passent, `nginx -t` passe, front serveur 14 pass/4 skip et API VFS 13 pass.
+  Le template est poussé sur `main` ; NGINX live reste détenu par Aphrody Infra et n’est pas
+  déclaré modifié par ce lot.
+- VPS : `bun-os-lancache.service` et `dbxv2-serve.service` sont actifs, enabled et redémarrables
+  (respectivement `on-failure` et `always`), avec linger utilisateur actif. Le redirect
+  `bun-os-lancache-nft.service` a été démarré via Aphrody Infra et est actif/exited + enabled.
+  La session 454650 reste une unité transitoire `oneshot`; `launch run` ne fait qu’envoyer une
+  URI Steam puis termine. Aucun processus de jeu/Proton/Wine/Gamescope n’existe; le sender 8797
+  reste privé, `viewer=false`, et l’URL Play demande une session. Les binaires du jeu sont
+  installés (~39,5 Go), mais Steam Linux Runtime 4.0 n’est pas installé. `bun-steam proton
+  valve 4183110` a échoué sans session SteamCMD en cache. La session propriétaire doit être
+  authentifiée interactivement avant de poursuivre l’installation; aucun identifiant n’a été
+  demandé ni saisi. Pas de service de stream persistant/public qualifié.
+
 ## 2026-10-20 — DBXV2 public, coordination and production gates still open
 
 - `@aphrody/shenron-dbxv2@1.4.7` is public on npm. The exact archive SHA-256
