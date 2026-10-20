@@ -997,3 +997,52 @@ Suite workspace encore en cours ; lint global sans erreur mais 19 warnings en co
 de correction coordonnée. Prochaine étape : smoke natif, gates finaux, push normal,
 image scellée et contrôles Chrome authentifiés. Compiler release qualifié fabrique :
 ~/build/out/bun/release-1.4.6/bun, révision fd9d7a224b83d1763721e409ca98e06a16df1f43.
+
+## 2026-10-20 — Reprise des lots ouverts et vidéo native
+
+Demande courante : terminer les lots encore ouverts par sous-agents, capacités
+installées et livraison Infra. La consigne vidéo privilégie Bun Video, FilmCraft
+et Shenron Video. L'objectif reste actif ; les limites ci-dessous ne sont pas
+des tâches déclarées terminées.
+
+- Portes JS : types, lint, format, OpenAPI, tokens, contrats pipeline et graphe
+  strict des paquets verts. Suite workspace : 4 547 réussites, 199 ignorés,
+  zéro échec, code 0. Après migration CDN native, scripts : 467 réussites,
+  33 ignorés, zéro échec. Les journaux privés sont sous
+  `var/reports/goal-20261020/`.
+- Défauts corrigés et poussés : garde de gel en production quand son fichier
+  manque (`557dc96b`), clavier des onglets de transcription, classes de runtime
+  et confidentialité du CLI interne (`361d91a0`), vérification du bail de fabrique
+  et SHA de build épinglé (`4c2ef961`). Les fixtures de gel et la déclaration
+  conditionnelle du test live DBXV2 ont été corrigées séparément.
+- Vidéo : extraction de frames et preuve navigateur migrées sans FFmpeg direct
+  (`1d299515`, `9722d1ea`), optimiseur CDN natif (`2e86783c`). Le vrai master
+  Beerus est décodable par FilmCraft ; son remux refuse une configuration de
+  piste, donc l'optimiseur conserve la source exacte. Le wrapper d'encodage
+  Shenron Video et le rendu avec archive PNG restent en qualification native.
+- Production observée au début du contrôle : `docker-da63ff2818f5a3afb79fc807516c40599a1c484f`,
+  cinq conteneurs sains. Chrome authentifié : lecteur 876 réellement en lecture
+  1920 × 1080, GIF généré 320 × 180 ; manga 82 en pagination et vertical ;
+  databook 23 dans les deux modes à 390 px, sans débordement. Studio sert encore
+  sa vitrine. Le plein écran n'a pas été qualifié.
+- La tentative d'image a révélé `libfontconfig.so.1` manquante, corrigée dans
+  Docker (`c23921c7`), puis un refus Keyutils dans le SDK. Le stockage hébergé
+  privé par compte est en qualification ; aucune activation de cette tentative
+  ni porte Rust complète n'est revendiquée ici.
+- Compute/E5 restaurés via Infra : 257 386 chunks et vecteurs. Mesure retrieval
+  de 172 cas : Recall@5 77,91 %, dont une réponse 503 ; seuil de 80 % non atteint.
+  Base Qwen officielle réinstallée, adaptateur Shenron exact non retrouvé à ce
+  contrôle : chat et installeur complet restent non qualifiés. NSIS est installé,
+  mais la clé privée de signature n'est pas retrouvée dans les stores inspectés.
+- Catalogue : 110 volumes manquants ou partiels, SOSH 2–18 sans chapitre réel.
+  Workers actifs, file de publication vide. Les vieux snapshots wiki divergents
+  n'ont pas été réappliqués. Les notices ne sont pas des volumes livrés.
+- CI : runner réinstallé et enregistré, arrêté pendant les builds. Correctif
+  porté chez le propriétaire actuel `bun-distribution/os` (`7d89b79e22`) ;
+  ancienne PR Aphrody 18 remplacée puis fermée. CodeQL reste bloqué au compte
+  GitHub par les paiements ou la limite de dépenses, avant exécution du job.
+
+Suite : terminer les portes natives et l'image scellée, activer par Infra puis
+recontrôler Studio/admin et les lecteurs authentifiés sur le SHA réellement servi.
+Conserver les tâches de données, de modèle, de signature et de rendu encore
+ouvertes jusqu'à leurs propres preuves.
