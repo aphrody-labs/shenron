@@ -16,6 +16,8 @@ import {
   STORY_CHAPTERS,
 } from "./engine";
 import { KiExplosionEffect, type KiColorStyle } from "@aphrody/shenron-ui/cinematic";
+import { loadSpriteAtlas } from "@aphrody/shenron-engine/sprite-atlas";
+import { CombatAtlasEffect } from "@aphrody/shenron-engine/combat-atlas";
 
 /**
  * Authentic Full-Body High-Definition Akira Toriyama Character Artwork.
@@ -199,6 +201,40 @@ export default function DragonPixelGame() {
   const chargeSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const chargeGainRef = useRef<GainNode | null>(null);
   const imagesRef = useRef<Map<string, HTMLImageElement>>(new Map());
+  const combatAtlasRef = useRef<CombatAtlasEffect | null>(null);
+  const reducedMotionRef = useRef(false);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updateMotion = () => {
+      reducedMotionRef.current = preference.matches;
+      if (preference.matches) combatAtlasRef.current?.stop();
+    };
+    updateMotion();
+    preference.addEventListener("change", updateMotion);
+    void loadSpriteAtlas(
+      new URL("/assets/manga/dragon-pixel/chapter-516/sheet.layout.json", location.href),
+      controller.signal,
+    )
+      .then((clip) => {
+        if (controller.signal.aborted) {
+          clip.close();
+          return undefined;
+        }
+        combatAtlasRef.current = new CombatAtlasEffect(clip);
+        return undefined;
+      })
+      .catch(() => {
+        /* The optional cut-in must not block the combat simulation. */
+      });
+    return () => {
+      controller.abort();
+      preference.removeEventListener("change", updateMotion);
+      combatAtlasRef.current?.dispose();
+      combatAtlasRef.current = null;
+    };
+  }, []);
 
   // Visual enhancement state
   const onomatopoeiaRef = useRef<MangaSfxParticle[]>([]);
@@ -899,6 +935,7 @@ export default function DragonPixelGame() {
 
     // 8. Manga Koma Cut-in en surimpression
     drawMangaCutIn(ctx);
+    combatAtlasRef.current?.draw(ctx, { x: 1008, y: 128 });
 
     // 9. Écran de flash lumineux
     if (screenFlashRef.current > 0.05) {
@@ -1182,6 +1219,11 @@ export default function DragonPixelGame() {
       if (!lastTimeRef.current) lastTimeRef.current = timestamp;
       const dt = Math.min(0.033, (timestamp - lastTimeRef.current) / 1000);
       lastTimeRef.current = timestamp;
+      if (inDialogue || gameStatus !== "playing") combatAtlasRef.current?.stop();
+      combatAtlasRef.current?.advance(dt * 1000, {
+        paused: isPaused || document.hidden,
+        reducedMotion: reducedMotionRef.current,
+      });
 
       // Mise à jour des particules d'onomatopées
       for (const p of onomatopoeiaRef.current) {
@@ -1233,23 +1275,22 @@ export default function DragonPixelGame() {
         const prevPlayerHp = gameStateRef.current.player.hp;
         const prevEnemiesHp = gameStateRef.current.enemies.map((e) => e.hp);
 
-        // Déclenchement de Super Attaque
-        if (input.special && gameStateRef.current.player.energy >= 40 && !cutInRef.current.active) {
-          triggerMangaCutIn(
-            selectedFighter,
-            selectedFighter === "vegeta" ? "ファイナルフラッシュ!!" : "かめはめ波───ッ!!",
-            selectedFighter === "vegeta" ? "FINAL FLASH" : "KAMEHAMEHA",
-            selectedFighter === "vegeta" ? "#f59e0b" : "#00b4d8",
-          );
-        }
-
         // Déclenchement Sparking Blast (FighterZ)
         if (input.sparking && !gameStateRef.current.multiverse.sparkingActive) {
           playSound("power_up");
           spawnOnomatopoeia("スパーク!!", gameStateRef.current.player.x * 1.33, 500, "#f59e0b");
         }
 
-        step(gameStateRef.current, input, dt);
+        step(gameStateRef.current, input, dt, (event) => {
+          if (event.type !== "special") return;
+          combatAtlasRef.current?.trigger(reducedMotionRef.current);
+          triggerMangaCutIn(
+            event.fighterId,
+            event.fighterId === "vegeta" ? "ファイナルフラッシュ!!" : "かめはめ波───ッ!!",
+            event.fighterId === "vegeta" ? "FINAL FLASH" : "KAMEHAMEHA",
+            event.fighterId === "vegeta" ? "#f59e0b" : "#00b4d8",
+          );
+        });
 
         // Réception de dégâts joueur
         if (gameStateRef.current.player.hp < prevPlayerHp) {
@@ -1314,12 +1355,12 @@ export default function DragonPixelGame() {
     spawnOnomatopoeia,
     triggerMangaCutIn,
     renderCanvas,
-    selectedFighter,
   ]);
 
   const handleStartChapter = useCallback(
     (chapterId: number) => {
       setSelectedChapter(chapterId);
+      combatAtlasRef.current?.stop();
       gameStateRef.current = createGame(selectedFighter, "story", chapterId);
       setGameStatus("playing");
       setInDialogue(true);
@@ -1329,6 +1370,7 @@ export default function DragonPixelGame() {
   );
 
   const handleRestart = useCallback(() => {
+    combatAtlasRef.current?.stop();
     gameStateRef.current = createGame(selectedFighter, mode, selectedChapter);
     setGameStatus("playing");
     setInDialogue(true);

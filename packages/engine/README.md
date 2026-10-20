@@ -50,3 +50,27 @@ cases en parallaxe et les modèles 3D reconstruits sont des capacités distincte
 Le lot natif `shenron-panels` passe 25 tests et Clippy avec avertissements refusés ;
 un test de scan est ignoré par défaut, l'exemple réel ci-dessus étant exécuté séparément.
 Les captures, scans et exports de preuve restent privés dans `var/reports/engine-assets/`.
+
+## Séquence de combat Canvas — 20 octobre 2026
+
+`CombatAtlasEffect`, exporté par `./combat-atlas`, relie le lecteur existant à une
+séquence finie sans créer de timer. Dragon Pixel le déclenche sur le callback
+`special` émis par sa simulation après acceptation du coup, et non sur une simple
+touche pressée. Les cinq tuiles à 2 images/seconde jouent une fois en 2,5 secondes.
+La pause et la page masquée figent son horloge ; un dialogue, la fin du combat
+et un nouveau chapitre l'arrêtent. Les mouvements réduits refusent et arrêtent cette animation facultative.
+La bitmap est réutilisée entre les attaques, puis fermée exactement une fois au
+démontage ; le chargement est annulé si la page disparaît avant sa fin.
+
+Le dérivé réel du chapitre 516 et son manifeste avec empreinte PNG sont désormais
+dans `packages/ui/assets/assets/manga/dragon-pixel/chapter-516/`. La copie canonique
+des assets produit `/assets/manga/dragon-pixel/chapter-516/sheet.layout.json` pour le
+prochain build du site. Seuls l'atlas, son manifeste et une provenance publique
+minimale sont publiés ; les captures de qualification et le scan source restent privés.
+Il s'agit du titre et de quatre cases narratives, sans nouvelle pose ni reconstruction.
+
+Chrome a qualifié le vrai composant React sur un hôte source isolé : attaque au
+clavier, indices 0 à 4, durée, pause, préférence de mouvement et fermeture unique
+de la bitmap. L'empreinte reçue correspond au PNG publié. La route Next locale
+complète reste bloquée par la résolution Turbopack de dépendances isolées sous
+Windows ; cette preuve ne prétend pas qualifier la prochaine image publique.
