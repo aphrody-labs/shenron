@@ -12,16 +12,19 @@
   Cinq tests NGINX passent, `nginx -t` passe, front serveur 14 pass/4 skip et API VFS 13 pass.
   Le template est poussé sur `main` ; NGINX live reste détenu par Aphrody Infra et n’est pas
   déclaré modifié par ce lot.
-- VPS : `bun-os-lancache.service` et `dbxv2-serve.service` sont actifs, enabled et redémarrables
-  (respectivement `on-failure` et `always`), avec linger utilisateur actif. Le redirect
-  `bun-os-lancache-nft.service` a été démarré via Aphrody Infra et est actif/exited + enabled.
-  La session 454650 reste une unité transitoire `oneshot`; `launch run` ne fait qu’envoyer une
-  URI Steam puis termine. Aucun processus de jeu/Proton/Wine/Gamescope n’existe; le sender 8797
-  reste privé, `viewer=false`, et l’URL Play demande une session. Les binaires du jeu sont
-  installés (~39,5 Go), mais Steam Linux Runtime 4.0 n’est pas installé. `bun-steam proton
-  valve 4183110` a échoué sans session SteamCMD en cache. La session propriétaire doit être
-  authentifiée interactivement avant de poursuivre l’installation; aucun identifiant n’a été
-  demandé ni saisi. Pas de service de stream persistant/public qualifié.
+- VPS, vérification du 2026-10-20 à 19:10 UTC : Steam est déjà authentifié et son client tourne
+  (PID 746858). Steam Linux Runtime 4.0 (4183110, build 25607596) et DBXV2 (454650,
+  build 24379893) sont installés (`StateFlags=4`). La chaîne de lancement Steam → SLR4 → Proton
+  Experimental démarre `START.exe` (encore actif à 19:10 UTC), mais aucun `DBXV2.exe` n’apparaît.
+  Le dernier journal EAC
+  (18:42:05 UTC) montre `linux64` refusé en HTTP 403, puis le code 204 « No anti-cheat module
+  has been found for this game and platform » : l’authentification et le runtime ne sont plus
+  les blocages; seul l’éditeur peut publier/activer le module Linux compatible. Ne pas contourner
+  EAC.
+- `dbxv2-serve.service` est actif, enabled et redémarrable (`Restart=always`); sa santé répond
+  200 sur `10.200.77.1:8788/health`. Le sender H.264 répond 200 sur `10.200.77.1:8797/healthz`,
+  mais `viewer=false`; il n’existe pas d’unité `dbxv2-stream.service` et aucun processus
+  `DBXV2.exe` n’est démarré. Le flux reste privé et aucun streaming public persistant n’est qualifié.
 
 ## 2026-10-20 — DBXV2 public, coordination and production gates still open
 
