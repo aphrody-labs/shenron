@@ -256,7 +256,7 @@
     },
     "packages/dbxv2": {
       "name": "@aphrody/shenron-dbxv2",
-      "version": "1.4.6",
+      "version": "1.4.7",
       "dependencies": {
         "@aphrody/shenron-db": "workspace:*",
         "zod": "catalog:",
