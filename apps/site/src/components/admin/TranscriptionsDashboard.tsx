@@ -156,6 +156,7 @@ export function TranscriptionsDashboard({
         <div
           role="tablist"
           onKeyDown={onTablistKeyDown}
+          tabIndex={-1}
           aria-label="Sections du suivi des transcriptions"
           className="flex flex-wrap items-center gap-2"
         >
