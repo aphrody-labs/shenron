@@ -49,7 +49,10 @@ interactif ; automatiser le remplissage du wiki par sessions Codex `gpt-5.6-luna
 avec preuves primaires et relecture indépendante ; installer le plugin Aphrody
 et son MCP dans Codex. La demande explicite de synchronisation Git, merge, déploiement complet et
 mise à jour des paquets autorise la livraison site/bot via Infra et la publication
-des douze bibliothèques publiques auditées en version 1.4.6 ; les applications restent privées.
+des bibliothèques publiques auditées. Le propriétaire a ensuite explicitement autorisé
+DBXV2 public en production ; `@aphrody/shenron-dbxv2@1.4.7` est publié et vérifié.
+Les secrets, bases privées et sessions Steam restent hors paquet ; la version publiée
+n'est pas la preuve d'un jeu WASM ou d'un streaming qualifié.
 Demandes ajoutées ensuite : trier `/catalog/archive_movies` et `/catalog/archive_images`
 avec une sélection Dragon Ball réellement qualifiée et des filtres cohérents, puis
 corriger les GitHub Actions et workflows depuis leurs échecs réels.
