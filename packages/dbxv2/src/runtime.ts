@@ -41,7 +41,14 @@ export function getDbxv2Runtime(env: Dbxv2EnvInput = currentEnv()): Dbxv2Runtime
   const client = new Dbxv2Client(status.config);
   const runtime: Dbxv2Runtime = {
     client,
-    proxy: () => (proxy ??= createDbxv2Proxy({ upstream: status.config, env })),
+    proxy: () => {
+      if (!status.config.token)
+        throw new Dbxv2DisabledError("Public clients do not create private signing proxies");
+      return (proxy ??= createDbxv2Proxy({
+        upstream: { baseUrl: status.config.baseUrl, token: status.config.token },
+        env,
+      }));
+    },
     stop: () => {
       proxy?.stop();
       proxy = null;

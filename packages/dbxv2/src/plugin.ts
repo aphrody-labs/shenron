@@ -118,6 +118,10 @@ export function generateModuleSource(parsed: ParsedSpecifier): string {
 export interface Dbxv2PluginOptions {
   /** Environment (default `process.env`). */
   readonly env?: Dbxv2EnvInput;
+  /** Explicit publication manifest: immutable approved derivatives only, never private runtime imports. */
+  readonly publicAssets?: Readonly<
+    Record<string, { readonly url: string; readonly sha256: string; readonly provenance: string }>
+  >;
 }
 
 /**
@@ -131,7 +135,7 @@ export function dbxv2Plugin(options: Dbxv2PluginOptions = {}): Bun.BunPlugin {
     setup(build) {
       const env = options.env ?? (process.env as Dbxv2EnvInput);
       const config = (build as { config?: BuildConfigLike }).config;
-      if (config) assertDbxv2BuildAllowed(config, env);
+      if (config && !options.publicAssets) assertDbxv2BuildAllowed(config, env);
       build.onResolve({ filter: /^dbxv2:/ }, (args) => ({
         path: args.path,
         namespace: DBXV2_NAMESPACE,
@@ -141,11 +145,42 @@ export function dbxv2Plugin(options: Dbxv2PluginOptions = {}): Bun.BunPlugin {
         const parsed = parseSpecifier(
           args.path.startsWith("dbxv2:") ? args.path : `dbxv2:${args.path}`,
         );
+        if (options.publicAssets) {
+          const key = args.path.startsWith("dbxv2:") ? args.path : `dbxv2:${args.path}`;
+          const asset = options.publicAssets[key];
+          const url = asset ? URL.parse(asset.url) : null;
+          if (
+            !asset ||
+            !url ||
+            url.protocol !== "https:" ||
+            url.username ||
+            url.password ||
+            url.search ||
+            url.hash ||
+            !/^[a-f0-9]{64}$/.test(asset.sha256) ||
+            !url.pathname.includes(asset.sha256) ||
+            !asset.provenance.trim() ||
+            !["png", "wav", "video", "glb"].includes(parsed.format)
+          ) {
+            throw new Dbxv2ConfigError(
+              "Public imports require an approved immutable derivative with provenance",
+            );
+          }
+          return {
+            contents: `export const url = ${JSON.stringify(url.href)}; export const sha256 = ${JSON.stringify(asset.sha256)}; export default url;`,
+            loader: "js",
+          };
+        }
         if (config) {
           // Building (development): re-check at load, nothing is resolved against the server.
           assertDbxv2BuildAllowed(config, env);
         } else {
           const status = dbxv2Status(env);
+          if (status.enabled && status.config.mode === "public") {
+            throw new Dbxv2ConfigError(
+              "Public plugin imports require the publicAssets publication manifest",
+            );
+          }
           if (!status.enabled) {
             throw new Dbxv2DisabledError(
               `cannot import dbxv2:${parsed.ref.cpk}/${parsed.ref.path}: ${describeDisabledReason(status.reason)}. ` +
