@@ -1,24 +1,23 @@
 #!/usr/bin/env bun
 /**
  * extract-dbz-frames.ts — Extraction FRAME-PAR-FRAME d'un épisode DBZ depuis une
- * VIDÉO LOCALE via ffmpeg (scene-detection + cadence régulière), sortie webp.
+ * VIDÉO LOCALE via Bun Video / FilmCraft (cadence régulière), sortie webp.
  *
  * Réplique l'esprit du pipeline « frames d'anime » rpbey (cf.
  * apps/web/scripts/scrape-anime-frames.ts), mais adapté à la SOURCE shenron :
- * rpbey scrape des galeries de screencaps existantes (fancaps, zéro
- * ffmpeg) ; côté DBZ, l'ayant droit dispose des MASTERS VIDÉO → on génère nos
+ * rpbey scrape des galeries de screencaps existantes ; côté DBZ, l'ayant droit dispose des MASTERS VIDÉO → on génère nos
  * propres captures HQ localement (pas de dépendance à un wiki tiers).
  *
  *   Source d'entrée : un fichier vidéo d'épisode (mp4/mkv/...) ou un dossier.
- *   Méthode : ffmpeg `select='gt(scene,SEUIL)'` (changements de plan) FUSIONNÉ
- *     avec un échantillonnage régulier `fps=1/PERIODE` (filet de sécurité pour les
- *     plans longs sans coupe). Dédup par hash de contenu (frames quasi-identiques).
+ *   Méthode : échantillonnage périodique natif, borné avant décodage par --max.
+ *     La détection des changements de plan n'est pas exposée par Bun.Video :
+ *     --scene non nul échoue explicitement au lieu de changer de décodeur.
  *   Sortie : webp (qualité réglable) dans
  *     apps/bot/assets/ext/db_episodes_frames/<series>/ep<NNN>/frame-<NNNNN>.webp
  *     + dataset JSON apps/bot/data/dbz-frames/<series>-ep<NNN>.json (contrat
  *     frames-common.ts). AUCUNE écriture DB (ingestion séparée, gardée).
  *
- * Bun-only : `Bun.spawn(["ffmpeg", ...])`, `Bun.file`, `Bun.write`. Pas de node.
+ * Bun.Video décode ; Bun.Image encode les WebP. Aucun exécutable média externe.
  *
  * ── Où déposer les vidéos sources ────────────────────────────────────────────
  *   apps/bot/data/dbz-sources/<series>/<numberInSeries>.<ext>
@@ -27,20 +26,21 @@
  *
  * ── Usage ────────────────────────────────────────────────────────────────────
  *   bun apps/bot/scripts/extract-dbz-frames.ts --series DBZ --ep 1 \
- *       [--input <video>] [--scene 0.4] [--period 6] [--quality 82] \
+ *       [--input <video>] [--scene 0] [--period 6] [--quality 82] \
  *       [--max 400] [--dry-run]
  *
  *   --series   série db_episodes (DB|DBZ|DBGT|DBS|DB_DAIMA|DBZ_KAI). défaut DBZ
  *   --ep       numberInSeries (obligatoire)
  *   --input    chemin vidéo explicite (sinon résolu dans dbz-sources/)
- *   --scene    seuil scene-detection 0..1 (défaut 0.4 ; plus bas = plus de frames)
- *   --period   1 frame régulière toutes N secondes en filet (défaut 6 ; 0 = off)
+ *   --scene    0 uniquement ; la sélection par coupe reste indisponible
+ *   --period   1 frame régulière toutes N secondes (défaut 6 ; strictement positif)
  *   --quality  qualité webp 0..100 (défaut 82)
  *   --max      cap de frames gardées après extraction (défaut 600)
  *   --dry-run  n'écrit ni webp ni dataset : compte seulement les frames candidates
  */
-import { mkdir, readdir, stat } from "node:fs/promises";
-import { join } from "node:path";
+import { mkdir, readdir, stat, rm, mkdtemp } from "node:fs/promises";
+import { join, resolve, sep } from "node:path";
+import { tmpdir } from "node:os";
 import {
   type EpisodeFrame,
   type FramesDataset,
@@ -51,7 +51,7 @@ import {
 } from "./lib/frames-common.js";
 
 const SERIES_VALUES: Series[] = ["DB", "DBZ", "DBGT", "DBS", "DB_DAIMA", "DBZ_KAI"];
-const ROOT = new URL("../", import.meta.url).pathname; // apps/bot/
+const ROOT = Bun.fileURLToPath(new URL("../", import.meta.url));
 const SOURCES_DIR = join(ROOT, "data", "dbz-sources");
 const ASSETS_DIR = join(ROOT, "assets", "ext", "db_episodes_frames");
 const DATA_DIR = join(ROOT, "data", "dbz-frames");
@@ -86,16 +86,31 @@ function parseArgs(): Args {
   if (!Number.isInteger(ep) || ep <= 0) {
     throw new Error("--ep <numberInSeries> requis (entier > 0).");
   }
-  return {
+  const result = {
     series,
     ep,
     input: val("--input") ?? null,
-    scene: num("--scene", 0.4),
+    scene: num("--scene", 0),
     period: num("--period", 6),
     quality: num("--quality", 82),
     max: num("--max", 600),
     dryRun: argv.includes("--dry-run"),
   };
+  if (result.scene !== 0)
+    throw new Error(
+      "FilmCraft scene-cut selection unavailable; use explicit periodic sampling with --scene 0",
+    );
+  if (
+    !(Number.isFinite(result.period) && result.period > 0) ||
+    !Number.isInteger(result.max) ||
+    result.max < 1 ||
+    result.max > 600 ||
+    !Number.isInteger(result.quality) ||
+    result.quality < 0 ||
+    result.quality > 100
+  )
+    throw new Error("Invalid native sampling period, frame budget or WebP quality");
+  return result;
 }
 
 const exists = (p: string) =>
@@ -130,134 +145,56 @@ async function resolveInput(args: Args): Promise<string> {
   );
 }
 
-/** Durée de la vidéo en secondes via ffprobe (best-effort, 0 si indispo). */
+/** Qualified FilmCraft metadata; invalid sources fail explicitly. */
 async function probeDuration(input: string): Promise<number> {
-  const p = Bun.spawn(
-    [
-      "ffprobe",
-      "-v",
-      "error",
-      "-show_entries",
-      "format=duration",
-      "-of",
-      "default=noprint_wrappers=1:nokey=1",
-      input,
-    ],
-    { stdout: "pipe", stderr: "ignore" },
-  );
-  const out = await new Response(p.stdout).text();
-  await p.exited;
-  const d = Number(out.trim());
-  return Number.isFinite(d) ? d : 0;
+  if (!(Bun as any).Video?.available) throw new Error("Bun Video / FilmCraft unavailable");
+  const metadata = await new (Bun as any).Video(input).metadata();
+  if (!(Number.isFinite(metadata.duration) && metadata.duration > 0))
+    throw new Error("Native video duration unavailable");
+  return metadata.duration;
 }
 
-/**
- * Lance ffmpeg : sélection = (scene-cut > seuil) OU (1 frame toutes `period` s).
- * Émet des PNG numérotés + un timecode par frame (via `showinfo` sur stderr) pour
- * conserver le mapping frame ↔ timecode. PNG intermédiaire → webp (sharp-free,
- * via `ffmpeg` lui-même en 2e passe par fichier pour la qualité webp).
- *
- * On extrait d'abord en PNG (lossless, vfr) pour pouvoir lire les timecodes
- * `showinfo`, puis on convertit chaque PNG retenu en webp.
- */
+/** Bounded periodic native extraction. Scene-cut scoring is not an exposed Bun.Video capability. */
 async function extractPngs(
   input: string,
   outDir: string,
   args: Args,
-): Promise<{ file: string; timecodeSec: number | null }[]> {
-  const selectParts: string[] = [];
-  if (args.scene > 0) selectParts.push(`gt(scene,${args.scene})`);
-  // `fps` ne se combine pas dans un `select` ; on l'ajoute en filet via un
-  // second terme temporel : isnan(prev_selected_t) ou t-prev >= period.
-  if (args.period > 0)
-    selectParts.push(`isnan(prev_selected_t)+gte(t-prev_selected_t,${args.period})`);
-  const selectExpr = selectParts.length > 0 ? selectParts.join("+") : "1";
-
-  // -vsync vfr : garde le timing variable ; showinfo : émet pts_time sur stderr.
-  const vf = `select='${selectExpr}',showinfo`;
-  const pattern = join(outDir, "raw-%05d.png");
-  const proc = Bun.spawn(
-    [
-      "ffmpeg",
-      "-hide_banner",
-      "-loglevel",
-      "info",
-      "-i",
-      input,
-      "-vf",
-      vf,
-      "-vsync",
-      "vfr",
-      "-frame_pts",
-      "0",
-      "-y",
-      pattern,
-    ],
-    { stdout: "ignore", stderr: "pipe" },
-  );
-  const stderr = await new Response(proc.stderr).text();
-  const code = await proc.exited;
-  if (code !== 0) {
-    throw new Error(`ffmpeg a échoué (code ${code}). Dernières lignes:\n${stderr.slice(-600)}`);
+): Promise<{ file: string; timecodeSec: number }[]> {
+  if (args.scene !== 0)
+    throw new Error(
+      "FilmCraft scene-cut selection is unavailable; use --scene 0 --period <seconds> for explicit periodic sampling",
+    );
+  if (
+    !(Number.isFinite(args.period) && args.period > 0) ||
+    !Number.isInteger(args.max) ||
+    args.max < 1 ||
+    args.max > 600
+  )
+    throw new Error("Native sampling requires a positive period and --max 1..600");
+  const duration = await probeDuration(input);
+  const produced: { file: string; timecodeSec: number }[] = [];
+  for (let i = 0; i < args.max && i * args.period < duration; i++) {
+    const timecodeSec = i * args.period;
+    const file = join(outDir, "raw-" + pad(i + 1, 5) + ".png");
+    await new (Bun as any).Video(input).frame(timecodeSec).png().write(file);
+    produced.push({ file, timecodeSec });
   }
-
-  // `showinfo` émet une ligne par frame SÉLECTIONNÉE, dans l'ordre, avec pts_time.
-  const times = [...stderr.matchAll(/pts_time:([0-9.]+)/g)].map((m) => Number(m[1]));
-
-  // Liste les PNG produits, triés (raw-00001.png …) → on les apparie aux times.
-  const produced = (await readdir(outDir)).filter((f) => /^raw-\d+\.png$/.test(f)).toSorted();
-  return produced.map((f, i) => ({
-    file: join(outDir, f),
-    timecodeSec: Number.isFinite(times[i]) ? times[i] : null,
-  }));
+  return produced;
 }
 
-/** Convertit un PNG en webp via ffmpeg (qualité réglable), renvoie w/h. */
+/** Encode and inspect through Bun.Image, preserving the source dimensions. */
 async function pngToWebp(
   png: string,
   webp: string,
   quality: number,
-): Promise<{ width: number | null; height: number | null }> {
-  const proc = Bun.spawn(
-    [
-      "ffmpeg",
-      "-hide_banner",
-      "-loglevel",
-      "error",
-      "-i",
-      png,
-      "-frames:v",
-      "1",
-      "-c:v",
-      "libwebp",
-      "-quality",
-      String(quality),
-      "-y",
-      webp,
-    ],
-    { stdout: "ignore", stderr: "pipe" },
-  );
-  await proc.exited;
-  // Dimensions via ffprobe sur le webp final.
-  const probe = Bun.spawn(
-    [
-      "ffprobe",
-      "-v",
-      "error",
-      "-select_streams",
-      "v:0",
-      "-show_entries",
-      "stream=width,height",
-      "-of",
-      "csv=p=0",
-      webp,
-    ],
-    { stdout: "pipe", stderr: "ignore" },
-  );
-  const out = (await new Response(probe.stdout).text()).trim();
-  await probe.exited;
-  const [w, h] = out.split(",").map((n) => Number(n));
-  return { width: Number.isFinite(w) ? w : null, height: Number.isFinite(h) ? h : null };
+): Promise<{ width: number; height: number }> {
+  if (!(Bun as any).Image?.available) throw new Error("Bun.Image provider unavailable");
+  const image = new (Bun as any).Image(png);
+  await image.webp({ quality }).write(webp);
+  const metadata = await new (Bun as any).Image(webp).metadata();
+  if (!(metadata.width > 0 && metadata.height > 0))
+    throw new Error("Native WebP dimensions unavailable");
+  return { width: metadata.width, height: metadata.height };
 }
 
 async function main() {
@@ -270,16 +207,15 @@ async function main() {
   console.log(
     `Extraction frames — ${args.series} ${epTag} (db id ${epId?.id ?? "?"})\n` +
       `  source : ${input} (${duration ? `${duration.toFixed(0)}s` : "durée inconnue"})\n` +
-      `  params : scene>${args.scene}${args.period > 0 ? ` + 1/${args.period}s` : ""}, webp q${args.quality}, cap ${args.max}` +
+      `  params : periodic 1/${args.period}s, scene detection unavailable, webp q${args.quality}, cap ${args.max}` +
       (args.dryRun ? "  [DRY-RUN]" : ""),
   );
 
   // Dossier de travail temporaire pour les PNG bruts (toujours hors assets prod).
-  const work = join("/tmp", `dbz-frames-${args.series}-${epTag}-${Date.now()}`);
-  await mkdir(work, { recursive: true });
+  const work = await mkdtemp(join(tmpdir(), "dbz-frames-"));
 
   const raws = await extractPngs(input, work, args);
-  console.log(`  ffmpeg → ${raws.length} frame(s) candidate(s) extraite(s).`);
+  console.log(`  Bun Video / FilmCraft → ${raws.length} periodic frame(s) extracted.`);
   if (raws.length === 0)
     throw new Error("0 frame extraite — vérifier la vidéo / abaisser --scene.");
 
@@ -307,8 +243,8 @@ async function main() {
       height = dims.height;
     }
     frames.push({
-      source: "ffmpeg",
-      sourceId: `ffmpeg:${args.series.toLowerCase()}:${pad(args.ep, 3)}:${idx}`,
+      source: "bun-video",
+      sourceId: `bun-video:${args.series.toLowerCase()}:${pad(args.ep, 3)}:${idx}`,
       sourceUrl: input,
       episodeNumber: args.ep,
       imagePath: args.dryRun ? null : relPath,
@@ -316,30 +252,33 @@ async function main() {
       width,
       height,
       characterNames: [],
-      tags: ["ffmpeg-scene"],
+      tags: ["bun-video-periodic"],
       caption: null,
-      // Heuristique : une frame issue d'un scene-cut (timecode dédié) est plus
-      // « marquante » qu'un filet temporel — affiné par le merge personnages.
+      // Periodic sampling alone does not establish narrative significance.
       isNotable: false,
       sortOrder: sortOrder++,
     });
   }
 
   // Nettoyage des PNG bruts (toujours, même dry-run).
-  await Bun.spawn(["rm", "-rf", work]).exited;
+  if (!resolve(work).startsWith(resolve(tmpdir()) + sep))
+    throw new Error("Invalid owned temporary directory");
+  await rm(work, { recursive: true, force: true });
 
   const dataset: FramesDataset = {
     series: args.series,
     episodeNumber: args.ep,
     episodeId: epId?.id ?? null,
-    source: "ffmpeg",
+    source: "bun-video",
     meta: {
       input,
       durationSec: duration || null,
       scene: args.scene,
       periodSec: args.period,
       quality: args.quality,
-      ffmpeg: "scene-detection + fps filet",
+      producer: "Bun.Video / FilmCraft",
+      selection: "periodic",
+      sceneDetection: "unavailable",
     },
     scrapedAt: new Date().toISOString(),
     frames,
