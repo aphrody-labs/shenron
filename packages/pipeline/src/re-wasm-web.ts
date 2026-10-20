@@ -21,6 +21,17 @@ export interface GameDataFileResult {
   preview: unknown[];
 }
 
+export interface MessageEntry {
+  id: number;
+  name_id: string;
+  lines: string[];
+}
+
+/** Returns every original MSG entry and line; the explorer preview stays independently bounded. */
+export function parseMessageFile(bytes: Uint8Array): { entries: MessageEntry[] } {
+  return wasm_parse_msg(bytes) as { entries: MessageEntry[] };
+}
+
 let wasmReady: Promise<void> | undefined;
 
 const MAX_WASM_BYTES = 16 * 1024 * 1024;
@@ -106,7 +117,7 @@ export function parseGameDataFile(format: GameDataFormat, bytes: Uint8Array): Ga
       return { format, recordCount: file.moves.length, preview: file.moves.slice(0, 12) };
     }
     case "msg": {
-      const file = wasm_parse_msg(bytes) as { entries: unknown[] };
+      const file = parseMessageFile(bytes);
       return { format, recordCount: file.entries.length, preview: file.entries.slice(0, 12) };
     }
   }

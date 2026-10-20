@@ -14,6 +14,7 @@ const SRC = join(SITE, "src");
 const allowed = (rel: string): boolean =>
   rel.startsWith(`app${sep}admin${sep}dbxv2${sep}`) ||
   rel.startsWith(`app${sep}api${sep}public${sep}dbxv2${sep}cpk${sep}`) ||
+  rel === join("app", "games", "dragon-pixel", "cpk-scene.ts") ||
   /^lib[\\/]dbxv2[^\\/]*\.ts$/.test(rel) ||
   rel === join("components", "games", "Dbxv2CpkExplorer.tsx") ||
   rel === join("app", "games", "xenoverse-2", "Xenoverse2Explorer.tsx") ||

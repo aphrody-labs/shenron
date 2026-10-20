@@ -1,6 +1,44 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, spyOn, test } from "bun:test";
-import { initShenronReWeb, parseGameDataFile } from "../src/re-wasm-web";
+import { initShenronReWeb, parseGameDataFile, parseMessageFile } from "../src/re-wasm-web";
+
+function messageFixture(lines: string[]): Uint8Array {
+  const count = lines.length;
+  const keys = 32,
+    ids = keys + count * 16,
+    lists = ids + count * 4,
+    slots = lists + count * 8;
+  const buffer = new Uint8Array(
+    slots +
+      count * 16 +
+      lines.reduce((size, line, index) => size + (`MSG_${index}`.length + line.length + 2) * 2, 0),
+  );
+  const view = new DataView(buffer.buffer);
+  buffer.set([35, 77, 83, 71, 0, 1, 1, 0]);
+  [count, keys, ids, lists, count, slots].forEach((value, index) =>
+    view.setUint32(8 + index * 4, value, true),
+  );
+  let cursor = slots + count * 16;
+  lines.forEach((line, index) => {
+    view.setUint32(ids + index * 4, index, true);
+    view.setUint32(lists + index * 8, 1, true);
+    view.setUint32(lists + index * 8 + 4, slots + index * 16, true);
+    for (const [slot, text] of [
+      [keys + index * 16, `MSG_${index}`],
+      [slots + index * 16, line],
+    ] as const) {
+      [cursor, text.length, (text.length + 1) * 2].forEach((value, field) =>
+        view.setUint32(slot + field * 4, value, true),
+      );
+      for (let unit = 0; unit < text.length; unit++) {
+        view.setUint16(cursor, text.charCodeAt(unit), true);
+        cursor += 2;
+      }
+      cursor += 2;
+    }
+  });
+  return buffer;
+}
 
 test("the browser loader rejects untrusted responses, retries, and initializes the real parser once", async () => {
   const request = spyOn(globalThis, "fetch");
@@ -54,6 +92,16 @@ test("the browser loader rejects untrusted responses, retries, and initializes t
       preview: [{ id: 300, basic_attack_mult: 1.25 }],
     });
     expect(() => parseGameDataFile("pup", new Uint8Array())).toThrow();
+    const lines = [
+      "",
+      "  日本語 🐉  ",
+      "same",
+      "same",
+      ...Array.from({ length: 201 }, (_, index) => `line${index}`),
+    ];
+    const messages = messageFixture(lines);
+    expect(parseMessageFile(messages).entries.flatMap((entry) => entry.lines)).toEqual(lines);
+    expect(parseGameDataFile("msg", messages).preview).toHaveLength(12);
   } finally {
     request.mockRestore();
   }

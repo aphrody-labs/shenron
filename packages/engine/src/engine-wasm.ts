@@ -12,12 +12,17 @@ export interface EngineRenderer {
   free(): void;
 }
 
+export interface GlbSceneRenderer extends EngineRenderer {
+  camera(azimuth: number, elevation: number, zoom: number): void;
+}
+
 export interface MangaSceneHandle extends EngineRenderer {
   /** Detected panels, flat `x, y, w, h` in page uv, in reading order. */
   panels(): Float32Array;
 }
 
 export interface EngineGlue {
+  createGlbModel(canvas: HTMLCanvasElement, bytes: Uint8Array): Promise<GlbSceneRenderer>;
   default(options: { module_or_path: WebAssembly.Module }): Promise<unknown>;
   createToriyamaModel(
     canvas: HTMLCanvasElement,
@@ -36,7 +41,9 @@ export interface EngineGlue {
 let ready: Promise<EngineGlue> | null = null;
 
 async function compileModule(): Promise<WebAssembly.Module> {
-  const url = new URL("./wasm/shenron_engine_bg.wasm", import.meta.url);
+  const asset = new URL("./wasm/shenron_engine_bg.wasm", import.meta.url);
+  const url =
+    typeof window === "undefined" ? asset : new URL(asset.pathname, window.location.origin);
   const response = await fetch(url);
   if (!response.ok) throw new Error(`HTTP ${response.status} for ${url.pathname}`);
   const type = response.headers.get("content-type")?.split(";", 1)[0]?.trim().toLowerCase();

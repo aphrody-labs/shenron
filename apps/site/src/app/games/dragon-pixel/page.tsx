@@ -1,18 +1,25 @@
 // SPDX-License-Identifier: Apache-2.0
-import DragonPixelGame from "./DragonPixelGame";
+import CpkScene from "./CpkScene";
 import type { Metadata } from "next";
+import { getLocale } from "next-intl/server";
+import fr from "../../../../messages/dragon-pixel-scene/fr.json";
+import en from "../../../../messages/dragon-pixel-scene/en.json";
+import ja from "../../../../messages/dragon-pixel-scene/ja.json";
 
-export const metadata: Metadata = {
-  title: "Dragon Pixel — Mini-jeux DBFR",
-  description:
-    "Joue à Dragon Pixel, le jeu de combat anime haute définition fidèle à l'œuvre d'Akira Toriyama : 18 chapitres de la grande épopée Dragon Ball, guerriers légendaires, chocs de Kikōha et transformations Super Saiyan !",
-  alternates: { canonical: "/games/dragon-pixel" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const text = locale === "en" ? en : locale === "ja" ? ja : fr;
+  return {
+    title: text.title,
+    description: text.description,
+    alternates: { canonical: "/games/dragon-pixel" },
+  };
+}
 
 export default function PageDragonPixel() {
   return (
-    <main className="fixed inset-0 z-50 w-screen h-screen bg-black overflow-hidden m-0 p-0">
-      <DragonPixelGame />
+    <main className="min-h-screen bg-slate-950">
+      <CpkScene />
     </main>
   );
 }

@@ -26,6 +26,7 @@
     "./types": "./src/types.ts",
     "./toriyama3d": "./src/toriyama3d.ts",
     "./manga-scene": "./src/manga-scene.ts",
+    "./glb-scene": "./src/glb-scene.ts",
     "./sprite-atlas": "./src/sprite-atlas.ts",
     "./combat-atlas": "./src/combat-atlas.ts"
   },
@@ -53,6 +54,7 @@
       "./wasm": "pure",
       "./unified_canvas": "pure",
       "./types": "pure",
+      "./glb-scene": "pure",
       "./sprite-atlas": "pure",
       "./combat-atlas": "pure"
     }

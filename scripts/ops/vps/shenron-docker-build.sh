@@ -50,9 +50,11 @@ pids=()
 (
   bun packages/koharu/scripts/build-wasm.ts & canvas_pid=$!
   bun packages/pipeline/scripts/build-re-wasm.ts & re_pid=$!
+  bun packages/engine/scripts/build-wasm.ts & engine_pid=$!
   status=0
   wait "$canvas_pid" || status=$?
   wait "$re_pid" || status=$?
+  wait "$engine_pid" || status=$?
   exit "$status"
 ) & pids+=($!)
 ( mkdir -p dist/vfs; scp -q dbfr:/home/ubuntu/apps/shenron/shared/server/data/7b26187/shenron-vfs.public.sqlite dist/vfs/shenron-vfs.public.sqlite ) & pids+=($!)

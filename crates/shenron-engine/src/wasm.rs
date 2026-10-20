@@ -311,3 +311,160 @@ impl MangaSceneWasm {
         self.gpu.is_lost()
     }
 }
+
+/// A real indexed, textured GLB mesh rendered through the shared cel-shading pipeline.
+#[cfg(all(feature = "wasm", target_arch = "wasm32"))]
+#[wasm_bindgen]
+pub struct GlbModelWasm {
+    gpu: WebGpuCanvas,
+    pipeline: crate::render::ModelServePipeline,
+    model: crate::render::GpuCharacterModel,
+    camera: crate::render::TurntableCamera,
+    depth: wgpu::TextureView,
+}
+
+#[cfg(all(feature = "wasm", target_arch = "wasm32"))]
+fn glb_depth(gpu: &WebGpuCanvas) -> wgpu::TextureView {
+    gpu.device
+        .create_texture(&wgpu::TextureDescriptor {
+            label: Some("GLB depth"),
+            size: wgpu::Extent3d {
+                width: gpu.config.width,
+                height: gpu.config.height,
+                depth_or_array_layers: 1,
+            },
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: wgpu::TextureDimension::D2,
+            format: wgpu::TextureFormat::Depth32Float,
+            usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
+            view_formats: &[],
+        })
+        .create_view(&wgpu::TextureViewDescriptor::default())
+}
+
+#[cfg(all(feature = "wasm", target_arch = "wasm32"))]
+#[wasm_bindgen(js_name = createGlbModel)]
+pub async fn create_glb_model(
+    canvas: web_sys::HtmlCanvasElement,
+    bytes: Vec<u8>,
+) -> Result<GlbModelWasm, JsValue> {
+    use shenron_re::formats::{
+        AssembledCharacterModel, EmbRgbaTexture, ModelPrimitive, TexturePixelFormat,
+    };
+    if bytes.len() > 64 * 1024 * 1024 {
+        return Err(js_error("GLB exceeds 64 MiB"));
+    }
+    let parsed = crate::render::parse_glb(&bytes).map_err(js_error)?;
+    if parsed.primitives.is_empty() {
+        return Err(js_error("GLB contains no drawable primitives"));
+    }
+    let (center, radius) = parsed.bounds();
+    let assembled = AssembledCharacterModel {
+        name: "cpk-model".into(),
+        skeleton: None,
+        primitives: parsed
+            .primitives
+            .into_iter()
+            .map(|p| ModelPrimitive {
+                name: String::new(),
+                material_name: String::new(),
+                positions: p.positions,
+                normals: p.normals,
+                uv: p.uv,
+                indices: p.indices,
+                texture_index: p.texture,
+            })
+            .collect(),
+        textures: parsed
+            .textures
+            .into_iter()
+            .map(|t| EmbRgbaTexture {
+                width: t.width,
+                height: t.height,
+                rgba: t.rgba,
+                format: TexturePixelFormat::Rgba8,
+            })
+            .collect(),
+    };
+    let gpu = WebGpuCanvas::open(canvas, "shenron GLB scene").await?;
+    let pipeline = crate::render::ModelServePipeline::new(&gpu.device, gpu.config.format);
+    let model = crate::render::GpuCharacterModel::upload(
+        &gpu.device,
+        &gpu.queue,
+        &assembled,
+        &pipeline.material_bind_group_layout,
+    );
+    let camera = crate::render::TurntableCamera {
+        target: glam::Vec3::from_array(center),
+        distance: radius * 3.0,
+        z_near: (radius / 100.0).max(0.001),
+        z_far: radius * 100.0,
+        ..Default::default()
+    };
+    let depth = glb_depth(&gpu);
+    Ok(GlbModelWasm { gpu, pipeline, model, camera, depth })
+}
+
+#[cfg(all(feature = "wasm", target_arch = "wasm32"))]
+#[wasm_bindgen]
+impl GlbModelWasm {
+    /// Explicit camera controls: azimuth/elevation in radians and a bounded zoom factor.
+    pub fn camera(&mut self, azimuth: f32, elevation: f32, zoom: f32) {
+        if azimuth.is_finite() && elevation.is_finite() && zoom.is_finite() {
+            self.camera.azimuth = azimuth;
+            self.camera.elevation = elevation.clamp(-1.4, 1.4);
+            self.camera.fov_y = (45.0 / zoom.clamp(0.5, 3.0)).to_radians();
+        }
+    }
+    pub fn frame(&mut self, _time: f32, _tilt_x: f32, _tilt_y: f32) -> bool {
+        let (pipeline, model, camera, depth) =
+            (&self.pipeline, &self.model, &mut self.camera, &self.depth);
+        self.gpu.frame(|queue, encoder, view, aspect| {
+            camera.aspect_ratio = aspect;
+            pipeline.update_camera(queue, camera, glam::Mat4::IDENTITY);
+            let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+                label: Some("CPK model scene"),
+                color_attachments: &[Some(wgpu::RenderPassColorAttachment {
+                    view,
+                    depth_slice: None,
+                    resolve_target: None,
+                    ops: wgpu::Operations {
+                        load: wgpu::LoadOp::Clear(wgpu::Color {
+                            r: 0.025,
+                            g: 0.035,
+                            b: 0.06,
+                            a: 1.0,
+                        }),
+                        store: wgpu::StoreOp::Store,
+                    },
+                })],
+                depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachment {
+                    view: depth,
+                    depth_ops: Some(wgpu::Operations {
+                        load: wgpu::LoadOp::Clear(1.0),
+                        store: wgpu::StoreOp::Store,
+                    }),
+                    stencil_ops: None,
+                }),
+                timestamp_writes: None,
+                occlusion_query_set: None,
+                multiview_mask: None,
+            });
+            pass.set_pipeline(&pipeline.pipeline);
+            pass.set_bind_group(0, &pipeline.uniform_bind_group, &[]);
+            for primitive in &model.primitives {
+                if let Some(material) = &primitive.bind_group {
+                    pass.set_bind_group(1, material, &[]);
+                }
+                pass.set_vertex_buffer(0, primitive.vertex_buffer.slice(..));
+                pass.set_index_buffer(primitive.index_buffer.slice(..), primitive.index_format);
+                pass.draw_indexed(0..primitive.index_count, 0, 0..1);
+            }
+        })
+    }
+    pub fn resize(&mut self, width: u32, height: u32) {
+        self.gpu.resize(width, height);
+        self.depth = glb_depth(&self.gpu);
+    }
+}
