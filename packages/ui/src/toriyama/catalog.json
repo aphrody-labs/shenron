@@ -198,6 +198,18 @@
     {
       "path": "dbz/marque/kinto-un-2048.png",
       "kind": "image"
+    },
+    {
+      "path": "assets/manga/dragon-pixel/chapter-516/sheet.png",
+      "kind": "image"
+    },
+    {
+      "path": "assets/manga/dragon-pixel/chapter-516/sheet.layout.json",
+      "kind": "palette"
+    },
+    {
+      "path": "assets/manga/dragon-pixel/chapter-516/provenance.json",
+      "kind": "palette"
     }
   ],
   "glyphs": [
