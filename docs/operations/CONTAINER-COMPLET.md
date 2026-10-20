@@ -191,10 +191,29 @@ ni le verrou partagé ni le nettoyage propriétaire de la fabrique.
    `APHRODY_CARGO_JOBS` règlent les chemins, cible, configuration/identité de fabrique et
    concurrence Cargo. Le VPS est le défaut historique ; le propriétaire choisit toute autre
    cible explicitement dans le catalogue Infra.
-2. `ship-shenron.sh` transfère uniquement l'image qualifiée au déploiement Infra configuré.
-   La cible assemble et scelle la release puis passe les étapes de vérification et activation
-   du propriétaire Infra ; aucune commande locale ne modifie directement les conteneurs de prod.
-   Conserver le chemin de rollback retourné par Infra.
+2. Le `ship-shenron.sh` actuel transfère l'image à DBFR et appelle
+   `~/deploy-shenron-image.sh`. Ce helper historique prépare puis active le candidat avec
+   l'adaptateur conteneur ; il réutilise les vhosts déjà présents dans la release active et
+   n'assemble pas les sources NGINX d'un checkout Infra choisi. Il ne suffit donc pas pour
+   publier un nouveau bundle NGINX.
+
+   L'entrée canonique d'activation d'un candidat déjà assemblé et scellé est :
+
+   ```sh
+   aphrody infra deploy --target dbfr --stack shenron \
+     --release docker-<sha-shenron-complet> --apply
+   ```
+
+   Avant de router le script de livraison par cette commande, Infra doit fournir à DBFR un
+   chemin de préparation idempotent qui consomme un checkout Infra sélectionné par SHA complet,
+   exécute l'assembleur et le sealer de cette même révision, et produit
+   `/srv/shenron/releases/docker-<sha-shenron-complet>`. L'assembleur canonique exige le Compose
+   limité au site et au bot, l'image de passerelle et le chemin du VFS public versionné ; il peut
+   aussi nécessiter les images d'état/chat et le chemin du modèle selon la release active. Le CLI
+   `aphrody infra deploy` vérifie et active un répertoire existant, mais ne l'assemble pas. Le
+   workflow ne doit pas substituer un autre builder ni déduire la révision Infra. Le nom de
+   release étant déterminé par le SHA Shenron, ne jamais réutiliser un candidat existant pour un
+   autre SHA Infra. Conserver le résultat et le chemin de rollback retournés par Infra.
 3. Sondes après activation : pages, `/api/health`, `/api/public/rag/search`, `tools/list`
    anonyme de `/mcp`, `bot.` et `cdn.`.
 
