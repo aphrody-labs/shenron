@@ -58,6 +58,9 @@ impl SerializableSecret for SecretValue {}
 
 const SERVICE: &str = "koharu";
 
+#[cfg(target_os = "linux")]
+mod hosted;
+
 static CREDENTIAL_STORE: LazyLock<Result<(), String>> = LazyLock::new(|| {
     #[cfg(target_os = "linux")]
     {
@@ -71,6 +74,10 @@ static CREDENTIAL_STORE: LazyLock<Result<(), String>> = LazyLock::new(|| {
 
 /// Load a Koharu secret by key, returning `None` when no credential exists.
 pub fn get(key: &str) -> anyhow::Result<Option<SecretString>> {
+    #[cfg(target_os = "linux")]
+    if let Some(store) = hosted::Store::from_environment()? {
+        return store.get(key);
+    }
     let entry = entry(key)?;
     match entry.get_password() {
         Ok(value) => Ok(Some(SecretString::from(value))),
@@ -81,12 +88,20 @@ pub fn get(key: &str) -> anyhow::Result<Option<SecretString>> {
 
 /// Store a Koharu secret by key.
 pub fn set(key: &str, secret: &SecretString) -> anyhow::Result<()> {
+    #[cfg(target_os = "linux")]
+    if let Some(store) = hosted::Store::from_environment()? {
+        return store.set(key, secret);
+    }
     entry(key)?.set_password(secret.expose_secret())?;
     Ok(())
 }
 
 /// Delete a Koharu secret by key. Missing credentials are treated as success.
 pub fn delete(key: &str) -> anyhow::Result<()> {
+    #[cfg(target_os = "linux")]
+    if let Some(store) = hosted::Store::from_environment()? {
+        return store.delete(key);
+    }
     match entry(key)?.delete_credential() {
         Ok(()) | Err(keyring_core::Error::NoEntry) => Ok(()),
         Err(error) => Err(error.into()),

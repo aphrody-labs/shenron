@@ -25,7 +25,7 @@ Studio personnel ne donne pas ce rôle.
 | ------------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `SHENRON_STUDIO_SDK_BIN`  | Serveur / image scellée   | Chemin absolu du `koharu-sdk` qualifié et livré dans l'image. Sans binaire, la capacité reste indisponible.                                                           |
 | `SHENRON_STUDIO_HOME`     | Infra / volume protégé    | Racine privée des espaces de travail ; chaque identité reçoit un sous-dossier nommé par son SHA-256, créé en mode 0700.                                               |
-| `KOHARU_SECRET_NAMESPACE` | Runtime Studio uniquement | SHA-256 de l'identité, transmis au processus enfant pour isoler son service de trousseau. Non modifiable par un argument du navigateur ; valeur non conforme refusée. |
+| `KOHARU_SECRET_NAMESPACE` | Runtime Studio uniquement | SHA-256 de l'identité, transmis au processus enfant pour isoler ses identifiants. Sur Linux hébergé : fichiers privés dans `SHENRON_HOME/.credentials` (0700/0600), sans Keyutils ; le nom du foyer doit correspondre au namespace. Non modifiable par le navigateur. |
 | `APHRODY_CARGO_SERIAL`    | Fabrique                  | Surcharge explicite du chemin du propriétaire Cargo pour le helper d'image. Le verrou lourd réel doit être hérité.                                                    |
 | `APHRODY_SOURCE_REPO`     | Fabrique                  | Checkout Aphrody contenant ce propriétaire ; résolu par configuration, sinon voisin du checkout source Shenron de la fabrique.                                        |
 
