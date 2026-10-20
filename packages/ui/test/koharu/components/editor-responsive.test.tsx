@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, expect, mock, test, vi } from "bun:test";
+import userEvent from "@testing-library/user-event";
 
 mock.module("../../../src/koharu/components/editor/ActivityCenter", () => ({
   ActivityCenter: () => null,
@@ -52,7 +53,8 @@ test("compact workspace keeps one canvas while pages and tools open, and restore
   fireEvent.click(screen.getByRole("button", { name: "Tools" }));
   expect(await screen.findByRole("button", { name: "shenron" })).toBeInTheDocument();
   expect(document.querySelectorAll("canvas")).toHaveLength(1);
-  fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape", code: "Escape" });
+  // Dispatch the complete keyboard sequence from the focused control, as a user would.
+  await userEvent.keyboard("{Escape}");
   await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   await waitFor(() => expect(screen.getByRole("button", { name: "Tools" })).toHaveFocus());
 }, 15000);
