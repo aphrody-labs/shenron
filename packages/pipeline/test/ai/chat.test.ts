@@ -20,6 +20,33 @@ function setup(modelId = "gemini-web/flash") {
 }
 
 describe("createAphrodyChatModel", () => {
+  test("the OpenAI chat budget reaches the private boundary and is reported as supported", async () => {
+    const { rec, model } = setup("shenron-chat-v2");
+    const result = await generateText({
+      model,
+      prompt: "Hello",
+      maxOutputTokens: 128,
+      maxRetries: 0,
+    });
+    expect(JSON.parse(rec.calls[0]?.body ?? "null").maxOutputTokens).toBe(128);
+    expect(
+      result.warnings?.some((w) => w.type === "unsupported" && w.feature === "maxOutputTokens"),
+    ).toBe(false);
+  });
+
+  test("Gemini Web keeps an explicit unsupported warning without inventing a budget capability", async () => {
+    const { rec, model } = setup("gemini-web/flash");
+    const result = await generateText({
+      model,
+      prompt: "Hello",
+      maxOutputTokens: 128,
+      maxRetries: 0,
+    });
+    expect(JSON.parse(rec.calls[0]?.body ?? "null").maxOutputTokens).toBeUndefined();
+    expect(
+      result.warnings?.some((w) => w.type === "unsupported" && w.feature === "maxOutputTokens"),
+    ).toBe(true);
+  });
   test("satisfies LanguageModelV4 (spec v4, provider, no supported URLs)", () => {
     const { model } = setup();
     const typed = model satisfies LanguageModelV4;

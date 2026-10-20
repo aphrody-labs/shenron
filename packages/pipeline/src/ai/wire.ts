@@ -16,6 +16,8 @@ export const APHRODY_LIMITS = Object.freeze({
   chatMessages: 32,
   /** `shenron_llm_chat_core`: `content.len() > 32 * 1024` bytes is rejected. */
   chatMessageBytes: 32 * 1024,
+  /** Optional OpenAI generation budget, bounded by the private chat contract. */
+  chatOutputTokens: 8192,
   /** `shenron_embed`: `texts.len() > 16` is rejected. */
   embedTexts: 16,
   /** `shenron_embed`: `text.len() > 8192` bytes is rejected. */
@@ -71,7 +73,7 @@ export const WIRE_STRUCTS = Object.freeze({
   ],
   ShenronSyncFinish: ["originSourceId", "syncGeneration", "expectedCount"],
   ChatMessage: ["role", "content"],
-  ChatRequest: ["messages", "model"],
+  ChatRequest: ["messages", "model", "maxOutputTokens"],
   OcrRequest: ["image_base64", "language", "engine", "model", "include_geometry"],
   VisionRequest: ["image_base64", "image_mime", "prompt", "model", "reasoning_effort"],
   ShenronDocumentQuery: ["sourceId"],
@@ -95,6 +97,7 @@ export const ChatMessage = z.object({ role: ChatRole, content: z.string() });
 export const ChatRequest = z.object({
   messages: z.array(ChatMessage),
   model: z.string().optional(),
+  maxOutputTokens: z.number().int().min(1).max(APHRODY_LIMITS.chatOutputTokens).optional(),
 });
 export const ChatResponse = z.object({ answer: z.string(), model: z.string().optional() });
 

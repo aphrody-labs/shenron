@@ -35,6 +35,8 @@ describe("wire fixtures", () => {
   test("schemas reject malformed bodies", () => {
     expect(wire.HealthResponse.safeParse({ status: "down", capabilities: {} }).success).toBe(false);
     expect(wire.VisionResponse.safeParse({ result: [], model: "m" }).success).toBe(false);
+    expect(wire.ChatRequest.safeParse({ messages: [], maxOutputTokens: 0 }).success).toBe(false);
+    expect(wire.ChatRequest.safeParse({ messages: [], maxOutputTokens: 128 }).success).toBe(true);
   });
 });
 

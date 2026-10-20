@@ -112,9 +112,13 @@ const IGNORED_SETTINGS = [
   "seed",
 ] as const;
 
-export function ignoredSettingWarnings(options: LanguageModelV4CallOptions): SharedV4Warning[] {
+export function ignoredSettingWarnings(
+  options: LanguageModelV4CallOptions,
+  forwardsOutputBudget = false,
+): SharedV4Warning[] {
   const warnings: SharedV4Warning[] = [];
   for (const feature of IGNORED_SETTINGS) {
+    if (feature === "maxOutputTokens" && forwardsOutputBudget) continue;
     const value = options[feature];
     if (value === undefined || (Array.isArray(value) && value.length === 0)) continue;
     warnings.push({ type: "unsupported", feature, details: "not forwarded to llm/chat" });
@@ -162,16 +166,22 @@ export function createAphrodyChatModel(
   const modelId = o.modelId;
   // A blank id sends no `model`: Aphrody keeps its default (compute rejects `model: ""`).
   const wireModel = modelId.trim();
+  const forwardsOutputBudget = !wireModel.startsWith("gemini-web");
 
   async function doGenerate(
     options: LanguageModelV4CallOptions,
   ): Promise<LanguageModelV4GenerateResult> {
     rejectUnsupported(options);
     const messages = toAphrodyMessages(options.prompt);
+    const outputBudget =
+      forwardsOutputBudget && options.maxOutputTokens !== undefined
+        ? { maxOutputTokens: options.maxOutputTokens }
+        : {};
     // The compute client applies chatTimeoutMs(modelId); an explicit abort signal is combined with it.
     const result = await compute.chat({
       messages,
       ...(wireModel ? { model: wireModel } : {}),
+      ...outputBudget,
       ...(options.abortSignal ? { signal: options.abortSignal } : {}),
     });
     if (!result.ok) throw new AiFailureError(result);
@@ -179,9 +189,9 @@ export function createAphrodyChatModel(
       content: [{ type: "text", text: result.value.answer }],
       finishReason: { unified: "stop", raw: undefined },
       usage: emptyUsage(),
-      request: { body: { messages, ...(wireModel ? { model: wireModel } : {}) } },
+      request: { body: { messages, ...(wireModel ? { model: wireModel } : {}), ...outputBudget } },
       response: { modelId: result.value.model },
-      warnings: ignoredSettingWarnings(options),
+      warnings: ignoredSettingWarnings(options, forwardsOutputBudget),
     };
   }
 
