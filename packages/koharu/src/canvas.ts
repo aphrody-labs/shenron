@@ -165,7 +165,47 @@ export function canvasModuleIsCrossOrigin(
 }
 
 function canvasWasmUrl(): URL {
-  return new URL("./wasm/koharu_canvas_bg.wasm", import.meta.url);
+  const asset = new URL("./wasm/koharu_canvas_bg.wasm", import.meta.url);
+  const pageOrigin = globalThis.location?.origin;
+  if (!pageOrigin || typeof document === "undefined") return asset;
+
+  // Turbopack turns `new URL(asset, import.meta.url)` into a root-relative asset URL. Unlike
+  // Next's script and stylesheet loader, that path does not receive `assetPrefix`; the browser
+  // would request it from the page origin, where production intentionally does not serve
+  // `/_next/static`. Reuse the prefix of a loaded Next chunk so WASM follows the same CDN route.
+  return resolveCanvasWasmAssetUrl(
+    asset,
+    pageOrigin,
+    Array.from(document.scripts, (script) => script.src),
+  );
+}
+
+/** Resolve Turbopack's root-relative WASM asset through the same Next asset prefix as its chunks. */
+export function resolveCanvasWasmAssetUrl(
+  asset: URL,
+  pageOrigin: string,
+  scriptUrls: readonly string[],
+): URL {
+  const page = new URL(pageOrigin);
+  const resolvedAsset = new URL(asset.href, page);
+  const mediaPath = "/_next/static/media/";
+  if (!resolvedAsset.pathname.includes(mediaPath)) return resolvedAsset;
+
+  const chunkPath = "/_next/static/chunks/";
+  for (const source of scriptUrls) {
+    let script: URL;
+    try {
+      script = new URL(source, page);
+    } catch {
+      continue;
+    }
+    const chunkIndex = script.pathname.indexOf(chunkPath);
+    if (chunkIndex < 0) continue;
+    const assetPrefix = script.pathname.slice(0, chunkIndex);
+    const pathname = `${assetPrefix}${resolvedAsset.pathname}`;
+    return new URL(`${pathname}${resolvedAsset.search}${resolvedAsset.hash}`, script.origin);
+  }
+  return resolvedAsset;
 }
 
 export async function createCanvas(

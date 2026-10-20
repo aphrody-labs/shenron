@@ -17,7 +17,11 @@ import {
   writeStamp,
   type Toolchain,
 } from "../scripts/build-wasm.ts";
-import { CANVAS_HANDLE_METHODS, preloadCanvasModule } from "../src/canvas.ts";
+import {
+  CANVAS_HANDLE_METHODS,
+  preloadCanvasModule,
+  resolveCanvasWasmAssetUrl,
+} from "../src/canvas.ts";
 
 const wasmPath = join(OUT_DIR, WASM_FILE);
 const gluePath = join(OUT_DIR, GLUE_FILE);
@@ -33,6 +37,31 @@ interface Glue {
 }
 
 describe("module WASM de koharu-canvas (WebAssembly natif de Bun)", () => {
+  test("résout le chemin Turbopack avec le préfixe CDN des chunks Next", () => {
+    const asset = new URL(
+      "/_next/static/media/koharu_canvas_bg.abc123.wasm",
+      "https://dragonballfr.com",
+    );
+    const url = resolveCanvasWasmAssetUrl(asset, "https://dragonballfr.com", [
+      "https://cdn.dragonballfr.com/_next/static/chunks/app.js",
+    ]);
+    expect(url.href).toBe(
+      "https://cdn.dragonballfr.com/_next/static/media/koharu_canvas_bg.abc123.wasm",
+    );
+  });
+
+  test("préserve un préfixe de chemin CDN et reste sur l'origine sans chunk Next", () => {
+    const asset = new URL("/_next/static/media/canvas.wasm", "https://dragonballfr.com");
+    expect(
+      resolveCanvasWasmAssetUrl(asset, "https://dragonballfr.com", [
+        "https://cdn.example.test/site/_next/static/chunks/app.js",
+      ]).href,
+    ).toBe("https://cdn.example.test/site/_next/static/media/canvas.wasm");
+    expect(resolveCanvasWasmAssetUrl(asset, "https://dragonballfr.com", []).href).toBe(
+      "https://dragonballfr.com/_next/static/media/canvas.wasm",
+    );
+  });
+
   withWasm("valide et compile", async () => {
     const bytes = await Bun.file(wasmPath).bytes();
     expect(WebAssembly.validate(bytes)).toBe(true);
