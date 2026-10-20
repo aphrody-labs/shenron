@@ -69,13 +69,46 @@ async function closeOwnedBrowser(endpoint: string | undefined) {
     socket.addEventListener("close", finish, { once: true });
   });
 }
+export function validateNativeRenderBounds(input: {
+  width: number;
+  height: number;
+  fps: number;
+  frames: number;
+  durationSeconds: number;
+}) {
+  const { width, height, fps, frames, durationSeconds } = input;
+  if (
+    ![width, height, fps, frames].every(Number.isSafeInteger) ||
+    width < 16 ||
+    height < 16 ||
+    width > 1920 ||
+    height > 1920 ||
+    width % 2 !== 0 ||
+    height % 2 !== 0 ||
+    width * height > 2_073_600 ||
+    fps < 1 ||
+    fps > 60 ||
+    frames < 1 ||
+    frames > 1800 ||
+    !Number.isFinite(durationSeconds) ||
+    durationSeconds <= 0 ||
+    Math.abs(frames / fps - durationSeconds) > Number.EPSILON
+  )
+    throw new Error("Render plan exceeds the native encoder dimensions, timing or frame budget");
+}
 export async function renderVideo(plan: VideoPlan) {
+  validateNativeRenderBounds({
+    width: plan.request.width,
+    height: plan.request.height,
+    fps: plan.request.fps,
+    frames: plan.render.endFrame,
+    durationSeconds: plan.request.durationSeconds,
+  });
   const home = ownerPath("SHENRON_VIDEO_OUTPUT_HOME");
   const rendererHome = ownerPath("SHENRON_VIDEO_RENDERER_HOME");
   const chrome = ownerPath("SHENRON_VIDEO_CHROME");
-  const ffmpeg = ownerPath("SHENRON_VIDEO_FFMPEG");
-  const ffprobe = ownerPath("SHENRON_VIDEO_FFPROBE");
-  for (const path of [chrome, ffmpeg, ffprobe])
+  const nativeEncoder = ownerPath("SHENRON_VIDEO_ENCODER");
+  for (const path of [chrome, nativeEncoder])
     if (!(await Bun.file(path).exists()))
       throw new Error("Configured backend executable is absent");
   const capturePath = `${rendererHome}/hyperframes/packages/engine/src/services/nativeWebViewCapture.ts`;
@@ -85,7 +118,9 @@ export async function renderVideo(plan: VideoPlan) {
   if (!WebView) throw new Error("Runtime does not expose Bun.WebView");
   const id = crypto.randomUUID();
   const dir = `${home}/${id}`;
-  const master = `${dir}/master.mkv`;
+  if (!(Bun as any).Video?.available || !(Bun as any).Image?.available)
+    throw new Error("Bun Video / FilmCraft and Bun.Image providers are required");
+  const archive = `${dir}/frames`;
   const web = `${dir}/web.mp4`;
   const nonce = crypto.randomUUID().replaceAll("-", "");
   const controller = new AbortController();
@@ -157,23 +192,6 @@ export async function renderVideo(plan: VideoPlan) {
     void shutdown();
   };
   controller.signal.addEventListener("abort", abort, { once: true });
-  const run = async (args: string[]) => {
-    controller.signal.throwIfAborted();
-    const child = Bun.spawn(args, {
-      detached: true,
-      stdout: "pipe",
-      stderr: Bun.file(`${dir}/process-${children.size}-${crypto.randomUUID()}.log`),
-    });
-    children.add(child);
-    try {
-      const output = await new Response(child.stdout).text();
-      const code = await child.exited;
-      if (code !== 0) throw new Error(`Media process failed with exit ${code}`);
-      return output;
-    } finally {
-      children.delete(child);
-    }
-  };
   try {
     const acquired = await $`mkdir ${lock}`.quiet().nothrow();
     if (acquired.exitCode !== 0)
@@ -231,34 +249,28 @@ export async function renderVideo(plan: VideoPlan) {
     await view.resize(plan.request.width, plan.request.height);
     const encoder = Bun.spawn(
       [
-        ffmpeg,
-        "-nostdin",
-        "-n",
-        "-hide_banner",
-        "-loglevel",
-        "error",
-        "-threads",
-        "2",
-        "-f",
-        "image2pipe",
-        "-framerate",
+        nativeEncoder,
+        "encode-rgba",
+        "--width",
+        String(plan.request.width),
+        "--height",
+        String(plan.request.height),
+        "--fps-num",
         String(plan.request.fps),
-        "-vcodec",
-        "png",
-        "-i",
-        "pipe:0",
-        "-an",
-        "-c:v",
-        "ffv1",
-        "-threads",
-        "2",
-        "-level",
-        "3",
-        "-pix_fmt",
-        "bgra",
-        master,
+        "--fps-den",
+        "1",
+        "--frames",
+        String(plan.render.endFrame),
+        "--crf",
+        "18",
       ],
-      { detached: true, stdin: "pipe", stdout: "ignore", stderr: Bun.file(`${dir}/master.log`) },
+      {
+        detached: true,
+        stdin: "pipe",
+        stdout: Bun.file(web),
+        stderr: Bun.file(`${dir}/encoder.log`),
+        env: { ...process.env, RAYON_NUM_THREADS: "1" },
+      },
     );
     children.add(encoder);
     const representative = new Set([
@@ -267,6 +279,8 @@ export async function renderVideo(plan: VideoPlan) {
       plan.render.endFrame - 1,
     ]);
     const frames: { frame: number; path: string; sha256: string }[] = [];
+    const originals: { frame: number; path: string; sha256: string }[] = [];
+    let originalBytes = 0;
     let count = 0;
     const context = {
       navigate: (url: string) => view!.navigate(url),
@@ -289,159 +303,75 @@ export async function renderVideo(plan: VideoPlan) {
         throw new Error(
           `Capture ${dimensions.width}x${dimensions.height} frame ${captured.frame}; expected ${plan.request.width}x${plan.request.height} frame ${count}`,
         );
-      if (representative.has(count)) {
-        const path = `${dir}/frame-${count}.png`;
-        await Bun.write(path, captured.png, { mode: 0o600 });
-        frames.push({
-          frame: count,
-          path,
-          sha256: new Bun.CryptoHasher("sha256").update(captured.png).digest("hex"),
-        });
-      }
-      encoder.stdin.write(captured.png);
+      const path = `${archive}/${String(count).padStart(5, "0")}.png`;
+      originalBytes += captured.png.byteLength;
+      if (originalBytes > 2 * 1024 ** 3)
+        throw new Error("Original PNG archive exceeds the 2 GiB job budget");
+      await Bun.write(path, captured.png, { mode: 0o600 });
+      const sha256 = new Bun.CryptoHasher("sha256").update(captured.png).digest("hex");
+      const stored = await Bun.file(path).bytes();
+      if (new Bun.CryptoHasher("sha256").update(stored).digest("hex") !== sha256)
+        throw new Error("Original PNG archive differs from browser capture");
+      const original = { frame: count, path, sha256 };
+      originals.push(original);
+      if (representative.has(count)) frames.push(original);
+      const rgba = await new (Bun as any).Image(captured.png).rgba();
+      if (rgba.width !== plan.request.width || rgba.height !== plan.request.height)
+        throw new Error("Bun.Image RGBA dimensions differ from captured PNG");
+      encoder.stdin.write(rgba.data);
       await encoder.stdin.flush();
       count++;
     }
     encoder.stdin.end();
     if ((await encoder.exited) !== 0 || count !== plan.render.endFrame)
-      throw new Error("Archive encoding or frame count failed");
+      throw new Error("FilmCraft web encoding or frame count failed");
     children.delete(encoder);
-    await run([
-      ffmpeg,
-      "-nostdin",
-      "-n",
-      "-hide_banner",
-      "-loglevel",
-      "error",
-      "-threads",
-      "2",
-      "-i",
-      master,
-      "-an",
-      "-c:v",
-      "libx264",
-      "-threads",
-      "2",
-      "-crf",
-      "18",
-      "-pix_fmt",
-      "yuv420p",
-      "-movflags",
-      "+faststart",
-      web,
-    ]);
-    const probe = async (path: string) =>
-      JSON.parse(
-        await run([
-          ffprobe,
-          "-v",
-          "error",
-          "-count_frames",
-          "-select_streams",
-          "v:0",
-          "-show_entries",
-          "stream=codec_name,width,height,nb_read_frames,avg_frame_rate:format=duration",
-          "-of",
-          "json",
-          path,
-        ]),
-      ) as {
-        streams: {
-          codec_name: string;
-          width: number;
-          height: number;
-          nb_read_frames: string;
-          avg_frame_rate: string;
-        }[];
-        format: { duration: string };
-      };
-    const archiveProbe = await probe(master);
-    const webProbe = await probe(web);
-    for (const result of [archiveProbe, webProbe]) {
-      const stream = result.streams[0];
-      if (
-        !stream ||
-        stream.width !== plan.request.width ||
-        stream.height !== plan.request.height ||
-        Number(stream.nb_read_frames) !== count ||
-        stream.avg_frame_rate !== `${plan.request.fps}/1` ||
-        Math.abs(Number(result.format.duration) - plan.request.durationSeconds) >
-          1 / plan.request.fps
-      )
-        throw new Error("Encoded media differs from plan");
-    }
+    const webProbe = await new (Bun as any).Video(web).metadata();
     if (
-      archiveProbe.streams[0]!.codec_name !== "ffv1" ||
-      webProbe.streams[0]!.codec_name !== "h264"
+      webProbe.width !== plan.request.width ||
+      webProbe.height !== plan.request.height ||
+      webProbe.frameCount !== count ||
+      webProbe.fpsNumerator !== plan.request.fps ||
+      webProbe.fpsDenominator !== 1 ||
+      !/^H\.264(?:\s|$)/.test(String(webProbe.codec)) ||
+      Math.abs(webProbe.duration - plan.request.durationSeconds) > 1 / plan.request.fps
     )
-      throw new Error("Unexpected codec");
-    for (const frame of frames) {
-      const sourceRGBA = `${dir}/source-${frame.frame}.rgba`;
-      const decodedRGBA = `${dir}/decoded-${frame.frame}.rgba`;
-      await run([
-        ffmpeg,
-        "-nostdin",
-        "-n",
-        "-v",
-        "error",
-        "-i",
-        frame.path,
-        "-frames:v",
-        "1",
-        "-f",
-        "rawvideo",
-        "-pix_fmt",
-        "rgba",
-        sourceRGBA,
-      ]);
-      await run([
-        ffmpeg,
-        "-nostdin",
-        "-n",
-        "-v",
-        "error",
-        "-i",
-        master,
-        "-vf",
-        `select=eq(n\\,${frame.frame})`,
-        "-frames:v",
-        "1",
-        "-f",
-        "rawvideo",
-        "-pix_fmt",
-        "rgba",
-        decodedRGBA,
-      ]);
-      const a = new Uint8Array(await Bun.file(sourceRGBA).arrayBuffer());
-      const b = new Uint8Array(await Bun.file(decodedRGBA).arrayBuffer());
-      if (
-        a.length !== plan.request.width * plan.request.height * 4 ||
-        b.length !== a.length ||
-        new Bun.CryptoHasher("sha256").update(a).digest("hex") !==
-          new Bun.CryptoHasher("sha256").update(b).digest("hex")
-      )
-        throw new Error("Lossless archive pixel comparison failed");
-    }
+      throw new Error("FilmCraft encoded media differs from plan");
+    const archiveIndex = archive + "/index.json";
+    await Bun.write(
+      archiveIndex,
+      JSON.stringify({ format: "png-sequence", fps: plan.render.fps, frames: originals }),
+      { mode: 0o600 },
+    );
     const digest = async (path: string) =>
       new Bun.CryptoHasher("sha256").update(await Bun.file(path).arrayBuffer()).digest("hex");
     const receipt = {
+      schema: "shenron.video.render/v2",
       plan: {
         ...plan,
         qualification: { ...plan.qualification, rendered: true, pixelMatchVerified: false },
       },
       artifact: {
-        archive: { path: master, sha256: await digest(master), probe: archiveProbe },
+        archive: {
+          format: "png-sequence",
+          path: archive,
+          index: archiveIndex,
+          sha256: await digest(archiveIndex),
+          frames: count,
+          bytes: originalBytes,
+        },
         web: { path: web, sha256: await digest(web), probe: webProbe },
         frames,
       },
       qualification: {
-        backend: "bun.WebView/chrome + bun-video captureNativeWebViewFrames + FFmpeg",
+        backend:
+          "bun.WebView/chrome + bun-video captureNativeWebViewFrames + shenron-video/FilmCraft",
         ownerCapturePath: capturePath,
-        losslessRepresentativeFramesVerified: true,
+        originalPngFramesVerified: true,
         comparison:
-          "Captured composition RGBA equals decoded FFV1 first/middle/last; no external anime reference",
+          "All original captured PNGs retained byte-exact; H.264 web derivative is lossy BT.709 YUV420; no external anime reference",
         browserRuntimeQualified: false,
-        nativeEncodeVideoQualified: false,
+        nativeEncodeVideoQualified: true,
         workers: 1,
       },
       finishedAt: new Date().toISOString(),
