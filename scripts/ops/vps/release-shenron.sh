@@ -50,8 +50,14 @@ done
 
 if [[ "$MODE" != ship ]]; then
   git -C "$SOURCE" fetch -q origin
-  REVISION=${REVISION:-$(git -C "$SOURCE" rev-parse --verify 'origin/main^{commit}')}
-  git -C "$SOURCE" rev-parse --verify "${REVISION}^{commit}" >/dev/null
+  REVISION=${REVISION:-origin/main}
+fi
+if [[ -n "$REVISION" ]]; then
+  REVISION_REPO=$SOURCE
+  [[ "$MODE" != ship ]] || REVISION_REPO=$BUILD_REPO
+  REVISION=$(git -C "$REVISION_REPO" rev-parse --verify "${REVISION}^{commit}")
+fi
+if [[ "$MODE" != ship ]]; then
   export SHENRON_BUILD_REVISION=$REVISION
   # Aphrody's factory caps Cargo fan-out at the executing host's CPU count.
   export APHRODY_CARGO_JOBS=${APHRODY_CARGO_JOBS:-auto}
