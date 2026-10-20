@@ -168,39 +168,35 @@ Le script Docker versionné construit sous `~/build/transient/shenron-docker` av
 `docs/operations/container/CONTAINER.md` et
 `docs/operations/infra/SHENRON-DOCKER.md` d'Aphrody.
 
-### Livraison Docker vers dbfr
+### Release Docker unifiée
 
-Aucun build sur dbfr : il reçoit seulement l'image construite sur le vps. Sur le vps, les étapes
-longues tournent dans tmux, sans flux SSH maintenu ouvert. Les scripts VPS versionnés sont dans
-`~/src/shenron/scripts/ops/vps/` (`release-shenron.sh`, `shenron-docker-build.sh`, `ship-shenron.sh`). Les helpers DBFR
-installés dans `~/` proviennent de `scripts/ops/dbfr/` (`deploy-shenron-image.sh`,
-`assemble-shenron.py`, `seal-shenron-docker-release.py`). Vérifier leur présence avant livraison.
+`scripts/ops/vps/release-shenron.sh` est l'unique entrée pour pinner une révision, construire,
+qualifier puis livrer l'image Shenron. Le propriétaire choisit le builder ; le défaut reste `vps`.
+La production `dbfr` ne compile jamais. Chaque builder alternatif doit être déclaré par Aphrody
+Infra, posséder le toolchain demandé et obtenir son bail de fabrique. Le workflow ne contourne
+ni le verrou partagé ni le nettoyage propriétaire de la fabrique.
 
-1. `release-shenron.sh` fige `origin/main` en un SHA, exécute le build puis expédie
-   le même SHA. Par défaut, le wrapper choisit `APHRODY_CARGO_JOBS=auto`, borné par
-   les cœurs disponibles et le maximum de la fabrique, sans relâcher son verrou partagé.
-   Le run reste durable dans tmux :
+1. Choisir explicitement l'hôte builder et son identifiant Infra, puis lancer le run durable
+   dans tmux sur ce builder. Le wrapper fige `origin/main` en SHA avant le build ; toutes les
+   voies parallèles sont attendues et leur statut d'échec est conservé. `APHRODY_CARGO_JOBS=auto`
+   reste borné par les cœurs disponibles et le maximum de la fabrique :
 
    ```sh
    tmux new-session -d -s shenron-release 'bash ~/src/shenron/scripts/ops/vps/release-shenron.sh > ~/shenron-release.log 2>&1; code=$?; printf "EXIT_CODE=%s\n" "$code" >> ~/shenron-release.log'
    ```
 
-   `--build-only`, `--ship-only`, `--revision <sha>`, `SHENRON_SOURCE_REPO`,
-   `SHENRON_BUILD_REPO`, `SHENRON_BUILD_LOCK`, `SHENRON_DEPLOY_HOST`,
-   `APHRODY_BUILD_HOST` et `APHRODY_CARGO_JOBS` permettent de reprendre une phase,
-   choisir le checkout, l'hôte builder déclaré, la cible SSH et le nombre de tâches Cargo.
-   Le script peut tourner sur n'importe quel Linux qui possède le toolchain Bun/Rust/Docker,
-   les helpers Aphrody et le bail de fabrique de cet hôte. Le VPS reste le défaut historique ;
-   pour un autre builder, utiliser son identifiant de fabrique et son catalogue local au lieu
-   des valeurs par défaut. Aphrody Infra garde la déclaration des hôtes éligibles et des baux.
-2. Pour une reprise séparée, le build écrit `localhost/shenron:<sha>` dans le worktree
-   indiqué par `SHENRON_BUILD_REPO`. `ship-shenron.sh` exécute `docker save | zstd`,
-   `scp` vers dbfr, puis `~/deploy-shenron-image.sh <sha> <tar>` sur dbfr. Ce script charge l'image,
-   assemble la release (`~/assemble-shenron.py`, override `guild-admission`), la scelle
-   (`~/seal-shenron-docker-release.py`, en reprenant les images passerelle, postgres, redis et chat
-   de la release active), puis `aphrody-infra-deploy-shenron verify` et `activate` (sauvegarde de
-   retour arrière dans `/home/ubuntu/apps/shenron/deploy-backups/`).
-3. Sondes : pages, `/api/health`, `/api/public/rag/search`, `tools/list` anonyme de `/mcp`, `bot.` et `cdn.`.
+   `--build-only`, `--ship-only` et `--revision <sha>` reprennent une phase sans déplacer le
+   worktree épinglé. `SHENRON_SOURCE_REPO`, `SHENRON_BUILD_REPO`, `SHENRON_BUILD_LOCK`,
+   `SHENRON_DEPLOY_HOST`, `APHRODY_FACTORY_CONFIG`, `APHRODY_BUILD_HOST` et
+   `APHRODY_CARGO_JOBS` règlent les chemins, cible, configuration/identité de fabrique et
+   concurrence Cargo. Le VPS est le défaut historique ; le propriétaire choisit toute autre
+   cible explicitement dans le catalogue Infra.
+2. `ship-shenron.sh` transfère uniquement l'image qualifiée au déploiement Infra configuré.
+   La cible assemble et scelle la release puis passe les étapes de vérification et activation
+   du propriétaire Infra ; aucune commande locale ne modifie directement les conteneurs de prod.
+   Conserver le chemin de rollback retourné par Infra.
+3. Sondes après activation : pages, `/api/health`, `/api/public/rag/search`, `tools/list`
+   anonyme de `/mcp`, `bot.` et `cdn.`.
 
 ## 7. Tunnel vers le vps et dbfr
 

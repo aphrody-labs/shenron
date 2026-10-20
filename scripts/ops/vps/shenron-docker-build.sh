@@ -46,10 +46,22 @@ echo "== bun install"; bun install --frozen-lockfile
 echo "== parallel: cargo | wasm | vfs | bot"
 pids=()
 ( bash "$CARGO_SERIAL" build --release --locked -p shenron-mcp -p shenron-ffi && bash "$CARGO_SERIAL" build --release --locked -p koharu-library --bin koharu-sdk ) & pids+=($!)
-( bun packages/koharu/scripts/build-wasm.ts & bun packages/pipeline/scripts/build-re-wasm.ts & wait -n; wait ) & pids+=($!)
+(
+  bun packages/koharu/scripts/build-wasm.ts & canvas_pid=$!
+  bun packages/pipeline/scripts/build-re-wasm.ts & re_pid=$!
+  status=0
+  wait "$canvas_pid" || status=$?
+  wait "$re_pid" || status=$?
+  exit "$status"
+) & pids+=($!)
 ( mkdir -p dist/vfs; scp -q dbfr:/home/ubuntu/apps/shenron/shared/server/data/7b26187/shenron-vfs.public.sqlite dist/vfs/shenron-vfs.public.sqlite ) & pids+=($!)
 ( bun scripts/build/bot.ts --target linux-x64 ) & pids+=($!)
-for p in "${pids[@]}"; do wait "$p"; done
+build_status=0
+for p in "${pids[@]}"; do wait "$p" || build_status=$?; done
+if ((build_status != 0)); then
+  echo "A parallel build lane failed (exit $build_status)" >&2
+  exit "$build_status"
+fi
 echo "== server"; bun scripts/build/server.ts --flavor production --target linux-x64
 install -D -m 0755 target/release/shenron-mcp dist/mcp/linux-x64/shenron-mcp
 install -D -m 0755 target/release/libshenron_ffi.so dist/server/linux-x64/native/libshenron_ffi.so

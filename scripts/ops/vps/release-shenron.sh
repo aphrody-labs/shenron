@@ -14,11 +14,13 @@ usage() {
 Usage: release-shenron.sh [--revision <git-revision>] [--build-only | --ship-only]
 
 Builds and verifies an immutable Shenron image, then ships that exact revision to DBFR.
-Run this script on the Linux builder you choose. It defaults to the canonical VPS paths,
-but accepts another builder with the same Bun/Rust/Docker/Aphrody toolchain and valid factory
-lease. Set SHENRON_SOURCE_REPO, SHENRON_BUILD_REPO, SHENRON_BUILD_LOCK,
-SHENRON_DEPLOY_HOST, and APHRODY_CARGO_JOBS to select source, worktree, lock, target,
-and bounded Cargo fan-out.
+Run this script on the Linux builder you choose. It defaults to the canonical VPS paths;
+the operator selects any alternate builder and its factory identity explicitly. The chosen
+builder must have the matching Bun/Rust/Docker/Aphrody toolchain and a valid factory lease.
+Set SHENRON_SOURCE_REPO, SHENRON_BUILD_REPO, SHENRON_BUILD_LOCK, SHENRON_DEPLOY_HOST,
+APHRODY_BUILD_HOST, and APHRODY_CARGO_JOBS to select source, worktree, lock, deploy target,
+factory identity, and bounded Cargo fan-out. Use --build-only to qualify an image before
+shipping, then --ship-only to resume from the pinned build worktree.
 EOF
 }
 
