@@ -52,6 +52,7 @@
       "./sha256": "pure",
       "./video-plan": "pure",
       "./episode-video-delivery": "pure",
+      "./crunchyroll-mapping": "pure",
       "./episode-video-artifacts": "bun",
       "./episode-playback": "pure"
     }
