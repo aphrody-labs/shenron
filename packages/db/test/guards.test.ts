@@ -83,9 +83,15 @@ describe("databooks freeze gate", () => {
   });
 
   for (const production of [true, false]) {
-    test(`absent file is free (production=${production})`, () => {
+    test(`absent file fails closed only in production (production=${production})`, () => {
       const gate = createDatabooksFreezeGate({ freezeFile: PATH, production, fs: memoryFs({}) });
-      expect(gate.state()).toEqual({ frozen: false });
+      expect(gate.state()).toEqual(
+        production
+          ? { frozen: true, reason: "Fichier DATABOOKS_FREEZE_FILE introuvable", path: PATH }
+          : { frozen: false },
+      );
+      if (production) expect(() => gate.assertWritable()).toThrow(DatabooksFrozenError);
+      else expect(() => gate.assertWritable()).not.toThrow();
     });
 
     test(`{"frozen": false} is free (production=${production})`, () => {
@@ -123,6 +129,20 @@ describe("databooks freeze gate", () => {
       },
     });
     expect(gate.state().frozen).toBe(true);
+  });
+
+  test("removing an explicit production unfreeze immediately blocks subsequent writes", () => {
+    const files: Record<string, string | Error> = { [PATH]: '{"frozen":false}' };
+    const gate = createDatabooksFreezeGate({
+      freezeFile: PATH,
+      production: true,
+      fs: memoryFs(files),
+    });
+    expect(() => gate.assertWritable()).not.toThrow();
+    delete files[PATH];
+    expect(() => gate.assertWritable()).toThrow(DatabooksFrozenError);
+    files[PATH] = '{"frozen":false}';
+    expect(() => gate.assertWritable()).not.toThrow();
   });
 
   test("any other content is frozen with the site's reason extraction", () => {
@@ -171,6 +191,10 @@ describe("databooks freeze gate", () => {
       freezeFile: `${import.meta.dir}/does-not-exist-freeze.json`,
       production: true,
     });
-    expect(gate.state()).toEqual({ frozen: false });
+    expect(gate.state()).toEqual({
+      frozen: true,
+      reason: "Fichier DATABOOKS_FREEZE_FILE introuvable",
+      path: `${import.meta.dir}/does-not-exist-freeze.json`,
+    });
   });
 });
