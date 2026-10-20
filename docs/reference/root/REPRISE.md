@@ -1,5 +1,35 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## 2026-10-20 — DBXV2 public, coordination and production gates still open
+
+- `@aphrody/shenron-dbxv2@1.4.7` is public on npm. The exact archive SHA-256
+  `da2e5bb91924c7d6017bc2188ae3ea0df1e991bfbfe795a486ed8cb5ce735026` was submitted;
+  npm returned the matching SHA-1 `f5c31235a6a0ea33e7b9d89c58849a90858e097e` and version readback.
+  Source commits `a0dc2bf7` and `61d933d6` document the public client, Apache-2.0 code license,
+  approved immutable public-asset manifests and retained private-backend guards. Package gates:
+  60 tests pass, one live test skipped, typecheck on 47 files and lint pass. The package
+  contains parser/client code, not game data, a database or Steam session files.
+- Chrome loaded `/games/xenoverse-2`, whose copy distinguishes local format analysis from the
+  separate streaming link. A local empty `.bac` fixture reached the WebAssembly parser and was
+  reported unreadable, without sending game files; this proves parser invocation, not parsing a
+  real game file or a running game session. The published 288,579-byte WASM is SHA-256
+  `3dd710fb463ea433a3f575937af3a95cd8f98fb33509c9e07bedbe19cb0c11da`.
+- VPS user service overrides now pin sync/auto-deploy to Bun 1.4.4. Timers remain stopped pending
+  a qualified phase-2 image. DBXV2 CPK `/health` and game-stream `/healthz` return 200; stream
+  health reports a configured H.264 sender, but no viewer is connected. Steam is alive with
+  `runningAppId=null`; no game/Wine/Gamescope process exists. Do not report gameplay or streaming
+  as operational from these health checks.
+- Studio browser qualification with an authenticated test project imported a real 1662 × 2560
+  page, then showed `Module WASM du canevas indisponible : Failed to fetch`. This is Koharu canvas
+  WASM, separate from the DBXV2 parser. The fix is assigned to its owner and must be tested on the
+  page actually served before the next image is accepted.
+- Reader HTTP audit remains durable in tmux `reader-audit-20261020`: 2,586/2,586 pages,
+  7,514/69,072 assets, zero HTTP failures, 0/2,910 embeds. `rendered:false`; resume the same
+  checkpoint with `--embeds` after assets complete.
+- Bun OS code is still divergent between its canonical `os` branch and the VPS checkout; an
+  unrelated FilmCraft Cargo build holds the shared lock. RAG tool-box rebuild/runtime budget
+  smoke waits for source reconciliation and lock release. No new Cargo build may overlap it.
+
 ## 2026-10-20 — Déblocages vérifiés, livraison commune en qualification
 
 - Studio hébergé : backend de credentials privé par compte `adfdff01`, quatre
