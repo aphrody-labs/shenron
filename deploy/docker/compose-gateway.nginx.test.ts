@@ -66,3 +66,18 @@ test("CDN chunks prefer the sealed rolling tree and use the active site on a mis
   expect(retained).not.toContain("$http_cookie");
   expect(retained).not.toContain("$http_authorization");
 });
+
+test("CDN serves public CPK requests through the site API without browser credentials", () => {
+  const routeBlocks = [
+    ...config.matchAll(/location (?:=|\^~) \/api\/public\/dbxv2\/cpk\/? \{([^}]+)\}/g),
+  ];
+  expect(routeBlocks).toHaveLength(4);
+  for (const [, block = ""] of routeBlocks) {
+    expect(block).toContain("proxy_pass http://upstream_site");
+    expect(block).toContain("proxy_set_header Host dragonballfr.com;");
+    expect(block).toContain('proxy_set_header Cookie "";');
+    expect(block).toContain('proxy_set_header Authorization "";');
+    expect(block).toContain("proxy_set_header Range $http_range;");
+    expect(block).toContain("proxy_buffering off;");
+  }
+});

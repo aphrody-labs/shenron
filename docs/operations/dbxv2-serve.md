@@ -1,13 +1,16 @@
 # Serveur DBXV2 à la demande
 
-`scripts/ops/dbxv2-serve.ts` sert les CPK de Dragon Ball Xenoverse 2 comme un CDN, à la demande : seuls
-la table des matières et les plages demandées sont lues, rien n'est extrait d'avance.
+`scripts/ops/dbxv2-serve.ts` sert les CPK de Dragon Ball Xenoverse 2 à la demande : seules la table
+des matières et les plages demandées sont lues, rien n'est extrait d'avance. La page publique
+`/games/xenoverse-2` liste les archives, parcourt leurs entrées et charge au clic les formats pris
+en charge dans le moteur WebAssembly du navigateur. Les 37 Go d'archives ne sont ni copiés dans Git,
+ni inclus dans l'image, ni téléchargés en entier pour afficher le catalogue.
 
 Le propriétaire déclare le 2026-10-20 que l'accord confidentiel Toei, Shueisha et Bandai Namco
 couvre Xenoverse 2, et demande la publication des CPK et données DBXV2 sur dragonballfr.com.
-L'accord n'a pas été vérifié indépendamment. À l'état opérationnel documenté ici, le serveur
-reste protégé par jeton et joignable uniquement sur le mesh WireGuard ; la publication publique
-doit passer par la chaîne Infra. Aucun octet servi n'est commité.
+L'accord n'a pas été vérifié indépendamment. Le serveur de données reste protégé par jeton et
+joignable uniquement sur le mesh WireGuard ; seul le relais GET/HEAD explicite du site rend le
+catalogue et les entrées choisies accessibles au public. Aucun octet servi n'est commité.
 
 ## Garde-fous
 
@@ -55,6 +58,22 @@ Shenron ne dépend pas de bun-distribution. La bibliothèque native est `libshen
   (plafonnée à `DBXV2_MP4_MAX_SECONDS`). C'est le format web : `/video/` rend le flux natif (MPEG-1/2, illisible
   dans Chrome). Un USM déjà en MP4 est servi tel quel.
 - `/cpk/:name/model/*path.json|.glb` : EMD assemblé ; EMB et ESK frères de même nom, ou `?emb=&esk=`.
+
+## Accès public par le site, WASM et CDN
+
+Le relais `apps/site/src/app/api/public/dbxv2/cpk/[...path]/route.ts` expose uniquement les
+opérations GET/HEAD autorisées (`/cpk`, `find`, `raw`, `png`, `wav`, `video`, `mp4`, `model`). Il
+injecte `DBXV2_TOKEN` côté serveur, transmet les plages HTTP et ne relaie ni cookie ni en-tête
+d'authentification du navigateur. Les listes sont mises en cache une heure et les entrées avec ETag
+une journée côté CDN, avec revalidation ; erreurs et indisponibilités ne sont jamais mises en cache.
+Le CDN conserve `/_next/static`/WASM et relaie `/api/public/dbxv2/cpk/*` vers ce handler par le
+vhost NGINX `cdn.dragonballfr.com`. Le navigateur n'accède jamais au mesh ni au secret.
+
+Le relais reste désactivé sans `DBXV2_PUBLIC_CPK=1`, `DBXV2_SERVER_URL` et `DBXV2_TOKEN`. Ces trois
+valeurs sont injectées dans l'environnement privé du site par Infra. La page ne télécharge que
+l'entrée sélectionnée (maximum analysable de 16 Mio) et appelle `parseGameDataFile` en WASM ; les
+autres formats restent listés avec leur taille sans être chargés. Les gros CPK ne sont jamais
+aspirés dans le navigateur en bloc.
 
 ## Fonctionnement
 

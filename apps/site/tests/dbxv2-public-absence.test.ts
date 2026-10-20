@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * DBXV2 est privé : aucune page publique, aucun dictionnaire public, aucune dépendance du site
- * ni aucun artefact de build ne le référence. Seuls l'espace admin dédié et ses bibliothèques
- * serveur le nomment, et le paquet privé n'est jamais importé statiquement (donc jamais empaqueté).
+ * L'index en lecture seule des CPK est public ; l'espace DBXV2 éditorial reste privé. Le paquet
+ * propriétaire et les secrets du service ne quittent jamais le serveur.
  */
 import { describe, expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
@@ -14,7 +13,10 @@ const SRC = join(SITE, "src");
 
 const allowed = (rel: string): boolean =>
   rel.startsWith(`app${sep}admin${sep}dbxv2${sep}`) ||
+  rel.startsWith(`app${sep}api${sep}public${sep}dbxv2${sep}cpk${sep}`) ||
   /^lib[\\/]dbxv2[^\\/]*\.ts$/.test(rel) ||
+  rel === join("components", "games", "Dbxv2CpkExplorer.tsx") ||
+  rel === join("app", "games", "xenoverse-2", "Xenoverse2Explorer.tsx") ||
   // Both navigation surfaces are mounted exclusively behind the admin layout guard.
   rel === join("components", "admin", "AdminSidebar.tsx") ||
   rel === join("components", "admin", "AdminWorkspace.tsx");
@@ -29,7 +31,7 @@ function* walk(dir: string): Generator<string> {
 
 describe("pages publiques", () => {
   test(
-    "aucun fichier hors de l'espace admin dédié ne mentionne dbxv2",
+    "les usages CPK publics sont limités au relais read-only et au panneau Xenoverse",
     () => {
       const offenders: string[] = [];
       for (const file of walk(SRC)) {
@@ -56,6 +58,18 @@ describe("pages publiques", () => {
       expect(text).not.toMatch(/from\s+["']@aphrody\/shenron-dbxv2/);
       expect(text).not.toMatch(/from\s+["'](?:\.\.?\/)+packages\/dbxv2/);
     }
+  });
+
+  test("le relais public CPK exige sa fonction activée et n'accepte que GET/HEAD", () => {
+    const route = readFileSync(
+      join(SRC, "app", "api", "public", "dbxv2", "cpk", "[...path]", "route.ts"),
+      "utf8",
+    );
+    expect(route).toContain('env.DBXV2_PUBLIC_CPK !== "1"');
+    expect(route).toContain('request.method !== "GET" && request.method !== "HEAD"');
+    expect(route).toContain("Authorization: `Bearer ${env.DBXV2_TOKEN}`");
+    expect(route).toContain('"Access-Control-Allow-Origin": "*"');
+    expect(route).toContain('"Cross-Origin-Resource-Policy": "cross-origin"');
   });
 
   test("l'espace admin passe par la garde du proxy et par requireAdmin", () => {
