@@ -25,6 +25,7 @@ import type {
   LexiconOverviewItem,
 } from "@/lib/transcriptions-admin";
 import type { TranscriptionsOverviewView } from "@/lib/admin-status-view";
+import { onTablistKeyDown } from "@/lib/tablist-keys";
 
 export function TranscriptionsDashboard({
   initialData,
@@ -154,6 +155,7 @@ export function TranscriptionsDashboard({
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
         <div
           role="tablist"
+          onKeyDown={onTablistKeyDown}
           aria-label="Sections du suivi des transcriptions"
           className="flex flex-wrap items-center gap-2"
         >
@@ -161,6 +163,7 @@ export function TranscriptionsDashboard({
             type="button"
             role="tab"
             aria-selected={activeTab === "vue-globale"}
+            tabIndex={activeTab === "vue-globale" ? 0 : -1}
             onClick={() => setActiveTab("vue-globale")}
             className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
               activeTab === "vue-globale"
@@ -175,6 +178,7 @@ export function TranscriptionsDashboard({
             type="button"
             role="tab"
             aria-selected={activeTab === "lots-gpu"}
+            tabIndex={activeTab === "lots-gpu" ? 0 : -1}
             onClick={() => setActiveTab("lots-gpu")}
             className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
               activeTab === "lots-gpu"
@@ -189,6 +193,7 @@ export function TranscriptionsDashboard({
             type="button"
             role="tab"
             aria-selected={activeTab === "traduction-vps"}
+            tabIndex={activeTab === "traduction-vps" ? 0 : -1}
             onClick={() => setActiveTab("traduction-vps")}
             className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
               activeTab === "traduction-vps"
@@ -203,6 +208,7 @@ export function TranscriptionsDashboard({
             type="button"
             role="tab"
             aria-selected={activeTab === "lexique"}
+            tabIndex={activeTab === "lexique" ? 0 : -1}
             onClick={() => setActiveTab("lexique")}
             className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
               activeTab === "lexique"
@@ -217,6 +223,7 @@ export function TranscriptionsDashboard({
             type="button"
             role="tab"
             aria-selected={activeTab === "databooks"}
+            tabIndex={activeTab === "databooks" ? 0 : -1}
             onClick={() => setActiveTab("databooks")}
             className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
               activeTab === "databooks"
@@ -231,6 +238,7 @@ export function TranscriptionsDashboard({
             type="button"
             role="tab"
             aria-selected={activeTab === "manga"}
+            tabIndex={activeTab === "manga" ? 0 : -1}
             onClick={() => setActiveTab("manga")}
             className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
               activeTab === "manga"
@@ -245,6 +253,7 @@ export function TranscriptionsDashboard({
             type="button"
             role="tab"
             aria-selected={activeTab === "arbitrage"}
+            tabIndex={activeTab === "arbitrage" ? 0 : -1}
             onClick={() => setActiveTab("arbitrage")}
             className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 ${
               activeTab === "arbitrage"
