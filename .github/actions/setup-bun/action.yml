@@ -20,8 +20,8 @@ runs:
         SHENRON_EXPECTED_BUN: ${{ steps.fork.outputs.tag }}
       run: |
         set -euo pipefail
-        candidate=$(command -v bun || true)
-        if [ ! -x "$candidate" ]; then candidate="${BUN_INSTALL:-$HOME/.bun}/bin/bun"; fi
+        candidate="${SHENRON_BUN_EXECUTABLE:-${BUN_INSTALL:-$HOME/.bun}/bin/bun-${SHENRON_EXPECTED_BUN}}"
+        [ -x "$candidate" ] || { echo "The pinned factory Bun is unavailable: $SHENRON_EXPECTED_BUN" >&2; exit 1; }
         native=$(realpath "$candidate")
         [ -x "$native" ] || { echo "Qualified factory Bun is unavailable" >&2; exit 1; }
         # Qualified native Linux x64 factory artifact, revision dfde053a3 (2026-10-13).
