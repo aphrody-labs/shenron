@@ -21,7 +21,8 @@
  *   GIF   gifsicle -O3 -> identical coalesced RGBA frames and frame delays
  *   WebP  lossless VP8L re-encoded cwebp -lossless -z 9 -exact (ICC/Exif re-attached); lossy:
  *         XMP stripped -> identical dwebp pixels
- *   MP4   moov after mdat -> ffmpeg -c copy -movflags +faststart -> identical packet framemd5
+ *   MP4   Bun.Video/FilmCraft remux -> identical canonical native remux hashes;
+ *         keep the original when the native writer cannot produce fast start
  *   text  brotli q11/lgwin 24 and zopfli gzip siblings -> decompression gives the source bytes
  */
 // oxlint-disable no-await-in-loop -- sequential by design: header walks, candidate proofs, dedup links.
@@ -38,7 +39,7 @@ import {
   unlink,
   utimes,
 } from "node:fs/promises";
-import { availableParallelism } from "node:os";
+import { availableParallelism, tmpdir } from "node:os";
 import { dirname, extname, join, resolve, sep } from "node:path";
 import { brotliCompressSync, brotliDecompressSync, constants as zlib, gunzipSync } from "node:zlib";
 
@@ -126,7 +127,6 @@ const tools = {
   cwebp: Bun.which("cwebp"),
   dwebp: Bun.which("dwebp"),
   webpmux: Bun.which("webpmux"),
-  ffmpeg: Bun.which("ffmpeg"),
   zopfli: Bun.which("zopfli"),
 };
 
@@ -313,6 +313,28 @@ async function mp4NeedsFaststart(path: string): Promise<boolean> {
 
 // ---------------------------------------------------------------- proofs of identical content
 
+interface NativeVideoRemux {
+  remux(destination: string): Promise<number>;
+}
+const NativeVideo = Reflect.get(Bun, "Video") as
+  | { new (source: string): NativeVideoRemux; available: boolean }
+  | undefined;
+
+/** The native MP4 writer preserves samples, timing, track configuration and metadata. */
+async function canonicalVideoHash(path: string): Promise<string | null> {
+  if (!NativeVideo?.available) return null;
+  const canonical = resolve(tmpdir(), `shenron-video-proof-${crypto.randomUUID()}.mp4`);
+  try {
+    await new NativeVideo(path).remux(canonical);
+    return await sha256File(canonical);
+  } catch {
+    // An unsupported track or codec cannot establish losslessness: retain the source.
+    return null;
+  } finally {
+    await rm(canonical, { force: true });
+  }
+}
+
 async function decodedHash(kind: Kind, path: string): Promise<string | null> {
   switch (kind) {
     case "jpeg":
@@ -346,29 +368,7 @@ async function decodedHash(kind: Kind, path: string): Promise<string | null> {
         ? await hashStdout([tools.dwebp, "-quiet", path, "-pam", "-o", "-"])
         : null;
     case "mp4":
-      return tools.ffmpeg
-        ? await hashStdout(
-            [
-              tools.ffmpeg,
-              "-v",
-              "error",
-              "-i",
-              path,
-              "-map",
-              "0",
-              "-c",
-              "copy",
-              "-f",
-              "framemd5",
-              "-",
-            ],
-            (t) =>
-              t
-                .split("\n")
-                .filter((l) => l && !l.startsWith("#"))
-                .join("\n"),
-          )
-        : null;
+      return await canonicalVideoHash(path);
     default:
       return null;
   }
@@ -389,7 +389,7 @@ class Workspace {
   }
 }
 
-async function optimize(kind: Kind, src: string, ext: string, ws: Workspace): Promise<Candidate[]> {
+async function optimize(kind: Kind, src: string, ws: Workspace): Promise<Candidate[]> {
   const out: Candidate[] = [];
   const attempt = async (tool: string, path: string, cmd: string[]): Promise<void> => {
     const r = await run(cmd);
@@ -506,28 +506,15 @@ async function optimize(kind: Kind, src: string, ext: string, ws: Workspace): Pr
       break;
     }
     case "mp4": {
-      if (!tools.ffmpeg || !(await mp4NeedsFaststart(src))) break;
-      const m = ws.file(ext);
-      const format = ext === ".m4a" ? "ipod" : "mp4";
-      await attempt("ffmpeg faststart", m, [
-        tools.ffmpeg,
-        "-v",
-        "error",
-        "-y",
-        "-i",
-        src,
-        "-map",
-        "0",
-        "-c",
-        "copy",
-        "-map_metadata",
-        "0",
-        "-movflags",
-        "+faststart",
-        "-f",
-        format,
-        m,
-      ]);
+      if (!NativeVideo?.available || !(await mp4NeedsFaststart(src))) break;
+      const m = ws.file(".mp4");
+      try {
+        await new NativeVideo(src).remux(m);
+        if (!(await mp4NeedsFaststart(m))) out.push({ path: m, tool: "Bun.Video FilmCraft remux" });
+        else await rm(m, { force: true });
+      } catch {
+        await rm(m, { force: true });
+      }
       break;
     }
     default:
@@ -787,9 +774,7 @@ async function main(): Promise<void> {
     try {
       const srcSha = await sha256File(srcPath);
       outSha = srcSha;
-      const candidates = opts.only.has(kind)
-        ? await optimize(kind, srcPath, extname(rel).toLowerCase(), ws)
-        : [];
+      const candidates = opts.only.has(kind) ? await optimize(kind, srcPath, ws) : [];
       const { best, rejected } = await choose(kind, srcPath, candidates);
       s.rejected += rejected;
       if (best) {
