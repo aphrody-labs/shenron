@@ -11,6 +11,16 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
 
 ## Actions ouvertes
 
+- Reprise du 20 octobre en cours : portes JS et scripts qualifiées, correctifs de
+  gel, navigation clavier, manifestes et verrouillage de fabrique poussés. La
+  nouvelle image attend encore le stockage privé des identifiants Studio et ses
+  portes Rust ; aucune activation de cette tentative n'est déclarée. Terminer
+  ensuite les contrôles authentifiés sur la release réellement active.
+- Vidéo native : extraction et preuves navigateur réelles, ainsi que l'optimiseur
+  CDN, passent par Bun Video/FilmCraft. Terminer la qualification fabrique du
+  wrapper d'encodage Shenron Video et de l'archive PNG exacte ; ne pas déclarer
+  une parité FFmpeg pour les opérations natives qui restent indisponibles.
+
 - Livrer et qualifier l'import d'atlas Rust déjà raccordé à Studio avec pause/reprise,
   contrôle des empreintes source/PNG et sélection des frames ; raccorder ensuite
   une séquence validée aux événements Dragon Pixel. Conversion réelle

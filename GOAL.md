@@ -8,6 +8,14 @@ l’historique sont dans [REPRISE.md](docs/reference/root/REPRISE.md) ; les inva
 
 ## Priorités
 
+Demande propriétaire du 20 octobre : reprendre tous les lots encore ouverts dans
+GOAL/TODO/PLAN, avec sous-agents, MCP et skills pertinents, installer les capacités
+manquantes, corriger les défauts prouvés puis livrer les artefacts publics qualifiés.
+La vidéo utilise Bun Video, FilmCraft et Shenron Video ; les appels directs à
+FFmpeg sont remplacés par leurs capacités réellement qualifiées. Conserver les
+originaux et les limites explicites quand une opération native reste indisponible.
+Les données privées, secrets et modèles protégés restent exclus des publications.
+
 Demande propriétaire du 18 octobre : réunir le parcours manga de Shenron et
 Shenron Studio (Koharu), afin d'exploiter les capacités communes de lecture,
 édition, cases, atlas, Canvas et scènes 3D. Conserver `koharu-library` comme
