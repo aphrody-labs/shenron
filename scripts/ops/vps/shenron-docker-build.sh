@@ -7,6 +7,7 @@ W=${SHENRON_BUILD_REPO:-$HOME/build/transient/shenron-docker}
 LOCK=${SHENRON_BUILD_LOCK:-$HOME/build/locks/heavy.lock}
 APHRODY_SOURCE=${APHRODY_SOURCE_REPO:-$(dirname "$SOURCE")/aphrody}
 FACTORY_CONFIG=${APHRODY_FACTORY_CONFIG:-$APHRODY_SOURCE/tools/config/build-factory.json}
+export APHRODY_FACTORY_CONFIG="$FACTORY_CONFIG"
 CARGO_SERIAL=${APHRODY_CARGO_SERIAL:-$APHRODY_SOURCE/scripts/build/rust/cargo-serial.sh}
 test -f "$CARGO_SERIAL" || { echo "Aphrody Cargo owner is unavailable" >&2; exit 1; }
 test -f "$FACTORY_CONFIG" || { echo "Aphrody factory configuration is unavailable: $FACTORY_CONFIG" >&2; exit 1; }
@@ -23,9 +24,9 @@ bun() { "$SHENRON_COMPILE_BUN" "$@"; }
 export APHRODY_FACTORY_RESOURCE
 APHRODY_FACTORY_RESOURCE=$(bun -e 'const config = await Bun.file(process.argv[1]).json(); if (!config.cleanup?.transientRoot) throw new Error("Factory transient resource is not configured"); console.log(config.cleanup.transientRoot);' "$FACTORY_CONFIG")
 mkdir -p "$(dirname "$W")" "$(dirname "$LOCK")"
-# Keep the flock owner alive in the process ancestry so Infra can verify the lease.
+# Acquire through the Infra guardian so nested Cargo can verify and reuse the lease.
 if ! bun "$APHRODY_SOURCE/packages/infra/workspace/src/build-factory-cleanup.ts" --held "$FACTORY_CONFIG"; then
-  exec flock --exclusive --timeout "${SHENRON_BUILD_LOCK_TIMEOUT_SECS:-3600}" "$LOCK" bash "$0" "$@"
+  exec "$SHENRON_COMPILE_BUN" "$APHRODY_SOURCE/packages/infra/workspace/src/build-factory-cleanup.ts" "$FACTORY_CONFIG" bash "$0" "$@"
 fi
 cleanup() {
   git -C "$SOURCE" worktree prune >/dev/null 2>&1 || true

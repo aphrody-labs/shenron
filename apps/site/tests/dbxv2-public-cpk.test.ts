@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-import { describe, expect, test } from "bun:test";
-import { relayPublicCpk } from "../src/app/api/public/dbxv2/cpk/[...path]/route";
+import { describe, expect, spyOn, test } from "bun:test";
+import { relayPublicCpk } from "../src/app/api/public/dbxv2/cpk/_relay";
+import * as catalogueRoute from "../src/app/api/public/dbxv2/cpk/route";
+import * as entryRoute from "../src/app/api/public/dbxv2/cpk/[...path]/route";
 
 const env = {
   DBXV2_PUBLIC_CPK: "1",
@@ -9,6 +11,65 @@ const env = {
 };
 
 describe("relais public CPK", () => {
+  test("la route catalogue sans suffixe et la route entrée exposent des handlers Next valides", async () => {
+    for (const route of [catalogueRoute, entryRoute]) {
+      expect(Object.keys(route).toSorted()).toEqual(["GET", "HEAD", "dynamic", "runtime"]);
+    }
+    const saved = Object.fromEntries(Object.keys(env).map((key) => [key, process.env[key]]));
+    Object.assign(process.env, env);
+    const upstream = spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json([{ name: "data" }]),
+    );
+    try {
+      const response = await catalogueRoute.GET(
+        new Request("https://dragonballfr.com/api/public/dbxv2/cpk"),
+      );
+      expect(response.status).toBe(200);
+      expect(await response.json()).toEqual([{ name: "data" }]);
+      expect(String(upstream.mock.calls[0]?.[0])).toBe("http://127.0.0.1:8788/cpk");
+    } finally {
+      upstream.mockRestore();
+      for (const [key, value] of Object.entries(saved)) {
+        if (value === undefined) delete process.env[key];
+        else process.env[key] = value;
+      }
+    }
+  });
+
+  test("préserve les paramètres de conversion pour les fichiers dans des sous-dossiers", async () => {
+    for (const [action, query] of [
+      ["png", "index=2"],
+      ["wav", "cue=3"],
+      ["mp4", "t=10&d=5"],
+    ]) {
+      let seen = "";
+      await relayPublicCpk(
+        new Request(
+          `https://dragonballfr.com/api/public/dbxv2/cpk/data/${action}/chara/file?${query}&token=ignored`,
+        ),
+        ["data", action!, "chara", "file"],
+        env,
+        async (input) => {
+          seen = String(input);
+          return new Response("ok");
+        },
+      );
+      expect(seen).toBe(`http://127.0.0.1:8788/cpk/data/${action}/chara/file?${query}`);
+    }
+  });
+
+  test("interdit aussi au CDN de cacher une erreur upstream", async () => {
+    const response = await relayPublicCpk(
+      new Request("https://dragonballfr.com/api/public/dbxv2/cpk/data/raw/missing.bac"),
+      ["data", "raw", "missing.bac"],
+      env,
+      async () => new Response("missing", { status: 404 }),
+    );
+    expect(response.status).toBe(404);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(response.headers.get("cdn-cache-control")).toBe("no-store");
+  });
+
   test("reste fermé tant que la fonction publique n'est pas activée", async () => {
     let called = false;
     const response = await relayPublicCpk(

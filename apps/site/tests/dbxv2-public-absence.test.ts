@@ -62,7 +62,7 @@ describe("pages publiques", () => {
 
   test("le relais public CPK exige sa fonction activée et n'accepte que GET/HEAD", () => {
     const route = readFileSync(
-      join(SRC, "app", "api", "public", "dbxv2", "cpk", "[...path]", "route.ts"),
+      join(SRC, "app", "api", "public", "dbxv2", "cpk", "_relay.ts"),
       "utf8",
     );
     expect(route).toContain('env.DBXV2_PUBLIC_CPK !== "1"');
