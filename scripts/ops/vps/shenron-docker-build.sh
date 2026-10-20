@@ -30,12 +30,13 @@ cleanup() {
 }
 trap cleanup EXIT
 git -C "$SOURCE" fetch -q origin
+REVISION=$(git -C "$SOURCE" rev-parse --verify "${SHENRON_BUILD_REVISION:-origin/main}^{commit}")
 git -C "$SOURCE" worktree prune
 if [ -d "$W/.git" ] || [ -f "$W/.git" ]; then
-  git -C "$W" checkout -q -f --detach origin/main
+  git -C "$W" checkout -q -f --detach "$REVISION"
   git -C "$W" clean -ffdq -e target -e node_modules -e '.next*' -e .cache -e .turbo
 else
-  git -C "$SOURCE" worktree add -f --detach "$W" origin/main
+  git -C "$SOURCE" worktree add -f --detach "$W" "$REVISION"
 fi
 git -C "$W" submodule update --init --recursive --force
 cd "$W"; SHA=$(git rev-parse HEAD); echo "== commit $SHA"
