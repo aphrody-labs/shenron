@@ -18,6 +18,26 @@ test("qualified Shenron CDN MP4 is played directly with byte ranges", () => {
   expect(result.hlsMasterUrl).toBeNull();
 });
 
+test("published episode media supplies native playback when the legacy stream field is absent", () => {
+  const source = `https://cdn.dragonballfr.com/media/episodes/876/${"a".repeat(64)}/source.mp4`;
+  const players = [{ name: "Shenron", provider: "shenron", embedUrl: source, lang: "vostfr" }];
+  expect(episodePlayback({ id: 876, players }).nativeSource).toEqual({
+    src: source,
+    type: "video/mp4",
+  });
+  expect(episodePlayback({ id: 875, players }).nativeSource).toBeNull();
+  expect(
+    episodePlayback({ id: 876, players: [{ ...players[0], embedUrl: source + "?token=x" }] })
+      .nativeSource,
+  ).toBeNull();
+  expect(
+    episodePlayback({
+      id: 876,
+      players: [{ ...players[0], embedUrl: "https://example.test/video.mp4" }],
+    }).nativeSource,
+  ).toBeNull();
+});
+
 test("HLS metadata exposes the bot transport without leaking stored stream tokens", () => {
   const result = episodePlayback({
     id: 445,

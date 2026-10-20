@@ -15,7 +15,15 @@ export interface EpisodePlaybackInput {
 /** Public metadata exposes host transports, never stored stream tokens or headers. */
 export function episodePlayback(input: EpisodePlaybackInput) {
   const metadata = episodePlaybackMetadata(input);
-  const approvedMp4 = approvedEpisodeVideoURL(input.stream_url ?? null);
+  const publishedMp4 = metadata.players
+    .map((player) => approvedEpisodeVideoURL(player.embedUrl))
+    .find(
+      (url) =>
+        url &&
+        isShenronEpisodeVideoURL(url) &&
+        url.pathname.startsWith(`/media/episodes/${input.id}/`),
+    );
+  const approvedMp4 = approvedEpisodeVideoURL(input.stream_url ?? null) ?? publishedMp4;
   const hls = input.stream_url && URL.canParse(input.stream_url) ? new URL(input.stream_url) : null;
   const hlsUrl =
     hls &&
