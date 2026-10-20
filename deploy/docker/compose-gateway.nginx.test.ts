@@ -34,6 +34,19 @@ test("CDN quota failures use the private public-image origin without browser cre
   }
 });
 
+test("missing CDN assets fall through to the Shenron VFS without exposing its database", () => {
+  const origin = config.match(/location @cdn_public_origin \{([^}]+)\}/)?.[1] ?? "";
+  const vfs = config.match(/location @vfs_asset \{([^}]+)\}/)?.[1] ?? "";
+  expect(origin).toContain("proxy_intercept_errors on;");
+  expect(origin).toContain("error_page 404 = @vfs_asset;");
+  expect(vfs).toContain("proxy_pass http://upstream_site;");
+  expect(vfs).toContain("proxy_pass_request_headers off;");
+  expect(vfs).not.toContain("shenron-vfs.sqlite");
+  expect(vfs).not.toContain("$http_cookie");
+  expect(vfs).not.toContain("$http_authorization");
+  expect(config).not.toContain("/var/lib/shenron/data");
+});
+
 test("CDN chunks prefer the sealed rolling tree and use the active site on a miss", async () => {
   const source = await Bun.file(new URL("./cdn-dragonballfr-ssl.conf", import.meta.url)).text();
   expect(source).toContain("try_files $uri @release_static;");
