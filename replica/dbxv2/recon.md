@@ -1,8 +1,9 @@
-# Reconnaissance : Xenoverse 2, Shenron et Bun OS Play
+# Reconnaissance : Xenoverse 2, Shenron et port WASM
 
-Date : 2026-10-18. Périmètre : parcours web du jeu installé sur l’hôte du propriétaire,
-depuis les deux pages Shenron jusqu’à la session Play. Cette carte complète la reconnaissance
-existante sans remplacer ses travaux sur les sites officiels.
+Date : 2026-10-20. Périmètre : inventaire de Xenoverse 2 et cible de port complet vers WASM
+pour Shenron/dragonballfr.com. Le propriétaire déclare que l’accord confidentiel inclut Toei,
+Shueisha et Bandai Namco et demande la publication des CPK et données DBXV2. Le streaming Play
+est explicitement hors périmètre.
 
 ## Sources observées
 
@@ -10,15 +11,16 @@ existante sans remplacer ses travaux sur les sites officiels.
 | --- | --- | --- |
 | Page jeu DBFR | https://dragonballfr.com/games/xenoverse-2 | Analyse locale de fichiers ; sélection de dossier, confidentialité, moteur WASM |
 | Fiche wiki DBFR | https://dragonballfr.com/wiki/games/xenoverse-2 | Description, plateformes, galerie, personnages et discussion |
-| Bun OS Play | https://play.aphrody.app/stream?appId=454650 | Shell public ; rendu du navigateur Aphrody incomplet, parcours interactif non qualifié à ce stade |
+| Dossier local du jeu | `data/DB Xenoverse 2` | 39 fichiers de lanceur, exécutable et dépendances ; ne contient pas les CPK |
+| Serveur CPK | `docs/operations/dbxv2-serve.md` | Service présent sur le VPS, actuellement limité au mesh ; publication publique demandée, à livrer via Infra |
 | Fork REA demandé | https://github.com/aphrody-labs/rea | Outils de reconnaissance ; source de référence distincte du jeu |
 | Toolkit DBXV2 demandé | https://github.com/aphrody-labs/dbxv2 | Outils et catalogue de formats ; aucune preuve d’un jeu complet en WASM |
 
-## Boucle principale
+## Cible
 
-Choisir Xenoverse 2 dans Shenron, ouvrir sa cible Steam dans Play, s’authentifier,
-demander explicitement son lancement puis recevoir l’image et transmettre les commandes.
-La disponibilité de chaque étape doit rester distincte.
+Analyser l’exécutable et les formats, exploiter le store CPK existant, puis porter le moteur
+complet vers un jeu jouable dans le navigateur en WASM. L’analyseur WASM actuel couvre seulement
+quelques formats et ne constitue pas le jeu. La faisabilité et les étapes de port restent à établir.
 
 ## Écrans
 
@@ -26,9 +28,8 @@ La disponibilité de chaque étape doit rester distincte.
 | --- | --- | --- | --- | --- |
 | S01 | Jeu et explorateur | `/games/xenoverse-2` | Choix de dossier, analyse, résultats | État initial observé ; raccord Play préparé |
 | S02 | Fiche jeu | `/wiki/games/xenoverse-2` | Couverture, galerie, fiche, discussion | Fiche publiée observée ; raccord Play préparé |
-| S03 | Accès Play | `/stream?appId=454650` | Authentification, identité du jeu | Shell observé ; interface interactive à qualifier |
-| S04 | Lancement ciblé | même route après connexion | Titre, bouton, statut | Implémentation préparée ; lancement réel à vérifier |
-| S05 | Session distante | lecteur WebRTC de Play | Image, commandes, plein écran | Émetteur démarré ; réception et jouabilité à vérifier |
+| S03 | Analyse locale | `/games/xenoverse-2` | Sélection et parseurs WASM | Analyse limitée à cinq formats |
+| S04 | Jeu navigateur WASM | à concevoir | Moteur, données, contrôles et rendu | Non implémenté |
 
 ## Parcours
 
@@ -40,19 +41,14 @@ La disponibilité de chaque étape doit rester distincte.
 
 ## Composants et données
 
-Carte d’accès au jeu, bouton de lancement, statut accessible, lecteur distant,
-sélecteur de dossier et liste de résultats sont les composants du parcours.
+Sélecteur de dossier et liste de résultats existent pour l’analyse locale ; le jeu WASM complet
+et ses contrôles restent à concevoir.
 
 Entités déduites : `Game(appId, name, installationState)`,
-`Session(authenticated, host)`, `LaunchRequest(appId, requested)` et
-`Stream(sender, viewer, connectionState)`. Confiance haute pour les identités et
-la séparation des étapes ; gameplay, latence, son et fidélité restent non mesurés.
+`Game(appId, name, installationState)`. Le modèle de session Play est obsolète pour ce chantier.
 
 ## Limites et taille
 
-Voir `features.csv`. Cinq écrans, trois parcours, quatre entités. Les difficultés
-sont la session native Steam, le transport WebRTC réel et la conservation des entrées.
-Taille XL si l’objectif inclut un port complet du moteur Windows vers WASM : les
-parseurs de données et la recompilation de consoles ne constituent pas ce port.
-Les ressources du jeu et les sessions restent dans leurs stores autorisés ; cette
-reconnaissance ne les copie pas et ne remplace pas les propriétaires techniques.
+Voir `features.csv` et `wasm-port-feasibility.md`. Taille XL : le moteur complet et la
+compatibilité WASM ne sont pas encore établis. Le serveur CPK est un service de données, pas
+un moteur de jeu ; son exposition publique attend la livraison Infra.

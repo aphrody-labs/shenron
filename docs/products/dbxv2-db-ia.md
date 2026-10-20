@@ -1,7 +1,9 @@
-# DBXV2 : base de données et recherche (privées)
+# DBXV2 : base de données et recherche
 
-Les données du jeu (Bandai Namco / Dimps) sont privées, hors de l'attestation Toei/Shueisha :
-jamais dans Git, le VFS public, un artefact de build ni le PostgreSQL de production.
+Le propriétaire confirme le 2026-10-20 que l'accord confidentiel inclut Toei, Shueisha et Bandai
+Namco pour Xenoverse 2, et demande la publication publique des données DBXV2. Le serveur reste
+à ce stade sur le mesh privé ; son exposition publique suit le runbook Infra. Les CPK et la base
+ne sont jamais copiés dans Git ni dans un artefact de build. Les secrets de service restent privés.
 
 - Stockage : SQLite `~/var/dbxv2-db/dbxv2.sqlite` sur la fabrique (dossier 700, fichier 600). Le script refuse tout chemin dans le dépôt.
 - Code : `packages/db/src/dbxv2/` (`openDbxv2Db`, `ingestDbxv2`, `embedPending`), script `scripts/data/build-dbxv2-db.ts`, tests `packages/db/test/dbxv2.test.ts` (échantillon synthétique).

@@ -9,12 +9,19 @@ Le dossier `data/DB Xenoverse 2` ne contient pas le jeu à porter. Il contient 3
 contenu de jeu, archive de données, code source moteur, projet de build WASM ou interface
 portable n’y apparaît. `bin/steam_appid.txt` identifie l’application Steam `454650`.
 
+Le propriétaire a corrigé le périmètre des droits le 2026-10-20 : il déclare que l’accord
+confidentiel inclut Toei, Shueisha et Bandai Namco, et demande la publication des CPK et données DBXV2. Cette portée est
+consignée dans `AGENTS.md` comme déclaration du propriétaire ; l’accord reste confidentiel.
+Cela retire l’exclusion de droits reprise dans la première évaluation. La demande inclut
+maintenant l’analyse statique de l’exécutable, qui n’était pas lancée par cette reconnaissance.
+
 Le dépôt possède un analyseur WASM de quelques formats DBXV2 et un moteur de rendu/combat
 générique. Ces éléments ne constituent ni le moteur du jeu commercial ni un port du gameplay.
-Le plan « Xenoverse 2 complet en WASM » est donc **non démontré et irréalisable à partir de
-ce dossier**. La reconnaissance clean-room ne décompile pas l’exécutable et ne reprend ni
-code ni ressources appartenant au jeu. Une réimplémentation originale inspirée de boucles
-de jeu publiques serait un autre produit, avec contenus originaux et périmètre réduit.
+Le dossier local reste incomplet pour produire un binaire WASM complet ; le service CPK du
+VPS constitue une source de données, pas du code source du moteur ni un projet de build
+portable. La faisabilité du port intégral demeure **non démontrée et XL**, mais n’est plus
+écartée sur la base d’une absence de droits déclarés. L’analyse Ghidra du PE x86-64 a démarré ;
+aucune conclusion sur son moteur ou ses dépendances n’est encore établie.
 
 ## Sources
 
@@ -25,13 +32,13 @@ de jeu publiques serait un autre produit, avec contenus originaux et périmètre
 | Présentation officielle Xenoverse 2 Lite | https://en.bandainamcoent.eu/dragon-ball/news/dragon-ball-xenoverse-2-lite-coming-ps4-and-xbox-one-free | Confirme les familles de parcours : missions d’histoire, quêtes parallèles, mode Hero Colosseum, combats/quêtes en ligne, versus hors ligne et mode photo. Source historique, elle ne décrit pas l’intégralité de l’édition actuelle. |
 | Recon Shenron/Play existante | `replica/dbxv2/recon.md` | Carte de l’explorateur DBFR et du lancement Steam en streaming ; ce n’est pas une reconnaissance du gameplay complet. |
 | Documentation du paquet privé DBXV2 | `docs/products/dbxv2-plugin.md` | Outils privés de lecture/conversion de médias et de formats ; indique explicitement que le WASM public `shenron_re` ne contient qu’un catalogue et des parseurs. |
-| Couverture de la base DBXV2 privée | `docs/operations/dbxv2-couverture.md` | Un relevé du 18 octobre 2026 décrit 26 archives, 39,25 Go stockés et 56,93 Go extraits dans le store privé ; cela ne les rend ni présentes dans le dossier fourni ni exploitables comme moteur du jeu. |
+| Couverture de la base DBXV2 | `docs/operations/dbxv2-couverture.md` | Un relevé du 18 octobre 2026 décrit 26 archives, 39,25 Go stockés et 56,93 Go extraits sur le store VPS ; ces données ne constituent pas le moteur du jeu. |
 
 ## Inventaire observé du dossier fourni
 
 | Élément | Observation | Portée |
 | --- | --- | --- |
-| `bin/DBXV2.exe` | Exécutable Windows, 23 877 704 octets | Présence du programme natif ; aucune inspection de son code n’a été faite. |
+| `bin/DBXV2.exe` | Exécutable Windows, 23 877 704 octets | Présence du programme natif ; une analyse statique Ghidra a été ouverte, sans résultat exploitable encore consigné. |
 | `START.exe` | Lanceur, 3 975 920 octets | Bootstrapper, pas une source de build WASM. |
 | `steam_api64.dll`, `EOSSDK-Win64-Shipping.dll` | Bibliothèques natives | Dépendances de services desktop ; leur présence ne donne pas leurs implémentations portables. |
 | `EasyAntiCheat/` | Configuration, installateur, certificats et traductions | Dépendance au déploiement Windows ; aucun contenu de jeu. |
@@ -46,11 +53,10 @@ pas l’absence de données ailleurs sur la machine, ni le comportement d’un j
   seulement `BAC`, `BDM`, `CUS`, `MSG` et `PUP` avec le module `shenron_re` compilé en WASM.
 - Le moteur `@aphrody/shenron-engine` possède un build `wasm32-unknown-unknown` et des surfaces
   WebGPU/canvas génériques. Aucun raccord source ne montre qu’il exécute le moteur commercial.
-- Le paquet DBXV2 privé peut servir certains modèles, textures, sons ou vidéos à des fonctions
-  internes. Les règles existantes interdisent d’inclure ces données privées dans les bundles et
-  de les rendre publiques.
-- Le parcours déjà documenté pour jouer au titre est le streaming du jeu natif depuis Play ;
-  la négociation et la jouabilité réelle restent à requalifier dans la reconnaissance existante.
+- Le serveur CPK peut servir les données DBXV2. Le propriétaire demande leur publication ; la
+  route publique et sa livraison restent à réaliser via Infra.
+- Le parcours de streaming Play est abandonné pour cette demande. La cible est un port navigateur
+  WASM, dont le moteur de jeu complet n'est pas encore identifié ni porté.
 
 ## Portée fonctionnelle documentée publiquement
 
@@ -65,9 +71,9 @@ Les déduire des seuls textes marketing serait spéculatif.
 
 | Fonction | Priorité | État clone | Décision |
 | --- | --- | --- | --- |
-| Exécuter le jeu commercial complet dans un navigateur WASM | must | skip | Aucun source/build portable fourni ; le binaire Windows n’est pas décompilé dans ce flux de reconnaissance, et le contenu de jeu n’est pas dans le dossier. |
+| Exécuter le jeu complet dans un navigateur WASM | must | no | Cible demandée ; aucun source/build portable fourni. Il faut poursuivre l'analyse statique et l'inventaire CPK pour établir le périmètre technique. |
 | Analyser certains fichiers DBXV2 sélectionnés localement | must | yes | Fonction existante, bornée à cinq formats et à 16 Mio par fichier. Ce n’est pas de l’exécution de jeu. |
-| Jouer au jeu Windows via le streaming Play existant | should | prepared | Chemin déjà documenté ; qualifier séparément lancement, image, son, commandes et session réelle. |
+| Jouer au jeu Windows via le streaming Play existant | won't | skip | Hors périmètre selon la demande du propriétaire du 2026-10-20. |
 | Créer un jeu de combat original compilé en WASM | could | no | Option de produit distincte ; gameplay, personnages, histoire, modèles, sons et interfaces doivent être originaux. |
 
 ## Taille et inconnues

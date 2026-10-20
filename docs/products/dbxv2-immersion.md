@@ -1,16 +1,18 @@
-# Immersion DBXV2 (privée)
+# Immersion DBXV2 (accès staff actuel)
 
-Intégration **strictement privée** de [`@aphrody/shenron-dbxv2`](dbxv2-plugin.md) dans le site et
-l'UI. Dragon Ball Xenoverse 2 (Bandai Namco / Dimps) n'est jamais public : aucune URL, miniature ou
-donnée du jeu dans un rendu public, dans le HTML/RSC servi à un visiteur, dans Git ou dans un
-artefact de build. Désactivé par défaut.
+Le propriétaire déclare le 2026-10-20 que l'accord confidentiel Toei, Shueisha et Bandai Namco
+couvre Xenoverse 2 et demande la publication des CPK et données DBXV2. L'accord n'a pas été
+vérifié indépendamment. L'intégration actuelle de [`@aphrody/shenron-dbxv2`](dbxv2-plugin.md)
+reste limitée à l'admin et au mesh ; l'accès public demandé n'est pas encore livré. Les CPK et
+la base ne doivent pas être copiés dans Git ni intégrés aux artefacts de build.
 
 ## Portes
 
 1. `dbxv2SiteGate()` (`apps/site/src/lib/dbxv2-gate.ts`, sans dépendance) : faux sans
    `DBXV2_SERVER_URL` (http/https) et `DBXV2_TOKEN` (≥ 16 caractères), **toujours faux** en rendu ou
    build public (`SHENRON_PROFILE=public`, `SHENRON_PUBLIC_RENDER`, `SHENRON_PUBLIC_BUILD`) et avec
-   `NODE_ENV=production`. Le paquet privé recontrôle `isDbxv2Enabled` une fois chargé.
+   `NODE_ENV=production`. Cette porte décrit l'implémentation actuelle et devra évoluer pour la
+   surface publique demandée ; le paquet recontrôle `isDbxv2Enabled` une fois chargé.
 2. `src/proxy.ts` garde `/admin/**` avant tout rendu ; la page et **chaque action serveur** rappellent
    `requireAdmin()` (une action est un point d'entrée public).
 3. Seuls des codes d'erreur stables (`disabled`, `unavailable`, `invalid`, `unsupported`, `failed`)

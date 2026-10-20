@@ -66,6 +66,12 @@ ou du domaine, pas les droits sur une œuvre. Consigner la provenance et la port
 opérationnelle des médias publiés dans un manifeste privé, sans exposer l'accord ni
 inventer ses clauses.
 
+Rectification du propriétaire (2026-10-20) : Yohan Pierre confirme que le même accord
+confidentiel inclut également Bandai Namco pour Xenoverse 2. À sa demande, la portée
+opérationnelle inclut la publication publique du serveur CPK et des données DBXV2 sur
+dragonballfr.com. Le texte de l'accord reste confidentiel et n'a pas été vérifié
+indépendamment ; présenter cette portée comme une déclaration du propriétaire.
+
 Directive de publication (propriétaire, 2026-10-18) : accord total pour publier sur
 dragonballfr.com l'ensemble des données, épisodes, planches, médias et exports du
 catalogue (films, épisodes, tomes manga, databooks), dans le périmètre de l'attestation

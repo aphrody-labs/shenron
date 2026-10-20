@@ -1,11 +1,13 @@
-# Serveur DBXV2 à la demande (privé)
+# Serveur DBXV2 à la demande
 
 `scripts/ops/dbxv2-serve.ts` sert les CPK de Dragon Ball Xenoverse 2 comme un CDN, à la demande : seuls
 la table des matières et les plages demandées sont lues, rien n'est extrait d'avance.
 
-**Données privées** (Bandai Namco / Dimps, hors attestation Toei/Shueisha). Le serveur n'est jamais
-exposé publiquement (ni 0.0.0.0, ni nginx public), et aucun octet servi n'est commité. Il tourne en
-service permanent sur la fabrique, joignable uniquement par le mesh WireGuard.
+Le propriétaire déclare le 2026-10-20 que l'accord confidentiel Toei, Shueisha et Bandai Namco
+couvre Xenoverse 2, et demande la publication des CPK et données DBXV2 sur dragonballfr.com.
+L'accord n'a pas été vérifié indépendamment. À l'état opérationnel documenté ici, le serveur
+reste protégé par jeton et joignable uniquement sur le mesh WireGuard ; la publication publique
+doit passer par la chaîne Infra. Aucun octet servi n'est commité.
 
 ## Garde-fous
 
