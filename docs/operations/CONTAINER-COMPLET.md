@@ -172,17 +172,25 @@ Le script Docker versionné construit sous `~/build/transient/shenron-docker` av
 
 Aucun build sur dbfr : il reçoit seulement l'image construite sur le vps. Sur le vps, les étapes
 longues tournent dans tmux, sans flux SSH maintenu ouvert. Les scripts VPS versionnés sont dans
-`~/src/shenron/scripts/ops/vps/` (`shenron-docker-build.sh`, `ship-shenron.sh`). Les helpers DBFR
+`~/src/shenron/scripts/ops/vps/` (`release-shenron.sh`, `shenron-docker-build.sh`, `ship-shenron.sh`). Les helpers DBFR
 installés dans `~/` proviennent de `scripts/ops/dbfr/` (`deploy-shenron-image.sh`,
 `assemble-shenron.py`, `seal-shenron-docker-release.py`). Vérifier leur présence avant livraison.
 
-1. `tmux new -d -s shenron-build 'bash ~/src/shenron/scripts/ops/vps/shenron-docker-build.sh > ~/shenron-docker-build.log 2>&1; code=$?; printf "EXIT_CODE=%s\n" "$code" >> ~/shenron-docker-build.log'` :
-   worktree détaché sur `origin/main` sous `~/build/transient/shenron-docker`, verrou lourd,
-   Cargo, WASM, bot, serveur, image
-   `localhost/shenron:<sha>`, puis `version` et `--smoke` du bot.
-2. Après `EXIT_CODE=0` et vérification du SHA de l'image, lancer dans `shenron-ship`
-   `~/src/shenron/scripts/ops/vps/ship-shenron.sh`. Il lit le même worktree via
-   `SHENRON_BUILD_REPO` (ou le chemin par défaut), exécute `docker save | zstd`,
+1. `release-shenron.sh` fige `origin/main` en un SHA, exécute le build puis expédie
+   le même SHA. Par défaut, le wrapper choisit `APHRODY_CARGO_JOBS=auto`, borné par
+   les cœurs disponibles et le maximum de la fabrique, sans relâcher son verrou partagé.
+   Le run reste durable dans tmux :
+
+   ```sh
+   tmux new-session -d -s shenron-release 'bash ~/src/shenron/scripts/ops/vps/release-shenron.sh > ~/shenron-release.log 2>&1; code=$?; printf "EXIT_CODE=%s\n" "$code" >> ~/shenron-release.log'
+   ```
+
+   `--build-only`, `--ship-only`, `--revision <sha>`, `SHENRON_SOURCE_REPO`,
+   `SHENRON_BUILD_REPO`, `SHENRON_BUILD_LOCK` et `APHRODY_CARGO_JOBS` permettent de
+   reprendre une phase, figer une révision ou isoler le worktree et le nombre de tâches Cargo.
+   La fabrique VPS reste l'hôte Linux qualifié; tout nouvel hôte doit être déclaré par Aphrody Infra.
+2. Pour une reprise séparée, le build écrit `localhost/shenron:<sha>` dans le worktree
+   indiqué par `SHENRON_BUILD_REPO`. `ship-shenron.sh` exécute `docker save | zstd`,
    `scp` vers dbfr, puis `~/deploy-shenron-image.sh <sha> <tar>` sur dbfr. Ce script charge l'image,
    assemble la release (`~/assemble-shenron.py`, override `guild-admission`), la scelle
    (`~/seal-shenron-docker-release.py`, en reprenant les images passerelle, postgres, redis et chat
