@@ -18,7 +18,9 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
   ensuite les contrôles authentifiés sur la release réellement active.
 - Vidéo native : extraction et preuves navigateur réelles, ainsi que l'optimiseur
   CDN, passent par Bun Video/FilmCraft. Terminer la qualification fabrique du
-  wrapper d'encodage Shenron Video et de l'archive PNG exacte ; ne pas déclarer
+  wrapper d'encodage Shenron Video et de l'archive PNG exacte (portes natives et
+  rendu complet qualifiés le 20 octobre, voir REPRISE) ; terminer les voies encore
+  ouvertes HLS et WebP animé. Ne pas déclarer
   une parité FFmpeg pour les opérations natives qui restent indisponibles.
 
 - Livrer et qualifier l'import d'atlas Rust déjà raccordé à Studio avec pause/reprise,
@@ -96,7 +98,7 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
   parcours manga/databooks, les changements de mode et le défilement dans Bun WebView.
 - Appliquer après activation les trois corrections wiki préparées avec snapshots
   et comparaison atomique ; vérifier fiches et historique, poursuivre l’audit sourcé.
-- Terminer l’audit des 68 988 images et conserver séparément les preuves HTTP,
+- Terminer l’audit des 69 072 images du catalogue relu le 20 octobre et conserver séparément les preuves HTTP,
   les captures de rendu et les interactions de lecture.
 
 - Livrer le lot canon : compteurs réels, sauvegarde concurrente protégée, distinction

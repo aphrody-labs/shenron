@@ -1,5 +1,41 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## 2026-10-20 — Déblocages vérifiés, livraison commune en qualification
+
+- Studio hébergé : backend de credentials privé par compte `adfdff01`, quatre
+  tests Rust et Clippy verts sur la fabrique. SDK et image pin `099c0afd` en
+  compilation ; aucune activation de cette tentative n'est encore déclarée.
+- Vidéo native `3e540f78`, puis `d11a427d` : cinq tests Rust, Clippy et build
+  verts ; trois images Beerus réelles encodées et décodées. Le pipeline complet
+  données publiques → React → Chrome/Bun.WebView → PNG → FilmCraft H.264 est
+  exécuté sur quatre images 640 × 360, 2 fps, 2 s. Les PNG capturés sont conservés
+  exactement ; le dérivé H.264 est avec pertes. Cela ne prouve ni WebP animé ni
+  parité des voies HLS encore ouvertes. Les reçus restent dans `var/reports/`.
+- RAG : synchronisation ciblée des acteurs, précondition de digest `099c0afd`,
+  sauvegardes privées et relecture indépendante ; 56/56 chunks indexés E5.
+  Gold inchangé de 172 cas : rappel à cinq résultats 80,232558 %, contre
+  77,90698 % avant correction. Une réponse HTTP 503 reste à corriger ; cette
+  évaluation n'est donc pas entièrement verte.
+- Adaptateur chat v2 exact retrouvé sur Omar : 132 155 648 octets, SHA-256
+  `aab485357c68fdcbb6d4ba55911632b8228964106047db035e0223e2aecc6107`.
+  Restauration privée par Aphrody Infra, runtime épinglé et poids en lecture seule :
+  service sain, `llm:true`, génération réelle réussie. La qualification des
+  réponses publiques et citations reste distincte. Aucun poids n'est publié.
+- Audit lecteurs `b9caa01f` : reprise SQLite testée après interruption ; exécution
+  durable hors checkout de build dans tmux `reader-audit-20261020` sur la fabrique.
+  Inventaire frais : 2 586 pages, 69 072 images et 2 910 embeds. Les 2 586 pages
+  passent le contrôle HTTP ; les images sont encore en cours. Ce contrôle ne
+  prouve pas le rendu ni la lecture des embeds.
+- CodeQL `c9e3da23` passe sur le runner qualifié `shenron-factory`, avec garde
+  des PR du même dépôt. Run `39450371702` en attente ; le runner reste arrêté
+  pendant les builds. Aucun réglage de facturation modifié, aucun succès CodeQL
+  annoncé avant son exécution.
+
+Les acquisitions SOSH, les autres éditions incomplètes, la signature et les
+installeurs de bureau ainsi que les contrôles navigateur de la nouvelle release
+restent ouverts. Les archives Full Color trouvées sur Omar sont des candidats
+d'éditions différentes ; leurs noms ne prouvent pas les tomes manquants.
+
 ## 2026-10-18 — Intégration Mediabunny (submodule + n2b), Parité Catalogue Vidéo 100% et Watchlist
 
 - Intégration multi-lecteurs pour l'Épisode 876 :
