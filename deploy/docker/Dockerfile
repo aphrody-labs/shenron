@@ -23,7 +23,7 @@ ENV SHENRON_HOME=/var/lib/shenron \
     NEXT_TELEMETRY_DISABLED=1
 
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates curl jq libgcc-s1 libsqlite3-0 libvulkan1 mesa-vulkan-drivers \
+ && apt-get install -y --no-install-recommends ca-certificates curl jq libfontconfig1 libgcc-s1 libsqlite3-0 libvulkan1 mesa-vulkan-drivers \
  && rm -rf /var/lib/apt/lists/* \
  && groupadd --gid 10001 shenron \
  && useradd --uid 10001 --gid 10001 --home-dir /var/lib/shenron --no-create-home --shell /usr/sbin/nologin shenron \
