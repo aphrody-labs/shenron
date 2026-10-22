@@ -232,6 +232,14 @@ en LF : un CR final peut invalider une référence Docker. Les contrôles naviga
 aussi dans tmux : le timeout SSH peut perdre la sortie partielle. Sonder les logs par extraits
 bornés plutôt que relancer le travail.
 
+Constaté le 2026-10-22 : le checkout `~/src/shenron` de la fabrique peut porter du travail
+d'autres agents et retarder sur `origin/main` ; ses helpers anciens prennent eux-mêmes
+`heavy.lock` et s'interbloquent avec le wrapper Cargo. Sans toucher ce checkout, exécuter les
+helpers d'`origin/main` extraits par `git -C ~/src/shenron show origin/main:<chemin>` vers
+`~/build/helpers/`, avec `SHENRON_BUILD_REVISION=<sha>`. Une sortie 143 du build du site vient
+d'`earlyoom` (SIGTERM sous 15 % de mémoire disponible, le build Next culmine vers 27 Gio) :
+le helper attend désormais `SHENRON_SITE_BUILD_MIN_GIB` (30 par défaut) avant cette étape.
+
 ## Architecture
 
 - **Graphe** : acyclique, `config ← db/auth ← api` ; `@aphrody/shenron-ui` ne dépend que de `config`,
