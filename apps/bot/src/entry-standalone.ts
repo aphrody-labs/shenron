@@ -55,10 +55,26 @@ if (process.argv.includes("--smoke")) {
   await import("./_entries");
   const storage = MetadataStorage.instance;
   await storage.build();
+  // The command graph registered the canvas fonts: a compiled release must find every
+  // shipped font (SHENRON_BOT_ASSETS_DIR) and a colour emoji font from the system.
+  const { GlobalFonts } = await import("@napi-rs/canvas");
+  const { CANVAS_FONT_FILES } = await import("./lib/canvas-fonts");
+  const families = new Set(GlobalFonts.families.map((entry) => entry.family));
+  const canvasFontsMissing = CANVAS_FONT_FILES.map(([, family]) => family).filter(
+    (family) => !families.has(family),
+  );
+  const emojiFont = ["Noto Color Emoji", "Segoe UI Emoji"].find((family) => families.has(family));
+  if (runtime.isCompiled && (canvasFontsMissing.length > 0 || !emojiFont))
+    throw new Error(
+      `Canvas fonts missing: ${[...canvasFontsMissing, ...(emojiFont ? [] : ["colour emoji"])].join(", ")}`,
+    );
   console.log(
     JSON.stringify({
       smoke: "ok",
       canvasPngBytes,
+      canvasFonts: CANVAS_FONT_FILES.length - canvasFontsMissing.length,
+      canvasFontsMissing,
+      emojiFont: emojiFont ?? null,
       runtime: `Bun ${runtime.bunVersion}`,
       platform: `${runtime.platform}-${runtime.arch}`,
       compiled: runtime.isCompiled,
