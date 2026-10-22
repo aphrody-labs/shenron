@@ -13,6 +13,7 @@ import {
   hasRaceLadder,
   memberRaceId,
   raceLevelRoleAt,
+  raceLadderRoleIds,
   raceLevelRoleIds,
 } from "~/lib/race-levels";
 import { levelUpMessage } from "~/lib/dbz-flavor";
@@ -297,7 +298,9 @@ export class LevelService {
    */
   async syncRaceLevelRoles(member: GuildMember): Promise<void> {
     const u = await this.getUser(member.id);
-    const level = u?.lastLevelReached ?? levelForXP(u?.xp ?? 0);
+    // Sans ligne en base, le niveau est inconnu (base neuve ou restaurée) : ne rien déduire.
+    if (!u) return;
+    const level = u.lastLevelReached ?? levelForXP(u.xp);
     const race = memberRaceId(member) ?? DEFAULT_LEVEL_RACE;
 
     // GARDE : si la race du membre n'a AUCUNE échelle configurée (aucun palier),
@@ -308,9 +311,12 @@ export class LevelService {
 
     const keep = new Set(raceLevelRoleIds(race, level));
 
-    // Retire les paliers qui n'appartiennent pas à la race courante (autres races).
+    // Retire seulement les paliers des AUTRES races. Un palier de la race courante
+    // au-delà du niveau en base reste : la base peut être en retard sur Discord
+    // (incident du 2026-10-22 : base vide, 210 paliers retirés à tort).
+    const ownRace = new Set(raceLadderRoleIds(race));
     const toRemove = allRaceLevelRoleIds().filter(
-      (rid) => !keep.has(rid) && member.roles.cache.has(rid),
+      (rid) => !ownRace.has(rid) && member.roles.cache.has(rid),
     );
     if (toRemove.length) {
       await member.roles

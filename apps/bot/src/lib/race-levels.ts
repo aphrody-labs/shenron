@@ -117,6 +117,11 @@ export function allRaceLevelRoleIds(): string[] {
   return RACE_IDS.flatMap((id) => Object.values(l[id]).filter((r): r is string => !!r));
 }
 
+/** Tous les rôles de palier d'une race, quel que soit le niveau. */
+export function raceLadderRoleIds(race: RaceId): string[] {
+  return Object.values(ladders()[race]).filter((r): r is string => !!r);
+}
+
 /** Rôles de palier d'une race jusqu'au niveau `uptoLevel` inclus. */
 export function raceLevelRoleIds(race: RaceId, uptoLevel: number): string[] {
   const map = ladders()[race];
