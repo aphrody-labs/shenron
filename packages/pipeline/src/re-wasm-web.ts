@@ -4,6 +4,7 @@
 import initWasm, {
   wasm_parse_bac,
   wasm_parse_bdm,
+  wasm_parse_cms,
   wasm_parse_cus,
   wasm_parse_msg,
   wasm_parse_pup,
@@ -12,7 +13,7 @@ import { SHENRON_RE_WASM_FILENAME, SHENRON_RE_WASM_SHA256 } from "./wasm/re-wasm
 
 export { SHENRON_RE_WASM_FILENAME };
 
-export type GameDataFormat = "bac" | "bdm" | "cus" | "msg" | "pup";
+export type GameDataFormat = "bac" | "bdm" | "cms" | "cus" | "msg" | "pup";
 
 export interface GameDataFileResult {
   format: GameDataFormat;
@@ -30,6 +31,16 @@ export interface MessageEntry {
 /** Returns every original MSG entry and line; the explorer preview stays independently bounded. */
 export function parseMessageFile(bytes: Uint8Array): { entries: MessageEntry[] } {
   return wasm_parse_msg(bytes) as { entries: MessageEntry[] };
+}
+
+export interface RosterEntry {
+  id: number;
+  short_name: string;
+}
+
+/** Returns the full character roster (`data/system/char_model_spec.cms`), every entry. */
+export function parseCharacterRoster(bytes: Uint8Array): { entries: RosterEntry[] } {
+  return wasm_parse_cms(bytes) as { entries: RosterEntry[] };
 }
 
 let wasmReady: Promise<void> | undefined;
@@ -118,6 +129,10 @@ export function parseGameDataFile(format: GameDataFormat, bytes: Uint8Array): Ga
     }
     case "msg": {
       const file = parseMessageFile(bytes);
+      return { format, recordCount: file.entries.length, preview: file.entries.slice(0, 12) };
+    }
+    case "cms": {
+      const file = parseCharacterRoster(bytes);
       return { format, recordCount: file.entries.length, preview: file.entries.slice(0, 12) };
     }
   }

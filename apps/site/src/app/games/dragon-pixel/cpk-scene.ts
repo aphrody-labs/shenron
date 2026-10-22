@@ -1,4 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
+import {
+  initShenronReWeb,
+  parseCharacterRoster,
+  SHENRON_RE_WASM_FILENAME,
+} from "@aphrody/shenron-pipeline/re-wasm-web";
+
 export type SceneKind = "model" | "audio" | "dialogue";
 export type SceneEntry = { path: string; extract_size: number };
 export type SceneIndex = { entries: SceneEntry[]; total: number; offset: number; limit: number };
@@ -139,4 +145,30 @@ export async function fetchCharacter(code: string, signal: AbortSignal) {
     ),
   ]);
   return { esk, ean, bac, bdm, parts };
+}
+
+export type RosterEntry = { id: number; shortName: string };
+
+let roster: Promise<RosterEntry[]> | null = null;
+
+/**
+ * The game's full character roster (`data/system/char_model_spec.cms`), fetched and parsed
+ * once, sorted by short code. Not every entry has playable costume/animation files in the
+ * CPK store (NPCs, cut content); `fetchCharacter` returns null for those.
+ */
+export function fetchRoster(signal: AbortSignal): Promise<RosterEntry[]> {
+  roster ??= (async () => {
+    const [bytes] = await Promise.all([
+      fetchBytes(sceneUrl(CHARACTER_ARCHIVE, "raw", "data/system/char_model_spec.cms"), signal),
+      initShenronReWeb(`/wasm/${SHENRON_RE_WASM_FILENAME}`),
+    ]);
+    const { entries } = parseCharacterRoster(bytes);
+    return entries
+      .map((entry) => ({ id: entry.id, shortName: entry.short_name }))
+      .toSorted((a, b) => a.shortName.localeCompare(b.shortName));
+  })().catch((error: unknown) => {
+    roster = null;
+    throw error;
+  });
+  return roster;
 }

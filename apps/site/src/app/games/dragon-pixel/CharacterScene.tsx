@@ -6,7 +6,7 @@ import {
   createXv2Character,
   type Xv2CharacterRenderer,
 } from "@aphrody/shenron-engine/xv2-character";
-import { characterCode, fetchCharacter } from "./cpk-scene";
+import { characterCode, fetchCharacter, fetchRoster, type RosterEntry } from "./cpk-scene";
 import type fr from "../../../../messages/dragon-pixel-scene/fr.json";
 
 const inputClass = "min-h-11 rounded border border-white/25 bg-slate-950 px-3 text-white";
@@ -38,10 +38,27 @@ export default function CharacterScene({ text }: { text: typeof fr }) {
   const [input, setInput] = useState("APL");
   const [code, setCode] = useState<string | null>(null);
   const [phase, setPhase] = useState<Phase>("idle");
+  const [roster, setRoster] = useState<RosterEntry[] | null>(null);
   const [animations, setAnimations] = useState<{ name: string; slot: number }[]>([]);
   const [animation, setAnimation] = useState(0);
   const [actions, setActions] = useState<number[]>([]);
   const [camera, setCamera] = useState({ rotation: 0, elevation: 0.15, zoom: 1 });
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetchRoster(controller.signal)
+      .then((entries) => {
+        if (controller.signal.aborted) return undefined;
+        setRoster(entries);
+        const preferred = entries.find((entry) => entry.shortName === "GOK") ?? entries[0];
+        if (preferred) setInput(preferred.shortName);
+        return undefined;
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setRoster([]);
+      });
+    return () => controller.abort();
+  }, []);
 
   useEffect(() => {
     const element = canvas.current;
@@ -118,12 +135,27 @@ export default function CharacterScene({ text }: { text: typeof fr }) {
       >
         <label className="grid gap-1">
           {text.characterCode}
-          <input
-            className={inputClass}
-            value={input}
-            maxLength={8}
-            onChange={(event) => setInput(event.currentTarget.value)}
-          />
+          {roster && roster.length > 0 ? (
+            <select
+              className={inputClass}
+              value={input}
+              onChange={(event) => setInput(event.currentTarget.value)}
+            >
+              {roster.map((entry) => (
+                <option key={entry.id} value={entry.shortName}>
+                  {entry.shortName} · #{entry.id}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              className={inputClass}
+              value={input}
+              maxLength={8}
+              placeholder={roster === null ? text.loading : undefined}
+              onChange={(event) => setInput(event.currentTarget.value)}
+            />
+          )}
         </label>
         <button
           type="submit"
