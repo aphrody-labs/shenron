@@ -65,6 +65,12 @@ if ((build_status != 0)); then
   echo "A parallel build lane failed (exit $build_status)" >&2
   exit "$build_status"
 fi
+# The Next standalone build peaks near 27 GiB; earlyoom SIGTERMs it below 15 % available
+# memory while other factory jobs run. Start it only with enough headroom.
+SITE_MIN_KIB=$(( ${SHENRON_SITE_BUILD_MIN_GIB:-30} * 1024 * 1024 ))
+until [ "$(awk '/MemAvailable/ {print $2}' /proc/meminfo)" -ge "$SITE_MIN_KIB" ]; do
+  echo "== server waits for ${SHENRON_SITE_BUILD_MIN_GIB:-30} GiB available memory"; sleep 30
+done
 echo "== server"; bun scripts/build/server.ts --flavor production --target linux-x64
 install -D -m 0755 target/release/shenron-mcp dist/mcp/linux-x64/shenron-mcp
 install -D -m 0755 target/release/libshenron_ffi.so dist/server/linux-x64/native/libshenron_ffi.so
