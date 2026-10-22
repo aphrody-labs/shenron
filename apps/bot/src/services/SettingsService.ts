@@ -65,8 +65,16 @@ export interface SettingDef {
 export const XP_BOOST_ROLE_PREFIX = "xp.boost.role.";
 
 /** Types de ticket — cf. `TicketService`/`Ticket.ts` (garder synchro avec l'enum `db/schema.ts#tickets.kind`). */
-export const TICKET_KINDS = ["report", "achat", "shop", "abus"] as const;
+export const TICKET_KINDS = ["report", "achat", "shop", "abus", "staff"] as const;
 export type TicketKind = (typeof TICKET_KINDS)[number];
+/** Libellés affichés (panel, salon, notifications) : jamais la valeur brute du type. */
+export const TICKET_KIND_LABELS: Record<TicketKind, string> = {
+  report: "Signalement",
+  achat: "Achat",
+  shop: "Shop",
+  abus: "Abus de perm",
+  staff: "Candidature staff",
+};
 /** Préfixe des rôles ayant accès à un type de ticket : `tickets.access.<kind>.<roleId>` = "1". */
 export const TICKET_ACCESS_PREFIX = "tickets.access.";
 

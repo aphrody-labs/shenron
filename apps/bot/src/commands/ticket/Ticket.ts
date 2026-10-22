@@ -32,14 +32,20 @@ import { GuildOnly } from "~/guards/GuildOnly";
 import { AdminOnly } from "~/guards/AdminOnly";
 import { FeatureEnabled } from "~/guards/FeatureEnabled";
 import { TicketService } from "~/services/TicketService";
+import { TICKET_KIND_LABELS, TICKET_KINDS, type TicketKind } from "~/services/SettingsService";
 import { LogService } from "~/services/LogService";
 
-const KIND_LABELS = {
-  report: "Signaler",
-  achat: "Achat",
-  shop: "Shop",
-  abus: "Abus de perm",
-} as const;
+/** Question de la modal d'ouverture : une candidature staff demande une présentation. */
+const CONTEXT_PROMPT: Record<TicketKind, string> = {
+  report: "Que voulez-vous signaler ?",
+  achat: "Contexte (décrivez votre demande)",
+  shop: "Contexte (décrivez votre demande)",
+  abus: "Que s'est-il passé ?",
+  staff: "Présentation, motivations, disponibilités",
+};
+
+const isTicketKind = (value: string): value is TicketKind =>
+  (TICKET_KINDS as readonly string[]).includes(value);
 
 @Discord()
 @Bot("shenron")
@@ -69,6 +75,7 @@ export class TicketCommands {
         { name: "🛒 Achat", value: "Question sur un achat", inline: true },
         { name: "🏪 Shop", value: "Problème shop / custom", inline: true },
         { name: "⚠️ Abus de perm", value: "Rapport staff", inline: true },
+        { name: "📝 Candidature staff", value: "Rejoindre l'équipe", inline: true },
       )
       .setColor(0xff9800);
 
@@ -93,21 +100,27 @@ export class TicketCommands {
         .setLabel("Abus de perm")
         .setEmoji("⚠️")
         .setStyle(ButtonStyle.Danger),
+      new ButtonBuilder()
+        .setCustomId("ticket:open:staff")
+        .setLabel(TICKET_KIND_LABELS.staff)
+        .setEmoji("📝")
+        .setStyle(ButtonStyle.Success),
     );
 
     await interaction.reply({ embeds: [embed], components: [row] });
   }
 
   // Bouton Ouvrir → affiche la modal de contexte
-  @ButtonComponent({ id: /^ticket:open:(report|achat|shop|abus)$/ })
+  @ButtonComponent({ id: /^ticket:open:[a-z]+$/ })
   async openModal(interaction: ButtonInteraction) {
-    const kind = interaction.customId.split(":")[2] as keyof typeof KIND_LABELS;
+    const kind = interaction.customId.split(":")[2] ?? "";
+    if (!isTicketKind(kind)) return;
     const modal = new ModalBuilder()
       .setCustomId(`ticket:submit:${kind}`)
-      .setTitle(`Ticket — ${KIND_LABELS[kind]}`);
+      .setTitle(`Ticket — ${TICKET_KIND_LABELS[kind]}`);
     const input = new TextInputBuilder()
       .setCustomId("context")
-      .setLabel("Contexte (décrivez votre demande)")
+      .setLabel(CONTEXT_PROMPT[kind])
       .setStyle(TextInputStyle.Paragraph)
       .setRequired(true)
       .setMaxLength(1500);
@@ -116,10 +129,11 @@ export class TicketCommands {
   }
 
   // Soumission modal → création du ticket
-  @ModalComponent({ id: /^ticket:submit:(report|achat|shop|abus)$/ })
+  @ModalComponent({ id: /^ticket:submit:[a-z]+$/ })
   async submitModal(interaction: ModalSubmitInteraction) {
     if (!interaction.guild) return;
-    const kind = interaction.customId.split(":")[2] as keyof typeof KIND_LABELS;
+    const kind = interaction.customId.split(":")[2] ?? "";
+    if (!isTicketKind(kind)) return;
     const context = interaction.fields.getTextInputValue("context");
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
@@ -133,7 +147,7 @@ export class TicketCommands {
 
     // Notif mod
     const embed = this.logs
-      .makeEmbed(`Nouveau ticket — ${KIND_LABELS[kind]}`, 0xff9800)
+      .makeEmbed(`Nouveau ticket — ${TICKET_KIND_LABELS[kind]}`, 0xff9800)
       .addFields(
         { name: "Ouvert par", value: `<@${interaction.user.id}>`, inline: true },
         { name: "Salon", value: `${channel}`, inline: true },

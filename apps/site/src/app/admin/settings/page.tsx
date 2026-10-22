@@ -94,12 +94,13 @@ const CATEGORY_META: Record<string, { label: string; icon: React.ElementType; de
   },
 };
 
-const TICKET_KINDS = ["report", "achat", "shop", "abus"] as const;
+const TICKET_KINDS = ["report", "achat", "shop", "abus", "staff"] as const;
 const TICKET_KIND_META: Record<(typeof TICKET_KINDS)[number], { emoji: string; label: string }> = {
   report: { emoji: "🚨", label: "Signaler" },
   achat: { emoji: "🛒", label: "Achat" },
   shop: { emoji: "🏪", label: "Shop" },
   abus: { emoji: "⚠️", label: "Abus de perm" },
+  staff: { emoji: "📝", label: "Candidature staff" },
 };
 const TICKET_ACCESS_PREFIX = "tickets.access.";
 

@@ -188,7 +188,7 @@ export const tickets = sqliteTable(
     id: integer("id").primaryKey({ autoIncrement: true }),
     channelId: text("channel_id").notNull().unique(),
     ownerId: text("owner_id").notNull(),
-    kind: text("kind", { enum: ["report", "achat", "shop", "abus"] }).notNull(),
+    kind: text("kind", { enum: ["report", "achat", "shop", "abus", "staff"] }).notNull(),
     context: text("context"),
     closed: integer("closed", { mode: "boolean" }).notNull().default(false),
     closedAt: integer("closed_at", { mode: "timestamp_ms" }),

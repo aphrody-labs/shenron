@@ -14,7 +14,7 @@ import {
 import { DatabaseService } from "~/db/index";
 import { tickets } from "~/db/schema";
 import { env } from "~/lib/env";
-import { SettingsService, type TicketKind } from "./SettingsService";
+import { SettingsService, TICKET_KIND_LABELS, type TicketKind } from "./SettingsService";
 import { MessageTemplateService } from "./MessageTemplateService";
 import { executeWebhook, parseWebhookUrl, type Embed as WebhookEmbed } from "~/lib/discord-webhook";
 import { logger } from "~/lib/logger";
@@ -54,7 +54,7 @@ export class TicketService {
       name,
       type: ChannelType.GuildText,
       parent: category?.id,
-      topic: `Ticket ${kind} · <@${ownerId}>`,
+      topic: `Ticket ${TICKET_KIND_LABELS[kind]} · <@${ownerId}>`,
       permissionOverwrites: [
         { id: guild.roles.everyone.id, deny: [PermissionFlagsBits.ViewChannel] },
         {
@@ -78,12 +78,12 @@ export class TicketService {
     const templates = container.resolve(MessageTemplateService);
     const ticketRender = await templates.render("ticket_opened", {
       ownerId,
-      kind,
+      kind: TICKET_KIND_LABELS[kind].toLowerCase(),
       context: context || "Aucun contexte fourni.",
     });
 
     const embed = new EmbedBuilder()
-      .setTitle(`Ticket — ${kind}`)
+      .setTitle(`Ticket — ${TICKET_KIND_LABELS[kind]}`)
       .setDescription(ticketRender?.rendered ?? (context || "Aucun contexte fourni."))
       .addFields({ name: "Ouvert par", value: `<@${ownerId}>` })
       .setColor(0xff9800)
@@ -109,13 +109,13 @@ export class TicketService {
 
     // Notification webhook (best-effort, n'échoue jamais le flow ticket)
     void this.notifyWebhook({
-      title: `🎫 Ticket ouvert — ${kind}`,
+      title: `🎫 Ticket ouvert — ${TICKET_KIND_LABELS[kind]}`,
       description: context || "Aucun contexte fourni.",
       color: 0xff9800,
       fields: [
         { name: "Ouvert par", value: `<@${ownerId}>`, inline: true },
         { name: "Salon", value: `<#${channel.id}>`, inline: true },
-        { name: "Type", value: kind, inline: true },
+        { name: "Type", value: TICKET_KIND_LABELS[kind], inline: true },
       ],
     });
 
@@ -206,7 +206,7 @@ export class TicketService {
       .set({ closed: true, closedAt: new Date(), closedBy: closerId })
       .where(eq(tickets.channelId, channelId));
     void this.notifyWebhook({
-      title: `🔒 Ticket fermé — ${t.kind}`,
+      title: `🔒 Ticket fermé — ${TICKET_KIND_LABELS[t.kind as TicketKind] ?? t.kind}`,
       description: t.context ?? "Aucun contexte.",
       color: 0x6b7280,
       fields: [
