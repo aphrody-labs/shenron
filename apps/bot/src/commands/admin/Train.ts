@@ -3,7 +3,7 @@ import { Bot, Discord, Guard, Slash, SlashChoice, SlashGroup, SlashOption } from
 import {
   ApplicationCommandOptionType,
   type CommandInteraction,
-  EmbedBuilder,
+  type EmbedBuilder,
   MessageFlags,
   PermissionsBitField,
 } from "discord.js";
@@ -12,7 +12,19 @@ import path from "node:path";
 import { GuildOnly } from "~/guards/GuildOnly";
 import { CommandsChannelOnly } from "~/guards/CommandsChannelOnly";
 import { TrainingService } from "~/services/TrainingService";
-import { SHENRON_THEME, SHENRON_SEPARATORS, renderProgressBar } from "~/lib/embeds";
+import { COULEURS_RANG, type CanonTier } from "~/services/CanonService";
+import {
+  EMBED_LIMITS,
+  SHENRON_SEPARATORS,
+  SHENRON_THEME,
+  errorEmbed,
+  errorText,
+  renderProgressBar,
+  shenronEmbed,
+  successEmbed,
+  truncate,
+  warningEmbed,
+} from "~/lib/embeds";
 
 export const TRAIN_RUN_KINDS = ["embed", "rerank"] as const;
 export type TrainRunKind = (typeof TRAIN_RUN_KINDS)[number];
@@ -175,6 +187,21 @@ export function embeddingsLabel(active: boolean, remoteRag: boolean): string {
   return active ? "🟢 En ligne (WASM/ONNX)" : "🟠 Repli Lexical BM25";
 }
 
+/** Embed colour of a canon tier (`CANON_ABSOLU`…), amber for an unknown tier. */
+export function canonTierColor(tier: string): number {
+  return COULEURS_RANG[tier as CanonTier] ?? SHENRON_THEME.gold;
+}
+
+/** Whether `value` is an absolute http(s) URL, the only form an embed thumbnail accepts. */
+export function isHttpUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
 function isAdmin(interaction: CommandInteraction): boolean {
   return interaction.memberPermissions?.has(PermissionsBitField.Flags.Administrator) ?? false;
 }
@@ -206,6 +233,8 @@ export function startedMessage(job: TrainJob): string {
   );
 }
 
+const ADMIN_ONLY = "❌ Commande réservée aux administrateurs.";
+
 @Discord()
 @Bot("shenron")
 @Guard(GuildOnly, CommandsChannelOnly)
@@ -217,6 +246,20 @@ export function startedMessage(job: TrainJob): string {
 @injectable()
 export class TrainCommands {
   constructor(@inject(TrainingService) private training: TrainingService) {}
+
+  /** Deferred diagnostic: runs `work`, replies its embed, or a uniform error embed. */
+  private async diagnose(
+    interaction: CommandInteraction,
+    failure: string,
+    work: () => Promise<EmbedBuilder>,
+  ) {
+    await interaction.deferReply();
+    try {
+      await interaction.editReply({ embeds: [await work()] });
+    } catch (e) {
+      await interaction.editReply({ embeds: [errorEmbed(failure, errorText(e))] });
+    }
+  }
 
   @Slash({
     name: "eval",
@@ -235,10 +278,8 @@ export class TrainCommands {
     sample: number | undefined,
     interaction: CommandInteraction,
   ) {
-    await interaction.deferReply();
     const sampleSize = sample && sample > 0 ? sample : undefined;
-
-    try {
+    await this.diagnose(interaction, "Échec de l'évaluation", async () => {
       const metrics = await this.training.evaluateRag(sampleSize);
 
       const r1Pct = Math.round((metrics.recall[1] ?? 0) * 100);
@@ -246,35 +287,31 @@ export class TrainCommands {
       const mrrPct = Math.round((metrics.mrr ?? 0) * 100);
       const ndcgPct = Math.round((metrics.ndcg ?? 0) * 100);
 
-      const embed = new EmbedBuilder()
-        .setColor(SHENRON_THEME.gold)
-        .setAuthor({
-          name: "SHENRON · ÉVALUATION DIRECTE DU RAG",
-          iconURL: "https://dragonballfr.com/favicon.ico",
-        })
-        .setTitle(`🎯 Benchmarking Retrieval : ${metrics.cases} cas évalués`)
-        .setDescription(
-          [
-            `*Mesure de la précision de récupération sur le banc de test doré de Dragon Ball FR.*`,
-            "",
-            SHENRON_SEPARATORS.solid,
-            `**Recall@1 (Top 1 parfait) :** \`${renderProgressBar(r1Pct, 100, 8)}\``,
-            `**Recall@5 (Dans le Top 5) :** \`${renderProgressBar(r5Pct, 100, 8)}\``,
-            `**MRR (Rang moyen de succès) :** \`${mrrPct}%\``,
-            `**nDCG@10 (Qualité de placement) :** \`${ndcgPct}%\``,
-            SHENRON_SEPARATORS.solid,
-            `⏱️ **Durée d'exécution :** \`${metrics.durationMs} ms\` (${Math.round(metrics.durationMs / (metrics.cases || 1))} ms/req)`,
-            `⚡ **Sidecar Embeddings :** ${embeddingsLabel(metrics.sidecarActive, process.env.RAG_BACKEND === "aphrody")}`,
-          ].join("\n"),
-        );
+      const embed = shenronEmbed({
+        header: "ÉVALUATION DIRECTE DU RAG",
+        title: `🎯 Benchmarking Retrieval : ${metrics.cases} cas évalués`,
+        color: SHENRON_THEME.gold,
+        description: [
+          `*Mesure de la précision de récupération sur le banc de test doré de Dragon Ball FR.*`,
+          "",
+          SHENRON_SEPARATORS.solid,
+          `**Recall@1 (Top 1 parfait) :** \`${renderProgressBar(r1Pct, 100, 8)}\``,
+          `**Recall@5 (Dans le Top 5) :** \`${renderProgressBar(r5Pct, 100, 8)}\``,
+          `**MRR (Rang moyen de succès) :** \`${mrrPct}%\``,
+          `**nDCG@10 (Qualité de placement) :** \`${ndcgPct}%\``,
+          SHENRON_SEPARATORS.solid,
+          `⏱️ **Durée d'exécution :** \`${metrics.durationMs} ms\` (${Math.round(metrics.durationMs / (metrics.cases || 1))} ms/req)`,
+          `⚡ **Sidecar Embeddings :** ${embeddingsLabel(metrics.sidecarActive, process.env.RAG_BACKEND === "aphrody")}`,
+        ].join("\n"),
+      });
 
       if (metrics.misses.length > 0) {
         const missesLines = metrics.misses.slice(0, 4).map((m) => {
-          return `• **« ${m.q} »** → Attendu: \`${m.expected.join(", ")}\` (Reçu: *${m.returnedTitle ?? "aucun"}*)`;
+          return `• **« ${truncate(m.q, 120)} »** → Attendu: \`${truncate(m.expected.join(", "), 80)}\` (Reçu: *${truncate(m.returnedTitle ?? "aucun", 80)}*)`;
         });
         embed.addFields({
           name: `⚠️ Imprécisions détectées (${metrics.misses.length}/${metrics.cases})`,
-          value: missesLines.join("\n").slice(0, 1024),
+          value: truncate(missesLines.join("\n"), EMBED_LIMITS.fieldValue),
         });
       } else {
         embed.addFields({
@@ -283,13 +320,8 @@ export class TrainCommands {
             "Aucun miss détecté dans l'échantillon évalué. Toutes les entités canoniques ont été retrouvées !",
         });
       }
-
-      await interaction.editReply({ embeds: [embed] });
-    } catch (e: any) {
-      await interaction.editReply({
-        content: `❌ Échec de l'évaluation : ${e.message}`,
-      });
-    }
+      return embed;
+    });
   }
 
   @Slash({
@@ -302,13 +334,12 @@ export class TrainCommands {
       description: "La question ou le terme à diagnostiquer",
       type: ApplicationCommandOptionType.String,
       required: true,
+      maxLength: 500,
     })
     question: string,
     interaction: CommandInteraction,
   ) {
-    await interaction.deferReply();
-
-    try {
+    await this.diagnose(interaction, "Échec du diagnostic", async () => {
       const diag = await this.training.inspectRag(question);
 
       const resultsLines = diag.results.map((r, i) => {
@@ -320,34 +351,22 @@ export class TrainCommands {
         return `**[${i + 1}] [${r.kind.toUpperCase()}] ${r.title}** (Score: ${(r.score * 100).toFixed(1)}%)${subjectBoost}${mult}${rerank}\n> *${snip}*`;
       });
 
-      const embed = new EmbedBuilder()
-        .setColor(SHENRON_THEME.saiyanBlue)
-        .setAuthor({
-          name: "DIAGNOSTIC TECHNIQUE RAG · SHENRON",
-          iconURL: "https://dragonballfr.com/favicon.ico",
-        })
-        .setTitle(`🔍 Analyse RAG : « ${diag.query.slice(0, 100)} »`)
-        .setDescription(
-          [
-            `**Tokens FTS5 :** \`${diag.tokens.join("`, `") || "aucun"}\``,
-            `**Mode d'exécution :** \`${diag.mode}\``,
-            `**Temps de réponse :** \`${diag.durationMs} ms\``,
-            `**Sidecar Embeddings :** ${diag.sidecarActive ? "🟢 Connecté" : "🟠 Non disponible"}`,
-            "",
-            SHENRON_SEPARATORS.solid,
-            `**Top ${diag.results.length} résultats classés :**`,
-            resultsLines.join("\n\n") || "*Aucun résultat retourné par le moteur.*",
-          ]
-            .join("\n")
-            .slice(0, 4096),
-        );
-
-      await interaction.editReply({ embeds: [embed] });
-    } catch (e: any) {
-      await interaction.editReply({
-        content: `❌ Échec du diagnostic : ${e.message}`,
+      return shenronEmbed({
+        header: "DIAGNOSTIC TECHNIQUE RAG",
+        title: `🔍 Analyse RAG : « ${truncate(diag.query, 100)} »`,
+        color: SHENRON_THEME.saiyanBlue,
+        description: [
+          `**Tokens FTS5 :** \`${diag.tokens.join("`, `") || "aucun"}\``,
+          `**Mode d'exécution :** \`${diag.mode}\``,
+          `**Temps de réponse :** \`${diag.durationMs} ms\``,
+          `**Sidecar Embeddings :** ${diag.sidecarActive ? "🟢 Connecté" : "🟠 Non disponible"}`,
+          "",
+          SHENRON_SEPARATORS.solid,
+          `**Top ${diag.results.length} résultats classés :**`,
+          resultsLines.join("\n\n") || "*Aucun résultat retourné par le moteur.*",
+        ].join("\n"),
       });
-    }
+    });
   }
 
   @Slash({
@@ -360,54 +379,37 @@ export class TrainCommands {
       description: "Le sujet ou l'affirmation à inspecter (ex: Broly, Gine, SSJ4)",
       type: ApplicationCommandOptionType.String,
       required: true,
+      maxLength: 500,
     })
     sujet: string,
     interaction: CommandInteraction,
   ) {
-    await interaction.deferReply();
-
-    try {
+    await this.diagnose(interaction, "Diagnostic canon impossible", async () => {
       const diag = await this.training.inspectCanon(sujet);
       if (!diag) {
-        await interaction.editReply({ content: "⚠️ L'API Canon n'a pas pu être contactée." });
-        return;
+        return warningEmbed("API Canon injoignable", "L'API Canon n'a pas pu être contactée.");
       }
-
-      const embed = new EmbedBuilder()
-        .setColor(
-          diag.tier === "CANON_ABSOLU"
-            ? 0x22c55e
-            : diag.tier === "APOCRYPHE_FANON"
-              ? 0xef4444
-              : 0xf59e0b,
-        )
-        .setAuthor({
-          name: "DIAGNOSTIC API CANON · SHENRON",
-          iconURL: "https://dragonballfr.com/favicon.ico",
-        })
-        .setTitle(`⚖️ ${diag.tierLabel} : ${diag.query}`)
-        .setDescription(
-          [
-            `**Nature détectée :** \`${diag.nature.toUpperCase()}\``,
-            `**Autorité :** \`${diag.score}/100\``,
-            `**Latence de résolution :** \`${diag.latencyMs} ms\``,
-            "",
-            SHENRON_SEPARATORS.solid,
-            `**Verdict Doctrinal :** ${diag.verdict}`,
-            "",
-            diag.toriyamaQuote
-              ? `**Citations Toriyama :**\n> « ${diag.toriyamaQuote.text} »\n*— ${diag.toriyamaQuote.source} (${diag.toriyamaQuote.year ?? "s.d."})*`
-              : "*Aucune citation directe d'Akira Toriyama attachée.*",
-            "",
-            SHENRON_SEPARATORS.solid,
-            `📚 **Preuves rattachées :** \`${diag.referencesCount} références\`, \`${diag.planchesCount} databooks\`, \`${diag.fichesCount} fiches\``,
-          ].join("\n"),
-        );
-
-      await interaction.editReply({ embeds: [embed] });
-    } catch (e: any) {
-      await interaction.editReply({ content: `❌ Erreur : ${e.message}` });
-    }
+      return shenronEmbed({
+        header: "DIAGNOSTIC API CANON",
+        title: `⚖️ ${diag.tierLabel} : ${diag.query}`,
+        color: canonTierColor(diag.tier),
+        description: [
+          `**Nature détectée :** \`${diag.nature.toUpperCase()}\``,
+          `**Autorité :** \`${diag.score}/100\``,
+          `**Latence de résolution :** \`${diag.latencyMs} ms\``,
+          "",
+          SHENRON_SEPARATORS.solid,
+          `**Verdict Doctrinal :** ${diag.verdict}`,
+          "",
+          diag.toriyamaQuote
+            ? `**Citations Toriyama :**\n> « ${diag.toriyamaQuote.text} »\n*— ${diag.toriyamaQuote.source} (${diag.toriyamaQuote.year ?? "s.d."})*`
+            : "*Aucune citation directe d'Akira Toriyama attachée.*",
+          "",
+          SHENRON_SEPARATORS.solid,
+          `📚 **Preuves rattachées :** \`${diag.referencesCount} références\`, \`${diag.planchesCount} databooks\`, \`${diag.fichesCount} fiches\``,
+        ].join("\n"),
+      });
+    });
   }
 
   @Slash({
@@ -420,6 +422,7 @@ export class TrainCommands {
       description: "La citation ou réplique (ex: Kamehameha, Je suis Son Goku)",
       type: ApplicationCommandOptionType.String,
       required: true,
+      maxLength: 500,
     })
     citation: string,
     @SlashChoice({ name: "Dragon Ball original", value: "DB" })
@@ -433,40 +436,33 @@ export class TrainCommands {
     series: string | undefined,
     interaction: CommandInteraction,
   ) {
-    await interaction.deferReply();
-
-    try {
+    await this.diagnose(interaction, "Diagnostic manga impossible", async () => {
       const diag = await this.training.inspectManga(citation, { series });
 
       const planchesLines = diag.results.map((p, i) => {
-        const snip = p.excerpt.replace(/\s+/g, " ").trim();
-        return `**[${i + 1}] ${p.series} — ${p.volume}, planche ${p.page}** (Score: ${p.score.toFixed(1)})\n> *${snip}*\n🔗 [Consulter la planche](${p.href})`;
+        const snip = truncate(
+          String(p.excerpt ?? "")
+            .replace(/\s+/g, " ")
+            .trim(),
+          200,
+        );
+        const link = p.href ? `\n🔗 [Consulter la planche](${p.href})` : "";
+        return `**[${i + 1}] ${p.series} — ${p.volume}, planche ${p.page}** (Score: ${Number(p.score ?? 0).toFixed(1)})\n> *${snip}*${link}`;
       });
 
-      const embed = new EmbedBuilder()
-        .setColor(SHENRON_THEME.orange)
-        .setAuthor({
-          name: "DIAGNOSTIC RECHERCHE MANGA · OCR",
-          iconURL: "https://dragonballfr.com/favicon.ico",
-        })
-        .setTitle(`📖 Recherche de réplique : « ${citation} »`)
-        .setDescription(
-          [
-            `**Planches correspondantes trouvées :** \`${diag.count}\``,
-            `**Latence de recherche :** \`${diag.latencyMs} ms\``,
-            "",
-            SHENRON_SEPARATORS.solid,
-            planchesLines.join("\n\n") ||
-              "*Aucune réplique exacte trouvée dans le manga numérisé.*",
-          ]
-            .join("\n")
-            .slice(0, 4096),
-        );
-
-      await interaction.editReply({ embeds: [embed] });
-    } catch (e: any) {
-      await interaction.editReply({ content: `❌ Erreur : ${e.message}` });
-    }
+      return shenronEmbed({
+        header: "DIAGNOSTIC RECHERCHE MANGA · OCR",
+        title: `📖 Recherche de réplique : « ${truncate(citation, 200)} »`,
+        color: SHENRON_THEME.orange,
+        description: [
+          `**Planches correspondantes trouvées :** \`${diag.count}\``,
+          `**Latence de recherche :** \`${diag.latencyMs} ms\``,
+          "",
+          SHENRON_SEPARATORS.solid,
+          planchesLines.join("\n\n") || "*Aucune réplique exacte trouvée dans le manga numérisé.*",
+        ].join("\n"),
+      });
+    });
   }
 
   @Slash({
@@ -479,44 +475,41 @@ export class TrainCommands {
       description: "URL publique de l'image ou capture d'écran à analyser",
       type: ApplicationCommandOptionType.String,
       required: true,
+      maxLength: 1000,
     })
     imageUrl: string,
     interaction: CommandInteraction,
   ) {
-    await interaction.deferReply();
-
-    try {
-      const diag = await this.training.inspectFrames(imageUrl);
+    const url = imageUrl.trim();
+    if (!isHttpUrl(url)) {
+      await interaction.reply({
+        embeds: [errorEmbed("URL invalide", "Fournis une URL publique `https://…` d'image.")],
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+    await this.diagnose(interaction, "Diagnostic visuel impossible", async () => {
+      const diag = await this.training.inspectFrames(url);
 
       const matchesLines = diag.matches.map((m, i) => {
-        return `**[${i + 1}] ${m.titre}** · Timecode: \`${m.timecode}\` (Similarité: ${m.similarity}%)\n🔗 [Voir la scène](${m.href})`;
+        const link = m.href ? `\n🔗 [Voir la scène](${m.href})` : "";
+        return `**[${i + 1}] ${m.titre}** · Timecode: \`${m.timecode}\` (Similarité: ${m.similarity}%)${link}`;
       });
 
-      const embed = new EmbedBuilder()
-        .setColor(SHENRON_THEME.beerusPurple)
-        .setAuthor({
-          name: "DIAGNOSTIC RECHERCHE VISUELLE · FRAMES",
-          iconURL: "https://dragonballfr.com/favicon.ico",
-        })
-        .setTitle(`🖼️ Analyse d'image`)
-        .setThumbnail(imageUrl)
-        .setDescription(
-          [
-            `**Correspondances identifiées :** \`${diag.count}\``,
-            `**Parasites hors univers rejetés :** \`${diag.parasitesRejetes}\``,
-            `**Latence :** \`${diag.latencyMs} ms\``,
-            "",
-            SHENRON_SEPARATORS.solid,
-            matchesLines.join("\n\n") || "*Aucune scène Dragon Ball correspondante trouvée.*",
-          ]
-            .join("\n")
-            .slice(0, 4096),
-        );
-
-      await interaction.editReply({ embeds: [embed] });
-    } catch (e: any) {
-      await interaction.editReply({ content: `❌ Erreur : ${e.message}` });
-    }
+      return shenronEmbed({
+        header: "DIAGNOSTIC RECHERCHE VISUELLE · FRAMES",
+        title: `🖼️ Analyse d'image`,
+        color: SHENRON_THEME.beerusPurple,
+        description: [
+          `**Correspondances identifiées :** \`${diag.count}\``,
+          `**Parasites hors univers rejetés :** \`${diag.parasitesRejetes}\``,
+          `**Latence :** \`${diag.latencyMs} ms\``,
+          "",
+          SHENRON_SEPARATORS.solid,
+          matchesLines.join("\n\n") || "*Aucune scène Dragon Ball correspondante trouvée.*",
+        ].join("\n"),
+      }).setThumbnail(url);
+    });
   }
 
   @Slash({
@@ -541,6 +534,7 @@ export class TrainCommands {
       description: "La question ou le terme testé",
       type: ApplicationCommandOptionType.String,
       required: true,
+      maxLength: 500,
     })
     question: string,
     @SlashChoice({ name: "⭐⭐⭐⭐⭐ (Parfait)", value: 5 })
@@ -560,6 +554,7 @@ export class TrainCommands {
       description: "Ce qui aurait dû être renvoyé (ex: fiche Son Goku, tome 22)",
       type: ApplicationCommandOptionType.String,
       required: false,
+      maxLength: 500,
     })
     expected: string | undefined,
     @SlashOption({
@@ -567,24 +562,33 @@ export class TrainCommands {
       description: "Détails ou explications supplémentaires",
       type: ApplicationCommandOptionType.String,
       required: false,
+      maxLength: 1000,
     })
     comment: string | undefined,
     interaction: CommandInteraction,
   ) {
-    await this.training.recordFeedback({
-      userId: interaction.user.id,
-      userTag: interaction.user.username,
-      type,
-      query: question,
-      rating,
-      expected,
-      comment,
-    });
-
-    await interaction.reply({
-      content: `✅ **Retour d'entraînement enregistré !** Merci <@${interaction.user.id}> pour cette contribution à l'exactitude de Shenron.`,
-      flags: MessageFlags.Ephemeral,
-    });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+    try {
+      await this.training.recordFeedback({
+        userId: interaction.user.id,
+        userTag: interaction.user.username,
+        type,
+        query: question,
+        rating,
+        expected,
+        comment,
+      });
+      await interaction.editReply({
+        embeds: [
+          successEmbed(
+            "Retour d'entraînement enregistré",
+            `Merci <@${interaction.user.id}> pour cette contribution à l'exactitude de Shenron.`,
+          ),
+        ],
+      });
+    } catch (e) {
+      await interaction.editReply({ embeds: [errorEmbed("Enregistrement échoué", errorText(e))] });
+    }
   }
 
   @Slash({
@@ -598,6 +602,7 @@ export class TrainCommands {
       description: "La question à ajouter au dataset",
       type: ApplicationCommandOptionType.String,
       required: true,
+      maxLength: 500,
     })
     question: string,
     @SlashOption({
@@ -605,6 +610,7 @@ export class TrainCommands {
       description: "Mots-clés ou titres attendus séparés par des virgules (ex: Gine, Saiyan)",
       type: ApplicationCommandOptionType.String,
       required: true,
+      maxLength: 500,
     })
     expectedRaw: string,
     interaction: CommandInteraction,
@@ -614,21 +620,29 @@ export class TrainCommands {
       .map((s) => s.trim())
       .filter(Boolean);
 
-    const ok = await this.training.addGoldCase(
-      question,
-      expected,
-      interaction.user.id,
-      interaction.user.username,
-    );
-    if (ok) {
-      await interaction.reply({
-        content: `🏆 **Cas de test gold ajouté avec succès !**\n• Question : « ${question} »\n• Attendus : ${expected.map((e) => `« ${e} »`).join(", ")}\nIl sera inclus dans les prochains tests et CI.`,
+    await interaction.deferReply();
+    try {
+      const ok = await this.training.addGoldCase(
+        question,
+        expected,
+        interaction.user.id,
+        interaction.user.username,
+      );
+      await interaction.editReply({
+        embeds: [
+          ok
+            ? successEmbed(
+                "Cas de test gold ajouté 🏆",
+                `• Question : « ${question} »\n• Attendus : ${expected.map((e) => `« ${e} »`).join(", ")}\nIl sera inclus dans les prochains tests et CI.`,
+              )
+            : errorEmbed(
+                "Cas de test refusé",
+                "Question vide, aucun attendu, ou question déjà présente dans le banc gold.",
+              ),
+        ],
       });
-    } else {
-      await interaction.reply({
-        content: `❌ Impossible d'ajouter ce cas de test (paramètres invalides).`,
-        flags: MessageFlags.Ephemeral,
-      });
+    } catch (e) {
+      await interaction.editReply({ embeds: [errorEmbed("Ajout impossible", errorText(e))] });
     }
   }
 
@@ -637,41 +651,33 @@ export class TrainCommands {
     description: "Afficher le tableau de bord des données d'entraînement et de la santé des APIs",
   })
   async stats(interaction: CommandInteraction) {
-    await interaction.deferReply();
-
-    try {
+    await this.diagnose(interaction, "Tableau de bord indisponible", async () => {
       const s = await this.training.getStats();
       const remoteRag = process.env.RAG_BACKEND === "aphrody";
+      const status = (v: "online" | "offline") =>
+        v === "online" ? "🟢 Opérationnel" : "🔴 Hors-ligne";
 
-      const embed = new EmbedBuilder()
-        .setColor(SHENRON_THEME.kiGreen)
-        .setAuthor({
-          name: "TABLEAU DE BORD D'ENTRAÎNEMENT · SHENRON",
-          iconURL: "https://dragonballfr.com/favicon.ico",
-        })
-        .setTitle("📊 Statistiques Moteur & Disponibilité")
-        .setDescription(
-          [
-            `*Vue d'ensemble des données d'entraînement et de la santé des briques Dragon Ball FR.*`,
-            "",
-            SHENRON_SEPARATORS.solid,
-            `📚 **Corpus RAG :** \`${s.totalChunks.toLocaleString()} chunks indexés\` (${remoteRag ? "Aphrody" : "FTS5 BM25"})`,
-            `⚡ **Vecteurs denses :** \`${s.totalVectors.toLocaleString()} embeddings\` (${remoteRag ? "Aphrody" : "sqlite-vec"})`,
-            `🎯 **Cas de test Gold :** \`${s.totalGoldCases} questions validées\``,
-            `📝 **Feedbacks utilisateurs :** \`${s.totalFeedbacks} retours\` (\`${s.goldFeedbacks} gold\` · \`${s.pendingFeedbacks} en attente\`)`,
-            "",
-            SHENRON_SEPARATORS.solid,
-            `**État des briques de production :**`,
-            `• ${remoteRag ? "Embeddings Aphrody" : "Embeddings E5 (aphrody-shenron-embed)"} : ${s.sidecarStatus === "online" ? "🟢 Opérationnel" : "🔴 Hors-ligne"}`,
-            `• API Site (Canon / Manga) : ${s.siteApiStatus === "online" ? "🟢 Opérationnel" : "🔴 Hors-ligne"}`,
-            `• Bot Shenron (Port 5006) : ${s.botApiStatus === "online" ? "🟢 Opérationnel" : "🔴 Hors-ligne"}`,
-          ].join("\n"),
-        );
-
-      await interaction.editReply({ embeds: [embed] });
-    } catch (e: any) {
-      await interaction.editReply({ content: `❌ Erreur : ${e.message}` });
-    }
+      return shenronEmbed({
+        header: "TABLEAU DE BORD D'ENTRAÎNEMENT",
+        title: "📊 Statistiques Moteur & Disponibilité",
+        color: SHENRON_THEME.kiGreen,
+        description: [
+          `*Vue d'ensemble des données d'entraînement et de la santé des briques Dragon Ball FR.*`,
+          "",
+          SHENRON_SEPARATORS.solid,
+          `📚 **Corpus RAG :** \`${s.totalChunks.toLocaleString("fr-FR")} chunks indexés\` (${remoteRag ? "Aphrody" : "FTS5 BM25"})`,
+          `⚡ **Vecteurs denses :** \`${s.totalVectors.toLocaleString("fr-FR")} embeddings\` (${remoteRag ? "Aphrody" : "sqlite-vec"})`,
+          `🎯 **Cas de test Gold :** \`${s.totalGoldCases} questions validées\``,
+          `📝 **Feedbacks utilisateurs :** \`${s.totalFeedbacks} retours\` (\`${s.goldFeedbacks} gold\` · \`${s.pendingFeedbacks} en attente\`)`,
+          "",
+          SHENRON_SEPARATORS.solid,
+          `**État des briques de production :**`,
+          `• ${remoteRag ? "Embeddings Aphrody" : "Embeddings E5 (aphrody-shenron-embed)"} : ${status(s.sidecarStatus)}`,
+          `• API Site (Canon / Manga) : ${status(s.siteApiStatus)}`,
+          `• API Bot Shenron : ${status(s.botApiStatus)}`,
+        ].join("\n"),
+      });
+    });
   }
 
   @Slash({
@@ -698,21 +704,15 @@ export class TrainCommands {
     interaction: CommandInteraction,
   ) {
     if (!isAdmin(interaction)) {
-      await interaction.reply({
-        content: "❌ Commande réservée aux administrateurs.",
-        flags: MessageFlags.Ephemeral,
-      });
+      await interaction.reply({ content: ADMIN_ONLY, flags: MessageFlags.Ephemeral });
       return;
     }
     try {
       const job = trainJobs.start(kind, input, interaction.user.id);
+      await interaction.reply({ content: startedMessage(job), flags: MessageFlags.Ephemeral });
+    } catch (e) {
       await interaction.reply({
-        content: startedMessage(job),
-        flags: MessageFlags.Ephemeral,
-      });
-    } catch (e: any) {
-      await interaction.reply({
-        content: `❌ Lancement impossible : ${e?.message ?? e}`,
+        content: `❌ Lancement impossible : ${errorText(e)}`,
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -730,17 +730,16 @@ export class TrainCommands {
     interaction: CommandInteraction,
   ) {
     if (!isAdmin(interaction)) {
-      await interaction.reply({
-        content: "❌ Commande réservée aux administrateurs.",
-        flags: MessageFlags.Ephemeral,
-      });
+      await interaction.reply({ content: ADMIN_ONLY, flags: MessageFlags.Ephemeral });
       return;
     }
     const job = id ? trainJobs.get(id.trim()) : trainJobs.latest();
     await interaction.reply({
       content: job
         ? describeJob(job)
-        : "Aucun job d'entraînement connu depuis le démarrage du bot.",
+        : id
+          ? `Aucun job \`${truncate(id.trim(), 80)}\` depuis le démarrage du bot.`
+          : "Aucun job d'entraînement connu depuis le démarrage du bot.",
       flags: MessageFlags.Ephemeral,
     });
   }

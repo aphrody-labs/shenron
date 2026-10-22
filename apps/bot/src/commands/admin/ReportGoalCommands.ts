@@ -1,10 +1,37 @@
 import { inject, injectable } from "tsyringe";
 import { Bot, Discord, Guard, Slash, SlashChoice, SlashGroup, SlashOption } from "discordx";
-import { ApplicationCommandOptionType, type CommandInteraction, EmbedBuilder } from "discord.js";
+import {
+  ApplicationCommandOptionType,
+  MessageFlags,
+  PermissionFlagsBits,
+  type CommandInteraction,
+} from "discord.js";
 import { GuildOnly } from "~/guards/GuildOnly";
 import { CommandsChannelOnly } from "~/guards/CommandsChannelOnly";
-import { AdminReportGoalService } from "~/services/AdminReportGoalService";
-import { SHENRON_THEME, SHENRON_SEPARATORS } from "~/lib/embeds";
+import { isBotOwner } from "~/lib/env";
+import {
+  AdminReportGoalService,
+  REPORT_SEVERITY_COLORS,
+  type ReportSeverity,
+} from "~/services/AdminReportGoalService";
+import {
+  COLORS,
+  SHENRON_SEPARATORS,
+  SHENRON_THEME,
+  errorEmbed,
+  errorText,
+  shenronEmbed,
+  successEmbed,
+  truncate,
+} from "~/lib/embeds";
+
+/** Number of entries shown by `/report liste` and `/goal liste`. */
+const LIST_LIMIT = 8;
+
+/** `text` clipped to `max` characters, with an ellipsis only when something was cut. */
+const excerpt = (text: string, max: number) => truncate(text.replace(/\s+/g, " ").trim(), max);
+
+const frDate = (ms: number) => new Date(ms).toLocaleDateString("fr-FR");
 
 @Discord()
 @Bot("shenron")
@@ -42,6 +69,7 @@ export class ReportCommands {
       description: "Titre clair et concis du problème",
       type: ApplicationCommandOptionType.String,
       required: true,
+      maxLength: 200,
     })
     title: string,
     @SlashOption({
@@ -49,6 +77,7 @@ export class ReportCommands {
       description: "Détails de l'erreur ou du manque",
       type: ApplicationCommandOptionType.String,
       required: true,
+      maxLength: 2000,
     })
     description: string,
     @SlashChoice({ name: "Critique (P0 - Bloquant)", value: "critical" })
@@ -61,10 +90,11 @@ export class ReportCommands {
       type: ApplicationCommandOptionType.String,
       required: false,
     })
-    severity: "critical" | "major" | "minor" | "suggestion" | undefined,
+    severity: ReportSeverity | undefined,
     interaction: CommandInteraction,
   ) {
     await interaction.deferReply();
+    const level = severity ?? "minor";
 
     try {
       const rep = await this.service.createReport({
@@ -73,29 +103,31 @@ export class ReportCommands {
         category,
         title,
         description,
-        severity: severity ?? "minor",
+        severity: level,
       });
 
-      const embed = new EmbedBuilder()
-        .setColor(severity === "critical" ? 0xef4444 : severity === "major" ? 0xf97316 : 0x38bdf8)
-        .setTitle(`🚨 Signalement #${rep.id} enregistré !`)
-        .setDescription(
-          [
-            `**Catégorie :** \`${category.toUpperCase()}\``,
-            `**Titre :** ${title}`,
-            `**Description :** ${description}`,
-            `**Sévérité :** \`${(severity ?? "minor").toUpperCase()}\``,
-            "",
-            SHENRON_SEPARATORS.solid,
-            `• Synchronisé en DB (\`admin_reports\`)`,
-            `• Inscrit dans \`var/reports/ADMIN-REPORTS.md\``,
-            `• Transmis aux agents dans le salon admin.`,
-          ].join("\n"),
-        );
-
-      await interaction.editReply({ embeds: [embed] });
-    } catch (e: any) {
-      await interaction.editReply({ content: `❌ Erreur : ${e.message}` });
+      await interaction.editReply({
+        embeds: [
+          shenronEmbed({
+            header: "SIGNALEMENTS",
+            title: `🚨 Signalement #${rep.id} enregistré !`,
+            color: REPORT_SEVERITY_COLORS[level],
+            description: [
+              `**Catégorie :** \`${category.toUpperCase()}\``,
+              `**Titre :** ${title}`,
+              `**Description :** ${description}`,
+              `**Sévérité :** \`${level.toUpperCase()}\``,
+              "",
+              SHENRON_SEPARATORS.solid,
+              `• Synchronisé en DB (\`admin_reports\`)`,
+              `• Inscrit dans \`var/reports/ADMIN-REPORTS.md\``,
+              `• Transmis aux agents dans le salon admin.`,
+            ].join("\n"),
+          }),
+        ],
+      });
+    } catch (e) {
+      await interaction.editReply({ embeds: [errorEmbed("Signalement refusé", errorText(e))] });
     }
   }
 
@@ -118,31 +150,46 @@ export class ReportCommands {
   ) {
     await interaction.deferReply();
 
-    const reports = this.service.listReports(status ?? "open");
+    const filter = status ?? "open";
+    const reports = this.service.listReports(filter);
     if (reports.length === 0) {
       await interaction.editReply({
-        content: `✅ Aucun signalement correspondant trouvé (${status ?? "open"}).`,
+        embeds: [
+          shenronEmbed({
+            header: "SIGNALEMENTS",
+            title: "📋 Registre des signalements",
+            color: COLORS.muted,
+            description: `✅ Aucun signalement correspondant (\`${filter}\`).`,
+          }),
+        ],
       });
       return;
     }
 
-    const lines = reports.slice(0, 8).map((r) => {
-      const date = new Date(r.created_at).toLocaleDateString();
-      return `**#${r.id} [${r.category.toUpperCase()}]** ${r.title} (\`${r.severity}\` · ${r.status})\n> ${r.description.slice(0, 100)}... *(par @${r.user_tag ?? r.user_id} le ${date})*`;
+    const lines = reports.slice(0, LIST_LIMIT).map((r) => {
+      const by = r.user_tag ? `@${r.user_tag}` : `<@${r.user_id}>`;
+      return `**#${r.id} [${r.category.toUpperCase()}]** ${excerpt(r.title, 120)} (\`${r.severity}\` · ${r.status})\n> ${excerpt(r.description, 110)} *(par ${by} le ${frDate(r.created_at)})*`;
     });
 
-    const embed = new EmbedBuilder()
-      .setColor(SHENRON_THEME.saiyanBlue)
-      .setTitle(`📋 Registre des Signalements (${reports.length})`)
-      .setDescription(lines.join("\n\n").slice(0, 4096))
-      .setFooter({ text: "Consultez var/reports/ADMIN-REPORTS.md pour le registre complet" });
-
-    await interaction.editReply({ embeds: [embed] });
+    await interaction.editReply({
+      embeds: [
+        shenronEmbed({
+          header: "SIGNALEMENTS",
+          title: `📋 Registre des signalements (${reports.length})`,
+          color: SHENRON_THEME.saiyanBlue,
+          description: lines.join("\n\n"),
+          footer:
+            reports.length > LIST_LIMIT
+              ? `${LIST_LIMIT} plus récents affichés · registre complet : var/reports/ADMIN-REPORTS.md`
+              : "Registre complet : var/reports/ADMIN-REPORTS.md",
+        }),
+      ],
+    });
   }
 
   @Slash({
     name: "resoudre",
-    description: "Marquer un signalement comme résolu avec notes d'intervention",
+    description: "Staff : marquer un signalement comme résolu avec notes d'intervention",
   })
   async resolve(
     @SlashOption({
@@ -150,6 +197,7 @@ export class ReportCommands {
       description: "Numéro ID du signalement",
       type: ApplicationCommandOptionType.Integer,
       required: true,
+      minValue: 1,
     })
     id: number,
     @SlashOption({
@@ -157,21 +205,41 @@ export class ReportCommands {
       description: "Ce qui a été corrigé ou ajusté",
       type: ApplicationCommandOptionType.String,
       required: true,
+      maxLength: 1500,
     })
     notes: string,
     interaction: CommandInteraction,
   ) {
-    await interaction.deferReply();
-
-    const rep = await this.service.resolveReport(id, notes, `@${interaction.user.username}`);
-    if (!rep) {
-      await interaction.editReply({ content: `❌ Signalement #${id} introuvable.` });
+    // `/report creer` is open to every member; closing a report is a staff action.
+    const isStaff =
+      isBotOwner(interaction.user.id) ||
+      (interaction.memberPermissions?.has(PermissionFlagsBits.ModerateMembers) ?? false);
+    if (!isStaff) {
+      await interaction.reply({
+        embeds: [
+          errorEmbed("Action réservée au staff", "Seul le staff peut clore un signalement."),
+        ],
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
+    await interaction.deferReply();
 
-    await interaction.editReply({
-      content: `✅ **Signalement #${id} résolu avec succès !** Mis à jour en base et dans \`var/reports/ADMIN-REPORTS.md\`.`,
-    });
+    try {
+      const rep = await this.service.resolveReport(id, notes, `@${interaction.user.username}`);
+      await interaction.editReply({
+        embeds: [
+          rep
+            ? successEmbed(
+                `Signalement #${id} résolu`,
+                `**${excerpt(rep.title, 200)}**\nMis à jour en base et dans \`var/reports/ADMIN-REPORTS.md\`.`,
+              )
+            : errorEmbed("Signalement introuvable", `Aucun signalement #${id}.`),
+        ],
+      });
+    } catch (e) {
+      await interaction.editReply({ embeds: [errorEmbed("Résolution échouée", errorText(e))] });
+    }
   }
 }
 
@@ -181,6 +249,7 @@ export class ReportCommands {
 @SlashGroup({
   name: "goal",
   description: "Définition des objectifs et feuille de route pour les agents de code",
+  defaultMemberPermissions: PermissionFlagsBits.Administrator,
 })
 @SlashGroup("goal")
 @injectable()
@@ -198,6 +267,7 @@ export class GoalCommands {
       description: "Titre clair de l'objectif",
       type: ApplicationCommandOptionType.String,
       required: true,
+      maxLength: 200,
     })
     title: string,
     @SlashOption({
@@ -205,6 +275,7 @@ export class GoalCommands {
       description: "Spécifications de ce qu'il faut faire",
       type: ApplicationCommandOptionType.String,
       required: true,
+      maxLength: 2000,
     })
     description: string,
     @SlashChoice({ name: "P0 (Priorité absolue / Urgence)", value: "p0" })
@@ -241,6 +312,9 @@ export class GoalCommands {
     interaction: CommandInteraction,
   ) {
     await interaction.deferReply();
+    const prio = priority ?? "p1";
+    const session = targetSession ?? "next_session";
+    const assignee = assignedTo ?? "all_agents";
 
     try {
       const goal = await this.service.createGoal({
@@ -248,32 +322,34 @@ export class GoalCommands {
         userTag: interaction.user.username,
         title,
         description,
-        priority: priority ?? "p1",
-        targetSession: targetSession ?? "next_session",
-        assignedTo: assignedTo ?? "all_agents",
+        priority: prio,
+        targetSession: session,
+        assignedTo: assignee,
       });
 
-      const embed = new EmbedBuilder()
-        .setColor(SHENRON_THEME.gold)
-        .setTitle(`🎯 Objectif #${goal.id} programmé pour la session !`)
-        .setDescription(
-          [
-            `**Titre :** ${title}`,
-            `**Description :** ${description}`,
-            `**Priorité :** \`${(priority ?? "p1").toUpperCase()}\``,
-            `**Session cible :** \`${targetSession ?? "next_session"}\``,
-            `**Assigné à :** \`${assignedTo ?? "all_agents"}\``,
-            "",
-            SHENRON_SEPARATORS.solid,
-            `• Synchronisé en temps réel dans \`var/reports/GOALS.md\``,
-            `• Enregistré en base (\`admin_goals\`)`,
-            `• Pris en charge par les agents (Claude, AGY, Codex) dès la prochaine session.`,
-          ].join("\n"),
-        );
-
-      await interaction.editReply({ embeds: [embed] });
-    } catch (e: any) {
-      await interaction.editReply({ content: `❌ Erreur : ${e.message}` });
+      await interaction.editReply({
+        embeds: [
+          shenronEmbed({
+            header: "FEUILLE DE ROUTE",
+            title: `🎯 Objectif #${goal.id} programmé pour la session !`,
+            color: SHENRON_THEME.gold,
+            description: [
+              `**Titre :** ${title}`,
+              `**Description :** ${description}`,
+              `**Priorité :** \`${prio.toUpperCase()}\``,
+              `**Session cible :** \`${session}\``,
+              `**Assigné à :** \`${assignee}\``,
+              "",
+              SHENRON_SEPARATORS.solid,
+              `• Synchronisé en temps réel dans \`var/reports/GOALS.md\``,
+              `• Enregistré en base (\`admin_goals\`)`,
+              `• Pris en charge par les agents (Claude, AGY, Codex) dès la prochaine session.`,
+            ].join("\n"),
+          }),
+        ],
+      });
+    } catch (e) {
+      await interaction.editReply({ embeds: [errorEmbed("Objectif refusé", errorText(e))] });
     }
   }
 
@@ -296,25 +372,40 @@ export class GoalCommands {
   ) {
     await interaction.deferReply();
 
-    const goals = this.service.listGoals(status ?? "pending");
+    const filter = status ?? "pending";
+    const goals = this.service.listGoals(filter);
     if (goals.length === 0) {
       await interaction.editReply({
-        content: `✅ Aucun objectif correspondant trouvé (${status ?? "pending"}).`,
+        embeds: [
+          shenronEmbed({
+            header: "FEUILLE DE ROUTE",
+            title: "🎯 Feuille de route & objectifs",
+            color: COLORS.muted,
+            description: `✅ Aucun objectif correspondant (\`${filter}\`).`,
+          }),
+        ],
       });
       return;
     }
 
-    const lines = goals.slice(0, 8).map((g) => {
-      return `**#${g.id} [${g.priority.toUpperCase()}]** ${g.title} (\`${g.target_session}\` · assigné à \`${g.assigned_to}\`)\n> ${g.description.slice(0, 110)}... *(statut: ${g.status})*`;
+    const lines = goals.slice(0, LIST_LIMIT).map((g) => {
+      return `**#${g.id} [${g.priority.toUpperCase()}]** ${excerpt(g.title, 120)} (\`${g.target_session}\` · assigné à \`${g.assigned_to}\`)\n> ${excerpt(g.description, 110)} *(statut : ${g.status})*`;
     });
 
-    const embed = new EmbedBuilder()
-      .setColor(SHENRON_THEME.kiGreen)
-      .setTitle(`🎯 Feuille de Route & Objectifs (${goals.length})`)
-      .setDescription(lines.join("\n\n").slice(0, 4096))
-      .setFooter({ text: "Consultez var/reports/GOALS.md pour le plan complet" });
-
-    await interaction.editReply({ embeds: [embed] });
+    await interaction.editReply({
+      embeds: [
+        shenronEmbed({
+          header: "FEUILLE DE ROUTE",
+          title: `🎯 Feuille de route & objectifs (${goals.length})`,
+          color: SHENRON_THEME.kiGreen,
+          description: lines.join("\n\n"),
+          footer:
+            goals.length > LIST_LIMIT
+              ? `${LIST_LIMIT} plus récents affichés · plan complet : var/reports/GOALS.md`
+              : "Plan complet : var/reports/GOALS.md",
+        }),
+      ],
+    });
   }
 
   @Slash({
@@ -327,6 +418,7 @@ export class GoalCommands {
       description: "Numéro ID de l'objectif",
       type: ApplicationCommandOptionType.Integer,
       required: true,
+      minValue: 1,
     })
     id: number,
     @SlashOption({
@@ -334,20 +426,27 @@ export class GoalCommands {
       description: "Résumé des réalisations",
       type: ApplicationCommandOptionType.String,
       required: false,
+      maxLength: 1500,
     })
     notes: string | undefined,
     interaction: CommandInteraction,
   ) {
     await interaction.deferReply();
 
-    const goal = await this.service.completeGoal(id, notes);
-    if (!goal) {
-      await interaction.editReply({ content: `❌ Objectif #${id} introuvable.` });
-      return;
+    try {
+      const goal = await this.service.completeGoal(id, notes);
+      await interaction.editReply({
+        embeds: [
+          goal
+            ? successEmbed(
+                `Objectif #${id} accompli 🏆`,
+                `**${excerpt(goal.title, 200)}**\nMis à jour dans \`var/reports/GOALS.md\`.`,
+              )
+            : errorEmbed("Objectif introuvable", `Aucun objectif #${id}.`),
+        ],
+      });
+    } catch (e) {
+      await interaction.editReply({ embeds: [errorEmbed("Mise à jour échouée", errorText(e))] });
     }
-
-    await interaction.editReply({
-      content: `🏆 **Objectif #${id} marqué comme accompli !** Mis à jour dans \`var/reports/GOALS.md\`.`,
-    });
   }
 }

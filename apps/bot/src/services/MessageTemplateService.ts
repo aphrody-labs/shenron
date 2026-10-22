@@ -4,7 +4,8 @@ import { eq } from "drizzle-orm";
 import { Client as DiscordxClient } from "discordx";
 import { DatabaseService } from "~/db/index";
 import { EventBusService } from "./EventBusService";
-import { messageTemplates, guildSettings, type MessageTemplate } from "~/db/schema";
+import { messageTemplates, type MessageTemplate } from "~/db/schema";
+import { SettingsService } from "./SettingsService";
 import {
   EVENTS,
   findEvent,
@@ -12,7 +13,7 @@ import {
   VIRTUAL_CHANNEL_KEYS,
   type EventDef,
 } from "~/lib/message-templates";
-import { brandedEmbed } from "~/lib/embeds";
+import { brandedEmbed, EMBED_LIMITS, truncate } from "~/lib/embeds";
 import { logger } from "~/lib/logger";
 import { env } from "~/lib/env";
 
@@ -32,24 +33,21 @@ import { env } from "~/lib/env";
 @singleton()
 export class MessageTemplateService {
   private templateCache = new Map<string, MessageTemplate | null>();
-  private settingsCache = new Map<string, string>();
   private cacheTs = 0;
   private TTL = 30_000;
 
   constructor(
     @inject(DatabaseService) private dbs: DatabaseService,
     @inject(EventBusService) private bus: EventBusService,
+    // Channel overrides come from the settings cache, which `set()` updates at once:
+    // a second copy of `guild_settings` here stayed stale up to 30 s after `/config channel`.
+    @inject(SettingsService) private settings: SettingsService,
   ) {}
 
   private async refresh(): Promise<void> {
-    const [templates, settings] = await Promise.all([
-      this.dbs.db.select().from(messageTemplates),
-      this.dbs.db.select().from(guildSettings),
-    ]);
+    const templates = await this.dbs.db.select().from(messageTemplates);
     this.templateCache.clear();
     for (const t of templates) this.templateCache.set(t.event, t);
-    this.settingsCache.clear();
-    for (const s of settings) this.settingsCache.set(s.key, s.value);
     this.cacheTs = Date.now();
   }
 
@@ -66,8 +64,7 @@ export class MessageTemplateService {
     // Clés virtuelles (DM, canal d'invocation, canal du ticket) → le caller
     // fournit son propre canal, on ne tente AUCUNE résolution settings/env.
     if (VIRTUAL_CHANNEL_KEYS.has(channelKey)) return null;
-    await this.ensureFresh();
-    const id = this.settingsCache.get(channelKey) ?? this.envFallback(channelKey);
+    const id = (await this.settings.getRaw(channelKey)) ?? this.envFallback(channelKey);
     if (!id) return null;
     const guild = client.guilds.cache.get(env.GUILD_ID);
     const cached = guild?.channels.cache.get(id);
@@ -156,6 +153,7 @@ export class MessageTemplateService {
     const content = renderTemplate(tmpl?.template ?? def.defaultTemplate, vars);
     try {
       if (def.embed) {
+        // brandedEmbed bounds the description: a long admin template must not fail the send.
         const userMention = typeof vars.user === "string" ? vars.user : undefined;
         return await channel.send({
           content: userMention,
@@ -168,7 +166,7 @@ export class MessageTemplateService {
           ],
         });
       }
-      return await channel.send({ content });
+      return await channel.send({ content: truncate(content, EMBED_LIMITS.content) });
     } catch (err) {
       logger.warn({ err, event }, "publish: send failed");
       return null;

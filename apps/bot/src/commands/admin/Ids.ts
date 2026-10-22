@@ -2,6 +2,7 @@ import {
   ApplicationCommandOptionType,
   ChannelType,
   MessageFlags,
+  PermissionFlagsBits,
   type CommandInteraction,
 } from "discord.js";
 import { Bot, Discord, Guard, Slash, SlashChoice, SlashOption } from "discordx";
@@ -19,6 +20,7 @@ export class IdsCommand {
   @Slash({
     name: "ids",
     description: "Lister les IDs rôles/salons du serveur (admin only)",
+    defaultMemberPermissions: PermissionFlagsBits.Administrator,
   })
   async ids(
     @SlashChoice({ name: "roles", value: "roles" })
@@ -104,12 +106,15 @@ export class IdsCommand {
   }
 }
 
-function chunk(text: string, maxLen: number): string[] {
+/** Splits `text` on line boundaries into chunks of at most `maxLen` characters. */
+export function chunk(text: string, maxLen: number): string[] {
   if (text.length <= maxLen) return [text];
   const out: string[] = [];
   let buf = "";
-  for (const line of text.split("\n")) {
-    if ((buf + line).length + 1 > maxLen) {
+  for (const raw of text.split("\n")) {
+    // A line longer than the limit is cut: no chunk may exceed it, none may be empty.
+    const line = raw.length > maxLen ? `${raw.slice(0, maxLen - 1)}…` : raw;
+    if (buf && buf.length + line.length + 1 > maxLen) {
       out.push(buf);
       buf = line;
     } else {

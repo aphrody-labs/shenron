@@ -4,6 +4,12 @@ import { CronRegistry } from "~/api/cron-registry";
 import { TrainingService } from "~/services/TrainingService";
 import { logger } from "~/lib/logger";
 import { sendAdminLabMessage } from "~/lib/admin-lab";
+import { COLORS, shenronEmbed } from "~/lib/embeds";
+import { embeddingsLabel } from "~/commands/admin/Train";
+
+/** Interval of the periodic evaluation and sample size of each run. */
+const EVAL_INTERVAL_MS = 6 * 3_600_000;
+const EVAL_SAMPLE = 25;
 
 /**
  * AutoEvalCron — Évaluation automatisée et surveillance de la précision du RAG.
@@ -23,17 +29,14 @@ export class AutoEvalCronEvent {
 
   @Once({ event: "clientReady" })
   async register() {
-    // Intervalle par défaut : toutes les 6 heures (6 * 3 600 000 ms)
-    const SIX_HOURS_MS = 6 * 3_600_000;
-
     this.cron.register({
       name: "rag-auto-eval",
       description: "Évaluation périodique du banc de test doré RAG et détection de régressions",
-      intervalMs: SIX_HOURS_MS,
+      intervalMs: EVAL_INTERVAL_MS,
       fn: async () => {
         logger.info("[AutoEvalCron] Lancement du banc d'évaluation RAG périodique...");
         try {
-          const metrics = await this.training.evaluateRag(25);
+          const metrics = await this.training.evaluateRag(EVAL_SAMPLE);
           logger.info(
             {
               cases: metrics.cases,
@@ -51,21 +54,21 @@ export class AutoEvalCronEvent {
           if (!metrics.sidecarActive || metrics.misses.length > 0) {
             await sendAdminLabMessage({
               embeds: [
-                {
-                  color: metrics.sidecarActive ? 0x22c55e : 0xeab308,
+                shenronEmbed({
+                  header: "LAB IA ADMIN",
+                  color: metrics.sidecarActive ? COLORS.success : COLORS.warning,
                   title: "📊 RAPPORT AUTOMATIQUE — ÉVALUATION RAG",
                   description: [
-                    `Cycle d'évaluation périodique automatique (25 cas testés).`,
+                    `Cycle d'évaluation périodique automatique (${metrics.cases} cas testés).`,
                     "",
                     `• **Recall@1 :** \`${((metrics.recall[1] ?? 0) * 100).toFixed(1)}%\``,
                     `• **Recall@5 :** \`${((metrics.recall[5] ?? 0) * 100).toFixed(1)}%\``,
                     `• **MRR :** \`${(metrics.mrr * 100).toFixed(1)}%\``,
                     `• **nDCG@10 :** \`${(metrics.ndcg * 100).toFixed(1)}%\``,
-                    `• **Sidecar ONNX :** ${metrics.sidecarActive ? "🟢 En ligne (aphrody-shenron-embed)" : "🟠 Hors-ligne (repli BM25 FTS5)"}`,
+                    `• **Embeddings :** ${embeddingsLabel(metrics.sidecarActive, process.env.RAG_BACKEND === "aphrody")}`,
                     `• **Misses :** \`${metrics.misses.length} / ${metrics.cases}\``,
                   ].join("\n"),
-                  timestamp: new Date().toISOString(),
-                },
+                }).toJSON(),
               ],
             }).catch((err) => logger.warn({ err }, "[AutoEvalCron] Erreur notification admin"));
           }

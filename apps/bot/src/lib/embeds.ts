@@ -48,11 +48,54 @@ export function brandedEmbed(opts: {
   timestamp?: boolean;
 }): EmbedBuilder {
   const e = new EmbedBuilder().setColor(COLORS[opts.kind ?? "brand"]);
-  if (opts.title) e.setTitle(opts.title);
-  if (opts.description) e.setDescription(opts.description);
-  if (opts.footer) e.setFooter({ text: opts.footer });
+  if (opts.title) e.setTitle(truncate(opts.title, EMBED_LIMITS.title));
+  if (opts.description) e.setDescription(truncate(opts.description, EMBED_LIMITS.description));
+  if (opts.footer) e.setFooter({ text: truncate(opts.footer, EMBED_LIMITS.footer) });
   if (opts.timestamp !== false) e.setTimestamp(new Date());
   return e;
+}
+
+/** Icône de marque affichée dans les en-têtes (`setAuthor`) des panneaux Shenron. */
+export const BRAND_ICON_URL = "https://dragonballfr.com/favicon.ico";
+/** Pied de page commun des panneaux Shenron (aide, admin, diagnostics). */
+export const BRAND_FOOTER = "Shenron · dragonballfr.com";
+
+/**
+ * Panneau Shenron au style unique : en-tête de marque (libellé en capitales + icône),
+ * titre, description et pied de page communs, textes bornés aux limites Discord.
+ * À préférer aux `new EmbedBuilder()` assemblés à la main dans les commandes.
+ */
+export function shenronEmbed(opts: {
+  /** Libellé de l'en-tête (ex. « DIAGNOSTIC RAG »), préfixé de la marque. */
+  header?: string;
+  title?: string;
+  description?: string;
+  color?: number;
+  /** Pied de page : texte libre, `false` pour aucun ; défaut `BRAND_FOOTER`. */
+  footer?: string | false;
+  timestamp?: boolean;
+}): EmbedBuilder {
+  const e = new EmbedBuilder().setColor(opts.color ?? COLORS.brand);
+  if (opts.header) {
+    e.setAuthor({
+      name: truncate(`SHENRON · ${opts.header}`, EMBED_LIMITS.author),
+      iconURL: BRAND_ICON_URL,
+    });
+  }
+  if (opts.title) e.setTitle(truncate(opts.title, EMBED_LIMITS.title));
+  if (opts.description) e.setDescription(truncate(opts.description, EMBED_LIMITS.description));
+  if (opts.footer !== false) {
+    e.setFooter({ text: truncate(opts.footer ?? BRAND_FOOTER, EMBED_LIMITS.footer) });
+  }
+  if (opts.timestamp !== false) e.setTimestamp(new Date());
+  return e;
+}
+
+/** Message lisible d'une erreur inconnue (`catch (err)`), borné pour Discord. */
+export function errorText(err: unknown, max = 900): string {
+  const raw =
+    err instanceof Error ? err.message : typeof err === "string" ? err : "Erreur inconnue";
+  return truncate(raw || "Erreur inconnue", max);
 }
 
 export function successEmbed(message: string, description?: string): EmbedBuilder {
@@ -72,10 +115,24 @@ export function warningEmbed(message: string, description?: string): EmbedBuilde
 //   title 256 · description 4096 · field name 256 · field value 1024 ·
 //   footer 2048 · author 256 · 25 fields max · 6000 chars total
 
+/** Limites de l'API Discord pour un embed. */
+export const EMBED_LIMITS = {
+  title: 256,
+  description: 4096,
+  fieldName: 256,
+  fieldValue: 1024,
+  footer: 2048,
+  author: 256,
+  fields: 25,
+  content: 2000,
+} as const;
+
 /** Tronque proprement à `max` chars (avec ellipsis si coupure). */
-function trim(str: string, max: number): string {
-  return str.length > max ? `${str.slice(0, max - 3)}...` : str;
+export function truncate(str: string, max: number): string {
+  return str.length > max ? `${str.slice(0, Math.max(0, max - 1))}…` : str;
 }
+
+const trim = truncate;
 
 // ─── Embeds DBZ thématiques ──────────────────────────────────────────────
 

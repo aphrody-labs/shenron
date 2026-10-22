@@ -36,6 +36,12 @@ function assertGrant(userId: unknown, amount: unknown, unit: string): asserts am
   }
 }
 
+/** Result count of a search action: 25 by default, an integer within `[1, 100]`. */
+export function boundedLimit(limit: unknown): number {
+  const n = typeof limit === "number" && Number.isFinite(limit) ? Math.trunc(limit) : 25;
+  return Math.min(100, Math.max(1, n));
+}
+
 export const SERVICE_ACTIONS: ServiceAction[] = [
   // ── AchievementService ────────────────────────────────────────────────
   {
@@ -86,7 +92,8 @@ export const SERVICE_ACTIONS: ServiceAction[] = [
     action: "removeZeni",
     description: "Body: { userId, amount }",
     handler: async ({ userId, amount }: { userId: string; amount: number }) => {
-      if (!userId || typeof amount !== "number") throw new Error("userId + amount requis.");
+      // Same bounds as an addition: NaN, Infinity or a typo must not reach the balance.
+      assertGrant(userId, amount, "zénis");
       const svc = container.resolve(EconomyService);
       await svc.removeZeni(userId, amount);
       return { ok: true };
@@ -131,9 +138,13 @@ export const SERVICE_ACTIONS: ServiceAction[] = [
     service: "settings",
     action: "set",
     description: "Body: { key, value }",
-    handler: async ({ key, value }: { key: string; value: string }) => {
+    handler: async ({ key, value }: { key: string; value: unknown }) => {
+      if (typeof key !== "string" || !key) throw new Error("key (texte) requis.");
+      if (value === undefined || value === null || typeof value === "object") {
+        throw new Error("value (texte, nombre ou booléen) requis.");
+      }
       const svc = container.resolve(SettingsService);
-      await svc.set(key, value);
+      await svc.set(key, String(value));
       return { ok: true };
     },
   },
@@ -142,6 +153,7 @@ export const SERVICE_ACTIONS: ServiceAction[] = [
     action: "unset",
     description: "Body: { key }",
     handler: async ({ key }: { key: string }) => {
+      if (typeof key !== "string" || !key) throw new Error("key (texte) requis.");
       const svc = container.resolve(SettingsService);
       await svc.unset(key);
       return { ok: true };
@@ -178,7 +190,7 @@ export const SERVICE_ACTIONS: ServiceAction[] = [
     handler: async ({ query, limit }: { query: string; limit?: number }) => {
       if (!query) throw new Error("query requis.");
       const svc = container.resolve(WikiService);
-      return await svc.search(query, limit ?? 25);
+      return await svc.search(query, boundedLimit(limit));
     },
   },
   {
@@ -213,7 +225,7 @@ export const SERVICE_ACTIONS: ServiceAction[] = [
     description: "Body: { query: string, limit?: 25 } — id, pseudo ou surnom",
     handler: async ({ query, limit }: { query: string; limit?: number }) => {
       if (!query) throw new Error("query requis.");
-      return container.resolve(GuildMirrorService).store.findMembers(query, limit ?? 25);
+      return container.resolve(GuildMirrorService).store.findMembers(query, boundedLimit(limit));
     },
   },
 ];

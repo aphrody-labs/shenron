@@ -1162,6 +1162,17 @@ export const SETTINGS_KEYS: SettingDef[] = [
   },
 ];
 
+/**
+ * Definition of `key`: exact match first, else the prefix collection it belongs to
+ * (`xp.boost.role.<roleId>` → `xp.boost.role.`). `undefined` for an unknown key.
+ */
+export function findSettingDef(key: string): SettingDef | undefined {
+  return (
+    SETTINGS_KEYS.find((s) => s.key === key && !s.prefix) ??
+    SETTINGS_KEYS.find((s) => s.prefix && key.startsWith(s.key) && key.length > s.key.length)
+  );
+}
+
 @singleton()
 export class SettingsService {
   private cache = new Map<string, string>();
@@ -1224,14 +1235,13 @@ export class SettingsService {
     return v && /^\d{17,20}$/.test(v) ? v : undefined;
   }
 
-  async set(key: string, value: string): Promise<void> {
+  async set(key: string, rawValue: string): Promise<void> {
+    const value = String(rawValue).trim();
     // Match exact d'abord, sinon match par préfixe (ex: xp.boost.role.<id>)
     let def = SETTINGS_KEYS.find((s) => s.key === key && !s.prefix);
     if (!def) {
-      const prefixDef = SETTINGS_KEYS.find(
-        (s) => s.prefix && key.startsWith(s.key) && key.length > s.key.length,
-      );
-      if (prefixDef) {
+      const prefixDef = findSettingDef(key);
+      if (prefixDef?.prefix) {
         // Validation contextuelle pour les préfixes connus
         if (prefixDef.key === XP_BOOST_ROLE_PREFIX) {
           const roleId = key.slice(prefixDef.key.length);
@@ -1270,12 +1280,13 @@ export class SettingsService {
     // Validation des types non-prefix
     if (!def.prefix) {
       if (def.type === "int") {
-        const n = Number.parseInt(value, 10);
-        if (!Number.isFinite(n)) throw new Error(`${key} attend un entier.`);
+        // Whole string: parseInt("12abc") would accept and store garbage.
+        const n = /^[-+]?\d+$/.test(value) ? Number(value) : Number.NaN;
+        if (!Number.isSafeInteger(n)) throw new Error(`${key} attend un entier.`);
         if (def.min !== undefined && n < def.min) throw new Error(`${key} ≥ ${def.min}.`);
         if (def.max !== undefined && n > def.max) throw new Error(`${key} ≤ ${def.max}.`);
       } else if (def.type === "float") {
-        const n = Number.parseFloat(value);
+        const n = value === "" ? Number.NaN : Number(value);
         if (!Number.isFinite(n)) throw new Error(`${key} attend un nombre.`);
         if (def.min !== undefined && n < def.min) throw new Error(`${key} ≥ ${def.min}.`);
         if (def.max !== undefined && n > def.max) throw new Error(`${key} ≤ ${def.max}.`);
@@ -1310,9 +1321,7 @@ export class SettingsService {
     return [...this.cache.entries()].map(([key, value]) => ({
       key,
       value,
-      def:
-        SETTINGS_KEYS.find((s) => s.key === key && !s.prefix) ??
-        SETTINGS_KEYS.find((s) => s.prefix && key.startsWith(s.key) && key.length > s.key.length),
+      def: findSettingDef(key),
     }));
   }
 

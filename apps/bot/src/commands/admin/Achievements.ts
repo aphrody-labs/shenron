@@ -1,18 +1,52 @@
 import { injectable, inject } from "tsyringe";
 import { Bot, Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
-import { ApplicationCommandOptionType, MessageFlags, type CommandInteraction } from "discord.js";
+import {
+  ApplicationCommandOptionType,
+  MessageFlags,
+  PermissionFlagsBits,
+  type CommandInteraction,
+  type EmbedBuilder,
+} from "discord.js";
 import { GuildOnly } from "~/guards/GuildOnly";
 import { AchievementService } from "~/services/AchievementService";
-import { brandedEmbed, errorEmbed, successEmbed, warningEmbed } from "~/lib/embeds";
+import { brandedEmbed, errorEmbed, successEmbed, truncate, warningEmbed } from "~/lib/embeds";
+
+/**
+ * Regex flags accepted for a trigger. `g` and `y` are refused: they make `RegExp.test`
+ * stateful (`lastIndex`), so a shared compiled trigger would skip every other match.
+ * Returns the error to show, or `null` when the pattern compiles.
+ */
+export function validateTriggerRegex(pattern: string, flags: string | undefined): string | null {
+  const f = flags ?? "i";
+  if (!/^[dimsuv]*$/.test(f) || new Set(f).size !== f.length) {
+    return `Flags invalides : \`${f}\` (autorisés : d, i, m, s, u, v, sans doublon).`;
+  }
+  try {
+    RegExp(pattern, f);
+    return null;
+  } catch (err) {
+    return (err as Error).message;
+  }
+}
+
+const notFound = (code: string) => errorEmbed("Trigger introuvable", `Aucun trigger \`${code}\`.`);
 
 @Discord()
 @Bot("shenron")
 @Guard(GuildOnly)
-@SlashGroup({ name: "succes", description: "Admin: gestion des succès auto-déclenchés" })
+@SlashGroup({
+  name: "succes",
+  description: "Admin: gestion des succès auto-déclenchés",
+  defaultMemberPermissions: PermissionFlagsBits.Administrator,
+})
 @SlashGroup("succes")
 @injectable()
 export class AchievementAdmin {
   constructor(@inject(AchievementService) private ach: AchievementService) {}
+
+  private async replyEphemeral(interaction: CommandInteraction, embed: EmbedBuilder) {
+    await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+  }
 
   @Slash({ name: "set", description: "Créer ou éditer un trigger de succès" })
   async set(
@@ -29,6 +63,7 @@ export class AchievementAdmin {
       description: "Regex JavaScript à matcher dans les messages",
       type: ApplicationCommandOptionType.String,
       required: true,
+      maxLength: 500,
     })
     pattern: string,
     @SlashOption({
@@ -41,7 +76,7 @@ export class AchievementAdmin {
     description: string | undefined,
     @SlashOption({
       name: "flags",
-      description: "Flags regex (défaut: i)",
+      description: "Flags regex (défaut: i ; g et y refusés)",
       type: ApplicationCommandOptionType.String,
       required: false,
       maxLength: 8,
@@ -49,58 +84,55 @@ export class AchievementAdmin {
     flags: string | undefined,
     interaction: CommandInteraction,
   ) {
-    try {
-      RegExp(pattern, flags ?? "i");
-    } catch (err) {
-      await interaction.reply({
-        embeds: [errorEmbed("Regex invalide", (err as Error).message)],
-        flags: MessageFlags.Ephemeral,
-      });
+    const invalid = validateTriggerRegex(pattern, flags);
+    if (invalid) {
+      await this.replyEphemeral(interaction, errorEmbed("Regex invalide", invalid));
       return;
     }
     await this.ach.upsert({ code, pattern, description, flags });
-    await interaction.reply({
-      embeds: [
-        successEmbed(
-          `Trigger \`${code}\` enregistré`,
-          `Pattern : \`/${pattern}/${flags ?? "i"}\`\nDescription : ${description ?? "*(n/a)*"}`,
-        ),
-      ],
-      flags: MessageFlags.Ephemeral,
-    });
+    await this.replyEphemeral(
+      interaction,
+      successEmbed(
+        `Trigger \`${code}\` enregistré`,
+        `Pattern : \`/${pattern}/${flags ?? "i"}\`\nDescription : ${description ?? "*(n/a)*"}`,
+      ),
+    );
   }
 
   @Slash({ name: "list", description: "Lister tous les triggers" })
   async list(interaction: CommandInteraction) {
     const list = await this.ach.list();
     if (list.length === 0) {
-      await interaction.reply({
-        embeds: [
-          brandedEmbed({
-            title: "Triggers de succès",
-            description: "*(aucun trigger configuré)*",
-            kind: "muted",
-          }),
-        ],
-        flags: MessageFlags.Ephemeral,
-      });
+      await this.replyEphemeral(
+        interaction,
+        brandedEmbed({
+          title: "Triggers de succès",
+          description: "*(aucun trigger configuré — `/succes set` pour en créer un)*",
+          kind: "muted",
+        }),
+      );
       return;
     }
+    const sorted = list.toSorted((a, b) => a.code.localeCompare(b.code));
+    const shown = sorted.slice(0, 25);
+    const active = list.filter((t) => t.enabled).length;
     const embed = brandedEmbed({
-      title: `Triggers de succès (${list.length})`,
-      description: list
-        .toSorted((a, b) => a.code.localeCompare(b.code))
-        .slice(0, 25)
+      title: `Triggers de succès (${active} actifs / ${list.length})`,
+      description: shown
         .map(
           (t) =>
             `**\`${t.code}\`** ${t.enabled ? "✅" : "🚫"}\n` +
-            `  → \`/${t.pattern}/${t.flags ?? "i"}\`\n` +
-            `  ${t.description ?? "—"}`,
+            `  → \`/${truncate(t.pattern, 120)}/${t.flags ?? "i"}\`\n` +
+            `  ${truncate(t.description ?? "—", 140)}`,
         )
         .join("\n\n"),
+      footer:
+        sorted.length > shown.length
+          ? `${sorted.length - shown.length} trigger(s) supplémentaire(s) non affiché(s)`
+          : undefined,
       kind: "info",
     });
-    await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+    await this.replyEphemeral(interaction, embed);
   }
 
   @Slash({ name: "remove", description: "Supprimer définitivement un trigger" })
@@ -114,11 +146,12 @@ export class AchievementAdmin {
     code: string,
     interaction: CommandInteraction,
   ) {
-    await this.ach.remove(code);
-    await interaction.reply({
-      embeds: [successEmbed("Trigger supprimé", `\`${code}\` retiré.`)],
-      flags: MessageFlags.Ephemeral,
-    });
+    const exists = (await this.ach.list()).some((t) => t.code === code);
+    if (exists) await this.ach.remove(code);
+    await this.replyEphemeral(
+      interaction,
+      exists ? successEmbed("Trigger supprimé", `\`${code}\` retiré.`) : notFound(code),
+    );
   }
 
   @Slash({ name: "enable", description: "Activer un trigger sans le recréer" })
@@ -133,14 +166,10 @@ export class AchievementAdmin {
     interaction: CommandInteraction,
   ) {
     const ok = await this.ach.setEnabled(code, true);
-    await interaction.reply({
-      embeds: [
-        ok
-          ? successEmbed("Trigger activé", `\`${code}\` est désormais actif.`)
-          : errorEmbed("Trigger introuvable", `Aucun trigger \`${code}\`.`),
-      ],
-      flags: MessageFlags.Ephemeral,
-    });
+    await this.replyEphemeral(
+      interaction,
+      ok ? successEmbed("Trigger activé", `\`${code}\` est désormais actif.`) : notFound(code),
+    );
   }
 
   @Slash({ name: "disable", description: "Désactiver un trigger sans le supprimer" })
@@ -155,17 +184,15 @@ export class AchievementAdmin {
     interaction: CommandInteraction,
   ) {
     const ok = await this.ach.setEnabled(code, false);
-    await interaction.reply({
-      embeds: [
-        ok
-          ? warningEmbed(
-              "Trigger désactivé",
-              `\`${code}\` ne se déclenchera plus jusqu'au prochain \`/succes enable\`.`,
-            )
-          : errorEmbed("Trigger introuvable", `Aucun trigger \`${code}\`.`),
-      ],
-      flags: MessageFlags.Ephemeral,
-    });
+    await this.replyEphemeral(
+      interaction,
+      ok
+        ? warningEmbed(
+            "Trigger désactivé",
+            `\`${code}\` ne se déclenchera plus jusqu'au prochain \`/succes enable\`.`,
+          )
+        : notFound(code),
+    );
   }
 
   @Slash({ name: "test", description: "Tester un trigger contre un texte d'exemple" })
@@ -189,25 +216,20 @@ export class AchievementAdmin {
   ) {
     const result = await this.ach.test(code, sample);
     if (!result) {
-      await interaction.reply({
-        embeds: [errorEmbed("Trigger introuvable", `Aucun trigger \`${code}\`.`)],
-        flags: MessageFlags.Ephemeral,
-      });
+      await this.replyEphemeral(interaction, notFound(code));
       return;
     }
-    await interaction.reply({
-      embeds: [
-        result.match
-          ? successEmbed(
-              `Match ✅`,
-              `Le pattern \`/${result.pattern}/${result.flags}\` **matche** le texte fourni.`,
-            )
-          : warningEmbed(
-              `Pas de match`,
-              `Le pattern \`/${result.pattern}/${result.flags}\` ne matche pas.\n\n> ${sample.slice(0, 200)}`,
-            ),
-      ],
-      flags: MessageFlags.Ephemeral,
-    });
+    await this.replyEphemeral(
+      interaction,
+      result.match
+        ? successEmbed(
+            `Match`,
+            `Le pattern \`/${result.pattern}/${result.flags}\` **matche** le texte fourni.`,
+          )
+        : warningEmbed(
+            `Pas de match`,
+            `Le pattern \`/${result.pattern}/${result.flags}\` ne matche pas.\n\n> ${truncate(sample, 200)}`,
+          ),
+    );
   }
 }

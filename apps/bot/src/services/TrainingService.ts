@@ -1,4 +1,5 @@
 import { inject, singleton } from "tsyringe";
+import { sql } from "drizzle-orm";
 import { DatabaseService } from "~/db/index";
 import { embedQueryVector, hybridSearch, tokenize, fold, hitTruthWeight } from "~/lib/rag";
 import {
@@ -451,11 +452,17 @@ export class TrainingService {
     const cleanExpect = expect.map((e) => e.trim()).filter(Boolean);
     if (!trimmedQ || cleanExpect.length === 0) return false;
 
-    const line = JSON.stringify({ q: trimmedQ, expect: cleanExpect }) + "\n";
-    const current = await Bun.file(goldPath())
+    const file = goldPath();
+    const current = await Bun.file(file)
       .text()
       .catch(() => "");
-    await Bun.write(goldPath(), current + line);
+    // A question already in the gold set would weigh twice in every evaluation.
+    const normalized = trimmedQ.toLowerCase();
+    if (parseGold(current).some((c) => c.q.trim().toLowerCase() === normalized)) return false;
+    const line = JSON.stringify({ q: trimmedQ, expect: cleanExpect }) + "\n";
+    // A last line without its newline would otherwise fuse with the new case.
+    const separator = current && !current.endsWith("\n") ? "\n" : "";
+    await Bun.write(file, current + separator + line);
 
     await this.recordFeedback({
       userId,
@@ -502,33 +509,37 @@ export class TrainingService {
 
     const goldCases = await this.loadGoldCases();
 
-    // Feedbacks
-    const feedbacks = await this.dbs.db.select().from(ragTrainingFeedback);
-    const pendingFeedbacks = feedbacks.filter((f) => f.status === "pending").length;
-    const goldFeedbacks = feedbacks.filter((f) => f.status === "gold_added").length;
+    // Feedbacks : counted in SQL rather than loading every row.
+    const [counts] = await this.dbs.db
+      .select({
+        total: sql<number>`count(*)`,
+        pending: sql<number>`coalesce(sum(case when ${ragTrainingFeedback.status} = 'pending' then 1 else 0 end), 0)`,
+        gold: sql<number>`coalesce(sum(case when ${ragTrainingFeedback.status} = 'gold_added' then 1 else 0 end), 0)`,
+      })
+      .from(ragTrainingFeedback);
 
-    // Sonde des services
-    const sidecarOnline = await this.isSidecarOnline();
-
-    let siteApiStatus: "online" | "offline" = "offline";
-    try {
-      const res = await fetch(`${SITE_INTERNAL}/api/canon`, { signal: AbortSignal.timeout(800) });
-      if (res.ok) siteApiStatus = "online";
-    } catch {}
-
-    let botApiStatus: "online" | "offline" = "offline";
-    try {
-      const res = await fetch(`${BOT_API_INTERNAL}/health`, { signal: AbortSignal.timeout(800) });
-      if (res.ok) botApiStatus = "online";
-    } catch {}
+    // Sonde des services, en parallèle : chaque sonde est bornée par son propre délai.
+    const probe = async (url: string): Promise<"online" | "offline"> => {
+      try {
+        const res = await fetch(url, { signal: AbortSignal.timeout(800) });
+        return res.ok ? "online" : "offline";
+      } catch {
+        return "offline";
+      }
+    };
+    const [sidecarOnline, siteApiStatus, botApiStatus] = await Promise.all([
+      this.isSidecarOnline(),
+      probe(`${SITE_INTERNAL}/api/canon`),
+      probe(`${BOT_API_INTERNAL}/health`),
+    ]);
 
     return {
       totalChunks,
       totalVectors,
       totalGoldCases: goldCases.length,
-      totalFeedbacks: feedbacks.length,
-      pendingFeedbacks,
-      goldFeedbacks,
+      totalFeedbacks: Number(counts?.total ?? 0),
+      pendingFeedbacks: Number(counts?.pending ?? 0),
+      goldFeedbacks: Number(counts?.gold ?? 0),
       sidecarStatus: sidecarOnline ? "online" : "offline",
       siteApiStatus,
       botApiStatus,
