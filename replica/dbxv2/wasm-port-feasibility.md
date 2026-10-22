@@ -68,10 +68,19 @@ dans `crates/shenron-re/src/formats`, et révèle **deux formats réels non enco
 5 116 fichiers). Les chemins en clair extraits de la section `.rdata` (non chiffrée) de
 `DBXV2.exe` lui-même confirment leur usage réel : surtout des objets d'effets visuels, ex.
 `data/vfx/lby_cmn/AuraLoop_B.emo` (objet) avec `AuraLoop_B.obj.ema` (motion d'objet) et des
-variantes `*.mat.ema` (motion de matériau — tramage UV, fondu) ; `.cam.ean` reste le format
-d'animation caméra des personnages (pas `.ema`). `.emo` agrège par ailleurs plusieurs `.emd`
-et leur hiérarchie de nœuds au niveau moteur (`EmObjectShared`, `var/reports/dbxv2-engine-map-20261022/`) —
-utile si un `.emo` personnage (hors vfx) existe aussi. Écrire `ema.rs`/`emo.rs` reste à faire
+variantes `*.mat.ema` (motion de matériau — tramage UV, fondu) et **`*.light.ema`** (motion de
+lumière, troisième genre confirmé) ; `.cam.ean` reste le format d'animation caméra des
+personnages (pas `.ema`). `.emo` agrège par ailleurs plusieurs `.emd` et leur hiérarchie de
+nœuds au niveau moteur (`EmObjectShared`).
+
+Vérité terrain (2026-10-22, octets réels extraits du CPK Steam local légitime du propriétaire
+via l'outil déjà présent `@shenron/dbxv2`, aucune archive extraite en totalité) : `data.cpk`
+seul contient 1 832 `.emo` et 4 743 `.ema`. En-tête confirmée sur quatre fichiers réels et
+indépendants : `#EMO`/`#EMA` + `u16 0xFFFE` + `u16 header_size=32` (fixe) + `u32` constant
+`0x92c0` (version de format du build, pas un champ par fichier) ; pour `#EMO`, l'octet `0xc`
+pointe une sous-table juste après l'en-tête de 32 octets ; pour `#EMA`, l'octet `0x12` est un
+compteur de canaux qui varie par fichier (3 à 8 vus). Détail et scripts :
+`var/reports/dbxv2-engine-map-20261022/README.md` (local). Écrire `ema.rs`/`emo.rs` reste à faire
 par l'agent qui possède `crates/shenron-re/src/formats` (revendiqué en direct le 2026-10-22).
 
 ## Capacités locales pertinentes
