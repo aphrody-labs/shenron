@@ -1,5 +1,5 @@
 import { singleton, inject } from "tsyringe";
-import { createCanvas, loadImage, type Image, type SKRSContext2D } from "@napi-rs/canvas";
+import { createCanvas, type Image, type SKRSContext2D } from "@napi-rs/canvas";
 import type { User } from "discord.js";
 import { BackgroundCacheService } from "./BackgroundCacheService";
 import { DatabaseService } from "~/db/index";
@@ -11,6 +11,7 @@ import {
   textStroked,
   textWithShadow,
   font,
+  loadRemoteImage,
 } from "~/lib/canvas-kit";
 
 /**
@@ -33,8 +34,6 @@ const COLOR_FUSION = "#ec4899"; // rose central
 
 @singleton()
 export class FusionService {
-  private avatarCache = new Map<string, Image>();
-
   constructor(
     @inject(BackgroundCacheService) private bgCache: BackgroundCacheService,
     @inject(DatabaseService) private dbs: DatabaseService,
@@ -60,14 +59,7 @@ export class FusionService {
       size: 256,
       forceStatic: true,
     });
-    if (this.avatarCache.has(url)) return this.avatarCache.get(url)!;
-    try {
-      const img = await loadImage(url);
-      this.avatarCache.set(url, img);
-      return img;
-    } catch {
-      return null;
-    }
+    return loadRemoteImage(url);
   }
 
   private async loadBg(): Promise<Image | null> {

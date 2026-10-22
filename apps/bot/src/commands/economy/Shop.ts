@@ -27,7 +27,7 @@ import {
 import { GuildOnly } from "~/guards/GuildOnly";
 import { AdminOnly } from "~/guards/AdminOnly";
 import { EconomyService } from "~/services/EconomyService";
-import { formatXP } from "~/lib/xp";
+import { formatZeni } from "~/lib/zeni";
 
 import { SHENRON_THEME, SHENRON_SEPARATORS } from "~/lib/embeds";
 
@@ -42,6 +42,7 @@ const TYPE_LABELS = {
 type ShopType = keyof typeof TYPE_LABELS;
 
 const SITE = resolveSiteUrl(Bun.env);
+const BRAND_ICON = "https://dragonballfr.com/favicon.ico";
 
 @Discord()
 @Bot("shenron")
@@ -63,7 +64,7 @@ export class ShopPanelCommands {
     const embed = new EmbedBuilder()
       .setAuthor({
         name: "SANCTUAIRE DRAGON BALL · BAZAR MYSTIQUE",
-        iconURL: "https://dragonballfr.com/favicon.ico",
+        iconURL: BRAND_ICON,
       })
       .setTitle("🏪 La Grande Boutique de Shenron · 神龍の市")
       .setColor(SHENRON_THEME.gold)
@@ -94,10 +95,15 @@ export class ShopPanelCommands {
           value: "Phrases de légende gravées dans ta carte",
           inline: true,
         },
+        {
+          name: "🌌 Bannières de Profil",
+          value: "Décors affichés en tête de ta carte",
+          inline: true,
+        },
       )
       .setFooter({
         text: "Boutique Officielle Shenron · dragonballfr.com",
-        iconURL: "https://dragonballfr.com/favicon.ico",
+        iconURL: BRAND_ICON,
       });
 
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -208,7 +214,7 @@ export class ShopPanelCommands {
       )
       .setFooter({
         text: "Utilise /inventaire equip ou /eprofil pour équiper un objet",
-        iconURL: "https://dragonballfr.com/favicon.ico",
+        iconURL: BRAND_ICON,
       });
 
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -242,6 +248,10 @@ export class ShopPanelCommands {
       return;
     }
 
+    // Prix du jour (inflation) : celui que le bouton facturera réellement.
+    const prices = new Map<string, number>();
+    for (const i of items) prices.set(i.key, await this.eco.priceOf(i.price));
+
     const ownedSet = new Set(
       (await this.eco.listInventory(interaction.user.id))
         .filter((i) => i.itemType === type)
@@ -263,7 +273,7 @@ export class ShopPanelCommands {
     const embed = new EmbedBuilder()
       .setAuthor({
         name: `Rayon ${TYPE_LABELS[type].label} · Boutique Shenron`,
-        iconURL: "https://dragonballfr.com/favicon.ico",
+        iconURL: BRAND_ICON,
       })
       .setTitle(`${TYPE_LABELS[type].icon} Objets Disponibles : ${TYPE_LABELS[type].label}`)
       .setColor(embedColor)
@@ -275,7 +285,7 @@ export class ShopPanelCommands {
           ...items.slice(0, 25).map((i) => {
             const owned = ownedSet.has(i.key)
               ? " ✅ *(Déjà possédé)*"
-              : ` — **${formatXP(i.price)}** 𝓩`;
+              : ` — **${formatZeni(prices.get(i.key) ?? i.price)}**`;
             const role = i.roleId ? ` · <@&${i.roleId}>` : "";
             return `• **${i.name}** (\`${i.key}\`)${role}${owned}\n> *${i.description ?? "Aucune description"}*`;
           }),
@@ -296,7 +306,9 @@ export class ShopPanelCommands {
         ...buyable.slice(i, i + 5).map((item) =>
           new ButtonBuilder()
             .setCustomId(`shop:buy:${item.key}`)
-            .setLabel(`${item.name} · ${formatXP(item.price)}z`.slice(0, 80))
+            .setLabel(
+              `${item.name} · ${formatZeni(prices.get(item.key) ?? item.price)}`.slice(0, 80),
+            )
             .setStyle(ButtonStyle.Success),
         ),
       );
@@ -336,10 +348,10 @@ export class ShopPanelCommands {
 
     const successEmb = new EmbedBuilder()
       .setColor(SHENRON_THEME.kiGreen)
-      .setTitle(`✅ Achat Réussi : \`${key}\``)
+      .setTitle(`✅ Achat Réussi : ${res.name ?? `\`${key}\``}`)
       .setDescription(
         [
-          `Félicitations pour ton acquisition ! L'objet a été débité de ton compte pour **${res.price}** 𝓩.`,
+          `Félicitations pour ton acquisition ! L'objet a été débité de ton compte pour **${formatZeni(res.price ?? 0)}**.`,
           "",
           `Stocké dans ton inventaire — utilise \`/inventaire equip\` ou le bouton ci-dessous pour l'équiper immédiatement.`,
         ].join("\n"),
@@ -392,6 +404,7 @@ export class ShopPanelCommands {
     @SlashChoice({ name: "badge", value: "badge" })
     @SlashChoice({ name: "color", value: "color" })
     @SlashChoice({ name: "title", value: "title" })
+    @SlashChoice({ name: "banner", value: "banner" })
     @SlashOption({
       name: "type",
       description: "Type (requis pour add)",

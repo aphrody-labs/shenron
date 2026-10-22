@@ -9,7 +9,7 @@
  * donc `import "~/lib/canvas-kit"` suffit à garantir leur disponibilité.
  */
 import { existsSync } from "node:fs";
-import { GlobalFonts, type SKRSContext2D } from "@napi-rs/canvas";
+import { GlobalFonts, loadImage, type Image, type SKRSContext2D } from "@napi-rs/canvas";
 import { botFile } from "~/lib/asset-files";
 import { CANVAS_FONT_FILES } from "~/lib/canvas-fonts";
 import { logger } from "~/lib/logger";
@@ -352,4 +352,52 @@ export function kiScouterLabel(n: number): string {
   if (n >= 1e6) return `${(n / 1e6).toFixed(1).replace(/\.0$/, "")}M`;
   if (n >= 1e3) return `${(n / 1e3).toFixed(1).replace(/\.0$/, "")}K`;
   return String(n);
+}
+
+// ─── Images distantes (avatars) ────────────────────────────────────────────
+
+const REMOTE_IMAGE_MAX = 256;
+const REMOTE_IMAGE_TTL_MS = 60 * 60_000;
+const REMOTE_IMAGE_TIMEOUT_MS = 5_000;
+const remoteImages = new Map<string, { image: Image; at: number }>();
+const remoteInflight = new Map<string, Promise<Image | null>>();
+
+/**
+ * Image distante (avatar Discord) décodée, partagée par toutes les cartes.
+ *
+ * Chaque service gardait sa propre `Map` d'avatars, jamais vidée : une
+ * pagination de /top sur tout le serveur y laissait des centaines d'images
+ * décodées. Ici le cache est borné (LRU de 256 entrées, 1 h), les demandes
+ * simultanées d'une même URL partagent un seul téléchargement, et un CDN lent
+ * ne bloque pas un rendu plus de 5 s (`null` : l'appelant dessine son repli).
+ */
+export async function loadRemoteImage(url: string): Promise<Image | null> {
+  const hit = remoteImages.get(url);
+  if (hit && Date.now() - hit.at < REMOTE_IMAGE_TTL_MS) {
+    remoteImages.delete(url);
+    remoteImages.set(url, hit);
+    return hit.image;
+  }
+  const pending = remoteInflight.get(url);
+  if (pending) return pending;
+  const task = (async () => {
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(REMOTE_IMAGE_TIMEOUT_MS) });
+      if (!res.ok) return null;
+      const image = await loadImage(Buffer.from(await res.arrayBuffer()));
+      remoteImages.set(url, { image, at: Date.now() });
+      while (remoteImages.size > REMOTE_IMAGE_MAX) {
+        const oldest = remoteImages.keys().next().value;
+        if (oldest === undefined) break;
+        remoteImages.delete(oldest);
+      }
+      return image;
+    } catch {
+      return null;
+    } finally {
+      remoteInflight.delete(url);
+    }
+  })();
+  remoteInflight.set(url, task);
+  return task;
 }

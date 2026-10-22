@@ -10,18 +10,10 @@ import {
   type CommandInteraction,
 } from "discord.js";
 import { GuildOnly } from "~/guards/GuildOnly";
-import { EconomyService } from "~/services/EconomyService";
-import { SHENRON_THEME, SHENRON_SEPARATORS } from "~/lib/embeds";
+import { EconomyService, type CosmeticType } from "~/services/EconomyService";
+import { COLORS, SHENRON_THEME, SHENRON_SEPARATORS } from "~/lib/embeds";
 
-type ItemType = "card" | "badge" | "color" | "title" | "banner";
-
-const TYPE_FIELD = {
-  card: "equippedCard",
-  badge: "equippedBadge",
-  color: "equippedColor",
-  title: "equippedTitle",
-  banner: "equippedBanner",
-} as const;
+type ItemType = CosmeticType;
 
 const TYPE_LABELS: Record<ItemType, string> = {
   card: "🖼️ Carte de Fond",
@@ -159,7 +151,10 @@ export class InventaireCommands {
     interaction: CommandInteraction,
   ) {
     if (!interaction.inCachedGuild()) return;
-    const ok = await this.eco.equip(interaction.user.id, type, key);
+    // Les rôles (retrait de l'ancien, pose du nouveau) passent par l'API Discord :
+    // on acquitte avant pour ne pas dépasser les 3 s.
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+    const { ok } = await this.eco.equipCosmetic(interaction.member, type, key);
     if (!ok) {
       const errEmb = new EmbedBuilder()
         .setColor(SHENRON_THEME.majinRed)
@@ -169,23 +164,8 @@ export class InventaireCommands {
         )
         .setFooter({ text: "Inventaire Shenron" });
 
-      await interaction.reply({
-        embeds: [errEmb],
-        flags: MessageFlags.Ephemeral,
-      });
+      await interaction.editReply({ embeds: [errEmb] });
       return;
-    }
-
-    // Attribution du rôle Discord si l'item shop est lié à un rôle
-    if (type === "color" || type === "title" || type === "badge") {
-      const item = await this.eco.getShopItem(key);
-      if (item?.roleId) {
-        try {
-          await interaction.member.roles.add(item.roleId, `inventaire equip ${type}:${key}`);
-        } catch {
-          // hierarchy ou perms
-        }
-      }
     }
 
     const successEmb = new EmbedBuilder()
@@ -203,10 +183,7 @@ export class InventaireCommands {
         iconURL: "https://dragonballfr.com/favicon.ico",
       });
 
-    await interaction.reply({
-      embeds: [successEmb],
-      flags: MessageFlags.Ephemeral,
-    });
+    await interaction.editReply({ embeds: [successEmb] });
   }
 
   @Slash({ name: "dequip", description: "Retirer l'objet équipé d'un type" })
@@ -226,28 +203,19 @@ export class InventaireCommands {
     interaction: CommandInteraction,
   ) {
     if (!interaction.inCachedGuild()) return;
-    const dbs = this.eco;
-    const u = await dbs.getUser(interaction.user.id);
-    const currentKey = u?.[TYPE_FIELD[type]] as string | null | undefined;
-    if (currentKey) {
-      const item = await this.eco.getShopItem(currentKey);
-      if (item?.roleId) {
-        await interaction.member.roles
-          .remove(item.roleId, `inventaire dequip ${type}`)
-          .catch(() => {});
-      }
-    }
-    await this.eco.setEquipped(interaction.user.id, type, null);
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+    const { previous } = await this.eco.unequipCosmetic(interaction.member, type);
 
     const dequipEmb = new EmbedBuilder()
-      .setColor(SHENRON_THEME.orange)
-      .setTitle("🔄 Emplacement Libéré")
-      .setDescription(`L'élément **${TYPE_LABELS[type]}** a été retiré de ton équipement actif.`)
+      .setColor(previous ? SHENRON_THEME.orange : COLORS.muted)
+      .setTitle(previous ? "🔄 Emplacement Libéré" : "ℹ️ Rien d'équipé")
+      .setDescription(
+        previous
+          ? `L'élément **${TYPE_LABELS[type]}** \`${previous}\` a été retiré de ton équipement actif.`
+          : `Aucun élément **${TYPE_LABELS[type]}** n'était équipé.`,
+      )
       .setFooter({ text: "Profil Shenron" });
 
-    await interaction.reply({
-      embeds: [dequipEmb],
-      flags: MessageFlags.Ephemeral,
-    });
+    await interaction.editReply({ embeds: [dequipEmb] });
   }
 }

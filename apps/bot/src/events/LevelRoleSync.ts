@@ -5,6 +5,7 @@ import { CronRegistry } from "~/api/cron-registry";
 import { LevelService } from "~/services/LevelService";
 import { SettingsService } from "~/services/SettingsService";
 import { logger } from "~/lib/logger";
+import { env } from "~/lib/env";
 
 /** Intervalle par défaut : toutes les 6 h (override via `cron.level-role-reconcile.interval_ms`). */
 const DEFAULT_INTERVAL_MS = 6 * 3_600_000;
@@ -41,7 +42,8 @@ export class LevelRoleSyncEvent {
   private async reconcileAll(client: Client) {
     if (!(await this.settings.getBool("features.level_role_sync", true))) return;
 
-    const guild = client.guilds.cache.first();
+    // La guilde configurée d'abord : `first()` seul pouvait viser un autre serveur.
+    const guild = client.guilds.cache.get(env.GUILD_ID) ?? client.guilds.cache.first();
     if (!guild) return;
 
     await guild.members.fetch().catch(() => null);

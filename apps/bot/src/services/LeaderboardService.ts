@@ -1,5 +1,5 @@
 import { singleton, inject } from "tsyringe";
-import { createCanvas, loadImage, type Image, type SKRSContext2D } from "@napi-rs/canvas";
+import { createCanvas, type Image, type SKRSContext2D } from "@napi-rs/canvas";
 import { BackgroundCacheService } from "./BackgroundCacheService";
 import {
   drawDragonBall,
@@ -11,6 +11,7 @@ import {
   textStroked,
   textWithShadow,
   font,
+  loadRemoteImage,
 } from "~/lib/canvas-kit";
 
 export interface LeaderboardEntry {
@@ -73,19 +74,10 @@ const PODIUM_CONFIG = {
 
 @singleton()
 export class LeaderboardService {
-  private avatarCache = new Map<string, Image>();
-
   constructor(@inject(BackgroundCacheService) private bgCache: BackgroundCacheService) {}
 
   private async loadAvatar(url: string): Promise<Image | null> {
-    if (this.avatarCache.has(url)) return this.avatarCache.get(url)!;
-    try {
-      const img = await loadImage(url);
-      this.avatarCache.set(url, img);
-      return img;
-    } catch {
-      return null;
-    }
+    return loadRemoteImage(url);
   }
 
   private async loadBg(): Promise<Image | null> {

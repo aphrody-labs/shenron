@@ -17,6 +17,7 @@ import { users } from "~/db/schema";
 import { LevelService } from "~/services/LevelService";
 import { RACES, RACE_IDS, RACE_ROLE_IDS, getRace, type RaceId } from "~/lib/races";
 import { logger } from "~/lib/logger";
+import { COLORS } from "~/lib/embeds";
 
 /**
  * /race — choisir/consulter sa race (système inspiré Xenoverse 2).
@@ -36,7 +37,7 @@ export class RaceCommands {
     const cur = getRace(currentRace);
     const embed = new EmbedBuilder()
       .setTitle("🐉 Choisis ta race")
-      .setColor(cur?.color ?? 0xfbbf24)
+      .setColor(cur?.color ?? COLORS.brand)
       .setDescription(
         cur
           ? `Ta race actuelle : **${cur.emoji} ${cur.name}**\n*${cur.perk}*\n\nClique pour en changer :`
@@ -85,6 +86,9 @@ export class RaceCommands {
   async setRace(interaction: ButtonInteraction) {
     const id = interaction.customId.split(":")[2] as RaceId;
     const def = RACES[id];
+    // Rôles de race et de palier : plusieurs appels REST, au-delà des 3 s
+    // accordées à une interaction. On acquitte d'abord.
+    await interaction.deferUpdate();
     await this.levels.ensureUser(interaction.user.id);
     await this.dbs.db
       .update(users)
@@ -101,13 +105,16 @@ export class RaceCommands {
           await member.roles.add(def.roleId, `Race : ${def.name}`);
         // Réaligne les rôles de palier sur la nouvelle race (retire ceux des
         // autres races, pose ceux de la race choisie jusqu'au niveau atteint).
-        await this.levels.syncRaceLevelRoles(member);
+        // La race est passée explicitement : le cache des rôles de `member`
+        // porte encore l'ancienne, dont les paliers auraient été gardés et ceux
+        // de la nouvelle retirés.
+        await this.levels.syncRaceLevelRoles(member, id);
       }
     } catch (err) {
       logger.warn({ err, race: id }, "race role assignment failed");
     }
 
-    await interaction.update({
+    await interaction.editReply({
       embeds: [
         this.overview(id)
           .setTitle(`${def.emoji} Tu es désormais ${def.name} !`)

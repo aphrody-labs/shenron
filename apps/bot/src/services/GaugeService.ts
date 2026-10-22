@@ -1,5 +1,5 @@
 import { singleton } from "tsyringe";
-import { createCanvas, loadImage, type Image, type SKRSContext2D } from "@napi-rs/canvas";
+import { createCanvas, type Image, type SKRSContext2D } from "@napi-rs/canvas";
 import type { User } from "discord.js";
 import {
   drawGauge,
@@ -9,6 +9,7 @@ import {
   textStroked,
   textWithShadow,
   font,
+  loadRemoteImage,
 } from "~/lib/canvas-kit";
 
 /**
@@ -27,22 +28,13 @@ export interface GaugeInput {
 
 @singleton()
 export class GaugeService {
-  private avatarCache = new Map<string, Image>();
-
   private async loadAvatar(user: User): Promise<Image | null> {
     const url = user.displayAvatarURL({
       extension: "png",
       size: 256,
       forceStatic: true,
     });
-    if (this.avatarCache.has(url)) return this.avatarCache.get(url)!;
-    try {
-      const img = await loadImage(url);
-      this.avatarCache.set(url, img);
-      return img;
-    } catch {
-      return null;
-    }
+    return loadRemoteImage(url);
   }
 
   async render(input: GaugeInput): Promise<Buffer> {

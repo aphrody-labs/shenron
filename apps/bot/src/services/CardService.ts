@@ -1,8 +1,8 @@
 import { singleton, inject } from "tsyringe";
-import { createCanvas, loadImage, type Image, type SKRSContext2D } from "@napi-rs/canvas";
+import { createCanvas, type Image, type SKRSContext2D } from "@napi-rs/canvas";
 import { BackgroundCacheService } from "./BackgroundCacheService";
 import type { User } from "discord.js";
-import { formatXP, levelForXP, nextThresholdFrom, xpRequiredForLevel } from "~/lib/xp";
+import { formatXP, xpProgress } from "~/lib/xp";
 import { logger } from "~/lib/logger";
 import { DatabaseService } from "~/db/index";
 import { cardThemes } from "~/db/schema";
@@ -16,6 +16,7 @@ import {
   textStroked,
   textWithShadow,
   font,
+  loadRemoteImage,
 } from "~/lib/canvas-kit";
 
 interface CardTheme {
@@ -133,7 +134,6 @@ function firstGrapheme(text: string): string {
 
 @singleton()
 export class CardService {
-  private avatarCache = new Map<string, { image: Image; ts: number }>();
   private bgCache = new Map<string, Image | null>();
   // Cache thèmes DB — refresh 60s. Fallback CARDS hardcoded si DB inaccessible.
   private themesCache: Map<string, CardTheme> | null = null;
@@ -184,20 +184,14 @@ export class CardService {
   }
 
   private async loadAvatar(user: User): Promise<Image | null> {
-    const cached = this.avatarCache.get(user.id);
-    if (cached && Date.now() - cached.ts < 60 * 60_000) return cached.image;
+    // Cache partagé et borné, indexé par URL : un nouvel avatar change d'URL et
+    // n'attend plus l'expiration d'une heure de l'ancien cache par membre.
     const url = user.displayAvatarURL({
       extension: "png",
       size: 512,
       forceStatic: true,
     });
-    try {
-      const img = await loadImage(url);
-      this.avatarCache.set(user.id, { image: img, ts: Date.now() });
-      return img;
-    } catch {
-      return null;
-    }
+    return loadRemoteImage(url);
   }
 
   async resolveBannerPath(bannerKey: string): Promise<string | null> {
@@ -457,8 +451,7 @@ export class CardService {
 
     const TXT_X = AV_CX + AV_R + 40;
     const name = input.discordUser.displayName || input.discordUser.username;
-    const level = levelForXP(input.xp);
-    const next = nextThresholdFrom(input.xp);
+    const { level, next } = xpProgress(input.xp);
 
     // Titre (petit, italique)
     if (input.title) {
@@ -595,13 +588,8 @@ export class CardService {
     const BAR_W = width - TXT_X - PAD - 20;
     const BAR_H = 28;
 
-    const baseXp = xpRequiredForLevel(level);
-    const thresholdMin = level === 0 || !Number.isFinite(baseXp) ? 0 : baseXp;
-    const thresholdMax = next?.xp ?? input.xp;
-    const progress =
-      thresholdMax > thresholdMin
-        ? Math.max(0, Math.min(1, (input.xp - thresholdMin) / (thresholdMax - thresholdMin)))
-        : 1;
+    // Source unique (lib/xp) : même avancement que /profil et l'API.
+    const progress = xpProgress(input.xp).ratio;
 
     // Fond sombre de la barre
     ctx.save();

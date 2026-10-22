@@ -33,12 +33,23 @@ import { GuildOnly } from "~/guards/GuildOnly";
 import { CommandsChannelOnly } from "~/guards/CommandsChannelOnly";
 import { AdminOnly } from "~/guards/AdminOnly";
 import { FeatureEnabled } from "~/guards/FeatureEnabled";
-import { EconomyService } from "~/services/EconomyService";
+import { EconomyService, type CosmeticType } from "~/services/EconomyService";
 import { FusionService } from "~/services/FusionService";
 import { FusionRoleService } from "~/services/FusionRoleService";
-import { formatXP } from "~/lib/xp";
-import { fusionName } from "~/lib/fusion-names";
-import { SHENRON_THEME, SHENRON_SEPARATORS } from "~/lib/embeds";
+import { fusionBonusLabel, fusionName } from "~/lib/fusion-names";
+import { formatZeni } from "~/lib/zeni";
+import { COLORS, SHENRON_THEME, SHENRON_SEPARATORS } from "~/lib/embeds";
+
+const BRAND_ICON = "https://dragonballfr.com/favicon.ico";
+
+/** Rayons de la boutique, dans l'ordre d'affichage. */
+const SHOP_DEPARTMENTS: ReadonlyArray<{ type: CosmeticType; label: string; icon: string }> = [
+  { type: "card", label: "Cartes de Profil", icon: "🖼️" },
+  { type: "banner", label: "Bannières de Profil", icon: "🌌" },
+  { type: "badge", label: "Badges Honorifiques", icon: "🎖️" },
+  { type: "color", label: "Auras & Couleurs", icon: "🎨" },
+  { type: "title", label: "Titres de Guerrier", icon: "📜" },
+];
 
 @Discord()
 @Bot("shenron")
@@ -62,19 +73,16 @@ export class EconomyCommands {
       });
       return;
     }
-    const grouped = {
-      card: items.filter((i) => i.type === "card"),
-      badge: items.filter((i) => i.type === "badge"),
-      color: items.filter((i) => i.type === "color"),
-      title: items.filter((i) => i.type === "title"),
-    };
+    // Prix du jour (inflation) : celui que /buy facturera réellement.
+    const prices = new Map<string, number>();
+    for (const i of items) prices.set(i.key, await this.eco.priceOf(i.price));
 
     const mkPage = (label: string, icon: string, list: typeof items) => ({
       embeds: [
         new EmbedBuilder()
           .setAuthor({
             name: "BOUTIQUE DU SANCTUAIRE · CATALOGUE",
-            iconURL: "https://dragonballfr.com/favicon.ico",
+            iconURL: BRAND_ICON,
           })
           .setTitle(`${icon} ${label}`)
           .setColor(SHENRON_THEME.gold)
@@ -87,7 +95,7 @@ export class EconomyCommands {
                 ? list
                     .map(
                       (i) =>
-                        `• **${i.name}** (\`${i.key}\`) — **${formatXP(i.price)}** 𝓩\n> *${i.description ?? "Aucune description."}*`,
+                        `• **${i.name}** (\`${i.key}\`) — **${formatZeni(prices.get(i.key) ?? i.price)}**\n> *${i.description ?? "Aucune description."}*`,
                     )
                     .join("\n\n")
                 : "*Rien en vente dans ce rayon pour l'instant.*",
@@ -96,18 +104,21 @@ export class EconomyCommands {
           )
           .setFooter({
             text: "Utilise /buy <clé> ou le panel interactif pour acheter · dragonballfr.com",
-            iconURL: "https://dragonballfr.com/favicon.ico",
+            iconURL: BRAND_ICON,
           })
           .toJSON(),
       ],
     });
 
-    const pages = [
-      mkPage("Cartes de Profil", "🖼️", grouped.card),
-      mkPage("Badges Honorifiques", "🎖️", grouped.badge),
-      mkPage("Auras & Couleurs", "🎨", grouped.color),
-      mkPage("Titres de Guerrier", "📜", grouped.title),
-    ];
+    // Une page par rayon garni ; les bannières n'avaient pas de page.
+    const pages = SHOP_DEPARTMENTS.flatMap((d) => {
+      const list = items.filter((i) => i.type === d.type);
+      return list.length > 0 ? [mkPage(d.label, d.icon, list)] : [];
+    });
+    if (pages.length === 1) {
+      await interaction.reply(pages[0]!);
+      return;
+    }
     const pagination = new Pagination(interaction, pages, {
       time: 120_000,
       buttons: {
@@ -149,20 +160,20 @@ export class EconomyCommands {
         name: "ACQUISITION RÉUSSIE · BOUTIQUE SHENRON",
         iconURL: interaction.user.displayAvatarURL({ size: 128 }),
       })
-      .setTitle(`✅ Objet acquis : \`${key}\``)
+      .setTitle(`✅ Objet acquis : ${res.name ?? `\`${key}\``}`)
       .setDescription(
         [
           `L'objet a été ajouté à ton inventaire avec succès.`,
           "",
           `${SHENRON_SEPARATORS.solid}`,
-          `> **Montant déduit :** **${formatXP(res.price ?? 0)}** 𝓩`,
+          `> **Montant déduit :** **${formatZeni(res.price ?? 0)}**`,
           `${SHENRON_SEPARATORS.solid}`,
           `Pour l'équiper, utilise \`/inventaire equip\` ou le bouton ci-dessous.`,
         ].join("\n"),
       )
       .setFooter({
         text: "Boutique du Sanctuaire · dragonballfr.com",
-        iconURL: "https://dragonballfr.com/favicon.ico",
+        iconURL: BRAND_ICON,
       });
 
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -229,7 +240,7 @@ export class EconomyCommands {
       )
       .setFooter({
         text: "Utilise les boutons ci-dessous pour équiper un objet précis",
-        iconURL: "https://dragonballfr.com/favicon.ico",
+        iconURL: BRAND_ICON,
       });
 
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -291,7 +302,11 @@ export class EconomyCommands {
       | "color"
       | "title";
     const key = interaction.fields.getTextInputValue("key").trim();
-    const ok = await this.eco.equip(interaction.user.id, type, key);
+    // Même chemin que /inventaire equip et le site : le rôle de l'ancien objet
+    // de l'emplacement est retiré, celui du nouveau posé.
+    const ok = interaction.inCachedGuild()
+      ? (await this.eco.equipCosmetic(interaction.member, type, key)).ok
+      : await this.eco.equip(interaction.user.id, type, key);
     await interaction.reply({
       content: ok
         ? `✅ ${type} \`${key}\` équipé avec succès !`
@@ -338,8 +353,16 @@ export class EconomyCommands {
       });
       return;
     }
+    if (await this.eco.getFusion(target.id)) {
+      await interaction.reply({
+        content: `${target} est déjà uni(e) par une fusion active.`,
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
 
     await interaction.deferReply();
+    const ratios = await this.eco.fusionRatios();
     const buf = await this.fusionCanvas.render({
       a: interaction.user,
       b: target,
@@ -359,7 +382,7 @@ export class EconomyCommands {
           "",
           `${SHENRON_SEPARATORS.solid}`,
           `**Avantages de l'Union :**`,
-          `> • **+10 % XP & Zénis partagés** sur chaque message et session vocale.`,
+          `> • **${fusionBonusLabel(ratios)}** sur chaque message et session vocale.`,
           `> • Rôle exclusif **Fusion** sur le sanctuaire.`,
           `> • Nom guerrier combiné canonique ou fusionné.`,
           `${SHENRON_SEPARATORS.solid}`,
@@ -369,7 +392,7 @@ export class EconomyCommands {
       .setImage("attachment://fusion-propose.png")
       .setFooter({
         text: "La fusion peut être rompue à tout moment via /defusion",
-        iconURL: "https://dragonballfr.com/favicon.ico",
+        iconURL: BRAND_ICON,
       });
 
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -418,7 +441,25 @@ export class EconomyCommands {
       });
       return;
     }
-    await this.eco.createFusion(proposerId!, targetId!);
+    // Acquitte tout de suite : rendu canvas et rôles dépassaient souvent les 3 s.
+    await interaction.deferUpdate();
+    // Refusée si l'un des deux s'est uni à quelqu'un d'autre depuis la proposition.
+    if (!(await this.eco.createFusion(proposerId!, targetId!))) {
+      await interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(COLORS.muted)
+            .setTitle("ℹ️ Fusion impossible")
+            .setDescription(
+              `<@${proposerId}> ou <@${targetId}> est déjà uni(e) par une autre fusion.`,
+            ),
+        ],
+        files: [],
+        components: [],
+      });
+      return;
+    }
+    const ratios = await this.eco.fusionRatios();
 
     if (interaction.guild) {
       await this.fusionRoles.applyToPair(interaction.guild, proposerId!, targetId!);
@@ -442,7 +483,7 @@ export class EconomyCommands {
         .setColor(SHENRON_THEME.gold)
         .setAuthor({
           name: "RÉUSSITE PARFAITE DE LA FUSION · 誕生",
-          iconURL: "https://dragonballfr.com/favicon.ico",
+          iconURL: BRAND_ICON,
         })
         .setTitle(`✨ NAISSANCE D'UN ÊTRE SUPRÊME : ${fused.toUpperCase()}`)
         .setDescription(
@@ -450,7 +491,7 @@ export class EconomyCommands {
             `Les esprits et forces de <@${proposerId}> et <@${targetId}> ne font désormais plus qu'un !`,
             "",
             `${SHENRON_SEPARATORS.solid}`,
-            `> **Multiplicateur Actif :** **+10 % XP & Zénis partagés** sur toute activité.`,
+            `> **Multiplicateur Actif :** **${fusionBonusLabel(ratios)}** sur toute activité.`,
             `> **Identité Guerrière :** **${fused}**`,
             `${SHENRON_SEPARATORS.solid}`,
           ].join("\n"),
@@ -458,10 +499,10 @@ export class EconomyCommands {
         .setImage("attachment://fusion-success.png")
         .setFooter({
           text: "Union scellée dans les registres du sanctuaire · dragonballfr.com",
-          iconURL: "https://dragonballfr.com/favicon.ico",
+          iconURL: BRAND_ICON,
         });
 
-      await interaction.update({
+      await interaction.editReply({
         embeds: [successEmb],
         files: [new AttachmentBuilder(buf, { name: "fusion-success.png" })],
         components: [],
@@ -474,7 +515,7 @@ export class EconomyCommands {
           `<@${proposerId}> et <@${targetId}> sont désormais unis sous l'identité **${fused}** !`,
         );
 
-      await interaction.update({
+      await interaction.editReply({
         embeds: [fallbackEmb],
         files: [],
         components: [],
@@ -486,16 +527,17 @@ export class EconomyCommands {
   async defusion(interaction: CommandInteraction) {
     const partner = await this.eco.partnerOf(interaction.user.id);
     const ok = await this.eco.breakFusion(interaction.user.id);
+    const ratios = await this.eco.fusionRatios();
     if (ok && partner && interaction.guild) {
       await this.fusionRoles.removeFromPair(interaction.guild, interaction.user.id, partner);
     }
 
     const embed = new EmbedBuilder()
-      .setColor(ok ? SHENRON_THEME.majinRed : 0x71717a)
+      .setColor(ok ? SHENRON_THEME.majinRed : COLORS.muted)
       .setTitle(ok ? "💔 Rupture de Fusion" : "ℹ️ Aucune Fusion")
       .setDescription(
         ok
-          ? `La fusion a été rompue. Toi et <@${partner}> avez repris vos identités distinctes et le bonus de +10 % a été retiré.`
+          ? `La fusion a été rompue. Toi et <@${partner}> avez repris vos identités distinctes et le bonus (${fusionBonusLabel(ratios)}) a été retiré.`
           : "Tu ne possèdes aucune fusion active.",
       )
       .setFooter({ text: "Économie Shenron" });
@@ -524,6 +566,7 @@ export class EconomyCommands {
     const user = target ?? interaction.user;
     const bal = await this.eco.getBalance(user.id);
     const fusion = await this.eco.getFusion(user.id);
+    const ratios = await this.eco.fusionRatios();
     const inv = await this.eco.listInventory(user.id);
     const partnerId = fusion?.userA === user.id ? fusion.userB : fusion?.userA;
 
@@ -539,7 +582,7 @@ export class EconomyCommands {
           `*La monnaie officielle circulant dans tout le sanctuaire Dragon Ball.*`,
           "",
           `${SHENRON_SEPARATORS.solid}`,
-          `> **Solde Disponible :** **${formatXP(bal)}** 𝓩 *(Zénis)*`,
+          `> **Solde Disponible :** **${formatZeni(bal)}** *(Zénis)*`,
           `${SHENRON_SEPARATORS.solid}`,
         ].join("\n"),
       )
@@ -552,14 +595,14 @@ export class EconomyCommands {
         {
           name: "💫 Statut d'Union",
           value: partnerId
-            ? `Uni(e) avec <@${partnerId}>\n*+10 % bonus partagé*`
+            ? `Uni(e) avec <@${partnerId}>\n*${fusionBonusLabel(ratios)}*`
             : "*Aucune fusion*",
           inline: true,
         },
       )
       .setFooter({
         text: "Économie Shenron · Utilise /shop pour acquérir des raretés",
-        iconURL: "https://dragonballfr.com/favicon.ico",
+        iconURL: BRAND_ICON,
       })
       .setTimestamp();
 
@@ -632,40 +675,43 @@ export class EconomyCommands {
   ) {
     if (!interaction.inCachedGuild()) return;
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-    const signed = action === "give" ? amount : -amount;
+    // Un retrait était silencieusement ignoré dès que le solde était inférieur
+    // au montant, tout en affichant un succès : il est désormais plafonné au
+    // solde et le montant réellement retiré est rapporté.
+    const apply = async (id: string): Promise<number> => {
+      if (action === "give") {
+        await this.eco.addZeni(id, amount, { propagateFusion: false, source: "admin" });
+        return amount;
+      }
+      return this.eco.removeZeniUpTo(id, amount);
+    };
+    const summary = (count: number, moved: number, scope: string) =>
+      `✅ ${action === "give" ? "Crédité" : "Retiré"} : **${formatZeni(moved)}** au total sur ${count} ${scope}.`;
 
     if (user) {
-      if (signed > 0)
-        await this.eco.addZeni(user.id, signed, { propagateFusion: false, source: "admin" });
-      else await this.eco.removeZeni(user.id, -signed);
-      await interaction.editReply({ content: `✅ ${user} : ${signed > 0 ? "+" : ""}${signed} z` });
+      const moved = await apply(user.id);
+      const delta = action === "give" ? `+${formatZeni(moved)}` : `−${formatZeni(moved)}`;
+      const partial = action === "remove" && moved < amount ? " *(plafonné au solde)*" : "";
+      await interaction.editReply({ content: `✅ ${user} : ${delta}${partial}` });
       return;
     }
+    let targets: string[] | null = null;
+    let scope = "";
     if (role) {
       const members = await interaction.guild.members.fetch();
-      let count = 0;
-      for (const m of members.values()) {
-        if (m.roles.cache.has(role.id)) {
-          if (signed > 0)
-            await this.eco.addZeni(m.id, signed, { propagateFusion: false, source: "admin" });
-          else await this.eco.removeZeni(m.id, -signed);
-          count++;
-        }
-      }
-      await interaction.editReply({ content: `✅ Appliqué à ${count} membres avec ${role}.` });
+      targets = [...members.values()].filter((m) => m.roles.cache.has(role.id)).map((m) => m.id);
+      scope = `membre(s) avec ${role}`;
+    } else if (all) {
+      targets = await this.eco.listRegisteredIds();
+      scope = "membre(s) inscrit(s)";
+    }
+    if (!targets) {
+      await interaction.editReply({ content: "Spécifiez un membre, un rôle, ou all:true." });
       return;
     }
-    if (all) {
-      const ids = await this.eco.listRegisteredIds();
-      for (const id of ids) {
-        if (signed > 0)
-          await this.eco.addZeni(id, signed, { propagateFusion: false, source: "admin" });
-        else await this.eco.removeZeni(id, -signed);
-      }
-      await interaction.editReply({ content: `✅ Appliqué à ${ids.length} membres inscrits.` });
-      return;
-    }
-    await interaction.editReply({ content: "Spécifiez un membre, un rôle, ou all:true." });
+    let moved = 0;
+    for (const id of targets) moved += await apply(id);
+    await interaction.editReply({ content: summary(targets.length, moved, scope) });
   }
 
   // Admin: /custom give|remove type key @cible
@@ -689,6 +735,7 @@ export class EconomyCommands {
     @SlashChoice({ name: "badge", value: "badge" })
     @SlashChoice({ name: "color", value: "color" })
     @SlashChoice({ name: "title", value: "title" })
+    @SlashChoice({ name: "banner", value: "banner" })
     @SlashChoice({ name: "succes", value: "succes" })
     @SlashOption({
       name: "type",
@@ -696,7 +743,7 @@ export class EconomyCommands {
       type: ApplicationCommandOptionType.String,
       required: true,
     })
-    type: "card" | "badge" | "color" | "title" | "succes",
+    type: CosmeticType | "succes",
     @SlashOption({
       name: "cle",
       description: "Clé",

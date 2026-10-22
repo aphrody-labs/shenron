@@ -5,6 +5,15 @@ import { achievementTriggers, type AchievementTrigger } from "~/db/schema";
 import { EconomyService } from "./EconomyService";
 import { logger } from "~/lib/logger";
 
+/**
+ * Drapeaux sans état (`g` et `y` retirés), `i` par défaut. Avec `g`, `test()`
+ * garde `lastIndex` d'un message à l'autre : un déclencheur ne répondait
+ * qu'un message sur deux.
+ */
+function statelessFlags(flags: string | null | undefined): string {
+  return (flags ?? "i").replace(/[gy]/g, "");
+}
+
 @singleton()
 export class AchievementService {
   private cache: { triggers: AchievementTrigger[]; compiled: Map<string, RegExp>; ts: number } = {
@@ -27,7 +36,7 @@ export class AchievementService {
     const compiled = new Map<string, RegExp>();
     for (const t of triggers) {
       try {
-        compiled.set(t.code, new RegExp(t.pattern, t.flags ?? "i"));
+        compiled.set(t.code, new RegExp(t.pattern, statelessFlags(t.flags)));
       } catch (err) {
         logger.warn({ err, code: t.code }, "invalid achievement trigger regex");
       }
@@ -113,7 +122,7 @@ export class AchievementService {
     const t = existing[0];
     if (!t) return null;
     try {
-      const re = new RegExp(t.pattern, t.flags ?? "i");
+      const re = new RegExp(t.pattern, statelessFlags(t.flags));
       return { match: re.test(sample), pattern: t.pattern, flags: t.flags ?? "i" };
     } catch {
       return { match: false, pattern: t.pattern, flags: t.flags ?? "i" };
