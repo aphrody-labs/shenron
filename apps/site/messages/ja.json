@@ -2371,6 +2371,8 @@
     "provenance": "来歴をダウンロード",
     "cancel": "キャンセル",
     "open": "ページ {page} をStudioで開く",
+    "sourceContext": "リーダーから開きました: {label} {id}、ページ {page}",
+    "databook": "データブック",
     "destination": "新しいプロジェクト",
     "importing": "インポート中…",
     "preview": "ページ {page} のプレビュー",

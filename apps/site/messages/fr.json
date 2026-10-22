@@ -2371,6 +2371,8 @@
     "provenance": "Télécharger la provenance",
     "cancel": "Annuler",
     "open": "Ouvrir la page {page} dans Studio",
+    "sourceContext": "Ouvert depuis le lecteur : {label} n° {id}, page {page}",
+    "databook": "Databook",
     "destination": "Nouveau projet",
     "importing": "Importation…",
     "preview": "Aperçu de la page {page}",

@@ -6,6 +6,7 @@ import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { LibraryNav } from "@/components/library/LibraryNav";
+import { StudioSourceContext } from "@/components/studio/StudioSourceContext";
 import { T } from "@/components/T";
 import { ogMeta } from "@/lib/og";
 import { StudioEditor } from "./StudioEditor";
@@ -22,8 +23,19 @@ export const metadata: Metadata = {
 
 const FEATURES = ["detect", "ocr", "translate", "inpaint", "typeset", "export"] as const;
 
+/** The reader's source page, as sent by `StudioSourceLink` (`?chapter=<id>&page=<n>`). */
+type StudioSource = { kind: "chapter" | "databook"; id: number; page: number };
+
+function studioSource(params: { chapter?: string; databook?: string; page?: string }) {
+  const kind = params.chapter !== undefined ? "chapter" : "databook";
+  const id = params.chapter ?? params.databook;
+  if (id === undefined || !/^\d{1,9}$/.test(id)) return null;
+  const page = params.page !== undefined && /^\d{1,5}$/.test(params.page) ? Number(params.page) : 1;
+  return { kind, id: Number(id), page: Math.max(1, page) } satisfies StudioSource;
+}
+
 /** Presentation of the editor for the browser; the desktop app replaces it with the editor. */
-function StudioPresentation() {
+function StudioPresentation({ source }: { source: StudioSource | null }) {
   return (
     <PageShell rhythm="tight">
       <Breadcrumbs
@@ -36,6 +48,7 @@ function StudioPresentation() {
         title={<T k="library.studio.title" />}
         subtitle={<T k="library.studio.lead" />}
       />
+      {source && <StudioSourceContext {...source} />}
       <LibraryNav />
 
       <section aria-labelledby="studio-features" className="mb-10 space-y-4">
@@ -82,6 +95,11 @@ function StudioPresentation() {
   );
 }
 
-export default function StudioPage() {
-  return <StudioEditor fallback={<StudioPresentation />} />;
+export default async function StudioPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ chapter?: string; databook?: string; page?: string }>;
+}) {
+  const source = studioSource(await searchParams);
+  return <StudioEditor fallback={<StudioPresentation source={source} />} />;
 }
