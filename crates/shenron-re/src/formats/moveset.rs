@@ -140,7 +140,14 @@ mod tests {
                     damage: 250,
                     bdm_entry_id: 1,
                     knockback_type: 0,
+                    damage_when_blocked: 0,
+                    position: [0.0; 3],
+                    size: 0.3,
+                    min_bounds: [0.0; 3],
+                    max_bounds: [0.0; 3],
                 }],
+                animations: Vec::new(),
+                blocks: Vec::new(),
             }],
         };
 

@@ -20,6 +20,10 @@ export interface Xv2CharacterRenderer {
   /** Animation names, in the slot order accepted by `play`. */
   animations(): string[];
   play(index: number): boolean;
+  /** Loads the character's `.bac`; returns the ids of actions it can play. */
+  loadActions(bytes: Uint8Array): Uint32Array;
+  /** Plays a `.bac` action once, then returns to the looping animation. */
+  playAction(id: number): boolean;
   camera(azimuth: number, elevation: number, zoom: number): void;
   /** Draws the pose at `time` seconds; `false` when the surface is unusable. */
   frame(time: number): boolean;

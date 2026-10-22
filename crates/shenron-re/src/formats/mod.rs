@@ -15,7 +15,7 @@ pub mod msg;
 pub mod pup;
 pub mod sav;
 
-pub use bac::{BacFile, BacHitbox, BacMove};
+pub use bac::{BacAnimation, BacBlock, BacFile, BacHitbox, BacMove};
 pub use bdm::{BdmEntry, BdmFile, DamageType};
 pub use cms::{CmsEntry, CmsFile};
 pub use cus::{CusFile, CusSkill, SkillCategory};

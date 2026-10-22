@@ -14,11 +14,13 @@ const inputClass = "min-h-11 rounded border border-white/25 bg-slate-950 px-3 te
 
 type Phase = "idle" | "loading" | "ready" | "missing" | "error";
 
+type Loaded = { renderer: Xv2CharacterRenderer; actions: number[] };
+
 async function loadCharacter(
   code: string,
   canvas: HTMLCanvasElement,
   signal: AbortSignal,
-): Promise<Xv2CharacterRenderer | null> {
+): Promise<Loaded | null> {
   const query = new URLSearchParams({ q: `data/chara/${code}/*`, limit: "500" });
   const response = await fetch(`${sceneUrl(ARCHIVE, "find")}?${query}`, { signal });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -31,9 +33,10 @@ async function loadCharacter(
   if (!files) return null;
   const get = (path: string | undefined) =>
     path ? fetchBytes(sceneUrl(ARCHIVE, "raw", path), signal) : Promise.resolve(undefined);
-  const [esk, ean, parts] = await Promise.all([
+  const [esk, ean, bac, parts] = await Promise.all([
     fetchBytes(sceneUrl(ARCHIVE, "raw", files.esk), signal),
     fetchBytes(sceneUrl(ARCHIVE, "raw", files.ean), signal),
+    get(files.bac),
     Promise.all(
       files.parts.map(async (part) => {
         const [emd, emb, emm, dyt] = await Promise.all([
@@ -46,7 +49,14 @@ async function loadCharacter(
       }),
     ),
   ]);
-  return createXv2Character(canvas, esk, ean, parts);
+  const renderer = await createXv2Character(canvas, esk, ean, parts);
+  let actions: number[] = [];
+  try {
+    if (bac) actions = [...renderer.loadActions(bac)];
+  } catch {
+    actions = [];
+  }
+  return { renderer, actions };
 }
 
 export default function CharacterScene({ text }: { text: typeof fr }) {
@@ -57,6 +67,7 @@ export default function CharacterScene({ text }: { text: typeof fr }) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [animations, setAnimations] = useState<{ name: string; slot: number }[]>([]);
   const [animation, setAnimation] = useState(0);
+  const [actions, setActions] = useState<number[]>([]);
   const [camera, setCamera] = useState({ rotation: 0, elevation: 0.15, zoom: 1 });
 
   useEffect(() => {
@@ -77,16 +88,17 @@ export default function CharacterScene({ text }: { text: typeof fr }) {
     setPhase("loading");
     void (async () => {
       try {
-        handle = await loadCharacter(code, element, controller.signal);
+        const loaded = await loadCharacter(code, element, controller.signal);
         if (controller.signal.aborted) {
-          handle?.free();
-          handle = null;
+          loaded?.renderer.free();
           return;
         }
-        if (!handle) {
+        if (!loaded) {
           setPhase("missing");
           return;
         }
+        handle = loaded.renderer;
+        setActions(loaded.actions);
         renderer.current = handle;
         setAnimations(handle.animations().map((name, slot) => ({ name, slot })));
         setAnimation(0);
@@ -162,6 +174,26 @@ export default function CharacterScene({ text }: { text: typeof fr }) {
               {animations.map(({ name, slot }) => (
                 <option key={slot} value={slot}>
                   {name || slot}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        {phase === "ready" && actions.length > 0 && (
+          <label className="grid gap-1">
+            {text.action}
+            <select
+              className={inputClass}
+              defaultValue=""
+              onChange={(event) => {
+                const id = Number(event.currentTarget.value);
+                if (event.currentTarget.value) renderer.current?.playAction(id);
+              }}
+            >
+              <option value="">—</option>
+              {actions.map((id) => (
+                <option key={id} value={id}>
+                  {id}
                 </option>
               ))}
             </select>

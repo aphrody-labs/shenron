@@ -37,6 +37,8 @@ export function messagePage(
 export type CharacterFiles = {
   esk: string;
   ean: string;
+  /** Player action timelines (`<CODE>_PLAYER.bac`), when present. */
+  bac?: string;
   parts: { emd: string; emb?: string; emm?: string; dyt?: string }[];
 };
 
@@ -83,7 +85,7 @@ export function characterFiles(
         dyt: find(`${stem}.dyt.emb`),
       };
     });
-  return esk && ean && parts.length ? { esk, ean, parts } : null;
+  return esk && ean && parts.length ? { esk, ean, bac: find(`${code}_PLAYER.bac`), parts } : null;
 }
 
 const MAX_ASSET = 64 * 1024 * 1024;

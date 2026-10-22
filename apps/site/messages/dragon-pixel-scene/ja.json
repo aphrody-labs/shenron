@@ -29,5 +29,6 @@
   "characterCode": "キャラクターコード",
   "characterLoad": "動かす",
   "characterMissing": "このキャラクターには data.cpk 内に骨格、アニメーション、または完全なモデルがありません。",
-  "animation": "アニメーション"
+  "animation": "アニメーション",
+  "action": "技アクション（BAC）"
 }

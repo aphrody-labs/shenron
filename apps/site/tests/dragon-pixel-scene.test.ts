@@ -69,11 +69,13 @@ describe("character files", () => {
     "data/chara/APL/APL_000_Face_ear.dyt.emb",
     "data/chara/APL/APL_000_skirt_scd.emd",
     "data/chara/APL/APL_001_Boots.emd",
+    "data/chara/APL/APL_PLAYER.bac",
   ];
   test("resolves skeleton, animations and full-detail parts with their files", () => {
     expect(characterFiles("APL", paths)).toEqual({
       esk: "data/chara/APL/APL_000.esk",
       ean: "data/chara/APL/APL.ean",
+      bac: "data/chara/APL/APL_PLAYER.bac",
       parts: [
         {
           emd: "data/chara/APL/APL_000_Bust.emd",

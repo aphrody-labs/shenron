@@ -10,7 +10,10 @@ use crate::render::TurntableCamera;
 use crate::render::skinned::{
     BoundAnimation, CharacterPart, SkinnedCharacter, SkinnedGpuCharacter, Xv2ToonPipeline,
 };
-use shenron_re::formats::{EanFile, EmbFile, EmdFile, EmmFile, EskFile};
+use shenron_re::formats::{BacFile, EanFile, EmbFile, EmdFile, EmmFile, EskFile};
+
+/// BAC animation source naming the character's own `.ean`.
+const EAN_CHARACTER: u16 = 5;
 use wasm_bindgen::prelude::*;
 
 /// EAN key frames are authored at 60 frames per second.
@@ -122,6 +125,12 @@ pub struct Xv2CharacterWasm {
     ean: EanFile,
     animation: Option<BoundAnimation>,
     started: Option<f32>,
+    /// Played frame range, playback speed and whether it plays once then returns to `idle`.
+    range: (f32, f32),
+    speed: f32,
+    once: bool,
+    idle: usize,
+    actions: Option<BacFile>,
     camera: TurntableCamera,
     zoom: f32,
 }
@@ -179,6 +188,11 @@ pub async fn create_xv2_character(
         ean,
         animation: None,
         started: None,
+        range: (0.0, 0.0),
+        speed: 1.0,
+        once: false,
+        idle: 0,
+        actions: None,
         camera,
         zoom: 1.0,
     };
@@ -196,9 +210,68 @@ impl Xv2CharacterWasm {
     /// Plays the animation at `index` of [`Self::animations`] from its first frame.
     pub fn play(&mut self, index: usize) -> bool {
         let Some(animation) = self.ean.animations.get(index) else { return false };
-        self.animation = Some(self.character.bind(&self.ean, animation));
+        let bound = self.character.bind(&self.ean, animation);
+        self.range = (0.0, bound.frame_count.saturating_sub(1) as f32);
+        self.animation = Some(bound);
+        self.speed = 1.0;
+        self.once = false;
+        self.idle = index;
         self.started = None;
         true
+    }
+
+    /// Loads the character's `.bac` action timelines; returns the ids of the actions that
+    /// animate the character with its own `.ean`.
+    #[wasm_bindgen(js_name = loadActions)]
+    pub fn load_actions(&mut self, bytes: Vec<u8>) -> Result<Vec<u32>, JsValue> {
+        let bac = BacFile::parse(&bytes).map_err(js_error)?;
+        let playable = bac
+            .moves
+            .iter()
+            .filter(|m| {
+                m.animations
+                    .iter()
+                    .any(|a| a.ean_type == EAN_CHARACTER && self.slot(a.ean_index).is_some())
+            })
+            .map(|m| m.move_id)
+            .collect();
+        self.actions = Some(bac);
+        Ok(playable)
+    }
+
+    /// Plays action `id` of the loaded `.bac` once: its first character animation over the
+    /// action's frame range and speed, then returns to the last looping animation.
+    #[wasm_bindgen(js_name = playAction)]
+    pub fn play_action(&mut self, id: u32) -> bool {
+        let Some(action) = self.actions.as_ref().and_then(|b| b.find(id)) else { return false };
+        let Some(record) = action
+            .animations
+            .iter()
+            .find(|a| a.ean_type == EAN_CHARACTER && self.slot(a.ean_index).is_some())
+            .cloned()
+        else {
+            return false;
+        };
+        let Some(slot) = self.slot(record.ean_index) else { return false };
+        let bound = self.character.bind(&self.ean, &self.ean.animations[slot]);
+        let last = bound.frame_count.saturating_sub(1) as f32;
+        let end =
+            if record.frame_end == u16::MAX { last } else { (record.frame_end as f32).min(last) };
+        self.range = ((record.frame_start as f32).min(end), end);
+        self.speed = if record.time_scale.is_finite() && record.time_scale > 0.0 {
+            record.time_scale
+        } else {
+            1.0
+        };
+        self.animation = Some(bound);
+        self.once = true;
+        self.started = None;
+        true
+    }
+
+    /// Position in [`Self::animations`] of the animation stored at EAN slot `index`.
+    fn slot(&self, index: u16) -> Option<usize> {
+        self.ean.animations.iter().position(|a| a.index == index as usize)
     }
 
     /// Azimuth/elevation in radians and a zoom factor in `[0.5, 3]`.
@@ -213,14 +286,21 @@ impl Xv2CharacterWasm {
     /// Draws the pose at `time` seconds (looping). `false` when the surface is unusable.
     pub fn frame(&mut self, time: f32) -> bool {
         let started = *self.started.get_or_insert(time);
-        let skin = match &self.animation {
-            Some(a) if a.frame_count > 1 => {
-                let frame =
-                    ((time - started).max(0.0) * FRAMES_PER_SECOND) % (a.frame_count - 1) as f32;
-                self.character.skin_matrices(Some(a), frame)
-            },
-            other => self.character.skin_matrices(other.as_ref(), 0.0),
+        let (start, end) = self.range;
+        let length = (end - start).max(0.0);
+        let elapsed = (time - started).max(0.0) * FRAMES_PER_SECOND * self.speed;
+        if self.once && elapsed > length {
+            self.play(self.idle);
+            return self.frame(time);
+        }
+        let frame = if self.once {
+            start + elapsed.min(length)
+        } else if length > 0.0 {
+            start + elapsed % length
+        } else {
+            start
         };
+        let skin = self.character.skin_matrices(self.animation.as_ref(), frame);
         self.gpu.update(&self.surface.queue, &self.character, &skin);
         let (center, _) = self.character.posed_bounds(&skin);
         self.camera.target = self.camera.target.lerp(center, 0.2);

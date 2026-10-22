@@ -29,5 +29,6 @@
   "characterCode": "Code du personnage",
   "characterLoad": "Animer",
   "characterMissing": "Ce personnage n’a pas de squelette, d’animations ou de modèle complet dans data.cpk.",
-  "animation": "Animation"
+  "animation": "Animation",
+  "action": "Action du moveset (BAC)"
 }
