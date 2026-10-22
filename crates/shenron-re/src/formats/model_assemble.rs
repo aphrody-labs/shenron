@@ -343,7 +343,6 @@ fn convert_submesh_to_primitive(sub: &EmdSubmesh, has_textures: bool) -> ModelPr
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::formats::emb::TexturePixelFormat;
 
     #[test]
     fn test_assemble_and_export_glb() {
@@ -355,7 +354,9 @@ mod tests {
         );
         let emd = EmdFile::parse(&emd_bytes).expect("parse EMD");
 
-        let emb_bytes = EmbFile::create_mock(32, 32, TexturePixelFormat::Rgba8);
+        let emb_bytes = crate::formats::emb::encode_emb(&[crate::formats::emb::encode_dds_rgba(
+            2, 2, &[255; 16],
+        )]);
         let emb = EmbFile::parse(&emb_bytes).expect("parse EMB");
 
         let esk_bytes = crate::formats::encode_esk(&[Default::default()]);
