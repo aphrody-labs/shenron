@@ -78,10 +78,17 @@ via l'outil déjà présent `@shenron/dbxv2`, aucune archive extraite en totalit
 seul contient 1 832 `.emo` et 4 743 `.ema`. En-tête confirmée sur quatre fichiers réels et
 indépendants : `#EMO`/`#EMA` + `u16 0xFFFE` + `u16 header_size=32` (fixe) + `u32` constant
 `0x92c0` (version de format du build, pas un champ par fichier) ; pour `#EMO`, l'octet `0xc`
-pointe une sous-table juste après l'en-tête de 32 octets ; pour `#EMA`, l'octet `0x12` est un
-compteur de canaux qui varie par fichier (3 à 8 vus). Détail et scripts :
-`var/reports/dbxv2-engine-map-20261022/README.md` (local). Écrire `ema.rs`/`emo.rs` reste à faire
-par l'agent qui possède `crates/shenron-re/src/formats` (revendiqué en direct le 2026-10-22).
+pointe une sous-table juste après l'en-tête de 32 octets. Correction (relevé par l'agent
+`dbxv2-wasm-engine-20261022`, corpus complet) : pour `#EMA`, l'octet `0x10` (`u16`) est le
+nombre d'animations et l'octet `0x12` (`u16`) est le **genre** (3 objet, 4 lumière, 8
+matériau), pas un compteur de canaux comme écrit plus haut. `EmMotion::GetTailTranslation`
+dans `xgcore.dll` confirme l'encodage des canaux : valeurs en f16 si `(u16_anim + 10) & 1`,
+sinon f32 ; indicateur `0x20` = temps en `u16`, `0x40` = indices en `u32` ; les bits hauts d'un
+indice donnent le décalage vers la tangente ; la composante vient de `flags & 3`. Détail et
+scripts : `var/reports/dbxv2-engine-map-20261022/README.md` (local). Les parseurs `.emo`/`.ema`
+sont écrits côté `bun-os` (`crates/re/src/game/formats/{emo,ema}.rs`, branchés dans
+`api::summarize`/`support`, documentés dans `bun-os/docs/re/DBXV2-EMO-EMA.md`) à la demande du
+propriétaire — pas dans `crates/shenron-re/src/formats` de ce dépôt.
 
 ## Capacités locales pertinentes
 
