@@ -490,7 +490,7 @@ export class Xv2CharacterWasm {
         wasm.xv2characterwasm_camera(this.__wbg_ptr, azimuth, elevation, zoom);
     }
     /**
-     * Draws the pose at `time` seconds (looping). `false` when the surface is unusable.
+     * Draws the pose at `time` seconds. `false` when the surface is unusable.
      * @param {number} time
      * @returns {boolean}
      */
@@ -499,8 +499,7 @@ export class Xv2CharacterWasm {
         return ret !== 0;
     }
     /**
-     * Loads the character's `.bac` action timelines; returns the ids of the actions that
-     * animate the character with its own `.ean`.
+     * Loads the character's `.bac`; returns the ids of the actions it can play.
      * @param {Uint8Array} bytes
      * @returns {Uint32Array}
      */
@@ -516,8 +515,7 @@ export class Xv2CharacterWasm {
         return v2;
     }
     /**
-     * Plays action `id` of the loaded `.bac` once: its first character animation over the
-     * action's frame range and speed, then returns to the last looping animation.
+     * Plays a `.bac` action once, then returns to the looping animation.
      * @param {number} id
      * @returns {boolean}
      */
@@ -526,7 +524,7 @@ export class Xv2CharacterWasm {
         return ret !== 0;
     }
     /**
-     * Plays the animation at `index` of [`Self::animations`] from its first frame.
+     * Loops the animation at `index` of [`Self::animations`].
      * @param {number} index
      * @returns {boolean}
      */
@@ -543,6 +541,115 @@ export class Xv2CharacterWasm {
     }
 }
 if (Symbol.dispose) Xv2CharacterWasm.prototype[Symbol.dispose] = Xv2CharacterWasm.prototype.free;
+
+/**
+ * Two real fighters facing each other; their `.bac` actions land through their `.bdm`.
+ */
+export class Xv2DuelWasm {
+    static __wrap(ptr) {
+        const obj = Object.create(Xv2DuelWasm.prototype);
+        obj.__wbg_ptr = ptr;
+        Xv2DuelWasmFinalization.register(obj, obj.__wbg_ptr, obj);
+        return obj;
+    }
+    __destroy_into_raw() {
+        const ptr = this.__wbg_ptr;
+        this.__wbg_ptr = 0;
+        Xv2DuelWasmFinalization.unregister(this);
+        return ptr;
+    }
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_xv2duelwasm_free(ptr, 0);
+    }
+    /**
+     * Playable `.bac` action ids of `player` (0 or 1).
+     * @param {number} player
+     * @returns {Uint32Array}
+     */
+    actions(player) {
+        const ret = wasm.xv2duelwasm_actions(this.__wbg_ptr, player);
+        var v1 = getArrayU32FromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
+        return v1;
+    }
+    /**
+     * Starts action `id` for `player`; refused while stunned or mid-action.
+     * @param {number} player
+     * @param {number} id
+     * @returns {boolean}
+     */
+    attack(player, id) {
+        const ret = wasm.xv2duelwasm_attack(this.__wbg_ptr, player, id);
+        return ret !== 0;
+    }
+    /**
+     * @param {number} azimuth
+     * @param {number} elevation
+     * @param {number} zoom
+     */
+    camera(azimuth, elevation, zoom) {
+        wasm.xv2duelwasm_camera(this.__wbg_ptr, azimuth, elevation, zoom);
+    }
+    /**
+     * Distance between the fighters, in metres.
+     * @returns {number}
+     */
+    distance() {
+        const ret = wasm.xv2duelwasm_distance(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * Advances the duel to `time` seconds and draws it.
+     * @param {number} time
+     * @returns {boolean}
+     */
+    frame(time) {
+        const ret = wasm.xv2duelwasm_frame(this.__wbg_ptr, time);
+        return ret !== 0;
+    }
+    /**
+     * Hits landed since the duel started.
+     * @returns {number}
+     */
+    hits() {
+        const ret = wasm.xv2duelwasm_hits(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * @param {number} player
+     * @returns {number}
+     */
+    hp(player) {
+        const ret = wasm.xv2duelwasm_hp(this.__wbg_ptr, player);
+        return ret;
+    }
+    /**
+     * Whether `player` can act (not stunned, no action in progress).
+     * @param {number} player
+     * @returns {boolean}
+     */
+    ready(player) {
+        const ret = wasm.xv2duelwasm_ready(this.__wbg_ptr, player);
+        return ret !== 0;
+    }
+    /**
+     * @param {number} width
+     * @param {number} height
+     */
+    resize(width, height) {
+        wasm.xv2duelwasm_resize(this.__wbg_ptr, width, height);
+    }
+    /**
+     * Moves `player` toward (positive) or away from (negative) the opponent.
+     * @param {number} player
+     * @param {number} metres
+     */
+    walk(player, metres) {
+        wasm.xv2duelwasm_walk(this.__wbg_ptr, player, metres);
+    }
+}
+if (Symbol.dispose) Xv2DuelWasm.prototype[Symbol.dispose] = Xv2DuelWasm.prototype.free;
 
 /**
  * @param {HTMLCanvasElement} canvas
@@ -606,6 +713,18 @@ export function createXv2Character(canvas, esk, ean, parts) {
     const ptr1 = passArray8ToWasm0(ean, wasm.__wbindgen_malloc);
     const len1 = WASM_VECTOR_LEN;
     const ret = wasm.createXv2Character(canvas, ptr0, len0, ptr1, len1, parts);
+    return ret;
+}
+
+/**
+ * `a` and `b` are `{ esk, ean, parts, bac?, bdm? }` (parts as for `createXv2Character`).
+ * @param {HTMLCanvasElement} canvas
+ * @param {any} a
+ * @param {any} b
+ * @returns {Promise<Xv2DuelWasm>}
+ */
+export function createXv2Duel(canvas, a, b) {
+    const ret = wasm.createXv2Duel(canvas, a, b);
     return ret;
 }
 
@@ -999,6 +1118,10 @@ function __wbg_get_imports() {
                 result = false;
             }
             const ret = result;
+            return ret;
+        },
+        __wbg_isArray_e15a2ff68ffdbef2: function(arg0) {
+            const ret = Array.isArray(arg0);
             return ret;
         },
         __wbg_label_7add8cb37a6ef98f: function(arg0, arg1) {
@@ -1715,29 +1838,33 @@ function __wbg_get_imports() {
             const ret = Xv2CharacterWasm.__wrap(arg0);
             return ret;
         },
+        __wbg_xv2duelwasm_new: function(arg0) {
+            const ret = Xv2DuelWasm.__wrap(arg0);
+            return ret;
+        },
         __wbindgen_generic_0000000000000001: function(arg0, arg1) {
-            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [Externref], shim_idx: 823, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
+            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [Externref], shim_idx: 827, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
             const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___JsValue__core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true_);
             return ret;
         },
         __wbindgen_generic_0000000000000002: function(arg0, arg1) {
-            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("GPUDevice")], shim_idx: 729, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
+            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("GPUDevice")], shim_idx: 733, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
             const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true_);
             return ret;
         },
         __wbindgen_generic_0000000000000003: function(arg0, arg1) {
-            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("GPUDeviceLostInfo")], shim_idx: 732, ret: Unit, inner_ret: Some(Unit) }, mutable: true }) -> Externref`.
+            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("GPUDeviceLostInfo")], shim_idx: 736, ret: Unit, inner_ret: Some(Unit) }, mutable: true }) -> Externref`.
             const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuDeviceLostInfo__GpuDeviceLostInfo______true_);
             return ret;
         },
         __wbindgen_generic_0000000000000004: function(arg0, arg1) {
-            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("any")], shim_idx: 729, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
-            const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__55);
+            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("any")], shim_idx: 733, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
+            const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__66);
             return ret;
         },
         __wbindgen_generic_0000000000000005: function(arg0, arg1) {
-            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("undefined")], shim_idx: 729, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
-            const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__56);
+            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("undefined")], shim_idx: 733, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
+            const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__67);
             return ret;
         },
         __wbindgen_generic_0000000000000006: function(arg0) {
@@ -1794,15 +1921,15 @@ function wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bin
     }
 }
 
-function wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__55(arg0, arg1, arg2) {
-    const ret = wasm.wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__55(arg0, arg1, arg2);
+function wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__66(arg0, arg1, arg2) {
+    const ret = wasm.wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__66(arg0, arg1, arg2);
     if (ret[1]) {
         throw takeFromExternrefTable0(ret[0]);
     }
 }
 
-function wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__56(arg0, arg1, arg2) {
-    const ret = wasm.wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__56(arg0, arg1, arg2);
+function wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__67(arg0, arg1, arg2) {
+    const ret = wasm.wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__67(arg0, arg1, arg2);
     if (ret[1]) {
         throw takeFromExternrefTable0(ret[0]);
     }
@@ -1916,6 +2043,9 @@ const ToriyamaModelWasmFinalization = (typeof FinalizationRegistry === 'undefine
 const Xv2CharacterWasmFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_xv2characterwasm_free(ptr, 1));
+const Xv2DuelWasmFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_xv2duelwasm_free(ptr, 1));
 
 function addToExternrefTable0(obj) {
     const idx = wasm.__externref_table_alloc();
