@@ -335,7 +335,8 @@ fn convert_submesh_to_primitive(sub: &EmdSubmesh, has_textures: bool) -> ModelPr
         normals,
         uv,
         indices: sub.indices.clone(),
-        texture_index: if has_textures { Some(0) } else { None },
+        texture_index: has_textures
+            .then(|| sub.samplers.first().map_or(0, |s| s.texture_index as usize)),
     }
 }
 
@@ -346,13 +347,18 @@ mod tests {
 
     #[test]
     fn test_assemble_and_export_glb() {
-        let emd_bytes = EmdFile::create_mock("Goku_Bust", "Mat_Gi_Orange");
+        let emd_bytes = crate::formats::emd::encode_emd(
+            "Goku_Bust",
+            &[[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]],
+            &[0, 1, 2],
+            &["b_C_Chest"],
+        );
         let emd = EmdFile::parse(&emd_bytes).expect("parse EMD");
 
         let emb_bytes = EmbFile::create_mock(32, 32, TexturePixelFormat::Rgba8);
         let emb = EmbFile::parse(&emb_bytes).expect("parse EMB");
 
-        let esk_bytes = EskFile::create_mock();
+        let esk_bytes = crate::formats::encode_esk(&[Default::default()]);
         let esk = EskFile::parse(&esk_bytes).expect("parse ESK");
 
         let assembled =
