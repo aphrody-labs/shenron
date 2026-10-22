@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { bacFixture, bdmFixture } from "./testing/dbxv2-fixtures";
+import { bacFixture, bdmFixture, msgFixture } from "./testing/dbxv2-fixtures";
 import { describe, expect, test, beforeAll } from "bun:test";
 import {
   initShenronRe,
@@ -293,25 +293,7 @@ describe("shenron-re WASM pipeline", () => {
   });
 
   test("decodes MSG (Message) strings via wasm_parse_msg", () => {
-    const lines = ["Kamehameha", "Super Saiyan"];
-    const headerSize = 16;
-    const encoded = lines.map((l) => new TextEncoder().encode(l));
-    const totalTextLen = encoded.reduce((acc, b) => acc + b.length + 1, 0);
-    const buffer = new Uint8Array(headerSize + totalTextLen);
-    const view = new DataView(buffer.buffer);
-
-    buffer.set([0x23, 0x4d, 0x53, 0x47], 0); // "#MSG"
-    view.setUint32(4, 1, true);
-    view.setUint32(8, lines.length, true);
-    view.setUint32(12, headerSize, true);
-
-    let off = headerSize;
-    for (const b of encoded) {
-      buffer.set(b, off);
-      buffer[off + b.length] = 0;
-      off += b.length + 1;
-    }
-
+    const buffer = msgFixture(["Kamehameha", "Super Saiyan"]);
     const msg = parseMsg(buffer);
     expect(msg.entries.length).toBe(2);
     expect(msg.entries[0]?.lines[0]).toBe("Kamehameha");

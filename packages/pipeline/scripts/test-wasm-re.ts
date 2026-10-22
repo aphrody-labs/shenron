@@ -7,7 +7,7 @@
  *   bun packages/pipeline/scripts/test-wasm-re.ts
  */
 
-import { bacFixture, bdmFixture } from "../src/testing/dbxv2-fixtures";
+import { bacFixture, bdmFixture, msgFixture } from "../src/testing/dbxv2-fixtures";
 import {
   initShenronRe,
   getDragonBallCatalog,
@@ -398,20 +398,7 @@ console.log(
 
 // 4. MSG Validation
 const msgLines = ["Super Kamehameha", "Final Flash", "Special Beam Cannon"];
-const msgEnc = msgLines.map((l) => new TextEncoder().encode(l));
-const msgTextLen = msgEnc.reduce((acc, b) => acc + b.length + 1, 0);
-const msgBuffer = new Uint8Array(16 + msgTextLen);
-const msgView = new DataView(msgBuffer.buffer);
-msgBuffer.set([0x23, 0x4d, 0x53, 0x47], 0); // "#MSG"
-msgView.setUint32(4, 1, true);
-msgView.setUint32(8, msgLines.length, true);
-msgView.setUint32(12, 16, true);
-let msgOff = 16;
-for (const b of msgEnc) {
-  msgBuffer.set(b, msgOff);
-  msgBuffer[msgOff + b.length] = 0;
-  msgOff += b.length + 1;
-}
+const msgBuffer = msgFixture(msgLines);
 const msg = parseMsg(msgBuffer);
 if (msg.entries.length !== 3 || msg.entries[0]?.lines[0] !== "Super Kamehameha") {
   throw new Error("MSG validation failed");

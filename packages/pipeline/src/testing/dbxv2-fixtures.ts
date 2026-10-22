@@ -63,3 +63,34 @@ export function bacFixture(eanIndex: number, hitStart: number, hitLength: number
   view.setFloat32(hit + 36, 0.3, true);
   return bytes;
 }
+
+/** UTF-16 MSG in the real layout, mirroring `MsgFile::create_mock` (keys `MSG_<i>`). */
+export function msgFixture(lines: readonly string[]): Uint8Array {
+  const count = lines.length;
+  const keys = 32;
+  const ids = keys + count * 16;
+  const lists = ids + count * 4;
+  const slots = lists + count * 8;
+  const chunks: number[] = Array.from({ length: slots + count * 16 }, () => 0);
+  const put32 = (at: number, value: number) => {
+    for (let k = 0; k < 4; k++) chunks[at + k] = (value >>> (8 * k)) & 0xff;
+  };
+  [0x23, 0x4d, 0x53, 0x47, 0, 1, 1, 0].forEach((byte, i) => (chunks[i] = byte)); // "#MSG"
+  [count, keys, ids, lists, count, slots].forEach((value, i) => put32(8 + i * 4, value));
+  lines.forEach((line, i) => {
+    put32(ids + i * 4, i);
+    put32(lists + i * 8, 1);
+    put32(lists + i * 8 + 4, slots + i * 16);
+    for (const [slot, text] of [
+      [keys + i * 16, `MSG_${i}`],
+      [slots + i * 16, line],
+    ] as const) {
+      put32(slot, chunks.length);
+      put32(slot + 4, text.length);
+      put32(slot + 8, (text.length + 1) * 2);
+      for (const unit of [...Array.from(text, (_, k) => text.charCodeAt(k)), 0])
+        chunks.push(unit & 0xff, unit >> 8);
+    }
+  });
+  return Uint8Array.from(chunks);
+}
