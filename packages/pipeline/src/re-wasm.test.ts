@@ -287,7 +287,10 @@ describe("shenron-re WASM pipeline", () => {
       ]),
     );
     expect(pup.entries.length).toBe(2);
-    expect(pup.entries[0]).toMatchObject({ id: 200, health: 1.2, duration: 800, f_20: 0 });
+    expect(pup.entries[0]?.id).toBe(200);
+    expect(pup.entries[0]?.health).toBeCloseTo(1.2);
+    expect(pup.entries[0]?.duration).toBe(800);
+    expect(pup.entries[0]?.f_20).toBe(0);
     expect(pup.entries[0]?.cmn_effect_id).toBe(-1);
     expect(pup.entries[1]?.duration).toBe(300);
   });
