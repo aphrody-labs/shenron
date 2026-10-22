@@ -228,7 +228,8 @@ export async function restoreCheck(dir: string) {
     if (!tables) throw new Error("restored database has no user tables");
     Object.assign(report, { tables, rows, databaseBytes });
   } finally {
-    Bun.spawnSync(["docker", "rm", "-f", name], { stdout: "ignore", stderr: "ignore" });
+    // `-v` : `rm -f` contourne `--rm`, le volume anonyme du PG de contrôle (3,1 Go) restait chaque jour.
+    Bun.spawnSync(["docker", "rm", "-f", "-v", name], { stdout: "ignore", stderr: "ignore" });
   }
   const sqlite: Record<string, string> = {};
   const scratch = join(dir, ".restore-scratch");

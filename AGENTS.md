@@ -5,72 +5,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 <!-- CLAUDE.md est un lien symbolique vers AGENTS.md : un seul fichier pour tous les agents. -->
 
-**Avant toute modification de code, lire [START-HERE.md](START-HERE.md)** (équipe, règles, hôtes, tunnel,
-contrôle à distance, travaux en cours ; source canonique dans `aphrody-labs/aphrody`).
 
 Shenron est le produit de dragonballfr.com : site, bot Discord, API, chaîne éditoriale (OCR et
 traduction des databooks), Shenron Studio (éditeur de traduction manga, nom de code Koharu), RAG
 et serveur MCP. Répondre et documenter en français ; le code, lui, est en anglais (voir « Langues
 et noms »). Exécuter de bout en bout ; commit et push à la fin de chaque lot vert,
-auteur `aphrody-dev <contact@aphrody.com>`, sans mention d'assistant.
-Poste propriétaire : Windows natif, sans démarrer WSL. Les builds lourds (Cargo, images Docker) tournent sur la fabrique VPS ; dbfr reçoit uniquement les binaires et images scellés. Les étapes longues tournent dans tmux ([runbook conteneurs](docs/operations/CONTAINER-COMPLET.md)). Le développement distant passe par `bun scripts/dev/remote-dev.ts up` (`just remote`, [runbook](docs/development/remote-dev.md)). Résoudre les hôtes et chemins depuis la configuration courante ; les règles de données (`db:push`, sources éditoriales) restent en vigueur.
+auteur `aphrody-dev <contact@aphrody.com>`
+Mémoire des conversations : avant tout travail substantiel, lire `data/home/MEMORY.md` s'il existe (privé, ignoré par Git) et `docs/reference/root/REPRISE.md`.
 
-Mémoire des conversations : avant tout travail substantiel, lire `data/home/MEMORY.md` s'il existe (privé, ignoré par Git) et `docs/reference/root/REPRISE.md`. À la fin de tout échange substantiel, y ajouter un résumé daté des faits nouveaux, décisions, préférences, points en suspens et prochaine étape ; mettre à jour les éléments durables et retirer ceux devenus faux. Ne pas y recopier les secrets. Ne pas prétendre se souvenir d'un échange absent du contexte ou des notes. Cette mémoire est un résumé, pas une transcription : l'historique mot à mot doit être exporté séparément s'il doit être conservé.
-
-Session cloud : `docs/operations/CLOUD-SESSION.md` (hooks, SSH, secrets) ; chantiers ouverts dans `docs/reference/root/REPRISE.md`, lus au démarrage et repris sans demander jusqu'à la production.
-
-Actualités urgentes (demande propriétaire du 2026-10-11) : suivre la priorité courante de
-`GOAL.md`, vérifier dates et annonces dans les sources officielles avant publication.
-Collecte Codex distante DBFR par Infra, jobs bornés et journaux privés ; PostgreSQL par les
-writers éditoriaux, Redis par l'invalidation ciblée propriétaire. Ne pas convertir une
-annonce de diffusion en preuve de lecture d'un épisode. La publication npm/crates.io exige
-un artefact qualifié, l'audit de ses fichiers et une version disponible. La demande explicite
-de publication autorise la préparation publique des bibliothèques avec allowlists relues ;
-les applications, données et stores restent protégés. Ne pas déclarer une publication à
-partir d'une archive préparée ou d'une authentification seule. Le CMS public utilise ses
-routes `/news` et son ISR propriétaire. Le miroir public Redis appartient à
-`apps/site/src/lib/posts-redis-shared.ts` et au wrapper `posts-redis.ts` : DB4,
-`dbfr:post:<id>`/`dbfr:posts:all`, TTL24h, uniquement articles publiés. Reconstruire par
-`scripts/ops/rebuild-news-redis.ts`, jamais FLUSH ni un writer PostgreSQL parallèle.
-Qualifier séparément le backfill, l'image active et une écriture CMS→Redis réelle.
-
-Synchronisation autorisée le11octobre2026 : maintenir README, ce fichier, GOAL et le plan
-depuis les propriétaires réels, générer le plugin par `scripts/plugin/sync.ts`
-et ses manifestes canoniques, puis vérifier la dérive. Le relevé registry/publication
-`scripts/ops/sync-source-status.ts` écrit uniquement dans `var/reports/source-sync/` ;
-HTTP200 metadata ne prouve ni installation, intégrité d'archive ni déploiement.
-Les12bibliothèques npm sont `@aphrody/shenron-*`, les apps privées ; GitHub contrôlé
-`aphrody-labs/shenron`, équipe `aphrody`. Conserver noms globaux et notices upstream des
-crates. Aucune réécriture des migrations SQL historiques, y compris leurs commentaires.
-Les tâches autonomes respectent les gates Infra DNSSEC/DS/TTL, stores protégés et claims.
-
-Collecte et lecteurs (demande du11octobre2026) : le crawl Bun garde les captures complètes
-privées ; publier uniquement notices originales et médias autorisés avec provenance.
-`payload.public_excerpt` contrôle l'extrait visible, les droits refusés restent refusés ;
-aucun intake n'active implicitement RAG, entraînement ou canon. Catalogues : writers
-canoniques, snapshot complet/frais, backup, JSONarray validé, comparaison optimiste,
-relecture et replay ; ne pas employer le delegate privé Bun.SQL mal encodé puis restauré.
-Bun.WebView ou AphrodyWeb servent les tests navigateur réels ; les noms Chromium/Video
-ne prouvent pas une API installée. Fournisseurs protégés restent liens officiels quand
-l'embed est indisponible ; aucune lecture/territoire/langue ni licence ne s'invente.
-
-Attestation du propriétaire (2026-10-13) : Yohan Pierre affirme disposer d'un accord
-privé de Toei et Shueisha couvrant tout contenu Dragon Ball et les produits liés pour
-dragonballfr.com. Le document reste confidentiel à la demande des ayants droit et
-n'est pas conservé dans ce dépôt. Cette attestation autorise les livraisons demandées
-dans son périmètre déclaré. Le propriétaire précise que l'accord couvre la
-diffusion publique mondiale, sans échéance connue, des épisodes entiers et de
-leurs versions compressées. Le texte de l'accord n'a pas été vérifié
-indépendamment. Gmail, OVH et Cloudflare établissent la maîtrise d'un compte
-ou du domaine, pas les droits sur une œuvre. Consigner la provenance et la portée
-opérationnelle des médias publiés dans un manifeste privé, sans exposer l'accord ni
-inventer ses clauses.
-
-Rectification du propriétaire (2026-10-20) : Yohan Pierre confirme que le même accord
-confidentiel inclut également Bandai Namco pour Xenoverse 2. À sa demande, la portée
-opérationnelle inclut la publication publique du serveur CPK et des données DBXV2 sur
-dragonballfr.com. Le texte de l'accord reste confidentiel et n'a pas été vérifié
-indépendamment ; présenter cette portée comme une déclaration du propriétaire.
 
 Directive de publication (propriétaire, 2026-10-18) : accord total pour publier sur
 dragonballfr.com l'ensemble des données, épisodes, planches, médias et exports du
@@ -78,19 +20,7 @@ catalogue (films, épisodes, tomes manga, databooks), dans le périmètre de l'a
 ci-dessus. Règles d'application :
 - Aucune page publique ne doit rester sans donnée, média, épisode ou planche. Une page
   sans contenu réel ne se publie pas : elle reste masquée ou répond un état vide explicite
-  (jamais une erreur 503 ni une coquille vide indexable). Les manques se listent dans
-  `var/reports/content-gaps/`, mis à jour à chaque lot.
-- Les garde-fous restent : aucun secret, donnée privée, `.env` ni `data/home/` dans Git ;
-  aucune écriture en production hors runbook Infra ; pas de `db:push` ; déploiement par
-  la chaîne de livraison (fabrique, image scellée, Infra), jamais à la main.
-- Ce qui ne peut pas être produit par le code (posters absents, couverture manga
-  incomplète) reste un manque de données à signaler, pas à masquer.
-- Crawl de notre propre site (dragonballfr.com) : le crawler n'obéit pas au robots.txt du
-  site (décision du propriétaire, 2026-10-18) ; /api, /admin et /profile restent exclus pour
-  la confidentialité. Cloudflare doit laisser passer ce crawler par une allowlist posée par
-  l'Infra, jamais par un contournement dans le code.
-- Sites tiers (sources, pools de mangas, lecteurs publics) : robots.txt reste respecté et
-  aucune protection anti-bot n'est contournée ; cette règle ne change pas.
+  (jamais une erreur 503 ni une coquille vide indexable).
 
 ## Exécution autonome NHIL
 

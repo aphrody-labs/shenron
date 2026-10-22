@@ -36,10 +36,6 @@ la présence d'un parseur ne constitue pas une publication d'assets du jeu.
 
 ## Développement
 
-Lire [AGENTS.md](AGENTS.md) et [START-HERE.md](START-HERE.md) avant modification.
-Le runtime est Bun 1.4.4 d'Aphrody ; Rust est épinglé dans `rust-toolchain.toml`
-(actuellement 1.98.1), TypeScript local dans les dépendances (7.0.2).
-
 ```sh
 bun install --frozen-lockfile
 bun run typecheck
@@ -51,41 +47,9 @@ bun run clippy:rust
 bun run test:rust
 ```
 
-Le lecteur vidéo sépare les contrôles React, la reprise propre à chaque source et
-l'adaptateur HLS fourni par `@aphrody/bun-video`. Le build utilise les assets same-origin
-et notices explicitement exposés par ce propriétaire. Qualité et pistes viennent des médias réels.
-Les fonctions DRM requièrent une configuration autorisée du fournisseur.
-
-Les commandes natives du fork sont accessibles par `bun run check:native`,
-`bun run lint:native` et `bun run format:native:check`. Le lanceur utilise le Bun
-courant, ou le chemin absolu `SHENRON_BUN_EXECUTABLE`, placé en tête du PATH enfant.
-Sur Windows, définir cette variable dans PowerShell ; sur le VPS, la fournir au
-job Infra avec le chemin de l'artefact qualifié. Le PATH existant, dont Cargo, est
-conservé. Bun 1.4.4 intègre OXC ; le format natif ne remplace pas encore la porte
-`bun fmt` complet. Les portes `bun check` et les contrôles canoniques restent requis.
-
-Les suites live nécessitent leurs services réels. Les gates ne prouvent pas un
-déploiement. Les builds lourds passent par la fabrique VPS ; l'Infra Aphrody
-active sur DBFR les artefacts scellés. Les règles de claims et de données sont
-[documentées dans les consignes](AGENTS.md).
-
-| Artefact                   | Commande de construction               |
-| -------------------------- | -------------------------------------- |
-| `shenron-server`           | `bun scripts/build/server.ts`          |
-| `shenron-bot`              | `bun scripts/build/bot.ts`             |
-| Application Shenron Studio | `bun scripts/build/desktop.ts`         |
-| CLI `shenron`              | `cargo build --release -p shenron-cli` |
-| `shenron-mcp`              | `cargo build --release -p shenron-mcp` |
-
-Le script [install.ps1](install.ps1) installe sur Windows un installeur local ou
-un artefact de GitHub Releases et vérifie son SHA-256. Ce mécanisme n'établit pas
-qu'une release téléchargeable existe pour chaque commit. `shenron-server doctor`
-et `paths` diagnostiquent les capacités locales ; aucun credential de production
-n'est livré avec l'application.
-
 ## MCP, plugin et A2A
 
-Le plugin Claude Code déclare le binaire stdio `shenron-mcp` dans
+Le plugin  déclare le binaire stdio `shenron-mcp` dans
 `plugin/.mcp.json`. Les manifestes portables déclarent le MCP HTTP public
 [dragonballfr.com/mcp](https://dragonballfr.com/mcp). Le serveur public filtre
 les outils privés ; les noms du protocole sont `dragonball.*`. Vérifier
@@ -124,8 +88,5 @@ et le [plan directeur](docs/reference/root/PLAN.md) détaillent les contrats.
 
 ## Licence et sources
 
-Apache-2.0 ([LICENSE](LICENSE)). Le moteur Koharu conserve MIT OR Apache-2.0
-et ses notices d'origine dans [docs/licenses/koharu](docs/licenses/koharu).
-Dragon Ball © Bird Studio/Shueisha, Toei Animation : projet de fans.
-Le manga, les databooks et les déclarations vérifiables priment ; Fandom n'est
-pas une source éditoriale. Les sous-modules conservent leurs licences propres.
+Apache-2.0 ([LICENSE](LICENSE))/
+Dragon Ball © Bird Studio/Shueisha, Toei Animation/ Bandai Nanco
