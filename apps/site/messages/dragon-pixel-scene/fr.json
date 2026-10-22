@@ -38,7 +38,8 @@
   "duelStart": "Combattre",
   "duelHealth": "Vie",
   "duelHits": "Coups portés :",
-  "duelControls": "Flèches ou A/D : avancer et reculer · J, K, L : attaques",
+  "duelControls": "Flèches ou A/D : avancer et reculer · J, K, L : attaques · U : compétence",
   "duelWin": "Victoire !",
-  "duelLose": "Défaite…"
+  "duelLose": "Défaite…",
+  "duelSkillReady": "U : {name}"
 }

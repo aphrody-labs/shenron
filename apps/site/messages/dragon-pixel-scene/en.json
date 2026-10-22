@@ -38,7 +38,8 @@
   "duelStart": "Fight",
   "duelHealth": "Health",
   "duelHits": "Hits landed:",
-  "duelControls": "Arrows or A/D: step forward and back · J, K, L: attacks",
+  "duelControls": "Arrows or A/D: step forward and back · J, K, L: attacks · U: skill",
   "duelWin": "Victory!",
-  "duelLose": "Defeat…"
+  "duelLose": "Defeat…",
+  "duelSkillReady": "U: {name}"
 }

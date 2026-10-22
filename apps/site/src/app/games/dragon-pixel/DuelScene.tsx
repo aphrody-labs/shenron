@@ -3,7 +3,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createXv2Duel, type Xv2DuelRenderer } from "@aphrody/shenron-engine/xv2-character";
-import { characterCode, fetchCharacter, fetchRoster, type RosterEntry } from "./cpk-scene";
+import {
+  characterCode,
+  fetchCharacter,
+  fetchCharacterSkills,
+  fetchRoster,
+  fetchSkillFiles,
+  type RosterEntry,
+} from "./cpk-scene";
 import type fr from "../../../../messages/dragon-pixel-scene/fr.json";
 
 const inputClass = "min-h-11 rounded border border-white/25 bg-slate-950 px-3 text-white";
@@ -32,6 +39,7 @@ export default function DuelScene({ text }: { text: typeof fr }) {
   const [moves, setMoves] = useState<number[]>([]);
   const [hud, setHud] = useState<Hud>({ hp: [0, 0], hits: 0 });
   const [roster, setRoster] = useState<RosterEntry[] | null>(null);
+  const [skill, setSkill] = useState<{ id: number; name: string } | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -86,6 +94,25 @@ export default function DuelScene({ text }: { text: typeof fr }) {
         const theirs = attacks(duel, 1);
         setMoves(own);
         setPhase("ready");
+
+        // Load the player's first real Super skill (e.g. Goku's Kamehameha), if their
+        // roster entry and the skill's own asset files resolve. Non-fatal when they don't:
+        // the duel stays playable with its base actions.
+        const cmsId = roster?.find((r) => r.shortName === started.a)?.id;
+        if (cmsId !== undefined) {
+          void (async () => {
+            try {
+              const [first] = await fetchCharacterSkills(cmsId, "super", controller.signal);
+              if (!first || controller.signal.aborted || !duel) return;
+              const { ean, bac } = await fetchSkillFiles(first.eanPath, controller.signal);
+              if (controller.signal.aborted || !duel) return;
+              const ids = duel.loadSkill(0, ean, bac);
+              if (ids.length) setSkill({ id: ids[0]!, name: first.shortName });
+            } catch {
+              // Skill is optional; the duel already works without it.
+            }
+          })();
+        }
         const draw = (time: number) => {
           if (controller.signal.aborted || !duel) return;
           const seconds = time / 1000;
@@ -123,14 +150,19 @@ export default function DuelScene({ text }: { text: typeof fr }) {
       cancelAnimationFrame(frame);
       duel?.free();
       duelRef.current = null;
+      setSkill(null);
     };
-  }, [started]);
+  }, [started, roster]);
 
   useEffect(() => {
     if (phase !== "ready") return;
     const held = keys.current;
     const down = (event: KeyboardEvent) => {
       const key = event.key.toLowerCase();
+      if (key === "u" && skill) {
+        duelRef.current?.playSkill(0, skill.id);
+        return;
+      }
       const slot = ATTACK_KEYS.indexOf(key as (typeof ATTACK_KEYS)[number]);
       if (slot >= 0 && moves[slot] !== undefined) duelRef.current?.attack(0, moves[slot]);
       else held.add(key);
@@ -143,7 +175,7 @@ export default function DuelScene({ text }: { text: typeof fr }) {
       removeEventListener("keyup", up);
       held.clear();
     };
-  }, [phase, moves]);
+  }, [phase, moves, skill]);
 
   const over = phase === "ready" && (hud.hp[0] === 0 || hud.hp[1] === 0);
   return (
@@ -220,6 +252,7 @@ export default function DuelScene({ text }: { text: typeof fr }) {
           ))}
           <p className="sm:col-span-2 text-sm text-white/70">
             {text.duelControls} · {text.duelHits} {hud.hits}
+            {skill && ` · ${text.duelSkillReady.replace("{name}", skill.name)}`}
           </p>
           {over && (
             <output className="sm:col-span-2 text-xl font-bold">

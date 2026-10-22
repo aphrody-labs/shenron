@@ -43,6 +43,25 @@ export function parseCharacterRoster(bytes: Uint8Array): { entries: RosterEntry[
   return wasm_parse_cms(bytes) as { entries: RosterEntry[] };
 }
 
+export type SkillCategory = "super" | "ultimate" | "evasive" | "unk" | "blast" | "awoken";
+
+export interface SkillEntry {
+  category: SkillCategory;
+  short_name: string;
+  id1: number;
+  /**
+   * Which character owns this skill: within `category`, a character's ten slots are
+   * `id2 ∈ [cms_id * 10, cms_id * 10 + 10)` (`cms_id` from the CMS roster).
+   */
+  id2: number;
+  ean_path: string | null;
+}
+
+/** Returns the full skill table (`data/system/custom_skill.cus`), every skill. */
+export function parseSkillTable(bytes: Uint8Array): { skills: SkillEntry[] } {
+  return wasm_parse_cus(bytes) as { skills: SkillEntry[] };
+}
+
 let wasmReady: Promise<void> | undefined;
 
 const MAX_WASM_BYTES = 16 * 1024 * 1024;

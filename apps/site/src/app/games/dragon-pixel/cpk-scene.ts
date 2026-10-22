@@ -2,7 +2,9 @@
 import {
   initShenronReWeb,
   parseCharacterRoster,
+  parseSkillTable,
   SHENRON_RE_WASM_FILENAME,
+  type SkillCategory,
 } from "@aphrody/shenron-pipeline/re-wasm-web";
 
 export type SceneKind = "model" | "audio" | "dialogue";
@@ -171,4 +173,57 @@ export function fetchRoster(signal: AbortSignal): Promise<RosterEntry[]> {
     throw error;
   });
   return roster;
+}
+
+export type SkillEntry = { category: SkillCategory; shortName: string; eanPath: string };
+
+let skillTable: Promise<{ category: SkillCategory; id2: number; entry: SkillEntry }[]> | null =
+  null;
+
+/** The game's full skill table (`data/system/custom_skill.cus`), fetched and parsed once. */
+function fetchSkillTable(signal: AbortSignal) {
+  skillTable ??= (async () => {
+    const [bytes] = await Promise.all([
+      fetchBytes(sceneUrl(CHARACTER_ARCHIVE, "raw", "data/system/custom_skill.cus"), signal),
+      initShenronReWeb(`/wasm/${SHENRON_RE_WASM_FILENAME}`),
+    ]);
+    const { skills } = parseSkillTable(bytes);
+    return skills
+      .filter((s): s is typeof s & { ean_path: string } => s.ean_path !== null)
+      .map((s) => ({
+        category: s.category,
+        id2: s.id2,
+        entry: { category: s.category, shortName: s.short_name, eanPath: s.ean_path },
+      }));
+  })().catch((error: unknown) => {
+    skillTable = null;
+    throw error;
+  });
+  return skillTable;
+}
+
+/**
+ * A character's skills in `category`: within each category, a character's ten slots are
+ * `id2 ∈ [cmsId * 10, cmsId * 10 + 10)` (verified against the real file: Goku, cms id 0,
+ * owns Super skills 0..9 in slot order, Kamehameha first).
+ */
+export async function fetchCharacterSkills(
+  cmsId: number,
+  category: SkillCategory,
+  signal: AbortSignal,
+): Promise<SkillEntry[]> {
+  const all = await fetchSkillTable(signal);
+  return all
+    .filter((s) => s.category === category && s.id2 >= cmsId * 10 && s.id2 < cmsId * 10 + 10)
+    .toSorted((a, b) => a.id2 - b.id2)
+    .map((s) => s.entry);
+}
+
+/** A skill's own `.ean` and `.bac`, from its `eanPath` (e.g. `SPA/004_GOK_GKD/004_GOK_GKD`). */
+export async function fetchSkillFiles(eanPath: string, signal: AbortSignal) {
+  const [ean, bac] = await Promise.all([
+    fetchBytes(sceneUrl(CHARACTER_ARCHIVE, "raw", `data/skill/${eanPath}.ean`), signal),
+    fetchBytes(sceneUrl(CHARACTER_ARCHIVE, "raw", `data/skill/${eanPath}.bac`), signal),
+  ]);
+  return { ean, bac };
 }

@@ -38,7 +38,8 @@
   "duelStart": "戦う",
   "duelHealth": "体力",
   "duelHits": "ヒット数：",
-  "duelControls": "矢印キーまたは A/D：前進・後退 · J、K、L：攻撃",
+  "duelControls": "矢印キーまたは A/D：前進・後退 · J、K、L：攻撃 · U：必殺技",
   "duelWin": "勝利！",
-  "duelLose": "敗北…"
+  "duelLose": "敗北…",
+  "duelSkillReady": "U：{name}"
 }
