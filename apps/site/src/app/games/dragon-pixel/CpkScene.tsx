@@ -12,7 +12,9 @@ import {
 import fr from "../../../../messages/dragon-pixel-scene/fr.json";
 import en from "../../../../messages/dragon-pixel-scene/en.json";
 import ja from "../../../../messages/dragon-pixel-scene/ja.json";
+import CharacterScene from "./CharacterScene";
 import {
+  fetchBytes,
   messageLines,
   messagePage,
   MESSAGE_PAGE_SIZE,
@@ -25,16 +27,6 @@ import {
 
 const dictionaries = { fr, en, ja };
 const inputClass = "min-h-11 rounded border border-white/25 bg-slate-950 px-3 text-white";
-
-async function fetchBytes(url: string, signal: AbortSignal): Promise<Uint8Array> {
-  const response = await fetch(url, { signal });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  const length = Number(response.headers.get("content-length"));
-  if (length > 64 * 1024 * 1024) throw new Error("Asset exceeds 64 MiB");
-  const bytes = new Uint8Array(await response.arrayBuffer());
-  if (bytes.length > 64 * 1024 * 1024) throw new Error("Asset exceeds 64 MiB");
-  return bytes;
-}
 
 function ModelScene({ src, text }: { src: string; text: typeof fr }) {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -277,6 +269,7 @@ export default function CpkScene() {
         <h1 className="text-3xl font-bold">{text.title}</h1>
         <p className="max-w-3xl text-white/75">{text.description}</p>
       </header>
+      <CharacterScene text={text} />
       <form
         onSubmit={(event) => {
           event.preventDefault();

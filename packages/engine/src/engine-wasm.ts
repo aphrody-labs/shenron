@@ -16,6 +16,17 @@ export interface GlbSceneRenderer extends EngineRenderer {
   camera(azimuth: number, elevation: number, zoom: number): void;
 }
 
+export interface Xv2CharacterRenderer {
+  /** Animation names, in the slot order accepted by `play`. */
+  animations(): string[];
+  play(index: number): boolean;
+  camera(azimuth: number, elevation: number, zoom: number): void;
+  /** Draws the pose at `time` seconds; `false` when the surface is unusable. */
+  frame(time: number): boolean;
+  resize(width: number, height: number): void;
+  free(): void;
+}
+
 export interface MangaSceneHandle extends EngineRenderer {
   /** Detected panels, flat `x, y, w, h` in page uv, in reading order. */
   panels(): Float32Array;
@@ -23,6 +34,12 @@ export interface MangaSceneHandle extends EngineRenderer {
 
 export interface EngineGlue {
   createGlbModel(canvas: HTMLCanvasElement, bytes: Uint8Array): Promise<GlbSceneRenderer>;
+  createXv2Character(
+    canvas: HTMLCanvasElement,
+    esk: Uint8Array,
+    ean: Uint8Array,
+    parts: { emd: Uint8Array; emb?: Uint8Array; emm?: Uint8Array; dyt?: Uint8Array }[],
+  ): Promise<Xv2CharacterRenderer>;
   default(options: { module_or_path: WebAssembly.Module }): Promise<unknown>;
   createToriyamaModel(
     canvas: HTMLCanvasElement,

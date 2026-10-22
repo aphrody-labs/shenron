@@ -32,3 +32,69 @@ export function messagePage(
     .slice(offset, offset + MESSAGE_PAGE_SIZE)
     .map((text, index) => ({ key: offset + index, text }));
 }
+
+/** Files of one animated character in a CPK index, resolved from `data/chara/<CODE>/`. */
+export type CharacterFiles = {
+  esk: string;
+  ean: string;
+  parts: { emd: string; emb?: string; emm?: string; dyt?: string }[];
+};
+
+/** Validates a three-letter-ish character code (`APL`, `GOK`, `HUM`…). */
+export function characterCode(input: string): string | null {
+  const code = input.trim().toUpperCase();
+  return /^[A-Z0-9]{2,8}$/.test(code) ? code : null;
+}
+
+/**
+ * Picks the costume `costume` of `code`: its skeleton, the body animation set and every
+ * full-detail part with the texture, material and dye files of the same name (matched
+ * case-insensitively, as the game's names differ in case). LOD and cloth-simulation
+ * meshes are skipped. Returns null when the skeleton, animations or parts are missing.
+ */
+export function characterFiles(
+  code: string,
+  paths: readonly string[],
+  costume = "000",
+): CharacterFiles | null {
+  const dir = `data/chara/${code}/`;
+  const byLower = new Map(paths.map((path) => [path.toLowerCase(), path]));
+  const find = (name: string) => byLower.get(`${dir}${name}`.toLowerCase());
+  const esk = find(`${code}_${costume}.esk`);
+  const ean = find(`${code}.ean`);
+  const prefix = `${dir}${code}_${costume}_`.toLowerCase();
+  const parts = paths
+    .filter((path) => {
+      const lower = path.toLowerCase();
+      return (
+        lower.startsWith(prefix) &&
+        lower.endsWith(".emd") &&
+        !/_lod\d+\.emd$/.test(lower) &&
+        !lower.endsWith("_scd.emd")
+      );
+    })
+    .toSorted()
+    .map((emd) => {
+      const stem = emd.slice(dir.length, -".emd".length);
+      return {
+        emd,
+        emb: find(`${stem}.emb`),
+        emm: find(`${stem}.emm`),
+        dyt: find(`${stem}.dyt.emb`),
+      };
+    });
+  return esk && ean && parts.length ? { esk, ean, parts } : null;
+}
+
+const MAX_ASSET = 64 * 1024 * 1024;
+
+/** Fetches one CPK entry, refusing anything above 64 MiB. */
+export async function fetchBytes(url: string, signal: AbortSignal): Promise<Uint8Array> {
+  const response = await fetch(url, { signal });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  if (Number(response.headers.get("content-length")) > MAX_ASSET)
+    throw new Error("Asset exceeds 64 MiB");
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  if (bytes.length > MAX_ASSET) throw new Error("Asset exceeds 64 MiB");
+  return bytes;
+}

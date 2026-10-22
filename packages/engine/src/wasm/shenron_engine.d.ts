@@ -150,6 +150,32 @@ export class ToriyamaModelWasm {
     resize(width: number, height: number): void;
 }
 
+/**
+ * A posed, animated DBXV2 character on a WebGPU canvas. JavaScript owns the frame loop.
+ */
+export class Xv2CharacterWasm {
+    private constructor();
+    free(): void;
+    [Symbol.dispose](): void;
+    /**
+     * Names of the animations, in slot order of [`Self::play`].
+     */
+    animations(): string[];
+    /**
+     * Azimuth/elevation in radians and a zoom factor in `[0.5, 3]`.
+     */
+    camera(azimuth: number, elevation: number, zoom: number): void;
+    /**
+     * Draws the pose at `time` seconds (looping). `false` when the surface is unusable.
+     */
+    frame(time: number): boolean;
+    /**
+     * Plays the animation at `index` of [`Self::animations`] from its first frame.
+     */
+    play(index: number): boolean;
+    resize(width: number, height: number): void;
+}
+
 export function createGlbModel(canvas: HTMLCanvasElement, bytes: Uint8Array): Promise<GlbModelWasm>;
 
 /**
@@ -164,6 +190,12 @@ export function createMangaScene(canvas: HTMLCanvasElement, rgba: Uint8Array, wi
  * flat measured `params` (see `DragonBallUniforms::from_params`, `KintoUnUniforms::from_params`).
  */
 export function createToriyamaModel(canvas: HTMLCanvasElement, model: string, params: Float32Array): Promise<ToriyamaModelWasm>;
+
+/**
+ * Parses every file, decodes textures and uploads the character. `parts` is an array of
+ * `{ emd, emb?, emm?, dyt? }` byte arrays.
+ */
+export function createXv2Character(canvas: HTMLCanvasElement, esk: Uint8Array, ean: Uint8Array, parts: Array<any>): Promise<Xv2CharacterWasm>;
 
 /**
  * Decompress a CRILAYLA compressed buffer into raw uncompressed bytes.
@@ -241,6 +273,7 @@ export interface InitOutput {
     readonly __wbg_mangascenewasm_free: (a: number, b: number) => void;
     readonly __wbg_session_free: (a: number, b: number) => void;
     readonly __wbg_toriyamamodelwasm_free: (a: number, b: number) => void;
+    readonly __wbg_xv2characterwasm_free: (a: number, b: number) => void;
     readonly canvasenginewasm_clear: (a: number, b: number, c: number, d: number, e: number) => void;
     readonly canvasenginewasm_draw_speech_bubble: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
     readonly canvasenginewasm_draw_text: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => void;
@@ -250,6 +283,7 @@ export interface InitOutput {
     readonly createGlbModel: (a: any, b: number, c: number) => any;
     readonly createMangaScene: (a: any, b: number, c: number, d: number, e: number, f: number) => any;
     readonly createToriyamaModel: (a: any, b: number, c: number, d: number, e: number) => any;
+    readonly createXv2Character: (a: any, b: number, c: number, d: number, e: number, f: any) => any;
     readonly dragonpixelenginewasm_get_render_packet_json: (a: number) => [number, number];
     readonly dragonpixelenginewasm_get_status: (a: number) => [number, number];
     readonly dragonpixelenginewasm_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => number;
@@ -276,14 +310,6 @@ export interface InitOutput {
     readonly wasm_extract_msg_text: (a: number, b: number, c: number, d: number) => [number, number, number];
     readonly wasm_get_dragon_ball_catalog: () => [number, number, number];
     readonly wasm_get_xenoverse3_prototype_map: () => [number, number, number];
-    readonly wasm_parse_bac: (a: number, b: number) => [number, number, number];
-    readonly wasm_parse_bdm: (a: number, b: number) => [number, number, number];
-    readonly wasm_parse_cus: (a: number, b: number) => [number, number, number];
-    readonly wasm_parse_emb: (a: number, b: number) => [number, number, number];
-    readonly wasm_parse_msg: (a: number, b: number) => [number, number, number];
-    readonly wasm_parse_pup: (a: number, b: number) => [number, number, number];
-    readonly wasm_scan_aob: (a: number, b: number, c: number, d: number) => [number, number, number, number];
-    readonly wasm_triage_cpk: (a: number, b: number) => [number, number, number];
     readonly shenron_re_abi_version: () => number;
     readonly shenron_re_bac_parse_json: (a: number, b: number) => number;
     readonly shenron_re_bdm_parse_json: (a: number, b: number) => number;
@@ -301,11 +327,24 @@ export interface InitOutput {
     readonly shenron_re_triage_json: (a: number, b: number) => number;
     readonly shenron_re_unified_state_json: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => number;
     readonly shenron_re_version: () => number;
+    readonly wasm_parse_bac: (a: number, b: number) => [number, number, number];
+    readonly wasm_parse_bdm: (a: number, b: number) => [number, number, number];
+    readonly wasm_parse_cus: (a: number, b: number) => [number, number, number];
+    readonly wasm_parse_emb: (a: number, b: number) => [number, number, number];
+    readonly wasm_parse_msg: (a: number, b: number) => [number, number, number];
+    readonly wasm_parse_pup: (a: number, b: number) => [number, number, number];
+    readonly wasm_scan_aob: (a: number, b: number, c: number, d: number) => [number, number, number, number];
+    readonly wasm_triage_cpk: (a: number, b: number) => [number, number, number];
+    readonly xv2characterwasm_animations: (a: number) => [number, number];
+    readonly xv2characterwasm_camera: (a: number, b: number, c: number, d: number) => void;
+    readonly xv2characterwasm_frame: (a: number, b: number) => number;
+    readonly xv2characterwasm_play: (a: number, b: number) => number;
+    readonly xv2characterwasm_resize: (a: number, b: number, c: number) => void;
     readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___js_sys_eb92dcb4f6145e43___Function_fn_wasm_bindgen_3017951c9ae318c7___JsValue_____wasm_bindgen_3017951c9ae318c7___sys__Undefined___js_sys_eb92dcb4f6145e43___Function_fn_wasm_bindgen_3017951c9ae318c7___JsValue_____wasm_bindgen_3017951c9ae318c7___sys__Undefined_______true_: (a: number, b: number, c: any, d: any) => void;
     readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___JsValue__core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true_: (a: number, b: number, c: any) => [number, number];
     readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true_: (a: number, b: number, c: any) => [number, number];
-    readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__47: (a: number, b: number, c: any) => [number, number];
-    readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__48: (a: number, b: number, c: any) => [number, number];
+    readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__53: (a: number, b: number, c: any) => [number, number];
+    readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__54: (a: number, b: number, c: any) => [number, number];
     readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuDeviceLostInfo__GpuDeviceLostInfo______true_: (a: number, b: number, c: any) => void;
     readonly __wbindgen_malloc: (a: number, b: number) => number;
     readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
@@ -315,6 +354,7 @@ export interface InitOutput {
     readonly __wbindgen_destroy_closure: (a: number, b: number) => void;
     readonly __wbindgen_free: (a: number, b: number, c: number) => void;
     readonly __externref_table_dealloc: (a: number) => void;
+    readonly __externref_drop_slice: (a: number, b: number) => void;
     readonly __wbindgen_start: () => void;
 }
 

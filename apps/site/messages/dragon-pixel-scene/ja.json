@@ -1,6 +1,6 @@
 {
   "title": "Dragon Pixel — ゼノバース2の3Dシーン",
-  "description": "CPKアーカイブ内のモデルをWebGPUで描画し、音声とテキストを必要に応じて読み込みます。実際のリソースを探索するシーンです。ゲームの戦闘とアニメーションはまだ接続されていません。",
+  "description": "CPK アーカイブから必要に応じて読み込むアニメーションキャラクター、モデル、サウンド、テキストを WebAssembly と WebGPU で描画します。ゲームの戦闘はまだ接続されていません。",
   "archive": "CPKアーカイブ",
   "kind": "リソース",
   "model": "3Dモデル",
@@ -23,5 +23,11 @@
   "lines": "MSGファイルの全行",
   "modelHint": "EMDファイルを選択してください。モデルを3Dで描画し、変換に含まれている場合はテクスチャも表示します。",
   "unavailable": "CPKサービスは一時的に利用できません。",
-  "gpu": "このモデルの表示にはWebGPUとGLBエンジンが必要です。"
+  "gpu": "このモデルの表示にはWebGPUとGLBエンジンが必要です。",
+  "characterTitle": "アニメーションキャラクター",
+  "characterHint": "ゲームのキャラクターコード（data/chara フォルダー）。例：APL、GOK、FRI。骨格・アニメーション・モデル・テクスチャ・マテリアルを data.cpk から読み込み、WebAssembly で動かします。",
+  "characterCode": "キャラクターコード",
+  "characterLoad": "動かす",
+  "characterMissing": "このキャラクターには data.cpk 内に骨格、アニメーション、または完全なモデルがありません。",
+  "animation": "アニメーション"
 }

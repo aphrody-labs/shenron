@@ -1,6 +1,6 @@
 {
   "title": "Dragon Pixel — scène 3D Xenoverse 2",
-  "description": "Modèles issus des archives CPK, rendu WebGPU, sons et textes chargés à la demande. Cette scène permet d’explorer les ressources réelles ; le combat et les animations du jeu ne sont pas encore raccordés.",
+  "description": "Personnages animés, modèles, sons et textes chargés à la demande depuis les archives CPK, rendus en WebAssembly et WebGPU. Le combat du jeu n’est pas encore raccordé.",
   "archive": "Archive CPK",
   "kind": "Ressource",
   "model": "Modèles 3D",
@@ -23,5 +23,11 @@
   "lines": "Toutes les lignes du fichier MSG",
   "modelHint": "Choisissez un fichier EMD. Le modèle est rendu en 3D, avec ses textures lorsqu’elles sont présentes dans la conversion.",
   "unavailable": "Le service CPK est momentanément indisponible.",
-  "gpu": "WebGPU et le moteur GLB sont nécessaires pour afficher ce modèle."
+  "gpu": "WebGPU et le moteur GLB sont nécessaires pour afficher ce modèle.",
+  "characterTitle": "Personnage animé",
+  "characterHint": "Code d’un personnage du jeu (dossier data/chara), par exemple APL, GOK ou FRI. Squelette, animations, modèles, textures et matériaux sont lus depuis l’archive data.cpk puis animés en WebAssembly.",
+  "characterCode": "Code du personnage",
+  "characterLoad": "Animer",
+  "characterMissing": "Ce personnage n’a pas de squelette, d’animations ou de modèle complet dans data.cpk.",
+  "animation": "Animation"
 }
