@@ -277,14 +277,18 @@ mod tests {
         assert!(BacFile::parse(&bytes).is_err());
     }
 
-    /// `SHENRON_REAL_BAC=<path to a game .bac>` checks a real action file.
+    /// `SHENRON_REAL_BAC=<path to a game .bac>` checks a real action file: a character's
+    /// `PLAYER.bac` has hundreds of actions, a skill's own `.bac` (e.g. `data/skill/SPA/
+    /// 004_GOK_GKD/004_GOK_GKD.bac`) only the handful it needs, so only non-emptiness is
+    /// asserted.
     #[test]
     fn parses_real_actions_when_provided() {
         let Ok(path) = std::env::var("SHENRON_REAL_BAC") else { return };
         let bac = BacFile::parse(&std::fs::read(path).unwrap()).expect("parse real BAC");
-        assert!(bac.moves.len() > 10);
+        assert!(!bac.moves.is_empty());
         assert!(bac.moves.iter().any(|m| !m.animations.is_empty()));
-        assert!(bac.moves.iter().any(|m| !m.hitboxes.is_empty()));
+        // A skill's own .bac (as opposed to a character's PLAYER.bac) may apply damage
+        // through a projectile tied to its .bdm rather than a BAC hitbox block.
         for m in &bac.moves {
             for a in &m.animations {
                 assert!(a.time_scale.is_finite() && a.blend_out.is_finite());
