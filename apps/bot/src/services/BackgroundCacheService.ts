@@ -23,7 +23,11 @@ export class BackgroundCacheService {
   private cache = new Map<string, Image | null>();
   private inflight = new Map<string, Promise<Image | null>>();
 
-  async get(relativePath: string): Promise<Image | null> {
+  /**
+   * `optional` marque une sonde (extensions candidates, convention héritée) :
+   * un fichier absent y est normal et ne se journalise qu'en debug.
+   */
+  async get(relativePath: string, { optional = false } = {}): Promise<Image | null> {
     // Cache hit (même null négatif pour éviter de re-tenter)
     if (this.cache.has(relativePath)) return this.cache.get(relativePath) ?? null;
 
@@ -31,7 +35,7 @@ export class BackgroundCacheService {
     const pending = this.inflight.get(relativePath);
     if (pending) return pending;
 
-    const promise = this.load(relativePath);
+    const promise = this.load(relativePath, optional);
     this.inflight.set(relativePath, promise);
     const result = await promise;
     this.inflight.delete(relativePath);
@@ -39,12 +43,13 @@ export class BackgroundCacheService {
     return result;
   }
 
-  private async load(relativePath: string): Promise<Image | null> {
+  private async load(relativePath: string, optional: boolean): Promise<Image | null> {
     const absolute = botFile(relativePath);
     try {
       const file = Bun.file(absolute);
       if (!(await file.exists())) {
-        logger.warn({ path: relativePath }, "background missing on disk");
+        if (optional) logger.debug({ path: relativePath }, "optional background absent");
+        else logger.warn({ path: relativePath }, "background missing on disk");
         return null;
       }
       const buf = Buffer.from(await file.arrayBuffer());

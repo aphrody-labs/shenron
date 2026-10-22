@@ -222,7 +222,7 @@ export class CardService {
       const bannerImg = await this.bgs.get(bannerFile);
       if (bannerImg) return bannerImg;
       for (const ext of ["webp", "png", "jpg"]) {
-        const img = await this.bgs.get(`assets/banners/${bannerFile}.${ext}`);
+        const img = await this.bgs.get(`assets/banners/${bannerFile}.${ext}`, { optional: true });
         if (img) return img;
       }
     }
@@ -239,7 +239,7 @@ export class CardService {
     }
     // 2) convention legacy assets/cards/<key>.(webp|png|jpg) — backgrounds achetables via shop
     for (const ext of ["webp", "png", "jpg"]) {
-      const img = await this.bgs.get(`assets/cards/${key}.${ext}`);
+      const img = await this.bgs.get(`assets/cards/${key}.${ext}`, { optional: true });
       if (img) {
         this.bgCache.set(key, img);
         return img;
