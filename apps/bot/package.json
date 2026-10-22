@@ -38,7 +38,7 @@
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push",
     "db:seed-xv2-char-meta": "bun src/db/seed-xv2-char-meta.ts",
-    "db:seed-xv2-all": "bun src/db/seed-xv2-techniques.ts && bun src/db/seed-xv2-characters.ts && bun src/db/seed-xv2-char-meta.ts && bun src/db/seed-xv2-portraits.ts && bun src/db/seed-xv2-transformations.ts && bun src/db/seed-xv2-char-techniques.ts",
+    "db:seed-xv2-all": "bun src/db/seed-xv2.ts",
     "typecheck": "bun check --project tsconfig.json && bun check --project tsconfig.scripts.json"
   },
   "dependencies": {
