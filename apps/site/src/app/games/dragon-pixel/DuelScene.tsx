@@ -95,24 +95,29 @@ export default function DuelScene({ text }: { text: typeof fr }) {
         setMoves(own);
         setPhase("ready");
 
-        // Load the player's first real Super skill (e.g. Goku's Kamehameha), if their
+        // Load each fighter's first real Super skill (e.g. Goku's Kamehameha), if their
         // roster entry and the skill's own asset files resolve. Non-fatal when they don't:
         // the duel stays playable with its base actions.
-        const cmsId = roster?.find((r) => r.shortName === started.a)?.id;
-        if (cmsId !== undefined) {
-          void (async () => {
-            try {
-              const [first] = await fetchCharacterSkills(cmsId, "super", controller.signal);
-              if (!first || controller.signal.aborted || !duel) return;
-              const { ean, bac } = await fetchSkillFiles(first.eanPath, controller.signal);
-              if (controller.signal.aborted || !duel) return;
-              const ids = duel.loadSkill(0, ean, bac);
-              if (ids.length) setSkill({ id: ids[0]!, name: first.shortName });
-            } catch {
-              // Skill is optional; the duel already works without it.
-            }
-          })();
-        }
+        let opponentSkill: number | null = null;
+        const loadSkillFor = async (player: 0 | 1, code: string) => {
+          const cmsId = roster?.find((r) => r.shortName === code)?.id;
+          if (cmsId === undefined) return;
+          try {
+            const [first] = await fetchCharacterSkills(cmsId, "super", controller.signal);
+            if (!first || controller.signal.aborted || !duel) return;
+            const { ean, bac } = await fetchSkillFiles(first.eanPath, controller.signal);
+            if (controller.signal.aborted || !duel) return;
+            const ids = duel.loadSkill(player, ean, bac);
+            if (!ids.length) return;
+            if (player === 0) setSkill({ id: ids[0]!, name: first.shortName });
+            else opponentSkill = ids[0]!;
+          } catch {
+            // Skill is optional; the duel already works without it.
+          }
+        };
+        void loadSkillFor(0, started.a);
+        void loadSkillFor(1, started.b);
+
         const draw = (time: number) => {
           if (controller.signal.aborted || !duel) return;
           const seconds = time / 1000;
@@ -120,9 +125,12 @@ export default function DuelScene({ text }: { text: typeof fr }) {
           if (keys.current.has("arrowleft") || keys.current.has("a")) duel.walk(0, -WALK_STEP);
           if (duel.hp(0) > 0 && duel.hp(1) > 0 && duel.ready(1)) {
             if (duel.distance() > AI_REACH) duel.walk(1, WALK_STEP);
-            else if (seconds - lastAi > AI_COOLDOWN && theirs.length) {
+            else if (seconds - lastAi > AI_COOLDOWN && (theirs.length || opponentSkill !== null)) {
               lastAi = seconds;
-              duel.attack(1, theirs[Math.floor(Math.random() * theirs.length)]!);
+              // Occasionally use the loaded skill instead of a base attack.
+              if (opponentSkill !== null && Math.random() < 0.3) duel.playSkill(1, opponentSkill);
+              else if (theirs.length)
+                duel.attack(1, theirs[Math.floor(Math.random() * theirs.length)]!);
             }
           }
           if (!document.hidden && !duel.frame(seconds)) {
