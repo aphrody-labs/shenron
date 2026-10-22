@@ -5,6 +5,9 @@ import { LevelService } from "~/services/LevelService";
 import { SettingsService } from "~/services/SettingsService";
 import { ModerationService } from "~/services/ModerationService";
 import { WikiService } from "~/services/WikiService";
+import { Client } from "discordx";
+import { env } from "~/lib/env";
+import { GuildMirrorService } from "~/services/GuildMirrorService";
 
 /**
  * Whitelist d'actions exposables côté dashboard. Évite de laisser le dashboard
@@ -185,6 +188,32 @@ export const SERVICE_ACTIONS: ServiceAction[] = [
     handler: async () => {
       const svc = container.resolve(WikiService);
       return await svc.count();
+    },
+  },
+  // ── GuildMirrorService ────────────────────────────────────────────────
+  {
+    service: "guild",
+    action: "sync",
+    description: "Synchronisation complète des salons, rôles et membres du serveur vers la base",
+    handler: async () => {
+      const guild = container.resolve(Client).guilds.cache.get(env.GUILD_ID);
+      if (!guild) throw new Error("Serveur introuvable dans le cache du bot.");
+      return await container.resolve(GuildMirrorService).syncGuild(guild);
+    },
+  },
+  {
+    service: "guild",
+    action: "stats",
+    description: "Compteurs du miroir (membres présents/partis, boosters, rôles, salons)",
+    handler: async () => container.resolve(GuildMirrorService).store.stats(),
+  },
+  {
+    service: "guild",
+    action: "findMembers",
+    description: "Body: { query: string, limit?: 25 } — id, pseudo ou surnom",
+    handler: async ({ query, limit }: { query: string; limit?: number }) => {
+      if (!query) throw new Error("query requis.");
+      return container.resolve(GuildMirrorService).store.findMembers(query, limit ?? 25);
     },
   },
 ];

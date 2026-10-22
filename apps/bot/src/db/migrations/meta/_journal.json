@@ -148,6 +148,13 @@
       "when": 1792800000000,
       "tag": "0021_economy_flags",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "6",
+      "when": 1792900000000,
+      "tag": "0022_discord_mirror",
+      "breakpoints": true
     }
   ]
 }

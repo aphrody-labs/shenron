@@ -42,6 +42,7 @@ import "./events/CanonWatch";
 import "./events/DirectMessageRelay";
 import "./events/DiscordProfileSync";
 import "./events/EconomyCron";
+import "./events/GuildMirror";
 import "./events/InteractionLog";
 import "./events/JailExpiry";
 import "./events/JoinLeave";
