@@ -64,11 +64,15 @@ DBXV2, sans valeur pour le port modèle/animation. `xgcore.dll` (`Eva::XG`) conf
 vérifications de magique `#EMM`/`#EMB` et ses constructeurs `ModelCore`/`SkeletonCore`/
 `AnimationSequencer` que `.emd`/`.esk`/`.ean`/`.emm`/`.emb` sont bien les formats déjà portés
 dans `crates/shenron-re/src/formats`, et révèle **deux formats réels non encore portés** :
-`.ema` (`#EMA`, mouvement caméra/lumière, `EmMotion`, 5 116 fichiers dans le CPK) et `.emo`
-(`#EMO`, objet/groupe de modèles qui agrège plusieurs `.emd` et leur hiérarchie de nœuds,
-`EmObjectShared`, 1 959 fichiers dans le CPK) — c'est la pièce qui manque entre un `.emd` nu
-et un personnage assemblé. Écrire `ema.rs`/`emo.rs` reste à faire par l'agent qui possède
-`crates/shenron-re/src/formats` (revendiqué en direct, non libéré, le 2026-10-22).
+`.emo` (`#EMO`, `EmObjectShared`, 1 959 fichiers dans le CPK) et `.ema` (`#EMA`, `EmMotion`,
+5 116 fichiers). Les chemins en clair extraits de la section `.rdata` (non chiffrée) de
+`DBXV2.exe` lui-même confirment leur usage réel : surtout des objets d'effets visuels, ex.
+`data/vfx/lby_cmn/AuraLoop_B.emo` (objet) avec `AuraLoop_B.obj.ema` (motion d'objet) et des
+variantes `*.mat.ema` (motion de matériau — tramage UV, fondu) ; `.cam.ean` reste le format
+d'animation caméra des personnages (pas `.ema`). `.emo` agrège par ailleurs plusieurs `.emd`
+et leur hiérarchie de nœuds au niveau moteur (`EmObjectShared`, `var/reports/dbxv2-engine-map-20261022/`) —
+utile si un `.emo` personnage (hors vfx) existe aussi. Écrire `ema.rs`/`emo.rs` reste à faire
+par l'agent qui possède `crates/shenron-re/src/formats` (revendiqué en direct le 2026-10-22).
 
 ## Capacités locales pertinentes
 
