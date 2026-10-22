@@ -15,17 +15,29 @@ import { existsSync } from "node:fs";
 import { GuildOnly } from "~/guards/GuildOnly";
 import { ModerationService } from "~/services/ModerationService";
 import { LogService } from "~/services/LogService";
-import {
-  sanctionEmbed,
-  sanctionLogEmbed,
-  brandedEmbed,
-  errorEmbed,
-  successEmbed,
-} from "~/lib/embeds";
-import { canModerate } from "~/lib/hierarchy";
+import { sanctionEmbed, sanctionLogEmbed, errorEmbed, successEmbed } from "~/lib/embeds";
 import { gifFor } from "~/lib/sanction-gif";
-import { parseDuration, formatDuration, notifyMember } from "~/lib/sanction-helpers";
+import {
+  discordTime,
+  dmField,
+  errorMessage,
+  failInteraction,
+  formatDuration,
+  notifySanction,
+  parseBoundedDuration,
+  resolveSanctionTarget,
+} from "~/lib/sanction-helpers";
 import { env } from "~/lib/env";
+
+/** Longest timed jail (one year); beyond, the sentence is meant to be indefinite. */
+const MAX_JAIL_MS = 365 * 86_400_000;
+
+/** Local animated jail GIF, resolved once (cwd = repo root, apps/bot, or the module). */
+const JAIL_GIF_PATH = [
+  `${process.cwd()}/assets/sanctions/jail.gif`,
+  `${process.cwd()}/apps/bot/assets/sanctions/jail.gif`,
+  `${import.meta.dir}/../../../assets/sanctions/jail.gif`,
+].find((path) => existsSync(path));
 
 @Discord()
 @Bot("shenron")
@@ -74,109 +86,80 @@ export class JailCommands {
     interaction: CommandInteraction,
   ) {
     if (!interaction.inCachedGuild()) return;
-    const isEphemeral = !!discret;
-    await interaction.deferReply({ flags: isEphemeral ? MessageFlags.Ephemeral : undefined });
-
-    const member = await interaction.guild.members.fetch(target.id).catch(() => null);
-    if (!member) {
-      await interaction.editReply({ embeds: [errorEmbed("Membre introuvable")] });
+    // Every check runs before the defer so that a refusal stays private even
+    // when the reply would be public.
+    if (!env.JAIL_ROLE_ID) {
+      await failInteraction(
+        interaction,
+        errorEmbed("JAIL_ROLE_ID non configuré", "Définis `JAIL_ROLE_ID` puis redémarre Shenron."),
+      );
       return;
     }
-    const allowed = await canModerate(interaction.member, member);
-    if (!allowed.ok) {
-      await interaction.editReply({
-        embeds: [errorEmbed("Hiérarchie staff", allowed.reason ?? "")],
-      });
+    const parsed = parseBoundedDuration(duration, { minMs: 60_000, maxMs: MAX_JAIL_MS });
+    if (!parsed.ok) {
+      // An unreadable duration used to jail forever without a word.
+      await failInteraction(interaction, errorEmbed("Durée invalide", parsed.reason));
       return;
     }
+    const ms = parsed.ms || undefined;
+    const checked = await resolveSanctionTarget(interaction, target, { requireMember: true });
+    const member = checked?.member;
+    if (!member) return;
     if (!member.manageable) {
-      await interaction.editReply({
-        embeds: [
-          errorEmbed(
-            "Hiérarchie",
-            `Le bot ne peut pas modifier les rôles de ${target} (rôle plus haut).`,
-          ),
-        ],
-      });
+      await failInteraction(
+        interaction,
+        errorEmbed(
+          "Hiérarchie",
+          `Le bot ne peut pas modifier les rôles de ${target} (rôle plus haut).`,
+        ),
+      );
       return;
     }
-    const ms = parseDuration(duration);
+    await interaction.deferReply({ flags: discret ? MessageFlags.Ephemeral : undefined });
+
+    const alreadyJailed = !!(await this.mod.getActiveJail(target.id));
     try {
       await this.mod.jail(member, interaction.user.id, reason, ms);
     } catch (err) {
-      await interaction.editReply({
-        embeds: [errorEmbed("Échec jail", (err as Error).message)],
-      });
+      await failInteraction(interaction, errorEmbed("Échec jail", errorMessage(err)));
       return;
     }
 
-    let gifUrl = await gifFor("jail");
-
     // Discord (depuis fin 2024) n'auto-anime PLUS les GIFs setImage via URL externe :
     // il faut les attacher comme AttachmentBuilder + référencer attachment://name.
-    // On essaie d'abord le fichier local assets/sanctions/jail.gif.
-    let jailLocal = `${process.cwd()}/assets/sanctions/jail.gif`;
-    if (!existsSync(jailLocal)) {
-      jailLocal = `${process.cwd()}/apps/bot/assets/sanctions/jail.gif`;
-    }
-    if (!existsSync(jailLocal)) {
-      jailLocal = `${import.meta.dir}/../../../assets/sanctions/jail.gif`;
-    }
-
-    const jailAttachment = existsSync(jailLocal)
-      ? new AttachmentBuilder(jailLocal, { name: "jail.gif" })
+    const jailAttachment = JAIL_GIF_PATH
+      ? new AttachmentBuilder(JAIL_GIF_PATH, { name: "jail.gif" })
       : null;
-    if (jailAttachment) gifUrl = "attachment://jail.gif";
+    const gifUrl = jailAttachment ? "attachment://jail.gif" : await gifFor("jail");
+    const durationText = ms
+      ? `${formatDuration(ms)} · fin ${discordTime(new Date(Date.now() + ms))}`
+      : "Indéfinie";
     const detailedEmbed = sanctionEmbed({
       target,
       moderator: interaction.user,
       action: "jail",
       reason,
-      duration: ms ? formatDuration(ms) : "Indéfinie",
+      duration: alreadyJailed ? `${durationText} (peine mise à jour)` : durationText,
       gifUrl,
     });
-    const dmOk = await notifyMember(
+    const dmDelivered = await notifySanction({
       target,
-      brandedEmbed({
-        title: "⛓️ Tu as été jailé",
-        description: `Tu es en jail sur **${interaction.guild.name}**${ms ? ` pour **${formatDuration(ms)}**` : ""}.\n\nMotif : ${reason ?? "*(non précisé)*"}`,
-        kind: "error",
-      }),
-      {
-        kind: "jail",
-        reason: reason ?? "*(non précisé)*",
-        duration: ms ? formatDuration(ms) : "Indéfinie",
-        moderator: interaction.user.username,
-        guildName: interaction.guild.name,
-      },
-    );
+      moderator: interaction.user,
+      kind: "jail",
+      guildName: interaction.guild.name,
+      reason,
+      durationMs: ms,
+    });
+    detailedEmbed.addFields(dmField(dmDelivered));
 
     // Public : embed compact "log style" (gif + nom + "envoyé en enfer !")
     // Détaillé : log sanction (modérateur, motif, durée, DM) — invisible côté membres.
-    if (discret) {
-      await interaction.editReply({
-        embeds: [
-          detailedEmbed.addFields({
-            name: "DM",
-            value: dmOk ? "✅ envoyé" : "❌ DM fermés",
-            inline: true,
-          }),
-        ],
-        files: jailAttachment ? [jailAttachment] : undefined,
-      });
-    } else {
-      const publicEmbed = sanctionLogEmbed({ target, action: "jail", gifUrl });
-      await interaction.editReply({
-        embeds: [publicEmbed],
-        files: jailAttachment ? [jailAttachment] : undefined,
-      });
-      // Log détaillé en log channel uniquement (pas de bruit dans le salon courant).
-      detailedEmbed.addFields({
-        name: "DM",
-        value: dmOk ? "✅ envoyé" : "❌ DM fermés",
-        inline: true,
-      });
-    }
+    const replyEmbed = discret
+      ? detailedEmbed
+      : sanctionLogEmbed({ target, action: "jail", gifUrl });
+    await interaction
+      .editReply({ embeds: [replyEmbed], files: jailAttachment ? [jailAttachment] : undefined })
+      .catch(() => {});
     await this.logs.send(
       interaction.client,
       "sanction",
@@ -211,9 +194,18 @@ export class JailCommands {
     // unjail effectue 1 PATCH role.remove + N PATCH role.add → peut dépasser les
     // 3s d'ack Discord. defer immédiat sinon "Unknown interaction" (10062).
     await interaction.deferReply();
-    const ok = await this.mod.unjail(interaction.guild, target.id, interaction.user.id, reason);
+    let ok: boolean;
+    try {
+      ok = await this.mod.unjail(interaction.guild, target.id, interaction.user.id, reason);
+    } catch (err) {
+      await failInteraction(interaction, errorEmbed("Échec unjail", errorMessage(err)));
+      return;
+    }
     if (!ok) {
-      await interaction.editReply({ embeds: [errorEmbed("Membre introuvable ou pas en jail")] });
+      await failInteraction(
+        interaction,
+        errorEmbed("Pas en jail", `<@${target.id}> n'a aucune peine de jail en cours.`),
+      );
       return;
     }
     const embed = sanctionEmbed({

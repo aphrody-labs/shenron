@@ -15,7 +15,6 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  EmbedBuilder,
   MessageFlags,
   ModalBuilder,
   TextInputBuilder,
@@ -32,8 +31,15 @@ import { GuildOnly } from "~/guards/GuildOnly";
 import { AdminOnly } from "~/guards/AdminOnly";
 import { FeatureEnabled } from "~/guards/FeatureEnabled";
 import { TicketService } from "~/services/TicketService";
-import { TICKET_KIND_LABELS, TICKET_KINDS, type TicketKind } from "~/services/SettingsService";
+import {
+  SettingsService,
+  TICKET_KIND_LABELS,
+  TICKET_KINDS,
+  type TicketKind,
+} from "~/services/SettingsService";
 import { LogService } from "~/services/LogService";
+import { brandedEmbed, errorEmbed, successEmbed, warningEmbed } from "~/lib/embeds";
+import { logger } from "~/lib/logger";
 
 /** Question de la modal d'ouverture : une candidature staff demande une présentation. */
 const CONTEXT_PROMPT: Record<TicketKind, string> = {
@@ -55,6 +61,7 @@ export class TicketCommands {
   constructor(
     @inject(TicketService) private tickets: TicketService,
     @inject(LogService) private logs: LogService,
+    @inject(SettingsService) private settings: SettingsService,
   ) {}
 
   // Admin : publier le panel
@@ -65,19 +72,19 @@ export class TicketCommands {
   })
   @Guard(AdminOnly)
   async publishPanel(interaction: CommandInteraction) {
-    const embed = new EmbedBuilder()
-      .setTitle("🎫 Ouvrir un ticket")
-      .setDescription(
+    const embed = brandedEmbed({
+      title: "🎫 Ouvrir un ticket",
+      description:
         "Cliquez sur le bouton correspondant à votre besoin. Un salon privé sera créé avec l'équipe.",
-      )
-      .addFields(
-        { name: "🚨 Signaler", value: "Signaler un comportement", inline: true },
-        { name: "🛒 Achat", value: "Question sur un achat", inline: true },
-        { name: "🏪 Shop", value: "Problème shop / custom", inline: true },
-        { name: "⚠️ Abus de perm", value: "Rapport staff", inline: true },
-        { name: "📝 Candidature staff", value: "Rejoindre l'équipe", inline: true },
-      )
-      .setColor(0xff9800);
+      footer: "Un ticket ouvert par type et par membre",
+      timestamp: false,
+    }).addFields(
+      { name: "🚨 Signaler", value: "Signaler un comportement", inline: true },
+      { name: "🛒 Achat", value: "Question sur un achat", inline: true },
+      { name: "🏪 Shop", value: "Problème shop / custom", inline: true },
+      { name: "⚠️ Abus de perm", value: "Rapport staff", inline: true },
+      { name: "📝 Candidature staff", value: "Rejoindre l'équipe", inline: true },
+    );
 
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
@@ -137,13 +144,45 @@ export class TicketCommands {
     const context = interaction.fields.getTextInputValue("context");
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
-    const channel = await this.tickets.create(
+    // One open ticket per member and type: a double click on the panel used
+    // to create two channels.
+    const existing = await this.tickets.findOpenForOwner(
       interaction.guild,
       interaction.user.id,
       kind,
-      context,
     );
-    await interaction.editReply({ content: `✅ Ticket créé : ${channel}` });
+    if (existing) {
+      await interaction.editReply({
+        embeds: [
+          warningEmbed(
+            "Ticket déjà ouvert",
+            `Tu as déjà un ticket **${TICKET_KIND_LABELS[kind]}** en cours : <#${existing.channelId}>.`,
+          ),
+        ],
+      });
+      return;
+    }
+
+    let channel: TextChannel;
+    try {
+      channel = await this.tickets.create(interaction.guild, interaction.user.id, kind, context);
+    } catch (err) {
+      logger.warn({ err, kind }, "ticket: create failed");
+      await interaction
+        .editReply({
+          embeds: [
+            errorEmbed(
+              "Ticket non créé",
+              "Le salon n'a pas pu être créé (catégorie pleine ou permissions du bot). Préviens l'équipe.",
+            ),
+          ],
+        })
+        .catch(() => {});
+      return;
+    }
+    await interaction.editReply({
+      embeds: [successEmbed("Ticket créé", `Rendez-vous dans ${channel}.`)],
+    });
 
     // Notif mod
     const embed = this.logs
@@ -165,38 +204,59 @@ export class TicketCommands {
 
   private async closeTicket(interaction: ButtonInteraction | CommandInteraction) {
     if (!interaction.channel || !interaction.guild) return;
-    const ok = await this.tickets.close(interaction.channel.id, interaction.user.id);
-    if (!ok) {
-      if (interaction.isRepliable()) {
-        await interaction.reply({
-          content: "Ce salon n'est pas un ticket actif.",
-          flags: MessageFlags.Ephemeral,
-        });
-      }
+    const channel = interaction.channel as TextChannel;
+    const ticket = await this.tickets.findByChannel(channel.id);
+    if (!ticket) {
+      await interaction.reply({
+        embeds: [errorEmbed("Pas un ticket", "Ce salon n'est pas un ticket.")],
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
-    const closeDelayMs = await (
-      await import("tsyringe")
-    ).container
-      .resolve((await import("~/services/SettingsService")).SettingsService)
+    if (ticket.closed) {
+      // Closed but still there: the delayed deletion was lost (bot restart).
+      await interaction.reply({
+        embeds: [warningEmbed("Ticket déjà fermé", "Suppression du salon restant…")],
+        flags: MessageFlags.Ephemeral,
+      });
+      await channel.delete("ticket already closed").catch(() => {});
+      return;
+    }
+    const ok = await this.tickets.close(channel.id, interaction.user.id);
+    if (!ok) {
+      await interaction.reply({
+        embeds: [warningEmbed("Ticket déjà fermé", "Un autre membre vient de le fermer.")],
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+    const closeDelayMs = await this.settings
       .getInt("game.ticket.close_delay_ms", 10_000)
       .catch(() => 10_000);
     const closeSec = Math.round(closeDelayMs / 1000);
-    if (interaction.isRepliable()) {
-      await interaction.reply({
-        content: `🔒 Ticket fermé par <@${interaction.user.id}>. Suppression dans ${closeSec} secondes…`,
-      });
-    }
-    setTimeout(async () => {
-      await (interaction.channel as TextChannel).delete().catch(() => {});
+    await interaction.reply({
+      embeds: [
+        brandedEmbed({
+          title: "🔒 Ticket fermé",
+          description: `Fermé par <@${interaction.user.id}>. Suppression du salon dans **${closeSec} s**.`,
+          kind: "muted",
+        }),
+      ],
+    });
+    setTimeout(() => {
+      void channel.delete(`ticket closed by ${interaction.user.username}`).catch(() => {});
     }, closeDelayMs);
 
-    const embed = this.logs
-      .makeEmbed("Ticket fermé", 0x6b7280)
-      .addFields(
-        { name: "Fermé par", value: `<@${interaction.user.id}>` },
-        { name: "Salon", value: `#${(interaction.channel as TextChannel).name}` },
-      );
+    const embed = this.logs.makeEmbed("Ticket fermé", 0x6b7280).addFields(
+      { name: "Fermé par", value: `<@${interaction.user.id}>`, inline: true },
+      { name: "Ouvert par", value: `<@${ticket.ownerId}>`, inline: true },
+      {
+        name: "Type",
+        value: isTicketKind(ticket.kind) ? TICKET_KIND_LABELS[ticket.kind] : ticket.kind,
+        inline: true,
+      },
+      { name: "Salon", value: `#${channel.name}` },
+    );
     await this.logs.send(interaction.client, "ticket", embed);
   }
 
@@ -204,15 +264,7 @@ export class TicketCommands {
   @Slash({ name: "close", description: "Fermer le ticket courant" })
   async close(interaction: CommandInteraction) {
     if (!interaction.channel) return;
-    const t = await this.tickets.findByChannel(interaction.channel.id);
-    if (!t) {
-      await interaction.reply({
-        content: "Ce salon n'est pas un ticket.",
-        flags: MessageFlags.Ephemeral,
-      });
-      return;
-    }
-    await this.closeTicket(interaction as unknown as ButtonInteraction);
+    await this.closeTicket(interaction);
   }
 
   // /ticket add / remove
@@ -263,11 +315,39 @@ export class TicketCommands {
       });
       return;
     }
-    if (action === "add")
-      await this.tickets.addUser(interaction.guild, interaction.channel.id, targetId);
-    else await this.tickets.removeUser(interaction.guild, interaction.channel.id, targetId);
+    const mention = user ? `<@${targetId}>` : `<@&${targetId}>`;
+    let done: boolean;
+    try {
+      done =
+        action === "add"
+          ? await this.tickets.addUser(interaction.guild, interaction.channel.id, targetId)
+          : await this.tickets.removeUser(interaction.guild, interaction.channel.id, targetId);
+    } catch (err) {
+      logger.warn({ err, action, targetId }, "ticket: permission overwrite failed");
+      done = false;
+    }
+    if (!done) {
+      await interaction.reply({
+        embeds: [
+          errorEmbed(
+            "Action refusée",
+            action === "remove" && targetId === t.ownerId
+              ? "Impossible de retirer l'auteur du ticket."
+              : `Impossible de modifier l'accès de ${mention} à ce ticket.`,
+          ),
+        ],
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
     await interaction.reply({
-      content: `✅ ${action === "add" ? "Ajouté" : "Retiré"} <@${targetId}>.`,
+      embeds: [
+        successEmbed(
+          action === "add" ? "Accès ajouté" : "Accès retiré",
+          `${mention} ${action === "add" ? "peut maintenant voir" : "ne voit plus"} ce ticket.`,
+        ),
+      ],
+      allowedMentions: { parse: [] },
     });
   }
 }

@@ -6,6 +6,41 @@ import { warns, jails, actionLogs, bans } from "~/db/schema";
 import { env } from "~/lib/env";
 import { logger } from "~/lib/logger";
 
+/** Parses a `previousRoles` snapshot; a corrupt value restores nothing rather than throwing. */
+export function parseRoleSnapshot(raw: string | null | undefined): string[] {
+  if (!raw) return [];
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((r): r is string => typeof r === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Roles to give back at release: the union of every open snapshot, without
+ * the jail role, @everyone, deleted roles, managed roles and roles the bot
+ * cannot assign (they would make `roles.set` fail as a whole).
+ */
+export function restorableRoles(
+  rows: readonly { previousRoles: string | null }[],
+  guild: Pick<Guild, "id" | "roles">,
+  jailRoleId: string | undefined,
+  me: GuildMember | null | undefined,
+): string[] {
+  const top = me?.roles.highest.position ?? Number.POSITIVE_INFINITY;
+  const out = new Set<string>();
+  for (const row of rows) {
+    for (const id of parseRoleSnapshot(row.previousRoles)) {
+      if (id === guild.id || id === jailRoleId) continue;
+      const role = guild.roles.cache.get(id);
+      if (!role || role.managed || role.position >= top) continue;
+      out.add(id);
+    }
+  }
+  return [...out];
+}
+
 @singleton()
 export class ModerationService {
   constructor(@inject(DatabaseService) private dbs: DatabaseService) {}
@@ -36,7 +71,7 @@ export class ModerationService {
     await this.log("WARN", userId, moderatorId, reason);
   }
 
-  async removeLastWarn(userId: string): Promise<boolean> {
+  async removeLastWarn(userId: string, moderatorId?: string): Promise<boolean> {
     const w = await this.db.query.warns.findFirst({
       where: and(eq(warns.userId, userId), eq(warns.active, true)),
       // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
@@ -44,7 +79,7 @@ export class ModerationService {
     });
     if (!w) return false;
     await this.db.update(warns).set({ active: false }).where(eq(warns.id, w.id));
-    await this.log("UNWARN", userId, null, `removed warn #${w.id}`);
+    await this.log("UNWARN", userId, moderatorId ?? null, `removed warn #${w.id}`);
     return true;
   }
 
@@ -79,14 +114,28 @@ export class ModerationService {
       );
     }
 
-    const prev = member.roles.cache.filter((r) => r.id !== member.guild.id).map((r) => r.id);
-    await this.db.insert(jails).values({
-      userId: member.id,
-      moderatorId,
-      reason: reason ?? null,
-      expiresAt: durationMs ? new Date(Date.now() + durationMs) : null,
-      previousRoles: JSON.stringify(prev),
-    });
+    const prev = member.roles.cache
+      .filter((r) => r.id !== member.guild.id && r.id !== roleId)
+      .map((r) => r.id);
+    const expiresAt = durationMs ? new Date(Date.now() + durationMs) : null;
+    const active = await this.getActiveJail(member.id);
+    if (active) {
+      // Already jailed (anti-link re-jail, second /jail): update the sentence
+      // instead of stacking a row whose snapshot would only hold the jail
+      // role — the original roles must survive until the release.
+      await this.db
+        .update(jails)
+        .set({ moderatorId, reason: reason ?? active.reason, expiresAt })
+        .where(eq(jails.id, active.id));
+    } else {
+      await this.db.insert(jails).values({
+        userId: member.id,
+        moderatorId,
+        reason: reason ?? null,
+        expiresAt,
+        previousRoles: JSON.stringify(prev),
+      });
+    }
 
     const botHighestPosition = me.roles.highest.position;
     const rolesToKeep = member.roles.cache
@@ -139,26 +188,24 @@ export class ModerationService {
     moderatorId: string,
     reason?: string,
   ): Promise<boolean> {
-    const j = await this.db.query.jails.findFirst({
-      where: and(eq(jails.userId, userId), isNull(jails.releasedAt)),
-      // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
-      orderBy: (t, { desc }) => desc(t.createdAt),
-    });
+    // Every open row is closed at once: a leftover row would make the expiry
+    // cron unjail the member again and again.
+    const open = await this.db
+      .select()
+      .from(jails)
+      .where(and(eq(jails.userId, userId), isNull(jails.releasedAt)));
     const member = await guild.members.fetch(userId).catch(() => null);
-    if (!member && !j) return false;
+    const roleId = env.JAIL_ROLE_ID;
+    const isJailedOnDiscord = !!roleId && !!member?.roles.cache.has(roleId);
+    if (open.length === 0 && !isJailedOnDiscord) return false;
 
     if (member) {
-      const roleId = env.JAIL_ROLE_ID;
-      const restore: string[] = j?.previousRoles ? (JSON.parse(j.previousRoles) as string[]) : [];
-
+      const restore = restorableRoles(open, guild, roleId, member.guild.members.me);
       const rolesToSet = member.roles.cache
         .filter((r) => r.id !== guild.id && r.id !== roleId)
         .map((r) => r.id);
-
       for (const r of restore) {
-        if (!rolesToSet.includes(r)) {
-          rolesToSet.push(r);
-        }
+        if (!rolesToSet.includes(r)) rolesToSet.push(r);
       }
 
       try {
@@ -172,8 +219,11 @@ export class ModerationService {
       }
     }
 
-    if (j) {
-      await this.db.update(jails).set({ releasedAt: new Date() }).where(eq(jails.id, j.id));
+    if (open.length > 0) {
+      await this.db
+        .update(jails)
+        .set({ releasedAt: new Date() })
+        .where(and(eq(jails.userId, userId), isNull(jails.releasedAt)));
     }
     await this.log("UNJAIL", userId, moderatorId, reason);
     return true;
