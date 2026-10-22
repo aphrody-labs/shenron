@@ -219,6 +219,33 @@ export interface BacHitbox {
   damage: number;
   bdm_entry_id: number;
   knockback_type: number;
+  damage_when_blocked: number;
+  position: [number, number, number];
+  size: number;
+  min_bounds: [number, number, number];
+  max_bounds: [number, number, number];
+}
+
+/** An animation record (BAC block type 0): which EAN plays and how. */
+export interface BacAnimation {
+  start_frame: number;
+  duration: number;
+  /** Source animation set: 5 is the character's own `.ean`. */
+  ean_type: number;
+  ean_index: number;
+  flags: number;
+  frame_start: number;
+  /** `0xFFFF` plays to the animation's end. */
+  frame_end: number;
+  loop_start: number;
+  time_scale: number;
+  blend_in: number;
+  blend_out: number;
+}
+
+export interface BacBlock {
+  kind: number;
+  records: number;
 }
 
 export interface BacMove {
@@ -227,24 +254,57 @@ export interface BacMove {
   startup_frames: number;
   recovery_frames: number;
   hitboxes: BacHitbox[];
+  animations: BacAnimation[];
+  blocks: BacBlock[];
 }
 
 export interface BacFile {
   moves: BacMove[];
 }
 
+/**
+ * One power-up/transformation preset from `powerup_parameter.pup`. Fields named `f_N` keep
+ * their byte offset; LazyBone's MIT XV2-Tools reference leaves them unnamed too.
+ */
 export interface PupEntry {
   id: number;
-  basic_attack_mult: number;
-  basic_ki_mult: number;
-  strike_mult: number;
-  ki_blast_mult: number;
-  damage_taken_mult: number;
-  speed_ground_mult: number;
-  speed_air_mult: number;
-  speed_boost_mult: number;
-  ki_drain_rate: number;
-  stamina_drain_rate: number;
+  cmn_effect_id: number;
+  talisman_id_1: number;
+  talisman_id_2: number;
+  health: number;
+  f_20: number;
+  ki: number;
+  ki_recovery: number;
+  stamina: number;
+  stamina_recovery: number;
+  enemy_stamina_eraser: number;
+  stamina_eraser: number;
+  f_48: number;
+  attack: number;
+  ki_blast: number;
+  strike: number;
+  blast: number;
+  attack_damage: number;
+  ki_blast_damage: number;
+  strike_damage: number;
+  blast_damage: number;
+  ground_speed: number;
+  air_speed: number;
+  boosting_speed: number;
+  dash_speed: number;
+  duration: number;
+  f_104: number;
+  f_108: number;
+  f_112: number;
+  f_116: number;
+  f_120: number;
+  f_124: number;
+  f_128: number;
+  f_132: number;
+  f_136: number;
+  f_140: number;
+  f_144: number;
+  f_148: number;
 }
 
 export interface PupFile {

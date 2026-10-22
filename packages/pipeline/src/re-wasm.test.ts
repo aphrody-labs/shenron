@@ -1,5 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
-import { bacFixture, bdmFixture, cmsFixture, msgFixture } from "./testing/dbxv2-fixtures";
+import {
+  bacFixture,
+  bdmFixture,
+  cmsFixture,
+  msgFixture,
+  pupFixture,
+} from "./testing/dbxv2-fixtures";
 import { describe, expect, test, beforeAll } from "bun:test";
 import {
   initShenronRe,
@@ -273,38 +279,17 @@ describe("shenron-re WASM pipeline", () => {
     expect(cms.entries[2]?.short_name).toBe("FRI");
   });
 
-  test("decodes PUP (Power-Up Parameters) transformation multipliers via wasm_parse_pup", () => {
-    const count = 2;
-    const headerSize = 16;
-    const entrySize = 64;
-    const buffer = new Uint8Array(headerSize + count * entrySize);
-    const view = new DataView(buffer.buffer);
-
-    buffer.set([0x23, 0x50, 0x55, 0x50], 0); // "#PUP"
-    view.setUint32(4, 1, true);
-    view.setUint32(8, count, true);
-    view.setUint32(12, headerSize, true);
-
-    for (let i = 0; i < count; i++) {
-      const off = headerSize + i * entrySize;
-      view.setUint32(off, 200 + i, true); // id
-      view.setFloat32(off + 4, 1.2, true); // basic_attack_mult
-      view.setFloat32(off + 8, 1.25, true); // basic_ki_mult
-      view.setFloat32(off + 12, 1.3, true); // strike_mult
-      view.setFloat32(off + 16, 1.35, true); // ki_blast_mult
-      view.setFloat32(off + 20, 0.9, true); // damage_taken_mult
-      view.setFloat32(off + 24, 1.1, true); // speed_ground_mult
-      view.setFloat32(off + 28, 1.15, true); // speed_air_mult
-      view.setFloat32(off + 32, 1.2, true); // speed_boost_mult
-      view.setFloat32(off + 36, 0.05, true); // ki_drain_rate
-      view.setFloat32(off + 40, 0.0, true); // stamina_drain_rate
-    }
-
-    const pup = parsePup(buffer);
+  test("decodes PUP (Power-Up Parameters) transformation presets via wasm_parse_pup", () => {
+    const pup = parsePup(
+      pupFixture([
+        { id: 200, health: 1.2, duration: 800 },
+        { id: 201, health: 0.0, duration: 300 },
+      ]),
+    );
     expect(pup.entries.length).toBe(2);
-    expect(pup.entries[0]?.id).toBe(200);
-    expect(pup.entries[0]?.basic_attack_mult).toBeCloseTo(1.2);
-    expect(pup.entries[0]?.ki_blast_mult).toBeCloseTo(1.35);
+    expect(pup.entries[0]).toMatchObject({ id: 200, health: 1.2, duration: 800, f_20: 0 });
+    expect(pup.entries[0]?.cmn_effect_id).toBe(-1);
+    expect(pup.entries[1]?.duration).toBe(300);
   });
 
   test("decodes MSG (Message) strings via wasm_parse_msg", () => {

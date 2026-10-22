@@ -112,3 +112,26 @@ export function cmsFixture(entries: readonly { id: number; shortName: string }[]
   });
   return bytes;
 }
+
+/** PUP power-up preset in the real 152-byte-entry layout, mirroring `encode_pup`. */
+export function pupFixture(
+  entries: readonly { id: number; health: number; duration: number }[],
+): Uint8Array {
+  const entrySize = 152;
+  const bytes = new Uint8Array(16 + entries.length * entrySize);
+  const view = new DataView(bytes.buffer);
+  bytes.set([0x23, 0x50, 0x55, 0x50], 0); // "#PUP"
+  view.setUint16(4, 0xfffe, true);
+  view.setUint16(6, 16, true);
+  view.setUint32(8, entries.length, true);
+  entries.forEach((entry, i) => {
+    const at = 16 + i * entrySize;
+    view.setInt32(at, entry.id, true);
+    view.setInt32(at + 4, -1, true);
+    view.setInt32(at + 8, -1, true);
+    view.setInt32(at + 12, -1, true);
+    view.setFloat32(at + 16, entry.health, true);
+    view.setFloat32(at + 100, entry.duration, true);
+  });
+  return bytes;
+}

@@ -7,7 +7,7 @@
  *   bun packages/pipeline/scripts/test-wasm-re.ts
  */
 
-import { bacFixture, bdmFixture, msgFixture } from "../src/testing/dbxv2-fixtures";
+import { bacFixture, bdmFixture, msgFixture, pupFixture } from "../src/testing/dbxv2-fixtures";
 import {
   initShenronRe,
   getDragonBallCatalog,
@@ -376,24 +376,17 @@ console.log(
 );
 
 // 3. PUP Validation
-const pupBuffer = new Uint8Array(16 + 2 * 64);
-const pupView = new DataView(pupBuffer.buffer);
-pupBuffer.set([0x23, 0x50, 0x55, 0x50], 0); // "#PUP"
-pupView.setUint32(4, 1, true);
-pupView.setUint32(8, 2, true);
-pupView.setUint32(12, 16, true);
-for (let i = 0; i < 2; i++) {
-  const off = 16 + i * 64;
-  pupView.setUint32(off, 200 + i, true);
-  pupView.setFloat32(off + 4, 1.2, true);
-  pupView.setFloat32(off + 16, 1.35, true);
-}
-const pup = parsePup(pupBuffer);
-if (pup.entries.length !== 2) {
+const pup = parsePup(
+  pupFixture([
+    { id: 200, health: 1.2, duration: 800 },
+    { id: 201, health: 0, duration: 300 },
+  ]),
+);
+if (pup.entries.length !== 2 || pup.entries[0]?.duration !== 800) {
   throw new Error("PUP validation failed");
 }
 console.log(
-  `  ✓ PUP: decoded ${pup.entries.length} power-up presets (Preset 0: atk_mult=${pup.entries[0]?.basic_attack_mult}, blast_mult=${pup.entries[0]?.ki_blast_mult})`,
+  `  ✓ PUP: decoded ${pup.entries.length} power-up presets (Preset 0: health=${pup.entries[0]?.health}, duration=${pup.entries[0]?.duration})`,
 );
 
 // 4. MSG Validation
