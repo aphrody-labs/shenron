@@ -56,6 +56,20 @@ d'analyse statique praticable retenue pour le port.
 Le relevé est une observation de noms, tailles et fichiers texte de configuration. Il ne prouve
 pas l’absence de données ailleurs sur la machine, ni le comportement d’un jeu lancé.
 
+## Carte statique du moteur (`xgcore.dll`, `iggy_w64.dll`)
+
+Détail complet : `var/reports/dbxv2-engine-map-20261022/README.md`. `iggy_w64.dll` est le
+lecteur Flash/SWF+AS3 tiers « Iggy » de RAD Game Tools (UI/menus) : aucun format propre à
+DBXV2, sans valeur pour le port modèle/animation. `xgcore.dll` (`Eva::XG`) confirme par ses
+vérifications de magique `#EMM`/`#EMB` et ses constructeurs `ModelCore`/`SkeletonCore`/
+`AnimationSequencer` que `.emd`/`.esk`/`.ean`/`.emm`/`.emb` sont bien les formats déjà portés
+dans `crates/shenron-re/src/formats`, et révèle **deux formats réels non encore portés** :
+`.ema` (`#EMA`, mouvement caméra/lumière, `EmMotion`, 5 116 fichiers dans le CPK) et `.emo`
+(`#EMO`, objet/groupe de modèles qui agrège plusieurs `.emd` et leur hiérarchie de nœuds,
+`EmObjectShared`, 1 959 fichiers dans le CPK) — c'est la pièce qui manque entre un `.emd` nu
+et un personnage assemblé. Écrire `ema.rs`/`emo.rs` reste à faire par l'agent qui possède
+`crates/shenron-re/src/formats` (revendiqué en direct, non libéré, le 2026-10-22).
+
 ## Capacités locales pertinentes
 
 - `/games/xenoverse-2` demande à l’utilisateur de sélectionner des fichiers locaux puis analyse
