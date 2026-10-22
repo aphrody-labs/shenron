@@ -22,7 +22,7 @@ import { GameRewardService } from "~/services/GameRewardService";
 import { ZENI_GAME_WIN, ZENI_GAME_LOSS_PENALTY } from "~/lib/constants";
 import { formatZeni, formatZeniDelta } from "~/lib/zeni";
 import { buildChallengeMessage, challengeIdPattern, parseChallengeId } from "~/lib/challenge";
-import { COLORS, DBZ_COLORS } from "~/lib/embeds";
+import { DBZ_COLORS } from "~/lib/embeds";
 import { logger } from "~/lib/logger";
 import {
   MORPION_BOT,
@@ -34,7 +34,20 @@ import {
   type MorpionGame,
   type MorpionOutcome,
 } from "~/services/games/morpion";
-import { REWARD_BLOCK_LABELS, stakeAllowed } from "~/services/games/anti-farm";
+import { stakeAllowed } from "~/services/games/anti-farm";
+import {
+  BOT_STAKE_REFUSED,
+  ChallengeBoard,
+  DUEL_MAX_STAKE_DEFAULT,
+  closedChallenge,
+  duelStakeError,
+  grantLine,
+  opponentError,
+  resolveChallengeClick,
+  stakeSummary,
+  statusColor,
+} from "~/services/games/duel";
+import { GameSessionsService } from "~/services/games/sessions";
 
 interface Session {
   game: MorpionGame;
@@ -46,12 +59,10 @@ interface PendingChallenge {
   challengerId: string;
   opponentId: string;
   stake: number;
-  expiresAt: number;
 }
 
 const sessions = new Map<string, Session>();
-const challenges = new Map<string, PendingChallenge>();
-const CHALLENGE_TTL_MS = 60_000;
+const challenges = new ChallengeBoard<PendingChallenge>();
 const DEFAULT_IDLE_TTL_MS = 5 * 60_000;
 
 const TURN_ERRORS = {
@@ -126,16 +137,7 @@ function buildEmbed(
     lines.push("", "**Partie expirée.**");
   }
 
-  const color =
-    status === "won"
-      ? opts.winnerId === MORPION_BOT
-        ? DBZ_COLORS.power
-        : COLORS.brand
-      : status === "draw"
-        ? COLORS.muted
-        : status === "expired"
-          ? DBZ_COLORS.power
-          : DBZ_COLORS.goku;
+  const color = statusColor(status === "won" && opts.winnerId === MORPION_BOT ? "lost" : status);
 
   const embed = new EmbedBuilder()
     .setTitle(vsBot ? "Morpion · Contre le robot" : "Morpion · Duel")
@@ -170,6 +172,7 @@ export class MorpionCommand {
     @inject(SettingsService) private settings: SettingsService,
     @inject(MessageTemplateService) private msg: MessageTemplateService,
     @inject(GameRewardService) private rewards: GameRewardService,
+    @inject(GameSessionsService) private journal: GameSessionsService,
   ) {}
 
   @Slash({ name: "morpion", description: "Morpion (tic-tac-toe)" })
@@ -206,11 +209,7 @@ export class MorpionCommand {
   ) {
     const userId = interaction.user.id;
     if (!stakeAllowed(mode, mise)) {
-      await interaction.reply({
-        content:
-          "Les mises sont réservées aux duels. Contre le robot, seul le gain de base est versé.",
-        flags: MessageFlags.Ephemeral,
-      });
+      await interaction.reply({ content: BOT_STAKE_REFUSED, flags: MessageFlags.Ephemeral });
       return;
     }
     if (hasActiveMorpionGame(activeGames(), userId)) {
@@ -222,8 +221,12 @@ export class MorpionCommand {
     }
 
     if (mode === "joueur") {
-      if (!opponent || opponent.bot || opponent.id === userId) {
-        await interaction.reply({ content: "Adversaire invalide.", flags: MessageFlags.Ephemeral });
+      const invalid = opponentError(userId, opponent);
+      if (invalid || !opponent) {
+        await interaction.reply({
+          content: invalid ?? "Adversaire invalide.",
+          flags: MessageFlags.Ephemeral,
+        });
         return;
       }
       if (hasActiveMorpionGame(activeGames(), opponent.id)) {
@@ -234,57 +237,32 @@ export class MorpionCommand {
         return;
       }
       const stake = mise ?? 0;
-      if (stake > 0) {
-        const maxStake = await this.settings.getInt("game.max_stake", 1_000_000);
-        if (stake > maxStake) {
-          await interaction.reply({
-            content: `Mise maximale : **${formatZeni(maxStake)}**.`,
-            flags: MessageFlags.Ephemeral,
-          });
-          return;
-        }
-        const [bal1, bal2] = await Promise.all([
-          this.eco.getBalance(userId),
-          this.eco.getBalance(opponent.id),
-        ]);
-        if (bal1 < stake || bal2 < stake) {
-          const who = bal1 < stake ? "Tu n'as" : `${opponent} n'a`;
-          await interaction.reply({
-            content: `${who} pas assez de zénis pour une mise de **${formatZeni(stake)}**.`,
-            flags: MessageFlags.Ephemeral,
-          });
-          return;
-        }
-      }
-      const [baseWin, baseLoss] = await Promise.all([
-        this.settings.getInt("zeni.game.win", ZENI_GAME_WIN),
-        this.settings.getInt("zeni.game.loss_penalty", ZENI_GAME_LOSS_PENALTY),
-      ]);
-      const key = interaction.id;
-      challenges.set(key, {
-        challengerId: userId,
-        opponentId: opponent.id,
+      const stakeError = await duelStakeError(
+        {
+          getBalance: (id) => this.eco.getBalance(id),
+          maxStake: () => this.settings.getInt("game.max_stake", DUEL_MAX_STAKE_DEFAULT),
+        },
+        userId,
+        opponent,
         stake,
-        expiresAt: Date.now() + CHALLENGE_TTL_MS,
-      });
+      );
+      if (stakeError) {
+        await interaction.reply({ content: stakeError, flags: MessageFlags.Ephemeral });
+        return;
+      }
+      const [baseWin, baseLoss] = await this.baseRewards();
+      challenges.open(interaction.id, { challengerId: userId, opponentId: opponent.id, stake });
       await interaction.reply(
         buildChallengeMessage({
           scope: "morpion",
-          key,
+          key: interaction.id,
           challenger: interaction.user,
           opponent,
           gameTitle: "Morpion · Duel",
           color: DBZ_COLORS.goku,
-          stake:
-            stake > 0
-              ? `Mise **${formatZeni(stake)}** par joueur, séquestrée à l'acceptation · pot **${formatZeni(stake * 2)}**`
-              : `Gagnant **${formatZeniDelta(baseWin)}** · Perdant **${formatZeniDelta(-baseLoss)}**`,
+          stake: stakeSummary(stake, baseWin, baseLoss),
         }),
       );
-      setTimeout(() => {
-        const c = challenges.get(key);
-        if (c && c.expiresAt <= Date.now()) challenges.delete(key);
-      }, CHALLENGE_TTL_MS + 5_000).unref();
       return;
     }
 
@@ -294,12 +272,16 @@ export class MorpionCommand {
       lastMoveAt: Date.now(),
     };
     sessions.set(gameId, session);
+    this.journal.open({ id: gameId, game: "morpion", players: [userId], stake: 0 });
     const response = await interaction.reply({
       embeds: [buildEmbed(session.game, "playing")],
       components: renderBoard(session.game, gameId),
       withResponse: true,
     });
     session.message = response.resource?.message ?? undefined;
+    if (session.message) {
+      this.journal.board(gameId, session.message.channelId, session.message.id);
+    }
     void this.scheduleExpiry(gameId);
   }
 
@@ -307,54 +289,26 @@ export class MorpionCommand {
   async onChallengeButton(interaction: ButtonInteraction) {
     const parsed = parseChallengeId(interaction.customId);
     if (!parsed) return;
-    const challenge = challenges.get(parsed.key);
-    if (!challenge || challenge.expiresAt <= Date.now()) {
-      challenges.delete(parsed.key);
-      // Réponse éphémère : un double-clic ne doit pas écraser le plateau déjà affiché.
-      await interaction
-        .reply({ content: "Défi expiré ou déjà traité.", flags: MessageFlags.Ephemeral })
-        .catch(() => {});
-      return;
-    }
-    if (interaction.user.id !== challenge.opponentId) {
-      await interaction.reply({
-        content: "Ce défi ne t'est pas adressé.",
-        flags: MessageFlags.Ephemeral,
-      });
-      return;
-    }
-    // Retrait synchrone : un second clic concurrent ne retrouve plus le défi.
-    challenges.delete(parsed.key);
+    const challenge = await resolveChallengeClick(
+      interaction,
+      challenges,
+      parsed.key,
+      parsed.action,
+      "Morpion",
+    );
+    if (!challenge) return;
 
-    if (parsed.action === "decline") {
-      await interaction.update({
-        content: "",
-        embeds: [
-          new EmbedBuilder()
-            .setTitle("Morpion · Défi refusé")
-            .setDescription(`<@${challenge.opponentId}> a refusé le défi.`)
-            .setColor(COLORS.muted),
-        ],
-        components: [],
-      });
-      return;
-    }
-
-    const games = activeGames();
     if (
-      hasActiveMorpionGame(games, challenge.challengerId) ||
-      hasActiveMorpionGame([...activeGames()], challenge.opponentId)
+      hasActiveMorpionGame(activeGames(), challenge.challengerId) ||
+      hasActiveMorpionGame(activeGames(), challenge.opponentId)
     ) {
-      await interaction.update({
-        content: "",
-        embeds: [
-          new EmbedBuilder()
-            .setTitle("Morpion · Duel annulé")
-            .setDescription("Un des joueurs a déjà une partie de morpion en cours.")
-            .setColor(COLORS.muted),
-        ],
-        components: [],
-      });
+      await interaction.update(
+        closedChallenge(
+          "Morpion",
+          "cancelled",
+          "Un des joueurs a déjà une partie de morpion en cours.",
+        ),
+      );
       return;
     }
 
@@ -372,24 +326,23 @@ export class MorpionCommand {
       );
       if (!ok) {
         sessions.delete(gameId);
-        await interaction.editReply({
-          content: "",
-          embeds: [
-            new EmbedBuilder()
-              .setTitle("Morpion · Duel annulé")
-              .setDescription("Un des joueurs n'a plus assez de zénis pour couvrir la mise.")
-              .setColor(DBZ_COLORS.power),
-          ],
-          components: [],
-        });
+        await interaction.editReply(
+          closedChallenge(
+            "Morpion",
+            "cancelled",
+            "Un des joueurs n'a plus assez de zénis pour couvrir la mise.",
+          ),
+        );
         return;
       }
+      this.journalDuel(gameId, game, interaction);
       await interaction.editReply({
         content: "",
         embeds: [buildEmbed(game, "playing")],
         components: renderBoard(game, gameId),
       });
     } else {
+      this.journalDuel(gameId, game, interaction);
       await interaction.update({
         content: "",
         embeds: [buildEmbed(game, "playing")],
@@ -397,6 +350,17 @@ export class MorpionCommand {
       });
     }
     void this.scheduleExpiry(gameId);
+  }
+
+  private journalDuel(gameId: string, game: MorpionGame, interaction: ButtonInteraction): void {
+    this.journal.open({
+      id: gameId,
+      game: "morpion",
+      players: [game.playerX, game.playerO],
+      stake: game.stake,
+      channelId: interaction.message.channelId,
+      messageId: interaction.message.id,
+    });
   }
 
   @ButtonComponent({ id: /^morpion:\d+:[0-8]$/ })
@@ -434,6 +398,9 @@ export class MorpionCommand {
     }
 
     sessions.delete(gameId!);
+    // Journal fermé avant le règlement : un arrêt pendant le versement ne doit
+    // jamais rembourser en plus une partie déjà payée.
+    this.journal.close(gameId!);
     await interaction.deferUpdate();
     try {
       const embed = await this.settle(game, result.outcome, interaction);
@@ -448,6 +415,13 @@ export class MorpionCommand {
     } catch (err) {
       logger.error({ err, gameId }, "morpion: règlement de fin de partie en échec");
     }
+  }
+
+  private async baseRewards(): Promise<[number, number]> {
+    return Promise.all([
+      this.settings.getInt("zeni.game.win", ZENI_GAME_WIN),
+      this.settings.getInt("zeni.game.loss_penalty", ZENI_GAME_LOSS_PENALTY),
+    ]);
   }
 
   private async settle(
@@ -476,10 +450,7 @@ export class MorpionCommand {
       });
     }
 
-    const [baseWin, baseLoss] = await Promise.all([
-      this.settings.getInt("zeni.game.win", ZENI_GAME_WIN),
-      this.settings.getInt("zeni.game.loss_penalty", ZENI_GAME_LOSS_PENALTY),
-    ]);
+    const [baseWin, baseLoss] = await this.baseRewards();
 
     if (winnerId === MORPION_BOT) {
       const charged = baseLoss > 0 && (await this.eco.removeZeni(loserId, baseLoss));
@@ -489,26 +460,21 @@ export class MorpionCommand {
       });
     }
 
+    const label = vsBot ? "morpion" : "morpion (duel)";
     const grant = await this.rewards.grantWin({
       userId: winnerId,
       amount: baseWin,
       opponentId: vsBot ? undefined : loserId,
+      game: label,
     });
-    if (grant.paid === 0) {
-      return buildEmbed(game, "won", {
-        winnerId,
-        result: grant.blocked
-          ? `Victoire sans gain : ${REWARD_BLOCK_LABELS[grant.blocked]}.`
-          : "Aucun gain.",
-      });
-    }
-    let result = `<@${winnerId}> **${formatZeniDelta(grant.paid)}**`;
+    let result = grantLine(grant, winnerId);
+    if (grant.paid === 0) return buildEmbed(game, "won", { winnerId, result });
     if (!vsBot && baseLoss > 0 && (await this.eco.removeZeni(loserId, baseLoss))) {
       result += ` · <@${loserId}> **${formatZeniDelta(-baseLoss)}**`;
     }
     await this.msg.publish(
       "zeni_game_win",
-      { user: `<@${winnerId}>`, zeni: grant.paid, game: vsBot ? "morpion" : "morpion (duel)" },
+      { user: `<@${winnerId}>`, zeni: grant.paid, game: label },
       interaction.client,
     );
     return buildEmbed(game, "won", { winnerId, result });
@@ -529,6 +495,7 @@ export class MorpionCommand {
         return;
       }
       sessions.delete(gameId);
+      this.journal.close(gameId);
       session.game.status = "finished";
       this.expire(gameId, session).catch((err) =>
         logger.error({ err, gameId }, "morpion: expiration en échec"),
@@ -545,6 +512,9 @@ export class MorpionCommand {
       const other = idle === game.playerX ? game.playerO : game.playerX;
       await this.rewards.payStakes("forfeit", other, idle, game.stake);
       result = `<@${idle}> n'a pas joué à temps : <@${other}> remporte le pot (**${formatZeni(game.stake * 2)}**).`;
+    } else if (game.stake > 0) {
+      await this.rewards.payStakes("cancel", game.playerX, game.playerO, game.stake);
+      result = "Partie expirée : mises rendues.";
     }
     await session.message
       ?.edit({
