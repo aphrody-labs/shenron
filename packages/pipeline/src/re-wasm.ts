@@ -18,6 +18,7 @@ import initWasm, {
   wasm_parse_bac,
   wasm_parse_bdm,
   wasm_parse_cus,
+  wasm_parse_cms,
   wasm_parse_msg,
   wasm_extract_msg_text,
   wasm_parse_emb,
@@ -116,6 +117,17 @@ export interface CusSkill {
 export interface CusFile {
   version: number;
   skills: CusSkill[];
+}
+
+/** One roster entry: a persistent character id and its short code (e.g. `GOK`, `VGT`). */
+export interface CmsEntry {
+  id: number;
+  short_name: string;
+}
+
+/** The game's full character roster (`data/system/char_model_spec.cms`). */
+export interface CmsFile {
+  entries: CmsEntry[];
 }
 
 export type MapEvidenceStatus = "announced" | "prototype";
@@ -326,6 +338,12 @@ export function decompressCrilayla(compressed: Uint8Array, uncompressedSize = 0)
 export function parseCus(cusBytes: Uint8Array): CusFile {
   ensureWasm();
   return wasm_parse_cus(cusBytes) as CusFile;
+}
+
+/** Parses the DBXV2 CMS roster file and returns every character entry. */
+export function parseCms(cmsBytes: Uint8Array): CmsFile {
+  ensureWasm();
+  return wasm_parse_cms(cmsBytes) as CmsFile;
 }
 
 /**

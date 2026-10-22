@@ -94,3 +94,21 @@ export function msgFixture(lines: readonly string[]): Uint8Array {
   });
   return Uint8Array.from(chunks);
 }
+
+/** CMS roster in the real 84-byte-entry layout, mirroring `encode_cms`. */
+export function cmsFixture(entries: readonly { id: number; shortName: string }[]): Uint8Array {
+  const entrySize = 84;
+  const bytes = new Uint8Array(16 + entries.length * entrySize);
+  const view = new DataView(bytes.buffer);
+  bytes.set([0x23, 0x43, 0x4d, 0x53], 0); // "#CMS"
+  view.setUint16(4, 0xfffe, true);
+  view.setUint32(8, entries.length, true);
+  view.setUint32(12, 16, true);
+  entries.forEach((entry, i) => {
+    const at = 16 + i * entrySize;
+    view.setUint32(at, entry.id, true);
+    for (let k = 0; k < entry.shortName.length; k++)
+      bytes[at + 4 + k] = entry.shortName.charCodeAt(k);
+  });
+  return bytes;
+}

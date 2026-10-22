@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
-import { bacFixture, bdmFixture, msgFixture } from "./testing/dbxv2-fixtures";
+import { bacFixture, bdmFixture, cmsFixture, msgFixture } from "./testing/dbxv2-fixtures";
 import { describe, expect, test, beforeAll } from "bun:test";
 import {
   initShenronRe,
   getDragonBallCatalog,
   scanAob,
   parseCus,
+  parseCms,
   parseBdm,
   parseBac,
   parsePup,
@@ -256,6 +257,20 @@ describe("shenron-re WASM pipeline", () => {
     expect(bac.moves[0]?.total_frames).toBe(30);
     expect(bac.moves[0]?.startup_frames).toBe(8);
     expect(bac.moves[0]?.hitboxes[0]?.damage).toBe(250);
+  });
+
+  test("decodes CMS (Character Model Spec) roster via wasm_parse_cms", () => {
+    const cms = parseCms(
+      cmsFixture([
+        { id: 0, shortName: "GOK" },
+        { id: 16, shortName: "VGT" },
+        { id: 999, shortName: "FRI" },
+      ]),
+    );
+    expect(cms.entries.length).toBe(3);
+    expect(cms.entries[0]).toEqual({ id: 0, short_name: "GOK" });
+    expect(cms.entries[1]?.id).toBe(16);
+    expect(cms.entries[2]?.short_name).toBe("FRI");
   });
 
   test("decodes PUP (Power-Up Parameters) transformation multipliers via wasm_parse_pup", () => {

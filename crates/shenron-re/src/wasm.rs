@@ -6,7 +6,8 @@
 
 use crate::catalog::get_dragon_ball_catalog;
 use crate::formats::{
-    bac::BacFile, bdm::BdmFile, cus::CusFile, emb_archive::EmbArchive, msg::MsgFile, pup::PupFile,
+    bac::BacFile, bdm::BdmFile, cms::CmsFile, cus::CusFile, emb_archive::EmbArchive, msg::MsgFile,
+    pup::PupFile,
 };
 use crate::fs::cpk::{CpkArchive, CpkEntry};
 use crate::fs::crilayla::{decompress_crilayla, decompress_crilayla_raw};
@@ -77,6 +78,13 @@ pub fn wasm_decompress_crilayla(
 pub fn wasm_parse_cus(cus_bytes: &[u8]) -> Result<JsValue, JsValue> {
     let cus = CusFile::parse(cus_bytes).map_err(to_js_err)?;
     serde_wasm_bindgen::to_value(&cus).map_err(to_js_err)
+}
+
+/// Parse the DBXV2 CMS (Character Model Spec) roster file and return every character entry.
+#[wasm_bindgen]
+pub fn wasm_parse_cms(cms_bytes: &[u8]) -> Result<JsValue, JsValue> {
+    let cms = CmsFile::parse(cms_bytes).map_err(to_js_err)?;
+    serde_wasm_bindgen::to_value(&cms).map_err(to_js_err)
 }
 
 /// Parse a DBXV2 BAC (Battle Action Code) moveset binary file and return all moves.
