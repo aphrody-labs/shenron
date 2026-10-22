@@ -4,7 +4,14 @@
  * titres en Saiyan Sans, interface en Google Sans Flex. Aucune ombre portée.
  */
 import { createCanvas, type SKRSContext2D } from "@napi-rs/canvas";
-import { circlePath, drawDragonBall, fillRadialGlow, rgba, roundRectPath } from "~/lib/canvas-kit";
+import {
+  circlePath,
+  drawDragonBall,
+  FONT_STACK,
+  fillRadialGlow,
+  rgba,
+  roundRectPath,
+} from "~/lib/canvas-kit";
 import { DIFFICULTY_LABELS, type GameDifficulty } from "~/services/games/difficulty";
 
 const GAME_CARD_COLORS = {
@@ -31,8 +38,8 @@ type GameCardStatus = "playing" | "won" | "lost";
 
 const SCALE = 2;
 const PAD = 36;
-const UI_FONT = "'Google Sans Flex', 'Inter', sans-serif";
-const TITLE_FONT = "'Saiyan Sans', 'Inter Display Black', sans-serif";
+const UI_FONT = FONT_STACK;
+const TITLE_FONT = `'Saiyan Sans', 'Inter Display Black', ${FONT_STACK}`;
 const C = GAME_CARD_COLORS;
 
 function newCard(w: number, h: number) {

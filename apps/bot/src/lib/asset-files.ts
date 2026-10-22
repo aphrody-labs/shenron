@@ -43,5 +43,17 @@ export function botFile(relative: string, cwd?: string): string {
     const source = `${uiAssetsDir(cwd)}/${path.slice(sitePublic.length)}`;
     if (existsSync(source)) return source;
   }
-  return path;
+  return existsSync(path) ? path : (shippedFile(relative) ?? path);
+}
+
+/**
+ * Canvas assets shipped beside the compiled binary (`scripts/build/bot.ts`,
+ * `share/`): the image has neither `apps/site/public` nor a populated
+ * `/app/assets`, which Infra mounts over the image.
+ */
+function shippedFile(relative: string): string | null {
+  const root = process.env.SHENRON_BOT_ASSETS_DIR;
+  if (!root) return null;
+  const candidate = posix(resolve(root, relative));
+  return existsSync(candidate) ? candidate : null;
 }

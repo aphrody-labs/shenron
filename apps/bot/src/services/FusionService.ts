@@ -10,6 +10,7 @@ import {
   roundRectPath,
   textStroked,
   textWithShadow,
+  font,
 } from "~/lib/canvas-kit";
 
 /**
@@ -114,7 +115,7 @@ export class FusionService {
     // ── Titre ──────────────────────────────────────────────────────────
     const title = input.state === "success" ? "FUSIOOON-HA !!" : "PROPOSITION DE FUSION";
     textStroked(ctx, title, W / 2, 56, {
-      font: "800 34px 'Google Sans Flex', sans-serif",
+      font: font("800 34px"),
       color: input.state === "success" ? "#fbbf24" : "#f1f5f9",
       stroke: "rgba(0,0,0,0.9)",
       strokeWidth: 4,
@@ -134,7 +135,7 @@ export class FusionService {
 
       // Centre : VS + point d'interrogation
       textStroked(ctx, "?", W / 2, 195, {
-        font: "800 110px 'Google Sans Flex', sans-serif",
+        font: font("800 110px"),
         color: COLOR_FUSION,
         stroke: "rgba(0,0,0,0.8)",
         strokeWidth: 5,
@@ -184,14 +185,14 @@ export class FusionService {
 
       // Pseudos de part et d'autre
       textWithShadow(ctx, input.a.username.slice(0, 14), AV_CX_A - 80, AV_Y + 10, {
-        font: "700 16px 'Google Sans Flex', sans-serif",
+        font: font("700 16px"),
         color: COLOR_A,
         shadow: "rgba(0,0,0,0.9)",
         blur: 4,
         align: "left",
       });
       textWithShadow(ctx, input.b.username.slice(0, 14), AV_CX_B + 80, AV_Y + 10, {
-        font: "700 16px 'Google Sans Flex', sans-serif",
+        font: font("700 16px"),
         color: COLOR_B,
         shadow: "rgba(0,0,0,0.9)",
         blur: 4,
@@ -217,7 +218,7 @@ export class FusionService {
 
     if (input.state === "success" && input.fusedName) {
       textStroked(ctx, input.fusedName.toUpperCase(), W / 2, BAND_Y + 40, {
-        font: "800 34px 'Google Sans Flex', sans-serif",
+        font: font("800 34px"),
         color: "#fbbf24",
         stroke: "rgba(0,0,0,0.9)",
         strokeWidth: 3,
@@ -225,7 +226,7 @@ export class FusionService {
       });
     } else {
       textWithShadow(ctx, "Acceptes-tu la fusion ?", W / 2, BAND_Y + 38, {
-        font: "800 22px 'Google Sans Flex', sans-serif",
+        font: font("800 22px"),
         color: "#f1f5f9",
         shadow: "rgba(0,0,0,0.9)",
         blur: 5,
@@ -287,7 +288,7 @@ export class FusionService {
 
     // Pseudo
     textWithShadow(ctx, user.username.slice(0, 14), cx, cy + r + 24, {
-      font: "700 16px 'Google Sans Flex', sans-serif",
+      font: font("700 16px"),
       color: "#f1f5f9",
       shadow: "rgba(0,0,0,0.9)",
       blur: 4,

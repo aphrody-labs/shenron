@@ -11,7 +11,10 @@
 import { existsSync } from "node:fs";
 import { GlobalFonts, type SKRSContext2D } from "@napi-rs/canvas";
 import { botFile } from "~/lib/asset-files";
+import { CANVAS_FONT_FILES } from "~/lib/canvas-fonts";
 import { logger } from "~/lib/logger";
+
+export { FONT_STACK, font } from "~/lib/canvas-fonts";
 
 // ─── Fonts ────────────────────────────────────────────────────────────────
 
@@ -23,25 +26,7 @@ const BOT_ROOT = `${import.meta.dir}/../..`;
  * Ne throw jamais : fallback silencieux sur sans-serif si un fichier manque.
  */
 function registerFonts(): void {
-  const fonts: Array<[string, string]> = [
-    // Google Sans Flex — police principale (variable, axes opsz+wght). Skia
-    // (@napi-rs/canvas) sélectionne le poids via la font string (`600 24px ...`).
-    // Une seule famille pour tous les poids grâce à l'axe wght variable.
-    ["GoogleSansFlex.ttf", "Google Sans Flex"],
-    // Legacy conservées en fallback (anciennes cartes / accents).
-    ["Inter-Medium.ttf", "Inter"],
-    ["Inter-SemiBold.ttf", "Inter SemiBold"],
-    ["Inter-Bold.ttf", "Inter Bold"],
-    ["Inter-ExtraBold.ttf", "Inter ExtraBold"],
-    ["InterDisplay-Black.ttf", "Inter Display Black"],
-    ["Teko-SemiBold.ttf", "Teko SemiBold"],
-    ["Teko-Bold.ttf", "Teko Bold"],
-    ["SaiyanSans.ttf", "Saiyan Sans"],
-    ["SaiyanSans-LeftOblique.ttf", "Saiyan Sans Oblique"],
-    ["DBSScouter.ttf", "DBS Scouter"],
-    ["NotoColorEmoji.ttf", "Noto Color Emoji"],
-  ];
-  for (const [file, family] of fonts) {
+  for (const [file, family] of CANVAS_FONT_FILES) {
     try {
       const primaryPath = botFile(`assets/fonts/${file}`, BOT_ROOT);
       if (existsSync(primaryPath)) GlobalFonts.registerFromPath(primaryPath, family);

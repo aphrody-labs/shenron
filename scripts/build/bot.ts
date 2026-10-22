@@ -82,6 +82,12 @@ copyRuntimeFile(canvasBinding, join(out, `skia.${canvasPlatform}.node`));
 // Migrations are read from disk by drizzle at boot: ship them beside the binary.
 const migrations = join(BOT, "src/db/migrations");
 if (existsSync(migrations)) copyRuntimeDirectory(migrations, join(out, "src/db/migrations"));
+// Canvas fonts and banners: the image has no source tree and Infra mounts /app/assets.
+const canvasAssets = Bun.spawn(
+  [process.execPath, "scripts/ship-canvas-assets.ts", join(out, "share")],
+  { cwd: BOT, stdio: ["inherit", "inherit", "inherit"] },
+);
+if ((await canvasAssets.exited) !== 0) throw new Error("canvas assets copy failed");
 // A release worktree's `.git` points outside the build container: the caller passes the commit.
 const sourceCommit = process.env.SHENRON_REVISION ?? (await gitHead());
 if (!/^[0-9a-f]{40}$/.test(sourceCommit)) throw Error("Cannot pin bot source revision");

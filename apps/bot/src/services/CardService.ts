@@ -15,6 +15,7 @@ import {
   roundRectPath,
   textStroked,
   textWithShadow,
+  font,
 } from "~/lib/canvas-kit";
 
 interface CardTheme {
@@ -117,6 +118,17 @@ export interface CardInput {
   color?: string | null;
   fused?: boolean;
   rank?: number | null;
+}
+
+/** Fond des pastilles de stats : contraste stable quel que soit le thème de la carte. */
+const CHIP_SCRIM = "rgba(0, 0, 0, 0.38)";
+/** Libellés en petites capitales, lisibles sur fonds clairs comme sombres. */
+const LABEL_STYLE = { color: "rgba(241, 245, 249, 0.82)", shadow: "rgba(0, 0, 0, 0.8)", blur: 4 };
+
+/** Premier graphème : un emoji composé (ZWJ, sélecteur de variante) reste entier. */
+function firstGrapheme(text: string): string {
+  const [first] = new Intl.Segmenter("fr", { granularity: "grapheme" }).segment(text);
+  return first?.segment ?? "";
 }
 
 @singleton()
@@ -442,7 +454,7 @@ export class CardService {
     if (input.title) {
       textWithShadow(ctx, input.title, TXT_X, 72, {
         color: "#cbd5e1",
-        font: "italic 600 18px 'Google Sans Flex', sans-serif",
+        font: font("italic 600 18px"),
         shadow: theme.textShadow,
         blur: 4,
       });
@@ -454,13 +466,13 @@ export class CardService {
       color: userColor,
       stroke: "rgba(0,0,0,0.8)",
       strokeWidth: 7,
-      font: "800 48px 'Google Sans Flex', sans-serif",
+      font: font("800 48px"),
     });
 
     // Badge : pastille ronde à côté du pseudo
     if (input.badge) {
       ctx.save();
-      ctx.font = "800 48px 'Google Sans Flex', sans-serif";
+      ctx.font = font("800 48px");
       const nameWidth = ctx.measureText(displayName).width;
       const BADGE_CX = TXT_X + nameWidth + 40;
       const BADGE_CY = 108;
@@ -477,11 +489,11 @@ export class CardService {
       ctx.lineWidth = 2;
       ctx.stroke();
       // Contenu du badge : emoji couleur (Noto) ou texte court
-      ctx.font = "30px 'Noto Color Emoji', 'Google Sans Flex', sans-serif";
+      ctx.font = font("30px");
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillStyle = "#1f2937";
-      ctx.fillText(input.badge.slice(0, 2), BADGE_CX, BADGE_CY + 2);
+      ctx.fillText(firstGrapheme(input.badge), BADGE_CX, BADGE_CY + 2);
       ctx.restore();
     }
 
@@ -493,7 +505,7 @@ export class CardService {
     const levelH = 38;
     ctx.save();
     roundRectPath(ctx, TXT_X, STATS_Y - levelH + 6, levelW, levelH, 10);
-    ctx.fillStyle = rgba(theme.accent, 0.25);
+    ctx.fillStyle = CHIP_SCRIM;
     ctx.fill();
     ctx.strokeStyle = rgba(theme.accent, 0.6);
     ctx.lineWidth = 1.5;
@@ -501,7 +513,7 @@ export class CardService {
     ctx.restore();
     textWithShadow(ctx, levelLabel, TXT_X + levelW / 2, STATS_Y, {
       color: theme.accent,
-      font: "700 28px 'Google Sans Flex', sans-serif",
+      font: font("700 28px"),
       align: "center",
       shadow: theme.textShadow,
       blur: 3,
@@ -511,10 +523,10 @@ export class CardService {
     const zeniX = TXT_X + levelW + 14;
     const zeniLabel = `${formatXP(input.zeni)} Z`;
     ctx.save();
-    ctx.font = "700 28px 'Google Sans Flex', sans-serif";
+    ctx.font = font("700 28px");
     const zeniW = Math.max(130, ctx.measureText(zeniLabel).width + 30);
     roundRectPath(ctx, zeniX, STATS_Y - levelH + 6, zeniW, levelH, 10);
-    ctx.fillStyle = "rgba(251, 191, 36, 0.2)";
+    ctx.fillStyle = CHIP_SCRIM;
     ctx.fill();
     ctx.strokeStyle = "rgba(251, 191, 36, 0.5)";
     ctx.lineWidth = 1.5;
@@ -522,7 +534,7 @@ export class CardService {
     ctx.restore();
     textWithShadow(ctx, zeniLabel, zeniX + zeniW / 2, STATS_Y, {
       color: "#fde047",
-      font: "700 28px 'Google Sans Flex', sans-serif",
+      font: font("700 28px"),
       align: "center",
       shadow: "rgba(0,0,0,0.7)",
       blur: 3,
@@ -532,7 +544,7 @@ export class CardService {
     if (input.rank) {
       textWithShadow(ctx, `#${input.rank}`, width - PAD - 30, 90, {
         color: "#f1f5f9",
-        font: "700 48px 'Google Sans Flex', sans-serif",
+        font: font("700 48px"),
         align: "right",
         shadow: "rgba(0,0,0,0.7)",
         blur: 4,
@@ -540,8 +552,8 @@ export class CardService {
       ctx.save();
       ctx.letterSpacing = "3px";
       textWithShadow(ctx, "RANG", width - PAD - 30, 115, {
-        color: "#94a3b8",
-        font: "600 14px 'Google Sans Flex', sans-serif",
+        ...LABEL_STYLE,
+        font: font("600 14px"),
         align: "right",
       });
       ctx.restore();
@@ -561,7 +573,7 @@ export class CardService {
       ctx.restore();
       textWithShadow(ctx, "💞 FUSIONNÉ", fusedX + fusedW / 2, STATS_Y, {
         color: "#f9a8d4",
-        font: "700 22px 'Google Sans Flex', sans-serif",
+        font: font("700 22px"),
         align: "center",
         shadow: "rgba(80,7,36,0.8)",
         blur: 3,
@@ -646,13 +658,13 @@ export class CardService {
     ctx.save();
     ctx.letterSpacing = "2px";
     textWithShadow(ctx, "UNITÉS", BAR_X, BAR_Y - 12, {
-      color: "#94a3b8",
-      font: "700 12px 'Google Sans Flex', sans-serif",
+      ...LABEL_STYLE,
+      font: font("700 12px"),
     });
     ctx.restore();
     textWithShadow(ctx, `${xpCurrent} / ${xpMax}`, BAR_X + BAR_W, BAR_Y - 10, {
       color: "#f1f5f9",
-      font: "700 18px 'Google Sans Flex', sans-serif",
+      font: font("700 18px"),
       align: "right",
       shadow: theme.textShadow,
       blur: 3,
@@ -665,7 +677,7 @@ export class CardService {
         color: "#ffffff",
         stroke: "rgba(0,0,0,0.5)",
         strokeWidth: 3,
-        font: "700 14px 'Google Sans Flex', sans-serif",
+        font: font("700 14px"),
         align: "center",
       });
     }
@@ -686,16 +698,16 @@ export class CardService {
       // Tracking typographique pour les labels uppercase (style petite capitale)
       ctx.letterSpacing = "1.5px";
       textWithShadow(ctx, item.label, footerX, FOOTER_Y + 18, {
-        color: "#64748b",
-        font: "700 11px 'Google Sans Flex', sans-serif",
+        ...LABEL_STYLE,
+        font: font("700 11px"),
       });
       ctx.restore();
       textWithShadow(ctx, item.value, footerX, FOOTER_Y + 36, {
         color: "#e2e8f0",
-        font: "600 18px 'Google Sans Flex', sans-serif",
+        font: font("600 18px"),
       });
       ctx.save();
-      ctx.font = "600 18px 'Google Sans Flex', sans-serif";
+      ctx.font = font("600 18px");
       footerX += Math.max(120, ctx.measureText(item.value).width + 36);
       ctx.restore();
     }
@@ -709,9 +721,9 @@ export class CardService {
 
     ctx.save();
     // Mesure texte scouter
-    ctx.font = "700 30px 'Google Sans Flex', sans-serif";
+    ctx.font = font("700 30px");
     const scouterTextW = ctx.measureText(kiLabel).width;
-    ctx.font = "700 10px 'Google Sans Flex', sans-serif";
+    ctx.font = font("700 10px");
     const kiLabelW = ctx.measureText("KI LEVEL").width;
     const chipW = Math.max(scouterTextW, kiLabelW) + 26;
     const chipX = SCOUTER_R_X - chipW;
@@ -727,7 +739,7 @@ export class CardService {
 
     // Label "KI LEVEL" avec tracking pour le côté scouter
     ctx.fillStyle = rgba(chipBg, 0.9);
-    ctx.font = "700 9px 'Google Sans Flex', sans-serif";
+    ctx.font = font("700 9px");
     ctx.textAlign = "center";
     ctx.letterSpacing = "2.5px";
     ctx.fillText("KI LEVEL", chipX + chipW / 2, SCOUTER_Y + 11);
@@ -737,15 +749,9 @@ export class CardService {
     ctx.shadowColor = chipBg;
     ctx.shadowBlur = 8;
     ctx.fillStyle = chipBg;
-    ctx.font = "700 30px 'Google Sans Flex', sans-serif";
+    ctx.font = font("700 30px");
     ctx.fillText(kiLabel, chipX + chipW / 2, SCOUTER_Y + 36);
     ctx.restore();
-
-    textWithShadow(ctx, `#${input.discordUser.id.slice(-6)}`, width - PAD - 30, 135, {
-      color: "rgba(148,163,184,0.3)",
-      font: "500 10px 'Google Sans Flex', sans-serif",
-      align: "right",
-    });
 
     ctx.restore(); // undo clip
     ctx.save();

@@ -8,6 +8,7 @@ import {
   roundRectPath,
   textStroked,
   textWithShadow,
+  font,
 } from "~/lib/canvas-kit";
 
 /**
@@ -81,20 +82,20 @@ export class GaugeService {
 
     // ── Label scouter en haut ──────────────────────────────────────────
     textWithShadow(ctx, "« SCANNER »", 28, 32, {
-      font: "700 13px 'Google Sans Flex', sans-serif",
+      font: font("700 13px"),
       color: rgba(input.accent, 0.85),
       align: "left",
     });
     // Titre — Google Sans Flex 900 avec halo accent (glow néon, lisible).
     textWithShadow(ctx, input.title, 28, 62, {
-      font: "900 28px 'Google Sans Flex', sans-serif",
+      font: font("900 28px"),
       color: "#f1f5f9",
       align: "left",
       shadow: rgba(input.accent, 0.85),
       blur: 14,
     });
     textWithShadow(ctx, input.subtitle, 28, 84, {
-      font: "500 12px 'Google Sans Flex', sans-serif",
+      font: font("500 12px"),
       color: "rgba(255,255,255,0.5)",
       align: "left",
     });
@@ -143,7 +144,7 @@ export class GaugeService {
 
     // Pseudo sous l'avatar
     textWithShadow(ctx, input.user.username.toUpperCase().slice(0, 14), AV_CX, AV_CY + AV_R + 24, {
-      font: "700 14px 'Google Sans Flex', sans-serif",
+      font: font("700 14px"),
       color: "#f1f5f9",
       align: "center",
       shadow: "rgba(0,0,0,0.8)",
@@ -157,7 +158,7 @@ export class GaugeService {
 
     // Chiffre géant en font Scouter
     textStroked(ctx, pctText, PCT_CX, PCT_CY, {
-      font: "700 140px 'Google Sans Flex', sans-serif",
+      font: font("700 140px"),
       color: input.accent,
       stroke: "rgba(0,0,0,0.9)",
       strokeWidth: 5,
@@ -165,7 +166,7 @@ export class GaugeService {
     });
     // Signe %
     textWithShadow(ctx, "%", PCT_CX + 90, PCT_CY - 20, {
-      font: "700 60px 'Google Sans Flex', sans-serif",
+      font: font("700 60px"),
       color: input.accent,
       shadow: rgba(input.accent, 0.7),
       blur: 14,
@@ -197,12 +198,12 @@ export class GaugeService {
 
     // Sous-label
     textWithShadow(ctx, "POWER LEVEL / COMPATIBILITY", G_X, G_Y + G_H + 20, {
-      font: "700 11px 'Google Sans Flex', sans-serif",
+      font: font("700 11px"),
       color: rgba(input.accent, 0.6),
       align: "left",
     });
     textWithShadow(ctx, `${input.pct}/100`, G_X + G_W, G_Y + G_H + 20, {
-      font: "700 13px 'Google Sans Flex', sans-serif",
+      font: font("700 13px"),
       color: input.accent,
       align: "right",
     });

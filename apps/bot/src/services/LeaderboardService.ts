@@ -10,6 +10,7 @@ import {
   roundRectPath,
   textStroked,
   textWithShadow,
+  font,
 } from "~/lib/canvas-kit";
 
 export interface LeaderboardEntry {
@@ -151,7 +152,7 @@ export class LeaderboardService {
       W / 2,
       headerY - 24,
       {
-        font: "700 11px 'Google Sans Flex', sans-serif",
+        font: font("700 11px"),
         color: "rgba(56, 189, 248, 0.85)",
         align: "center",
       },
@@ -159,7 +160,7 @@ export class LeaderboardService {
 
     // Titre principal percutant avec encrage franc (0.8% stroke)
     textStroked(ctx, meta.title.toUpperCase(), W / 2, headerY + 12, {
-      font: "800 38px 'Google Sans Flex', sans-serif",
+      font: font("800 38px"),
       color: "#fbbf24",
       stroke: "#000000",
       strokeWidth: 5,
@@ -169,7 +170,7 @@ export class LeaderboardService {
     // Sous-titre ou statut
     if (meta.subtitle) {
       textWithShadow(ctx, meta.subtitle, W / 2, headerY + 36, {
-        font: "600 14px 'Google Sans Flex', sans-serif",
+        font: font("600 14px"),
         color: "rgba(255, 255, 255, 0.75)",
         shadow: "rgba(0,0,0,0.8)",
         blur: 6,
@@ -289,7 +290,7 @@ export class LeaderboardService {
       W / 2,
       footerY,
       {
-        font: "700 13px 'Google Sans Flex', sans-serif",
+        font: font("700 13px"),
         color: "rgba(250, 204, 21, 0.9)",
         shadow: "rgba(0,0,0,0.9)",
         blur: 4,
@@ -299,13 +300,13 @@ export class LeaderboardService {
 
     // Badge système
     textWithShadow(ctx, "SHENRON KI ENGINE v2.4", W - 90, footerY, {
-      font: "600 11px 'Google Sans Flex', sans-serif",
+      font: font("600 11px"),
       color: "rgba(56, 189, 248, 0.5)",
       align: "right",
     });
 
     textWithShadow(ctx, "SYSTEM: ACTIVE", 90, footerY, {
-      font: "600 11px 'Google Sans Flex', sans-serif",
+      font: font("600 11px"),
       color: "rgba(34, 197, 94, 0.6)",
       align: "left",
     });
@@ -357,18 +358,6 @@ export class LeaderboardService {
     ctx.stroke();
     ctx.restore();
 
-    // Watermark chiffre géant dans le piédestal
-    ctx.save();
-    ctx.globalAlpha = 0.16;
-    textStroked(ctx, String(rank), cx, P_TOP_Y + P_H - 12, {
-      font: "900 88px 'Google Sans Flex', sans-serif",
-      color: cfg.ring,
-      stroke: "#000000",
-      strokeWidth: 4,
-      align: "center",
-    });
-    ctx.restore();
-
     // Badge Kanji sur le piédestal
     ctx.save();
     ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
@@ -378,7 +367,7 @@ export class LeaderboardService {
     ctx.lineWidth = 1.5;
     ctx.stroke();
     textWithShadow(ctx, cfg.kanji, cx, P_TOP_Y + 5, {
-      font: "700 16px 'Google Sans Flex', sans-serif",
+      font: font("700 16px"),
       color: cfg.ring,
       align: "center",
     });
@@ -444,17 +433,17 @@ export class LeaderboardService {
     // 4. Pseudo du guerrier sous l'avatar (fond badge d'encre)
     const nameText = truncate(entry.username, 16);
     ctx.save();
-    ctx.font = "700 16px 'Google Sans Flex', sans-serif";
+    ctx.font = font("700 16px");
     const nameW = ctx.measureText(nameText).width;
-    roundRectPath(ctx, cx - nameW / 2 - 10, cy + avR + 5, nameW + 20, 24, 6);
+    roundRectPath(ctx, cx - nameW / 2 - 10, cy + avR - 8, nameW + 20, 24, 6);
     ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
     ctx.fill();
     ctx.strokeStyle = "rgba(0, 0, 0, 0.9)";
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    textWithShadow(ctx, nameText, cx, cy + avR + 22, {
-      font: "700 15px 'Google Sans Flex', sans-serif",
+    textWithShadow(ctx, nameText, cx, cy + avR + 9, {
+      font: font("700 15px"),
       color: "#ffffff",
       shadow: "rgba(0,0,0,0.9)",
       blur: 4,
@@ -464,21 +453,21 @@ export class LeaderboardService {
 
     // 5. Statistiques dans le piédestal (XP Scouter + Zénis)
     textWithShadow(ctx, "PUISSANCE (KI)", cx, P_TOP_Y + P_H / 2 - 12, {
-      font: "800 10px 'Google Sans Flex', sans-serif",
+      font: font("800 10px"),
       color: "rgba(56, 189, 248, 0.85)",
       align: "center",
     });
 
-    textStroked(ctx, `${kiScouterLabel(entry.xp)} U`, cx, P_TOP_Y + P_H / 2 + 15, {
-      font: "900 26px 'Google Sans Flex', sans-serif",
+    textStroked(ctx, `${kiScouterLabel(entry.xp)} u`, cx, P_TOP_Y + P_H / 2 + 15, {
+      font: font("900 26px"),
       color: cfg.ring,
       stroke: "#000000",
       strokeWidth: 3.5,
       align: "center",
     });
 
-    textWithShadow(ctx, `${kiScouterLabel(entry.zeni)} Ƶ`, cx, P_TOP_Y + P_H / 2 + 35, {
-      font: "600 12px 'Google Sans Flex', sans-serif",
+    textWithShadow(ctx, `${kiScouterLabel(entry.zeni)} z`, cx, P_TOP_Y + P_H / 2 + 35, {
+      font: font("600 12px"),
       color: "rgba(250, 204, 21, 0.9)",
       shadow: "rgba(0,0,0,0.9)",
       blur: 4,
@@ -523,7 +512,7 @@ export class LeaderboardService {
     ctx.stroke();
 
     textWithShadow(ctx, `#${rank}`, x + 8 + rankBoxW / 2, y + (h - 4) / 2 + 5, {
-      font: "800 13px 'Google Sans Flex', sans-serif",
+      font: font("800 13px"),
       color: rank <= 5 ? "#fbbf24" : "rgba(255, 255, 255, 0.75)",
       align: "center",
     });
@@ -563,7 +552,7 @@ export class LeaderboardService {
     // Nom du combattant
     const nameX = avX + avSize + 12;
     textWithShadow(ctx, truncate(entry.username, 20), nameX, y + (h - 4) / 2 + 5, {
-      font: "700 14px 'Google Sans Flex', sans-serif",
+      font: font("700 14px"),
       color: "#f8fafc",
       shadow: "rgba(0,0,0,0.8)",
       blur: 4,
@@ -602,7 +591,7 @@ export class LeaderboardService {
 
     // Score XP (Scouter Power Level)
     textWithShadow(ctx, `${kiScouterLabel(entry.xp)} u`, x + w - 170, y + (h - 4) / 2 + 5, {
-      font: "800 14px 'Google Sans Flex', sans-serif",
+      font: font("800 14px"),
       color: "#38bdf8",
       shadow: "rgba(0,0,0,0.8)",
       blur: 4,
@@ -611,7 +600,7 @@ export class LeaderboardService {
 
     // Zénis (pièces dorées)
     textWithShadow(ctx, `${kiScouterLabel(entry.zeni)} z`, x + w - 30, y + (h - 4) / 2 + 5, {
-      font: "700 14px 'Google Sans Flex', sans-serif",
+      font: font("700 14px"),
       color: "#fbbf24",
       shadow: "rgba(0,0,0,0.8)",
       blur: 4,

@@ -430,3 +430,8 @@ Validées par zod ; un identifiant absent désactive la fonctionnalité concern�
   `TICKET_CATEGORY_ID`, `VOCAL_TEMPO_HUB_ID`, `SERVER_INVITE_URL`.
 - API : `API_ENABLED`, `API_HOST`, `API_PORT`, `API_ADMIN_TOKEN`, `API_USER_SECRET`.
 - Divers : `LOG_LEVEL`, `NODE_ENV`.
+- Canvas : `SHENRON_BOT_ASSETS_DIR`, dossier de repli des polices et bannières livrées à côté
+  du binaire (`share/` de `dist/bot/<cible>`, copié par `apps/bot/scripts/ship-canvas-assets.ts`).
+  L'image le pose à `/usr/local/share/shenron-bot`, hors du montage `/app/assets` ; un fichier
+  présent dans l'arbre source reste prioritaire. Emoji et CJK viennent des polices système
+  de l'image (`fonts-noto-color-emoji`, `fonts-wqy-microhei`).
