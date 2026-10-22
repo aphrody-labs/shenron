@@ -20,8 +20,17 @@ générique. Ces éléments ne constituent ni le moteur du jeu commercial ni un 
 Le dossier local reste incomplet pour produire un binaire WASM complet ; le service CPK du
 VPS constitue une source de données, pas du code source du moteur ni un projet de build
 portable. La faisabilité du port intégral demeure **non démontrée et XL**, mais n’est plus
-écartée sur la base d’une absence de droits déclarés. L’analyse Ghidra du PE x86-64 a démarré ;
-aucune conclusion sur son moteur ou ses dépendances n’est encore établie.
+écartée sur la base d’une absence de droits déclarés. L’analyse Ghidra du PE x86-64 avait démarré
+puis expiré (`var/reports/dbxv2-binary-20261021/rea-analysis.json`, `provider_timeout` à 330 s).
+Un scan de signatures statique (Detect It Easy, 2026-10-22,
+`var/reports/dbxv2-drm-20261022/`) explique pourquoi : `DBXV2.exe` est enveloppé par
+**SteamStub x64**, le DRM/CEG natif de Steamworks — section `.text` (15,3 Mio) à une entropie de
+7.9999/8 bits/octet, indiscernable d'un flux chiffré, plus une section `.bind` propre à
+SteamStub. Le code réel ne se déchiffre qu'en mémoire sous une session Steam valide ; aucun
+outil de retrait de ce DRM n'a été utilisé ni produit, conformément à l'autorisation du
+propriétaire (analyse oui, retrait du DRM Steam non). Le même scan sur `xgcore.dll` et
+`iggy_w64.dll` ne montre aucune protection : ce sont elles, avec les données CPK, la voie
+d'analyse statique praticable retenue pour le port.
 
 ## Sources
 
@@ -38,7 +47,7 @@ aucune conclusion sur son moteur ou ses dépendances n’est encore établie.
 
 | Élément | Observation | Portée |
 | --- | --- | --- |
-| `bin/DBXV2.exe` | Exécutable Windows, 23 877 704 octets | Présence du programme natif ; une analyse statique Ghidra a été ouverte, sans résultat exploitable encore consigné. |
+| `bin/DBXV2.exe` | Exécutable Windows, 23 877 704 octets, verrouillé par SteamStub x64 (`var/reports/dbxv2-drm-20261022/`) | Présence du programme natif ; la section de code est chiffrée au repos (DRM Steamworks), le code réel n'existe qu'en mémoire sous session Steam. Aucune analyse Ghidra exploitable, aucun outil de retrait produit. |
 | `START.exe` | Lanceur, 3 975 920 octets | Bootstrapper, pas une source de build WASM. |
 | `steam_api64.dll`, `EOSSDK-Win64-Shipping.dll` | Bibliothèques natives | Dépendances de services desktop ; leur présence ne donne pas leurs implémentations portables. |
 | `EasyAntiCheat/` | Configuration, installateur, certificats et traductions | Dépendance au déploiement Windows ; aucun contenu de jeu. |
