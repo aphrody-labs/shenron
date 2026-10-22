@@ -286,8 +286,8 @@ impl ToonMaterial {
     }
 }
 
-/// XV2 toon shading: the lambert term indexes the material's dye ramp horizontally, the
-/// line map's alpha draws ink lines and its red channel darkens stains.
+/// XV2 toon shading: a two-tone lambert term indexes the bright half of the material's dye
+/// ramp, the line map's alpha draws ink lines and its red channel darkens stains.
 pub const XV2_TOON_WGSL: &str = r#"
 struct Uniforms {
     view_proj: mat4x4<f32>,
@@ -330,10 +330,12 @@ fn vs_main(in: VertexInput) -> VertexOutput {
 fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
     let line = textureSampleLevel(t_line, s_linear, in.uv, 0.0);
     let n_dot_l = dot(normalize(in.world_normal), normalize(u.light_dir));
-    let lit = clamp(n_dot_l * 0.5 + 0.5, 0.0, 1.0) * (1.0 - 0.35 * line.r);
+    // Two-tone toon: lit faces read the bright end of the dye ramp, shadowed faces its
+    // middle; stains (line map red) pull toward the shadow tone.
+    let toon = smoothstep(-0.1, 0.2, n_dot_l) * (1.0 - 0.4 * line.r);
     var color: vec3<f32>;
     if (m.has_dye > 0.5) {
-        let ramp_u = clamp(0.04 + 0.92 * lit, 0.0, 1.0);
+        let ramp_u = mix(0.6, 0.96, toon);
         color = textureSampleLevel(t_dye, s_linear, vec2<f32>(ramp_u, m.dye_v), 0.0).rgb;
     } else {
         color = line.rgb * (u.ambient.rgb + vec3<f32>(select(0.55, 1.0, n_dot_l > 0.15)));
