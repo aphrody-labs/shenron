@@ -104,7 +104,7 @@ import { GameRewardService } from "~/services/GameRewardService";
 const consumedGameStates = new SingleUseTokens();
 const GAME_STATE_TTL_MS = 30 * 60 * 1000;
 import { ZENI_GAME_WIN, ZENI_GAME_LOSS_PENALTY } from "~/lib/constants";
-import { eq, and, sql, desc, asc, inArray, isNull } from "drizzle-orm";
+import { eq, and, sql, desc, asc, gte, inArray, isNull } from "drizzle-orm";
 import {
   users,
   actionLogs,
@@ -1901,7 +1901,7 @@ export class ApiServer {
                 .where(
                   and(
                     action,
-                    sql`${actionLogs.createdAt} >= ${since}`,
+                    gte(actionLogs.createdAt, since),
                     sql`${actionLogs.userId} is not null`,
                   ),
                 )

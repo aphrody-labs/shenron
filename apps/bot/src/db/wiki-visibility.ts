@@ -123,4 +123,8 @@ const REPLICA_COLUMNS = [
   ["db_tools", "archived", "INTEGER DEFAULT false NOT NULL"],
   ["db_tools", "pushed_at", "INTEGER"],
   ["db_tools", "checked_at", "INTEGER"],
+  // Every Drizzle select on `users` reads these: a missing one breaks voice XP, /profil and roles.
+  ["users", "zeni_frozen", "INTEGER NOT NULL DEFAULT 0"],
+  ["users", "equipped_banner", "TEXT"],
+  ["level_rewards", "banner_url", "TEXT"],
 ] as const;
