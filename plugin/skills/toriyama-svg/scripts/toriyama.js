@@ -1,7 +1,7 @@
 // @bun
 // Généré par scripts/plugin/build-references.ts — ne pas éditer.
-// Sources : packages/ui/src/toriyama-svg/couverture.ts, packages/ui/src/toriyama-svg/emblems.ts, packages/ui/src/toriyama-svg/geometry.ts, packages/ui/src/toriyama-svg/index.ts, packages/ui/src/toriyama-svg/kinto-un.ts, packages/ui/src/toriyama-svg/model3d.ts, packages/ui/src/toriyama-svg/palette.ts, packages/ui/src/toriyama-svg/potara.ts, packages/ui/src/toriyama-svg/senzu.ts, packages/ui/src/toriyama-svg/sphere.ts, scripts/plugin/src/toriyama.ts
-// Révision : e94292e1 (2026-10-17)
+// Sources : packages/ui/src/toriyama-svg/couverture.ts, packages/ui/src/toriyama-svg/emblems.ts, packages/ui/src/toriyama-svg/geometry.ts, packages/ui/src/toriyama-svg/gohan-ultime.ts, packages/ui/src/toriyama-svg/index.ts, packages/ui/src/toriyama-svg/kinto-un.ts, packages/ui/src/toriyama-svg/model3d.ts, packages/ui/src/toriyama-svg/palette.ts, packages/ui/src/toriyama-svg/potara.ts, packages/ui/src/toriyama-svg/senzu.ts, packages/ui/src/toriyama-svg/sphere.ts, scripts/plugin/src/toriyama.ts
+// Révision : e94292e1+modifications (2026-10-17)
 var __defProp = Object.defineProperty;
 var __returnValue = (v) => v;
 function __exportSetter(name, newValue) {
@@ -52,6 +52,20 @@ __export(exports_kinto_un, {
   svgIllustration: () => svgIllustration3,
   svgMonochrome: () => svgMonochrome,
   volute: () => volute
+});
+
+// packages/ui/src/toriyama-svg/gohan-ultime.ts
+var exports_gohan_ultime = {};
+__export(exports_gohan_ultime, {
+  GOHAN_ULTIME_COULEURS: () => GOHAN_ULTIME_COULEURS,
+  GOHAN_ULTIME_COULEURS_BRUTES: () => GOHAN_ULTIME_COULEURS_BRUTES,
+  GOHAN_ULTIME_MESURES: () => GOHAN_ULTIME_MESURES,
+  cheminAura: () => cheminAura,
+  cheminChevelure: () => cheminChevelure,
+  cheminShuchusen: () => cheminShuchusen,
+  svgCalqueBanniere: () => svgCalqueBanniere,
+  svgChevelure: () => svgChevelure,
+  svgEmbleme: () => svgEmbleme
 });
 
 // packages/ui/src/toriyama-svg/couverture.ts
@@ -847,6 +861,145 @@ function svgMonochrome() {
 </svg>
 `;
 }
+// packages/ui/src/toriyama-svg/gohan-ultime.ts
+var GOHAN_ULTIME_MESURES = {
+  ratio: 193 / 161,
+  creuxBas: [0.5, 13.5, 26.6, 36.7, 46.4, 50.8, 57.7],
+  traitSurLargeur: 0.009,
+  contour: [
+    [0.254, 1.13],
+    [0, 0.674],
+    [0.047, 0.565],
+    [0.138, 0.27],
+    [0.187, 0.41],
+    [0.239, 0.048],
+    [0.42, 0.304],
+    [0.435, 0.004],
+    [0.567, 0.265],
+    [0.609, 0],
+    [0.896, 0.39],
+    [0.969, 0.172],
+    [0.995, 0.634],
+    [0.94, 1],
+    [0.874, 1.211],
+    [0.81, 1.04],
+    [0.66, 0.99],
+    [0.47, 0.9],
+    [0.352, 0.851],
+    [0.3, 0.95]
+  ],
+  fleches: [
+    0.004,
+    0.004,
+    0.004,
+    0.003,
+    0.003,
+    0.003,
+    0.003,
+    0.003,
+    0.003,
+    0.012,
+    0.003,
+    0.004,
+    0.014,
+    0.006,
+    0.004,
+    -0.004,
+    -0.012,
+    -0.01,
+    -0.006,
+    0.006
+  ],
+  shuchusen: { traits: 96, centreLibre: 0.22 },
+  aura: { pointes: 23, amplitude: 0.18 }
+};
+var GOHAN_ULTIME_COULEURS = {
+  gi: "#fc9d18",
+  giOmbre: "#ba5f1e",
+  bleu: "#2150ac",
+  peau: "#fed7b4",
+  encre: "var(--color-encre, #131b08)",
+  papier: "var(--color-os, #efe9d8)"
+};
+var GOHAN_ULTIME_COULEURS_BRUTES = {
+  ...GOHAN_ULTIME_COULEURS,
+  encre: "#131b08",
+  papier: "#efe9d8"
+};
+function cheminChevelure(x, y, L) {
+  const m = GOHAN_ULTIME_MESURES;
+  const H = L / m.ratio;
+  const pts = m.contour.map(([u, v]) => [x + u * L, y + v * H]);
+  return arcs(pts, m.fleches.map((f) => f * L));
+}
+function svgChevelure(L = 480, marge = 16, couleurs = GOHAN_ULTIME_COULEURS) {
+  const H = L / GOHAN_ULTIME_MESURES.ratio * 1.22;
+  const vw = Math.round(L + 2 * marge);
+  const vh = Math.round(H + 2 * marge);
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${vw} ${vh}" width="${vw}" height="${vh}" role="img" aria-label="Son Gohan"><path d="${cheminChevelure(marge, marge, L)}" fill="${couleurs.encre}"/></svg>
+`;
+}
+function cheminAura(cx, cy, r) {
+  const { pointes, amplitude } = GOHAN_ULTIME_MESURES.aura;
+  const pts = [];
+  for (let i = 0;i < pointes * 2; i++) {
+    const t = i / (pointes * 2) * Math.PI * 2 - Math.PI / 2;
+    const haut = Math.max(0, -Math.sin(t));
+    const k = i % 2 === 0 ? 1 + amplitude * (1 + 1.6 * haut) + i * 7 % 5 * 0.012 : 1 - amplitude * 0.35;
+    pts.push([cx + Math.cos(t) * r * k * 0.72, cy + Math.sin(t) * r * k]);
+  }
+  return arcs(pts, pts.map(() => r * 0.006));
+}
+function cheminShuchusen(cx, cy, rInt, rExt) {
+  const { traits } = GOHAN_ULTIME_MESURES.shuchusen;
+  return radialSpeedlines(cx, cy, rInt, rExt, traits).map((l, i) => {
+    const [, x1, y1, x2, y2] = l.match(/M (\S+) (\S+) L (\S+) (\S+)/).map(Number);
+    const a = Math.atan2(y2 - y1, x2 - x1);
+    const e = rExt * (0.004 + i * 11 % 4 * 0.002);
+    const [nx, ny] = [-Math.sin(a) * e, Math.cos(a) * e];
+    return `M${roundTo(x1)} ${roundTo(y1)}L${roundTo(x2 + nx)} ${roundTo(y2 + ny)}L${roundTo(x2 - nx)} ${roundTo(y2 - ny)}Z`;
+  }).join("");
+}
+function svgEmbleme(cote = 512, couleurs = GOHAN_ULTIME_COULEURS) {
+  const c = cote / 2;
+  const trait = roundTo(cote * 0.016, 2);
+  const rDisque = c - trait;
+  const rMedaillon = cote * 0.22;
+  const L = cote * 0.5;
+  const H = L / GOHAN_ULTIME_MESURES.ratio;
+  const x = c - L / 2;
+  const y = c + rMedaillon * 0.35 - H;
+  const ombre = roundTo(cote * 0.03, 1);
+  const aura = cheminAura(c, c + cote * 0.03, cote * 0.36);
+  const chevelure = cheminChevelure(x, y, L);
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${cote} ${cote}" width="${cote}" height="${cote}" role="img" aria-label="Son Gohan">
+<defs><clipPath id="gohan-ultime-disque"><circle cx="${c}" cy="${c}" r="${rDisque}"/></clipPath></defs>
+<circle cx="${c}" cy="${c}" r="${rDisque}" fill="${couleurs.bleu}"/>
+<g clip-path="url(#gohan-ultime-disque)">
+<path d="${cheminShuchusen(c, c, cote * 0.36, cote * 0.75)}" fill="${couleurs.papier}"/>
+<path d="${aura}" fill="${couleurs.papier}" stroke="${couleurs.encre}" stroke-width="${trait}" stroke-linejoin="round"/>
+</g>
+<circle cx="${c + ombre}" cy="${c + ombre}" r="${rMedaillon}" fill="${couleurs.encre}"/>
+<circle cx="${c}" cy="${c}" r="${rMedaillon}" fill="${couleurs.gi}" stroke="${couleurs.encre}" stroke-width="${trait}"/>
+<circle cx="${c}" cy="${c}" r="${rMedaillon - trait * 1.8}" fill="${couleurs.peau}" stroke="${couleurs.encre}" stroke-width="${trait * 0.6}"/>
+<path d="${chevelure}" fill="${couleurs.giOmbre}" transform="translate(${ombre} ${ombre})"/>
+<path d="${chevelure}" fill="${couleurs.encre}"/>
+<circle cx="${c}" cy="${c}" r="${rDisque}" fill="none" stroke="${couleurs.encre}" stroke-width="${trait * 2}"/>
+</svg>
+`;
+}
+function svgCalqueBanniere(largeur, hauteur, cx, cy, couleurs = GOHAN_ULTIME_COULEURS) {
+  const r = hauteur * 0.62;
+  const trait = roundTo(hauteur * 0.006, 2);
+  const ombre = roundTo(hauteur * 0.012, 1);
+  const aura = cheminAura(cx, cy, r);
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${largeur} ${hauteur}" width="${largeur}" height="${hauteur}" aria-hidden="true">
+<path d="${cheminShuchusen(cx, cy, r * GOHAN_ULTIME_MESURES.shuchusen.centreLibre * 4, Math.hypot(largeur, hauteur))}" fill="${couleurs.papier}"/>
+<path d="${aura}" fill="${couleurs.encre}" transform="translate(${ombre} ${ombre})"/>
+<path d="${aura}" fill="${couleurs.papier}" stroke="${couleurs.encre}" stroke-width="${trait}" stroke-linejoin="round"/>
+</svg>
+`;
+}
 // packages/ui/src/toriyama-svg/couverture.ts
 var CADRE_CASE = {
   lisere: 0.0177,
@@ -1153,6 +1306,7 @@ export {
   exports_couverture as couverture,
   dragonBallParams,
   etoilesSphere,
+  exports_gohan_ultime as gohanUltime,
   inkStroke,
   exports_kinto_un as kintoUn,
   kintoUnParams,
