@@ -74,6 +74,9 @@
   },
   "ignorePatterns": [
     "**/node_modules/**",
+    "vendor/**",
+    "crates/filmcraft/**",
+    "plugin/skills/*/scripts/*.js",
     "target/**",
     "var/**",
     "dist/**",
