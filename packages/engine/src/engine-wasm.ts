@@ -34,8 +34,18 @@ export interface Xv2CharacterRenderer {
 export interface Xv2DuelRenderer {
   /** Playable `.bac` action ids of `player` (0 or 1). */
   actions(player: number): Uint32Array;
-  /** Starts an action; refused while stunned or mid-action. */
+  /** Starts an action; refused while stunned or mid-action/skill. */
   attack(player: number, id: number): boolean;
+  /**
+   * Loads a skill's own `.ean`/`.bac` (e.g. `data/skill/SPA/004_GOK_GKD/
+   * 004_GOK_GKD.{ean,bac}`, Goku's Kamehameha) for `player`; returns its playable action ids.
+   */
+  loadSkill(player: number, eanBytes: Uint8Array, bacBytes: Uint8Array): Uint32Array;
+  /**
+   * Plays a loaded skill's action once, animated from the skill's own `.ean`. The skill's
+   * own hitboxes, if any, are not yet resolved.
+   */
+  playSkill(player: number, id: number): boolean;
   /** Moves toward (positive) or away from (negative) the opponent, in metres. */
   walk(player: number, metres: number): void;
   hp(player: number): number;

@@ -196,7 +196,7 @@ export class Xv2DuelWasm {
      */
     actions(player: number): Uint32Array;
     /**
-     * Starts action `id` for `player`; refused while stunned or mid-action.
+     * Starts action `id` for `player`; refused while stunned or mid-action/skill.
      */
     attack(player: number, id: number): boolean;
     camera(azimuth: number, elevation: number, zoom: number): void;
@@ -213,6 +213,17 @@ export class Xv2DuelWasm {
      */
     hits(): number;
     hp(player: number): number;
+    /**
+     * Loads a skill's own `.ean` and `.bac` (e.g. `data/skill/SPA/004_GOK_GKD/
+     * 004_GOK_GKD.{ean,bac}`, a Kamehameha) for `player`; returns its playable action ids.
+     */
+    loadSkill(player: number, ean_bytes: Uint8Array, bac_bytes: Uint8Array): Uint32Array;
+    /**
+     * Plays action `id` of `player`'s loaded skill once, animated from the skill's own
+     * `.ean` rather than the character's. The skill's own hitboxes, if any, are not yet
+     * resolved (see [`crate::xv2_fighter::Fighter::start_skill`]).
+     */
+    playSkill(player: number, id: number): boolean;
     /**
      * Whether `player` can act (not stunned, no action in progress).
      */
@@ -285,6 +296,11 @@ export function wasm_parse_bac(bac_bytes: Uint8Array): any;
  * Parse a DBXV2 BDM (Battle Damage Matrix) binary file and return all damage definitions.
  */
 export function wasm_parse_bdm(bdm_bytes: Uint8Array): any;
+
+/**
+ * Parse the DBXV2 CMS (Character Model Spec) roster file and return every character entry.
+ */
+export function wasm_parse_cms(cms_bytes: Uint8Array): any;
 
 /**
  * Parse a DBXV2 CUS (Character Ultimate Skill) binary file and return all skills.
@@ -367,6 +383,7 @@ export interface InitOutput {
     readonly wasm_get_xenoverse3_prototype_map: () => [number, number, number];
     readonly wasm_parse_bac: (a: number, b: number) => [number, number, number];
     readonly wasm_parse_bdm: (a: number, b: number) => [number, number, number];
+    readonly wasm_parse_cms: (a: number, b: number) => [number, number, number];
     readonly wasm_parse_cus: (a: number, b: number) => [number, number, number];
     readonly wasm_parse_emb: (a: number, b: number) => [number, number, number];
     readonly wasm_parse_msg: (a: number, b: number) => [number, number, number];
@@ -377,6 +394,7 @@ export interface InitOutput {
     readonly xv2characterwasm_camera: (a: number, b: number, c: number, d: number) => void;
     readonly xv2characterwasm_frame: (a: number, b: number) => number;
     readonly xv2characterwasm_loadActions: (a: number, b: number, c: number) => [number, number, number, number];
+    readonly xv2characterwasm_play: (a: number, b: number) => number;
     readonly shenron_re_abi_version: () => number;
     readonly shenron_re_bac_parse_json: (a: number, b: number) => number;
     readonly shenron_re_bdm_parse_json: (a: number, b: number) => number;
@@ -394,7 +412,6 @@ export interface InitOutput {
     readonly shenron_re_triage_json: (a: number, b: number) => number;
     readonly shenron_re_unified_state_json: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => number;
     readonly shenron_re_version: () => number;
-    readonly xv2characterwasm_play: (a: number, b: number) => number;
     readonly xv2characterwasm_playAction: (a: number, b: number) => number;
     readonly xv2characterwasm_resize: (a: number, b: number, c: number) => void;
     readonly xv2duelwasm_actions: (a: number, b: number) => [number, number];
@@ -404,14 +421,16 @@ export interface InitOutput {
     readonly xv2duelwasm_frame: (a: number, b: number) => number;
     readonly xv2duelwasm_hits: (a: number) => number;
     readonly xv2duelwasm_hp: (a: number, b: number) => number;
+    readonly xv2duelwasm_loadSkill: (a: number, b: number, c: number, d: number, e: number, f: number) => [number, number, number, number];
+    readonly xv2duelwasm_playSkill: (a: number, b: number, c: number) => number;
     readonly xv2duelwasm_ready: (a: number, b: number) => number;
     readonly xv2duelwasm_resize: (a: number, b: number, c: number) => void;
     readonly xv2duelwasm_walk: (a: number, b: number, c: number) => void;
     readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___js_sys_eb92dcb4f6145e43___Function_fn_wasm_bindgen_3017951c9ae318c7___JsValue_____wasm_bindgen_3017951c9ae318c7___sys__Undefined___js_sys_eb92dcb4f6145e43___Function_fn_wasm_bindgen_3017951c9ae318c7___JsValue_____wasm_bindgen_3017951c9ae318c7___sys__Undefined_______true_: (a: number, b: number, c: any, d: any) => void;
     readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___JsValue__core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true_: (a: number, b: number, c: any) => [number, number];
     readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true_: (a: number, b: number, c: any) => [number, number];
-    readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__66: (a: number, b: number, c: any) => [number, number];
-    readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__67: (a: number, b: number, c: any) => [number, number];
+    readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__69: (a: number, b: number, c: any) => [number, number];
+    readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__70: (a: number, b: number, c: any) => [number, number];
     readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuDeviceLostInfo__GpuDeviceLostInfo______true_: (a: number, b: number, c: any) => void;
     readonly __wbindgen_malloc: (a: number, b: number) => number;
     readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
