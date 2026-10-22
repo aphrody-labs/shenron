@@ -126,14 +126,26 @@ export class ShopPanelCommands {
   // ─────────────────────────────────────────────────────────────────
   @ButtonComponent({ id: "shop:open" })
   async openShop(interaction: ButtonInteraction) {
+    // Seuls les rayons qui ont un objet en vente : un rayon vide n'est pas proposé.
+    const stock = new Map<string, number>();
+    for (const item of await this.eco.listShop())
+      stock.set(item.type, (stock.get(item.type) ?? 0) + 1);
+    const departments = Object.entries(TYPE_LABELS).filter(([value]) => stock.has(value));
+    if (departments.length === 0) {
+      await interaction.reply({
+        content: "La boutique est vide pour le moment : revenez bientôt !",
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
     const select = new StringSelectMenuBuilder()
       .setCustomId("shop:category")
       .setPlaceholder("🔮 Choisis un rayon de la boutique…")
       .addOptions(
-        ...Object.entries(TYPE_LABELS).map(([value, { label, icon }]) => ({
+        ...departments.map(([value, { label, icon }]) => ({
           label: `Rayon ${label}`,
           value,
-          description: `Parcourir tous les objets du rayon ${label.toLowerCase()}`,
+          description: `${stock.get(value)} objet${stock.get(value)! > 1 ? "s" : ""} en vente`,
           emoji: icon,
         })),
       );
