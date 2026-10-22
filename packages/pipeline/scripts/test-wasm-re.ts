@@ -7,6 +7,7 @@
  *   bun packages/pipeline/scripts/test-wasm-re.ts
  */
 
+import { bacFixture, bdmFixture } from "../src/testing/dbxv2-fixtures";
 import {
   initShenronRe,
   getDragonBallCatalog,
@@ -357,46 +358,21 @@ if (matchCount !== originalData.length) {
 console.log("\n[7/7] Validating Dimps Binary Formats (BDM, BAC, PUP, MSG)...");
 
 // 1. BDM Validation
-const bdmBuffer = new Uint8Array(16 + 5 * 48);
-const bdmView = new DataView(bdmBuffer.buffer);
-bdmBuffer.set([0x23, 0x42, 0x44, 0x4d], 0); // "#BDM"
-bdmView.setUint32(4, 1, true);
-bdmView.setUint32(8, 5, true);
-bdmView.setUint32(12, 16, true);
-for (let i = 0; i < 5; i++) {
-  const off = 16 + i * 48;
-  bdmView.setUint32(off, 100 + i, true);
-  bdmView.setUint16(off + 4, i % 6, true);
-  bdmView.setUint32(off + 8, (i + 1) * 250, true);
-}
-const bdm = parseBdm(bdmBuffer);
-if (bdm.entries.length !== 5 || bdm.entries[0]?.damage_type !== "Strike") {
+const bdm = parseBdm(bdmFixture([{ id: 100, damageType: 3, amount: 250, victimStun: 30 }]));
+if (bdm.entries.length !== 1 || bdm.entries[0]?.damage_type !== "Standard") {
   throw new Error("BDM validation failed");
 }
 console.log(
-  `  ✓ BDM: decoded ${bdm.entries.length} impact matrices (Entry 0: type=${bdm.entries[0]?.damage_type}, dmg=${bdm.entries[0]?.base_damage})`,
+  `  ✓ BDM: decoded ${bdm.entries.length} damage entries (Entry 0: type=${bdm.entries[0]?.damage_type}, dmg=${bdm.entries[0]?.base_damage})`,
 );
 
 // 2. BAC Validation
-const bacBuffer = new Uint8Array(16 + 3 * 32);
-const bacView = new DataView(bacBuffer.buffer);
-bacBuffer.set([0x23, 0x42, 0x41, 0x43], 0); // "#BAC"
-bacView.setUint32(4, 1, true);
-bacView.setUint32(8, 3, true);
-bacView.setUint32(12, 16, true);
-for (let i = 0; i < 3; i++) {
-  const off = 16 + i * 32;
-  bacView.setUint32(off, 500 + i, true);
-  bacView.setUint16(off + 4, 60, true);
-  bacView.setUint16(off + 6, 12, true);
-  bacView.setUint16(off + 8, 20, true);
-}
-const bac = parseBac(bacBuffer);
-if (bac.moves.length !== 3 || bac.moves[0]?.startup_frames !== 12) {
+const bac = parseBac(bacFixture(4, 8, 4, 250));
+if (bac.moves.length !== 1 || bac.moves[0]?.startup_frames !== 8) {
   throw new Error("BAC validation failed");
 }
 console.log(
-  `  ✓ BAC: decoded ${bac.moves.length} moveset scripts (Move 0: startup=${bac.moves[0]?.startup_frames}f, total=${bac.moves[0]?.total_frames}f)`,
+  `  ✓ BAC: decoded ${bac.moves.length} action timelines (Action 1: startup=${bac.moves[0]?.startup_frames}f, total=${bac.moves[0]?.total_frames}f)`,
 );
 
 // 3. PUP Validation

@@ -162,9 +162,9 @@ mod tests {
 
     #[test]
     fn test_wasm_parse_bdm_direct() {
-        let mock = BdmFile::create_mock(5);
-        let parsed = BdmFile::parse(&mock).unwrap();
-        assert_eq!(parsed.entries.len(), 5);
+        let bytes = crate::formats::bdm::encode_bdm(&[(100, 3, 10, 20)]);
+        let parsed = BdmFile::parse(&bytes).unwrap();
+        assert_eq!(parsed.entries.len(), 1);
         assert_eq!(parsed.entries[0].id, 100);
     }
 

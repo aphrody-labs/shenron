@@ -16,7 +16,7 @@ pub mod pup;
 pub mod sav;
 
 pub use bac::{BacAnimation, BacBlock, BacFile, BacHitbox, BacMove};
-pub use bdm::{BdmEntry, BdmFile, DamageType};
+pub use bdm::{BdmEntry, BdmFile, BdmVariant, DamageType};
 pub use cms::{CmsEntry, CmsFile};
 pub use cus::{CusFile, CusSkill, SkillCategory};
 pub use ean::{EanAnimation, EanChannel, EanComponent, EanFile, EanNode, LocalPose};

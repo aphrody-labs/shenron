@@ -168,14 +168,21 @@ export interface Xenoverse3Map {
   caveat: string;
 }
 
+/** Victim reaction of a BDM variant; unnamed game codes serialize as `{ Other: code }`. */
 export type DamageType =
-  | "Strike"
-  | "KiBlast"
-  | "HeavyStrike"
+  | "None"
+  | "Block"
+  | "GuardBreak"
+  | "Standard"
+  | "Heavy"
+  | "Knockback"
   | "Grab"
-  | "Unblockable"
-  | "Special"
-  | "Unknown";
+  | "Electric"
+  | "Dazed"
+  | "Paralysis"
+  | "Freeze"
+  | "StaminaBreak"
+  | { Other: number };
 
 export interface BdmEntry {
   id: number;
