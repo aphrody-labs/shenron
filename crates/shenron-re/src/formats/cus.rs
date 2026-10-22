@@ -15,6 +15,15 @@
 //! supported, which is what the game currently ships. Every count/offset in this layout was
 //! verified against the real 434-skillset file: each category's declared offset lands
 //! exactly at the previous category's `offset + count * stride`.
+//!
+//! Which character a skill belongs to is not stored directly; it is derived from
+//! [`CusSkill::id2`]: within each category independently, a character's ten skill slots are
+//! `id2 ∈ [cms_id * 10, cms_id * 10 + 10)` (`cms_id` from [`super::cms::CmsFile`]'s roster).
+//! This is XV2-Tools' own id-assignment rule (`CUS_File.AssignNewSkillId`: `cmsEntry.ID *
+//! 10`), confirmed against the real file: Goku (`cms_id` 0) owns the ten Super skills with
+//! `id2` 0..9 (`KMH` Kamehameha, `GKD` Kaioken Kamehameha at slot 4 -- matching the real
+//! `data/skill/SPA/004_GOK_GKD/` asset path -- …), and `id2` 10..17 continues with another
+//! character's skills without a gap.
 
 use crate::error::{ReError, Result};
 use crate::formats::esk::{c_string_at, u16_at, u32_at};
@@ -299,5 +308,16 @@ mod tests {
                 skill.short_name
             );
         }
+
+        // Goku is cms_id 0: his ten Super skills are id2 0..9, in slot order, starting with
+        // Kamehameha and including Kaioken Kamehameha at slot 4 (data/skill/SPA/004_GOK_GKD/).
+        let mut goku_supers: Vec<_> = cus
+            .skills
+            .iter()
+            .filter(|s| s.category == SkillCategory::Super && s.id2 < 10)
+            .collect();
+        goku_supers.sort_by_key(|s| s.id2);
+        let names: Vec<_> = goku_supers.iter().map(|s| s.short_name.as_str()).collect();
+        assert_eq!(names, ["KMH", "KMC", "CSG", "CRG", "GKD", "SKI", "GTW", "AST", "4KM", "KMQ"]);
     }
 }
