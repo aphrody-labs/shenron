@@ -259,6 +259,22 @@ export class CardService {
     return themes.get(key);
   }
 
+  /** Thème effectif d'une carte équipée (clé brute, préfixe `card_` ou inconnue → défaut). */
+  async resolveTheme(cardKey: string | null | undefined): Promise<CardTheme> {
+    const themes = await this.getThemes();
+    return themes.get(await this.resolveThemeKey(cardKey)) ?? CARDS.default!;
+  }
+
+  private async resolveThemeKey(cardKey: string | null | undefined): Promise<string> {
+    const themes = await this.getThemes();
+    const rawKey = cardKey
+      ? themes.has(cardKey)
+        ? cardKey
+        : cardKey.replace(/^card_/, "")
+      : "default";
+    return themes.has(rawKey) ? rawKey : "default";
+  }
+
   /**
    * Render the profile card at 2× internal resolution (retina)
    * then return a high-quality PNG buffer.
@@ -271,14 +287,8 @@ export class CardService {
     const ctx = canvas.getContext("2d") as SKRSContext2D;
     ctx.scale(SCALE, SCALE);
 
-    const themes = await this.getThemes();
-    const rawKey = input.cardKey
-      ? themes.has(input.cardKey)
-        ? input.cardKey
-        : input.cardKey.replace(/^card_/, "")
-      : "default";
-    const cardKey = themes.has(rawKey) ? rawKey : "default";
-    const theme = themes.get(cardKey) ?? CARDS.default!;
+    const cardKey = await this.resolveThemeKey(input.cardKey);
+    const theme = await this.resolveTheme(cardKey);
 
     // Sécurisation absolue de la couleur : doit être un format CSS valide (#hex, rgb(), hsl())
     let userColor = theme.accent;
@@ -657,7 +667,7 @@ export class CardService {
     const xpMax = next ? formatXP(next.xp) : "MAX";
     ctx.save();
     ctx.letterSpacing = "2px";
-    textWithShadow(ctx, "UNITÉS", BAR_X, BAR_Y - 12, {
+    textWithShadow(ctx, "EXPÉRIENCE", BAR_X, BAR_Y - 12, {
       ...LABEL_STYLE,
       font: font("700 12px"),
     });

@@ -26,6 +26,10 @@ export interface LeaderboardMeta {
   subtitle?: string;
   page: number;
   totalPages: number;
+  /** Membres classés au total (toutes pages) ; défaut : lignes de la page. */
+  total?: number;
+  /** Instant des données affichées ; défaut : maintenant. */
+  generatedAt?: Date;
 }
 
 const BG_FILE = "assets/backgrounds/nebula/weighing-in-on-the-dumbbell-nebula.webp";
@@ -286,7 +290,7 @@ export class LeaderboardService {
     // Info page & total
     textWithShadow(
       ctx,
-      `PAGE ${meta.page} / ${meta.totalPages}   ·   ${entries.length} GUERRIERS ACTIFS`,
+      `PAGE ${meta.page} / ${meta.totalPages}   ·   ${meta.total ?? entries.length} COMBATTANTS RÉPERTORIÉS`,
       W / 2,
       footerY,
       {
@@ -298,14 +302,19 @@ export class LeaderboardService {
       },
     );
 
-    // Badge système
-    textWithShadow(ctx, "SHENRON KI ENGINE v2.4", W - 90, footerY, {
+    // Date réelle des données (fuseau du serveur) et site, au lieu d'un faux statut figé.
+    const updated = new Intl.DateTimeFormat("fr-FR", {
+      dateStyle: "short",
+      timeStyle: "short",
+      timeZone: "Europe/Paris",
+    }).format(meta.generatedAt ?? new Date());
+    textWithShadow(ctx, `MÀJ ${updated}`, W - 90, footerY, {
       font: font("600 11px"),
       color: "rgba(56, 189, 248, 0.5)",
       align: "right",
     });
 
-    textWithShadow(ctx, "SYSTEM: ACTIVE", 90, footerY, {
+    textWithShadow(ctx, "DRAGONBALLFR.COM", 90, footerY, {
       font: font("600 11px"),
       color: "rgba(34, 197, 94, 0.6)",
       align: "left",
@@ -452,13 +461,13 @@ export class LeaderboardService {
     ctx.restore();
 
     // 5. Statistiques dans le piédestal (XP Scouter + Zénis)
-    textWithShadow(ctx, "PUISSANCE (KI)", cx, P_TOP_Y + P_H / 2 - 12, {
+    textWithShadow(ctx, "EXPÉRIENCE", cx, P_TOP_Y + P_H / 2 - 12, {
       font: font("800 10px"),
       color: "rgba(56, 189, 248, 0.85)",
       align: "center",
     });
 
-    textStroked(ctx, `${kiScouterLabel(entry.xp)} u`, cx, P_TOP_Y + P_H / 2 + 15, {
+    textStroked(ctx, `${kiScouterLabel(entry.xp)} XP`, cx, P_TOP_Y + P_H / 2 + 15, {
       font: font("900 26px"),
       color: cfg.ring,
       stroke: "#000000",
@@ -466,7 +475,7 @@ export class LeaderboardService {
       align: "center",
     });
 
-    textWithShadow(ctx, `${kiScouterLabel(entry.zeni)} z`, cx, P_TOP_Y + P_H / 2 + 35, {
+    textWithShadow(ctx, `${kiScouterLabel(entry.zeni)} Z`, cx, P_TOP_Y + P_H / 2 + 35, {
       font: font("600 12px"),
       color: "rgba(250, 204, 21, 0.9)",
       shadow: "rgba(0,0,0,0.9)",
@@ -562,7 +571,8 @@ export class LeaderboardService {
     // Jauge de niveau / énergie Toriyama (entre le nom et les scores)
     const gaugeW = 120;
     const gaugeH = 6;
-    const gaugeX = x + w - 340;
+    // Fin de jauge 85 px avant le score XP (aligné à droite à w - 170), assez pour « 999.9K XP ».
+    const gaugeX = x + w - 375;
     const gaugeY = y + (h - 4 - gaugeH) / 2;
     const ratio = Math.max(0.04, Math.min(1, entry.xp / maxXp));
 
@@ -590,7 +600,7 @@ export class LeaderboardService {
     ctx.restore();
 
     // Score XP (Scouter Power Level)
-    textWithShadow(ctx, `${kiScouterLabel(entry.xp)} u`, x + w - 170, y + (h - 4) / 2 + 5, {
+    textWithShadow(ctx, `${kiScouterLabel(entry.xp)} XP`, x + w - 170, y + (h - 4) / 2 + 5, {
       font: font("800 14px"),
       color: "#38bdf8",
       shadow: "rgba(0,0,0,0.8)",
@@ -599,7 +609,7 @@ export class LeaderboardService {
     });
 
     // Zénis (pièces dorées)
-    textWithShadow(ctx, `${kiScouterLabel(entry.zeni)} z`, x + w - 30, y + (h - 4) / 2 + 5, {
+    textWithShadow(ctx, `${kiScouterLabel(entry.zeni)} Z`, x + w - 30, y + (h - 4) / 2 + 5, {
       font: font("700 14px"),
       color: "#fbbf24",
       shadow: "rgba(0,0,0,0.8)",

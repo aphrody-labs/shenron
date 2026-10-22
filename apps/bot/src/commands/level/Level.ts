@@ -241,6 +241,7 @@ export class LevelCommands {
         } catch {}
       }
 
+      const cardTheme = await this.cards.resolveTheme(data?.equippedCard);
       const buffer = await this.cards.render({
         discordUser: user,
         xp,
@@ -293,7 +294,7 @@ export class LevelCommands {
           {
             name: "🎒 Équipement Actif",
             value: [
-              `• 🖼️ Carte : **${data?.equippedCard ?? "Classique"}**`,
+              `• 🖼️ Carte : **${cardTheme.name}**`,
               `• 🌌 Bannière : **${bannerItem?.name ?? data?.equippedBanner ?? "Défaut"}**`,
               `• 🎖️ Badge : **${badgeItem?.name ?? data?.equippedBadge ?? "Aucun"}**`,
               `• 🎨 Couleur : **${colorItem?.name ?? (data?.equippedColor ? "Équipée" : "Défaut")}**`,
@@ -382,6 +383,7 @@ export class LevelCommands {
         subtitle: guildName,
         page: i + 1,
         totalPages,
+        total,
       });
       const file = new AttachmentBuilder(buffer, { name: `top-p${i + 1}.png` });
 
