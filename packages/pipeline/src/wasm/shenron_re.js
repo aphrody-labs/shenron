@@ -112,6 +112,21 @@ export function wasm_parse_bdm(bdm_bytes) {
 }
 
 /**
+ * Parse the DBXV2 CMS (Character Model Spec) roster file and return every character entry.
+ * @param {Uint8Array} cms_bytes
+ * @returns {any}
+ */
+export function wasm_parse_cms(cms_bytes) {
+    const ptr0 = passArray8ToWasm0(cms_bytes, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.wasm_parse_cms(ptr0, len0);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * Parse a DBXV2 CUS (Character Ultimate Skill) binary file and return all skills.
  * @param {Uint8Array} cus_bytes
  * @returns {any}
