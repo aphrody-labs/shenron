@@ -7,7 +7,7 @@ import { SettingsService } from "~/services/SettingsService";
 import { MessageTemplateService } from "~/services/MessageTemplateService";
 import { DatabaseService } from "~/db/index";
 import { actionLogs } from "~/db/schema";
-import { XP_PER_VOICE_TICK, XP_VOICE_TICK_MS, VOCAL_TEMPO_EMPTY_DELAY_MS } from "~/lib/constants";
+import { XP_VOICE_TICK_MS, VOCAL_TEMPO_EMPTY_DELAY_MS } from "~/lib/constants";
 import { env } from "~/lib/env";
 import { resolveLevelChannel } from "~/lib/announce";
 import { boosterXpMultiplier } from "~/lib/booster";
@@ -16,6 +16,7 @@ import {
   bestRoleMultiplier,
   formatMultiplier,
   isNight,
+  loadVoiceBaseGain,
   loadXpBoostConfig,
   voiceBoost,
   voiceChannelContext,
@@ -89,12 +90,7 @@ export class VoiceXPEvent {
     await this.syncSessions(guild, cfg, now);
 
     // Setting xp.voice.per_minute → conversion en per-tick (XP_VOICE_TICK_MS).
-    // Fallback constant `XP_PER_VOICE_TICK` si pas de setting.
-    const perMinute = await this.settings.getInt("xp.voice.per_minute", 0);
-    const baseGain =
-      perMinute > 0
-        ? Math.max(1, Math.round((perMinute * XP_VOICE_TICK_MS) / 60_000))
-        : XP_PER_VOICE_TICK;
+    const { perTick: baseGain } = await loadVoiceBaseGain(this.settings);
 
     for (const [userId, sess] of this.sessions) {
       // Marge de 5s : `setInterval` peut tirer quelques ms trop tôt et faire
@@ -329,11 +325,12 @@ export class VoiceXPEvent {
       VOCAL_TEMPO_EMPTY_DELAY_MS,
     );
     const timer = setTimeout(async () => {
+      // Libéré d'emblée : un salon re-rempli gardait sinon son minuteur échu en mémoire.
+      this.emptyTimers.delete(channel.id);
       const refetched = await channel.fetch().catch(() => null);
       if (!refetched || refetched.members.size > 0) return;
       await refetched.delete("Vocal tempo empty").catch(() => {});
       await this.vts.remove(channel.id);
-      this.emptyTimers.delete(channel.id);
       await this.msg.publish("vocal_tempo_destroyed", { channelId: channel.id }, channel.client);
     }, delayMs);
     this.emptyTimers.set(channel.id, timer);

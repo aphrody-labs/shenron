@@ -14,6 +14,13 @@
  */
 import type { Guild } from "discord.js";
 import { RACE_IDS, RACES, ZENKAI_MULT, getRace, type RaceId } from "~/lib/races";
+import {
+  XP_MESSAGE_COOLDOWN_MS,
+  XP_PER_MESSAGE_MAX,
+  XP_PER_MESSAGE_MIN,
+  XP_PER_VOICE_TICK,
+  XP_VOICE_TICK_MS,
+} from "~/lib/constants";
 
 export type VoiceStatus = "open" | "muted" | "deafened";
 
@@ -341,4 +348,32 @@ export function voiceBoost(
 /** `×2,5` */
 export function formatMultiplier(n: number): string {
   return `×${n.toLocaleString("fr-FR", { maximumFractionDigits: 2 })}`;
+}
+
+// ── Gains de base ─────────────────────────────────────────────────────────
+
+/** Gain de base d'un message et cooldown (`xp.message.*`), lus en un seul endroit. */
+export async function loadMessageXpConfig(
+  s: SettingsReader,
+): Promise<{ min: number; max: number; cooldownMs: number }> {
+  const min = Math.max(0, await s.getInt("xp.message.min", XP_PER_MESSAGE_MIN));
+  const max = Math.max(min, await s.getInt("xp.message.max", XP_PER_MESSAGE_MAX));
+  const cooldownMs = Math.max(0, await s.getInt("xp.message.cooldown_ms", XP_MESSAGE_COOLDOWN_MS));
+  return { min, max, cooldownMs };
+}
+
+/**
+ * Gain vocal de base avant bonus. `xp.voice.per_minute` (0 = non réglé) est
+ * converti par tick ; sinon `XP_PER_VOICE_TICK`. `/boosts` et le tick vocal
+ * lisent cette même valeur.
+ */
+export async function loadVoiceBaseGain(
+  s: SettingsReader,
+): Promise<{ perTick: number; perMinute: number }> {
+  const perMinute = await s.getInt("xp.voice.per_minute", 0);
+  const perTick =
+    perMinute > 0
+      ? Math.max(1, Math.round((perMinute * XP_VOICE_TICK_MS) / 60_000))
+      : XP_PER_VOICE_TICK;
+  return { perTick, perMinute: Math.round((perTick * 60_000) / XP_VOICE_TICK_MS) };
 }

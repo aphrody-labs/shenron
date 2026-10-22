@@ -5,7 +5,7 @@ import { DatabaseService } from "~/db/index";
 import { users, levelRewards, actionLogs, fusions } from "~/db/schema";
 import { ZENI_PER_LEVEL, FUSION_XP_BONUS_RATIO } from "~/lib/constants";
 import { levelForXP } from "~/lib/xp";
-import { applyZeniRace, hasZenkai } from "~/lib/races";
+import { applyZeniRace, hasZenkai, type RaceId } from "~/lib/races";
 import { DEFAULT_XP_BOOST_CONFIG } from "~/lib/xp-boosts";
 import {
   allRaceLevelRoleIds,
@@ -42,6 +42,11 @@ export class LevelService {
 
   async getUser(userId: string) {
     await this.ensureUser(userId);
+    return this.db.query.users.findFirst({ where: eq(users.id, userId) });
+  }
+
+  /** Ligne `users` existante, sans la créer (`undefined` si absente). */
+  async findUser(userId: string) {
     return this.db.query.users.findFirst({ where: eq(users.id, userId) });
   }
 
@@ -84,22 +89,22 @@ export class LevelService {
     if (!Number.isFinite(amount)) throw new Error("Montant d'XP invalide.");
     amount = Math.trunc(amount);
     await this.ensureUser(userId);
-    const current = await this.getUser(userId);
+    // Lecture et écriture SYNCHRONES, sans `await` entre elles : un gain
+    // vocal, un message et une part de fusion simultanés écrasaient chacun
+    // l'XP écrite par l'autre (`xp = lecture + n` calculé sur une lecture
+    // devenue périmée).
+    const current = this.db.select().from(users).where(eq(users.id, userId)).get();
     const before = current?.xp ?? 0;
     const after = Math.min(Number.MAX_SAFE_INTEGER, Math.max(0, before + amount));
     amount = after - before;
     const oldLevel = levelForXP(before);
     const newLevel = levelForXP(after);
     const levelUp = newLevel > oldLevel;
-
-    await this.db
+    this.db
       .update(users)
-      .set({
-        xp: after,
-        lastLevelReached: newLevel,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, userId));
+      .set({ xp: after, lastLevelReached: newLevel, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .run();
     await this.db.insert(actionLogs).values({
       userId,
       action: "XP_GAIN",
@@ -279,7 +284,11 @@ export class LevelService {
     if (!channel) return;
 
     const u = await this.getUser(member.id);
-    const baseLevelZeni = await this.settings.getInt("zeni.per_level", ZENI_PER_LEVEL);
+    // Même montant que celui crédité par `addXP` (race appliquée).
+    const baseLevelZeni = applyZeniRace(
+      u?.race,
+      await this.settings.getInt("zeni.per_level", ZENI_PER_LEVEL),
+    );
     const embed = levelUpEmbed({
       member,
       level: newLevel,
@@ -296,12 +305,16 @@ export class LevelService {
    * celles de sa race jusqu'à son niveau. Appelé au changement de race (commande
    * `/race` ou rôle de race posé/retiré à la main — cf. events/JoinLeave.ts).
    */
-  async syncRaceLevelRoles(member: GuildMember): Promise<void> {
-    const u = await this.getUser(member.id);
-    // Sans ligne en base, le niveau est inconnu (base neuve ou restaurée) : ne rien déduire.
+  async syncRaceLevelRoles(member: GuildMember, raceOverride?: RaceId): Promise<void> {
+    // Sans ligne en base, le niveau est inconnu (base neuve ou restaurée) : ne
+    // rien déduire. `findUser` ne crée pas la ligne (`getUser` la créait, ce
+    // qui rendait cette garde inopérante).
+    const u = await this.findUser(member.id);
     if (!u) return;
     const level = u.lastLevelReached ?? levelForXP(u.xp);
-    const race = memberRaceId(member) ?? DEFAULT_LEVEL_RACE;
+    // `raceOverride` : la race que l'appelant vient de poser. Le cache des
+    // rôles du membre ne la reflète qu'après l'événement de mise à jour.
+    const race = raceOverride ?? memberRaceId(member) ?? DEFAULT_LEVEL_RACE;
 
     // GARDE : si la race du membre n'a AUCUNE échelle configurée (aucun palier),
     // on NE touche à rien — surtout on ne retire pas ses rôles de palier existants

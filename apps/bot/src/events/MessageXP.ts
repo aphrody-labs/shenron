@@ -1,25 +1,24 @@
 import { injectable, inject } from "tsyringe";
 import { NotBot } from "@aphrody/discord-kit";
 import { Bot, Discord, Guard, On, type ArgsOf } from "discordx";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull, lt, or, sql } from "drizzle-orm";
 import { LevelService } from "~/services/LevelService";
 import { EconomyService } from "~/services/EconomyService";
 import { AchievementService } from "~/services/AchievementService";
 import { DatabaseService } from "~/db/index";
 import { actionLogs, users } from "~/db/schema";
-import {
-  DISCORD_INVITE_REGEX,
-  XP_MESSAGE_COOLDOWN_MS,
-  XP_PER_MESSAGE_MAX,
-  XP_PER_MESSAGE_MIN,
-  ZENI_DAILY_QUEST,
-} from "~/lib/constants";
+import { DISCORD_INVITE_REGEX, ZENI_DAILY_QUEST } from "~/lib/constants";
 import { env } from "~/lib/env";
 import { randomInt } from "~/lib/xp";
 import { applyZeniRace, hasRegen, regenTuning } from "~/lib/races";
 import { resolveLevelChannel } from "~/lib/announce";
 import { boosterXpMultiplier } from "~/lib/booster";
-import { bestRoleMultiplier, loadXpBoostConfig, messageBoost } from "~/lib/xp-boosts";
+import {
+  bestRoleMultiplier,
+  loadMessageXpConfig,
+  loadXpBoostConfig,
+  messageBoost,
+} from "~/lib/xp-boosts";
 import { MessageTemplateService } from "~/services/MessageTemplateService";
 import { ModerationService } from "~/services/ModerationService";
 import { SettingsService } from "~/services/SettingsService";
@@ -97,7 +96,6 @@ export class MessageXPEvent {
     const user = await this.levels.getUser(userId);
     if (!user) return;
     const now = Date.now();
-    const last = user.lastMessageAt?.getTime() ?? 0;
 
     const announce =
       (await resolveLevelChannel(message.client, message.guild ?? undefined)) ??
@@ -107,41 +105,40 @@ export class MessageXPEvent {
     // Quête quotidienne — message rendu par le template `daily_quest`.
     const today = new Date(now).setHours(0, 0, 0, 0);
     const lastQuest = user.lastDailyQuestAt?.getTime() ?? 0;
-    const isNewDay = lastQuest < today;
-    if (isNewDay) {
+    if (lastQuest < today) {
       const yesterday = new Date(now);
       yesterday.setDate(yesterday.getDate() - 1);
       const yesterdayDelta = today - yesterday.setHours(0, 0, 0, 0);
       const streak = lastQuest >= today - yesterdayDelta ? user.dailyStreak + 1 : 1;
-      const dailyZeni = applyZeniRace(
-        user.race,
-        await this.settings.getInt("zeni.daily_quest", ZENI_DAILY_QUEST),
-      );
-      await this.dbs.db
-        .update(users)
-        .set({ lastDailyQuestAt: new Date(now), dailyStreak: streak })
-        .where(eq(users.id, userId));
-      // Via `addZeni` : incrément atomique (l'ancien `user.zeni + n`, calculé
-      // sur une lecture antérieure, écrasait les gains concurrents), gel et
-      // anti-triche respectés. La race est déjà appliquée ci-dessus.
-      await this.eco.addZeni(userId, dailyZeni, { source: "daily", applyRace: false });
-      await this.dbs.db.insert(actionLogs).values({
-        userId,
-        action: "ZENI_DAILY",
-        meta: JSON.stringify({ amount: dailyZeni }),
-      });
-      await this.msg.publish(
-        "daily_quest",
-        { user: `<@${userId}>`, zeni: dailyZeni, streak },
-        message.client,
-      );
+      // Réclamation conditionnelle : deux messages simultanés lisaient tous
+      // deux « nouveau jour » et versaient la quête deux fois.
+      if (this.claim(userId, "lastDailyQuestAt", today, now, { dailyStreak: streak })) {
+        const dailyZeni = applyZeniRace(
+          user.race,
+          await this.settings.getInt("zeni.daily_quest", ZENI_DAILY_QUEST),
+        );
+        // Via `addZeni` : incrément atomique (l'ancien `user.zeni + n`, calculé
+        // sur une lecture antérieure, écrasait les gains concurrents), gel et
+        // anti-triche respectés. La race est déjà appliquée ci-dessus.
+        await this.eco.addZeni(userId, dailyZeni, { source: "daily", applyRace: false });
+        await this.dbs.db.insert(actionLogs).values({
+          userId,
+          action: "ZENI_DAILY",
+          meta: JSON.stringify({ amount: dailyZeni }),
+        });
+        await this.msg.publish(
+          "daily_quest",
+          { user: `<@${userId}>`, zeni: dailyZeni, streak },
+          message.client,
+        );
+      }
     }
 
     // Succès — résolution lazy via le template service (gère canal + texte).
-    const isFirstMessage = user.messageCount === 0;
+    // Le premier message n'est annoncé qu'à l'attribution effective du succès :
+    // deux messages simultanés ne l'annoncent plus deux fois.
     const granted = await this.achievements.checkMessage(userId, message.content);
-    if (isFirstMessage) {
-      await this.eco.grantAchievement(userId, "FIRST_MESSAGE");
+    if (user.messageCount === 0 && (await this.eco.grantAchievement(userId, "FIRST_MESSAGE"))) {
       await this.msg.publish(
         "first_message",
         { user: `<@${userId}>`, userName: message.author.username },
@@ -155,28 +152,25 @@ export class MessageXPEvent {
         message.client,
       );
     }
+    // Incrément atomique (l'ancien `messageCount + 1` perdait des messages concurrents).
     await this.dbs.db
       .update(users)
-      .set({ messageCount: user.messageCount + 1 })
+      .set({ messageCount: sql`${users.messageCount} + 1` })
       .where(eq(users.id, userId));
 
     // Toggle features.message_xp — fallback true (DB vide = activé par défaut, jamais couper l'XP par accident).
     if (!(await this.settings.getBool("features.message_xp", true))) return;
 
-    // XP cooldown — settings runtime avec fallback constants
-    const cooldownMs = await this.settings.getInt("xp.message.cooldown_ms", XP_MESSAGE_COOLDOWN_MS);
-    if (now - last < cooldownMs) return;
-    const xpMin = await this.settings.getInt("xp.message.min", XP_PER_MESSAGE_MIN);
-    const xpMax = await this.settings.getInt("xp.message.max", XP_PER_MESSAGE_MAX);
-    let gain = randomInt(xpMin, xpMax);
+    // XP cooldown — settings runtime avec fallback constants. Le créneau est
+    // réclamé atomiquement : deux messages dans la même milliseconde ne
+    // rapportent plus deux gains.
+    const base = await loadMessageXpConfig(this.settings);
+    if (!this.claim(userId, "lastMessageAt", now - base.cooldownMs + 1, now)) return;
+    let gain = randomInt(base.min, base.max);
 
     // Régén passive Namek : 1×/24 h, à la 1re activité du jour (+XP & +zéni).
     const regen = regenTuning();
-    if (hasRegen(user.race) && now - (user.lastRaceRegenAt?.getTime() ?? 0) >= regen.ms) {
-      await this.dbs.db
-        .update(users)
-        .set({ lastRaceRegenAt: new Date(now) })
-        .where(eq(users.id, userId));
+    if (hasRegen(user.race) && this.claim(userId, "lastRaceRegenAt", now - regen.ms + 1, now)) {
       await this.eco.addZeni(userId, regen.zeni, { source: "regen", applyRace: false });
       await this.dbs.db.insert(actionLogs).values({
         userId,
@@ -219,20 +213,15 @@ export class MessageXPEvent {
     );
     gain = Math.floor(gain * boost.total);
 
-    await this.dbs.db
-      .update(users)
-      .set({ lastMessageAt: new Date(now) })
-      .where(eq(users.id, userId));
     const res = await this.levels.addXP(userId, gain, { propagateFusion: true, source: "message" });
     if (res.levelUp) {
       // Fallback : si message.member est null (intent GuildMembers pas encore
       // hydraté, cache miss), fetch côté Discord avant de poser le rôle.
-      // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
-      const member =
-        message.member ??
+      const leveled =
+        member ??
         (message.guild ? await message.guild.members.fetch(userId).catch(() => null) : null);
-      if (member) {
-        await this.levels.handleLevelUp(member, res.newLevel, announce);
+      if (leveled) {
+        await this.levels.handleLevelUp(leveled, res.newLevel, announce);
       } else {
         logger.warn(
           { userId, newLevel: res.newLevel },
@@ -240,5 +229,27 @@ export class MessageXPEvent {
         );
       }
     }
+  }
+
+  /**
+   * Pose `column = now` seulement si sa valeur précédente est absente ou
+   * antérieure à `before`. Synchrone (bun:sqlite) : aucun `await` entre le
+   * contrôle et l'écriture, donc un seul message concurrent l'emporte.
+   */
+  private claim(
+    userId: string,
+    column: "lastDailyQuestAt" | "lastMessageAt" | "lastRaceRegenAt",
+    before: number,
+    now: number,
+    extra: Partial<typeof users.$inferInsert> = {},
+  ): boolean {
+    const col = users[column];
+    const rows = this.dbs.db
+      .update(users)
+      .set({ [column]: new Date(now), ...extra })
+      .where(and(eq(users.id, userId), or(isNull(col), lt(col, new Date(before)))))
+      .returning({ id: users.id })
+      .all();
+    return rows.length > 0;
   }
 }

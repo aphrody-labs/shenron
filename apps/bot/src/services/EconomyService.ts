@@ -1,12 +1,34 @@
 import { container, singleton, inject } from "tsyringe";
 import { and, eq, gte, sql, desc } from "drizzle-orm";
+import type { GuildMember } from "discord.js";
 import { DatabaseService } from "~/db/index";
 import { users, inventory, shopItems, fusions, achievements, actionLogs } from "~/db/schema";
-import { FUSION_ZENI_BONUS_RATIO } from "~/lib/constants";
+import { FUSION_XP_BONUS_RATIO, FUSION_ZENI_BONUS_RATIO } from "~/lib/constants";
+import { logger } from "~/lib/logger";
 import { applyZeniRace } from "~/lib/races";
 import { SettingsService } from "~/services/SettingsService";
 import { AntiCheatService, type ZeniSource } from "~/services/AntiCheatService";
 import { InflationService } from "~/services/InflationService";
+
+/** Emplacements cosmétiques du profil. */
+export type CosmeticType = "card" | "badge" | "color" | "title" | "banner";
+
+/** Colonne `users` de l'objet équipé, par emplacement. */
+export const EQUIPPED_FIELD = {
+  card: "equippedCard",
+  badge: "equippedBadge",
+  color: "equippedColor",
+  title: "equippedTitle",
+  banner: "equippedBanner",
+} as const satisfies Record<CosmeticType, keyof typeof users.$inferSelect>;
+
+/** Emplacements dont l'objet peut porter un rôle Discord, posé à l'équipement. */
+export const ROLE_COSMETICS: ReadonlySet<CosmeticType> = new Set(["color", "title", "badge"]);
+
+/** Carte de profil par défaut : équipable sans la posséder. */
+export function isDefaultCard(type: CosmeticType, key: string): boolean {
+  return type === "card" && (key === "default" || key === "card_default");
+}
 
 @singleton()
 export class EconomyService {
@@ -105,10 +127,7 @@ export class EconomyService {
     if (options.propagateFusion && amount > 0) {
       const partner = await this.partnerOf(userId);
       if (partner) {
-        const ratio = await this.settings.getFloat(
-          "zeni.fusion.bonus_ratio",
-          FUSION_ZENI_BONUS_RATIO,
-        );
+        const { zeni: ratio } = await this.fusionRatios();
         const bonus = Math.floor(amount * ratio);
         if (bonus > 0) {
           await this.addZeni(partner, bonus, { propagateFusion: false, source: "fusion" });
@@ -122,6 +141,8 @@ export class EconomyService {
   async removeZeni(userId: string, amount: number): Promise<boolean> {
     await this.ensureUser(userId);
     if (!Number.isFinite(amount) || amount < 0) return false;
+    amount = Math.trunc(amount);
+    if (amount === 0) return true;
     // Débit conditionnel ATOMIQUE : la lecture puis l'écriture séparées
     // laissaient deux débits concurrents passer sur le même solde et le
     // rendre négatif (double-clic sur « Acheter », deux mises simultanées).
@@ -133,16 +154,50 @@ export class EconomyService {
     return rows.length > 0;
   }
 
+  /**
+   * Débite au plus `amount` sans passer sous zéro et renvoie le montant
+   * réellement retiré. Lecture et écriture synchrones, sans `await` entre
+   * elles : aucun autre mouvement ne peut s'intercaler.
+   */
+  async removeZeniUpTo(userId: string, amount: number): Promise<number> {
+    await this.ensureUser(userId);
+    if (!Number.isFinite(amount) || amount <= 0) return 0;
+    const row = this.db.select({ zeni: users.zeni }).from(users).where(eq(users.id, userId)).get();
+    const removed = Math.min(Math.trunc(amount), Math.max(0, row?.zeni ?? 0));
+    if (removed > 0) {
+      this.db
+        .update(users)
+        .set({ zeni: sql`${users.zeni} - ${removed}`, updatedAt: new Date() })
+        .where(eq(users.id, userId))
+        .run();
+    }
+    return removed;
+  }
+
   async setZeni(userId: string, amount: number) {
     await this.ensureUser(userId);
+    if (!Number.isFinite(amount)) throw new Error("Montant de zénis invalide.");
     await this.db
       .update(users)
-      .set({ zeni: amount, updatedAt: new Date() })
+      .set({ zeni: Math.max(0, Math.trunc(amount)), updatedAt: new Date() })
       .where(eq(users.id, userId));
   }
 
+  /** Parts versées au partenaire de fusion (`xp.fusion.bonus_ratio`, `zeni.fusion.bonus_ratio`). */
+  async fusionRatios(): Promise<{ xp: number; zeni: number }> {
+    return {
+      xp: await this.settings.getFloat("xp.fusion.bonus_ratio", FUSION_XP_BONUS_RATIO),
+      zeni: await this.settings.getFloat("zeni.fusion.bonus_ratio", FUSION_ZENI_BONUS_RATIO),
+    };
+  }
+
+  /** Prix affiché et facturé d'un article : indexé sur l'inflation quand elle est active. */
+  async priceOf(basePrice: number): Promise<number> {
+    return container.resolve(InflationService).priceOf(basePrice);
+  }
+
   // Shop
-  async listShop(type?: "card" | "badge" | "color" | "title" | "banner") {
+  async listShop(type?: CosmeticType) {
     if (type) {
       return this.db
         .select()
@@ -165,7 +220,7 @@ export class EconomyService {
 
   async upsertShopItem(item: {
     key: string;
-    type: "card" | "badge" | "color" | "title" | "banner";
+    type: CosmeticType;
     name: string;
     description?: string | null;
     price: number;
@@ -196,11 +251,7 @@ export class EconomyService {
       });
   }
 
-  async grantItem(
-    userId: string,
-    type: "card" | "badge" | "color" | "title" | "banner",
-    key: string,
-  ) {
+  async grantItem(userId: string, type: CosmeticType, key: string) {
     await this.ensureUser(userId);
     await this.db
       .insert(inventory)
@@ -208,11 +259,7 @@ export class EconomyService {
       .onConflictDoNothing();
   }
 
-  async removeItem(
-    userId: string,
-    type: "card" | "badge" | "color" | "title" | "banner",
-    key: string,
-  ) {
+  async removeItem(userId: string, type: CosmeticType, key: string) {
     await this.db
       .delete(inventory)
       .where(
@@ -220,11 +267,7 @@ export class EconomyService {
       );
   }
 
-  async ownsItem(
-    userId: string,
-    type: "card" | "badge" | "color" | "title" | "banner",
-    key: string,
-  ): Promise<boolean> {
+  async ownsItem(userId: string, type: CosmeticType, key: string): Promise<boolean> {
     const row = await this.db.query.inventory.findFirst({
       where: and(
         eq(inventory.userId, userId),
@@ -238,27 +281,50 @@ export class EconomyService {
   async purchase(
     userId: string,
     itemKey: string,
-  ): Promise<{ ok: boolean; reason?: string; price?: number; roleId?: string | null }> {
+  ): Promise<{
+    ok: boolean;
+    reason?: string;
+    price?: number;
+    roleId?: string | null;
+    name?: string;
+    type?: CosmeticType;
+  }> {
     const item = await this.getShopItem(itemKey);
     if (!item || !item.enabled) return { ok: false, reason: "Objet introuvable" };
     if (await this.ownsItem(userId, item.type, item.key))
       return { ok: false, reason: "Déjà possédé" };
 
-    // Prix du jour : indexé sur l'inflation quand elle est active.
-    const price = await container.resolve(InflationService).priceOf(item.price);
+    const price = await this.priceOf(item.price);
     const balance = await this.getBalance(userId);
-    if (balance < price) return { ok: false, reason: `Solde insuffisant (${balance}/${price})` };
+    if (balance < price) {
+      const fmt = (n: number) => n.toLocaleString("fr-FR");
+      return { ok: false, reason: `Solde insuffisant (${fmt(balance)} / ${fmt(price)} zénis)` };
+    }
 
     const removed = await this.removeZeni(userId, price);
     if (!removed) return { ok: false, reason: "Solde insuffisant" };
 
-    await this.db.insert(inventory).values({ userId, itemType: item.type, itemKey: item.key });
+    // Deux achats simultanés (double-clic) passaient tous deux le contrôle
+    // « déjà possédé » : le second débit avait lieu, puis l'insertion levait la
+    // contrainte unique et les zénis étaient perdus. Le doublon est remboursé.
+    const granted = await this.db
+      .insert(inventory)
+      .values({ userId, itemType: item.type, itemKey: item.key })
+      .onConflictDoNothing()
+      .returning({ id: inventory.id });
+    if (granted.length === 0) {
+      await this.db
+        .update(users)
+        .set({ zeni: sql`${users.zeni} + ${price}`, updatedAt: new Date() })
+        .where(eq(users.id, userId));
+      return { ok: false, reason: "Déjà possédé" };
+    }
     await this.db.insert(actionLogs).values({
       userId,
       action: "SHOP_PURCHASE",
       meta: JSON.stringify({ item: item.key, price, basePrice: item.price }),
     });
-    return { ok: true, price, roleId: item.roleId };
+    return { ok: true, price, roleId: item.roleId, name: item.name, type: item.type };
   }
 
   async listInventory(userId: string) {
@@ -269,22 +335,18 @@ export class EconomyService {
     return this.db.query.users.findFirst({ where: eq(users.id, userId) });
   }
 
-  async setEquipped(
-    userId: string,
-    type: "card" | "badge" | "color" | "title" | "banner",
-    key: string | null,
-  ) {
+  async setEquipped(userId: string, type: CosmeticType, key: string | null) {
     await this.ensureUser(userId);
-    const patch: Record<string, string | null> = {};
-    if (type === "card") patch.equippedCard = key;
-    if (type === "badge") patch.equippedBadge = key;
-    if (type === "color") patch.equippedColor = key;
-    if (type === "title") patch.equippedTitle = key;
-    if (type === "banner") patch.equippedBanner = key;
     await this.db
       .update(users)
-      .set({ ...patch, updatedAt: new Date() })
+      .set({ [EQUIPPED_FIELD[type]]: key, updatedAt: new Date() })
       .where(eq(users.id, userId));
+  }
+
+  /** Clé équipée sur un emplacement, `null` si rien. */
+  async equippedKey(userId: string, type: CosmeticType): Promise<string | null> {
+    const user = await this.getUser(userId);
+    return user?.[EQUIPPED_FIELD[type]] ?? null;
   }
 
   /**
@@ -293,44 +355,75 @@ export class EconomyService {
    * REMPLACÉ : un membre qui équipait une bannière n'avait plus aucun moyen de
    * revenir à sa carte par défaut.
    */
-  async unequip(
-    userId: string,
-    type: "card" | "badge" | "color" | "title" | "banner",
-  ): Promise<string | null> {
-    const user = await this.getUser(userId);
-    const previous =
-      type === "card"
-        ? user?.equippedCard
-        : type === "badge"
-          ? user?.equippedBadge
-          : type === "color"
-            ? user?.equippedColor
-            : type === "title"
-              ? user?.equippedTitle
-              : user?.equippedBanner;
+  async unequip(userId: string, type: CosmeticType): Promise<string | null> {
+    const previous = await this.equippedKey(userId, type);
     await this.setEquipped(userId, type, null);
-    return previous ?? null;
+    return previous;
   }
 
-  async equip(
-    userId: string,
-    type: "card" | "badge" | "color" | "title" | "banner",
-    key: string,
-  ): Promise<boolean> {
-    const isDefaultCard = type === "card" && (key === "default" || key === "card_default");
-    if (!isDefaultCard && !(await this.ownsItem(userId, type, key))) return false;
-    await this.ensureUser(userId);
-    const patch: Record<string, string | null> = {};
-    if (type === "card") patch.equippedCard = key;
-    if (type === "badge") patch.equippedBadge = key;
-    if (type === "color") patch.equippedColor = key;
-    if (type === "title") patch.equippedTitle = key;
-    if (type === "banner") patch.equippedBanner = key;
-    await this.db
-      .update(users)
-      .set({ ...patch, updatedAt: new Date() })
-      .where(eq(users.id, userId));
+  async equip(userId: string, type: CosmeticType, key: string): Promise<boolean> {
+    if (!isDefaultCard(type, key) && !(await this.ownsItem(userId, type, key))) return false;
+    await this.setEquipped(userId, type, key);
     return true;
+  }
+
+  /** Rôle Discord lié à l'objet `key` de cet emplacement, `null` sinon. */
+  async cosmeticRoleId(type: CosmeticType, key: string | null): Promise<string | null> {
+    if (!key || !ROLE_COSMETICS.has(type)) return null;
+    const item = await this.getShopItem(key);
+    return item && item.type === type ? (item.roleId ?? null) : null;
+  }
+
+  /**
+   * Équipe un objet et aligne les rôles Discord du membre : le rôle de l'ancien
+   * objet du même emplacement est retiré (changer de couleur empilait les rôles
+   * de couleur), celui du nouveau est posé. Un échec de rôle (hiérarchie,
+   * permission) n'annule pas l'équipement.
+   */
+  async equipCosmetic(
+    member: GuildMember,
+    type: CosmeticType,
+    key: string,
+  ): Promise<{ ok: boolean; previous: string | null; roleGranted: boolean }> {
+    const previous = await this.equippedKey(member.id, type);
+    if (!(await this.equip(member.id, type, key))) {
+      return { ok: false, previous, roleGranted: false };
+    }
+    const [oldRole, newRole] = await Promise.all([
+      previous !== key ? this.cosmeticRoleId(type, previous) : Promise.resolve(null),
+      this.cosmeticRoleId(type, key),
+    ]);
+    if (oldRole && oldRole !== newRole && member.roles.cache.has(oldRole)) {
+      await member.roles
+        .remove(oldRole, `Équipement ${type} remplacé`)
+        .catch((err) => logger.warn({ err, roleId: oldRole }, "cosmetic role removal failed"));
+    }
+    let roleGranted = false;
+    if (newRole) {
+      roleGranted = await member.roles
+        .add(newRole, `Équipement ${type}:${key}`)
+        .then(() => true)
+        .catch((err) => {
+          logger.warn({ err, roleId: newRole }, "cosmetic role grant failed");
+          return false;
+        });
+    }
+    return { ok: true, previous, roleGranted };
+  }
+
+  /** Déséquipe un emplacement et retire le rôle Discord de l'objet retiré. */
+  async unequipCosmetic(
+    member: GuildMember,
+    type: CosmeticType,
+  ): Promise<{ previous: string | null; roleRemoved: boolean }> {
+    const previous = await this.unequip(member.id, type);
+    const roleId = await this.cosmeticRoleId(type, previous);
+    if (!roleId || !member.roles.cache.has(roleId)) return { previous, roleRemoved: false };
+    const roleRemoved = await member.roles
+      .remove(roleId, `Équipement ${type} retiré`)
+      .then(() => true)
+      .catch(() => false);
+    return { previous, roleRemoved };
   }
 
   // Fusion
@@ -346,9 +439,29 @@ export class EconomyService {
     return f.userA === userId ? f.userB : f.userA;
   }
 
-  async createFusion(a: string, b: string) {
+  /**
+   * Scelle une fusion si aucun des deux membres n'est déjà fusionné. Le
+   * contrôle et l'insertion sont synchrones : deux acceptations simultanées
+   * (A accepte B pendant que B accepte C) ne créent plus deux unions pour B.
+   */
+  async createFusion(a: string, b: string): Promise<boolean> {
+    if (a === b) return false;
     const [userA, userB] = [a, b].toSorted();
-    await this.db.insert(fusions).values({ userA, userB }).onConflictDoNothing();
+    const taken = this.db
+      .select({ id: fusions.id })
+      .from(fusions)
+      .where(
+        sql`${fusions.userA} IN (${userA}, ${userB}) OR ${fusions.userB} IN (${userA}, ${userB})`,
+      )
+      .get();
+    if (taken) return false;
+    const rows = this.db
+      .insert(fusions)
+      .values({ userA: userA!, userB: userB! })
+      .onConflictDoNothing()
+      .returning({ id: fusions.id })
+      .all();
+    return rows.length > 0;
   }
 
   async breakFusion(userId: string) {
@@ -365,12 +478,12 @@ export class EconomyService {
   // Succès
   async grantAchievement(userId: string, code: string): Promise<boolean> {
     await this.ensureUser(userId);
-    try {
-      await this.db.insert(achievements).values({ userId, code });
-      return true;
-    } catch {
-      return false; // déjà attribué
-    }
+    const rows = await this.db
+      .insert(achievements)
+      .values({ userId, code })
+      .onConflictDoNothing()
+      .returning({ id: achievements.id });
+    return rows.length > 0; // false : déjà attribué
   }
 
   async revokeAchievement(userId: string, code: string) {

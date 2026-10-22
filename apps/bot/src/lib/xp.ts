@@ -53,3 +53,32 @@ export function randomInt(min: number, max: number): number {
 export function formatXP(xp: number): string {
   return formatXpHelper(xp);
 }
+
+/** Progression dans le palier courant, source unique de /profil, de la carte et de l'API. */
+export interface XpProgress {
+  level: number;
+  /** XP du palier atteint (0 avant le premier palier). */
+  floor: number;
+  /** Prochain palier, `undefined` au niveau maximal. */
+  next: LevelThreshold | undefined;
+  /** XP gagnée depuis le palier atteint. */
+  into: number;
+  /** Écart entre le palier atteint et le suivant. */
+  span: number;
+  /** Avancement 0..1 (1 au niveau maximal). */
+  ratio: number;
+  /** XP restante jusqu'au prochain palier (0 au niveau maximal). */
+  remaining: number;
+}
+
+export function xpProgress(xp: number): XpProgress {
+  const safe = Number.isFinite(xp) ? Math.max(0, xp) : 0;
+  const level = levelForXP(safe);
+  const required = level > 0 ? xpRequiredForLevel(level) : 0;
+  const floor = Number.isFinite(required) ? required : 0;
+  const next = nextThresholdFrom(safe);
+  const span = next ? Math.max(0, next.xp - floor) : 0;
+  const into = Math.max(0, safe - floor);
+  const ratio = next ? (span > 0 ? Math.min(1, into / span) : 0) : 1;
+  return { level, floor, next, into, span, ratio, remaining: next ? next.xp - safe : 0 };
+}
