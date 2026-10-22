@@ -1,19 +1,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
-//! WebAssembly binding of a real DBXV2 character: `.esk` skeleton, `.emd`/`.emb`/`.emm`/
-//! `.dyt.emb` parts and an `.ean` animation set, skinned on the CPU every frame and drawn
-//! with the XV2 toon pipeline on WebGPU.
+//! WebAssembly bindings of real DBXV2 characters: one animated character
+//! ([`createXv2Character`](create_xv2_character)) and a two-fighter duel
+//! ([`createXv2Duel`](create_xv2_duel)). Characters are `.esk` skeletons, `.emd`/`.emb`/
+//! `.emm`/`.dyt.emb` parts, an `.ean` animation set and optionally `.bac` actions and `.bdm`
+//! damage; they are skinned on the CPU every frame and drawn with the XV2 toon pipeline.
 
 #![cfg(all(feature = "wasm", target_arch = "wasm32"))]
 
 use crate::render::TurntableCamera;
 use crate::render::skinned::{
-    BoundAnimation, CharacterPart, SkinnedCharacter, SkinnedGpuCharacter, Xv2ToonPipeline,
+    CharacterPart, SkinnedCharacter, SkinnedGpuCharacter, Xv2ToonPipeline,
 };
-use shenron_re::formats::{BacFile, EanFile, EmbFile, EmdFile, EmmFile, EskFile};
-
-/// BAC animation source naming the character's own `.ean`.
-const EAN_CHARACTER: u16 = 5;
+use crate::xv2_fighter::{Duel, Fighter};
+use glam::Vec3;
+use shenron_re::formats::{BacFile, BdmFile, EanFile, EmbFile, EmdFile, EmmFile, EskFile};
 use wasm_bindgen::prelude::*;
 
 /// EAN key frames are authored at 60 frames per second.
@@ -42,13 +43,63 @@ fn decode_all(emb: &EmbFile) -> Vec<shenron_re::formats::EmbRgbaTexture> {
     (0..emb.count).filter_map(|i| emb.decode_rgba(i).ok()).collect()
 }
 
-/// A browser canvas presented by wgpu on WebGPU.
+/// Parses `{ emd, emb?, emm?, dyt? }` parts.
+fn parts_of(parts: &js_sys::Array) -> Result<Vec<CharacterPart>, JsValue> {
+    let mut loaded = Vec::new();
+    for part in parts.iter() {
+        let Some(emd) = bytes_of(&part, "emd")? else { continue };
+        let mut entry = CharacterPart::new(
+            EmdFile::parse(&emd).map_err(js_error)?,
+            match bytes_of(&part, "emb")? {
+                Some(b) => decode_all(&EmbFile::parse(&b).map_err(js_error)?),
+                None => Vec::new(),
+            },
+        );
+        if let Some(b) = bytes_of(&part, "emm")? {
+            entry.materials = Some(EmmFile::parse(&b).map_err(js_error)?);
+        }
+        if let Some(b) = bytes_of(&part, "dyt")? {
+            entry.dye = EmbFile::parse(&b).ok().and_then(|d| d.decode_rgba(0).ok());
+        }
+        loaded.push(entry);
+    }
+    if loaded.is_empty() {
+        return Err(js_error("character has no model part"));
+    }
+    Ok(loaded)
+}
+
+fn fighter_of(esk: &[u8], ean: &[u8], parts: &js_sys::Array) -> Result<Fighter, JsValue> {
+    let esk = EskFile::parse(esk).map_err(js_error)?;
+    let ean = EanFile::parse(ean).map_err(js_error)?;
+    Ok(Fighter::new(SkinnedCharacter::new(esk.bones, parts_of(parts)?), ean))
+}
+
+/// Parses `{ esk, ean, parts, bac?, bdm? }`.
+fn duel_fighter(object: &JsValue) -> Result<Fighter, JsValue> {
+    let esk = bytes_of(object, "esk")?.ok_or_else(|| js_error("esk is missing"))?;
+    let ean = bytes_of(object, "ean")?.ok_or_else(|| js_error("ean is missing"))?;
+    let parts = js_sys::Reflect::get(object, &JsValue::from_str("parts"))?
+        .dyn_into::<js_sys::Array>()
+        .map_err(|_| js_error("parts must be an array"))?;
+    let mut fighter = fighter_of(&esk, &ean, &parts)?;
+    if let Some(b) = bytes_of(object, "bac")? {
+        fighter.actions = Some(BacFile::parse(&b).map_err(js_error)?);
+    }
+    if let Some(b) = bytes_of(object, "bdm")? {
+        fighter.damage = Some(BdmFile::parse(&b).map_err(js_error)?);
+    }
+    Ok(fighter)
+}
+
+/// A browser canvas presented by wgpu on WebGPU, with its toon pipeline.
 struct Surface {
     device: wgpu::Device,
     queue: wgpu::Queue,
     surface: wgpu::Surface<'static>,
     config: wgpu::SurfaceConfiguration,
     depth: wgpu::TextureView,
+    pipeline: Xv2ToonPipeline,
 }
 
 fn depth_view(device: &wgpu::Device, config: &wgpu::SurfaceConfiguration) -> wgpu::TextureView {
@@ -101,7 +152,16 @@ impl Surface {
         config.alpha_mode = wgpu::CompositeAlphaMode::Opaque;
         surface.configure(&device, &config);
         let depth = depth_view(&device, &config);
-        Ok(Self { device, queue, surface, config, depth })
+        let pipeline = Xv2ToonPipeline::new(&device, config.format);
+        Ok(Self { device, queue, surface, config, depth, pipeline })
+    }
+
+    fn upload(&self, fighter: &Fighter) -> SkinnedGpuCharacter {
+        SkinnedGpuCharacter::upload(&self.device, &self.queue, &fighter.character, &self.pipeline)
+    }
+
+    fn aspect(&self) -> f32 {
+        self.config.width as f32 / self.config.height.max(1) as f32
     }
 
     fn resize(&mut self, width: u32, height: u32) {
@@ -113,216 +173,31 @@ impl Surface {
             self.depth = depth_view(&self.device, &self.config);
         }
     }
-}
 
-/// A posed, animated DBXV2 character on a WebGPU canvas. JavaScript owns the frame loop.
-#[wasm_bindgen]
-pub struct Xv2CharacterWasm {
-    surface: Surface,
-    pipeline: Xv2ToonPipeline,
-    character: SkinnedCharacter,
-    gpu: SkinnedGpuCharacter,
-    ean: EanFile,
-    animation: Option<BoundAnimation>,
-    started: Option<f32>,
-    /// Played frame range, playback speed and whether it plays once then returns to `idle`.
-    range: (f32, f32),
-    speed: f32,
-    once: bool,
-    idle: usize,
-    actions: Option<BacFile>,
-    camera: TurntableCamera,
-    zoom: f32,
-}
-
-/// Parses every file, decodes textures and uploads the character. `parts` is an array of
-/// `{ emd, emb?, emm?, dyt? }` byte arrays.
-#[wasm_bindgen(js_name = createXv2Character)]
-pub async fn create_xv2_character(
-    canvas: web_sys::HtmlCanvasElement,
-    esk: Vec<u8>,
-    ean: Vec<u8>,
-    parts: js_sys::Array,
-) -> Result<Xv2CharacterWasm, JsValue> {
-    let esk = EskFile::parse(&esk).map_err(js_error)?;
-    let ean = EanFile::parse(&ean).map_err(js_error)?;
-    let mut loaded = Vec::new();
-    for part in parts.iter() {
-        let Some(emd) = bytes_of(&part, "emd")? else { continue };
-        let mut entry = CharacterPart::new(
-            EmdFile::parse(&emd).map_err(js_error)?,
-            match bytes_of(&part, "emb")? {
-                Some(b) => decode_all(&EmbFile::parse(&b).map_err(js_error)?),
-                None => Vec::new(),
-            },
-        );
-        if let Some(b) = bytes_of(&part, "emm")? {
-            entry.materials = Some(EmmFile::parse(&b).map_err(js_error)?);
+    /// Re-skins `fighters` with their world skin and presents one frame.
+    fn draw(
+        &mut self,
+        camera: &TurntableCamera,
+        fighters: &mut [(&Fighter, &mut SkinnedGpuCharacter)],
+    ) -> bool {
+        for (fighter, gpu) in fighters.iter_mut() {
+            gpu.update(&self.queue, &fighter.character, &fighter.world_skin());
         }
-        if let Some(b) = bytes_of(&part, "dyt")? {
-            entry.dye = EmbFile::parse(&b).ok().and_then(|d| d.decode_rgba(0).ok());
-        }
-        loaded.push(entry);
-    }
-    if loaded.is_empty() {
-        return Err(js_error("character has no model part"));
-    }
-    let character = SkinnedCharacter::new(esk.bones, loaded);
-    let surface = Surface::open(canvas).await?;
-    let pipeline = Xv2ToonPipeline::new(&surface.device, surface.config.format);
-    let gpu = SkinnedGpuCharacter::upload(&surface.device, &surface.queue, &character, &pipeline);
-    let (center, radius) = character.bounds();
-    let camera = TurntableCamera {
-        target: center,
-        distance: radius * 3.2,
-        azimuth: std::f32::consts::PI,
-        z_near: (radius / 100.0).max(0.001),
-        z_far: radius * 100.0,
-        ..Default::default()
-    };
-    let mut handle = Xv2CharacterWasm {
-        surface,
-        pipeline,
-        character,
-        gpu,
-        ean,
-        animation: None,
-        started: None,
-        range: (0.0, 0.0),
-        speed: 1.0,
-        once: false,
-        idle: 0,
-        actions: None,
-        camera,
-        zoom: 1.0,
-    };
-    handle.play(0);
-    Ok(handle)
-}
-
-#[wasm_bindgen]
-impl Xv2CharacterWasm {
-    /// Names of the animations, in slot order of [`Self::play`].
-    pub fn animations(&self) -> Vec<String> {
-        self.ean.animations.iter().map(|a| a.name.clone()).collect()
-    }
-
-    /// Plays the animation at `index` of [`Self::animations`] from its first frame.
-    pub fn play(&mut self, index: usize) -> bool {
-        let Some(animation) = self.ean.animations.get(index) else { return false };
-        let bound = self.character.bind(&self.ean, animation);
-        self.range = (0.0, bound.frame_count.saturating_sub(1) as f32);
-        self.animation = Some(bound);
-        self.speed = 1.0;
-        self.once = false;
-        self.idle = index;
-        self.started = None;
-        true
-    }
-
-    /// Loads the character's `.bac` action timelines; returns the ids of the actions that
-    /// animate the character with its own `.ean`.
-    #[wasm_bindgen(js_name = loadActions)]
-    pub fn load_actions(&mut self, bytes: Vec<u8>) -> Result<Vec<u32>, JsValue> {
-        let bac = BacFile::parse(&bytes).map_err(js_error)?;
-        let playable = bac
-            .moves
-            .iter()
-            .filter(|m| {
-                m.animations
-                    .iter()
-                    .any(|a| a.ean_type == EAN_CHARACTER && self.slot(a.ean_index).is_some())
-            })
-            .map(|m| m.move_id)
-            .collect();
-        self.actions = Some(bac);
-        Ok(playable)
-    }
-
-    /// Plays action `id` of the loaded `.bac` once: its first character animation over the
-    /// action's frame range and speed, then returns to the last looping animation.
-    #[wasm_bindgen(js_name = playAction)]
-    pub fn play_action(&mut self, id: u32) -> bool {
-        let Some(action) = self.actions.as_ref().and_then(|b| b.find(id)) else { return false };
-        let Some(record) = action
-            .animations
-            .iter()
-            .find(|a| a.ean_type == EAN_CHARACTER && self.slot(a.ean_index).is_some())
-            .cloned()
-        else {
-            return false;
-        };
-        let Some(slot) = self.slot(record.ean_index) else { return false };
-        let bound = self.character.bind(&self.ean, &self.ean.animations[slot]);
-        let last = bound.frame_count.saturating_sub(1) as f32;
-        let end =
-            if record.frame_end == u16::MAX { last } else { (record.frame_end as f32).min(last) };
-        self.range = ((record.frame_start as f32).min(end), end);
-        self.speed = if record.time_scale.is_finite() && record.time_scale > 0.0 {
-            record.time_scale
-        } else {
-            1.0
-        };
-        self.animation = Some(bound);
-        self.once = true;
-        self.started = None;
-        true
-    }
-
-    /// Position in [`Self::animations`] of the animation stored at EAN slot `index`.
-    fn slot(&self, index: u16) -> Option<usize> {
-        self.ean.animations.iter().position(|a| a.index == index as usize)
-    }
-
-    /// Azimuth/elevation in radians and a zoom factor in `[0.5, 3]`.
-    pub fn camera(&mut self, azimuth: f32, elevation: f32, zoom: f32) {
-        if azimuth.is_finite() && elevation.is_finite() && zoom.is_finite() {
-            self.camera.azimuth = std::f32::consts::PI + azimuth;
-            self.camera.elevation = elevation.clamp(-1.4, 1.4);
-            self.zoom = zoom.clamp(0.5, 3.0);
-        }
-    }
-
-    /// Draws the pose at `time` seconds (looping). `false` when the surface is unusable.
-    pub fn frame(&mut self, time: f32) -> bool {
-        let started = *self.started.get_or_insert(time);
-        let (start, end) = self.range;
-        let length = (end - start).max(0.0);
-        let elapsed = (time - started).max(0.0) * FRAMES_PER_SECOND * self.speed;
-        if self.once && elapsed > length {
-            self.play(self.idle);
-            return self.frame(time);
-        }
-        let frame = if self.once {
-            start + elapsed.min(length)
-        } else if length > 0.0 {
-            start + elapsed % length
-        } else {
-            start
-        };
-        let skin = self.character.skin_matrices(self.animation.as_ref(), frame);
-        self.gpu.update(&self.surface.queue, &self.character, &skin);
-        let (center, _) = self.character.posed_bounds(&skin);
-        self.camera.target = self.camera.target.lerp(center, 0.2);
-        self.camera.aspect_ratio =
-            self.surface.config.width as f32 / self.surface.config.height.max(1) as f32;
-        self.camera.fov_y = (45.0 / self.zoom).to_radians();
-        self.pipeline.update_camera(&self.surface.queue, &self.camera);
-
-        let texture = match self.surface.surface.get_current_texture() {
+        self.pipeline.update_camera(&self.queue, camera);
+        let texture = match self.surface.get_current_texture() {
             wgpu::CurrentSurfaceTexture::Success(t)
             | wgpu::CurrentSurfaceTexture::Suboptimal(t) => t,
             wgpu::CurrentSurfaceTexture::Outdated | wgpu::CurrentSurfaceTexture::Lost => {
-                self.surface.surface.configure(&self.surface.device, &self.surface.config);
+                self.surface.configure(&self.device, &self.config);
                 return true;
             },
             _ => return true,
         };
         let view = texture.texture.create_view(&wgpu::TextureViewDescriptor::default());
-        let mut encoder = self.surface.device.create_command_encoder(&Default::default());
+        let mut encoder = self.device.create_command_encoder(&Default::default());
         {
             let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
-                label: Some("xv2 character"),
+                label: Some("xv2 scene"),
                 color_attachments: &[Some(wgpu::RenderPassColorAttachment {
                     view: &view,
                     depth_slice: None,
@@ -338,7 +213,7 @@ impl Xv2CharacterWasm {
                     },
                 })],
                 depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachment {
-                    view: &self.surface.depth,
+                    view: &self.depth,
                     depth_ops: Some(wgpu::Operations {
                         load: wgpu::LoadOp::Clear(1.0),
                         store: wgpu::StoreOp::Store,
@@ -351,11 +226,202 @@ impl Xv2CharacterWasm {
             });
             pass.set_pipeline(&self.pipeline.pipeline);
             pass.set_bind_group(0, &self.pipeline.uniform_bind_group, &[]);
-            self.gpu.draw(&mut pass);
+            for (_, gpu) in fighters.iter() {
+                gpu.draw(&mut pass);
+            }
         }
-        self.surface.queue.submit([encoder.finish()]);
-        self.surface.queue.present(texture);
+        self.queue.submit([encoder.finish()]);
+        self.queue.present(texture);
         true
+    }
+}
+
+/// Game frames elapsed since the previous call, from a time in seconds.
+fn elapsed_frames(last: &mut Option<f32>, time: f32) -> f32 {
+    let frames = last.map_or(0.0, |previous| (time - previous).max(0.0) * FRAMES_PER_SECOND);
+    *last = Some(time);
+    frames
+}
+
+/// A posed, animated DBXV2 character on a WebGPU canvas. JavaScript owns the frame loop.
+#[wasm_bindgen]
+pub struct Xv2CharacterWasm {
+    surface: Surface,
+    fighter: Fighter,
+    gpu: SkinnedGpuCharacter,
+    camera: TurntableCamera,
+    zoom: f32,
+    last: Option<f32>,
+}
+
+/// Parses every file, decodes textures and uploads the character. `parts` is an array of
+/// `{ emd, emb?, emm?, dyt? }` byte arrays.
+#[wasm_bindgen(js_name = createXv2Character)]
+pub async fn create_xv2_character(
+    canvas: web_sys::HtmlCanvasElement,
+    esk: Vec<u8>,
+    ean: Vec<u8>,
+    parts: js_sys::Array,
+) -> Result<Xv2CharacterWasm, JsValue> {
+    let fighter = fighter_of(&esk, &ean, &parts)?;
+    let surface = Surface::open(canvas).await?;
+    let gpu = surface.upload(&fighter);
+    let (center, radius) = fighter.character.bounds();
+    let camera = TurntableCamera {
+        target: center,
+        distance: radius * 3.2,
+        azimuth: std::f32::consts::PI,
+        z_near: (radius / 100.0).max(0.001),
+        z_far: radius * 100.0,
+        ..Default::default()
+    };
+    Ok(Xv2CharacterWasm { surface, fighter, gpu, camera, zoom: 1.0, last: None })
+}
+
+#[wasm_bindgen]
+impl Xv2CharacterWasm {
+    /// Names of the animations, in slot order of [`Self::play`].
+    pub fn animations(&self) -> Vec<String> {
+        self.fighter.ean.animations.iter().map(|a| a.name.clone()).collect()
+    }
+
+    /// Loops the animation at `index` of [`Self::animations`].
+    pub fn play(&mut self, index: usize) -> bool {
+        self.fighter.play(index)
+    }
+
+    /// Loads the character's `.bac`; returns the ids of the actions it can play.
+    #[wasm_bindgen(js_name = loadActions)]
+    pub fn load_actions(&mut self, bytes: Vec<u8>) -> Result<Vec<u32>, JsValue> {
+        self.fighter.actions = Some(BacFile::parse(&bytes).map_err(js_error)?);
+        Ok(self.fighter.playable_actions())
+    }
+
+    /// Plays a `.bac` action once, then returns to the looping animation.
+    #[wasm_bindgen(js_name = playAction)]
+    pub fn play_action(&mut self, id: u32) -> bool {
+        self.fighter.start_action(id)
+    }
+
+    /// Azimuth/elevation in radians and a zoom factor in `[0.5, 3]`.
+    pub fn camera(&mut self, azimuth: f32, elevation: f32, zoom: f32) {
+        if azimuth.is_finite() && elevation.is_finite() && zoom.is_finite() {
+            self.camera.azimuth = std::f32::consts::PI + azimuth;
+            self.camera.elevation = elevation.clamp(-1.4, 1.4);
+            self.zoom = zoom.clamp(0.5, 3.0);
+        }
+    }
+
+    /// Draws the pose at `time` seconds. `false` when the surface is unusable.
+    pub fn frame(&mut self, time: f32) -> bool {
+        let frames = elapsed_frames(&mut self.last, time);
+        self.fighter.advance(frames);
+        let (center, _) = self.fighter.character.posed_bounds(&self.fighter.world_skin());
+        self.camera.target = self.camera.target.lerp(center, 0.2);
+        self.camera.aspect_ratio = self.surface.aspect();
+        self.camera.fov_y = (45.0 / self.zoom).to_radians();
+        let camera = self.camera.clone();
+        self.surface.draw(&camera, &mut [(&self.fighter, &mut self.gpu)])
+    }
+
+    pub fn resize(&mut self, width: u32, height: u32) {
+        self.surface.resize(width, height);
+    }
+}
+
+/// Two real fighters facing each other; their `.bac` actions land through their `.bdm`.
+#[wasm_bindgen]
+pub struct Xv2DuelWasm {
+    surface: Surface,
+    duel: Duel,
+    gpus: [SkinnedGpuCharacter; 2],
+    camera: TurntableCamera,
+    zoom: f32,
+    last: Option<f32>,
+    hits: u32,
+}
+
+/// `a` and `b` are `{ esk, ean, parts, bac?, bdm? }` (parts as for `createXv2Character`).
+#[wasm_bindgen(js_name = createXv2Duel)]
+pub async fn create_xv2_duel(
+    canvas: web_sys::HtmlCanvasElement,
+    a: JsValue,
+    b: JsValue,
+) -> Result<Xv2DuelWasm, JsValue> {
+    let duel = Duel::new(duel_fighter(&a)?, duel_fighter(&b)?, 2.0);
+    let surface = Surface::open(canvas).await?;
+    let gpus = [surface.upload(&duel.fighters[0]), surface.upload(&duel.fighters[1])];
+    let camera = TurntableCamera {
+        target: Vec3::new(0.0, 0.9, 0.0),
+        distance: 4.0,
+        z_near: 0.05,
+        z_far: 200.0,
+        ..Default::default()
+    };
+    Ok(Xv2DuelWasm { surface, duel, gpus, camera, zoom: 1.0, last: None, hits: 0 })
+}
+
+#[wasm_bindgen]
+impl Xv2DuelWasm {
+    /// Playable `.bac` action ids of `player` (0 or 1).
+    pub fn actions(&self, player: usize) -> Vec<u32> {
+        self.duel.fighters.get(player).map(Fighter::playable_actions).unwrap_or_default()
+    }
+
+    /// Starts action `id` for `player`; refused while stunned or mid-action.
+    pub fn attack(&mut self, player: usize, id: u32) -> bool {
+        self.duel.fighters.get_mut(player).is_some_and(|f| f.start_action(id))
+    }
+
+    /// Moves `player` toward (positive) or away from (negative) the opponent.
+    pub fn walk(&mut self, player: usize, metres: f32) {
+        if let Some(f) = self.duel.fighters.get_mut(player) {
+            f.walk(metres);
+        }
+    }
+
+    pub fn hp(&self, player: usize) -> i32 {
+        self.duel.fighters.get(player).map_or(0, |f| f.hp)
+    }
+
+    /// Whether `player` can act (not stunned, no action in progress).
+    pub fn ready(&self, player: usize) -> bool {
+        self.duel.fighters.get(player).is_some_and(|f| f.stun == 0 && f.current_action().is_none())
+    }
+
+    /// Distance between the fighters, in metres.
+    pub fn distance(&self) -> f32 {
+        let [a, b] = &self.duel.fighters;
+        a.placement.position.distance(b.placement.position)
+    }
+
+    /// Hits landed since the duel started.
+    pub fn hits(&self) -> u32 {
+        self.hits
+    }
+
+    pub fn camera(&mut self, azimuth: f32, elevation: f32, zoom: f32) {
+        if azimuth.is_finite() && elevation.is_finite() && zoom.is_finite() {
+            self.camera.azimuth = azimuth;
+            self.camera.elevation = elevation.clamp(-1.4, 1.4);
+            self.zoom = zoom.clamp(0.5, 3.0);
+        }
+    }
+
+    /// Advances the duel to `time` seconds and draws it.
+    pub fn frame(&mut self, time: f32) -> bool {
+        let frames = elapsed_frames(&mut self.last, time);
+        self.hits += self.duel.step(frames).len() as u32;
+        let [a, b] = &self.duel.fighters;
+        let middle = (a.placement.position + b.placement.position) / 2.0;
+        self.camera.target = self.camera.target.lerp(middle + Vec3::Y * 0.9, 0.2);
+        self.camera.distance = (self.distance() * 1.3).max(3.5);
+        self.camera.aspect_ratio = self.surface.aspect();
+        self.camera.fov_y = (45.0 / self.zoom).to_radians();
+        let camera = self.camera.clone();
+        let [g0, g1] = &mut self.gpus;
+        let [f0, f1] = &self.duel.fighters;
+        self.surface.draw(&camera, &mut [(f0, g0), (f1, g1)])
     }
 
     pub fn resize(&mut self, width: u32, height: u32) {

@@ -20,7 +20,7 @@ pub struct Placement {
 }
 
 impl Placement {
-    fn to_world(self, local: Vec3) -> Vec3 {
+    pub fn to_world(self, local: Vec3) -> Vec3 {
         self.position + Quat::from_rotation_y(self.yaw) * local
     }
 }
@@ -42,6 +42,66 @@ pub struct HitEvent {
     pub knockback: Vec3,
 }
 
+/// Yaw that makes a fighter at `from` face `to` (forward is -z).
+pub fn yaw_toward(from: Vec3, to: Vec3) -> f32 {
+    let d = to - from;
+    if d.x.abs() + d.z.abs() < f32::EPSILON { 0.0 } else { (-d.x).atan2(-d.z) }
+}
+
+/// World-space spheres `(index, centre, radius)` of `action` active at `frame`.
+pub fn active_spheres(
+    action: &BacMove,
+    attacker: Placement,
+    frame: u16,
+) -> Vec<(usize, Vec3, f32)> {
+    action
+        .hitboxes
+        .iter()
+        .enumerate()
+        .filter(|(_, h)| h.start_frame <= frame && frame < h.end_frame)
+        .map(|(i, h)| (i, attacker.to_world(Vec3::from_array(h.position)), h.size.max(0.0)))
+        .collect()
+}
+
+/// Hits of `action` landing at `frame` on a victim sphere (`centre`, `radius`). `landed`
+/// holds one flag per hitbox and keeps each from landing twice.
+pub fn resolve_hits(
+    action: &BacMove,
+    landed: &mut [bool],
+    attacker: Placement,
+    victim_centre: Vec3,
+    victim_radius: f32,
+    frame: u16,
+    bdm: Option<&BdmFile>,
+) -> Vec<HitEvent> {
+    let facing = Quat::from_rotation_y(attacker.yaw);
+    let mut events = Vec::new();
+    for (index, centre, radius) in active_spheres(action, attacker, frame) {
+        let Some(flag) = landed.get_mut(index) else { continue };
+        if *flag || centre.distance(victim_centre) > radius + victim_radius {
+            continue;
+        }
+        *flag = true;
+        let hitbox = &action.hitboxes[index];
+        let variant =
+            bdm.and_then(|b| b.find(hitbox.bdm_entry_id as u32)).and_then(|e| e.variants.first());
+        events.push(HitEvent {
+            hitbox: index,
+            frame,
+            damage: hitbox.damage,
+            bdm_entry: hitbox.bdm_entry_id,
+            reaction: variant.map_or(DamageType::Standard, |v| v.damage_type.into()),
+            user_stun: variant.map_or(0, |v| v.user_stun),
+            victim_stun: variant.map_or(0, |v| v.victim_stun),
+            knockback_frames: variant.map_or(0, |v| v.knockback_duration),
+            pushback: facing * Vec3::NEG_Z * variant.map_or(0.0, |v| v.pushback_strength),
+            knockback: facing
+                * Vec3::from_array(variant.map_or([0.0; 3], |v| v.knockback_strength)),
+        });
+    }
+    events
+}
+
 /// One action in progress against one victim; remembers which hitboxes already landed.
 #[derive(Debug, Clone)]
 pub struct ActionState<'a> {
@@ -56,13 +116,7 @@ impl<'a> ActionState<'a> {
 
     /// World-space spheres `(index, centre, radius)` active at `frame`.
     pub fn active_spheres(&self, attacker: Placement, frame: u16) -> Vec<(usize, Vec3, f32)> {
-        self.action
-            .hitboxes
-            .iter()
-            .enumerate()
-            .filter(|(_, h)| h.start_frame <= frame && frame < h.end_frame)
-            .map(|(i, h)| (i, attacker.to_world(Vec3::from_array(h.position)), h.size.max(0.0)))
-            .collect()
+        active_spheres(self.action, attacker, frame)
     }
 
     /// Hits landing at `frame` on a victim sphere (`centre`, `radius`).
@@ -74,32 +128,15 @@ impl<'a> ActionState<'a> {
         frame: u16,
         bdm: Option<&BdmFile>,
     ) -> Vec<HitEvent> {
-        let facing = Quat::from_rotation_y(attacker.yaw);
-        let mut events = Vec::new();
-        for (index, centre, radius) in self.active_spheres(attacker, frame) {
-            if self.landed[index] || centre.distance(victim_centre) > radius + victim_radius {
-                continue;
-            }
-            self.landed[index] = true;
-            let hitbox = &self.action.hitboxes[index];
-            let variant = bdm
-                .and_then(|b| b.find(hitbox.bdm_entry_id as u32))
-                .and_then(|e| e.variants.first());
-            events.push(HitEvent {
-                hitbox: index,
-                frame,
-                damage: hitbox.damage,
-                bdm_entry: hitbox.bdm_entry_id,
-                reaction: variant.map_or(DamageType::Standard, |v| v.damage_type.into()),
-                user_stun: variant.map_or(0, |v| v.user_stun),
-                victim_stun: variant.map_or(0, |v| v.victim_stun),
-                knockback_frames: variant.map_or(0, |v| v.knockback_duration),
-                pushback: facing * Vec3::NEG_Z * variant.map_or(0.0, |v| v.pushback_strength),
-                knockback: facing
-                    * Vec3::from_array(variant.map_or([0.0; 3], |v| v.knockback_strength)),
-            });
-        }
-        events
+        resolve_hits(
+            self.action,
+            &mut self.landed,
+            attacker,
+            victim_centre,
+            victim_radius,
+            frame,
+            bdm,
+        )
     }
 }
 
@@ -140,6 +177,14 @@ mod tests {
         let hits = state.step(turned, Vec3::new(5.0, 0.0, -0.4), 0.25, 9, None);
         assert_eq!(hits.len(), 1);
         assert_eq!(hits[0].reaction, DamageType::Standard, "no BDM: plain hit");
+    }
+
+    #[test]
+    fn faces_the_target_along_negative_z() {
+        let yaw = yaw_toward(Vec3::ZERO, Vec3::new(1.0, 0.0, 0.0));
+        let forward = Quat::from_rotation_y(yaw) * Vec3::NEG_Z;
+        assert!((forward - Vec3::X).length() < 1e-5);
+        assert_eq!(yaw_toward(Vec3::ZERO, Vec3::new(0.0, 0.0, -2.0)), 0.0);
     }
 
     /// `SHENRON_REAL_BAC` and `SHENRON_REAL_BDM` (a character's PLAYER files) resolve every

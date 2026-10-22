@@ -24,6 +24,7 @@
 //! - [`wasm`]: WebAssembly bindings for browser canvas and WebGPU engines.
 //! - [`wasm_xv2`]: WebGPU binding of real, animated DBXV2 characters.
 //! - [`xv2_battle`]: hit resolution from real BAC hitboxes and BDM reactions.
+//! - [`xv2_fighter`]: DBXV2 fighters and a two-fighter duel driven by real data.
 
 pub mod asm;
 pub mod canvas;
@@ -33,6 +34,7 @@ pub mod render;
 pub mod wasm;
 pub mod wasm_xv2;
 pub mod xv2_battle;
+pub mod xv2_fighter;
 
 // High-level re-exports for easy consumer adoption
 pub use asm::{

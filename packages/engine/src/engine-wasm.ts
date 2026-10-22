@@ -31,6 +31,23 @@ export interface Xv2CharacterRenderer {
   free(): void;
 }
 
+export interface Xv2DuelRenderer {
+  /** Playable `.bac` action ids of `player` (0 or 1). */
+  actions(player: number): Uint32Array;
+  /** Starts an action; refused while stunned or mid-action. */
+  attack(player: number, id: number): boolean;
+  /** Moves toward (positive) or away from (negative) the opponent, in metres. */
+  walk(player: number, metres: number): void;
+  hp(player: number): number;
+  ready(player: number): boolean;
+  distance(): number;
+  hits(): number;
+  camera(azimuth: number, elevation: number, zoom: number): void;
+  frame(time: number): boolean;
+  resize(width: number, height: number): void;
+  free(): void;
+}
+
 export interface MangaSceneHandle extends EngineRenderer {
   /** Detected panels, flat `x, y, w, h` in page uv, in reading order. */
   panels(): Float32Array;
@@ -44,6 +61,11 @@ export interface EngineGlue {
     ean: Uint8Array,
     parts: { emd: Uint8Array; emb?: Uint8Array; emm?: Uint8Array; dyt?: Uint8Array }[],
   ): Promise<Xv2CharacterRenderer>;
+  createXv2Duel(
+    canvas: HTMLCanvasElement,
+    a: Xv2FighterBytes,
+    b: Xv2FighterBytes,
+  ): Promise<Xv2DuelRenderer>;
   default(options: { module_or_path: WebAssembly.Module }): Promise<unknown>;
   createToriyamaModel(
     canvas: HTMLCanvasElement,
@@ -57,6 +79,15 @@ export interface EngineGlue {
     height: number,
     textureSide: number,
   ): Promise<MangaSceneHandle>;
+}
+
+/** One fighter's files: skeleton, animations, parts, and optional actions and damage. */
+export interface Xv2FighterBytes {
+  esk: Uint8Array;
+  ean: Uint8Array;
+  parts: { emd: Uint8Array; emb?: Uint8Array; emm?: Uint8Array; dyt?: Uint8Array }[];
+  bac?: Uint8Array;
+  bdm?: Uint8Array;
 }
 
 let ready: Promise<EngineGlue> | null = null;

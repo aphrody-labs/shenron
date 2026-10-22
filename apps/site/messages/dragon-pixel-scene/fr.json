@@ -30,5 +30,15 @@
   "characterLoad": "Animer",
   "characterMissing": "Ce personnage n’a pas de squelette, d’animations ou de modèle complet dans data.cpk.",
   "animation": "Animation",
-  "action": "Action du moveset (BAC)"
+  "action": "Action du moveset (BAC)",
+  "duelTitle": "Duel",
+  "duelHint": "Deux personnages du jeu s’affrontent avec leurs vraies attaques (BAC) et leurs vraies réactions aux dégâts (BDM). L’adversaire suit une IA simple propre à Dragon Pixel, pas celle du jeu.",
+  "duelPlayer": "Joueur",
+  "duelOpponent": "Adversaire",
+  "duelStart": "Combattre",
+  "duelHealth": "Vie",
+  "duelHits": "Coups portés :",
+  "duelControls": "Flèches ou A/D : avancer et reculer · J, K, L : attaques",
+  "duelWin": "Victoire !",
+  "duelLose": "Défaite…"
 }

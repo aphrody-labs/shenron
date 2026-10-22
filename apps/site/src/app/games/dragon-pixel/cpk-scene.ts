@@ -39,6 +39,8 @@ export type CharacterFiles = {
   ean: string;
   /** Player action timelines (`<CODE>_PLAYER.bac`), when present. */
   bac?: string;
+  /** Player damage table (`<CODE>_PLAYER.bdm`), when present. */
+  bdm?: string;
   parts: { emd: string; emb?: string; emm?: string; dyt?: string }[];
 };
 
@@ -85,7 +87,9 @@ export function characterFiles(
         dyt: find(`${stem}.dyt.emb`),
       };
     });
-  return esk && ean && parts.length ? { esk, ean, bac: find(`${code}_PLAYER.bac`), parts } : null;
+  return esk && ean && parts.length
+    ? { esk, ean, bac: find(`${code}_PLAYER.bac`), bdm: find(`${code}_PLAYER.bdm`), parts }
+    : null;
 }
 
 const MAX_ASSET = 64 * 1024 * 1024;
@@ -99,4 +103,40 @@ export async function fetchBytes(url: string, signal: AbortSignal): Promise<Uint
   const bytes = new Uint8Array(await response.arrayBuffer());
   if (bytes.length > MAX_ASSET) throw new Error("Asset exceeds 64 MiB");
   return bytes;
+}
+
+const CHARACTER_ARCHIVE = "data";
+
+/** Every file of a character's default costume, fetched from `data.cpk`; null when missing. */
+export async function fetchCharacter(code: string, signal: AbortSignal) {
+  const query = new URLSearchParams({ q: `data/chara/${code}/*`, limit: "500" });
+  const response = await fetch(`${sceneUrl(CHARACTER_ARCHIVE, "find")}?${query}`, { signal });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const index = (await response.json()) as SceneIndex;
+  if (!Array.isArray(index.entries)) throw new Error("Invalid index");
+  const files = characterFiles(
+    code,
+    index.entries.map((entry) => entry.path),
+  );
+  if (!files) return null;
+  const get = (path: string) => fetchBytes(sceneUrl(CHARACTER_ARCHIVE, "raw", path), signal);
+  const optional = (path: string | undefined) => (path ? get(path) : Promise.resolve(undefined));
+  const [esk, ean, bac, bdm, parts] = await Promise.all([
+    get(files.esk),
+    get(files.ean),
+    optional(files.bac),
+    optional(files.bdm),
+    Promise.all(
+      files.parts.map(async (part) => {
+        const [emd, emb, emm, dyt] = await Promise.all([
+          get(part.emd),
+          optional(part.emb),
+          optional(part.emm),
+          optional(part.dyt),
+        ]);
+        return { emd, emb, emm, dyt };
+      }),
+    ),
+  ]);
+  return { esk, ean, bac, bdm, parts };
 }

@@ -6,10 +6,9 @@ import {
   createXv2Character,
   type Xv2CharacterRenderer,
 } from "@aphrody/shenron-engine/xv2-character";
-import { characterCode, characterFiles, fetchBytes, sceneUrl, type SceneIndex } from "./cpk-scene";
+import { characterCode, fetchCharacter } from "./cpk-scene";
 import type fr from "../../../../messages/dragon-pixel-scene/fr.json";
 
-const ARCHIVE = "data";
 const inputClass = "min-h-11 rounded border border-white/25 bg-slate-950 px-3 text-white";
 
 type Phase = "idle" | "loading" | "ready" | "missing" | "error";
@@ -21,38 +20,12 @@ async function loadCharacter(
   canvas: HTMLCanvasElement,
   signal: AbortSignal,
 ): Promise<Loaded | null> {
-  const query = new URLSearchParams({ q: `data/chara/${code}/*`, limit: "500" });
-  const response = await fetch(`${sceneUrl(ARCHIVE, "find")}?${query}`, { signal });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  const index = (await response.json()) as SceneIndex;
-  if (!Array.isArray(index.entries)) throw new Error("Invalid index");
-  const files = characterFiles(
-    code,
-    index.entries.map((entry) => entry.path),
-  );
+  const files = await fetchCharacter(code, signal);
   if (!files) return null;
-  const get = (path: string | undefined) =>
-    path ? fetchBytes(sceneUrl(ARCHIVE, "raw", path), signal) : Promise.resolve(undefined);
-  const [esk, ean, bac, parts] = await Promise.all([
-    fetchBytes(sceneUrl(ARCHIVE, "raw", files.esk), signal),
-    fetchBytes(sceneUrl(ARCHIVE, "raw", files.ean), signal),
-    get(files.bac),
-    Promise.all(
-      files.parts.map(async (part) => {
-        const [emd, emb, emm, dyt] = await Promise.all([
-          fetchBytes(sceneUrl(ARCHIVE, "raw", part.emd), signal),
-          get(part.emb),
-          get(part.emm),
-          get(part.dyt),
-        ]);
-        return { emd, emb, emm, dyt };
-      }),
-    ),
-  ]);
-  const renderer = await createXv2Character(canvas, esk, ean, parts);
+  const renderer = await createXv2Character(canvas, files.esk, files.ean, files.parts);
   let actions: number[] = [];
   try {
-    if (bac) actions = [...renderer.loadActions(bac)];
+    if (files.bac) actions = [...renderer.loadActions(files.bac)];
   } catch {
     actions = [];
   }

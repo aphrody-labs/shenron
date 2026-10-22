@@ -13,6 +13,7 @@ import fr from "../../../../messages/dragon-pixel-scene/fr.json";
 import en from "../../../../messages/dragon-pixel-scene/en.json";
 import ja from "../../../../messages/dragon-pixel-scene/ja.json";
 import CharacterScene from "./CharacterScene";
+import DuelScene from "./DuelScene";
 import {
   fetchBytes,
   messageLines,
@@ -269,6 +270,7 @@ export default function CpkScene() {
         <h1 className="text-3xl font-bold">{text.title}</h1>
         <p className="max-w-3xl text-white/75">{text.description}</p>
       </header>
+      <DuelScene text={text} />
       <CharacterScene text={text} />
       <form
         onSubmit={(event) => {

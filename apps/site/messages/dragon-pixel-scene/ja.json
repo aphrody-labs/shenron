@@ -30,5 +30,15 @@
   "characterLoad": "動かす",
   "characterMissing": "このキャラクターには data.cpk 内に骨格、アニメーション、または完全なモデルがありません。",
   "animation": "アニメーション",
-  "action": "技アクション（BAC）"
+  "action": "技アクション（BAC）",
+  "duelTitle": "対戦",
+  "duelHint": "ゲームのキャラクター2人が、本物の攻撃（BAC）とダメージ反応（BDM）で戦います。相手はゲームのAIではなく、Dragon Pixel独自のシンプルなAIで動きます。",
+  "duelPlayer": "プレイヤー",
+  "duelOpponent": "対戦相手",
+  "duelStart": "戦う",
+  "duelHealth": "体力",
+  "duelHits": "ヒット数：",
+  "duelControls": "矢印キーまたは A/D：前進・後退 · J、K、L：攻撃",
+  "duelWin": "勝利！",
+  "duelLose": "敗北…"
 }

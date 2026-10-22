@@ -30,5 +30,15 @@
   "characterLoad": "Animate",
   "characterMissing": "This character has no skeleton, animations or full model in data.cpk.",
   "animation": "Animation",
-  "action": "Moveset action (BAC)"
+  "action": "Moveset action (BAC)",
+  "duelTitle": "Duel",
+  "duelHint": "Two game characters fight with their real attacks (BAC) and real damage reactions (BDM). The opponent follows a simple Dragon Pixel AI, not the game’s.",
+  "duelPlayer": "Player",
+  "duelOpponent": "Opponent",
+  "duelStart": "Fight",
+  "duelHealth": "Health",
+  "duelHits": "Hits landed:",
+  "duelControls": "Arrows or A/D: step forward and back · J, K, L: attacks",
+  "duelWin": "Victory!",
+  "duelLose": "Defeat…"
 }
