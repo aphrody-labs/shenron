@@ -10,8 +10,24 @@
 use super::model_serve::ModelVertex;
 use glam::{Mat4, Quat, Vec3};
 use shenron_re::formats::{
-    EanAnimation, EanChannel, EanFile, EmbRgbaTexture, EmdFile, EskBone, LocalPose,
+    EanAnimation, EanChannel, EanFile, EmbRgbaTexture, EmdFile, EmmFile, EskBone, LocalPose,
 };
+
+/// One `.emd` model of a character with its `.emb` textures, optional `.emm` materials and
+/// the selected ramp of its `.dyt.emb` dye package.
+#[derive(Debug, Clone)]
+pub struct CharacterPart {
+    pub model: EmdFile,
+    pub textures: Vec<EmbRgbaTexture>,
+    pub materials: Option<EmmFile>,
+    pub dye: Option<EmbRgbaTexture>,
+}
+
+impl CharacterPart {
+    pub fn new(model: EmdFile, textures: Vec<EmbRgbaTexture>) -> Self {
+        Self { model, textures, materials: None, dye: None }
+    }
+}
 
 /// One drawable submesh with its rest geometry and skinning data in skeleton bone indices.
 #[derive(Debug, Clone)]
@@ -25,6 +41,8 @@ pub struct SkinnedPart {
     pub weights: Vec<[f32; 4]>,
     /// Index into [`SkinnedCharacter::textures`].
     pub texture: Option<usize>,
+    /// Dye ramp texture (index into [`SkinnedCharacter::textures`]) and its line.
+    pub dye: Option<(usize, u32)>,
 }
 
 /// A character ready to pose: skeleton, rest inverses, parts and decoded textures.
@@ -88,17 +106,21 @@ fn rest_pose(bones: &[EskBone]) -> Vec<LocalPose> {
 }
 
 impl SkinnedCharacter {
-    /// Builds a character from its skeleton and `(model, textures)` parts. Every submesh
-    /// samples the part's texture named by its first sampler.
-    pub fn new(bones: Vec<EskBone>, parts: Vec<(EmdFile, Vec<EmbRgbaTexture>)>) -> Self {
+    /// Builds a character from its skeleton and parts. Every submesh samples the part's
+    /// texture named by its first sampler, and the dye line of its same-named material.
+    pub fn new(bones: Vec<EskBone>, parts: Vec<CharacterPart>) -> Self {
         let rest_locals: Vec<Mat4> = rest_pose(&bones).iter().map(local_matrix).collect();
         let rest_inverse = world_matrices(&bones, &rest_locals).iter().map(Mat4::inverse).collect();
         let mut textures = Vec::new();
         let mut out = Vec::new();
-        for (emd, part_textures) in parts {
+        for CharacterPart { model: emd, textures: part_textures, materials, dye } in parts {
             let base = textures.len();
             let available = part_textures.len();
             textures.extend(part_textures);
+            let dye_texture = dye.map(|d| {
+                textures.push(d);
+                textures.len() - 1
+            });
             for sub in emd.submeshes() {
                 let palette: Vec<u16> = sub
                     .bone_names
@@ -120,6 +142,12 @@ impl SkinnedCharacter {
                         .map(|s| s.texture_index as usize)
                         .filter(|&t| t < available)
                         .map(|t| base + t),
+                    dye: dye_texture.zip(
+                        materials
+                            .as_ref()
+                            .and_then(|m| m.find(&sub.material_name))
+                            .and_then(|m| m.dye_line()),
+                    ),
                 };
                 for v in &sub.vertices {
                     part.positions.push(Vec3::from_array(v.position));
@@ -230,8 +258,213 @@ impl SkinnedCharacter {
     }
 }
 
+/// Camera and light uniforms of the toon pipeline (same layout as [`super::ModelUniforms`]).
+pub type ToonUniforms = super::ModelUniforms;
+
+/// Per-part material uniforms: dye ramp row (texture v), whether a dye ramp applies.
+#[repr(C)]
+#[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
+pub struct ToonMaterial {
+    pub dye_v: f32,
+    pub has_dye: f32,
+    pub _pad: [f32; 2],
+}
+
+/// Rows per dye line in a `.dyt.emb` ramp; the lit ramp is the line's first rows.
+pub const DYE_LINE_ROWS: u32 = 16;
+
+impl ToonMaterial {
+    pub fn for_line(line: Option<u32>, dye_height: u32) -> Self {
+        match line {
+            Some(l) if dye_height > 0 => Self {
+                dye_v: ((l * DYE_LINE_ROWS) as f32 + 1.5) / dye_height as f32,
+                has_dye: 1.0,
+                _pad: [0.0; 2],
+            },
+            _ => Self { dye_v: 0.0, has_dye: 0.0, _pad: [0.0; 2] },
+        }
+    }
+}
+
+/// XV2 toon shading: the lambert term indexes the material's dye ramp horizontally, the
+/// line map's alpha draws ink lines and its red channel darkens stains.
+pub const XV2_TOON_WGSL: &str = r#"
+struct Uniforms {
+    view_proj: mat4x4<f32>,
+    model: mat4x4<f32>,
+    light_dir: vec3<f32>,
+    rim_power: f32,
+    ambient: vec4<f32>,
+    rim_color: vec4<f32>,
+};
+struct Material { dye_v: f32, has_dye: f32, pad: vec2<f32> };
+
+@group(0) @binding(0) var<uniform> u: Uniforms;
+@group(1) @binding(0) var t_line: texture_2d<f32>;
+@group(1) @binding(1) var s_linear: sampler;
+@group(1) @binding(2) var t_dye: texture_2d<f32>;
+@group(1) @binding(3) var<uniform> m: Material;
+
+struct VertexInput {
+    @location(0) position: vec3<f32>,
+    @location(1) normal: vec3<f32>,
+    @location(2) uv: vec2<f32>,
+};
+struct VertexOutput {
+    @builtin(position) clip_position: vec4<f32>,
+    @location(0) world_normal: vec3<f32>,
+    @location(1) uv: vec2<f32>,
+};
+
+@vertex
+fn vs_main(in: VertexInput) -> VertexOutput {
+    var out: VertexOutput;
+    let world = u.model * vec4<f32>(in.position, 1.0);
+    out.clip_position = u.view_proj * world;
+    out.world_normal = normalize((u.model * vec4<f32>(in.normal, 0.0)).xyz);
+    out.uv = in.uv;
+    return out;
+}
+
+@fragment
+fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
+    let line = textureSampleLevel(t_line, s_linear, in.uv, 0.0);
+    let n_dot_l = dot(normalize(in.world_normal), normalize(u.light_dir));
+    let lit = clamp(n_dot_l * 0.5 + 0.5, 0.0, 1.0) * (1.0 - 0.35 * line.r);
+    var color: vec3<f32>;
+    if (m.has_dye > 0.5) {
+        let ramp_u = clamp(0.04 + 0.92 * lit, 0.0, 1.0);
+        color = textureSampleLevel(t_dye, s_linear, vec2<f32>(ramp_u, m.dye_v), 0.0).rgb;
+    } else {
+        color = line.rgb * (u.ambient.rgb + vec3<f32>(select(0.55, 1.0, n_dot_l > 0.15)));
+    }
+    let ink = smoothstep(0.55, 0.8, line.a) * m.has_dye;
+    return vec4<f32>(color * (1.0 - 0.9 * ink), 1.0);
+}
+"#;
+
+/// Render pipeline for [`XV2_TOON_WGSL`].
+pub struct Xv2ToonPipeline {
+    pub pipeline: wgpu::RenderPipeline,
+    pub uniform_buffer: wgpu::Buffer,
+    pub uniform_bind_group: wgpu::BindGroup,
+    pub material_layout: wgpu::BindGroupLayout,
+}
+
+impl Xv2ToonPipeline {
+    pub fn new(device: &wgpu::Device, format: wgpu::TextureFormat) -> Self {
+        let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
+            label: Some("xv2 toon"),
+            source: wgpu::ShaderSource::Wgsl(XV2_TOON_WGSL.into()),
+        });
+        let uniform_buffer = device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("xv2 toon uniforms"),
+            size: std::mem::size_of::<ToonUniforms>() as u64,
+            usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
+        let uniform = |binding, visibility| wgpu::BindGroupLayoutEntry {
+            binding,
+            visibility,
+            ty: wgpu::BindingType::Buffer {
+                ty: wgpu::BufferBindingType::Uniform,
+                has_dynamic_offset: false,
+                min_binding_size: None,
+            },
+            count: None,
+        };
+        let texture = |binding| wgpu::BindGroupLayoutEntry {
+            binding,
+            visibility: wgpu::ShaderStages::FRAGMENT,
+            ty: wgpu::BindingType::Texture {
+                sample_type: wgpu::TextureSampleType::Float { filterable: true },
+                view_dimension: wgpu::TextureViewDimension::D2,
+                multisampled: false,
+            },
+            count: None,
+        };
+        let uniform_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+            label: Some("xv2 toon camera"),
+            entries: &[uniform(0, wgpu::ShaderStages::VERTEX_FRAGMENT)],
+        });
+        let material_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+            label: Some("xv2 toon material"),
+            entries: &[
+                texture(0),
+                wgpu::BindGroupLayoutEntry {
+                    binding: 1,
+                    visibility: wgpu::ShaderStages::FRAGMENT,
+                    ty: wgpu::BindingType::Sampler(wgpu::SamplerBindingType::Filtering),
+                    count: None,
+                },
+                texture(2),
+                uniform(3, wgpu::ShaderStages::FRAGMENT),
+            ],
+        });
+        let uniform_bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
+            label: Some("xv2 toon camera"),
+            layout: &uniform_layout,
+            entries: &[wgpu::BindGroupEntry {
+                binding: 0,
+                resource: uniform_buffer.as_entire_binding(),
+            }],
+        });
+        let layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+            label: Some("xv2 toon"),
+            bind_group_layouts: &[Some(&uniform_layout), Some(&material_layout)],
+            immediate_size: 0,
+        });
+        let pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+            label: Some("xv2 toon"),
+            layout: Some(&layout),
+            vertex: wgpu::VertexState {
+                module: &shader,
+                entry_point: Some("vs_main"),
+                buffers: &[Some(ModelVertex::LAYOUT)],
+                compilation_options: Default::default(),
+            },
+            fragment: Some(wgpu::FragmentState {
+                module: &shader,
+                entry_point: Some("fs_main"),
+                targets: &[Some(wgpu::ColorTargetState {
+                    format,
+                    blend: None,
+                    write_mask: wgpu::ColorWrites::ALL,
+                })],
+                compilation_options: Default::default(),
+            }),
+            primitive: wgpu::PrimitiveState { cull_mode: None, ..Default::default() },
+            depth_stencil: Some(wgpu::DepthStencilState {
+                format: wgpu::TextureFormat::Depth32Float,
+                depth_write_enabled: Some(true),
+                depth_compare: Some(wgpu::CompareFunction::Less),
+                stencil: wgpu::StencilState::default(),
+                bias: wgpu::DepthBiasState::default(),
+            }),
+            multisample: wgpu::MultisampleState::default(),
+            multiview_mask: None,
+            cache: None,
+        });
+        Self { pipeline, uniform_buffer, uniform_bind_group, material_layout }
+    }
+
+    /// Camera uniforms; the key light sits above the camera.
+    pub fn update_camera(&self, queue: &wgpu::Queue, camera: &super::TurntableCamera) {
+        let toward_eye = (camera.eye_position() - camera.target).normalize_or(Vec3::Z);
+        let uniforms = ToonUniforms {
+            view_proj: camera.view_proj_matrix().to_cols_array_2d(),
+            model: Mat4::IDENTITY.to_cols_array_2d(),
+            light_dir: (toward_eye + Vec3::Y).normalize().to_array(),
+            rim_power: 3.5,
+            ambient_color: [0.25, 0.25, 0.28, 1.0],
+            rim_color: [1.0, 0.88, 0.6, 1.0],
+        };
+        queue.write_buffer(&self.uniform_buffer, 0, bytemuck::cast_slice(&[uniforms]));
+    }
+}
+
 /// GPU buffers of a [`SkinnedCharacter`]: one dynamic vertex buffer per part, rewritten by
-/// [`Self::update`] and drawn through [`super::ModelServePipeline`].
+/// [`Self::update`] and drawn through [`Xv2ToonPipeline`].
 pub struct SkinnedGpuCharacter {
     parts: Vec<(wgpu::Buffer, wgpu::Buffer, u32, wgpu::BindGroup)>,
     scratch: Vec<ModelVertex>,
@@ -242,14 +475,16 @@ impl SkinnedGpuCharacter {
         device: &wgpu::Device,
         queue: &wgpu::Queue,
         character: &SkinnedCharacter,
-        layout: &wgpu::BindGroupLayout,
+        pipeline: &Xv2ToonPipeline,
     ) -> Self {
         use wgpu::util::DeviceExt;
         let sampler = device.create_sampler(&wgpu::SamplerDescriptor {
             label: Some("xv2 sampler"),
             address_mode_u: wgpu::AddressMode::Repeat,
             address_mode_v: wgpu::AddressMode::Repeat,
-            ..super::nearest_sampler_descriptor()
+            mag_filter: wgpu::FilterMode::Linear,
+            min_filter: wgpu::FilterMode::Linear,
+            ..Default::default()
         });
         let texture = |width: u32, height: u32, rgba: &[u8]| {
             device
@@ -270,7 +505,7 @@ impl SkinnedGpuCharacter {
                 )
                 .create_view(&wgpu::TextureViewDescriptor::default())
         };
-        let fallback = texture(1, 1, &[200, 200, 200, 255]);
+        let fallback = texture(1, 1, &[200, 200, 200, 0]);
         let views: Vec<_> =
             character.textures.iter().map(|t| texture(t.width, t.height, &t.rgba)).collect();
         let skin = character.skin_matrices(None, 0.0);
@@ -291,22 +526,36 @@ impl SkinnedGpuCharacter {
                     contents: bytemuck::cast_slice(&part.indices),
                     usage: wgpu::BufferUsages::INDEX,
                 });
-                let view = part.texture.and_then(|t| views.get(t)).unwrap_or(&fallback);
-                let material = device.create_bind_group(&wgpu::BindGroupDescriptor {
+                let line = part.texture.and_then(|t| views.get(t)).unwrap_or(&fallback);
+                let dye = part.dye.and_then(|(t, _)| views.get(t)).unwrap_or(&fallback);
+                let dye_height =
+                    part.dye.and_then(|(t, _)| character.textures.get(t)).map_or(0, |t| t.height);
+                let material = ToonMaterial::for_line(part.dye.map(|(_, l)| l), dye_height);
+                let material = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
                     label: Some("xv2 material"),
-                    layout,
+                    contents: bytemuck::cast_slice(&[material]),
+                    usage: wgpu::BufferUsages::UNIFORM,
+                });
+                let group = device.create_bind_group(&wgpu::BindGroupDescriptor {
+                    label: Some("xv2 material"),
+                    layout: &pipeline.material_layout,
                     entries: &[
                         wgpu::BindGroupEntry {
                             binding: 0,
-                            resource: wgpu::BindingResource::TextureView(view),
+                            resource: wgpu::BindingResource::TextureView(line),
                         },
                         wgpu::BindGroupEntry {
                             binding: 1,
                             resource: wgpu::BindingResource::Sampler(&sampler),
                         },
+                        wgpu::BindGroupEntry {
+                            binding: 2,
+                            resource: wgpu::BindingResource::TextureView(dye),
+                        },
+                        wgpu::BindGroupEntry { binding: 3, resource: material.as_entire_binding() },
                     ],
                 });
-                (vertices, indices, part.indices.len() as u32, material)
+                (vertices, indices, part.indices.len() as u32, group)
             })
             .collect();
         Self { parts, scratch }
@@ -321,7 +570,7 @@ impl SkinnedGpuCharacter {
         }
     }
 
-    /// Draws every part; the caller has bound the pipeline and its uniform group 0.
+    /// Draws every part; the caller has bound the pipeline and its camera group 0.
     pub fn draw(&self, pass: &mut wgpu::RenderPass<'_>) {
         for (vertices, indices, count, material) in &self.parts {
             pass.set_bind_group(1, material, &[]);
@@ -354,7 +603,7 @@ mod tests {
     fn rest_pose_leaves_vertices_in_place() {
         let emd =
             EmdFile::parse(&encode_emd("m", &[[2.0, 0.0, 0.0]; 3], &[0, 1, 2], &["arm"])).unwrap();
-        let character = SkinnedCharacter::new(bones(), vec![(emd, Vec::new())]);
+        let character = SkinnedCharacter::new(bones(), vec![CharacterPart::new(emd, Vec::new())]);
         let skin = character.skin_matrices(None, 0.0);
         let mut out = Vec::new();
         character.skin(&character.parts[0], &skin, &mut out);
@@ -366,7 +615,8 @@ mod tests {
     fn rotating_a_bone_moves_its_vertices() {
         let emd =
             EmdFile::parse(&encode_emd("m", &[[2.0, 0.0, 0.0]; 3], &[0, 1, 2], &["arm"])).unwrap();
-        let mut character = SkinnedCharacter::new(bones(), vec![(emd, Vec::new())]);
+        let mut character =
+            SkinnedCharacter::new(bones(), vec![CharacterPart::new(emd, Vec::new())]);
         // Rotate the arm 90° around Z: the vertex one unit along the arm swings to +Y.
         let q = Quat::from_rotation_z(std::f32::consts::FRAC_PI_2);
         character.bones[1].rotation = q.to_array();
@@ -393,7 +643,7 @@ mod real {
         let emb = EmbFile::parse(&read("APL_000_Bust.emb")).unwrap();
         let textures = (0..emb.count).map(|i| emb.decode_rgba(i).unwrap()).collect();
         let ean = EanFile::parse(&read("APL.ean")).unwrap();
-        let character = SkinnedCharacter::new(esk.bones, vec![(emd, textures)]);
+        let character = SkinnedCharacter::new(esk.bones, vec![CharacterPart::new(emd, textures)]);
         let (center, radius) = character.bounds();
         assert!(character.parts.iter().all(|p| p.texture.is_some()));
         let mut out = Vec::new();
@@ -420,8 +670,8 @@ mod real {
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod render_real {
     use super::*;
-    use crate::render::{GpuContext, ModelServePipeline, TurntableCamera};
-    use shenron_re::formats::{EmbFile, EskFile};
+    use crate::render::{GpuContext, TurntableCamera};
+    use shenron_re::formats::{EmbFile, EmmFile, EskFile};
 
     #[test]
     fn renders_real_character_when_provided() {
@@ -436,7 +686,15 @@ mod render_real {
         {
             let emd = EmdFile::parse(&read(&format!("{name}.emd"))).unwrap();
             let emb = EmbFile::parse(&read(&format!("{name}.emb"))).unwrap();
-            parts.push((emd, (0..emb.count).map(|i| emb.decode_rgba(i).unwrap()).collect()));
+            let mut part = CharacterPart::new(
+                emd,
+                (0..emb.count).map(|i| emb.decode_rgba(i).unwrap()).collect(),
+            );
+            let optional = |name: String| std::fs::read(format!("{dir}/{name}")).ok();
+            part.materials = optional(format!("{name}.emm")).map(|b| EmmFile::parse(&b).unwrap());
+            part.dye = optional(format!("{name}.dyt.emb"))
+                .map(|b| EmbFile::parse(&b).unwrap().decode_rgba(0).unwrap());
+            parts.push(part);
         }
         let esk = EskFile::parse(&read("APL_000.esk")).unwrap();
         let ean = EanFile::parse(&read("APL.ean")).unwrap();
@@ -447,13 +705,8 @@ mod render_real {
         let gpu = pollster::block_on(GpuContext::new_headless()).expect("adapter");
         let (device, queue) = (&gpu.device, &gpu.queue);
         let format = wgpu::TextureFormat::Rgba8UnormSrgb;
-        let pipeline = ModelServePipeline::new(device, format);
-        let mut model = SkinnedGpuCharacter::upload(
-            device,
-            queue,
-            &character,
-            &pipeline.material_bind_group_layout,
-        );
+        let pipeline = Xv2ToonPipeline::new(device, format);
+        let mut model = SkinnedGpuCharacter::upload(device, queue, &character, &pipeline);
         let skin = character.skin_matrices(Some(&bound), 20.0);
         model.update(queue, &character, &skin);
         let (center, radius) = character.posed_bounds(&skin);
@@ -464,7 +717,7 @@ mod render_real {
             z_near: 0.01,
             ..Default::default()
         };
-        pipeline.update_camera(queue, &camera, Mat4::IDENTITY);
+        pipeline.update_camera(queue, &camera);
         let size = wgpu::Extent3d { width: 512, height: 512, depth_or_array_layers: 1 };
         let target = device.create_texture(&wgpu::TextureDescriptor {
             label: None,
