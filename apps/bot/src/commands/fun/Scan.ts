@@ -13,6 +13,7 @@ import { GuildOnly } from "~/guards/GuildOnly";
 import { CommandsChannelOnly } from "~/guards/CommandsChannelOnly";
 import { LevelService } from "~/services/LevelService";
 import { formatXP } from "~/lib/xp";
+import { logger } from "~/lib/logger";
 import { drawScanlines, rgba, textWithShadow, font } from "~/lib/canvas-kit";
 
 function kiComment(xp: number): { line: string; accent: string } {
@@ -115,15 +116,21 @@ export class ScanCommand {
     const xp = data?.xp ?? 0;
     const { line, accent } = kiComment(xp);
 
-    const buf = await renderScouter(user, xp, accent);
-    const file = new AttachmentBuilder(buf, { name: "scouter.png" });
-
     const embed = new EmbedBuilder()
       .setTitle(`🔍 Scan de ${user.username}`)
       .setDescription(`${line}\n\n**Power Level:** \`${formatXP(xp)}\``)
-      .setImage("attachment://scouter.png")
       .setColor(Number.parseInt(accent.slice(1), 16));
-
-    await interaction.editReply({ embeds: [embed], files: [file] });
+    try {
+      const buf = await renderScouter(user, xp, accent);
+      const file = new AttachmentBuilder(buf, { name: "scouter.png" });
+      await interaction.editReply({
+        embeds: [embed.setImage("attachment://scouter.png")],
+        files: [file],
+      });
+    } catch (err) {
+      // The scouter card is decoration: a canvas failure still shows the reading.
+      logger.warn({ err }, "scan render failed");
+      await interaction.editReply({ embeds: [embed] }).catch(() => {});
+    }
   }
 }

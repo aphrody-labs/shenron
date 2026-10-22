@@ -69,6 +69,9 @@ export class AuditLogEventHandler {
   // ── Diff de rôles, nick, timeout ───────────────────────────────────
   @On({ event: "guildMemberUpdate" })
   async onMemberUpdate([oldM, newM]: ArgsOf<"guildMemberUpdate">) {
+    // Uncached old member: its empty role list would read as "every role added"
+    // and could record a jail nobody applied.
+    if (oldM.partial) return;
     const fields: { name: string; value: string; inline?: boolean }[] = [];
 
     // Rôles ajoutés / retirés
