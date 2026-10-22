@@ -31,7 +31,7 @@ import {
 
 import { isArchiveCategory, selectedArchiveEntry } from "./archive-catalog";
 
-import { archiveFilter } from "./archive-catalog-query";
+import { archiveFilter, archiveSeriesRank } from "./archive-catalog-query";
 import { catalogSourceFilters, catalogSourceHost } from "./catalog-source-query";
 
 type Extra = {
@@ -292,7 +292,9 @@ export async function readCatalogPage(
               ? sql`r.fetched_at asc, ${titleOrder}`
               : filters.order === "recent"
                 ? sql`r.fetched_at desc, ${titleOrder}`
-                : sql`case when ${q} = '' then 0 else ts_rank_cd(r.search_vector, websearch_to_tsquery('simple', ${q})) end desc, r.fetched_at desc, r.url asc`;
+                : isArchiveCategory(category) && q === ""
+                  ? sql`${archiveSeriesRank(category)} asc, ${titleOrder}`
+                  : sql`case when ${q} = '' then 0 else ts_rank_cd(r.search_vector, websearch_to_tsquery('simple', ${q})) end desc, r.fetched_at desc, r.url asc`;
       const matching = and(
         isArchiveCategory(category) ? archiveFilter(category, input) : undefined,
         filters.kind

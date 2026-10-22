@@ -7,7 +7,11 @@ import {
   selectArchiveEntries,
   selectedArchiveEntry,
 } from "../src/lib/archive-catalog";
-import { archiveFilter } from "../src/lib/archive-catalog-query";
+import {
+  archiveFilter,
+  archiveSeriesRank,
+  ARCHIVE_SERIES_ORDER,
+} from "../src/lib/archive-catalog-query";
 
 test("reviewed archive selection binds attributed records to real media, without private metadata", () => {
   expect(archiveEntries.length).toBeGreaterThan(0);
@@ -100,6 +104,25 @@ test("SQL enforces selection, successful observation and existing image permissi
   expect(dialect.sqlToQuery(archiveFilter(entry.category, { series: "invalid" })).sql).toContain(
     "false",
   );
+});
+
+test("default archive listing follows the canonical Dragon Ball series order", () => {
+  for (const category of ["archive_movies", "archive_images"]) {
+    const rank = dialect.sqlToQuery(archiveSeriesRank(category));
+    expect(rank.sql).toStartWith("case");
+    const ranked = archiveEntries.filter((item) => item.category === category);
+    const expected = ranked.map((item) => {
+      const index = ARCHIVE_SERIES_ORDER.indexOf(item.series);
+      return index === -1 ? ARCHIVE_SERIES_ORDER.length : index;
+    });
+    // Each selected record contributes its rank as a bound parameter, in selection order.
+    for (const rankValue of expected) expect(rank.params).toContain(rankValue);
+    expect(rank.params.filter((value) => value === 0).length).toBe(
+      ranked.filter((item) => item.series === "db").length,
+    );
+  }
+  expect(ARCHIVE_SERIES_ORDER.indexOf("db")).toBe(0);
+  expect(ARCHIVE_SERIES_ORDER.indexOf("games")).toBeGreaterThan(ARCHIVE_SERIES_ORDER.indexOf("z"));
 });
 
 test("direct details fail closed for unselected, changed, unreviewed or disallowed archive records", async () => {
