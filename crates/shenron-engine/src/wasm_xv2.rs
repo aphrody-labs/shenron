@@ -12,7 +12,7 @@ use crate::render::TurntableCamera;
 use crate::render::skinned::{
     CharacterPart, SkinnedCharacter, SkinnedGpuCharacter, Xv2ToonPipeline,
 };
-use crate::xv2_fighter::{Duel, Fighter};
+use crate::xv2_fighter::{self, Duel, Fighter};
 use glam::Vec3;
 use shenron_re::formats::{BacFile, BdmFile, EanFile, EmbFile, EmdFile, EmmFile, EskFile};
 use wasm_bindgen::prelude::*;
@@ -339,6 +339,8 @@ pub struct Xv2DuelWasm {
     zoom: f32,
     last: Option<f32>,
     hits: u32,
+    /// Each player's loaded skill (its own `.ean`/`.bac`, e.g. a Kamehameha), if any.
+    skills: [Option<(EanFile, BacFile)>; 2],
 }
 
 /// `a` and `b` are `{ esk, ean, parts, bac?, bdm? }` (parts as for `createXv2Character`).
@@ -358,7 +360,16 @@ pub async fn create_xv2_duel(
         z_far: 200.0,
         ..Default::default()
     };
-    Ok(Xv2DuelWasm { surface, duel, gpus, camera, zoom: 1.0, last: None, hits: 0 })
+    Ok(Xv2DuelWasm {
+        surface,
+        duel,
+        gpus,
+        camera,
+        zoom: 1.0,
+        last: None,
+        hits: 0,
+        skills: [None, None],
+    })
 }
 
 #[wasm_bindgen]
@@ -368,9 +379,44 @@ impl Xv2DuelWasm {
         self.duel.fighters.get(player).map(Fighter::playable_actions).unwrap_or_default()
     }
 
-    /// Starts action `id` for `player`; refused while stunned or mid-action.
+    /// Starts action `id` for `player`; refused while stunned or mid-action/skill.
     pub fn attack(&mut self, player: usize, id: u32) -> bool {
         self.duel.fighters.get_mut(player).is_some_and(|f| f.start_action(id))
+    }
+
+    /// Loads a skill's own `.ean` and `.bac` (e.g. `data/skill/SPA/004_GOK_GKD/
+    /// 004_GOK_GKD.{ean,bac}`, a Kamehameha) for `player`; returns its playable action ids.
+    #[wasm_bindgen(js_name = loadSkill)]
+    pub fn load_skill(
+        &mut self,
+        player: usize,
+        ean_bytes: Vec<u8>,
+        bac_bytes: Vec<u8>,
+    ) -> Result<Vec<u32>, JsValue> {
+        let ean = EanFile::parse(&ean_bytes).map_err(js_error)?;
+        let bac = BacFile::parse(&bac_bytes).map_err(js_error)?;
+        let ids = bac
+            .moves
+            .iter()
+            .filter(|m| m.animations.iter().any(|a| a.ean_type == xv2_fighter::EAN_SKILL))
+            .map(|m| m.move_id)
+            .collect();
+        let Some(slot) = self.skills.get_mut(player) else { return Err(js_error("bad player")) };
+        *slot = Some((ean, bac));
+        Ok(ids)
+    }
+
+    /// Plays action `id` of `player`'s loaded skill once, animated from the skill's own
+    /// `.ean` rather than the character's. The skill's own hitboxes, if any, are not yet
+    /// resolved (see [`crate::xv2_fighter::Fighter::start_skill`]).
+    #[wasm_bindgen(js_name = playSkill)]
+    pub fn play_skill(&mut self, player: usize, id: u32) -> bool {
+        let (Some(fighter), Some(Some((ean, bac)))) =
+            (self.duel.fighters.get_mut(player), self.skills.get(player))
+        else {
+            return false;
+        };
+        fighter.start_skill(ean, bac, id)
     }
 
     /// Moves `player` toward (positive) or away from (negative) the opponent.

@@ -12,6 +12,10 @@ use shenron_re::formats::{BacFile, BdmFile, EanFile};
 
 /// BAC animation source naming the character's own `.ean`.
 pub const EAN_CHARACTER: u16 = 5;
+/// BAC animation source naming a skill's own `.ean` (its action's `ean_index` then indexes
+/// that file, not the character's). Cross-checked against LazyBone's MIT XV2-Tools
+/// `BAC_File.EanTypeEnum.Skill` and the real value seen in `004_GOK_GKD.bac`.
+pub const EAN_SKILL: u16 = 0xFFFE;
 /// Starting health of a duel fighter.
 pub const START_HP: i32 = 1000;
 /// Victim body sphere: centre height above the feet and radius, in metres.
@@ -38,6 +42,12 @@ pub struct Fighter {
     idle: usize,
     clock: f32,
     action: Option<u32>,
+    /// A skill action currently playing from its own `.ean`/`.bac` (see [`Self::start_skill`]).
+    /// Tracked separately from `action`: skill hitboxes are not resolved by [`Duel::step`],
+    /// since the one real skill file traced so far (a Kamehameha) carries none of its own --
+    /// that kind of attack likely deals damage through a projectile tied to its `.bdm`,
+    /// which isn't simulated yet.
+    skill: Option<u32>,
     landed: Vec<bool>,
 }
 
@@ -59,6 +69,7 @@ impl Fighter {
             idle: 0,
             clock: 0.0,
             action: None,
+            skill: None,
             landed: Vec::new(),
         };
         fighter.play(0);
@@ -81,6 +92,7 @@ impl Fighter {
         self.idle = index;
         self.clock = 0.0;
         self.action = None;
+        self.skill = None;
         true
     }
 
@@ -98,9 +110,9 @@ impl Fighter {
             .collect()
     }
 
-    /// Starts action `id` once; refused while stunned or during another action.
+    /// Starts action `id` once; refused while stunned or during another action or skill.
     pub fn start_action(&mut self, id: u32) -> bool {
-        if self.stun > 0 || self.action.is_some() {
+        if self.stun > 0 || self.action.is_some() || self.skill.is_some() {
             return false;
         }
         let Some(action) = self.actions.as_ref().and_then(|b| b.find(id)) else { return false };
@@ -132,14 +144,48 @@ impl Fighter {
         true
     }
 
-    /// The action in progress and its current frame.
+    /// Plays skill action `id` of `bac` once, animated from the skill's own `ean` (an
+    /// `EAN_SKILL`-type animation record) rather than the character's. Refused while
+    /// stunned or mid-action/skill, or if the action has no skill-sourced animation.
+    ///
+    /// The skill's hitboxes, if any, are not resolved: the real file this was verified
+    /// against (`004_GOK_GKD.bac`, Goku's Kamehameha) has none, its damage presumably
+    /// coming from a projectile tied to its `.bdm` that isn't simulated here.
+    pub fn start_skill(&mut self, ean: &EanFile, bac: &BacFile, id: u32) -> bool {
+        if self.stun > 0 || self.action.is_some() || self.skill.is_some() {
+            return false;
+        }
+        let Some(action) = bac.find(id) else { return false };
+        let Some(record) = action.animations.iter().find(|a| a.ean_type == EAN_SKILL).cloned()
+        else {
+            return false;
+        };
+        let Some(animation) = ean.animations.get(record.ean_index as usize) else { return false };
+        let bound = self.character.bind(ean, animation);
+        let last = bound.frame_count.saturating_sub(1) as f32;
+        let end =
+            if record.frame_end == u16::MAX { last } else { (record.frame_end as f32).min(last) };
+        self.range = ((record.frame_start as f32).min(end), end);
+        self.speed = if record.time_scale.is_finite() && record.time_scale > 0.0 {
+            record.time_scale
+        } else {
+            1.0
+        };
+        self.animation = Some(bound);
+        self.once = true;
+        self.clock = 0.0;
+        self.skill = Some(id);
+        true
+    }
+
+    /// The action or skill in progress and its current frame.
     pub fn current_action(&self) -> Option<(u32, u16)> {
-        self.action.map(|id| (id, self.clock as u16))
+        self.action.or(self.skill).map(|id| (id, self.clock as u16))
     }
 
     /// Moves along the fighter's facing (`forward` metres; negative steps back).
     pub fn walk(&mut self, forward: f32) {
-        if self.stun == 0 && self.action.is_none() && forward.is_finite() {
+        if self.stun == 0 && self.action.is_none() && self.skill.is_none() && forward.is_finite() {
             let dir = Quat::from_rotation_y(self.placement.yaw) * Vec3::NEG_Z;
             self.placement.position += dir * forward.clamp(-0.5, 0.5);
         }
@@ -197,7 +243,7 @@ impl Fighter {
         self.hp = (self.hp - hit.damage as i32).max(0);
         self.stun = self.stun.max(hit.victim_stun.saturating_add(hit.knockback_frames));
         self.velocity += hit.pushback;
-        if self.action.is_some() {
+        if self.action.is_some() || self.skill.is_some() {
             self.play(self.idle);
         }
     }
@@ -354,6 +400,37 @@ mod tests {
         let forward = Quat::from_rotation_y(duel.fighters[0].placement.yaw) * Vec3::NEG_Z;
         assert!(forward.dot(gap.normalize()) > 0.99);
     }
+
+    #[test]
+    fn a_skill_plays_its_own_animation_and_blocks_other_actions() {
+        let mut duel = Duel::new(fighter(), fighter(), 1.0);
+        let skill_ean = ean_with_one_animation();
+        let mut skill_bac = BacFile::parse(&encode_bac(2, 0, 1, 0)).unwrap();
+        skill_bac.moves[0].animations[0].ean_type = EAN_SKILL;
+        skill_bac.moves[0].animations[0].ean_index = 2;
+
+        assert!(duel.fighters[0].start_skill(&skill_ean, &skill_bac, 1));
+        assert!(!duel.fighters[0].start_skill(&skill_ean, &skill_bac, 1), "one skill at a time");
+        assert!(!duel.fighters[0].start_action(1), "or an action while a skill plays");
+        assert_eq!(duel.fighters[0].current_action(), Some((1, 0)));
+        duel.fighters[0].walk(0.5);
+        assert_eq!(duel.fighters[0].placement.position.x, -0.5, "can't move mid-skill");
+
+        for _ in 0..60 {
+            duel.step(1.0);
+        }
+        assert!(duel.fighters[0].current_action().is_none(), "returns to its loop");
+        assert!(duel.fighters[0].start_action(1), "free to act again");
+    }
+
+    #[test]
+    fn a_skill_with_no_skill_ean_animation_is_refused() {
+        let mut duel = Duel::new(fighter(), fighter(), 1.0);
+        let skill_ean = ean_with_one_animation();
+        // encode_bac's animation record is EAN_CHARACTER-typed, not EAN_SKILL.
+        let skill_bac = BacFile::parse(&encode_bac(2, 0, 1, 0)).unwrap();
+        assert!(!duel.fighters[0].start_skill(&skill_ean, &skill_bac, 1));
+    }
 }
 
 /// `SHENRON_REAL_DUEL=<dir>` with `GOK_000.esk`, `GOK.ean`, `GOK_PLAYER.bac` and
@@ -390,5 +467,33 @@ mod real {
             (0..90).flat_map(|_| far.step(1.0)).count()
         };
         assert_eq!(out_of_reach, 0);
+    }
+
+    /// `SHENRON_REAL_SKILL=<dir>` with `004_GOK_GKD.bac` and `004_GOK_GKD.ean` (Goku's
+    /// Kamehameha, `data/skill/SPA/004_GOK_GKD/`) plays the real skill animation.
+    #[test]
+    fn goku_plays_his_kamehameha_when_provided() {
+        let (Ok(duel_dir), Ok(skill_dir)) =
+            (std::env::var("SHENRON_REAL_DUEL"), std::env::var("SHENRON_REAL_SKILL"))
+        else {
+            return;
+        };
+        let read = |name: &str| std::fs::read(format!("{skill_dir}/{name}")).unwrap();
+        let skill_ean = EanFile::parse(&read("004_GOK_GKD.ean")).unwrap();
+        let skill_bac = BacFile::parse(&read("004_GOK_GKD.bac")).unwrap();
+        // The game indexes a skill's own actions from the same id space it ran out of in
+        // playable_actions(); the sample file's first used slot is 0 (verified by hex trace).
+        let action = skill_bac.find(0).or_else(|| skill_bac.moves.first()).unwrap().move_id;
+
+        let mut duel = Duel::new(goku(&duel_dir), goku(&duel_dir), 1.2);
+        assert!(duel.fighters[0].start_skill(&skill_ean, &skill_bac, action));
+        assert!(!duel.fighters[0].start_action(300), "no base action while the skill plays");
+        for _ in 0..600 {
+            duel.step(1.0);
+            if duel.fighters[0].current_action().is_none() {
+                break;
+            }
+        }
+        assert!(duel.fighters[0].current_action().is_none(), "the skill animation ends");
     }
 }
