@@ -3,7 +3,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createXv2Duel, type Xv2DuelRenderer } from "@aphrody/shenron-engine/xv2-character";
-import { characterCode, fetchCharacter } from "./cpk-scene";
+import { characterCode, fetchCharacter, fetchRoster, type RosterEntry } from "./cpk-scene";
 import type fr from "../../../../messages/dragon-pixel-scene/fr.json";
 
 const inputClass = "min-h-11 rounded border border-white/25 bg-slate-950 px-3 text-white";
@@ -31,6 +31,21 @@ export default function DuelScene({ text }: { text: typeof fr }) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [moves, setMoves] = useState<number[]>([]);
   const [hud, setHud] = useState<Hud>({ hp: [0, 0], hits: 0 });
+  const [roster, setRoster] = useState<RosterEntry[] | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetchRoster(controller.signal)
+      .then((entries) => {
+        if (controller.signal.aborted) return undefined;
+        setRoster(entries);
+        return undefined;
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setRoster([]);
+      });
+    return () => controller.abort();
+  }, []);
 
   useEffect(() => {
     const element = canvas.current;
@@ -146,17 +161,35 @@ export default function DuelScene({ text }: { text: typeof fr }) {
           if (a && b) setStarted({ a, b });
         }}
       >
-        {(["a", "b"] as const).map((side) => (
-          <label key={side} className="grid gap-1">
-            {side === "a" ? text.duelPlayer : text.duelOpponent}
-            <input
-              className={inputClass}
-              value={codes[side]}
-              maxLength={8}
-              onChange={(event) => setCodes({ ...codes, [side]: event.currentTarget.value })}
-            />
-          </label>
-        ))}
+        {(["a", "b"] as const).map((side) =>
+          roster && roster.length > 0 ? (
+            <label key={side} className="grid gap-1">
+              {side === "a" ? text.duelPlayer : text.duelOpponent}
+              <select
+                className={inputClass}
+                value={codes[side]}
+                onChange={(event) => setCodes({ ...codes, [side]: event.currentTarget.value })}
+              >
+                {roster.map((entry) => (
+                  <option key={entry.id} value={entry.shortName}>
+                    {entry.shortName} · #{entry.id}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : (
+            <label key={side} className="grid gap-1">
+              {side === "a" ? text.duelPlayer : text.duelOpponent}
+              <input
+                className={inputClass}
+                value={codes[side]}
+                maxLength={8}
+                placeholder={roster === null ? text.loading : undefined}
+                onChange={(event) => setCodes({ ...codes, [side]: event.currentTarget.value })}
+              />
+            </label>
+          ),
+        )}
         <button
           type="submit"
           className={inputClass}
