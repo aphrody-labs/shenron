@@ -100,22 +100,50 @@ export interface EmbFile {
   entries: EmbEntry[];
 }
 
-export type SkillCategory = "Super" | "Ultimate" | "Evasive" | "Awoken" | "Unknown";
+export type SkillCategory = "super" | "ultimate" | "evasive" | "unk" | "blast" | "awoken";
 
-export interface CusSkill {
+/** One entry of the skillset table: the skill ids a character/costume equips by default. */
+export interface Skillset {
   id: number;
+  flags: number;
+  values: [number, number, number, number, number, number, number, number, number];
+}
+
+/** One skill: its short code, equip constraints, referenced assets and stat ids. */
+export interface CusSkill {
   category: SkillCategory;
-  ki_cost: number;
-  stamina_cost: number;
-  name_id: number;
-  desc_id: number;
-  animation_id: number;
-  particle_id: number;
-  sound_id: number;
+  /** Four-letter code (e.g. an ability's short name). */
+  short_name: string;
+  id1: number;
+  id2: number;
+  /** `CusRaceLock` bitflags; 0 means unlocked for every race. */
+  race_lock: number;
+  /** Which optional asset paths below are actually present. */
+  files_loaded: number;
+  ean_path: string | null;
+  cam_ean_path: string | null;
+  eepk_path: string | null;
+  se_path: string | null;
+  vox_path: string | null;
+  after_bac_path: string | null;
+  after_bcm_path: string | null;
+  /** PUP (power-up preset) id this skill applies, if any. */
+  pup: number;
+  cus_aura: number;
+  num_transformations: number;
+  part_set: number;
+  part_set_2: number;
+  part_set_3: number;
+  chara_swap_id: number;
+  chara_swap_id_2: number;
+  chara_swap_id_3: number;
+  skillset_change_1: number;
+  skillset_change_2: number;
+  skillset_change_3: number;
 }
 
 export interface CusFile {
-  version: number;
+  skillsets: Skillset[];
   skills: CusSkill[];
 }
 

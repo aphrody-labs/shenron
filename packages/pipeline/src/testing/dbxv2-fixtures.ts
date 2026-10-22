@@ -135,3 +135,73 @@ export function pupFixture(
   });
   return bytes;
 }
+
+/**
+ * Minimal version-3 (patch 1.25+) `.cus` with one skillset and one skill per given
+ * category, mirroring `encode_cus`. Skills carry no string-table paths.
+ */
+export function cusFixture(
+  skillsetId: number,
+  skills: readonly {
+    category: "super" | "ultimate" | "evasive" | "unk" | "blast" | "awoken";
+    shortName: string;
+    id1: number;
+  }[],
+): Uint8Array {
+  const skillSize = 92;
+  const skillsetSize = 32;
+  const header = new Uint8Array(64);
+  const headerView = new DataView(header.buffer);
+  header.set([0x23, 0x43, 0x55, 0x53], 0); // "#CUS"
+  headerView.setUint16(4, 0xfffe, true);
+  headerView.setUint32(8, 1, true); // skillsetCount
+  headerView.setUint32(12, 64, true); // skillsetOffset
+  headerView.setUint32(16, 1, true); // placeholder, overwritten below per category
+
+  const skillset = new Uint8Array(skillsetSize);
+  new DataView(skillset.buffer).setInt32(0, skillsetId, true);
+
+  const order = ["super", "ultimate", "evasive", "unk", "blast", "awoken"] as const;
+  const countField = {
+    super: 16,
+    ultimate: 20,
+    evasive: 24,
+    unk: 28,
+    blast: 32,
+    awoken: 36,
+  } as const;
+  const offsetField = {
+    super: 40,
+    ultimate: 44,
+    evasive: 48,
+    unk: 52,
+    blast: 56,
+    awoken: 60,
+  } as const;
+
+  let cursor = 64 + skillsetSize;
+  const chunks: Uint8Array[] = [header, skillset];
+  for (const category of order) {
+    const entries = skills.filter((s) => s.category === category);
+    headerView.setUint32(countField[category], entries.length, true);
+    headerView.setUint32(offsetField[category], cursor, true);
+    for (const entry of entries) {
+      const bytes = new Uint8Array(skillSize);
+      const view = new DataView(bytes.buffer);
+      for (let k = 0; k < Math.min(4, entry.shortName.length); k++)
+        bytes[k] = entry.shortName.charCodeAt(k);
+      view.setUint16(8, entry.id1, true);
+      for (const o of [64, 66, 68, 70, 72, 74]) view.setUint16(o, 0xffff, true);
+      chunks.push(bytes);
+      cursor += skillSize;
+    }
+  }
+  const total = chunks.reduce((sum, c) => sum + c.length, 0);
+  const out = new Uint8Array(total);
+  let at = 0;
+  for (const chunk of chunks) {
+    out.set(chunk, at);
+    at += chunk.length;
+  }
+  return out;
+}

@@ -3,6 +3,7 @@ import {
   bacFixture,
   bdmFixture,
   cmsFixture,
+  cusFixture,
   msgFixture,
   pupFixture,
 } from "./testing/dbxv2-fixtures";
@@ -83,32 +84,18 @@ describe("shenron-re WASM pipeline", () => {
     expect(matches).toEqual([1]);
   });
 
-  test("decodes 708 Xenoverse 2 skills via wasm_parse_cus", () => {
-    const count = 708;
-    const headerSize = 16;
-    const entrySize = 48;
-    const buffer = new Uint8Array(headerSize + count * entrySize);
-    const view = new DataView(buffer.buffer);
-
-    buffer.set([0x23, 0x43, 0x55, 0x53], 0); // "#CUS"
-    view.setUint32(4, 1, true);
-    view.setUint32(8, count, true);
-    view.setUint32(12, headerSize, true);
-
-    for (let i = 0; i < count; i++) {
-      const off = headerSize + i * entrySize;
-      view.setUint32(off, 1000 + i, true);
-      view.setUint16(off + 4, i % 4, true);
-      view.setUint32(off + 8, 200, true);
-      view.setUint32(off + 12, 100, true);
-    }
-
-    const cus = parseCus(buffer);
-    expect(cus.version).toBe(1);
-    expect(cus.skills.length).toBe(708);
-    expect(cus.skills[0]?.id).toBe(1000);
-    expect(cus.skills[0]?.category).toBe("Super");
-    expect(cus.skills[1]?.category).toBe("Ultimate");
+  test("decodes CUS skillsets and skills across categories via wasm_parse_cus", () => {
+    const cus = parseCus(
+      cusFixture(7, [
+        { category: "super", shortName: "KMHM", id1: 12 },
+        { category: "awoken", shortName: "SSJ3", id1: 99 },
+      ]),
+    );
+    expect(cus.skillsets.length).toBe(1);
+    expect(cus.skillsets[0]?.id).toBe(7);
+    expect(cus.skills.length).toBe(2);
+    expect(cus.skills[0]).toMatchObject({ category: "super", short_name: "KMHM", id1: 12 });
+    expect(cus.skills[1]).toMatchObject({ category: "awoken", short_name: "SSJ3", id1: 99 });
   });
 
   test("triages and extracts files from CRIWARE CPK virtual archive", () => {

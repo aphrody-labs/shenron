@@ -7,7 +7,13 @@
  *   bun packages/pipeline/scripts/test-wasm-re.ts
  */
 
-import { bacFixture, bdmFixture, msgFixture, pupFixture } from "../src/testing/dbxv2-fixtures";
+import {
+  bacFixture,
+  bdmFixture,
+  cusFixture,
+  msgFixture,
+  pupFixture,
+} from "../src/testing/dbxv2-fixtures";
 import {
   initShenronRe,
   getDragonBallCatalog,
@@ -100,51 +106,20 @@ if (matches.length !== 1 || matches[0] !== 3) {
   throw new Error(`AOB scan returned unexpected matches: ${JSON.stringify(matches)}, expected [3]`);
 }
 
-console.log("\n[4/6] Validating CUS Skill Binary Decoding (708 skills)...");
-// Construct synthetic DBXV2 CUS binary file with 708 skills
-function buildMockCus(skillCount: number): Uint8Array {
-  const headerSize = 16;
-  const entrySize = 48;
-  const totalSize = headerSize + skillCount * entrySize;
-  const buffer = new Uint8Array(totalSize);
-  const view = new DataView(buffer.buffer);
-
-  // Magic "#CUS"
-  buffer.set([0x23, 0x43, 0x55, 0x53], 0);
-  view.setUint32(4, 1, true); // Version 1
-  view.setUint32(8, skillCount, true); // Skill count = 708
-  view.setUint32(12, headerSize, true); // Offset = 16
-
-  for (let i = 0; i < skillCount; i++) {
-    const offset = headerSize + i * entrySize;
-    const skillId = 1000 + i;
-    const category = i % 4; // 0=Super, 1=Ultimate, 2=Evasive, 3=Awoken
-    const kiCost = (i % 5) * 100;
-    const staminaCost = category === 2 ? 300 : 0;
-
-    view.setUint32(offset, skillId, true);
-    view.setUint16(offset + 4, category, true);
-    view.setUint32(offset + 8, kiCost, true);
-    view.setUint32(offset + 12, staminaCost, true);
-    view.setUint32(offset + 16, skillId * 10, true);
-    view.setUint32(offset + 20, skillId * 10 + 1, true);
-    view.setUint32(offset + 24, 500 + i, true); // animation_id
-    view.setUint32(offset + 28, 600 + i, true); // particle_id
-    view.setUint32(offset + 32, 700 + i, true); // sound_id
-  }
-
-  return buffer;
-}
-
-const mockCusBytes = buildMockCus(708);
-const parsedCus = parseCus(mockCusBytes);
-console.log(
-  `✓ CUS decoded skills count: ${parsedCus.skills.length} (Version: ${parsedCus.version})`,
+console.log("\n[4/6] Validating CUS Skill Binary Decoding...");
+const parsedCus = parseCus(
+  cusFixture(7, [
+    { category: "super", shortName: "KMHM", id1: 12 },
+    { category: "ultimate", shortName: "FFLH", id1: 34 },
+  ]),
 );
-if (parsedCus.skills.length !== 708) {
-  throw new Error(`Expected 708 skills, got ${parsedCus.skills.length}`);
+console.log(
+  `✓ CUS decoded ${parsedCus.skillsets.length} skillset(s) and ${parsedCus.skills.length} skills`,
+);
+if (parsedCus.skills.length !== 2) {
+  throw new Error(`Expected 2 skills, got ${parsedCus.skills.length}`);
 }
-if (parsedCus.skills[0]!.category !== "Super" || parsedCus.skills[1]!.category !== "Ultimate") {
+if (parsedCus.skills[0]!.category !== "super" || parsedCus.skills[1]!.category !== "ultimate") {
   throw new Error(`Unexpected category in decoded skills: ${JSON.stringify(parsedCus.skills[0])}`);
 }
 

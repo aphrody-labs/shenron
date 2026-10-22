@@ -91,7 +91,9 @@ impl Dbxv2UnifiedState {
         cus: Option<&CusFile>,
         bac: Option<&BacFile>,
         bdm: Option<&BdmFile>,
-        msg: Option<&MsgFile>,
+        // CUS skills resolve to their own `short_name`; MSG lookup is unused until a
+        // verified name-id link is found.
+        _msg: Option<&MsgFile>,
         wine_mem: Option<&WineProcessMemory>,
         live_char: Option<&LiveBattleCharacter>,
     ) -> Self {
@@ -122,16 +124,16 @@ impl Dbxv2UnifiedState {
                             .and_then(|b| b.entries.first())
                             .map(|e| e.base_damage as f32)
                             .unwrap_or(100.0);
-                        let skill_name = msg
-                            .and_then(|m| m.entries.iter().find(|e| e.id == skill.name_id))
-                            .and_then(|e| e.lines.first().cloned())
-                            .unwrap_or_else(|| format!("Skill #{:04}", skill.id));
 
                         profile.super_skills.push(ResolvedSkill {
-                            id: skill.id,
-                            name: skill_name,
+                            id: u32::from(skill.id1),
+                            // CUS stores no separate display-name id; `short_name` is its
+                            // only in-file label.
+                            name: skill.short_name.clone(),
                             category: format!("{:?}", skill.category),
-                            ki_cost: skill.ki_cost,
+                            // CUS carries no ki-cost field (it's engine/BAC-side, not yet
+                            // ported); kept at 0 rather than an invented value.
+                            ki_cost: 0,
                             total_hits,
                             base_damage,
                         });
