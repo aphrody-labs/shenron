@@ -901,7 +901,8 @@ export class ModerationCommands {
     }
     await this.logs.send(interaction.client, "sanction", publicEmbed);
 
-    await interaction.editReply({ embeds: [successEmbed("Purge terminée", desc)] });
+    // A long global purge can outlive the 15 min interaction token: the log above stays.
+    await interaction.editReply({ embeds: [successEmbed("Purge terminée", desc)] }).catch(() => {});
   }
 
   // ────────────────────────────── /slowmode
@@ -1394,14 +1395,17 @@ export class ModerationCommands {
         failed,
         scope,
       });
-      await interaction.editReply({
-        embeds: [
-          successEmbed(
-            action === "give" ? "Rôle donné en masse" : "Rôle retiré en masse",
-            `${role} ${action === "give" ? "ajouté à" : "retiré de"} **${ok}** membre(s)${failed ? ` (${failed} échec(s))` : ""}.\n*Scope : ${scope}.*`,
-          ),
-        ],
-      });
+      // A large guild can outlive the 15 min interaction token: the log above stays.
+      await interaction
+        .editReply({
+          embeds: [
+            successEmbed(
+              action === "give" ? "Rôle donné en masse" : "Rôle retiré en masse",
+              `${role} ${action === "give" ? "ajouté à" : "retiré de"} **${ok}** membre(s)${failed ? ` (${failed} échec(s))` : ""}.\n*Scope : ${scope}.*`,
+            ),
+          ],
+        })
+        .catch(() => {});
     }
   }
 }
