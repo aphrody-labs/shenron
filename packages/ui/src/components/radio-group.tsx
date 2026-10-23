@@ -18,7 +18,7 @@ function RadioItem({
   return (
     <RadioPrimitive.Root
       className={cn(
-        "group relative flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-black bg-[#121218] outline-none transition-all cursor-pointer",
+        "cible-44 group relative flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-black bg-[#121218] outline-none transition-all cursor-pointer",
         "hover:border-dbz-orange",
         "active:translate-x-px active:translate-y-px",
         "data-[checked]:border-dbz-orange data-[checked]:bg-black",
