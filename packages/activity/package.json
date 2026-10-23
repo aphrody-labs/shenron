@@ -1,0 +1,45 @@
+{
+  "name": "@aphrody/shenron-activity",
+  "version": "1.4.7",
+  "private": true,
+  "description": "Rules and protocol of the Arène Shenron Discord Activity: wire protocol, per-instance rooms, Quiz Budokai rules, bounded zeni rewards and signed settlement receipts (no Discord, no network)",
+  "homepage": "https://dragonballfr.com",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./protocol": "./src/protocol.ts",
+    "./rooms": "./src/rooms/index.ts",
+    "./quiz": "./src/quiz/index.ts",
+    "./quiz/lexicon": "./src/quiz/lexicon.ts",
+    "./i18n": "./src/i18n/index.ts",
+    "./testing": "./src/testing.ts"
+  },
+  "scripts": {
+    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json",
+    "test": "bun test",
+    "typecheck": "bun check --project tsconfig.json"
+  },
+  "dependencies": {
+    "@aphrody/shenron-lexicon": "workspace:*",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  },
+  "engines": {
+    "bun": ">=1.4.3"
+  },
+  "shenron": {
+    "runtime": {
+      ".": "pure",
+      "./protocol": "pure",
+      "./rooms": "pure",
+      "./quiz": "pure",
+      "./quiz/lexicon": "pure",
+      "./i18n": "pure",
+      "./testing": "pure"
+    }
+  }
+}

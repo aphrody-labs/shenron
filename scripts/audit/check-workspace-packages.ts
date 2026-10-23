@@ -54,6 +54,7 @@ const PACKAGES: Readonly<Record<string, string>> = {
   "@aphrody/shenron-api": "packages/api",
   "@aphrody/shenron-ui": "packages/ui",
 
+  "@aphrody/shenron-activity": "packages/activity",
   "@aphrody/shenron-koharu": "packages/koharu",
   "@aphrody/shenron-lexicon": "packages/lexicon",
   "@aphrody/shenron-media": "packages/media",
@@ -98,6 +99,8 @@ const ALLOWED_EDGES: Readonly<
     dev: ["@aphrody/shenron-config"],
   },
 
+  // Discord activity rules and protocol: pure, reads only the lexicon.
+  "@aphrody/shenron-activity": { runtime: ["@aphrody/shenron-lexicon"], dev: [] },
   // Leaves: the Koharu client, the media helpers and the shenron-ffi binding.
   "@aphrody/shenron-koharu": { runtime: [], dev: [] },
   // The one ja/fr/en lexicon (data embedded, no I/O): a leaf every layer may read.

@@ -17,6 +17,9 @@
       "path": "apps/site/tsconfig.tests.json"
     },
     {
+      "path": "packages/activity/tsconfig.json"
+    },
+    {
       "path": "packages/api/tsconfig.json"
     },
     {

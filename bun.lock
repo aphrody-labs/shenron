@@ -182,6 +182,17 @@
         "typescript": "catalog:",
       },
     },
+    "packages/activity": {
+      "name": "@aphrody/shenron-activity",
+      "version": "1.4.7",
+      "dependencies": {
+        "@aphrody/shenron-lexicon": "workspace:*",
+        "zod": "catalog:",
+      },
+      "devDependencies": {
+        "@types/bun": "catalog:",
+      },
+    },
     "packages/api": {
       "name": "@aphrody/shenron-api",
       "version": "1.4.7",
@@ -618,6 +629,8 @@
     "@aphrody/plugin-opener": ["@aphrody/plugin-opener@3.0.0-alpha.5", "", { "dependencies": { "@aphrody/api": "3.0.0-alpha.5" } }, "sha512-rW2El+81DnSSBr6aiE0ds8X2HfKn7qxZ3uzm9I/Q+YNe0h8A4n1LxHYiLRudrMH1Z0BxXnpFK5RRigU1jkYBTw=="],
 
     "@aphrody/runtime-sdk": ["@aphrody/runtime-sdk@0.1.4", "", {}, "sha512-BaMTxKPiloX6v0fCghhoQHb1IFpU2RGgUpaOO6BO37xZ0T6llMpx9TsnH9vHJGGI3PDkC7grAMLONrb/gJeoHA=="],
+
+    "@aphrody/shenron-activity": ["@aphrody/shenron-activity@workspace:packages/activity"],
 
     "@aphrody/shenron-api": ["@aphrody/shenron-api@workspace:packages/api"],
 
