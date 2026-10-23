@@ -157,8 +157,7 @@ async function readMember(base: string, token: string, file: FileRow): Promise<U
         signal: AbortSignal.timeout(120_000),
       });
       if (response.ok) return new Uint8Array(await response.arrayBuffer());
-      const details = (await response.text()).slice(0, 500);
-      lastError = new Error(`CPK service returned HTTP ${response.status}: ${details}`);
+      lastError = new Error(`CPK service returned HTTP ${response.status}`);
       if (response.status < 500 && response.status !== 429) break;
     } catch (error) {
       lastError = error;
