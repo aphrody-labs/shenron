@@ -5,7 +5,10 @@ import {
   real,
   index,
   uniqueIndex,
+  unique,
   primaryKey,
+  check,
+  type AnySQLiteColumn,
 } from "drizzle-orm/sqlite-core";
 import { relations, sql } from "drizzle-orm";
 import type { EpisodeFrame } from "./episode-frames";
@@ -275,6 +278,8 @@ export const actionLogs = sqliteTable(
     index("idx_log_user").on(t.userId),
     index("idx_log_action").on(t.action),
     index("idx_log_created").on(t.createdAt),
+    // Monthly leaderboard and audit reads filter on `action` then range on `created_at`.
+    index("idx_log_action_created").on(t.action, t.createdAt),
   ],
 );
 
@@ -304,6 +309,48 @@ export const economyFlags = sqliteTable(
     index("idx_economy_flags_status").on(t.status),
     index("idx_economy_flags_created").on(t.createdAt),
   ],
+);
+
+/**
+ * Daily money-supply snapshot (InflationService). One row per UTC day; `index_value` is the
+ * inflation index and `enabled` records whether the correction was active that day.
+ * Created by migration 0023 (the service keeps its own `CREATE TABLE IF NOT EXISTS`).
+ */
+export const economyIndex = sqliteTable("economy_index", {
+  day: text("day").primaryKey(), // YYYY-MM-DD
+  supply: integer("supply").notNull(),
+  indexValue: real("index_value").notNull(),
+  enabled: integer("enabled", { mode: "boolean" }).notNull().default(false),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(CAST(unixepoch() * 1000 AS INTEGER))`),
+});
+
+/**
+ * URSAF notices raised against flagged accounts (UrsafService). `flag_ids` is a serialized JSON
+ * list of `economy_flags.id`. Created by migration 0023 (the service keeps its own
+ * `CREATE TABLE IF NOT EXISTS`).
+ */
+export const ursafNotices = sqliteTable(
+  "ursaf_notices",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: text("user_id").notNull(),
+    flagIds: text("flag_ids").notNull(),
+    taxable: integer("taxable").notNull(),
+    rate: real("rate").notNull(),
+    amount: integer("amount").notNull(),
+    collected: integer("collected").notNull().default(0),
+    severity: text("severity").notNull(),
+    status: text("status").notNull().default("pending"), // pending | notified | collected | cancelled
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(CAST(unixepoch() * 1000 AS INTEGER))`),
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" }),
+    updatedBy: text("updated_by"),
+    note: text("note"),
+  },
+  (t) => [index("idx_ursaf_user").on(t.userId), index("idx_ursaf_status").on(t.status)],
 );
 
 /* ============================================================
@@ -827,7 +874,9 @@ export const mediaWorks = sqliteTable(
     titleJa: text("title_ja"),
     titleRomaji: text("title_romaji"),
     synopsisFr: text("synopsis_fr"),
-    sourceId: text("source_id"),
+    // INTEGER affinity in migration 0018 while PostgreSQL carries source ids as text: SQLite keeps
+    // a non-numeric value as TEXT, so a replicated row may hold either form.
+    sourceId: integer("source_id").$type<number | string>(),
     visible: integer("visible", { mode: "boolean" }).notNull().default(true),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
@@ -856,7 +905,10 @@ export const mediaEditions = sqliteTable(
     scanPolicy: text("scan_policy").notNull().default("self_hosted"),
     visible: integer("visible", { mode: "boolean" }).notNull().default(true),
   },
-  (t) => [index("idx_media_editions_work").on(t.workId, t.edition)],
+  (t) => [
+    index("idx_media_editions_work").on(t.workId, t.edition),
+    unique().on(t.workId, t.edition, t.language, t.isbn),
+  ],
 );
 
 export const mediaVolumes = sqliteTable(
@@ -874,7 +926,10 @@ export const mediaVolumes = sqliteTable(
     pageCount: integer("page_count"),
     visible: integer("visible", { mode: "boolean" }).notNull().default(true),
   },
-  (t) => [index("idx_media_volumes_edition").on(t.editionId, t.number)],
+  (t) => [
+    index("idx_media_volumes_edition").on(t.editionId, t.number),
+    unique().on(t.editionId, t.number),
+  ],
 );
 
 export const mediaChapters = sqliteTable(
@@ -888,11 +943,14 @@ export const mediaChapters = sqliteTable(
     number: real("number").notNull(),
     slug: text("slug").notNull().unique(),
     title: text("title"),
-    pages: text("pages", { mode: "json" }).$type<string[]>().default([]),
+    pages: text("pages", { mode: "json" }).$type<string[]>().notNull().default([]),
     ocrStatus: text("ocr_status").notNull().default("unprocessed"),
     visible: integer("visible", { mode: "boolean" }).notNull().default(true),
   },
-  (t) => [index("idx_media_chapters_volume").on(t.volumeId, t.number)],
+  (t) => [
+    index("idx_media_chapters_volume").on(t.volumeId, t.number),
+    unique().on(t.volumeId, t.number),
+  ],
 );
 
 export const mediaPageAssets = sqliteTable("media_page_assets", {
@@ -901,7 +959,8 @@ export const mediaPageAssets = sqliteTable("media_page_assets", {
   width: integer("width"),
   height: integer("height"),
   sha256: text("sha256").notNull().unique(),
-  sourceId: text("source_id"),
+  // INTEGER affinity in migration 0018, see `mediaWorks.sourceId`.
+  sourceId: integer("source_id").$type<number | string>(),
 });
 
 export const mediaPageRefs = sqliteTable(
@@ -918,7 +977,9 @@ export const mediaPageRefs = sqliteTable(
   },
   (t) => [
     primaryKey({ columns: [t.chapterId, t.ordinal] }),
+    unique().on(t.chapterId, t.assetId),
     index("idx_media_page_refs_asset").on(t.assetId),
+    check("media_page_refs_ordinal_positive", sql`${t.ordinal} > 0`),
   ],
 );
 
@@ -927,7 +988,7 @@ export const narrativeTimelines = sqliteTable("narrative_timelines", {
   slug: text("slug").notNull().unique(),
   kind: text("kind").notNull(),
   label: text("label").notNull(),
-  parentId: integer("parent_id"),
+  parentId: integer("parent_id").references((): AnySQLiteColumn => narrativeTimelines.id),
   sourceId: text("source_id"),
   visible: integer("visible", { mode: "boolean" }).notNull().default(true),
 });
@@ -1092,6 +1153,8 @@ export const dbMangaPages = sqliteTable(
   (t) => [
     uniqueIndex("uq_db_manga_pages").on(t.series, t.tome, t.planche),
     index("idx_db_manga_pages_series").on(t.series),
+    // Created by `ensureKoharuMangaPages` (wiki-visibility.ts) with the two Koharu columns.
+    index("idx_db_manga_pages_koharu").on(t.koharuPageId),
   ],
 );
 export type DbMangaPage = typeof dbMangaPages.$inferSelect;
@@ -1106,6 +1169,11 @@ export type DragonballcnPageItem = {
   pageUrl: string;
 };
 
+/**
+ * DragonBallCN archive volumes (replica of PostgreSQL `bot.dragonballcn_volumes`). Created by
+ * migration 0023: the catalogue enrichment (`packages/pipeline`, `--sqlite`) updates
+ * `cover_url`, `isbn` and `date` here. Timestamps are epoch milliseconds.
+ */
 export const dragonballcnVolumes = sqliteTable(
   "dragonballcn_volumes",
   {
@@ -1117,12 +1185,17 @@ export const dragonballcnVolumes = sqliteTable(
     coverUrl: text("cover_url"),
     url: text("url"),
     date: text("date"),
+    isbn: text("isbn"),
     totalPages: integer("total_pages").notNull().default(0),
-    pages: text("pages", { mode: "json" }).$type<DragonballcnPageItem[]>().notNull(),
-    scrapedAt: integer("scraped_at").notNull().default(0),
-    updatedAt: integer("updated_at").notNull().default(0),
+    pages: text("pages", { mode: "json" }).$type<DragonballcnPageItem[]>().notNull().default([]),
+    scrapedAt: integer("scraped_at")
+      .notNull()
+      .default(sql`(unixepoch() * 1000)`),
+    updatedAt: integer("updated_at")
+      .notNull()
+      .default(sql`(unixepoch() * 1000)`),
   },
-  (t) => [index("idx_dbcn_volumes_cat").on(t.category)],
+  (t) => [index("idx_dbcn_vol_cat").on(t.category)],
 );
 export type DragonballcnVolume = typeof dragonballcnVolumes.$inferSelect;
 export type NewDragonballcnVolume = typeof dragonballcnVolumes.$inferInsert;
@@ -1378,6 +1451,82 @@ export const dmMessages = sqliteTable(
     index("idx_dm_messages_created").on(t.createdAt),
   ],
 );
+
+/* ============================================================
+ * Discord guild mirror (GuildMirrorService, migration 0022)
+ * Local copy of the guild's members, roles and channels. Rows are never deleted: a member
+ * who left has `present = 0`, a removed role or channel has `deleted_at`. All timestamps are
+ * epoch milliseconds, ids are Discord snowflakes (text).
+ * ========================================================= */
+export const discordMembers = sqliteTable(
+  "discord_members",
+  {
+    userId: text("user_id").primaryKey(),
+    username: text("username").notNull(),
+    globalName: text("global_name"),
+    nickname: text("nickname"),
+    avatarHash: text("avatar_hash"),
+    guildAvatarHash: text("guild_avatar_hash"),
+    bot: integer("bot", { mode: "boolean" }).notNull().default(false),
+    joinedAt: integer("joined_at", { mode: "timestamp_ms" }),
+    premiumSince: integer("premium_since", { mode: "timestamp_ms" }),
+    timeoutUntil: integer("timeout_until", { mode: "timestamp_ms" }),
+    pending: integer("pending", { mode: "boolean" }).notNull().default(false),
+    roleIds: text("role_ids").notNull().default("[]"), // serialized JSON list of role ids
+    topRoleId: text("top_role_id"),
+    present: integer("present", { mode: "boolean" }).notNull().default(true),
+    leftAt: integer("left_at", { mode: "timestamp_ms" }),
+    syncedAt: integer("synced_at", { mode: "timestamp_ms" }).notNull(),
+  },
+  (t) => [
+    index("idx_discord_members_present").on(t.present),
+    index("idx_discord_members_joined").on(t.joinedAt),
+  ],
+);
+
+export const discordRoles = sqliteTable("discord_roles", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  color: integer("color").notNull().default(0),
+  position: integer("position").notNull().default(0),
+  hoist: integer("hoist", { mode: "boolean" }).notNull().default(false),
+  managed: integer("managed", { mode: "boolean" }).notNull().default(false),
+  mentionable: integer("mentionable", { mode: "boolean" }).notNull().default(false),
+  permissions: text("permissions").notNull().default("0"), // permission bitfield as a decimal string
+  icon: text("icon"),
+  unicodeEmoji: text("unicode_emoji"),
+  memberCount: integer("member_count").notNull().default(0),
+  deletedAt: integer("deleted_at", { mode: "timestamp_ms" }),
+  syncedAt: integer("synced_at", { mode: "timestamp_ms" }).notNull(),
+});
+
+export const discordChannels = sqliteTable(
+  "discord_channels",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    type: integer("type").notNull(), // Discord ChannelType
+    parentId: text("parent_id"),
+    position: integer("position").notNull().default(0),
+    topic: text("topic"),
+    nsfw: integer("nsfw", { mode: "boolean" }).notNull().default(false),
+    rateLimit: integer("rate_limit").notNull().default(0),
+    deletedAt: integer("deleted_at", { mode: "timestamp_ms" }),
+    syncedAt: integer("synced_at", { mode: "timestamp_ms" }).notNull(),
+  },
+  (t) => [index("idx_discord_channels_parent").on(t.parentId)],
+);
+
+/**
+ * Cache of Discord usernames and avatars (`lib/discord-profiles.ts`), reconciled into
+ * PostgreSQL by `scripts/ops/sync-discord-profiles-sqlite-to-postgres.ts`.
+ */
+export const discordUserProfiles = sqliteTable("discord_user_profiles", {
+  userId: text("user_id").primaryKey(),
+  username: text("username"),
+  avatarHash: text("avatar_hash"),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+});
 
 /**
  * Retours d'entraînement et validation humaine pour le RAG et les APIs de Dragon Ball FR.
