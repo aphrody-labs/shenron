@@ -55,6 +55,12 @@ if (process.argv.includes("--smoke")) {
   await import("./_entries");
   const storage = MetadataStorage.instance;
   await storage.build();
+  // A worker that does not resolve in the compiled binary only fails asynchronously, long after
+  // boot: start the indexer worker and require its handshake, so a broken layout fails the build.
+  const { startBundledWorker, whenWorkerReady } = await import("./lib/bundled-worker");
+  const indexerWorker = startBundledWorker("indexer.ts");
+  await whenWorkerReady(indexerWorker);
+  indexerWorker.terminate();
   // The command graph registered the canvas fonts: a compiled release must find every
   // shipped font (SHENRON_BOT_ASSETS_DIR) and a colour emoji font from the system.
   const { GlobalFonts } = await import("@napi-rs/canvas");
@@ -72,6 +78,7 @@ if (process.argv.includes("--smoke")) {
     JSON.stringify({
       smoke: "ok",
       canvasPngBytes,
+      indexerWorker: "ready",
       canvasFonts: CANVAS_FONT_FILES.length - canvasFontsMissing.length,
       canvasFontsMissing,
       emojiFont: emojiFont ?? null,

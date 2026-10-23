@@ -138,6 +138,8 @@ export class CardService {
   // Cache thèmes DB — refresh 60s. Fallback CARDS hardcoded si DB inaccessible.
   private themesCache: Map<string, CardTheme> | null = null;
   private themesCacheAt = 0;
+  /** Theme id → background path referenced by the catalog but absent from disk. */
+  private readonly missing = new Map<string, string>();
 
   constructor(@inject(BackgroundCacheService) private bgs: BackgroundCacheService) {}
 
@@ -172,9 +174,40 @@ export class CardService {
     } catch (err) {
       logger.warn({ err }, "CardService.getThemes — fallback CARDS hardcoded");
     }
+    for (const [id, theme] of out) out.set(id, this.withAvailableBackground(id, theme));
     this.themesCache = out;
     this.themesCacheAt = now;
     return out;
+  }
+
+  /**
+   * A theme never references a background that is not on disk. The database rows seeded by
+   * migration 0007 name NASA images (`assets/backgrounds/...`) that were never shipped: the
+   * banner of the built-in theme of the same id replaces them, else the theme renders its
+   * gradient. Reported once per theme and path, not on every 60 s refresh.
+   */
+  private withAvailableBackground(id: string, theme: CardTheme): CardTheme {
+    const wanted = theme.bgFile;
+    if (!wanted || this.bgs.exists(wanted)) {
+      this.missing.delete(id);
+      return theme;
+    }
+    const builtin = CARDS[id]?.bgFile;
+    const fallback =
+      builtin && builtin !== wanted && this.bgs.exists(builtin) ? builtin : undefined;
+    if (this.missing.get(id) !== wanted) {
+      this.missing.set(id, wanted);
+      logger.warn(
+        { theme: id, bgFile: wanted, fallback: fallback ?? null },
+        "card theme background missing on disk, not used",
+      );
+    }
+    return { ...theme, bgFile: fallback };
+  }
+
+  /** Themes whose configured background is absent from disk (diagnostics). */
+  missingBackgrounds(): { theme: string; bgFile: string }[] {
+    return [...this.missing].map(([theme, bgFile]) => ({ theme, bgFile }));
   }
 
   /** Invalide le cache thèmes (appelé par admin POST/PUT/DELETE card-themes). */

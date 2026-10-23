@@ -55,6 +55,11 @@ const child = Bun.spawn(
     "build",
     "src/entry-standalone.ts",
     // Workers are extra entry points: new Worker() can only load modules embedded in the binary.
+    // The embedded root is pinned to apps/bot (cwd): without `--root` Bun derives it from the
+    // entries, and the canvas addon below lives outside apps/bot, so the workers' embedded path
+    // moved with the checkout layout. They are at `src/workers/` (see src/lib/bundled-worker.ts).
+    "--root",
+    ".",
     "src/workers/indexer.ts",
     "src/workers/vector-builder.ts",
     canvas,

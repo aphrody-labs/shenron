@@ -8,6 +8,7 @@ import type {
 } from "discord.js";
 import { inject, singleton } from "tsyringe";
 import { DatabaseService } from "~/db/index";
+import { isGatewayRateLimit } from "~/lib/guild-members";
 import { logger } from "~/lib/logger";
 
 /**
@@ -69,6 +70,11 @@ export type SyncReport = {
   rolesDeleted: number;
   channels: number;
   channelsDeleted: number;
+  /**
+   * False when the member list could not be fetched (gateway rate limit) and the cache was
+   * partial: members are upserted but nobody is marked as gone.
+   */
+  membersComplete: boolean;
   durationMs: number;
 };
 
@@ -211,8 +217,15 @@ export class GuildMirrorStore {
       .run(id, now);
   }
 
-  /** Full sync: everything absent from the snapshot is marked gone, never deleted. */
-  replaceAll(snapshot: { members: MemberRow[]; roles: RoleRow[]; channels: ChannelRow[] }) {
+  /**
+   * Full sync: everything absent from the snapshot is marked gone, never deleted.
+   * With `membersComplete: false` (partial member list) members are only upserted:
+   * absence from an incomplete list proves nothing.
+   */
+  replaceAll(
+    snapshot: { members: MemberRow[]; roles: RoleRow[]; channels: ChannelRow[] },
+    { membersComplete = true }: { membersComplete?: boolean } = {},
+  ) {
     const now = Date.now();
     this.upsertRoles(snapshot.roles, now);
     this.upsertChannels(snapshot.channels, now);
@@ -221,11 +234,9 @@ export class GuildMirrorStore {
       this.db.query(`UPDATE ${table} SET ${set} WHERE synced_at < ?1 AND ${column}`).run(now)
         .changes;
     return {
-      membersLeft: gone(
-        "discord_members",
-        "present = 1",
-        "present = 0, left_at = ?1, synced_at = ?1",
-      ),
+      membersLeft: membersComplete
+        ? gone("discord_members", "present = 1", "present = 0, left_at = ?1, synced_at = ?1")
+        : 0,
       rolesDeleted: gone("discord_roles", "deleted_at IS NULL", "deleted_at = ?1, synced_at = ?1"),
       channelsDeleted: gone(
         "discord_channels",
@@ -291,26 +302,47 @@ export class GuildMirrorService {
     return this.running;
   }
 
+  /**
+   * Every member of the guild, or what the cache holds when Discord refuses the request.
+   * A gateway rate limit must never fail the sync (the next cycle completes it), but a
+   * partial list must not mark anyone as gone, hence `complete`.
+   */
+  private async loadMembers(guild: Guild): Promise<{ members: GuildMember[]; complete: boolean }> {
+    try {
+      return { members: [...(await guild.members.fetch()).values()], complete: true };
+    } catch (err) {
+      if (!isGatewayRateLimit(err)) throw err;
+      const cache = guild.members.cache;
+      const complete = guild.memberCount > 0 && cache.size >= guild.memberCount;
+      logger.warn(
+        { err, cached: cache.size, memberCount: guild.memberCount, complete },
+        "[GUILD MIRROR] member fetch rate limited, syncing from the member cache",
+      );
+      return { members: [...cache.values()], complete };
+    }
+  }
+
   private async runSync(guild: Guild): Promise<SyncReport> {
     const started = Date.now();
-    const [members, roles, channels] = await Promise.all([
-      guild.members.fetch(),
+    const [{ members, complete }, roles, channels] = await Promise.all([
+      this.loadMembers(guild),
       guild.roles.fetch(),
       guild.channels.fetch(),
     ]);
     const snapshot = {
-      members: [...members.values()].map((m) => memberRow(m, guild.id)),
+      members: members.map((m) => memberRow(m, guild.id)),
       roles: [...roles.values()].filter((r) => r.id !== guild.id).map(roleRow),
       channels: [...channels.values()]
         .filter((c): c is NonThreadGuildBasedChannel => c !== null)
         .map(channelRow),
     };
-    const gone = this.store.replaceAll(snapshot);
+    const gone = this.store.replaceAll(snapshot, { membersComplete: complete });
     const report: SyncReport = {
       members: snapshot.members.length,
       roles: snapshot.roles.length,
       channels: snapshot.channels.length,
       ...gone,
+      membersComplete: complete,
       durationMs: Date.now() - started,
     };
     logger.info(report, "[GUILD MIRROR] full sync done");

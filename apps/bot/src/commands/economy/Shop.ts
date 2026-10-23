@@ -319,7 +319,7 @@ export class ShopPanelCommands {
       new ButtonBuilder()
         .setCustomId("shop:open")
         .setLabel("Autre catégorie")
-        .setEmoji("←")
+        .setEmoji("⬅️")
         .setStyle(ButtonStyle.Secondary),
       new ButtonBuilder()
         .setCustomId("shop:eprofil")

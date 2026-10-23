@@ -1,4 +1,5 @@
 import { Buffer } from "node:buffer";
+import { existsSync } from "node:fs";
 import { singleton } from "tsyringe";
 import { loadImage, type Image } from "@napi-rs/canvas";
 import { botFile } from "~/lib/asset-files";
@@ -41,6 +42,14 @@ export class BackgroundCacheService {
     this.inflight.delete(relativePath);
     this.cache.set(relativePath, result);
     return result;
+  }
+
+  /**
+   * Whether the file is on disk, without loading or logging anything. Catalogs call it to
+   * stop offering a background that is not there (the NASA set was never shipped to production).
+   */
+  exists(relativePath: string): boolean {
+    return existsSync(botFile(relativePath));
   }
 
   private async load(relativePath: string, optional: boolean): Promise<Image | null> {

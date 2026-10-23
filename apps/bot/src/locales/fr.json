@@ -8,5 +8,10 @@
     "timeout": "La réponse a pris trop de temps. Pose une question plus courte ou réessaie plus tard.",
     "unavailable": "Le modèle est momentanément indisponible. Réessaie un peu plus tard.",
     "attachmentOnly": "Je ne lis que le texte des messages privés : écris-moi ta question."
+  },
+  "interaction": {
+    "failed": "❌ La commande a rencontré une erreur interne. Réessaie dans un instant.",
+    "unknown": "Commande inconnue ou expirée. Recharge Discord (Ctrl+R) pour actualiser la liste.",
+    "paginationExpired": "Cette pagination a expiré. Relance la commande pour reprendre la lecture."
   }
 }

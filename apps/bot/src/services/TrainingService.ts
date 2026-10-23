@@ -16,6 +16,9 @@ import { sendAdminLabMessage } from "~/lib/admin-lab";
 import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
 import { resolveDataPath, warnIfEphemeral } from "@aphrody/shenron-config/paths";
 import { resolveBotApiInternalUrl, resolveSiteInternalUrl } from "@aphrody/shenron-config/services";
+import { logger } from "~/lib/logger";
+// Embedded in the binary: `tests/` is not shipped, and a path-only gold set read as empty in production.
+import bundledGold from "../../tests/rag-gold.jsonl" with { type: "text" };
 
 /** Jeu doré livré avec le bot (défaut historique, D15). */
 const LEGACY_GOLD_PATH = Bun.fileURLToPath(new URL("../../tests/rag-gold.jsonl", import.meta.url));
@@ -151,11 +154,21 @@ export class TrainingService {
    * Charge les cas de test du fichier tests/rag-gold.jsonl.
    */
   async loadGoldCases(): Promise<GoldCase[]> {
-    return parseGold(
-      await Bun.file(goldPath())
-        .text()
-        .catch(() => ""),
-    );
+    return parseGold(await this.readGoldText());
+  }
+
+  /**
+   * The configured file (`RAG_GOLD_PATH`, else the historical `tests/` path) when it exists,
+   * otherwise the set embedded at build time: never an empty set because a path is absent.
+   */
+  private async readGoldText(): Promise<string> {
+    const file = goldPath();
+    const text = await Bun.file(file)
+      .text()
+      .catch(() => null);
+    if (text !== null) return text;
+    logger.info({ file }, "[TrainingService] gold set file absent, using the embedded set");
+    return bundledGold;
   }
 
   /**
@@ -169,6 +182,12 @@ export class TrainingService {
     const allCases = await this.loadGoldCases();
     const cases =
       sampleSize && sampleSize < allCases.length ? allCases.slice(0, sampleSize) : allCases;
+    // An empty gold set measured nothing: say so, and never record zeros as a result
+    // (they would pose as the previous run in the regression check).
+    if (cases.length === 0) {
+      logger.warn("[TrainingService] gold set is empty: RAG evaluation skipped, nothing recorded");
+      options = { ...options, persist: false };
+    }
 
     const sidecarActive = await this.isSidecarOnline();
     const results: CaseResult[] = [];
@@ -453,9 +472,7 @@ export class TrainingService {
     if (!trimmedQ || cleanExpect.length === 0) return false;
 
     const file = goldPath();
-    const current = await Bun.file(file)
-      .text()
-      .catch(() => "");
+    const current = await this.readGoldText();
     // A question already in the gold set would weigh twice in every evaluation.
     const normalized = trimmedQ.toLowerCase();
     if (parseGold(current).some((c) => c.q.trim().toLowerCase() === normalized)) return false;

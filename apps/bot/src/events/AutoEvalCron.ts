@@ -37,6 +37,11 @@ export class AutoEvalCronEvent {
         logger.info("[AutoEvalCron] Lancement du banc d'évaluation RAG périodique...");
         try {
           const metrics = await this.training.evaluateRag(EVAL_SAMPLE);
+          if (metrics.cases === 0) {
+            // Zero cases is not a success: the gold set was not found or is empty.
+            logger.warn("[AutoEvalCron] Aucun cas évalué : jeu doré vide ou introuvable");
+            return;
+          }
           logger.info(
             {
               cases: metrics.cases,

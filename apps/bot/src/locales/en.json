@@ -8,5 +8,10 @@
     "timeout": "The answer took too long. Ask a shorter question or try again later.",
     "unavailable": "The model is unavailable for the moment. Try again a little later.",
     "attachmentOnly": "I only read the text of private messages: write me your question."
+  },
+  "interaction": {
+    "failed": "❌ The command hit an internal error. Try again in a moment.",
+    "unknown": "Unknown or expired command. Reload Discord (Ctrl+R) to refresh the list.",
+    "paginationExpired": "This pagination has expired. Run the command again to keep reading."
   }
 }
