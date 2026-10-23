@@ -1,4 +1,5 @@
 import { mangaData } from "@/lib/manga-data";
+import { mangaVolumeNeighbors } from "@/lib/manga-volume-neighbors";
 import { hasEditorialDatabase } from "@/lib/prerender";
 import { JAPANESE_FULL_COLOR_CATALOGUE } from "@aphrody/shenron-config/manga-catalogue";
 import Image from "next/image";
@@ -20,6 +21,7 @@ import type { Book as BookSchema, WithContext } from "schema-dts";
 import { JsonLd } from "@/components/JsonLd";
 import { VolumeChaptersList } from "@/components/manga/VolumeChaptersList";
 import { UnifiedVolumeReader } from "@/components/manga/UnifiedVolumeReader";
+import { MangaUnavailableNotice } from "@/components/manga/MangaUnavailableNotice";
 import { CadreCase, PastilleTome } from "@aphrody/shenron-ui/toriyama/MotifsCouverture";
 import { idDeFiche } from "../../../_id-fiche";
 import { AccesApi } from "@/components/manga/AccesApi";
@@ -100,10 +102,7 @@ export default async function MangaVolumePage({ params }: { params: Promise<{ id
   if (!volume) notFound();
 
   const siblingVols = (await mangaData.mangaVolumes(volume.series))?.volumes ?? [];
-  const curIdx = siblingVols.findIndex((v) => v.id === volume.id);
-  const prevVolume = curIdx > 0 ? siblingVols[curIdx - 1] : null;
-  const nextVolume =
-    curIdx >= 0 && curIdx < siblingVols.length - 1 ? siblingVols[curIdx + 1] : null;
+  const { prev: prevVolume, next: nextVolume } = mangaVolumeNeighbors(volume, siblingVols);
 
   // Balisage `Book` du tome. Les épisodes, films, jeux, personnages, lieux et
   // techniques étaient déjà décrits en JSON-LD ; le manga — la moitié du
@@ -264,6 +263,7 @@ export default async function MangaVolumePage({ params }: { params: Promise<{ id
           </aside>
 
           <div className="min-w-0 space-y-10">
+            <MangaUnavailableNotice pageCount={planchesTotal} />
             {/* `UnifiedVolumeReader` lit `useSearchParams()` (chapitre et édition demandés).
                 Sans frontière `Suspense` à lui, Next abandonnait le rendu serveur de TOUTE
                 la route (`BAILOUT_TO_CLIENT_SIDE_RENDERING`) : le HTML servi ne contenait que

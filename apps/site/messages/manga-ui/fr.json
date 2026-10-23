@@ -95,6 +95,9 @@
   },
   "searchShort": "Recherche",
   "reader": {
+    "unavailableTitle": "Lecture indisponible pour cette édition",
+    "unavailableNotice": "Cette fiche présente les informations bibliographiques du tome. Aucune planche de cette édition n’est disponible à la lecture ici.",
+    "suggestSource": "Proposer une source",
     "preview": "Extrait officiel — {count} pages (tome incomplet)",
     "previewNotice": "Cet extrait officiel présente {count} pages et couvre seulement une partie du tome.",
     "previewSource": "Consulter la source officielle",
