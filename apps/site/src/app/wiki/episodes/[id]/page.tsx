@@ -28,7 +28,6 @@ import { VideoLecteurs } from "@/components/episodes/VideoLecteurs";
 import { VideoSourceSummary } from "@/components/episodes/VideoSourceSummary";
 import { VideoUnavailableCard } from "@/components/episodes/VideoUnavailableCard";
 import { OffreLegale } from "@/components/episodes/OffreLegale";
-import { EpisodeDownload } from "@/components/episodes/EpisodeDownload";
 import { AnimatedMedia } from "@/components/media/AnimatedMedia";
 import { BackgroundImage } from "@/components/media/BackgroundImage";
 import { EpisodeScenes } from "./EpisodeScenes";
@@ -234,16 +233,6 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
     />
   ) : null;
 
-  // Téléchargement réellement résoluble ? Le bot résout à la volée depuis les
-  // sources voir-anime (présence de `players`) ou depuis un MP4/HLS stocké
-  // (`video_url`/`stream_url`). Un fallback image seul n'est PAS téléchargeable →
-  // on masque le bouton pour ne jamais présenter un lien qui renverrait un 404.
-  const canDownload =
-    !cdnOnly &&
-    ((ep.players != null && ep.players.length > 0) ||
-      Boolean(ep.video_url) ||
-      Boolean(ep.stream_url));
-
   // === Scènes d'épisode (additif, dégradation gracieuse) ===
   // On ne garde que les frames réellement écrites (imagePath non null : un
   // dry-run du pipeline laisse `imagePath === null`).
@@ -316,24 +305,14 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
         />
         <WatchStage>
           {/* === Player === */}
-          {player && (
-            <div className="relative group/player">
-              {player}
-              {/* Téléchargement affiché uniquement quand une source est résoluble
-						    (résolution HLS on-demand côté bot), réservé aux membres connectés
-						    Discord. Masqué sur un fallback image seul → jamais de lien mort. */}
-              {canDownload && (
-                <div className="absolute top-3 right-3 z-20">
-                  <EpisodeDownload
-                    href={`/api/episodes/${ep.id}/download`}
-                    signinCallback={`/wiki/episodes/${ep.id}`}
-                    title={ep.title}
-                  />
-                </div>
-              )}
-            </div>
+          {player && <div className="relative group/player">{player}</div>}
+          {!player && (
+            <VideoUnavailableCard
+              title={ep.title}
+              kind="episode"
+              poster={ep.image ? assetUrl(ep.image) : undefined}
+            />
           )}
-          {!player && <VideoUnavailableCard title={ep.title} kind="episode" />}
         </WatchStage>
         <WikiEditBar table="db_episodes" id={ep.id} indexHref="/wiki/episodes" label={ep.title} />
         <WatchColumns

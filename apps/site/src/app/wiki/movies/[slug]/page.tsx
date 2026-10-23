@@ -25,7 +25,6 @@ import { VideoLecteurs } from "@/components/episodes/VideoLecteurs";
 import { VideoSourceSummary } from "@/components/episodes/VideoSourceSummary";
 import { VideoUnavailableCard } from "@/components/episodes/VideoUnavailableCard";
 import { OffreLegale } from "@/components/episodes/OffreLegale";
-import { EpisodeDownload } from "@/components/episodes/EpisodeDownload";
 import { JsonLd } from "@/components/JsonLd";
 import { AdUnit } from "@/components/ads/AdUnit";
 import type { Movie as MovieSchema, WithContext } from "schema-dts";
@@ -152,21 +151,6 @@ export default async function FilmPage({ params }: { params: Promise<{ slug: str
       />
     ) : null;
 
-  // Téléchargement réellement résoluble ? Les iframes tierces (vidmoly/voe/mailru)
-  // sont lisibles mais PAS téléchargeables. Seul un MP4/HLS direct est un fichier :
-  // `video_url`/`stream_url` stockés, un lecteur Archive.org (MP4 dérivé de l'API
-  // metadata) ou un `embedUrl` déjà direct (`.mp4`/`.m3u8`). On masque le bouton
-  // sinon → jamais de lien qui renverrait un 404.
-  const canDownload =
-    Boolean(m.video_url) ||
-    Boolean(m.stream_url) ||
-    (m.players ?? []).some(
-      (p) =>
-        p.provider === "archive" ||
-        /archive\.org\/(embed|download)\//i.test(p.embedUrl) ||
-        /\.(mp4|m3u8)(\?|$)/i.test(p.embedUrl),
-    );
-
   const jsonLdData: WithContext<MovieSchema> = {
     "@context": "https://schema.org",
     "@type": "Movie",
@@ -204,23 +188,16 @@ export default async function FilmPage({ params }: { params: Promise<{ slug: str
       />
       <WatchStage>
         {player ? (
-          <div className="relative group/player">
-            {player}
-            {canDownload && (
-              <div className="absolute top-3 right-3 z-20">
-                <EpisodeDownload
-                  href={`/api/movies/${m.id}/download`}
-                  signinCallback={`/wiki/movies/${m.slug}`}
-                  title={m.title}
-                />
-              </div>
-            )}
-          </div>
+          <div className="relative group/player">{player}</div>
         ) : (
           // Aucun lecteur ni source (ex. Bardock, History of Trunks…) : état
           // vide propre plutôt qu'un embed cassé ou un bouton de téléchargement
           // mort. Le reste de la fiche (poster, infos, synopsis) reste affiché.
-          <VideoUnavailableCard title={m.title} kind="film" />
+          <VideoUnavailableCard
+            title={m.title}
+            kind="film"
+            poster={m.poster ? assetUrl(m.poster) : undefined}
+          />
         )}
       </WatchStage>
       <div className="mb-6">
