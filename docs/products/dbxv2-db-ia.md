@@ -5,7 +5,7 @@ Namco pour Xenoverse 2, et demande la publication publique des données DBXV2. L
 à ce stade sur le mesh privé ; son exposition publique suit le runbook Infra. Les CPK et la base
 ne sont jamais copiés dans Git ni dans un artefact de build. Les secrets de service restent privés.
 
-- Stockage : SQLite `~/var/dbxv2-db/dbxv2.sqlite` sur la fabrique (dossier 700, fichier 600). Le script refuse tout chemin dans le dépôt.
+- Stockage de travail VPS : SQLite `/games/private/shenron-dbxv2/dbxv2.sqlite` (dossier 700, fichier 600), alimentée depuis les CPK montés. Le builder historique `build-dbxv2-db.ts` garde son défaut fabrique `~/var/dbxv2-db/dbxv2.sqlite` ; lui passer `--out` pour viser explicitement une autre copie. Le script refuse tout chemin dans le dépôt.
 - Code : `packages/db/src/dbxv2/` (`openDbxv2Db`, `ingestDbxv2`, `embedPending`), script `scripts/data/build-dbxv2-db.ts`, tests `packages/db/test/dbxv2.test.ts` (échantillon synthétique).
 
 ## Schéma
