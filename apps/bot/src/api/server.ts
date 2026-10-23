@@ -1,4 +1,5 @@
 import { botOperationalLogs } from "../lib/operational-logs";
+import { botNoiseMeter } from "~/ui/noise-meter";
 import { readHlsSegment, registerHlsSegment } from "./hls-security";
 import { resolveApiUrl, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import { adminPipeline } from "./admin-pipeline";
@@ -982,6 +983,7 @@ import { findAction, listServiceActions, SERVICE_ACTIONS } from "./service-regis
  *     GET  /health/host          host CPU/mem
  *     GET  /health/monitoring    aggregate
  *     GET  /health/logs          bounded process operational log snapshot
+ *     GET  /health/noise         public bot messages per channel and kind (?hours=24)
  *
  *     GET  /stats/totals         users/guilds/commands
  *     GET  /stats/interaction/last
@@ -1427,6 +1429,16 @@ export class ApiServer {
             pid: await this.stats.getPidUsage(),
             host: await this.stats.getHostUsage(),
             latency: this.stats.getLatency(),
+            noise: botNoiseMeter.snapshot(),
+          });
+        }),
+        // Public messages posted by the bot per channel and kind (noise meter, read-only).
+        "/api/health/noise": admin((req) => {
+          const hours = Number(new URL(req.url).searchParams.get("hours") ?? 24);
+          const windowMs =
+            (Number.isFinite(hours) ? Math.min(336, Math.max(1, hours)) : 24) * 3_600_000;
+          return Response.json(botNoiseMeter.snapshot({ windowMs }), {
+            headers: { "cache-control": "private, no-store" },
           });
         }),
         "/api/health/logs": admin((req) => {
@@ -6913,6 +6925,9 @@ function buildOpenApiSpec(port: number) {
       "/api/health/check": { get: { summary: "Health public" } },
       "/api/health/latency": { get: { summary: "WS + DB latency" } },
       "/api/health/monitoring": { get: { summary: "Full monitoring", security: [{ bearer: [] }] } },
+      "/api/health/noise": {
+        get: { summary: "Public bot messages per channel and kind", security: [{ bearer: [] }] },
+      },
       "/api/stats/totals": { get: { summary: "Totaux", security: [{ bearer: [] }] } },
       "/api/bot/guilds": { get: { summary: "Guilds", security: [{ bearer: [] }] } },
       "/api/bot/commands": { get: { summary: "Slash commands", security: [{ bearer: [] }] } },

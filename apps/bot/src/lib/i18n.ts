@@ -46,6 +46,27 @@ export function botLang(locale: string | null | undefined): BotLang {
   return code === "en" || code === "ja" ? code : "fr";
 }
 
+/**
+ * Language of an interaction (`interaction.locale`, the user's Discord client language): `fr`,
+ * `en` or `ja`, French when the locale is missing or not supported. The single place that maps
+ * an interaction to a bot language: handlers never read `interaction.locale` themselves.
+ */
+export function interactionLang(source: { locale?: string | null }): BotLang {
+  return botLang(source.locale);
+}
+
+/**
+ * `nameLocalizations` / `descriptionLocalizations` of a slash command: the French and Japanese
+ * texts of `key`. English is the default text of the command itself (identifiers are English),
+ * so it is not repeated here. The result is a valid Discord `LocalizationMap`.
+ */
+export function discordLocalizations(
+  key: BotMessageKey,
+  vars: Record<string, string | number> = {},
+): { fr: string; ja: string } {
+  return { fr: t("fr", key, vars), ja: t("ja", key, vars) };
+}
+
 /** Text of `key` in `lang`, `{name}` placeholders replaced by `vars`. */
 export function t(
   lang: BotLang,

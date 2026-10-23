@@ -51,6 +51,8 @@ import "./events/LevelRoleSync";
 import "./events/MessageLog";
 import "./events/MessageXP";
 import "./events/NewsScan";
+import "./events/NoiseMeter";
 import "./events/TikTokWatch";
+import "./events/UiComponents";
 import "./events/VoiceXP";
 import "./events/ready";

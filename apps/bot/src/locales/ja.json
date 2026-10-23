@@ -75,5 +75,84 @@
     "footer": "Shenron · DBZ の願いを叶えよう",
     "reached": "<@{userId}> が **{xp} XP** に到達しました！",
     "powerUp": "<@{userId}> がパワーアップ！"
+  },
+  "ui": {
+    "expired": "このメッセージは期限切れです。コマンドをもう一度実行して更新してください。",
+    "notYours": "このボタンはあなた用ではありません。ご自身でコマンドを実行してください。",
+    "cancelled": "操作をキャンセルしました。",
+    "shared": "チャンネルに共有しました。",
+    "shareFailed": "このチャンネルには共有できません。",
+    "shareCooldown": "もう一度共有するまで数秒お待ちください。",
+    "invalidPage": "ページが正しくありません。1〜{max}の数字を入力してください。",
+    "failed": "エラーが発生しました。しばらくしてからもう一度お試しください。",
+    "button": {
+      "previous": "前へ",
+      "next": "次へ",
+      "page": "{page}/{total}",
+      "confirm": "確定",
+      "cancel": "キャンセル",
+      "share": "共有"
+    },
+    "modal": {
+      "goToTitle": "ページへ移動",
+      "goToLabel": "ページ番号（1〜{max}）"
+    }
+  },
+  "commands": {
+    "help": {
+      "description": "Shenron のヘルプセンターを開く"
+    }
+  },
+  "help": {
+    "title": "Shenron ヘルプセンター",
+    "intro": "ようこそ、戦士よ！カテゴリを選ぶと使えるコマンドが表示されます。",
+    "placeholder": "カテゴリを選択…",
+    "noDescription": "説明はありません。",
+    "empty": "表示できるコマンドはありません。",
+    "active": { "one": "有効なコマンド{count}件", "other": "有効なコマンド{count}件" },
+    "more": {
+      "one": "…ほか{count}件：`/` を入力して確認できます。",
+      "other": "…ほか{count}件：`/` を入力して確認できます。"
+    },
+    "home": { "label": "ホーム", "description": "Shenron の概要" },
+    "links": { "site": "公式サイト", "wiki": "正史ウィキ", "databooks": "データブック" },
+    "category": {
+      "profile": {
+        "title": "プロフィールと戦闘力",
+        "description": "成長、戦士カード、ランキング"
+      },
+      "economy": {
+        "title": "経済とショップ",
+        "description": "ゼニ、ショップ、インベントリ、フュージョン"
+      },
+      "lore": {
+        "title": "ウィキと正史",
+        "description": "正史、キャラクター、惑星、データブック"
+      },
+      "games": {
+        "title": "ミニゲーム",
+        "description": "対戦、決闘、ハングマンなどの息抜き"
+      },
+      "support": {
+        "title": "サポートとボイス",
+        "description": "チケット、ボイスチャンネル、報告"
+      },
+      "community": {
+        "title": "イベントとコミュニティ",
+        "description": "プレゼント抽選と招待"
+      },
+      "moderation": {
+        "title": "モデレーション",
+        "description": "秩序を保つためのツールと制裁"
+      },
+      "admin": {
+        "title": "管理",
+        "description": "サーバー、報酬、実績の設定"
+      },
+      "other": {
+        "title": "その他のコマンド",
+        "description": "他のカテゴリに属さないコマンド"
+      }
+    }
   }
 }

@@ -75,5 +75,84 @@
     "footer": "Shenron · réalise tes vœux DBZ",
     "reached": "<@{userId}> a atteint les **{xp} XP** !",
     "powerUp": "<@{userId}> monte en puissance !"
+  },
+  "ui": {
+    "expired": "Ce message a expiré. Relance la commande pour l'actualiser.",
+    "notYours": "Ces boutons ne sont pas pour toi : lance toi-même la commande.",
+    "cancelled": "Action annulée.",
+    "shared": "Partagé dans le salon.",
+    "shareFailed": "Impossible de partager dans ce salon.",
+    "shareCooldown": "Patiente quelques secondes avant de partager à nouveau.",
+    "invalidPage": "Page invalide : indique un nombre entre 1 et {max}.",
+    "failed": "Une erreur est survenue. Réessaie dans un instant.",
+    "button": {
+      "previous": "Précédent",
+      "next": "Suivant",
+      "page": "{page}/{total}",
+      "confirm": "Confirmer",
+      "cancel": "Annuler",
+      "share": "Partager"
+    },
+    "modal": {
+      "goToTitle": "Aller à une page",
+      "goToLabel": "Numéro de page (1 à {max})"
+    }
+  },
+  "commands": {
+    "help": {
+      "description": "Ouvrir le centre d'aide de Shenron"
+    }
+  },
+  "help": {
+    "title": "Centre d'aide Shenron",
+    "intro": "Bienvenue, guerrier ! Choisis une catégorie pour voir les commandes disponibles.",
+    "placeholder": "Choisir une catégorie…",
+    "noDescription": "Aucune description.",
+    "empty": "Aucune commande répertoriée.",
+    "active": { "one": "{count} commande active", "other": "{count} commandes actives" },
+    "more": {
+      "one": "… et {count} autre : tape `/` pour la voir.",
+      "other": "… et {count} autres : tape `/` pour les voir."
+    },
+    "home": { "label": "Accueil", "description": "Vue d'ensemble de Shenron" },
+    "links": { "site": "Site officiel", "wiki": "Wiki canon", "databooks": "Databooks" },
+    "category": {
+      "profile": {
+        "title": "Profil et puissance",
+        "description": "Progression, cartes de combattant et classements"
+      },
+      "economy": {
+        "title": "Économie et boutique",
+        "description": "Zénis, boutique, inventaire et fusions"
+      },
+      "lore": {
+        "title": "Wiki et savoir canonique",
+        "description": "Canon, fiches de personnages, planètes et databooks"
+      },
+      "games": {
+        "title": "Mini-jeux",
+        "description": "Défis, duels, pendu et détente"
+      },
+      "support": {
+        "title": "Assistance et vocaux",
+        "description": "Tickets, salons vocaux et signalements"
+      },
+      "community": {
+        "title": "Événements et communauté",
+        "description": "Tirages au sort et invitations"
+      },
+      "moderation": {
+        "title": "Modération",
+        "description": "Outils de maintien de l'ordre et sanctions"
+      },
+      "admin": {
+        "title": "Administration",
+        "description": "Paramétrage du serveur, des gains et des succès"
+      },
+      "other": {
+        "title": "Autres commandes",
+        "description": "Commandes qui ne relèvent d'aucune autre catégorie"
+      }
+    }
   }
 }

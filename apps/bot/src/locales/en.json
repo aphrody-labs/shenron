@@ -75,5 +75,84 @@
     "footer": "Shenron · make your DBZ wishes come true",
     "reached": "<@{userId}> has reached **{xp} XP**!",
     "powerUp": "<@{userId}> is powering up!"
+  },
+  "ui": {
+    "expired": "This message has expired. Run the command again to refresh it.",
+    "notYours": "These buttons are not yours: run the command yourself.",
+    "cancelled": "Action cancelled.",
+    "shared": "Shared in the channel.",
+    "shareFailed": "Could not share in this channel.",
+    "shareCooldown": "Wait a few seconds before sharing again.",
+    "invalidPage": "Invalid page: enter a number between 1 and {max}.",
+    "failed": "Something went wrong. Try again in a moment.",
+    "button": {
+      "previous": "Previous",
+      "next": "Next",
+      "page": "{page}/{total}",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "share": "Share"
+    },
+    "modal": {
+      "goToTitle": "Go to a page",
+      "goToLabel": "Page number (1 to {max})"
+    }
+  },
+  "commands": {
+    "help": {
+      "description": "Open the Shenron help center"
+    }
+  },
+  "help": {
+    "title": "Shenron help center",
+    "intro": "Welcome, warrior! Pick a category to see the available commands.",
+    "placeholder": "Choose a category…",
+    "noDescription": "No description.",
+    "empty": "No command listed.",
+    "active": { "one": "{count} active command", "other": "{count} active commands" },
+    "more": {
+      "one": "… and {count} more: type `/` to see it.",
+      "other": "… and {count} more: type `/` to see them."
+    },
+    "home": { "label": "Home", "description": "Overview of Shenron" },
+    "links": { "site": "Official site", "wiki": "Canon wiki", "databooks": "Databooks" },
+    "category": {
+      "profile": {
+        "title": "Profile and power",
+        "description": "Progression, fighter cards and leaderboards"
+      },
+      "economy": {
+        "title": "Economy and shop",
+        "description": "Zeni, shop, inventory and fusions"
+      },
+      "lore": {
+        "title": "Wiki and canon lore",
+        "description": "Canon, character sheets, planets and databooks"
+      },
+      "games": {
+        "title": "Mini-games",
+        "description": "Challenges, duels, hangman and downtime"
+      },
+      "support": {
+        "title": "Support and voice",
+        "description": "Tickets, voice channels and reports"
+      },
+      "community": {
+        "title": "Events and community",
+        "description": "Giveaways and invitations"
+      },
+      "moderation": {
+        "title": "Moderation",
+        "description": "Tools to keep order, and sanctions"
+      },
+      "admin": {
+        "title": "Administration",
+        "description": "Server, rewards and achievements settings"
+      },
+      "other": {
+        "title": "Other commands",
+        "description": "Commands that belong to no other category"
+      }
+    }
   }
 }

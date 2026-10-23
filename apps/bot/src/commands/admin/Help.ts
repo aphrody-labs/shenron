@@ -9,30 +9,63 @@ import {
   type DApplicationCommand,
 } from "discordx";
 import {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  MessageFlags,
   PermissionsBitField,
-  StringSelectMenuBuilder,
-  StringSelectMenuOptionBuilder,
   type BaseInteraction,
   type CommandInteraction,
-  type EmbedBuilder,
+  type LocaleString,
   type StringSelectMenuInteraction,
 } from "discord.js";
 import { env } from "~/lib/env";
 import { GuildOnly } from "~/guards/GuildOnly";
-import { SHENRON_THEME, SHENRON_SEPARATORS, shenronEmbed, truncate } from "~/lib/embeds";
+import {
+  discordLocalizations,
+  interactionLang,
+  t,
+  tn,
+  type BotLang,
+  type BotMessageKey,
+} from "~/lib/i18n";
+import {
+  actions,
+  card,
+  clip,
+  customId,
+  edit,
+  link,
+  reply,
+  select,
+  LIMITS,
+  type Accent,
+  type UiMessage,
+} from "~/ui";
 
 const SITE_URL = resolveSiteUrl(Bun.env);
 
+/** Pilot of the Components V2 kit (`~/ui`): `/help` is a card, a category select and link buttons. */
+export const HELP_MENU_NS = "help";
+export const HELP_MENU_VERSION = 1;
+const HELP_MENU_ID = customId(HELP_MENU_NS, HELP_MENU_VERSION, "category");
+/** Menus of messages sent before the id was versioned (`help:category`) still work. */
+export const HELP_MENU_PATTERN = /^help:(?:v1:)?category$/;
+
+type CategoryI18n =
+  | "profile"
+  | "economy"
+  | "lore"
+  | "games"
+  | "support"
+  | "community"
+  | "moderation"
+  | "admin"
+  | "other";
+
 export interface CategoryDef {
+  /** Select value, kept stable (`tests/admin-core.test.ts`). */
   key: string;
-  title: string;
+  /** Dictionary group: `help.category.<i18n>.{title,description}`. */
+  i18n: CategoryI18n;
   icon: string;
-  description: string;
-  color: number;
+  accent: Accent;
   /** Top-level command or group names (`/shop`, `/config …`) of the category. */
   cmds: Set<string>;
   modOnly?: boolean;
@@ -44,58 +77,51 @@ export const OTHER_CATEGORY = "autres";
 export const CATEGORIES: CategoryDef[] = [
   {
     key: "profil",
-    title: "Profil & Puissance",
+    i18n: "profile",
     icon: "⚡",
-    description: "Progression martiale, cartes de combattant et classements de puissance",
-    color: SHENRON_THEME.saiyanBlue,
+    accent: "level",
     cmds: new Set(["profil", "top", "stats", "scan", "eprofil", "boosts", "race", "inventaire"]),
   },
   {
     key: "eco",
-    title: "Économie & Boutique",
+    i18n: "economy",
     icon: "💰",
-    description: "Gestion des Zénis, boutique cosmétique, inventaire et unions par fusion",
-    color: SHENRON_THEME.gold,
+    accent: "economy",
     cmds: new Set(["solde", "shop", "buy", "fusion", "defusion"]),
   },
   {
     key: "wiki",
-    title: "Wiki & Savoir Canonique",
+    i18n: "lore",
     icon: "📜",
-    description: "Arbitre de canonicité, fiches de personnages, planètes et databooks",
-    color: SHENRON_THEME.kiGreen,
+    accent: "lore",
     cmds: new Set(["canon", "wiki", "races", "planete", "databooks", "ask", "scanlate"]),
   },
   {
     key: "fun",
-    title: "Mini-Jeux & Tournois",
+    i18n: "games",
     icon: "🎮",
-    description: "Défis ludiques, duels martiaux, pendu et mini-jeux de détente",
-    color: SHENRON_THEME.beerusPurple,
+    accent: "games",
     cmds: new Set(["gay", "raciste", "pendu", "morpion", "bingo", "pfc"]),
   },
   {
     key: "tickets",
-    title: "Assistance & Salons Vocaux",
+    i18n: "support",
     icon: "🎫",
-    description: "Tickets de support, salons vocaux dynamiques et signalements",
-    color: SHENRON_THEME.orange,
+    accent: "brand",
     cmds: new Set(["close", "ticket", "voc", "report"]),
   },
   {
     key: "giveaway",
-    title: "Événements & Communauté",
+    i18n: "community",
     icon: "🎁",
-    description: "Tirages au sort, cadeaux et invitations de la communauté",
-    color: SHENRON_THEME.gold,
+    accent: "economy",
     cmds: new Set(["giveaway", "invitations", "inviteur"]),
   },
   {
     key: "mod",
-    title: "Discipline & Modération",
+    i18n: "moderation",
     icon: "🛡️",
-    description: "Outils de maintien de l'ordre et sanctions divines",
-    color: SHENRON_THEME.majinRed,
+    accent: "staff",
     cmds: new Set([
       "warn",
       "unwarn",
@@ -123,10 +149,9 @@ export const CATEGORIES: CategoryDef[] = [
   },
   {
     key: "admin",
-    title: "Administration & Système",
+    i18n: "admin",
     icon: "⚙️",
-    description: "Paramétrage du sanctuaire, configuration des gains et succès",
-    color: 0x475569,
+    accent: "staff",
     cmds: new Set([
       "niveau",
       "zeni",
@@ -147,10 +172,9 @@ export const CATEGORIES: CategoryDef[] = [
   },
   {
     key: OTHER_CATEGORY,
-    title: "Autres commandes",
+    i18n: "other",
     icon: "📦",
-    description: "Commandes disponibles qui ne relèvent d'aucune autre catégorie",
-    color: SHENRON_THEME.silverUltra,
+    accent: "brand",
     cmds: new Set(),
   },
 ];
@@ -221,124 +245,135 @@ function visibleCategories(canSeeMod: boolean): CategoryDef[] {
   return CATEGORIES.filter((cat) => !cat.modOnly || canSeeMod);
 }
 
-function buildHomeEmbed(canSeeMod: boolean, totalCmds: number): EmbedBuilder {
-  return shenronEmbed({
-    header: "CENTRE D'AIDE ET DE DOCTRINE",
-    title: "🐉 Le Sanctuaire des Commandes Shenron · 神龍",
-    color: SHENRON_THEME.orange,
-    footer: "Shenron · L'autorité suprême de Dragon Ball",
-    timestamp: false,
-    description: [
-      "Bienvenue, guerrier ! Shenron met à ta disposition l'ensemble des pouvoirs et connaissances de l'univers Dragon Ball.",
-      "",
-      SHENRON_SEPARATORS.solid,
-      "**Sélectionne une catégorie ci-dessous** pour explorer les incantations disponibles :",
-      "",
-      ...visibleCategories(canSeeMod).map(
-        (cat) => `> ${cat.icon} **${cat.title}**\n> └ *${cat.description}*`,
-      ),
-      "",
-      SHENRON_SEPARATORS.solid,
-      `⚡ **${totalCmds} commandes actives** déployées sur ce sanctuaire.`,
-      `📖 Base de données officielle & doctrine : [dragonballfr.com](${SITE_URL})`,
-    ].join("\n"),
-  });
+const categoryTitle = (lang: BotLang, cat: CategoryDef) =>
+  t(lang, `help.category.${cat.i18n}.title` as BotMessageKey);
+const categoryDescription = (lang: BotLang, cat: CategoryDef) =>
+  t(lang, `help.category.${cat.i18n}.description` as BotMessageKey);
+
+function navigation(lang: BotLang, canSeeMod: boolean, currentKey: string) {
+  return [
+    actions(
+      select({
+        id: HELP_MENU_ID,
+        placeholder: `🔮 ${t(lang, "help.placeholder")}`,
+        options: [
+          {
+            label: t(lang, "help.home.label"),
+            value: "home",
+            description: t(lang, "help.home.description"),
+            emoji: "🐉",
+            default: currentKey === "home",
+          },
+          ...visibleCategories(canSeeMod).map((cat) => ({
+            label: categoryTitle(lang, cat),
+            value: cat.key,
+            description: categoryDescription(lang, cat),
+            emoji: cat.icon,
+            default: currentKey === cat.key,
+          })),
+        ],
+      }),
+    ),
+    actions(
+      link({ url: SITE_URL, label: t(lang, "help.links.site"), emoji: "🌐" }),
+      link({ url: `${SITE_URL}/wiki/canon`, label: t(lang, "help.links.wiki"), emoji: "📜" }),
+      link({
+        url: `${SITE_URL}/wiki/databooks`,
+        label: t(lang, "help.links.databooks"),
+        emoji: "📚",
+      }),
+    ),
+  ];
 }
 
-function buildCategoryEmbed(cat: CategoryDef, commands: DApplicationCommand[]): EmbedBuilder {
+/** The overview: every category visible to the member, with its description. */
+export function buildHomeView(lang: BotLang, canSeeMod: boolean, totalCmds: number): UiMessage {
+  return {
+    components: [
+      card({
+        accent: "brand",
+        title: `🐉 ${t(lang, "help.title")}`,
+        lines: [
+          t(lang, "help.intro"),
+          "",
+          ...visibleCategories(canSeeMod).map(
+            (cat) =>
+              `> ${cat.icon} **${categoryTitle(lang, cat)}**\n> └ *${categoryDescription(lang, cat)}*`,
+          ),
+        ],
+        footer: tn(lang, "help.active", totalCmds),
+        actions: navigation(lang, canSeeMod, "home"),
+      }),
+    ],
+  };
+}
+
+/** Text budget of the command list, leaving room for the title, description and footer. */
+const LIST_BUDGET = LIMITS.textTotal - 700;
+
+/** One category: its commands, whole lines only (a cut would break the markdown). */
+export function buildCategoryView(
+  lang: BotLang,
+  cat: CategoryDef,
+  commands: readonly DApplicationCommand[],
+  canSeeMod: boolean,
+  locale?: LocaleString,
+): UiMessage {
   const lines = commands
-    .map((c) => `• **\`${getLabelOf(c)}\`** — ${c.description || "Aucune description."}`)
+    .map((c) => {
+      const description =
+        (locale ? c.descriptionLocalizations?.[locale] : undefined) ||
+        c.description ||
+        t(lang, "help.noDescription");
+      return `• **\`${getLabelOf(c)}\`** — ${clip(description, 140)}`;
+    })
     .toSorted();
-  // Whole lines only: a cut in the middle of a line would break its markdown.
   const kept: string[] = [];
   let size = 0;
   for (const line of lines) {
-    if (size + line.length + 1 > 3600) break;
+    if (size + line.length + 1 > LIST_BUDGET) break;
     kept.push(line);
     size += line.length + 1;
   }
   const hidden = lines.length - kept.length;
-
-  return shenronEmbed({
-    header: "CENTRE D'AIDE",
-    title: `${cat.icon} ${cat.title}`,
-    color: cat.color,
-    timestamp: false,
-    footer: `${commands.length} commande(s) dans ce grimoire · Sélectionne une autre catégorie ci-dessous`,
-    description: [
-      `*${cat.description}*`,
-      "",
-      SHENRON_SEPARATORS.solid,
-      "",
-      ...(kept.length > 0 ? kept : ["*Aucune commande répertoriée.*"]),
-      ...(hidden > 0 ? [`*… et ${hidden} autre(s) : tape \`/\` pour les voir.*`] : []),
-      "",
-      SHENRON_SEPARATORS.solid,
-    ].join("\n"),
-  });
-}
-
-function buildNavComponents(canSeeMod: boolean, currentKey = "home") {
-  const select = new StringSelectMenuBuilder()
-    .setCustomId("help:category")
-    .setPlaceholder("🔮 Choisir un domaine de techniques…")
-    .addOptions(
-      new StringSelectMenuOptionBuilder()
-        .setLabel("Accueil Shenron")
-        .setValue("home")
-        .setDescription("Vue d'ensemble et guide du sanctuaire")
-        .setEmoji("🐉")
-        .setDefault(currentKey === "home"),
-      ...visibleCategories(canSeeMod).map((cat) =>
-        new StringSelectMenuOptionBuilder()
-          .setLabel(cat.title)
-          .setValue(cat.key)
-          .setDescription(truncate(cat.description, 100))
-          .setEmoji(cat.icon)
-          .setDefault(currentKey === cat.key),
-      ),
-    );
-
-  const rowSelect = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select);
-
-  const rowButtons = new ActionRowBuilder<ButtonBuilder>().addComponents(
-    new ButtonBuilder()
-      .setStyle(ButtonStyle.Link)
-      .setLabel("Site Officiel")
-      .setEmoji("🌐")
-      .setURL(SITE_URL),
-    new ButtonBuilder()
-      .setStyle(ButtonStyle.Link)
-      .setLabel("Wiki Canon")
-      .setEmoji("📜")
-      .setURL(`${SITE_URL}/wiki/canon`),
-    new ButtonBuilder()
-      .setStyle(ButtonStyle.Link)
-      .setLabel("Databooks")
-      .setEmoji("📚")
-      .setURL(`${SITE_URL}/wiki/databooks`),
-  );
-
-  return [rowSelect, rowButtons];
+  return {
+    components: [
+      card({
+        accent: cat.accent,
+        title: `${cat.icon} ${categoryTitle(lang, cat)}`,
+        lines: [
+          `*${categoryDescription(lang, cat)}*`,
+          "",
+          ...(kept.length > 0 ? kept : [`*${t(lang, "help.empty")}*`]),
+          ...(hidden > 0 ? [tn(lang, "help.more", hidden)] : []),
+        ],
+        footer: tn(lang, "help.active", commands.length),
+        actions: navigation(lang, canSeeMod, cat.key),
+      }),
+    ],
+  };
 }
 
 @Discord()
 @Bot("shenron")
 @Guard(GuildOnly)
 export class HelpCommand {
-  @Slash({ name: "help", description: "Consulter le centre d'aide interactif de Shenron" })
+  @Slash({
+    name: "help",
+    description: t("en", "commands.help.description"),
+    descriptionLocalizations: discordLocalizations("commands.help.description"),
+  })
   async help(interaction: CommandInteraction) {
     const onGuild = getGuildCommands(env.GUILD_ID);
-    const canSeeMod = canSeeModeration(interaction);
-    await interaction.reply({
-      embeds: [buildHomeEmbed(canSeeMod, onGuild.length)],
-      components: buildNavComponents(canSeeMod, "home"),
-      flags: MessageFlags.Ephemeral,
-    });
+    await reply(
+      interaction,
+      buildHomeView(interactionLang(interaction), canSeeModeration(interaction), onGuild.length),
+    );
   }
 
-  @SelectMenuComponent({ id: "help:category" })
+  @SelectMenuComponent({ id: HELP_MENU_PATTERN })
   async onSelectCategory(interaction: StringSelectMenuInteraction) {
+    const lang = interactionLang(interaction);
     const selectedKey = interaction.values[0];
     const onGuild = getGuildCommands(env.GUILD_ID);
     const canSeeMod = canSeeModeration(interaction);
@@ -346,17 +381,11 @@ export class HelpCommand {
     // A hidden category (moderation, admin) stays hidden even from a crafted selection.
     const cat = visibleCategories(canSeeMod).find((c) => c.key === selectedKey);
     if (selectedKey === "home" || !cat) {
-      await interaction.update({
-        embeds: [buildHomeEmbed(canSeeMod, onGuild.length)],
-        components: buildNavComponents(canSeeMod, "home"),
-      });
+      await edit(interaction, buildHomeView(lang, canSeeMod, onGuild.length));
       return;
     }
 
     const matched = commandsOfCategory(cat, onGuild, staffOnlyRoots(), canSeeMod);
-    await interaction.update({
-      embeds: [buildCategoryEmbed(cat, matched)],
-      components: buildNavComponents(canSeeMod, cat.key),
-    });
+    await edit(interaction, buildCategoryView(lang, cat, matched, canSeeMod, interaction.locale));
   }
 }
