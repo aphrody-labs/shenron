@@ -211,10 +211,13 @@ export function mangaCoverPath(
   series: string,
   volumeNumber: number,
   fallback: string | null | undefined,
+  useLegacyMirror = true,
 ): string | null {
+  const declared = fallback?.trim();
+  if (declared) return declared;
   const collection = DRAGONBALLCN_COVER_COLLECTION[series];
-  if (!collection || !Number.isSafeInteger(volumeNumber) || volumeNumber <= 0) {
-    return fallback?.trim() || null;
+  if (!useLegacyMirror || !collection || !Number.isSafeInteger(volumeNumber) || volumeNumber <= 0) {
+    return null;
   }
   return `./assets/dragonballcn/${collection}/${String(volumeNumber).padStart(3, "0")}.webp`;
 }

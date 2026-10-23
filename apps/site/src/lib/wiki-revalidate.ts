@@ -54,6 +54,12 @@ export function revalidateWikiEntity(table: string, row?: Record<string, unknown
     revalidatePath("/wiki");
     const detail = row ? publicEntityUrl(table, row) : null;
     if (detail) revalidatePath(detail);
+    if (table === "db_manga_volumes") {
+      revalidatePath("/api/manga");
+      revalidatePath("/api/manga/coverage");
+      const id = Number(row?.id);
+      if (Number.isSafeInteger(id) && id > 0) revalidatePath(`/api/manga/volume/${id}`);
+    }
     if (table === "db_episodes") {
       revalidateTag("episode-series", { expire: 0 });
       revalidateTag("episodes-by-series", { expire: 0 });

@@ -91,13 +91,21 @@ describe("publication des médias manga", () => {
     expect(publishedMangaPageCount("DBS", 103, [], 0)).toBe(45);
   });
 
-  test("substitue les couvertures japonaises par le miroir local", () => {
-    expect(mangaCoverPath("DBJP", 1, "https://example.org/broken.gif")).toBe(
+  test("preserves explicit editorial covers and uses the local mirror only when absent", () => {
+    const exact = "https://cdn.dragonballfr.com/assets/manga/covers/isbn/9782723472272/cover.jpg";
+    expect(mangaCoverPath("ARALE", 1, exact)).toBe(exact);
+    expect(mangaCoverPath("DBJP", 1, " /wiki/manga/admin.jpg ")).toBe("/wiki/manga/admin.jpg");
+    expect(mangaCoverPath("DBJP", 1, "https://publisher.example/cover.jpg")).toBe(
+      "https://publisher.example/cover.jpg",
+    );
+    expect(mangaCoverPath("DBJP", 1, null)).toBe(
       "./assets/dragonballcn/dragonball_jp_original/001.webp",
     );
     expect(mangaCoverPath("DBKZ", 34, null)).toBe(
       "./assets/dragonballcn/dragonball_jp_kanzenban/034.webp",
     );
+    expect(mangaCoverPath("ARALE", 1, null, false)).toBeNull();
+    expect(mangaCoverPath("ARALE", 1, exact, false)).toBe(exact);
   });
 
   test("ne modifie pas les couvertures des séries ordinaires", () => {
