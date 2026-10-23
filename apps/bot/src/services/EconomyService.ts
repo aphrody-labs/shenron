@@ -1,5 +1,5 @@
 import { container, singleton, inject } from "tsyringe";
-import { and, eq, gte, sql, desc } from "drizzle-orm";
+import { and, asc, eq, gte, sql, desc } from "drizzle-orm";
 import type { GuildMember } from "discord.js";
 import { DatabaseService } from "~/db/index";
 import { users, inventory, shopItems, fusions, achievements, actionLogs } from "~/db/schema";
@@ -9,6 +9,9 @@ import { applyZeniRace } from "~/lib/races";
 import { SettingsService } from "~/services/SettingsService";
 import { AntiCheatService, type ZeniSource } from "~/services/AntiCheatService";
 import { InflationService } from "~/services/InflationService";
+
+/** Largest exactly representable balance: beyond it a JavaScript integer loses units. */
+export const ZENI_MAX = Number.MAX_SAFE_INTEGER;
 
 /** Emplacements cosmétiques du profil. */
 export type CosmeticType = "card" | "badge" | "color" | "title" | "banner";
@@ -41,8 +44,14 @@ export class EconomyService {
     return this.dbs.db;
   }
 
+  /** Creates the row when missing (idempotent). A failure is logged, then rethrown. */
   async ensureUser(userId: string) {
-    await this.db.insert(users).values({ id: userId }).onConflictDoNothing();
+    try {
+      await this.db.insert(users).values({ id: userId }).onConflictDoNothing();
+    } catch (err) {
+      logger.error({ err, userId }, "users upsert failed — XP and zeni writes will be lost");
+      throw err;
+    }
   }
 
   async getBalance(userId: string): Promise<number> {
@@ -90,11 +99,11 @@ export class EconomyService {
     const u =
       amount > 0 ? await this.db.query.users.findFirst({ where: eq(users.id, userId) }) : null;
     if (amount > 0 && !isStake && source !== "admin" && u?.zeniFrozen) {
-      await this.db.insert(actionLogs).values({
+      await this.ledger({
         userId,
         action: "ZENI_BLOCKED",
         reason: "Gains gelés par l'anti-triche",
-        meta: JSON.stringify({ amount, source, kind: options.kind ?? "other" }),
+        meta: { amount, source, kind: options.kind ?? "other" },
       });
       return undefined;
     }
@@ -102,16 +111,32 @@ export class EconomyService {
     if (amount > 0 && !isStake && options.applyRace !== false) {
       amount = applyZeniRace(u?.race, amount, options.kind === "game");
     }
-    const [after] = await this.db
-      .update(users)
-      .set({ zeni: sql`${users.zeni} + ${amount}`, updatedAt: new Date() })
-      .where(eq(users.id, userId))
-      .returning({ zeni: users.zeni });
+    // An amount outside the safe integers is clamped; the balance is bounded on both sides
+    // (never negative, never beyond the exact integer) in the query itself.
+    amount = Math.max(-ZENI_MAX, Math.min(ZENI_MAX, amount));
+    let after: { zeni: number } | undefined;
+    try {
+      [after] = await this.db
+        .update(users)
+        .set({
+          zeni: sql`max(0, min(${ZENI_MAX}, ${users.zeni} + ${amount}))`,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, userId))
+        .returning({ zeni: users.zeni });
+    } catch (err) {
+      logger.error({ err, userId, amount, source }, "zeni credit failed");
+      throw err;
+    }
+    if (!after) {
+      logger.error({ userId, amount, source }, "zeni credit matched no users row");
+      return undefined;
+    }
     if (amount > 0) {
-      await this.db.insert(actionLogs).values({
+      await this.ledger({
         userId,
         action: "ZENI_GAIN",
-        meta: JSON.stringify({ amount, kind: options.kind ?? "other", source }),
+        meta: { amount, kind: options.kind ?? "other", source },
       });
       if (!isStake && source !== "admin") {
         await container.resolve(AntiCheatService).inspect({
@@ -136,6 +161,32 @@ export class EconomyService {
       }
     }
     return undefined;
+  }
+
+  /**
+   * Writes a ledger row without ever failing the operation it describes: the balance has
+   * already changed, so throwing here would make the caller believe the credit failed (and
+   * replay it). The failure is logged as an error, with the amount.
+   */
+  private async ledger(entry: {
+    userId: string;
+    action: string;
+    reason?: string;
+    meta: Record<string, unknown>;
+  }) {
+    try {
+      await this.db.insert(actionLogs).values({
+        userId: entry.userId,
+        action: entry.action,
+        reason: entry.reason,
+        meta: JSON.stringify(entry.meta),
+      });
+    } catch (err) {
+      logger.error(
+        { err, userId: entry.userId, action: entry.action, meta: entry.meta },
+        "ledger write failed — balance already changed",
+      );
+    }
   }
 
   async removeZeni(userId: string, amount: number): Promise<boolean> {
@@ -179,7 +230,7 @@ export class EconomyService {
     if (!Number.isFinite(amount)) throw new Error("Montant de zénis invalide.");
     await this.db
       .update(users)
-      .set({ zeni: Math.max(0, Math.trunc(amount)), updatedAt: new Date() })
+      .set({ zeni: Math.min(ZENI_MAX, Math.max(0, Math.trunc(amount))), updatedAt: new Date() })
       .where(eq(users.id, userId));
   }
 
@@ -301,28 +352,39 @@ export class EconomyService {
       return { ok: false, reason: `Solde insuffisant (${fmt(balance)} / ${fmt(price)} zénis)` };
     }
 
-    const removed = await this.removeZeni(userId, price);
-    if (!removed) return { ok: false, reason: "Solde insuffisant" };
-
-    // Deux achats simultanés (double-clic) passaient tous deux le contrôle
-    // « déjà possédé » : le second débit avait lieu, puis l'insertion levait la
-    // contrainte unique et les zénis étaient perdus. Le doublon est remboursé.
-    const granted = await this.db
-      .insert(inventory)
-      .values({ userId, itemType: item.type, itemKey: item.key })
-      .onConflictDoNothing()
-      .returning({ id: inventory.id });
-    if (granted.length === 0) {
-      await this.db
-        .update(users)
-        .set({ zeni: sql`${users.zeni} + ${price}`, updatedAt: new Date() })
-        .where(eq(users.id, userId));
-      return { ok: false, reason: "Déjà possédé" };
-    }
-    await this.db.insert(actionLogs).values({
+    // Debit and item hand-over in ONE synchronous transaction: two simultaneous purchases
+    // (double click) can no longer debit twice, and no case leaves zeni debited without the
+    // item (an already-owned item stops the sale before any debit).
+    const bought = this.db.transaction(
+      (tx) => {
+        tx.insert(users).values({ id: userId }).onConflictDoNothing().run();
+        const granted = tx
+          .insert(inventory)
+          .values({ userId, itemType: item.type, itemKey: item.key })
+          .onConflictDoNothing()
+          .returning({ id: inventory.id })
+          .all();
+        if (granted.length === 0) return "owned" as const;
+        const debited = tx
+          .update(users)
+          .set({ zeni: sql`${users.zeni} - ${price}`, updatedAt: new Date() })
+          .where(and(eq(users.id, userId), gte(users.zeni, price)))
+          .returning({ id: users.id })
+          .all();
+        if (debited.length === 0) {
+          tx.delete(inventory).where(eq(inventory.id, granted[0]!.id)).run();
+          return "poor" as const;
+        }
+        return "ok" as const;
+      },
+      { behavior: "immediate" },
+    );
+    if (bought === "owned") return { ok: false, reason: "Déjà possédé" };
+    if (bought === "poor") return { ok: false, reason: "Solde insuffisant" };
+    await this.ledger({
       userId,
       action: "SHOP_PURCHASE",
-      meta: JSON.stringify({ item: item.key, price, basePrice: item.price }),
+      meta: { item: item.key, price, basePrice: item.price },
     });
     return { ok: true, price, roleId: item.roleId, name: item.name, type: item.type };
   }
@@ -497,8 +559,15 @@ export class EconomyService {
   }
 
   // Classements
-  async topRich(limit = 10) {
-    return this.db.select().from(users).orderBy(desc(users.zeni)).limit(limit);
+  /** Richest members, same rules as the XP top: balance > 0, ties broken by id. */
+  async topRich(limit = 10, offset = 0) {
+    return this.db
+      .select()
+      .from(users)
+      .where(sql`${users.zeni} > 0`)
+      .orderBy(desc(users.zeni), asc(users.id))
+      .limit(limit)
+      .offset(offset);
   }
 
   async listRegisteredIds(): Promise<string[]> {

@@ -50,6 +50,9 @@ interface Detection {
 
 const HOUR_MS = 3_600_000;
 const DAY_MS = 86_400_000;
+/** De-duplication window of open flags (same member, same code). */
+const FLAG_DEDUP_MS = HOUR_MS;
+const SEVERITY_ORDER: readonly Severity[] = ["low", "medium", "high", "critical"];
 
 /** Sources exemptées d'analyse (admin manuel). */
 const EXEMPT: ReadonlySet<ZeniSource> = new Set(["admin"]);
@@ -309,12 +312,7 @@ export class AntiCheatService {
       status: "open",
     });
 
-    if (shouldFreeze) {
-      await this.db
-        .update(users)
-        .set({ zeniFrozen: true, updatedAt: new Date() })
-        .where(eq(users.id, userId));
-    }
+    if (shouldFreeze) await this.freeze(userId);
 
     await this.db.insert(actionLogs).values({
       userId,
@@ -359,10 +357,18 @@ export class AntiCheatService {
       /* pas de client / canal */
     }
 
-    logger.warn(
-      { userId, code: d.code, severity: d.severity, freeze: shouldFreeze },
-      "[anticheat] flag raised",
-    );
+    // A flag that sanctions nothing (no freeze) is reviewed in the admin: it does not deserve
+    // a warn. The 3,750 warns in 48 h on 2026-10-22 drowned the real ones.
+    const fields = { userId, code: d.code, severity: d.severity, freeze: shouldFreeze };
+    if (shouldFreeze) logger.warn(fields, "[anticheat] flag raised");
+    else logger.debug(fields, "[anticheat] flag raised");
+  }
+
+  private async freeze(userId: string) {
+    await this.db
+      .update(users)
+      .set({ zeniFrozen: true, updatedAt: new Date() })
+      .where(eq(users.id, userId));
   }
 
   /**
@@ -378,11 +384,75 @@ export class AntiCheatService {
       meta: Record<string, unknown>;
       freeze?: boolean;
     },
-  ): Promise<void> {
+  ): Promise<boolean> {
     try {
+      // One open flag per member and code over the window: a spike repeated on every message is
+      // counted in the existing flag instead of opening a row, a Discord alert and a URSAF
+      // notice per message.
+      const open = await this.db
+        .select()
+        .from(economyFlags)
+        .where(
+          and(
+            eq(economyFlags.userId, userId),
+            eq(economyFlags.code, d.code),
+            eq(economyFlags.status, "open"),
+            gte(economyFlags.createdAt, new Date(Date.now() - FLAG_DEDUP_MS)),
+          ),
+        )
+        .orderBy(desc(economyFlags.createdAt))
+        .limit(1);
+      if (open[0]) {
+        await this.recount(open[0], d);
+        return false;
+      }
       await this.raise(userId, d);
+      return true;
     } catch (e) {
       logger.error({ err: e, userId, code: d.code }, "[anticheat] flag failed");
+      return false;
+    }
+  }
+
+  /** Adds an occurrence to the open flag; raises its severity and freezes when needed. */
+  private async recount(
+    open: typeof economyFlags.$inferSelect,
+    d: { severity: Severity; reason: string; meta: Record<string, unknown>; freeze?: boolean },
+  ) {
+    let previous: Record<string, unknown> = {};
+    try {
+      previous = open.meta ? (JSON.parse(open.meta) as Record<string, unknown>) : {};
+    } catch {
+      previous = {};
+    }
+    const num = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : 0);
+    const meta = {
+      ...previous,
+      occurrences: Math.max(1, num(previous.occurrences)) + 1,
+      peak: Math.max(num(previous.peak), num(previous.amount), num(d.meta.amount)),
+      lastAt: Date.now(),
+    };
+    const worse =
+      SEVERITY_ORDER.indexOf(d.severity) > SEVERITY_ORDER.indexOf(open.severity as Severity);
+    await this.db
+      .update(economyFlags)
+      .set({
+        meta: JSON.stringify(meta),
+        ...(worse ? { severity: d.severity, reason: d.reason } : {}),
+      })
+      .where(eq(economyFlags.id, open.id));
+    const t = await this.thresholds();
+    if (d.freeze && t.autoFreezeHigh) {
+      await this.freeze(open.userId);
+      logger.warn(
+        { userId: open.userId, code: open.code, severity: d.severity, freeze: true },
+        "[anticheat] flag raised",
+      );
+    } else {
+      logger.debug(
+        { userId: open.userId, code: open.code, occurrences: meta.occurrences },
+        "[anticheat] flag repeated",
+      );
     }
   }
 

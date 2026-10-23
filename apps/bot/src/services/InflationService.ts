@@ -61,10 +61,15 @@ export class InflationService {
     }
   }
 
-  private moneySupply(): number {
-    const row = this.dbs.sqlite.query(`SELECT COALESCE(SUM(zeni), 0) AS s FROM users`).get() as {
-      s: number;
-    } | null;
+  /**
+   * Zeni in circulation. Frozen accounts are excluded: a frozen account held 99.96 % of the
+   * supply (999,999,948,999) and pushed the index toward its ceiling by +2 % a day, though
+   * that money cannot move.
+   */
+  moneySupply(): number {
+    const row = this.dbs.sqlite
+      .query(`SELECT COALESCE(SUM(zeni), 0) AS s FROM users WHERE COALESCE(zeni_frozen, 0) = 0`)
+      .get() as { s: number } | null;
     return Number(row?.s ?? 0);
   }
 
@@ -77,10 +82,18 @@ export class InflationService {
       .map((r) => ({ day: r.day, supply: Number(r.supply), index: r.index_value }));
   }
 
-  /** Instantané du jour (idempotent : un jour = une ligne, recalculée si relancée). */
-  async snapshot(): Promise<IndexPoint> {
+  /**
+   * Snapshot of the day (idempotent: one day = one row, recomputed when rerun). Returns `null`
+   * and writes nothing when the money supply is zero: an empty or just-restored database
+   * must not leave a spurious point that resets the index to 1.0.
+   */
+  async snapshot(): Promise<IndexPoint | null> {
     const enabled = await this.settings.getBool("economy.inflation.enabled", false);
     const supply = this.moneySupply();
+    if (supply <= 0) {
+      logger.warn({ supply }, "[inflation] snapshot skipped: no zeni in circulation");
+      return null;
+    }
     const last = this.history(2).findLast((p) => p.day !== dayOf());
 
     let reference = await this.settings.getInt("economy.inflation.reference_supply", 0);

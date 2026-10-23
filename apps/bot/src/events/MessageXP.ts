@@ -9,7 +9,8 @@ import { DatabaseService } from "~/db/index";
 import { actionLogs, users } from "~/db/schema";
 import { DISCORD_INVITE_REGEX, ZENI_DAILY_QUEST } from "~/lib/constants";
 import { env } from "~/lib/env";
-import { randomInt } from "~/lib/xp";
+import { levelFromXp, randomInt } from "~/lib/xp";
+import { DEFAULT_LEVEL_RACE, memberRaceId, tierEntitlement } from "~/lib/race-levels";
 import { applyZeniRace, hasRegen, regenTuning } from "~/lib/races";
 import { resolveLevelChannel } from "~/lib/announce";
 import { boosterXpMultiplier } from "~/lib/booster";
@@ -41,7 +42,8 @@ export class MessageXPEvent {
   @On({ event: "messageCreate" })
   @Guard(NotBot)
   async onMessage([message]: ArgsOf<"messageCreate">) {
-    if (!message.inGuild()) return;
+    // System messages (join, boost, pin...): their author wrote nothing.
+    if (!message.inGuild() || message.system) return;
     const userId = message.author.id;
 
     // Anti-lien Discord externe — configurable via anti_invite.* (enabled / action / whitelist_url).
@@ -91,16 +93,18 @@ export class MessageXPEvent {
       }
     }
 
-    // XP + quête quotidienne
-    await this.levels.ensureUser(userId);
-    const user = await this.levels.getUser(userId);
+    // XP + daily quest. A write failure (missing column, locked database) is logged with its
+    // context then rethrown: the 2026-10-12 incident left the `users` table empty for ten days
+    // because nobody saw these failures.
+    let user: Awaited<ReturnType<LevelService["getUser"]>>;
+    try {
+      user = await this.levels.getUser(userId);
+    } catch (err) {
+      logger.error({ err, userId, op: "message-xp:getUser" }, "message XP: user row unavailable");
+      throw err;
+    }
     if (!user) return;
     const now = Date.now();
-
-    const announce =
-      (await resolveLevelChannel(message.client, message.guild ?? undefined)) ??
-      ("send" in message.channel ? message.channel : null);
-    if (!announce) return;
 
     // Quête quotidienne — message rendu par le template `daily_quest`.
     const today = new Date(now).setHours(0, 0, 0, 0);
@@ -199,12 +203,15 @@ export class MessageXPEvent {
 
     // Multiplicateurs : meilleur rôle boosté ou boost booster (ne se cumulent
     // pas), race et Zenkai, boost de nuit, sous le plafond `xp.multiplier.max`.
+    // A tier role only multiplies from the level at which the ladder grants it:
+    // "Perfect Ultra Instinct" (x32,000) held by a level-17 member earns nothing.
     const member = message.member;
     const roleMultiplier = member
       ? bestRoleMultiplier(
           (roleId) => member.roles.cache.has(roleId),
           await this.settings.getXpBoostRoles(),
           await boosterXpMultiplier(member, this.settings),
+          tierEntitlement(levelFromXp(user.xp), memberRaceId(member) ?? DEFAULT_LEVEL_RACE),
         )
       : 1;
     const boost = messageBoost(
@@ -215,13 +222,16 @@ export class MessageXPEvent {
 
     const res = await this.levels.addXP(userId, gain, { propagateFusion: true, source: "message" });
     if (res.levelUp) {
+      const announce =
+        (await resolveLevelChannel(message.client, message.guild ?? undefined)) ??
+        ("send" in message.channel ? message.channel : undefined);
       // Fallback : si message.member est null (intent GuildMembers pas encore
       // hydraté, cache miss), fetch côté Discord avant de poser le rôle.
       const leveled =
         member ??
         (message.guild ? await message.guild.members.fetch(userId).catch(() => null) : null);
       if (leveled) {
-        await this.levels.handleLevelUp(leveled, res.newLevel, announce);
+        await this.levels.handleLevelUp(leveled, res.newLevel, announce, res.oldLevel);
       } else {
         logger.warn(
           { userId, newLevel: res.newLevel },

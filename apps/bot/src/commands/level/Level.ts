@@ -23,6 +23,7 @@ import { CardService } from "~/services/CardService";
 import { LeaderboardService, type LeaderboardEntry } from "~/services/LeaderboardService";
 import { logger } from "~/lib/logger";
 import { levelForXP, xpProgress, formatXP } from "~/lib/xp";
+import { DEFAULT_LEVEL_RACE, memberRaceId, tierEntitlement } from "~/lib/race-levels";
 import { formatZeni } from "~/lib/zeni";
 import { fusionBonusLabel } from "~/lib/fusion-names";
 import { SHENRON_THEME, SHENRON_SEPARATORS, renderProgressBar } from "~/lib/embeds";
@@ -78,6 +79,8 @@ export class LevelCommands {
           (roleId) => member.roles.cache.has(roleId),
           await this.settings.getXpBoostRoles(),
           await boosterXpMultiplier(member, this.settings),
+          // Same eligibility as the real gains: a tier above the level does not count.
+          tierEntitlement(levelForXP(user?.xp ?? 0), memberRaceId(member) ?? DEFAULT_LEVEL_RACE),
         )
       : 1;
     const base = {

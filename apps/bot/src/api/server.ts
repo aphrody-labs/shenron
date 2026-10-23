@@ -2,7 +2,7 @@ import { botOperationalLogs } from "../lib/operational-logs";
 import { readHlsSegment, registerHlsSegment } from "./hls-security";
 import { resolveApiUrl, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import { adminPipeline } from "./admin-pipeline";
-import os from "node:os";
+import { describeSpawnError, episodeResolver } from "~/lib/episode-resolver";
 import { singleton, inject, container } from "tsyringe";
 import { Client } from "discordx";
 import { botFile } from "~/lib/asset-files";
@@ -132,7 +132,8 @@ import { TrainingService } from "~/services/TrainingService";
 import { buildCommandCatalog, execCommand } from "~/api/command-exec";
 import { DatabaseService } from "~/db/index";
 import { RACE_IDS, isRaceId } from "~/lib/races";
-import { reloadRaceLevelRoles } from "~/lib/race-levels";
+import { findLadderConflict, reloadRaceLevelRoles } from "~/lib/race-levels";
+import { buildXpBuckets } from "~/lib/xp";
 import { MessageTemplateService } from "~/services/MessageTemplateService";
 import { EconomyService } from "~/services/EconomyService";
 import { InflationService } from "~/services/InflationService";
@@ -146,7 +147,7 @@ import { FusionService } from "~/services/FusionService";
 import { WikiService } from "~/services/WikiService";
 import { DatabooksService } from "~/services/DatabooksService";
 import { LeaderboardService, type LeaderboardEntry } from "~/services/LeaderboardService";
-import { LevelService } from "~/services/LevelService";
+import { LevelService, rankOrdering } from "~/services/LevelService";
 import { getLevelThresholds, levelForXP, xpProgress, type LevelThreshold } from "~/lib/xp";
 import { hybridSearch, logRagHealth } from "~/lib/rag";
 import { contextPublicRag, searchPublicRag } from "./public-rag";
@@ -733,14 +734,17 @@ async function resolveStreamOnDemand(id: string): Promise<HlsStream | null> {
       console.error("[HLS] Episode introuvable en base SQLite.");
       return null;
     }
+    // No BXC checkout (production container): disabled once, with the reason logged.
+    const resolver = episodeResolver();
+    if (!resolver) return null;
     console.log("[HLS] Résolution à la volée d'un épisode.");
-    const BXC_DIR = process.env.BXC_DIR ?? `${os.homedir()}/bxc`;
     const proc = Bun.spawn(
-      [process.execPath, "scripts/resolve-episode.ts", row.series, String(row.number_in_series)],
-      { cwd: BXC_DIR, stdout: "pipe", stderr: "ignore" },
+      [process.execPath, resolver.script, row.series, String(row.number_in_series)],
+      { cwd: resolver.dir, stdout: "pipe", stderr: "ignore" },
     );
     const out = await new Response(proc.stdout).text();
-    await proc.exited;
+    const exitCode = await proc.exited;
+    if (exitCode !== 0) console.error(`[HLS] resolve-episode exited with code ${exitCode}.`);
     // oxlint-disable-next-line unicorn/prefer-array-find -- getting the last non-empty line
     const line = out.trim().split("\n").filter(Boolean).pop() ?? "";
     const res = JSON.parse(line) as {
@@ -771,8 +775,10 @@ async function resolveStreamOnDemand(id: string): Promise<HlsStream | null> {
       console.error("[HLS] Résolution d'épisode indisponible.");
       return null;
     }
-  } catch {
-    console.error("[HLS] Erreur lors de la résolution d'un épisode.");
+  } catch (err) {
+    // The cause (spawn failure, unparsable output) is what makes this diagnosable; the message
+    // is cut to one line and never carries upstream URLs or headers.
+    console.error(`[HLS] Erreur lors de la résolution d'un épisode : ${describeSpawnError(err)}`);
     return null;
   }
 }
@@ -1907,7 +1913,7 @@ export class ApiServer {
                   ),
                 )
                 .groupBy(actionLogs.userId)
-                .orderBy(desc(amount))
+                .orderBy(desc(amount), asc(actionLogs.userId))
                 .limit(limit);
               const ids = monthly.map((r) => r.id).filter((id): id is string => Boolean(id));
               const current = ids.length
@@ -1933,7 +1939,7 @@ export class ApiServer {
                 .select({ id: users.id, xp: users.xp, zeni: users.zeni })
                 .from(users)
                 .where(sql`${col} > 0`)
-                .orderBy(desc(col))
+                .orderBy(...rankOrdering(col))
                 .limit(limit);
               for (const r of current) rows.push({ ...r, level: levelForXP(r.xp) });
             }
@@ -4479,13 +4485,9 @@ export class ApiServer {
         },
         "/api/levels/distribution": admin(async () => {
           const dbs = container.resolve(DatabaseService);
-          const curve = getLevelThresholds();
-          // Compte les users dans chaque tranche de palier (basé sur user.xp).
-          const buckets = curve.map((t, i) => ({
-            level: t.level,
-            minXp: i === 0 ? 0 : curve[i - 1]!.xp,
-            maxXp: t.xp,
-          }));
+          // Buckets = REACHED levels (level 0 before the first threshold, last level open-ended),
+          // counted with one query per bucket on the active curve.
+          const buckets = buildXpBuckets(getLevelThresholds());
           const result: Array<{ level: number; minXp: number; maxXp: number; count: number }> = [];
           for (const b of buckets) {
             const [{ c = 0 } = { c: 0 }] = await dbs.db
@@ -4494,18 +4496,6 @@ export class ApiServer {
               .where(sql`${users.xp} >= ${b.minXp} AND ${users.xp} < ${b.maxXp}`);
             result.push({ ...b, count: Number(c) });
           }
-          // Bucket "au-delà" pour ceux qui dépassent le dernier seuil
-          const lastXp = curve[curve.length - 1]!.xp;
-          const [{ c: cBeyond = 0 } = { c: 0 }] = await dbs.db
-            .select({ c: sql<number>`COUNT(*)` })
-            .from(users)
-            .where(sql`${users.xp} >= ${lastXp}`);
-          result.push({
-            level: 11,
-            minXp: lastXp,
-            maxXp: Number.MAX_SAFE_INTEGER,
-            count: Number(cBeyond),
-          });
           return Response.json({ buckets: result });
         }),
         "/api/levels/rewards": {
@@ -4636,6 +4626,28 @@ export class ApiServer {
               );
             }
             const dbs = container.resolve(DatabaseService);
+            // A tier role belongs to ONE level of the ladder: setting it on a second would open that
+            // tier (and its XP multiplier) at the lower of the two levels.
+            const sameRole = await dbs.db
+              .select({ level: raceLevelRoles.level })
+              .from(raceLevelRoles)
+              .where(
+                and(eq(raceLevelRoles.race, body.race), eq(raceLevelRoles.roleId, body.roleId)),
+              );
+            const conflict = findLadderConflict(
+              Object.fromEntries(sameRole.map((r) => [r.level, body.roleId])),
+              body.level,
+              body.roleId,
+            );
+            if (conflict) {
+              return Response.json(
+                {
+                  error: `Ce rôle est déjà le palier du niveau ${conflict.level} de l'échelle ${body.race}`,
+                  level: conflict.level,
+                },
+                { status: 409 },
+              );
+            }
             await dbs.db
               .insert(raceLevelRoles)
               .values({ race: body.race, level: body.level, roleId: body.roleId })
@@ -4693,7 +4705,8 @@ export class ApiServer {
               dailyStreak: users.dailyStreak,
             })
             .from(users)
-            .orderBy(desc(col))
+            .where(sql`${col} > 0`)
+            .orderBy(...rankOrdering(col))
             .limit(limit);
           return Response.json({ metric, limit, users: rows });
         }),
@@ -4719,19 +4732,29 @@ export class ApiServer {
             // Passe par LevelService → recalcule lastLevelReached, puis réaligne les
             // rôles de palier de la race (sinon niveau + rôles se désynchronisent).
             const levels = container.resolve(LevelService);
-            const newXp =
-              body.mode === "set" ? Math.max(0, body.amount) : Math.max(0, current + body.amount);
+            // Admin grant: `source: "admin"` bypasses the gain caps and the spike flag (without it a
+            // legitimate grant raised an XP_SPIKE). The reported amount is the one actually written
+            // (safe integer >= 0), not the requested one.
             const res =
               body.mode === "set"
-                ? await levels.setXP(userId, newXp)
-                : await levels.addXP(userId, body.amount, { propagateFusion: false });
+                ? await levels.setXP(userId, body.amount)
+                : await levels.addXP(userId, body.amount, {
+                    propagateFusion: false,
+                    source: "admin",
+                  });
             const member = await resolveMember(userId);
-            if (member) await levels.syncRaceLevelRoles(member).catch(() => {});
+            if (member) {
+              await levels
+                .syncRaceLevelRoles(member)
+                .catch((err) =>
+                  logger.warn({ err, userId }, "tier role sync after admin XP change failed"),
+                );
+            }
             return Response.json({
               ok: true,
               userId,
               previousXp: current,
-              newXp,
+              newXp: res.after,
               newLevel: res.newLevel,
               levelUp: res.levelUp,
               rolesSynced: !!member,
@@ -4945,7 +4968,8 @@ export class ApiServer {
             const rows = await dbs.db
               .select({ id: users.id, xp: users.xp, zeni: users.zeni })
               .from(users)
-              .orderBy(desc(col))
+              .where(sql`${col} > 0`)
+              .orderBy(...rankOrdering(col))
               .limit(limit);
             const fetched = await Promise.all(
               rows.map(async (r) => {

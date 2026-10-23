@@ -167,14 +167,14 @@ Les valeurs de stats par niveau/race vivent dans des binaires `system/*` propri�
 
 ## 6. Provenance des données (fichiers du jeu)
 
-| Donnée                                                        | Fichier extrait (`output/cpk/...`)                                                                   |
-| ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Noms & traits des races, sexes, style de combat, médailles PT | `data1/data/msg/tribeselect_text_fr.msg(.json)`                                                      |
-| Noms des 6 stats + tendances QQ Bang                          | `data1/data/msg/customize_status_text_fr.msg(.json)`                                                 |
+| Donnée                                                        | Fichier extrait (`output/cpk/...`)                                                              |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Noms & traits des races, sexes, style de combat, médailles PT | `data1/data/msg/tribeselect_text_fr.msg(.json)`                                                 |
+| Noms des 6 stats + tendances QQ Bang                          | `data1/data/msg/customize_status_text_fr.msg(.json)`                                            |
 | Table d'EXP, niveau max                                       | `data/system/avatar_growth_data.agd`                                                            |
 | Coûts de niveau                                               | `data/system/CharacterLevelupPriceList.clv`                                                     |
 | Croissance des paramètres avatar                              | `data/system/{level_character_parameter.lcp, parameter_spec_avater.psa, powerup_parameter.pup}` |
-| Tutoriels / aide                                              | `data1/data/msg/{tutorial_text_fr, lobby_tutorial_text_fr}.msg(.json)`                               |
+| Tutoriels / aide                                              | `data1/data/msg/{tutorial_text_fr, lobby_tutorial_text_fr}.msg(.json)`                          |
 
 ---
 
@@ -214,23 +214,53 @@ choix de race.
 > écrire la progression dans le wiki éditorial (`wiki-write-guard`). Les valeurs sont des
 > points de départ équilibrables (cf. `lib/races.ts`).
 
-### Phase 2 — rôles de palier PAR RACE — ✅ infra en place
+### Phase 2 — rôles de palier PAR RACE — ✅ en place
 
-- **Échelles de transformations par race** : `apps/bot/src/lib/race-levels.ts`
-  (`RACE_LEVEL_ROLES`, module pur testé `apps/bot/tests/race-levels.test.ts`). Chaque race a sa
-  propre suite de rôles de palier (niveaux 1..10). **Saiyan** est peuplée (Kaioken → UI
-  Parfait, source unique réutilisée par `seed-level-rewards.ts`) ; les **autres races
-  sont vides** → à compléter avec les rôles Discord créés côté serveur.
-- **Nettoyage au changement de race** : `LevelService.syncRaceLevelRoles(member)` retire
-  les paliers des autres races et (re)pose ceux de la race courante jusqu'au niveau. Appelé
-  par `/race` (kaio) **et** par `guildMemberUpdate` (grandPretre) quand un rôle de race est
-  posé/retiré à la main. Le niveau suit l'XP (jamais re-dérivé des rôles).
+- **Échelles de transformations par race** : `apps/bot/src/lib/race-levels.ts` (module pur
+  testé par `apps/bot/tests/race-levels.test.ts`, `xp-tiers.test.ts` et
+  `xp-tier-hydration.test.ts`). La **source de vérité** est la table `race_level_roles`
+  (éditable depuis l'admin, `/api/levels/race-rewards`), chargée au boot par
+  `loadRaceLevelRoles`. **Rien n'est jamais seedé automatiquement** : une table vide veut dire
+  « aucun palier » et le boot le signale en erreur.
+- **Échelle canonique Saiyan, 14 paliers** (`RACE_LEVEL_ROLES.saiyan`, repli tant que le cache
+  DB n'est pas hydraté) : 2 Ozaru · 5 Zenkaï · 8 Kaioken · 15 Super Saiyan · 20 SSJ 2 · 30 SSJ 3 ·
+  32 Super Saiyan God · 35 Super Saiyan Blue · 38 SSB Kaioken · 40 Ultra Instinct · 42 UI
+  Maîtrisé · 45 Perfect Ultra Instinct · 48 Super Ozaru · 50 Super Saiyan 4. Les autres races sont
+  vides par défaut et se renseignent dans la table. Un membre **sans rôle de race** suit l'échelle
+  Saiyan (`DEFAULT_LEVEL_RACE`, conception voulue).
+- **Un rôle = un niveau.** Un même `roleId` à deux niveaux d'une échelle est refusé à l'écriture
+  (`409` sur `POST /api/levels/race-rewards`). À la lecture, si la table en contient quand même
+  (restes d'un ancien seed), seul le niveau le plus haut est retenu et l'erreur est journalisée :
+  le 2026-10-22, sept lignes résiduelles (niveaux 1, 3, 4, 6, 7, 9, 10) ouvraient « Perfect
+  Ultra Instinct » au niveau 10.
+- **Niveau → multiplicateur d'XP.** Les rôles de palier sont aussi des rôles boostés
+  (`xp.boost.role.<roleId>`). Un rôle de palier ne multiplie qu'à partir du niveau où l'échelle
+  l'attribue (`tierEntitlement`, utilisé par `MessageXP`, `VoiceXP` et `/boosts`) : un palier
+  posé trop tôt ne rapporte rien. `/config xp-boost-set` refuse un multiplicateur supérieur à
+  `min(xp.multiplier.max, 100 000)` et journalise l'auteur (`action_logs`, `CONFIG_SET`).
+- **Le niveau suit l'XP.** `levelFromXp(xp)` (`lib/xp.ts`) est la seule définition du niveau, pure ;
+  `levelDrift(rows)` liste les niveaux stockés qui ont dérivé.
+- **Plafonds d'XP** (`LevelService.addXP`, source ≠ `admin`) : plafond par gain et par minute,
+  dérivés de la configuration active (`xp.message.max`, `xp.voice.per_minute`,
+  `xp.multiplier.max`, régén, part de fusion) ; `xp.gain.max_single` et `xp.gain.max_per_minute`
+  ne peuvent que les resserrer (0 = dérivé). Un gain écrêté ouvre un `XP_SPIKE` (ou `XP_RATE`),
+  **un seul signalement ouvert par membre et par code et par heure** ; au-delà de 10 × le plafond
+  le signalement est « high » et **gèle** le compte (`zeni_frozen`) : plus de gain tant qu'il est
+  gelé. Les signalements d'XP n'entrent pas dans les avis URSAF.
+- **Alignement des rôles** : `LevelService.syncRaceLevelRoles(member, race?, { removal })` pose les
+  paliers dus et, au changement de race, retire ceux des autres races. La réconciliation
+  périodique (`level-role-reconcile`, 6 h) **constate** les paliers en trop (au-dessus du niveau ou
+  d'une autre race) et ne retire rien par défaut. Pour retirer : réglage
+  `level_role_sync.strip = true` (opt-in). Même activé, rien n'est retiré si plus de la moitié des
+  membres seraient touchés, ni pour un membre absent de la base ou à XP nulle.
 - `level_rewards` reste la table **race-agnostique** des paliers (zéni, seuil XP, bannière) ;
-  seuls les **rôles** de transformation sont par race.
+  seuls les **rôles** de transformation sont par race. `seed-level-rewards.ts` ne seede plus rien :
+  la table se règle explicitement (`/config level-reward-set`, `/api/levels/rewards`). Le zéni
+  de palier (`zeni.per_level`) est versé **pour chaque niveau franchi**.
 
 ### Phases suivantes (roadmap)
 
-- **Peupler les échelles non-Saiyan** dans `RACE_LEVEL_ROLES` (Namek, Mutant, Cyborg,
+- **Peupler les échelles non-Saiyan** dans `race_level_roles` (Namek, Mutant, Cyborg,
   Majin, Humain) une fois les rôles Discord créés. Cooldown/coût de changement de race,
   intégration carte de profil (`CardService`).
 - **Phase 3 — stats & combat** (optionnel) : vraies stats HP/Ki à la XV2 si un mode combat

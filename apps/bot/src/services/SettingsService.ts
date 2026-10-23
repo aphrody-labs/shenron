@@ -434,6 +434,14 @@ export const SETTINGS_KEYS: SettingDef[] = [
     default: true,
   },
   {
+    key: "level_role_sync.strip",
+    type: "bool",
+    category: "features",
+    description:
+      "Autorise la réconciliation à RETIRER les rôles de palier en trop (au-dessus du niveau ou d'une autre race). Désactivé : elle les constate seulement.",
+    default: false,
+  },
+  {
     key: "game.pfc.duel_timeout_ms",
     type: "int",
     category: "features",
@@ -446,9 +454,28 @@ export const SETTINGS_KEYS: SettingDef[] = [
     key: "anticheat.xp.max_single",
     type: "int",
     category: "xp",
-    description: "Gain d'XP unitaire (hors admin) au-delà duquel un signalement XP_SPIKE est levé.",
-    default: 5_000_000,
-    min: 1_000,
+    description:
+      "Ancien plafond d'XP unitaire : ne fait plus que resserrer le plafond dérivé de la configuration (0 = dérivé).",
+    default: 0,
+    min: 0,
+  },
+  {
+    key: "xp.gain.max_single",
+    type: "int",
+    category: "xp",
+    description:
+      "Plafond d'un gain d'XP unitaire (hors admin). Au-delà : gain écrêté et XP_SPIKE (gel si > 10 ×). 0 = dérivé de la configuration (message, vocal, plafond de multiplicateur) ; ne peut que resserrer.",
+    default: 0,
+    min: 0,
+  },
+  {
+    key: "xp.gain.max_per_minute",
+    type: "int",
+    category: "xp",
+    description:
+      "Plafond d'XP reçue par un membre sur 60 s (hors admin). Au-delà : surplus refusé et XP_RATE. 0 = dérivé de la configuration ; ne peut que resserrer.",
+    default: 0,
+    min: 0,
   },
   {
     key: "xp.fusion.bonus_ratio",

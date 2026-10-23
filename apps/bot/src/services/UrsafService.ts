@@ -122,7 +122,11 @@ export class UrsafService {
     };
   }
 
-  /** Signalements ouverts, pas encore rattachés à un avis non annulé. */
+  /**
+   * Signalements ouverts, pas encore rattachés à un avis non annulé. XP flags (XP_SPIKE,
+   * XP_RATE) are left out: a notice taxes zeni, and their severity used to raise the rate of
+   * a notice built on other flags.
+   */
   private untaxedFlags(): Map<string, FlagInput[]> {
     const taken = new Set<number>();
     const notices = this.sqlite
@@ -133,7 +137,8 @@ export class UrsafService {
     const rows = this.sqlite
       .query(
         `SELECT id, user_id, code, severity, meta FROM economy_flags
-				 WHERE status IN ('open', 'reviewing') ORDER BY created_at`,
+				 WHERE status IN ('open', 'reviewing') AND code NOT IN ('XP_SPIKE', 'XP_RATE')
+				 ORDER BY created_at`,
       )
       .all() as Array<{
       id: number;

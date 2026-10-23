@@ -23,8 +23,9 @@ import {
 import { EconomyService } from "~/services/EconomyService";
 import { FusionRoleService } from "~/services/FusionRoleService";
 import { DatabaseService } from "~/db/index";
-import { levelRewards } from "~/db/schema";
+import { actionLogs, levelRewards } from "~/db/schema";
 import { xpRequiredForLevel } from "~/lib/xp";
+import { DEFAULT_XP_BOOST_CONFIG, roleBoostLimit } from "~/lib/xp-boosts";
 import { formatZeni } from "~/lib/zeni";
 import { logger } from "~/lib/logger";
 import {
@@ -506,8 +507,34 @@ export class ConfigCommand {
     multiplier: number,
     interaction: CommandInteraction,
   ) {
+    const key = `${XP_BOOST_ROLE_PREFIX}${role.id}`;
+    const previous = await this.settings.getRaw(key);
+    const audit = (extra: Record<string, unknown>) =>
+      this.dbs.db
+        .insert(actionLogs)
+        .values({
+          moderatorId: interaction.user.id,
+          action: "CONFIG_SET",
+          meta: JSON.stringify({
+            key,
+            value: String(multiplier),
+            previous: previous ?? null,
+            ...extra,
+          }),
+        })
+        .catch((err) => logger.error({ err, key }, "CONFIG_SET ledger write failed"));
     try {
-      await this.settings.set(`${XP_BOOST_ROLE_PREFIX}${role.id}`, String(multiplier));
+      // A boost above the cumulative cap has no legitimate use: it is refused (and the attempt
+      // logged) instead of being accepted then silently clipped.
+      const limit = roleBoostLimit(
+        await this.settings.getFloat("xp.multiplier.max", DEFAULT_XP_BOOST_CONFIG.maxMultiplier),
+      );
+      if (multiplier > limit) {
+        await audit({ refused: true, limit });
+        throw new Error(`${key} ≤ ${limit}.`);
+      }
+      await this.settings.set(key, String(multiplier));
+      await audit({});
       await this.replyEphemeral(
         interaction,
         successEmbed("Boost XP enregistré", `${role} → multiplier **×${multiplier}**`),

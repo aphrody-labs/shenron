@@ -27,6 +27,8 @@ import {
   type XpBoostConfig,
 } from "~/lib/xp-boosts";
 import { logger } from "~/lib/logger";
+import { levelFromXp } from "~/lib/xp";
+import { DEFAULT_LEVEL_RACE, memberRaceId, tierEntitlement } from "~/lib/race-levels";
 import { ChannelType } from "discord.js";
 import { CronRegistry } from "~/api/cron-registry";
 
@@ -92,6 +94,7 @@ export class VoiceXPEvent {
     // Setting xp.voice.per_minute → conversion en per-tick (XP_VOICE_TICK_MS).
     const { perTick: baseGain } = await loadVoiceBaseGain(this.settings);
 
+    let failed = 0;
     for (const [userId, sess] of this.sessions) {
       // Marge de 5s : `setInterval` peut tirer quelques ms trop tôt et faire
       // sauter un tick entier (XP vocal divisé par 2 sans raison visible).
@@ -100,45 +103,73 @@ export class VoiceXPEvent {
       if (!channel) continue;
       sess.lastTickAt = now;
 
-      const member =
-        guild.members.cache.get(userId) ?? (await guild.members.fetch(userId).catch(() => null));
-      const roleMultiplier = member
-        ? bestRoleMultiplier(
-            (roleId) => member.roles.cache.has(roleId),
-            boosts,
-            await boosterXpMultiplier(member, this.settings),
-          )
-        : 1;
-      const u = await this.levels.getUser(userId);
-      const boost = voiceBoost(
-        {
-          roleMultiplier,
-          race: u?.race,
-          raceBoostUntil: u?.raceBoostUntil?.getTime() ?? 0,
-          now,
-          status: sess.status,
-          channel,
-        },
-        cfg,
-      );
-      const gain = Math.floor(baseGain * boost.total);
-
-      // Temps de présence vocal (classement « vocal » + stats de profil).
-      await this.levels.addVoiceTime(userId, XP_VOICE_TICK_MS, new Date(sess.joinedAt));
-      if (gain <= 0) continue;
-
-      const res = await this.levels.addXP(userId, gain, { propagateFusion: true, source: "voice" });
-      if (channel.sleepcall) {
-        const sleepcall = this.sleepcalls.get(sess.channelId);
-        if (sleepcall) sleepcall.xp += gain;
-      }
-      if (res.levelUp && member) {
-        const announce = await resolveLevelChannel(client, guild);
-        await this.levels.handleLevelUp(member, res.newLevel, announce ?? undefined);
+      // A failure on one member (locked database, missing column) does not cut the tick of the
+      // others: it is logged with its context, counted, then rethrown at the end so the task
+      // registry shows the error.
+      try {
+        await this.tickMember(client, guild, userId, sess, channel, boosts, cfg, baseGain, now);
+      } catch (err) {
+        failed++;
+        logger.error(
+          { err, userId, channelId: sess.channelId, op: "voice-xp" },
+          "voice XP tick failed",
+        );
       }
     }
 
     await this.closeSleepcalls(client, cfg, now);
+    if (failed > 0) throw new Error(`voice XP tick: ${failed} member write(s) failed`);
+  }
+
+  private async tickMember(
+    client: Client,
+    guild: Guild,
+    userId: string,
+    sess: VoiceSession,
+    channel: VoiceChannelContext,
+    boosts: Awaited<ReturnType<SettingsService["getXpBoostRoles"]>>,
+    cfg: XpBoostConfig,
+    baseGain: number,
+    now: number,
+  ) {
+    const member =
+      guild.members.cache.get(userId) ?? (await guild.members.fetch(userId).catch(() => null));
+    const u = await this.levels.getUser(userId);
+    // A tier role only multiplies from the level at which the ladder grants it.
+    const roleMultiplier = member
+      ? bestRoleMultiplier(
+          (roleId) => member.roles.cache.has(roleId),
+          boosts,
+          await boosterXpMultiplier(member, this.settings),
+          tierEntitlement(levelFromXp(u?.xp ?? 0), memberRaceId(member) ?? DEFAULT_LEVEL_RACE),
+        )
+      : 1;
+    const boost = voiceBoost(
+      {
+        roleMultiplier,
+        race: u?.race,
+        raceBoostUntil: u?.raceBoostUntil?.getTime() ?? 0,
+        now,
+        status: sess.status,
+        channel,
+      },
+      cfg,
+    );
+    const gain = Math.floor(baseGain * boost.total);
+
+    // Temps de présence vocal (classement « vocal » + stats de profil).
+    await this.levels.addVoiceTime(userId, XP_VOICE_TICK_MS, new Date(sess.joinedAt));
+    if (gain <= 0) return;
+
+    const res = await this.levels.addXP(userId, gain, { propagateFusion: true, source: "voice" });
+    if (channel.sleepcall) {
+      const sleepcall = this.sleepcalls.get(sess.channelId);
+      if (sleepcall) sleepcall.xp += res.granted;
+    }
+    if (res.levelUp && member) {
+      const announce = await resolveLevelChannel(client, guild);
+      await this.levels.handleLevelUp(member, res.newLevel, announce ?? undefined, res.oldLevel);
+    }
   }
 
   /**

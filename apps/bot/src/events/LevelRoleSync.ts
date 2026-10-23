@@ -11,8 +11,16 @@ import { env } from "~/lib/env";
 const DEFAULT_INTERVAL_MS = 6 * 3_600_000;
 
 /**
- * Vérifie périodiquement que chaque membre possède les rôles de palier
- * correspondant à sa race et à son niveau (XP en base).
+ * Setting (boolean, absent = false) that lets the pass REMOVE excess tier roles (above the
+ * level, or from another race). Without it the pass grants the due tiers and only counts
+ * what exceeds.
+ */
+export const LEVEL_ROLE_STRIP_KEY = "level_role_sync.strip";
+
+/**
+ * Periodically checks that every member holds the tier roles matching their race and level
+ * (XP in database). Never removes a tier without the explicit {@link LEVEL_ROLE_STRIP_KEY}
+ * setting.
  */
 @Discord()
 @Bot("shenron")
@@ -47,7 +55,18 @@ export class LevelRoleSyncEvent {
     if (!guild) return;
 
     await guild.members.fetch().catch(() => null);
-    const stats = await this.levels.reconcileAllRaceLevelRoles(guild);
+    const strip = await this.settings.getBool(LEVEL_ROLE_STRIP_KEY, false);
+    const stats = await this.levels.reconcileAllRaceLevelRoles(guild, { strip });
     logger.info(stats, "level-role-reconcile completed");
+    if (stats.excessMembers > 0 && stats.mode === "report") {
+      logger.warn(
+        {
+          excessMembers: stats.excessMembers,
+          excessRoles: stats.excessRoles,
+          aborted: stats.aborted,
+        },
+        `level-role-reconcile: tier roles above level or from another race — set ${LEVEL_ROLE_STRIP_KEY}=true to remove them`,
+      );
+    }
   }
 }
