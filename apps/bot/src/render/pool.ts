@@ -261,7 +261,7 @@ export class RenderPool {
       if (!slot.ready) this.startFailed(error);
       this.lose(slot, error);
     }, this.readyTimeoutMs);
-    worker.addEventListener("message", (event: MessageEvent) => {
+    worker.onmessage = (event: MessageEvent) => {
       const data = event.data as RenderReply | { status?: string } | null;
       if (!data) return;
       if ("status" in data && data.status === "ready") {
@@ -273,7 +273,7 @@ export class RenderPool {
       } else if ("type" in data && data.type === "result") {
         this.settle(slot, data);
       }
-    });
+    };
     worker.addEventListener("error", (event: ErrorEvent) => {
       clearTimeout(readyTimer);
       const error = new Error(event.message || "render worker failed");
