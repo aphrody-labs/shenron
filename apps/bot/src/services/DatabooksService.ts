@@ -95,6 +95,10 @@ const TTL_CATALOGUE_MS = 5 * 60_000;
 export class DatabooksService {
   /** Catalogue léger, rafraîchi à la demande : l'autocomplete tape à chaque frappe. */
   private catalogue: { at: number; items: Databook[] } | null = null;
+  /** Un seul chargement en vol : dix frappes d'autocomplete ne lancent pas dix catalogues. */
+  private chargement: Promise<Databook[]> | null = null;
+  /** Fiches vues masquées au dernier chargement du catalogue. */
+  private masquees = new Set<number>();
 
   private async get<T>(chemin: string): Promise<T | null> {
     try {
@@ -122,6 +126,13 @@ export class DatabooksService {
     if (this.catalogue && Date.now() - this.catalogue.at < TTL_CATALOGUE_MS) {
       return this.catalogue.items;
     }
+    this.chargement ??= this.charger().finally(() => {
+      this.chargement = null;
+    });
+    return this.chargement;
+  }
+
+  private async charger(): Promise<Databook[]> {
     const items: Databook[] = [];
     for (let offset = 0; offset < 1_000; offset += 200) {
       const page = await this.get<{ items: Databook[]; total: number }>(
@@ -131,8 +142,11 @@ export class DatabooksService {
       items.push(...page.items);
       if (items.length >= page.total || page.items.length === 0) break;
     }
-    this.catalogue = { at: Date.now(), items };
-    return items;
+    // Suppression logique : une fiche masquée (`visible = false`) ne sort jamais.
+    const visibles = items.filter((d) => d.visible !== false);
+    this.masquees = new Set(items.filter((d) => d.visible === false).map((d) => d.id));
+    this.catalogue = { at: Date.now(), items: visibles };
+    return visibles;
   }
 
   /** Fiches dont le titre, le titre japonais ou l'auteur contient `terme`. */
@@ -140,15 +154,24 @@ export class DatabooksService {
     const tous = await this.listAll();
     const t = terme.trim().toLocaleLowerCase();
     if (!t) return tous.slice(0, limit);
+    // Titre qui commence par le terme, puis titre qui le contient, puis le reste.
+    const rang = (d: Databook): number => {
+      const titre = d.title.toLocaleLowerCase();
+      if (titre.startsWith(t)) return 0;
+      if (titre.includes(t)) return 1;
+      return [d.title_ja, d.author].some((v) => v?.toLocaleLowerCase().includes(t)) ? 2 : 3;
+    };
     return tous
-      .filter((d) =>
-        [d.title, d.title_ja, d.author].some((v) => v?.toLocaleLowerCase().includes(t)),
-      )
-      .slice(0, limit);
+      .map((d) => ({ d, r: rang(d) }))
+      .filter((x) => x.r < 3)
+      .toSorted((a, b) => a.r - b.r)
+      .slice(0, limit)
+      .map((x) => x.d);
   }
 
   async get1(id: number): Promise<Databook | null> {
-    return this.get<Databook>(`/api/databooks/${id}`);
+    const fiche = await this.get<Databook>(`/api/databooks/${id}`);
+    return fiche && fiche.visible !== false ? fiche : null;
   }
 
   /**
@@ -163,16 +186,20 @@ export class DatabooksService {
       `/api/databooks/search?q=${encodeURIComponent(term)}&limit=${Math.min(100, limit)}`,
     );
     if (!raw) return null;
+    // Planches d'une fiche connue comme masquée : écartées.
+    const masquees = this.masquees;
     return {
-      items: raw.items.map((item) => ({
-        databookId: item.databookId,
-        title: item.title ?? item.titre ?? "",
-        category: item.category ?? item.categorie ?? null,
-        cover: item.cover ?? null,
-        number: item.number ?? item.numero ?? 0,
-        image: item.image ?? null,
-        text: item.text ?? item.texte ?? "",
-      })),
+      items: raw.items
+        .filter((item) => !masquees.has(item.databookId))
+        .map((item) => ({
+          databookId: item.databookId,
+          title: item.title ?? item.titre ?? "",
+          category: item.category ?? item.categorie ?? null,
+          cover: item.cover ?? null,
+          number: item.number ?? item.numero ?? 0,
+          image: item.image ?? null,
+          text: item.text ?? item.texte ?? "",
+        })),
       total: raw.total,
       databookCount: raw.databookCount ?? raw.fiches ?? 0,
     };

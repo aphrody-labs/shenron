@@ -56,6 +56,19 @@ function clip(text: string | null, max: number): string {
   return value.length <= max ? value : `${value.slice(0, max - 1)}…`;
 }
 
+/** Marge sous la limite Discord de 6 000 signes par embed. */
+const EMBED_TEXT_BUDGET = 5_800;
+
+function embedTextLength(embed: EmbedBuilder): number {
+  const d = embed.data;
+  return (
+    (d.title?.length ?? 0) +
+    (d.description?.length ?? 0) +
+    (d.footer?.text.length ?? 0) +
+    (d.fields ?? []).reduce((n, f) => n + f.name.length + f.value.length, 0)
+  );
+}
+
 /** Embed de revue : paires source → traduction + image de planche. */
 export function candidateEmbed(row: MangaCandidateRow): EmbedBuilder {
   const pairs = extractTranslationPairs(row.payload);
@@ -68,14 +81,23 @@ export function candidateEmbed(row: MangaCandidateRow): EmbedBuilder {
         `${pairs.length} bulle(s) traduite(s)`,
     )
     .setFooter({ text: `hash ${row.candidateHash.slice(0, 12)}` });
+  // Discord refuse un embed de plus de 6 000 signes au total : douze bulles
+  // longues (256 + 1 024 chacune) faisaient échouer `/scanlate voir`.
+  let budget = EMBED_TEXT_BUDGET - embedTextLength(embed);
+  let shown = 0;
   for (const [index, pair] of pairs.slice(0, 12).entries()) {
-    embed.addFields({
-      name: clip(`${index + 1}. ${pair.sourceText ?? "(source absente)"}`, 256),
-      value: clip(pair.translatedText, 1024),
-    });
+    const name = clip(`${index + 1}. ${pair.sourceText ?? "(source absente)"}`, 256);
+    const value = clip(
+      pair.translatedText,
+      Math.min(1024, Math.max(40, budget - name.length - 80)),
+    );
+    if (name.length + value.length + 80 > budget) break;
+    embed.addFields({ name, value });
+    budget -= name.length + value.length;
+    shown += 1;
   }
-  if (pairs.length > 12) {
-    embed.addFields({ name: "…", value: `${pairs.length - 12} bulle(s) non affichée(s).` });
+  if (pairs.length > shown) {
+    embed.addFields({ name: "…", value: `${pairs.length - shown} bulle(s) non affichée(s).` });
   }
   const image = plancheImageUrl(row);
   if (image) embed.setImage(image);
