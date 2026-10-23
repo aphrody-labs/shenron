@@ -11,6 +11,10 @@
   background: var(--background);
 }
 
+.root:has(:global(.shenron-video[data-theater="true"])) {
+  z-index: 100;
+}
+
 .root > :not(.stage, .artwork) {
   inline-size: min(calc(100% - var(--watch-gutter) * 2), var(--watch-content-width));
   min-inline-size: 0;
