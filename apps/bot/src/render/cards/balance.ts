@@ -13,9 +13,6 @@ import { drawWordmark, finishShell, paintShell, resolveOptions } from "./chrome"
 
 export const BALANCE_CARD_SIZE = { width: 900, height: 320 } as const;
 
-/** Currency sign printed in the coin. */
-const ZENI_SIGN = "Z";
-
 export type Tone = "neutral" | "good" | "bad" | "warn" | "info";
 
 /** Colour of a tone on the dark panels. */
@@ -105,7 +102,7 @@ export async function renderBalanceCard(
       spacing: "4px",
       stroke: { color: rgba(palette.ink, 0.8), width: 4 },
     });
-    drawCoin(ctx, palette, X0 + 40, 118, 38, ZENI_SIGN);
+    drawCoin(ctx, palette, X0 + 40, 118, 38);
     const amount = formatInt(input.zeni, locale);
     const size = fitSize(ctx, amount, W - X0 - 100 - 40, num, 112, 54);
     drawText(ctx, amount, X0 + 92, 118 + size * 0.34, {

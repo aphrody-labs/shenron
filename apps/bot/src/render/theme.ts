@@ -88,6 +88,11 @@ export function setPaletteOverrides(next: Partial<Record<PaletteToken, string>>)
   overrides = clean;
 }
 
+/** The runtime theme in force, to hand to render workers (they hold their own copy). */
+export function getPaletteOverrides(): Partial<Record<PaletteToken, string>> {
+  return { ...overrides };
+}
+
 /** Palette for one render: defaults, then the runtime theme, then the caller's patch. */
 export function resolvePalette(patch: Partial<Record<PaletteToken, string>> = {}): RenderPalette {
   const tokens: Record<PaletteToken, string> = { ...UI_COLORS, ember: UI_EMBER };

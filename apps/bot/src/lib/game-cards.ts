@@ -5,7 +5,7 @@
  * eux, les libellés français historiques ci-dessous servent de repli le temps de la
  * migration des commandes vers les dictionnaires (lot L6), puis disparaissent.
  */
-import { renderGameCard, type GameBlock, type Tone, type TileCell } from "~/render";
+import { renderCardOnPool, type GameBlock, type Tone, type TileCell } from "~/render";
 import type { RenderOptions } from "~/render";
 import { DIFFICULTY_LABELS, type GameDifficulty } from "~/services/games/difficulty";
 
@@ -113,7 +113,8 @@ export async function renderPenduCard(
       miss: input.missed,
     },
   ];
-  const card = await renderGameCard(
+  const card = await renderCardOnPool(
+    "game",
     {
       title: labels.title,
       subtitle: input.category ? labels.hint(input.category) : labels.noHint,
@@ -179,7 +180,8 @@ export async function renderBingoCard(
       text: input.lastHint === "higher" ? labels.higher : labels.lower,
     });
   }
-  const card = await renderGameCard(
+  const card = await renderCardOnPool(
+    "game",
     {
       title: labels.title,
       subtitle: labels.range(input.min, input.max),

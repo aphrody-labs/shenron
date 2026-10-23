@@ -5,7 +5,7 @@
 import { existsSync } from "node:fs";
 import { loadImage, type Image } from "@napi-rs/canvas";
 import { botFile, uiAssetsDir } from "~/lib/asset-files";
-import { loadRemoteImage } from "~/lib/canvas-kit";
+import { isRemoteRef, loadFrameImage, loadRemoteImage } from "~/lib/canvas-kit";
 import { RENDER_ASSET_FILES } from "./assets";
 import type { ImageSource } from "./types";
 
@@ -65,10 +65,14 @@ export async function loadLocalImage(ref: string): Promise<Image | null> {
   return task;
 }
 
-/** Discord CDN avatars (shared bounded cache) and the bot assets on disk. */
+/** A local asset (relative to `apps/bot`, or `ui:`) or a frame URL, through their caches. */
+export const loadAsset = (ref: string): Promise<Image | null> =>
+  isRemoteRef(ref) ? loadFrameImage(ref) : loadLocalImage(ref);
+
+/** Discord CDN avatars (shared bounded cache), the bot assets on disk and the episode frames. */
 export const defaultImages: ImageSource = {
   avatar: (url) => loadRemoteImage(url),
-  asset: loadLocalImage,
+  asset: loadAsset,
 };
 
 /** First of `refs` that decodes, in order; `null` when none does. */

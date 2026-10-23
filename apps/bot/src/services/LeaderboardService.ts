@@ -1,7 +1,17 @@
 import { singleton, inject } from "tsyringe";
 import type { Image } from "@napi-rs/canvas";
 import { BackgroundCacheService } from "./BackgroundCacheService";
-import { imageSourceFrom, renderLeaderboardCard, type RenderedCard } from "~/render";
+import { container } from "tsyringe";
+import {
+  RENDER_WORKERS_KEY,
+  imageSourceFrom,
+  pickFrameBackdrop,
+  renderCardOnPool,
+  syncRenderWorkers,
+  warmRenderPool,
+  type RenderedCard,
+} from "~/render";
+import { SettingsService } from "./SettingsService";
 
 export interface LeaderboardEntry {
   id: string;
@@ -63,7 +73,9 @@ const LEGACY_TEXT: LeaderboardCardText = {
 
 @singleton()
 export class LeaderboardService {
-  constructor(@inject(BackgroundCacheService) private bgCache: BackgroundCacheService) {}
+  constructor(@inject(BackgroundCacheService) private bgCache: BackgroundCacheService) {
+    warmRenderPool();
+  }
 
   private async loadBg(): Promise<Image | null> {
     const file = this.bgCache.firstAvailable(BG_CANDIDATES);
@@ -78,7 +90,9 @@ export class LeaderboardService {
   async renderCard(entries: LeaderboardEntry[], meta: LeaderboardMeta): Promise<RenderedCard> {
     const text = { ...LEGACY_TEXT, ...meta.text };
     const background = this.bgCache.firstAvailable(BG_CANDIDATES);
-    return renderLeaderboardCard(
+    await syncRenderWorkers(() => container.resolve(SettingsService).getRaw(RENDER_WORKERS_KEY));
+    return renderCardOnPool(
+      "leaderboard",
       {
         entries: entries.slice(0, 10).map((entry) => ({
           id: entry.id,
@@ -96,8 +110,11 @@ export class LeaderboardService {
         updatedLabel: text.updated(meta.generatedAt ?? new Date()),
         site: text.site,
         backgrounds: background ? [background] : [],
+        // the frame of the day, the same for the whole server (the old background is the fallback)
+        frame: pickFrameBackdrop({ purpose: "leaderboard", seed: "leaderboard" }),
       },
-      { images: imageSourceFrom(this.bgCache), locale: meta.locale },
+      { locale: meta.locale },
+      { images: imageSourceFrom(this.bgCache) },
     );
   }
 

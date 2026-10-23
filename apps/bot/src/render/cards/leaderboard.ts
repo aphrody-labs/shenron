@@ -5,16 +5,33 @@
 import type { SKRSContext2D } from "@napi-rs/canvas";
 import { rgba } from "~/lib/canvas-kit";
 import { drawAvatar, drawBall, drawChip, drawPanel, drawSparkle, hashSeed, rrect } from "../draw";
-import { avatarImage, firstImage, loadWordmark } from "../images";
+import { drawIcon } from "../icons";
+import type { ShadeZone } from "../backdrop";
+import type { FrameBackdrop } from "~/frames/types";
+import { avatarImage, loadWordmark } from "../images";
 import { renderCard } from "../surface";
 import { lighten, mix, normalizeHex, rankColor, type RenderPalette } from "../theme";
 import { drawText, fitSize, formatCompact, formatInt, num, shout, title, ui } from "../text";
 import type { RenderOptions, RenderedCard } from "../types";
 import type { Image } from "@napi-rs/canvas";
-import { drawWordmark, finishShell, paintShell, resolveOptions } from "./chrome";
+import {
+  drawWordmark,
+  finishShell,
+  frameOptions,
+  loadBackdrop,
+  paintShell,
+  resolveOptions,
+} from "./chrome";
 import { PODIUM_BOTTOM, PODIUM_SLOTS, PODIUM_WIDTH, planPodiumStep } from "./podium";
 
 export const LEADERBOARD_CARD_SIZE = { width: 1000, height: 640 } as const;
+
+/** Header, podium and footer: the list panel is opaque and needs nothing. */
+const LEADERBOARD_SHADE: readonly ShadeZone[] = [
+  { x: 24, y: 14, w: 760, h: 112, strength: 0.46 },
+  { x: 20, y: 226, w: 440, h: 400, strength: 0.34, feather: 36 },
+  { x: 20, y: 600, w: 960, h: 34, strength: 0.42 },
+];
 
 export interface LeaderboardCardEntry {
   id: string;
@@ -48,6 +65,8 @@ export interface LeaderboardCardInput {
   site?: string | null;
   accent?: string;
   backgrounds?: ReadonlyArray<string | null | undefined>;
+  /** Episode frame of the day (see `pickFrameBackdrop`), used first when it loads. */
+  frame?: FrameBackdrop | null;
 }
 
 const MAX_ROWS = 10;
@@ -61,6 +80,7 @@ interface Row {
 const valueText = (entry: LeaderboardCardEntry, unit: string | null | undefined, locale: string) =>
   `${formatCompact(entry.value, locale)}${unit ? ` ${unit}` : ""}`;
 
+/** Crown of the first place: the measured crown glyph (19 of its 24 units wide). */
 function drawCrown(
   ctx: SKRSContext2D,
   palette: RenderPalette,
@@ -68,34 +88,10 @@ function drawCrown(
   cy: number,
   w: number,
 ): void {
-  const h = w * 0.62;
-  const x = cx - w / 2;
-  const y = cy - h / 2;
-  ctx.save();
-  ctx.beginPath();
-  ctx.moveTo(x, y + h);
-  ctx.lineTo(x - w * 0.02, y + h * 0.18);
-  ctx.lineTo(x + w * 0.26, y + h * 0.52);
-  ctx.lineTo(x + w * 0.5, y);
-  ctx.lineTo(x + w * 0.74, y + h * 0.52);
-  ctx.lineTo(x + w * 1.02, y + h * 0.18);
-  ctx.lineTo(x + w, y + h);
-  ctx.closePath();
-  ctx.translate(3, 4);
-  ctx.fillStyle = rgba(palette.ink, 0.6);
-  ctx.fill();
-  ctx.translate(-3, -4);
-  ctx.fillStyle = palette.title;
-  ctx.fill();
-  ctx.lineJoin = "round";
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = palette.ink;
-  ctx.stroke();
-  ctx.fillStyle = palette.red;
-  ctx.beginPath();
-  ctx.arc(cx, y + h * 0.7, w * 0.07, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
+  drawIcon(ctx, "crown", cx, cy, (w * 24) / 19, palette.title, {
+    outline: { color: palette.ink, width: 1.1 },
+    shadow: { color: rgba(palette.ink, 0.6), dx: 1, dy: 1.3 },
+  });
 }
 
 function drawPodium(
@@ -267,8 +263,8 @@ export async function renderLeaderboardCard(
   const podium = (input.podium ?? firstRank === 1) && entries.length >= 1;
 
   return renderCard(W, H, options, async ({ ctx }) => {
-    const [background, wordmark, ...avatars] = await Promise.all([
-      firstImage(images, input.backgrounds ?? []),
+    const [backdrop, wordmark, ...avatars] = await Promise.all([
+      loadBackdrop(images, input.frame, input.backgrounds ?? []),
       loadWordmark(images),
       ...entries.map((entry) => avatarImage(images, entry.avatarUrl)),
     ]);
@@ -282,12 +278,13 @@ export async function renderLeaderboardCard(
     paintShell(ctx, palette, {
       width: W,
       height: H,
-      image: background,
+      image: backdrop.image,
       gradient: [
         mix(palette.bg, palette.ember, 0.24),
         mix(palette.bg, palette.orange, 0.36),
         palette.bg,
       ],
+      ...frameOptions(backdrop, LEADERBOARD_SHADE, undefined),
       focal: podium ? { x: 226, y: 250 } : { x: W / 2, y: 60 },
       accent,
       seed,

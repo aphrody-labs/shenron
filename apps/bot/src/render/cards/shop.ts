@@ -33,9 +33,6 @@ import { drawWordmark, finishShell, paintShell, resolveOptions } from "./chrome"
 export const SHOP_ITEM_CARD_SIZE = { width: 800, height: 360 } as const;
 export const SHOP_BOARD_CARD_SIZE = { width: 1200, height: 600 } as const;
 
-/** Currency sign printed in the coin. */
-const ZENI_SIGN = "Z";
-
 /** What the preview area shows. */
 export type ShopPreview =
   /** Banner or card picture on disk (`assets/...`), `gradient` while it loads or when absent. */
@@ -276,7 +273,7 @@ function drawItemTile(
       stroke: { color: palette.ink, width: 7 },
     });
     if (!item.priceLabel) {
-      drawCoin(ctx, palette, tx + coin, baseY - fontSize * 0.34, coin, ZENI_SIGN);
+      drawCoin(ctx, palette, tx + coin, baseY - fontSize * 0.34, coin);
     }
   }
 

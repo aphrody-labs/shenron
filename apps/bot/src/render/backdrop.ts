@@ -9,6 +9,18 @@ import { drawImageCover, rgba } from "~/lib/canvas-kit";
 import { drawHalftone, drawSpeedLines, rrect } from "./draw";
 import type { RenderPalette } from "./theme";
 
+/** A zone under text that the picture must not compete with, in logical card pixels. */
+export interface ShadeZone {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /** Darkening at the heart of the zone, 0 to 1 (default 0.5). */
+  strength?: number;
+  /** Width of the soft edge, in pixels (default 28). */
+  feather?: number;
+}
+
 export interface BackdropOptions {
   width: number;
   height: number;
@@ -23,6 +35,10 @@ export interface BackdropOptions {
   overlay?: number;
   /** Colour wash over everything, to marry the image and the accent. */
   tint?: { color: string; strength: number };
+  /** Centre of interest of `image`, fractions of the picture: the `cover` crop follows it. */
+  focus?: readonly [number, number];
+  /** Local darkening under the texts (soft rectangles), applied before the cel shading. */
+  shade?: readonly ShadeZone[];
   /** Point the speed lines radiate from. */
   focal: { x: number; y: number };
   accent: string;
@@ -83,6 +99,17 @@ export function posterize(
   ctx.putImageData(image, 0, 0);
 }
 
+/** Soft dark rectangle under a text block: the picture stays, the lettering stays readable. */
+function shadeZone(ctx: SKRSContext2D, color: string, zone: ShadeZone): void {
+  const feather = zone.feather ?? 28;
+  ctx.save();
+  ctx.filter = `blur(${feather / 2}px)`;
+  ctx.fillStyle = rgba(color, zone.strength ?? 0.5);
+  rrect(ctx, zone.x, zone.y, zone.w, zone.h, Math.min(zone.h / 2, 22));
+  ctx.fill();
+  ctx.restore();
+}
+
 /** Backdrop pixels at the logical size (opaque), before posterization. */
 function composeLayer(
   palette: RenderPalette,
@@ -95,7 +122,15 @@ function composeLayer(
   ctx.imageSmoothingQuality = "high";
 
   if (options.image) {
-    drawImageCover(ctx, options.image, 0, 0, w, h);
+    drawImageCover(
+      ctx,
+      options.image,
+      0,
+      0,
+      w,
+      h,
+      options.focus ? { x: options.focus[0], y: options.focus[1] } : undefined,
+    );
     const strength = options.overlay ?? 0.76;
     const veil = ctx.createLinearGradient(0, 0, w, 0);
     veil.addColorStop(0, rgba(palette.bg, Math.min(0.96, strength + 0.14)));
@@ -117,6 +152,8 @@ function composeLayer(
     ctx.fillStyle = rgba(palette.bg, 0.5);
     ctx.fillRect(0, 0, w, h);
   }
+
+  for (const zone of options.shade ?? []) shadeZone(ctx, palette.bg, zone);
 
   if (options.tint && options.tint.strength > 0) {
     ctx.fillStyle = rgba(options.tint.color, options.tint.strength);

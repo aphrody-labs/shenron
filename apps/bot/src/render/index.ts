@@ -9,6 +9,11 @@
  *   renderShopBoardCard    board of up to four previews
  *   renderGameCard         game card primitive (tiles, lives, keyboard, range, grid, scores)
  *
+ *   renderCardOnPool       any of the above on the render workers (`pool.ts`), the entry point of the
+ *                          services: the gateway thread never waits for the canvas
+ *   pickFrameBackdrop      episode frame chosen for a card from the catalog (`frames/catalog.ts`)
+ *   drawIcon               pictograms measured on the manga (`icons.ts`)
+ *
  * Every function takes localized texts and returns a `RenderedCard`; a missing avatar or
  * background never throws. See `docs/products/bot-discord-refonte.md` section 4.4.
  */
@@ -72,3 +77,34 @@ export {
   type Tone,
   type TileCell,
 } from "./cards/game";
+export { drawIcon, iconSizeForRadius, type IconName, type IconOptions } from "./icons";
+export {
+  RENDER_WORKERS_KEY,
+  RenderPool,
+  RenderQueueFullError,
+  RenderTimeoutError,
+  closeRenderPool,
+  configureRenderPool,
+  getRenderPool,
+  poolEnabled,
+  renderCardOnPool,
+  syncRenderWorkers,
+  warmRenderPool,
+  workerCount,
+  type RenderExtras,
+  type RenderPoolOptions,
+  type RenderPoolStats,
+} from "./pool";
+export { CARD_KINDS, renderInline, type CardInputs, type CardKind } from "./dispatch";
+export {
+  dayKey,
+  pickFrameBackdrop,
+  type FrameBackdrop,
+  type FramePurpose,
+  type FrameRequest,
+} from "~/frames/catalog";
+export {
+  TRANSFORMATION_KEYS,
+  transformationKeyForLabel,
+  type TransformationKey,
+} from "~/frames/transformations";

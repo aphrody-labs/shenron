@@ -435,6 +435,13 @@ Validées par zod ; un identifiant absent désactive la fonctionnalité concern�
   L'image le pose à `/usr/local/share/shenron-bot`, hors du montage `/app/assets` ; un fichier
   présent dans l'arbre source reste prioritaire. Emoji et CJK viennent des polices système
   de l'image (`fonts-noto-color-emoji`, `fonts-wqy-microhei`).
+- Rendu des cartes (`apps/bot/src/render/pool.ts`) : les cartes sont dessinées par un pool de
+  workers, `min(cœurs − 1, render.workers)` ; le réglage `render.workers` (`guild_settings`)
+  prime sur `SHENRON_RENDER_WORKERS`, `0` dessine sur le fil principal. `SHENRON_RENDER_POOL=0`
+  coupe le pool, `1` le force sous `bun test` (où il est coupé par défaut).
+  `SHENRON_FRAME_CACHE_DIR` : copie disque des frames d'épisodes servant de fonds (défaut :
+  `shenron-frames` dans le dossier temporaire du système), partagée par les workers et gardée
+  entre deux redémarrages.
 
 ## Activité « Arène Shenron » — `@aphrody/shenron-config/env` (`ACTIVITY_ENV`), `apps/bot/src/api/activity.ts`
 

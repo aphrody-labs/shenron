@@ -3,6 +3,7 @@ import { existsSync } from "node:fs";
 import { singleton } from "tsyringe";
 import { loadImage, type Image } from "@napi-rs/canvas";
 import { botFile } from "~/lib/asset-files";
+import { isRemoteRef, loadFrameImage } from "~/lib/canvas-kit";
 import { logger } from "~/lib/logger";
 
 /**
@@ -29,6 +30,8 @@ export class BackgroundCacheService {
    * un fichier absent y est normal et ne se journalise qu'en debug.
    */
   async get(relativePath: string, { optional = false } = {}): Promise<Image | null> {
+    // An episode frame (card backdrop): bounded LRU with a disk copy, not kept forever here.
+    if (isRemoteRef(relativePath)) return loadFrameImage(relativePath);
     // Cache hit (même null négatif pour éviter de re-tenter)
     if (this.cache.has(relativePath)) return this.cache.get(relativePath) ?? null;
 

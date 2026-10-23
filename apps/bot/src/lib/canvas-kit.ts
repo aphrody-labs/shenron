@@ -9,9 +9,12 @@
  * donc `import "~/lib/canvas-kit"` suffit à garantir leur disponibilité.
  */
 import { existsSync } from "node:fs";
+import { rename } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { GlobalFonts, loadImage, type Image, type SKRSContext2D } from "@napi-rs/canvas";
 import { botFile } from "~/lib/asset-files";
 import { CANVAS_FONT_FILES } from "~/lib/canvas-fonts";
+import { drawIcon, ICON_BOX } from "~/render/icons";
 import { logger } from "~/lib/logger";
 
 export { FONT_STACK, font } from "~/lib/canvas-fonts";
@@ -238,6 +241,10 @@ export function textStroked(
 
 // ─── Formes thématiques DBZ ───────────────────────────────────────────────
 
+/** Circumradius of the measured star glyph, in the units of its 24-unit drawing box. */
+const STAR_GLYPH_RADIUS = 9;
+
+/** Star of `points` branches; the five-pointed one is the measured glyph of the site. */
 export function drawStar(
   ctx: SKRSContext2D,
   cx: number,
@@ -246,6 +253,10 @@ export function drawStar(
   points = 5,
   color = "#ffffff",
 ): void {
+  if (points === 5) {
+    drawIcon(ctx, "star", cx, cy, (r * ICON_BOX) / STAR_GLYPH_RADIUS, color);
+    return;
+  }
   ctx.save();
   ctx.beginPath();
   for (let i = 0; i < points * 2; i++) {
@@ -323,6 +334,8 @@ export function drawImageCover(
   dy: number,
   dw: number,
   dh: number,
+  /** Centre of interest as fractions of the image (default: its centre): the crop follows it. */
+  focus: { x: number; y: number } = { x: 0.5, y: 0.5 },
 ): void {
   const srcRatio = img.width / img.height;
   const dstRatio = dw / dh;
@@ -333,11 +346,11 @@ export function drawImageCover(
   if (srcRatio > dstRatio) {
     // source plus large → crop gauche/droite
     sw = img.height * dstRatio;
-    sx = (img.width - sw) / 2;
+    sx = Math.min(img.width - sw, Math.max(0, focus.x * img.width - sw / 2));
   } else {
     // source plus haute → crop haut/bas
     sh = img.width / dstRatio;
-    sy = (img.height - sh) / 2;
+    sy = Math.min(img.height - sh, Math.max(0, focus.y * img.height - sh / 2));
   }
   // @ts-expect-error signature drawImage 9-arg
   ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
@@ -354,73 +367,170 @@ export function kiScouterLabel(n: number): string {
   return String(n);
 }
 
-// ─── Images distantes (avatars) ────────────────────────────────────────────
+// ─── Images distantes (avatars, frames d'épisodes) ─────────────────────────
 
-const REMOTE_IMAGE_MAX = 256;
-const REMOTE_IMAGE_TTL_MS = 60 * 60_000;
-const REMOTE_IMAGE_TIMEOUT_MS = 5_000;
-/** An avatar is a few tens of KiB: anything above this is not one, and is not decoded. */
-const REMOTE_IMAGE_MAX_BYTES = 4 * 1024 * 1024;
-/** How long a failed URL is not asked again (a CDN outage must not cost 5 s per card). */
-const REMOTE_FAILURE_TTL_MS = 60_000;
-const remoteImages = new Map<string, { image: Image; at: number }>();
-const remoteFailures = new Map<string, number>();
-const remoteInflight = new Map<string, Promise<Image | null>>();
+export interface RemoteImageCacheOptions {
+  /** Decoded images kept (LRU). */
+  max: number;
+  /** How long a decoded image is served without asking again. */
+  ttlMs: number;
+  /** Time allowed for one download. */
+  timeoutMs: number;
+  /** A response above this is not an image of this kind and is not decoded. */
+  maxBytes: number;
+  /** How long a failed URL is not asked again (a CDN outage must not cost a timeout per card). */
+  failureTtlMs: number;
+  /**
+   * Directory of a disk copy of the downloaded bytes, shared by every process and render
+   * worker of the machine (a download is paid once, a restart does not pay it again).
+   */
+  diskDir?: () => string | null;
+}
 
-/** Forgets every cached and failed remote image (tests, `/reload`). */
-export function clearRemoteImageCache(): void {
-  remoteImages.clear();
-  remoteFailures.clear();
+export interface RemoteImageCache {
+  load(url: string): Promise<Image | null>;
+  clear(): void;
+}
+
+/** Disk name of a URL: a hash, so any URL maps to a safe file name. */
+const diskName = (url: string): string => `${Bun.hash(url).toString(16)}.img`;
+
+/**
+ * Bounded cache of remote pictures, decoded once and shared by every card: LRU, expiry,
+ * one download for simultaneous requests of the same URL, a timeout, a size cap and a memory
+ * of failures. A failed or slow URL resolves `null` and the caller draws its fallback.
+ */
+export function createRemoteImageCache(options: RemoteImageCacheOptions): RemoteImageCache {
+  const images = new Map<string, { image: Image; at: number }>();
+  const failures = new Map<string, number>();
+  const inflight = new Map<string, Promise<Image | null>>();
+
+  const fromDisk = async (url: string): Promise<Buffer | null> => {
+    const dir = options.diskDir?.();
+    if (!dir) return null;
+    try {
+      const file = Bun.file(`${dir}/${diskName(url)}`);
+      if (!(await file.exists()) || file.size === 0) return null;
+      return Buffer.from(await file.arrayBuffer());
+    } catch {
+      return null;
+    }
+  };
+  const toDisk = async (url: string, bytes: Buffer): Promise<void> => {
+    const dir = options.diskDir?.();
+    if (!dir) return;
+    try {
+      const target = `${dir}/${diskName(url)}`;
+      const partial = `${target}.${process.pid}.${Math.random().toString(36).slice(2)}.part`;
+      await Bun.write(partial, bytes); // creates the directory
+      await rename(partial, target);
+    } catch {
+      // the disk copy is an optimisation, never a failure
+    }
+  };
+
+  const remember = (url: string, image: Image): void => {
+    images.set(url, { image, at: Date.now() });
+    while (images.size > options.max) {
+      const oldest = images.keys().next().value;
+      if (oldest === undefined) break;
+      images.delete(oldest);
+    }
+  };
+
+  return {
+    async load(url) {
+      const hit = images.get(url);
+      if (hit && Date.now() - hit.at < options.ttlMs) {
+        images.delete(url);
+        images.set(url, hit);
+        return hit.image;
+      }
+      const failedAt = failures.get(url);
+      if (failedAt !== undefined && Date.now() - failedAt < options.failureTtlMs) return null;
+      const pending = inflight.get(url);
+      if (pending) return pending;
+      const task = (async () => {
+        try {
+          let bytes = await fromDisk(url);
+          if (!bytes) {
+            const res = await fetch(url, { signal: AbortSignal.timeout(options.timeoutMs) });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            bytes = Buffer.from(await res.arrayBuffer());
+            if (bytes.length > options.maxBytes) throw new Error("image too large");
+            const image = await loadImage(bytes);
+            void toDisk(url, bytes);
+            failures.delete(url);
+            remember(url, image);
+            return image;
+          }
+          const image = await loadImage(bytes);
+          failures.delete(url);
+          remember(url, image);
+          return image;
+        } catch {
+          failures.set(url, Date.now());
+          if (failures.size > options.max) {
+            const oldest = failures.keys().next().value;
+            if (oldest !== undefined) failures.delete(oldest);
+          }
+          return null;
+        } finally {
+          inflight.delete(url);
+        }
+      })();
+      inflight.set(url, task);
+      return task;
+    },
+    clear() {
+      images.clear();
+      failures.clear();
+    },
+  };
 }
 
 /**
- * Image distante (avatar Discord) décodée, partagée par toutes les cartes.
- *
- * Chaque service gardait sa propre `Map` d'avatars, jamais vidée : une
- * pagination de /top sur tout le serveur y laissait des centaines d'images
- * décodées. Ici le cache est borné (LRU de 256 entrées, 1 h), les demandes
- * simultanées d'une même URL partagent un seul téléchargement, et un CDN lent
- * ne bloque pas un rendu plus de 5 s (`null` : l'appelant dessine son repli).
- * Une URL en échec n'est pas redemandée pendant une minute, et une réponse de
- * plus de 4 Mio n'est pas décodée.
+ * Avatars (Discord CDN): LRU of 256 for an hour, 5 s per download, nothing above 4 MiB (an
+ * avatar is a few tens of KiB), a failed URL is not asked again for a minute.
  */
-export async function loadRemoteImage(url: string): Promise<Image | null> {
-  const hit = remoteImages.get(url);
-  if (hit && Date.now() - hit.at < REMOTE_IMAGE_TTL_MS) {
-    remoteImages.delete(url);
-    remoteImages.set(url, hit);
-    return hit.image;
-  }
-  const failedAt = remoteFailures.get(url);
-  if (failedAt !== undefined && Date.now() - failedAt < REMOTE_FAILURE_TTL_MS) return null;
-  const pending = remoteInflight.get(url);
-  if (pending) return pending;
-  const task = (async () => {
-    try {
-      const res = await fetch(url, { signal: AbortSignal.timeout(REMOTE_IMAGE_TIMEOUT_MS) });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const bytes = Buffer.from(await res.arrayBuffer());
-      if (bytes.length > REMOTE_IMAGE_MAX_BYTES) throw new Error("image too large");
-      const image = await loadImage(bytes);
-      remoteFailures.delete(url);
-      remoteImages.set(url, { image, at: Date.now() });
-      while (remoteImages.size > REMOTE_IMAGE_MAX) {
-        const oldest = remoteImages.keys().next().value;
-        if (oldest === undefined) break;
-        remoteImages.delete(oldest);
-      }
-      return image;
-    } catch {
-      remoteFailures.set(url, Date.now());
-      if (remoteFailures.size > REMOTE_IMAGE_MAX) {
-        const oldest = remoteFailures.keys().next().value;
-        if (oldest !== undefined) remoteFailures.delete(oldest);
-      }
-      return null;
-    } finally {
-      remoteInflight.delete(url);
-    }
-  })();
-  remoteInflight.set(url, task);
-  return task;
+const avatars = createRemoteImageCache({
+  max: 256,
+  ttlMs: 60 * 60_000,
+  timeoutMs: 5_000,
+  maxBytes: 4 * 1024 * 1024,
+  failureTtlMs: 60_000,
+});
+
+/**
+ * Frames of episodes (cards backdrops, ~25 KiB WebP each): a smaller LRU, since a decoded
+ * frame is a megabyte, backed by a disk copy so the render workers and a restart do not
+ * download them again. `SHENRON_FRAME_CACHE_DIR` moves the copy (default: system temp dir).
+ */
+const frames = createRemoteImageCache({
+  max: 24,
+  ttlMs: 6 * 60 * 60_000,
+  timeoutMs: 8_000,
+  maxBytes: 1024 * 1024,
+  failureTtlMs: 60_000,
+  diskDir: () => process.env.SHENRON_FRAME_CACHE_DIR || `${tmpdir()}/shenron-frames`,
+});
+
+/** Forgets every cached and failed remote image (tests, `/reload`). */
+export function clearRemoteImageCache(): void {
+  avatars.clear();
+  frames.clear();
 }
+
+/**
+ * Image distante (avatar Discord) décodée, partagée par toutes les cartes. Les demandes
+ * simultanées d'une même URL partagent un seul téléchargement, et un CDN lent ne bloque pas
+ * un rendu plus de 5 s (`null` : l'appelant dessine son repli).
+ */
+export const loadRemoteImage = avatars.load;
+
+/** Frame d'épisode distante (fond de carte), décodée, avec copie sur disque. */
+export const loadFrameImage = frames.load;
+
+/** `http(s)://...`: a picture to download rather than a file of the bot. */
+export const isRemoteRef = (ref: string): boolean =>
+  ref.startsWith("https://") || ref.startsWith("http://");

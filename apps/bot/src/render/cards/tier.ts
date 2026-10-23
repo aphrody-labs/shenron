@@ -4,14 +4,33 @@
  */
 import { rgba } from "~/lib/canvas-kit";
 import { drawAvatar, drawRibbon, drawSparkle, hashSeed, rng, slantPath } from "../draw";
-import { avatarImage, firstImage, loadWordmark } from "../images";
+import { drawIcon } from "../icons";
+import type { ShadeZone } from "../backdrop";
+import type { FrameBackdrop } from "~/frames/types";
+import { avatarImage, loadWordmark } from "../images";
 import { renderCard } from "../surface";
 import { lighten, mix, normalizeHex, readableOn } from "../theme";
 import { drawText, fitSize, formatInt, num, shout, title, ui } from "../text";
 import type { RenderOptions, RenderedCard } from "../types";
-import { drawWordmark, finishShell, paintShell, resolveOptions } from "./chrome";
+import {
+  drawWordmark,
+  finishShell,
+  frameOptions,
+  loadBackdrop,
+  paintShell,
+  resolveOptions,
+} from "./chrome";
 
 export const TIER_CARD_SIZE = { width: 1000, height: 400 } as const;
+
+/** Behind the ribbons and the numbers, the heart of the card. */
+const TIER_SHADE: readonly ShadeZone[] = [
+  { x: 330, y: 92, w: 650, h: 204, strength: 0.4, feather: 40 },
+  { x: 40, y: 318, w: 300, h: 60, strength: 0.4 },
+];
+
+/** Drawing box of a level-change chevron: its 15 units of height measure 72 px. */
+const CHEVRON_BOX = 115;
 
 export interface TierCardLabels {
   /** Ribbon at the top ("Tier reached"). */
@@ -31,6 +50,8 @@ export interface TierCardInput {
   role?: { label: string; accent?: string } | null;
   accent?: string;
   backgrounds?: ReadonlyArray<string | null | undefined>;
+  /** Episode frame chosen for the card (the one of the transformation when it has a link). */
+  frame?: FrameBackdrop | null;
   labels: TierCardLabels;
 }
 
@@ -45,9 +66,9 @@ export async function renderTierCard(
   const { labels } = input;
 
   return renderCard(W, H, options, async ({ ctx }) => {
-    const [avatar, background, wordmark] = await Promise.all([
+    const [avatar, backdrop, wordmark] = await Promise.all([
       avatarImage(images, input.avatarUrl),
-      firstImage(images, input.backgrounds ?? []),
+      loadBackdrop(images, input.frame, input.backgrounds ?? []),
       loadWordmark(images),
     ]);
     const seed = hashSeed(`${input.name}|${input.fromLevel}|${input.toLevel}`);
@@ -56,9 +77,10 @@ export async function renderTierCard(
     paintShell(ctx, palette, {
       width: W,
       height: H,
-      image: background,
+      image: backdrop.image,
       gradient: [mix(palette.bg, accent, 0.2), mix(palette.bg, accent, 0.4), palette.bg],
       angle: 35,
+      ...frameOptions(backdrop, TIER_SHADE, undefined),
       focal: { x: AV.x, y: AV.y },
       accent,
       seed,
@@ -138,30 +160,16 @@ export async function renderTierCard(
       stroke: { color: palette.ink, width: 9 },
     });
     x += fromWidth + gap;
-    // two chevrons
-    ctx.save();
+    // two chevrons: the measured chevron glyph, thickened to the weight of the numbers
     for (const [offset, color] of [
       [0, accent],
       [34, lighten(accent, 0.35)],
     ] as const) {
-      const ax = x + offset;
-      const ay = baseline - 52;
-      ctx.beginPath();
-      ctx.moveTo(ax, ay - 36);
-      ctx.lineTo(ax + 26, ay);
-      ctx.lineTo(ax, ay + 36);
-      ctx.lineTo(ax + 20, ay + 36);
-      ctx.lineTo(ax + 46, ay);
-      ctx.lineTo(ax + 20, ay - 36);
-      ctx.closePath();
-      ctx.lineJoin = "round";
-      ctx.lineWidth = 6;
-      ctx.strokeStyle = palette.ink;
-      ctx.stroke();
-      ctx.fillStyle = color;
-      ctx.fill();
+      drawIcon(ctx, "chevronRight", x + offset + 20, baseline - 52, CHEVRON_BOX, color, {
+        strokeWidth: 3.4,
+        outline: { color: palette.ink, width: 1.4 },
+      });
     }
-    ctx.restore();
     x += arrow + gap;
     drawText(ctx, to, x, baseline, {
       font: num(toSize),

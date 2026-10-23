@@ -6,6 +6,7 @@
 import type { Image, SKRSContext2D } from "@napi-rs/canvas";
 import { rgba } from "~/lib/canvas-kit";
 import { darken, lighten, mix, type RenderPalette } from "./theme";
+import { drawIcon, iconSizeForRadius } from "./icons";
 import { drawText, initialOf, num } from "./text";
 
 // ─── Randomness ───────────────────────────────────────────────────────────────
@@ -349,7 +350,7 @@ export function drawGauge(
 
 // ─── Shapes ───────────────────────────────────────────────────────────────────
 
-/** Four-point manga shine. */
+/** Four-point manga shine: the large sparkle of the highlight glyph. */
 export function drawSparkle(
   ctx: SKRSContext2D,
   cx: number,
@@ -357,34 +358,16 @@ export function drawSparkle(
   r: number,
   color: string,
 ): void {
-  const waist = r * 0.16;
-  ctx.save();
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(cx, cy - r);
-  ctx.quadraticCurveTo(cx + waist, cy - waist, cx + r, cy);
-  ctx.quadraticCurveTo(cx + waist, cy + waist, cx, cy + r);
-  ctx.quadraticCurveTo(cx - waist, cy + waist, cx - r, cy);
-  ctx.quadraticCurveTo(cx - waist, cy - waist, cx, cy - r);
-  ctx.closePath();
-  ctx.fill();
-  ctx.restore();
+  drawIcon(ctx, "sparkle", cx, cy, iconSizeForRadius("sparkle", r), color);
 }
 
-function starPath(ctx: SKRSContext2D, cx: number, cy: number, r: number): void {
-  ctx.beginPath();
-  for (let i = 0; i < 10; i++) {
-    const angle = (i * Math.PI) / 5 - Math.PI / 2;
-    const radius = i % 2 === 0 ? r : r * 0.45;
-    const px = cx + Math.cos(angle) * radius;
-    const py = cy + Math.sin(angle) * radius;
-    if (i === 0) ctx.moveTo(px, py);
-    else ctx.lineTo(px, py);
-  }
-  ctx.closePath();
-}
+/** Line of the ball outline, in glyph units: the ink ratio of the cards (about 9 % of the radius). */
+const BALL_LINE = 0.9;
 
-/** Flat Toriyama Dragon Ball: ink outline, one shade crescent, red stars, paper highlight. */
+/**
+ * Flat Toriyama Dragon Ball: the measured outline and star of the Dragon Ball glyph, one
+ * shade crescent, red stars (1 to 7, one at the centre or on a ring), paper highlight.
+ */
 export function drawBall(
   ctx: SKRSContext2D,
   palette: RenderPalette,
@@ -394,16 +377,17 @@ export function drawBall(
   stars: number,
   alpha = 1,
 ): void {
+  const size = iconSizeForRadius("ball", r);
   ctx.save();
   ctx.globalAlpha = alpha;
-  ctx.beginPath();
-  ctx.arc(cx + r * 0.1, cy + r * 0.12, r, 0, Math.PI * 2);
-  ctx.fillStyle = rgba(palette.ink, 0.55);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.fillStyle = palette.giClair;
-  ctx.fill();
+  drawIcon(ctx, "ball", cx + r * 0.1, cy + r * 0.12, size, rgba(palette.ink, 0.55), {
+    backing: rgba(palette.ink, 0.55),
+    strokeWidth: BALL_LINE,
+  });
+  drawIcon(ctx, "ball", cx, cy, size, palette.ink, {
+    backing: palette.giClair,
+    strokeWidth: BALL_LINE,
+  });
   // shade crescent: the part of the disc outside an offset disc
   ctx.save();
   ctx.beginPath();
@@ -415,64 +399,41 @@ export function drawBall(
   ctx.fillStyle = palette.giOmbre;
   ctx.fill("evenodd");
   ctx.restore();
-  // stars
   const starRadius = r * (stars === 1 ? 0.34 : 0.2);
-  ctx.fillStyle = palette.etoileRouge;
+  const starSize = iconSizeForRadius("ballStar", starRadius);
   if (stars <= 1) {
-    starPath(ctx, cx, cy, starRadius);
-    ctx.fill();
+    drawIcon(ctx, "ballStar", cx, cy, starSize, palette.etoileRouge);
   } else {
     const ring = r * 0.5;
     for (let i = 0; i < stars; i++) {
       const angle = (i * 2 * Math.PI) / stars - Math.PI / 2;
-      starPath(ctx, cx + Math.cos(angle) * ring, cy + Math.sin(angle) * ring, starRadius);
-      ctx.fill();
+      const sx = cx + Math.cos(angle) * ring;
+      const sy = cy + Math.sin(angle) * ring;
+      drawIcon(ctx, "ballStar", sx, sy, starSize, palette.etoileRouge);
     }
   }
   ctx.beginPath();
   ctx.ellipse(cx - r * 0.42, cy - r * 0.46, r * 0.2, r * 0.11, -0.6, 0, Math.PI * 2);
   ctx.fillStyle = rgba(palette.os, 0.8);
   ctx.fill();
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.lineWidth = Math.max(1.5, r * 0.09);
-  ctx.strokeStyle = palette.ink;
-  ctx.stroke();
+  drawIcon(ctx, "ball", cx, cy, size, palette.ink, { strokeWidth: BALL_LINE });
   ctx.restore();
 }
 
-/** Coin of the zeni: gold disc, ink outline, inner ring and the currency sign. */
+/** Glyph box of a coin of radius `r`: the two overlapped zeni tokens fill 15 of its 24 units. */
+const COIN_BOX_PER_RADIUS = 2.9;
+
+/** Zeni: the measured coin glyph (two engraved tokens), gold with an ink halo and hard shadow. */
 export function drawCoin(
   ctx: SKRSContext2D,
   palette: RenderPalette,
   cx: number,
   cy: number,
   r: number,
-  sign: string,
 ): void {
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(cx + r * 0.12, cy + r * 0.14, r, 0, Math.PI * 2);
-  ctx.fillStyle = rgba(palette.ink, 0.6);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.fillStyle = palette.title;
-  ctx.fill();
-  ctx.lineWidth = Math.max(2, r * 0.12);
-  ctx.strokeStyle = palette.ink;
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(cx, cy, r * 0.74, 0, Math.PI * 2);
-  ctx.lineWidth = Math.max(1, r * 0.07);
-  ctx.strokeStyle = palette.giOmbre;
-  ctx.stroke();
-  ctx.restore();
-  drawText(ctx, sign, cx, cy + r * 0.05, {
-    font: num(Math.round(r * 1.25)),
-    fill: palette.ink,
-    align: "center",
-    baseline: "middle",
+  drawIcon(ctx, "coin", cx, cy, r * COIN_BOX_PER_RADIUS, palette.title, {
+    outline: { color: palette.ink, width: 1.1 },
+    shadow: { color: rgba(palette.ink, 0.6), dx: 1, dy: 1.2 },
   });
 }
 

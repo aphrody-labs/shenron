@@ -5,10 +5,15 @@ import { logger } from "~/lib/logger";
 import { xpProgress } from "~/lib/xp";
 import { DatabaseService } from "~/db/index";
 import { cardThemes } from "~/db/schema";
+import { SettingsService } from "./SettingsService";
 import { container } from "tsyringe";
 import {
+  RENDER_WORKERS_KEY,
   imageSourceFrom,
-  renderProfileCard,
+  pickFrameBackdrop,
+  renderCardOnPool,
+  syncRenderWorkers,
+  warmRenderPool,
   withExtensions,
   type ProfileCardInput,
   type ProfileCardLabels,
@@ -118,6 +123,11 @@ export interface CardInput {
   labels?: Partial<ProfileCardLabels>;
   /** Locale of the figures (`fr`, `en`, `ja`). */
   locale?: string;
+  /**
+   * Episode frame behind a default card (no equipped banner, no purchased theme): chosen from
+   * the race, the tier or the day of the member. `false` keeps the theme banner.
+   */
+  episodeFrame?: boolean;
 }
 
 /** French card texts used while the callers do not pass `labels` (to remove with lot L2). */
@@ -151,7 +161,15 @@ export class CardService {
   /** Theme id → background path referenced by the catalog but absent from disk. */
   private readonly missing = new Map<string, string>();
 
-  constructor(@inject(BackgroundCacheService) private bgs: BackgroundCacheService) {}
+  constructor(@inject(BackgroundCacheService) private bgs: BackgroundCacheService) {
+    // the first worker is up before the first card
+    warmRenderPool();
+  }
+
+  /** Applies the `render.workers` setting to the card pool (once a minute at most). */
+  private syncPool(): Promise<void> {
+    return syncRenderWorkers(() => container.resolve(SettingsService).getRaw(RENDER_WORKERS_KEY));
+  }
 
   /**
    * Retourne la map active des thèmes (DB > fallback CARDS hardcoded).
@@ -292,7 +310,20 @@ export class CardService {
     const theme = await this.resolveTheme(cardKey);
     const bannerFile =
       input.bannerPath || (input.bannerKey ? await this.resolveBannerPath(input.bannerKey) : null);
-    return renderProfileCard(
+    await this.syncPool();
+    // A member who bought a theme or equipped a banner keeps it; the default card shows a frame
+    // of the series, chosen by race and tier or by the day.
+    const frame =
+      input.episodeFrame === false || bannerFile || cardKey !== "default"
+        ? null
+        : pickFrameBackdrop({
+            purpose: "profile",
+            seed: input.discordUser.id,
+            race: input.race?.id ?? null,
+            label: input.tier?.label ?? null,
+          });
+    return renderCardOnPool(
+      "profile",
       {
         name: input.discordUser.displayName || input.discordUser.username,
         title: input.title,
@@ -320,11 +351,13 @@ export class CardService {
           label: theme.name,
         },
         backgrounds: this.backgroundCandidates(cardKey, theme, bannerFile),
+        frame,
         progressLabel:
           input.progressLabel === undefined ? legacyProgressLabel(input.xp) : input.progressLabel,
         labels: { ...LEGACY_PROFILE_LABELS, ...input.labels },
       },
-      { images: imageSourceFrom(this.bgs), locale: input.locale },
+      { locale: input.locale },
+      { images: imageSourceFrom(this.bgs) },
     );
   }
 

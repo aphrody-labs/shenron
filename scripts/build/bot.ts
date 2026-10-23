@@ -62,6 +62,7 @@ const child = Bun.spawn(
     ".",
     "src/workers/indexer.ts",
     "src/workers/vector-builder.ts",
+    "src/workers/render.ts",
     canvas,
     canvasBinding,
     "--compile",
@@ -84,6 +85,10 @@ if ((await child.exited) !== 0) throw new Error("bot compile failed");
 // Keep the platform package beside the binary so the sealed image can copy it
 // into the runtime filesystem; this is required by Bun 1.4.4 as well as Linux.
 copyRuntimeFile(canvasBinding, join(out, `skia.${canvasPlatform}.node`));
+// Skia shapes the letter-spaced lettering of the cards with ICU data read next to the binary:
+// without `icudtl.dat` the first card drawn aborts the process (render workers included).
+const icuData = join(dirname(canvasBinding), "icudtl.dat");
+if (existsSync(icuData)) copyRuntimeFile(icuData, join(out, "icudtl.dat"));
 // Migrations are read from disk by drizzle at boot: ship them beside the binary.
 const migrations = join(BOT, "src/db/migrations");
 if (existsSync(migrations)) copyRuntimeDirectory(migrations, join(out, "src/db/migrations"));

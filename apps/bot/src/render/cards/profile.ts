@@ -6,7 +6,9 @@ import type { SKRSContext2D } from "@napi-rs/canvas";
 import { rgba } from "~/lib/canvas-kit";
 import { xpProgress, type XpProgress } from "~/lib/xp";
 import { drawAvatar, drawChip, drawCoin, drawGauge, drawPanel, hashSeed } from "../draw";
-import { avatarImage, firstImage, loadWordmark } from "../images";
+import type { ShadeZone } from "../backdrop";
+import type { FrameBackdrop } from "~/frames/types";
+import { avatarImage, loadWordmark } from "../images";
 import { renderCard } from "../surface";
 import {
   darken,
@@ -20,12 +22,23 @@ import {
 import { drawText, fitSize, formatCompact, formatInt, graphemes, num, shout, ui } from "../text";
 import type { RenderOptions, RenderedCard } from "../types";
 import type { RaceId } from "~/lib/races";
-import { drawWordmark, finishShell, paintShell, resolveOptions } from "./chrome";
+import {
+  drawWordmark,
+  finishShell,
+  frameOptions,
+  loadBackdrop,
+  paintShell,
+  resolveOptions,
+} from "./chrome";
 
 export const PROFILE_CARD_SIZE = { width: 1000, height: 360 } as const;
 
-/** Currency sign printed next to zeni amounts. */
-const ZENI_SIGN = "Z";
+/** Under the title and name, the rank and the gauge: where an episode frame must stay quiet. */
+const PROFILE_SHADE: readonly ShadeZone[] = [
+  { x: 226, y: 16, w: 540, h: 142, strength: 0.4 },
+  { x: 716, y: 10, w: 270, h: 118, strength: 0.34 },
+  { x: 226, y: 262, w: 748, h: 90, strength: 0.42 },
+];
 
 export interface ProfileCardLabels {
   level: string;
@@ -72,6 +85,8 @@ export interface ProfileCardInput {
   theme?: Partial<ProfileCardTheme>;
   /** Background candidates in order of preference (banner, theme file, shop card). */
   backgrounds?: ReadonlyArray<string | null | undefined>;
+  /** Episode frame chosen for the card: used first when it loads (see `pickFrameBackdrop`). */
+  frame?: FrameBackdrop | null;
   /** "1 200 XP to level 13", localized by the caller. */
   progressLabel?: string | null;
   /** Progress override (tests, custom curves); default `xpProgress(xp)`. */
@@ -115,10 +130,10 @@ function drawStat(
   if (coin) {
     ctx.font = num(size);
     const width = ctx.measureText(value).width;
-    const total = width + 30;
+    const total = width + 36;
     const left = x + (w - total) / 2;
-    drawCoin(ctx, palette, left + 11, y + 56, 11, ZENI_SIGN);
-    drawText(ctx, value, left + 30, y + 68, {
+    drawCoin(ctx, palette, left + 12, y + 56, 11);
+    drawText(ctx, value, left + 36, y + 68, {
       ...text,
       stroke: { color: palette.ink, width: 4 },
     });
@@ -150,9 +165,9 @@ export async function renderProfileCard(
   const { labels } = input;
 
   return renderCard(W, H, options, async ({ ctx }) => {
-    const [avatar, background, wordmark] = await Promise.all([
+    const [avatar, backdrop, wordmark] = await Promise.all([
       avatarImage(images, input.avatarUrl),
-      firstImage(images, input.backgrounds ?? []),
+      loadBackdrop(images, input.frame, input.backgrounds ?? []),
       loadWordmark(images),
     ]);
     const seed = hashSeed(`${input.name}|${input.xp}`);
@@ -161,10 +176,10 @@ export async function renderProfileCard(
     paintShell(ctx, palette, {
       width: W,
       height: H,
-      image: background,
+      image: backdrop.image,
       gradient: theme.gradient,
       angle: theme.gradientAngle,
-      overlay: theme.overlayOpacity,
+      ...frameOptions(backdrop, PROFILE_SHADE, theme.overlayOpacity),
       tint: { color: theme.aura, strength: theme.tintStrength ?? 0.08 },
       focal: { x: AV.x, y: AV.y },
       accent,
