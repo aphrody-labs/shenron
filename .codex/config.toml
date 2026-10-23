@@ -11,3 +11,7 @@ args = [
     "C:/Users/aphro/.aphrody/mcp/dbfr-db.ts",
     "redis",
 ]
+
+[mcp_servers.shenron]
+url = "https://dragonballfr.com/mcp"
+bearer_token_env_var = "SHENRON_MCP_TOKENS"
