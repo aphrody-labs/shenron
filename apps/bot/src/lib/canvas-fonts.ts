@@ -40,3 +40,20 @@ export const FONT_STACK = `'Google Sans Flex', ${FALLBACK_FAMILIES}`;
 
 /** Font string complète : `font("800 48px")`. */
 export const font = (spec: string): string => `${spec} ${FONT_STACK}`;
+
+/**
+ * Display stack (card titles): Saiyan Sans only covers capital letters, so digits, accents
+ * and other scripts fall back, glyph by glyph, to Teko then to the interface stack.
+ */
+export const DISPLAY_STACK = `'Saiyan Sans', 'Teko Bold', ${FONT_STACK}`;
+
+/** Condensed bold stack for numbers, ranks, names and scoreboards (Teko, then the interface). */
+export const NUMBER_STACK = `'Teko Bold', ${FONT_STACK}`;
+
+/** Lighter Teko cut, for secondary figures. */
+export const NUMBER_LIGHT_STACK = `'Teko SemiBold', ${FONT_STACK}`;
+
+/** `displayFont("48px")`, `numberFont("64px")`: size only; numbers are bold so CJK fallbacks match. */
+export const displayFont = (size: string): string => `${size} ${DISPLAY_STACK}`;
+export const numberFont = (size: string): string => `700 ${size} ${NUMBER_STACK}`;
+export const numberLightFont = (size: string): string => `${size} ${NUMBER_LIGHT_STACK}`;

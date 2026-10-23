@@ -74,6 +74,16 @@ if (process.argv.includes("--smoke")) {
     throw new Error(
       `Canvas fonts missing: ${[...canvasFontsMissing, ...(emojiFont ? [] : ["colour emoji"])].join(", ")}`,
     );
+  // Every card carries the wordmark of the site: a compiled release must ship the renderer
+  // pictures (`scripts/ship-canvas-assets.ts`), found through SHENRON_BOT_ASSETS_DIR.
+  const { RENDER_ASSET_FILES } = await import("./render/assets");
+  const { botFile } = await import("./lib/asset-files");
+  const renderAssetsMissing: string[] = [];
+  for (const file of RENDER_ASSET_FILES) {
+    if (!(await Bun.file(botFile(file)).exists())) renderAssetsMissing.push(file);
+  }
+  if (runtime.isCompiled && renderAssetsMissing.length > 0)
+    throw new Error(`Render assets missing: ${renderAssetsMissing.join(", ")}`);
   console.log(
     JSON.stringify({
       smoke: "ok",
@@ -81,6 +91,7 @@ if (process.argv.includes("--smoke")) {
       indexerWorker: "ready",
       canvasFonts: CANVAS_FONT_FILES.length - canvasFontsMissing.length,
       canvasFontsMissing,
+      renderAssetsMissing,
       emojiFont: emojiFont ?? null,
       runtime: `Bun ${runtime.bunVersion}`,
       platform: `${runtime.platform}-${runtime.arch}`,

@@ -359,8 +359,19 @@ export function kiScouterLabel(n: number): string {
 const REMOTE_IMAGE_MAX = 256;
 const REMOTE_IMAGE_TTL_MS = 60 * 60_000;
 const REMOTE_IMAGE_TIMEOUT_MS = 5_000;
+/** An avatar is a few tens of KiB: anything above this is not one, and is not decoded. */
+const REMOTE_IMAGE_MAX_BYTES = 4 * 1024 * 1024;
+/** How long a failed URL is not asked again (a CDN outage must not cost 5 s per card). */
+const REMOTE_FAILURE_TTL_MS = 60_000;
 const remoteImages = new Map<string, { image: Image; at: number }>();
+const remoteFailures = new Map<string, number>();
 const remoteInflight = new Map<string, Promise<Image | null>>();
+
+/** Forgets every cached and failed remote image (tests, `/reload`). */
+export function clearRemoteImageCache(): void {
+  remoteImages.clear();
+  remoteFailures.clear();
+}
 
 /**
  * Image distante (avatar Discord) décodée, partagée par toutes les cartes.
@@ -370,6 +381,8 @@ const remoteInflight = new Map<string, Promise<Image | null>>();
  * décodées. Ici le cache est borné (LRU de 256 entrées, 1 h), les demandes
  * simultanées d'une même URL partagent un seul téléchargement, et un CDN lent
  * ne bloque pas un rendu plus de 5 s (`null` : l'appelant dessine son repli).
+ * Une URL en échec n'est pas redemandée pendant une minute, et une réponse de
+ * plus de 4 Mio n'est pas décodée.
  */
 export async function loadRemoteImage(url: string): Promise<Image | null> {
   const hit = remoteImages.get(url);
@@ -378,13 +391,18 @@ export async function loadRemoteImage(url: string): Promise<Image | null> {
     remoteImages.set(url, hit);
     return hit.image;
   }
+  const failedAt = remoteFailures.get(url);
+  if (failedAt !== undefined && Date.now() - failedAt < REMOTE_FAILURE_TTL_MS) return null;
   const pending = remoteInflight.get(url);
   if (pending) return pending;
   const task = (async () => {
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(REMOTE_IMAGE_TIMEOUT_MS) });
-      if (!res.ok) return null;
-      const image = await loadImage(Buffer.from(await res.arrayBuffer()));
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const bytes = Buffer.from(await res.arrayBuffer());
+      if (bytes.length > REMOTE_IMAGE_MAX_BYTES) throw new Error("image too large");
+      const image = await loadImage(bytes);
+      remoteFailures.delete(url);
       remoteImages.set(url, { image, at: Date.now() });
       while (remoteImages.size > REMOTE_IMAGE_MAX) {
         const oldest = remoteImages.keys().next().value;
@@ -393,6 +411,11 @@ export async function loadRemoteImage(url: string): Promise<Image | null> {
       }
       return image;
     } catch {
+      remoteFailures.set(url, Date.now());
+      if (remoteFailures.size > REMOTE_IMAGE_MAX) {
+        const oldest = remoteFailures.keys().next().value;
+        if (oldest !== undefined) remoteFailures.delete(oldest);
+      }
       return null;
     } finally {
       remoteInflight.delete(url);
