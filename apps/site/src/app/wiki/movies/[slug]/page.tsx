@@ -117,6 +117,9 @@ export default async function FilmPage({ params }: { params: Promise<{ slug: str
         players={m.players}
         entityType="movie"
         entityId={m.id}
+        title={`${nature} : ${m.title ?? ""}`}
+        poster={m.poster ? assetUrl(m.poster) : undefined}
+        subtitles={m.subtitles ?? undefined}
         vo={
           m.stream_url && m.subtitles?.length
             ? {

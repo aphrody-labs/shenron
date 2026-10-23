@@ -128,6 +128,8 @@ const episodeMetadata = z
   })
   .passthrough();
 
+const movieMetadata = episodeMetadata.pick({ subtitles: true }).passthrough();
+
 export function validateCatalogEditorialBody(
   table: string,
   body: Record<string, unknown>,
@@ -176,8 +178,10 @@ export function validateCatalogEditorialBody(
       return { ok: false as const, fields: ["readerExtent"] };
     return { ok: true as const, value: body };
   }
-  if (table !== "db_episodes") return { ok: true as const, value: body };
-  const parsed = episodeMetadata.safeParse(body);
+  const metadata =
+    table === "db_episodes" ? episodeMetadata : table === "db_movies" ? movieMetadata : null;
+  if (!metadata) return { ok: true as const, value: body };
+  const parsed = metadata.safeParse(body);
   if (!parsed.success) {
     return {
       ok: false as const,
