@@ -24,6 +24,8 @@ export type ZeniSource =
   | "shop_refund"
   | "admin"
   | "fusion"
+  /** Arène Shenron Activity round settled by `api/activity.ts` (bounded, signed, idempotent). */
+  | "activity"
   | "other";
 
 export interface GainContext {

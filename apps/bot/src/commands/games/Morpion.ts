@@ -43,6 +43,7 @@ import {
   duelStakeError,
   grantLine,
   opponentError,
+  playerRewardLine,
   resolveChallengeClick,
   stakeSummary,
   statusColor,
@@ -430,13 +431,19 @@ export class MorpionCommand {
     interaction: ButtonInteraction,
   ): Promise<EmbedBuilder> {
     const vsBot = game.playerO === MORPION_BOT;
+    const lang = await this.settings.getLanguage();
+    const label = vsBot ? "morpion" : "morpion (duel)";
     if (outcome.kind === "draw") {
       if (game.stake > 0)
         await this.rewards.payStakes("draw", game.playerX, game.playerO, game.stake);
-      return buildEmbed(game, "draw", {
-        result:
-          game.stake > 0 ? `Mises rendues (**${formatZeni(game.stake)}** chacun).` : "Aucun gain.",
-      });
+      const lines = game.stake > 0 ? [`Mises rendues (**${formatZeni(game.stake)}** chacun).`] : [];
+      for (const userId of [game.playerX, game.playerO]) {
+        if (userId === MORPION_BOT) continue;
+        const xp = await this.rewards.grantGameXp({ userId, outcome: "draw", game: label });
+        const line = playerRewardLine(lang, userId, xp);
+        if (line) lines.push(line);
+      }
+      return buildEmbed(game, "draw", { result: lines.join("\n") || "Aucun gain." });
     }
 
     const winnerId = outcome.mark === "X" ? game.playerX : game.playerO;
@@ -444,39 +451,61 @@ export class MorpionCommand {
 
     if (game.stake > 0) {
       await this.rewards.payStakes("win", winnerId, loserId, game.stake);
-      return buildEmbed(game, "won", {
-        winnerId,
-        result: `<@${winnerId}> remporte le pot : **${formatZeniDelta(game.stake * 2)}**.`,
+      const lines = [`<@${winnerId}> remporte le pot : **${formatZeniDelta(game.stake * 2)}**.`];
+      const winnerXp = await this.rewards.grantGameXp({
+        userId: winnerId,
+        outcome: "win",
+        game: label,
+        opponentId: loserId,
       });
+      const loserXp = await this.rewards.grantGameXp({
+        userId: loserId,
+        outcome: "play",
+        game: label,
+      });
+      for (const line of [
+        playerRewardLine(lang, winnerId, winnerXp),
+        playerRewardLine(lang, loserId, loserXp),
+      ]) {
+        if (line) lines.push(line);
+      }
+      return buildEmbed(game, "won", { winnerId, result: lines.join("\n") });
     }
 
     const [baseWin, baseLoss] = await this.baseRewards();
 
     if (winnerId === MORPION_BOT) {
       const charged = baseLoss > 0 && (await this.eco.removeZeni(loserId, baseLoss));
-      return buildEmbed(game, "won", {
-        winnerId,
-        result: charged ? `<@${loserId}> **${formatZeniDelta(-baseLoss)}**` : "Aucune pénalité.",
-      });
+      const xp = await this.rewards.grantGameXp({ userId: loserId, outcome: "play", game: label });
+      const line = playerRewardLine(lang, loserId, xp, charged ? -baseLoss : 0);
+      return buildEmbed(game, "won", { winnerId, result: line || "Aucune pénalité." });
     }
 
-    const label = vsBot ? "morpion" : "morpion (duel)";
     const grant = await this.rewards.grantWin({
       userId: winnerId,
       amount: baseWin,
       opponentId: vsBot ? undefined : loserId,
       game: label,
     });
-    let result = grantLine(grant, winnerId);
-    if (grant.paid === 0) return buildEmbed(game, "won", { winnerId, result });
-    if (!vsBot && baseLoss > 0 && (await this.eco.removeZeni(loserId, baseLoss))) {
-      result += ` · <@${loserId}> **${formatZeniDelta(-baseLoss)}**`;
+    let result = grantLine(grant, winnerId, undefined, lang);
+    if (!vsBot) {
+      const charged =
+        grant.paid > 0 && baseLoss > 0 && (await this.eco.removeZeni(loserId, baseLoss));
+      const loserXp = await this.rewards.grantGameXp({
+        userId: loserId,
+        outcome: "play",
+        game: label,
+      });
+      const loserLine = playerRewardLine(lang, loserId, loserXp, charged ? -baseLoss : 0);
+      if (loserLine) result += `\n${loserLine}`;
     }
-    await this.msg.publish(
-      "zeni_game_win",
-      { user: `<@${winnerId}>`, zeni: grant.paid, game: label },
-      interaction.client,
-    );
+    if (grant.paid > 0) {
+      await this.msg.publish(
+        "zeni_game_win",
+        { user: `<@${winnerId}>`, zeni: grant.paid, game: label },
+        interaction.client,
+      );
+    }
     return buildEmbed(game, "won", { winnerId, result });
   }
 

@@ -1717,3 +1717,40 @@ export const dbAssetsRelations = relations(dbAssets, ({ one }) => ({
     references: [dbLicenses.key],
   }),
 }));
+
+/**
+ * Arène Shenron Activity: one row per `activity:<instanceId>:<roundId>:<userId>` key, written
+ * before anything is paid. The primary key is the idempotency guard: a receipt replayed (or a retry
+ * after a lost response) finds its rows and pays nothing again. `pending` marks a settlement that
+ * began and did not finish (a crash between the claim and the credit): it stays unpaid, never paid
+ * twice. Migration 0030.
+ */
+export const activitySettlements = sqliteTable(
+  "activity_settlements",
+  {
+    idempotencyKey: text("idempotency_key").primaryKey(),
+    instanceId: text("instance_id").notNull(),
+    roundId: text("round_id").notNull(),
+    userId: text("user_id").notNull(),
+    game: text("game").notNull(),
+    rank: integer("rank").notNull(),
+    /** Zeni the signed receipt asked for. */
+    requested: integer("requested").notNull().default(0),
+    /** Zeni really credited (daily budget and account checks applied). */
+    granted: integer("granted").notNull().default(0),
+    /** XP of the game credited by the level system. */
+    xp: integer("xp").notNull().default(0),
+    reason: text("reason").notNull(),
+    status: text("status", { enum: ["pending", "settled"] })
+      .notNull()
+      .default("pending"),
+    settledAt: integer("settled_at", { mode: "timestamp_ms" }),
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(unixepoch() * 1000)`),
+  },
+  (t) => [
+    index("idx_activity_settlements_round").on(t.instanceId, t.roundId),
+    index("idx_activity_settlements_user").on(t.userId, t.createdAt),
+  ],
+);

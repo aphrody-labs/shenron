@@ -10,10 +10,13 @@
  *    `@aphrody/shenron-db/bot-schema`): mirrored by primary key, so PostgreSQL ends up equal to
  *    SQLite (insert, update, delete), one transaction per table, bounded batches, read back.
  *
+ * The copy itself is `@aphrody/shenron-db/replica`, the engine the bot runs every few minutes
+ * (`apps/bot/src/services/ReplicaSyncService.ts`); this script is the manual, whole-table,
+ * checkpointed entry point to it.
+ *
  * Without `--apply` nothing is written: the run prints the gap per table (`--dry-run` says so
  * explicitly). Usage and flags: see `usage()` and docs/operations/sync-bot-runtime.md.
  */
-import { createHash } from "node:crypto";
 import {
   chmodSync,
   closeSync,
@@ -30,64 +33,23 @@ import postgres from "postgres";
 import { BOT_STATE_REPLICA_NAMES } from "@aphrody/shenron-db/bot-schema";
 import {
   DEFAULT_BATCH_SIZE,
+  JOURNAL_TABLES,
   MAX_BATCH_SIZE,
   emptyReport,
+  formatStateReport,
   mirrorTable,
-  type Row as StateRow,
-  type SqliteColumn,
+  readSqliteSnapshot,
+  syncJournals,
+  type JournalReport,
+  type JournalTable,
+  type SqlClient,
   type TableReport,
-} from "./sync-bot-runtime-state";
+} from "@aphrody/shenron-db/replica";
 
-const MAX_ID = 0x3fffffffffffffffn;
-const TABLES = ["action_logs", "rag_eval_history"] as const;
-type Table = (typeof TABLES)[number];
-type Row = Record<string, string | number | null> & { id: number; created_at: number };
+export { formatStateReport, sameRecord, stablePostgresId } from "@aphrody/shenron-db/replica";
 
-const COLUMNS: Record<Table, readonly string[]> = {
-  action_logs: ["id", "user_id", "moderator_id", "action", "reason", "meta", "created_at"],
-  rag_eval_history: [
-    "id",
-    "recall_1",
-    "recall_3",
-    "recall_5",
-    "recall_10",
-    "mrr",
-    "ndcg",
-    "duration_ms",
-    "cases_count",
-    "sidecar_online",
-    "misses_count",
-    "misses_json",
-    "created_at",
-  ],
-};
-
-/** Negative IDs cannot collide with the positive IDs of the historical import. */
-export function stablePostgresId(table: Table, row: Row, source: string): string {
-  if (!Number.isSafeInteger(row.id) || row.id < 1)
-    throw new Error(`${table}: invalid SQLite row ID`);
-  const payload = JSON.stringify([source, table, row.id]);
-  const digest = createHash("sha256").update(payload).digest();
-  return (-((digest.readBigUInt64BE(0) & MAX_ID) + 1n)).toString();
-}
-
-export function sameRecord(table: Table, source: Row, target: Record<string, unknown>): boolean {
-  return COLUMNS[table].every((column) => {
-    if (column === "id") return true;
-    const left = source[column];
-    const right = target[column];
-    return left === null ? right === null : String(left) === String(right);
-  });
-}
-
-function fingerprintRow(table: Table, row: Record<string, unknown>, id: string): string {
-  return JSON.stringify([
-    id,
-    ...COLUMNS[table]
-      .filter((column) => column !== "id")
-      .map((column) => (row[column] === null ? null : String(row[column]))),
-  ]);
-}
+const TABLES = JOURNAL_TABLES;
+type Table = JournalTable;
 
 type Checkpoint = {
   sourceId: string;
@@ -254,121 +216,6 @@ function saveCheckpoint(path: string, data: Checkpoint, create: boolean): void {
   if (!create) renameSync(target, path);
 }
 
-type JournalReport = Record<
-  Table,
-  {
-    source: number;
-    existing: number;
-    missing: number;
-    written: number;
-    fingerprintMatch?: boolean;
-  }
->;
-
-/** The append-only journals: unchanged logic, one row at a time, refusing any divergent row. */
-async function syncJournals(
-  sql: postgres.Sql,
-  options: Options,
-  tables: readonly Table[],
-  snapshots: ReadonlyMap<Table, Row[]>,
-): Promise<JournalReport> {
-  const { apply, schema } = options;
-  const report: JournalReport = {
-    action_logs: { source: 0, existing: 0, missing: 0, written: 0 },
-    rag_eval_history: { source: 0, existing: 0, missing: 0, written: 0 },
-  };
-  const sourceDigests = new Map(tables.map((table) => [table, createHash("sha256")]));
-  const targetDigests = new Map(tables.map((table) => [table, createHash("sha256")]));
-  const target = sql(schema);
-  for (const table of tables) {
-    const rows = snapshots.get(table) ?? [];
-    report[table].source = rows.length;
-    for (const row of rows) {
-      const id = stablePostgresId(table, row, options.sourceId);
-      sourceDigests.get(table)!.update(fingerprintRow(table, row, id));
-      const found =
-        table === "action_logs"
-          ? await sql`SELECT * FROM ${target}.action_logs WHERE id = ${id}`
-          : await sql`SELECT * FROM ${target}.rag_eval_history WHERE id = ${id}`;
-      if (found.length) {
-        if (!sameRecord(table, row, found[0]))
-          throw new Error(`${table}: ID collision or divergent row`);
-        targetDigests.get(table)!.update(fingerprintRow(table, found[0], id));
-        report[table].existing++;
-        continue;
-      }
-      report[table].missing++;
-      if (!apply) continue;
-      if (table === "action_logs") {
-        await sql`INSERT INTO ${target}.action_logs
-          (id,user_id,moderator_id,action,reason,meta,created_at)
-          VALUES (${id},${row.user_id},${row.moderator_id},${row.action},${row.reason},${row.meta},${row.created_at})
-          ON CONFLICT (id) DO NOTHING`;
-      } else {
-        await sql`INSERT INTO ${target}.rag_eval_history
-          (id,recall_1,recall_3,recall_5,recall_10,mrr,ndcg,duration_ms,cases_count,sidecar_online,misses_count,misses_json,created_at)
-          VALUES (${id},${row.recall_1},${row.recall_3},${row.recall_5},${row.recall_10},${row.mrr},${row.ndcg},${row.duration_ms},${row.cases_count},${row.sidecar_online},${row.misses_count},${row.misses_json},${row.created_at})
-          ON CONFLICT (id) DO NOTHING`;
-      }
-      const verified =
-        table === "action_logs"
-          ? await sql`SELECT * FROM ${target}.action_logs WHERE id = ${id}`
-          : await sql`SELECT * FROM ${target}.rag_eval_history WHERE id = ${id}`;
-      if (verified.length !== 1 || !sameRecord(table, row, verified[0]))
-        throw new Error(`${table}: PostgreSQL readback mismatch`);
-      targetDigests.get(table)!.update(fingerprintRow(table, verified[0], id));
-      report[table].written++;
-    }
-    const sourceFingerprint = sourceDigests.get(table)!.digest("hex");
-    const targetFingerprint = targetDigests.get(table)!.digest("hex");
-    report[table].fingerprintMatch = sourceFingerprint === targetFingerprint;
-    if (
-      apply &&
-      (report[table].existing + report[table].written !== report[table].source ||
-        !report[table].fingerprintMatch)
-    )
-      throw new Error(`${table}: count or fingerprint mismatch after PostgreSQL readback`);
-  }
-  return report;
-}
-
-interface StateSnapshot {
-  columns: SqliteColumn[];
-  rows: StateRow[];
-}
-
-/** One line per table for the operator; the JSON on stdout stays the machine-readable record. */
-export function formatStateReport(reports: Record<string, TableReport>): string {
-  const lines = ["table                   status    sqlite  pg      +insert ~update -delete  note"];
-  for (const [table, report] of Object.entries(reports)) {
-    const notes = [
-      report.reason,
-      report.duplicates ? `${report.duplicates} duplicated key(s)` : undefined,
-      report.sqliteOnlyColumns.length
-        ? `not in PostgreSQL: ${report.sqliteOnlyColumns.join(",")}`
-        : undefined,
-      Object.keys(report.changedColumns).length
-        ? `changed: ${Object.entries(report.changedColumns)
-            .map(([column, count]) => `${column}(${count})`)
-            .join(",")}`
-        : undefined,
-    ].filter(Boolean);
-    lines.push(
-      [
-        table.padEnd(23),
-        report.status.padEnd(9),
-        String(report.source).padEnd(7),
-        String(report.target).padEnd(7),
-        String(report.insert).padEnd(7),
-        String(report.update).padEnd(7),
-        String(report.delete).padEnd(8),
-        notes.join("; "),
-      ].join(" "),
-    );
-  }
-  return lines.join("\n");
-}
-
 async function main() {
   const options = parseOptions(process.argv.slice(2), process.env, process.platform);
   const { path, sourceId, checkpointPath, apply, prepare } = options;
@@ -379,52 +226,39 @@ async function main() {
   const expected = expectedCheckpoint(path, sourceId);
   const checkpoint = apply ? readCheckpoint(checkpointPath!, expected) : expected;
   const sqlite = new Database(path, { readonly: true, create: false });
-  const snapshots = new Map<Table, Row[]>();
-  const stateSnapshots = new Map<string, StateSnapshot>();
+  let snapshot;
   try {
-    sqlite.exec("BEGIN");
-    for (const table of journalTables) {
-      const columns = COLUMNS[table].join(", ");
-      snapshots.set(
-        table,
-        sqlite.query<Row, []>(`SELECT ${columns} FROM ${table} ORDER BY id`).all(),
-      );
-    }
-    for (const table of stateTables) {
-      const columns = sqlite
-        .query<SqliteColumn, [string]>("SELECT name, pk FROM pragma_table_info(?)")
-        .all(table);
-      if (columns.length === 0) continue;
-      const names = columns.map((column) => `"${column.name}"`).join(", ");
-      stateSnapshots.set(table, {
-        columns,
-        rows: sqlite.query<StateRow, []>(`SELECT ${names} FROM "${table}"`).all(),
-      });
-    }
-    sqlite.exec("COMMIT");
+    snapshot = readSqliteSnapshot(sqlite, { journals: journalTables, state: stateTables });
   } finally {
     sqlite.close();
   }
+  const snapshots = snapshot.journals;
 
   const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
+  const client: SqlClient = sql;
   const errors: string[] = [];
   let journals: JournalReport | undefined;
   const state: Record<string, TableReport> = {};
   try {
     if (journalTables.length > 0) {
       try {
-        journals = await syncJournals(sql, options, journalTables, snapshots);
+        journals = await syncJournals(
+          client,
+          { apply, schema: options.schema, sourceId, batchSize: options.batchSize },
+          journalTables,
+          snapshots,
+        );
       } catch (error) {
         errors.push(error instanceof Error ? error.message : String(error));
       }
     }
     for (const table of stateTables) {
-      const snapshot = stateSnapshots.get(table);
-      if (!snapshot) {
+      const tableSnapshot = snapshot.state.get(table);
+      if (!tableSnapshot) {
         state[table] = { ...emptyReport(0), reason: "table does not exist in SQLite" };
         continue;
       }
-      state[table] = await mirrorTable(sql, table, snapshot.columns, snapshot.rows, {
+      state[table] = await mirrorTable(client, table, tableSnapshot.columns, tableSnapshot.rows, {
         schema: options.schema,
         apply,
         keepAbsent: options.keepAbsent,

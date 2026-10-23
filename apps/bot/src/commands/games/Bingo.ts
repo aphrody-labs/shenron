@@ -31,7 +31,9 @@ import {
   closedChallenge,
   duelStakeError,
   opponentError,
+  playerRewardLine,
   resolveChallengeClick,
+  rewardText,
   runMessageGame,
   statusColor,
   type EndReason,
@@ -407,16 +409,32 @@ export class BingoCommand {
   ): Promise<string[]> {
     const duel = session.players.length === 2;
     const [a, b] = session.players as [string, string?];
+    const lang = await this.settings.getLanguage();
+    const label = duel ? "bingo (duel)" : "bingo";
+    // Participation counts only after a real guess: opening a game and walking away earns nothing.
+    const played = (userId: string) => (session.attempts.get(userId) ?? 0) > 0;
     if (reason !== "won" || !winnerId) {
       const head = reason === "timeout" ? "Temps écoulé." : "Plus aucun essai.";
       if (duel) {
         if (session.stake > 0) await this.rewards.payStakes("draw", a, b!, session.stake);
-        return [head, session.stake > 0 ? "Mises rendues." : "Aucun gain."];
+        const xpLines: string[] = [];
+        for (const userId of session.players) {
+          if (!played(userId)) continue;
+          const xp = await this.rewards.grantGameXp({ userId, outcome: "draw", game: label });
+          const line = playerRewardLine(lang, userId, xp);
+          if (line) xpLines.push(line);
+        }
+        const stakeLine =
+          session.stake > 0 ? ["Mises rendues."] : xpLines.length === 0 ? ["Aucun gain."] : [];
+        return [head, ...stakeLine, ...xpLines];
       }
-      if (session.lossPenalty > 0 && (await this.eco.removeZeni(a, session.lossPenalty))) {
-        return [head, `<@${a}> **${formatZeniDelta(-session.lossPenalty)}**`];
-      }
-      return [head];
+      const charged =
+        session.lossPenalty > 0 && (await this.eco.removeZeni(a, session.lossPenalty));
+      const xp = played(a)
+        ? await this.rewards.grantGameXp({ userId: a, outcome: "play", game: label })
+        : undefined;
+      const line = playerRewardLine(lang, a, xp, charged ? -session.lossPenalty : 0);
+      return line ? [head, line] : [head];
     }
 
     const lines: string[] = [];
@@ -429,17 +447,31 @@ export class BingoCommand {
       userId: winnerId,
       amount: session.winReward,
       opponentId: loserId,
-      game: duel ? "bingo (duel)" : "bingo",
+      game: label,
     });
     if (grant.paid > 0) {
-      lines.push(`${duel ? "Bonus" : `<@${winnerId}>`} **${formatZeniDelta(grant.paid)}**`);
+      // Solo: one line with the XP and the zeni. Duel: the zeni are a bonus on top of the pot.
+      lines.push(
+        duel
+          ? `Bonus **${formatZeniDelta(grant.paid)}**`
+          : `<@${winnerId}> ${rewardText(lang, { xp: grant.xp, zeni: grant.paid })}`,
+      );
       await this.msg.publish(
         "zeni_game_win",
-        { user: `<@${winnerId}>`, zeni: grant.paid, game: duel ? "bingo (duel)" : "bingo" },
+        { user: `<@${winnerId}>`, zeni: grant.paid, game: label },
         client,
       );
     } else if (grant.blocked) {
       lines.push(`Bonus non versé : ${REWARD_BLOCK_LABELS[grant.blocked]}.`);
+    }
+    if (duel || grant.paid === 0) {
+      const winnerLine = playerRewardLine(lang, winnerId, grant.xp);
+      if (winnerLine) lines.push(winnerLine);
+    }
+    if (loserId && played(loserId)) {
+      const xp = await this.rewards.grantGameXp({ userId: loserId, outcome: "play", game: label });
+      const loserLine = playerRewardLine(lang, loserId, xp);
+      if (loserLine) lines.push(loserLine);
     }
     return lines;
   }

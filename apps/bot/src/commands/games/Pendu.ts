@@ -33,6 +33,7 @@ import {
   duelStakeError,
   grantLine,
   opponentError,
+  playerRewardLine,
   resolveChallengeClick,
   runMessageGame,
   stakeSummary,
@@ -83,6 +84,8 @@ interface PenduSession {
   winReward: number;
   lossPenalty: number;
   lastMove: string | null;
+  /** Players who made at least one valid move: only they earn participation XP. */
+  moved: Set<string>;
 }
 
 interface PenduConfig {
@@ -366,6 +369,7 @@ export class PenduCommand {
       winReward: config.winReward,
       lossPenalty: config.lossPenalty,
       lastMove: null,
+      moved: new Set(),
     };
   }
 
@@ -417,6 +421,7 @@ export class PenduCommand {
         ? `${who} trouve le mot entier.`
         : `${who} propose **${guess.toUpperCase()}** : raté, ${r.cost} vie${r.cost > 1 ? "s" : ""} perdue${r.cost > 1 ? "s" : ""}.`;
     }
+    session.moved.add(m.author.id);
     const outcome = evaluatePendu(state);
     if (outcome === "won") return { kind: "won", winnerId: m.author.id };
     if (outcome === "lost") return { kind: "lost" };
@@ -429,6 +434,7 @@ export class PenduCommand {
     client: Client,
   ): Promise<string[]> {
     const userId = session.players[0]!;
+    const lang = await this.settings.getLanguage();
     if (reason === "won") {
       const grant = await this.rewards.grantWin({
         userId,
@@ -442,12 +448,17 @@ export class PenduCommand {
           client,
         );
       }
-      return [grantLine(grant, userId)];
+      return [grantLine(grant, userId, undefined, lang)];
     }
     const lines = [reason === "timeout" ? "Temps écoulé." : "Plus aucune Dragon Ball."];
-    if (session.lossPenalty > 0 && (await this.eco.removeZeni(userId, session.lossPenalty))) {
-      lines.push(`<@${userId}> **${formatZeniDelta(-session.lossPenalty)}**`);
-    }
+    const charged =
+      session.lossPenalty > 0 && (await this.eco.removeZeni(userId, session.lossPenalty));
+    // Participation counts only after a real move: opening a game and walking away earns nothing.
+    const xp = session.moved.has(userId)
+      ? await this.rewards.grantGameXp({ userId, outcome: "play", game: "pendu" })
+      : undefined;
+    const line = playerRewardLine(lang, userId, xp, charged ? -session.lossPenalty : 0);
+    if (line) lines.push(line);
     return lines;
   }
 
@@ -458,19 +469,50 @@ export class PenduCommand {
     client: Client,
   ): Promise<string[]> {
     const [a, b] = session.players as [string, string];
+    const lang = await this.settings.getLanguage();
     if (reason !== "won" || !winnerId) {
       if (session.stake > 0) await this.rewards.payStakes("draw", a, b, session.stake);
-      return [
+      const lines = [
         reason === "timeout"
           ? "Temps écoulé, personne n'a trouvé."
           : "Plus aucune Dragon Ball, personne n'a trouvé.",
-        session.stake > 0 ? "Mises rendues." : "Aucun gain.",
       ];
+      const xpLines: string[] = [];
+      for (const userId of session.players) {
+        if (!session.moved.has(userId)) continue;
+        const xp = await this.rewards.grantGameXp({
+          userId,
+          outcome: "draw",
+          game: "pendu (duel)",
+        });
+        const line = playerRewardLine(lang, userId, xp);
+        if (line) xpLines.push(line);
+      }
+      if (session.stake > 0) lines.push("Mises rendues.");
+      else if (xpLines.length === 0) lines.push("Aucun gain.");
+      return [...lines, ...xpLines];
     }
     const loserId = winnerId === a ? b : a;
+    // The loser earns participation XP only after a real move.
+    const loserXp = session.moved.has(loserId)
+      ? await this.rewards.grantGameXp({ userId: loserId, outcome: "play", game: "pendu (duel)" })
+      : undefined;
     if (session.stake > 0) {
       await this.rewards.payStakes("win", winnerId, loserId, session.stake);
-      return [`<@${winnerId}> remporte le pot : **${formatZeniDelta(session.stake * 2)}**.`];
+      const lines = [`<@${winnerId}> remporte le pot : **${formatZeniDelta(session.stake * 2)}**.`];
+      const winnerXp = await this.rewards.grantGameXp({
+        userId: winnerId,
+        outcome: "win",
+        game: "pendu (duel)",
+        opponentId: loserId,
+      });
+      for (const line of [
+        playerRewardLine(lang, winnerId, winnerXp),
+        playerRewardLine(lang, loserId, loserXp),
+      ]) {
+        if (line) lines.push(line);
+      }
+      return lines;
     }
     const grant = await this.rewards.grantWin({
       userId: winnerId,
@@ -478,16 +520,20 @@ export class PenduCommand {
       opponentId: loserId,
       game: "pendu (duel)",
     });
-    const lines = [grantLine(grant, winnerId)];
-    if (grant.paid === 0) return lines;
-    if (session.lossPenalty > 0 && (await this.eco.removeZeni(loserId, session.lossPenalty))) {
-      lines.push(`<@${loserId}> **${formatZeniDelta(-session.lossPenalty)}**`);
+    const lines = [grantLine(grant, winnerId, undefined, lang)];
+    const charged =
+      grant.paid > 0 &&
+      session.lossPenalty > 0 &&
+      (await this.eco.removeZeni(loserId, session.lossPenalty));
+    const loserLine = playerRewardLine(lang, loserId, loserXp, charged ? -session.lossPenalty : 0);
+    if (loserLine) lines.push(loserLine);
+    if (grant.paid > 0) {
+      await this.msg.publish(
+        "zeni_game_win",
+        { user: `<@${winnerId}>`, zeni: grant.paid, game: "pendu (duel)" },
+        client,
+      );
     }
-    await this.msg.publish(
-      "zeni_game_win",
-      { user: `<@${winnerId}>`, zeni: grant.paid, game: "pendu (duel)" },
-      client,
-    );
     return lines;
   }
 

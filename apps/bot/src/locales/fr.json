@@ -154,5 +154,25 @@
         "description": "Commandes qui ne relèvent d'aucune autre catégorie"
       }
     }
+  },
+  "games": {
+    "reward": {
+      "xp": "+{xp} XP",
+      "level": "Niveau {from} → {to}",
+      "capped": "Plafond d'XP de jeu atteint sur 24 h."
+    }
+  },
+  "arena": {
+    "command": {
+      "name": "arene",
+      "description": "Ouvre l'Arène Shenron, l'Activité de quiz Budokai, dans ton salon vocal"
+    },
+    "soon": {
+      "title": "L'Arène Shenron arrive bientôt",
+      "body": "L'Activité « Arène Shenron » (un quiz Budokai à plusieurs, joué directement dans un salon vocal) n'est pas encore ouverte sur ce serveur. Elle sera lancée dès que Discord aura validé l'application."
+    },
+    "voice": {
+      "required": "Rejoins d'abord un salon vocal, puis relance la commande : l'Arène se joue à plusieurs, dans le vocal."
+    }
   }
 }

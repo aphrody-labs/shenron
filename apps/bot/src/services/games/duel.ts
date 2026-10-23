@@ -17,6 +17,8 @@ import {
   type User,
 } from "discord.js";
 import { COLORS, DBZ_COLORS } from "~/lib/embeds";
+import type { GameXpGrant } from "~/lib/game-xp";
+import { formatNumber, t, type BotLang } from "~/lib/i18n";
 import { logger } from "~/lib/logger";
 import { formatZeni, formatZeniDelta } from "~/lib/zeni";
 import { REWARD_BLOCK_LABELS, type RewardBlock } from "./anti-farm";
@@ -246,15 +248,53 @@ export function stakeSummary(stake: number, win: number, loss = 0): string {
 
 // ─── Results ──────────────────────────────────────────────────────────────
 
-/** Result line of a base reward (`GameRewardService.grantWin`). */
+/**
+ * What a result really gave, in the order `+X XP · +Y Ƶ · Level N → M`: only the parts that
+ * exist, the amounts in bold. When the daily XP cap swallowed the award, says so instead of
+ * showing a silent zero. Empty when there is nothing to show.
+ */
+export function rewardText(lang: BotLang, parts: { xp?: GameXpGrant; zeni?: number }): string {
+  const { xp, zeni } = parts;
+  const out: string[] = [];
+  if (xp && xp.xp > 0)
+    out.push(`**${t(lang, "games.reward.xp", { xp: formatNumber(lang, xp.xp) })}**`);
+  if (zeni) out.push(`**${formatZeniDelta(zeni)}**`);
+  if (xp?.levelUp) {
+    out.push(t(lang, "games.reward.level", { from: xp.oldLevel, to: xp.newLevel }));
+  }
+  if (xp && xp.xp <= 0 && xp.capped) out.push(t(lang, "games.reward.capped"));
+  return out.join(" · ");
+}
+
+/** Result line of one player (`<@id> +X XP · −Y Ƶ`); empty when there is nothing to show. */
+export function playerRewardLine(
+  lang: BotLang,
+  userId: string,
+  xp: GameXpGrant | undefined,
+  zeni?: number,
+): string {
+  const text = rewardText(lang, { xp, zeni });
+  return text ? `<@${userId}> ${text}` : "";
+}
+
+/**
+ * Result line of a base reward (`GameRewardService.grantWin`), with the XP given with it: the
+ * win when it is paid, participation when a cap blocks the zeni.
+ */
 export function grantLine(
-  grant: { paid: number; blocked: RewardBlock | null },
+  grant: { paid: number; blocked: RewardBlock | null; xp?: GameXpGrant },
   winnerId: string,
   prefix?: string,
+  lang: BotLang = "fr",
 ): string {
-  if (grant.paid > 0) return `${prefix ?? `<@${winnerId}>`} **${formatZeniDelta(grant.paid)}**`;
-  if (grant.blocked) return `Victoire sans gain : ${REWARD_BLOCK_LABELS[grant.blocked]}.`;
-  return "Aucun gain.";
+  const who = prefix ?? `<@${winnerId}>`;
+  if (grant.paid > 0) return `${who} ${rewardText(lang, { xp: grant.xp, zeni: grant.paid })}`;
+  const xpOnly = rewardText(lang, { xp: grant.xp });
+  if (grant.blocked) {
+    const reason = `Victoire sans gain : ${REWARD_BLOCK_LABELS[grant.blocked]}.`;
+    return xpOnly ? `${reason}\n${who} ${xpOnly}` : reason;
+  }
+  return xpOnly ? `${who} ${xpOnly}` : "Aucun gain.";
 }
 
 /** Embed colour of a board by status, shared by every game. */

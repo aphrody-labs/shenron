@@ -154,5 +154,25 @@
         "description": "Commands that belong to no other category"
       }
     }
+  },
+  "games": {
+    "reward": {
+      "xp": "+{xp} XP",
+      "level": "Level {from} → {to}",
+      "capped": "Game XP cap reached over 24 h."
+    }
+  },
+  "arena": {
+    "command": {
+      "name": "arena",
+      "description": "Open the Shenron Arena, the Budokai quiz Activity, in your voice channel"
+    },
+    "soon": {
+      "title": "The Shenron Arena is coming soon",
+      "body": "The “Shenron Arena” Activity (a multiplayer Budokai quiz played right inside a voice channel) is not open on this server yet. It will launch as soon as Discord has verified the application."
+    },
+    "voice": {
+      "required": "Join a voice channel first, then run the command again: the Arena is played together, in voice."
+    }
   }
 }

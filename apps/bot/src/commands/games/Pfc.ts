@@ -23,9 +23,12 @@ import {
   duelStakeError,
   grantLine,
   opponentError,
+  playerRewardLine,
+  rewardText,
   statusColor,
 } from "~/services/games/duel";
-import { formatZeni, formatZeniDelta } from "~/lib/zeni";
+import { interactionLang } from "~/lib/i18n";
+import { formatZeni } from "~/lib/zeni";
 import { SettingsService } from "~/services/SettingsService";
 import { MessageTemplateService } from "~/services/MessageTemplateService";
 import { ZENI_GAME_WIN, ZENI_GAME_LOSS_PENALTY } from "~/lib/constants";
@@ -237,6 +240,8 @@ export class PfcCommand {
     const botChoice = decideBotChoice();
     const result = resolvePfc(player, botChoice);
     const lines = [`Tu joues ${EMOJIS[player]} · le robot joue ${EMOJIS[botChoice]}`, ""];
+    // The round is an ephemeral message: it speaks the player's own language.
+    const lang = interactionLang(interaction);
     try {
       const [baseWin, baseLoss] = await Promise.all([
         this.settings.getInt("zeni.game.win", ZENI_GAME_WIN),
@@ -245,7 +250,7 @@ export class PfcCommand {
       if (result === "win") {
         // Plafonds anti-farm (victoires payées sur 24 h) + journal du salon casino.
         const grant = await this.rewards.grantWin({ userId, amount: baseWin, game: "pfc" });
-        lines.push(`**Victoire.** ${grantLine(grant, userId, "Gain")}`);
+        lines.push(`**Victoire.** ${grantLine(grant, userId, "Gain", lang)}`);
         if (grant.paid > 0) {
           await this.msg.publish(
             "zeni_game_win",
@@ -255,9 +260,12 @@ export class PfcCommand {
         }
       } else if (result === "lose") {
         const removed = baseLoss > 0 ? await this.eco.removeZeni(userId, baseLoss) : false;
-        lines.push(`**Défaite.**${removed ? ` **${formatZeniDelta(-baseLoss)}**` : ""}`);
+        const xp = await this.rewards.grantGameXp({ userId, outcome: "play", game: "pfc" });
+        const gains = rewardText(lang, { xp, zeni: removed ? -baseLoss : 0 });
+        lines.push(`**Défaite.**${gains ? ` ${gains}` : ""}`);
       } else {
-        lines.push("**Égalité.** Aucun gain.");
+        const xp = await this.rewards.grantGameXp({ userId, outcome: "draw", game: "pfc" });
+        lines.push(`**Égalité.** ${rewardText(lang, { xp }) || "Aucun gain."}`);
       }
     } catch (err) {
       logger.error({ err }, "pfc: règlement contre le robot en échec");
@@ -328,7 +336,17 @@ export class PfcCommand {
   ): Promise<string> {
     const head = `<@${duel.challenger}> ${EMOJIS[cC]} contre ${EMOJIS[oC]} <@${duel.opponent}>\n\n`;
     const outcome = resolvePfc(cC, oC);
-    if (outcome === "draw") return `${head}**Égalité.** Aucun gain.`;
+    // The result is public: it follows the language of the public announcements.
+    const lang = await this.settings.getLanguage();
+    if (outcome === "draw") {
+      const lines: string[] = [];
+      for (const userId of [duel.challenger, duel.opponent]) {
+        const xp = await this.rewards.grantGameXp({ userId, outcome: "draw", game: "pfc (duel)" });
+        const line = playerRewardLine(lang, userId, xp);
+        if (line) lines.push(line);
+      }
+      return `${head}**Égalité.** ${lines.join("\n") || "Aucun gain."}`;
+    }
     const winner = outcome === "win" ? duel.challenger : duel.opponent;
     const loser = winner === duel.challenger ? duel.opponent : duel.challenger;
 
@@ -340,7 +358,27 @@ export class PfcCommand {
         return `${head}<@${winner}> gagne — mise annulée, un des joueurs n'a plus le solde.`;
       }
       await this.rewards.payStakes("win", winner, loser, duel.stake);
-      return `${head}<@${winner}> remporte le pot de **${formatZeni(duel.stake * 2)}** · <@${loser}> perd sa mise.`;
+      const lines = [
+        `<@${winner}> remporte le pot de **${formatZeni(duel.stake * 2)}** · <@${loser}> perd sa mise.`,
+      ];
+      const winnerXp = await this.rewards.grantGameXp({
+        userId: winner,
+        outcome: "win",
+        game: "pfc (duel)",
+        opponentId: loser,
+      });
+      const loserXp = await this.rewards.grantGameXp({
+        userId: loser,
+        outcome: "play",
+        game: "pfc (duel)",
+      });
+      for (const line of [
+        playerRewardLine(lang, winner, winnerXp),
+        playerRewardLine(lang, loser, loserXp),
+      ]) {
+        if (line) lines.push(line);
+      }
+      return `${head}${lines.join("\n")}`;
     }
 
     const baseWin = await this.settings.getInt("zeni.game.win", ZENI_GAME_WIN);
@@ -357,6 +395,13 @@ export class PfcCommand {
         interaction.client,
       );
     }
-    return `${head}<@${winner}> gagne. ${grantLine(grant, winner, "Gain")}`;
+    const loserXp = await this.rewards.grantGameXp({
+      userId: loser,
+      outcome: "play",
+      game: "pfc (duel)",
+    });
+    const loserLine = playerRewardLine(lang, loser, loserXp);
+    const winnerLine = grantLine(grant, winner, "Gain", lang);
+    return `${head}<@${winner}> gagne. ${winnerLine}${loserLine ? `\n${loserLine}` : ""}`;
   }
 }

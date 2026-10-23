@@ -65,6 +65,16 @@ export interface SettingDef {
 
 export const XP_BOOST_ROLE_PREFIX = "xp.boost.role.";
 
+/** Periodic SQLite -> PostgreSQL replica of the runtime state (`ReplicaSyncService`). */
+export const REPLICA_SYNC_ENABLED = "replica.sync.enabled";
+export const REPLICA_SYNC_INTERVAL_MINUTES = "replica.sync.interval_minutes";
+export const REPLICA_SYNC_JOURNALS = "replica.sync.journals";
+export const REPLICA_SYNC_SOURCE_ID = "replica.sync.source_id";
+export const REPLICA_SYNC_DEFAULT_INTERVAL_MINUTES = 15;
+/** Identity of the database the journals were copied under on 2026-10-23: keeps their PostgreSQL ids. */
+export const REPLICA_SYNC_DEFAULT_SOURCE_ID = "dbfr-bot-20261023";
+export const REPLICA_SYNC_SOURCE_ID_PATTERN = /^[a-z0-9][a-z0-9-]{5,80}$/;
+
 /** Types de ticket — cf. `TicketService`/`Ticket.ts` (garder synchro avec l'enum `db/schema.ts#tickets.kind`). */
 export const TICKET_KINDS = ["report", "achat", "shop", "abus", "staff"] as const;
 export type TicketKind = (typeof TICKET_KINDS)[number];
@@ -912,6 +922,51 @@ export const SETTINGS_KEYS: SettingDef[] = [
     min: 0,
     max: 1000,
   },
+  // Arène Shenron (Activité Discord) : règlement des manches par `api/activity.ts`.
+  {
+    key: "features.games.arena",
+    type: "bool",
+    category: "features",
+    description:
+      "Gains de l'Activité Arène Shenron (interrupteur) : désactivé, les manches sont réglées sans rien verser",
+    default: true,
+  },
+  {
+    key: "activity.enabled",
+    type: "bool",
+    category: "features",
+    description:
+      "Lancement de l'Activité par /arena. Désactivé tant que l'application n'est pas vérifiée par Discord (réponse « bientôt »)",
+    default: false,
+  },
+  {
+    key: "activity.daily_budget",
+    type: "int",
+    category: "economy",
+    description:
+      "Zénis de jeux versables par membre sur 24 h glissantes, tous jeux confondus (budget commun, plafond dur 5 000)",
+    default: 600,
+    min: 0,
+    max: 5000,
+  },
+  {
+    key: "activity.min_account_days",
+    type: "int",
+    category: "economy",
+    description: "Âge minimal du compte Discord (jours) pour recevoir les gains de l'Activité",
+    default: 7,
+    min: 0,
+    max: 365,
+  },
+  {
+    key: "activity.min_level",
+    type: "int",
+    category: "economy",
+    description: "Niveau minimal pour recevoir des zénis de l'Activité (l'XP de jeu reste ouverte)",
+    default: 2,
+    min: 0,
+    max: 100,
+  },
   {
     key: "games.pair_reward_cap",
     type: "int",
@@ -921,6 +976,63 @@ export const SETTINGS_KEYS: SettingDef[] = [
     default: 3,
     min: 0,
     max: 100,
+  },
+  {
+    key: "games.xp.enabled",
+    type: "bool",
+    category: "economy",
+    description:
+      "Les mini-jeux donnent de l'XP (victoire, égalité, podium, participation). Jamais multipliée par les rôles, la race, la nuit ou le Zenkai",
+    default: true,
+  },
+  {
+    key: "games.xp.win_ratio",
+    type: "float",
+    category: "economy",
+    description:
+      "XP d'une victoire en mini-jeu : part de l'écart entre le palier atteint et le suivant (0,02 = 2 %)",
+    default: 0.02,
+    min: 0,
+    max: 1,
+  },
+  {
+    key: "games.xp.draw_ratio",
+    type: "float",
+    category: "economy",
+    description:
+      "XP d'une égalité ou d'un podium en mini-jeu : part de l'écart entre le palier atteint et le suivant",
+    default: 0.01,
+    min: 0,
+    max: 1,
+  },
+  {
+    key: "games.xp.play_ratio",
+    type: "float",
+    category: "economy",
+    description:
+      "XP de participation en mini-jeu (défaite, victoire non payée) : part de l'écart entre le palier atteint et le suivant",
+    default: 0.004,
+    min: 0,
+    max: 1,
+  },
+  {
+    key: "games.xp.min",
+    type: "int",
+    category: "economy",
+    description: "XP minimale d'un résultat de mini-jeu, quel que soit l'écart du palier",
+    default: 25,
+    min: 0,
+    max: 1_000_000,
+  },
+  {
+    key: "games.xp.daily_ratio",
+    type: "float",
+    category: "economy",
+    description:
+      "Plafond de l'XP de mini-jeux sur 24 h glissantes, en part de l'écart du palier courant (0,1 = 10 %)",
+    default: 0.1,
+    min: 0,
+    max: 1,
   },
 
   // ── API session ────────────────────────────────────────────────
@@ -1079,6 +1191,41 @@ export const SETTINGS_KEYS: SettingDef[] = [
     default: 2.0,
     min: 1,
     max: 5,
+  },
+
+  // ── Réplica PostgreSQL de l'état du bot ──────────────────────────
+  {
+    key: REPLICA_SYNC_ENABLED,
+    type: "bool",
+    category: "advanced",
+    description:
+      "Synchronise périodiquement l'état du bot (SQLite) vers le réplica PostgreSQL. Sans effet tant que DATABASE_URL est absente.",
+    default: true,
+  },
+  {
+    key: REPLICA_SYNC_INTERVAL_MINUTES,
+    type: "int",
+    category: "advanced",
+    description: "Réplica PostgreSQL : minutes entre deux passes de synchronisation.",
+    default: REPLICA_SYNC_DEFAULT_INTERVAL_MINUTES,
+    min: 1,
+    max: 1440,
+  },
+  {
+    key: REPLICA_SYNC_JOURNALS,
+    type: "bool",
+    category: "advanced",
+    description:
+      "Réplica PostgreSQL : recopie aussi les journaux en ajout seul (action_logs, rag_eval_history) après un curseur persistant.",
+    default: true,
+  },
+  {
+    key: REPLICA_SYNC_SOURCE_ID,
+    type: "string",
+    category: "advanced",
+    description:
+      "Réplica PostgreSQL : identité stable de la base SQLite dont dérivent les identifiants des journaux. À changer seulement après un remplacement de base, jamais autrement (les journaux seraient recopiés).",
+    default: REPLICA_SYNC_DEFAULT_SOURCE_ID,
   },
 
   // ── Présence publique (widget "connectés" de la home du site) ──
@@ -1312,6 +1459,9 @@ export class SettingsService {
     if (!def) throw new Error(`Setting inconnue : ${key}`);
     if (key === "economy.ursaf.mode" && !/^(off|notice|collect)$/.test(value)) {
       throw new Error(`${key} attend off, notice ou collect.`);
+    }
+    if (key === REPLICA_SYNC_SOURCE_ID && !REPLICA_SYNC_SOURCE_ID_PATTERN.test(value)) {
+      throw new Error(`${key} attend 6 à 81 caractères : minuscules, chiffres et tirets.`);
     }
     if (key === "bot.language" && !/^(fr|en|ja)$/.test(value)) {
       throw new Error(`${key} attend fr, en ou ja.`);

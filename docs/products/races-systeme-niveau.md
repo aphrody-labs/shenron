@@ -258,6 +258,36 @@ choix de race.
   la table se règle explicitement (`/config level-reward-set`, `/api/levels/rewards`). Le zéni
   de palier (`zeni.per_level`) est versé **pour chaque niveau franchi**.
 
+### XP des mini-jeux
+
+Les mini-jeux (pfc, morpion, pendu, bingo, puis l'Arène) donnent de l'XP en plus des zénis.
+Règle pure dans `apps/bot/src/lib/game-xp.ts` (`apps/bot/tests/game-xp*.test.ts`) :
+
+- **Montant** : `max(games.xp.min, round(écart × part))`, l'écart étant la distance entre le palier
+  atteint et le suivant sur la courbe active (`xpProgress().span` ; au niveau maximal, l'écart du
+  dernier palier). Parts : victoire 2 % (`games.xp.win_ratio`), égalité et podium 1 %
+  (`games.xp.draw_ratio`), participation 0,4 % (`games.xp.play_ratio`) ; plancher 25
+  (`games.xp.min`). Un résultat pèse donc autant à chaque niveau et ne fait jamais passer un palier
+  à lui seul.
+- **Jamais multiplié.** `GameRewardService.grantGameXp` crédite par
+  `LevelService.addXP(userId, montant, { source: "game", propagateFusion: false })` : ni rôle boosté
+  (`xp.boost.role.<id>`), ni race, ni nuit, ni Zenkai, ni part de fusion. C'est la leçon de
+  l'inflation du 2026-10-22 (`docs/operations/bot-economie-incidents.md`) ; un test pose un rôle
+  à ×100 000 en base et vérifie que le gain reste celui de la règle.
+- **Plafond sur 24 h glissantes** : la somme de l'XP de jeu (`XP_GAIN`, `source: "game"`) ne dépasse
+  pas `games.xp.daily_ratio` (10 %) × l'écart du palier courant ; au-delà, le reliquat puis 0.
+  Le montant est aussi borné au plafond d'un gain unique (`singleGainCeiling`), pour ne jamais
+  déclencher `XP_SPIKE` ni geler un compte.
+- **Plafonds anti-farm** : une victoire non payée (`games.daily_reward_cap`,
+  `games.pair_reward_cap`) ne donne que l'XP de participation. Le perdant d'un duel ou d'une
+  partie contre le robot, et chaque joueur d'un duel sans vainqueur (égalité), reçoivent `play` ou
+  `draw` ; au pendu et au bingo, seulement après un coup valide.
+- **Passage de palier** : flux normal de `LevelService.handleLevelUp` (rôles de palier de la race,
+  zéni de palier, annonce unique). Le message de résultat affiche « +X XP · +Y Ƶ » et « Niveau N → M »
+  (clés `games.reward.*` des trois locales), sans message public supplémentaire.
+- **Réglages** : `games.xp.enabled` (true), `games.xp.win_ratio`, `games.xp.draw_ratio`,
+  `games.xp.play_ratio`, `games.xp.min`, `games.xp.daily_ratio`.
+
 ### Phases suivantes (roadmap)
 
 - **Peupler les échelles non-Saiyan** dans `race_level_roles` (Namek, Mutant, Cyborg,

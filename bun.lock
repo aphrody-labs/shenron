@@ -31,6 +31,7 @@
         "@aphrody/discord-kit": "catalog:",
         "@aphrody/messaging": "catalog:",
         "@aphrody/paths": "catalog:",
+        "@aphrody/shenron-activity": "workspace:*",
         "@aphrody/shenron-api": "workspace:*",
         "@aphrody/shenron-auth": "workspace:*",
         "@aphrody/shenron-config": "workspace:*",

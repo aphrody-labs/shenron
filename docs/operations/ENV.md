@@ -21,13 +21,13 @@ Règles :
 Le rôle admin reste requis pour les routes de publication du catalogue ; un projet
 Studio personnel ne donne pas ce rôle.
 
-| Variable                  | Propriétaire              | Contrat                                                                                                                                                               |
-| ------------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `SHENRON_STUDIO_SDK_BIN`  | Serveur / image scellée   | Chemin absolu du `koharu-sdk` qualifié et livré dans l'image. Sans binaire, la capacité reste indisponible.                                                           |
-| `SHENRON_STUDIO_HOME`     | Infra / volume protégé    | Racine privée des espaces de travail ; chaque identité reçoit un sous-dossier nommé par son SHA-256, créé en mode 0700.                                               |
+| Variable                  | Propriétaire              | Contrat                                                                                                                                                                                                                                                               |
+| ------------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SHENRON_STUDIO_SDK_BIN`  | Serveur / image scellée   | Chemin absolu du `koharu-sdk` qualifié et livré dans l'image. Sans binaire, la capacité reste indisponible.                                                                                                                                                           |
+| `SHENRON_STUDIO_HOME`     | Infra / volume protégé    | Racine privée des espaces de travail ; chaque identité reçoit un sous-dossier nommé par son SHA-256, créé en mode 0700.                                                                                                                                               |
 | `KOHARU_SECRET_NAMESPACE` | Runtime Studio uniquement | SHA-256 de l'identité, transmis au processus enfant pour isoler ses identifiants. Sur Linux hébergé : fichiers privés dans `SHENRON_HOME/.credentials` (0700/0600), sans Keyutils ; le nom du foyer doit correspondre au namespace. Non modifiable par le navigateur. |
-| `APHRODY_CARGO_SERIAL`    | Fabrique                  | Surcharge explicite du chemin du propriétaire Cargo pour le helper d'image. Le verrou lourd réel doit être hérité.                                                    |
-| `APHRODY_SOURCE_REPO`     | Fabrique                  | Checkout Aphrody contenant ce propriétaire ; résolu par configuration, sinon voisin du checkout source Shenron de la fabrique.                                        |
+| `APHRODY_CARGO_SERIAL`    | Fabrique                  | Surcharge explicite du chemin du propriétaire Cargo pour le helper d'image. Le verrou lourd réel doit être hérité.                                                                                                                                                    |
+| `APHRODY_SOURCE_REPO`     | Fabrique                  | Checkout Aphrody contenant ce propriétaire ; résolu par configuration, sinon voisin du checkout source Shenron de la fabrique.                                                                                                                                        |
 
 L'environnement des processus Studio est reconstruit depuis une liste limitée :
 aucune clé de fournisseur, base de données ou session d'opérateur n'est héritée.
@@ -435,3 +435,21 @@ Validées par zod ; un identifiant absent désactive la fonctionnalité concern�
   L'image le pose à `/usr/local/share/shenron-bot`, hors du montage `/app/assets` ; un fichier
   présent dans l'arbre source reste prioritaire. Emoji et CJK viennent des polices système
   de l'image (`fonts-noto-color-emoji`, `fonts-wqy-microhei`).
+
+## Activité « Arène Shenron » — `@aphrody/shenron-config/env` (`ACTIVITY_ENV`), `apps/bot/src/api/activity.ts`
+
+Le serveur de l'Activité ne crédite jamais rien : il signe un reçu de règlement et le bot le
+vérifie, applique ses plafonds et verse (`docs/products/bot-discord-refonte.md` §7.2).
+
+| Variable                  | Où                    | Rôle                                                                                                                                                                        |
+| ------------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SHENRON_ACTIVITY_SECRET` | bot et serveur        | Clé HMAC-SHA256 des reçus (16 octets au moins, secret **distinct** de `API_USER_SECRET`). Absente ou trop courte : `/api/activity/settle` répond 503 `not_configured`.      |
+| `SHENRON_ACTIVITY_TOKEN`  | bot et serveur (opt.) | Jeton porteur du serveur de l'Activité sur `/api/activity/*`. Sans lui, seul `API_ADMIN_TOKEN` est accepté ; les deux sont toujours acceptés quand le jeton dédié est posé. |
+
+- Les routes `POST /api/activity/settle` et `GET /api/activity/budget/{userId}` ne sont jamais
+  publiques : jeton porteur obligatoire (503 si aucun jeton n'est configuré, 401 sinon).
+- Réglages du bot (`/config`, table `guild_settings`) : `activity.enabled` (lancement par
+  `/arena`, `false` tant que l'application n'est pas vérifiée), `features.games.arena`
+  (interrupteur des gains, `true`), `activity.daily_budget` (zénis de jeux par membre sur 24 h,
+  600, au plus 5 000), `activity.min_account_days` (7) et `activity.min_level` (2, gains de zénis
+  seulement).

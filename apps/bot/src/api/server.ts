@@ -3,6 +3,7 @@ import { botNoiseMeter } from "~/ui/noise-meter";
 import { readHlsSegment, registerHlsSegment } from "./hls-security";
 import { resolveApiUrl, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import { adminPipeline } from "./admin-pipeline";
+import { createActivityRoutes } from "./activity";
 import { describeSpawnError, episodeResolver } from "~/lib/episode-resolver";
 import { singleton, inject, container } from "tsyringe";
 import { Client } from "discordx";
@@ -167,6 +168,7 @@ import { ADMIN_ROUTES, dashboardRedirect } from "@aphrody/shenron-config/admin";
 import { handleBetterAuthRequest, getBetterAuthSession } from "~/lib/better-auth";
 import { EventBusService } from "~/services/EventBusService";
 import { PgService } from "~/db/pg";
+import { ReplicaSyncService } from "~/services/ReplicaSyncService";
 import { EpisodesService } from "~/services/EpisodesService";
 import {
   CRUNCHYROLL_SERIES_BY_SHENRON,
@@ -1078,6 +1080,9 @@ export class ApiServer {
           ]),
         ),
 
+        // ── Arène Shenron : règlement des manches (jeton de service, jamais public) ──
+        ...createActivityRoutes(),
+
         // ── Static assets (favicons + manifest) ───────────────────────
         "/favicon.ico": staticFile("public/favicon.ico", "image/x-icon"),
         "/favicon-16.png": staticFile("public/favicon-16.png", "image/png"),
@@ -1430,6 +1435,8 @@ export class ApiServer {
             host: await this.stats.getHostUsage(),
             latency: this.stats.getLatency(),
             noise: botNoiseMeter.snapshot(),
+            // Last SQLite -> PostgreSQL replica pass (read-only).
+            replicaSync: container.resolve(ReplicaSyncService).status(),
           });
         }),
         // Public messages posted by the bot per channel and kind (noise meter, read-only).

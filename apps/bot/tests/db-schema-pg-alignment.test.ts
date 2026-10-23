@@ -29,6 +29,8 @@ const NOT_MIRRORED: Record<string, string> = {
   ba_session: "authentication data never leaves the SQLite",
   ba_account: "authentication data never leaves the SQLite",
   ba_verification: "authentication data never leaves the SQLite",
+  activity_settlements:
+    "idempotency ledger of the Activity settlements: bot-local (the credits are mirrored through users and action_logs)",
   admin_goals: "cockpit table, PostgreSQL ownership still undecided (SH-API-5)",
   admin_reports: "cockpit table, PostgreSQL ownership still undecided (SH-API-5)",
   admin_lab_messages: "cockpit table, PostgreSQL ownership still undecided (SH-API-5)",

@@ -55,7 +55,7 @@ describe("mini-jeux — économie", () => {
       results.push(await rewards.grantWin({ userId: main, amount: 150, opponentId: alt }));
     }
     expect(results.slice(0, 3).every((r) => r.paid === 150)).toBe(true);
-    expect(results[3]).toEqual({ paid: 0, blocked: "pair-cap" });
+    expect(results[3]).toMatchObject({ paid: 0, blocked: "pair-cap" });
   });
 
   test("plafond quotidien compté dans le grand livre", async () => {
@@ -69,7 +69,7 @@ describe("mini-jeux — économie", () => {
       })),
     );
     expect(await rewards.rewardedWinsLastDay(id)).toBe(20);
-    expect(await rewards.grantWin({ userId: id, amount: 150 })).toEqual({
+    expect(await rewards.grantWin({ userId: id, amount: 150 })).toMatchObject({
       paid: 0,
       blocked: "daily-cap",
     });
