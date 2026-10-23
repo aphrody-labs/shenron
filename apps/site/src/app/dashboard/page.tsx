@@ -28,7 +28,7 @@ import { readAccountSummary } from "@/lib/account-data";
 import { assetUrl } from "@/lib/assets";
 import { yearOf } from "@/lib/epoch";
 import { readMediaCatalog } from "@/lib/media-catalog";
-import { getShenronUserResult } from "@/lib/shenron";
+import { getShenronUserResult, xpProgressPercent } from "@/lib/shenron";
 import { requireUser } from "@/lib/session";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 
@@ -61,15 +61,7 @@ export default async function DashboardPage() {
     resumeIndisponible ? "dashboard.warningSummary" : null,
   ].filter((cle): cle is string => cle !== null);
   const username = profile?.username ?? me.user?.username ?? DEFAULT_NAME;
-  const progress = profile?.xpProgress
-    ? Math.min(
-        100,
-        Math.max(
-          0,
-          (profile.xpProgress.current / Math.max(1, profile.xpProgress.nextLevelXp)) * 100,
-        ),
-      )
-    : 0;
+  const progress = xpProgressPercent(profile?.xpProgress);
   return (
     <PageShell width="wide" rhythm="tight">
       <div>

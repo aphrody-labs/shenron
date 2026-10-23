@@ -566,7 +566,12 @@
     "ledgerCommentsTitle": "Comments on the site",
     "topRoleLabel": "Highest Discord role:",
     "contributorBadge": "Contributor",
-    "contributorCount": "{count} accepted contribution(s)"
+    "contributorCount": "{count} accepted contribution(s)",
+    "statXp": "Total XP",
+    "statZeni": "Zeni",
+    "statAchievements": "Achievements",
+    "statItems": "Items",
+    "fusionWith": "✦ Fused with {name}"
   },
   "settings": {
     "eyebrow": "Member account",

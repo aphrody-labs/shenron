@@ -566,7 +566,12 @@
     "ledgerCommentsTitle": "サイト上のコメント",
     "topRoleLabel": "Discord の最上位ロール：",
     "contributorBadge": "コントリビューター",
-    "contributorCount": "承認済みの投稿 {count} 件"
+    "contributorCount": "承認済みの投稿 {count} 件",
+    "statXp": "合計XP",
+    "statZeni": "ゼニー",
+    "statAchievements": "実績",
+    "statItems": "アイテム",
+    "fusionWith": "✦ {name}とフュージョン"
   },
   "settings": {
     "eyebrow": "メンバーアカウント",

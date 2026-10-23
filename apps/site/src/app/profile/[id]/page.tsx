@@ -16,7 +16,7 @@ import { MemberLedger } from "@/components/contest/MemberLedger";
 import { getProfileCardUrl } from "@/lib/assets";
 import { Avatar } from "@/components/Avatar";
 import { discordDefaultAvatarUrl } from "@/lib/discord-avatar";
-import { getShenronUserResult } from "@/lib/shenron";
+import { getShenronUserResult, xpProgressPercent } from "@/lib/shenron";
 import { getSessionUser } from "@/lib/session";
 import { formatZeni } from "@/lib/zeni";
 import { ProfileCardCustomizer } from "@/components/profile/ProfileCardCustomizer";
@@ -134,17 +134,12 @@ export default async function ProfilePage({
   const avatar = user.avatarUrl || discordDefaultAvatarUrl(id);
   const cardUrl = getProfileCardUrl(id);
   const equipped = user.equipped || {};
-  const progress = user.xpProgress
-    ? Math.min(
-        100,
-        Math.max(0, (user.xpProgress.current / Math.max(1, user.xpProgress.nextLevelXp)) * 100),
-      )
-    : 0;
+  const progress = xpProgressPercent(user.xpProgress);
   const stats = [
-    ["XP total", fmt(user.xp)],
-    ["Zénis", formatZeni(user.zeni)],
-    ["Succès", fmt(user.achievements?.length)],
-    ["Objets", fmt(user.inventory?.length)],
+    ["profile.statXp", fmt(user.xp)],
+    ["profile.statZeni", formatZeni(user.zeni)],
+    ["profile.statAchievements", fmt(user.achievements?.length)],
+    ["profile.statItems", fmt(user.inventory?.length)],
   ];
   const gear: Array<[string, string | null | undefined]> = [
     ["profile.gearCard", equipped.card],
@@ -233,13 +228,15 @@ export default async function ProfilePage({
                   href={`/profile/${user.fusion.partnerId}`}
                   className="inline-flex w-fit items-center gap-2 rounded-full border border-fuchsia-400/30 bg-fuchsia-400/10 px-4 py-2 text-sm text-fuchsia-200 hover:bg-fuchsia-400/20"
                 >
-                  ✦ Fusion avec {user.fusion.partnerName}
+                  <T k="profile.fusionWith" values={{ name: user.fusion.partnerName }} />
                 </Link>
               )}
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {stats.map(([label, value]) => (
                   <div key={label} className="rounded-xl border border-white/10 bg-black/20 p-3">
-                    <p className="text-[10px] uppercase tracking-wider text-white/45">{label}</p>
+                    <p className="text-[10px] uppercase tracking-wider text-white/45">
+                      <T k={label} />
+                    </p>
                     <p className="mt-1 text-xl font-semibold text-dbz-orange">{value}</p>
                   </div>
                 ))}

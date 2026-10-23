@@ -69,6 +69,8 @@ interface ShenronUser {
     nextLevel: number;
     nextLevelXp: number;
     needed: number;
+    /** Progress 0..1 within the current tier; absent on a bot not yet redeployed. */
+    ratio?: number;
   } | null;
   banner: string | null;
   equipped: {
@@ -85,6 +87,16 @@ interface ShenronUser {
     partnerName: string;
     createdAt: string | number;
   } | null;
+}
+
+/** XP bar fill (0..100) within the current tier, the bot's `/profil` ratio when exposed. */
+export function xpProgressPercent(progress: ShenronUser["xpProgress"] | undefined): number {
+  if (!progress) return 0;
+  const ratio =
+    typeof progress.ratio === "number"
+      ? progress.ratio
+      : progress.current / Math.max(1, progress.nextLevelXp);
+  return Math.min(100, Math.max(0, (Number.isFinite(ratio) ? ratio : 0) * 100));
 }
 
 export interface ShenronShopItem {
