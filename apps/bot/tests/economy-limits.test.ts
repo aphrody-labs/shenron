@@ -6,9 +6,9 @@
 import "./setup"; // must be first
 import { describe, expect, test } from "bun:test";
 import { container } from "tsyringe";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { DatabaseService } from "~/db/index";
-import { inventory, shopItems, users } from "~/db/schema";
+import { actionLogs, inventory, shopItems, users } from "~/db/schema";
 
 const { EconomyService, ZENI_MAX } = await import("~/services/EconomyService");
 const { LevelService } = await import("~/services/LevelService");
@@ -50,6 +50,20 @@ describe("bornes du solde", () => {
     expect(await eco.getBalance(id)).toBe(ZENI_MAX);
     await eco.setZeni(id, -9);
     expect(await eco.getBalance(id)).toBe(0);
+  });
+
+  test("setZeni est journalisé (ZENI_SET, avant et après)", async () => {
+    const id = "eco-lim-set-log";
+    await freshUser(id, { zeni: 120 });
+    await eco.setZeni(id, 4500);
+    const rows = dbs.db
+      .select()
+      .from(actionLogs)
+      .where(and(eq(actionLogs.userId, id), eq(actionLogs.action, "ZENI_SET")))
+      .all();
+    expect(rows.map((row) => JSON.parse(row.meta ?? "{}"))).toEqual([
+      { before: 120, after: 4500, source: "admin" },
+    ]);
   });
 
   test("un compte gelé ne reçoit rien (hors admin)", async () => {

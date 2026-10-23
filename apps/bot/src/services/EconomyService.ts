@@ -244,13 +244,31 @@ export class EconomyService {
     return removed;
   }
 
+  /** Admin balance write, journaled like `LevelService.setXP` (`ZENI_SET`, before and after). */
   async setZeni(userId: string, amount: number) {
     await this.ensureUser(userId);
     if (!Number.isFinite(amount)) throw new Error("Montant de zénis invalide.");
-    await this.db
-      .update(users)
-      .set({ zeni: Math.min(ZENI_MAX, Math.max(0, Math.trunc(amount))), updatedAt: new Date() })
-      .where(eq(users.id, userId));
+    const after = Math.min(ZENI_MAX, Math.max(0, Math.trunc(amount)));
+    const before = this.db.transaction(
+      (tx) => {
+        const row = tx.select({ zeni: users.zeni }).from(users).where(eq(users.id, userId)).get();
+        tx.update(users)
+          .set({ zeni: after, updatedAt: new Date() })
+          .where(eq(users.id, userId))
+          .run();
+        return row?.zeni ?? 0;
+      },
+      { behavior: "immediate" },
+    );
+    try {
+      await this.db.insert(actionLogs).values({
+        userId,
+        action: "ZENI_SET",
+        meta: JSON.stringify({ before, after, source: "admin" }),
+      });
+    } catch (err) {
+      logger.error({ err, userId }, "ZENI_SET ledger write failed");
+    }
   }
 
   /** Parts versées au partenaire de fusion (`xp.fusion.bonus_ratio`, `zeni.fusion.bonus_ratio`). */

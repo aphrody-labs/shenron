@@ -70,6 +70,43 @@ DBFR (droits 600).
 - La réconciliation des paliers constate les rôles en trop et ne les retire que si
   `level_role_sync.strip` est activé.
 
+## 2026-10-22 22 h 54 UTC : XP du compte développeur écrite hors journal
+
+- **Symptôme.** Après le rollback du 23/10, le compte `BOT_DEV_ID` (281114294152724491)
+  restait premier du classement avec 100 Md d'XP au niveau 19, alors qu'il avait 784 M
+  d'XP au niveau 16 dans la sauvegarde du 11/10.
+- **Cause.** Entre deux gains vocaux, son XP est passée de 796 041 933 à 99 999 999 999.
+  Aucun `XP_GAIN` ne correspond à ce saut : c'était une écriture d'administration
+  (`POST /api/levels/users/:id/xp`). Le rollback rejoue le journal, il n'a donc pas pu la
+  voir. À cette date, la version en production ne journalisait pas ce type d'écriture.
+  Ses 999 999 947 999 zénis (compte gelé) viennent de la même voie
+  (`POST /api/levels/users/:id/zeni`).
+- **Correction (23/10).** XP recalculée en une transaction. Le point de départ est la
+  valeur restaurée le 22/10 à 22 h 51 (784 041 933). S'y ajoutent les gains journalisés
+  depuis, chacun plafonné au taux légitime de sa source : 2 M par minute de vocal, 43 600
+  par message, 150 000 par part de fusion. Résultat : 978 706 975 XP, niveau 16. Une
+  ligne `XP_ROLLBACK` est inscrite au journal, et la ligne d'origine est sauvegardée
+  (`~/audit/` sur DBFR, droits 600). Les quatre autres ruptures de la nuit retombent
+  exactement sur les valeurs de la sauvegarde : ce sont des restaurations.
+- **Suites.**
+  - Les écritures d'administration sont journalisées (`XP_SET` et `ZENI_SET`, avec les
+    valeurs avant et après).
+  - Le compte `BOT_DEV_ID` n'apparaît plus dans aucun classement : XP, zénis, mensuel,
+    rang de `/profil` et API publique.
+
+Repérer une écriture hors journal pour un membre : cette requête liste ses ruptures, c'est-à-dire
+les gains dont le `before` ne vaut pas l'`after` du gain précédent. On compare ensuite chaque
+rupture à la sauvegarde.
+
+```sql
+with g as (
+  select id, created_at, json_extract(meta, '$.before') b, json_extract(meta, '$.after') a
+  from action_logs where action = 'XP_GAIN' and user_id = :id
+), o as (select *, lag(a) over (order by created_at, id) pa from g)
+select id, datetime(created_at / 1000, 'unixepoch'), pa, b, b - pa from o
+where pa is not null and b != pa order by created_at;
+```
+
 ## Outils
 
 Les deux scripts sont autonomes (`bun:sqlite` et `fetch`), sans dépendance au dépôt. Ils
