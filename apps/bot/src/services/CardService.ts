@@ -333,6 +333,10 @@ export class CardService {
           forceStatic: true,
         }),
         xp: input.xp,
+        // Computed here, never in the render worker: the server's level curve
+        // (`setLevelThresholds`, read from the settings at startup) lives on the main thread only,
+        // and a worker would fall back to the default curve (level 10 shown as "MAX").
+        progress: xpProgress(input.xp),
         zeni: input.zeni,
         messages: input.messageCount,
         rank: input.rank,
