@@ -147,7 +147,7 @@ import { WikiService } from "~/services/WikiService";
 import { DatabooksService } from "~/services/DatabooksService";
 import { LeaderboardService, type LeaderboardEntry } from "~/services/LeaderboardService";
 import { LevelService } from "~/services/LevelService";
-import { getLevelThresholds, levelForXP, nextThresholdFrom, type LevelThreshold } from "~/lib/xp";
+import { getLevelThresholds, levelForXP, xpProgress, type LevelThreshold } from "~/lib/xp";
 import { hybridSearch, logRagHealth } from "~/lib/rag";
 import { contextPublicRag, searchPublicRag } from "./public-rag";
 import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
@@ -1672,8 +1672,8 @@ export class ApiServer {
             const user = await dbs.db.query.users.findFirst({ where: eq(users.id, id) });
             if (!user) throw new HttpError(404, "User inconnu");
 
-            const level = levelForXP(user.xp);
-            const next = nextThresholdFrom(user.xp);
+            const progress = xpProgress(user.xp);
+            const { level, next } = progress;
 
             // 4 fetches en parallèle (SQLite WAL supporte les lectures
             // concurrentes ; Discord REST de toute façon en parallèle).
@@ -1775,7 +1775,8 @@ export class ApiServer {
                     current: user.xp,
                     nextLevel: next.level,
                     nextLevelXp: next.xp,
-                    needed: next.xp - user.xp,
+                    needed: progress.remaining,
+                    ratio: progress.ratio,
                   }
                 : null,
               banner: bannerUrl,
