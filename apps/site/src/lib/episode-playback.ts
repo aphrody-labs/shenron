@@ -12,8 +12,8 @@ export interface EpisodePlaybackInput {
   stream_url?: string | null;
 }
 
-/** Public metadata exposes host transports, never stored stream tokens or headers. */
-export function episodePlayback(input: EpisodePlaybackInput) {
+/** Prefer the published immutable media over a legacy origin that can expire. */
+export function episodeMp4Source(input: EpisodePlaybackInput): URL | null {
   const metadata = episodePlaybackMetadata(input);
   const publishedMp4 = metadata.players
     .map((player) => approvedEpisodeVideoURL(player.embedUrl))
@@ -23,7 +23,13 @@ export function episodePlayback(input: EpisodePlaybackInput) {
         isShenronEpisodeVideoURL(url) &&
         url.pathname.startsWith(`/media/episodes/${input.id}/`),
     );
-  const approvedMp4 = approvedEpisodeVideoURL(input.stream_url ?? null) ?? publishedMp4;
+  return publishedMp4 ?? approvedEpisodeVideoURL(input.stream_url ?? null);
+}
+
+/** Public metadata exposes host transports, never stored stream tokens or headers. */
+export function episodePlayback(input: EpisodePlaybackInput) {
+  const metadata = episodePlaybackMetadata(input);
+  const approvedMp4 = episodeMp4Source(input);
   const hls = input.stream_url && URL.canParse(input.stream_url) ? new URL(input.stream_url) : null;
   const hlsUrl =
     hls &&

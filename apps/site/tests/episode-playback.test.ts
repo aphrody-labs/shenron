@@ -38,6 +38,22 @@ test("published episode media supplies native playback when the legacy stream fi
   ).toBeNull();
 });
 
+test("published MP4 takes precedence over a legacy origin or HLS stream", () => {
+  const source = `https://cdn.dragonballfr.com/media/episodes/875/${"b".repeat(64)}/source.mp4`;
+  for (const stream_url of [
+    "https://27.mugiwara.one/dbs/dbs-1.mp4",
+    "https://example.test/expired/master.m3u8",
+  ]) {
+    expect(
+      episodePlayback({
+        id: 875,
+        stream_url,
+        players: [{ name: "Shenron", provider: "shenron", embedUrl: source, lang: "vostfr" }],
+      }).nativeSource,
+    ).toEqual({ src: source, type: "video/mp4" });
+  }
+});
+
 test("HLS metadata exposes the bot transport without leaking stored stream tokens", () => {
   const result = episodePlayback({
     id: 445,

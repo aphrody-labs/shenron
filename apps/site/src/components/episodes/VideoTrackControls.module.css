@@ -1,0 +1,33 @@
+.toggle {
+  position: relative;
+}
+
+.toggle[aria-pressed="true"]::after {
+  position: absolute;
+  inset-inline: 12px;
+  inset-block-end: 8px;
+  block-size: 2px;
+  border-radius: 2px;
+  background: var(--color-logo-jaune);
+  content: "";
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-inline-size: 0;
+}
+
+.row > :global([role="combobox"]) {
+  max-inline-size: 100%;
+  overflow: hidden;
+}
+
+.row > :global([role="combobox"]) > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

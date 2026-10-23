@@ -19,6 +19,8 @@ import {
   Settings,
 } from "lucide-react";
 import { VideoSelect } from "./VideoSelect";
+import { VideoCaptionToggle, VideoTrackSettings } from "./VideoTrackControls";
+import { useVideoTextTracks } from "./use-video-text-tracks";
 import styles from "./video-player.module.css";
 import { useVideoSource } from "./use-video-source";
 import {
@@ -104,8 +106,7 @@ export function VideoPlayer({
   const lastSaved = useRef(0);
   const [paused, setPaused] = useState(true);
   const [rate, setRate] = useState(1);
-  const [caption, setCaption] = useState(-1);
-  const [textTracks, setTextTracks] = useState<{ index: number; label: string }[]>([]);
+  const { textTracks, caption, selectCaption, toggleCaptions } = useVideoTextTracks(videoRef, src);
   const [fullscreenSupported, setFullscreenSupported] = useState(false);
   const [pipSupported, setPipSupported] = useState(false);
   const [isIosFullscreen, setIsIosFullscreen] = useState(false);
@@ -183,28 +184,7 @@ export function VideoPlayer({
   };
   useEffect(() => {
     setEnhanced(true);
-    const tracks = videoRef.current?.textTracks;
-    if (!tracks) return;
-    const sync = () => {
-      const list = Array.from(tracks);
-      setTextTracks(
-        list.map((track, index) => ({
-          index,
-          label: track.label || track.language || t("captionNumber", { number: index + 1 }),
-        })),
-      );
-      setCaption(list.findIndex((track) => track.mode === "showing"));
-    };
-    sync();
-    tracks.addEventListener("addtrack", sync);
-    tracks.addEventListener("removetrack", sync);
-    tracks.addEventListener("change", sync);
-    return () => {
-      tracks.removeEventListener("addtrack", sync);
-      tracks.removeEventListener("removetrack", sync);
-      tracks.removeEventListener("change", sync);
-    };
-  }, [src, subtitles, t]);
+  }, []);
 
   useEffect(() => {
     setPaused(videoRef.current?.paused ?? true);
@@ -311,15 +291,6 @@ export function VideoPlayer({
       setActionError(true);
     }
   };
-  const selectCaption = (index: number) => {
-    const video = videoRef.current;
-    if (!video || !Number.isInteger(index) || index < -1 || index >= video.textTracks.length)
-      return;
-    Array.from(video.textTracks).forEach((track, i) => {
-      track.mode = i === index ? "showing" : "disabled";
-    });
-    setCaption(index);
-  };
   const toggleMute = () => {
     const video = videoRef.current;
     if (!video) return;
@@ -405,7 +376,7 @@ export function VideoPlayer({
         void pictureInPicture();
         break;
       case "captions":
-        selectCaption(caption === -1 ? 0 : -1);
+        toggleCaptions();
         break;
     }
   };
@@ -666,6 +637,7 @@ export function VideoPlayer({
               className="w-24"
             />
           </label>
+          <VideoCaptionToggle textTracks={textTracks} caption={caption} onToggle={toggleCaptions} />
           <button
             type="button"
             aria-pressed={theater}
@@ -757,44 +729,14 @@ export function VideoPlayer({
                 </VideoSelect>
               </label>
             )}
-            {audioTracks.length > 1 && (
-              <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
-                {t("audioTrack")}
-                <VideoSelect
-                  cinema
-                  aria-label={t("audioTrack")}
-                  value={audioTrack}
-                  onChange={(event) => {
-                    const value = Number(event.target.value);
-                    selectAudioTrack(value);
-                  }}
-                >
-                  {audioTracks.map((track) => (
-                    <option key={track.index} value={track.index}>
-                      {track.name || t("audioTrackNumber", { number: track.index + 1 })}
-                    </option>
-                  ))}
-                </VideoSelect>
-              </label>
-            )}
-            {textTracks.length > 0 && (
-              <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
-                {t("captions")}
-                <VideoSelect
-                  cinema
-                  aria-label={t("captions")}
-                  value={caption}
-                  onChange={(event) => selectCaption(Number(event.target.value))}
-                >
-                  <option value={-1}>{t("captionsOff")}</option>
-                  {textTracks.map((track) => (
-                    <option key={track.index} value={track.index}>
-                      {track.label}
-                    </option>
-                  ))}
-                </VideoSelect>
-              </label>
-            )}
+            <VideoTrackSettings
+              textTracks={textTracks}
+              caption={caption}
+              onCaptionChange={selectCaption}
+              audioTracks={audioTracks}
+              audioTrack={audioTrack}
+              onAudioChange={selectAudioTrack}
+            />
           </div>
         </details>
       </div>

@@ -91,12 +91,18 @@ export function VideoLecteurs({
   entityType,
   entityId,
   vo,
+  subtitles,
+  title,
+  poster,
 }: {
   players: Lecteur[];
   /** Entité regardée — sans elle, aucun événement de lecture n'est émis. */
   entityType?: "episode" | "movie";
   entityId?: string | number;
   vo?: LecteurVo;
+  subtitles?: SubtitleTrack[];
+  title?: string;
+  poster?: string;
 }) {
   const t = useTranslations("mediaPlayback");
   const ui = useVideoUIText();
@@ -333,7 +339,9 @@ export function VideoLecteurs({
           episodeId={entityType === "episode" ? entityId : undefined}
           key={nativeSource}
           src={nativeSource}
-          title={cleanName(current.name)}
+          title={title ?? cleanName(current.name)}
+          subtitles={subtitles}
+          poster={poster}
           onError={() => {
             const next = nextPlayerIndex(safeActive, list.length);
             if (next !== null) setActive(next);
@@ -363,12 +371,13 @@ export function VideoLecteurs({
           </button>
         </div>
       ) : (
-        <div className="shenron-video">
+        <div className="shenron-video relative aspect-video">
           {/* sandbox : autorise le player tiers (scripts + accès à SA propre
 					    origine, requis pour les tokens de flux) mais bloque popups et
 					    navigation du top-window → coupe popunders et hijack de l'onglet
 					    dragonballfr.com. NE PAS ajouter allow-popups / allow-top-navigation. */}
           <iframe
+            className="absolute inset-0 h-full w-full"
             key={current.embedUrl}
             src={current.embedUrl}
             title={t("playerTitle", { number: safeActive + 1, name: cleanName(current.name) })}
@@ -377,7 +386,22 @@ export function VideoLecteurs({
             allowFullScreen
             referrerPolicy="origin"
             loading="lazy"
-            onLoad={() => {
+            onLoad={(event) => {
+              const frame = event.currentTarget;
+              const bounds = frame.getBoundingClientRect();
+              const surface = frame.parentElement?.getBoundingClientRect();
+              // A browser can collapse a blocked frame while still firing load.
+              if (
+                surface &&
+                surface.width > 0 &&
+                surface.height > 0 &&
+                (bounds.width === 0 || bounds.height === 0)
+              ) {
+                const next = nextPlayerIndex(safeActive, list.length);
+                if (next !== null) setActive(next);
+                else setStatus("failed");
+                return;
+              }
               if (networkFailure.current !== current.embedUrl) setStatus("ready");
             }}
             onError={() => {

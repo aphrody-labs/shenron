@@ -32,6 +32,7 @@ import { AnimatedMedia } from "@/components/media/AnimatedMedia";
 import { BackgroundImage } from "@/components/media/BackgroundImage";
 import { EpisodeScenes } from "./EpisodeScenes";
 import { isShenronEpisodeVideoURL } from "@/lib/episode-video-source";
+import { episodePlayback } from "@/lib/episode-playback";
 import { EntityRating, EntityRatingSummary } from "@/components/ratings/EntityRating";
 import { CommunityRankBadge } from "@/components/ratings/CommunityRankBadge";
 import { JsonLd } from "@/components/JsonLd";
@@ -167,17 +168,20 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
       ? `${seriesLabel} · ${ep.title}`
       : `${seriesLabel} · épisode ${ep.number_in_series}`;
   const cdnOnly = ep.id === 875 || ep.id === 876;
-  const cdnSource = [ep.video_url, ...(ep.players ?? []).map((entry) => entry.embedUrl)].find(
-    (source): source is string => {
-      if (!source || !URL.canParse(source)) return false;
-      const url = new URL(source);
-      return (
-        isShenronEpisodeVideoURL(url) &&
-        (url.pathname.includes(`/episodes/${ep.id}/`) ||
-          (ep.id === 875 && url.pathname.includes("/episodes/beerus-01/")))
-      );
-    },
-  );
+  const playback = episodePlayback(ep);
+  const cdnSource = [
+    ep.video_url,
+    ep.stream_url,
+    ...(ep.players ?? []).map((entry) => entry.embedUrl),
+  ].find((source): source is string => {
+    if (!source || !URL.canParse(source)) return false;
+    const url = new URL(source);
+    return (
+      isShenronEpisodeVideoURL(url) &&
+      (url.pathname.includes(`/episodes/${ep.id}/`) ||
+        (ep.id === 875 && url.pathname.includes("/episodes/beerus-01/")))
+    );
+  });
 
   // Priorité aux lecteurs voir-anime (VF/VOSTFR, sources réelles maintenues à
   // jour) : ils priment sur `video_url`/`stream_url` qui pouvaient contenir des
@@ -197,10 +201,13 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
       players={ep.players}
       entityType="episode"
       entityId={ep.id}
+      title={episodeTitle}
+      poster={ep.image ? assetUrl(ep.image) : undefined}
+      subtitles={ep.subtitles ?? undefined}
       // VO sous-titrée : variante VOSTFR (audio japonais) du proxy HLS, avec les
       // pistes de la fiche — les iframes tierces ne peuvent pas les afficher.
       vo={
-        ep.stream_url && ep.subtitles?.length
+        playback.hlsMasterUrl && ep.subtitles?.length
           ? {
               src: hlsMasterUrl(ep.id, "vostfr"),
               title: episodeTitle,
@@ -217,9 +224,9 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
       poster={ep.image ? assetUrl(ep.image) : undefined}
       subtitles={ep.subtitles ?? undefined}
     />
-  ) : ep.stream_url ? (
+  ) : playback.nativeSource ? (
     <VideoPlayer
-      src={hlsMasterUrl(ep.id)}
+      src={playback.nativeSource.src}
       title={episodeTitle}
       poster={ep.image ? assetUrl(ep.image) : undefined}
       subtitles={ep.subtitles ?? undefined}
