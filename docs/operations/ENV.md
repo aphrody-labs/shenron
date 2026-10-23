@@ -453,3 +453,34 @@ vérifie, applique ses plafonds et verse (`docs/products/bot-discord-refonte.md`
   (interrupteur des gains, `true`), `activity.daily_budget` (zénis de jeux par membre sur 24 h,
   600, au plus 5 000), `activity.min_account_days` (7) et `activity.min_level` (2, gains de zénis
   seulement).
+
+### Serveur de l'Activité — `apps/activity/src/config.ts`
+
+`bun apps/activity/src/main.ts` (ou le binaire de `bun run --filter @aphrody/shenron-activity-app compile`)
+lit l'environnement une seule fois. Une variable absente désactive la capacité concernée sans arrêter
+le serveur : `GET /health` répond 200 avec `status: "degraded"` et dit laquelle (`client`, `oauth`,
+`settlement`). Les secrets ne sont jamais journalisés ni renvoyés au client.
+
+| Variable                      | Rôle                                                                                                                                                                                                                                    | Défaut                                                     |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `DISCORD_CLIENT_ID`           | Identifiant (snowflake) de l'application Discord, le même que `APPLICATION_ID_SHENRON` du bot. Public : `GET /api/config` le donne au client, qui construit le SDK avec.                                                                | aucun : connexion impossible                               |
+| `DISCORD_CLIENT_SECRET`       | Secret OAuth2 de l'application, utilisé seulement par `POST /api/token` pour échanger le `code` de `authorize()` contre un jeton (`https://discord.com/api/oauth2/token`). Ne sort jamais du serveur.                                   | aucun : `/api/token` répond 503 `not_configured`           |
+| `SHENRON_ACTIVITY_SECRET`     | Clé HMAC des reçus (voir ci-dessus, 16 octets au moins). Le serveur signe chaque fin de manche qui paie quelqu'un.                                                                                                                      | aucun : les reçus sont journalisés puis abandonnés         |
+| `SHENRON_ACTIVITY_TOKEN`      | Jeton porté en `Authorization: Bearer` vers l'API du bot (voir ci-dessus).                                                                                                                                                              | aucun : le bot refuse (401, nouvel essai plus tard)        |
+| `SHENRON_BOT_API_URL`         | Base de l'API du bot pour `POST /api/activity/settle`, sans barre finale.                                                                                                                                                               | `http://${API_HOST}:${API_PORT}` du bot (`127.0.0.1:5006`) |
+| `SHENRON_ACTIVITY_HOST`       | Interface d'écoute (le proxy inverse de l'hôte de l'Activité la joint).                                                                                                                                                                 | `127.0.0.1`                                                |
+| `SHENRON_ACTIVITY_PORT`       | Port d'écoute (0 : éphémère, pour les tests).                                                                                                                                                                                           | `5013`                                                     |
+| `SHENRON_ACTIVITY_PUBLIC_URL` | Origine publique de l'hôte, par exemple `https://activity.dragonballfr.com` ; ajoutée sous sa forme `wss://` à `connect-src` de la CSP. Dans Discord, la CSP nomme déjà `wss://*.discordsays.com`.                                      | aucun                                                      |
+| `SHENRON_ACTIVITY_DIST`       | Dossier du client construit (`bun run --filter @aphrody/shenron-activity-app build`). Ignoré par le binaire compilé, qui embarque ses fichiers.                                                                                         | `apps/activity/dist/client`                                |
+| `SHENRON_ACTIVITY_DEV_AUTH`   | `1` : accepte les identités de développement du faux SDK (`?mock=1`, `bun run dev`). Le serveur refuse de démarrer avec `NODE_ENV=production` ou sur une interface autre que la boucle locale ; ne jamais le poser sur un hôte déployé. | désactivé                                                  |
+
+- Aucun de ces secrets n'est un jeton de bot : l'Activité ne détient jamais celui du bot.
+- Un reçu que le bot ne peut pas encore régler (endpoint absent : 404, bot arrêté, 5xx, 429, ou
+  configuration en cours : 401, 403, 503) reste dans une file bornée en mémoire (100 reçus, deux
+  heures), réessayée avec un délai de 5 s doublé jusqu'à 5 min ; chaque essai signe une nouvelle
+  fenêtre de validité et garde les mêmes clés d'idempotence, donc un essai répété ne paie jamais deux
+  fois. Un refus du reçu lui-même (400, 409, 410, 422) l'abandonne. La file n'est pas persistée : un
+  redémarrage perd les reçus en attente (des gains non versés, jamais des gains versés deux fois).
+- En-têtes : jamais d'`X-Frame-Options` ; une CSP dont `frame-ancestors` nomme `discord.com`,
+  `*.discord.com` et `*.discordsays.com`. Le HTML est servi `no-store`, les autres fichiers (noms
+  hachés) `immutable`, car le proxy de Discord retire les en-têtes de cache des réponses HTML.

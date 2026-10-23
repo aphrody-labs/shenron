@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: Apache-2.0
+# Exemple de bloc de proxy inverse pour activity.dragonballfr.com (cible du mappage d'URL `/` du
+# portail Discord). L'hébergement appartient à l'Infra d'Aphrody : ce fichier n'est pas installé ici.
+#
+# Points qui comptent pour une Activité :
+#  - AUCUN `X-Frame-Options`, ni ajouté ici, ni hérité d'un bloc `http` ou d'un snippet de sécurité
+#    commun : il blanchirait l'iframe de Discord. Le serveur envoie déjà la CSP (`frame-ancestors`
+#    Discord) ; ne pas la doubler.
+#  - le WebSocket `/ws` (WebTransport et WebRTC ne passent pas par le proxy de Discord) ;
+#  - `X-Real-IP` pour le limiteur de `/api/token` (le serveur lit `x-real-ip`, puis le dernier
+#    saut de `x-forwarded-for`).
+
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name activity.dragonballfr.com;
+
+    ssl_certificate     /etc/ssl/shenron/activity.dragonballfr.com.pem;
+    ssl_certificate_key /etc/ssl/shenron/activity.dragonballfr.com.key;
+
+    # Un reçu ou un salut tient en moins de 4 Kio : rien de plus ne doit passer.
+    client_max_body_size 8k;
+
+    # Défense en profondeur : retire l'en-tête s'il venait à être posé en amont du serveur.
+    proxy_hide_header X-Frame-Options;
+
+    location /ws {
+        proxy_pass http://127.0.0.1:5013;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        # Le battement du client est toutes les 15 s ; le serveur ferme après 90 s de silence.
+        proxy_read_timeout 120s;
+        proxy_send_timeout 120s;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:5013;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        # Le serveur compresse lui-même les fichiers texte (gzip, en mémoire) ; pas de double passe.
+        proxy_set_header Accept-Encoding $http_accept_encoding;
+    }
+}
