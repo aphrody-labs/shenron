@@ -4,7 +4,7 @@ import { Metric, MetricGrid, StatusBadge } from "@aphrody/shenron-ui/admin";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RefreshCw, Search, UserX } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { useConfirm } from "@/components/admin/admin-ui";
 import { api } from "@/lib/admin-api";
 import { EmptyState, ErrorState, errorMessage, Section, SkeletonRows } from "./BotUi";
@@ -55,6 +55,16 @@ const SEARCH_LIMIT = 25;
 /** The bot syncs daily at 04:00 UTC: past 36 h the mirror is considered stale. */
 const STALE_AFTER_MS = 36 * 3_600_000;
 
+/** Wall clock refreshed every minute, so render stays pure. */
+function useNow() {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
+  return now;
+}
+
 const callGuild = <T,>(action: string, body: Record<string, unknown> = {}) =>
   api.post<ActionResult<T>>(`/services/guild/${action}`, body).then((r) => r.result);
 
@@ -84,8 +94,9 @@ export function GuildMirrorPanel() {
     if (ok) sync.mutate();
   }
 
+  const now = useNow();
   const s = stats.data;
-  const stale = s?.lastSyncAt != null && Date.now() - s.lastSyncAt > STALE_AFTER_MS;
+  const stale = s?.lastSyncAt != null && now - s.lastSyncAt > STALE_AFTER_MS;
 
   return (
     <div className="space-y-6">
@@ -168,6 +179,7 @@ export function GuildMirrorPanel() {
 }
 
 function MemberSearch() {
+  const now = useNow();
   const t = useTranslations("adminBot.guild.search");
   const fmt = useBotFormat();
   const [draft, setDraft] = useState("");
@@ -253,7 +265,7 @@ function MemberSearch() {
                     {m.premium_since ? (
                       <StatusBadge tone="accent">{t("booster")}</StatusBadge>
                     ) : null}
-                    {m.timeout_until && m.timeout_until > Date.now() ? (
+                    {m.timeout_until && m.timeout_until > now ? (
                       <StatusBadge tone="warning">{t("timeout")}</StatusBadge>
                     ) : null}
                   </div>

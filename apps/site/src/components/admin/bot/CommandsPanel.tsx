@@ -36,10 +36,10 @@ export function CommandsPanel({ botId }: { botId: string }) {
   const commands = cmds.data?.commands;
   const all = commands ?? [];
   const shown = useMemo(() => {
-    const all = commands ?? [];
+    const list = commands ?? [];
     const q = filter.trim().toLowerCase();
-    if (!q) return all;
-    return all.filter(
+    if (!q) return list;
+    return list.filter(
       (c) => c.name.toLowerCase().includes(q) || c.description.toLowerCase().includes(q),
     );
   }, [commands, filter]);

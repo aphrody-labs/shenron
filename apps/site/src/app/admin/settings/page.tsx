@@ -236,6 +236,8 @@ export default function SettingsPage() {
   );
 }
 
+const boldChunk = (chunks: React.ReactNode) => <strong>{chunks}</strong>;
+
 function CategorySection({
   category,
   keys,
@@ -583,7 +585,7 @@ function XpBoostRoleEditor({
         {t("xpBoost.title", { count: entries.length })}
       </h4>
       <p className="mb-3 text-xs text-muted-foreground">
-        {t.rich("xpBoost.hint", { strong: (c) => <strong>{c}</strong> })}
+        {t.rich("xpBoost.hint", { strong: boldChunk })}
       </p>
       <div className="space-y-2">
         {entries.map((e) => (
@@ -660,7 +662,7 @@ function TicketAccessEditor({
         {t("tickets.title")}
       </h4>
       <p className="mb-3 text-xs text-muted-foreground">
-        {t.rich("tickets.hint", { strong: (c) => <strong>{c}</strong> })}
+        {t.rich("tickets.hint", { strong: boldChunk })}
       </p>
       <div className="mb-3 flex flex-wrap gap-2">
         {TICKET_KINDS.map((k) => (
