@@ -150,6 +150,7 @@ export default function CharacterScene({ text }: { text: typeof fr }) {
           ) : (
             <input
               className={inputClass}
+              aria-label={text.characterCode}
               value={input}
               maxLength={8}
               placeholder={roster === null ? text.loading : undefined}
