@@ -22,12 +22,14 @@
 }
 
 .row > :global([role="combobox"]) {
+  flex: 1 1 12rem;
+  min-inline-size: 0;
   max-inline-size: 100%;
-  overflow: hidden;
 }
 
-.row > :global([role="combobox"]) > span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.row > :global([role="combobox"]) > :global([data-slot="select-value"]) {
+  display: block;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
