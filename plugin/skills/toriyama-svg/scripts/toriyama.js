@@ -1,7 +1,7 @@
 // @bun
 // Généré par scripts/plugin/build-references.ts — ne pas éditer.
 // Sources : packages/ui/src/toriyama-svg/couverture.ts, packages/ui/src/toriyama-svg/emblems.ts, packages/ui/src/toriyama-svg/geometry.ts, packages/ui/src/toriyama-svg/gohan-ultime.ts, packages/ui/src/toriyama-svg/index.ts, packages/ui/src/toriyama-svg/kinto-un.ts, packages/ui/src/toriyama-svg/model3d.ts, packages/ui/src/toriyama-svg/palette.ts, packages/ui/src/toriyama-svg/potara.ts, packages/ui/src/toriyama-svg/senzu.ts, packages/ui/src/toriyama-svg/sphere.ts, scripts/plugin/src/toriyama.ts
-// Révision : e94292e1+modifications (2026-10-17)
+// Révision : 4981b124 (2026-10-23)
 var __defProp = Object.defineProperty;
 var __returnValue = (v) => v;
 function __exportSetter(name, newValue) {

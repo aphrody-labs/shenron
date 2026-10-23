@@ -133,8 +133,8 @@
       "sha256": "808401eef60340c493e23af9380bd806e3f46528f5b0b492ec33a98ffb6969df"
     },
     "plugin/skills/toriyama-svg/scripts/toriyama.js": {
-      "revision": "e94292e1+modifications",
-      "date": "2026-10-17",
+      "revision": "4981b124",
+      "date": "2026-10-23",
       "sources": {
         "packages/ui/src/toriyama-svg/couverture.ts": "36bb1c785adc37ba09c7d516d8ec8845ffb97de4f1f940cb3db530a6b78978c6",
         "packages/ui/src/toriyama-svg/emblems.ts": "c9ff5f5cc92b213f57b0320ad4e37605f4d1cfef6efc770e6f2aa2e5f6f0025f",
@@ -149,7 +149,7 @@
         "packages/ui/src/toriyama-svg/sphere.ts": "7feed0aba0942253273204814be68bcfad44cbd1f64897f1d45eadf18959b8df",
         "scripts/plugin/src/toriyama.ts": "e2870b41b11957f2b8713c1c9aa93bdc206f3e85cc4d85dc42a39d0967849360"
       },
-      "sha256": "5cf1131806bd5a115352a0aa7c51985583e6635dce7804d3f3ef50b82e45652b",
+      "sha256": "db830d9a508d2c6d20e0287816986f736ae40eaad2189a1fbd6a57b4a7025f3f",
       "paquet": true
     }
   }
