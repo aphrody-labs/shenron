@@ -2,7 +2,7 @@
  * canvas-kit — primitives de rendu 2D partagées.
  *
  * Extraites de `CardService` + `commands/fun/Scan.ts`, réutilisables par les
- * futurs canvases (/top, /fusion, /shop, /gay, /raciste, /bingo, /morpion, /pfc, /pendu).
+ * futurs canvases (/top, /fusion, /shop, /saiyan, /villain, /bingo, /morpion, /pfc, /pendu).
  *
  * Pas de logique métier ici — uniquement des helpers sans état.
  * L'enregistrement des fonts est fait au chargement de ce module (side effect),

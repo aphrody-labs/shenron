@@ -90,8 +90,8 @@ d("canvas rendering — visual smoke", () => {
     for (const pct of [0, 42, 87, 100, 101]) {
       const buf = await g.render({
         user: fakeUser("100", "Goku"),
-        title: "GAYDAR DE BULMA",
-        subtitle: "Scanner calibré sur Master Roshi",
+        title: "SANG SAIYAN",
+        subtitle: "Scouter de Bulma, calibré sur Vegeta",
         pct,
         accent: "#FF4FB0",
         accentDark: "#3a0420",

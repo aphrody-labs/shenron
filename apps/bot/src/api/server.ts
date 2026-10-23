@@ -148,6 +148,7 @@ import { indexedPrice } from "~/lib/inflation-rules";
 import { CardService } from "~/services/CardService";
 import { CommandPermissionsService } from "~/services/CommandPermissionsService";
 import { GaugeService } from "~/services/GaugeService";
+import { funGaugeStyle, type FunGauge } from "~/commands/fun/Fun";
 import { FusionService } from "~/services/FusionService";
 import { WikiService } from "~/services/WikiService";
 import { DatabooksService } from "~/services/DatabooksService";
@@ -4934,23 +4935,11 @@ export class ApiServer {
             const user = await client.users.fetch(userId).catch(() => null);
             if (!user) throw new HttpError(404, "Utilisateur introuvable");
             const url = new URL(req.url);
-            const type = (url.searchParams.get("type") ?? "gay") as "gay" | "raciste";
+            const type: FunGauge =
+              url.searchParams.get("type") === "villain" ? "villain" : "saiyan";
             const pct = Math.max(0, Math.min(101, Number(url.searchParams.get("pct") ?? 50)));
             const gauge = container.resolve(GaugeService);
-            const config =
-              type === "raciste"
-                ? {
-                    title: "RACISM-O-MÈTRE",
-                    subtitle: "Scanner calibré sur Commander Red",
-                    accent: "#dc2626",
-                    accentDark: "#4a0000",
-                  }
-                : {
-                    title: "GAYDAR DE BULMA",
-                    subtitle: "Scanner calibré sur Master Roshi",
-                    accent: "#ec4899",
-                    accentDark: "#3a0420",
-                  };
+            const config = funGaugeStyle(type, "fr");
             return await gauge.render({ user, ...config, pct });
           }),
         ),
@@ -5137,8 +5126,8 @@ export class ApiServer {
               {
                 id: "scouter",
                 name: "Scouter (gauge)",
-                description: "Gauge style scouter pour /gay et /raciste (700×320)",
-                url: "/api/canvas/scouter/:userId?type=gay|raciste&pct=50",
+                description: "Gauge style scouter pour /saiyan et /villain (700×320)",
+                url: "/api/canvas/scouter/:userId?type=saiyan|villain&pct=50",
                 params: ["userId", "type", "pct"],
               },
               {

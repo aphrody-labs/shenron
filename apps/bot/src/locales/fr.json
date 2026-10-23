@@ -101,6 +101,28 @@
   "commands": {
     "help": {
       "description": "Ouvrir le centre d'aide de Shenron"
+    },
+    "saiyan": {
+      "name": "saiyan",
+      "description": "Mesure le sang saiyan d'un membre au scouter de Bulma",
+      "member": "membre",
+      "memberDescription": "Membre à scanner",
+      "title": "SANG SAIYAN",
+      "subtitle": "Scouter de Bulma, calibré sur Vegeta"
+    },
+    "villain": {
+      "name": "mechant",
+      "description": "Mesure la méchanceté d'un membre, façon Freezer",
+      "member": "membre",
+      "memberDescription": "Membre à scanner",
+      "title": "MÉCHANTOMÈTRE",
+      "subtitle": "Calibré sur Freezer, empereur de l'univers"
+    },
+    "gauge": {
+      "badge": "« SCOUTER »",
+      "caption": "NIVEAU MESURÉ",
+      "failedTitle": "Scouter en panne",
+      "failedBody": "Réessaie dans un instant."
     }
   },
   "help": {

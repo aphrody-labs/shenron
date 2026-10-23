@@ -524,8 +524,8 @@ export const messageTemplates = sqliteTable("message_templates", {
  * `deniedRoles`  — JSON array de roleId. Si membre a un de ces rôles → refus.
  * `deniedUsers`  — JSON array de userId. Refus exact.
  *
- * Bypass automatique : OWNER_ID, BOT_DEV_ID, et toute personne avec la permission
- * Discord native `Administrator` (garde-fou anti lock-out).
+ * Aucun contournement : ni OWNER_ID, ni BOT_DEV_ID, ni la permission Discord native
+ * `Administrator` ne passent outre une règle (`guards/CommandPermissions.ts`).
  */
 /**
  * Log persistant des invitations Discord — qui a invité qui via quel code.

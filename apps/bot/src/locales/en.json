@@ -101,6 +101,28 @@
   "commands": {
     "help": {
       "description": "Open the Shenron help center"
+    },
+    "saiyan": {
+      "name": "saiyan",
+      "description": "Measure a member's Saiyan blood with Bulma's scouter",
+      "member": "member",
+      "memberDescription": "Member to scan",
+      "title": "SAIYAN BLOOD",
+      "subtitle": "Bulma's scouter, calibrated on Vegeta"
+    },
+    "villain": {
+      "name": "villain",
+      "description": "Measure how evil a member is, Frieza style",
+      "member": "member",
+      "memberDescription": "Member to scan",
+      "title": "VILLAIN-O-METER",
+      "subtitle": "Calibrated on Frieza, emperor of the universe"
+    },
+    "gauge": {
+      "badge": "« SCOUTER »",
+      "caption": "MEASURED LEVEL",
+      "failedTitle": "Scouter down",
+      "failedBody": "Try again in a moment."
     }
   },
   "help": {

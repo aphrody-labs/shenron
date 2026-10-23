@@ -101,6 +101,28 @@
   "commands": {
     "help": {
       "description": "Shenron のヘルプセンターを開く"
+    },
+    "saiyan": {
+      "name": "サイヤ人",
+      "description": "ブルマのスカウターでメンバーのサイヤ人の血を測る",
+      "member": "メンバー",
+      "memberDescription": "スキャンするメンバー",
+      "title": "サイヤ人の血",
+      "subtitle": "ブルマのスカウター、ベジータ基準"
+    },
+    "villain": {
+      "name": "悪役",
+      "description": "フリーザ流にメンバーの悪役度を測る",
+      "member": "メンバー",
+      "memberDescription": "スキャンするメンバー",
+      "title": "悪役メーター",
+      "subtitle": "宇宙の帝王フリーザ基準"
+    },
+    "gauge": {
+      "badge": "《スカウター》",
+      "caption": "測定値",
+      "failedTitle": "スカウター故障",
+      "failedBody": "少し待ってからもう一度試してね。"
     }
   },
   "help": {

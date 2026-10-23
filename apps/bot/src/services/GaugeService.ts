@@ -11,16 +11,19 @@ import {
   font,
   loadRemoteImage,
 } from "~/lib/canvas-kit";
+import { t } from "~/lib/i18n";
 
 /**
- * Canvas "scouter gauge" — pour /gay (Gaydar de Bulma) et /raciste (Racism-o-mètre de Mr. Popo).
+ * Canvas "scouter gauge" — for /saiyan (Saiyan blood) and /villain (Frieza-style villainy).
  * Rend une fiche scanner avec avatar de la cible + pourcentage + barre.
  */
 
 export interface GaugeInput {
   user: User;
-  title: string; // "GAYDAR DE BULMA"
-  subtitle: string; // "Scanner calibré sur Master Roshi"
+  title: string; // "SANG SAIYAN", from the dictionaries
+  subtitle: string; // "Scouter de Bulma, calibré sur Vegeta"
+  badge?: string; // "« SCOUTER »", top-left label (default: commands.gauge.badge in French)
+  caption?: string; // "NIVEAU MESURÉ", under the gauge (default: commands.gauge.caption)
   pct: number; // 0-101 (OVERFLOW si > 100 — spec owner=101)
   accent: string; // couleur principale
   accentDark: string; // variante foncée pour le fond
@@ -73,7 +76,7 @@ export class GaugeService {
     ctx.restore();
 
     // ── Label scouter en haut ──────────────────────────────────────────
-    textWithShadow(ctx, "« SCANNER »", 28, 32, {
+    textWithShadow(ctx, input.badge ?? t("fr", "commands.gauge.badge"), 28, 32, {
       font: font("700 13px"),
       color: rgba(input.accent, 0.85),
       align: "left",
@@ -189,7 +192,7 @@ export class GaugeService {
     }
 
     // Sous-label
-    textWithShadow(ctx, "POWER LEVEL / COMPATIBILITY", G_X, G_Y + G_H + 20, {
+    textWithShadow(ctx, input.caption ?? t("fr", "commands.gauge.caption"), G_X, G_Y + G_H + 20, {
       font: font("700 11px"),
       color: rgba(input.accent, 0.6),
       align: "left",
