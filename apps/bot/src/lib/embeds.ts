@@ -11,6 +11,7 @@
  */
 import { EmbedBuilder, type ColorResolvable, type GuildMember, type User } from "discord.js";
 import { formatZeni } from "~/lib/zeni";
+import { formatNumber, t, type BotLang } from "~/lib/i18n";
 
 export const COLORS = {
   success: 0x57f287,
@@ -150,34 +151,51 @@ function colorForLevel(level: number): ColorResolvable {
 
 /**
  * Level-up embed : avatar du membre, gradient couleur selon palier, fields
- * Niveau / XP / Récompense.
+ * Niveau / XP / Récompense. Un gain qui franchit plusieurs niveaux (`fromLevel` + 1 < `level`)
+ * est annoncé une seule fois, « Niveau 12 → 15 ». Textes dans la langue `lang` (dictionnaires du bot).
  */
 export function levelUpEmbed(opts: {
   member: GuildMember;
   level: number;
+  /** Niveau avant le gain ; omis ou à un niveau du but : un seul niveau franchi. */
+  fromLevel?: number;
   xp: number;
+  /** Zénis réellement crédités pour ce passage (0 ou absent : aucun champ « Récompense »). */
   zeniBonus?: number;
   message: string;
+  lang?: BotLang;
 }): EmbedBuilder {
-  const { member, level, xp, zeniBonus, message } = opts;
+  const { member, level, fromLevel, xp, zeniBonus, message, lang = "fr" } = opts;
+  const range = fromLevel !== undefined && level - fromLevel > 1;
   const embed = new EmbedBuilder()
     .setColor(colorForLevel(level))
     .setAuthor({
       name: member.displayName,
       iconURL: member.displayAvatarURL({ size: 128 }),
     })
-    .setTitle(trim(`Niveau ${level} atteint !`, 256))
+    .setTitle(
+      trim(
+        range
+          ? t(lang, "levelUp.titleRange", { from: fromLevel, level })
+          : t(lang, "levelUp.title", { level }),
+        256,
+      ),
+    )
     .setDescription(trim(message, 4096))
     .setThumbnail(member.displayAvatarURL({ size: 256 }))
     .addFields(
-      { name: "Niveau", value: `**${level}**`, inline: true },
-      { name: "XP total", value: xp.toLocaleString("fr-FR"), inline: true },
+      {
+        name: t(lang, "levelUp.fieldLevel"),
+        value: range ? `**${fromLevel} → ${level}**` : `**${level}**`,
+        inline: true,
+      },
+      { name: t(lang, "levelUp.fieldXp"), value: formatNumber(lang, xp), inline: true },
     )
     .setTimestamp()
-    .setFooter(FOOTER_DBZ);
+    .setFooter({ text: t(lang, "levelUp.footer") });
   if (zeniBonus && zeniBonus > 0) {
     embed.addFields({
-      name: "Récompense",
+      name: t(lang, "levelUp.fieldReward"),
       value: `**+${formatZeni(zeniBonus)}**`,
       inline: true,
     });

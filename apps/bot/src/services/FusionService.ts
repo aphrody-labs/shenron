@@ -27,7 +27,14 @@ export interface FusionInput {
   fusedName?: string; // requis si state = success
 }
 
-const BG_FILE = "assets/backgrounds/aurora/aurora-borealis-at-kennedy-space-center.webp";
+/**
+ * Backgrounds in order of preference: the aurora image (not shipped to production), then a
+ * built-in banner; when neither is on disk the canvas draws its gradient.
+ */
+const BG_CANDIDATES = [
+  "assets/backgrounds/aurora/aurora-borealis-at-kennedy-space-center.webp",
+  "assets/banners/banner-15.jpg",
+] as const;
 const COLOR_A = "#F85B1A"; // orange Goku
 const COLOR_B = "#2955DC"; // bleu Vegeta
 const COLOR_FUSION = "#ec4899"; // rose central
@@ -63,7 +70,8 @@ export class FusionService {
   }
 
   private async loadBg(): Promise<Image | null> {
-    return this.bgCache.get(BG_FILE);
+    const file = this.bgCache.firstAvailable(BG_CANDIDATES);
+    return file ? this.bgCache.get(file) : null;
   }
 
   async render(input: FusionInput): Promise<Buffer> {

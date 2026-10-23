@@ -147,7 +147,7 @@ import { FusionService } from "~/services/FusionService";
 import { WikiService } from "~/services/WikiService";
 import { DatabooksService } from "~/services/DatabooksService";
 import { LeaderboardService, type LeaderboardEntry } from "~/services/LeaderboardService";
-import { LevelService, rankOrdering } from "~/services/LevelService";
+import { LevelService, rankOrdering, rankedMembersOnly } from "~/services/LevelService";
 import { getLevelThresholds, levelForXP, xpProgress, type LevelThreshold } from "~/lib/xp";
 import { hybridSearch, logRagHealth } from "~/lib/rag";
 import { contextPublicRag, searchPublicRag } from "./public-rag";
@@ -1910,6 +1910,7 @@ export class ApiServer {
                     action,
                     gte(actionLogs.createdAt, since),
                     sql`${actionLogs.userId} is not null`,
+                    rankedMembersOnly(actionLogs.userId),
                   ),
                 )
                 .groupBy(actionLogs.userId)
@@ -1938,7 +1939,7 @@ export class ApiServer {
               const current = await dbs.db
                 .select({ id: users.id, xp: users.xp, zeni: users.zeni })
                 .from(users)
-                .where(sql`${col} > 0`)
+                .where(and(sql`${col} > 0`, rankedMembersOnly(users.id)))
                 .orderBy(...rankOrdering(col))
                 .limit(limit);
               for (const r of current) rows.push({ ...r, level: levelForXP(r.xp) });
@@ -4705,7 +4706,7 @@ export class ApiServer {
               dailyStreak: users.dailyStreak,
             })
             .from(users)
-            .where(sql`${col} > 0`)
+            .where(and(sql`${col} > 0`, rankedMembersOnly(users.id)))
             .orderBy(...rankOrdering(col))
             .limit(limit);
           return Response.json({ metric, limit, users: rows });
@@ -4968,7 +4969,7 @@ export class ApiServer {
             const rows = await dbs.db
               .select({ id: users.id, xp: users.xp, zeni: users.zeni })
               .from(users)
-              .where(sql`${col} > 0`)
+              .where(and(sql`${col} > 0`, rankedMembersOnly(users.id)))
               .orderBy(...rankOrdering(col))
               .limit(limit);
             const fetched = await Promise.all(

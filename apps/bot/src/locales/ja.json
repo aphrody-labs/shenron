@@ -13,5 +13,67 @@
     "failed": "❌ コマンドの実行中に内部エラーが発生しました。しばらくしてからもう一度お試しください。",
     "unknown": "不明または期限切れのコマンドです。Discord を再読み込み（Ctrl+R）して一覧を更新してください。",
     "paginationExpired": "このページ送りは期限切れです。コマンドをもう一度実行して続きを読んでください。"
+  },
+  "templates": {
+    "achievement_unlocked": "{user} が実績 **{name}** を解除しました！",
+    "first_message": "{user} が実績 **{name}** を解除しました！",
+    "daily_quest": "{user} が毎日の修行で **{zeni} Ƶ** を獲得しました（連続 {streakDays}）。",
+    "sleepcall_start": "🌙 <#{channelId}> でスリープコールを開始しました（{membersLabel}）。{endHour}時までボイス XP {multiplier}、ミュート中も対象です。",
+    "sleepcall_end": "☀️ <#{channelId}> のスリープコールが終了しました：{duration} ・ {participantsLabel} ・ 合計 {xp} XP を獲得。"
+  },
+  "titles": {
+    "welcome": "🌟 新たな戦士！",
+    "farewell": "👋 さらば、戦士よ",
+    "level_up": "🚀 新しい段階に到達！",
+    "achievement_unlocked": "🏆 実績を解除",
+    "first_message": "🏆 実績を解除",
+    "daily_quest": "🎯 デイリークエスト",
+    "anti_link_jail": "⛓️ 自動投獄",
+    "jail_expired": "🕊️ 釈放",
+    "giveaway_winner": "🎁 抽選",
+    "vocal_tempo_created": "🔊 一時ボイスチャンネルを作成",
+    "vocal_tempo_destroyed": "🔇 一時ボイスチャンネルを削除"
+  },
+  "achievements": {
+    "names": {
+      "FIRST_MESSAGE": "はじめてのメッセージ",
+      "KAMEHAMEHA": "かめはめ波",
+      "OVER_9000": "戦闘力9000超え",
+      "GENKIDAMA": "元気玉",
+      "NAMEK": "ナメック星",
+      "SAIYAN": "サイヤ人",
+      "DRAGON_BALL": "ドラゴンボール",
+      "SHENRON": "神龍",
+      "PORUNGA": "ポルンガ",
+      "KAIOKEN": "界王拳",
+      "ULTRA_INSTINCT": "身勝手の極意",
+      "GOD_MODE": "神の領域",
+      "FINAL_FLASH": "ファイナルフラッシュ",
+      "GALICK_GUN": "ギャリック砲",
+      "MAKANKOSAPPO": "魔貫光殺砲",
+      "CHICHI_SIMP": "チチが怖い"
+    }
+  },
+  "plural": {
+    "days": { "one": "{count}日", "other": "{count}日" },
+    "members": { "one": "{count}人", "other": "{count}人" },
+    "participants": { "one": "参加者{count}人", "other": "参加者{count}人" }
+  },
+  "duration": {
+    "day": "{n}日",
+    "hour": "{n}時間",
+    "minute": "{n}分",
+    "second": "{n}秒",
+    "separator": ""
+  },
+  "levelUp": {
+    "title": "レベル{level}に到達！",
+    "titleRange": "レベル{from} → {level}に到達！",
+    "fieldLevel": "レベル",
+    "fieldXp": "XP",
+    "fieldReward": "報酬",
+    "footer": "Shenron · DBZ の願いを叶えよう",
+    "reached": "<@{userId}> が **{xp} XP** に到達しました！",
+    "powerUp": "<@{userId}> がパワーアップ！"
   }
 }

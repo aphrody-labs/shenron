@@ -52,6 +52,15 @@ export class BackgroundCacheService {
     return existsSync(botFile(relativePath));
   }
 
+  /**
+   * First of `candidates` that is on disk, `null` when none is. Canvases list their preferred
+   * background (the NASA set, never shipped to production) then a built-in banner, and fall
+   * back to their gradient: nothing absent is ever requested, so nothing is logged.
+   */
+  firstAvailable(candidates: readonly string[]): string | null {
+    return candidates.find((candidate) => this.exists(candidate)) ?? null;
+  }
+
   private async load(relativePath: string, optional: boolean): Promise<Image | null> {
     const absolute = botFile(relativePath);
     try {

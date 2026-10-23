@@ -2,6 +2,7 @@
  * Textes DBZ-thémés des passages de palier (`levelUpMessage`, 3 variantes par
  * niveau). La quête quotidienne est rendue par le template `daily_quest`.
  */
+import { t, type BotLang } from "./i18n";
 import { formatXP, xpRequiredForLevel } from "./xp";
 
 function pick<T>(arr: readonly T[]): T {
@@ -67,13 +68,17 @@ const LEVEL_FLAVORS: Record<number, readonly string[]> = {
   ],
 };
 
-export function levelUpMessage(userId: string, newLevel: number): string {
+/**
+ * Announcement text of a level: the header (in `lang`, amounts always in "XP"), followed in
+ * French by one of the flavor lines of the tier (they exist in French only).
+ */
+export function levelUpMessage(userId: string, newLevel: number, lang: BotLang = "fr"): string {
   const reqXp = xpRequiredForLevel(newLevel);
   const threshold = Number.isFinite(reqXp) ? { level: newLevel, xp: reqXp } : undefined;
-  const variants = LEVEL_FLAVORS[newLevel];
+  const variants = lang === "fr" ? LEVEL_FLAVORS[newLevel] : undefined;
   const flavor = variants ? pick(variants) : undefined;
   const header = threshold
-    ? `<@${userId}> a atteint les **${formatXP(threshold.xp)} unités** !`
-    : `<@${userId}> monte en puissance !`;
+    ? t(lang, "levelUp.reached", { userId, xp: formatXP(threshold.xp) })
+    : t(lang, "levelUp.powerUp", { userId });
   return flavor ? `${header}\n${flavor}` : header;
 }

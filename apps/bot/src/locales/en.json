@@ -13,5 +13,67 @@
     "failed": "❌ The command hit an internal error. Try again in a moment.",
     "unknown": "Unknown or expired command. Reload Discord (Ctrl+R) to refresh the list.",
     "paginationExpired": "This pagination has expired. Run the command again to keep reading."
+  },
+  "templates": {
+    "achievement_unlocked": "{user} unlocks the achievement **{name}**!",
+    "first_message": "{user} unlocks the achievement **{name}**!",
+    "daily_quest": "{user} collects **{zeni} Ƶ** for their daily training (streak: {streakDays}).",
+    "sleepcall_start": "🌙 Sleepcall started in <#{channelId}> ({membersLabel}): voice XP {multiplier} until {endHour}:00, muted mics and headsets included.",
+    "sleepcall_end": "☀️ Sleepcall ended in <#{channelId}>: {duration} · {participantsLabel} · {xp} XP earned in total."
+  },
+  "titles": {
+    "welcome": "🌟 New fighter!",
+    "farewell": "👋 Farewell, warrior",
+    "level_up": "🚀 New tier reached!",
+    "achievement_unlocked": "🏆 Achievement unlocked",
+    "first_message": "🏆 Achievement unlocked",
+    "daily_quest": "🎯 Daily quest",
+    "anti_link_jail": "⛓️ Automatic jail",
+    "jail_expired": "🕊️ Release",
+    "giveaway_winner": "🎁 Giveaway",
+    "vocal_tempo_created": "🔊 Temporary voice channel created",
+    "vocal_tempo_destroyed": "🔇 Temporary voice channel removed"
+  },
+  "achievements": {
+    "names": {
+      "FIRST_MESSAGE": "First message",
+      "KAMEHAMEHA": "Kamehameha",
+      "OVER_9000": "It's over 9000!",
+      "GENKIDAMA": "Spirit Bomb",
+      "NAMEK": "Namek",
+      "SAIYAN": "Saiyan",
+      "DRAGON_BALL": "Dragon Ball",
+      "SHENRON": "Shenron",
+      "PORUNGA": "Porunga",
+      "KAIOKEN": "Kaio-ken",
+      "ULTRA_INSTINCT": "Ultra Instinct",
+      "GOD_MODE": "Divine state",
+      "FINAL_FLASH": "Final Flash",
+      "GALICK_GUN": "Galick Gun",
+      "MAKANKOSAPPO": "Special Beam Cannon",
+      "CHICHI_SIMP": "Afraid of Chi-Chi"
+    }
+  },
+  "plural": {
+    "days": { "one": "{count} day", "other": "{count} days" },
+    "members": { "one": "{count} member", "other": "{count} members" },
+    "participants": { "one": "{count} participant", "other": "{count} participants" }
+  },
+  "duration": {
+    "day": "{n} d",
+    "hour": "{n} h",
+    "minute": "{n} min",
+    "second": "{n} s",
+    "separator": " "
+  },
+  "levelUp": {
+    "title": "Level {level} reached!",
+    "titleRange": "Level {from} → {level} reached!",
+    "fieldLevel": "Level",
+    "fieldXp": "XP",
+    "fieldReward": "Reward",
+    "footer": "Shenron · make your DBZ wishes come true",
+    "reached": "<@{userId}> has reached **{xp} XP**!",
+    "powerUp": "<@{userId}> is powering up!"
   }
 }

@@ -1,4 +1,5 @@
 /** Durées des sanctions et des vocaux : `"10m"` ↔ millisecondes, en TypeScript pur. */
+import { t, type BotLang } from "~/lib/i18n";
 
 /**
  * Parse `"10m"`, `"1h"`, `"7d"`, `"2w"` → millisecondes.
@@ -70,4 +71,30 @@ export function formatDuration(ms: number): string {
     return `${divRound(abs, 60000)}min`;
   }
   return `${divRound(abs, 1000)}s`;
+}
+
+/**
+ * Readable elapsed time for announcements, localized and never ambiguous: `3 h 25 min`,
+ * `45 min`, `1 j 2 h`, `42 s`. At most two units, from the largest one; minutes are rounded.
+ */
+export function formatElapsed(ms: number, lang: BotLang): string {
+  const abs = Math.abs(ms);
+  const unit = (key: "day" | "hour" | "minute" | "second", n: number) =>
+    t(lang, `duration.${key}`, { n });
+  if (abs < 60_000) return unit("second", Math.round(abs / 1000));
+  const totalMinutes = Math.round(abs / 60_000);
+  const days = Math.floor(totalMinutes / 1440);
+  const hours = Math.floor((totalMinutes % 1440) / 60);
+  const minutes = totalMinutes % 60;
+  const parts: string[] = [];
+  if (days > 0) {
+    parts.push(unit("day", days));
+    if (hours > 0) parts.push(unit("hour", hours));
+  } else if (hours > 0) {
+    parts.push(unit("hour", hours));
+    if (minutes > 0) parts.push(unit("minute", minutes));
+  } else {
+    parts.push(unit("minute", minutes));
+  }
+  return parts.join(t(lang, "duration.separator"));
 }

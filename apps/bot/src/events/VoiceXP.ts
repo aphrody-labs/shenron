@@ -11,7 +11,8 @@ import { XP_VOICE_TICK_MS, VOCAL_TEMPO_EMPTY_DELAY_MS } from "~/lib/constants";
 import { env } from "~/lib/env";
 import { resolveLevelChannel } from "~/lib/announce";
 import { boosterXpMultiplier } from "~/lib/booster";
-import { formatDuration } from "~/lib/duration";
+import { formatElapsed } from "~/lib/duration";
+import { formatNumber, tn } from "~/lib/i18n";
 import {
   bestRoleMultiplier,
   formatMultiplier,
@@ -168,7 +169,13 @@ export class VoiceXPEvent {
     }
     if (res.levelUp && member) {
       const announce = await resolveLevelChannel(client, guild);
-      await this.levels.handleLevelUp(member, res.newLevel, announce ?? undefined, res.oldLevel);
+      await this.levels.handleLevelUp(
+        member,
+        res.newLevel,
+        announce ?? undefined,
+        res.oldLevel,
+        res.levelZeni,
+      );
     }
   }
 
@@ -233,11 +240,13 @@ export class VoiceXPEvent {
       sleepcall = { channelId, startedAt: now, lastSeenAt: now, participants: new Set(), xp: 0 };
       this.sleepcalls.set(channelId, sleepcall);
       if (this.adopted && cfg.sleepcall.announce) {
+        const lang = await this.msg.lang();
         await this.msg.publish(
           "sleepcall_start",
           {
             channelId,
             members: ctx.earners.length,
+            membersLabel: tn(lang, "plural.members", ctx.earners.length),
             multiplier: formatMultiplier(cfg.sleepcall.multiplier),
             endHour: cfg.night.endHour,
           },
@@ -281,13 +290,28 @@ export class VoiceXPEvent {
         logger.warn({ err, channelId: sleepcall.channelId }, "sleepcall log failed");
       }
       if (cfg.sleepcall.announce) {
+        // A summary that reports no XP is noise (and wrong when gains were refused or failed):
+        // it is not published, the reason is logged for the operators.
+        if (sleepcall.xp <= 0) {
+          logger.warn(
+            {
+              channelId: sleepcall.channelId,
+              participants: sleepcall.participants.size,
+              durationMs,
+            },
+            "sleepcall summary skipped: no XP was granted during the call",
+          );
+          continue;
+        }
+        const lang = await this.msg.lang();
         await this.msg.publish(
           "sleepcall_end",
           {
             channelId: sleepcall.channelId,
-            duration: formatDuration(durationMs),
+            duration: formatElapsed(durationMs, lang),
             participants: sleepcall.participants.size,
-            xp: sleepcall.xp.toLocaleString("fr-FR"),
+            participantsLabel: tn(lang, "plural.participants", sleepcall.participants.size),
+            xp: formatNumber(lang, sleepcall.xp),
           },
           client,
         );

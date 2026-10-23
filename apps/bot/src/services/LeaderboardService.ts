@@ -33,7 +33,14 @@ export interface LeaderboardMeta {
   generatedAt?: Date;
 }
 
-const BG_FILE = "assets/backgrounds/nebula/weighing-in-on-the-dumbbell-nebula.webp";
+/**
+ * Backgrounds in order of preference: the nebula image (not shipped to production), then a
+ * built-in banner; when neither is on disk the canvas draws its gradient.
+ */
+const BG_CANDIDATES = [
+  "assets/backgrounds/nebula/weighing-in-on-the-dumbbell-nebula.webp",
+  "assets/banners/banner-02.jpg",
+] as const;
 
 // Configuration Toriyama des médailles de podium
 const PODIUM_CONFIG = {
@@ -81,7 +88,8 @@ export class LeaderboardService {
   }
 
   private async loadBg(): Promise<Image | null> {
-    return this.bgCache.get(BG_FILE);
+    const file = this.bgCache.firstAvailable(BG_CANDIDATES);
+    return file ? this.bgCache.get(file) : null;
   }
 
   async render(entries: LeaderboardEntry[], meta: LeaderboardMeta): Promise<Buffer> {

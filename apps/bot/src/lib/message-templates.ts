@@ -11,7 +11,12 @@
  *
  * Le `MessageTemplateService` charge la table `message_templates` (cache 30s),
  * fusionne avec les défauts ci-dessous et expose `render(event, vars)`.
+ *
+ * Les défauts de texte vivent dans les dictionnaires du bot (`locales/*.json`, section
+ * `templates`) : `defaultTemplate` en est la version française (référence du dashboard),
+ * `defaultTemplateFor` la version dans la langue des annonces.
  */
+import { tryT, t, type BotLang } from "~/lib/i18n";
 
 export interface EventDef {
   event: string;
@@ -95,12 +100,13 @@ export const EVENTS: readonly EventDef[] = [
   {
     event: "achievement_unlocked",
     description: "Débloquage d'un succès",
-    defaultTemplate: "{user} débloque l'accomplissement **{code}** !",
+    defaultTemplate: t("fr", "templates.achievement_unlocked"),
     defaultChannelKey: "channel.achievement",
     variables: [
       { name: "user", description: "Mention du membre" },
       { name: "userName", description: "Pseudo" },
-      { name: "code", description: "Code du succès (ex: KAMEHAMEHA)" },
+      { name: "name", description: "Nom lisible du succès, dans la langue des annonces" },
+      { name: "code", description: "Code technique du succès (ex: KAMEHAMEHA)" },
       {
         name: "description",
         description: "Description du succès si configurée",
@@ -111,24 +117,25 @@ export const EVENTS: readonly EventDef[] = [
   {
     event: "first_message",
     description: "Premier message d'un membre (auto-attribué)",
-    defaultTemplate: "{user} débloque l'accomplissement **Premier message** !",
+    defaultTemplate: t("fr", "templates.first_message"),
     defaultChannelKey: "channel.achievement",
     variables: [
       { name: "user", description: "Mention du membre" },
       { name: "userName", description: "Pseudo" },
+      { name: "name", description: "Nom lisible du succès, dans la langue des annonces" },
     ],
     embed: true,
   },
   {
     event: "daily_quest",
     description: "Récompense de la quête quotidienne (premier message du jour)",
-    defaultTemplate:
-      "{user} récupère **{zeni} Ƶ** pour son entraînement quotidien (streak {streak} jours).",
+    defaultTemplate: t("fr", "templates.daily_quest"),
     defaultChannelKey: "channel.zeni",
     variables: [
       { name: "user", description: "Mention" },
       { name: "zeni", description: "Zénis gagnés" },
-      { name: "streak", description: "Jours consécutifs" },
+      { name: "streak", description: "Jours consécutifs (nombre)" },
+      { name: "streakDays", description: "Jours consécutifs accordés (« 1 jour », « 5 jours »)" },
     ],
     embed: true,
   },
@@ -212,12 +219,12 @@ export const EVENTS: readonly EventDef[] = [
   {
     event: "sleepcall_start",
     description: "Début d'un sleepcall (vocal à plusieurs pendant la nuit, boost d'XP)",
-    defaultTemplate:
-      "🌙 Sleepcall lancé dans <#{channelId}> ({members} membres) : XP vocale {multiplier} jusqu'à {endHour} h, micro et casque coupés compris.",
+    defaultTemplate: t("fr", "templates.sleepcall_start"),
     defaultChannelKey: "channel.level",
     variables: [
       { name: "channelId", description: "ID du salon vocal" },
-      { name: "members", description: "Membres présents au lancement" },
+      { name: "members", description: "Membres présents au lancement (nombre)" },
+      { name: "membersLabel", description: "Membres présents accordés (« 2 membres »)" },
       { name: "multiplier", description: "Multiplicateur du sleepcall (ex: ×2,5)" },
       { name: "endHour", description: "Heure de fin de la nuit" },
     ],
@@ -226,13 +233,13 @@ export const EVENTS: readonly EventDef[] = [
   {
     event: "sleepcall_end",
     description: "Fin d'un sleepcall d'au moins 15 minutes, avec son bilan",
-    defaultTemplate:
-      "☀️ Fin du sleepcall dans <#{channelId}> : {duration} à {participants}, {xp} XP gagnés au total.",
+    defaultTemplate: t("fr", "templates.sleepcall_end"),
     defaultChannelKey: "channel.level",
     variables: [
       { name: "channelId", description: "ID du salon vocal" },
-      { name: "duration", description: "Durée du sleepcall" },
-      { name: "participants", description: "Nombre de participants" },
+      { name: "duration", description: "Durée du sleepcall (« 3 h 25 min »)" },
+      { name: "participants", description: "Nombre de participants (nombre)" },
+      { name: "participantsLabel", description: "Participants accordés (« 11 participants »)" },
       { name: "xp", description: "XP gagnée par l'ensemble des participants" },
     ],
     embed: true,
@@ -295,6 +302,14 @@ export const EVENTS: readonly EventDef[] = [
 
 export function findEvent(event: string): EventDef | undefined {
   return EVENTS.find((e) => e.event === event);
+}
+
+/**
+ * Default text of an event in `lang`: the `templates.<event>` dictionary entry when the bot
+ * has one, else the catalogue default. An admin override (`message_templates`) always wins over it.
+ */
+export function defaultTemplateFor(def: EventDef, lang: BotLang): string {
+  return tryT(lang, `templates.${def.event}`) ?? def.defaultTemplate;
 }
 
 /**

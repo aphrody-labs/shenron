@@ -11,6 +11,7 @@ import {
 } from "~/lib/constants";
 import { RACE_IDS, RACES, REGEN_XP, REGEN_ZENI, setRaceTuning } from "~/lib/races";
 import { DEFAULT_XP_BOOST_CONFIG as XP_BOOST } from "~/lib/xp-boosts";
+import { botLang, type BotLang } from "~/lib/i18n";
 
 /**
  * Settings runtime — table key/value persistée en SQLite.
@@ -819,6 +820,16 @@ export const SETTINGS_KEYS: SettingDef[] = [
     description: "Rôle 'Héros du peuple' (booster serveur — boost XP auto via xp.boost.boosters)",
   },
 
+  // ── Langue des annonces ────────────────────────────────────────
+  {
+    key: "bot.language",
+    type: "string",
+    category: "advanced",
+    description:
+      "Langue des annonces publiques du bot (niveaux, succès, quêtes, sleepcalls) : fr, en ou ja.",
+    default: "fr",
+  },
+
   // ── Vocal éphémère ─────────────────────────────────────────────
   {
     key: "vocal.tempo_empty_delay_ms",
@@ -1257,6 +1268,11 @@ export class SettingsService {
     return (await this.getRaw(key)) ?? fallback;
   }
 
+  /** Language of the public announcements (`bot.language`); French unless set to en or ja. */
+  async getLanguage(): Promise<BotLang> {
+    return botLang(await this.getRaw("bot.language"));
+  }
+
   async getSnowflake(key: string): Promise<string | undefined> {
     const v = await this.getRaw(key);
     return v && /^\d{17,20}$/.test(v) ? v : undefined;
@@ -1296,6 +1312,9 @@ export class SettingsService {
     if (!def) throw new Error(`Setting inconnue : ${key}`);
     if (key === "economy.ursaf.mode" && !/^(off|notice|collect)$/.test(value)) {
       throw new Error(`${key} attend off, notice ou collect.`);
+    }
+    if (key === "bot.language" && !/^(fr|en|ja)$/.test(value)) {
+      throw new Error(`${key} attend fr, en ou ja.`);
     }
     if (key === "xp.night.timezone") {
       try {

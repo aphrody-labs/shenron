@@ -33,6 +33,16 @@ export function isDefaultCard(type: CosmeticType, key: string): boolean {
   return type === "card" && (key === "default" || key === "card_default");
 }
 
+/** Options of a zeni credit ({@link EconomyService.addZeni}, {@link EconomyService.creditZeni}). */
+export interface ZeniCreditOptions {
+  propagateFusion?: boolean;
+  kind?: "game" | "stake" | "other";
+  /** Provenance du gain, pour l'anti-triche et le grand livre. */
+  source?: ZeniSource;
+  /** `false` quand l'appelant a déjà appliqué le multiplicateur de race. */
+  applyRace?: boolean;
+}
+
 @singleton()
 export class EconomyService {
   constructor(
@@ -75,17 +85,25 @@ export class EconomyService {
   async addZeni(
     userId: string,
     amount: number,
-    options: {
-      propagateFusion?: boolean;
-      kind?: "game" | "stake" | "other";
-      /** Provenance du gain, pour l'anti-triche et le grand livre. */
-      source?: ZeniSource;
-      /** `false` quand l'appelant a déjà appliqué le multiplicateur de race. */
-      applyRace?: boolean;
-    } = {
+    options: ZeniCreditOptions = {
       propagateFusion: true,
     },
   ): Promise<number | undefined> {
+    return (await this.creditZeni(userId, amount, options)).fusionBonus;
+  }
+
+  /**
+   * Même crédit que {@link addZeni}, mais rapporte ce qui a réellement été versé : `credited`
+   * vaut 0 quand le compte est gelé ou introuvable. Les annonces publiques (palier franchi)
+   * affichent ce montant, pas celui qui était prévu.
+   */
+  async creditZeni(
+    userId: string,
+    amount: number,
+    options: ZeniCreditOptions = {
+      propagateFusion: true,
+    },
+  ): Promise<{ credited: number; fusionBonus?: number }> {
     await this.ensureUser(userId);
     if (!Number.isFinite(amount)) throw new Error("Montant de zénis invalide.");
     amount = Math.trunc(amount);
@@ -105,7 +123,7 @@ export class EconomyService {
         reason: "Gains gelés par l'anti-triche",
         meta: { amount, source, kind: options.kind ?? "other" },
       });
-      return undefined;
+      return { credited: 0 };
     }
     // Multiplicateur de RACE : Terrien +25 % (général), Majin +50 % sur les jeux.
     if (amount > 0 && !isStake && options.applyRace !== false) {
@@ -130,7 +148,7 @@ export class EconomyService {
     }
     if (!after) {
       logger.error({ userId, amount, source }, "zeni credit matched no users row");
-      return undefined;
+      return { credited: 0 };
     }
     if (amount > 0) {
       await this.ledger({
@@ -156,11 +174,11 @@ export class EconomyService {
         const bonus = Math.floor(amount * ratio);
         if (bonus > 0) {
           await this.addZeni(partner, bonus, { propagateFusion: false, source: "fusion" });
-          return bonus;
+          return { credited: Math.max(0, amount), fusionBonus: bonus };
         }
       }
     }
-    return undefined;
+    return { credited: Math.max(0, amount) };
   }
 
   /**

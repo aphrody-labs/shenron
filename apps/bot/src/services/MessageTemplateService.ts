@@ -8,6 +8,7 @@ import { messageTemplates, type MessageTemplate } from "~/db/schema";
 import { SettingsService } from "./SettingsService";
 import {
   EVENTS,
+  defaultTemplateFor,
   findEvent,
   renderTemplate,
   VIRTUAL_CHANNEL_KEYS,
@@ -16,6 +17,7 @@ import {
 import { brandedEmbed, EMBED_LIMITS, truncate } from "~/lib/embeds";
 import { logger } from "~/lib/logger";
 import { env } from "~/lib/env";
+import { tryT, type BotLang } from "~/lib/i18n";
 
 /**
  * Couche centrale pour publier les messages "événementiels" du bot. Tous les
@@ -53,6 +55,11 @@ export class MessageTemplateService {
 
   private async ensureFresh(): Promise<void> {
     if (Date.now() - this.cacheTs > this.TTL) await this.refresh();
+  }
+
+  /** Language of the public announcements (`bot.language` setting, French by default). */
+  async lang(): Promise<BotLang> {
+    return this.settings.getLanguage();
   }
 
   /** Force le reload du cache (appelé par l'API après un upsert). */
@@ -93,7 +100,8 @@ export class MessageTemplateService {
     await this.ensureFresh();
     const tmpl = this.templateCache.get(event);
     const enabled = tmpl?.enabled ?? true;
-    const rendered = renderTemplate(tmpl?.template ?? def.defaultTemplate, vars);
+    const lang = await this.lang();
+    const rendered = renderTemplate(tmpl?.template ?? defaultTemplateFor(def, lang), vars);
     return { enabled, rendered, def };
   }
 
@@ -150,7 +158,8 @@ export class MessageTemplateService {
       logger.debug({ event, channelKey }, "publish: canal introuvable, skip");
       return null;
     }
-    const content = renderTemplate(tmpl?.template ?? def.defaultTemplate, vars);
+    const lang = await this.lang();
+    const content = renderTemplate(tmpl?.template ?? defaultTemplateFor(def, lang), vars);
     try {
       if (def.embed) {
         // brandedEmbed bounds the description: a long admin template must not fail the send.
@@ -159,7 +168,7 @@ export class MessageTemplateService {
           content: userMention,
           embeds: [
             brandedEmbed({
-              title: this.guessTitle(def),
+              title: this.guessTitle(def, lang),
               description: content,
               kind: "brand",
             }),
@@ -189,7 +198,8 @@ export class MessageTemplateService {
     if (!def) throw new Error(`Événement inconnu : ${event}`);
     await this.ensureFresh();
     const tmpl = this.templateCache.get(event);
-    const template = tmpl?.template ?? def.defaultTemplate;
+    const defaultTemplate = defaultTemplateFor(def, await this.lang());
+    const template = tmpl?.template ?? defaultTemplate;
     const channelKey = tmpl?.channelKey ?? def.defaultChannelKey;
     return {
       event,
@@ -198,7 +208,7 @@ export class MessageTemplateService {
       channelKey,
       enabled: tmpl?.enabled ?? true,
       isOverridden: {
-        template: tmpl?.template != null && tmpl.template !== def.defaultTemplate,
+        template: tmpl?.template != null && tmpl.template !== defaultTemplate,
         channel: tmpl?.channelKey != null && tmpl.channelKey !== def.defaultChannelKey,
       },
     };
@@ -215,10 +225,11 @@ export class MessageTemplateService {
     >
   > {
     await this.ensureFresh();
+    const lang = await this.lang();
     return EVENTS.map((def) => {
       const tmpl = this.templateCache.get(def.event);
       return Object.assign({}, def, {
-        template: tmpl?.template ?? def.defaultTemplate,
+        template: tmpl?.template ?? defaultTemplateFor(def, lang),
         channelKey: tmpl?.channelKey ?? def.defaultChannelKey,
         enabled: tmpl?.enabled ?? true,
         isCustom: !!tmpl,
@@ -279,31 +290,8 @@ export class MessageTemplateService {
     return map[channelKey];
   }
 
-  private guessTitle(def: EventDef): string {
-    switch (def.event) {
-      case "welcome":
-        return "🌟 Nouveau combattant !";
-      case "farewell":
-        return "👋 Au revoir guerrier";
-      case "level_up":
-        return "🚀 Nouveau palier atteint !";
-      case "achievement_unlocked":
-      case "first_message":
-        return "🏆 Accomplissement débloqué";
-      case "daily_quest":
-        return "🎯 Quête quotidienne";
-      case "anti_link_jail":
-        return "⛓️ Jail automatique";
-      case "jail_expired":
-        return "🕊️ Libération";
-      case "giveaway_winner":
-        return "🎁 Tirage au sort";
-      case "vocal_tempo_created":
-        return "🔊 Vocal éphémère créé";
-      case "vocal_tempo_destroyed":
-        return "🔇 Vocal éphémère supprimé";
-      default:
-        return def.description;
-    }
+  /** Embed title of an event in `lang` (`titles.<event>`), else the catalogue description. */
+  private guessTitle(def: EventDef, lang: BotLang): string {
+    return tryT(lang, `titles.${def.event}`) ?? def.description;
   }
 }

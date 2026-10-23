@@ -56,6 +56,11 @@ export class AchievementService {
     return granted;
   }
 
+  /** Description configured for a trigger (cached with the triggers), `undefined` when none. */
+  descriptionOf(code: string): string | undefined {
+    return this.cache.triggers.find((t) => t.code === code)?.description ?? undefined;
+  }
+
   async list() {
     return this.dbs.db.select().from(achievementTriggers);
   }

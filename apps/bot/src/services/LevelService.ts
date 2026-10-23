@@ -41,6 +41,17 @@ export function rankOrdering(column: SQLiteColumn) {
   return [desc(column), asc(users.id)] as const;
 }
 
+/**
+ * Members who left the guild, and bots, are not ranked. The `discord_members` mirror is
+ * reliable only after a full sync, so the rule is one-sided: a user is hidden when the mirror
+ * has a row that says `present = 0` or `bot = 1`; a user the mirror does not know stays.
+ * `userId` is the column holding the Discord id in the query (`users.id`, `actionLogs.userId`).
+ * Raw SQL: the mirror tables are managed by the guild mirror, not by the Drizzle schema.
+ */
+export function rankedMembersOnly(userId: SQLiteColumn) {
+  return sql`not exists (select 1 from discord_members dm where dm.user_id = ${userId} and (dm.present = 0 or dm.bot = 1))`;
+}
+
 /** Above this share of members to strip, the pass assumes a wrong database and removes nothing. */
 const MAX_STRIP_SHARE = 0.5;
 /** Maximum number of level-up zeni payments for a single XP gain. */
@@ -154,6 +165,8 @@ export class LevelService {
     newLevel: number;
     /** XP actually added (capped, or 0 when the account is frozen). */
     granted: number;
+    /** Zeni actually credited for the levels crossed (`zeni.per_level` each), 0 when none. */
+    levelZeni: number;
     blocked?: "frozen";
     partnerBonus?: number;
   }> {
@@ -225,7 +238,16 @@ export class LevelService {
 
     if (outcome.blocked) {
       logger.debug({ userId, amount: requested, source }, "XP gain refused: account frozen");
-      return { before, after, levelUp: false, oldLevel, newLevel, granted: 0, blocked: "frozen" };
+      return {
+        before,
+        after,
+        levelUp: false,
+        oldLevel,
+        newLevel,
+        granted: 0,
+        levelZeni: 0,
+        blocked: "frozen",
+      };
     }
 
     // The ledger feeds the audit and the monthly top: its failure must neither cancel an
@@ -249,9 +271,10 @@ export class LevelService {
 
     if (outcome.clip) await this.flagClippedGain(userId, source, requested, ceiling, limits);
 
+    let levelZeni = 0;
     if (levelUp) {
       try {
-        await this.payLevelUp(userId, race, before, after);
+        levelZeni = await this.payLevelUp(userId, race, before, after);
       } catch (err) {
         logger.error({ err, userId, newLevel }, "level-up zeni credit failed");
       }
@@ -271,7 +294,7 @@ export class LevelService {
       }
     }
 
-    return { before, after, levelUp, oldLevel, newLevel, granted, partnerBonus };
+    return { before, after, levelUp, oldLevel, newLevel, granted, levelZeni, partnerBonus };
   }
 
   /** Flags a clipped gain. A spike far above the ceiling freezes the account's gains. */
@@ -305,9 +328,15 @@ export class LevelService {
   /**
    * Level-up zeni: `zeni.per_level` for EACH level crossed (a gain crossing several used to
    * pay only the first), paid level by level so the single-gain anti-cheat threshold never
-   * sees a lumped sum. Zenkai opens once.
+   * sees a lumped sum. Zenkai opens once. Returns the zeni actually credited (a frozen account
+   * receives nothing), which is what the level-up announcement shows.
    */
-  private async payLevelUp(userId: string, race: string | null, before: number, after: number) {
+  private async payLevelUp(
+    userId: string,
+    race: string | null,
+    before: number,
+    after: number,
+  ): Promise<number> {
     const crossed = Math.min(
       MAX_LEVELS_PAID,
       getLevelThresholds().filter((t) => t.xp > before && t.xp <= after).length,
@@ -329,9 +358,13 @@ export class LevelService {
     }
     // Through `addZeni`: freeze, anti-cheat and atomic increment. Race already applied.
     const economy = container.resolve(EconomyService);
+    let credited = 0;
     for (let i = 0; i < crossed; i++) {
-      await economy.addZeni(userId, perLevel, { source: "level", applyRace: false });
+      credited += (
+        await economy.creditZeni(userId, perLevel, { source: "level", applyRace: false })
+      ).credited;
     }
+    return credited;
   }
 
   async partnerOf(userId: string): Promise<string | null> {
@@ -401,7 +434,7 @@ export class LevelService {
     return this.db
       .select()
       .from(users)
-      .where(sql`${users.xp} > 0`)
+      .where(and(sql`${users.xp} > 0`, rankedMembersOnly(users.id)))
       .orderBy(...rankOrdering(users.xp))
       .limit(limit)
       .offset(offset);
@@ -415,10 +448,22 @@ export class LevelService {
   async rankOf(userId: string): Promise<number | null> {
     const u = await this.findUser(userId);
     if (!u || u.xp <= 0) return null;
+    // A member who left (or a bot) has no rank, like in /top: counting only the members who are
+    // ranked keeps the rank of /profil equal to the position shown by /top.
+    const [self] = await this.db
+      .select({ c: sql<number>`count(*)` })
+      .from(users)
+      .where(and(eq(users.id, userId), rankedMembersOnly(users.id)));
+    if (Number(self?.c ?? 0) === 0) return null;
     const [row] = await this.db
       .select({ c: sql<number>`count(*)` })
       .from(users)
-      .where(or(sql`${users.xp} > ${u.xp}`, and(eq(users.xp, u.xp), lt(users.id, u.id))));
+      .where(
+        and(
+          or(sql`${users.xp} > ${u.xp}`, and(eq(users.xp, u.xp), lt(users.id, u.id))),
+          rankedMembersOnly(users.id),
+        ),
+      );
     return Number(row?.c ?? 0) + 1;
   }
 
@@ -426,7 +471,7 @@ export class LevelService {
     const [row] = await this.db
       .select({ c: sql<number>`count(*)` })
       .from(users)
-      .where(sql`${users.xp} > 0`);
+      .where(and(sql`${users.xp} > 0`, rankedMembersOnly(users.id)));
     return Number(row?.c ?? 0);
   }
 
@@ -435,15 +480,19 @@ export class LevelService {
   }
 
   /**
-   * Announcement and rewards of a level change. `fromLevel` = previous level: the tier zeni
-   * (`level_rewards`) is paid for EACH level crossed, while the race tier roles catch up
-   * every level up to `newLevel`.
+   * Announcement and rewards of a level change, once per XP gain even when it crosses several
+   * levels (the embed then reads "Level 12 → 15"). `fromLevel` = previous level: the tier zeni
+   * (`level_rewards`) is paid for EACH level crossed, while the race tier roles catch up every
+   * level up to `newLevel`. `levelZeni` = what `addXP` credited for the levels crossed
+   * (`zeni.per_level`): the announcement shows that credit plus the tier rewards paid here, and
+   * no reward at all for a change that credited nothing (admin adjustment, frozen account).
    */
   async handleLevelUp(
     member: GuildMember,
     newLevel: number,
     fallbackChannel?: TextBasedChannel,
     fromLevel: number = newLevel - 1,
+    levelZeni = 0,
   ) {
     // Le zéni de palier est RACE-AGNOSTIQUE (tout le monde le touche) ; les RÔLES
     // de palier dépendent de la RACE du membre (échelle dédiée, cf. race-levels.ts).
@@ -454,7 +503,6 @@ export class LevelService {
       .orderBy(levelRewards.level);
     // Only the levels crossed here are credited: the previous ones already were.
     const crossedRewards = allRewards.filter((r) => r.level > fromLevel);
-    const bonusZeni = crossedRewards.reduce((s, r) => s + r.zeniBonus, 0);
 
     // Rôles de transformation selon la race : on (re)pose ceux de la race du membre
     // jusqu'au niveau atteint (catch-up des paliers précédents inclus).
@@ -478,14 +526,21 @@ export class LevelService {
     }
 
     const economy = container.resolve(EconomyService);
+    let rewardZeni = 0;
     for (const reward of crossedRewards) {
       if (reward.zeniBonus <= 0) continue;
       try {
-        await economy.addZeni(member.id, reward.zeniBonus, { source: "level", applyRace: false });
+        const res = await economy.creditZeni(member.id, reward.zeniBonus, {
+          source: "level",
+          applyRace: false,
+        });
+        rewardZeni += res.credited;
       } catch (err) {
         logger.error({ err, userId: member.id, level: reward.level }, "level reward zeni failed");
       }
     }
+    // Exactly what was credited, shown as such in the announcement.
+    const bonusZeni = Math.max(0, levelZeni) + rewardZeni;
 
     try {
       await this.db.insert(actionLogs).values({
@@ -511,20 +566,15 @@ export class LevelService {
     if (!channel) return;
 
     const u = await this.getUser(member.id);
-    // Same amount as credited by `addXP` (race applied, one payment per level).
-    const crossedLevels = Math.max(
-      1,
-      getLevelThresholds().filter((t) => t.level > fromLevel && t.level <= newLevel).length,
-    );
-    const baseLevelZeni =
-      applyZeniRace(u?.race, await this.settings.getInt("zeni.per_level", ZENI_PER_LEVEL)) *
-      Math.min(MAX_LEVELS_PAID, crossedLevels);
+    const lang = await this.settings.getLanguage();
     const embed = levelUpEmbed({
       member,
+      lang,
+      fromLevel,
       level: newLevel,
       xp: u?.xp ?? 0,
-      zeniBonus: bonusZeni + baseLevelZeni,
-      message: levelUpMessage(member.id, newLevel),
+      zeniBonus: bonusZeni,
+      message: levelUpMessage(member.id, newLevel, lang),
     });
     await channel.send({ content: `<@${member.id}>`, embeds: [embed] }).catch(() => {});
   }

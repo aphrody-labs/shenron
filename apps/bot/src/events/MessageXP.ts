@@ -24,6 +24,8 @@ import { MessageTemplateService } from "~/services/MessageTemplateService";
 import { ModerationService } from "~/services/ModerationService";
 import { SettingsService } from "~/services/SettingsService";
 import { logger } from "~/lib/logger";
+import { achievementName } from "~/lib/achievement-names";
+import { tn } from "~/lib/i18n";
 
 @Discord()
 @Bot("shenron")
@@ -130,9 +132,16 @@ export class MessageXPEvent {
           action: "ZENI_DAILY",
           meta: JSON.stringify({ amount: dailyZeni }),
         });
+        // `streakDays` agrees the noun with the count ("1 jour", "5 jours"), per language.
+        const lang = await this.msg.lang();
         await this.msg.publish(
           "daily_quest",
-          { user: `<@${userId}>`, zeni: dailyZeni, streak },
+          {
+            user: `<@${userId}>`,
+            zeni: dailyZeni,
+            streak,
+            streakDays: tn(lang, "plural.days", streak),
+          },
           message.client,
         );
       }
@@ -142,17 +151,29 @@ export class MessageXPEvent {
     // Le premier message n'est annoncé qu'à l'attribution effective du succès :
     // deux messages simultanés ne l'annoncent plus deux fois.
     const granted = await this.achievements.checkMessage(userId, message.content);
+    // Members read the localized name of an achievement, never its technical code.
+    const lang = await this.msg.lang();
     if (user.messageCount === 0 && (await this.eco.grantAchievement(userId, "FIRST_MESSAGE"))) {
       await this.msg.publish(
         "first_message",
-        { user: `<@${userId}>`, userName: message.author.username },
+        {
+          user: `<@${userId}>`,
+          userName: message.author.username,
+          name: achievementName(lang, "FIRST_MESSAGE"),
+        },
         message.client,
       );
     }
     for (const code of granted) {
       await this.msg.publish(
         "achievement_unlocked",
-        { user: `<@${userId}>`, userName: message.author.username, code },
+        {
+          user: `<@${userId}>`,
+          userName: message.author.username,
+          code,
+          name: achievementName(lang, code),
+          description: this.achievements.descriptionOf(code) ?? "",
+        },
         message.client,
       );
     }
@@ -231,7 +252,13 @@ export class MessageXPEvent {
         member ??
         (message.guild ? await message.guild.members.fetch(userId).catch(() => null) : null);
       if (leveled) {
-        await this.levels.handleLevelUp(leveled, res.newLevel, announce, res.oldLevel);
+        await this.levels.handleLevelUp(
+          leveled,
+          res.newLevel,
+          announce,
+          res.oldLevel,
+          res.levelZeni,
+        );
       } else {
         logger.warn(
           { userId, newLevel: res.newLevel },
