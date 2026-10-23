@@ -278,7 +278,9 @@ describe("catalogue editorial writes", () => {
   });
   test("movie subtitle JSON is mutable, validated and recorded as a structured revision", async () => {
     expect(WIKI_TABLE_SPECS.db_movies!.mutableColumns).toContain("subtitles");
-    const subtitles = [{ lang: "ja", label: "Japanese · DVD", src: "/assets/subtitles/movie.vtt" }];
+    const subtitles = [
+      { lang: "ja", label: "Japanese · DVD", src: "./assets/subtitles/movie.vtt" },
+    ];
     const response = await write("db_movies", {
       subtitles: JSON.stringify(subtitles),
       title: "Movie",

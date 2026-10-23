@@ -18,7 +18,9 @@ const httpUrl = z
   });
 const subtitleSource = z.string().refine((value) => {
   if (httpUrl.safeParse(value).success) return true;
-  return /^\/?assets\/subtitles\//.test(value) && !value.includes("..") && !/[\\?#]/.test(value);
+  return (
+    /^(?:\.\/|\/)?assets\/subtitles\//.test(value) && !value.includes("..") && !/[\\?#]/.test(value)
+  );
 });
 const subtitle = z
   .object({
