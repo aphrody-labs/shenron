@@ -27,6 +27,17 @@ const CORS = {
   "Access-Control-Max-Age": "86400",
 };
 
+function isCanonValue(value: unknown): boolean {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") return value === 1;
+  if (typeof value !== "string") return false;
+  return value.trim().toLowerCase() === "true" || value.trim() === "1";
+}
+
+function isXenoverseSeries(value: unknown): boolean {
+  return typeof value === "string" && /xv|xenoverse/i.test(value);
+}
+
 export function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS });
 }
@@ -108,11 +119,9 @@ export async function GET(req: NextRequest) {
     const combatants = Array.isArray(b.combatants)
       ? b.combatants.map((c: any) => c?.name ?? String(c))
       : [];
-    const timeline = b.series?.includes("XV")
-      ? "xenoverse"
-      : b.canon
-        ? "manga-canon"
-        : "anime-toei";
+    const isXenoverse = isXenoverseSeries(b.series);
+    const canon = !isXenoverse && isCanonValue(b.canon);
+    const timeline = isXenoverse ? "xenoverse" : canon ? "manga-canon" : "anime-toei";
     allItems.push({
       kind: "battle",
       id: b.id,
@@ -121,7 +130,7 @@ export async function GET(req: NextRequest) {
       title_ja: b.title_ja ?? null,
       series: b.series || "DBZ",
       timeline,
-      canon: Boolean(b.canon),
+      canon,
       href: "/wiki/events",
       summary: b.winner_name ? `Vainqueur : ${b.winner_name}` : null,
       participants: combatants,
@@ -133,7 +142,9 @@ export async function GET(req: NextRequest) {
   }
 
   for (const t of tournaments) {
-    const timeline = t.canon ? "manga-canon" : "anime-toei";
+    const isXenoverse = isXenoverseSeries(t.tournament_type) || /xeno/i.test(t.slug);
+    const canon = !isXenoverse && isCanonValue(t.canon);
+    const timeline = isXenoverse ? "xenoverse" : canon ? "manga-canon" : "anime-toei";
     allItems.push({
       kind: "tournament",
       id: t.id,
@@ -142,7 +153,7 @@ export async function GET(req: NextRequest) {
       title_ja: t.name_ja ?? null,
       series: t.saga?.includes("Super") ? "DBS" : t.saga?.includes("GT") ? "DBGT" : "DB",
       timeline,
-      canon: Boolean(t.canon),
+      canon,
       href: "/wiki/events",
       summary: t.winner_name ? `Champion : ${t.winner_name}` : t.rules_summary,
       participants: [t.winner_name, t.runner_up_name].filter(Boolean) as string[],
@@ -152,7 +163,8 @@ export async function GET(req: NextRequest) {
   }
 
   for (const e of timelineEvents) {
-    const timeline = e.canon ? "manga-canon" : "anime-toei";
+    const canon = isCanonValue(e.canon);
+    const timeline = canon ? "manga-canon" : "anime-toei";
     allItems.push({
       kind: "timeline",
       id: e.id,
@@ -161,7 +173,7 @@ export async function GET(req: NextRequest) {
       title_ja: e.title_ja ?? null,
       series: e.age_year >= 778 ? "DBS" : e.age_year >= 761 ? "DBZ" : "DB",
       timeline,
-      canon: Boolean(e.canon),
+      canon,
       href: `/wiki/timeline#age-${e.age_year}`,
       summary: e.description,
       participants: Array.isArray(e.characters_involved) ? e.characters_involved : [],
