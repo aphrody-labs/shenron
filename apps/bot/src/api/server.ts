@@ -5688,7 +5688,8 @@ export class ApiServer {
           const rows = await dbs.db
             .select()
             .from(u)
-            .orderBy(desc(u.zeni))
+            .where(rankedMembersOnly(u.id))
+            .orderBy(desc(u.zeni), asc(u.id))
             .limit(limit)
             .offset(offset);
           return Response.json({ rows, total: rows.length });

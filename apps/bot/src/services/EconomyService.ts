@@ -9,6 +9,7 @@ import { applyZeniRace } from "~/lib/races";
 import { SettingsService } from "~/services/SettingsService";
 import { AntiCheatService, type ZeniSource } from "~/services/AntiCheatService";
 import { InflationService } from "~/services/InflationService";
+import { rankedMembersOnly } from "~/services/LevelService";
 
 /** Largest exactly representable balance: beyond it a JavaScript integer loses units. */
 export const ZENI_MAX = Number.MAX_SAFE_INTEGER;
@@ -577,12 +578,12 @@ export class EconomyService {
   }
 
   // Classements
-  /** Richest members, same rules as the XP top: balance > 0, ties broken by id. */
+  /** Richest members, same rules as the XP top: balance > 0, ranked members only, ties broken by id. */
   async topRich(limit = 10, offset = 0) {
     return this.db
       .select()
       .from(users)
-      .where(sql`${users.zeni} > 0`)
+      .where(and(sql`${users.zeni} > 0`, rankedMembersOnly(users.id)))
       .orderBy(desc(users.zeni), asc(users.id))
       .limit(limit)
       .offset(offset);

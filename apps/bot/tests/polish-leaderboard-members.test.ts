@@ -1,7 +1,8 @@
 /**
  * Rankings leave out the members who left the guild and the bots, with the rule of the guild
  * mirror (`discord_members`): hidden when a row says `present = 0` or `bot = 1`, kept when the
- * mirror does not know them. /top, the /profil rank and the public API agree.
+ * mirror does not know them. The bot developer's account (`BOT_DEV_ID`) is never ranked.
+ * /top, the /profil rank and the public API agree.
  */
 import "./setup"; // must be first
 import "./polish-api-env";
@@ -10,11 +11,25 @@ import { container } from "tsyringe";
 import { DatabaseService } from "~/db/index";
 import { actionLogs, users } from "~/db/schema";
 import { ApiServer } from "~/api/server";
+import { env } from "~/lib/env";
 
 const { LevelService } = await import("~/services/LevelService");
+const { EconomyService } = await import("~/services/EconomyService");
 
 const dbs = container.resolve(DatabaseService);
 const levels = container.resolve(LevelService);
+const economy = container.resolve(EconomyService);
+
+/** Runs `fn` with `BOT_DEV_ID` set to `id`, then restores it. */
+async function asDeveloper<T>(id: string, fn: () => Promise<T>): Promise<T> {
+  const previous = env.BOT_DEV_ID;
+  env.BOT_DEV_ID = id;
+  try {
+    return await fn();
+  } finally {
+    env.BOT_DEV_ID = previous;
+  }
+}
 
 /** Ranked in this order when everyone is present. */
 const ROSTER = [
@@ -84,6 +99,17 @@ describe("ranking rules", () => {
     expect(await levels.rankOf("6002")).toBe(2);
   });
 
+  test("the bot developer is ranked nowhere: XP top, zeni top, /profil rank", async () => {
+    await asDeveloper("6001", async () => {
+      expect((await levels.top(10)).map((u) => u.id)).toEqual(["6002", "6003", "6004", "6005"]);
+      expect((await economy.topRich(10)).map((u) => u.id)).toEqual(["6002", "6003", "6004", "6005"]);
+      expect(await levels.totalUsers()).toBe(4);
+      expect(await levels.rankOf("6001")).toBeNull();
+      expect(await levels.rankOf("6002")).toBe(1);
+    });
+    expect((await levels.top(1)).map((u) => u.id)).toEqual(["6001"]);
+  });
+
   test("ties keep the stable order (value, then id) among the visible members", async () => {
     await dbs.db.delete(users);
     await dbs.db
@@ -128,6 +154,23 @@ describe("public leaderboard API", () => {
     expect(xp.map((row) => row.rank)).toEqual([1, 2, 3]);
     const zeni = await ranking("metric=zeni&limit=52");
     expect(zeni.map((row) => row.discordId)).toEqual(["6002", "6004", "6005"]);
+  });
+
+  test("the bot developer is absent from the XP, zeni and monthly rankings", async () => {
+    await dbs.db.insert(actionLogs).values({
+      userId: "6003",
+      action: "XP_GAIN",
+      meta: JSON.stringify({ amount: 5000 }),
+    });
+    await asDeveloper("6003", async () => {
+      const xp = await ranking("metric=xp&limit=54");
+      expect(xp.map((row) => row.discordId)).toEqual(["6001", "6002", "6004", "6005"]);
+      expect(xp.map((row) => row.rank)).toEqual([1, 2, 3, 4]);
+      const zeni = await ranking("metric=zeni&limit=55");
+      expect(zeni.map((row) => row.discordId)).toEqual(["6001", "6002", "6004", "6005"]);
+      const month = await ranking("metric=xp&period=month&limit=56");
+      expect(month.map((row) => row.discordId)).not.toContain("6003");
+    });
   });
 
   test("the monthly ranking omits them as well", async () => {

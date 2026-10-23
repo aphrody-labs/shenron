@@ -25,6 +25,7 @@ import {
 } from "~/lib/race-levels";
 import { levelUpMessage } from "~/lib/dbz-flavor";
 import { levelUpEmbed } from "~/lib/embeds";
+import { env } from "~/lib/env";
 import { logger } from "~/lib/logger";
 import { MessageTemplateService } from "~/services/MessageTemplateService";
 import { SettingsService } from "~/services/SettingsService";
@@ -41,15 +42,29 @@ export function rankOrdering(column: SQLiteColumn) {
   return [desc(column), asc(users.id)] as const;
 }
 
+/** Accounts never ranked: the bot developer's (`BOT_DEV_ID`), whose XP and zeni are test values. */
+export function unrankedUserIds(): string[] {
+  return env.BOT_DEV_ID ? [env.BOT_DEV_ID] : [];
+}
+
 /**
- * Members who left the guild, and bots, are not ranked. The `discord_members` mirror is
- * reliable only after a full sync, so the rule is one-sided: a user is hidden when the mirror
- * has a row that says `present = 0` or `bot = 1`; a user the mirror does not know stays.
- * `userId` is the column holding the Discord id in the query (`users.id`, `actionLogs.userId`).
- * Raw SQL: the mirror tables are managed by the guild mirror, not by the Drizzle schema.
+ * Members who left the guild, bots and {@link unrankedUserIds} are not ranked. The
+ * `discord_members` mirror is reliable only after a full sync, so that rule is one-sided: a user
+ * is hidden when the mirror has a row that says `present = 0` or `bot = 1`; a user the mirror
+ * does not know stays. `userId` is the column holding the Discord id in the query (`users.id`,
+ * `actionLogs.userId`). Raw SQL: the mirror tables are managed by the guild mirror, not by the
+ * Drizzle schema.
  */
-export function rankedMembersOnly(userId: SQLiteColumn) {
-  return sql`not exists (select 1 from discord_members dm where dm.user_id = ${userId} and (dm.present = 0 or dm.bot = 1))`;
+export function rankedMembersOnly(
+  userId: SQLiteColumn,
+  unranked: readonly string[] = unrankedUserIds(),
+) {
+  const members = sql`not exists (select 1 from discord_members dm where dm.user_id = ${userId} and (dm.present = 0 or dm.bot = 1))`;
+  if (unranked.length === 0) return members;
+  return sql`${members} and ${userId} not in (${sql.join(
+    unranked.map((id) => sql`${id}`),
+    sql`, `,
+  )})`;
 }
 
 /** Above this share of members to strip, the pass assumes a wrong database and removes nothing. */
