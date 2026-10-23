@@ -2378,7 +2378,6 @@
     "preview": "Page {page} preview",
     "chapter": "Chapter",
     "selected": "{kind} {id} · page {page}",
-    "databook": "Databook",
     "title": "Import from the library"
   },
   "AdminWorkspace": {
@@ -2405,5 +2404,300 @@
     "translationDescription": "Translate and review catalogue pages.",
     "gameCatalogueDescription": "Game characters, skills and item catalogue.",
     "transcriptionTitle": "Transcription workshop"
+  },
+  "adminBot": {
+    "common": {
+      "loadFailed": "Could not load the data.",
+      "retry": "Retry",
+      "loading": "Loading…"
+    },
+    "selector": {
+      "label": "Bot identity",
+      "ping": "Ping {ping} ms",
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "tabs": {
+      "label": "Bot sections",
+      "overview": "Overview",
+      "guild": "Discord server",
+      "commands": "Commands"
+    },
+    "overview": {
+      "intro": "The bot runs on a single Shenron Gateway client that brings together services, commands and events. Legacy persona ids remain aliases for existing integrations.",
+      "status": "Status",
+      "online": "Online",
+      "offline": "Offline",
+      "pingUptime": "Ping {ping} ms · up for {uptime}",
+      "loginDisabled": "Discord login disabled.",
+      "commands": "Commands",
+      "servers": "Servers",
+      "members": "Total members",
+      "serversTitle": "Discord servers",
+      "memberCount": "{count, plural, one {# member} other {# members}}",
+      "joined": "joined {date}",
+      "noServers": "No servers."
+    },
+    "guild": {
+      "stats": {
+        "title": "Server mirror",
+        "description": "Local copy of the Discord members, roles and channels, used by commands and dashboards.",
+        "present": "Members present",
+        "left": "Members left",
+        "bots": "Bots",
+        "boosters": "Boosters",
+        "roles": "Roles",
+        "channels": "Channels",
+        "lastSync": "Last synchronization",
+        "never": "Never",
+        "stale": "The last synchronization is more than 36 h old: run a full synchronization."
+      },
+      "sync": {
+        "button": "Synchronize now",
+        "running": "Synchronizing…",
+        "confirmTitle": "Run a full synchronization?",
+        "confirmBody": "The server channels, roles and members are read again from Discord and rewritten in the bot database. This can take a few seconds.",
+        "confirm": "Synchronize",
+        "failed": "The synchronization failed.",
+        "done": "Synchronization finished in {duration}: {members} members, {left} left, {roles} roles, {channels} channels."
+      },
+      "search": {
+        "title": "Member search",
+        "description": "Search the mirror by id, username, display name or nickname.",
+        "label": "Id, username or nickname",
+        "placeholder": "Id, username or nickname…",
+        "button": "Search",
+        "idle": "Enter a name or an id",
+        "idleHint": "Members who left stay searchable and are marked as such.",
+        "empty": "No member matches “{query}”.",
+        "count": "{count, plural, one {# result} other {# results}}",
+        "limit": "limited to {limit}, refine the search",
+        "present": "Present",
+        "left": "Left",
+        "bot": "Bot",
+        "booster": "Booster",
+        "timeout": "Timed out",
+        "joined": "Joined {date}",
+        "leftAt": "Left {date}"
+      }
+    },
+    "commands": {
+      "title": "Commands ({count})",
+      "description": "Commands the bot registered with Discord.",
+      "filter": "Filter commands",
+      "filterPlaceholder": "Filter…",
+      "empty": "No command registered for this bot.",
+      "noMatch": "No command matches “{query}”.",
+      "nsfw": "NSFW",
+      "optionCount": "{count, plural, one {# option} other {# options}}",
+      "yes": "Yes",
+      "types": {
+        "1": "Slash",
+        "2": "User menu",
+        "3": "Message menu"
+      },
+      "optionTypes": {
+        "1": "subcommand",
+        "2": "subcommand group",
+        "3": "text",
+        "4": "integer",
+        "5": "yes/no",
+        "6": "user",
+        "7": "channel",
+        "8": "role",
+        "9": "mention",
+        "10": "number",
+        "11": "file"
+      },
+      "columns": {
+        "name": "Name",
+        "type": "Type",
+        "required": "Required",
+        "description": "Description",
+        "choices": "Choices"
+      }
+    },
+    "cron": {
+      "intro": "Actions the bot repeats on its own at a regular interval: sanction expiry, stale data cleanup, voice XP ticks…",
+      "refreshNote": "Refreshes every {seconds} s · {count, plural, =0 {no tasks} one {# task} other {# tasks}}",
+      "empty": "No scheduled task registered.",
+      "statusError": "Error",
+      "statusOk": "OK",
+      "statusNever": "Never run",
+      "run": "Run",
+      "runTitle": "Trigger now, outside its cycle",
+      "confirmTitle": "Trigger “{name}” now?",
+      "confirmBody": "The task runs immediately, outside its normal cycle.",
+      "triggered": "Task “{name}” was triggered.",
+      "triggerFailed": "Could not trigger “{name}”: {error}",
+      "intervalSaved": "The cadence of “{name}” was saved.",
+      "intervalFailed": "Could not save the cadence of “{name}”: {error}",
+      "cadence": "Cadence",
+      "runCount": "Runs",
+      "lastRun": "Last run",
+      "nextRun": "Next run",
+      "lastError": "Last error:",
+      "editCadence": "Edit cadence",
+      "intervalLabel": "Interval in seconds",
+      "secondsUnit": "s",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "services": {
+      "intro": "Each bot feature exposes actions you can trigger by hand, without going through Discord: force an update, recompute data, test a behavior.",
+      "warning": "Some actions modify the database: a confirmation is requested.",
+      "filter": "Filter actions",
+      "filterPlaceholder": "Filter by service or action…",
+      "empty": "No action available yet.",
+      "noMatch": "No action matches “{query}”.",
+      "labels": {
+        "settings": "Bot settings",
+        "moderation": "Moderation",
+        "levels": "Levels and XP",
+        "economy": "Economy (zeni)",
+        "tickets": "Support tickets",
+        "giveaway": "Giveaways",
+        "bio": "Bio role",
+        "wiki": "Dragon Ball wiki",
+        "guild": "Server mirror"
+      },
+      "paramsHint": "Parameters as JSON. Leave '{}' when the action takes none.",
+      "paramsLabel": "JSON parameters",
+      "invalidJson": "The parameters are not valid JSON.",
+      "confirmTitle": "Run “{action}” of the “{service}” service?",
+      "confirmNoParams": "With no parameters. This action may modify data.",
+      "confirmParams": "With parameters: {params}. This action may modify data.",
+      "run": "Run",
+      "running": "Running…",
+      "result": "Result",
+      "error": "Error",
+      "failed": "The action failed."
+    },
+    "reports": {
+      "intro": "“Report an error” submissions from signed-in members, handled like tickets: open, in progress, resolved. Separate from the Discord support tickets.",
+      "filters": "Filter by status",
+      "status": {
+        "open": "Open",
+        "in_progress": "In progress",
+        "resolved": "Resolved",
+        "closed": "Closed",
+        "all": "All"
+      },
+      "category": {
+        "bug": "Bug or malfunction",
+        "contenu": "Content error",
+        "lien": "Broken link or media",
+        "suggestion": "Suggestion",
+        "autre": "Other"
+      },
+      "loadFailed": "Could not load the reports.",
+      "emptyAll": "No reports",
+      "empty": "No report with status “{status}”",
+      "emptyHint": "Member submissions will appear here.",
+      "deleteTitle": "Delete this report?",
+      "deleteBody": "Deletion is permanent.",
+      "delete": "Delete",
+      "by": "By {name}",
+      "discordId": "Discord id: {id}",
+      "resolvedBy": "handled by {name}",
+      "noteLabel": "Internal note",
+      "notePlaceholder": "Internal note (handling)…",
+      "saveNote": "Save",
+      "actionFailed": "The action failed, try again."
+    },
+    "settings": {
+      "intro": "Every bot setting lives here: channels, roles, XP gains… Each value has a built-in default; only change what you want to customize.",
+      "summary": "{total} settings · {overridden, plural, =0 {none customized} one {# customized} other {# customized}} · bot cache: 30 s",
+      "empty": "The bot declares no settings.",
+      "saved": "Setting saved.",
+      "reset": "Back to the default value.",
+      "failed": "Failed: {error}",
+      "resetConfirmTitle": "Go back to the default value?",
+      "resetConfirmBody": "The custom value of “{key}” will be removed.",
+      "resetConfirm": "Reset",
+      "resetTitle": "Remove the override and go back to the default",
+      "categories": {
+        "xp": {
+          "label": "XP and levels",
+          "desc": "XP gained per message and in voice, role multipliers."
+        },
+        "economy": {
+          "label": "Economy",
+          "desc": "Zeni rewards, drops, level-up bonuses."
+        },
+        "channels": {
+          "label": "Channels",
+          "desc": "Channels used per function (welcome, logs…)."
+        },
+        "roles": {
+          "label": "Roles",
+          "desc": "Special roles: fusion, jail, bio."
+        },
+        "features": {
+          "label": "Features",
+          "desc": "Enable or disable the bot modules."
+        },
+        "moderation": {
+          "label": "Moderation",
+          "desc": "Warning thresholds, default durations."
+        },
+        "anti_invite": {
+          "label": "Anti-invite",
+          "desc": "Detection of Discord invite links."
+        },
+        "tickets": {
+          "label": "Tickets",
+          "desc": "Notification webhook and display name of tickets."
+        },
+        "gifs": {
+          "label": "Sanction GIFs",
+          "desc": "GIFs of the sanction embeds: warn, mute, kick, ban, jail, purge."
+        },
+        "advanced": {
+          "label": "Advanced",
+          "desc": "Dynamic prefixes (xp.boost.role.ID)."
+        }
+      },
+      "overriddenCount": "{overridden} / {total} customized",
+      "overridden": "Customized",
+      "default": "default: {value}",
+      "close": "Close",
+      "edit": "Edit",
+      "define": "Set",
+      "save": "Save",
+      "add": "Add",
+      "remove": "Remove",
+      "notSet": "not set",
+      "on": "On",
+      "off": "Off",
+      "choose": "Choose…",
+      "enabled": "true (enabled)",
+      "disabled": "false (disabled)",
+      "snowflakePlaceholder": "Discord id (17 to 20 digits)",
+      "httpsRequired": "https URL required",
+      "openGif": "Open the GIF",
+      "syncFailed": "Failed",
+      "xpBoost": {
+        "title": "XP multipliers per role ({count})",
+        "hint": "If a member holds several boosted roles, the <strong>maximum</strong> applies (no stacking).",
+        "multiplier": "Multiplier",
+        "add": "Add the booster"
+      },
+      "tickets": {
+        "title": "Staff access per ticket type",
+        "hint": "Roles added here can see and write in the <strong>new</strong> tickets of this type as soon as they open. Administrators already see everything. Use the resync button for tickets already open.",
+        "kinds": {
+          "report": "Report",
+          "achat": "Purchase",
+          "shop": "Shop",
+          "abus": "Permission abuse",
+          "staff": "Staff application"
+        },
+        "none": "No role configured for “{kind}”: only the ticket author and administrators can see it.",
+        "syncOpen": "Apply to tickets already open",
+        "synced": "{updated, plural, one {# channel updated} other {# channels updated}}",
+        "skipped": "{skipped, plural, one {# not found} other {# not found}}"
+      }
+    }
   }
 }
