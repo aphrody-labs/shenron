@@ -11,7 +11,8 @@
   background: var(--background);
 }
 
-.root:has(:global(.shenron-video[data-theater="true"])) {
+.root:has(:global(.shenron-video[data-theater="true"])),
+:global(main#contenu:has(.shenron-video[data-theater="true"])) {
   z-index: 100;
 }
 
