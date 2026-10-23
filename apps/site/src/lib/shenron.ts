@@ -52,7 +52,8 @@ import {
   resolveCharacterParam,
   resolvePlanetParam,
   resolveTransformationParam,
-} from "@aphrody/shenron-config/wiki-slugs";
+} from "@/lib/wiki-slugs";
+import { findCharacterByCanonicalSlug } from "@/lib/wiki-slugs";
 
 interface ShenronUser {
   discordId: string;
@@ -945,10 +946,12 @@ export async function getShenronCharacter(
 ): Promise<CharacterWithRelations | null> {
   try {
     let id: number | null = null;
+    let canonicalSlug: string | null = null;
     if (typeof idOrSlug === "number") {
       id = idOrSlug;
     } else {
       const resolved = resolveCharacterParam(idOrSlug);
+      canonicalSlug = resolved.canonicalSlug;
       if (resolved.id !== null) {
         id = resolved.id;
       }
@@ -961,9 +964,14 @@ export async function getShenronCharacter(
         .from(botCharacters)
         .where(and(eq(botCharacters.id, id), eq(botCharacters.visible, true)))
         .limit(1);
-    } else if (typeof idOrSlug === "string") {
+    }
+
+    if (!c && typeof idOrSlug === "string") {
+      canonicalSlug ??= resolveCharacterParam(idOrSlug).canonicalSlug;
       const all = await db.select().from(botCharacters).where(eq(botCharacters.visible, true));
-      c = all.find((char) => formatCharacterSlug(char) === idOrSlug);
+      c = canonicalSlug
+        ? findCharacterByCanonicalSlug(all, canonicalSlug)
+        : all.find((char) => formatCharacterSlug(char) === idOrSlug);
       if (c) id = c.id;
     }
 
