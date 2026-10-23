@@ -116,6 +116,8 @@ test.skipIf(typeof document === "undefined")(
     expect(f.state().caption).toBe(0);
     expect(f.tracks[0]!.label).toBe("Netflix");
     f.tracks.splice(0, 1);
+    // A new video's default track can become active before metadata is restored.
+    f.tracks[0]!.mode = "showing";
     await f.render("episode-3");
     expect(f.state().caption).toBe(-1);
     expect(f.tracks[0]!.mode).toBe("disabled");

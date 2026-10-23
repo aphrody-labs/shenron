@@ -77,12 +77,10 @@ export function useVideoTextTracks(videoRef: RefObject<HTMLVideoElement | null>,
                   track.label === preference.label,
               );
         // A different edition is not silently selected when the saved variant is absent.
-        if (preference === "off" || preferred !== -1) {
-          list.forEach((track, index) => {
-            if (isCaption(track)) track.mode = index === preferred ? "showing" : "disabled";
-          });
-          if (preference !== "off") lastCaption.current = preference;
-        }
+        list.forEach((track, index) => {
+          if (isCaption(track)) track.mode = index === preferred ? "showing" : "disabled";
+        });
+        if (preference !== "off" && preferred !== -1) lastCaption.current = preference;
       }
       sync();
     };
