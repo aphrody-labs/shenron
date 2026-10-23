@@ -1125,7 +1125,7 @@
         "cpkSearchLabel": "アーカイブ内を検索",
         "cpkSearch": "閲覧",
         "cpkArchiveSize": "アーカイブ全体のサイズ：{size}。選択した項目のみ読み込みます。",
-        "cpkResults": "{count} 件が一致しました（最大100件を表示）。",
+        "cpkResults": "{count} 件が一致しました（最大{max}件を表示）。",
         "cpkNoResults": "一致する項目はありません。",
         "cpkError": "アーカイブを読み込めませんでした。しばらくして再試行してください。",
         "cpkCompressed": "圧縮済み",

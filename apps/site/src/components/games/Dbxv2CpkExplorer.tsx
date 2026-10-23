@@ -29,6 +29,7 @@ type EntryResult = {
 
 const API_PATH = "/api/public/dbxv2/cpk";
 const MAX_ANALYZE_BYTES = 16 * 1024 * 1024;
+const PAGE_SIZE = 100;
 const FORMATS = new Set<GameDataFormat>(["bac", "bdm", "cus", "msg", "pup"]);
 const ERROR_KEYS = {
   unsupported: "communaute.jeux.xenoverse.cpkUnsupported",
@@ -106,7 +107,7 @@ export function Dbxv2CpkExplorer() {
     setIndexState("loading");
     setEntryResults({});
     try {
-      const params = new URLSearchParams({ q: search, limit: "100", offset: "0" });
+      const params = new URLSearchParams({ q: search, limit: String(PAGE_SIZE), offset: "0" });
       const response = await fetch(apiUrl(`/${encodeURIComponent(name)}/find?${params}`), {
         headers: { Accept: "application/json" },
       });
@@ -247,7 +248,7 @@ export function Dbxv2CpkExplorer() {
           {index && (
             <>
               <p className="text-sm text-white/70">
-                {t("communaute.jeux.xenoverse.cpkResults", { count: index.total })}
+                {t("communaute.jeux.xenoverse.cpkResults", { count: index.total, max: PAGE_SIZE })}
               </p>
               {index.entries.length === 0 ? (
                 <p className="text-sm text-white/60">
