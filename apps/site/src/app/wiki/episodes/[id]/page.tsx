@@ -1,3 +1,4 @@
+import { readPlaybackCapabilities } from "@/lib/playback-capabilities";
 /* oxlint-disable react/iframe-missing-sandbox -- legacy UI kept as-is (behavior-preserving lint pass) */
 import { WatchLayout, WatchStage, WatchColumns } from "@/components/episodes/WatchLayout";
 import { T } from "@/components/T";
@@ -11,7 +12,7 @@ import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
 import { dbUniverse } from "@/lib/db-universe";
 import type { EpisodeNavItem } from "@/lib/db-universe";
-import { assetUrl, hlsMasterUrl } from "@/lib/assets";
+import { assetUrl } from "@/lib/assets";
 import { ogMeta } from "@/lib/og";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -45,10 +46,9 @@ import type { TVEpisode, WithContext } from "schema-dts";
 import { excerpt } from "../_text";
 import { idDeFiche } from "../../_id-fiche";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
-// Pré-rend tous les épisodes au build → cache CDN (sinon Next 16 rend la route
-// dynamiquement). L'éditeur admin est un îlot client (useMe) → aucune session SSR.
+// Playback capability is projected at request time; catalogue data keeps its own cache.
 // Utilise `episodeIds()` pour ne transférer que les entiers d'identifiants sans charger
 // les gros payloads JSONB (synopsis, players, frames) en mémoire de build.
 export async function generateStaticParams() {
@@ -168,7 +168,8 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
       ? `${seriesLabel} · ${ep.title}`
       : `${seriesLabel} · épisode ${ep.number_in_series}`;
   const cdnOnly = ep.id === 875 || ep.id === 876;
-  const playback = episodePlayback(ep);
+  const capabilities = await readPlaybackCapabilities();
+  const playback = episodePlayback(ep, capabilities);
   const cdnSource = [
     ep.video_url,
     ep.stream_url,
@@ -196,9 +197,9 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
         subtitles={ep.subtitles ?? undefined}
       />
     ) : null
-  ) : ep.players && ep.players.length > 0 ? (
+  ) : playback.players.length > 0 ? (
     <VideoLecteurs
-      players={ep.players}
+      players={playback.players}
       entityType="episode"
       entityId={ep.id}
       title={episodeTitle}
@@ -207,9 +208,9 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
       // VO sous-titrée : variante VOSTFR (audio japonais) du proxy HLS, avec les
       // pistes de la fiche — les iframes tierces ne peuvent pas les afficher.
       vo={
-        playback.hlsMasterUrl && ep.subtitles?.length
+        playback.voHlsMasterUrl && ep.subtitles?.length
           ? {
-              src: hlsMasterUrl(ep.id, "vostfr"),
+              src: playback.voHlsMasterUrl,
               title: episodeTitle,
               poster: ep.image ? assetUrl(ep.image) : undefined,
               subtitles: ep.subtitles,
@@ -231,14 +232,6 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
       poster={ep.image ? assetUrl(ep.image) : undefined}
       subtitles={ep.subtitles ?? undefined}
     />
-  ) : ep.image ? (
-    <div className="dbz-panel p-2 aspect-video bg-dbz-bg overflow-hidden">
-      <img
-        src={assetUrl(ep.image)}
-        alt={ep.title}
-        className="w-full h-full object-cover rounded-lg opacity-90"
-      />
-    </div>
   ) : null;
 
   // Téléchargement réellement résoluble ? Le bot résout à la volée depuis les

@@ -1,4 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
+import {
+  supportsPlaybackVariant,
+  unavailablePlaybackCapabilities,
+  type PlaybackCapabilities,
+} from "@aphrody/shenron-api/contract";
 import { episodePlaybackMetadata } from "@aphrody/shenron-media/episode-playback";
 import { approvedEpisodeVideoURL, isShenronEpisodeVideoURL } from "./episode-video-source";
 import { hlsMasterUrl } from "./assets";
@@ -27,16 +32,22 @@ export function episodeMp4Source(input: EpisodePlaybackInput): URL | null {
 }
 
 /** Public metadata exposes host transports, never stored stream tokens or headers. */
-export function episodePlayback(input: EpisodePlaybackInput) {
+export function episodePlayback(
+  input: EpisodePlaybackInput,
+  capabilities: PlaybackCapabilities = unavailablePlaybackCapabilities(),
+) {
   const metadata = episodePlaybackMetadata(input);
   const approvedMp4 = episodeMp4Source(input);
   const hls = input.stream_url && URL.canParse(input.stream_url) ? new URL(input.stream_url) : null;
-  const hlsUrl =
+  const validHls = Boolean(
     hls &&
     ["http:", "https:"].includes(hls.protocol) &&
     !hls.username &&
     !hls.password &&
-    /\.m3u8$/i.test(hls.pathname)
+    /\.m3u8$/i.test(hls.pathname),
+  );
+  const hlsUrl =
+    validHls && supportsPlaybackVariant(capabilities, "episode", input.id)
       ? hlsMasterUrl(input.id)
       : null;
   const nativeSource = approvedMp4
@@ -53,6 +64,10 @@ export function episodePlayback(input: EpisodePlaybackInput) {
     ...metadata,
     nativeSource,
     hlsMasterUrl: hlsUrl,
+    voHlsMasterUrl:
+      validHls && supportsPlaybackVariant(capabilities, "episode", input.id, "vostfr")
+        ? hlsMasterUrl(input.id, "vostfr")
+        : null,
     availability: normalizeAvailability(input.availability) ?? [],
   };
 }

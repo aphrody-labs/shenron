@@ -1,3 +1,5 @@
+import { readPlaybackCapabilities } from "@/lib/playback-capabilities";
+import { supportsPlaybackVariant } from "@aphrody/shenron-api/contract";
 /* oxlint-disable react/iframe-missing-sandbox -- legacy UI kept as-is (behavior-preserving lint pass) */
 import { WatchLayout, WatchStage, WatchColumns } from "@/components/episodes/WatchLayout";
 import { hasEditorialDatabase } from "@/lib/prerender";
@@ -29,7 +31,7 @@ import { AdUnit } from "@/components/ads/AdUnit";
 import type { Movie as MovieSchema, WithContext } from "schema-dts";
 
 import { hlsMasterUrl } from "@/lib/assets";
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
   if (!hasEditorialDatabase()) return [];
@@ -111,6 +113,7 @@ export default async function FilmPage({ params }: { params: Promise<{ slug: str
   };
   const youtubeId = getYoutubeId(m.trailer_url);
 
+  const capabilities = await readPlaybackCapabilities();
   const player =
     m.players && m.players.length > 0 ? (
       <VideoLecteurs
@@ -121,7 +124,9 @@ export default async function FilmPage({ params }: { params: Promise<{ slug: str
         poster={m.poster ? assetUrl(m.poster) : undefined}
         subtitles={m.subtitles ?? undefined}
         vo={
-          m.stream_url && m.subtitles?.length
+          m.stream_url &&
+          m.subtitles?.length &&
+          supportsPlaybackVariant(capabilities, "movie", m.id, "vostfr")
             ? {
                 src: hlsMasterUrl(`movie-${m.id}`, "vostfr"),
                 title: `${nature} : ${m.title ?? ""}`,
@@ -138,7 +143,7 @@ export default async function FilmPage({ params }: { params: Promise<{ slug: str
         poster={m.poster ? assetUrl(m.poster) : undefined}
         subtitles={m.subtitles ?? undefined}
       />
-    ) : m.stream_url ? (
+    ) : m.stream_url && supportsPlaybackVariant(capabilities, "movie", m.id) ? (
       <VideoPlayer
         src={hlsMasterUrl(`movie-${m.id}`)}
         title={`${nature} : ${m.title ?? ""}`}

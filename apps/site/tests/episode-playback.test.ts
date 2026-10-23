@@ -55,21 +55,24 @@ test("published MP4 takes precedence over a legacy origin or HLS stream", () => 
 });
 
 test("HLS metadata exposes the bot transport without leaking stored stream tokens", () => {
-  const result = episodePlayback({
-    id: 445,
-    stream_url: "https://example.test/token/master.m3u8?private=token",
-    players: [
-      {
-        name: "Source",
-        provider: "observed",
-        lang: "vostfr",
-        embedUrl: "https://example.test/embed",
-      },
-    ],
-    subtitles: [
-      { src: "./assets/subtitles/db_episodes/445/ja.srt", lang: "ja", label: "Japanese" },
-    ],
-  });
+  const result = episodePlayback(
+    {
+      id: 445,
+      stream_url: "https://example.test/token/master.m3u8?private=token",
+      players: [
+        {
+          name: "Source",
+          provider: "observed",
+          lang: "vostfr",
+          embedUrl: "https://example.test/embed",
+        },
+      ],
+      subtitles: [
+        { src: "./assets/subtitles/db_episodes/445/ja.srt", lang: "ja", label: "Japanese" },
+      ],
+    },
+    { episodeOnDemand: true, cachedEpisodeVariants: {}, cachedMovieVariants: {} },
+  );
   expect(result.hlsMasterUrl).toContain("/api/hls/445/master.m3u8");
   expect(result.nativeSource?.src ?? null).toBe(result.hlsMasterUrl);
   expect(result.versions).toEqual(["vostfr"]);
@@ -89,4 +92,31 @@ test("unapproved stored sources never become a public native playback URL", () =
     expect(result.nativeSource).toBeNull();
     expect(result.hlsMasterUrl).toBeNull();
   }
+});
+
+test("historical HLS is retained as metadata input but not advertised when backend is disabled", () => {
+  const input = {
+    id: 445,
+    stream_url: "https://example.test/expired/master.m3u8",
+    players: [
+      {
+        name: "Source",
+        provider: "external",
+        lang: "vostfr",
+        embedUrl: "https://example.test/embed",
+      },
+    ],
+  };
+  const disabled = episodePlayback(input);
+  expect(disabled.nativeSource).toBeNull();
+  expect(disabled.hlsMasterUrl).toBeNull();
+  expect(disabled.voHlsMasterUrl).toBeNull();
+  expect(disabled.players).toHaveLength(1);
+  const variant = episodePlayback(input, {
+    episodeOnDemand: false,
+    cachedEpisodeVariants: { "445": ["vostfr"] },
+    cachedMovieVariants: {},
+  });
+  expect(variant.nativeSource).toBeNull();
+  expect(variant.voHlsMasterUrl).toContain("lang=vostfr");
 });

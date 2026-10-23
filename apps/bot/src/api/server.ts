@@ -1,7 +1,9 @@
+import { PLAYBACK_CAPABILITIES_PATH } from "@aphrody/shenron-api/contract";
 import { botOperationalLogs } from "../lib/operational-logs";
 import { botNoiseMeter } from "~/ui/noise-meter";
 import { readHlsSegment, registerHlsSegment } from "./hls-security";
 import { movieStreamCandidates } from "./movie-stream-selection";
+import { declarePlaybackCapabilities } from "./playback-capabilities";
 import { resolveApiUrl, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import { adminPipeline } from "./admin-pipeline";
 import { createActivityRoutes } from "./activity";
@@ -2299,6 +2301,11 @@ export class ApiServer {
 
         // Proxy HLS : le site joue le flux dans son player via ces routes
         // (le bot fetch depuis l'IP du VPS = IP de résolution → CDN OK).
+        [PLAYBACK_CAPABILITIES_PATH]: async () =>
+          Response.json(
+            declarePlaybackCapabilities(episodeResolver() !== null, await loadStreams()),
+            { headers: { "Cache-Control": "public, max-age=30" } },
+          ),
         "/api/hls/:id/master.m3u8": (req) => hlsMaster(req, req.params.id),
         "/api/hls/:id/seg": (req) => hlsSeg(req, req.params.id),
         "/api/hls/:id/download": () => hlsDownload(),
