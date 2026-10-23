@@ -397,6 +397,7 @@ export function VideoPlayer({
       className={`shenron-video ${styles.player}`}
       data-theater={theater}
       data-controls-visible={controlsVisible}
+      data-caption-dock={enhanced && caption >= 0}
     >
       <header className={styles.heading}>
         <p>{title}</p>

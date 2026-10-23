@@ -19,6 +19,9 @@
   object-fit: contain;
   background: var(--media-surface);
 }
+.player:has(details[open]):not([data-theater="true"]) {
+  z-index: 60;
+}
 .player[data-theater="true"] {
   position: fixed;
   inset: 0;
@@ -81,9 +84,37 @@
 .overlay[hidden] {
   display: none;
 }
+.player[data-caption-dock="true"] {
+  aspect-ratio: auto;
+}
+.player[data-caption-dock="true"] > video {
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+.player[data-caption-dock="true"] .overlay {
+  position: relative;
+  inset: auto;
+  padding-top: 12px;
+  background: var(--media-surface);
+  opacity: 1;
+  pointer-events: auto;
+}
+.player[data-caption-dock="true"]:is(:fullscreen, [data-theater="true"]) {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+.player[data-caption-dock="true"]:is(:fullscreen, [data-theater="true"]) > video {
+  min-height: 0;
+  height: 100%;
+  aspect-ratio: auto;
+}
 .player[data-controls-visible="false"] :is(.overlay, .heading) {
   opacity: 0;
   pointer-events: none;
+}
+.player[data-caption-dock="true"][data-controls-visible="false"] .overlay {
+  opacity: 1;
+  pointer-events: auto;
 }
 .player[data-controls-visible="false"] :is(.overlay, .heading):has(:focus-visible),
 .player[data-controls-visible="false"]:focus-visible .overlay,
@@ -292,8 +323,13 @@
     position: fixed;
     right: 12px;
     left: 12px;
-    bottom: 12px;
+    bottom: calc(var(--barre-nav-total, 0px) + 12px);
     width: auto;
+    max-height: min(60dvh, 360px, calc(100dvh - var(--barre-nav-total, 0px) - 24px));
+  }
+  .player:fullscreen .settingsPanel,
+  .player[data-theater="true"] .settingsPanel {
+    bottom: max(12px, env(safe-area-inset-bottom));
     max-height: min(60dvh, 360px);
   }
 }
