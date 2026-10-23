@@ -1,6 +1,7 @@
 import { botOperationalLogs } from "../lib/operational-logs";
 import { botNoiseMeter } from "~/ui/noise-meter";
 import { readHlsSegment, registerHlsSegment } from "./hls-security";
+import { movieStreamCandidates } from "./movie-stream-selection";
 import { resolveApiUrl, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import { adminPipeline } from "./admin-pipeline";
 import { createActivityRoutes } from "./activity";
@@ -601,8 +602,6 @@ function hlsRewrite(text: string, baseUrl: string, id: string, referer: string):
     .join("\n");
 }
 
-type MoviePlayer = { name?: string; provider?: string; embedUrl?: string; lang?: string };
-
 /** Extrait l'identifiant Archive.org d'une URL `embed`/`download`. `null` sinon. */
 function archiveIdentifier(embedUrl: string): string | null {
   const m = /archive\.org\/(?:embed|download)\/([^/?#]+)/i.exec(embedUrl);
@@ -643,7 +642,10 @@ async function resolveArchiveMp4(identifier: string): Promise<string | null> {
  * replica SQLite** → sélection défensive des colonnes réellement présentes.
  * Absence de source téléchargeable ⇒ `null` (le caller renvoie un 404 propre).
  */
-async function resolveMovieStream(rawId: string): Promise<HlsStream | null> {
+async function resolveMovieStream(
+  rawId: string,
+  language?: "vf" | "vostfr",
+): Promise<HlsStream | null> {
   const movieId = Number(rawId);
   if (!Number.isInteger(movieId)) {
     console.error("[HLS] ID de film invalide.");
@@ -673,24 +675,13 @@ async function resolveMovieStream(rawId: string): Promise<HlsStream | null> {
       return null;
     }
 
-    // 1) MP4 direct stocké.
-    if (row.video_url) {
-      return { url: row.video_url, headers: {}, type: "mp4", at: Date.now() };
+    const { stored, players } = movieStreamCandidates(row, language);
+    // Stored sources have no audio tag; only unversioned requests may use them.
+    if (stored) {
+      const type = /\.m3u8(\?|$)/i.test(stored) ? "hls" : "mp4";
+      return { url: stored, headers: {}, type, at: Date.now() };
     }
-    // 2) Flux HLS stocké.
-    if (row.stream_url) {
-      const type = /\.m3u8(\?|$)/i.test(row.stream_url) ? "hls" : "mp4";
-      return { url: row.stream_url, headers: {}, type, at: Date.now() };
-    }
-    // 3) Lecteurs (`players`) téléchargeables : embed déjà direct puis Archive.org.
-    if (row.players) {
-      let players: MoviePlayer[] = [];
-      try {
-        const parsed = JSON.parse(row.players) as unknown;
-        if (Array.isArray(parsed)) players = parsed as MoviePlayer[];
-      } catch {
-        players = [];
-      }
+    if (players.length > 0) {
       for (const p of players) {
         const embed = p?.embedUrl ?? "";
         if (/\.(mp4|m3u8)(\?|$)/i.test(embed)) {
@@ -726,7 +717,7 @@ async function resolveStreamOnDemand(id: string): Promise<HlsStream | null> {
   const language = languageMatch?.[2] as "vf" | "vostfr" | undefined;
   // Films : `movie-<n>` → table db_movies (source stockée/players, pas de bxc).
   if (mediaId.startsWith("movie-")) {
-    return await resolveMovieStream(mediaId.slice("movie-".length));
+    return await resolveMovieStream(mediaId.slice("movie-".length), language);
   }
   try {
     const dbs = container.resolve(DatabaseService);
