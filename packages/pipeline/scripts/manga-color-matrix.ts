@@ -293,8 +293,6 @@ export async function buildMangaColorMatrix(options: MatrixOptions): Promise<Man
   }
   for (const entry of catalogueEntries) {
     const volumeNumber = Number(entry.rang);
-    const key = `DBFC:vol${volumeNumber}`;
-    const matched = pageImages.filter((image) => chapterOrVolume(image.path, "DBFC") === key);
     const coverPath = entry.couverture?.chemin;
     const coverBasename =
       String(coverPath ?? "")
@@ -322,9 +320,10 @@ export async function buildMangaColorMatrix(options: MatrixOptions): Promise<Man
       coverPresent: Boolean(cover),
       coverSha256: cover?.sha256 ?? null,
       coverCatalogueSha256: entry.couverture?.sha256 ?? null,
-      pageFiles: matched.length,
-      pageScanPresence: matched.length ? "present" : "missing",
-      pageHashesVerified: matched.length,
+      // Bibliographic identity does not establish a mapping to independently measured DBFC assets.
+      pageFiles: 0,
+      pageScanPresence: "missing",
+      pageHashesVerified: 0,
       ocrPageIndices: null,
       provenance: entry.url_fiche ?? "DragonballCN catalogue record; not proof of page scans",
     });
