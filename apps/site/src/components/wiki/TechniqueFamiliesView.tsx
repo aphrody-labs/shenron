@@ -127,7 +127,9 @@ export function TechniqueFamiliesView({ techniques }: { techniques: TechniqueCar
               <button
                 type="button"
                 onClick={() => setExpandedFamily(isExpanded ? null : fam.id)}
-                className="flex w-full items-start justify-between gap-4 text-left"
+                aria-expanded={isExpanded}
+                aria-controls={`technique-family-${fam.id}`}
+                className="flex min-h-11 w-full items-start justify-between gap-4 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
               >
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
@@ -155,7 +157,10 @@ export function TechniqueFamiliesView({ techniques }: { techniques: TechniqueCar
               </button>
 
               {isExpanded && (
-                <div className="mt-6 pt-5 border-t border-white/10">
+                <div
+                  id={`technique-family-${fam.id}`}
+                  className="mt-6 pt-5 border-t border-white/10"
+                >
                   {list.length === 0 ? (
                     <p className="text-xs text-white/50 italic">
                       Aucune technique appariée dans ce filtre.

@@ -83,26 +83,28 @@ export function LocationsGrid({ locations }: { locations: Location[] }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Rechercher un sanctuaire, une planète, une cité (ex: Kame House, Karin, Namek, Zeno)..."
-            className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/40 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="min-h-11 w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 pr-20 text-sm text-white placeholder-white/55 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/70"
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery("")}
-              className="absolute right-3 top-2.5 text-xs text-white/50 hover:text-white"
+              aria-label="Effacer la recherche"
+              className="absolute right-2 top-1/2 min-h-9 -translate-y-1/2 rounded-md px-2 text-xs text-white/70 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
             >
               Effacer
             </button>
           )}
         </div>
 
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-2" aria-label="Filtrer les lieux par royaume">
           {REALM_TYPES.map((realm) => (
             <button
               key={realm}
               type="button"
               onClick={() => setSelectedRealm(realm)}
-              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+              aria-pressed={selectedRealm === realm}
+              className={`min-h-11 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/70 ${
                 selectedRealm === realm
                   ? "bg-orange-600 text-white shadow-md shadow-orange-950/40"
                   : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
@@ -114,10 +116,10 @@ export function LocationsGrid({ locations }: { locations: Location[] }) {
         </div>
       </div>
 
-      <div className="text-xs text-white/50">
+      <output className="text-sm text-white/70" aria-live="polite">
         {filtered.length} lieu{filtered.length > 1 ? "x" : ""} répertorié
         {filtered.length > 1 ? "s" : ""}
-      </div>
+      </output>
 
       {/* Grille de lieux */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

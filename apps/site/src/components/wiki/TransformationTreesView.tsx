@@ -309,7 +309,8 @@ export function TransformationTreesView() {
               key={tree.id}
               type="button"
               onClick={() => setActiveTreeId(tree.id)}
-              className={`shrink-0 snap-start rounded-xl border px-3.5 py-2.5 text-left transition-all ${
+              aria-pressed={isSelected}
+              className={`min-h-11 shrink-0 snap-start rounded-xl border px-3.5 py-2.5 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400/80 ${
                 isSelected
                   ? "border-orange-500 bg-orange-500/20 text-white shadow-lg shadow-orange-950/40 ring-1 ring-orange-500/40"
                   : "border-white/5 bg-white/[0.03] text-white/65 hover:border-white/20 hover:text-white"

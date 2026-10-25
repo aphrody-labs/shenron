@@ -100,7 +100,8 @@ export function TechniqueGrid({
           <button
             type="button"
             onClick={() => setViewMode("families")}
-            className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-bold transition-all ${
+            aria-pressed={viewMode === "families"}
+            className={`inline-flex min-h-11 items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/70 ${
               viewMode === "families"
                 ? "bg-orange-600 text-white shadow-lg shadow-orange-950/50"
                 : "text-white/60 hover:text-white"
@@ -112,7 +113,8 @@ export function TechniqueGrid({
           <button
             type="button"
             onClick={() => setViewMode("linear")}
-            className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-bold transition-all ${
+            aria-pressed={viewMode === "linear"}
+            className={`inline-flex min-h-11 items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/70 ${
               viewMode === "linear"
                 ? "bg-orange-600 text-white shadow-lg shadow-orange-950/50"
                 : "text-white/60 hover:text-white"
