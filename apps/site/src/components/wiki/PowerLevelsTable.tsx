@@ -1,10 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { PowerLevel } from "@/lib/db-universe";
 import { CHARACTER_CANONICAL_SLUGS } from "@/lib/wiki-slugs";
 import { isPathPublic, type AccessSnapshot } from "@/lib/wiki-launch";
+/* oxlint-disable jsx-a11y/no-noninteractive-tabindex -- the table scroller is focusable for horizontal keyboard scrolling */
 
 const SOURCE_LABELS: Record<string, string> = {
   ALL: "Toutes les sources",
@@ -21,6 +23,7 @@ export function PowerLevelsTable({
   powers: PowerLevel[];
   access?: AccessSnapshot | null;
 }) {
+  const t = useTranslations("wikiUi.list");
   const ouvert = (href: string) => !access || isPathPublic(href, access);
   const [query, setQuery] = useState("");
   const [sourceFilter, setSourceFilter] = useState("ALL");
@@ -125,15 +128,16 @@ export function PowerLevelsTable({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Rechercher un personnage, une forme, un chiffre (ex: Goku, 150 000 000, Raditz)..."
-            className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/40 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="min-h-11 w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 pr-16 text-sm text-white placeholder-white/40 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-400"
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery("")}
-              className="absolute right-3 top-2.5 text-xs text-white/50 hover:text-white"
+              aria-label={t("clear")}
+              className="absolute right-1 top-1/2 inline-flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-lg px-2 text-xs text-white/70 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-orange-400"
             >
-              Effacer
+              {t("clear")}
             </button>
           )}
         </div>
@@ -143,8 +147,9 @@ export function PowerLevelsTable({
             <button
               key={k}
               type="button"
+              aria-pressed={sourceFilter === k}
               onClick={() => setSourceFilter(k)}
-              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+              className={`inline-flex min-h-11 items-center rounded-lg px-3 py-2 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 ${
                 sourceFilter === k
                   ? "bg-orange-600 text-white shadow-md shadow-orange-950/40"
                   : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
@@ -156,8 +161,9 @@ export function PowerLevelsTable({
 
           <button
             type="button"
+            aria-pressed={sortBy === "asc"}
             onClick={() => setSortBy(sortBy === "desc" ? "asc" : "desc")}
-            className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/80 hover:text-white"
+            className="min-h-11 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-white/80 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
           >
             Tri : {sortBy === "desc" ? "Plus fort ↓" : "Plus faible ↑"}
           </button>
@@ -165,8 +171,12 @@ export function PowerLevelsTable({
       </div>
 
       {/* Tableau des Battle Powers */}
-      <div className="overflow-hidden rounded-xl border border-white/10 bg-white/[0.02]">
-        <table className="w-full text-left text-sm text-white/80">
+      <section
+        className="max-w-full overflow-x-auto rounded-xl border border-white/10 bg-white/[0.02] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+        aria-label="Tableau des niveaux de puissance"
+        tabIndex={0}
+      >
+        <table className="w-full min-w-[44rem] text-left text-sm text-white/80 md:min-w-[60rem]">
           <thead className="border-b border-white/10 bg-white/[0.04] text-xs uppercase tracking-wider text-white/50">
             <tr>
               <th className="px-4 py-3">Guerrier & Forme</th>
@@ -232,7 +242,7 @@ export function PowerLevelsTable({
             Aucun niveau de puissance ne correspond à votre filtre.
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 }

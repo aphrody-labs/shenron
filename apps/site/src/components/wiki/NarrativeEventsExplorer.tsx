@@ -2,6 +2,7 @@
 /* oxlint-disable jsx-a11y/control-has-associated-label, react/no-array-index-key, react/no-object-type-as-default-prop -- reviewed: legacy patterns, behavior preserved */
 
 import { useMemo, useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
 import { useSearchParams, usePathname } from "next/navigation";
@@ -129,6 +130,7 @@ export function NarrativeEventsExplorer({
   arcs?: Array<{ id: number; slug: string; name: string }>;
   fallbackImage?: string;
 }) {
+  const listUi = useTranslations("wikiUi.list");
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -376,12 +378,18 @@ export function NarrativeEventsExplorer({
           </div>
           <div className="mt-1 font-saiyan text-2xl text-amber-400">{tournaments.length}</div>
         </div>
-        <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 backdrop-blur-md">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-white/40">
+        <output
+          className="block rounded-xl border border-white/10 bg-black/40 p-3.5 backdrop-blur-md"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          <span className="block text-[10px] font-bold uppercase tracking-wider text-white/40">
             Événements Filtrés
-          </div>
-          <div className="mt-1 font-saiyan text-2xl text-green-400">{filteredEvents.length}</div>
-        </div>
+          </span>
+          <span className="mt-1 block font-saiyan text-2xl text-green-400">
+            {filteredEvents.length}
+          </span>
+        </output>
       </div>
 
       {/* Panneau de Contrôle & Facettes Combinables */}
@@ -402,7 +410,8 @@ export function NarrativeEventsExplorer({
               <button
                 type="button"
                 onClick={() => setQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+                aria-label={listUi("clear")}
+                className="absolute right-1 top-1/2 inline-flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-lg text-white/60 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-orange-400"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -413,8 +422,9 @@ export function NarrativeEventsExplorer({
           <div className="flex rounded-xl bg-white/5 p-1 border border-white/10 shrink-0 self-stretch sm:self-auto justify-center">
             <button
               type="button"
+              aria-pressed={viewMode === "grid"}
               onClick={() => setViewMode("grid")}
-              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+              className={`inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-xs font-bold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 ${
                 viewMode === "grid"
                   ? "bg-orange-600 text-white shadow-md shadow-orange-950/40"
                   : "text-white/60 hover:text-white"
@@ -425,8 +435,9 @@ export function NarrativeEventsExplorer({
             </button>
             <button
               type="button"
+              aria-pressed={viewMode === "continuity"}
               onClick={() => setViewMode("continuity")}
-              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+              className={`inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-xs font-bold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 ${
                 viewMode === "continuity"
                   ? "bg-orange-600 text-white shadow-md shadow-orange-950/40"
                   : "text-white/60 hover:text-white"
@@ -453,8 +464,9 @@ export function NarrativeEventsExplorer({
             <button
               key={tl.id}
               type="button"
+              aria-pressed={selectedTimeline === tl.id}
               onClick={() => setSelectedTimeline(tl.id)}
-              className={`rounded-lg px-2.5 py-1 font-semibold transition-all ${
+              className={`min-h-11 rounded-lg px-3 py-2 font-semibold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 ${
                 selectedTimeline === tl.id
                   ? "bg-cyan-600 text-white shadow-sm"
                   : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
@@ -481,8 +493,9 @@ export function NarrativeEventsExplorer({
               <button
                 key={tab.id}
                 type="button"
+                aria-pressed={selectedType === tab.id}
                 onClick={() => setSelectedType(tab.id)}
-                className={`rounded-lg px-2.5 py-1 font-semibold transition-all ${
+                className={`min-h-11 rounded-lg px-3 py-2 font-semibold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 ${
                   selectedType === tab.id
                     ? "bg-orange-600 text-white shadow-sm"
                     : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
@@ -507,8 +520,9 @@ export function NarrativeEventsExplorer({
               <button
                 key={c.id}
                 type="button"
+                aria-pressed={selectedCanon === c.id}
                 onClick={() => setSelectedCanon(c.id)}
-                className={`rounded-lg px-2.5 py-1 font-semibold transition-all ${
+                className={`min-h-11 rounded-lg px-3 py-2 font-semibold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300 ${
                   selectedCanon === c.id
                     ? "bg-amber-600 text-white shadow-sm"
                     : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
@@ -555,7 +569,7 @@ export function NarrativeEventsExplorer({
               setSelectedTimeline("all");
               setQuery("");
             }}
-            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-xs font-semibold text-white hover:bg-white/20"
+            className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl bg-white/10 px-4 text-sm font-semibold text-white hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             Réinitialiser tous les filtres
           </button>

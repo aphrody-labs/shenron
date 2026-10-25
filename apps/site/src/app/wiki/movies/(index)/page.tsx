@@ -170,7 +170,7 @@ export default async function FilmsPage() {
             <a
               key={group.key}
               href={`#films-${group.key}`}
-              className="min-h-10 shrink-0 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white/65 transition hover:border-dbz-orange/50 hover:text-dbz-orange"
+              className="inline-flex min-h-11 shrink-0 items-center rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-white/75 transition hover:border-dbz-orange/50 hover:text-dbz-orange focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
             >
               {group.label} <span className="ml-1 text-white/40">{group.movies.length}</span>
             </a>
