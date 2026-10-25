@@ -11,7 +11,9 @@ saveTextLockfile = true
 minimumReleaseAge = 259200
 # Owner-published Aphrody packages are pinned exactly and released in step with this repository;
 # security fixes (next, nodemailer, undici) track upstream in real time.
+# Owner directive 2026-10-25: allow qualified, newly published Bun Video releases.
 minimumReleaseAgeExcludes = [
+  "@aphrody/bun-video",
   "@aphrody/bun",
   "@aphrody/bun-types",
   "@aphrody/agent-browser",
