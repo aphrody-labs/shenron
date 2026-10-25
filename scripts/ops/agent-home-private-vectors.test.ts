@@ -8,6 +8,7 @@ import { importNote, prepareNote, sha256 } from "./agent-home-notes";
 import {
   indexPrivateNotes,
   privateQueryEmbedder,
+  renderObservationProjection,
   type PrivateVectorOptions,
 } from "./agent-home-notes-index";
 const roots: string[] = [];
@@ -19,27 +20,29 @@ async function fixture() {
   const home = mkdtempSync(join(tmpdir(), "shenron-private-vectors-"));
   roots.push(home);
   await Bun.write(join(home, "source.txt"), "Inspected fixture");
-  const prepared = await prepareNote(
-    JSON.stringify({
-      version: 1,
-      id: "vector-fixture",
-      title: "Reviewed fixture",
-      status: "reviewed",
-      visibility: "private",
-      continuity: "Fixture only",
-      observedAt: "2026-10-25",
-      observations: "Bounded observation.",
-      limitations: "Not a real manga claim.",
-      sources: [{ file: "source.txt", sha256: sha256("Inspected fixture"), locator: "Fixture" }],
-      review: { by: "qa", at: "2026-10-25" },
-    }),
-    home,
-  );
+  const manifest = JSON.stringify({
+    version: 1,
+    id: "vector-fixture",
+    title: "Reviewed fixture",
+    status: "reviewed",
+    visibility: "private",
+    continuity: "Fixture only",
+    observedAt: "2026-10-25",
+    observations: "Bounded observation.",
+    limitations: "Not a real manga claim.",
+    sources: [{ file: "source.txt", sha256: sha256("Inspected fixture"), locator: "Fixture" }],
+    review: { by: "qa", at: "2026-10-25" },
+  });
+  const prepared = await prepareNote(manifest, home);
+  const manifestPath = join(home, "manifest.json");
+  await Bun.write(manifestPath, manifest);
   await importNote(home, prepared, { apply: true });
   const lexical = await indexPrivateNotes(home, true, async (text) => [{ text }]);
   return {
     home,
     lexical,
+    prepared,
+    manifestPath,
     expected: {
       noteId: prepared.note.id,
       sourceSha256: sha256(prepared.markdown),
@@ -49,6 +52,101 @@ async function fixture() {
     },
   };
 }
+test("reviewed observations projection is experimental and preserves the full canonical note and lexical index", async () => {
+  const { home, lexical, expected, prepared, manifestPath } = await fixture();
+  const text = renderObservationProjection(prepared.note);
+  const projection: NonNullable<PrivateVectorOptions["projection"]> = {
+    version: 1,
+    kind: "observations-markdown-v1",
+    manifestPath,
+    sha256: sha256(text),
+    archives: 1,
+  };
+  let calls = 0;
+  const compute: PrivateVectorOptions["compute"] = {
+    embed: async (input) => {
+      calls++;
+      expect(input.texts).toEqual([text]);
+      return {
+        ok: true,
+        value: { model: "Xenova/multilingual-e5-small", vectors: [unitVector()] },
+      };
+    },
+  };
+  for (const invalid of [
+    { ...projection, sha256: "0".repeat(64) },
+    { ...projection, archives: 2 },
+  ])
+    await expect(
+      indexPrivateNotes(home, true, async (value) => [{ text: value }], {
+        expected,
+        compute,
+        projection: invalid,
+      }),
+    ).rejects.toThrow();
+  expect(calls).toBe(0);
+  for (const path of [
+    manifestPath,
+    join(home, "memory", prepared.note.id + ".md"),
+    join(home, "notes", "reviews", prepared.note.id + ".json"),
+  ]) {
+    const original = await Bun.file(path).text();
+    await Bun.write(
+      path,
+      path.endsWith(".json") && path !== manifestPath
+        ? JSON.stringify({ ...JSON.parse(original), manifestSha256: "0".repeat(64) })
+        : original + " ",
+    );
+    try {
+      await expect(
+        indexPrivateNotes(home, true, async (value) => [{ text: value }], {
+          expected,
+          compute,
+          projection,
+        }),
+      ).rejects.toThrow();
+    } finally {
+      await Bun.write(path, original);
+    }
+  }
+  expect(calls).toBe(0);
+  await expect(
+    indexPrivateNotes(home, true, async () => [{ text: "x".repeat(1401) }], {
+      expected,
+      compute,
+      projection,
+    }),
+  ).rejects.toThrow("1400");
+  await expect(
+    indexPrivateNotes(home, true, async () => [], { expected, compute, projection }),
+  ).rejects.toThrow("chunk count");
+  expect(calls).toBe(0);
+  const indexed = await indexPrivateNotes(home, true, async (value) => [{ text: value }], {
+    expected: { ...expected, chunkSha256: [sha256(text.trim())] },
+    compute,
+    projection,
+  });
+  expect(indexed.output).toContain("experiments");
+  expect(sha256(await Bun.file(lexical.output).arrayBuffer())).toBe(expected.indexSha256);
+  const opened = openShenronVfs(indexed.output, { readOnly: true });
+  try {
+    expect(opened.vfs.readTextSync(`/home/memory/${prepared.note.id}.md`)).toBe(prepared.markdown);
+    expect(opened.vfs.meta("notes_projection_sha256")).toBe(projection.sha256);
+    expect(opened.rag.stats().vectorsF32).toBe(1);
+  } finally {
+    opened.vfs.db.close();
+  }
+  const archive = join(home, "memory", "attachments", sha256("Inspected fixture") + ".txt");
+  await Bun.write(archive, "changed");
+  await expect(
+    indexPrivateNotes(home, true, async (value) => [{ text: value }], {
+      expected,
+      compute,
+      projection,
+    }),
+  ).rejects.toThrow("Archived source");
+  expect(calls).toBe(1);
+});
 test("explicit private vectors use owner passage/query kinds, retain lexical backup and stay excluded publicly", async () => {
   const { home, lexical, expected } = await fixture();
   const calls: { kind: string; requireModel?: string; texts: readonly string[] }[] = [];

@@ -28,6 +28,8 @@ interface PrivateVectorJob {
   receipt: string;
   ownerConfigContainer: string;
   expected: PrivateVectorOptions["expected"];
+  projection?: PrivateVectorOptions["projection"];
+  comparison?: { path: string; sha256: string; baselineChunkSha256: string[] };
 }
 const probes = [
   {
@@ -93,8 +95,11 @@ function metadata(hit: RagHit, expected: string | null) {
 
 export async function runPrivateVectorJob(job: PrivateVectorJob) {
   const home = resolveNotesHome(job.home);
-  if (job.expected.chunks !== 9 || job.expected.chunkSha256?.length !== 9)
-    throw new Error("Reviewed job requires exactly nine frozen chunks");
+  const count = job.projection ? 8 : 9;
+  if (job.expected.chunks !== count || job.expected.chunkSha256?.length !== count)
+    throw new Error("Reviewed job requires its exact frozen chunk count");
+  if (job.projection && (!job.comparison || job.projection.archives !== 24))
+    throw new Error("Projection requires the archived comparison and 24 sources");
   if (await Bun.file(job.receipt).exists())
     throw new Error("Private job receipt exists; inspect before rerun");
   const reviewed = await prepareNativeNoteImport({
@@ -108,6 +113,7 @@ export async function runPrivateVectorJob(job: PrivateVectorJob) {
   if (sha256(await Bun.file(job.baseline).arrayBuffer()) !== job.expected.indexSha256)
     throw new Error("Lexical baseline SHA differs");
   const baseline = openShenronVfs(job.baseline, { readOnly: true });
+  let comparison: ReturnType<typeof openShenronVfs> | undefined;
   try {
     const stats = baseline.rag.stats();
     const baselineChunks = baseline.vfs.query<{ content: string }>(
@@ -115,7 +121,7 @@ export async function runPrivateVectorJob(job: PrivateVectorJob) {
     );
     if (
       JSON.stringify(baselineChunks.map((chunk) => sha256(chunk.content))) !==
-      JSON.stringify(job.expected.chunkSha256)
+      JSON.stringify(job.comparison?.baselineChunkSha256 ?? job.expected.chunkSha256)
     )
       throw new Error("Frozen lexical chunks differ");
     if (
@@ -146,6 +152,21 @@ export async function runPrivateVectorJob(job: PrivateVectorJob) {
     if (sha256(await Bun.file(output).arrayBuffer()) !== job.expected.indexSha256)
       throw new Error("Current private index changed before job");
     chmodSync(output, 0o600);
+    if (job.comparison) {
+      if (sha256(await Bun.file(job.comparison.path).arrayBuffer()) !== job.comparison.sha256)
+        throw new Error("Archived vector comparison SHA differs");
+      comparison = openShenronVfs(job.comparison.path, { readOnly: true });
+      const old = comparison.rag.stats();
+      if (
+        old.docs !== 1 ||
+        old.chunks !== 9 ||
+        old.vectorsF32 !== 9 ||
+        old.vectorsI8 ||
+        comparison.rag.model() !== SHENRON_E5.modelId
+      ) {
+        throw new Error("Archived vector comparison model or scope differs");
+      }
+    }
     const owner = ownerCompute(job.ownerConfigContainer);
     let passageRequests = 0;
     let queryRequests = 0;
@@ -154,8 +175,8 @@ export async function runPrivateVectorJob(job: PrivateVectorJob) {
         if (input.requireModel !== SHENRON_E5.modelId)
           throw new Error("Private embedding must require the exact qualified model");
         if (input.kind === "passage") {
-          if (++passageRequests !== 1 || input.texts.length !== 9)
-            throw new Error("Private job permits one passage batch of nine");
+          if (++passageRequests !== 1 || input.texts.length !== count)
+            throw new Error("Private job permits one approved passage batch");
         } else if (++queryRequests > 5 || input.texts.length !== 1)
           throw new Error("Private query probe budget exceeded");
         return owner.embed(input);
@@ -167,11 +188,19 @@ export async function runPrivateVectorJob(job: PrivateVectorJob) {
     const indexed = await indexPrivateNotes(home, true, chunkReviewedMarkdown, {
       compute,
       expected: job.expected,
+      projection: job.projection,
       beforePublish: async (opened) => {
         for (const probe of probes) {
           const lexical = baseline.rag.search(probe.query, { limit: 9 });
           const vector = await embed(probe.query);
           const hits = opened.rag.search(probe.query, { embedding: vector, limit: 9 });
+          const previousHits = comparison?.rag.search(probe.query, { embedding: vector, limit: 9 });
+          const goldSha =
+            probe.expected === "Nail"
+              ? "4a3875c3ad1183543b2be7d4f3f53bb78850b21d058c1de08e447b8efb7ef3a9"
+              : probe.expected === "Masenko"
+                ? "b49f62a1661bc74875e33d0b2bbb94e505353c21bcf6dd14d22c63b6330cba16"
+                : null;
           const publicHits = opened.rag.search(probe.query, {
             embedding: vector,
             limit: 9,
@@ -182,6 +211,15 @@ export async function runPrivateVectorJob(job: PrivateVectorJob) {
             id: probe.id,
             query: probe.query,
             lexicalHits: lexical.length,
+            lexicalTop: lexical.slice(0, 3).map((hit) => metadata(hit, probe.expected)),
+            previousTop: previousHits?.slice(0, 3).map((hit) => metadata(hit, probe.expected)),
+            previousGoldRank: goldSha
+              ? (previousHits?.findIndex((hit) => sha256(hit.content) === goldSha) ?? -1) + 1
+              : null,
+            goldContentSha256: goldSha,
+            goldRank: goldSha ? hits.findIndex((hit) => sha256(hit.content) === goldSha) + 1 : null,
+            queryVectorSha256: sha256(vector.buffer as ArrayBuffer),
+            sameQueryVectorForComparison: !!comparison,
             hybridHits: hits.length,
             publicHits: 0,
             expectedToken: probe.expected,
@@ -195,6 +233,7 @@ export async function runPrivateVectorJob(job: PrivateVectorJob) {
         const api = createLocalApi(
           {
             SHENRON_VFS_DB: opened.vfs.db.filename,
+            RAG_EMBED_MODEL: SHENRON_E5.modelId,
             RAG_BACKEND: "local",
             SHENRON_CHAT_BACKENDS: "extractive",
             SHENRON_CHAT_STORE: "off",
@@ -258,6 +297,8 @@ export async function runPrivateVectorJob(job: PrivateVectorJob) {
       lexicalBaselineSha256: job.expected.indexSha256,
       indexSha256: sha256(await Bun.file(indexed.output).arrayBuffer()),
       indexed,
+      projection: job.projection,
+      activeLexicalSha256: sha256(await Bun.file(output).arrayBuffer()),
       model: SHENRON_E5.modelId,
       dimensions: 384,
       passageRequests,
@@ -274,6 +315,7 @@ export async function runPrivateVectorJob(job: PrivateVectorJob) {
     await privateWrite(job.receipt, receipt);
     return receipt;
   } finally {
+    comparison?.vfs.db.close();
     baseline.vfs.db.close();
   }
 }

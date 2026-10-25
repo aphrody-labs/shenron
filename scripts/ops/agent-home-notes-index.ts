@@ -16,9 +16,22 @@ import {
   SHENRON_RAG_INDEX,
 } from "../../packages/pipeline/src/ai/config";
 import { normalizeVector } from "../../packages/db/src/vfs/rag";
+import { prepareNativeNoteImport } from "./agent-home-native-note";
+import type { ObservationNote } from "./agent-home-notes";
+
+export function renderObservationProjection(note: ObservationNote): string {
+  return `# ${note.title}\n\nContinuité : ${note.continuity}\n\n${note.observations}\n\n## Limites\n\n${note.limitations}\n`;
+}
 
 export interface PrivateVectorOptions {
   compute: Pick<AphrodyCompute, "embed">;
+  projection?: {
+    version: 1;
+    kind: "observations-markdown-v1";
+    manifestPath: string;
+    sha256: string;
+    archives: number;
+  };
   /** Failure of this private qualification preserves the previous index. */
   beforePublish?: (opened: OpenedVfs) => Promise<void>;
   expected: {
@@ -166,7 +179,49 @@ export async function indexPrivateNotes(
 ) {
   const docs = await readReviewedPrivateNotes(home);
   if (docs.length === 0) throw new Error("No reviewed notes available; no index was created");
-  const output = join(home, "notes", "private-notes-vfs.sqlite");
+  const baselineOutput = join(home, "notes", "private-notes-vfs.sqlite");
+  const projection = vectors?.projection;
+  let projectedText: string | undefined;
+  const validateProjection = async () => {
+    if (!projection || !vectors) return;
+    if (
+      projection.version !== 1 ||
+      projection.kind !== "observations-markdown-v1" ||
+      !/^[a-f0-9]{64}$/.test(projection.sha256) ||
+      !Number.isSafeInteger(projection.archives) ||
+      projection.archives < 1
+    )
+      throw new Error("Invalid private projection contract");
+    const reviewed = await prepareNativeNoteImport({
+      home,
+      manifestPath: projection.manifestPath,
+      expectedSourceSha256: vectors.expected.sourceSha256,
+      expectedManifestSha256: vectors.expected.manifestSha256,
+    });
+    if (
+      reviewed.noteId !== vectors.expected.noteId ||
+      reviewed.attachments.length !== projection.archives
+    )
+      throw new Error("Private projection archive scope differs");
+    const manifestText = await Bun.file(projection.manifestPath).text();
+    if (sha256(manifestText) !== vectors.expected.manifestSha256)
+      throw new Error("Projection manifest changed during validation");
+    const note = JSON.parse(manifestText) as ObservationNote;
+    const text = renderObservationProjection(note);
+    if (sha256(text) !== projection.sha256) throw new Error("Private projection SHA differs");
+    projectedText = text;
+  };
+  await validateProjection();
+  const output = projection
+    ? join(
+        home,
+        "notes",
+        "experiments",
+        `private-notes-vfs-observations-v1-${projection.sha256}.sqlite`,
+      )
+    : baselineOutput;
+  if (projection && existsSync(output))
+    throw new Error("Private experimental candidate already exists");
   let vectorCount = 0;
   let backup: string | null = null;
   if (vectors) {
@@ -183,8 +238,8 @@ export async function indexPrivateNotes(
     )
       throw new Error("Private vector job differs from the reviewed one-note snapshot");
     if (
-      !(await Bun.file(output).exists()) ||
-      sha256(await Bun.file(output).arrayBuffer()) !== expected.indexSha256
+      !(await Bun.file(baselineOutput).exists()) ||
+      sha256(await Bun.file(baselineOutput).arrayBuffer()) !== expected.indexSha256
     )
       throw new Error("Previous private lexical index SHA differs");
   }
@@ -206,7 +261,7 @@ export async function indexPrivateNotes(
       if (!(await Bun.file(backup).exists())) {
         const descriptor = openSync(backup, "wx", 0o600);
         closeSync(descriptor);
-        await Bun.write(backup, Bun.file(output));
+        await Bun.write(backup, Bun.file(baselineOutput));
       }
       if (sha256(await Bun.file(backup).arrayBuffer()) !== vectors.expected.indexSha256)
         throw new Error("Private lexical backup SHA differs");
@@ -215,6 +270,7 @@ export async function indexPrivateNotes(
     const temp = output + `.${process.pid}.tmp`;
     if (await Bun.file(temp).exists()) throw new Error("Index temporary file already exists");
     mkdirSync(join(home, "notes"), { recursive: true, mode: 0o700 });
+    if (projection) mkdirSync(join(home, "notes", "experiments"), { recursive: true, mode: 0o700 });
     const temporaryDb = new Database(temp);
     try {
       // Protect the file before the VFS writer can put any private note bytes into it.
@@ -229,6 +285,12 @@ export async function indexPrivateNotes(
       opened.vfs.setMeta("profile", "complet");
       opened.vfs.setMeta("generated_at", new Date().toISOString());
       opened.vfs.setMeta("notes_bridge_version", "1");
+      if (projection) {
+        opened.vfs.setMeta("notes_projection", projection.kind);
+        opened.vfs.setMeta("notes_projection_sha256", projection.sha256);
+        opened.vfs.setMeta("notes_source_sha256", vectors!.expected.sourceSha256);
+        opened.vfs.setMeta("notes_manifest_sha256", vectors!.expected.manifestSha256);
+      }
       opened.vfs.mkdirAll("/home/memory");
       for (const doc of docs)
         opened.vfs.write(`/home/memory/${doc.id}.md`, doc.text, {
@@ -237,7 +299,8 @@ export async function indexPrivateNotes(
         });
       // Chunk before entering the writer transaction; failure never replaces the active derived file.
       const chunks: { doc: (typeof docs)[number]; chunks: { text: string }[] }[] = [];
-      for (const doc of docs) chunks.push({ doc, chunks: await chunker(doc.text) });
+      for (const doc of docs)
+        chunks.push({ doc, chunks: await chunker(projectedText ?? doc.text) });
       const texts = chunks.flatMap((entry) => entry.chunks.map((chunk) => chunk.text));
       let embeddings: Float32Array[] = [];
       if (vectors) {
@@ -296,8 +359,14 @@ export async function indexPrivateNotes(
         )
           throw new Error("Reviewed note changed; private publication refused");
       }
-      if (vectors && sha256(await Bun.file(output).arrayBuffer()) !== vectors.expected.indexSha256)
+      await validateProjection();
+      if (
+        vectors &&
+        sha256(await Bun.file(baselineOutput).arrayBuffer()) !== vectors.expected.indexSha256
+      )
         throw new Error("Previous index changed; private publication refused");
+      if (projection && existsSync(output))
+        throw new Error("Private candidate changed; publication refused");
       renameSync(temp, output);
     } catch (error) {
       opened.vfs.db.close();
