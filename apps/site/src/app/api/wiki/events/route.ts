@@ -16,6 +16,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
+import { seriesFromLabels } from "@/lib/wiki-series";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -55,6 +56,7 @@ export interface NarrativeEventApiResponse {
     href: string;
     summary?: string | null;
     participants?: string[];
+    techniques?: string[];
     location?: string | null;
     orderRank?: number;
   }>;
@@ -99,12 +101,13 @@ export async function GET(req: NextRequest) {
 
   // `null` = lecture PostgreSQL échouée (`safe`) : une source manquante est une
   // panne (503), jamais une liste partielle ou vide servie en 200.
-  const [battles, tournaments, timelineEvents] = await Promise.all([
+  const [battles, tournaments, timelineEvents, movieData] = await Promise.all([
     dbUniverse.battles(),
     dbUniverse.tournaments(),
     dbUniverse.timelineEvents(),
+    dbUniverse.movies(),
   ]);
-  if (battles === null || tournaments === null || timelineEvents === null) {
+  if (battles === null || tournaments === null || timelineEvents === null || movieData === null) {
     return NextResponse.json(
       { error: "Événements narratifs momentanément indisponibles." },
       { status: 503, headers: { ...CORS, "Cache-Control": "no-store" } },
@@ -128,12 +131,13 @@ export async function GET(req: NextRequest) {
       slug: b.slug,
       title: b.title,
       title_ja: b.title_ja ?? null,
-      series: b.series || "DBZ",
+      series: seriesFromLabels(b.series),
       timeline,
       canon,
       href: "/wiki/events",
       summary: b.winner_name ? `Vainqueur : ${b.winner_name}` : null,
       participants: combatants,
+      techniques: b.techniques_used ?? [],
       location: b.location ?? null,
       orderRank: b.manga_volume_start
         ? b.manga_volume_start * 1000 + (b.manga_chapter_start ?? 0)
@@ -151,7 +155,7 @@ export async function GET(req: NextRequest) {
       slug: t.slug,
       title: t.name,
       title_ja: t.name_ja ?? null,
-      series: t.saga?.includes("Super") ? "DBS" : t.saga?.includes("GT") ? "DBGT" : "DB",
+      series: seriesFromLabels(t.saga, t.name),
       timeline,
       canon,
       href: "/wiki/events",
@@ -171,7 +175,7 @@ export async function GET(req: NextRequest) {
       slug: `age-${e.age_year}-${e.id}`,
       title: e.title,
       title_ja: e.title_ja ?? null,
-      series: e.age_year >= 778 ? "DBS" : e.age_year >= 761 ? "DBZ" : "DB",
+      series: seriesFromLabels(e.era, e.age_year >= 761 && e.age_year < 778 ? "DBZ" : null),
       timeline,
       canon,
       href: `/wiki/timeline#age-${e.age_year}`,
@@ -179,6 +183,26 @@ export async function GET(req: NextRequest) {
       participants: Array.isArray(e.characters_involved) ? e.characters_involved : [],
       location: null,
       orderRank: e.age_year,
+    });
+  }
+
+  for (const movie of movieData.movies) {
+    const series = seriesFromLabels(movie.series);
+    allItems.push({
+      kind: "timeline",
+      id: movie.id,
+      slug: movie.slug,
+      title: movie.title,
+      title_ja: movie.title_ja ?? null,
+      series,
+      timeline: "movies-dbz",
+      canon: false,
+      href: `/wiki/movies/${movie.slug}`,
+      summary: movie.synopsis,
+      orderRank:
+        typeof movie.release_date === "number"
+          ? movie.release_date * 1000 + movie.id
+          : 90000 + movie.id,
     });
   }
 
@@ -239,9 +263,11 @@ export async function GET(req: NextRequest) {
       const inTitle = item.title.toLowerCase().includes(q);
       const inTitleJa = item.title_ja ? item.title_ja.toLowerCase().includes(q) : false;
       const inParticipants = item.participants?.some((p) => p.toLowerCase().includes(q)) ?? false;
+      const inTechniques =
+        item.techniques?.some((technique) => technique.toLowerCase().includes(q)) ?? false;
       const inSummary = item.summary ? item.summary.toLowerCase().includes(q) : false;
       const inLocation = item.location ? item.location.toLowerCase().includes(q) : false;
-      if (!inTitle && !inTitleJa && !inParticipants && !inSummary && !inLocation) {
+      if (!inTitle && !inTitleJa && !inParticipants && !inTechniques && !inSummary && !inLocation) {
         return false;
       }
     }

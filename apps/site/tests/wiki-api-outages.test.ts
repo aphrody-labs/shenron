@@ -19,6 +19,7 @@ mock.module("@/lib/db-universe", () => ({
     battles: answer([]),
     tournaments: answer([]),
     timelineEvents: answer([]),
+    movies: async () => (failing ? null : { movies: [] }),
     contributors: answer([]),
   },
 }));

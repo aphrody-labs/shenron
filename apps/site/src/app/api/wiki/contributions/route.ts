@@ -123,18 +123,41 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 }
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  const session = await me();
+  let session: Awaited<ReturnType<typeof me>>;
+  try {
+    session = await getCurrentUser();
+  } catch (err) {
+    console.error("[contributions] session lookup failed", err);
+    return NextResponse.json(
+      { ok: false, error: "auth_unavailable" },
+      { status: 503, headers: { "Cache-Control": "private, no-store", "Retry-After": "30" } },
+    );
+  }
   if (!session?.user?.id) {
-    return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
+    return NextResponse.json(
+      { ok: false, error: "auth_required" },
+      { status: 401, headers: { "Cache-Control": "private, no-store" } },
+    );
   }
   const sp = req.nextUrl.searchParams;
-  const result = await listContributions({
-    authorId: session.user.id,
-    table: sp.get("table") ?? undefined,
-    rowId: sp.get("rowId") ?? undefined,
-    limit: Number(sp.get("limit")) || 20,
-  });
-  return NextResponse.json({ ok: true, ...result });
+  try {
+    const result = await listContributions({
+      authorId: session.user.id,
+      table: sp.get("table") ?? undefined,
+      rowId: sp.get("rowId") ?? undefined,
+      limit: Number(sp.get("limit")) || 20,
+    });
+    return NextResponse.json(
+      { ok: true, ...result },
+      { headers: { "Cache-Control": "private, no-store" } },
+    );
+  } catch (err) {
+    console.error("[contributions] list failed", err);
+    return NextResponse.json(
+      { ok: false, error: "list_unavailable" },
+      { status: 503, headers: { "Cache-Control": "private, no-store", "Retry-After": "30" } },
+    );
+  }
 }
 
 export async function DELETE(req: NextRequest): Promise<NextResponse> {

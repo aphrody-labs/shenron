@@ -23,14 +23,20 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  let session: Awaited<ReturnType<typeof getCurrentUser>> = null;
+  let session: Awaited<ReturnType<typeof getCurrentUser>>;
   try {
     session = await getCurrentUser();
   } catch {
-    session = null;
+    return NextResponse.json(
+      { ok: false, error: "auth_unavailable" },
+      { status: 503, headers: { "Cache-Control": "private, no-store", "Retry-After": "30" } },
+    );
   }
   if (!session?.user?.id) {
-    return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
+    return NextResponse.json(
+      { ok: false, error: "auth_required" },
+      { status: 401, headers: { "Cache-Control": "private, no-store" } },
+    );
   }
 
   const sp = req.nextUrl.searchParams;
@@ -38,31 +44,59 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const rowId = sp.get("rowId") ?? "";
   const column = sp.get("column") ?? "";
   if (!targetIsValid(table, column) || !rowId) {
-    return NextResponse.json({ ok: false, error: "bad_target" }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, error: "bad_target" },
+      { status: 400, headers: { "Cache-Control": "private, no-store" } },
+    );
   }
 
   // Transcription d'une planche (`pages#42`) : elle vit dans le jsonb de
   // l'ouvrage, pas dans une colonne — `getWikiRow` ne saurait pas la trouver.
   const planche = estCiblePlanche(table, column) ? numeroDePlanche(column) : null;
-  if (planche !== null) {
-    const texte = await lireTranscription(rowId, planche).catch(() => null);
-    if (texte === null) {
-      return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
+  try {
+    if (planche !== null) {
+      const texte = await lireTranscription(rowId, planche);
+      if (texte === null) {
+        return NextResponse.json(
+          { ok: false, error: "not_found" },
+          { status: 404, headers: { "Cache-Control": "private, no-store" } },
+        );
+      }
+      return NextResponse.json(
+        { ok: true, value: texte },
+        { headers: { "Cache-Control": "private, no-store" } },
+      );
     }
-    return NextResponse.json({ ok: true, value: texte });
+
+    const row = await getWikiRow(table, rowId);
+    if (!row) {
+      return NextResponse.json(
+        { ok: false, error: "not_found" },
+        { status: 404, headers: { "Cache-Control": "private, no-store" } },
+      );
+    }
+
+    // Statistiques : un jsonb rendu en texte, une mesure par ligne.
+    if (estCibleStats(table, column)) {
+      return NextResponse.json(
+        {
+          ok: true,
+          value: formatStats((row as Record<string, unknown>).stats),
+        },
+        { headers: { "Cache-Control": "private, no-store" } },
+      );
+    }
+
+    const v = (row as Record<string, unknown>)[column];
+    return NextResponse.json(
+      { ok: true, value: v == null ? "" : String(v) },
+      { headers: { "Cache-Control": "private, no-store" } },
+    );
+  } catch (error) {
+    console.error("[wiki/contributions/value] read failed", error);
+    return NextResponse.json(
+      { ok: false, error: "value_unavailable" },
+      { status: 503, headers: { "Cache-Control": "private, no-store", "Retry-After": "30" } },
+    );
   }
-
-  const row = await getWikiRow(table, rowId).catch(() => null);
-  if (!row) return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
-
-  // Statistiques : un jsonb rendu en texte, une mesure par ligne.
-  if (estCibleStats(table, column)) {
-    return NextResponse.json({
-      ok: true,
-      value: formatStats((row as Record<string, unknown>).stats),
-    });
-  }
-
-  const v = (row as Record<string, unknown>)[column];
-  return NextResponse.json({ ok: true, value: v == null ? "" : String(v) });
 }
