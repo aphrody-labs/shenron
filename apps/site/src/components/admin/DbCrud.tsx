@@ -18,6 +18,7 @@ import { api, apiAt } from "@/lib/admin-api";
 import { colLabel } from "@/lib/db-labels";
 import { buildSubmitBody, isStudioTable } from "@/lib/wiki-fields";
 import { WIKI_TABLE_SPECS, crudBase, isWikiTable } from "@/lib/wiki-tables";
+import { browserWikiSnapshotHash } from "@/lib/wiki-snapshot";
 
 interface TableSpec {
   name: string;
@@ -161,7 +162,16 @@ export function DbRowActions({ table, id }: { table: string; id: string | number
   });
 
   const update = useMutation({
-    mutationFn: (body: Record<string, unknown>) => crud.client.put(crud.row(id), body),
+    mutationFn: async (body: Record<string, unknown>) => {
+      if (table !== "db_character_variants") return crud.client.put(crud.row(id), body);
+      const expected = row.data ? structuredClone(row.data) : null;
+      if (!expected) throw new Error("Editorial row is not loaded");
+      return crud.client.put(crud.row(id), {
+        ...body,
+        expected,
+        expectedSha256: await browserWikiSnapshotHash(expected),
+      });
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["db", table] });
       setEditing(false);
