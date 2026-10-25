@@ -3,6 +3,7 @@ import { expect, mock, test } from "bun:test";
 
 const published = `https://cdn.dragonballfr.com/media/episodes/876/${"a".repeat(64)}/source.mp4`;
 const reads: number[] = [];
+let catalogueRead: () => Promise<unknown> = async () => ({ episodes: [], total: 0 });
 mock.module("@/lib/db-universe", () => ({
   dbUniverse: {
     episode: async (id: number) => {
@@ -15,6 +16,7 @@ mock.module("@/lib/db-universe", () => ({
           }
         : null;
     },
+    episodes: () => catalogueRead(),
   },
 }));
 
@@ -59,6 +61,7 @@ test("published episode MP4 is served without a legacy stream URL, preserving GE
 });
 
 test("unknown and malformed identities never request an upstream video", async () => {
+  catalogueRead = async () => ({ episodes: [], total: 0 });
   reads.length = 0;
   for (const id of ["0", "-1", "876/private", "877"]) {
     const response = await GET(new Request("https://dragonballfr.com/api/episodes/x/video"), {
@@ -67,4 +70,14 @@ test("unknown and malformed identities never request an upstream video", async (
     expect(response.status).toBe(404);
   }
   expect(reads).toEqual([877]);
+});
+
+test("a database outage is reported as a retryable response, not a missing episode", async () => {
+  catalogueRead = async () => null;
+  const response = await GET(new Request("https://dragonballfr.com/api/episodes/877/video"), {
+    params: Promise.resolve({ id: "877" }),
+  });
+
+  expect(response.status).toBe(503);
+  expect(response.headers.get("Cache-Control")).toBe("no-store");
 });

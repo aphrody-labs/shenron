@@ -1,6 +1,7 @@
 import { readPlaybackCapabilities } from "@/lib/playback-capabilities";
 import { NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
+import { lookupPublicEpisode } from "@/lib/episode-api-read";
 import { episodeApiSummary } from "@/lib/episode-api";
 import { idDeFiche } from "../../../wiki/_id-fiche";
 
@@ -28,13 +29,23 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
       );
     }
 
-    const ep = await dbUniverse.episode(numero);
-    if (!ep) {
+    const lookup = await lookupPublicEpisode(numero);
+    if (lookup.status === "unavailable") {
+      return NextResponse.json(
+        { error: "episode_temporarily_unavailable" },
+        {
+          status: 503,
+          headers: { ...CORS_HEADERS, "Cache-Control": "no-store", "Retry-After": "30" },
+        },
+      );
+    }
+    if (lookup.status === "missing") {
       return NextResponse.json(
         { error: "Épisode introuvable" },
         { status: 404, headers: CORS_HEADERS },
       );
     }
+    const ep = lookup.episode;
 
     const [nav, saga] = await Promise.all([
       dbUniverse
