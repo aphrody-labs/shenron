@@ -9,6 +9,7 @@
  *    preceding binding of the same name in the file;
  *  - `…Key: "a.b"` / `…Key = "a.b"` constants handed to `<T k={…} />` later.
  * Template-literal keys are dynamic and not checked here.
+ * Feature hooks aliased as useT use their registered dictionaries plus shared root keys.
  */
 import { describe, expect, test } from "bun:test";
 import path from "node:path";
@@ -18,6 +19,19 @@ const read = async (lang: string) =>
   (await Bun.file(path.join(root, `messages/${lang}.json`)).json()) as Record<string, unknown>;
 const fr = await read("fr");
 const dictionaries = { fr, en: await read("en"), ja: await read("ja") };
+const featureModules = {
+  "wiki-admin-text": "wiki-admin",
+  "wiki-explorer-text": "wiki-explorer",
+} as const;
+const featureDictionaries: Record<string, Record<string, Record<string, unknown>>> = {};
+for (const feature of Object.values(featureModules)) {
+  featureDictionaries[feature] = {};
+  for (const lang of ["fr", "en", "ja"])
+    featureDictionaries[feature]![lang] = await Bun.file(
+      path.join(root, "messages", feature, `${lang}.json`),
+    ).json();
+}
+const featureByFile = new Map<string, string>();
 
 function exists(key: string, dictionary: Record<string, unknown> = fr): boolean {
   let node: unknown = dictionary;
@@ -30,15 +44,23 @@ function exists(key: string, dictionary: Record<string, unknown> = fr): boolean 
 
 const KEY = String.raw`[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*`;
 
-async function usedKeys(): Promise<Map<string, string>> {
-  const used = new Map<string, string>();
+async function usedKeys(): Promise<Map<string, { key: string; file: string }>> {
+  const used = new Map<string, { key: string; file: string }>();
   const add = (key: string, file: string) => {
-    if (!used.has(key)) used.set(key, file);
+    used.set(`${file}\0${key}`, { key, file });
   };
   for await (const file of new Bun.Glob("src/**/*.{ts,tsx}").scan(root)) {
     const code = (await Bun.file(path.join(root, file)).text())
       .replace(/\/\*[\s\S]*?\*\//g, "")
       .replace(/^\s*\/\/.*$/gm, "");
+    // Feature hooks aliased as useT resolve their own namespace and shared root strings.
+    for (const [module, feature] of Object.entries(featureModules))
+      if (
+        new RegExp(
+          String.raw`import\s*\{\s*\w+\s+as\s+useT\s*\}\s*from\s*["'][^"']*/${module}["']`,
+        ).test(code)
+      )
+        featureByFile.set(file, feature);
     // Bindings: name → [position, namespace ("" for useT)].
     const bindings: { name: string; at: number; ns: string }[] = [];
     for (const m of code.matchAll(
@@ -70,12 +92,16 @@ async function usedKeys(): Promise<Map<string, string>> {
 
 describe("i18n keys", () => {
   test("every key used by the code exists in fr, en and ja", async () => {
-    const used = [...(await usedKeys())];
+    const used = [...(await usedKeys()).values()];
     expect(used.length).toBeGreaterThan(500);
     for (const [lang, dictionary] of Object.entries(dictionaries)) {
       const missing = used
-        .filter(([key]) => !exists(key, dictionary))
-        .map(([key, file]) => `${lang}: ${key}  (${file})`);
+        .filter(({ key, file }) => {
+          const feature = featureByFile.get(file);
+          const local = feature ? featureDictionaries[feature]?.[lang] : undefined;
+          return !exists(key, local ? { ...dictionary, ...local } : dictionary);
+        })
+        .map(({ key, file }) => `${lang}: ${key}  (${file})`);
       expect(missing).toEqual([]);
     }
   });
