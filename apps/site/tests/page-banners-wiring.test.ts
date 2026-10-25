@@ -1,5 +1,5 @@
 /**
- * Public heroes use the quality selector; the episode catalogue starts with records.
+ * Public heroes use the quality selector; streaming uses its catalogue-owned feature.
  */
 import { describe, expect, test } from "bun:test";
 import { PAGE_HERO_KEYS } from "../src/lib/page-banners";
@@ -29,11 +29,11 @@ const routes: Record<(typeof PAGE_HERO_KEYS)[number], string> = {
 };
 
 describe("bannières configurées dans l'administration", () => {
-  test("public pages use qualified frames while episodes start directly with the catalogue", async () => {
+  test("public pages use qualified frames while streaming owns its catalogue composition", async () => {
     for (const key of PAGE_HERO_KEYS) {
       const source = await Bun.file(new URL(routes[key], import.meta.url)).text();
       if (key === "episodes") {
-        expect(source).toContain("@/components/episodes/EpisodesCatalogue");
+        expect(source).toContain("@/components/streaming/StreamingCatalogue");
         expect(source).not.toContain("<Billboard");
         continue;
       }

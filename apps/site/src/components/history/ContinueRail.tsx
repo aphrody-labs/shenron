@@ -1,7 +1,9 @@
 "use client";
 
 /**
- * Rail « Reprendre » — les dernières pages ouvertes sur cet appareil.
+ * Resume rail for saved reading visits and actual unfinished native playback.
+ * Episode/movie visits require measured progress and exclude completed playback.
+ * Their direct anchors open the full player instead of the catalogue quick look.
  *
  * Deux journaux locaux l'alimentent, et ce rail est le seul endroit qui les
  * réunit :
@@ -16,13 +18,19 @@
  * montage client, puis l'état arrive après l'effet — c'est ce qui évite une
  * divergence d'hydratation (le serveur n'a aucun accès à `localStorage`).
  */
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { Croix } from "@aphrody/shenron-ui/icones";
 import { WikiImg } from "@/components/wiki/WikiImg";
 import { forgetHistory, readHistory, HISTORY_EVENT, type HistoryEntry } from "@/lib/history";
 import { reprises } from "@/lib/historique-local";
 import { useT } from "@/components/T";
+import {
+  readPlaybackProgress,
+  PLAYBACK_PROGRESS_EVENT,
+  playbackTimeLabel,
+  type PlaybackProgress,
+} from "@/lib/playback-progress";
 
 /** Le type d'entrée, nommé par le dictionnaire : c'est une étiquette d'interface. */
 const KIND_KEY: Record<HistoryEntry["kind"], string> = {
@@ -42,6 +50,7 @@ export interface RailEntry {
   at: number;
   /** Entrée média : seule celle-ci se retire une à une (`forgetHistory`). */
   media: HistoryEntry | null;
+  progress?: PlaybackProgress;
 }
 
 /**
@@ -85,6 +94,26 @@ export function mergeHistories(
     .filter((e) => (seen.has(e.href) ? false : (seen.add(e.href), true)));
 }
 
+function HistoryLink({
+  entry,
+  className,
+  children,
+}: {
+  entry: RailEntry;
+  className: string;
+  children: ReactNode;
+}) {
+  return entry.media?.kind === "episode" || entry.media?.kind === "movie" ? (
+    <a href={entry.href} className={className}>
+      {children}
+    </a>
+  ) : (
+    <Link href={entry.href} className={className}>
+      {children}
+    </Link>
+  );
+}
+
 export function ContinueRail({
   limit = 12,
   kinds,
@@ -126,11 +155,30 @@ export function ContinueRail({
     const load = () => {
       const media = readHistory().filter((e) => !autorises || autorises.has(e.kind));
       const fiches = wiki ? reprises() : [];
-      setItems(mergeHistories(media, fiches).slice(0, limit));
+      const progress = readPlaybackProgress();
+      setItems(
+        mergeHistories(media, fiches)
+          .flatMap((entry) => {
+            if (entry.media?.kind !== "episode" && entry.media?.kind !== "movie") return [entry];
+            const playback = progress.find(
+              (item) => item.kind === entry.media!.kind && item.id === entry.media!.id,
+            );
+            if (!playback || playback.completed || playback.seconds < 15) return [];
+            return [{ ...entry, progress: playback, at: playback.updatedAt }];
+          })
+          .toSorted((a, b) => b.at - a.at)
+          .slice(0, limit),
+      );
     };
     load();
     window.addEventListener(HISTORY_EVENT, load);
-    return () => window.removeEventListener(HISTORY_EVENT, load);
+    window.addEventListener(PLAYBACK_PROGRESS_EVENT, load);
+    window.addEventListener("storage", load);
+    return () => {
+      window.removeEventListener(HISTORY_EVENT, load);
+      window.removeEventListener(PLAYBACK_PROGRESS_EVENT, load);
+      window.removeEventListener("storage", load);
+    };
   }, [limit, cleKinds, wiki]);
 
   if (!items || items.length === 0) return null;
@@ -145,8 +193,8 @@ export function ContinueRail({
       <ul className="-mx-1 flex snap-x gap-3 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {items.map((e) => (
           <li key={e.key} className="relative shrink-0 snap-start">
-            <Link
-              href={e.href}
+            <HistoryLink
+              entry={e}
               className="group block w-[200px] overflow-hidden rounded-xl border border-white/[0.08] bg-dbz-card transition-colors hover:border-dbz-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange sm:w-[232px]"
             >
               <div className="relative aspect-video overflow-hidden bg-black/40">
@@ -156,14 +204,28 @@ export function ContinueRail({
                   sizes="232px"
                   className="absolute inset-0 h-full w-full object-cover object-top opacity-90"
                 />
+                {e.progress && (
+                  <progress
+                    className="absolute inset-x-0 bottom-0 h-1 w-full accent-dbz-orange"
+                    value={e.progress.seconds}
+                    max={e.progress.duration}
+                    aria-label={e.title}
+                  />
+                )}
               </div>
               <div className="p-2.5">
                 <p className="truncate text-[13px] font-semibold text-white">{e.title}</p>
                 <p className="mt-0.5 truncate text-[11px] text-white/55">
                   {e.caption ?? (e.media ? t(KIND_KEY[e.media.kind]) : "")}
                 </p>
+                {e.progress && (
+                  <p className="mt-1 text-xs tabular-nums text-white/80">
+                    {playbackTimeLabel(e.progress.seconds)} /{" "}
+                    {playbackTimeLabel(e.progress.duration)}
+                  </p>
+                )}
               </div>
-            </Link>
+            </HistoryLink>
             {e.media && (
               <button
                 type="button"

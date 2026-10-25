@@ -1,0 +1,385 @@
+.browser {
+  min-width: 0;
+  color: var(--foreground);
+  scroll-margin-top: 100px;
+}
+
+.heading,
+.groupHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.heading h2 {
+  margin: 0 0 8px;
+  font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+  font-weight: 750;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.heading p,
+.metadata,
+.seriesLabel,
+.availability,
+.resultStatus {
+  display: block;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 16px;
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.searchField {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+.seriesField {
+  flex: 0 1 280px;
+  min-width: 0;
+}
+
+.filters label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.searchControl {
+  position: relative;
+}
+.searchControl > svg {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  width: 20px;
+  height: 20px;
+  color: var(--muted-foreground);
+  pointer-events: none;
+}
+.searchControl input,
+.filters select {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  background: var(--color-dbz-card);
+  color: var(--foreground);
+  font: inherit;
+  font-size: 1rem;
+}
+.searchControl input {
+  padding-left: 44px;
+}
+.searchControl input::placeholder {
+  color: var(--muted-foreground);
+  opacity: 1;
+}
+.filters select {
+  cursor: pointer;
+}
+
+.clear,
+.loadMore,
+.feedback button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--color-dbz-card);
+  color: var(--foreground);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 150ms,
+    color 150ms,
+    background 150ms;
+}
+.clear svg {
+  width: 18px;
+  height: 18px;
+}
+.browser button:hover:not(:disabled):not([aria-disabled="true"]),
+.browser select:hover,
+.sagaItem:hover {
+  border-color: var(--color-dbz-yellow);
+  color: var(--color-dbz-yellow);
+}
+.browser :is(a, button, input, select, summary):focus-visible {
+  outline: 2px solid var(--color-dbz-yellow);
+  outline-offset: 4px;
+}
+.browser button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+}
+.group {
+  min-width: 0;
+  scroll-margin-top: 100px;
+}
+.groupHeading {
+  margin-bottom: 12px;
+}
+.groupHeading h2 {
+  margin: 0;
+  font-size: clamp(1.125rem, 1rem + 0.5vw, 1.5rem);
+  font-weight: 700;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+.groupHeading > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
+.groupHeading > a:hover {
+  color: var(--color-dbz-yellow);
+}
+.groupHeading > a svg {
+  width: 18px;
+  height: 18px;
+}
+
+.rail {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  margin: 0;
+  padding: 4px 4px 12px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.rail > li {
+  width: clamp(240px, 24vw, 320px);
+  min-width: 0;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  list-style: none;
+}
+.card {
+  position: relative;
+  min-width: 0;
+}
+.cardLink {
+  display: block;
+  border-radius: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+.artwork {
+  position: relative;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--color-dbz-card);
+  transition: border-color 150ms;
+}
+.artwork img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 180ms;
+}
+.cardLink:hover .artwork,
+.cardLink:focus-visible .artwork {
+  border-color: var(--color-dbz-yellow);
+}
+.cardLink:hover img {
+  transform: scale(1.025);
+}
+.episodeNumber {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--color-dbz-bg);
+  color: var(--foreground);
+  font-size: 0.75rem;
+  font-weight: 650;
+  line-height: 1.3;
+}
+.play {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--color-dbz-bg);
+  color: var(--color-dbz-yellow);
+}
+.play svg {
+  width: 16px;
+  height: 16px;
+}
+.cardText {
+  padding: 14px 0 0;
+}
+.seriesLabel {
+  margin: 0 0 4px;
+  font-size: 0.75rem;
+}
+.cardText h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.metadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 8px 0 0;
+  font-size: 0.75rem;
+}
+.availability {
+  margin: 6px 0 0;
+  font-size: 0.75rem;
+}
+.save {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+}
+.sagas {
+  margin-top: 12px;
+  color: var(--muted-foreground);
+}
+.sagas summary {
+  width: fit-content;
+  min-height: 44px;
+  padding: 10px 0;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.sagas ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.sagaItem {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--foreground);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+.resultStatus {
+  min-height: 24px;
+  margin: 0 0 20px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: 32px 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.grid li {
+  min-width: 0;
+}
+.loadMore {
+  margin: 32px auto 0;
+  display: flex;
+}
+.feedback {
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--color-dbz-card);
+}
+.feedback h3 {
+  margin: 0 0 12px;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+.feedback p {
+  margin: 0 0 20px;
+  color: var(--muted-foreground);
+}
+
+@media (max-width: 600px) {
+  .filters {
+    gap: 12px;
+  }
+  .seriesField {
+    flex: 1 1 100%;
+  }
+  .clear {
+    width: 100%;
+  }
+  .groupHeading {
+    padding-right: 0;
+    align-items: start;
+  }
+  .groupHeading h2 {
+    flex: 1 1 160px;
+  }
+  .groups {
+    gap: 32px;
+  }
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .feedback {
+    padding: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .browser *,
+  .browser *::before,
+  .browser *::after {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

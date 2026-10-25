@@ -1,15 +1,13 @@
 "use client";
 
 /**
- * Îlot client à déposer dans une page serveur pour journaliser la visite dans
- * l'historique local. Rend `null` — effet de bord uniquement, comme `TrackView`.
- *
- * Volontairement distinct de `TrackView` (télémétrie) : celui-ci n'envoie rien
- * au serveur, ne dépend d'aucun consentement et sert l'utilisateur, pas la
- * mesure d'audience.
+ * Records a server page's local visit and binds native playback to its watch layout.
+ * The hidden marker scopes observation to the current episode rather than hero media.
+ * Unlike TrackView telemetry, this writes only to device storage and sends nothing.
  */
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { recordHistory, type HistoryKind } from "@/lib/history";
+import { observePlaybackProgress } from "@/lib/playback-progress";
 
 export function TrackHistory({
   kind,
@@ -26,8 +24,13 @@ export function TrackHistory({
   image?: string | null;
   caption?: string | null;
 }) {
+  const marker = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     recordHistory({ kind, id: String(id), title, href, image, caption });
   }, [kind, id, title, href, image, caption]);
-  return null;
+  useEffect(() => {
+    if ((kind !== "episode" && kind !== "movie") || !marker.current) return;
+    return observePlaybackProgress(marker.current, kind, String(id), href);
+  }, [kind, id, href]);
+  return <span ref={marker} hidden aria-hidden="true" />;
 }

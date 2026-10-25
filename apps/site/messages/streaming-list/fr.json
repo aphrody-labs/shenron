@@ -1,0 +1,13 @@
+{
+  "title": "Mes épisodes enregistrés",
+  "device": "Vos favoris d’épisodes",
+  "empty": "Aucun épisode enregistré",
+  "emptyHint": "Ajoutez un épisode à vos favoris pour le retrouver ici.",
+  "add": "Favori",
+  "saved": "En favori",
+  "addLabel": "Ajouter « {title} » aux favoris",
+  "removeLabel": "Retirer « {title} » des favoris",
+  "storageError": "Impossible d’enregistrer sur cet appareil. Autorisez le stockage dans ce navigateur et réessayez.",
+  "episode": "Épisode {number}",
+  "details": "Voir « {title} »"
+}

@@ -61,9 +61,9 @@ test("series metadata distinguishes an empty result from a database outage", asy
   expect(metadata).toContain("notFound()");
 });
 
-test("episode catalogue remains the current record-first component without a large billboard skeleton", async () => {
+test("streaming catalogue retains the compact loading boundary", async () => {
   expect(await routeFile("episodes/(index)/page.tsx").text()).toContain(
-    "@/components/episodes/EpisodesCatalogue",
+    "@/components/streaming/StreamingCatalogue",
   );
   const source = await routeFile("episodes/(index)/loading.tsx").text();
   expect(source).not.toContain("BillboardSkeleton");

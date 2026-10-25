@@ -19,10 +19,19 @@ export function StreamRail({
   children,
   ariaLabel,
   className = "",
+  listClassName = "",
+  previousLabel = "Défiler vers la gauche",
+  nextLabel = "Défiler vers la droite",
+  controls = "hover",
 }: {
   children: React.ReactNode;
   ariaLabel?: string;
   className?: string;
+  listClassName?: string;
+  previousLabel?: string;
+  nextLabel?: string;
+  /** Keep the controls above the cards for touch and keyboard discovery. */
+  controls?: "hover" | "always";
 }) {
   const ref = useRef<HTMLUListElement>(null);
   const gaucheRef = useRef<HTMLButtonElement>(null);
@@ -32,6 +41,7 @@ export function StreamRail({
   const flechePressee = useRef<-1 | 1 | null>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
+  const itemCount = Children.count(children);
 
   const update = useCallback(() => {
     const el = ref.current;
@@ -54,7 +64,8 @@ export function StreamRail({
     const ro = new ResizeObserver(update);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [update]);
+  // oxlint-disable-next-line react/exhaustive-effect-dependencies -- content changes can alter scrollWidth without resizing the rail viewport
+  }, [update, itemCount]);
 
   // Atteindre une extrémité DÉSACTIVE la flèche qu'on vient de presser : le
   // navigateur rend alors le focus à `<body>`, et la tabulation suivante repart
@@ -95,36 +106,45 @@ export function StreamRail({
         }`}
       />
 
-      {/* Flèche gauche (masquée à l'extrémité, révélée au survol du rail) */}
-      <button
-        ref={gaucheRef}
-        type="button"
-        aria-label="Défiler vers la gauche"
-        onClick={() => scrollByPage(-1)}
-        disabled={atStart}
-        className={`absolute left-1 top-1/2 z-20 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/70 text-white backdrop-blur transition-all duration-200 hover:border-dbz-orange hover:bg-dbz-orange hover:text-black ${
-          atStart
-            ? "pointer-events-none opacity-0"
-            : "pointer-events-none opacity-0 focus-visible:pointer-events-auto focus-visible:opacity-100 group-hover/rail:pointer-events-auto group-hover/rail:opacity-100"
-        }`}
-      >
-        <ChevronGauche className="h-6 w-6" />
-      </button>
-      {/* Flèche droite */}
-      <button
-        ref={droiteRef}
-        type="button"
-        aria-label="Défiler vers la droite"
-        onClick={() => scrollByPage(1)}
-        disabled={atEnd}
-        className={`absolute right-1 top-1/2 z-20 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/70 text-white backdrop-blur transition-all duration-200 hover:border-dbz-orange hover:bg-dbz-orange hover:text-black ${
-          atEnd
-            ? "pointer-events-none opacity-0"
-            : "pointer-events-none opacity-0 focus-visible:pointer-events-auto focus-visible:opacity-100 group-hover/rail:pointer-events-auto group-hover/rail:opacity-100"
-        }`}
-      >
-        <ChevronDroite className="h-6 w-6" />
-      </button>
+      <div className={controls === "always" ? "mb-3 flex justify-end gap-2" : "contents"}>
+        <button
+          ref={gaucheRef}
+          type="button"
+          aria-label={previousLabel}
+          onClick={() => scrollByPage(-1)}
+          disabled={atStart}
+          className={
+            controls === "always"
+              ? "grid size-11 place-items-center rounded-xl border border-dbz-border bg-dbz-card text-os transition-colors hover:border-dbz-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-gold disabled:cursor-default disabled:opacity-40 motion-reduce:transition-none"
+              : `absolute left-1 top-1/2 z-20 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/70 text-white backdrop-blur transition-all duration-200 hover:border-dbz-orange hover:bg-dbz-orange hover:text-black ${
+                  atStart
+                    ? "pointer-events-none opacity-0"
+                    : "pointer-events-none opacity-0 focus-visible:pointer-events-auto focus-visible:opacity-100 group-hover/rail:pointer-events-auto group-hover/rail:opacity-100"
+                }`
+          }
+        >
+          <ChevronGauche className="h-6 w-6" aria-hidden="true" />
+        </button>
+        {/* Flèche droite */}
+        <button
+          ref={droiteRef}
+          type="button"
+          aria-label={nextLabel}
+          onClick={() => scrollByPage(1)}
+          disabled={atEnd}
+          className={
+            controls === "always"
+              ? "grid size-11 place-items-center rounded-xl border border-dbz-border bg-dbz-card text-os transition-colors hover:border-dbz-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-gold disabled:cursor-default disabled:opacity-40 motion-reduce:transition-none"
+              : `absolute right-1 top-1/2 z-20 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/70 text-white backdrop-blur transition-all duration-200 hover:border-dbz-orange hover:bg-dbz-orange hover:text-black ${
+                  atEnd
+                    ? "pointer-events-none opacity-0"
+                    : "pointer-events-none opacity-0 focus-visible:pointer-events-auto focus-visible:opacity-100 group-hover/rail:pointer-events-auto group-hover/rail:opacity-100"
+                }`
+          }
+        >
+          <ChevronDroite className="h-6 w-6" aria-hidden="true" />
+        </button>
+      </div>
 
       <ul
         ref={ref}
@@ -134,7 +154,7 @@ export function StreamRail({
         // retrouverait sur un élément générique, donc jamais annoncé.
 
         aria-label={ariaLabel}
-        className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className={`no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${listClassName}`}
       >
         {Children.map(children, (child) => (
           <li className="shrink-0 snap-start">{child}</li>

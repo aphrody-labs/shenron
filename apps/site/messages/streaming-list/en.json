@@ -1,0 +1,13 @@
+{
+  "title": "My saved episodes",
+  "device": "Your episode favorites",
+  "empty": "No saved episodes",
+  "emptyHint": "Add an episode to your favorites to find it here.",
+  "add": "Favorite",
+  "saved": "Saved",
+  "addLabel": "Add “{title}” to favorites",
+  "removeLabel": "Remove “{title}” from favorites",
+  "storageError": "Unable to save on this device. Allow storage in this browser and try again.",
+  "episode": "Episode {number}",
+  "details": "View “{title}”"
+}

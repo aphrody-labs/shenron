@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ogMeta } from "@/lib/og";
 
-export { default } from "@/components/episodes/EpisodesCatalogue";
+export { default } from "@/components/streaming/StreamingCatalogue";
 export const revalidate = 3600;
 
 const title = "Épisodes Dragon Ball — l'intégrale de l'anime";
