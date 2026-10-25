@@ -80,13 +80,11 @@ async function currentActor(): Promise<RevisionActor> {
   }
 }
 
-const forbidden = () =>
-  NextResponse.json(
-    { error: "Forbidden" },
-    { status: 403, headers: { "Cache-Control": "private, no-store" } },
-  );
-const notFound = (msg = "Table inconnue") => NextResponse.json({ error: msg }, { status: 404 });
-const badRequest = (msg: string) => NextResponse.json({ error: msg }, { status: 400 });
+const privateError = (body: Record<string, unknown>, status: number) =>
+  NextResponse.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
+const forbidden = () => privateError({ error: "Forbidden" }, 403);
+const notFound = (msg = "Table inconnue") => privateError({ error: msg }, 404);
+const badRequest = (msg: string) => privateError({ error: msg }, 400);
 
 /** Keep authentication outages distinct from a denied admin session. */
 async function requireAdmin(): Promise<NextResponse | null> {
@@ -122,10 +120,7 @@ function databookPagesFreezeError(
   if (writesDatabookPages(table, body)) {
     const freeze = databooksFreeze();
     if (freeze) {
-      return NextResponse.json(
-        { error: "DATABOOKS_FROZEN", reason: freeze.reason },
-        { status: 423 },
-      );
+      return privateError({ error: "DATABOOKS_FROZEN", reason: freeze.reason }, 423);
     }
   }
   return null;
@@ -220,10 +215,7 @@ export async function POST(req: NextRequest, ctx: Ctx) {
     if (bodyError) return bodyError;
     const validated = validateCatalogEditorialBody(table, body, true);
     if (!validated.ok)
-      return NextResponse.json(
-        { error: "invalid_catalog_metadata", fields: validated.fields },
-        { status: 400 },
-      );
+      return privateError({ error: "invalid_catalog_metadata", fields: validated.fields }, 400);
     const row = await insertWiki(table, validated.value);
     revalidateWikiEntity(table, row);
     if (table === "db_wiki_sections") await revalidateSectionParent(row);
@@ -256,10 +248,7 @@ async function mutate(req: NextRequest, ctx: Ctx) {
     if (bodyError) return bodyError;
     const validated = validateCatalogEditorialBody(table, precondition.data);
     if (!validated.ok)
-      return NextResponse.json(
-        { error: "invalid_catalog_metadata", fields: validated.fields },
-        { status: 400 },
-      );
+      return privateError({ error: "invalid_catalog_metadata", fields: validated.fields }, 400);
     const decoded = decodeURIComponent(id);
     // Snapshot AVANT pour la révision (diff avant/après + retour arrière).
     const before =
@@ -328,27 +317,24 @@ export async function DELETE(req: NextRequest, ctx: Ctx) {
  */
 function writeFailed(context: string, err: unknown): NextResponse {
   if (err instanceof WikiUpdatePreconditionError) {
-    return NextResponse.json({ error: err.code }, { status: 409 });
+    return privateError({ error: err.code }, 409);
   }
   if (err instanceof WikiUpdateRequestError || err instanceof WikiCollectionQueryError) {
-    return NextResponse.json({ error: err.code }, { status: 400 });
+    return privateError({ error: err.code }, 400);
   }
   if (err instanceof DatabooksFrozenError) {
-    return NextResponse.json({ error: err.code, reason: err.freeze.reason }, { status: 423 });
+    return privateError({ error: err.code, reason: err.freeze.reason }, 423);
   }
   if (err instanceof CatalogMediaConflictError) {
-    return NextResponse.json(
-      { error: "catalog_media_conflict", existingIds: err.existingIds },
-      { status: 409 },
-    );
+    return privateError({ error: "catalog_media_conflict", existingIds: err.existingIds }, 409);
   }
   if (err instanceof z.ZodError) {
-    return NextResponse.json(
+    return privateError(
       {
         error: "invalid_catalog_metadata",
         fields: err.issues.map((issue) => issue.path.join(".")),
       },
-      { status: 400 },
+      400,
     );
   }
   const msg = err instanceof Error ? err.message : String(err);
@@ -358,7 +344,7 @@ function writeFailed(context: string, err: unknown): NextResponse {
     typeof (err as { code?: unknown })?.code === "string" ||
     /constraint|violates|relation |column |syntax error/i.test(msg);
   if (isDriverError) {
-    return NextResponse.json({ error: "Écriture refusée par la base." }, { status: 500 });
+    return privateError({ error: "wiki_admin_unavailable" }, 503);
   }
-  return NextResponse.json({ error: msg || "erreur" }, { status: 400 });
+  return privateError({ error: "internal_error" }, 500);
 }
