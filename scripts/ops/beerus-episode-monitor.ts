@@ -24,6 +24,7 @@ export type Candidate = {
   synopsis: string | null;
   images: string[];
   watchUrls: string[];
+  mediaSources?: string[];
 };
 export type Observation = {
   source: string;
@@ -265,13 +266,56 @@ export async function observeSource(
     } else if (source.kind === "shenron") {
       const data = JSON.parse(body);
       const item = data?.data?.episode ?? data?.data ?? data?.episode ?? data;
+      const identityMatches =
+        item?.id === 877 && item?.series === "DBS_BEERUS" && item?.numberInSeries === 3;
+      const offeredSource =
+        typeof item?.nativeSource?.src === "string"
+          ? publicUrl(item.nativeSource.src, source.url)
+          : null;
+      const nativeSource =
+        identityMatches &&
+        offeredSource &&
+        new URL(offeredSource).origin === "https://cdn.dragonballfr.com" &&
+        /^\/media\/episodes\/877\/[a-f0-9]{64}\/source\.mp4$/.test(new URL(offeredSource).pathname)
+          ? offeredSource
+          : null;
+      const officialOffer = Array.isArray(item?.availability)
+        ? item.availability.find(
+            (offer: Record<string, unknown>) =>
+              offer.provider === "crunchyroll" &&
+              offer.available === true &&
+              typeof offer.url === "string" &&
+              publicUrl(offer.url, source.url)?.startsWith(
+                "https://www.crunchyroll.com/fr/watch/GE00389315JAJP/",
+              ),
+          )
+        : null;
       observation.facts = {
         requestedId: 877,
         returnedId: typeof item?.id === "number" ? item.id : null,
         series: typeof item?.series === "string" ? clean(item.series) : null,
         number: typeof item?.numberInSeries === "number" ? item.numberInSeries : null,
+        durationSec: typeof item?.durationSec === "number" ? item.durationSec : null,
+        frameCount: Array.isArray(item?.frames) ? item.frames.length : 0,
+        officialWatchUrl: identityMatches && officialOffer ? String(officialOffer.url) : null,
+        nativeSourceUrl: nativeSource,
       };
-      observation.status = "catalogue-observed";
+      observation.status = !identityMatches
+        ? "episode-identity-mismatch"
+        : nativeSource
+          ? "native-source-needs-validation"
+          : "catalogue-observed";
+      if (nativeSource)
+        observation.candidate = {
+          episode: 3,
+          lang: source.lang,
+          source: source.url,
+          title: typeof item?.title === "string" ? clean(item.title) : null,
+          synopsis: null,
+          images: [],
+          watchUrls: [],
+          mediaSources: [nativeSource],
+        };
     } else {
       let text = "";
       await new HTMLRewriter()

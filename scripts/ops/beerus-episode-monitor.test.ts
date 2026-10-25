@@ -17,13 +17,43 @@ test("Shenron identity uses the public API episode number field", async () => {
   const result = await observeSource(SOURCES[4], async () =>
     Response.json({ id: 877, series: "DBS_BEERUS", numberInSeries: 3 }),
   );
-  expect(result.facts).toEqual({
+  expect(result.facts).toMatchObject({
     requestedId: 877,
     returnedId: 877,
     series: "DBS_BEERUS",
     number: 3,
   });
 });
+test("a new immutable E3 media delivery becomes actionable without retaining signed URLs", async () => {
+  const url = `https://cdn.dragonballfr.com/media/episodes/877/${"a".repeat(64)}/source.mp4`;
+  const episode = {
+    id: 877,
+    series: "DBS_BEERUS",
+    numberInSeries: 3,
+    title: "E3",
+    durationSec: 1397,
+    frames: [{ source: "bun-video" }],
+    nativeSource: { src: url },
+  };
+  const observed = await observeSource(SOURCES[4], async () => Response.json(episode));
+  expect(observed.status).toBe("native-source-needs-validation");
+  expect(observed.candidate?.mediaSources).toEqual([url]);
+  expect(observed.facts.frameCount).toBe(1);
+  expect(snapshotFingerprint(observed)).not.toBe(
+    snapshotFingerprint({ ...observed, facts: { ...observed.facts, frameCount: 2 } }),
+  );
+  for (const input of [
+    { ...episode, numberInSeries: 2 },
+    { ...episode, nativeSource: { src: url + "?token=secret" } },
+    { ...episode, nativeSource: { src: url.replace("/877/", "/876/") } },
+  ]) {
+    const rejected = await observeSource(SOURCES[4], async () => Response.json(input));
+    expect(rejected.candidate).toBeNull();
+    expect(rejected.facts.nativeSourceUrl).toBeNull();
+    expect(JSON.stringify(rejected)).not.toContain("secret");
+  }
+});
+
 describe("official episode 3 evidence", () => {
   test("rejects episode 1/2 text and commented episode 3", async () => {
     const html =
