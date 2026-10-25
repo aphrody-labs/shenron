@@ -2,10 +2,13 @@ import { beforeEach, describe, expect, mock, test } from "bun:test";
 import { NextRequest } from "next/server";
 
 let authFails = true;
+let anonymous = false;
 let listFails = false;
 let valueReadFails = false;
 let rowIsMissing = false;
 let rightsFail = false;
+let rightsAllowed = false;
+let withdrawFails = false;
 let createCalls = 0;
 
 mock.module("server-only", () => ({}));
@@ -15,6 +18,7 @@ mock.module("@/lib/memory-rate-limit", () => ({
 mock.module("@/lib/session", () => ({
   getCurrentUser: async () => {
     if (authFails) throw new Error("auth store unavailable");
+    if (anonymous) return null;
     return { user: { id: "user-1" } };
   },
   isCurrentUserAdmin: async () => false,
@@ -33,12 +37,14 @@ mock.module("@/lib/wiki-contributions", () => ({
     return { rows: [], total: 0, limit: 20, offset: 0 };
   },
   targetIsValid: () => true,
-  withdrawContribution: async () => undefined,
+  withdrawContribution: async () => {
+    if (withdrawFails) throw new Error("database unavailable");
+  },
 }));
 mock.module("@/lib/contribution-rights", () => ({
   canContribute: async () => {
     if (rightsFail) throw new Error("rights store unavailable");
-    return false;
+    return rightsAllowed;
   },
   scopeOf: () => "wiki",
 }));
@@ -61,14 +67,23 @@ mock.module("@/lib/stats-personnage", () => ({
 const contributions = await import("../src/app/api/wiki/contributions/route");
 const value = await import("../src/app/api/wiki/contributions/value/route");
 const req = (path: string) => new NextRequest(new URL(path, "http://localhost:3000"));
+const mutate = (method: "POST" | "DELETE", path: string, body?: unknown) =>
+  new NextRequest(new URL(path, "http://localhost:3000"), {
+    method,
+    headers: body === undefined ? undefined : { "content-type": "application/json" },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
 
 describe("API des contributions : indisponibilité des dépendances", () => {
   beforeEach(() => {
     authFails = true;
+    anonymous = false;
     listFails = false;
     valueReadFails = false;
     rowIsMissing = false;
     rightsFail = false;
+    rightsAllowed = false;
+    withdrawFails = false;
     createCalls = 0;
   });
 
@@ -143,13 +158,7 @@ describe("API des contributions : indisponibilité des dépendances", () => {
   });
 
   test("POST et DELETE ne confondent plus panne de session et absence de connexion", async () => {
-    const post = await contributions.POST(
-      new NextRequest(new URL("/api/wiki/contributions", "http://localhost:3000"), {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: "{}",
-      }),
-    );
+    const post = await contributions.POST(mutate("POST", "/api/wiki/contributions", {}));
     const remove = await contributions.DELETE(req("/api/wiki/contributions?id=1"));
 
     for (const response of [post, remove]) {
@@ -157,5 +166,56 @@ describe("API des contributions : indisponibilité des dépendances", () => {
       expect(response.headers.get("Cache-Control")).toBe("private, no-store");
       expect(((await response.json()) as { error: string }).error).toBe("auth_unavailable");
     }
+  });
+
+  test("réponses de session anonyme, succès et refus restent privées", async () => {
+    authFails = false;
+    anonymous = true;
+    const anonymousList = await contributions.GET(req("/api/wiki/contributions"));
+    const anonymousPost = await contributions.POST(mutate("POST", "/api/wiki/contributions", {}));
+    const anonymousDelete = await contributions.DELETE(req("/api/wiki/contributions?id=1"));
+
+    anonymous = false;
+    rightsAllowed = true;
+    const submitted = await contributions.POST(
+      mutate("POST", "/api/wiki/contributions", {
+        table: "db_characters",
+        rowId: "1",
+        column: "name",
+        valueAfter: "Son Goku",
+      }),
+    );
+    const withdrawn = await contributions.DELETE(req("/api/wiki/contributions?id=1"));
+
+    rightsAllowed = false;
+    const refused = await contributions.POST(
+      mutate("POST", "/api/wiki/contributions", {
+        table: "db_characters",
+        rowId: "1",
+        column: "name",
+        valueAfter: "Son Goku",
+      }),
+    );
+
+    for (const response of [anonymousList, anonymousPost, anonymousDelete]) {
+      expect(response.status).toBe(401);
+      expect(response.headers.get("Cache-Control")).toBe("private, no-store");
+    }
+    for (const response of [submitted, withdrawn]) {
+      expect(response.status).toBe(200);
+      expect(response.headers.get("Cache-Control")).toBe("private, no-store");
+    }
+    expect(refused.status).toBe(403);
+    expect(refused.headers.get("Cache-Control")).toBe("private, no-store");
+  });
+
+  test("une panne au retrait reste une 503 privée, sans réessai aveugle", async () => {
+    authFails = false;
+    withdrawFails = true;
+    const response = await contributions.DELETE(req("/api/wiki/contributions?id=1"));
+
+    expect(response.status).toBe(503);
+    expect(response.headers.get("Cache-Control")).toBe("private, no-store");
+    expect(((await response.json()) as { error: string }).error).toBe("withdraw_unavailable");
   });
 });

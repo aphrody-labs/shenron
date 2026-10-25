@@ -48,11 +48,14 @@ const contributionRateLimit = createMemoryRateLimiter({
   namespace: "wiki-contributions",
 });
 
+function privateJson(body: unknown, init: ResponseInit = {}): NextResponse {
+  const headers = new Headers(init.headers);
+  headers.set("Cache-Control", "private, no-store");
+  return NextResponse.json(body, { ...init, headers });
+}
+
 function unavailable(error: string): NextResponse {
-  return NextResponse.json(
-    { ok: false, error },
-    { status: 503, headers: { "Cache-Control": "private, no-store", "Retry-After": "30" } },
-  );
+  return privateJson({ ok: false, error }, { status: 503, headers: { "Retry-After": "30" } });
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -64,11 +67,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return unavailable("auth_unavailable");
   }
   if (!session?.user?.id) {
-    return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
+    return privateJson({ ok: false, error: "auth_required" }, { status: 401 });
   }
   const rate = await contributionRateLimit.consume(session.user.id);
   if (rate.limited) {
-    return NextResponse.json(
+    return privateJson(
       { ok: false, error: "rate_limited" },
       { status: 429, headers: { "Retry-After": String(rate.retryAfter) } },
     );
@@ -78,13 +81,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     parsed = bodySchema.parse(await req.json());
   } catch {
-    return NextResponse.json({ ok: false, error: "bad_request" }, { status: 400 });
+    return privateJson({ ok: false, error: "bad_request" }, { status: 400 });
   }
   const entityPath = parsed.path
     ? sanitizeInternalPath(parsed.path.split("?")[0]!.split("#")[0], 512)
     : null;
   if (parsed.path && !entityPath) {
-    return NextResponse.json({ ok: false, error: "bad_path" }, { status: 400 });
+    return privateJson({ ok: false, error: "bad_path" }, { status: 400 });
   }
 
   // Droit de contribution du périmètre visé (wiki / databooks), réglé depuis
@@ -103,10 +106,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return unavailable("rights_unavailable");
   }
   if (!autorise) {
-    return NextResponse.json(
-      { ok: false, error: "not_allowed" },
-      { status: 403, headers: { "Cache-Control": "private, no-store" } },
-    );
+    return privateJson({ ok: false, error: "not_allowed" }, { status: 403 });
   }
 
   try {
@@ -124,16 +124,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         discordId: session.user.discordId ?? session.discordId ?? null,
       },
     });
-    return NextResponse.json({ ok: true, contribution });
+    return privateJson({ ok: true, contribution });
   } catch (err) {
     if (err instanceof ContributionError) {
-      return NextResponse.json(
+      return privateJson(
         { ok: false, error: err.code, message: err.message },
         { status: err.status },
       );
     }
     console.error("[contributions] create failed", err);
-    return NextResponse.json({ ok: false, error: "insert_failed" }, { status: 500 });
+    return privateJson({ ok: false, error: "insert_failed" }, { status: 500 });
   }
 }
 
@@ -143,16 +143,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     session = await getCurrentUser();
   } catch (err) {
     console.error("[contributions] session lookup failed", err);
-    return NextResponse.json(
+    return privateJson(
       { ok: false, error: "auth_unavailable" },
-      { status: 503, headers: { "Cache-Control": "private, no-store", "Retry-After": "30" } },
+      { status: 503, headers: { "Retry-After": "30" } },
     );
   }
   if (!session?.user?.id) {
-    return NextResponse.json(
-      { ok: false, error: "auth_required" },
-      { status: 401, headers: { "Cache-Control": "private, no-store" } },
-    );
+    return privateJson({ ok: false, error: "auth_required" }, { status: 401 });
   }
   const sp = req.nextUrl.searchParams;
   try {
@@ -162,15 +159,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       rowId: sp.get("rowId") ?? undefined,
       limit: Number(sp.get("limit")) || 20,
     });
-    return NextResponse.json(
-      { ok: true, ...result },
-      { headers: { "Cache-Control": "private, no-store" } },
-    );
+    return privateJson({ ok: true, ...result });
   } catch (err) {
     console.error("[contributions] list failed", err);
-    return NextResponse.json(
+    return privateJson(
       { ok: false, error: "list_unavailable" },
-      { status: 503, headers: { "Cache-Control": "private, no-store", "Retry-After": "30" } },
+      { status: 503, headers: { "Retry-After": "30" } },
     );
   }
 }
@@ -184,17 +178,18 @@ export async function DELETE(req: NextRequest): Promise<NextResponse> {
     return unavailable("auth_unavailable");
   }
   if (!session?.user?.id) {
-    return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
+    return privateJson({ ok: false, error: "auth_required" }, { status: 401 });
   }
   const id = req.nextUrl.searchParams.get("id");
-  if (!id) return NextResponse.json({ ok: false, error: "bad_request" }, { status: 400 });
+  if (!id) return privateJson({ ok: false, error: "bad_request" }, { status: 400 });
   try {
     await withdrawContribution(id, session.user.id);
-    return NextResponse.json({ ok: true });
+    return privateJson({ ok: true });
   } catch (err) {
     if (err instanceof ContributionError) {
-      return NextResponse.json({ ok: false, error: err.code }, { status: err.status });
+      return privateJson({ ok: false, error: err.code }, { status: err.status });
     }
-    return NextResponse.json({ ok: false, error: "failed" }, { status: 500 });
+    console.error("[contributions] withdraw failed", err);
+    return privateJson({ ok: false, error: "withdraw_unavailable" }, { status: 503 });
   }
 }
