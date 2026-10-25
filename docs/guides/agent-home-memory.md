@@ -71,6 +71,53 @@ Le MCP propriétaire en stdio peut lire ce même schéma par
 se transporte pas sur un daemon MCP public. Les endpoints RAG publics gardent
 leur filtre `publicOnly` ; une note privée ne devient pas un article publié.
 
+## CLI Windows et connexion Codex locale
+
+La livraison qualifiée du 25 octobre 2026 utilise le commit
+`d774025545e1a40037711674f7812ed2256b063b`. Les exécutables Windows 1.4.5 ont
+été construits depuis cet arbre propre, puis installés sans écrasement sous
+`<home-canonique>/bin/`. Leur nom versionné et leur SHA identifient la livraison :
+
+| Exécutable | SHA-256 |
+| --- | --- |
+| `shenron-d7740255.exe` | `4d4fa07f0484e4c2d27103eecced890b8e9025e8558d2a647c6293360cac0f72` |
+| `shenron-mcp-d7740255.exe` | `05a6d5b3f6e4a1091679cecddf63d93e8e916565f3aee95f7270b7861ccc85d5` |
+
+Dans un terminal PowerShell local privé dédié, la lecture du home Windows
+standard du profil DBFR se reproduit ainsi :
+
+```powershell
+$dbfrHome = Join-Path $env:USERPROFILE ".aphrody/workspaces/dbfr"
+$env:APHRODY_DRAGONBALL_RAG_DB = Join-Path $dbfrHome "notes/private-notes-vfs.sqlite"
+$env:SHENRON_LOCAL_RAG = "1"
+$env:APHRODY_AUTO_FALLBACK = "0"
+& (Join-Path $dbfrHome "bin/shenron-d7740255.exe") rag local "Nail" --limit 3 --json
+```
+
+Cette commande lit l'index existant. Les extraits sont centrés sur les termes
+recherchés, avec des bornes Unicode sûres ; un identifiant de source privée
+reste opaque, sans URL publique inventée.
+
+Le serveur global **du poste** `shenron_memory` est enregistré dans la
+configuration Codex utilisateur, suivant la
+[configuration MCP officielle](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).
+Son transport stdio lance le MCP versionné depuis le home. Sa liste
+`enabled_tools` contient seulement `dragonball.rag_search` et
+`dragonball.rag_context`, avec annotations de lecture seule. Les trois variables
+de l'exemple sont imposées au serveur : moteur local forcé ; repli automatique
+désactivé. Les lectures qualifiées restent hors réseau, sans secret de connexion.
+
+Le helper privé revu `bind-memory.ts` a appliqué ce binding avec sauvegarde
+protégée, comparaison des SHA et lecture indépendante de la configuration
+résultante. Les reçus restent dans
+`var/reports/wiki-codex-memory-binding-20261025/`, hors Git. Le serveur installé
+a répondu aux deux outils sans argument `local:true`, ce qui vérifie le
+forçage local par l'environnement. L'enregistrement global et ces appels stdio
+ne prouvent pas le chargement dans la session Codex courante ; ce chargement
+reste à contrôler après rafraîchissement ou dans une nouvelle session.
+Le corpus est mémorisé pour la durée du processus MCP : après réindexation,
+recréer ce processus privé puis vérifier le passage effectivement retourné.
+
 ## Carte du coffre et procédure de capture
 
 ```sh
@@ -125,12 +172,36 @@ la recherche sur le véritable SQLite dérivé, le moteur commun et ses citation
 un POST HTTP local ainsi qu’un appel MCP stdio. Une capture de configuration ou
 un fichier produit ne prouve pas à lui seul le branchement d’un service actif.
 
+Un ancien essai de chat à deux tours a retrouvé une note, mais sa réponse a
+rendu ambigu ou inversé le sens de l'assimilation. Ce reçu historique est
+invalidé comme preuve factuelle de direction. La version finale revue (V3) place
+en tête de section « Piccolo assimile Nail ; Nail est assimilé par Piccolo ».
+Les quatre appels aux outils installés `rag_search`/`rag_context` et la lecture
+native DBFR retrouvent cette direction. La fenêtre bornée peut toutefois couper
+l'URL primaire : les preuves complètes restent à ouvrir dans la note et ses
+archives. Une complétion V3 unique a ensuite donné la bonne direction et la
+séquence visuelle attendue, avec un contexte de 842 caractères fourni depuis la
+note verbatim. Les pages étaient identifiées, mais les balises de citation
+attendues manquaient. Ce contrôle ne valide ni une récupération de bout en bout
+depuis l'index ni le partage entre deux chats distincts. Le refus observé sur un
+contrôle négatif historique conserve sa portée limitée à cet essai.
+
+Le binding local ne raccorde pas les notes au site, au bot ou au MCP publics.
+Un usage privé de production exige son admission autorisée et sa configuration
+par le propriétaire Infra ; fournir ce fichier aux processus publics exposerait
+le corpus. Les preuves locales ne valent pas déploiement d'un chat privé de
+production.
+
 Le dérivé de notes de ce lot est lexical (`vectors:0`). Le client E5 existant
 appartient à `packages/db/src/vfs/rag.ts` ; le fournisseur et son espace doivent
 être qualifiés avant enrichissement vectoriel. Le CLI home inspecté construit
 son indexeur sans embedder et fusionne des canaux lexicaux : son appellation
 « hybrid » ne prouve pas une recherche sémantique. Aucun `rag:build` global au
 premier plan ou sur le bot de production n’est nécessaire à l’import borné.
+
+L'expérience E5 a produit des passages non pertinents sur les contrôles
+négatifs. Son artefact reste expérimental et le chemin privé standard reste
+lexical ; ces essais ne qualifient pas une qualité sémantique générale.
 
 ## Option vectorielle privée
 
