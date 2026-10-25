@@ -234,8 +234,13 @@ pub(crate) fn absolutize(value: Value, site: &str) -> Value {
             map.into_iter()
                 .map(|(k, v)| {
                     let v = match v {
-                        Value::String(s) if (k == "url" || k == "href") && s.starts_with('/') => {
-                            Value::String(format!("{site}{s}"))
+                        Value::String(s) if k == "url" || k == "href" => {
+                            let resolved = shenron_rag::dragonball::absolutize(&s);
+                            Value::String(if resolved != s {
+                                resolved.replacen(shenron_rag::dragonball::SITE_BASE, site, 1)
+                            } else {
+                                resolved
+                            })
                         },
                         other => absolutize(other, site),
                     };
@@ -1645,7 +1650,25 @@ mod tests {
         assert_eq!(v["url"], "https://site/wiki/x");
         assert_eq!(v["href"], "https://a/b");
         assert_eq!(v["title"], "/not-a-link");
-        assert_eq!(v["items"][0]["url"], "https://site/y");
+        assert_eq!(v["items"][0]["url"], "/y");
+        let roots = absolutize(json!({"url":"/wiki","href":"/news"}), "https://site");
+        assert_eq!(roots["url"], "https://site/wiki");
+        assert_eq!(roots["href"], "https://site/news");
+    }
+
+    #[test]
+    fn private_sources_never_become_public_links() {
+        let sources = [
+            "/home/ubuntu/private/note.md",
+            "C:\\private\\note.md",
+            "shenron:home:memory/note.md",
+            "https://dragonballfr.com/wiki/manga",
+        ];
+        for source in sources {
+            let out = absolutize(json!({"url":source,"nested":{"href":source}}), "https://site");
+            assert_eq!(out["url"], source);
+            assert_eq!(out["nested"]["href"], source);
+        }
     }
 
     #[test]

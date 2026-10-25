@@ -329,7 +329,7 @@ pub struct LocalHit {
     pub kind: String,
     /// Title.
     pub title: String,
-    /// Absolute URL.
+    /// Public URL or opaque source locator (private sources are never public links).
     pub url: String,
     /// Bounded passage.
     pub snippet: String,
@@ -485,7 +485,7 @@ impl LocalCorpus {
             .into_iter()
             .take(limit)
             .enumerate()
-            .map(|(idx, (d, score))| hit(d, idx, score))
+            .map(|(idx, (d, score))| hit(d, idx, score, &terms))
             .collect()
     }
 
@@ -583,13 +583,9 @@ fn embedded(id: &str, name: &str, url: &str, text: &str, kind: &str) -> ShenronC
     }
 }
 
-fn hit(d: &IndexedDoc, idx: usize, score: u32) -> LocalHit {
+fn hit(d: &IndexedDoc, idx: usize, score: u32, terms: &[String]) -> LocalHit {
     let text = d.doc.text_content();
-    let snippet = if text.chars().count() > 280 {
-        format!("{}...", text.chars().take(280).collect::<String>())
-    } else {
-        text.to_owned()
-    };
+    let snippet = passage(text, terms);
     let url = if d.doc.url.is_empty() {
         format!("/wiki/databooks/{}", d.doc.id)
     } else {
@@ -613,16 +609,108 @@ fn hit(d: &IndexedDoc, idx: usize, score: u32) -> LocalHit {
     }
 }
 
-/// Prefix a site-relative URL with [`SITE_BASE`]; absolute URLs pass through.
+/// Resolve known public routes; preserve every other source locator verbatim.
 #[must_use]
 pub fn absolutize(url: &str) -> String {
-    if url.starts_with("http://") || url.starts_with("https://") {
-        url.to_owned()
-    } else if url.starts_with('/') {
+    if matches!(url, "/wiki" | "/news")
+        || ["/wiki/", "/assets/", "/news/"].iter().any(|prefix| url.starts_with(prefix))
+    {
         format!("{SITE_BASE}{url}")
     } else {
-        format!("{SITE_BASE}/{url}")
+        url.to_owned()
     }
+}
+
+/// Select a bounded body window with maximal distinct query-term coverage.
+/// Offsets are original character indices, including Unicode lowercase expansions.
+fn passage(text: &str, terms: &[String]) -> String {
+    let mut distinct_terms = Vec::new();
+    for term in terms {
+        if !distinct_terms.contains(&term) {
+            distinct_terms.push(term);
+        }
+    }
+    let yaml = text.strip_prefix('\u{feff}').unwrap_or(text);
+    let mut body = yaml
+        .strip_prefix("---\n")
+        .and_then(|rest| rest.split_once("\n---\n"))
+        .or_else(|| yaml.strip_prefix("---\r\n").and_then(|rest| rest.split_once("\r\n---\r\n")))
+        .filter(|(header, _)| {
+            // Recognize metadata mappings conservatively, not Markdown horizontal rules.
+            let mut has_key = false;
+            let valid = header.lines().all(|line| {
+                if line.trim().is_empty()
+                    || line.trim_start().starts_with('#')
+                    || line.starts_with(char::is_whitespace)
+                {
+                    return true;
+                }
+                let key = line.split_once(':').is_some_and(|(key, _)| {
+                    !key.is_empty()
+                        && key.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '-')
+                });
+                has_key |= key;
+                key
+            });
+            valid && has_key
+        })
+        .map_or(text, |(_, body)| body);
+    if body != text {
+        let body_lower = body.to_lowercase();
+        if !distinct_terms.iter().any(|term| body_lower.contains(term.as_str())) {
+            let source_lower = text.to_lowercase();
+            if distinct_terms.iter().any(|term| source_lower.contains(term.as_str())) {
+                body = text;
+            }
+        }
+    }
+    let chars: Vec<char> = body.chars().collect();
+    let mut folded = String::new();
+    let mut positions = Vec::new();
+    for (index, ch) in chars.iter().enumerate() {
+        for lower in ch.to_lowercase() {
+            positions.extend(std::iter::repeat_n(index, lower.len_utf8()));
+            folded.push(lower);
+        }
+    }
+    let mut best = (0, 0);
+    // Rare anchors reach complete coverage without visiting every repeated common term.
+    let mut anchors: Vec<_> = distinct_terms
+        .iter()
+        .map(|term| (folded.matches(term.as_str()).count(), term))
+        .filter(|(count, _)| *count > 0)
+        .collect();
+    anchors.sort_by_key(|(count, _)| *count);
+    let available = anchors.len();
+    'windows: for (_, term) in anchors {
+        for (offset, _) in folded.match_indices(term.as_str()) {
+            for candidate in [
+                positions[offset].saturating_sub(80),
+                positions[offset],
+                positions[offset + term.len() - 1].saturating_add(1).saturating_sub(280),
+            ] {
+                let start = candidate.min(chars.len().saturating_sub(280));
+                let window: String = chars.iter().skip(start).take(280).collect();
+                let lower = window.to_lowercase();
+                let coverage =
+                    distinct_terms.iter().filter(|term| lower.contains(term.as_str())).count();
+                if coverage > best.1 {
+                    best = (start, coverage);
+                    if coverage == available {
+                        break 'windows;
+                    }
+                }
+            }
+        }
+    }
+    let end = (best.0 + 280).min(chars.len());
+    let window: String = chars[best.0..end].iter().collect();
+    format!(
+        "{}{}{}",
+        if best.0 > 0 { "…" } else { "" },
+        window.trim(),
+        if end < chars.len() { "…" } else { "" }
+    )
 }
 
 /// Read documents from an `aphrody-rag` SQLite store (docs + chunks), read-only.
@@ -636,8 +724,10 @@ fn load_store(path: &Path) -> Vec<ShenronCorpusDoc> {
         return Vec::new();
     };
     let Ok(mut stmt) = conn.prepare(
-        "SELECT d.id, d.path, d.title, d.language, group_concat(c.content, char(10))
-           FROM docs d JOIN chunks c ON c.doc_id = d.id GROUP BY d.id ORDER BY d.id",
+        "SELECT d.id, d.path, d.title, d.language,
+                (SELECT group_concat(content, char(10)) FROM
+                    (SELECT content FROM chunks WHERE doc_id = d.id ORDER BY id))
+           FROM docs d WHERE EXISTS (SELECT 1 FROM chunks WHERE doc_id = d.id) ORDER BY d.id",
     ) else {
         return Vec::new();
     };
@@ -821,6 +911,112 @@ mod tests {
         assert_eq!(hits.len(), 1);
         assert_eq!(hits[0].origin_source_id, "aphrody-rag-dragonball");
         assert_eq!(hits[0].url, "https://example.org/vegeta");
+    }
+
+    #[test]
+    fn passages_find_late_unicode_terms_and_skip_yaml() {
+        let text = format!(
+            "---\r\nsource: {}\r\n---\r\n{}Nail apparaît au chapitre 295, scan 1444 page 20. 悟空 est présent.",
+            "metadata".repeat(80),
+            "遠い本文。".repeat(200)
+        );
+        let out = passage(&text, &["nail".into(), "295".into()]);
+        assert!(out.contains("Nail apparaît au chapitre 295"));
+        assert!(!out.contains("source:"));
+        assert!(out.chars().count() <= 282);
+        let japanese = passage(&text, &["悟空".into()]);
+        assert!(japanese.contains("悟空 est présent"));
+        assert!(japanese.chars().count() <= 282);
+        let expansion =
+            passage(&format!("{}İstanbul puis Nail.", "前".repeat(400)), &["nail".into()]);
+        assert!(expansion.contains("İstanbul puis Nail."));
+        assert_eq!(passage("---\nkey: value\n---\nBody only", &["missing".into()]), "Body only");
+    }
+
+    #[test]
+    fn passage_prefers_multiple_terms_over_early_single_match() {
+        let text = format!("Nail {} Nail chapitre 295.", "neutre ".repeat(200));
+        let terms = ["nail".into(), "295".into()];
+        let out = passage(&text, &terms);
+        assert!(out.contains("Nail chapitre 295"));
+        assert_eq!(out, passage(&text, &terms));
+        let middle = format!(
+            "{}Nail apparaît au chapitre 295.{}",
+            "avant ".repeat(100),
+            "après ".repeat(200)
+        );
+        assert!(passage(&middle, &["nail".into()]).contains("Nail apparaît au chapitre 295"));
+        assert_eq!(
+            passage("\u{feff}---\nkey: value\n---\nBody only", &["body".into()]),
+            "Body only"
+        );
+        let malformed = "---\nNail au chapitre 295 sans fermeture YAML.";
+        assert_eq!(passage(malformed, &["nail".into()]), malformed);
+        let rules = "---\nNail apparaît au chapitre 295.\n---\nSuite du document.";
+        assert_eq!(passage(rules, &["nail".into()]), rules);
+        let metadata_only = "---\nsource_sha: abcdef123456\n---\nBody only";
+        assert!(
+            passage(metadata_only, &["abcdef123456".into()]).contains("source_sha: abcdef123456")
+        );
+    }
+
+    #[test]
+    fn frequent_terms_in_long_body_keep_a_relevant_bounded_passage() {
+        let text =
+            format!("{}Nail apparaît au chapitre 295.", "Nail contexte fréquent. ".repeat(20_000));
+        let start = std::time::Instant::now();
+        let out = passage(&text, &["nail".into(), "295".into()]);
+        println!("long passage: {} chars, {:?}", text.chars().count(), start.elapsed());
+        assert!(out.contains("Nail apparaît au chapitre 295"));
+        assert!(out.chars().count() <= 282);
+        assert!(passage(&text, &["nail".into()]).contains("Nail"));
+    }
+
+    #[test]
+    fn sqlite_private_note_search_returns_actual_passage_and_locator() {
+        let dir = tempfile::tempdir().expect("tempdir");
+        let path = dir.path().join("rag.sqlite");
+        let conn = rusqlite::Connection::open(&path).expect("open");
+        conn.execute_batch("CREATE TABLE docs(id INTEGER PRIMARY KEY,path TEXT,title TEXT,language TEXT); CREATE TABLE chunks(id INTEGER PRIMARY KEY,doc_id INTEGER,content TEXT);
+          INSERT INTO docs VALUES(1,'shenron:home:memory/review.md','Visual review','fr');
+          INSERT INTO chunks VALUES(1,1,'---\nsource: private\n---\n');").expect("schema");
+        conn.execute(
+            "INSERT INTO chunks VALUES(2,1,?1)",
+            [format!("{}Nail : chapitre 295 ; scan 1444, page 20.", "contexte ".repeat(150))],
+        )
+        .expect("body");
+        drop(conn);
+        let corpus = LocalCorpus::from_docs(
+            load_store(&path).into_iter().map(|doc| (doc, "test-store".into())),
+        );
+        let hits = corpus.search(
+            "Nail 295",
+            &LocalSearchOptions { limit: Some(1), lang: Some("fr".into()), ..Default::default() },
+        );
+        assert_eq!(hits.len(), 1);
+        assert!(hits[0].snippet.contains("Nail : chapitre 295"));
+        assert_eq!(hits[0].url, "shenron:home:memory/review.md");
+        assert!(
+            corpus.context_json("Nail 295", &LocalSearchOptions::default(), None)["context"]
+                .as_str()
+                .expect("context")
+                .contains("Nail : chapitre 295")
+        );
+        for locator in [
+            "/home/private/note.md",
+            "C:\\private\\note.md",
+            "memory/note.md",
+            "shenron:home:memory/review.md",
+            "https://example.org/wiki?q=Nail",
+        ] {
+            assert_eq!(absolutize(locator), locator);
+        }
+        assert_eq!(
+            absolutize("/wiki/characters/nail"),
+            "https://dragonballfr.com/wiki/characters/nail"
+        );
+        assert_eq!(absolutize("/wiki"), "https://dragonballfr.com/wiki");
+        assert_eq!(absolutize("/news"), "https://dragonballfr.com/news");
     }
 
     #[tokio::test]
