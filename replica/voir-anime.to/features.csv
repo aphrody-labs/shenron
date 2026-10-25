@@ -18,7 +18,7 @@ Précédent et suivant,player,must,yes,no,Liens mis à jour; clics non qualifié
 Lecture effective,player,must,unknown,no,Iframe ne prouve pas une lecture; lecture non tentée
 Reprise personnelle,account,should,unknown,no,Aucun stockage ou compte testé
 Favoris,account,should,unknown,no,Pas de parcours public qualifié
-Réglages du compte,account,could,unknown,no,S10 déclaré uniquement
+Réglages du compte,account,could,unknown,no,S10 GET public redirigé vers accueil; aucun compte testé
 Notes agrégées,catalogue,could,yes,no,Affichage seulement; vote non testé
 Vue mobile,layout,must,yes,no,S01 et S06 mesurés à 390 px sans débordement
 Catalogue et médias du tiers,content,skip,yes,no,Non livrés et non réutilisables par cette reconnaissance

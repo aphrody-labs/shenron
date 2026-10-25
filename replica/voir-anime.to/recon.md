@@ -28,6 +28,14 @@ Les preuves privées et scripts reproductibles vivent dans
 L'état actualisé est dans `crawl/native-crawl-batch2-progress.json`, puis
 `crawl/native-crawl-batch2-terminal.json` après sa fin. Ne pas lancer un doublon.
 
+La frontière du crawler n'est pas l'inventaire des sitemaps : au relevé de 14:29:24 UTC,
+43 584 URL déclarées étaient encore absentes de cette frontière. L'aide installée confirme
+que `max-requests` compte les tentatives de chaque invocation. La source locale récente
+présente des plafonds d'ingestion de 100 sitemaps et 50 000 entrées ; sa correspondance
+exacte avec le binaire installé n'est pas établie. Répéter le même lancement ne garantit
+donc pas l'ensemencement des URL manquantes. Voir `crawl/resume-semantics.md` : la reprise
+doit comparer les ensembles et conserver les pages déjà terminées.
+
 ## Sources
 
 | Source publique | Usage et preuve locale |
@@ -60,14 +68,16 @@ d'utilisation ailleurs. Aucun abonnement, paiement ni parcours de compte n'a ét
 | S07 | `/?s=…&post_type=wp-manga` | Recherche, filtres avancés, tris et résultats détaillés | Panneau mobile ouvert ; recherche directe 57 résultats ; formulaire perdant la saisie |
 | S08 | `/anime-genre/:slug/` | Archive par genre | 20 URL dans les sitemaps ; Action reçu en 200 et affiché ; R+ affiche zéro résultat et un message vide explicite |
 | S09 | `/anime-release/:slug/` | Archive par année | 59 URL dans les sitemaps ; 2026 reçu en 200 ; pas de qualification visuelle dédiée |
-| S10 | `/user-settings/` | Page déclarée dans le sitemap | Inventoriée seulement ; ni session ni réglage modifié |
-| S11 | `/manga/` | Page déclarée dans le sitemap | Inventoriée seulement ; rôle précis non établi |
+| S10 | `/user-settings/` | Page déclarée dans le sitemap | GET public redirigé vers l'accueil, réponse finale 200 ; ni session ni réglage modifié |
+| S11 | `/manga/` | Page déclarée dans le sitemap | HTML 200 et rendu 1280 ; titre Manga et date, aucun catalogue ni contenu principal visible dans l'état testé |
 
 Captures : `screens/S01-home-{1280,390}.jpg`, `S02-directory-1280.jpg`,
 `S05-series-1280.jpg`, `S06-episode-1280.jpg`, `S06-episode03-390.jpg`,
 `S07-advanced-390.jpg`, `S07-search-dragon-ball-1280.jpg`. Elles ne sont pas commitées.
 L'accueil et l'épisode mobile ont une largeur documentaire mesurée de 375 px pour un
 viewport de 390 px, sans débordement horizontal mesuré sur ces états.
+Les captures S08 documentent l'archive Action, l'archive R+ vide et les suggestions
+latérales ; S11 documente la page Manga réduite à son titre et sa date.
 
 ## Parcours
 
