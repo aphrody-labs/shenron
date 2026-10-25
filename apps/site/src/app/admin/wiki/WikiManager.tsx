@@ -163,7 +163,7 @@ function EntityCard({ s }: { s: CmsEntityStat }) {
           {s.imageCol && s.missingImage > 0 && (
             <Link
               href={`/admin/wiki/todo#${s.table}`}
-              className="inline-flex items-center gap-1 rounded border border-dbz-border px-1.5 py-0.5 text-white/55 transition-colors hover:border-dbz-orange hover:text-dbz-orange"
+              className="inline-flex min-h-11 min-w-11 items-center gap-1 rounded border border-dbz-border px-2 text-white/55 transition-colors hover:border-dbz-orange hover:text-dbz-orange"
             >
               <IllustrationAbsente className="h-3 w-3" />
               {t("adminWiki.manager.missingImage", { count: s.missingImage })}
@@ -172,7 +172,7 @@ function EntityCard({ s }: { s: CmsEntityStat }) {
           {s.descCol && s.missingDesc > 0 && (
             <Link
               href={`/admin/wiki/todo#${s.table}`}
-              className="inline-flex items-center gap-1 rounded border border-dbz-border px-1.5 py-0.5 text-white/55 transition-colors hover:border-dbz-orange hover:text-dbz-orange"
+              className="inline-flex min-h-11 min-w-11 items-center gap-1 rounded border border-dbz-border px-2 text-white/55 transition-colors hover:border-dbz-orange hover:text-dbz-orange"
             >
               <Document className="h-3 w-3" />
               {t("adminWiki.manager.missingText", { count: s.missingDesc })}
@@ -181,7 +181,7 @@ function EntityCard({ s }: { s: CmsEntityStat }) {
           {s.jaCol && s.missingJa > 0 && (
             <Link
               href={`/admin/wiki/todo#${s.table}`}
-              className="inline-flex items-center gap-1 rounded border border-dbz-border px-1.5 py-0.5 text-white/55 transition-colors hover:border-dbz-orange hover:text-dbz-orange"
+              className="inline-flex min-h-11 min-w-11 items-center gap-1 rounded border border-dbz-border px-2 text-white/55 transition-colors hover:border-dbz-orange hover:text-dbz-orange"
             >
               <span aria-hidden className="font-jp text-[11px] leading-none">
                 日
@@ -210,14 +210,14 @@ function EntityCard({ s }: { s: CmsEntityStat }) {
         <div className="mt-4 flex items-center gap-2">
           <Link
             href={`/admin/database/${s.table}`}
-            className="inline-flex flex-1 items-center justify-center gap-1 rounded border border-dbz-border px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider text-white/70 transition-colors hover:border-dbz-orange hover:text-dbz-orange"
+            className="inline-flex min-h-11 flex-1 items-center justify-center gap-1 rounded border border-dbz-border px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider text-white/70 transition-colors hover:border-dbz-orange hover:text-dbz-orange"
           >
             {t("adminWiki.manager.browse")}
             <FlecheDroite className="h-3 w-3" />
           </Link>
           <Link
             href={studio ? `/admin/wiki/studio/${s.table}/new` : `/admin/database/${s.table}`}
-            className="inline-flex items-center justify-center gap-1 rounded border border-dbz-orange/40 bg-dbz-orange/10 px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider text-dbz-orange transition-colors hover:bg-dbz-orange/20"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1 rounded border border-dbz-orange/40 bg-dbz-orange/10 px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider text-dbz-orange transition-colors hover:bg-dbz-orange/20"
             title={t("adminWiki.manager.createEntry")}
           >
             <Plus className="h-3 w-3" />
@@ -277,21 +277,30 @@ export function WikiManager({
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <Link href="/admin/wiki/todo" className="dbz-button-ghost inline-flex items-center gap-2">
+          <Link
+            href="/admin/wiki/todo"
+            className="dbz-button-ghost inline-flex min-h-11 min-w-11 items-center gap-2 px-2"
+          >
             <Presse className="h-4 w-4" />
             {t("adminWiki.manager.todo")}
           </Link>
           <Link
             href="/admin/wiki/history"
-            className="dbz-button-ghost inline-flex items-center gap-2"
+            className="dbz-button-ghost inline-flex min-h-11 min-w-11 items-center gap-2 px-2"
           >
             <Historique className="h-4 w-4" />
             {t("adminWiki.manager.history")}
           </Link>
-          <Link href="/admin/wiki/category/new" className="dbz-button">
+          <Link
+            href="/admin/wiki/category/new"
+            className="dbz-button inline-flex min-h-11 min-w-11 items-center px-2"
+          >
             {t("adminWiki.manager.newCategory")}
           </Link>
-          <Link href="/admin/wiki/page/new" className="dbz-button">
+          <Link
+            href="/admin/wiki/page/new"
+            className="dbz-button inline-flex min-h-11 min-w-11 items-center px-2"
+          >
             {t("adminWiki.manager.newPage")}
           </Link>
         </div>
@@ -310,7 +319,7 @@ export function WikiManager({
           className="min-w-0 flex-1 rounded-xl border border-dbz-border bg-dbz-bg p-3 text-white focus:border-dbz-orange"
         />
         {q && (
-          <button type="button" onClick={() => setQ("")} className="btn btn-ghost">
+          <button type="button" onClick={() => setQ("")} className="btn btn-ghost min-h-11 px-2">
             {t("admin.table.clearSearch")}
           </button>
         )}
@@ -346,7 +355,7 @@ export function WikiManager({
             </h2>
             <Link
               href="/admin/wiki/history"
-              className="text-xs font-bold uppercase tracking-wider text-dbz-orange/80 hover:text-dbz-orange"
+              className="inline-flex min-h-11 min-w-11 items-center px-2 text-xs font-bold uppercase tracking-wider text-dbz-orange/80 hover:text-dbz-orange"
             >
               {t("adminWiki.manager.fullHistory")}
             </Link>
@@ -371,7 +380,7 @@ export function WikiManager({
                   {canStudio ? (
                     <Link
                       href={`/admin/wiki/studio/${r.tableName}/${encodeURIComponent(r.rowId)}`}
-                      className="font-semibold text-white hover:text-dbz-orange"
+                      className="inline-flex min-h-11 min-w-11 items-center px-2 font-semibold text-white hover:text-dbz-orange"
                     >
                       {r.label || `#${r.rowId}`}
                     </Link>
@@ -447,16 +456,16 @@ export function WikiManager({
                     /{cat.slug} · {t("adminWiki.manager.order", { order: cat.order })}
                   </p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   <Link
                     href={`/admin/wiki/category/${cat.id}`}
-                    className="font-saiyan text-sm uppercase tracking-wider text-dbz-blue-light hover:text-dbz-yellow"
+                    className="inline-flex min-h-11 min-w-11 items-center px-2 font-saiyan text-sm uppercase tracking-wider text-dbz-blue-light hover:text-dbz-yellow"
                   >
                     {t("adminWiki.manager.edit")}
                   </Link>
                   <Link
                     href={`/admin/wiki/page/new?category=${cat.id}`}
-                    className="font-saiyan text-sm uppercase tracking-wider text-dbz-orange hover:text-dbz-yellow"
+                    className="inline-flex min-h-11 min-w-11 items-center px-2 font-saiyan text-sm uppercase tracking-wider text-dbz-orange hover:text-dbz-yellow"
                   >
                     {t("adminWiki.manager.newPage")}
                   </Link>
@@ -466,23 +475,26 @@ export function WikiManager({
               {cat.pages.length > 0 && (
                 <ul className="ml-4 space-y-1 border-l-2 border-dbz-border pl-4">
                   {cat.pages.map((p) => (
-                    <li key={p.id} className="group flex items-center justify-between gap-3">
+                    <li
+                      key={p.id}
+                      className="group flex flex-wrap items-center justify-between gap-3"
+                    >
                       <Link
                         href={`/wiki/${cat.slug}/${p.slug}`}
-                        className="truncate text-sm text-gray-300 transition-colors hover:text-dbz-orange"
+                        className="inline-flex min-h-11 min-w-0 items-center break-words text-sm text-gray-300 transition-colors hover:text-dbz-orange"
                       >
                         {p.title}
                       </Link>
                       <span className="flex shrink-0 gap-3">
                         <Link
                           href={`/wiki/${cat.slug}/${p.slug}`}
-                          className="font-saiyan text-xs uppercase text-gray-400 hover:text-dbz-yellow"
+                          className="inline-flex min-h-11 min-w-11 items-center justify-center px-2 font-saiyan text-xs uppercase text-gray-400 hover:text-dbz-yellow"
                         >
                           {t("adminWiki.manager.view")}
                         </Link>
                         <Link
                           href={`/admin/wiki/page/${p.id}`}
-                          className="font-saiyan text-xs uppercase text-dbz-blue-light hover:text-dbz-yellow"
+                          className="inline-flex min-h-11 min-w-11 items-center justify-center px-2 font-saiyan text-xs uppercase text-dbz-blue-light hover:text-dbz-yellow"
                         >
                           {t("adminWiki.manager.edit")}
                         </Link>
@@ -505,23 +517,26 @@ export function WikiManager({
                         </h3>
                         <Link
                           href={`/admin/wiki/category/${sub.id}`}
-                          className="text-xs uppercase text-gray-500 hover:text-dbz-yellow"
+                          className="inline-flex min-h-11 min-w-11 items-center justify-center px-2 text-xs uppercase text-gray-500 hover:text-dbz-yellow"
                         >
                           {t("adminWiki.manager.edit")}
                         </Link>
                       </div>
                       <ul className="space-y-1 text-sm">
                         {sub.pages.map((p) => (
-                          <li key={p.id} className="group flex justify-between gap-3">
+                          <li
+                            key={p.id}
+                            className="group flex flex-wrap items-center justify-between gap-3"
+                          >
                             <Link
                               href={`/wiki/${cat.slug}/${sub.slug}/${p.slug}`}
-                              className="truncate text-gray-400 transition-colors hover:text-dbz-orange"
+                              className="inline-flex min-h-11 min-w-0 items-center break-words text-gray-400 transition-colors hover:text-dbz-orange"
                             >
                               {p.title}
                             </Link>
                             <Link
                               href={`/admin/wiki/page/${p.id}`}
-                              className="shrink-0 font-saiyan text-xs uppercase text-dbz-blue-light hover:text-dbz-yellow"
+                              className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center px-2 font-saiyan text-xs uppercase text-dbz-blue-light hover:text-dbz-yellow"
                             >
                               {t("adminWiki.manager.edit")}
                             </Link>
