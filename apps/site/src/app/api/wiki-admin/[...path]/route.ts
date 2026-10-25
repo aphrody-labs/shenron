@@ -80,9 +80,29 @@ async function currentActor(): Promise<RevisionActor> {
   }
 }
 
-const forbidden = () => NextResponse.json({ error: "Forbidden" }, { status: 403 });
+const forbidden = () =>
+  NextResponse.json(
+    { error: "Forbidden" },
+    { status: 403, headers: { "Cache-Control": "private, no-store" } },
+  );
 const notFound = (msg = "Table inconnue") => NextResponse.json({ error: msg }, { status: 404 });
 const badRequest = (msg: string) => NextResponse.json({ error: msg }, { status: 400 });
+
+/** Keep authentication outages distinct from a denied admin session. */
+async function requireAdmin(): Promise<NextResponse | null> {
+  try {
+    return (await isCurrentUserAdmin()) ? null : forbidden();
+  } catch (err) {
+    console.error("[wiki-admin-auth]", err);
+    return NextResponse.json(
+      { error: "admin_auth_unavailable" },
+      {
+        status: 503,
+        headers: { "Cache-Control": "private, no-store", "Retry-After": "30" },
+      },
+    );
+  }
+}
 
 async function readJson(req: NextRequest): Promise<Record<string, unknown> | null> {
   try {
@@ -112,7 +132,8 @@ function databookPagesFreezeError(
 }
 
 export async function GET(req: NextRequest, ctx: Ctx) {
-  if (!(await isCurrentUserAdmin())) return forbidden();
+  const authError = await requireAdmin();
+  if (authError) return authError;
   const { path } = await ctx.params;
   const [table, id] = path;
   if (!table || !isWikiTable(table)) return notFound();
@@ -150,7 +171,8 @@ export async function GET(req: NextRequest, ctx: Ctx) {
 }
 
 export async function POST(req: NextRequest, ctx: Ctx) {
-  if (!(await isCurrentUserAdmin())) return forbidden();
+  const authError = await requireAdmin();
+  if (authError) return authError;
   const { path } = await ctx.params;
   const [table] = path;
   if (!table || !isWikiTable(table)) return notFound();
@@ -213,7 +235,8 @@ export async function POST(req: NextRequest, ctx: Ctx) {
 }
 
 async function mutate(req: NextRequest, ctx: Ctx) {
-  if (!(await isCurrentUserAdmin())) return forbidden();
+  const authError = await requireAdmin();
+  if (authError) return authError;
   const { path } = await ctx.params;
   const [table, id] = path;
   if (!table || !isWikiTable(table)) return notFound();
@@ -270,7 +293,8 @@ export const PUT = mutate;
 export const PATCH = mutate;
 
 export async function DELETE(req: NextRequest, ctx: Ctx) {
-  if (!(await isCurrentUserAdmin())) return forbidden();
+  const authError = await requireAdmin();
+  if (authError) return authError;
   const { path } = await ctx.params;
   const [table, id] = path;
   if (!table || !isWikiTable(table)) return notFound();
