@@ -47,6 +47,8 @@ export const AphrodyResolvedSourceSchema = z.object({
   hlsUrl: z.string().optional(),
   qualities: z.record(z.string(), z.string()).optional(),
   headers: z.record(z.string(), z.string()).optional(),
+  /** Epoch milliseconds estimated by the native resolver; not a playback guarantee. */
+  expiresAt: z.number().int().nonnegative().optional(),
   error: z.string().optional(),
 });
 export type AphrodyResolvedSource = z.infer<typeof AphrodyResolvedSourceSchema>;
@@ -56,6 +58,8 @@ export const AphrodyResolvedStreamSchema = z.object({
   headers: z.record(z.string(), z.string()).default({}),
   type: z.string().default("application/x-mpegURL"),
   provider: z.string().optional(),
+  /** Epoch milliseconds estimated by the native resolver; not a playback guarantee. */
+  expiresAt: z.number().int().nonnegative().optional(),
   at: z.number().default(() => Date.now()),
 });
 export type AphrodyResolvedStream = z.infer<typeof AphrodyResolvedStreamSchema>;
@@ -129,6 +133,7 @@ export class AphrodyMediaService {
       ...(media.kind === "hls" ? { hlsUrl: direct } : direct ? { directUrl: direct } : {}),
       ...(Object.keys(qualities).length ? { qualities } : {}),
       headers: media.headers,
+      ...(media.expiresAt != null ? { expiresAt: media.expiresAt } : {}),
     });
   }
 
@@ -150,6 +155,7 @@ export class AphrodyMediaService {
       headers: media.headers,
       type,
       provider: media.host,
+      ...(media.expiresAt != null ? { expiresAt: media.expiresAt } : {}),
     });
   }
 }

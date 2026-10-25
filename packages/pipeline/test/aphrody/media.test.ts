@@ -6,6 +6,27 @@ import { AphrodyMediaService } from "../../src/aphrody/media";
 const fixture = nativeFixture;
 
 describe("Aphrody media consumer contract", () => {
+  it("preserves native expiry milliseconds across source and stream compatibility adapters", async () => {
+    const expiresAt = 1_800_000_000_000;
+    const service = new AphrodyMediaService({
+      nativeExecutor: async () => ({
+        code: 0,
+        stderr: "",
+        stdout: JSON.stringify({
+          host: "example.com",
+          embedUrl: "https://example.com/embed",
+          kind: "mp4",
+          url: "https://example.com/video.mp4",
+          candidates: [],
+          variants: [],
+          headers: {},
+          expiresAt,
+        }),
+      }),
+    });
+    expect((await service.resolveSource("https://example.com/embed")).expiresAt).toBe(expiresAt);
+    expect((await service.resolveStream("https://example.com/embed")).expiresAt).toBe(expiresAt);
+  });
   it("maps the Rust resolver response into Shenron source and stream shapes", async () => {
     const nativeExecutor = fixture(
       "media-success",
