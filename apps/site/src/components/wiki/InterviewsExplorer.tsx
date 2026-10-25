@@ -142,7 +142,7 @@ export function InterviewsExplorer({ groups, access, ragResults = [] }: Intervie
                     selectedDocument === group.documentKey ? null : group.documentKey,
                   );
                 }}
-                className="group min-w-0 text-start outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
+                className="group min-w-0 rounded-xl text-start outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <div className="relative aspect-[3/4] overflow-hidden rounded-xl border border-border bg-card group-hover:border-primary group-focus-visible:border-primary">
                   <WikiImg
@@ -153,10 +153,10 @@ export function InterviewsExplorer({ groups, access, ragResults = [] }: Intervie
                     className="object-cover object-top"
                   />
                 </div>
-                <h2 className="mt-2 line-clamp-2 text-sm font-semibold text-foreground group-hover:text-primary">
+                <h2 className="mt-2 break-words text-sm font-semibold leading-snug text-foreground group-hover:text-primary">
                   {group.document}
                 </h2>
-                <p className="mt-1 text-xs text-muted-foreground">
+                <p className="mt-1 break-words text-xs leading-relaxed text-muted-foreground">
                   {group.year ?? ui("unknownDate")} ·{" "}
                   {ui("citations", { count: group.words.length })}
                 </p>
@@ -174,7 +174,9 @@ export function InterviewsExplorer({ groups, access, ragResults = [] }: Intervie
           className="rounded-2xl border border-border bg-card p-4 sm:p-6"
         >
           <div className="flex items-start justify-between gap-3">
-            <h2 className="text-xl font-semibold">{selected.document}</h2>
+            <h2 className="min-w-0 break-words text-xl font-semibold leading-snug">
+              {selected.document}
+            </h2>
             <button
               type="button"
               className={control}
@@ -190,10 +192,12 @@ export function InterviewsExplorer({ groups, access, ragResults = [] }: Intervie
             {selected.words.map((word) => (
               <li key={word.id} className="border-l-2 border-primary pl-4">
                 {word.subject && <h3 className="font-semibold">{word.subject}</h3>}
-                <p className="mt-2 whitespace-pre-line text-sm leading-relaxed">
+                <p className="mt-2 whitespace-pre-line break-words text-sm leading-relaxed">
                   {word.textFr ?? word.text}
                 </p>
-                <p className="mt-2 text-xs text-muted-foreground">{word.source}</p>
+                <p className="mt-2 break-words text-xs leading-relaxed text-muted-foreground">
+                  {word.source}
+                </p>
                 {word.lang === "ja" && word.textFr && (
                   <p className="mt-1 text-xs text-muted-foreground">{ui("translated")}</p>
                 )}
