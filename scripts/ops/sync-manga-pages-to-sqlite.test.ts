@@ -103,6 +103,28 @@ describe("atomic manga replica and FTS", () => {
     }
   });
 
+  test("an automatic SQLite rollback preserves the original error and the usable index", () => {
+    const db = fixture();
+    try {
+      syncMangaSnapshot(db, [page()], 1);
+      const before = db.query("SELECT * FROM db_manga_pages ORDER BY id").all();
+      db.exec(`CREATE TRIGGER rollback_second BEFORE INSERT ON db_manga_pages
+        WHEN new.planche=2 BEGIN SELECT RAISE(ROLLBACK,'source transaction aborted'); END`);
+      expect(() =>
+        syncMangaSnapshot(db, [{ ...page(), text: "Changed" }, page(501, 2)], 2),
+      ).toThrow("source transaction aborted");
+      expect(db.inTransaction).toBe(false);
+      expect(db.query("SELECT * FROM db_manga_pages ORDER BY id").all()).toEqual(before);
+      expect(
+        db
+          .query("SELECT rowid FROM manga_pages_fts WHERE manga_pages_fts MATCH 'Kamehameha'")
+          .all(),
+      ).toEqual([{ rowid: 9 }]);
+    } finally {
+      db.close();
+    }
+  });
+
   test("rejects zero and partial PostgreSQL reads before any local mutation", () => {
     const db = fixture();
     try {

@@ -97,4 +97,46 @@ describe("bounded manga FTS recovery", () => {
       db.close();
     }
   });
+
+  test("SQLITE_FULL remains observable after SQLite automatically rolls back index creation", () => {
+    const db = fixture();
+    try {
+      const expected = auditMangaIndex(db);
+      const before = db.query("SELECT * FROM db_manga_pages ORDER BY id").all();
+      const pages = Number(Object.values(db.query("PRAGMA page_count").get()!)[0]);
+      db.exec(`PRAGMA max_page_count=${pages}`);
+      let failure: unknown;
+      try {
+        rebuildMangaIndex(db, expected);
+      } catch (error) {
+        failure = error;
+      }
+      expect(failure).toMatchObject({ code: "SQLITE_FULL" });
+      expect(db.inTransaction).toBe(false);
+      expect(db.query("SELECT * FROM db_manga_pages ORDER BY id").all()).toEqual(before);
+      expect(db.query("SELECT name FROM sqlite_master WHERE name='manga_pages_fts'").all()).toEqual(
+        [],
+      );
+    } finally {
+      db.close();
+    }
+  });
+
+  test("a nested failure rolls back only its savepoint and leaves caller work committable", () => {
+    const db = fixture();
+    try {
+      const expected = auditMangaIndex(db);
+      db.exec(
+        "CREATE TABLE caller_work(value TEXT); BEGIN IMMEDIATE; INSERT INTO caller_work VALUES('keep')",
+      );
+      expect(() => rebuildMangaIndex(db, { ...expected, sourcePages: 99 })).toThrow(
+        "Source snapshot",
+      );
+      expect(db.inTransaction).toBe(true);
+      db.exec("COMMIT");
+      expect(db.query("SELECT value FROM caller_work").all()).toEqual([{ value: "keep" }]);
+    } finally {
+      db.close();
+    }
+  });
 });

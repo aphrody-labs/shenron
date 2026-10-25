@@ -125,7 +125,11 @@ export function syncMangaSnapshot(
     db.exec("COMMIT");
     return { replicatedPages: rows.length, ...index };
   } catch (error) {
-    db.exec("ROLLBACK");
+    try {
+      if (db.inTransaction) db.exec("ROLLBACK");
+    } catch {
+      // SQLite may already have rolled back (for example SQLITE_FULL); retain the original failure.
+    }
     throw error;
   }
 }

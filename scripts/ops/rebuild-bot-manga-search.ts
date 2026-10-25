@@ -133,7 +133,14 @@ export function rebuildMangaIndex(
     db.exec(nested ? "RELEASE manga_search_rebuild" : "COMMIT");
     return after;
   } catch (error) {
-    db.exec(nested ? "ROLLBACK TO manga_search_rebuild; RELEASE manga_search_rebuild" : "ROLLBACK");
+    try {
+      if (db.inTransaction)
+        db.exec(
+          nested ? "ROLLBACK TO manga_search_rebuild; RELEASE manga_search_rebuild" : "ROLLBACK",
+        );
+    } catch {
+      // Cleanup must never replace the original failure, including an automatic SQLite rollback.
+    }
     throw error;
   }
 }
