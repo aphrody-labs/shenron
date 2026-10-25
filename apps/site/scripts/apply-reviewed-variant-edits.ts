@@ -19,6 +19,7 @@ const fields = [
   "transformationIds",
   "visible",
   "evidence",
+  "image",
 ] as const;
 const source = z
   .object({
@@ -102,6 +103,7 @@ export function validateReviewedVariantManifest(input: unknown) {
           "fr.dragon-ball-official.com",
           "jp.dragon-ball-official.com",
           "dragon-ball-official.com",
+          "lineup.toei-anim.co.jp",
         ].includes(url.hostname) ||
         [...url.searchParams.keys()].some((key) =>
           /token|secret|auth|password|signature|credential|key/i.test(key),

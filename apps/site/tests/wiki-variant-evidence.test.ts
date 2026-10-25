@@ -12,29 +12,19 @@ const measurements = {
   mesureAt: 1787661211645,
   legacyMeasurement: { retained: true },
 };
-const image = "./assets/wiki/generated-portraits/variant-2235.png";
+const imageHash = "c".repeat(64);
+const image = `https://cdn.dragonballfr.com/assets/wiki/variants/manga-${imageHash}.jpg`;
 const reference = {
-  fields: ["summary", "highlights"],
+  fields: ["image"],
   url: "https://dragonballfr.com/wiki/manga/1441?page=65",
   title: "Dragon Ball, chapitre 261",
-  locator: "Tome 22, planche 65",
-};
-const artwork = {
-  kind: "generated",
-  image,
-  referenceUrl: reference.url,
-  referenceImageUrl: "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol22/065.webp",
-  referenceTitle: reference.title,
-  referenceSha256: "a".repeat(64),
-  outputSha256: "b".repeat(64),
-  generatedAt: "2026-10-25T13:00:00Z",
-  generator: "image_gen",
+  locator: `Tome 22, planche 65; SHA-256 ${imageHash}`,
 };
 const before = { image: null, evidence: measurements };
 
 describe("variant evidence provenance", () => {
-  test("adds documented artwork and primary field references without changing measurements", () => {
-    const next = { ...measurements, imageArtwork: artwork, editorialReferences: [reference] };
+  test("adds a source-hashed primary image reference without changing measurements", () => {
+    const next = { ...measurements, editorialReferences: [reference] };
     expect(() => assertVariantEvidenceUpdate(before, { image, evidence: next })).not.toThrow();
     expect(before.evidence).toEqual(measurements);
     expect(() =>
@@ -96,39 +86,36 @@ describe("variant evidence provenance", () => {
       }),
     ).toThrow();
   });
-  test("requires generated identity, hashes, timestamp, generator and matching resulting image", () => {
-    for (const item of [
-      { ...artwork, kind: "scan" },
-      { ...artwork, outputSha256: "bad" },
-      { ...artwork, referenceSha256: "bad" },
-      { ...artwork, generatedAt: "yesterday" },
-      { ...artwork, generator: "unknown" },
-      { ...artwork, image: "./assets/wiki/generated-portraits/a/./b.png" },
-      { ...artwork, referenceImageUrl: "https://external.example/ref.png" },
-    ])
-      expect(() =>
-        assertVariantEvidenceUpdate(before, {
-          image,
-          evidence: { ...measurements, imageArtwork: item },
-        }),
-      ).toThrow();
+  test("rejects generated artwork metadata and unreferenced image changes", () => {
     expect(() =>
       assertVariantEvidenceUpdate(before, {
-        image: "./assets/wiki/generated-portraits/other.png",
-        evidence: { ...measurements, imageArtwork: artwork },
+        image,
+        evidence: { ...measurements, imageArtwork: { kind: "generated", generator: "image_gen" } },
       }),
-    ).toThrow("match");
+    ).toThrow("Invalid primary references");
+    expect(() => assertVariantEvidenceUpdate(before, { image })).toThrow(
+      "primary source reference",
+    );
+    expect(() =>
+      assertVariantEvidenceUpdate(before, {
+        image: "https://example.com/generated.png",
+        evidence: { ...measurements, editorialReferences: [reference] },
+      }),
+    ).toThrow("primary source image");
   });
-  test("allows reviewed reference corrections and artwork rollback while retaining measurement keys", () => {
+  test("requires removing a legacy generated image and its metadata together", () => {
     const current = {
-      image,
-      evidence: { ...measurements, imageArtwork: artwork, editorialReferences: [reference] },
+      image: "./assets/wiki/generated-portraits/legacy.webp",
+      evidence: {
+        ...measurements,
+        imageArtwork: { kind: "generated", generator: "image_gen" },
+        editorialReferences: [reference],
+      },
     };
     expect(() =>
       assertVariantEvidenceUpdate(current, {
         evidence: {
           ...measurements,
-          imageArtwork: artwork,
           editorialReferences: [
             reference,
             {
@@ -139,33 +126,22 @@ describe("variant evidence provenance", () => {
           ],
         },
       }),
-    ).not.toThrow();
+    ).toThrow("Generated images are not accepted");
     expect(() =>
       assertVariantEvidenceUpdate(current, {
-        evidence: { ...measurements, imageArtwork: artwork, editorialReferences: [] },
+        evidence: { ...measurements, editorialReferences: [] },
       }),
-    ).not.toThrow();
+    ).toThrow("Generated images are not accepted");
     expect(() =>
       assertVariantEvidenceUpdate(current, { image: null, evidence: { ...measurements } }),
     ).not.toThrow();
-    expect(() =>
-      assertVariantEvidenceUpdate(current, {
-        image: "./assets/dbz/officiel-2026-08-27/portrait.jpg",
-        evidence: { ...measurements },
-      }),
-    ).not.toThrow();
-    expect(() =>
-      assertVariantEvidenceUpdate(current, {
-        evidence: { ...measurements, editorialReferences: [reference] },
-      }),
-    ).toThrow("requires its provenance");
-    expect(() => assertVariantEvidenceUpdate(current, { image: null })).toThrow("match");
+    expect(() => assertVariantEvidenceUpdate(current, { image: null })).toThrow("removed together");
   });
   test("keeps legacy edits without evidence compatible and refuses inventing a missing measurement", () => {
     expect(() => assertVariantEvidenceUpdate(before, { summary: "Reviewed text" })).not.toThrow();
     expect(() =>
       assertVariantEvidenceUpdate({ evidence: null, image: null }, { image: "official.png" }),
-    ).not.toThrow();
+    ).toThrow("primary source reference");
     expect(() =>
       assertVariantEvidenceUpdate({ evidence: null, image: null }, { evidence: null }),
     ).not.toThrow();

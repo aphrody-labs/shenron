@@ -3,6 +3,11 @@ import { z } from "zod";
 import { WikiUpdatePreconditionError, WikiUpdateRequestError } from "./wiki-update-precondition";
 
 type Row = Record<string, unknown>;
+/**
+ * Keys isolated from measured evidence. `imageArtwork` is legacy-only: preserve it long enough to
+ * keep old generated assets display-blocked and allow an atomic removal, while the strict metadata
+ * schema below rejects it on every new edit.
+ */
 export const VARIANT_EDITORIAL_EVIDENCE_KEYS = ["imageArtwork", "editorialReferences"] as const;
 const EDITORIAL_KEYS = new Set<string>(VARIANT_EDITORIAL_EVIDENCE_KEYS);
 const REFERENCE_FIELDS = [
@@ -39,6 +44,7 @@ const PRIMARY_HOSTS = new Set([
   "vjump.shueisha.co.jp",
   "toei-anim.co.jp",
   "www.toei-anim.co.jp",
+  "lineup.toei-anim.co.jp",
   "toei-animation.com",
   "www.toei-animation.com",
 ]);
@@ -70,31 +76,15 @@ function primaryReference(value: string): boolean {
     /^\/wiki\/(?:manga|databooks|episodes)(?:\/|$)/.test(url.pathname)
   );
 }
-function primaryImage(value: string): boolean {
+function primaryImage(value: unknown): value is string {
+  if (typeof value !== "string") return false;
   const url = safeHttps(value);
   return (
     !!url &&
     ((url.hostname === "cdn.dragonballfr.com" &&
-      /^\/assets\/(?:manga|dbz\/officiel-|wiki\/episodes\/)/.test(url.pathname)) ||
+      (/^\/assets\/(?:manga|dbz\/officiel-|wiki\/episodes\/)/.test(url.pathname) ||
+        /^\/assets\/wiki\/variants\/(?:manga|anime)-[a-f0-9]{64}\.jpg$/i.test(url.pathname))) ||
       (PRIMARY_HOSTS.has(url.hostname) && url.hostname !== "dragonballfr.com"))
-  );
-}
-function generatedImage(value: string): boolean {
-  let path = value;
-  if (value.startsWith("https://")) {
-    const url = safeHttps(value);
-    if (!url || url.hostname !== "cdn.dragonballfr.com" || url.search || url.hash) return false;
-    path = url.pathname;
-  }
-  return (
-    /^(?:\.\/|\/)?assets\/wiki\/generated-portraits\/[a-z0-9][a-z0-9._/-]*\.(?:png|webp|avif|jpe?g)$/i.test(
-      path,
-    ) &&
-    !path
-      .split("/")
-      .slice(path.startsWith("./") ? 1 : 0)
-      .some((part) => part === ".." || part === ".") &&
-    !path.includes("//")
   );
 }
 function generatedNamespace(value: unknown): boolean {
@@ -122,22 +112,8 @@ const reference = z
     locator: boundedText(1000),
   })
   .strict();
-const artwork = z
-  .object({
-    kind: z.literal("generated"),
-    image: z.string().max(2048).refine(generatedImage),
-    referenceUrl: z.string().max(2048).refine(primaryReference),
-    referenceImageUrl: z.string().max(2048).refine(primaryImage),
-    referenceTitle: boundedText(300),
-    referenceSha256: z.string().regex(/^[a-f0-9]{64}$/),
-    outputSha256: z.string().regex(/^[a-f0-9]{64}$/),
-    generatedAt: z.string().max(40).datetime({ offset: true }),
-    generator: z.literal("image_gen"),
-  })
-  .strict();
 const metadata = z
   .object({
-    imageArtwork: artwork.optional(),
     editorialReferences: z.array(reference).max(64).optional(),
   })
   .strict();
@@ -159,15 +135,19 @@ export function assertVariantEvidenceUpdate(before: Row, patch: Row): void {
   const current = before.evidence;
   const next = writesEvidence ? patch.evidence : current;
   const image = Object.hasOwn(patch, "image") ? patch.image : before.image;
+  const imageChanged = Object.hasOwn(patch, "image") && !Bun.deepEquals(image, before.image);
   if (!writesEvidence) {
     if (record(current) && record(current.imageArtwork)) {
       if (current.imageArtwork.image !== image)
-        fail("Generated artwork provenance must match the resulting image");
-    } else if (generatedNamespace(image)) fail("Generated artwork requires its provenance");
+        fail("Existing generated image and provenance must be removed together");
+    }
+    if (imageChanged) fail("Variant image changes require a primary source reference");
+    if (generatedNamespace(image)) fail("Generated images are not accepted");
     return;
   }
   if (current === null && next === null) {
-    if (generatedNamespace(image)) fail("Generated artwork requires its provenance");
+    if (imageChanged) fail("Variant image changes require a primary source reference");
+    if (generatedNamespace(image)) fail("Generated images are not accepted");
     return;
   }
   if (!record(current) || !record(next))
@@ -187,11 +167,23 @@ export function assertVariantEvidenceUpdate(before: Row, patch: Row): void {
     Object.entries(next).filter(([key]) => EDITORIAL_KEYS.has(key)),
   );
   const parsed = metadata.safeParse(editorial);
-  if (!parsed.success) fail("Invalid primary references or generated artwork provenance");
-  if (parsed.data.imageArtwork) {
-    if (parsed.data.imageArtwork.image !== image)
-      fail("Generated artwork provenance must match the resulting image");
-  } else if (generatedNamespace(image)) fail("Generated artwork requires its provenance");
+  if (!parsed.success)
+    fail("Invalid primary references; generated artwork provenance is unsupported");
+  if (generatedNamespace(image)) fail("Generated images are not accepted");
+  if (imageChanged && image !== null) {
+    const imageReference = parsed.data.editorialReferences?.find((item) =>
+      item.fields.includes("image"),
+    );
+    if (!primaryImage(image) || !imageReference)
+      fail("Variant image changes require a primary source image and reference");
+    const url = safeHttps(image)!;
+    const contentHash =
+      url.hostname === "cdn.dragonballfr.com"
+        ? /^\/assets\/wiki\/variants\/(?:manga|anime)-([a-f0-9]{64})\.jpg$/i.exec(url.pathname)?.[1]
+        : undefined;
+    if (contentHash && !imageReference.locator.toLowerCase().includes(contentHash.toLowerCase()))
+      fail("Published source image hash must match its editorial locator");
+  }
 }
 
 /** Restore only an audited editorial delta, preserving independent producer updates. */
@@ -217,6 +209,8 @@ export function variantRevisionRestore(before: Row, after: Row, current: Row): R
     }
     const evidence = { ...currentEvidence };
     for (const field of EDITORIAL_KEYS) {
+      // An editorial rollback must never resurrect an image generated by the retired pipeline.
+      if (field === "imageArtwork") continue;
       if (Bun.deepEquals(oldEvidence[field], writtenEvidence[field])) continue;
       if (!Bun.deepEquals(currentEvidence[field], writtenEvidence[field]))
         throw new WikiUpdatePreconditionError();

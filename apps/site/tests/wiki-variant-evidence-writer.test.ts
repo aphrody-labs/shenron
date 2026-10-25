@@ -14,23 +14,12 @@ const measurements = {
   mesureAt: 1787661211645,
 };
 const reference = {
-  fields: ["summary"],
+  fields: ["image"],
   url: "https://dragonballfr.com/wiki/manga/1441?page=65",
   title: "Chapter 261",
-  locator: "Volume 22, page 65",
+  locator: `Volume 22, page 65; SHA-256 ${"c".repeat(64)}`,
 };
-const image = "./assets/wiki/generated-portraits/2235.png";
-const artwork = {
-  kind: "generated",
-  image,
-  referenceUrl: reference.url,
-  referenceImageUrl: "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol22/065.webp",
-  referenceTitle: reference.title,
-  referenceSha256: "a".repeat(64),
-  outputSha256: "b".repeat(64),
-  generatedAt: "2026-10-25T13:00:00Z",
-  generator: "image_gen",
-};
+const image = `https://cdn.dragonballfr.com/assets/wiki/variants/manga-${"c".repeat(64)}.jpg`;
 let live: Row;
 let updates: Row[] = [];
 let rowLocks: string[] = [];
@@ -122,8 +111,8 @@ beforeEach(() => {
 });
 
 describe("variant provenance owner writer", () => {
-  test("validates complete provenance under a row lock before accepting image and evidence together", async () => {
-    const evidence = { ...measurements, imageArtwork: artwork, editorialReferences: [reference] };
+  test("validates a primary source image under a row lock before accepting image and evidence together", async () => {
+    const evidence = { ...measurements, editorialReferences: [reference] };
     const saved = await updateWiki(
       "db_character_variants",
       "2235",
@@ -136,14 +125,14 @@ describe("variant provenance owner writer", () => {
     expect(queries[0]).toContain("pg_advisory_xact_lock");
     expect(updates).toEqual([{ image, evidence }]);
   });
-  test("rejects evidence deletion, measurement changes, malformed JSON and mismatched artwork without a partial image write", async () => {
+  test("rejects evidence deletion, measurement changes and generated artwork without a partial image write", async () => {
     for (const evidence of [
       null,
       { ...measurements, planches: 0 },
       "invalid-json",
       {
         ...measurements,
-        imageArtwork: { ...artwork, image: "./assets/wiki/generated-portraits/other.png" },
+        imageArtwork: { kind: "generated", generator: "image_gen" },
       },
     ]) {
       await expect(
@@ -176,14 +165,16 @@ describe("variant provenance owner writer", () => {
     expect(live.evidence).toEqual(measurements);
     expect(WIKI_TABLE_SPECS.db_character_variants!.mutableColumns).toContain("visible");
   });
-  test("legacy image-only writes cannot put a generated asset online without its attribution", async () => {
+  test("image-only changes and unverified legacy image changes are rejected", async () => {
     await expect(updateWiki("db_character_variants", "2235", { image })).rejects.toThrow(
-      "requires its provenance",
+      "primary source reference",
     );
-    await updateWiki("db_character_variants", "2235", {
-      image: "./assets/dbz/officiel-2026-08-27/portrait.jpg",
-    });
-    expect(updates).toHaveLength(1);
+    await expect(
+      updateWiki("db_character_variants", "2235", {
+        image: "./assets/dbz/officiel-2026-08-27/portrait.jpg",
+      }),
+    ).rejects.toThrow("primary source reference");
+    expect(updates).toEqual([]);
   });
   test("generic inserts cannot invent or replace OCR measurements", async () => {
     await expect(
@@ -206,7 +197,7 @@ describe("variant revision JSON preservation", () => {
     };
     const after = {
       ...before,
-      evidence: { ...measurements, imageArtwork: artwork, editorialReferences: [reference] },
+      evidence: { ...measurements, editorialReferences: [reference] },
       image,
       highlights: ["After"],
     };
@@ -252,7 +243,7 @@ describe("variant revision JSON preservation", () => {
       "2235",
       {
         image,
-        evidence: { ...measurements, imageArtwork: artwork, editorialReferences: [reference] },
+        evidence: { ...measurements, editorialReferences: [reference] },
         highlights: ["After"],
         techniqueIds: [3],
         transformationIds: [4],
@@ -282,7 +273,7 @@ describe("variant revision JSON preservation", () => {
       "2235",
       {
         image,
-        evidence: { ...measurements, imageArtwork: artwork, editorialReferences: [reference] },
+        evidence: { ...measurements, editorialReferences: [reference] },
         highlights: ["After"],
       },
       options(live),

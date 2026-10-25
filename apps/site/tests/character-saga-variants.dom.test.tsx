@@ -78,7 +78,7 @@ const variants: CharacterVariant[] = [
           locator: "page 134",
         },
       ],
-    },
+    } as unknown as CharacterVariant["evidence"],
   },
 ];
 
@@ -95,7 +95,6 @@ const messages = {
   animatedSeries: "Animated series",
   mangaPages: "Manga pages",
   episodeSynopses: "Episode synopses",
-  generatedImageCaption: "Generated illustration based on the reference “{title}”.",
   imageReference: "View source",
   noImage: "No version-specific image has been verified yet.",
   noSummary: "No summary",
@@ -256,19 +255,13 @@ domTest(
       expect(panel.textContent).toContain("Special Beam Cannon");
       expect(panel.textContent).not.toContain("Kamehameha");
       expect(panel.textContent).toContain("Namek BP");
-      const imageSource = panel.querySelector<HTMLAnchorElement>(
-        'a[aria-label="View source: Dragon Ball volume 24, page 134"]',
-      );
-      expect(imageSource?.href).toBe("https://dragonballfr.com/wiki/manga/1443?page=134");
-      expect(imageSource?.textContent).toContain("Dragon Ball volume 24");
+      expect(panel.querySelector('img[src="/images/goku-namek-generated.webp"]')).toBeNull();
+      expect(
+        panel.querySelector('a[aria-label="View source: Dragon Ball volume 24, page 134"]'),
+      ).toBeNull();
       expect(panel.textContent).not.toContain("Saiyan BP");
       expect(panel.textContent).toContain("Automatically detected");
-      expect(panel.textContent).toContain(
-        "Generated illustration based on the reference “Dragon Ball, tome 24, page 134”.",
-      );
-      expect(
-        panel.querySelector('a[href="https://dragonballfr.com/wiki/manga/1443?page=134"]'),
-      ).not.toBeNull();
+      expect(panel.textContent).not.toContain("Generated illustration");
       expect(window.location.hash).toBe("#saga-2");
       await act(async () =>
         tabs[2]!.dispatchEvent(new KeyboardEvent("keydown", { key: "Home", bubbles: true })),

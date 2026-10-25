@@ -115,7 +115,8 @@ mock.module("@/lib/databook-pages", () => ({
 }));
 const { PATCH } = await import("../src/app/api/wiki-admin/[...path]/route");
 const { revertRevision } = await import("../src/lib/wiki-revisions");
-const image = "./assets/wiki/generated-portraits/2235.png";
+const imageHash = "c".repeat(64);
+const image = `https://cdn.dragonballfr.com/assets/wiki/variants/anime-${imageHash}.jpg`;
 const measurements = {
   methode: "ocr-manga",
   tomes: [22],
@@ -123,16 +124,11 @@ const measurements = {
   graphies: ["tenshinhan"],
   mesureAt: 1787661211645,
 };
-const artwork = {
-  kind: "generated",
-  image,
-  referenceUrl: "https://dragonballfr.com/wiki/manga/1441?page=65",
-  referenceImageUrl: "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol22/065.webp",
-  referenceTitle: "Dragon Ball, chapter 261",
-  referenceSha256: "a".repeat(64),
-  outputSha256: "b".repeat(64),
-  generatedAt: "2026-10-25T13:00:00Z",
-  generator: "image_gen",
+const imageReference = {
+  fields: ["image"],
+  url: "https://lineup.toei-anim.co.jp/ja/tv/dragonz/episode/82/",
+  title: "Toei Animation — Dragon Ball Z, épisode 82",
+  locator: `Still inspecté; SHA-256 ${imageHash}`,
 };
 const request = (body: Row) =>
   PATCH(
@@ -145,7 +141,7 @@ const request = (body: Row) =>
   );
 const publication = () => ({
   image,
-  evidence: { ...measurements, imageArtwork: artwork },
+  evidence: { ...measurements, editorialReferences: [imageReference] },
   summary: "Reviewed publication",
   expected: structuredClone(live),
   expectedSha256: wikiUpdateSnapshotHash(live),
@@ -187,7 +183,7 @@ describe("real variant PATCH route with atomic owner journaling", () => {
       after: {
         image,
         summary: "Reviewed publication",
-        evidence: { ...measurements, imageArtwork: artwork },
+        evidence: { ...measurements, editorialReferences: [imageReference] },
       },
     });
     expect(outsideJournalWrites).toBe(0);
