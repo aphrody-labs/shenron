@@ -302,33 +302,43 @@ export default async function DatabookDetailPage({ params }: { params: Promise<{
 
           <div className="mt-8 space-y-4 border-t border-white/10 pt-6 text-xs font-display">
             <div className="flex justify-between gap-4">
-              <span className="text-white/50">Catégorie</span>
-              <span className="font-bold tracking-wide text-dbz-orange">{category}</span>
+              <span className="min-w-0 text-white/50">Catégorie</span>
+              <span className="min-w-0 break-words text-right font-bold tracking-wide text-dbz-orange">
+                {category}
+              </span>
             </div>
             {book.published_at && (
               <div className="flex justify-between gap-4">
-                <span className="text-white/50">Publication</span>
-                <span className="font-bold text-white">{formatDate(book.published_at)}</span>
+                <span className="min-w-0 text-white/50">Publication</span>
+                <span className="min-w-0 text-right font-bold text-white">
+                  {formatDate(book.published_at)}
+                </span>
               </div>
             )}
             {book.author && (
               <div className="flex justify-between gap-4">
-                <span className="text-white/50">Auteur</span>
-                <span className="font-bold text-white text-right">{book.author}</span>
+                <span className="min-w-0 text-white/50">Auteur</span>
+                <span className="min-w-0 break-words text-right font-bold text-white">
+                  {book.author}
+                </span>
               </div>
             )}
             {book.isbn && (
               <div className="flex justify-between gap-4">
-                <span className="text-white/50">
+                <span className="min-w-0 text-white/50">
                   <T k="mangaCatalog.isbn" />
                 </span>
-                <span className="font-bold text-white">{book.isbn}</span>
+                <span className="min-w-0 break-all text-right font-bold text-white">
+                  {book.isbn}
+                </span>
               </div>
             )}
             {hasPages && (
               <div className="flex justify-between gap-4">
-                <span className="text-white/50">Pages</span>
-                <span className="font-bold text-white">{filledPages.length}</span>
+                <span className="min-w-0 text-white/50">Pages</span>
+                <span className="min-w-0 text-right font-bold text-white">
+                  {filledPages.length}
+                </span>
               </div>
             )}
             {book.source_url && (
@@ -336,7 +346,7 @@ export default async function DatabookDetailPage({ params }: { params: Promise<{
                 href={book.source_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-dbz-orange/40 bg-dbz-orange/10 px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-dbz-orange transition-colors hover:bg-dbz-orange/20"
+                className="mt-2 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-dbz-orange/40 bg-dbz-orange/10 px-4 py-2.5 text-sm font-bold uppercase tracking-widest text-dbz-orange transition-colors hover:bg-dbz-orange/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
               >
                 <LienExterne className="h-3.5 w-3.5" />
                 Source officielle
@@ -350,7 +360,7 @@ export default async function DatabookDetailPage({ params }: { params: Promise<{
             <span className="mb-3 inline-block rounded bg-dbz-orange/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.2em] text-dbz-orange">
               {isInterview ? "Interview" : "Databook"}
             </span>
-            <h1 className="font-saiyan text-[clamp(1.75rem,7vw,2.25rem)] uppercase leading-none tracking-wider text-white [overflow-wrap:anywhere] sm:text-5xl md:text-6xl">
+            <h1 className="font-saiyan text-[clamp(1.75rem,7vw,2.25rem)] uppercase leading-tight tracking-wider text-white [overflow-wrap:anywhere] sm:text-5xl md:text-6xl">
               {book.title}
             </h1>
             {book.title_ja && (
@@ -383,9 +393,15 @@ export default async function DatabookDetailPage({ params }: { params: Promise<{
 			    Hors du layout 2 colonnes pour maximiser la largeur utile et
 			    éviter que le chrome/nav masque le haut des scans. */}
       {hasPages && (
-        <section className="mt-10 min-w-0 space-y-4 sm:mt-16" aria-label="Lecteur de pages">
+        <section
+          className="mt-10 min-w-0 space-y-4 sm:mt-16"
+          aria-labelledby="databook-page-reader-heading"
+        >
           <div className="flex items-end justify-between gap-4 border-b border-dbz-border/50 pb-3">
-            <h2 className="font-saiyan text-2xl uppercase tracking-wider text-dbz-yellow sm:text-3xl">
+            <h2
+              id="databook-page-reader-heading"
+              className="font-saiyan text-2xl uppercase tracking-wider text-dbz-yellow sm:text-3xl"
+            >
               Pages
             </h2>
             <span className="hidden text-[11px] font-bold uppercase tracking-widest text-white/50 sm:inline">
