@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
 import { assetUrl } from "@/lib/assets";
 import { normalizeVideoSubtitles } from "@aphrody/shenron-media/episode-playback";
+import { summarizeVideoSources } from "@/lib/video-source-coverage";
 
 export const runtime = "nodejs";
 export const revalidate = 3600;
@@ -43,8 +44,10 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     const previous = nav?.prev ?? null;
     const next = nav?.next ?? null;
     const players = Array.isArray(movie.players) ? movie.players : [];
+    const availability = Array.isArray(movie.availability) ? movie.availability : [];
     const hasVf = players.some((p) => p.lang === "vf");
     const hasVostfr = players.some((p) => p.lang === "vostfr");
+    const sourceCoverage = summarizeVideoSources(players, availability);
 
     return NextResponse.json(
       {
@@ -63,6 +66,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         subtitles: normalizeVideoSubtitles(movie.subtitles),
         hasVf,
         hasVostfr,
+        sourceCoverage,
         playerCount: players.length,
         players: players.map((p) => ({
           name: p.name,
@@ -70,7 +74,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
           lang: p.lang,
           embedUrl: p.embedUrl,
         })),
-        availability: movie.availability,
+        availability,
         navigation: {
           prev: previous ? { id: previous.id, slug: previous.slug, title: previous.title } : null,
           next: next ? { id: next.id, slug: next.slug, title: next.title } : null,

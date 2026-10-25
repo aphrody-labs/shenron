@@ -228,7 +228,11 @@ export default async function FilmPage({ params }: { params: Promise<{ slug: str
               )}
             </div>
 
-            <VideoSourceSummary players={m.players ?? []} subtitles={m.subtitles?.length ?? 0} />
+            <VideoSourceSummary
+              players={m.players ?? []}
+              offers={m.availability}
+              subtitles={m.subtitles?.length ?? 0}
+            />
 
             {/* Offre légale (ADN…) — sous le player, comme sur la fiche épisode. */}
             <OffreLegale offres={m.availability} />
