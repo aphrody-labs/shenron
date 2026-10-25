@@ -9,8 +9,12 @@ import { ogMeta } from "@/lib/og";
 import { bannerForSeries } from "@/lib/banner-config";
 import { eraOf, ERA_ACCENT } from "@/lib/chronology";
 import { Billboard } from "@/components/stream/Billboard";
+import { VideoSourceSummary } from "@/components/episodes/VideoSourceSummary";
 import { DbsBeerusSpotlight } from "@/components/home/DbsBeerusSpotlight";
 import { T } from "@/components/T";
+import { collectEpisodeSourceLinks, summarizeEpisodeSources } from "@/lib/episode-source-coverage";
+import { VideoSourceLinks } from "@/components/episodes/VideoSourceLinks";
+import { OfficialEpisodeSourceLinks } from "@/components/episodes/OfficialEpisodeSourceLinks";
 import { getDictionary } from "@/lib/i18n";
 import {
   DBS_BEERUS_EPISODE_HREF,
@@ -90,6 +94,7 @@ export default async function EpisodeSeriePage({
   const { episodes, total } = data;
   const navSeries = orderSeries(seriesRows);
   const opener = episodes[0]!;
+  const coverage = summarizeEpisodeSources(episodes);
 
   return (
     <>
@@ -155,6 +160,14 @@ export default async function EpisodeSeriePage({
           </span>
         </h2>
 
+        <div className="mb-8">
+          <VideoSourceSummary players={[]} coverage={coverage} />
+        </div>
+        <div className="mb-8">
+          <VideoSourceLinks links={collectEpisodeSourceLinks(episodes)} />
+        </div>
+        {series === "SDBH" ? <OfficialEpisodeSourceLinks episodes={episodes} /> : null}
+
         <EpisodeSeriesGrid
           episodes={episodes.map((ep) => ({
             id: ep.id,
@@ -167,6 +180,9 @@ export default async function EpisodeSeriePage({
             hasVf: hasLang(ep.players, "vf"),
             hasVostfr: hasLang(ep.players, "vostfr"),
             hasVost: hasLang(ep.players, "vost"),
+            officialLanguages: (ep.availability ?? [])
+              .filter((offer) => offer.available)
+              .flatMap((offer) => offer.langs),
             playerCount: ep.players?.length ?? 0,
           }))}
         />

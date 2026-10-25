@@ -365,10 +365,55 @@ main:focus {
   /* Racine posée par `app/wiki/layout.tsx` : les 52 routes héritent des mêmes
 	   dimensions, même celles qui emploient encore une composition historique. */
   [data-wiki-surface] {
-    --wiki-shell-max: 1720px;
-    --wiki-shell-pad: clamp(1rem, 3vw, 3rem);
-    --wiki-section-gap: 2rem;
+    --wiki-shell-max: 1440px;
+    --wiki-shell-pad: clamp(1rem, 3.5vw, 3rem);
+    --wiki-section-gap: clamp(2rem, 4vw, 3.5rem);
     isolation: isolate;
+    min-width: 0;
+    color: var(--color-os);
+    text-rendering: optimizeLegibility;
+  }
+
+  [data-wiki-surface] :where(h1, h2, h3, h4) {
+    text-wrap: balance;
+  }
+
+  [data-wiki-surface] :where(p, li) {
+    overflow-wrap: anywhere;
+  }
+
+  [data-wiki-surface] :where(button, [role="tab"], input, select, textarea) {
+    touch-action: manipulation;
+  }
+
+  [data-wiki-surface] :where(button, a, [role="tab"], input, select, textarea):focus-visible {
+    outline: 3px solid var(--color-dbz-orange, #ffb200);
+    outline-offset: 3px;
+    scroll-margin-block: 6rem;
+  }
+
+  [data-wiki-surface] :where(button, [role="tab"]) {
+    min-height: 2.75rem;
+  }
+
+  [data-wiki-surface] .wiki-content-card :where(p, li) {
+    max-width: 72ch;
+    line-height: 1.7;
+  }
+
+  [data-wiki-surface] .wiki-infobox {
+    user-select: text;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-wiki-surface] *,
+    [data-wiki-surface] *::before,
+    [data-wiki-surface] *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 
   /** Full-bleed maximum available width wiki container */

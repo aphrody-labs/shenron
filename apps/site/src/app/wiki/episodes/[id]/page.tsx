@@ -318,6 +318,14 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
         <WatchColumns
           aside={
             <>
+              {!cdnOnly && (
+                <VideoSourceSummary
+                  players={ep.players ?? []}
+                  offers={ep.availability}
+                  subtitles={ep.subtitles?.length ?? 0}
+                  frames={frames.length}
+                />
+              )}
               {nav && (nav.prev || nav.next) && (
                 <nav className="grid gap-3">
                   {nav.prev && <NavCard ep={nav.prev} dir="prev" />}
@@ -330,12 +338,6 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
                 ep.availability?.length ||
                 sceneHero ? (
                   <>
-                    <VideoSourceSummary
-                      players={ep.players ?? []}
-                      subtitles={ep.subtitles?.length ?? 0}
-                      frames={frames.length}
-                    />
-
                     <OffreLegale offres={ep.availability} />
 
                     {/* === Aperçu animé de scène (montage MP4 / frame marquante) ===

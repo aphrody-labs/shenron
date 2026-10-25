@@ -23,6 +23,12 @@ import { JsonLd } from "@/components/JsonLd";
 import type { CreativeWork, WithContext } from "schema-dts";
 import { bannerForSeries } from "@/lib/banner-config";
 import { BackgroundImage } from "@/components/media/BackgroundImage";
+import { VideoSourceSummary } from "@/components/episodes/VideoSourceSummary";
+import { collectEpisodeSourceLinks, summarizeEpisodeSources } from "@/lib/episode-source-coverage";
+import { VideoSourceLinks } from "@/components/episodes/VideoSourceLinks";
+import { OfficialEpisodeSourceLinks } from "@/components/episodes/OfficialEpisodeSourceLinks";
+import { getEpisodesCached } from "../../episodes/_shared";
+import { getDictionary } from "@/lib/i18n";
 
 export const revalidate = 3600;
 
@@ -72,6 +78,14 @@ export default async function SagaPage({ params }: { params: Promise<{ slug: str
   if (!data) notFound();
   const saga = data;
   const arcs = data.arcs ?? [];
+  const linkedVideoCatalog = saga.episodeSeries
+    ? await getEpisodesCached(saga.episodeSeries, 1000, 0).catch(() => null)
+    : null;
+  const sagaEpisodeIds = new Set(saga.episodes.map((episode) => episode.id));
+  const linkedVideoEpisodes = (linkedVideoCatalog?.episodes ?? []).filter((episode) =>
+    sagaEpisodeIds.has(episode.id),
+  );
+  const coverage = summarizeEpisodeSources(linkedVideoEpisodes);
   const seriesLabel = SERIES_LABELS[saga.series] ?? saga.series;
   const episodeNumbers = data.episodes.map((episode) => episode.number_in_series);
   const heroFrame =
@@ -165,6 +179,28 @@ export default async function SagaPage({ params }: { params: Promise<{ slug: str
           <WikiArticle article={saga.article} sources={saga.article_sources} heading="Article" />
         </div>
       )}
+
+      <section className="mb-10" aria-label={getDictionary().mediaPlayback.sourceSagaLabel}>
+        {linkedVideoCatalog && saga.episodes.length > 0 ? (
+          <VideoSourceSummary players={[]} coverage={coverage} />
+        ) : !linkedVideoCatalog ? (
+          <p className="rounded-xl border border-amber-400/30 bg-amber-400/10 p-4 text-sm text-white/75">
+            <T k="mediaPlayback.sourceCatalogUnavailable" />
+          </p>
+        ) : (
+          <p className="rounded-xl border border-amber-400/30 bg-amber-400/10 p-4 text-sm text-white/75">
+            <T k="mediaPlayback.sourceSagaUnlinked" />
+          </p>
+        )}
+      </section>
+      {linkedVideoEpisodes.length > 0 ? (
+        <section className="mb-10" aria-label={getDictionary().mediaPlayback.sourceSagaLabel}>
+          <VideoSourceLinks links={collectEpisodeSourceLinks(linkedVideoEpisodes)} />
+        </section>
+      ) : null}
+      {saga.episodeSeries === "SDBH" ? (
+        <OfficialEpisodeSourceLinks episodes={saga.episodes} />
+      ) : null}
 
       <div className="mb-20">
         <WikiEntitySections entityType="saga" entityId={saga.id} />

@@ -134,6 +134,7 @@ export default async function OfficialBeerusEpisodePage({
           />
           <VideoSourceSummary
             players={[{ name: episode.title, provider: "mugiwara", embedUrl: episode.video_url }]}
+            offers={episode.availability}
             subtitles={episode.subtitles?.length ?? 0}
             frames={episode.frames?.length ?? 0}
           />

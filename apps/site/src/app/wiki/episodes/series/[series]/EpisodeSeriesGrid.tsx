@@ -29,6 +29,7 @@ export interface SeriesEpisode {
   hasVf: boolean;
   hasVostfr: boolean;
   hasVost?: boolean;
+  officialLanguages?: ("vf" | "vostfr" | "vost")[];
   playerCount: number;
 }
 
@@ -50,9 +51,16 @@ export function filterSeriesEpisodes(
   const q = fold(query.trim());
   const number = /^\d+$/.test(q) ? Number(q) : null;
   return episodes.filter((episode) => {
-    if (language === "vf" && !episode.hasVf) return false;
-    if (language === "vostfr" && !episode.hasVostfr) return false;
-    if (language === "vost" && !episode.hasVost) return false;
+    if (language === "vf" && !episode.hasVf && !episode.officialLanguages?.includes("vf"))
+      return false;
+    if (
+      language === "vostfr" &&
+      !episode.hasVostfr &&
+      !episode.officialLanguages?.includes("vostfr")
+    )
+      return false;
+    if (language === "vost" && !episode.hasVost && !episode.officialLanguages?.includes("vost"))
+      return false;
     if (!q) return true;
     if (number !== null) return episode.number === number;
     return fold(`${episode.title} ${episode.titleJa ?? ""}`).includes(q);
@@ -82,19 +90,29 @@ export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
 
   const visible = filtered.slice(0, limit);
   const remaining = filtered.length - visible.length;
-  const vfCount = episodes.filter((episode) => episode.hasVf).length;
-  const vostfrCount = episodes.filter((episode) => episode.hasVostfr).length;
-  const vostCount = episodes.filter((episode) => episode.hasVost).length;
+  const vfCount = episodes.filter(
+    (episode) => episode.hasVf || episode.officialLanguages?.includes("vf"),
+  ).length;
+  const vostfrCount = episodes.filter(
+    (episode) => episode.hasVostfr || episode.officialLanguages?.includes("vostfr"),
+  ).length;
+  const vostCount = episodes.filter(
+    (episode) => episode.hasVost || episode.officialLanguages?.includes("vost"),
+  ).length;
   const imageCount = episodes.filter((episode) => episode.image).length;
+  const vfMissing = episodes.length - vfCount;
+  const vostfrMissing = episodes.length - vostfrCount;
 
   return (
     <div className="shenron-episode-series @container min-w-0 space-y-6">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5" aria-label={labels("coverage")}>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label={labels("coverage")}>
         {[
           [labels("episodes"), episodes.length],
           [labels("vfSources"), vfCount],
           [labels("vostfrSources"), vostfrCount],
           [t("vost"), vostCount],
+          [labels("vfMissing"), vfMissing],
+          [labels("vostfrMissing"), vostfrMissing],
           [labels("thumbnails"), imageCount],
         ].map(([label, value]) => (
           <div key={label} className="min-w-0 rounded-2xl border border-border bg-card px-4 py-3">
