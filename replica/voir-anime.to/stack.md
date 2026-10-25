@@ -1,7 +1,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 # Stack et surface publique de Voiranime
 
-Observation du 25 octobre 2026, entre 14:10 et 14:19 UTC. Cible :
+Observation du 25 octobre 2026, entre 14:10 et 14:43 UTC. Cible :
 [voir-anime.to](https://voir-anime.to/). Cette carte décrit ce qui a été annoncé
 dans les pages publiques ou observé pendant leur consultation ; elle ne constitue
 pas un inventaire des services internes.
@@ -67,6 +67,15 @@ automatiquement un **POST `action=manga_views`**, avec les noms de paramètres
 `action` et `manga`. Le réseau montre une réponse `200` de type JSON du dispatcher.
 Il n'y a eu ni POST forgé, ni rejeu, ni variation de paramètres. La donnée et l'effet
 du compteur côté serveur ne sont pas établis par cette seule observation.
+
+À 14:43 UTC, une recherche latérale par saisie de « Naruto » et clic sur la loupe a
+émis le POST `action=ajaxsearchpro_search` au même dispatcher. Les noms de paramètres
+sont `action`, `aspp`, `asid`, `asp_inst_id` et `options` ; seules ces clés et le nom
+de l'action sont conservés. Réponse HTTP `200`, 13 suggestions visibles, puis clic
+sur « Naruto » jusqu'à la fiche `/anime/naruto/` avec son titre affiché. Cette action
+est établie par une interaction normale de l'interface, sans POST forgé ni rejeu.
+Preuve : `root/sidebar-search-action.json`. Les autres labels de configuration ne
+deviennent pas pour autant des endpoints vérifiés.
 
 La configuration de recherche déclare `/?s={query}` et `/?asp_ls={query}`. Les
 valeurs `ajax`, `ajax_search`, `nothing` sont des choix d'interface ; `facet_change`,

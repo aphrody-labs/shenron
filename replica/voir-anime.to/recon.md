@@ -36,6 +36,17 @@ exacte avec le binaire installé n'est pas établie. Répéter le même lancemen
 donc pas l'ensemencement des URL manquantes. Voir `crawl/resume-semantics.md` : la reprise
 doit comparer les ensembles et conserver les pages déjà terminées.
 
+Une reprise séquentielle a été lancée à 14:40 UTC après qualification sur une base
+temporaire : deux seeds explicites enregistrés, un seul GET de page exécuté avec
+`max-requests=1`, l'autre seed conservé en attente. Le contrôleur attend la fin normale
+du lot actuel avant tout import ; il ne lance pas de crawler concurrent. Il compare les
+ensembles, importe les URL manquantes par le CLI natif puis poursuit par lots de 2 000
+tentatives, avec les mêmes exclusions et règles robots. Bornes : 2 Gio pour le dossier
+du crawl, 72 heures et 100 lots ; arrêt en cas d'échec ou de restrictions répétées.
+Les reçus vivent dans `root/continuation-progress.json` et `root/continuations/`.
+L'état `frontier-drained-audit-required` impose encore une relecture des erreurs et de
+la couverture ; il ne constitue pas une preuve de lecture vidéo ni de backend privé.
+
 ## Sources
 
 | Source publique | Usage et preuve locale |
@@ -89,14 +100,17 @@ latérales ; S11 documente la page Manga réduite à son titre et sa date.
 | F04 | Changer de fournisseur : S06 → sélection → autre iframe | Une sélection ; quatre fournisseurs observés ; remplacement d'iframe prouvé, démarrage vidéo non prouvé |
 | F05 | Changer d'épisode : S06/04 → sélection 03 → S06/03 | Une sélection ; fil d'Ariane et précédent/suivant mis à jour après navigation ; fournisseur par défaut rétabli |
 | F06 | Affiner : S07 → Advanced → filtres → résultats | Panneau ouvert ; champs inventoriés ; pas de combinaison exhaustive ni d'état vide qualifié |
-| F07 | Recherche latérale : S08 → saisir Dragon Ball → loupe → suggestions | Suggestions affichées sur la même page ; 18 titres visibles relevés ; endpoint AJAX non capturé dans cette fenêtre réseau |
+| F07 | Recherche latérale : S08/S11 → saisir un titre → loupe → suggestions → S05 | Dragon Ball : 18 titres visibles ; Naruto : 13 suggestions, action AJAX 200 et clic vers la fiche Naruto vérifiés |
 
 Le formulaire S07 affichait bien « Dragon Ball » dans `input[name=s]` avant envoi,
 mais la navigation observée contenait `s=` vide et affichait 6 817 résultats.
 La cause n'est pas établie. Le GET direct fonctionne : ce défaut ne justifie pas de
 déclarer tout le moteur de recherche défaillant. La recherche latérale Ajax Search Pro
 affiche des suggestions Dragon Ball après saisie et clic sur la loupe. Le lien d'une
-suggestion n'a pas été suivi ; son endpoint n'a pas été qualifié par le relevé réseau.
+suggestion Naruto a ensuite été suivi jusqu'à `/anime/naruto/`, avec le titre Naruto
+affiché. Le second relevé réseau confirme `ajaxsearchpro_search`, réponse 200 et noms
+de paramètres `action`, `aspp`, `asid`, `asp_inst_id`, `options`. Les valeurs sérialisées
+et d'éventuels jetons ne sont pas conservés.
 
 ## Composants et états
 
@@ -149,7 +163,7 @@ la disponibilité des fournisseurs, les droits et sources des médias, et la per
 personnelle avec reprise multiappareil.
 
 Restent : terminer la frontière HTML bornée, étendre la qualification des archives et des états vides,
-terminer le parcours d'une suggestion latérale et distinguer systématiquement les ressources
+étendre les contrôles de recherche et distinguer systématiquement les ressources
 bloquées au client direct des ressources chargées par le navigateur. Une nouvelle phase
 d'architecture ne remplace pas ces contrôles. Le catalogue, les images, la marque,
 les comptes et les médias de Voir Anime ne sont pas des livrables à réutiliser.
