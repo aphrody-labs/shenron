@@ -24,9 +24,9 @@ runs:
         [ -x "$candidate" ] || { echo "The pinned factory Bun is unavailable: $SHENRON_EXPECTED_BUN" >&2; exit 1; }
         native=$(realpath "$candidate")
         [ -x "$native" ] || { echo "Qualified factory Bun is unavailable" >&2; exit 1; }
-        # Qualified native Linux x64 factory artifact, revision dfde053a3 (2026-10-13).
-        printf '%s  %s\n' '890af6a675e1dc58b15a15777c53de3b2e82668690c9be5f6e87ec690246ac0e' "$native" | sha256sum -c -
-        [ "$("$native" --revision)" = '1.4.4+dfde053a3' ] || { echo "Factory Bun revision differs" >&2; exit 1; }
+        # Published Linux x64 artifact, revision fd9d7a224 (2026-10-17), also used by production.
+        printf '%s  %s\n' 'cb3332aa3c28f199087fa69bf2d1b1b967b5e12364f1b23d8d1d65ce2feb3a0f' "$native" | sha256sum -c -
+        "$native" -e 'if (Bun.version !== process.env.SHENRON_EXPECTED_BUN || Bun.revision !== "fd9d7a224b83d1763721e409ca98e06a16df1f43") throw new Error("Factory Bun identity differs");'
         # Expose this verified executable as bun without replacing the shared runtime.
         stage=$(mktemp -d "$RUNNER_TEMP/shenron-pinned-bun.XXXXXXXX")
         ln -s "$native" "$stage/bun"
