@@ -38,18 +38,15 @@
     padding-bottom: var(--barre-nav-total);
   }
 
-  /* Les trois pastilles flottantes — Assistant (bas droite), Signalement (bas
-	   gauche), invitation Discord — sont en `fixed bottom-4`. Elles tombaient
-	   DANS la barre. `bottom` est réécrit plutôt que `margin` : ce sont des
-	   valeurs Tailwind arbitraires posées en classe, une marge s'y ajouterait
-	   sans remplacer le `bottom`. */
-  .fab-secondary,
+  /* Les pastilles fixes remontent au-dessus de la barre. Les actions wiki en
+	   flux normal (`data-inline`) gardent leur place dans la page. */
+  .fab-secondary:not([data-inline]),
   .assistant-fab {
     bottom: calc(var(--barre-nav-total) + 0.75rem) !important;
   }
   /* L'invitation Discord et le signalement partagent le bord gauche : réécrits au même
 	   `bottom`, ils se superposaient. L'invitation monte d'une pastille. */
-  .fab-discord {
+  .fab-discord:not([data-inline]) {
     bottom: calc(var(--barre-nav-total) + 4.25rem) !important;
   }
 
@@ -74,10 +71,10 @@
    réglages, « Replier la barre latérale » — et en volaient les clics. Elles longent
    désormais le bord du contenu. */
 @media (min-width: 1024px) {
-  .fab-secondary {
+  .fab-secondary:not([data-inline]) {
     left: calc(17rem + 1.25rem) !important;
   }
-  html[data-shell-sidebar="collapsed"] .fab-secondary {
+  html[data-shell-sidebar="collapsed"] .fab-secondary:not([data-inline]) {
     left: calc(4.5rem + 1.25rem) !important;
   }
 }
