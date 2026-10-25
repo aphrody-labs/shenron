@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bun
+#!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
 import { CrunchyrollClient } from "./client";
 import { configureImportedRuntime, importedArchiveStatus } from "./import-runtime";
