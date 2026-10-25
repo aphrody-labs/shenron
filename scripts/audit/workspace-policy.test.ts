@@ -57,9 +57,9 @@ test("approved public libraries retain exact reviewed allowlists while applicati
   ).toBeGreaterThan(0);
 });
 
-test("all twelve current public manifests and their source payloads match reviewed notices and exports", async () => {
+test("all thirteen current public manifests and their source payloads match reviewed notices and exports", async () => {
   const root = resolve(import.meta.dir, "../..");
-  expect(Object.keys(PUBLIC_LIBRARY_FILES)).toHaveLength(12);
+  expect(Object.keys(PUBLIC_LIBRARY_FILES)).toHaveLength(13);
   for (const [name, files] of Object.entries(PUBLIC_LIBRARY_FILES)) {
     const relative = `packages/${name.slice("@aphrody/shenron-".length)}`;
     const manifest = await Bun.file(join(root, relative, "package.json")).json();
@@ -104,10 +104,18 @@ test("external capabilities use exact registry pins and local links remain confi
   expect(pinnedAphrodyDependency("@aphrody/bun-video", "1.4.4-video.1", local)).toBe(true);
 });
 
-test("the reviewed Bun Video npm archive requires its exact CDN identity, source and integrity", async () => {
-  const root = await Bun.file(resolve(import.meta.dir, "../../package.json")).json();
+test("the reviewed Bun Video npm archive requires its exact CDN identity, source and integrity", () => {
   const name = "@aphrody/bun-video";
-  const pin = root["shenron.packageArchives"][name];
+  // Keep the qualified historical archive as a fixture when the application moves to npm pins.
+  const pin = {
+    name,
+    version: "1.4.4-video.1",
+    source: "8ae3009ee97d6768d58b0ff09e840ff68fb2e24c",
+    url: "https://dist.aphrody.app/packages/bun-video/1.4.4-video.1/db7590aff424cc85c783a316556b8552f780898f92d9765443092a5c69970056/package.tgz",
+    sha256: "db7590aff424cc85c783a316556b8552f780898f92d9765443092a5c69970056",
+    integrity:
+      "sha512-FMYE7oRCfy31vNA9MVhQYVwdueRdhsmmOr++KPk2J7NlhfKzfIyVxiVnY8Uhg/2ayXbgoVxKBix5COkXBE6QuQ==",
+  };
   const archives = { [name]: pin };
   const local = new Set<string>();
   expect(pinnedAphrodyDependency(name, pin.url, local, archives)).toBe(true);
