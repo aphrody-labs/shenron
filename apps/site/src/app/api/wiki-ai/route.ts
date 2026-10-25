@@ -13,13 +13,27 @@ import { NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+function unavailable(error: string): NextResponse {
+  return NextResponse.json(
+    { error },
+    { status: 503, headers: { "Cache-Control": "no-store", "Retry-After": "30" } },
+  );
+}
+
 /** Nettoie un snippet RAG (retire les marqueurs de surbrillance FTS). */
 function clean(s: string): string {
   return (s || "").replace(/\s+/g, " ").trim();
 }
 
 export async function POST(req: NextRequest) {
-  if (!(await isCurrentUserAdmin())) {
+  let isAdmin = false;
+  try {
+    isAdmin = await isCurrentUserAdmin();
+  } catch (error) {
+    console.error("[wiki-ai] admin lookup failed", error);
+    return unavailable("auth_unavailable");
+  }
+  if (!isAdmin) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   const body = (await req.json().catch(() => null)) as {
@@ -31,12 +45,16 @@ export async function POST(req: NextRequest) {
   if (!query) return NextResponse.json({ error: "query requise" }, { status: 400 });
   const limit = Math.min(12, Math.max(1, Number(body?.limit) || 8));
 
-  const rag = await dbUniverse.rag(
-    query,
-    limit,
-    body?.entity ? { entity: body.entity } : undefined,
-  );
-  const results = (rag?.results ?? []).map((r) => ({
+  let rag: Awaited<ReturnType<typeof dbUniverse.rag>>;
+  try {
+    rag = await dbUniverse.rag(query, limit, body?.entity ? { entity: body.entity } : undefined);
+  } catch (error) {
+    console.error("[wiki-ai] RAG lookup failed", error);
+    return unavailable("rag_unavailable");
+  }
+  if (rag === null) return unavailable("rag_unavailable");
+
+  const results = rag.results.map((r) => ({
     title: r.title,
     url: r.url,
     snippet: clean(r.snippet),
