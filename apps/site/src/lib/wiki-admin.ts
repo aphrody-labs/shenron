@@ -19,6 +19,7 @@
  */
 import "server-only";
 import { assertDatabooksWritable } from "@/lib/databooks-freeze";
+import { assertVariantEvidenceUpdate } from "@/lib/wiki-variant-evidence";
 import {
   and,
   type Column,
@@ -185,6 +186,11 @@ function coerceValue(spec: ResolvedTable, key: string, value: unknown): unknown 
  * `forInsert` autorise en plus la pk simple si fournie (jamais générée si absente).
  */
 function buildValues(spec: ResolvedTable, body: Row, { forInsert }: { forInsert: boolean }): Row {
+  if (spec.name === "db_character_variants" && forInsert && Object.hasOwn(body, "evidence")) {
+    throw new WikiUpdateRequestError(
+      "Variant evidence metadata may only extend an existing measurement",
+    );
+  }
   // Guard the owner writer as well as HTTP routes, including historical restores.
   if (spec.name === "db_databooks" && Object.hasOwn(body, "pages")) assertDatabooksWritable();
   const out: Row = {};
@@ -568,15 +574,23 @@ export async function updateWiki(
     throw new Error("Aucune colonne mutable fournie.");
   }
   const cond = pkCondition(spec, id);
+  const variantEvidenceWrite =
+    table === "db_character_variants" && Object.hasOwn(values, "evidence");
+  const variantImageWrite = table === "db_character_variants" && Object.hasOwn(values, "image");
   if (
     !isMediaCatalogTable(table) &&
     (options.expected ||
       options.expectedSha256 ||
       (table === "db_episodes" && Object.hasOwn(values, "frames")) ||
       (table === "db_manga_chapters" &&
-        ["pages", "readerExtent", "visible"].some((key) => Object.hasOwn(values, key))))
+        ["pages", "readerExtent", "visible"].some((key) => Object.hasOwn(values, key))) ||
+      variantEvidenceWrite ||
+      variantImageWrite)
   ) {
-    if (!options.expected || !options.expectedSha256) {
+    if (
+      (!variantImageWrite || variantEvidenceWrite || options.expected || options.expectedSha256) &&
+      (!options.expected || !options.expectedSha256)
+    ) {
       throw new WikiUpdateRequestError("Complete wiki snapshot and SHA256 required");
     }
     return db.transaction(async (tx) => {
@@ -590,10 +604,12 @@ export async function updateWiki(
         .limit(1)
         .for("update")) as Row[];
       if (!before) throw new Error(`Ligne introuvable: ${table}#${id}`);
-      assertWikiUpdatePrecondition(before, options.expected!, {
-        complete: true,
-        sha256: options.expectedSha256,
-      });
+      if (options.expected)
+        assertWikiUpdatePrecondition(before, options.expected, {
+          complete: true,
+          sha256: options.expectedSha256,
+        });
+      if (variantEvidenceWrite || variantImageWrite) assertVariantEvidenceUpdate(before, values);
       const [updated] = (await tx.update(spec.table).set(values).where(cond).returning()) as Row[];
       if (!updated) throw new Error(`Ligne introuvable: ${table}#${id}`);
       return updated;

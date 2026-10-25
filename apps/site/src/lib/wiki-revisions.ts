@@ -33,6 +33,7 @@ import {
   restoreDatabookPageRevision,
 } from "@/lib/databook-page-revisions";
 import { wikiUpdateSnapshotHash } from "@/lib/wiki-update-precondition";
+import { variantRevisionRestore } from "@/lib/wiki-variant-evidence";
 import { WIKI_TABLE_SPECS } from "@/lib/wiki-tables";
 import {
   deleteWiki,
@@ -96,17 +97,34 @@ function deriveLabel(row: Row | null | undefined): string | null {
  * only changed pages, including original JA/FR wrappers and verification flags.
  * Their revert merges the recorded field delta into the current array under CAS.
  */
+const VARIANT_REVISION_JSON_FIELDS = new Set([
+  "evidence",
+  "highlights",
+  "techniqueIds",
+  "transformationIds",
+  "keyEpisodes",
+]);
+
 function snapshot(table: string, row: Row | null | undefined): Row | null {
   if (!row) return null;
   const spec = WIKI_TABLE_SPECS[table];
   // `visible` n'est pas une colonne mutable (bascule dédiée) mais on la capture :
   // elle documente l'état publié/masqué et permet le revert d'une visibilité.
   const cols = new Set([...(spec?.mutableColumns ?? Object.keys(row)), "visible"]);
+  if (table === "db_character_variants") {
+    for (const field of VARIANT_REVISION_JSON_FIELDS) cols.add(field);
+  }
   const out: Row = {};
   for (const c of cols) {
     if (!(c in row)) continue;
     const v = row[c];
-    if (v !== null && typeof v === "object" && !isCatalogRevisionJson(table, c)) continue;
+    if (
+      v !== null &&
+      typeof v === "object" &&
+      !isCatalogRevisionJson(table, c) &&
+      !(table === "db_character_variants" && VARIANT_REVISION_JSON_FIELDS.has(c))
+    )
+      continue;
     out[c] = v;
   }
   // Les cibles de planche (transcription comme traduction) ne sont pas des
@@ -410,12 +428,14 @@ export async function revertRevision(
     // Le reste du snapshot (colonnes réelles) suit le chemin normal. S'il ne
     // contient QUE des cibles de planche, on n'appelle pas `updateWiki` : il
     // n'aurait rien à écrire et rejetterait la clé inconnue.
-    const colonnes = Object.fromEntries(
+    let colonnes = Object.fromEntries(
       Object.entries(before).filter(
         ([k, value]) =>
           !estCibleJsonbPlanche(table, k) && !isDatabookPageRevisionTarget(table, k, value),
       ),
     );
+    if (table === "db_character_variants")
+      colonnes = variantRevisionRestore(before, (rev.after as Row | null) ?? {}, current);
     const hasPageSnapshots =
       table === "db_databooks" && Object.values(before).some(isDatabookPageSnapshot);
     if (hasPageSnapshots) {
@@ -438,7 +458,7 @@ export async function revertRevision(
             table,
             rowId,
             colonnes,
-            hasPageSnapshots
+            hasPageSnapshots || table === "db_character_variants"
               ? { expected: current, expectedSha256: wikiUpdateSnapshotHash(current) }
               : {},
           )
@@ -466,7 +486,12 @@ export async function revertRevision(
     id: rowId,
     action: "revert",
     before: current,
-    after: mode === "delete" ? null : restoredPageSnapshots ? resultRow : before,
+    after:
+      mode === "delete"
+        ? null
+        : restoredPageSnapshots || table === "db_character_variants"
+          ? resultRow
+          : before,
     actor,
   });
 

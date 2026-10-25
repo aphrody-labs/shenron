@@ -277,6 +277,13 @@ export const botCharacterArcs = bot.table("db_character_arcs", {
  * confondue avec une variante écrite par un rédacteur.
  */
 export type VariantEvidence = {
+  /** Primary references validating selected editorial fields, separate from name detection. */
+  editorialReferences?: Array<{
+    fields: string[];
+    url: string;
+    title: string;
+    locator: string;
+  }>;
   /** Generated artwork is an illustration, distinct from the primary evidence below. */
   imageArtwork?: {
     kind: "generated";

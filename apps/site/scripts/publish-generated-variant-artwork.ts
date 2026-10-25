@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { assetUrl } from "../src/lib/assets";
 import { wikiUpdateSnapshotHash } from "../src/lib/wiki-update-precondition";
+import { assertVariantEvidenceUpdate } from "../src/lib/wiki-variant-evidence";
 import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
 
 export type GeneratedVariantArtwork = {
@@ -66,7 +67,7 @@ export function prepareGeneratedArtworkUpdate(
   )
     return null;
   if (row.image !== null) throw new Error("Existing editorial image must be preserved");
-  return {
+  const body = {
     image: uploadedPath,
     evidence: {
       ...row.evidence,
@@ -85,6 +86,8 @@ export function prepareGeneratedArtworkUpdate(
     expected: row,
     expectedSha256: wikiUpdateSnapshotHash(row),
   };
+  assertVariantEvidenceUpdate(row, body);
+  return body;
 }
 
 /** Upload and edit only through the authenticated site APIs, with independent read-back. */

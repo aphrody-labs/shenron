@@ -326,6 +326,7 @@ export const WIKI_TABLE_SPECS: Record<string, WikiTableSpec> = {
       "image",
       "age",
       "powerLevel",
+      "evidence",
       "ki",
       "maxKi",
       "role",
