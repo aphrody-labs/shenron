@@ -13,11 +13,14 @@ import { NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+function privateJson(body: unknown, init: ResponseInit = {}): NextResponse {
+  const headers = new Headers(init.headers);
+  headers.set("Cache-Control", "private, no-store");
+  return NextResponse.json(body, { ...init, headers });
+}
+
 function unavailable(error: string): NextResponse {
-  return NextResponse.json(
-    { error },
-    { status: 503, headers: { "Cache-Control": "no-store", "Retry-After": "30" } },
-  );
+  return privateJson({ error }, { status: 503, headers: { "Retry-After": "30" } });
 }
 
 /** Nettoie un snippet RAG (retire les marqueurs de surbrillance FTS). */
@@ -34,7 +37,7 @@ export async function POST(req: NextRequest) {
     return unavailable("auth_unavailable");
   }
   if (!isAdmin) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    return privateJson({ error: "Forbidden" }, { status: 403 });
   }
   const body = (await req.json().catch(() => null)) as {
     query?: string;
@@ -42,7 +45,7 @@ export async function POST(req: NextRequest) {
     entity?: string;
   } | null;
   const query = body?.query?.trim();
-  if (!query) return NextResponse.json({ error: "query requise" }, { status: 400 });
+  if (!query) return privateJson({ error: "query requise" }, { status: 400 });
   const limit = Math.min(12, Math.max(1, Number(body?.limit) || 8));
 
   let rag: Awaited<ReturnType<typeof dbUniverse.rag>>;
@@ -81,7 +84,7 @@ export async function POST(req: NextRequest) {
     markdown += `\n\n**Sources :** ${sources.map((s) => `[${s.title}](${s.url})`).join(" · ")}`;
   }
 
-  return NextResponse.json({
+  return privateJson({
     query,
     mode: rag?.mode ?? null,
     results,

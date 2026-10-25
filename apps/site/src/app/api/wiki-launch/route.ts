@@ -20,26 +20,53 @@ import { NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const forbidden = () => NextResponse.json({ error: "Forbidden" }, { status: 403 });
+function privateJson(body: unknown, init: ResponseInit = {}): NextResponse {
+  const headers = new Headers(init.headers);
+  headers.set("Cache-Control", "private, no-store");
+  return NextResponse.json(body, { ...init, headers });
+}
+
+function unavailable(error: string): NextResponse {
+  return privateJson({ error }, { status: 503, headers: { "Retry-After": "30" } });
+}
 
 export async function GET(req: NextRequest) {
-  if (!(await isAdminOrToken(req))) return forbidden();
-  return NextResponse.json(await getLaunchConfig());
+  let allowed: boolean;
+  try {
+    allowed = await isAdminOrToken(req);
+  } catch (error) {
+    console.error("[wiki-launch] admin lookup failed", error);
+    return unavailable("auth_unavailable");
+  }
+  if (!allowed) return privateJson({ error: "Forbidden" }, { status: 403 });
+  try {
+    return privateJson(await getLaunchConfig());
+  } catch (error) {
+    console.error("[wiki-launch] configuration read failed", error);
+    return unavailable("launch_service_unavailable");
+  }
 }
 
 export async function PUT(req: NextRequest) {
-  const { allowed, me } = await adminUserOrToken(req);
-  if (!allowed) return forbidden();
+  let decision: Awaited<ReturnType<typeof adminUserOrToken>>;
+  try {
+    decision = await adminUserOrToken(req);
+  } catch (error) {
+    console.error("[wiki-launch] admin lookup failed", error);
+    return unavailable("auth_unavailable");
+  }
+  const { allowed, me } = decision;
+  if (!allowed) return privateJson({ error: "Forbidden" }, { status: 403 });
 
   let body: unknown;
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "JSON body requis" }, { status: 400 });
+    return privateJson({ error: "JSON body requis" }, { status: 400 });
   }
 
   if (!body || typeof body !== "object" || Array.isArray(body)) {
-    return NextResponse.json({ error: "Launch object required" }, { status: 400 });
+    return privateJson({ error: "Launch object required" }, { status: 400 });
   }
   const b = body as {
     openKeys?: unknown;
@@ -59,7 +86,7 @@ export async function PUT(req: NextRequest) {
   }
 
   if (Object.keys(patch).length === 0) {
-    return NextResponse.json({ error: "openKeys[], order[] ou access{} attendu" }, { status: 400 });
+    return privateJson({ error: "openKeys[], order[] ou access{} attendu" }, { status: 400 });
   }
 
   let config;
@@ -71,12 +98,14 @@ export async function PUT(req: NextRequest) {
       envFirst(process.env, ENV_ALIASES.adminToken)?.value,
     );
   } catch (err) {
-    return NextResponse.json(
+    console.error("[wiki-launch] configuration write failed", err);
+    const status = err instanceof HostLaunchError ? err.status : 502;
+    return privateJson(
       { error: "Launch service unavailable" },
-      { status: err instanceof HostLaunchError ? err.status : 502 },
+      { status, headers: status >= 500 ? { "Retry-After": "30" } : undefined },
     );
   }
   // Le gating/nav/teaser lisent la config dans le layout → revalide tout le site.
   revalidatePath("/", "layout");
-  return NextResponse.json({ ok: true, ...config });
+  return privateJson({ ok: true, ...config });
 }
