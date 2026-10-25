@@ -1,19 +1,29 @@
 #!/usr/bin/env bun
 /** Conservative character consolidation. Simulation is the default. */
-import { join } from "node:path";
 import postgres from "postgres";
 import {
   CHARACTER_MERGES,
   type CharacterIdentity,
   validateCharacterMerge,
 } from "../src/lib/character-consolidation";
+import {
+  planVariantConsolidation,
+  type ConsolidationVariant,
+} from "../src/lib/character-variant-consolidation";
 
 const APPLY = process.argv.includes("--appliquer");
 const revisionId = () => crypto.randomUUID().replaceAll("-", "").slice(0, 24);
+const JSON_FIELDS = new Set([
+  "highlights",
+  "transformation_ids",
+  "technique_ids",
+  "key_episodes",
+  "evidence",
+]);
 
 async function databaseUrl(): Promise<string> {
   if (process.env.DATABASE_URL?.trim()) return process.env.DATABASE_URL.trim();
-  const env = await Bun.file(join(import.meta.dir, "..", ".env"))
+  const env = await Bun.file(`${import.meta.dir}/../.env`)
     .text()
     .catch(() => "");
   const value = env
@@ -40,16 +50,11 @@ export async function consolidateCharacters(
   const revisions = sql.unsafe(tables.revisions);
   const ids = [...new Set(CHARACTER_MERGES.flatMap((m) => [m.winnerId, m.duplicateId]))];
   const rows = await sql<{ id: string; name: string; name_ja: string | null; visible: boolean }[]>`
-		select id, name, name_ja, visible from ${characters} where id in ${sql(ids)}`;
+    select id, name, name_ja, visible from ${characters} where id in ${sql(ids)}`;
   const byId = new Map<number, CharacterIdentity>(
     rows.map((row) => [
       Number(row.id),
-      {
-        id: Number(row.id),
-        name: row.name,
-        nameJa: row.name_ja,
-        visible: row.visible,
-      },
+      { id: Number(row.id), name: row.name, nameJa: row.name_ja, visible: row.visible },
     ]),
   );
   const rejected: string[] = [];
@@ -62,55 +67,66 @@ export async function consolidateCharacters(
     if (reason) rejected.push(`${merge.duplicateId}->${merge.winnerId}: ${reason}`);
     return !reason;
   });
-  if (!apply) return { ready: ready.length, changed: 0, rejected };
+  if (!apply || rejected.length) return { ready: ready.length, changed: 0, rejected };
 
   let changed = 0;
-  for (const merge of ready) {
-    await sql.begin(async (tx) => {
-      const locked = await tx<
-        { id: string; name: string; name_ja: string | null; visible: boolean }[]
-      >`
-				select id, name, name_ja, visible from ${characters}
-				where id in ${tx([merge.winnerId, merge.duplicateId])} for update`;
-      const live = new Map(
-        locked.map((row) => [
-          Number(row.id),
-          { id: Number(row.id), name: row.name, nameJa: row.name_ja, visible: row.visible },
-        ]),
-      );
+  await sql.begin(async (tx) => {
+    await tx`set local lock_timeout = '5s'`;
+    await tx`set local statement_timeout = '30s'`;
+    await tx`select pg_advisory_xact_lock(7274926001)`;
+    const locked = await tx<
+      { id: string; name: string; name_ja: string | null; visible: boolean }[]
+    >`
+      select id, name, name_ja, visible from ${characters} where id in ${tx(ids)} order by id for update`;
+    const live = new Map(
+      locked.map((row) => [
+        Number(row.id),
+        { id: Number(row.id), name: row.name, nameJa: row.name_ja, visible: row.visible },
+      ]),
+    );
+    const variants = await tx<ConsolidationVariant[]>`
+      select * from ${variantsTable} where character_id in ${tx(ids)} order by id for update`;
+    // Plan the complete batch before the first write, including every collision.
+    const planned = ready.map((merge) => {
       const drift = validateCharacterMerge(
         merge,
         live.get(merge.winnerId),
         live.get(merge.duplicateId),
       );
       if (drift) throw new Error(`${merge.duplicateId}->${merge.winnerId}: ${drift}`);
-
-      const variants = await tx<{ id: string; slug: string; saga_id: string; visible: boolean }[]>`
-				select id, slug, saga_id, visible from ${variantsTable} where character_id = ${merge.duplicateId} for update`;
-      for (const variant of variants) {
-        const collision = await tx`select id from ${variantsTable}
-					where character_id = ${merge.winnerId} and saga_id = ${Number(variant.saga_id)}`;
-        if (collision.length && !variant.visible) continue;
-        const before = collision.length
-          ? { visible: variant.visible, character_id: merge.duplicateId }
-          : { character_id: merge.duplicateId };
-        const after = collision.length
-          ? { visible: false, character_id: merge.duplicateId }
-          : { character_id: merge.winnerId };
-        if (collision.length)
-          await tx`update ${variantsTable} set visible = false where id = ${Number(variant.id)}`;
-        else
-          await tx`update ${variantsTable} set character_id = ${merge.winnerId} where id = ${Number(variant.id)}`;
+      const canonical = variants.filter((row) => Number(row.character_id) === merge.winnerId);
+      return {
+        merge,
+        changes: variants
+          .filter((row) => Number(row.character_id) === merge.duplicateId)
+          .flatMap((row) =>
+            planVariantConsolidation(
+              merge.winnerId,
+              row,
+              canonical.find((candidate) => Number(candidate.saga_id) === Number(row.saga_id)),
+            ),
+          ),
+      };
+    });
+    for (const { merge, changes } of planned) {
+      for (const change of changes) {
+        const values = Object.fromEntries(
+          Object.entries(change.after).map(([key, value]) => [
+            key,
+            JSON_FIELDS.has(key) && value !== null ? tx.json(value as postgres.JSONValue) : value,
+          ]),
+        );
+        await tx`update ${variantsTable} set ${tx(values)} where id = ${Number(change.row.id)}`;
         await tx`insert into ${revisions} ${tx({
           id: revisionId(),
           tableName: "db_character_variants",
-          rowId: String(variant.id),
+          rowId: String(change.row.id),
           action: "update",
-          label: variant.slug,
-          before: tx.json(before),
-          after: tx.json(after),
+          label: change.row.slug,
+          before: tx.json(change.before as postgres.JSONValue),
+          after: tx.json(change.after as postgres.JSONValue),
           editorId: "agent",
-          editorName: "Script consolide-personnages (SH-P1-009)",
+          editorName: "Character identity consolidation (preserve published variants)",
         })}`;
       }
       if (live.get(merge.duplicateId)!.visible) {
@@ -124,33 +140,11 @@ export async function consolidateCharacters(
           before: tx.json({ visible: true }),
           after: tx.json({ visible: false }),
           editorId: "agent",
-          editorName: "Script consolide-personnages (SH-P1-009)",
+          editorName: "Character identity consolidation (preserve published variants)",
         })}`;
       }
-    });
-    changed++;
-  }
-  // No exact canonical target exists for this form. Keeping it visible below a
-  // hidden parent is worse than quarantining it until editorial arbitration.
-  await sql.begin(async (tx) => {
-    const orphan = await tx<{ id: string; slug: string; character_id: string; visible: boolean }[]>`
-			select id, slug, character_id, visible from ${variantsTable} where id = 2330 for update`;
-    const row = orphan[0];
-    if (!row || row.slug !== "super-buu-buu" || Number(row.character_id) !== 89)
-      throw new Error("orphan variant #2330 identity drifted");
-    if (!row.visible) return;
-    await tx`update ${variantsTable} set visible = false where id = 2330`;
-    await tx`insert into ${revisions} ${tx({
-      id: revisionId(),
-      tableName: "db_character_variants",
-      rowId: "2330",
-      action: "visibility",
-      label: "super-buu-buu",
-      before: tx.json({ visible: true }),
-      after: tx.json({ visible: false }),
-      editorId: "agent",
-      editorName: "Script consolide-personnages (SH-P1-009 quarantine)",
-    })}`;
+      changed++;
+    }
   });
   return { ready: ready.length, changed, rejected };
 }
