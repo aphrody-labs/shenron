@@ -1,31 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
+import { canonicalWikiSnapshot as canonical, WikiUpdateRequestError } from "./wiki-snapshot";
+export { WikiUpdateRequestError } from "./wiki-snapshot";
 
 export class WikiUpdatePreconditionError extends Error {
   readonly code = "wiki_update_precondition_changed";
   constructor() {
     super("Wiki update precondition changed");
   }
-}
-
-export class WikiUpdateRequestError extends Error {
-  readonly code = "invalid_wiki_update_precondition";
-}
-
-function canonical(value: unknown): string {
-  // PostgreSQL timestamps are Dates in Drizzle and ISO strings in the admin JSON response.
-  if (value instanceof Date) return JSON.stringify(value.toISOString());
-  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
-  if (value !== null && typeof value === "object") {
-    return `{${Object.keys(value)
-      .toSorted()
-      .map((key) => `${JSON.stringify(key)}:${canonical((value as Record<string, unknown>)[key])}`)
-      .join(",")}}`;
-  }
-  const encoded = JSON.stringify(value);
-  if (encoded === undefined) {
-    throw new WikiUpdateRequestError("Snapshot contains non-JSON values");
-  }
-  return encoded;
 }
 
 /** Hash the canonical administrative JSON snapshot, never a public projection. */

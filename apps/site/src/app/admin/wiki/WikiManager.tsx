@@ -11,6 +11,9 @@
  */
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useWikiAdminText as useT } from "@/lib/wiki-admin-text";
+import { useLangue } from "@/lib/i18n/client";
+import { filterWikiBranches, wikiSearchMatches } from "@/lib/wiki-manager-explorer";
 import {
   Document,
   FlecheDroite,
@@ -20,7 +23,6 @@ import {
   Plus,
   Presse,
 } from "@aphrody/shenron-ui/icones";
-import { TABLE_LABELS } from "@/lib/db-labels";
 import { isStudioTable } from "@/lib/wiki-fields";
 
 type PageNode = { id: string; title: string; slug: string };
@@ -75,30 +77,30 @@ const ENTITY_KANJI: Record<string, string> = {
 };
 
 // Outils/tables utilitaires (pas de complétude de contenu à suivre).
-const TOOLS: { label: string; kanji: string; href: string }[] = [
-  { label: "Chronologie", kanji: "年表", href: "/admin/timeline" },
-  { label: "Sources", kanji: "源", href: "/admin/db-universe/sources" },
-  { label: "Images & médias", kanji: "画", href: "/admin/db-universe/assets" },
-  { label: "Visibilité", kanji: "眼", href: "/admin/visibility" },
-  { label: "Actualités", kanji: "報", href: "/admin/database/db_news" },
+const TOOLS: { key: string; kanji: string; href: string }[] = [
+  { key: "timeline", kanji: "年表", href: "/admin/timeline" },
+  { key: "sources", kanji: "源", href: "/admin/db-universe/sources" },
+  { key: "assets", kanji: "画", href: "/admin/db-universe/assets" },
+  { key: "visibility", kanji: "眼", href: "/admin/visibility" },
+  { key: "news", kanji: "報", href: "/admin/database/db_news" },
 ];
 
-const ACTION_LABEL: Record<string, { label: string; cls: string }> = {
-  create: { label: "création", cls: "text-green-300" },
-  update: { label: "édition", cls: "text-dbz-blue-light" },
-  delete: { label: "suppression", cls: "text-red-300" },
-  visibility: { label: "visibilité", cls: "text-dbz-yellow" },
-  revert: { label: "retour arrière", cls: "text-purple-300" },
+const ACTION_CLASSES: Record<string, string> = {
+  create: "text-green-300",
+  update: "text-dbz-blue-light",
+  delete: "text-red-300",
+  visibility: "text-dbz-yellow",
+  revert: "text-purple-300",
 };
 
-function relTime(iso: string): string {
-  const s = Math.round((Date.now() - new Date(iso).getTime()) / 1000);
-  if (s < 60) return "à l'instant";
-  const m = Math.round(s / 60);
-  if (m < 60) return `il y a ${m} min`;
-  const h = Math.round(m / 60);
-  if (h < 24) return `il y a ${h} h`;
-  return `il y a ${Math.round(h / 24)} j`;
+function relTime(iso: string, locale: string): string {
+  const seconds = (new Date(iso).getTime() - Date.now()) / 1000;
+  if (!Number.isFinite(seconds)) return iso;
+  const format = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+  if (Math.abs(seconds) < 60) return format.format(Math.round(seconds), "second");
+  if (Math.abs(seconds) < 3600) return format.format(Math.round(seconds / 60), "minute");
+  if (Math.abs(seconds) < 86400) return format.format(Math.round(seconds / 3600), "hour");
+  return format.format(Math.round(seconds / 86400), "day");
 }
 
 /**
@@ -120,7 +122,9 @@ function richness(s: CmsEntityStat): number {
 }
 
 function EntityCard({ s }: { s: CmsEntityStat }) {
-  const label = TABLE_LABELS[s.table] ?? s.table;
+  const t = useT();
+  const { locale } = useLangue();
+  const label = t(`adminWiki.tables.${s.table}`) || s.table;
   const kanji = ENTITY_KANJI[s.table] ?? "";
   const studio = isStudioTable(s.table);
   const pct = richness(s);
@@ -136,14 +140,18 @@ function EntityCard({ s }: { s: CmsEntityStat }) {
       <div className="relative z-10">
         <div className="flex items-baseline justify-between gap-2">
           <h3 className="font-saiyan text-lg uppercase tracking-wider text-white">{label}</h3>
-          <span className="tabular-nums font-scouter text-2xl text-dbz-orange">{s.total}</span>
+          <span className="tabular-nums font-scouter text-2xl text-dbz-orange">
+            {s.total.toLocaleString(locale)}
+          </span>
         </div>
 
         {/* Barre de richesse du contenu */}
         <div className="mt-3">
           <div className="mb-1 flex items-center justify-between text-[10px] uppercase tracking-wider text-white/50">
-            <span>Complétude</span>
-            <span className="tabular-nums">{pct}%</span>
+            <span>{t("adminWiki.manager.completeness")}</span>
+            <span className="tabular-nums">
+              {new Intl.NumberFormat(locale, { style: "percent" }).format(pct / 100)}
+            </span>
           </div>
           <div className="h-1.5 w-full overflow-hidden rounded bg-dbz-bg">
             <div className={`h-full ${barColor} transition-all`} style={{ width: `${pct}%` }} />
@@ -158,7 +166,7 @@ function EntityCard({ s }: { s: CmsEntityStat }) {
               className="inline-flex items-center gap-1 rounded border border-dbz-border px-1.5 py-0.5 text-white/55 transition-colors hover:border-dbz-orange hover:text-dbz-orange"
             >
               <IllustrationAbsente className="h-3 w-3" />
-              {s.missingImage} sans image
+              {t("adminWiki.manager.missingImage", { count: s.missingImage })}
             </Link>
           )}
           {s.descCol && s.missingDesc > 0 && (
@@ -167,7 +175,7 @@ function EntityCard({ s }: { s: CmsEntityStat }) {
               className="inline-flex items-center gap-1 rounded border border-dbz-border px-1.5 py-0.5 text-white/55 transition-colors hover:border-dbz-orange hover:text-dbz-orange"
             >
               <Document className="h-3 w-3" />
-              {s.missingDesc} sans texte
+              {t("adminWiki.manager.missingText", { count: s.missingDesc })}
             </Link>
           )}
           {s.jaCol && s.missingJa > 0 && (
@@ -178,13 +186,13 @@ function EntityCard({ s }: { s: CmsEntityStat }) {
               <span aria-hidden className="font-jp text-[11px] leading-none">
                 日
               </span>
-              {s.missingJa} sans japonais
+              {t("adminWiki.manager.missingJapanese", { count: s.missingJa })}
             </Link>
           )}
           {s.hasVisibility && s.hidden > 0 && (
             <span className="inline-flex items-center gap-1 rounded border border-dbz-yellow/30 px-1.5 py-0.5 text-dbz-yellow/80">
               <Oeil className="h-3 w-3" />
-              {s.hidden} masquée{s.hidden > 1 ? "s" : ""}
+              {t("adminWiki.manager.hidden", { count: s.hidden })}
             </span>
           )}
           {s.total > 0 &&
@@ -193,7 +201,7 @@ function EntityCard({ s }: { s: CmsEntityStat }) {
             (!s.jaCol || s.missingJa === 0) &&
             (!s.hasVisibility || s.hidden === 0) && (
               <span className="rounded border border-green-500/30 px-1.5 py-0.5 text-green-300/80">
-                Complet
+                {t("adminWiki.manager.complete")}
               </span>
             )}
         </div>
@@ -204,16 +212,16 @@ function EntityCard({ s }: { s: CmsEntityStat }) {
             href={`/admin/database/${s.table}`}
             className="inline-flex flex-1 items-center justify-center gap-1 rounded border border-dbz-border px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider text-white/70 transition-colors hover:border-dbz-orange hover:text-dbz-orange"
           >
-            Parcourir
+            {t("adminWiki.manager.browse")}
             <FlecheDroite className="h-3 w-3" />
           </Link>
           <Link
             href={studio ? `/admin/wiki/studio/${s.table}/new` : `/admin/database/${s.table}`}
             className="inline-flex items-center justify-center gap-1 rounded border border-dbz-orange/40 bg-dbz-orange/10 px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider text-dbz-orange transition-colors hover:bg-dbz-orange/20"
-            title="Créer une entrée"
+            title={t("adminWiki.manager.createEntry")}
           >
             <Plus className="h-3 w-3" />
-            Nouveau
+            {t("adminWiki.manager.new")}
           </Link>
         </div>
       </div>
@@ -230,6 +238,8 @@ export function WikiManager({
   stats?: CmsEntityStat[];
   recent?: RevisionLite[];
 }) {
+  const t = useT();
+  const { locale } = useLangue();
   const [q, setQ] = useState("");
 
   const totals = useMemo(() => {
@@ -244,71 +254,86 @@ export function WikiManager({
     return { cats, pages, entities };
   }, [categories, stats]);
 
-  const needle = q.trim().toLowerCase();
-  const match = (s: string) => !needle || s.toLowerCase().includes(needle);
+  const needle = q.trim();
 
   const filtered = useMemo(() => {
-    if (!needle) return categories;
-    return categories
-      .map((c) => {
-        const pages = c.pages.filter((p) => match(p.title) || match(p.slug));
-        const children = c.children
-          .map((sub) => ({
-            ...sub,
-            pages: sub.pages.filter((p) => match(p.title) || match(p.slug)),
-          }))
-          .filter((sub) => match(sub.name) || sub.pages.length > 0);
-        return { ...c, pages, children };
-      })
-      .filter((c) => match(c.name) || c.pages.length > 0 || c.children.length > 0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return filterWikiBranches(categories, needle);
   }, [categories, needle]);
+  const filteredStats = stats.filter((s) =>
+    wikiSearchMatches(needle, t(`adminWiki.tables.${s.table}`), s.table),
+  );
 
   return (
     <div className="mx-auto w-full max-w-6xl">
       <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="font-saiyan text-4xl text-dbz-orange">GESTION DU WIKI</h1>
+          <h1 className="font-saiyan text-4xl text-dbz-orange">{t("adminWiki.manager.title")}</h1>
           <p className="mt-1 font-mono text-xs text-dbz-blue-light">
-            {totals.entities.toLocaleString("fr-FR")} fiches · {totals.cats} catégorie
-            {totals.cats > 1 ? "s" : ""} · {totals.pages} page{totals.pages > 1 ? "s" : ""} libre
-            {totals.pages > 1 ? "s" : ""}
+            {t("adminWiki.manager.totals", {
+              entities: totals.entities.toLocaleString(locale),
+              categories: totals.cats.toLocaleString(locale),
+              pages: totals.pages.toLocaleString(locale),
+            })}
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
           <Link href="/admin/wiki/todo" className="dbz-button-ghost inline-flex items-center gap-2">
             <Presse className="h-4 w-4" />
-            À COMPLÉTER
+            {t("adminWiki.manager.todo")}
           </Link>
           <Link
             href="/admin/wiki/history"
             className="dbz-button-ghost inline-flex items-center gap-2"
           >
             <Historique className="h-4 w-4" />
-            HISTORIQUE
+            {t("adminWiki.manager.history")}
           </Link>
           <Link href="/admin/wiki/category/new" className="dbz-button">
-            + CATÉGORIE
+            {t("adminWiki.manager.newCategory")}
           </Link>
           <Link href="/admin/wiki/page/new" className="dbz-button">
-            + PAGE
+            {t("adminWiki.manager.newPage")}
           </Link>
         </div>
+      </div>
+
+      <div className="dbz-panel mb-6 flex flex-wrap items-center gap-3 p-3">
+        <label htmlFor="wiki-manager-search" className="text-sm font-semibold text-dbz-blue-light">
+          {t("common.search")}
+        </label>
+        <input
+          id="wiki-manager-search"
+          type="search"
+          value={q}
+          onChange={(event) => setQ(event.target.value)}
+          aria-controls="wiki-manager-entities wiki-manager-pages"
+          className="min-w-0 flex-1 rounded-xl border border-dbz-border bg-dbz-bg p-3 text-white focus:border-dbz-orange"
+        />
+        {q && (
+          <button type="button" onClick={() => setQ("")} className="btn btn-ghost">
+            {t("admin.table.clearSearch")}
+          </button>
+        )}
       </div>
 
       {/* Cartes de complétude par entité */}
       <section className="mb-10">
         <h2 className="mb-1 font-saiyan text-2xl uppercase tracking-widest text-dbz-yellow">
-          Encyclopédie
+          {t("admin.families.encyclopedie")}
         </h2>
-        <p className="mb-4 text-sm text-gray-400">
-          Complétude du contenu par type de fiche. Repère d'un coup d'œil ce qu'il reste à
-          illustrer, rédiger ou publier.
-        </p>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {stats.map((s) => (
+        <p className="mb-4 text-sm text-gray-400">{t("adminWiki.manager.completenessIntro")}</p>
+        <div
+          id="wiki-manager-entities"
+          className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        >
+          {filteredStats.map((s) => (
             <EntityCard key={s.table} s={s} />
           ))}
+          {filteredStats.length === 0 && (
+            <output className="dbz-panel col-span-full p-5 text-sm text-white/60">
+              {t("common.noResults")}
+            </output>
+          )}
         </div>
       </section>
 
@@ -317,28 +342,32 @@ export function WikiManager({
         <section className="mb-10">
           <div className="mb-3 flex items-baseline justify-between">
             <h2 className="font-saiyan text-2xl uppercase tracking-widest text-dbz-yellow">
-              Dernières modifications
+              {t("adminWiki.manager.recentChanges")}
             </h2>
             <Link
               href="/admin/wiki/history"
               className="text-xs font-bold uppercase tracking-wider text-dbz-orange/80 hover:text-dbz-orange"
             >
-              Tout l'historique →
+              {t("adminWiki.manager.fullHistory")}
             </Link>
           </div>
           <ul className="dbz-panel divide-y divide-dbz-border/40">
             {recent.map((r) => {
-              const meta = ACTION_LABEL[r.action] ?? { label: r.action, cls: "text-white/60" };
-              const label = TABLE_LABELS[r.tableName] ?? r.tableName;
+              const action = Object.hasOwn(ACTION_CLASSES, r.action) ? r.action : "unknown";
+              const cls = ACTION_CLASSES[action] ?? "text-white/60";
+              const label = t(`adminWiki.tables.${r.tableName}`) || r.tableName;
               const canStudio = isStudioTable(r.tableName) && !r.rowId.includes(":");
               return (
                 <li
                   key={r.id}
                   className="flex flex-wrap items-center gap-x-2 gap-y-1 px-4 py-2.5 text-sm"
                 >
-                  <span className={`text-[11px] font-bold uppercase tracking-wider ${meta.cls}`}>
-                    {meta.label}
+                  <span className={`text-[11px] font-bold uppercase tracking-wider ${cls}`}>
+                    {t(`adminWiki.manager.actions.${action}`)}
                   </span>
+                  {action === "unknown" && (
+                    <code className="text-[11px] text-white/50">{r.action}</code>
+                  )}
                   {canStudio ? (
                     <Link
                       href={`/admin/wiki/studio/${r.tableName}/${encodeURIComponent(r.rowId)}`}
@@ -354,9 +383,9 @@ export function WikiManager({
                     {r.editorName ? (
                       <span className="text-white/60">{r.editorName}</span>
                     ) : (
-                      "système"
+                      t("adminWiki.manager.systemEditor")
                     )}{" "}
-                    · {relTime(r.createdAt)}
+                    · {relTime(r.createdAt, locale)}
                   </span>
                 </li>
               );
@@ -368,7 +397,7 @@ export function WikiManager({
       {/* Outils & tables utilitaires */}
       <section className="mb-10">
         <h2 className="mb-3 font-saiyan text-2xl uppercase tracking-widest text-dbz-yellow">
-          Outils
+          {t("desktop.tools.label")}
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {TOOLS.map((e) => (
@@ -381,7 +410,7 @@ export function WikiManager({
                 {e.kanji}
               </span>
               <span className="font-saiyan text-sm uppercase tracking-wider text-gray-200 group-hover:text-white">
-                {e.label}
+                {t(`adminWiki.manager.tools.${e.key}`)}
               </span>
             </Link>
           ))}
@@ -391,25 +420,16 @@ export function WikiManager({
       {/* Pages libres — table WikiPage (markdown + HTML + images custom). */}
       <div className="mb-4 flex items-baseline justify-between border-t border-dbz-border pt-8">
         <h2 className="font-saiyan text-2xl uppercase tracking-widest text-dbz-yellow">
-          Pages libres
+          {t("adminWiki.manager.customPages")}
         </h2>
-        <p className="text-xs text-gray-500">
-          Articles 100% custom (markdown, mise en page, images)
-        </p>
+        <p className="text-xs text-gray-500">{t("adminWiki.manager.customPagesIntro")}</p>
       </div>
 
-      <input
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-        placeholder="Rechercher une page ou une catégorie…"
-        className="mb-6 w-full border-2 border-dbz-border bg-dbz-bg p-3 text-white outline-none focus:border-dbz-orange"
-      />
-
-      <div className="space-y-6">
+      <div id="wiki-manager-pages" className="space-y-6">
         {filtered.length === 0 ? (
           <div className="dbz-panel p-8 text-center">
             <p className="font-saiyan text-2xl uppercase text-dbz-blue-light">
-              {needle ? "Aucun résultat" : "Aucune catégorie. Créez la première."}
+              {needle ? t("common.noResults") : t("adminWiki.manager.noCategories")}
             </p>
           </div>
         ) : (
@@ -424,7 +444,7 @@ export function WikiManager({
                     </span>
                   </h2>
                   <p className="mt-1 font-mono text-xs text-dbz-blue-light">
-                    /{cat.slug} · order: {cat.order}
+                    /{cat.slug} · {t("adminWiki.manager.order", { order: cat.order })}
                   </p>
                 </div>
                 <div className="flex gap-3">
@@ -432,13 +452,13 @@ export function WikiManager({
                     href={`/admin/wiki/category/${cat.id}`}
                     className="font-saiyan text-sm uppercase tracking-wider text-dbz-blue-light hover:text-dbz-yellow"
                   >
-                    ÉDITER
+                    {t("adminWiki.manager.edit")}
                   </Link>
                   <Link
                     href={`/admin/wiki/page/new?category=${cat.id}`}
                     className="font-saiyan text-sm uppercase tracking-wider text-dbz-orange hover:text-dbz-yellow"
                   >
-                    + PAGE
+                    {t("adminWiki.manager.newPage")}
                   </Link>
                 </div>
               </div>
@@ -453,18 +473,18 @@ export function WikiManager({
                       >
                         {p.title}
                       </Link>
-                      <span className="flex shrink-0 gap-3 opacity-0 transition-opacity group-hover:opacity-100">
+                      <span className="flex shrink-0 gap-3">
                         <Link
                           href={`/wiki/${cat.slug}/${p.slug}`}
                           className="font-saiyan text-xs uppercase text-gray-400 hover:text-dbz-yellow"
                         >
-                          VOIR
+                          {t("adminWiki.manager.view")}
                         </Link>
                         <Link
                           href={`/admin/wiki/page/${p.id}`}
                           className="font-saiyan text-xs uppercase text-dbz-blue-light hover:text-dbz-yellow"
                         >
-                          ÉDITER
+                          {t("adminWiki.manager.edit")}
                         </Link>
                       </span>
                     </li>
@@ -487,7 +507,7 @@ export function WikiManager({
                           href={`/admin/wiki/category/${sub.id}`}
                           className="text-xs uppercase text-gray-500 hover:text-dbz-yellow"
                         >
-                          ÉDITER
+                          {t("adminWiki.manager.edit")}
                         </Link>
                       </div>
                       <ul className="space-y-1 text-sm">
@@ -501,9 +521,9 @@ export function WikiManager({
                             </Link>
                             <Link
                               href={`/admin/wiki/page/${p.id}`}
-                              className="shrink-0 font-saiyan text-xs uppercase text-dbz-blue-light opacity-0 hover:text-dbz-yellow group-hover:opacity-100"
+                              className="shrink-0 font-saiyan text-xs uppercase text-dbz-blue-light hover:text-dbz-yellow"
                             >
-                              ÉDITER
+                              {t("adminWiki.manager.edit")}
                             </Link>
                           </li>
                         ))}

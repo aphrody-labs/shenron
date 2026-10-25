@@ -10,6 +10,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Alerte,
   CocheCercle,
+  Croix,
   Enregistrer,
   FlecheGauche,
   Historique,
@@ -18,6 +19,7 @@ import {
 } from "@aphrody/shenron-ui/icones";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useWikiAdminText as useT } from "@/lib/wiki-admin-text";
 import { RelationsPanel } from "@/components/admin/RelationsPanel";
 import { SmartField } from "@/components/admin/SmartField";
 import { WikiEntityPreview } from "@/components/admin/WikiEntityPreview";
@@ -29,8 +31,8 @@ import { GameMediaPanel } from "@/components/admin/GameMediaPanel";
 import { CharacterStatsPanel } from "@/components/admin/CharacterStatsPanel";
 import { TransformationsPanel } from "@/components/admin/TransformationsPanel";
 import { apiAt } from "@/lib/admin-api";
-import { colLabel, TABLE_LABELS } from "@/lib/db-labels";
-import { buildSubmitBody, entityRelations, isStudioTable } from "@/lib/wiki-fields";
+import { entityRelations, isStudioTable } from "@/lib/wiki-fields";
+import { prepareStudioSubmission, sameStudioDraft, toStudioDraft } from "@/lib/wiki-studio-draft";
 import { publicEntityUrl, sectionEntityType } from "@/lib/wiki-entity-model";
 import { crudBase, WIKI_TABLE_SPECS } from "@/lib/wiki-tables";
 
@@ -44,11 +46,12 @@ interface Props {
 
 type Row = Record<string, unknown>;
 
-function toDraft(cols: string[], row: Row | null): Record<string, string> {
-  return Object.fromEntries(cols.map((c) => [c, row?.[c] != null ? String(row[c]) : ""]));
+export function WikiStudio({ table, id }: Props) {
+  return <WikiStudioSession key={JSON.stringify([table, id])} table={table} id={id} />;
 }
 
-export function WikiStudio({ table, id }: Props) {
+function WikiStudioSession({ table, id }: Props) {
+  const t = useT();
   const router = useRouter();
   const qc = useQueryClient();
   const spec = WIKI_TABLE_SPECS[table];
@@ -61,13 +64,15 @@ export function WikiStudio({ table, id }: Props) {
     [spec],
   );
 
-  const [draft, setDraft] = useState<Record<string, string>>(() => toDraft(cols, null));
-  const [toast, setToast] = useState<{ type: "success" | "error"; msg: string } | null>(null);
+  const [draft, setDraft] = useState<Record<string, string>>(() => toStudioDraft(cols, null));
+  const [toast, setToast] = useState<{ type: "success" | "error"; messageKey: string } | null>(
+    null,
+  );
 
   useEffect(() => {
-    if (!toast) return;
-    const t = setTimeout(() => setToast(null), 3500);
-    return () => clearTimeout(t);
+    if (!toast || toast.type === "error") return;
+    const timeout = setTimeout(() => setToast(null), 3500);
+    return () => clearTimeout(timeout);
   }, [toast]);
 
   // Chargement de la ligne (édition). Pas de refetch en arrière-plan : le
@@ -86,53 +91,70 @@ export function WikiStudio({ table, id }: Props) {
   const hydratedId = useRef<string | null>(null);
   useEffect(() => {
     if (mode === "edit" && rowQuery.data && hydratedId.current !== id) {
-      setDraft(toDraft(cols, rowQuery.data));
+      setDraft(toStudioDraft(cols, rowQuery.data));
       hydratedId.current = id;
     }
   }, [rowQuery.data, cols, mode, id]);
 
   const row = mode === "edit" ? (rowQuery.data ?? null) : null;
+  const dirty = !sameStudioDraft(draft, toStudioDraft(cols, row), cols);
+  useEffect(() => {
+    if (!dirty) return;
+    const preventExit = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", preventExit);
+    return () => window.removeEventListener("beforeunload", preventExit);
+  }, [dirty]);
 
   const save = useMutation({
-    mutationFn: async () => {
-      const body = buildSubmitBody(draft, row, cols, { mode });
+    mutationFn: async (submitted: { draft: Record<string, string>; row: Row | null }) => {
+      const body = await prepareStudioSubmission(submitted.draft, submitted.row, cols, mode);
       if (mode === "create") return client.post<{ ok: boolean; row?: Row }>(`/${table}`, body);
       return client.put<{ ok: boolean; row?: Row }>(`/${table}/${encodeURIComponent(id)}`, body);
     },
-    onSuccess: (res) => {
+    onSuccess: (res, submitted) => {
       qc.invalidateQueries({ queryKey: ["db", table] });
-      setToast({ type: "success", msg: "Enregistré." });
+      setToast({ type: "success", messageKey: "adminWiki.studio.saved" });
       const savedRow = res?.row;
       const newId = savedRow?.[spec?.pk as string];
       // Met le cache à jour SANS refetch (qui écraserait le brouillon).
-      if (savedRow != null && newId != null)
+      if (savedRow != null && newId != null) {
         qc.setQueryData(["wiki-studio", table, String(newId)], savedRow);
+        setDraft((current) =>
+          sameStudioDraft(current, submitted.draft, cols) ? toStudioDraft(cols, savedRow) : current,
+        );
+      }
       // Création → bascule sur l'URL d'édition de la nouvelle entrée.
       if (mode === "create" && newId != null)
         router.replace(`/admin/wiki/studio/${table}/${encodeURIComponent(String(newId))}`);
     },
-    onError: (err: Error) => setToast({ type: "error", msg: `Erreur : ${err.message}` }),
+    onError: () => setToast({ type: "error", messageKey: "canonEditorSync.saveFailed" }),
   });
+  const submitDraft = () => {
+    if (!save.isPending) save.mutate({ draft: { ...draft }, row });
+  };
 
   // Le studio ne pilote que les entités « contenu » à pk simple (cf. STUDIO_TABLES) ;
   // les tables utilitaires / à pk composite restent sur l'éditeur générique.
   if (!spec || !isStudioTable(table)) {
     return (
       <div className="card py-12 text-center">
-        <p className="mb-1 font-saiyan uppercase text-dbz-orange">Table non éditable ici</p>
+        <p className="mb-1 font-saiyan uppercase text-dbz-orange">
+          {t("adminWiki.studio.unsupportedTitle")}
+        </p>
         <p className="text-sm text-white/50">
-          <code className="font-mono">{table}</code> n&apos;est pas une entité wiki gérée par le
-          studio.{" "}
+          {t("adminWiki.studio.unsupportedBody", { table })}{" "}
           <a href={`/admin/database/${table}`} className="text-dbz-orange hover:underline">
-            Ouvrir l&apos;éditeur classique
+            {t("adminWiki.studio.classicEditor")}
           </a>
-          .
         </p>
       </div>
     );
   }
 
-  const humanTable = TABLE_LABELS[table] ?? table;
+  const humanTable = t(`adminWiki.tables.${table}`) || table;
   const title = (draft.name ?? draft.title ?? "").trim();
   const publicUrl = mode === "edit" ? publicEntityUrl(table, { id, slug: draft.slug }) : null;
   // En édition, on ne peut enregistrer qu'une fois la ligne chargée (sinon le
@@ -142,10 +164,11 @@ export function WikiStudio({ table, id }: Props) {
   const secType = sectionEntityType(table);
 
   return (
-    <div className="space-y-4">
+    <div className="min-w-0 space-y-4">
       {toast && (
         <div
-          className={`fixed right-4 top-4 z-50 flex items-center gap-2 rounded-lg border px-4 py-3 text-sm shadow-xl ${
+          role={toast.type === "error" ? "alert" : "status"}
+          className={`flex items-center gap-2 rounded-xl border px-4 py-3 text-sm ${
             toast.type === "success"
               ? "border-green-500/50 bg-dbz-card text-green-300"
               : "border-red-500/50 bg-dbz-card text-red-300"
@@ -156,12 +179,20 @@ export function WikiStudio({ table, id }: Props) {
           ) : (
             <Alerte className="h-4 w-4 shrink-0" />
           )}
-          {toast.msg}
+          {t(toast.messageKey)}
+          <button
+            type="button"
+            className="btn btn-ghost ml-auto"
+            onClick={() => setToast(null)}
+            aria-label={t("common.close")}
+          >
+            <Croix className="h-4 w-4" aria-hidden />
+          </button>
         </div>
       )}
 
       {/* En-tête */}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="sticky top-0 z-20 flex flex-wrap items-center gap-3 rounded-xl border border-dbz-border bg-dbz-bg p-3">
         <button
           type="button"
           onClick={() =>
@@ -172,11 +203,13 @@ export function WikiStudio({ table, id }: Props) {
           className="btn btn-ghost"
         >
           <FlecheGauche className="h-4 w-4" />
-          <span className="sr-only">Retour à la liste</span>
+          <span className="sr-only">{t("adminWiki.studio.backToList")}</span>
         </button>
         <div className="min-w-0 flex-1">
           <h2 className="truncate font-saiyan text-xl uppercase text-dbz-orange">
-            {mode === "create" ? `Nouvelle entrée · ${humanTable}` : title || humanTable}
+            {mode === "create"
+              ? t("adminWiki.studio.createTitle", { table: humanTable })
+              : title || humanTable}
           </h2>
           <code className="font-mono text-[10px] text-white/25">
             {table}
@@ -186,62 +219,74 @@ export function WikiStudio({ table, id }: Props) {
         {publicUrl && (
           <a href={publicUrl} target="_blank" rel="noreferrer" className="btn btn-ghost">
             <LienExterne className="h-3.5 w-3.5" />
-            Page publique
+            {t("adminWiki.studio.publicPage")}
           </a>
         )}
         <button
           type="button"
-          onClick={() => save.mutate()}
+          onClick={submitDraft}
           disabled={save.isPending || notReady}
           className="btn btn-primary"
         >
           <Enregistrer className="h-4 w-4" />
-          {save.isPending ? "Enregistrement…" : "Enregistrer"}
+          {save.isPending ? t("common.loading") : t("common.save")}
         </button>
       </div>
 
       {mode === "edit" && rowQuery.isLoading ? (
-        <div className="card h-96 animate-pulse" />
+        <output className="card flex h-96 items-center justify-center" aria-busy="true">
+          {t("common.loading")}
+        </output>
       ) : mode === "edit" && rowQuery.isError ? (
         <div className="card py-12 text-center">
-          <p className="mb-1 font-saiyan uppercase text-dbz-orange">Entrée introuvable</p>
-          <p className="text-sm text-white/50">Impossible de charger cette ligne.</p>
+          <p role="alert" className="mb-3 text-sm text-red-300">
+            {t("adminBot.common.loadFailed")}
+          </p>
+          <button type="button" className="btn btn-ghost" onClick={() => void rowQuery.refetch()}>
+            {t("error.retry")}
+          </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
           {/* Formulaire */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              save.mutate();
+              if (!notReady) submitDraft();
             }}
-            className="dbz-panel space-y-4 p-5"
+            className="dbz-panel min-w-0 p-5"
+            aria-busy={save.isPending}
           >
-            {cols.map((c) => (
-              <Field
-                key={c}
-                table={table}
-                col={c}
-                value={draft[c] ?? ""}
-                original={row?.[c]}
-                onChange={(v) => setDraft((d) => ({ ...d, [c]: v }))}
-              />
-            ))}
-            <button
-              type="submit"
+            <fieldset
               disabled={save.isPending || notReady}
-              className="btn btn-primary w-full"
+              className="min-w-0 space-y-4 disabled:opacity-70"
             >
-              <Enregistrer className="h-4 w-4" />
-              {save.isPending ? "Enregistrement…" : "Enregistrer"}
-            </button>
+              {cols.map((c) => (
+                <Field
+                  key={c}
+                  table={table}
+                  col={c}
+                  value={draft[c] ?? ""}
+                  original={row?.[c]}
+                  onChange={(v) => setDraft((d) => ({ ...d, [c]: v }))}
+                />
+              ))}
+              <button
+                type="submit"
+                disabled={save.isPending || notReady}
+                className="btn btn-primary w-full"
+              >
+                <Enregistrer className="h-4 w-4" />
+                {save.isPending ? t("common.loading") : t("common.save")}
+              </button>
+            </fieldset>
           </form>
 
           {/* Aperçu live + relations (sticky sur grand écran) */}
-          <div className="space-y-4 lg:sticky lg:top-4 lg:self-start">
+          <div className="min-w-0 space-y-4">
             <div className="dbz-panel p-6">
               <div className="mb-4 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light">
-                <Oeil className="h-3.5 w-3.5" /> Aperçu live
+                <Oeil className="h-3.5 w-3.5" /> {t("adminDesign.previewTitle")}
               </div>
               <WikiEntityPreview table={table} draft={draft} />
             </div>
@@ -250,8 +295,7 @@ export function WikiStudio({ table, id }: Props) {
                 <RelationsPanel table={table} entityId={id} />
               ) : (
                 <div className="dbz-panel p-5 text-xs text-white/50">
-                  Enregistre d&apos;abord cette entrée pour gérer ses relations (techniques,
-                  personnages…).
+                  {t("adminWiki.studio.saveRelations")}
                 </div>
               ))}
             {secType &&
@@ -270,14 +314,13 @@ export function WikiStudio({ table, id }: Props) {
                 </>
               ) : (
                 <div className="dbz-panel p-5 text-xs text-white/50">
-                  Enregistre d&apos;abord cette entrée pour ajouter ses sections de contenu
-                  (histoire, personnalité, anecdotes…).
+                  {t("adminWiki.studio.saveSections")}
                 </div>
               ))}
             {mode === "edit" && (
               <details className="dbz-panel p-5">
                 <summary className="flex cursor-pointer items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light">
-                  <Historique className="h-3.5 w-3.5" /> Historique des révisions
+                  <Historique className="h-3.5 w-3.5" /> {t("admin.pages.wikiHistory.title")}
                 </summary>
                 <div className="mt-4">
                   <WikiHistory table={table} rowId={id} compact />
@@ -289,32 +332,34 @@ export function WikiStudio({ table, id }: Props) {
       )}
 
       {/* Pages du lecteur databook — panneau dédié (jsonb `pages`). */}
-      {table === "db_databooks" &&
+      {!notReady &&
+        table === "db_databooks" &&
         (mode === "edit" ? (
           <div className="mt-2">
             <DatabookPagesPanel databookId={id} />
           </div>
         ) : (
           <div className="dbz-panel mt-2 p-5 text-xs text-white/50">
-            Enregistre d&apos;abord cette entrée pour ajouter les pages du lecteur (numéro + image +
-            texte sous chaque planche).
+            {t("adminWiki.studio.savePages")}
           </div>
         ))}
 
       {/* Galerie médias jeu (images + YouTube) — panneau dédié (jsonb `media`). */}
-      {table === "db_games" &&
+      {!notReady &&
+        table === "db_games" &&
         (mode === "edit" ? (
           <div className="mt-2">
             <GameMediaPanel gameId={id} />
           </div>
         ) : (
           <div className="dbz-panel mt-2 p-5 text-xs text-white/50">
-            Enregistre d&apos;abord ce jeu pour ajouter la galerie (screenshots + trailers YouTube).
+            {t("adminWiki.studio.saveGameMedia")}
           </div>
         ))}
 
       {/* Stats scouter + transformations d'un personnage. */}
-      {table === "db_characters" &&
+      {!notReady &&
+        table === "db_characters" &&
         (mode === "edit" ? (
           <div className="mt-2 space-y-4">
             <CharacterStatsPanel characterId={id} />
@@ -322,8 +367,7 @@ export function WikiStudio({ table, id }: Props) {
           </div>
         ) : (
           <div className="dbz-panel mt-2 p-5 text-xs text-white/50">
-            Enregistre d&apos;abord ce personnage pour gérer ses stats scouter et ses
-            transformations.
+            {t("adminWiki.studio.saveCharacterStats")}
           </div>
         ))}
     </div>
@@ -344,13 +388,14 @@ function Field({
   original?: unknown;
   onChange: (v: string) => void;
 }) {
+  const t = useT();
   return (
-    <div>
-      <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-dbz-blue-light">
-        {colLabel(col)}
+    <fieldset className="min-w-0">
+      <legend className="mb-1 block text-xs font-semibold uppercase tracking-wider text-dbz-blue-light">
+        {t(`adminWiki.fields.${col}`)}
         <span className="ml-2 font-mono font-normal normal-case text-white/25">{col}</span>
-      </label>
+      </legend>
       <SmartField table={table} col={col} value={value} original={original} onChange={onChange} />
-    </div>
+    </fieldset>
   );
 }
