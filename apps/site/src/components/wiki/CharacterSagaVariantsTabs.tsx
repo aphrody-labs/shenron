@@ -174,7 +174,13 @@ export function CharacterSagaVariantsTabs({
   // The wiki accepts only source-verifiable manga/anime artwork. Older
   // editorial records may still identify an image as generated; never render
   // that asset or its generation prompt/reference as a public source image.
-  const generatedArtwork = v.evidence?.imageArtwork?.kind === "generated";
+  // This legacy marker is intentionally excluded from the persisted evidence
+  // type; read it only to suppress old records during their cleanup.
+  const legacyArtwork = v.evidence as unknown as
+    | { imageArtwork?: { kind?: unknown } }
+    | null
+    | undefined;
+  const generatedArtwork = legacyArtwork?.imageArtwork?.kind === "generated";
   const imageReferences = (generatedArtwork ? [] : (v.evidence?.editorialReferences ?? [])).flatMap(
     (reference) => {
       if (!reference.fields.includes("image")) return [];
