@@ -287,8 +287,28 @@ describe.skipIf(!testUrl)("official consolidation against isolated PostgreSQL", 
     const plan = await preview();
     const before = await snapshot();
     await client!`SELECT set_config('shenron_qa.fail_journal','on',false)`;
-    await expect(apply(plan.plan.sha256)).rejects.toThrow("isolated QA journal failure");
-    await client!`SELECT set_config('shenron_qa.fail_journal','off',false)`;
+    let failure: unknown;
+    try {
+      await apply(plan.plan.sha256);
+    } catch (error) {
+      failure = error;
+    } finally {
+      await client!`SELECT set_config('shenron_qa.fail_journal','off',false)`;
+    }
+    // Drizzle wraps the PostgreSQL error; inspect the original SQLSTATE instead
+    // of matching its outer query message. Bound traversal also handles cycles.
+    const visited = new Set<unknown>();
+    while (failure !== null && typeof failure === "object" && !visited.has(failure)) {
+      const error = failure as { code?: unknown; cause?: unknown };
+      if (error.code === "P0001") break;
+      visited.add(failure);
+      failure = error.cause;
+    }
+    const databaseError = failure as { code?: unknown; message?: unknown } | undefined;
+    expect(databaseError?.code).toBe("P0001");
+    expect(databaseError?.message).toBe("isolated QA journal failure");
     expect(await snapshot()).toBe(before);
+    const [audit] = await client!`SELECT count(*)::int AS n FROM public.wiki_revisions`;
+    expect(audit!.n).toBe(0);
   }, 20_000);
 });
