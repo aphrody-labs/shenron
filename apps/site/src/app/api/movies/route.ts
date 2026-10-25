@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
 import { assetUrl } from "@/lib/assets";
+import { summarizeVideoSources } from "@/lib/video-source-coverage";
 
 export const runtime = "nodejs";
 export const revalidate = 3600;
@@ -41,6 +42,7 @@ export async function GET(req: Request) {
 
     const movies = rawMovies.map((m) => {
       const players = Array.isArray(m.players) ? m.players : [];
+      const availability = Array.isArray(m.availability) ? m.availability : [];
       return {
         id: m.id,
         slug: m.slug,
@@ -55,6 +57,8 @@ export async function GET(req: Request) {
         playerCount: players.length,
         hasVf: players.some((p) => p.lang === "vf"),
         hasVostfr: players.some((p) => p.lang === "vostfr"),
+        sourceCoverage: summarizeVideoSources(players, availability),
+        availability,
         players: players.map((p) => ({
           name: p.name,
           provider: p.provider,

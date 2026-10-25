@@ -7,6 +7,7 @@ import {
 import { episodePlaybackMetadata } from "@aphrody/shenron-media/episode-playback";
 import { approvedEpisodeVideoURL, isShenronEpisodeVideoURL } from "./episode-video-source";
 import { hlsMasterUrl } from "./assets";
+import { summarizeVideoSources } from "./video-source-coverage";
 import { normalizeAvailability } from "./video-languages";
 
 export interface EpisodePlaybackInput {
@@ -60,6 +61,7 @@ export function episodePlayback(
     : hlsUrl
       ? { src: hlsUrl, type: "application/vnd.apple.mpegurl" as const }
       : null;
+  const availability = normalizeAvailability(input.availability) ?? [];
   return {
     ...metadata,
     nativeSource,
@@ -68,6 +70,7 @@ export function episodePlayback(
       validHls && supportsPlaybackVariant(capabilities, "episode", input.id, "vostfr")
         ? hlsMasterUrl(input.id, "vostfr")
         : null,
-    availability: normalizeAvailability(input.availability) ?? [],
+    availability,
+    sourceCoverage: summarizeVideoSources(metadata.players, availability),
   };
 }

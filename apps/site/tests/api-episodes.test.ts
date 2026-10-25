@@ -19,9 +19,10 @@ const nativeEpisode = {
   scene_preview: "https://cdn.dragonballfr.com/episodes/875/preview.mp4",
   availability: [
     {
-      provider: "crunchyroll",
-      label: "Crunchyroll",
-      url: "https://www.crunchyroll.com/series/observed",
+      provider: "adn",
+      label: "ADN",
+      url: "https://animationdigitalnetwork.com/video/observed",
+      embedUrl: null,
       langs: ["vostfr"],
       available: true,
       checkedAt: 1,
@@ -190,6 +191,7 @@ describe("API routes /api/episodes", () => {
       "versions",
       "subtitles",
       "availability",
+      "sourceCoverage",
       "nativeSource",
       "hlsMasterUrl",
       "playerCount",
@@ -208,7 +210,9 @@ describe("API routes /api/episodes", () => {
     expect(data.hasVostfr).toBe(false);
     expect(data.durationSec).toBe(1397);
     expect(data.scenePreview).toBe(nativeEpisode.scene_preview);
-    expect(data.availability).toEqual([]);
+    expect(data.availability).toHaveLength(1);
+    expect(data.sourceCoverage.originalAudio.official).toBe(true);
+    expect(data.sourceCoverage.players.vostfr).toBe(false);
   });
 
   test("a missing catalogue is an uncached service failure instead of an empty success", async () => {
