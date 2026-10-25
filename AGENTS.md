@@ -39,6 +39,31 @@ un ancien backlog en nouvelle demande. Si une approbation externe exacte ou une 
 indispensable du propriétaire manque, terminer d’abord le travail indépendant autorisé puis
 rapporter le blocage concret. Suivre le skill global `nhil` et son rappel au démarrage.
 
+### Accord permanent du propriétaire — 2026-10-25
+
+L’accord NHIL couvre durablement l’exécution complète des demandes du propriétaire :
+recherche, création et enrichissement de contenus, fonctionnalités nécessaires, corrections,
+qualification, commit/push, publication et déploiement par leurs propriétaires techniques.
+Livrer le maximum de contenu et de fonctionnalités utiles dans le périmètre courant, avec
+les capacités effectivement disponibles et des preuves de résultat. Ne pas redemander une
+confirmation intermédiaire pour une action déjà couverte par cet accord ; résoudre les choix
+réversibles et déléguer les tâches indépendantes quand cela réduit le délai. Lorsqu’il demande
+d’informer les autres sessions, transmettre les consignes aux sessions concernées et vérifier
+les retours, sans prétendre avoir informé une session inaccessible.
+
+Cet accord n’élargit pas une demande à un ancien backlog. Conserver des revendications
+étroites et un seul écrivain par chemin, les protections des secrets et données privées, les
+gels éditoriaux, la provenance des sources et les contrôles des outils/reviewers. Les mutations
+de production passent toujours par les API autorisées et Aphrody Infra ; une capacité absente
+ou une approbation externe requise se rapporte comme telle, sans inventer une livraison.
+
+Pour Bun Video, rechercher la version publiée la plus récente depuis le dépôt upstream
+propriétaire et son sous-module qualifié, puis qualifier cette version avant consommation.
+Conserver une version exactement épinglée et la provenance du commit/package. Le propriétaire
+autorise explicitement une exception au délai `minimumReleaseAge` de trois jours pour
+`@aphrody/bun-video` uniquement ; cette exception ne dispense ni des portes ni des contrôles
+sur média réel et ne vaut pas preuve d’une capacité de codec ou d’une accélération.
+
 Graphe de code : Graphify (`uv tool install graphifyy`, skill `/graphify`) indexe le code localement, sans LLM (`.graphifyignore`). `graphify update .` construit ou rafraîchit le graphe ; préférer `graphify query "<question>"`, `graphify explain` ou `graphify path` aux greps larges quand `graphify-out/graph.json` existe (sortie locale, ignorée par Git).
 
 ## Langues et noms
@@ -106,7 +131,8 @@ Rust : `just` (tâches Bun et Rust, `just --list`), alias Cargo de `.cargo/confi
 `bunfig.toml` : `linker = "isolated"`, seuls `react` et `react-dom` sont hissés
 (`hoistPattern`) ; chaque paquet déclare ses dépendances, scripts racine compris (le
 `package.json` racine déclare ce qu'importe `scripts/`) ; versions tierces centralisées dans `workspaces.catalog` du `package.json` racine
-(`"catalog:"`), `@aphrody/*` épinglés exactement ; `minimumReleaseAge` de 3 jours.
+(`"catalog:"`), `@aphrody/*` épinglés exactement ; `minimumReleaseAge` de 3 jours, sauf
+`@aphrody/bun-video` selon l’accord propriétaire du 2026-10-25 ci-dessus.
 
 ## Commandes
 
