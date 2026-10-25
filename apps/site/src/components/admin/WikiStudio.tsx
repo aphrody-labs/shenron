@@ -30,13 +30,8 @@ import { CharacterStatsPanel } from "@/components/admin/CharacterStatsPanel";
 import { TransformationsPanel } from "@/components/admin/TransformationsPanel";
 import { apiAt } from "@/lib/admin-api";
 import { colLabel, TABLE_LABELS } from "@/lib/db-labels";
-import {
-  buildSubmitBody,
-  entityRelations,
-  isStudioTable,
-  publicEntityUrl,
-  sectionEntityType,
-} from "@/lib/wiki-fields";
+import { buildSubmitBody, entityRelations, isStudioTable } from "@/lib/wiki-fields";
+import { publicEntityUrl, sectionEntityType } from "@/lib/wiki-entity-model";
 import { crudBase, WIKI_TABLE_SPECS } from "@/lib/wiki-tables";
 
 /** jsonb gérés par un panneau dédié — pas de champ SmartField (sinon corruption string). */

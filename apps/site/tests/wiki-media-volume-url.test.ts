@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { publicEntityUrl } from "../src/lib/wiki-fields";
+import { publicEntityUrl } from "../src/lib/wiki-entity-model";
 
 test("native volume revalidation follows an existing legacy reader identity", () => {
   expect(publicEntityUrl("media_volumes", { id: 1, legacyVolumeId: 82 })).toBe(

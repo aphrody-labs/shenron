@@ -12,10 +12,6 @@ mock.module("next/cache", () => ({
   revalidateTag: () => {},
 }));
 mock.module("@/lib/wiki-admin", () => ({ getWikiRow: async () => null }));
-mock.module("@/lib/wiki-fields", () => ({
-  publicEntityUrl: (table: string, row: Record<string, unknown>) =>
-    table === "db_characters" ? `/wiki/characters/${row.slug}` : null,
-}));
 const { revalidateWikiEntity } = await import("../src/lib/wiki-revalidate");
 const paths = () => invalidations.map(({ path }) => path);
 
@@ -38,7 +34,7 @@ describe("character variant editorial cache dependencies", () => {
     revalidateWikiEntity("db_characters", { id: 1, slug: "son-goku" });
     expect(paths()).toContain("/api/wiki/variants");
     expect(paths()).toContain("/wiki/characters");
-    expect(paths()).toContain("/wiki/characters/son-goku");
+    expect(paths()).toContain("/wiki/characters/1");
   });
 
   test("a saga edit expires variant card labels and the character version selector", () => {

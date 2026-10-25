@@ -9,7 +9,7 @@
 import "server-only";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { getWikiRow } from "@/lib/wiki-admin";
-import { publicEntityUrl } from "@/lib/wiki-fields";
+import { publicEntityUrl, tableForSectionEntity } from "@/lib/wiki-entity-model";
 
 /** Pages liste publiques par table (revalidées à chaque écriture). */
 const WIKI_LIST_PATHS: Record<string, string[]> = {
@@ -31,18 +31,6 @@ const WIKI_LIST_PATHS: Record<string, string[]> = {
   media_works: ["/wiki/manga"],
   media_editions: ["/wiki/manga"],
   media_volumes: ["/wiki/manga"],
-};
-
-/** entity_type d'une section → table wiki de l'entité parente (revalidation). */
-const SECTION_ENTITY_TABLE: Record<string, string> = {
-  character: "db_characters",
-  planet: "db_planets",
-  saga: "db_sagas",
-  arc: "db_arcs",
-  race: "db_races",
-  technique: "db_techniques",
-  game: "db_games",
-  movie: "db_movies",
 };
 
 /**
@@ -105,7 +93,7 @@ export async function revalidateSectionParent(
     if (!row) return;
     const entityType = typeof row.entityType === "string" ? row.entityType : "";
     const entityId = row.entityId;
-    const table = SECTION_ENTITY_TABLE[entityType];
+    const table = tableForSectionEntity(entityType);
     if (!table || entityId == null) return;
     const parent = await getWikiRow(table, String(entityId)).catch(() => null);
     const url = parent ? publicEntityUrl(table, parent) : null;

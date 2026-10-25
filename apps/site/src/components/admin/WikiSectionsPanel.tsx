@@ -35,11 +35,11 @@ import { assetUrl } from "@/lib/assets";
 import { SECTION_ACCENT_OPTIONS } from "@/lib/wiki-section-accents";
 import {
   PWS_GROUP_PRESETS,
-  publicEntityUrl,
   SECTION_PRESETS,
   sectionKeyFromLabel,
   uploadSubdir,
 } from "@/lib/wiki-fields";
+import { publicEntityUrl } from "@/lib/wiki-entity-model";
 import { crudBase } from "@/lib/wiki-tables";
 
 /** Carte « page wiki affiliée » (miroir client de WikiSectionLink de bot-schema). */

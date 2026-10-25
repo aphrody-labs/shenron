@@ -9,10 +9,6 @@ mock.module("next/cache", () => ({
   revalidateTag: () => {},
 }));
 mock.module("@/lib/wiki-admin", () => ({ getWikiRow: async () => null }));
-mock.module("@/lib/wiki-fields", () => ({
-  publicEntityUrl: (table: string, row: Record<string, unknown>) =>
-    table === "db_manga_volumes" ? `/wiki/manga/volume/${row.id}` : null,
-}));
 const { revalidateWikiEntity } = await import("../src/lib/wiki-revalidate");
 
 test("a volume cover edit invalidates its public API and catalogue along with the wiki page", () => {

@@ -1,7 +1,7 @@
 /**
  * Helpers **client-safe** pour l'édition des entités wiki (`db_*`) : détection du
- * rôle d'une colonne (image / texte long / booléen), sous-dossier d'upload, URL
- * de la page publique, et éligibilité au studio d'édition visuelle.
+ * rôle d'une colonne (image / texte long / booléen), sous-dossier d'upload
+ * et éligibilité au studio d'édition visuelle.
  *
  * Aucune dépendance server-only — importé par l'éditeur DB, le studio wiki et la
  * vignette de grille (tous Client Components).
@@ -188,25 +188,6 @@ export function isStudioTable(table: string): boolean {
   return STUDIO_TABLES.has(table);
 }
 
-/**
- * Table wiki → `entity_type` des sections de contenu (`bot.db_wiki_sections`).
- * Doit rester synchronisé avec `SECTION_ENTITY_TABLE` (route `/api/wiki-admin`).
- * null = table sans sélecteur de catégories.
- */
-const SECTION_ENTITY_TYPE: Record<string, string> = {
-  db_characters: "character",
-  db_planets: "planet",
-  db_sagas: "saga",
-  db_arcs: "arc",
-  db_races: "race",
-  db_techniques: "technique",
-  db_games: "game",
-  db_movies: "movie",
-};
-export function sectionEntityType(table: string): string | null {
-  return SECTION_ENTITY_TYPE[table] ?? null;
-}
-
 /** Sections « suggérées » à l'ajout rapide (libellé + slug + accent). */
 export interface SectionPreset {
   key: string;
@@ -363,48 +344,4 @@ export function fieldRoles(cols: string[]): {
     titleRomaji: pick(cols, ["nameRomaji", "titleRomaji"]),
     description: pick(cols, ["description", "synopsis", "body", "overview"]),
   };
-}
-
-/**
- * URL de la page publique d'une entité (best-effort ; null si inconnue ou si la
- * clé requise — id/slug — n'est pas encore renseignée).
- */
-export function publicEntityUrl(table: string, row: Record<string, unknown>): string | null {
-  const id = row.id;
-  const slug = typeof row.slug === "string" && row.slug ? row.slug : null;
-  const hasId = id != null && id !== "";
-  switch (table) {
-    case "db_characters":
-      return hasId ? `/wiki/characters/${id}` : null;
-    case "db_planets":
-      return hasId ? "/wiki/locations" : null;
-    case "db_techniques":
-      return slug ? `/wiki/techniques/${slug}` : null;
-    case "db_games":
-      // Public : /wiki/games/[slug] (route canonique actuelle).
-      return slug ? `/wiki/games/${slug}` : null;
-    case "db_sagas":
-      return slug ? `/wiki/sagas/${slug}` : null;
-    case "db_arcs":
-      return slug ? `/wiki/arcs/${slug}` : null;
-    case "db_races":
-      return slug ? `/wiki/races/${slug}` : null;
-    case "db_movies":
-      return slug ? `/wiki/movies/${slug}` : null;
-    case "db_manga_volumes":
-      return hasId ? `/wiki/manga/volume/${id}` : null;
-    case "media_volumes": {
-      // Public volume routes address legacy manga records, never native media IDs.
-      const legacyId = Number(row.legacyVolumeId);
-      return Number.isSafeInteger(legacyId) && legacyId > 0
-        ? `/wiki/manga/volume/${legacyId}`
-        : null;
-    }
-    case "db_databooks":
-      return hasId ? `/wiki/databooks/${id}` : "/wiki/databooks";
-    case "db_episodes":
-      return hasId ? `/wiki/episodes/${id}` : null;
-    default:
-      return null;
-  }
 }

@@ -33,25 +33,7 @@ import { Crayon } from "@aphrody/shenron-ui/icones";
 import { normalizeWikiSectionGroups, PWS_GROUP_NAME } from "@/lib/wiki-section-groups";
 import { PWS_GROUP_PRESETS, PWS_LEGACY_KEY_ALIASES } from "@/lib/wiki-fields";
 import type { ReaderPanel } from "@/components/wiki/WikiSectionsReader";
-
-/**
- * Type d'entité → table wiki. Recopié ici plutôt qu'importé de
- * `wiki-revalidate` : ce module-là tire `next/cache` ET tout `wiki-admin`
- * (Drizzle, specs de toutes les tables), et l'importer depuis un module de
- * rendu utilisé par ~1 400 pages statiques a suffi à faire mourir le build en
- * OOM pendant la compilation. Six lignes de duplication valent mieux qu'une
- * dépendance qui traverse les couches.
- */
-const TABLE_PAR_TYPE: Record<string, string> = {
-  character: "db_characters",
-  planet: "db_planets",
-  saga: "db_sagas",
-  arc: "db_arcs",
-  race: "db_races",
-  technique: "db_techniques",
-  game: "db_games",
-  movie: "db_movies",
-};
+import { tableForSectionEntity } from "@/lib/wiki-entity-model";
 
 export interface ContentPanel extends ReaderPanel {
   /** Slug de section (sert au merge des galeries relationnelles). */
@@ -236,7 +218,11 @@ export async function buildWikiContentPanels({
     const cible =
       origine === "db" && s.sectionId != null
         ? { table: "db_wiki_sections", rowId: s.sectionId, column: "body" }
-        : { table: TABLE_PAR_TYPE[entityType], rowId: entityId, column: "article" };
+        : {
+            table: tableForSectionEntity(entityType) ?? undefined,
+            rowId: entityId,
+            column: "article",
+          };
 
     return {
       key,
