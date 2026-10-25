@@ -20,6 +20,7 @@
 import "server-only";
 import { assertDatabooksWritable } from "@/lib/databooks-freeze";
 import { assertVariantEvidenceUpdate } from "@/lib/wiki-variant-evidence";
+import type { RevisionActor } from "@/lib/wiki-revisions";
 import {
   and,
   type Column,
@@ -564,7 +565,12 @@ export async function updateWiki(
   table: string,
   id: string,
   data: Row,
-  options: { expected?: Row; expectedSha256?: string } = {},
+  options: {
+    expected?: Row;
+    expectedSha256?: string;
+    actor?: RevisionActor;
+    revisionAction?: "update" | "revert";
+  } = {},
 ): Promise<Row> {
   const spec = getSpec(table);
   if (!spec) throw new Error(`Table inconnue: ${table}`);
@@ -577,6 +583,11 @@ export async function updateWiki(
   const variantEvidenceWrite =
     table === "db_character_variants" && Object.hasOwn(values, "evidence");
   const variantImageWrite = table === "db_character_variants" && Object.hasOwn(values, "image");
+  // Import after module initialization: revisions also calls this writer for revert.
+  const variantJournal =
+    table === "db_character_variants"
+      ? (await import("@/lib/wiki-revisions")).recordRevisionStrict
+      : null;
   if (
     !isMediaCatalogTable(table) &&
     (options.expected ||
@@ -585,10 +596,11 @@ export async function updateWiki(
       (table === "db_manga_chapters" &&
         ["pages", "readerExtent", "visible"].some((key) => Object.hasOwn(values, key))) ||
       variantEvidenceWrite ||
-      variantImageWrite)
+      variantImageWrite ||
+      variantJournal)
   ) {
     if (
-      (!variantImageWrite || variantEvidenceWrite || options.expected || options.expectedSha256) &&
+      (!variantJournal || variantEvidenceWrite || options.expected || options.expectedSha256) &&
       (!options.expected || !options.expectedSha256)
     ) {
       throw new WikiUpdateRequestError("Complete wiki snapshot and SHA256 required");
@@ -612,6 +624,18 @@ export async function updateWiki(
       if (variantEvidenceWrite || variantImageWrite) assertVariantEvidenceUpdate(before, values);
       const [updated] = (await tx.update(spec.table).set(values).where(cond).returning()) as Row[];
       if (!updated) throw new Error(`Ligne introuvable: ${table}#${id}`);
+      if (variantJournal)
+        await variantJournal(
+          {
+            table,
+            id,
+            action: options.revisionAction ?? "update",
+            before,
+            after: updated,
+            actor: options.actor,
+          },
+          tx,
+        );
       return updated;
     });
   }

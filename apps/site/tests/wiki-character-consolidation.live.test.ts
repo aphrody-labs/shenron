@@ -2,11 +2,14 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, mock, test } from "bun:test";
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
+import { wikiUpdateSnapshotHash } from "../src/lib/wiki-update-precondition";
 
 // Never fall back to DATABASE_URL. This suite owns a fresh disposable database.
 const testUrl = process.env.SHENRON_CONSOLIDATION_TEST_DATABASE_URL?.trim();
 let client: ReturnType<typeof postgres> | undefined;
 let consolidate: typeof import("../src/lib/wiki-character-consolidation").consolidateWikiCharacters;
+let variantAdmin: typeof import("../src/lib/wiki-admin");
+let variantRevisions: typeof import("../src/lib/wiki-revisions");
 let initialized = false;
 const actor = { id: "qa-editor", name: "Isolated consolidation QA" };
 const pair = { winnerId: 83, duplicateId: 514, actor };
@@ -127,6 +130,10 @@ describe.skipIf(!testUrl)("official consolidation against isolated PostgreSQL", 
           AND NEW."tableName" = 'db_characters' AND NEW."rowId" = '514' THEN
           RAISE EXCEPTION 'isolated QA journal failure';
         END IF;
+        IF current_setting('shenron_qa.fail_variant_journal', true) = 'on'
+          AND NEW."tableName" = 'db_character_variants' THEN
+          RAISE EXCEPTION 'isolated QA variant journal failure';
+        END IF;
         RETURN NEW;
       END $$;
       CREATE TRIGGER qa_reject_consolidation_journal BEFORE INSERT ON public.wiki_revisions
@@ -137,12 +144,15 @@ describe.skipIf(!testUrl)("official consolidation against isolated PostgreSQL", 
     mock.module("@/lib/db", () => ({ db: database }));
     consolidate = (await import("../src/lib/wiki-character-consolidation"))
       .consolidateWikiCharacters;
+    variantAdmin = await import("../src/lib/wiki-admin");
+    variantRevisions = await import("../src/lib/wiki-revisions");
     initialized = true;
   }, 30_000);
 
   beforeEach(async () => {
     if (!initialized || !client) return;
     await client`SELECT set_config('shenron_qa.fail_journal','off',false)`;
+    await client`SELECT set_config('shenron_qa.fail_variant_journal','off',false)`;
     // Only these fixture tables in the verified fresh QA database are cleared.
     await client.unsafe(
       `TRUNCATE ${tableNames.map((name) => `bot.${name}`).join(",")}, public.wiki_revisions`,
@@ -307,6 +317,69 @@ describe.skipIf(!testUrl)("official consolidation against isolated PostgreSQL", 
     const databaseError = failure as { code?: unknown; message?: unknown } | undefined;
     expect(databaseError?.code).toBe("P0001");
     expect(databaseError?.message).toBe("isolated QA journal failure");
+    expect(await snapshot()).toBe(before);
+    const [audit] = await client!`SELECT count(*)::int AS n FROM public.wiki_revisions`;
+    expect(audit!.n).toBe(0);
+  }, 20_000);
+
+  test("the real variant owner commits provenance and one revision, then reverts both atomically", async () => {
+    const before = (await variantAdmin.getWikiRow("db_character_variants", "12"))!;
+    const evidence = {
+      ...(before.evidence as Record<string, unknown>),
+      editorialReferences: [
+        {
+          fields: ["summary"],
+          url: "https://dragonballfr.com/wiki/manga/1441?page=65",
+          title: "QA primary reference",
+          locator: "Volume22 page65",
+        },
+      ],
+    };
+    const after = await variantAdmin.updateWiki(
+      "db_character_variants",
+      "12",
+      { summary: "Reviewed QA summary", evidence },
+      { expected: before, expectedSha256: wikiUpdateSnapshotHash(before), actor },
+    );
+    const journal =
+      await client!`SELECT id,action,"editorId",before,after FROM public.wiki_revisions ORDER BY "createdAt",id`;
+    expect(journal).toHaveLength(1);
+    expect(journal[0]).toMatchObject({
+      action: "update",
+      editorId: actor.id,
+      before: { summary: before.summary, evidence: before.evidence },
+      after: { summary: after.summary, evidence },
+    });
+    await variantRevisions.revertRevision(journal[0]!.id, actor);
+    expect(await variantAdmin.getWikiRow("db_character_variants", "12")).toEqual(before);
+    const restored =
+      await client!`SELECT action,"editorId",after FROM public.wiki_revisions ORDER BY "createdAt",id`;
+    expect(restored).toHaveLength(2);
+    expect(restored[1]).toMatchObject({
+      action: "revert",
+      editorId: actor.id,
+      after: { summary: before.summary, evidence: before.evidence },
+    });
+  }, 20_000);
+
+  test("the real variant owner rolls back its update when the strict revision insert fails", async () => {
+    const row = (await variantAdmin.getWikiRow("db_character_variants", "12"))!;
+    const before = await snapshot();
+    await client!`SELECT set_config('shenron_qa.fail_variant_journal','on',false)`;
+    let failure: unknown;
+    try {
+      await variantAdmin.updateWiki(
+        "db_character_variants",
+        "12",
+        { summary: "Must roll back", visible: false },
+        { expected: row, expectedSha256: wikiUpdateSnapshotHash(row), actor },
+      );
+    } catch (error) {
+      failure = error;
+    } finally {
+      await client!`SELECT set_config('shenron_qa.fail_variant_journal','off',false)`;
+    }
+    expect(failure).toMatchObject({ code: "wiki_revision_write_failed" });
     expect(await snapshot()).toBe(before);
     const [audit] = await client!`SELECT count(*)::int AS n FROM public.wiki_revisions`;
     expect(audit!.n).toBe(0);

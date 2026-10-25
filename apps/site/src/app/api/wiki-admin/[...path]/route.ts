@@ -259,21 +259,27 @@ async function mutate(req: NextRequest, ctx: Ctx) {
       );
     const decoded = decodeURIComponent(id);
     // Snapshot AVANT pour la révision (diff avant/après + retour arrière).
-    const before = precondition.expected ?? (await getWikiRow(table, decoded).catch(() => null));
+    const before =
+      table === "db_character_variants"
+        ? null
+        : (precondition.expected ?? (await getWikiRow(table, decoded).catch(() => null)));
+    const actor = await currentActor();
     const row = await updateWiki(table, decoded, validated.value, {
       expected: precondition.expected,
       expectedSha256: precondition.expectedSha256,
+      ...(table === "db_character_variants" ? { actor } : {}),
     });
     revalidateWikiEntity(table, row);
     if (table === "db_wiki_sections") await revalidateSectionParent(row);
-    await recordRevision({
-      table,
-      id: decoded,
-      action: "update",
-      before,
-      after: row,
-      actor: await currentActor(),
-    });
+    if (table !== "db_character_variants")
+      await recordRevision({
+        table,
+        id: decoded,
+        action: "update",
+        before,
+        after: row,
+        actor,
+      });
     return NextResponse.json({ ok: true, row });
   } catch (err) {
     return writeFailed("wiki-admin", err);

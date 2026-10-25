@@ -176,14 +176,27 @@ function diffKeys(before: Row | null, after: Row | null): string[] {
  * ce que la modération des contributions garde pour offrir « annuler » en un
  * clic sur une proposition acceptée.
  */
-export async function recordRevision(input: {
+export type RevisionInput = {
   table: string;
   id?: string;
   action: RevisionAction;
   before?: Row | null;
   after?: Row | null;
   actor?: RevisionActor;
-}): Promise<string | null> {
+};
+
+export class WikiRevisionWriteError extends Error {
+  readonly code = "wiki_revision_write_failed";
+  constructor(cause: unknown) {
+    super("Wiki revision could not be recorded", { cause });
+  }
+}
+
+/** Strict shared serializer: use the caller's transaction for atomic mutations. */
+export async function recordRevisionStrict(
+  input: RevisionInput,
+  client: Pick<typeof db, "insert">,
+): Promise<string> {
   try {
     const before = snapshot(input.table, input.before);
     const after = snapshot(input.table, input.after);
@@ -200,7 +213,7 @@ export async function recordRevision(input: {
           ? rowIdOf(input.table, input.before)
           : "");
     const label = deriveLabel(input.after) ?? deriveLabel(input.before);
-    const [inserted] = await db
+    const [inserted] = await client
       .insert(wikiRevisions)
       .values({
         tableName: input.table,
@@ -213,7 +226,16 @@ export async function recordRevision(input: {
         editorName: input.actor?.name ?? null,
       })
       .returning({ id: wikiRevisions.id });
-    return inserted?.id ?? null;
+    if (!inserted?.id) throw new Error("Revision insert returned no identity");
+    return inserted.id;
+  } catch (err) {
+    throw new WikiRevisionWriteError(err);
+  }
+}
+
+export async function recordRevision(input: RevisionInput): Promise<string | null> {
+  try {
+    return await recordRevisionStrict(input, db);
   } catch (err) {
     console.error("[wiki-revisions] record failed:", err);
     return null;
@@ -381,8 +403,23 @@ export async function revertRevision(
 
   // Revert d'une bascule de visibilité → restauration via le chemin dédié
   // (la colonne `visible` n'est pas mutable côté éditeur).
-  if (rev.action === "visibility" && hasVisibility(table)) {
+  if (rev.action === "visibility" && (table === "db_character_variants" || hasVisibility(table))) {
     const want = before && typeof before.visible === "boolean" ? before.visible : true;
+    if (table === "db_character_variants") {
+      if (!current) throw new Error("Cannot restore visibility of a physically missing variant");
+      const row = await updateWiki(
+        table,
+        rowId,
+        { visible: want },
+        {
+          expected: current,
+          expectedSha256: wikiUpdateSnapshotHash(current),
+          actor,
+          revisionAction: "revert",
+        },
+      );
+      return { table, rowId, mode: "restore", row };
+    }
     await setWikiVisibility(table, rowId, want);
     await recordRevision({
       table,
@@ -398,10 +435,24 @@ export async function revertRevision(
   let mode: "restore" | "reinsert" | "delete";
   let resultRow: Row | null = null;
   let restoredPageSnapshots = false;
+  let variantRevisionRecorded = false;
 
   if (before == null) {
     // La ligne a été créée par cette révision → revert = suppression.
-    if (current) await deleteWiki(table, rowId);
+    if (current && table === "db_character_variants") {
+      resultRow = await updateWiki(
+        table,
+        rowId,
+        { visible: false },
+        {
+          expected: current,
+          expectedSha256: wikiUpdateSnapshotHash(current),
+          actor,
+          revisionAction: "revert",
+        },
+      );
+      variantRevisionRecorded = true;
+    } else if (current) await deleteWiki(table, rowId);
     mode = "delete";
   } else if (current) {
     // Cibles de planche : elles ne sont PAS des colonnes, `updateWiki` ne sait
@@ -459,12 +510,21 @@ export async function revertRevision(
             rowId,
             colonnes,
             hasPageSnapshots || table === "db_character_variants"
-              ? { expected: current, expectedSha256: wikiUpdateSnapshotHash(current) }
+              ? {
+                  expected: current,
+                  expectedSha256: wikiUpdateSnapshotHash(current),
+                  ...(table === "db_character_variants"
+                    ? { actor, revisionAction: "revert" as const }
+                    : {}),
+                }
               : {},
           )
         : ((await getWikiRow(table, rowId).catch(() => null)) ?? current);
+    variantRevisionRecorded = table === "db_character_variants" && Object.keys(colonnes).length > 0;
     mode = "restore";
   } else {
+    if (table === "db_character_variants")
+      throw new Error("Cannot restore a physically missing variant from an editorial snapshot");
     // La ligne avait été supprimée → ré-insertion. Pour une pk simple (les
     // tables wiki n'ont pas de default sequence), on réinjecte l'id d'origine ;
     // pour une pk composite (tables de jointure), les colonnes fk sont déjà
@@ -481,19 +541,20 @@ export async function revertRevision(
     mode = "reinsert";
   }
 
-  await recordRevision({
-    table,
-    id: rowId,
-    action: "revert",
-    before: current,
-    after:
-      mode === "delete"
-        ? null
-        : restoredPageSnapshots || table === "db_character_variants"
-          ? resultRow
-          : before,
-    actor,
-  });
+  if (!variantRevisionRecorded)
+    await recordRevision({
+      table,
+      id: rowId,
+      action: "revert",
+      before: current,
+      after:
+        mode === "delete"
+          ? null
+          : restoredPageSnapshots || table === "db_character_variants"
+            ? resultRow
+            : before,
+      actor,
+    });
 
   return { table, rowId, mode, row: resultRow ?? current };
 }

@@ -247,7 +247,7 @@ describe("variant revision JSON preservation", () => {
       keyEpisodes: [{ id: 1, num: 1, title: "Episode" }],
     };
     live = structuredClone(before);
-    const after = await updateWiki(
+    await updateWiki(
       "db_character_variants",
       "2235",
       {
@@ -259,13 +259,6 @@ describe("variant revision JSON preservation", () => {
       },
       options(live),
     );
-    await recordRevision({
-      table: "db_character_variants",
-      id: "2235",
-      action: "update",
-      before,
-      after,
-    });
     const result = await revertRevision(String(journal[0]!.id), { id: "editor", name: "Editor" });
     expect(result.mode).toBe("restore");
     expect(live.image).toBeNull();
@@ -284,7 +277,7 @@ describe("variant revision JSON preservation", () => {
       highlights: ["Before"],
     };
     live = structuredClone(before);
-    const after = await updateWiki(
+    await updateWiki(
       "db_character_variants",
       "2235",
       {
@@ -294,13 +287,6 @@ describe("variant revision JSON preservation", () => {
       },
       options(live),
     );
-    await recordRevision({
-      table: "db_character_variants",
-      id: "2235",
-      action: "update",
-      before,
-      after,
-    });
     live = {
       ...live,
       keyEpisodes: [{ id: 2, num: 2, title: "New measured episode" }],
@@ -336,19 +322,7 @@ describe("variant revision JSON preservation", () => {
   test("rollback rejects a later edit of the same editorial field and keeps unrelated edits", async () => {
     const before = { ...live, highlights: ["Before"] };
     live = structuredClone(before);
-    const after = await updateWiki(
-      "db_character_variants",
-      "2235",
-      { highlights: ["After"] },
-      options(live),
-    );
-    await recordRevision({
-      table: "db_character_variants",
-      id: "2235",
-      action: "update",
-      before,
-      after,
-    });
+    await updateWiki("db_character_variants", "2235", { highlights: ["After"] }, options(live));
     live.highlights = ["Later editorial correction"];
     live.summary = "Independent summary correction";
     await expect(revertRevision(String(journal[0]!.id), null)).rejects.toThrow(
