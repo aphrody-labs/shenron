@@ -14,7 +14,11 @@ type Context = { params: Promise<{ id: string }> };
 
 export async function GET(request: Request, { params }: Context) {
   const { id } = await params;
-  if (!/^(875|876)$/.test(id)) return Response.json({ error: "source_not_found" }, { status: 404 });
+  if (!/^(875|876|877)$/.test(id))
+    return Response.json(
+      { error: "source_not_found" },
+      { status: 404, headers: { "Cache-Control": "no-store" } },
+    );
   try {
     const episode = await dbUniverse.episode(Number(id));
     return episodeTimeline(request, Number(id), episode?.players ?? null);
