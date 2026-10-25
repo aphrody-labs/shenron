@@ -59,17 +59,60 @@ Une page de vérification du fournisseur est rapportée et reste à résoudre da
 session normale du propriétaire. Le statut local n’atteste ni l’acceptation actuelle
 des cookies par le fournisseur ni la lecture effective d’un épisode.
 
-Le HAR fourni le 25 octobre 2026 contient 34 entrées et une réponse de jetons ; les
-15 cookies proviennent de l’export séparé. Il ne contient aucune réponse catalogue,
-saison ou épisode. La conversion intégrale est possible ; aucune fiche d’épisode
-supplémentaire ne peut être déduite de cette capture.
-La page HTML de l’épisode 3, fournie ensuite, constitue une source distincte de
-métadonnées : elle est conservée et analysée avec sa propre provenance.
-L’inventaire fourni contient 70 fichiers, dont un MP4 nommé épisode 02 ; il ne
-contient aucun fichier vidéo de l’épisode 3. La lecture officielle de l’épisode 3
-a été recontrôlée dans la session Chrome existante (compteur 616,75 à 646,93 s,
-854 × 480, durée 1397,688 s). Le navigateur Bun avec cookies importés a rencontré
-une vérification fournisseur : cela ne prouve pas une session propriétaire expirée.
-Le [téléchargement officiel Crunchyroll](https://crunchyroll.zendesk.com/hc/en-us/articles/19203280609172-How-do-I-download-content-to-watch-offline)
-n’est pas proposé sur PC. Aucun MP4 de l’épisode 3 ni export d’un flux protégé
-n’a été produit par cet import.
+## Source MP4 distincte et lecture locale
+
+Un HAR ou une page sauvegardée ne constitue pas un fichier vidéo. Une source MP4
+claire fournie séparément suit sa propre chaîne de provenance : réponse HTTP,
+taille annoncée, signature `ftyp`, durée, codecs, SHA-256 et contrôle visuel de
+l’identité de l’épisode. Le numéro dans le nom du fichier ne suffit pas à distinguer
+une ancienne édition d’un remake.
+
+Télécharger vers un fichier partiel et ne publier le nom final qu’après vérification
+de la taille et de l’empreinte. Une reprise doit valider le `Content-Range` et le
+nombre exact d’octets ; respecter les limites et délais du fournisseur. Une copie
+complète qualifiée peut ensuite être répliquée entre les serveurs sans relancer
+plusieurs téléchargements de la source.
+
+Pour la lecture locale, `Bun.serve` écoute uniquement sur `127.0.0.1`, expose le
+seul média sélectionné et gère GET, HEAD et les plages d’octets. Un iframe local
+peut charger un document de la même origine contenant le vrai élément `<video>`.
+L’intégration d’une page distante reste soumise à ses propres règles d’encadrement ;
+ne pas supprimer ses protections ou déclarer une lecture réussie depuis `onload`.
+
+## Publication par les propriétaires
+
+R2, les inventaires CDN et l’origine derrière NGINX passent par Aphrody Infra et
+leurs helpers existants. Conserver les objets adressés par SHA et ajouter les
+nouveaux chemins sans perdre les anciens inventaires. Pour un épisode, le chemin
+vidéo doit correspondre à l’allowlist de l’image réellement servie, notamment
+`/media/episodes/<id>/<sha256>/source.mp4`.
+
+Avant de modifier la fiche, vérifier la longueur, le type et les plages du début
+et de la fin du fichier CDN. Mettre à jour les champs nécessaires avec un snapshot
+frais et son SHA de comparaison optimiste ; relire indépendamment la fiche admin
+et la projection publique. Conserver les autres champs et un reçu de rollback.
+Un MP4 ne doit jamais devenir une couverture d’image ou une source officielle.
+
+Le rendu dépend aussi de la priorité des lecteurs dans l’image déployée. Vérifier
+qu’un lecteur externe ne masque pas le lecteur natif, et qu’un MP4 CDN n’est pas
+simplement ouvert dans un iframe. La preuve de lecture comprend l’avancement du
+compteur, les dimensions décodées, l’absence d’erreur et les commandes du lecteur,
+sur bureau et mobile. Une archive sur DBFR ne prouve pas qu’un nouveau serveur
+local a été installé : documenter le transport réellement actif.
+
+Les limites mémoire et leur persistance appartiennent également à Infra. Si une
+origine redémarre en boucle, vérifier son résultat et sa consommation avant de
+relancer ; garder un seul écrivain et qualifier la correction ainsi que le rollback.
+
+## Analyse et sous-titres
+
+Les indices de frames, GIF et analyses conservent le SHA de la vidéo et leurs
+horodatages. Les transitions noires ou blanches peuvent figurer dans un index
+exhaustif, mais ne servent pas d’illustrations sans inspection. Les rapports,
+captures, manifestes de livraison et mesures restent sous `var/reports/`.
+
+Une langue audio ne prouve pas l’existence de sous-titres dans cette langue. Les
+sous-titres incrustés ne constituent pas une piste téléchargeable. Importer et
+annoncer seulement les fichiers réellement trouvés pour le bon épisode et la bonne
+édition, avec langue, format, provenance et vérification des horodatages. Une
+traduction ou une transcription générée reste un produit distinct explicitement nommé.
