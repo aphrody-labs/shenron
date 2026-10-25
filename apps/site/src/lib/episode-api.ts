@@ -4,6 +4,7 @@ import type { Episode } from "./db-universe";
 import { assetUrl } from "./assets";
 import { episodePlayback } from "./episode-playback";
 import { EPISODE_SERIES_LABELS } from "./episode-series-links";
+import { sdbhOfficialSourceUrl } from "./sdbh-official-sources";
 export { EPISODE_SERIES_LABELS } from "./episode-series-links";
 
 function publicOfficialSourceURL(source: string | null): string | null {
@@ -15,6 +16,7 @@ function publicOfficialSourceURL(source: string | null): string | null {
 
 /** The catalogue and detail endpoints share the same public media projection. */
 export function episodeApiSummary(ep: Episode, capabilities?: PlaybackCapabilities) {
+  const mappedJapaneseSource = ep.series === "SDBH" ? sdbhOfficialSourceUrl(ep.id) : null;
   return {
     id: ep.id,
     series: ep.series,
@@ -28,7 +30,8 @@ export function episodeApiSummary(ep: Episode, capabilities?: PlaybackCapabiliti
     imageUrl: ep.image ? assetUrl(ep.image) : null,
     synopsis: ep.synopsis,
     scenePreview: ep.scene_preview ?? null,
-    officialSourceUrl: publicOfficialSourceURL(ep.official_source_url),
+    officialSourceUrl: publicOfficialSourceURL(ep.official_source_url) ?? mappedJapaneseSource,
+    sourceLanguages: mappedJapaneseSource ? ["ja"] : [],
     ...episodePlayback(ep, capabilities),
     url: `/wiki/episodes/${ep.id}`,
     downloadUrl: `/api/episodes/${ep.id}/download`,
