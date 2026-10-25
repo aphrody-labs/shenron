@@ -49,6 +49,7 @@ import {
   type OpenedVfs,
   openShenronVfs,
   RAG_EMBED_MODEL,
+  type QueryEmbedder,
 } from "@aphrody/shenron-db/vfs";
 import { isPublicRagRow } from "@aphrody/shenron-db/vfs/build";
 import { createChatEngine } from "../chat/engine";
@@ -334,6 +335,8 @@ export function staticFileResponse(
 }
 
 export interface LocalApiOptions {
+  /** Explicit private-chat query embedding; never used by the public RAG port. */
+  privateQueryEmbedding?: { query: QueryEmbedder; model: string };
   /** Canonical editorial retrieval assembled by the product when RAG_BACKEND=aphrody. */
   rag?: RagPort | null;
   /** Native public-corpus Jev judgments supplied by the product backend. */
@@ -445,6 +448,8 @@ export function usableChatBackends(
 export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): LocalApi {
   const paths = hostPaths(env);
   const publicOnly = env.SHENRON_PROFILE === "public" || env.SHENRON_VFS_PUBLIC_ONLY === "1";
+  if (options.privateQueryEmbedding && (publicOnly || envString(env, "RAG_BACKEND") === "aphrody"))
+    throw new Error("Private query embedding requires a private local VFS host");
   const cdn = defaultCdn(env);
   let opened: OpenedVfs | null = null;
   if (options.vfsDatabase) {
@@ -595,8 +600,8 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
           },
         }
       : {}),
-    embed: embedder?.query ?? null,
-    embedderModel: embedModel,
+    embed: options.privateQueryEmbedding?.query ?? embedder?.query ?? null,
+    embedderModel: options.privateQueryEmbedding?.model ?? embedModel,
     publicOnly,
     backends,
     home: (ownerId) => {

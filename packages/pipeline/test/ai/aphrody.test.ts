@@ -159,6 +159,59 @@ describe("createAphrodyCompute: documented differences", () => {
     }
   });
 
+  test("embed: optional exact model gate preserves the existing wire protocol and default compatibility", async () => {
+    for (const model of [undefined, "another/e5-small", "intfloat/multilingual-e5-small"]) {
+      const rec = createRecordingFetch({
+        "POST /api/v1/shenron/embed": () =>
+          json({ vectors: [vector(1)], ...(model ? { model } : {}) }),
+      });
+      const compute = createAphrodyCompute({ baseUrl: BASE, token: TOKEN }, { fetch: rec.fetch });
+      expect((await compute.embed({ texts: ["text"], kind: "query" })).ok).toBe(true);
+      expect(
+        await compute.embed({
+          texts: ["text"],
+          kind: "passage",
+          requireModel: "Xenova/multilingual-e5-small",
+        }),
+      ).toMatchObject({ ok: false, kind: "invalid_response" });
+      expect(JSON.parse(rec.calls[1]!.body!)).toEqual({ texts: ["text"], kind: "passage" });
+    }
+    const rec = createRecordingFetch(ROUTES);
+    const compute = createAphrodyCompute({ baseUrl: BASE, token: TOKEN }, { fetch: rec.fetch });
+    const result = await compute.embed({
+      texts: ["text"],
+      kind: "passage",
+      requireModel: "Xenova/multilingual-e5-small",
+    });
+    expect(result.ok && result.value.model).toBe("Xenova/multilingual-e5-small");
+  });
+
+  test("embed: strict model checks every batch and rejects malformed requirements before networking", async () => {
+    let batch = 0;
+    const rec = createRecordingFetch({
+      "POST /api/v1/shenron/embed": async (request: Request) => {
+        const body = (await request.json()) as { texts: string[] };
+        return json({
+          vectors: body.texts.map(() => vector(1)),
+          model: batch++ === 0 ? "Xenova/multilingual-e5-small" : "other/model",
+        });
+      },
+    });
+    const compute = createAphrodyCompute({ baseUrl: BASE, token: TOKEN }, { fetch: rec.fetch });
+    expect(await compute.embed({ texts: ["x"], kind: "query", requireModel: "" })).toMatchObject({
+      ok: false,
+      kind: "invalid_request",
+    });
+    expect(rec.calls).toHaveLength(0);
+    expect(
+      await compute.embed({
+        texts: Array.from({ length: 17 }, () => "x"),
+        kind: "passage",
+        requireModel: "Xenova/multilingual-e5-small",
+      }),
+    ).toMatchObject({ ok: false, kind: "invalid_response" });
+  });
+
   test("chat limits: 33 messages rejected before any call", async () => {
     const rec = createRecordingFetch(ROUTES);
     const c = createAphrodyCompute({ baseUrl: BASE, token: TOKEN }, { fetch: rec.fetch });

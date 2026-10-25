@@ -88,7 +88,9 @@ export interface AphrodyCompute {
     texts: readonly string[];
     kind: "query" | "passage";
     signal?: AbortSignal;
-  }): Promise<AiResult<{ vectors: number[][] }>>;
+    /** Optional exact response model gate; not sent in the wire request. */
+    requireModel?: string;
+  }): Promise<AiResult<{ vectors: number[][]; model?: string }>>;
   ragSearch(q: {
     q: string;
     limit?: number;
@@ -298,6 +300,8 @@ export function createAphrodyCompute(
 
     async embed(i) {
       const route = SHENRON_ROUTES.embed;
+      if (i.requireModel !== undefined && (!i.requireModel.trim() || i.requireModel.length > 128))
+        return invalidRequest(route.path, "invalid required embedding model");
       const texts = i.texts.map(collapseWhitespace);
       if (texts.length === 0 || texts.some((text) => !text)) {
         return invalidRequest(route.path, "embedding input is empty");
@@ -309,6 +313,8 @@ export function createAphrodyCompute(
         );
       }
       const vectors: number[][] = [];
+      let model: string | undefined;
+      let consistentModel = true;
       for (let start = 0; start < texts.length; start += APHRODY_LIMITS.embedTexts) {
         const batch = texts.slice(start, start + APHRODY_LIMITS.embedTexts);
         // No client prefix: the server adds `query: ` / `passage: ` (http_rest.rs, D10).
@@ -322,9 +328,13 @@ export function createAphrodyCompute(
         if (r.value === null || !checkVectors(r.value.vectors, batch.length)) {
           return invalidResponse(route.path);
         }
+        if (i.requireModel !== undefined && r.value.model !== i.requireModel)
+          return invalidResponse(route.path);
+        if (start === 0) model = r.value.model;
+        else if (model !== r.value.model) consistentModel = false;
         vectors.push(...r.value.vectors);
       }
-      return { ok: true, value: { vectors } };
+      return { ok: true, value: { vectors, ...(consistentModel && model ? { model } : {}) } };
     },
 
     async ragSearch(q) {
