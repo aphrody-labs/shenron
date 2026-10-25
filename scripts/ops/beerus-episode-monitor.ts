@@ -14,6 +14,11 @@ export const SOURCES = [
     url: "https://www.crunchyroll.com/fr/series/GT00389311/dragon-ball-super-beerus",
   },
   { kind: "shenron", lang: "fr", url: "https://dragonballfr.com/api/episodes/877" },
+  {
+    kind: "voiranime",
+    lang: "fr",
+    url: "https://voir-anime.to/anime/dragon-ball-super-beerus/",
+  },
 ] as const;
 type Source = (typeof SOURCES)[number];
 export type Candidate = {
@@ -184,6 +189,29 @@ export async function extractCrunchyrollEpisode3(html: string, source: string): 
   return [...links].toSorted();
 }
 
+/** Observe catalogue navigation only; never resolve embedded streams. */
+export async function extractVoiranimeEpisodes(html: string, source: string): Promise<string[]> {
+  const links = new Set<string>();
+  await new HTMLRewriter()
+    .on("a[href]", {
+      element(element) {
+        const url = publicUrl(element.getAttribute("href") ?? "", source);
+        if (!url) return;
+        const parsed = new URL(url);
+        if (
+          parsed.origin === new URL(source).origin &&
+          /^\/anime\/dragon-ball-super-beerus\/dragon-ball-super-beerus-\d{2,3}-(?:vostfr|vf)\/$/.test(
+            parsed.pathname,
+          )
+        )
+          links.add(url);
+      },
+    })
+    .transform(new Response(html))
+    .text();
+  return [...links].toSorted();
+}
+
 async function boundedBody(response: Response): Promise<string> {
   if (Number(response.headers.get("content-length")) > MAX_BODY_BYTES)
     throw new Error("body-limit");
@@ -263,6 +291,25 @@ export async function observeSource(
           };
         observation.status = watchUrls.length ? "candidate-needs-review" : "episode-3-not-observed";
       }
+    } else if (source.kind === "voiranime") {
+      const episodes = await extractVoiranimeEpisodes(body, source.url);
+      const watchUrls = episodes.filter((url) =>
+        /-0*3-(?:vostfr|vf)\/$/.test(new URL(url).pathname),
+      );
+      observation.facts = { catalogueEpisodes: episodes.length, playbackVerified: false };
+      observation.status = watchUrls.length
+        ? "external-episode-link-needs-validation"
+        : "episode-3-not-observed";
+      if (watchUrls.length)
+        observation.candidate = {
+          episode: 3,
+          lang: source.lang,
+          source: source.url,
+          title: null,
+          synopsis: null,
+          images: [],
+          watchUrls,
+        };
     } else if (source.kind === "shenron") {
       const data = JSON.parse(body);
       const item = data?.data?.episode ?? data?.data ?? data?.episode ?? data;

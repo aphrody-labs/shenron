@@ -4,6 +4,7 @@ import {
   boundedMap,
   extractCrunchyrollEpisode3,
   extractOfficialEpisode3,
+  extractVoiranimeEpisodes,
   maxWorkers,
   observeSource,
   parseOptions,
@@ -13,6 +14,23 @@ import {
 } from "./beerus-episode-monitor";
 
 const source = "https://dragonball-super.com/";
+test("Voiranime observes exact Beerus catalogue links without resolving a stream", async () => {
+  const base = SOURCES[5].url;
+  const episode = (number: string) => `${base}dragon-ball-super-beerus-${number}-vostfr/`;
+  const html = `<a href="${episode("01")}">1</a><a href="${episode("02")}">2</a><!-- <a href="${episode("03")}">3</a> --><a href="https://foreign.example/stream.mp4">3</a><a href="${episode("03")}?token=secret">3</a>`;
+  expect(await extractVoiranimeEpisodes(html, base)).toEqual([episode("01"), episode("02")]);
+  const before = await observeSource(SOURCES[5], async () => new Response(html));
+  expect(before.candidate).toBeNull();
+  expect(before.facts).toEqual({ catalogueEpisodes: 2, playbackVerified: false });
+  const after = await observeSource(
+    SOURCES[5],
+    async () => new Response(html + `<a href="${episode("03")}">3</a>`),
+  );
+  expect(after.status).toBe("external-episode-link-needs-validation");
+  expect(after.candidate?.watchUrls).toEqual([episode("03")]);
+  expect(after.candidate?.mediaSources).toBeUndefined();
+  expect(JSON.stringify(after)).not.toContain("secret");
+});
 test("Shenron identity uses the public API episode number field", async () => {
   const result = await observeSource(SOURCES[4], async () =>
     Response.json({ id: 877, series: "DBS_BEERUS", numberInSeries: 3 }),
