@@ -64,7 +64,7 @@ export function StreamRail({
     const ro = new ResizeObserver(update);
     ro.observe(el);
     return () => ro.disconnect();
-  // oxlint-disable-next-line react/exhaustive-effect-dependencies -- content changes can alter scrollWidth without resizing the rail viewport
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- content changes can alter scrollWidth without resizing the rail viewport
   }, [update, itemCount]);
 
   // Atteindre une extrémité DÉSACTIVE la flèche qu'on vient de presser : le
