@@ -360,8 +360,21 @@ export async function consolidateWikiCharacters(input: {
         const parent = sql.identifier(relation.parent);
         let condition = sql`${parent} IN (${ids})`;
         if (relation.entity) condition = sql`(${condition}) AND entity_type = 'character'`;
-        if (relation.name === "db_battles")
-          condition = sql`(${condition}) OR combatants @> ${JSON.stringify([{ characterId: input.duplicateId }])}::jsonb`;
+        if (relation.name === "db_battles") {
+          const [combatantsColumn] = await tx.execute(sql`
+            SELECT data_type
+            FROM information_schema.columns
+            WHERE table_schema = 'bot' AND table_name = 'db_battles' AND column_name = 'combatants'
+          `);
+          const combatant = JSON.stringify([{ characterId: input.duplicateId }]);
+          const containsCombatant =
+            combatantsColumn?.data_type === "jsonb"
+              ? sql`combatants @> ${combatant}::jsonb`
+              : combatantsColumn?.data_type === "text"
+                ? sql`combatants::jsonb @> ${combatant}::jsonb`
+                : sql`FALSE`;
+          condition = sql`(${condition}) OR ${containsCombatant}`;
+        }
         snapshot[relation.name] = [
           ...(await tx.execute(
             sql`SELECT * FROM ${tableSql(relation.name)} WHERE ${condition} ORDER BY ${sql.join(
