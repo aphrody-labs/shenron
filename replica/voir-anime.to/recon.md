@@ -12,7 +12,7 @@ ni source du site, ni média vidéo. Les captures restent locales et ignorées p
 
 **L'inventaire des sitemaps est complet ; le crawl HTML ne l'est pas.** Les 109 documents
 déclarés par l'index ont répondu 200 et leurs empreintes ont été relues : 104 556 URL
-uniques, dont 6 752 fiches séries, 97 719 pages d'épisodes, 59 archives d'années,
+uniques, dont 6 751 fiches séries, l'archive `/anime/`, 97 719 pages d'épisodes, 59 archives d'années,
 20 archives de genres et six autres pages. Ce sont des URL déclarées, pas autant de
 pages chargées ou de vidéos lisibles.
 
@@ -81,6 +81,7 @@ d'utilisation ailleurs. Aucun abonnement, paiement ni parcours de compte n'a ét
 | S09 | `/anime-release/:slug/` | Archive par année | 59 URL dans les sitemaps ; 2026 reçu en 200 ; pas de qualification visuelle dédiée |
 | S10 | `/user-settings/` | Page déclarée dans le sitemap | GET public redirigé vers l'accueil, réponse finale 200 ; ni session ni réglage modifié |
 | S11 | `/manga/` | Page déclarée dans le sitemap | HTML 200 et rendu 1280 ; titre Manga et date, aucun catalogue ni contenu principal visible dans l'état testé |
+| S12 | `/anime/` | Archive générale du catalogue | HTML 200, liens et métadonnées extraits ; cette archive faisait partie du compteur de 6 752 URL de la famille séries |
 
 Captures : `screens/S01-home-{1280,390}.jpg`, `S02-directory-1280.jpg`,
 `S05-series-1280.jpg`, `S06-episode-1280.jpg`, `S06-episode03-390.jpg`,
@@ -154,7 +155,7 @@ Les iframes des fournisseurs ne révèlent pas à elles seules le CDN des octets
 
 ## Périmètre restant et réutilisation
 
-11 familles d'écrans, sept parcours, sept entités inférées. La matrice
+12 familles d'écrans, sept parcours, sept entités inférées. La matrice
 [features.csv](features.csv) sert une éventuelle implémentation ultérieure ; aucune
 implémentation de clone n'a été demandée dans ce lot. Priorités proposées, non engagements.
 Complexité L pour un service complet avec vrais médias et persistance ; un catalogue
