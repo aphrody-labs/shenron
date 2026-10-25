@@ -1,0 +1,99 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+# Mémoire visuelle, Obsidian et retrieval privé
+
+Les notes revues du domaine DBFR vivent dans le dossier `memory/` de son home
+canonique. Ce dossier peut être ouvert comme coffre Obsidian ; les mêmes fichiers
+alimentent les consommateurs existants. Les brouillons et les reçus restent sous
+`notes/`, hors du corpus mémoire. Les scans originaux sont archivés par SHA-256
+dans `memory/attachments/`. Une illustration générée ne sert pas de preuve.
+
+La documentation officielle consultée par Context7 confirme le stockage en
+[fichiers Markdown](https://obsidian.md/help/data-storage) et l’ouverture d’un
+[dossier existant comme coffre](https://obsidian.md/help/manage-vaults). Aucun
+plugin tiers n’est nécessaire. Ne pas imbriquer deux coffres. La commande URI
+`obsidian://open` cible un coffre déjà enregistré ; elle ne remplace pas son
+enregistrement initial par l’interface officielle.
+
+## Curater une observation
+
+`scripts/ops/agent-home-notes.ts` réutilise la résolution de home, l’écriture
+atomique et la détection de données sensibles de leurs propriétaires. Son
+manifeste privé de version1 contient un identifiant anglais, un titre, la
+continuité, la date d’observation, les observations, leurs limites et les sources
+locales avec SHA-256 et localisateur. Une source peut aussi porter son URL HTTPS.
+Une note revue ajoute l’identité du relecteur et sa date.
+
+Un brouillon (`status:draft`) reste dans `notes/inbox/`. Une note revue
+(`status:reviewed`, `visibility:private`) rejoint `memory/`. L’application exige
+le SHA du manifeste ; le remplacement d’une note différente exige aussi le SHA
+de la version précédente.
+
+```sh
+bun scripts/ops/agent-home-notes.ts --manifest <manifest-prive.json> --home <home-canonique>
+bun scripts/ops/agent-home-notes.ts --manifest <manifest-prive.json> --home <home-canonique> --apply --expected-sha <sha-manifeste>
+```
+
+`--init-notes` crée uniquement le dossier de notes d’un home canonique absent ;
+ce mode ne prétend pas initialiser le persona ou un profil Aphrody complet.
+Pour une mise à jour, ajouter `--previous-sha <sha-markdown-actuel>`.
+Les sources et leurs archives sont vérifiées avant écriture, les liens vers les
+pièces archivées sont relatifs au coffre.
+
+## Index Shenron dérivé
+
+```sh
+bun scripts/ops/agent-home-notes-index.ts --home <home-canonique>
+bun scripts/ops/agent-home-notes-index.ts --home <home-canonique> --apply
+```
+
+Le CLI ne prend que les notes présentes dans le registre de revue et dont le
+Markdown correspond encore au SHA revu. Une édition dans Obsidian doit donc
+être relue et réimportée avant réindexation. Il réutilise le chunker natif
+`aphrody pure rag chunk --profile shenron_parity`, puis le writer et le schéma
+VFS/RAG existants. Il écrit son dérivé privé sous
+`notes/private-notes-vfs.sqlite`, sans remplacer un VFS étranger au bridge.
+Un échec de découpage ou de validation conserve le précédent dérivé.
+
+Ce fichier peut être fourni explicitement à un hôte **local privé**, par
+`SHENRON_VFS_DB`. Le moteur de chat commun peut alors le consommer sur ses
+surfaces site, bot et desktop. Le backend extractif existant permet de qualifier
+retrieval et citations sans appeler de modèle externe. La mémoire de conversation
+par utilisateur conserve son propriétaire distinct.
+
+Le MCP propriétaire en stdio peut lire ce même schéma par
+`APHRODY_DRAGONBALL_RAG_DB`, avec `SHENRON_LOCAL_RAG=1` et
+`dragonball.rag_search({query:"…",local:true})`. Cette configuration privée ne
+se transporte pas sur un daemon MCP public. Les endpoints RAG publics gardent
+leur filtre `publicOnly` ; une note privée ne devient pas un article publié.
+
+## Index natif du home
+
+Le home natif Aphrody et le VFS Shenron sont deux consommateurs existants :
+copier le Markdown ne synchronise pas leurs index. Le préparateur vérifie
+les SHA du manifeste, de la note et de chaque pièce avant d’émettre un plan :
+
+```sh
+bun scripts/ops/agent-home-native-note.ts --home <home-canonique> --manifest <manifest-prive.json> --expected-source-sha <sha-markdown> --expected-manifest-sha <sha-manifeste> --out <plan-prive.json>
+```
+
+Il n’exécute aucune mutation distante et n’a pas d’option d’application. Le
+propriétaire Infra réalise ensuite le transfert privé, le backup natif et
+`aphrody home --profile dbfr index` sur un répertoire ne contenant que la note,
+avec un label dédié. L’indexeur retire les documents disparus de son label :
+un label existant associé à un corpus plus large ne se réutilise pas pour une
+note isolée. Le contrôle final porte sur le chemin exact du hit, le nombre
+de documents, l’absence de suppression et l’idempotence.
+
+## Qualification et limites
+
+Les preuves datées du lot restent privées sous `var/reports/`. Elles couvrent
+la recherche sur le véritable SQLite dérivé, le moteur commun et ses citations,
+un POST HTTP local ainsi qu’un appel MCP stdio. Une capture de configuration ou
+un fichier produit ne prouve pas à lui seul le branchement d’un service actif.
+
+Le dérivé de notes de ce lot est lexical (`vectors:0`). Le client E5 existant
+appartient à `packages/db/src/vfs/rag.ts` ; le fournisseur et son espace doivent
+être qualifiés avant enrichissement vectoriel. Le CLI home inspecté construit
+son indexeur sans embedder et fusionne des canaux lexicaux : son appellation
+« hybrid » ne prouve pas une recherche sémantique. Aucun `rag:build` global au
+premier plan ou sur le bot de production n’est nécessaire à l’import borné.
