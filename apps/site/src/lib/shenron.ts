@@ -696,6 +696,8 @@ export interface CharacterVariant {
   /** Méthode de mesure ("ocr-manga", "synopsis-episodes", les deux) ou "editorial". */
   origin: string | null;
   evidence: VariantEvidence | null;
+  transformationIds: number[] | null;
+  techniqueIds: number[] | null;
   sagaId: number;
   sagaName: string;
   sagaSlug: string;
@@ -749,6 +751,8 @@ export async function getShenronCharacterVariants(
       episodeSeries: s.episodeSeries,
       origin: v.origin,
       evidence: v.evidence ?? null,
+      transformationIds: v.transformationIds ?? null,
+      techniqueIds: v.techniqueIds ?? null,
       sagaId: s.id,
       sagaName: s.name,
       sagaSlug: s.slug,
