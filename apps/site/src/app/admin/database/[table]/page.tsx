@@ -22,6 +22,11 @@ import { assetUrl } from "@/lib/assets";
 import { TABLE_LABELS, colLabel } from "@/lib/db-labels";
 import { WIKI_TABLE_SPECS, crudBase, isWikiTable } from "@/lib/wiki-tables";
 import { buildSubmitBody, IMAGE_COL_RE, isImageColumn, isStudioTable } from "@/lib/wiki-fields";
+import {
+  normalizeWikiListQuery,
+  wikiCollectionSearch,
+  wikiPageWindow,
+} from "@/lib/wiki-collection-query";
 
 interface TableSpec {
   name: string;
@@ -55,6 +60,7 @@ export default function TablePage() {
   } | null>(null);
   const limit = 25;
   const offset = page * limit;
+  const listQuery = normalizeWikiListQuery({ limit, offset, q: debouncedSearch });
   const qc = useQueryClient();
 
   // Auto-dismiss toast
@@ -118,12 +124,10 @@ export default function TablePage() {
   }, [search]);
 
   const rows = useQuery({
-    queryKey: ["db", table, page, debouncedSearch],
+    queryKey: ["db", table, listQuery],
     queryFn: () =>
       client.get<{ rows: Record<string, unknown>[]; total: number }>(
-        `${collection}?limit=${limit}&offset=${offset}${
-          debouncedSearch ? `&q=${encodeURIComponent(debouncedSearch)}` : ""
-        }`,
+        `${collection}?${wikiCollectionSearch(listQuery)}`,
       ),
     enabled: !!table,
   });
@@ -169,7 +173,9 @@ export default function TablePage() {
   const humanLabel = TABLE_LABELS[table] ?? table;
   const cols = rows.data?.rows[0] ? Object.keys(rows.data.rows[0]) : [];
   const total = rows.data?.total ?? 0;
-  const totalPages = Math.ceil(total / limit);
+  const pagination = wikiPageWindow(total, listQuery);
+  // A changed result count can invalidate the requested page; the pure bound converges once.
+  if (rows.data && pagination.page !== page) setPage(pagination.page);
 
   return (
     <div className="space-y-4">
@@ -210,7 +216,7 @@ export default function TablePage() {
           {rows.data ? (
             <>
               {total.toLocaleString("fr-FR")} entrée{total > 1 ? "s" : ""} · page {page + 1} sur{" "}
-              {Math.max(1, totalPages)}
+              {pagination.pages}
             </>
           ) : (
             <output>{rows.isError ? common("error") : common("loading")}</output>
@@ -326,18 +332,18 @@ export default function TablePage() {
         <button
           type="button"
           onClick={() => setPage((p) => Math.max(0, p - 1))}
-          disabled={page === 0}
+          disabled={rows.isFetching || (rows.data ? !pagination.hasPrevious : page === 0)}
           className="btn btn-ghost"
         >
           Page précédente
         </button>
         <span className="text-xs text-white/50 tabular-nums">
-          {offset + 1}–{Math.min(offset + limit, total)} / {total.toLocaleString("fr-FR")}
+          {pagination.start}–{pagination.end} / {total.toLocaleString("fr-FR")}
         </span>
         <button
           type="button"
           onClick={() => setPage((p) => p + 1)}
-          disabled={offset + limit >= total}
+          disabled={rows.isFetching || !rows.data || !pagination.hasNext}
           className="btn btn-ghost"
         >
           Page suivante

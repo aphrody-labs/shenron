@@ -58,6 +58,7 @@ import {
 } from "@/lib/wiki-update-precondition";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { parseWikiCollectionQuery, WikiCollectionQueryError } from "@/lib/wiki-collection-query";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -122,48 +123,27 @@ export async function GET(req: NextRequest, ctx: Ctx) {
       if (!row) return notFound("Row introuvable");
       return NextResponse.json(row);
     }
-    const sp = req.nextUrl.searchParams;
-    // Picker FK : pk + libellé seulement (léger, trié, non tronqué à 500).
-    if (sp.get("as") === "options") {
-      return NextResponse.json({ options: await listWikiOptions(table) });
+    const query = parseWikiCollectionQuery(req.nextUrl.searchParams);
+    switch (query.kind) {
+      case "options":
+        return NextResponse.json({ options: await listWikiOptions(table) });
+      case "relations":
+        return NextResponse.json({
+          ids: await listWikiRelations(table, query.col, query.id, query.target),
+        });
+      case "byParent":
+        return NextResponse.json(await listWikiByParent(table, query.col, query.id));
+      case "visibility":
+        if (!hasVisibility(table)) return badRequest("Table sans colonne de visibilité");
+        return NextResponse.json({ items: await listWikiVisibility(table, { q: query.q }) });
+      case "sectionsFor":
+        if (table !== "db_wiki_sections") return badRequest("Réservé à db_wiki_sections");
+        return NextResponse.json({
+          items: await listWikiSectionsForEntity(query.entityType, query.entityId),
+        });
+      case "list":
+        return NextResponse.json(await listWiki(table, query));
     }
-    // Relations N-N : ids liés dans une table de jointure.
-    if (sp.get("as") === "relations") {
-      const col = sp.get("col") ?? "";
-      const relId = sp.get("id") ?? "";
-      const target = sp.get("target") ?? "";
-      if (!col || !relId || !target) return badRequest("col, id, target requis");
-      return NextResponse.json({ ids: await listWikiRelations(table, col, relId, target) });
-    }
-    // Relations 1-N : lignes enfants d'un parent (transformations d'un personnage).
-    // Sans ce mode, la requête retombait sur la liste générique et le panneau
-    // affichait les 50 premières transformations de toute la table.
-    if (sp.get("as") === "byParent") {
-      const col = sp.get("col") ?? "";
-      const parentId = sp.get("id") ?? "";
-      if (!col || !parentId) return badRequest("col, id requis");
-      return NextResponse.json(await listWikiByParent(table, col, parentId));
-    }
-    // Gestionnaire de visibilité : id + libellé + image + état visible.
-    if (sp.get("as") === "visibility") {
-      if (!hasVisibility(table)) return badRequest("Table sans colonne de visibilité");
-      const q = sp.get("q") ?? undefined;
-      return NextResponse.json({ items: await listWikiVisibility(table, { q }) });
-    }
-    // Sections d'une entité (toutes, masquées comprises) pour le panneau du studio.
-    if (sp.get("as") === "sectionsFor") {
-      if (table !== "db_wiki_sections") return badRequest("Réservé à db_wiki_sections");
-      const entityType = sp.get("entityType") ?? "";
-      const entityId = Number(sp.get("entityId"));
-      if (!entityType || !Number.isFinite(entityId)) {
-        return badRequest("entityType, entityId requis");
-      }
-      return NextResponse.json({ items: await listWikiSectionsForEntity(entityType, entityId) });
-    }
-    const limit = Number(sp.get("limit")) || 50;
-    const offset = Number(sp.get("offset")) || 0;
-    const q = sp.get("q") ?? undefined;
-    return NextResponse.json(await listWiki(table, { limit, offset, q }));
   } catch (err) {
     return writeFailed("wiki-admin", err);
   }
@@ -326,7 +306,7 @@ function writeFailed(context: string, err: unknown): NextResponse {
   if (err instanceof WikiUpdatePreconditionError) {
     return NextResponse.json({ error: err.code }, { status: 409 });
   }
-  if (err instanceof WikiUpdateRequestError) {
+  if (err instanceof WikiUpdateRequestError || err instanceof WikiCollectionQueryError) {
     return NextResponse.json({ error: err.code }, { status: 400 });
   }
   if (err instanceof DatabooksFrozenError) {

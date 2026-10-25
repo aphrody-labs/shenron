@@ -20,6 +20,7 @@ import { apiAt } from "@/lib/admin-api";
 import { assetUrl } from "@/lib/assets";
 import { uploadSubdir } from "@/lib/wiki-fields";
 import { crudBase } from "@/lib/wiki-tables";
+import { wikiCollectionSearch } from "@/lib/wiki-collection-query";
 
 interface TransfoRow {
   id: number;
@@ -38,7 +39,7 @@ export function TransformationsPanel({ characterId }: { characterId: string }) {
     queryKey: key,
     queryFn: () =>
       client.get<{ rows: TransfoRow[] }>(
-        `/db_transformations?as=byParent&col=characterId&id=${encodeURIComponent(characterId)}`,
+        `/db_transformations?${wikiCollectionSearch({ kind: "byParent", col: "characterId", id: characterId })}`,
       ),
   });
 

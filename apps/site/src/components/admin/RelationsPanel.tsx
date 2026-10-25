@@ -12,6 +12,7 @@ import { useState } from "react";
 import { apiAt } from "@/lib/admin-api";
 import { entityRelations, type RelationSpec } from "@/lib/wiki-fields";
 import { crudBase } from "@/lib/wiki-tables";
+import { wikiCollectionSearch } from "@/lib/wiki-collection-query";
 
 export function RelationsPanel({ table, entityId }: { table: string; entityId: string }) {
   const specs = entityRelations(table);
@@ -38,7 +39,7 @@ function RelationEditor({ spec, entityId }: { spec: RelationSpec; entityId: stri
     queryKey: ["relations", spec.joinTable, spec.selfCol, entityId],
     queryFn: () =>
       joinClient.get<{ ids: string[] }>(
-        `/${spec.joinTable}?as=relations&col=${spec.selfCol}&id=${encodeURIComponent(entityId)}&target=${spec.targetCol}`,
+        `/${spec.joinTable}?${wikiCollectionSearch({ kind: "relations", col: spec.selfCol, id: entityId, target: spec.targetCol })}`,
       ),
   });
 
@@ -46,7 +47,7 @@ function RelationEditor({ spec, entityId }: { spec: RelationSpec; entityId: stri
     queryKey: ["fk-options", spec.targetTable],
     queryFn: () =>
       apiAt(crudBase(spec.targetTable)).get<{ options: { value: string; label: string }[] }>(
-        `/${spec.targetTable}?as=options`,
+        `/${spec.targetTable}?${wikiCollectionSearch({ kind: "options" })}`,
       ),
     staleTime: 5 * 60_000,
   });
@@ -125,7 +126,9 @@ function RelationEditor({ spec, entityId }: { spec: RelationSpec; entityId: stri
         value={adding}
         // Gate sur `related` aussi : sinon, pendant le chargement, `idSet` est
         // vide → la liste proposerait des paires déjà liées (doublon).
-        disabled={busy || options.isLoading || related.isLoading || related.isError}
+        disabled={
+          busy || options.isLoading || options.isError || related.isLoading || related.isError
+        }
         onChange={(e) => {
           const v = e.target.value;
           setAdding("");

@@ -66,6 +66,7 @@ import {
   type VisibilityScope,
 } from "@/lib/wiki-gaps";
 import { WIKI_TABLE_SPECS, type WikiTableSpec } from "@/lib/wiki-tables";
+import { planWikiList, planWikiRelation } from "@/lib/wiki-collection-query";
 import {
   CatalogMediaConflictError,
   isMediaCatalogTable,
@@ -259,35 +260,28 @@ export async function listWiki(
 ): Promise<{ rows: Row[]; total: number; limit: number; offset: number }> {
   const spec = getSpec(table);
   if (!spec) throw new Error(`Table inconnue: ${table}`);
-  const lim = Math.min(500, Math.max(1, limit));
-  const off = Math.max(0, offset);
-  // Recherche sur les colonnes « libellé » présentes (nom FR/JP, titre, slug).
-  const labelCols = ["name", "title", "slug", "nameJa", "titleJa"].filter((k) =>
-    spec.columns.includes(k),
-  );
-  const term = (q ?? "").trim();
+  const plan = planWikiList(spec.columns, pkCamelKeys(spec), { limit, offset, q });
+  const term = plan.q;
   // Échappe les métacaractères LIKE (% _ \) → "100%" cherche bien le littéral.
   const safe = escapeLike(term);
   const where =
-    term && labelCols.length
-      ? or(...labelCols.map((k) => ilike(spec.table[k], `%${safe}%`)))
+    term && plan.searchColumns.length
+      ? or(...plan.searchColumns.map((k) => ilike(spec.table[k], `%${safe}%`)))
       : undefined;
   // Ordre déterministe : libellé PUIS pk (tie-break) → pagination stable même
   // quand plusieurs lignes partagent le même libellé.
-  const pkCol = spec.table[pkCamelKeys(spec)[0]];
-  const orderCol = labelCols[0] ? spec.table[labelCols[0]] : pkCol;
   const rows = (await db
     .select()
     .from(spec.table)
     .where(where)
-    .orderBy(asc(orderCol), asc(pkCol))
-    .limit(lim)
-    .offset(off)) as Row[];
+    .orderBy(...plan.orderColumns.map((key) => asc(spec.table[key])))
+    .limit(plan.limit)
+    .offset(plan.offset)) as Row[];
   const [{ value: total = 0 } = { value: 0 }] = await db
     .select({ value: count() })
     .from(spec.table)
     .where(where);
-  return { rows, total: Number(total), limit: lim, offset: off };
+  return { rows, total: Number(total), limit: plan.limit, offset: plan.offset };
 }
 
 /**
@@ -321,13 +315,13 @@ export async function listWikiRelations(
 ): Promise<string[]> {
   const spec = getSpec(table);
   if (!spec) throw new Error(`Table inconnue: ${table}`);
-  if (!spec.columns.includes(col) || !spec.columns.includes(target)) {
-    throw new Error(`Colonne inconnue sur ${table}`);
-  }
+  const plan = planWikiRelation(spec.columns, col, id, target);
   const rows = (await db
     .select({ v: spec.table[target] })
     .from(spec.table)
-    .where(eq(spec.table[col], coerceValue(spec, col, id) as never))) as { v: unknown }[];
+    .where(eq(spec.table[plan.col], coerceValue(spec, plan.col, plan.id) as never))) as {
+    v: unknown;
+  }[];
   return rows.map((r) => String(r.v));
 }
 
@@ -345,13 +339,12 @@ export async function listWikiByParent(
 ): Promise<{ rows: Row[]; total: number }> {
   const spec = getSpec(table);
   if (!spec) throw new Error(`Table inconnue: ${table}`);
-  if (!spec.columns.includes(col)) throw new Error(`Colonne inconnue sur ${table}`);
-  const pkCol = spec.table[pkCamelKeys(spec)[0]];
+  const plan = planWikiRelation(spec.columns, col, id);
   const rows = (await db
     .select()
     .from(spec.table)
-    .where(eq(spec.table[col], coerceValue(spec, col, id) as never))
-    .orderBy(asc(pkCol))) as Row[];
+    .where(eq(spec.table[plan.col], coerceValue(spec, plan.col, plan.id) as never))
+    .orderBy(...pkCamelKeys(spec).map((key) => asc(spec.table[key])))) as Row[];
   return { rows, total: rows.length };
 }
 
