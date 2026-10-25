@@ -37,7 +37,17 @@ export async function GET(req: Request) {
     }
 
     const limit = readInt(url.searchParams.get("limit"), { min: 1, max: 100, fallback: 25 });
-    const data = await listWiki(tableName, { limit, q: url.searchParams.get("q") ?? undefined });
+    const offset = readInt(url.searchParams.get("offset"), {
+      min: 0,
+      max: Number.MAX_SAFE_INTEGER - 500,
+      fallback: 0,
+    });
+    const data = await listWiki(tableName, {
+      limit,
+      offset,
+      q: url.searchParams.get("q") ?? undefined,
+      visibleOnly: true,
+    });
     const primaryKeys = (
       Array.isArray(table.primaryKey) ? table.primaryKey : [table.primaryKey]
     ).map(camel);
@@ -48,6 +58,13 @@ export async function GET(req: Request) {
         label: label(row),
       }));
 
-    return agentOk({ table: tableName, rows, total: rows.length, limit });
+    return agentOk({
+      table: tableName,
+      rows,
+      total: data.total,
+      limit: data.limit,
+      offset: data.offset,
+      hasMore: data.offset + data.rows.length < data.total,
+    });
   });
 }

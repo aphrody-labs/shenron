@@ -401,8 +401,14 @@ export function buildOpenApiDocument(origin: string): Record<string, unknown> {
             { name: "table", in: "query", required: true, schema: { type: "string" } },
             { name: "q", in: "query", schema: { type: "string", maxLength: 120 } },
             { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: 100 } },
+            { name: "offset", in: "query", schema: { type: "integer", minimum: 0, default: 0 } },
           ],
-          responses: { 200: { description: "Cibles visibles" } },
+          responses: {
+            200: {
+              description:
+                "Cibles visibles paginées avec un total exact, l’offset utilisé et l’indicateur hasMore.",
+            },
+          },
         },
       },
     },

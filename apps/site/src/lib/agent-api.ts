@@ -205,6 +205,7 @@ export function readInt(
   value: string | null,
   opts: { min: number; max: number; fallback: number },
 ): number {
+  if (value == null || value.trim() === "") return opts.fallback;
   const n = Number(value);
   if (!Number.isFinite(n)) return opts.fallback;
   return Math.min(opts.max, Math.max(opts.min, Math.trunc(n)));

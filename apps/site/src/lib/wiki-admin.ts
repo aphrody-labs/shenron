@@ -256,7 +256,12 @@ function toSnakeRow(row: Row): Row {
 
 export async function listWiki(
   table: string,
-  { limit = 50, offset = 0, q }: { limit?: number; offset?: number; q?: string } = {},
+  {
+    limit = 50,
+    offset = 0,
+    q,
+    visibleOnly = false,
+  }: { limit?: number; offset?: number; q?: string; visibleOnly?: boolean } = {},
 ): Promise<{ rows: Row[]; total: number; limit: number; offset: number }> {
   const spec = getSpec(table);
   if (!spec) throw new Error(`Table inconnue: ${table}`);
@@ -264,10 +269,21 @@ export async function listWiki(
   const term = plan.q;
   // Échappe les métacaractères LIKE (% _ \) → "100%" cherche bien le littéral.
   const safe = escapeLike(term);
-  const where =
+  const search =
     term && plan.searchColumns.length
       ? or(...plan.searchColumns.map((k) => ilike(spec.table[k], `%${safe}%`)))
       : undefined;
+  const conditions: SQL[] = [];
+  if (search) conditions.push(search);
+  if (visibleOnly && spec.columns.includes("visible")) {
+    conditions.push(eq(spec.table.visible, true));
+  }
+  const where =
+    conditions.length > 1
+      ? and(...conditions)
+      : conditions.length === 1
+        ? conditions[0]
+        : undefined;
   // Ordre déterministe : libellé PUIS pk (tie-break) → pagination stable même
   // quand plusieurs lignes partagent le même libellé.
   const rows = (await db
