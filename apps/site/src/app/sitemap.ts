@@ -23,6 +23,7 @@ import { isPathPublic, type AccessSnapshot } from "@/lib/wiki-launch";
 import { sitemapDestinations } from "@/lib/site-map";
 import { isDatabookIndexable } from "@/lib/databooks-rules";
 import { formatCharacterSlug, formatTransformationSlug } from "@/lib/wiki-slugs";
+import { canonicalCharacterSitemapRows } from "@/lib/wiki-sitemap";
 
 export const revalidate = 86400; // Cache le sitemap pendant 24 heures
 
@@ -160,7 +161,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         })
         .from(botCharacters)
         .where(eq(botCharacters.visible, true));
-      return rows.map(
+      return canonicalCharacterSitemapRows(rows).map(
         (r) => [`/wiki/characters/${formatCharacterSlug(r)}`, 0.6, new Date()] as const,
       );
     }),
