@@ -18,8 +18,19 @@ import { NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const forbidden = () => NextResponse.json({ error: "Forbidden" }, { status: 403 });
-const badRequest = (msg: string) => NextResponse.json({ error: msg }, { status: 400 });
+const privateJson = (body: unknown, status = 200) =>
+  NextResponse.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
+const forbidden = () => privateJson({ error: "Forbidden" }, 403);
+const badRequest = (msg: string) => privateJson({ error: msg }, 400);
+
+async function requireAdmin(): Promise<NextResponse | null> {
+  try {
+    return (await isCurrentUserAdmin()) ? null : forbidden();
+  } catch (err) {
+    console.error("[wiki-history-auth]", err);
+    return privateJson({ error: "admin_auth_unavailable" }, 503);
+  }
+}
 
 async function currentActor(): Promise<RevisionActor> {
   try {
@@ -32,7 +43,8 @@ async function currentActor(): Promise<RevisionActor> {
 }
 
 export async function GET(req: NextRequest) {
-  if (!(await isCurrentUserAdmin())) return forbidden();
+  const authError = await requireAdmin();
+  if (authError) return authError;
   const sp = req.nextUrl.searchParams;
   try {
     const result = await listRevisions({
@@ -42,14 +54,15 @@ export async function GET(req: NextRequest) {
       limit: Number(sp.get("limit")) || 50,
       offset: Number(sp.get("offset")) || 0,
     });
-    return NextResponse.json(result);
+    return privateJson(result);
   } catch (err) {
     return writeFailed("wiki-history", err);
   }
 }
 
 export async function POST(req: NextRequest) {
-  if (!(await isCurrentUserAdmin())) return forbidden();
+  const authError = await requireAdmin();
+  if (authError) return authError;
   let body: { id?: string } | null = null;
   try {
     body = (await req.json()) as { id?: string };
@@ -62,7 +75,7 @@ export async function POST(req: NextRequest) {
     // Purge la page publique de l'entité restaurée.
     const row = res.row ?? (await getWikiRow(res.table, res.rowId).catch(() => null));
     revalidateWikiEntity(res.table, row ?? { id: res.rowId });
-    return NextResponse.json({ ok: true, ...res });
+    return privateJson({ ok: true, ...res });
   } catch (err) {
     return writeFailed("wiki-history", err);
   }
@@ -83,16 +96,19 @@ export async function POST(req: NextRequest) {
  */
 function writeFailed(context: string, err: unknown): NextResponse {
   if (err instanceof DatabooksFrozenError) {
-    return NextResponse.json({ error: err.code, reason: err.freeze.reason }, { status: 423 });
+    return privateJson({ error: err.code, reason: err.freeze.reason }, 423);
   }
   const msg = err instanceof Error ? err.message : String(err);
+  if (msg === "Révision introuvable") return privateJson({ error: "revision_not_found" }, 404);
+  if (msg.startsWith("Table non réversible : "))
+    return privateJson({ error: "revision_not_reversible" }, 409);
   console.error(`[${context}]`, err);
   // Signature d'une erreur du pilote PostgreSQL (code SQLSTATE) → on masque.
   const isDriverError =
     typeof (err as { code?: unknown })?.code === "string" ||
     /constraint|violates|relation |column |syntax error/i.test(msg);
   if (isDriverError) {
-    return NextResponse.json({ error: "Écriture refusée par la base." }, { status: 500 });
+    return privateJson({ error: "wiki_history_unavailable" }, 503);
   }
-  return NextResponse.json({ error: msg || "erreur" }, { status: 400 });
+  return privateJson({ error: "internal_error" }, 500);
 }
