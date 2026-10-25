@@ -20,7 +20,7 @@
 import { useEffect, useId, useMemo, useState, type ReactNode } from "react";
 import { Dialog, DialogClose, DialogPopup, DialogTitle } from "@aphrody/shenron-ui/dialog";
 import { Croix, Scouter } from "@aphrody/shenron-ui/icones";
-import { useT } from "@/components/T";
+import { useWikiExplorerText as useT } from "@/lib/wiki-explorer-text";
 import { STICKY_TOP } from "@/components/wiki/fiche-layout";
 
 /** Normalise pour comparer sans accents ni casse (recherche tolérante). */
@@ -32,10 +32,10 @@ export function normaliser(s: string): string {
     .trim();
 }
 
-function useLibelles() {
+function useWikiListLabels() {
   const t = useT();
-  return (cle: string, repli: string, values?: Record<string, string | number>) =>
-    t(`wikiCoeur.list.${cle}`, values) || repli;
+  return (key: string, values?: Record<string, string | number>) =>
+    t(`wikiExplorer.list.${key}`, values);
 }
 
 export function WikiListLayout({
@@ -63,7 +63,8 @@ export function WikiListLayout({
   resultLabel: ReactNode;
   children: ReactNode;
 }) {
-  const l = useLibelles();
+  const l = useWikiListLabels();
+  const t = useT();
   const [sheet, setSheet] = useState(false);
 
   // La feuille ne sert qu'au téléphone : passée en grand écran (rotation,
@@ -77,7 +78,7 @@ export function WikiListLayout({
     return () => mq.removeEventListener("change", close);
   }, [sheet]);
 
-  const titreFiltres = l("filters", "Filtres");
+  const titreFiltres = l("filters");
   const effacer = activeCount > 0 && onReset && (
     <button
       type="button"
@@ -85,7 +86,7 @@ export function WikiListLayout({
       className="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 text-[13px] font-semibold text-white/65 transition-colors hover:text-dbz-orange focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
     >
       <Croix className="h-3.5 w-3.5" aria-hidden />
-      {l("reset", "Tout effacer")}
+      {l("reset")}
     </button>
   );
 
@@ -141,13 +142,35 @@ export function WikiListLayout({
             {filters}
           </aside>
         )}
-        <div className="min-w-0">{children}</div>
+        <div className="min-w-0">
+          {resultCount === 0 && onReset ? (
+            <div className="rounded-xl border border-os/20 bg-os/[0.03] p-6 sm:p-8">
+              <h2 className="font-display text-xl font-semibold text-os">
+                {t("wikiExplorer.emptyTitle")}
+              </h2>
+              <p className="mt-2 max-w-prose text-base leading-relaxed text-os/80">
+                {t("wikiExplorer.emptyHint")}
+              </p>
+              {onReset && (
+                <button
+                  type="button"
+                  onClick={onReset}
+                  className="mt-5 min-h-11 rounded-lg bg-dbz-orange px-4 font-semibold text-encre focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-dbz-orange"
+                >
+                  {t("wikiExplorer.reset")}
+                </button>
+              )}
+            </div>
+          ) : (
+            children
+          )}
+        </div>
       </div>
 
       {filters && (
         <Dialog open={sheet} onOpenChange={setSheet}>
           <DialogPopup
-            closeLabel={l("close", "Fermer")}
+            closeLabel={l("close")}
             className="mt-auto flex max-h-[85dvh] max-w-xl flex-col self-end rounded-xl p-0 shadow-none sm:p-0 data-[ending-style]:translate-y-6 data-[ending-style]:scale-100 data-[starting-style]:translate-y-6 data-[starting-style]:scale-100 motion-reduce:transition-none"
           >
             <div className="border-b border-white/10 px-5 pb-4 pt-5 pr-16">
@@ -159,7 +182,7 @@ export function WikiListLayout({
             <div className="flex items-center gap-3 border-t border-white/10 px-5 py-4">
               {effacer}
               <DialogClose className="ml-auto inline-flex min-h-11 items-center rounded-xl bg-dbz-orange px-5 font-display text-sm font-bold text-black transition-colors hover:bg-dbz-yellow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-                {l("show", `Voir ${resultCount} résultats`, { count: resultCount })}
+                {l("show", { count: resultCount })}
               </DialogClose>
             </div>
           </DialogPopup>
@@ -182,38 +205,45 @@ export function WikiSearchField({
   label: string;
   placeholder?: string;
 }) {
-  const l = useLibelles();
+  const l = useWikiListLabels();
+  const id = useId();
   return (
-    <div className="relative">
-      <svg
-        className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        aria-hidden
-      >
-        <circle cx="11" cy="11" r="8" />
-        <path d="m21 21-4.3-4.3" />
-      </svg>
-      <input
-        type="search"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder ?? label}
-        aria-label={label}
-        className="h-11 w-full rounded-xl border border-white/[0.12] bg-white/[0.04] pl-11 pr-12 text-base text-white placeholder:text-white/45 transition-colors focus:border-dbz-orange/60 focus:bg-white/[0.06] focus:outline-none sm:text-sm"
-      />
-      {value && (
-        <button
-          type="button"
-          onClick={() => onChange("")}
-          aria-label={l("clear", "Effacer la recherche")}
-          className="absolute right-0 top-0 grid h-11 w-11 place-items-center rounded-xl text-white/55 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-dbz-orange"
+    <div className="space-y-2">
+      <label htmlFor={id} className="block text-sm font-semibold text-os">
+        {label}
+      </label>
+      <div className="relative">
+        <svg
+          className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          aria-hidden
         >
-          <Croix className="h-4 w-4" aria-hidden />
-        </button>
-      )}
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+        <input
+          id={id}
+          type="search"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder ?? label}
+          aria-label={label}
+          className="h-11 w-full rounded-xl border border-white/[0.12] bg-white/[0.04] pl-11 pr-12 text-base text-white placeholder:text-white/45 transition-colors focus:border-dbz-orange/60 focus:bg-white/[0.06] focus:outline-none sm:text-sm"
+        />
+        {value && (
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            aria-label={l("clear")}
+            className="absolute right-0 top-0 grid h-11 w-11 place-items-center rounded-xl text-white/55 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-dbz-orange"
+          >
+            <Croix className="h-4 w-4" aria-hidden />
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -235,7 +265,7 @@ export function WikiFacet({
   selected: readonly string[];
   onChange: (next: string[]) => void;
 }) {
-  const l = useLibelles();
+  const l = useWikiListLabels();
   const id = useId();
   const [q, setQ] = useState("");
   const selectedSet = useMemo(() => new Set(selected), [selected]);
@@ -263,10 +293,10 @@ export function WikiFacet({
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder={l("facetSearch", `Filtrer ${title.toLowerCase()}…`, {
+          placeholder={l("facetSearch", {
             title: title.toLowerCase(),
           })}
-          aria-label={l("facetSearchLabel", `Rechercher dans ${title}`, { title })}
+          aria-label={l("facetSearchLabel", { title })}
           aria-controls={`${id}-options`}
           className="h-11 w-full rounded-xl border border-white/10 bg-white/[0.05] px-3 text-base text-white placeholder:text-white/45 focus:border-dbz-orange/60 focus:outline-none sm:text-sm"
         />
@@ -275,9 +305,7 @@ export function WikiFacet({
         id={`${id}-options`}
         className="max-h-72 space-y-0.5 overflow-y-auto pr-1 [scrollbar-width:thin]"
       >
-        {shown.length === 0 && (
-          <p className="px-1 py-2 text-xs text-white/50">{l("noOption", "Aucune option.")}</p>
-        )}
+        {shown.length === 0 && <p className="px-1 py-2 text-xs text-white/50">{l("noOption")}</p>}
         {shown.map((o) => {
           const on = selectedSet.has(o.value);
           return (
@@ -293,7 +321,7 @@ export function WikiFacet({
                 onChange={() => toggle(o.value)}
                 className="h-4 w-4 shrink-0 accent-dbz-orange"
               />
-              <span className="flex-1 truncate">{o.label}</span>
+              <span className="min-w-0 flex-1 whitespace-normal break-words py-2">{o.label}</span>
               {typeof o.count === "number" && (
                 <span className="shrink-0 text-[11px] tabular-nums text-white/55">{o.count}</span>
               )}
@@ -345,7 +373,7 @@ export function WikiChoice({
                 onChange={() => onChange(o.value)}
                 className="h-4 w-4 shrink-0 accent-dbz-orange"
               />
-              <span className="flex-1 truncate">{o.label}</span>
+              <span className="min-w-0 flex-1 whitespace-normal break-words py-2">{o.label}</span>
               {typeof o.count === "number" && (
                 <span className="shrink-0 text-[11px] tabular-nums text-white/55">{o.count}</span>
               )}

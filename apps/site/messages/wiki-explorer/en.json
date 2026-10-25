@@ -1,0 +1,48 @@
+{
+  "wikiExplorer": {
+    "home": "Encyclopedia",
+    "browse": "All categories",
+    "navigation": "Wiki categories",
+    "searchLabel": "Search the wiki",
+    "placeholder": "Character, technique, place, work…",
+    "search": "Search",
+    "emptyTitle": "No results with these filters",
+    "emptyHint": "Try another term or reset the filters to broaden your search.",
+    "reset": "Reset filters",
+    "categories": {
+      "characters": "Characters",
+      "races": "Races",
+      "transformations": "Transformations",
+      "techniques": "Techniques",
+      "sagas": "Sagas",
+      "power-levels": "Power levels & Scouter",
+      "items": "Items & technology",
+      "locations": "Places & sanctuaries",
+      "events": "Events",
+      "music": "Music & OST",
+      "movies": "Movies",
+      "episodes": "Episodes",
+      "manga": "Manga",
+      "games": "Games",
+      "databooks": "Databooks",
+      "timeline": "Timeline",
+      "tools": "Tools",
+      "contribute": "Contribute",
+      "canon": "Canon & sources",
+      "interviews": "Interviews",
+      "toriyama": "Akira Toriyama",
+      "staff": "Staff & contributors",
+      "random": "Random article"
+    },
+    "list": {
+      "filters": "Filters",
+      "reset": "Clear all",
+      "close": "Close",
+      "show": "Show {count} results",
+      "clear": "Clear search",
+      "facetSearch": "Filter {title}…",
+      "facetSearchLabel": "Search in {title}",
+      "noOption": "No options."
+    }
+  }
+}

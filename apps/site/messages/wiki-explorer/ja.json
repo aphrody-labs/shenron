@@ -1,0 +1,48 @@
+{
+  "wikiExplorer": {
+    "home": "百科事典",
+    "browse": "すべてのカテゴリ",
+    "navigation": "Wikiのカテゴリ",
+    "searchLabel": "Wiki内を検索",
+    "placeholder": "キャラクター、技、場所、作品…",
+    "search": "検索",
+    "emptyTitle": "条件に一致する結果がありません",
+    "emptyHint": "別のキーワードを試すか、絞り込みを解除してください。",
+    "reset": "絞り込みを解除",
+    "categories": {
+      "characters": "キャラクター",
+      "races": "種族",
+      "transformations": "変身",
+      "techniques": "技",
+      "sagas": "編",
+      "power-levels": "戦闘力とスカウター",
+      "items": "道具と技術",
+      "locations": "場所と聖地",
+      "events": "出来事",
+      "music": "音楽・OST",
+      "movies": "映画",
+      "episodes": "エピソード",
+      "manga": "漫画",
+      "games": "ゲーム",
+      "databooks": "資料集",
+      "timeline": "年表",
+      "tools": "ツール",
+      "contribute": "投稿する",
+      "canon": "正史と出典",
+      "interviews": "インタビュー",
+      "toriyama": "鳥山明",
+      "staff": "スタッフ・貢献者",
+      "random": "ランダムな記事"
+    },
+    "list": {
+      "filters": "絞り込み",
+      "reset": "すべて解除",
+      "close": "閉じる",
+      "show": "{count}件の結果を表示",
+      "clear": "検索をクリア",
+      "facetSearch": "{title}を絞り込む…",
+      "facetSearchLabel": "{title}内を検索",
+      "noOption": "選択肢がありません。"
+    }
+  }
+}
