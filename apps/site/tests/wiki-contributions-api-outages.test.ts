@@ -5,8 +5,13 @@ let authFails = true;
 let listFails = false;
 let valueReadFails = false;
 let rowIsMissing = false;
+let rightsFail = false;
+let createCalls = 0;
 
 mock.module("server-only", () => ({}));
+mock.module("@/lib/memory-rate-limit", () => ({
+  createMemoryRateLimiter: () => ({ consume: async () => ({ limited: false, retryAfter: 0 }) }),
+}));
 mock.module("@/lib/session", () => ({
   getCurrentUser: async () => {
     if (authFails) throw new Error("auth store unavailable");
@@ -19,7 +24,10 @@ mock.module("@/lib/wiki-contributions", () => ({
     code = "test_error";
     status = 400;
   },
-  createContribution: async () => null,
+  createContribution: async () => {
+    createCalls++;
+    return null;
+  },
   listContributions: async () => {
     if (listFails) throw new Error("database unavailable");
     return { rows: [], total: 0, limit: 20, offset: 0 };
@@ -28,7 +36,10 @@ mock.module("@/lib/wiki-contributions", () => ({
   withdrawContribution: async () => undefined,
 }));
 mock.module("@/lib/contribution-rights", () => ({
-  canContribute: async () => false,
+  canContribute: async () => {
+    if (rightsFail) throw new Error("rights store unavailable");
+    return false;
+  },
   scopeOf: () => "wiki",
 }));
 mock.module("@/lib/wiki-admin", () => ({
@@ -57,6 +68,8 @@ describe("API des contributions : indisponibilité des dépendances", () => {
     listFails = false;
     valueReadFails = false;
     rowIsMissing = false;
+    rightsFail = false;
+    createCalls = 0;
   });
 
   test("l'indisponibilité de session répond 503 et reste non cachable", async () => {
@@ -104,5 +117,45 @@ describe("API des contributions : indisponibilité des dépendances", () => {
 
     expect(response.status).toBe(404);
     expect(((await response.json()) as { error: string }).error).toBe("not_found");
+  });
+
+  test("la panne des droits de contribution répond 503 et n'écrit rien", async () => {
+    authFails = false;
+    rightsFail = true;
+    const response = await contributions.POST(
+      new NextRequest(new URL("/api/wiki/contributions", "http://localhost:3000"), {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          table: "db_characters",
+          rowId: "1",
+          column: "name",
+          valueAfter: "Son Goku",
+        }),
+      }),
+    );
+
+    expect(response.status).toBe(503);
+    expect(response.headers.get("Cache-Control")).toBe("private, no-store");
+    expect(response.headers.get("Retry-After")).toBe("30");
+    expect(((await response.json()) as { error: string }).error).toBe("rights_unavailable");
+    expect(createCalls).toBe(0);
+  });
+
+  test("POST et DELETE ne confondent plus panne de session et absence de connexion", async () => {
+    const post = await contributions.POST(
+      new NextRequest(new URL("/api/wiki/contributions", "http://localhost:3000"), {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: "{}",
+      }),
+    );
+    const remove = await contributions.DELETE(req("/api/wiki/contributions?id=1"));
+
+    for (const response of [post, remove]) {
+      expect(response.status).toBe(503);
+      expect(response.headers.get("Cache-Control")).toBe("private, no-store");
+      expect(((await response.json()) as { error: string }).error).toBe("auth_unavailable");
+    }
   });
 });

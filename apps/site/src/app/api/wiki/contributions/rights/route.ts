@@ -16,6 +16,13 @@ import { CONTRIBUTION_SCOPES, scopeOf } from "@/lib/contribution-rights-shared";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+function unavailable(error: string): NextResponse {
+  return NextResponse.json(
+    { ok: false, error },
+    { status: 503, headers: { "cache-control": "private, no-store", "retry-after": "30" } },
+  );
+}
+
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const table = req.nextUrl.searchParams.get("table") ?? "";
   const scope = table ? scopeOf(table) : "wiki";
@@ -23,15 +30,26 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ ok: false, error: "bad_request" }, { status: 400 });
   }
 
-  const session = await getCurrentUser().catch(() => null);
+  let session: Awaited<ReturnType<typeof getCurrentUser>>;
+  try {
+    session = await getCurrentUser();
+  } catch (err) {
+    console.error("[contributions/rights] session lookup failed", err);
+    return unavailable("auth_unavailable");
+  }
   const authenticated = !!session?.user?.id;
-  const isAdmin = authenticated ? await isCurrentUserAdmin().catch(() => false) : false;
-
-  const allowed = await canContribute(scope, {
-    isAdmin,
-    authenticated,
-    discordId: session?.user?.discordId ?? session?.discordId ?? null,
-  });
+  let allowed: boolean;
+  try {
+    const isAdmin = authenticated ? await isCurrentUserAdmin() : false;
+    allowed = await canContribute(scope, {
+      isAdmin,
+      authenticated,
+      discordId: session?.user?.discordId ?? session?.discordId ?? null,
+    });
+  } catch (err) {
+    console.error("[contributions/rights] rights lookup failed", err);
+    return unavailable("rights_unavailable");
+  }
 
   return NextResponse.json(
     { ok: true, scope, allowed, authenticated },

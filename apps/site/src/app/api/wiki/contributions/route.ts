@@ -48,16 +48,21 @@ const contributionRateLimit = createMemoryRateLimiter({
   namespace: "wiki-contributions",
 });
 
-async function me() {
-  try {
-    return await getCurrentUser();
-  } catch {
-    return null;
-  }
+function unavailable(error: string): NextResponse {
+  return NextResponse.json(
+    { ok: false, error },
+    { status: 503, headers: { "Cache-Control": "private, no-store", "Retry-After": "30" } },
+  );
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  const session = await me();
+  let session: Awaited<ReturnType<typeof getCurrentUser>>;
+  try {
+    session = await getCurrentUser();
+  } catch (err) {
+    console.error("[contributions] session lookup failed", err);
+    return unavailable("auth_unavailable");
+  }
   if (!session?.user?.id) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
   }
@@ -85,13 +90,23 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   // Droit de contribution du périmètre visé (wiki / databooks), réglé depuis
   // l'admin. Vérifié ICI et pas seulement dans l'interface : le bouton peut
   // être masqué côté client, la route reste appelable directement.
-  const autorise = await canContribute(scopeOf(parsed.table), {
-    isAdmin: await isCurrentUserAdmin().catch(() => false),
-    authenticated: true,
-    discordId: session.user.discordId ?? session.discordId ?? null,
-  });
+  let autorise: boolean;
+  try {
+    const isAdmin = await isCurrentUserAdmin();
+    autorise = await canContribute(scopeOf(parsed.table), {
+      isAdmin,
+      authenticated: true,
+      discordId: session.user.discordId ?? session.discordId ?? null,
+    });
+  } catch (err) {
+    console.error("[contributions] rights lookup failed", err);
+    return unavailable("rights_unavailable");
+  }
   if (!autorise) {
-    return NextResponse.json({ ok: false, error: "not_allowed" }, { status: 403 });
+    return NextResponse.json(
+      { ok: false, error: "not_allowed" },
+      { status: 403, headers: { "Cache-Control": "private, no-store" } },
+    );
   }
 
   try {
@@ -123,7 +138,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 }
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  let session: Awaited<ReturnType<typeof me>>;
+  let session: Awaited<ReturnType<typeof getCurrentUser>>;
   try {
     session = await getCurrentUser();
   } catch (err) {
@@ -161,7 +176,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 }
 
 export async function DELETE(req: NextRequest): Promise<NextResponse> {
-  const session = await me();
+  let session: Awaited<ReturnType<typeof getCurrentUser>>;
+  try {
+    session = await getCurrentUser();
+  } catch (err) {
+    console.error("[contributions] session lookup failed", err);
+    return unavailable("auth_unavailable");
+  }
   if (!session?.user?.id) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
   }

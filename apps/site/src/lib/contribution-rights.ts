@@ -6,7 +6,8 @@
  * databooks), piloté depuis /admin/wiki/contributions.
  *
  * Même mécanique que `wiki-launch-config` : singleton jsonb + cache mémoire à
- * TTL court, jamais de throw (repli sur les défauts). La route de dépôt
+ * TTL court. Une panne de lecture doit échouer fermée, jamais rétablir les
+ * droits par défaut. La route de dépôt
  * l'appelle sur chaque proposition, l'UI une fois à l'ouverture de la modale.
  */
 import "server-only";
@@ -28,6 +29,13 @@ import { getMemberRoleIds } from "@/lib/member-roles";
 
 const SINGLETON_ID = "default";
 const TTL_MS = 30_000;
+
+export class ContributionRightsUnavailableError extends Error {
+  constructor(options?: ErrorOptions) {
+    super("Contribution rights are unavailable", options);
+    this.name = "ContributionRightsUnavailableError";
+  }
+}
 
 let cache: { rights: ContributionRights; ts: number } | null = null;
 
@@ -61,7 +69,7 @@ function sanitizeRights(raw: unknown): ContributionRights {
   return out;
 }
 
-/** Droit courant. Ne throw jamais : en cas de panne DB on garde le défaut. */
+/** Droit courant. Une panne DB est distincte d'une table vide et reste fermée. */
 export async function getContributionRights(): Promise<ContributionRights> {
   const now = Date.now();
   if (cache && now - cache.ts < TTL_MS) return cache.rights;
@@ -75,8 +83,8 @@ export async function getContributionRights(): Promise<ContributionRights> {
     cache = { rights, ts: now };
     return rights;
   } catch (e) {
-    console.error("[contribution-rights] lecture impossible, repli sur les défauts", e);
-    return DEFAULT_CONTRIBUTION_RIGHTS;
+    console.error("[contribution-rights] lecture impossible", e);
+    throw new ContributionRightsUnavailableError({ cause: e });
   }
 }
 
