@@ -42,13 +42,18 @@ markdown `# Tome N` avec un bloc par case/bulle dans l'ordre de lecture.
 
 ## Pipeline de production
 
-La chaîne opérationnelle couvre **Dragon Ball** (`DB`, 42 tomes réguliers + 2
-Full Color) et **Dragon Ball Super** (`DBS`, 103 chapitres). Elle n'infère jamais
-l'identité d'une planche depuis la sortie du modèle : le `manifest.json` signé
-par SHA-256 fait autorité.
+La chaîne opérationnelle accepte les séries qui identifient explicitement une
+édition : **Dragon Ball** (`DB`, `DBFC` pour le corpus français couleur et
+`DBKZ` pour le Full Color japonais) et **Dragon Ball Super** (`DBS`). Les chemins
+et manifestes gardent ces séries séparées pour éviter de confondre deux pages
+du même numéro. Dragon Ball Super n'a pas d'édition couleur publiée : aucune
+série couleur fictive n'est créée pour cette œuvre. Les codes couleur ne
+permettent pas non plus d'importer une source dont les droits ou la provenance
+ne sont pas documentés. Le manifeste signé par SHA-256 reste l'autorité sur
+l'identité des fichiers et des planches.
 
 ```text
-assets/manga/{DB,DBS}/**/*.webp
+assets/manga/{DB,DBS,DBFC,DBKZ}/**/*.{webp,jpg,jpeg,png}
   → export-manga-ocr.ts
   → runs/corpus-<sha>/lot-NNN/{manifest.json,images/*.jpg}
   → run-manga-ocr.ts → detections.jsonl (PP-OCRv5)
@@ -69,9 +74,12 @@ bun packages/pipeline/scripts/export-manga-ocr.ts --sortie data/manga-ocr
 ```
 
 Le mode par défaut ne sélectionne que les planches sans texte dans le réplica
-SQLite. `--tout` prépare une retranscription complète ; `--series DB` ou
-`--series DBS` borne le corpus ; `--id DB:vol1:3` peut être répété pour un lot QA
-exact ; `--plan` n'écrit rien. Avant un export sur le
+SQLite. `--tout` prépare une retranscription complète ; `--series DB`,
+`--series DBS`, `--series DBFC` ou `--series DBKZ` borne le corpus
+(`--series DBFC,DBKZ` sélectionne les deux éditions couleur) ; `--id DB:vol1:3`
+ou `--id DBKZ:vol01:3` peut être répété pour un lot QA exact ; `--plan` n'écrit
+rien. Les scans doivent déjà être présents sous le code d'édition correspondant
+et avoir une provenance éditoriale qualifiée. Avant un export sur le
 VPS, laisser le reverse-sync PostgreSQL → SQLite terminer afin que le filtre des
 planches manquantes parte d'un réplica frais.
 
@@ -79,7 +87,8 @@ Un run est immuable et adressé par le SHA-256 des sources et des paramètres de
 réduction. `data/manga-ocr/current.json` pointe vers le run courant. Chaque
 entrée de lot porte :
 
-- l'identité stable `DB:vol12:7` ou `DBS:ch1315:29` ;
+- l'identité stable `DB:vol12:7`, `DBS:ch1315:29`, `DBFC:vol12:7` ou
+  `DBKZ:vol01:7` ; le code de série fait partie de la clé unique ;
 - le chemin source, sa taille et son SHA-256 ;
 - l'image OCR réduite, sa taille et son SHA-256 ;
 - la collection (`regular`, `fullcolor/...`, `principal`) et l'état déjà

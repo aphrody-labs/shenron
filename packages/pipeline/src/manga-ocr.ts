@@ -3,7 +3,14 @@ import { basename, dirname, join } from "node:path";
 
 export const MANGA_MANIFEST_SCHEMA_VERSION = 1 as const;
 export const MANGA_REVIEW_PROMPT_VERSION = 4 as const;
-export const MANGA_SERIES = ["DB", "DBS"] as const;
+/**
+ * Catalog series are edition-scoped identifiers. DBFC is the French color
+ * corpus and DBKZ the Japanese Shueisha Full Color corpus; they must never be
+ * collapsed into DB/DBS because the editorial key is (series, volume, page).
+ * Dragon Ball Super has no published color edition and is intentionally not
+ * assigned a synthetic color series.
+ */
+export const MANGA_SERIES = ["DB", "DBS", "DBFC", "DBKZ"] as const;
 
 export type MangaSeries = (typeof MANGA_SERIES)[number];
 
@@ -27,7 +34,9 @@ export interface MangaOcrManifest {
   lot: number;
   lots: number;
   generatedAt: string;
-  generator: "apps/bot/scripts/export-manga-ocr.ts";
+  generator:
+    | "apps/bot/scripts/export-manga-ocr.ts"
+    | "packages/pipeline/scripts/export-manga-ocr.ts";
   selection: "missing" | "all" | "ids";
   series: MangaSeries[];
   imagePipeline: {
@@ -183,8 +192,9 @@ export function identifyMangaAsset(
   const source = relativePath.replaceAll("\\", "/").replace(/^\.\//, "");
   const parts = source.split("/").filter(Boolean);
   if (parts.length < 3 || !IMAGE_EXT.test(parts.at(-1) ?? "")) return null;
-  const series = parts[0];
-  if (series !== "DB" && series !== "DBS") return null;
+  const seriesCandidate = parts[0];
+  if (!seriesCandidate || !MANGA_SERIES.includes(seriesCandidate as MangaSeries)) return null;
+  const series = seriesCandidate as MangaSeries;
   const tome = parts.at(-2);
   const filename = parts.at(-1);
   if (!tome || !filename) return null;
@@ -237,8 +247,7 @@ export function assertMangaManifest(value: unknown): asserts value is MangaOcrMa
   const images = new Set<string>();
   for (const entry of manifest.entries) {
     if (!entry || typeof entry !== "object") throw new Error("entrée de manifeste invalide");
-    if (entry.series !== "DB" && entry.series !== "DBS")
-      throw new Error(`série refusée: ${entry.series}`);
+    if (!MANGA_SERIES.includes(entry.series)) throw new Error(`série refusée: ${entry.series}`);
     if (entry.id !== mangaPageId(entry.series, entry.tome, entry.planche)) {
       throw new Error(`identité incohérente: ${entry.id}`);
     }

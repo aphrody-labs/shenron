@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { mkdir, stat } from "node:fs/promises";
 import { join } from "node:path";
 /**
- * Exporte Dragon Ball et Dragon Ball Super en lots OCR immuables et vérifiables.
+ * Exporte les éditions manga prises en charge en lots OCR immuables et vérifiables.
  *
  * Par défaut, seules les planches absentes de `db_manga_pages` sont exportées.
  * Chaque run est adressé par le SHA-256 du corpus et de ses paramètres : une
@@ -12,12 +12,12 @@ import { join } from "node:path";
  *
  * Usage :
  *   bun scripts/export-manga-ocr.ts --sortie ../../data/manga-ocr
- *   bun scripts/export-manga-ocr.ts --series DB,DBS --taille 100 --plan
+ *   bun scripts/export-manga-ocr.ts --assets ./scans-authorises --series DBKZ --plan
+ *   bun scripts/export-manga-ocr.ts --series DB,DBS,DBFC,DBKZ --taille 100 --plan
  *   bun scripts/export-manga-ocr.ts --id DB:vol1:3 --id DBS:ch1315:1
  *   bun scripts/export-manga-ocr.ts --tout --force
  */
 import { Glob } from "bun";
-import sharp from "sharp";
 import {
   atomicWriteJson,
   identifyMangaAsset,
@@ -51,7 +51,7 @@ const positiveInteger = (name: string, fallback: number, min: number, max: numbe
 };
 
 const BOT_ROOT = join(import.meta.dir, "..");
-const MANGA_ROOT = join(BOT_ROOT, "assets", "manga");
+const MANGA_ROOT = option("assets") ?? join(BOT_ROOT, "assets", "manga");
 const DATABASE = option("database") ?? join(BOT_ROOT, "data", "bot.db");
 const OUTPUT_ROOT = option("sortie") ?? join(BOT_ROOT, "..", "..", "data", "manga-ocr");
 const LOT_SIZE = positiveInteger("taille", 100, 1, 1_000);
@@ -87,7 +87,7 @@ if (
   requestedSeries.length === 0 ||
   requestedSeries.some((value) => !MANGA_SERIES.includes(value as MangaSeries))
 ) {
-  throw new Error("--series accepte uniquement DB, DBS ou DB,DBS");
+  throw new Error(`--series accepte les codes suivants : ${MANGA_SERIES.join(", ")}`);
 }
 const SERIES = [...new Set(requestedSeries)] as MangaSeries[];
 
@@ -135,7 +135,7 @@ function existingTranscriptions(): Set<string> {
 }
 
 const discovered: Array<ReturnType<typeof identifyMangaAsset> & { absolute: string }> = [];
-for await (const relative of new Glob("**/*.webp").scan(MANGA_ROOT)) {
+for await (const relative of new Glob("**/*.{webp,jpg,jpeg,png}").scan(MANGA_ROOT)) {
   const identity = identifyMangaAsset(relative);
   if (!identity || !SERIES.includes(identity.series)) continue;
   discovered.push({
@@ -182,6 +182,10 @@ console.log(
 );
 
 if (selected.length === 0) {
+  if (PLAN) {
+    console.log("✓ aucune planche à exporter (simulation — aucune écriture)");
+    process.exit(0);
+  }
   await mkdir(OUTPUT_ROOT, { recursive: true });
   await atomicWriteJson(join(OUTPUT_ROOT, "current.json"), {
     schemaVersion: MANGA_MANIFEST_SCHEMA_VERSION,
@@ -256,12 +260,10 @@ for (let lot = 1; lot <= totalLots; lot++) {
     const imagePath = join(imagesRoot, imageName);
     if (FORCE || !existsSync(imagePath)) {
       const temporary = `${imagePath}.${process.pid}.tmp.jpg`;
-      await sharp(entry.absolute)
-        .rotate()
-        .resize({ width: WIDTH, withoutEnlargement: true })
-        .jpeg({ quality: QUALITY, mozjpeg: true })
-        .toFile(temporary);
-      await Bun.file(temporary).exists();
+      await new Bun.Image(entry.absolute)
+        .resize(WIDTH, undefined, { withoutEnlargement: true })
+        .jpeg({ quality: QUALITY })
+        .write(temporary);
       await import("node:fs/promises").then(({ rename }) => rename(temporary, imagePath));
     }
     const imageInfo = await stat(imagePath);
@@ -286,7 +288,7 @@ for (let lot = 1; lot <= totalLots; lot++) {
     lot,
     lots: totalLots,
     generatedAt: new Date().toISOString(),
-    generator: "apps/bot/scripts/export-manga-ocr.ts",
+    generator: "packages/pipeline/scripts/export-manga-ocr.ts",
     selection,
     series: SERIES,
     imagePipeline: { width: WIDTH, quality: QUALITY, format: "jpeg" },
@@ -314,7 +316,7 @@ const corpusManifest = {
   schemaVersion: MANGA_MANIFEST_SCHEMA_VERSION,
   runId,
   generatedAt: new Date().toISOString(),
-  generator: "apps/bot/scripts/export-manga-ocr.ts",
+  generator: "packages/pipeline/scripts/export-manga-ocr.ts",
   selection,
   series: SERIES,
   corpusSha256,

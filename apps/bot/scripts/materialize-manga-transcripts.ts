@@ -26,7 +26,7 @@ if (
   requested.length === 0 ||
   requested.some((value) => !MANGA_SERIES.includes(value as MangaSeries))
 ) {
-  throw new Error("--series accepte uniquement DB, DBS ou DB,DBS");
+  throw new Error(`--series accepte les codes suivants : ${MANGA_SERIES.join(", ")}`);
 }
 const series = [...new Set(requested)] as MangaSeries[];
 

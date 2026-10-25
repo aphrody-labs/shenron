@@ -21,11 +21,16 @@
     "lot": { "type": "integer", "minimum": 1 },
     "lots": { "type": "integer", "minimum": 1 },
     "generatedAt": { "type": "string", "format": "date-time" },
-    "generator": { "const": "apps/bot/scripts/export-manga-ocr.ts" },
+    "generator": {
+      "enum": [
+        "apps/bot/scripts/export-manga-ocr.ts",
+        "packages/pipeline/scripts/export-manga-ocr.ts"
+      ]
+    },
     "selection": { "enum": ["missing", "all", "ids"] },
     "series": {
       "type": "array",
-      "items": { "enum": ["DB", "DBS"] },
+      "items": { "enum": ["DB", "DBS", "DBFC", "DBKZ"] },
       "minItems": 1,
       "uniqueItems": true
     },
@@ -62,13 +67,13 @@
         "properties": {
           "id": {
             "type": "string",
-            "pattern": "^(DB|DBS):(?:vol|t|ch)[0-9]+:[1-9][0-9]*$"
+            "pattern": "^(DB|DBS|DBFC|DBKZ):(?:vol|t|ch)[0-9]+:[1-9][0-9]*$"
           },
-          "series": { "enum": ["DB", "DBS"] },
+          "series": { "enum": ["DB", "DBS", "DBFC", "DBKZ"] },
           "collection": { "type": "string", "minLength": 1 },
           "tome": { "type": "string", "pattern": "^(?:vol|t|ch)[0-9]+$" },
           "planche": { "type": "integer", "minimum": 1 },
-          "source": { "type": "string", "pattern": "^assets/manga/(DB|DBS)/" },
+          "source": { "type": "string", "pattern": "^assets/manga/(DB|DBS|DBFC|DBKZ)/" },
           "sourceSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
           "sourceBytes": { "type": "integer", "minimum": 1 },
           "image": { "type": "string", "pattern": "^images/.+\\.jpg$" },
