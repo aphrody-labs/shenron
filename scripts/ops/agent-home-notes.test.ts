@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterEach, expect, test } from "bun:test";
-import { mkdtempSync, rmSync, symlinkSync } from "node:fs";
+import { mkdtempSync, rmSync, statSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join, resolve, sep } from "node:path";
 import { Database } from "bun:sqlite";
@@ -113,6 +113,25 @@ test("rejects public promotion, unsafe identifiers, sensitive content and unrevi
     expect(() => validateNote({ ...note, ...patch })).toThrow();
 });
 
+test("a reviewed observation cannot cite a scan SHA omitted from declared source archives", async () => {
+  const { home, note } = await fixture();
+  const missing = sha256("Another reviewed scan");
+  note.observations += ` Source SHA-256 ${missing}.`;
+  await expect(prepareNote(JSON.stringify(note), home)).rejects.toThrow(
+    "must be declared and archived",
+  );
+  await Bun.write(join(home, "another-scan.txt"), "Another reviewed scan");
+  note.sources.push({
+    file: "another-scan.txt",
+    sha256: missing,
+    locator: "Second inspected panel",
+  });
+  const prepared = await prepareNote(JSON.stringify(note), home);
+  const receipt = await importNote(home, prepared, { apply: true });
+  expect(receipt.attachments).toHaveLength(2);
+  expect(await Bun.file(receipt.attachments[1]!).text()).toBe("Another reviewed scan");
+});
+
 test("refuses a memory destination redirected outside the active home", async () => {
   const { home, prepared } = await fixture();
   const outside = mkdtempSync(join(tmpdir(), "shenron-outside-"));
@@ -183,3 +202,17 @@ test("archived attachments survive deletion of the temporary source; reviewed no
   await Bun.write(join(home, "memory", prepared.note.id + ".md"), "Unreviewed modification");
   await expect(indexPrivateNotes(home, true)).rejects.toThrow("review and import");
 });
+
+test.skipIf(process.platform === "win32")(
+  "private VFS is mode 0600 before note chunking and stays private after atomic replacement",
+  async () => {
+    const { home, prepared } = await fixture();
+    await importNote(home, prepared, { apply: true });
+    const output = join(home, "notes", "private-notes-vfs.sqlite");
+    const receipt = await indexPrivateNotes(home, true, async (text) => {
+      expect(statSync(output + `.${process.pid}.tmp`).mode & 0o777).toBe(0o600);
+      return [{ text }];
+    });
+    expect(statSync(receipt.output).mode & 0o777).toBe(0o600);
+  },
+);

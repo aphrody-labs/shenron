@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Private derived VFS for notes reviewed by the bridge; uses Shenron's existing RAG writer. */
 import { Database } from "bun:sqlite";
-import { mkdirSync, renameSync, rmSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, renameSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { createRagWriter } from "../../packages/db/src/vfs/build";
 import { openShenronVfs } from "../../packages/db/src/vfs";
@@ -49,19 +49,18 @@ export async function chunkReviewedMarkdown(text: string): Promise<{ text: strin
   return chunks;
 }
 
-export async function indexPrivateNotes(
-  home: string,
-  apply = false,
-  chunker = chunkReviewedMarkdown,
-) {
+/** Shared validated review registry: navigation and retrieval use the same current-note gate. */
+export async function readReviewedPrivateNotes(home: string) {
   const reviews = join(home, "notes", "reviews");
   const docs: { id: string; title: string; text: string; reviewedAt: string }[] = [];
   ownedDirectory(home, reviews);
+  if (!existsSync(reviews)) return docs;
   for await (const filename of new Bun.Glob("*.json").scan({
     cwd: reviews,
     onlyFiles: true,
     throwErrorOnBrokenSymlink: true,
   })) {
+    if (filename.endsWith(".manifest.json")) continue;
     const reviewPath = join(reviews, filename);
     ownedDirectory(home, reviewPath);
     const review = await Bun.file(reviewPath).json();
@@ -83,6 +82,15 @@ export async function indexPrivateNotes(
       throw new Error("Curated note changed; review and import it again before indexing");
     docs.push({ id: review.id, title: review.title, text, reviewedAt: review.reviewedAt });
   }
+  return docs.toSorted((a, b) => a.id.localeCompare(b.id));
+}
+
+export async function indexPrivateNotes(
+  home: string,
+  apply = false,
+  chunker = chunkReviewedMarkdown,
+) {
+  const docs = await readReviewedPrivateNotes(home);
   if (docs.length === 0) throw new Error("No reviewed notes available; no index was created");
   const output = join(home, "notes", "private-notes-vfs.sqlite");
   ownedDirectory(home, output);
@@ -99,7 +107,16 @@ export async function indexPrivateNotes(
     const temp = output + `.${process.pid}.tmp`;
     if (await Bun.file(temp).exists()) throw new Error("Index temporary file already exists");
     mkdirSync(join(home, "notes"), { recursive: true, mode: 0o700 });
-    const opened = openShenronVfs(new Database(temp), { readOnly: false });
+    const temporaryDb = new Database(temp);
+    try {
+      // Protect the file before the VFS writer can put any private note bytes into it.
+      chmodSync(temp, 0o600);
+    } catch (error) {
+      temporaryDb.close();
+      rmSync(temp, { force: true });
+      throw error;
+    }
+    const opened = openShenronVfs(temporaryDb, { readOnly: false });
     try {
       opened.vfs.setMeta("profile", "complet");
       opened.vfs.setMeta("generated_at", new Date().toISOString());

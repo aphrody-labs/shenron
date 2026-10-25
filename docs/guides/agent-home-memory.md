@@ -23,6 +23,11 @@ continuité, la date d’observation, les observations, leurs limites et les sou
 locales avec SHA-256 et localisateur. Une source peut aussi porter son URL HTTPS.
 Une note revue ajoute l’identité du relecteur et sa date.
 
+Les SHA-256 écrits dans `observations` sont réservés aux pièces de preuve et
+doivent tous figurer dans `sources[]` avec leur archive vérifiée. Les hashes de
+manifestes, d’index ou d’artefacts techniques restent dans leurs métadonnées et
+reçus, pour éviter de les confondre avec une source visuelle.
+
 Un brouillon (`status:draft`) reste dans `notes/inbox/`. Une note revue
 (`status:reviewed`, `visibility:private`) rejoint `memory/`. L’application exige
 le SHA du manifeste ; le remplacement d’une note différente exige aussi le SHA
@@ -65,6 +70,35 @@ Le MCP propriétaire en stdio peut lire ce même schéma par
 `dragonball.rag_search({query:"…",local:true})`. Cette configuration privée ne
 se transporte pas sur un daemon MCP public. Les endpoints RAG publics gardent
 leur filtre `publicOnly` ; une note privée ne devient pas un article publié.
+
+## Carte du coffre et procédure de capture
+
+```sh
+bun scripts/ops/agent-home-knowledge-map.ts --home <home-canonique>
+bun scripts/ops/agent-home-knowledge-map.ts --home <home-canonique> --apply
+```
+
+Cette commande génère `memory/Knowledge-map.md` avec des liens relatifs vers les
+notes du registre de revue dont le SHA courant correspond encore à la version
+relue. Elle partage cette validation avec le consommateur VFS, ignore les
+brouillons et ne remplace pas une note manuelle de même nom. La carte est un
+outil de navigation, pas une preuve canonique ; elle reste hors du registre
+des observations indexées par le bridge. Une seule note disponible ne constitue
+pas un second cerveau complet.
+
+Le parcours commun est **capture → revue → archive → index → consommateur**.
+La capture conserve la continuité, le localisateur, le scan et les limites dans
+un brouillon hors mémoire. La revue vérifie les faits et les SHA. L’archive
+préserve chaque pièce originale ; la promotion compare la version précédente.
+L’indexation passe ensuite par le VFS privé ou l’indexeur natif borné, puis la
+qualification vérifie le chemin exact du résultat et les citations du vrai
+consommateur privé. Toute édition Obsidian exige une nouvelle revue avant
+réindexation.
+
+Une analyse de qualité d’image candidate peut avoir sa note distincte et
+explicitement non canonique. Une illustration générée, un rendu candidat ou
+une appréciation visuelle ne remplace jamais un scan primaire comme preuve
+d’un fait du récit.
 
 ## Index natif du home
 

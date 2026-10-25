@@ -101,6 +101,14 @@ export function validateNote(input: unknown): asserts input is ObservationNote {
       }
     }
   }
+  if (note.status === "reviewed") {
+    const declared = new Set(note.sources.map((source) => source.sha256));
+    const cited = note.observations.match(/\b[a-fA-F0-9]{64}\b/g) ?? [];
+    if (cited.some((digest) => !declared.has(digest.toLowerCase())))
+      throw new Error(
+        "Every source SHA-256 cited by reviewed observations must be declared and archived",
+      );
+  }
   // Refuse rather than silently modifying a reviewed observation's meaning.
   const text = [
     note.title,
