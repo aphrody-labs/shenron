@@ -30,6 +30,11 @@ test("only the matching immutable public episode source is accepted", () => {
   expect(episodeTimelineSource(875, players)).toBeNull();
   expect(episodeTimelineSource(877, players)).toBeNull();
   expect(episodeTimelineSource(876, [{ embedUrl: players[0]!.embedUrl + "?secret=x" }])).toBeNull();
+  const episode3 = `https://cdn.dragonballfr.com/media/episodes/877/${"b".repeat(64)}/source.mp4`;
+  expect(episodeTimelineSource(877, [{ embedUrl: episode3 }])?.href).toBe(episode3);
+  expect(episodeTimelineSource(876, [{ embedUrl: episode3 }])).toBeNull();
+  expect(episodeTimelineSource(877, [{ embedUrl: episode3 + "?token=private" }])).toBeNull();
+  expect(episodeTimelineSource(878, [{ embedUrl: episode3.replace("/877/", "/878/") }])).toBeNull();
 });
 
 test("query and frame bounds reject invalid work without decoding", async () => {

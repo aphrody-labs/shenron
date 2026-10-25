@@ -10,7 +10,7 @@ export function isShenronEpisodeVideoURL(url: URL): boolean {
     !url.search &&
     !url.hash &&
     (url.pathname === "/media/episodes/beerus-01/optimized-720p.mp4" ||
-      /^\/media\/episodes\/(875|876)\/[a-f0-9]{64}\/source\.mp4$/.test(url.pathname))
+      /^\/media\/episodes\/(875|876|877)\/[a-f0-9]{64}\/source\.mp4$/.test(url.pathname))
   );
 }
 
