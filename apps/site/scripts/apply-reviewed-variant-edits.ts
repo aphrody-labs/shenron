@@ -12,6 +12,8 @@ const fields = [
   "powerLevel",
   "ki",
   "maxKi",
+  "firstVolume",
+  "lastVolume",
   "highlights",
   "techniqueIds",
   "transformationIds",
@@ -71,8 +73,20 @@ export function validateReviewedVariantManifest(input: unknown) {
           throw new Error(`Invalid ${field}`);
       } else if (field === "visible") {
         if (typeof value !== "boolean") throw new Error("Invalid visibility");
+      } else if (field === "firstVolume" || field === "lastVolume") {
+        if (value !== null && (!Number.isSafeInteger(value) || Number(value) < 1))
+          throw new Error(`Invalid ${field}`);
       } else if (field !== "evidence" && value !== null && typeof value !== "string")
         throw new Error(`Invalid text field ${field}`);
+    }
+    if (Object.hasOwn(item.patch, "firstVolume") || Object.hasOwn(item.patch, "lastVolume")) {
+      const target = { ...item.expected, ...item.patch };
+      if (
+        typeof target.firstVolume === "number" &&
+        typeof target.lastVolume === "number" &&
+        target.firstVolume > target.lastVolume
+      )
+        throw new Error("Reversed volume bounds");
     }
     assertVariantEvidenceUpdate(item.expected, item.patch);
     for (const reference of item.sources) {

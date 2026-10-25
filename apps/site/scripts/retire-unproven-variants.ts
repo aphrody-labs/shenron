@@ -3,6 +3,10 @@
 import postgres from "postgres";
 
 const appliquer = process.argv.includes("--appliquer");
+if (appliquer)
+  throw new Error(
+    "Legacy retirement apply is disabled; review primary evidence and use the official wiki administration API",
+  );
 async function databaseUrl(): Promise<string> {
   if (process.env.DATABASE_URL?.trim()) return process.env.DATABASE_URL.trim();
   const env = await Bun.file(".env.remote-db")
@@ -30,36 +34,13 @@ try {
   console.log(
     JSON.stringify(
       {
-        mode: appliquer ? "APPLIQUER" : "SIMULATION",
+        mode: "SIMULATION",
         count: rows.length,
         sample: rows.slice(0, 10),
       },
       null,
       2,
     ),
-  );
-  if (!appliquer) process.exit(0);
-  await sql.begin(async (tx) => {
-    for (const row of rows) {
-      await tx.unsafe("update bot.db_character_variants set visible=false where id=$1", [row.id]);
-      await tx.unsafe(
-        'insert into public.wiki_revisions (id,"tableName","rowId",action,label,before,after,"editorId","editorName") values ($1,$2,$3,$4,$5,$6::jsonb,$7::jsonb,$8,$9)',
-        [
-          `retire-unproven-variant-${row.id}-${crypto.randomUUID()}`,
-          "db_character_variants",
-          String(row.id),
-          "update",
-          `${row.slug} — retrait faute de preuve manga/databook`,
-          JSON.stringify({ visible: true, evidence: row.evidence }),
-          JSON.stringify({ visible: false }),
-          "agent-shenron",
-          "Shenron — doctrine canonique",
-        ],
-      );
-    }
-  });
-  console.log(
-    `✔ ${rows.length} variante(s) sans preuve primaire retirée(s) logiquement et versionnée(s)`,
   );
 } finally {
   await sql.end();

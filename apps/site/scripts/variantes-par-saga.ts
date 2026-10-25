@@ -22,7 +22,7 @@
  * l'OCR d'une bulle ne dit pas si Goku est Super Saiyan à ce moment-là. Ces
  * champs restent vides et se remplissent depuis le back-office. Une variante
  * amorcée est marquée `origin = 'ocr-manga'` ; une variante retouchée à la main
- * passe à `'editorial'` et n'est plus jamais écrasée par une nouvelle mesure.
+ * conserve son origine de mesure et ses métadonnées éditoriales attestées.
  *
  ── Deux sources, jamais confondues ─────────────────────────────────────────
  * 1. **OCR du manga** (`bot.db_manga_pages`, série DB, 42 tomes) : la source de
@@ -42,13 +42,19 @@
  *   bun scripts/variantes-par-saga.ts --mesure                 # simulation (n'écrit rien)
  *   bun scripts/variantes-par-saga.ts --mesure --personnage Goku
  *   bun scripts/variantes-par-saga.ts --mesure --appliquer     # écrit les variantes
- *   bun scripts/variantes-par-saga.ts --mesure --reinitialiser --appliquer  # remesure à neuf
+ *   --reinitialiser est refusé : une remesure ne détruit pas les lignes éditoriales.
  *   bun scripts/variantes-par-saga.ts --etat                   # ce qu'il y a en base
  */
 import { join } from "node:path";
 import postgres from "postgres";
+import {
+  assertVariantMeasurementMode,
+  VARIANT_MEASUREMENT_EVIDENCE_SQL,
+  variantMeasurementVolumeSql,
+} from "./variant-measurement-policy";
 
 const args = process.argv.slice(2);
+assertVariantMeasurementMode(args);
 const opt = (nom: string, defaut?: string) => {
   const i = args.indexOf(`--${nom}`);
   return i !== -1 && args[i + 1] ? args[i + 1]! : defaut;
@@ -96,7 +102,7 @@ const BORNES_MANGA: Record<string, [number, number]> = {
   "tournament-23": [13, 16],
   saiyan: [17, 20],
   namek: [20, 24],
-  saga_freezer: [24, 28],
+  saga_freezer: [24, 27],
   retour_sur_terre: [28, 29],
   androids: [29, 33],
   cell: [33, 36],
@@ -539,17 +545,6 @@ try {
 		${filtre ? sql`and name ilike ${`%${filtre}%`}` : sql``}
 		order by id`;
 
-  // `--reinitialiser` : efface les variantes AMORCÉES avant de remesurer. Sans
-  // lui, resserrer les graphies laisserait en base les faux positifs de la
-  // passe précédente (rien ne les supprime, `on conflict` ne fait qu'ajouter).
-  // Les variantes reprises à la main (`origin = 'editorial'`) sont épargnées.
-  if (flag("reinitialiser") && APPLIQUER) {
-    const supprimees = await sql`
-			delete from bot.db_character_variants
-			where origin is distinct from 'editorial' returning id`;
-    console.log(`${supprimees.length} variante(s) amorcée(s) effacée(s) avant remesure.`);
-  }
-
   // Seuils. Trois planches pour le manga : en dessous on est dans le bruit
   // d'OCR (mesuré sur « boo », qui touche 4 planches du tome 1 où il n'a rien
   // à faire). Deux synopsis pour l'anime : un résumé fait 500 à 1 000 signes
@@ -684,9 +679,9 @@ try {
         graphies: formes,
         mesureAt,
       };
-      // `where origin is distinct from 'editorial'` : une variante reprise à
-      // la main n'est JAMAIS écrasée par une nouvelle mesure. C'est la seule
-      // garantie qui rend ce script rejouable sans détruire du travail.
+      // Only measured columns change. Merge the two editorial evidence keys
+      // from the current conflict row, without retaining obsolete measurements.
+      // Legacy fully editorial rows remain outside this producer.
       await sql`
 				insert into bot.db_character_variants
 					(character_id, saga_id, slug, label, display_name,
@@ -699,12 +694,12 @@ try {
 					${v.titres.length ? sql.json(v.titres) : null},
 					${methode}, ${sql.json(evidence)}, ${v.saga.orderIdx ?? 0})
 				on conflict (character_id, saga_id) do update set
-					first_volume  = excluded.first_volume,
-					last_volume   = excluded.last_volume,
+					first_volume  = ${sql.unsafe(variantMeasurementVolumeSql("firstVolume"))},
+					last_volume   = ${sql.unsafe(variantMeasurementVolumeSql("lastVolume"))},
 					first_episode = excluded.first_episode,
 					last_episode  = excluded.last_episode,
 					origin        = excluded.origin,
-					evidence      = excluded.evidence,
+					evidence      = ${sql.unsafe(VARIANT_MEASUREMENT_EVIDENCE_SQL)},
 					sort_order    = excluded.sort_order
 				where bot.db_character_variants.origin is distinct from 'editorial'`;
       ecrites++;

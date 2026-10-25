@@ -3,7 +3,8 @@ import { z } from "zod";
 import { WikiUpdatePreconditionError, WikiUpdateRequestError } from "./wiki-update-precondition";
 
 type Row = Record<string, unknown>;
-const EDITORIAL_KEYS = new Set(["imageArtwork", "editorialReferences"]);
+export const VARIANT_EDITORIAL_EVIDENCE_KEYS = ["imageArtwork", "editorialReferences"] as const;
+const EDITORIAL_KEYS = new Set<string>(VARIANT_EDITORIAL_EVIDENCE_KEYS);
 const REFERENCE_FIELDS = [
   "label",
   "displayName",
@@ -20,6 +21,8 @@ const REFERENCE_FIELDS = [
   "highlights",
   "transformationIds",
   "techniqueIds",
+  "firstVolume",
+  "lastVolume",
   "visible",
 ] as const;
 const PRIMARY_HOSTS = new Set([

@@ -113,6 +113,32 @@ test("requires qualified sources and typed catalogue IDs", () => {
   ).toThrow("Empty");
 });
 
+test("accepts reviewed display bounds without rewriting measured evidence and rejects reversed volumes", () => {
+  const manifest = fixture();
+  const item = manifest.entries[0]!;
+  const reviewed = {
+    ...item,
+    expected: { ...item.expected, firstVolume: 24, lastVolume: 28 },
+    patch: { lastVolume: 27 },
+  };
+  reviewed.expectedSha256 = wikiUpdateSnapshotHash(reviewed.expected);
+  expect(
+    validateReviewedVariantManifest({ version: 1, entries: [reviewed] }).entries[0]!.patch,
+  ).toEqual({ lastVolume: 27 });
+  expect(() =>
+    validateReviewedVariantManifest({
+      version: 1,
+      entries: [{ ...reviewed, patch: { lastVolume: 0 } }],
+    }),
+  ).toThrow("lastVolume");
+  expect(() =>
+    validateReviewedVariantManifest({
+      version: 1,
+      entries: [{ ...reviewed, patch: { lastVolume: 23 } }],
+    }),
+  ).toThrow("Reversed");
+});
+
 test("checks the complete batch before any write and preserves a receipt on readback failure", async () => {
   const manifest = fixture();
   const item = manifest.entries[0]!;

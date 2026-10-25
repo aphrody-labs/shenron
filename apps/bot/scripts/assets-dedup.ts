@@ -35,6 +35,7 @@ import {
   normalizeDbPath,
 } from "@aphrody/shenron-images";
 import { arretSiGel } from "../../site/scripts/_databooks-base";
+import { VARIANT_ASSET_DEDUP_PREDICATE } from "./variant-asset-dedup-policy";
 
 const APPLY = process.argv.includes("--apply");
 const UNDO = process.argv.find((a) => a.startsWith("--undo="))?.slice(7);
@@ -263,7 +264,15 @@ for (const [t, c] of IMAGE_COLUMNS) {
   for (const r of rows) {
     const to = rewrite.get(normalizeDbPath(r.p));
     if (!to) continue;
-    const res = await sql.unsafe(`update bot.${t} set ${c} = $1 where ${c} = $2`, [to, r.p]);
+    const guard = t === "db_character_variants" ? ` and ${VARIANT_ASSET_DEDUP_PREDICATE}` : "";
+    if (guard)
+      console.warn(
+        "Variant artwork references are preserved; attributed path changes require the official image/provenance API.",
+      );
+    const res = await sql.unsafe(`update bot.${t} set ${c} = $1 where ${c} = $2${guard}`, [
+      to,
+      r.p,
+    ]);
     updated += res.count;
     touchedUrls.add(to);
   }
