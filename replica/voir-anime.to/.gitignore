@@ -1,0 +1,3 @@
+# Captures de référence privées : ne jamais les livrer dans le produit.
+screens/*
+!screens/.gitkeep

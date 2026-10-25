@@ -1,0 +1,24 @@
+feature,area,priority,original,clone,notes
+Catalogue des publications,catalogue,must,yes,no,S01 rempli sur ordinateur et mobile
+Fiches séries,catalogue,must,yes,no,S05 titres alternatifs et métadonnées observés
+Liste des épisodes,catalogue,must,yes,no,S05 liens vers quatre épisodes sur la fiche testée
+Recherche par titre,search,must,yes,no,S07 GET direct validé; formulaire testé perd la saisie
+Filtres avancés,search,should,yes,no,Panneau observé; combinaisons non qualifiées
+Tri des résultats,search,should,yes,no,Liens annoncés; effet de chaque tri non testé
+Annuaire alphabétique,catalogue,should,yes,no,S02 affiché; filtres annoncés
+Filtres VF et VOSTFR,catalogue,must,yes,no,Contrôles visibles; parcours complet non qualifié
+Nouveaux ajouts,catalogue,should,yes,no,S03 HTML public reçu
+Prochaines sorties,catalogue,should,yes,no,S04 HTML public reçu
+Archives par genre,catalogue,should,yes,no,S08 URL déclarées et liens visibles
+Archives par année,catalogue,could,yes,no,S09 URL déclarées et liens visibles
+Choix du fournisseur,player,must,yes,no,S06 quatre remplacements iframe observés
+Choix de l'épisode,player,must,yes,no,S06 navigation 04 vers 03 vérifiée
+Précédent et suivant,player,must,yes,no,Liens mis à jour; clics non qualifiés
+Lecture effective,player,must,unknown,no,Iframe ne prouve pas une lecture; lecture non tentée
+Reprise personnelle,account,should,unknown,no,Aucun stockage ou compte testé
+Favoris,account,should,unknown,no,Pas de parcours public qualifié
+Réglages du compte,account,could,unknown,no,S10 déclaré uniquement
+Notes agrégées,catalogue,could,yes,no,Affichage seulement; vote non testé
+Vue mobile,layout,must,yes,no,S01 et S06 mesurés à 390 px sans débordement
+Catalogue et médias du tiers,content,skip,yes,no,Non livrés et non réutilisables par cette reconnaissance
+Marque et sources du tiers,content,skip,yes,no,Références locales seulement; aucune source embarquée
