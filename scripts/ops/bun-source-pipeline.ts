@@ -1065,6 +1065,29 @@ export function nativeDatabase(sql: SQL): PipelineDatabase {
 function comparable(snapshot: RegistrySnapshot) {
   return JSON.stringify(snapshot.rows.map(({ provenance_updated_at: _, ...row }) => row));
 }
+function registryCoverage(urls: string[], snapshot: RegistrySnapshot, inputSha256: string) {
+  const expected = new Set(urls);
+  const observed = new Set<string>();
+  for (const row of snapshot.rows) {
+    if (!expected.has(row.url) || observed.has(row.url))
+      throw Object.assign(new Error("Registry read-back returned unexpected or duplicate URLs"), {
+        code: "ERR_SOURCE_REGISTRY_COVERAGE",
+      });
+    observed.add(row.url);
+  }
+  if (observed.size !== expected.size)
+    throw Object.assign(new Error("Registry read-back is missing projected URLs"), {
+      code: "ERR_SOURCE_REGISTRY_COVERAGE",
+    });
+  return {
+    scope: "projected-urls" as const,
+    inputSha256,
+    membershipSha256: hash(JSON.stringify(urls)),
+    expected: expected.size,
+    observed: observed.size,
+    complete: true,
+  };
+}
 function assertProtected(
   before: RegistrySnapshot,
   after: RegistrySnapshot,
@@ -1532,6 +1555,7 @@ async function executeSourcePipeline(
       }
     }
     const after = await database.snapshot(urls);
+    const coverage = registryCoverage(urls, after, pins.input!);
     assertProtected(before, after, records);
     if (action === "verify") {
       const previous = await Bun.file(join(config.job, "registry-after.json")).json();
@@ -1660,6 +1684,7 @@ async function executeSourcePipeline(
     return await receipt(action, {
       applied,
       protected: protectedRecords,
+      registryCoverage: coverage,
       identities: after.rows.length,
       added: after.rows.filter((row) => !previous.has(row.url)).length,
       byDomain,

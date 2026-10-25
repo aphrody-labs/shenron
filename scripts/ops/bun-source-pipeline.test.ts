@@ -890,6 +890,14 @@ test("pinned plan applies canonical records, keeps backup, proves replay and ver
     applied: 1,
     canonicalPromotions: 0,
     replayVerified: true,
+    registryCoverage: {
+      scope: "projected-urls",
+      inputSha256: hash(await Bun.file(f.input).text()),
+      membershipSha256: hash(JSON.stringify(["https://source.example/a"])),
+      expected: 1,
+      observed: 1,
+      complete: true,
+    },
   });
   expect(db.writes()).toBe(2);
   expect(await Bun.file(join(f.config.job, "registry-before.json")).json()).toEqual({ rows: [] });
@@ -905,6 +913,36 @@ test("pinned plan applies canonical records, keeps backup, proves replay and ver
     false,
   );
 });
+
+test.each(["missing", "duplicate", "foreign"] as const)(
+  "registry %s read-back cannot produce a successful receipt",
+  async (kind) => {
+    const f = await fixture(),
+      db = database();
+    const plan = await runSourcePipeline("plan", f.configPath);
+    let snapshots = 0;
+    const port: PipelineDatabase = {
+      ...db.port,
+      async snapshot(urls) {
+        const actual = await db.port.snapshot(urls);
+        if (++snapshots === 1) return actual;
+        if (kind === "missing") return { rows: [] };
+        if (kind === "duplicate") return { rows: [...actual.rows, ...actual.rows] };
+        return {
+          rows: [...actual.rows, { ...actual.rows[0]!, url: "https://source.example/foreign" }],
+        };
+      },
+    };
+    await expect(
+      runSourcePipeline("apply", f.configPath, { planSha256: plan.planSha256 }, { database: port }),
+    ).rejects.toThrow("Registry read-back");
+    expect(await Bun.file(join(f.config.job, "apply.json")).exists()).toBe(false);
+    expect(await Bun.file(join(f.config.job, "failure.json")).json()).toMatchObject({
+      code: "ERR_SOURCE_REGISTRY_COVERAGE",
+      complete: false,
+    });
+  },
+);
 test("changed export fails before registry or object store side effects", async () => {
   const f = await fixture(),
     db = database();
