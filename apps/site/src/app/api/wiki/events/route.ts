@@ -175,7 +175,9 @@ export async function GET(req: NextRequest) {
       slug: `age-${e.age_year}-${e.id}`,
       title: e.title,
       title_ja: e.title_ja ?? null,
-      series: seriesFromLabels(e.era, e.age_year >= 761 && e.age_year < 778 ? "DBZ" : null),
+      // Age alone cannot identify a continuity: Daima and DBZ overlap in the
+      // chronology, and some records have no series label at all.
+      series: seriesFromLabels(e.era),
       timeline,
       canon,
       href: `/wiki/timeline#age-${e.age_year}`,
