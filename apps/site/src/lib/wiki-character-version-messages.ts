@@ -15,7 +15,6 @@ export interface CharacterVersionMessages {
   animatedSeries: string;
   mangaPages: string;
   episodeSynopses: string;
-  generatedImageCaption: string;
   imageReference: string;
   noImage: string;
   noSummary: string;

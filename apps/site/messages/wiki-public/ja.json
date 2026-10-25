@@ -12,7 +12,6 @@
     "animatedSeries": "アニメシリーズ",
     "mangaPages": "名前が登場する漫画ページ",
     "episodeSynopses": "エピソードあらすじ",
-    "generatedImageCaption": "「{title}」の資料をもとに生成したイラストです。",
     "imageReference": "参照元を見る",
     "noImage": "このバージョン固有の画像はまだ確認されていません。",
     "noSummary": "このバージョンの概要はまだ登録されていません。",

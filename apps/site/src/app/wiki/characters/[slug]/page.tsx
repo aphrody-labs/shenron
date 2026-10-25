@@ -487,7 +487,6 @@ export default async function CharacterPage({ params }: { params: Promise<{ slug
             animatedSeries: versionT("animatedSeries"),
             mangaPages: versionT("mangaPages"),
             episodeSynopses: versionT("episodeSynopses"),
-            generatedImageCaption: versionT("generatedImageCaption", { title: "{title}" }),
             imageReference: versionT("imageReference"),
             noImage: versionT("noImage"),
             noSummary: versionT("noSummary"),

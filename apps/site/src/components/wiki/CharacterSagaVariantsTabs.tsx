@@ -32,10 +32,46 @@ function courte(label: string): string {
   return label.replace(/^saga\s+(de\s+l['’]|de\s+la\s+|de\s+|du\s+|des\s+)?/i, "").trim() || label;
 }
 
-function safeReferenceUrl(value: string): string | null {
+const WIKI_ARTWORK_HOSTS = new Set([
+  "cdn.dragonballfr.com",
+  "dragon-ball-official.com",
+  "www.dragon-ball-official.com",
+  "en.dragon-ball-official.com",
+  "fr.dragon-ball-official.com",
+  "jp.dragon-ball-official.com",
+  "shonenjump.com",
+  "www.shonenjump.com",
+  "shueisha.co.jp",
+  "www.shueisha.co.jp",
+  "vjump.shueisha.co.jp",
+  "toei-anim.co.jp",
+  "www.toei-anim.co.jp",
+  "lineup.toei-anim.co.jp",
+  "toei-animation.com",
+  "www.toei-animation.com",
+]);
+
+function safePrimaryUrl(value: string): string | null {
   try {
     const url = new URL(value);
-    return url.protocol === "https:" || url.protocol === "http:" ? url.href : null;
+    if (
+      url.protocol !== "https:" ||
+      url.username ||
+      url.password ||
+      url.port ||
+      url.href !== value ||
+      !WIKI_ARTWORK_HOSTS.has(url.hostname) ||
+      /(?:^|\.)fandom\.com$/i.test(url.hostname)
+    )
+      return null;
+    for (const key of url.searchParams.keys())
+      if (/token|secret|auth|password|signature|credential|api.?key/i.test(key)) return null;
+    if (
+      url.hostname === "cdn.dragonballfr.com" &&
+      !/^\/assets\/(?:manga|dbz\/officiel-|wiki\/episodes\/|wiki\/variants\/)/.test(url.pathname)
+    )
+      return null;
+    return url.href;
   } catch {
     return null;
   }
@@ -135,17 +171,20 @@ export function CharacterSagaVariantsTabs({
   const isOverview = actif < 0;
   const variantIndex = Math.max(actif, 0);
   const v = variants[Math.min(variantIndex, variants.length - 1)]!;
-  const artwork = v.evidence?.imageArtwork;
-  const generatedArtwork =
-    artwork?.kind === "generated" && artwork.image === v.image ? artwork : null;
-  const imageReferences = (v.evidence?.editorialReferences ?? []).flatMap((reference) => {
-    if (!reference.fields.includes("image")) return [];
-    const url = safeReferenceUrl(reference.url);
-    return url ? [{ ...reference, url }] : [];
-  });
-  const generatedReferenceUrl = generatedArtwork
-    ? safeReferenceUrl(generatedArtwork.referenceUrl)
-    : null;
+  // The wiki accepts only source-verifiable manga/anime artwork. Older
+  // editorial records may still identify an image as generated; never render
+  // that asset or its generation prompt/reference as a public source image.
+  const generatedArtwork = v.evidence?.imageArtwork?.kind === "generated";
+  const imageReferences = (generatedArtwork ? [] : (v.evidence?.editorialReferences ?? [])).flatMap(
+    (reference) => {
+      if (!reference.fields.includes("image")) return [];
+      const url = safePrimaryUrl(reference.url);
+      return url ? [{ ...reference, url }] : [];
+    },
+  );
+  // Fail closed: an image needs both an approved source URL and an explicit
+  // editorial reference that attests to the image field.
+  const displayImage = imageReferences.length > 0 ? safePrimaryUrl(v.image ?? "") : null;
   const tomes =
     v.firstVolume != null && v.lastVolume != null
       ? v.firstVolume === v.lastVolume
@@ -182,6 +221,7 @@ export function CharacterSagaVariantsTabs({
           className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-1 scrollbar-thin sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
           role="tablist"
           aria-label={messages.tabsLabel.replace("{name}", characterName)}
+          tabIndex={-1}
           // Le rôle `tablist` promet les flèches ←/→ et Début/Fin ; sans ce
           // gestionnaire, la promesse n'était pas tenue et la frise ne se
           // parcourait qu'onglet par onglet à la tabulation.
@@ -247,15 +287,11 @@ export function CharacterSagaVariantsTabs({
 					    rendu sur next/image en mode `fill`, qui se positionne en absolu
 					    et ne donne AUCUNE hauteur à son parent. Sans ratio ici, la
 					    colonne s'effondrait à une bande de vingt pixels. */}
-              <div
-                className={`relative aspect-[3/4] overflow-hidden rounded-lg border border-dbz-border ${generatedArtwork ? "bg-[#fffaf0]" : "bg-dbz-bg"}`}
-              >
-                {!generatedArtwork && (
-                  <div aria-hidden className="halftone absolute inset-0 z-10 opacity-10" />
-                )}
-                {v.image ? (
+              <div className="relative aspect-[3/4] overflow-hidden rounded-lg border border-dbz-border bg-dbz-bg">
+                <div aria-hidden className="halftone absolute inset-0 z-10 opacity-10" />
+                {displayImage ? (
                   <WikiImg
-                    src={v.image}
+                    src={displayImage}
                     alt={v.displayName ?? `${characterName} — ${v.label}`}
                     sizes="(min-width: 640px) 224px, 100vw"
                     loading="lazy"
@@ -263,11 +299,7 @@ export function CharacterSagaVariantsTabs({
                     placeholderClassName="absolute inset-0 flex items-center justify-center rounded"
                   />
                 ) : (
-                  <div
-                    role="img"
-                    aria-label={messages.noImage}
-                    className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent p-5 text-center"
-                  >
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent p-5 text-center">
                     <span aria-hidden="true" className="font-saiyan text-5xl text-white/25">
                       ?
                     </span>
@@ -277,24 +309,6 @@ export function CharacterSagaVariantsTabs({
                   </div>
                 )}
               </div>
-              {generatedArtwork && (
-                <p className="mt-2 text-xs leading-relaxed text-white/55">
-                  {messages.generatedImageCaption.replace(
-                    "{title}",
-                    generatedArtwork.referenceTitle,
-                  )}{" "}
-                  {generatedReferenceUrl && (
-                    <a
-                      href={generatedReferenceUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="font-semibold text-dbz-orange underline underline-offset-2 hover:text-white"
-                    >
-                      {messages.imageReference}
-                    </a>
-                  )}
-                </p>
-              )}
               {imageReferences.length > 0 && (
                 <div className="mt-2 space-y-1 text-xs leading-relaxed text-white/60">
                   <p className="font-semibold text-white/75">{messages.imageReference}</p>
