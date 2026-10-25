@@ -277,6 +277,18 @@ export const botCharacterArcs = bot.table("db_character_arcs", {
  * confondue avec une variante écrite par un rédacteur.
  */
 export type VariantEvidence = {
+  /** Generated artwork is an illustration, distinct from the primary evidence below. */
+  imageArtwork?: {
+    kind: "generated";
+    image: string;
+    referenceUrl: string;
+    referenceImageUrl: string;
+    referenceTitle: string;
+    referenceSha256: string;
+    outputSha256: string;
+    generatedAt: string;
+    generator: "image_gen";
+  };
   /**
    * Sources ayant fourni la preuve : "ocr-manga" (texte des planches),
    * "synopsis-episodes" (résumés de la série animée), ou les deux jointes par
