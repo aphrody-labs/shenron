@@ -102,7 +102,12 @@ describe("ranking rules", () => {
   test("the bot developer is ranked nowhere: XP top, zeni top, /profil rank", async () => {
     await asDeveloper("6001", async () => {
       expect((await levels.top(10)).map((u) => u.id)).toEqual(["6002", "6003", "6004", "6005"]);
-      expect((await economy.topRich(10)).map((u) => u.id)).toEqual(["6002", "6003", "6004", "6005"]);
+      expect((await economy.topRich(10)).map((u) => u.id)).toEqual([
+        "6002",
+        "6003",
+        "6004",
+        "6005",
+      ]);
       expect(await levels.totalUsers()).toBe(4);
       expect(await levels.rankOf("6001")).toBeNull();
       expect(await levels.rankOf("6002")).toBe(1);
