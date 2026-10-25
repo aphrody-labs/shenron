@@ -101,12 +101,22 @@ export async function GET(req: NextRequest) {
 
   // `null` = lecture PostgreSQL échouée (`safe`) : une source manquante est une
   // panne (503), jamais une liste partielle ou vide servie en 200.
-  const [battles, tournaments, timelineEvents, movieData] = await Promise.all([
+  const reads = await Promise.all([
     dbUniverse.battles(),
     dbUniverse.tournaments(),
     dbUniverse.timelineEvents(),
     dbUniverse.movies(),
-  ]);
+  ]).catch((error) => {
+    console.error("[wiki/events] database read failed", error);
+    return null;
+  });
+  if (reads === null) {
+    return NextResponse.json(
+      { error: "Événements narratifs momentanément indisponibles." },
+      { status: 503, headers: { ...CORS, "Cache-Control": "no-store", "Retry-After": "30" } },
+    );
+  }
+  const [battles, tournaments, timelineEvents, movieData] = reads;
   if (battles === null || tournaments === null || timelineEvents === null || movieData === null) {
     return NextResponse.json(
       { error: "Événements narratifs momentanément indisponibles." },

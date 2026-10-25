@@ -74,7 +74,16 @@ export async function GET(req: NextRequest) {
   );
 
   // `null` = lecture PostgreSQL échouée (`safe`) : une panne, jamais un `[]` en 200.
-  const allContributors = await dbUniverse.contributors();
+  let allContributors: Awaited<ReturnType<typeof dbUniverse.contributors>>;
+  try {
+    allContributors = await dbUniverse.contributors();
+  } catch (error) {
+    console.error("[wiki/contributors] database read failed", error);
+    return NextResponse.json(
+      { error: "Contributeurs momentanément indisponibles." },
+      { status: 503, headers: { ...CORS, "Cache-Control": "no-store", "Retry-After": "30" } },
+    );
+  }
   if (allContributors === null) {
     return NextResponse.json(
       { error: "Contributeurs momentanément indisponibles." },
