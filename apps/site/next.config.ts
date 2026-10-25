@@ -1,5 +1,6 @@
 import { withBun } from "@aphrody/next-bun";
 import type { NextConfig } from "next";
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 import {
   ownImageRemotePatterns,
   resolveApiUrl,
@@ -495,7 +496,7 @@ const nextConfig: NextConfig = {
 // file tracing à la racine du workspace (magasin isolé de Bun), `transpilePackages` déduit des paquets
 // qui publient leurs sources TypeScript (@aphrody/shenron-*, @aphrody/m3-*…), alias communs à Turbopack et
 // Webpack, et `next start` qui reprend le préfixe d'assets et l'identifiant de déploiement du build.
-export default withBun(nextConfig, {
+const resolveConfig = withBun(nextConfig, {
   bundler: "turbopack",
   projectDir: __dirname,
   // next-intl : son plugin ne fait, pour cette configuration, que poser cet alias ; il chargeait
@@ -505,3 +506,9 @@ export default withBun(nextConfig, {
   // Une seule copie pour l'éditeur (Tiptap) et ses extensions.
   dedupe: ["prosemirror-transform"],
 });
+
+export default async function resolveNextConfig(...args: Parameters<typeof resolveConfig>) {
+  const resolved = await resolveConfig(...args);
+  // Development chunks only exist in the local compilation, never on the public CDN.
+  return args[0] === PHASE_DEVELOPMENT_SERVER ? { ...resolved, assetPrefix: undefined } : resolved;
+}

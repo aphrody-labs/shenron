@@ -8,7 +8,11 @@ import { afterAll, describe, expect, test } from "bun:test";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { PHASE_DEVELOPMENT_SERVER, PHASE_PRODUCTION_SERVER } from "next/constants";
+import {
+  PHASE_DEVELOPMENT_SERVER,
+  PHASE_PRODUCTION_BUILD,
+  PHASE_PRODUCTION_SERVER,
+} from "next/constants";
 
 const dist = mkdtempSync(path.join(tmpdir(), "shenron-next-dist-"));
 afterAll(() => rmSync(dist, { recursive: true, force: true }));
@@ -26,9 +30,8 @@ describe("build-frozen client config", () => {
     const server = await config(PHASE_PRODUCTION_SERVER, {});
     expect(server.assetPrefix).toBeUndefined();
     expect(server.deploymentId).toBe("build-sha");
-    // Outside `next start`, the environment rules (dev server, build).
-    expect((await config(PHASE_DEVELOPMENT_SERVER, {})).assetPrefix).toBe(
-      "https://cdn.example.test",
-    );
+    // Build chunks use the CDN; development chunks only exist on the local server.
+    expect((await config(PHASE_DEVELOPMENT_SERVER, {})).assetPrefix).toBeUndefined();
+    expect((await config(PHASE_PRODUCTION_BUILD, {})).assetPrefix).toBe("https://cdn.example.test");
   });
 });
