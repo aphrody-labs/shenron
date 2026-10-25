@@ -131,3 +131,38 @@ appartient à `packages/db/src/vfs/rag.ts` ; le fournisseur et son espace doiven
 son indexeur sans embedder et fusionne des canaux lexicaux : son appellation
 « hybrid » ne prouve pas une recherche sémantique. Aucun `rag:build` global au
 premier plan ou sur le bot de production n’est nécessaire à l’import borné.
+
+## Option vectorielle privée
+
+L’indexeur privé possède une option explicite `--embedding aphrody`, avec les
+préconditions `--expected-note`, `--expected-source-sha`,
+`--expected-manifest-sha`, `--expected-index-sha` et `--expected-chunks`.
+Le défaut reste lexical. Le job refuse un corpus différent, un batch dépassant
+seize passages ou un passage de plus de1400 caractères effectifs ; la limite
+du chunker natif peut être souple sur certains blocs Markdown. Aucun fait
+ne se tronque silencieusement pour satisfaire cette limite.
+
+Le transport est celui du client propriétaire `createAphrodyCompute` :
+`POST /api/v1/shenron/embed`, avec `texts` et `kind` query/passage.
+Ce client n’ajoute pas de préfixe ; le serveur applique le préfixe E5.
+Ne pas le remplacer par l’ancien client direct `/embeddings`, qui applique
+ses propres préfixes. L’option `requireModel` vérifie le namespace exact du
+modèle de réponse sans modifier le protocole HTTP existant.
+
+La génération privée vérifie modèle, dimension384, valeurs finies et normeL2,
+préserve une sauvegarde lexicale0600 et publie par comparaison du SHA précédent
+puis remplacement atomique. Une erreur d’embedding ou de qualification conserve
+l’index précédent. Les artefacts d’expérience et leurs métriques restent privés.
+
+Le host reçoit l’adaptateur de requête par `privateQueryEmbedding`, seulement
+dans un processus local privé. Cette injection est refusée sur les profils
+public **et production**, sur le backend éditorial Aphrody, ou lorsque le modèle
+ne correspond pas au namespace qualifié et aux métadonnées du VFS. Le port RAG
+public conserve sa propre voie filtrée. Le MCP local natif actuel demeure lexical,
+même si un fichier de recherche contient des vecteurs.
+
+Une citation ou un voisin vectoriel ne prouve pas la pertinence d’un passage.
+La qualification compare des paraphrases sourcées et des requêtes négatives
+sans rapport, avec rangs/scores et contrôle public vide. Si la projection de la
+note n’est pas discriminante, garder le lexical par défaut et revoir la
+projection avec le chunker propriétaire ; ne pas fabriquer un seuil de score.
