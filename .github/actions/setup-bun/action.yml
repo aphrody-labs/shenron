@@ -27,7 +27,10 @@ runs:
         # Qualified native Linux x64 factory artifact, revision dfde053a3 (2026-10-13).
         printf '%s  %s\n' '890af6a675e1dc58b15a15777c53de3b2e82668690c9be5f6e87ec690246ac0e' "$native" | sha256sum -c -
         [ "$("$native" --revision)" = '1.4.4+dfde053a3' ] || { echo "Factory Bun revision differs" >&2; exit 1; }
-        echo "$(dirname "$native")" >> "$GITHUB_PATH"
+        # Expose this verified executable as bun without replacing the shared runtime.
+        stage=$(mktemp -d "$RUNNER_TEMP/shenron-pinned-bun.XXXXXXXX")
+        ln -s "$native" "$stage/bun"
+        echo "$stage" >> "$GITHUB_PATH"
         echo "SHENRON_BUN_EXECUTABLE=$native" >> "$GITHUB_ENV"
     - name: Download the exact public owner runtime
       if: runner.environment != 'self-hosted'
