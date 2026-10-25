@@ -24,6 +24,7 @@ const RUBRIQUE: Record<string, string> = {
   episode: "Épisode",
   planet: "Monde",
   technique: "Technique",
+  transformation: "Transformation",
   game: "Jeu",
   manga: "Manga",
   race: "Race",

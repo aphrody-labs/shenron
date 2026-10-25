@@ -65,14 +65,8 @@ export default async function TechniqueDetailPage({
   const { slug } = await params;
   const tech = await getShenronTechnique(slug);
   if (!tech) notFound();
-  // Toutes les fiches gardent un repère visuel, même lorsque l'archive ne
-  // contient pas encore de planche dédiée. Le Kinto-Un local est explicitement
-  // décoratif : il ne prétend pas représenter la technique.
   const heroTechImage =
-    pickBestImage([tech.image, tech.creatorImage]) ??
-    tech.image ??
-    tech.creatorImage ??
-    "/dbz/kinto-un.svg";
+    pickBestImage([tech.image, tech.creatorImage]) ?? tech.image ?? tech.creatorImage;
   const contentPanels = await buildWikiContentPanels({
     entityType: "technique",
     entityId: tech.id,

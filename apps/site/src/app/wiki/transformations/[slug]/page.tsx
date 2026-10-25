@@ -65,7 +65,7 @@ export default async function TransformationPage({
 
   return (
     <article className="wiki-container">
-      <TrackView entityType="technique" entityId={t.id} entityName={t.name} image={t.image} />
+      <TrackView entityType="transformation" entityId={t.id} entityName={t.name} image={t.image} />
       <DomainBar domain="wiki" />
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <Breadcrumbs

@@ -10,17 +10,17 @@ import { DISCORD_INVITE } from "@/lib/config";
 const FOLD_AT = 160;
 
 /**
- * Discord invitation, floating. Hidden on the home, whose live server panel already invites
- * to the server (the pill covered its blocks); elsewhere it folds into an icon once the
- * reader scrolls, so it stops sitting on the content.
+ * Discord invitation. Hidden on the home, whose live server panel already invites to the
+ * server; kept in the document flow on wiki pages so it never covers editorial content.
  */
 export function DiscordInviteFAB({ inline = false }: { inline?: boolean }) {
   const t = useT();
   const pathname = usePathname();
+  const wikiPage = pathname === "/wiki" || pathname.startsWith("/wiki/");
   const mediaPage = /^\/wiki\/(?:episodes\/(?:\d+|series\/[^/]+\/\d+)|movies\/[^/]+)\/?$/.test(
     pathname,
   );
-  const inFlow = inline || mediaPage;
+  const inFlow = inline || wikiPage || mediaPage;
   const [isVisible, setIsVisible] = useState(false);
   const [folded, setFolded] = useState(false);
 
@@ -48,7 +48,13 @@ export function DiscordInviteFAB({ inline = false }: { inline?: boolean }) {
     if (!dismissed) setIsVisible(true);
   }, []);
 
-  if (!isVisible || pathname === "/" || (pathname === "/desktop" && !inline)) return null;
+  if (
+    !isVisible ||
+    pathname === "/" ||
+    (pathname === "/desktop" && !inline) ||
+    (wikiPage && !inline)
+  )
+    return null;
 
   const handleDismiss = (e: React.MouseEvent) => {
     e.stopPropagation();

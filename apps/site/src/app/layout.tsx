@@ -31,6 +31,9 @@ import { PwaProvider } from "@/components/PwaProvider";
 const DiscordInviteFAB = dynamic(() =>
   import("@/components/DiscordInviteFAB").then((m) => m.DiscordInviteFAB),
 );
+const WikiPageActions = dynamic(() =>
+  import("@/components/WikiPageActions").then((m) => m.WikiPageActions),
+);
 
 // Bouton flottant « Signaler une erreur » (îlot client, jamais critical).
 const ReportButton = dynamic(() => import("@/components/ReportButton").then((m) => m.ReportButton));
@@ -262,6 +265,7 @@ export default async function RootLayout({
           <PwaProvider>
             <SiteShell>
               <PageTransition>{children}</PageTransition>
+              <WikiPageActions />
             </SiteShell>
           </PwaProvider>
           <DiscordInviteFAB />

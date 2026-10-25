@@ -43,6 +43,7 @@ export type TelemetryEvent =
           | "episode"
           | "planet"
           | "technique"
+          | "transformation"
           | "game"
           | "manga"
           | "race"

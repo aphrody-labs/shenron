@@ -2,7 +2,7 @@
 "use client";
 
 /**
- * Bouton flottant « Signaler une erreur » présent sur toutes les pages publiques
+ * Bouton « Signaler une erreur » présent sur toutes les pages publiques
  * (îlot client → n'introduit aucune session côté serveur, cache préservé). Ouvre
  * une modale de signalement réservée aux membres **connectés** (compte Discord
  * lié) ; un anonyme est invité à se connecter. Chaque envoi crée un ticket
@@ -27,7 +27,13 @@ type Phase = "idle" | "sending" | "done" | "error";
 export function ReportButton({ inline = false }: { inline?: boolean }) {
   const t = useT();
   const pathname = usePathname();
-  const visible = !(pathname?.startsWith("/admin") || (pathname === "/desktop" && !inline));
+  const wikiPage = pathname === "/wiki" || pathname?.startsWith("/wiki/");
+  const inFlow = inline || wikiPage;
+  const visible = !(
+    pathname?.startsWith("/admin") ||
+    (pathname === "/desktop" && !inline) ||
+    (wikiPage && !inline)
+  );
   const me = useMe();
   const idCategorie = useId();
   const idMessage = useId();
@@ -148,8 +154,12 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
         // `min-h-11 min-w-11` : 44 px de cible tactile. En `p-2.5` seul, le bouton
         // replié tombait à 46×42 — le doigt le rate une fois sur trois au coin de
         // l'écran, là où la prise est la moins sûre.
-        data-inline={inline || undefined}
-        className="group fab-secondary fixed bottom-4 left-4 z-40 inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-full border border-white/12 bg-[rgba(10,10,10,0.8)] p-2.5 text-white/55 shadow-lg backdrop-blur-md transition-all hover:border-dbz-orange/50 hover:text-dbz-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60 md:bottom-6 md:left-6"
+        data-inline={inFlow || undefined}
+        className={`group fab-secondary inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-full border border-white/12 bg-[rgba(10,10,10,0.8)] p-2.5 text-white/55 shadow-lg backdrop-blur-md transition-all hover:border-dbz-orange/50 hover:text-dbz-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60 ${
+          inFlow
+            ? "relative mx-auto my-3 w-fit"
+            : "fixed bottom-4 left-4 z-40 md:bottom-6 md:left-6"
+        }`}
         title={t("reportDialog.title")}
       >
         <Drapeau className="h-4 w-4" />
