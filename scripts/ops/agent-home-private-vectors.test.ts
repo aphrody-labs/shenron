@@ -109,6 +109,10 @@ test("vector scope and chunk-count preconditions reject drift before sending any
     }),
   ).rejects.toThrow("chunk count");
   expect(calls).toBe(0);
+  await expect(
+    indexPrivateNotes(home, true, async () => [{ text: "x".repeat(1401) }], { compute, expected }),
+  ).rejects.toThrow("effective 1400-character");
+  expect(calls).toBe(0);
 });
 test("provider failure and invalid model/space preserve the exact previous lexical file", async () => {
   const { home, lexical, expected } = await fixture();

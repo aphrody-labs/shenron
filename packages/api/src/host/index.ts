@@ -448,8 +448,15 @@ export function usableChatBackends(
 export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): LocalApi {
   const paths = hostPaths(env);
   const publicOnly = env.SHENRON_PROFILE === "public" || env.SHENRON_VFS_PUBLIC_ONLY === "1";
-  if (options.privateQueryEmbedding && (publicOnly || envString(env, "RAG_BACKEND") === "aphrody"))
+  if (
+    options.privateQueryEmbedding &&
+    (publicOnly ||
+      env.SHENRON_PROFILE === "production" ||
+      envString(env, "RAG_BACKEND") === "aphrody")
+  )
     throw new Error("Private query embedding requires a private local VFS host");
+  if (options.privateQueryEmbedding && options.privateQueryEmbedding.model !== RAG_EMBED_MODEL)
+    throw new Error("Private query embedding requires the exact qualified VFS model namespace");
   const cdn = defaultCdn(env);
   let opened: OpenedVfs | null = null;
   if (options.vfsDatabase) {
@@ -474,6 +481,10 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
       candidate?.vfs.db.close();
       console.error(JSON.stringify({ event: "shenron.api.vfs_unavailable", error: String(error) }));
     }
+  }
+  if (options.privateQueryEmbedding && (!opened || opened.rag.model() !== RAG_EMBED_MODEL)) {
+    if (!options.vfsDatabase) opened?.vfs.db.close();
+    throw new Error("Private query embedding space differs from the VFS model metadata");
   }
   const embedModel = envString(env, "APHRODY_AI_EMBED_MODEL") ?? RAG_EMBED_MODEL;
   const embedBase = envString(env, "APHRODY_AI_EMBED_BASE_URL");

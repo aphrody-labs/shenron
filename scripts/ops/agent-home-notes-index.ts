@@ -243,6 +243,10 @@ export async function indexPrivateNotes(
       if (vectors) {
         if (texts.length !== vectors.expected.chunks)
           throw new Error("Private chunk count differs before embedding request");
+        // The native Markdown chunker treats some lists as a single soft-limit block.
+        // Reject oversized input rather than truncating reviewed evidence silently.
+        if (texts.some((text) => text.length > 1400))
+          throw new Error("Private chunk exceeds the effective 1400-character embedding bound");
         if (
           vectors.expected.chunkSha256 &&
           JSON.stringify(texts.map((text) => sha256(text.trim()))) !==

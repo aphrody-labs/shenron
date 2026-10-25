@@ -17,12 +17,43 @@ test("private query embedding cannot be injected into public or editorial Aphrod
   };
   for (const config of [
     { SHENRON_PROFILE: "public" },
+    { SHENRON_PROFILE: "production", RAG_BACKEND: "local" },
     { SHENRON_VFS_PUBLIC_ONLY: "1" },
     { RAG_BACKEND: "aphrody" },
   ])
     expect(() => createLocalApi({ ...env, ...config }, { privateQueryEmbedding })).toThrow(
       "private local VFS host",
     );
+});
+
+test("private query embedding requires the qualified namespace and matching VFS model metadata", () => {
+  expect(() =>
+    createLocalApi(env, {
+      privateQueryEmbedding: {
+        query: async () => new Float32Array(384),
+        model: "intfloat/multilingual-e5-small",
+      },
+    }),
+  ).toThrow("exact qualified VFS model namespace");
+  const db = new Database(":memory:");
+  const vfs = new ShenronVfs(db);
+  vfs.setMeta("embed_model_id", "another/model");
+  try {
+    expect(() =>
+      createLocalApi(env, {
+        vfsDatabase: db,
+        conversations: null,
+        memory: null,
+        betterAuth: null,
+        privateQueryEmbedding: {
+          query: async () => new Float32Array(384),
+          model: "Xenova/multilingual-e5-small",
+        },
+      }),
+    ).toThrow("VFS model metadata");
+  } finally {
+    db.close();
+  }
 });
 test("real private chat uses its injected query embedder while the public RAG port does not", async () => {
   const db = new Database(":memory:");
