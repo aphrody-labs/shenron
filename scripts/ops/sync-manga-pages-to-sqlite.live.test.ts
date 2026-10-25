@@ -5,7 +5,7 @@ import { describe, expect, test } from "bun:test";
 import {
   readPublicMangaSnapshot,
   syncMangaSnapshot,
-} from "../../apps/bot/scripts/sync-manga-pages-to-sqlite";
+} from "../../apps/bot/src/db/manga-search-replica";
 
 const url = process.env.SHENRON_MANGA_TEST_DATABASE_URL;
 const enabled = process.env.SHENRON_LIVE === "1" && Boolean(url);

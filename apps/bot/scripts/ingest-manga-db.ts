@@ -1,24 +1,16 @@
-/**
- * ingest-manga-db.ts — Intègre les transcriptions OCR manga (.md) dans la DB
- * SQLite de façon durable et type-safe :
- *   - table Drizzle `db_manga_pages` (une ligne par planche, `lines` json + `text`),
- *   - index FTS5 `manga_pages_fts` (recherche plein-texte bilingue FR+JP, rowid =
- *     db_manga_pages.id pour le join).
- *
- * Source : assets/manga/transcripts/*.md (générés par scripts/transcribe-manga.py).
- * Idempotent : reconstruit intégralement (DELETE + INSERT). Le JP n'est PAS du bruit.
- *
- * Usage : bun apps/bot/scripts/ingest-manga-db.ts
- */
-import { Database } from "bun:sqlite";
-import { drizzle } from "drizzle-orm/bun-sqlite";
+// SPDX-License-Identifier: Apache-2.0
+/** Read-only inspection of legacy Markdown derivatives; canonical replication owns all SQLite writes. */
 import { readdirSync, readFileSync } from "node:fs";
-import * as schema from "../src/db/schema";
-import { dbMangaPages, type NewDbMangaPage } from "../src/db/schema";
+import type { NewDbMangaPage } from "../src/db/schema";
+
+const args = Bun.argv.slice(2);
+if (args.length !== 1 || args[0] !== "--dry-run")
+  throw new Error(
+    "Legacy manga ingest writes are disabled; use --dry-run explicitly or the canonical --replica-sync --manga-search owner",
+  );
 
 const ROOT = new URL("..", import.meta.url).pathname; // apps/bot/
 const TDIR = `${ROOT}assets/manga/transcripts`;
-const DBP = process.env.DATABASE_PATH ?? `${ROOT}data/bot.db`;
 
 const CJK = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u;
 
@@ -81,50 +73,13 @@ for (const file of files) {
   }
 }
 
-const sqlite = new Database(DBP);
-const db = drizzle(sqlite, { schema });
-
-// Reconstruction idempotente de la table.
-sqlite.run("DELETE FROM db_manga_pages");
-const BATCH = 400;
-const tx = sqlite.transaction(() => {
-  for (let i = 0; i < rows.length; i += BATCH) {
-    db.insert(dbMangaPages)
-      .values(rows.slice(i, i + BATCH))
-      .run();
-  }
-});
-tx();
-
-// Index FTS5 bilingue (rowid = db_manga_pages.id pour join).
-sqlite.run("DROP TABLE IF EXISTS manga_pages_fts");
-sqlite.run(
-  `CREATE VIRTUAL TABLE manga_pages_fts USING fts5(
-		text, series UNINDEXED, tome UNINDEXED, planche UNINDEXED, lang UNINDEXED,
-		tokenize='unicode61 remove_diacritics 2'
-	)`,
-);
-const allRows = sqlite
-  .query("SELECT id, series, tome, planche, text, lang FROM db_manga_pages")
-  .all() as {
-  id: number;
-  series: string;
-  tome: string;
-  planche: number;
-  text: string;
-  lang: string;
-}[];
-const insFts = sqlite.query(
-  "INSERT INTO manga_pages_fts(rowid, text, series, tome, planche, lang) VALUES (?,?,?,?,?,?)",
-);
-const txFts = sqlite.transaction(() => {
-  for (const r of allRows) insFts.run(r.id, r.text, r.series, r.tome, r.planche, r.lang);
-});
-txFts();
-
-const tomes = new Set(rows.map((r) => `${r.series}-${r.tome}`)).size;
-const ja = rows.filter((r) => r.hasJa).length;
 console.log(
-  `✓ db_manga_pages : ${rows.length} planches (${tomes} tomes, ${ja} avec JP) + manga_pages_fts construit`,
+  JSON.stringify({
+    mode: "dry-run",
+    pages: rows.length,
+    volumes: new Set(rows.map((row) => `${row.series}/${row.tome}`)).size,
+    writesDisabled: true,
+    authoritativeSource: "PostgreSQL published manga snapshot",
+    owner: "shenron-bot --replica-sync --manga-search",
+  }),
 );
-sqlite.close();

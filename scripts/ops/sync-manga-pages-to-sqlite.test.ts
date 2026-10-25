@@ -4,7 +4,7 @@ import { describe, expect, test } from "bun:test";
 import {
   syncMangaSnapshot,
   type MangaTranscriptRow,
-} from "../../apps/bot/scripts/sync-manga-pages-to-sqlite";
+} from "../../apps/bot/src/db/manga-search-replica";
 
 function page(id = 500, planche = 1): MangaTranscriptRow {
   return {
@@ -135,6 +135,109 @@ describe("atomic manga replica and FTS", () => {
       expect(db.query("SELECT name FROM sqlite_master WHERE name='manga_pages_fts'").all()).toEqual(
         [],
       );
+    } finally {
+      db.close();
+    }
+  });
+
+  test("an unchanged complete snapshot makes no source or index writes", () => {
+    const db = fixture();
+    try {
+      const pages = [page(), page(501, 2)];
+      syncMangaSnapshot(db, pages, 2);
+      const changes = db.query("SELECT total_changes() AS changes").get();
+      const result = syncMangaSnapshot(db, pages, 2);
+      expect(result).toMatchObject({
+        healthy: true,
+        writtenPages: 0,
+        unchangedPages: 2,
+        indexedChangedPages: 0,
+        removedIndexPages: 0,
+      });
+      expect(db.query("SELECT total_changes() AS changes").get()).toEqual(changes);
+    } finally {
+      db.close();
+    }
+  });
+
+  test("one changed transcription updates only its source and index row without dropping other public hits", () => {
+    const db = fixture();
+    try {
+      syncMangaSnapshot(db, [page(), page(501, 2)], 2);
+      const result = syncMangaSnapshot(
+        db,
+        [{ ...page(), text: "Reviewed correction" }, page(501, 2)],
+        2,
+      );
+      expect(result).toMatchObject({
+        healthy: true,
+        sourcePages: 2,
+        indexedPages: 2,
+        writtenPages: 1,
+        indexedChangedPages: 1,
+      });
+      expect(
+        db
+          .query("SELECT rowid FROM manga_pages_fts WHERE manga_pages_fts MATCH 'Kamehameha'")
+          .all(),
+      ).toEqual([{ rowid: 43 }]);
+      expect(
+        db
+          .query("SELECT rowid FROM manga_pages_fts WHERE manga_pages_fts MATCH 'correction'")
+          .all(),
+      ).toEqual([{ rowid: 9 }]);
+      expect(db.query("SELECT koharu_revision FROM db_manga_pages WHERE id=9").get()).toEqual({
+        koharu_revision: 7,
+      });
+    } finally {
+      db.close();
+    }
+  });
+
+  test("a page leaving the complete public scope leaves only the index, keeping its local source history", () => {
+    const db = fixture();
+    try {
+      syncMangaSnapshot(db, [page(), page(501, 2)], 2);
+      const previous = db.query("SELECT * FROM db_manga_pages WHERE id=43").get();
+      const result = syncMangaSnapshot(db, [page()], 1);
+      expect(result).toMatchObject({
+        healthy: true,
+        writtenPages: 0,
+        indexedPages: 1,
+        indexedChangedPages: 0,
+        removedIndexPages: 1,
+      });
+      expect(db.query("SELECT * FROM db_manga_pages WHERE id=43").get()).toEqual(previous);
+      expect(
+        db
+          .query("SELECT rowid FROM manga_pages_fts WHERE manga_pages_fts MATCH 'Kamehameha'")
+          .all(),
+      ).toEqual([{ rowid: 9 }]);
+    } finally {
+      db.close();
+    }
+  });
+
+  test("source-only metadata changes avoid index writes and become a complete no-op on replay", () => {
+    const db = fixture();
+    try {
+      syncMangaSnapshot(db, [page()], 1);
+      const metadata = { ...page(), lines: '["Kame","hameha"]', line_count: 2 };
+      expect(syncMangaSnapshot(db, [metadata], 1)).toMatchObject({
+        healthy: true,
+        writtenPages: 1,
+        indexedChangedPages: 0,
+      });
+      expect(db.query("SELECT lines,line_count FROM db_manga_pages WHERE id=9").get()).toEqual({
+        lines: metadata.lines,
+        line_count: 2,
+      });
+      const changes = db.query("SELECT total_changes() AS changes").get();
+      expect(syncMangaSnapshot(db, [metadata], 1)).toMatchObject({
+        writtenPages: 0,
+        indexedChangedPages: 0,
+      });
+      expect(db.query("SELECT total_changes() AS changes").get()).toEqual(changes);
     } finally {
       db.close();
     }
