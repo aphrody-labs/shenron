@@ -94,13 +94,25 @@ export interface AphrodyWebCrawlRequest {
   maxRequests?: number;
   maxConcurrency?: number;
   perHostDelayMs?: number;
+  maxPerHost?: number;
+  maxRetries?: number;
+  obeyRobots?: boolean;
+  sitemaps?: boolean;
+  /** Conservative compatibility bound from available native source; not a binary capacity claim. */
+  maxSitemaps?: number;
+  /** Rust regular expressions, repeated as individual native flags. */
+  includeUrlRegex?: string[];
+  excludeUrlRegex?: string[];
+  goal?: string;
+  /** Scheduling revisits requires the same persistent frontier on subsequent runs. */
+  revisit?: boolean;
   sqlite?: string;
 }
 
 export interface AphrodyWebCrawlReport {
   attempts: number;
   pages: Array<{ url: string; title?: string; markdown?: string; [key: string]: unknown }>;
-  errors: Array<{ url: string; error: string }>;
+  errors: Array<{ url: string; error: string } | [string, string]>;
   frontier?: Record<string, number>;
 }
 
@@ -149,11 +161,87 @@ export async function aphrodyWebCrawl(
   request: AphrodyWebCrawlRequest,
   options: Omit<AphrodyCliOptions, "json"> = {},
 ): Promise<AphrodyWebCrawlReport> {
-  if (!request.urls.length) throw new Error("Aphrody Web crawl requires at least one seed URL");
+  if (!Array.isArray(request.urls) || !request.urls.length)
+    throw new Error("Aphrody Web crawl requires at least one seed URL");
+  const seedDomains = new Set<string>();
   for (const raw of request.urls) {
+    if (typeof raw !== "string" || raw.includes("\0"))
+      throw new TypeError("Crawl seed URLs require strings without NUL");
     const url = new URL(raw);
     if (!["http:", "https:"].includes(url.protocol) || url.username || url.password) {
-      throw new Error(`Aphrody Web crawl requires HTTP(S) URLs without credentials: ${raw}`);
+      throw new Error("Aphrody Web crawl requires HTTP(S) URLs without credentials");
+    }
+    seedDomains.add(url.hostname);
+  }
+  const integer = (
+    value: number | undefined,
+    fallback: number,
+    minimum: number,
+    name: string,
+    maximum = 0xffffffff,
+  ) => {
+    const selected = value === undefined ? fallback : value;
+    if (!Number.isSafeInteger(selected) || selected < minimum || selected > maximum)
+      throw new RangeError(`${name} must be an integer between ${minimum} and ${maximum}`);
+    return selected;
+  };
+  const text = (value: unknown, name: string, maximum = 4096): string => {
+    if (
+      typeof value !== "string" ||
+      !value.trim() ||
+      value.includes("\0") ||
+      value.length > maximum
+    )
+      throw new TypeError(`${name} requires a nonempty bounded string without NUL`);
+    return value;
+  };
+  for (const key of ["obeyRobots", "sitemaps", "revisit"] as const)
+    if (request[key] !== undefined && typeof request[key] !== "boolean")
+      throw new TypeError(`${key} must be boolean`);
+  const allowedDomains =
+    request.allowedDomains === undefined ? [...seedDomains] : request.allowedDomains;
+  if (!Array.isArray(allowedDomains) || !allowedDomains.length)
+    throw new TypeError("allowedDomains requires exact seed hostnames");
+  for (const domain of allowedDomains) {
+    text(domain, "allowedDomains", 253);
+    if (
+      !/^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/.test(domain) ||
+      domain
+        .split(".")
+        .some(
+          (label) => !label || label.length > 63 || label.startsWith("-") || label.endsWith("-"),
+        ) ||
+      new URL(`https://${domain}`).hostname !== domain
+    )
+      throw new TypeError(
+        "allowedDomains must contain canonical exact hostnames without wildcards, ports or paths",
+      );
+  }
+  if ([...seedDomains].some((domain) => !allowedDomains.includes(domain)))
+    throw new Error("Every crawl seed must belong to an explicitly allowed domain");
+  const numeric = {
+    maxDepth: integer(request.maxDepth, 3, 0, "maxDepth"),
+    maxRequests: integer(request.maxRequests, 100, 1, "maxRequests"),
+    maxConcurrency: integer(request.maxConcurrency, 2, 1, "maxConcurrency"),
+    perHostDelayMs: integer(request.perHostDelayMs, 1000, 0, "perHostDelayMs"),
+    maxPerHost: integer(request.maxPerHost, 1, 1, "maxPerHost"),
+    maxRetries: integer(request.maxRetries, 3, 0, "maxRetries"),
+  };
+  const maxSitemaps =
+    request.maxSitemaps === undefined
+      ? undefined
+      : integer(request.maxSitemaps, 25, 1, "maxSitemaps", 100);
+  if (maxSitemaps !== undefined && !request.sitemaps)
+    throw new Error("maxSitemaps requires sitemaps discovery");
+  if (request.sqlite !== undefined) text(request.sqlite, "sqlite");
+  if (request.revisit && !request.sqlite)
+    throw new Error("Revisit scheduling requires a persistent sqlite frontier");
+  if (request.goal !== undefined) text(request.goal, "goal");
+  for (const key of ["includeUrlRegex", "excludeUrlRegex"] as const) {
+    const patterns = request[key];
+    if (patterns !== undefined) {
+      if (!Array.isArray(patterns)) throw new TypeError(`${key} must be an array`);
+      for (const pattern of patterns) text(pattern, key);
     }
   }
   const args = [
@@ -161,26 +249,64 @@ export async function aphrodyWebCrawl(
     "crawl",
     ...request.urls,
     "--max-depth",
-    String(request.maxDepth ?? 3),
+    String(numeric.maxDepth),
     "--max-requests",
-    String(request.maxRequests ?? 100),
+    String(numeric.maxRequests),
     "--concurrency",
-    String(request.maxConcurrency ?? 2),
+    String(numeric.maxConcurrency),
     "--per-host-delay",
-    String(request.perHostDelayMs ?? 1000),
+    String(numeric.perHostDelayMs),
+    "--max-per-host",
+    String(numeric.maxPerHost),
+    "--max-retries",
+    String(numeric.maxRetries),
     "--json",
   ];
-  if (request.allowedDomains?.length)
-    args.push("--allowed-domains", request.allowedDomains.join(","));
+  args.push("--allowed-domains", [...new Set(allowedDomains)].join(","));
+  if (request.obeyRobots !== false) args.push("--obey-robots");
+  if (request.sitemaps) args.push("--sitemaps");
+  if (maxSitemaps !== undefined) args.push("--max-sitemaps", String(maxSitemaps));
+  for (const pattern of request.includeUrlRegex ?? []) args.push("--include-url-regex", pattern);
+  for (const pattern of request.excludeUrlRegex ?? []) args.push("--exclude-url-regex", pattern);
+  if (request.goal !== undefined) args.push("--goal", request.goal);
+  if (request.revisit) args.push("--revisit");
   if (request.sqlite) args.push("--sqlite", request.sqlite);
+  // The native ABI accepts at most 256 arguments; reject overflow before submission.
+  if (args.length > 256) throw new RangeError("Crawl options exceed the native argument budget");
   const result = await runAphrodyCli<AphrodyWebCrawlReport>(args, {
     timeoutMs: 600_000,
     ...options,
     json: true,
   });
-  if (result.kind !== "exit" || !result.ok || !result.data || !Array.isArray(result.data.pages)) {
+  if (result.kind !== "exit" || !result.ok || !result.data) {
     throw new Error(formatCliError(result));
   }
+  const report = result.data;
+  const counter = (value: unknown) =>
+    typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+  if (
+    !counter(report.attempts) ||
+    !Array.isArray(report.pages) ||
+    !Array.isArray(report.errors) ||
+    report.pages.some(
+      (page) =>
+        !page ||
+        typeof page.url !== "string" ||
+        (page.title !== undefined && typeof page.title !== "string") ||
+        (page.markdown !== undefined && typeof page.markdown !== "string"),
+    ) ||
+    report.errors.some((error) =>
+      Array.isArray(error)
+        ? error.length !== 2 || error.some((value) => typeof value !== "string")
+        : !error || typeof error.url !== "string" || typeof error.error !== "string",
+    ) ||
+    (report.frontier !== undefined &&
+      (!report.frontier ||
+        typeof report.frontier !== "object" ||
+        Array.isArray(report.frontier) ||
+        Object.values(report.frontier).some((value) => !counter(value))))
+  )
+    throw new Error("Aphrody Web returned an invalid crawl report");
   return result.data;
 }
 
