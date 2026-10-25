@@ -10,6 +10,7 @@ import { WikiSectionsReader, type ReaderPanel } from "@/components/wiki/WikiSect
 import { WikiEditBar } from "@/components/wiki/WikiEditBar";
 import { WikiImg } from "@/components/wiki/WikiImg";
 import { CharacterPowerScaling } from "@/components/wiki/CharacterPowerScaling";
+import { DEFAULT_POWER_SCALING_CONFIG } from "@/lib/canon-engine";
 import { buildWikiContentPanels } from "@/lib/wiki-panels";
 import { TECH_SECTION_KEYS, TRANSFO_SECTION_KEYS } from "@/lib/wiki-article-sections";
 import {
@@ -31,12 +32,23 @@ import type { SectionAccent } from "@/lib/wiki-section-accents";
 import { capParams } from "@/lib/prerender";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { pickBestImage } from "@/lib/image-variants";
+import { getLocale } from "next-intl/server";
+import { getWikiCharacterVersionText } from "@/lib/wiki-character-version-messages";
 import { CHARACTER_CANONICAL_SLUGS, resolveCharacterParam } from "@/lib/wiki-slugs";
 
 export const revalidate = 3600;
 
 /** Fiches prérendues au build ; l'ISR sert toutes les autres à la demande. */
 const PRERENDU = 100;
+
+function normalizeVersionLabel(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .replace(/\bsaga\b/g, " ")
+    .replace(/[^a-z0-9]/g, "");
+}
 
 export async function generateStaticParams() {
   if (!hasEditorialDatabase()) return [];
@@ -118,6 +130,8 @@ export default async function CharacterPage({ params }: { params: Promise<{ slug
     getShenronCharacterVariants(character.id),
     getLaunchConfig().catch(() => null),
   ]);
+  const locale = await getLocale();
+  const versionT = getWikiCharacterVersionText(locale);
 
   const personSchema: WithContext<Person> = {
     "@context": "https://schema.org",
@@ -279,26 +293,6 @@ export default async function CharacterPage({ params }: { params: Promise<{ slug
     "Techniques",
     "blue",
   );
-
-  // Placé AVANT « Versions & apparitions » : la frise des sagas parle du même
-  // personnage à des époques différentes, l'autre catégorie parle d'autres
-  // fiches (Xeno, futur, GT). Les inverser ferait lire la seconde comme la
-  // suite de la première.
-  if (variants.length > 0) {
-    panels.push({
-      key: "sagas",
-      label: "Au fil des sagas",
-      accent: "gold",
-      node: (
-        <CharacterSagaVariants
-          variants={variants}
-          characterName={character.name}
-          characterImage={heroImage}
-          access={access}
-        />
-      ),
-    });
-  }
 
   if (character.versions.length > 0) {
     panels.push({
@@ -475,136 +469,274 @@ export default async function CharacterPage({ params }: { params: Promise<{ slug
         </div>
       </header>
 
-      {/* Grille principale : Infobox Fandom à gauche, Contenu & Onglets à droite */}
-      <div className="flex flex-col lg:flex-row gap-8 xl:gap-12 items-start">
-        {/* Infobox Fandom standardisée avec finitions Toriyama */}
-        <aside className="w-full lg:w-[360px] xl:w-[400px] shrink-0 lg:sticky lg:top-24 space-y-6">
-          <div className="wiki-infobox">
-            <div className="wiki-infobox-header">DONNÉES OFFICIELLES //</div>
+      <div className="my-8 scroll-mt-24" id="versions-du-personnage">
+        <CharacterSagaVariants
+          variants={variants}
+          characterName={character.name}
+          access={access}
+          messages={{
+            intro: versionT("intro", { count: variants.length }),
+            overview: versionT("overview"),
+            chooseVersion: versionT("chooseVersion"),
+            tabsLabel: versionT("tabsLabel", { name: "{name}" }),
+            form: versionT("form"),
+            age: versionT("age"),
+            years: versionT("years"),
+            affiliation: versionT("affiliation"),
+            manga: versionT("manga"),
+            animatedSeries: versionT("animatedSeries"),
+            mangaPages: versionT("mangaPages"),
+            episodeSynopses: versionT("episodeSynopses"),
+            generatedImageCaption: versionT("generatedImageCaption", { title: "{title}" }),
+            imageReference: versionT("imageReference"),
+            noImage: versionT("noImage"),
+            noSummary: versionT("noSummary"),
+            powerAria: versionT("powerAria", { name: "{name}", version: "{version}" }),
+            powerHeading: versionT("powerHeading", { version: "{version}" }),
+            powerLevel: versionT("powerLevel"),
+            ki: versionT("ki"),
+            maxKi: versionT("maxKi"),
+            noPower: versionT("noPower"),
+            transformationsAria: versionT("transformationsAria", {
+              name: "{name}",
+              version: "{version}",
+            }),
+            transformations: versionT("transformations"),
+            noTransformations: versionT("noTransformations"),
+            techniquesAria: versionT("techniquesAria", { name: "{name}", version: "{version}" }),
+            techniques: versionT("techniques"),
+            noTechniques: versionT("noTechniques"),
+            episodesNamed: versionT("episodesNamed"),
+            autoSynopsis: versionT("autoSynopsis"),
+            autoManga: versionT("autoManga"),
+            autoBoth: versionT("autoBoth"),
+            volumesRange: versionT("volumesRange", { range: "{range}" }),
+            volumeSingle: versionT("volumeSingle", { number: "{number}" }),
+            episodesRange: versionT("episodesRange", { range: "{range}" }),
+            episodeSingle: versionT("episodeSingle", { number: "{number}" }),
+            officialReadings: versionT("officialReadings"),
+            scouterSource: versionT("scouterSource"),
+            daizenshuuSource: versionT("daizenshuuSource"),
+            bpUnit: versionT("bpUnit"),
+          }}
+          powerScalingNodes={variants.map((variant) => {
+            const versionSaga = normalizeVersionLabel(variant.sagaName);
+            const readings = DEFAULT_POWER_SCALING_CONFIG.officialBps.filter((reading) => {
+              const belongsToCharacter =
+                reading.characterId === character.id ||
+                (!reading.characterId &&
+                  normalizeVersionLabel(reading.character) ===
+                    normalizeVersionLabel(character.name));
+              return belongsToCharacter && normalizeVersionLabel(reading.saga) === versionSaga;
+            });
+            if (readings.length === 0) return null;
+            return (
+              <div
+                key={`power-readings-${variant.id}`}
+                className="dbz-panel space-y-2 p-4 sm:col-span-3"
+              >
+                <h4 className="text-[10px] font-bold uppercase tracking-wider text-white/55">
+                  {versionT("officialReadings")}
+                </h4>
+                <ul className="space-y-2">
+                  {readings.map((reading) => (
+                    <li
+                      key={`${reading.saga}-${reading.state}-${reading.bp}`}
+                      className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-white/10 pt-2 text-sm"
+                    >
+                      <span className="text-white/80">{reading.state}</span>
+                      <span className="font-mono font-bold text-dbz-orange">
+                        {reading.bp.toLocaleString(locale)} {versionT("bpUnit")}
+                      </span>
+                      <span className="w-full text-xs text-white/45">
+                        {reading.source} ·{" "}
+                        {reading.scouter ? versionT("scouterSource") : versionT("daizenshuuSource")}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+          transformationNodes={variants.map((variant) => {
+            const items = character.transformations.filter((item) =>
+              variant.transformationIds?.includes(item.id),
+            );
+            return items.length ? (
+              <ul key={`transformations-${variant.id}`} className="flex flex-wrap gap-2">
+                {items.map((item) => (
+                  <li
+                    key={item.id}
+                    className="rounded-lg border border-dbz-border px-3 py-2 text-sm text-white/85"
+                  >
+                    {item.name}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p key={`transformations-${variant.id}`} className="text-sm text-white/55">
+                {versionT("noTransformations")}
+              </p>
+            );
+          })}
+          techniqueNodes={variants.map((variant) => {
+            const items = character.techniques.filter(({ technique }) =>
+              variant.techniqueIds?.includes(technique.id),
+            );
+            return items.length ? (
+              <ul key={`techniques-${variant.id}`} className="flex flex-wrap gap-2">
+                {items.map(({ technique }) => (
+                  <li
+                    key={technique.id}
+                    className="rounded-lg border border-dbz-border px-3 py-2 text-sm text-white/85"
+                  >
+                    {technique.name}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p key={`techniques-${variant.id}`} className="text-sm text-white/55">
+                {versionT("noTechniques")}
+              </p>
+            );
+          })}
+        >
+          {/* Grille principale : Infobox Fandom à gauche, Contenu & Onglets à droite */}
+          <div className="flex flex-col lg:flex-row gap-8 xl:gap-12 items-start">
+            {/* Infobox Fandom standardisée avec finitions Toriyama */}
+            <aside className="w-full lg:w-[360px] xl:w-[400px] shrink-0 lg:sticky lg:top-24 space-y-6">
+              <div className="wiki-infobox">
+                <div className="wiki-infobox-header">DONNÉES OFFICIELLES //</div>
 
-            {/* Portrait principal */}
-            <div className="p-4 bg-[#0a0a0c] border-b-2 border-black flex justify-center items-center relative overflow-hidden group">
-              <div className="absolute inset-0 halftone opacity-10" />
-              <ViewTransition name={`character-img-${character.id}`} share="morph">
-                {/* Meilleure résolution existante en premier (image éditoriale,
+                {/* Portrait principal */}
+                <div className="p-4 bg-[#0a0a0c] border-b-2 border-black flex justify-center items-center relative overflow-hidden group">
+                  <div className="absolute inset-0 halftone opacity-10" />
+                  <ViewTransition name={`character-img-${character.id}`} share="morph">
+                    {/* Meilleure résolution existante en premier (image éditoriale,
 								    portrait XV2 ou copie plus grande de la même image, mesurées
 								    par l'inventaire) ; l'autre reste en repli. */}
-                <WikiImg
-                  src={heroImage}
-                  fallback={heroImage === character.image ? character.portraitXv2 : character.image}
-                  alt={character.name}
-                  loading="eager"
-                  className="max-h-[380px] w-auto object-contain relative z-10 drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-500"
-                  placeholderClassName="relative z-10 w-full aspect-[3/4] flex items-center justify-center bg-dbz-card overflow-hidden rounded"
-                />
-              </ViewTransition>
-            </div>
+                    <WikiImg
+                      src={heroImage}
+                      fallback={
+                        heroImage === character.image ? character.portraitXv2 : character.image
+                      }
+                      alt={character.name}
+                      loading="eager"
+                      className="max-h-[380px] w-auto object-contain relative z-10 drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-500"
+                      placeholderClassName="relative z-10 w-full aspect-[3/4] flex items-center justify-center bg-dbz-card overflow-hidden rounded"
+                    />
+                  </ViewTransition>
+                </div>
 
-            {/* Attributs structurés */}
-            <div className="divide-y divide-white/[0.08]">
-              <div className="wiki-infobox-row">
-                <span className="wiki-infobox-label">Nom officiel</span>
-                <span className="wiki-infobox-value">{character.name}</span>
-              </div>
-              {character.nameJa && (
-                <div className="wiki-infobox-row">
-                  <span className="wiki-infobox-label">Japonais</span>
-                  <span lang="ja" className="wiki-infobox-value font-jp text-dbz-orange">
-                    {character.nameJa}
-                  </span>
-                </div>
-              )}
-              {character.nameRomaji && (
-                <div className="wiki-infobox-row">
-                  <span className="wiki-infobox-label">Romaji</span>
-                  <span className="wiki-infobox-value italic">{character.nameRomaji}</span>
-                </div>
-              )}
-              {character.race && (
-                <div className="wiki-infobox-row">
-                  <span className="wiki-infobox-label">Race</span>
-                  <span className="wiki-infobox-value text-dbz-yellow">{character.race}</span>
-                </div>
-              )}
-              {character.affiliation && (
-                <div className="wiki-infobox-row">
-                  <span className="wiki-infobox-label">Affiliation</span>
-                  <span className="wiki-infobox-value">{character.affiliation}</span>
-                </div>
-              )}
-              {character.originPlanet && (
-                <div className="wiki-infobox-row">
-                  <span className="wiki-infobox-label">Planète</span>
-                  <span className="wiki-infobox-value text-dbz-cyan">
-                    {character.originPlanet.name}
-                  </span>
-                </div>
-              )}
-              {character.voiceActors?.map((va) => (
-                <div key={va.id} className="wiki-infobox-row">
-                  <span className="wiki-infobox-label">
-                    {va.nationality === "ja"
-                      ? "Seiyū (Japonais)"
-                      : va.nationality === "fr"
-                        ? "Voix Française"
-                        : `Voix (${va.nationality.toUpperCase()})`}
-                  </span>
-                  <span className="wiki-infobox-value text-dbz-orange">
-                    <GatedWrap href="/wiki/staff?tier=voice" className="hover:underline">
-                      {va.name}{" "}
-                      {va.nameJa && (
-                        <span lang="ja" className="font-jp text-xs opacity-75">
-                          ({va.nameJa})
-                        </span>
-                      )}
-                    </GatedWrap>
-                    {va.roleNotes && (
-                      <span className="block text-[10px] text-white/40 font-normal mt-0.5">
-                        {va.roleNotes}
+                {/* Attributs structurés */}
+                <div className="divide-y divide-white/[0.08]">
+                  <div className="wiki-infobox-row">
+                    <span className="wiki-infobox-label">Nom officiel</span>
+                    <span className="wiki-infobox-value">{character.name}</span>
+                  </div>
+                  {character.nameJa && (
+                    <div className="wiki-infobox-row">
+                      <span className="wiki-infobox-label">Japonais</span>
+                      <span lang="ja" className="wiki-infobox-value font-jp text-dbz-orange">
+                        {character.nameJa}
                       </span>
-                    )}
-                  </span>
+                    </div>
+                  )}
+                  {character.nameRomaji && (
+                    <div className="wiki-infobox-row">
+                      <span className="wiki-infobox-label">Romaji</span>
+                      <span className="wiki-infobox-value italic">{character.nameRomaji}</span>
+                    </div>
+                  )}
+                  {character.race && (
+                    <div className="wiki-infobox-row">
+                      <span className="wiki-infobox-label">Race</span>
+                      <span className="wiki-infobox-value text-dbz-yellow">{character.race}</span>
+                    </div>
+                  )}
+                  {character.affiliation && (
+                    <div className="wiki-infobox-row">
+                      <span className="wiki-infobox-label">Affiliation</span>
+                      <span className="wiki-infobox-value">{character.affiliation}</span>
+                    </div>
+                  )}
+                  {character.originPlanet && (
+                    <div className="wiki-infobox-row">
+                      <span className="wiki-infobox-label">Planète</span>
+                      <span className="wiki-infobox-value text-dbz-cyan">
+                        {character.originPlanet.name}
+                      </span>
+                    </div>
+                  )}
+                  {character.voiceActors?.map((va) => (
+                    <div key={va.id} className="wiki-infobox-row">
+                      <span className="wiki-infobox-label">
+                        {va.nationality === "ja"
+                          ? "Seiyū (Japonais)"
+                          : va.nationality === "fr"
+                            ? "Voix Française"
+                            : `Voix (${va.nationality.toUpperCase()})`}
+                      </span>
+                      <span className="wiki-infobox-value text-dbz-orange">
+                        <GatedWrap href="/wiki/staff?tier=voice" className="hover:underline">
+                          {va.name}{" "}
+                          {va.nameJa && (
+                            <span lang="ja" className="font-jp text-xs opacity-75">
+                              ({va.nameJa})
+                            </span>
+                          )}
+                        </GatedWrap>
+                        {va.roleNotes && (
+                          <span className="block text-[10px] text-white/40 font-normal mt-0.5">
+                            {va.roleNotes}
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  ))}
+                  {character.ki && (
+                    <div className="wiki-infobox-row">
+                      <span className="wiki-infobox-label">Ki de base</span>
+                      <span className="wiki-infobox-value font-mono text-dbz-orange">
+                        {character.ki}
+                      </span>
+                    </div>
+                  )}
+                  {character.maxKi && (
+                    <div className="wiki-infobox-row">
+                      <span className="wiki-infobox-label">Ki maximum</span>
+                      <span className="wiki-infobox-value font-mono text-dbz-red">
+                        {character.maxKi}
+                      </span>
+                    </div>
+                  )}
+                  {character.stats?.map((st) => (
+                    <div key={st.label} className="wiki-infobox-row">
+                      <span className="wiki-infobox-label">{st.label}</span>
+                      <span className="wiki-infobox-value font-mono text-dbz-yellow">
+                        {st.value}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-              {character.ki && (
-                <div className="wiki-infobox-row">
-                  <span className="wiki-infobox-label">Ki de base</span>
-                  <span className="wiki-infobox-value font-mono text-dbz-orange">
-                    {character.ki}
-                  </span>
-                </div>
-              )}
-              {character.maxKi && (
-                <div className="wiki-infobox-row">
-                  <span className="wiki-infobox-label">Ki maximum</span>
-                  <span className="wiki-infobox-value font-mono text-dbz-red">
-                    {character.maxKi}
-                  </span>
-                </div>
-              )}
-              {character.stats?.map((st) => (
-                <div key={st.label} className="wiki-infobox-row">
-                  <span className="wiki-infobox-label">{st.label}</span>
-                  <span className="wiki-infobox-value font-mono text-dbz-yellow">{st.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </aside>
+              </div>
+            </aside>
 
-        {/* Colonne de contenu principale : Sections, Biographie, Powerscaling */}
-        <main className="flex-1 min-w-0 w-full space-y-10">
-          <WikiSectionsReader panels={panels} />
-          <WikiSources sources={character.articleSources} />
-        </main>
+            {/* Colonne de contenu principale : Sections, Biographie, Powerscaling */}
+            <main className="flex-1 min-w-0 w-full space-y-10">
+              <WikiSectionsReader panels={panels} />
+              <WikiSources sources={character.articleSources} />
+            </main>
+          </div>
+          <EntityParticipation
+            kind="wiki"
+            table="db_characters"
+            id={character.id}
+            path={`/wiki/characters/${slug}`}
+            label={character.name}
+          />
+        </CharacterSagaVariants>
       </div>
-      <EntityParticipation
-        kind="wiki"
-        table="db_characters"
-        id={character.id}
-        path={`/wiki/characters/${slug}`}
-        label={character.name}
-      />
     </article>
   );
 }

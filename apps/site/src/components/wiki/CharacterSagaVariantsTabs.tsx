@@ -25,10 +25,20 @@ import { ClientGatedWrap } from "@/components/GatedClientLink";
 import { onTablistKeyDown } from "@/lib/tablist-keys";
 import type { AccessSnapshot } from "@/lib/wiki-launch";
 import type { CharacterVariant } from "@/lib/shenron";
+import type { CharacterVersionMessages } from "@/lib/wiki-character-version-messages";
 
 /** Libellé court pour la pilule : « Saga Majin Boo » → « Majin Boo ». */
 function courte(label: string): string {
   return label.replace(/^saga\s+(de\s+l['’]|de\s+la\s+|de\s+|du\s+|des\s+)?/i, "").trim() || label;
+}
+
+function safeReferenceUrl(value: string): string | null {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:" ? url.href : null;
+  } catch {
+    return null;
+  }
 }
 
 function Champ({ titre, valeur }: { titre: string; valeur: string }) {
@@ -42,20 +52,27 @@ function Champ({ titre, valeur }: { titre: string; valeur: string }) {
 
 export function CharacterSagaVariantsTabs({
   variants,
+  overviewNode,
   characterName,
-  characterImage,
   access,
   summaryNodes,
+  powerScalingNodes,
+  transformationNodes,
+  techniqueNodes,
+  messages,
 }: {
   variants: Omit<CharacterVariant, "summary">[];
+  overviewNode: ReactNode;
   summaryNodes: ReactNode[];
+  powerScalingNodes: ReactNode[];
   characterName: string;
-  /** Apparence de la fiche — repli quand la variante n'a pas d'image propre. */
-  characterImage: string | null;
   /** Instantané de la configuration de lancement, résolu côté serveur. */
   access?: AccessSnapshot | null;
+  transformationNodes: ReactNode[];
+  techniqueNodes: ReactNode[];
+  messages: CharacterVersionMessages;
 }) {
-  const [actif, setActif] = useState(0);
+  const [actif, setActif] = useState(-1);
   /**
    * Le motif ARIA « onglets » n'était qu'à moitié posé : les pilules portaient
    * `role="tab"` sans jamais dire quel panneau elles commandent, et le panneau
@@ -78,7 +95,10 @@ export function CharacterSagaVariantsTabs({
   useEffect(() => {
     const applyHash = () => {
       const m = /^#saga-(\d+)$/.exec(window.location.hash);
-      if (!m) return;
+      if (!m) {
+        if (!window.location.hash) setActif(-1);
+        return;
+      }
       const cible = Number(m[1]);
       const i = variants.findIndex((x) => x.sagaId === cible);
       if (i < 0) return;
@@ -102,13 +122,35 @@ export function CharacterSagaVariantsTabs({
     }
   }
 
+  function selectOverview() {
+    setActif(-1);
+    if (typeof window !== "undefined" && window.history?.replaceState) {
+      const url = new URL(window.location.href);
+      url.hash = "";
+      window.history.replaceState(null, "", `${url.pathname}${url.search}`);
+    }
+  }
+
   if (!variants.length) return null;
-  const v = variants[Math.min(actif, variants.length - 1)]!;
+  const isOverview = actif < 0;
+  const variantIndex = Math.max(actif, 0);
+  const v = variants[Math.min(variantIndex, variants.length - 1)]!;
+  const artwork = v.evidence?.imageArtwork;
+  const generatedArtwork =
+    artwork?.kind === "generated" && artwork.image === v.image ? artwork : null;
+  const imageReferences = (v.evidence?.editorialReferences ?? []).flatMap((reference) => {
+    if (!reference.fields.includes("image")) return [];
+    const url = safeReferenceUrl(reference.url);
+    return url ? [{ ...reference, url }] : [];
+  });
+  const generatedReferenceUrl = generatedArtwork
+    ? safeReferenceUrl(generatedArtwork.referenceUrl)
+    : null;
   const tomes =
     v.firstVolume != null && v.lastVolume != null
       ? v.firstVolume === v.lastVolume
-        ? `tome ${v.firstVolume}`
-        : `tomes ${v.firstVolume} à ${v.lastVolume}`
+        ? messages.volumeSingle.replace("{number}", String(v.firstVolume))
+        : messages.volumesRange.replace("{range}", `${v.firstVolume}–${v.lastVolume}`)
       : null;
   const episodes =
     v.firstEpisode != null && v.lastEpisode != null
@@ -116,195 +158,327 @@ export function CharacterSagaVariantsTabs({
         // à voir avec les épisodes 1 à 20 de Z.
         `${v.episodeSeries ?? ""} ${
           v.firstEpisode === v.lastEpisode
-            ? `épisode ${v.firstEpisode}`
-            : `épisodes ${v.firstEpisode} à ${v.lastEpisode}`
+            ? messages.episodeSingle.replace("{number}", String(v.firstEpisode))
+            : messages.episodesRange.replace("{range}", `${v.firstEpisode}–${v.lastEpisode}`)
         }`.trim()
       : null;
   const mesuree = v.origin != null && v.origin !== "editorial";
 
   return (
     <section className="space-y-8" ref={ancre}>
-      <p className="max-w-3xl text-sm text-white/50">
-        {characterName} au fil des sagas : ce qui change d'une époque à l'autre — apparence, forme
-        atteinte, rôle. {variants.length} saga{variants.length > 1 ? "s" : ""} référencée
-        {variants.length > 1 ? "s" : ""}.
+      <p className="max-w-3xl text-sm leading-relaxed text-white/70">
+        {messages.intro.replace("{count}", String(variants.length))}
       </p>
 
-      {/* Rail défilant sur mobile : quatorze sagas ne tiennent pas sur une
+      <div className="rounded-xl border-2 border-dbz-orange/70 bg-dbz-orange/10 p-4 sm:p-5">
+        <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-dbz-orange">
+          {messages.chooseVersion}
+        </p>
+
+        {/* Rail défilant sur mobile : quatorze sagas ne tiennent pas sur une
 			    ligne d'écran de téléphone, et les empiler pousserait le contenu
 			    hors de vue avant qu'on ait lu la première. */}
-      <div
-        tabIndex={0}
-        className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-1 scrollbar-thin sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
-        role="tablist"
-        aria-label={`Sagas de ${characterName}`}
-        // Le rôle `tablist` promet les flèches ←/→ et Début/Fin ; sans ce
-        // gestionnaire, la promesse n'était pas tenue et la frise ne se
-        // parcourait qu'onglet par onglet à la tabulation.
-        onKeyDown={onTablistKeyDown}
-      >
-        {variants.map((x, i) => {
-          const on = i === actif;
-          return (
-            <button
-              key={x.id}
-              type="button"
-              role="tab"
-              id={`${panneauId}-onglet-${x.id}`}
-              aria-controls={panneauId}
-              aria-selected={on}
-              // `tabIndex` tournant : le jeu d'onglets = UN arrêt de tabulation.
-              tabIndex={on ? 0 : -1}
-              onClick={() => selectVariant(i, x.sagaId)}
-              className={`inline-flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors sm:min-h-0 sm:py-1.5 ${
-                on
-                  ? "border-dbz-orange bg-dbz-orange/10 text-white"
-                  : "border-dbz-border text-white/60 hover:border-dbz-orange/40 hover:text-white"
-              }`}
-            >
-              {courte(x.label)}
-              {x.form && <span className="text-[10px] text-dbz-yellow/80">{x.form}</span>}
-            </button>
-          );
-        })}
+        <div
+          className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-1 scrollbar-thin sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
+          role="tablist"
+          aria-label={messages.tabsLabel.replace("{name}", characterName)}
+          // Le rôle `tablist` promet les flèches ←/→ et Début/Fin ; sans ce
+          // gestionnaire, la promesse n'était pas tenue et la frise ne se
+          // parcourait qu'onglet par onglet à la tabulation.
+          onKeyDown={onTablistKeyDown}
+        >
+          <button
+            type="button"
+            role="tab"
+            id={`${panneauId}-onglet-overview`}
+            aria-controls={panneauId}
+            aria-selected={isOverview}
+            tabIndex={isOverview ? 0 : -1}
+            onClick={selectOverview}
+            className={`inline-flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
+              isOverview
+                ? "border-dbz-orange bg-dbz-orange/10 text-white"
+                : "border-dbz-border text-white/60 hover:border-dbz-orange/40 hover:text-white"
+            } focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange`}
+          >
+            {messages.overview}
+          </button>
+          {variants.map((x, i) => {
+            const on = i === actif;
+            return (
+              <button
+                key={x.id}
+                type="button"
+                role="tab"
+                id={`${panneauId}-onglet-${x.id}`}
+                aria-controls={panneauId}
+                aria-selected={on}
+                // `tabIndex` tournant : le jeu d'onglets = UN arrêt de tabulation.
+                tabIndex={on ? 0 : -1}
+                onClick={() => selectVariant(i, x.sagaId)}
+                className={`inline-flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
+                  on
+                    ? "border-dbz-orange bg-dbz-orange/10 text-white"
+                    : "border-dbz-border text-white/60 hover:border-dbz-orange/40 hover:text-white"
+                } focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange`}
+              >
+                {courte(x.label)}
+                {x.form && <span className="text-[10px] text-dbz-yellow/80">{x.form}</span>}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div
-        className="dbz-panel flex flex-col gap-6 p-6 sm:flex-row"
         role="tabpanel"
+        aria-live="polite"
         id={panneauId}
-        aria-labelledby={`${panneauId}-onglet-${v.id}`}
+        aria-labelledby={
+          isOverview ? `${panneauId}-onglet-overview` : `${panneauId}-onglet-${v.id}`
+        }
       >
-        <div className="w-full shrink-0 sm:w-56">
-          {/* `aspect-[3/4]` obligatoire : passer `sizes` à WikiImg bascule le
+        {isOverview ? (
+          overviewNode
+        ) : (
+          <div className="dbz-panel flex flex-col gap-6 p-6 sm:flex-row">
+            <div className="w-full shrink-0 sm:w-56">
+              {/* `aspect-[3/4]` obligatoire : passer `sizes` à WikiImg bascule le
 					    rendu sur next/image en mode `fill`, qui se positionne en absolu
 					    et ne donne AUCUNE hauteur à son parent. Sans ratio ici, la
 					    colonne s'effondrait à une bande de vingt pixels. */}
-          <div className="relative aspect-[3/4] overflow-hidden rounded-lg border border-dbz-border bg-dbz-bg">
-            <div aria-hidden className="halftone absolute inset-0 z-10 opacity-10" />
-            <WikiImg
-              src={v.image ?? characterImage}
-              alt={v.displayName ?? `${characterName} — ${v.label}`}
-              sizes="(min-width: 640px) 224px, 100vw"
-              loading="lazy"
-              className="object-contain p-2"
-              placeholderClassName="absolute inset-0 flex items-center justify-center rounded"
-            />
-          </div>
-        </div>
+              <div
+                className={`relative aspect-[3/4] overflow-hidden rounded-lg border border-dbz-border ${generatedArtwork ? "bg-[#fffaf0]" : "bg-dbz-bg"}`}
+              >
+                {!generatedArtwork && (
+                  <div aria-hidden className="halftone absolute inset-0 z-10 opacity-10" />
+                )}
+                {v.image ? (
+                  <WikiImg
+                    src={v.image}
+                    alt={v.displayName ?? `${characterName} — ${v.label}`}
+                    sizes="(min-width: 640px) 224px, 100vw"
+                    loading="lazy"
+                    className="object-contain p-2"
+                    placeholderClassName="absolute inset-0 flex items-center justify-center rounded"
+                  />
+                ) : (
+                  <div
+                    role="img"
+                    aria-label={messages.noImage}
+                    className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent p-5 text-center"
+                  >
+                    <span aria-hidden="true" className="font-saiyan text-5xl text-white/25">
+                      ?
+                    </span>
+                    <span className="text-xs leading-relaxed text-white/60">
+                      {messages.noImage}
+                    </span>
+                  </div>
+                )}
+              </div>
+              {generatedArtwork && (
+                <p className="mt-2 text-xs leading-relaxed text-white/55">
+                  {messages.generatedImageCaption.replace(
+                    "{title}",
+                    generatedArtwork.referenceTitle,
+                  )}{" "}
+                  {generatedReferenceUrl && (
+                    <a
+                      href={generatedReferenceUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-semibold text-dbz-orange underline underline-offset-2 hover:text-white"
+                    >
+                      {messages.imageReference}
+                    </a>
+                  )}
+                </p>
+              )}
+              {imageReferences.length > 0 && (
+                <div className="mt-2 space-y-1 text-xs leading-relaxed text-white/60">
+                  <p className="font-semibold text-white/75">{messages.imageReference}</p>
+                  <ul className="space-y-1">
+                    {imageReferences.map((reference) => (
+                      <li key={`${reference.url}:${reference.locator}`}>
+                        <a
+                          href={reference.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label={`${messages.imageReference}: ${reference.title}, ${reference.locator}`}
+                          className="font-semibold text-dbz-orange underline underline-offset-2 hover:text-white"
+                        >
+                          {reference.title}{" "}
+                          <span className="font-normal">· {reference.locator}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
 
-        <div className="min-w-0 flex-1 space-y-4">
-          <div>
-            {/* `h2` et non `h3` : cette frise est une rubrique de la fiche au
+            <div className="min-w-0 flex-1 space-y-4">
+              <div>
+                {/* `h2` et non `h3` : cette frise est une rubrique de la fiche au
 						    même titre que « Transformations » ou « Personnages affiliés »,
 						    qui titrent toutes en `h2`. Elle sautait donc un niveau sous le
 						    `h1` du personnage, et la fiche n'avait aucun `h2` quand la
 						    frise était sa seule rubrique. */}
-            <h2 className="font-saiyan text-2xl uppercase tracking-widest text-white sm:text-3xl">
-              {v.displayName ?? `${characterName} — ${v.label}`}
-            </h2>
-            <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
-              <ClientGatedWrap
-                access={access}
-                href={`/wiki/sagas/${v.sagaSlug}`}
-                className="font-bold uppercase tracking-widest text-dbz-orange hover:text-white"
-              >
-                {v.sagaName} →
-              </ClientGatedWrap>
-              {v.sagaSeries && (
-                <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">
-                  {v.sagaSeries}
-                </span>
-              )}
-              {v.role && (
-                <span className="border border-white/20 bg-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/80">
-                  {v.role}
-                </span>
-              )}
-            </div>
-          </div>
+                <h2 className="font-saiyan text-2xl uppercase tracking-widest text-white sm:text-3xl">
+                  {v.displayName ?? `${characterName} — ${v.label}`}
+                </h2>
+                <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
+                  <ClientGatedWrap
+                    access={access}
+                    href={`/wiki/sagas/${v.sagaSlug}`}
+                    className="font-bold uppercase tracking-widest text-dbz-orange hover:text-white"
+                  >
+                    {v.sagaName} →
+                  </ClientGatedWrap>
+                  {v.sagaSeries && (
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">
+                      {v.sagaSeries}
+                    </span>
+                  )}
+                  {v.role && (
+                    <span className="border border-white/20 bg-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/80">
+                      {v.role}
+                    </span>
+                  )}
+                </div>
+              </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {v.form && <Champ titre="Forme atteinte" valeur={v.form} />}
-            {v.age != null && <Champ titre="Âge" valeur={`${v.age} ans`} />}
-            {v.powerLevel && <Champ titre="Puissance" valeur={v.powerLevel} />}
-            {v.ki && <Champ titre="Ki" valeur={v.ki} />}
-            {v.maxKi && <Champ titre="Ki maximum" valeur={v.maxKi} />}
-            {v.affiliation && <Champ titre="Affiliation" valeur={v.affiliation} />}
-            {/* Les deux seules valeurs qu'on tienne d'une mesure et non d'une
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {v.form && <Champ titre={messages.form} valeur={v.form} />}
+                {v.age != null && (
+                  <Champ titre={messages.age} valeur={`${v.age} ${messages.years}`} />
+                )}
+                {v.affiliation && <Champ titre={messages.affiliation} valeur={v.affiliation} />}
+                {/* Les deux seules valeurs qu'on tienne d'une mesure et non d'une
 						    rédaction : elles occupent le bloc tant que le reste n'est pas
 						    écrit, et elles restent vraies après. */}
-            {tomes && <Champ titre="Manga" valeur={tomes} />}
-            {episodes && <Champ titre="Série animée" valeur={episodes} />}
-            {!!v.evidence?.planches && (
-              <Champ titre="Planches où le nom paraît" valeur={String(v.evidence.planches)} />
-            )}
-            {!!v.evidence?.synopsis && (
-              <Champ titre="Résumés d'épisode" valeur={String(v.evidence.synopsis)} />
-            )}
-          </div>
+                {tomes && <Champ titre={messages.manga} valeur={tomes} />}
+                {episodes && <Champ titre={messages.animatedSeries} valeur={episodes} />}
+                {!!v.evidence?.planches && (
+                  <Champ titre={messages.mangaPages} valeur={String(v.evidence.planches)} />
+                )}
+                {!!v.evidence?.synopsis && (
+                  <Champ titre={messages.episodeSynopses} valeur={String(v.evidence.synopsis)} />
+                )}
+              </div>
 
-          {summaryNodes[Math.min(actif, variants.length - 1)] && (
-            <div className="prose-invert max-w-none text-sm">
-              {summaryNodes[Math.min(actif, variants.length - 1)]}
-            </div>
-          )}
+              {summaryNodes[Math.min(variantIndex, variants.length - 1)] ? (
+                <div className="prose-invert max-w-none text-sm">
+                  {summaryNodes[Math.min(variantIndex, variants.length - 1)]}
+                </div>
+              ) : (
+                <p className="text-sm leading-relaxed text-white/55">{messages.noSummary}</p>
+              )}
 
-          {/* Épisodes dont le TITRE nomme le personnage : ni un résumé ni une
+              <section
+                aria-label={messages.powerAria
+                  .replace("{name}", characterName)
+                  .replace("{version}", v.label)}
+                className="space-y-3 border-t border-white/10 pt-4"
+              >
+                <h3 className="text-xs font-bold uppercase tracking-wider text-dbz-yellow">
+                  {messages.powerHeading.replace("{version}", v.label)}
+                </h3>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {v.powerLevel ? (
+                    <Champ titre={messages.powerLevel} valeur={v.powerLevel} />
+                  ) : null}
+                  {v.ki ? <Champ titre={messages.ki} valeur={v.ki} /> : null}
+                  {v.maxKi ? <Champ titre={messages.maxKi} valeur={v.maxKi} /> : null}
+                  {powerScalingNodes[variantIndex]}
+                </div>
+                {!v.powerLevel && !v.ki && !v.maxKi && !powerScalingNodes[variantIndex] && (
+                  <p className="text-sm text-white/55">{messages.noPower}</p>
+                )}
+              </section>
+
+              {(transformationNodes[variantIndex] || techniqueNodes[variantIndex]) && (
+                <div className="grid gap-4 border-t border-white/10 pt-4 sm:grid-cols-2">
+                  {transformationNodes[variantIndex] && (
+                    <section
+                      aria-label={messages.transformationsAria
+                        .replace("{name}", characterName)
+                        .replace("{version}", v.label)}
+                    >
+                      <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-dbz-orange">
+                        {messages.transformations}
+                      </h3>
+                      {transformationNodes[variantIndex]}
+                    </section>
+                  )}
+                  {techniqueNodes[variantIndex] && (
+                    <section
+                      aria-label={messages.techniquesAria
+                        .replace("{name}", characterName)
+                        .replace("{version}", v.label)}
+                    >
+                      <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-dbz-blue-light">
+                        {messages.techniques}
+                      </h3>
+                      {techniqueNodes[variantIndex]}
+                    </section>
+                  )}
+                </div>
+              )}
+
+              {/* Épisodes dont le TITRE nomme le personnage : ni un résumé ni une
 					    interprétation, la liste de ce que la série a mis à son nom
 					    pendant la saga. C'est le seul contenu de la variante qu'on
 					    tienne d'une mesure et pas d'une rédaction. */}
-          {v.keyEpisodes && v.keyEpisodes.length > 0 && (
-            <div>
-              <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/50">
-                Épisodes à son nom
-              </p>
-              <ul className="flex flex-wrap gap-2">
-                {v.keyEpisodes.map((e) => (
-                  <li key={e.id}>
-                    <ClientGatedWrap
-                      access={access}
-                      href={`/wiki/episodes/${e.id}`}
-                      className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-dbz-border px-3 py-1.5 text-xs text-white/75 transition-colors hover:border-dbz-orange/50 hover:text-white"
-                    >
-                      <span className="tabular-nums text-dbz-orange/80">#{e.num}</span>
-                      {e.title}
-                    </ClientGatedWrap>
-                  </li>
-                ))}
-              </ul>
+              {v.keyEpisodes && v.keyEpisodes.length > 0 && (
+                <div>
+                  <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/50">
+                    {messages.episodesNamed}
+                  </p>
+                  <ul className="flex flex-wrap gap-2">
+                    {v.keyEpisodes.map((e) => (
+                      <li key={e.id}>
+                        <ClientGatedWrap
+                          access={access}
+                          href={`/wiki/episodes/${e.id}`}
+                          className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-dbz-border px-3 py-1.5 text-xs text-white/75 transition-colors hover:border-dbz-orange/50 hover:text-white"
+                        >
+                          <span className="tabular-nums text-dbz-orange/80">#{e.num}</span>
+                          {e.title}
+                        </ClientGatedWrap>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {v.highlights && v.highlights.length > 0 && (
+                <ul className="space-y-2 text-sm text-white/75">
+                  {v.highlights.map((h) => (
+                    <li key={h} className="flex gap-3">
+                      <span aria-hidden className="text-dbz-orange">
+                        ▸
+                      </span>
+                      <span>{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {/* Provenance — dit ce que la mesure prouve, et ce qu'elle ne prouve pas. */}
+              {mesuree && (
+                <p className="border-t border-white/10 pt-4 text-xs leading-relaxed text-white/45">
+                  {v.origin === "synopsis-episodes"
+                    ? messages.autoSynopsis
+                    : v.origin === "ocr-manga"
+                      ? messages.autoManga
+                      : messages.autoBoth}
+                </p>
+              )}
             </div>
-          )}
-
-          {v.highlights && v.highlights.length > 0 && (
-            <ul className="space-y-2 text-sm text-white/75">
-              {v.highlights.map((h) => (
-                <li key={h} className="flex gap-3">
-                  <span aria-hidden className="text-dbz-orange">
-                    ▸
-                  </span>
-                  <span>{h}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {/* Provenance — dit ce que la mesure prouve, et ce qu'elle ne prouve pas. */}
-          {mesuree && (
-            <p className="border-t border-white/10 pt-4 text-xs leading-relaxed text-white/45">
-              Relevé automatique : le nom est <em>cité</em> dans{" "}
-              {v.origin === "synopsis-episodes"
-                ? "ces résumés d'épisode"
-                : v.origin === "ocr-manga"
-                  ? "ces planches"
-                  : "ces planches et ces résumés"}
-              , ce qui ne dit pas à soi seul quel rôle le personnage tient dans la saga.
-              {v.origin === "synopsis-episodes" &&
-                " Cette saga n'a pas de manga : la présence n'est attestée que par l'adaptation animée."}{" "}
-              Forme, puissance et faits marquants restent à écrire.
-            </p>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );
