@@ -30,6 +30,76 @@ const cleanText = (max: number) =>
     .min(1)
     .max(max)
     .refine((s) => !s.includes("\0"));
+const capturedAt = z
+  .string()
+  .datetime({ offset: true })
+  .refine((s) => Date.parse(s) <= Date.now() + 60_000);
+const contentHash = z.string().regex(/^[a-f0-9]{64}$/);
+const toriyamaFamily = z.enum([
+  "dragon_ball",
+  "dr_slump",
+  "sand_land",
+  "blue_dragon",
+  "dragon_quest",
+  "chrono_trigger",
+  "other_toriyama",
+]);
+
+function safeToeiCatalogUrl(value: string, listing = false): boolean {
+  try {
+    const url = new URL(value);
+    return (
+      url.origin === "https://www.toei-animation.com" &&
+      !url.username &&
+      !url.password &&
+      !url.search &&
+      !url.hash &&
+      url.href === value &&
+      (listing
+        ? /^\/catalog\/(?:page\/[1-9][0-9]*\/)?$/.test(url.pathname)
+        : /^\/catalog\/[a-z0-9-]+\/$/.test(url.pathname))
+    );
+  } catch {
+    return false;
+  }
+}
+
+const catalogProof = z
+  .object({
+    entryUrl: z
+      .string()
+      .max(2048)
+      .refine((url) => safeToeiCatalogUrl(url)),
+    entryTitle: cleanText(1000),
+    listingUrl: z
+      .string()
+      .max(2048)
+      .refine((url) => safeToeiCatalogUrl(url, true)),
+    observedAt: capturedAt,
+    contentHash,
+    method: z.literal("GET"),
+    httpStatus: z.literal(200),
+  })
+  .strict();
+const capturedProvenance = z.object({
+  sourceUrl: z
+    .string()
+    .max(2048)
+    .refine((url) => safeUrl(url)),
+  sitemap: z
+    .string()
+    .max(2048)
+    .refine((url) => safeUrl(url, true)),
+  observedAt: capturedAt,
+  method: z.literal("GET"),
+  httpStatus: z.literal(200),
+  kind: z.enum(["series", "episode_candidate"]),
+  edition: z.enum(["vf", "vostfr", "unspecified"]),
+});
+const sourceProvenance = z.union([
+  capturedProvenance.extend({ family: toriyamaFamily }).strict(),
+  capturedProvenance.extend({ scope: z.literal("toei_catalog"), catalogProof }).strict(),
+]);
 const sourceRecord = z
   .object({
     url: z
@@ -41,36 +111,8 @@ const sourceRecord = z
       .string()
       .max(8000)
       .refine((s) => !s.includes("\0")),
-    contentHash: z.string().regex(/^[a-f0-9]{64}$/),
-    provenance: z
-      .object({
-        sourceUrl: z
-          .string()
-          .max(2048)
-          .refine((url) => safeUrl(url)),
-        sitemap: z
-          .string()
-          .max(2048)
-          .refine((url) => safeUrl(url, true)),
-        observedAt: z
-          .string()
-          .datetime({ offset: true })
-          .refine((s) => Date.parse(s) <= Date.now() + 60_000),
-        method: z.literal("GET"),
-        httpStatus: z.literal(200),
-        kind: z.enum(["series", "episode_candidate"]),
-        family: z.enum([
-          "dragon_ball",
-          "dr_slump",
-          "sand_land",
-          "blue_dragon",
-          "dragon_quest",
-          "chrono_trigger",
-          "other_toriyama",
-        ]),
-        edition: z.enum(["vf", "vostfr", "unspecified"]),
-      })
-      .strict(),
+    contentHash,
+    provenance: sourceProvenance,
   })
   .strict()
   .refine((r) => r.url === r.provenance.sourceUrl, { message: "Source URL must match record URL" })
@@ -96,7 +138,7 @@ export const externalSourceImportSchema = z
 export type ExternalSourceImport = z.infer<typeof externalSourceImportSchema>;
 export type ExternalSourceImportRecord = ExternalSourceImport["records"][number];
 export type SourceImportActor = { id: string; name: string | null };
-const relationships: Record<ExternalSourceImportRecord["provenance"]["family"], string> = {
+const relationships: Record<z.infer<typeof toriyamaFamily>, string> = {
   dragon_ball: "original_author",
   dr_slump: "original_author",
   sand_land: "original_author",
@@ -165,8 +207,14 @@ export async function externalSourceImportStore(): Promise<ExternalSourceImportS
             contentHash: r.contentHash,
             parentUrl:
               r.provenance.kind === "episode_candidate" ? new URL("../", r.url).href : null,
-            relationship: relationships[r.provenance.family],
-            creditScope: "franchise_not_adaptation_specific",
+            relationship:
+              "family" in r.provenance
+                ? relationships[r.provenance.family]
+                : "official_catalog_match_candidate",
+            creditScope:
+              "family" in r.provenance
+                ? "franchise_not_adaptation_specific"
+                : "catalogue_not_studio",
             editionMeaning: "source_url_label_not_verified_playback_language",
             canonicalEligible: false,
             import: {

@@ -24,6 +24,28 @@ const record = {
     edition: "unspecified",
   },
 };
+const { family: _family, ...capturedProvenance } = record.provenance;
+const toeiRecord = {
+  ...record,
+  url: "https://voir-anime.to/anime/one-piece/one-piece-01-vf/",
+  title: "One Piece 01 VF",
+  provenance: {
+    ...capturedProvenance,
+    sourceUrl: "https://voir-anime.to/anime/one-piece/one-piece-01-vf/",
+    kind: "episode_candidate",
+    edition: "vf",
+    scope: "toei_catalog",
+    catalogProof: {
+      entryUrl: "https://www.toei-animation.com/catalog/one-piece/",
+      entryTitle: "ONE PIECE",
+      listingUrl: "https://www.toei-animation.com/catalog/",
+      contentHash: "b".repeat(64),
+      observedAt: "2026-01-01T00:00:00Z",
+      method: "GET",
+      httpStatus: 200,
+    },
+  },
+};
 const dialect = new PgDialect();
 let queries: { sql: string; params: unknown[] }[] = [];
 let transactions = 0;
@@ -67,6 +89,121 @@ beforeEach(() => {
 });
 
 describe("external reference import", () => {
+  test("accepts mixed legacy and Toei references without assigning a Toriyama or studio credit", async () => {
+    const store = await externalSourceImportStore();
+    expect(
+      (await importExternalSources({ records: [record, toeiRecord] }, actor, store)).wouldInsert,
+    ).toBe(2);
+    expect(transactions).toBe(0);
+    expect(
+      (await importExternalSources({ apply: true, records: [record, toeiRecord] }, actor, store))
+        .inserted,
+    ).toBe(2);
+    const payload = JSON.parse(queries.at(-1)!.params[0] as string);
+    const source = payload.find((r: { url: string }) => r.url === toeiRecord.url);
+    expect(source.provenance.catalogProof).toEqual(toeiRecord.provenance.catalogProof);
+    expect(source.provenance.scope).toBe("toei_catalog");
+    expect(source.provenance).not.toHaveProperty("family");
+    expect(source.provenance).not.toHaveProperty("studio");
+    expect(source.provenance.relationship).toBe("official_catalog_match_candidate");
+    expect(source.provenance.creditScope).toBe("catalogue_not_studio");
+    expect(source.provenance.parentUrl).toBe("https://voir-anime.to/anime/one-piece/");
+    expect(source.provenance.editionMeaning).toBe(
+      "source_url_label_not_verified_playback_language",
+    );
+    expect(source.provenance.canonicalEligible).toBe(false);
+    expect(payload.find((r: { url: string }) => r.url === record.url).provenance.relationship).toBe(
+      "original_author",
+    );
+    expect(
+      (await importExternalSources({ apply: true, records: [toeiRecord] }, actor, store)).skipped,
+    ).toBe(1);
+  });
+  test("accepts a newly observed catalog entry and paginated listing without a frozen title inventory", () => {
+    const input = {
+      records: [
+        {
+          ...toeiRecord,
+          provenance: {
+            ...toeiRecord.provenance,
+            catalogProof: {
+              ...toeiRecord.provenance.catalogProof,
+              entryUrl: "https://www.toei-animation.com/catalog/newly-observed-title/",
+              entryTitle: "Newly observed title",
+              listingUrl: "https://www.toei-animation.com/catalog/page/9/",
+            },
+          },
+        },
+      ],
+    };
+    expect(externalSourceImportSchema.parse(input).apply).toBe(false);
+  });
+  test.each([
+    { entryUrl: "https://www.toei-animation.com.evil.example/catalog/one-piece/" },
+    { entryUrl: "https://evil.example/catalog/one-piece/" },
+    { entryUrl: "https://toei-animation.com/catalog/one-piece/" },
+    { entryUrl: "https://sub.www.toei-animation.com/catalog/one-piece/" },
+    { entryUrl: "http://www.toei-animation.com/catalog/one-piece/" },
+    { entryUrl: "https://user:secret@www.toei-animation.com/catalog/one-piece/" },
+    { entryUrl: "https://www.toei-animation.com:8443/catalog/one-piece/" },
+    { entryUrl: "https://www.toei-animation.com/catalog/one-piece/?token=x" },
+    { entryUrl: "https://www.toei-animation.com/catalog/one-piece/#credit" },
+    { entryUrl: "https://www.toei-animation.com/press/one-piece/" },
+    { entryUrl: "https://www.toei-animation.com/catalog/one-piece/../digimon/" },
+    { entryUrl: "https://www.toei-animation.com/catalog/%6fne-piece/" },
+    { entryUrl: "https://www.toei-animation.com/catalog/page/2/" },
+    { entryUrl: "javascript:alert(1)" },
+    { listingUrl: "https://www.toei-animation.com/catalog/one-piece/" },
+    { listingUrl: "https://www.toei-animation.com/catalog/page/0/" },
+    { listingUrl: "https://www.toei-animation.com/catalog/page/2/?cat=family" },
+    { listingUrl: "https://evil.example/catalog/" },
+    { entryTitle: " " },
+    { entryTitle: "x".repeat(1001) },
+    { entryTitle: "ONE\0PIECE" },
+    { contentHash: "unverified" },
+    { observedAt: "2099-01-01T00:00:00Z" },
+    { method: "POST" },
+    { httpStatus: 301 },
+    { studio: "Toei Animation" },
+  ])("rejects an invalid or unbounded official catalog attestation: %j", async (patch) => {
+    await expect(
+      importExternalSources(
+        {
+          records: [
+            {
+              ...toeiRecord,
+              provenance: {
+                ...toeiRecord.provenance,
+                catalogProof: { ...toeiRecord.provenance.catalogProof, ...patch },
+              },
+            },
+          ],
+        },
+        actor,
+        await externalSourceImportStore(),
+      ),
+    ).rejects.toThrow();
+    expect(queries).toHaveLength(0);
+    expect(transactions).toBe(0);
+  });
+  test.each([
+    { scope: "toei_studio" },
+    { family: "other_toriyama" },
+    { studio: "Toei Animation" },
+    { canonicalEligible: true },
+    { catalogProof: undefined },
+  ])("rejects missing proof and mixed or invented Toei attribution: %j", (patch) => {
+    expect(() =>
+      externalSourceImportSchema.parse({
+        records: [
+          {
+            ...toeiRecord,
+            provenance: { ...toeiRecord.provenance, ...patch },
+          },
+        ],
+      }),
+    ).toThrow();
+  });
   test("defaults to dry-run without a transaction or write", async () => {
     const result = await importExternalSources(
       { records: [record] },

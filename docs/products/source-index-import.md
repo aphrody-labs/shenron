@@ -16,11 +16,35 @@ L'origine de la requête doit correspondre à celle du site.
 
 Chaque référence contient `url`, `title`, `excerpt`, `contentHash` et `provenance`.
 La provenance exige `sourceUrl`, `sitemap`, `observedAt`, `method`, `httpStatus`,
-`kind`, `family` et `edition`. Les URL doivent appartenir à `https://voir-anime.to`,
+`kind` et `edition`, puis l'une des deux variantes décrites ci-dessous. Les URL de
+référence doivent appartenir à `https://voir-anime.to`,
 sans identifiant, paramètre ni fragment. Les captures importables sont uniquement
 des GET HTTP 200 avec une empreinte SHA-256 ; la route ne collecte pas de contenu
 distant. Le type distingue une fiche série d'une sous-page candidate, sans décider
 qu'une sous-page est nécessairement un épisode plutôt qu'un film ou un spécial.
+
+La variante historique conserve `family` parmi les sept familles Toriyama déjà
+acceptées. Son format et ses crédits restent inchangés. La variante catalogue
+Toei exige `scope: "toei_catalog"` et `catalogProof`, sans champ `family` : une œuvre
+de ce catalogue ne reçoit ainsi aucun crédit Toriyama par défaut.
+
+`catalogProof` contient `entryUrl`, `entryTitle`, `listingUrl`, `observedAt`,
+`contentHash`, `method: "GET"` et `httpStatus: 200`. `entryUrl` désigne une fiche
+`https://www.toei-animation.com/catalog/<slug>/` ; `listingUrl` désigne la page
+`/catalog/` ou `/catalog/page/<entier-positif>/` où son lien et son titre ont été
+observés. Le hash porte sur cette **page de liste capturée**, pas sur une fiche
+distante qui n'aurait pas été collectée. L'hôte exact, le chemin canonique et les
+champs bornés sont contrôlés ; identifiants, paramètres et fragments sont refusés.
+La liste des titres n'est pas figée dans le code afin de permettre son actualisation.
+
+Cette preuve est une attestation du caller administratif, comme la capture
+Voir Anime : la route ne télécharge pas les pages et ne vérifie pas automatiquement
+que le SHA-256 ou l'association entre les deux œuvres est exact. Elle conserve le
+rapprochement comme `official_catalog_match_candidate`, avec
+`creditScope: "catalogue_not_studio"`. Une présence au catalogue officiel peut
+relever de la distribution ; elle ne prouve ni le studio d'une adaptation ni son
+auteur. Les champs additionnels de crédit, une preuve absente ou un mélange des
+deux variantes sont refusés. Aucun lecteur ni épisode jouable n'est créé.
 
 L'application insère seulement les URL absentes de `external_source_records` et
 de `external_source_provenance`. Elle préserve les références et provenances
@@ -29,7 +53,7 @@ existantes, y compris une provenance orpheline. Les deux nouvelles lignes sont
 la transaction. Aucune table n'est créée ou migrée par cette route.
 
 La provenance ajoutée conserve l'acteur administratif réel, le parent de la
-sous-page et le lien à Toriyama au niveau de la franchise. Un crédit de design
+sous-page et, pour la variante historique, le lien à Toriyama au niveau de la franchise. Un crédit de design
 de franchise n'est pas un crédit individuel sur chaque adaptation. L'étiquette
 d'édition du site ne prouve pas la langue réellement lue. Ces limites restent
 explicites ; `canonical_eligible` vaut toujours `false` pour une nouvelle référence.
