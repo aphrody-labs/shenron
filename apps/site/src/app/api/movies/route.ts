@@ -16,6 +16,20 @@ export function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
 }
 
+function unavailable(): NextResponse {
+  return NextResponse.json(
+    { error: "Le catalogue des films est momentanément indisponible." },
+    {
+      status: 503,
+      headers: {
+        ...CORS_HEADERS,
+        "Cache-Control": "no-store",
+        "Retry-After": "30",
+      },
+    },
+  );
+}
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -23,7 +37,11 @@ export async function GET(req: Request) {
     const q = searchParams.get("q") ?? searchParams.get("search") ?? undefined;
 
     const data = await dbUniverse.movies();
-    let rawMovies = data?.movies ?? [];
+    // `dbUniverse.movies()` returns null on a failed safe() read. Serving []
+    // here would turn an outage into a successful empty catalogue cached by
+    // the CDN for an hour.
+    if (data === null) return unavailable();
+    let rawMovies = data.movies;
 
     if (seriesParam) {
       rawMovies = rawMovies.filter((m) => m.series?.toUpperCase() === seriesParam);
@@ -85,12 +103,7 @@ export async function GET(req: Request) {
       },
     );
   } catch (error) {
-    return NextResponse.json(
-      {
-        error: "Erreur lors de la récupération des films",
-        detail: error instanceof Error ? error.message : String(error),
-      },
-      { status: 500, headers: CORS_HEADERS },
-    );
+    console.error("[api/movies] read failed", error);
+    return unavailable();
   }
 }
