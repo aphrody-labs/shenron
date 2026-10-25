@@ -6,6 +6,13 @@ import { episodePlayback } from "./episode-playback";
 import { EPISODE_SERIES_LABELS } from "./episode-series-links";
 export { EPISODE_SERIES_LABELS } from "./episode-series-links";
 
+function publicOfficialSourceURL(source: string | null): string | null {
+  if (!source || !URL.canParse(source)) return null;
+  const url = new URL(source);
+  if (url.protocol !== "https:" || url.username || url.password) return null;
+  return url.href;
+}
+
 /** The catalogue and detail endpoints share the same public media projection. */
 export function episodeApiSummary(ep: Episode, capabilities?: PlaybackCapabilities) {
   return {
@@ -21,6 +28,7 @@ export function episodeApiSummary(ep: Episode, capabilities?: PlaybackCapabiliti
     imageUrl: ep.image ? assetUrl(ep.image) : null,
     synopsis: ep.synopsis,
     scenePreview: ep.scene_preview ?? null,
+    officialSourceUrl: publicOfficialSourceURL(ep.official_source_url),
     ...episodePlayback(ep, capabilities),
     url: `/wiki/episodes/${ep.id}`,
     downloadUrl: `/api/episodes/${ep.id}/download`,
