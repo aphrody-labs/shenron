@@ -64,7 +64,7 @@ export function WikiEditBar({
       ) : null}
       <Link
         href="/wiki/contribute"
-        className="text-[11px] text-white/35 underline-offset-2 transition-colors hover:text-white/60 hover:underline"
+        className="inline-flex min-h-11 items-center rounded-md px-2 py-2 text-xs text-white/70 underline-offset-2 transition-colors hover:text-white hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange focus-visible:ring-offset-2 focus-visible:ring-offset-black"
       >
         Comment contribuer&nbsp;?
       </Link>

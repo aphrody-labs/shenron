@@ -690,7 +690,7 @@ export function NarrativeEventsExplorer({
                     {ev.manga_volume_start && <span>Tome {ev.manga_volume_start}</span>}
                     <Link
                       href={ev.href}
-                      className="font-semibold text-orange-400 hover:text-white transition-colors ml-auto inline-flex items-center gap-1"
+                      className="ml-auto inline-flex min-h-11 shrink-0 items-center justify-center gap-1 rounded-lg border border-orange-400/20 bg-orange-400/10 px-3 py-2 font-semibold text-orange-300 transition-colors hover:border-orange-300/50 hover:bg-orange-400/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                     >
                       <span>Fiche tactique</span>
                       <span>→</span>
@@ -776,7 +776,7 @@ export function NarrativeEventsExplorer({
                     {ev.participants_count && <span>{ev.participants_count} compétiteurs</span>}
                     <Link
                       href={ev.href}
-                      className="font-semibold text-amber-400 hover:text-white transition-colors ml-auto inline-flex items-center gap-1"
+                      className="ml-auto inline-flex min-h-11 shrink-0 items-center justify-center gap-1 rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-2 font-semibold text-amber-300 transition-colors hover:border-amber-300/50 hover:bg-amber-400/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                     >
                       <span>Tableau & Matchs</span>
                       <span>→</span>
