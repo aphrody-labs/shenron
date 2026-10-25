@@ -14,6 +14,7 @@ import { publicEntityUrl } from "@/lib/wiki-fields";
 /** Pages liste publiques par table (revalidées à chaque écriture). */
 const WIKI_LIST_PATHS: Record<string, string[]> = {
   db_characters: ["/wiki/characters"],
+  db_character_variants: ["/wiki/characters", "/wiki/sagas"],
   db_planets: ["/wiki/locations"],
   db_sagas: ["/wiki/sagas"],
   db_arcs: ["/wiki/sagas"],
@@ -51,9 +52,24 @@ const SECTION_ENTITY_TABLE: Record<string, string> = {
 export function revalidateWikiEntity(table: string, row?: Record<string, unknown>): void {
   try {
     for (const p of WIKI_LIST_PATHS[table] ?? []) revalidatePath(p);
+    // `sitemap.ts` caches the dynamic entity list for 24 hours. A visible flag,
+    // canonical slug, or merge can otherwise leave a deleted character URL in
+    // the sitemap until TTL expiry (for example, a stale /characters/c-21).
+    if (WIKI_LIST_PATHS[table]) revalidatePath("/sitemap.xml");
     revalidatePath("/wiki");
     const detail = row ? publicEntityUrl(table, row) : null;
     if (detail) revalidatePath(detail);
+    // Variant cards join characters and sagas. Their API and character pages
+    // must also expire when a parent label, fallback image or visibility changes.
+    if (table === "db_character_variants" || table === "db_characters" || table === "db_sagas") {
+      revalidatePath("/api/wiki/variants");
+      if (table !== "db_characters") {
+        revalidatePath("/wiki/characters");
+        revalidatePath("/wiki/characters/[slug]", "page");
+      }
+      // Saga character lists also consume variant roles and character images.
+      if (table !== "db_sagas") revalidatePath("/wiki/sagas/[slug]", "page");
+    }
     if (table === "db_manga_volumes") {
       revalidatePath("/api/manga");
       revalidatePath("/api/manga/coverage");

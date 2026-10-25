@@ -32,3 +32,11 @@ test("a malformed or missing volume identity never constructs an API detail inva
     expect(paths).toContain("/api/manga");
   }
 });
+
+test("a character visibility or slug edit refreshes the sitemap that lists public characters", () => {
+  paths.length = 0;
+  revalidateWikiEntity("db_characters", { id: 298, name: "C-21", visible: false });
+  expect(paths).toContain("/wiki/characters");
+  expect(paths).toContain("/wiki");
+  expect(paths).toContain("/sitemap.xml");
+});
