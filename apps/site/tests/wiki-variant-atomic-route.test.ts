@@ -197,7 +197,9 @@ describe("real variant PATCH route with atomic owner journaling", () => {
     const before = structuredClone(live);
     failJournal = true;
     const response = await request(publication());
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(503);
+    expect(await response.json()).toMatchObject({ error: "wiki_admin_unavailable" });
+    expect(response.headers.get("cache-control")).toContain("no-store");
     expect(updatesAttempted).toBe(1);
     expect(live).toEqual(before);
     expect(journal).toEqual([]);
