@@ -78,7 +78,7 @@ export async function GET(req: NextRequest) {
     console.error("[API_WIKI_MEDIA_ERROR]", error);
     return NextResponse.json(
       { error: "Erreur interne lors de la récupération des œuvres média." },
-      { status: 500, headers: CORS },
+      { status: 500, headers: { ...CORS, "Cache-Control": "no-store" } },
     );
   }
 }
