@@ -89,3 +89,27 @@ Les illustrations utilisent les writers séparés `assign-character-variant-imag
 et `publish-generated-variant-artwork.ts`. Une illustration générée conserve sa
 légende, sa référence primaire et les empreintes des deux images ; elle ne devient
 jamais une preuve documentaire.
+
+## Consolider les identités en doublon
+
+La consolidation utilise uniquement le service officiel, qui possède le plan et
+la transaction couvrant les relations. Depuis `apps/site`, la simulation des
+quinze paires relues ne modifie aucune donnée :
+
+```sh
+bun scripts/review-character-consolidation.ts
+```
+
+Elle conserve les plans, les deux racines et un digest dans un nouveau dossier
+privé sous `var/reports/wiki-character-consolidation/`. Un conflit de récit ou de
+relation reste un blocage à relire. Pour appliquer un lot sauvegardé compatible :
+
+```sh
+bun scripts/review-character-consolidation.ts --apply --plan <review.json> --expected-review-sha256 <sha256-du-review-digest.json>
+```
+
+Le client préqualifie le lot entier, sauvegarde les intentions avant écriture et
+contrôle les racines et chaque révision nouvelle. Le serveur revérifie l'empreinte
+exacte de son plan sous verrou. Après une interruption, réconcilier les états et
+les reçus avant tout nouvel essai ; le client ne réessaie jamais un apply ambigu.
+L'ancien script `consolide-personnages.ts` refuse l'application SQL partielle.
