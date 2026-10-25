@@ -113,42 +113,42 @@ export default async function ContributorDetailPage({ params }: ContributorPageP
   const categoryLabels: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
     author: {
       label: "Auteur & Mangaka",
-      icon: <BookOpen className="h-4 w-4" />,
+      icon: <BookOpen aria-hidden="true" className="h-4 w-4" />,
       color: "border-orange-500/30 bg-orange-950/60 text-orange-400",
     },
     editorial_staff: {
       label: "Éditeur Shueisha (Jump)",
-      icon: <Building2 className="h-4 w-4" />,
+      icon: <Building2 aria-hidden="true" className="h-4 w-4" />,
       color: "border-blue-500/30 bg-blue-950/60 text-blue-400",
     },
     scenario: {
       label: "Scénariste Toei",
-      icon: <Film className="h-4 w-4" />,
+      icon: <Film aria-hidden="true" className="h-4 w-4" />,
       color: "border-purple-500/30 bg-purple-950/60 text-purple-400",
     },
     animation: {
       label: "Directeur Animation & Chara-design",
-      icon: <Film className="h-4 w-4" />,
+      icon: <Film aria-hidden="true" className="h-4 w-4" />,
       color: "border-emerald-500/30 bg-emerald-950/60 text-emerald-400",
     },
     voice: {
       label: "Comédien & Seiyū",
-      icon: <Mic className="h-4 w-4" />,
+      icon: <Mic aria-hidden="true" className="h-4 w-4" />,
       color: "border-rose-500/30 bg-rose-950/60 text-rose-400",
     },
     music: {
       label: "Compositeur & Musicien",
-      icon: <Music className="h-4 w-4" />,
+      icon: <Music aria-hidden="true" className="h-4 w-4" />,
       color: "border-amber-500/30 bg-amber-950/60 text-amber-400",
     },
     publisher: {
       label: "Maison d'Édition / Studio",
-      icon: <Building2 className="h-4 w-4" />,
+      icon: <Building2 aria-hidden="true" className="h-4 w-4" />,
       color: "border-cyan-500/30 bg-cyan-950/60 text-cyan-400",
     },
     other: {
       label: "Staff & Contributeur",
-      icon: <Award className="h-4 w-4" />,
+      icon: <Award aria-hidden="true" className="h-4 w-4" />,
       color: "border-white/20 bg-white/5 text-white/80",
     },
   };
@@ -204,7 +204,7 @@ export default async function ContributorDetailPage({ params }: ContributorPageP
                   </span>
                 </div>
               )}
-              <div className="space-y-3">
+              <div className="min-w-0 space-y-3">
                 <div className="flex flex-wrap items-center gap-2">
                   <span
                     className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1 text-xs font-bold uppercase tracking-wider ${catMeta.color}`}
@@ -214,12 +214,13 @@ export default async function ContributorDetailPage({ params }: ContributorPageP
                   </span>
                   {contributor.spotlight_rank !== null && (
                     <span className="inline-flex items-center gap-1 rounded-lg border border-amber-500/30 bg-amber-950/60 px-2.5 py-1 text-xs font-bold text-amber-300">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Personnalité Majeure
+                      <CheckCircle2 aria-hidden="true" className="h-3.5 w-3.5" /> Personnalité
+                      Majeure
                     </span>
                   )}
                 </div>
 
-                <h1 className="font-saiyan text-3xl sm:text-4xl lg:text-5xl text-white tracking-wide">
+                <h1 className="break-words font-saiyan text-3xl sm:text-4xl lg:text-5xl text-white tracking-wide">
                   {contributor.name}
                 </h1>
 
@@ -239,7 +240,7 @@ export default async function ContributorDetailPage({ params }: ContributorPageP
                     <>
                       <span>·</span>
                       <span className="inline-flex items-center gap-1 font-mono text-white/50">
-                        <Calendar className="h-3.5 w-3.5" />
+                        <Calendar aria-hidden="true" className="h-3.5 w-3.5" />
                         {contributor.birth_date?.slice(0, 4) ?? "???"} —{" "}
                         {contributor.death_date?.slice(0, 4) ?? "Présent"}
                       </span>
@@ -252,9 +253,9 @@ export default async function ContributorDetailPage({ params }: ContributorPageP
             <div className="shrink-0 self-start md:self-center">
               <Link
                 href="/wiki/staff"
-                className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-xs font-semibold text-white hover:bg-white/20 transition-colors"
+                className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange motion-reduce:transition-none"
               >
-                <ArrowLeft className="h-4 w-4" />
+                <ArrowLeft aria-hidden="true" className="h-4 w-4" />
                 <span>Retour au hub staff</span>
               </Link>
             </div>
@@ -279,7 +280,7 @@ export default async function ContributorDetailPage({ params }: ContributorPageP
             {ANECDOTES_MAP[slug] && (
               <div className="rounded-2xl border border-amber-500/30 bg-amber-950/20 p-6 backdrop-blur-md space-y-3">
                 <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
-                  <Quote className="h-4 w-4 shrink-0 text-amber-400" />
+                  <Quote aria-hidden="true" className="h-4 w-4 shrink-0 text-amber-400" />
                   <span>Anecdote de Production &amp; Témoignage</span>
                 </div>
                 <p className="text-sm leading-relaxed text-amber-200/90 italic">
@@ -300,10 +301,10 @@ export default async function ContributorDetailPage({ params }: ContributorPageP
                       key={cr.id}
                       className="rounded-xl border border-white/10 bg-black/40 p-3.5"
                     >
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-white/40">
+                      <div className="text-xs font-bold uppercase tracking-wider text-white/65">
                         Portée : {cr.credit_scope}
                       </div>
-                      <div className="mt-1 text-sm font-bold text-white">{cr.role}</div>
+                      <div className="mt-1 break-words text-sm font-bold text-white">{cr.role}</div>
                     </div>
                   ))}
                 </div>
@@ -314,28 +315,28 @@ export default async function ContributorDetailPage({ params }: ContributorPageP
           {/* Barre latérale d'informations */}
           <aside className="space-y-6">
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-md space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-white/50">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-white/75">
                 Rattachement Institutionnel
               </h3>
               <div>
-                <div className="text-[11px] text-white/40">Catégorie Métier</div>
+                <div className="text-xs text-white/65">Catégorie Métier</div>
                 <div className="text-sm font-semibold text-white">{catMeta.label}</div>
               </div>
               {contributor.birth_date && (
                 <div>
-                  <div className="text-[11px] text-white/40">Date de Naissance</div>
+                  <div className="text-xs text-white/65">Date de Naissance</div>
                   <div className="text-sm font-mono text-white/80">{contributor.birth_date}</div>
                 </div>
               )}
               {contributor.death_date && (
                 <div>
-                  <div className="text-[11px] text-white/40">Date de Décès</div>
+                  <div className="text-xs text-white/65">Date de Décès</div>
                   <div className="text-sm font-mono text-white/80">{contributor.death_date}</div>
                 </div>
               )}
               <div>
-                <div className="text-[11px] text-white/40">Source des Données</div>
-                <div className="text-xs text-white/60">
+                <div className="text-xs text-white/65">Source des Données</div>
+                <div className="text-sm leading-relaxed text-white/75">
                   Archives éditoriales Shūeisha / Toei Animation
                 </div>
               </div>
@@ -345,16 +346,16 @@ export default async function ContributorDetailPage({ params }: ContributorPageP
               <div className="text-xs font-bold text-orange-300">
                 À propos de l&apos;auteur démiurge
               </div>
-              <p className="mt-1 text-[11px] leading-relaxed text-orange-200/80">
+              <p className="mt-1 text-sm leading-relaxed text-orange-100/90">
                 Pour consulter les déclarations textuelles et l&apos;anthologie complète
                 d&apos;Akira Toriyama, rendez-vous sur l&apos;espace dédié.
               </p>
               <Link
                 href="/wiki/toriyama"
-                className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-white hover:text-orange-400 transition-colors"
+                className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm font-bold text-white transition-colors hover:text-orange-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange motion-reduce:transition-none"
               >
                 <span>Anthologie Toriyama</span>
-                <span>→</span>
+                <span aria-hidden="true">→</span>
               </Link>
             </div>
           </aside>

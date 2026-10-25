@@ -168,7 +168,7 @@ export default async function RacesPage() {
               <Link
                 key={race.id}
                 href={`/wiki/races/${race.slug}`}
-                className={`group relative overflow-hidden rounded-xl border bg-zinc-950/40 p-8 transition-all duration-500 hover:scale-[1.02] ${theme.border} ${theme.hoverBorder} ${theme.glow} flex flex-col justify-between h-[320px] reveal-up`}
+                className={`group relative flex min-h-[20rem] h-full flex-col justify-between overflow-hidden rounded-xl border bg-zinc-950/40 p-6 sm:p-8 transition-all duration-500 hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-dbz-orange motion-reduce:transition-none motion-reduce:hover:scale-100 ${theme.border} ${theme.hoverBorder} ${theme.glow} reveal-up`}
                 style={{ animationDelay: `${0.1 + idx * 0.05}s` }}
               >
                 {heroImage && (
@@ -195,9 +195,9 @@ export default async function RacesPage() {
 
                 <div className="relative z-10 space-y-4">
                   <header className="flex justify-between items-start">
-                    <div>
+                    <div className="min-w-0">
                       <h2
-                        className={`text-3xl font-saiyan tracking-widest leading-none ${theme.text} mb-2`}
+                        className={`break-words text-2xl sm:text-3xl font-saiyan tracking-wider leading-tight ${theme.text} mb-2`}
                       >
                         {race.name}
                       </h2>
@@ -208,7 +208,7 @@ export default async function RacesPage() {
                       )}
                     </div>
                     <span
-                      className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${theme.badge}`}
+                      className={`inline-flex min-h-8 items-center rounded border px-2.5 py-1 text-xs font-bold uppercase tracking-wider ${theme.badge}`}
                     >
                       {raceChars.length} Guerrier{raceChars.length > 1 ? "s" : ""}
                     </span>
@@ -249,17 +249,18 @@ export default async function RacesPage() {
                           </div>
                         )}
                       </div>
-                      <span className="text-[10px] font-bold text-white/50 group-hover:text-white/60 transition-colors uppercase tracking-widest font-sans">
+                      <span className="text-xs font-bold text-white/55 group-hover:text-white/70 transition-colors uppercase tracking-wider font-sans">
                         Membres
                       </span>
                     </div>
                   ) : (
-                    <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest font-sans">
+                    <span className="text-xs font-bold text-white/55 uppercase tracking-wider font-sans">
                       Aucun membre répertorié
                     </span>
                   )}
                   <span
-                    className={`text-xl ${theme.text} translate-x-[-5px] opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300`}
+                    aria-hidden="true"
+                    className={`text-xl ${theme.text} translate-x-[-5px] opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 transition-all duration-300 motion-reduce:transition-none`}
                   >
                     →
                   </span>

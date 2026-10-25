@@ -184,7 +184,7 @@ export default async function RaceDetailPage({ params }: { params: Promise<{ slu
             </span>
           </div>
 
-          <h1 className="font-saiyan text-5xl sm:text-7xl md:text-8xl font-bold tracking-wider text-white drop-shadow-[0_4px_20px_rgba(255,107,0,0.35)]">
+          <h1 className="font-saiyan text-4xl sm:text-6xl lg:text-7xl font-bold tracking-wide text-white drop-shadow-[0_4px_20px_rgba(255,107,0,0.35)] [overflow-wrap:anywhere]">
             {race.name}
           </h1>
 
@@ -209,7 +209,7 @@ export default async function RaceDetailPage({ params }: { params: Promise<{ slu
               />
             ) : (
               <div
-                className={`dbz-panel p-10 relative overflow-hidden ${theme.border} ${theme.glow}`}
+                className={`dbz-panel relative overflow-hidden p-5 sm:p-8 ${theme.border} ${theme.glow}`}
               >
                 <div className={`absolute top-0 left-0 w-1.5 h-full ${theme.barre}`} />
                 <div className="prose prose-invert max-w-none wiki-content">
@@ -224,7 +224,7 @@ export default async function RaceDetailPage({ params }: { params: Promise<{ slu
             <div
               className={`dbz-panel p-6 border ${theme.border} ${theme.glow} flex flex-col items-center text-center space-y-4`}
             >
-              <p className={`text-[10px] font-bold ${theme.text} tracking-[0.25em] uppercase`}>
+              <p className={`text-xs font-bold ${theme.text} tracking-[0.18em] uppercase`}>
                 Monde d&apos;Origine
               </p>
 
@@ -245,7 +245,7 @@ export default async function RaceDetailPage({ params }: { params: Promise<{ slu
               </h3>
 
               {race.homePlanet.description && (
-                <p className="text-gray-400 text-xs leading-relaxed">
+                <p className="text-sm leading-relaxed text-white/70">
                   {race.homePlanet.description}
                 </p>
               )}
@@ -267,7 +267,7 @@ export default async function RaceDetailPage({ params }: { params: Promise<{ slu
                 <GatedWrap
                   key={char.id}
                   href={`/wiki/characters/${char.slug || char.id}`}
-                  className="group dbz-panel overflow-hidden hover:scale-105 hover:border-dbz-orange transition-all duration-300"
+                  className="group dbz-panel min-h-11 overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:border-dbz-orange focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange motion-reduce:transition-none motion-reduce:hover:scale-100"
                   style={{ animationDelay: `${0.1 + idx * 0.03}s` }}
                 >
                   <div className="relative aspect-[3/4] bg-dbz-bg overflow-hidden">
@@ -275,7 +275,11 @@ export default async function RaceDetailPage({ params }: { params: Promise<{ slu
                     <img
                       src={assetUrl(char.image)}
                       alt={char.name}
-                      className="w-full h-full object-cover object-top opacity-100 group-hover:scale-110 transition-all duration-700"
+                      width={320}
+                      height={420}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover object-top opacity-100 transition-transform duration-700 group-hover:scale-110 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent z-20" />
                     <div className="absolute inset-x-0 bottom-0 p-4 z-30">
