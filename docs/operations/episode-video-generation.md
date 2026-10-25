@@ -73,3 +73,22 @@ serveur sans signal dédié.
 Les reçus, scripts de qualification et médias restent dans `var/reports/`, hors
 Git et hors du payload public. Aucun cookie, HAR, jeton, source privée ni
 configuration d'administration ne rejoint les notes de release.
+
+## Activation du 25 octobre 2026
+
+La release `60e1b42602592d7e4b9823c0e12e7be5f7327b6e` est activée par
+Aphrody Infra avec l'image scellée
+`sha256:ce4f3ffbfb7d3dba7ad6803e31ae532f71e10ce415b1da6e7392598e7248da84`.
+Le player 877 a été rétabli par CAS et relu indépendamment ; les 18 images,
+le synopsis et les autres champs éditoriaux sont préservés.
+
+La qualification HTTP publique après activation réussit ses 16 contrôles :
+métadonnées 1080p, WebP 320 × 180, GIF de 12 images et 2000 ms, répétitions
+identiques par SHA-256, erreurs 400/404 avec `no-store`, santé et métadonnées
+E1/E2. Ces résultats ne remplacent pas la vérification interactive dans Chrome.
+
+Les 31 tests ciblés du lecteur passent, ainsi que les portes statiques et
+contrats de la coupe déployée. La suite globale de cette coupe échoue sur
+20 tests hors du lecteur ; cette livraison ne constitue pas une CI globale
+verte. Les changements Wiki et migrations ultérieurs sur `main` sont exclus
+de cette image.
