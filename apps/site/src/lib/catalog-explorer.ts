@@ -3,7 +3,12 @@ import "server-only";
 import { and, asc, count, eq, getTableColumns, ilike, or, sql, type SQL } from "drizzle-orm";
 import type { PgColumn, PgTable } from "drizzle-orm/pg-core";
 import { WIKI_REGISTRY } from "@aphrody/shenron-db/wiki-registry";
-import { createWikiReadRepository, escapeLike, wikiQueries } from "@aphrody/shenron-db/repos/wiki";
+import {
+  createWikiReadRepository,
+  escapeLike,
+  publicColumns,
+  wikiQueries,
+} from "@aphrody/shenron-db/repos/wiki";
 import type { WikiCategoryName } from "@aphrody/shenron-db/constants";
 import * as tables from "@aphrody/shenron-db/bot-schema";
 import { posts } from "@/db/schema";
@@ -33,6 +38,7 @@ import { isArchiveCategory, selectedArchiveEntry } from "./archive-catalog";
 
 import { archiveFilter, archiveSeriesRank } from "./archive-catalog-query";
 import { catalogSourceFilters, catalogSourceHost } from "./catalog-source-query";
+import { episodeLanguageQuery, episodeQueryPredicate } from "./episode-query";
 
 type Extra = {
   table: PgTable;
@@ -271,7 +277,30 @@ export async function readCatalogPage(
   const q = input.q?.trim().slice(0, 120) ?? "";
   const offset = (page - 1) * CATALOG_PAGE_SIZE;
   let rows: Record<string, unknown>[], total: number;
-  if (sourceCategory(category)) {
+  if (category === "episodes") {
+    if (input.parent !== undefined) return null;
+    const predicate = episodeQueryPredicate(
+      input.series?.toUpperCase(),
+      q,
+      episodeLanguageQuery(input.mediaLang),
+    );
+    const [records, totals] = await Promise.all([
+      db
+        .select(publicColumns(WIKI_REGISTRY.episodes))
+        .from(tables.botEpisodes)
+        .where(predicate)
+        .orderBy(
+          asc(tables.botEpisodes.series),
+          asc(tables.botEpisodes.numberInSeries),
+          asc(tables.botEpisodes.id),
+        )
+        .limit(CATALOG_PAGE_SIZE)
+        .offset(offset),
+      db.select({ total: count() }).from(tables.botEpisodes).where(predicate),
+    ]);
+    rows = records;
+    total = Number(totals[0]?.total ?? 0);
+  } else if (sourceCategory(category)) {
     const filters = catalogSourceFilters(category, input);
     if (input.parent !== undefined || archiveCategories[category]) {
       const parentUrl = input.parent !== undefined ? externalSourceUrlFromId(input.parent) : null;

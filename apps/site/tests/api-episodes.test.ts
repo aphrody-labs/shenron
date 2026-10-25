@@ -41,7 +41,13 @@ mock.module("@/lib/db-universe", () => ({
       { series: "DB", count: 153 },
       { series: "DBZ", count: 291 },
     ],
-    episodes: async (series?: string, limit = 50, offset = 0, query?: string) => {
+    episodes: async (
+      series?: string,
+      limit = 50,
+      offset = 0,
+      query?: string,
+      mediaLang?: string,
+    ) => {
       if (!catalogueAvailable) return null;
       const rows = [
         {
@@ -76,13 +82,28 @@ mock.module("@/lib/db-universe", () => ({
           title: "Une dernière chance",
           synopsis: "Beerus arrive",
         },
-        { ...first, id: 999, series: "SDBH", title: "Autre Beerus", synopsis: null },
+        {
+          ...first,
+          id: 999,
+          series: "SDBH",
+          title: "Autre Beerus",
+          synopsis: null,
+          players: [
+            {
+              name: "Original",
+              provider: "vidmoly",
+              lang: "vost",
+              embedUrl: "https://vidmoly.biz/3",
+            },
+          ],
+        },
         nativeEpisode,
       ];
       const needle = query?.trim().toLowerCase();
       const matched = fixture.filter(
         (ep) =>
           (!series || ep.series === series) &&
+          (!mediaLang || ep.players.some((player) => player.lang === mediaLang)) &&
           (!needle ||
             [ep.title, ep.title_ja, ep.synopsis].some((value) =>
               value?.toLowerCase().includes(needle),
@@ -121,6 +142,32 @@ const { GET: getEpisodes } = await import("../src/app/api/episodes/route");
 const { GET: getEpisodeById } = await import("../src/app/api/episodes/[id]/route");
 
 describe("API routes /api/episodes", () => {
+  test("version filtering reaches the query before pagination and keeps VOST distinct", async () => {
+    const res = await getEpisodes(
+      new Request("http://localhost/api/episodes?q=Beerus&mediaLang=vost&limit=1"),
+    );
+    const data = await res.json();
+    expect(res.status).toBe(200);
+    expect(data.total).toBe(1);
+    expect(data.episodes.map((ep: { id: number }) => ep.id)).toEqual([999]);
+    const vf = await getEpisodes(
+      new Request("http://localhost/api/episodes?q=Beerus&mediaLang=vf&limit=1&offset=1"),
+    );
+    expect((await vf.json()).episodes.map((ep: { id: number }) => ep.id)).toEqual([452]);
+    const offerOnly = await getEpisodes(
+      new Request("http://localhost/api/episodes?series=DBS_BEERUS&mediaLang=vostfr"),
+    );
+    expect((await offerOnly.json()).total).toBe(0);
+  });
+  test("invalid language tags receive 400 instead of an unfiltered response", async () => {
+    for (const value of ["", "vo", "VO", "VF", "VOST", "ja", "unknown"]) {
+      const res = await getEpisodes(
+        new Request(`http://localhost/api/episodes?mediaLang=${value}`),
+      );
+      expect(res.status).toBe(400);
+      expect(await res.json()).toEqual({ error: "invalid_media_language" });
+    }
+  });
   test("search finds later episodes before pagination and reports the filtered total", async () => {
     const res = await getEpisodes(
       new NextRequest("http://localhost:3000/api/episodes?q=Beerus&limit=2"),

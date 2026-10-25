@@ -2,11 +2,13 @@
 import { NextResponse } from "next/server";
 import { readCatalogDetail, readCatalogPage, readCatalogSummary } from "@/lib/catalog-explorer";
 import { readCdnPage } from "@/lib/cdn-catalog";
+import { episodeLanguageQuery, EpisodeLanguageQueryError } from "@/lib/episode-query";
 export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   const query = new URL(request.url).searchParams;
   const category = query.get("category");
   try {
+    if (category === "episodes") episodeLanguageQuery(query.get("mediaLang"));
     const data =
       category === "assets"
         ? await readCdnPage({
@@ -33,7 +35,13 @@ export async function GET(request: Request) {
       status: data ? 200 : 404,
       headers: { "cache-control": "no-store" },
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof EpisodeLanguageQueryError) {
+      return NextResponse.json(
+        { error: "invalid_media_language" },
+        { status: 400, headers: { "cache-control": "no-store" } },
+      );
+    }
     return NextResponse.json(
       { error: "catalog_unavailable" },
       { status: 503, headers: { "cache-control": "no-store" } },

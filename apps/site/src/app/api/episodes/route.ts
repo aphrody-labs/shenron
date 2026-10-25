@@ -2,6 +2,7 @@ import { readPlaybackCapabilities } from "@/lib/playback-capabilities";
 import { NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
 import { episodeApiSummary, EPISODE_SERIES_LABELS } from "@/lib/episode-api";
+import { episodeLanguageQuery, EpisodeLanguageQueryError } from "@/lib/episode-query";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,6 +20,7 @@ export function OPTIONS() {
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
+    const mediaLang = episodeLanguageQuery(searchParams.get("mediaLang"));
     const seriesParam = searchParams.get("series")?.toUpperCase() ?? undefined;
     const q = searchParams.get("q") ?? searchParams.get("search") ?? undefined;
     const limit = Math.min(200, Math.max(1, parseInt(searchParams.get("limit") ?? "50", 10) || 50));
@@ -26,7 +28,7 @@ export async function GET(req: Request) {
 
     const [seriesList, episodesResult] = await Promise.all([
       dbUniverse.episodeSeries().catch(() => []),
-      dbUniverse.episodes(seriesParam, limit, offset, q),
+      dbUniverse.episodes(seriesParam, limit, offset, q, mediaLang),
     ]);
 
     const seriesSummary = (seriesList ?? []).map((s) => ({
@@ -66,6 +68,12 @@ export async function GET(req: Request) {
       },
     );
   } catch (error) {
+    if (error instanceof EpisodeLanguageQueryError) {
+      return NextResponse.json(
+        { error: "invalid_media_language" },
+        { status: 400, headers: { ...CORS_HEADERS, "Cache-Control": "no-store" } },
+      );
+    }
     return NextResponse.json(
       {
         error: "Erreur lors de la récupération des épisodes",

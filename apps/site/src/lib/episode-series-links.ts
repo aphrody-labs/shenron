@@ -23,6 +23,12 @@ export function episodeSeriesHref(series: string): string | null {
     ([code, label]) =>
       normalizedSeries(code) === normalized || normalizedSeries(label) === normalized,
   );
-  const code = entry?.[0] ?? (normalized === "dragon ball kai" ? "DBZ_KAI" : null);
+  const code =
+    entry?.[0] ??
+    (normalized === "dragon ball kai"
+      ? "DBZ_KAI"
+      : normalized === "sdbh" || normalized === "super dragon ball heroes"
+        ? "SDBH"
+        : null);
   return code ? `/wiki/episodes/series/${code}` : null;
 }

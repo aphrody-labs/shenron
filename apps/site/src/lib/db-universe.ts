@@ -3,6 +3,7 @@ import { getTimelineItems, getTimelineEvents } from "./chronology-config";
 import { normalizeAvailability } from "./video-languages";
 import { mangaReaderExtent, type MangaReaderExtent } from "./manga-reader-extent";
 import { episodeIdentityPredicate, episodeQueryPredicate } from "./episode-query";
+import type { VideoLanguage } from "@aphrody/shenron-media/episode-playback";
 /**
  * db-universe — accès au **wiki Dragon Ball** (schéma Neon `bot`, miroir du
  * SQLite du bot) via Drizzle, en LECTURE SEULE.
@@ -1496,9 +1497,9 @@ export const dbUniverse = {
       return e?.url ? { url: e.url, headers: e.headers ?? {} } : null;
     }),
 
-  episodes: (series?: string, limit = 50, offset = 0, query?: string) =>
+  episodes: (series?: string, limit = 50, offset = 0, query?: string, mediaLang?: VideoLanguage) =>
     safe(async () => {
-      const predicate = episodeQueryPredicate(series, query);
+      const predicate = episodeQueryPredicate(series, query, mediaLang);
       const rows = await db
         .select()
         .from(botEpisodes)
