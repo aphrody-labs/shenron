@@ -1,15 +1,18 @@
 // SPDX-License-Identifier: Apache-2.0
-import { beforeEach, expect, mock, test } from "bun:test";
+import { beforeEach, expect, mock, spyOn, test } from "bun:test";
 import { type SQL } from "drizzle-orm";
 import { PgDialect } from "drizzle-orm/pg-core";
 import { NextRequest } from "next/server";
 import { wikiCollectionSearch } from "../src/lib/wiki-collection-query";
 mock.module("server-only", () => ({}));
-let authorized = true;
+let authorized: boolean | "error" = true;
 const reads: Array<{ order: string[]; limit?: number; offset?: number; params?: unknown[] }> = [];
 const dialect = new PgDialect();
 mock.module("@/lib/session", () => ({
-  isCurrentUserAdmin: async () => authorized,
+  isCurrentUserAdmin: async () => {
+    if (authorized === "error") throw new Error("private database diagnostics");
+    return authorized;
+  },
   getCurrentUser: async () => null,
   revisionActorOf: () => null,
 }));
@@ -46,11 +49,23 @@ mock.module("@/lib/wiki-revalidate", () => ({
   revalidateWikiEntity: () => {},
   revalidateSectionParent: async () => {},
 }));
-const { GET } = await import("../src/app/api/wiki-admin/[...path]/route");
-const request = (table: string, query: string) =>
-  GET(new NextRequest(`https://dragonballfr.com/api/wiki-admin/${table}?${query}`), {
-    params: Promise.resolve({ path: [table] }),
-  });
+const { DELETE, GET, PATCH, POST, PUT } = await import("../src/app/api/wiki-admin/[...path]/route");
+const handlers = { GET, POST, PUT, PATCH, DELETE };
+const request = (table: string, query: string) => requestAs("GET", table, query);
+const requestAs = (
+  method: keyof typeof handlers,
+  table: string,
+  query: string,
+): Promise<Response> =>
+  handlers[method](
+    new NextRequest(`https://dragonballfr.com/api/wiki-admin/${table}?${query}`, {
+      method,
+      ...(method === "POST" || method === "PUT" || method === "PATCH"
+        ? { headers: { "content-type": "application/json" }, body: "{}" }
+        : {}),
+    }),
+    { params: Promise.resolve({ path: method === "GET" ? [table] : [table, "1"] }) },
+  );
 beforeEach(() => {
   reads.length = 0;
   authorized = true;
@@ -95,4 +110,22 @@ test("authentication still precedes parsing and every database effect", async ()
   const response = await request("db_characters", "as=unknown");
   expect(response.status).toBe(403);
   expect(reads).toEqual([]);
+});
+
+test("an authentication outage is private and exits before every wiki-admin method can write", async () => {
+  authorized = "error";
+  const log = spyOn(console, "error").mockImplementation(() => {});
+  try {
+    for (const method of Object.keys(handlers) as (keyof typeof handlers)[]) {
+      const response = await requestAs(method, "db_characters", "as=unknown");
+      expect(response.status).toBe(503);
+      expect(response.headers.get("cache-control")).toBe("private, no-store");
+      expect(response.headers.get("retry-after")).toBe("30");
+      expect(await response.json()).toEqual({ error: "admin_auth_unavailable" });
+    }
+    expect(log).toHaveBeenCalledTimes(Object.keys(handlers).length);
+    expect(reads).toEqual([]);
+  } finally {
+    log.mockRestore();
+  }
 });
