@@ -85,21 +85,21 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
 
         <div className="grid gap-6 md:grid-cols-3">
           <div className="space-y-6 md:col-span-2">
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-md">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-orange-400 mb-3">
+            <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] p-5 sm:p-6 backdrop-blur-md">
+              <h2 className="mb-3 text-base font-semibold uppercase tracking-wider text-orange-400">
                 Description & Fonctionnement
               </h2>
-              <p className="text-sm leading-relaxed text-white/80 whitespace-pre-line">
+              <p className="text-base leading-relaxed text-white/85 whitespace-pre-line">
                 {item.description}
               </p>
             </div>
 
             {item.article && (
-              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-orange-400 mb-3">
+              <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
+                <h2 className="mb-3 text-base font-semibold uppercase tracking-wider text-orange-400">
                   Histoire & Contexte Canonique
                 </h2>
-                <p className="text-sm leading-relaxed text-white/80">{item.article}</p>
+                <p className="text-base leading-relaxed text-white/85">{item.article}</p>
               </div>
             )}
 
@@ -114,12 +114,12 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
                     <Link
                       key={peer.slug}
                       href={`/wiki/items/${peer.slug}`}
-                      className="rounded-xl border border-white/10 bg-white/[0.03] p-4 hover:border-orange-500/40 hover:bg-white/[0.06] transition-all group"
+                      className="group min-h-11 min-w-0 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-orange-500/40 hover:bg-white/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
                     >
                       <div className="text-xs font-bold text-white group-hover:text-orange-400 transition-colors">
                         {peer.name}
                       </div>
-                      <div className="text-[11px] text-white/50 line-clamp-2 mt-1">
+                      <div className="mt-1 line-clamp-2 text-xs leading-relaxed text-white/60">
                         {peer.description}
                       </div>
                     </Link>
@@ -130,27 +130,27 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
           </div>
 
           <div className="space-y-6">
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6 space-y-4">
+            <div className="space-y-4 rounded-xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
               <h3 className="text-xs font-bold uppercase tracking-wider text-white/50">
                 Fiche Technique
               </h3>
 
               {item.name_ja && (
                 <div>
-                  <div className="text-[11px] text-white/40">Nom Japonais</div>
+                  <div className="text-xs text-white/60">Nom Japonais</div>
                   <div className="text-sm font-mono text-white/90">{item.name_ja}</div>
                 </div>
               )}
 
               {item.name_romaji && (
                 <div>
-                  <div className="text-[11px] text-white/40">Romaji Hepburn</div>
+                  <div className="text-xs text-white/60">Romaji Hepburn</div>
                   <div className="text-sm text-white/80">{item.name_romaji}</div>
                 </div>
               )}
 
               <div>
-                <div className="text-[11px] text-white/40">Catégorie</div>
+                <div className="text-xs text-white/60">Catégorie</div>
                 <div className="text-sm font-medium text-orange-300 capitalize">
                   {item.category}
                 </div>
@@ -158,13 +158,13 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
 
               {item.creator && (
                 <div>
-                  <div className="text-[11px] text-white/40">Concepteur / Origine</div>
+                  <div className="text-xs text-white/60">Concepteur / Origine</div>
                   {(() => {
                     const creatorSlug = resolveCharacterSlugByName(item.creator);
                     return creatorSlug ? (
                       <GatedLink
                         href={`/wiki/characters/${creatorSlug}`}
-                        className="text-sm font-semibold text-white hover:text-orange-400 transition-colors inline-flex items-center gap-1"
+                        className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-white transition-colors hover:text-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
                       >
                         <span>{item.creator}</span>
                         <span className="text-white/40 text-xs">↗</span>
@@ -178,14 +178,14 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
 
               {item.debut_chapter && (
                 <div>
-                  <div className="text-[11px] text-white/40">Première Apparition Manga</div>
+                  <div className="text-xs text-white/60">Première Apparition Manga</div>
                   <div className="text-sm text-white">{item.debut_chapter}</div>
                 </div>
               )}
 
               {item.debut_episode && (
                 <div>
-                  <div className="text-[11px] text-white/40">Première Apparition Animée</div>
+                  <div className="text-xs text-white/60">Première Apparition Animée</div>
                   <div className="text-sm text-white">{item.debut_episode}</div>
                 </div>
               )}
@@ -194,7 +194,7 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
             <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6 text-center">
               <Link
                 href="/wiki/items"
-                className="inline-flex items-center justify-center rounded-lg bg-white/10 px-4 py-2 text-xs font-semibold text-white hover:bg-white/20 transition-colors w-full"
+                className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-white/10 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
               >
                 ← Retour aux objets
               </Link>
