@@ -150,14 +150,19 @@ export async function consolidateCharacters(
 }
 
 if (import.meta.main) {
+  if (APPLY)
+    throw new Error(
+      "Direct SQL consolidation is retired: use POST /api/wiki-admin/characters/consolidate with a freshly reviewed dry-run plan. The former CLI does not reconcile every character relationship.",
+    );
   const sql = postgres(await databaseUrl(), { max: 2, prepare: false });
   try {
     const result = await consolidateCharacters(sql, APPLY);
     console.log(
       JSON.stringify(
         {
-          status: result.rejected.length ? "INCOMPLET" : "FAIT",
-          mode: APPLY ? "apply" : "simulation",
+          status: result.rejected.length ? "INCOMPLET" : "IDENTITIES_CHECKED_ONLY",
+          mode: "identity-audit",
+          mergePlanEndpoint: "/api/wiki-admin/characters/consolidate",
           ...result,
         },
         null,
