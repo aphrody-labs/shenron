@@ -1,13 +1,25 @@
 ﻿#!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
 import { CrunchyrollClient } from "./client";
+import { configureImportedRuntime, importedArchiveStatus } from "./import-runtime";
 
 async function main() {
   const args = process.argv.slice(2);
+  const importHome = args.indexOf("--import-home");
+  if (importHome >= 0) {
+    const home = args[importHome + 1];
+    if (!home || home.startsWith("--")) throw new Error("--import-home requires a directory");
+    await configureImportedRuntime(home);
+    args.splice(importHome, 2);
+  }
   const command = args[0] || "help";
   const client = new CrunchyrollClient();
 
   switch (command) {
+    case "import-status": {
+      console.log(JSON.stringify(await importedArchiveStatus(), null, 2));
+      break;
+    }
     case "status": {
       console.log(
         JSON.stringify(
@@ -15,7 +27,8 @@ async function main() {
             authenticated: client.isAuthenticated(),
             hasCookies: client.hasCookies(),
             hasToken: !!client.getBearerToken(),
-            accountId: client.getAccountId() || null,
+            accountKnown: Boolean(client.getAccountId()),
+            providerVerified: false,
           },
           null,
           2,
@@ -59,6 +72,8 @@ crunchyroll-cli: Headless Crunchyroll CLI & Resolver for Shenron
 
 Usage:
   crunchyroll-cli status               Check session/token authentication state
+  crunchyroll-cli import-status        Inspect imported archive without credentials
+  --import-home <private-directory>    Use a converted HAR and cookie import
   crunchyroll-cli search <query>       Search series and episodes
   crunchyroll-cli series <series_id>   Get series metadata (e.g. DBS_BEERUS, GT00389311)
   crunchyroll-cli episode <episode_id> Get episode metadata (e.g. GE00389313JAJP)
@@ -69,7 +84,7 @@ Usage:
   }
 }
 
-main().catch((err) => {
+await main().catch((err) => {
   console.error("Error:", err.message);
   process.exit(1);
 });

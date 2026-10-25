@@ -1,7 +1,44 @@
 ﻿// SPDX-License-Identifier: Apache-2.0
 import type { CrunchyrollSeriesMeta, CrunchyrollEpisodeMeta } from "./types";
 import { CRUNCHYROLL_SERIES_BY_SHENRON } from "../../media/src/crunchyroll-mapping";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync } from "node:fs";
+import { importedCatalogue } from "./import-runtime";
+
+const BEARER_TOKEN = /^[A-Za-z0-9._~+/-]+=*$/;
+
+function validBearer(value: unknown): value is string {
+  return typeof value === "string" && BEARER_TOKEN.test(value);
+}
+
+function usableCookie(value: unknown, now: number): boolean {
+  if (!value || typeof value !== "object") return false;
+  const cookie = value as Record<string, unknown>;
+  if (
+    typeof cookie.name !== "string" ||
+    !cookie.name ||
+    typeof cookie.value !== "string" ||
+    !cookie.value
+  )
+    return false;
+  let domain: string;
+  if (typeof cookie.domain === "string") domain = cookie.domain.toLowerCase().replace(/^\./, "");
+  else if (typeof cookie.url === "string") {
+    try {
+      const url = new URL(cookie.url);
+      if (url.protocol !== "https:" || url.username || url.password || url.port) return false;
+      domain = url.hostname;
+    } catch {
+      return false;
+    }
+  } else return false;
+  if (domain !== "crunchyroll.com" && !domain.endsWith(".crunchyroll.com")) return false;
+  const expiry = cookie.expirationDate !== undefined ? cookie.expirationDate : cookie.expires;
+  return (
+    expiry === undefined ||
+    expiry === -1 ||
+    (typeof expiry === "number" && Number.isFinite(expiry) && expiry * 1000 > now)
+  );
+}
 
 export interface CrunchyrollAuthOptions {
   token?: string;
@@ -13,6 +50,7 @@ export interface CrunchyrollAuthOptions {
 
 export class CrunchyrollClient {
   private bearerToken?: string;
+  private bearerExpiresAt?: number;
   private cookiesFile?: string;
   private tokenFile?: string;
   private accountId?: string;
@@ -24,32 +62,59 @@ export class CrunchyrollClient {
     this.tokenFile = options.tokenFile || process.env.CRUNCHYROLL_TOKEN_FILE;
     this.cookiesFile = options.cookiesFile || process.env.CRUNCHYROLL_COOKIES_FILE;
 
-    // 1. Explicit token
-    if (options.token) {
-      this.bearerToken = options.token;
-    } else if (process.env.BUN_VIDEO_CRUNCHYROLL_ACCESS_TOKEN) {
-      this.bearerToken = process.env.BUN_VIDEO_CRUNCHYROLL_ACCESS_TOKEN;
-    } else if (process.env.CRUNCHYROLL_BEARER_TOKEN) {
-      this.bearerToken = process.env.CRUNCHYROLL_BEARER_TOKEN;
-    } else if (this.tokenFile && existsSync(this.tokenFile)) {
+    const configuredToken =
+      options.token ??
+      process.env.BUN_VIDEO_CRUNCHYROLL_ACCESS_TOKEN ??
+      process.env.CRUNCHYROLL_BEARER_TOKEN;
+    if (configuredToken !== undefined) {
+      this.bearerToken = validBearer(configuredToken) ? configuredToken : undefined;
+    } else if (this.tokenFile) {
       try {
-        this.bearerToken = readFileSync(this.tokenFile, "utf8").trim();
+        const text = readFileSync(this.tokenFile, "utf8").trim();
+        let session: unknown;
+        try {
+          session = JSON.parse(text);
+        } catch {
+          if (validBearer(text)) this.bearerToken = text;
+          return;
+        }
+        if (!session || typeof session !== "object" || Array.isArray(session)) return;
+        const data = session as Record<string, unknown>;
+        if (
+          !validBearer(data.accessToken) ||
+          typeof data.expiresAt !== "number" ||
+          !Number.isFinite(data.expiresAt) ||
+          data.expiresAt <= Date.now()
+        )
+          return;
+        this.bearerToken = data.accessToken;
+        this.bearerExpiresAt = data.expiresAt;
+        if (!this.accountId && typeof data.accountId === "string" && data.accountId.trim()) {
+          this.accountId = data.accountId;
+        }
       } catch {
-        // Fallback to unauthenticated
+        // Invalid or unavailable private session files provide no bearer credentials.
       }
     }
   }
 
-  /** Returns whether authenticated session or profile is active */
+  /** Reports locally configured credentials; provider authentication requires a network check. */
   isAuthenticated(): boolean {
-    return !!(this.bearerToken || this.hasCookies());
+    return !!(this.getBearerToken() || this.hasCookies());
   }
 
   hasCookies(): boolean {
-    return !!(this.cookiesFile && existsSync(this.cookiesFile));
+    if (!this.cookiesFile) return false;
+    try {
+      const cookies: unknown = JSON.parse(readFileSync(this.cookiesFile, "utf8"));
+      return Array.isArray(cookies) && cookies.some((cookie) => usableCookie(cookie, Date.now()));
+    } catch {
+      return false;
+    }
   }
 
   getBearerToken(): string | undefined {
+    if (this.bearerExpiresAt !== undefined && this.bearerExpiresAt <= Date.now()) return undefined;
     return this.bearerToken;
   }
 
@@ -82,6 +147,10 @@ export class CrunchyrollClient {
    * Returns metadata for known canonical episodes
    */
   async getEpisode(episodeId: string): Promise<CrunchyrollEpisodeMeta | null> {
+    const imported = (await importedCatalogue())?.episodes.find(
+      (episode) => episode.id === episodeId,
+    );
+    if (imported) return imported;
     if (episodeId === "GE00389313JAJP" || episodeId === "1" || episodeId === "875") {
       return {
         id: "GE00389313JAJP",
@@ -109,12 +178,22 @@ export class CrunchyrollClient {
   async search(query: string): Promise<Array<CrunchyrollSeriesMeta | CrunchyrollEpisodeMeta>> {
     const q = query.toLowerCase();
     const results: Array<CrunchyrollSeriesMeta | CrunchyrollEpisodeMeta> = [];
+    for (const episode of (await importedCatalogue())?.episodes ?? []) {
+      if (
+        [episode.id, episode.title, episode.description ?? ""].some((value) =>
+          value.toLowerCase().includes(q),
+        ) ||
+        q.includes("beerus") ||
+        q.includes("dragon ball")
+      )
+        results.push(episode);
+    }
 
     if (q.includes("beerus") || q.includes("super") || q.includes("dragon ball")) {
       const series = await this.getKnownSeries("DBS_BEERUS");
       if (series) results.push(series);
       const ep1 = await this.getEpisode("GE00389313JAJP");
-      if (ep1) results.push(ep1);
+      if (ep1 && !results.some((result) => result.id === ep1.id)) results.push(ep1);
     }
     return results;
   }
