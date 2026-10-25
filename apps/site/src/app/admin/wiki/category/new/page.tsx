@@ -6,6 +6,7 @@ export const dynamic = "force-dynamic";
 
 export default async function NewCategoryPage() {
   const allCategories = await db.query.wikiCategories.findMany({
+    where: (category, { eq }) => eq(category.visible, true),
     orderBy: (c, { asc }) => asc(c.order),
   });
 

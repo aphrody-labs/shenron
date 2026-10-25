@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/config";
 import { db } from "@/lib/db";
-import { posts, wikiPages } from "@/db/schema";
+import { posts, wikiCategories, wikiPages } from "@/db/schema";
 import {
   botEpisodes,
   botMovies,
@@ -236,12 +236,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
     // Pages wiki éditoriales (Articles libres, Archives Akira Toriyama, etc.)
     block(entries, isPublic, async () => {
-      const rows = await db
-        .select({ slug: wikiPages.slug, updatedAt: wikiPages.updatedAt })
-        .from(wikiPages);
-      return rows.map(
-        (p) => [`/wiki/${p.slug}`, 0.7, p.updatedAt ? new Date(p.updatedAt) : new Date()] as const,
+      const categories = await db
+        .select({
+          id: wikiCategories.id,
+          parentId: wikiCategories.parentId,
+          visible: wikiCategories.visible,
+        })
+        .from(wikiCategories);
+      const visibleCategoryIds = new Set(
+        categories
+          .filter((category) => category.visible)
+          .filter(
+            (category) =>
+              !category.parentId ||
+              categories.some((parent) => parent.id === category.parentId && parent.visible),
+          )
+          .map((category) => category.id),
       );
+      const rows = await db
+        .select({
+          slug: wikiPages.slug,
+          categoryId: wikiPages.categoryId,
+          updatedAt: wikiPages.updatedAt,
+        })
+        .from(wikiPages)
+        .where(eq(wikiPages.visible, true));
+      return rows
+        .filter((page) => visibleCategoryIds.has(page.categoryId))
+        .map(
+          (p) =>
+            [`/wiki/${p.slug}`, 0.7, p.updatedAt ? new Date(p.updatedAt) : new Date()] as const,
+        );
     }),
   ]);
 

@@ -12,6 +12,7 @@ import { getCurrentUser, isCurrentUserAdmin } from "@/lib/session";
 import { getWikiRow } from "@/lib/wiki-admin";
 import { listRevisions, revertRevision, type RevisionActor } from "@/lib/wiki-revisions";
 import { revalidateWikiEntity } from "@/lib/wiki-revalidate";
+import { revalidatePath } from "next/cache";
 import { DatabooksFrozenError } from "@/lib/databooks-freeze";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -72,6 +73,14 @@ export async function POST(req: NextRequest) {
   if (!body?.id) return badRequest("id requis");
   try {
     const res = await revertRevision(body.id, await currentActor());
+    if (res.table === "WikiPage" || res.table === "WikiCategory") {
+      const slug = typeof res.row?.slug === "string" ? res.row.slug : null;
+      revalidatePath("/wiki");
+      revalidatePath("/wiki/[...slug]", "page");
+      revalidatePath("/sitemap.xml");
+      if (slug) revalidatePath(`/wiki/${slug}`);
+      revalidatePath("/admin/wiki");
+    }
     // Purge la page publique de l'entité restaurée.
     const row = res.row ?? (await getWikiRow(res.table, res.rowId).catch(() => null));
     revalidateWikiEntity(res.table, row ?? { id: res.rowId });

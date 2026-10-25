@@ -12,6 +12,7 @@ export default async function NewWikiPagePage({
 }) {
   const params = await searchParams;
   const allCategories = await db.query.wikiCategories.findMany({
+    where: (category, { eq }) => eq(category.visible, true),
     orderBy: (c, { asc }) => asc(c.order),
   });
 

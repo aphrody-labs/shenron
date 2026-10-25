@@ -29,11 +29,17 @@ export async function generateMetadata({
   const { slug } = await params;
   const page = await db.query.wikiPages.findFirst({
     where: (p, { eq }) => eq(p.slug, slug[slug.length - 1]!),
-    columns: { title: true, body: true, slug: true },
+    columns: { title: true, body: true, slug: true, visible: true },
+    with: { category: { with: { parent: true } } },
   });
   // Metadata resolves before the stream (`wiki/loading.tsx` flushes a 200 otherwise):
   // an unknown slug — `/wiki/bardock.mp4` included — must answer a real 404.
-  if (!page) notFound();
+  if (
+    !page?.visible ||
+    !page.category.visible ||
+    (page.category.parent && !page.category.parent.visible)
+  )
+    notFound();
   return {
     title: page.title,
     // Pas de champ résumé sur `WikiPage` : on dérive un extrait du corps
@@ -57,7 +63,12 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
     with: { category: { with: { parent: true } } },
   });
 
-  if (!page) notFound();
+  if (
+    !page?.visible ||
+    !page.category.visible ||
+    (page.category.parent && !page.category.parent.visible)
+  )
+    notFound();
 
   const isAdmin = await isCurrentUserAdmin();
 

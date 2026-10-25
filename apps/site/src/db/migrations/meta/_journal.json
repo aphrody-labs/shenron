@@ -113,6 +113,13 @@
       "when": 1792051200000,
       "tag": "0023_manga_reader_extent",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1793232000000,
+      "tag": "0024_legacy_wiki_visibility",
+      "breakpoints": true
     }
   ]
 }

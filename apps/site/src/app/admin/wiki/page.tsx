@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminWikiPage() {
   const [categories, stats, recent] = await Promise.all([
     db.query.wikiCategories.findMany({
-      where: (c, { isNull }) => isNull(c.parentId),
+      where: (c, { and, eq, isNull }) => and(isNull(c.parentId), eq(c.visible, true)),
       with: {
         children: { with: { pages: true } },
         pages: true,
@@ -25,13 +25,19 @@ export default async function AdminWikiPage() {
     name: cat.name,
     slug: cat.slug,
     order: cat.order,
-    pages: cat.pages.map((p) => ({ id: p.id, title: p.title, slug: p.slug })),
-    children: cat.children.map((sub) => ({
-      id: sub.id,
-      name: sub.name,
-      slug: sub.slug,
-      pages: sub.pages.map((p) => ({ id: p.id, title: p.title, slug: p.slug })),
-    })),
+    pages: cat.pages
+      .filter((p) => p.visible)
+      .map((p) => ({ id: p.id, title: p.title, slug: p.slug })),
+    children: cat.children
+      .filter((sub) => sub.visible)
+      .map((sub) => ({
+        id: sub.id,
+        name: sub.name,
+        slug: sub.slug,
+        pages: sub.pages
+          .filter((p) => p.visible)
+          .map((p) => ({ id: p.id, title: p.title, slug: p.slug })),
+      })),
   }));
 
   return <WikiManager categories={tree} stats={stats} recent={recent.rows} />;

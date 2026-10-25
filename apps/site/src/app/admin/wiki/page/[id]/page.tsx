@@ -14,6 +14,7 @@ export default async function EditWikiPagePage({ params }: { params: Promise<{ i
   if (!page) notFound();
 
   const allCategories = await db.query.wikiCategories.findMany({
+    where: (category, { eq }) => eq(category.visible, true),
     orderBy: (c, { asc }) => asc(c.order),
   });
 

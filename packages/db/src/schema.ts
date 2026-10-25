@@ -183,6 +183,7 @@ export const wikiCategories = pgTable("WikiCategory", {
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
   order: integer("order").notNull().default(0),
+  visible: boolean("visible").notNull().default(true),
 });
 
 export const wikiPages = pgTable("WikiPage", {
@@ -194,6 +195,7 @@ export const wikiPages = pgTable("WikiPage", {
   slug: text("slug").notNull().unique(),
   body: text("body").notNull(),
   order: integer("order").notNull().default(0),
+  visible: boolean("visible").notNull().default(true),
   updatedAt: timestamp("updatedAt", { precision: 3, mode: "date" })
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),

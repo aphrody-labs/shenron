@@ -17,7 +17,7 @@ import "server-only";
 import { isCatalogRevisionJson, isMediaCatalogTable } from "@/lib/catalog-media-contracts";
 import { and, count, desc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { wikiRevisions, type WikiRevision } from "@/db/schema";
+import { wikiCategories, wikiPages, wikiRevisions, type WikiRevision } from "@/db/schema";
 import {
   estCibleJsonbPlanche,
   estCiblePlanche,
@@ -370,6 +370,64 @@ export async function revertRevision(
   const rev = await getRevision(id);
   if (!rev) throw new Error("Révision introuvable");
   const table = rev.tableName;
+  if (table === "WikiPage" || table === "WikiCategory") {
+    const rowId = rev.rowId;
+    const before = (rev.before as Row | null) ?? null;
+    const current =
+      table === "WikiPage"
+        ? ((await db.query.wikiPages.findFirst({
+            where: (row, operators) => operators.eq(row.id, rowId),
+          })) as Row | undefined)
+        : ((await db.query.wikiCategories.findFirst({
+            where: (row, operators) => operators.eq(row.id, rowId),
+          })) as Row | undefined);
+    if (!current) throw new Error(`Legacy wiki row not found: ${table}#${rowId}`);
+
+    const target = before ?? current;
+    const visible = rev.action === "create" ? false : target.visible !== false;
+    const after =
+      table === "WikiPage"
+        ? await db
+            .update(wikiPages)
+            .set(
+              rev.action === "visibility" || rev.action === "create"
+                ? { visible }
+                : {
+                    title: String(target.title ?? current.title),
+                    slug: String(target.slug ?? current.slug),
+                    categoryId: String(target.categoryId ?? current.categoryId),
+                    body: String(target.body ?? current.body),
+                    order: Number(target.order ?? current.order),
+                    visible,
+                    updatedAt: new Date(),
+                  },
+            )
+            .where(eq(wikiPages.id, rowId))
+            .returning()
+            .then(([row]) => row)
+        : await db
+            .update(wikiCategories)
+            .set(
+              rev.action === "visibility" || rev.action === "create"
+                ? { visible }
+                : {
+                    name: String(target.name ?? current.name),
+                    slug: String(target.slug ?? current.slug),
+                    parentId: typeof target.parentId === "string" ? target.parentId : null,
+                    order: Number(target.order ?? current.order),
+                    visible,
+                  },
+            )
+            .where(eq(wikiCategories.id, rowId))
+            .returning()
+            .then(([row]) => row);
+    if (!after) throw new Error(`Legacy wiki revert failed: ${table}#${rowId}`);
+    await recordRevisionStrict(
+      { table, id: rowId, action: "revert", before: current, after, actor },
+      db,
+    );
+    return { table, rowId, mode: rev.action === "create" ? "delete" : "restore", row: after };
+  }
   const spec = WIKI_TABLE_SPECS[table];
   if (!spec) throw new Error(`Table non réversible : ${table}`);
   const rowId = rev.rowId;

@@ -14,6 +14,7 @@ export default async function EditCategoryPage({ params }: { params: Promise<{ i
 
   // Catégories sélectionnables comme parent : toutes sauf elle-même.
   const allCategories = await db.query.wikiCategories.findMany({
+    where: (candidate, { eq }) => eq(candidate.visible, true),
     orderBy: (c, { asc }) => asc(c.order),
   });
   const parents = allCategories.filter((c) => c.id !== category.id);
