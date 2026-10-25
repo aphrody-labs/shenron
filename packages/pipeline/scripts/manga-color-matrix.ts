@@ -7,7 +7,11 @@ import { Database } from "bun:sqlite";
 import { stat } from "node:fs/promises";
 import { resolve, isAbsolute, sep } from "node:path";
 
-type Edition = "Dragon Ball Full Color" | "Dragon Ball Super" | "Dragon Ball";
+type Edition =
+  | "Dragon Ball Full Color"
+  | "Dragon Ball Super"
+  | "Dragon Ball"
+  | "Dragon Ball Super Color Edition";
 type ImageRole = "cover" | "thumbnail" | "page" | "unclassified";
 type RecordRow = Record<string, unknown>;
 
@@ -43,6 +47,7 @@ export interface MangaMatrixResult {
       catalogueVolumeCount: number;
     };
     DBS: { publishedColorEdition: boolean; publishedEditions: string[]; source: string };
+    DBSFCJP: { publishedVolumes: number; source: string; verifiedVolumes: number[] };
   };
   totals: Record<string, number> & { records: number; pageImages: number };
   records: RecordRow[];
@@ -56,6 +61,7 @@ const EDITIONS: Record<string, Edition> = {
   DB: "Dragon Ball",
   DBFC: "Dragon Ball Full Color",
   DBS: "Dragon Ball Super",
+  DBSFCJP: "Dragon Ball Super Color Edition",
 };
 
 function fail(message: string): never {
@@ -157,7 +163,7 @@ async function walkImages(root: string, catalogueCovers: Set<string>): Promise<I
     const hash = new Bun.CryptoHasher("sha256").update(bytes).digest("hex");
     const normalized = path.split(sep).join("/");
     const isCatalogueCover = catalogueCovers.has(normalized);
-    const series = seriesFromRelativePath(path) ?? (isCatalogueCover ? "DBFC" : "unknown");
+    const series = seriesFromRelativePath(path) ?? (isCatalogueCover ? "DBCN" : "unknown");
     const role = isCatalogueCover ? "cover" : imageRole(path);
     const record: ImageRecord = {
       path: normalized,
@@ -236,17 +242,17 @@ export async function buildMangaColorMatrix(options: MatrixOptions): Promise<Man
     volumes = rowsIfPresent(
       db,
       "db_manga_volumes",
-      "SELECT * FROM db_manga_volumes WHERE series IN ('DB', 'DBFC', 'DBS') ORDER BY series, volume_number",
+      "SELECT * FROM db_manga_volumes WHERE series IN ('DB', 'DBFC', 'DBS', 'DBSFCJP') ORDER BY series, volume_number",
     );
     chapters = rowsIfPresent(
       db,
       "db_manga_chapters",
-      "SELECT * FROM db_manga_chapters WHERE series IN ('DB', 'DBFC', 'DBS') ORDER BY series, chapter_number",
+      "SELECT * FROM db_manga_chapters WHERE series IN ('DB', 'DBFC', 'DBS', 'DBSFCJP') ORDER BY series, chapter_number",
     );
     pageRows = rowsIfPresent(
       db,
       "db_manga_pages",
-      "SELECT series, tome, planche, count(*) AS ocr_rows FROM db_manga_pages WHERE series IN ('DB', 'DBFC', 'DBS') GROUP BY series, tome, planche ORDER BY series, tome, planche",
+      "SELECT series, tome, planche, count(*) AS ocr_rows FROM db_manga_pages WHERE series IN ('DB', 'DBFC', 'DBS', 'DBSFCJP') GROUP BY series, tome, planche ORDER BY series, tome, planche",
     );
   } finally {
     db.close();
@@ -258,7 +264,7 @@ export async function buildMangaColorMatrix(options: MatrixOptions): Promise<Man
   const records: RecordRow[] = [];
   for (const volume of volumes) {
     const series = String(volume.series);
-    if (series === "DBS") continue;
+    if (series === "DBS" || series === "DBSFCJP") continue;
     const key = `${series}:vol${Number(volume.volume_number)}`;
     const matched = pageImages.filter((image) => chapterOrVolume(image.path, series) === key);
     const textCount = pageRows.filter(
@@ -304,8 +310,8 @@ export async function buildMangaColorMatrix(options: MatrixOptions): Promise<Man
       ? Number(entry.planches_recensees)
       : null;
     records.push({
-      series: "DBFC",
-      edition: "Dragon Ball Full Color (catalogue numérique)",
+      series: "DBCN",
+      edition: "DragonballCN catalogue entry (bibliographic only)",
       unit: `vol${volumeNumber}`,
       title: entry.titre ?? "",
       isbn: entry.isbn ?? "",
@@ -320,11 +326,42 @@ export async function buildMangaColorMatrix(options: MatrixOptions): Promise<Man
       pageScanPresence: matched.length ? "present" : "missing",
       pageHashesVerified: matched.length,
       ocrPageIndices: null,
-      provenance: entry.url_fiche ?? "catalogue record",
+      provenance: entry.url_fiche ?? "DragonballCN catalogue record; not proof of page scans",
     });
   }
-  for (const chapter of chapters.filter((item) => item.series === "DBS")) {
-    const series = "DBS";
+  for (let volumeNumber = 1; volumeNumber <= 24; volumeNumber++) {
+    const key = `DBSFCJP:vol${volumeNumber}`;
+    const matched = pageImages.filter((image) => chapterOrVolume(image.path, "DBSFCJP") === key);
+    records.push({
+      series: "DBSFCJP",
+      edition: "Dragon Ball Super Color Edition (Japanese, Shueisha)",
+      unit: `vol${volumeNumber}`,
+      title: null,
+      isbn: null,
+      expectedPages: null,
+      paginationStatus: "unknown-unless-explicit-source-manifest",
+      source:
+        "https://www.shueisha.co.jp/books/search/search.html?digital=1&titleauthor=%E3%82%B9%E3%83%BC",
+      officialProductPage:
+        volumeNumber === 2
+          ? "https://www.shueisha.co.jp/books/items/contents.html?jdcn=08880867851831325501"
+          : volumeNumber === 24
+            ? "https://books.shueisha.co.jp/items/contents.html?jdcn=08X10000000063175100"
+            : null,
+      productPageVerified: volumeNumber === 2 || volumeNumber === 24,
+      verifiedVolumeExamples: [2, 24],
+      pageFiles: matched.length,
+      pageScanPresence: matched.length ? "present" : "missing",
+      pageHashesVerified: matched.length,
+      ocrPageIndices: null,
+      provenance:
+        "Shueisha official catalog confirms color edition volumes 1–24; page-level assets not inferred",
+    });
+  }
+  for (const chapter of chapters.filter(
+    (item) => item.series === "DBS" || item.series === "DBSFCJP",
+  )) {
+    const series = String(chapter.series);
     const number = Number(chapter.chapter_number);
     const snapshotId = Number(chapter.id);
     const matched = pageImages.filter(
@@ -337,11 +374,14 @@ export async function buildMangaColorMatrix(options: MatrixOptions): Promise<Man
     );
     records.push({
       series,
-      edition: "Dragon Ball Super (édition publiée N&B)",
+      edition:
+        series === "DBSFCJP"
+          ? "Dragon Ball Super Color Edition (Japanese, Shueisha)"
+          : "Dragon Ball Super (monochrome chapters in local snapshot)",
       unit: `ch${number}`,
       title: chapter.title ?? "",
       expectedPages: null,
-      paginationStatus: "not-applicable-no-published-color-edition",
+      paginationStatus: "unknown-unless-explicit-source-manifest",
       pageFiles: matched.length,
       pageScanPresence: matched.length ? "present" : "missing",
       pageHashesVerified: matched.length,
@@ -391,9 +431,15 @@ export async function buildMangaColorMatrix(options: MatrixOptions): Promise<Man
       catalogueVolumeCount: catalogueEntries.length,
     },
     DBS: {
-      publishedColorEdition: false,
-      publishedEditions: ["fr-nb", "ja-nb"],
+      publishedColorEdition: true,
+      publishedEditions: ["fr-nb", "ja-nb", "ja-couleur"],
       source: "apps/site/src/lib/manga-editions.ts",
+    },
+    DBSFCJP: {
+      publishedVolumes: 24,
+      verifiedVolumes: [2, 24],
+      source:
+        "Shueisha official catalog: https://www.shueisha.co.jp/books/search/search.html?digital=1&titleauthor=%E3%82%B9%E3%83%BC",
     },
   };
   const result: MangaMatrixResult = {

@@ -42,15 +42,18 @@ markdown `# Tome N` avec un bloc par case/bulle dans l'ordre de lecture.
 
 ## Pipeline de production
 
-La chaîne opérationnelle accepte les séries qui identifient explicitement une
-édition : **Dragon Ball** (`DB`, `DBFC` pour le corpus français couleur et
-`DBKZ` pour le Full Color japonais) et **Dragon Ball Super** (`DBS`). Les chemins
-et manifestes gardent ces séries séparées pour éviter de confondre deux pages
-du même numéro. Dragon Ball Super n'a pas d'édition couleur publiée : aucune
-série couleur fictive n'est créée pour cette œuvre. Les codes couleur ne
-permettent pas non plus d'importer une source dont les droits ou la provenance
-ne sont pas documentés. Le manifeste signé par SHA-256 reste l'autorité sur
-l'identité des fichiers et des planches.
+La chaîne opérationnelle accepte actuellement les séries qui identifient
+explicitement une édition : **Dragon Ball** (`DB`, `DBFC` pour le corpus français
+couleur et `DBKZ` pour le Full Color japonais) et **Dragon Ball Super** (`DBS`).
+Les chemins et manifestes gardent ces séries séparées pour éviter de confondre
+deux pages du même numéro. Shueisha publie aussi *Dragon Ball Super Color Edition*
+en japonais (`DBSFCJP` dans le catalogue des éditions, volumes 1–24). Cette édition
+n'est pas encore activée dans le manifeste d'ingestion OCR : les scans autorisés,
+leur provenance et leurs empreintes doivent être qualifiés avant de l'ajouter au
+corpus. L'édition française couleur de *Dragon Ball Super* n'est pas vérifiée.
+Les codes couleur ne permettent pas d'importer une source dont les droits ou la
+provenance ne sont pas documentés. Le manifeste signé par SHA-256 reste l'autorité
+sur l'identité des fichiers et des planches.
 
 ```text
 assets/manga/{DB,DBS,DBFC,DBKZ}/**/*.{webp,jpg,jpeg,png}

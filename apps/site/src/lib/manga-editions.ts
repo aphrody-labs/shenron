@@ -25,9 +25,8 @@
  * CE QUI EXISTE CHEZ L'ÉDITEUR N'EST PAS CE QU'ON POSSÈDE
  * ------------------------------------------------------
  * Les deux se mesurent séparément, et les confondre fait courir après des
- * éditions qui n'ont jamais été publiées : *Dragon Ball Super* n'a **pas**
- * d'édition en couleur, ni en français ni en japonais. Réclamer quatre versions
- * pour Super, c'est en réclamer deux qui n'existent pas.
+ * éditions qui n'ont jamais été publiées : *Dragon Ball Super* a une édition
+ * japonaise couleur officielle, mais aucune édition française couleur vérifiée.
  */
 
 /** Les deux langues du catalogue de lecture. */
@@ -89,6 +88,7 @@ export const EDITION_PAR_SERIE: Record<
   [SERIE_COULEUR]: { langue: "fr", colorisation: "couleur" },
   DBJP: { langue: "ja", colorisation: "nb" },
   DBSJP: { langue: "ja", colorisation: "nb" },
+  DBSFCJP: { langue: "ja", colorisation: "couleur" },
   DBFCJP: { langue: "ja", colorisation: "couleur" },
   DBKZ: { langue: "ja", colorisation: "couleur" },
   SOSH: { langue: "ja", colorisation: "mixte" },
@@ -171,12 +171,12 @@ export function libelleEdition(code: CodeEdition): string {
  *
  * *Dragon Ball* a bien ses quatre versions : l'originale japonaise, sa reprise
  * en couleur (フルカラー版, Shueisha), et les deux équivalents français chez
- * Glénat. *Dragon Ball Super* n'a jamais été colorisé — deux cases sur quatre
- * n'y existent pas, et aucune source ne les fera apparaître.
+ * Glénat. *Dragon Ball Super* existe aussi en édition japonaise couleur chez
+ * Shueisha (24 volumes) ; aucune édition française couleur n'est vérifiée.
  */
 export const EDITIONS_PUBLIEES: Record<string, readonly CodeEdition[]> = {
   DB: ["fr-nb", "fr-couleur", "ja-nb", "ja-couleur"],
-  DBS: ["fr-nb", "ja-nb"],
+  DBS: ["fr-nb", "ja-nb", "ja-couleur"],
 };
 
 /** Vrai si cette édition de cette œuvre existe chez un éditeur. */
@@ -203,7 +203,7 @@ export function serieOeuvre(series: string): string {
   ) {
     return "DB";
   }
-  if (series === "DBSJP") return "DBS";
+  if (series === "DBSJP" || series === "DBSFCJP") return "DBS";
   if (series === "ARALE") return "ARALE";
   return series;
 }
@@ -216,6 +216,7 @@ export const LIBELLE_SERIE: Record<string, string> = {
   [SERIE_COULEUR]: "Dragon Ball Full Color",
   DBJP: "Dragon Ball (Édition Japonaise)",
   DBSJP: "ドラゴンボール超",
+  DBSFCJP: "ドラゴンボール超 カラー版",
   DBFCJP: "ドラゴンボール フルカラー",
   DBKZ: "Dragon Ball Kanzenban",
   SOSH: "Dragon Ball Sōshūhen (Digest Edition)",
