@@ -7,7 +7,6 @@ export const PUBLIC_LIBRARY_FILES: Readonly<Record<string, readonly string[]>> =
   "@aphrody/shenron-auth": ["src", "LICENSE"],
   "@aphrody/shenron-config": ["src", "LICENSE", "tsconfig"],
   "@aphrody/shenron-db": ["src", "LICENSE"],
-  "@aphrody/shenron-dbxv2": ["src", "LICENSE"],
   "@aphrody/shenron-engine": ["src", "LICENSE"],
   "@aphrody/shenron-images": ["src", "LICENSE"],
   "@aphrody/shenron-koharu": ["src", "LICENSE"],

@@ -7,9 +7,9 @@ import {
   EmbedBuilder,
   MessageFlags,
   type ButtonInteraction,
-  type Client,
   type CommandInteraction,
   type Message,
+  type SendableChannels,
   type User,
 } from "discord.js";
 import { GuildOnly } from "~/guards/GuildOnly";
@@ -21,27 +21,10 @@ import { SettingsService } from "~/services/SettingsService";
 import { MessageTemplateService } from "~/services/MessageTemplateService";
 import { GameRewardService } from "~/services/GameRewardService";
 import { buildChallengeMessage, challengeIdPattern, parseChallengeId } from "~/lib/challenge";
-import { DBZ_COLORS } from "~/lib/embeds";
+import { COLORS, DBZ_COLORS } from "~/lib/embeds";
 import { logger } from "~/lib/logger";
 import { renderPenduCard } from "~/lib/game-cards";
-import { stakeAllowed } from "~/services/games/anti-farm";
-import {
-  ActivePlayers,
-  ChallengeBoard,
-  DUEL_MAX_STAKE_DEFAULT,
-  closedChallenge,
-  duelStakeError,
-  grantLine,
-  opponentError,
-  playerRewardLine,
-  resolveChallengeClick,
-  runMessageGame,
-  stakeSummary,
-  statusColor,
-  type EndReason,
-  type MoveOutcome,
-} from "~/services/games/duel";
-import { GameSessionsService } from "~/services/games/sessions";
+import { REWARD_BLOCK_LABELS, stakeAllowed } from "~/services/games/anti-farm";
 import {
   DIFFICULTY_LABELS,
   parseGameDifficulty,
@@ -70,11 +53,11 @@ interface PendingChallenge {
   level: GameDifficulty;
   challengerId: string;
   opponentId: string;
+  expiresAt: number;
   stake: number;
 }
 
 interface PenduSession {
-  id: string;
   entry: PenduEntry;
   level: GameDifficulty;
   state: PenduState;
@@ -84,21 +67,15 @@ interface PenduSession {
   winReward: number;
   lossPenalty: number;
   lastMove: string | null;
-  /** Players who made at least one valid move: only they earn participation XP. */
-  moved: Set<string>;
 }
 
-interface PenduConfig {
-  maxErrors: number;
-  winReward: number;
-  lossPenalty: number;
-}
-
+type EndReason = "won" | "lost" | "timeout";
 type BoardPayload = { embeds: EmbedBuilder[]; files: AttachmentBuilder[] };
 
-const challenges = new ChallengeBoard<PendingChallenge>();
+const challenges = new Map<string, PendingChallenge>();
 /** Une seule partie de pendu à la fois par joueur (anti parties parallèles). */
-const activePlayers = new ActivePlayers();
+const activePlayers = new Set<string>();
+const CHALLENGE_TTL_MS = 60_000;
 const GUESS_RE = /^[\p{L}' -]{1,40}$/u;
 
 @Discord()
@@ -111,7 +88,6 @@ export class PenduCommand {
     @inject(SettingsService) private settings: SettingsService,
     @inject(MessageTemplateService) private msg: MessageTemplateService,
     @inject(GameRewardService) private rewards: GameRewardService,
-    @inject(GameSessionsService) private journal: GameSessionsService,
   ) {}
 
   @Slash({
@@ -184,12 +160,8 @@ export class PenduCommand {
     const config = await this.loadConfig(level);
 
     if (mode === "joueur") {
-      const invalid = opponentError(userId, opponent);
-      if (invalid || !opponent) {
-        await interaction.reply({
-          content: invalid ?? "Adversaire invalide.",
-          flags: MessageFlags.Ephemeral,
-        });
+      if (!opponent || opponent.bot || opponent.id === userId) {
+        await interaction.reply({ content: "Adversaire invalide.", flags: MessageFlags.Ephemeral });
         return;
       }
       if (activePlayers.has(opponent.id)) {
@@ -200,35 +172,41 @@ export class PenduCommand {
         return;
       }
       const stake = mise ?? 0;
-      const stakeError = await duelStakeError(
-        {
-          getBalance: (id) => this.eco.getBalance(id),
-          maxStake: () => this.settings.getInt("game.max_stake", DUEL_MAX_STAKE_DEFAULT),
-        },
-        userId,
-        opponent,
-        stake,
-      );
-      if (stakeError) {
-        await interaction.reply({ content: stakeError, flags: MessageFlags.Ephemeral });
-        return;
+      if (stake > 0) {
+        const [bal1, bal2] = await Promise.all([
+          this.eco.getBalance(userId),
+          this.eco.getBalance(opponent.id),
+        ]);
+        if (bal1 < stake || bal2 < stake) {
+          const who = bal1 < stake ? "Tu n'as" : `${opponent} n'a`;
+          await interaction.reply({
+            content: `${who} pas assez de zénis pour une mise de **${formatZeni(stake)}**.`,
+            flags: MessageFlags.Ephemeral,
+          });
+          return;
+        }
       }
-      challenges.open(interaction.id, {
+      const key = interaction.id;
+      challenges.set(key, {
         entry,
         level,
         challengerId: userId,
         opponentId: opponent.id,
+        expiresAt: Date.now() + CHALLENGE_TTL_MS,
         stake,
       });
       await interaction.reply(
         buildChallengeMessage({
           scope: "pendu",
-          key: interaction.id,
+          key,
           challenger: interaction.user,
           opponent,
           gameTitle: `Pendu · Duel ${DIFFICULTY_LABELS[level].toLowerCase()}`,
           color: DBZ_COLORS.goku,
-          stake: stakeSummary(stake, config.winReward, config.lossPenalty),
+          stake:
+            stake > 0
+              ? `Mise **${formatZeni(stake)}** par joueur, séquestrée · pot **${formatZeni(stake * 2)}**`
+              : `Gagnant **${formatZeniDelta(config.winReward)}** · Perdant **${formatZeniDelta(-config.lossPenalty)}**`,
           extraFields: [
             {
               name: "Mot mystère",
@@ -239,20 +217,23 @@ export class PenduCommand {
           ],
         }),
       );
+      setTimeout(() => {
+        const c = challenges.get(key);
+        if (c && c.expiresAt <= Date.now()) challenges.delete(key);
+      }, CHALLENGE_TTL_MS + 5_000).unref();
       return;
     }
 
-    if (!activePlayers.reserve([userId])) return;
-    const session = this.createSession(interaction.id, entry, level, [userId], config, 0);
-    this.journal.open({ id: session.id, game: "pendu", players: [userId], stake: 0 });
+    const session = this.createSession(entry, level, [userId], config, 0);
+    activePlayers.add(userId);
     try {
       const first = await this.boardPayload(session, "playing");
       const response = await interaction.reply({ ...first, withResponse: true });
-      const board = response.resource?.message ?? null;
-      this.start(channel, session, board, interaction.client);
+      this.runGame(channel, session, response.resource?.message ?? null, (reason) =>
+        this.settleSolo(session, reason, interaction),
+      );
     } catch (err) {
-      activePlayers.release([userId]);
-      this.journal.close(session.id);
+      activePlayers.delete(userId);
       throw err;
     }
   }
@@ -261,27 +242,54 @@ export class PenduCommand {
   async onChallengeButton(interaction: ButtonInteraction) {
     const parsed = parseChallengeId(interaction.customId);
     if (!parsed) return;
-    const challenge = await resolveChallengeClick(
-      interaction,
-      challenges,
-      parsed.key,
-      parsed.action,
-      "Pendu",
-    );
-    if (!challenge) return;
-
-    const channel = interaction.channel;
-    const players = [challenge.challengerId, challenge.opponentId];
-    if (!channel?.isSendable() || !activePlayers.reserve(players)) {
-      await interaction.update(
-        closedChallenge(
-          "Pendu",
-          "cancelled",
-          "Un des joueurs a déjà une partie de pendu en cours.",
-        ),
-      );
+    const challenge = challenges.get(parsed.key);
+    if (!challenge || challenge.expiresAt <= Date.now()) {
+      challenges.delete(parsed.key);
+      await interaction
+        .reply({ content: "Défi expiré ou déjà traité.", flags: MessageFlags.Ephemeral })
+        .catch(() => {});
       return;
     }
+    if (interaction.user.id !== challenge.opponentId) {
+      await interaction.reply({
+        content: "Ce défi ne t'est pas adressé.",
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+    challenges.delete(parsed.key);
+    const channel = interaction.channel;
+
+    if (parsed.action === "decline") {
+      await interaction.update({
+        content: "",
+        embeds: [
+          new EmbedBuilder()
+            .setTitle("Pendu · Défi refusé")
+            .setDescription(
+              `<@${challenge.opponentId}> a refusé le défi de <@${challenge.challengerId}>.`,
+            )
+            .setColor(COLORS.muted),
+        ],
+        components: [],
+      });
+      return;
+    }
+    const players = [challenge.challengerId, challenge.opponentId];
+    if (!channel?.isSendable() || players.some((p) => activePlayers.has(p))) {
+      await interaction.update({
+        content: "",
+        embeds: [
+          new EmbedBuilder()
+            .setTitle("Pendu · Duel annulé")
+            .setDescription("Un des joueurs a déjà une partie de pendu en cours.")
+            .setColor(COLORS.muted),
+        ],
+        components: [],
+      });
+      return;
+    }
+    for (const p of players) activePlayers.add(p);
 
     await interaction.update({
       content: "",
@@ -301,22 +309,15 @@ export class PenduCommand {
       challenge.stake,
     );
     if (!escrowed) {
-      activePlayers.release(players);
-      await interaction.editReply(
-        closedChallenge(
-          "Pendu",
-          "cancelled",
-          "Un des joueurs n'a plus assez de zénis pour couvrir la mise.",
-        ),
-      );
+      for (const p of players) activePlayers.delete(p);
+      await channel.send({
+        content: "Duel annulé : un des joueurs n'a plus assez de zénis pour couvrir la mise.",
+      });
       return;
     }
-    const [config, timeoutMs] = await Promise.all([
-      this.loadConfig(challenge.level),
-      this.settings.getInt("game.challenge_timeout_ms", 5 * 60_000),
-    ]);
+    const config = await this.loadConfig(challenge.level);
+    const timeoutMs = await this.settings.getInt("game.challenge_timeout_ms", 5 * 60_000);
     const session = this.createSession(
-      parsed.key,
       challenge.entry,
       challenge.level,
       players,
@@ -324,19 +325,19 @@ export class PenduCommand {
       challenge.stake,
       timeoutMs,
     );
-    this.journal.open({ id: session.id, game: "pendu", players, stake: challenge.stake });
     try {
       const board = await channel.send(await this.boardPayload(session, "playing"));
-      this.start(channel, session, board, interaction.client);
+      this.runGame(channel, session, board, (reason, winnerId) =>
+        this.settleDuel(session, reason, winnerId, interaction),
+      );
     } catch (err) {
-      activePlayers.release(players);
-      this.journal.close(session.id);
-      await this.rewards.payStakes("cancel", players[0]!, players[1]!, challenge.stake);
+      for (const p of players) activePlayers.delete(p);
+      await this.rewards.payStakes("draw", players[0]!, players[1]!, challenge.stake);
       throw err;
     }
   }
 
-  private async loadConfig(level: GameDifficulty): Promise<PenduConfig> {
+  private async loadConfig(level: GameDifficulty) {
     const [baseErrors, baseWin, baseLoss] = await Promise.all([
       this.settings.getInt("game.pendu.max_errors", PENDU_MAX_ERRORS_DEFAULT),
       this.settings.getInt("zeni.game.win", ZENI_GAME_WIN),
@@ -350,16 +351,14 @@ export class PenduCommand {
   }
 
   private createSession(
-    id: string,
     entry: PenduEntry,
     level: GameDifficulty,
     players: string[],
-    config: PenduConfig,
+    config: { maxErrors: number; winReward: number; lossPenalty: number },
     stake: number,
     durationMs = PENDU_LEVELS[level].timeLimitMs,
   ): PenduSession {
     return {
-      id,
       entry,
       level,
       state: createPenduState(entry.word, config.maxErrors),
@@ -369,96 +368,121 @@ export class PenduCommand {
       winReward: config.winReward,
       lossPenalty: config.lossPenalty,
       lastMove: null,
-      moved: new Set(),
     };
   }
 
-  /** Boucle de jeu commune solo/duel (`runMessageGame`). */
-  private start(
-    channel: Parameters<typeof runMessageGame>[0]["channel"],
+  /**
+   * Boucle de jeu commune solo/duel. Les messages sont traités en file (pas de
+   * course entre deux propositions rapides) et un seul plateau reste affiché :
+   * le précédent est supprimé à chaque coup.
+   */
+  private runGame(
+    channel: SendableChannels,
     session: PenduSession,
     firstBoard: Message | null,
-    client: Client,
+    settle: (reason: EndReason, winnerId?: string) => Promise<string[]>,
   ): void {
-    if (firstBoard) this.journal.board(session.id, firstBoard.channelId, firstBoard.id);
-    runMessageGame({
-      scope: "pendu",
-      channel,
-      players: session.players,
-      endsAt: session.endsAt,
-      firstBoard,
-      accepts: (content) => GUESS_RE.test(content),
-      play: (m) => this.play(session, m),
-      render: (status, result) => this.boardPayload(session, status, result),
-      settle: (reason, winnerId) => {
-        // Journal fermé avant le versement : jamais de remboursement en double.
-        this.journal.close(session.id);
-        return session.players.length === 1
-          ? this.settleSolo(session, reason, client)
-          : this.settleDuel(session, reason, winnerId, client);
-      },
-      onFinished: () => activePlayers.release(session.players),
-      onBoard: (board) => this.journal.board(session.id, board.channelId, board.id),
-    });
-  }
-
-  private play(session: PenduSession, m: Message): MoveOutcome {
+    let board = firstBoard;
+    let finished = false;
+    let queue: Promise<void> = Promise.resolve();
     const { state } = session;
-    const guess = normalizePenduWord(m.content);
-    const letters = guess.replace(/[^a-z]/g, "");
-    if (!letters) return { kind: "ignored" };
-    const who = `<@${m.author.id}>`;
-    if (guess.length === 1) {
-      const r = guessPenduLetter(state, guess);
-      if (r.alreadyPlayed) return { kind: "ignored" };
-      session.lastMove = r.hit
-        ? `${who} : **${guess.toUpperCase()}** est dans le mot.`
-        : `${who} : **${guess.toUpperCase()}** n'y est pas, une Dragon Ball de moins.`;
-    } else {
-      const r = guessPenduWord(state, guess, PENDU_LEVELS[session.level].wordMissCost);
-      if (r.ignored) return { kind: "ignored" };
-      session.lastMove = r.correct
-        ? `${who} trouve le mot entier.`
-        : `${who} propose **${guess.toUpperCase()}** : raté, ${r.cost} vie${r.cost > 1 ? "s" : ""} perdue${r.cost > 1 ? "s" : ""}.`;
-    }
-    session.moved.add(m.author.id);
-    const outcome = evaluatePendu(state);
-    if (outcome === "won") return { kind: "won", winnerId: m.author.id };
-    if (outcome === "lost") return { kind: "lost" };
-    return { kind: "playing" };
+    const cost = PENDU_LEVELS[session.level].wordMissCost;
+
+    const refresh = async (status: "playing" | "won" | "lost", result?: string[]) => {
+      const next = await channel
+        .send(await this.boardPayload(session, status, result))
+        .catch(() => null);
+      if (next) {
+        await board?.delete().catch(() => {});
+        board = next;
+      }
+    };
+
+    const finish = async (reason: EndReason, winnerId?: string) => {
+      finished = true;
+      let result: string[] = [];
+      try {
+        result = await settle(reason, winnerId);
+      } catch (err) {
+        logger.error({ err }, "pendu: règlement de fin de partie en échec");
+      } finally {
+        for (const p of session.players) activePlayers.delete(p);
+      }
+      await refresh(reason === "won" ? "won" : "lost", result);
+    };
+
+    const collector = channel.createMessageCollector({
+      filter: (m: Message) =>
+        session.players.includes(m.author.id) && GUESS_RE.test(m.content.trim()),
+      time: Math.max(1_000, session.endsAt - Date.now()),
+    });
+
+    const handle = async (m: Message) => {
+      if (finished) return;
+      const guess = normalizePenduWord(m.content);
+      const letters = guess.replace(/[^a-z]/g, "");
+      if (!letters) return;
+      const who = `<@${m.author.id}>`;
+      if (guess.length === 1) {
+        const r = guessPenduLetter(state, guess);
+        if (r.alreadyPlayed) return;
+        session.lastMove = r.hit
+          ? `${who} : **${guess.toUpperCase()}** est dans le mot.`
+          : `${who} : **${guess.toUpperCase()}** n'y est pas, une Dragon Ball de moins.`;
+      } else {
+        const r = guessPenduWord(state, guess, cost);
+        if (r.ignored) return;
+        session.lastMove = r.correct
+          ? `${who} trouve le mot entier.`
+          : `${who} propose **${guess.toUpperCase()}** : raté, ${r.cost} vie${r.cost > 1 ? "s" : ""} perdue${r.cost > 1 ? "s" : ""}.`;
+      }
+      const outcome = evaluatePendu(state);
+      if (outcome === "playing") {
+        await refresh("playing");
+        return;
+      }
+      collector.stop(outcome);
+      await finish(outcome, outcome === "won" ? m.author.id : undefined);
+    };
+
+    collector.on("collect", (m: Message) => {
+      queue = queue
+        .then(() => handle(m))
+        .catch((err) => logger.error({ err }, "pendu: coup en échec"));
+    });
+    collector.on("end", (_c, reason) => {
+      queue = queue
+        .then(() => (finished ? undefined : finish("timeout")))
+        .catch((err) => logger.error({ err, reason }, "pendu: fin de partie en échec"));
+    });
   }
 
   private async settleSolo(
     session: PenduSession,
     reason: EndReason,
-    client: Client,
+    interaction: CommandInteraction,
   ): Promise<string[]> {
     const userId = session.players[0]!;
-    const lang = await this.settings.getLanguage();
     if (reason === "won") {
-      const grant = await this.rewards.grantWin({
-        userId,
-        amount: session.winReward,
-        game: "pendu",
-      });
-      if (grant.paid > 0) {
-        await this.msg.publish(
-          "zeni_game_win",
-          { user: `<@${userId}>`, zeni: grant.paid, game: "pendu" },
-          client,
-        );
+      const grant = await this.rewards.grantWin({ userId, amount: session.winReward });
+      if (grant.paid === 0) {
+        return [
+          grant.blocked
+            ? `Victoire sans gain : ${REWARD_BLOCK_LABELS[grant.blocked]}.`
+            : "Aucun gain.",
+        ];
       }
-      return [grantLine(grant, userId, undefined, lang)];
+      await this.msg.publish(
+        "zeni_game_win",
+        { user: `<@${userId}>`, zeni: grant.paid, game: "pendu" },
+        interaction.client,
+      );
+      return [`<@${userId}> **${formatZeniDelta(grant.paid)}**`];
     }
     const lines = [reason === "timeout" ? "Temps écoulé." : "Plus aucune Dragon Ball."];
-    const charged =
-      session.lossPenalty > 0 && (await this.eco.removeZeni(userId, session.lossPenalty));
-    // Participation counts only after a real move: opening a game and walking away earns nothing.
-    const xp = session.moved.has(userId)
-      ? await this.rewards.grantGameXp({ userId, outcome: "play", game: "pendu" })
-      : undefined;
-    const line = playerRewardLine(lang, userId, xp, charged ? -session.lossPenalty : 0);
-    if (line) lines.push(line);
+    if (session.lossPenalty > 0 && (await this.eco.removeZeni(userId, session.lossPenalty))) {
+      lines.push(`<@${userId}> **${formatZeniDelta(-session.lossPenalty)}**`);
+    }
     return lines;
   }
 
@@ -466,74 +490,44 @@ export class PenduCommand {
     session: PenduSession,
     reason: EndReason,
     winnerId: string | undefined,
-    client: Client,
+    interaction: ButtonInteraction,
   ): Promise<string[]> {
     const [a, b] = session.players as [string, string];
-    const lang = await this.settings.getLanguage();
     if (reason !== "won" || !winnerId) {
       if (session.stake > 0) await this.rewards.payStakes("draw", a, b, session.stake);
-      const lines = [
+      return [
         reason === "timeout"
           ? "Temps écoulé, personne n'a trouvé."
           : "Plus aucune Dragon Ball, personne n'a trouvé.",
+        session.stake > 0 ? "Mises rendues." : "Aucun gain.",
       ];
-      const xpLines: string[] = [];
-      for (const userId of session.players) {
-        if (!session.moved.has(userId)) continue;
-        const xp = await this.rewards.grantGameXp({
-          userId,
-          outcome: "draw",
-          game: "pendu (duel)",
-        });
-        const line = playerRewardLine(lang, userId, xp);
-        if (line) xpLines.push(line);
-      }
-      if (session.stake > 0) lines.push("Mises rendues.");
-      else if (xpLines.length === 0) lines.push("Aucun gain.");
-      return [...lines, ...xpLines];
     }
     const loserId = winnerId === a ? b : a;
-    // The loser earns participation XP only after a real move.
-    const loserXp = session.moved.has(loserId)
-      ? await this.rewards.grantGameXp({ userId: loserId, outcome: "play", game: "pendu (duel)" })
-      : undefined;
     if (session.stake > 0) {
       await this.rewards.payStakes("win", winnerId, loserId, session.stake);
-      const lines = [`<@${winnerId}> remporte le pot : **${formatZeniDelta(session.stake * 2)}**.`];
-      const winnerXp = await this.rewards.grantGameXp({
-        userId: winnerId,
-        outcome: "win",
-        game: "pendu (duel)",
-        opponentId: loserId,
-      });
-      for (const line of [
-        playerRewardLine(lang, winnerId, winnerXp),
-        playerRewardLine(lang, loserId, loserXp),
-      ]) {
-        if (line) lines.push(line);
-      }
-      return lines;
+      return [`<@${winnerId}> remporte le pot : **${formatZeniDelta(session.stake * 2)}**.`];
     }
     const grant = await this.rewards.grantWin({
       userId: winnerId,
       amount: session.winReward,
       opponentId: loserId,
-      game: "pendu (duel)",
     });
-    const lines = [grantLine(grant, winnerId, undefined, lang)];
-    const charged =
-      grant.paid > 0 &&
-      session.lossPenalty > 0 &&
-      (await this.eco.removeZeni(loserId, session.lossPenalty));
-    const loserLine = playerRewardLine(lang, loserId, loserXp, charged ? -session.lossPenalty : 0);
-    if (loserLine) lines.push(loserLine);
-    if (grant.paid > 0) {
-      await this.msg.publish(
-        "zeni_game_win",
-        { user: `<@${winnerId}>`, zeni: grant.paid, game: "pendu (duel)" },
-        client,
-      );
+    if (grant.paid === 0) {
+      return [
+        grant.blocked
+          ? `Victoire sans gain : ${REWARD_BLOCK_LABELS[grant.blocked]}.`
+          : "Aucun gain.",
+      ];
     }
+    const lines = [`<@${winnerId}> **${formatZeniDelta(grant.paid)}**`];
+    if (session.lossPenalty > 0 && (await this.eco.removeZeni(loserId, session.lossPenalty))) {
+      lines.push(`<@${loserId}> **${formatZeniDelta(-session.lossPenalty)}**`);
+    }
+    await this.msg.publish(
+      "zeni_game_win",
+      { user: `<@${winnerId}>`, zeni: grant.paid, game: "pendu (duel)" },
+      interaction.client,
+    );
     return lines;
   }
 
@@ -554,7 +548,6 @@ export class PenduCommand {
     const description = [players, "", `**Mot :** \`${shown.toUpperCase()}\``];
     if (session.lastMove) description.push(session.lastMove);
 
-    const missed = [...state.missed].toSorted().join(" ").toUpperCase();
     const embed = new EmbedBuilder()
       .setTitle(
         status === "won"
@@ -564,7 +557,9 @@ export class PenduCommand {
             : `Pendu · ${DIFFICULTY_LABELS[level]}`,
       )
       .setDescription(description.join("\n"))
-      .setColor(statusColor(status))
+      .setColor(
+        status === "won" ? COLORS.brand : status === "lost" ? DBZ_COLORS.power : DBZ_COLORS.goku,
+      )
       .addFields(
         { name: "Difficulté", value: DIFFICULTY_LABELS[level], inline: true },
         { name: "Vies", value: `${penduLivesLeft(state)} / ${state.maxErrors}`, inline: true },
@@ -592,7 +587,6 @@ export class PenduCommand {
           inline: true,
         },
       );
-      if (missed) embed.addFields({ name: "Lettres ratées", value: missed });
       embed.setFooter({ text: "Envoie une lettre, ou tente le mot entier." });
     } else if (result?.length) {
       embed.addFields({ name: "Résultat", value: result.join("\n") });

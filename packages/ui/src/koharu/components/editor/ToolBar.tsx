@@ -17,7 +17,7 @@ import { ColorWell } from "../controls/ColorWell";
 import { usePage } from "../../lib/queries";
 import {
   isBrushTool,
-  maxBrushDiameter,
+  MAX_BRUSH_DIAMETER,
   MIN_BRUSH_DIAMETER,
   useKoharuStore,
   type CanvasTool,
@@ -55,13 +55,11 @@ export function ToolBar() {
   const hasBrush = isBrushTool(active);
 
   return (
-    <aside className="absolute right-3 bottom-3 left-3 z-20 flex min-w-0 flex-row overflow-x-auto rounded-2xl border border-border bg-[var(--surface-floating)] p-1 shadow-[var(--shadow-toolrail)] lg:top-3 lg:right-auto lg:bottom-auto lg:w-11 lg:flex-col lg:overflow-visible [&_button]:min-h-11 [&_button]:min-w-11 lg:[&_button]:min-h-8 lg:[&_button]:min-w-8">
-      <div className="flex shrink-0 flex-row items-center py-0.5 lg:flex-col">
+    <aside className="absolute top-3 left-3 z-20 flex w-11 flex-col rounded-2xl border border-border bg-[var(--surface-floating)] p-1 shadow-[var(--shadow-toolrail)]">
+      <div className="flex flex-col items-center py-0.5">
         {tools.map(([tool, Icon], index) => (
           <div key={tool} className="contents">
-            {index === tools.length - 1 && (
-              <span className="mx-1 h-5 w-px bg-border lg:mx-0 lg:my-1 lg:h-px lg:w-5" />
-            )}
+            {index === tools.length - 1 && <span className="my-1 h-px w-5 bg-border" />}
             <Tooltip>
               <TooltipTrigger
                 render={
@@ -72,7 +70,7 @@ export function ToolBar() {
                     disabled={!page}
                     aria-label={t(`tools.${tool}`)}
                     data-active={active === tool}
-                    className="relative shrink-0 text-muted-foreground hover:bg-foreground/[0.06] hover:text-foreground disabled:opacity-30 data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
+                    className="relative text-muted-foreground hover:bg-foreground/[0.06] hover:text-foreground disabled:opacity-30 data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
                     onClick={() => setTool(tool)}
                   />
                 }
@@ -89,7 +87,7 @@ export function ToolBar() {
       </div>
 
       {hasBrush && (
-        <div className="ml-1 flex shrink-0 flex-row items-center gap-1 border-l border-border/80 pl-1 lg:ml-0 lg:flex-col lg:border-t lg:border-l-0 lg:py-1.5 lg:pl-0">
+        <div className="flex flex-col items-center gap-1 border-t border-border/80 py-1.5">
           {active === "draw" && (
             <ColorWell value={brush.color} onChange={(color) => setBrush({ ...brush, color })} />
           )}
@@ -106,8 +104,6 @@ export function ToolBar() {
 function BrushSize({ value, onChange }: { value: number; onChange: (value: number) => void }) {
   const { t } = useTranslation();
   const roundedValue = Math.round(value);
-  const page = usePage().data;
-  const maxSize = maxBrushDiameter(page?.size ?? { width: 2048, height: 2048 });
 
   return (
     <Popover>
@@ -143,15 +139,15 @@ function BrushSize({ value, onChange }: { value: number; onChange: (value: numbe
           <PopoverTitle className="text-[11px]">{t("tools.brushSize")}</PopoverTitle>
           <NumberField
             min={MIN_BRUSH_DIAMETER}
-            max={maxSize}
+            max={MAX_BRUSH_DIAMETER}
             step={1}
             value={roundedValue}
             className="w-20"
             onValueChange={(next) => {
-              if (next !== null) onChange(clamp(next, MIN_BRUSH_DIAMETER, maxSize));
+              if (next !== null) onChange(clamp(next, MIN_BRUSH_DIAMETER, MAX_BRUSH_DIAMETER));
             }}
           >
-            <NumberFieldGroup className="h-11 lg:h-7">
+            <NumberFieldGroup className="h-7">
               <NumberFieldDecrement aria-label={t("tools.decreaseBrushSize")}>
                 <Minus />
               </NumberFieldDecrement>
@@ -165,10 +161,10 @@ function BrushSize({ value, onChange }: { value: number; onChange: (value: numbe
         <Slider
           aria-label={t("tools.brushSize")}
           min={MIN_BRUSH_DIAMETER}
-          max={maxSize}
+          max={MAX_BRUSH_DIAMETER}
           step={1}
           value={value}
-          className="min-h-11 py-1 lg:min-h-0 [&_[data-slot=slider-thumb]]:size-5 lg:[&_[data-slot=slider-thumb]]:size-2.5"
+          className="py-1 [&_[data-slot=slider-thumb]]:size-2.5"
           onValueChange={onChange}
         />
       </PopoverPopup>

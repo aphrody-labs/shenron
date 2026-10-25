@@ -1256,17 +1256,7 @@ export function createGame(
   };
 }
 
-export interface CombatEvent {
-  type: "special";
-  fighterId: FighterId;
-}
-
-export function step(
-  g: GameState,
-  input: GameInput,
-  dt: number,
-  onEvent?: (event: CombatEvent) => void,
-): void {
+export function step(g: GameState, input: GameInput, dt: number): void {
   if (g.status !== "playing") return;
   const clampedDt = Math.max(0, Math.min(dt, 0.05));
   const p = g.player;
@@ -1485,7 +1475,6 @@ export function step(
       source: "player",
       duration: 0.6,
     });
-    onEvent?.({ type: "special", fighterId: p.fighterId });
   }
 
   // Mise à jour des projectiles

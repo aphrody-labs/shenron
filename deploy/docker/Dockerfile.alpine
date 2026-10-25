@@ -20,11 +20,10 @@ ENV SHENRON_HOME=/var/lib/shenron \
     API_HOST=127.0.0.1 \
     DATABASE_PATH=/app/data/bot.db \
     SHENRON_FFI_LIB=/usr/local/lib/libshenron_ffi.so \
-    SHENRON_BOT_ASSETS_DIR=/usr/local/share/shenron-bot \
     NAPI_RS_NATIVE_LIBRARY_PATH=/usr/local/bin/skia.linux-x64-musl.node \
     NEXT_TELEMETRY_DISABLED=1
 
-RUN apk add --no-cache ca-certificates curl font-noto-emoji font-wqy-zenhei jq libgcc libstdc++ sqlite-libs \
+RUN apk add --no-cache ca-certificates curl jq libgcc libstdc++ sqlite-libs \
  && addgroup -g 10001 shenron \
  && adduser -D -H -u 10001 -G shenron -h /var/lib/shenron -s /sbin/nologin shenron \
  && install -d -o 10001 -g 10001 /app/data /app/assets /var/lib/shenron \
@@ -33,8 +32,6 @@ RUN apk add --no-cache ca-certificates curl font-noto-emoji font-wqy-zenhei jq l
 COPY --chown=10001:10001 --chmod=755 dist/mcp/linux-x64-musl/shenron-mcp /usr/local/bin/shenron-mcp
 COPY --chown=10001:10001 --chmod=755 dist/server/linux-x64-musl/native/libshenron_ffi.so /usr/local/lib/libshenron_ffi.so
 COPY --chown=10001:10001 --chmod=644 dist/bot/linux-x64-musl/skia.linux-x64-musl.node /usr/local/bin/skia.linux-x64-musl.node
-# Canvas fonts and banners (`apps/bot/scripts/ship-canvas-assets.ts`), outside the /app/assets mount.
-COPY --chown=10001:10001 --chmod=755 dist/bot/linux-x64-musl/share /usr/local/share/shenron-bot
 COPY --chown=10001:10001 --chmod=644 dist/bot/linux-x64-musl/pipeline.mjs /usr/local/lib/shenron/pipeline.mjs
 COPY --chown=10001:10001 --chmod=644 dist/bot/linux-x64-musl/pipeline-build-receipt.json /usr/local/lib/shenron/pipeline-build-receipt.json
 COPY --chown=10001:10001 --chmod=755 dist/bot/linux-x64-musl/src/db/migrations /app/src/db/migrations

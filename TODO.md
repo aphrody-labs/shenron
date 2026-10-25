@@ -11,52 +11,6 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
 
 ## Actions ouvertes
 
-- Reprise du 20 octobre en cours : portes JS et scripts qualifiées, correctifs de
-  gel, navigation clavier, manifestes et verrouillage de fabrique poussés. La
-  nouvelle image attend encore le stockage privé des identifiants Studio et ses
-  portes Rust ; aucune activation de cette tentative n'est déclarée. Terminer
-  ensuite les contrôles authentifiés sur la release réellement active.
-- Vidéo native : extraction et preuves navigateur réelles, ainsi que l'optimiseur
-  CDN, passent par Bun Video/FilmCraft. Terminer la qualification fabrique du
-  wrapper d'encodage Shenron Video et de l'archive PNG exacte (portes natives et
-  rendu complet qualifiés le 20 octobre, voir REPRISE) ; terminer les voies encore
-  ouvertes HLS et WebP animé. Ne pas déclarer
-  une parité FFmpeg pour les opérations natives qui restent indisponibles.
-
-- Livrer et qualifier l'import d'atlas Rust déjà raccordé à Studio avec pause/reprise,
-  contrôle des empreintes source/PNG et sélection des frames ; raccorder ensuite
-  une séquence validée aux événements Dragon Pixel. Conversion réelle
-  planche → atlas/GIF et consommateur Canvas qualifiés ; les icônes SVG
-  vectorisées, maillages 3D reconstruits et nouveaux VFX restent des lots distincts,
-  détaillés dans [le plan moteur](docs/reference/root/PLAN.md#assets-manga-rustwasm--demande-du-18-octobre-2026)
-  et [la matrice des capacités](packages/engine/README.md#capacités-et-portes--18-octobre-2026).
-
-- Hero immersif livré sous `1e9193db` : quatre frames HD CDN, logo/Kinto'un,
-  introduction CMS et accès Beerus. Chrome réel 1440/390 : images chargées,
-  navigation, pause et absence de débordement vérifiées. Recontrôler après
-  la livraison commune Studio/admin.
-
-- Terminer la qualification navigateur du lecteur CDN unique Beerus 1 et 2
-  (875/876), de la timeline et du générateur GIF du lot `114a2829`, selon
-  [le lot vidéo du plan](docs/reference/root/PLAN.md#timeline-vidéo-et-gif--demande-du-18-octobre-2026).
-  Sources CDN et writers livrés ; lecteur unique, metadata, WebP et GIF publics
-  qualifiés sous `114a2829` (36 images / 3 s / 480 px pour chaque GIF testé) ;
-  Lecture, seek par slider et frame, GIF réel et absence de débordement 390 px
-  sont vérifiés dans Chrome sur l'image `1e9193db`. Livrer puis vérifier le correctif
-  des menus Base UI hors plein écran (`bad52271`). Le plein écran réel reste
-  à qualifier ; le cache CDN 876 et les réponses Range 206 début/fin sont vérifiés
-  depuis PC et DBFR.
-
-- Terminer le moteur Studio hébergé : binaire `koharu-sdk` dans l'image,
-  homes et services de credentials isolés par compte, bootstrap sans installation
-  ML implicite, import/hash réels, Canvas et exports. Les deux tests Rust du
-  namespace sont verts ; compilation SDK et smoke réels en cours sur la fabrique.
-  Qualifier l'image avant de déclarer disponible l'éditeur de production.
-- Livrer le cadre admin Studio `aafa7c8b`, sa page dashboard réelle et les panneaux
-  mobiles de l'éditeur. Cadre vérifié sur fixture Chrome : filtre, palette,
-  Échap/focus et largeur 390 px avec texte 200 %. La fixture ne prouve pas
-  le chargement des données administratives authentifiées en production.
-
 - Exécuter la livraison des 17 tomes SOSH manquants pour compléter 18 selon
   [le plan confirmé](docs/reference/root/SOSH-DELIVERY-PLAN.md). Conserver les
   identités existantes et le contrat 18 tomes. Réconcilier pagination/provenance,
@@ -98,7 +52,7 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
   parcours manga/databooks, les changements de mode et le défilement dans Bun WebView.
 - Appliquer après activation les trois corrections wiki préparées avec snapshots
   et comparaison atomique ; vérifier fiches et historique, poursuivre l’audit sourcé.
-- Terminer l’audit des 69 072 images du catalogue relu le 20 octobre et conserver séparément les preuves HTTP,
+- Terminer l’audit des 68 988 images et conserver séparément les preuves HTTP,
   les captures de rendu et les interactions de lecture.
 
 - Livrer le lot canon : compteurs réels, sauvegarde concurrente protégée, distinction

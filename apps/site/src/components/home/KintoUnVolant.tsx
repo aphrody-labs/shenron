@@ -1,11 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { KiAura, KintoUn } from "@aphrody/shenron-ui/toriyama";
+import { KintoUn } from "@aphrody/shenron-ui/toriyama";
 import { useT } from "@/components/T";
-import { useHomeMotion } from "./HomeMotion";
-import { useScenePlaybackPolicy } from "@aphrody/shenron-ui/public/SceneBackdrop";
-import styles from "./HomeHero.module.css";
 
 /** Les figures déclenchées au clic, dans l'ordre où elles s'enchaînent. */
 const FIGURES = ["boucle", "vrille", "trombe", "rebond"] as const;
@@ -36,9 +33,6 @@ const DUREE: Record<Figure, number> = { boucle: 1500, vrille: 1100, trombe: 1300
  */
 export function KintoUnVolant() {
   const t = useT();
-  const motion = useHomeMotion();
-  const policy = useScenePlaybackPolicy();
-  const active = motion && policy.motionAllowed && policy.visible;
   const coque = useRef<HTMLDivElement>(null);
   const [figure, setFigure] = useState<Figure | null>(null);
   const [survol, setSurvol] = useState(false);
@@ -65,7 +59,6 @@ export function KintoUnVolant() {
         const estHorsHero = window.scrollY > 48;
         return etaitHorsHero === estHorsHero ? etaitHorsHero : estHorsHero;
       });
-      if (!active) return;
       if (!cadre) cadre = requestAnimationFrame(peindre);
     };
     const peindre = () => {
@@ -110,10 +103,9 @@ export function KintoUnVolant() {
       window.removeEventListener("resize", mesurer);
       if (cadre) cancelAnimationFrame(cadre);
     };
-  }, [active]);
+  }, []);
 
   const jouer = useCallback(() => {
-    if (!active || horsHero) return;
     // Les figures s'enchaînent d'un clic à l'autre : cliquer deux fois de suite
     // ne rejoue pas la même, sinon l'objet paraît n'avoir qu'un seul tour.
     const f = FIGURES[suivant.current % FIGURES.length];
@@ -126,7 +118,7 @@ export function KintoUnVolant() {
       setFigure(f);
       minuteur.current = setTimeout(() => setFigure(null), DUREE[f]);
     });
-  }, [active, horsHero]);
+  }, []);
 
   useEffect(() => () => void (minuteur.current && clearTimeout(minuteur.current)), []);
 
@@ -149,17 +141,8 @@ export function KintoUnVolant() {
         onBlur={() => setSurvol(false)}
         aria-label={t("home.kintoun.trick")}
       >
-        <span className="kt-volant__nuage" data-figure={active ? (figure ?? undefined) : undefined}>
+        <span className="kt-volant__nuage" data-figure={figure ?? undefined}>
           <KintoUn hauteur={120} decorative />
-          {figure && active && !horsHero && (
-            <KiAura
-              size={140}
-              color="gold"
-              sparks={false}
-              decorative
-              className={styles.cloudAura}
-            />
-          )}
         </span>
         <span className="kt-volant__vitesse" aria-hidden />
       </button>

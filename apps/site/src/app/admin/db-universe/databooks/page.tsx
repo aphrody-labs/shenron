@@ -76,79 +76,43 @@ export default async function AdminDatabooksPage() {
             : undefined
         }
       />
-      <div className="mb-6 rounded-xl border border-white/10 bg-white/[0.025] p-4 text-sm text-white/70">
-        <p>
-          Guides officiels, artbooks, daizenshuu et interviews. L&apos;édition du contenu se fait
-          dans le <strong className="text-white">studio visuel</strong> (aperçu live, upload
-          couverture, markdown). L&apos;index public est disponible sur{" "}
-          <Link
-            href="/wiki/databooks"
-            className="font-mono text-xs text-dbz-orange hover:underline"
-          >
-            /wiki/databooks
-          </Link>
-          .
-        </p>
-        <div className="mt-3 flex flex-wrap gap-4 text-xs font-semibold text-dbz-orange">
-          <Link
-            href="/workshop/transcription"
-            className="hover:underline flex items-center gap-1.5"
-          >
-            → Suivi & arbitrage des transcriptions
-          </Link>
-          <Link href="/workshop/translation" className="hover:underline flex items-center gap-1.5">
-            → Campagnes de traduction & indexation
-          </Link>
-        </div>
-      </div>
+      <p className="mb-4 text-sm text-white/50">
+        Guides officiels, artbooks, daizenshuu et interviews. L&apos;édition se fait dans le{" "}
+        <strong className="text-white/70">studio visuel</strong> (aperçu live, upload couverture,
+        markdown) — comme pour les personnages. L&apos;index public triable est sur{" "}
+        <code className="text-dbz-orange/80">/wiki/databooks</code>. Le texte des planches se relit
+        dans le{" "}
+        <Link href="/workshop/transcription" className="text-dbz-orange hover:underline">
+          suivi des transcriptions
+        </Link>
+        .
+      </p>
 
       {items.length > 0 && (
-        <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4 text-xs">
-          <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center">
-            <span className="block font-mono text-lg font-bold text-white">
-              {withCover}/{items.length}
-            </span>
-            <span className="text-[11px] uppercase tracking-wider text-white/50">Couvertures</span>
-          </div>
-          <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center">
-            <span className="block font-mono text-lg font-bold text-white">
-              {withDesc}/{items.length}
-            </span>
-            <span className="text-[11px] uppercase tracking-wider text-white/50">Descriptions</span>
-          </div>
-          <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center">
-            <span className="block font-mono text-lg font-bold text-dbz-orange">{totalPages}</span>
-            <span className="text-[11px] uppercase tracking-wider text-white/50">
-              {withPages} avec planches
-            </span>
-          </div>
-          <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center">
-            <span className="block font-mono text-lg font-bold text-dbz-yellow">
-              {items.filter((d) => resolveKind(d) === "databook").length}
-            </span>
-            <span className="text-[11px] uppercase tracking-wider text-white/50">
-              Databooks purs
-            </span>
-          </div>
+        <div className="mb-6 flex flex-wrap gap-3 text-[11px] uppercase tracking-wider text-white/50">
+          <span className="rounded border border-dbz-border/50 bg-white/[0.03] px-2.5 py-1">
+            {withCover}/{items.length} covers
+          </span>
+          <span className="rounded border border-dbz-border/50 bg-white/[0.03] px-2.5 py-1">
+            {withDesc}/{items.length} descriptions
+          </span>
+          <span className="rounded border border-dbz-border/50 bg-white/[0.03] px-2.5 py-1">
+            {withPages}/{items.length} avec pages · {totalPages} planches
+          </span>
+          <span className="rounded border border-dbz-border/50 bg-white/[0.03] px-2.5 py-1">
+            {items.filter((d) => resolveKind(d) === "databook").length} databooks ·{" "}
+            {items.filter((d) => resolveKind(d) === "interview").length} interviews ·{" "}
+            {items.filter((d) => resolveKind(d) === "artbook").length} art books ·{" "}
+            {items.filter((d) => resolveKind(d) === "guidebook").length} guides
+          </span>
         </div>
       )}
 
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Link
-            href="/workshop/translation"
-            className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 text-xs font-medium text-white transition hover:bg-white/10 hover:border-dbz-orange/50"
-          >
-            <Scan className="h-3.5 w-3.5 text-dbz-orange" />
-            Campagnes de traduction
-          </Link>
-          <Link
-            href="/workshop/transcription"
-            className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 text-xs font-medium text-white transition hover:bg-white/10 hover:border-dbz-orange/50"
-          >
-            Transcription des planches
-          </Link>
-        </div>
+      <div className="mb-6 flex flex-wrap justify-end gap-2">
+        <Link href="/workshop/translation" className="btn btn-ghost h-9 px-3 text-xs">
+          <Scan className="h-3.5 w-3.5" />
+          Atelier : traduction et campagnes
+        </Link>
         <DbAddButton table={TABLE} label="Ajouter une entrée" />
       </div>
 

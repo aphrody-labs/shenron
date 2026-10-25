@@ -1,8 +1,0 @@
-{
-  "title": "Play Xenoverse 2",
-  "stream": "Open in Bun OS Play",
-  "description": "The PC game runs on a remote host and is played through streaming. Bun OS Play checks game availability and session access.",
-  "wasm": "Local WebAssembly analysis",
-  "wasmDescription": "The explorer below analyses your files in the browser. It does not run the PC game.",
-  "details": "Open the game and explorer"
-}

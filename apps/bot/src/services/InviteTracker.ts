@@ -19,33 +19,13 @@ export class InviteTracker {
     if (after) this.snapshots.set(guild.id, after);
     if (!before || !after) return { inviterId: null, code: null };
 
-    return diffInvites(before, after);
-  }
-}
-
-type InviteUse = Pick<Invite, "uses" | "maxUses" | "inviterId">;
-
-/**
- * Invite used between two snapshots: the one whose `uses` grew, else a
- * limited invite that vanished on its last use (Discord deletes it at
- * `maxUses`, so it is missing from the second snapshot).
- */
-export function diffInvites(
-  before: ReadonlyMap<string, InviteUse>,
-  after: ReadonlyMap<string, InviteUse>,
-): { inviterId: string | null; code: string | null } {
-  for (const [code, inv] of after) {
-    const prev = before.get(code);
-    if (!prev) continue;
-    if ((inv.uses ?? 0) > (prev.uses ?? 0)) {
-      return { inviterId: inv.inviterId ?? null, code };
+    for (const [code, inv] of after) {
+      const prev = before.get(code);
+      if (!prev) continue;
+      if ((inv.uses ?? 0) > (prev.uses ?? 0)) {
+        return { inviterId: inv.inviterId ?? null, code };
+      }
     }
+    return { inviterId: null, code: null };
   }
-  for (const [code, prev] of before) {
-    if (after.has(code)) continue;
-    if (prev.maxUses && (prev.uses ?? 0) + 1 >= prev.maxUses) {
-      return { inviterId: prev.inviterId ?? null, code };
-    }
-  }
-  return { inviterId: null, code: null };
 }

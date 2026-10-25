@@ -1,6 +1,6 @@
 {
   "name": "@aphrody/shenron-db",
-  "version": "1.4.7",
+  "version": "1.4.6",
   "private": false,
   "description": "PostgreSQL partagé Shenron : schéma Drizzle, pool postgres-js (Next) et driver Bun.SQL (scripts, API), indépendant du framework",
   "homepage": "https://dragonballfr.com",
@@ -37,7 +37,6 @@
     "./redis": "./src/redis.ts",
     "./vfs": "./src/vfs/index.ts",
     "./dbxv2": "./src/dbxv2/index.ts",
-    "./replica": "./src/replica/index.ts",
     "./conversations": "./src/conversations/index.ts",
     "./conversations/types": "./src/conversations/types.ts",
     "./conversations/redact": "./src/conversations/redact.ts",
@@ -95,7 +94,6 @@
       "./redis": "bun",
       "./vfs": "bun",
       "./dbxv2": "bun",
-      "./replica": "bun",
       "./conversations": "bun",
       "./conversations/types": "pure",
       "./conversations/redact": "pure",

@@ -31,8 +31,7 @@ describe("home layout", () => {
 
   test("hero identity and editorial content stay visible without background videos", () => {
     const hero = source("../src/components/home/HomeHero.tsx");
-    expect(hero).not.toContain("home-wordmark");
-    expect(hero).toContain('<h1 className="sr-only">');
+    expect(hero).toContain("home-wordmark");
     expect(hero).toContain("<KintoUnVolant");
     expect(hero).not.toContain("<HomeHeroScenes");
     expect(hero).not.toContain("<video");

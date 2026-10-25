@@ -99,14 +99,14 @@ const sha256 = (bytes: Uint8Array): string => createHash("sha256").update(bytes)
 
 describe.if(live)("live: EMB textures served by the real server", () => {
   setDefaultTimeout(300_000);
+  const status = dbxv2Status(process.env);
+  if (!status.enabled)
+    throw new Error(`DBXV2_LIVE=1 needs DBXV2_SERVER_URL and DBXV2_TOKEN (${status.reason})`);
+  const { baseUrl, token } = status.config;
+  const client = createDbxv2Client({ baseUrl, token, cache: false });
   const enc = (path: string): string => path.split("/").map(encodeURIComponent).join("/");
 
   test("sha256, dimensions, invariance and declared colour / alpha on a dynamic sample", async () => {
-    const status = dbxv2Status(process.env);
-    if (!status.enabled)
-      throw new Error(`DBXV2_LIVE=1 needs DBXV2_SERVER_URL and DBXV2_TOKEN (${status.reason})`);
-    const { baseUrl, token } = status.config;
-    const client = createDbxv2Client({ baseUrl, token, cache: false });
     const cpks = await client.cpks();
     const picks: { cpk: string; path: string; entries: DdsEntry[] }[] = [];
     for (let round = 0; picks.length < SAMPLE_EMBS && round < 6; round++) {

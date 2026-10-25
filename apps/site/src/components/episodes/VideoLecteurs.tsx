@@ -5,7 +5,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { type SubtitleTrack, VideoPlayer } from "@/components/episodes/VideoPlayer";
 import { track } from "@/lib/telemetry";
 import { probePlayerNetwork } from "@/lib/player-network";
-import { isShenronEpisodeVideoURL } from "@/lib/episode-video-source";
 import { nextPlayerIndex, resolvePlayerIndex } from "@/lib/video-selection-state";
 import { useTranslations } from "next-intl";
 import { useVideoUIText } from "@/lib/video-ui-text";
@@ -91,18 +90,12 @@ export function VideoLecteurs({
   entityType,
   entityId,
   vo,
-  subtitles,
-  title,
-  poster,
 }: {
   players: Lecteur[];
   /** Entité regardée — sans elle, aucun événement de lecture n'est émis. */
   entityType?: "episode" | "movie";
   entityId?: string | number;
   vo?: LecteurVo;
-  subtitles?: SubtitleTrack[];
-  title?: string;
-  poster?: string;
 }) {
   const t = useTranslations("mediaPlayback");
   const ui = useVideoUIText();
@@ -176,8 +169,6 @@ export function VideoLecteurs({
   const current = list[safeActive] ?? list[0];
   const officialURL = current ? officialWatchLink(current.embedUrl) : null;
   const officialPage = officialURL !== null;
-  const nativeSource =
-    current && isShenronEpisodeVideoURL(new URL(current.embedUrl)) ? current.embedUrl : null;
   const enVo = modeVo && aVo;
   const voEchec = vo != null && failedVoSource === vo.src;
 
@@ -196,7 +187,7 @@ export function VideoLecteurs({
   // An iframe can emit load for its browser error document after a DNS failure.
   // Check the user's network independently; VPS reachability cannot establish it.
   useEffect(() => {
-    if (enVo || !current || officialPage || nativeSource) return;
+    if (enVo || !current || officialPage) return;
     networkFailure.current = null;
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 8_000);
@@ -213,20 +204,20 @@ export function VideoLecteurs({
       controller.abort();
       window.clearTimeout(timeout);
     };
-  }, [current?.embedUrl, enVo, officialPage, nativeSource, safeActive, list.length, probeAttempt]);
+  }, [current?.embedUrl, enVo, officialPage, safeActive, list.length, probeAttempt]);
 
   // Les embeds tiers ne permettent pas toujours un HEAD/CORS fiable. On sonde
   // le lecteur visible uniquement tant qu'il n'a pas confirmé son chargement (ready).
   // Dès que `onLoad` passe le statut à `ready`, ce timer est annulé et ne s'exécute pas.
   useEffect(() => {
-    if (enVo || !current || officialPage || nativeSource || status === "ready") return;
+    if (enVo || !current || officialPage || status === "ready") return;
     const timeout = window.setTimeout(() => {
       const next = nextPlayerIndex(safeActive, list.length);
       if (next !== null) setActive(next);
       else setStatus("failed");
     }, 8_000);
     return () => window.clearTimeout(timeout);
-  }, [safeActive, current, enVo, officialPage, nativeSource, list.length, status]);
+  }, [safeActive, current, enVo, officialPage, list.length, status]);
 
   // Choix de version : langues des lecteurs externes (ou « Lecteurs » s'ils ne
   // portent aucun tag), puis la VO quand elle existe.
@@ -334,20 +325,6 @@ export function VideoLecteurs({
             onError={() => setFailedVoSource(vo.src)}
           />
         )
-      ) : nativeSource && status !== "failed" ? (
-        <VideoPlayer
-          episodeId={entityType === "episode" ? entityId : undefined}
-          key={nativeSource}
-          src={nativeSource}
-          title={title ?? cleanName(current.name)}
-          subtitles={subtitles}
-          poster={poster}
-          onError={() => {
-            const next = nextPlayerIndex(safeActive, list.length);
-            if (next !== null) setActive(next);
-            else setStatus("failed");
-          }}
-        />
       ) : officialURL ? (
         <div className="shenron-video flex aspect-video w-full flex-col items-center justify-center gap-4 p-6 text-center">
           <p className="text-sm">{ui("officialProviderNote")}</p>
@@ -371,13 +348,12 @@ export function VideoLecteurs({
           </button>
         </div>
       ) : (
-        <div className="shenron-video relative aspect-video">
+        <div className="shenron-video">
           {/* sandbox : autorise le player tiers (scripts + accès à SA propre
 					    origine, requis pour les tokens de flux) mais bloque popups et
 					    navigation du top-window → coupe popunders et hijack de l'onglet
 					    dragonballfr.com. NE PAS ajouter allow-popups / allow-top-navigation. */}
           <iframe
-            className="absolute inset-0 h-full w-full"
             key={current.embedUrl}
             src={current.embedUrl}
             title={t("playerTitle", { number: safeActive + 1, name: cleanName(current.name) })}
@@ -386,22 +362,7 @@ export function VideoLecteurs({
             allowFullScreen
             referrerPolicy="origin"
             loading="lazy"
-            onLoad={(event) => {
-              const frame = event.currentTarget;
-              const bounds = frame.getBoundingClientRect();
-              const surface = frame.parentElement?.getBoundingClientRect();
-              // A browser can collapse a blocked frame while still firing load.
-              if (
-                surface &&
-                surface.width > 0 &&
-                surface.height > 0 &&
-                (bounds.width === 0 || bounds.height === 0)
-              ) {
-                const next = nextPlayerIndex(safeActive, list.length);
-                if (next !== null) setActive(next);
-                else setStatus("failed");
-                return;
-              }
+            onLoad={() => {
               if (networkFailure.current !== current.embedUrl) setStatus("ready");
             }}
             onError={() => {
@@ -412,7 +373,7 @@ export function VideoLecteurs({
           />
         </div>
       )}
-      {!officialPage && (!nativeSource || enVo) && (
+      {!officialPage && (
         <p className="text-xs text-muted-foreground" aria-live="polite">
           {enVo && vo
             ? t("voTracks", { tracks: vo.subtitles.map((track) => track.label).join(", ") })

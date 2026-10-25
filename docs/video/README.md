@@ -7,16 +7,6 @@ les pistes, le changement de source et la récupération réseau. Les contrôles
 les traductions et la reprise restent dans Shenron. L'adaptateur navigateur utilise
 `@aphrody/bun-runtime-sdk/video/hls` ; `Bun.Video` est une capacité native du serveur
 et ne devient pas une API globale dans le navigateur.
-La reprise vit dans `VideoPlayer.tsx` : la position est mémorisée dans `localStorage`
-(clé `shenron:video-position:` + origine et chemin de la source, sans jeton de requête), toutes
-les 5 secondes et à la fermeture de la page. Elle est restaurée au chargement des métadonnées si elle
-dépasse 15 s et reste à plus de 30 s de la fin, puis effacée à la fin de la lecture. Le stockage
-bloqué est toléré. Les flèches haut/bas règlent le volume, le retour du son à volume 0 repasse à 50 %,
-le plein écran iOS passe par `webkitEnterFullscreen`, et `crossOrigin` n'est posé que si des
-sous-titres sont chargés (sinon un MP4 cross-origin sans CORS ne démarre pas). Les tests purs sont dans
-`apps/site/tests/video-controls.test.ts` ; les tests DOM du lecteur exigent un `document` et sont ignorés
-sans lui. Aucune lecture réelle n'est qualifiée par ce lot.
-
 Le worker est servi sur la même origine avec sa licence Apache-2.0. Qualité, audio et
 sous-titres sont proposés selon les pistes réellement présentes. Les fournisseurs protégés
 conservent leur lecteur et leurs conditions ; HTTP200 et iframe.onload ne prouvent pas une lecture.

@@ -8,18 +8,14 @@ export function AdminHeader({
   right?: React.ReactNode;
 }) {
   return (
-    <header className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-white/10 pb-4">
+    <header className="mb-8 flex items-end justify-between flex-wrap gap-4">
       <div>
-        <h1 className="font-saiyan text-3xl sm:text-4xl uppercase tracking-wide text-dbz-orange">
-          {title}
-        </h1>
+        <h1 className="text-4xl font-saiyan text-dbz-orange mb-2 uppercase">{title}</h1>
         {subtitle && (
-          <p className="mt-1 font-mono text-xs uppercase tracking-widest text-dbz-yellow/80">
-            {subtitle}
-          </p>
+          <p className="text-xs text-dbz-blue-light uppercase tracking-widest">{subtitle}</p>
         )}
       </div>
-      {right && <div className="flex items-center gap-2">{right}</div>}
+      {right && <div>{right}</div>}
     </header>
   );
 }

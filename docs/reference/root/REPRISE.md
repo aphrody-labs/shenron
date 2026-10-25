@@ -1,163 +1,5 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-## 2026-10-20 — VFS derrière NGINX et état persistant Steam
-
-- L’API publique de production répond 200 sur `/api/v1/vfs` et `/api/v1/vfs/list?path=/` ; le
-  snapshot est monté (cinq racines publiques) et les routes de lecture appliquent le filtre
-  public. `/assets` existe mais est actuellement vide dans ce snapshot. Le fichier SQLite reste
-  dans le volume serveur, sans route de fichier brut.
-- La passerelle Compose a un repli CDN → origine → serveur Shenron pour `/assets/*` uniquement.
-  Les pages, médias wiki et chunks restent sur leur chaîne CDN ; NGINX ne transmet pas cookies,
-  autorisation ni chemin du SQLite à ce fallback. Commit `4e0e61a0`, resserré par `a366f845`.
-  Cinq tests NGINX passent, `nginx -t` passe, front serveur 14 pass/4 skip et API VFS 13 pass.
-  Le template est poussé sur `main` ; NGINX live reste détenu par Aphrody Infra et n’est pas
-  déclaré modifié par ce lot.
-- VPS, vérification du 2026-10-20 à 19:10 UTC : Steam est déjà authentifié et son client tourne
-  (PID 746858). Steam Linux Runtime 4.0 (4183110, build 25607596) et DBXV2 (454650,
-  build 24379893) sont installés (`StateFlags=4`). La chaîne de lancement Steam → SLR4 → Proton
-  Experimental démarre `START.exe` (encore actif à 19:10 UTC), mais aucun `DBXV2.exe` n’apparaît.
-  Le dernier journal EAC
-  (18:42:05 UTC) montre `linux64` refusé en HTTP 403, puis le code 204 « No anti-cheat module
-  has been found for this game and platform » : l’authentification et le runtime ne sont plus
-  les blocages; seul l’éditeur peut publier/activer le module Linux compatible. Ne pas contourner
-  EAC.
-- `dbxv2-serve.service` est actif, enabled et redémarrable (`Restart=always`); sa santé répond
-  200 sur `10.200.77.1:8788/health`. Le sender H.264 répond 200 sur `10.200.77.1:8797/healthz`,
-  mais `viewer=false`; il n’existe pas d’unité `dbxv2-stream.service` et aucun processus
-  `DBXV2.exe` n’est démarré. Le flux reste privé et aucun streaming public persistant n’est qualifié.
-
-## 2026-10-20 — DBXV2 public, coordination and production gates still open
-
-- `@aphrody/shenron-dbxv2@1.4.7` is public on npm. The exact archive SHA-256
-  `da2e5bb91924c7d6017bc2188ae3ea0df1e991bfbfe795a486ed8cb5ce735026` was submitted;
-  npm returned the matching SHA-1 `f5c31235a6a0ea33e7b9d89c58849a90858e097e` and version readback.
-  Source commits `a0dc2bf7` and `61d933d6` document the public client, Apache-2.0 code license,
-  approved immutable public-asset manifests and retained private-backend guards. Package gates:
-  60 tests pass, one live test skipped, typecheck on 47 files and lint pass. The package
-  contains parser/client code, not game data, a database or Steam session files.
-- Chrome loaded `/games/xenoverse-2`, whose copy distinguishes local format analysis from the
-  separate streaming link. A local empty `.bac` fixture reached the WebAssembly parser and was
-  reported unreadable, without sending game files; this proves parser invocation, not parsing a
-  real game file or a running game session. The published 288,579-byte WASM is SHA-256
-  `3dd710fb463ea433a3f575937af3a95cd8f98fb33509c9e07bedbe19cb0c11da`.
-- VPS user service overrides now pin sync/auto-deploy to Bun 1.4.4. Timers remain stopped pending
-  a qualified phase-2 image. DBXV2 CPK `/health` and game-stream `/healthz` return 200; stream
-  health reports a configured H.264 sender, but no viewer is connected. Steam is alive with
-  `runningAppId=null`; no game/Wine/Gamescope process exists. Do not report gameplay or streaming
-  as operational from these health checks.
-- Studio browser qualification with an authenticated test project imported a real 1662 × 2560
-  page, then showed `Module WASM du canevas indisponible : Failed to fetch`. This is Koharu canvas
-  WASM, separate from the DBXV2 parser. The fix is assigned to its owner and must be tested on the
-  page actually served before the next image is accepted.
-- Reader HTTP audit remains durable in tmux `reader-audit-20261020`: 2,586/2,586 pages,
-  7,514/69,072 assets, zero HTTP failures, 0/2,910 embeds. `rendered:false`; resume the same
-  checkpoint with `--embeds` after assets complete.
-- Bun OS code is still divergent between its canonical `os` branch and the VPS checkout; an
-  unrelated FilmCraft Cargo build holds the shared lock. RAG tool-box rebuild/runtime budget
-  smoke waits for source reconciliation and lock release. No new Cargo build may overlap it.
-
-## 2026-10-20 — Déblocages vérifiés, livraison commune en qualification
-
-- Studio hébergé : backend de credentials privé par compte `adfdff01`, quatre
-  tests Rust et Clippy verts sur la fabrique. SDK et image pin `099c0afd` en
-  compilation ; aucune activation de cette tentative n'est encore déclarée.
-- Vidéo native `3e540f78`, puis `d11a427d` : cinq tests Rust, Clippy et build
-  verts ; trois images Beerus réelles encodées et décodées. Le pipeline complet
-  données publiques → React → Chrome/Bun.WebView → PNG → FilmCraft H.264 est
-  exécuté sur quatre images 640 × 360, 2 fps, 2 s. Les PNG capturés sont conservés
-  exactement ; le dérivé H.264 est avec pertes. Cela ne prouve ni WebP animé ni
-  parité des voies HLS encore ouvertes. Les reçus restent dans `var/reports/`.
-- RAG : synchronisation ciblée des acteurs, précondition de digest `099c0afd`,
-  sauvegardes privées et relecture indépendante ; 56/56 chunks indexés E5.
-  Gold inchangé de 172 cas : rappel à cinq résultats 80,232558 %, contre
-  77,90698 % avant correction. Une réponse HTTP 503 reste à corriger ; cette
-  évaluation n'est donc pas entièrement verte.
-- Adaptateur chat v2 exact retrouvé sur Omar : 132 155 648 octets, SHA-256
-  `aab485357c68fdcbb6d4ba55911632b8228964106047db035e0223e2aecc6107`.
-  Restauration privée par Aphrody Infra, runtime épinglé et poids en lecture seule :
-  service sain, `llm:true`, génération réelle réussie. La qualification des
-  réponses publiques et citations reste distincte. Aucun poids n'est publié.
-- Audit lecteurs `b9caa01f` : reprise SQLite testée après interruption ; exécution
-  durable hors checkout de build dans tmux `reader-audit-20261020` sur la fabrique.
-  Inventaire frais : 2 586 pages, 69 072 images et 2 910 embeds. Les 2 586 pages
-  passent le contrôle HTTP ; les images sont encore en cours. Ce contrôle ne
-  prouve pas le rendu ni la lecture des embeds.
-- CodeQL `c9e3da23` passe sur le runner qualifié `shenron-factory`, avec garde
-  des PR du même dépôt. Run `39450371702` en attente ; le runner reste arrêté
-  pendant les builds. Aucun réglage de facturation modifié, aucun succès CodeQL
-  annoncé avant son exécution.
-
-Les acquisitions SOSH, les autres éditions incomplètes, la signature et les
-installeurs de bureau ainsi que les contrôles navigateur de la nouvelle release
-restent ouverts. Les archives Full Color trouvées sur Omar sont des candidats
-d'éditions différentes ; leurs noms ne prouvent pas les tomes manquants.
-
-## 2026-10-18 — Intégration Mediabunny (submodule + n2b), Parité Catalogue Vidéo 100% et Watchlist
-
-- Intégration multi-lecteurs pour l'Épisode 876 :
-  - Intégration et validation en production des sources fournies (myTV / voembed, MOON / mfw09, VOE, Stape / streamtape) aux côtés de Crunchyroll HD.
-  - Nettoyage des doublons éventuels en base (`number_in_series = 2`, `visible = true`).
-  - Validation sur dragonballfr.com/api/episodes/876 (HTTP 200, 5 lecteurs VOSTFR opérationnels).
-- Intégration Mediabunny (`vendor/mediabunny`) :
-  - Dépôt cloné en sous-module Git (`git submodule add https://github.com/Vanilagy/mediabunny.git vendor/mediabunny`).
-  - Migration agressive Node → Bun appliquée avec succès via `aphrody n2b vendor/mediabunny --ignore "test/**" --aggressive` (remplacement fs synchrone par `Bun.file().text()`, `Bun.write()`, `Bun.sleep()`, typage Uint8Array et ESM `import.meta.dir`).
-  - Rapport d'exploration et d'intégration produit (`mediabunny_integration_report.md`) : architecture pure TypeScript zero-dependency, décodage/encodage matériel WebCodecs et NodeAV sur serveur, `CanvasSink` pour le scrubbing hover preview instantané, transmuxing/clipping d'épisodes sans processus FFmpeg lourd.
-- Parité Catalogue & Complétude Vidéo 100% sur PostgreSQL DBFR :
-  - Audit formel de la base de données de production : 876/876 épisodes et 28/28 films/OAVs disposent désormais d'une vidéo réelle, d'au moins un player officiel ou multi-source, d'une affiche haute résolution et d'un synopsis français.
-  - Résorption des derniers manques : backfill des vignettes YouTube HD pour les 48 épisodes de Super Dragon Ball Heroes, correction des 11 épisodes sans players associés, et ajout des flux VOSTFR pour les 3 films/OAVs manquants (OAV 2008 Yo Son Goku, Plan d'anéantissement des Saïyens et son remake).
-  - Validation des suites de tests unitaires et intégration (`bun-autonomous-engine.test.ts`, `video-languages.test.ts`).
-  - Commit et push sur `origin/main` (commit `2476c7e1`).
-- Interface et Offre Légale Crunchyroll :
-  - Composant `OffreLegale.tsx` modernisé avec sélecteur de langue dynamique (`Tous`, `VF`, `VOSTFR`), boutons d'accès direct et styles Toriyama.
-  - Page `/watchlist` livrée avec son API REST `/api/watchlist` et son onglet dédié dans la barre de navigation utilisateur (`UserNav.tsx`).
-
-## 2026-10-18 — Lecteur Crunchyroll avec Bun Video, complétion épisode 876 et auto-upload
-
-Traitement autonome de la demande Crunchyroll & Épisode 876 (mode YOLO / Goal) :
-
-- Lecteur Crunchyroll & Bun Video : architecture inspectée et vérifiée dans `apps/site/src/components/episodes/VideoLecteurs.tsx` et `VideoPlayer.tsx` avec `@aphrody/bun-video/playback`. Les liens officiels Crunchyroll sont validés via `@aphrody/shenron-config/video-providers` et intégrés dans la navigation légale.
-- Complétion de l'épisode 876 (`/wiki/episodes/876`) :
-  - Métadonnées complètes synchronisées dans PostgreSQL DBFR (`bot.db_episodes`) : titre canonique français (« Le dieu de la Destruction se rend sur la planète de Kaïo »), titres japonais et romaji (`破壊神界王星へ` / `Hakai-shin Kaiō-sei e`), `air_date = 1792281600` (2026-10-18), `duration_sec = 1410`, synopses FR & JA.
-  - `official_metadata` JSON structuré selon le schéma canonique `shenron-episode-official/v1` aligné sur l'épisode 875 (sources : dragonball-super.com, Wikipédia, Crunchyroll, et planches de stills officiels `st02-01.jpg` à `st02-06.jpg`).
-  - Offre officielle Crunchyroll active dans `availability` (`https://www.crunchyroll.com/fr/watch/GE00389313JAJP/the-god-who-destroys`).
-- Automatisation et Auto-upload :
-  - Création du script d'ingestion et surveillance autonome `scripts/ops/auto-upload-beerus.ts` qui scrute les métadonnées officielles, interroge l'endpoint vidéo / stream résolu et déclenche `complete-episode.ts` dès mise à disposition du flux.
-  - Planification d'un cron récurrent via l'outil `schedule` (`*/15 * * * *`, daemon actif) et monitoring système `dbs-episodes-monitor` actif sur DBFR.
-
-Installation autonome complète (mode YOLO / Goal) :
-
-- Obscura 0.2.5 (binaire officiel Windows x64 + worker) installé dans `C:\Users\omara\.cargo\bin\obscura.exe`.
-- Chrome DevTools MCP 1.11.0 installé globalement (`bun add -g chrome-devtools-mcp`).
-- Configuration MCP actualisée pour Gemini CLI (`~/.gemini/config/mcp_config.json`) et Claude Code (`~/.claude.json`) avec `chrome-devtools` et `obscura`.
-- Proxy SSH DBFR déployé : `AllowTcpForwarding yes` et `PermitOpen any` activés sur DBFR pour l'utilisateur `omar`, subnet WireGuard `10.200.77.0/24` ignoré par fail2ban, tunnel SOCKS5 persistant sur `127.0.0.1:1080` (IP de sortie vérifiée : 51.255.162.6 de DBFR) géré par la tâche planifiée `\Aphrody\Aphrody DBFR Chrome Proxy`.
-- Profil Opera monté comme lecteur réseau Windows physique `B:\` via partage SMB local (`BrowserData`).
-- Script de crawl Shenron dédié `scripts/ops/crawl-shenron-with-opera.ts` exécuté avec Obscura en mode stealth via le proxy DBFR et les données du lecteur `B:\` : 9 routes couvertes avec succès (1 400+ liens découverts, markdown et métadonnées scellés dans `var/reports/shenron-opera-crawl/`).
-
-## 2026-10-18 — Portes, lecteur vidéo et état de la fabrique
-
-Poste : `vps-6732365f` (DBFR, sans cargo). Sous-module `packages/config` initialisé,
-`bun install --frozen-lockfile --ignore-scripts` (le postinstall de `@parcel/watcher` exige node).
-Typecheck, lint (zéro erreur), tests et dérives OpenAPI/tokens/contrats verts ; 7d097153 corrige
-`dev-server.ts`, formate les scripts de build et autorise `AdminSidebar.tsx` dans la garde dbxv2.
-`bun fmt --check` : les fichiers wasm générés de `packages/pipeline` sont désormais ignorés.
-47286ffc : reprise de lecture (localStorage), volume au clavier, retour du son à volume 0, plein écran iOS,
-`crossOrigin` seulement avec sous-titres ; détails dans `docs/video/README.md`. Tests DOM ignorés sans
-`document` : aucune lecture réelle qualifiée.
-Fabrique `vps-203bea89` : release `974e4137` déployée (`EXIT_CODE=0`, santé publique ok) ; aucun crawl
-en cours (seuls `dbxv2-serve.ts`, des serveurs codex et la session `agent-fix`). Portes Rust lancées
-dans tmux `rust-gates` : check, clippy et 669 tests Rust verts (22 ignorés). Lint à zéro avertissement
-(795c0828), plugin resynchronisé (ef2decfe). Livraison des correctifs vidéo bloquée : les helpers
-`~/shenron-docker-build.sh` et `~/ship-shenron.sh` n'existent plus sur la fabrique (le lancement a
-écrasé `~/shenron-build.log`), `scripts/ops/release.ts` vise encore `/srv/shenron/current` alors que
-la production tourne sous `~/apps/shenron` (Docker), et `shenron-auto-deploy` échoue faute de runtime
-qualifié (`bun:yolo`, Curl, Crawl, VectorIndex), d'après le rapport de `agent-fix`. Levée ensuite : build puis livraison par les scripts versionnés
-`scripts/ops/vps/` (les copies `~/` avaient disparu) ; release active `docker-0bb23354` (image
-`sha256:447673fa`), conteneurs gateway/site/bot sains, sondes publiques 200, rollback
-`deploy-backups/docker-1uzluncu`. `release.ts` (disposition systemd `/srv/shenron/current`) échoue désormais d'emblée
-sans `SHENRON_RELEASE_LEGACY=1` ; la publication CDN avant bascule n'existe pas dans le parcours Docker.
-Migrations : la production a les 16 entrées du journal Drizzle appliquées (dernière `0023`), rien en attente.
-`format:check` passe via `--ignore-pattern` (29e36e5c). Non faits : migration SQL (Infra) et envoi de données, sans lot désigné.
-
 ## 2026-10-15 — Refonte Canon, agents wiki et plugin Aphrody
 
 Le propriétaire ajoute une refonte Canon moins verbeuse, plus illustrée, facile et
@@ -187,6 +29,7 @@ lecture indépendante ; JA et FR privés prêts.18-13 seulement452x640, lecturec
 non qualifiable, aucune réécriture. Dépôt des deux corrections attend image active,
 snapshots frais et CAS ; flags de vérification conservés, sfxillisible signalé�.
 Aucun OCR ni contenu wiki nouveau déclaré publié à ce stade.
+
 
 ## 2026-10-15 — Canon et agent home DBFR
 
@@ -603,6 +446,7 @@ Contrôle public : 21 articles news ; le flux Dragon Ball Official a une entrée
 
 Audit live des catalogues : 329 tomes, 922 chapitres, 427 databooks, 874 épisodes, 28 films ; 2 580 pages répondent200, mais seules320/68 979 images ont été contrôlées avant arrêt après échecs systématiques. Les URL de lecteur même origine répondent404, alors que trois objets correspondants testés répondent200 depuis `shenron-cdn.aphrody-labs.workers.dev` et le gateway local ; `cdn.dragonballfr.com` répond525. Correctif préparé dans `deploy/docker/compose-gateway.nginx.conf` : fallback Worker sur `/assets/` et fichiers d'images `/wiki/`, sans intercepter les pages wiki ni transmettre les cookies. Tests ciblés11/11 verts, format vert et syntaxe complète validée avec Nginx dans un conteneur jetable. Aucun DB, cache, DNS ou hôte prod modifié. Suite : commit/push, livraison Infra autorisée et relecture navigateur réelle ; reprise de la couverture images après correction du routeur.
 
+
 ### 2026-10-15 — Pipeline Bun, SDK Yolo et livraison qualifiée
 
 SDK public `@aphrody/bun-runtime-sdk@1.4.10` publié et archive vérifiée ; export natif `/yolo` et déclarations canoniques qualifiés côté consommateurs. Canon dispose dune action explicite de repérage des citations, désactivée par défaut, avec quotas Redis, délai borné et abstention native. Source et contrat API poussés (`70a616b9`, `da7f3898`). Les clés Jev restent dans les fichiers privés des hôtes ; cela ne prouve pas leur chargement par les processus actifs.
@@ -610,6 +454,7 @@ SDK public `@aphrody/bun-runtime-sdk@1.4.10` publié et archive vérifiée ; exp
 Pipeline partagé DB/CDN/RAG ajouté avec plans épinglés, checkpoints et vérification des octets ; voir `docs/operations/BUN-SOURCE-PIPELINE.md`. Gates combinées : 78 tests réussis, 369 assertions, dont PostgreSQL réel ; un cas de persistance VectorIndex attend le nouveau runtime. Livraison SQL réelle : 349 documents et 4 312 médias de référence, sans promotion canon ; premier lot CAS vérifié de sept objets. Le RAG se livre par cycles bornés avec relecture de source, sans annoncer le corpus complet avant preuve.
 
 Le crawl des 24 sources demeure partiel. La reprise doit conserver le collecteur existant, les refus robots et les reçus par source ; un code zéro ne prouve pas la complétude. Le runtime natif et les exécutables compilés doivent passer leurs fixtures avant promotion. La fabrique Aphrody est épinglée avec une qualification bloquante ; le runtime installé ne la satisfait pas encore. Aucun basculement de lecteur vers VectorIndex ni activation Canon ne doit être déduit des seuls commits.
+
 
 ## 2026-10-15 — Accord complet de livraison et gates de préparation
 
@@ -627,7 +472,9 @@ Finalflash traité par le lot déjà relu sur scans. Aucune de ces propositions 
 à cette étape. Prochain travail : SHA commun vert, image scellée/activation Infra,
 reset neutre, contrôles navigateur puis écritures éditoriales protégées et RAG.
 
+
 Mise à jour du 2026-10-15 : livraison RAG terminée pour les 349 documents du lot reprojecté. Relecture PostgreSQL indépendante : 349 documents, 349 vecteurs, contenus et identités de provenance vérifiés, avec 349 recherches filtrées réussies. Répartition conservée : 199 communautaires et 150 références ; modèle `Xenova/multilingual-e5-small`, dimension 384. Reçu privé SHA-256 `d21f4ba9609078b3b8e8a7c627f7eba530343c8d7ca5efece12be0d7faed7a42`. Ingestion via Bun.fetch et propriétaire HTTP existant ; embeddings par le service externe existant. Cela ne constitue ni activation du sidecar Bun.VectorIndex, ni publication publique, ni promotion canonique, ni complétude du crawl et des médias.
+
 
 ## 2026-10-15 — Publication npm qualifiée et demandes catalogues/Actions
 
@@ -665,11 +512,13 @@ VPN Japon/Tokyo vérifié par Mullvad depuis le namespace existant sans mutation
 
 2026-10-15 — Campagnewiki108 (tmuxshenron-wiki-110-20261015) terminal0 après8tâchesparallèles :3approved(454déjàpréparé,mediaworks10/16nouveaux),102blockedfauteancrageprimaire,2quarantined,1rejected. Exportprivéproposals-110-reviewed.json ; RAGrelitles2synopsisetpréparewriter9sansapply. SourceAMPShueishaqualifiée seulementLegend2 :70requêtes,1document/3chunksindexés0erreur,17alertredirect ; campaign.completed=falsemêmeCLIexit0. GoogleDriveaucunscanfichiercorrespondantretrouvé. Sourcepool+publisher60302557livrésmaisrevuedeuxP0 :genericPATCHpages/visiblehorswhitelistet93absentchaptersnoncouverts ; notesownersavantactivation. ReaderM3fixsource : preuvepass3privé18états2/10/381×390/1280×paginé/vertical/paginé,rootrelectureJSONet2captures ; badge390plie3lignes→correctifCSSconsommateurencours. M3public3.3.12pasencorequalifiéinstallé. Sourceworkerunitencoreinactive, aucun24/7publicdéclaré. Fabrique12vCPU97%occupés/attenteI/O,25GiBdisponibles ; verrouheavypréservé,guardianlivraisonb90pauseauto-syncjusqu15:40max.
 
+
 ### 2026-10-15 13:58 UTC — wiki et workers manga en parallèle
 
 Vingt et une fiches renseignées par ce root via API canonique avec snapshots complets, sauvegardes privées, CAS, relecture indépendante des sources et révisions vérifiées. Dix-neuf textes sont relus exactement dans le HTML ou l’API publics. Les articles des comédiens9/10 attendent l’image contenant9a33380a. Derniers lots : Chozenshu16/17/18, Daizenshu10/11/15, Carddass13/14 et Forever22. Carddass14 reste limité à sa couverture ; Forever22 ne reprend que les faits de la couverture japonaise, les scans hongkongais sont distingués. Aucune écriture OCR ou traduction de planche. Reçus privés wiki-root-delivery-20261015/delivery.json et dossiers de chaque lot. Inventaire GET frais13:57 :10754 fiches,83 avec champs de prose manquants selon le détecteur, contre108 au départ ; ce compteur ne prouve pas un wiki exhaustif.
 
 Fusion36fb4616 poussée : publication transactionnelle des chapitres absents et aperçu explicitement partiel, tests PostgreSQL18.1 isolé2/55 verts, tests Bun ciblés verts. Nouvelle image36fb en préparation sur fabrique, verrou lourd partagé respecté ; source du pool b12d4774 poussée ensuite. Pool unique réellement actif depuis13:55:40,16 Workers Bun installé1.4.4 dfde053a, namespace Mullvad Japon vérifié ;175 documents490chunks réellement indexés au premier relevé,0 erreur. Recherche Google explicitement indisponible, collecte directe des sources officielles continue et robots respectés. Aucun nouveau tome complet acquis ; SOSH2–18 et déficit110 ne sont pas déclarés résolus. Consumer DBFR et timer handoff actifs ; projection dates suspendue avant activation pour compatibilité de l’imageb90 avec reader_extent. Reprise par propriétaire de projection compatible ou après nouvelle image, sans faux ACK.
+
 
 ## 2026-10-15 — Stockage DBFR et premières mémoires Windows,14:25UTC
 
@@ -927,7 +776,7 @@ et cette fenêtre ; aucune complétude manga/wiki n'en découle.
 
 ### 2026-10-15 — Source officielle Dragon Ball et état de reprise
 
-La page officielle Dragon Ball sur le volume 1 de _Super Dragon Ball Heroes: Ultra God Mission!!!!_ a été vérifiée puis ajoutée comme notice paraphrasée au RAG privé Shenron : réponse HTTP 200, SHA-256 `dcf4e1d0dfe4c60773eb883141d542a2b897fae6f262edd0cff242f40cec4e4b`, 2 chunks retrouvés par une requête native. Elle étaye le contexte du Super Space-Time Tournament et Aeos, mais pas « Toki Toki City » pour la fiche `tournaments/11`; aucune écriture wiki n'a été faite.
+La page officielle Dragon Ball sur le volume 1 de *Super Dragon Ball Heroes: Ultra God Mission!!!!* a été vérifiée puis ajoutée comme notice paraphrasée au RAG privé Shenron : réponse HTTP 200, SHA-256 `dcf4e1d0dfe4c60773eb883141d542a2b897fae6f262edd0cff242f40cec4e4b`, 2 chunks retrouvés par une requête native. Elle étaye le contexte du Super Space-Time Tournament et Aeos, mais pas « Toki Toki City » pour la fiche `tournaments/11`; aucune écriture wiki n'a été faite.
 
 Le crawl Dragon Ball natif est toujours actif dans son répertoire protégé. Son état à la reprise indique 256 requêtes, 101 268 documents projetés et quota global atteint pour ce cycle; le statut n'est pas terminal. Je n'ai ni indexé ni modifié sa sortie. L'API manga publique relevée précédemment reste à 329 volumes dont 110 manquants ou partiels; les pages sources nécessaires aux tomes et les sources primaires requises pour les fiches wiki bloquées ne sont pas apparues. L'index RAG officiel complété ne signifie ni complétude du wiki ni publication publique.
 
@@ -994,7 +843,7 @@ du dépôt ni une qualification de build/test de chaque crate.
 
 La notice publique Shenron `manga/621` demeure sans chapitre lisible. La fiche
 officielle Shueisha correspondant à l'ISBN `978-4-08-881110-9` identifie
-_Super Dragon Ball Heroes: Dark Demon Realm Mission!_ volume 1, YukI Nagayama,
+*Super Dragon Ball Heroes: Dark Demon Realm Mission!* volume 1, YukI Nagayama,
 une parution papier au 2 mai 2017 et 176 pages annoncées. Un lien officiel
 d'aperçu existe, mais cette vérification ne compte ni ne capture ses planches;
 la notice bibliographique paraphrasée est seulement dans le RAG privé DBFR.
@@ -1008,7 +857,7 @@ L'article et ses sources sont toujours nuls pour `tournaments/11`; aucune
 
 Une seconde source primaire Bandai Namco America, l'annonce de mise à jour du
 27 août 2020 (`https://www.bandainamcoent.com/news/dbx2-free-big-update`),
-nomme précisément le « Conton City World Tournament » de _Xenoverse 2_. Elle
+nomme précisément le « Conton City World Tournament » de *Xenoverse 2*. Elle
 établit que c'est un événement récurrent, accessible après l'histoire
 principale, qui peut débloquer Supreme Kai of Time après complétion; elle ne
 donne ni vainqueur canonique ni finaliste. Réponse HTTP 200, corps SHA-256
@@ -1021,10 +870,10 @@ article et n'a pas été modifiée.
 
 La relecture ciblée des notices manga 719–721 a aussi trouvé deux écarts
 bibliographiques dans des volumes toujours dépourvus de pages. Shenron 719
-n'a pas d'ISBN public, alors que Shueisha référence _Dragon Ball Super Broly_
+n'a pas d'ISBN public, alors que Shueisha référence *Dragon Ball Super Broly*
 — roman Mirai Bunko, 228 pages — sous l'ISBN `978-4-08-321475-2`. Pour
 Shenron 721, l'API affiche `978-4-08-321727-1`, mais la fiche officielle
-_Super Hero_ donne `978-4-08-321721-0` et 228 pages. Les deux réponses éditeur
+*Super Hero* donne `978-4-08-321721-0` et 228 pages. Les deux réponses éditeur
 sont HTTP 200; leurs SHA-256 sont consignés dans la note bibliographique
 privée `/home/ubuntu/.aphrody/workspace-shenron/private/web/official-manga-bibliography-20261015/volumes-719-721.md`,
 qui a été indexée au RAG DBFR et retrouvée par requête. Le volume 720 reste
@@ -1044,97 +893,7 @@ Une paraphrase prudente a été indexée au RAG privé DBFR : 1 document, 1 chun
 0 erreur; la requête sur l'identité du tournoi retrouve cette source. Aucun
 article wiki n'a été écrit à partir de cette preuve partielle.
 
+
 ## Pipeline unifiée (2026-10-16)
 
 `bun packages/pipeline/src/cli.ts run` orchestre dataset > canon/rag > decision > wiki/agent-home > plugin (cache par empreinte, historique `var/reports/pipeline/history.sqlite`). Reste : 4 violations `apps/site boundary` (jev.ts, canon-judgment.ts, site-rag.ts) à router par une façade server-class.
-
-## 2026-10-19 — Studio, administration et hero : qualification en cours
-
-Demande active : fusion fonctionnelle Koharu/Shenron Studio sur web, bureau et mobile,
-admin refondu en atelier, lecteur CDN Beerus et frames/GIF réels. Dernière correction
-propriétaire : hero sur toute la largeur, composition répartie et retrait du logo
-Dragon Ball France répété ; seul le logo officiel Beerus reste dans le hero (031e755b).
-
-L'image publique vérifiée reste 1e9193db, image Docker
-sha256:8bcfdfaa985340db1dcfe1f6bfa55f55348a845fda81aa13fa38fe5ec89025d9.
-Chrome réel : lecture 876 avance, seek slider et frame 721 à 30,03 s, GIF réel
-320 x 180, hero 1440/390 et absence de débordement. Le correctif des menus Base UI
-hors plein écran bad52271 attend l'image suivante ; plein écran réel non qualifié.
-
-Admin : cadre commun aafa7c8b, dashboard opérationnel 134a7507 ; 64 liens conservés,
-explorateur, onglets, palette, contexte, responsive. Fixture réelle Chrome : recherche,
-Échap et focus corrects, viewport 390/document 375 à texte 200 %. Capture de référence
-privée var/reports/admin-studio/workspace-desktop-final.png. L'autorisation Discord a
-été explicitement accordée par le propriétaire ; connexion réelle réussie après
-renouvellement d'un état OAuth expiré. /admin/dashboard authentifié s'ouvre sur l'image
-ancienne ; retour profil 281114294152724491?member=1 rencontré en 404, correction déléguée.
-Aucun cookie ou token exporté. Nouvelle UI non déclarée déployée.
-
-Studio : pinceau adaptatif upstream restauré, Canvas unique et panneaux mobiles avec
-retour de focus, outils tactiles 44 px. Import catalogue avec provenance candidate,
-atlas source/PNG contrôlés. CLI release b1122fb2 exécutée sur une vraie planche du
-chapitre 516 : atlas 784 x 520 et GIF cinq images 256 x 256/500 ms, empreintes relues,
-rejet --only 0 ; compilation et preuve EXIT_CODE=0. SVG raster et parallaxe texturée
-restent distincts de trait vectorisé et maillage 3D reconstruit.
-
-Moteur hébergé 71e79fc9 : SDK dans l'image, home et credentials isolés par compte.
-Deux tests Rust de namespace passent ; build SDK sur la fabrique en cours, smoke
-get_preferences/subscribe/import/hash encore attendu. Subscribe n'installe plus les
-runtimes ML implicitement (76b8fe03) ; les traitements explicites gardent leur moteur.
-
-Bun check global : 6462 fichiers/20 projets sans erreur. OpenAPI, tokens et 12 contrats
-pipeline sans dérive. Réparation média aa8851fc : paquet Mediabunny admissible 1.61.5,
-faux en-têtes image remplacés par décodage réel Bun.Video ; tests décodage JPEG/WebP.
-Suite workspace encore en cours ; lint global sans erreur mais 19 warnings en cours
-de correction coordonnée. Prochaine étape : smoke natif, gates finaux, push normal,
-image scellée et contrôles Chrome authentifiés. Compiler release qualifié fabrique :
-~/build/out/bun/release-1.4.6/bun, révision fd9d7a224b83d1763721e409ca98e06a16df1f43.
-
-## 2026-10-20 — Reprise des lots ouverts et vidéo native
-
-Demande courante : terminer les lots encore ouverts par sous-agents, capacités
-installées et livraison Infra. La consigne vidéo privilégie Bun Video, FilmCraft
-et Shenron Video. L'objectif reste actif ; les limites ci-dessous ne sont pas
-des tâches déclarées terminées.
-
-- Portes JS : types, lint, format, OpenAPI, tokens, contrats pipeline et graphe
-  strict des paquets verts. Suite workspace : 4 547 réussites, 199 ignorés,
-  zéro échec, code 0. Après migration CDN native, scripts : 467 réussites,
-  33 ignorés, zéro échec. Les journaux privés sont sous
-  `var/reports/goal-20261020/`.
-- Défauts corrigés et poussés : garde de gel en production quand son fichier
-  manque (`557dc96b`), clavier des onglets de transcription, classes de runtime
-  et confidentialité du CLI interne (`361d91a0`), vérification du bail de fabrique
-  et SHA de build épinglé (`4c2ef961`). Les fixtures de gel et la déclaration
-  conditionnelle du test live DBXV2 ont été corrigées séparément.
-- Vidéo : extraction de frames et preuve navigateur migrées sans FFmpeg direct
-  (`1d299515`, `9722d1ea`), optimiseur CDN natif (`2e86783c`). Le vrai master
-  Beerus est décodable par FilmCraft ; son remux refuse une configuration de
-  piste, donc l'optimiseur conserve la source exacte. Le wrapper d'encodage
-  Shenron Video et le rendu avec archive PNG restent en qualification native.
-- Production observée au début du contrôle : `docker-da63ff2818f5a3afb79fc807516c40599a1c484f`,
-  cinq conteneurs sains. Chrome authentifié : lecteur 876 réellement en lecture
-  1920 × 1080, GIF généré 320 × 180 ; manga 82 en pagination et vertical ;
-  databook 23 dans les deux modes à 390 px, sans débordement. Studio sert encore
-  sa vitrine. Le plein écran n'a pas été qualifié.
-- La tentative d'image a révélé `libfontconfig.so.1` manquante, corrigée dans
-  Docker (`c23921c7`), puis un refus Keyutils dans le SDK. Le stockage hébergé
-  privé par compte est en qualification ; aucune activation de cette tentative
-  ni porte Rust complète n'est revendiquée ici.
-- Compute/E5 restaurés via Infra : 257 386 chunks et vecteurs. Mesure retrieval
-  de 172 cas : Recall@5 77,91 %, dont une réponse 503 ; seuil de 80 % non atteint.
-  Base Qwen officielle réinstallée, adaptateur Shenron exact non retrouvé à ce
-  contrôle : chat et installeur complet restent non qualifiés. NSIS est installé,
-  mais la clé privée de signature n'est pas retrouvée dans les stores inspectés.
-- Catalogue : 110 volumes manquants ou partiels, SOSH 2–18 sans chapitre réel.
-  Workers actifs, file de publication vide. Les vieux snapshots wiki divergents
-  n'ont pas été réappliqués. Les notices ne sont pas des volumes livrés.
-- CI : runner réinstallé et enregistré, arrêté pendant les builds. Correctif
-  porté chez le propriétaire actuel `bun-distribution/os` (`7d89b79e22`) ;
-  ancienne PR Aphrody 18 remplacée puis fermée. CodeQL reste bloqué au compte
-  GitHub par les paiements ou la limite de dépenses, avant exécution du job.
-
-Suite : terminer les portes natives et l'image scellée, activer par Infra puis
-recontrôler Studio/admin et les lecteurs authentifiés sur le SHA réellement servi.
-Conserver les tâches de données, de modèle, de signature et de rendu encore
-ouvertes jusqu'à leurs propres preuves.

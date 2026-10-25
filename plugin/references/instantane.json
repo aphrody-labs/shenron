@@ -1,6 +1,6 @@
 {
   "_genere": "Généré par scripts/plugin/build-references.ts — ne pas éditer. Registre des instantanés hors ligne du plugin.",
-  "bun": "1.4.6",
+  "bun": "1.4.4",
   "sorties": {
     "plugin/skills/dragon-ball-canon/references/doctrine.md": {
       "revision": "aa6240b0",
@@ -96,15 +96,6 @@
       },
       "sha256": "70c654f6c570c920516ce53fae3f8d44b9103cd4789746fc6c8406ad387a77b7"
     },
-    "plugin/skills/toriyama-svg/references/mesures/gohan-ultime-analyse-visuelle.md": {
-      "revision": "non commitée",
-      "date": "inconnue",
-      "sources": {
-        "docs/reference/gohan-ultime-analyse-visuelle.md": "59f2d58cff13943744f7b1d1f45bb102c26cb76160c1ed453456874c5633ff13",
-        "scripts/plugin/build-references.ts": "8a89a8f0ea4f00598c877eaad34d4bab49509db75987e173231572ebbbdfe1c3"
-      },
-      "sha256": "6e47924e33dce431342e2a0a48d77bbfed2fc059b8b7a9824efde25b6ef92554"
-    },
     "plugin/skills/toriyama-svg/references/mesures/kinto-un-analyse-visuelle.md": {
       "revision": "f4579c5",
       "date": "2026-10-05",
@@ -133,14 +124,13 @@
       "sha256": "808401eef60340c493e23af9380bd806e3f46528f5b0b492ec33a98ffb6969df"
     },
     "plugin/skills/toriyama-svg/scripts/toriyama.js": {
-      "revision": "4981b124",
-      "date": "2026-10-23",
+      "revision": "086e9d4c+modifications",
+      "date": "2026-10-17",
       "sources": {
         "packages/ui/src/toriyama-svg/couverture.ts": "36bb1c785adc37ba09c7d516d8ec8845ffb97de4f1f940cb3db530a6b78978c6",
         "packages/ui/src/toriyama-svg/emblems.ts": "c9ff5f5cc92b213f57b0320ad4e37605f4d1cfef6efc770e6f2aa2e5f6f0025f",
         "packages/ui/src/toriyama-svg/geometry.ts": "3a5a477a9be910a58650ad7f2ce947d5f49db0fd55a98a7dc77774ff5c1df92b",
-        "packages/ui/src/toriyama-svg/gohan-ultime.ts": "6b280c625c5bf2fba2e8c58a8f8a1cf53cbc1d80e9988d84096af26d400bf13a",
-        "packages/ui/src/toriyama-svg/index.ts": "979fe5b62cfc50dcc08d6e62475c763220211cac2b6af5a7792813686296acd8",
+        "packages/ui/src/toriyama-svg/index.ts": "2a027251b0ed70e0150d887e8fd78f345713a070841bd75278192b7466a5dcad",
         "packages/ui/src/toriyama-svg/kinto-un.ts": "0087873f1f8c867321038c1edb6f57496c883454dba7ba179104ae2bb9a61305",
         "packages/ui/src/toriyama-svg/model3d.ts": "90ae7b1f6d121f3302a582dc7e3ebe60a3638f5db5f482613d9ac179909fa179",
         "packages/ui/src/toriyama-svg/palette.ts": "7a29876231c964e37b77a55c6ebac456fe3e8153b740c27dcb92ca1dbd8ad0cb",
@@ -149,7 +139,7 @@
         "packages/ui/src/toriyama-svg/sphere.ts": "7feed0aba0942253273204814be68bcfad44cbd1f64897f1d45eadf18959b8df",
         "scripts/plugin/src/toriyama.ts": "e2870b41b11957f2b8713c1c9aa93bdc206f3e85cc4d85dc42a39d0967849360"
       },
-      "sha256": "db830d9a508d2c6d20e0287816986f736ae40eaad2189a1fbd6a57b4a7025f3f",
+      "sha256": "f5a09fef1b9868454f7a7ab6e301038cc51943c53b77a5c32db2d4b5231c7483",
       "paquet": true
     }
   }

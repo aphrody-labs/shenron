@@ -45,7 +45,7 @@ function SelectTrigger({
             ]
           : [
               "inline-flex w-full items-center justify-between rounded-xl border-2 border-black bg-[#121218] font-semibold uppercase tracking-wider text-gray-100 shadow-[2.5px_2.5px_0px_#000] outline-none transition-all",
-              "hover:border-dbz-orange/70 hover:shadow-[3.5px_3.5px_0px_#000] active:translate-x-px active:translate-y-px active:shadow-none focus-visible:border-dbz-orange focus-visible:ring-2 focus-visible:ring-dbz-orange",
+              "hover:border-dbz-orange/70 hover:shadow-[3.5px_3.5px_0px_#000] active:translate-x-px active:translate-y-px active:shadow-none focus-visible:border-dbz-orange focus-visible:ring-2 focus-visible:ring-dbz-orange/30",
               sm ? "h-8 gap-1.5 px-2.5 py-1 text-[11px]" : "h-10 px-3.5 py-2 text-xs",
             ],
         className,
@@ -118,7 +118,6 @@ function SelectPopup({
   sideOffset = 6,
   alignOffset,
   alignItemWithTrigger,
-  portalContainer,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Popup> &
   Pick<
@@ -126,14 +125,12 @@ function SelectPopup({
     "side" | "align" | "sideOffset" | "alignOffset" | "alignItemWithTrigger"
   > & {
     variant?: SurfaceVariant;
-    /** Keep public media menus inside the browser's fullscreen element. */
-    portalContainer?: HTMLElement | null;
   }) {
   const surface = useSurface();
   const resolved = variant ?? surface.variant ?? "toriyama";
   const planche = resolved === "planche";
   return (
-    <SelectPortal container={portalContainer ?? undefined}>
+    <SelectPortal>
       <SelectPrimitive.Positioner
         data-slot="select-positioner"
         side={side}

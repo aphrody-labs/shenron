@@ -6,7 +6,7 @@ import type {
   UnifiedStaffMember,
 } from "@/components/wiki/UnifiedStaffExplorer";
 
-export const ANECDOTES_MAP: Record<string, string> = {
+const ANECDOTES_MAP: Record<string, string> = {
   // --- Créateurs & Éditeurs ---
   "kazuhiko-torishima":
     "A rejeté plus de 500 pages de Toriyama avant Dr. Slump. Il a poussé l'auteur vers les arts martiaux et a inspiré directement les visages du Dr. Mashirito et du Roi Démon Piccolo.",
@@ -16,16 +16,8 @@ export const ANECDOTES_MAP: Record<string, string> = {
     "A accompagné Toriyama jusqu'au 519e chapitre. Connu pour sa complicité totale avec l'auteur, lui laissant carte blanche pour l'humour et les fusions délirantes de l'arc Buu.",
   "akio-iyoku":
     "Ancien rédacteur en chef du V-Jump, créateur de la Dragon Ball Room chez Shueisha en 2016, puis fondateur de Capsule Corporation Tokyo pour pérenniser l'héritage de Toriyama.",
-  "victory-uchida":
-    "Visage public culte du V-Jump et animateur vedette des Weekly Dragon Ball News. Il a collaboré étroitement avec Toriyama et Toyotarō sur les arcs Granolah et Super Hero du manga.",
 
   // --- Animation & Réalisation ---
-  "naotoshi-shida":
-    "Surnommé le « Climax Animator » de Toei Animation. Connu pour ses séquences d'anthologie (Trunks découpant Mecha Freezer, Vegeto Blue vs Zamasu, le climax de DBS: Broly) avec ses déformations grand-angle et ses impacts percutants.",
-  "yuya-takahashi":
-    "Adulé par les fans pour avoir réintroduit les traits musculeux, ombrés et anguleux de l'apogée de DBZ dans Dragon Ball Super (épisodes 114 et 131) et Dragon Ball Daima en tant que directeur d'animation en chef.",
-  "masayuki-uchiyama":
-    "Fondateur de Studio Last House. Il détient le record absolu d'épisodes supervisés dans toute l'histoire de la franchise Dragon Ball (des dizaines d'épisodes de DB, DBZ et DBGT).",
   "daisuke-nishio":
     "Réalisateur légendaire des 199 premiers épisodes de DBZ. Il chronométrait lui-même chaque échange de coups sur ses storyboards pour garantir un rythme d'impact inégalé.",
   "shigeyasu-yamauchi":
@@ -779,7 +771,7 @@ export function buildUnifiedStaffCatalog(
       ].join("\n\n"),
       anecdote: ANECDOTES_MAP[va.slug],
       image: PORTRAITS_MAP[va.slug] || (va.image ? assetUrl(va.image) : null),
-      wikiLink: `/wiki/contributors/${va.slug}`,
+      wikiLink: `/wiki/staff#${va.slug}`,
       roles: parsedRoles,
     });
   }

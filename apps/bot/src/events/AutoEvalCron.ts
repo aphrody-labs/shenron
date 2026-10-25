@@ -4,12 +4,6 @@ import { CronRegistry } from "~/api/cron-registry";
 import { TrainingService } from "~/services/TrainingService";
 import { logger } from "~/lib/logger";
 import { sendAdminLabMessage } from "~/lib/admin-lab";
-import { COLORS, shenronEmbed } from "~/lib/embeds";
-import { embeddingsLabel } from "~/commands/admin/Train";
-
-/** Interval of the periodic evaluation and sample size of each run. */
-const EVAL_INTERVAL_MS = 6 * 3_600_000;
-const EVAL_SAMPLE = 25;
 
 /**
  * AutoEvalCron — Évaluation automatisée et surveillance de la précision du RAG.
@@ -29,19 +23,17 @@ export class AutoEvalCronEvent {
 
   @Once({ event: "clientReady" })
   async register() {
+    // Intervalle par défaut : toutes les 6 heures (6 * 3 600 000 ms)
+    const SIX_HOURS_MS = 6 * 3_600_000;
+
     this.cron.register({
       name: "rag-auto-eval",
       description: "Évaluation périodique du banc de test doré RAG et détection de régressions",
-      intervalMs: EVAL_INTERVAL_MS,
+      intervalMs: SIX_HOURS_MS,
       fn: async () => {
         logger.info("[AutoEvalCron] Lancement du banc d'évaluation RAG périodique...");
         try {
-          const metrics = await this.training.evaluateRag(EVAL_SAMPLE);
-          if (metrics.cases === 0) {
-            // Zero cases is not a success: the gold set was not found or is empty.
-            logger.warn("[AutoEvalCron] Aucun cas évalué : jeu doré vide ou introuvable");
-            return;
-          }
+          const metrics = await this.training.evaluateRag(25);
           logger.info(
             {
               cases: metrics.cases,
@@ -59,21 +51,21 @@ export class AutoEvalCronEvent {
           if (!metrics.sidecarActive || metrics.misses.length > 0) {
             await sendAdminLabMessage({
               embeds: [
-                shenronEmbed({
-                  header: "LAB IA ADMIN",
-                  color: metrics.sidecarActive ? COLORS.success : COLORS.warning,
+                {
+                  color: metrics.sidecarActive ? 0x22c55e : 0xeab308,
                   title: "📊 RAPPORT AUTOMATIQUE — ÉVALUATION RAG",
                   description: [
-                    `Cycle d'évaluation périodique automatique (${metrics.cases} cas testés).`,
+                    `Cycle d'évaluation périodique automatique (25 cas testés).`,
                     "",
                     `• **Recall@1 :** \`${((metrics.recall[1] ?? 0) * 100).toFixed(1)}%\``,
                     `• **Recall@5 :** \`${((metrics.recall[5] ?? 0) * 100).toFixed(1)}%\``,
                     `• **MRR :** \`${(metrics.mrr * 100).toFixed(1)}%\``,
                     `• **nDCG@10 :** \`${(metrics.ndcg * 100).toFixed(1)}%\``,
-                    `• **Embeddings :** ${embeddingsLabel(metrics.sidecarActive, process.env.RAG_BACKEND === "aphrody")}`,
+                    `• **Sidecar ONNX :** ${metrics.sidecarActive ? "🟢 En ligne (aphrody-shenron-embed)" : "🟠 Hors-ligne (repli BM25 FTS5)"}`,
                     `• **Misses :** \`${metrics.misses.length} / ${metrics.cases}\``,
                   ].join("\n"),
-                }).toJSON(),
+                  timestamp: new Date().toISOString(),
+                },
               ],
             }).catch((err) => logger.warn({ err }, "[AutoEvalCron] Erreur notification admin"));
           }

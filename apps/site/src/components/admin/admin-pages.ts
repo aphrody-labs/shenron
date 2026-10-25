@@ -103,29 +103,6 @@ export const ADMIN_PAGES = {
 
 export type AdminPageId = keyof typeof ADMIN_PAGES;
 
-/** Static routes outrank parameter routes; descendants inherit their closest workspace. */
-export function adminPageForPath(pathname: string): AdminPageId | null {
-  const path = pathname.split("?")[0];
-  const entries = Object.entries(ADMIN_PAGES) as [
-    AdminPageId,
-    { route: string; family: AdminFamily },
-  ][];
-  entries.sort(
-    (a, b) =>
-      b[1].route.split("/").length - a[1].route.split("/").length ||
-      Number(a[1].route.includes("[")) - Number(b[1].route.includes("[")),
-  );
-  return (
-    entries.find(([, value]) => {
-      const route = value.route
-        .split("/")
-        .map((segment) => (segment.startsWith("[") ? "[^/]+" : segment))
-        .join("/");
-      return new RegExp(`^${route}(?:/|$)`).test(path);
-    })?.[0] ?? null
-  );
-}
-
 /**
  * Routes qui ne rendent pas d'en-tête propre : la racine et les anciens écrans
  * IA redirigent (`/admin/assistance-ia` répond un 308 depuis le proxy), le cockpit IA

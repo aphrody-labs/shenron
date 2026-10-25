@@ -32,11 +32,11 @@ describe("isDbxv2Enabled", () => {
     });
   });
 
-  test("private credentials stay out of public renders and builds, but work in production", () => {
+  test("never in a public render, a public build or production", () => {
     expect(isDbxv2Enabled({ ...OK, SHENRON_PROFILE: "public" })).toBe(false);
     expect(isDbxv2Enabled({ ...OK, SHENRON_PUBLIC_RENDER: "1" })).toBe(false);
     expect(isDbxv2Enabled({ ...OK, SHENRON_PUBLIC_BUILD: "true" })).toBe(false);
-    expect(isDbxv2Enabled({ ...OK, NODE_ENV: "production" })).toBe(true);
+    expect(isDbxv2Enabled({ ...OK, NODE_ENV: "production" })).toBe(false);
     expect(isDbxv2Enabled({ ...OK, NODE_ENV: "development" })).toBe(true);
   });
 

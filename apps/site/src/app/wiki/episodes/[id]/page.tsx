@@ -1,18 +1,13 @@
-import { readPlaybackCapabilities } from "@/lib/playback-capabilities";
 /* oxlint-disable react/iframe-missing-sandbox -- legacy UI kept as-is (behavior-preserving lint pass) */
 import { WatchLayout, WatchStage, WatchColumns } from "@/components/episodes/WatchLayout";
 import { T } from "@/components/T";
-import { ArrowLeft, ArrowRight, Film } from "lucide-react";
-import { HOME_HERO_FRAMES } from "@/lib/home-hero-frames";
-import { EpisodeAirDate } from "@/components/episodes/EpisodeAirDate";
-import detailStyles from "./episode-detail.module.css";
 import { episodeNumberText } from "@/lib/episode-number";
 import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
 import { dbUniverse } from "@/lib/db-universe";
 import type { EpisodeNavItem } from "@/lib/db-universe";
-import { assetUrl } from "@/lib/assets";
+import { assetUrl, hlsMasterUrl } from "@/lib/assets";
 import { ogMeta } from "@/lib/og";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -21,18 +16,16 @@ import type { Metadata } from "next";
 // autorisé via next/dynamic dans un Server Component (Next 16) → le no-SSR
 // (hls.js touche `window`) est géré à l'intérieur du composant lui-même.
 import { VideoPlayer } from "@/components/episodes/VideoPlayer";
-import { EpisodeTimeline } from "@/components/episodes/EpisodeTimeline";
 import { EpisodeAdminEditor } from "./EpisodeAdminEditor";
 import { WikiEditBar } from "@/components/wiki/WikiEditBar";
 import { VideoLecteurs } from "@/components/episodes/VideoLecteurs";
 import { VideoSourceSummary } from "@/components/episodes/VideoSourceSummary";
 import { VideoUnavailableCard } from "@/components/episodes/VideoUnavailableCard";
 import { OffreLegale } from "@/components/episodes/OffreLegale";
+import { EpisodeDownload } from "@/components/episodes/EpisodeDownload";
 import { AnimatedMedia } from "@/components/media/AnimatedMedia";
 import { BackgroundImage } from "@/components/media/BackgroundImage";
 import { EpisodeScenes } from "./EpisodeScenes";
-import { isShenronEpisodeVideoURL } from "@/lib/episode-video-source";
-import { episodePlayback } from "@/lib/episode-playback";
 import { EntityRating, EntityRatingSummary } from "@/components/ratings/EntityRating";
 import { CommunityRankBadge } from "@/components/ratings/CommunityRankBadge";
 import { JsonLd } from "@/components/JsonLd";
@@ -45,9 +38,10 @@ import type { TVEpisode, WithContext } from "schema-dts";
 import { excerpt } from "../_text";
 import { idDeFiche } from "../../_id-fiche";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
-// Playback capability is projected at request time; catalogue data keeps its own cache.
+// Pré-rend tous les épisodes au build → cache CDN (sinon Next 16 rend la route
+// dynamiquement). L'éditeur admin est un îlot client (useMe) → aucune session SSR.
 // Utilise `episodeIds()` pour ne transférer que les entiers d'identifiants sans charger
 // les gros payloads JSONB (synopsis, players, frames) en mémoire de build.
 export async function generateStaticParams() {
@@ -108,35 +102,36 @@ function getYoutubeId(url: string | null): string | null {
 
 /** Carte de navigation épisode précédent / suivant. */
 function NavCard({ ep, dir }: { ep: EpisodeNavItem; dir: "prev" | "next" }) {
-  const image =
-    HOME_HERO_FRAMES.find((frame) => frame.episodeId === ep.id)?.src ??
-    (ep.image ? assetUrl(ep.image) : null);
   return (
-    <Link href={`/wiki/episodes/${ep.id}`} className={detailStyles.navCard}>
-      <div className={detailStyles.navImage}>
-        {image ? (
-          <img src={image} alt="" aria-hidden loading="lazy" />
+    <Link
+      href={`/wiki/episodes/${ep.id}`}
+      className={`group flex items-center gap-4 dbz-panel p-3 flex-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange focus-visible:ring-offset-2 focus-visible:ring-offset-black ${dir === "next" ? "flex-row-reverse text-right" : ""}`}
+    >
+      <div className="relative w-28 aspect-video shrink-0 overflow-hidden rounded-md bg-dbz-bg">
+        {ep.image ? (
+          <img
+            src={assetUrl(ep.image)}
+            alt=""
+            aria-hidden
+            className="h-full w-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+            loading="lazy"
+          />
         ) : (
-          <div className={detailStyles.navPlaceholder}>
-            {ep.number_in_series === null ? (
-              <Film size={24} aria-hidden="true" />
-            ) : (
-              ep.number_in_series
-            )}
+          <div className="grid h-full w-full place-items-center text-zinc-700 font-saiyan">
+            {String(ep.number_in_series).padStart(3, "0")}
           </div>
         )}
       </div>
-      <div className={detailStyles.navText}>
-        <p className={detailStyles.navDirection}>
-          {dir === "prev" ? (
-            <ArrowLeft size={15} aria-hidden="true" />
-          ) : (
-            <ArrowRight size={15} aria-hidden="true" />
-          )}
-          <T k={dir === "prev" ? "mediaPlayback.previousEpisode" : "mediaPlayback.nextEpisode"} />
-          {ep.number_in_series}
+      <div className="min-w-0">
+        <p className="font-display font-bold text-[10px] tracking-[0.3em] uppercase text-dbz-orange/80">
+          {dir === "prev" ? "← Précédent" : "Suivant →"}
         </p>
-        <p className={detailStyles.navTitle}>{ep.title}</p>
+        <p className="scouter-text text-sm text-white/50">
+          #{String(ep.number_in_series).padStart(3, "0")}
+        </p>
+        <p className="font-display font-semibold text-[13px] text-white leading-snug line-clamp-2 group-hover:text-dbz-orange transition-colors">
+          {ep.title}
+        </p>
       </div>
     </Link>
   );
@@ -166,77 +161,66 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
     ep.number_in_series === null
       ? `${seriesLabel} · ${ep.title}`
       : `${seriesLabel} · épisode ${ep.number_in_series}`;
-  const cdnOnly = ep.id === 875 || ep.id === 876;
-  const capabilities = await readPlaybackCapabilities();
-  const playback = episodePlayback(ep, capabilities);
-  const cdnSource = [
-    ep.video_url,
-    ep.stream_url,
-    ...(ep.players ?? []).map((entry) => entry.embedUrl),
-  ].find((source): source is string => {
-    if (!source || !URL.canParse(source)) return false;
-    const url = new URL(source);
-    return (
-      isShenronEpisodeVideoURL(url) &&
-      (url.pathname.includes(`/episodes/${ep.id}/`) ||
-        (ep.id === 875 && url.pathname.includes("/episodes/beerus-01/")))
-    );
-  });
 
   // Priorité aux lecteurs voir-anime (VF/VOSTFR, sources réelles maintenues à
   // jour) : ils priment sur `video_url`/`stream_url` qui pouvaient contenir des
   // flux de test (mux.dev) ou des tokens HLS périmés (IP-bound, ~12 h).
-  const player = cdnOnly ? (
-    cdnSource ? (
+  const player =
+    ep.players && ep.players.length > 0 ? (
+      <VideoLecteurs
+        players={ep.players}
+        entityType="episode"
+        entityId={ep.id}
+        // VO sous-titrée : variante VOSTFR (audio japonais) du proxy HLS, avec les
+        // pistes de la fiche — les iframes tierces ne peuvent pas les afficher.
+        vo={
+          ep.stream_url && ep.subtitles?.length
+            ? {
+                src: hlsMasterUrl(ep.id, "vostfr"),
+                title: episodeTitle,
+                poster: ep.image ? assetUrl(ep.image) : undefined,
+                subtitles: ep.subtitles,
+              }
+            : undefined
+        }
+      />
+    ) : ep.video_url ? (
       <VideoPlayer
-        src={cdnSource}
+        src={ep.video_url}
         title={episodeTitle}
-        episodeId={ep.id}
         poster={ep.image ? assetUrl(ep.image) : undefined}
         subtitles={ep.subtitles ?? undefined}
       />
-    ) : null
-  ) : playback.players.length > 0 ? (
-    <VideoLecteurs
-      players={playback.players}
-      entityType="episode"
-      entityId={ep.id}
-      title={episodeTitle}
-      poster={ep.image ? assetUrl(ep.image) : undefined}
-      subtitles={ep.subtitles ?? undefined}
-      // VO sous-titrée : variante VOSTFR (audio japonais) du proxy HLS, avec les
-      // pistes de la fiche — les iframes tierces ne peuvent pas les afficher.
-      vo={
-        playback.voHlsMasterUrl && ep.subtitles?.length
-          ? {
-              src: playback.voHlsMasterUrl,
-              title: episodeTitle,
-              poster: ep.image ? assetUrl(ep.image) : undefined,
-              subtitles: ep.subtitles,
-            }
-          : undefined
-      }
-    />
-  ) : ep.video_url ? (
-    <VideoPlayer
-      src={ep.video_url}
-      title={episodeTitle}
-      poster={ep.image ? assetUrl(ep.image) : undefined}
-      subtitles={ep.subtitles ?? undefined}
-    />
-  ) : playback.nativeSource ? (
-    <VideoPlayer
-      src={playback.nativeSource.src}
-      title={episodeTitle}
-      poster={ep.image ? assetUrl(ep.image) : undefined}
-      subtitles={ep.subtitles ?? undefined}
-    />
-  ) : null;
+    ) : ep.stream_url ? (
+      <VideoPlayer
+        src={hlsMasterUrl(ep.id)}
+        title={episodeTitle}
+        poster={ep.image ? assetUrl(ep.image) : undefined}
+        subtitles={ep.subtitles ?? undefined}
+      />
+    ) : ep.image ? (
+      <div className="dbz-panel p-2 aspect-video bg-dbz-bg overflow-hidden">
+        <img
+          src={assetUrl(ep.image)}
+          alt={ep.title}
+          className="w-full h-full object-cover rounded-lg opacity-90"
+        />
+      </div>
+    ) : null;
+
+  // Téléchargement réellement résoluble ? Le bot résout à la volée depuis les
+  // sources voir-anime (présence de `players`) ou depuis un MP4/HLS stocké
+  // (`video_url`/`stream_url`). Un fallback image seul n'est PAS téléchargeable →
+  // on masque le bouton pour ne jamais présenter un lien qui renverrait un 404.
+  const canDownload =
+    (ep.players != null && ep.players.length > 0) ||
+    Boolean(ep.video_url) ||
+    Boolean(ep.stream_url);
 
   // === Scènes d'épisode (additif, dégradation gracieuse) ===
   // On ne garde que les frames réellement écrites (imagePath non null : un
   // dry-run du pipeline laisse `imagePath === null`).
-  const frames = cdnOnly ? [] : (ep.frames ?? []).filter((f) => f.imagePath != null);
+  const frames = (ep.frames ?? []).filter((f) => f.imagePath != null);
   const _hasFrames = frames.length > 0;
   // Première frame (poster du preview) + meilleure frame marquante (hero fallback).
   const firstFrame = frames[0] ?? null;
@@ -245,7 +229,7 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
   // Bloc « scène » mis en avant : MP4 preview animé > frame marquante en
   // ken-burns. N'apparaît que si on a un montage ou des frames — sinon null,
   // le comportement actuel de la page reste strictement inchangé.
-  const sceneHero = cdnOnly ? null : ep.scene_preview ? (
+  const sceneHero = ep.scene_preview ? (
     <AnimatedMedia
       src={assetUrl(ep.scene_preview)}
       poster={firstFrame?.imagePath ? assetUrl(firstFrame.imagePath) : undefined}
@@ -305,103 +289,113 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
         />
         <WatchStage>
           {/* === Player === */}
-          {player && <div className="relative group/player">{player}</div>}
-          {!player && (
-            <VideoUnavailableCard
-              title={ep.title}
-              kind="episode"
-              poster={ep.image ? assetUrl(ep.image) : undefined}
-            />
+          {player && (
+            <div className="relative group/player">
+              {player}
+              {/* Téléchargement affiché uniquement quand une source est résoluble
+						    (résolution HLS on-demand côté bot), réservé aux membres connectés
+						    Discord. Masqué sur un fallback image seul → jamais de lien mort. */}
+              {canDownload && (
+                <div className="absolute top-3 right-3 z-20">
+                  <EpisodeDownload
+                    href={`/api/episodes/${ep.id}/download`}
+                    signinCallback={`/wiki/episodes/${ep.id}`}
+                    title={ep.title}
+                  />
+                </div>
+              )}
+            </div>
           )}
+          {!player && <VideoUnavailableCard title={ep.title} kind="episode" />}
         </WatchStage>
         <WikiEditBar table="db_episodes" id={ep.id} indexHref="/wiki/episodes" label={ep.title} />
+        {/* Title and metadata stay outside the viewing stage. */}
+        <header className="mb-6">
+          <div className="flex items-center gap-4 mb-4">
+            <span className="scouter-text text-2xl text-dbz-orange drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
+              {epNum === null ? <T k="mediaPlayback.numberUnverified" /> : `#${epNum}`}
+            </span>
+            <div className="h-px w-12 bg-dbz-orange/40" />
+            <p className="font-display font-semibold text-[12px] tracking-[0.3em] uppercase text-white/60">
+              {seriesLabel}
+            </p>
+          </div>
+
+          <h1 className="font-display font-bold text-4xl lg:text-6xl text-white leading-[1.02] tracking-tight mb-4 max-w-3xl drop-shadow-[0_4px_28px_rgba(0,0,0,0.65)]">
+            {ep.title}
+          </h1>
+
+          {ep.title_ja && (
+            <p className="font-jp text-xl lg:text-2xl text-dbz-orange/85 mb-4">{ep.title_ja}</p>
+          )}
+
+          <div className="flex flex-wrap items-center gap-4">
+            {ep.air_date && (
+              <p className="text-[13px] font-display tracking-widest uppercase text-white/55">
+                Première diffusion —{" "}
+                {new Date(ep.air_date * 1000).toLocaleDateString("fr-FR", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </p>
+            )}
+            <div className="flex flex-wrap items-center gap-2">
+              <EntityRatingSummary targetType="episode" targetId={ep.id} />
+              <CommunityRankBadge kind="episode" targetId={ep.id} />
+            </div>
+          </div>
+        </header>
+
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          <FavoriteButton
+            kind="episode"
+            id={ep.id}
+            title={ep.title}
+            href={`/wiki/episodes/${ep.id}`}
+            image={ep.image}
+            caption={episodeCaption}
+          />
+          <ShareButton
+            title={`${ep.title} — ${seriesLabel}`}
+            text={episodeCaption}
+            path={`/wiki/episodes/${ep.id}`}
+          />
+        </div>
+
+        <EpisodeAdminEditor episodeId={ep.id} videoUrl={ep.video_url} subtitles={ep.subtitles} />
+
         <WatchColumns
           aside={
-            <>
-              {nav && (nav.prev || nav.next) && (
-                <nav className="grid gap-3">
-                  {nav.prev && <NavCard ep={nav.prev} dir="prev" />}
-                  {nav.next && <NavCard ep={nav.next} dir="next" />}
-                </nav>
-              )}
-              {!cdnOnly &&
-                (ep.players?.some((source) => source.embedUrl.trim()) ||
-                ep.subtitles?.length ||
-                ep.availability?.length ||
-                sceneHero ? (
-                  <>
-                    <VideoSourceSummary
-                      players={ep.players ?? []}
-                      subtitles={ep.subtitles?.length ?? 0}
-                      frames={frames.length}
-                    />
+            ep.players?.some((source) => source.embedUrl.trim()) ||
+            ep.subtitles?.length ||
+            ep.availability?.length ||
+            sceneHero ? (
+              <>
+                <VideoSourceSummary
+                  players={ep.players ?? []}
+                  subtitles={ep.subtitles?.length ?? 0}
+                  frames={frames.length}
+                />
 
-                    <OffreLegale offres={ep.availability} />
+                <OffreLegale offres={ep.availability} />
 
-                    {/* === Aperçu animé de scène (montage MP4 / frame marquante) ===
+                {/* === Aperçu animé de scène (montage MP4 / frame marquante) ===
 				    Affiché en complément du player s'il existe un montage ou des
 				    frames. Si aucun player n'existe par ailleurs, ce bloc tient
 				    lieu de visuel principal. */}
-                    {sceneHero && <div className="rounded-xl overflow-hidden">{sceneHero}</div>}
-                  </>
-                ) : null)}
-            </>
+                {sceneHero && <div className="rounded-xl overflow-hidden">{sceneHero}</div>}
+              </>
+            ) : null
           }
         >
-          {/* Title and metadata stay outside the viewing stage. */}
-          <header className={detailStyles.heading}>
-            <div className={detailStyles.kicker}>
-              <span className={detailStyles.number}>
-                {epNum === null ? <T k="mediaPlayback.numberUnverified" /> : `#${epNum}`}
-              </span>
-              <p>{seriesLabel}</p>
-            </div>
-
-            <h1 className={detailStyles.title}>{ep.title}</h1>
-
-            {ep.title_ja && <p className={detailStyles.japanese}>{ep.title_ja}</p>}
-
-            <div className={detailStyles.metadata}>
-              {ep.air_date && <EpisodeAirDate seconds={ep.air_date} />}
-              <div className="flex flex-wrap items-center gap-2">
-                <EntityRatingSummary targetType="episode" targetId={ep.id} />
-                <CommunityRankBadge kind="episode" targetId={ep.id} />
-              </div>
-            </div>
-          </header>
-
-          <div className={detailStyles.actions}>
-            <FavoriteButton
-              kind="episode"
-              id={ep.id}
-              title={ep.title}
-              href={`/wiki/episodes/${ep.id}`}
-              image={ep.image}
-              caption={episodeCaption}
-              className={detailStyles.action}
-            />
-            <ShareButton
-              title={`${ep.title} — ${seriesLabel}`}
-              text={episodeCaption}
-              path={`/wiki/episodes/${ep.id}`}
-              className={detailStyles.action}
-            />
-            {cdnOnly && cdnSource && (
-              <a href="#episode-timeline" className={detailStyles.action}>
-                <Film size={17} aria-hidden="true" />
-                <T k="episodePage.timelineAction" />
-              </a>
-            )}
-          </div>
-
-          <EpisodeAdminEditor episodeId={ep.id} videoUrl={ep.video_url} subtitles={ep.subtitles} />
-
           {/* === Corps : synopsis + scènes + nav — notes tout en bas === */}
           <div className="space-y-12">
             {ep.synopsis && (
-              <section className={detailStyles.synopsis}>
-                <h2>
-                  <T k="episodePage.synopsis" />
+              <section className="dbz-panel p-8 relative overflow-hidden reveal-up">
+                <div className="absolute top-0 left-0 w-1 h-full bg-dbz-orange" />
+                <h2 className="font-display font-bold text-xl text-dbz-orange mb-4 uppercase tracking-widest">
+                  Synopsis
                 </h2>
                 <div className="prose prose-invert max-w-none wiki-content">
                   <WikiMarkdown body={ep.synopsis} />
@@ -411,40 +405,25 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
                     href={ep.official_source_url}
                     target="_blank"
                     rel="noreferrer"
-                    className={detailStyles.source}
+                    className="mt-5 inline-block text-sm text-dbz-orange underline underline-offset-4"
                   >
-                    <T k="episodePage.officialSource" />
+                    Source primaire : Toei Animation
                   </a>
                 )}
               </section>
             )}
 
             {/* === Scènes & Frame Finder : moteur bxc frames MPEG-7 et scènes === */}
-            {cdnOnly ? (
-              cdnSource ? (
-                <div id="episode-timeline" className={detailStyles.timeline}>
-                  <EpisodeTimeline episodeId={ep.id} />
-                </div>
-              ) : null
-            ) : (
-              <EpisodeScenes
-                frames={frames}
-                title={ep.title}
-                episodeNumber={ep.number_in_series}
-                series={ep.series}
-                episodeId={ep.id}
-                episodeImage={ep.image}
-                timelineAvailable={
-                  ep.players?.some(
-                    (entry) =>
-                      URL.canParse(entry.embedUrl) &&
-                      isShenronEpisodeVideoURL(new URL(entry.embedUrl)),
-                  ) ?? false
-                }
-              />
-            )}
+            <EpisodeScenes
+              frames={frames}
+              title={ep.title}
+              episodeNumber={ep.number_in_series}
+              series={ep.series}
+              episodeId={ep.id}
+              episodeImage={ep.image}
+            />
 
-            {!cdnOnly && youtubeId && (
+            {youtubeId && (
               <section className="space-y-6 reveal-up">
                 <div className="flex items-center gap-6">
                   <h2 className="font-display font-bold text-2xl text-white uppercase tracking-widest whitespace-nowrap">
@@ -466,11 +445,19 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
               </section>
             )}
 
+            {/* === Navigation précédent / suivant === */}
+            {nav && (nav.prev || nav.next) && (
+              <nav className="flex flex-col sm:flex-row gap-4">
+                {nav.prev ? <NavCard ep={nav.prev} dir="prev" /> : <div className="flex-1" />}
+                {nav.next ? <NavCard ep={nav.next} dir="next" /> : <div className="flex-1" />}
+              </nav>
+            )}
+
             {/* === Strip des épisodes voisins === */}
             {nav && nav.around.length > 1 && (
               <section>
                 <h2 className="font-display font-bold text-[12px] tracking-[0.3em] uppercase text-white/50 mb-4">
-                  <T k="episodePage.inSeries" values={{ series: seriesLabel }} />
+                  Dans {seriesLabel}
                 </h2>
                 <div className="flex gap-3 overflow-x-auto pb-3 -mx-1 px-1 [scrollbar-width:thin]">
                   {nav.around.map((e) => {

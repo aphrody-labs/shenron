@@ -70,7 +70,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const resolved = resolveCharacterParam(slug);
-  const c = await getChar(resolved.canonicalSlug ?? resolved.id ?? slug);
+  const c = await getChar(resolved.id ?? resolved.canonicalSlug ?? slug);
   if (!c) notFound();
   const heroImage = pickBestImage([c.image, c.portraitXv2]) ?? c.image;
   const img = heroImage ? assetUrl(heroImage) : undefined;
@@ -95,7 +95,7 @@ export async function generateMetadata({
 export default async function CharacterPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const resolved = resolveCharacterParam(slug);
-  const character = await getChar(resolved.canonicalSlug ?? resolved.id ?? slug);
+  const character = await getChar(resolved.id ?? resolved.canonicalSlug ?? slug);
 
   if (!character) notFound();
   // Meilleure résolution existante entre l'image éditoriale et le portrait XV2

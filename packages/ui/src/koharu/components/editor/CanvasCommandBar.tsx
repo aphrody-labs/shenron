@@ -30,7 +30,7 @@ export function CanvasCommandBar() {
   };
 
   return (
-    <header className="flex min-h-11 min-w-0 shrink-0 items-center gap-2 overflow-x-auto border-b border-border/80 bg-[var(--surface-toolbar)] px-2.5 lg:h-10 lg:min-h-10 [&_button]:min-h-11 lg:[&_button]:min-h-0">
+    <header className="flex h-10 shrink-0 items-center gap-2 border-b border-border/80 bg-[var(--surface-toolbar)] px-2.5">
       <div className="min-w-0 flex-1" />
       <InferenceControl disabled={!page || Boolean(running)} onRun={run} />
     </header>

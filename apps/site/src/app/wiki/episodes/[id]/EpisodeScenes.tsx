@@ -15,7 +15,6 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { assetUrl } from "@/lib/assets";
-import { EpisodeTimeline } from "@/components/episodes/EpisodeTimeline";
 import { Film, RefreshCw, Scan, Search, Sparkles, Upload } from "lucide-react";
 import { useVideoUIText } from "@/lib/video-ui-text";
 import { frameUploadError, resolveFrameSearchTarget } from "@/lib/frames-map-shared";
@@ -134,7 +133,6 @@ export function EpisodeScenes({
   series,
   episodeId,
   episodeImage,
-  timelineAvailable = false,
 }: {
   frames?: SceneFrame[];
   title: string;
@@ -142,7 +140,6 @@ export function EpisodeScenes({
   series?: string;
   episodeId?: number;
   episodeImage?: string | null;
-  timelineAvailable?: boolean;
 }) {
   const videoText = useVideoUIText();
   const renderable = useMemo(
@@ -275,9 +272,6 @@ export function EpisodeScenes({
 
   return (
     <section className="shenron-episode-scenes @container min-w-0 space-y-6">
-      {timelineAvailable && episodeId != null && (
-        <EpisodeTimeline key={episodeId} episodeId={episodeId} />
-      )}
       {/* En-tête de section avec navigation par onglets */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
         <div className="flex min-w-0 items-center gap-3">

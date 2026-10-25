@@ -182,8 +182,6 @@ export function couleurHex(hex: string | undefined, tier: CanonTier): number {
 export class CanonService {
   private client: Client | null = null;
   private doctrine: { at: number; data: CanonDoctrine } | null = null;
-  /** Une seule requête de doctrine en vol : l'autocomplete tape à chaque frappe. */
-  private doctrineEnCours: Promise<CanonDoctrine | null> | null = null;
 
   constructor(@inject(SettingsService) private settings: SettingsService) {}
 
@@ -227,10 +225,7 @@ export class CanonService {
     if (!force && this.doctrine && Date.now() - this.doctrine.at < TTL_DOCTRINE_MS) {
       return this.doctrine.data;
     }
-    this.doctrineEnCours ??= this.get<CanonDoctrine>("/api/canon").finally(() => {
-      this.doctrineEnCours = null;
-    });
-    const data = await this.doctrineEnCours;
+    const data = await this.get<CanonDoctrine>("/api/canon");
     if (data) this.doctrine = { at: Date.now(), data };
     return data ?? this.doctrine?.data ?? null;
   }
@@ -334,11 +329,11 @@ export class CanonService {
     const embed = new EmbedBuilder()
       .setColor(couleurHex(rang?.couleur, entree.tier))
       .setAuthor({ name: "Canon du jour · dragonballfr.com" })
-      .setTitle(`${EMOJI_RANG[entree.tier]} ${entree.title}`.slice(0, 256))
+      .setTitle(`${EMOJI_RANG[entree.tier]} ${entree.title}`)
       .setURL(`${BASE}/wiki/canon?q=${encodeURIComponent(entree.title)}`)
       .setDescription((verdict?.verdict.verdict ?? entree.verdict).slice(0, 2000))
       .addFields({
-        name: (rang?.label ?? entree.tier).slice(0, 256),
+        name: rang?.label ?? entree.tier,
         value: `${rang?.definition ?? "—"}`.slice(0, 1024),
       });
     if (verdict?.verdict.explanation) {
@@ -348,7 +343,7 @@ export class CanonService {
     if (ref) {
       const texte = ref.textFr ?? ref.text;
       embed.addFields({
-        name: `📜 ${ref.source}${ref.year ? ` (${ref.year})` : ""}`.slice(0, 256),
+        name: `📜 ${ref.source}${ref.year ? ` (${ref.year})` : ""}`,
         value: `> ${texte.replace(/\s+/g, " ").slice(0, 900)}`,
       });
     }

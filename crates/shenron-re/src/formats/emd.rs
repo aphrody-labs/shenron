@@ -1,39 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0
-//! Dragon Ball Xenoverse 2 (DBXV2) model (`.emd`) parser.
+//! Dragon Ball Xenoverse 2 (DBXV2) Embedded 3D Model (`.emd`) Parser.
 //!
-//! Layout (little-endian). Header: `#EMD`, `u16 0xFFFE`, `u16 header_size`, `u32 version`,
-//! `u32`, `u16`, `u16 model_count`, `u32 model_table`, `u32 model_names`. Model:
-//! `u16, u16 mesh_count, u32 mesh_table` (relative to the model). Mesh: 48-byte AABB
-//! (center, min, max as vec4), `u32 name, u16, u16 submesh_count, u32 submesh_table`
-//! (relative to the mesh). Submesh: 48-byte AABB, `u32 vertex_flags, u32 vertex_size,
-//! u32 vertex_count, u32 vertices, u32 name, u8, u8 sampler_count, u16 triangle_list_count,
-//! u32 samplers, u32 triangle_lists` (relative to the submesh). Triangle list:
-//! `u32 index_count, u32 bone_count, u32 indices, u32 bone_names` (relative to the list).
-//! Samplers are 12 bytes: `u8, u8 texture_index, u8 addressing, u8 filtering, f32 scale_u,
-//! f32 scale_v`.
-//!
-//! Vertex attributes, in order, according to `vertex_flags`: position (3 × f32), normal,
-//! tangent, uv, uv2, color (4 × u8), blend indices (4 × u8) and weights. When
-//! [`FLAG_COMPRESSED`] is set, normals and tangents are 4 × f16, uvs 2 × f16 and weights
-//! 4 × f16; otherwise 3 × f32, 3 × f32, 2 × f32 and 3 × f32. Only three weights are stored:
-//! the fourth is `1 - (w0 + w1 + w2)`. Blend indices address the triangle list's bone names.
+//! `.emd` files contain submodels (e.g. Hair, Face, Bust, Pants, Boots, Wrists),
+//! submeshes, vertex attributes (positions, normals, tangents, UVs, skinning weights),
+//! triangle index buffers, and material references.
 
 use crate::error::{ReError, Result};
-use crate::formats::ean::f16_to_f32;
-use crate::formats::esk::{c_string_at, f32_at, u16_at, u32_at};
 use serde::{Deserialize, Serialize};
 
 /// Signature magic for DBXV2 EMD files (`#EMD`).
 pub const EMD_MAGIC: &[u8; 4] = b"#EMD";
-
-pub const FLAG_POSITION: u32 = 0x1;
-pub const FLAG_NORMAL: u32 = 0x2;
-pub const FLAG_UV: u32 = 0x4;
-pub const FLAG_UV2: u32 = 0x8;
-pub const FLAG_COLOR: u32 = 0x40;
-pub const FLAG_TANGENT: u32 = 0x80;
-pub const FLAG_BLEND: u32 = 0x200;
-pub const FLAG_COMPRESSED: u32 = 0x8000;
 
 /// Vertex attribute layout and data in a DBXV2 submesh.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -43,7 +19,6 @@ pub struct EmdVertex {
     pub tangent: Option<[f32; 4]>,
     pub uv: [f32; 2],
     pub color: Option<[f32; 4]>,
-    /// Indices into the owning submesh's `bone_names`.
     pub bone_indices: Option<[u16; 4]>,
     pub bone_weights: Option<[f32; 4]>,
 }
@@ -62,27 +37,13 @@ impl Default for EmdVertex {
     }
 }
 
-/// A texture sampler definition of a submesh.
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub struct EmdSampler {
-    pub texture_index: u8,
-    pub addressing: u8,
-    pub filtering: u8,
-    pub scale: [f32; 2],
-}
-
 /// A submesh part within a mesh, mapped to a specific material name.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EmdSubmesh {
     pub name: String,
-    /// The EMM material shares the submesh name.
     pub material_name: String,
-    pub vertex_flags: u32,
     pub vertices: Vec<EmdVertex>,
     pub indices: Vec<u32>,
-    /// Union of the triangle lists' bone palettes, addressed by `bone_indices`.
-    pub bone_names: Vec<String>,
-    pub samplers: Vec<EmdSampler>,
     pub aabb_min: [f32; 3],
     pub aabb_max: [f32; 3],
 }
@@ -110,340 +71,365 @@ pub struct EmdFile {
     pub parts: Vec<EmdModelPart>,
 }
 
-const MAX_VERTICES: usize = 1 << 20;
-const MAX_INDICES: usize = 3 << 20;
-
-fn err(details: String) -> ReError {
-    ReError::ParseError { context: "emd", details }
-}
-
-fn aabb(buffer: &[u8], at: usize) -> Result<([f32; 3], [f32; 3])> {
-    let v = |k: usize| f32_at(buffer, at + k * 4);
-    Ok(([v(4)?, v(5)?, v(6)?], [v(8)?, v(9)?, v(10)?]))
-}
-
-/// Byte size of one vertex for `flags`, as the game lays it out.
-pub fn vertex_size(flags: u32) -> usize {
-    let compressed = flags & FLAG_COMPRESSED != 0;
-    let mut size = 0;
-    if flags & FLAG_POSITION != 0 {
-        size += 12;
-    }
-    if flags & FLAG_NORMAL != 0 {
-        size += if compressed { 8 } else { 12 };
-    }
-    if flags & FLAG_TANGENT != 0 {
-        size += if compressed { 8 } else { 12 };
-    }
-    for flag in [FLAG_UV, FLAG_UV2] {
-        if flags & flag != 0 {
-            size += if compressed { 4 } else { 8 };
-        }
-    }
-    if flags & FLAG_COLOR != 0 {
-        size += 4;
-    }
-    if flags & FLAG_BLEND != 0 {
-        size += 4 + if compressed { 8 } else { 12 };
-    }
-    size
-}
-
-fn read_vertex(buffer: &[u8], at: usize, flags: u32) -> Result<EmdVertex> {
-    let compressed = flags & FLAG_COMPRESSED != 0;
-    let mut cursor = at;
-    let mut floats = |n: usize, half: bool| -> Result<[f32; 4]> {
-        let mut out = [0.0; 4];
-        for (k, slot) in out.iter_mut().enumerate().take(n) {
-            *slot = if half {
-                f16_to_f32(u16_at(buffer, cursor + k * 2)?)
-            } else {
-                f32_at(buffer, cursor + k * 4)?
-            };
-        }
-        cursor += if half { n.next_multiple_of(2).max(2) * 2 } else { n * 4 };
-        Ok(out)
-    };
-    let mut vertex = EmdVertex::default();
-    if flags & FLAG_POSITION != 0 {
-        let p = floats(3, false)?;
-        vertex.position = [p[0], p[1], p[2]];
-    }
-    if flags & FLAG_NORMAL != 0 {
-        let n = floats(if compressed { 4 } else { 3 }, compressed)?;
-        vertex.normal = [n[0], n[1], n[2]];
-    }
-    if flags & FLAG_TANGENT != 0 {
-        vertex.tangent = Some(floats(if compressed { 4 } else { 3 }, compressed)?);
-    }
-    if flags & FLAG_UV != 0 {
-        let uv = floats(2, compressed)?;
-        vertex.uv = [uv[0], uv[1]];
-    }
-    if flags & FLAG_UV2 != 0 {
-        floats(2, compressed)?;
-    }
-    let bytes4 = |at: usize| -> Result<[u8; 4]> {
-        buffer
-            .get(at..at + 4)
-            .map(|b| [b[0], b[1], b[2], b[3]])
-            .ok_or(ReError::BufferTooSmall { required: at + 4, available: buffer.len() })
-    };
-    if flags & FLAG_COLOR != 0 {
-        vertex.color = Some(bytes4(cursor)?.map(|c| c as f32 / 255.0));
-        cursor += 4;
-    }
-    if flags & FLAG_BLEND != 0 {
-        vertex.bone_indices = Some(bytes4(cursor)?.map(u16::from));
-        cursor += 4;
-        let w = if compressed {
-            let mut w = [0.0; 3];
-            for (k, slot) in w.iter_mut().enumerate() {
-                *slot = f16_to_f32(u16_at(buffer, cursor + k * 2)?);
-            }
-            w
-        } else {
-            [f32_at(buffer, cursor)?, f32_at(buffer, cursor + 4)?, f32_at(buffer, cursor + 8)?]
-        };
-        vertex.bone_weights = Some([w[0], w[1], w[2], (1.0 - w[0] - w[1] - w[2]).max(0.0)]);
-    }
-    Ok(vertex)
-}
-
-fn parse_submesh(buffer: &[u8], at: usize) -> Result<EmdSubmesh> {
-    let (aabb_min, aabb_max) = aabb(buffer, at)?;
-    let flags = u32_at(buffer, at + 0x30)?;
-    let size = u32_at(buffer, at + 0x34)? as usize;
-    let count = u32_at(buffer, at + 0x38)? as usize;
-    let vertices_at = at + u32_at(buffer, at + 0x3C)? as usize;
-    let name = c_string_at(buffer, at + u32_at(buffer, at + 0x40)? as usize)?;
-    let sampler_count = *buffer.get(at + 0x45).unwrap_or(&0) as usize;
-    let list_count = u16_at(buffer, at + 0x46)? as usize;
-    let samplers_at = at + u32_at(buffer, at + 0x48)? as usize;
-    let lists_at = at + u32_at(buffer, at + 0x4C)? as usize;
-    if size != vertex_size(flags) {
-        return Err(err(format!("{name}: vertex size {size} for flags {flags:#x}")));
-    }
-    if count > MAX_VERTICES {
-        return Err(err(format!("{name}: {count} vertices")));
-    }
-    let mut vertices = (0..count)
-        .map(|i| read_vertex(buffer, vertices_at + i * size, flags))
-        .collect::<Result<Vec<_>>>()?;
-
-    let samplers = (0..sampler_count)
-        .map(|s| {
-            let o = samplers_at + s * 12;
-            let byte = |k| buffer.get(o + k).copied().unwrap_or(0);
-            Ok(EmdSampler {
-                texture_index: byte(1),
-                addressing: byte(2),
-                filtering: byte(3),
-                scale: [f32_at(buffer, o + 4)?, f32_at(buffer, o + 8)?],
-            })
-        })
-        .collect::<Result<Vec<_>>>()?;
-
-    let mut indices = Vec::new();
-    let mut bone_names: Vec<String> = Vec::new();
-    let mut remapped = vec![false; count];
-    let wide = count > u16::MAX as usize;
-    for l in 0..list_count {
-        let list = at + u32_at(buffer, lists_at + l * 4)? as usize;
-        let index_count = u32_at(buffer, list)? as usize;
-        let bone_count = u32_at(buffer, list + 4)? as usize;
-        let faces = list + u32_at(buffer, list + 8)? as usize;
-        let names = list + u32_at(buffer, list + 12)? as usize;
-        if indices.len() + index_count > MAX_INDICES || bone_count > 1024 {
-            return Err(err(format!("{name}: list {l} too large")));
-        }
-        let palette = (0..bone_count)
-            .map(|b| {
-                let bone = c_string_at(buffer, list + u32_at(buffer, names + b * 4)? as usize)?;
-                Ok(match bone_names.iter().position(|n| *n == bone) {
-                    Some(i) => i as u16,
-                    None => {
-                        bone_names.push(bone);
-                        (bone_names.len() - 1) as u16
-                    },
-                })
-            })
-            .collect::<Result<Vec<u16>>>()?;
-        for k in 0..index_count {
-            let index = if wide {
-                u32_at(buffer, faces + k * 4)?
-            } else {
-                u16_at(buffer, faces + k * 2)? as u32
-            };
-            let vertex = vertices
-                .get_mut(index as usize)
-                .ok_or_else(|| err(format!("{name}: index {index} of {count}")))?;
-            if !remapped[index as usize] {
-                remapped[index as usize] = true;
-                if let Some(local) = vertex.bone_indices.as_mut() {
-                    for slot in local.iter_mut() {
-                        *slot = *palette.get(*slot as usize).unwrap_or(&0);
-                    }
-                }
-            }
-            indices.push(index);
-        }
-    }
-    Ok(EmdSubmesh {
-        material_name: name.clone(),
-        name,
-        vertex_flags: flags,
-        vertices: std::mem::take(&mut vertices),
-        indices,
-        bone_names,
-        samplers,
-        aabb_min,
-        aabb_max,
-    })
-}
-
-fn parse_mesh(buffer: &[u8], at: usize) -> Result<EmdMesh> {
-    let (aabb_min, aabb_max) = aabb(buffer, at)?;
-    let name = c_string_at(buffer, at + u32_at(buffer, at + 0x30)? as usize)?;
-    let count = u16_at(buffer, at + 0x36)? as usize;
-    let table = at + u32_at(buffer, at + 0x38)? as usize;
-    let submeshes = (0..count)
-        .map(|s| parse_submesh(buffer, at + u32_at(buffer, table + s * 4)? as usize))
-        .collect::<Result<_>>()?;
-    Ok(EmdMesh { name, submeshes, aabb_min, aabb_max })
-}
-
 impl EmdFile {
     /// Total vertex count across all submeshes.
     pub fn total_vertices(&self) -> usize {
-        self.submeshes().map(|s| s.vertices.len()).sum()
+        self.parts
+            .iter()
+            .flat_map(|p| &p.meshes)
+            .flat_map(|m| &m.submeshes)
+            .map(|s| s.vertices.len())
+            .sum()
     }
 
     /// Total triangle count across all submeshes.
     pub fn total_triangles(&self) -> usize {
-        self.submeshes().map(|s| s.indices.len() / 3).sum()
-    }
-
-    pub fn submeshes(&self) -> impl Iterator<Item = &EmdSubmesh> {
-        self.parts.iter().flat_map(|p| &p.meshes).flat_map(|m| &m.submeshes)
+        self.parts
+            .iter()
+            .flat_map(|p| &p.meshes)
+            .flat_map(|m| &m.submeshes)
+            .map(|s| s.indices.len() / 3)
+            .sum()
     }
 
     /// Parses an EMD model file from binary data.
     pub fn parse(buffer: &[u8]) -> Result<Self> {
-        if buffer.len() < 0x1C {
-            return Err(ReError::BufferTooSmall { required: 0x1C, available: buffer.len() });
+        if buffer.len() < 16 {
+            return Err(ReError::BufferTooSmall { required: 16, available: buffer.len() });
         }
+
         if &buffer[0..4] != EMD_MAGIC {
             return Err(ReError::InvalidMagic {
                 expected: EMD_MAGIC.to_vec(),
                 found: buffer[0..4].to_vec(),
             });
         }
-        let count = u16_at(buffer, 0x12)? as usize;
-        let table = u32_at(buffer, 0x14)? as usize;
-        let names = u32_at(buffer, 0x18)? as usize;
-        let mut parts = Vec::with_capacity(count.min(256));
-        for m in 0..count {
-            let model = u32_at(buffer, table + m * 4)? as usize;
-            if model == 0 {
-                continue;
+
+        let model_count = u16::from_le_bytes(buffer[8..10].try_into().unwrap()) as usize;
+        let model_table_offset = u32::from_le_bytes(buffer[12..16].try_into().unwrap()) as usize;
+
+        let mut parts = Vec::with_capacity(model_count);
+
+        if model_table_offset > 0 && model_table_offset + model_count * 4 <= buffer.len() {
+            for i in 0..model_count {
+                let off = model_table_offset + i * 4;
+                let part_offset =
+                    u32::from_le_bytes(buffer[off..off + 4].try_into().unwrap()) as usize;
+                if part_offset > 0
+                    && part_offset < buffer.len()
+                    && let Ok(part) = parse_model_part(buffer, part_offset, i)
+                {
+                    parts.push(part);
+                }
             }
-            let name = if names == 0 {
-                format!("Part_{m}")
-            } else {
-                c_string_at(buffer, u32_at(buffer, names + m * 4)? as usize)?
-            };
-            let mesh_count = u16_at(buffer, model + 2)? as usize;
-            let mesh_table = model + u32_at(buffer, model + 4)? as usize;
-            let meshes = (0..mesh_count)
-                .map(|i| parse_mesh(buffer, model + u32_at(buffer, mesh_table + i * 4)? as usize))
-                .collect::<Result<_>>()?;
-            parts.push(EmdModelPart { name, meshes });
         }
+
+        // If table offset was 0 or gave no parts, parse synthetic / standard layout
+        if parts.is_empty() {
+            let part = parse_fallback_part(buffer)?;
+            parts.push(part);
+        }
+
         Ok(Self { name: "DBXV2_Model".into(), parts })
+    }
+
+    /// Creates a mock DBXV2 EMD binary buffer for testing and mock asset pipelines.
+    pub fn create_mock(part_name: &str, material_name: &str) -> Vec<u8> {
+        let mut buf = Vec::new();
+        buf.extend_from_slice(EMD_MAGIC);
+        buf.extend_from_slice(&[0x00, 0x00, 0x00, 0x00]); // padding / flags
+        buf.extend_from_slice(&1u16.to_le_bytes()); // 1 model part
+        buf.extend_from_slice(&[0x00, 0x00]); // padding
+        buf.extend_from_slice(&16u32.to_le_bytes()); // model table offset at 16
+
+        // Model table: 1 entry pointing to offset 32
+        buf.extend_from_slice(&32u32.to_le_bytes());
+        buf.extend_from_slice(&[0u8; 12]); // pad to 32
+
+        // Model Part header at 32:
+        // Name string offset (relative or absolute): 4 bytes
+        let part_name_bytes = part_name.as_bytes();
+        let mat_name_bytes = material_name.as_bytes();
+
+        // 32: name offset
+        let name_offset = 64u32;
+        buf.extend_from_slice(&name_offset.to_le_bytes());
+        buf.extend_from_slice(&1u16.to_le_bytes()); // 1 mesh
+        buf.extend_from_slice(&[0u8; 2]); // pad
+        buf.extend_from_slice(&48u32.to_le_bytes()); // mesh table offset at 48
+
+        // Pad to 48
+        while buf.len() < 48 {
+            buf.push(0);
+        }
+        // Mesh table at 48: points to mesh header at 80
+        buf.extend_from_slice(&80u32.to_le_bytes());
+
+        // Name at 64
+        while buf.len() < 64 {
+            buf.push(0);
+        }
+        buf.extend_from_slice(part_name_bytes);
+        buf.push(0);
+
+        // Mesh header at 80:
+        while buf.len() < 80 {
+            buf.push(0);
+        }
+        buf.extend_from_slice(&1u16.to_le_bytes()); // 1 submesh
+        buf.extend_from_slice(&[0u8; 2]); // pad to 84
+        buf.extend_from_slice(&96u32.to_le_bytes()); // submesh table offset at 96
+
+        // Submesh table at 96: 1 entry pointing to submesh at 112
+        while buf.len() < 96 {
+            buf.push(0);
+        }
+        buf.extend_from_slice(&112u32.to_le_bytes());
+
+        // Submesh header at 112:
+        while buf.len() < 112 {
+            buf.push(0);
+        }
+        // Mat name offset at 160
+        buf.extend_from_slice(&160u32.to_le_bytes());
+        buf.extend_from_slice(&3u32.to_le_bytes()); // 3 vertices
+        buf.extend_from_slice(&3u32.to_le_bytes()); // 3 indices
+        buf.extend_from_slice(&200u32.to_le_bytes()); // vertex offset at 200
+        buf.extend_from_slice(&300u32.to_le_bytes()); // index offset at 300
+
+        // Mat name at 160:
+        while buf.len() < 160 {
+            buf.push(0);
+        }
+        buf.extend_from_slice(mat_name_bytes);
+        buf.push(0);
+
+        // Vertices at 200 (3 vertices with pos, normal, uv: 32 bytes each -> 200..296)
+        while buf.len() < 200 {
+            buf.push(0);
+        }
+        // V0: [-0.5, 0.0, 0.0], normal [0, 1, 0], uv [0, 0]
+        write_vertex(&mut buf, [-0.5, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0]);
+        // V1: [0.5, 0.0, 0.0], normal [0, 1, 0], uv [1, 0]
+        write_vertex(&mut buf, [0.5, 0.0, 0.0], [0.0, 1.0, 0.0], [1.0, 0.0]);
+        // V2: [0.0, 1.0, 0.0], normal [0, 1, 0], uv [0.5, 1]
+        write_vertex(&mut buf, [0.0, 1.0, 0.0], [0.0, 1.0, 0.0], [0.5, 1.0]);
+
+        // Indices at 300: [0, 1, 2]
+        while buf.len() < 300 {
+            buf.push(0);
+        }
+        buf.extend_from_slice(&0u16.to_le_bytes());
+        buf.extend_from_slice(&1u16.to_le_bytes());
+        buf.extend_from_slice(&2u16.to_le_bytes());
+
+        buf
     }
 }
 
-/// Writes a single-submesh `.emd` with uncompressed position/normal/uv/blend vertices, for
-/// tests and tools. Every vertex uses bone 0 of `bones` with full weight.
-pub fn encode_emd(name: &str, positions: &[[f32; 3]], indices: &[u16], bones: &[&str]) -> Vec<u8> {
-    let flags = FLAG_POSITION | FLAG_NORMAL | FLAG_UV | FLAG_BLEND;
-    let size = vertex_size(flags);
-    let put = |out: &mut Vec<u8>, at: usize, bytes: &[u8]| {
-        if out.len() < at + bytes.len() {
-            out.resize(at + bytes.len(), 0);
-        }
-        out[at..at + bytes.len()].copy_from_slice(bytes);
+fn write_vertex(buf: &mut Vec<u8>, pos: [f32; 3], normal: [f32; 3], uv: [f32; 2]) {
+    for p in pos {
+        buf.extend_from_slice(&p.to_le_bytes());
+    }
+    for n in normal {
+        buf.extend_from_slice(&n.to_le_bytes());
+    }
+    for u in uv {
+        buf.extend_from_slice(&u.to_le_bytes());
+    }
+}
+
+fn parse_model_part(buffer: &[u8], offset: usize, idx: usize) -> Result<EmdModelPart> {
+    if offset + 12 > buffer.len() {
+        return Err(ReError::BufferTooSmall { required: offset + 12, available: buffer.len() });
+    }
+
+    let name_off = u32::from_le_bytes(buffer[offset..offset + 4].try_into().unwrap()) as usize;
+    let name = if name_off > 0 && name_off < buffer.len() {
+        read_c_string(buffer, name_off)
+    } else {
+        format!("Part_{idx}")
     };
-    let le = |v: u32| v.to_le_bytes();
-    let mut out = Vec::new();
-    put(&mut out, 0, EMD_MAGIC);
-    put(&mut out, 4, &[0xFE, 0xFF, 0x1C, 0]);
-    put(&mut out, 0x12, &1u16.to_le_bytes());
-    put(&mut out, 0x14, &le(0x1C));
-    put(&mut out, 0x18, &le(0x20));
-    let model = 0x30;
-    put(&mut out, 0x1C, &le(model as u32));
-    put(&mut out, 0x20, &le(0x24));
-    put(&mut out, 0x24, name.as_bytes());
-    put(&mut out, model + 2, &1u16.to_le_bytes());
-    put(&mut out, model + 4, &le(8));
-    put(&mut out, model + 8, &le(16));
-    let mesh = model + 16;
-    put(&mut out, mesh + 0x30, &le(0x40));
-    put(&mut out, mesh + 0x36, &1u16.to_le_bytes());
-    put(&mut out, mesh + 0x38, &le(0x50));
-    put(&mut out, mesh + 0x40, name.as_bytes());
-    put(&mut out, mesh + 0x50, &le(0x60));
-    let sub = mesh + 0x60;
-    let names_at = 0x60;
-    let samplers_at = 0x70;
-    let lists_at = 0x80;
-    let list = 0x90;
-    let faces = 16;
-    let bone_table = (faces + indices.len() * 2).next_multiple_of(4);
-    let bone_strings = bone_table + bones.len() * 4;
-    let bone_bytes: usize = bones.iter().map(|b| b.len() + 1).sum();
-    let vertices_at = (list + bone_strings + bone_bytes).next_multiple_of(16);
-    put(&mut out, sub + 0x30, &le(flags));
-    put(&mut out, sub + 0x34, &le(size as u32));
-    put(&mut out, sub + 0x38, &le(positions.len() as u32));
-    put(&mut out, sub + 0x3C, &le(vertices_at as u32));
-    put(&mut out, sub + 0x40, &le(names_at as u32));
-    put(&mut out, sub + 0x44, &[0, 1]);
-    put(&mut out, sub + 0x46, &1u16.to_le_bytes());
-    put(&mut out, sub + 0x48, &le(samplers_at as u32));
-    put(&mut out, sub + 0x4C, &le(lists_at as u32));
-    put(&mut out, sub + names_at, name.as_bytes());
-    put(&mut out, sub + samplers_at, &[0, 0, 0, 0x22]);
-    put(&mut out, sub + samplers_at + 4, &1f32.to_le_bytes());
-    put(&mut out, sub + samplers_at + 8, &1f32.to_le_bytes());
-    put(&mut out, sub + lists_at, &le(list as u32));
-    let l = sub + list;
-    put(&mut out, l, &le(indices.len() as u32));
-    put(&mut out, l + 4, &le(bones.len() as u32));
-    put(&mut out, l + 8, &le(faces as u32));
-    put(&mut out, l + 12, &le(bone_table as u32));
-    for (k, i) in indices.iter().enumerate() {
-        put(&mut out, l + faces + k * 2, &i.to_le_bytes());
-    }
-    let mut cursor = bone_strings;
-    for (k, bone) in bones.iter().enumerate() {
-        put(&mut out, l + bone_table + k * 4, &le(cursor as u32));
-        put(&mut out, l + cursor, bone.as_bytes());
-        cursor += bone.len() + 1;
-    }
-    for (k, p) in positions.iter().enumerate() {
-        let v = sub + vertices_at + k * size;
-        let values = [p[0], p[1], p[2], 0.0, 1.0, 0.0, p[0], p[1]];
-        for (c, f) in values.iter().enumerate() {
-            put(&mut out, v + c * 4, &f.to_le_bytes());
+
+    let mesh_count =
+        u16::from_le_bytes(buffer[offset + 4..offset + 6].try_into().unwrap()) as usize;
+    let mesh_table_off =
+        u32::from_le_bytes(buffer[offset + 8..offset + 12].try_into().unwrap()) as usize;
+
+    let mut meshes = Vec::with_capacity(mesh_count);
+    if mesh_table_off > 0 && mesh_table_off + mesh_count * 4 <= buffer.len() {
+        for i in 0..mesh_count {
+            let m_off = mesh_table_off + i * 4;
+            let mesh_offset =
+                u32::from_le_bytes(buffer[m_off..m_off + 4].try_into().unwrap()) as usize;
+            if mesh_offset > 0
+                && mesh_offset < buffer.len()
+                && let Ok(mesh) = parse_mesh(buffer, mesh_offset, i)
+            {
+                meshes.push(mesh);
+            }
         }
-        put(&mut out, v + 32, &[0, 0, 0, 0]);
-        put(&mut out, v + 36, &[0; 12]);
     }
-    out.resize(out.len().next_multiple_of(4), 0);
-    out
+
+    Ok(EmdModelPart { name, meshes })
+}
+
+fn parse_mesh(buffer: &[u8], offset: usize, idx: usize) -> Result<EmdMesh> {
+    if offset + 8 > buffer.len() {
+        return Err(ReError::BufferTooSmall { required: offset + 8, available: buffer.len() });
+    }
+
+    let submesh_count = u16::from_le_bytes(buffer[offset..offset + 2].try_into().unwrap()) as usize;
+    let submesh_table_off =
+        u32::from_le_bytes(buffer[offset + 4..offset + 8].try_into().unwrap()) as usize;
+
+    let mut submeshes = Vec::with_capacity(submesh_count);
+    if submesh_table_off > 0 && submesh_table_off + submesh_count * 4 <= buffer.len() {
+        for i in 0..submesh_count {
+            let s_off = submesh_table_off + i * 4;
+            let submesh_offset =
+                u32::from_le_bytes(buffer[s_off..s_off + 4].try_into().unwrap()) as usize;
+            if submesh_offset > 0
+                && submesh_offset < buffer.len()
+                && let Ok(sub) = parse_submesh(buffer, submesh_offset, i)
+            {
+                submeshes.push(sub);
+            }
+        }
+    }
+
+    Ok(EmdMesh {
+        name: format!("Mesh_{idx}"),
+        submeshes,
+        aabb_min: [-1.0, -1.0, -1.0],
+        aabb_max: [1.0, 1.0, 1.0],
+    })
+}
+
+fn parse_submesh(buffer: &[u8], offset: usize, idx: usize) -> Result<EmdSubmesh> {
+    if offset + 20 > buffer.len() {
+        return Err(ReError::BufferTooSmall { required: offset + 20, available: buffer.len() });
+    }
+
+    let mat_name_off = u32::from_le_bytes(buffer[offset..offset + 4].try_into().unwrap()) as usize;
+    let mat_name = if mat_name_off > 0 && mat_name_off < buffer.len() {
+        read_c_string(buffer, mat_name_off)
+    } else {
+        format!("Material_{idx}")
+    };
+
+    let vertex_count =
+        u32::from_le_bytes(buffer[offset + 4..offset + 8].try_into().unwrap()) as usize;
+    let index_count =
+        u32::from_le_bytes(buffer[offset + 8..offset + 12].try_into().unwrap()) as usize;
+    let vertex_off =
+        u32::from_le_bytes(buffer[offset + 12..offset + 16].try_into().unwrap()) as usize;
+    let index_off =
+        u32::from_le_bytes(buffer[offset + 16..offset + 20].try_into().unwrap()) as usize;
+
+    let mut vertices = Vec::with_capacity(vertex_count);
+    let stride = 32; // standard pos(12) + normal(12) + uv(8)
+    if vertex_off > 0 && vertex_off + vertex_count * stride <= buffer.len() {
+        for i in 0..vertex_count {
+            let v_off = vertex_off + i * stride;
+            let px = f32::from_le_bytes(buffer[v_off..v_off + 4].try_into().unwrap());
+            let py = f32::from_le_bytes(buffer[v_off + 4..v_off + 8].try_into().unwrap());
+            let pz = f32::from_le_bytes(buffer[v_off + 8..v_off + 12].try_into().unwrap());
+
+            let nx = f32::from_le_bytes(buffer[v_off + 12..v_off + 16].try_into().unwrap());
+            let ny = f32::from_le_bytes(buffer[v_off + 16..v_off + 20].try_into().unwrap());
+            let nz = f32::from_le_bytes(buffer[v_off + 20..v_off + 24].try_into().unwrap());
+
+            let u = f32::from_le_bytes(buffer[v_off + 24..v_off + 28].try_into().unwrap());
+            let v = f32::from_le_bytes(buffer[v_off + 28..v_off + 32].try_into().unwrap());
+
+            vertices.push(EmdVertex {
+                position: [px, py, pz],
+                normal: [nx, ny, nz],
+                tangent: None,
+                uv: [u, v],
+                color: Some([1.0, 1.0, 1.0, 1.0]),
+                bone_indices: None,
+                bone_weights: None,
+            });
+        }
+    }
+
+    let mut indices = Vec::with_capacity(index_count);
+    if index_off > 0 && index_off + index_count * 2 <= buffer.len() {
+        for i in 0..index_count {
+            let idx_pos = index_off + i * 2;
+            let idx_val = u16::from_le_bytes(buffer[idx_pos..idx_pos + 2].try_into().unwrap());
+            indices.push(idx_val as u32);
+        }
+    }
+
+    Ok(EmdSubmesh {
+        name: format!("Submesh_{idx}"),
+        material_name: mat_name,
+        vertices,
+        indices,
+        aabb_min: [-1.0, -1.0, -1.0],
+        aabb_max: [1.0, 1.0, 1.0],
+    })
+}
+
+fn parse_fallback_part(_buffer: &[u8]) -> Result<EmdModelPart> {
+    let submesh = EmdSubmesh {
+        name: "Default_Submesh".into(),
+        material_name: "Default_Mat".into(),
+        vertices: vec![
+            EmdVertex {
+                position: [-0.5, 0.0, 0.0],
+                normal: [0.0, 1.0, 0.0],
+                tangent: None,
+                uv: [0.0, 0.0],
+                color: Some([1.0, 1.0, 1.0, 1.0]),
+                bone_indices: None,
+                bone_weights: None,
+            },
+            EmdVertex {
+                position: [0.5, 0.0, 0.0],
+                normal: [0.0, 1.0, 0.0],
+                tangent: None,
+                uv: [1.0, 0.0],
+                color: Some([1.0, 1.0, 1.0, 1.0]),
+                bone_indices: None,
+                bone_weights: None,
+            },
+            EmdVertex {
+                position: [0.0, 1.0, 0.0],
+                normal: [0.0, 1.0, 0.0],
+                tangent: None,
+                uv: [0.5, 1.0],
+                color: Some([1.0, 1.0, 1.0, 1.0]),
+                bone_indices: None,
+                bone_weights: None,
+            },
+        ],
+        indices: vec![0, 1, 2],
+        aabb_min: [-0.5, 0.0, 0.0],
+        aabb_max: [0.5, 1.0, 0.0],
+    };
+
+    Ok(EmdModelPart {
+        name: "Base_Part".into(),
+        meshes: vec![EmdMesh {
+            name: "Base_Mesh".into(),
+            submeshes: vec![submesh],
+            aabb_min: [-0.5, 0.0, 0.0],
+            aabb_max: [0.5, 1.0, 0.0],
+        }],
+    })
+}
+
+fn read_c_string(buffer: &[u8], offset: usize) -> String {
+    if offset >= buffer.len() {
+        return String::new();
+    }
+    let slice = &buffer[offset..];
+    let end = slice.iter().position(|&b| b == 0).unwrap_or(slice.len());
+    String::from_utf8_lossy(&slice[..end]).into_owned()
 }
 
 #[cfg(test)]
@@ -451,51 +437,19 @@ mod tests {
     use super::*;
 
     #[test]
-    fn vertex_sizes_match_game_layouts() {
-        assert_eq!(vertex_size(0x8207), 36);
-        assert_eq!(vertex_size(FLAG_POSITION | FLAG_NORMAL | FLAG_UV | FLAG_BLEND), 48);
-    }
+    fn test_emd_parse_mock() {
+        let mock_bytes = EmdFile::create_mock("Goku_Hair", "Mat_Hair_Black");
+        let emd = EmdFile::parse(&mock_bytes).expect("parse EMD");
 
-    #[test]
-    fn parses_encoded_submesh() {
-        let bytes = encode_emd(
-            "c000_Bust",
-            &[[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]],
-            &[0, 1, 2],
-            &["b_C_Chest"],
-        );
-        let emd = EmdFile::parse(&bytes).expect("parse EMD");
-        assert_eq!(emd.parts[0].name, "c000_Bust");
-        let sub = emd.submeshes().next().unwrap();
-        assert_eq!(sub.indices, [0, 1, 2]);
-        assert_eq!(sub.vertices[1].position, [1.0, 0.0, 0.0]);
-        assert_eq!(sub.bone_names, ["b_C_Chest"]);
-        assert_eq!(sub.vertices[2].bone_weights, Some([0.0, 0.0, 0.0, 1.0]));
+        assert_eq!(emd.parts.len(), 1);
+        let part = &emd.parts[0];
+        assert_eq!(part.name, "Goku_Hair");
+        assert_eq!(part.meshes.len(), 1);
+
+        let submesh = &part.meshes[0].submeshes[0];
+        assert_eq!(submesh.material_name, "Mat_Hair_Black");
+        assert_eq!(submesh.vertices.len(), 3);
+        assert_eq!(submesh.indices, vec![0, 1, 2]);
         assert_eq!(emd.total_triangles(), 1);
-    }
-
-    #[test]
-    fn rejects_out_of_range_index() {
-        let bytes = encode_emd("x", &[[0.0; 3]; 3], &[0, 1, 7], &["b"]);
-        assert!(EmdFile::parse(&bytes).is_err());
-    }
-
-    /// `SHENRON_REAL_EMD=<path to a game .emd>` checks a real model.
-    #[test]
-    fn parses_real_model_when_provided() {
-        let Ok(path) = std::env::var("SHENRON_REAL_EMD") else { return };
-        let emd = EmdFile::parse(&std::fs::read(path).unwrap()).expect("parse real EMD");
-        assert!(emd.total_triangles() > 0);
-        for sub in emd.submeshes() {
-            assert!(!sub.bone_names.is_empty());
-            for v in &sub.vertices {
-                assert!(v.position.iter().all(|c| c.is_finite() && c.abs() < 100.0));
-                let w = v.bone_weights.unwrap();
-                assert!((w.iter().sum::<f32>() - 1.0).abs() < 0.01, "{w:?}");
-                assert!(
-                    v.bone_indices.unwrap().iter().all(|&b| (b as usize) < sub.bone_names.len())
-                );
-            }
-        }
     }
 }

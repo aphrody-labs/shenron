@@ -70,19 +70,8 @@ export class JoinLeaveEvent {
           const role =
             member.guild.roles.cache.get(roleId) ??
             (await member.guild.roles.fetch(roleId).catch(() => null));
-          const reapplied = role
-            ? await member.roles
-                .add(role, "Re-jail on rejoin (attempted escape)")
-                .then(() => true)
-                .catch(() => false)
-            : false;
-          if (role && !reapplied) {
-            await this.signalerEvasion(
-              member,
-              activeJail.reason,
-              `ajout du rôle ${role.id} refusé (hiérarchie ou permission Manage Roles)`,
-            );
-          } else if (role) {
+          if (role) {
+            await member.roles.add(role, "Re-jail on rejoin (attempted escape)").catch(() => {});
             jailedOnRejoin = true;
 
             const jailEmbed = this.logs

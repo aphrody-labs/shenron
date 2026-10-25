@@ -93,6 +93,7 @@ export async function captureShueishaPreview(
       "1",
       "--concurrency",
       "1",
+      "--obey-robots",
       "--proxy",
       "socks5h://127.0.0.1:1080",
       "--delay-ms",

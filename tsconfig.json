@@ -2,9 +2,6 @@
   "files": [],
   "references": [
     {
-      "path": "apps/activity/tsconfig.json"
-    },
-    {
       "path": "apps/bot/tsconfig.json"
     },
     {
@@ -18,9 +15,6 @@
     },
     {
       "path": "apps/site/tsconfig.tests.json"
-    },
-    {
-      "path": "packages/activity/tsconfig.json"
     },
     {
       "path": "packages/api/tsconfig.json"

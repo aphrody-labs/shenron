@@ -4,7 +4,6 @@ import { userTransformer } from "~/lib/slash-user";
 import {
   ApplicationCommandOptionType,
   MessageFlags,
-  PermissionFlagsBits,
   type CommandInteraction,
   type Role,
   type User,
@@ -12,20 +11,6 @@ import {
 import { GuildOnly } from "~/guards/GuildOnly";
 import { LevelService } from "~/services/LevelService";
 import { levelForXP, xpRequiredForLevel } from "~/lib/xp";
-import { errorEmbed, successEmbed, warningEmbed } from "~/lib/embeds";
-import { logger } from "~/lib/logger";
-
-/** New XP of a member after `/niveau`: XP delta, or a whole-level jump to that level's threshold. */
-export function adjustedXp(
-  currentXP: number,
-  kind: "niveau" | "exp",
-  sign: 1 | -1,
-  amount: number,
-): number {
-  if (kind === "exp") return Math.max(0, currentXP + sign * amount);
-  const newLevel = Math.max(0, levelForXP(currentXP) + sign * amount);
-  return newLevel === 0 ? 0 : xpRequiredForLevel(newLevel);
-}
 
 @Discord()
 @Bot("shenron")
@@ -38,7 +23,6 @@ export class LevelAdminCommands {
   @Slash({
     name: "niveau",
     description: "Admin: modifier niveau/xp",
-    defaultMemberPermissions: PermissionFlagsBits.Administrator,
   })
   async niveauAdmin(
     @SlashChoice({ name: "give", value: "give" })
@@ -94,63 +78,54 @@ export class LevelAdminCommands {
     interaction: CommandInteraction,
   ) {
     if (!interaction.inCachedGuild()) return;
-    const targets = [user, role, all ? true : undefined].filter((t) => t !== undefined).length;
-    if (targets !== 1) {
-      await interaction.reply({
-        embeds: [
-          warningEmbed(
-            "Cible ambiguë",
-            "Spécifie **une seule** cible : `membre`, `role` ou `all:true`.",
-          ),
-        ],
-        flags: MessageFlags.Ephemeral,
-      });
-      return;
-    }
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     const sign = action === "give" ? 1 : -1;
-    let failed = 0;
-    // One member's failure (left the guild, role above the bot…) must not stop a batch.
+
+    const compute = (currentXP: number): number => {
+      if (kind === "exp") return Math.max(0, currentXP + sign * amount);
+      const currentLevel = levelForXP(currentXP);
+      const newLevel = Math.max(0, currentLevel + sign * amount);
+      if (newLevel === 0) return 0;
+      return xpRequiredForLevel(newLevel);
+    };
+
     const apply = async (id: string) => {
-      try {
-        const c = await this.levels.getUser(id);
-        const res = await this.levels.setXP(id, adjustedXp(c?.xp ?? 0, kind, sign, amount));
-        if (res.levelUp) {
-          const member = await interaction.guild.members.fetch(id).catch(() => null);
-          if (member) await this.levels.handleLevelUp(member, res.newLevel);
+      const c = await this.levels.getUser(id);
+      const res = await this.levels.setXP(id, compute(c?.xp ?? 0));
+      if (res.levelUp) {
+        const member = await interaction.guild?.members.fetch(id).catch(() => null);
+        if (member) {
+          await this.levels.handleLevelUp(member, res.newLevel);
         }
-      } catch (err) {
-        failed++;
-        logger.warn({ err, userId: id }, "[niveau] adjustment failed");
       }
     };
 
-    let ids: string[];
-    let label: string;
     if (user) {
-      ids = [user.id];
-      label = `${user}`;
-    } else if (role) {
-      const members = await interaction.guild.members.fetch();
-      ids = [...members.values()].filter((m) => m.roles.cache.has(role.id)).map((m) => m.id);
-      label = `${ids.length} membre(s) avec ${role}`;
-    } else {
-      ids = (await this.levels.top(10_000, 0)).map((u) => u.id);
-      label = `${ids.length} membre(s) inscrit(s)`;
+      await apply(user.id);
+      await interaction.editReply({ content: `✅ Appliqué à ${user}.` });
+      return;
     }
-    for (const id of ids) await apply(id);
-
-    const what = `${action === "give" ? "+" : "−"}${amount} ${kind === "niveau" ? "niveau(x)" : "XP"}`;
-    await interaction.editReply({
-      embeds: [
-        failed === ids.length && ids.length > 0
-          ? errorEmbed("Ajustement échoué", `${what} n'a pu être appliqué à ${label}.`)
-          : successEmbed(
-              "Ajustement appliqué",
-              `${what} appliqué à ${label}.${failed ? `\n⚠️ ${failed} échec(s), voir les logs.` : ""}`,
-            ),
-      ],
-    });
+    if (role) {
+      const members = await interaction.guild.members.fetch();
+      let count = 0;
+      for (const m of members.values()) {
+        if (m.roles.cache.has(role.id)) {
+          await apply(m.id);
+          count++;
+        }
+      }
+      await interaction.editReply({ content: `✅ Appliqué à ${count} membres avec ${role}.` });
+      return;
+    }
+    if (all) {
+      const allUsers = await this.levels.top(10_000, 0);
+      for (const u of allUsers) await apply(u.id);
+      await interaction.editReply({
+        content: `✅ Appliqué à ${allUsers.length} membres inscrits.`,
+      });
+      return;
+    }
+    await interaction.editReply({ content: "Spécifiez un membre, un rôle, ou all:true." });
   }
 }

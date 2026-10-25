@@ -1,17 +1,14 @@
 //! Shenron video library, pure Rust (no ffmpeg, no C): MPEG-1/2 decode (`filmcraft-mpeg2v`), H.264
 //! encode (`filmcraft-h264enc`), fragmented MP4 mux (`filmcraft-isobmff`).
 
-use filmcraft_h264enc::{
-    Encoder, EncoderConfig, Packet, PacketFormat, Preset, RateControl, YuvFrame,
-};
+use filmcraft_h264enc::{Encoder, EncoderConfig, Packet, PacketFormat, Preset, RateControl, YuvFrame};
 use filmcraft_isobmff::{
-    AvcConfig, Brand, ColorInfo, FragmentedWriter, SampleEntry, TrackConfig, WriteSample,
-    WriterOptions,
+    AvcConfig, Brand, FragmentedWriter, SampleEntry, TrackConfig, WriteSample, WriterOptions,
 };
 use filmcraft_mpeg2v::{
     ChromaFormat, Decoder, Picture, access_units, probe as probe_seq, scan_access_unit,
 };
-use std::io::{Read, Write};
+use std::io::Write;
 use std::sync::mpsc::sync_channel;
 
 pub type Res<T> = Result<T, Box<dyn std::error::Error + Send + Sync>>;
@@ -103,10 +100,9 @@ pub fn to_420(p: &Picture, w: usize, h: usize) -> Yuv420 {
                 out.push(match p.chroma {
                     ChromaFormat::Yuv420 => src[r * cw + c],
                     ChromaFormat::Yuv422 => {
-                        (u16::from(src[2 * r * cw + c])
-                            + u16::from(src[(2 * r + 1) * cw + c]))
-                            .div_ceil(2) as u8
-                    },
+                        ((u16::from(src[2 * r * cw + c]) + u16::from(src[(2 * r + 1) * cw + c]) + 1)
+                            / 2) as u8
+                    }
                     ChromaFormat::Yuv444 => src[2 * r * cw + 2 * c],
                 });
             }
@@ -121,83 +117,6 @@ struct Sink<W: Write> {
     track: usize,
     den: u32,
     since_flush: usize,
-}
-
-/// Dimensions and exact timing of a bounded stream of opaque RGBA8 frames.
-#[derive(Clone, Copy, Debug)]
-pub struct RgbaVideoInfo {
-    pub width: u32,
-    pub height: u32,
-    pub fps_num: u32,
-    pub fps_den: u32,
-    pub frames: u32,
-}
-
-/// Encode opaque RGBA8 through FilmCraft's BT.709 conversion, H.264 encoder and MP4 muxer.
-/// This web derivative is lossy; callers retain original PNG frames for exact archival pixels.
-pub fn encode_rgba_fmp4<R: Read, W: Write>(
-    mut input: R,
-    info: RgbaVideoInfo,
-    opts: &Mp4Options,
-    out: W,
-) -> Res<u64> {
-    let RgbaVideoInfo { width, height, fps_num, fps_den, frames } = info;
-    if !(16..=1920).contains(&width)
-        || !(16..=1920).contains(&height)
-        || !width.is_multiple_of(2)
-        || !height.is_multiple_of(2)
-        || u64::from(width) * u64::from(height) > 2_073_600
-        || fps_num == 0
-        || fps_den == 0
-        || fps_den > 100_000
-        || fps_num > 60 * fps_den
-        || frames == 0
-        || frames > 1800
-        || !opts.crf.is_finite()
-        || !(0.0..=51.0).contains(&opts.crf)
-    {
-        return Err("invalid bounded RGBA video dimensions, timing, frame count or CRF".into());
-    }
-    let (w, h) = (width as usize, height as usize);
-    let mut cfg = EncoderConfig::new(width, height, fps_num, fps_den);
-    cfg.rate = RateControl::Crf(opts.crf);
-    cfg.preset = match opts.speed {
-        Speed::Speed => Preset::Speed,
-        Speed::Balanced => Preset::Balanced,
-        Speed::Quality => Preset::Quality,
-    };
-    cfg.keyint = (fps_num / fps_den).max(1) * 2;
-    cfg.bframes = 0;
-    cfg.threads = 1;
-    cfg.color.primaries = 1;
-    cfg.color.transfer = 13;
-    cfg.color.matrix = 1;
-    cfg.format = PacketFormat::LengthPrefixed;
-    let mut enc = Encoder::new(cfg)?;
-    let avcc = AvcConfig::parse(&enc.avcc())?;
-    let mut mux = FragmentedWriter::new(out, WriterOptions::new(Brand::Mp4));
-    let mut entry = SampleEntry::avc(avcc, width as u16, height as u16);
-    entry.video.as_mut().ok_or("AVC sample entry has no video parameters")?.color =
-        Some(ColorInfo::Nclx { primaries: 1, transfer: 13, matrix: 1, full_range: false });
-    let track = mux.add_track(TrackConfig::new(entry, fps_num))?;
-    let mut sink = Sink { mux, track, den: fps_den, since_flush: 0 };
-    let mut rgba = vec![0; w * h * 4];
-    let (mut y, mut u, mut v) = (Vec::new(), Vec::new(), Vec::new());
-    for index in 0..frames {
-        input.read_exact(&mut rgba)?;
-        if rgba.as_chunks::<4>().0.iter().any(|pixel| pixel[3] != 255) {
-            return Err("web H.264 requires opaque input; retain PNG frames for alpha".into());
-        }
-        filmcraft_export::rgba_to_yuv420_8(&rgba, w, h, &mut y, &mut u, &mut v);
-        let frame = YuvFrame { y: &y, u: &u, v: &v, y_stride: w, uv_stride: w / 2 };
-        sink.push(enc.encode(&frame, i64::from(index))?)?;
-    }
-    if input.read(&mut [0])? != 0 {
-        return Err("RGBA input contains more frames than declared".into());
-    }
-    sink.push(enc.flush())?;
-    sink.mux.finish()?.flush()?;
-    Ok(u64::from(frames))
 }
 
 impl<W: Write> Sink<W> {
@@ -441,50 +360,5 @@ mod tests {
     #[test]
     fn probe_rejects_garbage() {
         assert!(probe(&[0u8; 64]).is_err());
-    }
-
-    #[test]
-    fn rgba_stream_rejects_invalid_bounds_before_reading() {
-        let info = RgbaVideoInfo { width: 0, height: 16, fps_num: 24, fps_den: 1, frames: 1 };
-        let error =
-            encode_rgba_fmp4(&[][..], info, &Mp4Options::default(), Vec::new()).unwrap_err();
-        assert!(error.to_string().contains("invalid bounded RGBA"));
-        let extreme = RgbaVideoInfo { width: 16, fps_den: u32::MAX, ..info };
-        assert!(encode_rgba_fmp4(&[][..], extreme, &Mp4Options::default(), Vec::new()).is_err());
-    }
-
-    #[test]
-    fn rgba_stream_refuses_truncation_alpha_and_extra_data() {
-        let info = RgbaVideoInfo { width: 16, height: 16, fps_num: 24, fps_den: 1, frames: 1 };
-        let opts = Mp4Options::default();
-        assert!(encode_rgba_fmp4(&[][..], info, &opts, Vec::new()).is_err());
-        let transparent = vec![0; 16 * 16 * 4];
-        assert!(
-            encode_rgba_fmp4(&transparent[..], info, &opts, Vec::new())
-                .unwrap_err()
-                .to_string()
-                .contains("opaque input")
-        );
-        let extra = vec![255; 16 * 16 * 4 + 1];
-        assert!(
-            encode_rgba_fmp4(&extra[..], info, &opts, Vec::new())
-                .unwrap_err()
-                .to_string()
-                .contains("more frames")
-        );
-    }
-
-    #[test]
-    fn rgba_stream_muxes_the_exact_declared_frame_count() {
-        let info = RgbaVideoInfo { width: 16, height: 16, fps_num: 24, fps_den: 1, frames: 3 };
-        let rgba = vec![255; 16 * 16 * 4 * 3];
-        let mut output = Vec::new();
-        assert_eq!(
-            encode_rgba_fmp4(&rgba[..], info, &Mp4Options::default(), &mut output).unwrap(),
-            3
-        );
-        assert!(output.windows(4).any(|bytes| bytes == b"ftyp"));
-        assert!(output.windows(4).any(|bytes| bytes == b"moov"));
-        assert!(output.windows(4).any(|bytes| bytes == b"moof"));
     }
 }

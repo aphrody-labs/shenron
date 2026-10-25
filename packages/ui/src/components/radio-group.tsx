@@ -18,11 +18,11 @@ function RadioItem({
   return (
     <RadioPrimitive.Root
       className={cn(
-        "cible-44 group relative flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-black bg-[#121218] outline-none transition-all cursor-pointer",
+        "group relative flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-black bg-[#121218] outline-none transition-all cursor-pointer",
         "hover:border-dbz-orange",
         "active:translate-x-px active:translate-y-px",
         "data-[checked]:border-dbz-orange data-[checked]:bg-black",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange/40",
         className,
       )}
       {...props}

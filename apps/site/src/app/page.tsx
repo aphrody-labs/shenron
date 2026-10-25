@@ -18,10 +18,6 @@ import { ogMeta } from "@/lib/og";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { readMediaCatalog } from "@/lib/media-catalog";
 import { pageHero } from "@/lib/banner-config";
-import type { BeerusFeature } from "@/components/home/HomeBeerusFeature";
-import { getEpisodesCached } from "@/app/wiki/episodes/_shared";
-import { DBS_BEERUS_SERIES_CODE } from "@/lib/episode-series-catalogue";
-import { isShenronEpisodeVideoURL } from "@/lib/episode-video-source";
 
 /** Editorial selections use ISR; live community state refreshes after hydration. */
 export const revalidate = 900;
@@ -118,43 +114,6 @@ async function getSagas() {
   }
 }
 
-/** Newest Beerus episode and the aired count, for the hero; null when the series cannot be read. */
-async function getBeerusFeature(): Promise<BeerusFeature | null> {
-  try {
-    const data = await getEpisodesCached(DBS_BEERUS_SERIES_CODE, 200, 0);
-    const aired = data.episodes
-      .filter(
-        (episode) =>
-          (!episode.air_date || episode.air_date * 1000 <= Date.now()) &&
-          (episode.id === 875 || episode.id === 876) &&
-          episode.players?.some((player) => {
-            if (!URL.canParse(player.embedUrl)) return false;
-            const url = new URL(player.embedUrl);
-            return (
-              isShenronEpisodeVideoURL(url) &&
-              url.pathname.startsWith(`/media/episodes/${episode.id}/`)
-            );
-          }),
-      )
-      .map((ep) => ({
-        id: ep.id,
-        number: ep.number_in_series,
-        title: ep.title,
-        titleJa: ep.title_ja,
-        airDate: ep.air_date,
-        image: ep.image || "/banners/dbs-beerus-2026.jpg",
-      }));
-    const latest = aired.at(-1) ?? null;
-    return {
-      total: aired.length,
-      latest,
-      episodes: aired,
-    };
-  } catch {
-    return null;
-  }
-}
-
 export default async function Home() {
   const [
     feed,
@@ -172,7 +131,6 @@ export default async function Home() {
     canonDoctrine,
     canonReferences,
     heroFrame,
-    beerus,
   ] = await Promise.all([
     getHomeFeed(),
     getShenronPersonas(900).catch(() => []),
@@ -197,23 +155,21 @@ export default async function Home() {
     getCanonConfig(),
     getCanonReferences(),
     pageHero("episodes").catch(() => ""),
-    getBeerusFeature(),
   ]);
 
   return (
     <HomeView
       config={config}
       heroFrame={heroFrame}
-      beerus={beerus}
       access={access}
       stats={stats}
-      personas={personas.map((p: any) => ({
+      personas={personas.map((p) => ({
         id: p.id,
         name: p.name,
         avatar: p.avatar,
         online: p.online,
       }))}
-      characters={characters.map((c: any) => ({
+      characters={characters.map((c) => ({
         id: c.id,
         name: c.name,
         nameJa: c.nameJa,
@@ -221,7 +177,7 @@ export default async function Home() {
         ki: c.ki,
         image: c.image,
       }))}
-      sagas={sagas.map((s: any) => ({
+      sagas={sagas.map((s) => ({
         id: s.id,
         slug: s.slug,
         name: s.name,
@@ -231,7 +187,7 @@ export default async function Home() {
       bestof={bestof}
       communityTops={communityTops}
       feed={feed}
-      topMembers={leaderboard.entries.map((m: any) => ({
+      topMembers={leaderboard.entries.map((m) => ({
         rank: m.rank,
         discordId: m.discordId,
         username: m.username,

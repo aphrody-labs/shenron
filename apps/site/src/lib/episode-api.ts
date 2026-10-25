@@ -1,4 +1,3 @@
-import type { PlaybackCapabilities } from "@aphrody/shenron-api/contract";
 // SPDX-License-Identifier: Apache-2.0
 import type { Episode } from "./db-universe";
 import { assetUrl } from "./assets";
@@ -7,7 +6,7 @@ import { EPISODE_SERIES_LABELS } from "./episode-series-links";
 export { EPISODE_SERIES_LABELS } from "./episode-series-links";
 
 /** The catalogue and detail endpoints share the same public media projection. */
-export function episodeApiSummary(ep: Episode, capabilities?: PlaybackCapabilities) {
+export function episodeApiSummary(ep: Episode) {
   return {
     id: ep.id,
     series: ep.series,
@@ -21,7 +20,7 @@ export function episodeApiSummary(ep: Episode, capabilities?: PlaybackCapabiliti
     imageUrl: ep.image ? assetUrl(ep.image) : null,
     synopsis: ep.synopsis,
     scenePreview: ep.scene_preview ?? null,
-    ...episodePlayback(ep, capabilities),
+    ...episodePlayback(ep),
     url: `/wiki/episodes/${ep.id}`,
     downloadUrl: `/api/episodes/${ep.id}/download`,
   };

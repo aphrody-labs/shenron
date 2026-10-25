@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * L'index en lecture seule des CPK est public ; l'espace DBXV2 éditorial reste privé. Le paquet
- * propriétaire et les secrets du service ne quittent jamais le serveur.
+ * DBXV2 est privé : aucune page publique, aucun dictionnaire public, aucune dépendance du site
+ * ni aucun artefact de build ne le référence. Seuls l'espace admin dédié et ses bibliothèques
+ * serveur le nomment, et le paquet privé n'est jamais importé statiquement (donc jamais empaqueté).
  */
 import { describe, expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
@@ -12,15 +13,7 @@ const SITE = join(import.meta.dir, "..");
 const SRC = join(SITE, "src");
 
 const allowed = (rel: string): boolean =>
-  rel.startsWith(`app${sep}admin${sep}dbxv2${sep}`) ||
-  rel.startsWith(`app${sep}api${sep}public${sep}dbxv2${sep}cpk${sep}`) ||
-  rel === join("app", "games", "dragon-pixel", "cpk-scene.ts") ||
-  /^lib[\\/]dbxv2[^\\/]*\.ts$/.test(rel) ||
-  rel === join("components", "games", "Dbxv2CpkExplorer.tsx") ||
-  rel === join("app", "games", "xenoverse-2", "Xenoverse2Explorer.tsx") ||
-  // Both navigation surfaces are mounted exclusively behind the admin layout guard.
-  rel === join("components", "admin", "AdminSidebar.tsx") ||
-  rel === join("components", "admin", "AdminWorkspace.tsx");
+  rel.startsWith(`app${sep}admin${sep}dbxv2${sep}`) || /^lib[\\/]dbxv2[^\\/]*\.ts$/.test(rel);
 
 function* walk(dir: string): Generator<string> {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -31,19 +24,15 @@ function* walk(dir: string): Generator<string> {
 }
 
 describe("pages publiques", () => {
-  test(
-    "les usages CPK publics sont limités au relais read-only et au panneau Xenoverse",
-    () => {
-      const offenders: string[] = [];
-      for (const file of walk(SRC)) {
-        const rel = relative(SRC, file);
-        if (allowed(rel)) continue;
-        if (/dbxv2/i.test(readFileSync(file, "utf8"))) offenders.push(rel);
-      }
-      expect(offenders).toEqual([]);
-    },
-    { timeout: 30_000 },
-  );
+  test("aucun fichier hors de l'espace admin dédié ne mentionne dbxv2", () => {
+    const offenders: string[] = [];
+    for (const file of walk(SRC)) {
+      const rel = relative(SRC, file);
+      if (allowed(rel)) continue;
+      if (/dbxv2/i.test(readFileSync(file, "utf8"))) offenders.push(rel);
+    }
+    expect(offenders).toEqual([]);
+  });
 
   test("les dictionnaires publics ne contiennent aucune clé ni valeur dbxv2", () => {
     for (const locale of ["fr", "en", "ja"]) {
@@ -61,25 +50,10 @@ describe("pages publiques", () => {
     }
   });
 
-  test("le relais public CPK exige sa fonction activée et n'accepte que GET/HEAD", () => {
-    const route = readFileSync(
-      join(SRC, "app", "api", "public", "dbxv2", "cpk", "_relay.ts"),
-      "utf8",
-    );
-    expect(route).toContain('env.DBXV2_PUBLIC_CPK !== "1"');
-    expect(route).toContain('request.method !== "GET" && request.method !== "HEAD"');
-    expect(route).toContain("Authorization: `Bearer ${env.DBXV2_TOKEN}`");
-    expect(route).toContain('"Access-Control-Allow-Origin": "*"');
-    expect(route).toContain('"Cross-Origin-Resource-Policy": "cross-origin"');
-  });
-
   test("l'espace admin passe par la garde du proxy et par requireAdmin", () => {
     const page = readFileSync(join(SRC, "app/admin/dbxv2/page.tsx"), "utf8");
     const actions = readFileSync(join(SRC, "app/admin/dbxv2/_actions.ts"), "utf8");
     expect(page).toContain("requireAdmin()");
-    const layout = readFileSync(join(SRC, "app/admin/layout.tsx"), "utf8");
-    expect(layout).toContain("await requireAdmin()");
-    expect(layout).toContain("<AdminWorkspace>");
     expect(actions.match(/requireAdmin\(\)/g)?.length).toBeGreaterThanOrEqual(5);
     expect(readFileSync(join(SRC, "proxy.ts"), "utf8")).toContain('pathname.startsWith("/admin/")');
   });

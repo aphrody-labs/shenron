@@ -1,85 +1,32 @@
 import { injectable, inject } from "tsyringe";
-import { Bot, ButtonComponent, Discord, Guard, Once, Slash, SlashOption } from "discordx";
+import { Bot, ButtonComponent, Discord, Guard, Slash, SlashOption } from "discordx";
 import {
   ApplicationCommandOptionType,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  ChannelType,
   EmbedBuilder,
   MessageFlags,
   PermissionFlagsBits,
   type ButtonInteraction,
-  type Client,
   type CommandInteraction,
   type TextChannel,
 } from "discord.js";
-import { and, count, eq, lte } from "drizzle-orm";
+import { and, eq, lte } from "drizzle-orm";
 import { GuildOnly } from "~/guards/GuildOnly";
 import { ModOnly } from "~/guards/ModOnly";
 import { FeatureEnabled } from "~/guards/FeatureEnabled";
 import { DatabaseService } from "~/db/index";
 import { giveaways, giveawayEntries } from "~/db/schema";
 import { MessageTemplateService } from "~/services/MessageTemplateService";
-import { CronRegistry } from "~/api/cron-registry";
-import { COLORS } from "~/lib/embeds";
-import { logger } from "~/lib/logger";
-
-/** Durée la plus longue acceptée : au-delà, `Date` déborde ou le tirage n'a plus de sens. */
-const MAX_DURATION_MS = 365 * 86_400_000;
 
 function parseDuration(input: string): number | undefined {
-  const m = input.trim().match(/^(\d+)\s*([smhdw])$/i);
+  const m = input.match(/^(\d+)\s*([smhdw])$/i);
   if (!m) return undefined;
   const n = parseInt(m[1]!, 10);
   const mult =
     { s: 1_000, m: 60_000, h: 3_600_000, d: 86_400_000, w: 604_800_000 }[m[2]!.toLowerCase()] ?? 0;
-  const ms = n * mult;
-  return ms > 0 && ms <= MAX_DURATION_MS ? ms : undefined;
-}
-
-type GiveawayRow = typeof giveaways.$inferSelect;
-
-function giveawayEmbed(
-  gw: Pick<GiveawayRow, "title" | "reward" | "description" | "winners" | "endsAt">,
-  state: { entrants: number; winnerIds?: string[] | null },
-): EmbedBuilder {
-  const ended = state.winnerIds !== undefined && state.winnerIds !== null;
-  const end = `<t:${Math.floor(gw.endsAt.getTime() / 1000)}:${ended ? "f" : "R"}>`;
-  const lines = [
-    gw.description ?? "",
-    "",
-    `**Récompense** : ${gw.reward}`,
-    `**Gagnants** : ${gw.winners}`,
-    `**Participants** : ${state.entrants}`,
-    `**${ended ? "Terminé" : "Fin"}** : ${end}`,
-  ];
-  if (ended) {
-    lines.push(
-      "",
-      state.winnerIds!.length
-        ? `🏆 ${state.winnerIds!.map((id) => `<@${id}>`).join(", ")}`
-        : "*Aucun participant.*",
-    );
-  } else {
-    lines.push("", "Clique sur le bouton pour participer.");
-  }
-  return new EmbedBuilder()
-    .setTitle(`🎁 ${gw.title}`)
-    .setDescription(lines.join("\n").trim())
-    .setColor(ended ? COLORS.muted : COLORS.brand)
-    .setTimestamp(gw.endsAt);
-}
-
-function enterRow(disabled: boolean) {
-  return new ActionRowBuilder<ButtonBuilder>().addComponents(
-    new ButtonBuilder()
-      .setCustomId("giveaway:enter")
-      .setLabel(disabled ? "Terminé" : "Participer")
-      .setEmoji("🎉")
-      .setStyle(disabled ? ButtonStyle.Secondary : ButtonStyle.Success)
-      .setDisabled(disabled),
-  );
+  return n * mult;
 }
 
 @Discord()
@@ -130,7 +77,6 @@ export class GiveawayCommands {
       name: "salon",
       description: "Salon de publication",
       type: ApplicationCommandOptionType.Channel,
-      channelTypes: [ChannelType.GuildText, ChannelType.GuildAnnouncement],
       required: false,
     })
     channel: TextChannel | undefined,
@@ -147,41 +93,43 @@ export class GiveawayCommands {
     const ms = parseDuration(duration);
     if (!ms) {
       await interaction.reply({
-        content: "Durée invalide (ex: 30m, 1h, 2d ; un an au plus).",
+        content: "Durée invalide (ex: 1h, 1d).",
         flags: MessageFlags.Ephemeral,
       });
       return;
     }
-    const ch = channel ?? (interaction.channel as TextChannel | null);
-    if (!ch || typeof ch.send !== "function") {
-      await interaction.reply({
-        content: "Ce salon ne peut pas recevoir de giveaway.",
-        flags: MessageFlags.Ephemeral,
-      });
-      return;
-    }
-    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+    const ch = channel ?? (interaction.channel as TextChannel);
     const endsAt = new Date(Date.now() + ms);
-    const draft = { title, reward, description: description ?? null, winners, endsAt };
 
-    // Un salon sans permission d'écriture faisait échouer la commande sans réponse.
-    const msg = await ch
-      .send({ embeds: [giveawayEmbed(draft, { entrants: 0 })], components: [enterRow(false)] })
-      .catch((err) => {
-        logger.warn({ err, channelId: ch.id }, "giveaway publish failed");
-        return null;
-      });
-    if (!msg) {
-      await interaction.editReply({ content: `❌ Impossible de publier dans ${ch}.` });
-      return;
-    }
+    const embed = new EmbedBuilder()
+      .setTitle(`🎁 ${title}`)
+      .setDescription(
+        `${description ?? ""}\n\n**Récompense** : ${reward}\n**Gagnants** : ${winners}\n**Fin** : <t:${Math.floor(endsAt.getTime() / 1000)}:R>\n\nCliquez sur le bouton pour participer.`,
+      )
+      .setColor(0xfbbf24)
+      .setTimestamp();
+    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      new ButtonBuilder()
+        .setCustomId("giveaway:enter")
+        .setLabel("Participer")
+        .setEmoji("🎉")
+        .setStyle(ButtonStyle.Success),
+    );
+    const msg = await ch.send({ embeds: [embed], components: [row] });
     await this.dbs.db.insert(giveaways).values({
-      ...draft,
       messageId: msg.id,
       channelId: ch.id,
       hostId: interaction.user.id,
+      title,
+      reward,
+      description: description ?? null,
+      winners,
+      endsAt,
     });
-    await interaction.editReply({ content: `✅ Giveaway publié dans ${ch}.` });
+    await interaction.reply({
+      content: `✅ Giveaway publié dans ${ch}.`,
+      flags: MessageFlags.Ephemeral,
+    });
   }
 
   @ButtonComponent({ id: "giveaway:enter" })
@@ -190,32 +138,27 @@ export class GiveawayCommands {
     const gw = await this.dbs.db.query.giveaways.findFirst({
       where: eq(giveaways.messageId, interaction.message.id),
     });
-    // Échu mais pas encore tiré (le tirage passe chaque minute) : déjà fermé.
-    if (!gw || gw.ended || gw.endsAt.getTime() <= Date.now()) {
+    if (!gw || gw.ended) {
       await interaction.reply({ content: "Giveaway terminé.", flags: MessageFlags.Ephemeral });
       return;
     }
-    const inserted = await this.dbs.db
-      .insert(giveawayEntries)
-      .values({ giveawayId: gw.id, userId: interaction.user.id })
-      .onConflictDoNothing()
-      .returning({ id: giveawayEntries.id });
-    const [row] = await this.dbs.db
-      .select({ n: count() })
-      .from(giveawayEntries)
-      .where(eq(giveawayEntries.giveawayId, gw.id));
-    const entrants = Number(row?.n ?? 0);
-    await interaction.reply({
-      content: inserted.length
-        ? `🎉 Participation enregistrée ! (${entrants} participant${entrants > 1 ? "s" : ""})`
-        : "Tu participes déjà.",
-      flags: MessageFlags.Ephemeral,
-    });
-    if (inserted.length) {
-      await interaction.message.edit({ embeds: [giveawayEmbed(gw, { entrants })] }).catch(() => {});
+    try {
+      await this.dbs.db
+        .insert(giveawayEntries)
+        .values({ giveawayId: gw.id, userId: interaction.user.id });
+      await interaction.reply({
+        content: "🎉 Participation enregistrée !",
+        flags: MessageFlags.Ephemeral,
+      });
+    } catch {
+      await interaction.reply({ content: "Tu participes déjà.", flags: MessageFlags.Ephemeral });
     }
   }
 }
+
+import { Once } from "discordx";
+import type { Client } from "discord.js";
+import { CronRegistry } from "~/api/cron-registry";
 
 @Discord()
 @Bot("shenron")
@@ -248,14 +191,6 @@ export class GiveawayTicker {
       .from(giveaways)
       .where(and(eq(giveaways.ended, false), lte(giveaways.endsAt, now)));
     for (const gw of ready) {
-      // Clôture réclamée d'abord : un tirage ne peut pas être joué deux fois.
-      const claimed = await this.dbs.db
-        .update(giveaways)
-        .set({ ended: true })
-        .where(and(eq(giveaways.id, gw.id), eq(giveaways.ended, false)))
-        .returning({ id: giveaways.id });
-      if (claimed.length === 0) continue;
-
       const entries = await this.dbs.db
         .select()
         .from(giveawayEntries)
@@ -269,21 +204,8 @@ export class GiveawayTicker {
       }
       await this.dbs.db
         .update(giveaways)
-        .set({ winnerIds: JSON.stringify(picked) })
+        .set({ ended: true, winnerIds: JSON.stringify(picked) })
         .where(eq(giveaways.id, gw.id));
-
-      const channel = (await client.channels
-        .fetch(gw.channelId)
-        .catch(() => null)) as TextChannel | null;
-      // Le message d'origine affiche le résultat et son bouton se désactive :
-      // il restait cliquable et répondait « terminé » sans rien montrer.
-      const original = await channel?.messages.fetch(gw.messageId).catch(() => null);
-      await original
-        ?.edit({
-          embeds: [giveawayEmbed(gw, { entrants: entries.length, winnerIds: picked })],
-          components: [enterRow(true)],
-        })
-        .catch(() => {});
 
       // Annonce templatable (channel.giveaway) si gagnants — sinon fallback dans
       // le salon d'origine du giveaway pour signaler l'absence de participants.
@@ -300,6 +222,9 @@ export class GiveawayTicker {
             client,
           );
           if (!published) {
+            const channel = (await client.channels
+              .fetch(gw.channelId)
+              .catch(() => null)) as TextChannel | null;
             await channel
               ?.send({
                 content: `🎉 Résultat du giveaway **${gw.title}**\nGagnant${picked.length > 1 ? "s" : ""} : ${picked.map((id) => `<@${id}>`).join(", ")}\nRécompense : ${gw.reward}`,
@@ -308,6 +233,9 @@ export class GiveawayTicker {
           }
         }
       } else {
+        const channel = (await client.channels
+          .fetch(gw.channelId)
+          .catch(() => null)) as TextChannel | null;
         await channel
           ?.send({ content: `😔 Giveaway **${gw.title}** terminé sans participants.` })
           .catch(() => {});

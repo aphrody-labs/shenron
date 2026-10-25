@@ -8,14 +8,6 @@
 import { LaunchPatchSchema, LaunchConfigResponse, LaunchConfigSaveResponse } from "./wiki-launch";
 import { z } from "zod";
 import {
-  ACTIVITY_PATHS,
-  ACTIVITY_SETTLE_MAX_BODY_BYTES,
-  ActivityBudgetParams,
-  ActivityBudgetResponse,
-  ActivitySettleBody,
-  ActivitySettleResponse,
-} from "./activity";
-import {
   WEB_PATHS,
   WebStatus,
   WebImage,
@@ -812,26 +804,6 @@ export const endpoints = {
     path: "/api/economy/stats",
     auth: "admin",
     response: BotEconomyStats,
-    cache: "no-store",
-  },
-  // Service routes of the Arène Shenron Activity (bot-owned, bearer token, never public).
-  activitySettle: {
-    id: "activitySettle",
-    method: "post",
-    path: ACTIVITY_PATHS.settle,
-    auth: "admin",
-    body: ActivitySettleBody,
-    maxBodyBytes: ACTIVITY_SETTLE_MAX_BODY_BYTES,
-    response: ActivitySettleResponse,
-    cache: "no-store",
-  },
-  activityBudget: {
-    id: "activityBudget",
-    method: "get",
-    path: ACTIVITY_PATHS.budget,
-    auth: "admin",
-    params: ActivityBudgetParams,
-    response: ActivityBudgetResponse,
     cache: "no-store",
   },
 } as const satisfies Record<string, EndpointSpec>;

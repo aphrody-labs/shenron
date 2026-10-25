@@ -5,7 +5,6 @@ import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { T } from "@/components/T";
 import { ogMeta } from "@/lib/og";
 import Xenoverse2Explorer from "./Xenoverse2Explorer";
-import { Xenoverse2Runtime } from "@/components/games/Xenoverse2Runtime";
 
 export const metadata: Metadata = {
   title: "Dragon Ball Xenoverse 2 — Jeux",
@@ -27,7 +26,6 @@ export default function Xenoverse2Page() {
         className="mb-4"
         subtitle={<T k="communaute.jeux.xenoverse.lead" />}
       />
-      <Xenoverse2Runtime />
       <Xenoverse2Explorer />
     </PageShell>
   );

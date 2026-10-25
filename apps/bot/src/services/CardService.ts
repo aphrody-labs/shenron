@@ -1,24 +1,21 @@
 import { singleton, inject } from "tsyringe";
+import { createCanvas, loadImage, type Image, type SKRSContext2D } from "@napi-rs/canvas";
 import { BackgroundCacheService } from "./BackgroundCacheService";
 import type { User } from "discord.js";
+import { formatXP, levelForXP, nextThresholdFrom, xpRequiredForLevel } from "~/lib/xp";
 import { logger } from "~/lib/logger";
-import { xpProgress } from "~/lib/xp";
 import { DatabaseService } from "~/db/index";
 import { cardThemes } from "~/db/schema";
-import { SettingsService } from "./SettingsService";
 import { container } from "tsyringe";
 import {
-  RENDER_WORKERS_KEY,
-  imageSourceFrom,
-  pickFrameBackdrop,
-  renderCardOnPool,
-  syncRenderWorkers,
-  warmRenderPool,
-  withExtensions,
-  type ProfileCardInput,
-  type ProfileCardLabels,
-  type RenderedCard,
-} from "~/render";
+  drawDragonBall,
+  drawImageCover,
+  kiScouterLabel,
+  rgba,
+  roundRectPath,
+  textStroked,
+  textWithShadow,
+} from "~/lib/canvas-kit";
 
 interface CardTheme {
   name: string;
@@ -31,6 +28,12 @@ interface CardTheme {
   tintStrength?: number; // teinte aura par-dessus le fond (0-1), défaut 0.08
   gradientAngle?: number; // angle du dégradé sans image (deg), défaut 135
 }
+
+// Valeurs par défaut du rendu (= anciens hardcodes). Utilisées si non définies
+// (thèmes hardcodés CARDS) ; les thèmes DB portent toujours une valeur.
+const DEFAULT_OVERLAY = 0.78;
+const DEFAULT_TINT = 0.08;
+const DEFAULT_ANGLE = 135;
 
 // Palettes calquées sur les couleurs officielles de l'anime/manga DBZ.
 // Sources : brandpalettes.com pour le logo, schemecolor.com pour Goku/Vegeta.
@@ -114,62 +117,17 @@ export interface CardInput {
   color?: string | null;
   fused?: boolean;
   rank?: number | null;
-  /** Race and current transformation role, localized by the caller. */
-  race?: ProfileCardInput["race"];
-  tier?: ProfileCardInput["tier"];
-  /** "1 200 XP to level 13", localized by the caller; `undefined` uses the French fallback. */
-  progressLabel?: string | null;
-  /** Card texts; the French ones below stand in until the callers pass the dictionaries. */
-  labels?: Partial<ProfileCardLabels>;
-  /** Locale of the figures (`fr`, `en`, `ja`). */
-  locale?: string;
-  /**
-   * Episode frame behind a default card (no equipped banner, no purchased theme): chosen from
-   * the race, the tier or the day of the member. `false` keeps the theme banner.
-   */
-  episodeFrame?: boolean;
-}
-
-/** French card texts used while the callers do not pass `labels` (to remove with lot L2). */
-const LEGACY_PROFILE_LABELS: ProfileCardLabels = {
-  level: "Niveau",
-  rank: "Rang",
-  zeni: "Zéni",
-  messages: "Messages",
-  experience: "Expérience",
-  power: "Niveau de ki",
-  max: "MAX",
-  fused: "Fusionné",
-};
-
-/**
- * French "XP left before the next level" line, from the same `xpProgress` as the gauge and
- * the level of the card, so the three always agree. `null` at the top level. Stands in until
- * the callers pass a localized `progressLabel` (to remove with lot L2).
- */
-export function legacyProgressLabel(xp: number): string | null {
-  const { next, remaining } = xpProgress(xp);
-  if (!next) return null;
-  return `${new Intl.NumberFormat("fr-FR").format(Math.ceil(remaining))} XP avant le niveau ${next.level}`;
 }
 
 @singleton()
 export class CardService {
+  private avatarCache = new Map<string, { image: Image; ts: number }>();
+  private bgCache = new Map<string, Image | null>();
   // Cache thèmes DB — refresh 60s. Fallback CARDS hardcoded si DB inaccessible.
   private themesCache: Map<string, CardTheme> | null = null;
   private themesCacheAt = 0;
-  /** Theme id → background path referenced by the catalog but absent from disk. */
-  private readonly missing = new Map<string, string>();
 
-  constructor(@inject(BackgroundCacheService) private bgs: BackgroundCacheService) {
-    // the first worker is up before the first card
-    warmRenderPool();
-  }
-
-  /** Applies the `render.workers` setting to the card pool (once a minute at most). */
-  private syncPool(): Promise<void> {
-    return syncRenderWorkers(() => container.resolve(SettingsService).getRaw(RENDER_WORKERS_KEY));
-  }
+  constructor(@inject(BackgroundCacheService) private bgs: BackgroundCacheService) {}
 
   /**
    * Retourne la map active des thèmes (DB > fallback CARDS hardcoded).
@@ -202,45 +160,32 @@ export class CardService {
     } catch (err) {
       logger.warn({ err }, "CardService.getThemes — fallback CARDS hardcoded");
     }
-    for (const [id, theme] of out) out.set(id, this.withAvailableBackground(id, theme));
     this.themesCache = out;
     this.themesCacheAt = now;
     return out;
   }
 
-  /**
-   * A theme never references a background that is not on disk. The database rows seeded by
-   * migration 0007 name NASA images (`assets/backgrounds/...`) that were never shipped: the
-   * banner of the built-in theme of the same id replaces them, else the theme renders its
-   * gradient. Reported once per theme and path, not on every 60 s refresh.
-   */
-  private withAvailableBackground(id: string, theme: CardTheme): CardTheme {
-    const wanted = theme.bgFile;
-    if (!wanted || this.bgs.exists(wanted)) {
-      this.missing.delete(id);
-      return theme;
-    }
-    const builtin = CARDS[id]?.bgFile;
-    const fallback =
-      builtin && builtin !== wanted && this.bgs.exists(builtin) ? builtin : undefined;
-    if (this.missing.get(id) !== wanted) {
-      this.missing.set(id, wanted);
-      logger.warn(
-        { theme: id, bgFile: wanted, fallback: fallback ?? null },
-        "card theme background missing on disk, not used",
-      );
-    }
-    return { ...theme, bgFile: fallback };
-  }
-
-  /** Themes whose configured background is absent from disk (diagnostics). */
-  missingBackgrounds(): { theme: string; bgFile: string }[] {
-    return [...this.missing].map(([theme, bgFile]) => ({ theme, bgFile }));
-  }
-
   /** Invalide le cache thèmes (appelé par admin POST/PUT/DELETE card-themes). */
   invalidateThemes(): void {
     this.themesCache = null;
+    this.bgCache.clear();
+  }
+
+  private async loadAvatar(user: User): Promise<Image | null> {
+    const cached = this.avatarCache.get(user.id);
+    if (cached && Date.now() - cached.ts < 60 * 60_000) return cached.image;
+    const url = user.displayAvatarURL({
+      extension: "png",
+      size: 512,
+      forceStatic: true,
+    });
+    try {
+      const img = await loadImage(url);
+      this.avatarCache.set(user.id, { image: img, ts: Date.now() });
+      return img;
+    } catch {
+      return null;
+    }
   }
 
   async resolveBannerPath(bannerKey: string): Promise<string | null> {
@@ -260,6 +205,38 @@ export class CardService {
     return null;
   }
 
+  private async loadBackground(key: string, bannerFile?: string | null): Promise<Image | null> {
+    if (bannerFile) {
+      const bannerImg = await this.bgs.get(bannerFile);
+      if (bannerImg) return bannerImg;
+      for (const ext of ["webp", "png", "jpg"]) {
+        const img = await this.bgs.get(`assets/banners/${bannerFile}.${ext}`);
+        if (img) return img;
+      }
+    }
+    if (this.bgCache.has(key)) return this.bgCache.get(key) ?? null;
+    // 1) bgFile explicite du thème (assets/backgrounds/...) — délégué au cache partagé
+    const themes = await this.getThemes();
+    const theme = themes.get(key);
+    if (theme?.bgFile) {
+      const img = await this.bgs.get(theme.bgFile);
+      if (img) {
+        this.bgCache.set(key, img);
+        return img;
+      }
+    }
+    // 2) convention legacy assets/cards/<key>.(webp|png|jpg) — backgrounds achetables via shop
+    for (const ext of ["webp", "png", "jpg"]) {
+      const img = await this.bgs.get(`assets/cards/${key}.${ext}`);
+      if (img) {
+        this.bgCache.set(key, img);
+        return img;
+      }
+    }
+    this.bgCache.set(key, null);
+    return null;
+  }
+
   async listCards(): Promise<string[]> {
     const themes = await this.getThemes();
     return [...themes.keys()];
@@ -270,103 +247,515 @@ export class CardService {
     return themes.get(key);
   }
 
-  /** Thème effectif d'une carte équipée (clé brute, préfixe `card_` ou inconnue → défaut). */
-  async resolveTheme(cardKey: string | null | undefined): Promise<CardTheme> {
-    const themes = await this.getThemes();
-    return themes.get(await this.resolveThemeKey(cardKey)) ?? CARDS.default!;
-  }
+  /**
+   * Render the profile card at 2× internal resolution (retina)
+   * then return a high-quality PNG buffer.
+   */
+  async render(input: CardInput): Promise<Buffer> {
+    const SCALE = 2;
+    const W = 1000 * SCALE;
+    const H = 360 * SCALE;
+    const canvas = createCanvas(W, H);
+    const ctx = canvas.getContext("2d") as SKRSContext2D;
+    ctx.scale(SCALE, SCALE);
 
-  private async resolveThemeKey(cardKey: string | null | undefined): Promise<string> {
     const themes = await this.getThemes();
-    const rawKey = cardKey
-      ? themes.has(cardKey)
-        ? cardKey
-        : cardKey.replace(/^card_/, "")
+    const rawKey = input.cardKey
+      ? themes.has(input.cardKey)
+        ? input.cardKey
+        : input.cardKey.replace(/^card_/, "")
       : "default";
-    return themes.has(rawKey) ? rawKey : "default";
-  }
+    const cardKey = themes.has(rawKey) ? rawKey : "default";
+    const theme = themes.get(cardKey) ?? CARDS.default!;
 
-  /**
-   * Candidate backgrounds of a card, best first: the equipped banner (as given, then with
-   * the usual extensions), the file of the theme, then the legacy `assets/cards/<key>`
-   * convention of purchasable backgrounds. The renderer takes the first that decodes and
-   * draws the theme gradient when none does.
-   */
-  private backgroundCandidates(key: string, theme: CardTheme, bannerFile: string | null): string[] {
-    return [
-      ...(bannerFile ? [bannerFile, ...withExtensions(`assets/banners/${bannerFile}`)] : []),
-      ...(theme.bgFile ? [theme.bgFile] : []),
-      ...withExtensions(`assets/cards/${key}`),
-    ];
-  }
+    // Sécurisation absolue de la couleur : doit être un format CSS valide (#hex, rgb(), hsl())
+    let userColor = theme.accent;
+    if (input.color && typeof input.color === "string") {
+      const c = input.color.trim();
+      if (
+        /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(c) ||
+        /^(rgb|rgba|hsl|hsla)\(/.test(c)
+      ) {
+        userColor = c;
+      }
+    }
 
-  /**
-   * Profile card as PNG at 2x through the shared card renderer (`~/render`): level and XP
-   * gauge from `xpProgress`, rank, zeni, race, tier, equipped banner, colour and badge. A
-   * missing background or avatar draws its fallback and never throws.
-   */
-  async renderCard(input: CardInput): Promise<RenderedCard> {
-    const cardKey = await this.resolveThemeKey(input.cardKey);
-    const theme = await this.resolveTheme(cardKey);
+    const width = 1000;
+    const height = 360;
+    const PAD = 24;
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+
+    const CARD_R = 28;
+    ctx.save();
+    roundRectPath(ctx, 0, 0, width, height, CARD_R);
+    ctx.clip();
+
+    const overlayOpacity = theme.overlayOpacity ?? DEFAULT_OVERLAY;
+    const tintStrength = theme.tintStrength ?? DEFAULT_TINT;
+    const gradientAngle = theme.gradientAngle ?? DEFAULT_ANGLE;
+
     const bannerFile =
       input.bannerPath || (input.bannerKey ? await this.resolveBannerPath(input.bannerKey) : null);
-    await this.syncPool();
-    // A member who bought a theme or equipped a banner keeps it; the default card shows a frame
-    // of the series, chosen by race and tier or by the day.
-    const frame =
-      input.episodeFrame === false || bannerFile || cardKey !== "default"
-        ? null
-        : pickFrameBackdrop({
-            purpose: "profile",
-            seed: input.discordUser.id,
-            race: input.race?.id ?? null,
-            label: input.tier?.label ?? null,
-          });
-    return renderCardOnPool(
-      "profile",
-      {
-        name: input.discordUser.displayName || input.discordUser.username,
-        title: input.title,
-        avatarUrl: input.discordUser.displayAvatarURL({
-          extension: "png",
-          size: 512,
-          forceStatic: true,
-        }),
-        xp: input.xp,
-        // Computed here, never in the render worker: the server's level curve
-        // (`setLevelThresholds`, read from the settings at startup) lives on the main thread only,
-        // and a worker would fall back to the default curve (level 10 shown as "MAX").
-        progress: xpProgress(input.xp),
-        zeni: input.zeni,
-        messages: input.messageCount,
-        rank: input.rank,
-        race: input.race,
-        tier: input.tier,
-        badge: input.badge,
-        fused: input.fused,
-        color: input.color,
-        theme: {
-          accent: theme.accent,
-          aura: theme.aura,
-          gradient: theme.bgGrad,
-          overlayOpacity: theme.overlayOpacity,
-          tintStrength: theme.tintStrength,
-          gradientAngle: theme.gradientAngle,
-          label: theme.name,
-        },
-        backgrounds: this.backgroundCandidates(cardKey, theme, bannerFile),
-        frame,
-        progressLabel:
-          input.progressLabel === undefined ? legacyProgressLabel(input.xp) : input.progressLabel,
-        labels: { ...LEGACY_PROFILE_LABELS, ...input.labels },
-      },
-      { locale: input.locale },
-      { images: imageSourceFrom(this.bgs) },
-    );
-  }
+    const bg = await this.loadBackground(cardKey, bannerFile);
+    if (bg) {
+      // object-fit: cover — préserve le ratio, crop ce qui dépasse
+      drawImageCover(ctx, bg, 0, 0, width, height);
+      // Overlay dégradé : obscurci à gauche pour lisibilité de l'avatar/texte.
+      // Les 3 stops sont pilotés par overlayOpacity (défaut 0.78 → 0.78/0.45/0.22).
+      const overlay = ctx.createLinearGradient(0, 0, width, 0);
+      overlay.addColorStop(0, `rgba(0,0,0,${overlayOpacity})`);
+      overlay.addColorStop(0.55, `rgba(0,0,0,${overlayOpacity * 0.577})`);
+      overlay.addColorStop(1, `rgba(0,0,0,${overlayOpacity * 0.282})`);
+      ctx.fillStyle = overlay;
+      ctx.fillRect(0, 0, width, height);
+      // Teinte thématique pour marier bg + palette
+      ctx.fillStyle = rgba(theme.aura, tintStrength);
+      ctx.fillRect(0, 0, width, height);
+    } else {
+      // Multi-stop linear gradient orienté par gradientAngle (deg, repère écran)
+      const rad = (gradientAngle * Math.PI) / 180;
+      const hx = (Math.cos(rad) * width) / 2;
+      const hy = (Math.sin(rad) * height) / 2;
+      const grad = ctx.createLinearGradient(
+        width / 2 - hx,
+        height / 2 - hy,
+        width / 2 + hx,
+        height / 2 + hy,
+      );
+      grad.addColorStop(0, theme.bgGrad[0]);
+      grad.addColorStop(0.5, theme.bgGrad[1]);
+      grad.addColorStop(1, theme.bgGrad[2]);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, width, height);
 
-  /** Profile card image (see `renderCard`). */
-  async render(input: CardInput): Promise<Buffer> {
-    return (await this.renderCard(input)).buffer;
+      // Halo coloré haut-gauche
+      const radial = ctx.createRadialGradient(200, 140, 20, 200, 140, 520);
+      radial.addColorStop(0, rgba(theme.aura, 0.35));
+      radial.addColorStop(1, rgba(theme.aura, 0));
+      ctx.fillStyle = radial;
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    // Groupe de droite — bien visibles derrière le rang
+    ctx.save();
+    ctx.globalAlpha = 0.35;
+    drawDragonBall(ctx, width - 110, 85, 38, 4);
+    drawDragonBall(ctx, width - 55, 155, 26, 5);
+    drawDragonBall(ctx, width - 170, 115, 22, 1);
+    // Groupe bas-gauche plus discret
+    ctx.globalAlpha = 0.18;
+    drawDragonBall(ctx, 35, height - 40, 20, 7);
+    drawDragonBall(ctx, 85, height - 55, 14, 2);
+    ctx.restore();
+
+    // Bande lumineuse en haut
+    const topGlow = ctx.createLinearGradient(0, 0, 0, 90);
+    try {
+      topGlow.addColorStop(0, rgba(userColor, 0.22));
+      topGlow.addColorStop(1, rgba(userColor, 0));
+    } catch {
+      topGlow.addColorStop(0, rgba(theme.accent, 0.22));
+      topGlow.addColorStop(1, rgba(theme.accent, 0));
+    }
+    ctx.fillStyle = topGlow;
+    ctx.fillRect(0, 0, width, 90);
+
+    // Ombre basse pour la profondeur
+    const bottomShade = ctx.createLinearGradient(0, height - 80, 0, height);
+    bottomShade.addColorStop(0, "rgba(0,0,0,0)");
+    bottomShade.addColorStop(1, "rgba(0,0,0,0.55)");
+    ctx.fillStyle = bottomShade;
+    ctx.fillRect(0, height - 80, width, 80);
+
+    const avatar = await this.loadAvatar(input.discordUser);
+    const AV_CX = 130;
+    const AV_CY = height / 2;
+    const AV_R = 85;
+
+    // Aura avatar : trois couches en blend "screen" = effet lumière additive
+    ctx.save();
+    ctx.globalCompositeOperation = "screen";
+    for (let i = 3; i > 0; i--) {
+      const auraR = AV_R + i * 18;
+      const auraGrad = ctx.createRadialGradient(AV_CX, AV_CY, AV_R, AV_CX, AV_CY, auraR);
+      auraGrad.addColorStop(0, rgba(theme.aura, 0.55));
+      auraGrad.addColorStop(0.6, rgba(theme.aura, 0.18));
+      auraGrad.addColorStop(1, rgba(theme.aura, 0));
+      ctx.fillStyle = auraGrad;
+      ctx.beginPath();
+      ctx.arc(AV_CX, AV_CY, auraR, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // Avatar (découpe ronde)
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(AV_CX, AV_CY, AV_R, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.clip();
+    if (avatar) {
+      ctx.drawImage(avatar, AV_CX - AV_R, AV_CY - AV_R, AV_R * 2, AV_R * 2);
+    } else {
+      // Avatar introuvable → carré gris
+      ctx.fillStyle = "#1f2937";
+      ctx.fillRect(AV_CX - AV_R, AV_CY - AV_R, AV_R * 2, AV_R * 2);
+    }
+    ctx.restore();
+
+    // Ring avatar, couleur équipée
+    ctx.lineWidth = 5;
+    const ringGrad = ctx.createLinearGradient(
+      AV_CX - AV_R,
+      AV_CY - AV_R,
+      AV_CX + AV_R,
+      AV_CY + AV_R,
+    );
+    try {
+      ringGrad.addColorStop(0, userColor);
+    } catch {
+      ringGrad.addColorStop(0, theme.accent);
+    }
+    try {
+      ringGrad.addColorStop(1, theme.accent);
+    } catch {}
+    ctx.strokeStyle = ringGrad;
+    ctx.beginPath();
+    ctx.arc(AV_CX, AV_CY, AV_R + 3, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Ring intérieur pour le relief
+    ctx.strokeStyle = "rgba(255,255,255,0.3)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(AV_CX, AV_CY, AV_R, 0, Math.PI * 2);
+    ctx.stroke();
+
+    const TXT_X = AV_CX + AV_R + 40;
+    const name = input.discordUser.displayName || input.discordUser.username;
+    const level = levelForXP(input.xp);
+    const next = nextThresholdFrom(input.xp);
+
+    // Titre (petit, italique)
+    if (input.title) {
+      textWithShadow(ctx, input.title, TXT_X, 72, {
+        color: "#cbd5e1",
+        font: "italic 600 18px 'Google Sans Flex', sans-serif",
+        shadow: theme.textShadow,
+        blur: 4,
+      });
+    }
+
+    // Pseudo en Google Sans Flex (800, lisible)
+    const displayName = name.toUpperCase();
+    textStroked(ctx, displayName, TXT_X, 120, {
+      color: userColor,
+      stroke: "rgba(0,0,0,0.8)",
+      strokeWidth: 7,
+      font: "800 48px 'Google Sans Flex', sans-serif",
+    });
+
+    // Badge : pastille ronde à côté du pseudo
+    if (input.badge) {
+      ctx.save();
+      ctx.font = "800 48px 'Google Sans Flex', sans-serif";
+      const nameWidth = ctx.measureText(displayName).width;
+      const BADGE_CX = TXT_X + nameWidth + 40;
+      const BADGE_CY = 108;
+      const BADGE_R = 26;
+      // Chip background
+      const chipGrad = ctx.createLinearGradient(0, BADGE_CY - BADGE_R, 0, BADGE_CY + BADGE_R);
+      chipGrad.addColorStop(0, rgba(theme.accent, 0.9));
+      chipGrad.addColorStop(1, rgba(theme.aura, 0.9));
+      ctx.fillStyle = chipGrad;
+      ctx.beginPath();
+      ctx.arc(BADGE_CX, BADGE_CY, BADGE_R, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(0,0,0,0.5)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      // Contenu du badge : emoji couleur (Noto) ou texte court
+      ctx.font = "30px 'Noto Color Emoji', 'Google Sans Flex', sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#1f2937";
+      ctx.fillText(input.badge.slice(0, 2), BADGE_CX, BADGE_CY + 2);
+      ctx.restore();
+    }
+
+    // Ligne de stats (Niveau, Zéni, Fusion)
+    const STATS_Y = 165;
+    // Chip Niveau
+    const levelLabel = `NIVEAU ${level}`;
+    const levelW = 140;
+    const levelH = 38;
+    ctx.save();
+    roundRectPath(ctx, TXT_X, STATS_Y - levelH + 6, levelW, levelH, 10);
+    ctx.fillStyle = rgba(theme.accent, 0.25);
+    ctx.fill();
+    ctx.strokeStyle = rgba(theme.accent, 0.6);
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.restore();
+    textWithShadow(ctx, levelLabel, TXT_X + levelW / 2, STATS_Y, {
+      color: theme.accent,
+      font: "700 28px 'Google Sans Flex', sans-serif",
+      align: "center",
+      shadow: theme.textShadow,
+      blur: 3,
+    });
+
+    // Chip Zéni
+    const zeniX = TXT_X + levelW + 14;
+    const zeniLabel = `${formatXP(input.zeni)} Z`;
+    ctx.save();
+    ctx.font = "700 28px 'Google Sans Flex', sans-serif";
+    const zeniW = Math.max(130, ctx.measureText(zeniLabel).width + 30);
+    roundRectPath(ctx, zeniX, STATS_Y - levelH + 6, zeniW, levelH, 10);
+    ctx.fillStyle = "rgba(251, 191, 36, 0.2)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(251, 191, 36, 0.5)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.restore();
+    textWithShadow(ctx, zeniLabel, zeniX + zeniW / 2, STATS_Y, {
+      color: "#fde047",
+      font: "700 28px 'Google Sans Flex', sans-serif",
+      align: "center",
+      shadow: "rgba(0,0,0,0.7)",
+      blur: 3,
+    });
+
+    // Rang (aligné à droite)
+    if (input.rank) {
+      textWithShadow(ctx, `#${input.rank}`, width - PAD - 30, 90, {
+        color: "#f1f5f9",
+        font: "700 48px 'Google Sans Flex', sans-serif",
+        align: "right",
+        shadow: "rgba(0,0,0,0.7)",
+        blur: 4,
+      });
+      ctx.save();
+      ctx.letterSpacing = "3px";
+      textWithShadow(ctx, "RANG", width - PAD - 30, 115, {
+        color: "#94a3b8",
+        font: "600 14px 'Google Sans Flex', sans-serif",
+        align: "right",
+      });
+      ctx.restore();
+    }
+
+    // Chip Fusion, à la suite du zéni
+    if (input.fused) {
+      const fusedX = zeniX + zeniW + 14;
+      const fusedW = 150;
+      ctx.save();
+      roundRectPath(ctx, fusedX, STATS_Y - levelH + 6, fusedW, levelH, 10);
+      ctx.fillStyle = "rgba(236, 72, 153, 0.22)";
+      ctx.fill();
+      ctx.strokeStyle = "rgba(236, 72, 153, 0.55)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.restore();
+      textWithShadow(ctx, "💞 FUSIONNÉ", fusedX + fusedW / 2, STATS_Y, {
+        color: "#f9a8d4",
+        font: "700 22px 'Google Sans Flex', sans-serif",
+        align: "center",
+        shadow: "rgba(80,7,36,0.8)",
+        blur: 3,
+      });
+    }
+
+    const BAR_X = TXT_X;
+    const BAR_Y = 238;
+    const BAR_W = width - TXT_X - PAD - 20;
+    const BAR_H = 28;
+
+    const baseXp = xpRequiredForLevel(level);
+    const thresholdMin = level === 0 || !Number.isFinite(baseXp) ? 0 : baseXp;
+    const thresholdMax = next?.xp ?? input.xp;
+    const progress =
+      thresholdMax > thresholdMin
+        ? Math.max(0, Math.min(1, (input.xp - thresholdMin) / (thresholdMax - thresholdMin)))
+        : 1;
+
+    // Fond sombre de la barre
+    ctx.save();
+    roundRectPath(ctx, BAR_X, BAR_Y, BAR_W, BAR_H, BAR_H / 2);
+    ctx.fillStyle = "rgba(0,0,0,0.55)";
+    ctx.fill();
+    // Ombre interne
+    ctx.strokeStyle = "rgba(0,0,0,0.5)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.restore();
+
+    // Remplissage
+    if (progress > 0) {
+      ctx.save();
+      roundRectPath(ctx, BAR_X, BAR_Y, BAR_W * progress, BAR_H, BAR_H / 2);
+      ctx.clip();
+      const fillGrad = ctx.createLinearGradient(BAR_X, BAR_Y, BAR_X + BAR_W * progress, BAR_Y);
+      fillGrad.addColorStop(0, theme.aura);
+      fillGrad.addColorStop(0.5, theme.accent);
+      try {
+        fillGrad.addColorStop(1, userColor);
+      } catch {
+        fillGrad.addColorStop(1, theme.accent);
+      }
+      ctx.fillStyle = fillGrad;
+      ctx.fillRect(BAR_X, BAR_Y, BAR_W * progress, BAR_H);
+
+      // Reflet du haut
+      const hi = ctx.createLinearGradient(0, BAR_Y, 0, BAR_Y + BAR_H / 2);
+      hi.addColorStop(0, "rgba(255,255,255,0.35)");
+      hi.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = hi;
+      ctx.fillRect(BAR_X, BAR_Y, BAR_W * progress, BAR_H / 2);
+
+      // Étincelle d'énergie au bout
+      const endX = BAR_X + BAR_W * progress;
+      const sparkle = ctx.createRadialGradient(
+        endX,
+        BAR_Y + BAR_H / 2,
+        0,
+        endX,
+        BAR_Y + BAR_H / 2,
+        20,
+      );
+      sparkle.addColorStop(0, "rgba(255,255,255,0.9)");
+      sparkle.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = sparkle;
+      ctx.fillRect(endX - 20, BAR_Y - 5, 40, BAR_H + 10);
+      ctx.restore();
+    }
+
+    // Bordure
+    ctx.save();
+    roundRectPath(ctx, BAR_X, BAR_Y, BAR_W, BAR_H, BAR_H / 2);
+    ctx.strokeStyle = rgba(userColor, 0.6);
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.restore();
+
+    // Label XP au-dessus de la barre
+    const xpCurrent = formatXP(input.xp);
+    const xpMax = next ? formatXP(next.xp) : "MAX";
+    ctx.save();
+    ctx.letterSpacing = "2px";
+    textWithShadow(ctx, "UNITÉS", BAR_X, BAR_Y - 12, {
+      color: "#94a3b8",
+      font: "700 12px 'Google Sans Flex', sans-serif",
+    });
+    ctx.restore();
+    textWithShadow(ctx, `${xpCurrent} / ${xpMax}`, BAR_X + BAR_W, BAR_Y - 10, {
+      color: "#f1f5f9",
+      font: "700 18px 'Google Sans Flex', sans-serif",
+      align: "right",
+      shadow: theme.textShadow,
+      blur: 3,
+    });
+
+    // % dans la barre
+    if (progress > 0.15) {
+      const pctText = `${Math.round(progress * 100)}%`;
+      textStroked(ctx, pctText, BAR_X + (BAR_W * progress) / 2, BAR_Y + BAR_H / 2 + 5, {
+        color: "#ffffff",
+        stroke: "rgba(0,0,0,0.5)",
+        strokeWidth: 3,
+        font: "700 14px 'Google Sans Flex', sans-serif",
+        align: "center",
+      });
+    }
+
+    const FOOTER_Y = 310;
+    ctx.save();
+    ctx.fillStyle = "rgba(255,255,255,0.08)";
+    ctx.fillRect(BAR_X, FOOTER_Y, BAR_W, 1);
+    ctx.restore();
+
+    const footerItems: Array<{ label: string; value: string }> = [
+      { label: "MESSAGES", value: formatXP(input.messageCount) },
+      { label: "CARTE", value: theme.name.toUpperCase() },
+    ];
+    let footerX = BAR_X;
+    for (const item of footerItems) {
+      ctx.save();
+      // Tracking typographique pour les labels uppercase (style petite capitale)
+      ctx.letterSpacing = "1.5px";
+      textWithShadow(ctx, item.label, footerX, FOOTER_Y + 18, {
+        color: "#64748b",
+        font: "700 11px 'Google Sans Flex', sans-serif",
+      });
+      ctx.restore();
+      textWithShadow(ctx, item.value, footerX, FOOTER_Y + 36, {
+        color: "#e2e8f0",
+        font: "600 18px 'Google Sans Flex', sans-serif",
+      });
+      ctx.save();
+      ctx.font = "600 18px 'Google Sans Flex', sans-serif";
+      footerX += Math.max(120, ctx.measureText(item.value).width + 36);
+      ctx.restore();
+    }
+
+    const kiLabel = kiScouterLabel(input.xp).toUpperCase();
+    const SCOUTER_R_X = width - PAD - 14;
+    const SCOUTER_H = 28;
+    const CHIP_H = SCOUTER_H + 18;
+    // Chip aligné sur la baseline du footer pour rester dans le canvas (height=360)
+    const SCOUTER_Y = height - CHIP_H - 8;
+
+    ctx.save();
+    // Mesure texte scouter
+    ctx.font = "700 30px 'Google Sans Flex', sans-serif";
+    const scouterTextW = ctx.measureText(kiLabel).width;
+    ctx.font = "700 10px 'Google Sans Flex', sans-serif";
+    const kiLabelW = ctx.measureText("KI LEVEL").width;
+    const chipW = Math.max(scouterTextW, kiLabelW) + 26;
+    const chipX = SCOUTER_R_X - chipW;
+    // Chip bg — écran scouter (vert/ambre selon intensité)
+    const kiIntensity = Math.min(1, input.xp / 1_000_000);
+    const chipBg = kiIntensity > 0.5 ? "#22c55e" : "#f59e0b"; // vert > 500k, sinon ambre
+    roundRectPath(ctx, chipX, SCOUTER_Y, chipW, CHIP_H, 6);
+    ctx.fillStyle = "rgba(0,0,0,0.85)";
+    ctx.fill();
+    ctx.strokeStyle = rgba(chipBg, 0.7);
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Label "KI LEVEL" avec tracking pour le côté scouter
+    ctx.fillStyle = rgba(chipBg, 0.9);
+    ctx.font = "700 9px 'Google Sans Flex', sans-serif";
+    ctx.textAlign = "center";
+    ctx.letterSpacing = "2.5px";
+    ctx.fillText("KI LEVEL", chipX + chipW / 2, SCOUTER_Y + 11);
+    ctx.letterSpacing = "0px";
+
+    // Valeur en font Scouter avec glow
+    ctx.shadowColor = chipBg;
+    ctx.shadowBlur = 8;
+    ctx.fillStyle = chipBg;
+    ctx.font = "700 30px 'Google Sans Flex', sans-serif";
+    ctx.fillText(kiLabel, chipX + chipW / 2, SCOUTER_Y + 36);
+    ctx.restore();
+
+    textWithShadow(ctx, `#${input.discordUser.id.slice(-6)}`, width - PAD - 30, 135, {
+      color: "rgba(148,163,184,0.3)",
+      font: "500 10px 'Google Sans Flex', sans-serif",
+      align: "right",
+    });
+
+    ctx.restore(); // undo clip
+    ctx.save();
+    roundRectPath(ctx, 0, 0, width, height, CARD_R);
+    ctx.strokeStyle = rgba(userColor, 0.4);
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.restore();
+
+    // Encodage WebP async (thread pool libuv, non-bloquant, ~40% plus petit qu'un PNG)
+    return await canvas.encode("webp", 92);
   }
 }

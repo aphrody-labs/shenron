@@ -123,24 +123,3 @@ test.skipIf(typeof document === "undefined")(
     expect(container.querySelector('[data-theater="true"]')).toBeNull();
   },
 );
-
-test.skipIf(typeof document === "undefined")(
-  "the mute toggle keeps one accessible name and exposes its state through aria-pressed",
-  async () => {
-    actEnvironment.IS_REACT_ACT_ENVIRONMENT = true;
-    container = document.createElement("div");
-    document.body.append(container);
-    root = createRoot(container);
-    await act(async () => root!.render(player()));
-    const mute = container.querySelector<HTMLButtonElement>('[aria-label="Couper le son"]')!;
-    expect(mute.getAttribute("aria-pressed")).toBe("false");
-    const video = container.querySelector("video")!;
-    await act(async () => {
-      video.muted = true;
-      video.dispatchEvent(new Event("volumechange", { bubbles: true }));
-    });
-    expect(mute.getAttribute("aria-label")).toBe("Couper le son");
-    expect(mute.getAttribute("aria-pressed")).toBe("true");
-    expect(container.querySelector('[aria-label="Activer le son"]')).toBeNull();
-  },
-);

@@ -55,14 +55,8 @@ const child = Bun.spawn(
     "build",
     "src/entry-standalone.ts",
     // Workers are extra entry points: new Worker() can only load modules embedded in the binary.
-    // The embedded root is pinned to apps/bot (cwd): without `--root` Bun derives it from the
-    // entries, and the canvas addon below lives outside apps/bot, so the workers' embedded path
-    // moved with the checkout layout. They are at `src/workers/` (see src/lib/bundled-worker.ts).
-    "--root",
-    ".",
     "src/workers/indexer.ts",
     "src/workers/vector-builder.ts",
-    "src/workers/render.ts",
     canvas,
     canvasBinding,
     "--compile",
@@ -85,19 +79,9 @@ if ((await child.exited) !== 0) throw new Error("bot compile failed");
 // Keep the platform package beside the binary so the sealed image can copy it
 // into the runtime filesystem; this is required by Bun 1.4.4 as well as Linux.
 copyRuntimeFile(canvasBinding, join(out, `skia.${canvasPlatform}.node`));
-// Skia shapes the letter-spaced lettering of the cards with ICU data read next to the binary:
-// without `icudtl.dat` the first card drawn aborts the process (render workers included).
-const icuData = join(dirname(canvasBinding), "icudtl.dat");
-if (existsSync(icuData)) copyRuntimeFile(icuData, join(out, "icudtl.dat"));
 // Migrations are read from disk by drizzle at boot: ship them beside the binary.
 const migrations = join(BOT, "src/db/migrations");
 if (existsSync(migrations)) copyRuntimeDirectory(migrations, join(out, "src/db/migrations"));
-// Canvas fonts and banners: the image has no source tree and Infra mounts /app/assets.
-const canvasAssets = Bun.spawn(
-  [process.execPath, "scripts/ship-canvas-assets.ts", join(out, "share")],
-  { cwd: BOT, stdio: ["inherit", "inherit", "inherit"] },
-);
-if ((await canvasAssets.exited) !== 0) throw new Error("canvas assets copy failed");
 // A release worktree's `.git` points outside the build container: the caller passes the commit.
 const sourceCommit = process.env.SHENRON_REVISION ?? (await gitHead());
 if (!/^[0-9a-f]{40}$/.test(sourceCommit)) throw Error("Cannot pin bot source revision");

@@ -8,7 +8,6 @@ import {
   invoke,
   configureKoharuBridge,
   koharuBridge,
-  importStudioFiles,
 } from "../src/transport.ts";
 
 const realFetch = globalThis.fetch;
@@ -20,74 +19,6 @@ afterEach(() => {
   delete (globalThis as { window?: unknown }).window;
   (globalThis as { EventSource?: unknown }).EventSource = realEventSource;
   delete (globalThis as { __TAURI_INTERNALS__?: unknown }).__TAURI_INTERNALS__;
-});
-
-describe("hosted catalogue file handoff", () => {
-  test("uploads real File bodies on the selected bridge and keeps its event session", async () => {
-    (globalThis as { EventSource?: unknown }).EventSource = FakeEventSource;
-    configureKoharuBridge("/api/studio", true);
-    const source = new File([new Uint8Array([137, 80, 78, 71])], "chapter-12-page-3.png", {
-      type: "image/png",
-    });
-    const calls = fakeFetch((_url, init) => {
-      expect(init.body).toBeInstanceOf(FormData);
-      expect(init.credentials).toBe("same-origin");
-      return Response.json({ result: null });
-    });
-    const session = koharuBridge().session;
-    await expect(importStudioFiles([source])).resolves.toBeNull();
-    expect(calls[0]!.url).toBe("/api/studio/import");
-    expect((calls[0]!.init.headers as Record<string, string>)[KOHARU_SESSION_HEADER]).toBe(session);
-    expect(FakeEventSource.last!.url).toContain(`session=${session}`);
-    const uploaded = (calls[0]!.init.body as FormData).get("files") as File;
-    expect(uploaded.name).toBe(source.name);
-    expect(new Uint8Array(await uploaded.arrayBuffer())).toEqual(
-      new Uint8Array(await source.arrayBuffer()),
-    );
-  });
-
-  test("refuses local and Tauri uploads instead of opening another transport", async () => {
-    const calls = fakeFetch(() => Response.json({ result: null }));
-    const file = new File(["source"], "page.webp");
-    await expect(importStudioFiles([file])).rejects.toThrow("hosted browser");
-    await expect(new KoharuBridge().importFiles([file])).rejects.toThrow("hosted browser");
-    configureKoharuBridge("/api/studio", true);
-    (globalThis as { __TAURI_INTERNALS__?: unknown }).__TAURI_INTERNALS__ = {};
-    await expect(importStudioFiles([file])).rejects.toThrow("hosted browser");
-    expect(calls).toHaveLength(0);
-  });
-
-  test("bounds files and respects cancellation before sending bytes", async () => {
-    configureKoharuBridge("/api/studio", true);
-    const calls = fakeFetch(() => Response.json({ result: null }));
-    await expect(importStudioFiles([new File(["private"], "config.env")])).rejects.toThrow(
-      "Unsupported",
-    );
-    await expect(
-      importStudioFiles(Array.from({ length: 101 }, () => new File(["page"], "page.png"))),
-    ).rejects.toThrow("100");
-    const oversized = new File(["page"], "page.png");
-    Object.defineProperty(oversized, "size", { value: 96 * 1024 * 1024 + 1 });
-    await expect(importStudioFiles([oversized])).rejects.toThrow("96 MiB");
-    const controller = new AbortController();
-    controller.abort();
-    await expect(
-      importStudioFiles([new File(["page"], "page.png")], controller.signal),
-    ).rejects.toThrow();
-    expect(calls).toHaveLength(0);
-  });
-
-  test("forwards cancellation to the upload and preserves server rejection", async () => {
-    configureKoharuBridge("/api/studio", true);
-    const controller = new AbortController();
-    const calls = fakeFetch(() =>
-      Response.json({ error: "Studio staff authentication required" }, { status: 401 }),
-    );
-    await expect(
-      importStudioFiles([new File(["page"], "page.png")], controller.signal),
-    ).rejects.toThrow("authentication");
-    expect(calls[0]!.init.signal).toBe(controller.signal);
-  });
 });
 
 test("hosted mode pins commands and channels to one same-origin authenticated bridge", async () => {

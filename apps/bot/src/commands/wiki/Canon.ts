@@ -1,12 +1,17 @@
+import { resolveApiUrl, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import { inject, injectable } from "tsyringe";
 import { Bot, Discord, Guard, Slash, SlashChoice, SlashGroup, SlashOption } from "discordx";
 import {
+  ActionRowBuilder,
   ApplicationCommandOptionType,
+  ButtonBuilder,
+  ButtonStyle,
   EmbedBuilder,
   MessageFlags,
   type AutocompleteInteraction,
   type CommandInteraction,
 } from "discord.js";
+import { Pagination } from "@discordx/pagination";
 import { GuildOnly } from "~/guards/GuildOnly";
 import { AdminOnly } from "~/guards/AdminOnly";
 import { CommandsChannelOnly } from "~/guards/CommandsChannelOnly";
@@ -38,6 +43,9 @@ import {
  * page, on la tient ici mot pour mot.
  */
 
+const SITE = resolveSiteUrl(Bun.env);
+const ASSETS = resolveApiUrl(Bun.env);
+
 const PROVENANCE_LABEL: Record<CanonReference["provenance"], string> = {
   aphrody: "déclaration d'auteur",
   databooks: "planche de databook",
@@ -45,19 +53,23 @@ const PROVENANCE_LABEL: Record<CanonReference["provenance"], string> = {
   manuel: "saisie par l'équipe",
 };
 
+function lienSite(href: string): string {
+  return href.startsWith("http") ? href : `${SITE}${href}`;
+}
+
+/** Chemin d'asset (`./assets/…`) → URL absolue servie par le bot. */
+function assetUrl(chemin: string | null): string | null {
+  if (!chemin) return null;
+  if (chemin.startsWith("http")) return chemin;
+  return `${ASSETS}/db/${chemin.replace(/^\.?\/*/, "")}`;
+}
+
+function uneLigne(texte: string, max: number): string {
+  const t = texte.replace(/\s+/g, " ").trim();
+  return t.length <= max ? t : `${t.slice(0, max - 1).trimEnd()}…`;
+}
+
 import { SHENRON_THEME, SHENRON_SEPARATORS, renderProgressBar } from "~/lib/embeds";
-import {
-  SITE_URL,
-  clip,
-  linkLabel,
-  linkRow,
-  respondAutocomplete,
-  sendPages,
-  siteLink,
-  wikiAssetUrl,
-  wikiAuthor,
-  wikiFooter,
-} from "~/lib/wiki-embeds";
 
 function barreScore(score: number): string {
   return `${renderProgressBar(score, 100, 10)} (${score}/100)`;
@@ -73,11 +85,14 @@ function embedVerdict(v: CanonVerdict): EmbedBuilder {
 
   const embed = new EmbedBuilder()
     .setColor(badgeColor)
-    .setAuthor(wikiAuthor("ARBITRE DE CANONICITÉ"))
+    .setAuthor({
+      name: "ARBITRE DE CANONICITÉ · dragonballfr.com",
+      iconURL: "https://dragonballfr.com/favicon.ico",
+    })
     .setTitle(
-      `${troll ? "🚫" : inconnu ? "⚪" : EMOJI_RANG[r.tier]} 【${r.tierLabel.toUpperCase()}】 ${clip(v.question, 220)}`,
+      `${troll ? "🚫" : inconnu ? "⚪" : EMOJI_RANG[r.tier]} 【${r.tierLabel.toUpperCase()}】 ${uneLigne(v.question, 220)}`,
     )
-    .setURL(`${SITE_URL}/wiki/canon?q=${encodeURIComponent(v.question)}`)
+    .setURL(`${SITE}/wiki/canon?q=${encodeURIComponent(v.question)}`)
     .setDescription(
       [
         troll
@@ -100,25 +115,22 @@ function embedVerdict(v: CanonVerdict): EmbedBuilder {
   if (r.tierDefinition && !inconnu) {
     embed.addFields({
       name: "📖 Définition du rang",
-      value: clip(r.tierDefinition, 1024),
+      value: uneLigne(r.tierDefinition, 1024),
     });
   }
   if (r.toriyamaQuote) {
     embed.addFields({
-      name: clip(
-        `🖋️ Akira Toriyama (鳥山 明) — ${r.toriyamaQuote.source}${r.toriyamaQuote.year ? ` (${r.toriyamaQuote.year})` : ""}`,
-        256,
-      ),
-      value: `> « ${clip(r.toriyamaQuote.text, 950)} »`,
+      name: `🖋️ Akira Toriyama (鳥山 明) — ${r.toriyamaQuote.source}${r.toriyamaQuote.year ? ` (${r.toriyamaQuote.year})` : ""}`,
+      value: `> « ${uneLigne(r.toriyamaQuote.text, 950)} »`,
     });
   }
   for (const ref of v.references.slice(0, 2)) {
     const texte = ref.textFr ?? ref.text;
-    const lien = ref.href ? ` · [Consulter le scan](${siteLink(ref.href)})` : "";
+    const lien = ref.href ? ` · [Consulter le scan](${lienSite(ref.href)})` : "";
     embed.addFields({
-      name: `📜 Preuve : ${clip(ref.source, 200)}${ref.year ? ` (${ref.year})` : ""}`,
+      name: `📜 Preuve : ${uneLigne(ref.source, 200)}${ref.year ? ` (${ref.year})` : ""}`,
       value:
-        `> « ${clip(texte, 850)} »\n*Provenance : ${PROVENANCE_LABEL[ref.provenance]}${lien}*`.slice(
+        `> « ${uneLigne(texte, 850)} »\n*Provenance : ${PROVENANCE_LABEL[ref.provenance]}${lien}*`.slice(
           0,
           1024,
         ),
@@ -131,12 +143,12 @@ function embedVerdict(v: CanonVerdict): EmbedBuilder {
         .slice(0, 3)
         .map(
           (p) =>
-            `• [${linkLabel(p.databookTitre, 60)}, planche ${p.numero}](${siteLink(p.href)})${p.verifiee ? " ✓" : ""}`,
+            `• [${uneLigne(p.databookTitre, 60)}, planche ${p.numero}](${lienSite(p.href)})${p.verifiee ? " ✓" : ""}`,
         )
         .join("\n")
         .slice(0, 1024),
     });
-    const image = wikiAssetUrl(v.planches[0]!.image);
+    const image = assetUrl(v.planches[0]!.image);
     if (image) embed.setThumbnail(image);
   }
   if (v.fiches.length > 0) {
@@ -146,14 +158,14 @@ function embedVerdict(v: CanonVerdict): EmbedBuilder {
         .slice(0, 4)
         .map(
           (f) =>
-            `• [${linkLabel(f.titre, 60)}](${siteLink(f.href)})${f.nameJa ? ` (${f.nameJa})` : ""} — ${clip(f.extrait, 90)}`,
+            `• [${uneLigne(f.titre, 60)}](${lienSite(f.href)})${f.nameJa ? ` (${f.nameJa})` : ""} — ${uneLigne(f.extrait, 90)}`,
         )
         .join("\n")
         .slice(0, 1024),
     });
     // The entity's own picture, when the planches gave no thumbnail.
     const portrait = v.fiches.find((f) => f.image)?.image ?? null;
-    const image = portrait ? wikiAssetUrl(portrait) : null;
+    const image = portrait ? assetUrl(portrait) : null;
     if (image && !embed.data.thumbnail) embed.setThumbnail(image);
     if (image && v.planches.length === 0) embed.setImage(image);
   }
@@ -162,7 +174,7 @@ function embedVerdict(v: CanonVerdict): EmbedBuilder {
       name: troll ? "⚖️ Sujets tranchés qui existent, eux" : "🔎 Sujets tranchés proches",
       value: v.suggestions
         .slice(0, 4)
-        .map((s) => `• [${linkLabel(s.titre, 70)}](${siteLink(s.href)})`)
+        .map((s) => `• [${uneLigne(s.titre, 70)}](${lienSite(s.href)})`)
         .join("\n")
         .slice(0, 1024),
     });
@@ -170,7 +182,7 @@ function embedVerdict(v: CanonVerdict): EmbedBuilder {
   if (r.sources.length > 0 && !inconnu) {
     embed.addFields({
       name: "🏛️ Sources doctrinales",
-      value: clip(r.sources.join(" · "), 1024),
+      value: uneLigne(r.sources.join(" · "), 1024),
     });
   }
   const origine = troll
@@ -180,24 +192,32 @@ function embedVerdict(v: CanonVerdict): EmbedBuilder {
       : r.origine.startsWith("heuristic:")
         ? "Application de la règle générale"
         : "Hors doctrine : aucune extrapolation";
-  embed.setFooter(
-    wikiFooter(
-      `${origine}${r.matchedKeywords.length ? ` · Termes : ${r.matchedKeywords.slice(0, 5).join(", ")}` : ""}`,
-    ),
-  );
+  embed.setFooter({
+    text: `${origine}${r.matchedKeywords.length ? ` · Termes : ${r.matchedKeywords.slice(0, 5).join(", ")}` : ""} · dragonballfr.com`,
+    iconURL: "https://dragonballfr.com/favicon.ico",
+  });
   return embed;
 }
 
-function boutons(question: string) {
-  return linkRow([
-    {
-      label: "Verdict & Preuves",
-      emoji: "📜",
-      url: `/wiki/canon${question ? `?q=${encodeURIComponent(question.slice(0, 300))}` : ""}`,
-    },
-    { label: "La Doctrine des 5 Rangs", emoji: "⚖️", url: "/wiki/canon" },
-    { label: "Databooks & Scans", emoji: "📚", url: "/wiki/databooks" },
-  ]);
+function boutons(question: string): ActionRowBuilder<ButtonBuilder> {
+  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    new ButtonBuilder()
+      .setStyle(ButtonStyle.Link)
+      .setLabel("Verdict & Preuves")
+      .setEmoji("📜")
+      .setURL(`${SITE}/wiki/canon${question ? `?q=${encodeURIComponent(question)}` : ""}`),
+    new ButtonBuilder()
+      .setStyle(ButtonStyle.Link)
+      .setLabel("La Doctrine des 5 Rangs")
+      .setEmoji("⚖️")
+      .setURL(`${SITE}/wiki/canon`),
+    new ButtonBuilder()
+      .setStyle(ButtonStyle.Link)
+      .setLabel("Databooks & Scans")
+      .setEmoji("📚")
+      .setURL(`${SITE}/wiki/databooks`),
+  );
+  return row;
 }
 
 @Discord()
@@ -216,15 +236,14 @@ export class CanonCommands {
   ) {}
 
   private async completerSujet(interaction: AutocompleteInteraction): Promise<void> {
-    await respondAutocomplete(interaction, async () => {
-      const sujets = await this.canon.sujets(interaction.options.getFocused());
-      // Un titre au-delà de 100 signes ne peut pas servir de valeur : on le
-      // tronque, `verifier` le traite comme une question libre.
-      return sujets.map((s) => ({
-        name: `${EMOJI_RANG[s.tier]} ${s.title}`,
-        value: clip(s.title, 100),
-      }));
-    });
+    const focus = interaction.options.getFocused();
+    const sujets = await this.canon.sujets(focus);
+    await interaction.respond(
+      sujets.map((s) => ({
+        name: `${EMOJI_RANG[s.tier]} ${s.title.slice(0, 90)}`,
+        value: s.title.slice(0, 100),
+      })),
+    );
   }
 
   @Slash({
@@ -274,15 +293,18 @@ export class CanonCommands {
     }
     const embed = new EmbedBuilder()
       .setColor(SHENRON_THEME.gold)
-      .setAuthor(wikiAuthor("DOCTRINE OFFICIELLE DE CANONICITÉ"))
+      .setAuthor({
+        name: "DOCTRINE OFFICIELLE DE CANONICITÉ · dragonballfr.com",
+        iconURL: "https://dragonballfr.com/favicon.ico",
+      })
       .setTitle("⚖️ Qu'est-ce qui compte dans Dragon Ball ? · 正史の基準")
-      .setURL(`${SITE_URL}/wiki/canon`)
+      .setURL(`${SITE}/wiki/canon`)
       .setDescription(
         [
           `*La doctrine DragonBallFR établit cinq rangs hiérarchisés pour distinguer le canon absolu d'Akira Toriyama des dérivés.*`,
           "",
           `${SHENRON_SEPARATORS.solid}`,
-          clip(d.intro || "Cinq rangs, par autorité décroissante.", 1500),
+          uneLigne(d.intro || "Cinq rangs, par autorité décroissante.", 1500),
           `${SHENRON_SEPARATORS.solid}`,
         ].join("\n"),
       );
@@ -290,7 +312,7 @@ export class CanonCommands {
       embed.addFields({
         name: `${EMOJI_RANG[t.id]} ${t.label}`,
         value:
-          `${clip(t.definition, 600)}\n*Exemples : ${clip(t.inclut.slice(0, 6).join(" · "), 380)}*`.slice(
+          `${uneLigne(t.definition, 600)}\n*Exemples : ${uneLigne(t.inclut.slice(0, 6).join(" · "), 380)}*`.slice(
             0,
             1024,
           ),
@@ -301,16 +323,15 @@ export class CanonCommands {
         name: "📜 Principes fondamentaux",
         value: d.doctrine
           .slice(0, 6)
-          .map((r) => `• ${clip(r, 160)}`)
+          .map((r) => `• ${uneLigne(r, 160)}`)
           .join("\n")
           .slice(0, 1024),
       });
     }
-    embed.setFooter(
-      wikiFooter(
-        `${d.entries.length} sujets tranchés · ${d.stats.references} preuves archéologiques`,
-      ),
-    );
+    embed.setFooter({
+      text: `${d.entries.length} sujets tranchés · ${d.stats.references} preuves archéologiques · dragonballfr.com`,
+      iconURL: "https://dragonballfr.com/favicon.ico",
+    });
     await interaction.editReply({ embeds: [embed], components: [boutons("")] });
   }
 
@@ -350,11 +371,14 @@ export class CanonCommands {
       const lot = entrees.slice(i, i + parPage);
       const embed = new EmbedBuilder()
         .setColor(rang ? COULEURS_RANG[rang] : SHENRON_THEME.gold)
-        .setAuthor(wikiAuthor("ARBITRAGES DOCTRINAUX"))
+        .setAuthor({
+          name: "ARBITRAGES DOCTRINAUX · dragonballfr.com",
+          iconURL: "https://dragonballfr.com/favicon.ico",
+        })
         .setTitle(
           `⚖️ Sujets Tranchés${rang ? ` · ${d.tiers.find((t) => t.id === rang)?.court ?? rang}` : ""}`,
         )
-        .setURL(`${SITE_URL}/wiki/canon`)
+        .setURL(`${SITE}/wiki/canon`)
         .setDescription(
           [
             `*Index des affirmations analysées et fixées selon la doctrine.*`,
@@ -362,7 +386,7 @@ export class CanonCommands {
             `${SHENRON_SEPARATORS.solid}`,
             ...lot.map(
               (e) =>
-                `${EMOJI_RANG[e.tier]} **[${linkLabel(e.title, 80)}](${SITE_URL}/wiki/canon?q=${encodeURIComponent(e.title)})**\n> \`${renderProgressBar(e.score, 100, 8)}\` (${e.score}/100)\n> *${clip(e.verdict, 200)}*`,
+                `${EMOJI_RANG[e.tier]} **[${uneLigne(e.title, 80)}](${SITE}/wiki/canon?q=${encodeURIComponent(e.title)})**\n> \`${renderProgressBar(e.score, 100, 8)}\` (${e.score}/100)\n> *${uneLigne(e.verdict, 200)}*`,
             ),
             `${SHENRON_SEPARATORS.solid}`,
           ]
@@ -372,9 +396,9 @@ export class CanonCommands {
         .setFooter({
           text: `${entrees.length} sujets répertoriés · /canon verifier pour tester une affirmation`,
         });
-      pages.push({ embeds: [embed.toJSON()], components: [boutons("")] });
+      pages.push({ embeds: [embed] });
     }
-    await sendPages(interaction, pages);
+    await new Pagination(interaction, pages, { time: 180_000 }).send();
   }
 
   @Slash({
@@ -419,9 +443,9 @@ export class CanonCommands {
         .setColor(isDatabook ? SHENRON_THEME.gold : SHENRON_THEME.kiGreen)
         .setAuthor({
           name: `${PROVENANCE_LABEL[ref.provenance].toUpperCase()} · Preuve ${i + 1}/${page.items.length} (sur ${page.total})`,
-          iconURL: `${SITE_URL}/favicon.ico`,
+          iconURL: "https://dragonballfr.com/favicon.ico",
         })
-        .setTitle(`📜 ${clip(ref.subject, 240)}`)
+        .setTitle(`📜 ${uneLigne(ref.subject, 240)}`)
         .setDescription(
           [
             `${SHENRON_SEPARATORS.solid}`,
@@ -438,15 +462,18 @@ export class CanonCommands {
       if (ref.textFr && ref.lang !== "fr" && ref.text) {
         embed.addFields({
           name: `🇯🇵 Texte original (${ref.lang.toUpperCase()})`,
-          value: `> « ${clip(ref.text, 800)} »`,
+          value: `> « ${uneLigne(ref.text, 800)} »`,
           inline: false,
         });
       }
-      if (ref.href) embed.setURL(siteLink(ref.href));
-      embed.setFooter(wikiFooter(`Recherche : « ${clip(terme, 60)} »`));
-      return { embeds: [embed.toJSON()], components: [boutons(terme)] };
+      if (ref.href) embed.setURL(lienSite(ref.href));
+      embed.setFooter({
+        text: `Recherche : « ${terme.slice(0, 60)} » · dragonballfr.com/wiki/canon`,
+        iconURL: "https://dragonballfr.com/favicon.ico",
+      });
+      return { embeds: [embed] };
     });
-    await sendPages(interaction, pages);
+    await new Pagination(interaction, pages, { time: 180_000 }).send();
   }
 
   @Slash({

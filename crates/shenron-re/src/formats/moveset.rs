@@ -69,7 +69,7 @@ fn calculate_move_frame_data(m: &BacMove, bdm: Option<&BdmFile>) -> MoveFrameDat
     let mut total_stm = 0;
     let mut max_hitstun = 0;
     let mut max_blockstun = 0;
-    let mut damage_type = DamageType::None;
+    let mut damage_type = DamageType::Strike;
     let mut knockback = 0.0f32;
 
     let active_frames = if let Some(first_hit) = m.hitboxes.first() {
@@ -140,21 +140,14 @@ mod tests {
                     damage: 250,
                     bdm_entry_id: 1,
                     knockback_type: 0,
-                    damage_when_blocked: 0,
-                    position: [0.0; 3],
-                    size: 0.3,
-                    min_bounds: [0.0; 3],
-                    max_bounds: [0.0; 3],
                 }],
-                animations: Vec::new(),
-                blocks: Vec::new(),
             }],
         };
 
         let bdm = BdmFile {
             entries: vec![BdmEntry {
                 id: 1,
-                damage_type: DamageType::Standard,
+                damage_type: DamageType::Strike,
                 base_damage: 250,
                 stamina_damage: 50,
                 hitstun_frames: 18,
@@ -163,7 +156,6 @@ mod tests {
                 knockback_strength: 1.5,
                 pushback_distance: 0.5,
                 camera_shake: 0,
-                variants: Vec::new(),
             }],
         };
 

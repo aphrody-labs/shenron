@@ -9,8 +9,7 @@
 //! in-between animation.
 
 use image::{
-    Delay, Frame, Rgba, RgbaImage,
-    codecs::gif::{GifEncoder, Repeat},
+    Rgba, RgbaImage,
     imageops::{self, FilterType},
 };
 use serde_json::{Value, json};
@@ -85,62 +84,6 @@ pub struct SheetFrame {
 }
 
 impl Sheet {
-    /// Encode the actual atlas tiles as a looping cut-out animation, in frame order.
-    ///
-    /// GIF delays have centisecond precision. The requested rate is rounded to the
-    /// nearest representable delay; this does not create intermediate drawings.
-    /// Only one tile is copied at a time, rather than all frames being retained.
-    ///
-    /// # Errors
-    /// Fails on an inconsistent public sheet structure or when the GIF encoder does.
-    pub fn gif(&self) -> Result<Vec<u8>, ExportError> {
-        if self.frames.is_empty()
-            || self.columns == 0
-            || self.rows == 0
-            || self.tile.0 == 0
-            || self.tile.1 == 0
-            || u64::from(self.columns) > MAX_SIDE
-            || u64::from(self.rows) > MAX_SIDE
-            || u64::from(self.tile.0) > MAX_SIDE
-            || u64::from(self.tile.1) > MAX_SIDE
-            || u64::from(self.padding) > MAX_SIDE
-            || !self.fps.is_finite()
-            || !(1.0..=100.0).contains(&self.fps)
-        {
-            return Err(ExportError::BadSheet("invalid animation grid or rate".into()));
-        }
-        let width = u64::from(self.columns) * (u64::from(self.tile.0) + u64::from(self.padding))
-            - u64::from(self.padding);
-        let height = u64::from(self.rows) * (u64::from(self.tile.1) + u64::from(self.padding))
-            - u64::from(self.padding);
-        if width > MAX_SIDE
-            || height > MAX_SIDE
-            || width != u64::from(self.image.width())
-            || height != u64::from(self.image.height())
-            || self.frames.len() as u64 > u64::from(self.columns) * u64::from(self.rows)
-        {
-            return Err(ExportError::BadSheet("animation tiles do not fit the image".into()));
-        }
-        let delay_ms = ((100.0 / self.fps).round().max(1.0) as u32) * 10;
-        let mut output = Vec::new();
-        {
-            let mut encoder = GifEncoder::new_with_speed(&mut output, 10);
-            encoder.set_repeat(Repeat::Infinite)?;
-            for index in 0..self.frames.len() {
-                let (x, y) = self.tile_origin(index as u32);
-                let tile =
-                    imageops::crop_imm(&self.image, x, y, self.tile.0, self.tile.1).to_image();
-                encoder.encode_frame(Frame::from_parts(
-                    tile,
-                    0,
-                    0,
-                    Delay::from_numer_denom_ms(delay_ms, 1),
-                ))?;
-            }
-        }
-        Ok(output)
-    }
-
     /// Origin of the tile of frame `index`, in sheet pixels.
     #[must_use]
     pub fn tile_origin(&self, index: u32) -> (u32, u32) {
@@ -204,14 +147,7 @@ pub fn build_sheet(panels: &[Panel], opts: &SheetOptions) -> Result<Sheet, Expor
     if panels.is_empty() {
         return Err(ExportError::NoPanels);
     }
-    if !opts.fps.is_finite() || !(1.0..=100.0).contains(&opts.fps) {
-        return Err(ExportError::BadSheet("fps must be finite and between 1 and 100".into()));
-    }
-    if panels.iter().any(|p| p.image.width() == 0 || p.image.height() == 0) {
-        return Err(ExportError::BadSheet("a panel has a zero side".into()));
-    }
-    let n =
-        u32::try_from(panels.len()).map_err(|_| ExportError::BadSheet("too many panels".into()))?;
+    let n = panels.len() as u32;
     let tile = match opts.tile {
         Some(t) => t,
         None => {
@@ -230,12 +166,6 @@ pub fn build_sheet(panels: &[Panel], opts: &SheetOptions) -> Result<Sheet, Expor
     };
     if tile.0 == 0 || tile.1 == 0 {
         return Err(ExportError::BadSheet("tile has a zero side".into()));
-    }
-    if u64::from(tile.0) > MAX_SIDE
-        || u64::from(tile.1) > MAX_SIDE
-        || u64::from(opts.padding) > MAX_SIDE
-    {
-        return Err(ExportError::BadSheet("tile or padding exceeds the texture limit".into()));
     }
     let columns = if opts.columns == 0 { f64::from(n).sqrt().ceil() as u32 } else { opts.columns }
         .clamp(1, n);
@@ -335,61 +265,5 @@ mod tests {
         assert!(matches!(build_sheet(&p, &zero), Err(ExportError::BadSheet(_))));
         let huge = SheetOptions { tile: Some((9000, 8)), ..SheetOptions::default() };
         assert!(matches!(build_sheet(&p, &huge), Err(ExportError::BadSheet(_))));
-    }
-
-    #[test]
-    fn invalid_animation_rates_and_empty_images_are_refused() {
-        let panels = [panel(10, 10, 0)];
-        for fps in [0.0, -1.0, f32::NAN, f32::INFINITY, 100.1] {
-            let options = SheetOptions { fps, ..SheetOptions::default() };
-            assert!(matches!(build_sheet(&panels, &options), Err(ExportError::BadSheet(_))));
-        }
-        assert!(matches!(
-            build_sheet(&[panel(0, 10, 0)], &SheetOptions::default()),
-            Err(ExportError::BadSheet(_))
-        ));
-    }
-
-    #[test]
-    fn animated_sheet_roundtrips_tiles_in_order_without_padding_or_unused_cells() {
-        use image::AnimationDecoder as _;
-        use std::io::Cursor;
-
-        let panels = [panel(20, 10, 10), panel(10, 20, 100), panel(10, 10, 200)];
-        let sheet = build_sheet(
-            &panels,
-            &SheetOptions {
-                tile: Some((32, 32)),
-                columns: 2,
-                padding: 7,
-                fps: 8.0,
-                ..SheetOptions::default()
-            },
-        )
-        .unwrap();
-        let bytes = sheet.gif().unwrap();
-        let decoder = image::codecs::gif::GifDecoder::new(Cursor::new(&bytes)).unwrap();
-        let frames = decoder.into_frames().collect_frames().unwrap();
-        assert_eq!(frames.len(), 3);
-        for (frame, shade) in frames.iter().zip([10, 100, 200]) {
-            assert_eq!(frame.buffer().dimensions(), (32, 32));
-            assert_eq!(frame.buffer().get_pixel(16, 16).0, [shade, shade, shade, 255]);
-            assert_eq!(frame.delay().numer_denom_ms(), (130, 1));
-        }
-        assert_eq!(frames[0].buffer().get_pixel(0, 0).0, [255, 255, 255, 255]);
-    }
-
-    #[test]
-    fn mutated_public_sheet_cannot_panic_the_encoder() {
-        let mut sheet = build_sheet(&[panel(10, 10, 0)], &SheetOptions::default()).unwrap();
-        sheet.columns = 0;
-        assert!(matches!(sheet.gif(), Err(ExportError::BadSheet(_))));
-        sheet.columns = u32::MAX;
-        sheet.padding = u32::MAX;
-        assert!(matches!(sheet.gif(), Err(ExportError::BadSheet(_))));
-        sheet.columns = 1;
-        sheet.padding = 0;
-        sheet.image = RgbaImage::new(1, 1);
-        assert!(matches!(sheet.gif(), Err(ExportError::BadSheet(_))));
     }
 }

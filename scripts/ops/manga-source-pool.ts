@@ -693,6 +693,42 @@ async function readBounded(response: Response, max: number, retain: boolean) {
   }
   return { bytes, size, sha256: hash.digest("hex") };
 }
+async function robotsAllows(url: URL, fetcher: typeof fetch = fetch) {
+  const response = await fetcher(url.origin + "/robots.txt", {
+    redirect: "error",
+    signal: AbortSignal.timeout(20000),
+  });
+  if (response.status === 404) return { allowed: true, status: 404 };
+  if (!response.ok) return { allowed: false, status: response.status };
+  const raw = await readBounded(response, 512 * 1024, true);
+  const text = new TextDecoder().decode(raw.bytes);
+  let applicable = false;
+  let longest = -1;
+  let allowed = true;
+  for (const rawLine of text.split(/\r?\n/)) {
+    const line = rawLine.replace(/#.*/, "").trim();
+    const agent = /^User-agent:\s*(.*)$/i.exec(line);
+    if (agent) {
+      applicable = agent[1]!.trim() === "*";
+      continue;
+    }
+    const rule = /^(Allow|Disallow):\s*(.*)$/i.exec(line);
+    if (!applicable || !rule || !rule[2]) continue;
+    const pattern = rule[2].trim();
+    const expression =
+      "^" +
+      pattern
+        .split("*")
+        .map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+        .join(".*")
+        .replace(/\\\$$/, "$");
+    if (new RegExp(expression).test(url.pathname + url.search) && pattern.length >= longest) {
+      longest = pattern.length;
+      allowed = rule[1]!.toLowerCase() === "allow";
+    }
+  }
+  return { allowed, status: response.status, sha256: raw.sha256 };
+}
 export async function executeTask(
   task: PoolTask,
   job: string,
@@ -761,7 +797,7 @@ export async function executeTask(
   }
   const robots = ownHosts.has(url.hostname)
     ? { allowed: true, status: 200, basis: "first-party-authorized-public-resource" }
-    : { allowed: true, status: 0, basis: "robots-not-read" };
+    : await robotsAllows(url, fetcher);
   if (!robots.allowed)
     return { state: "robots_refused", taskId: task.id, robots, startedAt, children: [] };
   if (task.kind === "browser") {

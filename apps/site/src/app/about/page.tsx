@@ -38,7 +38,7 @@ export default function AboutPage() {
             </div>
             <Link
               href="/wiki"
-              className="text-xs font-bold text-dbz-orange uppercase tracking-wider mt-6 inline-flex min-h-6 items-center gap-1"
+              className="text-xs font-bold text-dbz-orange uppercase tracking-wider mt-6 inline-flex items-center gap-1"
             >
               Explorer la base →
             </Link>
@@ -59,7 +59,7 @@ export default function AboutPage() {
             </div>
             <Link
               href="/personas"
-              className="text-xs font-bold text-purple-300 uppercase tracking-wider mt-6 inline-flex min-h-6 items-center gap-1 hover:underline"
+              className="text-xs font-bold text-purple-300 uppercase tracking-wider mt-6 inline-flex items-center gap-1 hover:underline"
             >
               Consulter les Gardiens →
             </Link>
@@ -82,7 +82,7 @@ export default function AboutPage() {
               href={DISCORD_INVITE}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs font-bold text-cyan-300 uppercase tracking-wider mt-6 inline-flex min-h-6 items-center gap-1 hover:underline"
+              className="text-xs font-bold text-cyan-300 uppercase tracking-wider mt-6 inline-flex items-center gap-1 hover:underline"
             >
               Rejoindre le serveur →
             </a>
@@ -118,7 +118,7 @@ export default function AboutPage() {
                   <Bouclier className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-display font-bold text-white">Rigueur Canonique</h3>
+                  <h4 className="text-sm font-display font-bold text-white">Rigueur Canonique</h4>
                   <p className="text-xs text-white/75 font-sans mt-0.5">
                     Toutes nos fiches et informations sont sourcées depuis les 42 tomes du manga et
                     les guides officiels.
@@ -130,7 +130,7 @@ export default function AboutPage() {
                   <Bulle className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-display font-bold text-white">Entraide & Partage</h3>
+                  <h4 className="text-sm font-display font-bold text-white">Entraide & Partage</h4>
                   <p className="text-xs text-white/75 font-sans mt-0.5">
                     Une documentation collaborative ouverte aux relectures et aux contributions des
                     membres.
@@ -142,9 +142,9 @@ export default function AboutPage() {
                   <Recompense className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-display font-bold text-white">
+                  <h4 className="text-sm font-display font-bold text-white">
                     Recherche & Preuves Documentées
-                  </h3>
+                  </h4>
                   <p className="text-xs text-white/75 font-sans mt-0.5">
                     Outils d&apos;indexation et de consultation pour retrouver instantanément les
                     citations et planches originales.

@@ -19,11 +19,6 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { StatusBadge } from "@aphrody/shenron-ui/admin";
-import { useTranslations } from "next-intl";
-import { useConfirm } from "@/components/admin/admin-ui";
-import { EmptyState, ErrorState, errorMessage, SkeletonRows } from "@/components/admin/bot/BotUi";
-import { useBotFormat } from "@/components/admin/bot/useBotFormat";
 import { api } from "@/lib/admin-api";
 import { ChannelSelect } from "@/components/admin/ChannelSelect";
 import { RoleSelect } from "@/components/admin/RoleSelect";
@@ -46,26 +41,65 @@ interface CurrentSetting {
   value: string;
 }
 
-const CATEGORY_ICON: Record<string, React.ElementType> = {
-  xp: Trophy,
-  economy: Coins,
-  channels: Hash,
-  roles: Shield,
-  features: Power,
-  moderation: ShieldAlert,
-  anti_invite: MessageSquare,
-  tickets: Ticket,
-  gifs: Film,
-  advanced: Wrench,
+const CATEGORY_META: Record<string, { label: string; icon: React.ElementType; desc: string }> = {
+  xp: {
+    label: "XP & niveaux",
+    icon: Trophy,
+    desc: "Gain d'XP par message, vocal, multipliers de rôle.",
+  },
+  economy: {
+    label: "Économie",
+    icon: Coins,
+    desc: "Récompenses zenis, drops, bonus level-up.",
+  },
+  channels: {
+    label: "Salons",
+    icon: Hash,
+    desc: "Mappage des salons par fonction (welcome, logs, etc.).",
+  },
+  roles: {
+    label: "Rôles",
+    icon: Shield,
+    desc: "Rôles spéciaux : fusion, jail, bio.",
+  },
+  features: {
+    label: "Fonctions",
+    icon: Power,
+    desc: "Activer / désactiver les modules du bot.",
+  },
+  moderation: {
+    label: "Modération",
+    icon: ShieldAlert,
+    desc: "Seuils warns, durées par défaut.",
+  },
+  anti_invite: {
+    label: "Anti-invitation",
+    icon: MessageSquare,
+    desc: "Détection de liens d'invitation Discord.",
+  },
+  tickets: {
+    label: "Tickets",
+    icon: Ticket,
+    desc: "Webhook de notification + nom d'affichage du webhook tickets.",
+  },
+  gifs: {
+    label: "GIFs sanctions",
+    icon: Film,
+    desc: "Override des GIFs DBZ embed pour warn / mute / kick / ban / jail / purge / unjail / unban.",
+  },
+  advanced: {
+    label: "Avancé",
+    icon: Wrench,
+    desc: "Préfixes dynamiques (xp.boost.role.<id>).",
+  },
 };
 
-const TICKET_KINDS = ["report", "achat", "shop", "abus", "staff"] as const;
-const TICKET_KIND_EMOJI: Record<(typeof TICKET_KINDS)[number], string> = {
-  report: "🚨",
-  achat: "🛒",
-  shop: "🏪",
-  abus: "⚠️",
-  staff: "📝",
+const TICKET_KINDS = ["report", "achat", "shop", "abus"] as const;
+const TICKET_KIND_META: Record<(typeof TICKET_KINDS)[number], { emoji: string; label: string }> = {
+  report: { emoji: "🚨", label: "Signaler" },
+  achat: { emoji: "🛒", label: "Achat" },
+  shop: { emoji: "🏪", label: "Shop" },
+  abus: { emoji: "⚠️", label: "Abus de perm" },
 };
 const TICKET_ACCESS_PREFIX = "tickets.access.";
 
@@ -83,8 +117,6 @@ const CATEGORY_ORDER = [
 ];
 
 export default function SettingsPage() {
-  const t = useTranslations("adminBot.settings");
-  const { confirm, dialog } = useConfirm();
   const qc = useQueryClient();
 
   const schema = useQuery({
@@ -105,25 +137,25 @@ export default function SettingsPage() {
   } | null>(null);
   useEffect(() => {
     if (!toast) return;
-    const timer = setTimeout(() => setToast(null), 3500);
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => setToast(null), 3500);
+    return () => clearTimeout(t);
   }, [toast]);
 
   const set = useMutation({
     mutationFn: (data: { key: string; value: string }) => api.post("/services/settings/set", data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["settings"] });
-      setToast({ type: "success", msg: t("saved") });
+      setToast({ type: "success", msg: "Paramètre enregistré." });
     },
-    onError: (err: Error) => setToast({ type: "error", msg: t("failed", { error: err.message }) }),
+    onError: (err: Error) => setToast({ type: "error", msg: `Échec : ${err.message}` }),
   });
   const unset = useMutation({
     mutationFn: (key: string) => api.post("/services/settings/unset", { key }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["settings"] });
-      setToast({ type: "success", msg: t("reset") });
+      setToast({ type: "success", msg: "Retour à la valeur par défaut." });
     },
-    onError: (err: Error) => setToast({ type: "error", msg: t("failed", { error: err.message }) }),
+    onError: (err: Error) => setToast({ type: "error", msg: `Échec : ${err.message}` }),
   });
 
   const valueMap = useMemo(() => {
@@ -171,53 +203,38 @@ export default function SettingsPage() {
     return out;
   }, [valueMap]);
 
-  const onUnset = async (key: string) => {
-    const ok = await confirm({
-      title: t("resetConfirmTitle"),
-      description: t("resetConfirmBody", { key }),
-      confirmLabel: t("resetConfirm"),
-      tone: "danger",
-    });
-    if (ok) unset.mutate(key);
-  };
-
-  if (schema.isLoading) return <SkeletonRows count={4} className="h-16" />;
-  if (schema.isError)
-    return (
-      <ErrorState
-        message={errorMessage(schema.error)}
-        onRetry={() => schema.refetch()}
-        retrying={schema.isFetching}
-      />
-    );
-  if (!grouped.length) return <EmptyState title={t("empty")} icon={<SettingsIcon />} />;
+  if (schema.isLoading)
+    return <div className="text-zinc-500 text-sm">Chargement de la configuration…</div>;
 
   return (
     <div className="space-y-4">
-      {dialog}
-      <div aria-live="polite" className="fixed right-4 top-4 z-50">
-        {toast && (
-          <div
-            role={toast.type === "error" ? "alert" : "status"}
-            className={`rounded-lg border px-4 py-3 text-sm shadow-xl ${
-              toast.type === "success"
-                ? "border-dbz-green/50 bg-card text-green-300"
-                : "border-dbz-red/50 bg-card text-red-300"
-            }`}
-          >
-            {toast.msg}
-          </div>
-        )}
+      {toast && (
+        <div
+          className={`fixed top-4 right-4 z-50 rounded-lg border px-4 py-3 text-sm shadow-xl ${
+            toast.type === "success"
+              ? "border-green-500/50 bg-dbz-card text-green-300"
+              : "border-red-500/50 bg-dbz-card text-red-300"
+          }`}
+        >
+          {toast.msg}
+        </div>
+      )}
+      <div className="dbz-panel p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <SettingsIcon className="h-5 w-5 text-dbz-orange" />
+          <h2 className="text-lg font-saiyan text-dbz-orange uppercase">Configuration du bot</h2>
+        </div>
+        <p className="text-sm text-zinc-300">
+          Tous les réglages du bot sont regroupés ici : quels salons utiliser, quels rôles assigner,
+          combien d'XP gagner par message… Chaque valeur a un défaut intégré ; vous ne modifiez que
+          ce que vous souhaitez personnaliser.
+        </p>
+        <p className="mt-1 text-xs text-dbz-blue-light">
+          {schema.data?.keys.filter((k) => !k.prefix).length ?? 0} paramètres ·{overriddenCount}{" "}
+          personnalisé{overriddenCount > 1 ? "s" : ""} · les valeurs par défaut s'appliquent si rien
+          n'est défini · cache bot 30 s
+        </p>
       </div>
-      <p className="max-w-3xl text-sm text-muted-foreground">
-        {t("intro")}{" "}
-        <span className="text-xs">
-          {t("summary", {
-            total: schema.data?.keys.filter((k) => !k.prefix).length ?? 0,
-            overridden: overriddenCount,
-          })}
-        </span>
-      </p>
 
       {grouped.map(({ category, keys }) => (
         <CategorySection
@@ -226,7 +243,7 @@ export default function SettingsPage() {
           keys={keys}
           valueMap={valueMap}
           onSet={(key, value) => set.mutate({ key, value })}
-          onUnset={onUnset}
+          onUnset={(key) => unset.mutate(key)}
           xpBoostRoles={category === "xp" ? xpBoostRoles : undefined}
           ticketAccessRoles={category === "tickets" ? ticketAccessRoles : undefined}
           pending={set.isPending || unset.isPending}
@@ -235,8 +252,6 @@ export default function SettingsPage() {
     </div>
   );
 }
-
-const boldChunk = (chunks: React.ReactNode) => <strong>{chunks}</strong>;
 
 function CategorySection({
   category,
@@ -257,31 +272,29 @@ function CategorySection({
   ticketAccessRoles?: Record<string, string[]>;
   pending: boolean;
 }) {
-  const t = useTranslations("adminBot.settings");
-  const label = t.has(`categories.${category}.label`)
-    ? t(`categories.${category}.label`)
-    : category;
-  const desc = t.has(`categories.${category}.desc`) ? t(`categories.${category}.desc`) : "";
-  // Cast: the icon union collapses to `never` under the canary React types.
-  const Icon = (CATEGORY_ICON[category] ?? SettingsIcon) as React.ComponentType<{
-    className?: string;
-  }>;
+  const meta = CATEGORY_META[category] ?? {
+    label: category,
+    icon: SettingsIcon,
+    desc: "",
+  };
+  // `meta` est une union (CATEGORY_META[...] ?? fallback) dont l'intersection des
+  // props composant donne `never` sous les types React canary → cast explicite.
+  const Icon = meta.icon as React.ComponentType<{ className?: string }>;
   const [open, setOpen] = useState(category === "features" || category === "channels");
   const overridden = keys.filter((k) => !k.prefix && valueMap.has(k.key)).length;
   const total = keys.filter((k) => !k.prefix).length;
 
   return (
-    <div className="min-w-0 rounded-xl border border-border bg-card">
+    <div className="card p-0">
       <button
         type="button"
-        aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center gap-3 p-4 text-left transition-colors hover:bg-muted/30"
+        className="flex w-full items-center gap-3 p-4 text-left transition-colors hover:bg-zinc-900/40"
       >
-        <Icon className="h-5 w-5 shrink-0 text-primary" />
-        <div className="min-w-0 flex-1">
-          <h3 className="font-semibold text-foreground">{label}</h3>
-          <p className="text-xs text-muted-foreground">{desc}</p>
+        <Icon className="h-5 w-5 shrink-0 text-brand-400" />
+        <div className="flex-1">
+          <h3 className="font-semibold">{meta.label}</h3>
+          <p className="text-xs text-zinc-500">{meta.desc}</p>
           {category === "tickets" && ticketAccessRoles && (
             <TicketAccessEditor
               entries={ticketAccessRoles}
@@ -291,16 +304,15 @@ function CategorySection({
             />
           )}
         </div>
-        <StatusBadge tone={overridden > 0 ? "accent" : "neutral"}>
-          {t("overriddenCount", { overridden, total })}
-        </StatusBadge>
+        <span className="badge">
+          {overridden} / {total} surchargé{overridden > 1 ? "s" : ""}
+        </span>
         <ChevronDown
-          aria-hidden
-          className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+          className={`h-4 w-4 shrink-0 text-zinc-500 transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
       {open && (
-        <div className="border-t border-border p-4">
+        <div className="border-t border-zinc-800 p-4">
           <div className="space-y-2">
             {keys
               .filter((k) => !k.prefix)
@@ -342,26 +354,23 @@ function SettingRow({
   onUnset: () => void;
   pending: boolean;
 }) {
-  const t = useTranslations("adminBot.settings");
   const [draft, setDraft] = useState<string>(current ?? "");
   const [editing, setEditing] = useState(false);
 
   const isOverridden = current !== undefined;
 
   return (
-    <div className="rounded-lg border border-border bg-background/40 p-3">
-      <div className="flex flex-wrap items-start gap-3">
+    <div className="rounded-lg border border-zinc-800 bg-zinc-950/40 p-3">
+      <div className="flex items-start gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <code className="text-sm font-medium">{def.key}</code>
-            {isOverridden && <StatusBadge tone="warning">{t("overridden")}</StatusBadge>}
+            {isOverridden && <span className="badge badge-warning">surchargé</span>}
             {!isOverridden && def.default !== undefined && (
-              <span className="text-xs text-muted-foreground">
-                {t("default", { value: String(def.default) })}
-              </span>
+              <span className="text-xs text-zinc-500">défaut : {String(def.default)}</span>
             )}
           </div>
-          <p className="mt-0.5 text-xs text-muted-foreground">{def.description}</p>
+          <p className="mt-0.5 text-xs text-zinc-400">{def.description}</p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
           {!editing && (
@@ -375,23 +384,22 @@ function SettingRow({
             }}
             className="btn btn-ghost px-2"
           >
-            {editing ? t("close") : isOverridden ? t("edit") : t("define")}
+            {editing ? "Fermer" : isOverridden ? "Modifier" : "Définir"}
           </button>
           {isOverridden && (
             <button
               type="button"
               onClick={onUnset}
               className="btn btn-ghost px-2 text-red-400"
-              title={t("resetTitle")}
-              aria-label={t("resetTitle")}
+              title="Supprimer la surcharge (retour au défaut)"
             >
-              <Trash2 aria-hidden className="h-3 w-3" />
+              <Trash2 className="h-3 w-3" />
             </button>
           )}
         </div>
       </div>
       {editing && (
-        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3">
+        <div className="mt-3 flex items-center gap-2 border-t border-zinc-800 pt-3">
           <SettingValueInput def={def} value={draft} onChange={setDraft} />
           <button
             type="button"
@@ -403,7 +411,7 @@ function SettingRow({
             disabled={pending || !draft}
             className="btn btn-primary"
           >
-            {t("save")}
+            Enregistrer
           </button>
         </div>
       )}
@@ -420,7 +428,6 @@ function SettingValueInput({
   value: string;
   onChange: (v: string) => void;
 }) {
-  const t = useTranslations("adminBot.settings");
   if (def.type === "snowflake" && def.key.startsWith("channel.")) {
     const types =
       def.channelType === "voice"
@@ -441,17 +448,16 @@ function SettingValueInput({
         className="input flex-1 font-mono text-xs"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={t("snowflakePlaceholder")}
-        aria-label={def.key}
+        placeholder="snowflake (17-20 chiffres)"
       />
     );
   }
   if (def.type === "bool") {
     return (
       <select className="input flex-1" value={value} onChange={(e) => onChange(e.target.value)}>
-        <option value="">{t("choose")}</option>
-        <option value="true">{t("enabled")}</option>
-        <option value="false">{t("disabled")}</option>
+        <option value="">— Choisir —</option>
+        <option value="true">true (activé)</option>
+        <option value="false">false (désactivé)</option>
       </select>
     );
   }
@@ -479,12 +485,11 @@ function SettingValueInput({
 }
 
 function GifPreview({ url }: { url: string }) {
-  const t = useTranslations("adminBot.settings");
   if (!/^https:\/\//i.test(url))
-    return <span className="text-xs italic text-muted-foreground">{t("httpsRequired")}</span>;
+    return <span className="text-xs italic text-zinc-600">URL https requise</span>;
   return (
     <div className="flex items-center gap-2">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {}
       <img
         src={url}
         alt=""
@@ -497,20 +502,17 @@ function GifPreview({ url }: { url: string }) {
         href={url}
         target="_blank"
         rel="noreferrer"
-        className="text-xs text-muted-foreground hover:text-primary"
+        className="text-xs text-zinc-400 hover:text-brand-400"
         title={url}
-        aria-label={t("openGif")}
       >
-        <ExternalLink aria-hidden className="h-3 w-3" />
+        <ExternalLink className="h-3 w-3" />
       </a>
     </div>
   );
 }
 
 function SettingValuePreview({ def, value }: { def: SettingDef; value: string }) {
-  const t = useTranslations("adminBot.settings");
-  const fmt = useBotFormat();
-  if (!value) return <span className="text-xs italic text-muted-foreground">{t("notSet")}</span>;
+  if (!value) return <span className="text-xs italic text-zinc-600">non défini</span>;
   if (def.key.startsWith("gif.")) {
     return <GifPreview url={value} />;
   }
@@ -522,16 +524,18 @@ function SettingValuePreview({ def, value }: { def: SettingDef; value: string })
   }
   if (def.type === "bool") {
     const on = value === "true" || value === "1";
-    return <StatusBadge tone={on ? "success" : "danger"}>{on ? t("on") : t("off")}</StatusBadge>;
+    return (
+      <span className={`badge ${on ? "badge-success" : "badge-error"}`}>{on ? "ON" : "OFF"}</span>
+    );
   }
   if (def.type === "int" || def.type === "float") {
     return (
-      <code className="rounded bg-muted px-2 py-1 text-xs font-mono">
-        {fmt.number(Number(value))}
+      <code className="rounded bg-zinc-800 px-2 py-1 text-xs font-mono">
+        {Number(value).toLocaleString("fr-FR")}
       </code>
     );
   }
-  return <code className="rounded bg-muted px-2 py-1 text-xs font-mono">{value}</code>;
+  return <code className="rounded bg-zinc-800 px-2 py-1 text-xs font-mono">{value}</code>;
 }
 
 function ChannelInline({ channelId }: { channelId: string }) {
@@ -542,7 +546,9 @@ function ChannelInline({ channelId }: { channelId: string }) {
     staleTime: 30_000,
   });
   const c = data?.channels.find((x) => x.id === channelId);
-  return <code className="rounded bg-muted px-2 py-1 text-xs">{c ? `#${c.name}` : channelId}</code>;
+  return (
+    <code className="rounded bg-zinc-800 px-2 py-1 text-xs">{c ? `#${c.name}` : channelId}</code>
+  );
 }
 
 function RoleInline({ roleId }: { roleId: string }) {
@@ -555,7 +561,7 @@ function RoleInline({ roleId }: { roleId: string }) {
   const r = data?.roles.find((x) => x.id === roleId);
   return (
     <code
-      className="rounded bg-muted px-2 py-1 text-xs"
+      className="rounded bg-zinc-800 px-2 py-1 text-xs"
       style={
         r && r.color !== 0 ? { color: `#${r.color.toString(16).padStart(6, "0")}` } : undefined
       }
@@ -576,31 +582,28 @@ function XpBoostRoleEditor({
   onUnset: (roleId: string) => void;
   pending: boolean;
 }) {
-  const t = useTranslations("adminBot.settings");
   const [roleId, setRoleId] = useState("");
   const [mult, setMult] = useState("1.5");
   return (
-    <div className="mt-4 rounded-lg border border-border bg-background/40 p-3">
-      <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        {t("xpBoost.title", { count: entries.length })}
+    <div className="mt-4 rounded-lg border border-zinc-800 bg-zinc-950/40 p-3">
+      <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">
+        Multiplicateurs XP par rôle ({entries.length})
       </h4>
-      <p className="mb-3 text-xs text-muted-foreground">
-        {t.rich("xpBoost.hint", { strong: boldChunk })}
+      <p className="mb-3 text-xs text-zinc-500">
+        Si un membre a plusieurs rôles boostés, on prend le <strong>max</strong> (ne stack pas).
       </p>
       <div className="space-y-2">
         {entries.map((e) => (
           <div key={e.roleId} className="flex items-center gap-2">
             <RoleInline roleId={e.roleId} />
-            <span className="text-xs text-muted-foreground">×</span>
-            <code className="rounded bg-muted px-2 py-1 text-xs">{e.multiplier}</code>
+            <span className="text-xs text-zinc-500">×</span>
+            <code className="rounded bg-zinc-800 px-2 py-1 text-xs">{e.multiplier}</code>
             <button
               type="button"
               onClick={() => onUnset(e.roleId)}
               className="btn btn-ghost px-2 text-red-400"
-              aria-label={t("remove")}
-              title={t("remove")}
             >
-              <Trash2 aria-hidden className="h-3 w-3" />
+              <Trash2 className="h-3 w-3" />
             </button>
           </div>
         ))}
@@ -615,7 +618,6 @@ function XpBoostRoleEditor({
           value={mult}
           onChange={(e) => setMult(e.target.value)}
           placeholder="1.5"
-          aria-label={t("xpBoost.multiplier")}
         />
         <button
           type="button"
@@ -628,7 +630,7 @@ function XpBoostRoleEditor({
           disabled={pending || !roleId || !mult}
           className="btn btn-primary"
         >
-          {t("xpBoost.add")}
+          Ajouter le booster
         </button>
       </div>
     </div>
@@ -646,7 +648,6 @@ function TicketAccessEditor({
   onUnset: (kind: string, roleId: string) => void;
   pending: boolean;
 }) {
-  const t = useTranslations("adminBot.settings");
   const [kind, setKind] = useState<(typeof TICKET_KINDS)[number]>("report");
   const [roleId, setRoleId] = useState("");
   const current = entries[kind] ?? [];
@@ -657,12 +658,14 @@ function TicketAccessEditor({
   });
 
   return (
-    <div className="mt-4 rounded-lg border border-border bg-background/40 p-3">
-      <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        {t("tickets.title")}
+    <div className="mt-4 rounded-lg border border-zinc-800 bg-zinc-950/40 p-3">
+      <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">
+        Accès staff par type de ticket
       </h4>
-      <p className="mb-3 text-xs text-muted-foreground">
-        {t.rich("tickets.hint", { strong: boldChunk })}
+      <p className="mb-3 text-xs text-zinc-500">
+        Rôles ajoutés ici = accès (voir + écrire) aux <strong>nouveaux</strong> tickets de ce type
+        dès leur ouverture. Les Administrateurs voient déjà tout (bypass Discord). Pour appliquer
+        aussi aux tickets déjà ouverts, utiliser le bouton de resync ci-dessous.
       </p>
       <div className="mb-3 flex flex-wrap gap-2">
         {TICKET_KINDS.map((k) => (
@@ -672,15 +675,16 @@ function TicketAccessEditor({
             onClick={() => setKind(k)}
             className={`btn ${kind === k ? "btn-primary" : "btn-ghost"}`}
           >
-            {TICKET_KIND_EMOJI[k]} {t(`tickets.kinds.${k}`)}
+            {TICKET_KIND_META[k].emoji} {TICKET_KIND_META[k].label}
             <span className="ml-1 text-xs opacity-70">({(entries[k] ?? []).length})</span>
           </button>
         ))}
       </div>
       <div className="space-y-2">
         {current.length === 0 && (
-          <p className="text-xs italic text-muted-foreground">
-            {t("tickets.none", { kind: t(`tickets.kinds.${kind}`) })}
+          <p className="text-xs italic text-zinc-600">
+            Aucun rôle configuré pour « {TICKET_KIND_META[kind].label} » — seul l'auteur du ticket
+            (+ Administrateur) le voit.
           </p>
         )}
         {current.map((rid) => (
@@ -690,10 +694,8 @@ function TicketAccessEditor({
               type="button"
               onClick={() => onUnset(kind, rid)}
               className="btn btn-ghost px-2 text-red-400"
-              aria-label={t("remove")}
-              title={t("remove")}
             >
-              <Trash2 aria-hidden className="h-3 w-3" />
+              <Trash2 className="h-3 w-3" />
             </button>
           </div>
         ))}
@@ -710,30 +712,28 @@ function TicketAccessEditor({
           disabled={pending || !roleId || current.includes(roleId)}
           className="btn btn-primary"
         >
-          {t("add")}
+          Ajouter
         </button>
       </div>
-      <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3">
+      <div className="mt-3 flex items-center gap-2 border-t border-zinc-800 pt-3">
         <button
           type="button"
           onClick={() => sync.mutate()}
           disabled={sync.isPending}
           className="btn btn-ghost"
         >
-          <RefreshCw aria-hidden className={`h-3 w-3 ${sync.isPending ? "animate-spin" : ""}`} />
-          {t("tickets.syncOpen")}
+          <RefreshCw className={`h-3 w-3 ${sync.isPending ? "animate-spin" : ""}`} />
+          Appliquer aux tickets déjà ouverts
         </button>
         {sync.data && (
-          <span role="status" className="text-xs text-muted-foreground">
-            {t("tickets.synced", { updated: sync.data.updated })}
-            {sync.data.skipped > 0
-              ? ` · ${t("tickets.skipped", { skipped: sync.data.skipped })}`
-              : ""}
+          <span className="text-xs text-zinc-400">
+            {sync.data.updated} salon(s) mis à jour
+            {sync.data.skipped > 0 ? ` · ${sync.data.skipped} introuvable(s)` : ""}
           </span>
         )}
         {sync.isError && (
-          <span role="alert" className="text-xs text-red-400">
-            {sync.error instanceof Error ? sync.error.message : t("syncFailed")}
+          <span className="text-xs text-red-400">
+            {sync.error instanceof Error ? sync.error.message : "échec"}
           </span>
         )}
       </div>

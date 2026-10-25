@@ -11,15 +11,12 @@ import { GuildOnly } from "~/guards/GuildOnly";
 import { CommandsChannelOnly } from "~/guards/CommandsChannelOnly";
 import { isBotOwner } from "~/lib/env";
 import { GaugeService } from "~/services/GaugeService";
-import { errorEmbed } from "~/lib/embeds";
-import { discordLocalizations, interactionLang, t, type BotLang } from "~/lib/i18n";
-import { logger } from "~/lib/logger";
 
 /**
  * Helper: % aléatoire stable par jour et par user (déterministe dans la journée).
- * Comme ça /saiyan sur la même cible renvoie le même % tant que c'est le même jour.
+ * Comme ça /gay sur la même cible renvoie le même % tant que c'est le même jour.
  */
-export function stablePercent(userId: string, salt: string): number {
+function stablePercent(userId: string, salt: string): number {
   const today = Math.floor(Date.now() / 86_400_000);
   let h = 2166136261;
   for (const ch of `${userId}:${salt}:${today}`) {
@@ -29,32 +26,6 @@ export function stablePercent(userId: string, salt: string): number {
   return h % 101;
 }
 
-/** The two Dragon Ball gauges: texts from `commands.<kind>`, colours of the scouter card. */
-export const FUN_GAUGES = {
-  saiyan: { accent: "#f59e0b", accentDark: "#3a2304", owner: 101 },
-  villain: { accent: "#a855f7", accentDark: "#25073d", owner: 0 },
-} as const;
-
-export type FunGauge = keyof typeof FUN_GAUGES;
-
-/** Gauge texts and colours in `lang` (the canvas API and the commands draw the same card). */
-export function funGaugeStyle(kind: FunGauge, lang: BotLang) {
-  const { accent, accentDark } = FUN_GAUGES[kind];
-  return {
-    title: t(lang, `commands.${kind}.title`),
-    subtitle: t(lang, `commands.${kind}.subtitle`),
-    badge: t(lang, "commands.gauge.badge"),
-    caption: t(lang, "commands.gauge.caption"),
-    accent,
-    accentDark,
-  };
-}
-
-/** Percentage shown for `userId`: stable over the day; the owner gets the gauge's joke value. */
-export function funGaugePercent(kind: FunGauge, userId: string): number {
-  return isBotOwner(userId) ? FUN_GAUGES[kind].owner : stablePercent(userId, kind);
-}
-
 @Discord()
 @Bot("shenron")
 @Guard(GuildOnly, CommandsChannelOnly)
@@ -62,45 +33,42 @@ export function funGaugePercent(kind: FunGauge, userId: string): number {
 export class FunCommands {
   constructor(@inject(GaugeService) private gauge: GaugeService) {}
 
-  /** Renders the gauge card; a canvas failure ends the deferred reply instead of hanging it. */
-  private async sendGauge(interaction: CommandInteraction, target: User, kind: FunGauge) {
-    const lang = interactionLang(interaction);
+  @Slash({ name: "gay", description: "% aléatoire de gaytitude (fun)" })
+  async gay(
+    @SlashOption(
+      {
+        name: "membre",
+        description: "Membre",
+        type: ApplicationCommandOptionType.User,
+        required: true,
+      },
+      userTransformer,
+    )
+    target: User,
+    interaction: CommandInteraction,
+  ) {
     await interaction.deferReply();
-    try {
-      const buf = await this.gauge.render({
-        user: target,
-        pct: funGaugePercent(kind, target.id),
-        ...funGaugeStyle(kind, lang),
-      });
-      await interaction.editReply({
-        content: `${target}`,
-        files: [new AttachmentBuilder(buf, { name: `${kind}.png` })],
-      });
-    } catch (err) {
-      logger.warn({ err, kind }, "fun gauge render failed");
-      await interaction
-        .editReply({
-          embeds: [
-            errorEmbed(t(lang, "commands.gauge.failedTitle"), t(lang, "commands.gauge.failedBody")),
-          ],
-        })
-        .catch(() => {});
-    }
+    const pct = isBotOwner(target.id) ? 0 : stablePercent(target.id, "gay");
+    const buf = await this.gauge.render({
+      user: target,
+      title: "GAYDAR DE BULMA",
+      subtitle: "Scanner calibré sur Master Roshi",
+      pct,
+      accent: "#ec4899",
+      accentDark: "#3a0420",
+    });
+    await interaction.editReply({
+      content: `${target}`,
+      files: [new AttachmentBuilder(buf, { name: "gaydar.png" })],
+    });
   }
 
-  @Slash({
-    name: "saiyan",
-    description: t("en", "commands.saiyan.description"),
-    nameLocalizations: discordLocalizations("commands.saiyan.name"),
-    descriptionLocalizations: discordLocalizations("commands.saiyan.description"),
-  })
-  async saiyan(
+  @Slash({ name: "raciste", description: "% aléatoire de racisme (fun)" })
+  async raciste(
     @SlashOption(
       {
-        name: "member",
-        description: t("en", "commands.saiyan.memberDescription"),
-        nameLocalizations: discordLocalizations("commands.saiyan.member"),
-        descriptionLocalizations: discordLocalizations("commands.saiyan.memberDescription"),
+        name: "membre",
+        description: "Membre",
         type: ApplicationCommandOptionType.User,
         required: true,
       },
@@ -109,30 +77,20 @@ export class FunCommands {
     target: User,
     interaction: CommandInteraction,
   ) {
-    await this.sendGauge(interaction, target, "saiyan");
-  }
-
-  @Slash({
-    name: "villain",
-    description: t("en", "commands.villain.description"),
-    nameLocalizations: discordLocalizations("commands.villain.name"),
-    descriptionLocalizations: discordLocalizations("commands.villain.description"),
-  })
-  async villain(
-    @SlashOption(
-      {
-        name: "member",
-        description: t("en", "commands.villain.memberDescription"),
-        nameLocalizations: discordLocalizations("commands.villain.member"),
-        descriptionLocalizations: discordLocalizations("commands.villain.memberDescription"),
-        type: ApplicationCommandOptionType.User,
-        required: true,
-      },
-      userTransformer,
-    )
-    target: User,
-    interaction: CommandInteraction,
-  ) {
-    await this.sendGauge(interaction, target, "villain");
+    await interaction.deferReply();
+    // Spec : si utilisée sur l'owner → 101 % (overflow rouge)
+    const pct = isBotOwner(target.id) ? 101 : stablePercent(target.id, "raciste");
+    const buf = await this.gauge.render({
+      user: target,
+      title: "RACISM-O-MÈTRE",
+      subtitle: "Scanner calibré sur Commander Red",
+      pct,
+      accent: "#dc2626",
+      accentDark: "#4a0000",
+    });
+    await interaction.editReply({
+      content: `${target}`,
+      files: [new AttachmentBuilder(buf, { name: "racism-o-metre.png" })],
+    });
   }
 }

@@ -7,7 +7,7 @@ use std::path::{Path, PathBuf};
 
 use clap::Args;
 use miette::{IntoDiagnostic, Result};
-use shenron_manga::{MangaCdnClient, sha256_hex};
+use shenron_manga::MangaCdnClient;
 use shenron_panels::{
     GifOptions, SegmentOptions, SheetOptions, build_sheet, crop_panel, ken_burns_gif,
     page_layout_svg, panel_svg, reveal_gif, segment_panels,
@@ -56,9 +56,6 @@ pub(crate) struct PanelsArgs {
     /// selected panels, in `--only` order, instead of the per-panel files.
     #[arg(long)]
     sheet: bool,
-    /// Also encode the sheet tiles, in their chosen order, as a looping cut-out GIF.
-    #[arg(long, requires = "sheet")]
-    sheet_gif: bool,
     /// Sheet tile size `WxH` in pixels (default: mean panel aspect, longer side `--tile-side`).
     #[arg(long, value_parser = parse_tile, requires = "sheet")]
     tile: Option<(u32, u32)>,
@@ -122,15 +119,7 @@ pub(crate) async fn run(args: PanelsArgs) -> Result<()> {
     let mut panels = segment_panels(rgba, width as usize, height as usize, &opts);
     if !args.only.is_empty() {
         // Keep the order of `--only`: it is the frame order of a sheet.
-        panels = args
-            .only
-            .iter()
-            .map(|&n| {
-                n.checked_sub(1).and_then(|index| panels.get(index)).copied().ok_or_else(|| {
-                    miette::miette!("panel index {n} is outside 1..={}", panels.len())
-                })
-            })
-            .collect::<Result<Vec<_>>>()?;
+        panels = args.only.iter().filter_map(|&n| panels.get(n.checked_sub(1)?).copied()).collect();
     }
     if panels.is_empty() {
         return Err(miette::miette!(
@@ -139,7 +128,7 @@ pub(crate) async fn run(args: PanelsArgs) -> Result<()> {
     }
     std::fs::create_dir_all(&args.output).into_diagnostic()?;
     if args.sheet {
-        return write_sheet(&args, &label, rgba, (width, height), &panels, &sha256_hex(&bytes));
+        return write_sheet(&args, &label, rgba, (width, height), &panels);
     }
     let gif = GifOptions { max_side: args.gif_side, ..GifOptions::default() };
     let mut files = Vec::new();
@@ -199,7 +188,6 @@ fn write_sheet(
     rgba: &[u8],
     (width, height): (u32, u32),
     panels: &[shenron_panels::PanelRect],
-    source_sha256: &str,
 ) -> Result<()> {
     let crops = panels
         .iter()
@@ -220,38 +208,8 @@ fn write_sheet(
     let sheet = build_sheet(&crops, &opts).into_diagnostic()?;
     let image_name = format!("{label}-sheet.png");
     let layout_name = format!("{label}-sheet.layout.json");
-    let image = sheet.png().into_diagnostic()?;
-    write(&args.output.join(&image_name), &image)?;
-    let mut layout: serde_json::Value =
-        serde_json::from_str(&sheet.layout_json(&image_name)).into_diagnostic()?;
-    layout["source"] = serde_json::json!({
-        "sha256": source_sha256,
-        "width": width,
-        "height": height,
-    });
-    layout["image_sha256"] = serde_json::json!(sha256_hex(&image));
-    write(&args.output.join(&layout_name), serde_json::to_vec_pretty(&layout).into_diagnostic()?)?;
-    let mut files = vec![image_name.clone(), layout_name.clone()];
-    if args.sheet_gif {
-        let gif_name = format!("{label}-sheet.gif");
-        write(&args.output.join(&gif_name), sheet.gif().into_diagnostic()?)?;
-        files.push(gif_name);
-    }
-    if args.json {
-        println!(
-            "{}",
-            serde_json::to_string_pretty(&serde_json::json!({
-                "page": label,
-                "width": width,
-                "height": height,
-                "panels": panels.iter().map(|p| [p.x, p.y, p.w, p.h]).collect::<Vec<_>>(),
-                "files": files,
-                "sheet": layout,
-            }))
-            .into_diagnostic()?
-        );
-        return Ok(());
-    }
+    write(&args.output.join(&image_name), sheet.png().into_diagnostic()?)?;
+    write(&args.output.join(&layout_name), sheet.layout_json(&image_name))?;
     println!(
         "{label}: sheet {}×{} px, {} frame(s) of {}×{} ({} col × {} row) → {image_name}, {layout_name}",
         sheet.image.width(),

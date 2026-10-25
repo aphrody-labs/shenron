@@ -93,7 +93,7 @@ test("authentication and same-origin checks precede all engine creation", async 
   expect(calls).toHaveLength(0);
 });
 
-test("authenticated identities get distinct SDK roots and credential namespaces", async () => {
+test("staff identities get distinct SDK roots and no inherited provider credentials", async () => {
   const { runtime, calls } = await setup();
   expect((await runtime.handle(request("invoke"), "alice")).status).toBe(200);
   expect((await runtime.handle(request("invoke"), "bob")).status).toBe(200);
@@ -101,10 +101,6 @@ test("authenticated identities get distinct SDK roots and credential namespaces"
   expect(calls[0]!.command[2]).not.toBe(calls[1]!.command[2]);
   expect(calls[0]!.command).toContain("--web-io-root");
   expect(calls[0]!.env.SHENRON_HOME).toContain(Bun.CryptoHasher.hash("sha256", "alice", "hex"));
-  expect(calls[0]!.env.KOHARU_SECRET_NAMESPACE).toBe(
-    Bun.CryptoHasher.hash("sha256", "alice", "hex"),
-  );
-  expect(calls[1]!.env.KOHARU_SECRET_NAMESPACE).toBe(Bun.CryptoHasher.hash("sha256", "bob", "hex"));
   expect(calls[0]!.env).not.toHaveProperty("DATABASE_URL");
   expect(calls[0]!.env).not.toHaveProperty("SHENRON_ADMIN_TOKEN");
   expect(calls[0]!.env).not.toHaveProperty("OPENAI_API_KEY");

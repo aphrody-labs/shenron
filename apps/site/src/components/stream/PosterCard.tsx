@@ -112,8 +112,7 @@ export function PosterCard({
         <p className="truncate font-display text-[13px] font-semibold text-white/90 transition-colors group-hover/card:text-dbz-orange group-focus-visible/card:text-dbz-orange">
           {title}
         </p>
-        {/* Deux lignes : « Aucune source » ne doit pas être tronqué en « Aucune sou… ». */}
-        <p className="line-clamp-2 text-[11px] leading-snug text-white/55">
+        <p className="truncate text-[11px] text-white/55">
           {[
             year,
             meta,

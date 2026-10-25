@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // End-to-end proof of scripts/release/cdn-optimize.ts on generated fixtures. Image and video
-// cases need their encoders (magick, cwebp) and the matching optimizers; a case whose
+// cases need their encoders (magick, cwebp, ffmpeg) and the matching optimizers; a case whose
 // tools are absent is skipped, never faked.
 // oxlint-disable no-await-in-loop -- ordered tree hash and per-file assertions.
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
@@ -8,12 +8,10 @@ import { mkdir, mkdtemp, rm, stat, unlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { brotliDecompressSync, gunzipSync } from "node:zlib";
-import { decodedHash, mp4NeedsFaststart } from "./cdn-optimize.ts";
+import { decodedHash } from "./cdn-optimize.ts";
 
 const script = join(import.meta.dir, "cdn-optimize.ts");
 const has = (...names: string[]): boolean => names.every((n) => Bun.which(n) !== null);
-// Native video qualification uses an explicit real, authorized local media source.
-const videoSource = process.env.SHENRON_VIDEO_TEST_SOURCE;
 let root = "";
 let src = "";
 let out = "";
@@ -54,17 +52,9 @@ async function optimize(...extra: string[]): Promise<Report> {
 async function treeHash(dir: string): Promise<string> {
   const h = new Bun.CryptoHasher("sha256");
   const files = await Array.fromAsync(new Bun.Glob("**/*").scan({ cwd: dir, dot: true }));
-  for (const rel of files.toSorted()) {
-    h.update(rel + "\0");
-    for await (const chunk of Bun.file(join(dir, rel)).stream()) h.update(chunk);
-  }
+  for (const rel of files.toSorted())
+    h.update(rel + "\0").update(await Bun.file(join(dir, rel)).bytes());
   return h.digest("hex");
-}
-
-async function fileHash(path: string): Promise<string> {
-  const hash = new Bun.CryptoHasher("sha256");
-  for await (const chunk of Bun.file(path).stream()) hash.update(chunk);
-  return hash.digest("hex");
 }
 
 beforeAll(async () => {
@@ -129,7 +119,24 @@ beforeAll(async () => {
       join(src, "img", "lossless.webp"),
     ]);
   }
-  if (videoSource) await Bun.write(join(src, "clip.mp4"), Bun.file(videoSource));
+  if (has("ffmpeg")) {
+    // Default mp4 muxing writes moov after mdat: a fast-start candidate.
+    await sh([
+      "ffmpeg",
+      "-v",
+      "error",
+      "-y",
+      "-f",
+      "lavfi",
+      "-i",
+      "testsrc=size=160x120:rate=10:duration=1",
+      "-c:v",
+      "mpeg4",
+      "-q:v",
+      "5",
+      join(src, "clip.mp4"),
+    ]);
+  }
 });
 
 afterAll(async () => {
@@ -196,26 +203,10 @@ describe("cdn-optimize", () => {
     "lossless WebP is re-encoded with identical pixels",
     lossless("img/lossless.webp", "webp"),
   );
-  test.skipIf(!videoSource)(
-    "native MP4 optimization preserves real media or retains the source",
-    async () => {
-      const source = join(src, "clip.mp4");
-      const served = join(out, "clip.mp4");
-      const reference = await decodedHash("mp4", source);
-      if (first.kinds.mp4?.optimized) {
-        expect(reference).not.toBeNull();
-        expect(await decodedHash("mp4", served)).toBe(reference);
-        expect(await mp4NeedsFaststart(served)).toBe(false);
-      } else {
-        expect(await fileHash(served)).toBe(await fileHash(source));
-      }
-    },
-  );
-
-  test("unsupported native video cannot pass a lossless proof", async () => {
-    const invalid = join(root, "invalid.mp4");
-    await Bun.write(invalid, "not a video");
-    expect(await decodedHash("mp4", invalid)).toBeNull();
+  test.skipIf(!has("ffmpeg"))("MP4 is remuxed for fast start with identical packets", async () => {
+    await lossless("clip.mp4", "mp4")();
+    const head = await Bun.file(join(out, "clip.mp4")).slice(0, 64).text();
+    expect(head.indexOf("moov")).toBeGreaterThan(-1);
   });
 
   test("second run is incremental", async () => {

@@ -408,6 +408,9 @@ export async function crawl(
       const r = await read(origin + "/robots.txt");
       const text = new TextDecoder().decode(r.bytes);
       const access = robotsAccess(r.status);
+      // RFC 9309 treats a non-2xx robots resource as unavailable for crawling.
+      // Keep the crawl fail-closed for both HTTP errors and network failures.
+      if (access !== "rules") robotsUnavailable.add(origin);
       const { rules, sitemaps } =
         access === "rules" ? parseRobots(text) : { rules: [], sitemaps: [] };
       forbidden.set(origin, rules);
@@ -415,7 +418,7 @@ export async function crawl(
         url: origin + "/robots.txt",
         status: r.status,
         access,
-        policy: "not-enforced",
+        policy: "rfc9309-2.3.1",
         fetchedAt: new Date().toISOString(),
         rules,
         sitemaps,
@@ -428,6 +431,7 @@ export async function crawl(
           sitemapQueue.push(approved);
       }
     } catch {
+      robotsUnavailable.add(origin);
       robots.push({
         url: origin + "/robots.txt",
         state: "unavailable",
@@ -435,8 +439,11 @@ export async function crawl(
       });
     }
   }
-  // robots.txt is read only to discover sitemaps; it never restricts the crawl (owner decision, 2026-10-18).
-  const permitted = (_url: string) => true;
+  const permitted = (url: string) => {
+    const parsed = new URL(url);
+    if (robotsUnavailable.has(parsed.origin)) return false;
+    return robotsPermits(url, forbidden.get(parsed.origin) ?? []);
+  };
   const sitemapSeen = new Set<string>();
   let sitemapBytes = 0;
   let consumedBodyBytes = 0;

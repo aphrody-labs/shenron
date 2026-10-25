@@ -566,28 +566,5 @@
     "maximize": "Maximize",
     "minimize": "Minimize",
     "restore": "Restore"
-  },
-  "atlasPreview": {
-    "title": "Panel animation",
-    "description": "Import the PNG atlas and its manifest exported from this page. Files stay on this device.",
-    "emptyPage": "Open a page in the project.",
-    "manifest": "Atlas manifest (JSON)",
-    "image": "Panel atlas (PNG)",
-    "open": "Open atlas",
-    "loading": "Loading…",
-    "sourceMismatch": "The atlas source hash or dimensions do not match the open page.",
-    "failed": "The atlas could not be opened. Check the files and try again.",
-    "sourceMatched": "Source verified: {{label}}",
-    "frame": "Frame {{index}} of {{count}}",
-    "previous": "Previous frame",
-    "next": "Next frame",
-    "play": "Play",
-    "pause": "Pause"
-  },
-  "responsive": {
-    "navigation": "Workspace panels",
-    "pages": "Pages",
-    "tools": "Tools",
-    "description": "Use the same project pages and tools in this panel."
   }
 }

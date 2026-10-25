@@ -1,13 +1,8 @@
-import { PLAYBACK_CAPABILITIES_PATH } from "@aphrody/shenron-api/contract";
 import { botOperationalLogs } from "../lib/operational-logs";
-import { botNoiseMeter } from "~/ui/noise-meter";
 import { readHlsSegment, registerHlsSegment } from "./hls-security";
-import { movieStreamCandidates } from "./movie-stream-selection";
-import { declarePlaybackCapabilities } from "./playback-capabilities";
 import { resolveApiUrl, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import { adminPipeline } from "./admin-pipeline";
-import { createActivityRoutes } from "./activity";
-import { describeSpawnError, episodeResolver } from "~/lib/episode-resolver";
+import os from "node:os";
 import { singleton, inject, container } from "tsyringe";
 import { Client } from "discordx";
 import { botFile } from "~/lib/asset-files";
@@ -109,7 +104,7 @@ import { GameRewardService } from "~/services/GameRewardService";
 const consumedGameStates = new SingleUseTokens();
 const GAME_STATE_TTL_MS = 30 * 60 * 1000;
 import { ZENI_GAME_WIN, ZENI_GAME_LOSS_PENALTY } from "~/lib/constants";
-import { eq, and, sql, desc, asc, gte, inArray, isNull } from "drizzle-orm";
+import { eq, and, sql, desc, asc, inArray, isNull } from "drizzle-orm";
 import {
   users,
   actionLogs,
@@ -137,8 +132,7 @@ import { TrainingService } from "~/services/TrainingService";
 import { buildCommandCatalog, execCommand } from "~/api/command-exec";
 import { DatabaseService } from "~/db/index";
 import { RACE_IDS, isRaceId } from "~/lib/races";
-import { findLadderConflict, reloadRaceLevelRoles } from "~/lib/race-levels";
-import { buildXpBuckets } from "~/lib/xp";
+import { reloadRaceLevelRoles } from "~/lib/race-levels";
 import { MessageTemplateService } from "~/services/MessageTemplateService";
 import { EconomyService } from "~/services/EconomyService";
 import { InflationService } from "~/services/InflationService";
@@ -148,13 +142,12 @@ import { indexedPrice } from "~/lib/inflation-rules";
 import { CardService } from "~/services/CardService";
 import { CommandPermissionsService } from "~/services/CommandPermissionsService";
 import { GaugeService } from "~/services/GaugeService";
-import { funGaugeStyle, type FunGauge } from "~/commands/fun/Fun";
 import { FusionService } from "~/services/FusionService";
 import { WikiService } from "~/services/WikiService";
 import { DatabooksService } from "~/services/DatabooksService";
 import { LeaderboardService, type LeaderboardEntry } from "~/services/LeaderboardService";
-import { LevelService, rankOrdering, rankedMembersOnly } from "~/services/LevelService";
-import { getLevelThresholds, levelForXP, xpProgress, type LevelThreshold } from "~/lib/xp";
+import { LevelService } from "~/services/LevelService";
+import { getLevelThresholds, levelForXP, nextThresholdFrom, type LevelThreshold } from "~/lib/xp";
 import { hybridSearch, logRagHealth } from "~/lib/rag";
 import { contextPublicRag, searchPublicRag } from "./public-rag";
 import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
@@ -172,14 +165,6 @@ import { ADMIN_ROUTES, dashboardRedirect } from "@aphrody/shenron-config/admin";
 import { handleBetterAuthRequest, getBetterAuthSession } from "~/lib/better-auth";
 import { EventBusService } from "~/services/EventBusService";
 import { PgService } from "~/db/pg";
-import { ReplicaSyncService } from "~/services/ReplicaSyncService";
-import { EpisodesService } from "~/services/EpisodesService";
-import {
-  CRUNCHYROLL_SERIES_BY_SHENRON,
-  crunchyrollSeriesSummary,
-  resolveCrunchyroll,
-  type ShenronEpisodeRow,
-} from "../../../../packages/media/src/crunchyroll-mapping";
 import {
   botConversationStore,
   createBotShenronApi,
@@ -605,6 +590,8 @@ function hlsRewrite(text: string, baseUrl: string, id: string, referer: string):
     .join("\n");
 }
 
+type MoviePlayer = { name?: string; provider?: string; embedUrl?: string; lang?: string };
+
 /** Extrait l'identifiant Archive.org d'une URL `embed`/`download`. `null` sinon. */
 function archiveIdentifier(embedUrl: string): string | null {
   const m = /archive\.org\/(?:embed|download)\/([^/?#]+)/i.exec(embedUrl);
@@ -645,10 +632,7 @@ async function resolveArchiveMp4(identifier: string): Promise<string | null> {
  * replica SQLite** → sélection défensive des colonnes réellement présentes.
  * Absence de source téléchargeable ⇒ `null` (le caller renvoie un 404 propre).
  */
-async function resolveMovieStream(
-  rawId: string,
-  language?: "vf" | "vostfr",
-): Promise<HlsStream | null> {
+async function resolveMovieStream(rawId: string): Promise<HlsStream | null> {
   const movieId = Number(rawId);
   if (!Number.isInteger(movieId)) {
     console.error("[HLS] ID de film invalide.");
@@ -678,13 +662,24 @@ async function resolveMovieStream(
       return null;
     }
 
-    const { stored, players } = movieStreamCandidates(row, language);
-    // Stored sources have no audio tag; only unversioned requests may use them.
-    if (stored) {
-      const type = /\.m3u8(\?|$)/i.test(stored) ? "hls" : "mp4";
-      return { url: stored, headers: {}, type, at: Date.now() };
+    // 1) MP4 direct stocké.
+    if (row.video_url) {
+      return { url: row.video_url, headers: {}, type: "mp4", at: Date.now() };
     }
-    if (players.length > 0) {
+    // 2) Flux HLS stocké.
+    if (row.stream_url) {
+      const type = /\.m3u8(\?|$)/i.test(row.stream_url) ? "hls" : "mp4";
+      return { url: row.stream_url, headers: {}, type, at: Date.now() };
+    }
+    // 3) Lecteurs (`players`) téléchargeables : embed déjà direct puis Archive.org.
+    if (row.players) {
+      let players: MoviePlayer[] = [];
+      try {
+        const parsed = JSON.parse(row.players) as unknown;
+        if (Array.isArray(parsed)) players = parsed as MoviePlayer[];
+      } catch {
+        players = [];
+      }
       for (const p of players) {
         const embed = p?.embedUrl ?? "";
         if (/\.(mp4|m3u8)(\?|$)/i.test(embed)) {
@@ -720,7 +715,7 @@ async function resolveStreamOnDemand(id: string): Promise<HlsStream | null> {
   const language = languageMatch?.[2] as "vf" | "vostfr" | undefined;
   // Films : `movie-<n>` → table db_movies (source stockée/players, pas de bxc).
   if (mediaId.startsWith("movie-")) {
-    return await resolveMovieStream(mediaId.slice("movie-".length), language);
+    return await resolveMovieStream(mediaId.slice("movie-".length));
   }
   try {
     const dbs = container.resolve(DatabaseService);
@@ -731,17 +726,14 @@ async function resolveStreamOnDemand(id: string): Promise<HlsStream | null> {
       console.error("[HLS] Episode introuvable en base SQLite.");
       return null;
     }
-    // No BXC checkout (production container): disabled once, with the reason logged.
-    const resolver = episodeResolver();
-    if (!resolver) return null;
     console.log("[HLS] Résolution à la volée d'un épisode.");
+    const BXC_DIR = process.env.BXC_DIR ?? `${os.homedir()}/bxc`;
     const proc = Bun.spawn(
-      [process.execPath, resolver.script, row.series, String(row.number_in_series)],
-      { cwd: resolver.dir, stdout: "pipe", stderr: "ignore" },
+      [process.execPath, "scripts/resolve-episode.ts", row.series, String(row.number_in_series)],
+      { cwd: BXC_DIR, stdout: "pipe", stderr: "ignore" },
     );
     const out = await new Response(proc.stdout).text();
-    const exitCode = await proc.exited;
-    if (exitCode !== 0) console.error(`[HLS] resolve-episode exited with code ${exitCode}.`);
+    await proc.exited;
     // oxlint-disable-next-line unicorn/prefer-array-find -- getting the last non-empty line
     const line = out.trim().split("\n").filter(Boolean).pop() ?? "";
     const res = JSON.parse(line) as {
@@ -772,10 +764,8 @@ async function resolveStreamOnDemand(id: string): Promise<HlsStream | null> {
       console.error("[HLS] Résolution d'épisode indisponible.");
       return null;
     }
-  } catch (err) {
-    // The cause (spawn failure, unparsable output) is what makes this diagnosable; the message
-    // is cut to one line and never carries upstream URLs or headers.
-    console.error(`[HLS] Erreur lors de la résolution d'un épisode : ${describeSpawnError(err)}`);
+  } catch {
+    console.error("[HLS] Erreur lors de la résolution d'un épisode.");
     return null;
   }
 }
@@ -979,7 +969,6 @@ import { findAction, listServiceActions, SERVICE_ACTIONS } from "./service-regis
  *     GET  /health/host          host CPU/mem
  *     GET  /health/monitoring    aggregate
  *     GET  /health/logs          bounded process operational log snapshot
- *     GET  /health/noise         public bot messages per channel and kind (?hours=24)
  *
  *     GET  /stats/totals         users/guilds/commands
  *     GET  /stats/interaction/last
@@ -1073,9 +1062,6 @@ export class ApiServer {
             (request: Request) => dashboardRedirect(request, Bun.env),
           ]),
         ),
-
-        // ── Arène Shenron : règlement des manches (jeton de service, jamais public) ──
-        ...createActivityRoutes(),
 
         // ── Static assets (favicons + manifest) ───────────────────────
         "/favicon.ico": staticFile("public/favicon.ico", "image/x-icon"),
@@ -1378,46 +1364,6 @@ export class ApiServer {
           ),
         "/api/health": () => Response.json({ status: "ok" }),
 
-        // ── Couche Crunchyroll : offres stockées sur les épisodes (lecture seule, sans jeton) ──
-        "/api/crunchyroll/series/:series": async (req) => {
-          const series = req.params.series.toUpperCase();
-          if (!CRUNCHYROLL_SERIES_BY_SHENRON[series])
-            return Response.json({ error: "series_not_mapped" }, { status: 404 });
-          const rows = await container.resolve(EpisodesService).parSerie(series);
-          return rows
-            ? Response.json(crunchyrollSeriesSummary(series, rows))
-            : Response.json({ error: "catalogue_unavailable" }, { status: 503 });
-        },
-        "/api/crunchyroll/resolve": async (req) => {
-          const params = new URL(req.url).searchParams;
-          const series = params.get("series")?.toUpperCase();
-          const number = Number(params.get("number"));
-          const episode = Number(params.get("episode"));
-          const crunchyroll = params.get("crunchyroll") ?? undefined;
-          const service = container.resolve(EpisodesService);
-          const scope = series ? [series] : Object.keys(CRUNCHYROLL_SERIES_BY_SHENRON);
-          const rows = (await Promise.all(scope.map((s) => service.parSerie(s))))
-            .flat()
-            .filter((r): r is ShenronEpisodeRow => r !== null);
-          const query =
-            Number.isSafeInteger(episode) && episode > 0
-              ? { episode }
-              : series && Number.isSafeInteger(number)
-                ? { series, number }
-                : crunchyroll
-                  ? { crunchyroll }
-                  : null;
-          if (!query)
-            return Response.json(
-              { error: "episode, series+number or crunchyroll is required" },
-              { status: 400 },
-            );
-          const offer = resolveCrunchyroll(rows, query);
-          return offer
-            ? Response.json(offer)
-            : Response.json({ error: "no_crunchyroll_offer" }, { status: 404 });
-        },
-
         // ── Health admin ──────────────────────────────────────────────
         "/api/health/usage": admin(async () => Response.json(await this.stats.getPidUsage())),
         "/api/health/host": admin(async () => Response.json(await this.stats.getHostUsage())),
@@ -1428,18 +1374,6 @@ export class ApiServer {
             pid: await this.stats.getPidUsage(),
             host: await this.stats.getHostUsage(),
             latency: this.stats.getLatency(),
-            noise: botNoiseMeter.snapshot(),
-            // Last SQLite -> PostgreSQL replica pass (read-only).
-            replicaSync: container.resolve(ReplicaSyncService).status(),
-          });
-        }),
-        // Public messages posted by the bot per channel and kind (noise meter, read-only).
-        "/api/health/noise": admin((req) => {
-          const hours = Number(new URL(req.url).searchParams.get("hours") ?? 24);
-          const windowMs =
-            (Number.isFinite(hours) ? Math.min(336, Math.max(1, hours)) : 24) * 3_600_000;
-          return Response.json(botNoiseMeter.snapshot({ windowMs }), {
-            headers: { "cache-control": "private, no-store" },
           });
         }),
         "/api/health/logs": admin((req) => {
@@ -1691,8 +1625,8 @@ export class ApiServer {
             const user = await dbs.db.query.users.findFirst({ where: eq(users.id, id) });
             if (!user) throw new HttpError(404, "User inconnu");
 
-            const progress = xpProgress(user.xp);
-            const { level, next } = progress;
+            const level = levelForXP(user.xp);
+            const next = nextThresholdFrom(user.xp);
 
             // 4 fetches en parallèle (SQLite WAL supporte les lectures
             // concurrentes ; Discord REST de toute façon en parallèle).
@@ -1794,8 +1728,7 @@ export class ApiServer {
                     current: user.xp,
                     nextLevel: next.level,
                     nextLevelXp: next.xp,
-                    needed: progress.remaining,
-                    ratio: progress.ratio,
+                    needed: next.xp - user.xp,
                   }
                 : null,
               banner: bannerUrl,
@@ -1921,13 +1854,12 @@ export class ApiServer {
                 .where(
                   and(
                     action,
-                    gte(actionLogs.createdAt, since),
+                    sql`${actionLogs.createdAt} >= ${since}`,
                     sql`${actionLogs.userId} is not null`,
-                    rankedMembersOnly(actionLogs.userId),
                   ),
                 )
                 .groupBy(actionLogs.userId)
-                .orderBy(desc(amount), asc(actionLogs.userId))
+                .orderBy(desc(amount))
                 .limit(limit);
               const ids = monthly.map((r) => r.id).filter((id): id is string => Boolean(id));
               const current = ids.length
@@ -1952,8 +1884,8 @@ export class ApiServer {
               const current = await dbs.db
                 .select({ id: users.id, xp: users.xp, zeni: users.zeni })
                 .from(users)
-                .where(and(sql`${col} > 0`, rankedMembersOnly(users.id)))
-                .orderBy(...rankOrdering(col))
+                .where(sql`${col} > 0`)
+                .orderBy(desc(col))
                 .limit(limit);
               for (const r of current) rows.push({ ...r, level: levelForXP(r.xp) });
             }
@@ -2302,11 +2234,6 @@ export class ApiServer {
 
         // Proxy HLS : le site joue le flux dans son player via ces routes
         // (le bot fetch depuis l'IP du VPS = IP de résolution → CDN OK).
-        [PLAYBACK_CAPABILITIES_PATH]: async () =>
-          Response.json(
-            declarePlaybackCapabilities(episodeResolver() !== null, await loadStreams()),
-            { headers: { "Cache-Control": "public, max-age=30" } },
-          ),
         "/api/hls/:id/master.m3u8": (req) => hlsMaster(req, req.params.id),
         "/api/hls/:id/seg": (req) => hlsSeg(req, req.params.id),
         "/api/hls/:id/download": () => hlsDownload(),
@@ -4504,9 +4431,13 @@ export class ApiServer {
         },
         "/api/levels/distribution": admin(async () => {
           const dbs = container.resolve(DatabaseService);
-          // Buckets = REACHED levels (level 0 before the first threshold, last level open-ended),
-          // counted with one query per bucket on the active curve.
-          const buckets = buildXpBuckets(getLevelThresholds());
+          const curve = getLevelThresholds();
+          // Compte les users dans chaque tranche de palier (basé sur user.xp).
+          const buckets = curve.map((t, i) => ({
+            level: t.level,
+            minXp: i === 0 ? 0 : curve[i - 1]!.xp,
+            maxXp: t.xp,
+          }));
           const result: Array<{ level: number; minXp: number; maxXp: number; count: number }> = [];
           for (const b of buckets) {
             const [{ c = 0 } = { c: 0 }] = await dbs.db
@@ -4515,6 +4446,18 @@ export class ApiServer {
               .where(sql`${users.xp} >= ${b.minXp} AND ${users.xp} < ${b.maxXp}`);
             result.push({ ...b, count: Number(c) });
           }
+          // Bucket "au-delà" pour ceux qui dépassent le dernier seuil
+          const lastXp = curve[curve.length - 1]!.xp;
+          const [{ c: cBeyond = 0 } = { c: 0 }] = await dbs.db
+            .select({ c: sql<number>`COUNT(*)` })
+            .from(users)
+            .where(sql`${users.xp} >= ${lastXp}`);
+          result.push({
+            level: 11,
+            minXp: lastXp,
+            maxXp: Number.MAX_SAFE_INTEGER,
+            count: Number(cBeyond),
+          });
           return Response.json({ buckets: result });
         }),
         "/api/levels/rewards": {
@@ -4645,28 +4588,6 @@ export class ApiServer {
               );
             }
             const dbs = container.resolve(DatabaseService);
-            // A tier role belongs to ONE level of the ladder: setting it on a second would open that
-            // tier (and its XP multiplier) at the lower of the two levels.
-            const sameRole = await dbs.db
-              .select({ level: raceLevelRoles.level })
-              .from(raceLevelRoles)
-              .where(
-                and(eq(raceLevelRoles.race, body.race), eq(raceLevelRoles.roleId, body.roleId)),
-              );
-            const conflict = findLadderConflict(
-              Object.fromEntries(sameRole.map((r) => [r.level, body.roleId])),
-              body.level,
-              body.roleId,
-            );
-            if (conflict) {
-              return Response.json(
-                {
-                  error: `Ce rôle est déjà le palier du niveau ${conflict.level} de l'échelle ${body.race}`,
-                  level: conflict.level,
-                },
-                { status: 409 },
-              );
-            }
             await dbs.db
               .insert(raceLevelRoles)
               .values({ race: body.race, level: body.level, roleId: body.roleId })
@@ -4724,8 +4645,7 @@ export class ApiServer {
               dailyStreak: users.dailyStreak,
             })
             .from(users)
-            .where(and(sql`${col} > 0`, rankedMembersOnly(users.id)))
-            .orderBy(...rankOrdering(col))
+            .orderBy(desc(col))
             .limit(limit);
           return Response.json({ metric, limit, users: rows });
         }),
@@ -4751,29 +4671,19 @@ export class ApiServer {
             // Passe par LevelService → recalcule lastLevelReached, puis réaligne les
             // rôles de palier de la race (sinon niveau + rôles se désynchronisent).
             const levels = container.resolve(LevelService);
-            // Admin grant: `source: "admin"` bypasses the gain caps and the spike flag (without it a
-            // legitimate grant raised an XP_SPIKE). The reported amount is the one actually written
-            // (safe integer >= 0), not the requested one.
+            const newXp =
+              body.mode === "set" ? Math.max(0, body.amount) : Math.max(0, current + body.amount);
             const res =
               body.mode === "set"
-                ? await levels.setXP(userId, body.amount)
-                : await levels.addXP(userId, body.amount, {
-                    propagateFusion: false,
-                    source: "admin",
-                  });
+                ? await levels.setXP(userId, newXp)
+                : await levels.addXP(userId, body.amount, { propagateFusion: false });
             const member = await resolveMember(userId);
-            if (member) {
-              await levels
-                .syncRaceLevelRoles(member)
-                .catch((err) =>
-                  logger.warn({ err, userId }, "tier role sync after admin XP change failed"),
-                );
-            }
+            if (member) await levels.syncRaceLevelRoles(member).catch(() => {});
             return Response.json({
               ok: true,
               userId,
               previousXp: current,
-              newXp: res.after,
+              newXp,
               newLevel: res.newLevel,
               levelUp: res.levelUp,
               rolesSynced: !!member,
@@ -4935,11 +4845,23 @@ export class ApiServer {
             const user = await client.users.fetch(userId).catch(() => null);
             if (!user) throw new HttpError(404, "Utilisateur introuvable");
             const url = new URL(req.url);
-            const type: FunGauge =
-              url.searchParams.get("type") === "villain" ? "villain" : "saiyan";
+            const type = (url.searchParams.get("type") ?? "gay") as "gay" | "raciste";
             const pct = Math.max(0, Math.min(101, Number(url.searchParams.get("pct") ?? 50)));
             const gauge = container.resolve(GaugeService);
-            const config = funGaugeStyle(type, "fr");
+            const config =
+              type === "raciste"
+                ? {
+                    title: "RACISM-O-MÈTRE",
+                    subtitle: "Scanner calibré sur Commander Red",
+                    accent: "#dc2626",
+                    accentDark: "#4a0000",
+                  }
+                : {
+                    title: "GAYDAR DE BULMA",
+                    subtitle: "Scanner calibré sur Master Roshi",
+                    accent: "#ec4899",
+                    accentDark: "#3a0420",
+                  };
             return await gauge.render({ user, ...config, pct });
           }),
         ),
@@ -4975,8 +4897,7 @@ export class ApiServer {
             const rows = await dbs.db
               .select({ id: users.id, xp: users.xp, zeni: users.zeni })
               .from(users)
-              .where(and(sql`${col} > 0`, rankedMembersOnly(users.id)))
-              .orderBy(...rankOrdering(col))
+              .orderBy(desc(col))
               .limit(limit);
             const fetched = await Promise.all(
               rows.map(async (r) => {
@@ -5126,8 +5047,8 @@ export class ApiServer {
               {
                 id: "scouter",
                 name: "Scouter (gauge)",
-                description: "Gauge style scouter pour /saiyan et /villain (700×320)",
-                url: "/api/canvas/scouter/:userId?type=saiyan|villain&pct=50",
+                description: "Gauge style scouter pour /gay et /raciste (700×320)",
+                url: "/api/canvas/scouter/:userId?type=gay|raciste&pct=50",
                 params: ["userId", "type", "pct"],
               },
               {
@@ -5675,8 +5596,7 @@ export class ApiServer {
           const rows = await dbs.db
             .select()
             .from(u)
-            .where(rankedMembersOnly(u.id))
-            .orderBy(desc(u.zeni), asc(u.id))
+            .orderBy(desc(u.zeni))
             .limit(limit)
             .offset(offset);
           return Response.json({ rows, total: rows.length });
@@ -6920,9 +6840,6 @@ function buildOpenApiSpec(port: number) {
       "/api/health/check": { get: { summary: "Health public" } },
       "/api/health/latency": { get: { summary: "WS + DB latency" } },
       "/api/health/monitoring": { get: { summary: "Full monitoring", security: [{ bearer: [] }] } },
-      "/api/health/noise": {
-        get: { summary: "Public bot messages per channel and kind", security: [{ bearer: [] }] },
-      },
       "/api/stats/totals": { get: { summary: "Totaux", security: [{ bearer: [] }] } },
       "/api/bot/guilds": { get: { summary: "Guilds", security: [{ bearer: [] }] } },
       "/api/bot/commands": { get: { summary: "Slash commands", security: [{ bearer: [] }] } },

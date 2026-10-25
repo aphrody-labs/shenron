@@ -1,19 +1,9 @@
 {
   "name": "@aphrody/shenron-dbxv2",
-  "version": "1.4.7",
-  "private": false,
-  "description": "Typed DBXV2 gateway client and Bun imports for approved immutable public assets, with optional private backend adapters.",
-  "homepage": "https://dragonballfr.com/games/xenoverse-2",
-  "license": "Apache-2.0",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/aphrody-labs/shenron.git",
-    "directory": "packages/dbxv2"
-  },
-  "files": [
-    "src",
-    "LICENSE"
-  ],
+  "version": "1.4.6",
+  "private": true,
+  "description": "Private typed access to Dragon Ball Xenoverse 2 (client of the on-demand CPK server, private database, Bun plugin). Never public, never bundled.",
+  "license": "UNLICENSED",
   "type": "module",
   "sideEffects": [
     "./src/preload.ts"
@@ -35,10 +25,6 @@
     "./declarations": "./src/declarations.ts",
     "./guard": "./src/guard.ts",
     "./db": "./src/db.ts"
-  },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
     "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src test scripts",

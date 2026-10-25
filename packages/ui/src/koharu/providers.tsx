@@ -30,8 +30,6 @@ import {
 } from "@aphrody/shenron-koharu/protocol";
 import { Toaster } from "@aphrody/m3-primitives";
 import { TooltipProvider } from "@aphrody/m3-primitives";
-import { AtlasPreviewContext, type AtlasPreviewFactory } from "./lib/atlas-preview";
-export type { AtlasPreviewFactory } from "./lib/atlas-preview";
 
 /** How long the editor waits for the engine's startup state before showing an error. */
 const STARTUP_TIMEOUT_MS = 30_000;
@@ -41,12 +39,10 @@ export function Providers({
   children,
   locale,
   embedded = false,
-  atlasRenderer = null,
 }: {
   children: ReactNode;
   locale?: string;
   embedded?: boolean;
-  atlasRenderer?: AtlasPreviewFactory | null;
 }) {
   useSiteLocale(locale);
   const runtime = useRef({ active: false, bound: false });
@@ -122,7 +118,6 @@ export function Providers({
   }, []);
 
   useEffect(() => {
-    if (embedded) return;
     // Prevent the host webview from applying browser zoom; keep Ctrl+wheel for app handlers.
     const preventViewportScaling = (event: WheelEvent) => {
       if (event.ctrlKey) event.preventDefault();
@@ -130,21 +125,19 @@ export function Providers({
 
     window.addEventListener("wheel", preventViewportScaling, { capture: true, passive: false });
     return () => window.removeEventListener("wheel", preventViewportScaling, { capture: true });
-  }, [embedded]);
+  }, []);
 
   return (
-    <AtlasPreviewContext.Provider value={atlasRenderer}>
-      <QueryClientProvider client={queryClient}>
-        <I18nextProvider i18n={i18n}>
-          <TooltipProvider delay={0}>
-            <ClientOnly>
-              <StartupBoundary embedded={embedded}>{children}</StartupBoundary>
-              <Toaster />
-            </ClientOnly>
-          </TooltipProvider>
-        </I18nextProvider>
-      </QueryClientProvider>
-    </AtlasPreviewContext.Provider>
+    <QueryClientProvider client={queryClient}>
+      <I18nextProvider i18n={i18n}>
+        <TooltipProvider delay={0}>
+          <ClientOnly>
+            <StartupBoundary embedded={embedded}>{children}</StartupBoundary>
+            <Toaster />
+          </ClientOnly>
+        </TooltipProvider>
+      </I18nextProvider>
+    </QueryClientProvider>
   );
 }
 

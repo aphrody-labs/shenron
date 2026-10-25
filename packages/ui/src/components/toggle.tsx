@@ -10,11 +10,11 @@ function Toggle({ className, ...props }: React.ComponentProps<typeof TogglePrimi
   return (
     <TogglePrimitive
       className={cn(
-        "cible-44 inline-flex h-9 min-w-9 items-center justify-center rounded-lg border-2 border-black bg-[#121218] px-3 text-xs font-sans font-extrabold uppercase tracking-wider text-gray-300 outline-none transition-all cursor-pointer",
+        "inline-flex h-9 min-w-9 items-center justify-center rounded-lg border-2 border-black bg-[#121218] px-3 text-xs font-sans font-extrabold uppercase tracking-wider text-gray-300 outline-none transition-all cursor-pointer",
         "hover:border-dbz-orange hover:text-white",
         "active:translate-x-px active:translate-y-px",
         "data-[pressed]:bg-dbz-orange data-[pressed]:text-black data-[pressed]:border-black",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange/40",
         className,
       )}
       {...props}

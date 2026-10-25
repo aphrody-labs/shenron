@@ -367,7 +367,3 @@ self.addEventListener("message", async (event: MessageEvent<WorkerMessage>) => {
     self.postMessage({ status: "fatal", error: String(err), type }, []);
   }
 });
-
-// Handshake: the owner learns that the module resolved and evaluated. In a compiled binary a
-// wrong worker path only surfaces as an asynchronous ErrorEvent, so silence proves nothing.
-self.postMessage({ status: "ready", type: "READY", count: 0 }, []);

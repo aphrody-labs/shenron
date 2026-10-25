@@ -19,7 +19,6 @@ pub mod pixel_sprite;
 pub mod postprocess;
 pub mod raster3d;
 pub mod shaders;
-pub mod skinned;
 pub mod toriyama3d;
 pub mod virtual_geometry;
 

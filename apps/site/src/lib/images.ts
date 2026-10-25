@@ -20,12 +20,6 @@
  * l'optimiseur.
  */
 
-import { REVIEWED_SOURCE_MEDIA } from "./reviewed-source-media";
-
-const reviewedPublishedImages = new Set<string>(
-  REVIEWED_SOURCE_MEDIA.map((media) => media.publishedUrl),
-);
-
 /** Préfixe des images téléversées depuis l'admin, remplaçables au même chemin. */
 const PREFIXE_EDITABLE = "assets/wiki/";
 
@@ -64,16 +58,14 @@ export const LARGEURS_OPTIMISEUR = [
  * son remplacement (cf. `isEditableAsset`).
  */
 export function optimizedSrc(src: string, width: number, quality = 70): string {
-  // Standalone builds have no Next image optimizer. These exact reviewed scan
-  // objects are already public and immutable; preserve their qualified source.
-  if (isEditableAsset(src) || reviewedPublishedImages.has(src)) return src;
+  if (isEditableAsset(src)) return src;
   const w = LARGEURS_OPTIMISEUR.find((c) => c >= width) ?? LARGEURS_OPTIMISEUR.at(-1)!;
   return `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=${quality}`;
 }
 
 /** `srcSet` sur plusieurs largeurs, pour laisser le navigateur choisir. */
 export function optimizedSrcSet(src: string, largeurs: readonly number[], quality = 70): string {
-  if (isEditableAsset(src) || reviewedPublishedImages.has(src)) return "";
+  if (isEditableAsset(src)) return "";
   return largeurs
     .map((l) => `${optimizedSrc(src, l, quality)} ${LARGEURS_OPTIMISEUR.find((c) => c >= l) ?? l}w`)
     .join(", ");

@@ -3,7 +3,6 @@ import { DatabaseService } from "~/db/index";
 import { sendAdminLabMessage, type AdminLabMessageOptions } from "~/lib/admin-lab";
 import { realpathSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { truncate } from "~/lib/embeds";
 
 export interface CreateReportInput {
   userId: string;
@@ -24,31 +23,6 @@ export interface CreateGoalInput {
   assignedTo?: string;
   notes?: string;
 }
-
-export type ReportSeverity = NonNullable<CreateReportInput["severity"]>;
-
-/** Embed colour of a report severity (admin channel notification and command reply). */
-export const REPORT_SEVERITY_COLORS: Record<ReportSeverity, number> = {
-  critical: 0xef4444,
-  major: 0xf97316,
-  minor: 0x38bdf8,
-  suggestion: 0xa78bfa,
-};
-
-/** Statuses still awaiting work, listed by the 'open' / 'pending' filters and the Markdown. */
-const OPEN_REPORT_STATUSES = ["open", "in_progress"];
-const ACTIVE_GOAL_STATUSES = ["pending", "in_progress"];
-
-/** Text safe inside a Markdown table cell: no pipe nor line break may split the row. */
-export function escapeMdCell(value: unknown): string {
-  return String(value ?? "")
-    .replace(/\r?\n/g, " ")
-    .replaceAll("|", "\\|")
-    .trim();
-}
-
-const frDate = (ms: number) => new Date(ms).toLocaleDateString("fr-FR");
-const frDateTime = (ms: number) => new Date(ms).toLocaleString("fr-FR");
 
 /** Sends an embed payload to the admin channel. */
 export type AdminLabNotifier = (options: AdminLabMessageOptions) => Promise<unknown>;
@@ -162,18 +136,18 @@ export class AdminReportGoalService {
 
     await this.syncReportsMarkdown();
 
-    // Notification Discord dans le salon admin (bornée aux limites d'un embed)
+    // Notification Discord dans le salon admin
+    const severityColor =
+      input.severity === "critical" ? 0xef4444 : input.severity === "major" ? 0xf97316 : 0x38bdf8;
+
     try {
       await this.notifyAdmin({
         embeds: [
           {
-            color: REPORT_SEVERITY_COLORS[input.severity ?? "minor"],
-            title: truncate(
-              `🚨 Signalement #${res.id} [${input.category.toUpperCase()}] : ${input.title}`,
-              256,
-            ),
+            color: severityColor,
+            title: `🚨 Signalement #${res.id} [${input.category.toUpperCase()}] : ${input.title}`,
             description: [
-              `> ${truncate(input.description, 3500)}`,
+              `> ${input.description}`,
               "",
               `• **Sévérité :** \`${(input.severity ?? "minor").toUpperCase()}\``,
               `• **Auteur :** <@${input.userId}> (${input.userTag ?? "Admin"})`,
@@ -212,9 +186,9 @@ export class AdminReportGoalService {
         embeds: [
           {
             color: 0x22c55e,
-            title: truncate(`✅ Signalement #${id} Résolu : ${report.title}`, 256),
+            title: `✅ Signalement #${id} Résolu : ${report.title}`,
             description: [
-              `> **Notes de résolution :** ${truncate(resolutionNotes, 3500)}`,
+              `> **Notes de résolution :** ${resolutionNotes}`,
               "",
               `• **Résolu par :** ${resolverTag ?? "Agent / Admin"}`,
               `• **Mise à jour :** \`var/reports/ADMIN-REPORTS.md\``,
@@ -225,7 +199,7 @@ export class AdminReportGoalService {
       });
     } catch {}
 
-    return { ...report, status: "resolved", resolution_notes: resolutionNotes };
+    return report;
   }
 
   /**
@@ -233,13 +207,9 @@ export class AdminReportGoalService {
    */
   listReports(status?: string): any[] {
     if (status && status !== "all") {
-      // "open" also covers reports being worked on, as in ADMIN-REPORTS.md.
-      const statuses = status === "open" ? OPEN_REPORT_STATUSES : [status];
       return this.dbs.sqlite
-        .query(
-          `SELECT * FROM admin_reports WHERE status IN (${statuses.map(() => "?").join(", ")}) ORDER BY id DESC`,
-        )
-        .all(...statuses) as any[];
+        .query("SELECT * FROM admin_reports WHERE status = ? ORDER BY id DESC")
+        .all(status) as any[];
     }
     return this.dbs.sqlite.query("SELECT * FROM admin_reports ORDER BY id DESC").all() as any[];
   }
@@ -274,12 +244,9 @@ export class AdminReportGoalService {
         embeds: [
           {
             color: 0xf59e0b,
-            title: truncate(
-              `🎯 Objectif #${res.id} [${(input.priority ?? "p1").toUpperCase()}] : ${input.title}`,
-              256,
-            ),
+            title: `🎯 Objectif #${res.id} [${(input.priority ?? "P1").toUpperCase()}] : ${input.title}`,
             description: [
-              `> ${truncate(input.description, 3500)}`,
+              `> ${input.description}`,
               "",
               `• **Priorité :** \`${(input.priority ?? "p1").toUpperCase()}\``,
               `• **Session cible :** \`${input.targetSession ?? "next_session"}\``,
@@ -319,9 +286,9 @@ export class AdminReportGoalService {
         embeds: [
           {
             color: 0x22c55e,
-            title: truncate(`🏆 Objectif #${id} Accompli : ${goal.title}`, 256),
+            title: `🏆 Objectif #${id} Accompli : ${goal.title}`,
             description: [
-              notes ? `> **Bilan :** ${truncate(notes, 3500)}` : `> Objectif validé avec succès.`,
+              notes ? `> **Bilan :** ${notes}` : `> Objectif validé avec succès.`,
               "",
               `• **Statut :** \`COMPLETED\``,
               `• **Mise à jour :** \`var/reports/GOALS.md\``,
@@ -332,7 +299,7 @@ export class AdminReportGoalService {
       });
     } catch {}
 
-    return { ...goal, status: "completed", notes: notes ?? goal.notes };
+    return goal;
   }
 
   /**
@@ -340,13 +307,9 @@ export class AdminReportGoalService {
    */
   listGoals(status?: string): any[] {
     if (status && status !== "all") {
-      // "pending" also covers goals in progress, as in GOALS.md.
-      const statuses = status === "pending" ? ACTIVE_GOAL_STATUSES : [status];
       return this.dbs.sqlite
-        .query(
-          `SELECT * FROM admin_goals WHERE status IN (${statuses.map(() => "?").join(", ")}) ORDER BY id DESC`,
-        )
-        .all(...statuses) as any[];
+        .query("SELECT * FROM admin_goals WHERE status = ? ORDER BY id DESC")
+        .all(status) as any[];
     }
     return this.dbs.sqlite.query("SELECT * FROM admin_goals ORDER BY id DESC").all() as any[];
   }
@@ -376,13 +339,13 @@ export class AdminReportGoalService {
             "|:---:|:---:|:---:|:---|:---:|:---:|",
             ...open.map(
               (r) =>
-                `| **#${r.id}** | \`${r.category}\` | **${r.severity.toUpperCase()}** | ${escapeMdCell(r.title)} | @${escapeMdCell(r.user_tag ?? r.user_id)} | ${frDate(r.created_at)} |`,
+                `| **#${r.id}** | \`${r.category}\` | **${r.severity.toUpperCase()}** | ${r.title} | @${r.user_tag ?? r.user_id} | ${new Date(r.created_at).toLocaleDateString()} |`,
             ),
             "",
             "### Détails des signalements ouverts",
             ...open.map(
               (r) =>
-                `\n#### #${r.id} — ${r.title} (\`${r.category}\` · ${r.severity})\n- **Description :** ${r.description}\n- **Créé le :** ${frDateTime(r.created_at)}`,
+                `\n#### #${r.id} — ${r.title} (\`${r.category}\` · ${r.severity})\n- **Description :** ${r.description}\n- **Créé le :** ${new Date(r.created_at).toLocaleString()}`,
             ),
           ].join("\n"),
       "",
@@ -397,7 +360,7 @@ export class AdminReportGoalService {
             "|:---:|:---:|:---|:---|:---:|",
             ...resolved.map(
               (r) =>
-                `| **#${r.id}** | \`${r.category}\` | ${escapeMdCell(r.title)} | ${escapeMdCell(r.resolution_notes ?? "Traité")} | ${frDate(r.resolved_at ?? r.created_at)} |`,
+                `| **#${r.id}** | \`${r.category}\` | ${r.title} | ${r.resolution_notes ?? "Traité"} | ${new Date(r.resolved_at ?? r.created_at).toLocaleDateString()} |`,
             ),
           ].join("\n"),
       "",
@@ -410,7 +373,7 @@ export class AdminReportGoalService {
             "|:---:|:---:|:---|:---:|",
             ...rejected.map(
               (r) =>
-                `| **#${r.id}** | \`${r.category}\` | ${escapeMdCell(r.title)} | ${frDate(r.created_at)} |`,
+                `| **#${r.id}** | \`${r.category}\` | ${r.title} | ${new Date(r.created_at).toLocaleDateString()} |`,
             ),
           ].join("\n"),
       "",
@@ -445,7 +408,7 @@ export class AdminReportGoalService {
             "|:---:|:---:|:---|:---:|:---:|:---:|",
             ...active.map(
               (g) =>
-                `| **#${g.id}** | \`${g.priority.toUpperCase()}\` | **${escapeMdCell(g.title)}** | \`${g.target_session}\` | \`${g.assigned_to}\` | ${frDate(g.created_at)} |`,
+                `| **#${g.id}** | \`${g.priority.toUpperCase()}\` | **${g.title}** | \`${g.target_session}\` | \`${g.assigned_to}\` | ${new Date(g.created_at).toLocaleDateString()} |`,
             ),
             "",
             "### Spécifications des objectifs",
@@ -466,7 +429,7 @@ export class AdminReportGoalService {
             "|:---:|:---:|:---|:---:|:---:|:---:|",
             ...deferred.map(
               (g) =>
-                `| **#${g.id}** | \`${g.priority.toUpperCase()}\` | ${escapeMdCell(g.title)} | \`${g.target_session}\` | \`${g.assigned_to}\` | ${frDate(g.created_at)} |`,
+                `| **#${g.id}** | \`${g.priority.toUpperCase()}\` | ${g.title} | \`${g.target_session}\` | \`${g.assigned_to}\` | ${new Date(g.created_at).toLocaleDateString()} |`,
             ),
           ].join("\n"),
       `\n*État : ${active.length} actif(s), ${deferred.length} différé(s), ${completed.length} accompli(s).*`,
@@ -480,7 +443,7 @@ export class AdminReportGoalService {
             "|:---:|:---|:---:|:---|",
             ...completed.map(
               (g) =>
-                `| **#${g.id}** | ${escapeMdCell(g.title)} | ${frDate(g.completed_at ?? g.created_at)} | ${escapeMdCell(g.notes ?? "Terminé")} |`,
+                `| **#${g.id}** | ${g.title} | ${new Date(g.completed_at ?? g.created_at).toLocaleDateString()} | ${g.notes ?? "Terminé"} |`,
             ),
           ].join("\n"),
       "",

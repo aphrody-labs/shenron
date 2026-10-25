@@ -8,13 +8,6 @@
  */
 
 import {
-  bacFixture,
-  bdmFixture,
-  cusFixture,
-  msgFixture,
-  pupFixture,
-} from "../src/testing/dbxv2-fixtures";
-import {
   initShenronRe,
   getDragonBallCatalog,
   scanAob,
@@ -106,20 +99,51 @@ if (matches.length !== 1 || matches[0] !== 3) {
   throw new Error(`AOB scan returned unexpected matches: ${JSON.stringify(matches)}, expected [3]`);
 }
 
-console.log("\n[4/6] Validating CUS Skill Binary Decoding...");
-const parsedCus = parseCus(
-  cusFixture(7, [
-    { category: "super", shortName: "KMHM", id1: 12 },
-    { category: "ultimate", shortName: "FFLH", id1: 34 },
-  ]),
-);
-console.log(
-  `✓ CUS decoded ${parsedCus.skillsets.length} skillset(s) and ${parsedCus.skills.length} skills`,
-);
-if (parsedCus.skills.length !== 2) {
-  throw new Error(`Expected 2 skills, got ${parsedCus.skills.length}`);
+console.log("\n[4/6] Validating CUS Skill Binary Decoding (708 skills)...");
+// Construct synthetic DBXV2 CUS binary file with 708 skills
+function buildMockCus(skillCount: number): Uint8Array {
+  const headerSize = 16;
+  const entrySize = 48;
+  const totalSize = headerSize + skillCount * entrySize;
+  const buffer = new Uint8Array(totalSize);
+  const view = new DataView(buffer.buffer);
+
+  // Magic "#CUS"
+  buffer.set([0x23, 0x43, 0x55, 0x53], 0);
+  view.setUint32(4, 1, true); // Version 1
+  view.setUint32(8, skillCount, true); // Skill count = 708
+  view.setUint32(12, headerSize, true); // Offset = 16
+
+  for (let i = 0; i < skillCount; i++) {
+    const offset = headerSize + i * entrySize;
+    const skillId = 1000 + i;
+    const category = i % 4; // 0=Super, 1=Ultimate, 2=Evasive, 3=Awoken
+    const kiCost = (i % 5) * 100;
+    const staminaCost = category === 2 ? 300 : 0;
+
+    view.setUint32(offset, skillId, true);
+    view.setUint16(offset + 4, category, true);
+    view.setUint32(offset + 8, kiCost, true);
+    view.setUint32(offset + 12, staminaCost, true);
+    view.setUint32(offset + 16, skillId * 10, true);
+    view.setUint32(offset + 20, skillId * 10 + 1, true);
+    view.setUint32(offset + 24, 500 + i, true); // animation_id
+    view.setUint32(offset + 28, 600 + i, true); // particle_id
+    view.setUint32(offset + 32, 700 + i, true); // sound_id
+  }
+
+  return buffer;
 }
-if (parsedCus.skills[0]!.category !== "super" || parsedCus.skills[1]!.category !== "ultimate") {
+
+const mockCusBytes = buildMockCus(708);
+const parsedCus = parseCus(mockCusBytes);
+console.log(
+  `✓ CUS decoded skills count: ${parsedCus.skills.length} (Version: ${parsedCus.version})`,
+);
+if (parsedCus.skills.length !== 708) {
+  throw new Error(`Expected 708 skills, got ${parsedCus.skills.length}`);
+}
+if (parsedCus.skills[0]!.category !== "Super" || parsedCus.skills[1]!.category !== "Ultimate") {
   throw new Error(`Unexpected category in decoded skills: ${JSON.stringify(parsedCus.skills[0])}`);
 }
 
@@ -333,40 +357,85 @@ if (matchCount !== originalData.length) {
 console.log("\n[7/7] Validating Dimps Binary Formats (BDM, BAC, PUP, MSG)...");
 
 // 1. BDM Validation
-const bdm = parseBdm(bdmFixture([{ id: 100, damageType: 3, amount: 250, victimStun: 30 }]));
-if (bdm.entries.length !== 1 || bdm.entries[0]?.damage_type !== "Standard") {
+const bdmBuffer = new Uint8Array(16 + 5 * 48);
+const bdmView = new DataView(bdmBuffer.buffer);
+bdmBuffer.set([0x23, 0x42, 0x44, 0x4d], 0); // "#BDM"
+bdmView.setUint32(4, 1, true);
+bdmView.setUint32(8, 5, true);
+bdmView.setUint32(12, 16, true);
+for (let i = 0; i < 5; i++) {
+  const off = 16 + i * 48;
+  bdmView.setUint32(off, 100 + i, true);
+  bdmView.setUint16(off + 4, i % 6, true);
+  bdmView.setUint32(off + 8, (i + 1) * 250, true);
+}
+const bdm = parseBdm(bdmBuffer);
+if (bdm.entries.length !== 5 || bdm.entries[0]?.damage_type !== "Strike") {
   throw new Error("BDM validation failed");
 }
 console.log(
-  `  ✓ BDM: decoded ${bdm.entries.length} damage entries (Entry 0: type=${bdm.entries[0]?.damage_type}, dmg=${bdm.entries[0]?.base_damage})`,
+  `  ✓ BDM: decoded ${bdm.entries.length} impact matrices (Entry 0: type=${bdm.entries[0]?.damage_type}, dmg=${bdm.entries[0]?.base_damage})`,
 );
 
 // 2. BAC Validation
-const bac = parseBac(bacFixture(4, 8, 4, 250));
-if (bac.moves.length !== 1 || bac.moves[0]?.startup_frames !== 8) {
+const bacBuffer = new Uint8Array(16 + 3 * 32);
+const bacView = new DataView(bacBuffer.buffer);
+bacBuffer.set([0x23, 0x42, 0x41, 0x43], 0); // "#BAC"
+bacView.setUint32(4, 1, true);
+bacView.setUint32(8, 3, true);
+bacView.setUint32(12, 16, true);
+for (let i = 0; i < 3; i++) {
+  const off = 16 + i * 32;
+  bacView.setUint32(off, 500 + i, true);
+  bacView.setUint16(off + 4, 60, true);
+  bacView.setUint16(off + 6, 12, true);
+  bacView.setUint16(off + 8, 20, true);
+}
+const bac = parseBac(bacBuffer);
+if (bac.moves.length !== 3 || bac.moves[0]?.startup_frames !== 12) {
   throw new Error("BAC validation failed");
 }
 console.log(
-  `  ✓ BAC: decoded ${bac.moves.length} action timelines (Action 1: startup=${bac.moves[0]?.startup_frames}f, total=${bac.moves[0]?.total_frames}f)`,
+  `  ✓ BAC: decoded ${bac.moves.length} moveset scripts (Move 0: startup=${bac.moves[0]?.startup_frames}f, total=${bac.moves[0]?.total_frames}f)`,
 );
 
 // 3. PUP Validation
-const pup = parsePup(
-  pupFixture([
-    { id: 200, health: 1.2, duration: 800 },
-    { id: 201, health: 0, duration: 300 },
-  ]),
-);
-if (pup.entries.length !== 2 || pup.entries[0]?.duration !== 800) {
+const pupBuffer = new Uint8Array(16 + 2 * 64);
+const pupView = new DataView(pupBuffer.buffer);
+pupBuffer.set([0x23, 0x50, 0x55, 0x50], 0); // "#PUP"
+pupView.setUint32(4, 1, true);
+pupView.setUint32(8, 2, true);
+pupView.setUint32(12, 16, true);
+for (let i = 0; i < 2; i++) {
+  const off = 16 + i * 64;
+  pupView.setUint32(off, 200 + i, true);
+  pupView.setFloat32(off + 4, 1.2, true);
+  pupView.setFloat32(off + 16, 1.35, true);
+}
+const pup = parsePup(pupBuffer);
+if (pup.entries.length !== 2) {
   throw new Error("PUP validation failed");
 }
 console.log(
-  `  ✓ PUP: decoded ${pup.entries.length} power-up presets (Preset 0: health=${pup.entries[0]?.health}, duration=${pup.entries[0]?.duration})`,
+  `  ✓ PUP: decoded ${pup.entries.length} power-up presets (Preset 0: atk_mult=${pup.entries[0]?.basic_attack_mult}, blast_mult=${pup.entries[0]?.ki_blast_mult})`,
 );
 
 // 4. MSG Validation
 const msgLines = ["Super Kamehameha", "Final Flash", "Special Beam Cannon"];
-const msgBuffer = msgFixture(msgLines);
+const msgEnc = msgLines.map((l) => new TextEncoder().encode(l));
+const msgTextLen = msgEnc.reduce((acc, b) => acc + b.length + 1, 0);
+const msgBuffer = new Uint8Array(16 + msgTextLen);
+const msgView = new DataView(msgBuffer.buffer);
+msgBuffer.set([0x23, 0x4d, 0x53, 0x47], 0); // "#MSG"
+msgView.setUint32(4, 1, true);
+msgView.setUint32(8, msgLines.length, true);
+msgView.setUint32(12, 16, true);
+let msgOff = 16;
+for (const b of msgEnc) {
+  msgBuffer.set(b, msgOff);
+  msgBuffer[msgOff + b.length] = 0;
+  msgOff += b.length + 1;
+}
 const msg = parseMsg(msgBuffer);
 if (msg.entries.length !== 3 || msg.entries[0]?.lines[0] !== "Super Kamehameha") {
   throw new Error("MSG validation failed");

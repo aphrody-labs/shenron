@@ -7,15 +7,14 @@
  * - in a browser on a site served by `shenron-server`, when `/api/local/health` reports the
  *   `koharu` group: the engine is a `koharu-sdk` child reached through `/api/local/koharu`.
  *
- * - on the public site, an authenticated account owns an isolated engine through `/api/studio`.
- * The first paint shows the presentation; the editor is fetched once an engine is available.
+ * Elsewhere (dragonballfr.com) the server-rendered presentation (`fallback`) stays: it is also
+ * what the first paint shows, and the editor bundle is only fetched once an engine is found.
  */
 import dynamic from "next/dynamic";
 import { type ReactNode, useEffect, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import type { LocalHealthResponse } from "@aphrody/shenron-api/contract";
 import { isTauri } from "@aphrody/shenron-ui/studio/tauri-bridge";
-import { SignInDiscord } from "@/components/SignInDiscord";
 
 const StudioDesktop = dynamic(() => import("./StudioDesktop"), { ssr: false });
 
@@ -44,7 +43,6 @@ export function StudioEditor({ fallback }: { fallback: ReactNode }) {
   const [bridge, setBridge] = useState<"local" | "hosted" | null>(null);
   const [linked, setLinked] = useState<boolean | null>(null);
   const [loginPending, setLoginPending] = useState(false);
-  const [webStatus, setWebStatus] = useState<"signIn" | "unavailable" | null>(null);
 
   useEffect(() => {
     if (desktop) return;
@@ -60,24 +58,15 @@ export function StudioEditor({ fallback }: { fallback: ReactNode }) {
           cache: "no-store",
           signal: controller.signal,
         });
-        if (controller.signal.aborted) return;
-        if (response.status === 401) {
-          setWebStatus("signIn");
+        if (!response.ok || (await response.json()).available !== true || controller.signal.aborted)
           return;
-        }
-        if (!response.ok || (await response.json()).available !== true) {
-          setWebStatus("unavailable");
-          return;
-        }
         const transport = await import("@aphrody/shenron-koharu/transport");
         if (controller.signal.aborted) return;
         transport.configureKoharuBridge("/api/studio", true);
         setBridge("hosted");
         return undefined;
       })
-      .catch(() => {
-        if (!controller.signal.aborted) setWebStatus("unavailable");
-      });
+      .catch(() => undefined);
     return () => controller.abort();
   }, [desktop]);
 
@@ -133,39 +122,7 @@ export function StudioEditor({ fallback }: { fallback: ReactNode }) {
   if (desktop && linked !== true)
     return <DesktopAuthGate pending={loginPending} onPendingChange={setLoginPending} />;
   if (desktop) return <StudioDesktop />;
-  return bridge ? (
-    <StudioDesktop embedded />
-  ) : (
-    <>
-      {webStatus && <WebAccess status={webStatus} />}
-      {fallback}
-    </>
-  );
-}
-
-function WebAccess({ status }: { status: "signIn" | "unavailable" }) {
-  const t = useTranslations("library.studio");
-  const returnPath =
-    typeof window === "undefined" ? "/studio" : window.location.pathname + window.location.search;
-  return (
-    <section className="mx-auto my-6 w-[calc(100%-2rem)] max-w-6xl rounded-2xl border border-border bg-card p-5 text-card-foreground">
-      <h2 className="text-lg font-semibold">{t("webTitle")}</h2>
-      <p
-        role={status === "unavailable" ? "status" : undefined}
-        className="mt-2 text-sm text-muted-foreground"
-      >
-        {t(status === "signIn" ? "webText" : "webUnavailable")}
-      </p>
-      {status === "signIn" && (
-        <SignInDiscord
-          callbackURL={returnPath}
-          className="mt-4 inline-flex min-h-12 items-center rounded-xl bg-primary px-5 font-semibold text-primary-foreground"
-        >
-          {t("webSignIn")}
-        </SignInDiscord>
-      )}
-    </section>
-  );
+  return bridge ? <StudioDesktop embedded /> : fallback;
 }
 
 function DesktopAuthGate({

@@ -6,24 +6,19 @@ const { createMangaData, MANGA_CATALOGUE_INDEX_URL } = await import("../src/lib/
 import { projectMangaCdn, mangaDigest } from "../../../scripts/ops/manga-cdn-projection";
 import { mangaReaderAssetUrl } from "../src/lib/manga-reader-assets";
 
-function projection(
-  title = "Goku",
-  isbn: string | null = null,
-  volumeId = 1,
-  cover: string | null = null,
-) {
+function projection(title = "Goku", isbn: string | null = null) {
   return projectMangaCdn(
     {
       observedAt: "2026-10-14T16:00:00.000Z",
       declaredSeries: [{ series: "DB", chapters: 2, pages: 8 }],
       volumes: [
         {
-          id: volumeId,
+          id: 1,
           series: "DB",
           volume_number: 1,
           title,
           isbn,
-          cover,
+          cover: null,
           chapters: [{ id: 10 }, { id: 11 }],
         },
       ],
@@ -31,22 +26,13 @@ function projection(
         id,
         series: "DB",
         chapter_number: offset + 1,
-        volume_id: volumeId,
+        volume_id: 1,
         title,
         pages: 4,
         pageList: Array.from({ length: 4 }, () => ({ image: "./assets/manga/DB/page.webp" })),
       })),
     },
     {
-      ...(cover
-        ? {
-            [new URL(cover.replace(/^\.\//, "/"), "https://cdn.dragonballfr.com").pathname]: {
-              sha256: mangaDigest("qualified cover"),
-              size: 21,
-              contentType: "image/webp",
-            },
-          }
-        : {}),
       "/assets/manga/DB/page.webp": {
         sha256: mangaDigest("qualified scan"),
         size: 20,
@@ -101,8 +87,8 @@ function editorial() {
   };
   return { port, calls };
 }
-function transport(isbn: string | null = null, volumeId = 1, cover: string | null = null) {
-  let current = projection("Goku", isbn, volumeId, cover);
+function transport(isbn: string | null = null) {
+  let current = projection("Goku", isbn);
   let failure: "head" | "digest" | "uri" | "size" | "cache" | "schema" | "stream" | "sha" | null =
     null;
   const calls: string[] = [];
@@ -156,7 +142,7 @@ function transport(isbn: string | null = null, volumeId = 1, cover: string | nul
       failure = value;
     },
     publish: (title: string) => {
-      current = projection(title, isbn, volumeId, cover);
+      current = projection(title, isbn);
     },
   };
 }
@@ -282,71 +268,4 @@ test("CDN scan resolution is explicit and rejects foreign or credential-bearing 
   expect(mangaReaderAssetUrl("https://foreign.test/assets/page.webp", "cdn")).toBe(
     "https://foreign.test/assets/page.webp",
   );
-});
-
-test("editorial cover740 immediately overrides CDN metadata in catalogue, series and detail without changing scans", async () => {
-  const network = transport("9782723472272", 740);
-  const fallback = editorial();
-  let cover = "https://cdn.dragonballfr.com/assets/manga/covers/isbn/9782723472272/cover.jpg";
-  const data = createMangaData(
-    { ...fallback.port, mangaVolumeCovers: async () => [{ id: 740, cover }] },
-    network.fetcher,
-    () => 0,
-  );
-  const [catalogue, series, volume] = await Promise.all([
-    data.mangaCatalogVolumes(),
-    data.mangaVolumes("DB"),
-    data.mangaVolume(740),
-  ]);
-  expect(catalogue?.volumes[0]?.cover).toBe(cover);
-  expect(series?.volumes[0]?.cover).toBe(cover);
-  expect(volume?.cover).toBe(cover);
-  expect(volume?.sourceKind).toBe("cdn");
-  expect(volume?.chapters[0]?.pages).toEqual(
-    Array(4).fill("https://cdn.dragonballfr.com/assets/manga/DB/page.webp"),
-  );
-  cover = "/wiki/manga/admin-replacement.jpg";
-  expect((await data.mangaVolume(740))?.cover).toBe(cover);
-  expect(network.calls.filter((c) => c.startsWith("HEAD:"))).toHaveLength(1);
-  expect(fallback.calls).toEqual([]);
-});
-
-test("a known bibliographic edition never inherits the CN fallback when editorial cover is absent or unavailable", async () => {
-  const source = "./assets/dragonballcn/arale_cn/001.webp";
-  const network = transport("9782723472272", 740, source);
-  for (const covers of [
-    async () => null,
-    async () => [{ id: 740, cover: null }],
-    async () => {
-      throw Error("DB unavailable");
-    },
-  ]) {
-    const data = createMangaData(
-      { ...editorial().port, mangaVolumeCovers: covers },
-      network.fetcher,
-    );
-    expect((await data.mangaVolume(740))?.cover).toBeNull();
-    expect((await data.mangaCatalogVolumes())?.volumes[0]?.cover).toBeNull();
-    expect((await data.mangaVolume(740))?.chapters[0]?.pages).toHaveLength(4);
-  }
-});
-
-test("a missing or failed editorial overlay preserves qualified legacy covers and unmatched volume identities", async () => {
-  const source = "./assets/dragonballcn/dragonball_jp_original/001.webp";
-  const network = transport(null, 1, source);
-  for (const covers of [
-    async () => null,
-    async () => [{ id: 740, cover: "/wiki/other.jpg" }],
-    async () => {
-      throw Error("DB unavailable");
-    },
-  ]) {
-    const data = createMangaData(
-      { ...editorial().port, mangaVolumeCovers: covers },
-      network.fetcher,
-    );
-    expect((await data.mangaVolume(1))?.cover).toBe(
-      "https://cdn.dragonballfr.com/assets/dragonballcn/dragonball_jp_original/001.webp",
-    );
-  }
 });

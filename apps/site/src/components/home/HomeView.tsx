@@ -29,8 +29,6 @@ import { publicShellJourneys } from "@/lib/shell-nav";
 import { HomeCanonArbitre } from "./HomeCanonArbitre";
 import { HOME_GAMES, HomeGames } from "./HomeGames";
 import { HomeHero } from "./HomeHero";
-import { HOME_HERO_FRAMES } from "@/lib/home-hero-frames";
-import type { BeerusFeature } from "./HomeBeerusFeature";
 import { HomeGuardians, HomeLivePanel, HomeLiveProvider, HomePantheon } from "./HomeLive";
 import { HomeMenuJourney } from "./HomeMenuJourney";
 import { HomeSection } from "./HomeSection";
@@ -43,7 +41,6 @@ import type { BotStats, PersonaLive, PresenceState, TopMember } from "./useLiveB
 export interface HomeViewProps {
   config: HomeConfig;
   heroFrame?: string;
-  beerus?: BeerusFeature | null;
   access: AccessSnapshot | null;
   stats: BotStats;
   personas: PersonaLive[];
@@ -201,14 +198,7 @@ export function HomeView(rawProps: HomeViewProps) {
       presence={props.presence}
     >
       <HomeScreenDeck>
-        <HomeHero
-          hero={config.hero}
-          heroFrame={props.heroFrame}
-          beerus={props.beerus}
-          frames={HOME_HERO_FRAMES.filter((frame) =>
-            props.beerus?.episodes?.some((ep) => ep.id === frame.episodeId),
-          ).map((frame) => frame.src)}
-        />
+        <HomeHero hero={config.hero} />
         {community && shown.has("community") && (
           <SectionScene
             scene={community.scene}

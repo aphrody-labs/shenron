@@ -1,6 +1,5 @@
 "use client";
 
-/* oxlint-disable react/jsx-no-constructed-context-values -- reviewed: admin-only private tooling, behavior preserved */
 /**
  * Labels shared by the private resource viewers. A plain React context: no server, no `bun`
  * module, no network. The host passes already-localised strings; English is the fallback.

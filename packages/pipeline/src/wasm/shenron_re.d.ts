@@ -38,11 +38,6 @@ export function wasm_parse_bac(bac_bytes: Uint8Array): any;
 export function wasm_parse_bdm(bdm_bytes: Uint8Array): any;
 
 /**
- * Parse the DBXV2 CMS (Character Model Spec) roster file and return every character entry.
- */
-export function wasm_parse_cms(cms_bytes: Uint8Array): any;
-
-/**
  * Parse a DBXV2 CUS (Character Ultimate Skill) binary file and return all skills.
  */
 export function wasm_parse_cus(cus_bytes: Uint8Array): any;
@@ -100,7 +95,6 @@ export interface InitOutput {
     readonly wasm_get_xenoverse3_prototype_map: () => [number, number, number];
     readonly wasm_parse_bac: (a: number, b: number) => [number, number, number];
     readonly wasm_parse_bdm: (a: number, b: number) => [number, number, number];
-    readonly wasm_parse_cms: (a: number, b: number) => [number, number, number];
     readonly wasm_parse_cus: (a: number, b: number) => [number, number, number];
     readonly wasm_parse_emb: (a: number, b: number) => [number, number, number];
     readonly wasm_parse_msg: (a: number, b: number) => [number, number, number];

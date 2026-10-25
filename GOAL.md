@@ -8,33 +8,6 @@ l’historique sont dans [REPRISE.md](docs/reference/root/REPRISE.md) ; les inva
 
 ## Priorités
 
-Demande propriétaire du 20 octobre : reprendre tous les lots encore ouverts dans
-GOAL/TODO/PLAN, avec sous-agents, MCP et skills pertinents, installer les capacités
-manquantes, corriger les défauts prouvés puis livrer les artefacts publics qualifiés.
-La vidéo utilise Bun Video, FilmCraft et Shenron Video ; les appels directs à
-FFmpeg sont remplacés par leurs capacités réellement qualifiées. Conserver les
-originaux et les limites explicites quand une opération native reste indisponible.
-Les données privées, secrets et modèles protégés restent exclus des publications.
-
-Demande propriétaire du 18 octobre : réunir le parcours manga de Shenron et
-Shenron Studio (Koharu), afin d'exploiter les capacités communes de lecture,
-édition, cases, atlas, Canvas et scènes 3D. Conserver `koharu-library` comme
-propriétaire de l'état éditorial, les transports existants et les producteurs
-Rust/Bun ; raccorder les capacités plutôt que dupliquer moteurs et applications.
-Chaque capacité exposée doit fonctionner sur une vraie page autorisée et être
-qualifiée séparément ; SVG raster, trait vectoriel et modèles 3D restent distincts.
-La modernisation des fiches épisodes, du lecteur CDN, du hero et de la timeline
-GIF continue jusqu'au contrôle de l'image publique activée.
-
-Extension du même lot : restaurer les fonctions réellement perdues de l'upstream
-Koharu dans Shenron Studio, avec un seul moteur et des parcours site, bureau et
-mobile. Le site propose des espaces personnels authentifiés et isolés ; les
-writes éditoriaux restent sous leur garde admin. L'administration entière partage
-un atelier Studio moderne (explorateur, onglets, commandes, contexte), puis son
-tableau de bord reprend les données et actions réelles dans cette composition.
-Qualifier séparément parité source, compilation native/WASM, import réel,
-responsive, image scellée et comportement de production.
-
 Demande active du 15 octobre : corriger les bugs et trous de données des pages manga,
 databooks et wiki, synchroniser l’IA et l’interface avec PostgreSQL, évaluer le RAG,
 et qualifier le crawl/rendu avec Bun WebView sur la fabrique. Le propriétaire ajoute :
@@ -49,10 +22,7 @@ interactif ; automatiser le remplissage du wiki par sessions Codex `gpt-5.6-luna
 avec preuves primaires et relecture indépendante ; installer le plugin Aphrody
 et son MCP dans Codex. La demande explicite de synchronisation Git, merge, déploiement complet et
 mise à jour des paquets autorise la livraison site/bot via Infra et la publication
-des bibliothèques publiques auditées. Le propriétaire a ensuite explicitement autorisé
-DBXV2 public en production ; `@aphrody/shenron-dbxv2@1.4.7` est publié et vérifié.
-Les secrets, bases privées et sessions Steam restent hors paquet ; la version publiée
-n'est pas la preuve d'un jeu WASM ou d'un streaming qualifié.
+des douze bibliothèques publiques auditées en version 1.4.6 ; les applications restent privées.
 Demandes ajoutées ensuite : trier `/catalog/archive_movies` et `/catalog/archive_images`
 avec une sélection Dragon Ball réellement qualifiée et des filtres cohérents, puis
 corriger les GitHub Actions et workflows depuis leurs échecs réels.

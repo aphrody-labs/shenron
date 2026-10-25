@@ -6,17 +6,19 @@ import { join } from "node:path";
 import { code } from "bun:yolo";
 import { runAuto } from "../../src/auto";
 import { probeCapabilities } from "../../src/auto/capabilities";
-import { hostAllowed } from "../../src/auto/crawl";
+import { hostAllowed, robotsDisallows } from "../../src/auto/crawl";
 import { runDrafts, type DraftRunner } from "../../src/auto/workers";
 
 const body = "Goku est un Saiyan élevé sur Terre. ".repeat(6);
 const page = (links = "") =>
   `<html><head><title>Goku</title></head><body><nav>menu</nav><p>${body}</p>${links}<script>x()</script></body></html>`;
 
-test("host allowlist refuses Fandom and unlisted hosts", () => {
+test("host allowlist refuses Fandom and unlisted hosts; robots honoured", () => {
   expect(hostAllowed(new URL("https://dragonballfr.com/a"), ["dragonballfr.com"])).toBe(true);
   expect(hostAllowed(new URL("https://x.fandom.com/a"), ["fandom.com"])).toBe(false);
   expect(hostAllowed(new URL("https://evil.test/a"), ["dragonballfr.com"])).toBe(false);
+  expect(robotsDisallows("User-agent: *\nDisallow: /private", "/private/x")).toBe(true);
+  expect(robotsDisallows("User-agent: *\nDisallow: /private", "/ok")).toBe(false);
 });
 
 test("capability probe never throws and reports booleans", async () => {

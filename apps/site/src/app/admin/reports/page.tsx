@@ -1,137 +1,152 @@
 "use client";
 
 /**
- * /admin/reports: back-office of the user reports (tickets). Lists the "Report
- * an error" submissions of members with status filters, a workflow (open, in
- * progress, resolved, closed), an internal note and deletion. Read/write through
- * /api/admin/reports (site Postgres).
+ * /admin/reports — back-office des signalements utilisateurs (tickets).
+ * Liste les remontées « Signaler une erreur » des membres, avec filtres par
+ * statut, workflow (ouvert → en cours → résolu → fermé), note interne et
+ * suppression. Lecture/écriture via /api/admin/reports (Postgres site).
  */
-import { StatusBadge, type StatusTone } from "@aphrody/shenron-ui/admin";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bulle, Chargement, Corbeille, Drapeau } from "@aphrody/shenron-ui/icones";
-import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
-import { useConfirm } from "@/components/admin/admin-ui";
-import { EmptyState, ErrorState, SkeletonRows } from "@/components/admin/bot/BotUi";
-import { useBotFormat } from "@/components/admin/bot/useBotFormat";
+import {
+  reportCategoryLabel,
+  REPORT_STATUSES,
+  reportStatusLabel,
+  type ReportRow,
+} from "@/lib/report-types";
 import { PlainField } from "@/components/editor/PlainField";
-import { REPORT_STATUSES, type ReportRow } from "@/lib/report-types";
 
 type ReportsResponse = { ok: true; items: ReportRow[]; counts: Record<string, number> };
 
 async function fetchReports(status: string): Promise<ReportsResponse> {
-  const res = await fetch(`/api/admin/reports?status=${encodeURIComponent(status)}`, {
-    credentials: "same-origin",
-  });
+  const res = await fetch(`/api/admin/reports?status=${status}`, { credentials: "same-origin" });
   if (!res.ok) throw new Error(`reports ${res.status}`);
   return res.json() as Promise<ReportsResponse>;
 }
 
-const STATUS_TONE: Record<string, StatusTone> = {
-  orange: "accent",
-  blue: "info",
-  green: "success",
-  muted: "neutral",
+const STATUS_TONE: Record<string, string> = {
+  orange: "border-dbz-orange/50 bg-dbz-orange/10 text-dbz-orange",
+  blue: "border-dbz-blue-light/50 bg-dbz-blue-light/10 text-dbz-blue-light",
+  green: "border-green-500/50 bg-green-500/10 text-green-400",
+  muted: "border-white/20 bg-white/5 text-white/50",
 };
 
-function toneFor(status: string): StatusTone {
+function toneFor(status: string): string {
   const s = REPORT_STATUSES.find((x) => x.key === status);
-  return STATUS_TONE[s?.tone ?? "muted"] ?? "neutral";
+  return STATUS_TONE[s?.tone ?? "muted"] ?? STATUS_TONE.muted;
 }
 
-const FILTERS = ["open", "in_progress", "resolved", "closed", "all"] as const;
-
-/** Label of a status or category key, falling back to the raw key if unknown. */
-function useKeyLabel(group: "status" | "category") {
-  const t = useTranslations("adminBot.reports");
-  return (key: string) => (t.has(`${group}.${key}`) ? t(`${group}.${key}`) : key);
+function fmtDate(iso: string): string {
+  try {
+    return new Date(iso).toLocaleString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return iso;
+  }
 }
 
-export default function ReportsPage() {
-  const t = useTranslations("adminBot.reports");
-  const statusLabel = useKeyLabel("status");
+export default function SignalementsPage() {
   const [filter, setFilter] = useState<string>("open");
   const qc = useQueryClient();
+  const key = ["admin-reports", filter];
 
   const q = useQuery({
-    queryKey: ["admin-reports", filter],
+    queryKey: key,
     queryFn: () => fetchReports(filter),
     refetchInterval: 60_000,
     placeholderData: (prev) => prev,
   });
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["admin-reports"] });
+
   const items = q.data?.items ?? [];
   const counts = q.data?.counts ?? {};
 
-  return (
-    <div className="space-y-5">
-      <p className="max-w-3xl text-sm text-muted-foreground">{t("intro")}</p>
+  const FILTERS = [
+    { key: "open", label: "Ouverts" },
+    { key: "in_progress", label: "En cours" },
+    { key: "resolved", label: "Résolus" },
+    { key: "closed", label: "Fermés" },
+    { key: "all", label: "Tous" },
+  ];
 
-      <div role="group" aria-label={t("filters")} className="flex flex-wrap items-center gap-2">
-        {FILTERS.map((key) => {
-          const active = filter === key;
-          return (
-            <button
-              key={key}
-              type="button"
-              aria-pressed={active}
-              onClick={() => setFilter(key)}
-              className={`inline-flex min-h-10 items-center gap-2 rounded-lg border px-3.5 py-2 text-sm font-semibold transition-colors ${
-                active
-                  ? "border-dbz-orange bg-dbz-orange text-black"
-                  : "border-border bg-background/40 text-foreground/70 hover:bg-card hover:text-foreground"
-              }`}
-            >
-              {key === "all" ? t("status.all") : statusLabel(key)}
-              <span
-                className={`rounded-full px-1.5 font-mono text-[11px] ${
-                  active ? "bg-black/20" : "bg-muted text-muted-foreground"
-                }`}
-              >
-                {counts[key] ?? 0}
-              </span>
-            </button>
-          );
-        })}
-        {q.isFetching && (
-          <Chargement aria-hidden className="h-4 w-4 animate-spin text-muted-foreground" />
-        )}
+  return (
+    <div className="space-y-6">
+      <div className="dbz-panel px-6 py-5">
+        <h1 className="flex items-center gap-3 font-saiyan text-3xl leading-tight text-dbz-yellow">
+          <Drapeau className="h-7 w-7 text-dbz-orange" />
+          Signalements
+        </h1>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/60">
+          Remontées « Signaler une erreur » des membres connectés. Traite-les comme des tickets :
+          ouvert → en cours → résolu. Distinct des tickets de support Discord.
+        </p>
       </div>
 
-      {q.isError ? (
-        <ErrorState message={t("loadFailed")} onRetry={() => q.refetch()} retrying={q.isFetching} />
-      ) : q.isLoading ? (
-        <SkeletonRows count={3} className="h-40" />
-      ) : items.length === 0 ? (
-        <EmptyState
-          title={filter === "all" ? t("emptyAll") : t("empty", { status: statusLabel(filter) })}
-          hint={t("emptyHint")}
-          icon={<Drapeau />}
-        />
+      {/* Filtres par statut */}
+      <div className="flex flex-wrap gap-2">
+        {FILTERS.map((f) => (
+          <button
+            key={f.key}
+            type="button"
+            onClick={() => setFilter(f.key)}
+            className={`inline-flex items-center gap-2 rounded-lg border px-3.5 py-2 text-sm font-display font-semibold transition-colors ${
+              filter === f.key
+                ? "border-dbz-orange bg-dbz-orange text-black"
+                : "border-dbz-border bg-dbz-bg/40 text-white/70 hover:bg-white/5 hover:text-white"
+            }`}
+          >
+            {f.label}
+            <span
+              className={`rounded-full px-1.5 text-[11px] font-mono ${
+                filter === f.key ? "bg-black/20" : "bg-white/10 text-white/60"
+              }`}
+            >
+              {counts[f.key] ?? 0}
+            </span>
+          </button>
+        ))}
+        {q.isFetching && <Chargement className="h-4 w-4 animate-spin self-center text-white/50" />}
+      </div>
+
+      {q.isError && (
+        <div className="card border-dbz-red/40">
+          <p className="text-sm text-dbz-red">Impossible de charger les signalements.</p>
+        </div>
+      )}
+
+      {items.length === 0 && !q.isLoading ? (
+        <div className="dbz-panel py-16 text-center">
+          <Drapeau className="mx-auto mb-3 h-8 w-8 text-white/20" />
+          <p className="font-saiyan uppercase tracking-widest text-white/50">
+            Aucun signalement {filter !== "all" ? reportStatusLabel(filter).toLowerCase() : ""}
+          </p>
+          <p className="mt-1 text-sm text-white/50">Les remontées des membres apparaîtront ici.</p>
+        </div>
       ) : (
-        <ul className="space-y-3">
+        <div className="space-y-3">
           {items.map((r) => (
             <ReportCard key={r.id} report={r} onChanged={invalidate} />
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );
 }
 
 function ReportCard({ report, onChanged }: { report: ReportRow; onChanged: () => void }) {
-  const t = useTranslations("adminBot.reports");
-  const statusLabel = useKeyLabel("status");
-  const categoryLabel = useKeyLabel("category");
-  const fmt = useBotFormat();
-  const { confirm, dialog } = useConfirm();
   const [note, setNote] = useState(report.adminNote ?? "");
 
   const patch = useMutation({
     mutationFn: (body: { status?: string; adminNote?: string }) =>
-      fetch("/api/admin/reports", {
+      fetch(`/api/admin/reports`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "same-origin",
@@ -145,7 +160,7 @@ function ReportCard({ report, onChanged }: { report: ReportRow; onChanged: () =>
 
   const remove = useMutation({
     mutationFn: () =>
-      fetch(`/api/admin/reports?id=${encodeURIComponent(report.id)}`, {
+      fetch(`/api/admin/reports?id=${report.id}`, {
         method: "DELETE",
         credentials: "same-origin",
       }).then((res) => {
@@ -157,61 +172,54 @@ function ReportCard({ report, onChanged }: { report: ReportRow; onChanged: () =>
 
   const busy = patch.isPending || remove.isPending;
   const noteDirty = note !== (report.adminNote ?? "");
-  const failed = patch.isError || remove.isError;
-
-  async function onDelete() {
-    const ok = await confirm({
-      title: t("deleteTitle"),
-      description: t("deleteBody"),
-      confirmLabel: t("delete"),
-      tone: "danger",
-    });
-    if (ok) remove.mutate();
-  }
 
   return (
-    <li className="min-w-0 space-y-3 rounded-xl border border-border bg-card p-4">
-      {dialog}
+    <div className="dbz-panel space-y-3 p-4">
+      {/* En-tête */}
       <div className="flex flex-wrap items-center gap-2">
-        <StatusBadge tone={toneFor(report.status)}>{statusLabel(report.status)}</StatusBadge>
-        <StatusBadge tone="neutral">{categoryLabel(report.category)}</StatusBadge>
+        <span
+          className={`rounded-full border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider ${toneFor(report.status)}`}
+        >
+          {reportStatusLabel(report.status)}
+        </span>
+        <span className="rounded border border-white/15 bg-white/5 px-2 py-0.5 text-[11px] text-white/70">
+          {reportCategoryLabel(report.category)}
+        </span>
         <Link
           href={report.path}
           target="_blank"
-          rel="noreferrer"
-          className="break-all font-mono text-xs text-dbz-ki hover:underline"
+          className="font-mono text-xs text-dbz-blue-light hover:underline"
           title={report.pageTitle ?? report.path}
         >
           {report.path}
         </Link>
-        <time dateTime={report.createdAt} className="ml-auto text-xs text-muted-foreground">
-          {fmt.dateTime(report.createdAt)}
-        </time>
+        <span className="ml-auto text-[11px] text-white/50">{fmtDate(report.createdAt)}</span>
       </div>
 
-      <p className="whitespace-pre-wrap break-words rounded-lg border border-border bg-background/40 p-3 text-sm text-foreground">
+      {/* Message */}
+      <p className="whitespace-pre-wrap rounded-md border border-white/10 bg-dbz-bg/40 p-3 text-sm text-white/90">
         {report.message}
       </p>
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-        <span>{t("by", { name: report.username ?? "?" })}</span>
-        {report.discordId && (
-          <span className="font-mono">{t("discordId", { id: report.discordId })}</span>
-        )}
-        {report.resolvedBy && <span>{t("resolvedBy", { name: report.resolvedBy })}</span>}
+      {/* Rapporteur */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-white/50">
+        <span>
+          Par <span className="text-white/75">{report.username ?? "?"}</span>
+        </span>
+        {report.discordId && <span className="font-mono">Discord ID : {report.discordId}</span>}
+        {report.resolvedBy && <span>· traité par {report.resolvedBy}</span>}
       </div>
 
+      {/* Note interne */}
       <div className="flex items-start gap-2">
-        <Bulle aria-hidden className="mt-2 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+        <Bulle className="mt-2 h-3.5 w-3.5 shrink-0 text-white/50" />
         <PlainField
           className="flex-1"
           value={note}
           onChange={setNote}
           minRows={1}
           maxRows={8}
-          label={t("noteLabel")}
-          hideLabel
-          placeholder={t("notePlaceholder")}
+          placeholder="Note interne (traitement)…"
         />
         {noteDirty && (
           <button
@@ -220,39 +228,39 @@ function ReportCard({ report, onChanged }: { report: ReportRow; onChanged: () =>
             onClick={() => patch.mutate({ adminNote: note })}
             className="btn btn-ghost shrink-0 text-xs"
           >
-            {t("saveNote")}
+            Enregistrer
           </button>
         )}
       </div>
 
-      {failed && (
-        <p role="alert" className="text-xs text-red-300">
-          {t("actionFailed")}
-        </p>
-      )}
-
-      <div className="flex flex-wrap items-center gap-1.5 border-t border-border pt-3">
+      {/* Actions statut + suppression */}
+      <div className="flex flex-wrap items-center gap-1.5 border-t border-white/10 pt-3">
         {REPORT_STATUSES.map((s) => (
           <button
             key={s.key}
             type="button"
-            aria-pressed={report.status === s.key}
             disabled={busy || report.status === s.key}
             onClick={() => patch.mutate({ status: s.key })}
-            className="rounded-lg border border-border px-2.5 py-1 text-xs font-semibold text-foreground/70 transition-colors hover:border-dbz-orange hover:text-foreground disabled:opacity-40 aria-pressed:border-dbz-orange aria-pressed:text-dbz-orange"
+            className={`rounded border px-2.5 py-1 text-xs font-semibold transition-colors disabled:opacity-40 ${
+              report.status === s.key
+                ? toneFor(s.key)
+                : "border-dbz-border text-white/60 hover:border-dbz-orange hover:text-white"
+            }`}
           >
-            {statusLabel(s.key)}
+            {s.label}
           </button>
         ))}
         <button
           type="button"
           disabled={busy}
-          onClick={onDelete}
-          className="ml-auto inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1 text-xs text-red-300 transition-colors hover:border-dbz-red hover:text-red-200 disabled:opacity-40"
+          onClick={() => {
+            if (window.confirm("Supprimer définitivement ce signalement ?")) remove.mutate();
+          }}
+          className="ml-auto inline-flex items-center gap-1 rounded border border-white/15 px-2.5 py-1 text-xs text-red-400 transition-colors hover:border-dbz-red hover:text-red-300 disabled:opacity-40"
         >
-          <Corbeille aria-hidden className="h-3.5 w-3.5" /> {t("delete")}
+          <Corbeille className="h-3.5 w-3.5" /> Supprimer
         </button>
       </div>
-    </li>
+    </div>
   );
 }

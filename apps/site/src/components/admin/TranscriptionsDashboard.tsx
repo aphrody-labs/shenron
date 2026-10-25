@@ -25,7 +25,6 @@ import type {
   LexiconOverviewItem,
 } from "@/lib/transcriptions-admin";
 import type { TranscriptionsOverviewView } from "@/lib/admin-status-view";
-import { onTablistKeyDown } from "@/lib/tablist-keys";
 
 export function TranscriptionsDashboard({
   initialData,
@@ -153,22 +152,13 @@ export function TranscriptionsDashboard({
     <div className="space-y-6">
       {/* Subnav Tabs */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
-        <div
-          role="tablist"
-          onKeyDown={onTablistKeyDown}
-          tabIndex={-1}
-          aria-label="Sections du suivi des transcriptions"
-          className="flex flex-wrap items-center gap-2"
-        >
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            role="tab"
-            aria-selected={activeTab === "vue-globale"}
-            tabIndex={activeTab === "vue-globale" ? 0 : -1}
             onClick={() => setActiveTab("vue-globale")}
-            className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
               activeTab === "vue-globale"
-                ? "bg-dbz-orange text-black shadow-sm"
+                ? "bg-dbz-orange text-black"
                 : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
             }`}
           >
@@ -177,13 +167,10 @@ export function TranscriptionsDashboard({
           </button>
           <button
             type="button"
-            role="tab"
-            aria-selected={activeTab === "lots-gpu"}
-            tabIndex={activeTab === "lots-gpu" ? 0 : -1}
             onClick={() => setActiveTab("lots-gpu")}
-            className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
               activeTab === "lots-gpu"
-                ? "bg-dbz-orange text-black shadow-sm"
+                ? "bg-dbz-orange text-black"
                 : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
             }`}
           >
@@ -192,13 +179,10 @@ export function TranscriptionsDashboard({
           </button>
           <button
             type="button"
-            role="tab"
-            aria-selected={activeTab === "traduction-vps"}
-            tabIndex={activeTab === "traduction-vps" ? 0 : -1}
             onClick={() => setActiveTab("traduction-vps")}
-            className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
               activeTab === "traduction-vps"
-                ? "bg-dbz-orange text-black shadow-sm"
+                ? "bg-dbz-orange text-black"
                 : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
             }`}
           >
@@ -207,13 +191,10 @@ export function TranscriptionsDashboard({
           </button>
           <button
             type="button"
-            role="tab"
-            aria-selected={activeTab === "lexique"}
-            tabIndex={activeTab === "lexique" ? 0 : -1}
             onClick={() => setActiveTab("lexique")}
-            className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
               activeTab === "lexique"
-                ? "bg-dbz-orange text-black shadow-sm"
+                ? "bg-dbz-orange text-black"
                 : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
             }`}
           >
@@ -222,13 +203,10 @@ export function TranscriptionsDashboard({
           </button>
           <button
             type="button"
-            role="tab"
-            aria-selected={activeTab === "databooks"}
-            tabIndex={activeTab === "databooks" ? 0 : -1}
             onClick={() => setActiveTab("databooks")}
-            className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
               activeTab === "databooks"
-                ? "bg-dbz-orange text-black shadow-sm"
+                ? "bg-dbz-orange text-black"
                 : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
             }`}
           >
@@ -237,13 +215,10 @@ export function TranscriptionsDashboard({
           </button>
           <button
             type="button"
-            role="tab"
-            aria-selected={activeTab === "manga"}
-            tabIndex={activeTab === "manga" ? 0 : -1}
             onClick={() => setActiveTab("manga")}
-            className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
               activeTab === "manga"
-                ? "bg-dbz-orange text-black shadow-sm"
+                ? "bg-dbz-orange text-black"
                 : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
             }`}
           >
@@ -252,13 +227,10 @@ export function TranscriptionsDashboard({
           </button>
           <button
             type="button"
-            role="tab"
-            aria-selected={activeTab === "arbitrage"}
-            tabIndex={activeTab === "arbitrage" ? 0 : -1}
             onClick={() => setActiveTab("arbitrage")}
-            className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 ${
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
               activeTab === "arbitrage"
-                ? "bg-amber-400 text-black font-bold shadow-sm"
+                ? "bg-amber-400 text-black font-bold"
                 : "bg-amber-400/10 text-amber-300 border border-amber-400/20 hover:bg-amber-400/20"
             }`}
           >

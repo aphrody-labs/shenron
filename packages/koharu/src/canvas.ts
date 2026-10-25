@@ -133,56 +133,15 @@ let modulePromise: Promise<CanvasGlue> | null = null;
 let activeCanvas: Canvas | null = null;
 let prefetchGeneration = 0;
 
-export interface PreloadCanvasModuleOptions {
-  /**
-   * Ne rien télécharger hors de l'origine de la page : un CDN sans `Access-Control-Allow-Origin`
-   * bloque le fetch et journalise une erreur console. Le résultat est alors `false`.
-   */
-  sameOriginOnly?: boolean;
-}
-
 /**
  * Lance le téléchargement et la compilation du module WASM avant l'ouverture de l'éditeur.
  * Ne rejette jamais : un échec est relevé (et retenté) par `createCanvas`.
  */
-export function preloadCanvasModule(options: PreloadCanvasModuleOptions = {}): Promise<boolean> {
-  if (options.sameOriginOnly && canvasModuleIsCrossOrigin()) return Promise.resolve(false);
+export function preloadCanvasModule(): Promise<boolean> {
   return loadCanvasModule().then(
     () => true,
     () => false,
   );
-}
-
-/**
- * Le WASM du canevas reste sur l'origine de la page, même lorsque les chunks Next utilisent le CDN.
- */
-export function canvasModuleIsCrossOrigin(
-  pageOrigin: string | undefined = globalThis.location?.origin,
-): boolean {
-  if (pageOrigin === undefined) return false;
-  return canvasWasmUrl(pageOrigin).origin !== pageOrigin;
-}
-
-function canvasWasmUrl(pageOrigin = globalThis.location?.origin): URL {
-  const asset = new URL("./wasm/koharu_canvas_bg.wasm", import.meta.url);
-  if (!pageOrigin) return asset;
-
-  // Turbopack emits a root-relative, hashed asset URL. Keep that path on the site origin:
-  // the CDN does not send Access-Control-Allow-Origin for this WASM asset.
-  return resolveCanvasWasmAssetUrl(asset, pageOrigin, [], true);
-}
-
-/** Resolve Turbopack's root-relative WASM asset on the page origin, independently of the CDN. */
-export function resolveCanvasWasmAssetUrl(
-  asset: URL,
-  pageOrigin: string,
-  _scriptUrls: readonly string[] = [],
-  forcePageOrigin = false,
-): URL {
-  const page = new URL(pageOrigin);
-  if (!forcePageOrigin && asset.protocol !== "http:" && asset.protocol !== "https:") return asset;
-  const resolvedAsset = new URL(asset.href, page);
-  return new URL(`${resolvedAsset.pathname}${resolvedAsset.search}${resolvedAsset.hash}`, page);
 }
 
 export async function createCanvas(
@@ -313,7 +272,7 @@ function importCanvasGlue(): Promise<CanvasGlue> {
  * serveur qui ne l'annonce pas en `application/wasm` passe par la compilation en mémoire.
  */
 async function compileCanvasModule(): Promise<WebAssembly.Module> {
-  const url = canvasWasmUrl();
+  const url = new URL("./wasm/koharu_canvas_bg.wasm", import.meta.url);
   const response = await fetch(url);
   if (!response.ok) throw new Error(`HTTP ${response.status} pour ${url.pathname}`);
   const type = response.headers.get("content-type")?.split(";", 1)[0]?.trim().toLowerCase();

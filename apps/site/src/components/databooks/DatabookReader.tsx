@@ -1,6 +1,5 @@
 "use client";
-import { useCallback, useState } from "react";
-import { StudioSourceLink } from "@/components/studio/StudioSourceLink";
+import { useCallback } from "react";
 import {
   DatabookReader as BaseDatabookReader,
   type DatabookReaderPage,
@@ -22,7 +21,6 @@ export type DatabookReaderProps = {
 export function DatabookReader({ pages, title, bookId }: DatabookReaderProps) {
   const canvasWarmup = useKoharuCanvasWarmup();
   const { prechargement } = useReglages();
-  const [currentPage, setCurrentPage] = useState(Number(pages[0]?.number) || 1);
   const resolveAssetUrl = useCallback(
     (url: string) => readerAssetUrl(url, [CDN_ORIGIN, API_ORIGIN, SITE_URL]),
     [],
@@ -50,7 +48,6 @@ export function DatabookReader({ pages, title, bookId }: DatabookReaderProps) {
   );
   return (
     <div className="m3-reader--dragon-ball" data-koharu-canvas={canvasWarmup}>
-      {bookId != null && <StudioSourceLink kind="databook" id={bookId} page={currentPage} />}
       <BaseDatabookReader
         key={bookId ?? title}
         pages={pages}
@@ -61,7 +58,6 @@ export function DatabookReader({ pages, title, bookId }: DatabookReaderProps) {
         loadTranscriptions={bookId == null ? undefined : loadTranscriptions}
         renderTranscription={renderTranscription}
         preloadCount={prechargement}
-        onPageChange={setCurrentPage}
       />
     </div>
   );

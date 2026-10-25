@@ -69,15 +69,15 @@ function interaction(overrides: Partial<MockInteraction> = {}): MockInteraction 
 describe("FunCommands", () => {
   const cmd = container.resolve(FunCommands);
 
-  test("/saiyan", async () => {
+  test("/gay", async () => {
     const int = interaction();
-    await cmd.saiyan(richUser() as never, int as never);
+    await cmd.gay(richUser() as never, int as never);
     assertResponded(int);
   });
 
-  test("/villain", async () => {
+  test("/raciste", async () => {
     const int = interaction();
-    await cmd.villain(richUser() as never, int as never);
+    await cmd.raciste(richUser() as never, int as never);
     assertResponded(int);
   });
 });

@@ -7,7 +7,6 @@ import { logger } from "~/lib/logger";
 import { auditInputs, neutralize, type InputAudit } from "~/lib/input-audit";
 import { LogService } from "~/services/LogService";
 import { SettingsService } from "~/services/SettingsService";
-import { COLORS } from "~/lib/embeds";
 
 /** Options d'une commande à plat (`groupe sous-commande option`). */
 function flattenOptions(
@@ -139,7 +138,7 @@ export class InteractionLogEvent {
         return;
       }
       const embed = new EmbedBuilder()
-        .setColor(suspicious ? COLORS.error : COLORS.brand)
+        .setColor(suspicious ? 0xef4444 : 0xf38418)
         .setTitle(suspicious ? `Entrée suspecte · /${name}` : `/${name}`)
         .addFields(
           {

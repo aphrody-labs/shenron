@@ -71,7 +71,7 @@ export function TitleBar({ windowControls = true }: { windowControls?: boolean }
     <>
       <header
         data-tauri-drag-region="deep"
-        className="relative flex min-h-11 min-w-0 shrink-0 items-center bg-[var(--surface-titlebar)] text-[12px]"
+        className="relative flex h-10 shrink-0 items-center bg-[var(--surface-titlebar)] text-[12px]"
       >
         {macOS ? (
           <div className="w-[84px] shrink-0" />
@@ -87,7 +87,7 @@ export function TitleBar({ windowControls = true }: { windowControls?: boolean }
             />
           </div>
         )}
-        <Menubar className="relative z-10 min-h-11 min-w-0 flex-1 gap-0 overflow-x-auto border-0 bg-transparent p-0 shadow-none lg:flex-none">
+        <Menubar className="relative z-10 h-full shrink-0 gap-0 border-0 bg-transparent p-0 shadow-none">
           <MenubarMenu>
             <MenubarTrigger>{t(titleBarMenuSections.file)}</MenubarTrigger>
             <MenubarContent>
@@ -263,8 +263,8 @@ export function TitleBar({ windowControls = true }: { windowControls?: boolean }
           </MenubarMenu>
         </Menubar>
 
-        <div className="hidden min-w-0 flex-1 lg:block" />
-        <div className="pointer-events-none absolute inset-y-0 left-1/2 hidden max-w-[40vw] min-w-16 -translate-x-1/2 items-center justify-center px-3 text-[11px] text-muted-foreground select-none lg:flex">
+        <div className="min-w-0 flex-1" />
+        <div className="pointer-events-none absolute inset-y-0 left-1/2 flex max-w-[40vw] min-w-16 -translate-x-1/2 items-center justify-center px-3 text-[11px] text-muted-foreground select-none">
           {project ? (
             <span className="truncate">
               <span className="font-medium text-foreground">{project.name}</span>
@@ -291,7 +291,7 @@ function MenubarTrigger({ className, ...props }: ComponentProps<typeof UiMenubar
   return (
     <UiMenubarTrigger
       className={cn(
-        "min-h-11 shrink-0 px-2.5 text-[11px] text-muted-foreground transition-colors hover:bg-primary/10 hover:text-muted-foreground aria-expanded:bg-primary/10 aria-expanded:text-muted-foreground lg:min-h-6 lg:px-1.5",
+        "h-6 px-1.5 text-[11px] text-muted-foreground transition-colors hover:bg-primary/10 hover:text-muted-foreground aria-expanded:bg-primary/10 aria-expanded:text-muted-foreground",
         className,
       )}
       {...props}
@@ -307,7 +307,7 @@ function MenubarItem({ className, ...props }: ComponentProps<typeof UiMenubarIte
   return (
     <UiMenubarItem
       className={cn(
-        "min-h-11 gap-1.5 px-2 py-1 text-xs lg:min-h-8 [&_svg:not([class*='size-'])]:size-3.5",
+        "min-h-8 gap-1.5 px-2 py-1 text-xs [&_svg:not([class*='size-'])]:size-3.5",
         className,
       )}
       {...props}

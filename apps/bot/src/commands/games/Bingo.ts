@@ -9,6 +9,7 @@ import {
   type ButtonInteraction,
   type CommandInteraction,
   type Message,
+  type SendableChannels,
   type User,
 } from "discord.js";
 import { GuildOnly } from "~/guards/GuildOnly";
@@ -20,26 +21,10 @@ import { SettingsService } from "~/services/SettingsService";
 import { MessageTemplateService } from "~/services/MessageTemplateService";
 import { GameRewardService } from "~/services/GameRewardService";
 import { buildChallengeMessage, challengeIdPattern, parseChallengeId } from "~/lib/challenge";
-import { DBZ_COLORS } from "~/lib/embeds";
+import { COLORS, DBZ_COLORS } from "~/lib/embeds";
 import { logger } from "~/lib/logger";
 import { renderBingoCard } from "~/lib/game-cards";
 import { REWARD_BLOCK_LABELS } from "~/services/games/anti-farm";
-import {
-  ActivePlayers,
-  ChallengeBoard,
-  DUEL_MAX_STAKE_DEFAULT,
-  closedChallenge,
-  duelStakeError,
-  opponentError,
-  playerRewardLine,
-  resolveChallengeClick,
-  rewardText,
-  runMessageGame,
-  statusColor,
-  type EndReason,
-  type MoveOutcome,
-} from "~/services/games/duel";
-import { GameSessionsService } from "~/services/games/sessions";
 import {
   DIFFICULTY_LABELS,
   parseGameDifficulty,
@@ -62,10 +47,10 @@ interface PendingChallenge {
   challengerId: string;
   opponentId: string;
   stake: number;
+  expiresAt: number;
 }
 
 interface BingoSession {
-  id: string;
   level: GameDifficulty;
   min: number;
   max: number;
@@ -82,10 +67,12 @@ interface BingoSession {
   lastMove: string | null;
 }
 
-const challenges = new ChallengeBoard<PendingChallenge>();
+type EndReason = "won" | "lost" | "timeout";
+
+const challenges = new Map<string, PendingChallenge>();
 /** Une seule partie de bingo à la fois par joueur. */
-const activePlayers = new ActivePlayers();
-const GUESS_RE = /^\d{1,7}$/;
+const activePlayers = new Set<string>();
+const CHALLENGE_TTL_MS = 60_000;
 
 @Discord()
 @Bot("shenron")
@@ -97,7 +84,6 @@ export class BingoCommand {
     @inject(SettingsService) private settings: SettingsService,
     @inject(MessageTemplateService) private msg: MessageTemplateService,
     @inject(GameRewardService) private rewards: GameRewardService,
-    @inject(GameSessionsService) private journal: GameSessionsService,
   ) {}
 
   @Slash({ name: "bingo", description: "Devine le nombre mystère en un nombre d'essais limité" })
@@ -172,35 +158,31 @@ export class BingoCommand {
         });
         return;
       }
-      if (!activePlayers.reserve([userId])) return;
-      const session = this.createSession(interaction.id, level, [userId], {
+      const session = this.createSession(level, [userId], {
         stake: 0,
         winReward: bingoReward(baseWin, level),
         lossPenalty: bingoLossPenalty(baseLoss, level),
         durationMs: bingoTimeLimitMs(level, baseMs),
       });
-      this.journal.open({ id: session.id, game: "bingo", players: [userId], stake: 0 });
+      activePlayers.add(userId);
       try {
         const response = await interaction.reply({
           ...(await this.boardPayload(session, "playing")),
           withResponse: true,
         });
-        this.start(channel, session, response.resource?.message ?? null, interaction.client);
+        this.runGame(channel, session, response.resource?.message ?? null, (reason, winnerId) =>
+          this.settle(session, reason, winnerId, interaction.client),
+        );
       } catch (err) {
-        activePlayers.release([userId]);
-        this.journal.close(session.id);
+        activePlayers.delete(userId);
         throw err;
       }
       return;
     }
 
     // ── Duel ───────────────────────────────────────────────────────
-    const invalid = opponentError(userId, opponent);
-    if (invalid || !opponent) {
-      await interaction.reply({
-        content: invalid ?? "Adversaire invalide.",
-        flags: MessageFlags.Ephemeral,
-      });
+    if (!opponent || opponent.bot || opponent.id === userId) {
+      await interaction.reply({ content: "Adversaire invalide.", flags: MessageFlags.Ephemeral });
       return;
     }
     if (activePlayers.has(opponent.id)) {
@@ -211,30 +193,33 @@ export class BingoCommand {
       return;
     }
     const stake = mise ?? Math.max(0, baseLoss);
-    const stakeError = await duelStakeError(
-      {
-        getBalance: (id) => this.eco.getBalance(id),
-        maxStake: () => this.settings.getInt("game.max_stake", DUEL_MAX_STAKE_DEFAULT),
-      },
-      userId,
-      opponent,
-      stake,
-    );
-    if (stakeError) {
-      await interaction.reply({ content: stakeError, flags: MessageFlags.Ephemeral });
-      return;
+    if (stake > 0) {
+      const [bal1, bal2] = await Promise.all([
+        this.eco.getBalance(userId),
+        this.eco.getBalance(opponent.id),
+      ]);
+      if (bal1 < stake || bal2 < stake) {
+        const who = bal1 < stake ? "Tu n'as" : `${opponent} n'a`;
+        await interaction.reply({
+          content: `${who} pas assez de zénis pour une mise de **${formatZeni(stake)}**.`,
+          flags: MessageFlags.Ephemeral,
+        });
+        return;
+      }
     }
-    challenges.open(interaction.id, {
+    const key = interaction.id;
+    challenges.set(key, {
       level,
       challengerId: userId,
       opponentId: opponent.id,
       stake,
+      expiresAt: Date.now() + CHALLENGE_TTL_MS,
     });
     const bonus = bingoReward(baseWin, level);
     await interaction.reply(
       buildChallengeMessage({
         scope: "bingo",
-        key: interaction.id,
+        key,
         challenger: interaction.user,
         opponent,
         gameTitle: `Bingo · Duel ${DIFFICULTY_LABELS[level].toLowerCase()}`,
@@ -249,33 +234,64 @@ export class BingoCommand {
         ],
       }),
     );
+    setTimeout(() => {
+      const c = challenges.get(key);
+      if (c && c.expiresAt <= Date.now()) challenges.delete(key);
+    }, CHALLENGE_TTL_MS + 5_000).unref();
   }
 
   @ButtonComponent({ id: challengeIdPattern("bingo") })
   async onChallengeButton(interaction: ButtonInteraction) {
     const parsed = parseChallengeId(interaction.customId);
     if (!parsed) return;
-    const challenge = await resolveChallengeClick(
-      interaction,
-      challenges,
-      parsed.key,
-      parsed.action,
-      "Bingo",
-    );
-    if (!challenge) return;
-
-    const channel = interaction.channel;
-    const players = [challenge.challengerId, challenge.opponentId];
-    if (!channel?.isSendable() || !activePlayers.reserve(players)) {
-      await interaction.update(
-        closedChallenge(
-          "Bingo",
-          "cancelled",
-          "Un des joueurs a déjà une partie de bingo en cours.",
-        ),
-      );
+    const challenge = challenges.get(parsed.key);
+    if (!challenge || challenge.expiresAt <= Date.now()) {
+      challenges.delete(parsed.key);
+      await interaction
+        .reply({ content: "Défi expiré ou déjà traité.", flags: MessageFlags.Ephemeral })
+        .catch(() => {});
       return;
     }
+    if (interaction.user.id !== challenge.opponentId) {
+      await interaction.reply({
+        content: "Ce défi ne t'est pas adressé.",
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+    challenges.delete(parsed.key);
+
+    if (parsed.action === "decline") {
+      await interaction.update({
+        content: "",
+        embeds: [
+          new EmbedBuilder()
+            .setTitle("Bingo · Défi refusé")
+            .setDescription(
+              `<@${challenge.opponentId}> a refusé le défi de <@${challenge.challengerId}>.`,
+            )
+            .setColor(COLORS.muted),
+        ],
+        components: [],
+      });
+      return;
+    }
+    const channel = interaction.channel;
+    const players = [challenge.challengerId, challenge.opponentId];
+    if (!channel?.isSendable() || players.some((p) => activePlayers.has(p))) {
+      await interaction.update({
+        content: "",
+        embeds: [
+          new EmbedBuilder()
+            .setTitle("Bingo · Duel annulé")
+            .setDescription("Un des joueurs a déjà une partie de bingo en cours.")
+            .setColor(COLORS.muted),
+        ],
+        components: [],
+      });
+      return;
+    }
+    for (const p of players) activePlayers.add(p);
     await interaction.update({
       content: "",
       embeds: [
@@ -294,47 +310,41 @@ export class BingoCommand {
       challenge.stake,
     );
     if (!escrowed) {
-      activePlayers.release(players);
-      await interaction.editReply(
-        closedChallenge(
-          "Bingo",
-          "cancelled",
-          "Un des joueurs n'a plus assez de zénis pour couvrir la mise.",
-        ),
-      );
+      for (const p of players) activePlayers.delete(p);
+      await channel.send({
+        content: "Duel annulé : un des joueurs n'a plus assez de zénis pour couvrir la mise.",
+      });
       return;
     }
     const [baseWin, timeoutMs] = await Promise.all([
       this.settings.getInt("zeni.game.win", ZENI_GAME_WIN),
       this.settings.getInt("game.challenge_timeout_ms", 5 * 60_000),
     ]);
-    const session = this.createSession(parsed.key, challenge.level, players, {
+    const session = this.createSession(challenge.level, players, {
       stake: challenge.stake,
       winReward: bingoReward(baseWin, challenge.level),
       lossPenalty: 0,
       durationMs: timeoutMs,
     });
-    this.journal.open({ id: session.id, game: "bingo", players, stake: challenge.stake });
     try {
       const board = await channel.send(await this.boardPayload(session, "playing"));
-      this.start(channel, session, board, interaction.client);
+      this.runGame(channel, session, board, (reason, winnerId) =>
+        this.settle(session, reason, winnerId, interaction.client),
+      );
     } catch (err) {
-      activePlayers.release(players);
-      this.journal.close(session.id);
-      await this.rewards.payStakes("cancel", players[0]!, players[1]!, challenge.stake);
+      for (const p of players) activePlayers.delete(p);
+      await this.rewards.payStakes("draw", players[0]!, players[1]!, challenge.stake);
       throw err;
     }
   }
 
   private createSession(
-    id: string,
     level: GameDifficulty,
     players: string[],
     opts: { stake: number; winReward: number; lossPenalty: number; durationMs: number },
   ): BingoSession {
     const cfg = BINGO_LEVELS[level];
     return {
-      id,
       level,
       min: cfg.min,
       max: cfg.max,
@@ -352,53 +362,86 @@ export class BingoCommand {
     };
   }
 
-  /** Boucle commune solo/duel (`runMessageGame`). */
-  private start(
-    channel: Parameters<typeof runMessageGame>[0]["channel"],
+  /** Boucle commune solo/duel : coups traités en file, un seul plateau affiché. */
+  private runGame(
+    channel: SendableChannels,
     session: BingoSession,
     firstBoard: Message | null,
-    client: Message["client"],
+    settle: (reason: EndReason, winnerId?: string) => Promise<string[]>,
   ): void {
-    if (firstBoard) this.journal.board(session.id, firstBoard.channelId, firstBoard.id);
-    runMessageGame({
-      scope: "bingo",
-      channel,
-      players: session.players,
-      endsAt: session.endsAt,
-      firstBoard,
-      accepts: (content) => GUESS_RE.test(content),
-      play: (m) => this.play(session, m),
-      render: (status, result) => this.boardPayload(session, status, result),
-      settle: (reason, winnerId) => {
-        // Journal fermé avant le versement : jamais de remboursement en double.
-        this.journal.close(session.id);
-        return this.settle(session, reason, winnerId, client);
-      },
-      onFinished: () => activePlayers.release(session.players),
-      onBoard: (board) => this.journal.board(session.id, board.channelId, board.id),
-    });
-  }
+    let board = firstBoard;
+    let finished = false;
+    let queue: Promise<void> = Promise.resolve();
 
-  private play(session: BingoSession, m: Message): MoveOutcome {
-    const uid = m.author.id;
-    const used = session.attempts.get(uid) ?? 0;
-    if (used >= session.maxAttempts) return { kind: "ignored" };
-    const guess = Number.parseInt(m.content.trim(), 10);
-    const who = `<@${uid}>`;
-    const hint = compareBingoGuess(guess, session.target, session.min, session.max);
-    if (hint === "out-of-range") {
-      session.lastMove = `${who} : **${guess}** est hors plage, essai non compté.`;
-      return { kind: "playing" };
-    }
-    session.attempts.set(uid, used + 1);
-    session.guesses.push({ value: guess, hint });
-    session.range = narrowBingoRange(session.range, guess, hint);
-    if (hint === "match") return { kind: "won", winnerId: uid };
-    session.lastMove = `${who} : **${guess}**, c'est plus ${hint === "higher" ? "haut" : "bas"}.`;
-    if (session.players.every((p) => (session.attempts.get(p) ?? 0) >= session.maxAttempts)) {
-      return { kind: "lost" };
-    }
-    return { kind: "playing" };
+    const refresh = async (status: "playing" | "won" | "lost", result?: string[]) => {
+      const next = await channel
+        .send(await this.boardPayload(session, status, result))
+        .catch(() => null);
+      if (next) {
+        await board?.delete().catch(() => {});
+        board = next;
+      }
+    };
+
+    const finish = async (reason: EndReason, winnerId?: string) => {
+      finished = true;
+      let result: string[] = [];
+      try {
+        result = await settle(reason, winnerId);
+      } catch (err) {
+        logger.error({ err }, "bingo: règlement de fin de partie en échec");
+      } finally {
+        for (const p of session.players) activePlayers.delete(p);
+      }
+      await refresh(reason === "won" ? "won" : "lost", result);
+    };
+
+    const collector = channel.createMessageCollector({
+      filter: (m: Message) =>
+        session.players.includes(m.author.id) && /^\d{1,7}$/.test(m.content.trim()),
+      time: Math.max(1_000, session.endsAt - Date.now()),
+    });
+
+    const handle = async (m: Message) => {
+      if (finished) return;
+      const uid = m.author.id;
+      const used = session.attempts.get(uid) ?? 0;
+      if (used >= session.maxAttempts) return;
+      const guess = Number.parseInt(m.content.trim(), 10);
+      const who = `<@${uid}>`;
+      const hint = compareBingoGuess(guess, session.target, session.min, session.max);
+      if (hint === "out-of-range") {
+        session.lastMove = `${who} : **${guess}** est hors plage, essai non compté.`;
+        await refresh("playing");
+        return;
+      }
+      session.attempts.set(uid, used + 1);
+      session.guesses.push({ value: guess, hint });
+      session.range = narrowBingoRange(session.range, guess, hint);
+      if (hint === "match") {
+        collector.stop("won");
+        await finish("won", uid);
+        return;
+      }
+      session.lastMove = `${who} : **${guess}**, c'est plus ${hint === "higher" ? "haut" : "bas"}.`;
+      if (session.players.every((p) => (session.attempts.get(p) ?? 0) >= session.maxAttempts)) {
+        collector.stop("lost");
+        await finish("lost");
+        return;
+      }
+      await refresh("playing");
+    };
+
+    collector.on("collect", (m: Message) => {
+      queue = queue
+        .then(() => handle(m))
+        .catch((err) => logger.error({ err }, "bingo: coup en échec"));
+    });
+    collector.on("end", (_c, reason) => {
+      queue = queue
+        .then(() => (finished ? undefined : finish("timeout")))
+        .catch((err) => logger.error({ err, reason }, "bingo: fin de partie en échec"));
+    });
   }
 
   private async settle(
@@ -409,32 +452,16 @@ export class BingoCommand {
   ): Promise<string[]> {
     const duel = session.players.length === 2;
     const [a, b] = session.players as [string, string?];
-    const lang = await this.settings.getLanguage();
-    const label = duel ? "bingo (duel)" : "bingo";
-    // Participation counts only after a real guess: opening a game and walking away earns nothing.
-    const played = (userId: string) => (session.attempts.get(userId) ?? 0) > 0;
     if (reason !== "won" || !winnerId) {
       const head = reason === "timeout" ? "Temps écoulé." : "Plus aucun essai.";
       if (duel) {
         if (session.stake > 0) await this.rewards.payStakes("draw", a, b!, session.stake);
-        const xpLines: string[] = [];
-        for (const userId of session.players) {
-          if (!played(userId)) continue;
-          const xp = await this.rewards.grantGameXp({ userId, outcome: "draw", game: label });
-          const line = playerRewardLine(lang, userId, xp);
-          if (line) xpLines.push(line);
-        }
-        const stakeLine =
-          session.stake > 0 ? ["Mises rendues."] : xpLines.length === 0 ? ["Aucun gain."] : [];
-        return [head, ...stakeLine, ...xpLines];
+        return [head, session.stake > 0 ? "Mises rendues." : "Aucun gain."];
       }
-      const charged =
-        session.lossPenalty > 0 && (await this.eco.removeZeni(a, session.lossPenalty));
-      const xp = played(a)
-        ? await this.rewards.grantGameXp({ userId: a, outcome: "play", game: label })
-        : undefined;
-      const line = playerRewardLine(lang, a, xp, charged ? -session.lossPenalty : 0);
-      return line ? [head, line] : [head];
+      if (session.lossPenalty > 0 && (await this.eco.removeZeni(a, session.lossPenalty))) {
+        return [head, `<@${a}> **${formatZeniDelta(-session.lossPenalty)}**`];
+      }
+      return [head];
     }
 
     const lines: string[] = [];
@@ -447,31 +474,16 @@ export class BingoCommand {
       userId: winnerId,
       amount: session.winReward,
       opponentId: loserId,
-      game: label,
     });
     if (grant.paid > 0) {
-      // Solo: one line with the XP and the zeni. Duel: the zeni are a bonus on top of the pot.
-      lines.push(
-        duel
-          ? `Bonus **${formatZeniDelta(grant.paid)}**`
-          : `<@${winnerId}> ${rewardText(lang, { xp: grant.xp, zeni: grant.paid })}`,
-      );
+      lines.push(`${duel ? "Bonus" : `<@${winnerId}>`} **${formatZeniDelta(grant.paid)}**`);
       await this.msg.publish(
         "zeni_game_win",
-        { user: `<@${winnerId}>`, zeni: grant.paid, game: label },
+        { user: `<@${winnerId}>`, zeni: grant.paid, game: duel ? "bingo (duel)" : "bingo" },
         client,
       );
     } else if (grant.blocked) {
       lines.push(`Bonus non versé : ${REWARD_BLOCK_LABELS[grant.blocked]}.`);
-    }
-    if (duel || grant.paid === 0) {
-      const winnerLine = playerRewardLine(lang, winnerId, grant.xp);
-      if (winnerLine) lines.push(winnerLine);
-    }
-    if (loserId && played(loserId)) {
-      const xp = await this.rewards.grantGameXp({ userId: loserId, outcome: "play", game: label });
-      const loserLine = playerRewardLine(lang, loserId, xp);
-      if (loserLine) lines.push(loserLine);
     }
     return lines;
   }
@@ -510,7 +522,9 @@ export class BingoCommand {
             : `Bingo · ${DIFFICULTY_LABELS[level]}`,
       )
       .setDescription(description.join("\n"))
-      .setColor(statusColor(status))
+      .setColor(
+        status === "won" ? COLORS.brand : status === "lost" ? DBZ_COLORS.power : DBZ_COLORS.goku,
+      )
       .addFields(
         { name: "Difficulté", value: DIFFICULTY_LABELS[level], inline: true },
         { name: "Plage", value: `${session.min} → ${session.max}`, inline: true },

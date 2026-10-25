@@ -81,7 +81,6 @@ export interface AphrodyCompute {
   chat(i: {
     messages: readonly { role: AphrodyChatRole; content: string }[];
     model?: string;
-    maxOutputTokens?: number;
     signal?: AbortSignal;
   }): Promise<AiResult<{ answer: string; model: string }>>;
   embed(i: {
@@ -272,19 +271,10 @@ export function createAphrodyCompute(
       ) {
         return invalidRequest(route.path, "invalid model id");
       }
-      if (
-        i.maxOutputTokens !== undefined &&
-        (!Number.isInteger(i.maxOutputTokens) ||
-          i.maxOutputTokens < 1 ||
-          i.maxOutputTokens > APHRODY_LIMITS.chatOutputTokens)
-      ) {
-        return invalidRequest(route.path, "maxOutputTokens must be an integer in 1..=8192");
-      }
       const r = await call(route, ChatResponse, {
         body: {
           messages: i.messages.map((m) => ({ role: m.role, content: m.content })),
           ...(i.model ? { model: i.model } : {}),
-          ...(i.maxOutputTokens !== undefined ? { maxOutputTokens: i.maxOutputTokens } : {}),
         },
         timeoutMs: chatTimeoutMs(i.model, timeouts),
         signal: i.signal,

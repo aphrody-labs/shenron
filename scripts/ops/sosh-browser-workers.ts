@@ -132,6 +132,7 @@ export async function inspectBrowserSources(job: string, slot: number, urls: str
             "1",
             "--concurrency",
             "1",
+            "--obey-robots",
             "--delay-ms",
             "2000",
             "--timeout",

@@ -4,20 +4,17 @@ import { eq } from "drizzle-orm";
 import { Client as DiscordxClient } from "discordx";
 import { DatabaseService } from "~/db/index";
 import { EventBusService } from "./EventBusService";
-import { messageTemplates, type MessageTemplate } from "~/db/schema";
-import { SettingsService } from "./SettingsService";
+import { messageTemplates, guildSettings, type MessageTemplate } from "~/db/schema";
 import {
   EVENTS,
-  defaultTemplateFor,
   findEvent,
   renderTemplate,
   VIRTUAL_CHANNEL_KEYS,
   type EventDef,
 } from "~/lib/message-templates";
-import { brandedEmbed, EMBED_LIMITS, truncate } from "~/lib/embeds";
+import { brandedEmbed } from "~/lib/embeds";
 import { logger } from "~/lib/logger";
 import { env } from "~/lib/env";
-import { tryT, type BotLang } from "~/lib/i18n";
 
 /**
  * Couche centrale pour publier les messages "événementiels" du bot. Tous les
@@ -35,31 +32,29 @@ import { tryT, type BotLang } from "~/lib/i18n";
 @singleton()
 export class MessageTemplateService {
   private templateCache = new Map<string, MessageTemplate | null>();
+  private settingsCache = new Map<string, string>();
   private cacheTs = 0;
   private TTL = 30_000;
 
   constructor(
     @inject(DatabaseService) private dbs: DatabaseService,
     @inject(EventBusService) private bus: EventBusService,
-    // Channel overrides come from the settings cache, which `set()` updates at once:
-    // a second copy of `guild_settings` here stayed stale up to 30 s after `/config channel`.
-    @inject(SettingsService) private settings: SettingsService,
   ) {}
 
   private async refresh(): Promise<void> {
-    const templates = await this.dbs.db.select().from(messageTemplates);
+    const [templates, settings] = await Promise.all([
+      this.dbs.db.select().from(messageTemplates),
+      this.dbs.db.select().from(guildSettings),
+    ]);
     this.templateCache.clear();
     for (const t of templates) this.templateCache.set(t.event, t);
+    this.settingsCache.clear();
+    for (const s of settings) this.settingsCache.set(s.key, s.value);
     this.cacheTs = Date.now();
   }
 
   private async ensureFresh(): Promise<void> {
     if (Date.now() - this.cacheTs > this.TTL) await this.refresh();
-  }
-
-  /** Language of the public announcements (`bot.language` setting, French by default). */
-  async lang(): Promise<BotLang> {
-    return this.settings.getLanguage();
   }
 
   /** Force le reload du cache (appelé par l'API après un upsert). */
@@ -71,7 +66,8 @@ export class MessageTemplateService {
     // Clés virtuelles (DM, canal d'invocation, canal du ticket) → le caller
     // fournit son propre canal, on ne tente AUCUNE résolution settings/env.
     if (VIRTUAL_CHANNEL_KEYS.has(channelKey)) return null;
-    const id = (await this.settings.getRaw(channelKey)) ?? this.envFallback(channelKey);
+    await this.ensureFresh();
+    const id = this.settingsCache.get(channelKey) ?? this.envFallback(channelKey);
     if (!id) return null;
     const guild = client.guilds.cache.get(env.GUILD_ID);
     const cached = guild?.channels.cache.get(id);
@@ -100,8 +96,7 @@ export class MessageTemplateService {
     await this.ensureFresh();
     const tmpl = this.templateCache.get(event);
     const enabled = tmpl?.enabled ?? true;
-    const lang = await this.lang();
-    const rendered = renderTemplate(tmpl?.template ?? defaultTemplateFor(def, lang), vars);
+    const rendered = renderTemplate(tmpl?.template ?? def.defaultTemplate, vars);
     return { enabled, rendered, def };
   }
 
@@ -158,24 +153,22 @@ export class MessageTemplateService {
       logger.debug({ event, channelKey }, "publish: canal introuvable, skip");
       return null;
     }
-    const lang = await this.lang();
-    const content = renderTemplate(tmpl?.template ?? defaultTemplateFor(def, lang), vars);
+    const content = renderTemplate(tmpl?.template ?? def.defaultTemplate, vars);
     try {
       if (def.embed) {
-        // brandedEmbed bounds the description: a long admin template must not fail the send.
         const userMention = typeof vars.user === "string" ? vars.user : undefined;
         return await channel.send({
           content: userMention,
           embeds: [
             brandedEmbed({
-              title: this.guessTitle(def, lang),
+              title: this.guessTitle(def),
               description: content,
               kind: "brand",
             }),
           ],
         });
       }
-      return await channel.send({ content: truncate(content, EMBED_LIMITS.content) });
+      return await channel.send({ content });
     } catch (err) {
       logger.warn({ err, event }, "publish: send failed");
       return null;
@@ -198,8 +191,7 @@ export class MessageTemplateService {
     if (!def) throw new Error(`Événement inconnu : ${event}`);
     await this.ensureFresh();
     const tmpl = this.templateCache.get(event);
-    const defaultTemplate = defaultTemplateFor(def, await this.lang());
-    const template = tmpl?.template ?? defaultTemplate;
+    const template = tmpl?.template ?? def.defaultTemplate;
     const channelKey = tmpl?.channelKey ?? def.defaultChannelKey;
     return {
       event,
@@ -208,7 +200,7 @@ export class MessageTemplateService {
       channelKey,
       enabled: tmpl?.enabled ?? true,
       isOverridden: {
-        template: tmpl?.template != null && tmpl.template !== defaultTemplate,
+        template: tmpl?.template != null && tmpl.template !== def.defaultTemplate,
         channel: tmpl?.channelKey != null && tmpl.channelKey !== def.defaultChannelKey,
       },
     };
@@ -225,11 +217,10 @@ export class MessageTemplateService {
     >
   > {
     await this.ensureFresh();
-    const lang = await this.lang();
     return EVENTS.map((def) => {
       const tmpl = this.templateCache.get(def.event);
       return Object.assign({}, def, {
-        template: tmpl?.template ?? defaultTemplateFor(def, lang),
+        template: tmpl?.template ?? def.defaultTemplate,
         channelKey: tmpl?.channelKey ?? def.defaultChannelKey,
         enabled: tmpl?.enabled ?? true,
         isCustom: !!tmpl,
@@ -290,8 +281,31 @@ export class MessageTemplateService {
     return map[channelKey];
   }
 
-  /** Embed title of an event in `lang` (`titles.<event>`), else the catalogue description. */
-  private guessTitle(def: EventDef, lang: BotLang): string {
-    return tryT(lang, `titles.${def.event}`) ?? def.description;
+  private guessTitle(def: EventDef): string {
+    switch (def.event) {
+      case "welcome":
+        return "🌟 Nouveau combattant !";
+      case "farewell":
+        return "👋 Au revoir guerrier";
+      case "level_up":
+        return "🚀 Nouveau palier atteint !";
+      case "achievement_unlocked":
+      case "first_message":
+        return "🏆 Accomplissement débloqué";
+      case "daily_quest":
+        return "🎯 Quête quotidienne";
+      case "anti_link_jail":
+        return "⛓️ Jail automatique";
+      case "jail_expired":
+        return "🕊️ Libération";
+      case "giveaway_winner":
+        return "🎁 Tirage au sort";
+      case "vocal_tempo_created":
+        return "🔊 Vocal éphémère créé";
+      case "vocal_tempo_destroyed":
+        return "🔇 Vocal éphémère supprimé";
+      default:
+        return def.description;
+    }
   }
 }

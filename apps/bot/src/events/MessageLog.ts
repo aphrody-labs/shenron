@@ -66,8 +66,6 @@ export class MessageLogEvent {
   @On({ event: "messageUpdate" })
   async onUpdate([oldM, newM]: ArgsOf<"messageUpdate">) {
     if (!newM.guild || newM.author?.bot || oldM.content === newM.content) return;
-    // Embed unfurl of an uncached message: no text change to report.
-    if (oldM.partial && !newM.content) return;
     const embed = this.logs.makeEmbed("Message modifié", 0xfbbf24).addFields(
       {
         name: "Auteur",
@@ -75,10 +73,7 @@ export class MessageLogEvent {
         inline: true,
       },
       { name: "Salon", value: `<#${newM.channelId}>`, inline: true },
-      {
-        name: "Avant",
-        value: oldM.partial ? "*(non caché)*" : (oldM.content || "*(vide)*").slice(0, 1024),
-      },
+      { name: "Avant", value: (oldM.content || "*(vide)*").slice(0, 1024) },
       { name: "Après", value: (newM.content || "*(vide)*").slice(0, 1024) },
     );
     await this.logs.send(newM.client, "message", embed);

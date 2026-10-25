@@ -18,7 +18,7 @@ export function FormGrid({
   className?: string;
 }) {
   return (
-    <div className={`grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2 md:gap-x-6 ${className}`}>
+    <div className={`grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-x-6 ${className}`}>
       {children}
     </div>
   );
@@ -46,10 +46,7 @@ export function FormField({
 }) {
   return (
     <div className={`min-w-0 ${span === "full" ? "md:col-span-2" : ""} ${className}`}>
-      <label
-        htmlFor={htmlFor}
-        className="mb-1.5 block break-words text-sm font-medium text-foreground"
-      >
+      <label htmlFor={htmlFor} className="mb-1.5 block text-sm font-medium text-os/85">
         {label}
         {required && (
           <span aria-hidden className="ml-0.5 text-dbz-orange">
@@ -59,10 +56,7 @@ export function FormField({
       </label>
       {children}
       {hint && (
-        <p
-          id={htmlFor ? `${htmlFor}-hint` : undefined}
-          className="mt-1.5 text-xs text-muted-foreground"
-        >
+        <p id={htmlFor ? `${htmlFor}-hint` : undefined} className="mt-1.5 text-xs text-os/45">
           {hint}
         </p>
       )}
@@ -84,7 +78,7 @@ export function FormActions({
 }) {
   return (
     <div
-      className={`flex min-w-0 flex-col-reverse gap-2 pt-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end md:col-span-2 [&>*]:min-h-12 ${className}`}
+      className={`flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:items-center sm:justify-end md:col-span-2 [&>*]:min-h-11 md:[&>*]:min-h-9 ${className}`}
     >
       {children}
     </div>

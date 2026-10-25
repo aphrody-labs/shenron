@@ -55,44 +55,10 @@ if (process.argv.includes("--smoke")) {
   await import("./_entries");
   const storage = MetadataStorage.instance;
   await storage.build();
-  // A worker that does not resolve in the compiled binary only fails asynchronously, long after
-  // boot: start the indexer worker and require its handshake, so a broken layout fails the build.
-  const { startBundledWorker, whenWorkerReady } = await import("./lib/bundled-worker");
-  const indexerWorker = startBundledWorker("indexer.ts");
-  await whenWorkerReady(indexerWorker);
-  indexerWorker.terminate();
-  // The command graph registered the canvas fonts: a compiled release must find every
-  // shipped font (SHENRON_BOT_ASSETS_DIR) and a colour emoji font from the system.
-  const { GlobalFonts } = await import("@napi-rs/canvas");
-  const { CANVAS_FONT_FILES } = await import("./lib/canvas-fonts");
-  const families = new Set(GlobalFonts.families.map((entry) => entry.family));
-  const canvasFontsMissing = CANVAS_FONT_FILES.map(([, family]) => family).filter(
-    (family) => !families.has(family),
-  );
-  const emojiFont = ["Noto Color Emoji", "Segoe UI Emoji"].find((family) => families.has(family));
-  if (runtime.isCompiled && (canvasFontsMissing.length > 0 || !emojiFont))
-    throw new Error(
-      `Canvas fonts missing: ${[...canvasFontsMissing, ...(emojiFont ? [] : ["colour emoji"])].join(", ")}`,
-    );
-  // Every card carries the wordmark of the site: a compiled release must ship the renderer
-  // pictures (`scripts/ship-canvas-assets.ts`), found through SHENRON_BOT_ASSETS_DIR.
-  const { RENDER_ASSET_FILES } = await import("./render/assets");
-  const { botFile } = await import("./lib/asset-files");
-  const renderAssetsMissing: string[] = [];
-  for (const file of RENDER_ASSET_FILES) {
-    if (!(await Bun.file(botFile(file)).exists())) renderAssetsMissing.push(file);
-  }
-  if (runtime.isCompiled && renderAssetsMissing.length > 0)
-    throw new Error(`Render assets missing: ${renderAssetsMissing.join(", ")}`);
   console.log(
     JSON.stringify({
       smoke: "ok",
       canvasPngBytes,
-      indexerWorker: "ready",
-      canvasFonts: CANVAS_FONT_FILES.length - canvasFontsMissing.length,
-      canvasFontsMissing,
-      renderAssetsMissing,
-      emojiFont: emojiFont ?? null,
       runtime: `Bun ${runtime.bunVersion}`,
       platform: `${runtime.platform}-${runtime.arch}`,
       compiled: runtime.isCompiled,

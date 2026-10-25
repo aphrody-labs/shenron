@@ -4,7 +4,6 @@ import { inject, injectable } from "tsyringe";
 import { lireValeurEpisode, PREFIXE_MENU_EPISODES } from "~/lib/episode-menus";
 import { logger } from "~/lib/logger";
 import { EpisodesService } from "~/services/EpisodesService";
-import { API_URL, SITE_URL, clip, linkRow, wikiFooter } from "~/lib/wiki-embeds";
 
 /**
  * Le menu déroulant d'épisodes des fils du forum `🎬・animes-et-films`.
@@ -28,14 +27,21 @@ import { API_URL, SITE_URL, clip, linkRow, wikiFooter } from "~/lib/wiki-embeds"
  * modifiant son message d'ouverture au lieu d'en republier un.
  */
 
+const SITE = "https://dragonballfr.com";
+const ASSETS = "https://bot.dragonballfr.com";
+
 /** Une description d'embed accepte 4 096 signes ; on garde de la marge. */
 const MAX_SYNOPSIS = 1_400;
 
 function urlAsset(chemin: string | null): string | null {
   if (!chemin) return null;
   if (/^https?:\/\//.test(chemin)) return chemin;
-  if (chemin.includes("..")) return null;
-  return `${API_URL}/${chemin.replace(/^\.?\/*/, "")}`;
+  return `${ASSETS}/${chemin.replace(/^\.?\/*/, "")}`;
+}
+
+function coupe(texte: string, taille: number): string {
+  const propre = texte.replace(/\s+/g, " ").trim();
+  return propre.length <= taille ? propre : `${propre.slice(0, taille - 1).trimEnd()}…`;
 }
 
 @Discord()
@@ -68,7 +74,7 @@ export class ForumEpisodesComponents {
       await interaction.editReply({
         content:
           "Cet épisode n'est plus dans la base (ou elle est momentanément injoignable). " +
-          `La fiche reste lisible sur ${SITE_URL}/wiki/episodes/${id}.`,
+          `La fiche reste lisible sur ${SITE}/wiki/episodes/${id}.`,
       });
       return;
     }
@@ -76,10 +82,10 @@ export class ForumEpisodesComponents {
     const titre = episode.titre?.trim() || `Épisode ${episode.numero ?? id}`;
     const embed = new EmbedBuilder()
       .setColor(0xf59e0b)
-      .setTitle(clip(`${episode.numero ? `#${episode.numero} · ` : ""}${titre}`, 256))
-      .setURL(`${SITE_URL}/wiki/episodes/${episode.id}`);
+      .setTitle(coupe(`${episode.numero ? `#${episode.numero} · ` : ""}${titre}`, 256))
+      .setURL(`${SITE}/wiki/episodes/${episode.id}`);
 
-    if (episode.titreJa) embed.setAuthor({ name: clip(episode.titreJa, 256) });
+    if (episode.titreJa) embed.setAuthor({ name: coupe(episode.titreJa, 256) });
 
     const entete: string[] = [`**${episode.series}**`];
     if (episode.numero !== null) entete.push(`Épisode ${episode.numero}`);
@@ -88,7 +94,7 @@ export class ForumEpisodesComponents {
     }
 
     const corps = [entete.join(" · ")];
-    if (episode.synopsis?.trim()) corps.push("", clip(episode.synopsis, MAX_SYNOPSIS));
+    if (episode.synopsis?.trim()) corps.push("", coupe(episode.synopsis, MAX_SYNOPSIS));
     embed.setDescription(corps.join("\n"));
 
     if (episode.officialWatchUrl) {
@@ -102,24 +108,17 @@ export class ForumEpisodesComponents {
     } else {
       embed.addFields({
         name: "Lecture",
-        value: `Consulte la [fiche de l'épisode](${SITE_URL}/wiki/episodes/${episode.id}) pour les offres disponibles.`,
+        value: `Consulte la [fiche de l'épisode](${SITE}/wiki/episodes/${episode.id}) pour les offres disponibles.`,
       });
     }
 
     const image = urlAsset(episode.image);
     if (image) embed.setThumbnail(image);
-    embed.setFooter(wikiFooter(episode.series));
+    embed.addFields({
+      name: "Fiche",
+      value: `[${SITE.replace(/^https:\/\//, "")}/wiki/episodes/${episode.id}](${SITE}/wiki/episodes/${episode.id})`,
+    });
 
-    const links = [
-      { label: "Fiche de l'épisode", url: `/wiki/episodes/${episode.id}`, emoji: "📺" },
-    ];
-    if (episode.officialWatchUrl) {
-      links.push({
-        label: "Regarder (offre officielle)",
-        url: episode.officialWatchUrl,
-        emoji: "▶️",
-      });
-    }
-    await interaction.editReply({ embeds: [embed], components: [linkRow(links)] });
+    await interaction.editReply({ embeds: [embed] });
   }
 }

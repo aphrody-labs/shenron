@@ -1,11 +1,11 @@
 /**
  * test-gemma-multimodal.ts — Teste la MULTIMODALITÉ de Gemma 4 (vision) via Aphrody
  * sur (1) les PLANCHES manga (images .webp ↔ OCR de référence) et (2) les VIDÉOS
- * (frames extraites par Bun Video / FilmCraft). Gemma 4 est encoder-free multimodal (projecteur clip).
+ * (frames extraites par ffmpeg). Gemma 4 est encoder-free multimodal (projecteur clip).
  *
  * Manga : prend N planches (avec OCR de référence) du data/manga-visual-map.json,
  *   envoie l'image à Gemma, et compare la lecture/description vision au texte OCR.
- * Vidéo : --video <fichier> → extrait 3 frames réparties (Bun Video) → Gemma décrit la
+ * Vidéo : --video <fichier> → extrait 3 frames réparties (ffmpeg) → Gemma décrit la
  *   scène et identifie les personnages. (L'endpoint ne prend pas la vidéo brute : on passe
  *   des frames. Aucune vidéo locale n'existe par défaut → fournir --video.)
  *
@@ -15,6 +15,7 @@
  * Usage : bun apps/bot/scripts/test-gemma-multimodal.ts [--manga N] [--video chemin]
  * Env   : APHRODY_AI_HTTP_URL, APHRODY_AI_HTTP_TOKEN, MM_MODEL (défaut : modèle vision résolu)
  */
+import { $ } from "bun";
 import {
   requireAiHttpToken,
   requireAiHttpUrl,
@@ -104,15 +105,23 @@ if (nManga > 0) {
 const video = flag("--video");
 if (video) {
   console.log(`\n========== VIDÉO (frames) — ${MODEL} — ${video} ==========`);
-  if (!(Bun as any).Video?.available) throw new Error("Bun Video / FilmCraft is unavailable");
-  const native = new (Bun as any).Video(video);
-  const { duration: dur } = await native.metadata();
-  if (!(Number.isFinite(dur) && dur > 0)) throw new Error("Native video duration is unavailable");
+  // durée pour répartir 3 frames
+  let dur = 60;
+  try {
+    const probe =
+      await $`ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 ${video}`.text();
+    dur = Math.max(6, Math.floor(Number(probe.trim()) || 60));
+  } catch {}
   const ts = [0.2, 0.5, 0.8].map((f) => Math.floor(dur * f));
   const frames: VisionImage[] = [];
   for (const t of ts) {
-    const bytes = await new (Bun as any).Video(video).frame(t).resize(768).png().bytes();
-    frames.push({ data: Buffer.from(bytes).toString("base64"), mime: "image/png" });
+    const out = `/tmp/mm-frame-${t}.png`;
+    try {
+      await $`ffmpeg -y -ss ${t} -i ${video} -frames:v 1 -vf scale=768:-1 ${out}`.quiet();
+      frames.push(await b64(out));
+    } catch (e) {
+      console.error(`  ! extraction frame @${t}s échouée`, e);
+    }
   }
   if (frames.length) {
     const out = await vision(
@@ -125,6 +134,6 @@ if (video) {
   }
 } else {
   console.log(
-    `\n========== VIDÉO ==========\n(aucune vidéo : passe --video /chemin/episode.mp4 — ex. un master DBZ. Bun Video extraira 3 frames réparties.)`,
+    `\n========== VIDÉO ==========\n(aucune vidéo : passe --video /chemin/episode.mp4 — ex. un master DBZ. ffmpeg extraira 3 frames réparties.)`,
   );
 }

@@ -11,6 +11,7 @@ import {
   initApplicationCommandsSafe,
   registerGracefulShutdown,
   resolveGrantedIntents,
+  safeExecuteInteraction,
 } from "@aphrody/discord-kit";
 import { migrate } from "drizzle-orm/bun-sqlite/migrator";
 import { env } from "./lib/env";
@@ -21,9 +22,6 @@ import { ensureWikiReplicaSchema, ensureWikiVisibility } from "./db/wiki-visibil
 import { loadRaceLevelRoles } from "./lib/race-levels";
 import { loadLevelThresholds } from "./lib/level-thresholds";
 import { runBootAudit } from "./lib/boot-audit";
-import { installComponentEmojiGuard } from "./lib/component-emoji";
-import { installMemberFetchGuard } from "./lib/guild-members";
-import { executeInteractionSafely } from "./lib/safe-interaction";
 import { ApiServer } from "./api/server";
 import { CronRegistry } from "./api/cron-registry";
 import { registerSourcePipelineJob } from "./api/source-pipeline-job";
@@ -90,12 +88,6 @@ try {
 } catch (err) {
   logger.warn({ err }, "level thresholds load skipped (first run?)");
 }
-
-// Garde-fous discord.js, posés avant tout client : une seule requête opcode 8 à la fois (sinon
-// GatewayRateLimitError), et un emoji de bouton invalide réparé ou retiré au lieu de faire
-// rejeter le message entier par Discord.
-installMemberFetchGuard();
-installComponentEmojiGuard();
 
 // Un seul client Gateway : les anciens noms de personas restent des alias
 // pour l'API et le dashboard, mais ne créent plus de connexions ni de caches.
@@ -184,9 +176,12 @@ client.on("guildCreate", async (guild) => {
 });
 
 client.on("interactionCreate", async (interaction) => {
-  // Remplace safeExecuteInteraction du kit : son repli répondait en concurrence des collecteurs
-  // de pagination (« Interaction has already been acknowledged »), cf. lib/safe-interaction.ts.
-  await executeInteractionSafely(client, interaction, { logger });
+  await safeExecuteInteraction(client, interaction, {
+    logger: {
+      error: (msg, ...args) => logger.error({ args }, msg),
+      warn: (msg, ...args) => logger.warn({ args }, msg),
+    },
+  });
 });
 
 // Arrêt propre (SIGINT/SIGTERM) par le cycle de vie du kit : les étapes s'exécutent dans

@@ -1,6 +1,6 @@
 {
   "name": "@aphrody/shenron-media",
-  "version": "1.4.7",
+  "version": "1.4.6",
   "private": false,
   "homepage": "https://dragonballfr.com",
   "license": "Apache-2.0",
@@ -21,7 +21,6 @@
     "./sha256": "./src/sha256.ts",
     "./video-plan": "./src/video-plan.ts",
     "./episode-video-delivery": "./src/episode-video-delivery.ts",
-    "./crunchyroll-mapping": "./src/crunchyroll-mapping.ts",
     "./episode-video-artifacts": "./src/episode-video-artifacts.ts",
     "./episode-playback": "./src/episode-playback.ts"
   },
@@ -35,8 +34,7 @@
     "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src"
   },
   "dependencies": {
-    "@aphrody/http": "catalog:",
-    "mediabunny": "catalog:"
+    "@aphrody/http": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "catalog:"
@@ -52,7 +50,6 @@
       "./sha256": "pure",
       "./video-plan": "pure",
       "./episode-video-delivery": "pure",
-      "./crunchyroll-mapping": "pure",
       "./episode-video-artifacts": "bun",
       "./episode-playback": "pure"
     }

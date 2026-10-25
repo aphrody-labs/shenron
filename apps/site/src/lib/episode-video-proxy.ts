@@ -80,9 +80,6 @@ export async function streamEpisodeVideo(
       "X-Content-Type-Options": "nosniff",
     });
     if (contentRange) headers.set("Content-Range", contentRange);
-    // An origin that ignores Range answers 200 with the whole body; saying so keeps players from
-    // issuing range seeks that would each restart the download.
-    if (range && upstream.status === 200) headers.set("Accept-Ranges", "none");
     if (request.method === "HEAD" || !upstream.body) {
       cleanup();
       return new Response(null, { status: upstream.status, headers });

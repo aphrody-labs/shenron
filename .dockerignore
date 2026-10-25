@@ -6,7 +6,6 @@
 !dist/server/linux-x64/shenron-server
 !dist/server/linux-x64/native/
 !dist/server/linux-x64/native/libshenron_ffi.so
-!dist/server/linux-x64/native/koharu-sdk
 !dist/bot/
 !dist/bot/linux-x64/
 !dist/bot/linux-x64/shenron-bot

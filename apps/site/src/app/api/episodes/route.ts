@@ -1,10 +1,9 @@
-import { readPlaybackCapabilities } from "@/lib/playback-capabilities";
 import { NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
 import { episodeApiSummary, EPISODE_SERIES_LABELS } from "@/lib/episode-api";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -42,10 +41,7 @@ export async function GET(req: Request) {
       );
     }
     const total = episodesResult.total;
-    const capabilities = await readPlaybackCapabilities();
-    const episodes = episodesResult.episodes.map((episode) =>
-      episodeApiSummary(episode, capabilities),
-    );
+    const episodes = episodesResult.episodes.map(episodeApiSummary);
 
     return NextResponse.json(
       {
@@ -61,7 +57,7 @@ export async function GET(req: Request) {
         headers: {
           ...CORS_HEADERS,
           "Content-Type": "application/json; charset=utf-8",
-          "Cache-Control": "public, s-maxage=30",
+          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
         },
       },
     );

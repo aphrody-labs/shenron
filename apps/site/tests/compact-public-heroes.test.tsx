@@ -6,13 +6,17 @@ import { DEFAULT_HOME_CONFIG } from "../src/lib/home-scenes";
 import { HomeHero } from "../src/components/home/HomeHero";
 import { Billboard } from "../src/components/stream/Billboard";
 
-test("home hero keeps accessible identity and search without a duplicate wordmark", () => {
+test("home hero keeps identity and search within compact adaptive spacing", () => {
   const html = renderToStaticMarkup(
     <NextIntlClientProvider locale="fr" messages={fr} timeZone="UTC">
       <HomeHero hero={DEFAULT_HOME_CONFIG.hero} />
     </NextIntlClientProvider>,
   );
-  expect(html).not.toContain("home-wordmark");
+  expect(html).toContain("min-h-60");
+  expect(html).toContain("sm:min-h-72");
+  expect(html).toContain("home-wordmark");
+  expect(html).toContain("wordmark-manga--rouge");
+  expect(html).toMatch(/class="wordmark-boule"><svg\b/);
   expect(html).toMatch(/class="kt-volant__nuage"[^>]*><svg\b/);
   expect(html).toContain(fr.home.kintoun.trick);
   expect(html).toContain('name="q"');
@@ -21,6 +25,8 @@ test("home hero keeps accessible identity and search without a duplicate wordmar
   expect(html).not.toMatch(/\.(?:mp4|webm)(?:[?"\s]|$)/);
   expect(html).not.toContain("goku_normal");
   expect(html).not.toContain("dbs-beerus-2026.jpg");
+  // Without a qualified frame, the right half carries the 3D ball, hidden from AT.
+  expect(html).toMatch(/class="home-hero__ball[^"]*"[^>]*aria-hidden="true"><canvas\b/);
 });
 
 test("catalogue billboard grows for complete synopsis and keeps both navigation actions", () => {

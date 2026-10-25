@@ -1572,8 +1572,6 @@ restent dans les applications ; les éléments visuels Toriyama sont dans le paq
   `koharu-app`), `./native` (transport `koharu-sdk` en JSON Lines, classe bun) et
   `./canvas` (WASM de `koharu-canvas`).
 - `@aphrody/shenron-lexicon` : le lexique unique ja/fr/en (`data/lexicon/terms.json`), recherche, localisation et masquage, classe `pure` (`.` moteur, `./data` données embarquées), sans arête `@aphrody/shenron-*` ; mêmes règles que le crate `shenron-lexicon` ([lexicon.md](lexicon.md)).
-- `@aphrody/shenron-activity` : protocole, salons par instance et règles du Quiz Budokai de l'Activité Discord « Arène Shenron » (récompenses en zéni bornées, reçu de règlement signé par HMAC), classe `pure` (aucun Discord, aucun réseau), seule arête `@aphrody/shenron-lexicon` ; consommé par `apps/activity` et `apps/bot` (`docs/products/bot-discord-refonte.md` §6 G1, §7).
-- `apps/activity` (`@aphrody/shenron-activity-app`, privée) : serveur `Bun.serve` (jeton OAuth, WebSocket `/ws` par `instance_id`, reçus signés postés au bot) et client React de l'Activité « Arène Shenron » ; il consomme `activity`, `config` et `@discord/embedded-app-sdk`, son client n'importe que `activity/{protocol,i18n}` (classe `pure`), `ui` n'y est lu qu'à la construction (jetons) ; variables : `docs/operations/ENV.md`.
 - `@aphrody/shenron-media` : aides OCR et manga, classe `pure` (SHA-256 en TypeScript), sans arête `@aphrody/shenron-*`.
 - `@aphrody/shenron-native` : liaison `bun:ffi` de `shenron-ffi` (classe bun).
 - `@aphrody/*` vendorisés : `dist` commité, hors du périmètre.
@@ -1601,7 +1599,6 @@ Les arêtes ci-dessous sont celles du code ; `scripts/audit/check-workspace-pack
 @aphrody/shenron-pipeline → config, db (./sql, ./bun-sql, ./env, ./guards, ./redis),
                     koharu (./native), lexicon, media, native
 @aphrody/shenron-koharu   (feuille)
-@aphrody/shenron-activity → lexicon
 @aphrody/shenron-lexicon  (feuille)
 @aphrody/shenron-media    (feuille)
 @aphrody/shenron-native   (feuille)

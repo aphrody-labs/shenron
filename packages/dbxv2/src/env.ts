@@ -1,6 +1,6 @@
 /**
- * Explicit public gateway configuration and private server gating.
- * Local database paths remain unavailable in public builds. Pure: callers pass the environment.
+ * Gating of the private DBXV2 features. Disabled by default, never active in a public render or
+ * build. Variables are documented in docs/operations/ENV.md. Pure: callers pass the environment.
  */
 
 export type Dbxv2EnvInput = Readonly<Record<string, string | undefined>>;
@@ -8,10 +8,9 @@ export type Dbxv2EnvInput = Readonly<Record<string, string | undefined>>;
 export const DBXV2_MIN_TOKEN_LENGTH = 16;
 
 export interface Dbxv2Config {
-  /** Origin (and optional path prefix) of the server, without trailing slash. */
+  /** Origin (and optional path prefix) of the private server, without trailing slash. */
   readonly baseUrl: string;
-  readonly token?: string;
-  readonly mode?: "public";
+  readonly token: string;
 }
 
 export type Dbxv2DisabledReason =
@@ -58,14 +57,8 @@ export function normalizeServerUrl(raw: string): string | null {
 }
 
 export function dbxv2Status(env: Dbxv2EnvInput): Dbxv2Status {
-  if (env.DBXV2_CLIENT_MODE === "public") {
-    const baseUrl = normalizeServerUrl(env.DBXV2_PUBLIC_URL ?? "");
-    if (!baseUrl || !baseUrl.startsWith("https://"))
-      return { enabled: false, reason: "invalid-url" };
-    return { enabled: true, config: { mode: "public", baseUrl } };
-  }
   const context = isPublicContext(env);
-  if (context === "public-render") return { enabled: false, reason: context };
+  if (context) return { enabled: false, reason: context };
   const rawUrl = env.DBXV2_SERVER_URL?.trim();
   if (!rawUrl) return { enabled: false, reason: "missing-url" };
   const baseUrl = normalizeServerUrl(rawUrl);

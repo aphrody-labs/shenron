@@ -26,7 +26,7 @@ describe("Sprint 4 — Contributor Detail Pages & Wiring", () => {
     expect(content).toContain("contributorBySlug");
   });
 
-  it("le hub staff intègre le casting et ouvre les fiches dédiées des comédiens", () => {
+  it("le hub staff rend le catalogue unifié et intègre le casting dans le hub", () => {
     const filePath = Bun.fileURLToPath(new URL("../src/app/wiki/staff/page.tsx", import.meta.url));
     const content = readFileSync(filePath, "utf-8");
     expect(content).toContain("buildUnifiedStaffCatalog");
@@ -35,13 +35,6 @@ describe("Sprint 4 — Contributor Detail Pages & Wiring", () => {
       new URL("../src/lib/unified-staff-catalog.ts", import.meta.url),
       "utf-8",
     );
-    expect(catalog).toContain("/wiki/contributors/${va.slug}");
-    const detail = readFileSync(
-      new URL("../src/app/wiki/contributors/[slug]/page.tsx", import.meta.url),
-      "utf-8",
-    );
-    expect(detail).toContain("dbUniverse.voiceActorBySlug(slug)");
-    expect(detail).toContain("if (!voiceActor)");
-    expect(detail).toContain("voiceActor.roles");
+    expect(catalog).toContain("/wiki/staff#${va.slug}");
   });
 });

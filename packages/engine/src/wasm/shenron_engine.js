@@ -237,55 +237,6 @@ export class DragonPixelEngineWasm {
 if (Symbol.dispose) DragonPixelEngineWasm.prototype[Symbol.dispose] = DragonPixelEngineWasm.prototype.free;
 
 /**
- * A real indexed, textured GLB mesh rendered through the shared cel-shading pipeline.
- */
-export class GlbModelWasm {
-    static __wrap(ptr) {
-        const obj = Object.create(GlbModelWasm.prototype);
-        obj.__wbg_ptr = ptr;
-        GlbModelWasmFinalization.register(obj, obj.__wbg_ptr, obj);
-        return obj;
-    }
-    __destroy_into_raw() {
-        const ptr = this.__wbg_ptr;
-        this.__wbg_ptr = 0;
-        GlbModelWasmFinalization.unregister(this);
-        return ptr;
-    }
-    free() {
-        const ptr = this.__destroy_into_raw();
-        wasm.__wbg_glbmodelwasm_free(ptr, 0);
-    }
-    /**
-     * Explicit camera controls: azimuth/elevation in radians and a bounded zoom factor.
-     * @param {number} azimuth
-     * @param {number} elevation
-     * @param {number} zoom
-     */
-    camera(azimuth, elevation, zoom) {
-        wasm.glbmodelwasm_camera(this.__wbg_ptr, azimuth, elevation, zoom);
-    }
-    /**
-     * @param {number} _time
-     * @param {number} _tilt_x
-     * @param {number} _tilt_y
-     * @returns {boolean}
-     */
-    frame(_time, _tilt_x, _tilt_y) {
-        const ret = wasm.glbmodelwasm_frame(this.__wbg_ptr, _time, _tilt_x, _tilt_y);
-        return ret !== 0;
-    }
-    /**
-     * @param {number} width
-     * @param {number} height
-     */
-    resize(width, height) {
-        wasm.glbmodelwasm_resize(this.__wbg_ptr, width, height);
-    }
-}
-if (Symbol.dispose) GlbModelWasm.prototype[Symbol.dispose] = GlbModelWasm.prototype.free;
-
-/**
  * Browser WebGPU renderer of a manga page staged in 3D (`render::manga_scene`).
  */
 export class MangaSceneWasm {
@@ -451,252 +402,6 @@ export class ToriyamaModelWasm {
 if (Symbol.dispose) ToriyamaModelWasm.prototype[Symbol.dispose] = ToriyamaModelWasm.prototype.free;
 
 /**
- * A posed, animated DBXV2 character on a WebGPU canvas. JavaScript owns the frame loop.
- */
-export class Xv2CharacterWasm {
-    static __wrap(ptr) {
-        const obj = Object.create(Xv2CharacterWasm.prototype);
-        obj.__wbg_ptr = ptr;
-        Xv2CharacterWasmFinalization.register(obj, obj.__wbg_ptr, obj);
-        return obj;
-    }
-    __destroy_into_raw() {
-        const ptr = this.__wbg_ptr;
-        this.__wbg_ptr = 0;
-        Xv2CharacterWasmFinalization.unregister(this);
-        return ptr;
-    }
-    free() {
-        const ptr = this.__destroy_into_raw();
-        wasm.__wbg_xv2characterwasm_free(ptr, 0);
-    }
-    /**
-     * Names of the animations, in slot order of [`Self::play`].
-     * @returns {string[]}
-     */
-    animations() {
-        const ret = wasm.xv2characterwasm_animations(this.__wbg_ptr);
-        var v1 = getArrayJsValueFromWasm0(ret[0], ret[1]);
-        wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
-        return v1;
-    }
-    /**
-     * Azimuth/elevation in radians and a zoom factor in `[0.5, 3]`.
-     * @param {number} azimuth
-     * @param {number} elevation
-     * @param {number} zoom
-     */
-    camera(azimuth, elevation, zoom) {
-        wasm.xv2characterwasm_camera(this.__wbg_ptr, azimuth, elevation, zoom);
-    }
-    /**
-     * Draws the pose at `time` seconds. `false` when the surface is unusable.
-     * @param {number} time
-     * @returns {boolean}
-     */
-    frame(time) {
-        const ret = wasm.xv2characterwasm_frame(this.__wbg_ptr, time);
-        return ret !== 0;
-    }
-    /**
-     * Loads the character's `.bac`; returns the ids of the actions it can play.
-     * @param {Uint8Array} bytes
-     * @returns {Uint32Array}
-     */
-    loadActions(bytes) {
-        const ptr0 = passArray8ToWasm0(bytes, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.xv2characterwasm_loadActions(this.__wbg_ptr, ptr0, len0);
-        if (ret[3]) {
-            throw takeFromExternrefTable0(ret[2]);
-        }
-        var v2 = getArrayU32FromWasm0(ret[0], ret[1]).slice();
-        wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
-        return v2;
-    }
-    /**
-     * Plays a `.bac` action once, then returns to the looping animation.
-     * @param {number} id
-     * @returns {boolean}
-     */
-    playAction(id) {
-        const ret = wasm.xv2characterwasm_playAction(this.__wbg_ptr, id);
-        return ret !== 0;
-    }
-    /**
-     * Loops the animation at `index` of [`Self::animations`].
-     * @param {number} index
-     * @returns {boolean}
-     */
-    play(index) {
-        const ret = wasm.xv2characterwasm_play(this.__wbg_ptr, index);
-        return ret !== 0;
-    }
-    /**
-     * @param {number} width
-     * @param {number} height
-     */
-    resize(width, height) {
-        wasm.xv2characterwasm_resize(this.__wbg_ptr, width, height);
-    }
-}
-if (Symbol.dispose) Xv2CharacterWasm.prototype[Symbol.dispose] = Xv2CharacterWasm.prototype.free;
-
-/**
- * Two real fighters facing each other; their `.bac` actions land through their `.bdm`.
- */
-export class Xv2DuelWasm {
-    static __wrap(ptr) {
-        const obj = Object.create(Xv2DuelWasm.prototype);
-        obj.__wbg_ptr = ptr;
-        Xv2DuelWasmFinalization.register(obj, obj.__wbg_ptr, obj);
-        return obj;
-    }
-    __destroy_into_raw() {
-        const ptr = this.__wbg_ptr;
-        this.__wbg_ptr = 0;
-        Xv2DuelWasmFinalization.unregister(this);
-        return ptr;
-    }
-    free() {
-        const ptr = this.__destroy_into_raw();
-        wasm.__wbg_xv2duelwasm_free(ptr, 0);
-    }
-    /**
-     * Playable `.bac` action ids of `player` (0 or 1).
-     * @param {number} player
-     * @returns {Uint32Array}
-     */
-    actions(player) {
-        const ret = wasm.xv2duelwasm_actions(this.__wbg_ptr, player);
-        var v1 = getArrayU32FromWasm0(ret[0], ret[1]).slice();
-        wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
-        return v1;
-    }
-    /**
-     * Starts action `id` for `player`; refused while stunned or mid-action/skill.
-     * @param {number} player
-     * @param {number} id
-     * @returns {boolean}
-     */
-    attack(player, id) {
-        const ret = wasm.xv2duelwasm_attack(this.__wbg_ptr, player, id);
-        return ret !== 0;
-    }
-    /**
-     * @param {number} azimuth
-     * @param {number} elevation
-     * @param {number} zoom
-     */
-    camera(azimuth, elevation, zoom) {
-        wasm.xv2duelwasm_camera(this.__wbg_ptr, azimuth, elevation, zoom);
-    }
-    /**
-     * Distance between the fighters, in metres.
-     * @returns {number}
-     */
-    distance() {
-        const ret = wasm.xv2duelwasm_distance(this.__wbg_ptr);
-        return ret;
-    }
-    /**
-     * Advances the duel to `time` seconds and draws it.
-     * @param {number} time
-     * @returns {boolean}
-     */
-    frame(time) {
-        const ret = wasm.xv2duelwasm_frame(this.__wbg_ptr, time);
-        return ret !== 0;
-    }
-    /**
-     * Hits landed since the duel started.
-     * @returns {number}
-     */
-    hits() {
-        const ret = wasm.xv2duelwasm_hits(this.__wbg_ptr);
-        return ret >>> 0;
-    }
-    /**
-     * @param {number} player
-     * @returns {number}
-     */
-    hp(player) {
-        const ret = wasm.xv2duelwasm_hp(this.__wbg_ptr, player);
-        return ret;
-    }
-    /**
-     * Loads a skill's own `.ean` and `.bac` (e.g. `data/skill/SPA/004_GOK_GKD/
-     * 004_GOK_GKD.{ean,bac}`, a Kamehameha) for `player`; returns its playable action ids.
-     * @param {number} player
-     * @param {Uint8Array} ean_bytes
-     * @param {Uint8Array} bac_bytes
-     * @returns {Uint32Array}
-     */
-    loadSkill(player, ean_bytes, bac_bytes) {
-        const ptr0 = passArray8ToWasm0(ean_bytes, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ptr1 = passArray8ToWasm0(bac_bytes, wasm.__wbindgen_malloc);
-        const len1 = WASM_VECTOR_LEN;
-        const ret = wasm.xv2duelwasm_loadSkill(this.__wbg_ptr, player, ptr0, len0, ptr1, len1);
-        if (ret[3]) {
-            throw takeFromExternrefTable0(ret[2]);
-        }
-        var v3 = getArrayU32FromWasm0(ret[0], ret[1]).slice();
-        wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
-        return v3;
-    }
-    /**
-     * Plays action `id` of `player`'s loaded skill once, animated from the skill's own
-     * `.ean` rather than the character's. The skill's own hitboxes, if any, are not yet
-     * resolved (see [`crate::xv2_fighter::Fighter::start_skill`]).
-     * @param {number} player
-     * @param {number} id
-     * @returns {boolean}
-     */
-    playSkill(player, id) {
-        const ret = wasm.xv2duelwasm_playSkill(this.__wbg_ptr, player, id);
-        return ret !== 0;
-    }
-    /**
-     * Whether `player` can act (not stunned, no action in progress).
-     * @param {number} player
-     * @returns {boolean}
-     */
-    ready(player) {
-        const ret = wasm.xv2duelwasm_ready(this.__wbg_ptr, player);
-        return ret !== 0;
-    }
-    /**
-     * @param {number} width
-     * @param {number} height
-     */
-    resize(width, height) {
-        wasm.xv2duelwasm_resize(this.__wbg_ptr, width, height);
-    }
-    /**
-     * Moves `player` toward (positive) or away from (negative) the opponent.
-     * @param {number} player
-     * @param {number} metres
-     */
-    walk(player, metres) {
-        wasm.xv2duelwasm_walk(this.__wbg_ptr, player, metres);
-    }
-}
-if (Symbol.dispose) Xv2DuelWasm.prototype[Symbol.dispose] = Xv2DuelWasm.prototype.free;
-
-/**
- * @param {HTMLCanvasElement} canvas
- * @param {Uint8Array} bytes
- * @returns {Promise<GlbModelWasm>}
- */
-export function createGlbModel(canvas, bytes) {
-    const ptr0 = passArray8ToWasm0(bytes, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.createGlbModel(canvas, ptr0, len0);
-    return ret;
-}
-
-/**
  * Segments the page (`rgba`, `width × height`, an authorised scan, full resolution) into panels,
  * box-filters its texture to `texture_side` pixels and opens its 3D scene on `canvas`. Without
  * WebGPU it rejects and the caller keeps the flat page.
@@ -728,36 +433,6 @@ export function createToriyamaModel(canvas, model, params) {
     const ptr1 = passArrayF32ToWasm0(params, wasm.__wbindgen_malloc);
     const len1 = WASM_VECTOR_LEN;
     const ret = wasm.createToriyamaModel(canvas, ptr0, len0, ptr1, len1);
-    return ret;
-}
-
-/**
- * Parses every file, decodes textures and uploads the character. `parts` is an array of
- * `{ emd, emb?, emm?, dyt? }` byte arrays.
- * @param {HTMLCanvasElement} canvas
- * @param {Uint8Array} esk
- * @param {Uint8Array} ean
- * @param {Array<any>} parts
- * @returns {Promise<Xv2CharacterWasm>}
- */
-export function createXv2Character(canvas, esk, ean, parts) {
-    const ptr0 = passArray8ToWasm0(esk, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ptr1 = passArray8ToWasm0(ean, wasm.__wbindgen_malloc);
-    const len1 = WASM_VECTOR_LEN;
-    const ret = wasm.createXv2Character(canvas, ptr0, len0, ptr1, len1, parts);
-    return ret;
-}
-
-/**
- * `a` and `b` are `{ esk, ean, parts, bac?, bdm? }` (parts as for `createXv2Character`).
- * @param {HTMLCanvasElement} canvas
- * @param {any} a
- * @param {any} b
- * @returns {Promise<Xv2DuelWasm>}
- */
-export function createXv2Duel(canvas, a, b) {
-    const ret = wasm.createXv2Duel(canvas, a, b);
     return ret;
 }
 
@@ -866,21 +541,6 @@ export function wasm_parse_bdm(bdm_bytes) {
     const ptr0 = passArray8ToWasm0(bdm_bytes, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ret = wasm.wasm_parse_bdm(ptr0, len0);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * Parse the DBXV2 CMS (Character Model Spec) roster file and return every character entry.
- * @param {Uint8Array} cms_bytes
- * @returns {any}
- */
-export function wasm_parse_cms(cms_bytes) {
-    const ptr0 = passArray8ToWasm0(cms_bytes, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.wasm_parse_cms(ptr0, len0);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }
@@ -1087,9 +747,6 @@ function __wbg_get_imports() {
             const ret = arg0.document;
             return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
         },
-        __wbg_drawIndexed_638959aae942557c: function(arg0, arg1, arg2, arg3, arg4, arg5) {
-            arg0.drawIndexed(arg1 >>> 0, arg2 >>> 0, arg3 >>> 0, arg4, arg5 >>> 0);
-        },
         __wbg_draw_086a9578fc9898c2: function(arg0, arg1, arg2, arg3, arg4) {
             arg0.draw(arg1 >>> 0, arg2 >>> 0, arg3 >>> 0, arg4 >>> 0);
         },
@@ -1116,29 +773,13 @@ function __wbg_get_imports() {
             const ret = arg0.getCurrentTexture();
             return ret;
         }, arguments); },
-        __wbg_getMappedRange_fb54c6327b2d8d20: function() { return handleError(function (arg0, arg1, arg2) {
-            const ret = arg0.getMappedRange(arg1, arg2);
-            return ret;
-        }, arguments); },
         __wbg_getPreferredCanvasFormat_0ef5034c8902201b: function(arg0) {
             const ret = arg0.getPreferredCanvasFormat();
             return (__wbindgen_enum_GpuTextureFormat.indexOf(ret) + 1 || 102) - 1;
         },
-        __wbg_get_31af05bd4842a84f: function() { return handleError(function (arg0, arg1) {
-            const ret = Reflect.get(arg0, arg1);
-            return ret;
-        }, arguments); },
         __wbg_get_fd12a9100976c296: function(arg0, arg1) {
             const ret = arg0[arg1 >>> 0];
             return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
-        },
-        __wbg_get_unchecked_288889d017702237: function(arg0, arg1) {
-            const ret = arg0[arg1 >>> 0];
-            return ret;
-        },
-        __wbg_glbmodelwasm_new: function(arg0) {
-            const ret = GlbModelWasm.__wrap(arg0);
-            return ret;
         },
         __wbg_gpu_afdd4387c7afe5f9: function(arg0) {
             const ret = arg0.gpu;
@@ -1146,16 +787,6 @@ function __wbg_get_imports() {
         },
         __wbg_height_fc97e1a0c2e7331f: function(arg0) {
             const ret = arg0.height;
-            return ret;
-        },
-        __wbg_instanceof_Uint8Array_828cef2aaacafc31: function(arg0) {
-            let result;
-            try {
-                result = arg0 instanceof Uint8Array;
-            } catch (_) {
-                result = false;
-            }
-            const ret = result;
             return ret;
         },
         __wbg_instanceof_Window_82d71df4eddf88bc: function(arg0) {
@@ -1168,24 +799,12 @@ function __wbg_get_imports() {
             const ret = result;
             return ret;
         },
-        __wbg_isArray_e15a2ff68ffdbef2: function(arg0) {
-            const ret = Array.isArray(arg0);
-            return ret;
-        },
         __wbg_label_7add8cb37a6ef98f: function(arg0, arg1) {
             const ret = arg1.label;
             const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
             const len1 = WASM_VECTOR_LEN;
             getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
             getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
-        },
-        __wbg_length_7f3c00c40364105e: function(arg0) {
-            const ret = arg0.length;
-            return ret;
-        },
-        __wbg_length_d4bdea10311bd9cf: function(arg0) {
-            const ret = arg0.length;
-            return ret;
         },
         __wbg_lost_bb454eb62101af1a: function(arg0) {
             const ret = arg0.lost;
@@ -1248,16 +867,9 @@ function __wbg_get_imports() {
                 state0.a = 0;
             }
         },
-        __wbg_new_with_byte_offset_and_length_2f5d7fc2a828b74d: function(arg0, arg1, arg2) {
-            const ret = new Uint8Array(arg0, arg1 >>> 0, arg2 >>> 0);
-            return ret;
-        },
         __wbg_onSubmittedWorkDone_1190213cee1ecf7e: function(arg0) {
             const ret = arg0.onSubmittedWorkDone();
             return ret;
-        },
-        __wbg_prototypesetcall_bc27214492979395: function(arg0, arg1, arg2) {
-            Uint8Array.prototype.set.call(getArrayU8FromWasm0(arg0, arg1), arg2);
         },
         __wbg_querySelectorAll_6aebfe3df1fb2014: function() { return handleError(function (arg0, arg1, arg2) {
             const ret = arg0.querySelectorAll(getStringFromWasm0(arg1, arg2));
@@ -1296,9 +908,6 @@ function __wbg_get_imports() {
         __wbg_setBindGroup_418c3e0eb6943ce0: function(arg0, arg1, arg2) {
             arg0.setBindGroup(arg1 >>> 0, arg2);
         },
-        __wbg_setIndexBuffer_241097e303986c14: function(arg0, arg1, arg2, arg3, arg4) {
-            arg0.setIndexBuffer(arg1, __wbindgen_enum_GpuIndexFormat[arg2], arg3, arg4);
-        },
         __wbg_setPipeline_b6f981027e02cd16: function(arg0, arg1) {
             arg0.setPipeline(arg1);
         },
@@ -1312,9 +921,6 @@ function __wbg_get_imports() {
             const ret = Reflect.set(arg0, arg1, arg2);
             return ret;
         }, arguments); },
-        __wbg_set_34d08fd992d43d61: function(arg0, arg1, arg2) {
-            arg0.set(arg1, arg2 >>> 0);
-        },
         __wbg_set_6be42768c690e380: function(arg0, arg1, arg2) {
             arg0[arg1] = arg2;
         },
@@ -1869,9 +1475,6 @@ function __wbg_get_imports() {
         __wbg_unconfigure_835307f58dc68d80: function(arg0) {
             arg0.unconfigure();
         },
-        __wbg_unmap_6a96b14c9ef5f7f5: function(arg0) {
-            arg0.unmap();
-        },
         __wbg_width_3d0dce3d9892e35e: function(arg0) {
             const ret = arg0.width;
             return ret;
@@ -1882,37 +1485,29 @@ function __wbg_get_imports() {
         __wbg_writeTexture_30e592e8c061c3d9: function() { return handleError(function (arg0, arg1, arg2, arg3, arg4, arg5) {
             arg0.writeTexture(arg1, getArrayU8FromWasm0(arg2, arg3), arg4, arg5);
         }, arguments); },
-        __wbg_xv2characterwasm_new: function(arg0) {
-            const ret = Xv2CharacterWasm.__wrap(arg0);
-            return ret;
-        },
-        __wbg_xv2duelwasm_new: function(arg0) {
-            const ret = Xv2DuelWasm.__wrap(arg0);
-            return ret;
-        },
         __wbindgen_generic_0000000000000001: function(arg0, arg1) {
-            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [Externref], shim_idx: 831, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
+            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [Externref], shim_idx: 148, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
             const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___JsValue__core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true_);
             return ret;
         },
         __wbindgen_generic_0000000000000002: function(arg0, arg1) {
-            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("GPUDevice")], shim_idx: 735, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
+            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("GPUDevice")], shim_idx: 58, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
             const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true_);
             return ret;
         },
         __wbindgen_generic_0000000000000003: function(arg0, arg1) {
-            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("GPUDeviceLostInfo")], shim_idx: 738, ret: Unit, inner_ret: Some(Unit) }, mutable: true }) -> Externref`.
+            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("GPUDeviceLostInfo")], shim_idx: 61, ret: Unit, inner_ret: Some(Unit) }, mutable: true }) -> Externref`.
             const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuDeviceLostInfo__GpuDeviceLostInfo______true_);
             return ret;
         },
         __wbindgen_generic_0000000000000004: function(arg0, arg1) {
-            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("any")], shim_idx: 735, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
-            const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__69);
+            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("any")], shim_idx: 58, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
+            const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__43);
             return ret;
         },
         __wbindgen_generic_0000000000000005: function(arg0, arg1) {
-            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("undefined")], shim_idx: 735, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
-            const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__70);
+            // Cast intrinsic for `Closure(Closure { owned: true, function: Function { arguments: [NamedExternref("undefined")], shim_idx: 58, ret: Result(Unit), inner_ret: Some(Result(Unit)) }, mutable: true }) -> Externref`.
+            const ret = makeMutClosure(arg0, arg1, wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__44);
             return ret;
         },
         __wbindgen_generic_0000000000000006: function(arg0) {
@@ -1921,16 +1516,11 @@ function __wbg_get_imports() {
             return ret;
         },
         __wbindgen_generic_0000000000000007: function(arg0, arg1) {
-            // Cast intrinsic for `Ref(Slice(U8)) -> NamedExternref("Uint8Array")`.
-            const ret = getArrayU8FromWasm0(arg0, arg1);
-            return ret;
-        },
-        __wbindgen_generic_0000000000000008: function(arg0, arg1) {
             // Cast intrinsic for `Ref(String) -> Externref`.
             const ret = getStringFromWasm0(arg0, arg1);
             return ret;
         },
-        __wbindgen_generic_0000000000000009: function(arg0) {
+        __wbindgen_generic_0000000000000008: function(arg0) {
             // Cast intrinsic for `U64 -> Externref`.
             const ret = BigInt.asUintN(64, arg0);
             return ret;
@@ -1969,15 +1559,15 @@ function wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bin
     }
 }
 
-function wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__69(arg0, arg1, arg2) {
-    const ret = wasm.wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__69(arg0, arg1, arg2);
+function wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__43(arg0, arg1, arg2) {
+    const ret = wasm.wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__43(arg0, arg1, arg2);
     if (ret[1]) {
         throw takeFromExternrefTable0(ret[0]);
     }
 }
 
-function wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__70(arg0, arg1, arg2) {
-    const ret = wasm.wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__70(arg0, arg1, arg2);
+function wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__44(arg0, arg1, arg2) {
+    const ret = wasm.wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__44(arg0, arg1, arg2);
     if (ret[1]) {
         throw takeFromExternrefTable0(ret[0]);
     }
@@ -2076,9 +1666,6 @@ const CanvasEngineWasmFinalization = (typeof FinalizationRegistry === 'undefined
 const DragonPixelEngineWasmFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_dragonpixelenginewasm_free(ptr, 1));
-const GlbModelWasmFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_glbmodelwasm_free(ptr, 1));
 const MangaSceneWasmFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_mangascenewasm_free(ptr, 1));
@@ -2088,12 +1675,6 @@ const SessionFinalization = (typeof FinalizationRegistry === 'undefined')
 const ToriyamaModelWasmFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_toriyamamodelwasm_free(ptr, 1));
-const Xv2CharacterWasmFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_xv2characterwasm_free(ptr, 1));
-const Xv2DuelWasmFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_xv2duelwasm_free(ptr, 1));
 
 function addToExternrefTable0(obj) {
     const idx = wasm.__externref_table_alloc();
@@ -2173,17 +1754,6 @@ function debugString(val) {
 function getArrayF32FromWasm0(ptr, len) {
     ptr = ptr >>> 0;
     return getFloat32ArrayMemory0().subarray(ptr / 4, ptr / 4 + len);
-}
-
-function getArrayJsValueFromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    const mem = getDataViewMemory0();
-    const result = [];
-    for (let i = ptr; i < ptr + 4 * len; i += 4) {
-        result.push(wasm.__wbindgen_externrefs.get(mem.getUint32(i, true)));
-    }
-    wasm.__externref_drop_slice(ptr, len);
-    return result;
 }
 
 function getArrayJsValueViewFromWasm0(ptr, len) {

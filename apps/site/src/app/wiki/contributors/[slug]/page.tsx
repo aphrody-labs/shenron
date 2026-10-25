@@ -18,9 +18,7 @@ import {
   Building2,
   ArrowLeft,
   CheckCircle2,
-  Quote,
 } from "lucide-react";
-import { ANECDOTES_MAP } from "@/lib/unified-staff-catalog";
 
 export const revalidate = 3600;
 
@@ -65,49 +63,9 @@ export default async function ContributorDetailPage({ params }: ContributorPageP
     redirect("/wiki/toriyama");
   }
 
-  const rawContributor = await dbUniverse.contributorBySlug(slug);
-  let contributor = rawContributor;
-  let voiceActor = null;
-
+  const contributor = await dbUniverse.contributorBySlug(slug);
   if (!contributor) {
-    voiceActor = await dbUniverse.voiceActorBySlug(slug);
-    if (!voiceActor) {
-      notFound();
-    }
-    // Adaptation au schéma d'affichage
-    let parsedRoles: any[] = [];
-    try {
-      parsedRoles =
-        typeof voiceActor.roles === "string"
-          ? JSON.parse(voiceActor.roles)
-          : voiceActor.roles || [];
-    } catch {
-      parsedRoles = [];
-    }
-    contributor = {
-      id: Number(voiceActor.id),
-      slug: voiceActor.slug,
-      name: voiceActor.name,
-      name_ja: voiceActor.name_ja,
-      name_romaji: null,
-      category: "voice" as any,
-      birth_date: voiceActor.birth_date,
-      death_date: null,
-      biography_fr: voiceActor.biography || (voiceActor as any).article || null,
-      image: voiceActor.image,
-      spotlight_rank: null,
-      credits: parsedRoles.map((r: any, idx: number) => ({
-        id: idx + 1,
-        role: `Voix : ${r.characterName}${r.notes ? ` (${r.notes})` : ""}`,
-        credit_scope: r.series || "Dragon Ball",
-        work_id: null,
-        character_id: null,
-        episode_id: null,
-        movie_id: null,
-        game_id: null,
-        soundtrack_id: null,
-      })),
-    };
+    notFound();
   }
 
   const categoryLabels: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
@@ -185,71 +143,51 @@ export default async function ContributorDetailPage({ params }: ContributorPageP
         {/* Profil Card Header */}
         <header className="rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-black/80 to-black p-6 sm:p-10 backdrop-blur-2xl shadow-2xl">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-              {contributor.image && !contributor.image.includes(".svg") ? (
-                <div className="relative h-28 w-28 sm:h-32 sm:w-32 shrink-0 overflow-hidden rounded-2xl border-2 border-orange-500/30 bg-black/60 shadow-xl">
-                  <img
-                    src={contributor.image}
-                    alt={contributor.name}
-                    className="h-full w-full object-cover object-top"
-                  />
-                </div>
-              ) : (
-                <div
-                  aria-hidden="true"
-                  className="relative flex h-28 w-28 sm:h-32 sm:w-32 shrink-0 items-center justify-center rounded-2xl border-2 border-orange-500/30 bg-gradient-to-br from-orange-950/40 via-black to-neutral-900 shadow-xl"
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1 text-xs font-bold uppercase tracking-wider ${catMeta.color}`}
                 >
-                  <span className="font-saiyan text-4xl sm:text-5xl font-bold text-orange-400">
-                    {contributor.name.slice(0, 1).toUpperCase()}
+                  {catMeta.icon}
+                  <span>{catMeta.label}</span>
+                </span>
+                {contributor.spotlight_rank !== null && (
+                  <span className="inline-flex items-center gap-1 rounded-lg border border-amber-500/30 bg-amber-950/60 px-2.5 py-1 text-xs font-bold text-amber-300">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Personnalité Majeure
                   </span>
-                </div>
-              )}
-              <div className="space-y-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span
-                    className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1 text-xs font-bold uppercase tracking-wider ${catMeta.color}`}
-                  >
-                    {catMeta.icon}
-                    <span>{catMeta.label}</span>
+                )}
+              </div>
+
+              <h1 className="font-saiyan text-3xl sm:text-4xl lg:text-5xl text-white tracking-wide">
+                {contributor.name}
+              </h1>
+
+              <div className="flex flex-wrap items-center gap-3 text-sm text-white/60">
+                {contributor.name_ja && (
+                  <span className="font-jp text-lg font-bold text-amber-300">
+                    {contributor.name_ja}
                   </span>
-                  {contributor.spotlight_rank !== null && (
-                    <span className="inline-flex items-center gap-1 rounded-lg border border-amber-500/30 bg-amber-950/60 px-2.5 py-1 text-xs font-bold text-amber-300">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Personnalité Majeure
+                )}
+                {contributor.name_romaji && (
+                  <>
+                    <span>·</span>
+                    <span className="font-mono text-white/50">{contributor.name_romaji}</span>
+                  </>
+                )}
+                {(contributor.birth_date || contributor.death_date) && (
+                  <>
+                    <span>·</span>
+                    <span className="inline-flex items-center gap-1 font-mono text-white/50">
+                      <Calendar className="h-3.5 w-3.5" />
+                      {contributor.birth_date?.slice(0, 4) ?? "???"} —{" "}
+                      {contributor.death_date?.slice(0, 4) ?? "Présent"}
                     </span>
-                  )}
-                </div>
-
-                <h1 className="font-saiyan text-3xl sm:text-4xl lg:text-5xl text-white tracking-wide">
-                  {contributor.name}
-                </h1>
-
-                <div className="flex flex-wrap items-center gap-3 text-sm text-white/60">
-                  {contributor.name_ja && (
-                    <span className="font-jp text-lg font-bold text-amber-300">
-                      {contributor.name_ja}
-                    </span>
-                  )}
-                  {contributor.name_romaji && (
-                    <>
-                      <span>·</span>
-                      <span className="font-mono text-white/50">{contributor.name_romaji}</span>
-                    </>
-                  )}
-                  {(contributor.birth_date || contributor.death_date) && (
-                    <>
-                      <span>·</span>
-                      <span className="inline-flex items-center gap-1 font-mono text-white/50">
-                        <Calendar className="h-3.5 w-3.5" />
-                        {contributor.birth_date?.slice(0, 4) ?? "???"} —{" "}
-                        {contributor.death_date?.slice(0, 4) ?? "Présent"}
-                      </span>
-                    </>
-                  )}
-                </div>
+                  </>
+                )}
               </div>
             </div>
 
-            <div className="shrink-0 self-start md:self-center">
+            <div className="shrink-0">
               <Link
                 href="/wiki/staff"
                 className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-xs font-semibold text-white hover:bg-white/20 transition-colors"
@@ -274,19 +212,6 @@ export default async function ContributorDetailPage({ params }: ContributorPageP
                   "Notice encyclopédique en cours de documentation vérifiée."}
               </p>
             </div>
-
-            {/* Anecdote de production sourcée */}
-            {ANECDOTES_MAP[slug] && (
-              <div className="rounded-2xl border border-amber-500/30 bg-amber-950/20 p-6 backdrop-blur-md space-y-3">
-                <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
-                  <Quote className="h-4 w-4 shrink-0 text-amber-400" />
-                  <span>Anecdote de Production &amp; Témoignage</span>
-                </div>
-                <p className="text-sm leading-relaxed text-amber-200/90 italic">
-                  &laquo; {ANECDOTES_MAP[slug]} &raquo;
-                </p>
-              </div>
-            )}
 
             {/* Crédits officiels */}
             {contributor.credits.length > 0 && (

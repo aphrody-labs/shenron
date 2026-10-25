@@ -76,10 +76,7 @@ import { CLE_VERIFIEE } from "@aphrody/shenron-config/databooks-defauts";
 import type { SignauxRichesse } from "@/lib/character-richesse";
 import { formatCharacterSlug } from "@aphrody/shenron-config/wiki-slugs";
 import { mangaCoverPath, publishedMangaPageCount, publishedMangaPages } from "@/lib/manga-assets";
-import {
-  mangaVolumeBibliographicRecord,
-  mangaVolumeBibliographicSource,
-} from "@/lib/manga-source-registry";
+import { mangaVolumeBibliographicSource } from "@/lib/manga-source-registry";
 import { mediaPublicationLink } from "@/lib/media-publication-links";
 
 // Re-export types from schema
@@ -771,12 +768,7 @@ function toMangaVolume(r: typeof botMangaVolumes.$inferSelect): MangaVolume {
     series: r.series,
     volume_number: r.volumeNumber ?? 0,
     title: r.title,
-    cover: mangaCoverPath(
-      r.series,
-      r.volumeNumber ?? 0,
-      r.cover,
-      !mangaVolumeBibliographicRecord(r),
-    ),
+    cover: mangaCoverPath(r.series, r.volumeNumber ?? 0, r.cover),
     title_ja: r.titleJa,
     published_at: r.publishedAt,
     isbn: r.isbn,
@@ -1782,15 +1774,6 @@ export const dbUniverse = {
         await db.select().from(botTransformations).where(eq(botTransformations.visible, true))
       ).map(toTransformation),
     })),
-
-  /** Raw editorial covers override an immutable reader projection without loading its pages. */
-  mangaVolumeCovers: () =>
-    safe(async () =>
-      db
-        .select({ id: botMangaVolumes.id, cover: botMangaVolumes.cover })
-        .from(botMangaVolumes)
-        .where(eq(botMangaVolumes.visible, true)),
-    ),
 
   mangaVolumes: (series = "DB") =>
     safe(async () => ({
@@ -3050,7 +3033,6 @@ export const dbUniverse = {
         birth_date: r.birthDate,
         death_date: r.deathDate,
         biography_fr: r.biographyFr,
-        image: r.image,
         spotlight_rank: r.spotlightRank,
       }));
     }),
@@ -3084,7 +3066,6 @@ export const dbUniverse = {
         birth_date: r.birthDate,
         death_date: r.deathDate,
         biography_fr: r.biographyFr,
-        image: r.image,
         spotlight_rank: r.spotlightRank,
         credits: credits.map((c) => ({
           id: Number(c.id),

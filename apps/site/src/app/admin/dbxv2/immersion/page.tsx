@@ -1,4 +1,3 @@
-/* oxlint-disable jsx-a11y/prefer-tag-over-role -- reviewed: admin-only private tooling, behavior preserved */
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getLocale } from "next-intl/server";

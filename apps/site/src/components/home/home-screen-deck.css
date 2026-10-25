@@ -26,8 +26,7 @@
 .home-screen:has(.home-section-scene) {
   padding: 0;
 }
-.home-screen-content:has(.home-section-scene),
-.home-screen-content:has(#hero) {
+.home-screen-content:has(.home-section-scene) {
   max-width: none;
 }
 .home-screen .home-section-scene {
@@ -45,6 +44,13 @@
 }
 .home-screen:first-child {
   padding: 0;
+}
+.home-screen .home-stage {
+  min-height: clamp(20rem, 44svh, 30rem);
+}
+.home-screen .home-stage > .page-shell {
+  min-height: inherit;
+  justify-content: center;
 }
 .home-screen-controls {
   position: sticky;

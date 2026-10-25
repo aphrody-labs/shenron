@@ -13,7 +13,6 @@
  */
 import { describe, expect, test } from "bun:test";
 import { readerAssetUrl } from "../src/lib/reader-assets";
-import { REVIEWED_SOURCE_MEDIA } from "../src/lib/reviewed-source-media";
 import {
   LARGEURS_OPTIMISEUR,
   isEditableAsset,
@@ -40,29 +39,6 @@ describe("isEditableAsset", () => {
 });
 
 describe("optimizedSrc", () => {
-  test("all nine reviewed scan identities retain their qualified immutable source", () => {
-    expect(REVIEWED_SOURCE_MEDIA).toHaveLength(9);
-    for (const media of REVIEWED_SOURCE_MEDIA) {
-      const resolved = readerAssetUrl(media.sourceUrl);
-      expect(resolved).toBe(media.publishedUrl);
-      expect(optimizedSrc(resolved, 828)).toBe(media.publishedUrl);
-      expect(optimizedSrcSet(resolved, [384, 828, 1080])).toBe("");
-      expect(isEditableAsset(resolved)).toBe(false);
-    }
-  });
-
-  test("the direct-source exception never expands to other CDN objects or query variants", () => {
-    const known = REVIEWED_SOURCE_MEDIA[0].publishedUrl;
-    for (const src of [
-      `${known}?edition=other`,
-      known.replace("cdn.dragonballfr.com", "images.example.com"),
-      "https://cdn.dragonballfr.com/publications/other/objects/page.png",
-    ]) {
-      expect(optimizedSrc(src, 828)).toStartWith("/_next/image?url=");
-      expect(optimizedSrcSet(src, [828])).toContain("828w");
-    }
-  });
-
   test("passe par l'optimiseur et encode la source", () => {
     const u = optimizedSrc(IMPORTEE, 1080);
     expect(u).toStartWith("/_next/image?url=");

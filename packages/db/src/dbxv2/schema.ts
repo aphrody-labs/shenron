@@ -8,7 +8,7 @@
  */
 import { RAG_SIDE_DDL, RAG_STORE_DDL } from "../vfs/schema";
 
-export const DBXV2_SCHEMA_VERSION = 2;
+export const DBXV2_SCHEMA_VERSION = 1;
 
 /** Languages stored in the text tables. */
 export const DBXV2_LANGS = ["fr", "en", "ja"] as const;
@@ -54,24 +54,6 @@ CREATE TABLE IF NOT EXISTS dbxv2_msg (
   PRIMARY KEY (file_id, entry_id)
 );
 CREATE INDEX IF NOT EXISTS idx_dbxv2_msg_key ON dbxv2_msg(base, name_id, lang);
-CREATE TABLE IF NOT EXISTS dbxv2_structured (
-  file_id INTEGER PRIMARY KEY REFERENCES dbxv2_files(id) ON DELETE CASCADE,
-  format TEXT NOT NULL,
-  support_state TEXT NOT NULL CHECK (support_state IN ('full', 'header', 'unverified', 'convert', 'identify', 'unknown')),
-  parse_status TEXT NOT NULL CHECK (parse_status IN ('parsed', 'deferred', 'error')),
-  parser_version TEXT NOT NULL,
-  source_sha256 TEXT,
-  data_json TEXT,
-  error TEXT,
-  parsed_at TEXT NOT NULL,
-  CHECK (
-    (parse_status = 'parsed' AND data_json IS NOT NULL AND error IS NULL)
-    OR (parse_status = 'deferred' AND data_json IS NULL AND error IS NULL)
-    OR (parse_status = 'error' AND data_json IS NULL AND error IS NOT NULL)
-  )
-);
-CREATE INDEX IF NOT EXISTS idx_dbxv2_structured_status
-  ON dbxv2_structured(format, parse_status, support_state);
 `;
 
 export const DBXV2_DDL = [DBXV2_CORE_DDL, RAG_STORE_DDL, RAG_SIDE_DDL].join("\n");

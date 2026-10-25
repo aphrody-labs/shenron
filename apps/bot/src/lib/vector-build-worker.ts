@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-import { startBundledWorker } from "./bundled-worker";
 import type { VectorGeneration } from "../../../../packages/pipeline/src/ai/vector-sidecar";
 /** CPU-bound native build runs off the serving thread; all SQL stays on its existing pool. */
 export async function buildWithVectorWorker(
@@ -10,7 +9,7 @@ export async function buildWithVectorWorker(
 ) {
   signal = AbortSignal.any([signal, AbortSignal.timeout(30 * 60 * 1000)]);
   signal.throwIfAborted();
-  const worker = startBundledWorker("vector-builder.ts");
+  const worker = new Worker(new URL("../workers/vector-builder.ts", import.meta.url).href);
   let result: unknown,
     failure = false,
     requests = 0;

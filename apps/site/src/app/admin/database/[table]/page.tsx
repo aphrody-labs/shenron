@@ -15,7 +15,6 @@ import {
 } from "@aphrody/shenron-ui/icones";
 import { useState, type ReactNode, useEffect } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { SmartField } from "@/components/admin/SmartField";
 import { api, apiAt } from "@/lib/admin-api";
 import { assetUrl } from "@/lib/assets";
@@ -32,7 +31,6 @@ interface TableSpec {
 }
 
 export default function TablePage() {
-  const common = useTranslations("common");
   const { table } = useParams<{ table: string }>();
   const router = useRouter();
   // `?q=` pré-remplit la recherche : la worklist /admin/wiki/todo ouvre ainsi
@@ -207,14 +205,8 @@ export default function TablePage() {
           <code className="text-[10px] text-white/25 font-mono">{table}</code>
         </div>
         <div className="text-sm text-white/50 tabular-nums">
-          {rows.data ? (
-            <>
-              {total.toLocaleString("fr-FR")} entrée{total > 1 ? "s" : ""} · page {page + 1} sur{" "}
-              {Math.max(1, totalPages)}
-            </>
-          ) : (
-            <output>{rows.isError ? common("error") : common("loading")}</output>
-          )}
+          {total.toLocaleString("fr-FR")} entrée{total > 1 ? "s" : ""} · page {page + 1} sur{" "}
+          {Math.max(1, totalPages)}
         </div>
         {spec && !spec.readonly && (
           <button type="button" onClick={openCreate} className="btn btn-primary">

@@ -3,7 +3,6 @@
 import { LoadingText } from "@/components/LoadingText";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { StudioSourceLink } from "@/components/studio/StudioSourceLink";
 import {
   MangaReader as BaseMangaReader,
   type MangaReaderProps as ReaderProps,
@@ -85,7 +84,6 @@ export function MangaReader({ chapterId, sourceKind, readerExtent, ...props }: M
   return (
     <div className="m3-reader--dragon-ball" data-koharu-canvas={canvasWarmup}>
       <MangaPreviewNotice extent={readerExtent} count={props.pages.length} />
-      {chapterId && <StudioSourceLink kind="chapter" id={chapterId} page={currentPage} />}
       <BaseMangaReader
         key={`${chapterId ?? "ch"}-${initialPage}`}
         {...props}

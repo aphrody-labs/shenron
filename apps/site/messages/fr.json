@@ -504,9 +504,6 @@
     "s9": "9. Modifications"
   },
   "profile": {
-    "communityMissingTitle": "Profil communautaire non créé",
-    "communityMissingMessage": "Votre compte est connecté. Aucun profil communautaire Shenron n’est encore associé à ce compte Discord. Votre bibliothèque personnelle reste disponible.",
-    "accountLink": "Ouvrir mon espace",
     "unavailableTitle": "Profil temporairement indisponible",
     "unavailableMessage": "Le service des profils ne répond pas. Réessaie dans un instant — rien n'est perdu.",
     "leaderboardLink": "Le classement",
@@ -566,12 +563,7 @@
     "ledgerCommentsTitle": "Commentaires sur le site",
     "topRoleLabel": "Rôle Discord le plus haut :",
     "contributorBadge": "Contributeur",
-    "contributorCount": "{count} contribution(s) acceptée(s)",
-    "statXp": "XP total",
-    "statZeni": "Zénis",
-    "statAchievements": "Succès",
-    "statItems": "Objets",
-    "fusionWith": "✦ Fusion avec {name}"
+    "contributorCount": "{count} contribution(s) acceptée(s)"
   },
   "settings": {
     "eyebrow": "Compte membre",
@@ -1122,23 +1114,6 @@
         "cardDescription": "Explore les formats Xenoverse 2 et analyse localement les données que tu as extraites.",
         "title": "Dragon Ball Xenoverse 2",
         "lead": "Catalogue de formats et analyse WASM des fichiers extraits de ta copie du jeu.",
-        "cpkTitle": "Archives CPK en direct",
-        "cpkDescription": "Parcours les archives servies par le site. Les entrées sélectionnées sont chargées à la demande depuis le CDN puis analysées dans ton navigateur avec le moteur WebAssembly.",
-        "cpkLoading": "Chargement du catalogue CPK…",
-        "cpkUnavailable": "Le catalogue public des archives est momentanément indisponible.",
-        "cpkArchive": "Archive",
-        "cpkSearchLabel": "Recherche dans l’archive",
-        "cpkSearch": "Parcourir",
-        "cpkArchiveSize": "Taille complète de l’archive : {size}. Seules les entrées choisies sont chargées.",
-        "cpkResults": "{count} entrées correspondent à la recherche ({max} affichées au maximum).",
-        "cpkNoResults": "Aucune entrée pour cette recherche.",
-        "cpkError": "Impossible de charger cette archive. Réessaie dans un instant.",
-        "cpkCompressed": "compressée",
-        "cpkAnalyze": "Charger et analyser en WASM",
-        "cpkUnsupported": "Ce format est consultable dans l’archive mais son analyse WASM n’est pas disponible.",
-        "cpkOversize": "Cette entrée dépasse la limite d’analyse de 16 Mio.",
-        "cpkInvalid": "L’entrée n’a pas pu être chargée ou analysée.",
-        "cpkDecoded": "{format} · {count} entrées décodées",
         "localTitle": "Analyse locale des données",
         "localDescription": "Choisis un dossier de données extraites. Le moteur lit les fichiers BAC, BDM, CUS, MSG et PUP directement dans ton navigateur.",
         "chooseFolder": "Choisir un dossier de données",
@@ -1573,12 +1548,7 @@
   },
   "accueil": {
     "hero": {
-      "title": "Dragon Ball, en français et sourcé",
-      "featureEyebrow": "À l’affiche",
-      "watchEpisode": "Voir l’épisode {number}",
-      "episodeNumber": "Épisode {number}",
-      "pauseFrames": "Mettre les images en pause",
-      "resumeFrames": "Animer les images"
+      "title": "Dragon Ball, en français et sourcé"
     },
     "search": {
       "label": "Rechercher dans l'encyclopédie",
@@ -1705,11 +1675,7 @@
       "desktopAuthWaiting": "Terminez la connexion dans le navigateur. Shenron Studio se mettra à jour automatiquement.",
       "desktopAuthRetry": "Rouvrir la connexion",
       "desktopAuthError": "Impossible de démarrer la liaison du compte. Vérifiez que le serveur local Shenron répond, puis réessayez.",
-      "workshopLink": "Voir l'avancement de la traduction",
-      "webTitle": "Votre atelier Studio",
-      "webUnavailable": "L’atelier est temporairement indisponible. Vos projets restent conservés.",
-      "webSignIn": "Ouvrir mon Studio",
-      "webText": "Connectez-vous pour créer un projet personnel, importer vos planches et utiliser les outils de traduction."
+      "workshopLink": "Voir l'avancement de la traduction"
     }
   },
   "desktop": {
@@ -1931,8 +1897,8 @@
       }
     },
     "admin": "Administration",
-    "title": "Atelier de pilotage",
-    "intro": "Exécutez les opérations éditoriales, ouvrez vos outils et suivez les mesures réelles des services.",
+    "title": "Bonjour, voici votre espace de pilotage",
+    "intro": "Retrouvez ici ce qui fonctionne, ce qui mérite votre attention et les actions les plus utiles.",
     "liveLink": "Voir l’activité en direct",
     "console": "Ouvrir la console",
     "metricsError": "Certains indicateurs ne répondent pas. Les valeurs manquantes ne sont pas interprétées comme des zéros.",
@@ -2020,9 +1986,7 @@
       "redis_failed": "Connexion, authentification ou PING Redis en échec",
       "admin_unconfigured": "Jeton d’administration du bot non configuré"
     },
-    "httpFailure": "Réponse HTTP {status}",
-    "studio": "Mon atelier Studio",
-    "studioDescription": "Importer, traduire et exporter des planches dans votre espace personnel."
+    "httpFailure": "Réponse HTTP {status}"
   },
   "dbsBeerus": {
     "trailer": "Bande-annonce",
@@ -2038,7 +2002,7 @@
     "episodeTitle": "Le dieu de la Destruction",
     "episodeSynopsis": "Après le combat contre Majin Boo, Goku vit paisiblement sur Terre. Sur une planète lointaine, Beerus, Dieu de la Destruction, se réveille d’un long sommeil.",
     "episodeContinuity": "Cette édition enrichie reprend le début de Dragon Ball Super et le récit de Beerus après Majin Boo. Elle ne prolonge pas la numérotation de la série de 2015–2018, qui garde son catalogue propre.",
-    "episodeCountOne": "Série en cours de diffusion",
+    "episodeCountOne": "1 épisode officiellement présenté",
     "openEpisode": "Ouvrir la fiche de l’épisode",
     "openLocalEpisode": "Fiche DBFR de l’épisode 1",
     "originalCatalogue": "Catalogue original · 2015–2018",
@@ -2047,11 +2011,7 @@
     "episodeReleaseDate": "Première diffusion au Japon : 11 octobre 2026",
     "watchEpisode": "Ouvrir la fiche officielle Crunchyroll",
     "originalVideo": "Vidéo officielle",
-    "originalVideoNote": "Consultez la fiche du diffuseur officiel.",
-    "heroEyebrow": "Nouvelle série · chaque dimanche",
-    "heroLatest": "Dernier épisode",
-    "heroAll": "Tous les épisodes",
-    "heroCount": "{count} épisodes déjà diffusés"
+    "originalVideoNote": "Consultez la fiche du diffuseur officiel."
   },
   "episodeSeries": {
     "coverage": "Couverture de la série",
@@ -2359,350 +2319,5 @@
     "previous": "Planche précédente",
     "next": "Planche suivante",
     "position": "Planche {page} sur {total}"
-  },
-  "episodePage": {
-    "officialSource": "Source officielle",
-    "synopsis": "Synopsis",
-    "timelineAction": "Timeline et GIF",
-    "firstBroadcast": "Première diffusion",
-    "inSeries": "Dans {series}"
-  },
-  "StudioSource": {
-    "import": "Créer le projet et importer",
-    "openProject": "Fermez le projet ouvert dans Studio avant de créer ce projet.",
-    "candidate": "Source conservée avec son empreinte SHA-256. Aucun rattachement éditorial automatique.",
-    "error": "Import impossible : vérifiez la source, les droits et le nom du projet.",
-    "imported": "Page importée",
-    "provenance": "Télécharger la provenance",
-    "cancel": "Annuler",
-    "open": "Ouvrir la page {page} dans Studio",
-    "sourceContext": "Ouvert depuis le lecteur : {label} n° {id}, page {page}",
-    "databook": "Databook",
-    "destination": "Nouveau projet",
-    "importing": "Importation…",
-    "preview": "Aperçu de la page {page}",
-    "chapter": "Chapitre",
-    "selected": "{kind} {id} · page {page}",
-    "title": "Importer depuis la bibliothèque"
-  },
-  "AdminWorkspace": {
-    "commands": "Rechercher une commande",
-    "commandNote": "Ouvrir un outil sans modifier les données en cours.",
-    "inspector": "Contexte",
-    "status": "Actions et droits vérifiés par le serveur",
-    "noResults": "Aucun outil correspondant.",
-    "close": "Fermer",
-    "contextNote": "Les données et les actions restent dans le panneau central. Ce contexte suit la page active.",
-    "results": "Outils disponibles",
-    "explorer": "Explorateur",
-    "title": "Shenron Studio · Administration",
-    "group": "Espace de travail",
-    "tabs": "Espaces ouverts",
-    "commandPlaceholder": "Rechercher une page, un outil ou une rubrique…",
-    "related": "Dans cet espace",
-    "navigationNote": "Choisir un espace puis un outil.",
-    "filter": "Filtrer les espaces",
-    "editor": "Éditeur de planches",
-    "gameCatalogueTitle": "Dragon Ball Xenoverse 2",
-    "translationTitle": "Atelier de traduction",
-    "transcriptionDescription": "Transcrire et relire le texte des pages.",
-    "translationDescription": "Traduire et relire les pages du catalogue.",
-    "gameCatalogueDescription": "Catalogue des personnages, compétences et objets du jeu.",
-    "transcriptionTitle": "Atelier de transcription"
-  },
-  "adminBot": {
-    "common": {
-      "loadFailed": "Impossible de charger les données.",
-      "retry": "Réessayer",
-      "loading": "Chargement…"
-    },
-    "selector": {
-      "label": "Identité du bot",
-      "ping": "Ping {ping} ms",
-      "online": "En ligne",
-      "offline": "Hors ligne"
-    },
-    "tabs": {
-      "label": "Sections du bot",
-      "overview": "Vue d’ensemble",
-      "guild": "Serveur Discord",
-      "commands": "Commandes"
-    },
-    "overview": {
-      "intro": "Le bot fonctionne avec un seul client Gateway Shenron qui rassemble services, commandes et événements. Les anciens identifiants de persona restent des alias pour les intégrations existantes.",
-      "status": "État",
-      "online": "En ligne",
-      "offline": "Hors ligne",
-      "pingUptime": "Ping {ping} ms · actif depuis {uptime}",
-      "loginDisabled": "Connexion Discord désactivée.",
-      "commands": "Commandes",
-      "servers": "Serveurs",
-      "members": "Membres au total",
-      "serversTitle": "Serveurs Discord",
-      "memberCount": "{count, plural, one {# membre} other {# membres}}",
-      "joined": "rejoint le {date}",
-      "noServers": "Aucun serveur."
-    },
-    "guild": {
-      "stats": {
-        "title": "Miroir du serveur",
-        "description": "Copie locale des membres, rôles et salons Discord, utilisée par les commandes et les tableaux de bord.",
-        "present": "Membres présents",
-        "left": "Membres partis",
-        "bots": "Bots",
-        "boosters": "Boosters",
-        "roles": "Rôles",
-        "channels": "Salons",
-        "lastSync": "Dernière synchronisation",
-        "never": "Jamais",
-        "stale": "La dernière synchronisation date de plus de 36 h : lancez une synchronisation complète."
-      },
-      "sync": {
-        "button": "Synchroniser maintenant",
-        "running": "Synchronisation en cours…",
-        "confirmTitle": "Lancer une synchronisation complète ?",
-        "confirmBody": "Les salons, rôles et membres du serveur sont relus depuis Discord et réécrits dans la base du bot. L’opération peut durer quelques secondes.",
-        "confirm": "Synchroniser",
-        "failed": "La synchronisation a échoué.",
-        "done": "Synchronisation terminée en {duration} : {members} membres, {left} partis, {roles} rôles, {channels} salons."
-      },
-      "search": {
-        "title": "Recherche de membres",
-        "description": "Cherchez par identifiant, pseudo, nom affiché ou surnom dans le miroir.",
-        "label": "Identifiant, pseudo ou surnom",
-        "placeholder": "Identifiant, pseudo ou surnom…",
-        "button": "Rechercher",
-        "idle": "Saisissez un nom ou un identifiant",
-        "idleHint": "Les membres partis restent consultables, ils sont marqués comme tels.",
-        "empty": "Aucun membre ne correspond à « {query} ».",
-        "count": "{count, plural, one {# résultat} other {# résultats}}",
-        "limit": "limité à {limit}, affinez la recherche",
-        "present": "Présent",
-        "left": "Parti",
-        "bot": "Bot",
-        "booster": "Booster",
-        "timeout": "Exclu temporairement",
-        "joined": "Arrivé le {date}",
-        "leftAt": "Parti le {date}"
-      }
-    },
-    "commands": {
-      "title": "Commandes ({count})",
-      "description": "Commandes enregistrées auprès de Discord par le bot.",
-      "filter": "Filtrer les commandes",
-      "filterPlaceholder": "Filtrer…",
-      "empty": "Aucune commande enregistrée pour ce bot.",
-      "noMatch": "Aucune commande ne correspond à « {query} ».",
-      "nsfw": "NSFW",
-      "optionCount": "{count, plural, one {# option} other {# options}}",
-      "yes": "Oui",
-      "types": {
-        "1": "Slash",
-        "2": "Menu utilisateur",
-        "3": "Menu message"
-      },
-      "optionTypes": {
-        "1": "sous-commande",
-        "2": "groupe de sous-commandes",
-        "3": "texte",
-        "4": "entier",
-        "5": "oui/non",
-        "6": "utilisateur",
-        "7": "salon",
-        "8": "rôle",
-        "9": "mention",
-        "10": "nombre",
-        "11": "fichier"
-      },
-      "columns": {
-        "name": "Nom",
-        "type": "Type",
-        "required": "Obligatoire",
-        "description": "Description",
-        "choices": "Choix"
-      }
-    },
-    "cron": {
-      "intro": "Actions que le bot répète seul à intervalle régulier : expiration des sanctions, nettoyage des données obsolètes, gain d’XP vocal…",
-      "refreshNote": "Actualisation toutes les {seconds} s · {count, plural, =0 {aucune tâche} one {# tâche} other {# tâches}}",
-      "empty": "Aucune tâche automatique enregistrée.",
-      "statusError": "Erreur",
-      "statusOk": "OK",
-      "statusNever": "Jamais lancée",
-      "run": "Lancer",
-      "runTitle": "Déclencher maintenant, hors cycle",
-      "confirmTitle": "Déclencher « {name} » maintenant ?",
-      "confirmBody": "La tâche s’exécute immédiatement, en dehors de son cycle normal.",
-      "triggered": "La tâche « {name} » a été déclenchée.",
-      "triggerFailed": "Échec du déclenchement de « {name} » : {error}",
-      "intervalSaved": "La cadence de « {name} » a été enregistrée.",
-      "intervalFailed": "Échec de l’enregistrement de la cadence de « {name} » : {error}",
-      "cadence": "Cadence",
-      "runCount": "Exécutions",
-      "lastRun": "Dernière exécution",
-      "nextRun": "Prochaine exécution",
-      "lastError": "Dernière erreur :",
-      "editCadence": "Modifier la cadence",
-      "intervalLabel": "Intervalle en secondes",
-      "secondsUnit": "s",
-      "save": "Enregistrer",
-      "cancel": "Annuler"
-    },
-    "services": {
-      "intro": "Chaque fonctionnalité du bot expose des actions à déclencher à la main, sans passer par Discord : forcer une mise à jour, recalculer des données, tester un comportement.",
-      "warning": "Certaines actions modifient la base de données : une confirmation est demandée.",
-      "filter": "Filtrer les actions",
-      "filterPlaceholder": "Filtrer par service ou action…",
-      "empty": "Aucune action disponible pour l’instant.",
-      "noMatch": "Aucune action ne correspond à « {query} ».",
-      "labels": {
-        "settings": "Paramètres du bot",
-        "moderation": "Modération",
-        "levels": "Niveaux et XP",
-        "economy": "Économie (zénis)",
-        "tickets": "Tickets de support",
-        "giveaway": "Giveaways",
-        "bio": "Rôle bio",
-        "wiki": "Wiki Dragon Ball",
-        "guild": "Miroir du serveur"
-      },
-      "paramsHint": "Paramètres au format JSON. Laissez '{}' si l’action n’en a pas.",
-      "paramsLabel": "Paramètres JSON",
-      "invalidJson": "Les paramètres ne sont pas un JSON valide.",
-      "confirmTitle": "Exécuter « {action} » du service « {service} » ?",
-      "confirmNoParams": "Sans paramètre. Cette action peut modifier des données.",
-      "confirmParams": "Avec les paramètres : {params}. Cette action peut modifier des données.",
-      "run": "Exécuter",
-      "running": "Exécution en cours…",
-      "result": "Résultat",
-      "error": "Erreur",
-      "failed": "L’action a échoué."
-    },
-    "reports": {
-      "intro": "Remontées « Signaler une erreur » des membres connectés, à traiter comme des tickets : ouvert, en cours, résolu. Distinct des tickets de support Discord.",
-      "filters": "Filtrer par statut",
-      "status": {
-        "open": "Ouverts",
-        "in_progress": "En cours",
-        "resolved": "Résolus",
-        "closed": "Fermés",
-        "all": "Tous"
-      },
-      "category": {
-        "bug": "Bug ou dysfonctionnement",
-        "contenu": "Erreur de contenu",
-        "lien": "Lien ou média cassé",
-        "suggestion": "Suggestion",
-        "autre": "Autre"
-      },
-      "loadFailed": "Impossible de charger les signalements.",
-      "emptyAll": "Aucun signalement",
-      "empty": "Aucun signalement dans l’état « {status} »",
-      "emptyHint": "Les remontées des membres apparaîtront ici.",
-      "deleteTitle": "Supprimer ce signalement ?",
-      "deleteBody": "La suppression est définitive.",
-      "delete": "Supprimer",
-      "by": "Par {name}",
-      "discordId": "Identifiant Discord : {id}",
-      "resolvedBy": "traité par {name}",
-      "noteLabel": "Note interne",
-      "notePlaceholder": "Note interne (traitement)…",
-      "saveNote": "Enregistrer",
-      "actionFailed": "L’action a échoué, réessayez."
-    },
-    "settings": {
-      "intro": "Tous les réglages du bot sont réunis ici : salons, rôles, gains d’XP… Chaque valeur a un défaut intégré, vous ne modifiez que ce que vous voulez personnaliser.",
-      "summary": "{total} paramètres · {overridden, plural, =0 {aucun personnalisé} one {# personnalisé} other {# personnalisés}} · cache du bot : 30 s",
-      "empty": "Aucun paramètre déclaré par le bot.",
-      "saved": "Paramètre enregistré.",
-      "reset": "Retour à la valeur par défaut.",
-      "failed": "Échec : {error}",
-      "resetConfirmTitle": "Revenir à la valeur par défaut ?",
-      "resetConfirmBody": "La valeur personnalisée de « {key} » sera supprimée.",
-      "resetConfirm": "Réinitialiser",
-      "resetTitle": "Supprimer la surcharge et revenir au défaut",
-      "categories": {
-        "xp": {
-          "label": "XP et niveaux",
-          "desc": "Gain d’XP par message et en vocal, multiplicateurs de rôle."
-        },
-        "economy": {
-          "label": "Économie",
-          "desc": "Récompenses en zénis, drops, bonus de niveau."
-        },
-        "channels": {
-          "label": "Salons",
-          "desc": "Salons utilisés par fonction (accueil, journaux…)."
-        },
-        "roles": {
-          "label": "Rôles",
-          "desc": "Rôles spéciaux : fusion, prison, bio."
-        },
-        "features": {
-          "label": "Fonctions",
-          "desc": "Activer ou désactiver les modules du bot."
-        },
-        "moderation": {
-          "label": "Modération",
-          "desc": "Seuils d’avertissements, durées par défaut."
-        },
-        "anti_invite": {
-          "label": "Anti-invitation",
-          "desc": "Détection des liens d’invitation Discord."
-        },
-        "tickets": {
-          "label": "Tickets",
-          "desc": "Webhook de notification et nom d’affichage des tickets."
-        },
-        "gifs": {
-          "label": "GIF de sanctions",
-          "desc": "GIF des embeds de sanction : avertissement, mute, expulsion, bannissement, prison, purge."
-        },
-        "advanced": {
-          "label": "Avancé",
-          "desc": "Préfixes dynamiques (xp.boost.role.ID)."
-        }
-      },
-      "overriddenCount": "{overridden} / {total} personnalisé(s)",
-      "overridden": "Personnalisé",
-      "default": "défaut : {value}",
-      "close": "Fermer",
-      "edit": "Modifier",
-      "define": "Définir",
-      "save": "Enregistrer",
-      "add": "Ajouter",
-      "remove": "Retirer",
-      "notSet": "non défini",
-      "on": "Activé",
-      "off": "Désactivé",
-      "choose": "Choisir…",
-      "enabled": "true (activé)",
-      "disabled": "false (désactivé)",
-      "snowflakePlaceholder": "Identifiant Discord (chiffres uniquement, 17 à 20)",
-      "httpsRequired": "URL https requise",
-      "openGif": "Ouvrir le GIF",
-      "syncFailed": "Échec",
-      "xpBoost": {
-        "title": "Multiplicateurs d’XP par rôle ({count})",
-        "hint": "Si un membre porte plusieurs rôles boostés, le <strong>maximum</strong> s’applique (pas de cumul).",
-        "multiplier": "Multiplicateur",
-        "add": "Ajouter le booster"
-      },
-      "tickets": {
-        "title": "Accès du staff par type de ticket",
-        "hint": "Les rôles ajoutés ici voient et écrivent dans les <strong>nouveaux</strong> tickets de ce type dès leur ouverture. Les administrateurs voient déjà tout. Pour les tickets déjà ouverts, utilisez le bouton de resynchronisation.",
-        "kinds": {
-          "report": "Signalement",
-          "achat": "Achat",
-          "shop": "Boutique",
-          "abus": "Abus de permissions",
-          "staff": "Candidature staff"
-        },
-        "none": "Aucun rôle configuré pour « {kind} » : seuls l’auteur du ticket et les administrateurs le voient.",
-        "syncOpen": "Appliquer aux tickets déjà ouverts",
-        "synced": "{updated, plural, one {# salon mis à jour} other {# salons mis à jour}}",
-        "skipped": "{skipped, plural, one {# introuvable} other {# introuvables}}"
-      }
-    }
   }
 }

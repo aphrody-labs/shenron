@@ -22,15 +22,9 @@ export const IGNORE_FILE = join(ROOT, "Dockerfile.build.dockerignore");
 /** Paths that must never be part of a build context (matched on `/`-separated relative paths). */
 const CONTEXT_FORBIDDEN: readonly [RegExp, string][] = [
   [/(^|\/)\.env(\.|$)|\.env$/, "environment file"],
-  [
-    /(^|\/)(var|\.coord|\.claude|\.codex|\.agents|\.git|target|node_modules)\//,
-    "local state or cache",
-  ],
+  [/(^|\/)(var|\.coord|\.claude|\.codex|\.agents|\.git|target|node_modules)\//, "local state or cache"],
   [/^data\/(?!lexique-db-canonique\.json$)/, "private data directory"],
-  [
-    /\.(sqlite3?|db|db-wal|db-shm|pem|key|p12|pfx|gguf|safetensors|cpk|afs)$/i,
-    "database, key, model or game archive",
-  ],
+  [/\.(sqlite3?|db|db-wal|db-shm|pem|key|p12|pfx|gguf|safetensors|cpk|afs)$/i, "database, key, model or game archive"],
   [/(^|\/)id_(rsa|ed25519|ecdsa)/, "ssh key"],
   [/(^|\/)dbxv2\.d\.ts$|(^|\/)\.dbxv2/, "generated DBXV2 declarations"],
   [/(^|\/)dbxv2-data\//, "DBXV2 game data"],
@@ -55,27 +49,13 @@ export function ignoreFileProblems(text: string): string[] {
   const problems: string[] = [];
   if (rules[0] !== "**") problems.push("the first rule must be `**` (deny everything, then allow)");
   const required = [
-    "**/node_modules",
-    "**/target",
-    "**/.env",
-    "**/.env.*",
-    "**/*.sqlite",
-    "**/*.db",
-    "**/*.pem",
-    "**/*.key",
-    "**/*.cpk",
-    "**/.coord",
-    "/var",
-    "/data/home",
-    "**/dbxv2.d.ts",
+    "**/node_modules", "**/target", "**/.env", "**/.env.*", "**/*.sqlite", "**/*.db",
+    "**/*.pem", "**/*.key", "**/*.cpk", "**/.coord", "/var", "/data/home", "**/dbxv2.d.ts",
   ];
-  for (const rule of required)
-    if (!rules.includes(rule)) problems.push(`missing deny rule ${rule}`);
-  const forbiddenAllow =
-    /^!\/?(var|\.coord|\.git|\.env|node_modules|target|data\/home|dist)(\/|$)|^!\*\*/;
+  for (const rule of required) if (!rules.includes(rule)) problems.push(`missing deny rule ${rule}`);
+  const forbiddenAllow = /^!\/?(var|\.coord|\.git|\.env|node_modules|target|data\/home|dist)(\/|$)|^!\*\*/;
   for (const rule of rules)
-    if (rule.startsWith("!") && forbiddenAllow.test(rule))
-      problems.push(`forbidden allow rule ${rule}`);
+    if (rule.startsWith("!") && forbiddenAllow.test(rule)) problems.push(`forbidden allow rule ${rule}`);
   // Each deny rule must come after the allow-list it protects.
   const lastAllow = rules.reduce((n, r, i) => (r.startsWith("!") ? i : n), -1);
   for (const rule of ["**/.env", "**/*.sqlite", "**/node_modules"])
@@ -97,32 +77,20 @@ export function artifactProblems(dir: string): string[] {
 async function contextNames(): Promise<string[]> {
   const tar = join(ROOT, "dist/local/.context.tar");
   const code = await Bun.spawn(
-    [
-      "docker",
-      "buildx",
-      "bake",
-      "-f",
-      join(ROOT, "docker-bake.hcl"),
-      "context-dump",
-      "--set",
-      `*.output=type=tar,dest=${tar}`,
-    ],
+    ["docker", "buildx", "bake", "-f", join(ROOT, "docker-bake.hcl"), "context-dump",
+      "--set", `*.output=type=tar,dest=${tar}`],
     { cwd: ROOT, stdio: ["inherit", "inherit", "inherit"], env: process.env },
   ).exited;
   if (code !== 0) throw new Error("docker buildx bake context-dump failed");
   const list = Bun.spawnSync(["tar", "-tf", ".context.tar"], { cwd: join(ROOT, "dist/local") });
   if (list.exitCode !== 0) throw new Error("tar -tf failed");
-  return list.stdout
-    .toString()
-    .split(/\r?\n/)
-    .filter((n) => n && !n.endsWith("/"));
+  return list.stdout.toString().split(/\r?\n/).filter((n) => n && !n.endsWith("/"));
 }
 
 if (import.meta.main) {
   const args = process.argv.slice(2);
   const problems: string[] = [];
-  if (args.includes("--static"))
-    problems.push(...ignoreFileProblems(readFileSync(IGNORE_FILE, "utf8")));
+  if (args.includes("--static")) problems.push(...ignoreFileProblems(readFileSync(IGNORE_FILE, "utf8")));
   if (args.includes("--context")) {
     const names = await contextNames();
     console.log(`context: ${names.length} files`);
@@ -131,15 +99,11 @@ if (import.meta.main) {
   const at = args.indexOf("--artifacts");
   if (at >= 0)
     for (const dir of args.slice(at + 1).filter((a) => !a.startsWith("--"))) {
-      if (!existsSync(dir) || !statSync(dir).isDirectory())
-        problems.push(`${dir}: not a directory`);
-      else
-        problems.push(...artifactProblems(dir).map((p) => `${relative(ROOT, resolve(dir))}/${p}`));
+      if (!existsSync(dir) || !statSync(dir).isDirectory()) problems.push(`${dir}: not a directory`);
+      else problems.push(...artifactProblems(dir).map((p) => `${relative(ROOT, resolve(dir))}/${p}`));
     }
   if (problems.length) {
-    console.error(
-      `private-data guard FAILED (${problems.length}):\n${problems.slice(0, 40).join("\n")}`,
-    );
+    console.error(`private-data guard FAILED (${problems.length}):\n${problems.slice(0, 40).join("\n")}`);
     process.exit(1);
   }
   console.log("private-data guard: ok");

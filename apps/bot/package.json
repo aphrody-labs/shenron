@@ -38,14 +38,13 @@
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push",
     "db:seed-xv2-char-meta": "bun src/db/seed-xv2-char-meta.ts",
-    "db:seed-xv2-all": "bun src/db/seed-xv2.ts",
+    "db:seed-xv2-all": "bun src/db/seed-xv2-techniques.ts && bun src/db/seed-xv2-characters.ts && bun src/db/seed-xv2-char-meta.ts && bun src/db/seed-xv2-portraits.ts && bun src/db/seed-xv2-transformations.ts && bun src/db/seed-xv2-char-techniques.ts",
     "typecheck": "bun check --project tsconfig.json && bun check --project tsconfig.scripts.json"
   },
   "dependencies": {
     "@aphrody/discord-kit": "catalog:",
     "@aphrody/messaging": "catalog:",
     "@aphrody/paths": "catalog:",
-    "@aphrody/shenron-activity": "workspace:*",
     "@aphrody/shenron-api": "workspace:*",
     "@aphrody/shenron-auth": "workspace:*",
     "@aphrody/shenron-config": "workspace:*",

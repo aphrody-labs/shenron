@@ -46,8 +46,7 @@ export function useGpuLoop<R extends GpuLoopRenderer>(
     let live: R | null = null;
     let frame = 0;
     let visible = true;
-    const motion = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)");
-    let reduced = motion?.matches ?? false;
+    const reduced = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
     const tilt = { x: 0, y: 0, tx: 0, ty: 0 };
     const start = performance.now();
     const backing = (): [number, number] => {
@@ -78,15 +77,6 @@ export function useGpuLoop<R extends GpuLoopRenderer>(
       draw();
       frame = live && visible && !reduced ? requestAnimationFrame(loop) : 0;
     };
-    const onMotionChange = () => {
-      reduced = motion?.matches ?? false;
-      cancelAnimationFrame(frame);
-      frame = 0;
-      if (!live || !visible) return;
-      if (reduced) draw();
-      else frame = requestAnimationFrame(loop);
-    };
-    motion?.addEventListener("change", onMotionChange);
     const observer = new IntersectionObserver(([entry]) => {
       visible = entry?.isIntersecting ?? true;
       if (visible && !frame && !reduced && live) frame = requestAnimationFrame(loop);
@@ -122,7 +112,6 @@ export function useGpuLoop<R extends GpuLoopRenderer>(
       cancelAnimationFrame(frame);
       observer.disconnect();
       globalThis.removeEventListener("pointermove", onPointer);
-      motion?.removeEventListener("change", onMotionChange);
       live?.free();
       live = null;
     };

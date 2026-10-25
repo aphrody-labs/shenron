@@ -5,7 +5,7 @@
  *
  * - null path in production: frozen (fail closed, `DATABOOKS_FREEZE_FILE non configuré`);
  * - null path outside production: free;
- * - absent file: frozen in production, free outside production;
+ * - absent file: free;
  * - file containing JSON with `frozen === false`: free (escape hatch);
  * - any other content, or an unreadable file: frozen, reason read from
  *   `reason` / `raison` / `motif` / `message`, else the raw text.
@@ -90,10 +90,7 @@ export function createDatabooksFreezeGate(options: {
     } catch {
       return { frozen: true, reason: DEFAULT_REASON, path };
     }
-    if (!exists)
-      return options.production
-        ? { frozen: true, reason: "Fichier DATABOOKS_FREEZE_FILE introuvable", path }
-        : { frozen: false };
+    if (!exists) return { frozen: false };
     let raw: string;
     try {
       raw = fs.read(path);

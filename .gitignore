@@ -49,7 +49,6 @@ test-results/
 /deploy/connectors/local/
 /data/home/
 /data/source-acquisition/
-/data/episode/
 /apps/bot/data/*.db
 *.db
 *.db-shm

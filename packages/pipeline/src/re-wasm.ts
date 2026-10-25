@@ -18,7 +18,6 @@ import initWasm, {
   wasm_parse_bac,
   wasm_parse_bdm,
   wasm_parse_cus,
-  wasm_parse_cms,
   wasm_parse_msg,
   wasm_extract_msg_text,
   wasm_parse_emb,
@@ -100,62 +99,23 @@ export interface EmbFile {
   entries: EmbEntry[];
 }
 
-export type SkillCategory = "super" | "ultimate" | "evasive" | "unk" | "blast" | "awoken";
+export type SkillCategory = "Super" | "Ultimate" | "Evasive" | "Awoken" | "Unknown";
 
-/** One entry of the skillset table: the skill ids a character/costume equips by default. */
-export interface Skillset {
-  id: number;
-  flags: number;
-  values: [number, number, number, number, number, number, number, number, number];
-}
-
-/** One skill: its short code, equip constraints, referenced assets and stat ids. */
 export interface CusSkill {
+  id: number;
   category: SkillCategory;
-  /** Four-letter code (e.g. an ability's short name). */
-  short_name: string;
-  id1: number;
-  id2: number;
-  /** `CusRaceLock` bitflags; 0 means unlocked for every race. */
-  race_lock: number;
-  /** Which optional asset paths below are actually present. */
-  files_loaded: number;
-  ean_path: string | null;
-  cam_ean_path: string | null;
-  eepk_path: string | null;
-  se_path: string | null;
-  vox_path: string | null;
-  after_bac_path: string | null;
-  after_bcm_path: string | null;
-  /** PUP (power-up preset) id this skill applies, if any. */
-  pup: number;
-  cus_aura: number;
-  num_transformations: number;
-  part_set: number;
-  part_set_2: number;
-  part_set_3: number;
-  chara_swap_id: number;
-  chara_swap_id_2: number;
-  chara_swap_id_3: number;
-  skillset_change_1: number;
-  skillset_change_2: number;
-  skillset_change_3: number;
+  ki_cost: number;
+  stamina_cost: number;
+  name_id: number;
+  desc_id: number;
+  animation_id: number;
+  particle_id: number;
+  sound_id: number;
 }
 
 export interface CusFile {
-  skillsets: Skillset[];
+  version: number;
   skills: CusSkill[];
-}
-
-/** One roster entry: a persistent character id and its short code (e.g. `GOK`, `VGT`). */
-export interface CmsEntry {
-  id: number;
-  short_name: string;
-}
-
-/** The game's full character roster (`data/system/char_model_spec.cms`). */
-export interface CmsFile {
-  entries: CmsEntry[];
 }
 
 export type MapEvidenceStatus = "announced" | "prototype";
@@ -208,21 +168,14 @@ export interface Xenoverse3Map {
   caveat: string;
 }
 
-/** Victim reaction of a BDM variant; unnamed game codes serialize as `{ Other: code }`. */
 export type DamageType =
-  | "None"
-  | "Block"
-  | "GuardBreak"
-  | "Standard"
-  | "Heavy"
-  | "Knockback"
+  | "Strike"
+  | "KiBlast"
+  | "HeavyStrike"
   | "Grab"
-  | "Electric"
-  | "Dazed"
-  | "Paralysis"
-  | "Freeze"
-  | "StaminaBreak"
-  | { Other: number };
+  | "Unblockable"
+  | "Special"
+  | "Unknown";
 
 export interface BdmEntry {
   id: number;
@@ -247,33 +200,6 @@ export interface BacHitbox {
   damage: number;
   bdm_entry_id: number;
   knockback_type: number;
-  damage_when_blocked: number;
-  position: [number, number, number];
-  size: number;
-  min_bounds: [number, number, number];
-  max_bounds: [number, number, number];
-}
-
-/** An animation record (BAC block type 0): which EAN plays and how. */
-export interface BacAnimation {
-  start_frame: number;
-  duration: number;
-  /** Source animation set: 5 is the character's own `.ean`. */
-  ean_type: number;
-  ean_index: number;
-  flags: number;
-  frame_start: number;
-  /** `0xFFFF` plays to the animation's end. */
-  frame_end: number;
-  loop_start: number;
-  time_scale: number;
-  blend_in: number;
-  blend_out: number;
-}
-
-export interface BacBlock {
-  kind: number;
-  records: number;
 }
 
 export interface BacMove {
@@ -282,57 +208,24 @@ export interface BacMove {
   startup_frames: number;
   recovery_frames: number;
   hitboxes: BacHitbox[];
-  animations: BacAnimation[];
-  blocks: BacBlock[];
 }
 
 export interface BacFile {
   moves: BacMove[];
 }
 
-/**
- * One power-up/transformation preset from `powerup_parameter.pup`. Fields named `f_N` keep
- * their byte offset; LazyBone's MIT XV2-Tools reference leaves them unnamed too.
- */
 export interface PupEntry {
   id: number;
-  cmn_effect_id: number;
-  talisman_id_1: number;
-  talisman_id_2: number;
-  health: number;
-  f_20: number;
-  ki: number;
-  ki_recovery: number;
-  stamina: number;
-  stamina_recovery: number;
-  enemy_stamina_eraser: number;
-  stamina_eraser: number;
-  f_48: number;
-  attack: number;
-  ki_blast: number;
-  strike: number;
-  blast: number;
-  attack_damage: number;
-  ki_blast_damage: number;
-  strike_damage: number;
-  blast_damage: number;
-  ground_speed: number;
-  air_speed: number;
-  boosting_speed: number;
-  dash_speed: number;
-  duration: number;
-  f_104: number;
-  f_108: number;
-  f_112: number;
-  f_116: number;
-  f_120: number;
-  f_124: number;
-  f_128: number;
-  f_132: number;
-  f_136: number;
-  f_140: number;
-  f_144: number;
-  f_148: number;
+  basic_attack_mult: number;
+  basic_ki_mult: number;
+  strike_mult: number;
+  ki_blast_mult: number;
+  damage_taken_mult: number;
+  speed_ground_mult: number;
+  speed_air_mult: number;
+  speed_boost_mult: number;
+  ki_drain_rate: number;
+  stamina_drain_rate: number;
 }
 
 export interface PupFile {
@@ -426,12 +319,6 @@ export function decompressCrilayla(compressed: Uint8Array, uncompressedSize = 0)
 export function parseCus(cusBytes: Uint8Array): CusFile {
   ensureWasm();
   return wasm_parse_cus(cusBytes) as CusFile;
-}
-
-/** Parses the DBXV2 CMS roster file and returns every character entry. */
-export function parseCms(cmsBytes: Uint8Array): CmsFile {
-  ensureWasm();
-  return wasm_parse_cms(cmsBytes) as CmsFile;
 }
 
 /**

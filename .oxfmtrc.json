@@ -10,7 +10,6 @@
     "**/.next-*/**",
     "packages/koharu/src/wasm/**",
     "packages/engine/src/wasm/**",
-    "packages/pipeline/src/wasm/**",
     "packages/koharu/src/protocol.ts",
     "packages/native/src/generated/**",
     "plugin/references/**",

@@ -102,9 +102,9 @@ export async function SiteFooter() {
           <div className="grid sm:grid-cols-3 gap-8">
             {columns.map((col) => (
               <div key={col.titleKey}>
-                <h2 className="font-display font-semibold text-[12px] tracking-[0.16em] uppercase text-dbz-orange mb-4">
+                <h4 className="font-display font-semibold text-[12px] tracking-[0.16em] uppercase text-dbz-orange mb-4">
                   <T k={col.titleKey} />
-                </h2>
+                </h4>
                 <ul className="space-y-2.5">
                   {col.links.map((l) => (
                     <li key={l.href}>

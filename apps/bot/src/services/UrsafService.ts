@@ -122,11 +122,7 @@ export class UrsafService {
     };
   }
 
-  /**
-   * Signalements ouverts, pas encore rattachés à un avis non annulé. XP flags (XP_SPIKE,
-   * XP_RATE) are left out: a notice taxes zeni, and their severity used to raise the rate of
-   * a notice built on other flags.
-   */
+  /** Signalements ouverts, pas encore rattachés à un avis non annulé. */
   private untaxedFlags(): Map<string, FlagInput[]> {
     const taken = new Set<number>();
     const notices = this.sqlite
@@ -137,8 +133,7 @@ export class UrsafService {
     const rows = this.sqlite
       .query(
         `SELECT id, user_id, code, severity, meta FROM economy_flags
-				 WHERE status IN ('open', 'reviewing') AND code NOT IN ('XP_SPIKE', 'XP_RATE')
-				 ORDER BY created_at`,
+				 WHERE status IN ('open', 'reviewing') ORDER BY created_at`,
       )
       .all() as Array<{
       id: number;
@@ -264,15 +259,12 @@ export class UrsafService {
 
   /** Prélève un avis (plafonné au solde du moment) et résout ses signalements. */
   private async collect(n: UrsafNotice): Promise<boolean> {
+    const user = this.sqlite.query(`SELECT zeni FROM users WHERE id = ?`).get(n.userId) as {
+      zeni: number;
+    } | null;
+    const amount = Math.min(n.amount, Math.max(0, Number(user?.zeni ?? 0)));
     const reference = n.reference;
-    // Lecture du solde, prélèvement, journal et statut dans UNE transaction :
-    // un arrêt entre le prélèvement et le statut laissait l'avis « pending »
-    // et le cycle suivant le prélevait une seconde fois.
-    const tx = this.sqlite.transaction((): number => {
-      const user = this.sqlite.query(`SELECT zeni FROM users WHERE id = ?`).get(n.userId) as {
-        zeni: number;
-      } | null;
-      const amount = Math.min(n.amount, Math.max(0, Number(user?.zeni ?? 0)));
+    const tx = this.sqlite.transaction(() => {
       this.sqlite.query(`UPDATE users SET zeni = zeni - ? WHERE id = ?`).run(amount, n.userId);
       this.sqlite
         .query(
@@ -286,10 +278,9 @@ export class UrsafService {
 					 WHERE id IN (${placeholders}) AND status IN ('open', 'reviewing')`,
         )
         .run(Date.now(), `Recouvré par l'avis ${reference}`, ...n.flagIds);
-      this.setStatus(n.id, "collected", "ursaf", null, amount);
-      return amount;
     });
-    const amount = tx();
+    tx();
+    this.setStatus(n.id, "collected", "ursaf", null, amount);
     await this.publish({ ...n, collected: amount }, "collected");
     return amount > 0;
   }
@@ -301,26 +292,20 @@ export class UrsafService {
       .get(id) as NoticeRow | null;
     if (!row || row.status === "cancelled") return row ? toNotice(row) : null;
     const n = toNotice(row);
-    // Remboursement et statut ensemble : jamais remboursé sans être annulé.
-    const tx = this.sqlite.transaction(() => {
-      if (n.status === "collected" && n.collected > 0) {
-        this.sqlite
-          .query(`UPDATE users SET zeni = zeni + ? WHERE id = ?`)
-          .run(n.collected, n.userId);
-        this.sqlite
-          .query(
-            `INSERT INTO action_logs (user_id, moderator_id, action, reason, meta) VALUES (?, ?, 'ZENI_TAX_REFUND', ?, ?)`,
-          )
-          .run(
-            n.userId,
-            by,
-            `Annulation ${n.reference}`,
-            JSON.stringify({ amount: n.collected, notice: n.id }),
-          );
-      }
-      this.setStatus(id, "cancelled", by, note);
-    });
-    tx();
+    if (n.status === "collected" && n.collected > 0) {
+      this.sqlite.query(`UPDATE users SET zeni = zeni + ? WHERE id = ?`).run(n.collected, n.userId);
+      this.sqlite
+        .query(
+          `INSERT INTO action_logs (user_id, moderator_id, action, reason, meta) VALUES (?, ?, 'ZENI_TAX_REFUND', ?, ?)`,
+        )
+        .run(
+          n.userId,
+          by,
+          `Annulation ${n.reference}`,
+          JSON.stringify({ amount: n.collected, notice: n.id }),
+        );
+    }
+    this.setStatus(id, "cancelled", by, note);
     return { ...n, status: "cancelled", note };
   }
 

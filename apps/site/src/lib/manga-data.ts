@@ -4,17 +4,13 @@ import { cache } from "react";
 import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
 import { dbUniverse } from "./db-universe";
 import { createMangaCdnSource, mangaCdnWithFallback } from "./manga-cdn-source";
-import {
-  mangaVolumeBibliographicRecord,
-  mangaVolumeBibliographicSource,
-} from "./manga-source-registry";
+import { mangaVolumeBibliographicSource } from "./manga-source-registry";
 
 export const MANGA_CATALOGUE_INDEX_URL = `${DEFAULT_PUBLIC_ORIGINS.cdn}/publications/manga-catalogue/index.json`;
 type EditorialManga = Pick<
   typeof dbUniverse,
   "mangaCatalogVolumes" | "mangaVolumes" | "readableMangaChapters" | "mangaVolume" | "mangaChapter"
-> &
-  Partial<Pick<typeof dbUniverse, "mangaVolumeCovers">>;
+>;
 type Source = ReturnType<typeof createMangaCdnSource>;
 type TaggedRead<K extends "mangaVolume" | "mangaChapter"> =
   | (NonNullable<Awaited<ReturnType<EditorialManga[K]>>> & { sourceKind: "cdn" | "editorial" })
@@ -34,34 +30,6 @@ export function createMangaData(
   fetcher: typeof fetch = fetch,
   now: () => number = Date.now,
 ) {
-  // React deduplicates this lightweight editorial query within one render only.
-  const editorialCovers = cache(async () => editorial.mangaVolumeCovers?.());
-  const withEditorialCovers = async <
-    T extends { id: number; cover: string | null; isbn?: string | null; title: string | null },
-  >(
-    volumes: T[],
-  ) => {
-    const publication = (volume: T) =>
-      mangaVolumeBibliographicRecord({ ...volume, isbn: volume.isbn ?? null });
-    const safeVolumes = volumes.map((volume) =>
-      publication(volume) && /(?:^|\/)assets\/dragonballcn\//.test(volume.cover ?? "")
-        ? { ...volume, cover: null }
-        : volume,
-    );
-    if (!editorial.mangaVolumeCovers) return safeVolumes;
-    try {
-      const rows = await editorialCovers();
-      const covers = new Map((rows ?? []).map((row) => [row.id, row.cover?.trim() || null]));
-      return safeVolumes.map((volume) => {
-        if (!covers.has(volume.id)) return volume;
-        const cover = covers.get(volume.id);
-        return cover || publication(volume) ? { ...volume, cover: cover ?? null } : volume;
-      });
-    } catch {
-      // An unavailable editorial overlay must never interrupt qualified CDN scans.
-      return safeVolumes;
-    }
-  };
   let current: { expires: number; source: Promise<Source> } | undefined;
   const source = (expectedSha256?: string) => {
     if (current && now() < current.expires) return current.source;
@@ -115,18 +83,14 @@ export function createMangaData(
         async () => (await source()).mangaCatalogVolumes(),
         () => editorial.mangaCatalogVolumes(),
       );
-      return result
-        ? { ...result, volumes: (await withEditorialCovers(result.volumes)).map(withBibliography) }
-        : null;
+      return result ? { ...result, volumes: result.volumes.map(withBibliography) } : null;
     },
     mangaVolumes: async (series = "DB") => {
       const result = await mangaCdnWithFallback(
         async () => (await source()).mangaVolumes(series),
         () => editorial.mangaVolumes(series),
       );
-      return result
-        ? { ...result, volumes: (await withEditorialCovers(result.volumes)).map(withBibliography) }
-        : null;
+      return result ? { ...result, volumes: result.volumes.map(withBibliography) } : null;
     },
     readableMangaChapters: (series?: string) =>
       mangaCdnWithFallback(
@@ -144,12 +108,7 @@ export function createMangaData(
       mangaCdnWithFallback<TaggedRead<"mangaVolume">>(
         async () => {
           const result = await (await source()).mangaVolume(id);
-          return result
-            ? {
-                ...withBibliography((await withEditorialCovers([result]))[0]!),
-                sourceKind: "cdn" as const,
-              }
-            : null;
+          return result ? { ...withBibliography(result), sourceKind: "cdn" as const } : null;
         },
         async () => {
           const result = await editorial.mangaVolume(id);

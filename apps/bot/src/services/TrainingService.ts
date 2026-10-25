@@ -1,5 +1,4 @@
 import { inject, singleton } from "tsyringe";
-import { sql } from "drizzle-orm";
 import { DatabaseService } from "~/db/index";
 import { embedQueryVector, hybridSearch, tokenize, fold, hitTruthWeight } from "~/lib/rag";
 import {
@@ -16,9 +15,6 @@ import { sendAdminLabMessage } from "~/lib/admin-lab";
 import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
 import { resolveDataPath, warnIfEphemeral } from "@aphrody/shenron-config/paths";
 import { resolveBotApiInternalUrl, resolveSiteInternalUrl } from "@aphrody/shenron-config/services";
-import { logger } from "~/lib/logger";
-// Embedded in the binary: `tests/` is not shipped, and a path-only gold set read as empty in production.
-import bundledGold from "../../tests/rag-gold.jsonl" with { type: "text" };
 
 /** Jeu doré livré avec le bot (défaut historique, D15). */
 const LEGACY_GOLD_PATH = Bun.fileURLToPath(new URL("../../tests/rag-gold.jsonl", import.meta.url));
@@ -154,21 +150,11 @@ export class TrainingService {
    * Charge les cas de test du fichier tests/rag-gold.jsonl.
    */
   async loadGoldCases(): Promise<GoldCase[]> {
-    return parseGold(await this.readGoldText());
-  }
-
-  /**
-   * The configured file (`RAG_GOLD_PATH`, else the historical `tests/` path) when it exists,
-   * otherwise the set embedded at build time: never an empty set because a path is absent.
-   */
-  private async readGoldText(): Promise<string> {
-    const file = goldPath();
-    const text = await Bun.file(file)
-      .text()
-      .catch(() => null);
-    if (text !== null) return text;
-    logger.info({ file }, "[TrainingService] gold set file absent, using the embedded set");
-    return bundledGold;
+    return parseGold(
+      await Bun.file(goldPath())
+        .text()
+        .catch(() => ""),
+    );
   }
 
   /**
@@ -182,12 +168,6 @@ export class TrainingService {
     const allCases = await this.loadGoldCases();
     const cases =
       sampleSize && sampleSize < allCases.length ? allCases.slice(0, sampleSize) : allCases;
-    // An empty gold set measured nothing: say so, and never record zeros as a result
-    // (they would pose as the previous run in the regression check).
-    if (cases.length === 0) {
-      logger.warn("[TrainingService] gold set is empty: RAG evaluation skipped, nothing recorded");
-      options = { ...options, persist: false };
-    }
 
     const sidecarActive = await this.isSidecarOnline();
     const results: CaseResult[] = [];
@@ -471,15 +451,11 @@ export class TrainingService {
     const cleanExpect = expect.map((e) => e.trim()).filter(Boolean);
     if (!trimmedQ || cleanExpect.length === 0) return false;
 
-    const file = goldPath();
-    const current = await this.readGoldText();
-    // A question already in the gold set would weigh twice in every evaluation.
-    const normalized = trimmedQ.toLowerCase();
-    if (parseGold(current).some((c) => c.q.trim().toLowerCase() === normalized)) return false;
     const line = JSON.stringify({ q: trimmedQ, expect: cleanExpect }) + "\n";
-    // A last line without its newline would otherwise fuse with the new case.
-    const separator = current && !current.endsWith("\n") ? "\n" : "";
-    await Bun.write(file, current + separator + line);
+    const current = await Bun.file(goldPath())
+      .text()
+      .catch(() => "");
+    await Bun.write(goldPath(), current + line);
 
     await this.recordFeedback({
       userId,
@@ -526,37 +502,33 @@ export class TrainingService {
 
     const goldCases = await this.loadGoldCases();
 
-    // Feedbacks : counted in SQL rather than loading every row.
-    const [counts] = await this.dbs.db
-      .select({
-        total: sql<number>`count(*)`,
-        pending: sql<number>`coalesce(sum(case when ${ragTrainingFeedback.status} = 'pending' then 1 else 0 end), 0)`,
-        gold: sql<number>`coalesce(sum(case when ${ragTrainingFeedback.status} = 'gold_added' then 1 else 0 end), 0)`,
-      })
-      .from(ragTrainingFeedback);
+    // Feedbacks
+    const feedbacks = await this.dbs.db.select().from(ragTrainingFeedback);
+    const pendingFeedbacks = feedbacks.filter((f) => f.status === "pending").length;
+    const goldFeedbacks = feedbacks.filter((f) => f.status === "gold_added").length;
 
-    // Sonde des services, en parallèle : chaque sonde est bornée par son propre délai.
-    const probe = async (url: string): Promise<"online" | "offline"> => {
-      try {
-        const res = await fetch(url, { signal: AbortSignal.timeout(800) });
-        return res.ok ? "online" : "offline";
-      } catch {
-        return "offline";
-      }
-    };
-    const [sidecarOnline, siteApiStatus, botApiStatus] = await Promise.all([
-      this.isSidecarOnline(),
-      probe(`${SITE_INTERNAL}/api/canon`),
-      probe(`${BOT_API_INTERNAL}/health`),
-    ]);
+    // Sonde des services
+    const sidecarOnline = await this.isSidecarOnline();
+
+    let siteApiStatus: "online" | "offline" = "offline";
+    try {
+      const res = await fetch(`${SITE_INTERNAL}/api/canon`, { signal: AbortSignal.timeout(800) });
+      if (res.ok) siteApiStatus = "online";
+    } catch {}
+
+    let botApiStatus: "online" | "offline" = "offline";
+    try {
+      const res = await fetch(`${BOT_API_INTERNAL}/health`, { signal: AbortSignal.timeout(800) });
+      if (res.ok) botApiStatus = "online";
+    } catch {}
 
     return {
       totalChunks,
       totalVectors,
       totalGoldCases: goldCases.length,
-      totalFeedbacks: Number(counts?.total ?? 0),
-      pendingFeedbacks: Number(counts?.pending ?? 0),
-      goldFeedbacks: Number(counts?.gold ?? 0),
+      totalFeedbacks: feedbacks.length,
+      pendingFeedbacks,
+      goldFeedbacks,
       sidecarStatus: sidecarOnline ? "online" : "offline",
       siteApiStatus,
       botApiStatus,

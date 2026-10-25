@@ -2,24 +2,12 @@ import "reflect-metadata";
 import "./wiki-write-guard";
 import { container } from "tsyringe";
 import { botFile } from "~/lib/asset-files";
-import type { Database } from "bun:sqlite";
 import { existsSync } from "node:fs";
 import { eq } from "drizzle-orm";
 import { DatabaseService } from "~/db/index";
 import { dbCharacters, dbPlanets, dbTransformations } from "~/db/schema";
 import { WikiService } from "~/services/WikiService";
 import { logger } from "~/lib/logger";
-import {
-  EMPTY_INDEX,
-  enrichmentGate,
-  fetchAnilistChars,
-  indexAnilist,
-  NAME_OVERRIDES,
-  PLANET_OVERRIDES,
-  planCharacterEnrichment,
-  planPlanetEnrichment,
-} from "./anilist-enrichment";
-import { resolveBotDatabaseUrl } from "./pg-url";
 
 /**
  * dragonball-api.com est une base de fans : elle amorce les fiches (noms,
@@ -96,86 +84,216 @@ export type WikiSeedResult = {
   enriched: number;
 };
 
-/* ─── Enrichissement AniList (noms 日本語 + romaji) : cf. anilist-enrichment.ts ─── */
+/* ─── Enrichissement AniList (noms 日本語 + romaji canon EN) ───────────── */
 
-/** Marque (guild_settings) du dernier passage complet : pas de nouveau passage avant 7 jours. */
-export const ENRICHMENT_MARK_KEY = "wiki.anilist_enriched_at";
+const ANILIST_URL = "https://graphql.anilist.co";
 
-export function readEnrichmentMark(sqlite: Database): number | null {
-  const row = sqlite
-    .query("SELECT value FROM guild_settings WHERE key = ?1")
-    .get(ENRICHMENT_MARK_KEY) as { value: string } | null;
-  const at = Number(row?.value);
-  return Number.isFinite(at) && at > 0 ? at : null;
+// Animes Dragon Ball sur AniList (couvre quasi tous les personnages canon)
+const ANILIST_DBZ_MEDIA_IDS = [
+  223, // Dragon Ball
+  813, // Dragon Ball Z
+  225, // Dragon Ball GT
+  21893, // Dragon Ball Super
+];
+
+type AnilistChar = {
+  name: { full: string; native: string | null; userPreferred: string };
+};
+
+/**
+ * Overrides explicites pour les divergences nomenclature dragonball-api (ES)
+ * vs AniList (EN/JP canon). Clés = nom dragonball-api normalisé.
+ */
+const NAME_OVERRIDES: Record<string, { ja: string; romaji: string }> = {
+  // Personnages avec divergences nomenclature ES → EN/JP canon
+  celula: { ja: "セル", romaji: "Cell" },
+  freezer: { ja: "フリーザ", romaji: "Frieza" },
+  bills: { ja: "ビルス", romaji: "Beerus" },
+  vermoudh: { ja: "ヴァーモッド", romaji: "Vermoud" },
+  tenshinhan: { ja: "天津飯", romaji: "Tenshinhan" },
+  vegetto: { ja: "ベジット", romaji: "Vegetto" },
+  // Goku & famille
+  goku: { ja: "孫悟空", romaji: "Son Gokuu" },
+  gohan: { ja: "孫悟飯", romaji: "Son Gohan" },
+  bardock: { ja: "バーダック", romaji: "Baadakku" },
+  // Fusions
+  gogeta: { ja: "ゴジータ", romaji: "Gogeta" },
+  gotenks: { ja: "ゴテンクス", romaji: "Gotenks" },
+  // Cyborgs (AniList = "Jinzouningen XX")
+  android13: { ja: "人造人間13号", romaji: "Jinzouningen 13-gou" },
+  android14: { ja: "人造人間14号", romaji: "Jinzouningen 14-gou" },
+  android15: { ja: "人造人間15号", romaji: "Jinzouningen 15-gou" },
+  android16: { ja: "人造人間16号", romaji: "Jinzouningen 16-gou" },
+  android17: { ja: "人造人間17号", romaji: "Jinzouningen 17-gou" },
+  android18: { ja: "人造人間18号", romaji: "Jinzouningen 18-gou" },
+  android19: { ja: "人造人間19号", romaji: "Jinzouningen 19-gou" },
+  android20drgero: { ja: "ドクター・ゲロ", romaji: "Dokutaa Gero" },
+  // Super: Tournament of Power
+  jiren: { ja: "ジレン", romaji: "Jiren" },
+  toppo: { ja: "トッポ", romaji: "Toppo" },
+  dyspo: { ja: "ディスポ", romaji: "Dyspo" },
+  janemba: { ja: "ジャネンバ", romaji: "Janemba" },
+  broly: { ja: "ブロリー", romaji: "Broly" },
+  zeno: { ja: "全王", romaji: "Zen'ou" },
+  marcarita: { ja: "マルカリータ", romaji: "Marcarita" },
+  // Kaïos espagnol → canon
+  grandpriest: { ja: "大神官", romaji: "Daishinkan" },
+  grankaio: { ja: "大界王", romaji: "Daikaiou" },
+  grankaioshin: { ja: "大界王神", romaji: "Daikaioushin" },
+  kaiodeloeste: { ja: "西の界王", romaji: "Nishi no Kaiou" },
+  kaiodelsur: { ja: "南の界王", romaji: "Minami no Kaiou" },
+  kaiodeleste: { ja: "東の界王", romaji: "Higashi no Kaiou" },
+  kaiodelnortekaito: { ja: "北の界王", romaji: "Kita no Kaiou" },
+  kaioshindeleste: { ja: "東の界王神", romaji: "Higashi no Kaioushin" },
+  kaioshindelnorte: { ja: "北の界王神", romaji: "Kita no Kaioushin" },
+  kaioshindeloeste: { ja: "西の界王神", romaji: "Nishi no Kaioushin" },
+  kaioshindelsur: { ja: "南の界王神", romaji: "Minami no Kaioushin" },
+  // Autres
+  kibito: { ja: "キビト", romaji: "Kibito" },
+  kibitoshin: { ja: "キビト神", romaji: "Kibitoshin" },
+  launch: { ja: "ランチ", romaji: "Lunch" },
+  mrsatan: { ja: "ミスター・サタン", romaji: "Misutaa Satan" },
+  nail: { ja: "ネイル", romaji: "Neiru" },
+  // Last 6
+  krillin: { ja: "クリリン", romaji: "Kuririn" },
+  majinbuu: { ja: "魔人ブウ", romaji: "Majin Buu" },
+  masterroshi: { ja: "亀仙人", romaji: "Kame-Sennin" },
+  raditz: { ja: "ラディッツ", romaji: "Radittsu" },
+  whis: { ja: "ウイス", romaji: "Whis" },
+  zarbon: { ja: "ザーボン", romaji: "Zaabon" },
+};
+
+/**
+ * Overrides planètes (l'API ES utilise des noms locaux : Tierra→Earth,
+ * Vegeta→Planet Vegeta, etc.). AniList n'a pas de data planètes donc tout hardcodé.
+ */
+const PLANET_OVERRIDES: Record<string, { ja: string; romaji: string }> = {
+  namek: { ja: "ナメック星", romaji: "Namekku-sei" },
+  tierra: { ja: "地球", romaji: "Chikyuu" },
+  vegeta: { ja: "ベジータ星", romaji: "Bejiita-sei" },
+  kanassa: { ja: "カナッサ星", romaji: "Kanassa-sei" },
+  freezerno79: { ja: "フリーザ第79惑星", romaji: "Frieza Dai-79 Wakusei" },
+  yardrat: { ja: "ヤードラット星", romaji: "Yaadoratto-sei" },
+  makyo: { ja: "魔凶星", romaji: "Makyousei" },
+  babari: { ja: "バブリ", romaji: "Baburi-sei" },
+  monmar: { ja: "モンマール星", romaji: "Monmaaru-sei" },
+  otromundo: { ja: "あの世", romaji: "Ano-yo" },
+  // `planetasagrado` et `tsufuruniverso6` : aucune graphie sourcée,
+  // la cellule reste vide (聖地 est la terre sainte de Karin, pas ce monde).
+  planetadebills: { ja: "ビルスの星", romaji: "Birusu no Hoshi" },
+  planetadelgrankaio: { ja: "大界王星", romaji: "Daikaiou-sei" },
+  templomovildelreydetodo: { ja: "全王の宮殿", romaji: "Zen'ou no Kyuuden" },
+  universo11: { ja: "第11宇宙", romaji: "Dai-11 Uchuu" },
+  nuevoplanetatsufrui: { ja: "新ツフル星", romaji: "Shin Tsufuru-sei" },
+  nucleodelmundo: { ja: "世界の中心", romaji: "Sekai no Chuushin" },
+  kaiodelnorte: { ja: "北の界王星", romaji: "Kita no Kaiou-sei" },
+  desconocido: { ja: "不明", romaji: "Fumei" },
+};
+
+function normalizeName(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]/g, "");
 }
 
-export function writeEnrichmentMark(sqlite: Database, at: number) {
-  sqlite
-    .query(
-      "INSERT INTO guild_settings (key, value, updated_at) VALUES (?1, ?2, ?3) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at",
-    )
-    .run(ENRICHMENT_MARK_KEY, String(at), at);
+async function fetchAnilistChars(): Promise<Map<string, AnilistChar>> {
+  const map = new Map<string, AnilistChar>();
+  for (const mediaId of ANILIST_DBZ_MEDIA_IDS) {
+    for (let page = 1; page <= 8; page++) {
+      const res = await fetch(ANILIST_URL, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          query: `query($id: Int!, $page: Int!) {
+						Media(id: $id) {
+							characters(page: $page, perPage: 25, sort: ROLE) {
+								pageInfo { hasNextPage }
+								nodes { name { full native userPreferred } }
+							}
+						}
+					}`,
+          variables: { id: mediaId, page },
+        }),
+      });
+      if (!res.ok) break;
+      const json = (await res.json()) as {
+        data?: {
+          Media?: {
+            characters?: {
+              pageInfo: { hasNextPage: boolean };
+              nodes: AnilistChar[];
+            };
+          };
+        };
+      };
+      const chars = json.data?.Media?.characters;
+      if (!chars) break;
+      for (const c of chars.nodes) {
+        const key = normalizeName(c.name.userPreferred);
+        if (!map.has(key)) map.set(key, c);
+        // Aussi indexer par `full` au cas où userPreferred = "Son, Gokuu"
+        const keyFull = normalizeName(c.name.full);
+        if (!map.has(keyFull)) map.set(keyFull, c);
+      }
+      if (!chars.pageInfo.hasNextPage) break;
+      // Respect rate-limit AniList (90/min)
+      await new Promise((r) => setTimeout(r, 800));
+    }
+  }
+  return map;
 }
 
-async function enrichCharactersWithAnilist(
-  log: (m: string) => void,
-  { replicaFed }: { replicaFed: boolean },
-): Promise<number> {
+async function enrichCharactersWithAnilist(log: (m: string) => void): Promise<number> {
   const dbs = container.resolve(DatabaseService);
   const db = dbs.db;
 
-  const gate = enrichmentGate({
-    replicaFed,
-    lastCompleteRunAt: readEnrichmentMark(dbs.sqlite),
-    now: Date.now(),
-  });
-  if (!gate.run) {
-    log(`  enrichment AniList ignoré : ${gate.reason}`);
-    return 0;
-  }
+  log("→ Fetching AniList Dragon Ball characters…");
+  const anilistMap = await fetchAnilistChars();
+  log(`  ${anilistMap.size} entries indexed (par normalized name)`);
 
-  const characters = await db.select().from(dbCharacters);
-  const planets = await db.select().from(dbPlanets);
+  let updated = 0;
 
-  // Explicit overrides first: the network is only worth it for rows they do not settle.
-  let plan = planCharacterEnrichment(characters, NAME_OVERRIDES, EMPTY_INDEX);
-  let complete = true;
-  if (plan.unmatched > 0) {
-    log("→ Fetching AniList Dragon Ball characters…");
-    const fetched = await fetchAnilistChars({ log });
-    const index = indexAnilist(fetched.chars);
-    complete = fetched.truncated.length === 0;
-    log(
-      `  ${index.byName.size} noms indexés (${fetched.requests} requêtes)${
-        complete ? "" : ` — INCOMPLET : ${fetched.truncated.join("; ")}`
-      }`,
-    );
-    plan = planCharacterEnrichment(characters, NAME_OVERRIDES, index);
+  const existingChars = await db.select().from(dbCharacters);
+  for (const c of existingChars) {
+    if (c.nameJa && c.nameRomaji) continue;
+    const key = normalizeName(c.name);
+    const override = NAME_OVERRIDES[key];
+    let nameJa: string | null = null;
+    let nameRomaji: string | null = null;
+    if (override) {
+      nameJa = override.ja;
+      nameRomaji = override.romaji;
+    } else {
+      const hit = anilistMap.get(key);
+      if (hit) {
+        nameJa = hit.name.native;
+        nameRomaji = hit.name.userPreferred ?? hit.name.full;
+      }
+    }
+    if (!nameJa && !nameRomaji) continue;
+    await db.update(dbCharacters).set({ nameJa, nameRomaji }).where(eq(dbCharacters.id, c.id));
+    updated++;
   }
-  for (const u of plan.updates) {
-    await db
-      .update(dbCharacters)
-      .set({ nameJa: u.nameJa, nameRomaji: u.nameRomaji })
-      .where(eq(dbCharacters.id, u.id));
-  }
-  log(
-    `✓ characters: ${plan.updates.length} enrichis, ${plan.alreadyComplete} déjà complets, ${plan.unmatched} sans correspondance (${characters.length} au total)`,
-  );
+  log(`✓ ${updated}/${existingChars.length} characters enriched JA+romaji`);
 
-  const planetPlan = planPlanetEnrichment(planets, PLANET_OVERRIDES);
-  for (const u of planetPlan.updates) {
+  const existingPlanets = await db.select().from(dbPlanets);
+  let planetsUpdated = 0;
+  for (const p of existingPlanets) {
+    if (p.nameJa && p.nameRomaji) continue;
+    const key = normalizeName(p.name);
+    const override = PLANET_OVERRIDES[key];
+    if (!override) continue;
     await db
       .update(dbPlanets)
-      .set({ nameJa: u.nameJa, nameRomaji: u.nameRomaji })
-      .where(eq(dbPlanets.id, u.id));
+      .set({ nameJa: override.ja, nameRomaji: override.romaji })
+      .where(eq(dbPlanets.id, p.id));
+    planetsUpdated++;
   }
-  log(
-    `✓ planets: ${planetPlan.updates.length} enrichies, ${planetPlan.alreadyComplete} déjà complètes, ${planetPlan.unmatched} sans correspondance (${planets.length} au total)`,
-  );
+  log(`✓ ${planetsUpdated}/${existingPlanets.length} planets enriched JA+romaji`);
 
-  // A truncated fetch must not postpone the next attempt by a week.
-  if (complete) writeEnrichmentMark(dbs.sqlite, Date.now());
-  return plan.updates.length + planetPlan.updates.length;
+  return updated + planetsUpdated;
 }
 
 /**
@@ -183,22 +301,16 @@ async function enrichCharactersWithAnilist(
  * Réutilisable depuis le bot boot pour self-healing après perte de bot.db.
  */
 export async function runWikiSeed(
-  opts: {
-    force?: boolean;
-    log?: (msg: string) => void;
-    /** PostgreSQL feeds this replica (default: a PostgreSQL URL is configured). */
-    replicaFed?: boolean;
-  } = {},
+  opts: { force?: boolean; log?: (msg: string) => void } = {},
 ): Promise<WikiSeedResult> {
   const log = opts.log ?? ((m: string) => logger.info(m));
-  const replicaFed = opts.replicaFed ?? resolveBotDatabaseUrl() !== null;
   const dbs = container.resolve(DatabaseService);
   const wiki = container.resolve(WikiService);
   const db = dbs.db;
 
   if (!opts.force && (await wiki.isSeeded())) {
     log("wiki seed: déjà présent, skip dragonball-api fetch");
-    const enriched = await enrichCharactersWithAnilist(log, { replicaFed }).catch((err) => {
+    const enriched = await enrichCharactersWithAnilist(log).catch((err) => {
       log(`  enrichment AniList échoué (non-fatal): ${err}`);
       return 0;
     });
@@ -289,7 +401,7 @@ export async function runWikiSeed(
   log(`✓ ${chars.length} characters + ${totalTransfos} transformations inserted`);
   log(`  Images mapped locally: ${imgMapped}, fallback network: ${imgMissing}`);
 
-  const enriched = await enrichCharactersWithAnilist(log, { replicaFed }).catch((err) => {
+  const enriched = await enrichCharactersWithAnilist(log).catch((err) => {
     log(`  enrichment AniList échoué (non-fatal): ${err}`);
     return 0;
   });

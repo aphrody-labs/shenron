@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
 import { assetUrl } from "@/lib/assets";
-import { normalizeVideoSubtitles } from "@aphrody/shenron-media/episode-playback";
 
 export const runtime = "nodejs";
 export const revalidate = 3600;
@@ -60,7 +59,6 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         posterUrl: movie.poster ? assetUrl(movie.poster) : null,
         trailerUrl: movie.trailer_url,
         synopsis: movie.synopsis,
-        subtitles: normalizeVideoSubtitles(movie.subtitles),
         hasVf,
         hasVostfr,
         playerCount: players.length,

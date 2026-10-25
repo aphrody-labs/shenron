@@ -1,9 +1,7 @@
 import { Buffer } from "node:buffer";
-import { existsSync } from "node:fs";
 import { singleton } from "tsyringe";
 import { loadImage, type Image } from "@napi-rs/canvas";
 import { botFile } from "~/lib/asset-files";
-import { isRemoteRef, loadFrameImage } from "~/lib/canvas-kit";
 import { logger } from "~/lib/logger";
 
 /**
@@ -25,13 +23,7 @@ export class BackgroundCacheService {
   private cache = new Map<string, Image | null>();
   private inflight = new Map<string, Promise<Image | null>>();
 
-  /**
-   * `optional` marque une sonde (extensions candidates, convention héritée) :
-   * un fichier absent y est normal et ne se journalise qu'en debug.
-   */
-  async get(relativePath: string, { optional = false } = {}): Promise<Image | null> {
-    // An episode frame (card backdrop): bounded LRU with a disk copy, not kept forever here.
-    if (isRemoteRef(relativePath)) return loadFrameImage(relativePath);
+  async get(relativePath: string): Promise<Image | null> {
     // Cache hit (même null négatif pour éviter de re-tenter)
     if (this.cache.has(relativePath)) return this.cache.get(relativePath) ?? null;
 
@@ -39,7 +31,7 @@ export class BackgroundCacheService {
     const pending = this.inflight.get(relativePath);
     if (pending) return pending;
 
-    const promise = this.load(relativePath, optional);
+    const promise = this.load(relativePath);
     this.inflight.set(relativePath, promise);
     const result = await promise;
     this.inflight.delete(relativePath);
@@ -47,30 +39,12 @@ export class BackgroundCacheService {
     return result;
   }
 
-  /**
-   * Whether the file is on disk, without loading or logging anything. Catalogs call it to
-   * stop offering a background that is not there (the NASA set was never shipped to production).
-   */
-  exists(relativePath: string): boolean {
-    return existsSync(botFile(relativePath));
-  }
-
-  /**
-   * First of `candidates` that is on disk, `null` when none is. Canvases list their preferred
-   * background (the NASA set, never shipped to production) then a built-in banner, and fall
-   * back to their gradient: nothing absent is ever requested, so nothing is logged.
-   */
-  firstAvailable(candidates: readonly string[]): string | null {
-    return candidates.find((candidate) => this.exists(candidate)) ?? null;
-  }
-
-  private async load(relativePath: string, optional: boolean): Promise<Image | null> {
+  private async load(relativePath: string): Promise<Image | null> {
     const absolute = botFile(relativePath);
     try {
       const file = Bun.file(absolute);
       if (!(await file.exists())) {
-        if (optional) logger.debug({ path: relativePath }, "optional background absent");
-        else logger.warn({ path: relativePath }, "background missing on disk");
+        logger.warn({ path: relativePath }, "background missing on disk");
         return null;
       }
       const buf = Buffer.from(await file.arrayBuffer());

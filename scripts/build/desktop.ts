@@ -21,8 +21,8 @@
  * --skip-chat-model ships neither llama-server nor the adapter: the chat then needs a server
  * declared by APHRODY_LOCAL_MODEL_URL. The base model (2.5 GB, too large for the installer) is
  * downloaded by shenron-server into SHENRON_HOME on first launch, digest-checked.
- * windows-x64 from Linux/WSL: the app is cross-compiled with cargo-xwin. Linux uses
- * its native NSIS toolset; WSL drives Windows NSIS through scripts/build/makensis-wsl.ts.
+ * windows-x64 from Linux/WSL: the app is cross-compiled with cargo-xwin and the NSIS
+ * installer is produced by the Windows NSIS toolset through scripts/build/makensis-wsl.ts.
  * Outputs land in dist/desktop/<target>/ with their SHA-256 in SHA256SUMS.
  */
 import {
@@ -184,7 +184,7 @@ const resources = withChatModel
 writeFileSync(bundleConfig, `${JSON.stringify({ bundle: { externalBin, resources } }, null, 2)}\n`);
 
 // 3. NSIS from WSL: a `makensis` on PATH that drives the Windows toolset.
-if (target === "windows-x64" && process.platform === "linux" && process.env.WSL_DISTRO_NAME) {
+if (target === "windows-x64" && process.platform !== "win32") {
   const shim = join(ROOT, "target/makensis-shim");
   mkdirSync(shim, { recursive: true });
   const makensis = join(shim, "makensis");

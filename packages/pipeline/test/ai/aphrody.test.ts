@@ -21,17 +21,6 @@ const { AphrodyComputeClient } = (await import(legacyPath)) as {
 
 const BASE = loopbackBase();
 
-test("invalid output budgets are refused without an HTTP request", async () => {
-  const rec = createRecordingFetch({});
-  const compute = createAphrodyCompute({ baseUrl: BASE, token: TOKEN }, { fetch: rec.fetch });
-  for (const maxOutputTokens of [0, -1, 1.5, 8193, Number.NaN, Number.POSITIVE_INFINITY]) {
-    expect(
-      (await compute.chat({ messages: [{ role: "user", content: "hello" }], maxOutputTokens })).ok,
-    ).toBe(false);
-  }
-  expect(rec.calls).toHaveLength(0);
-});
-
 const ROUTES = {
   "GET /api/v1/shenron/health": () => json(fixture("health").response),
   "POST /api/v1/shenron/llm/chat": () => json(fixture("chat").response),

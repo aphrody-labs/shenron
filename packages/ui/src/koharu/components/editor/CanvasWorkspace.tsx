@@ -33,7 +33,7 @@ import {
 } from "../../lib/queries";
 import {
   isBrushTool,
-  maxBrushDiameter,
+  MAX_BRUSH_DIAMETER,
   MIN_BRUSH_DIAMETER,
   receiveError,
   useKoharuStore,
@@ -716,7 +716,7 @@ export function CanvasWorkspace() {
                 const nextDiameter = clamp(
                   currentBrush.diameter + delta,
                   MIN_BRUSH_DIAMETER,
-                  maxBrushDiameter(page.size),
+                  MAX_BRUSH_DIAMETER,
                 );
                 if (nextDiameter !== currentBrush.diameter) {
                   setBrush({ ...currentBrush, diameter: nextDiameter });

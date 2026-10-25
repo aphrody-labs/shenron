@@ -74,47 +74,30 @@ function levelOf(member: GuildMember, hierarchy: Hierarchy): number {
  * Vérifie si `mod` peut sanctionner `target`.
  *
  * Règles :
- *  - Soi-même ou le bot → refusé, pour tout appelant.
+ *  - Owner / BotDev → autorisé (peu importe `target`).
  *  - `target` est owner / botdev → refusé (sauf si appelant est owner).
  *  - `target` est le propriétaire du serveur Discord → refusé (sauf si appelant est owner du serveur).
  *  - Discord Native Hierarchy : mod.roles.highest.position <= target.roles.highest.position (sauf si owner du serveur).
- *  - Bot Discord Hierarchy : bot.roles.highest.position <= target.roles.highest.position
- *    (vérifiée aussi pour l'owner : Discord refuserait l'action).
- *  - Owner / BotDev → autorisé au-delà de ce point.
+ *  - Bot Discord Hierarchy : bot.roles.highest.position <= target.roles.highest.position.
  *  - Hiérarchie staff configurable : `mod.level < target.level` (mod hiérarchiquement plus haut).
  */
 export async function canModerate(
   mod: GuildMember,
   target: GuildMember,
 ): Promise<{ ok: boolean; reason?: string }> {
+  const isOwner = isBotOwner(mod.id);
+  if (isOwner) return { ok: true };
+  if (isBotOwner(target.id)) {
+    return { ok: false, reason: "Cible protégée (propriétaire / bot-dev)." };
+  }
   if (target.id === mod.id) {
     return { ok: false, reason: "Tu ne peux pas te sanctionner toi-même." };
   }
-  const botId = mod.client.user?.id;
-  if (botId && target.id === botId) {
-    return { ok: false, reason: "Le bot ne peut pas se sanctionner lui-même." };
-  }
-  const isOwner = isBotOwner(mod.id);
-  if (!isOwner && isBotOwner(target.id)) {
-    return { ok: false, reason: "Cible protégée (propriétaire / bot-dev)." };
-  }
 
-  // Protection du propriétaire du serveur Discord : Discord refuse toute
-  // sanction sur lui, owner du bot compris.
+  // Protection du propriétaire du serveur Discord
   if (target.id === target.guild.ownerId) {
     return { ok: false, reason: "Impossible de sanctionner le propriétaire du serveur." };
   }
-
-  // Hiérarchie Discord du bot : vérifiée pour tout appelant (owner compris),
-  // sinon Discord renvoie un « Missing Permissions » opaque après coup.
-  const botMember = mod.guild.members.me ?? (await mod.guild.members.fetchMe().catch(() => null));
-  if (botMember && botMember.roles.highest.position <= target.roles.highest.position) {
-    return {
-      ok: false,
-      reason: `Hiérarchie Discord : le rôle le plus haut de ta cible (${target.roles.highest.name}) est supérieur ou égal au rôle du bot (${botMember.roles.highest.name}).`,
-    };
-  }
-  if (isOwner) return { ok: true };
 
   // Hiérarchie native Discord : le modérateur doit avoir un rôle supérieur à la cible (sauf s'il est l'owner du serveur)
   if (mod.id !== mod.guild.ownerId) {
@@ -124,6 +107,15 @@ export async function canModerate(
         reason: `Hiérarchie Discord : le rôle le plus haut de ta cible (${target.roles.highest.name}) est supérieur ou égal au tien (${mod.roles.highest.name}).`,
       };
     }
+  }
+
+  // Hiérarchie Discord du bot : le bot ne peut pas modérer quelqu'un au-dessus de lui
+  const botMember = mod.guild.members.me ?? (await mod.guild.members.fetchMe().catch(() => null));
+  if (botMember && botMember.roles.highest.position <= target.roles.highest.position) {
+    return {
+      ok: false,
+      reason: `Hiérarchie Discord : le rôle le plus haut de ta cible (${target.roles.highest.name}) est supérieur ou égal au rôle du bot (${botMember.roles.highest.name}).`,
+    };
   }
 
   // Hiérarchie configurable (staff Shenron)

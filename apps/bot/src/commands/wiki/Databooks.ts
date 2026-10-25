@@ -1,29 +1,23 @@
+import { resolveApiUrl, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import { injectable, inject } from "tsyringe";
 import { Bot, Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import {
+  ActionRowBuilder,
   ApplicationCommandOptionType,
+  ButtonBuilder,
+  ButtonStyle,
   EmbedBuilder,
   MessageFlags,
+  type APIEmbed,
   type AutocompleteInteraction,
   type CommandInteraction,
 } from "discord.js";
+import { Pagination } from "@discordx/pagination";
 import { GuildOnly } from "~/guards/GuildOnly";
 import { CommandsChannelOnly } from "~/guards/CommandsChannelOnly";
 import { FeatureEnabled } from "~/guards/FeatureEnabled";
 import { DatabooksService, type Databook, type PlateHit } from "~/services/DatabooksService";
 import { SHENRON_THEME, SHENRON_SEPARATORS, renderProgressBar } from "~/lib/embeds";
-import {
-  SITE_URL,
-  clip,
-  linkLabel,
-  linkRow,
-  respondAutocomplete,
-  sendPages,
-  wikiAssetUrl,
-  wikiAuthor,
-  wikiFooter,
-  type WikiPage,
-} from "~/lib/wiki-embeds";
 
 /**
  * `/databooks` — guides officiels, daizenshuu, artbooks et interviews Dragon Ball.
@@ -39,15 +33,30 @@ const COULEURS: Record<string, number> = {
 
 const COULEUR_DEFAUT = SHENRON_THEME.gold;
 
-function databookButtons(d?: Databook) {
-  return linkRow([
-    {
-      label: "Consulter sur DragonBallFR",
-      emoji: "🌐",
-      url: d ? `/wiki/databooks/${d.id}` : "/wiki/databooks",
-    },
-    { label: "Arbitre de Canonicité", emoji: "📜", url: "/wiki/canon" },
-  ]);
+const SITE = resolveSiteUrl(Bun.env);
+const ASSETS = resolveApiUrl(Bun.env);
+
+function databookButtons(d?: Databook): ActionRowBuilder<ButtonBuilder> {
+  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    new ButtonBuilder()
+      .setStyle(ButtonStyle.Link)
+      .setLabel("Consulter sur DragonBallFR")
+      .setEmoji("🌐")
+      .setURL(d ? `${SITE}/wiki/databooks/${d.id}` : `${SITE}/wiki/databooks`),
+    new ButtonBuilder()
+      .setStyle(ButtonStyle.Link)
+      .setLabel("Arbitre de Canonicité")
+      .setEmoji("📜")
+      .setURL(`${SITE}/wiki/canon`),
+  );
+  return row;
+}
+
+/** Chemin d'asset DB (`./assets/…`) → URL absolue servie par le bot. */
+function assetUrl(chemin: string | null): string | null {
+  if (!chemin) return null;
+  if (chemin.startsWith("http")) return chemin;
+  return `${ASSETS}/db/${chemin.replace(/^\.?\/*/, "")}`;
 }
 
 /** La recherche nomme le champ `categorie`, l'API de fiche `category` : on prend la valeur. */
@@ -90,15 +99,14 @@ export class DatabooksCommands {
 
   /** Réponse d'autocomplete commune : titre + année, valeur = id. */
   private async completerOuvrage(interaction: AutocompleteInteraction): Promise<void> {
-    // Catalogue froid : la réponse part vide dans le délai, le chargement
-    // continue et sert la frappe suivante.
-    await respondAutocomplete(interaction, async () => {
-      const fiches = await this.api.searchTitles(interaction.options.getFocused(), 25);
-      return fiches.map((d) => ({
-        name: `${clip(d.title, 85)} (${annee(d.published_at)})`,
+    const focus = interaction.options.getFocused();
+    const fiches = await this.api.searchTitles(focus, 25);
+    await interaction.respond(
+      fiches.map((d) => ({
+        name: `${d.title.slice(0, 85)} (${annee(d.published_at)})`,
         value: String(d.id),
-      }));
-    });
+      })),
+    );
   }
 
   private ficheEmbed(d: Databook): EmbedBuilder {
@@ -106,13 +114,14 @@ export class DatabooksCommands {
     const pbar = renderProgressBar(transcrites, d.pages.length, 10);
 
     const embed = new EmbedBuilder()
-      .setAuthor(
-        wikiAuthor(
-          d.title_ja ? `🇯🇵 ${d.title_ja} · ARCHIVES OFFICIELLES` : "ARCHIVES OFFICIELLES & GUIDES",
-        ),
-      )
-      .setTitle(clip(`📚 ${d.title}`, 256))
-      .setURL(`${SITE_URL}/wiki/databooks/${d.id}`)
+      .setAuthor({
+        name: d.title_ja
+          ? `🇯🇵 ${d.title_ja} · ARCHIVES OFFICIELLES`
+          : "ARCHIVES OFFICIELLES & GUIDES",
+        iconURL: "https://dragonballfr.com/favicon.ico",
+      })
+      .setTitle(`📚 ${d.title}`)
+      .setURL(`${SITE}/wiki/databooks/${d.id}`)
       .setColor(couleur(d.category))
       .setDescription(
         [
@@ -137,7 +146,7 @@ export class DatabooksCommands {
         },
       );
 
-    const cover = wikiAssetUrl(d.cover);
+    const cover = assetUrl(d.cover);
     if (cover) embed.setThumbnail(cover);
 
     if (d.pages.length > 0) {
@@ -147,13 +156,13 @@ export class DatabooksCommands {
         inline: false,
       });
     }
-    embed.setFooter(
-      wikiFooter(
+    embed.setFooter({
+      text:
         d.pages.length > 0
-          ? `/databooks planche ouvrage:${clip(d.title, 35)}`
-          : "Bibliothèque des databooks",
-      ),
-    );
+          ? `/databooks planche ouvrage:${d.title.slice(0, 35)} · dragonballfr.com`
+          : "dragonballfr.com/wiki/databooks",
+      iconURL: "https://dragonballfr.com/favicon.ico",
+    });
     return embed;
   }
 
@@ -223,19 +232,15 @@ export class DatabooksCommands {
 
     // Une planche par page de pagination : le texte est long, et l'intérêt est
     // de LIRE le passage trouvé, pas d'en survoler dix titres.
-    const pages: WikiPage[] = res.items.map((p, i) => ({
+    const pages: Array<{ embeds: APIEmbed[] }> = res.items.map((p, i) => ({
       embeds: [this.resultatEmbed(p, terme, i, res.items.length, res).toJSON()],
-      components: [
-        linkRow([
-          {
-            label: `Planche ${p.number} sur le site`,
-            emoji: "📖",
-            url: `/wiki/databooks/${p.databookId}`,
-          },
-        ]),
-      ],
     }));
-    await sendPages(interaction, pages);
+
+    if (pages.length === 1) {
+      await interaction.editReply(pages[0]!);
+      return;
+    }
+    await new Pagination(interaction, pages, { time: 180_000 }).send();
   }
 
   private resultatEmbed(
@@ -246,9 +251,12 @@ export class DatabooksCommands {
     res: { total: number; databookCount: number },
   ): EmbedBuilder {
     const embed = new EmbedBuilder()
-      .setAuthor(wikiAuthor("ARCHIVES JAPONAISES TRANSCRITES · RECHERCHE"))
-      .setTitle(clip(`📖 ${p.title} — Planche ${p.number}`, 256))
-      .setURL(`${SITE_URL}/wiki/databooks/${p.databookId}`)
+      .setAuthor({
+        name: "ARCHIVES JAPONAISES TRANSCRITES · RECHERCHE",
+        iconURL: "https://dragonballfr.com/favicon.ico",
+      })
+      .setTitle(`📖 ${p.title} — Planche ${p.number}`)
+      .setURL(`${SITE}/wiki/databooks/${p.databookId}`)
       .setColor(couleur(p.category))
       .setDescription(
         [
@@ -257,12 +265,11 @@ export class DatabooksCommands {
           `${SHENRON_SEPARATORS.solid}`,
         ].join("\n"),
       )
-      .setFooter(
-        wikiFooter(
-          `${index + 1}/${affichees} affichées · ${res.total} planche${res.total > 1 ? "s" : ""} dans ${res.databookCount} ouvrage${res.databookCount > 1 ? "s" : ""}`,
-        ),
-      );
-    const image = wikiAssetUrl(p.image);
+      .setFooter({
+        text: `${index + 1}/${affichees} affichées · ${res.total} planche${res.total > 1 ? "s" : ""} dans ${res.databookCount} ouvrage${res.databookCount > 1 ? "s" : ""} · dragonballfr.com`,
+        iconURL: "https://dragonballfr.com/favicon.ico",
+      });
+    const image = assetUrl(p.image);
     if (image) embed.setThumbnail(image);
     return embed;
   }
@@ -324,9 +331,12 @@ export class DatabooksCommands {
     }
 
     const embed = new EmbedBuilder()
-      .setAuthor(wikiAuthor(`ARCHIVES & MANUSCRITS · ${fiche.title}`))
+      .setAuthor({
+        name: `ARCHIVES & MANUSCRITS · ${fiche.title}`,
+        iconURL: "https://dragonballfr.com/favicon.ico",
+      })
       .setTitle(`📖 Planche n°${planche.number}`)
-      .setURL(`${SITE_URL}/wiki/databooks/${fiche.id}`)
+      .setURL(`${SITE}/wiki/databooks/${fiche.id}`)
       .setColor(couleur(fiche.category))
       .setDescription(
         [
@@ -337,10 +347,11 @@ export class DatabooksCommands {
           `${SHENRON_SEPARATORS.solid}`,
         ].join("\n"),
       )
-      .setFooter(
-        wikiFooter(`Planche ${planche.number}/${fiche.pages.length} · Archives Universelles`),
-      );
-    const image = wikiAssetUrl(planche.image);
+      .setFooter({
+        text: "Archives Universelles · dragonballfr.com/wiki/databooks",
+        iconURL: "https://dragonballfr.com/favicon.ico",
+      });
+    const image = assetUrl(planche.image);
     if (image) embed.setImage(image);
     await cmd.editReply({ embeds: [embed], components: [databookButtons(fiche)] });
   }
@@ -358,14 +369,17 @@ export class DatabooksCommands {
     interaction: CommandInteraction | AutocompleteInteraction,
   ) {
     if (interaction.isAutocomplete()) {
-      await respondAutocomplete(interaction, async () => {
-        const tous = await this.api.listAll();
-        const focus = interaction.options.getFocused().toLocaleLowerCase();
-        return [...new Set(tous.map((d) => d.category).filter((c): c is string => !!c))]
-          .toSorted()
+      const tous = await this.api.listAll();
+      const cats = [
+        ...new Set(tous.map((d) => d.category).filter((c): c is string => !!c)),
+      ].toSorted();
+      const focus = interaction.options.getFocused().toLocaleLowerCase();
+      await interaction.respond(
+        cats
           .filter((c) => c.toLocaleLowerCase().includes(focus))
-          .map((c) => ({ name: c, value: c }));
-      });
+          .slice(0, 25)
+          .map((c) => ({ name: c, value: c })),
+      );
       return;
     }
     const cmd = interaction as CommandInteraction;
@@ -386,13 +400,16 @@ export class DatabooksCommands {
     // en tête quand on cherche « le dernier guide sorti ».
     const tries = fiches.slice().toSorted((a, b) => (b.published_at ?? 0) - (a.published_at ?? 0));
     const PAR_PAGE = 12;
-    const pages: WikiPage[] = [];
+    const pages: Array<{ embeds: APIEmbed[] }> = [];
     for (let i = 0; i < tries.length; i += PAR_PAGE) {
       const lot = tries.slice(i, i + PAR_PAGE);
       pages.push({
         embeds: [
           new EmbedBuilder()
-            .setAuthor(wikiAuthor("BIBLIOTHÈQUE UNIVERSELLE · DATABOOKS"))
+            .setAuthor({
+              name: "BIBLIOTHÈQUE UNIVERSELLE · DATABOOKS",
+              iconURL: "https://dragonballfr.com/favicon.ico",
+            })
             .setTitle(
               categorie ? `📚 Databooks — ${categorie}` : "📚 Catalogue des Guides & Interviews",
             )
@@ -404,21 +421,25 @@ export class DatabooksCommands {
                 `${SHENRON_SEPARATORS.solid}`,
                 ...lot.map((d) => {
                   const n = d.pages.length;
-                  return `• [**${linkLabel(d.title, 90)}**](${SITE_URL}/wiki/databooks/${d.id}) — **${annee(d.published_at)}**${n ? ` · \`${n} planches\`` : ""}`;
+                  return `• [**${d.title}**](${SITE}/wiki/databooks/${d.id}) — **${annee(d.published_at)}**${n ? ` · \`${n} planches\`` : ""}`;
                 }),
                 `${SHENRON_SEPARATORS.solid}`,
               ].join("\n"),
             )
-            .setFooter(
-              wikiFooter(
-                `${i + 1}–${Math.min(i + PAR_PAGE, tries.length)} sur ${tries.length} ouvrages`,
-              ),
-            )
+            .setFooter({
+              text: `${i + 1}–${Math.min(i + PAR_PAGE, tries.length)} sur ${tries.length} ouvrages · dragonballfr.com`,
+              iconURL: "https://dragonballfr.com/favicon.ico",
+            })
             .toJSON(),
         ],
       });
     }
-    await sendPages(cmd, pages);
+
+    if (pages.length === 1) {
+      await cmd.editReply(pages[0]!);
+      return;
+    }
+    await new Pagination(cmd, pages, { time: 180_000 }).send();
   }
 
   /** Résout un choix d'autocomplete (id) ou une saisie libre (titre). */

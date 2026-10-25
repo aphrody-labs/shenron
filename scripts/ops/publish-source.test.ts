@@ -278,7 +278,7 @@ test("plans are deterministic, bounded and use the installed native crawl interf
       "https://dragonballfr.com/publications/guide",
     ),
   );
-  expect(plan.crawl).not.toContain("--obey-robots");
+  expect(plan.crawl).toContain("--obey-robots");
   expect(plan.crawl).toContain("--sitemaps");
   const singlePage = publicationPlan(plan.sourceUrl, plan.targetUrl, {
     requests: 1,

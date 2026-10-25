@@ -23,6 +23,3 @@ export * from "./chronology";
 export * from "./wiki-launch";
 export * from "./web";
 export * from "./video";
-export * from "./activity";
-
-export * from "./playback-capabilities";

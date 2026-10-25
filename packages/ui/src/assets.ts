@@ -27,9 +27,6 @@ export const uiAssetPaths = [
   "dbz/marque/emoji-128.png",
   "dbz/marque/kinto-un-1024.png",
   "dbz/marque/kinto-un-2048.png",
-  "assets/manga/dragon-pixel/chapter-516/sheet.png",
-  "assets/manga/dragon-pixel/chapter-516/sheet.layout.json",
-  "assets/manga/dragon-pixel/chapter-516/provenance.json",
 ] as const;
 
 export type UiAssetPath = (typeof uiAssetPaths)[number];

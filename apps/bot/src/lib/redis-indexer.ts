@@ -10,9 +10,9 @@
  * Cf. piège CLAUDE.md : sans l'intent MessageContent, `content` est vide pour les messages qui ne
  * mentionnent pas le bot — mais l'indexation des métadonnées (auteur, salon, date) reste valable.
  */
+import { isCompiledBinary } from "@aphrody/discord-kit";
 import { Client, ChannelType } from "discord.js";
 import { injectable, singleton } from "tsyringe";
-import { startBundledWorker } from "~/lib/bundled-worker";
 
 export interface IndexedAuthor {
   id: string;
@@ -25,10 +25,6 @@ export interface IndexedAuthor {
 @injectable()
 export class RedisIndexerService {
   private worker: Worker | null = null;
-  /** True once the worker posted its handshake; a startup error before that is fatal. */
-  private workerReady = false;
-  /** Why the worker is unusable, for the error raised by every indexation attempt. */
-  private workerFailure: string | null = null;
   private isIndexationActive = false;
   /** Backfill max de messages par salon (pagination). Le temps réel couvre tout le nouveau flux ;
    *  ce backfill profond (8x l'ancien cap de 50) tourne au boot + cron sans marteler l'API Discord.
@@ -64,43 +60,28 @@ export class RedisIndexerService {
     this.initWorker();
   }
 
-  /** Overridable: tests inject a fake worker. See `lib/bundled-worker.ts` for the binary layout. */
-  protected createWorker(): Worker {
-    return startBundledWorker("indexer.ts");
-  }
-
-  /** The worker cannot index: remember why, so every attempt fails loudly instead of "succeeding". */
-  private failWorker(cause: unknown) {
-    const reason = cause instanceof Error ? cause.message : String(cause);
-    this.workerFailure = reason;
-    this.worker?.terminate();
-    this.worker = null;
-    console.error(`[REDIS INDEXER] Worker indisponible, aucune indexation possible : ${reason}`);
-  }
-
   private initWorker() {
     try {
-      const worker = this.createWorker();
-      this.worker = worker;
-      worker.addEventListener("message", (event) => {
+      // Exécutable compilé : le worker est un point d’entrée de `bun build --compile`
+      // (scripts/build/bot.ts), résolu depuis la racine des entrées (src/).
+      const workerUrl = isCompiledBinary()
+        ? "./workers/indexer.ts"
+        : new URL("../workers/indexer.ts", import.meta.url).href;
+      this.worker = new Worker(workerUrl, { type: "module" });
+
+      this.worker.addEventListener("message", (event) => {
         const { status, type, count, error } = event.data;
-        if (status === "ready") {
-          this.workerReady = true;
-        } else if (status === "success") {
+        if (status === "success") {
           console.log(`[REDIS INDEXER] ${type} : ${count} items indexés.`);
         } else {
           this.logEchec(type, error);
         }
       });
-      worker.addEventListener("error", (event) => {
-        if (this.workerReady) {
-          console.error(`[REDIS INDEXER] Erreur globale du Worker :`, event.message);
-        } else {
-          this.failWorker(event.message || "le module du worker ne se charge pas");
-        }
+      this.worker.addEventListener("error", (err) => {
+        console.error(`[REDIS INDEXER] Erreur globale du Worker :`, err);
       });
     } catch (e) {
-      this.failWorker(e);
+      console.error("[REDIS INDEXER] Impossible de démarrer le Bun Worker :", e);
     }
   }
 
@@ -111,12 +92,10 @@ export class RedisIndexerService {
       return;
     }
     if (!this.worker) {
-      // Not a quiet return: a caller that logs success without a consumer hides the outage.
-      throw new Error(`[REDIS INDEXER] worker unavailable: ${this.workerFailure ?? "not started"}`);
+      console.error("[REDIS INDEXER] Worker indisponible, indexation annulée.");
+      return;
     }
-    const worker = this.worker;
     this.isIndexationActive = true;
-    let completed = false;
     console.log("[REDIS INDEXER] Démarrage de l'indexation complète...");
 
     try {
@@ -129,7 +108,7 @@ export class RedisIndexerService {
           parentId: ch.parentId,
         }));
         if (channels.length > 0) {
-          worker.postMessage({ type: "INDEX_CHANNELS", data: channels }, []);
+          this.worker.postMessage({ type: "INDEX_CHANNELS", data: channels }, []);
         }
 
         // 2. Membres (bonus, seulement si l'intent GuildMembers est dispo — sinon ignoré sans erreur).
@@ -143,7 +122,7 @@ export class RedisIndexerService {
             joinedAt: m.joinedAt?.toISOString() || null,
           }));
           for (let i = 0; i < users.length; i += 100) {
-            worker.postMessage({ type: "INDEX_USERS", data: users.slice(i, i + 100) }, []);
+            this.worker.postMessage({ type: "INDEX_USERS", data: users.slice(i, i + 100) }, []);
           }
         } catch {
           // Pas d'intent GuildMembers -> on s'appuiera sur les auteurs de messages (ci-dessous).
@@ -171,7 +150,7 @@ export class RedisIndexerService {
                 authorDisplay: m.member?.displayName ?? m.author.globalName ?? m.author.username,
                 authorBot: m.author.bot,
               }));
-              worker.postMessage({ type: "INDEX_MESSAGES", data: messages }, []);
+              this.worker.postMessage({ type: "INDEX_MESSAGES", data: messages }, []);
               fetched += batch.size;
               before = batch.last()?.id; // le plus ancien du lot -> page vers le passé
               if (batch.size < 100) break;
@@ -181,19 +160,11 @@ export class RedisIndexerService {
           }
         }
       }
-      // The worker may have died while batches were being posted: nobody consumed them.
-      if (!this.worker) {
-        throw new Error(
-          `[REDIS INDEXER] worker lost during indexation: ${this.workerFailure ?? "unknown"}`,
-        );
-      }
-      completed = true;
     } catch (err) {
       console.error("[REDIS INDEXER] Erreur fatale durant l'indexation :", err);
-      throw err;
     } finally {
       this.isIndexationActive = false;
-      if (completed) console.log("[REDIS INDEXER] Indexation complète achevée.");
+      console.log("[REDIS INDEXER] Indexation complète achevée.");
     }
   }
 

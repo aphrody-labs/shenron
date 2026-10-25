@@ -65,9 +65,7 @@ export interface Dbxv2Binary {
 
 export interface Dbxv2ClientOptions {
   readonly baseUrl: string;
-  readonly token?: string;
-  /** Public gateways never receive a bearer token or browser credentials. */
-  readonly mode?: "private" | "public";
+  readonly token: string;
   /** Replaces the global `fetch` (tests, custom transports). */
   readonly fetch?: typeof fetch;
   /** LRU settings, or `false` to disable the cache. */
@@ -176,15 +174,10 @@ export class Dbxv2Client {
       throw new Dbxv2ConfigError(
         "baseUrl must be an http(s) URL without credentials or wildcard host",
       );
-    if (
-      options.mode === "public" &&
-      (options.token !== undefined || !baseUrl.startsWith("https://"))
-    )
-      throw new Dbxv2ConfigError("public mode requires HTTPS and forbids a token");
-    if (options.mode !== "public" && (options.token ?? "").length < DBXV2_MIN_TOKEN_LENGTH)
+    if (options.token.length < DBXV2_MIN_TOKEN_LENGTH)
       throw new Dbxv2ConfigError(`token must hold at least ${DBXV2_MIN_TOKEN_LENGTH} characters`);
     this.baseUrl = baseUrl;
-    this.#token = options.mode === "public" ? "" : options.token!;
+    this.#token = options.token;
     this.#fetch = options.fetch ?? fetch;
     this.#cache = options.cache === false ? null : new LruCache<Fetched>(options.cache);
     this.#timeoutMs = options.timeoutMs ?? 60_000;
@@ -445,7 +438,7 @@ export class Dbxv2Client {
     }
 
     const headers: Record<string, string> = { Accept: "*/*" };
-    if (flags.auth !== false && this.#token) headers.Authorization = `Bearer ${this.#token}`;
+    if (flags.auth !== false) headers.Authorization = `Bearer ${this.#token}`;
     if (range) headers.Range = range;
     if (range && init.ifRange) headers["If-Range"] = init.ifRange;
     if (stale?.etag) headers["If-None-Match"] = stale.etag;
@@ -556,7 +549,6 @@ export class Dbxv2Client {
           headers,
           signal: attemptController.signal,
           redirect: "error",
-          credentials: "omit",
         });
       } catch (error) {
         if (timedOut) throw new Dbxv2TimeoutError(`request timed out after ${this.#timeoutMs} ms`);

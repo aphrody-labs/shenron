@@ -42,9 +42,6 @@ export class BioRoleEvent {
     const roleId = env.URL_IN_BIO_ROLE_ID;
     if (!roleId) return;
     if (!(await this.settings.getBool("features.bio_role", true))) return;
-    // No presence = offline or not cached: unknown status, not "no invite".
-    // Removing the role there stripped it from every offline member each hour.
-    if (!member.presence || member.presence.status === "offline") return;
     try {
       const has = this.hasInvite(member);
       const hasRole = member.roles.cache.has(roleId);

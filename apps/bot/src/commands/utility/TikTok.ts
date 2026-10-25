@@ -2,7 +2,6 @@ import { injectable, inject } from "tsyringe";
 import { Bot, Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import {
   ApplicationCommandOptionType,
-  ChannelType,
   MessageFlags,
   PermissionFlagsBits,
   type Channel,
@@ -15,16 +14,6 @@ import { AdminOnly } from "~/guards/AdminOnly";
 import { SettingsService } from "~/services/SettingsService";
 import { TikTokService } from "~/services/TikTokService";
 import { brandedEmbed, errorEmbed, successEmbed } from "~/lib/embeds";
-
-/** `http(s)://[user:pass@]host[:port]` — anything else would break every TikTok request. */
-export function isProxyUrl(value: string): boolean {
-  try {
-    const u = new URL(value);
-    return (u.protocol === "http:" || u.protocol === "https:") && u.hostname.length > 0;
-  } catch {
-    return false;
-  }
-}
 
 /**
  * Configuration de la surveillance TikTok (notif live + nouvelles vidéos).
@@ -59,8 +48,6 @@ export class TikTokCommands {
       description: "Salon où poster les notifications TikTok",
       type: ApplicationCommandOptionType.Channel,
       required: true,
-      // A voice channel or a category cannot receive the notifications.
-      channelTypes: [ChannelType.GuildText, ChannelType.GuildAnnouncement],
     })
     channel: Channel,
     @SlashOption({
@@ -81,16 +68,9 @@ export class TikTokCommands {
   ) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     try {
-      // Validated before any write: a refused setup leaves the config untouched.
-      const handle = pseudo?.trim().replace(/^@/, "");
-      if (handle && !/^[\w.]{2,24}$/.test(handle)) {
-        throw new Error(
-          `Pseudo TikTok invalide : \`${handle.slice(0, 40)}\` (lettres, chiffres, _ et .).`,
-        );
-      }
       await this.settings.set("tiktok.channel", channel.id);
       if (role) await this.settings.set("tiktok.role", role.id);
-      if (handle) await this.settings.set("tiktok.username", handle);
+      if (pseudo) await this.settings.set("tiktok.username", pseudo.trim().replace(/^@/, ""));
       await this.settings.set("tiktok.enabled", "true");
 
       const username = await this.settings.getString("tiktok.username", "goku_dbfr");
@@ -165,20 +145,7 @@ export class TikTokCommands {
     url: string | undefined,
     interaction: CommandInteraction,
   ) {
-    const proxy = (url ?? "").trim();
-    if (proxy && !isProxyUrl(proxy)) {
-      await interaction.reply({
-        embeds: [
-          errorEmbed(
-            "Proxy invalide",
-            "URL attendue : `http://hôte:port` ou `https://user:pass@hôte:port`.",
-          ),
-        ],
-        flags: MessageFlags.Ephemeral,
-      });
-      return;
-    }
-    await this.settings.set("tiktok.proxy", proxy);
+    await this.settings.set("tiktok.proxy", (url ?? "").trim());
     await interaction.reply({
       embeds: [
         successEmbed(

@@ -17,9 +17,10 @@ pub use dragon_pixel::{
 pub fn from_xenoverse_move(xv: &shenron_re::formats::MoveFrameData) -> MoveFrameData {
     use shenron_re::formats::DamageType;
     let kind = match xv.damage_type {
-        DamageType::Knockback if xv.base_damage > 3000 => MoveKind::Ultimate,
-        DamageType::Knockback => MoveKind::BeamSpecial,
-        DamageType::Heavy | DamageType::GuardBreak => MoveKind::HeavyStrike,
+        DamageType::KiBlast => MoveKind::KiBlast,
+        DamageType::Special if xv.base_damage > 3000 => MoveKind::Ultimate,
+        DamageType::Special => MoveKind::BeamSpecial,
+        DamageType::HeavyStrike => MoveKind::HeavyStrike,
         _ if xv.startup_frames <= 6 => MoveKind::LightJab,
         _ if xv.startup_frames <= 10 => MoveKind::HeavyStrike,
         _ => MoveKind::SweepKick,
@@ -85,7 +86,7 @@ mod tests {
             block_advantage: -4,
             base_damage: 1800,
             stamina_damage: 100,
-            damage_type: shenron_re::formats::DamageType::Knockback,
+            damage_type: shenron_re::formats::DamageType::Special,
             knockback_strength: 12.0,
             is_invincible: false,
             has_super_armor: false,

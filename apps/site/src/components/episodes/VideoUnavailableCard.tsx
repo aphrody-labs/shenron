@@ -4,30 +4,13 @@ import Link from "next/link";
 import { useVideoUIText } from "@/lib/video-ui-text";
 
 /** Keep the episode accessible while no verified playback source is present. */
-export function VideoUnavailableCard({
-  title,
-  kind,
-  poster,
-}: {
-  title: string;
-  kind: "episode" | "film";
-  poster?: string;
-}) {
+export function VideoUnavailableCard({ title, kind }: { title: string; kind: "episode" | "film" }) {
   const t = useVideoUIText();
   return (
     <section
       className="@container min-w-0 rounded-2xl border border-dashed border-border bg-card p-6 text-card-foreground sm:p-8"
       aria-label={t("unavailableLabel")}
     >
-      {poster && (
-        <img
-          src={poster}
-          alt=""
-          className="mb-6 aspect-video w-full rounded-xl object-cover"
-          loading="lazy"
-          decoding="async"
-        />
-      )}
       <div className="flex flex-col gap-4 @lg:flex-row @lg:items-center @lg:justify-between">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-widest text-[var(--muted-foreground)]">

@@ -1,25 +1,12 @@
 .root {
-  --watch-content-width: 80rem;
-  --watch-gutter: clamp(1rem, 3vw, 2.5rem);
   position: relative;
   isolation: isolate;
   inline-size: 100%;
   min-inline-size: 0;
-  padding-block-start: 1rem;
+  padding: clamp(0.75rem, 1.5vw, 2rem);
   padding-block-end: 4rem;
   color: var(--foreground);
   background: var(--background);
-}
-
-.root:has(:global(.shenron-video[data-theater="true"])),
-:global(main#contenu:has(.shenron-video[data-theater="true"])) {
-  z-index: 100;
-}
-
-.root > :not(.stage, .artwork) {
-  inline-size: min(calc(100% - var(--watch-gutter) * 2), var(--watch-content-width));
-  min-inline-size: 0;
-  margin-inline: auto;
 }
 
 .artwork {
@@ -32,12 +19,12 @@
   object-fit: cover;
   object-position: center top;
   pointer-events: none;
-  opacity: 0.06;
+  opacity: 0.18;
   mask-image: linear-gradient(black, transparent);
 }
 
 :global(html[data-episode-theme="goku"]) .artwork {
-  opacity: 0.03;
+  opacity: 0.08;
 }
 
 @media (forced-colors: active) {
@@ -50,8 +37,8 @@
   position: relative;
   inline-size: 100%;
   min-inline-size: 0;
-  margin-block: 0 2rem;
-  border-radius: 0;
+  margin-block: 1rem 1.5rem;
+  border-radius: 1rem;
 }
 
 .stage > * {
@@ -62,7 +49,7 @@
 .columns {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: clamp(1.5rem, 3vw, 3rem);
+  gap: clamp(1.5rem, 2vw, 2.5rem);
   align-items: start;
 }
 
@@ -82,9 +69,9 @@
 
 .root h1 {
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 1.2rem + 0.9vw, 2rem);
-  line-height: 1.3;
-  letter-spacing: -0.015em;
+  font-size: clamp(1.75rem, 1.1rem + 2vw, 3rem);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
   text-shadow: none;
   overflow-wrap: anywhere;
 }
@@ -118,7 +105,7 @@
 
 @media (min-width: 64rem) {
   .columns {
-    grid-template-columns: minmax(0, 1fr) 20rem;
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 23rem);
   }
 
   .columns:not(:has(> .aside)) {
@@ -128,9 +115,11 @@
 
 @media (max-width: 30rem) {
   .root {
-    --watch-gutter: 1rem;
+    padding-inline: 0.75rem;
   }
   .stage {
-    margin-block-end: 1.5rem;
+    margin-inline: -0.75rem;
+    inline-size: calc(100% + 1.5rem);
+    border-radius: 0;
   }
 }

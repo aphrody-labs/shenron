@@ -1,8 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import type { Metadata } from "next";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
-import { ogMeta } from "@/lib/og";
 import { notFound } from "next/navigation";
 import { PageShell, LinkPager } from "@/components/kit";
 import { T } from "@/components/T";
@@ -17,18 +14,6 @@ import {
 } from "@/lib/catalog-source-query";
 import { CatalogUIText } from "@/lib/catalog-ui-text";
 export const dynamic = "force-dynamic";
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ category: string }>;
-}): Promise<Metadata> {
-  const { category } = await params;
-  const t = await getTranslations("catalog");
-  const title = t.has(`categories.${category}`) ? t(`categories.${category}`) : t("title");
-  return { title, ...ogMeta({ title, type: "website", canonical: `/catalog/${category}` }) };
-}
-
 export default async function CatalogCategory({
   params,
   searchParams,

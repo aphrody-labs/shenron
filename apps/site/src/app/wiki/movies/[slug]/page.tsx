@@ -1,5 +1,3 @@
-import { readPlaybackCapabilities } from "@/lib/playback-capabilities";
-import { supportsPlaybackVariant } from "@aphrody/shenron-api/contract";
 /* oxlint-disable react/iframe-missing-sandbox -- legacy UI kept as-is (behavior-preserving lint pass) */
 import { WatchLayout, WatchStage, WatchColumns } from "@/components/episodes/WatchLayout";
 import { hasEditorialDatabase } from "@/lib/prerender";
@@ -25,12 +23,13 @@ import { VideoLecteurs } from "@/components/episodes/VideoLecteurs";
 import { VideoSourceSummary } from "@/components/episodes/VideoSourceSummary";
 import { VideoUnavailableCard } from "@/components/episodes/VideoUnavailableCard";
 import { OffreLegale } from "@/components/episodes/OffreLegale";
+import { EpisodeDownload } from "@/components/episodes/EpisodeDownload";
 import { JsonLd } from "@/components/JsonLd";
 import { AdUnit } from "@/components/ads/AdUnit";
 import type { Movie as MovieSchema, WithContext } from "schema-dts";
 
 import { hlsMasterUrl } from "@/lib/assets";
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
   if (!hasEditorialDatabase()) return [];
@@ -112,20 +111,14 @@ export default async function FilmPage({ params }: { params: Promise<{ slug: str
   };
   const youtubeId = getYoutubeId(m.trailer_url);
 
-  const capabilities = await readPlaybackCapabilities();
   const player =
     m.players && m.players.length > 0 ? (
       <VideoLecteurs
         players={m.players}
         entityType="movie"
         entityId={m.id}
-        title={`${nature} : ${m.title ?? ""}`}
-        poster={m.poster ? assetUrl(m.poster) : undefined}
-        subtitles={m.subtitles ?? undefined}
         vo={
-          m.stream_url &&
-          m.subtitles?.length &&
-          supportsPlaybackVariant(capabilities, "movie", m.id, "vostfr")
+          m.stream_url && m.subtitles?.length
             ? {
                 src: hlsMasterUrl(`movie-${m.id}`, "vostfr"),
                 title: `${nature} : ${m.title ?? ""}`,
@@ -142,7 +135,7 @@ export default async function FilmPage({ params }: { params: Promise<{ slug: str
         poster={m.poster ? assetUrl(m.poster) : undefined}
         subtitles={m.subtitles ?? undefined}
       />
-    ) : m.stream_url && supportsPlaybackVariant(capabilities, "movie", m.id) ? (
+    ) : m.stream_url ? (
       <VideoPlayer
         src={hlsMasterUrl(`movie-${m.id}`)}
         title={`${nature} : ${m.title ?? ""}`}
@@ -150,6 +143,21 @@ export default async function FilmPage({ params }: { params: Promise<{ slug: str
         subtitles={m.subtitles ?? undefined}
       />
     ) : null;
+
+  // Téléchargement réellement résoluble ? Les iframes tierces (vidmoly/voe/mailru)
+  // sont lisibles mais PAS téléchargeables. Seul un MP4/HLS direct est un fichier :
+  // `video_url`/`stream_url` stockés, un lecteur Archive.org (MP4 dérivé de l'API
+  // metadata) ou un `embedUrl` déjà direct (`.mp4`/`.m3u8`). On masque le bouton
+  // sinon → jamais de lien qui renverrait un 404.
+  const canDownload =
+    Boolean(m.video_url) ||
+    Boolean(m.stream_url) ||
+    (m.players ?? []).some(
+      (p) =>
+        p.provider === "archive" ||
+        /archive\.org\/(embed|download)\//i.test(p.embedUrl) ||
+        /\.(mp4|m3u8)(\?|$)/i.test(p.embedUrl),
+    );
 
   const jsonLdData: WithContext<MovieSchema> = {
     "@context": "https://schema.org",
@@ -188,16 +196,23 @@ export default async function FilmPage({ params }: { params: Promise<{ slug: str
       />
       <WatchStage>
         {player ? (
-          <div className="relative group/player">{player}</div>
+          <div className="relative group/player">
+            {player}
+            {canDownload && (
+              <div className="absolute top-3 right-3 z-20">
+                <EpisodeDownload
+                  href={`/api/movies/${m.id}/download`}
+                  signinCallback={`/wiki/movies/${m.slug}`}
+                  title={m.title}
+                />
+              </div>
+            )}
+          </div>
         ) : (
           // Aucun lecteur ni source (ex. Bardock, History of Trunks…) : état
           // vide propre plutôt qu'un embed cassé ou un bouton de téléchargement
           // mort. Le reste de la fiche (poster, infos, synopsis) reste affiché.
-          <VideoUnavailableCard
-            title={m.title}
-            kind="film"
-            poster={m.poster ? assetUrl(m.poster) : undefined}
-          />
+          <VideoUnavailableCard title={m.title} kind="film" />
         )}
       </WatchStage>
       <div className="mb-6">

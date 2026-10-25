@@ -11,6 +11,7 @@ import { WikiPageShell } from "@/components/wiki/WikiPageShell";
 import { dbUniverse, type Episode, type Saga } from "@/lib/db-universe";
 import { assetUrl } from "@/lib/assets";
 import { ERA_ACCENT, eraOf } from "@/lib/chronology";
+import { DBS_BEERUS_EPISODE_HREF, DBS_BEERUS_SERIES_CODE } from "@/lib/episode-series-catalogue";
 import {
   getEpisodeSeriesCached,
   getEpisodesCached,
@@ -91,7 +92,11 @@ export default async function EpisodesCatalogue() {
               {SERIES_LABELS[group.series] ?? group.series}
             </h2>
             <Link
-              href={`/wiki/episodes/series/${group.series}`}
+              href={
+                group.series === DBS_BEERUS_SERIES_CODE
+                  ? DBS_BEERUS_EPISODE_HREF
+                  : `/wiki/episodes/series/${group.series}`
+              }
               className="inline-flex min-h-11 items-center text-sm text-white/70 hover:text-dbz-orange focus-visible:outline-2 focus-visible:outline-dbz-orange"
             >
               <T k="common.viewAll" />

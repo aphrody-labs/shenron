@@ -4,7 +4,7 @@
  *
  * Combine le pipeline existant en UN seul geste, par (série, épisode) :
  *   1. EXTRACTION — lance le producteur de frames adapté :
- *        `extract-dbz-frames.ts` (Bun Video sur master vidéo local), alimenté par
+ *        `extract-dbz-frames.ts` (ffmpeg sur master vidéo local), alimenté par
  *        `data/dbz-sources/<series>/<ep>.<ext>` ou `--input`. Le producteur qui
  *        aspirait des screencaps Fandom a été retiré : source interdite.
  *      Il écrit un dataset `data/dbz-frames/<series>-ep<NNN>.json`
@@ -12,8 +12,8 @@
  *      `assets/ext/db_episodes_frames/<series>/ep<NNN>/`.
  *   2. SÉLECTION — relit ce dataset, trie « notable d'abord » puis par `sortOrder`,
  *      cap à `--max` (défaut 24) → les meilleures frames du montage.
- *   3. PREVIEW — FilmCraft génère `preview.mp4` (montage court, `--hold` s/frame,
- *      images décodées par Bun.Image, H.264 YUV420 avec pertes).
+ *   3. PREVIEW — ffmpeg génère `preview.mp4` (montage court, ~`--hold` s/frame,
+ *      slideshow concat des webp sélectionnés, H.264 yuv420p, web-friendly).
  *   4. DATASET — réécrit `data/dbz-frames/<series>-ep<NNN>.json` au format
  *      orchestrateur : `{ series, number, episodeId, frames: EpisodeFrame[],
  *      scenePreview, meta, scrapedAt }`. `scenePreview` = chemin relatif
@@ -26,14 +26,14 @@
  * ── Usage ────────────────────────────────────────────────────────────────────
  *   bun apps/bot/scripts/build-episode-scenes.ts --series DBZ --ep 1 \
  *       [--max 24] [--hold 0.8] [--input <video>] \
- *       [--dry-run]
+ *       [--keep-extract-args "--scene 0.4 --period 6"] [--dry-run]
  *
  *   --series   série db_episodes (DB|DBZ|DBGT|DBS|DB_DAIMA|DBZ_KAI). défaut DBZ
  *   --ep       numberInSeries (obligatoire)
  *   --max      nombre de frames retenues pour le montage (défaut 24)
  *   --hold     durée d'affichage par frame dans le preview, en s (défaut 0.8)
- *   --input    chemin vidéo réel autorisé → source Bun Video
- *   --dry-run  smoke : exige --input, prouve captures réelles + preview.mp4,
+ *   --input    chemin vidéo explicite → force la source ffmpeg
+ *   --dry-run  smoke : génère un clip lavfi de test, prouve frames + preview.mp4,
  *              nettoie tout dans /tmp, n'écrit RIEN dans assets/ ni data/.
  */
 import { mkdir, readdir, stat, rm } from "node:fs/promises";
@@ -170,57 +170,92 @@ async function buildPreview(
   );
 }
 
-/** Qualify a real authorized master in temporary storage, without editorial writes. */
+/**
+ * SMOKE (--dry-run) : génère un clip de test via `ffmpeg -f lavfi`, en extrait
+ * des frames webp, monte un preview.mp4, prouve la chaîne, et nettoie tout dans
+ * /tmp. N'ÉCRIT RIEN dans assets/ ni data/.
+ */
 async function smoke(args: Args): Promise<void> {
-  if (!args.input || !(await Bun.file(args.input).exists()))
-    throw new Error("--dry-run requires --input with a real authorized local video");
-  const Video = (Bun as any).Video;
-  if (!Video?.available) throw new Error("Bun.Video provider unavailable");
-  const video = new Video(args.input);
-  const metadata = await video.metadata();
-  if (!Number.isFinite(metadata.duration) || metadata.duration <= 0)
-    throw new Error("Real source has no finite positive duration");
-  const work = join("/tmp", "scenes-smoke-" + crypto.randomUUID());
+  const work = join("/tmp", `scenes-smoke-${Date.now()}`);
   await mkdir(work, { recursive: true });
   try {
-    const count = Math.min(3, args.max);
-    if (!Number.isSafeInteger(count) || count < 1) throw new Error("Invalid smoke frame count");
-    const frames: EpisodeFrame[] = [];
-    for (let index = 0; index < count; index++) {
-      const time = (metadata.duration * (index + 1)) / (count + 1);
-      const path = join(work, "frame-" + pad(index, 5) + ".webp");
-      await video.frame(time).resize(640).webp({ quality: 80 }).write(path);
-      const image = await new (Bun as any).Image(path).metadata();
-      frames.push({
-        source: "bun-video",
-        sourceId: "smoke:" + pad(index, 5),
-        sourceUrl: args.input,
-        episodeNumber: args.ep,
-        imagePath: path,
-        timecodeSec: time,
-        width: image.width,
-        height: image.height,
-        characterNames: [],
-        tags: ["smoke"],
-        caption: null,
-        isNotable: index === 0,
-        sortOrder: index,
-      });
-    }
+    // 1. Clip synthétique 5 s (testsrc2) → master local factice.
+    const clip = join(work, "clip.mp4");
+    const genClip = Bun.spawn(
+      [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-f",
+        "lavfi",
+        "-i",
+        "testsrc2=size=320x240:rate=15:duration=5",
+        "-pix_fmt",
+        "yuv420p",
+        "-y",
+        clip,
+      ],
+      { stdout: "ignore", stderr: "pipe" },
+    );
+    const e1 = await new Response(genClip.stderr).text();
+    if ((await genClip.exited) !== 0) throw new Error(`lavfi clip KO:\n${e1.slice(-400)}`);
+
+    // 2. Extraction : 1 frame/s → webp.
+    const extractCode = await Bun.spawn(
+      [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-i",
+        clip,
+        "-vf",
+        "fps=1",
+        "-c:v",
+        "libwebp",
+        "-quality",
+        "80",
+        "-y",
+        join(work, "frame-%05d.webp"),
+      ],
+      { stdout: "ignore", stderr: "inherit" },
+    ).exited;
+    if (extractCode !== 0) throw new Error("extraction webp KO");
+
+    const webps = (await readdir(work)).filter((f) => /^frame-\d+\.webp$/.test(f)).toSorted();
+    if (webps.length === 0) throw new Error("0 frame webp extraite (smoke)");
+
+    // 3. Frames factices pointant sur les webp /tmp (imagePath absolu via ./ hack).
+    const frames: EpisodeFrame[] = webps.map((f, i) => ({
+      source: "ffmpeg",
+      sourceId: `smoke:${pad(i + 1, 5)}`,
+      sourceUrl: clip,
+      episodeNumber: args.ep,
+      imagePath: join(work, f), // chemin absolu /tmp (frameAbsPath le garde tel quel)
+      timecodeSec: i,
+      width: 320,
+      height: 240,
+      characterNames: [],
+      tags: ["smoke"],
+      caption: null,
+      isNotable: i === 0,
+      sortOrder: i,
+    }));
+
+    const selected = selectTopFrames(frames, args.max);
     const preview = join(work, "preview.mp4");
-    await buildPreview(frames, preview, args.hold, work);
-    const probe = await new Video(preview).metadata();
+    await buildPreview(selected, preview, args.hold, work);
+
+    const st = await stat(preview);
+    if (st.size <= 0) throw new Error("preview.mp4 vide (smoke)");
+
     console.log(
-      JSON.stringify({
-        schema: "shenron.scene.smoke/v1",
-        source: args.input,
-        sourceMetadata: metadata,
-        captures: frames.map(({ timecodeSec, width, height }) => ({ timecodeSec, width, height })),
-        preview: probe,
-        bytes: Bun.file(preview).size,
-        backend: "Bun.Video + Bun.Image + shenron-video/FilmCraft",
-        editorialWrites: false,
-      }),
+      `\n[SMOKE OK] chaîne prouvée dans ${work}\n` +
+        `  • clip lavfi    : ${clip}\n` +
+        `  • frames webp   : ${webps.length} (sélection ${selected.length})\n` +
+        `  • preview.mp4   : ${preview} (${st.size} octets)\n` +
+        `  rien écrit dans assets/ ni data/. Nettoyage /tmp…`,
     );
   } finally {
     await rm(work, { recursive: true, force: true });
@@ -234,7 +269,7 @@ async function main(): Promise<void> {
   if (args.dryRun) {
     console.log(
       `build-episode-scenes — ${args.series} ${epTag}  [DRY-RUN / SMOKE]\n` +
-        `  (master réel autorisé, montage natif, nettoyage /tmp — zéro écriture prod)`,
+        `  (clip lavfi de test, preview montage, nettoyage /tmp — zéro écriture prod)`,
     );
     await smoke(args);
     return;
@@ -246,7 +281,7 @@ async function main(): Promise<void> {
 
   console.log(
     `build-episode-scenes — ${args.series} ${epTag} (db id ${epId?.id ?? "?"})\n` +
-      `  source : Bun Video (master local)\n` +
+      `  source : ffmpeg (master local)\n` +
       `  params : max ${args.max} frames, hold ${args.hold}s/frame`,
   );
 

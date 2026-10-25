@@ -95,9 +95,6 @@
   },
   "searchShort": "Search",
   "reader": {
-    "unavailableTitle": "Reading unavailable for this edition",
-    "unavailableNotice": "This page provides bibliographic information about the volume. No pages from this edition are available to read here.",
-    "suggestSource": "Suggest a source",
     "preview": "Official preview — {count} pages (incomplete volume)",
     "previewNotice": "This official preview contains {count} pages from the volume.",
     "previewSource": "View the official source",

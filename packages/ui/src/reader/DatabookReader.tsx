@@ -99,8 +99,6 @@ export type DatabookReaderProps = {
   loadTranscriptions?: (pages: number[], signal: AbortSignal) => Promise<Record<string, string>>;
   renderTranscription?: (transcription: ReaderTranscription) => ReactNode;
   preloadCount?: number;
-  /** Canonical printed page number, unlike the manga reader's one-based ordinal. */
-  onPageChange?: (number: number) => void;
 };
 
 type ResolvedPage = {
@@ -225,7 +223,6 @@ export function DatabookReader({
   loadTranscriptions,
   renderTranscription,
   preloadCount = 4,
-  onPageChange,
 }: DatabookReaderProps): ReactElement {
   const containerRef = useRef<HTMLDivElement>(null);
   const lightboxRef = useRef<HTMLDivElement>(null);
@@ -236,10 +233,6 @@ export function DatabookReader({
 
   const [mode, setMode] = useState<ViewMode>("vertical");
   const [current, setCurrent] = useState(0);
-  const selectedNumber = items[current]?.number;
-  useEffect(() => {
-    if (selectedNumber !== undefined) onPageChange?.(selectedNumber);
-  }, [selectedNumber, onPageChange]);
   const { isFullscreen, pseudoFullscreen, toggleFullscreen } = useFullscreen(containerRef);
   /** Double page : seulement en paginé et à partir de `lg` (lisibilité mobile). */
   const isLarge = useMediaQuery(LARGE_SCREEN_QUERY);

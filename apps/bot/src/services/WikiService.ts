@@ -1,5 +1,5 @@
 import { singleton, inject } from "tsyringe";
-import { and, asc, desc, eq, or, sql, type SQL } from "drizzle-orm";
+import { and, asc, desc, eq, like, sql, type SQL } from "drizzle-orm";
 import type { SQLiteColumn } from "drizzle-orm/sqlite-core";
 import { DatabaseService } from "~/db/index";
 import {
@@ -56,11 +56,6 @@ export type TechniqueWithCreator = DBTechnique & {
  */
 function byIdOrSlug(id: SQLiteColumn, slug: SQLiteColumn, key: string): SQL {
   return /^\d+$/.test(key) ? eq(id, Number(key)) : eq(slug, key);
-}
-
-/** Motif LIKE littéral : `%`, `_` et `\` tapés par un membre ne sont pas des jokers. */
-function likeLiteral(text: string): string {
-  return text.replace(/[\\%_]/g, (c) => `\\${c}`);
 }
 
 /** Retire `visible` d'une ligne déjà filtrée. */
@@ -134,15 +129,11 @@ export class WikiService {
   }
 
   /**
-   * Recherche par nom (partielle, insensible à la casse) parmi les personnages
-   * visibles, aussi sur le romaji et le nom japonais ; sans `limit`, toutes les
-   * correspondances. Ordre : nom exact, puis nom qui commence par la saisie,
-   * puis le reste, alphabétique — « Goku » passe avant « Goku Black ».
+   * Recherche fuzzy par nom (partial, case-insensitive) parmi les personnages
+   * visibles ; sans `limit`, toutes les correspondances.
    */
   async search(query: string, limit?: number): Promise<DBCharacter[]> {
-    const q = query.trim().toLowerCase();
-    const contains = `%${likeLiteral(q)}%`;
-    const prefix = `${likeLiteral(q)}%`;
+    const q = query.trim();
     const rows = await this.db
       .select()
       .from(dbCharacters)
@@ -150,19 +141,9 @@ export class WikiService {
         q
           ? and(
               eq(dbCharacters.visible, true),
-              or(
-                sql`LOWER(${dbCharacters.name}) LIKE ${contains} ESCAPE '\\'`,
-                sql`LOWER(coalesce(${dbCharacters.nameRomaji}, '')) LIKE ${contains} ESCAPE '\\'`,
-                sql`coalesce(${dbCharacters.nameJa}, '') LIKE ${contains} ESCAPE '\\'`,
-              ),
+              like(sql`LOWER(${dbCharacters.name})`, `%${q.toLowerCase()}%`),
             )
           : eq(dbCharacters.visible, true),
-      )
-      .orderBy(
-        sql`CASE WHEN LOWER(${dbCharacters.name}) = ${q} THEN 0
-                 WHEN LOWER(${dbCharacters.name}) LIKE ${prefix} ESCAPE '\\' THEN 1
-                 ELSE 2 END`,
-        asc(dbCharacters.name),
       )
       .limit(limit ?? -1);
     return rows.map(publicRow);

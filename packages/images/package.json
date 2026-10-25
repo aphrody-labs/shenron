@@ -1,6 +1,6 @@
 {
   "name": "@aphrody/shenron-images",
-  "version": "1.4.7",
+  "version": "1.4.6",
   "private": false,
   "description": "Image hashing, deduplication, variant selection and sourced illustration picking for Shenron (Bun + sharp)",
   "homepage": "https://dragonballfr.com",

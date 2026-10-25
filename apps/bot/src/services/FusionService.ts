@@ -1,5 +1,5 @@
 import { singleton, inject } from "tsyringe";
-import { createCanvas, type Image, type SKRSContext2D } from "@napi-rs/canvas";
+import { createCanvas, loadImage, type Image, type SKRSContext2D } from "@napi-rs/canvas";
 import type { User } from "discord.js";
 import { BackgroundCacheService } from "./BackgroundCacheService";
 import { DatabaseService } from "~/db/index";
@@ -10,8 +10,6 @@ import {
   roundRectPath,
   textStroked,
   textWithShadow,
-  font,
-  loadRemoteImage,
 } from "~/lib/canvas-kit";
 
 /**
@@ -27,20 +25,15 @@ export interface FusionInput {
   fusedName?: string; // requis si state = success
 }
 
-/**
- * Backgrounds in order of preference: the aurora image (not shipped to production), then a
- * built-in banner; when neither is on disk the canvas draws its gradient.
- */
-const BG_CANDIDATES = [
-  "assets/backgrounds/aurora/aurora-borealis-at-kennedy-space-center.webp",
-  "assets/banners/banner-15.jpg",
-] as const;
+const BG_FILE = "assets/backgrounds/aurora/aurora-borealis-at-kennedy-space-center.webp";
 const COLOR_A = "#F85B1A"; // orange Goku
 const COLOR_B = "#2955DC"; // bleu Vegeta
 const COLOR_FUSION = "#ec4899"; // rose central
 
 @singleton()
 export class FusionService {
+  private avatarCache = new Map<string, Image>();
+
   constructor(
     @inject(BackgroundCacheService) private bgCache: BackgroundCacheService,
     @inject(DatabaseService) private dbs: DatabaseService,
@@ -66,12 +59,18 @@ export class FusionService {
       size: 256,
       forceStatic: true,
     });
-    return loadRemoteImage(url);
+    if (this.avatarCache.has(url)) return this.avatarCache.get(url)!;
+    try {
+      const img = await loadImage(url);
+      this.avatarCache.set(url, img);
+      return img;
+    } catch {
+      return null;
+    }
   }
 
   private async loadBg(): Promise<Image | null> {
-    const file = this.bgCache.firstAvailable(BG_CANDIDATES);
-    return file ? this.bgCache.get(file) : null;
+    return this.bgCache.get(BG_FILE);
   }
 
   async render(input: FusionInput): Promise<Buffer> {
@@ -115,7 +114,7 @@ export class FusionService {
     // ── Titre ──────────────────────────────────────────────────────────
     const title = input.state === "success" ? "FUSIOOON-HA !!" : "PROPOSITION DE FUSION";
     textStroked(ctx, title, W / 2, 56, {
-      font: font("800 34px"),
+      font: "800 34px 'Google Sans Flex', sans-serif",
       color: input.state === "success" ? "#fbbf24" : "#f1f5f9",
       stroke: "rgba(0,0,0,0.9)",
       strokeWidth: 4,
@@ -135,7 +134,7 @@ export class FusionService {
 
       // Centre : VS + point d'interrogation
       textStroked(ctx, "?", W / 2, 195, {
-        font: font("800 110px"),
+        font: "800 110px 'Google Sans Flex', sans-serif",
         color: COLOR_FUSION,
         stroke: "rgba(0,0,0,0.8)",
         strokeWidth: 5,
@@ -185,14 +184,14 @@ export class FusionService {
 
       // Pseudos de part et d'autre
       textWithShadow(ctx, input.a.username.slice(0, 14), AV_CX_A - 80, AV_Y + 10, {
-        font: font("700 16px"),
+        font: "700 16px 'Google Sans Flex', sans-serif",
         color: COLOR_A,
         shadow: "rgba(0,0,0,0.9)",
         blur: 4,
         align: "left",
       });
       textWithShadow(ctx, input.b.username.slice(0, 14), AV_CX_B + 80, AV_Y + 10, {
-        font: font("700 16px"),
+        font: "700 16px 'Google Sans Flex', sans-serif",
         color: COLOR_B,
         shadow: "rgba(0,0,0,0.9)",
         blur: 4,
@@ -218,7 +217,7 @@ export class FusionService {
 
     if (input.state === "success" && input.fusedName) {
       textStroked(ctx, input.fusedName.toUpperCase(), W / 2, BAND_Y + 40, {
-        font: font("800 34px"),
+        font: "800 34px 'Google Sans Flex', sans-serif",
         color: "#fbbf24",
         stroke: "rgba(0,0,0,0.9)",
         strokeWidth: 3,
@@ -226,7 +225,7 @@ export class FusionService {
       });
     } else {
       textWithShadow(ctx, "Acceptes-tu la fusion ?", W / 2, BAND_Y + 38, {
-        font: font("800 22px"),
+        font: "800 22px 'Google Sans Flex', sans-serif",
         color: "#f1f5f9",
         shadow: "rgba(0,0,0,0.9)",
         blur: 5,
@@ -288,7 +287,7 @@ export class FusionService {
 
     // Pseudo
     textWithShadow(ctx, user.username.slice(0, 14), cx, cy + r + 24, {
-      font: font("700 16px"),
+      font: "700 16px 'Google Sans Flex', sans-serif",
       color: "#f1f5f9",
       shadow: "rgba(0,0,0,0.9)",
       blur: 4,

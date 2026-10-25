@@ -18,61 +18,22 @@ test("qualified Shenron CDN MP4 is played directly with byte ranges", () => {
   expect(result.hlsMasterUrl).toBeNull();
 });
 
-test("published episode media supplies native playback when the legacy stream field is absent", () => {
-  const source = `https://cdn.dragonballfr.com/media/episodes/876/${"a".repeat(64)}/source.mp4`;
-  const players = [{ name: "Shenron", provider: "shenron", embedUrl: source, lang: "vostfr" }];
-  expect(episodePlayback({ id: 876, players }).nativeSource).toEqual({
-    src: source,
-    type: "video/mp4",
-  });
-  expect(episodePlayback({ id: 875, players }).nativeSource).toBeNull();
-  expect(
-    episodePlayback({ id: 876, players: [{ ...players[0], embedUrl: source + "?token=x" }] })
-      .nativeSource,
-  ).toBeNull();
-  expect(
-    episodePlayback({
-      id: 876,
-      players: [{ ...players[0], embedUrl: "https://example.test/video.mp4" }],
-    }).nativeSource,
-  ).toBeNull();
-});
-
-test("published MP4 takes precedence over a legacy origin or HLS stream", () => {
-  const source = `https://cdn.dragonballfr.com/media/episodes/875/${"b".repeat(64)}/source.mp4`;
-  for (const stream_url of [
-    "https://27.mugiwara.one/dbs/dbs-1.mp4",
-    "https://example.test/expired/master.m3u8",
-  ]) {
-    expect(
-      episodePlayback({
-        id: 875,
-        stream_url,
-        players: [{ name: "Shenron", provider: "shenron", embedUrl: source, lang: "vostfr" }],
-      }).nativeSource,
-    ).toEqual({ src: source, type: "video/mp4" });
-  }
-});
-
 test("HLS metadata exposes the bot transport without leaking stored stream tokens", () => {
-  const result = episodePlayback(
-    {
-      id: 445,
-      stream_url: "https://example.test/token/master.m3u8?private=token",
-      players: [
-        {
-          name: "Source",
-          provider: "observed",
-          lang: "vostfr",
-          embedUrl: "https://example.test/embed",
-        },
-      ],
-      subtitles: [
-        { src: "./assets/subtitles/db_episodes/445/ja.srt", lang: "ja", label: "Japanese" },
-      ],
-    },
-    { episodeOnDemand: true, cachedEpisodeVariants: {}, cachedMovieVariants: {} },
-  );
+  const result = episodePlayback({
+    id: 445,
+    stream_url: "https://example.test/token/master.m3u8?private=token",
+    players: [
+      {
+        name: "Source",
+        provider: "observed",
+        lang: "vostfr",
+        embedUrl: "https://example.test/embed",
+      },
+    ],
+    subtitles: [
+      { src: "./assets/subtitles/db_episodes/445/ja.srt", lang: "ja", label: "Japanese" },
+    ],
+  });
   expect(result.hlsMasterUrl).toContain("/api/hls/445/master.m3u8");
   expect(result.nativeSource?.src ?? null).toBe(result.hlsMasterUrl);
   expect(result.versions).toEqual(["vostfr"]);
@@ -92,31 +53,4 @@ test("unapproved stored sources never become a public native playback URL", () =
     expect(result.nativeSource).toBeNull();
     expect(result.hlsMasterUrl).toBeNull();
   }
-});
-
-test("historical HLS is retained as metadata input but not advertised when backend is disabled", () => {
-  const input = {
-    id: 445,
-    stream_url: "https://example.test/expired/master.m3u8",
-    players: [
-      {
-        name: "Source",
-        provider: "external",
-        lang: "vostfr",
-        embedUrl: "https://example.test/embed",
-      },
-    ],
-  };
-  const disabled = episodePlayback(input);
-  expect(disabled.nativeSource).toBeNull();
-  expect(disabled.hlsMasterUrl).toBeNull();
-  expect(disabled.voHlsMasterUrl).toBeNull();
-  expect(disabled.players).toHaveLength(1);
-  const variant = episodePlayback(input, {
-    episodeOnDemand: false,
-    cachedEpisodeVariants: { "445": ["vostfr"] },
-    cachedMovieVariants: {},
-  });
-  expect(variant.nativeSource).toBeNull();
-  expect(variant.voHlsMasterUrl).toContain("lang=vostfr");
 });

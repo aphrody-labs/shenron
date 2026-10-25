@@ -95,9 +95,6 @@
   },
   "searchShort": "検索",
   "reader": {
-    "unavailableTitle": "この版は閲覧できません",
-    "unavailableNotice": "このページには巻の書誌情報を掲載しています。この版の本文ページは、ここでは閲覧できません。",
-    "suggestSource": "資料を提案する",
     "preview": "公式試し読み — {count}ページ（巻の一部）",
     "previewNotice": "公式試し読みの{count}ページを掲載しています。収録範囲は巻の一部です。",
     "previewSource": "公式の出典を確認",

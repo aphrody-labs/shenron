@@ -11,7 +11,6 @@ import {
 } from "~/lib/constants";
 import { RACE_IDS, RACES, REGEN_XP, REGEN_ZENI, setRaceTuning } from "~/lib/races";
 import { DEFAULT_XP_BOOST_CONFIG as XP_BOOST } from "~/lib/xp-boosts";
-import { botLang, type BotLang } from "~/lib/i18n";
 
 /**
  * Settings runtime — table key/value persistée en SQLite.
@@ -65,27 +64,9 @@ export interface SettingDef {
 
 export const XP_BOOST_ROLE_PREFIX = "xp.boost.role.";
 
-/** Periodic SQLite -> PostgreSQL replica of the runtime state (`ReplicaSyncService`). */
-export const REPLICA_SYNC_ENABLED = "replica.sync.enabled";
-export const REPLICA_SYNC_INTERVAL_MINUTES = "replica.sync.interval_minutes";
-export const REPLICA_SYNC_JOURNALS = "replica.sync.journals";
-export const REPLICA_SYNC_SOURCE_ID = "replica.sync.source_id";
-export const REPLICA_SYNC_DEFAULT_INTERVAL_MINUTES = 15;
-/** Identity of the database the journals were copied under on 2026-10-23: keeps their PostgreSQL ids. */
-export const REPLICA_SYNC_DEFAULT_SOURCE_ID = "dbfr-bot-20261023";
-export const REPLICA_SYNC_SOURCE_ID_PATTERN = /^[a-z0-9][a-z0-9-]{5,80}$/;
-
 /** Types de ticket — cf. `TicketService`/`Ticket.ts` (garder synchro avec l'enum `db/schema.ts#tickets.kind`). */
-export const TICKET_KINDS = ["report", "achat", "shop", "abus", "staff"] as const;
+export const TICKET_KINDS = ["report", "achat", "shop", "abus"] as const;
 export type TicketKind = (typeof TICKET_KINDS)[number];
-/** Libellés affichés (panel, salon, notifications) : jamais la valeur brute du type. */
-export const TICKET_KIND_LABELS: Record<TicketKind, string> = {
-  report: "Signalement",
-  achat: "Achat",
-  shop: "Shop",
-  abus: "Abus de perm",
-  staff: "Candidature staff",
-};
 /** Préfixe des rôles ayant accès à un type de ticket : `tickets.access.<kind>.<roleId>` = "1". */
 export const TICKET_ACCESS_PREFIX = "tickets.access.";
 
@@ -445,14 +426,6 @@ export const SETTINGS_KEYS: SettingDef[] = [
     default: true,
   },
   {
-    key: "level_role_sync.strip",
-    type: "bool",
-    category: "features",
-    description:
-      "Autorise la réconciliation à RETIRER les rôles de palier en trop (au-dessus du niveau ou d'une autre race). Désactivé : elle les constate seulement.",
-    default: false,
-  },
-  {
     key: "game.pfc.duel_timeout_ms",
     type: "int",
     category: "features",
@@ -465,28 +438,9 @@ export const SETTINGS_KEYS: SettingDef[] = [
     key: "anticheat.xp.max_single",
     type: "int",
     category: "xp",
-    description:
-      "Ancien plafond d'XP unitaire : ne fait plus que resserrer le plafond dérivé de la configuration (0 = dérivé).",
-    default: 0,
-    min: 0,
-  },
-  {
-    key: "xp.gain.max_single",
-    type: "int",
-    category: "xp",
-    description:
-      "Plafond d'un gain d'XP unitaire (hors admin). Au-delà : gain écrêté et XP_SPIKE (gel si > 10 ×). 0 = dérivé de la configuration (message, vocal, plafond de multiplicateur) ; ne peut que resserrer.",
-    default: 0,
-    min: 0,
-  },
-  {
-    key: "xp.gain.max_per_minute",
-    type: "int",
-    category: "xp",
-    description:
-      "Plafond d'XP reçue par un membre sur 60 s (hors admin). Au-delà : surplus refusé et XP_RATE. 0 = dérivé de la configuration ; ne peut que resserrer.",
-    default: 0,
-    min: 0,
+    description: "Gain d'XP unitaire (hors admin) au-delà duquel un signalement XP_SPIKE est levé.",
+    default: 5_000_000,
+    min: 1_000,
   },
   {
     key: "xp.fusion.bonus_ratio",
@@ -830,16 +784,6 @@ export const SETTINGS_KEYS: SettingDef[] = [
     description: "Rôle 'Héros du peuple' (booster serveur — boost XP auto via xp.boost.boosters)",
   },
 
-  // ── Langue des annonces ────────────────────────────────────────
-  {
-    key: "bot.language",
-    type: "string",
-    category: "advanced",
-    description:
-      "Langue des annonces publiques du bot (niveaux, succès, quêtes, sleepcalls) : fr, en ou ja.",
-    default: "fr",
-  },
-
   // ── Vocal éphémère ─────────────────────────────────────────────
   {
     key: "vocal.tempo_empty_delay_ms",
@@ -922,51 +866,6 @@ export const SETTINGS_KEYS: SettingDef[] = [
     min: 0,
     max: 1000,
   },
-  // Arène Shenron (Activité Discord) : règlement des manches par `api/activity.ts`.
-  {
-    key: "features.games.arena",
-    type: "bool",
-    category: "features",
-    description:
-      "Gains de l'Activité Arène Shenron (interrupteur) : désactivé, les manches sont réglées sans rien verser",
-    default: true,
-  },
-  {
-    key: "activity.enabled",
-    type: "bool",
-    category: "features",
-    description:
-      "Lancement de l'Activité par /arena. Désactivé tant que l'application n'est pas vérifiée par Discord (réponse « bientôt »)",
-    default: false,
-  },
-  {
-    key: "activity.daily_budget",
-    type: "int",
-    category: "economy",
-    description:
-      "Zénis de jeux versables par membre sur 24 h glissantes, tous jeux confondus (budget commun, plafond dur 5 000)",
-    default: 600,
-    min: 0,
-    max: 5000,
-  },
-  {
-    key: "activity.min_account_days",
-    type: "int",
-    category: "economy",
-    description: "Âge minimal du compte Discord (jours) pour recevoir les gains de l'Activité",
-    default: 7,
-    min: 0,
-    max: 365,
-  },
-  {
-    key: "activity.min_level",
-    type: "int",
-    category: "economy",
-    description: "Niveau minimal pour recevoir des zénis de l'Activité (l'XP de jeu reste ouverte)",
-    default: 2,
-    min: 0,
-    max: 100,
-  },
   {
     key: "games.pair_reward_cap",
     type: "int",
@@ -976,63 +875,6 @@ export const SETTINGS_KEYS: SettingDef[] = [
     default: 3,
     min: 0,
     max: 100,
-  },
-  {
-    key: "games.xp.enabled",
-    type: "bool",
-    category: "economy",
-    description:
-      "Les mini-jeux donnent de l'XP (victoire, égalité, podium, participation). Jamais multipliée par les rôles, la race, la nuit ou le Zenkai",
-    default: true,
-  },
-  {
-    key: "games.xp.win_ratio",
-    type: "float",
-    category: "economy",
-    description:
-      "XP d'une victoire en mini-jeu : part de l'écart entre le palier atteint et le suivant (0,02 = 2 %)",
-    default: 0.02,
-    min: 0,
-    max: 1,
-  },
-  {
-    key: "games.xp.draw_ratio",
-    type: "float",
-    category: "economy",
-    description:
-      "XP d'une égalité ou d'un podium en mini-jeu : part de l'écart entre le palier atteint et le suivant",
-    default: 0.01,
-    min: 0,
-    max: 1,
-  },
-  {
-    key: "games.xp.play_ratio",
-    type: "float",
-    category: "economy",
-    description:
-      "XP de participation en mini-jeu (défaite, victoire non payée) : part de l'écart entre le palier atteint et le suivant",
-    default: 0.004,
-    min: 0,
-    max: 1,
-  },
-  {
-    key: "games.xp.min",
-    type: "int",
-    category: "economy",
-    description: "XP minimale d'un résultat de mini-jeu, quel que soit l'écart du palier",
-    default: 25,
-    min: 0,
-    max: 1_000_000,
-  },
-  {
-    key: "games.xp.daily_ratio",
-    type: "float",
-    category: "economy",
-    description:
-      "Plafond de l'XP de mini-jeux sur 24 h glissantes, en part de l'écart du palier courant (0,1 = 10 %)",
-    default: 0.1,
-    min: 0,
-    max: 1,
   },
 
   // ── API session ────────────────────────────────────────────────
@@ -1193,41 +1035,6 @@ export const SETTINGS_KEYS: SettingDef[] = [
     max: 5,
   },
 
-  // ── Réplica PostgreSQL de l'état du bot ──────────────────────────
-  {
-    key: REPLICA_SYNC_ENABLED,
-    type: "bool",
-    category: "advanced",
-    description:
-      "Synchronise périodiquement l'état du bot (SQLite) vers le réplica PostgreSQL. Sans effet tant que DATABASE_URL est absente.",
-    default: true,
-  },
-  {
-    key: REPLICA_SYNC_INTERVAL_MINUTES,
-    type: "int",
-    category: "advanced",
-    description: "Réplica PostgreSQL : minutes entre deux passes de synchronisation.",
-    default: REPLICA_SYNC_DEFAULT_INTERVAL_MINUTES,
-    min: 1,
-    max: 1440,
-  },
-  {
-    key: REPLICA_SYNC_JOURNALS,
-    type: "bool",
-    category: "advanced",
-    description:
-      "Réplica PostgreSQL : recopie aussi les journaux en ajout seul (action_logs, rag_eval_history) après un curseur persistant.",
-    default: true,
-  },
-  {
-    key: REPLICA_SYNC_SOURCE_ID,
-    type: "string",
-    category: "advanced",
-    description:
-      "Réplica PostgreSQL : identité stable de la base SQLite dont dérivent les identifiants des journaux. À changer seulement après un remplacement de base, jamais autrement (les journaux seraient recopiés).",
-    default: REPLICA_SYNC_DEFAULT_SOURCE_ID,
-  },
-
   // ── Présence publique (widget "connectés" de la home du site) ──
   {
     key: "presence.public",
@@ -1347,17 +1154,6 @@ export const SETTINGS_KEYS: SettingDef[] = [
   },
 ];
 
-/**
- * Definition of `key`: exact match first, else the prefix collection it belongs to
- * (`xp.boost.role.<roleId>` → `xp.boost.role.`). `undefined` for an unknown key.
- */
-export function findSettingDef(key: string): SettingDef | undefined {
-  return (
-    SETTINGS_KEYS.find((s) => s.key === key && !s.prefix) ??
-    SETTINGS_KEYS.find((s) => s.prefix && key.startsWith(s.key) && key.length > s.key.length)
-  );
-}
-
 @singleton()
 export class SettingsService {
   private cache = new Map<string, string>();
@@ -1415,23 +1211,19 @@ export class SettingsService {
     return (await this.getRaw(key)) ?? fallback;
   }
 
-  /** Language of the public announcements (`bot.language`); French unless set to en or ja. */
-  async getLanguage(): Promise<BotLang> {
-    return botLang(await this.getRaw("bot.language"));
-  }
-
   async getSnowflake(key: string): Promise<string | undefined> {
     const v = await this.getRaw(key);
     return v && /^\d{17,20}$/.test(v) ? v : undefined;
   }
 
-  async set(key: string, rawValue: string): Promise<void> {
-    const value = String(rawValue).trim();
+  async set(key: string, value: string): Promise<void> {
     // Match exact d'abord, sinon match par préfixe (ex: xp.boost.role.<id>)
     let def = SETTINGS_KEYS.find((s) => s.key === key && !s.prefix);
     if (!def) {
-      const prefixDef = findSettingDef(key);
-      if (prefixDef?.prefix) {
+      const prefixDef = SETTINGS_KEYS.find(
+        (s) => s.prefix && key.startsWith(s.key) && key.length > s.key.length,
+      );
+      if (prefixDef) {
         // Validation contextuelle pour les préfixes connus
         if (prefixDef.key === XP_BOOST_ROLE_PREFIX) {
           const roleId = key.slice(prefixDef.key.length);
@@ -1460,12 +1252,6 @@ export class SettingsService {
     if (key === "economy.ursaf.mode" && !/^(off|notice|collect)$/.test(value)) {
       throw new Error(`${key} attend off, notice ou collect.`);
     }
-    if (key === REPLICA_SYNC_SOURCE_ID && !REPLICA_SYNC_SOURCE_ID_PATTERN.test(value)) {
-      throw new Error(`${key} attend 6 à 81 caractères : minuscules, chiffres et tirets.`);
-    }
-    if (key === "bot.language" && !/^(fr|en|ja)$/.test(value)) {
-      throw new Error(`${key} attend fr, en ou ja.`);
-    }
     if (key === "xp.night.timezone") {
       try {
         Intl.DateTimeFormat("fr-FR", { timeZone: value });
@@ -1476,13 +1262,12 @@ export class SettingsService {
     // Validation des types non-prefix
     if (!def.prefix) {
       if (def.type === "int") {
-        // Whole string: parseInt("12abc") would accept and store garbage.
-        const n = /^[-+]?\d+$/.test(value) ? Number(value) : Number.NaN;
-        if (!Number.isSafeInteger(n)) throw new Error(`${key} attend un entier.`);
+        const n = Number.parseInt(value, 10);
+        if (!Number.isFinite(n)) throw new Error(`${key} attend un entier.`);
         if (def.min !== undefined && n < def.min) throw new Error(`${key} ≥ ${def.min}.`);
         if (def.max !== undefined && n > def.max) throw new Error(`${key} ≤ ${def.max}.`);
       } else if (def.type === "float") {
-        const n = value === "" ? Number.NaN : Number(value);
+        const n = Number.parseFloat(value);
         if (!Number.isFinite(n)) throw new Error(`${key} attend un nombre.`);
         if (def.min !== undefined && n < def.min) throw new Error(`${key} ≥ ${def.min}.`);
         if (def.max !== undefined && n > def.max) throw new Error(`${key} ≤ ${def.max}.`);
@@ -1517,7 +1302,9 @@ export class SettingsService {
     return [...this.cache.entries()].map(([key, value]) => ({
       key,
       value,
-      def: findSettingDef(key),
+      def:
+        SETTINGS_KEYS.find((s) => s.key === key && !s.prefix) ??
+        SETTINGS_KEYS.find((s) => s.prefix && key.startsWith(s.key) && key.length > s.key.length),
     }));
   }
 

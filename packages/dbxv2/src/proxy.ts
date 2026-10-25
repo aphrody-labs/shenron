@@ -96,7 +96,7 @@ function jsonError(status: number, error: string): Response {
 export function createDbxv2Proxy(options: Dbxv2ProxyOptions): Dbxv2Proxy {
   const env = options.env ?? (process.env as Dbxv2EnvInput);
   const blocked = isPublicContext(env);
-  if (blocked === "public-render") throw new Dbxv2DisabledError(describeDisabledReason(blocked));
+  if (blocked) throw new Dbxv2DisabledError(describeDisabledReason(blocked));
   const upstream = normalizeServerUrl(options.upstream.baseUrl);
   if (!upstream) throw new Dbxv2ConfigError("upstream.baseUrl must be a valid http(s) URL");
   const token = options.upstream.token;
@@ -169,7 +169,6 @@ export function createDbxv2Proxy(options: Dbxv2ProxyOptions): Dbxv2Proxy {
         method: req.method,
         headers,
         redirect: "error",
-        credentials: "omit",
         signal: req.signal,
       });
     } catch {

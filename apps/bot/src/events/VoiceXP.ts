@@ -7,17 +7,15 @@ import { SettingsService } from "~/services/SettingsService";
 import { MessageTemplateService } from "~/services/MessageTemplateService";
 import { DatabaseService } from "~/db/index";
 import { actionLogs } from "~/db/schema";
-import { XP_VOICE_TICK_MS, VOCAL_TEMPO_EMPTY_DELAY_MS } from "~/lib/constants";
+import { XP_PER_VOICE_TICK, XP_VOICE_TICK_MS, VOCAL_TEMPO_EMPTY_DELAY_MS } from "~/lib/constants";
 import { env } from "~/lib/env";
 import { resolveLevelChannel } from "~/lib/announce";
 import { boosterXpMultiplier } from "~/lib/booster";
-import { formatElapsed } from "~/lib/duration";
-import { formatNumber, tn } from "~/lib/i18n";
+import { formatDuration } from "~/lib/duration";
 import {
   bestRoleMultiplier,
   formatMultiplier,
   isNight,
-  loadVoiceBaseGain,
   loadXpBoostConfig,
   voiceBoost,
   voiceChannelContext,
@@ -28,8 +26,6 @@ import {
   type XpBoostConfig,
 } from "~/lib/xp-boosts";
 import { logger } from "~/lib/logger";
-import { levelFromXp } from "~/lib/xp";
-import { DEFAULT_LEVEL_RACE, memberRaceId, tierEntitlement } from "~/lib/race-levels";
 import { ChannelType } from "discord.js";
 import { CronRegistry } from "~/api/cron-registry";
 
@@ -93,9 +89,13 @@ export class VoiceXPEvent {
     await this.syncSessions(guild, cfg, now);
 
     // Setting xp.voice.per_minute → conversion en per-tick (XP_VOICE_TICK_MS).
-    const { perTick: baseGain } = await loadVoiceBaseGain(this.settings);
+    // Fallback constant `XP_PER_VOICE_TICK` si pas de setting.
+    const perMinute = await this.settings.getInt("xp.voice.per_minute", 0);
+    const baseGain =
+      perMinute > 0
+        ? Math.max(1, Math.round((perMinute * XP_VOICE_TICK_MS) / 60_000))
+        : XP_PER_VOICE_TICK;
 
-    let failed = 0;
     for (const [userId, sess] of this.sessions) {
       // Marge de 5s : `setInterval` peut tirer quelques ms trop tôt et faire
       // sauter un tick entier (XP vocal divisé par 2 sans raison visible).
@@ -104,79 +104,45 @@ export class VoiceXPEvent {
       if (!channel) continue;
       sess.lastTickAt = now;
 
-      // A failure on one member (locked database, missing column) does not cut the tick of the
-      // others: it is logged with its context, counted, then rethrown at the end so the task
-      // registry shows the error.
-      try {
-        await this.tickMember(client, guild, userId, sess, channel, boosts, cfg, baseGain, now);
-      } catch (err) {
-        failed++;
-        logger.error(
-          { err, userId, channelId: sess.channelId, op: "voice-xp" },
-          "voice XP tick failed",
-        );
+      const member =
+        guild.members.cache.get(userId) ?? (await guild.members.fetch(userId).catch(() => null));
+      const roleMultiplier = member
+        ? bestRoleMultiplier(
+            (roleId) => member.roles.cache.has(roleId),
+            boosts,
+            await boosterXpMultiplier(member, this.settings),
+          )
+        : 1;
+      const u = await this.levels.getUser(userId);
+      const boost = voiceBoost(
+        {
+          roleMultiplier,
+          race: u?.race,
+          raceBoostUntil: u?.raceBoostUntil?.getTime() ?? 0,
+          now,
+          status: sess.status,
+          channel,
+        },
+        cfg,
+      );
+      const gain = Math.floor(baseGain * boost.total);
+
+      // Temps de présence vocal (classement « vocal » + stats de profil).
+      await this.levels.addVoiceTime(userId, XP_VOICE_TICK_MS, new Date(sess.joinedAt));
+      if (gain <= 0) continue;
+
+      const res = await this.levels.addXP(userId, gain, { propagateFusion: true, source: "voice" });
+      if (channel.sleepcall) {
+        const sleepcall = this.sleepcalls.get(sess.channelId);
+        if (sleepcall) sleepcall.xp += gain;
+      }
+      if (res.levelUp && member) {
+        const announce = await resolveLevelChannel(client, guild);
+        await this.levels.handleLevelUp(member, res.newLevel, announce ?? undefined);
       }
     }
 
     await this.closeSleepcalls(client, cfg, now);
-    if (failed > 0) throw new Error(`voice XP tick: ${failed} member write(s) failed`);
-  }
-
-  private async tickMember(
-    client: Client,
-    guild: Guild,
-    userId: string,
-    sess: VoiceSession,
-    channel: VoiceChannelContext,
-    boosts: Awaited<ReturnType<SettingsService["getXpBoostRoles"]>>,
-    cfg: XpBoostConfig,
-    baseGain: number,
-    now: number,
-  ) {
-    const member =
-      guild.members.cache.get(userId) ?? (await guild.members.fetch(userId).catch(() => null));
-    const u = await this.levels.getUser(userId);
-    // A tier role only multiplies from the level at which the ladder grants it.
-    const roleMultiplier = member
-      ? bestRoleMultiplier(
-          (roleId) => member.roles.cache.has(roleId),
-          boosts,
-          await boosterXpMultiplier(member, this.settings),
-          tierEntitlement(levelFromXp(u?.xp ?? 0), memberRaceId(member) ?? DEFAULT_LEVEL_RACE),
-        )
-      : 1;
-    const boost = voiceBoost(
-      {
-        roleMultiplier,
-        race: u?.race,
-        raceBoostUntil: u?.raceBoostUntil?.getTime() ?? 0,
-        now,
-        status: sess.status,
-        channel,
-      },
-      cfg,
-    );
-    const gain = Math.floor(baseGain * boost.total);
-
-    // Temps de présence vocal (classement « vocal » + stats de profil).
-    await this.levels.addVoiceTime(userId, XP_VOICE_TICK_MS, new Date(sess.joinedAt));
-    if (gain <= 0) return;
-
-    const res = await this.levels.addXP(userId, gain, { propagateFusion: true, source: "voice" });
-    if (channel.sleepcall) {
-      const sleepcall = this.sleepcalls.get(sess.channelId);
-      if (sleepcall) sleepcall.xp += res.granted;
-    }
-    if (res.levelUp && member) {
-      const announce = await resolveLevelChannel(client, guild);
-      await this.levels.handleLevelUp(
-        member,
-        res.newLevel,
-        announce ?? undefined,
-        res.oldLevel,
-        res.levelZeni,
-      );
-    }
   }
 
   /**
@@ -240,13 +206,11 @@ export class VoiceXPEvent {
       sleepcall = { channelId, startedAt: now, lastSeenAt: now, participants: new Set(), xp: 0 };
       this.sleepcalls.set(channelId, sleepcall);
       if (this.adopted && cfg.sleepcall.announce) {
-        const lang = await this.msg.lang();
         await this.msg.publish(
           "sleepcall_start",
           {
             channelId,
             members: ctx.earners.length,
-            membersLabel: tn(lang, "plural.members", ctx.earners.length),
             multiplier: formatMultiplier(cfg.sleepcall.multiplier),
             endHour: cfg.night.endHour,
           },
@@ -290,28 +254,13 @@ export class VoiceXPEvent {
         logger.warn({ err, channelId: sleepcall.channelId }, "sleepcall log failed");
       }
       if (cfg.sleepcall.announce) {
-        // A summary that reports no XP is noise (and wrong when gains were refused or failed):
-        // it is not published, the reason is logged for the operators.
-        if (sleepcall.xp <= 0) {
-          logger.warn(
-            {
-              channelId: sleepcall.channelId,
-              participants: sleepcall.participants.size,
-              durationMs,
-            },
-            "sleepcall summary skipped: no XP was granted during the call",
-          );
-          continue;
-        }
-        const lang = await this.msg.lang();
         await this.msg.publish(
           "sleepcall_end",
           {
             channelId: sleepcall.channelId,
-            duration: formatElapsed(durationMs, lang),
+            duration: formatDuration(durationMs),
             participants: sleepcall.participants.size,
-            participantsLabel: tn(lang, "plural.participants", sleepcall.participants.size),
-            xp: formatNumber(lang, sleepcall.xp),
+            xp: sleepcall.xp.toLocaleString("fr-FR"),
           },
           client,
         );
@@ -380,12 +329,11 @@ export class VoiceXPEvent {
       VOCAL_TEMPO_EMPTY_DELAY_MS,
     );
     const timer = setTimeout(async () => {
-      // Libéré d'emblée : un salon re-rempli gardait sinon son minuteur échu en mémoire.
-      this.emptyTimers.delete(channel.id);
       const refetched = await channel.fetch().catch(() => null);
       if (!refetched || refetched.members.size > 0) return;
       await refetched.delete("Vocal tempo empty").catch(() => {});
       await this.vts.remove(channel.id);
+      this.emptyTimers.delete(channel.id);
       await this.msg.publish("vocal_tempo_destroyed", { channelId: channel.id }, channel.client);
     }, delayMs);
     this.emptyTimers.set(channel.id, timer);

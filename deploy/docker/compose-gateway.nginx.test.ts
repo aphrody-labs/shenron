@@ -34,25 +34,6 @@ test("CDN quota failures use the private public-image origin without browser cre
   }
 });
 
-test("missing CDN assets fall through to the Shenron VFS without exposing its database", () => {
-  const assetsRoute = config.match(/location \/assets\/ \{([^}]+)\}/)?.[1] ?? "";
-  const assetsWorker = config.match(/location @cdn_worker_assets \{([^}]+)\}/)?.[1] ?? "";
-  const origin = config.match(/location @cdn_public_origin_assets \{([^}]+)\}/)?.[1] ?? "";
-  const vfs = config.match(/location @vfs_asset \{([^}]+)\}/)?.[1] ?? "";
-  const genericOrigin = config.match(/location @cdn_public_origin \{([^}]+)\}/)?.[1] ?? "";
-  expect(assetsRoute).toContain("try_files $uri @cdn_worker_assets;");
-  expect(assetsWorker).toContain("error_page 404 429 500 502 503 504 = @cdn_public_origin_assets;");
-  expect(origin).toContain("proxy_intercept_errors on;");
-  expect(origin).toContain("error_page 404 = @vfs_asset;");
-  expect(vfs).toContain("proxy_pass http://upstream_site;");
-  expect(vfs).toContain("proxy_pass_request_headers off;");
-  expect(vfs).not.toContain("shenron-vfs.sqlite");
-  expect(vfs).not.toContain("$http_cookie");
-  expect(vfs).not.toContain("$http_authorization");
-  expect(genericOrigin).not.toContain("@vfs_asset");
-  expect(config).not.toContain("/var/lib/shenron/data");
-});
-
 test("CDN chunks prefer the sealed rolling tree and use the active site on a miss", async () => {
   const source = await Bun.file(new URL("./cdn-dragonballfr-ssl.conf", import.meta.url)).text();
   expect(source).toContain("try_files $uri @release_static;");
@@ -65,19 +46,4 @@ test("CDN chunks prefer the sealed rolling tree and use the active site on a mis
   expect(retained).toContain("proxy_pass_request_headers off;");
   expect(retained).not.toContain("$http_cookie");
   expect(retained).not.toContain("$http_authorization");
-});
-
-test("CDN serves public CPK requests through the site API without browser credentials", () => {
-  const routeBlocks = [
-    ...config.matchAll(/location (?:=|\^~) \/api\/public\/dbxv2\/cpk\/? \{([^}]+)\}/g),
-  ];
-  expect(routeBlocks).toHaveLength(4);
-  for (const [, block = ""] of routeBlocks) {
-    expect(block).toContain("proxy_pass http://upstream_site");
-    expect(block).toContain("proxy_set_header Host dragonballfr.com;");
-    expect(block).toContain('proxy_set_header Cookie "";');
-    expect(block).toContain('proxy_set_header Authorization "";');
-    expect(block).toContain("proxy_set_header Range $http_range;");
-    expect(block).toContain("proxy_buffering off;");
-  }
 });

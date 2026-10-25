@@ -4,7 +4,6 @@
 
 import { useRef, useState, type ChangeEvent } from "react";
 import { useT } from "@/components/T";
-import { Dbxv2CpkExplorer } from "@/components/games/Dbxv2CpkExplorer";
 import { BTN_PRIMARY, PANEL } from "@/components/games/planche";
 import {
   initShenronReWeb,
@@ -118,7 +117,6 @@ export default function Xenoverse2Explorer() {
 
   return (
     <div className="space-y-6">
-      <Dbxv2CpkExplorer />
       <section className={`${PANEL} space-y-4 p-5 sm:p-6`} aria-labelledby="xv2-local-title">
         <div>
           <h2 id="xv2-local-title" className="font-display text-xl font-bold text-white">

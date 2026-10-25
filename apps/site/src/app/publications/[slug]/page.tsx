@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 import Image from "next/image";
 import Link from "next/link";
-import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageShell } from "@/components/kit";
 import { T } from "@/components/T";
 import { CatalogControls } from "@/components/catalog/CatalogControls";
-import { ogMeta } from "@/lib/og";
 import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
 import {
   readSourcePublication,
@@ -15,22 +13,6 @@ import {
 } from "@/lib/public-source-publication";
 
 export const dynamic = "force-dynamic";
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
-  const { slug } = await params;
-  const publication = await readSourcePublication(slug);
-  const doc = publication?.documents.find((entry) => entry.sourceUrl === publication.sourceUrl);
-  if (!publication || !doc) return { robots: { index: false } };
-  return {
-    title: doc.title,
-    ...ogMeta({ title: doc.title, type: "article", canonical: `/publications/${slug}` }),
-  };
-}
-
 export default async function PublicSourcePublication({
   params,
   searchParams,

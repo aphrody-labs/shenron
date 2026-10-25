@@ -2,11 +2,7 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
 import { NextRequest } from "next/server";
 import { validateCatalogEditorialBody } from "../src/lib/catalog-editorial-contracts";
-import {
-  CatalogMediaConflictError,
-  isCatalogRevisionJson,
-} from "../src/lib/catalog-media-contracts";
-import { WIKI_TABLE_SPECS } from "../src/lib/wiki-tables";
+import { CatalogMediaConflictError } from "../src/lib/catalog-media-contracts";
 import { z } from "zod";
 import { DatabooksFrozenError } from "@aphrody/shenron-db/guards";
 import {
@@ -31,14 +27,9 @@ mock.module("@/lib/databooks-freeze", () => ({
 }));
 mock.module("@/lib/wiki-admin", () => ({
   isWikiTable: (table: string) =>
-    [
-      "db_episodes",
-      "db_movies",
-      "db_databooks",
-      "media_works",
-      "media_editions",
-      "media_volumes",
-    ].includes(table),
+    ["db_episodes", "db_databooks", "media_works", "media_editions", "media_volumes"].includes(
+      table,
+    ),
   hasVisibility: () => true,
   getWikiRow: async () => ({ id: 1 }),
   insertWiki: async (table: string, body: Record<string, unknown>) => {
@@ -275,32 +266,6 @@ describe("catalogue editorial writes", () => {
       },
     ])
       expect(validateCatalogEditorialBody("db_episodes", body).ok).toBe(false);
-  });
-  test("movie subtitle JSON is mutable, validated and recorded as a structured revision", async () => {
-    expect(WIKI_TABLE_SPECS.db_movies!.mutableColumns).toContain("subtitles");
-    const subtitles = [
-      { lang: "ja", label: "Japanese · DVD", src: "./assets/subtitles/movie.vtt" },
-    ];
-    const response = await write("db_movies", {
-      subtitles: JSON.stringify(subtitles),
-      title: "Movie",
-    });
-    expect(response.status).toBe(200);
-    expect(writes).toEqual([{ table: "db_movies", body: { subtitles, title: "Movie" } }]);
-    expect(revisions).toHaveLength(1);
-    expect(isCatalogRevisionJson("db_movies", "subtitles")).toBe(true);
-    expect(isCatalogRevisionJson("db_movies", "players")).toBe(false);
-  });
-  test("malformed movie tracks never reach the editorial writer", async () => {
-    for (const subtitles of [
-      "{bad json",
-      [{ lang: "ja", label: "Japanese", src: "/assets/subtitles/../private.vtt" }],
-      [{ lang: "ja", label: "Japanese", src: "https://user:secret@example.test/ja.vtt" }],
-    ]) {
-      expect((await write("db_movies", { subtitles })).status).toBe(400);
-    }
-    expect(writes).toHaveLength(0);
-    expect(revisions).toHaveLength(0);
   });
   test("rejects scalar bodies without reaching CRUD", async () => {
     for (const body of [null, [], "title", 12]) {

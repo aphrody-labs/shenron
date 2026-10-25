@@ -25,7 +25,6 @@ export const wasm_get_dragon_ball_catalog: () => [number, number, number];
 export const wasm_get_xenoverse3_prototype_map: () => [number, number, number];
 export const wasm_parse_bac: (a: number, b: number) => [number, number, number];
 export const wasm_parse_bdm: (a: number, b: number) => [number, number, number];
-export const wasm_parse_cms: (a: number, b: number) => [number, number, number];
 export const wasm_parse_cus: (a: number, b: number) => [number, number, number];
 export const wasm_parse_emb: (a: number, b: number) => [number, number, number];
 export const wasm_parse_msg: (a: number, b: number) => [number, number, number];

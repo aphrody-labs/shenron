@@ -52,8 +52,7 @@ import {
   resolveCharacterParam,
   resolvePlanetParam,
   resolveTransformationParam,
-} from "@/lib/wiki-slugs";
-import { findCharacterByCanonicalSlug } from "@/lib/wiki-slugs";
+} from "@aphrody/shenron-config/wiki-slugs";
 
 interface ShenronUser {
   discordId: string;
@@ -70,8 +69,6 @@ interface ShenronUser {
     nextLevel: number;
     nextLevelXp: number;
     needed: number;
-    /** Progress 0..1 within the current tier; absent on a bot not yet redeployed. */
-    ratio?: number;
   } | null;
   banner: string | null;
   equipped: {
@@ -88,16 +85,6 @@ interface ShenronUser {
     partnerName: string;
     createdAt: string | number;
   } | null;
-}
-
-/** XP bar fill (0..100) within the current tier, the bot's `/profil` ratio when exposed. */
-export function xpProgressPercent(progress: ShenronUser["xpProgress"] | undefined): number {
-  if (!progress) return 0;
-  const ratio =
-    typeof progress.ratio === "number"
-      ? progress.ratio
-      : progress.current / Math.max(1, progress.nextLevelXp);
-  return Math.min(100, Math.max(0, (Number.isFinite(ratio) ? ratio : 0) * 100));
 }
 
 export interface ShenronShopItem {
@@ -946,12 +933,10 @@ export async function getShenronCharacter(
 ): Promise<CharacterWithRelations | null> {
   try {
     let id: number | null = null;
-    let canonicalSlug: string | null = null;
     if (typeof idOrSlug === "number") {
       id = idOrSlug;
     } else {
       const resolved = resolveCharacterParam(idOrSlug);
-      canonicalSlug = resolved.canonicalSlug;
       if (resolved.id !== null) {
         id = resolved.id;
       }
@@ -964,14 +949,9 @@ export async function getShenronCharacter(
         .from(botCharacters)
         .where(and(eq(botCharacters.id, id), eq(botCharacters.visible, true)))
         .limit(1);
-    }
-
-    if (!c && typeof idOrSlug === "string") {
-      canonicalSlug ??= resolveCharacterParam(idOrSlug).canonicalSlug;
+    } else if (typeof idOrSlug === "string") {
       const all = await db.select().from(botCharacters).where(eq(botCharacters.visible, true));
-      c = canonicalSlug
-        ? findCharacterByCanonicalSlug(all, canonicalSlug)
-        : all.find((char) => formatCharacterSlug(char) === idOrSlug);
+      c = all.find((char) => formatCharacterSlug(char) === idOrSlug);
       if (c) id = c.id;
     }
 

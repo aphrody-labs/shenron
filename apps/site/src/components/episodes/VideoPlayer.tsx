@@ -4,32 +4,13 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import {
-  Play,
-  Pause,
-  SkipBack,
-  SkipForward,
-  RotateCcw,
-  RotateCw,
-  VolumeX,
-  Volume2,
-  RectangleHorizontal,
-  Maximize,
-  PictureInPicture2,
-  Settings,
-} from "lucide-react";
-import { VideoSelect } from "./VideoSelect";
-import { VideoCaptionToggle, VideoTrackSettings } from "./VideoTrackControls";
-import { useVideoTextTracks } from "./use-video-text-tracks";
+import { MaterialSymbol } from "@aphrody/shenron-ui/icones";
 import styles from "./video-player.module.css";
 import { useVideoSource } from "./use-video-source";
 import {
   VIDEO_PLAYBACK_RATES,
   videoKeyAction,
   videoSeekTarget,
-  videoResumeKey,
-  videoResumePosition,
-  videoVolumeStep,
   isHlsSource,
 } from "@/lib/video-controls";
 import { nativeEpisodeVideoSource } from "@/lib/episode-video-source";
@@ -41,7 +22,6 @@ export interface SubtitleTrack {
   src: string;
 }
 export interface VideoPlayerProps {
-  episodeId?: string | number;
   src: string;
   title: string;
   poster?: string;
@@ -55,21 +35,6 @@ function trackUrl(src: string): string {
     ? src
     : `/api/subtitles?src=${encodeURIComponent(src.replace(/^\.?\/*/, ""))}`;
 }
-function readResume(key: string): number {
-  try {
-    return Number(localStorage.getItem(key)) || 0;
-  } catch {
-    return 0;
-  }
-}
-function writeResume(key: string, seconds: number | null) {
-  try {
-    if (seconds === null) localStorage.removeItem(key);
-    else localStorage.setItem(key, String(Math.floor(seconds)));
-  } catch {
-    // Storage can be blocked (private window); resume is a convenience only.
-  }
-}
 function timeLabel(seconds: number): string {
   const value = Math.max(0, Math.floor(Number.isFinite(seconds) ? seconds : 0));
   return `${Math.floor(value / 60)}:${String(value % 60).padStart(2, "0")}`;
@@ -77,7 +42,6 @@ function timeLabel(seconds: number): string {
 
 /** Native controls remain the pre-hydration fallback; one enhanced toolbar owns playback. */
 export function VideoPlayer({
-  episodeId,
   src,
   title,
   poster,
@@ -102,14 +66,12 @@ export function VideoPlayer({
     retry,
   } = useVideoSource(videoRef, playbackSource, onError);
   const rateRef = useRef(1);
-  const resumeKey = videoResumeKey(playbackSource);
-  const lastSaved = useRef(0);
   const [paused, setPaused] = useState(true);
   const [rate, setRate] = useState(1);
-  const { textTracks, caption, selectCaption, toggleCaptions } = useVideoTextTracks(videoRef, src);
+  const [caption, setCaption] = useState(-1);
+  const [textTracks, setTextTracks] = useState<{ index: number; label: string }[]>([]);
   const [fullscreenSupported, setFullscreenSupported] = useState(false);
   const [pipSupported, setPipSupported] = useState(false);
-  const [isIosFullscreen, setIsIosFullscreen] = useState(false);
   const [actionError, setActionError] = useState(false);
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -120,41 +82,6 @@ export function VideoPlayer({
   const [waiting, setWaiting] = useState(false);
   const [enhanced, setEnhanced] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
-  const [previewMetadata, setPreviewMetadata] = useState<{
-    fps: number;
-    frameCount: number;
-  } | null>(null);
-  const [hoverPreview, setHoverPreview] = useState<{
-    index: number;
-    seconds: number;
-    left: number;
-  } | null>(null);
-  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(() => {
-    const controller = new AbortController();
-    setPreviewMetadata(null);
-    setHoverPreview(null);
-    if (episodeId === 875 || episodeId === 876 || episodeId === "875" || episodeId === "876") {
-      void fetch(`/api/episodes/${episodeId}/timeline`, { signal: controller.signal })
-        .then(async (response) => {
-          if (!response.ok) return null;
-          const value = await response.json();
-          if (
-            !controller.signal.aborted &&
-            value.fps > 0 &&
-            Number.isSafeInteger(value.frameCount) &&
-            value.frameCount > 0
-          )
-            setPreviewMetadata(value);
-          return null;
-        })
-        .catch(() => {});
-    }
-    return () => {
-      controller.abort();
-      if (hoverTimer.current) clearTimeout(hoverTimer.current);
-    };
-  }, [episodeId, src]);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pointerRevealOnly = useRef(false);
   const revealControls = useCallback(() => {
@@ -184,7 +111,28 @@ export function VideoPlayer({
   };
   useEffect(() => {
     setEnhanced(true);
-  }, []);
+    const tracks = videoRef.current?.textTracks;
+    if (!tracks) return;
+    const sync = () => {
+      const list = Array.from(tracks);
+      setTextTracks(
+        list.map((track, index) => ({
+          index,
+          label: track.label || track.language || t("captionNumber", { number: index + 1 }),
+        })),
+      );
+      setCaption(list.findIndex((track) => track.mode === "showing"));
+    };
+    sync();
+    tracks.addEventListener("addtrack", sync);
+    tracks.addEventListener("removetrack", sync);
+    tracks.addEventListener("change", sync);
+    return () => {
+      tracks.removeEventListener("addtrack", sync);
+      tracks.removeEventListener("removetrack", sync);
+      tracks.removeEventListener("change", sync);
+    };
+  }, [src, subtitles, t]);
 
   useEffect(() => {
     setPaused(videoRef.current?.paused ?? true);
@@ -196,36 +144,10 @@ export function VideoPlayer({
     setFullscreenSupported(
       Boolean(document.fullscreenEnabled && containerRef.current?.requestFullscreen),
     );
-    setIsIosFullscreen(
-      Boolean(
-        !document.fullscreenEnabled &&
-        (videoRef.current as { webkitEnterFullscreen?: unknown } | null)?.webkitEnterFullscreen,
-      ),
-    );
     setPipSupported(
       Boolean(document.pictureInPictureEnabled && videoRef.current?.requestPictureInPicture),
     );
   }, [src]);
-
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  useEffect(() => {
-    const sync = () => setIsFullscreen(document.fullscreenElement === containerRef.current);
-    document.addEventListener("fullscreenchange", sync);
-    return () => document.removeEventListener("fullscreenchange", sync);
-  }, []);
-  useEffect(() => {
-    const video = videoRef.current;
-    const save = () => {
-      if (!video) return;
-      const resume = videoResumePosition(video.currentTime, video.duration);
-      if (resume !== null) writeResume(resumeKey, resume);
-    };
-    window.addEventListener("pagehide", save);
-    return () => {
-      window.removeEventListener("pagehide", save);
-      save();
-    };
-  }, [resumeKey]);
 
   useEffect(() => {
     if (!theater) return;
@@ -264,14 +186,7 @@ export function VideoPlayer({
     if (target !== null) video.currentTime = target;
   };
   const fullscreen = async () => {
-    if (!fullscreenSupported) {
-      // iOS Safari only fullscreens the video element itself.
-      const video = videoRef.current as
-        | (HTMLVideoElement & { webkitEnterFullscreen?: () => void })
-        | null;
-      video?.webkitEnterFullscreen?.();
-      return;
-    }
+    if (!fullscreenSupported) return;
     try {
       if (document.fullscreenElement === containerRef.current) await document.exitFullscreen();
       else await containerRef.current?.requestFullscreen();
@@ -291,15 +206,16 @@ export function VideoPlayer({
       setActionError(true);
     }
   };
-  const toggleMute = () => {
+  const selectCaption = (index: number) => {
     const video = videoRef.current;
-    if (!video) return;
-    video.muted = !video.muted;
-    // Unmuting a zero volume would stay silent.
-    if (!video.muted && video.volume === 0) video.volume = 0.5;
+    if (!video || !Number.isInteger(index) || index < -1 || index >= video.textTracks.length)
+      return;
+    Array.from(video.textTracks).forEach((track, i) => {
+      track.mode = i === index ? "showing" : "disabled";
+    });
+    setCaption(index);
   };
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.defaultPrevented) return;
     const settings = containerRef.current?.querySelector<HTMLDetailsElement>("details[open]");
     if (event.key === "Escape" && settings) {
       event.preventDefault();
@@ -343,7 +259,7 @@ export function VideoPlayer({
     if (
       !action ||
       (action === "captions" && textTracks.length === 0) ||
-      (action === "fullscreen" && !fullscreenSupported && !isIosFullscreen) ||
+      (action === "fullscreen" && !fullscreenSupported) ||
       (action === "pip" && !pipSupported)
     )
       return;
@@ -359,15 +275,7 @@ export function VideoPlayer({
         seek(event.key.toLowerCase() === "l" ? 10 : 5);
         break;
       case "mute":
-        toggleMute();
-        break;
-      case "volumeUp":
-      case "volumeDown":
-        if (videoRef.current) {
-          const video = videoRef.current;
-          video.volume = videoVolumeStep(video.volume, action === "volumeUp" ? 0.1 : -0.1);
-          video.muted = video.volume === 0;
-        }
+        if (videoRef.current) videoRef.current.muted = !videoRef.current.muted;
         break;
       case "fullscreen":
         void fullscreen();
@@ -376,7 +284,7 @@ export function VideoPlayer({
         void pictureInPicture();
         break;
       case "captions":
-        toggleCaptions();
+        selectCaption(caption === -1 ? 0 : -1);
         break;
     }
   };
@@ -397,7 +305,6 @@ export function VideoPlayer({
       className={`shenron-video ${styles.player}`}
       data-theater={theater}
       data-controls-visible={controlsVisible}
-      data-caption-dock={enhanced && caption >= 0}
     >
       <header className={styles.heading}>
         <p>{title}</p>
@@ -409,7 +316,7 @@ export function VideoPlayer({
                 title={previousEpisode.label}
                 className="rounded px-2 py-2 focus-visible:outline-2"
               >
-                <SkipBack size={22} aria-hidden="true" />
+                <MaterialSymbol name="skip_previous" />
                 <span className="sr-only">{t("previousEpisode")}</span>
               </Link>
             )}
@@ -419,7 +326,7 @@ export function VideoPlayer({
                 title={nextEpisode.label}
                 className="rounded px-2 py-2 focus-visible:outline-2"
               >
-                <SkipForward size={22} aria-hidden="true" />
+                <MaterialSymbol name="skip_next" />
                 <span className="sr-only">{t("nextEpisode")}</span>
               </Link>
             )}
@@ -427,13 +334,12 @@ export function VideoPlayer({
         )}
       </header>
       <video
-        data-episode-id={episodeId}
         ref={videoRef}
         src={isHlsSource(playbackSource) ? undefined : playbackSource}
         controls={!enhanced}
         playsInline
         preload="metadata"
-        crossOrigin={subtitles?.length ? "anonymous" : undefined}
+        crossOrigin="anonymous"
         poster={poster}
         aria-label={title}
         tabIndex={0}
@@ -444,18 +350,7 @@ export function VideoPlayer({
           }
           if (enhanced) void playPause();
         }}
-        onTimeUpdate={(event) => {
-          syncTimeline();
-          const video = event.currentTarget;
-          if (Math.abs(video.currentTime - lastSaved.current) < 5) return;
-          lastSaved.current = video.currentTime;
-          const resume = videoResumePosition(video.currentTime, video.duration);
-          if (resume !== null) writeResume(resumeKey, resume);
-        }}
-        onEnded={() => {
-          writeResume(resumeKey, null);
-          lastSaved.current = 0;
-        }}
+        onTimeUpdate={syncTimeline}
         onProgress={syncTimeline}
         onDurationChange={syncTimeline}
         onWaiting={() => setWaiting(true)}
@@ -469,15 +364,7 @@ export function VideoPlayer({
         onPlay={(event) => setPaused(event.currentTarget.paused)}
         onPause={(event) => setPaused(event.currentTarget.paused)}
         onLoadedMetadata={() => {
-          const video = videoRef.current;
-          if (video) {
-            video.playbackRate = rateRef.current;
-            const resume = videoResumePosition(readResume(resumeKey), video.duration);
-            if (resume !== null && video.currentTime < 1) {
-              video.currentTime = resume;
-              lastSaved.current = resume;
-            }
-          }
+          if (videoRef.current) videoRef.current.playbackRate = rateRef.current;
           syncTimeline();
         }}
         onRateChange={() => {
@@ -513,53 +400,10 @@ export function VideoPlayer({
               style={{ width: `${duration ? Math.min(100, (buffered / duration) * 100) : 0}%` }}
             />
           </div>
-          <label
-            className={styles.progress}
-            onPointerLeave={() => {
-              if (hoverTimer.current) clearTimeout(hoverTimer.current);
-              setHoverPreview(null);
-            }}
-            onPointerMove={(event) => {
-              if (event.pointerType !== "mouse" || !previewMetadata || !duration) return;
-              const bounds = event.currentTarget.getBoundingClientRect();
-              const fraction = Math.max(
-                0,
-                Math.min(1, (event.clientX - bounds.left) / bounds.width),
-              );
-              if (hoverTimer.current) clearTimeout(hoverTimer.current);
-              hoverTimer.current = setTimeout(
-                () =>
-                  setHoverPreview({
-                    index: Math.min(
-                      previewMetadata.frameCount - 1,
-                      Math.floor(fraction * duration * previewMetadata.fps),
-                    ),
-                    seconds: fraction * duration,
-                    left: fraction * 100,
-                  }),
-                160,
-              );
-            }}
-          >
-            {hoverPreview && (
-              <span
-                className={styles.hoverPreview}
-                style={{ left: `clamp(84px, ${hoverPreview.left}%, calc(100% - 84px))` }}
-              >
-                <img
-                  src={`/api/episodes/${episodeId}/timeline?kind=frame&index=${hoverPreview.index}`}
-                  width={160}
-                  height={90}
-                  alt=""
-                  onError={() => setHoverPreview(null)}
-                />
-                <span>{timeLabel(hoverPreview.seconds)}</span>
-              </span>
-            )}
+          <label className="block">
             <span className="sr-only">{t("seekPosition")}</span>
             <input
               type="range"
-              aria-label={t("seekPosition")}
               min={0}
               max={duration || 1}
               step={0.1}
@@ -571,12 +415,6 @@ export function VideoPlayer({
                 setPosition(Number(event.target.value));
               }}
               className="w-full"
-              style={
-                {
-                  "--played": `${duration ? (position / duration) * 100 : 0}%`,
-                  "--buffered": `${duration ? (buffered / duration) * 100 : 0}%`,
-                } as React.CSSProperties
-              }
             />
           </label>
         </div>
@@ -588,11 +426,7 @@ export function VideoPlayer({
             data-primary
             aria-label={paused ? t("play") : t("pause")}
           >
-            {paused ? (
-              <Play size={27} fill="currentColor" aria-hidden="true" />
-            ) : (
-              <Pause size={27} fill="currentColor" aria-hidden="true" />
-            )}
+            <MaterialSymbol name={paused ? "play_arrow" : "pause"} size={28} />
           </button>
           <button
             type="button"
@@ -601,7 +435,7 @@ export function VideoPlayer({
             aria-label={ui("backward")}
             className={styles.skip}
           >
-            <RotateCcw size={22} aria-hidden="true" />
+            <MaterialSymbol name="replay_10" />
           </button>
           <button
             type="button"
@@ -610,14 +444,17 @@ export function VideoPlayer({
             aria-label={ui("forward")}
             className={styles.skip}
           >
-            <RotateCw size={22} aria-hidden="true" />
+            <MaterialSymbol name="forward_10" />
           </button>
-          <button type="button" aria-pressed={muted} aria-label={t("mute")} onClick={toggleMute}>
-            {muted || volume === 0 ? (
-              <VolumeX size={22} aria-hidden="true" />
-            ) : (
-              <Volume2 size={22} aria-hidden="true" />
-            )}
+          <button
+            type="button"
+            aria-pressed={muted}
+            aria-label={t(muted ? "unmute" : "mute")}
+            onClick={() => {
+              if (videoRef.current) videoRef.current.muted = !videoRef.current.muted;
+            }}
+          >
+            <MaterialSymbol name={muted || volume === 0 ? "volume_off" : "volume_up"} />
           </button>
           <label className={styles.volume}>
             <span className="sr-only">{t("volume")}</span>
@@ -638,23 +475,17 @@ export function VideoPlayer({
               className="w-24"
             />
           </label>
-          <VideoCaptionToggle textTracks={textTracks} caption={caption} onToggle={toggleCaptions} />
           <button
             type="button"
             aria-pressed={theater}
             aria-label={t(theater ? "exitTheater" : "theater")}
             onClick={() => setTheater(!theater)}
           >
-            <RectangleHorizontal size={22} aria-hidden="true" />
+            <MaterialSymbol name="theaters" />
           </button>
-          {(fullscreenSupported || isIosFullscreen) && (
-            <button
-              type="button"
-              aria-pressed={isFullscreen}
-              aria-label={t("fullscreen")}
-              onClick={() => void fullscreen()}
-            >
-              <Maximize size={22} aria-hidden="true" />
+          {fullscreenSupported && (
+            <button type="button" aria-label={t("fullscreen")} onClick={() => void fullscreen()}>
+              <MaterialSymbol name="fullscreen" />
             </button>
           )}
           {pipSupported && (
@@ -664,13 +495,13 @@ export function VideoPlayer({
               disabled={status !== "ready"}
               aria-label={t("pictureInPicture")}
             >
-              <PictureInPicture2 size={22} aria-hidden="true" />
+              <MaterialSymbol name="picture_in_picture_alt" />
             </button>
           )}
         </div>
         <details className={styles.settings}>
           <summary aria-label={ui("playbackSettings")}>
-            <Settings size={22} aria-hidden="true" />
+            <MaterialSymbol name="settings" />
           </summary>
           <div className={styles.settingsPanel}>
             <label className={styles.mobileVolume}>
@@ -692,9 +523,7 @@ export function VideoPlayer({
             </label>
             <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
               {t("speed")}
-              <VideoSelect
-                cinema
-                aria-label={t("speed")}
+              <select
                 value={rate}
                 onChange={(event) => {
                   if (videoRef.current) videoRef.current.playbackRate = Number(event.target.value);
@@ -705,14 +534,12 @@ export function VideoPlayer({
                     {value}×
                   </option>
                 ))}
-              </VideoSelect>
+              </select>
             </label>
             {levels.length > 1 && (
               <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
                 {t("quality")}
-                <VideoSelect
-                  cinema
-                  aria-label={t("quality")}
+                <select
                   value={quality}
                   onChange={(event) => {
                     const value = Number(event.target.value);
@@ -727,17 +554,43 @@ export function VideoPlayer({
                         : t("bitrate", { rate: Math.round(level.bitrate / 1000) })}
                     </option>
                   ))}
-                </VideoSelect>
+                </select>
               </label>
             )}
-            <VideoTrackSettings
-              textTracks={textTracks}
-              caption={caption}
-              onCaptionChange={selectCaption}
-              audioTracks={audioTracks}
-              audioTrack={audioTrack}
-              onAudioChange={selectAudioTrack}
-            />
+            {audioTracks.length > 1 && (
+              <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
+                {t("audioTrack")}
+                <select
+                  value={audioTrack}
+                  onChange={(event) => {
+                    const value = Number(event.target.value);
+                    selectAudioTrack(value);
+                  }}
+                >
+                  {audioTracks.map((track) => (
+                    <option key={track.index} value={track.index}>
+                      {track.name || t("audioTrackNumber", { number: track.index + 1 })}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            {textTracks.length > 0 && (
+              <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
+                {t("captions")}
+                <select
+                  value={caption}
+                  onChange={(event) => selectCaption(Number(event.target.value))}
+                >
+                  <option value={-1}>{t("captionsOff")}</option>
+                  {textTracks.map((track) => (
+                    <option key={track.index} value={track.index}>
+                      {track.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
           </div>
         </details>
       </div>

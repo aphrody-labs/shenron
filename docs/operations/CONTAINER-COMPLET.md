@@ -168,54 +168,27 @@ Le script Docker versionné construit sous `~/build/transient/shenron-docker` av
 `docs/operations/container/CONTAINER.md` et
 `docs/operations/infra/SHENRON-DOCKER.md` d'Aphrody.
 
-### Release Docker unifiée
+### Livraison Docker vers dbfr
 
-`scripts/ops/vps/release-shenron.sh` est l'unique entrée pour pinner une révision, construire,
-qualifier puis livrer l'image Shenron. Le propriétaire choisit le builder ; le défaut reste `vps`.
-La production `dbfr` ne compile jamais. Chaque builder alternatif doit être déclaré par Aphrody
-Infra, posséder le toolchain demandé et obtenir son bail de fabrique. Le workflow ne contourne
-ni le verrou partagé ni le nettoyage propriétaire de la fabrique.
+Aucun build sur dbfr : il reçoit seulement l'image construite sur le vps. Sur le vps, les étapes
+longues tournent dans tmux, sans flux SSH maintenu ouvert. Les scripts VPS versionnés sont dans
+`~/src/shenron/scripts/ops/vps/` (`shenron-docker-build.sh`, `ship-shenron.sh`). Les helpers DBFR
+installés dans `~/` proviennent de `scripts/ops/dbfr/` (`deploy-shenron-image.sh`,
+`assemble-shenron.py`, `seal-shenron-docker-release.py`). Vérifier leur présence avant livraison.
 
-1. Choisir explicitement l'hôte builder et son identifiant Infra, puis lancer le run durable
-   dans tmux sur ce builder. Le wrapper fige `origin/main` en SHA avant le build ; toutes les
-   voies parallèles sont attendues et leur statut d'échec est conservé. `APHRODY_CARGO_JOBS=auto`
-   reste borné par les cœurs disponibles et le maximum de la fabrique :
-
-   ```sh
-   tmux new-session -d -s shenron-release 'bash ~/src/shenron/scripts/ops/vps/release-shenron.sh > ~/shenron-release.log 2>&1; code=$?; printf "EXIT_CODE=%s\n" "$code" >> ~/shenron-release.log'
-   ```
-
-   `--build-only`, `--ship-only` et `--revision <sha>` reprennent une phase sans déplacer le
-   worktree épinglé. `SHENRON_SOURCE_REPO`, `SHENRON_BUILD_REPO`, `SHENRON_BUILD_LOCK`,
-   `SHENRON_DEPLOY_HOST`, `APHRODY_FACTORY_CONFIG`, `APHRODY_BUILD_HOST` et
-   `APHRODY_CARGO_JOBS` règlent les chemins, cible, configuration/identité de fabrique et
-   concurrence Cargo. Le VPS est le défaut historique ; le propriétaire choisit toute autre
-   cible explicitement dans le catalogue Infra.
-2. Le `ship-shenron.sh` actuel transfère l'image à DBFR et appelle
-   `~/deploy-shenron-image.sh`. Ce helper historique prépare puis active le candidat avec
-   l'adaptateur conteneur ; il réutilise les vhosts déjà présents dans la release active et
-   n'assemble pas les sources NGINX d'un checkout Infra choisi. Il ne suffit donc pas pour
-   publier un nouveau bundle NGINX.
-
-   L'entrée canonique d'activation d'un candidat déjà assemblé et scellé est :
-
-   ```sh
-   aphrody infra deploy --target dbfr --stack shenron \
-     --release docker-<sha-shenron-complet> --apply
-   ```
-
-   Avant de router le script de livraison par cette commande, Infra doit fournir à DBFR un
-   chemin de préparation idempotent qui consomme un checkout Infra sélectionné par SHA complet,
-   exécute l'assembleur et le sealer de cette même révision, et produit
-   `/srv/shenron/releases/docker-<sha-shenron-complet>`. L'assembleur canonique exige le Compose
-   limité au site et au bot, l'image de passerelle et le chemin du VFS public versionné ; il peut
-   aussi nécessiter les images d'état/chat et le chemin du modèle selon la release active. Le CLI
-   `aphrody infra deploy` vérifie et active un répertoire existant, mais ne l'assemble pas. Le
-   workflow ne doit pas substituer un autre builder ni déduire la révision Infra. Le nom de
-   release étant déterminé par le SHA Shenron, ne jamais réutiliser un candidat existant pour un
-   autre SHA Infra. Conserver le résultat et le chemin de rollback retournés par Infra.
-3. Sondes après activation : pages, `/api/health`, `/api/public/rag/search`, `tools/list`
-   anonyme de `/mcp`, `bot.` et `cdn.`.
+1. `tmux new -d -s shenron-build 'bash ~/src/shenron/scripts/ops/vps/shenron-docker-build.sh > ~/shenron-docker-build.log 2>&1; code=$?; printf "EXIT_CODE=%s\n" "$code" >> ~/shenron-docker-build.log'` :
+   worktree détaché sur `origin/main` sous `~/build/transient/shenron-docker`, verrou lourd,
+   Cargo, WASM, bot, serveur, image
+   `localhost/shenron:<sha>`, puis `version` et `--smoke` du bot.
+2. Après `EXIT_CODE=0` et vérification du SHA de l'image, lancer dans `shenron-ship`
+   `~/src/shenron/scripts/ops/vps/ship-shenron.sh`. Il lit le même worktree via
+   `SHENRON_BUILD_REPO` (ou le chemin par défaut), exécute `docker save | zstd`,
+   `scp` vers dbfr, puis `~/deploy-shenron-image.sh <sha> <tar>` sur dbfr. Ce script charge l'image,
+   assemble la release (`~/assemble-shenron.py`, override `guild-admission`), la scelle
+   (`~/seal-shenron-docker-release.py`, en reprenant les images passerelle, postgres, redis et chat
+   de la release active), puis `aphrody-infra-deploy-shenron verify` et `activate` (sauvegarde de
+   retour arrière dans `/home/ubuntu/apps/shenron/deploy-backups/`).
+3. Sondes : pages, `/api/health`, `/api/public/rag/search`, `tools/list` anonyme de `/mcp`, `bot.` et `cdn.`.
 
 ## 7. Tunnel vers le vps et dbfr
 

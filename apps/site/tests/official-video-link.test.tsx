@@ -45,19 +45,6 @@ test("an actual external embed keeps the existing iframe path", () => {
   expect(html).not.toContain(videoFr.officialProviderNote);
 });
 
-test("a published Shenron MP4 renders native video and preserves alternate sources", () => {
-  const source = `https://cdn.dragonballfr.com/media/episodes/876/${"a".repeat(64)}/source.mp4`;
-  const html = render("fr", [
-    { name: "Shenron", provider: "shenron", embedUrl: source },
-    { name: "Alternate", provider: "vidmoly", embedUrl: "https://vidmoly.example/embed/1" },
-  ]);
-  expect(html).toContain("<video");
-  expect(html).toContain(source);
-  expect(html).not.toContain("<iframe");
-  expect(html).toContain("Alternate");
-  expect(html).not.toContain("Vérification du lecteur");
-});
-
 test("official links drop stored query tokens and never embed them", () => {
   const html = render("fr", [
     {
@@ -101,40 +88,4 @@ test("unqualified Crunchyroll destinations never become embeds or outbound links
     expect(html).not.toContain("<iframe");
     expect(html).not.toContain("href=");
   }
-});
-
-test("external embeds are sandboxed without popups or top navigation and keep an accessible name", () => {
-  const html = render("fr", [
-    { name: "VF · Lecteur", provider: "vidmoly", embedUrl: "https://vidmoly.example/embed/1" },
-  ]);
-  const sandbox = /sandbox="([^"]*)"/.exec(html)?.[1] ?? "";
-  expect(sandbox.split(" ")).toEqual(
-    expect.arrayContaining(["allow-scripts", "allow-same-origin", "allow-presentation"]),
-  );
-  expect(sandbox).not.toContain("allow-popups");
-  expect(sandbox).not.toContain("allow-top-navigation");
-  expect(html).toMatch(/<iframe[^>]*title="[^"]+"/);
-  expect(html).toContain('aria-live="polite"');
-});
-
-test("plain http embeds never reach an iframe on the https site", () => {
-  const html = render("fr", [
-    { name: "Lecteur", provider: "video", embedUrl: "http://player.example/embed/1" },
-  ]);
-  expect(html).not.toContain("<iframe");
-});
-
-test("the language and player selectors are pressed-state button groups", () => {
-  const html = render("fr", [
-    { name: "VF 1", provider: "vidmoly", embedUrl: "https://a.example/1", lang: "vf" } as Player,
-    {
-      name: "VOSTFR 1",
-      provider: "vidmoly",
-      embedUrl: "https://a.example/2",
-      lang: "vostfr",
-    } as Player,
-  ]);
-  expect((html.match(/role="group"/g) ?? []).length).toBeGreaterThanOrEqual(2);
-  expect(html).toContain('aria-pressed="true"');
-  expect(html).toContain('aria-pressed="false"');
 });

@@ -23,12 +23,6 @@
  *    nul au premier échec.
  *
  * Le dépôt ne touche aucun hôte autrement que par `aphrody-infra` (ssh exec, deploy).
- *
- * Ce parcours vise la disposition systemd `/srv/shenron/current`. La production tourne désormais
- * sous Docker (`~/apps/shenron`) : un build + déploiement complet passe par
- * `scripts/ops/vps/shenron-docker-build.sh` puis `ship-shenron.sh` (voir AGENTS.md). Sans
- * `SHENRON_RELEASE_LEGACY=1`, les plans qui construisent ou activent échouent d'emblée ;
- * `--cdn-only` reste disponible.
  */
 import { join } from "node:path";
 
@@ -344,13 +338,6 @@ async function koharuWasmProbe(): Promise<string[]> {
 if (import.meta.main && (args.has("--help") || args.has("-h"))) {
   console.log("bun scripts/ops/release.ts [--cdn-only | --no-deploy]");
 } else if (import.meta.main) {
-  if (releasePlan(args).includes("build") && process.env.SHENRON_RELEASE_LEGACY !== "1") {
-    throw new Error(
-      "release.ts vise la disposition systemd /srv/shenron/current ; livrer par " +
-        "scripts/ops/vps/shenron-docker-build.sh puis ship-shenron.sh (AGENTS.md), " +
-        "ou définir SHENRON_RELEASE_LEGACY=1 pour ce parcours.",
-    );
-  }
   let release = "";
   for (const step of releasePlan(args)) {
     if (step === "build") {

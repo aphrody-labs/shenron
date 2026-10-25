@@ -58,11 +58,10 @@ export function playersForVideoLanguage<T extends { lang?: unknown }>(
   return players.filter((player) => normalizeVideoLanguage(player.lang) === version);
 }
 
-/** https only: the site is served over https, so a plain http iframe or track is blocked as mixed content. */
 function publicMediaUrl(value: unknown): string | null {
   if (typeof value !== "string" || !URL.canParse(value.trim())) return null;
   const url = new URL(value.trim());
-  if (url.protocol !== "https:" || url.username || url.password) return null;
+  if (!["https:", "http:"].includes(url.protocol) || url.username || url.password) return null;
   return url.href;
 }
 

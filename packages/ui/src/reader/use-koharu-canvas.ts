@@ -18,9 +18,7 @@ export function useKoharuCanvasWarmup(): KoharuCanvasWarmup {
 
   useEffect(() => {
     let active = true;
-    // Le WASM vient du CDN d'actifs, sans CORS : sur les lecteurs publics, pas de fetch cross-origin
-    // (erreur console) ; le repli image reste la seule voie de rendu.
-    void preloadCanvasModule({ sameOriginOnly: true }).then((ready) => {
+    void preloadCanvasModule().then((ready) => {
       if (active) setState(ready ? "ready" : "unavailable");
     });
     return () => {

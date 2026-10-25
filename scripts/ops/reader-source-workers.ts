@@ -603,6 +603,7 @@ export async function collect(options: Options) {
                   "1",
                   "--concurrency",
                   "1",
+                  "--obey-robots",
                   "--delay-ms",
                   "1000",
                   "--timeout",

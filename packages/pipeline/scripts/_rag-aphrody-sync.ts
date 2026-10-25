@@ -76,17 +76,10 @@ export async function syncSource(
     force?: boolean;
     concurrency?: number;
     requireVectors?: boolean;
-    expectedSourceDigest?: string;
     onProgress?: (indexed: number, total: number) => void;
   },
 ): Promise<{ result: SyncResult; state?: SourceState }> {
   const { documents, digest } = prepareSource(source, chunks);
-  if (
-    options.expectedSourceDigest !== undefined &&
-    (!/^[a-f0-9]{64}$/.test(options.expectedSourceDigest) ||
-      options.expectedSourceDigest !== digest)
-  )
-    throw new Error(`${source}: source changed since reviewed snapshot; no ingestion attempted`);
   const base = { source, rendered: documents.length, digest };
   if (documents.length === 0) {
     if (options.apply)

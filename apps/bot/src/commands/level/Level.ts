@@ -22,20 +22,21 @@ import { EconomyService } from "~/services/EconomyService";
 import { CardService } from "~/services/CardService";
 import { LeaderboardService, type LeaderboardEntry } from "~/services/LeaderboardService";
 import { logger } from "~/lib/logger";
-import { levelForXP, xpProgress, formatXP } from "~/lib/xp";
-import { DEFAULT_LEVEL_RACE, memberRaceId, tierEntitlement } from "~/lib/race-levels";
-import { formatZeni } from "~/lib/zeni";
-import { fusionBonusLabel } from "~/lib/fusion-names";
+import { levelForXP, xpRequiredForLevel, nextThresholdFrom, formatXP } from "~/lib/xp";
 import { SHENRON_THEME, SHENRON_SEPARATORS, renderProgressBar } from "~/lib/embeds";
 import { SettingsService } from "~/services/SettingsService";
 import { boosterXpMultiplier } from "~/lib/booster";
 import { env } from "~/lib/env";
 import {
+  XP_MESSAGE_COOLDOWN_MS,
+  XP_PER_MESSAGE_MAX,
+  XP_PER_MESSAGE_MIN,
+  XP_PER_VOICE_TICK,
+} from "~/lib/constants";
+import {
   bestRoleMultiplier,
   formatMultiplier,
   isNight,
-  loadMessageXpConfig,
-  loadVoiceBaseGain,
   loadXpBoostConfig,
   messageBoost,
   statusRatio,
@@ -79,8 +80,6 @@ export class LevelCommands {
           (roleId) => member.roles.cache.has(roleId),
           await this.settings.getXpBoostRoles(),
           await boosterXpMultiplier(member, this.settings),
-          // Same eligibility as the real gains: a tier above the level does not count.
-          tierEntitlement(levelForXP(user?.xp ?? 0), memberRaceId(member) ?? DEFAULT_LEVEL_RACE),
         )
       : 1;
     const base = {
@@ -89,9 +88,10 @@ export class LevelCommands {
       raceBoostUntil: user?.raceBoostUntil?.getTime() ?? 0,
       now,
     };
-    // Mêmes lectures que les gains réels (MessageXP, VoiceXP).
-    const { min: xpMin, max: xpMax, cooldownMs } = await loadMessageXpConfig(this.settings);
-    const { perMinute } = await loadVoiceBaseGain(this.settings);
+    const xpMin = await this.settings.getInt("xp.message.min", XP_PER_MESSAGE_MIN);
+    const xpMax = await this.settings.getInt("xp.message.max", XP_PER_MESSAGE_MAX);
+    const cooldownMs = await this.settings.getInt("xp.message.cooldown_ms", XP_MESSAGE_COOLDOWN_MS);
+    const perMinute = (await this.settings.getInt("xp.voice.per_minute", 0)) || XP_PER_VOICE_TICK;
 
     const detail = (boost: XpBoost) =>
       boost.parts.length === 0
@@ -185,17 +185,16 @@ export class LevelCommands {
       const zeni = data?.zeni ?? 0;
       const messageCount = data?.messageCount ?? 0;
 
-      // Même calcul que la carte et l'API : avant le premier palier, la barre
-      // restait vide (le palier « 0 » n'existe pas et valait l'infini).
-      const progress = xpProgress(xp);
-      const currentLevel = progress.level;
-      const nextThresh = progress.next;
+      const currentLevel = levelForXP(xp);
+      const currentBaseXp = xpRequiredForLevel(currentLevel);
+      const nextThresh = nextThresholdFrom(xp);
       const nextXp = nextThresh ? nextThresh.xp : xp;
+      const progressInLevel = Math.max(0, xp - currentBaseXp);
+      const neededForNext = Math.max(1, nextXp - currentBaseXp);
 
       const pbar = nextThresh
-        ? renderProgressBar(progress.into, Math.max(1, progress.span), 12)
+        ? renderProgressBar(progressInLevel, neededForNext, 12)
         : "▰▰▰▰▰▰▰▰▰▰▰▰ MAX";
-      const ratios = await this.eco.fusionRatios();
 
       const partnerId = fusion?.userA === user.id ? fusion.userB : fusion?.userA;
 
@@ -242,7 +241,6 @@ export class LevelCommands {
         } catch {}
       }
 
-      const cardTheme = await this.cards.resolveTheme(data?.equippedCard);
       const buffer = await this.cards.render({
         discordUser: user,
         xp,
@@ -279,12 +277,12 @@ export class LevelCommands {
         .addFields(
           {
             name: "🏆 Rang Serveur",
-            value: rank ? `**#${rank}**` : "*Non classé*",
+            value: `**#${rank}**`,
             inline: true,
           },
           {
             name: "💰 Fortune",
-            value: `**${formatZeni(zeni)}**`,
+            value: `**${formatXP(zeni)}** zénis`,
             inline: true,
           },
           {
@@ -295,7 +293,7 @@ export class LevelCommands {
           {
             name: "🎒 Équipement Actif",
             value: [
-              `• 🖼️ Carte : **${cardTheme.name}**`,
+              `• 🖼️ Carte : **${data?.equippedCard ?? "Classique"}**`,
               `• 🌌 Bannière : **${bannerItem?.name ?? data?.equippedBanner ?? "Défaut"}**`,
               `• 🎖️ Badge : **${badgeItem?.name ?? data?.equippedBadge ?? "Aucun"}**`,
               `• 🎨 Couleur : **${colorItem?.name ?? (data?.equippedColor ? "Équipée" : "Défaut")}**`,
@@ -305,7 +303,7 @@ export class LevelCommands {
           {
             name: "💫 Union Sacrée (Fusion)",
             value: partnerId
-              ? `Fusionné(e) avec <@${partnerId}>\n*${fusionBonusLabel(ratios)}*`
+              ? `Fusionné(e) avec <@${partnerId}>\n*+10 % XP & Zénis partagés*`
               : "*Célibataire (aucune fusion)*",
             inline: true,
           },
@@ -384,7 +382,6 @@ export class LevelCommands {
         subtitle: guildName,
         page: i + 1,
         totalPages,
-        total,
       });
       const file = new AttachmentBuilder(buffer, { name: `top-p${i + 1}.png` });
 
@@ -392,7 +389,7 @@ export class LevelCommands {
         const pos = i * pageSize + idx + 1;
         const medal = podiumMedals[idx] ?? `**#${pos}**`;
         const lvl = levelForXP(e.xp);
-        return `${medal} **${e.username}** · Niv. **${lvl}** (${formatXP(e.xp)} XP) — ${formatZeni(e.zeni)}`;
+        return `${medal} **${e.username}** · Niv. **${lvl}** (${formatXP(e.xp)} XP) — ${formatXP(e.zeni)} 𝓩`;
       });
 
       const embed = new EmbedBuilder()

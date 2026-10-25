@@ -7,16 +7,14 @@ test("the public staff catalog includes the published article and preserves the 
     slug: "sean-schemmel",
     name: "Sean Schemmel",
     nationality: "en",
-    roles: [{ characterName: "Goku", series: "Dragon Ball Z" }],
+    roles: [],
     biography: "Existing editorial biography.",
     article: "Published film casting evidence.",
   };
   const [published] = buildUnifiedStaffCatalog([], [actor]);
   expect(published?.bioSummary).toContain(actor.biography);
   expect(published?.bioSummary).toContain(actor.article);
-  expect(published?.roles).toEqual(actor.roles);
-  expect(published?.keyWorks).toContain("Goku");
-  expect(published?.wikiLink).toBe("/wiki/contributors/sean-schemmel");
+  expect(published?.wikiLink).toBe("/wiki/staff#sean-schemmel");
   const [legacy] = buildUnifiedStaffCatalog([], [{ ...actor, article: null }]);
   expect(legacy?.bioSummary).toBe(actor.biography);
   const [duplicate] = buildUnifiedStaffCatalog([], [{ ...actor, article: actor.biography }]);

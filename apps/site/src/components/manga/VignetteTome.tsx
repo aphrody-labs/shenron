@@ -60,9 +60,7 @@ export function VignetteTome({
     >
       <Link
         href={href}
-        className={`block rounded-lg transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange focus-visible:ring-offset-2 focus-visible:ring-offset-background group-hover:-translate-y-1 ${
-          couleur ? "hover:brightness-110" : ""
-        }`}
+        className={`block transition-transform duration-300 ${couleur ? "hover:brightness-110" : ""}`}
       >
         <CadreCase largeur={compact ? 140 : 220} className="overflow-visible">
           <div className="relative aspect-[2/3] overflow-hidden bg-dbz-bg">

@@ -1,12 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-import { describe, expect, test } from "bun:test";
+import { expect, test } from "bun:test";
 import {
   isHlsSource,
   videoKeyAction,
-  videoResumeKey,
-  videoResumePosition,
   videoSeekTarget,
-  videoVolumeStep,
   VIDEO_PLAYBACK_RATES,
 } from "../src/lib/video-controls";
 
@@ -40,24 +37,4 @@ test("seeking respects VOD and live windows without invalid currentTime writes",
   expect(videoSeekTarget(0, 10, 0, Infinity)).toBeNull();
   expect(videoSeekTarget(0, 10, 10, 0)).toBeNull();
   expect(VIDEO_PLAYBACK_RATES).toContain(1);
-});
-
-describe("reprise et volume", () => {
-  test("clé de reprise sans jeton de requête", () => {
-    expect(videoResumeKey("https://cdn.example/a/b.m3u8?token=x")).toBe(
-      "shenron:video-position:https://cdn.example/a/b.m3u8",
-    );
-  });
-  test("reprise seulement entre l'intro et le générique", () => {
-    expect(videoResumePosition(5, 1400)).toBeNull();
-    expect(videoResumePosition(600, 1400)).toBe(600);
-    expect(videoResumePosition(1390, 1400)).toBeNull();
-    expect(videoResumePosition(600, Number.NaN)).toBeNull();
-  });
-  test("pas de volume borné, flèches haut et bas", () => {
-    expect(videoVolumeStep(0.95, 0.1)).toBe(1);
-    expect(videoVolumeStep(0.05, -0.1)).toBe(0);
-    expect(videoKeyAction("ArrowUp", "VIDEO")).toBe("volumeUp");
-    expect(videoKeyAction("ArrowDown", "DIV")).toBe("volumeDown");
-  });
 });

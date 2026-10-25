@@ -13,15 +13,7 @@
  * sleepcall il ne réduit rien, puisqu'on y dort.
  */
 import type { Guild } from "discord.js";
-import { RACE_IDS, RACES, ZENKAI_MULT, getRace, regenTuning, type RaceId } from "~/lib/races";
-import {
-  FUSION_XP_BONUS_RATIO,
-  XP_MESSAGE_COOLDOWN_MS,
-  XP_PER_MESSAGE_MAX,
-  XP_PER_MESSAGE_MIN,
-  XP_PER_VOICE_TICK,
-  XP_VOICE_TICK_MS,
-} from "~/lib/constants";
+import { RACE_IDS, RACES, ZENKAI_MULT, getRace, type RaceId } from "~/lib/races";
 
 export type VoiceStatus = "open" | "muted" | "deafened";
 
@@ -275,20 +267,15 @@ export interface XpBoost {
   capped: boolean;
 }
 
-/**
- * Best multiplier among the boosted roles and the booster boost (they do not stack).
- * `isEntitled` drops a role the member is not yet entitled to: a tier role held above
- * the member's level multiplies nothing (see `tierEntitlement`).
- */
+/** Meilleur multiplicateur parmi les rôles boostés et le boost booster (ne se cumulent pas). */
 export function bestRoleMultiplier(
   hasRole: (roleId: string) => boolean,
   roleBoosts: ReadonlyArray<{ roleId: string; multiplier: number }>,
   boosterMultiplier: number,
-  isEntitled: (roleId: string) => boolean = () => true,
 ): number {
   let best = Math.max(1, boosterMultiplier);
   for (const b of roleBoosts) {
-    if (b.multiplier > best && hasRole(b.roleId) && isEntitled(b.roleId)) best = b.multiplier;
+    if (b.multiplier > best && hasRole(b.roleId)) best = b.multiplier;
   }
   return best;
 }
@@ -354,151 +341,4 @@ export function voiceBoost(
 /** `×2,5` */
 export function formatMultiplier(n: number): string {
   return `×${n.toLocaleString("fr-FR", { maximumFractionDigits: 2 })}`;
-}
-
-// ── Gains de base ─────────────────────────────────────────────────────────
-
-/** Gain de base d'un message et cooldown (`xp.message.*`), lus en un seul endroit. */
-export async function loadMessageXpConfig(
-  s: SettingsReader,
-): Promise<{ min: number; max: number; cooldownMs: number }> {
-  const min = Math.max(0, await s.getInt("xp.message.min", XP_PER_MESSAGE_MIN));
-  const max = Math.max(min, await s.getInt("xp.message.max", XP_PER_MESSAGE_MAX));
-  const cooldownMs = Math.max(0, await s.getInt("xp.message.cooldown_ms", XP_MESSAGE_COOLDOWN_MS));
-  return { min, max, cooldownMs };
-}
-
-/**
- * Gain vocal de base avant bonus. `xp.voice.per_minute` (0 = non réglé) est
- * converti par tick ; sinon `XP_PER_VOICE_TICK`. `/boosts` et le tick vocal
- * lisent cette même valeur.
- */
-export async function loadVoiceBaseGain(
-  s: SettingsReader,
-): Promise<{ perTick: number; perMinute: number }> {
-  const perMinute = await s.getInt("xp.voice.per_minute", 0);
-  const perTick =
-    perMinute > 0
-      ? Math.max(1, Math.round((perMinute * XP_VOICE_TICK_MS) / 60_000))
-      : XP_PER_VOICE_TICK;
-  return { perTick, perMinute: Math.round((perTick * 60_000) / XP_VOICE_TICK_MS) };
-}
-
-// ── Hard limits ─────────────────────────────────────────────────────────────
-
-/** Largest multiplier a boosted role can carry, whatever `xp.multiplier.max` says. */
-export const XP_BOOST_ROLE_CAP = 100_000;
-
-/**
- * Largest multiplier we accept on a role: the cumulative cap `xp.multiplier.max` (a higher
- * boost would only ever be clipped), and never more than {@link XP_BOOST_ROLE_CAP}.
- * Cyborg/mutant roles set to x10,000,000 through `/config xp-boost-set` went unnoticed
- * under the cumulative cap.
- */
-export function roleBoostLimit(maxMultiplier: number): number {
-  return Math.min(
-    XP_BOOST_ROLE_CAP,
-    Math.max(1, Number.isFinite(maxMultiplier) ? maxMultiplier : 1),
-  );
-}
-
-/** Where an XP gain comes from (the ceiling depends on the source). */
-export type XpGainSource = "message" | "voice" | "game" | "fusion" | "admin" | "other";
-
-export interface XpGainLimits {
-  /** Largest gain of one message (regeneration included), multiplier cap applied. */
-  message: number;
-  /** Largest gain of one voice tick, multiplier cap applied. */
-  voice: number;
-  /** Total a member can receive over 60 s, fusion shares included. */
-  perMinute: number;
-}
-
-/**
- * Limits derived from the ACTIVE configuration: nothing the game can legitimately produce
- * exceeds them, anything above is an anomaly (stacking multiplier, loop, call without a
- * source). Unlike the former fixed 5 M threshold they follow the settings: in production
- * (message <= 500, voice 10,000/min, cap x100,000) a normal gain exceeded 5 M and raised a
- * flag on every message.
- */
-export function xpGainLimits(input: {
-  messageMax: number;
-  messageCooldownMs: number;
-  regenXp: number;
-  voicePerTick: number;
-  maxMultiplier: number;
-  fusionRatio: number;
-}): XpGainLimits {
-  const mult = Math.max(1, input.maxMultiplier);
-  const message = Math.ceil(Math.max(0, input.messageMax + input.regenXp) * mult);
-  const voice = Math.ceil(Math.max(0, input.voicePerTick) * mult);
-  // At most one gain per cooldown (never more than one per second), two voice ticks of margin.
-  const messages = Math.ceil(60_000 / Math.max(1_000, input.messageCooldownMs)) + 1;
-  const own = 2 * voice + messages * message;
-  const share = 1 + Math.min(1, Math.max(0, input.fusionRatio));
-  return { message, voice, perMinute: Math.ceil(own * share) };
-}
-
-/** Ceiling of a single gain by source. `admin` has none. */
-export function singleGainCeiling(limits: XpGainLimits, source: XpGainSource): number {
-  if (source === "admin") return Number.POSITIVE_INFINITY;
-  if (source === "message") return limits.message;
-  if (source === "voice") return limits.voice;
-  return Math.max(limits.message, limits.voice);
-}
-
-/**
- * Reads the active limits. `xp.gain.max_single` and `xp.gain.max_per_minute` (and the
- * former `anticheat.xp.max_single`) can only TIGHTEN the derived limits; 0 or unset
- * means no manual limit.
- */
-export async function loadXpGainLimits(s: SettingsReader): Promise<XpGainLimits> {
-  const message = await loadMessageXpConfig(s);
-  const voice = await loadVoiceBaseGain(s);
-  const derived = xpGainLimits({
-    messageMax: message.max,
-    messageCooldownMs: message.cooldownMs,
-    regenXp: regenTuning().xp,
-    voicePerTick: voice.perTick,
-    maxMultiplier: await s.getFloat("xp.multiplier.max", DEFAULT_XP_BOOST_CONFIG.maxMultiplier),
-    fusionRatio: await s.getFloat("xp.fusion.bonus_ratio", FUSION_XP_BONUS_RATIO),
-  });
-  const manualSingle =
-    (await s.getInt("xp.gain.max_single", 0)) || (await s.getInt("anticheat.xp.max_single", 0));
-  const manualMinute = await s.getInt("xp.gain.max_per_minute", 0);
-  const tighten = (limit: number, manual: number) => (manual > 0 ? Math.min(limit, manual) : limit);
-  return {
-    message: tighten(derived.message, manualSingle),
-    voice: tighten(derived.voice, manualSingle),
-    perMinute: tighten(derived.perMinute, manualMinute),
-  };
-}
-
-/**
- * Sliding window of gains per member: what can still be granted over the last `windowMs`
- * ms. In memory (a restart starts from zero).
- */
-export class XpRateWindow {
-  private readonly entries = new Map<string, Array<{ at: number; amount: number }>>();
-  private calls = 0;
-
-  constructor(private readonly windowMs = 60_000) {}
-
-  /** Grants at most `cap` over the window and records what is granted. */
-  take(userId: string, amount: number, cap: number, now = Date.now()): number {
-    if (++this.calls % 1_000 === 0) this.prune(now);
-    const live = (this.entries.get(userId) ?? []).filter((e) => now - e.at < this.windowMs);
-    const used = live.reduce((sum, e) => sum + e.amount, 0);
-    const granted = Math.max(0, Math.min(amount, cap - used));
-    if (granted > 0) live.push({ at: now, amount: granted });
-    if (live.length > 0) this.entries.set(userId, live);
-    else this.entries.delete(userId);
-    return granted;
-  }
-
-  private prune(now: number) {
-    for (const [id, list] of this.entries) {
-      if (list.every((e) => now - e.at >= this.windowMs)) this.entries.delete(id);
-    }
-  }
 }

@@ -2,22 +2,16 @@
  * canvas-kit — primitives de rendu 2D partagées.
  *
  * Extraites de `CardService` + `commands/fun/Scan.ts`, réutilisables par les
- * futurs canvases (/top, /fusion, /shop, /saiyan, /villain, /bingo, /morpion, /pfc, /pendu).
+ * futurs canvases (/top, /fusion, /shop, /gay, /raciste, /bingo, /morpion, /pfc, /pendu).
  *
  * Pas de logique métier ici — uniquement des helpers sans état.
  * L'enregistrement des fonts est fait au chargement de ce module (side effect),
  * donc `import "~/lib/canvas-kit"` suffit à garantir leur disponibilité.
  */
 import { existsSync } from "node:fs";
-import { rename } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { GlobalFonts, loadImage, type Image, type SKRSContext2D } from "@napi-rs/canvas";
+import { GlobalFonts, type SKRSContext2D } from "@napi-rs/canvas";
 import { botFile } from "~/lib/asset-files";
-import { CANVAS_FONT_FILES } from "~/lib/canvas-fonts";
-import { drawIcon, ICON_BOX } from "~/render/icons";
 import { logger } from "~/lib/logger";
-
-export { FONT_STACK, font } from "~/lib/canvas-fonts";
 
 // ─── Fonts ────────────────────────────────────────────────────────────────
 
@@ -29,7 +23,25 @@ const BOT_ROOT = `${import.meta.dir}/../..`;
  * Ne throw jamais : fallback silencieux sur sans-serif si un fichier manque.
  */
 function registerFonts(): void {
-  for (const [file, family] of CANVAS_FONT_FILES) {
+  const fonts: Array<[string, string]> = [
+    // Google Sans Flex — police principale (variable, axes opsz+wght). Skia
+    // (@napi-rs/canvas) sélectionne le poids via la font string (`600 24px ...`).
+    // Une seule famille pour tous les poids grâce à l'axe wght variable.
+    ["GoogleSansFlex.ttf", "Google Sans Flex"],
+    // Legacy conservées en fallback (anciennes cartes / accents).
+    ["Inter-Medium.ttf", "Inter"],
+    ["Inter-SemiBold.ttf", "Inter SemiBold"],
+    ["Inter-Bold.ttf", "Inter Bold"],
+    ["Inter-ExtraBold.ttf", "Inter ExtraBold"],
+    ["InterDisplay-Black.ttf", "Inter Display Black"],
+    ["Teko-SemiBold.ttf", "Teko SemiBold"],
+    ["Teko-Bold.ttf", "Teko Bold"],
+    ["SaiyanSans.ttf", "Saiyan Sans"],
+    ["SaiyanSans-LeftOblique.ttf", "Saiyan Sans Oblique"],
+    ["DBSScouter.ttf", "DBS Scouter"],
+    ["NotoColorEmoji.ttf", "Noto Color Emoji"],
+  ];
+  for (const [file, family] of fonts) {
     try {
       const primaryPath = botFile(`assets/fonts/${file}`, BOT_ROOT);
       if (existsSync(primaryPath)) GlobalFonts.registerFromPath(primaryPath, family);
@@ -241,10 +253,6 @@ export function textStroked(
 
 // ─── Formes thématiques DBZ ───────────────────────────────────────────────
 
-/** Circumradius of the measured star glyph, in the units of its 24-unit drawing box. */
-const STAR_GLYPH_RADIUS = 9;
-
-/** Star of `points` branches; the five-pointed one is the measured glyph of the site. */
 export function drawStar(
   ctx: SKRSContext2D,
   cx: number,
@@ -253,10 +261,6 @@ export function drawStar(
   points = 5,
   color = "#ffffff",
 ): void {
-  if (points === 5) {
-    drawIcon(ctx, "star", cx, cy, (r * ICON_BOX) / STAR_GLYPH_RADIUS, color);
-    return;
-  }
   ctx.save();
   ctx.beginPath();
   for (let i = 0; i < points * 2; i++) {
@@ -334,8 +338,6 @@ export function drawImageCover(
   dy: number,
   dw: number,
   dh: number,
-  /** Centre of interest as fractions of the image (default: its centre): the crop follows it. */
-  focus: { x: number; y: number } = { x: 0.5, y: 0.5 },
 ): void {
   const srcRatio = img.width / img.height;
   const dstRatio = dw / dh;
@@ -346,11 +348,11 @@ export function drawImageCover(
   if (srcRatio > dstRatio) {
     // source plus large → crop gauche/droite
     sw = img.height * dstRatio;
-    sx = Math.min(img.width - sw, Math.max(0, focus.x * img.width - sw / 2));
+    sx = (img.width - sw) / 2;
   } else {
     // source plus haute → crop haut/bas
     sh = img.width / dstRatio;
-    sy = Math.min(img.height - sh, Math.max(0, focus.y * img.height - sh / 2));
+    sy = (img.height - sh) / 2;
   }
   // @ts-expect-error signature drawImage 9-arg
   ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
@@ -366,171 +368,3 @@ export function kiScouterLabel(n: number): string {
   if (n >= 1e3) return `${(n / 1e3).toFixed(1).replace(/\.0$/, "")}K`;
   return String(n);
 }
-
-// ─── Images distantes (avatars, frames d'épisodes) ─────────────────────────
-
-export interface RemoteImageCacheOptions {
-  /** Decoded images kept (LRU). */
-  max: number;
-  /** How long a decoded image is served without asking again. */
-  ttlMs: number;
-  /** Time allowed for one download. */
-  timeoutMs: number;
-  /** A response above this is not an image of this kind and is not decoded. */
-  maxBytes: number;
-  /** How long a failed URL is not asked again (a CDN outage must not cost a timeout per card). */
-  failureTtlMs: number;
-  /**
-   * Directory of a disk copy of the downloaded bytes, shared by every process and render
-   * worker of the machine (a download is paid once, a restart does not pay it again).
-   */
-  diskDir?: () => string | null;
-}
-
-export interface RemoteImageCache {
-  load(url: string): Promise<Image | null>;
-  clear(): void;
-}
-
-/** Disk name of a URL: a hash, so any URL maps to a safe file name. */
-const diskName = (url: string): string => `${Bun.hash(url).toString(16)}.img`;
-
-/**
- * Bounded cache of remote pictures, decoded once and shared by every card: LRU, expiry,
- * one download for simultaneous requests of the same URL, a timeout, a size cap and a memory
- * of failures. A failed or slow URL resolves `null` and the caller draws its fallback.
- */
-export function createRemoteImageCache(options: RemoteImageCacheOptions): RemoteImageCache {
-  const images = new Map<string, { image: Image; at: number }>();
-  const failures = new Map<string, number>();
-  const inflight = new Map<string, Promise<Image | null>>();
-
-  const fromDisk = async (url: string): Promise<Buffer | null> => {
-    const dir = options.diskDir?.();
-    if (!dir) return null;
-    try {
-      const file = Bun.file(`${dir}/${diskName(url)}`);
-      if (!(await file.exists()) || file.size === 0) return null;
-      return Buffer.from(await file.arrayBuffer());
-    } catch {
-      return null;
-    }
-  };
-  const toDisk = async (url: string, bytes: Buffer): Promise<void> => {
-    const dir = options.diskDir?.();
-    if (!dir) return;
-    try {
-      const target = `${dir}/${diskName(url)}`;
-      const partial = `${target}.${process.pid}.${Math.random().toString(36).slice(2)}.part`;
-      await Bun.write(partial, bytes); // creates the directory
-      await rename(partial, target);
-    } catch {
-      // the disk copy is an optimisation, never a failure
-    }
-  };
-
-  const remember = (url: string, image: Image): void => {
-    images.set(url, { image, at: Date.now() });
-    while (images.size > options.max) {
-      const oldest = images.keys().next().value;
-      if (oldest === undefined) break;
-      images.delete(oldest);
-    }
-  };
-
-  return {
-    async load(url) {
-      const hit = images.get(url);
-      if (hit && Date.now() - hit.at < options.ttlMs) {
-        images.delete(url);
-        images.set(url, hit);
-        return hit.image;
-      }
-      const failedAt = failures.get(url);
-      if (failedAt !== undefined && Date.now() - failedAt < options.failureTtlMs) return null;
-      const pending = inflight.get(url);
-      if (pending) return pending;
-      const task = (async () => {
-        try {
-          let bytes = await fromDisk(url);
-          if (!bytes) {
-            const res = await fetch(url, { signal: AbortSignal.timeout(options.timeoutMs) });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            bytes = Buffer.from(await res.arrayBuffer());
-            if (bytes.length > options.maxBytes) throw new Error("image too large");
-            const image = await loadImage(bytes);
-            void toDisk(url, bytes);
-            failures.delete(url);
-            remember(url, image);
-            return image;
-          }
-          const image = await loadImage(bytes);
-          failures.delete(url);
-          remember(url, image);
-          return image;
-        } catch {
-          failures.set(url, Date.now());
-          if (failures.size > options.max) {
-            const oldest = failures.keys().next().value;
-            if (oldest !== undefined) failures.delete(oldest);
-          }
-          return null;
-        } finally {
-          inflight.delete(url);
-        }
-      })();
-      inflight.set(url, task);
-      return task;
-    },
-    clear() {
-      images.clear();
-      failures.clear();
-    },
-  };
-}
-
-/**
- * Avatars (Discord CDN): LRU of 256 for an hour, 5 s per download, nothing above 4 MiB (an
- * avatar is a few tens of KiB), a failed URL is not asked again for a minute.
- */
-const avatars = createRemoteImageCache({
-  max: 256,
-  ttlMs: 60 * 60_000,
-  timeoutMs: 5_000,
-  maxBytes: 4 * 1024 * 1024,
-  failureTtlMs: 60_000,
-});
-
-/**
- * Frames of episodes (cards backdrops, ~25 KiB WebP each): a smaller LRU, since a decoded
- * frame is a megabyte, backed by a disk copy so the render workers and a restart do not
- * download them again. `SHENRON_FRAME_CACHE_DIR` moves the copy (default: system temp dir).
- */
-const frames = createRemoteImageCache({
-  max: 24,
-  ttlMs: 6 * 60 * 60_000,
-  timeoutMs: 8_000,
-  maxBytes: 1024 * 1024,
-  failureTtlMs: 60_000,
-  diskDir: () => process.env.SHENRON_FRAME_CACHE_DIR || `${tmpdir()}/shenron-frames`,
-});
-
-/** Forgets every cached and failed remote image (tests, `/reload`). */
-export function clearRemoteImageCache(): void {
-  avatars.clear();
-  frames.clear();
-}
-
-/**
- * Image distante (avatar Discord) décodée, partagée par toutes les cartes. Les demandes
- * simultanées d'une même URL partagent un seul téléchargement, et un CDN lent ne bloque pas
- * un rendu plus de 5 s (`null` : l'appelant dessine son repli).
- */
-export const loadRemoteImage = avatars.load;
-
-/** Frame d'épisode distante (fond de carte), décodée, avec copie sur disque. */
-export const loadFrameImage = frames.load;
-
-/** `http(s)://...`: a picture to download rather than a file of the bot. */
-export const isRemoteRef = (ref: string): boolean =>
-  ref.startsWith("https://") || ref.startsWith("http://");

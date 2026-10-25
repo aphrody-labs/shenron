@@ -254,7 +254,6 @@ export const WIKI_TABLE_SPECS: Record<string, WikiTableSpec> = {
       "malId",
       "anilistId",
       "trailerUrl",
-      "subtitles",
     ],
   },
   db_games: {

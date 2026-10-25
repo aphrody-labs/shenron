@@ -8,15 +8,6 @@ const LIVE_COLOR = 0xfe2c55; // rose/rouge TikTok
 const VIDEO_COLOR = 0x25f4ee; // cyan TikTok
 const DESC_MAX = 280;
 
-/**
- * Most recent video by `createTime`, independent of the parser's ordering: a
- * pinned (old) video remembered as "last" would make every newer video look
- * fresh at each tick.
- */
-export function newestVideo(videos: readonly TikTokVideo[]): TikTokVideo {
-  return videos.reduce((best, v) => (v.createTime > best.createTime ? v : best));
-}
-
 export interface TikTokTickResult {
   ok: boolean;
   reason?: string;
@@ -107,12 +98,9 @@ export class TikTokService {
         `Le live de **${p.nickname}** vient de commencer, viens vite !`,
         this.liveEmbed(p),
       );
-      // Marked live only once announced: a failed post (salon mal configuré,
-      // Discord indisponible) is retried at the next tick instead of being lost.
-      if (!sent) return false;
       await this.settings.set("tiktok.live_active", "true");
-      logger.info({ user: p.uniqueId }, "[tiktok] notif live envoyée");
-      return true;
+      if (sent) logger.info({ user: p.uniqueId }, "[tiktok] notif live envoyée");
+      return sent;
     }
     if (!p.isLive && wasLive) {
       await this.settings.set("tiktok.live_active", "false");
@@ -129,7 +117,7 @@ export class TikTokService {
     // Premier passage (jamais seedé) : on enregistre la plus récente sans rien
     // annoncer, pour ne pas spammer tout l'historique d'un coup.
     if (!lastId && lastTime === 0) {
-      await this.rememberVideo(newestVideo(p.videos));
+      await this.rememberVideo(p.videos[0]);
       return 0;
     }
 
@@ -149,7 +137,7 @@ export class TikTokService {
     }
     // On mémorise la plus récente vue (même si un envoi a échoué, pour ne pas
     // boucler indéfiniment sur la même vidéo).
-    await this.rememberVideo(newestVideo(p.videos));
+    await this.rememberVideo(p.videos[0]);
     if (count > 0) logger.info({ user: p.uniqueId, count }, "[tiktok] notif vidéo(s) envoyée(s)");
     return count;
   }

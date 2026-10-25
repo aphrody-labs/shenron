@@ -26,7 +26,7 @@ function Switch({
         "cible-44 peer inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-black/80 bg-black/60 p-0.5 transition-all outline-none cursor-pointer",
         "data-[unchecked]:bg-black/80",
         "data-[checked]:bg-gradient-to-r data-[checked]:from-dbz-orange data-[checked]:to-amber-500",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange/40",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         "aria-invalid:border-destructive",
         className,

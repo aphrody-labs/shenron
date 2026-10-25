@@ -8,9 +8,9 @@ import {
   type User,
   type TextChannel,
   type Client,
-  type APIEmbedField,
   PermissionFlagsBits,
   MessageFlags,
+  EmbedBuilder,
   Routes,
 } from "discord.js";
 import type { PersonaId } from "~/lib/personas";
@@ -27,28 +27,10 @@ import {
   successEmbed,
   warningEmbed,
 } from "~/lib/embeds";
-import { canManageRole } from "~/lib/hierarchy";
+import { canModerate, canManageRole } from "~/lib/hierarchy";
 import { gifFor } from "~/lib/sanction-gif";
-import {
-  MAX_TIMEOUT_MS,
-  NO_REASON,
-  auditReason,
-  discordErrorCode,
-  discordTime,
-  dmField,
-  errorMessage,
-  failInteraction,
-  formatDuration,
-  notifySanction,
-  parseBoundedDuration,
-  resolveSanctionTarget,
-} from "~/lib/sanction-helpers";
+import { parseDuration, formatDuration, notifyMember } from "~/lib/sanction-helpers";
 import type { GuildBasedChannel, Collection, Snowflake } from "discord.js";
-
-/** Discord API error code of `DELETE /guilds/{id}/bans/{user}` on a user who is not banned. */
-const UNKNOWN_BAN = 10026;
-
-type AnnouncedAction = "warn" | "mute" | "unmute" | "kick" | "ban" | "unban";
 
 @Discord()
 @Bot("shenron")
@@ -59,42 +41,6 @@ export class ModerationCommands {
     @inject(ModerationService) private mod: ModerationService,
     @inject(LogService) private logs: LogService,
   ) {}
-
-  /**
-   * Common ending of a sanction: detailed embed (moderator, reason, duration,
-   * DM) to the reply and the sanction log; `compact` keeps the public reply to
-   * the one-line persona announcement (ban, kick) and the details in the log.
-   */
-  private async announce(
-    interaction: CommandInteraction<"cached">,
-    opts: {
-      target: User;
-      action: AnnouncedAction;
-      reason?: string;
-      duration?: string;
-      dmDelivered?: boolean;
-      compact?: boolean;
-      fields?: APIEmbedField[];
-    },
-  ): Promise<void> {
-    const gifUrl = await gifFor(opts.action);
-    const detailed = sanctionEmbed({
-      target: opts.target,
-      moderator: interaction.user,
-      action: opts.action,
-      reason: opts.reason,
-      duration: opts.duration,
-      gifUrl,
-    });
-    if (opts.fields?.length) detailed.addFields(opts.fields);
-    if (opts.dmDelivered !== undefined) detailed.addFields(dmField(opts.dmDelivered));
-    const publicEmbed =
-      opts.compact && (opts.action === "ban" || opts.action === "kick")
-        ? sanctionLogEmbed({ target: opts.target, action: opts.action, gifUrl })
-        : detailed;
-    await interaction.editReply({ embeds: [publicEmbed] }).catch(() => {});
-    await this.logs.send(interaction.client, "sanction", detailed);
-  }
 
   // ────────────────────────────── /warn
   @Slash({ name: "warn", description: "Avertir un membre" })
@@ -118,32 +64,46 @@ export class ModerationCommands {
     reason: string | undefined,
     interaction: CommandInteraction,
   ) {
-    if (!interaction.inCachedGuild()) return;
-    // A warn stays possible on a user who left (history only), never on a bot.
-    const checked = await resolveSanctionTarget(interaction, target, {
-      requireMember: false,
-      allowBots: false,
-    });
-    if (!checked) return;
-    await interaction.deferReply();
-
+    if (target.bot) {
+      await interaction.reply({
+        embeds: [errorEmbed("Cible invalide", "Impossible d'avertir un bot.")],
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
     await this.mod.addWarn(target.id, interaction.user.id, reason);
     const count = await this.mod.countWarns(target.id);
-    const dmDelivered = await notifySanction({
+
+    const embed = sanctionEmbed({
       target,
       moderator: interaction.user,
-      kind: "warn",
-      guildName: interaction.guild.name,
-      reason,
-      footer: `Tu as ${count} avertissement(s) actif(s).`,
-    });
-    await this.announce(interaction, {
-      target,
       action: "warn",
       reason,
-      dmDelivered,
-      fields: [{ name: "Total warns actifs", value: String(count), inline: true }],
+      gifUrl: await gifFor("warn"),
+    }).addFields({ name: "Total warns actifs", value: String(count), inline: true });
+
+    const dmOk = await notifyMember(
+      target,
+      brandedEmbed({
+        title: "⚠️ Avertissement reçu",
+        description: `Tu as reçu un avertissement sur **${interaction.guild?.name ?? "le serveur"}**.\n\nMotif : ${reason ?? "*(non précisé)*"}`,
+        kind: "warning",
+        footer: `Tu as ${count} avertissement(s) actif(s).`,
+      }),
+      {
+        kind: "warn",
+        reason: reason ?? "*(non précisé)*",
+        moderator: interaction.user.username,
+        guildName: interaction.guild?.name ?? "le serveur",
+      },
+    );
+
+    await interaction.reply({
+      embeds: [
+        embed.addFields({ name: "DM", value: dmOk ? "✅ envoyé" : "❌ DM fermés", inline: true }),
+      ],
     });
+    await this.logs.send(interaction.client, "sanction", embed);
   }
 
   // ────────────────────────────── /unwarn
@@ -161,7 +121,7 @@ export class ModerationCommands {
     target: User,
     interaction: CommandInteraction,
   ) {
-    const ok = await this.mod.removeLastWarn(target.id, interaction.user.id);
+    const ok = await this.mod.removeLastWarn(target.id);
     await interaction.reply({
       embeds: [
         ok
@@ -206,13 +166,11 @@ export class ModerationCommands {
       description: `**${list.length}** avertissement(s) actif(s)`,
       kind: "warning",
     }).addFields(
-      // Field names do not render mentions: moderator and date go in the value.
       list.slice(0, 25).map((w) => ({
-        name: `Warn #${w.id}`,
-        value: `${discordTime(w.createdAt, "R")} · par <@${w.moderatorId}>\nMotif : ${(w.reason ?? NO_REASON).slice(0, 900)}`,
+        name: `#${w.id} · <t:${Math.floor(w.createdAt.getTime() / 1000)}:R>`,
+        value: `Mod : <@${w.moderatorId}>\nMotif : ${w.reason ?? "*(n/a)*"}`,
       })),
     );
-    if (list.length > 25) embed.setFooter({ text: `25 affichés sur ${list.length}` });
     await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
   }
 
@@ -284,58 +242,92 @@ export class ModerationCommands {
     interaction: CommandInteraction,
   ) {
     if (!interaction.inCachedGuild()) return;
-    const parsed = parseBoundedDuration(duration, {
-      minMs: 1_000,
-      maxMs: MAX_TIMEOUT_MS,
-      required: true,
-    });
-    if (!parsed.ok) {
-      await failInteraction(
-        interaction,
-        errorEmbed("Durée invalide", `${parsed.reason}\nMaximum **28 jours** (limite Discord).`),
-      );
+    const ms = parseDuration(duration);
+    if (!ms || ms < 1_000 || ms > 28 * 86_400_000) {
+      await interaction.reply({
+        embeds: [
+          errorEmbed(
+            "Durée invalide",
+            "Format attendu : `10m`, `1h`, `1d`. Maximum **28 jours** (limite Discord).",
+          ),
+        ],
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
-    const ms = parsed.ms;
-    const checked = await resolveSanctionTarget(interaction, target, { requireMember: true });
-    const member = checked?.member;
-    if (!member) return;
+    const member = await interaction.guild.members.fetch(target.id).catch(() => null);
+    if (!member) {
+      await interaction.reply({
+        embeds: [errorEmbed("Membre introuvable")],
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+    {
+      const allowed = await canModerate(interaction.member, member);
+      if (!allowed.ok) {
+        await interaction.reply({
+          embeds: [errorEmbed("Hiérarchie staff", allowed.reason ?? "")],
+          flags: MessageFlags.Ephemeral,
+        });
+        return;
+      }
+    }
     if (!member.moderatable) {
-      await failInteraction(
-        interaction,
-        errorEmbed(
-          "Permissions insuffisantes",
-          `Le bot ne peut pas timeout ${target} (rôle plus haut, administrateur ou perm absente).`,
-        ),
-      );
+      await interaction.reply({
+        embeds: [
+          errorEmbed(
+            "Permissions insuffisantes",
+            `Le bot ne peut pas timeout ${target} (rôle plus haut ou perm absente).`,
+          ),
+        ],
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
-    await interaction.deferReply();
 
     try {
-      await member.timeout(ms, auditReason(reason, interaction.user));
+      await member.timeout(ms, reason ?? `by ${interaction.user.username}`);
     } catch (err) {
-      await failInteraction(interaction, errorEmbed("Échec mute", errorMessage(err)));
+      await interaction.reply({
+        embeds: [errorEmbed("Échec mute", err instanceof Error ? err.message : "erreur inconnue")],
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
     await this.mod.log("MUTE", target.id, interaction.user.id, reason, { durationMs: ms });
 
     const until = new Date(Date.now() + ms);
-    const dmDelivered = await notifySanction({
+    const embed = sanctionEmbed({
       target,
       moderator: interaction.user,
-      kind: "mute",
-      guildName: interaction.guild.name,
-      reason,
-      durationMs: ms,
-    });
-    await this.announce(interaction, {
-      target,
       action: "mute",
       reason,
-      duration: `${formatDuration(ms)} · fin ${discordTime(until)}`,
-      dmDelivered,
+      duration: `${formatDuration(ms)} (jusqu'à ${until.toLocaleString("fr-FR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })})`,
+      gifUrl: await gifFor("mute"),
     });
+    const dmOk = await notifyMember(
+      target,
+      brandedEmbed({
+        title: "🔇 Tu as été mute",
+        description: `Tu es mute sur **${interaction.guild.name}** pour **${formatDuration(ms)}**.\n\nMotif : ${reason ?? "*(non précisé)*"}\nFin : <t:${Math.floor(until.valueOf() / 1000)}:f>`,
+        kind: "warning",
+      }),
+      {
+        kind: "mute",
+        reason: reason ?? "*(non précisé)*",
+        duration: formatDuration(ms),
+        moderator: interaction.user.username,
+        guildName: interaction.guild.name,
+      },
+    );
+
+    await interaction.reply({
+      embeds: [
+        embed.addFields({ name: "DM", value: dmOk ? "✅ envoyé" : "❌ DM fermés", inline: true }),
+      ],
+    });
+    await this.logs.send(interaction.client, "sanction", embed);
   }
 
   // ────────────────────────────── /unmute
@@ -362,33 +354,32 @@ export class ModerationCommands {
   ) {
     if (!interaction.inCachedGuild()) return;
     const member = await interaction.guild.members.fetch(target.id).catch(() => null);
-    if (!member || member.id !== target.id) {
-      await failInteraction(
-        interaction,
-        errorEmbed("Membre introuvable", `<@${target.id}> n'est plus sur le serveur.`),
-      );
+    if (!member) {
+      await interaction.reply({
+        embeds: [errorEmbed("Membre introuvable")],
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
     if (!member.isCommunicationDisabled()) {
-      await failInteraction(
-        interaction,
-        warningEmbed("Pas mute", `<@${target.id}> n'est pas mute.`),
-      );
+      await interaction.reply({
+        embeds: [warningEmbed("Pas mute", `<@${target.id}> n'est pas mute.`)],
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
-    await interaction.deferReply();
-    try {
-      await member.timeout(
-        null,
-        reason?.trim() ? auditReason(reason, interaction.user) : "manual unmute",
-      );
-    } catch (err) {
-      // The timeout is still running: never report an unmute that did not happen.
-      await failInteraction(interaction, errorEmbed("Échec unmute", errorMessage(err)));
-      return;
-    }
+    await member.timeout(null, reason ?? "manual unmute").catch(() => {});
     await this.mod.log("UNMUTE", target.id, interaction.user.id, reason);
-    await this.announce(interaction, { target, action: "unmute", reason });
+
+    const embed = sanctionEmbed({
+      target,
+      moderator: interaction.user,
+      action: "unmute",
+      reason,
+      gifUrl: await gifFor("unmute"),
+    });
+    await interaction.reply({ embeds: [embed] });
+    await this.logs.send(interaction.client, "sanction", embed);
   }
 
   // ────────────────────────────── /ban
@@ -426,51 +417,89 @@ export class ModerationCommands {
     // L'accès à /ban est exclusivement déterminé par CommandPermissions,
     // configuré dans le dashboard. Le bot conserve, lui, la permission Discord
     // Ban Members nécessaire pour exécuter l'action au nom du staff autorisé.
-    // A user who already left can still be banned (by ID); a member goes
-    // through the staff hierarchy and the bot's ability to ban them.
-    const checked = await resolveSanctionTarget(interaction, target, { requireMember: false });
-    if (!checked) return;
-    if (checked.member && !checked.member.bannable) {
-      await failInteraction(
-        interaction,
-        errorEmbed("Permissions insuffisantes", `Le bot ne peut pas bannir ${target}.`),
-      );
+    if (target.id === interaction.user.id) {
+      await interaction.reply({
+        embeds: [errorEmbed("Cible invalide", "Tu ne peux pas te bannir toi-même.")],
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
-    await interaction.deferReply();
+    if (target.id === interaction.client.user?.id) {
+      await interaction.reply({
+        embeds: [errorEmbed("Cible invalide", "Le bot ne peut pas se bannir.")],
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+    {
+      const targetMember = await interaction.guild.members.fetch(target.id).catch(() => null);
+      if (targetMember) {
+        const allowed = await canModerate(interaction.member, targetMember);
+        if (!allowed.ok) {
+          await interaction.reply({
+            embeds: [errorEmbed("Hiérarchie staff", allowed.reason ?? "")],
+            flags: MessageFlags.Ephemeral,
+          });
+          return;
+        }
+      }
+    }
 
     // DM avant ban (sinon on ne peut plus joindre la cible une fois bannie)
-    const dmDelivered = checked.member
-      ? await notifySanction({
-          target,
-          moderator: interaction.user,
-          kind: "ban",
-          guildName: interaction.guild.name,
-          reason,
-        })
-      : false;
+    const dmOk = await notifyMember(
+      target,
+      brandedEmbed({
+        title: "🔨 Tu as été banni",
+        description: `Tu as été banni de **${interaction.guild.name}**.\n\nMotif : ${reason ?? "*(non précisé)*"}`,
+        kind: "error",
+      }),
+      {
+        kind: "ban",
+        reason: reason ?? "*(non précisé)*",
+        moderator: interaction.user.username,
+        guildName: interaction.guild.name,
+      },
+    );
 
     try {
       await interaction.guild.members.ban(target.id, {
-        reason: auditReason(reason, interaction.user),
+        reason: reason ?? `by ${interaction.user.username}`,
         deleteMessageSeconds: (deleteDays ?? 0) * 86_400,
       });
+      await this.mod.addBan(target.id, interaction.user.id, reason);
+
+      const gifUrl = await gifFor("ban");
+      // Public : embed compact (gif + "X a été désintégré par Beerus !")
+      const publicEmbed = sanctionLogEmbed({ target, action: "ban", gifUrl });
+      await interaction.reply({ embeds: [publicEmbed] });
+
+      // Log détaillé : sanction channel uniquement
+      const detailedEmbed = sanctionEmbed({
+        target,
+        moderator: interaction.user,
+        action: "ban",
+        reason,
+        gifUrl,
+      });
+      if (deleteDays && deleteDays > 0) {
+        detailedEmbed.addFields({
+          name: "Messages purgés",
+          value: `${deleteDays} j`,
+          inline: true,
+        });
+      }
+      detailedEmbed.addFields({
+        name: "DM",
+        value: dmOk ? "✅ envoyé" : "❌ DM fermés",
+        inline: true,
+      });
+      await this.logs.send(interaction.client, "sanction", detailedEmbed);
     } catch (err) {
-      await failInteraction(interaction, errorEmbed("Échec ban", errorMessage(err)));
-      return;
+      await interaction.reply({
+        embeds: [errorEmbed("Échec ban", (err as Error).message)],
+        flags: MessageFlags.Ephemeral,
+      });
     }
-    await this.mod.addBan(target.id, interaction.user.id, reason);
-    await this.announce(interaction, {
-      target,
-      action: "ban",
-      reason,
-      dmDelivered,
-      compact: true,
-      fields:
-        deleteDays && deleteDays > 0
-          ? [{ name: "Messages purgés", value: `${deleteDays} j`, inline: true }]
-          : [],
-    });
   }
 
   // ────────────────────────────── /unban
@@ -500,31 +529,31 @@ export class ModerationCommands {
       });
       return;
     }
-    await interaction.deferReply();
     try {
-      await interaction.guild.members.unban(userId, auditReason(reason, interaction.user));
-    } catch (err) {
-      if (discordErrorCode(err) === UNKNOWN_BAN) {
-        // Not banned on Discord: still close a stale active ban in the database.
-        await this.mod.removeBan(userId, interaction.user.id, reason);
-        await failInteraction(
-          interaction,
-          warningEmbed("Pas banni", `<@${userId}> n'est pas banni de ce serveur.`),
-        );
-        return;
+      await interaction.guild.members.unban(userId, reason ?? `by ${interaction.user.username}`);
+      await this.mod.removeBan(userId, interaction.user.id, reason);
+      const user = await interaction.client.users.fetch(userId).catch(() => null);
+      if (user) {
+        const embed = sanctionEmbed({
+          target: user,
+          moderator: interaction.user,
+          action: "unban",
+          reason,
+          gifUrl: await gifFor("unban"),
+        });
+        await interaction.reply({ embeds: [embed] });
+        await this.logs.send(interaction.client, "sanction", embed);
+      } else {
+        await interaction.reply({
+          embeds: [successEmbed("Débannissement effectué", `<@${userId}> débanni.`)],
+        });
       }
-      await failInteraction(interaction, errorEmbed("Échec unban", errorMessage(err)));
-      return;
+    } catch (err) {
+      await interaction.reply({
+        embeds: [errorEmbed("Échec unban", (err as Error).message)],
+        flags: MessageFlags.Ephemeral,
+      });
     }
-    await this.mod.removeBan(userId, interaction.user.id, reason);
-    const user = await interaction.client.users.fetch(userId).catch(() => null);
-    if (user) {
-      await this.announce(interaction, { target: user, action: "unban", reason });
-      return;
-    }
-    await interaction
-      .editReply({ embeds: [successEmbed("Débannissement effectué", `<@${userId}> débanni.`)] })
-      .catch(() => {});
   }
 
   // ────────────────────────────── /kick
@@ -550,39 +579,60 @@ export class ModerationCommands {
     interaction: CommandInteraction,
   ) {
     if (!interaction.inCachedGuild()) return;
-    const checked = await resolveSanctionTarget(interaction, target, { requireMember: true });
-    const member = checked?.member;
-    if (!member) return;
-    if (!member.kickable) {
-      await failInteraction(
-        interaction,
-        errorEmbed("Permissions insuffisantes", `Le bot ne peut pas expulser ${target}.`),
-      );
+    const member = await interaction.guild.members.fetch(target.id).catch(() => null);
+    if (!member) {
+      await interaction.reply({
+        embeds: [errorEmbed("Membre introuvable")],
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
-    await interaction.deferReply();
-    const dmDelivered = await notifySanction({
+    if (!member.kickable) {
+      await interaction.reply({
+        embeds: [errorEmbed("Hiérarchie", `Le bot ne peut pas expulser ${target}.`)],
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+    {
+      const allowed = await canModerate(interaction.member, member);
+      if (!allowed.ok) {
+        await interaction.reply({
+          embeds: [errorEmbed("Hiérarchie staff", allowed.reason ?? "")],
+          flags: MessageFlags.Ephemeral,
+        });
+        return;
+      }
+    }
+    const dmOk = await notifyMember(
+      target,
+      brandedEmbed({
+        title: "👢 Tu as été expulsé",
+        description: `Tu as été expulsé de **${interaction.guild.name}**.\n\nMotif : ${reason ?? "*(non précisé)*"}`,
+        kind: "warning",
+      }),
+      {
+        kind: "kick",
+        reason: reason ?? "*(non précisé)*",
+        moderator: interaction.user.username,
+        guildName: interaction.guild.name,
+      },
+    );
+    await member.kick(reason ?? `by ${interaction.user.username}`).catch(() => {});
+    await this.mod.log("KICK", target.id, interaction.user.id, reason);
+
+    const gifUrl = await gifFor("kick");
+    const publicEmbed = sanctionLogEmbed({ target, action: "kick", gifUrl });
+    await interaction.reply({ embeds: [publicEmbed] });
+
+    const detailedEmbed = sanctionEmbed({
       target,
       moderator: interaction.user,
-      kind: "kick",
-      guildName: interaction.guild.name,
-      reason,
-    });
-    try {
-      await member.kick(auditReason(reason, interaction.user));
-    } catch (err) {
-      // Never announce a kick that Discord refused.
-      await failInteraction(interaction, errorEmbed("Échec kick", errorMessage(err)));
-      return;
-    }
-    await this.mod.log("KICK", target.id, interaction.user.id, reason);
-    await this.announce(interaction, {
-      target,
       action: "kick",
       reason,
-      dmDelivered,
-      compact: true,
-    });
+      gifUrl,
+    }).addFields({ name: "DM", value: dmOk ? "✅ envoyé" : "❌ DM fermés", inline: true });
+    await this.logs.send(interaction.client, "sanction", detailedEmbed);
   }
 
   // ────────────────────────────── /clear
@@ -618,20 +668,14 @@ export class ModerationCommands {
       return;
     }
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-    const ch = interaction.channel as TextChannel;
-    let deleted: { size: number };
-    try {
-      const messages = await ch.messages.fetch({ limit: target ? 100 : amount });
-      const filtered = target
-        ? messages.filter((m) => m.author.id === target.id).first(amount)
-        : messages.first(amount);
-      const toDelete = Array.isArray(filtered) ? filtered : [...filtered];
-      // `true` skips messages older than 14 days instead of failing the batch.
-      deleted = await ch.bulkDelete(toDelete, true);
-    } catch (err) {
-      await failInteraction(interaction, errorEmbed("Échec clear", errorMessage(err)));
-      return;
-    }
+    const messages = await (interaction.channel as TextChannel).messages.fetch({
+      limit: target ? 100 : amount,
+    });
+    const filtered = target
+      ? messages.filter((m) => m.author.id === target.id).first(amount)
+      : messages.first(amount);
+    const toDelete = Array.isArray(filtered) ? filtered : [...filtered];
+    const deleted = await (interaction.channel as TextChannel).bulkDelete(toDelete, true);
     await this.mod.log("PURGE", null, interaction.user.id, undefined, {
       count: deleted.size,
       target: target?.id,
@@ -726,8 +770,17 @@ export class ModerationCommands {
     if (!interaction.inCachedGuild()) return;
     // Hiérarchie staff — empêcher de purger un membre au-dessus
     if (target) {
-      const checked = await resolveSanctionTarget(interaction, target, { requireMember: false });
-      if (!checked) return;
+      const targetMember = await interaction.guild.members.fetch(target.id).catch(() => null);
+      if (targetMember) {
+        const allowed = await canModerate(interaction.member, targetMember);
+        if (!allowed.ok) {
+          await interaction.reply({
+            embeds: [errorEmbed("Hiérarchie staff", allowed.reason ?? "")],
+            flags: MessageFlags.Ephemeral,
+          });
+          return;
+        }
+      }
     }
     const limit = amount ?? 100;
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
@@ -842,15 +895,14 @@ export class ModerationCommands {
       }
     }
 
-    const scopeLabel = globalScope
-      ? "global"
-      : categoryScope
-        ? `📁${categoryScope.name}`
-        : channel
-          ? `#${channel.name}`
-          : `#${(interaction.channel as TextChannel | null)?.name ?? "?"}`;
     await this.mod.log("PURGE", target?.id ?? null, interaction.user.id, undefined, {
-      scope: scopeLabel,
+      scope: globalScope
+        ? "global"
+        : categoryScope
+          ? `📁${categoryScope.name}`
+          : channel
+            ? `#${channel.name}`
+            : `#${(interaction.channel as TextChannel | null)?.name ?? "?"}`,
       target: target?.id,
       deleted: totalDeleted,
       scanned,
@@ -883,7 +935,11 @@ export class ModerationCommands {
       deleted: totalDeleted,
       target: target?.id ?? "",
       targetClause: target ? ` de <@${target.id}>` : "",
-      scope: scopeLabel,
+      scope: globalScope
+        ? "global"
+        : channel
+          ? `#${channel.name}`
+          : `#${(interaction.channel as TextChannel | null)?.name ?? "?"}`,
     });
     const publicEmbed = brandedEmbed({
       title: "💥 Purge — Final Explosion",
@@ -901,8 +957,7 @@ export class ModerationCommands {
     }
     await this.logs.send(interaction.client, "sanction", publicEmbed);
 
-    // A long global purge can outlive the 15 min interaction token: the log above stays.
-    await interaction.editReply({ embeds: [successEmbed("Purge terminée", desc)] }).catch(() => {});
+    await interaction.editReply({ embeds: [successEmbed("Purge terminée", desc)] });
   }
 
   // ────────────────────────────── /slowmode
@@ -1055,36 +1110,41 @@ export class ModerationCommands {
     interaction: CommandInteraction,
   ) {
     if (!interaction.inCachedGuild()) return;
-    // Renaming oneself is allowed; anyone else goes through the staff hierarchy.
-    let member;
-    if (target.id === interaction.user.id) {
-      member = interaction.member;
-    } else {
-      const checked = await resolveSanctionTarget(interaction, target, { requireMember: true });
-      if (!checked?.member) return;
-      member = checked.member;
-    }
-    if (!member.manageable) {
-      await failInteraction(
-        interaction,
-        errorEmbed("Hiérarchie", `Le bot ne peut pas modifier ${target}.`),
-      );
+    const member = await interaction.guild.members.fetch(target.id).catch(() => null);
+    if (!member) {
+      await interaction.reply({
+        embeds: [errorEmbed("Membre introuvable")],
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
-    const nick = newNick?.trim() || null;
+    if (!member.manageable) {
+      await interaction.reply({
+        embeds: [errorEmbed("Hiérarchie", `Le bot ne peut pas modifier ${target}.`)],
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
     try {
-      await member.setNickname(nick, `nick by ${interaction.user.username}`);
-      await this.mod.log("NICK", target.id, interaction.user.id, undefined, { newNick: nick });
+      await member.setNickname(newNick ?? null, `nick by ${interaction.user.username}`);
+      await this.mod.log("NICK", target.id, interaction.user.id, undefined, {
+        newNick: newNick ?? null,
+      });
       await interaction.reply({
         embeds: [
           successEmbed(
-            nick ? `Pseudo changé` : `Pseudo réinitialisé`,
-            nick ? `<@${target.id}> → **${nick}**` : `<@${target.id}> retrouve son nom Discord.`,
+            newNick ? `Pseudo changé` : `Pseudo réinitialisé`,
+            newNick
+              ? `<@${target.id}> → **${newNick}**`
+              : `<@${target.id}> retrouve son nom Discord.`,
           ),
         ],
       });
     } catch (err) {
-      await failInteraction(interaction, errorEmbed("Échec nick", errorMessage(err)));
+      await interaction.reply({
+        embeds: [errorEmbed("Échec nick", (err as Error).message)],
+        flags: MessageFlags.Ephemeral,
+      });
     }
   }
 
@@ -1144,25 +1204,20 @@ export class ModerationCommands {
     const user = target ?? interaction.user;
     const warnCount = await this.mod.countWarns(user.id);
     const jail = await this.mod.getActiveJail(user.id);
-    const ban = await this.mod.getActiveBan(user.id);
-    const clean = warnCount === 0 && !jail && !ban;
-    const embed = brandedEmbed({
-      title: `🛡️ Dossier modération — ${user.username}`,
-      description: clean ? "Casier vierge." : `<@${user.id}>`,
-      kind: clean ? "success" : "warning",
-    })
+    const embed = new EmbedBuilder()
+      .setTitle(`Stats modération de ${user.username}`)
       .setThumbnail(user.displayAvatarURL())
       .addFields(
         { name: "Warns actifs", value: String(warnCount), inline: true },
         {
-          name: "Jail",
+          name: "Jailed",
           value: jail
-            ? `Oui ${jail.expiresAt ? `(fin ${discordTime(jail.expiresAt, "R")})` : "(indéfini)"}`
+            ? `Oui ${jail.expiresAt ? `(jusqu'à <t:${Math.floor(jail.expiresAt.getTime() / 1000)}:R>)` : "(indéfini)"}`
             : "Non",
           inline: true,
         },
-        { name: "Ban actif", value: ban ? "Oui" : "Non", inline: true },
-      );
+      )
+      .setColor(warnCount > 0 || jail ? 0xfbbf24 : 0x57f287);
     await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
   }
 
@@ -1178,7 +1233,8 @@ export class ModerationCommands {
         .slice(0, 5)
         .map(([action, count]) => `\`${action}\` × ${count}`)
         .join(" · ") || "*aucune*";
-    const embed = brandedEmbed({ title: `📊 Stats — ${g.name}`, kind: "brand" })
+    const embed = new EmbedBuilder()
+      .setTitle(`Stats — ${g.name}`)
       .setThumbnail(g.iconURL() ?? null)
       .addFields(
         { name: "Membres", value: String(g.memberCount), inline: true },
@@ -1187,7 +1243,8 @@ export class ModerationCommands {
         { name: "Boosts", value: String(g.premiumSubscriptionCount ?? 0), inline: true },
         { name: "Créé le", value: `<t:${Math.floor(g.createdTimestamp / 1000)}:D>`, inline: true },
         { name: "Mod (7j)", value: top3 },
-      );
+      )
+      .setColor(0xfbbf24);
     await interaction.reply({ embeds: [embed] });
   }
 
@@ -1281,26 +1338,6 @@ export class ModerationCommands {
         ],
       });
     } else {
-      // Bulk @everyone: Administrator only (as the option says), and the role
-      // must sit below the invoker's highest role like a targeted change.
-      if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
-        await failInteraction(
-          interaction,
-          errorEmbed(
-            "Réservé aux administrateurs",
-            "Sans membre ciblé, `/role` agit sur tout le serveur : permission **Administrateur** requise.",
-          ),
-        );
-        return;
-      }
-      const allowed = await canManageRole(interaction.member, role);
-      if (!allowed.ok) {
-        await failInteraction(
-          interaction,
-          errorEmbed("Hiérarchie", allowed.reason ?? "Action interdite par la hiérarchie."),
-        );
-        return;
-      }
       await interaction.deferReply();
       // Beerus tourne sur [Guilds, GuildModeration] — pas d'intent GuildMembers.
       // Donc `role.members.cache` côté Beerus est vide ou quasi vide. On délègue
@@ -1395,17 +1432,14 @@ export class ModerationCommands {
         failed,
         scope,
       });
-      // A large guild can outlive the 15 min interaction token: the log above stays.
-      await interaction
-        .editReply({
-          embeds: [
-            successEmbed(
-              action === "give" ? "Rôle donné en masse" : "Rôle retiré en masse",
-              `${role} ${action === "give" ? "ajouté à" : "retiré de"} **${ok}** membre(s)${failed ? ` (${failed} échec(s))` : ""}.\n*Scope : ${scope}.*`,
-            ),
-          ],
-        })
-        .catch(() => {});
+      await interaction.editReply({
+        embeds: [
+          successEmbed(
+            action === "give" ? "Rôle donné en masse" : "Rôle retiré en masse",
+            `${role} ${action === "give" ? "ajouté à" : "retiré de"} **${ok}** membre(s)${failed ? ` (${failed} échec(s))` : ""}.\n*Scope : ${scope}.*`,
+          ),
+        ],
+      });
     }
   }
 }

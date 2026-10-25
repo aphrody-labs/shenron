@@ -16,7 +16,7 @@ import { MemberLedger } from "@/components/contest/MemberLedger";
 import { getProfileCardUrl } from "@/lib/assets";
 import { Avatar } from "@/components/Avatar";
 import { discordDefaultAvatarUrl } from "@/lib/discord-avatar";
-import { getShenronUserResult, xpProgressPercent } from "@/lib/shenron";
+import { getShenronUserResult } from "@/lib/shenron";
 import { getSessionUser } from "@/lib/session";
 import { formatZeni } from "@/lib/zeni";
 import { ProfileCardCustomizer } from "@/components/profile/ProfileCardCustomizer";
@@ -92,40 +92,7 @@ export default async function ProfilePage({
       </PageShell>
     );
   }
-  if (result.status === "absent") {
-    if (!ownProfile || !viewer?.user) notFound();
-    return (
-      <PageShell rhythm="tight">
-        <div>
-          <UserNav />
-          <h1 className="mt-6 break-words text-3xl font-semibold">{viewer.user.username}</h1>
-          <section
-            className="mt-6 rounded-2xl border border-border bg-card p-5"
-            aria-labelledby="community-profile-status"
-          >
-            <h2 id="community-profile-status" className="font-semibold">
-              <T k="profile.communityMissingTitle" />
-            </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              <T k="profile.communityMissingMessage" />
-            </p>
-            <Link
-              href="/dashboard"
-              className="mt-4 inline-flex min-h-11 items-center rounded-md border border-border px-4 text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
-            >
-              <T k="profile.accountLink" />
-            </Link>
-          </section>
-          <ContinueRail
-            titleKey="history.resumeWith"
-            titleValues={{ name: viewer.user.username }}
-            className="mt-8"
-          />
-          <MemberLibrary />
-        </div>
-      </PageShell>
-    );
-  }
+  if (result.status === "absent") notFound();
   const user = result.user;
   const username = user.username || "Guerrier inconnu";
   // Sans avatar personnalisé, Discord affiche l'avatar par défaut du membre,
@@ -134,12 +101,17 @@ export default async function ProfilePage({
   const avatar = user.avatarUrl || discordDefaultAvatarUrl(id);
   const cardUrl = getProfileCardUrl(id);
   const equipped = user.equipped || {};
-  const progress = xpProgressPercent(user.xpProgress);
+  const progress = user.xpProgress
+    ? Math.min(
+        100,
+        Math.max(0, (user.xpProgress.current / Math.max(1, user.xpProgress.nextLevelXp)) * 100),
+      )
+    : 0;
   const stats = [
-    ["profile.statXp", fmt(user.xp)],
-    ["profile.statZeni", formatZeni(user.zeni)],
-    ["profile.statAchievements", fmt(user.achievements?.length)],
-    ["profile.statItems", fmt(user.inventory?.length)],
+    ["XP total", fmt(user.xp)],
+    ["Zénis", formatZeni(user.zeni)],
+    ["Succès", fmt(user.achievements?.length)],
+    ["Objets", fmt(user.inventory?.length)],
   ];
   const gear: Array<[string, string | null | undefined]> = [
     ["profile.gearCard", equipped.card],
@@ -228,15 +200,13 @@ export default async function ProfilePage({
                   href={`/profile/${user.fusion.partnerId}`}
                   className="inline-flex w-fit items-center gap-2 rounded-full border border-fuchsia-400/30 bg-fuchsia-400/10 px-4 py-2 text-sm text-fuchsia-200 hover:bg-fuchsia-400/20"
                 >
-                  <T k="profile.fusionWith" values={{ name: user.fusion.partnerName }} />
+                  ✦ Fusion avec {user.fusion.partnerName}
                 </Link>
               )}
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {stats.map(([label, value]) => (
                   <div key={label} className="rounded-xl border border-white/10 bg-black/20 p-3">
-                    <p className="text-[10px] uppercase tracking-wider text-white/45">
-                      <T k={label} />
-                    </p>
+                    <p className="text-[10px] uppercase tracking-wider text-white/45">{label}</p>
                     <p className="mt-1 text-xl font-semibold text-dbz-orange">{value}</p>
                   </div>
                 ))}

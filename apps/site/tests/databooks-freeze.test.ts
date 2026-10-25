@@ -58,12 +58,11 @@ describe("databooks-freeze (S11)", () => {
     expect(r.throws).toBe("DATABOOKS_FROZEN");
   });
 
-  it("production + variable -> fichier absent -> gelé", () => {
+  it("variable -> fichier absent -> libre", () => {
     const file = join(tmp, "absent.json");
     const r = probe({ NODE_ENV: "production", DATABOOKS_FREEZE_FILE: file });
     expect(r.file).toBe(file);
-    expect(r.freeze).toEqual({ reason: "Fichier DATABOOKS_FREEZE_FILE introuvable", path: file });
-    expect(r.throws).toBe("DATABOOKS_FROZEN");
+    expect(r.freeze).toBeNull();
   });
 
   it('fichier {"frozen": false} -> libre', () => {

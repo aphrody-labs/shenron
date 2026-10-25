@@ -259,7 +259,6 @@ export class WorkerPool {
         p.timedOut = true;
         void worker.terminate();
       }, this.timeoutMs);
-      // oxlint-disable-next-line unicorn/require-post-message-target-origin -- Worker, not Window
       worker.postMessage({ id: p.id, job: p.job });
     }
   }
@@ -548,7 +547,7 @@ export function createDbxv2Server(opts: ServeOptions) {
     if (parts[0] !== "cpk") throw new HttpError(404, "not found");
 
     if (parts.length === 1) {
-      const names = (await readdir(opts.cpkDir)).filter((n) => n.endsWith(".cpk")).toSorted();
+      const names = (await readdir(opts.cpkDir)).filter((n) => n.endsWith(".cpk")).sort();
       const list = await Promise.all(
         names.map(async (n) => {
           const s = await stat(join(opts.cpkDir, n));

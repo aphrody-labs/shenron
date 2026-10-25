@@ -504,9 +504,6 @@
     "s9": "9. Modifications"
   },
   "profile": {
-    "communityMissingTitle": "コミュニティプロフィールは未作成です",
-    "communityMissingMessage": "ログイン済みです。このDiscordアカウントにはまだShenronのコミュニティプロフィールがありません。個人ライブラリは引き続き利用できます。",
-    "accountLink": "マイページを開く",
     "unavailableTitle": "プロファイルは一時的に利用できません",
     "unavailableMessage": "プロファイル サービスが応答していません。しばらくしてからもう一度お試しください。何も失われません。",
     "leaderboardLink": "ランキング",
@@ -566,12 +563,7 @@
     "ledgerCommentsTitle": "サイト上のコメント",
     "topRoleLabel": "Discord の最上位ロール：",
     "contributorBadge": "コントリビューター",
-    "contributorCount": "承認済みの投稿 {count} 件",
-    "statXp": "合計XP",
-    "statZeni": "ゼニー",
-    "statAchievements": "実績",
-    "statItems": "アイテム",
-    "fusionWith": "✦ {name}とフュージョン"
+    "contributorCount": "承認済みの投稿 {count} 件"
   },
   "settings": {
     "eyebrow": "メンバーアカウント",
@@ -1122,23 +1114,6 @@
         "cardDescription": "Xenoverse 2 の形式を確認し、自分で抽出したデータをブラウザー内で解析します。",
         "title": "ドラゴンボール ゼノバース2",
         "lead": "形式カタログと、ゲームから抽出したファイルを解析する WASM エンジン。",
-        "cpkTitle": "CPK アーカイブのライブ表示",
-        "cpkDescription": "サイトが提供するアーカイブを閲覧できます。選択した項目だけを CDN から取得し、ブラウザー内の WebAssembly エンジンで解析します。",
-        "cpkLoading": "CPK カタログを読み込み中…",
-        "cpkUnavailable": "公開アーカイブカタログは一時的に利用できません。",
-        "cpkArchive": "アーカイブ",
-        "cpkSearchLabel": "アーカイブ内を検索",
-        "cpkSearch": "閲覧",
-        "cpkArchiveSize": "アーカイブ全体のサイズ：{size}。選択した項目のみ読み込みます。",
-        "cpkResults": "{count} 件が一致しました（最大{max}件を表示）。",
-        "cpkNoResults": "一致する項目はありません。",
-        "cpkError": "アーカイブを読み込めませんでした。しばらくして再試行してください。",
-        "cpkCompressed": "圧縮済み",
-        "cpkAnalyze": "読み込んで WASM で解析",
-        "cpkUnsupported": "形式は一覧にありますが、WASM 解析には対応していません。",
-        "cpkOversize": "この項目は解析上限の16 MiBを超えています。",
-        "cpkInvalid": "項目を読み込むか解析できませんでした。",
-        "cpkDecoded": "{format} · {count} 件をデコード",
         "localTitle": "ローカルデータ解析",
         "localDescription": "抽出済みデータのフォルダーを選択してください。BAC、BDM、CUS、MSG、PUP ファイルをブラウザー内で読み込みます。",
         "chooseFolder": "データフォルダーを選択",
@@ -1573,12 +1548,7 @@
   },
   "accueil": {
     "hero": {
-      "title": "フランス語で、出典つきのドラゴンボール",
-      "featureEyebrow": "ピックアップ",
-      "watchEpisode": "第{number}話を見る",
-      "episodeNumber": "第{number}話",
-      "pauseFrames": "画像を一時停止",
-      "resumeFrames": "画像を動かす"
+      "title": "フランス語で、出典つきのドラゴンボール"
     },
     "search": {
       "label": "百科事典を検索",
@@ -1705,11 +1675,7 @@
       "desktopAuthWaiting": "ブラウザーでアカウント連携を完了してください。Shenron Studio は自動的に更新されます。",
       "desktopAuthRetry": "ログイン画面を再度開く",
       "desktopAuthError": "アカウント連携を開始できませんでした。Shenron のローカルサーバーを確認して、もう一度お試しください。",
-      "workshopLink": "翻訳の進捗を見る",
-      "webTitle": "Studioワークスペース",
-      "webUnavailable": "ワークスペースは一時的に利用できません。プロジェクトは保持されています。",
-      "webSignIn": "Studioを開く",
-      "webText": "ログインして個人プロジェクトを作成し、ページを読み込んで翻訳ツールを利用できます。"
+      "workshopLink": "翻訳の進捗を見る"
     }
   },
   "desktop": {
@@ -1931,8 +1897,8 @@
       }
     },
     "admin": "管理",
-    "title": "運用ワークスペース",
-    "intro": "編集作業を実行し、ツールを開いて、サービスの実測状況を確認します。",
+    "title": "管理ダッシュボードへようこそ",
+    "intro": "サービスの状態、確認が必要な項目、操作を確認できます。",
     "liveLink": "現在の活動を見る",
     "console": "コンソールを開く",
     "metricsError": "一部の指標を取得できません。欠損値はゼロとして扱いません。",
@@ -2020,9 +1986,7 @@
       "redis_failed": "Redisの接続、認証、またはPINGが失敗しました",
       "admin_unconfigured": "ボット管理トークンが設定されていません"
     },
-    "httpFailure": "HTTP応答 {status}",
-    "studio": "自分のStudio",
-    "studioDescription": "個人ワークスペースでページを読み込み、翻訳して書き出します。"
+    "httpFailure": "HTTP応答 {status}"
   },
   "dbsBeerus": {
     "trailer": "予告編",
@@ -2047,11 +2011,7 @@
     "episodeReleaseDate": "日本初回放送：2026年10月11日",
     "watchEpisode": "Crunchyroll公式ページを開く",
     "originalVideo": "公式動画",
-    "originalVideoNote": "公式配信元のページをご確認ください。",
-    "heroEyebrow": "新シリーズ・毎週日曜",
-    "heroLatest": "最新話",
-    "heroAll": "全エピソード",
-    "heroCount": "放送済み {count} 話"
+    "originalVideoNote": "公式配信元のページをご確認ください。"
   },
   "episodeSeries": {
     "coverage": "シリーズの収録状況",
@@ -2359,350 +2319,5 @@
     "previous": "前のページ",
     "next": "次のページ",
     "position": "{total}ページ中{page}ページ"
-  },
-  "episodePage": {
-    "officialSource": "公式情報",
-    "synopsis": "あらすじ",
-    "timelineAction": "タイムラインとGIF",
-    "firstBroadcast": "初放送",
-    "inSeries": "{series}のエピソード"
-  },
-  "StudioSource": {
-    "import": "プロジェクトを作成してインポート",
-    "openProject": "新しいプロジェクトを作成する前に、開いているプロジェクトを閉じてください。",
-    "candidate": "ソースとSHA-256を保存します。編集上の関連付けは別途確認が必要です。",
-    "error": "インポートできません。ソース、権限、プロジェクト名を確認してください。",
-    "imported": "ページをインポートしました",
-    "provenance": "来歴をダウンロード",
-    "cancel": "キャンセル",
-    "open": "ページ {page} をStudioで開く",
-    "sourceContext": "リーダーから開きました: {label} {id}、ページ {page}",
-    "databook": "データブック",
-    "destination": "新しいプロジェクト",
-    "importing": "インポート中…",
-    "preview": "ページ {page} のプレビュー",
-    "chapter": "章",
-    "selected": "{kind} {id} · ページ {page}",
-    "title": "ライブラリからインポート"
-  },
-  "AdminWorkspace": {
-    "commands": "コマンドを検索",
-    "commandNote": "現在のデータを変更せずにツールを開きます。",
-    "inspector": "コンテキスト",
-    "status": "権限と操作はサーバーで確認されます",
-    "noResults": "該当するツールがありません。",
-    "close": "閉じる",
-    "contextNote": "データと操作は中央パネルにあります。ここには現在のページの情報を表示します。",
-    "results": "利用可能なツール",
-    "explorer": "エクスプローラー",
-    "title": "Shenron Studio · 管理",
-    "group": "ワークスペース",
-    "tabs": "開いているワークスペース",
-    "commandPlaceholder": "ページ、ツール、グループを検索…",
-    "related": "このワークスペース内",
-    "navigationNote": "ワークスペースとツールを選択します。",
-    "filter": "ワークスペースを絞り込む",
-    "editor": "ページエディター",
-    "gameCatalogueTitle": "ドラゴンボール ゼノバース2",
-    "translationTitle": "翻訳ワークショップ",
-    "transcriptionDescription": "ページの文章を文字起こしして確認します。",
-    "translationDescription": "カタログのページを翻訳して確認します。",
-    "gameCatalogueDescription": "ゲームのキャラクター、技、アイテムのカタログ。",
-    "transcriptionTitle": "文字起こしワークショップ"
-  },
-  "adminBot": {
-    "common": {
-      "loadFailed": "データを読み込めませんでした。",
-      "retry": "再試行",
-      "loading": "読み込み中…"
-    },
-    "selector": {
-      "label": "ボットの識別子",
-      "ping": "Ping {ping} ms",
-      "online": "オンライン",
-      "offline": "オフライン"
-    },
-    "tabs": {
-      "label": "ボットのセクション",
-      "overview": "概要",
-      "guild": "Discord サーバー",
-      "commands": "コマンド"
-    },
-    "overview": {
-      "intro": "ボットは、サービス・コマンド・イベントをまとめた単一の Shenron Gateway クライアントで動作します。従来のペルソナ ID は既存の連携用エイリアスとして残ります。",
-      "status": "状態",
-      "online": "オンライン",
-      "offline": "オフライン",
-      "pingUptime": "Ping {ping} ms・稼働時間 {uptime}",
-      "loginDisabled": "Discord へのログインは無効です。",
-      "commands": "コマンド",
-      "servers": "サーバー",
-      "members": "メンバー合計",
-      "serversTitle": "Discord サーバー",
-      "memberCount": "メンバー {count} 人",
-      "joined": "参加日 {date}",
-      "noServers": "サーバーはありません。"
-    },
-    "guild": {
-      "stats": {
-        "title": "サーバーミラー",
-        "description": "Discord のメンバー・ロール・チャンネルのローカルコピー。コマンドやダッシュボードが使用します。",
-        "present": "在籍メンバー",
-        "left": "退出したメンバー",
-        "bots": "ボット",
-        "boosters": "ブースター",
-        "roles": "ロール",
-        "channels": "チャンネル",
-        "lastSync": "最終同期",
-        "never": "未実行",
-        "stale": "最後の同期から 36 時間以上経過しています。完全同期を実行してください。"
-      },
-      "sync": {
-        "button": "今すぐ同期",
-        "running": "同期中…",
-        "confirmTitle": "完全同期を実行しますか？",
-        "confirmBody": "サーバーのチャンネル、ロール、メンバーを Discord から再取得し、ボットのデータベースに書き込みます。数秒かかる場合があります。",
-        "confirm": "同期する",
-        "failed": "同期に失敗しました。",
-        "done": "同期が {duration} で完了しました。メンバー {members} 人、退出 {left} 人、ロール {roles} 件、チャンネル {channels} 件。"
-      },
-      "search": {
-        "title": "メンバー検索",
-        "description": "ID、ユーザー名、表示名、ニックネームでミラーを検索します。",
-        "label": "ID、ユーザー名、ニックネーム",
-        "placeholder": "ID、ユーザー名、ニックネーム…",
-        "button": "検索",
-        "idle": "名前または ID を入力してください",
-        "idleHint": "退出したメンバーも検索でき、退出済みと表示されます。",
-        "empty": "「{query}」に一致するメンバーはいません。",
-        "count": "{count} 件",
-        "limit": "上限 {limit} 件。検索条件を絞ってください",
-        "present": "在籍",
-        "left": "退出",
-        "bot": "ボット",
-        "booster": "ブースター",
-        "timeout": "タイムアウト中",
-        "joined": "参加日 {date}",
-        "leftAt": "退出日 {date}"
-      }
-    },
-    "commands": {
-      "title": "コマンド（{count}）",
-      "description": "ボットが Discord に登録したコマンド。",
-      "filter": "コマンドを絞り込む",
-      "filterPlaceholder": "絞り込み…",
-      "empty": "このボットに登録されたコマンドはありません。",
-      "noMatch": "「{query}」に一致するコマンドはありません。",
-      "nsfw": "NSFW",
-      "optionCount": "オプション {count} 件",
-      "yes": "はい",
-      "types": {
-        "1": "スラッシュ",
-        "2": "ユーザーメニュー",
-        "3": "メッセージメニュー"
-      },
-      "optionTypes": {
-        "1": "サブコマンド",
-        "2": "サブコマンドグループ",
-        "3": "テキスト",
-        "4": "整数",
-        "5": "はい／いいえ",
-        "6": "ユーザー",
-        "7": "チャンネル",
-        "8": "ロール",
-        "9": "メンション",
-        "10": "数値",
-        "11": "ファイル"
-      },
-      "columns": {
-        "name": "名前",
-        "type": "種類",
-        "required": "必須",
-        "description": "説明",
-        "choices": "選択肢"
-      }
-    },
-    "cron": {
-      "intro": "ボットが一定間隔で自動的に繰り返す処理です。制裁の期限切れ処理、古いデータの整理、ボイス XP の付与など。",
-      "refreshNote": "{seconds} 秒ごとに更新・{count} 件のタスク",
-      "empty": "登録された自動タスクはありません。",
-      "statusError": "エラー",
-      "statusOk": "正常",
-      "statusNever": "未実行",
-      "run": "実行",
-      "runTitle": "サイクル外で今すぐ実行",
-      "confirmTitle": "「{name}」を今すぐ実行しますか？",
-      "confirmBody": "通常のサイクルとは別に、タスクをすぐに実行します。",
-      "triggered": "タスク「{name}」を実行しました。",
-      "triggerFailed": "「{name}」を実行できませんでした：{error}",
-      "intervalSaved": "「{name}」の実行間隔を保存しました。",
-      "intervalFailed": "「{name}」の実行間隔を保存できませんでした：{error}",
-      "cadence": "実行間隔",
-      "runCount": "実行回数",
-      "lastRun": "前回の実行",
-      "nextRun": "次回の実行",
-      "lastError": "直近のエラー：",
-      "editCadence": "実行間隔を変更",
-      "intervalLabel": "間隔（秒）",
-      "secondsUnit": "秒",
-      "save": "保存",
-      "cancel": "キャンセル"
-    },
-    "services": {
-      "intro": "ボットの各機能は、Discord を介さず手動で実行できる操作を提供します。更新の強制、データの再計算、動作の確認などに使います。",
-      "warning": "一部の操作はデータベースを変更するため、実行前に確認が表示されます。",
-      "filter": "操作を絞り込む",
-      "filterPlaceholder": "サービスまたは操作で絞り込み…",
-      "empty": "現在利用できる操作はありません。",
-      "noMatch": "「{query}」に一致する操作はありません。",
-      "labels": {
-        "settings": "ボット設定",
-        "moderation": "モデレーション",
-        "levels": "レベルと XP",
-        "economy": "経済（ゼニー）",
-        "tickets": "サポートチケット",
-        "giveaway": "プレゼント企画",
-        "bio": "自己紹介ロール",
-        "wiki": "ドラゴンボール Wiki",
-        "guild": "サーバーミラー"
-      },
-      "paramsHint": "パラメーターは JSON 形式です。不要な場合は '{}' のままにしてください。",
-      "paramsLabel": "JSON パラメーター",
-      "invalidJson": "パラメーターが有効な JSON ではありません。",
-      "confirmTitle": "サービス「{service}」の「{action}」を実行しますか？",
-      "confirmNoParams": "パラメーターなし。この操作はデータを変更する場合があります。",
-      "confirmParams": "パラメーター：{params}。この操作はデータを変更する場合があります。",
-      "run": "実行",
-      "running": "実行中…",
-      "result": "結果",
-      "error": "エラー",
-      "failed": "操作に失敗しました。"
-    },
-    "reports": {
-      "intro": "ログイン中のメンバーからの「エラーを報告」をチケットとして処理します（未対応、対応中、解決済み）。Discord のサポートチケットとは別です。",
-      "filters": "状態で絞り込む",
-      "status": {
-        "open": "未対応",
-        "in_progress": "対応中",
-        "resolved": "解決済み",
-        "closed": "終了",
-        "all": "すべて"
-      },
-      "category": {
-        "bug": "不具合",
-        "contenu": "内容の誤り",
-        "lien": "リンク・メディアの不具合",
-        "suggestion": "提案",
-        "autre": "その他"
-      },
-      "loadFailed": "報告を読み込めませんでした。",
-      "emptyAll": "報告はありません",
-      "empty": "状態「{status}」の報告はありません",
-      "emptyHint": "メンバーからの報告がここに表示されます。",
-      "deleteTitle": "この報告を削除しますか？",
-      "deleteBody": "削除は元に戻せません。",
-      "delete": "削除",
-      "by": "報告者：{name}",
-      "discordId": "Discord ID：{id}",
-      "resolvedBy": "対応者：{name}",
-      "noteLabel": "内部メモ",
-      "notePlaceholder": "内部メモ（対応内容）…",
-      "saveNote": "保存",
-      "actionFailed": "操作に失敗しました。もう一度お試しください。"
-    },
-    "settings": {
-      "intro": "ボットのすべての設定をここにまとめています。チャンネル、ロール、XP の獲得量など。各値には既定値があり、変更したい項目だけを調整できます。",
-      "summary": "{total} 件の設定・カスタマイズ済み {overridden} 件・ボットのキャッシュ：30 秒",
-      "empty": "ボットが宣言している設定はありません。",
-      "saved": "設定を保存しました。",
-      "reset": "既定値に戻しました。",
-      "failed": "失敗：{error}",
-      "resetConfirmTitle": "既定値に戻しますか？",
-      "resetConfirmBody": "「{key}」のカスタム値を削除します。",
-      "resetConfirm": "リセット",
-      "resetTitle": "上書きを削除して既定値に戻す",
-      "categories": {
-        "xp": {
-          "label": "XP とレベル",
-          "desc": "メッセージやボイスでの XP 獲得量、ロール倍率。"
-        },
-        "economy": {
-          "label": "経済",
-          "desc": "ゼニーの報酬、ドロップ、レベルアップボーナス。"
-        },
-        "channels": {
-          "label": "チャンネル",
-          "desc": "機能ごとに使うチャンネル（ようこそ、ログなど）。"
-        },
-        "roles": {
-          "label": "ロール",
-          "desc": "特別なロール：フュージョン、投獄、自己紹介。"
-        },
-        "features": {
-          "label": "機能",
-          "desc": "ボットのモジュールの有効・無効。"
-        },
-        "moderation": {
-          "label": "モデレーション",
-          "desc": "警告のしきい値、既定の期間。"
-        },
-        "anti_invite": {
-          "label": "招待リンク対策",
-          "desc": "Discord 招待リンクの検出。"
-        },
-        "tickets": {
-          "label": "チケット",
-          "desc": "通知用 Webhook とチケットの表示名。"
-        },
-        "gifs": {
-          "label": "制裁用 GIF",
-          "desc": "制裁埋め込みの GIF：警告、ミュート、キック、BAN、投獄、一括削除。"
-        },
-        "advanced": {
-          "label": "詳細",
-          "desc": "動的プレフィックス（xp.boost.role.ID）。"
-        }
-      },
-      "overriddenCount": "{overridden} / {total} 件カスタマイズ済み",
-      "overridden": "カスタマイズ済み",
-      "default": "既定値：{value}",
-      "close": "閉じる",
-      "edit": "編集",
-      "define": "設定",
-      "save": "保存",
-      "add": "追加",
-      "remove": "削除",
-      "notSet": "未設定",
-      "on": "オン",
-      "off": "オフ",
-      "choose": "選択…",
-      "enabled": "true（有効）",
-      "disabled": "false（無効）",
-      "snowflakePlaceholder": "Discord ID（17〜20 桁）",
-      "httpsRequired": "https の URL が必要です",
-      "openGif": "GIF を開く",
-      "syncFailed": "失敗",
-      "xpBoost": {
-        "title": "ロール別 XP 倍率（{count}）",
-        "hint": "複数のブーストロールを持つメンバーには、<strong>最大値</strong>が適用されます（加算なし）。",
-        "multiplier": "倍率",
-        "add": "ブースターを追加"
-      },
-      "tickets": {
-        "title": "チケット種別ごとのスタッフ権限",
-        "hint": "ここに追加したロールは、この種別の<strong>新しい</strong>チケットを開設時から閲覧・書き込みできます。管理者はすでにすべて閲覧できます。開設済みのチケットには再同期ボタンを使ってください。",
-        "kinds": {
-          "report": "報告",
-          "achat": "購入",
-          "shop": "ショップ",
-          "abus": "権限の悪用",
-          "staff": "スタッフ応募"
-        },
-        "none": "「{kind}」に設定されたロールはありません。チケットの作成者と管理者のみが閲覧できます。",
-        "syncOpen": "開設済みのチケットに適用",
-        "synced": "{updated} 件のチャンネルを更新しました",
-        "skipped": "{skipped} 件が見つかりません"
-      }
-    }
   }
 }

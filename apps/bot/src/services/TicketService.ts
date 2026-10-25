@@ -1,11 +1,12 @@
 import { singleton, inject, container } from "tsyringe";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import {
   ChannelType,
   PermissionFlagsBits,
   type CategoryChannel,
   type Guild,
   type TextChannel,
+  EmbedBuilder,
   ButtonBuilder,
   ButtonStyle,
   ActionRowBuilder,
@@ -13,11 +14,10 @@ import {
 import { DatabaseService } from "~/db/index";
 import { tickets } from "~/db/schema";
 import { env } from "~/lib/env";
-import { SettingsService, TICKET_KIND_LABELS, type TicketKind } from "./SettingsService";
+import { SettingsService, type TicketKind } from "./SettingsService";
 import { MessageTemplateService } from "./MessageTemplateService";
 import { executeWebhook, parseWebhookUrl, type Embed as WebhookEmbed } from "~/lib/discord-webhook";
 import { logger } from "~/lib/logger";
-import { brandedEmbed } from "~/lib/embeds";
 
 export type { TicketKind };
 
@@ -54,7 +54,7 @@ export class TicketService {
       name,
       type: ChannelType.GuildText,
       parent: category?.id,
-      topic: `Ticket ${TICKET_KIND_LABELS[kind]} · <@${ownerId}>`,
+      topic: `Ticket ${kind} · <@${ownerId}>`,
       permissionOverwrites: [
         { id: guild.roles.everyone.id, deny: [PermissionFlagsBits.ViewChannel] },
         {
@@ -69,13 +69,7 @@ export class TicketService {
       ],
     })) as TextChannel;
 
-    try {
-      await this.db.insert(tickets).values({ channelId: channel.id, ownerId, kind, context });
-    } catch (err) {
-      // No row = a channel nobody can close with /close: remove it.
-      await channel.delete("ticket row insert failed").catch(() => {});
-      throw err;
-    }
+    await this.db.insert(tickets).values({ channelId: channel.id, ownerId, kind, context });
     await this.applyAccessRoles(guild, channel.id, kind);
 
     // Header templatable depuis /messages (toggle enabled + texte custom).
@@ -84,18 +78,16 @@ export class TicketService {
     const templates = container.resolve(MessageTemplateService);
     const ticketRender = await templates.render("ticket_opened", {
       ownerId,
-      kind: TICKET_KIND_LABELS[kind].toLowerCase(),
+      kind,
       context: context || "Aucun contexte fourni.",
     });
 
-    const embed = brandedEmbed({
-      title: `🎫 Ticket — ${TICKET_KIND_LABELS[kind]}`,
-      description: (ticketRender?.rendered ?? (context || "Aucun contexte fourni.")).slice(0, 4096),
-      footer: "L'équipe te répond ici · 🔒 Fermer quand c'est réglé",
-    }).addFields(
-      { name: "Ouvert par", value: `<@${ownerId}>`, inline: true },
-      { name: "Type", value: TICKET_KIND_LABELS[kind], inline: true },
-    );
+    const embed = new EmbedBuilder()
+      .setTitle(`Ticket — ${kind}`)
+      .setDescription(ticketRender?.rendered ?? (context || "Aucun contexte fourni."))
+      .addFields({ name: "Ouvert par", value: `<@${ownerId}>` })
+      .setColor(0xff9800)
+      .setTimestamp();
 
     const closeBtn = new ButtonBuilder()
       .setCustomId("ticket:close")
@@ -105,34 +97,25 @@ export class TicketService {
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(closeBtn);
 
     if (ticketRender?.enabled !== false) {
-      await channel
-        .send({
-          content: `<@${ownerId}>`,
-          embeds: [embed],
-          components: [row],
-          allowedMentions: { users: [ownerId] },
-        })
-        .catch((err) => logger.warn({ err, channelId: channel.id }, "ticket header: send failed"));
+      await channel.send({
+        content: `<@${ownerId}>`,
+        embeds: [embed],
+        components: [row],
+      });
     } else {
       // Bouton seul (admin a désactivé le message d'accueil)
-      await channel
-        .send({
-          content: `<@${ownerId}>`,
-          components: [row],
-          allowedMentions: { users: [ownerId] },
-        })
-        .catch((err) => logger.warn({ err, channelId: channel.id }, "ticket header: send failed"));
+      await channel.send({ content: `<@${ownerId}>`, components: [row] });
     }
 
     // Notification webhook (best-effort, n'échoue jamais le flow ticket)
     void this.notifyWebhook({
-      title: `🎫 Ticket ouvert — ${TICKET_KIND_LABELS[kind]}`,
+      title: `🎫 Ticket ouvert — ${kind}`,
       description: context || "Aucun contexte fourni.",
       color: 0xff9800,
       fields: [
         { name: "Ouvert par", value: `<@${ownerId}>`, inline: true },
         { name: "Salon", value: `<#${channel.id}>`, inline: true },
-        { name: "Type", value: TICKET_KIND_LABELS[kind], inline: true },
+        { name: "Type", value: kind, inline: true },
       ],
     });
 
@@ -166,31 +149,6 @@ export class TicketService {
 
   async findByChannel(channelId: string) {
     return this.db.query.tickets.findFirst({ where: eq(tickets.channelId, channelId) });
-  }
-
-  /**
-   * Open ticket of `ownerId` for `kind` whose channel still exists. A ticket
-   * whose channel was deleted by hand (outside `/close`) is closed on the way:
-   * without that, the orphan row would block or clutter forever.
-   */
-  async findOpenForOwner(guild: Guild, ownerId: string, kind: TicketKind) {
-    const open = await this.db.query.tickets.findMany({
-      where: and(eq(tickets.ownerId, ownerId), eq(tickets.kind, kind), eq(tickets.closed, false)),
-    });
-    for (const t of open) {
-      const ch = await guild.channels.fetch(t.channelId).catch(() => null);
-      if (ch) return t;
-      await this.markOrphanClosed(t.channelId);
-    }
-    return undefined;
-  }
-
-  /** Closes the row of a ticket whose channel no longer exists. */
-  async markOrphanClosed(channelId: string): Promise<void> {
-    await this.db
-      .update(tickets)
-      .set({ closed: true, closedAt: new Date(), closedBy: "orphan" })
-      .where(and(eq(tickets.channelId, channelId), eq(tickets.closed, false)));
   }
 
   /**
@@ -231,7 +189,6 @@ export class TicketService {
     for (const t of open) {
       const ch = await guild.channels.fetch(t.channelId).catch(() => null);
       if (!ch) {
-        await this.markOrphanClosed(t.channelId);
         skipped++;
         continue;
       }
@@ -249,7 +206,7 @@ export class TicketService {
       .set({ closed: true, closedAt: new Date(), closedBy: closerId })
       .where(eq(tickets.channelId, channelId));
     void this.notifyWebhook({
-      title: `🔒 Ticket fermé — ${TICKET_KIND_LABELS[t.kind as TicketKind] ?? t.kind}`,
+      title: `🔒 Ticket fermé — ${t.kind}`,
       description: t.context ?? "Aucun contexte.",
       color: 0x6b7280,
       fields: [
@@ -262,8 +219,6 @@ export class TicketService {
   }
 
   async addUser(guild: Guild, channelId: string, userId: string): Promise<boolean> {
-    // Opening the ticket to @everyone would make it public.
-    if (userId === guild.id) return false;
     const ch = (await guild.channels.fetch(channelId).catch(() => null)) as TextChannel | null;
     if (!ch) return false;
     await ch.permissionOverwrites.edit(userId, {
@@ -274,14 +229,7 @@ export class TicketService {
     return true;
   }
 
-  /**
-   * Removes a user or role overwrite. Never @everyone (its deny is what keeps
-   * the ticket private) nor the ticket owner; returns `false` when refused.
-   */
   async removeUser(guild: Guild, channelId: string, userId: string): Promise<boolean> {
-    if (userId === guild.id) return false;
-    const t = await this.findByChannel(channelId);
-    if (t?.ownerId === userId) return false;
     const ch = (await guild.channels.fetch(channelId).catch(() => null)) as TextChannel | null;
     if (!ch) return false;
     await ch.permissionOverwrites.delete(userId).catch(() => {});

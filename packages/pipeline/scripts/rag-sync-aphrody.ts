@@ -27,7 +27,6 @@ const list = args.includes("--liste");
 const crawlOnly = args.includes("--corpus-crawl");
 const option = (name: string) =>
   args.find((arg) => arg.startsWith(`${name}=`))?.slice(name.length + 1);
-const expectedSourceDigest = option("--expected-source-digest");
 const crawlDir = resolve(
   option("--crawl-dir") ??
     join(process.env.APHRODY_HOME?.trim() || join(homedir(), ".aphrody"), "workspaces/dbfr/crawl"),
@@ -152,11 +151,6 @@ if (!targets.length || targets.some((source) => !sources.includes(source))) {
     `Usage: rag-sync-aphrody.ts <source|--toutes> [--appliquer] [--force] [--report=PATH]. Sources: ${sources.join(", ")}`,
   );
 }
-if (
-  expectedSourceDigest !== undefined &&
-  (targets.length !== 1 || !/^[a-f0-9]{64}$/.test(expectedSourceDigest))
-)
-  throw new Error("A source digest precondition requires exactly one source and a SHA256 digest");
 
 await mkdir(dirname(manifestPath), { recursive: true });
 const lockPath = `${manifestPath}.lock`;
@@ -229,7 +223,6 @@ try {
             apply,
             force,
             requireVectors: true,
-            expectedSourceDigest,
             onProgress: (indexed, total) => {
               if (indexed % 100 === 0 || indexed === total)
                 console.log(`… ${source}: ${indexed}/${total} indexed`);

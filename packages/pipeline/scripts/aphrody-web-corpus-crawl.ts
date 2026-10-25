@@ -87,6 +87,7 @@ function commandFor(target: Target): string[] {
   for (const pattern of target.excludePatterns ?? []) command.push("--exclude-url-regex", pattern);
   if (target.perHostDelayMs !== undefined)
     command.push("--per-host-delay", String(target.perHostDelayMs));
+  if (plan.respectRobots) command.push("--obey-robots");
   if (target.goal) command.push("--goal", target.goal);
   if (target.maxDepth === undefined && defaults.maxDepth === undefined)
     command.push("--max-depth", "2");

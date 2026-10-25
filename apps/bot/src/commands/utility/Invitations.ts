@@ -2,6 +2,7 @@ import { injectable, inject } from "tsyringe";
 import { Bot, Discord, Guard, Slash, SlashOption } from "discordx";
 import {
   ApplicationCommandOptionType,
+  EmbedBuilder,
   MessageFlags,
   type CommandInteraction,
   type User,
@@ -11,7 +12,6 @@ import { CommandsChannelOnly } from "~/guards/CommandsChannelOnly";
 import { DatabaseService } from "~/db/index";
 import { invitesLog } from "~/db/schema";
 import { userTransformer } from "~/lib/slash-user";
-import { brandedEmbed } from "~/lib/embeds";
 import { and, desc, eq, gte, sql } from "drizzle-orm";
 
 /**
@@ -56,13 +56,7 @@ export class InvitationsCommand {
 
     if (total === 0) {
       await interaction.reply({
-        embeds: [
-          brandedEmbed({
-            title: "📨 Invitations",
-            description: `<@${user.id}> n'a encore invité personne (depuis l'activation du suivi).`,
-            kind: "muted",
-          }),
-        ],
+        content: `<@${user.id}> n'a invité personne (encore tracké).`,
         flags: MessageFlags.Ephemeral,
       });
       return;
@@ -97,12 +91,10 @@ export class InvitationsCommand {
       )
       .join("\n");
 
-    const embed = brandedEmbed({
-      title: `📨 Invitations — ${user.username}`,
-      kind: "info",
-      footer: "Suivi depuis l'activation · lien vanity non suivi",
-    })
+    const embed = new EmbedBuilder()
+      .setTitle(`📨 Invitations — ${user.username}`)
       .setThumbnail(user.displayAvatarURL({ size: 256 }))
+      .setColor(0x3b82f6)
       .addFields(
         { name: "Total", value: `**${total}** membre(s) invité(s)`, inline: true },
         { name: "7 derniers jours", value: `**${week}**`, inline: true },
@@ -112,7 +104,8 @@ export class InvitationsCommand {
           inline: true,
         },
         { name: "5 plus récents", value: recentLines || "—" },
-      );
+      )
+      .setFooter({ text: "Tracking depuis activation. Lien vanity = non tracké." });
 
     await interaction.reply({ embeds: [embed] });
   }
@@ -140,21 +133,17 @@ export class InvitationsCommand {
 
     if (row.length === 0 || !row[0]) {
       await interaction.reply({
-        embeds: [
-          brandedEmbed({
-            title: `🔍 Inviteur de ${target.username}`,
-            description: `Aucune donnée pour <@${target.id}> (arrivé avant l'activation du suivi, ou par le lien vanity).`,
-            kind: "muted",
-          }),
-        ],
+        content: `Aucune donnée pour <@${target.id}> (rejoint avant l'activation du tracker, ou lien vanity).`,
         flags: MessageFlags.Ephemeral,
       });
       return;
     }
 
     const entry = row[0];
-    const embed = brandedEmbed({ title: `🔍 Inviteur de ${target.username}`, kind: "success" })
+    const embed = new EmbedBuilder()
+      .setTitle(`🔍 Inviteur de ${target.username}`)
       .setThumbnail(target.displayAvatarURL({ size: 256 }))
+      .setColor(0x22c55e)
       .addFields(
         { name: "Membre", value: `<@${target.id}>`, inline: true },
         {

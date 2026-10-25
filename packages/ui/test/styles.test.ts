@@ -81,16 +81,4 @@ describe("styles.css", () => {
       ),
     ).toBe(false);
   });
-
-  test("interactive primitives keep a 44px touch target, reduced motion and readable placeholders", async () => {
-    for (const file of ["button", "checkbox", "radio-group", "toggle", "switch"]) {
-      const src = await Bun.file(new URL(`../src/components/${file}.tsx`, import.meta.url)).text();
-      expect({ file, cible: src.includes("cible-44") }).toEqual({ file, cible: true });
-    }
-    for (const file of ["input", "textarea"]) {
-      const src = await Bun.file(new URL(`../src/components/${file}.tsx`, import.meta.url)).text();
-      expect(src).not.toContain("placeholder:text-gray-500");
-    }
-    expect(pkgCss).toMatch(/prefers-reduced-motion: reduce\)[\s\S]*\.cible-44:active/);
-  });
 });

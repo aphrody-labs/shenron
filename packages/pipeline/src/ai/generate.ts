@@ -130,7 +130,7 @@ export interface GroundedAnswer {
 }
 
 /**
- * Numbered passages of the context: `[n] title: text`. The identifier `n` is what the
+ * Numbered passages of the context: `[n] title (source): text`. The identifier `n` is what the
  * model must cite and what `verifyAnswer` reads back.
  */
 export async function buildGroundedPassages(
@@ -166,7 +166,11 @@ export async function buildGroundedPassages(
 
 /** Context text of the numbered passages (one per line). */
 export function renderGroundedContext(passages: readonly PassageText[]): string {
-  return passages.map((p) => `[${p.n}] ${p.hit.title} : ${p.text}`).join("\n");
+  return passages
+    .map(
+      (p) => `[${p.n}] ${p.hit.title}${p.hit.sourceId ? ` (${p.hit.sourceId})` : ""} : ${p.text}`,
+    )
+    .join("\n");
 }
 
 /** Compact fact context (llm.ts `buildContext`), without dumping it to the user. */
@@ -286,7 +290,7 @@ export async function generateGroundedAnswer(i: GroundedAnswerInput): Promise<Gr
       : "";
   const memories = i.memories?.trim() ? `${i.memories.trim()}\n\n` : "";
   const userContent = context
-    ? `${memories}Contexte (faits Dragon Ball, à reformuler${strict ? " ; cite les identifiants [n]" : ""}) :\n<sources>\n${context}\n</sources>${absent}\n\nMessage de l'utilisateur : ${i.question}${LANG_REMINDER[lang]}`
+    ? `${memories}Contexte (faits Dragon Ball, à reformuler${strict ? " ; cite les identifiants [n]" : ""}) :\n${context}${absent}\n\nMessage de l'utilisateur : ${i.question}${LANG_REMINDER[lang]}`
     : memories
       ? `${memories}Message de l'utilisateur : ${i.question}`
       : i.question;

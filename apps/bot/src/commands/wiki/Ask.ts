@@ -31,13 +31,8 @@ import { DatabaseService } from "~/db/index";
 import { hybridSearch, hitTruthWeight, type SearchOptions } from "~/lib/rag";
 import { TrainingService } from "~/services/TrainingService";
 import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
-import { isBotStaff } from "~/api/staff-check";
-import { SingleUseTokens } from "~/services/games/anti-farm";
-import { clip, linkLabel, siteLink, wikiFooter } from "~/lib/wiki-embeds";
 
-/** Une validation « vérité » par membre et par passage (double-clic, re-clic). */
-const goldVotes = new SingleUseTokens();
-const GOLD_VOTE_TTL_MS = 24 * 60 * 60_000;
+const SITE = "https://dragonballfr.com";
 
 /**
  * S6 : les réponses de `/ask` reprennent la question et des extraits générés ;
@@ -71,6 +66,15 @@ const KIND_META: Record<string, { icon: string; label: string }> = {
   episode: { icon: "📺", label: "Épisode" },
   source: { icon: "📜", label: "Source" },
 };
+
+/**
+ * Construit l'URL absolue d'un résultat. Les URLs RAG sont relatives au site
+ * (`/wiki/...`) ; on préfixe par le domaine de prod.
+ */
+function siteUrl(path: string): string {
+  if (path.startsWith("http")) return path;
+  return `${SITE}${path.startsWith("/") ? "" : "/"}${path}`;
+}
 
 /**
  * `/ask` — Pose une question en langage naturel sur l'univers Dragon Ball.
@@ -195,7 +199,7 @@ export class AskCommands {
         const meta = KIND_META[r.kind] ?? { icon: "•", label: r.kind };
         const snip = (r.snippet ?? "").replace(/\s+/g, " ").trim().slice(0, 280);
         const pct = Math.round((r.score ?? 0) * 100);
-        return `**[${i + 1}] ${meta.icon} [${linkLabel(r.title)}](${siteLink(r.url)})** · ${pct}%\n> ${snip || "_(voir la source)_"}`;
+        return `**[${i + 1}] ${meta.icon} [${r.title}](${siteUrl(r.url)})** · ${pct}%\n> ${snip || "_(voir la source)_"}`;
       })
       .join("\n\n");
 
@@ -203,7 +207,7 @@ export class AskCommands {
     const embed = new EmbedBuilder()
       .setColor(0x38bdf8)
       .setAuthor({ name: `Whis ${modeIcon} · Archives de l'Univers 7` })
-      .setTitle(clip(`❓ ${q}`, 256))
+      .setTitle(`❓ ${q.slice(0, 240)}`)
       .setDescription(
         `Voici les passages les plus pertinents de nos archives sur ta question :\n\n${previews}`.slice(
           0,
@@ -215,7 +219,7 @@ export class AskCommands {
     const sourcesText = results
       .map((r, i) => {
         const meta = KIND_META[r.kind] ?? { icon: "•", label: r.kind };
-        return `[${i + 1}] ${meta.icon} [${linkLabel(r.title, 60)}](${siteLink(r.url)})`;
+        return `[${i + 1}] ${meta.icon} [${r.title}](${siteUrl(r.url)})`;
       })
       .join("  ·  ");
 
@@ -230,19 +234,18 @@ export class AskCommands {
     if (sourceId) filterLabels.push(`source: ${sourceId}`);
     const filterText = filterLabels.length > 0 ? ` · Filtres : ${filterLabels.join(", ")}` : "";
 
-    embed.setFooter(
-      wikiFooter(
+    embed.setFooter({
+      text:
         (mode.startsWith("hybrid")
           ? `RAG · Recherche hybride + rerank · ${results.length} sources`
           : `RAG · Recherche lexicale · ${results.length} sources`) + filterText,
-      ),
-    );
+    });
 
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
         .setStyle(ButtonStyle.Link)
-        .setLabel(clip(`Ouvrir : ${top.title}`, 80))
-        .setURL(siteLink(top.url)),
+        .setLabel("Ouvrir la source")
+        .setURL(siteUrl(top.url)),
     );
     if (top.rowid > 0)
       row.addComponents(
@@ -273,28 +276,10 @@ export class AskCommands {
   @ButtonComponent({ id: /^rag:train:gold:\d+$/ })
   async handleGoldBtn(interaction: ButtonInteraction) {
     const rowid = Number(interaction.customId.split(":")[3]);
-    // Une référence « vérité » entraîne le RAG de tout le serveur : réservé au staff.
-    if (!isBotStaff(interaction.user.id)) {
-      await interaction.reply({
-        content:
-          "La validation des sources est réservée au staff. Utilise « Signaler » pour proposer une correction.",
-        flags: MessageFlags.Ephemeral,
-      });
-      return;
-    }
-    if (!goldVotes.consume(`${interaction.user.id}:${rowid}`, GOLD_VOTE_TTL_MS)) {
-      await interaction.reply({
-        content: "Tu as déjà validé ce passage.",
-        flags: MessageFlags.Ephemeral,
-      });
-      return;
-    }
-    // Le passage peut venir du service distant : on accuse réception d'abord.
-    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-    const chunk = await this.getRagChunk(rowid).catch(() => null);
+    const chunk = await this.getRagChunk(rowid);
 
     if (!chunk) {
-      await interaction.editReply({ content: "Passage introuvable dans l'index." });
+      await interaction.reply({ content: "Chunk introuvable.", flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -310,25 +295,27 @@ export class AskCommands {
       comment: "Validé comme vérité canon via bouton interactif Discord",
     });
 
-    await interaction.editReply({
-      content: `🎯 **Vérité Canon Validée !** La source « **${clip(chunk.title, 200)}** » a été enregistrée comme référence officielle d'entraînement.`,
+    await interaction.reply({
+      content: `🎯 **Vérité Canon Validée !** La source « **${chunk.title}** » a été enregistrée comme référence officielle d'entraînement.`,
+      flags: MessageFlags.Ephemeral,
     });
   }
 
   @ButtonComponent({ id: /^rag:train:diag:\d+$/ })
   async handleDiagBtn(interaction: ButtonInteraction) {
     const rowid = Number(interaction.customId.split(":")[3]);
-    // Index distant et sonde du sidecar : plus de 3 s possibles, on diffère.
-    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-    const chunk = await this.getRagChunk(rowid).catch(() => null);
+    const chunk = await this.getRagChunk(rowid);
 
     if (!chunk) {
-      await interaction.editReply({ content: "Données de diagnostic indisponibles." });
+      await interaction.reply({
+        content: "Données de diagnostic indisponibles.",
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
 
     const mult = hitTruthWeight(chunk);
-    const sidecar = await this.training.isSidecarOnline().catch(() => false);
+    const sidecar = await this.training.isSidecarOnline();
 
     const embed = new EmbedBuilder()
       .setColor(0x38bdf8)
@@ -343,11 +330,11 @@ export class AskCommands {
           `**Embeddings :** ${sidecar ? "🟢 En ligne" : "🟠 Indisponibles"}`,
           "",
           `*Extrait indexé :*`,
-          `> ${chunk.snippet ? clip(chunk.snippet, 500) : "(aucun)"}`,
+          `> ${chunk.snippet ? chunk.snippet.slice(0, 500) : "(aucun)"}`,
         ].join("\n"),
       );
 
-    await interaction.editReply({ embeds: [embed] });
+    await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
   }
 
   @ButtonComponent({ id: /^rag:train:fb:\d+$/ })
@@ -361,14 +348,12 @@ export class AskCommands {
       .setCustomId("expected")
       .setLabel("Entité ou information attendue")
       .setStyle(TextInputStyle.Short)
-      .setMaxLength(200)
       .setRequired(true);
 
     const inputComment = new TextInputBuilder()
       .setCustomId("comment")
       .setLabel("Remarque (ex: filler, hors-sujet, jeu vidéo)")
       .setStyle(TextInputStyle.Paragraph)
-      .setMaxLength(1000)
       .setRequired(false);
 
     modal.addComponents(
@@ -385,8 +370,7 @@ export class AskCommands {
     const expected = interaction.fields.getTextInputValue("expected").trim();
     const comment = interaction.fields.getTextInputValue("comment").trim();
 
-    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-    const chunk = await this.getRagChunk(Number(rowid)).catch(() => null);
+    const chunk = await this.getRagChunk(Number(rowid));
 
     await this.training.recordFeedback({
       userId: interaction.user.id,
@@ -400,8 +384,9 @@ export class AskCommands {
       status: "pending",
     });
 
-    await interaction.editReply({
+    await interaction.reply({
       content: `✅ **Signalement enregistré !** Ton retour a été transmis pour l'entraînement continu de Shenron.`,
+      flags: MessageFlags.Ephemeral,
     });
   }
 }

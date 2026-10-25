@@ -1,7 +1,6 @@
 import { requireAdmin } from "@/lib/session";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { QueryProvider } from "@/components/admin/QueryProvider";
-import { AdminWorkspace } from "@/components/admin/AdminWorkspace";
 import type { Metadata } from "next";
 
 // L'espace admin n'est pas indexable par les moteurs de recherche
@@ -29,7 +28,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <QueryProvider>
       <AdminSidebar />
-      <AdminWorkspace>{children}</AdminWorkspace>
+      <div id="admin-content" className="relative w-full min-w-0 flex-1 p-4 sm:p-6 lg:p-10">
+        {children}
+      </div>
     </QueryProvider>
   );
 }

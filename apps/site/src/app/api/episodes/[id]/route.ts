@@ -1,11 +1,10 @@
-import { readPlaybackCapabilities } from "@/lib/playback-capabilities";
 import { NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
 import { episodeApiSummary } from "@/lib/episode-api";
 import { idDeFiche } from "../../../wiki/_id-fiche";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -47,7 +46,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     const next = nav?.next ?? null;
     return NextResponse.json(
       {
-        ...episodeApiSummary(ep, await readPlaybackCapabilities()),
+        ...episodeApiSummary(ep),
         synopsisFr: ep.synopsis,
         arcId: ep.arc_id,
         saga: saga ? { id: saga.id, name: saga.name, slug: saga.slug } : null,
@@ -76,7 +75,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         headers: {
           ...CORS_HEADERS,
           "Content-Type": "application/json; charset=utf-8",
-          "Cache-Control": "public, s-maxage=30",
+          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
         },
       },
     );

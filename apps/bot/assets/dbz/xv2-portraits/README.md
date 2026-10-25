@@ -21,47 +21,20 @@ dans `crates/shenron-re` ; le dépôt propriétaire `dbxv2` n'est pas requis pou
 Tout est piloté par `xv2-catalog.json` (noms factuels du jeu = vérité), **pas** par un
 mapping en dur. Le catalogue est produit par un **parser `.msg` robuste** (lecture des
 valeurs par position via la table d'entrées — un parser naïf désaligne les noms, ex.
-`G13` confondu avec "Bulma" alors que c'est "C-13").
+`G13` confondu avec "Bulma" alors que c'est "C-13"). L'appariement se fait par **nom
+normalisé + synonymes**.
 
-Code : `apps/bot/src/db/xv2/` (`content.ts` planifie, `apply.ts` écrit, `cli.ts`).
-**Cible par défaut : PostgreSQL `bot.*`**, source de vérité du wiki ; le reverse-sync
-(15 min) recopie ces tables dans le SQLite du bot. Écrire directement le réplica de
-production ne sert à rien : le prochain pull remplace ces tables.
+| Script                            | Effet                                                                                               |
+| --------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `bun db:seed-xv2-portraits`       | Pose `db_characters.portrait_xv2` sur les persos existants appariés par nom.                        |
+| `bun db:seed-xv2-characters`      | Ajoute les persos XV2 absents qui ont un portrait (forme de base, hors transfos/NPC/grands singes). |
+| `bun db:seed-xv2-transformations` | Lie les formes (« X (Super Saiyen…) ») au perso de base dans `db_transformations`.                  |
+| `bun db:seed-xv2-techniques`      | Importe les compétences XV2 dans `db_techniques` (type + description d'effet).                      |
+| `bun db:seed-xv2-char-techniques` | Lie chaque perso à son loadout XV2 dans `db_character_techniques`.                                  |
 
-```sh
-cd apps/bot
-bun db:seed-xv2-all --dry-run              # plan (comptes par table), aucune écriture
-bun db:seed-xv2-all                        # tout, en une transaction PostgreSQL
-bun db:seed-xv2-techniques                 # une étape : techniques, characters, char-meta,
-                                           # portraits, transformations, char-techniques
-DATABASE_PATH=/copie/bot.db ALLOW_SQLITE_WIKI_WRITE=1 bun db:seed-xv2-all --target sqlite
-```
+Tous additifs/idempotents (dédup par nom canonique ; purge des lignes XV2 avant ré-insert).
 
-Règles (testées par `tests/xv2-seed.test.ts`) :
-
-- **Additif** : aucun `DELETE` (la suppression éditoriale est logique, `visible = false`).
-  Une ligne masquée compte comme présente : jamais ressuscitée, jamais modifiée, jamais liée.
-- **Le choix des éditeurs prime** : seuls les champs vides se remplissent (description,
-  race, genre, portrait) ; un portrait posé à la main identifie le personnage du code
-  (« Zabon » = `ZBN`, « Majin Boo » = `BUL`), donc pas de doublon « Zarbon » ou « Buu ».
-- Un nom du wiki sous-titré (« Broly (DBS) ») n'obtient un portrait que sur le nom exact
-  du jeu ; les codes d'avatar `XA*` et les variantes d'époque (« DB Super », « mini »,
-  « Retenu ») ne deviennent ni portrait ni transformation.
-- En PostgreSQL : verrou des quatre tables, lecture du snapshot sous verrou, identifiants
-  après le maximum, une révision `public.wiki_revisions` par ligne (`editorId` `xv2-content`).
-- Une étape seule n'écrit jamais d'identifiant créé par une étape absente.
-- Idempotent : un second passage ne planifie rien.
-
-Contrôle du catalogue contre l'index privé du jeu (`dbxv2_msg`, `dbxv2_characters`), ignoré
-sans la base : `DBXV2_DB_PATH=../../var/dbxv2/dbxv2.sqlite bun test --isolate tests/xv2-catalog-source.test.ts`.
-Le 2026-10-23 : 164 noms de personnages, 516/290/35/66 compétences et les 153 codes de
-loadout concordent avec le jeu (entités XML décodées). Seule correction : `URN` = « Oolong ».
-
-Sur une base vide, l'extraction produit 708 techniques (super 429, ultime 213, esquive 50,
-awoken 16), 79 personnages, 50 races/genres, 18 transformations et 1119 liens. Sur le réplica
-du 2026-10-08 (import antérieur déjà absorbé), il reste 7 portraits et 26 transformations.
-
-## Couverture obtenue (import historique)
+## Couverture obtenue
 
 - **db_characters : 58 → 108** persos (81 avec portrait XV2).
 - **db_techniques : 120 → 825** (705 ajoutées : super 428, ultime 211, esquive 50, awoken 16 ; **747 avec description d'effet**).
