@@ -28,6 +28,7 @@ const ERRORS = {
   auth_required: { status: 401, message: "Jeton d'agent manquant ou invalide." },
   scope_missing: { status: 403, message: "Portée insuffisante pour cette opération." },
   rate_limited: { status: 429, message: "Quota horaire atteint pour cette clé." },
+  service_unavailable: { status: 503, message: "Service temporairement indisponible." },
   bad_request: { status: 400, message: "Requête invalide." },
   not_found: { status: 404, message: "Ressource introuvable." },
   conflict: { status: 409, message: "Conflit avec l'état actuel de la ressource." },
@@ -111,7 +112,13 @@ export async function withAgent(
   const path = url.pathname;
   let summary: string | null = null;
 
-  const agent = await authenticateAgent(req);
+  let agent: AgentIdentity | null;
+  try {
+    agent = await authenticateAgent(req);
+  } catch (err) {
+    console.error(`[agent-api] ${req.method} ${path} authentication lookup failed`, err);
+    return agentError("service_unavailable", undefined, { "Retry-After": "30" });
+  }
   if (!agent) {
     // S8 : un 401 anonyme n'écrit plus de ligne `agent_audit` (le trafic
     // anonyme se traduisait en écritures SQL) ; compteur en mémoire échantillonné.
@@ -135,7 +142,13 @@ export async function withAgent(
   // un agent qui pagine un catalogue, sans rien protéger (la lecture est déjà
   // publique par ailleurs).
   if (!isQuotaExemptMethod(req.method)) {
-    const used = await agentCallsLastHour(agent.keyId);
+    let used: number;
+    try {
+      used = await agentCallsLastHour(agent.keyId);
+    } catch (err) {
+      console.error(`[agent-api] ${req.method} ${path} quota lookup failed`, err);
+      return agentError("service_unavailable", undefined, { "Retry-After": "30" });
+    }
     const quota = decideWriteQuota({
       method: req.method,
       writesLastHour: used,
