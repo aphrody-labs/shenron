@@ -86,11 +86,13 @@ describe("ce que l'éditeur a réellement publié", () => {
     for (const code of CODES_EDITION) expect(editionPubliee("DB", code)).toBe(true);
   });
 
-  test("Super n'a jamais été colorisé — deux cases n'existent pas", () => {
+  test("Super has a published Japanese colour edition, without claiming a French one", () => {
+    // Shueisha: Japanese full-colour volume 24, released 2025-07-04.
+    // https://www.shueisha.co.jp/books/items/contents.html?jdcn=08X10000000063175100
     expect(editionPubliee("DBS", "fr-nb")).toBe(true);
     expect(editionPubliee("DBS", "ja-nb")).toBe(true);
     expect(editionPubliee("DBS", "fr-couleur")).toBe(false);
-    expect(editionPubliee("DBS", "ja-couleur")).toBe(false);
+    expect(editionPubliee("DBS", "ja-couleur")).toBe(true);
   });
 });
 

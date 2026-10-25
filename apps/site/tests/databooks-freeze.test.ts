@@ -31,7 +31,7 @@ function probe(env: Record<string, string | undefined>, cwd = siteDir): Probe {
     if (v !== undefined && k !== "DATABOOKS_FREEZE_FILE" && k !== "NODE_ENV") base[k] = v;
   }
   for (const [k, v] of Object.entries(env)) if (v !== undefined) base[k] = v;
-  const res = Bun.spawnSync([process.execPath, "-e", script], {
+  const res = Bun.spawnSync([process.execPath, "--no-env-file", "-e", script], {
     cwd,
     env: base,
     stdout: "pipe",
@@ -53,6 +53,20 @@ describe("databooks-freeze (S11)", () => {
 
   it("production + variable absente -> gelé", () => {
     const r = probe({ NODE_ENV: "production" });
+    expect(r.file).toBeNull();
+    expect(r.freeze).toEqual({ reason: "DATABOOKS_FREEZE_FILE non configuré", path: null });
+    expect(r.throws).toBe("DATABOOKS_FROZEN");
+  });
+
+  it("production without an explicit freeze path ignores ambient dotenv files", () => {
+    const isolatedCwd = mkdtempSync(join(tmp, "dotenv-"));
+    const file = join(isolatedCwd, "unfrozen.json");
+    writeFileSync(file, JSON.stringify({ frozen: false }));
+    writeFileSync(
+      join(isolatedCwd, ".env.local"),
+      `DATABOOKS_FREEZE_FILE=${JSON.stringify(file)}\n`,
+    );
+    const r = probe({ NODE_ENV: "production" }, isolatedCwd);
     expect(r.file).toBeNull();
     expect(r.freeze).toEqual({ reason: "DATABOOKS_FREEZE_FILE non configuré", path: null });
     expect(r.throws).toBe("DATABOOKS_FROZEN");

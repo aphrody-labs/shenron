@@ -3,6 +3,9 @@ import { describe, expect, test } from "bun:test";
 import { fileURLToPath } from "node:url";
 import { inspectStreamTracks, extractVideoFrame } from "../src/mediabunny-pipeline";
 
+const Video = (Bun as typeof Bun & { Video?: { readonly available: boolean } }).Video;
+const nativeTest = test.skipIf(!Video?.available);
+
 describe("mediabunny-pipeline", () => {
   const demoVideoPath = fileURLToPath(
     new URL("../../../vendor/mediabunny/test/public/demo.mp4", import.meta.url),
@@ -47,7 +50,16 @@ describe("mediabunny-pipeline", () => {
     expect(result.audioTracks[0]!.channels).toBe(6);
   });
 
-  test("extractVideoFrame decodes frame at specified timestamp to webp", async () => {
+  test.skipIf(Boolean(Video?.available))(
+    "unavailable native decoding rejects explicitly",
+    async () => {
+      await expect(extractVideoFrame(demoVideoPath, 1)).rejects.toThrow(
+        "Native video decoding is unavailable",
+      );
+    },
+  );
+
+  nativeTest("extractVideoFrame decodes frame at specified timestamp to webp", async () => {
     const frame = await extractVideoFrame(demoVideoPath, 2.0, { format: "webp" });
 
     expect(frame.format).toBe("webp");
@@ -64,7 +76,7 @@ describe("mediabunny-pipeline", () => {
     expect([...decoded.subarray(0, 8)]).toEqual([137, 80, 78, 71, 13, 10, 26, 10]);
   });
 
-  test("extractVideoFrame decodes frame at specified timestamp to jpeg", async () => {
+  nativeTest("extractVideoFrame decodes frame at specified timestamp to jpeg", async () => {
     const frame = await extractVideoFrame(demoVideoPath, 1.5, { format: "jpeg" });
 
     expect(frame.format).toBe("jpeg");
@@ -81,18 +93,21 @@ describe("mediabunny-pipeline", () => {
     expect([...decoded.subarray(0, 8)]).toEqual([137, 80, 78, 71, 13, 10, 26, 10]);
   });
 
-  test("native resizing returns an actual decoded image at the requested dimensions", async () => {
-    const frame = await extractVideoFrame(demoVideoPath, 1, { width: 160, height: 90 });
-    const image = await new Bun.Image(frame.data).metadata();
-    expect(frame.width).toBe(160);
-    expect(frame.height).toBe(90);
-    expect(image.width).toBe(160);
-    expect(image.height).toBe(90);
-    expect(frame.durationSeconds).toBeGreaterThan(0);
-    expect(frame.durationSeconds).toBeLessThan(1);
-  });
+  nativeTest(
+    "native resizing returns an actual decoded image at the requested dimensions",
+    async () => {
+      const frame = await extractVideoFrame(demoVideoPath, 1, { width: 160, height: 90 });
+      const image = await new Bun.Image(frame.data).metadata();
+      expect(frame.width).toBe(160);
+      expect(frame.height).toBe(90);
+      expect(image.width).toBe(160);
+      expect(image.height).toBe(90);
+      expect(frame.durationSeconds).toBeGreaterThan(0);
+      expect(frame.durationSeconds).toBeLessThan(1);
+    },
+  );
 
-  test("single-dimension resizing preserves the video's aspect ratio", async () => {
+  nativeTest("single-dimension resizing preserves the video's aspect ratio", async () => {
     const frame = await extractVideoFrame(demoVideoPath, 1, { width: 160 });
     const image = await new Bun.Image(frame.data).metadata();
     expect(image.width).toBe(160);

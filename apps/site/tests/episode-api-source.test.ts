@@ -6,9 +6,9 @@ mock.module("../src/lib/db-universe", () => ({}));
 
 const { episodeApiSummary } = await import("../src/lib/episode-api");
 
-function episode(official_source_url: string | null): Episode {
+function episode(official_source_url: string | null, id = 999_827): Episode {
   return {
-    id: 827,
+    id,
     series: "SDBH",
     number_in_series: null,
     arc_id: null,
@@ -47,5 +47,22 @@ describe("episode API official source URL", () => {
     ]) {
       expect(episodeApiSummary(episode(source)).officialSourceUrl).toBeNull();
     }
+  });
+
+  test("known SDBH episodes retain their safe official fallback when a source is rejected", () => {
+    for (const source of [
+      "http://example.com/video",
+      "javascript:alert(1)",
+      "https://user:pass@example.com/video",
+      "not a URL",
+      null,
+    ]) {
+      const summary = episodeApiSummary(episode(source, 827));
+      expect(summary.officialSourceUrl).toBe("https://www.youtube.com/watch?v=8dgszLUSWHg");
+      expect(summary.sourceLanguages).toEqual(["ja"]);
+    }
+    expect(
+      episodeApiSummary(episode("https://www.youtube.com/watch?v=abc", 827)).officialSourceUrl,
+    ).toBe("https://www.youtube.com/watch?v=abc");
   });
 });

@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 let viewer: { discordId: string; user: { username: string } } | null = null;
 let status = "absent";
 let calls = 0;
+const xpProgressPercent = mock(() => 0);
 mock.module("@/components/kit", () => ({ DomainBar: () => null }));
 mock.module("next/navigation", () => ({
   notFound: () => {
@@ -16,6 +17,7 @@ mock.module("next/link", () => ({
   ),
 }));
 mock.module("@/lib/shenron", () => ({
+  xpProgressPercent,
   getShenronUserResult: async () => {
     calls++;
     return { status };
@@ -46,6 +48,7 @@ beforeEach(() => {
   viewer = null;
   status = "absent";
   calls = 0;
+  xpProgressPercent.mockClear();
 });
 describe("Missing community profile", () => {
   test("keeps personal library and real session identity without fictional game stats", async () => {
@@ -57,6 +60,7 @@ describe("Missing community profile", () => {
     expect(html).toContain("profile.libraryTitle");
     expect(html).not.toContain("XP total");
     expect(html).not.toContain("Dossier concours");
+    expect(xpProgressPercent).not.toHaveBeenCalled();
   });
   test("anonymous visitors still receive 404", async () => {
     await expect(page()).rejects.toThrow("NOT_FOUND");
