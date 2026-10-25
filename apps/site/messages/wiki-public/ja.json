@@ -40,5 +40,36 @@
     "autoSynopsis": "自動検出：エピソードのあらすじに名前が登場しますが、それだけではサーガ内での役割を示しません。このサーガに漫画はなく、アニメ版のみで確認されています。形態、戦闘力、主な出来事は編集者による記録が必要です。",
     "autoManga": "自動検出：漫画ページに名前が登場しますが、それだけではサーガ内での役割を示しません。形態、戦闘力、主な出来事は編集者による記録が必要です。",
     "autoBoth": "自動検出：漫画ページとエピソードのあらすじに名前が登場しますが、それだけではサーガ内での役割を示しません。形態、戦闘力、主な出来事は編集者による記録が必要です。"
+  },
+  "powerScaling": {
+    "doctrineCopy": "数値化された戦闘力（戦闘力）は、鳥山明の原作漫画におけるスカウター測定値と、大全集7（1996）の資料にのみ基づいています。公式数値はフリーザ編以降記載されていません。魔人ブウ編ではバビディが魔法の単位キリを使用します。",
+    "battlePower": "戦闘力 (BP)",
+    "scouterManga": "漫画のスカウター",
+    "daizenshuuSource": "大全集7",
+    "noOfficialReadings": "漫画および大全集7に、このキャラクターの公式スカウター数値は記録されていません。",
+    "unmeasuredNarrative": "作者が数値化していない強さは、物語上の段階や比較として示します。",
+    "base": "基準：",
+    "source": "出典：",
+    "kiriDescription": "魔人ブウ編では、バビディがキリ単位の魔法の装置で戦士の力を測定します。",
+    "gokuSuperSaiyan2": "孫悟空 スーパーサイヤ人2",
+    "sensorSaturated": "魔法の測定器の上限に達します。",
+    "planetaryThreshold": "惑星破壊の目安",
+    "planetEnergy": "標準的な惑星を破壊するために必要なエネルギー。"
+  },
+  "soundtracks": {
+    "composition": "作曲：",
+    "lyrics": "作詞：",
+    "airing": "放送：",
+    "categoryAlt": "音楽カテゴリの画像",
+    "hidePlayer": "プレーヤーを閉じる",
+    "playOfficialClip": "公式クリップを再生",
+    "searchYouTube": "YouTubeで検索",
+    "spotify": "Spotifyで検索",
+    "seriesLink": "シリーズを見る",
+    "officialPlayerTitle": "公式ミュージックビデオ",
+    "officialLabelToei": "東映アニメーション公式映像",
+    "officialLabelColumbia": "日本コロムビア公式映像",
+    "officialLabelMiura": "三浦大知公式映像",
+    "officialLabelDaima": "ドラゴンボールDAIMA公式バージョン"
   }
 }

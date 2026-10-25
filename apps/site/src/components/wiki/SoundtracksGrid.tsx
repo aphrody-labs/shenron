@@ -7,12 +7,13 @@ import type { Soundtrack } from "@/lib/db-universe";
 import { useT } from "@/components/T";
 import { assetUrl } from "@/lib/assets";
 import { episodeSeriesHref } from "@/lib/episode-series-links";
+import { useWikiSoundtrackText, type SoundtrackKey } from "@/components/wiki/WikiPublicText";
 
-const OFFICIAL_YOUTUBE: Record<string, { id: string; label: string }> = {
-  "genkai-toppa-survivor": { id: "S7QsHpLU1Sw", label: "Clip officiel Toei Animation" },
-  "chouzetsu-dynamic": { id: "uO5TYG4BBOk", label: "Clip officiel Nippon Columbia" },
-  blizzard: { id: "YqllOJ7ut10", label: "Clip officiel Daichi Miura" },
-  "jaka-jaan": { id: "gYlz3GDbf7c", label: "Version officielle Dragon Ball DAIMA" },
+const OFFICIAL_YOUTUBE: Record<string, { id: string; label: SoundtrackKey }> = {
+  "genkai-toppa-survivor": { id: "S7QsHpLU1Sw", label: "officialLabelToei" },
+  "chouzetsu-dynamic": { id: "uO5TYG4BBOk", label: "officialLabelColumbia" },
+  blizzard: { id: "YqllOJ7ut10", label: "officialLabelMiura" },
+  "jaka-jaan": { id: "gYlz3GDbf7c", label: "officialLabelDaima" },
 };
 
 const TRACK_TYPES = [
@@ -34,6 +35,7 @@ export function SoundtracksGrid({
   const [selectedType, setSelectedType] = useState("all");
   const [playing, setPlaying] = useState<string | null>(null);
   const t = useT();
+  const ui = useWikiSoundtrackText();
   const typeLabel = (type: string) => {
     const item = TRACK_TYPES.find((entry) => entry.key === type);
     return item ? t(`wikiUi.soundtracks.types.${item.i18n}`) : type.replaceAll("_", " ");
@@ -71,7 +73,7 @@ export function SoundtracksGrid({
         ].map(([label, value]) => (
           <div key={label} className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3">
             <div className="text-2xl font-black text-white">{value}</div>
-            <div className="text-[11px] uppercase tracking-wide text-white/45">{label}</div>
+            <div className="text-xs uppercase tracking-wide text-white/55">{label}</div>
           </div>
         ))}
       </div>
@@ -93,7 +95,7 @@ export function SoundtracksGrid({
               <button
                 type="button"
                 onClick={() => setQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md px-2 py-1 text-xs text-white/55 hover:bg-white/10 hover:text-white"
+                className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-xs text-white/70 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
               >
                 {t("wikiUi.soundtracks.clear")}
               </button>
@@ -142,7 +144,7 @@ export function SoundtracksGrid({
                     <iframe
                       className="h-full w-full"
                       src={`https://www.youtube-nocookie.com/embed/${video.id}?rel=0&modestbranding=1`}
-                      title={`${track.title} — ${video.label}`}
+                      title={`${track.title} — ${ui(video.label)}`}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       allowFullScreen
                     />
@@ -153,14 +155,14 @@ export function SoundtracksGrid({
                     <div className="h-24 overflow-hidden rounded-lg border border-white/10 bg-black/20">
                       <img
                         src={assetUrl(fallbackImage)}
-                        alt="Visuel de la catégorie musiques"
+                        alt={ui("categoryAlt")}
                         loading="lazy"
                         className="h-full w-full object-cover opacity-60"
                       />
                     </div>
                   )}
                   <div className="flex items-start justify-between gap-3">
-                    <span className="rounded-md bg-rose-500/15 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-rose-300">
+                    <span className="rounded-md bg-rose-500/15 px-2 py-1 text-xs font-bold uppercase tracking-wider text-rose-200">
                       {typeLabel(track.track_type)}
                     </span>
                     <span className="text-xs text-white/45">{track.release_year ?? "—"}</span>
@@ -177,19 +179,23 @@ export function SoundtracksGrid({
                   <div className="rounded-xl border border-white/5 bg-black/30 p-3">
                     <p className="text-xs font-semibold text-orange-300">{track.artist}</p>
                     {track.composer && (
-                      <p className="mt-1 text-[11px] text-white/55">
-                        Composition : {track.composer}
+                      <p className="mt-1 text-xs text-white/60">
+                        {ui("composition")} {track.composer}
                       </p>
                     )}
                     {track.lyricist && (
-                      <p className="mt-1 text-[11px] text-white/45">Paroles : {track.lyricist}</p>
+                      <p className="mt-1 text-xs text-white/55">
+                        {ui("lyrics")} {track.lyricist}
+                      </p>
                     )}
                   </div>
                   <p className="line-clamp-3 text-xs leading-relaxed text-white/65">
                     {track.description}
                   </p>
                   {track.episodes_range && (
-                    <p className="text-[11px] text-white/40">Diffusion : {track.episodes_range}</p>
+                    <p className="text-xs text-white/50">
+                      {ui("airing")} {track.episodes_range}
+                    </p>
                   )}
                   <div className="mt-auto flex flex-wrap items-center gap-2 border-t border-white/10 pt-3">
                     {video ? (
@@ -199,7 +205,7 @@ export function SoundtracksGrid({
                         className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-red-600 px-4 text-xs font-bold text-white transition hover:bg-red-500"
                         aria-expanded={isOpen}
                       >
-                        {isOpen ? "Masquer le lecteur" : "▶ Lire le clip officiel"}
+                        {isOpen ? ui("hidePlayer") : `▶ ${ui("playOfficialClip")}`}
                       </button>
                     ) : (
                       <a
@@ -208,7 +214,7 @@ export function SoundtracksGrid({
                         rel="noopener noreferrer"
                         className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-red-600/20 px-4 text-xs font-bold text-red-200 transition hover:bg-red-600/40"
                       >
-                        ▶ Rechercher sur YouTube
+                        ▶ {ui("searchYouTube")}
                       </a>
                     )}
                     <a
@@ -217,14 +223,14 @@ export function SoundtracksGrid({
                       rel="noopener noreferrer"
                       className="inline-flex min-h-11 items-center rounded-xl bg-emerald-600/15 px-3 text-xs font-semibold text-emerald-200 transition hover:bg-emerald-600/30"
                     >
-                      ♫ Spotify
+                      ♫ {ui("spotify")}
                     </a>
                     {seriesHref ? (
                       <Link
                         href={seriesHref}
-                        className="ml-auto text-xs font-medium text-muted-foreground hover:text-primary"
+                        className="ml-auto inline-flex min-h-11 items-center rounded-lg px-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-white/5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
                       >
-                        {track.series} ↗
+                        {ui("seriesLink")}: {track.series} ↗
                       </Link>
                     ) : (
                       <span className="ml-auto text-xs font-medium text-muted-foreground">

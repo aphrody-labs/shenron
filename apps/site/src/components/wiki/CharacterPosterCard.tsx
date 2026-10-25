@@ -93,9 +93,9 @@ export function CharacterPosterCard({
           {name}
         </p>
         {(subtitle ?? race) && (
-          <p className="truncate text-[11px] text-white/60">{subtitle ?? race}</p>
+          <p className="line-clamp-2 text-xs leading-5 text-white/70">{subtitle ?? race}</p>
         )}
-        {meta && <p className="truncate text-[10px] text-dbz-orange/80">{meta}</p>}
+        {meta && <p className="line-clamp-2 text-xs leading-5 text-dbz-orange/90">{meta}</p>}
       </div>
     </ClientGatedWrap>
   );

@@ -40,5 +40,36 @@
     "autoSynopsis": "Automatically detected: the name appears in these episode synopses; that alone does not establish the character’s role in the saga. This saga has no manga, so presence is attested only by the animated adaptation. Form, power, and highlights still need editorial documentation.",
     "autoManga": "Automatically detected: the name appears on these manga pages; that alone does not establish the character’s role in the saga. Form, power, and highlights still need editorial documentation.",
     "autoBoth": "Automatically detected: the name appears on these manga pages and in these episode synopses; that alone does not establish the character’s role in the saga. Form, power, and highlights still need editorial documentation."
+  },
+  "powerScaling": {
+    "doctrineCopy": "Numbered battle power readings (Sentōryoku) come exclusively from manga scouter readings and Akira Toriyama’s original manga and Daizenshuu 7 (1996) reference entries. Official figures stop after the Freeza arc; in the Majin Boo arc, Babidi uses the magical Kiri unit.",
+    "battlePower": "Sentōryoku (BP)",
+    "scouterManga": "Manga scouter",
+    "daizenshuuSource": "Daizenshuu 7",
+    "noOfficialReadings": "No official numeric scouter reading is recorded for this character in the manga or Daizenshuu 7.",
+    "unmeasuredNarrative": "Power levels not measured by the author are presented as narrative and comparative tiers.",
+    "base": "Base:",
+    "source": "Source:",
+    "kiriDescription": "In the Majin Boo arc, Babidi measures warriors’ strength with a magical device calibrated in Kiri units:",
+    "gokuSuperSaiyan2": "Goku Super Saiyan 2",
+    "sensorSaturated": "The magical sensor reaches its limit.",
+    "planetaryThreshold": "Planetary destruction threshold",
+    "planetEnergy": "Energy required to destroy a standard planet."
+  },
+  "soundtracks": {
+    "composition": "Composition:",
+    "lyrics": "Lyrics:",
+    "airing": "Broadcast:",
+    "categoryAlt": "Music category artwork",
+    "hidePlayer": "Hide player",
+    "playOfficialClip": "Play official clip",
+    "searchYouTube": "Search on YouTube",
+    "spotify": "Search Spotify",
+    "seriesLink": "View series",
+    "officialPlayerTitle": "Official music video",
+    "officialLabelToei": "Official Toei Animation video",
+    "officialLabelColumbia": "Official Nippon Columbia video",
+    "officialLabelMiura": "Official Daichi Miura video",
+    "officialLabelDaima": "Official Dragon Ball DAIMA version"
   }
 }

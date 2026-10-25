@@ -40,5 +40,36 @@
     "autoSynopsis": "Relevé automatique : le nom est cité dans ces résumés d’épisode ; cela ne suffit pas à établir son rôle dans la saga. Cette saga n’a pas de manga : la présence est attestée par l’adaptation animée. Forme, puissance et faits marquants restent à documenter.",
     "autoManga": "Relevé automatique : le nom est cité dans ces planches ; cela ne suffit pas à établir son rôle dans la saga. Forme, puissance et faits marquants restent à documenter.",
     "autoBoth": "Relevé automatique : le nom est cité dans ces planches et résumés ; cela ne suffit pas à établir son rôle dans la saga. Forme, puissance et faits marquants restent à documenter."
+  },
+  "powerScaling": {
+    "doctrineCopy": "Les niveaux de combat chiffrés (Sentōryoku) proviennent exclusivement des relevés de détecteurs du manga original d’Akira Toriyama et des fiches du Daizenshuu 7 (1996). Les chiffres officiels s’arrêtent après l’arc Freezer; dans l’arc Majin Boo, Babidi utilise l’unité magique Kiri.",
+    "battlePower": "Sentōryoku (BP)",
+    "scouterManga": "Scouter du manga",
+    "daizenshuuSource": "Daizenshuu 7",
+    "noOfficialReadings": "Aucun relevé numérique officiel au scouter n’est enregistré pour ce personnage dans le manga ou le Daizenshuu 7.",
+    "unmeasuredNarrative": "Les puissances non mesurées par l’auteur sont présentées par paliers narratifs et comparatifs.",
+    "base": "Base :",
+    "source": "Source :",
+    "kiriDescription": "Dans l’arc Majin Boo, Babidi mesure la force des guerriers avec un dispositif magique gradué en unités Kiri :",
+    "gokuSuperSaiyan2": "Goku Super Saiyan 2",
+    "sensorSaturated": "Le capteur magique atteint sa limite.",
+    "planetaryThreshold": "Seuil de destruction planétaire",
+    "planetEnergy": "Énergie nécessaire pour détruire une planète standard."
+  },
+  "soundtracks": {
+    "composition": "Composition :",
+    "lyrics": "Paroles :",
+    "airing": "Diffusion :",
+    "categoryAlt": "Visuel de la catégorie musiques",
+    "hidePlayer": "Masquer le lecteur",
+    "playOfficialClip": "Lire le clip officiel",
+    "searchYouTube": "Rechercher sur YouTube",
+    "spotify": "Ouvrir la recherche Spotify",
+    "seriesLink": "Voir la série",
+    "officialPlayerTitle": "Clip musical officiel",
+    "officialLabelToei": "Clip officiel Toei Animation",
+    "officialLabelColumbia": "Clip officiel Nippon Columbia",
+    "officialLabelMiura": "Clip officiel Daichi Miura",
+    "officialLabelDaima": "Version officielle de Dragon Ball DAIMA"
   }
 }

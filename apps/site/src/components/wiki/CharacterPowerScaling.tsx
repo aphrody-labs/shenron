@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { DEFAULT_POWER_SCALING_CONFIG } from "@/lib/canon-engine";
 import { T } from "@/components/T";
+import { WikiPowerNumber, WikiPowerText } from "@/components/wiki/WikiPublicText";
 
 interface CharacterPowerScalingProps {
   characterName: string;
@@ -42,23 +43,19 @@ export function CharacterPowerScaling({
             <span className="font-scouter text-xs uppercase tracking-widest text-dbz-orange">
               <T k="wikiPower.doctrine" />
             </span>
-            <span className="rounded bg-dbz-orange/20 px-2 py-0.5 font-saiyan text-[10px] text-dbz-yellow">
+            <span className="rounded bg-dbz-orange/20 px-2 py-1 font-saiyan text-xs text-dbz-yellow">
               <T k="wikiPower.badge" />
             </span>
           </div>
           <Link
             href="/wiki/guide-officiel-power-scaling-sentoryoku-kiri"
-            className="text-[11px] text-dbz-orange hover:underline"
+            className="inline-flex min-h-11 items-center rounded-lg px-3 py-2 text-xs text-dbz-orange underline-offset-4 hover:bg-dbz-orange/10 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange"
           >
             <T k="wikiPower.dossier" />
           </Link>
         </div>
         <p className="mt-3 text-xs leading-relaxed text-white/65">
-          Les niveaux de combat chiffrés (<em>Sentōryoku</em>) proviennent exclusivement des relevés
-          de détecteurs (<em>scouters</em>) du manga original d&apos;Akira Toriyama et des fiches
-          exhaustives du <strong>Daizenshuu 7</strong> (1996). Conformément à la doctrine de
-          l&apos;auteur, les chiffres s&apos;arrêtent officiellement après l&apos;arc Freezer,
-          remplacés dans l&apos;arc Majin Boo par l&apos;unité magique <strong>Kiri</strong>.
+          <WikiPowerText k="doctrineCopy" />
         </p>
       </div>
 
@@ -68,17 +65,53 @@ export function CharacterPowerScaling({
           <h3 className="font-saiyan text-sm uppercase tracking-wider text-dbz-yellow">
             <T k="wikiPower.readings" values={{ name: characterName }} />
           </h3>
-          <div className="overflow-x-auto rounded-xl border border-white/10 bg-black/20">
+          <div className="grid gap-3 md:hidden">
+            {bpsOfficiels.map((bp, i) => (
+              <article key={i} className="rounded-xl border border-white/10 bg-black/20 p-4">
+                <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-white/10 pb-3">
+                  <h4 className="font-semibold text-white">{bp.saga}</h4>
+                  <p className="font-mono text-base font-bold text-dbz-orange">
+                    <WikiPowerNumber value={bp.bp} /> BP
+                  </p>
+                </div>
+                <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-3 text-xs">
+                  <div>
+                    <dt className="text-white/50">
+                      <T k="wikiPower.state" />
+                    </dt>
+                    <dd className="mt-1 text-white/90">{bp.state}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-white/50">
+                      <T k="wikiPower.sensor" />
+                    </dt>
+                    <dd className="mt-1 text-white/90">
+                      <WikiPowerText k={bp.scouter ? "scouterManga" : "daizenshuuSource"} />
+                    </dd>
+                  </div>
+                  <div className="col-span-2">
+                    <dt className="text-white/50">
+                      <T k="wikiPower.canonSource" />
+                    </dt>
+                    <dd className="mt-1 break-words text-white/80">{bp.source}</dd>
+                  </div>
+                </dl>
+              </article>
+            ))}
+          </div>
+          <div className="hidden overflow-x-auto rounded-xl border border-white/10 bg-black/20 md:block">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-white/10 bg-white/[0.02] text-[10px] uppercase tracking-wider text-white/40">
+                <tr className="border-b border-white/10 bg-white/[0.02] text-xs uppercase tracking-wider text-white/55">
                   <th className="py-2.5 px-4">
                     <T k="wikiPower.saga" />
                   </th>
                   <th className="py-2.5 px-4">
                     <T k="wikiPower.state" />
                   </th>
-                  <th className="py-2.5 px-4 font-mono">Battle Power (BP)</th>
+                  <th className="py-2.5 px-4 font-mono">
+                    <WikiPowerText k="battlePower" />
+                  </th>
                   <th className="py-2.5 px-4">
                     <T k="wikiPower.sensor" />
                   </th>
@@ -93,20 +126,20 @@ export function CharacterPowerScaling({
                     <td className="py-2.5 px-4 font-medium text-white/90">{bp.saga}</td>
                     <td className="py-2.5 px-4 text-white/70">{bp.state}</td>
                     <td className="py-2.5 px-4 font-mono font-bold text-dbz-orange text-sm">
-                      {bp.bp.toLocaleString("fr-FR")}
+                      <WikiPowerNumber value={bp.bp} />
                     </td>
                     <td className="py-2.5 px-4">
                       {bp.scouter ? (
-                        <span className="inline-flex items-center rounded border border-green-500/30 bg-green-500/10 px-2 py-0.5 text-[10px] text-green-400">
-                          Scouter manga
+                        <span className="inline-flex items-center rounded border border-green-500/30 bg-green-500/10 px-2 py-1 text-xs text-green-300">
+                          <WikiPowerText k="scouterManga" />
                         </span>
                       ) : (
-                        <span className="inline-flex items-center rounded border border-yellow-500/30 bg-yellow-500/10 px-2 py-0.5 text-[10px] text-yellow-400">
-                          Daizenshuu 7
+                        <span className="inline-flex items-center rounded border border-yellow-500/30 bg-yellow-500/10 px-2 py-1 text-xs text-yellow-300">
+                          <WikiPowerText k="daizenshuuSource" />
                         </span>
                       )}
                     </td>
-                    <td className="py-2.5 px-4 text-[11px] text-white/50">{bp.source}</td>
+                    <td className="py-2.5 px-4 text-xs text-white/60">{bp.source}</td>
                   </tr>
                 ))}
               </tbody>
@@ -116,12 +149,10 @@ export function CharacterPowerScaling({
       ) : (
         <div className="rounded-xl border border-white/10 bg-black/20 p-5 text-center text-xs text-white/50">
           <p>
-            Aucun relevé numérique officiel sous scouter n&apos;est enregistré pour ce personnage
-            dans le manga ni dans le Daizenshuu 7.
+            <WikiPowerText k="noOfficialReadings" />
           </p>
           <p className="mt-1 text-white/35">
-            Les puissances non mesurées par l&apos;auteur sont classées par échelons narratifs et
-            comparatifs.
+            <WikiPowerText k="unmeasuredNarrative" />
           </p>
         </div>
       )}
@@ -146,14 +177,12 @@ export function CharacterPowerScaling({
                       x{m.multiplier}
                     </span>
                   </div>
-                  <p className="text-[11px] text-white/50">
-                    Base : <span className="text-white/70">{m.baseForm}</span>
+                  <p className="text-xs text-white/60">
+                    <WikiPowerText k="base" /> <span className="text-white/80">{m.baseForm}</span>
                   </p>
-                  {m.notes && (
-                    <p className="text-[10px] leading-relaxed text-white/40">{m.notes}</p>
-                  )}
-                  <div className="border-t border-white/5 pt-2 text-[10px] text-white/35">
-                    Source : {m.source}
+                  {m.notes && <p className="text-xs leading-relaxed text-white/55">{m.notes}</p>}
+                  <div className="border-t border-white/5 pt-2 text-xs text-white/50">
+                    <WikiPowerText k="source" /> {m.source}
                   </div>
                 </div>
               ))}
@@ -167,29 +196,32 @@ export function CharacterPowerScaling({
           <T k="wikiPower.kiriTitle" />
         </h3>
         <p className="text-xs leading-relaxed text-white/60">
-          Dans l&apos;arc Majin Buu, Babidi mesure la force des guerriers à l&apos;aide d&apos;un
-          dispositif occulte en unités <strong>Kiri</strong> :
+          <WikiPowerText k="kiriDescription" />
         </p>
         <div className="grid gap-3 sm:grid-cols-3 pt-1">
           <div className="rounded-lg border border-white/10 bg-black/30 p-3">
-            <span className="text-[10px] uppercase text-white/40">Yakon</span>
+            <span className="text-xs uppercase text-white/55">Yakon</span>
             <p className="font-mono text-lg font-bold text-dbz-orange">800 Kiri</p>
-            <p className="text-[10px] text-white/50 mt-1">
+            <p className="text-xs text-white/60 mt-1">
               <T k="wikiPower.yakonNote" />
             </p>
           </div>
           <div className="rounded-lg border border-white/10 bg-black/30 p-3">
-            <span className="text-[10px] uppercase text-white/40">Goku Super Saiyan 2</span>
+            <span className="text-xs uppercase text-white/55">
+              <WikiPowerText k="gokuSuperSaiyan2" />
+            </span>
             <p className="font-mono text-lg font-bold text-dbz-orange">3 000 Kiri</p>
-            <p className="text-[10px] text-white/50 mt-1">Sature le capteur magique</p>
+            <p className="text-xs text-white/60 mt-1">
+              <WikiPowerText k="sensorSaturated" />
+            </p>
           </div>
           <div className="rounded-lg border border-white/10 bg-black/30 p-3">
-            <span className="text-[10px] uppercase text-white/40">
-              Seuil Destruction Planétaire
+            <span className="text-xs uppercase text-white/55">
+              <WikiPowerText k="planetaryThreshold" />
             </span>
             <p className="font-mono text-lg font-bold text-dbz-yellow">200 - 300 Kiri</p>
-            <p className="text-[10px] text-white/50 mt-1">
-              Énergie nécessaire pour anéantir une planète standard
+            <p className="text-xs text-white/60 mt-1">
+              <WikiPowerText k="planetEnergy" />
             </p>
           </div>
         </div>
