@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
 import {
+  applyReviewedVariantEdits,
   prepareReviewedVariantEdit,
   validateReviewedVariantManifest,
 } from "../scripts/apply-reviewed-variant-edits";
@@ -39,6 +40,7 @@ function fixture() {
         rationale: "Chapter 25 is outside chapters 1–23",
         sources: [
           {
+            kind: "scan",
             file: "reviewed-scan.webp",
             sha256: "a".repeat(64),
             url: "https://dragonballfr.com/wiki/manga/1421?page=174",
@@ -109,4 +111,80 @@ test("requires qualified sources and typed catalogue IDs", () => {
   expect(() =>
     validateReviewedVariantManifest({ ...original, entries: [{ ...item, patch: {} }] }),
   ).toThrow("Empty");
+});
+
+test("checks the complete batch before any write and preserves a receipt on readback failure", async () => {
+  const manifest = fixture();
+  const item = manifest.entries[0]!;
+  item.sources[0]!.file = import.meta.filename;
+  item.sources[0]!.sha256 = new Bun.CryptoHasher("sha256")
+    .update(await Bun.file(import.meta.filename).bytes())
+    .digest("hex");
+  const receipt = `../../var/reports/test-reviewed-writer-${crypto.randomUUID()}.json`;
+  const originalFetch = globalThis.fetch;
+  const methods: string[] = [];
+  let written = false;
+  const fake = async (_input: string | URL | Request, init?: RequestInit) => {
+    methods.push(init?.method ?? "GET");
+    if (init?.method === "PATCH") {
+      written = true;
+      return Response.json({ ok: true });
+    }
+    // Simulate a writer silently discarding a field after a successful HTTP status.
+    return Response.json(
+      written ? { ...item.expected, summary: "Unexpected concurrent text" } : item.expected,
+    );
+  };
+  globalThis.fetch = Object.assign(fake, { preconnect: originalFetch.preconnect }) as typeof fetch;
+  try {
+    await expect(
+      applyReviewedVariantEdits(manifest, { apply: true, token: "test-only", receipt }),
+    ).rejects.toThrow("Complete readback mismatch");
+    expect(methods).toEqual(["GET", "PATCH", "GET"]);
+    const saved = await Bun.file(receipt).json();
+    expect(saved.entries[0].after.summary).toBe("Unexpected concurrent text");
+    expect(JSON.stringify(saved)).not.toContain("test-only");
+    await expect(
+      applyReviewedVariantEdits(manifest, { apply: true, token: "test-only", receipt }),
+    ).rejects.toThrow("new receipt path");
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (await Bun.file(receipt).exists()) await Bun.file(receipt).delete();
+  }
+});
+
+test("drift in a later entry prevents all writes", async () => {
+  const manifest = fixture();
+  const item = manifest.entries[0]!;
+  item.sources[0]!.file = import.meta.filename;
+  item.sources[0]!.sha256 = new Bun.CryptoHasher("sha256")
+    .update(await Bun.file(import.meta.filename).bytes())
+    .digest("hex");
+  const next = structuredClone(item);
+  next.id = 2450;
+  next.expected.id = 2450;
+  next.expectedSha256 = wikiUpdateSnapshotHash(next.expected);
+  manifest.entries.push(next);
+  const receipt = `../../var/reports/test-reviewed-writer-${crypto.randomUUID()}.json`;
+  const originalFetch = globalThis.fetch;
+  const methods: string[] = [];
+  const fake = async (input: string | URL | Request, init?: RequestInit) => {
+    methods.push(init?.method ?? "GET");
+    return Response.json(
+      String(input).endsWith("2449")
+        ? item.expected
+        : { ...next.expected, summary: "New editorial correction" },
+    );
+  };
+  globalThis.fetch = Object.assign(fake, { preconnect: originalFetch.preconnect }) as typeof fetch;
+  try {
+    await expect(
+      applyReviewedVariantEdits(manifest, { apply: true, token: "test-only", receipt }),
+    ).rejects.toThrow("Snapshot drift");
+    expect(methods).toEqual(["GET", "GET"]);
+    expect(await Bun.file(receipt).exists()).toBe(false);
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (await Bun.file(receipt).exists()) await Bun.file(receipt).delete();
+  }
 });

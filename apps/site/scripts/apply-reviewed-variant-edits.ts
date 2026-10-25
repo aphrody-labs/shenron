@@ -20,6 +20,7 @@ const fields = [
 ] as const;
 const source = z
   .object({
+    kind: z.enum(["scan", "primary-document", "review-record"]),
     file: z.string().min(1),
     sha256: z.string().regex(/^[a-f0-9]{64}$/),
     url: z.url().startsWith("https://"),
@@ -129,7 +130,11 @@ export async function applyReviewedVariantEdits(
     throw new Error("Use a new receipt path; preserve earlier audit receipts");
   for (const item of manifest.entries)
     for (const reference of item.sources) {
-      const file = Bun.file(reference.file);
+      const file = Bun.file(
+        reference.file.startsWith("var/reports/")
+          ? new URL(`../../../${reference.file}`, import.meta.url)
+          : reference.file,
+      );
       if (
         !(await file.exists()) ||
         new Bun.CryptoHasher("sha256").update(await file.bytes()).digest("hex") !== reference.sha256
@@ -197,6 +202,7 @@ export async function applyReviewedVariantEdits(
     }
     const after = await read(path(item.id));
     result.after = after;
+    await save();
     if (
       wikiUpdateSnapshotHash(after) !== wikiUpdateSnapshotHash({ ...item.expected, ...item.patch })
     )
