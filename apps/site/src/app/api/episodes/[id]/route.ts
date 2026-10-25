@@ -81,12 +81,10 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
       },
     );
   } catch (error) {
+    console.error("Episode detail API request failed", error);
     return NextResponse.json(
-      {
-        error: "Erreur serveur lors de la récupération de l'épisode",
-        detail: error instanceof Error ? error.message : String(error),
-      },
-      { status: 500, headers: CORS_HEADERS },
+      { error: "episode_fetch_failed" },
+      { status: 500, headers: { ...CORS_HEADERS, "Cache-Control": "no-store" } },
     );
   }
 }
