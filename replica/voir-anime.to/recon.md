@@ -79,12 +79,14 @@ viewport de 390 px, sans débordement horizontal mesuré sur ces états.
 | F04 | Changer de fournisseur : S06 → sélection → autre iframe | Une sélection ; quatre fournisseurs observés ; remplacement d'iframe prouvé, démarrage vidéo non prouvé |
 | F05 | Changer d'épisode : S06/04 → sélection 03 → S06/03 | Une sélection ; fil d'Ariane et précédent/suivant mis à jour après navigation ; fournisseur par défaut rétabli |
 | F06 | Affiner : S07 → Advanced → filtres → résultats | Panneau ouvert ; champs inventoriés ; pas de combinaison exhaustive ni d'état vide qualifié |
+| F07 | Recherche latérale : S08 → saisir Dragon Ball → loupe → suggestions | Suggestions affichées sur la même page ; 18 titres visibles relevés ; endpoint AJAX non capturé dans cette fenêtre réseau |
 
 Le formulaire S07 affichait bien « Dragon Ball » dans `input[name=s]` avant envoi,
 mais la navigation observée contenait `s=` vide et affichait 6 817 résultats.
 La cause n'est pas établie. Le GET direct fonctionne : ce défaut ne justifie pas de
 déclarer tout le moteur de recherche défaillant. La recherche latérale Ajax Search Pro
-n'a pas encore été qualifiée de bout en bout.
+affiche des suggestions Dragon Ball après saisie et clic sur la loupe. Le lien d'une
+suggestion n'a pas été suivi ; son endpoint n'a pas été qualifié par le relevé réseau.
 
 ## Composants et états
 
@@ -128,7 +130,7 @@ Les iframes des fournisseurs ne révèlent pas à elles seules le CDN des octets
 
 ## Périmètre restant et réutilisation
 
-11 familles d'écrans, six parcours, sept entités inférées. La matrice
+11 familles d'écrans, sept parcours, sept entités inférées. La matrice
 [features.csv](features.csv) sert une éventuelle implémentation ultérieure ; aucune
 implémentation de clone n'a été demandée dans ce lot. Priorités proposées, non engagements.
 Complexité L pour un service complet avec vrais médias et persistance ; un catalogue
@@ -137,7 +139,7 @@ la disponibilité des fournisseurs, les droits et sources des médias, et la per
 personnelle avec reprise multiappareil.
 
 Restent : terminer la frontière HTML bornée, étendre la qualification des archives et des états vides,
-tester les contrôles de recherche latérale et distinguer systématiquement les ressources
+terminer le parcours d'une suggestion latérale et distinguer systématiquement les ressources
 bloquées au client direct des ressources chargées par le navigateur. Une nouvelle phase
 d'architecture ne remplace pas ces contrôles. Le catalogue, les images, la marque,
 les comptes et les médias de Voir Anime ne sont pas des livrables à réutiliser.
