@@ -43,6 +43,15 @@ export const TECHNIQUE_ARTWORK: Readonly<Record<string, PrimaryTechniqueArtwork>
   dodompa: mangaArtwork("dodompa", 10, 125),
   kaioken: mangaArtwork("kaioken", 19, 120),
   teleportation: mangaArtwork("teleportation", 28, 100),
+  "canon-garric": mangaArtwork("canon-garric", 20, 10),
+  masenko: mangaArtwork("masenko", 19, 71),
+  "beignets-galactiques": mangaArtwork("beignets-galactiques", 41, 61),
+  "kamehameha-teleporte": mangaArtwork("kamehameha-teleporte", 34, 51),
+  "super-kamehameha": mangaArtwork("super-kamehameha", 16, 33),
+  sokidan: mangaArtwork("sokidan", 15, 71),
+  "attaque-volley-ball": mangaArtwork("attaque-volley-ball", 11, 80),
+  "technique-du-loup": mangaArtwork("technique-du-loup", 1, 173),
+  "image-remanente": mangaArtwork("image-remanente", 4, 115),
 });
 
 export function getTechniqueArtwork(slug: string): PrimaryTechniqueArtwork | null {

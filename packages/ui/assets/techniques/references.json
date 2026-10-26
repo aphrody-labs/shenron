@@ -141,5 +141,104 @@
     "width": 1280,
     "height": 1972,
     "crop": [465, 1160, 405, 685]
+  },
+  {
+    "slug": "canon-garric",
+    "volume": 20,
+    "page": 10,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1439?page=10",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol20/010.webp",
+    "sha256": "2c5d82724d04d462e4fe56656e1fd9c289632a1c991bc9a95e336fd4a67185b8",
+    "width": 1280,
+    "height": 1972,
+    "crop": [80, 155, 1120, 1335]
+  },
+  {
+    "slug": "masenko",
+    "volume": 19,
+    "page": 71,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1438?page=71",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol19/071.webp",
+    "sha256": "b338627dd127f778475c812a1d08049e93eaeff4b772d0225645ab6afa79b6d7",
+    "width": 1280,
+    "height": 1972,
+    "crop": [0, 980, 1200, 992]
+  },
+  {
+    "slug": "beignets-galactiques",
+    "volume": 41,
+    "page": 61,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1460?page=61",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol41/061.webp",
+    "sha256": "fe3274425f12724d865d7d62e492b026d1b864f5a423fb6a6c2be516f127c8f6",
+    "width": 1280,
+    "height": 1972,
+    "crop": [85, 150, 1120, 965]
+  },
+  {
+    "slug": "kamehameha-teleporte",
+    "volume": 34,
+    "page": 51,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1453?page=51",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol34/051.webp",
+    "sha256": "4a70941f89bf71152067c094c494881376fff04c4a304d480ef6edddb2c5bcd7",
+    "width": 1280,
+    "height": 1972,
+    "crop": [395, 640, 805, 1200]
+  },
+  {
+    "slug": "super-kamehameha",
+    "volume": 16,
+    "page": 33,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1435?page=33",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol16/033.webp",
+    "sha256": "17f390f8a7ae744c2e930e154350fe7b5bd3ff7b432c9db8f12a673c2114bde6",
+    "width": 1280,
+    "height": 1972,
+    "crop": [85, 665, 1115, 1175]
+  },
+  {
+    "slug": "sokidan",
+    "volume": 15,
+    "page": 71,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1434?page=71",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol15/071.webp",
+    "sha256": "37356d5a3f409562ea7ae43ec029d0715451e5791d1a7a1267ac3f65b8219f35",
+    "width": 1280,
+    "height": 1972,
+    "crop": [660, 0, 545, 870]
+  },
+  {
+    "slug": "attaque-volley-ball",
+    "volume": 11,
+    "page": 80,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1430?page=80",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol11/080.webp",
+    "sha256": "335bbc57cc8544cdb0f5d69c829c3dfcb98077390c10fe777b68ba992cec0627",
+    "width": 1280,
+    "height": 1972,
+    "crop": [660, 720, 540, 1120]
+  },
+  {
+    "slug": "technique-du-loup",
+    "volume": 1,
+    "page": 173,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1420?page=173",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol1/173.webp",
+    "sha256": "a289f85d4cf2090d2db23c947ccc82797a4d2ea9566d71db14c027cc980a8db7",
+    "width": 1280,
+    "height": 1920,
+    "crop": [420, 0, 780, 740]
+  },
+  {
+    "slug": "image-remanente",
+    "volume": 4,
+    "page": 115,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1423?page=115",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol4/115.webp",
+    "sha256": "9ab60074378e4c556b7b95f10191670fa919e9b3d43dc55af02d87e101899d0a",
+    "width": 1280,
+    "height": 1972,
+    "crop": [660, 150, 540, 450]
   }
 ]

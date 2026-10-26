@@ -44,6 +44,20 @@ automatiques de toute l'encre du scan.
 | Kaioken           | tome 19, p. 120 | Enveloppe d'énergie pointue autour de Goku pendant son accélération contre Nappa ; contour en flamme. La flèche interne est un symbole éditorial d'amplification, pas un élément extrait du manga.         |
 | Téléportation     | tome 28, p. 100 | Index et majeur près du front pendant le repérage de l'aura ; deux doigts levés et stries latérales. Les stries indiquent le déplacement pour l'icône ; la scène retenue représente la préparation nommée. |
 
+## Second lot : neuf scènes supplémentaires
+
+| Technique            | Référence manga | Forme observée et adaptation dans le repère de 96 unités                                                                                                                                                                                |
+| -------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Canon Garric         | tome 20, p. 10  | Faisceau de Vegeta lancé des deux mains ; noyau ovale et deux stries axiales. La diagonale de la scène est conservée, tournée pour la lecture de l'icône.                                                                               |
+| Masenko              | tome 19, p. 71  | Gohan projette une colonne d'énergie après la préparation explicitement nommée p. 70 ; colonne diagonale étroite et pointe resserrée.                                                                                                   |
+| Beignets galactiques | tome 41, p. 61  | Anneau creux qui descend autour de Boo ; ellipse extérieure 70 × 34 et trou 50 × 18. Les arcs séparés indiquent la rotation observée.                                                                                                   |
+| Kamehameha téléporté | tome 34, p. 51  | Apparition de Goku juste devant Cell, mains en position de tir ; la page 52 inspectée montre le tir. L'icône combine la boule du Kamehameha et une traînée discontinue : la discontinuité est un symbole éditorial du déplacement.      |
+| Super Kamehameha     | tome 16, p. 33  | Illustration du chapitre 185 qui nomme le Super Kamehameha et montre Goku avec les mains en coupe. Deux contours autour d'un espace central vide figurent le geste de charge ; cette image ne prétend pas montrer le tir achevé.        |
+| Sokidan              | tome 15, p. 71  | Boule suspendue au-dessus de la paume de Yamcha et projectile lancé dans la case suivante ; cercle de rayon 20, trois rayons courts. La flèche courbe est un repère éditorial de guidage, pas un trait extrait du manga.                |
+| Attaque volley-ball  | tome 11, p. 80  | Haikyuken nommé sur la page ; mains jointes de Tenshinhan renvoyant Goku en l'air. La manchette devient un contour plein, et la petite figure envoyée en l'air un point de repère ; il ne s'agit pas d'un ballon présent dans la scène. |
+| Technique du loup    | tome 1, p. 173  | Enchaînement de Yamcha annoncé comme Roga Fufu Ken sur la page 172 inspectée ; main ouverte de frappe et doigts séparés. La main est simplifiée, sans inventer un loup spectral absent de cette case.                                   |
+| Image rémanente      | tome 4, p. 115  | Silhouette de Goku brouillée par les stries pendant le combat contre Jackie Chun ; trois silhouettes schématiques décalées de 19–20 unités représentent la rémanence. Les gris sont un choix de lisibilité monochrome.                  |
+
 ## Reproduire
 
 ```powershell
@@ -55,14 +69,14 @@ La primitive maintenue `radialSpeedlines` vient de
 `packages/ui/src/toriyama-svg/geometry.ts`. Aucune copie de moteur n'est ajoutée.
 Le générateur produit des fichiers stables à partir des sources épinglées.
 
-Qualification du 26 octobre 2026 : les 13 découpes et les 26 planches PNG
+Qualification du 26 octobre 2026 : les 22 découpes et les 44 planches PNG
 clair/sombre ont été ouvertes. Le rendu emploie réellement le moteur WebView
 Chrome de Bun à 512, 128, 64, 32, 28 et 16 pixels, puis agrandit les petites
 tailles au plus proche voisin pour le contrôle. Les silhouettes restent
 distinctes à 28 pixels ; à 16 pixels les traits du visage solaire et de la main
 de téléportation se simplifient. Cette taille n'est pas celle du badge livré.
 
-Les 13 scènes ne couvrent pas toutes les techniques du catalogue. Une absence du
+Les 22 scènes ne couvrent pas toutes les techniques du catalogue. Une absence du
 manifeste signifie « média pas encore vérifié », sans substitution par un portrait.
 La qualification locale ne prouve pas que ces nouveaux fichiers sont déjà servis
 par le déploiement public.

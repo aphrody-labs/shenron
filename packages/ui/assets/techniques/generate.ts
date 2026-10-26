@@ -15,6 +15,15 @@ const rayLines = (inner: number, outer: number, count: number) =>
 // Geometry is manually composed from the inspected, monochrome source scene.
 // It is an icon interpretation, not an automatic tracing or a raster embedded in SVG.
 const drawings: Record<string, string> = {
+  "canon-garric": `<path fill="#fff" d="M10 73L47 34C56 12 79 9 85 24C93 42 67 53 56 53L25 86Z"/><path stroke="#111" d="M21 75L65 32M34 70L74 33"/><path d="M18 56L30 44M36 81L48 69"/>`,
+  masenko: `<path fill="#fff" d="M13 71L45 34Q51 23 63 18L74 8L82 18L72 29Q69 40 58 47L25 83Z"/><path stroke="#111" d="M25 69L60 34"/><path d="M9 55L25 39M40 86L53 72M53 12L58 7M84 35L90 30"/>`,
+  "beignets-galactiques": `<ellipse cx="48" cy="42" rx="35" ry="17" fill="#fff"/><ellipse cx="48" cy="42" rx="25" ry="9" fill="#111" stroke="#111"/><path d="M19 64Q48 77 77 64M27 17Q47 8 69 18"/>`,
+  "kamehameha-teleporte": `<path fill="#fff" d="M47 42H55C60 26 79 25 86 39C94 56 78 72 63 64Q57 61 55 54H47Z"/><path d="M8 43H17M25 43H34M8 54H17M25 54H34M43 20L37 31M47 76L39 67M82 18L78 26"/>`,
+  "super-kamehameha": `<path fill="#fff" d="M13 65Q11 46 28 31L39 29L31 42L24 54L28 65L41 72L38 81L24 76Z M83 31Q85 50 68 65L57 67L65 54L72 42L68 31L55 24L58 15L72 20Z"/><path d="M34 50Q35 34 48 33Q61 34 62 49Q61 62 48 63Q36 62 34 50Z"/>`,
+  sokidan: `<circle cx="38" cy="35" r="20" fill="#fff"/><path d="M66 17Q90 44 70 69Q53 89 28 74"/><path fill="#fff" d="M33 65L17 70L28 85Z"/><path d="M13 12L19 18M8 34H13M37 7V12"/>`,
+  "attaque-volley-ball": `<path fill="#fff" d="M17 70L33 65L44 69L56 67L67 49L80 47L83 60L68 78L49 83L34 78L19 82Z"/><path d="M21 26L31 34M43 15L46 31M67 16L60 32"/><circle cx="47" cy="45" r="8" fill="#fff"/>`,
+  "technique-du-loup": `<path fill="#fff" d="M16 82L29 55L26 31Q26 24 31 25L36 44L39 19Q40 13 44 15L46 42L54 17Q57 12 60 16L56 44L69 25Q73 21 76 25L65 51L75 45Q82 40 84 46L73 63L55 71L46 86Z"/><path stroke="#111" d="M34 58L44 52L53 57M44 52L46 43"/>`,
+  "image-remanente": `<g stroke="#777" fill="#777"><circle cx="26" cy="27" r="9"/><path d="M18 40H35L43 68L34 77L26 61L17 77L9 68Z"/></g><g stroke="#bbb" fill="#bbb"><circle cx="45" cy="27" r="9"/><path d="M37 40H54L62 68L53 77L45 61L36 77L28 68Z"/></g><g fill="#fff"><circle cx="65" cy="27" r="9"/><path d="M57 40H74L82 68L73 77L65 61L56 77L48 68Z"/></g>`,
   kikoho: `<path fill="#fff" d="M10 52L35 15L48 11L61 15L86 52L72 79L48 68L24 79Z"/><path fill="#111" stroke="#111" d="M28 47L48 25L68 47L48 63Z"/><path stroke="#111" d="M20 52L34 31M76 52L62 31"/>`,
   mafuba: `<path d="M12 47C12 24 72 13 83 35C93 53 56 61 31 56C14 52 17 37 39 33C61 29 76 42 64 49C54 56 37 48 41 42C43 38 54 38 55 42"/><path fill="#fff" d="M15 60Q48 78 80 60L58 84L38 84Z"/><path d="M39 89H57"/>`,
   dodompa: `<path fill="#fff" d="M8 47H51L63 36L82 43L89 48L81 53L63 59L51 50H8Z"/><path d="M12 37H40M12 60H40M66 23V31M83 31L78 36M82 64L78 59M66 65V73"/>`,
