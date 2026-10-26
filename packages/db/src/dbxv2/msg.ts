@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Readers of the two DBXV2 layouts the DB needs and that `bun_re::game::api::summarize`
- * does not decode correctly yet (its MSG reader is a null-terminated mock, its CMS reader
- * uses a 16-byte stride). Both are bounds-checked, read-only and cover only the fields the
- * DB stores; retire them once `bun_re` decodes the real layouts. Runtime class: `pure`.
+ * Read-only projections of the MSG and CMS fields stored by the DB. The upstream
+ * `bun_re::game::formats::msg` reader now handles real UTF-8/UTF-16LE tables; its CMS
+ * reader still uses a 32-byte stride, while this DBXV2 layout uses 0x54 bytes. Retire
+ * these adapters only after both ingestion consumers match the native results on real
+ * multilingual MSG and CMS fixtures. Runtime class: `pure`.
  */
 
 export interface MsgEntry {

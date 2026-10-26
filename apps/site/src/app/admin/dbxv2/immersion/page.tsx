@@ -3,14 +3,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getLocale } from "next-intl/server";
 import { createTranslator } from "next-intl";
-import {
-  Dbxv2Audio,
-  Dbxv2Image,
-  Dbxv2ModelViewer,
-  Dbxv2UiProvider,
-  Dbxv2Video,
-} from "@aphrody/shenron-ui/dbxv2";
+import { Dbxv2Audio, Dbxv2Image, Dbxv2UiProvider, Dbxv2Video } from "@aphrody/shenron-ui/dbxv2";
 import "@aphrody/shenron-ui/dbxv2.css";
+import { Dbxv2GpuModelViewer } from "@/components/games/Dbxv2GpuModelViewer";
 import { requireAdmin } from "@/lib/session";
 import { dbxv2Locale, dbxv2Text } from "@/lib/dbxv2-text";
 import { loadImmersionPack } from "@/lib/dbxv2-immersion";
@@ -58,7 +53,9 @@ export default async function AdminDbxv2ImmersionPage() {
                   {slot.kind === "png" && <Dbxv2Image src={slot.url} alt={label} />}
                   {slot.kind === "wav" && <Dbxv2Audio src={slot.url} label={label} />}
                   {slot.kind === "video" && <Dbxv2Video src={slot.url} label={label} />}
-                  {slot.kind === "model.glb" && <Dbxv2ModelViewer src={slot.url} title={label} />}
+                  {slot.kind === "model.glb" && (
+                    <Dbxv2GpuModelViewer src={slot.url} title={label} />
+                  )}
                 </li>
               );
             })}

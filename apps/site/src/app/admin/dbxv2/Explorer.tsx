@@ -4,14 +4,9 @@
 import { useId, useState, useTransition, type FormEvent } from "react";
 import { createTranslator } from "next-intl";
 import { onTablistKeyDown } from "@/lib/tablist-keys";
-import {
-  Dbxv2Audio,
-  Dbxv2Image,
-  Dbxv2ModelViewer,
-  Dbxv2UiProvider,
-  Dbxv2Video,
-} from "@aphrody/shenron-ui/dbxv2";
+import { Dbxv2Audio, Dbxv2Image, Dbxv2UiProvider, Dbxv2Video } from "@aphrody/shenron-ui/dbxv2";
 import "@aphrody/shenron-ui/dbxv2.css";
+import { Dbxv2GpuModelViewer } from "@/components/games/Dbxv2GpuModelViewer";
 import type { Dbxv2Locale, Dbxv2Text } from "@/lib/dbxv2-text";
 import {
   listDbxv2Files,
@@ -313,7 +308,7 @@ export function Explorer({ locale, messages, stats }: ExplorerProps) {
               {preview.kind === "wav" && <Dbxv2Audio src={preview.url} label={label("audio")} />}
               {preview.kind === "video" && <Dbxv2Video src={preview.url} label={label("video")} />}
               {preview.kind === "model.glb" && (
-                <Dbxv2ModelViewer src={preview.url} title={label("model")} />
+                <Dbxv2GpuModelViewer src={preview.url} title={label("model")} />
               )}
               <button
                 type="button"
