@@ -60,6 +60,8 @@ export {
   discoverTechniqueImages,
   eligibleTechniqueImageUrl,
   techniqueDocumentsFromNativeWiki,
+  techniqueDocumentsFromNativeCrawl,
+  techniqueDocumentsFromNativeMarkdown,
 } from "./technique-images";
 export type {
   TechniqueImageIdentity,
