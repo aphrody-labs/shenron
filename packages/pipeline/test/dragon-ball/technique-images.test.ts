@@ -4,6 +4,8 @@ import {
   discoverTechniqueImages,
   eligibleTechniqueImageUrl,
   techniqueDocumentsFromNativeWiki,
+  techniqueDocumentsFromNativeCrawl,
+  techniqueDocumentsFromNativeMarkdown,
   type TechniqueImageDocument,
 } from "../../src/dragon-ball/technique-images";
 
@@ -115,4 +117,91 @@ test("a forbidden source rejects its entire gallery and repeated image receipts 
   const forbidden = { ...source, sourceUrl: "https://dragonball.fandom.com/wiki/Kamehameha" };
   expect(discoverTechniqueImages(techniques, [forbidden]).candidates).toEqual([]);
   expect(discoverTechniqueImages(techniques, [source, source]).candidates).toHaveLength(1);
+});
+
+test("curated first-appearance metadata makes a finite review queue when OCR is absent", () => {
+  const page = { ...document(""), chapterId: 20014 };
+  const result = discoverTechniqueImages(
+    [
+      { ...techniques[0]!, debutChapterId: 20014 },
+      { ...techniques[1]!, debutChapterId: 20015 },
+    ],
+    [page],
+  );
+  expect(result.candidates).toHaveLength(1);
+  expect(result.candidates[0]).toMatchObject({
+    techniqueId: 1,
+    matchIn: "debut-chapter",
+    status: "candidate-needs-visual-review",
+  });
+  expect(result.verifiedImages).toBe(0);
+});
+
+test("native crawl receipts keep their source hash, per-image captions and declared medium", () => {
+  const receipt = {
+    crawl_id: "crawl-1",
+    document_uid: "document-1",
+    canonical_url: "https://dragon-ball-official.com/news/scene",
+    source_domain: "dragon-ball-official.com",
+    category: "reference",
+    http_status: 200,
+    raw_checksum: "a".repeat(64),
+    timestamp_utc: "2026-10-26T12:00:00Z",
+    payload: {
+      title_raw: "Technique compendium",
+      body_markdown: "Source article",
+      embedded_media: [
+        {
+          type: "image",
+          url: "https://dragon-ball-official.com/images/scene.webp",
+          caption: "Kienzan",
+        },
+        {
+          type: "video",
+          url: "https://dragon-ball-official.com/video/scene.mp4",
+          caption: "Kamehameha",
+        },
+      ],
+    },
+  };
+  const docs = techniqueDocumentsFromNativeCrawl(receipt, "anime");
+  const result = discoverTechniqueImages(techniques, docs);
+  expect(result.candidates).toHaveLength(1);
+  expect(result.candidates[0]).toMatchObject({
+    techniqueId: 3,
+    medium: "anime",
+    matchIn: "caption",
+  });
+  expect(result.candidates[0]!.locator).toContain("sha256:" + "a".repeat(64));
+  expect(techniqueDocumentsFromNativeCrawl({ ...receipt, http_status: 404 }, "anime")).toEqual([]);
+});
+
+test("native Markdown image attribution stays within its section and primary label", () => {
+  const docs = techniqueDocumentsFromNativeMarkdown({
+    url: "https://dragon-ball-official.com/news/scene",
+    medium: "manga",
+    markdown:
+      "## Techniques\n\n**Kienzan**\nCompared to the Kamehameha.\n\n![](https://dragon-ball-official.com/scene.webp)\n\n## Next section\n\nNo attack here.\n\n![](https://dragon-ball-official.com/other.webp)\n\n```html\n<img src='https://dragon-ball-official.com/fake.webp'>\n```",
+  });
+  const result = discoverTechniqueImages(techniques, docs);
+  expect(docs).toHaveLength(2);
+  expect(result.candidates).toHaveLength(1);
+  expect(result.candidates[0]).toMatchObject({
+    techniqueId: 3,
+    matchIn: "context",
+    image: "https://dragon-ball-official.com/scene.webp",
+  });
+});
+
+test("native Markdown keeps an attack heading when its adjacent prose omits the name", () => {
+  const docs = techniqueDocumentsFromNativeMarkdown({
+    url: "https://dragon-ball-official.com/news/scene",
+    medium: "manga",
+    markdown:
+      "###### Kienzan\n\nA cutting disc of energy.\n\n![](https://dragon-ball-official.com/disc.webp)",
+  });
+  expect(discoverTechniqueImages(techniques, docs).candidates[0]).toMatchObject({
+    techniqueId: 3,
+    matchIn: "context",
+  });
 });

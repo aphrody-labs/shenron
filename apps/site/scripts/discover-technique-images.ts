@@ -6,10 +6,17 @@ import { resolve } from "node:path";
 import {
   discoverTechniqueImages,
   techniqueDocumentsFromNativeWiki,
+  techniqueDocumentsFromNativeCrawl,
+  techniqueDocumentsFromNativeMarkdown,
   type TechniqueImageDocument,
   type TechniqueImageIdentity,
 } from "../../../packages/pipeline/src/dragon-ball/technique-images";
-import { TECHNIQUES } from "./_technique-lexicon";
+import {
+  TECHNIQUES,
+  TECHNIQUE_IMAGE_SEARCH_ALIASES,
+  normalizeForQuote,
+  toHepburn,
+} from "./_technique-lexicon";
 
 function option(name: string) {
   const index = Bun.argv.indexOf(name);
@@ -76,12 +83,18 @@ async function main() {
       slug: row.slug,
       name: row.name,
       visible: row.visible,
-      aliases: [row.nameJa, row.nameRomaji, lexicon?.ja, lexicon?.reading].filter(
-        (alias): alias is string => typeof alias === "string" && alias.length > 0,
-      ),
+      debutChapterId: row.debutChapterId,
+      aliases: [
+        row.nameJa,
+        row.nameRomaji,
+        lexicon?.ja,
+        lexicon?.reading,
+        lexicon?.reading ? toHepburn(lexicon.reading) : undefined,
+      ].filter((alias): alias is string => typeof alias === "string" && alias.length > 0),
     };
   });
   const documents: TechniqueImageDocument[] = [];
+  const nativeTextSources = new Map<string, string>();
   if (snapshotPath) {
     using snapshot = new Database(snapshotPath, { readonly: true });
     const pages = snapshot
@@ -101,6 +114,7 @@ async function main() {
       documents.push({
         sourceUrl: payload.href,
         medium: "manga",
+        chapterId: page.chapter_id,
         locator: `chapter:${page.chapter_id};page:${page.page_index}`,
         text: page.text ?? "",
         images: [{ url: page.image }],
@@ -109,13 +123,77 @@ async function main() {
   }
   if (nativePath) {
     const input = (await Bun.file(nativePath).json()) as Array<
-      Parameters<typeof techniqueDocumentsFromNativeWiki>[0] & { medium: "manga" | "anime" }
+      (
+        | Parameters<typeof techniqueDocumentsFromNativeWiki>[0]
+        | { canonical_url: string }
+        | { url: string; markdown: string; format: "native-markdown" }
+      ) & {
+        medium: "manga" | "anime";
+      }
     >;
     if (!Array.isArray(input)) throw new Error("Native input must contain parsed wiki dossiers");
     for (const dossier of input) {
       if (!["manga", "anime"].includes(dossier.medium))
         throw new Error("Native dossier needs an explicit source medium");
-      documents.push(...techniqueDocumentsFromNativeWiki(dossier, dossier.medium));
+      if ("canonical_url" in dossier) {
+        documents.push(...techniqueDocumentsFromNativeCrawl(dossier, dossier.medium));
+      } else if ("format" in dossier) {
+        if (dossier.format !== "native-markdown" || typeof dossier.markdown !== "string")
+          throw new Error("Invalid native Markdown source");
+        documents.push(...techniqueDocumentsFromNativeMarkdown(dossier));
+        nativeTextSources.set(dossier.url, dossier.markdown);
+      } else {
+        documents.push(...techniqueDocumentsFromNativeWiki(dossier, dossier.medium));
+      }
+    }
+  }
+  const searchAliasReceipts: Array<{
+    techniqueId: number;
+    alias: string;
+    sourceUrl: string;
+    quote: string;
+  }> = [];
+  for (const technique of techniques) {
+    const lexicon = TECHNIQUES.find(
+      (entry) => entry.id === technique.id && entry.name === technique.name,
+    );
+    const publisher = TECHNIQUE_IMAGE_SEARCH_ALIASES.find(
+      (entry) => entry.id === technique.id && entry.name === technique.name,
+    );
+    for (const alias of [...(lexicon?.searchAliases ?? []), ...(publisher?.aliases ?? [])]) {
+      if ("official" in alias.evidence) {
+        const source = nativeTextSources.get(alias.evidence.official);
+        if (!source || !normalizeForQuote(source).includes(normalizeForQuote(alias.evidence.quote)))
+          continue;
+        technique.aliases.push(alias.name);
+        searchAliasReceipts.push({
+          techniqueId: technique.id,
+          alias: alias.name,
+          sourceUrl: alias.evidence.official,
+          quote: alias.evidence.quote,
+        });
+        continue;
+      }
+      if (!("manga" in alias.evidence)) continue;
+      const volume = Number(alias.evidence.manga.replace(/^vol/, ""));
+      const evidence = alias.evidence;
+      const document = documents.find(
+        (item) =>
+          item.chapterId === 1419 + volume &&
+          item.locator === `chapter:${1419 + volume};page:${evidence.page}`,
+      );
+      if (
+        !document ||
+        !normalizeForQuote(document.text).includes(normalizeForQuote(evidence.quote))
+      )
+        continue;
+      technique.aliases.push(alias.name);
+      searchAliasReceipts.push({
+        techniqueId: technique.id,
+        alias: alias.name,
+        sourceUrl: document.sourceUrl,
+        quote: evidence.quote,
+      });
     }
   }
   const result = discoverTechniqueImages(techniques, documents);
@@ -124,6 +202,7 @@ async function main() {
     `${JSON.stringify(
       {
         ...result,
+        searchAliasReceipts,
         observedAt: new Date().toISOString(),
         inputs: {
           snapshot: snapshotPath ? resolve(snapshotPath) : null,

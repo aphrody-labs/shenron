@@ -33,3 +33,31 @@ les épisodes. Un zéro signifie « aucune preuve retrouvée dans ces entrées �
 jamais « technique sans image existante ». Les dossiers natifs d’images anime
 portent explicitement `medium: "anime"` et leurs légendes ; le titre général de
 la page ne suffit pas à attribuer toute sa galerie à une technique.
+
+La découverte exploite aussi `debutChapterId` pour produire une file bornée des
+pages du chapitre de première apparition, même si leur OCR manque. Ces résultats
+portent `matchIn: "debut-chapter"`, distinct des mentions OCR : toutes les pages
+du chapitre ne représentent évidemment pas la technique. Les graphies de
+recherche du lexique canonique sont relues sur leurs pages sources avant emploi ;
+elles ne renomment aucune fiche et ne valident aucune illustration.
+
+Les entrées de `--native` acceptent les dossiers MediaWiki, les documents du
+crawler natif avec `canonical_url/payload.embedded_media`, et les conversions
+Markdown complètes d’Aphrody Web sous cette forme :
+
+```json
+{"format":"native-markdown","url":"https://en.dragon-ball-official.com/news/01_3929.html","medium":"manga","markdown":"…"}
+```
+
+Le rapprochement du Markdown utilise `Bun.markdown.render`, conserve l’empreinte
+du document et distingue `matchIn: "context"` d’une légende native. Une nouvelle
+section réinitialise le contexte ; un intitulé en gras précédant l’image reste
+prioritaire sur les techniques citées à titre de comparaison dans le paragraphe.
+Le protocole ne reconstitue aucun parseur HTML ou MediaWiki du propriétaire.
+
+Sur la fiche officielle Vegeta vérifiée le 26 octobre 2026, `aphrody web extract`
+ne retenait que le bloc de partage (21 mots), tandis que `aphrody web scrape
+--markdown` conservait le corps et ses URL d’images. Ce constat justifie de
+consommer la conversion complète pour ce site. L’index local de photogrammes
+était vide lors du contrôle ; aucune couverture de tous les épisodes n’est
+revendiquée.

@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Editorial matching over native image/OCR receipts; this does not parse HTML or approve artwork. */
+import { nativeDocumentSchema } from "./crawl-ingest";
 export type TechniqueImageIdentity = {
   id: number;
   slug: string;
   name: string;
   aliases?: readonly string[];
+  debutChapterId?: number | null;
   visible?: boolean;
 };
 export type TechniqueImageDocument = {
@@ -12,6 +14,8 @@ export type TechniqueImageDocument = {
   medium: "manga" | "anime";
   locator: string;
   text: string;
+  textKind?: "ocr" | "context";
+  chapterId?: number;
   images: readonly { url: string; caption?: string; width?: number; height?: number }[];
 };
 export type TechniqueImageCandidate = {
@@ -22,7 +26,7 @@ export type TechniqueImageCandidate = {
   medium: "manga" | "anime";
   locator: string;
   matchedAlias: string;
-  matchIn: "caption" | "ocr";
+  matchIn: "caption" | "ocr" | "context" | "debut-chapter";
   status: "candidate-needs-visual-review";
 };
 type Folded = { value: string; offsets: number[]; source: string };
@@ -173,9 +177,38 @@ export function discoverTechniqueImages(
           medium: document.medium,
           locator: document.locator,
           matchedAlias: mention.entry.alias,
-          matchIn: captionMentions.length ? "caption" : "ocr",
+          matchIn:
+            document.textKind === "context"
+              ? "context"
+              : captionMentions.length
+                ? "caption"
+                : "ocr",
           status: "candidate-needs-visual-review",
         });
+      }
+      // A curated first-appearance chapter is a finite visual-review queue even when OCR is absent.
+      // It does not attest that every page of the chapter depicts the attack.
+      if (
+        document.medium === "manga" &&
+        Number.isSafeInteger(document.chapterId) &&
+        document.chapterId! > 0
+      ) {
+        for (const technique of active.filter((row) => row.debutChapterId === document.chapterId)) {
+          const key = JSON.stringify([technique.id, url, sourceUrl, document.locator]);
+          if (seen.has(key)) continue;
+          seen.add(key);
+          candidates.push({
+            techniqueId: technique.id,
+            slug: technique.slug,
+            image: url,
+            sourceUrl,
+            medium: document.medium,
+            locator: document.locator,
+            matchedAlias: technique.name,
+            matchIn: "debut-chapter",
+            status: "candidate-needs-visual-review",
+          });
+        }
       }
     }
   }
@@ -243,4 +276,78 @@ export function techniqueDocumentsFromNativeWiki(
       },
     ];
   });
+}
+
+/** Consume the existing native crawler contract, matching each image's own caption only. */
+export function techniqueDocumentsFromNativeCrawl(
+  value: unknown,
+  medium: "manga" | "anime",
+): TechniqueImageDocument[] {
+  const document = nativeDocumentSchema.parse(value);
+  if (document.http_status < 200 || document.http_status >= 300) return [];
+  return document.payload.embedded_media.flatMap((media, index) =>
+    media.type === "image"
+      ? [
+          {
+            sourceUrl: document.canonical_url,
+            medium,
+            locator: `native:${document.document_uid};sha256:${document.raw_checksum};image:${index + 1}`,
+            text: "",
+            images: [{ url: media.url, caption: media.caption ?? "" }],
+          },
+        ]
+      : [],
+  );
+}
+
+/** Use Bun's native Markdown callbacks on Aphrody's complete-page conversion, not an HTML reparser. */
+export function techniqueDocumentsFromNativeMarkdown(value: {
+  url: string;
+  markdown: string;
+  medium: "manga" | "anime";
+}): TechniqueImageDocument[] {
+  const checksum = new Bun.CryptoHasher("sha256").update(value.markdown).digest("hex");
+  let paragraph = "";
+  let strong = "";
+  let label = "";
+  let heading = "";
+  let imageIndex = 0;
+  const documents: TechniqueImageDocument[] = [];
+  Bun.markdown.render(value.markdown, {
+    heading: (children) => {
+      heading = children;
+      paragraph = "";
+      label = "";
+      strong = "";
+      return children;
+    },
+    strong: (children) => {
+      strong = children;
+      return children;
+    },
+    paragraph: (children) => {
+      if (children.trim()) {
+        paragraph = children;
+        label = strong && children.startsWith(strong) ? strong : "";
+      }
+      strong = "";
+      return children;
+    },
+    image: (children, meta) => {
+      imageIndex++;
+      documents.push({
+        sourceUrl: value.url,
+        medium: value.medium,
+        locator: `native-markdown:sha256:${checksum}:image:${imageIndex}`,
+        text: label || [heading, paragraph].filter(Boolean).join(" · "),
+        textKind: "context",
+        images: [{ url: meta.src, caption: children }],
+      });
+      return "";
+    },
+    html: () => "",
+    code: () => "",
+    codespan: () => "",
+  });
+  return documents;
 }

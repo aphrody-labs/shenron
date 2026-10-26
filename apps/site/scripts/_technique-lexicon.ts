@@ -36,6 +36,11 @@ export type Evidence =
   /** A planche of the manga corpus (`bot.db_manga_pages`, series DB): `tome` is e.g. "vol10". */
   | { manga: string; page: number; quote: string };
 
+export type TechniqueSearchAlias = {
+  name: string;
+  evidence: Evidence | { official: string; quote: string };
+};
+
 export interface TechniqueEntry {
   /** `bot.db_techniques.id` */
   id: number;
@@ -49,6 +54,8 @@ export interface TechniqueEntry {
    * itself pure kana. Omitted when no planche attests the reading of a kanji.
    */
   reading?: string;
+  /** Exact source spellings used only to discover scenes, never to rename or approve a technique. */
+  searchAliases?: TechniqueSearchAlias[];
   /** Manga chapter number (tankōbon numbering 其之N, series DBFC). */
   debutChapter?: { number: number; evidence: Evidence[] };
   /** `bot.db_characters.id` of the inventor, on an explicit "編み出した"-type sentence. */
@@ -60,6 +67,60 @@ export const BOOK_LABELS: Record<number, string> = {
   6: "Super Exciting Guide — Character Volume",
   19: "Chōzenshū 4 — Super Encyclopedia",
 };
+
+/** Publisher labels are retrieval hints only; the source page is rechecked by image discovery. */
+export const TECHNIQUE_IMAGE_SEARCH_ALIASES: Array<{
+  id: number;
+  name: string;
+  aliases: TechniqueSearchAlias[];
+}> = [
+  {
+    id: 188,
+    name: "Canon Garric",
+    aliases: [
+      {
+        name: "Galick Gun",
+        evidence: {
+          official: "https://en.dragon-ball-official.com/news/01_3929.html",
+          quote: "Galick Gun",
+        },
+      },
+    ],
+  },
+  {
+    id: 494,
+    name: "Makankosappo",
+    aliases: [
+      {
+        name: "Special Beam Cannon",
+        evidence: {
+          official: "https://en.dragon-ball-official.com/news/01_1179.html",
+          quote: "Makankosappo: Special Beam Cannon",
+        },
+      },
+    ],
+  },
+  {
+    id: 354,
+    name: "Rayon oculaire",
+    aliases: [
+      {
+        name: "Rayons oculaires",
+        evidence: {
+          official: "https://fr.dragon-ball-official.com/news/01_1179.html",
+          quote: "Rayons oculaires",
+        },
+      },
+      {
+        name: "Eye Beams",
+        evidence: {
+          official: "https://en.dragon-ball-official.com/news/01_1179.html",
+          quote: "Eye Beams",
+        },
+      },
+    ],
+  },
+];
 
 /** Technique-dictionary planches: a name_ja must be a headword found there. */
 export const DICTIONARY_PAGES: { book: number; from: number; to: number }[] = [
@@ -262,6 +323,9 @@ export const TECHNIQUES: TechniqueEntry[] = [
     name: "Canon Garric",
     ja: "ギャリック砲",
     reading: "ぎゃりっく ほう",
+    searchAliases: [
+      { name: "Garrick Cannon", evidence: { manga: "vol20", page: 9, quote: "GARRICK CANNON" } },
+    ],
     debutChapter: {
       number: 231,
       evidence: [
@@ -288,6 +352,9 @@ export const TECHNIQUES: TechniqueEntry[] = [
     name: "Recoom Kick",
     ja: "リクームキック",
     reading: "リクーム キック",
+    searchAliases: [
+      { name: "Kick Reacum", evidence: { manga: "vol23", page: 91, quote: "KICK! REACUM" } },
+    ],
     debutChapter: {
       number: 275,
       evidence: [
@@ -315,6 +382,12 @@ export const TECHNIQUES: TechniqueEntry[] = [
     id: 337,
     name: "Néo-technique du loup",
     ja: "新狼牙風風拳",
+    searchAliases: [
+      {
+        name: "Nouveau Roga Fufu Ken",
+        evidence: { manga: "vol10", page: 71, quote: "LE NOUVEAU ROGA FUFU KEN" },
+      },
+    ],
     debutChapter: {
       number: 117,
       evidence: [
@@ -386,6 +459,9 @@ export const TECHNIQUES: TechniqueEntry[] = [
     name: "Échange des corps",
     ja: "ボディチェンジ",
     reading: "ボディ チェンジ",
+    searchAliases: [
+      { name: "Body Change", evidence: { manga: "vol24", page: 76, quote: "BODY CHANGE" } },
+    ],
     debutChapter: {
       number: 286,
       evidence: [
@@ -400,6 +476,12 @@ export const TECHNIQUES: TechniqueEntry[] = [
     name: "Super fantômes kamikazes",
     ja: "スーパーゴーストカミカゼアタック",
     reading: "スーパー ゴースト カミカゼ アタック",
+    searchAliases: [
+      {
+        name: "Ghost Kamikazé Attack",
+        evidence: { manga: "vol41", page: 69, quote: "GHOST KAMIKAZÉ ATTACK" },
+      },
+    ],
     debutChapter: {
       number: 490,
       evidence: [
