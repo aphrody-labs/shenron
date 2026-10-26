@@ -8,6 +8,7 @@ import {
   XENOVERSE_GAME_BUFF_SOURCE,
 } from "../src/lib/technique-publication-policy";
 import { wikiUpdateSnapshotHash } from "../src/lib/wiki-update-precondition";
+import { getTechniqueArtwork } from "../src/lib/technique-artwork";
 
 const origin = "https://dragonballfr.com";
 
@@ -36,6 +37,9 @@ export async function retireXenoverseTechniques(options: {
   const plan = [];
   for (const entry of XENOVERSE_ONLY_TECHNIQUES) {
     const before = await read(entry.id);
+    if (typeof before.slug === "string" && getTechniqueArtwork(before.slug)) {
+      throw new Error(`A reviewed manga/anime artwork protects technique ${entry.id}`);
+    }
     assertReviewedXenoverseRetirement(before);
     if (before.visible === false) continue;
     if (before.visible !== true) throw new Error(`Unknown visibility for ${entry.id}`);

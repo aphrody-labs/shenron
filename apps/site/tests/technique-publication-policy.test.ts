@@ -6,6 +6,7 @@ import {
   XENOVERSE_FESTIVAL_TECHNIQUES,
   XENOVERSE_ONLY_TECHNIQUES,
   XENOVERSE_GAME_BUFF_TECHNIQUES,
+  XENOVERSE_ORIGINAL_TECHNIQUES,
 } from "../src/lib/technique-publication-policy";
 
 describe("reviewed Xenoverse reward retirement", () => {
@@ -64,7 +65,7 @@ describe("reviewed Xenoverse reward retirement", () => {
     ).not.toThrow();
     expect(isReviewedXenoverseOnlyTechnique({ id: 588, name: "Double Kienzan" })).toBe(false);
     expect(isReviewedXenoverseOnlyTechnique({ id: 179, name: "Double dimanche" })).toBe(false);
-    expect(new Set(XENOVERSE_ONLY_TECHNIQUES.map((entry) => entry.id)).size).toBe(107);
+    expect(new Set(XENOVERSE_ONLY_TECHNIQUES.map((entry) => entry.id)).size).toBe(110);
   });
 
   test("game buff tiers preserve generic charging and canonical character poses", () => {
@@ -82,5 +83,23 @@ describe("reviewed Xenoverse reward retirement", () => {
         }),
       ).toThrow("description changed");
     }
+  });
+
+  test("game-specific forms preserve their canonical objects and underlying attack", async () => {
+    const catalogue = await Bun.file("../../apps/bot/assets/dbz/xv2-catalog.json").json();
+    for (const entry of XENOVERSE_ORIGINAL_TECHNIQUES) {
+      const skill = catalogue.skills[entry.sourceType][entry.sourceKey];
+      expect(skill.name).toBe(entry.name);
+      expect(skill.desc).toBe(entry.sourceDescription);
+      expect(() =>
+        assertReviewedXenoverseRetirement({
+          ...entry,
+          article: `## Aperçu\n\n${entry.description}`,
+        }),
+      ).not.toThrow();
+    }
+    expect(isReviewedXenoverseOnlyTechnique({ id: 139, name: "Bâton magique" })).toBe(false);
+    expect(isReviewedXenoverseOnlyTechnique({ id: 128, name: "Genkidama" })).toBe(false);
+    expect(isReviewedXenoverseOnlyTechnique({ id: 773, name: "Pur progrès" })).toBe(false);
   });
 });

@@ -364,10 +364,42 @@ export const XENOVERSE_GAME_BUFF_TECHNIQUES = [
 
 export const XENOVERSE_GAME_BUFF_SOURCE = "https://dbx.bn-ent.net/online/update.php";
 
+export const XENOVERSE_ORIGINAL_TECHNIQUES = [
+  {
+    id: 765,
+    name: "Pro du bâton magique",
+    sourceKey: "met_skill_0001",
+    sourceType: "awoken",
+    sourceDescription:
+      "Combats avec le nuage magique et le bâton magique. Mais si tu te fais toucher, tu les perds.",
+    description:
+      "Combats avec le nuage magique et le bâton magique. Mais si tu te fais toucher, tu les perds.",
+  },
+  {
+    id: 770,
+    name: "Super méchant : Géant",
+    sourceKey: "met_skill_0320",
+    sourceType: "awoken",
+    sourceDescription: "",
+    description:
+      "Métamorphose en géant titanesque sous l'influence du pouvoir du Royaume des Démons, décuplant l'allonge et la résistance.",
+  },
+  {
+    id: 130,
+    name: "Tour Genkidama (police temps)",
+    sourceKey: "spe_skill_0006",
+    sourceType: "super",
+    sourceDescription: "",
+    description:
+      "Technique de la Police du Temps concentrant une sphère d'énergie pure issue de multiples lignes temporelles pour neutraliser les distorsions spatio-temporelles.",
+  },
+] as const;
+
 export const XENOVERSE_ONLY_TECHNIQUES = [
   ...XENOVERSE_FESTIVAL_TECHNIQUES,
   ...XENOVERSE_DUAL_TECHNIQUES,
   ...XENOVERSE_GAME_BUFF_TECHNIQUES,
+  ...XENOVERSE_ORIGINAL_TECHNIQUES,
 ] as const;
 
 export const XENOVERSE_DUAL_SOURCE = "https://en.dragon-ball-official.com/news/01_628.html";
@@ -384,15 +416,18 @@ export function assertReviewedXenoverseRetirement(row: Record<string, unknown>):
     throw new Error("Technique identity is not in the reviewed Xenoverse list");
   }
   const description = typeof row.description === "string" ? row.description.trim() : "";
+  const original = XENOVERSE_ORIGINAL_TECHNIQUES.find((entry) => entry.id === Number(row.id));
   const buff = XENOVERSE_GAME_BUFF_TECHNIQUES.find((entry) => entry.id === Number(row.id));
   const festival = XENOVERSE_FESTIVAL_TECHNIQUES.some((entry) => entry.id === Number(row.id));
-  const descriptionMatches = buff
-    ? description === buff.description
-    : festival
-      ? description.startsWith("Une compétence du festival obtenue en approfondissant le lien") &&
-        description.includes("Festival des univers")
-      : description.startsWith("Une attaque ultime nécessite un partenaire ultime") ||
-        (Number(row.id) === 692 && description.startsWith("Pose ultime double"));
+  const descriptionMatches = original
+    ? description === original.description
+    : buff
+      ? description === buff.description
+      : festival
+        ? description.startsWith("Une compétence du festival obtenue en approfondissant le lien") &&
+          description.includes("Festival des univers")
+        : description.startsWith("Une attaque ultime nécessite un partenaire ultime") ||
+          (Number(row.id) === 692 && description.startsWith("Pose ultime double"));
   if (!descriptionMatches) {
     throw new Error("Reviewed game reward description changed");
   }
