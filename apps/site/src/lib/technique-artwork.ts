@@ -4,7 +4,7 @@ export type PrimaryTechniqueArtwork = {
   image: string;
   icon: string;
   medium: "manga" | "anime";
-  source: { label: string; url: string };
+  source: { label: string; url: string; provenance: "dbfc-colorization" };
 };
 
 export type TechniqueArtwork =
@@ -16,51 +16,61 @@ export type TechniqueArtwork =
       source: null;
     };
 
-function mangaArtwork(slug: string, volume: number, page: number): PrimaryTechniqueArtwork {
+function mangaArtwork(slug: string, chapter: number, page: number): PrimaryTechniqueArtwork {
   return {
     image: `/techniques/${slug}.webp`,
     icon: `/techniques/${slug}.svg`,
     medium: "manga",
     source: {
-      label: `Dragon Ball · ${volume} · ${page}`,
-      url: `https://dragonballfr.com/wiki/manga/${1419 + volume}?page=${page}`,
+      label: `DBFC ${chapter} · ${page}`,
+      url: `https://dragonballfr.com/wiki/manga/${20000 + chapter}?page=${page}`,
+      provenance: "dbfc-colorization",
     },
   };
 }
 
 /** Exact technique scenes inspected before publication; never inferred from a creator portrait. */
 export const TECHNIQUE_ARTWORK: Readonly<Record<string, PrimaryTechniqueArtwork>> = Object.freeze({
-  kamehameha: mangaArtwork("kamehameha", 2, 13),
-  genkidama: mangaArtwork("genkidama", 18, 81),
-  kienzan: mangaArtwork("kienzan", 19, 41),
-  makankosappo: mangaArtwork("makankosappo", 17, 110),
-  "final-flash": mangaArtwork("final-flash", 32, 133),
-  "shin-kikoho": mangaArtwork("shin-kikoho", 31, 136),
-  "morsure-du-soleil": mangaArtwork("morsure-du-soleil", 11, 6),
-  "big-bang": mangaArtwork("big-bang", 29, 45),
-  kikoho: mangaArtwork("kikoho", 11, 142),
-  mafuba: mangaArtwork("mafuba", 12, 175),
-  dodompa: mangaArtwork("dodompa", 10, 125),
-  kaioken: mangaArtwork("kaioken", 19, 120),
-  teleportation: mangaArtwork("teleportation", 28, 100),
-  "canon-garric": mangaArtwork("canon-garric", 20, 10),
-  masenko: mangaArtwork("masenko", 19, 71),
-  "beignets-galactiques": mangaArtwork("beignets-galactiques", 41, 61),
-  "kamehameha-teleporte": mangaArtwork("kamehameha-teleporte", 34, 51),
-  "super-kamehameha": mangaArtwork("super-kamehameha", 16, 33),
-  sokidan: mangaArtwork("sokidan", 15, 71),
-  "attaque-volley-ball": mangaArtwork("attaque-volley-ball", 11, 80),
-  "technique-du-loup": mangaArtwork("technique-du-loup", 1, 173),
-  "image-remanente": mangaArtwork("image-remanente", 4, 115),
-  "super-fantomes-kamikazes": mangaArtwork("super-fantomes-kamikazes", 41, 69),
-  "explosion-finale": mangaArtwork("explosion-finale", 39, 103),
-  "grenade-infernale": mangaArtwork("grenade-infernale", 31, 43),
-  "kamehameha-pere-fils": mangaArtwork("kamehameha-pere-fils", 35, 109),
-  "boule-de-la-mort": mangaArtwork("boule-de-la-mort", 26, 155),
-  "super-vegeta": mangaArtwork("super-vegeta", 32, 47),
-  "super-saiyen": mangaArtwork("super-saiyen", 27, 27),
-  "super-saiyen-2": mangaArtwork("super-saiyen-2", 34, 155),
-  "super-saiyen-3": mangaArtwork("super-saiyen-3", 42, 93),
+  kamehameha: mangaArtwork("kamehameha", 14, 13),
+  genkidama: mangaArtwork("genkidama", 212, 4),
+  kienzan: mangaArtwork("kienzan", 221, 9),
+  makankosappo: mangaArtwork("makankosappo", 202, 3),
+  "final-flash": mangaArtwork("final-flash", 384, 11),
+  "shin-kikoho": mangaArtwork("shin-kikoho", 373, 13),
+  "morsure-du-soleil": mangaArtwork("morsure-du-soleil", 124, 6),
+  "big-bang": mangaArtwork("big-bang", 344, 13),
+  kikoho: mangaArtwork("kikoho", 133, 5),
+  mafuba: mangaArtwork("mafuba", 146, 8),
+  dodompa: mangaArtwork("dodompa", 121, 3),
+  kaioken: mangaArtwork("kaioken", 226, 13),
+  teleportation: mangaArtwork("teleportation", 336, 4),
+  "canon-garric": mangaArtwork("canon-garric", 231, 10),
+  masenko: mangaArtwork("masenko", 223, 9),
+  "beignets-galactiques": mangaArtwork("beignets-galactiques", 490, 7),
+  "kamehameha-teleporte": mangaArtwork("kamehameha-teleporte", 401, 4),
+  "super-kamehameha": mangaArtwork("super-kamehameha", 185, 1),
+  sokidan: mangaArtwork("sokidan", 175, 9),
+  "attaque-volley-ball": mangaArtwork("attaque-volley-ball", 129, 3),
+  "technique-du-loup": mangaArtwork("technique-du-loup", 10, 11),
+  "image-remanente": mangaArtwork("image-remanente", 48, 6),
+  "super-fantomes-kamikazes": mangaArtwork("super-fantomes-kamikazes", 491, 2),
+  "explosion-finale": mangaArtwork("explosion-finale", 467, 11),
+  "grenade-infernale": mangaArtwork("grenade-infernale", 367, 11),
+  "kamehameha-pere-fils": mangaArtwork("kamehameha-pere-fils", 416, 7),
+  "boule-de-la-mort": mangaArtwork("boule-de-la-mort", 316, 5),
+  "super-vegeta": mangaArtwork("super-vegeta", 378, 15),
+  "super-saiyen": mangaArtwork("super-saiyen", 319, 10),
+  "super-saiyen-2": mangaArtwork("super-saiyen-2", 408, 2),
+  "super-saiyen-3": mangaArtwork("super-saiyen-3", 509, 13),
+  "baton-magique": mangaArtwork("baton-magique", 1, 32),
+  "rayon-oculaire": mangaArtwork("rayon-oculaire", 210, 4),
+  "echange-des-corps": mangaArtwork("echange-des-corps", 286, 15),
+  "super-genkidama": mangaArtwork("super-genkidama", 514, 13),
+  "kaioken-kamehameha-x4": mangaArtwork("kaioken-kamehameha-x4", 231, 16),
+  "kaioken-kamehameha-x20": mangaArtwork("kaioken-kamehameha-x20", 313, 13),
+  autodestruction: mangaArtwork("autodestruction", 217, 13),
+  geant: mangaArtwork("geant", 186, 12),
+  "dynamite-kick": mangaArtwork("dynamite-kick", 396, 13),
 });
 
 export function getTechniqueArtwork(slug: string): PrimaryTechniqueArtwork | null {

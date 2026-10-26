@@ -15,19 +15,21 @@ test("a reviewed attack scene has an independent SVG icon and a link to its prim
     <TechniqueArtworkPanel
       name="Kamehameha"
       artwork={{
-        image: "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol02/100.webp",
+        image: "/techniques/kamehameha.webp",
         icon: "/techniques/kamehameha.svg",
         medium: "manga",
         source: {
-          label: "Dragon Ball, tome 2",
-          url: "https://dragonballfr.com/wiki/manga/1421?page=100",
+          label: "DBFC 14 · 13",
+          url: "https://dragonballfr.com/wiki/manga/20014?page=13",
+          provenance: "dbfc-colorization",
         },
       }}
     />,
   );
-  expect(html).toContain('href="https://dragonballfr.com/wiki/manga/1421?page=100"');
+  expect(html).toContain('href="https://dragonballfr.com/wiki/manga/20014?page=13"');
   expect(html).toContain('src="/techniques/kamehameha.svg"');
   expect(html).toContain("Source manga");
+  expect(html).toContain("Scans DBFC colorisés en français");
   expect(html).toContain("object-contain");
   expect(html).not.toContain("creator");
 });

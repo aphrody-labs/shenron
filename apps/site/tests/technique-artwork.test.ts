@@ -19,7 +19,7 @@ describe("primary-source technique artwork", () => {
   test("a known technique keeps its reviewed scene when the database image changes", () => {
     const artwork = resolveTechniqueArtwork({ slug: "kienzan", image: "/characters/krilin.webp" });
     expect(artwork?.image).toBe("/techniques/kienzan.webp");
-    expect(artwork?.source?.url).toBe("https://dragonballfr.com/wiki/manga/1438?page=41");
+    expect(artwork?.source?.url).toBe("https://dragonballfr.com/wiki/manga/20221?page=9");
   });
 
   test("dedicated editorial uploads retain their distinct unverified provenance", () => {
@@ -47,9 +47,13 @@ describe("primary-source technique artwork", () => {
   });
 
   test("every selected illustration ships with a real image and self-contained vector icon", async () => {
+    expect(Object.keys(TECHNIQUE_ARTWORK)).toHaveLength(40);
     for (const artwork of Object.values(TECHNIQUE_ARTWORK)) {
       expect(artwork.medium).toBe("manga");
       expect(new URL(artwork.source.url).hostname).toBe("dragonballfr.com");
+      expect(artwork.source.provenance).toBe("dbfc-colorization");
+      expect(new URL(artwork.source.url).pathname).toMatch(/^\/wiki\/manga\/20\d{3}$/);
+      expect(new URL(artwork.source.url).searchParams.has("page")).toBe(true);
       for (const path of [artwork.image, artwork.icon]) {
         expect(uiAssetPaths.includes(path.slice(1) as (typeof uiAssetPaths)[number])).toBe(true);
       }
@@ -59,9 +63,18 @@ describe("primary-source technique artwork", () => {
         rgba(): Promise<{ width: number; height: number; data: Uint8Array }>;
       };
       const image = await decoder.rgba();
-      expect(image.width).toBeGreaterThan(300);
-      expect(image.height).toBeGreaterThan(300);
+      expect(image.width).toBeGreaterThan(250);
+      expect(image.height).toBeGreaterThan(250);
+      expect(image.width * image.height).toBeGreaterThan(180_000);
       expect(image.data.some((value, index) => index % 4 !== 3 && value < 100)).toBe(true);
+      let coloredPixels = 0;
+      for (let index = 0; index < image.data.length; index += 4) {
+        const red = image.data[index]!;
+        const green = image.data[index + 1]!;
+        const blue = image.data[index + 2]!;
+        if (Math.max(red, green, blue) - Math.min(red, green, blue) > 32) coloredPixels++;
+      }
+      expect(coloredPixels / (image.width * image.height)).toBeGreaterThan(0.02);
       const svg = await Bun.file(`${prefix}${artwork.icon}`).text();
       expect(svg).toContain('viewBox="0 0 96 96"');
       expect(svg).toContain("source SHA-256");

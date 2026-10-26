@@ -50,6 +50,9 @@ export function TechniqueArtworkPanel({
               >
                 <span className="block font-semibold text-white">{t(artwork.medium)}</span>
                 <span className="block">{artwork.source.label}</span>
+                {artwork.source.provenance === "dbfc-colorization" && (
+                  <span className="block">{t("dbfcProvenance")}</span>
+                )}
                 <span className="sr-only"> · {t("reference")}</span>
               </a>
             ) : (
