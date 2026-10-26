@@ -2,6 +2,20 @@
 import { radialSpeedlines } from "../../src/toriyama-svg/geometry";
 import references from "./references.json";
 
+type ColorReference = (typeof references)[number] & {
+  edition?: "DBFC";
+  chapter?: number;
+  chapterPage?: number;
+  palette?: {
+    primary: string;
+    secondary: string;
+    tertiary: string;
+    outline: string;
+    background: string;
+  };
+};
+const colorReferences = references as ColorReference[];
+
 const outputDirectory = import.meta.dir;
 const cacheDirectory =
   Bun.env.TECHNIQUE_SOURCE_DIR ??
@@ -12,8 +26,8 @@ const rayLines = (inner: number, outer: number, count: number) =>
     .map((d) => `<path d="${d}"/>`)
     .join("");
 
-// Geometry is manually composed from the inspected, monochrome source scene.
-// It is an icon interpretation, not an automatic tracing or a raster embedded in SVG.
+// Geometry is manually composed from the inspected source scene. It is an icon
+// interpretation, not an automatic tracing or a raster embedded in SVG.
 const drawings: Record<string, string> = {
   "super-fantomes-kamikazes": `<path fill="#fff" d="M20 42L16 28L29 32L30 12L43 23L49 8L56 24L71 16L67 34L79 31L74 45Q80 59 70 68Q60 76 54 74Q41 71 38 84Q24 74 30 63Q17 58 20 42Z"/><path stroke="#111" d="M29 43L40 47M63 43L52 47M37 56Q48 66 61 54M39 36L46 29L53 36"/>`,
   "explosion-finale": `<path fill="#fff" d="M47 7L57 28L73 13L70 38L88 31L78 53L89 66L68 71L69 87L49 78L29 89L29 73L9 65L20 51L9 32L29 37L24 13L41 29Z"/><circle cx="49" cy="45" r="6" fill="#111" stroke="#111"/><path stroke="#111" d="M49 52V66M49 57L35 51M49 57L63 51M49 66L39 77M49 66L60 77"/>`,
@@ -46,10 +60,40 @@ const drawings: Record<string, string> = {
   "shin-kikoho": `<path fill="#fff" d="M15 72L38 20L48 11L58 20L81 72L64 80L48 66L32 80Z"/><path fill="#111" stroke="#111" d="M34 59L48 32L62 59L48 68Z"/><path stroke="#111" d="M24 67L39 35M72 67L57 35"/>`,
   "morsure-du-soleil": `${rayLines(23, 44, 20)}<path fill="#fff" d="M34 46Q31 19 48 19Q65 19 62 46L55 60L48 65L41 60Z"/><path stroke="#111" d="M39 43L45 46M57 43L51 46M45 34Q48 31 51 34"/><path d="M14 52L32 40M14 42L31 38M82 52L64 40M82 42L65 38"/>`,
   "big-bang": `<path fill="#fff" d="M9 70L40 42C37 25 51 15 65 19C81 23 85 41 74 53C67 61 57 62 49 56Z"/><path d="M16 55L31 40M26 73L42 59M65 11L67 5M84 27L90 23"/>`,
+  "baton-magique": `<path fill="#fff" stroke="#111" stroke-width="3" d="M13 76L24 81L84 20L77 13Z"/><path d="M18 68L29 76M72 25L79 32"/>`,
+  "rayon-oculaire": `<path fill="#fff" d="M20 48Q48 20 76 48Q48 76 20 48Z"/><circle cx="48" cy="48" r="12" fill="#111"/><path d="M48 8V22M48 74V88M8 48H21M75 48H88M19 19L29 29M67 67L77 77"/>`,
+  "echange-des-corps": `<circle cx="31" cy="34" r="13" fill="#fff"/><circle cx="65" cy="62" r="13" fill="#fff"/><path d="M25 49L20 76L34 69L42 80L47 56M71 47L76 20L62 27L54 16L49 40"/><path stroke="#111" stroke-width="4" d="M40 42L56 54M53 40L57 54L43 52"/>`,
+  "super-genkidama": `<circle cx="48" cy="43" r="27" fill="#fff"/><path d="M48 4V12M48 74V84M9 43H17M79 43H87M20 15L27 22M69 64L76 71M76 15L69 22M27 64L20 71"/><path d="M28 84L37 70H59L69 84M37 70L40 60M59 70L56 60"/>`,
+  "kaioken-kamehameha-x4": `<path fill="#fff" d="M10 42H56L67 30L87 45L94 49L87 53L67 67L56 54H10Z"/><path d="M17 34L38 39M17 64L38 59M46 27L52 37M46 70L52 61"/>`,
+  "kaioken-kamehameha-x20": `<path fill="#fff" d="M8 39H54L67 22L86 43L94 48L86 54L67 75L54 57H8Z"/><path stroke="#111" stroke-width="4" d="M17 48H78"/><path d="M22 30L39 39M22 67L39 57M48 22L55 34M48 74L55 61"/>`,
+  autodestruction: `<circle cx="48" cy="48" r="11" fill="#fff"/><path d="M48 5L54 29L73 13L65 35L91 31L71 47L91 62L66 60L76 84L55 67L46 92L40 67L18 83L29 59L5 54L28 44L10 25L35 31L34 7L47 29Z"/>`,
+  geant: `<path fill="#fff" d="M26 82L30 51L21 42L27 28L35 17L41 27L47 13L53 27L62 17L68 30L75 39L66 51L70 82L56 78L48 86L39 78Z"/><path stroke="#111" d="M34 43L43 46M62 43L53 46M42 59H55"/>`,
+  "dynamite-kick": `<path fill="#fff" d="M18 74L37 57L47 42L61 47L76 38L87 42L78 55L60 66L45 68L31 83Z"/><path d="M53 43L61 24L69 17L70 35M62 47L77 24L85 20L82 41M42 52L32 36L22 31M17 20L20 28M9 32L16 34M83 68L91 70"/>`,
 };
 
-for (const reference of references) {
-  const sourcePath = `${cacheDirectory}/vol${reference.volume}-${reference.page}.webp`;
+for (const reference of colorReferences) {
+  if (
+    reference.edition !== "DBFC" ||
+    !Number.isSafeInteger(reference.chapter) ||
+    !Number.isSafeInteger(reference.chapterPage) ||
+    !reference.palette ||
+    Object.values(reference.palette).some((color) => !/^#[0-9a-f]{6}$/i.test(color))
+  )
+    throw new Error(`A verified color-manga source and palette are required: ${reference.slug}`);
+  const chapter = reference.chapter!;
+  const chapterPage = reference.chapterPage!;
+  const readerUrl = new URL(reference.sourceUrl);
+  const imageUrl = new URL(reference.imageUrl);
+  if (
+    readerUrl.origin !== "https://dragonballfr.com" ||
+    readerUrl.pathname !== `/wiki/manga/${20000 + chapter}` ||
+    readerUrl.searchParams.get("page") !== String(chapterPage) ||
+    imageUrl.origin !== "https://cdn.dragonballfr.com" ||
+    imageUrl.pathname !==
+      `/assets/manga/DBFC/ch${chapter}/${String(chapterPage).padStart(3, "0")}.jpg`
+  )
+    throw new Error(`Reader and source image disagree: ${reference.slug}`);
+  const sourcePath = `${cacheDirectory}/DBFC-ch${chapter}-${String(chapterPage).padStart(3, "0")}.jpg`;
   if (!(await Bun.file(sourcePath).exists())) {
     const response = await fetch(reference.imageUrl, { signal: AbortSignal.timeout(15_000) });
     if (!response.ok) throw new Error(`Source HTTP ${response.status}: ${reference.slug}`);
@@ -58,6 +102,9 @@ for (const reference of references) {
   const bytes = await Bun.file(sourcePath).bytes();
   const digest = new Bun.CryptoHasher("sha256").update(bytes).digest("hex");
   if (digest !== reference.sha256) throw new Error(`Source changed: ${reference.slug}`);
+  const metadata = await new Bun.Image(bytes).metadata();
+  if (metadata.width !== reference.width || metadata.height !== reference.height)
+    throw new Error(`Source dimensions changed: ${reference.slug}`);
   const [left, top, width, height] = reference.crop;
   // The qualified runtime exposes extract; the pinned declaration package predates it.
   const image = new Bun.Image(bytes) as Bun.Image & {
@@ -70,7 +117,12 @@ for (const reference of references) {
     .write(`${outputDirectory}/${reference.slug}.webp`);
   const drawing = drawings[reference.slug];
   if (!drawing) throw new Error(`Missing icon: ${reference.slug}`);
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96"><metadata>Primary reference: ${reference.sourceUrl}; manual icon interpretation; source SHA-256 ${reference.sha256}</metadata><rect width="96" height="96" rx="14" fill="#111"/><g fill="none" stroke="#fff" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">${drawing}</g></svg>\n`;
+  const coloredDrawing = drawing
+    .replaceAll("#fff", reference.palette.primary)
+    .replaceAll("#111", reference.palette.outline)
+    .replaceAll("#777", reference.palette.secondary)
+    .replaceAll("#bbb", reference.palette.tertiary);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96"><metadata>Primary reference: ${reference.sourceUrl}; DBFC color-manga palette; manual icon interpretation; source SHA-256 ${reference.sha256}</metadata><rect width="96" height="96" rx="14" fill="${reference.palette.background}"/><g fill="none" stroke="${reference.palette.secondary}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">${coloredDrawing}</g></svg>\n`;
   await Bun.write(`${outputDirectory}/${reference.slug}.svg`, svg);
   console.log(reference.slug);
 }

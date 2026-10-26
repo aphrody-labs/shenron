@@ -2,17 +2,23 @@
 
 # Illustrations des techniques
 
-Les WebP sont de véritables cases du manga original, extraites des scans déjà
-publiés par le lecteur DBFR. Les SVG sont des **interprétations vectorielles
-dessinées manuellement** des formes observées. Ils ne sont ni des images de jeu,
-ni des portraits réattribués à une attaque, ni des scans encapsulés dans un SVG.
-Ils ne constituent pas une vectorisation automatique du trait de Toriyama.
+Les WebP sont des cases du manga extraites de DBFC, la colorisation française
+du lecteur DBFR. Ce n'est pas présenté comme l'édition couleur officielle
+Shueisha. Les SVG sont des **interprétations vectorielles dessinées
+manuellement** des formes observées, avec les couleurs mesurées dans ces pages.
+Ils ne sont ni des images de jeu, ni des portraits réattribués à une attaque,
+ni des scans encapsulés dans un SVG, ni une vectorisation automatique du trait
+de Toriyama.
 
 `references.json` fixe pour chaque scène l'URL de lecture, l'image originale,
 son empreinte SHA-256, ses dimensions et le rectangle exact de découpe
 `[gauche, haut, largeur, hauteur]`. Le générateur vérifie l'empreinte avant de
 découper. Les références complètes et les rendus de contrôle restent dans
-`var/reports/technique-media-20261026/`, hors de Git.
+`var/reports/technique-color-crossmatch-20261028/` et
+`var/reports/technique-media-followup-20261028/`, hors de Git. Quarante scènes
+sont qualifiées : 31 pages couleur vérifiées visuellement comme les mêmes scènes
+que les références manga précédentes et 9 scènes supplémentaires nommées ou
+reconnaissables dans la page. Les 40 fichiers source ont été revalidés par SHA-256.
 
 ## Géométrie et mesures
 
@@ -21,12 +27,12 @@ mesurées en pixels du scan original ; le générateur réduit leur largeur à
 768 pixels au maximum en conservant leurs proportions. Le lecteur doit employer
 `object-fit: contain` pour montrer le geste et le projectile entier.
 
-L'icône a un repère carré de 96 unités. Le fond `#111` et les formes `#fff`
-sont un choix de contraste en noir et blanc, sans prétention de restituer une
-palette d'anime. Les traits secondaires de 2,5 unités sont un épaississement
-délibéré pour 28 pixels, la taille du badge du catalogue. Les repères suivants
-décrivent les décisions de simplification ; ils ne sont pas des mesures
-automatiques de toute l'encre du scan.
+L'icône a un repère carré de 96 unités. Les couleurs principales et secondaires
+viennent des sujets mesurés dans la page couleur ; le fond bleu nuit et le
+contour sombre sont des choix de contraste. Les traits secondaires de 2,5
+unités sont un épaississement délibéré pour 28 pixels, la taille du badge du
+catalogue. Les repères suivants décrivent les décisions de simplification ; ils
+ne sont pas des mesures automatiques de toute l'encre du scan.
 
 | Technique         | Référence manga | Forme observée et adaptation dans le repère de 96 unités                                                                                                                                                   |
 | ----------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

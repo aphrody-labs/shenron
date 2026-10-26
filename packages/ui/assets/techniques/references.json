@@ -1,343 +1,962 @@
 [
   {
     "slug": "kamehameha",
-    "volume": 2,
-    "page": 13,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1421?page=13",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol2/013.webp",
-    "sha256": "dd0a263364bd366612f79264966326529cd74879dbfcaba960ffb2e31b821ca3",
-    "width": 1280,
-    "height": 1920,
-    "crop": [0, 0, 1280, 1030]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20014?page=13",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch14/013.jpg",
+    "sha256": "4ce9d37895bdbbbe864b7747bc5e27ca27af825f22507e8b40bfb9bd6a872a41",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      0,
+      0,
+      1662,
+      1373
+    ],
+    "edition": "DBFC",
+    "chapter": 14,
+    "chapterPage": 13,
+    "palette": {
+      "primary": "#fefe04",
+      "secondary": "#e74719",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "genkidama",
-    "volume": 18,
-    "page": 81,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1437?page=81",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol18/081.webp",
-    "sha256": "a1ccea601149b4c174686bf78262590b3e3ffef09ff14dd63f3b1a946228daf8",
-    "width": 1280,
-    "height": 1972,
-    "crop": [75, 1120, 755, 852]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20212?page=4",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch212/004.jpg",
+    "sha256": "7ad5ca9599c0da70dd4210d162c78bb87a96e4510711650374541e26916e8cb1",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      97,
+      1454,
+      980,
+      1106
+    ],
+    "edition": "DBFC",
+    "chapter": 212,
+    "chapterPage": 4,
+    "palette": {
+      "primary": "#e8fafc",
+      "secondary": "#fefefe",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "kienzan",
-    "volume": 19,
-    "page": 41,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1438?page=41",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol19/041.webp",
-    "sha256": "384ddeec86ef4765f3b6663483a8257cf68f276ba707e783af3411b85b0bd928",
-    "width": 1280,
-    "height": 1972,
-    "crop": [70, 0, 710, 645]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20221?page=9",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch221/009.jpg",
+    "sha256": "84691a2b9dff6bd61ff9a22e31711e4336ea2cd16f962e3461d17f9f32cc3226",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      91,
+      0,
+      922,
+      837
+    ],
+    "edition": "DBFC",
+    "chapter": 221,
+    "chapterPage": 9,
+    "palette": {
+      "primary": "#fcf427",
+      "secondary": "#fefefe",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "makankosappo",
-    "volume": 17,
-    "page": 110,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1436?page=110",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol17/110.webp",
-    "sha256": "bfb17093308b2bb4ecb2364f98d96f9fdb843f24d0ada175cc13e6b8325a209d",
-    "width": 1280,
-    "height": 1972,
-    "crop": [80, 150, 1120, 1248]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20202?page=3",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch202/003.jpg",
+    "sha256": "d882a131d51d68c3baa44916fc29e495c499ddc10cceec242f06536b906e3ce6",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      104,
+      195,
+      1454,
+      1620
+    ],
+    "edition": "DBFC",
+    "chapter": 202,
+    "chapterPage": 3,
+    "palette": {
+      "primary": "#fbb9f5",
+      "secondary": "#fefefe",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "final-flash",
-    "volume": 32,
-    "page": 133,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1451?page=133",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol32/133.webp",
-    "sha256": "780c9d3e1872e3d7b25ad5a3beb884de7194f2001a24dfc716f6bd97467c494e",
-    "width": 1280,
-    "height": 1972,
-    "crop": [80, 0, 1120, 1840]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20384?page=11",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch384/011.jpg",
+    "sha256": "dfb8e89831a504a3c3aef99cbcd15b044db063f19520ba2261b6c5d386948921",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      104,
+      0,
+      1454,
+      2389
+    ],
+    "edition": "DBFC",
+    "chapter": 384,
+    "chapterPage": 11,
+    "palette": {
+      "primary": "#fbf888",
+      "secondary": "#fefefe",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "shin-kikoho",
-    "volume": 31,
-    "page": 136,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1450?page=136",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol31/136.webp",
-    "sha256": "5308939f714a0efec3dc68f5d7eda6f0f917d1233f3fa3ace262aa9ebf8a381a",
-    "width": 1280,
-    "height": 1972,
-    "crop": [0, 510, 1200, 640]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20373?page=13",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch373/013.jpg",
+    "sha256": "0d4edeca3d4838948782a04c91bfa0d077bdc54bdd76937ae39a15a5c1c76523",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      0,
+      662,
+      1558,
+      831
+    ],
+    "edition": "DBFC",
+    "chapter": 373,
+    "chapterPage": 13,
+    "palette": {
+      "primary": "#fde3c5",
+      "secondary": "#fefefe",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "morsure-du-soleil",
-    "volume": 11,
-    "page": 6,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1430?page=6",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol11/006.webp",
-    "sha256": "ab8c57b5b29bf7eeebd76a06e4c7ed6de77b082b769988791ab1d14d44867c1b",
-    "width": 1280,
-    "height": 1972,
-    "crop": [92, 160, 1120, 1150]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20124?page=6",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch124/006.jpg",
+    "sha256": "c63b7972066d9205ef8e59c6ed6b94b52c82baca15e8afb6f804bc698d3a5923",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      119,
+      208,
+      1454,
+      1493
+    ],
+    "edition": "DBFC",
+    "chapter": 124,
+    "chapterPage": 6,
+    "palette": {
+      "primary": "#eab896",
+      "secondary": "#c9fde3",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "big-bang",
-    "volume": 29,
-    "page": 45,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1448?page=45",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol29/045.webp",
-    "sha256": "bd1596bb4d9c2563153c61799a05e25c4fc91256dbf0c07c986177f11906b675",
-    "width": 1280,
-    "height": 1972,
-    "crop": [0, 610, 1200, 1360]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20344?page=13",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch344/013.jpg",
+    "sha256": "5f2cf58107f71f67df4432fcbc00cb68c0946c8e9d214d2b76900c72af919573",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      0,
+      792,
+      1558,
+      1766
+    ],
+    "edition": "DBFC",
+    "chapter": 344,
+    "chapterPage": 13,
+    "palette": {
+      "primary": "#fded03",
+      "secondary": "#fefefe",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "kikoho",
-    "volume": 11,
-    "page": 142,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1430?page=142",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol11/142.webp",
-    "sha256": "f1d0aa52cd9432b56389846defd65ba89f549498f0dfc90290d8a0b82fe78af9",
-    "width": 1280,
-    "height": 1972,
-    "crop": [85, 160, 1115, 1085]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20133?page=5",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch133/005.jpg",
+    "sha256": "acca42c4688109a739afae61d37d8134243af260b6be5b5ef023de22d3123dc0",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      110,
+      208,
+      1448,
+      1409
+    ],
+    "edition": "DBFC",
+    "chapter": 133,
+    "chapterPage": 5,
+    "palette": {
+      "primary": "#feecda",
+      "secondary": "#fdfd93",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "mafuba",
-    "volume": 12,
-    "page": 175,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1431?page=175",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol12/175.webp",
-    "sha256": "e3bf489f8097079bd92a2ec1a364e03f6a73c732b28d8e190ef9bc5885b8e176",
-    "width": 1280,
-    "height": 1972,
-    "crop": [80, 1080, 1200, 892]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20146?page=8",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch146/008.jpg",
+    "sha256": "73ae1ebb771e3c968cc4ee77035b48bcb2c3ac0d6fbcb63b79479275152c2701",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      104,
+      1402,
+      1558,
+      1158
+    ],
+    "edition": "DBFC",
+    "chapter": 146,
+    "chapterPage": 8,
+    "palette": {
+      "primary": "#9a67b6",
+      "secondary": "#fefefe",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "dodompa",
-    "volume": 10,
-    "page": 125,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1429?page=125",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol10/125.webp",
-    "sha256": "bffab1751beab6cae8d4425e8a9fa71c1425e1ce6bcb5d5dbc692888c1f7687a",
-    "width": 1280,
-    "height": 1972,
-    "crop": [75, 875, 875, 555]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20121?page=3",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch121/003.jpg",
+    "sha256": "12db822e831ff0fd958ea3d42875e4c2e1ac8e788168da814e10d7dd43b92a3d",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      97,
+      1136,
+      1136,
+      720
+    ],
+    "edition": "DBFC",
+    "chapter": 121,
+    "chapterPage": 3,
+    "palette": {
+      "primary": "#fcfd87",
+      "secondary": "#fefefe",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "kaioken",
-    "volume": 19,
-    "page": 120,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1438?page=120",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol19/120.webp",
-    "sha256": "0eeac3fc52bad777a614a0acf9692c1be23e7ea6ae2bcc66e7a932fcad401916",
-    "width": 1280,
-    "height": 1972,
-    "crop": [80, 145, 1120, 645]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20226?page=13",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch226/013.jpg",
+    "sha256": "95ffb2049368a9bd612774cddd69ff4e3c0ca7d719e5a019507e94fbfc83dbd7",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      104,
+      188,
+      1454,
+      837
+    ],
+    "edition": "DBFC",
+    "chapter": 226,
+    "chapterPage": 13,
+    "palette": {
+      "primary": "#f56244",
+      "secondary": "#fefefe",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "teleportation",
-    "volume": 28,
-    "page": 100,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1447?page=100",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol28/100.webp",
-    "sha256": "b92a693d188a948a517c614c66a5124ae062f2b7631014170378dab819cdc86a",
-    "width": 1280,
-    "height": 1972,
-    "crop": [465, 1160, 405, 685]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20336?page=4",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch336/004.jpg",
+    "sha256": "bb201e2b84320b43a4a73d94b16b90b6e98f7f2b9fae578b7b0b55f304d4b017",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      604,
+      1506,
+      526,
+      889
+    ],
+    "edition": "DBFC",
+    "chapter": 336,
+    "chapterPage": 4,
+    "palette": {
+      "primary": "#fbd8b5",
+      "secondary": "#1e2f5b",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "canon-garric",
-    "volume": 20,
-    "page": 10,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1439?page=10",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol20/010.webp",
-    "sha256": "2c5d82724d04d462e4fe56656e1fd9c289632a1c991bc9a95e336fd4a67185b8",
-    "width": 1280,
-    "height": 1972,
-    "crop": [80, 155, 1120, 1335]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20231?page=10",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch231/010.jpg",
+    "sha256": "37c964329ea37646c79e996b04a380fe8a0ce37f17eb216a3b50705fe8cdebc7",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      104,
+      201,
+      1454,
+      1733
+    ],
+    "edition": "DBFC",
+    "chapter": 231,
+    "chapterPage": 10,
+    "palette": {
+      "primary": "#fded05",
+      "secondary": "#fefefe",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "masenko",
-    "volume": 19,
-    "page": 71,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1438?page=71",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol19/071.webp",
-    "sha256": "b338627dd127f778475c812a1d08049e93eaeff4b772d0225645ab6afa79b6d7",
-    "width": 1280,
-    "height": 1972,
-    "crop": [0, 980, 1200, 992]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20223?page=9",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch223/009.jpg",
+    "sha256": "a4a9dbee3c206b392b4f9514540a58f4c58cd11d3645fa04f6d47e190ff8e664",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      0,
+      1272,
+      1558,
+      1288
+    ],
+    "edition": "DBFC",
+    "chapter": 223,
+    "chapterPage": 9,
+    "palette": {
+      "primary": "#fdec05",
+      "secondary": "#fefefe",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "beignets-galactiques",
-    "volume": 41,
-    "page": 61,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1460?page=61",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol41/061.webp",
-    "sha256": "fe3274425f12724d865d7d62e492b026d1b864f5a423fb6a6c2be516f127c8f6",
-    "width": 1280,
-    "height": 1972,
-    "crop": [85, 150, 1120, 965]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20490?page=7",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch490/007.jpg",
+    "sha256": "8bedb4195da3c90acc76539fcd19290f3e0d0f19e94298228aa4d12a84a8cb2e",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      110,
+      195,
+      1454,
+      1253
+    ],
+    "edition": "DBFC",
+    "chapter": 490,
+    "chapterPage": 7,
+    "palette": {
+      "primary": "#fff266",
+      "secondary": "#fefefe",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "kamehameha-teleporte",
-    "volume": 34,
-    "page": 51,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1453?page=51",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol34/051.webp",
-    "sha256": "4a70941f89bf71152067c094c494881376fff04c4a304d480ef6edddb2c5bcd7",
-    "width": 1280,
-    "height": 1972,
-    "crop": [395, 640, 805, 1200]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20401?page=4",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch401/004.jpg",
+    "sha256": "511540aaa3a3113563ef9a831f18bca20fff63c3f6513f6511acd33dda9b9cc8",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      513,
+      831,
+      1045,
+      1558
+    ],
+    "edition": "DBFC",
+    "chapter": 401,
+    "chapterPage": 4,
+    "palette": {
+      "primary": "#ca682c",
+      "secondary": "#5884d9",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "super-kamehameha",
-    "volume": 16,
-    "page": 33,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1435?page=33",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol16/033.webp",
-    "sha256": "17f390f8a7ae744c2e930e154350fe7b5bd3ff7b432c9db8f12a673c2114bde6",
-    "width": 1280,
-    "height": 1972,
-    "crop": [85, 665, 1115, 1175]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20185?page=1",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch185/001.jpg",
+    "sha256": "50d5f6925cc4d7f83406d3304be8442c6a0bfa5f5086305117d83fb5d071a2b9",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      110,
+      863,
+      1448,
+      1525
+    ],
+    "edition": "DBFC",
+    "chapter": 185,
+    "chapterPage": 1,
+    "palette": {
+      "primary": "#fdd6b3",
+      "secondary": "#fefefe",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "sokidan",
-    "volume": 15,
-    "page": 71,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1434?page=71",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol15/071.webp",
-    "sha256": "37356d5a3f409562ea7ae43ec029d0715451e5791d1a7a1267ac3f65b8219f35",
-    "width": 1280,
-    "height": 1972,
-    "crop": [660, 0, 545, 870]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20175?page=9",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch175/009.jpg",
+    "sha256": "2e39c84065832db5ac9f4661edf005d350752ea117e341884d20c99b69900441",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      857,
+      0,
+      708,
+      1129
+    ],
+    "edition": "DBFC",
+    "chapter": 175,
+    "chapterPage": 9,
+    "palette": {
+      "primary": "#fbfa88",
+      "secondary": "#fefefe",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "attaque-volley-ball",
-    "volume": 11,
-    "page": 80,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1430?page=80",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol11/080.webp",
-    "sha256": "335bbc57cc8544cdb0f5d69c829c3dfcb98077390c10fe777b68ba992cec0627",
-    "width": 1280,
-    "height": 1972,
-    "crop": [660, 720, 540, 1120]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20129?page=3",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch129/003.jpg",
+    "sha256": "fab93b5715cfab473d32f12ddf294e7e7e8f4fac3bfb2e3d6beb4bcec7c45989",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      857,
+      935,
+      701,
+      1454
+    ],
+    "edition": "DBFC",
+    "chapter": 129,
+    "chapterPage": 3,
+    "palette": {
+      "primary": "#fddfc2",
+      "secondary": "#038733",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "technique-du-loup",
-    "volume": 1,
-    "page": 173,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1420?page=173",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol1/173.webp",
-    "sha256": "a289f85d4cf2090d2db23c947ccc82797a4d2ea9566d71db14c027cc980a8db7",
-    "width": 1280,
-    "height": 1920,
-    "crop": [420, 0, 780, 740]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20010?page=11",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch10/011.jpg",
+    "sha256": "596473166200651d2a395fd3c8fb8cd03f08616ce1c82abc3b3827ff4a02abdc",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      545,
+      0,
+      1013,
+      987
+    ],
+    "edition": "DBFC",
+    "chapter": 10,
+    "chapterPage": 11,
+    "palette": {
+      "primary": "#f9dbc5",
+      "secondary": "#326d1e",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "image-remanente",
-    "volume": 4,
-    "page": 115,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1423?page=115",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol4/115.webp",
-    "sha256": "9ab60074378e4c556b7b95f10191670fa919e9b3d43dc55af02d87e101899d0a",
-    "width": 1280,
-    "height": 1972,
-    "crop": [660, 150, 540, 450]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20048?page=6",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch48/006.jpg",
+    "sha256": "d769fb8bbec709b94a7c3c0fd11fb8b90dc31e7bda26cfd780febe59b67056b4",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      857,
+      195,
+      701,
+      584
+    ],
+    "edition": "DBFC",
+    "chapter": 48,
+    "chapterPage": 6,
+    "palette": {
+      "primary": "#fe8e25",
+      "secondary": "#173768",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "super-fantomes-kamikazes",
-    "volume": 41,
-    "page": 69,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1460?page=69",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol41/069.webp",
-    "sha256": "ae5c42bc451ef8a29e14e5b89c347e8cbe7150550218e8ac6824e13893b8ddcd",
-    "width": 1280,
-    "height": 1972,
-    "crop": [820, 656, 380, 490]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20491?page=2",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch491/002.jpg",
+    "sha256": "2820543873babcf95449587904729684ef3582a753e38fb1bf885a55fd610d6b",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      1065,
+      852,
+      493,
+      636
+    ],
+    "edition": "DBFC",
+    "chapter": 491,
+    "chapterPage": 2,
+    "palette": {
+      "primary": "#c5ddec",
+      "secondary": "#fefefe",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "explosion-finale",
-    "volume": 39,
-    "page": 103,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1458?page=103",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol39/103.webp",
-    "sha256": "ba4a7d76d72d72773dc4c09a902be4e533870bd5a11dde1af8baca71ec612253",
-    "width": 1280,
-    "height": 1972,
-    "crop": [0, 0, 1210, 1972]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20467?page=11",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch467/011.jpg",
+    "sha256": "e0b822dc7616474a963aa808bfe2896e88898e0494185206a351bb97191d1fbb",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      0,
+      0,
+      1571,
+      2560
+    ],
+    "edition": "DBFC",
+    "chapter": 467,
+    "chapterPage": 11,
+    "palette": {
+      "primary": "#f9f988",
+      "secondary": "#fefefe",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "grenade-infernale",
-    "volume": 31,
-    "page": 43,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1450?page=43",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol31/043.webp",
-    "sha256": "00cbe59f673a44e08474155b8dbae8af26f703ca8854fe48c333e21e4bf827b0",
-    "width": 1280,
-    "height": 1972,
-    "crop": [0, 0, 1200, 920]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20367?page=11",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch367/011.jpg",
+    "sha256": "5e9e93b8bacfd6c3b9328bae7075e77346938e88c547d94a7dfe54d1379a080e",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      0,
+      0,
+      1558,
+      1194
+    ],
+    "edition": "DBFC",
+    "chapter": 367,
+    "chapterPage": 11,
+    "palette": {
+      "primary": "#fcf518",
+      "secondary": "#fefefe",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "kamehameha-pere-fils",
-    "volume": 35,
-    "page": 109,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1454?page=109",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol35/109.webp",
-    "sha256": "223b80738c7a8e2c5ac7dff455baaccf78ed57d95b0316ad30b7c7b10e461578",
-    "width": 1280,
-    "height": 1972,
-    "crop": [80, 660, 1120, 1180]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20416?page=7",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch416/007.jpg",
+    "sha256": "8c112879ca67e4bb809a5a3ebf671cb9c6672a0fc448addcad825c9794f51cb2",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      104,
+      857,
+      1454,
+      1532
+    ],
+    "edition": "DBFC",
+    "chapter": 416,
+    "chapterPage": 7,
+    "palette": {
+      "primary": "#fde789",
+      "secondary": "#b997d7",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "boule-de-la-mort",
-    "volume": 26,
-    "page": 155,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1445?page=155",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol26/155.webp",
-    "sha256": "3e44b1fd4e9f00614f09f6e7ae561bfb523a4476fddad615755707038a7cfc63",
-    "width": 1280,
-    "height": 1972,
-    "crop": [725, 690, 470, 1150]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20316?page=5",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch316/005.jpg",
+    "sha256": "d382ee19d650477304e750c6071b6e5149f0a2b1e4f519fad3dad0a3fe0424dd",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      941,
+      896,
+      610,
+      1493
+    ],
+    "edition": "DBFC",
+    "chapter": 316,
+    "chapterPage": 5,
+    "palette": {
+      "primary": "#681c6d",
+      "secondary": "#fbd5e8",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "super-vegeta",
-    "volume": 32,
-    "page": 47,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1451?page=47",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol32/047.webp",
-    "sha256": "876647c71437e5492b1acff91b3f4632c65282598dd1ea833ccf656515c11846",
-    "width": 1280,
-    "height": 1972,
-    "crop": [80, 724, 1120, 1117]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20378?page=15",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch378/015.jpg",
+    "sha256": "e054ab8c02a418524dcfc60c52ee748358a66626803f8c95ee4844a7dd28d27b",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      104,
+      940,
+      1454,
+      1450
+    ],
+    "edition": "DBFC",
+    "chapter": 378,
+    "chapterPage": 15,
+    "palette": {
+      "primary": "#fee96c",
+      "secondary": "#3253b3",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "super-saiyen",
-    "volume": 27,
-    "page": 27,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1446?page=27",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol27/027.webp",
-    "sha256": "ba262a69165877444715dafc95db565fba0a27ea7341baf1ccf010dd54bc427d",
-    "width": 1280,
-    "height": 1972,
-    "crop": [80, 900, 820, 1072]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20319?page=10",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch319/010.jpg",
+    "sha256": "3b00992fbb08f0fc6b01d28eee9788a352fe26e64434902682440f31a584261c",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      104,
+      1168,
+      1065,
+      1392
+    ],
+    "edition": "DBFC",
+    "chapter": 319,
+    "chapterPage": 10,
+    "palette": {
+      "primary": "#fde86c",
+      "secondary": "#2d63ce",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "super-saiyen-2",
-    "volume": 34,
-    "page": 155,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1453?page=155",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol34/155.webp",
-    "sha256": "b0ce303dfd0182fc6b1b3751a5334dc911fb665c993df62bd1fcc20e5e0ce8e5",
-    "width": 1280,
-    "height": 1972,
-    "crop": [500, 0, 700, 1840]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20408?page=2",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch408/002.jpg",
+    "sha256": "62df052ddf9c81a0acd31686a7ed65a86644fac5826616360197cc2864ccf918",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      649,
+      0,
+      909,
+      2389
+    ],
+    "edition": "DBFC",
+    "chapter": 408,
+    "chapterPage": 2,
+    "palette": {
+      "primary": "#fce86b",
+      "secondary": "#4c2c6e",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   },
   {
     "slug": "super-saiyen-3",
-    "volume": 42,
-    "page": 93,
-    "sourceUrl": "https://dragonballfr.com/wiki/manga/1461?page=93",
-    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol42/093.webp",
-    "sha256": "136c3c35dbf8bc311129a09001b3116972223c29bf14b31cc36264bcbacbfafd",
-    "width": 1280,
-    "height": 1972,
-    "crop": [596, 164, 610, 680]
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20509?page=13",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch509/013.jpg",
+    "sha256": "89c6cfd3637133d6659f1a5a5f3fbb31a1a7c334d83f6157f0b6be4097e875ef",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      774,
+      213,
+      792,
+      883
+    ],
+    "edition": "DBFC",
+    "chapter": 509,
+    "chapterPage": 13,
+    "palette": {
+      "primary": "#fbfd27",
+      "secondary": "#fefefe",
+      "tertiary": "#ffffff",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
+  },
+  {
+    "slug": "baton-magique",
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20001?page=32",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch1/032.jpg",
+    "sha256": "25ecb6d4ae6c1a875a66f707697f4385d5aa54c62d519c0f0743e15426528b97",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      75,
+      750,
+      1485,
+      610
+    ],
+    "edition": "DBFC",
+    "chapter": 1,
+    "chapterPage": 32,
+    "palette": {
+      "primary": "#991c13",
+      "secondary": "#fefefe",
+      "tertiary": "#f8dd77",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
+  },
+  {
+    "slug": "rayon-oculaire",
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20210?page=4",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch210/004.jpg",
+    "sha256": "6cee0af4c1b75da2e89236e771a31c3e4dbd34a8127cd3418a5ce948df13b46a",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      100,
+      970,
+      1460,
+      520
+    ],
+    "edition": "DBFC",
+    "chapter": 210,
+    "chapterPage": 4,
+    "palette": {
+      "primary": "#f3e624",
+      "secondary": "#fefefe",
+      "tertiary": "#f8dd77",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
+  },
+  {
+    "slug": "echange-des-corps",
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20286?page=15",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch286/015.jpg",
+    "sha256": "e9321b834556e5704a68aad9314c1cfc9ef95aac82b00878ddc98bab41b84427",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      810,
+      190,
+      750,
+      570
+    ],
+    "edition": "DBFC",
+    "chapter": 286,
+    "chapterPage": 15,
+    "palette": {
+      "primary": "#f0c935",
+      "secondary": "#fefefe",
+      "tertiary": "#f8dd77",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
+  },
+  {
+    "slug": "super-genkidama",
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20514?page=13",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch514/013.jpg",
+    "sha256": "a61c8708881afb297df84e0fc5df730b531bf9995a6a21c14966a2941709144a",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      860,
+      1130,
+      800,
+      850
+    ],
+    "edition": "DBFC",
+    "chapter": 514,
+    "chapterPage": 13,
+    "palette": {
+      "primary": "#92e0f6",
+      "secondary": "#fefefe",
+      "tertiary": "#42b7e4",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
+  },
+  {
+    "slug": "kaioken-kamehameha-x4",
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20231?page=16",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch231/016.jpg",
+    "sha256": "13c5079dc8b930c3c319db1a52a632c883e3f56e45538874476e4e06b0b5929d",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      0,
+      0,
+      1662,
+      2560
+    ],
+    "edition": "DBFC",
+    "chapter": 231,
+    "chapterPage": 16,
+    "palette": {
+      "primary": "#e9df37",
+      "secondary": "#fefefe",
+      "tertiary": "#f8dd77",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
+  },
+  {
+    "slug": "kaioken-kamehameha-x20",
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20313?page=13",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch313/013.jpg",
+    "sha256": "75c49067582204581c5f5b84513cda1bda320b7ea2d72f017961ee876c74bed7",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      0,
+      0,
+      1662,
+      2560
+    ],
+    "edition": "DBFC",
+    "chapter": 313,
+    "chapterPage": 13,
+    "palette": {
+      "primary": "#f7f81c",
+      "secondary": "#fefefe",
+      "tertiary": "#f8dd77",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
+  },
+  {
+    "slug": "autodestruction",
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20217?page=13",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch217/013.jpg",
+    "sha256": "0c83b2e879c92c5a4925004193924f5dd8c3272336c24f6c6499f2113191e745",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      0,
+      1200,
+      1662,
+      1360
+    ],
+    "edition": "DBFC",
+    "chapter": 217,
+    "chapterPage": 13,
+    "palette": {
+      "primary": "#e88e22",
+      "secondary": "#fefefe",
+      "tertiary": "#f8dd77",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
+  },
+  {
+    "slug": "geant",
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20186?page=12",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch186/012.jpg",
+    "sha256": "58a47f18c59b66a5e3035aa91982be8de8bf372f3456784f218198f5e10fcee0",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      0,
+      840,
+      1662,
+      1720
+    ],
+    "edition": "DBFC",
+    "chapter": 186,
+    "chapterPage": 12,
+    "palette": {
+      "primary": "#619a37",
+      "secondary": "#fefefe",
+      "tertiary": "#f8dd77",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
+  },
+  {
+    "slug": "dynamite-kick",
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/20396?page=13",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DBFC/ch396/013.jpg",
+    "sha256": "499d8e444314a6feeebe775e74b2b1938c7c46e817ca94dcb660783cf975748f",
+    "width": 1662,
+    "height": 2560,
+    "crop": [
+      100,
+      205,
+      1470,
+      900
+    ],
+    "edition": "DBFC",
+    "chapter": 396,
+    "chapterPage": 13,
+    "palette": {
+      "primary": "#ed0603",
+      "secondary": "#56c6f9",
+      "tertiary": "#f86e05",
+      "outline": "#172033",
+      "background": "#16334b"
+    }
   }
 ]
