@@ -1,0 +1,58 @@
+{
+  "eyebrow": "The DBFR arena",
+  "title": "Your move.",
+  "subtitle": "A puzzle, a Ki duel or a match with the community: choose your playground.",
+  "choose": "Choose a game",
+  "navigation": "Browse games",
+  "browserTitle": "In your browser",
+  "browserIntro": "Four challenges. No installation.",
+  "explorersTitle": "Explore Dragon Ball",
+  "explorersIntro": "Worlds, collections and game tools.",
+  "discordTitle": "On Discord",
+  "community": "With the community",
+  "discordIntro": "Play Hangman and challenge server members using the bot’s commands.",
+  "join": "Join the Discord",
+  "play": "Play",
+  "account": "Sign-in required",
+  "noAccount": "No account · Solo",
+  "hangman": "Hangman and community challenges",
+  "hangmanDescription": "Guess a Dragon Ball name, one letter at a time. Enter a command in a game channel on the server.",
+  "rewards": "Zeni and stakes",
+  "rewardsDescription": "Gains and losses depend on the game, difficulty and chosen stake. Check the rules before staking.",
+  "rewardDefaults": "Default economy game rewards: win +100 Ƶ · loss −50 Ƶ.",
+  "merge": {
+    "name": "2048: Ki Merge",
+    "category": "Puzzle",
+    "description": "Merge warriors of equal power and build up your Ki. How far can you go?"
+  },
+  "morpion": {
+    "name": "Tic-Tac-Toe",
+    "category": "Strategy · Against the bot",
+    "description": "Line up three symbols before your opponent. Anticipate its moves and block its next line."
+  },
+  "pfc": {
+    "name": "Rock-Paper-Scissors",
+    "category": "Duel · Against the bot",
+    "description": "Choose your Ki technique and try to outplay the bot."
+  },
+  "bingo": {
+    "name": "Ki Bingo",
+    "category": "Deduction · Solo",
+    "description": "Find the hidden power between 1 and 100 in ten scans using your scouter’s clues."
+  },
+  "pixel": {
+    "name": "Dragon Pixel",
+    "category": "Exploration",
+    "description": "Discover Dragon Pixel, its environments and Dragon Ball collections.",
+    "action": "Explore Dragon Pixel"
+  },
+  "xenoverse": {
+    "name": "Dragon Ball Xenoverse 2",
+    "category": "Laboratory",
+    "description": "Explore game formats and your local data. PC gameplay is accessed through Bun OS Play, subject to availability.",
+    "action": "Open Xenoverse 2"
+  },
+  "catalogueTitle": "Looking for the official games?",
+  "catalogueDescription": "Sparking! ZERO, Kakarot, Xenoverse, Legends… Discover their entries in the encyclopedia.",
+  "catalogueAction": "Browse the game catalogue"
+}

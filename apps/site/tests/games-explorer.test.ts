@@ -1,72 +1,20 @@
 import { describe, expect, it } from "bun:test";
 import type { Game } from "@/lib/db-universe";
-
-// Helper de test simulant la logique de filtrage et de tri de GamesExplorer
-function matchPlatform(platforms: string | null | undefined, group: string): boolean {
-  if (group === "all") return true;
-  if (!platforms) return false;
-  const p = platforms.toLowerCase();
-  switch (group) {
-    case "playstation":
-      return /ps[1-5]|playstation|psp|vita/i.test(p);
-    case "nintendo":
-      return /switch|wii|gamecube|n64|snes|nes|famicom|ds|3ds|gba|game boy/i.test(p);
-    case "xbox":
-      return /xbox/i.test(p);
-    case "pc":
-      return /pc|windows|steam/i.test(p);
-    case "mobile":
-      return /ios|android|mobile/i.test(p);
-    case "arcade":
-      return /arcade/i.test(p);
-    default:
-      return true;
-  }
-}
+import { selectGames, type PlatformGroup, type SortOption } from "../src/lib/games-catalogue";
 
 function filterAndSortGames(
   games: Game[],
   ratings: Record<string, { average: number; count: number }>,
   searchQuery: string,
-  selectedPlatform: string,
-  sortBy: "rating-desc" | "date-desc" | "date-asc" | "title-asc",
+  selectedPlatform: PlatformGroup,
+  sortBy: SortOption,
 ) {
-  const q = searchQuery.trim().toLowerCase();
-
-  return games
-    .filter((g) => {
-      if (!matchPlatform(g.platforms, selectedPlatform)) return false;
-      if (!q) return true;
-      const titleMatch = g.title.toLowerCase().includes(q);
-      const titleJaMatch = g.title_ja ? g.title_ja.toLowerCase().includes(q) : false;
-      const devMatch = g.developer ? g.developer.toLowerCase().includes(q) : false;
-      const pubMatch = g.publisher ? g.publisher.toLowerCase().includes(q) : false;
-      const descMatch = g.description ? g.description.toLowerCase().includes(q) : false;
-      const platMatch = g.platforms ? g.platforms.toLowerCase().includes(q) : false;
-      return titleMatch || titleJaMatch || devMatch || pubMatch || descMatch || platMatch;
-    })
-    .toSorted((a, b) => {
-      const rA = ratings[String(a.id)]?.average ?? 0;
-      const rB = ratings[String(b.id)]?.average ?? 0;
-      const countA = ratings[String(a.id)]?.count ?? 0;
-      const countB = ratings[String(b.id)]?.count ?? 0;
-
-      if (sortBy === "rating-desc") {
-        if (rB !== rA) return rB - rA;
-        if (countB !== countA) return countB - countA;
-        return (b.release_date ?? 0) - (a.release_date ?? 0);
-      }
-      if (sortBy === "date-desc") {
-        return (b.release_date ?? 0) - (a.release_date ?? 0);
-      }
-      if (sortBy === "date-asc") {
-        return (a.release_date ?? 0) - (b.release_date ?? 0);
-      }
-      if (sortBy === "title-asc") {
-        return a.title.localeCompare(b.title, "fr");
-      }
-      return 0;
-    });
+  return selectGames(games, ratings, {
+    query: searchQuery,
+    platform: selectedPlatform,
+    sort: sortBy,
+    locale: "fr",
+  });
 }
 
 describe("GamesExplorer logic & canonical game metadata", () => {

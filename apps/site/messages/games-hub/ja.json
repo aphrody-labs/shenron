@@ -1,0 +1,58 @@
+{
+  "eyebrow": "DBFRのアリーナ",
+  "title": "さあ、遊ぼう。",
+  "subtitle": "パズル、気の対決、仲間との勝負。好きな遊び方を選ぼう。",
+  "choose": "ゲームを選ぶ",
+  "navigation": "ゲームを探す",
+  "browserTitle": "ブラウザーで遊ぶ",
+  "browserIntro": "インストール不要の4つのチャレンジ。",
+  "explorersTitle": "ドラゴンボールを探索",
+  "explorersIntro": "ゲームの世界、コレクション、分析ツール。",
+  "discordTitle": "Discordで遊ぶ",
+  "community": "コミュニティと一緒に",
+  "discordIntro": "ハングマンやボットのコマンドで、サーバーの仲間と対戦しよう。",
+  "join": "Discordに参加",
+  "play": "遊ぶ",
+  "account": "ログインが必要",
+  "noAccount": "アカウント不要・1人用",
+  "hangman": "ハングマンと仲間との対戦",
+  "hangmanDescription": "ドラゴンボールの名前を一文字ずつ当てよう。サーバーのゲームチャンネルでコマンドを入力してね。",
+  "rewards": "ゼニーと賭け金",
+  "rewardsDescription": "獲得・損失額はゲーム、難易度、賭け金によって変わります。賭ける前にルールを確認してください。",
+  "rewardDefaults": "ゼニーを使うゲームの標準設定：勝利 +100 Ƶ・敗北 −50 Ƶ。",
+  "merge": {
+    "name": "2048：気マージ",
+    "category": "パズル",
+    "description": "同じ強さの戦士を合体させて、気を高めよう。どこまで到達できるかな？"
+  },
+  "morpion": {
+    "name": "三目並べ",
+    "category": "戦略・ボット対戦",
+    "description": "相手より先に3つのマークを並べよう。相手の次の手を読んで阻止しよう。"
+  },
+  "pfc": {
+    "name": "じゃんけん",
+    "category": "対決・ボット対戦",
+    "description": "気の技を選んで、ボットとの勝負に挑もう。"
+  },
+  "bingo": {
+    "name": "気のビンゴ",
+    "category": "推理・1人用",
+    "description": "スカウターのヒントを頼りに、10回以内で1から100までの隠された戦闘力を当てよう。"
+  },
+  "pixel": {
+    "name": "Dragon Pixel",
+    "category": "探索",
+    "description": "Dragon Pixelの空間や風景、ドラゴンボールのコレクションを見てみよう。",
+    "action": "Dragon Pixelを探索"
+  },
+  "xenoverse": {
+    "name": "ドラゴンボール ゼノバース2",
+    "category": "ラボ",
+    "description": "ゲーム形式や手元のデータを分析。PCゲームへのアクセスはBun OS Playの提供状況によって異なります。",
+    "action": "ゼノバース2を開く"
+  },
+  "catalogueTitle": "公式ゲームを探していますか？",
+  "catalogueDescription": "Sparking! ZERO、KAKAROT、ゼノバース、レジェンズなどの情報を百科事典でチェック。",
+  "catalogueAction": "ゲームカタログを見る"
+}

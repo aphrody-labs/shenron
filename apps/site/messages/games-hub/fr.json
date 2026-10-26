@@ -1,0 +1,58 @@
+{
+  "eyebrow": "L’arène DBFR",
+  "title": "À toi de jouer.",
+  "subtitle": "Un défi de réflexion, un duel de Ki ou une partie entre membres : choisis ton terrain de jeu.",
+  "choose": "Choisir un jeu",
+  "navigation": "Parcourir les jeux",
+  "browserTitle": "Dans ton navigateur",
+  "browserIntro": "Quatre défis, sans installation.",
+  "explorersTitle": "Explorer Dragon Ball",
+  "explorersIntro": "Décors, collections et outils autour des jeux.",
+  "discordTitle": "Sur Discord",
+  "community": "Avec la communauté",
+  "discordIntro": "Retrouve le Pendu et défie les membres du serveur avec les commandes du bot.",
+  "join": "Rejoindre le Discord",
+  "play": "Jouer",
+  "account": "Connexion requise",
+  "noAccount": "Sans compte · Solo",
+  "hangman": "Pendu et défis entre membres",
+  "hangmanDescription": "Retrouve un nom de l’univers Dragon Ball, lettre après lettre. Saisis une commande dans un salon de jeu du serveur.",
+  "rewards": "Zénis et mises",
+  "rewardsDescription": "Les gains et les pertes dépendent du jeu, de sa difficulté et de la mise choisie. Consulte les règles avant de miser.",
+  "rewardDefaults": "Barème par défaut des jeux à économie : victoire +100 Ƶ · défaite −50 Ƶ.",
+  "merge": {
+    "name": "2048 : Ki Merge",
+    "category": "Réflexion",
+    "description": "Fusionne les guerriers de même puissance et fais grimper ton Ki. Jusqu’où iras-tu ?"
+  },
+  "morpion": {
+    "name": "Morpion",
+    "category": "Stratégie · Contre le bot",
+    "description": "Aligne trois symboles avant ton adversaire. Anticipe ses coups et bloque sa prochaine ligne."
+  },
+  "pfc": {
+    "name": "Pierre-Feuille-Ciseaux",
+    "category": "Duel · Contre le bot",
+    "description": "Choisis ta technique de Ki et tente de prendre le dessus sur le bot."
+  },
+  "bingo": {
+    "name": "Bingo du Ki",
+    "category": "Déduction · Solo",
+    "description": "Trouve la puissance cachée entre 1 et 100 en dix scans grâce aux indices du capteur."
+  },
+  "pixel": {
+    "name": "Dragon Pixel",
+    "category": "Exploration",
+    "description": "Découvre l’espace Dragon Pixel, ses décors et ses collections Dragon Ball.",
+    "action": "Explorer Dragon Pixel"
+  },
+  "xenoverse": {
+    "name": "Dragon Ball Xenoverse 2",
+    "category": "Laboratoire",
+    "description": "Explore les formats du jeu et tes données locales. L’accès au jeu PC passe par Bun OS Play, selon sa disponibilité.",
+    "action": "Accéder à Xenoverse 2"
+  },
+  "catalogueTitle": "Tu cherches les jeux officiels ?",
+  "catalogueDescription": "Sparking! ZERO, Kakarot, Xenoverse, Legends… Retrouve leurs fiches dans l’encyclopédie.",
+  "catalogueAction": "Voir le catalogue des jeux"
+}
