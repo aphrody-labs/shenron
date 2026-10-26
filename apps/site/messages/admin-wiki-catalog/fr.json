@@ -1,0 +1,5 @@
+{
+  "loading": "Chargement des tables du bot… Les tables éditoriales du site sont disponibles.",
+  "unavailable": "Le bot est injoignable. Les tables éditoriales du site restent disponibles.",
+  "intro": "Le wiki est édité par les API du site. Les autres tables dépendent du bot ; les tables en lecture seule ne sont pas modifiables."
+}

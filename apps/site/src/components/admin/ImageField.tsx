@@ -13,9 +13,8 @@ import {
 } from "react";
 import { api } from "@/lib/admin-api";
 import { assetUrl } from "@/lib/assets";
-
-const ACCEPT = "image/png,image/jpeg,image/webp,image/gif";
-const MAX_BYTES = 50 * 1024 * 1024;
+import { ADMIN_IMAGE_ACCEPT, adminImageUploadError } from "@/lib/admin-image-upload";
+import { useAdminImageText } from "@/lib/admin-image-text";
 
 interface Props {
   /** Valeur courante (chemin DB `./assets/...`, `/wiki/...` ou URL http). */
@@ -25,6 +24,7 @@ interface Props {
   subdir?: string;
   /** Nom de colonne (pour l'a11y / placeholder). */
   column?: string;
+  onUploadStateChange?: (uploading: boolean) => void;
 }
 
 interface GalleryFile {
@@ -40,7 +40,14 @@ interface GalleryFile {
  * `POST /api/admin/upload` (admin-gated, relais vers le bot) et stocke le chemin
  * DB renvoyé (`./assets/wiki/<subdir>/<uuid>.<ext>`).
  */
-export function ImageField({ value, onChange, subdir = "uploads", column }: Props) {
+export function ImageField({
+  value,
+  onChange,
+  subdir = "uploads",
+  column,
+  onUploadStateChange,
+}: Props) {
+  const t = useAdminImageText();
   const inputRef = useRef<HTMLInputElement | null>(null);
   // Garde anti-concurrence (ref → pas de dépendance/closure obsolète dans upload).
   const busyRef = useRef(false);
@@ -52,21 +59,17 @@ export function ImageField({ value, onChange, subdir = "uploads", column }: Prop
 
   const upload = useCallback(
     async (file: File) => {
-      setError(null);
-      // MIME client = indicatif seulement (vide pour certains drag-drop/presse-papier) ;
-      // la vérité est la signature binaire vérifiée côté serveur (magic-bytes).
-      if (file.type && !file.type.startsWith("image/")) {
-        setError("Le fichier n'est pas une image.");
-        return;
-      }
-      if (file.size > MAX_BYTES) {
-        setError("Image trop lourde (max 50 Mo).");
-        return;
-      }
       if (busyRef.current) return;
       busyRef.current = true;
       setUploading(true);
+      onUploadStateChange?.(true);
+      setError(null);
       try {
+        const invalid = await adminImageUploadError(file);
+        if (invalid) {
+          setError(t(invalid));
+          return;
+        }
         const fd = new FormData();
         fd.append("file", file, file.name);
         fd.append("subdir", subdir);
@@ -77,23 +80,25 @@ export function ImageField({ value, onChange, subdir = "uploads", column }: Prop
         });
         const data = (await res.json().catch(() => ({}))) as { path?: string; error?: string };
         if (!res.ok || !data.path) {
-          throw new Error(data.error ?? `Upload échoué (${res.status}).`);
+          throw new Error(data.error ?? t("failed"));
         }
         onChange(data.path);
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Upload échoué.");
+        setError(e instanceof Error ? e.message : t("failed"));
       } finally {
         setUploading(false);
         busyRef.current = false;
+        onUploadStateChange?.(false);
       }
     },
-    [onChange, subdir],
+    [onChange, subdir, onUploadStateChange, t],
   );
 
   const onDrop = useCallback(
     (e: DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       setDragging(false);
+      if (busyRef.current) return;
       const file = e.dataTransfer.files?.[0];
       if (file) {
         void upload(file);
@@ -111,13 +116,14 @@ export function ImageField({ value, onChange, subdir = "uploads", column }: Prop
         setError(null);
         return;
       }
-      setError("Déposez une image depuis votre ordinateur ou un lien d’image http(s).");
+      setError(t("dropError"));
     },
-    [onChange, upload],
+    [onChange, upload, t],
   );
 
   const onPaste = useCallback(
     (e: ClipboardEvent<HTMLDivElement>) => {
+      if (busyRef.current) return;
       const file = Array.from(e.clipboardData.files).find((f) => f.type.startsWith("image/"));
       if (file) {
         e.preventDefault();
@@ -142,10 +148,14 @@ export function ImageField({ value, onChange, subdir = "uploads", column }: Prop
       <div
         role="button"
         tabIndex={0}
-        aria-label={`Déposer ou choisir une image${column ? ` pour ${column}` : ""}`}
-        onClick={() => inputRef.current?.click()}
+        aria-label={`${t("choose")}${column ? ` · ${column}` : ""}`}
+        aria-disabled={uploading}
+        aria-busy={uploading}
+        onClick={() => {
+          if (!busyRef.current) inputRef.current?.click();
+        }}
         onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
+          if (!busyRef.current && (e.key === "Enter" || e.key === " ")) {
             e.preventDefault();
             inputRef.current?.click();
           }
@@ -191,26 +201,16 @@ export function ImageField({ value, onChange, subdir = "uploads", column }: Prop
         {/* Texte d'invite */}
         <div className="min-w-0 flex-1">
           <p className="text-sm text-white/80">
-            {uploading ? (
-              "Envoi en cours…"
-            ) : dragging ? (
-              "Relâchez pour envoyer l'image"
-            ) : (
-              <>
-                <span className="font-semibold text-dbz-orange">Glisser-déposer</span> une image ou
-                son lien, coller, ou cliquer pour parcourir
-              </>
-            )}
+            {uploading ? t("sending") : dragging ? t("release") : t("prompt")}
           </p>
-          <p className="truncate text-[11px] text-white/50">
-            {value ? value : "Image ou lien https · PNG · JPG · WebP · GIF — max 50 Mo"}
-          </p>
+          <p className="truncate text-[11px] text-white/50">{value || t("formats")}</p>
         </div>
 
         <input
           ref={inputRef}
           type="file"
-          accept={ACCEPT}
+          accept={ADMIN_IMAGE_ACCEPT}
+          disabled={uploading}
           className="hidden"
           onChange={(e) => {
             const file = e.target.files?.[0];
@@ -229,7 +229,7 @@ export function ImageField({ value, onChange, subdir = "uploads", column }: Prop
           disabled={uploading}
         >
           <Upload className="h-3 w-3" />
-          Parcourir
+          {t("browse")}
         </button>
         <button
           type="button"
@@ -238,7 +238,7 @@ export function ImageField({ value, onChange, subdir = "uploads", column }: Prop
           disabled={uploading}
         >
           <FolderOpen className="h-3 w-3" />
-          Galerie
+          {t("gallery")}
         </button>
         {value && (
           <button
@@ -251,7 +251,7 @@ export function ImageField({ value, onChange, subdir = "uploads", column }: Prop
             disabled={uploading}
           >
             <X className="h-3 w-3" />
-            Effacer
+            {t("clear")}
           </button>
         )}
       </div>
@@ -260,11 +260,17 @@ export function ImageField({ value, onChange, subdir = "uploads", column }: Prop
       <input
         className="input font-mono text-xs"
         value={value}
-        placeholder="./assets/… ou https:/…"
+        placeholder={t("placeholder")}
+        aria-label={`${t("path")}${column ? ` · ${column}` : ""}`}
+        disabled={uploading}
         onChange={(e) => onChange(e.target.value)}
       />
 
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && (
+        <p role="alert" className="text-xs text-red-400">
+          {error}
+        </p>
+      )}
 
       {galleryOpen && (
         <GalleryPicker
@@ -288,9 +294,15 @@ function GalleryPicker({
   onClose: () => void;
   onPick: (path: string) => void;
 }) {
+  const t = useAdminImageText();
+  const dialog = useRef<HTMLDialogElement>(null);
   const [files, setFiles] = useState<GalleryFile[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState("");
+
+  useEffect(() => {
+    dialog.current?.showModal();
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -301,88 +313,84 @@ function GalleryPicker({
         return undefined;
       })
       .catch((e: Error) => {
-        if (alive) setError(e.message || "Chargement de la galerie échoué.");
+        if (alive) setError(e.message || t("galleryFailed"));
       });
     return () => {
       alive = false;
     };
-  }, []);
+  }, [t]);
 
   const shown = (files ?? [])
     .filter((f) => (filter ? f.name.toLowerCase().includes(filter.toLowerCase()) : true))
     .slice(0, 240);
 
   return (
-    <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4 backdrop-blur"
-      onClick={onClose}
+    <dialog
+      ref={dialog}
+      aria-label={t("galleryTitle")}
+      className="dbz-panel fixed inset-0 z-[60] m-auto flex max-h-[85vh] min-w-0 w-[calc(100%-2rem)] max-w-4xl flex-col p-5 text-white backdrop:bg-black/70 backdrop:backdrop-blur"
+      onCancel={onClose}
     >
-      <div
-        className="dbz-panel flex max-h-[85vh] w-full max-w-4xl flex-col p-5"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-3 flex items-center gap-3">
-          <h3 className="font-saiyan text-lg uppercase text-dbz-orange">Galerie d'images</h3>
-          <div className="relative ml-auto">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3 w-3 -translate-y-1/2 text-white/50" />
-            <input
-              className="input h-8 w-56 pl-7 text-xs"
-              placeholder="Filtrer par nom…"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-            />
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="btn btn-ghost px-2"
-            aria-label="Fermer"
-          >
-            <X className="h-4 w-4" />
-          </button>
+      <div className="mb-3 flex items-center gap-3">
+        <h3 className="font-saiyan text-lg uppercase text-dbz-orange">{t("galleryTitle")}</h3>
+        <div className="relative ml-auto min-w-0 flex-1">
+          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3 w-3 -translate-y-1/2 text-white/50" />
+          <input
+            className="input h-8 w-full pl-7 text-xs"
+            placeholder={t("filter")}
+            aria-label={t("filter")}
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          />
         </div>
-
-        {error ? (
-          <p className="py-12 text-center text-sm text-red-400">{error}</p>
-        ) : files === null ? (
-          <div className="flex items-center justify-center gap-2 py-12 text-sm text-white/50">
-            <Loader2 className="h-4 w-4 animate-spin" /> <LoadingText />
-          </div>
-        ) : shown.length === 0 ? (
-          <p className="py-12 text-center text-sm text-white/50">Aucune image trouvée.</p>
-        ) : (
-          <div className="grid flex-1 grid-cols-3 gap-2 overflow-y-auto pr-1 sm:grid-cols-4 md:grid-cols-6">
-            {shown.map((f) => (
-              <button
-                key={f.path}
-                type="button"
-                title={f.name}
-                onClick={() => onPick(f.path)}
-                className="group overflow-hidden rounded border border-dbz-border bg-black/30 transition-colors hover:border-dbz-orange"
-              >
-                <span className="block aspect-square">
-                  <img
-                    src={assetUrl(f.path)}
-                    alt={f.name}
-                    loading="lazy"
-                    className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                  />
-                </span>
-                <span className="block truncate px-1 py-0.5 text-[9px] text-white/50">
-                  {f.name}
-                </span>
-              </button>
-            ))}
-          </div>
-        )}
-        <p className="mt-2 shrink-0 text-[10px] text-white/50">
-          {files && shown.length < files.length
-            ? `${shown.length} sur ${files.length} affichées — affinez le filtre.`
-            : files
-              ? `${files.length} image(s).`
-              : ""}
-        </p>
+        <button
+          type="button"
+          onClick={onClose}
+          className="btn btn-ghost px-2"
+          aria-label={t("close")}
+        >
+          <X className="h-4 w-4" />
+        </button>
       </div>
-    </div>
+
+      {error ? (
+        <p className="py-12 text-center text-sm text-red-400">{error}</p>
+      ) : files === null ? (
+        <div className="flex items-center justify-center gap-2 py-12 text-sm text-white/50">
+          <Loader2 className="h-4 w-4 animate-spin" /> <LoadingText />
+        </div>
+      ) : shown.length === 0 ? (
+        <p className="py-12 text-center text-sm text-white/50">{t("none")}</p>
+      ) : (
+        <div className="grid flex-1 grid-cols-3 gap-2 overflow-y-auto pr-1 sm:grid-cols-4 md:grid-cols-6">
+          {shown.map((f) => (
+            <button
+              key={f.path}
+              type="button"
+              title={f.name}
+              onClick={() => onPick(f.path)}
+              className="group overflow-hidden rounded border border-dbz-border bg-black/30 transition-colors hover:border-dbz-orange"
+            >
+              <span className="block aspect-square">
+                <img
+                  src={assetUrl(f.path)}
+                  alt={f.name}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                />
+              </span>
+              <span className="block truncate px-1 py-0.5 text-[9px] text-white/50">{f.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
+      <p className="mt-2 shrink-0 text-[10px] text-white/50">
+        {files && shown.length < files.length
+          ? t("filteredCount", { shown: shown.length, total: files.length })
+          : files
+            ? t("count", { count: files.length })
+            : ""}
+      </p>
+    </dialog>
   );
 }

@@ -39,6 +39,7 @@ interface Props {
   onChange: (v: string) => void;
   /** Valeur typée d'origine (détecte jsonb objet / unité epoch d'une date). */
   original?: unknown;
+  onUploadStateChange?: (uploading: boolean) => void;
 }
 
 function epochToDateInput(v: string): string {
@@ -56,11 +57,17 @@ function dateInputToEpoch(dateStr: string, original: string): string {
   return String(/^\d{13}$/.test(original) ? ms : Math.floor(ms / 1000));
 }
 
-export function SmartField({ table, col, value, onChange, original }: Props) {
+export function SmartField({ table, col, value, onChange, original, onUploadStateChange }: Props) {
   const t = useT();
   if (isImageColumn(table, col)) {
     return (
-      <ImageField value={value} onChange={onChange} subdir={uploadSubdir(table)} column={col} />
+      <ImageField
+        value={value}
+        onChange={onChange}
+        subdir={uploadSubdir(table)}
+        column={col}
+        onUploadStateChange={onUploadStateChange}
+      />
     );
   }
 

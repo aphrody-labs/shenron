@@ -2,6 +2,12 @@ import { PLAYBACK_CAPABILITIES_PATH } from "@aphrody/shenron-api/contract";
 import { botOperationalLogs } from "../lib/operational-logs";
 import { botNoiseMeter } from "~/ui/noise-meter";
 import { readHlsSegment, registerHlsSegment } from "./hls-security";
+import {
+  findWikiImage,
+  listWikiImages,
+  wikiImageRoots,
+  writeWikiImage,
+} from "./wiki-image-storage";
 import { movieStreamCandidates } from "./movie-stream-selection";
 import { declarePlaybackCapabilities } from "./playback-capabilities";
 import { resolveApiUrl, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
@@ -914,7 +920,12 @@ export function hlsDownload(): Response {
 }
 
 async function serveAsset(pathname: string, req?: Request): Promise<Response> {
-  const sub = decodeURIComponent(pathname.replace(/^\/assets\//, ""));
+  let sub: string;
+  try {
+    sub = decodeURIComponent(pathname.replace(/^\/assets\//, ""));
+  } catch {
+    return new Response("Chemin d'asset refusé", { status: 400 });
+  }
   if (!sub || sub.includes("..") || sub.startsWith("/") || sub.includes("\0")) {
     return new Response("Chemin d'asset refusé", { status: 400 });
   }
@@ -923,9 +934,10 @@ async function serveAsset(pathname: string, req?: Request): Promise<Response> {
   if (!contentType) {
     return new Response("Extension non autorisée", { status: 403 });
   }
-  const filePath = sub.startsWith("wiki/") ? `../site/public/${sub}` : botFile(`assets/${sub}`);
-  const file = Bun.file(filePath);
-  if (!(await file.exists())) {
+  const file = sub.startsWith("wiki/")
+    ? await findWikiImage(sub.slice("wiki/".length), wikiImageRoots(env.DATABASE_PATH))
+    : Bun.file(botFile(`assets/${sub}`));
+  if (!file || !(await file.exists())) {
     return new Response("Asset introuvable", { status: 404 });
   }
   const cors = req ? publicCorsHeaders(req) : {};
@@ -5876,6 +5888,7 @@ export class ApiServer {
               return Response.json({ error: "champ 'file' manquant" }, { status: 400 });
             }
             const MAX = 50 * 1024 * 1024;
+            if (file.size === 0) return Response.json({ error: "Fichier vide" }, { status: 400 });
             if (file.size > MAX) {
               return Response.json({ error: "Fichier trop lourd (max 50 Mo)" }, { status: 413 });
             }
@@ -5902,18 +5915,17 @@ export class ApiServer {
             // périmètre tierlist ; le Bearer admin garde tous les périmètres.
             const scopeDenied = assetUploadScopeDenied(uploadAuth, subdir);
             if (scopeDenied) return scopeDenied;
-            const relDir = subdir ? `assets/wiki/${subdir}` : "assets/wiki";
-            const writeDir = subdir ? `../site/public/wiki/${subdir}` : "../site/public/wiki";
-            const name = `${crypto.randomUUID()}${ext}`;
-            const rel = `${relDir}/${name}`;
-            const writePath = `${writeDir}/${name}`;
             try {
-              const { mkdir } = await import("node:fs/promises");
-              await mkdir(writeDir, { recursive: true });
-              await Bun.write(writePath, await file.arrayBuffer());
+              const path = await writeWikiImage(
+                new Uint8Array(await file.arrayBuffer()),
+                subdir,
+                ext,
+                wikiImageRoots(env.DATABASE_PATH),
+              );
+              return Response.json({ path, url: path.slice(1) });
             } catch (err) {
               logger.error(
-                { err, writeDir, writePath, subdir, size: file.size, type: file.type },
+                { err, subdir, size: file.size, type: file.type },
                 "wiki image upload write failed",
               );
               return Response.json(
@@ -5921,7 +5933,6 @@ export class ApiServer {
                 { status: 500 },
               );
             }
-            return Response.json({ path: `./${rel}`, url: `/${rel}` });
           },
         },
         // Upload d'une piste de sous-titres d'épisode (.vtt/.srt) → écrit dans
@@ -5992,16 +6003,20 @@ export class ApiServer {
               { status: 400 },
             );
           }
+          if (dir === "wiki") {
+            const files = await listWikiImages(wikiImageRoots(env.DATABASE_PATH));
+            return Response.json({ dir, dirs: [...ALLOWED], count: files.length, files });
+          }
           const { Glob } = await import("bun");
           const glob = new Glob("**/*.{png,jpg,jpeg,webp,gif}");
           const files: { path: string; url: string; name: string }[] = [];
           try {
-            const cwd = dir === "wiki" ? "../site/public/wiki" : `assets/${dir}`;
+            const cwd = `assets/${dir}`;
             for await (const f of glob.scan({
               cwd,
               onlyFiles: true,
             })) {
-              const rel = dir === "wiki" ? `assets/wiki/${f}` : `assets/${dir}/${f}`;
+              const rel = `assets/${dir}/${f}`;
               files.push({ path: rel, url: `/${rel}`, name: f });
               if (files.length >= 1000) break;
             }

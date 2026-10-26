@@ -1,0 +1,5 @@
+{
+  "loading": "Loading bot tables… The site’s editorial tables are available.",
+  "unavailable": "The bot is unreachable. The site’s editorial tables remain available.",
+  "intro": "Wiki content is edited through the site APIs. Other tables depend on the bot; read-only tables cannot be edited."
+}

@@ -95,7 +95,8 @@ export function fkTarget(col: string): { table: string; pk: string } | null {
  */
 const ENUM_OPTIONS: Record<string, { options: string[]; strict?: boolean }> = {
   "db_characters.gender": { options: ["Male", "Female"], strict: true },
-  "db_techniques.type": { options: ["super", "ultimate", "evasive", "awoken"], strict: true },
+  // Historical game slots are suggestions, never the complete editorial taxonomy.
+  "db_techniques.type": { options: ["super", "ultimate", "evasive", "awoken"] },
   "shop_items.type": { options: ["card", "badge", "color", "title", "banner"], strict: true },
   // kind est dérivé auto de category (wiki-admin) — plus exposé en formulaire.
   // Les adaptations écrites vivent dans db_media_publications : elles ne sont

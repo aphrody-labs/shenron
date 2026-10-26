@@ -65,6 +65,13 @@ function WikiStudioSession({ table, id }: Props) {
   );
 
   const [draft, setDraft] = useState<Record<string, string>>(() => toStudioDraft(cols, null));
+  const uploads = useRef(new Set<string>());
+  const [uploading, setUploading] = useState(false);
+  const uploadState = (column: string, busy: boolean) => {
+    if (busy) uploads.current.add(column);
+    else uploads.current.delete(column);
+    setUploading(uploads.current.size > 0);
+  };
   const [toast, setToast] = useState<{ type: "success" | "error"; messageKey: string } | null>(
     null,
   );
@@ -133,7 +140,7 @@ function WikiStudioSession({ table, id }: Props) {
     onError: () => setToast({ type: "error", messageKey: "canonEditorSync.saveFailed" }),
   });
   const submitDraft = () => {
-    if (!save.isPending) save.mutate({ draft: { ...draft }, row });
+    if (!save.isPending && uploads.current.size === 0) save.mutate({ draft: { ...draft }, row });
   };
 
   // Le studio ne pilote que les entités « contenu » à pk simple (cf. STUDIO_TABLES) ;
@@ -225,7 +232,7 @@ function WikiStudioSession({ table, id }: Props) {
         <button
           type="button"
           onClick={submitDraft}
-          disabled={save.isPending || notReady}
+          disabled={save.isPending || notReady || uploading}
           className="btn btn-primary"
         >
           <Enregistrer className="h-4 w-4" />
@@ -255,7 +262,7 @@ function WikiStudioSession({ table, id }: Props) {
               if (!notReady) submitDraft();
             }}
             className="dbz-panel min-w-0 p-5"
-            aria-busy={save.isPending}
+            aria-busy={save.isPending || uploading}
           >
             <fieldset
               disabled={save.isPending || notReady}
@@ -269,11 +276,12 @@ function WikiStudioSession({ table, id }: Props) {
                   value={draft[c] ?? ""}
                   original={row?.[c]}
                   onChange={(v) => setDraft((d) => ({ ...d, [c]: v }))}
+                  onUploadStateChange={(busy) => uploadState(c, busy)}
                 />
               ))}
               <button
                 type="submit"
-                disabled={save.isPending || notReady}
+                disabled={save.isPending || notReady || uploading}
                 className="btn btn-primary w-full"
               >
                 <Enregistrer className="h-4 w-4" />
@@ -381,12 +389,14 @@ function Field({
   value,
   original,
   onChange,
+  onUploadStateChange,
 }: {
   table: string;
   col: string;
   value: string;
   original?: unknown;
   onChange: (v: string) => void;
+  onUploadStateChange?: (uploading: boolean) => void;
 }) {
   const t = useT();
   return (
@@ -395,7 +405,14 @@ function Field({
         {t(`adminWiki.fields.${col}`)}
         <span className="ml-2 font-mono font-normal normal-case text-white/25">{col}</span>
       </legend>
-      <SmartField table={table} col={col} value={value} original={original} onChange={onChange} />
+      <SmartField
+        table={table}
+        col={col}
+        value={value}
+        original={original}
+        onChange={onChange}
+        onUploadStateChange={onUploadStateChange}
+      />
     </fieldset>
   );
 }

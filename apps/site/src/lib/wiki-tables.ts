@@ -79,6 +79,7 @@ export const WIKI_TABLE_SPECS: Record<string, WikiTableSpec> = {
       "name",
       "nameJa",
       "nameRomaji",
+      "image",
       "type",
       "creatorId",
       "description",

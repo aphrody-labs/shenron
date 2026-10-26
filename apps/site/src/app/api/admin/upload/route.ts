@@ -1,5 +1,6 @@
 import { API_URL } from "@/lib/config";
 import { isCurrentUserAdmin } from "@/lib/session";
+import { MAX_ADMIN_IMAGE_BYTES, sniffAdminImage } from "@/lib/admin-image-upload";
 
 /**
  * Upload d'image **admin** pour les éditeurs du dashboard `/admin` (éditeur DB
@@ -23,31 +24,6 @@ import { isCurrentUserAdmin } from "@/lib/session";
  */
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const MAX_BYTES = 50 * 1024 * 1024;
-
-/** Détecte le vrai type via magic-bytes (ignore le Content-Type client). */
-function sniffImage(b: Uint8Array): { type: string; ext: string } | null {
-  if (b.length >= 8 && b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47)
-    return { type: "image/png", ext: "png" };
-  if (b.length >= 3 && b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff)
-    return { type: "image/jpeg", ext: "jpg" };
-  if (b.length >= 6 && b[0] === 0x47 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x38)
-    return { type: "image/gif", ext: "gif" };
-  if (
-    b.length >= 12 &&
-    b[0] === 0x52 &&
-    b[1] === 0x49 &&
-    b[2] === 0x46 &&
-    b[3] === 0x46 &&
-    b[8] === 0x57 &&
-    b[9] === 0x45 &&
-    b[10] === 0x42 &&
-    b[11] === 0x50
-  )
-    return { type: "image/webp", ext: "webp" };
-  return null;
-}
 
 export async function POST(req: Request) {
   if (!(await isCurrentUserAdmin())) {
@@ -75,13 +51,13 @@ export async function POST(req: Request) {
   if (file.size === 0) {
     return Response.json({ error: "Fichier vide." }, { status: 400 });
   }
-  if (file.size > MAX_BYTES) {
+  if (file.size > MAX_ADMIN_IMAGE_BYTES) {
     return Response.json({ error: "Image trop lourde (max 50 Mo)." }, { status: 413 });
   }
 
   // Vérifie la signature binaire RÉELLE (pas le Content-Type client).
   const buf = new Uint8Array(await file.arrayBuffer());
-  const kind = sniffImage(buf);
+  const kind = sniffAdminImage(buf);
   if (!kind) {
     return Response.json(
       { error: "Fichier non reconnu comme image (png, jpg, webp, gif)." },
@@ -107,6 +83,8 @@ export async function POST(req: Request) {
       headers: { authorization: `Bearer ${token}` },
       body: upstream,
       cache: "no-store",
+      redirect: "error",
+      signal: AbortSignal.timeout(60_000),
     });
     const data = (await res.json().catch(() => ({}))) as { path?: string; error?: string };
     if (!res.ok || !data.path) {
