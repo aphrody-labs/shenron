@@ -73,8 +73,7 @@ export async function assignTechniqueArtwork(
     if (!response.ok) throw Error(`Administrative read failed ${response.status}`);
     return (await response.json()) as Record<string, unknown>;
   };
-  const plans = [];
-  for (const entry of entries) {
+  const prepare = async (entry: TechniqueArtworkAssignment) => {
     const row = await read(entry.id);
     const body = prepareTechniqueArtworkUpdate(entry, row);
     for (const [url, sha256] of [
@@ -88,8 +87,20 @@ export async function assignTechniqueArtwork(
       )
         throw Error(`Published bytes not verified for ${entry.slug}`);
     }
-    plans.push({ entry, row, body });
-  }
+    return { entry, row, body };
+  };
+  const plans: Awaited<ReturnType<typeof prepare>>[] = [];
+  let next = 0;
+  const checks = await Promise.allSettled(
+    Array.from({ length: Math.min(3, entries.length) }, async () => {
+      while (next < entries.length) {
+        const index = next++;
+        plans[index] = await prepare(entries[index]!);
+      }
+    }),
+  );
+  const failure = checks.find((result) => result.status === "rejected");
+  if (failure?.status === "rejected") throw failure.reason;
   await Bun.write(`${output}/before.json`, JSON.stringify(plans, null, 2));
   const completed = [];
   for (const { entry, row, body } of plans) {
