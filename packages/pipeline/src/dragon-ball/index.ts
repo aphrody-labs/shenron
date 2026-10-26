@@ -62,6 +62,7 @@ export {
   techniqueDocumentsFromNativeWiki,
   techniqueDocumentsFromNativeCrawl,
   techniqueDocumentsFromNativeMarkdown,
+  techniqueDocumentsFromEditorialArticles,
 } from "./technique-images";
 export type {
   TechniqueImageIdentity,

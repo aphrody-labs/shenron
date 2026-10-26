@@ -8,6 +8,7 @@ import {
   techniqueDocumentsFromNativeWiki,
   techniqueDocumentsFromNativeCrawl,
   techniqueDocumentsFromNativeMarkdown,
+  techniqueDocumentsFromEditorialArticles,
   type TechniqueImageDocument,
   type TechniqueImageIdentity,
 } from "../../../packages/pipeline/src/dragon-ball/technique-images";
@@ -32,7 +33,11 @@ async function main() {
     throw new Error(
       "Usage: bun discover-technique-images.ts --snapshot <public-snapshot.sqlite> [--native <native-dossiers.json>] [--catalogue <catalogue.json> | --live-catalogue] --out <report.json>",
     );
-  let catalogue: { rows: Array<TechniqueImageIdentity & { nameJa?: string; nameRomaji?: string }> };
+  let catalogue: {
+    rows: Array<
+      TechniqueImageIdentity & { nameJa?: string; nameRomaji?: string; article?: string | null }
+    >;
+  };
   if (Bun.argv.includes("--live-catalogue")) {
     const token = await Bun.secrets.get({ service: "shenron-mcp", name: "owner-admin" });
     if (!token) throw new Error("Authorized admin credential is unavailable");
@@ -115,6 +120,7 @@ async function main() {
         sourceUrl: payload.href,
         medium: "manga",
         chapterId: page.chapter_id,
+        pageIndex: page.page_index,
         locator: `chapter:${page.chapter_id};page:${page.page_index}`,
         text: page.text ?? "",
         images: [{ url: page.image }],
@@ -196,13 +202,17 @@ async function main() {
       });
     }
   }
-  const result = discoverTechniqueImages(techniques, documents);
+  const editorialDocuments = Bun.argv.includes("--skip-editorial")
+    ? []
+    : techniqueDocumentsFromEditorialArticles(catalogue.rows, documents);
+  const result = discoverTechniqueImages(techniques, [...documents, ...editorialDocuments]);
   await Bun.write(
     output,
     `${JSON.stringify(
       {
         ...result,
         searchAliasReceipts,
+        editorialDocuments: editorialDocuments.length,
         observedAt: new Date().toISOString(),
         inputs: {
           snapshot: snapshotPath ? resolve(snapshotPath) : null,

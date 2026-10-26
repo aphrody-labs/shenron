@@ -6,6 +6,7 @@ import {
   techniqueDocumentsFromNativeWiki,
   techniqueDocumentsFromNativeCrawl,
   techniqueDocumentsFromNativeMarkdown,
+  techniqueDocumentsFromEditorialArticles,
   type TechniqueImageDocument,
 } from "../../src/dragon-ball/technique-images";
 
@@ -204,4 +205,54 @@ test("native Markdown keeps an attack heading when its adjacent prose omits the 
     techniqueId: 3,
     matchIn: "context",
   });
+});
+
+test("editorial references resolve exact inventoried pages and preserve their coordinates", () => {
+  const page = { ...document("OCR misses the attack name"), chapterId: 20396, pageIndex: 13 };
+  const article = `![Kamehameha](unlisted.webp)\n\n![Kienzan](${page.images[0]!.url})\n\n![Kienzan](https://example.com/databooks/guide.webp)`;
+  const entries = [{ ...techniques[2]!, article }];
+  const docs = techniqueDocumentsFromEditorialArticles(entries, [page]);
+  expect(docs).toHaveLength(1);
+  const candidate = discoverTechniqueImages(techniques, docs).candidates[0]!;
+  expect(candidate).toMatchObject({
+    techniqueId: 3,
+    chapterId: 20396,
+    pageIndex: 13,
+    sourceUrl: page.sourceUrl,
+    locator: page.locator,
+    matchIn: "context",
+    status: "candidate-needs-visual-review",
+  });
+  expect(candidate.contextSource?.sha256).toBe(
+    new Bun.CryptoHasher("sha256").update(article).digest("hex"),
+  );
+  expect(candidate.documentSha256).toBe(
+    new Bun.CryptoHasher("sha256").update(JSON.stringify(docs[0])).digest("hex"),
+  );
+  expect(discoverTechniqueImages(techniques, docs).verifiedImages).toBe(0);
+});
+
+test("editorial context cannot attribute another technique or resurrect hidden entries", () => {
+  const page = { ...document(""), chapterId: 20014, pageIndex: 2 };
+  const entries = [
+    { ...techniques[0]!, article: `![Kienzan](${page.images[0]!.url})` },
+    { ...techniques[2]!, visible: false, article: `![Kienzan](${page.images[0]!.url})` },
+  ];
+  const docs = techniqueDocumentsFromEditorialArticles(entries, [page]);
+  expect(discoverTechniqueImages(techniques, docs).candidates).toEqual([]);
+  expect(
+    techniqueDocumentsFromEditorialArticles(entries, [{ ...page, pageIndex: undefined }]),
+  ).toEqual([]);
+});
+
+test("editorial and OCR evidence deduplicate the same technique/page without merging variants", () => {
+  const page = { ...document("Kamehameha"), chapterId: 20014, pageIndex: 2 };
+  const docs = techniqueDocumentsFromEditorialArticles(
+    [{ ...techniques[0]!, article: `![Kamehameha](${page.images[0]!.url})` }],
+    [page],
+  );
+  const result = discoverTechniqueImages(techniques, [page, ...docs, ...docs]);
+  expect(result.candidates).toHaveLength(1);
+  expect(result.candidates[0]!.matchIn).toBe("ocr");
+  expect(result.candidates[0]!.techniqueId).toBe(1);
 });

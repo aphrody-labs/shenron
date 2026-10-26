@@ -61,3 +61,27 @@ ne retenait que le bloc de partage (21 mots), tandis que `aphrody web scrape
 consommer la conversion complète pour ce site. L’index local de photogrammes
 était vide lors du contrôle ; aucune couverture de tous les épisodes n’est
 revendiquée.
+
+La découverte inclut aussi les images Markdown des articles du catalogue, avec
+un garde-fou : chaque URL doit correspondre exactement à une page manga déjà
+inventoriée avec chapitre et numéro de page. Les guides, liens inconnus et URL
+reconstituées ne deviennent pas des scènes. L’attribution reste limitée à la fiche
+qui porte l’article ; les techniques citées en comparaison ne reçoivent pas ses
+images. `--skip-editorial` permet de comparer sans cette entrée secondaire.
+L’OCR prioritaire et le contexte éditorial sont dédupliqués sur technique, image,
+source et locator. `contextSource` conserve l’URL et le SHA-256 de l’article.
+
+Chaque candidat porte `documentSha256`, empreinte du document normalisé exact
+consommé, ainsi que `chapterId` et `pageIndex` quand ces coordonnées existent.
+Cette empreinte n’est **pas** celle des octets de l’image distante : la découverte
+ne les télécharge pas. Les hashes natifs présents dans les locators sont conservés.
+
+Qualification du 26 octobre 2026 sur les mêmes sources locales et 594 fiches
+visibles : **810 → 815 candidats**, **51 → 55 fiches couvertes**, zéro image validée
+par le parseur. Les cinq résultats supplémentaires sont Beignets galactiques,
+Dynamite Kick (deux pages), Super Saiyen et Super Saiyen 3. Les alias exacts
+« Galactica Doughnut » et « Dynamite Kiiick » sont relus sur les pages manga avant
+emploi. Le terme trop large « Dynamite » seul n’est pas ajouté au lexique.
+Les 391 candidats DBFC existants restent une file des chapitres de début, car
+les 7 939 pages couleur du snapshot n’ont pas d’OCR. Aucun transfert automatique
+de numéro de page entre éditions, aucune image attribuée ou publiée.

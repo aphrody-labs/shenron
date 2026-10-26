@@ -75,6 +75,23 @@ export const TECHNIQUE_IMAGE_SEARCH_ALIASES: Array<{
   aliases: TechniqueSearchAlias[];
 }> = [
   {
+    id: 260,
+    name: "Beignets galactiques",
+    aliases: [
+      {
+        name: "Galactica Doughnut",
+        evidence: { manga: "vol41", page: 60, quote: "GALACTICA DOUGHNUT" },
+      },
+    ],
+  },
+  {
+    id: 288,
+    name: "Dynamite Kick",
+    aliases: [
+      { name: "Dynamite Kiiick", evidence: { manga: "vol41", page: 55, quote: "DYNAMITE KIIICK" } },
+    ],
+  },
+  {
     id: 188,
     name: "Canon Garric",
     aliases: [

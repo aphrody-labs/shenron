@@ -16,6 +16,10 @@ export type TechniqueImageDocument = {
   text: string;
   textKind?: "ocr" | "context";
   chapterId?: number;
+  pageIndex?: number;
+  /** Restrict secondary editorial context to its owning technique. */
+  techniqueId?: number;
+  contextSource?: { url: string; sha256: string };
   images: readonly { url: string; caption?: string; width?: number; height?: number }[];
 };
 export type TechniqueImageCandidate = {
@@ -25,6 +29,11 @@ export type TechniqueImageCandidate = {
   sourceUrl: string;
   medium: "manga" | "anime";
   locator: string;
+  chapterId?: number;
+  pageIndex?: number;
+  /** Hash of the exact normalized input document, not a claim to have fetched image bytes. */
+  documentSha256: string;
+  contextSource?: { url: string; sha256: string };
   matchedAlias: string;
   matchIn: "caption" | "ocr" | "context" | "debut-chapter";
   status: "candidate-needs-visual-review";
@@ -152,7 +161,17 @@ export function discoverTechniqueImages(
       rejectedImages += document.images.length;
       continue;
     }
-    const mentions = findMentions(document.text, unambiguous);
+    const scopedAliases =
+      document.techniqueId === undefined
+        ? unambiguous
+        : unambiguous.filter((entry) => entry.technique.id === document.techniqueId);
+    const mentions = findMentions(document.text, scopedAliases);
+    const provenance = {
+      documentSha256: new Bun.CryptoHasher("sha256").update(JSON.stringify(document)).digest("hex"),
+      ...(document.chapterId === undefined ? {} : { chapterId: document.chapterId }),
+      ...(document.pageIndex === undefined ? {} : { pageIndex: document.pageIndex }),
+      ...(document.contextSource === undefined ? {} : { contextSource: document.contextSource }),
+    };
     for (const image of document.images) {
       const url = eligibleTechniqueImageUrl(image.url, sourceUrl);
       if (
@@ -163,13 +182,14 @@ export function discoverTechniqueImages(
         rejectedImages++;
         continue;
       }
-      const captionMentions = findMentions(image.caption ?? "", unambiguous);
+      const captionMentions = findMentions(image.caption ?? "", scopedAliases);
       for (const mention of captionMentions.length ? captionMentions : mentions) {
         const technique = mention.entry.technique;
         const key = JSON.stringify([technique.id, url, sourceUrl, document.locator]);
         if (seen.has(key)) continue;
         seen.add(key);
         candidates.push({
+          ...provenance,
           techniqueId: technique.id,
           slug: technique.slug,
           image: url,
@@ -193,11 +213,16 @@ export function discoverTechniqueImages(
         Number.isSafeInteger(document.chapterId) &&
         document.chapterId! > 0
       ) {
-        for (const technique of active.filter((row) => row.debutChapterId === document.chapterId)) {
+        for (const technique of active.filter(
+          (row) =>
+            row.debutChapterId === document.chapterId &&
+            (document.techniqueId === undefined || row.id === document.techniqueId),
+        )) {
           const key = JSON.stringify([technique.id, url, sourceUrl, document.locator]);
           if (seen.has(key)) continue;
           seen.add(key);
           candidates.push({
+            ...provenance,
             techniqueId: technique.id,
             slug: technique.slug,
             image: url,
@@ -237,6 +262,56 @@ export function discoverTechniqueImages(
     coverage,
     verifiedImages: 0,
   };
+}
+
+/** Resolve editorial Markdown images against actual inventoried pages; never infer a scan URL. */
+export function techniqueDocumentsFromEditorialArticles(
+  entries: readonly (TechniqueImageIdentity & { article?: string | null })[],
+  sources: readonly TechniqueImageDocument[],
+): TechniqueImageDocument[] {
+  const pages = new Map<string, TechniqueImageDocument[]>();
+  for (const source of sources) {
+    if (
+      source.medium !== "manga" ||
+      !Number.isSafeInteger(source.chapterId) ||
+      !Number.isSafeInteger(source.pageIndex)
+    )
+      continue;
+    for (const image of source.images) {
+      const url = eligibleTechniqueImageUrl(image.url, source.sourceUrl);
+      if (!url) continue;
+      const matches = pages.get(url) ?? [];
+      matches.push(source);
+      pages.set(url, matches);
+    }
+  }
+  return entries
+    .filter((entry) => entry.visible !== false && entry.article)
+    .flatMap((entry) => {
+      const articleUrl = `https://dragonballfr.com/wiki/techniques/${encodeURIComponent(entry.slug)}`;
+      const contextSource = {
+        url: articleUrl,
+        sha256: new Bun.CryptoHasher("sha256").update(entry.article!).digest("hex"),
+      };
+      return techniqueDocumentsFromNativeMarkdown({
+        url: articleUrl,
+        markdown: entry.article!,
+        medium: "manga",
+      }).flatMap((document) =>
+        document.images.flatMap((image) => {
+          const url = eligibleTechniqueImageUrl(image.url, articleUrl);
+          return (url ? (pages.get(url) ?? []) : []).map((source) =>
+            Object.assign({}, source, {
+              techniqueId: entry.id,
+              contextSource,
+              text: document.text,
+              textKind: "context" as const,
+              images: [{ ...image, url: url! }],
+            }),
+          );
+        }),
+      );
+    });
 }
 
 /** Adapt an already parsed native MediaWiki dossier; retain original media URLs and captions. */
