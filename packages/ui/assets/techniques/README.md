@@ -58,6 +58,23 @@ automatiques de toute l'encre du scan.
 | Technique du loup    | tome 1, p. 173  | Enchaînement de Yamcha annoncé comme Roga Fufu Ken sur la page 172 inspectée ; main ouverte de frappe et doigts séparés. La main est simplifiée, sans inventer un loup spectral absent de cette case.                                   |
 | Image rémanente      | tome 4, p. 115  | Silhouette de Goku brouillée par les stries pendant le combat contre Jackie Chun ; trois silhouettes schématiques décalées de 19–20 unités représentent la rémanence. Les gris sont un choix de lisibilité monochrome.                  |
 
+## Troisième lot : neuf scènes supplémentaires
+
+| Technique                | Référence manga | Mesure et choix d'icône dans le repère de 96 unités                                                                                                                                                                                                     |
+| ------------------------ | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Super fantômes kamikazes | tome 41, p. 69  | La page nomme Super Ghost Kamikazé Attack. Le fantôme possède des cheveux dressés et une queue courbe ; contour de 68 × 76 unités et visage réduit à trois traits. Le poing et les plis sont supprimés pour le badge.                                   |
+| Explosion finale         | tome 39, p. 103 | Vegeta au centre d'une décharge très grande, bras écartés ; enveloppe pointue de 80 × 82 unités et personnage réduit à un cercle de rayon 6 et cinq segments. Les proportions du personnage sont volontairement agrandies.                              |
+| Grenade infernale        | tome 31, p. 43  | C-17 entouré des sphères de Piccolo ; sept cercles de rayon 6 ou 9 entourent un pentagone schématique. Les quatre segments internes symbolisent la convergence ; le pentagone remplace la cible, sans prétendre dessiner son portrait.                  |
+| Kamehameha père-fils     | tome 35, p. 109 | Gohan tire d'une main, Goku apparaît derrière lui. La découpe garde les deux figures et les mains. Le faisceau blanc mesure environ 79 × 52 unités ; deux petits signes ramifiés représentent schématiquement les deux participants.                    |
+| Boule de la Mort         | tome 26, p. 155 | Petite sphère noire irrégulière au-dessus de l'index de Freezer, pendant le duel contre le Genkidama. Le noyau est noir de rayon 16, la bordure blanche mesure environ 56 × 51. Le doigt reste séparé de 8 unités. Ce n'est pas une image de Supernova. |
+| Super Vegeta             | tome 32, p. 47  | Autodésignation explicite dans la case. Cheveux dressés et implantation en V, visage de 42 × 30 unités ; épaules réduites à deux traits. Cette image représente bien la forme nommée, pas un portrait de base réutilisé.                                |
+| Super Saiyen             | tome 27, p. 27  | Goku se nomme Super Saiyan dans la case ; cheveux clairs dressés, contour asymétrique de 75 × 44 unités. Le visage est simplifié ; aucun jaune n'est inventé pour une source monochrome.                                                                |
+| Super Saiyen 2           | tome 34, p. 155 | Gohan transformé face à Cell, aura et cheveux dressés. Contour des cheveux de 73 × 43 unités ; deux marques latérales anguleuses sont une convention éditoriale de l'aura, et non deux éclairs précisément relevés sur cette page.                      |
+| Super Saiyen 3           | tome 42, p. 93  | Goku en SSJ3, longue chevelure dans l'aura ; contour de 67 × 80 unités qui descend sous le visage. La page 91, inspectée puis rejetée, montrait Goku aux cheveux courts parlant de la forme.                                                            |
+
+La carte du fantôme correspond uniquement au slug `super-fantomes-kamikazes`.
+La proximité du nom d'une autre compétence du catalogue ne suffit pas à lui attribuer cette scène.
+
 ## Reproduire
 
 ```powershell
@@ -69,14 +86,14 @@ La primitive maintenue `radialSpeedlines` vient de
 `packages/ui/src/toriyama-svg/geometry.ts`. Aucune copie de moteur n'est ajoutée.
 Le générateur produit des fichiers stables à partir des sources épinglées.
 
-Qualification du 26 octobre 2026 : les 22 découpes et les 44 planches PNG
+Qualification du 26 octobre 2026 : les 31 découpes et les 62 planches PNG
 clair/sombre ont été ouvertes. Le rendu emploie réellement le moteur WebView
 Chrome de Bun à 512, 128, 64, 32, 28 et 16 pixels, puis agrandit les petites
 tailles au plus proche voisin pour le contrôle. Les silhouettes restent
 distinctes à 28 pixels ; à 16 pixels les traits du visage solaire et de la main
 de téléportation se simplifient. Cette taille n'est pas celle du badge livré.
 
-Les 22 scènes ne couvrent pas toutes les techniques du catalogue. Une absence du
+Les 31 scènes ne couvrent pas toutes les techniques du catalogue. Une absence du
 manifeste signifie « média pas encore vérifié », sans substitution par un portrait.
 La qualification locale ne prouve pas que ces nouveaux fichiers sont déjà servis
 par le déploiement public.

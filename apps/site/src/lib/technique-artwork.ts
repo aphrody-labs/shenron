@@ -52,6 +52,15 @@ export const TECHNIQUE_ARTWORK: Readonly<Record<string, PrimaryTechniqueArtwork>
   "attaque-volley-ball": mangaArtwork("attaque-volley-ball", 11, 80),
   "technique-du-loup": mangaArtwork("technique-du-loup", 1, 173),
   "image-remanente": mangaArtwork("image-remanente", 4, 115),
+  "super-fantomes-kamikazes": mangaArtwork("super-fantomes-kamikazes", 41, 69),
+  "explosion-finale": mangaArtwork("explosion-finale", 39, 103),
+  "grenade-infernale": mangaArtwork("grenade-infernale", 31, 43),
+  "kamehameha-pere-fils": mangaArtwork("kamehameha-pere-fils", 35, 109),
+  "boule-de-la-mort": mangaArtwork("boule-de-la-mort", 26, 155),
+  "super-vegeta": mangaArtwork("super-vegeta", 32, 47),
+  "super-saiyen": mangaArtwork("super-saiyen", 27, 27),
+  "super-saiyen-2": mangaArtwork("super-saiyen-2", 34, 155),
+  "super-saiyen-3": mangaArtwork("super-saiyen-3", 42, 93),
 });
 
 export function getTechniqueArtwork(slug: string): PrimaryTechniqueArtwork | null {

@@ -240,5 +240,104 @@
     "width": 1280,
     "height": 1972,
     "crop": [660, 150, 540, 450]
+  },
+  {
+    "slug": "super-fantomes-kamikazes",
+    "volume": 41,
+    "page": 69,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1460?page=69",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol41/069.webp",
+    "sha256": "ae5c42bc451ef8a29e14e5b89c347e8cbe7150550218e8ac6824e13893b8ddcd",
+    "width": 1280,
+    "height": 1972,
+    "crop": [820, 656, 380, 490]
+  },
+  {
+    "slug": "explosion-finale",
+    "volume": 39,
+    "page": 103,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1458?page=103",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol39/103.webp",
+    "sha256": "ba4a7d76d72d72773dc4c09a902be4e533870bd5a11dde1af8baca71ec612253",
+    "width": 1280,
+    "height": 1972,
+    "crop": [0, 0, 1210, 1972]
+  },
+  {
+    "slug": "grenade-infernale",
+    "volume": 31,
+    "page": 43,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1450?page=43",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol31/043.webp",
+    "sha256": "00cbe59f673a44e08474155b8dbae8af26f703ca8854fe48c333e21e4bf827b0",
+    "width": 1280,
+    "height": 1972,
+    "crop": [0, 0, 1200, 920]
+  },
+  {
+    "slug": "kamehameha-pere-fils",
+    "volume": 35,
+    "page": 109,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1454?page=109",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol35/109.webp",
+    "sha256": "223b80738c7a8e2c5ac7dff455baaccf78ed57d95b0316ad30b7c7b10e461578",
+    "width": 1280,
+    "height": 1972,
+    "crop": [80, 660, 1120, 1180]
+  },
+  {
+    "slug": "boule-de-la-mort",
+    "volume": 26,
+    "page": 155,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1445?page=155",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol26/155.webp",
+    "sha256": "3e44b1fd4e9f00614f09f6e7ae561bfb523a4476fddad615755707038a7cfc63",
+    "width": 1280,
+    "height": 1972,
+    "crop": [725, 690, 470, 1150]
+  },
+  {
+    "slug": "super-vegeta",
+    "volume": 32,
+    "page": 47,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1451?page=47",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol32/047.webp",
+    "sha256": "876647c71437e5492b1acff91b3f4632c65282598dd1ea833ccf656515c11846",
+    "width": 1280,
+    "height": 1972,
+    "crop": [80, 724, 1120, 1117]
+  },
+  {
+    "slug": "super-saiyen",
+    "volume": 27,
+    "page": 27,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1446?page=27",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol27/027.webp",
+    "sha256": "ba262a69165877444715dafc95db565fba0a27ea7341baf1ccf010dd54bc427d",
+    "width": 1280,
+    "height": 1972,
+    "crop": [80, 900, 820, 1072]
+  },
+  {
+    "slug": "super-saiyen-2",
+    "volume": 34,
+    "page": 155,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1453?page=155",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol34/155.webp",
+    "sha256": "b0ce303dfd0182fc6b1b3751a5334dc911fb665c993df62bd1fcc20e5e0ce8e5",
+    "width": 1280,
+    "height": 1972,
+    "crop": [500, 0, 700, 1840]
+  },
+  {
+    "slug": "super-saiyen-3",
+    "volume": 42,
+    "page": 93,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1461?page=93",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol42/093.webp",
+    "sha256": "136c3c35dbf8bc311129a09001b3116972223c29bf14b31cc36264bcbacbfafd",
+    "width": 1280,
+    "height": 1972,
+    "crop": [596, 164, 610, 680]
   }
 ]
