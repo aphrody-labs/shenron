@@ -3,9 +3,11 @@
 
 /** One compact preview and mixed thumbnail rail in editorial order. */
 import { Film, ImageIcon, Pause, Play } from "lucide-react";
+import { assetMirrorUrl, DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useReglages } from "@/lib/use-capacites";
 import { assetUrl } from "@/lib/assets";
+import { API_ORIGIN, ASSET_ORIGIN } from "@/lib/config";
 import { youtubeEmbedUrl, youtubeThumbUrl } from "@/lib/youtube";
 import { useGameGalleryUIText } from "@/lib/game-gallery-ui-text";
 
@@ -129,6 +131,8 @@ function Gallery({
 }) {
   const t = useGameGalleryUIText();
   const [activeKey, setActiveKey] = useState<string | null>(null);
+  const [cdnFallbacks, setCdnFallbacks] = useState<ReadonlySet<string>>(() => new Set());
+  const [failedMedia, setFailedMedia] = useState<ReadonlySet<string>>(() => new Set());
   const active = Math.max(
     0,
     items.findIndex((item) => item.key === activeKey),
@@ -138,6 +142,22 @@ function Gallery({
   const [enMarche, setEnMarche] = useState<boolean | null>(null);
   const suspendu = useRef(false);
   const current = items[Math.min(active, Math.max(0, items.length - 1))];
+  const cdnOrigin = ASSET_ORIGIN === API_ORIGIN ? DEFAULT_PUBLIC_ORIGINS.cdn : ASSET_ORIGIN;
+  const mediaSource = (item: ItemResolu) => {
+    if (item.kind !== "image" || !cdnFallbacks.has(item.key)) return item.src;
+    return assetMirrorUrl(item.src, cdnOrigin, API_ORIGIN) ?? item.src;
+  };
+  const handleMediaFailure = (item: ItemResolu) => {
+    if (
+      item.kind === "image" &&
+      !cdnFallbacks.has(item.key) &&
+      assetMirrorUrl(item.src, cdnOrigin, API_ORIGIN)
+    ) {
+      setCdnFallbacks((previous) => new Set(previous).add(item.key));
+      return;
+    }
+    setFailedMedia((previous) => new Set(previous).add(item.key));
+  };
 
   // `lectureAuto` porte à la fois le choix de l'utilisateur
   // (`prefers-reduced-motion`) et l'état de sa machine et de sa connexion :
@@ -217,14 +237,20 @@ function Gallery({
               loading="lazy"
               referrerPolicy="strict-origin-when-cross-origin"
             />
+          ) : failedMedia.has(current.key) ? (
+            <span className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-white/55">
+              <ImageIcon className="h-9 w-9" aria-hidden="true" />
+              <span className="sr-only">{t("imageUnavailable", { title })}</span>
+            </span>
           ) : (
             <img
               key={current.key}
-              src={current.src}
+              src={mediaSource(current)}
               alt={current.caption || t("imageTitle", { title })}
               // `animate-[fadeIn]` : sans fondu, le passage automatique d'une
               // image à l'autre est un à-coup sec au milieu de la lecture.
               className="absolute inset-0 h-full w-full motion-safe:animate-[fade-in_400ms_ease-out] object-contain"
+              onError={() => handleMediaFailure(current)}
             />
           )}
         </div>
@@ -253,12 +279,13 @@ function Gallery({
                       : "border-white/10 hover:border-white/30"
                   }`}
                 >
-                  {item.thumb ? (
+                  {item.thumb && !failedMedia.has(item.key) ? (
                     <img
-                      src={item.thumb}
+                      src={item.kind === "image" ? mediaSource(item) : item.thumb}
                       alt=""
                       className="h-full w-full object-cover"
                       loading="lazy"
+                      onError={() => handleMediaFailure(item)}
                     />
                   ) : (
                     <span className="flex h-full w-full items-center justify-center bg-zinc-900 text-white/50">

@@ -67,6 +67,53 @@ test("empty galleries and invalid video references render no empty media section
 });
 
 test.skipIf(typeof document === "undefined")(
+  "retries missing uploaded gallery images from the CDN before showing an accessible icon",
+  async () => {
+    const globals = globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean };
+    const previous = globals.IS_REACT_ACT_ENVIRONMENT;
+    const settings = spyOn(capabilities, "useReglages").mockReturnValue({
+      lectureAuto: false,
+    } as ReturnType<typeof capabilities.useReglages>);
+    globals.IS_REACT_ACT_ENVIRONMENT = true;
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    try {
+      await act(async () => {
+        root.render(
+          <NextIntlClientProvider locale="fr" messages={{}} timeZone="UTC">
+            <GameMediaGallery
+              title="Dragon Ball Legends"
+              media={[
+                {
+                  type: "image",
+                  url: "./assets/wiki/games-media/00000000-0000-4000-8000-000000000001.webp",
+                },
+              ]}
+            />
+          </NextIntlClientProvider>,
+        );
+      });
+      let image = container.querySelector("img")!;
+      expect(new URL(image.src).hostname).toBe("bot.dragonballfr.com");
+      await act(async () => image.dispatchEvent(new Event("error")));
+      image = container.querySelector("img")!;
+      expect(new URL(image.src).hostname).toBe("cdn.dragonballfr.com");
+      await act(async () => image.dispatchEvent(new Event("error")));
+      expect(container.querySelector("img")).toBeNull();
+      expect(container.querySelector(".sr-only")?.textContent).toBe(
+        "Image indisponible — Dragon Ball Legends",
+      );
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      globals.IS_REACT_ACT_ENVIRONMENT = previous;
+      settings.mockRestore();
+    }
+  },
+);
+
+test.skipIf(typeof document === "undefined")(
   "removing an unavailable earlier thumbnail preserves the selected video iframe",
   async () => {
     const globals = globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean };

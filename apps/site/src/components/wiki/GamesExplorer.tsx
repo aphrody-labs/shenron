@@ -3,9 +3,11 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Check, Gamepad2, Search, Star, X } from "lucide-react";
+import { assetMirrorUrl, DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
+import { ArrowRight, Check, Gamepad2, ImageOff, Search, Star, X } from "lucide-react";
 import { useLangue } from "@/lib/i18n/client";
 import { assetUrl } from "@/lib/assets";
+import { API_ORIGIN, ASSET_ORIGIN } from "@/lib/config";
 import { isEditableAsset } from "@/lib/images";
 import type { Game } from "@/lib/db-universe";
 import {
@@ -65,6 +67,7 @@ export function GamesExplorer({
     messages[key].replace(/\{(\w+)\}/g, (match, name: string) => String(values?.[name] ?? match));
   const [filters, setFilters] = useState<Filters>(initial);
   const [failedCovers, setFailedCovers] = useState<Set<string>>(() => new Set());
+  const [fallbackCovers, setFallbackCovers] = useState<Set<string>>(() => new Set());
   const [heroFailed, setHeroFailed] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLHeadingElement>(null);
@@ -96,6 +99,21 @@ export function GamesExplorer({
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const page = Math.min(filters.page, totalPages);
   const visible = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const featuredGames = games.filter((game) => game.cover).slice(0, 3);
+  const cdnOrigin = ASSET_ORIGIN === API_ORIGIN ? DEFAULT_PUBLIC_ORIGINS.cdn : ASSET_ORIGIN;
+  const coverSource = (cover: string) => {
+    const primary = assetUrl(cover);
+    return fallbackCovers.has(cover)
+      ? (assetMirrorUrl(primary, cdnOrigin, API_ORIGIN) ?? primary)
+      : primary;
+  };
+  const handleCoverFailure = (cover: string) => {
+    if (!fallbackCovers.has(cover) && assetMirrorUrl(assetUrl(cover), cdnOrigin, API_ORIGIN)) {
+      setFallbackCovers((previous) => new Set(previous).add(cover));
+      return;
+    }
+    setFailedCovers((previous) => new Set(previous).add(cover));
+  };
   const reset = () => update({ ...initial, sort: filters.sort });
   const changePage = (next: number) => {
     update({ page: next });
@@ -126,19 +144,39 @@ export function GamesExplorer({
             onError={() => setHeroFailed(true)}
           />
         )}
-        <div className={styles.heroContent}>
-          <p className={styles.eyebrow}>{t("eyebrow")}</p>
-          <h1>{t("title")}</h1>
-          <p>{t("intro", { count: games.length })}</p>
-          <div className={styles.heroLinks}>
-            <a href="#games-catalogue" className={styles.primary}>
-              {t("browse")}
-              <ArrowRight size={18} aria-hidden="true" />
-            </a>
-            <Link href="/games" className={styles.secondary}>
-              {t("miniGames")}
-            </Link>
+        <div className={styles.heroLayout}>
+          <div className={styles.heroContent}>
+            <p className={styles.eyebrow}>{t("eyebrow")}</p>
+            <h1>{t("title")}</h1>
+            <p>{t("intro", { count: games.length })}</p>
+            <div className={styles.heroLinks}>
+              <a href="#games-catalogue" className={styles.primary}>
+                {t("browse")}
+                <ArrowRight size={18} aria-hidden="true" />
+              </a>
+              <Link href="/games" className={styles.secondary}>
+                {t("miniGames")}
+              </Link>
+            </div>
           </div>
+          {featuredGames.length > 0 && (
+            <div className={styles.featuredCovers} aria-hidden="true">
+              {featuredGames.map((game, index) => (
+                <div className={styles.featuredCover} data-position={index} key={game.id}>
+                  {!failedCovers.has(game.cover!) && (
+                    <Image
+                      src={coverSource(game.cover!)}
+                      alt=""
+                      fill
+                      unoptimized={isEditableAsset(game.cover)}
+                      sizes="(max-width: 640px) 28vw, 160px"
+                      onError={() => handleCoverFailure(game.cover!)}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </header>
       <div className={styles.content}>
@@ -247,7 +285,7 @@ export function GamesExplorer({
                       <div className={styles.cover}>
                         {game.cover && !failedCovers.has(game.cover) ? (
                           <Image
-                            src={assetUrl(game.cover)}
+                            src={coverSource(game.cover)}
                             unoptimized={isEditableAsset(game.cover)}
                             alt=""
                             fill
@@ -256,15 +294,13 @@ export function GamesExplorer({
                             className={styles.coverImage}
                             ref={(image) => {
                               if (image?.complete && image.currentSrc && image.naturalWidth === 0)
-                                setFailedCovers((previous) => new Set(previous).add(game.cover!));
+                                handleCoverFailure(game.cover!);
                             }}
-                            onError={() =>
-                              setFailedCovers((previous) => new Set(previous).add(game.cover!))
-                            }
+                            onError={() => handleCoverFailure(game.cover!)}
                           />
                         ) : (
                           <div className={styles.noCover}>
-                            <Gamepad2 size={40} aria-hidden="true" />
+                            <ImageOff size={40} aria-hidden="true" />
                             <span>{t("noCover")}</span>
                           </div>
                         )}

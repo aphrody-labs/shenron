@@ -4,6 +4,7 @@
   "image": "Image {index}",
   "videoTitle": "{title} — vidéo",
   "imageTitle": "{title} — capture",
+  "imageUnavailable": "Image indisponible — {title}",
   "pause": "Pause",
   "play": "Lecture",
   "stopSlideshow": "Arrêter le défilement",

@@ -91,6 +91,14 @@ test("SSR keeps the first page bounded and exposes truthful accessible navigatio
   expect(html).not.toContain("Univers Dérivé");
 });
 
+test("the catalogue hero uses documented game covers as its featured artwork", () => {
+  const game = { ...games[0]!, cover: "./assets/ext/db_games/1.png" };
+  const html = renderToStaticMarkup(<GamesExplorer games={[game]} ratings={{}} />);
+  expect(html).toContain('aria-hidden="true"');
+  expect(html.match(/<img\b/g)).toHaveLength(2);
+  expect(html).toContain("db_games%2F1.png");
+});
+
 test("catalogue translations cover every non-empty interface message", () => {
   const keys = Object.keys(fr).toSorted();
   for (const dictionary of [fr, en, ja]) {
@@ -170,6 +178,27 @@ test("failed cover and hero images fall back while Xbox Series X|S remains one c
         expect(article.querySelector("a")!.getAttribute("href")).toBe("/wiki/games/game-1");
       },
       { games: [{ ...games[0]!, cover: "/covers/missing-game.webp" }] },
+    ),
+  );
+});
+
+test("retries missing editable covers from the public CDN before showing the fallback icon", async () => {
+  const cover = "./assets/wiki/games/00000000-0000-4000-8000-000000000001.webp";
+  await withImageState(false, async () =>
+    mounted(
+      "/wiki/games",
+      async (container) => {
+        const article = container.querySelector("article")!;
+        const image = article.querySelector("img")!;
+        expect(new URL(image.src).hostname).toBe("bot.dragonballfr.com");
+        await act(async () => image.dispatchEvent(new Event("error")));
+        expect(new URL(article.querySelector("img")!.src).hostname).toBe("cdn.dragonballfr.com");
+        await act(async () => article.querySelector("img")!.dispatchEvent(new Event("error")));
+        expect(article.querySelector("img")).toBeNull();
+        expect(article.querySelector("svg")).not.toBeNull();
+        expect(article.textContent).toContain(fr.noCover);
+      },
+      { games: [{ ...games[0]!, cover }] },
     ),
   );
 });

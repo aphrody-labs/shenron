@@ -8,6 +8,15 @@
   background: var(--card);
   border-bottom: 1px solid var(--border);
 }
+.heroLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 0.65fr);
+  align-items: center;
+  gap: clamp(1.5rem, 5vw, 4rem);
+  max-width: var(--shell-max, 1180px);
+  margin-inline: auto;
+  padding: clamp(2rem, 5vw, 4rem) var(--shell-pad, 1.5rem);
+}
 .heroImage {
   object-fit: cover;
   object-position: center;
@@ -26,9 +35,43 @@
   z-index: -1;
 }
 .heroContent {
-  max-width: var(--shell-max, 1180px);
-  margin-inline: auto;
-  padding: clamp(2rem, 5vw, 4rem) var(--shell-pad, 1.5rem);
+  min-width: 0;
+}
+.featuredCovers {
+  position: relative;
+  justify-self: end;
+  width: min(100%, 360px);
+  aspect-ratio: 1.16;
+  perspective: 800px;
+}
+.featuredCover {
+  position: absolute;
+  top: 7%;
+  width: 47%;
+  height: 86%;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--foreground) 25%, transparent);
+  border-radius: 0.75rem;
+  background: var(--card);
+  box-shadow: 0 1.25rem 2.5rem color-mix(in srgb, #000 35%, transparent);
+}
+.featuredCover img {
+  object-fit: contain;
+}
+.featuredCover[data-position="0"] {
+  left: 4%;
+  z-index: 1;
+  transform: rotate(-9deg) translateY(5%);
+}
+.featuredCover[data-position="1"] {
+  left: 28%;
+  z-index: 3;
+  transform: translateY(-3%);
+}
+.featuredCover[data-position="2"] {
+  right: 3%;
+  z-index: 2;
+  transform: rotate(9deg) translateY(5%);
 }
 .eyebrow {
   color: var(--foreground);
@@ -420,14 +463,34 @@
   }
 }
 @media (max-width: 540px) {
+  .heroLayout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+  .featuredCovers {
+    justify-self: center;
+    width: min(72vw, 280px);
+    aspect-ratio: 1.5;
+  }
+  .featuredCover {
+    top: 4%;
+    height: 92%;
+    width: 38%;
+  }
+  .featuredCover[data-position="0"] {
+    left: 8%;
+  }
+  .featuredCover[data-position="1"] {
+    left: 31%;
+  }
+  .featuredCover[data-position="2"] {
+    right: 8%;
+  }
   .grid {
     grid-template-columns: minmax(0, 1fr);
   }
   .sort {
     flex-basis: 100%;
-  }
-  .heroContent {
-    padding-block: 2rem;
   }
 }
 @media (forced-colors: active) {
