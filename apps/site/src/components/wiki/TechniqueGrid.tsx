@@ -1,40 +1,38 @@
 "use client";
-/* oxlint-disable react/exhaustive-effect-dependencies, react/set-state-in-effect -- reviewed: legacy patterns, behavior preserved */
-
-/**
- * Grille des techniques, paginée.
- *
- * La page rendait les 825 fiches d'un coup : **2,4 Mo de HTML** mesurés en
- * production (1,53 Mo de DOM + 892 Ko de charge RSC), pour 60 cartes visibles à
- * l'écran. C'est ce qui rendait la page lente à ouvrir et saccadée au
- * défilement, surtout sur mobile. Ici le DOM ne contient qu'une page de cartes,
- * et la pagination reprend le composant partagé (position dans l'URL, mesure
- * affichée).
- *
- * Le filtre par type est client : la liste est déjà là, un aller-retour serveur
- * pour masquer des lignes serait plus lent que de les masquer sur place.
- */
-import Image from "next/image";
+// SPDX-License-Identifier: Apache-2.0
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { Pagination } from "@/components/kit/Pagination";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
+import { CharacterCardGrid } from "@/components/wiki/CharacterPosterCard";
+import { TechniqueFamiliesView } from "@/components/wiki/TechniqueFamiliesView";
+import { WikiImg } from "@/components/wiki/WikiImg";
+import {
+  WikiFacet,
+  WikiListLayout,
+  WikiSearchField,
+  WikiSegmented,
+  normaliser,
+} from "@/components/wiki/WikiListLayout";
 import { assetUrl } from "@/lib/assets";
+import { useTechniqueText } from "@/lib/technique-ui-text";
 import type { AccessSnapshot } from "@/lib/wiki-launch";
 
 export type TechniqueCard = {
   id: number;
   slug: string;
   name: string;
+  nameJa?: string | null;
   description: string | null;
   type: string | null;
   image: string | null;
+  /** Only a source-verified technique SVG may populate this field. */
+  icon?: string | null;
+  source?: { label: string; url: string } | null;
   creatorName: string | null;
 };
 
-const PAR_PAGE = 60;
-
-import { TechniqueFamiliesView } from "@/components/wiki/TechniqueFamiliesView";
-import { Layers, LayoutGrid } from "lucide-react";
+const PAGE_SIZE = 60;
 
 export function TechniqueGrid({
   techniques,
@@ -42,177 +40,221 @@ export function TechniqueGrid({
   access,
 }: {
   techniques: TechniqueCard[];
-  /** type brut → libellé français (le registre vit côté serveur). */
   libelles: Record<string, string>;
-  /**
-   * Instantané de la configuration de lancement, résolu côté serveur. Sans lui
-   * la grille émettrait des liens vers des fiches qu'un anonyme ne peut pas
-   * ouvrir — le mur de 307 que `GatedLink` existe pour éviter.
-   */
   access: AccessSnapshot;
 }) {
-  const [viewMode, setViewMode] = useState<"families" | "linear">("families");
-  const [type, setType] = useState<string>("tous");
+  const t = useTechniqueText();
+  const [query, setQuery] = useState("");
+  const [types, setTypes] = useState<string[]>([]);
+  const [creators, setCreators] = useState<string[]>([]);
+  const [sort, setSort] = useState<"documented" | "alpha">("documented");
+  const [view, setView] = useState<"cards" | "families">("cards");
   const [page, setPage] = useState(1);
+  const [initialPage] = useState(() => {
+    const value =
+      typeof window === "undefined"
+        ? 1
+        : Number(new URLSearchParams(window.location.search).get("p"));
+    return Number.isFinite(value) && value > 0 ? Math.floor(value) : 1;
+  });
+  useEffect(() => {
+    // Restore a captured URL after hydration; children may already have synchronized page 1.
+    // oxlint-disable-next-line react/set-state-in-effect, react/no-deriving-state-in-effects -- restore an external URL snapshot after the matching server render
+    setPage(initialPage);
+  }, [initialPage]);
 
-  const types = useMemo(() => {
-    const compte = new Map<string, number>();
-    for (const t of techniques) {
-      const k = t.type ?? "Autre";
-      compte.set(k, (compte.get(k) ?? 0) + 1);
+  const typeOptions = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const technique of techniques) {
+      const type = technique.type ?? "";
+      counts.set(type, (counts.get(type) ?? 0) + 1);
     }
-    return [...compte.entries()].toSorted((a, b) => b[1] - a[1]);
+    return [...counts]
+      .toSorted((a, b) => b[1] - a[1])
+      .map(([value, count]) => ({ value, label: libelles[value] ?? (value || t("other")), count }));
+  }, [techniques, libelles, t]);
+  const creatorOptions = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const technique of techniques) {
+      if (technique.creatorName)
+        counts.set(technique.creatorName, (counts.get(technique.creatorName) ?? 0) + 1);
+    }
+    return [...counts]
+      .toSorted((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([value, count]) => ({ value, label: value, count }));
   }, [techniques]);
-
-  const filtrees = useMemo(
-    () => (type === "tous" ? techniques : techniques.filter((t) => (t.type ?? "Autre") === type)),
-    [techniques, type],
-  );
-
-  useEffect(() => setPage(1), [type]);
-
-  const pages = Math.max(1, Math.ceil(filtrees.length / PAR_PAGE));
-  const pageSure = Math.min(page, pages);
-  const visibles = useMemo(
-    () => filtrees.slice((pageSure - 1) * PAR_PAGE, pageSure * PAR_PAGE),
-    [filtrees, pageSure],
-  );
-
-  const pill =
-    // `min-h-11` = 44 px : ces puces filtrent tout le catalogue, et `py-2`
-    // seul les laissait à 38 px.
-    "inline-flex min-h-11 items-center rounded-full border px-4 py-2 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60";
+  const filtered = useMemo(() => {
+    const text = normaliser(query);
+    const selectedTypes = new Set(types);
+    const selectedCreators = new Set(creators);
+    const richness = (technique: TechniqueCard) =>
+      Number(Boolean(technique.image)) * 3 +
+      Number(Boolean(technique.description)) +
+      Number(Boolean(technique.creatorName));
+    return techniques
+      .filter((technique) => {
+        if (types.length && !selectedTypes.has(technique.type ?? "")) return false;
+        if (creators.length && !selectedCreators.has(technique.creatorName ?? "")) return false;
+        return (
+          !text ||
+          normaliser(
+            [technique.name, technique.nameJa, technique.creatorName].filter(Boolean).join(" "),
+          ).includes(text)
+        );
+      })
+      .toSorted(
+        (a, b) =>
+          (sort === "documented" ? richness(b) - richness(a) : 0) || a.name.localeCompare(b.name),
+      );
+  }, [techniques, query, types, creators, sort]);
+  const resetPage = () => {
+    setPage(1);
+  };
+  const reset = () => {
+    setQuery("");
+    setTypes([]);
+    setCreators([]);
+    resetPage();
+  };
+  const safePage = Math.min(page, Math.max(1, Math.ceil(filtered.length / PAGE_SIZE)));
+  const visible = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   return (
-    <div className="space-y-8">
-      {/* Sélecteur de mode : Familles & Lignées VS Grille Linéaire */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-white/10 bg-black/50 p-4 backdrop-blur-xl">
-        <div>
-          <div className="text-xs font-bold text-white uppercase tracking-wider">
-            Organisation des Capacités
-          </div>
-          <div className="text-[11px] text-white/50">
-            Basculez entre le regroupement généalogique par écoles martiales et la liste
-            alphabétique exhaustive.
-          </div>
-        </div>
-        <div className="flex rounded-xl bg-white/5 p-1 border border-white/10 shrink-0">
-          <button
-            type="button"
-            onClick={() => setViewMode("families")}
-            aria-pressed={viewMode === "families"}
-            className={`inline-flex min-h-11 items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/70 ${
-              viewMode === "families"
-                ? "bg-orange-600 text-white shadow-lg shadow-orange-950/50"
-                : "text-white/60 hover:text-white"
-            }`}
-          >
-            <Layers className="h-4 w-4" />
-            <span>Familles d&apos;Évolution</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewMode("linear")}
-            aria-pressed={viewMode === "linear"}
-            className={`inline-flex min-h-11 items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/70 ${
-              viewMode === "linear"
-                ? "bg-orange-600 text-white shadow-lg shadow-orange-950/50"
-                : "text-white/60 hover:text-white"
-            }`}
-          >
-            <LayoutGrid className="h-4 w-4" />
-            <span>Catalogue Exhaustif ({techniques.length})</span>
-          </button>
-        </div>
-      </div>
-
-      {viewMode === "families" ? (
-        <TechniqueFamiliesView techniques={techniques} />
+    <WikiListLayout
+      search={
+        <WikiSearchField
+          value={query}
+          onChange={(value) => {
+            setQuery(value);
+            resetPage();
+          }}
+          label={t("search")}
+          placeholder={t("searchPlaceholder")}
+        />
+      }
+      filters={
+        <>
+          <WikiFacet
+            title={t("type")}
+            options={typeOptions}
+            selected={types}
+            onChange={(value) => {
+              setTypes(value);
+              resetPage();
+            }}
+          />
+          <WikiFacet
+            title={t("creator")}
+            options={creatorOptions}
+            selected={creators}
+            onChange={(value) => {
+              setCreators(value);
+              resetPage();
+            }}
+          />
+        </>
+      }
+      activeCount={types.length + creators.length + Number(Boolean(query))}
+      onReset={reset}
+      tools={
+        <>
+          <WikiSegmented
+            label={t("sort")}
+            value={sort}
+            onChange={(value) => {
+              setSort(value);
+              resetPage();
+            }}
+            options={[
+              ["documented", t("documented")],
+              ["alpha", t("alphabetical")],
+            ]}
+          />
+          <WikiSegmented
+            label={t("display")}
+            value={view}
+            onChange={setView}
+            options={[
+              ["cards", t("cards")],
+              ["families", t("families")],
+            ]}
+          />
+        </>
+      }
+      resultCount={filtered.length}
+      resultLabel={t("results", { count: filtered.length, total: techniques.length })}
+    >
+      {view === "families" ? (
+        <TechniqueFamiliesView techniques={filtered} access={access} />
       ) : (
         <>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => setType("tous")}
-              aria-pressed={type === "tous"}
-              className={`${pill} ${
-                type === "tous"
-                  ? "border-dbz-orange bg-dbz-orange text-black"
-                  : "border-white/12 text-white/65 hover:border-white/30 hover:text-white"
-              }`}
-            >
-              Toutes
-              <span className="ml-1.5 tabular-nums opacity-70">{techniques.length}</span>
-            </button>
-            {types.map(([k, n]) => (
-              <button
-                key={k}
-                type="button"
-                onClick={() => setType(k)}
-                aria-pressed={type === k}
-                className={`${pill} ${
-                  type === k
-                    ? "border-dbz-orange bg-dbz-orange text-black"
-                    : "border-white/12 text-white/65 hover:border-white/30 hover:text-white"
-                }`}
-              >
-                {libelles[k] ?? k}
-                <span className="ml-1.5 tabular-nums opacity-70">{n}</span>
-              </button>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {visibles.map((tech) => (
-              <ClientGatedWrap
-                access={access}
-                key={tech.id}
-                href={`/wiki/techniques/${tech.slug}`}
-                className="group flex gap-4 rounded-xl border border-white/[0.08] p-4 transition-colors hover:border-dbz-orange/50 hover:bg-white/[0.02]"
-              >
-                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-white/10 bg-black">
-                  <Image
-                    src={assetUrl(tech.image ?? "/dbz/kinto-un-icone.svg")}
-                    alt=""
-                    fill
-                    sizes="56px"
-                    className="object-cover object-top transition-transform duration-500 group-hover:scale-110"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h3 className="font-display text-[15px] font-semibold leading-snug text-white transition-colors group-hover:text-dbz-orange">
-                    {tech.name}
-                  </h3>
-                  {tech.creatorName && (
-                    <p className="mt-0.5 font-scouter text-[10px] uppercase tracking-[0.12em] text-dbz-orange/70">
-                      {tech.creatorName}
+          <CharacterCardGrid>
+            {visible.map((technique, index) => (
+              <article key={technique.id} className="min-w-0">
+                <ClientGatedWrap
+                  access={access}
+                  href={`/wiki/techniques/${technique.slug}`}
+                  className="group/card block min-w-0 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange focus-visible:ring-offset-2 focus-visible:ring-offset-dbz-bg"
+                >
+                  <div className="relative aspect-[3/4] overflow-hidden rounded-xl border border-white/[0.08] bg-dbz-card transition-colors group-hover/card:border-dbz-orange/60 group-focus-visible/card:border-dbz-orange/60">
+                    <WikiImg
+                      src={technique.image}
+                      alt={technique.name}
+                      loading={index < 12 ? "eager" : "lazy"}
+                      sizes="(min-width: 1280px) 180px, (min-width: 1024px) 16vw, (min-width: 640px) 25vw, 45vw"
+                      className="object-contain transition-transform duration-500 group-hover/card:scale-[1.03] motion-reduce:transition-none"
+                    />
+                    {!technique.image && (
+                      <span className="absolute inset-x-2 bottom-3 text-center text-xs leading-5 text-white/60">
+                        {t("imagePending")}
+                      </span>
+                    )}
+                    {technique.icon && (
+                      <div className="absolute bottom-2 right-2 grid h-9 w-9 place-items-center rounded-lg border border-white/15 bg-black/75">
+                        <Image src={assetUrl(technique.icon)} alt="" width={28} height={28} />
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-2 space-y-0.5 px-0.5">
+                    <h2 className="line-clamp-2 font-display text-[13px] font-semibold leading-5 text-white/90 transition-colors group-hover/card:text-dbz-orange group-focus-visible/card:text-dbz-orange">
+                      {technique.name}
+                    </h2>
+                    <p className="text-xs leading-5 text-dbz-orange/90">
+                      {libelles[technique.type ?? ""] ?? technique.type ?? t("other")}
                     </p>
-                  )}
-                  {tech.description && (
-                    <p className="mt-1.5 line-clamp-2 text-[12px] leading-relaxed text-white/50">
-                      {tech.description}
-                    </p>
-                  )}
-                </div>
-              </ClientGatedWrap>
+                    {technique.creatorName && (
+                      <p className="line-clamp-2 text-xs leading-5 text-white/70">
+                        {technique.creatorName}
+                      </p>
+                    )}
+                    {technique.description && (
+                      <p className="line-clamp-2 text-xs leading-5 text-white/55">
+                        {technique.description}
+                      </p>
+                    )}
+                  </div>
+                </ClientGatedWrap>
+                {technique.source && (
+                  <a
+                    href={technique.source.url}
+                    className="mt-1 block break-words text-xs leading-5 text-white/55 underline decoration-white/20 underline-offset-4 hover:text-dbz-orange focus-visible:outline-2 focus-visible:outline-dbz-orange"
+                  >
+                    {technique.source.label}
+                  </a>
+                )}
+              </article>
             ))}
-          </div>
-
-          {filtrees.length === 0 && (
-            <p className="py-16 text-center text-sm text-white/45">
-              Aucune technique dans cette catégorie.
-            </p>
-          )}
-
+          </CharacterCardGrid>
           <Pagination
-            page={pageSure}
-            parPage={PAR_PAGE}
-            total={filtrees.length}
+            page={safePage}
+            parPage={PAGE_SIZE}
+            total={filtered.length}
             onPageChange={setPage}
-            unite="techniques"
+            unite={t("unit")}
+            className="pt-6"
           />
         </>
       )}
-    </div>
+    </WikiListLayout>
   );
 }

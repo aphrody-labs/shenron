@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
 import { Layers, ChevronDown, ChevronUp } from "lucide-react";
 import type { TechniqueCard } from "./TechniqueGrid";
+import type { AccessSnapshot } from "@/lib/wiki-launch";
 
 interface TechniqueFamily {
   id: string;
@@ -88,7 +89,13 @@ const FAMILIES: TechniqueFamily[] = [
   },
 ];
 
-export function TechniqueFamiliesView({ techniques }: { techniques: TechniqueCard[] }) {
+export function TechniqueFamiliesView({
+  techniques,
+  access,
+}: {
+  techniques: TechniqueCard[];
+  access?: AccessSnapshot;
+}) {
   const [expandedFamily, setExpandedFamily] = useState<string | null>("kamehameha");
 
   const grouped = useMemo(() => {
@@ -170,7 +177,7 @@ export function TechniqueFamiliesView({ techniques }: { techniques: TechniqueCar
                       {list.map((tech) => (
                         <ClientGatedWrap
                           key={tech.slug}
-                          access={undefined}
+                          access={access}
                           href={`/wiki/techniques/${tech.slug}`}
                           className="group flex flex-col justify-between rounded-xl border border-white/10 bg-black/50 p-3 hover:border-orange-500/50 hover:bg-black/70 transition-all shadow-md"
                         >

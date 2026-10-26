@@ -1,0 +1,18 @@
+{
+  "title": "Techniques",
+  "lead": "{count} techniques et capacités de l’univers Dragon Ball.",
+  "search": "Rechercher une technique",
+  "searchPlaceholder": "Technique, nom japonais ou créateur…",
+  "type": "Type",
+  "creator": "Créateur",
+  "other": "Autre",
+  "sort": "Trier les techniques",
+  "documented": "Les mieux documentées",
+  "alphabetical": "A → Z",
+  "display": "Affichage",
+  "cards": "Fiches",
+  "families": "Familles",
+  "results": "{count} / {total} techniques",
+  "unit": "techniques",
+  "imagePending": "Illustration à documenter"
+}

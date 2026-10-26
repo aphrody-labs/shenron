@@ -56,3 +56,13 @@ export type {
   VerifiedDataset,
   CoverageGap,
 } from "./source-coverage";
+export {
+  discoverTechniqueImages,
+  eligibleTechniqueImageUrl,
+  techniqueDocumentsFromNativeWiki,
+} from "./technique-images";
+export type {
+  TechniqueImageIdentity,
+  TechniqueImageDocument,
+  TechniqueImageCandidate,
+} from "./technique-images";

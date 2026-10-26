@@ -1,0 +1,145 @@
+[
+  {
+    "slug": "kamehameha",
+    "volume": 2,
+    "page": 13,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1421?page=13",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol2/013.webp",
+    "sha256": "dd0a263364bd366612f79264966326529cd74879dbfcaba960ffb2e31b821ca3",
+    "width": 1280,
+    "height": 1920,
+    "crop": [0, 0, 1280, 1030]
+  },
+  {
+    "slug": "genkidama",
+    "volume": 18,
+    "page": 81,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1437?page=81",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol18/081.webp",
+    "sha256": "a1ccea601149b4c174686bf78262590b3e3ffef09ff14dd63f3b1a946228daf8",
+    "width": 1280,
+    "height": 1972,
+    "crop": [75, 1120, 755, 852]
+  },
+  {
+    "slug": "kienzan",
+    "volume": 19,
+    "page": 41,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1438?page=41",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol19/041.webp",
+    "sha256": "384ddeec86ef4765f3b6663483a8257cf68f276ba707e783af3411b85b0bd928",
+    "width": 1280,
+    "height": 1972,
+    "crop": [70, 0, 710, 645]
+  },
+  {
+    "slug": "makankosappo",
+    "volume": 17,
+    "page": 110,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1436?page=110",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol17/110.webp",
+    "sha256": "bfb17093308b2bb4ecb2364f98d96f9fdb843f24d0ada175cc13e6b8325a209d",
+    "width": 1280,
+    "height": 1972,
+    "crop": [80, 150, 1120, 1248]
+  },
+  {
+    "slug": "final-flash",
+    "volume": 32,
+    "page": 133,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1451?page=133",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol32/133.webp",
+    "sha256": "780c9d3e1872e3d7b25ad5a3beb884de7194f2001a24dfc716f6bd97467c494e",
+    "width": 1280,
+    "height": 1972,
+    "crop": [80, 0, 1120, 1840]
+  },
+  {
+    "slug": "shin-kikoho",
+    "volume": 31,
+    "page": 136,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1450?page=136",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol31/136.webp",
+    "sha256": "5308939f714a0efec3dc68f5d7eda6f0f917d1233f3fa3ace262aa9ebf8a381a",
+    "width": 1280,
+    "height": 1972,
+    "crop": [0, 510, 1200, 640]
+  },
+  {
+    "slug": "morsure-du-soleil",
+    "volume": 11,
+    "page": 6,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1430?page=6",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol11/006.webp",
+    "sha256": "ab8c57b5b29bf7eeebd76a06e4c7ed6de77b082b769988791ab1d14d44867c1b",
+    "width": 1280,
+    "height": 1972,
+    "crop": [92, 160, 1120, 1150]
+  },
+  {
+    "slug": "big-bang",
+    "volume": 29,
+    "page": 45,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1448?page=45",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol29/045.webp",
+    "sha256": "bd1596bb4d9c2563153c61799a05e25c4fc91256dbf0c07c986177f11906b675",
+    "width": 1280,
+    "height": 1972,
+    "crop": [0, 610, 1200, 1360]
+  },
+  {
+    "slug": "kikoho",
+    "volume": 11,
+    "page": 142,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1430?page=142",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol11/142.webp",
+    "sha256": "f1d0aa52cd9432b56389846defd65ba89f549498f0dfc90290d8a0b82fe78af9",
+    "width": 1280,
+    "height": 1972,
+    "crop": [85, 160, 1115, 1085]
+  },
+  {
+    "slug": "mafuba",
+    "volume": 12,
+    "page": 175,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1431?page=175",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol12/175.webp",
+    "sha256": "e3bf489f8097079bd92a2ec1a364e03f6a73c732b28d8e190ef9bc5885b8e176",
+    "width": 1280,
+    "height": 1972,
+    "crop": [80, 1080, 1200, 892]
+  },
+  {
+    "slug": "dodompa",
+    "volume": 10,
+    "page": 125,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1429?page=125",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol10/125.webp",
+    "sha256": "bffab1751beab6cae8d4425e8a9fa71c1425e1ce6bcb5d5dbc692888c1f7687a",
+    "width": 1280,
+    "height": 1972,
+    "crop": [75, 875, 875, 555]
+  },
+  {
+    "slug": "kaioken",
+    "volume": 19,
+    "page": 120,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1438?page=120",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol19/120.webp",
+    "sha256": "0eeac3fc52bad777a614a0acf9692c1be23e7ea6ae2bcc66e7a932fcad401916",
+    "width": 1280,
+    "height": 1972,
+    "crop": [80, 145, 1120, 645]
+  },
+  {
+    "slug": "teleportation",
+    "volume": 28,
+    "page": 100,
+    "sourceUrl": "https://dragonballfr.com/wiki/manga/1447?page=100",
+    "imageUrl": "https://cdn.dragonballfr.com/assets/manga/DB/regular/vol28/100.webp",
+    "sha256": "b92a693d188a948a517c614c66a5124ae062f2b7631014170378dab819cdc86a",
+    "width": 1280,
+    "height": 1972,
+    "crop": [465, 1160, 405, 685]
+  }
+]

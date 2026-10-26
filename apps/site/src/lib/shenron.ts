@@ -1186,13 +1186,14 @@ export async function getShenronTechniques(): Promise<DBTechnique[]> {
       id: r.t.id,
       slug: r.t.slug,
       name: r.t.name,
+      nameJa: r.t.nameJa ?? null,
+      nameRomaji: r.t.nameRomaji ?? null,
       description: r.t.description,
       type: r.t.type,
       creatorId: r.t.creatorId,
       creatorName: r.name ?? null,
       creatorImage: r.image ?? null,
-      // Illustration propre à la technique (portrait XV2). Distincte du
-      // portrait du créateur, qui n'existe que sur 11 fiches.
+      // Historical images may be game portraits; consumers qualify scene provenance.
       image: r.t.image ?? null,
       article: r.t.article ?? null,
       articleSources: r.t.articleSources ?? null,

@@ -20,8 +20,8 @@ import type { DefinedTerm, WithContext } from "schema-dts";
 import { SITE_URL } from "@/lib/config";
 import { ogMeta } from "@/lib/og";
 import { capParams } from "@/lib/prerender";
-import { WikiImg } from "@/components/wiki/WikiImg";
-import { pickBestImage } from "@/lib/image-variants";
+import { TechniqueArtworkPanel } from "@/components/wiki/TechniqueArtworkPanel";
+import { resolveTechniqueArtwork } from "@/lib/technique-artwork";
 
 export const revalidate = 3600;
 export async function generateStaticParams() {
@@ -44,8 +44,7 @@ export async function generateMetadata({
   const tech = await getShenronTechnique(slug);
   if (!tech) notFound();
   const description = tech.description ?? `Fiche détaillée de la technique ${tech.name}.`;
-  const bestImage =
-    pickBestImage([tech.image, tech.creatorImage]) ?? tech.image ?? tech.creatorImage;
+  const bestImage = resolveTechniqueArtwork(tech)?.image;
   return {
     title: `${tech.name} — Technique Dragon Ball`,
     description,
@@ -65,8 +64,7 @@ export default async function TechniqueDetailPage({
   const { slug } = await params;
   const tech = await getShenronTechnique(slug);
   if (!tech) notFound();
-  const heroTechImage =
-    pickBestImage([tech.image, tech.creatorImage]) ?? tech.image ?? tech.creatorImage;
+  const artwork = resolveTechniqueArtwork(tech);
   const contentPanels = await buildWikiContentPanels({
     entityType: "technique",
     entityId: tech.id,
@@ -198,18 +196,7 @@ export default async function TechniqueDetailPage({
         <aside className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
           <div className="wiki-infobox">
             <div className="wiki-infobox-header">FICHE TECHNIQUE</div>
-            {heroTechImage && (
-              <div className="relative aspect-[3/4] w-full overflow-hidden border-b-2 border-black bg-black">
-                <WikiImg
-                  src={heroTechImage}
-                  fallback={heroTechImage === tech.image ? tech.creatorImage : tech.image}
-                  alt={heroTechImage === "/dbz/kinto-un.svg" ? "" : tech.name}
-                  sizes="(max-width: 1024px) 100vw, 380px"
-                  className="object-cover object-top"
-                  placeholderClassName="w-full h-full flex items-center justify-center bg-black"
-                />
-              </div>
-            )}
+            <TechniqueArtworkPanel name={tech.name} artwork={artwork} />
             <table className="w-full text-left text-xs sm:text-sm">
               <tbody>
                 <tr className="wiki-infobox-row">

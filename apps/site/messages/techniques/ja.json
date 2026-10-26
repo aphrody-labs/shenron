@@ -1,0 +1,18 @@
+{
+  "title": "技",
+  "lead": "ドラゴンボールの世界の技と能力、全{count}件。",
+  "search": "技を検索",
+  "searchPlaceholder": "技名、日本語名、考案者…",
+  "type": "種類",
+  "creator": "考案者",
+  "other": "その他",
+  "sort": "技の並び順",
+  "documented": "情報の多い順",
+  "alphabetical": "名前順",
+  "display": "表示",
+  "cards": "一覧",
+  "families": "系統",
+  "results": "全{total}件中{count}件",
+  "unit": "件の技",
+  "imagePending": "出典画像は準備中"
+}

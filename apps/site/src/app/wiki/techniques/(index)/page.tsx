@@ -1,10 +1,9 @@
 // Keep the index loader scoped to the catalogue, not streamed detail routes.
-import { ContributeRail, DomainBar } from "@/components/kit";
+import { ContributeRail } from "@/components/kit";
 import { getShenronTechniques } from "@/lib/shenron";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
-import { PageHero } from "@/components/PageHero";
-import { pageHero } from "@/lib/banner-config";
+import { WikiPageShell } from "@/components/wiki/WikiPageShell";
+import { TechniqueCatalogueHeading } from "@/components/wiki/TechniqueCatalogueHeading";
+import { resolveTechniqueArtwork } from "@/lib/technique-artwork";
 import { TechniqueGrid } from "@/components/wiki/TechniqueGrid";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { LIBELLES_TYPE } from "@/lib/techniques-types";
@@ -33,43 +32,28 @@ export default async function TechniquesPage() {
   // description tronquée à ce qui tient dans deux lignes. La page rendait les
   // 825 fiches entières — 2,4 Mo de HTML mesurés en production, pour 60 cartes
   // visibles. Le reste voyageait pour rien, deux fois (DOM + charge RSC).
-  const cartes = techniques.map((t) => ({
-    id: t.id,
-    slug: t.slug,
-    name: t.name,
-    type: t.type,
-    image: t.image ?? t.creatorImage ?? null,
-    creatorName: t.creatorName,
-    description: t.description ? tronquer(t.description, 160) : null,
-  }));
+  const cartes = techniques.map((t) => {
+    const artwork = resolveTechniqueArtwork(t);
+    return {
+      id: t.id,
+      slug: t.slug,
+      name: t.name,
+      nameJa: t.nameJa,
+      type: t.type,
+      image: artwork?.image ?? null,
+      icon: artwork?.icon ?? null,
+      source: artwork?.source ?? null,
+      creatorName: t.creatorName,
+      description: t.description ? tronquer(t.description, 160) : null,
+    };
+  });
 
   return (
-    <div>
-      <PageHero
-        eyebrow="Encyclopédie"
-        title="Techniques & Capacités"
-        lead={`${techniques.length} techniques répertoriées — Kamehameha, Genkidama, Final Flash et les attaques les plus dévastatrices de l'univers Dragon Ball.`}
-        image={await pageHero("techniques")}
-        imageAlt="Techniques Dragon Ball"
-      />
-
-      <div className="wiki-container space-y-8">
-        <DomainBar domain="wiki" />
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <Breadcrumbs items={[{ label: "Techniques" }]} />
-          <WikiDrawer />
-        </div>
-        <p className="max-w-2xl text-[13px] leading-relaxed text-white/45">
-          Répertoire des techniques canoniques issues du manga original d&apos;Akira Toriyama, de{" "}
-          <em>Dragon Ball Super</em> et des dictionnaires officiels (<em>Daizenshuu 7</em>,{" "}
-          <em>Chōzenshū 4</em>, <em>Super Exciting Guide</em>). Les techniques exclusives aux jeux
-          vidéo ont été retirées pour garantir la conformité canonique. Les vignettes illustrent un
-          utilisateur emblématique de l&apos;attaque.
-        </p>
-        <TechniqueGrid techniques={cartes} libelles={LIBELLES_TYPE} access={access} />
-        <ContributeRail quoiKey="kit.contribute.what.technique" />
-      </div>
-    </div>
+    <WikiPageShell adminBar category="techniques">
+      <TechniqueCatalogueHeading count={techniques.length} />
+      <TechniqueGrid techniques={cartes} libelles={LIBELLES_TYPE} access={access} />
+      <ContributeRail quoiKey="kit.contribute.what.technique" />
+    </WikiPageShell>
   );
 }
 

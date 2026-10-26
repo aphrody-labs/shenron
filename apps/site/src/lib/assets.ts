@@ -20,6 +20,15 @@ import { API_URL, ASSET_BASE, SITE_URL } from "@/lib/config";
 export function assetUrl(path: string | null | undefined): string {
   const value = path?.trim();
   if (!value) return "";
+  // Runtime uploads live in the bot's persistent data volume, outside the sealed CDN inventory.
+  const uploaded = value.replace(/^\.\//, "/").replace(/^assets\//, "/assets/");
+  if (
+    /^\/assets\/wiki\/[a-z0-9-]{1,32}\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\.(?:png|jpg|webp|gif)$/.test(
+      uploaded,
+    )
+  ) {
+    return `${API_URL}${uploaded}`;
+  }
   const legacyCdn = canonicalLegacyCdnAssetUrl(value);
   if (legacyCdn) return legacyCdn;
   const dbz = canonicalDbzAssetUrl(value, ASSET_BASE, API_URL, SITE_URL);

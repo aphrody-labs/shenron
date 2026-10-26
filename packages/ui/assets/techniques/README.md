@@ -1,0 +1,68 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+# Illustrations des techniques
+
+Les WebP sont de véritables cases du manga original, extraites des scans déjà
+publiés par le lecteur DBFR. Les SVG sont des **interprétations vectorielles
+dessinées manuellement** des formes observées. Ils ne sont ni des images de jeu,
+ni des portraits réattribués à une attaque, ni des scans encapsulés dans un SVG.
+Ils ne constituent pas une vectorisation automatique du trait de Toriyama.
+
+`references.json` fixe pour chaque scène l'URL de lecture, l'image originale,
+son empreinte SHA-256, ses dimensions et le rectangle exact de découpe
+`[gauche, haut, largeur, hauteur]`. Le générateur vérifie l'empreinte avant de
+découper. Les références complètes et les rendus de contrôle restent dans
+`var/reports/technique-media-20261026/`, hors de Git.
+
+## Géométrie et mesures
+
+Chaque source a été ouverte visuellement avant la sélection. Les découpes sont
+mesurées en pixels du scan original ; le générateur réduit leur largeur à
+768 pixels au maximum en conservant leurs proportions. Le lecteur doit employer
+`object-fit: contain` pour montrer le geste et le projectile entier.
+
+L'icône a un repère carré de 96 unités. Le fond `#111` et les formes `#fff`
+sont un choix de contraste en noir et blanc, sans prétention de restituer une
+palette d'anime. Les traits secondaires de 2,5 unités sont un épaississement
+délibéré pour 28 pixels, la taille du badge du catalogue. Les repères suivants
+décrivent les décisions de simplification ; ils ne sont pas des mesures
+automatiques de toute l'encre du scan.
+
+| Technique         | Référence manga | Forme observée et adaptation dans le repère de 96 unités                                                                                                                                                   |
+| ----------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Kamehameha        | tome 2, p. 13   | Masse d'énergie élargie, reliée au faisceau étroit ; noyau entre x47 et x88, faisceau horizontal entre x8 et x47. Rotation vers la droite pour la lecture de l'icône.                                      |
+| Genkidama         | tome 18, p. 81  | Petit projectile rond lancé depuis la paume ; cercle de rayon 22 et traits de rayonnement séparés. La scène comporte une boule petite, pas le Genkidama géant de Namek.                                    |
+| Kienzan           | tome 19, p. 41  | Disque très aplati au-dessus de Krilin ; ellipse 76 × 14,6, arcs de rotation séparés. La frange d'encre du scan est condensée en deux arcs lisibles.                                                       |
+| Makankosappo      | tome 17, p. 110 | Rayon axial et trois spires principales visibles dans la case ; axe diagonal et trois boucles dégagées. La réduction conserve le principe hélicoïdal, pas chaque hachure.                                  |
+| Final Flash       | tome 32, p. 133 | Éventail d'énergie des deux mains de Vegeta vers Cell ; silhouette évasée diagonale, deux stries noires. L'onomatopée est retirée de l'icône.                                                              |
+| Shin Kikoho       | tome 31, p. 136 | Deux mains jointes formant une ouverture géométrique ; ouverture 28 × 36 et poignets séparés. Cette icône montre le geste de visée, pas un projectile inventé.                                             |
+| Morsure du soleil | tome 11, p. 6   | Visage central de Tenshinhan et émission radiale ; tête blanche, trois repères faciaux et rayons. Aucun portrait complet n'est inventé.                                                                    |
+| Big bang          | tome 29, p. 45  | Projectile compact relié à une traînée ; noyau décentré vers x65 et queue diagonale. Distinct de la boule sans traînée du Genkidama.                                                                       |
+| Kikoho            | tome 11, p. 142 | Ouverture des mains cadrant le ring ; losange intérieur 40 × 38. La variante plus large suit la vue rapprochée du premier Kikoho.                                                                          |
+| Mafuba            | tome 12, p. 175 | Vortex qui attire Piccolo ; spirale elliptique et cône resserré. La spirale constitue la silhouette de la technique ; le personnage n'est pas redessiné.                                                   |
+| Dodompa           | tome 10, p. 125 | Rayon rectiligne du doigt de Chaozu ; axe très fin et pointe élargie. Le départ du rayon, la traînée et la pointe restent séparés à 28 pixels.                                                             |
+| Kaioken           | tome 19, p. 120 | Enveloppe d'énergie pointue autour de Goku pendant son accélération contre Nappa ; contour en flamme. La flèche interne est un symbole éditorial d'amplification, pas un élément extrait du manga.         |
+| Téléportation     | tome 28, p. 100 | Index et majeur près du front pendant le repérage de l'aura ; deux doigts levés et stries latérales. Les stries indiquent le déplacement pour l'icône ; la scène retenue représente la préparation nommée. |
+
+## Reproduire
+
+```powershell
+bun packages/ui/assets/techniques/generate.ts
+bun plugin/skills/toriyama-svg/scripts/rendu.ts packages/ui/assets/techniques/kienzan.svg --tailles 512 128 64 32 28 16 --sortie var/reports/technique-media-20261026/render-kienzan
+```
+
+La primitive maintenue `radialSpeedlines` vient de
+`packages/ui/src/toriyama-svg/geometry.ts`. Aucune copie de moteur n'est ajoutée.
+Le générateur produit des fichiers stables à partir des sources épinglées.
+
+Qualification du 26 octobre 2026 : les 13 découpes et les 26 planches PNG
+clair/sombre ont été ouvertes. Le rendu emploie réellement le moteur WebView
+Chrome de Bun à 512, 128, 64, 32, 28 et 16 pixels, puis agrandit les petites
+tailles au plus proche voisin pour le contrôle. Les silhouettes restent
+distinctes à 28 pixels ; à 16 pixels les traits du visage solaire et de la main
+de téléportation se simplifient. Cette taille n'est pas celle du badge livré.
+
+Les 13 scènes ne couvrent pas toutes les techniques du catalogue. Une absence du
+manifeste signifie « média pas encore vérifié », sans substitution par un portrait.
+La qualification locale ne prouve pas que ces nouveaux fichiers sont déjà servis
+par le déploiement public.
