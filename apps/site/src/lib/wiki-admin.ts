@@ -131,7 +131,9 @@ const TABLE_OBJECTS: Record<string, AnyTable> = {
 };
 
 export const WIKI_TABLES: Record<string, ResolvedTable> = Object.fromEntries(
-  Object.entries(WIKI_TABLE_SPECS).map(([name, spec]) => {
+  Object.entries(WIKI_TABLE_SPECS)
+    .filter(([name]) => Boolean(TABLE_OBJECTS[name]))
+    .map(([name, spec]) => {
     const table = TABLE_OBJECTS[name];
     if (!table) throw new Error(`[wiki-admin] table Drizzle absente: ${name}`);
     // Les clés camelCase exposées par l'objet Drizzle (colonnes du select).
