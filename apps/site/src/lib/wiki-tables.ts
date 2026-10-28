@@ -313,23 +313,6 @@ export const WIKI_TABLE_SPECS: Record<string, WikiTableSpec> = {
       "image",
     ],
   },
-  db_character_relations: {
-    name: "db_character_relations",
-    pk: "id",
-    mutableColumns: [
-      "characterId",
-      "relatedCharacterId",
-      "category",
-      "relationType",
-      "name",
-      "nameJa",
-      "image",
-      "slug",
-      "description",
-      "sortOrder",
-      "visible",
-    ],
-  },
   db_character_variants: {
     name: "db_character_variants",
     pk: "id",

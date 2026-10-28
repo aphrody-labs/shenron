@@ -1,0 +1,2 @@
+$cmd = "sudo chown ubuntu:ubuntu /home/ubuntu/shenron-build-release.log /home/ubuntu/shenron-ship.log 2>/dev/null; sudo -u ubuntu tmux kill-session -t shenron-build-release 2>/dev/null; sudo -u ubuntu tmux new-session -d -s shenron-build-release 'timeout 2400 bash /home/ubuntu/src/shenron/scripts/ops/vps/shenron-docker-build.sh > /home/ubuntu/shenron-build-release.log 2>&1; echo EXIT_CODE=$? >> /home/ubuntu/shenron-build-release.log'; echo 'BUILD_LAUNCHED'"
+aphrody infra ssh exec --host vps -c $cmd

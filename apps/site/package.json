@@ -106,6 +106,7 @@
     "server-only": "catalog:",
     "shadcn": "catalog:",
     "sharp": "catalog:",
+    "stripe": "^23.0.1",
     "tw-animate-css": "catalog:",
     "zod": "catalog:"
   },
