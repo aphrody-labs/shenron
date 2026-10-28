@@ -39,8 +39,8 @@ fn bytes_of(object: &JsValue, key: &str) -> Result<Option<Vec<u8>>, JsValue> {
     Ok(Some(array.to_vec()))
 }
 
-fn decode_all(emb: &EmbFile) -> Vec<shenron_re::formats::EmbRgbaTexture> {
-    (0..emb.count).filter_map(|i| emb.decode_rgba(i).ok()).collect()
+fn decode_all(emb: &EmbFile) -> Result<Vec<shenron_re::formats::EmbRgbaTexture>, JsValue> {
+    (0..emb.count).map(|index| emb.decode_rgba(index).map_err(js_error)).collect()
 }
 
 /// Parses `{ emd, emb?, emm?, dyt? }` parts.
@@ -51,7 +51,7 @@ fn parts_of(parts: &js_sys::Array) -> Result<Vec<CharacterPart>, JsValue> {
         let mut entry = CharacterPart::new(
             EmdFile::parse(&emd).map_err(js_error)?,
             match bytes_of(&part, "emb")? {
-                Some(b) => decode_all(&EmbFile::parse(&b).map_err(js_error)?),
+                Some(b) => decode_all(&EmbFile::parse(&b).map_err(js_error)?)?,
                 None => Vec::new(),
             },
         );
@@ -59,7 +59,8 @@ fn parts_of(parts: &js_sys::Array) -> Result<Vec<CharacterPart>, JsValue> {
             entry.materials = Some(EmmFile::parse(&b).map_err(js_error)?);
         }
         if let Some(b) = bytes_of(&part, "dyt")? {
-            entry.dye = EmbFile::parse(&b).ok().and_then(|d| d.decode_rgba(0).ok());
+            entry.dye =
+                Some(EmbFile::parse(&b).map_err(js_error)?.decode_rgba(0).map_err(js_error)?);
         }
         loaded.push(entry);
     }
@@ -70,13 +71,47 @@ fn parts_of(parts: &js_sys::Array) -> Result<Vec<CharacterPart>, JsValue> {
 }
 
 fn fighter_of(esk: &[u8], ean: &[u8], parts: &js_sys::Array) -> Result<Fighter, JsValue> {
-    let esk = EskFile::parse(esk).map_err(js_error)?;
+    let mut esk = EskFile::parse(esk).map_err(js_error)?;
     let ean = EanFile::parse(ean).map_err(js_error)?;
-    Ok(Fighter::new(SkinnedCharacter::new(esk.bones, parts_of(parts)?), ean))
+    let loaded = parts_of(parts)?;
+    let mut loaded_index = 0;
+    for part in parts.iter() {
+        let emd = js_sys::Reflect::get(&part, &JsValue::from_str("emd"))?;
+        if emd.is_null() || emd.is_undefined() {
+            continue;
+        }
+        if let Some(bytes) = bytes_of(&part, "esk")? {
+            let secondary = EskFile::parse(&bytes).map_err(js_error)?;
+            let mut required: Vec<String> = loaded[loaded_index]
+                .model
+                .submeshes()
+                .flat_map(|sub| sub.bone_names.iter().cloned())
+                .collect();
+            required.sort();
+            required.dedup();
+            crate::render::skinned::merge_secondary_skeleton(
+                &mut esk.bones,
+                &secondary.bones,
+                &required,
+            )
+            .map_err(js_error)?;
+        }
+        loaded_index += 1;
+    }
+    for part in &loaded {
+        for name in part.model.submeshes().flat_map(|sub| &sub.bone_names) {
+            if !esk.bones.iter().any(|bone| bone.name == *name) {
+                return Err(js_error(format!(
+                    "Model bone {name} is absent from the assembled skeleton"
+                )));
+            }
+        }
+    }
+    Ok(Fighter::new(SkinnedCharacter::new(esk.bones, loaded), ean))
 }
 
 /// Parses `{ esk, ean, parts, bac?, bdm? }`.
-fn duel_fighter(object: &JsValue) -> Result<Fighter, JsValue> {
+pub(crate) fn duel_fighter(object: &JsValue) -> Result<Fighter, JsValue> {
     let esk = bytes_of(object, "esk")?.ok_or_else(|| js_error("esk is missing"))?;
     let ean = bytes_of(object, "ean")?.ok_or_else(|| js_error("ean is missing"))?;
     let parts = js_sys::Reflect::get(object, &JsValue::from_str("parts"))?
@@ -98,6 +133,7 @@ struct Surface {
     queue: wgpu::Queue,
     surface: wgpu::Surface<'static>,
     config: wgpu::SurfaceConfiguration,
+    view_format: wgpu::TextureFormat,
     depth: wgpu::TextureView,
     pipeline: Xv2ToonPipeline,
 }
@@ -150,10 +186,15 @@ impl Surface {
             .get_default_config(&adapter, width, height)
             .ok_or_else(|| js_error("WebGPU adapter cannot present to the canvas"))?;
         config.alpha_mode = wgpu::CompositeAlphaMode::Opaque;
+        let view_format = crate::render::model_serve::canvas_view_format(
+            config.format,
+            &mut config.view_formats,
+            true,
+        );
         surface.configure(&device, &config);
         let depth = depth_view(&device, &config);
-        let pipeline = Xv2ToonPipeline::new(&device, config.format);
-        Ok(Self { device, queue, surface, config, depth, pipeline })
+        let pipeline = Xv2ToonPipeline::new(&device, view_format);
+        Ok(Self { device, queue, surface, config, view_format, depth, pipeline })
     }
 
     fn upload(&self, fighter: &Fighter) -> SkinnedGpuCharacter {
@@ -193,7 +234,10 @@ impl Surface {
             },
             _ => return true,
         };
-        let view = texture.texture.create_view(&wgpu::TextureViewDescriptor::default());
+        let view = texture.texture.create_view(&wgpu::TextureViewDescriptor {
+            format: Some(self.view_format),
+            ..Default::default()
+        });
         let mut encoder = self.device.create_command_encoder(&Default::default());
         {
             let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {

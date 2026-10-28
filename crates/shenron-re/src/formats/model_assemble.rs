@@ -10,7 +10,7 @@
 
 use crate::error::{ReError, Result};
 use crate::formats::emb::{EmbFile, EmbRgbaTexture};
-use crate::formats::emd::{EmdFile, EmdSubmesh};
+use crate::formats::emd::{EmdFile, EmdSampler, EmdSubmesh};
 use crate::formats::emm::EmmFile;
 use crate::formats::esk::EskFile;
 use serde_json::json;
@@ -32,6 +32,8 @@ pub struct ModelPrimitive {
     pub uv: Vec<[f32; 2]>,
     pub indices: Vec<u32>,
     pub texture_index: Option<usize>,
+    /// Original EMD sampler; UV scale is baked into `uv` during assembly.
+    pub sampler: Option<EmdSampler>,
 }
 
 /// Assembled Dragon Ball Xenoverse 2 character model.
@@ -56,8 +58,6 @@ impl AssembledCharacterModel {
         esk: Option<&EskFile>,
         _emm: Option<&EmmFile>,
     ) -> Self {
-        let mut primitives = Vec::new();
-
         // Extract textures from EMB if present
         let mut textures = Vec::new();
         if let Some(emb_file) = emb {
@@ -68,17 +68,108 @@ impl AssembledCharacterModel {
             }
         }
 
-        // Flatten EMD parts into model primitives
+        let primitives = Self::assemble_primitives(emd, textures.len());
+
+        Self { name: character_name.to_string(), primitives, textures, skeleton: esk.cloned() }
+    }
+
+    /// Assemble geometry using an existing decoded texture bank, without cloning its pixels.
+    /// Texture indices remain relative to that bank; the scene owner applies its bank offset.
+    pub fn assemble_primitives(emd: &EmdFile, texture_count: usize) -> Vec<ModelPrimitive> {
+        let mut primitives = Vec::new();
         for part in &emd.parts {
             for mesh in &part.meshes {
                 for submesh in &mesh.submeshes {
-                    let prim = convert_submesh_to_primitive(submesh, !textures.is_empty());
+                    let prim = convert_submesh_to_primitive(submesh, texture_count > 0);
                     primitives.push(prim);
                 }
             }
         }
 
-        Self { name: character_name.to_string(), primitives, textures, skeleton: esk.cloned() }
+        primitives
+    }
+
+    /// NSK without triangle bone palettes stores each rigid model in its named bone's
+    /// local coordinates. Weighted NSK already stores bind-space vertices, as EMD does.
+    /// Evidence: Blender-XV2-Tools EMD/importer.py rigid NSK model placement.
+    pub fn assemble_nsk_primitives(
+        emd: &EmdFile,
+        esk: &EskFile,
+        texture_count: usize,
+    ) -> Result<Vec<ModelPrimitive>> {
+        if emd.submeshes().any(|sub| !sub.bone_names.is_empty()) {
+            return Ok(Self::assemble_primitives(emd, texture_count));
+        }
+        let mut primitives = Vec::new();
+        for part in &emd.parts {
+            let matches: Vec<usize> = esk
+                .bones
+                .iter()
+                .enumerate()
+                .filter_map(|(index, bone)| (bone.name == part.name).then_some(index))
+                .collect();
+            if matches.len() > 1 {
+                return Err(stage_transform_error("ambiguous rigid model bone"));
+            }
+            let mut chain = Vec::new();
+            let mut cursor = matches.first().copied();
+            while let Some(index) = cursor {
+                if chain.contains(&index) {
+                    return Err(stage_transform_error("cyclic rigid model hierarchy"));
+                }
+                let bone = esk
+                    .bones
+                    .get(index)
+                    .ok_or_else(|| stage_transform_error("invalid rigid model parent"))?;
+                if !bone
+                    .translation
+                    .iter()
+                    .chain(&bone.rotation)
+                    .chain(&bone.scale)
+                    .all(|value| value.is_finite())
+                    || bone.scale.iter().any(|value| value.abs() < 1e-12)
+                    || bone.rotation.iter().map(|value| value * value).sum::<f32>() < 1e-12
+                {
+                    return Err(stage_transform_error("invalid rigid model transform"));
+                }
+                chain.push(index);
+                cursor = bone.parent_index;
+            }
+            for mesh in &part.meshes {
+                for sub in &mesh.submeshes {
+                    let mut primitive = convert_submesh_to_primitive(sub, texture_count > 0);
+                    for &index in &chain {
+                        let bone = &esk.bones[index];
+                        for position in &mut primitive.positions {
+                            *position = rotate_stage_vector(
+                                std::array::from_fn(|axis| position[axis] * bone.scale[axis]),
+                                bone.rotation,
+                            );
+                            for axis in 0..3 {
+                                position[axis] += bone.translation[axis];
+                            }
+                        }
+                        // Inverse transpose of each TRS linear part, including nonuniform scale.
+                        for normal in &mut primitive.normals {
+                            *normal = rotate_stage_vector(
+                                std::array::from_fn(|axis| normal[axis] / bone.scale[axis]),
+                                bone.rotation,
+                            );
+                        }
+                    }
+                    for normal in &mut primitive.normals {
+                        let length = normal.iter().map(|value| value * value).sum::<f32>().sqrt();
+                        if length > 1e-12 {
+                            for value in normal {
+                                *value /= length;
+                            }
+                        }
+                    }
+                    primitives.push(primitive);
+                }
+            }
+        }
+        Ok(primitives)
     }
 
     /// Total vertices in the assembled model.
@@ -317,15 +408,31 @@ impl AssembledCharacterModel {
     }
 }
 
+fn stage_transform_error(details: &str) -> ReError {
+    ReError::ParseError { context: "nsk rigid placement", details: details.into() }
+}
+
+fn rotate_stage_vector(vector: [f32; 3], quaternion: [f32; 4]) -> [f32; 3] {
+    let length = quaternion.iter().map(|value| value * value).sum::<f32>().sqrt();
+    let [x, y, z, w] = quaternion.map(|value| value / length);
+    let [vx, vy, vz] = vector;
+    let cross = [y * vz - z * vy, z * vx - x * vz, x * vy - y * vx];
+    let second =
+        [y * cross[2] - z * cross[1], z * cross[0] - x * cross[2], x * cross[1] - y * cross[0]];
+    std::array::from_fn(|axis| vector[axis] + 2.0 * (w * cross[axis] + second[axis]))
+}
+
 fn convert_submesh_to_primitive(sub: &EmdSubmesh, has_textures: bool) -> ModelPrimitive {
     let mut positions = Vec::with_capacity(sub.vertices.len());
     let mut normals = Vec::with_capacity(sub.vertices.len());
     let mut uv = Vec::with_capacity(sub.vertices.len());
+    let sampler = sub.samplers.first().copied();
+    let scale = sampler.map_or([1.0, 1.0], |sampler| sampler.scale);
 
     for v in &sub.vertices {
         positions.push(v.position);
         normals.push(v.normal);
-        uv.push(v.uv);
+        uv.push([v.uv[0] * scale[0], v.uv[1] * scale[1]]);
     }
 
     ModelPrimitive {
@@ -337,12 +444,85 @@ fn convert_submesh_to_primitive(sub: &EmdSubmesh, has_textures: bool) -> ModelPr
         indices: sub.indices.clone(),
         texture_index: has_textures
             .then(|| sub.samplers.first().map_or(0, |s| s.texture_index as usize)),
+        sampler,
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn rigid_nsk_models_use_named_bone_hierarchy_without_normalizing_parts() {
+        use crate::formats::{emd::encode_emd, esk::EskBone};
+        let emd =
+            EmdFile::parse(&encode_emd("rigid", &[[1.0, 0.0, 0.0]; 3], &[0, 1, 2], &[])).unwrap();
+        let esk = EskFile {
+            name: "stage".into(),
+            bones: vec![
+                EskBone {
+                    name: "parent".into(),
+                    translation: [10.0, 0.0, 0.0],
+                    ..Default::default()
+                },
+                EskBone {
+                    index: 1,
+                    name: "rigid".into(),
+                    parent_index: Some(0),
+                    translation: [0.0, 5.0, 0.0],
+                    rotation: [
+                        0.0,
+                        0.0,
+                        std::f32::consts::FRAC_1_SQRT_2,
+                        std::f32::consts::FRAC_1_SQRT_2,
+                    ],
+                    scale: [2.0, 1.0, 1.0],
+                    ..Default::default()
+                },
+            ],
+        };
+        let placed = AssembledCharacterModel::assemble_nsk_primitives(&emd, &esk, 0).unwrap();
+        for (actual, expected) in placed[0].positions[0].iter().zip([10.0, 7.0, 0.0]) {
+            assert!((actual - expected).abs() < 1e-5);
+        }
+        let mut weighted = emd.clone();
+        weighted.parts[0].meshes[0].submeshes[0].bone_names.push("rigid".into());
+        assert_eq!(
+            AssembledCharacterModel::assemble_nsk_primitives(&weighted, &esk, 0).unwrap()[0]
+                .positions[0],
+            [1.0, 0.0, 0.0]
+        );
+        let mut cycle = esk.clone();
+        cycle.bones[0].parent_index = Some(1);
+        assert!(AssembledCharacterModel::assemble_nsk_primitives(&emd, &cycle, 0).is_err());
+        let mut invalid = esk.clone();
+        invalid.bones[0].scale[0] = f32::NAN;
+        assert!(AssembledCharacterModel::assemble_nsk_primitives(&emd, &invalid, 0).is_err());
+    }
+
+    /// A private real BFtok01_01.nsk proves rigid models were previously stacked at origin.
+    #[test]
+    fn rigid_bftok_fixture_uses_original_crystal_placement_when_provided() {
+        let Ok(path) = std::env::var("SHENRON_REAL_BFTOK_NSK") else { return };
+        let nsk = crate::formats::nsk::NskFile::parse(&std::fs::read(path).unwrap()).unwrap();
+        assert!(nsk.model.submeshes().all(|sub| sub.bone_names.is_empty()));
+        let part = nsk
+            .model
+            .parts
+            .iter()
+            .find(|part| part.name == "crystal_dust001")
+            .expect("BFtok01_01 fixture");
+        let source = part.meshes[0].submeshes[0].vertices[0].position;
+        let placed =
+            AssembledCharacterModel::assemble_nsk_primitives(&nsk.model, &nsk.skeleton, 0).unwrap();
+        let actual = placed[0].positions[0];
+        // Source rest transform of crystal_dust001; ancestors are identity in this fixture.
+        for axis in 0..3 {
+            let translation = [283.25604, 306.3526, -108.61253][axis];
+            assert!((actual[axis] - source[axis] - translation).abs() < 0.002);
+        }
+        assert!((actual[0] - source[0]).abs() > 200.0);
+    }
 
     #[test]
     fn test_assemble_and_export_glb() {
@@ -367,10 +547,40 @@ mod tests {
         assert_eq!(assembled.total_vertices(), 3);
         assert_eq!(assembled.total_triangles(), 1);
 
+        let geometry = AssembledCharacterModel::assemble_primitives(&emd, assembled.textures.len());
+        assert_eq!(geometry.len(), assembled.primitives.len());
+        assert_eq!(geometry[0].positions, assembled.primitives[0].positions);
+        assert_eq!(geometry[0].uv, assembled.primitives[0].uv);
+        assert_eq!(geometry[0].texture_index, assembled.primitives[0].texture_index);
+
         let glb = assembled.to_glb().expect("export GLB");
         assert!(glb.len() > 64);
         assert_eq!(&glb[0..4], b"glTF");
         let version = u32::from_le_bytes(glb[4..8].try_into().unwrap());
         assert_eq!(version, 2);
+    }
+
+    #[test]
+    fn geometry_only_assembly_preserves_sampler_index_for_shared_bank() {
+        let emd_bytes = crate::formats::emd::encode_emd(
+            "stage",
+            &[[40.0, 0.0, 0.0], [41.0, 0.0, 0.0], [40.0, 1.0, 0.0]],
+            &[0, 1, 2],
+            &[],
+        );
+        let mut emd = EmdFile::parse(&emd_bytes).expect("parse EMD");
+        emd.parts[0].meshes[0].submeshes[0].samplers = vec![crate::formats::emd::EmdSampler {
+            texture_index: 3,
+            addressing: 0,
+            filtering: 0,
+            scale: [2.0, 3.0],
+        }];
+        emd.parts[0].meshes[0].submeshes[0].vertices[0].uv = [0.25, 0.5];
+        let geometry = AssembledCharacterModel::assemble_primitives(&emd, 4);
+        assert_eq!(geometry[0].texture_index, Some(3));
+        assert_eq!(geometry[0].positions[0], [40.0, 0.0, 0.0]);
+        assert_eq!(geometry[0].uv[0], [0.5, 1.5]);
+        let untextured = AssembledCharacterModel::assemble_primitives(&emd, 0);
+        assert_eq!(untextured[0].texture_index, None);
     }
 }
