@@ -47,7 +47,10 @@ export function generateTechniqueSvg(type: string | null, name: string): string 
       <path d="M 30 64 A 34 34 0 0 1 98 64" stroke="#ffffff" stroke-width="3" fill="none" opacity="0.6" stroke-dasharray="6,4"/>
       <path d="M 64 30 A 34 34 0 0 1 64 98" stroke="#ffffff" stroke-width="3" fill="none" opacity="0.6" stroke-dasharray="6,4"/>
     `;
-  } else if (t === "corps-a-corps" || /loup|poing|kick|punch|frappe|combo|enchaînement/i.test(name)) {
+  } else if (
+    t === "corps-a-corps" ||
+    /loup|poing|kick|punch|frappe|combo|enchaînement/i.test(name)
+  ) {
     // Physical combat / Martial impact
     bgGrad1 = "#200e0e";
     bgGrad2 = "#3d1313";
@@ -59,7 +62,10 @@ export function generateTechniqueSvg(type: string | null, name: string): string 
       <line x1="38" y1="38" x2="90" y2="90" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
       <line x1="90" y1="38" x2="38" y2="90" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
     `;
-  } else if (t === "support" || /téléportation|teleportation|morsure|remanente|afterimage|vol|flight/i.test(name)) {
+  } else if (
+    t === "support" ||
+    /téléportation|teleportation|morsure|remanente|afterimage|vol|flight/i.test(name)
+  ) {
     // Agility / Dimension / Support
     bgGrad1 = "#09203f";
     bgGrad2 = "#537895";
@@ -71,7 +77,11 @@ export function generateTechniqueSvg(type: string | null, name: string): string 
       <circle cx="64" cy="64" r="8" fill="#ffffff"/>
       <path d="M 64 16 L 64 34 M 64 94 L 64 112 M 16 64 L 34 64 M 94 64 L 112 64" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
     `;
-  } else if (t === "amplification" || t === "awoken" || /kaioken|saiyen|blue|ultra instinct|potentiel/i.test(name)) {
+  } else if (
+    t === "amplification" ||
+    t === "awoken" ||
+    /kaioken|saiyen|blue|ultra instinct|potentiel/i.test(name)
+  ) {
     // Awakening / Power surge
     bgGrad1 = "#2b0a1a";
     bgGrad2 = "#52082d";
@@ -118,7 +128,9 @@ export function generateTechniqueSvg(type: string | null, name: string): string 
 }
 
 async function main() {
-  const techniques: Technique[] = JSON.parse(fs.readFileSync("scripts/ops/all_techniques.json", "utf8"));
+  const techniques: Technique[] = JSON.parse(
+    fs.readFileSync("scripts/ops/all_techniques.json", "utf8"),
+  );
   console.log(`Loaded ${techniques.length} techniques.`);
 
   // Prepare local svg dir
@@ -135,7 +147,7 @@ async function main() {
     const svg = generateTechniqueSvg(t.type, t.name);
     const fileName = `${t.slug}.svg`;
     fs.writeFileSync(`${outDir}/${fileName}`, svg, "utf8");
-    
+
     // DB asset path
     const assetPath = `./assets/techniques/${fileName}`;
     updates.push({ id: t.id, image: assetPath });
@@ -145,7 +157,7 @@ async function main() {
 
   // Write batch sql update
   const sqlStatements = updates.map(
-    (u) => `UPDATE bot.db_techniques SET image = '${u.image}' WHERE id = ${u.id};`
+    (u) => `UPDATE bot.db_techniques SET image = '${u.image}' WHERE id = ${u.id};`,
   );
   fs.writeFileSync("scripts/ops/update_techniques_images.sql", sqlStatements.join("\n"), "utf8");
   console.log(`Wrote update_techniques_images.sql (${sqlStatements.length} updates).`);

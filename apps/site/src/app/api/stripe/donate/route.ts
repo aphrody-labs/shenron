@@ -25,7 +25,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => ({}));
     let amount = Number(body.amount); // en centimes d'EUR
     const tierId = body.tierId as string | undefined;
-    const donorName = (body.donorName as string)?.trim() || session?.user?.name || "Guerrier Z Anonyme";
+    const donorName =
+      (body.donorName as string)?.trim() || session?.user?.name || "Guerrier Z Anonyme";
     const donorEmail = (body.donorEmail as string)?.trim() || session?.user?.email;
     const message = (body.message as string)?.trim() || "";
     const isAnonymous = Boolean(body.isAnonymous);
@@ -59,7 +60,8 @@ export async function POST(req: NextRequest) {
             unit_amount: amount,
             product_data: {
               name: `Don de Soutien DBFR ${tierId ? `(${tierId})` : ""}`,
-              description: message || "Contribution au maintien et au développement de dragonballfr.com",
+              description:
+                message || "Contribution au maintien et au développement de dragonballfr.com",
             },
           },
           quantity: 1,
@@ -93,7 +95,11 @@ export async function POST(req: NextRequest) {
       tier: tierId || "custom",
     });
 
-    return NextResponse.json({ url: checkoutSession.url, sessionId: checkoutSession.id, donationId });
+    return NextResponse.json({
+      url: checkoutSession.url,
+      sessionId: checkoutSession.id,
+      donationId,
+    });
   } catch (err: any) {
     console.error("Erreur Checkout Donation Stripe:", err);
     return NextResponse.json(

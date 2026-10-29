@@ -6,7 +6,7 @@ let code = readFileSync(path, "utf8");
 // 1. Add import for CategorizedAffiliates and getShenronCharacterRelations
 code = code.replace(
   'import { WikiRelatedCharacters } from "@/components/wiki/WikiRelatedCharacters";',
-  'import { WikiRelatedCharacters } from "@/components/wiki/WikiRelatedCharacters";\nimport { CategorizedAffiliates } from "@/components/wiki/CategorizedAffiliates";\nimport { getShenronCharacterRelations } from "@/lib/shenron";'
+  'import { WikiRelatedCharacters } from "@/components/wiki/WikiRelatedCharacters";\nimport { CategorizedAffiliates } from "@/components/wiki/CategorizedAffiliates";\nimport { getShenronCharacterRelations } from "@/lib/shenron";',
 );
 
 // 2. Fetch relations alongside variants
@@ -19,7 +19,7 @@ code = code.replace(
     getShenronCharacterVariants(character.id),
     getShenronCharacterRelations(character.id),
     getLaunchConfig().catch(() => null),
-  ]);`
+  ]);`,
 );
 
 // 3. Replace the affiliate panel with CategorizedAffiliates

@@ -13,22 +13,29 @@ export function StudioVideoWorkspace() {
   const [auraIntensity, setAuraIntensity] = useState(85);
   const [activePreset, setActivePreset] = useState("Beerus Awakening");
 
-  const frameSrc = currentSeconds >= 300 
-    ? "/generated/frames/dbs-876/beerus-awakening-350s.png"
-    : "/generated/frames/dbs-876/kaioshin-warning-120s.png";
+  const frameSrc =
+    currentSeconds >= 300
+      ? "/generated/frames/dbs-876/beerus-awakening-350s.png"
+      : "/generated/frames/dbs-876/kaioshin-warning-120s.png";
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] bg-zinc-950 text-white font-sans overflow-hidden">
       {/* Top Header / Studio Toolbar */}
       <header className="flex items-center justify-between px-6 py-3 border-b border-purple-900/40 bg-zinc-900/80 backdrop-blur-md">
         <div className="flex items-center gap-4">
-          <Link href="/studio" className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition">
+          <Link
+            href="/studio"
+            className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition"
+          >
             <ArrowLeft className="w-4 h-4" />
           </Link>
           <div className="flex items-center gap-3">
             <div className="w-3 h-3 rounded-full bg-purple-500 animate-pulse shadow-[0_0_12px_#a855f7]" />
             <h1 className="font-display font-bold text-lg tracking-wide uppercase text-purple-200">
-              Shenron Video Studio <span className="text-xs text-purple-400 font-mono font-normal ml-2">DBS 876: Dieu de la Destruction Beerus</span>
+              Shenron Video Studio{" "}
+              <span className="text-xs text-purple-400 font-mono font-normal ml-2">
+                DBS 876: Dieu de la Destruction Beerus
+              </span>
             </h1>
           </div>
         </div>
@@ -40,7 +47,7 @@ export function StudioVideoWorkspace() {
           <span className="text-xs font-mono px-2.5 py-1 rounded bg-amber-950/80 border border-amber-500/30 text-amber-300">
             Engine: Remotion / HyperFrame
           </span>
-          <button 
+          <button
             className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm transition shadow-[0_0_16px_rgba(168,85,247,0.4)]"
             onClick={() => alert("Master rendu envoyé vers le CDN DBFR")}
           >
@@ -59,11 +66,14 @@ export function StudioVideoWorkspace() {
               <Film className="w-3.5 h-3.5" /> Séquence FilmCraft
             </h3>
             <div className="space-y-2">
-              <button 
-                onClick={() => { setCurrentSeconds(350); setActivePreset("Beerus Awakening"); }}
+              <button
+                onClick={() => {
+                  setCurrentSeconds(350);
+                  setActivePreset("Beerus Awakening");
+                }}
                 className={`w-full text-left p-3 rounded-lg border text-sm transition ${
-                  activePreset === "Beerus Awakening" 
-                    ? "bg-purple-900/40 border-purple-500/60 text-white shadow-[0_0_12px_rgba(168,85,247,0.2)]" 
+                  activePreset === "Beerus Awakening"
+                    ? "bg-purple-900/40 border-purple-500/60 text-white shadow-[0_0_12px_rgba(168,85,247,0.2)]"
                     : "bg-zinc-800/40 border-zinc-700/40 text-zinc-400 hover:text-zinc-200"
                 }`}
               >
@@ -71,11 +81,14 @@ export function StudioVideoWorkspace() {
                 <div className="text-xs opacity-75 font-mono mt-1">Frame 8,400 • 1080p AVC</div>
               </button>
 
-              <button 
-                onClick={() => { setCurrentSeconds(120); setActivePreset("Kaioshin Warning"); }}
+              <button
+                onClick={() => {
+                  setCurrentSeconds(120);
+                  setActivePreset("Kaioshin Warning");
+                }}
                 className={`w-full text-left p-3 rounded-lg border text-sm transition ${
-                  activePreset === "Kaioshin Warning" 
-                    ? "bg-purple-900/40 border-purple-500/60 text-white shadow-[0_0_12px_rgba(168,85,247,0.2)]" 
+                  activePreset === "Kaioshin Warning"
+                    ? "bg-purple-900/40 border-purple-500/60 text-white shadow-[0_0_12px_rgba(168,85,247,0.2)]"
                     : "bg-zinc-800/40 border-zinc-700/40 text-zinc-400 hover:text-zinc-200"
                 }`}
               >
@@ -95,10 +108,10 @@ export function StudioVideoWorkspace() {
                   <span className="text-zinc-400">Intensité Aura Pourpre</span>
                   <span className="font-mono text-purple-300">{auraIntensity}%</span>
                 </div>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="100" 
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
                   value={auraIntensity}
                   onChange={(e) => setAuraIntensity(Number(e.target.value))}
                   className="w-full accent-purple-500 cursor-pointer"
@@ -110,10 +123,10 @@ export function StudioVideoWorkspace() {
                   <span className="text-zinc-400">Position Temporelle</span>
                   <span className="font-mono text-purple-300">{currentSeconds}s</span>
                 </div>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="1397" 
+                <input
+                  type="range"
+                  min="0"
+                  max="1397"
                   value={currentSeconds}
                   onChange={(e) => setCurrentSeconds(Number(e.target.value))}
                   className="w-full accent-purple-500 cursor-pointer"
@@ -141,23 +154,17 @@ export function StudioVideoWorkspace() {
 
         {/* Center: Viewport Monitor (Pixel-Perfect Anime + Composition) */}
         <div className="flex-1 flex flex-col bg-black/90 p-4 items-center justify-center relative">
-          <div 
+          <div
             className="relative w-full max-w-4xl aspect-video rounded-xl overflow-hidden border border-purple-500/40 shadow-[0_0_40px_rgba(168,85,247,0.25)] flex items-center justify-center bg-zinc-950"
             style={{
               boxShadow: `0 0 ${auraIntensity * 0.5}px rgba(168, 85, 247, ${auraIntensity / 120})`,
             }}
           >
             {/* Base Anime Episode Frame */}
-            <Image
-              src={frameSrc}
-              alt="Episode Frame"
-              fill
-              className="object-contain"
-              priority
-            />
+            <Image src={frameSrc} alt="Episode Frame" fill className="object-contain" priority />
 
             {/* HyperFrame / Toriyama Vector Overlay Layer */}
-            <div 
+            <div
               className="absolute inset-0 pointer-events-none mix-blend-screen transition-opacity"
               style={{ opacity: auraIntensity / 100 }}
             >
@@ -167,7 +174,12 @@ export function StudioVideoWorkspace() {
             {/* Timecode Indicator */}
             <div className="absolute top-4 left-4 px-3 py-1.5 rounded-lg bg-black/70 backdrop-blur-md border border-white/10 font-mono text-xs text-purple-300 flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-400" />
-              <span>{Math.floor(currentSeconds / 60).toString().padStart(2, '0')}:{(Math.round(currentSeconds) % 60).toString().padStart(2, '0')}:00</span>
+              <span>
+                {Math.floor(currentSeconds / 60)
+                  .toString()
+                  .padStart(2, "0")}
+                :{(Math.round(currentSeconds) % 60).toString().padStart(2, "0")}:00
+              </span>
             </div>
 
             {/* Resolution Badge */}
@@ -178,13 +190,13 @@ export function StudioVideoWorkspace() {
 
           {/* Quick Monitor Controls */}
           <div className="flex items-center gap-4 mt-4">
-            <button 
+            <button
               onClick={() => setIsPlaying(!isPlaying)}
               className="p-3 rounded-full bg-purple-600 hover:bg-purple-500 text-white transition shadow-[0_0_12px_rgba(168,85,247,0.3)]"
             >
               {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
             </button>
-            <button 
+            <button
               onClick={() => alert("Point de coupe Razor appliqué sur la séquence FilmCraft")}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition text-xs font-semibold"
             >
@@ -207,7 +219,9 @@ export function StudioVideoWorkspace() {
           <div className="flex items-center gap-3">
             <div className="w-20 text-xs font-mono text-purple-400 font-bold">V2 [FX]</div>
             <div className="flex-1 h-7 rounded bg-purple-950/60 border border-purple-500/40 relative overflow-hidden flex items-center px-3">
-              <span className="text-xs text-purple-300 font-medium">Toriyama SVG Auras & Onomatopées</span>
+              <span className="text-xs text-purple-300 font-medium">
+                Toriyama SVG Auras & Onomatopées
+              </span>
             </div>
           </div>
 
@@ -215,7 +229,9 @@ export function StudioVideoWorkspace() {
           <div className="flex items-center gap-3">
             <div className="w-20 text-xs font-mono text-emerald-400 font-bold">V1 [Vidéo]</div>
             <div className="flex-1 h-7 rounded bg-emerald-950/60 border border-emerald-500/40 relative overflow-hidden flex items-center px-3">
-              <span className="text-xs text-emerald-300 font-medium">dbs-876.mp4 (Dragon Ball Super - Arc Beerus)</span>
+              <span className="text-xs text-emerald-300 font-medium">
+                dbs-876.mp4 (Dragon Ball Super - Arc Beerus)
+              </span>
             </div>
           </div>
 
@@ -223,7 +239,9 @@ export function StudioVideoWorkspace() {
           <div className="flex items-center gap-3">
             <div className="w-20 text-xs font-mono text-cyan-400 font-bold">A1 [Audio]</div>
             <div className="flex-1 h-7 rounded bg-cyan-950/60 border border-cyan-500/40 relative overflow-hidden flex items-center px-3">
-              <span className="text-xs text-cyan-300 font-medium">Master Audio VF/VOSTFR (44.1 kHz)</span>
+              <span className="text-xs text-cyan-300 font-medium">
+                Master Audio VF/VOSTFR (44.1 kHz)
+              </span>
             </div>
           </div>
         </div>

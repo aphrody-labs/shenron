@@ -3,13 +3,7 @@
 import { useState } from "react";
 import { DONATION_TIERS } from "@/lib/stripe";
 
-export function DonationModal({
-  isOpen,
-  onClose,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-}) {
+export function DonationModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [selectedTier, setSelectedTier] = useState<string>("dragon_ball");
   const [customAmount, setCustomAmount] = useState<string>("");
   const [donorName, setDonorName] = useState<string>("");
@@ -22,9 +16,7 @@ export function DonationModal({
 
   const currentTier = DONATION_TIERS.find((t) => t.id === selectedTier);
   const finalAmount =
-    selectedTier === "custom"
-      ? Math.round(Number(customAmount) * 100)
-      : currentTier?.amount || 500;
+    selectedTier === "custom" ? Math.round(Number(customAmount) * 100) : currentTier?.amount || 500;
 
   const handleDonate = async () => {
     try {
@@ -118,9 +110,7 @@ export function DonationModal({
                     {(tier.amount / 100).toFixed(2)} €
                   </span>
                 </div>
-                <span className="mt-1 font-semibold text-xs text-neutral-200">
-                  {tier.name}
-                </span>
+                <span className="mt-1 font-semibold text-xs text-neutral-200">{tier.name}</span>
                 <span className="text-[11px] text-neutral-400 line-clamp-1 mt-0.5">
                   {tier.description}
                 </span>
@@ -139,9 +129,7 @@ export function DonationModal({
           >
             <div className="flex items-center gap-2">
               <span className="text-xl">✨</span>
-              <span className="font-semibold text-xs text-neutral-200">
-                Montant personnalisé
-              </span>
+              <span className="font-semibold text-xs text-neutral-200">Montant personnalisé</span>
             </div>
             {selectedTier === "custom" && (
               <div className="flex items-center gap-1.5">
@@ -198,9 +186,7 @@ export function DonationModal({
               onChange={(e) => setIsAnonymous(e.target.checked)}
               className="rounded border-neutral-700 bg-neutral-900 text-amber-500 focus:ring-amber-400"
             />
-            <span className="text-xs text-neutral-400">
-              Faire ce don de manière anonyme
-            </span>
+            <span className="text-xs text-neutral-400">Faire ce don de manière anonyme</span>
           </label>
         </div>
 

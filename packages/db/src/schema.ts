@@ -271,8 +271,12 @@ export const baSubscription = pgTable(
     seats: integer("seats"),
     trialStart: timestamp("trialStart"),
     trialEnd: timestamp("trialEnd"),
-    createdAt: timestamp("createdAt").notNull().default(sql`CURRENT_TIMESTAMP`),
-    updatedAt: timestamp("updatedAt").notNull().default(sql`CURRENT_TIMESTAMP`),
+    createdAt: timestamp("createdAt")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: timestamp("updatedAt")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
   },
   (table) => [
     index("ba_subscription_ref_idx").on(table.referenceId),
@@ -296,8 +300,12 @@ export const siteDonations = pgTable(
     stripePaymentIntentId: text("stripePaymentIntentId").unique(),
     status: text("status").notNull().default("pending"),
     tier: text("tier"),
-    createdAt: timestamp("createdAt").notNull().default(sql`CURRENT_TIMESTAMP`),
-    updatedAt: timestamp("updatedAt").notNull().default(sql`CURRENT_TIMESTAMP`),
+    createdAt: timestamp("createdAt")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: timestamp("updatedAt")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
   },
   (table) => [
     index("site_donations_status_idx").on(table.status),
@@ -305,21 +313,22 @@ export const siteDonations = pgTable(
   ],
 );
 
-export const siteAdSlots = pgTable(
-  "site_ad_slots",
-  {
-    id: text("id").primaryKey(),
-    slotKey: text("slotKey").notNull().unique(),
-    name: text("name").notNull(),
-    format: text("format").notNull(),
-    adClient: text("adClient").notNull(),
-    adSlot: text("adSlot").notNull(),
-    active: boolean("active").notNull().default(true),
-    exemptVip: boolean("exemptVip").notNull().default(true),
-    createdAt: timestamp("createdAt").notNull().default(sql`CURRENT_TIMESTAMP`),
-    updatedAt: timestamp("updatedAt").notNull().default(sql`CURRENT_TIMESTAMP`),
-  },
-);
+export const siteAdSlots = pgTable("site_ad_slots", {
+  id: text("id").primaryKey(),
+  slotKey: text("slotKey").notNull().unique(),
+  name: text("name").notNull(),
+  format: text("format").notNull(),
+  adClient: text("adClient").notNull(),
+  adSlot: text("adSlot").notNull(),
+  active: boolean("active").notNull().default(true),
+  exemptVip: boolean("exemptVip").notNull().default(true),
+  createdAt: timestamp("createdAt")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updatedAt")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+});
 
 // --- First-party web telemetry (RGPD-safe) ---
 //

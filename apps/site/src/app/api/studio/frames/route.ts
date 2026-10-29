@@ -20,7 +20,16 @@ export async function GET(request: NextRequest) {
 
   // Fallback to apps/site/public path if running inside Next cwd
   if (!existsSync(targetFile)) {
-    targetFile = join(process.cwd(), "apps", "site", "public", "generated", "frames", episode, seconds >= 300 ? "beerus-awakening-350s.png" : "kaioshin-warning-120s.png");
+    targetFile = join(
+      process.cwd(),
+      "apps",
+      "site",
+      "public",
+      "generated",
+      "frames",
+      episode,
+      seconds >= 300 ? "beerus-awakening-350s.png" : "kaioshin-warning-120s.png",
+    );
   }
 
   if (existsSync(targetFile)) {
