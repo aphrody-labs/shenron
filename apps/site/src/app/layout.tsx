@@ -26,6 +26,7 @@ import { getSiteTheme } from "@/lib/theme-config";
 import { themeCssVars } from "@/lib/site-theme";
 import { EPISODE_THEME_BOOT } from "@/lib/episode-theme";
 import { PwaProvider } from "@/components/PwaProvider";
+import { GameSurfaceLayout } from "@/components/GameSurfaceLayout";
 
 // FAB Discord lazy : composant client gated par localStorage, jamais critical.
 const DiscordInviteFAB = dynamic(() =>
@@ -137,6 +138,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  if (env.SHENRON_SITE_SURFACE === "game") return <GameSurfaceLayout>{children}</GameSurfaceLayout>;
   const gtmId = env.NEXT_PUBLIC_GTM_ID || "GTM-KLSS5787";
   // Thème de design global (éditeur /admin/design). Sans thème posé → chaîne vide
   // → aucune injection, la palette d'origine de globals.css s'applique. Lecture

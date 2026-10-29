@@ -18,6 +18,7 @@ pkg/
 .next-dev/
 .next-standalone/
 .next-check/
+.next-*-review/
 .next-compact-home/
 out/
 coverage/
