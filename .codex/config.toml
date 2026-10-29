@@ -1,16 +1,10 @@
 [mcp_servers.dbfr-postgres]
 command = "bun"
-args = [
-    "C:/Users/aphro/.aphrody/mcp/dbfr-db.ts",
-    "postgres",
-]
+args = ["C:/Users/aphro/.aphrody/mcp/dbfr-db.ts", "postgres"]
 
 [mcp_servers.dbfr-redis]
 command = "bun"
-args = [
-    "C:/Users/aphro/.aphrody/mcp/dbfr-db.ts",
-    "redis",
-]
+args = ["C:/Users/aphro/.aphrody/mcp/dbfr-db.ts", "redis"]
 
 [mcp_servers.shenron]
 url = "https://dragonballfr.com/mcp"

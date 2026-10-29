@@ -3,11 +3,7 @@
     "target": "ESNext",
     "moduleDetection": "force",
     "allowImportingTsExtensions": true,
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -25,19 +21,11 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "react": [
-        "./node_modules/@types/react"
-      ],
-      "react/*": [
-        "./node_modules/@types/react/*"
-      ]
+      "@/*": ["./src/*"],
+      "react": ["./node_modules/@types/react"],
+      "react/*": ["./node_modules/@types/react/*"]
     },
-    "types": [
-      "bun"
-    ]
+    "types": ["bun"]
   },
   "include": [
     "next-env.d.ts",
@@ -59,9 +47,5 @@
     ".next-game-world-review/types/**/*.ts",
     ".next-game-world-review/dev/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "tests",
-    "scripts"
-  ]
+  "exclude": ["node_modules", "tests", "scripts"]
 }
