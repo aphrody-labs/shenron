@@ -257,6 +257,10 @@ export class Xv2WorldWasm {
      */
     camera(x: number, y: number, z: number, yaw: number, pitch: number): void;
     clearActor(): void;
+    /**
+     * CPU durations and submitted work only; no GPU completion or display-rate claim.
+     */
+    frameStats(): any;
     frame(time: number): boolean;
     resize(width: number, height: number): void;
     setActor(files: any, idle_name: string, walk_name: string | null | undefined, speed: number): void;
@@ -452,6 +456,7 @@ export interface InitOutput {
     readonly xv2duelwasm_playSkill: (a: number, b: number, c: number) => number;
     readonly xv2duelwasm_ready: (a: number, b: number) => number;
     readonly xv2duelwasm_resize: (a: number, b: number, c: number) => void;
+    readonly xv2duelwasm_walk: (a: number, b: number, c: number) => void;
     readonly shenron_re_abi_version: () => number;
     readonly shenron_re_bac_parse_json: (a: number, b: number) => number;
     readonly shenron_re_bdm_parse_json: (a: number, b: number) => number;
@@ -469,7 +474,6 @@ export interface InitOutput {
     readonly shenron_re_triage_json: (a: number, b: number) => number;
     readonly shenron_re_unified_state_json: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => number;
     readonly shenron_re_version: () => number;
-    readonly xv2duelwasm_walk: (a: number, b: number, c: number) => void;
     readonly xv2worldwasm_actorActions: (a: number) => [number, number];
     readonly xv2worldwasm_actorAttack: (a: number, b: number) => number;
     readonly xv2worldwasm_actorCanWalk: (a: number) => number;
@@ -480,14 +484,15 @@ export interface InitOutput {
     readonly xv2worldwasm_camera: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
     readonly xv2worldwasm_clearActor: (a: number) => void;
     readonly xv2worldwasm_frame: (a: number, b: number) => number;
+    readonly xv2worldwasm_frameStats: (a: number) => [number, number, number];
     readonly xv2worldwasm_resize: (a: number, b: number, c: number) => void;
     readonly xv2worldwasm_setActor: (a: number, b: any, c: number, d: number, e: number, f: number, g: number) => [number, number];
     readonly xv2worldwasm_textureProfile: (a: number) => [number, number, number];
     readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___js_sys_eb92dcb4f6145e43___Function_fn_wasm_bindgen_3017951c9ae318c7___JsValue_____wasm_bindgen_3017951c9ae318c7___sys__Undefined___js_sys_eb92dcb4f6145e43___Function_fn_wasm_bindgen_3017951c9ae318c7___JsValue_____wasm_bindgen_3017951c9ae318c7___sys__Undefined_______true_: (a: number, b: number, c: any, d: any) => void;
     readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___JsValue__core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true_: (a: number, b: number, c: any) => [number, number];
     readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true_: (a: number, b: number, c: any) => [number, number];
-    readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__85: (a: number, b: number, c: any) => [number, number];
     readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__86: (a: number, b: number, c: any) => [number, number];
+    readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wasm_bindgen_3017951c9ae318c7___sys__JsNullable_wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_ed718c3d60ebd546___result__Result_____wasm_bindgen_3017951c9ae318c7___JsError___true__87: (a: number, b: number, c: any) => [number, number];
     readonly wasm_bindgen_3017951c9ae318c7___convert__closures_____invoke___wgpu_a6a6189b5bcebd86___backend__webgpu__webgpu_sys__gen_GpuDeviceLostInfo__GpuDeviceLostInfo______true_: (a: number, b: number, c: any) => void;
     readonly __wbindgen_malloc: (a: number, b: number) => number;
     readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;

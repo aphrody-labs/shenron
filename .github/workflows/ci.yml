@@ -25,9 +25,9 @@ jobs:
   check:
     name: Check (Bun)
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    # Cible de prod = Linux. Les crates Rust (dépendances git épinglées sur Aphrody, socle ML)
-    # ont leur workflow, rust.yml, actif quand le secret APHRODY_GIT_TOKEN est défini.
-    runs-on: [self-hosted, Linux, X64, shenron-factory]
+    # Run checks on GitHub-hosted capacity so normal pushes do not consume the production VPS.
+    # Rust's private-dependency build remains in rust.yml until its GitHub secret setup is migrated.
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v7
