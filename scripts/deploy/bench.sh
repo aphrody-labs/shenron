@@ -4,9 +4,11 @@
 #
 #   scripts/deploy/bench.sh        (env as build-image.sh; results in $SHENRON_BENCH_LOG)
 #
-# Two throw-away commits on top of the current revision, never pushed: C1 touches a site file,
-# C2 (child of C1) touches a Rust crate. Each is built by the new pipeline, then by the old one.
-# The old run sets the Turbopack cache aside (it never had one) and puts it back afterwards.
+# Throw-away commits on top of the current revision, never pushed: C1 touches a site file; C2 and
+# C3 (children of C1) each touch a Rust crate. Site change: new(C1) then old(C1). Crate change:
+# old(C2) then new(C3), so each pipeline pays its own Rust compilation (a shared target/ would
+# otherwise favour whichever runs second). The old run sets the Turbopack cache aside (the old
+# pipeline never had one) and puts it back afterwards.
 set -euo pipefail
 HERE=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 W=${SHENRON_BUILD_REPO:-$HOME/build/shenron}
@@ -32,20 +34,19 @@ old() {
   git -C "$W" clean -ffdq -e target -e node_modules -e '.next*' -e .cache -e dist
   [ ! -d "$cache" ] || mv "$cache" "$W/.bench-turbopack-cache"
   bash "$HERE/bench-old-pipeline.sh"
-  rm -rf "$W/apps/site/.next-standalone"
-  mkdir -p "$W/apps/site/.next-standalone"
   [ ! -d "$W/.bench-turbopack-cache" ] || mv "$W/.bench-turbopack-cache" "$cache"
 }
 git -C "$W" checkout -q -f --detach "$BASE"
 C1=$(touch_commit apps/site/src/proxy.ts "bench: site file")
-C2=$(touch_commit crates/shenron-cli/src/shenron_cmd.rs "bench: rust crate")
-echo "base=$BASE c1=$C1 c2=$C2" | tee -a "$LOG"
+C2=$(touch_commit crates/shenron-cli/src/shenron_cmd.rs "bench: rust crate A")
+C3=$(touch_commit crates/shenron-cli/src/shenron_cmd.rs "bench: rust crate B")
+echo "base=$BASE c1=$C1 c2=$C2 c3=$C3" | tee -a "$LOG"
 timed new-site-change bash "$HERE/build-image.sh" "$C1"
 timed old-site-change old "$C1"
-timed new-crate-change bash "$HERE/build-image.sh" "$C2"
 timed old-crate-change old "$C2"
+timed new-crate-change bash "$HERE/build-image.sh" "$C3"
 git -C "$W" checkout -q -f --detach "$BASE"
-for sha in "$C1" "$C2"; do
+for sha in "$C1" "$C2" "$C3"; do
   "${SHENRON_CONTAINER:-docker}" image rm "${SHENRON_IMAGE:-localhost/shenron}:$sha" >/dev/null 2>&1 || true
 done
 echo "done" | tee -a "$LOG"
