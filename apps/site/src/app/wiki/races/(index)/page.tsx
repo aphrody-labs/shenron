@@ -4,7 +4,6 @@ import { getShenronRaces, getShenronCharacterCards } from "@/lib/shenron";
 import { slugDeRace } from "@aphrody/shenron-config/races-alias";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { PageHero } from "@/components/PageHero";
 import { pageHero } from "@/lib/banner-config";
 import { assetUrl } from "@/lib/db-universe";
@@ -153,10 +152,7 @@ export default async function RacesPage() {
 
       <div className="wiki-container space-y-8">
         <DomainBar domain="wiki" />
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <Breadcrumbs items={[{ label: "Races & peuples" }]} />
-          <WikiDrawer />
-        </div>
+        <Breadcrumbs items={[{ label: "Races & peuples" }]} />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {races.map((race, idx) => {
             const theme = colorThemes[race.slug] || defaultTheme;

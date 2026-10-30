@@ -9,7 +9,6 @@ import { CommunityRankBadge } from "@/components/ratings/CommunityRankBadge";
 import { dbUniverse, assetUrl } from "@/lib/db-universe";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { DomainBar } from "@/components/kit";
 import { GatedLink } from "@/components/GatedLink";
 import { notFound } from "next/navigation";
@@ -71,16 +70,13 @@ export default async function ArcPage({ params }: { params: Promise<{ slug: stri
   return (
     <div className="wiki-container">
       <DomainBar domain="wiki" />
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <Breadcrumbs
-          items={[
-            { label: "Sagas & arcs", href: "/wiki/sagas" },
-            { label: "Arcs", href: "/wiki/arcs" },
-            { label: arc.name },
-          ]}
-        />
-        <WikiDrawer />
-      </div>
+      <Breadcrumbs
+        items={[
+          { label: "Sagas & arcs", href: "/wiki/sagas" },
+          { label: "Arcs", href: "/wiki/arcs" },
+          { label: arc.name },
+        ]}
+      />
 
       <div className="mb-4">
         <WikiEditBar table="db_arcs" id={arc.id} indexHref="/wiki/sagas" label={arc.name} />

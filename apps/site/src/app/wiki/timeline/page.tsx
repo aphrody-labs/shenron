@@ -1,7 +1,6 @@
 import { DomainBar, PageShell } from "@/components/kit";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import type { Metadata } from "next";
 import { pageHero } from "@/lib/banner-config";
 import {
@@ -110,10 +109,7 @@ export default async function ChronologiePage() {
       />
       <div id="frise" className="wiki-container scroll-mt-24">
         <DomainBar domain="timeline" className="mb-6" />
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <Breadcrumbs items={[{ label: "Chronologie" }]} />
-          <WikiDrawer />
-        </div>
+        <Breadcrumbs items={[{ label: "Chronologie" }]} />
         <ChronologieTabs mediaItems={items} ageEvents={ageEvents ?? []} />
       </div>
     </>

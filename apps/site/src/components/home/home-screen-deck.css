@@ -61,7 +61,7 @@
   background: var(--background);
   color: var(--foreground);
 }
-.home-screen-controls :is(button, a) {
+.home-screen-controls button {
   display: grid;
   place-items: center;
   width: 44px;
@@ -69,14 +69,14 @@
   border-radius: 50%;
   color: inherit;
 }
-.home-screen-controls :is(button, a):hover {
+.home-screen-controls button:hover {
   background: var(--secondary);
   color: var(--secondary-foreground);
 }
 .home-screen-controls button:disabled {
   opacity: 0.35;
 }
-.home-screen-controls :is(button, a):focus-visible,
+.home-screen-controls button:focus-visible,
 .home-screen-deck:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 3px;

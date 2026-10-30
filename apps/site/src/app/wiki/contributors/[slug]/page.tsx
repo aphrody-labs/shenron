@@ -3,7 +3,6 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { WikiPageShell } from "@/components/wiki/WikiPageShell";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { DomainBar, ContributeRail } from "@/components/kit";
 import { dbUniverse } from "@/lib/db-universe";
 import { ogMeta } from "@/lib/og";
@@ -16,7 +15,6 @@ import {
   Music,
   Mic,
   Building2,
-  ArrowLeft,
   CheckCircle2,
   Quote,
 } from "lucide-react";
@@ -172,15 +170,9 @@ export default async function ContributorDetailPage({ params }: ContributorPageP
 
       <WikiPageShell>
         <DomainBar domain="wiki" />
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <Breadcrumbs
-            items={[
-              { label: "Staff & Créateurs", href: "/wiki/staff" },
-              { label: contributor.name },
-            ]}
-          />
-          <WikiDrawer />
-        </div>
+        <Breadcrumbs
+          items={[{ label: "Staff & Créateurs", href: "/wiki/staff" }, { label: contributor.name }]}
+        />
 
         {/* Profil Card Header */}
         <header className="rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-black/80 to-black p-6 sm:p-10 backdrop-blur-2xl shadow-2xl">
@@ -248,16 +240,6 @@ export default async function ContributorDetailPage({ params }: ContributorPageP
                   )}
                 </div>
               </div>
-            </div>
-
-            <div className="shrink-0 self-start md:self-center">
-              <Link
-                href="/wiki/staff"
-                className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange motion-reduce:transition-none"
-              >
-                <ArrowLeft aria-hidden="true" className="h-4 w-4" />
-                <span>Retour au hub staff</span>
-              </Link>
             </div>
           </div>
         </header>

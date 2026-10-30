@@ -5,7 +5,6 @@ import { dbUniverse } from "@/lib/db-universe";
 import Link from "next/link";
 import { T } from "@/components/T";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { ContinueRail } from "@/components/history/ContinueRail";
 import type { Metadata } from "next";
 import { pageHero } from "@/lib/banner-config";
@@ -139,10 +138,7 @@ export default async function FilmsPage() {
       />
 
       <div className="wiki-container">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <Breadcrumbs items={[{ label: "Films", display: <T k="categories.films.label" /> }]} />
-          <WikiDrawer />
-        </div>
+        <Breadcrumbs items={[{ label: "Films", display: <T k="categories.films.label" /> }]} />
         <div
           className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4"
           aria-label="Couverture du catalogue vidéo"

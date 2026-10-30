@@ -190,15 +190,6 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
                 </div>
               )}
             </div>
-
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6 text-center">
-              <Link
-                href="/wiki/items"
-                className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-white/10 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
-              >
-                ← Retour aux objets
-              </Link>
-            </div>
           </div>
         </div>
       </WikiPageShell>

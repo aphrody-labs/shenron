@@ -1,7 +1,6 @@
 "use client";
 
 import { Children, isValidElement, useEffect, useRef, useState, type ReactNode } from "react";
-import Link from "next/link";
 import { MaterialSymbol } from "@aphrody/shenron-ui/icones";
 import { useT } from "@/components/T";
 import { HomeMotion } from "./HomeMotion";
@@ -78,9 +77,6 @@ export function HomeScreenDeck({ children }: { children: ReactNode }) {
           >
             <MaterialSymbol name={motion ? "pause" : "play_arrow"} size={24} />
           </button>
-          <Link href="/wiki/gifs" aria-label={t("gifLibrary.title")} title={t("gifLibrary.title")}>
-            <MaterialSymbol name="gif" size={24} />
-          </Link>
           <button
             type="button"
             disabled={active === 0}

@@ -1,6 +1,5 @@
 import { PageHero } from "@/components/PageHero";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { DomainBar, ContributeRail } from "@/components/kit";
 import { dbUniverse } from "@/lib/db-universe";
 import { ItemsGrid } from "@/components/wiki/ItemsGrid";
@@ -40,10 +39,7 @@ export default async function ObjetsPage() {
 
       <WikiPageShell>
         <DomainBar domain="wiki" />
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <Breadcrumbs items={[{ label: "Objets & Technologies" }]} />
-          <WikiDrawer />
-        </div>
+        <Breadcrumbs items={[{ label: "Objets & Technologies" }]} />
 
         <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4 text-xs leading-relaxed text-amber-200/80">
           <strong>Note d'archive Capsule Corp :</strong> Chaque invention, vaisseau spatial ou

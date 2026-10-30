@@ -2968,10 +2968,10 @@ main:focus {
 /* Dans le shell, la fenêtre commence après la barre latérale (17rem, 4,5rem repliée) : le
    nuage longe le bord du CONTENU, pas celui de l'écran, et passe sous la barre (z 40). */
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
-  .kt-volant {
+  html:has([data-shell-variant="app"]) .kt-volant {
     left: 17rem;
   }
-  html[data-shell-sidebar="collapsed"] .kt-volant {
+  html[data-shell-sidebar="collapsed"]:has([data-shell-variant="app"]) .kt-volant {
     left: 4.5rem;
   }
 }
@@ -4799,6 +4799,11 @@ html[data-consent-open] body {
   background-color: color-mix(in srgb, var(--color-dbz-bg) 96%, transparent);
   backdrop-filter: blur(16px) saturate(130%);
   transition: none;
+}
+
+/* The home hero carries the full wordmark; the header mark would repeat it. */
+html:has(#hero) [data-shell-brand] {
+  display: none !important;
 }
 
 [data-shell-variant="site"] [data-shell-sidebar-brand],

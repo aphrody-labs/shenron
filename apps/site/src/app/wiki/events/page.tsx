@@ -8,7 +8,6 @@ import { SITE_URL } from "@/lib/config";
 import { dbUniverse } from "@/lib/db-universe";
 import { NarrativeEventsExplorer } from "@/components/wiki/NarrativeEventsExplorer";
 import { WikiPageShell } from "@/components/wiki/WikiPageShell";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { ogMeta } from "@/lib/og";
 import { pageHero } from "@/lib/banner-config";
 import { JsonLd } from "@/components/JsonLd";
@@ -71,10 +70,7 @@ export default async function EvenementsHubPage() {
 
       <WikiPageShell>
         <DomainBar domain="wiki" />
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <Breadcrumbs items={[{ label: "Événements & Chronologie" }]} />
-          <WikiDrawer />
-        </div>
+        <Breadcrumbs items={[{ label: "Événements & Chronologie" }]} />
 
         {/* 4 Continuités Narratives Explicatives */}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">

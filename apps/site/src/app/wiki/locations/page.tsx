@@ -5,7 +5,6 @@ import { LocationsGrid } from "@/components/wiki/LocationsGrid";
 import { WikiPageShell } from "@/components/wiki/WikiPageShell";
 import { DomainBar, ContributeRail } from "@/components/kit";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { ogMeta } from "@/lib/og";
 import { pageHero } from "@/lib/banner-config";
 
@@ -39,10 +38,7 @@ export default async function LocationsIndexPage() {
 
       <WikiPageShell>
         <DomainBar domain="wiki" />
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <Breadcrumbs items={[{ label: "Lieux & Sanctuaires" }]} />
-          <WikiDrawer />
-        </div>
+        <Breadcrumbs items={[{ label: "Lieux & Sanctuaires" }]} />
         <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-orange-950/20 via-black/40 to-transparent p-5 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <span className="text-2xl">🏛️</span>

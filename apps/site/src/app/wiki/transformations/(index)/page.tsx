@@ -4,7 +4,6 @@ import { ContributeRail } from "@/components/kit";
 
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { getShenronCharacterCards } from "@/lib/shenron";
 import { dbUniverse } from "@/lib/db-universe";
 import { PageHero } from "@/components/PageHero";
@@ -103,10 +102,7 @@ export default async function TransformationsPage() {
       />
 
       <div className="wiki-container">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <Breadcrumbs items={[{ label: "Transformations" }]} />
-          <WikiDrawer />
-        </div>
+        <Breadcrumbs items={[{ label: "Transformations" }]} />
         <WikiCategoryNav active="transformations" className="mb-8" />
 
         {/* Vue Arbres Évolutifs & Lignées */}

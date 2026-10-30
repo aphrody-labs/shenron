@@ -20,13 +20,13 @@ export interface BeerusFeature {
   latest: BeerusEpisodeSummary | null;
   episodes?: BeerusEpisodeSummary[];
 }
-/** Episodes shown in the hero rail: the most recent aired ones, oldest first. */
+/** Episodes shown in the hero rail: the ones aired before the featured latest, oldest first. */
 const RAIL_EPISODES = 3;
 
 export function HomeBeerusFeature({ beerus }: { beerus: BeerusFeature }) {
   const aired = beerus.episodes ?? [];
   const latest = aired.at(-1) ?? beerus.latest ?? undefined;
-  const episodes = aired.slice(-RAIL_EPISODES);
+  const episodes = aired.filter((ep) => ep.id !== latest?.id).slice(-RAIL_EPISODES);
   return (
     <div className={styles.feature}>
       <div className={styles.featureMain}>

@@ -19,7 +19,6 @@ import Link from "next/link";
 import { BouclierCoche, Crayon, Etincelle, Livre } from "@aphrody/shenron-ui/icones";
 import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { MesContributions } from "@/components/wiki/MesContributions";
 import { listeChantiers } from "@/lib/wiki-chantiers";
 import { topContributors } from "@/lib/wiki-contributions";
@@ -56,12 +55,9 @@ export default async function PageContribuer() {
 
   return (
     <PageShell width="narrow" rhythm="loose" wikiDecorative>
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-        <Breadcrumbs
-          items={[{ label: "Contribuer", display: <T k="wiki.contribuer.breadcrumb" /> }]}
-        />
-        <WikiDrawer />
-      </div>
+      <Breadcrumbs
+        items={[{ label: "Contribuer", display: <T k="wiki.contribuer.breadcrumb" /> }]}
+      />
 
       <PageHeader
         eyebrow={<T k="wiki.contribuer.eyebrow" />}

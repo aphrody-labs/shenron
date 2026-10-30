@@ -160,13 +160,6 @@
 .secondary:hover {
   border-color: var(--primary);
 }
-.search {
-  position: relative;
-  z-index: 3;
-  padding: 0 clamp(1.5rem, 3.5vw, 3rem) 1.5rem;
-  max-width: none;
-  width: 100%;
-}
 .hero :is(a, button):focus-visible {
   outline: 3px solid var(--primary);
   outline-offset: 4px;
@@ -193,9 +186,6 @@
     padding: 1rem 1.25rem 1.5rem;
   }
 
-  .search {
-    padding: 0 1.25rem 2rem;
-  }
   .feature {
     grid-template-columns: minmax(0, 1fr);
     gap: 1.25rem;
@@ -258,17 +248,6 @@
   flex: none;
 }
 
-.search :global(search) {
-  max-width: none;
-}
-.search :global(search button) {
-  min-height: 48px;
-  width: 48px;
-}
-.search :global(search input) {
-  padding-block: 0.65rem;
-  font-size: 0.9rem;
-}
 @media (prefers-reduced-motion: reduce) {
   .primary,
   .secondary {

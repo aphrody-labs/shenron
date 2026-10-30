@@ -4,7 +4,6 @@ import { PageHero } from "@/components/PageHero";
 import { SoundtracksGrid } from "@/components/wiki/SoundtracksGrid";
 import { WikiPageShell } from "@/components/wiki/WikiPageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { ContributeRail, DomainBar } from "@/components/kit";
 import { ogMeta } from "@/lib/og";
 import { pageHero } from "@/lib/banner-config";
@@ -40,10 +39,7 @@ export default async function SoundtracksIndexPage() {
 
       <WikiPageShell>
         <DomainBar domain="wiki" />
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <Breadcrumbs items={[{ label: "Musiques & OST" }]} />
-          <WikiDrawer />
-        </div>
+        <Breadcrumbs items={[{ label: "Musiques & OST" }]} />
         <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-rose-950/20 via-black/40 to-transparent p-5 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <span className="text-2xl">🎵</span>

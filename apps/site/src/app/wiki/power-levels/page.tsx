@@ -1,6 +1,5 @@
 import { PageHero } from "@/components/PageHero";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { DomainBar, ContributeRail } from "@/components/kit";
 import { dbUniverse } from "@/lib/db-universe";
 import { PowerLevelsTable } from "@/components/wiki/PowerLevelsTable";
@@ -45,10 +44,7 @@ export default async function PuissancesPage() {
 
       <WikiPageShell>
         <DomainBar domain="wiki" />
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <Breadcrumbs items={[{ label: "Puissances & Scouter" }]} />
-          <WikiDrawer />
-        </div>
+        <Breadcrumbs items={[{ label: "Puissances & Scouter" }]} />
 
         <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4 text-xs leading-relaxed text-amber-200/80">
           <strong>Doctrine de Shenron sur le Power Scaling :</strong> Seuls les chiffres

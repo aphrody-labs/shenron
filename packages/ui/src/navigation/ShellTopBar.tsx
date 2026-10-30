@@ -75,6 +75,7 @@ export function ShellTopBar({
       >
         {siteStyle && (
           <Link
+            data-shell-brand
             href={brand.href}
             aria-label={brand.label}
             className={`hidden min-h-11 shrink-0 items-center gap-2.5 rounded-lg px-2 lg:flex ${SITE_BRAND_FOCUS}`}
@@ -104,7 +105,12 @@ export function ShellTopBar({
             <ChevronGauche size={22} />
           </Link>
         ) : (
-          <Link href={brand.href} aria-label={brand.label} className={`${ICON_BUTTON} lg:hidden`}>
+          <Link
+            data-shell-brand
+            href={brand.href}
+            aria-label={brand.label}
+            className={`${ICON_BUTTON} lg:hidden`}
+          >
             <span aria-hidden className="grid h-8 w-8 place-items-center">
               {brand.mark}
             </span>

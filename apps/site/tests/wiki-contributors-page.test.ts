@@ -18,7 +18,7 @@ describe("Sprint 4 — Contributor Detail Pages & Wiring", () => {
     expect(existsSync(filePath)).toBe(true);
     const content = readFileSync(filePath, "utf-8");
     expect(content).toContain("DomainBar");
-    expect(content).toContain("WikiDrawer");
+    expect(content).not.toContain("WikiDrawer");
     expect(content).toContain("Breadcrumbs");
     expect(content).toContain("JsonLd");
     expect(content).toContain('slug === "akira-toriyama"');

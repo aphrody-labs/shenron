@@ -2,7 +2,6 @@
 import { ContributeRail, DomainBar } from "@/components/kit";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { GatedLink } from "@/components/GatedLink";
 import { dbUniverse } from "@/lib/db-universe";
 import { PageHero } from "@/components/PageHero";
@@ -58,10 +57,7 @@ export default async function ArcsPage() {
 
       <div className="wiki-container space-y-8">
         <DomainBar domain="wiki" />
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <Breadcrumbs items={[{ label: "Arcs narratifs" }]} />
-          <WikiDrawer />
-        </div>
+        <Breadcrumbs items={[{ label: "Arcs narratifs" }]} />
         <WikiCategoryNav active="arcs" className="mb-12" />
 
         {sagas.length === 0 ? (

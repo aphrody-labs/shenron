@@ -83,16 +83,6 @@ const OMITTED: ReadonlySet<string> = new Set(["universe"]);
 /** Sections rendered outside the ordered editorial flow. */
 const FIXED: ReadonlySet<string> = new Set(["news", "pantheon", "community"]);
 
-/** Largeur d'un bloc éditorial sur la grille de douze colonnes. */
-const SPAN: Record<string, string> = {
-  bestof: "lg:col-span-12",
-  tops: "lg:col-span-12",
-  personnages: "lg:col-span-12",
-  sagas: "lg:col-span-12",
-  guardians: "lg:col-span-6",
-  play: "lg:col-span-6",
-};
-
 const card =
   "rounded-xl border border-white/[0.08] bg-dbz-card/80 transition-colors hover:border-dbz-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange";
 
@@ -163,6 +153,8 @@ export function HomeView(rawProps: HomeViewProps) {
   const pantheon = enabled.get("pantheon");
   const community = enabled.get("community");
   const play = enabled.get("play");
+  const showCommunity = Boolean(community) && shown.has("community");
+  const showPantheon = Boolean(pantheon) && shown.has("pantheon");
   const tops = flow.findIndex((s) => s.id === "tops");
   const canonAt = tops >= 0 ? tops + 1 : flow.length;
   const covered = coveredDestinations(config, shown, access);
@@ -174,7 +166,7 @@ export function HomeView(rawProps: HomeViewProps) {
 
   // Each editorial section keeps the real clip selected in the home configuration.
   const blocks = flow.map((s) => (
-    <SectionScene key={s.id} scene={s.scene} className={SPAN[s.id] ?? "lg:col-span-12"}>
+    <SectionScene key={s.id} scene={s.scene}>
       <EditorialBlock section={s} {...props} className="" />
     </SectionScene>
   ));
@@ -187,7 +179,6 @@ export function HomeView(rawProps: HomeViewProps) {
         config={config.canon}
         doctrine={props.canon.doctrine}
         references={props.canon.references}
-        className="lg:col-span-12"
       />,
     );
   }
@@ -209,49 +200,44 @@ export function HomeView(rawProps: HomeViewProps) {
             props.beerus?.episodes?.some((ep) => ep.id === frame.episodeId),
           ).map((frame) => frame.src)}
         />
-        {community && shown.has("community") && (
-          <SectionScene
-            scene={community.scene}
-            className={pantheon && shown.has("pantheon") ? "lg:col-span-8" : "lg:col-span-12"}
-          >
-            <HomeLivePanel showCommunity className="" />
-          </SectionScene>
-        )}
-
-        {pantheon && shown.has("pantheon") && (
-          <SectionScene scene={pantheon.scene} className="lg:col-span-4">
-            <HomePantheon title={label(pantheon, "")} className="" />
+        {/* One screen for the live server and its ranking, side by side on wide screens. */}
+        {(showCommunity || showPantheon) && (
+          <SectionScene scene={(community ?? pantheon)?.scene}>
+            <div
+              className={
+                showCommunity && showPantheon
+                  ? "grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
+                  : "mx-auto max-w-3xl"
+              }
+            >
+              {showCommunity && <HomeLivePanel showCommunity />}
+              {showPantheon && pantheon && <HomePantheon title={label(pantheon, "")} />}
+            </div>
           </SectionScene>
         )}
 
         {blocks}
 
         {showJourney && (
-          <HomeMenuJourney
-            access={access}
-            config={config.journey}
-            covered={covered}
-            className="lg:col-span-12"
-          />
+          <HomeMenuJourney access={access} config={config.journey} covered={covered} />
         )}
 
         {/* Tout en bas, dans cet ordre : les dernières nouvelles, puis les mini-jeux. */}
         {news && shown.has("news") && (
-          <SectionScene scene={news.scene} className="lg:col-span-12">
+          <SectionScene scene={news.scene}>
             <HomeSection
               id="actualites"
               title={label(news, "") || <T k="home.news.index.title" />}
               subtitle={news.subtitle || undefined}
               moreHref="/news"
               moreLabel={<T k="home.news.all" />}
-              className="lg:col-span-12"
             >
               <HomeNews entries={feed} />
             </HomeSection>
           </SectionScene>
         )}
 
-        <SectionScene scene={play?.scene} className="lg:col-span-12">
+        <SectionScene scene={play?.scene}>
           <HomeGames />
         </SectionScene>
       </HomeScreenDeck>

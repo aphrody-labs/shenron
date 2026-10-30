@@ -69,12 +69,13 @@
 /* Au-dessus de 1024 px, la barre latérale du shell occupe le bord gauche (17rem, 4,5rem
    repliée) : les pastilles flottantes de gauche se posaient sur son pied — connexion,
    réglages, « Replier la barre latérale » — et en volaient les clics. Elles longent
-   désormais le bord du contenu. */
+   le bord du contenu. Le site public n’a qu’une barre horizontale : rien à contourner. */
 @media (min-width: 1024px) {
-  .fab-secondary:not([data-inline]) {
+  html:has([data-shell-variant="app"]) .fab-secondary:not([data-inline]) {
     left: calc(17rem + 1.25rem) !important;
   }
-  html[data-shell-sidebar="collapsed"] .fab-secondary:not([data-inline]) {
+  html[data-shell-sidebar="collapsed"]:has([data-shell-variant="app"])
+    .fab-secondary:not([data-inline]) {
     left: calc(4.5rem + 1.25rem) !important;
   }
 }

@@ -7,7 +7,6 @@ import { GatedWrap } from "@/components/GatedLink";
 import { TrackView } from "@/components/TrackView";
 import { WikiArticle, WikiSources } from "@/components/wiki/WikiArticle";
 import { WikiEditBar } from "@/components/wiki/WikiEditBar";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { DomainBar } from "@/components/kit";
 import { assetUrl } from "@/lib/db-universe";
 import { getShenronTransformation, getTransformationsAvecArticle } from "@/lib/shenron";
@@ -67,12 +66,9 @@ export default async function TransformationPage({
     <article className="wiki-container">
       <TrackView entityType="transformation" entityId={t.id} entityName={t.name} image={t.image} />
       <DomainBar domain="wiki" />
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <Breadcrumbs
-          items={[{ label: "Transformations", href: "/wiki/transformations" }, { label: t.name }]}
-        />
-        <WikiDrawer />
-      </div>
+      <Breadcrumbs
+        items={[{ label: "Transformations", href: "/wiki/transformations" }, { label: t.name }]}
+      />
 
       <div className="mb-4">
         <WikiEditBar

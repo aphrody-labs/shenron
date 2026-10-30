@@ -3,7 +3,6 @@ import { ContributeRail, DomainBar } from "@/components/kit";
 import { dbUniverse } from "@/lib/db-universe";
 import { getRatingSummaries } from "@/lib/ratings";
 import { GamesExplorer } from "@/components/wiki/GamesExplorer";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import type { Metadata } from "next";
 import { pageHero } from "@/lib/banner-config";
 export const revalidate = 3600;
@@ -30,7 +29,6 @@ export default async function GamesPage() {
         ratings={Object.fromEntries(ratings)}
         heroImage={games.length ? await pageHero("jeux") : undefined}
         unavailable={!games.length}
-        navigation={<WikiDrawer />}
       />
       <div className="wiki-container">
         <ContributeRail className="my-10" quoiKey="kit.contribute.what.game" />

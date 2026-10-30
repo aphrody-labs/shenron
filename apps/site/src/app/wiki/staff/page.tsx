@@ -6,7 +6,6 @@ import { pageHero } from "@/lib/banner-config";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { SITE_URL } from "@/lib/config";
 import { WikiPageShell } from "@/components/wiki/WikiPageShell";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { DomainBar, ContributeRail } from "@/components/kit";
 import { UnifiedStaffExplorer, type StaffTier } from "@/components/wiki/UnifiedStaffExplorer";
 import { buildUnifiedStaffCatalog } from "@/lib/unified-staff-catalog";
@@ -85,10 +84,7 @@ export default async function StaffHubPage({
 
       <WikiPageShell>
         <DomainBar domain="wiki" />
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <Breadcrumbs items={[{ label: "Autour de Dragon Ball (Staff & Créateurs)" }]} />
-          <WikiDrawer />
-        </div>
+        <Breadcrumbs items={[{ label: "Autour de Dragon Ball (Staff & Créateurs)" }]} />
 
         {/* 1. HERO SPOTLIGHT : AKIRA TORIYAMA (1955 — 2024) */}
         <section

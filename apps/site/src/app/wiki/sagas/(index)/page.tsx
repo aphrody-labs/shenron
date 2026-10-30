@@ -5,7 +5,6 @@ import { dbUniverse, assetUrl, type Saga } from "@/lib/db-universe";
 import Link from "next/link";
 import { T } from "@/components/T";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { GatedWrap } from "@/components/GatedLink";
 import type { Metadata } from "next";
 import { PageHero } from "@/components/PageHero";
@@ -75,10 +74,7 @@ export default async function SagasPage() {
         imageAlt="Bannière officielle Dragon Ball"
       />
       <div className="wiki-container">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-10">
-          <Breadcrumbs items={[{ label: "Sagas & arcs", display: <T k="wiki.sagas.title" /> }]} />
-          <WikiDrawer />
-        </div>
+        <Breadcrumbs items={[{ label: "Sagas & arcs", display: <T k="wiki.sagas.title" /> }]} />
         {bySeries.map((g) => (
           <section key={g.key} className="mb-16">
             <h2 className="font-display font-bold text-[24px] text-white border-b border-white/10 pb-3 mb-6">

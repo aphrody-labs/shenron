@@ -1,12 +1,10 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { GatedWrap } from "@/components/GatedLink";
 import { dbUniverse } from "@/lib/db-universe";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { WikiPageShell } from "@/components/wiki/WikiPageShell";
 import { WikiEditBar } from "@/components/wiki/WikiEditBar";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { DomainBar } from "@/components/kit";
 import { ogMeta } from "@/lib/og";
 
@@ -53,16 +51,13 @@ export default async function LocationDetailPage({
   return (
     <WikiPageShell>
       <DomainBar domain="wiki" />
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <Breadcrumbs
-          items={[
-            { label: "Encyclopédie", href: "/wiki" },
-            { label: "Lieux & Sanctuaires", href: "/wiki/locations" },
-            { label: loc.name, href: `/wiki/locations/${loc.slug}` },
-          ]}
-        />
-        <WikiDrawer />
-      </div>
+      <Breadcrumbs
+        items={[
+          { label: "Encyclopédie", href: "/wiki" },
+          { label: "Lieux & Sanctuaires", href: "/wiki/locations" },
+          { label: loc.name, href: `/wiki/locations/${loc.slug}` },
+        ]}
+      />
       <WikiEditBar table="db_locations" id={loc.id} indexHref="/wiki/locations" label={loc.name} />
 
       {/* Fiche d'en-tête */}
@@ -170,16 +165,6 @@ export default async function LocationDetailPage({
           </div>
         </div>
       )}
-
-      {/* Retour navigation */}
-      <div className="pt-4 border-t border-white/10 flex justify-between">
-        <Link
-          href="/wiki/locations"
-          className="text-xs font-semibold text-orange-400 hover:text-orange-300 transition-colors"
-        >
-          ← Retour à la liste des lieux
-        </Link>
-      </div>
     </WikiPageShell>
   );
 }

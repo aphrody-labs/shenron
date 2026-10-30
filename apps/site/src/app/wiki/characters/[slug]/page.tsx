@@ -23,7 +23,6 @@ import type { Metadata } from "next";
 import { ogMeta } from "@/lib/og";
 import { notFound, permanentRedirect } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { DomainBar } from "@/components/kit";
 import { GatedWrap } from "@/components/GatedLink";
 import { cache, type ReactNode } from "react";
@@ -411,12 +410,9 @@ export default async function CharacterPage({ params }: { params: Promise<{ slug
         image={character.image}
       />
       <DomainBar domain="wiki" />
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-        <Breadcrumbs
-          items={[{ label: "L'Univers", href: "/wiki/characters" }, { label: character.name }]}
-        />
-        <WikiDrawer />
-      </div>
+      <Breadcrumbs
+        items={[{ label: "L'Univers", href: "/wiki/characters" }, { label: character.name }]}
+      />
       <WikiEditBar
         sansArticle
         table="db_characters"

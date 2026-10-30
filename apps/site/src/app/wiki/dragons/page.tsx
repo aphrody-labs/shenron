@@ -1,6 +1,5 @@
 import { PageHero } from "@/components/PageHero";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { DomainBar, ContributeRail } from "@/components/kit";
 import { dbUniverse } from "@/lib/db-universe";
 import { WishesLedger } from "@/components/wiki/WishesLedger";
@@ -46,10 +45,7 @@ export default async function DragonsPage() {
 
       <WikiPageShell>
         <DomainBar domain="wiki" />
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <Breadcrumbs items={[{ label: "Dragons & Vœux" }]} />
-          <WikiDrawer />
-        </div>
+        <Breadcrumbs items={[{ label: "Dragons & Vœux" }]} />
 
         <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4 text-xs leading-relaxed text-amber-200/80">
           <strong>Loi sacrée des Dragon Balls :</strong> Créées à l'origine par les membres du Clan

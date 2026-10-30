@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { WikiPageShell } from "@/components/wiki/WikiPageShell";
 import { listToriyamaWords } from "@/lib/toriyama-words";
 import { ogMeta } from "@/lib/og";
@@ -59,7 +58,6 @@ export default async function InterviewsPage() {
             }}
           />
         </p>
-        <WikiDrawer />
       </div>
       <div className="mb-8 rounded-xl border border-dbz-orange/30 bg-dbz-orange/5 p-4 text-sm text-white/75">
         <T k="wiki.interviews.intro" />{" "}

@@ -9,12 +9,12 @@ const detailPageRoutes = [
   "../src/app/wiki/databooks/[id]/page.tsx",
 ];
 
-describe("Sprint 4 — Universal Navigation & Drawer Wiring on Detail Pages", () => {
-  test("chaque fiche de détail d'entité intègre DomainBar et WikiDrawer", async () => {
+describe("detail pages keep the shared wiki wiring", () => {
+  test("chaque fiche de détail d'entité intègre DomainBar sans menu wiki doublon", async () => {
     for (const route of detailPageRoutes) {
       const source = await Bun.file(new URL(route, import.meta.url)).text();
       expect(source).toContain("DomainBar");
-      expect(source).toContain("WikiDrawer");
+      expect(source).not.toContain("WikiDrawer");
     }
   });
 

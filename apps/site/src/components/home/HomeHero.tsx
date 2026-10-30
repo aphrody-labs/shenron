@@ -1,7 +1,6 @@
 import { T } from "@/components/T";
 import type { HomeConfig } from "@aphrody/shenron-config/home";
 import { canonicalFrameUrl } from "@/lib/episode-frame-banner";
-import { HomeSearch } from "./HomeSearch";
 import { KintoUnVolant } from "./KintoUnVolant";
 import { HomeBeerusFeature, type BeerusFeature } from "./HomeBeerusFeature";
 import { HomeHeroFrames } from "./HomeHeroFrames";
@@ -43,14 +42,12 @@ export function HomeHero({
         />
         {hero.lede.trim() && <p className={styles.lede}>{hero.lede.trim()}</p>}
         {beerus?.latest && <HomeBeerusFeature beerus={beerus} />}
-        {hero.ctaLabel.trim() && hero.ctaHref.trim() && (
+        {/* The episode block already carries the hero actions; the editorial link would repeat them. */}
+        {!beerus?.latest && hero.ctaLabel.trim() && hero.ctaHref.trim() && (
           <Link href={hero.ctaHref.trim()} className={styles.editorialLink}>
             {hero.ctaLabel.trim()}
           </Link>
         )}
-      </div>
-      <div className={styles.search}>
-        <HomeSearch />
       </div>
     </header>
   );

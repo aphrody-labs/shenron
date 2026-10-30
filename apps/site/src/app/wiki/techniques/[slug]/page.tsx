@@ -11,7 +11,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { GatedWrap } from "@/components/GatedLink";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { DomainBar } from "@/components/kit";
 import type { Metadata } from "next";
 import {
@@ -144,12 +143,9 @@ export default async function TechniqueDetailPage({
     >
       <JsonLd data={jsonLdData} />
       <DomainBar domain="wiki" />
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <Breadcrumbs
-          items={[{ label: "Techniques", href: "/wiki/techniques" }, { label: tech.name }]}
-        />
-        <WikiDrawer />
-      </div>
+      <Breadcrumbs
+        items={[{ label: "Techniques", href: "/wiki/techniques" }, { label: tech.name }]}
+      />
       <div className="mb-4">
         <WikiEditBar
           sansArticle
