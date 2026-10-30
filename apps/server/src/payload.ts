@@ -140,7 +140,35 @@ export async function extract(
   writeFileSync(join(temporary, ".complete"), `${new Date().toISOString()}\n`);
   swapIntoPlace(temporary, dir);
   writeStamp(dir);
+  prunePayloadCache(cacheDir, dir);
   return { dir, extracted: true, ms: Math.round(performance.now() - started) };
+}
+
+/**
+ * Every release extracts its own `payload-<id>` (about 400 MiB) and none was ever removed: a host
+ * that ships often filled its disk. After a fresh extraction, keep the current directory and the
+ * newest other one (a quick rollback or a still-running previous process) and drop the rest, plus
+ * abandoned `.tmp-*` extractions. Best effort: a failure here must never block startup.
+ */
+export function prunePayloadCache(cacheDir: string, current: string, keepPrevious = 1): void {
+  try {
+    const entries = readdirSync(cacheDir, { withFileTypes: true }).filter(
+      (entry) => entry.isDirectory() && entry.name.startsWith("payload-"),
+    );
+    const modified = (name: string) => statSync(join(cacheDir, name)).mtimeMs;
+    const names = entries
+      .map((entry) => entry.name)
+      .filter((name) => join(cacheDir, name) !== current);
+    const abandoned = names.filter((name) => name.includes(".tmp-"));
+    const previous = names
+      .filter((name) => !name.includes(".tmp-"))
+      .sort((a, b) => modified(b) - modified(a));
+    const doomed = [...abandoned, ...previous.slice(keepPrevious)];
+    for (const name of doomed)
+      rmSync(join(cacheDir, name), { recursive: true, force: true, maxRetries: 3, retryDelay: 50 });
+  } catch {
+    // pruning is housekeeping only
+  }
 }
 
 /** Replaces `dir` by `temporary`; Windows may transiently refuse (EPERM/EBUSY/ENOTEMPTY) while a scanner holds a file. */

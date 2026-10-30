@@ -47,7 +47,7 @@ describe("migration audit", () => {
   test("current tree matches the documented state", () => {
     const a = collectAudit(repoRoot);
     expect(a.journal.entries).toBe(17);
-    expect(a.journal.files).toBe(27);
+    expect(a.journal.files).toBe(29);
     expect(a.journal.unjournaled.map((t) => t.slice(0, 4))).toEqual([
       "0007",
       "0008",
@@ -59,10 +59,19 @@ describe("migration audit", () => {
       "0019",
       "0025",
       "0026",
+      "0027",
+      "0028",
     ]);
     expect(a.snapshots.at(-1)).toBe("0005_snapshot.json");
     expect([a.tablesFilter.filtered, a.tablesFilter.schemaTables]).toEqual([21, 40]);
-    expect(a.botDdl.map((t) => t.slice(0, 4))).toEqual(["0011", "0017", "0018", "0019", "0023"]);
+    expect(a.botDdl.map((t) => t.slice(0, 4))).toEqual([
+      "0011",
+      "0017",
+      "0018",
+      "0019",
+      "0023",
+      "0027",
+    ]);
   });
 
   test("--check passes on the real tree and on an untouched copy", async () => {
