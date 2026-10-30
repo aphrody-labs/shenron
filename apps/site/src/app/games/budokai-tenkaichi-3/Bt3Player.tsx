@@ -1,9 +1,9 @@
 "use client";
 // SPDX-License-Identifier: Apache-2.0
 /**
- * GameCube / Wii console: the Gecko emulator (GPL-3.0, WebAssembly + WebGPU) loaded from the CDN.
- * The player's own disc image or homebrew is read in the browser in 8 MiB chunks and never uploaded.
- * The emulator attaches its canvas to the document: it is moved into the console frame once created.
+ * Dragon Ball Z: Budokai Tenkaichi 3 in the browser, on the Gecko emulation engine (GPL-3.0, WebAssembly +
+ * WebGPU) loaded from the CDN. The player's own disc image is read in 8 MiB chunks and never uploaded; the
+ * site distributes no game. The engine attaches its canvas to the document: it is moved into the game frame.
  */
 import { useRef, useState, type ChangeEvent } from "react";
 import { useT } from "@/components/T";
@@ -27,7 +27,7 @@ function wasmUrl(path: string): string {
   return process.env.NODE_ENV === "production" && cdn ? `${cdn}${base}` : base;
 }
 
-export default function GeckoConsole() {
+export default function Bt3Player() {
   const t = useT();
   const input = useRef<HTMLInputElement>(null);
   const frame = useRef<HTMLDivElement>(null);
@@ -78,21 +78,21 @@ export default function GeckoConsole() {
           mod.append_game_chunk(new Uint8Array(await file.slice(offset, end).arrayBuffer()));
           setProgress(end / file.size);
           setStatus(
-            t("communaute.jeux.console.reading", {
+            t("communaute.jeux.bt3.reading", {
               done: (end / GIB).toFixed(2),
               total: (file.size / GIB).toFixed(2),
             }),
           );
         }
-        setStatus(t("communaute.jeux.console.initialising"));
+        setStatus(t("communaute.jeux.bt3.initialising"));
         mod.start_loaded_game_with_ipl(undefined);
       } else {
-        setStatus(t("communaute.jeux.console.initialising"));
+        setStatus(t("communaute.jeux.bt3.initialising"));
         mod.start_emulator(new Uint8Array(await file.arrayBuffer()), file.name, undefined);
       }
       adoptCanvas(known);
       setProgress(null);
-      setStatus(t("communaute.jeux.console.running"));
+      setStatus(t("communaute.jeux.bt3.running"));
       setRunning(true);
     } catch (cause) {
       try {
@@ -102,7 +102,7 @@ export default function GeckoConsole() {
       }
       setProgress(null);
       setStatus("");
-      setError(t("communaute.jeux.console.error", { error: String(cause) }));
+      setError(t("communaute.jeux.bt3.error", { error: String(cause) }));
     } finally {
       setBusy(false);
     }
@@ -111,11 +111,11 @@ export default function GeckoConsole() {
   return (
     <section className="space-y-4">
       <p className="max-w-prose rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-white/80">
-        {t("communaute.jeux.console.experimental")}
+        {t("communaute.jeux.bt3.experimental")}
       </p>
       {!webgpu && (
         <p role="alert" className="text-sm text-red-300">
-          {t("communaute.jeux.console.noWebgpu")}
+          {t("communaute.jeux.bt3.noWebgpu")}
         </p>
       )}
       {!running && (
@@ -123,20 +123,20 @@ export default function GeckoConsole() {
           <input
             ref={input}
             type="file"
-            accept=".rvz,.iso,.dol"
+            accept=".rvz,.iso"
             onChange={choose}
             className="sr-only"
-            aria-label={t("communaute.jeux.console.pick")}
+            aria-label={t("communaute.jeux.bt3.pick")}
           />
           <button
             type="button"
             onClick={() => input.current?.click()}
             className="inline-flex min-h-11 items-center rounded-lg border border-white/20 px-4 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2"
           >
-            {t("communaute.jeux.console.pick")}
+            {t("communaute.jeux.bt3.pick")}
           </button>
           <span className="text-sm text-white/70">
-            {file ? file.name : t("communaute.jeux.console.none")}
+            {file ? file.name : t("communaute.jeux.bt3.none")}
           </span>
           <button
             type="button"
@@ -144,11 +144,11 @@ export default function GeckoConsole() {
             onClick={start}
             className="inline-flex min-h-11 items-center rounded-lg bg-dbz-orange px-5 font-semibold text-black focus-visible:outline-2 focus-visible:outline-offset-4 disabled:opacity-40"
           >
-            {t("communaute.jeux.console.start")}
+            {t("communaute.jeux.bt3.start")}
           </button>
         </div>
       )}
-      <p className="text-xs text-white/60">{t("communaute.jeux.console.formats")}</p>
+      <p className="text-xs text-white/60">{t("communaute.jeux.bt3.formats")}</p>
       {progress !== null && (
         <progress className="w-full max-w-md" max={1} value={progress} aria-label={status} />
       )}
@@ -162,11 +162,11 @@ export default function GeckoConsole() {
       )}
       <section
         ref={frame}
-        aria-label={t("communaute.jeux.console.screen")}
+        aria-label={t("communaute.jeux.bt3.screen")}
         className="relative aspect-[4/3] w-full max-w-3xl overflow-hidden rounded-xl border border-white/10 bg-black"
       ></section>
       <p className="max-w-prose text-xs text-white/60">
-        {t("communaute.jeux.console.memory")} {t("communaute.jeux.console.legal")}
+        {t("communaute.jeux.bt3.memory")} {t("communaute.jeux.bt3.legal")}
       </p>
       <p className="text-xs">
         <a
@@ -174,7 +174,7 @@ export default function GeckoConsole() {
           rel="noreferrer"
           className="underline underline-offset-4"
         >
-          {t("communaute.jeux.console.source")}
+          {t("communaute.jeux.bt3.source")}
         </a>
       </p>
     </section>

@@ -55,10 +55,10 @@
   "catalogueTitle": "公式ゲームを探していますか？",
   "catalogueDescription": "Sparking! ZERO、KAKAROT、ゼノバース、レジェンズなどの情報を百科事典でチェック。",
   "catalogueAction": "ゲームカタログを見る",
-  "console": {
-    "name": "ゲームキューブ / Wii コンソール",
-    "category": "ラボ · 実験的",
-    "description": "Gecko の WebAssembly エミュレーターで、自分のディスクイメージやホームブリューをブラウザ上で実行します。ファイルは送信されず、端末内にとどまります。",
-    "action": "コンソールを開く"
+  "bt3": {
+    "name": "ドラゴンボールZ Budokai Tenkaichi 3",
+    "category": "格闘 · 実験的",
+    "description": "自分のディスクイメージで Budokai Tenkaichi 3 をブラウザ上で実行します。ファイルは端末内にとどまり、送信されません。",
+    "action": "Budokai Tenkaichi 3 を起動"
   }
 }

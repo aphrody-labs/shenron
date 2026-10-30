@@ -1223,24 +1223,24 @@
         "cell": "{row} 行目、{col} 列目：{state}",
         "empty": "空きマス"
       },
-      "console": {
-        "cardDescription": "WebAssembly 製のゲームキューブ / Wii エミュレーター。ディスクイメージは端末内にとどまります。",
-        "title": "ゲームキューブ / Wii コンソール",
-        "lead": "WebAssembly と WebGPU で動く Gecko エミュレーター。自分のディスクイメージ（.rvz、.iso）またはホームブリュー（.dol）を選んでください。ファイルはローカルで読み込まれ、送信されません。",
-        "pick": "ファイルを選択",
+      "bt3": {
+        "cardDescription": "ブラウザで Budokai Tenkaichi 3。ディスクイメージは端末内にとどまります。",
+        "title": "ドラゴンボールZ Budokai Tenkaichi 3",
+        "lead": "WebAssembly と WebGPU で Budokai Tenkaichi 3 をブラウザ上で遊べます。ディスクイメージ（.rvz、.iso）を選んでください。ファイルはローカルで読み込まれ、送信されません。",
+        "pick": "ディスクを選択",
         "none": "ファイルなし",
-        "formats": "対応形式：.rvz、.iso、.dol",
-        "start": "起動",
+        "formats": "対応形式：.rvz、.iso",
+        "start": "ゲームを起動",
         "reading": "ローカル読み込み：{done} / {total} GB",
-        "initialising": "コンソールを初期化しています…",
-        "running": "実行中です。ファイルを変えるにはページを再読み込みしてください。",
-        "error": "このファイルを起動できません：{error}",
+        "initialising": "Budokai Tenkaichi 3 を起動しています…",
+        "running": "実行中です。ディスクを変えるにはページを再読み込みしてください。",
+        "error": "このディスクを起動できません：{error}",
         "noWebgpu": "このブラウザでは WebGPU を利用できません。最新の Chrome または Edge を使ってください。",
-        "experimental": "実験的：ブラウザ内では JIT コンパイルなしで動作します。市販ゲームは通常速度を大きく下回り、小さなホームブリューのほうが快適です。",
+        "experimental": "実験的：ブラウザ内では JIT コンパイルなしで動作するため通常速度を大きく下回り、起動時に黒い画面が表示されることがあります。最適化版を開発中です。",
         "legal": "合法的に入手した自分のコピーを用意してください。このサイトはゲームも BIOS も配布しません。",
         "memory": "数 GB のディスクイメージはブラウザのメモリを大量に使います。",
-        "source": "Gecko エミュレーター、GPL-3.0 ライセンス：ソースコード",
-        "screen": "コンソール画面"
+        "source": "Gecko エミュレーションエンジン、GPL-3.0 ライセンス：ソースコード",
+        "screen": "ゲーム画面"
       }
     },
     "classements": {

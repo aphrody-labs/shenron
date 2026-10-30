@@ -1223,24 +1223,24 @@
         "cell": "Ligne {row}, colonne {col} : {state}",
         "empty": "case libre"
       },
-      "console": {
-        "cardDescription": "Émulateur GameCube et Wii en WebAssembly : charge ta propre image de disque, elle reste sur ton appareil.",
-        "title": "Console GameCube / Wii",
-        "lead": "Émulateur Gecko en WebAssembly et WebGPU. Choisis ta propre image de disque (.rvz, .iso) ou un homebrew (.dol) : le fichier est lu localement et n’est jamais envoyé.",
-        "pick": "Choisir un fichier",
+      "bt3": {
+        "cardDescription": "Budokai Tenkaichi 3 dans ton navigateur : charge ta propre image de disque, elle reste sur ton appareil.",
+        "title": "Dragon Ball Z : Budokai Tenkaichi 3",
+        "lead": "Joue à Budokai Tenkaichi 3 dans ton navigateur, en WebAssembly et WebGPU. Choisis ton image de disque (.rvz, .iso) : elle est lue localement et n’est jamais envoyée.",
+        "pick": "Choisir mon disque",
         "none": "Aucun fichier",
-        "formats": "Formats : .rvz, .iso, .dol",
-        "start": "Lancer",
+        "formats": "Formats : .rvz, .iso",
+        "start": "Lancer le jeu",
         "reading": "Lecture locale : {done} / {total} Go",
-        "initialising": "Initialisation de la console…",
-        "running": "En cours d’exécution. Recharge la page pour changer de fichier.",
-        "error": "Impossible de lancer ce fichier : {error}",
+        "initialising": "Démarrage de Budokai Tenkaichi 3…",
+        "running": "En cours d’exécution. Recharge la page pour changer de disque.",
+        "error": "Impossible de lancer ce disque : {error}",
         "noWebgpu": "WebGPU n’est pas disponible dans ce navigateur. Utilise une version récente de Chrome ou d’Edge.",
-        "experimental": "Expérimental : l’émulation s’exécute sans compilation à la volée dans le navigateur. Les jeux commerciaux tournent très en dessous de leur vitesse normale ; les petits homebrews s’en sortent mieux.",
-        "legal": "Tu dois fournir ta propre copie légale. Ce site ne distribue aucun jeu ni aucun BIOS.",
-        "memory": "Les images de disque de plusieurs Go demandent beaucoup de mémoire au navigateur.",
-        "source": "Émulateur Gecko, licence GPL-3.0 : code source",
-        "screen": "Écran de la console"
+        "experimental": "Expérimental : le jeu tourne sans compilation à la volée dans le navigateur, bien en dessous de sa vitesse normale, et peut afficher un écran noir au démarrage. Le portage optimisé est en cours.",
+        "legal": "Tu dois fournir ta propre copie légale du jeu. Ce site ne distribue ni le jeu ni aucun BIOS.",
+        "memory": "Une image de disque de plusieurs Go demande beaucoup de mémoire au navigateur.",
+        "source": "Moteur d’émulation Gecko, licence GPL-3.0 : code source",
+        "screen": "Écran du jeu"
       }
     },
     "classements": {

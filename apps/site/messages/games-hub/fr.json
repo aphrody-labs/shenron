@@ -55,10 +55,10 @@
   "catalogueTitle": "Tu cherches les jeux officiels ?",
   "catalogueDescription": "Sparking! ZERO, Kakarot, Xenoverse, Legends… Retrouve leurs fiches dans l’encyclopédie.",
   "catalogueAction": "Voir le catalogue des jeux",
-  "console": {
-    "name": "Console GameCube / Wii",
-    "category": "Laboratoire · Expérimental",
-    "description": "Lance dans ton navigateur ta propre image de disque ou ton homebrew avec l’émulateur Gecko en WebAssembly. Rien n’est envoyé : le fichier reste sur ton appareil.",
-    "action": "Ouvrir la console"
+  "bt3": {
+    "name": "Dragon Ball Z : Budokai Tenkaichi 3",
+    "category": "Combat · Expérimental",
+    "description": "Lance Budokai Tenkaichi 3 dans ton navigateur avec ta propre image de disque. Le fichier reste sur ton appareil et n’est jamais envoyé.",
+    "action": "Lancer Budokai Tenkaichi 3"
   }
 }

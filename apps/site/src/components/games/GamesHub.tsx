@@ -32,7 +32,7 @@ const games = [
 const explorers = [
   { id: "pixel", href: "/games/dragon-pixel", icon: Gamepad2 },
   { id: "xenoverse", href: "/games/xenoverse-2", icon: ScanLine },
-  { id: "console", href: "/games/console", icon: MonitorPlay },
+  { id: "bt3", href: "/games/budokai-tenkaichi-3", icon: MonitorPlay },
 ] as const;
 export function GamesHub() {
   const { locale } = useLangue();
