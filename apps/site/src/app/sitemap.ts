@@ -1,7 +1,14 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/config";
 import { db } from "@/lib/db";
-import { posts, wikiCategories, wikiPages } from "@/db/schema";
+import {
+  cardCatalogCards,
+  cardCatalogSeries,
+  cardCatalogSets,
+  posts,
+  wikiCategories,
+  wikiPages,
+} from "@/db/schema";
 import {
   botEpisodes,
   botMovies,
@@ -24,6 +31,7 @@ import { sitemapDestinations } from "@/lib/site-map";
 import { isDatabookIndexable } from "@/lib/databooks-rules";
 import { formatCharacterSlug, formatTransformationSlug } from "@/lib/wiki-slugs";
 import { canonicalCharacterSitemapRows } from "@/lib/wiki-sitemap";
+import { getPublishedCardCount } from "@/lib/card-catalog";
 
 export const revalidate = 86400; // Cache le sitemap pendant 24 heures
 
@@ -70,7 +78,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   //
   // `isPathPublic` filtre toujours : une rubrique fermée n'est pas annoncée, et
   // les pages hors registre (mentions légales…) passent telles quelles.
+  const hasPublishedCards = (await getPublishedCardCount().catch(() => 0)) > 0;
   for (const dest of sitemapDestinations()) {
+    if (dest.href === "/wiki/cards" && !hasPublishedCards) continue;
     push(dest.href === "/" ? "" : dest.href, dest.priority, dest.changeFrequency ?? "weekly");
   }
   // Les mini-jeux sont des pages filles d'une rubrique déjà portée par le
@@ -108,6 +118,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }
       for (const s of series) out.push([`/wiki/episodes/series/${s}`, 0.7, new Date()]);
       return out;
+    }),
+    // Le catalogue de cartes n'est indexé que lorsqu'il contient des fiches
+    // publiées sous une série et un set eux-mêmes publiés.
+    block(entries, isPublic, async () => {
+      const rows = await db
+        .select({
+          slug: cardCatalogCards.slug,
+          updatedAt: cardCatalogCards.updatedAt,
+        })
+        .from(cardCatalogCards)
+        .innerJoin(cardCatalogSets, eq(cardCatalogCards.setId, cardCatalogSets.id))
+        .innerJoin(cardCatalogSeries, eq(cardCatalogSets.seriesId, cardCatalogSeries.id))
+        .where(
+          and(
+            eq(cardCatalogCards.status, "published"),
+            eq(cardCatalogSets.status, "published"),
+            eq(cardCatalogSeries.status, "published"),
+          ),
+        );
+      return rows.map(
+        (row) => [`/wiki/cards/${row.slug}`, 0.5, row.updatedAt ?? new Date()] as const,
+      );
     }),
     block(entries, isPublic, async () => {
       const rows = await db

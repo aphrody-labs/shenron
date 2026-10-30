@@ -1,7 +1,7 @@
 {
 	"journal": {
 		"entries": 17,
-		"files": 26,
+		"files": 27,
 		"journaled": [
 			"0000_dark_johnny_blaze",
 			"0001_natural_switch",
@@ -30,7 +30,8 @@
 			"0015_social_agents",
 			"0018_media_works_and_editions",
 			"0019_narrative_graph_and_contributors",
-			"0025_stripe_subscriptions_donations_ads"
+			"0025_stripe_subscriptions_donations_ads",
+			"0026_official_card_catalog"
 		],
 		"missingFiles": [],
 		"list": [
@@ -147,8 +148,8 @@
 		"0005_snapshot.json"
 	],
 	"tablesFilter": {
-		"filtered": 17,
-		"schemaTables": 36,
+		"filtered": 21,
+		"schemaTables": 40,
 		"uncovered": [
 			"ba_subscription",
 			"site_donations",
@@ -205,6 +206,7 @@
 		"0022_chat_conversations": "a7b524ace2c8e3fbc1166af56837533f5abaedfde2e9999a8dec117d41cf59c8",
 		"0023_manga_reader_extent": "fdfc79162f3ee7f8337326cdfec4877681e758bc60f52d676737642a390c1cac",
 		"0024_legacy_wiki_visibility": "fd126d77101cf09ccfcdadb352399482443e96b433664c20eb184a1d67f65607",
-		"0025_stripe_subscriptions_donations_ads": "3f1f3800015b7923258a106f40f90dc6c648e54b6d88d08d646b6f8542746f87"
+		"0025_stripe_subscriptions_donations_ads": "3f1f3800015b7923258a106f40f90dc6c648e54b6d88d08d646b6f8542746f87",
+		"0026_official_card_catalog": "67a8cc18102f9a8f389c7166de7908deae29376befa859afcb42e1adbe4a08da"
 	}
 }

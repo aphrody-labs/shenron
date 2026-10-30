@@ -18,6 +18,8 @@ import { ContentCoverage } from "@/components/wiki/ContentCoverage";
 import type { Metadata } from "next";
 import { T } from "@/components/T";
 import { getPublicCorpusStats } from "@/lib/public-corpus-stats";
+import { getPublishedCardCount } from "@/lib/card-catalog";
+import { getTranslations } from "next-intl/server";
 
 export const revalidate = 3600;
 
@@ -70,6 +72,8 @@ async function WikiIndexContent() {
     dragonsData,
     itemsData,
     corpusCounts,
+    cardCatalogCards,
+    categoryT,
   ] = await Promise.all([
     getShenronCharacterCards(),
     getShenronMovies(),
@@ -86,9 +90,14 @@ async function WikiIndexContent() {
     dbUniverse.dragons(),
     dbUniverse.items(),
     getPublicCorpusStats(),
+    getPublishedCardCount().catch(() => 0),
+    getTranslations("wikiExplorer.categories"),
   ]);
 
-  const c = (counts ?? {}) as Record<string, number>;
+  const c: Record<string, number> = {
+    ...((counts ?? {}) as Record<string, number>),
+    cardCatalogCards,
+  };
   const total = Object.entries(c)
     .filter(([k]) => k !== "news" && k !== "tools")
     .reduce((n, [, v]) => n + (v ?? 0), 0);
@@ -106,6 +115,25 @@ async function WikiIndexContent() {
   // rubrique de 1 300. Même traitement pour toutes, sans texte écrit deux fois.
   const rubriques = WIKI_CATEGORIES.map((cat) =>
     Object.assign({}, cat, {
+      label: categoryT(
+        cat.key as
+          | "characters"
+          | "races"
+          | "transformations"
+          | "techniques"
+          | "sagas"
+          | "power-levels"
+          | "items"
+          | "locations"
+          | "events"
+          | "music"
+          | "movies"
+          | "episodes"
+          | "manga"
+          | "games"
+          | "databooks"
+          | "cards",
+      ),
       count: c[cat.countKey] ?? 0,
       blurb: entryByKey(cat.key)?.blurb ?? null,
     }),

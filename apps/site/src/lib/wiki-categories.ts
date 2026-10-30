@@ -98,6 +98,13 @@ export const WIKI_CATEGORIES: WikiCategory[] = [
     countKey: "databooks",
     group: "media",
   },
+  {
+    key: "cards",
+    label: "Cartes à collectionner",
+    href: "/wiki/cards",
+    countKey: "cardCatalogCards",
+    group: "media",
+  },
 ];
 
 /** Catégories à surfacer dans la nav du wiki (hors navbar → pas de doublon). */

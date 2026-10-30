@@ -11,6 +11,26 @@ html:root:root {
   );
 }
 
+.btn,
+.dbz-button,
+.dbz-button-ghost,
+.toriyama-btn-secondary,
+[data-slot="button"]:not([class*="size-"]) {
+  border-radius: var(--site-button-radius, 0.5rem);
+  text-transform: var(--site-button-text-transform, uppercase);
+  min-height: var(--site-button-min-height, 2.75rem);
+  padding-inline: var(--site-button-inline-padding, 1.25rem);
+}
+
+.dbz-panel {
+  border-radius: var(--site-panel-radius, 0.75rem);
+  box-shadow: var(--site-panel-shadow, 3px 3px 0 rgb(0 0 0 / 85%));
+}
+
+.dbz-panel:hover {
+  box-shadow: var(--site-panel-shadow-hover, 4px 4px 0 rgb(0 0 0 / 95%));
+}
+
 html:root:root:not([data-episode-theme="beerus"]):not([data-episode-theme="goku"]) {
   color-scheme: dark;
   --md-sys-color-background: var(--dbz-bg, #101010);

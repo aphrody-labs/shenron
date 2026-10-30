@@ -226,6 +226,42 @@
   font-weight: 750;
 }
 
+.previewHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.previewHeading .previewLabel {
+  margin: 0;
+}
+
+.previewModes {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.previewMode,
+.previewModeActive {
+  min-height: 2.75rem;
+  padding-inline: 0.75rem;
+  border: 1px solid var(--dbz-border);
+  border-radius: 0.5rem;
+  background: var(--dbz-card);
+  color: var(--dbz-os);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.previewModeActive {
+  border-color: var(--dbz-orange);
+  background: color-mix(in srgb, var(--dbz-orange) 16%, var(--dbz-card));
+}
+
 .cover {
   position: relative;
   overflow: hidden;
@@ -290,6 +326,17 @@
   background:
     linear-gradient(145deg, transparent 0 49%, rgb(255 255 255 / 8%) 49% 51%, transparent 51%),
     var(--dbz-blue);
+  border-radius: var(--site-panel-radius, 0.75rem);
+  box-shadow: var(--site-panel-shadow, 3px 3px 0 rgb(0 0 0 / 85%));
+}
+
+.previewPane[data-viewport="mobile"] .scene {
+  min-height: 14rem;
+  padding: 1rem;
+}
+
+.previewPane[data-viewport="mobile"] .sceneFrame {
+  margin: 0.75rem 0.75rem 1.4rem;
 }
 
 .scene::before {
@@ -328,6 +375,9 @@
 
 .previewActions {
   display: flex;
+  flex-direction: var(--site-home-action-direction, row);
+  justify-content: var(--site-home-action-justify, flex-start);
+  align-items: var(--site-home-action-align, center);
   flex-wrap: wrap;
   gap: 0.6rem;
 }
@@ -336,8 +386,8 @@
 .previewSecondary {
   display: inline-flex;
   align-items: center;
-  min-height: 2.45rem;
-  padding: 0.55rem 0.9rem;
+  min-height: var(--site-button-min-height, 2.45rem);
+  padding: 0.55rem var(--site-button-inline-padding, 0.9rem);
   font-size: 0.78rem;
   font-weight: 850;
   border: 1px solid var(--ink);

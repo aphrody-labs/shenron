@@ -4,9 +4,11 @@ import type { AgentScope } from "./constants";
 import {
   bigserial,
   boolean,
+  date,
   index,
   integer,
   jsonb,
+  numeric,
   pgTable,
   text,
   timestamp,
@@ -271,8 +273,12 @@ export const baSubscription = pgTable(
     seats: integer("seats"),
     trialStart: timestamp("trialStart"),
     trialEnd: timestamp("trialEnd"),
-    createdAt: timestamp("createdAt").notNull().default(sql`CURRENT_TIMESTAMP`),
-    updatedAt: timestamp("updatedAt").notNull().default(sql`CURRENT_TIMESTAMP`),
+    createdAt: timestamp("createdAt")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: timestamp("updatedAt")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
   },
   (table) => [
     index("ba_subscription_ref_idx").on(table.referenceId),
@@ -296,8 +302,12 @@ export const siteDonations = pgTable(
     stripePaymentIntentId: text("stripePaymentIntentId").unique(),
     status: text("status").notNull().default("pending"),
     tier: text("tier"),
-    createdAt: timestamp("createdAt").notNull().default(sql`CURRENT_TIMESTAMP`),
-    updatedAt: timestamp("updatedAt").notNull().default(sql`CURRENT_TIMESTAMP`),
+    createdAt: timestamp("createdAt")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: timestamp("updatedAt")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
   },
   (table) => [
     index("site_donations_status_idx").on(table.status),
@@ -305,21 +315,155 @@ export const siteDonations = pgTable(
   ],
 );
 
-export const siteAdSlots = pgTable(
-  "site_ad_slots",
+export const siteAdSlots = pgTable("site_ad_slots", {
+  id: text("id").primaryKey(),
+  slotKey: text("slotKey").notNull().unique(),
+  name: text("name").notNull(),
+  format: text("format").notNull(),
+  adClient: text("adClient").notNull(),
+  adSlot: text("adSlot").notNull(),
+  active: boolean("active").notNull().default(true),
+  exemptVip: boolean("exemptVip").notNull().default(true),
+  createdAt: timestamp("createdAt")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updatedAt")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+});
+
+// --- Dragon Ball official card catalog -------------------------------------
+// Editorial records are entered manually with provenance. No vendor catalog
+// crawler or card image mirror is implied by these tables.
+export const CARD_CATALOG_STATUSES = ["draft", "published", "archived"] as const;
+export type CardCatalogStatus = (typeof CARD_CATALOG_STATUSES)[number];
+
+export const cardCatalogSeries = pgTable(
+  "CardCatalogSeries",
   {
-    id: text("id").primaryKey(),
-    slotKey: text("slotKey").notNull().unique(),
+    id: cuid(),
+    slug: text("slug").notNull().unique(),
     name: text("name").notNull(),
+    publisher: text("publisher").notNull(),
     format: text("format").notNull(),
-    adClient: text("adClient").notNull(),
-    adSlot: text("adSlot").notNull(),
-    active: boolean("active").notNull().default(true),
-    exemptVip: boolean("exemptVip").notNull().default(true),
-    createdAt: timestamp("createdAt").notNull().default(sql`CURRENT_TIMESTAMP`),
-    updatedAt: timestamp("updatedAt").notNull().default(sql`CURRENT_TIMESTAMP`),
+    language: text("language").notNull(),
+    region: text("region").notNull(),
+    description: text("description"),
+    sourceLabel: text("sourceLabel").notNull(),
+    sourceUrl: text("sourceUrl").notNull(),
+    sourceAccessedAt: date("sourceAccessedAt", { mode: "string" }).notNull(),
+    status: text("status").$type<CardCatalogStatus>().notNull().default("draft"),
+    createdAt: timestamp("createdAt", { precision: 3, mode: "date" })
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: timestamp("updatedAt", { precision: 3, mode: "date" })
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
   },
+  (t) => [index("CardCatalogSeries_status_idx").on(t.status, t.name)],
 );
+
+export const cardCatalogSets = pgTable(
+  "CardCatalogSet",
+  {
+    id: cuid(),
+    seriesId: text("seriesId")
+      .notNull()
+      .references(() => cardCatalogSeries.id, { onDelete: "restrict" }),
+    slug: text("slug").notNull().unique(),
+    name: text("name").notNull(),
+    productCode: text("productCode"),
+    language: text("language").notNull(),
+    region: text("region").notNull(),
+    releaseDate: date("releaseDate", { mode: "string" }),
+    releaseDatePrecision: text("releaseDatePrecision"),
+    description: text("description"),
+    sourceLabel: text("sourceLabel").notNull(),
+    sourceUrl: text("sourceUrl").notNull(),
+    sourceAccessedAt: date("sourceAccessedAt", { mode: "string" }).notNull(),
+    status: text("status").$type<CardCatalogStatus>().notNull().default("draft"),
+    createdAt: timestamp("createdAt", { precision: 3, mode: "date" })
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: timestamp("updatedAt", { precision: 3, mode: "date" })
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+  },
+  (t) => [index("CardCatalogSet_series_status_idx").on(t.seriesId, t.status, t.name)],
+);
+
+export const cardCatalogCards = pgTable(
+  "CardCatalogCard",
+  {
+    id: cuid(),
+    setId: text("setId")
+      .notNull()
+      .references(() => cardCatalogSets.id, { onDelete: "restrict" }),
+    slug: text("slug").notNull().unique(),
+    name: text("name").notNull(),
+    cardNumber: text("cardNumber").notNull(),
+    language: text("language").notNull(),
+    region: text("region").notNull(),
+    rarity: text("rarity"),
+    releaseDate: date("releaseDate", { mode: "string" }),
+    description: text("description"),
+    frontImageUrl: text("frontImageUrl"),
+    frontImageSourceUrl: text("frontImageSourceUrl"),
+    frontImageRights: text("frontImageRights"),
+    backImageUrl: text("backImageUrl"),
+    backImageSourceUrl: text("backImageSourceUrl"),
+    backImageRights: text("backImageRights"),
+    sourceLabel: text("sourceLabel").notNull(),
+    sourceUrl: text("sourceUrl").notNull(),
+    sourceAccessedAt: date("sourceAccessedAt", { mode: "string" }).notNull(),
+    status: text("status").$type<CardCatalogStatus>().notNull().default("draft"),
+    createdAt: timestamp("createdAt", { precision: 3, mode: "date" })
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: timestamp("updatedAt", { precision: 3, mode: "date" })
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+  },
+  (t) => [
+    index("CardCatalogCard_set_status_idx").on(t.setId, t.status, t.cardNumber),
+    index("CardCatalogCard_public_release_idx").on(t.status, t.releaseDate, t.name),
+    unique("CardCatalogCard_set_number_language_region_key").on(
+      t.setId,
+      t.cardNumber,
+      t.language,
+      t.region,
+    ),
+  ],
+);
+
+export const cardCatalogValuations = pgTable(
+  "CardCatalogValuation",
+  {
+    id: cuid(),
+    cardId: text("cardId")
+      .notNull()
+      .references(() => cardCatalogCards.id, { onDelete: "restrict" }),
+    valueMin: numeric("valueMin", { precision: 16, scale: 4 }).notNull(),
+    valueMax: numeric("valueMax", { precision: 16, scale: 4 }).notNull(),
+    currency: text("currency").notNull(),
+    condition: text("condition").notNull(),
+    observedAt: date("observedAt", { mode: "string" }).notNull(),
+    sourceLabel: text("sourceLabel").notNull(),
+    sourceUrl: text("sourceUrl").notNull(),
+    createdAt: timestamp("createdAt", { precision: 3, mode: "date" })
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: timestamp("updatedAt", { precision: 3, mode: "date" })
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+  },
+  (t) => [index("CardCatalogValuation_card_observed_idx").on(t.cardId, t.observedAt)],
+);
+
+export type CardCatalogSeriesRow = typeof cardCatalogSeries.$inferSelect;
+export type CardCatalogSetRow = typeof cardCatalogSets.$inferSelect;
+export type CardCatalogCardRow = typeof cardCatalogCards.$inferSelect;
+export type CardCatalogValuationRow = typeof cardCatalogValuations.$inferSelect;
 
 // --- First-party web telemetry (RGPD-safe) ---
 //

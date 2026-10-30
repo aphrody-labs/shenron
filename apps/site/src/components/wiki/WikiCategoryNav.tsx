@@ -6,6 +6,8 @@ import { dbUniverse } from "@/lib/db-universe";
 import { ENCYCLOPEDIA_CATEGORIES } from "@/lib/wiki-categories";
 import { isPathPublic } from "@/lib/wiki-launch";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
+import { getPublishedCardCount } from "@/lib/card-catalog";
+import { getTranslations } from "next-intl/server";
 
 /**
  * Onglets de l'encyclopédie (Personnages, Races, Transformations, Techniques,
@@ -29,16 +31,36 @@ export async function WikiCategoryNav({
   active?: string;
   className?: string;
 }) {
-  const [counts, cfg] = await Promise.all([
+  const [counts, cardCount, cfg, t] = await Promise.all([
     dbUniverse.counts().catch(() => null),
+    getPublishedCardCount().catch(() => 0),
     // Config illisible → tout reste ouvert, comme `GatedLink` : mieux vaut une
     // redirection qu'une navigation éteinte parce que PostgreSQL a hoqueté.
     getLaunchConfig().catch(() => null),
+    getTranslations("wikiExplorer.categories"),
   ]);
   const items = ENCYCLOPEDIA_CATEGORIES.filter((c) => !cfg || isPathPublic(c.href, cfg)).map(
     (c) => {
-      const n = (counts as Record<string, number> | null)?.[c.countKey];
-      return { href: c.href, label: c.label, count: typeof n === "number" && n > 0 ? n : null };
+      const n =
+        c.countKey === "cardCatalogCards"
+          ? cardCount
+          : (counts as Record<string, number> | null)?.[c.countKey];
+      return {
+        href: c.href,
+        label: t(
+          c.key as
+            | "characters"
+            | "races"
+            | "transformations"
+            | "techniques"
+            | "sagas"
+            | "power-levels"
+            | "items"
+            | "locations"
+            | "cards",
+        ),
+        count: typeof n === "number" && n > 0 ? n : null,
+      };
     },
   );
   const courant = ENCYCLOPEDIA_CATEGORIES.find((c) => c.key === active)?.href ?? "";

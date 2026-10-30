@@ -13,6 +13,7 @@ import {
   Cpu,
   Database,
   MessageSquare,
+  Layers,
   Radio,
   RefreshCw,
   Server,
@@ -73,6 +74,12 @@ const QUICK_ACTIONS = [
     icon: BookOpen,
   },
   {
+    href: "/admin/cards",
+    label: "cards",
+    description: "cardsDescription",
+    icon: Layers,
+  },
+  {
     href: "/admin/levels",
     label: "levels",
     description: "levelsDescription",
@@ -120,6 +127,7 @@ const SERVICE_COPY: Record<LiveService["id"], { label: string; description: stri
 export default function DashboardPage() {
   const queryClient = useQueryClient();
   const t = useTranslations("adminDashboard");
+  const tDesign = useTranslations("adminDesign");
   const locale = useLocale();
   const bots = useQuery({
     queryKey: ["admin", "dashboard-bots"],
@@ -315,6 +323,34 @@ export default function DashboardPage() {
                   </div>
                 </Link>
               ))}
+              <Link
+                href="/admin/design"
+                className="group flex min-h-12 items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              >
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-muted text-primary">
+                  <Settings className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block font-medium text-foreground">{tDesign("title")}</span>
+                  <span className="mt-1 block text-sm leading-5 text-muted-foreground">
+                    {tDesign("designDescription")}
+                  </span>
+                </span>
+              </Link>
+              <Link
+                href="/admin/home"
+                className="group flex min-h-12 items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              >
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-muted text-primary">
+                  <PanelsTopLeft className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block font-medium text-foreground">{tDesign("homeLayout")}</span>
+                  <span className="mt-1 block text-sm leading-5 text-muted-foreground">
+                    {tDesign("homeLayoutDescription")}
+                  </span>
+                </span>
+              </Link>
             </div>
           </section>
           <section aria-labelledby="bots-title">

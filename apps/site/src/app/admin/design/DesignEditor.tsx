@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { useMemo, useState, type CSSProperties } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { DragonBallLoader } from "@aphrody/shenron-ui/toriyama";
@@ -37,9 +38,22 @@ const sameTheme = (a: SiteTheme | null, b: SiteTheme | null) =>
   Boolean(
     a &&
     b &&
-    (["version", "radius", "fontFamily", "fontScale", "contentWidth", "density"] as const).every(
-      (key) => a[key] === b[key],
-    ) &&
+    (
+      [
+        "version",
+        "radius",
+        "fontFamily",
+        "fontScale",
+        "contentWidth",
+        "density",
+        "buttonShape",
+        "buttonSize",
+        "buttonLabelCase",
+        "homeActionLayout",
+        "homeActionAlignment",
+        "panelStyle",
+      ] as const
+    ).every((key) => a[key] === b[key]) &&
     (Object.keys(THEME_COLOR_VARS) as ThemeColorKey[]).every(
       (key) => a.colors[key] === b.colors[key],
     ),
@@ -135,13 +149,18 @@ function ColorRow({
 
 function Preview({ theme }: { theme: SiteTheme }) {
   const t = useTranslations("adminDesign");
+  const [viewport, setViewport] = useState<"desktop" | "mobile">("desktop");
   const variables = themeCssProperties(theme);
   return (
     <section
       className={styles.previewPane}
+      data-viewport={viewport}
       style={
         {
           ...variables,
+          width: "100%",
+          maxWidth: viewport === "mobile" ? "390px" : undefined,
+          marginInline: viewport === "mobile" ? "auto" : undefined,
           color: theme.colors.os,
           fontFamily: variables["--site-font-family"],
           fontSize: theme.fontScale + "rem",
@@ -149,9 +168,24 @@ function Preview({ theme }: { theme: SiteTheme }) {
       }
       aria-labelledby="theme-preview-title"
     >
-      <h2 id="theme-preview-title" className={styles.previewLabel}>
-        {t("previewTitle")}
-      </h2>
+      <div className={styles.previewHeading}>
+        <h2 id="theme-preview-title" className={styles.previewLabel}>
+          {t("previewTitle")}
+        </h2>
+        <div className={styles.previewModes}>
+          {(["desktop", "mobile"] as const).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              className={viewport === mode ? styles.previewModeActive : styles.previewMode}
+              aria-pressed={viewport === mode}
+              onClick={() => setViewport(mode)}
+            >
+              {t("previewDevices." + mode)}
+            </button>
+          ))}
+        </div>
+      </div>
       <div className={styles.cover}>
         <div className={styles.coverTop}>
           <p className={styles.mastheadMark}>{t("previewKicker")}</p>
@@ -164,8 +198,26 @@ function Preview({ theme }: { theme: SiteTheme }) {
               <h3>{t("previewCard")}</h3>
               <p>{t("previewBody")}</p>
               <div className={styles.previewActions}>
-                <span className={styles.previewPrimary}>{t("primaryAction")}</span>
-                <span className={styles.previewSecondary}>{t("secondaryAction")}</span>
+                <span
+                  className={styles.previewPrimary}
+                  style={{
+                    borderRadius: "var(--site-button-radius)",
+                    textTransform:
+                      "var(--site-button-text-transform)" as CSSProperties["textTransform"],
+                  }}
+                >
+                  {t("primaryAction")}
+                </span>
+                <span
+                  className={styles.previewSecondary}
+                  style={{
+                    borderRadius: "var(--site-button-radius)",
+                    textTransform:
+                      "var(--site-button-text-transform)" as CSSProperties["textTransform"],
+                  }}
+                >
+                  {t("secondaryAction")}
+                </span>
               </div>
             </div>
           </div>
@@ -263,6 +315,9 @@ function DesignEditorForm({ initialTheme }: { initialTheme: SiteTheme }) {
           <p>{t("intro")}</p>
         </div>
         <div className={styles.mastheadActions}>
+          <Link href="/admin/home" className="btn btn-ghost">
+            {t("homeLayout")}
+          </Link>
           <button
             type="button"
             onClick={() => setTheme(structuredClone(DEFAULT_SITE_THEME))}
@@ -311,6 +366,23 @@ function DesignEditorForm({ initialTheme }: { initialTheme: SiteTheme }) {
           ))}
           <fieldset className={styles.radiusPanel} disabled={save.isPending}>
             <legend className={styles.groupLegend}>{t("layoutTitle")}</legend>
+            <label className={styles.settingLabel} htmlFor="theme-panelStyle">
+              {t("panelStyle")}
+            </label>
+            <select
+              id="theme-panelStyle"
+              value={theme.panelStyle}
+              onChange={(event) =>
+                update("panelStyle", event.target.value as SiteTheme["panelStyle"])
+              }
+              className={styles.hexInput}
+            >
+              {(["comic", "soft", "flat"] as const).map((key) => (
+                <option key={key} value={key}>
+                  {t("panelStyles." + key)}
+                </option>
+              ))}
+            </select>
             <label className={styles.settingLabel} htmlFor="theme-radius">
               {t("radius")}
               <output>{theme.radius.toFixed(2)} rem</output>
@@ -382,6 +454,97 @@ function DesignEditorForm({ initialTheme }: { initialTheme: SiteTheme }) {
               {["compact", "comfortable", "spacious"].map((key) => (
                 <option key={key} value={key}>
                   {t("densities." + key)}
+                </option>
+              ))}
+            </select>
+          </fieldset>
+          <fieldset className={styles.radiusPanel} disabled={save.isPending}>
+            <legend className={styles.groupLegend}>{t("buttonsTitle")}</legend>
+            <label className={styles.settingLabel} htmlFor="theme-buttonSize">
+              {t("buttonSize")}
+            </label>
+            <select
+              id="theme-buttonSize"
+              value={theme.buttonSize}
+              onChange={(event) =>
+                update("buttonSize", event.target.value as SiteTheme["buttonSize"])
+              }
+              className={styles.hexInput}
+            >
+              {(["compact", "comfortable", "spacious"] as const).map((key) => (
+                <option key={key} value={key}>
+                  {t("buttonSizes." + key)}
+                </option>
+              ))}
+            </select>
+            <label className={styles.settingLabel} htmlFor="theme-buttonShape">
+              {t("buttonShape")}
+            </label>
+            <select
+              id="theme-buttonShape"
+              value={theme.buttonShape}
+              onChange={(event) =>
+                update("buttonShape", event.target.value as SiteTheme["buttonShape"])
+              }
+              className={styles.hexInput}
+            >
+              {(["rounded", "pill", "square"] as const).map((key) => (
+                <option key={key} value={key}>
+                  {t("buttonShapes." + key)}
+                </option>
+              ))}
+            </select>
+            <label className={styles.settingLabel} htmlFor="theme-buttonLabelCase">
+              {t("buttonLabelCase")}
+            </label>
+            <select
+              id="theme-buttonLabelCase"
+              value={theme.buttonLabelCase}
+              onChange={(event) =>
+                update("buttonLabelCase", event.target.value as SiteTheme["buttonLabelCase"])
+              }
+              className={styles.hexInput}
+            >
+              {(["uppercase", "normal"] as const).map((key) => (
+                <option key={key} value={key}>
+                  {t("buttonCases." + key)}
+                </option>
+              ))}
+            </select>
+            <label className={styles.settingLabel} htmlFor="theme-homeActionLayout">
+              {t("homeActionLayout")}
+            </label>
+            <select
+              id="theme-homeActionLayout"
+              value={theme.homeActionLayout}
+              onChange={(event) =>
+                update("homeActionLayout", event.target.value as SiteTheme["homeActionLayout"])
+              }
+              className={styles.hexInput}
+            >
+              {(["row", "stacked"] as const).map((key) => (
+                <option key={key} value={key}>
+                  {t("homeActionLayouts." + key)}
+                </option>
+              ))}
+            </select>
+            <label className={styles.settingLabel} htmlFor="theme-homeActionAlignment">
+              {t("homeActionAlignment")}
+            </label>
+            <select
+              id="theme-homeActionAlignment"
+              value={theme.homeActionAlignment}
+              onChange={(event) =>
+                update(
+                  "homeActionAlignment",
+                  event.target.value as SiteTheme["homeActionAlignment"],
+                )
+              }
+              className={styles.hexInput}
+            >
+              {(["start", "center", "end"] as const).map((key) => (
+                <option key={key} value={key}>
+                  {t("homeActionAlignments." + key)}
                 </option>
               ))}
             </select>
