@@ -51,7 +51,7 @@
     "importDescription": "Upload a JSON array of up to 500 card records. Each row must include an existing release slug and a primary source. Imports never copy card images or long descriptions. Preview first, then confirm the write.",
     "importFormat": "Required fields and example",
     "importFields": "Required: setSlug, cardNumber, name, language, region, sourceLabel, sourceUrl, sourceAccessedAt. Optional: rarity, releaseDate (YYYY-MM-DD), status (draft or published).",
-    "importExample": "[{\n  \"setSlug\": \"existing-release-slug\",\n  \"cardNumber\": \"FB01-001\",\n  \"name\": \"Printed card name\",\n  \"language\": \"ja\",\n  \"region\": \"JP\",\n  \"rarity\": \"R\",\n  \"sourceLabel\": \"Official card list\",\n  \"sourceUrl\": \"https://official.example/card-list\",\n  \"sourceAccessedAt\": \"2026-10-30\"\n}]",
+    "importExample": "[{\n  \"setSlug\": \"existing-release-slug\",\n  \"cardNumber\": \"FB01-001\",\n  \"name\": \"Printed card name\",\n  \"language\": \"ja\",\n  \"region\": \"JP\",\n  \"rarity\": \"R\",\n  \"sourceLabel\": \"Official Fusion World card list\",\n  \"sourceUrl\": \"https://www.dbs-cardgame.com/fw/en/cardlist/\",\n  \"sourceAccessedAt\": \"2026-10-30\"\n}]",
     "importFile": "JSON card file",
     "importDuplicates": "When a card already exists",
     "importSkip": "Keep existing card",

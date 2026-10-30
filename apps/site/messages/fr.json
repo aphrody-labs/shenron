@@ -51,7 +51,7 @@
     "importDescription": "Importez un tableau JSON de 500 cartes maximum. Chaque ligne doit indiquer le slug d’une sortie existante et une source principale. L’import ne copie ni image ni longue description. Prévisualisez les données avant de confirmer l’écriture.",
     "importFormat": "Champs requis et exemple",
     "importFields": "Requis : setSlug, cardNumber, name, language, region, sourceLabel, sourceUrl, sourceAccessedAt. Facultatifs : rarity, releaseDate (AAAA-MM-JJ), status (draft ou published).",
-    "importExample": "[{\n  \"setSlug\": \"slug-sortie-existante\",\n  \"cardNumber\": \"FB01-001\",\n  \"name\": \"Nom imprimé sur la carte\",\n  \"language\": \"ja\",\n  \"region\": \"JP\",\n  \"rarity\": \"R\",\n  \"sourceLabel\": \"Liste officielle des cartes\",\n  \"sourceUrl\": \"https://official.example/liste-cartes\",\n  \"sourceAccessedAt\": \"2026-10-30\"\n}]",
+    "importExample": "[{\n  \"setSlug\": \"slug-sortie-existante\",\n  \"cardNumber\": \"FB01-001\",\n  \"name\": \"Nom imprimé sur la carte\",\n  \"language\": \"ja\",\n  \"region\": \"JP\",\n  \"rarity\": \"R\",\n  \"sourceLabel\": \"Base officielle Fusion World\",\n  \"sourceUrl\": \"https://www.dbs-cardgame.com/fw/en/cardlist/\",\n  \"sourceAccessedAt\": \"2026-10-30\"\n}]",
     "importFile": "Fichier de cartes JSON",
     "importDuplicates": "Si une carte existe déjà",
     "importSkip": "Conserver la carte existante",
