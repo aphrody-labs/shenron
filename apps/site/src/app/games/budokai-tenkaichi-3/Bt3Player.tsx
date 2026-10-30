@@ -23,8 +23,8 @@ interface GeckoModule {
 
 function wasmUrl(path: string): string {
   const cdn = process.env.NEXT_PUBLIC_CDN_URL?.trim().replace(/\/+$/, "");
-  const base = `/wasm/${path}`;
-  return process.env.NODE_ENV === "production" && cdn ? `${cdn}${base}` : base;
+  // The gateway allow-list serves /assets/** from the CDN but only fixed names under /wasm/.
+  return process.env.NODE_ENV === "production" && cdn ? `${cdn}/assets/${path}` : `/wasm/${path}`;
 }
 
 export default function Bt3Player() {
