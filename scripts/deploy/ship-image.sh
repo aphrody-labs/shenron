@@ -51,6 +51,12 @@ case "$TARGET" in
     "$ENGINE" save "$IMAGE:$SHA" | zstd -q -T0 -1 | "${SSH[@]}" "$host" "zstd -q -d -o $tar"
     phase "activate on $host"
     "${SSH[@]}" "$host" "${SHENRON_DEPLOY_COMMAND:-bash ~/deploy-shenron-image.sh} $SHA $tar"
+    # Keep the newest SHENRON_REMOTE_KEEP_IMAGES revisions (rollback targets); an image in use
+    # is never removed (no --force). Each image is about 1.8 GiB on the target root disk.
+    keep=${SHENRON_REMOTE_KEEP_IMAGES:-4}
+    [ "$keep" = 0 ] || "${SSH[@]}" "$host" "sudo -n docker image ls --format '{{.Repository}}:{{.Tag}}' localhost/shenron \
+      | grep -vE ':(local|active)\$' | sed -n '$((keep + 1)),\$p' \
+      | xargs -r -n1 sudo -n docker image rm >/dev/null 2>&1 || true"
     ;;
   registry:*)
     repository=${TARGET#registry:}
