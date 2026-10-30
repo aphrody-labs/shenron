@@ -1,8 +1,8 @@
-# Console GameCube / Wii (Gecko en WebAssembly)
+# Budokai Tenkaichi 3 dans le navigateur (moteur Gecko en WebAssembly)
 
-Mini-jeu `/games/console` : un émulateur GameCube et Wii dans le navigateur. Le joueur fournit son
-propre fichier (`.rvz`, `.iso`, `.dol`) ; il est lu localement par morceaux de 8 Mio et n'est jamais
-envoyé. Le site ne distribue aucun jeu, aucun BIOS ni aucune image de disque.
+Mini-jeu `/games/budokai-tenkaichi-3` : Dragon Ball Z Budokai Tenkaichi 3 dans le navigateur, sur le
+moteur d'émulation Gecko. Le joueur fournit sa propre image de disque (`.rvz`, `.iso`) ; elle est lue
+localement par morceaux de 8 Mio et n'est jamais envoyée. Le site ne distribue aucun jeu, aucun BIOS ni aucune image de disque.
 
 ## Provenance et licence
 
