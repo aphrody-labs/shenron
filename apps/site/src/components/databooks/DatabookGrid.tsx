@@ -27,7 +27,7 @@ import {
   type DatabookCategory,
 } from "@/lib/databook-categories";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
-import type { AccessSnapshot } from "@/lib/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import { toMillis } from "@/lib/epoch";
 import {
   readAvailability,

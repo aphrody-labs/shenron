@@ -21,7 +21,7 @@ import { LogService } from "~/services/LogService";
 import { container } from "tsyringe";
 import { Client } from "discordx";
 import { EmbedBuilder, type GuildMember } from "discord.js";
-import { formatZeni } from "~/lib/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 import { env } from "~/lib/env";
 import { logger } from "~/lib/logger";
 import { resolveLevelChannel } from "~/lib/announce";

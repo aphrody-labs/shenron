@@ -21,8 +21,11 @@
  * plusieurs pseudos commencent pareil.
  */
 import { useState, type ReactNode } from "react";
-import { discordDefaultAvatarUrl, discordUserIdFromAvatarUrl } from "@/lib/discord-avatar";
-import { cn } from "@/lib/utils";
+import {
+  discordDefaultAvatarUrl,
+  discordUserIdFromAvatarUrl,
+} from "@aphrody/shenron-config/public-urls";
+import { cn } from "@aphrody/shenron-ui/lib/utils";
 
 export function Avatar({
   src,

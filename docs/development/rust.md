@@ -133,9 +133,6 @@ Next exclues.
   verrou externe. Une release de production se construit par `scripts/deploy/release.sh`
   (voir `docs/operations/CONTAINER-COMPLET.md`), qui sérialise ses builds par un `flock` propre
   à son worktree et règle les jobs par `SHENRON_CARGO_JOBS`.
-- Sous WSL, le runner de `cargo tauri build` ne délègue au tunnel Cargo d'Aphrody que si
-  `APHRODY_ROOT` est posé explicitement (`SHENRON_CARGO_REMOTE=vps|off`) ; sinon il compile sur
-  place.
 - sccache reste un réglage local (`RUSTC_WRAPPER=sccache` ou `build.rustc-wrapper` dans
   `~/.cargo/config.toml`), comme le nombre de jobs (`CARGO_BUILD_JOBS`).
 - nextest se limite à 6 processus par défaut (`-j` ou `NEXTEST_TEST_THREADS` pour changer).

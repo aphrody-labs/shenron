@@ -12,7 +12,7 @@ const captured: {
 }[] = [];
 mock.module("server-only", () => ({}));
 mock.module("@/lib/wiki-launch-config", () => ({ getLaunchConfig: async () => ({}) }));
-mock.module("@/lib/wiki-launch", () => ({ isPathPublic: () => true }));
+mock.module("@aphrody/shenron-config/wiki-launch", () => ({ isPathPublic: () => true }));
 mock.module("@/lib/cdn-catalog", () => ({ readCdnPage: async () => null }));
 mock.module("@/lib/db", () => ({
   db: {

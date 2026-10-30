@@ -27,8 +27,8 @@ import {
   pendingChunks,
   type AssetRow,
   type CpkRow,
-} from "../../packages/db/src/dbxv2";
-import { createE5Embedder } from "../../packages/db/src/vfs/rag";
+} from "@aphrody/shenron-db/dbxv2";
+import { createE5Embedder } from "@aphrody/shenron-db/vfs/rag";
 
 const REPO = resolve(import.meta.dir, "../..");
 const HOME = process.env.HOME ?? homedir();
@@ -65,8 +65,9 @@ if (command === "build") {
   const dir = dirname(dbPath);
   mkdirSync(dir, { recursive: true, mode: 0o700 });
   chmodSync(dir, 0o700);
-  const src =
-    process.env.SHENRON_DBXV2_SRC ?? join(HOME, "src/bun-os/packages/shenron-dbxv2/src/index.ts");
+  // The DBXV2 FFI (loadDbxv2Ffi) is not part of this repository: name its entry explicitly.
+  const src = process.env.SHENRON_DBXV2_SRC;
+  if (!src) throw new Error("SHENRON_DBXV2_SRC must name the DBXV2 FFI entry (src/index.ts)");
   const { loadDbxv2Ffi } = (await import(src)) as {
     loadDbxv2Ffi(lib?: string): {
       identify(bytes: Uint8Array, name?: string): { format: string; category: string };

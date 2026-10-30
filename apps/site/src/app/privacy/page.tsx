@@ -1,6 +1,6 @@
 import { PageShell } from "@/components/kit";
 import Link from "next/link";
-import { PageHeader } from "@/components/PageHeader";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import type { Metadata } from "next";
 import { DISCORD_INVITE } from "@/lib/config";
 import { T } from "@/components/T";

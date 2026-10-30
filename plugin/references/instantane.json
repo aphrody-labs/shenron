@@ -67,7 +67,7 @@
         "packages/config/src/aphrody-corpus.ts": "a5a6d7e3355ed5393c98e91ba662dbc010c9218b7dd870f7e2dd8562958ef95d",
         "packages/config/src/economy-canon.ts": "a7e66d707f8ca1730f3cd2a25ae27516eeeb46582add8859aeec9fbc7bac60cb",
         "scripts/plugin/faits.ts": "4b43483cf9142968c5b3f671cd72118c9ffbf0b480f46c8639ac915503ffbd74",
-        "scripts/plugin/src/faits-sources.ts": "7efb804c5d3eef365583bdbd23f071f2ceeb6b41079f34f805e3787fbe9dfb5e"
+        "scripts/plugin/src/faits-sources.ts": "03b39d6da6868341b3a3637b2adc5a8a28571e25ed7d1e24d957ff0a83107627"
       },
       "sha256": "e7d0b8ccf17fb8d28ea5a96cf9d10fabafa8d5978a27532989cd52a7ca34d1ed"
     },
@@ -147,7 +147,7 @@
         "packages/ui/src/toriyama-svg/potara.ts": "e0d2f40c58b92850437b00a5380cc42ca1a40987e2f0ae0ac235769ff3636863",
         "packages/ui/src/toriyama-svg/senzu.ts": "20e9c4d397d4a7dd4fa4c151ddbec8250c1866e543eded730fbbb425a275381a",
         "packages/ui/src/toriyama-svg/sphere.ts": "7feed0aba0942253273204814be68bcfad44cbd1f64897f1d45eadf18959b8df",
-        "scripts/plugin/src/toriyama.ts": "e2870b41b11957f2b8713c1c9aa93bdc206f3e85cc4d85dc42a39d0967849360"
+        "scripts/plugin/src/toriyama.ts": "6ced9b484051c16b7deffefec12c44f4b870781e1a82a7bbd4917a5ab92054dd"
       },
       "sha256": "db830d9a508d2c6d20e0287816986f736ae40eaad2189a1fbd6a57b4a7025f3f",
       "paquet": true

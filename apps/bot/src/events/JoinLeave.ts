@@ -11,7 +11,7 @@ import { eq } from "drizzle-orm";
 import { AUTO_ROLE_ID } from "~/lib/constants";
 import { ModerationService } from "~/services/ModerationService";
 import { LevelService } from "~/services/LevelService";
-import { RACE_ROLE_IDS } from "~/lib/races";
+import { RACE_ROLE_IDS } from "@aphrody/shenron-config/races";
 import { levelOfRoleId, memberRaceId } from "~/lib/race-levels";
 import { env } from "~/lib/env";
 

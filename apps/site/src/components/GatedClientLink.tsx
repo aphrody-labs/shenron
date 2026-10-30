@@ -16,7 +16,7 @@
  */
 import Link from "next/link";
 import type { ComponentProps } from "react";
-import { isPathPublic, type AccessSnapshot } from "@/lib/wiki-launch";
+import { isPathPublic, type AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 
 /** Toutes les props de `<Link>` (dont `transitionTypes`), plus l'instantané d'accès. */
 type Props = ComponentProps<typeof Link> & {

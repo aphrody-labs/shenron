@@ -15,7 +15,7 @@ import * as tables from "@aphrody/shenron-db/bot-schema";
 import { posts } from "@/db/schema";
 import { db } from "@/lib/db";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
-import { isPathPublic } from "@/lib/wiki-launch";
+import { isPathPublic } from "@aphrody/shenron-config/wiki-launch";
 import { publicPostFilter } from "@/lib/posts";
 import {
   externalSourceHref,

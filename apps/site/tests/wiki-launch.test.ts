@@ -14,7 +14,7 @@ import {
   publicEntries,
   resolveAccess,
   type AccessSnapshot,
-} from "../src/lib/wiki-launch";
+} from "@aphrody/shenron-config/wiki-launch";
 
 const EMPTY: AccessSnapshot = { openKeys: [], access: {} };
 

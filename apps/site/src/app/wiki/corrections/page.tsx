@@ -12,7 +12,7 @@
  * Bénéfice de côté : l'URL est partageable (« corrige ce paragraphe, tiens »),
  * et la page fonctionne sans avoir à ouvrir une modale par-dessus la lecture.
  */
-import { PageHeader } from "@/components/PageHeader";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import Link from "next/link";
 import { FlecheGauche } from "@aphrody/shenron-ui/icones";
 import type { Metadata } from "next";
@@ -21,7 +21,7 @@ import { CONTRIBUTABLE_COLUMNS } from "@/lib/contributions-shared";
 import { champPlanche, estCiblePlanche, numeroDePlanche } from "@/lib/databook-pages-shared";
 import { estCibleStats } from "@/lib/stats-personnage";
 import { WIKI_TABLE_SPECS } from "@/lib/wiki-tables";
-import { sanitizeInternalPath } from "@/lib/internal-path";
+import { sanitizeInternalPath } from "@aphrody/shenron-config/favorites";
 import { PageShell } from "@/components/kit";
 
 export const dynamic = "force-dynamic";

@@ -240,10 +240,10 @@ export function koharuBridge(o: KoharuOptions): KoharuBridge {
       } catch {
         // the exit below reports the failure
       }
-      if (engine === child) closed("the Koharu engine stopped");
+      if (engine === child) closed("the Shenron Studio engine stopped");
     })();
     void child.exited.then((code) => {
-      if (engine === child) closed(`the Koharu engine exited (${code})`);
+      if (engine === child) closed(`the Shenron Studio engine exited (${code})`);
       return undefined;
     });
     return child;
@@ -265,7 +265,7 @@ export function koharuBridge(o: KoharuOptions): KoharuBridge {
       } catch (error) {
         pending.delete(id);
         clearTimeout(timer);
-        resolve({ error: `the Koharu engine is unreachable: ${String(error)}` });
+        resolve({ error: `the Shenron Studio engine is unreachable: ${String(error)}` });
       }
     });
   };

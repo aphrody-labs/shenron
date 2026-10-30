@@ -14,7 +14,7 @@ import { adminUserOrToken, isAdminOrToken } from "@/lib/admin-guard";
 import { HostHomeError } from "@/lib/host-home-error";
 import { ENV_ALIASES, envFirst } from "@aphrody/shenron-config/env";
 import { getHomeConfig, saveHomeConfig } from "@/lib/home-config";
-import type { HomeClip } from "@/lib/home-scenes";
+import type { HomeClip } from "@aphrody/shenron-config/home";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 

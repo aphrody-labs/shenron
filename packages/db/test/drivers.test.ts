@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // No connection is opened: postgres-js and Bun.SQL connect lazily.
 import { describe, expect, test } from "bun:test";
-import * as bunAlias from "../src/bun";
-import * as bunSql from "../src/bun-sql";
 import { bunSqlOptions, createBunDb, createBunSql } from "../src/bun-sql";
 import { POOL_MAX_CEILING } from "../src/config";
 import * as root from "../src/index";
@@ -98,11 +96,9 @@ describe("Bun.SQL driver", () => {
     client.close();
   });
 
-  test("createBunDb and the ./bun alias", () => {
+  test("createBunDb", () => {
     const { db, client } = createBunDb({ url: URL_TEST, applicationName: "t" });
     expect(db).toBeDefined();
     client.close();
-    expect(bunAlias.createBunDb).toBe(bunSql.createBunDb);
-    expect(bunAlias.createBunSql).toBe(bunSql.createBunSql);
   });
 });

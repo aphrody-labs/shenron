@@ -4,7 +4,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import type { NativeCommandExecutor } from "../../packages/pipeline/src/aphrody/cli.ts";
+import type { NativeCommandExecutor } from "@aphrody/shenron-pipeline/aphrody/cli";
 import { transferOcrResults } from "./envoie-ocr-results";
 
 let temporaryDirectory: string;

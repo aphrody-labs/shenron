@@ -1,7 +1,7 @@
 import { DomainBar, PageShell } from "@/components/kit";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PageHeader } from "@/components/PageHeader";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import { TierlistView } from "@/components/tierlist/TierlistView";
 import { getLikeCountsFor, listTierlists } from "@/lib/tierlists";
 import { ogMeta } from "@/lib/og";

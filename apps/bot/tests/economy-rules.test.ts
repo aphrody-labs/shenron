@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { CANON_INFLATION_FACTOR, CANON_PRICES, canonEquivalent } from "~/lib/economy-canon";
-import { changePercent, computeIndex, indexedPrice } from "~/lib/inflation-rules";
+import {
+  CANON_INFLATION_FACTOR,
+  CANON_PRICES,
+  canonEquivalent,
+} from "@aphrody/shenron-config/economy-canon";
+import { changePercent, computeIndex, indexedPrice } from "@aphrody/shenron-config/inflation-rules";
 import {
   assess,
   flagExcess,

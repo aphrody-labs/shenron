@@ -10,7 +10,7 @@
  *   • Brand    → 0xfbbf24 (amber, identité shenron)
  */
 import { EmbedBuilder, type ColorResolvable, type GuildMember, type User } from "discord.js";
-import { formatZeni } from "~/lib/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 import { formatNumber, t, type BotLang } from "~/lib/i18n";
 
 export const COLORS = {

@@ -5,7 +5,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { NextIntlClientProvider } from "next-intl";
 import type { ToriyamaSourceGroup } from "../src/lib/toriyama-shared";
-import type { AccessSnapshot } from "../src/lib/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import fr from "../messages/interview-ui/fr.json";
 import en from "../messages/interview-ui/en.json";
 import ja from "../messages/interview-ui/ja.json";

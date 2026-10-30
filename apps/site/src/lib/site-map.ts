@@ -18,7 +18,7 @@
  * accès réel se fait par l'appelant avec `isPathPublic()`, exactement comme la
  * nav et le sitemap le font déjà.
  */
-import { ALL_ENTRIES, type LaunchCategory } from "@/lib/wiki-launch";
+import { ALL_ENTRIES, type LaunchCategory } from "@aphrody/shenron-config/wiki-launch";
 import fr from "../../messages/fr.json";
 
 /**

@@ -14,7 +14,6 @@ const manifest = JSON.parse(readFileSync(join(PKG_DIR, "package.json"), "utf8"))
 const SUBPATHS = [
   "./ai",
   ...[
-    "index",
     "config",
     "wire",
     "aphrody",
@@ -26,11 +25,12 @@ const SUBPATHS = [
     "grounding",
     "eval",
     "ports",
-    "training-hashes",
     "canon-judgment",
-    "canon-eval",
   ].map((name) => `./ai/${name}`),
 ];
+
+/** Pure AI sources kept off the export map (reached through package-internal imports only). */
+const INTERNAL_PURE_SOURCES = ["./src/ai/training-hashes.ts", "./src/ai/canon-eval.ts"];
 
 describe("@aphrody/shenron-pipeline/ai manifest", () => {
   test("exports every subpath of docs/architecture/STACK.md §3.4 with its runtime class", () => {
@@ -38,9 +38,19 @@ describe("@aphrody/shenron-pipeline/ai manifest", () => {
       Object.keys(manifest.exports)
         .filter((key) => key === "./ai" || key.startsWith("./ai/"))
         .toSorted(),
-    ).toEqual([...SUBPATHS, "./ai/native", "./ai/jev-provider"].toSorted());
+    ).toEqual(
+      [
+        ...SUBPATHS,
+        "./ai/native",
+        "./ai/jev-provider",
+        "./ai/vector-reader",
+        "./ai/vector-sidecar",
+      ].toSorted(),
+    );
     expect(manifest.shenron.runtime["./ai/native"]).toBe("bun");
     expect(manifest.shenron.runtime["./ai/jev-provider"]).toBe("bun");
+    expect(manifest.shenron.runtime["./ai/vector-reader"]).toBe("bun");
+    expect(manifest.shenron.runtime["./ai/vector-sidecar"]).toBe("bun");
     // These three load the `ai` runtime, whose @ai-sdk/provider-utils bundle carries a
     // guarded `process.getBuiltinModule("node:module")` string that the browser-purity
     // check rejects. They are server-only targets (Next server, bot, scripts) anyway;
@@ -53,9 +63,13 @@ describe("@aphrody/shenron-pipeline/ai manifest", () => {
     expect(manifest.sideEffects).toBe(false);
   });
 
-  for (const key of SUBPATHS) {
+  const pureSources = [
+    ...SUBPATHS.map((key) => [key, manifest.exports[key] ?? "missing"] as const),
+    ...INTERNAL_PURE_SOURCES.map((path) => [path, path] as const),
+  ];
+  for (const [key, path] of pureSources) {
     test(`${key}: pure source (no node:, bun:, process, Bun., host literal)`, async () => {
-      const file = join(PKG_DIR, manifest.exports[key] ?? "missing");
+      const file = join(PKG_DIR, path);
       const source = readFileSync(file, "utf8")
         .replace(/\/\*[\s\S]*?\*\//g, "")
         .replace(/^\s*\/\/.*$/gm, "");

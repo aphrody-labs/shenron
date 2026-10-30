@@ -1,15 +1,7 @@
 {
+  "extends": "../config/tsconfig/bun.json",
   "compilerOptions": {
-    "types": ["bun"],
-    "module": "ESNext",
-    "target": "ESNext",
-    "strict": true,
-    "moduleResolution": "Bundler",
-    "skipLibCheck": true,
-    "moduleDetection": "force",
-    "noEmit": true,
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": false
+    "allowImportingTsExtensions": true
   },
   "include": ["src/**/*", "tests/**/*"]
 }

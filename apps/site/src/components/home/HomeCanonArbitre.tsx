@@ -1,6 +1,6 @@
 /* oxlint-disable jsx-a11y/prefer-tag-over-role -- reviewed: legacy patterns, behavior preserved */
 import Link from "next/link";
-import type { HomeCanonConfig } from "@/lib/home-scenes";
+import type { HomeCanonConfig } from "@aphrody/shenron-config/home";
 import type { CanonConfig } from "@/lib/canon-engine";
 import { T } from "@/components/T";
 import { HomeSection } from "./HomeSection";

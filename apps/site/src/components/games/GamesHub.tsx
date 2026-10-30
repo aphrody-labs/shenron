@@ -18,7 +18,7 @@ import {
 import { DEFAULT_DISCORD_INVITE } from "@aphrody/shenron-config/public-urls";
 import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
-import type { AccessSnapshot } from "@/lib/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import { useLangue } from "@/lib/i18n/client";
 import fr from "../../../messages/games-hub/fr.json";
 import en from "../../../messages/games-hub/en.json";

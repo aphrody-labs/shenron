@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-import { uiAssetPaths } from "../../packages/ui/src/assets";
-import { NOMS_ICONES } from "../../packages/ui/src/icones/geometries";
+import { uiAssetPaths } from "@aphrody/shenron-ui/assets";
+import { NOMS_ICONES } from "@aphrody/shenron-ui/icones/geometries";
 import symbols from "../../packages/ui/src/icones/material-symbol-subset.json";
 
 export async function toriyamaCatalog() {

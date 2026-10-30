@@ -160,7 +160,7 @@ test("index budget includes actual UTF-8 serialization and indentation bytes", (
 import {
   crawlIngestPolicySchema,
   projectNativeCrawl,
-} from "../../packages/pipeline/src/dragon-ball/crawl-ingest";
+} from "@aphrody/shenron-pipeline/dragon-ball/crawl-ingest";
 
 test("Archive publications retain their canonical classification and never replace existing rich notices", async () => {
   const source = "https://archive.org/details/qualified-item";

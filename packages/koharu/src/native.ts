@@ -187,7 +187,8 @@ export function startNativeClient(options: { binary?: string; root?: string } = 
         const { value, done } = await reader.read();
         if (done) break;
         buffer += decoder.decode(value, { stream: true });
-        if (buffer.length > 150_000_000) throw new Error("Koharu SDK response exceeds 150 MB");
+        if (buffer.length > 150_000_000)
+          throw new Error("Shenron Studio engine response exceeds 150 MB");
         let end: number;
         while ((end = buffer.indexOf("\n")) !== -1) {
           const line = buffer.slice(0, end);
@@ -252,7 +253,7 @@ export function startNativeClient(options: { binary?: string; root?: string } = 
             !("id" in message) ||
             typeof message.id !== "number"
           ) {
-            throw new Error("The Koharu SDK returned an invalid response.");
+            throw new Error("The Shenron Studio engine returned an invalid response.");
           }
           const request = pending.get(message.id);
           if (!request) continue;
@@ -260,14 +261,15 @@ export function startNativeClient(options: { binary?: string; root?: string } = 
           if ("error" in message) request.reject(new Error(formatSdkError(message.error)));
           else if ("result" in message) request.resolve(message.result);
           else {
-            const error = new Error("The Koharu SDK response has no result or error.");
+            const error = new Error("The Shenron Studio engine response has no result or error.");
             request.reject(error);
             throw error;
           }
         }
       }
-      if (buffer.trim()) throw new Error("The Koharu SDK closed with an incomplete response.");
-      fail(new Error("The Koharu SDK process closed."));
+      if (buffer.trim())
+        throw new Error("The Shenron Studio engine closed with an incomplete response.");
+      fail(new Error("The Shenron Studio engine process closed."));
     } catch (error) {
       fail(error instanceof Error ? error : new Error(String(error)));
       child.kill();
@@ -279,7 +281,7 @@ export function startNativeClient(options: { binary?: string; root?: string } = 
   return {
     exited: child.exited,
     call<Method extends NativeMethod>(method: Method, params: NativeParams<Method>) {
-      if (closed) return Promise.reject(new Error("The Koharu SDK process is closed."));
+      if (closed) return Promise.reject(new Error("The Shenron Studio engine process is closed."));
       const id = ++nextId;
       return new Promise<NativeResult<Method>>((resolve, reject) => {
         pending.set(id, { resolve: resolve as (value: unknown) => void, reject });
@@ -311,7 +313,7 @@ export function startNativeClient(options: { binary?: string; root?: string } = 
           child.stdin.end();
         }
         closing = child.exited.then(() => {
-          fail(new Error("The Koharu SDK process closed."));
+          fail(new Error("The Shenron Studio engine process closed."));
           return undefined;
         });
       }

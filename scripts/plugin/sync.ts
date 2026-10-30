@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
 import { join, resolve } from "node:path";
-import { DEFAULT_PUBLIC_ORIGINS } from "../../packages/config/src/public-urls";
+import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
 
 export async function portableManifests(root: string): Promise<Record<string, string>> {
   const source = await Bun.file(join(root, "plugin/.claude-plugin/plugin.json")).json();

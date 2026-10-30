@@ -28,7 +28,7 @@ import {
   statusColor,
 } from "~/services/games/duel";
 import { interactionLang } from "~/lib/i18n";
-import { formatZeni } from "~/lib/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 import { SettingsService } from "~/services/SettingsService";
 import { MessageTemplateService } from "~/services/MessageTemplateService";
 import { ZENI_GAME_WIN, ZENI_GAME_LOSS_PENALTY } from "~/lib/constants";

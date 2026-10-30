@@ -723,7 +723,12 @@ if (import.meta.main) {
     console.error(`DBXV2_TOKEN required (>= ${MIN_TOKEN} characters): refusing to start`);
     process.exit(2);
   }
-  const pkgDir = env.DBXV2_PKG_DIR ?? join(homedir(), "src/bun-os/packages/shenron-dbxv2");
+  // The DBXV2 FFI package (loadDbxv2Ffi) is not part of this repository: name it explicitly.
+  const pkgDir = env.DBXV2_PKG_DIR;
+  if (!pkgDir) {
+    console.error("DBXV2_PKG_DIR required: directory of the DBXV2 FFI package (src/index.ts)");
+    process.exit(2);
+  }
   const cpkDir = env.DBXV2_CPK_DIR ?? "/games/SteamLibrary/steamapps/common/DB Xenoverse 2/cpk";
   const server = createDbxv2Server({
     token,

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Point d'appel commun des builds du site (`build-site-external.ts`, `server.ts` et, par lui,
- * `desktop.ts`) : le viewport WebGPU de l'éditeur Koharu importe le WASM de
- * `crates/koharu-canvas` (`packages/koharu/src/wasm/`, suivi par Git), que Next doit trouver
- * pour l'émettre sous `static/media/`. `ensureKoharuWasm()` lance
- * `packages/koharu/scripts/build-wasm.ts`, qui ne reconstruit que si son tampon est périmé
- * (Cargo par `cargo-runner.ts`, donc sur le VPS depuis WSL) ; sans Rust, le module suivi sert.
+ * Point d'appel commun des builds du site (`server.ts` et, par lui, `desktop.ts`) : le
+ * viewport WebGPU de l'éditeur Koharu importe le WASM de `crates/koharu-canvas`
+ * (`packages/koharu/src/wasm/`, suivi par Git), que Next doit trouver pour l'émettre sous
+ * `static/media/`. `ensureKoharuWasm()` lance `packages/koharu/scripts/build-wasm.ts`, qui ne
+ * reconstruit que si son tampon est périmé (Cargo par `cargo-runner.ts`) ; sans Rust, le module
+ * suivi sert.
  */
 import { existsSync } from "node:fs";
 import { join } from "node:path";

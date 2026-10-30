@@ -9,7 +9,7 @@ import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { ContinueRail } from "@/components/history/ContinueRail";
 import type { Metadata } from "next";
 import { pageHero } from "@/lib/banner-config";
-import { eraOf, ERA_ACCENT } from "@/lib/chronology";
+import { eraOf, ERA_ACCENT } from "@aphrody/shenron-config/chronology";
 import { Billboard } from "@/components/stream/Billboard";
 import { StreamRow } from "@/components/stream/StreamRow";
 import { PosterCard } from "@/components/stream/PosterCard";

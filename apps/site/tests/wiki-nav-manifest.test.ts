@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { WIKI_NAVIGATION_MANIFEST } from "../src/lib/wiki-nav-manifest";
-import { GATEABLE_CATEGORIES } from "../src/lib/wiki-launch";
+import { GATEABLE_CATEGORIES } from "@aphrody/shenron-config/wiki-launch";
 import { publicLegacyRedirect } from "../src/lib/legacy-routes";
 
 describe("wiki-nav-manifest — Manifeste de navigation encyclopédique", () => {

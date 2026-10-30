@@ -58,8 +58,8 @@ import { requireProductionVfs } from "./server-vfs-policy";
 import { ensureKoharuWasm } from "./koharu-wasm.ts";
 import { findDbxv2Leaks } from "../../packages/dbxv2/src/guard.ts";
 import { privateFiles, stagePublicData } from "./server-data.ts";
-import { templateProblems } from "../../packages/db/src/agent-homes/template";
-import { AGENT_HOME_DOCUMENTS } from "../../packages/db/src/agent-homes/types";
+import { templateProblems } from "@aphrody/shenron-db/agent-homes/template";
+import { AGENT_HOME_DOCUMENTS } from "@aphrody/shenron-db/agent-homes/types";
 import { syncUiAssets } from "../../packages/ui/scripts/sync-assets";
 
 const ROOT = resolve(import.meta.dir, "../..");

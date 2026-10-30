@@ -17,7 +17,7 @@ import {
   verifyMangaEditorial,
 } from "./manga-publication-editor";
 import { wikiUpdateSnapshotHash } from "../../apps/site/src/lib/wiki-update-precondition";
-import type { MangaBundle } from "../../packages/pipeline/src/dragon-ball/manga-publication-contract";
+import type { MangaBundle } from "@aphrody/shenron-pipeline/dragon-ball/manga-publication-contract";
 import { archiveDigest } from "./apply-archive-catalog";
 
 const url = process.env.SOSH_IMPORT_PG_URL;

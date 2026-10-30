@@ -7,7 +7,7 @@ import {
   workshopTabFor,
 } from "../src/lib/library";
 import { staffLegacyRedirect } from "../src/lib/legacy-routes";
-import { ALL_ENTRIES } from "../src/lib/wiki-launch";
+import { ALL_ENTRIES } from "@aphrody/shenron-config/wiki-launch";
 
 const siteRoot = Bun.fileURLToPath(new URL("..", import.meta.url));
 

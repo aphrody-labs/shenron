@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { startBundledWorker } from "./bundled-worker";
-import type { VectorGeneration } from "../../../../packages/pipeline/src/ai/vector-sidecar";
+import type { VectorGeneration } from "@aphrody/shenron-pipeline/ai/vector-sidecar";
 /** CPU-bound native build runs off the serving thread; all SQL stays on its existing pool. */
 export async function buildWithVectorWorker(
   directory: string,

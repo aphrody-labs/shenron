@@ -157,7 +157,8 @@ bun scripts/dev/env-pull.ts tunnel --host vps
 
 ### Image de build `aphrody-build` (CI et runner self-hosted)
 
-Le runner self-hosted (`server-artifact.yml`) peut exécuter les étapes Rust, WASM, `bun install`
+Le workflow manuel `server-artifact.yml` construit et vérifie l'image par
+`scripts/deploy/build-image.sh` (build seul, runner self-hosted). Hors release, on peut exécuter les étapes Rust, WASM, `bun install`
 et bot dans l'image de build d'Aphrody (`aphrody-build:latest`), par `scripts/build/container.ts` :
 toolchain épinglée (Rust de `rust-toolchain.toml`, Bun de `packageManager`, `wasm-bindgen` de
 `Cargo.lock`), caches partagés en volumes (`aphrody-build-{cargo,sccache,bun,xwin,xdg}`), 6 CPU

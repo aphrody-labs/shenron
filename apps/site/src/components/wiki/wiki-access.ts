@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import "server-only";
-import type { AccessSnapshot } from "@/lib/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 
 /**

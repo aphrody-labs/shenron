@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { ogMeta } from "@/lib/og";
 import { getShenronPersonas } from "@/lib/shenron";
 import Link from "next/link";
-import { PageHeader } from "@/components/PageHeader";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 
 export const metadata: Metadata = {
   title: "Les six personas du bot",

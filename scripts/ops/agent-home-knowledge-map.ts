@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { join } from "node:path";
 import { mkdirSync } from "node:fs";
-import { writeAtomicSync } from "../../packages/db/src/agent-homes/dir";
+import { writeAtomicSync } from "@aphrody/shenron-db/agent-homes/dir";
 import { ownedDirectory, resolveNotesHome } from "./agent-home-notes";
 import { readReviewedPrivateNotes } from "./agent-home-notes-index";
 

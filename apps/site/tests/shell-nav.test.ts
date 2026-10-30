@@ -6,7 +6,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { SHELL_HIDDEN_HREFS, isAdminHref, publicShellJourneys } from "@/lib/shell-nav";
-import { ALL_ENTRIES } from "@/lib/wiki-launch";
+import { ALL_ENTRIES } from "@aphrody/shenron-config/wiki-launch";
 
 const source = (relative: string) => readFileSync(path.join(import.meta.dir, relative), "utf8");
 

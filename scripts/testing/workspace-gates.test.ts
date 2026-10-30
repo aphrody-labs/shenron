@@ -28,7 +28,7 @@ test("discovers every current package gate and retains the scripts typecheck", a
         .filter((command) => command.packageName !== "scripts")
         .map((command) => command.packageName),
     ).size,
-  ).toBe(18);
+  ).toBe(19);
   expect(commands.at(-1)?.args).toEqual(["bun", "check", "-p", "scripts"]);
   const solution = await Bun.file(resolve(root, "tsconfig.json")).json();
   const referenced = new Set(

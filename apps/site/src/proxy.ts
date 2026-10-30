@@ -5,7 +5,7 @@ import { ADMIN_COOKIE } from "@aphrody/shenron-auth/tokens";
 import { resolveVisitor, type Visitor } from "@/lib/proxy-admin";
 import { isAdminIp } from "@/lib/admin-ip";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
-import { findEntry, resolveAccess } from "@/lib/wiki-launch";
+import { findEntry, resolveAccess } from "@aphrody/shenron-config/wiki-launch";
 import { getMemberRoleIds } from "@/lib/member-roles";
 import { SITE_URL, GAME_URL } from "@/lib/config";
 import { env } from "@/lib/env";

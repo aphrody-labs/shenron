@@ -9,7 +9,7 @@ import { WikiImg } from "@/components/wiki/WikiImg";
 import { publicDatabookImage } from "@/lib/databook-media";
 import { useInterviewUIText } from "@/lib/interview-ui-text";
 import type { ToriyamaSourceGroup } from "@/lib/toriyama-shared";
-import type { AccessSnapshot } from "@/lib/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 
 export type SortOrder = "date-desc" | "date-asc" | "count-desc" | "title-asc";
 export type DecadeFilter = "all" | "80s" | "90s" | "2000s" | "2010s";

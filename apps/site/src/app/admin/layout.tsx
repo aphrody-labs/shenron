@@ -1,6 +1,6 @@
 import { requireAdmin } from "@/lib/session";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
-import { QueryProvider } from "@/components/admin/QueryProvider";
+import { QueryProvider } from "@aphrody/shenron-ui/admin/QueryProvider";
 import { AdminWorkspace } from "@/components/admin/AdminWorkspace";
 import type { Metadata } from "next";
 

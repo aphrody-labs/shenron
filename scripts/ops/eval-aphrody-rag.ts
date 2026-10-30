@@ -13,16 +13,16 @@ import { createReadStream } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { realpath } from "node:fs/promises";
-import { AphrodyComputeClient } from "../../packages/pipeline/src/aphrody/compute";
+import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody/compute";
 import {
   aggregate,
   aggregateByTag,
   parseGold,
   runCase,
   type CaseResult,
-} from "../../packages/pipeline/src/ai/eval";
-import { requireAiHttpUrl } from "../../packages/pipeline/src/ai/config";
-import { resolveDataPath } from "../../packages/config/src/paths";
+} from "@aphrody/shenron-pipeline/ai/eval";
+import { requireAiHttpUrl } from "@aphrody/shenron-pipeline/ai/config";
+import { resolveDataPath } from "@aphrody/shenron-config/paths";
 
 const REPO_ROOT = Bun.fileURLToPath(new URL("../../", import.meta.url));
 const COMPUTE_SERVICES = ["aphrody-shenron-embed", "aphrody-ai-http"];
@@ -74,7 +74,7 @@ async function prepareAttestation(releasePath: string) {
   if (process.platform !== "linux")
     throw new Error("Compute attestation requires Linux process provenance");
   const { loadLiveRagEnv, requireLiveRag } =
-    await import("../../packages/pipeline/src/testing/live-rag");
+    await import("@aphrody/shenron-pipeline/testing/live-rag");
   loadLiveRagEnv();
   const preload = await requireLiveRag();
   const release = await realpath(resolve(releasePath));

@@ -13,7 +13,14 @@
  * sleepcall il ne réduit rien, puisqu'on y dort.
  */
 import type { Guild } from "discord.js";
-import { RACE_IDS, RACES, ZENKAI_MULT, getRace, regenTuning, type RaceId } from "~/lib/races";
+import {
+  RACE_IDS,
+  RACES,
+  ZENKAI_MULT,
+  getRace,
+  regenTuning,
+  type RaceId,
+} from "@aphrody/shenron-config/races";
 import {
   FUSION_XP_BONUS_RATIO,
   XP_MESSAGE_COOLDOWN_MS,

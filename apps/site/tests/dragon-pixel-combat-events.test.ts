@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { createGame, step, type CombatEvent } from "../src/app/games/dragon-pixel/engine";
+import { createGame, step, type CombatEvent } from "@aphrody/shenron-engine/pixel-engine";
 
 test("special visual events are emitted only by accepted combat actions", () => {
   const game = createGame("goku");

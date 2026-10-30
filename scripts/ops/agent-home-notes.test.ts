@@ -4,10 +4,10 @@ import { mkdtempSync, rmSync, statSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join, resolve, sep } from "node:path";
 import { Database } from "bun:sqlite";
-import { applyVfsSchema } from "../../packages/db/src/vfs/schema";
-import { createRagWriter } from "../../packages/db/src/vfs/build";
-import { VfsRag } from "../../packages/db/src/vfs/rag";
-import { openShenronVfs } from "../../packages/db/src/vfs";
+import { applyVfsSchema } from "@aphrody/shenron-db/vfs/schema";
+import { createRagWriter } from "@aphrody/shenron-db/vfs/build";
+import { VfsRag } from "@aphrody/shenron-db/vfs/rag";
+import { openShenronVfs } from "@aphrody/shenron-db/vfs";
 import { indexPrivateNotes } from "./agent-home-notes-index";
 import {
   importNote,

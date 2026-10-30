@@ -10,7 +10,7 @@
  * Client-safe: no database access; the caller passes the launch configuration snapshot.
  */
 import { buildSiteMap, type Journey } from "@/lib/site-map";
-import { isPathPublic, type AccessSnapshot } from "@/lib/wiki-launch";
+import { isPathPublic, type AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 
 /** Journeys rendered in the sidebar; « Le site » (legal pages) lives in the footer. */
 export const SIDEBAR_JOURNEYS: readonly Journey[] = [

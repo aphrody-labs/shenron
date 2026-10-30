@@ -4,7 +4,7 @@
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { sanitizeInternalPath } from "@/lib/internal-path";
+import { sanitizeInternalPath } from "@aphrody/shenron-config/favorites";
 
 /**
  * Page Connexion — refondue de zéro pour résoudre la boucle infinie.

@@ -29,7 +29,7 @@ import { api } from "@/lib/admin-api";
 import { formatDuration } from "@/lib/admin-format";
 import { RoleBadge, RoleSelect } from "@/components/admin/RoleSelect";
 import { RolePicker } from "@/components/admin/RolePicker";
-import { formatZeni } from "@/lib/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 
 interface Threshold {
   level: number;

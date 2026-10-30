@@ -27,9 +27,9 @@ import {
   etoilesSphere,
   kintoUn,
   nombreEtoiles,
-} from "../../../packages/ui/src/toriyama-svg/index";
+} from "@aphrody/shenron-ui/svg";
 
-export * from "../../../packages/ui/src/toriyama-svg/index";
+export * from "@aphrody/shenron-ui/svg";
 
 /** SVG complet d'une Dragon Ball à `n` étoiles (même balisage que `<DragonBall>`). */
 export function svgSphere(n: number): string {

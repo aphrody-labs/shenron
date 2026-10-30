@@ -2,9 +2,9 @@ import { PageShell } from "@/components/kit";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getShenronLeaderboard } from "@/lib/shenron";
-import { PageHeader } from "@/components/PageHeader";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import { ogMeta } from "@/lib/og";
-import { formatZeni } from "@/lib/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 import { Avatar } from "@/components/Avatar";
 
 export const metadata: Metadata = {

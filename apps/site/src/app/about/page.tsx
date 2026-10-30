@@ -2,7 +2,7 @@ import { PageShell } from "@/components/kit";
 import React from "react";
 import { PageHero } from "@/components/PageHero";
 import Link from "next/link";
-import { Bouclier, Bulle, Etincelle, Groupe, Livre, Recompense } from "@/components/icones";
+import { Bouclier, Bulle, Etincelle, Groupe, Livre, Recompense } from "@aphrody/shenron-ui/icones";
 import { DISCORD_INVITE } from "@/lib/config";
 
 export const metadata = {

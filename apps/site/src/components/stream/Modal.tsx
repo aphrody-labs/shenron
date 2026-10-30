@@ -19,7 +19,7 @@ import { type MouseEvent, type PointerEvent, useCallback, useRef, useState } fro
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Croix } from "@aphrody/shenron-ui/icones";
-import { useFocusTrap } from "@/lib/use-focus-trap";
+import { useFocusTrap } from "@aphrody/shenron-ui/use-focus-trap";
 
 export function Modal({ children }: { children: React.ReactNode }) {
   const router = useRouter();

@@ -3,7 +3,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { syncUiAssets } from "../../packages/ui/scripts/sync-assets";
-import { uiAssetPaths } from "../../packages/ui/src/assets";
+import { uiAssetPaths } from "@aphrody/shenron-ui/assets";
 
 const target = await mkdtemp(join(tmpdir(), "shenron-ui-assets-"));
 afterAll(() => rm(target, { recursive: true, force: true }));

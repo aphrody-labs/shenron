@@ -56,7 +56,7 @@ import {
 } from "./ui/dialogs";
 import { RecoveryBanner, StatusBar } from "./ui/status";
 import { SourceView } from "./ui/source";
-import { cn } from "@/lib/utils";
+import { cn } from "@aphrody/shenron-ui/lib/utils";
 
 // Affordances de saisie (scopées `.sh-editor`) + direction « presse » du journal
 // (scopée `.editorial`) : l'éditeur d'article doit montrer la mise en page finale.

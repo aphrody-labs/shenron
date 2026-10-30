@@ -3,7 +3,7 @@ import { afterEach, expect, test } from "bun:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { openShenronVfs } from "../../packages/db/src/vfs";
+import { openShenronVfs } from "@aphrody/shenron-db/vfs";
 import { importNote, prepareNote, sha256 } from "./agent-home-notes";
 import {
   indexPrivateNotes,

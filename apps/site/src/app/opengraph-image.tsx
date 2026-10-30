@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { svgIllustration } from "@/lib/kinto-un";
+import { svgIllustration } from "@aphrody/shenron-ui/toriyama-svg/kinto-un";
 import { DRAGONBALLFR_LOGO_SIZE, DRAGONBALLFR_LOGO_SVG } from "@/lib/dragonballfr-logo.generated";
 
 export const alt = "DragonBall.fr — le portail francophone";

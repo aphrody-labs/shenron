@@ -98,7 +98,7 @@ mock.module("@/lib/manga-data", () => ({
   },
 }));
 mock.module("@/lib/chronology-config", () => ({ getChronologyConfig: async () => ({}) }));
-mock.module("@/lib/chronology", () => ({
+mock.module("@aphrody/shenron-config/chronology", () => ({
   applyChronology: (items: unknown[]) => items,
   ERA_LABELS: { DB: "Dragon Ball" },
 }));

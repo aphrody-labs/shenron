@@ -6,8 +6,8 @@ import {
   mangaCandidateSchema,
   type MangaCandidate,
   type MangaBundle,
-} from "../../packages/pipeline/src/dragon-ball/manga-publication-contract";
-import { crawlIngestPolicySchema } from "../../packages/pipeline/src/dragon-ball/crawl-ingest";
+} from "@aphrody/shenron-pipeline/dragon-ball/manga-publication-contract";
+import { crawlIngestPolicySchema } from "@aphrody/shenron-pipeline/dragon-ball/crawl-ingest";
 import { acquire, type AcquiredSource } from "./lib/bun-source-http";
 import { mangaDigest } from "./manga-cdn-projection";
 import { wikiUpdateSnapshotHash } from "../../apps/site/src/lib/wiki-update-precondition";

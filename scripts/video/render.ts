@@ -2,7 +2,7 @@
 import { createElement } from "react";
 import { $ } from "bun";
 import { renderToStaticMarkup } from "react-dom/server";
-import { ShenronComposition } from "../../packages/ui/src/video/ShenronComposition";
+import { ShenronComposition } from "@aphrody/shenron-ui/video/ShenronComposition";
 import type { VideoPlan } from "../../packages/media/src/video-plan";
 import { collectVideoPlan, readVideoRequest } from "./plan";
 

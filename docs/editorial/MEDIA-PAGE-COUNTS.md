@@ -19,8 +19,9 @@ volumes/chapitres. L'environnement DB existant reste injecté en mémoire.
 Exécuter avec Bun et la configuration du site :
 
 ```text
-bun scripts/ops/repair-media-page-counts.ts <job-private-absolute-path>
-bun scripts/ops/repair-media-page-counts.ts <job-private-absolute-path> --apply
+cd apps/site
+bun --conditions react-server scripts/repair-media-page-counts.ts <job-private-absolute-path>
+bun --conditions react-server scripts/repair-media-page-counts.ts <job-private-absolute-path> --apply
 ```
 
 Le writer canonique `updateWiki` conserve son verrou transactionnel médias
@@ -30,9 +31,9 @@ indépendante de chaque volume et les reçus de progression qualifient l'applica
 Une interruption peut laisser un lot partiellement appliqué : relire le reçu
 et préparer un nouveau plan frais, sans restaurer aveuglément l'ancienne table.
 
-Le CLIops lance l'entrypoint typé `apps/site/scripts/repair-media-page-counts.ts`
-avec Bun et le tsconfig du site. Les aliases du site ne traversent pas le projet
-TypeScript des scriptsopérationnels.
+L'entrypoint typé `apps/site/scripts/repair-media-page-counts.ts` se lance depuis
+`apps/site`, avec le tsconfig du site ; les aliases du site ne traversent pas le
+projet TypeScript des scripts opérationnels.
 
 ## Qualification du13octobre2026
 

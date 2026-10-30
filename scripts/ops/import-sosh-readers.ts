@@ -20,12 +20,12 @@ const seriesFor = (volume: ReaderManifest["volumes"][number]) =>
 const chapterNumberFor = (volume: ReaderManifest["volumes"][number]) =>
   "chapterNumber" in volume ? volume.chapterNumber : volume.volumeNumber;
 
-export { validateSoshReaderManifest } from "../../packages/pipeline/src/dragon-ball/sosh-reader-manifest";
+export { validateSoshReaderManifest } from "@aphrody/shenron-pipeline/dragon-ball/sosh-reader-manifest";
 import {
   validateSoshReaderManifest,
   validateMangaReaderManifest,
   type ReaderManifest,
-} from "../../packages/pipeline/src/dragon-ball/sosh-reader-manifest";
+} from "@aphrody/shenron-pipeline/dragon-ball/sosh-reader-manifest";
 
 /** Fetch the exact public object without redirecting to an unreviewed provider. */
 export type SoshAssetFetcher = (url: string, options: RequestInit) => Promise<Response>;

@@ -13,7 +13,7 @@
  * session côté client, et `Pagination` (URL et focus) : marqués `"use client"`
  * dans leur fichier.
  */
-export { PageShell, Stack } from "@/components/kit/PageShell";
+export { PageShell, Stack } from "@aphrody/shenron-ui/layout/PageShell";
 export { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
 export { TabNav } from "@/components/kit/TabNav";
 export { LinkPager } from "@/components/kit/LinkPager";

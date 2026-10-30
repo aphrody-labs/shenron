@@ -20,7 +20,7 @@ import { COLORS, DBZ_COLORS } from "~/lib/embeds";
 import type { GameXpGrant } from "~/lib/game-xp";
 import { formatNumber, t, type BotLang } from "~/lib/i18n";
 import { logger } from "~/lib/logger";
-import { formatZeni, formatZeniDelta } from "~/lib/zeni";
+import { formatZeni, formatZeniDelta } from "@aphrody/shenron-config/zeni";
 import { REWARD_BLOCK_LABELS, type RewardBlock } from "./anti-farm";
 
 export const CHALLENGE_TTL_MS = 60_000;

@@ -2,7 +2,7 @@
 import {
   WORDMARK_LETTERS,
   WORDMARK_FRANCE_GLYPHS,
-} from "../../packages/ui/src/toriyama-svg/wordmark";
+} from "@aphrody/shenron-ui/toriyama-svg/wordmark";
 
 export const LETTERING_COVERAGE = "DRAGNBLFCE";
 export const LETTERING_GLYPHS = {

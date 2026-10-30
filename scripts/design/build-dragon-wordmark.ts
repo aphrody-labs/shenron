@@ -1,4 +1,4 @@
-import { renderDragonBallWordmark } from "../../packages/ui/src/toriyama-svg/wordmark";
+import { renderDragonBallWordmark } from "@aphrody/shenron-ui/toriyama-svg/wordmark";
 
 const output = new URL("../../packages/ui/assets/brand/dragon-ball-wordmark.svg", import.meta.url);
 const svg = renderDragonBallWordmark();

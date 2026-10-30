@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { PageShell } from "@/components/kit";
-import { PageHeader } from "@/components/PageHeader";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import {
   assetUrl,
   assetsFor,

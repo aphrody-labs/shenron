@@ -26,7 +26,7 @@ import {
 import { and, eq, sql } from "drizzle-orm";
 import { publicPostFilter } from "@/lib/posts";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
-import { isPathPublic, type AccessSnapshot } from "@/lib/wiki-launch";
+import { isPathPublic, type AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import { sitemapDestinations } from "@/lib/site-map";
 import { isDatabookIndexable } from "@/lib/databooks-rules";
 import { formatCharacterSlug, formatTransformationSlug } from "@/lib/wiki-slugs";

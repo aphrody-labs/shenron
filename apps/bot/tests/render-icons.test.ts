@@ -1,7 +1,7 @@
 import "./setup"; // must be first
 import { describe, expect, test } from "bun:test";
 import { createCanvas } from "@napi-rs/canvas";
-import { GEOMETRIES, type GeometrieIcone } from "../../../packages/ui/src/icones/geometries";
+import { GEOMETRIES, type GeometrieIcone } from "@aphrody/shenron-ui/icones/geometries";
 import {
   ICON_PARTS,
   ICON_SOURCES,

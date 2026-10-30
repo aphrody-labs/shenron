@@ -4,7 +4,7 @@ import { Database } from "bun:sqlite";
 import { mkdtemp, mkdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { nativeDocumentSchema } from "../../packages/pipeline/src/dragon-ball/crawl-ingest";
+import { nativeDocumentSchema } from "@aphrody/shenron-pipeline/dragon-ball/crawl-ingest";
 import { executeTask } from "./manga-source-pool";
 import { projectPoolReceipts, projectionDigest } from "./manga-source-pool-projection";
 

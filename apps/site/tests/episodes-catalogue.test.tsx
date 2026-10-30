@@ -42,7 +42,10 @@ mock.module("@/lib/db-universe", () => ({
 mock.module("@/lib/assets", () => ({
   assetUrl: (path: string) => `https://cdn.dragonballfr.com${path}`,
 }));
-mock.module("@/lib/chronology", () => ({ eraOf: () => "DB", ERA_ACCENT: { DB: "#ff9900" } }));
+mock.module("@aphrody/shenron-config/chronology", () => ({
+  eraOf: () => "DB",
+  ERA_ACCENT: { DB: "#ff9900" },
+}));
 mock.module("@/components/T", () => ({ T: ({ k }: { k: string }) => k }));
 mock.module("@/components/wiki/WikiPageShell", () => ({
   WikiPageShell: ({

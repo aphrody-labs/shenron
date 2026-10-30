@@ -2,7 +2,7 @@
 import { T } from "@/components/T";
 import { dbUniverse, type SearchResults } from "@/lib/db-universe";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
-import { isPathPublic, type AccessSnapshot } from "@/lib/wiki-launch";
+import { isPathPublic, type AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import Link from "next/link";
 import Image from "next/image";
 import { assetUrl } from "@/lib/db-universe";

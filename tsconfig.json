@@ -32,6 +32,9 @@
       "path": "packages/config/tsconfig.json"
     },
     {
+      "path": "packages/crunchyroll/tsconfig.json"
+    },
+    {
       "path": "packages/db/tsconfig.json"
     },
     {

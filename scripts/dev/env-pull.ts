@@ -158,7 +158,8 @@ async function writePrivate(path: string, text: string): Promise<void> {
 async function contractCheck(service: Service, path: string): Promise<string> {
   const proc = Bun.spawn(
     ["aphrody-infra", "secrets", "check", "--service", SERVICES[service].unit, "--env-file", path],
-    { stdout: "pipe", stderr: "pipe", env: { ...process.env, APHRODY_INFRA_ROOT: infraRoot() } },
+    // aphrody-infra resolves its own checkout; APHRODY_INFRA_ROOT, when set, passes through.
+    { stdout: "pipe", stderr: "pipe" },
   );
   const [out, err, code] = await Promise.all([
     new Response(proc.stdout).text(),
@@ -167,16 +168,6 @@ async function contractCheck(service: Service, path: string): Promise<string> {
   ]);
   const text = `${out}${err}`.trim().split(/\r?\n/).at(-1) ?? "";
   return code === 0 ? `contract ok` : `contract: ${text}`;
-}
-
-function infraRoot(): string {
-  return (
-    process.env.APHRODY_INFRA_ROOT ??
-    [join(homedir(), "aphrody"), "C:/aphrody"].find(
-      (dir) => Bun.file(join(dir, "tools", "config", "secrets-contract.json")).size > 0,
-    ) ??
-    "."
-  );
 }
 
 async function pull(host: string): Promise<Map<Service, EnvMap>> {

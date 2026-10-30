@@ -2,7 +2,7 @@ import { expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { NextIntlClientProvider } from "next-intl";
 import fr from "../messages/fr.json";
-import { DEFAULT_HOME_CONFIG } from "../src/lib/home-scenes";
+import { DEFAULT_HOME_CONFIG } from "@aphrody/shenron-config/home";
 import { HomeHero } from "../src/components/home/HomeHero";
 import { Billboard } from "../src/components/stream/Billboard";
 

@@ -6,7 +6,7 @@ import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import {
   mangaCandidateSchema,
   type MangaCandidate,
-} from "../../packages/pipeline/src/dragon-ball/manga-publication-contract";
+} from "@aphrody/shenron-pipeline/dragon-ball/manga-publication-contract";
 import { mangaDigest } from "./manga-cdn-projection";
 
 interface Pin {

@@ -14,7 +14,7 @@ import { requireAdmin } from "@/lib/session";
 import { getMemberContributions, getTopRaters } from "@/lib/contributors";
 import { getShenronLeaderboard, type LeaderboardEntry } from "@/lib/shenron";
 import { MemberLedger } from "@/components/contest/MemberLedger";
-import { formatZeni } from "@/lib/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Concours communauté" };

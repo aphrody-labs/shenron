@@ -12,7 +12,7 @@ import { CharacterPosterCard } from "@/components/wiki/CharacterPosterCard";
 import { RepriseLecture } from "@/components/wiki/RepriseLecture";
 import { WIKI_CATEGORIES } from "@/lib/wiki-categories";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
-import { entryByKey, isPathPublic } from "@/lib/wiki-launch";
+import { entryByKey, isPathPublic } from "@aphrody/shenron-config/wiki-launch";
 import { pickBestImage } from "@/lib/image-variants";
 import { ContentCoverage } from "@/components/wiki/ContentCoverage";
 import type { Metadata } from "next";

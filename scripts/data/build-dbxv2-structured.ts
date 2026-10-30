@@ -11,7 +11,6 @@
  */
 import { Database } from "bun:sqlite";
 import { chmodSync } from "node:fs";
-import { homedir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { applyDbxv2Schema } from "../../packages/db/src/dbxv2/schema";
@@ -117,7 +116,7 @@ function kindFor(category: string, fallback: string): string {
 
 function assertPrivatePath(path: string): string {
   const absolute = resolve(path);
-  const root = resolve(homedir(), "src/shenron");
+  const root = resolve(import.meta.dir, "../..");
   if (absolute === root || absolute.startsWith(`${root}/`) || absolute.startsWith(`${root}\\`)) {
     throw new Error(`refusing a DBXV2 database inside the repository: ${absolute}`);
   }
@@ -210,8 +209,9 @@ if (command === "plan") {
   const selectedFormats = formatFilter();
   const limit = rowLimit();
   const serverUrl = values.server ?? "http://10.200.77.1:8788";
-  const source =
-    process.env.SHENRON_DBXV2_SRC ?? `${homedir()}/src/bun-os/packages/shenron-dbxv2/src/index.ts`;
+  // The DBXV2 FFI (loadDbxv2Ffi) is not part of this repository: name its entry explicitly.
+  const source = process.env.SHENRON_DBXV2_SRC;
+  if (!source) throw new Error("SHENRON_DBXV2_SRC must name the DBXV2 FFI entry (src/index.ts)");
   const { loadDbxv2Ffi } = (await import(source)) as {
     loadDbxv2Ffi(path?: string): FfiApi;
   };

@@ -10,7 +10,7 @@ import {
   getTimelineEvents,
   getTimelineAtlas,
 } from "@/lib/chronology-config";
-import { applyChronology } from "@/lib/chronology";
+import { applyChronology } from "@aphrody/shenron-config/chronology";
 import { Billboard } from "@/components/stream/Billboard";
 import { ChronologieTabs } from "@/components/wiki/ChronologieTabs";
 import { ChronologyAtlas } from "@/components/wiki/ChronologyAtlas";

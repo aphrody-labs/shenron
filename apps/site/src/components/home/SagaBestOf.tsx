@@ -23,7 +23,7 @@ import { PosterCard } from "@/components/stream/PosterCard";
 import { StreamRow } from "@/components/stream/StreamRow";
 import { languageBadges, seriesLabel } from "@/components/stream/MediaCatalogRails";
 import { yearOf } from "@/lib/epoch";
-import { isPathPublic, type AccessSnapshot } from "@/lib/wiki-launch";
+import { isPathPublic, type AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import { useT } from "@/components/T";
 import { matchesSeries, uniqueSagaMedia } from "@/lib/home-bestof-ui";
 import { useBestOfUIText } from "@/lib/home-bestof-ui-text";

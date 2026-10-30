@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 import { lstat, mkdir, open, rename, rm, readdir, statfs, realpath } from "node:fs/promises";
 import { dirname, isAbsolute, join, relative } from "node:path";
-import type { BunRagConfig } from "../../../../packages/pipeline/src/ai/vector-reader";
-import type { VectorGeneration } from "../../../../packages/pipeline/src/ai/vector-sidecar";
+import type { BunRagConfig } from "@aphrody/shenron-pipeline/ai/vector-reader";
+import type { VectorGeneration } from "@aphrody/shenron-pipeline/ai/vector-sidecar";
 export interface RefreshReader {
   close(): void;
 }

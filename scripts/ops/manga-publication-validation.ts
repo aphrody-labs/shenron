@@ -4,7 +4,7 @@ import { isAbsolute } from "node:path";
 import {
   mangaBundleSchema,
   type MangaBundle,
-} from "../../packages/pipeline/src/dragon-ball/manga-publication-contract";
+} from "@aphrody/shenron-pipeline/dragon-ball/manga-publication-contract";
 import { wikiUpdateSnapshotHash } from "../../apps/site/src/lib/wiki-update-precondition";
 import { validateAssetPath } from "./public-cdn-catalog";
 import { mangaDigest } from "./manga-cdn-projection";
@@ -12,7 +12,7 @@ import {
   crawlIngestPolicySchema,
   nativeDocumentSchema,
   readNativeCrawlDocuments,
-} from "../../packages/pipeline/src/dragon-ball/crawl-ingest";
+} from "@aphrody/shenron-pipeline/dragon-ball/crawl-ingest";
 import type { SourcePipelineConfig } from "./bun-source-pipeline";
 const isbn = (value: unknown) => String(value ?? "").replace(/[-\s]/g, "");
 export async function pinnedFile(

@@ -10,7 +10,7 @@
 import { Check, CloudOff, Loader2, TriangleAlert } from "lucide-react";
 
 import type { SaveStatus } from "../hooks/use-autosave";
-import { cn } from "@/lib/utils";
+import { cn } from "@aphrody/shenron-ui/lib/utils";
 
 /** Vitesse de lecture retenue : 220 mots/minute (lecture d'écran en français). */
 const WORDS_PER_MINUTE = 220;

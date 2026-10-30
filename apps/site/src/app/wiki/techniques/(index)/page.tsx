@@ -6,7 +6,7 @@ import { TechniqueCatalogueHeading } from "@/components/wiki/TechniqueCatalogueH
 import { resolveTechniqueArtwork } from "@/lib/technique-artwork";
 import { TechniqueGrid } from "@/components/wiki/TechniqueGrid";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
-import { LIBELLES_TYPE } from "@/lib/techniques-types";
+import { LIBELLES_TYPE } from "@aphrody/shenron-config/techniques-types";
 import { ogMeta } from "@/lib/og";
 import type { Metadata } from "next";
 

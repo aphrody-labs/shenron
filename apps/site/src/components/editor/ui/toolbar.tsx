@@ -23,7 +23,7 @@ import {
   type EditorAction,
 } from "../commands";
 import { EditorPanel, ToolButton, ToolGroup, panelInputClass } from "./primitives";
-import { cn } from "@/lib/utils";
+import { cn } from "@aphrody/shenron-ui/lib/utils";
 
 type ActionState = Record<string, { active: boolean; disabled: boolean }>;
 

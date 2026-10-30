@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { ResolvedTimelineItem } from "@/lib/chronology";
+import type { ResolvedTimelineItem } from "@aphrody/shenron-config/chronology";
 import type { TimelineEvent } from "@/lib/db-universe";
 import { ChronologyTimeline } from "@/components/wiki/ChronologyTimeline";
 import { AgeTimeline } from "@/components/wiki/AgeTimeline";

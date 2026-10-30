@@ -23,7 +23,7 @@ import { WikiImg } from "@/components/wiki/WikiImg";
 // est résolu par la page et descend en props.
 import { ClientGatedWrap } from "@/components/GatedClientLink";
 import { onTablistKeyDown } from "@/lib/tablist-keys";
-import type { AccessSnapshot } from "@/lib/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import type { CharacterVariant } from "@/lib/shenron";
 import type { CharacterVersionMessages } from "@/lib/wiki-character-version-messages";
 

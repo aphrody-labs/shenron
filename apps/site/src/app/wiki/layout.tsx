@@ -1,7 +1,7 @@
 import { WikiExplorer } from "@/components/wiki/WikiExplorer";
 import { SITE_DESTINATIONS } from "@/lib/site-map";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
-import { isPathPublic } from "@/lib/wiki-launch";
+import { isPathPublic } from "@aphrody/shenron-config/wiki-launch";
 
 export default async function WikiLayout({ children }: { children: React.ReactNode }) {
   // Une seule racine pour les 52 routes du wiki : les pages gardent leur

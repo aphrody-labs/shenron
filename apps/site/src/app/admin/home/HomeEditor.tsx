@@ -48,7 +48,7 @@ import {
   type HomeJourneyDestination,
   type HomeSectionConfig,
   type PlayCard,
-} from "@/lib/home-scenes";
+} from "@aphrody/shenron-config/home";
 import { PlainField } from "@/components/editor/PlainField";
 import { errorMessageFromBody, seedConfig } from "./home-config-client";
 import { HomeThumbnail } from "./HomeThumbnail";

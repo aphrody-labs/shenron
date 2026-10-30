@@ -14,7 +14,11 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { DomainBar } from "@/components/kit";
 import type { Metadata } from "next";
-import { NOTE_PROVENANCE, estTypeDeJeu, libelleType } from "@/lib/techniques-types";
+import {
+  NOTE_PROVENANCE,
+  estTypeDeJeu,
+  libelleType,
+} from "@aphrody/shenron-config/techniques-types";
 import { JsonLd } from "@/components/JsonLd";
 import type { DefinedTerm, WithContext } from "schema-dts";
 import { SITE_URL } from "@/lib/config";

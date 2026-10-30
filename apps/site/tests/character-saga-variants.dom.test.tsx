@@ -6,7 +6,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { CharacterSagaVariants } from "../src/components/wiki/CharacterSagaVariants";
 import { CharacterSagaVariantsTabs } from "../src/components/wiki/CharacterSagaVariantsTabs";
 import type { CharacterVariant } from "../src/lib/shenron";
-import type { AccessSnapshot } from "../src/lib/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 
 function variant(id: number, label: string, summary: string): CharacterVariant {
   return {

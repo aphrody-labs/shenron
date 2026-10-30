@@ -8,7 +8,12 @@ import {
   sortFrameMatches,
   validateFrameImage,
 } from "@/lib/frames-map";
-import { bxc, type FrameMatch, type BxcSearchOutput, type BxcVectorOutput } from "@/lib/bxc";
+import {
+  bxc,
+  type FrameMatch,
+  type BxcSearchOutput,
+  type BxcVectorOutput,
+} from "@aphrody/shenron-pipeline/bxc/server";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { unlink } from "node:fs/promises";

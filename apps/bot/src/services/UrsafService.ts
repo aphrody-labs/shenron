@@ -21,7 +21,7 @@ import { DatabaseService } from "~/db/index";
 import { SettingsService } from "~/services/SettingsService";
 import { LogService } from "~/services/LogService";
 import { assess, noticeReference, type FlagInput, type FlagSeverity } from "~/lib/ursaf-rules";
-import { formatZeni } from "~/lib/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 import { logger } from "~/lib/logger";
 
 export type UrsafMode = "off" | "notice" | "collect";

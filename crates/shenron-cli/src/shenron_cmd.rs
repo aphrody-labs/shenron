@@ -384,15 +384,8 @@ fn rag_backend() -> &'static str {
 }
 
 fn training_root() -> miette::Result<PathBuf> {
-    let python_root = std::env::var_os("APHRODY_PY_ROOT").map(PathBuf::from);
-    let monorepo = std::env::var_os("APHRODY_ROOT").map(PathBuf::from).or_else(|| {
-        PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .ancestors()
-            .nth(3)
-            .map(std::path::Path::to_path_buf)
-    });
-    python_root
-        .or_else(|| monorepo.and_then(|root| root.parent().map(|parent| parent.join("aphrody-py"))))
+    std::env::var_os("APHRODY_PY_ROOT")
+        .map(PathBuf::from)
         .filter(|root| {
             root.join("uv.lock").is_file()
                 && root.join("packages/ai/py/aphrody-train/pyproject.toml").is_file()

@@ -4,7 +4,7 @@
 import { type MouseEvent, useCallback, useEffect, useState } from "react";
 import { Chargement, Coche, Crayon, Croix, Etincelle, Sac } from "@aphrody/shenron-ui/icones";
 import Link from "next/link";
-import { formatZeni } from "@/lib/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 import { nowMs } from "@/lib/clock";
 
 interface EquippedState {

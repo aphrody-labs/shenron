@@ -50,8 +50,7 @@ versions) so an unchanged tree rebuilds nothing; `--force` rebuilds, `--check` e
 on a missing or stale output. The browser build uses the rasterizer without its `native`
 feature.
 
-Site builds (`scripts/build/build-site-external.ts`, `scripts/build/server.ts`) call it before
-Next. Turbopack emits `koharu_canvas_bg.<hash>.wasm` under `_next/static/media/`, which is
+The site build (`scripts/build/server.ts`) calls it before Next. Turbopack emits `koharu_canvas_bg.<hash>.wasm` under `_next/static/media/`, which is
 published on the CDN and served as `application/wasm` with an immutable cache (probe in
 `scripts/ops/release.ts`); `shenron-server` serves the same file from disk.
 

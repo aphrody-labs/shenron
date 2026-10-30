@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
-import { isPathPublic } from "@/lib/wiki-launch";
+import { isPathPublic } from "@aphrody/shenron-config/wiki-launch";
 
 /**
  * `/wiki/random` — envoie sur une fiche du wiki tirée au sort.

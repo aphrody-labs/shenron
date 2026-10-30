@@ -5,7 +5,7 @@ import {
   archiveSearchUrl,
   projectArchiveItem,
 } from "./enrich-internet-archive";
-import { projectNativeCrawl } from "../../packages/pipeline/src/dragon-ball/crawl-ingest";
+import { projectNativeCrawl } from "@aphrody/shenron-pipeline/dragon-ball/crawl-ingest";
 test("archive notices retain attribution, factual metadata and owner rights without copying media or promoting canon", () => {
   const document = projectArchiveItem(
     {

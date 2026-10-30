@@ -17,8 +17,8 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Croix } from "@aphrody/shenron-ui/icones";
 
-import { useFocusTrap } from "@/lib/use-focus-trap";
-import { cn } from "@/lib/utils";
+import { useFocusTrap } from "@aphrody/shenron-ui/use-focus-trap";
+import { cn } from "@aphrody/shenron-ui/lib/utils";
 
 /* -------------------------------------------------------------------------- */
 /* Boutons                                                                    */

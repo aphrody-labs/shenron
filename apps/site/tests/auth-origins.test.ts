@@ -16,7 +16,7 @@ mock.module("@/lib/proxy-admin", () => ({
   resolveVisitor: async () => ({ kind: "anonymous" }),
 }));
 mock.module("@/lib/wiki-launch-config", () => ({ getLaunchConfig: async () => null }));
-mock.module("@/lib/wiki-launch", () => ({
+mock.module("@aphrody/shenron-config/wiki-launch", () => ({
   findEntry: () => null,
   resolveAccess: () => ({ allowed: true }),
 }));

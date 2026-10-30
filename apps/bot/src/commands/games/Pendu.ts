@@ -16,7 +16,7 @@ import { GuildOnly } from "~/guards/GuildOnly";
 import { CommandsChannelOnly } from "~/guards/CommandsChannelOnly";
 import { EconomyService } from "~/services/EconomyService";
 import { ZENI_GAME_WIN, ZENI_GAME_LOSS_PENALTY } from "~/lib/constants";
-import { formatZeni, formatZeniDelta } from "~/lib/zeni";
+import { formatZeni, formatZeniDelta } from "@aphrody/shenron-config/zeni";
 import { SettingsService } from "~/services/SettingsService";
 import { MessageTemplateService } from "~/services/MessageTemplateService";
 import { GameRewardService } from "~/services/GameRewardService";

@@ -51,6 +51,7 @@
     "@aphrody/shenron-config": "workspace:*",
     "@aphrody/shenron-db": "workspace:*",
     "@aphrody/shenron-images": "workspace:*",
+    "@aphrody/shenron-media": "workspace:*",
     "@aphrody/shenron-native": "workspace:*",
     "@aphrody/shenron-pipeline": "workspace:*",
     "@discordx/di": "catalog:",
@@ -73,8 +74,9 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@aphrody/shenron-ui": "workspace:*",
     "drizzle-kit": "catalog:",
-    "undici-types": "~8.9.0"
+    "undici-types": "catalog:"
   },
   "engines": {
     "bun": ">=1.4.3"

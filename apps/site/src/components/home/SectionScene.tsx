@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { HomeScene } from "@/lib/home-scenes";
+import type { HomeScene } from "@aphrody/shenron-config/home";
 
 /** Editorial sections use the configured site surface without background playback. */
 export function SectionScene({

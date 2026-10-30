@@ -7,7 +7,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ogMeta } from "@/lib/og";
 import { bannerForSeries } from "@/lib/banner-config";
-import { eraOf, ERA_ACCENT } from "@/lib/chronology";
+import { eraOf, ERA_ACCENT } from "@aphrody/shenron-config/chronology";
 import { Billboard } from "@/components/stream/Billboard";
 import { VideoSourceSummary } from "@/components/episodes/VideoSourceSummary";
 import { DbsBeerusSpotlight } from "@/components/home/DbsBeerusSpotlight";

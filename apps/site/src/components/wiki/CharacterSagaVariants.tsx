@@ -2,7 +2,7 @@
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
 import type { ReactNode } from "react";
 import { CharacterSagaVariantsTabs } from "@/components/wiki/CharacterSagaVariantsTabs";
-import type { AccessSnapshot } from "@/lib/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import type { CharacterVariant } from "@/lib/shenron";
 import type { CharacterVersionMessages } from "@/lib/wiki-character-version-messages";
 

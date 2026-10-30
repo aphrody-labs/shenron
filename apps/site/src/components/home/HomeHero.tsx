@@ -1,5 +1,5 @@
 import { T } from "@/components/T";
-import type { HomeConfig } from "@/lib/home-scenes";
+import type { HomeConfig } from "@aphrody/shenron-config/home";
 import { canonicalFrameUrl } from "@/lib/episode-frame-banner";
 import { HomeSearch } from "./HomeSearch";
 import { KintoUnVolant } from "./KintoUnVolant";

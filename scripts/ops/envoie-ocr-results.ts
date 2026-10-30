@@ -8,7 +8,7 @@ import {
   runAphrodyCli,
   type CliResult,
   type NativeCommandExecutor,
-} from "../../packages/pipeline/src/aphrody/cli.ts";
+} from "@aphrody/shenron-pipeline/aphrody/cli";
 
 export interface OcrResultsTransferOptions {
   host?: string;

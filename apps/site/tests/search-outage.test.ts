@@ -13,7 +13,7 @@ mock.module("@/lib/db-universe", () => ({
   },
 }));
 mock.module("@/lib/wiki-launch-config", () => ({ getLaunchConfig: async () => ({}) }));
-mock.module("@/lib/wiki-launch", () => ({ isPathPublic: () => false }));
+mock.module("@aphrody/shenron-config/wiki-launch", () => ({ isPathPublic: () => false }));
 mock.module("@/lib/external-source-catalog", () => ({
   searchExternalSources: async () => ({ records: [] }),
 }));

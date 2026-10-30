@@ -15,7 +15,7 @@ import {
 } from "@/components/admin/bot/BotUi";
 import { GuildMirrorPanel } from "@/components/admin/bot/GuildMirrorPanel";
 import { useBotFormat } from "@/components/admin/bot/useBotFormat";
-import { Tabs, TabsList, TabsPanel, TabsTab } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsPanel, TabsTab } from "@aphrody/shenron-ui/tabs";
 import { api } from "@/lib/admin-api";
 
 interface Guild {
