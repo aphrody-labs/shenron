@@ -25,6 +25,19 @@ bun run capture:page /wiki          # captures desktop (1280) et mobile (390) �
 ```
 
 Le crawl commence par ensemencer la file depuis les sitemaps (environ 23 500 URL, plusieurs
-minutes de CPU) : le lancer dans tmux. Les règles viennent de `.claude/skills/ui-ux-pro-max`
+minutes de CPU) : le lancer dans tmux. Les règles suivent le skill global `ui-ux-pro-max`
 (`scripts/audit/uiux-rules.ts`, testées par `uiux-rules.test.ts`) ; `--fail-on critical|high|none`
 fixe le seuil d'échec.
+
+## Règles de doublon (2026-10-30)
+
+Nées du nettoyage de l'accueil et du wiki (invariants dans
+[accueil-et-shell.md](../products/accueil-et-shell.md)) :
+
+| Règle              | Sévérité | Constat                                                        |
+| ------------------ | -------- | -------------------------------------------------------------- |
+| `duplicate-search` | medium   | plus d'un landmark `search` : le shell offre déjà la recherche |
+| `landmark-unique`  | medium   | plusieurs `<nav>` de même nom accessible (ou tous sans nom)    |
+
+Les logos et boutons répétés ne se détectent pas dans le HTML statique (un doublon masqué par CSS
+reste présent) : les contrôler dans le rendu, `--render` à 1280 et 390 px.

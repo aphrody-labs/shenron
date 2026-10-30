@@ -1,5 +1,17 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## 2026-10-30 — Doublons d'interface retirés (accueil et wiki)
+
+- Accueil : logo d'en-tête masqué sous le héros, recherche et lien éditorial du héros, épisode
+  répété et lien GIF retirés ; serveur en direct et classement sur un seul écran. Wiki : barre
+  `WikiExplorer` et tiroir `WikiDrawer` (25 pages) supprimés, trois liens « Retour » en double
+  retirés. Boutons d'en-tête uniformisés ; décalages hérités de la barre latérale limités à la
+  variante `app`. Commit `73a55e2c`, invariants dans `docs/products/accueil-et-shell.md`.
+- `bun run audit:uiux` gagne `duplicate-search` et `landmark-unique`.
+- Reste ouvert : vérification en navigateur à 1280/390 px (le serveur de dev exige
+  `BUN_INSTALL_GLOBAL_STORE=0 bun install --frozen-lockfile --force`) ; binaire `shenron-mcp`
+  à installer pour le plugin ; alertes Dependabot Rust (`zip` 9.0.5 via Aphrody, `rustls` 0.23.46).
+
 ## 2026-10-30 — Release par `scripts/deploy`, checkout Aphrody local retiré
 
 - Le checkout Aphrody local (`~/aphrody`, `~/src/aphrody`) et tout ce qui en dépendait sont

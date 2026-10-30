@@ -1,22 +1,22 @@
 feature,area,priority,original,clone,notes
 Landing monopage à ancres,navigation,must,yes,no,Super/Daima
-Menu modal desktop et mobile,navigation,should,yes,no,Daima S05
-Sélecteur de langue,i18n,must,yes,no,JP/EN ; 11 régions chez Bandai
-Hero carrousel de visuels,home,should,yes,no,Daima 8 visuels
+Menu modal desktop et mobile,navigation,should,yes,yes,Feuille « Plus » du shell mobile ; Daima S05
+Sélecteur de langue,i18n,must,yes,yes,fr/en/ja (LanguageSwitcher) ; 11 régions chez Bandai
+Hero carrousel de visuels,home,should,yes,yes,Quatre frames d'épisode qualifiées (HomeHeroFrames) ; Daima 8 visuels
 Cartes vidéo avec lecteur embarqué,media,must,yes,no,5 à 7 vidéos datées
 Fiches personnage,content,must,yes,no,9 à 12 fiches avec doubleur
 Carrousel de personnages,content,could,yes,no,Daima
 Bloc diffusion par région,schedule,should,yes,no,Daima 20 plateformes
 Crédits staff,content,should,yes,no,rôle + nom
 Déclaration de l'auteur en modale,content,should,yes,no,Daima S06
-Barre de partage X Facebook LINE,social,could,yes,no,
+Barre de partage X Facebook LINE,social,could,yes,yes,ShareButton
 Retour en haut,navigation,could,yes,no,
 Fiche jeu (plateformes date genre studio),games,should,yes,no,Xenoverse 3
 Wishlist vers boutiques,games,could,yes,no,liens externes
 Newsletter avec consentement séparé,growth,could,yes,no,email naissance pays plateformes
 Carrousel d'actus,news,should,yes,no,6 articles
 Jeux liés,discovery,could,yes,no,
-Bandeau de consentement cookies,legal,must,yes,no,Axeptio chez Bandai
+Bandeau de consentement cookies,legal,must,yes,yes,ConsentGate (refus des mesures non essentielles) ; Axeptio chez Bandai
 Page de titre de chapitre (logo + titre + cases),reader,must,yes,no,S12 existe déjà sur DBFR
 Images responsives desktop et mobile,performance,must,yes,no,variantes _sp
 Droits de diffusion des séries,rights,skip,yes,no,skip : appartient à Toei/Shueisha
