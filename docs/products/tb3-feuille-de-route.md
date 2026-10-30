@@ -166,12 +166,24 @@ Description générale, sans mesure propre à ce projet.
 5. **Classé et classement** si les résultats sont vérifiables ; sinon rester en amical.
 6. **Mods et correctifs** seulement après avis juridique, appliqués localement.
 
-## 7. Questions ouvertes pour le propriétaire
+## 7. Décisions (2026-10-30, propriétaire : « trancher tout »)
 
-1. TB3 est-il bien Budokai Tenkaichi 3, et sur quelle plateforme d'origine (PS2 ou Wii) ?
-2. Quel moteur ou émulateur est visé, et peut-il être embarqué légalement dans le lanceur ?
-3. Que signifie « 120 % 30 fps » : vitesse de jeu à 120 % ou cadence cible ?
-4. Les mods (personnages, textures, son) sont-ils des fichiers à publier, ou des correctifs
-   appliqués localement sur la copie de l'utilisateur ?
-5. Le propriétaire détient-il un accord des ayants droit pour BT3 (aucun n'est consigné) ?
-6. Le projet vit-il dans Shenron (site, Studio, Activité) ou dans un produit séparé ?
+Les six questions du cadrage sont tranchées comme suit, sans attendre de réponse :
+
+1. **Jeu** : TB3 = Dragon Ball Z Budokai Tenkaichi 3. La plateforme d'origine retenue est celle de la
+   copie que fournit l'utilisateur (PS2 ou Wii) ; les versions PAL et NTSC sont des profils du
+   lanceur, pas des fichiers livrés.
+2. **Moteur** : aucun moteur ni émulateur n'est embarqué ni redistribué. Le lanceur pilote un
+   émulateur que l'utilisateur installe, et le choix se fait au prototype netcode (lot 3), sur
+   mesures réelles.
+3. **« 120 % 30 fps »** : lu comme une vitesse de jeu à 120 % avec un audio qui garde sa hauteur
+   (musique non accélérée). C'est un réglage de profil, à valider au prototype.
+4. **Mods** : correctifs appliqués localement sur la copie de l'utilisateur, jamais publiés comme
+   fichiers du jeu. Personnages, textures et équilibrage restent des correctifs locaux.
+5. **Droits** : aucun accord des ayants droit n'est consigné ; le périmètre reste donc celui des outils
+   d'accompagnement (lanceur, manettes, salons, réseau). Ni ROM, ni ISO, ni contournement de protection.
+6. **Hébergement** : le projet vit dans Shenron (Shenron Studio pour le lanceur de bureau, site et
+   Activité Discord pour salons, classement et chat).
+
+Conséquence : le prochain lot exécutable sans accord est le lot 2 (profils de manette et lanceur
+minimal, hors réseau) ; les lots 3 à 6 attendent le choix de l'émulateur et l'avis juridique.
