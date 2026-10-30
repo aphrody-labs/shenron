@@ -1222,6 +1222,25 @@
         "board": "Tic-tac-toe board, arrow keys move between squares",
         "cell": "Row {row}, column {col}: {state}",
         "empty": "empty square"
+      },
+      "console": {
+        "cardDescription": "GameCube and Wii emulator in WebAssembly: load your own disc image, it stays on your device.",
+        "title": "GameCube / Wii console",
+        "lead": "Gecko emulator in WebAssembly and WebGPU. Pick your own disc image (.rvz, .iso) or a homebrew (.dol): the file is read locally and never uploaded.",
+        "pick": "Choose a file",
+        "none": "No file",
+        "formats": "Formats: .rvz, .iso, .dol",
+        "start": "Start",
+        "reading": "Reading locally: {done} / {total} GB",
+        "initialising": "Initialising the console…",
+        "running": "Running. Reload the page to change file.",
+        "error": "Cannot start this file: {error}",
+        "noWebgpu": "WebGPU is not available in this browser. Use a recent Chrome or Edge.",
+        "experimental": "Experimental: emulation runs without just-in-time compilation in the browser. Commercial games run far below normal speed; small homebrews fare better.",
+        "legal": "You must supply your own legal copy. This site distributes no game and no BIOS.",
+        "memory": "Multi-gigabyte disc images need a lot of browser memory.",
+        "source": "Gecko emulator, GPL-3.0 licence: source code",
+        "screen": "Console screen"
       }
     },
     "classements": {

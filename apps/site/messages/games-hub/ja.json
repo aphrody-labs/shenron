@@ -54,5 +54,11 @@
   },
   "catalogueTitle": "公式ゲームを探していますか？",
   "catalogueDescription": "Sparking! ZERO、KAKAROT、ゼノバース、レジェンズなどの情報を百科事典でチェック。",
-  "catalogueAction": "ゲームカタログを見る"
+  "catalogueAction": "ゲームカタログを見る",
+  "console": {
+    "name": "ゲームキューブ / Wii コンソール",
+    "category": "ラボ · 実験的",
+    "description": "Gecko の WebAssembly エミュレーターで、自分のディスクイメージやホームブリューをブラウザ上で実行します。ファイルは送信されず、端末内にとどまります。",
+    "action": "コンソールを開く"
+  }
 }

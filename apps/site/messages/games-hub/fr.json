@@ -54,5 +54,11 @@
   },
   "catalogueTitle": "Tu cherches les jeux officiels ?",
   "catalogueDescription": "Sparking! ZERO, Kakarot, Xenoverse, Legends… Retrouve leurs fiches dans l’encyclopédie.",
-  "catalogueAction": "Voir le catalogue des jeux"
+  "catalogueAction": "Voir le catalogue des jeux",
+  "console": {
+    "name": "Console GameCube / Wii",
+    "category": "Laboratoire · Expérimental",
+    "description": "Lance dans ton navigateur ta propre image de disque ou ton homebrew avec l’émulateur Gecko en WebAssembly. Rien n’est envoyé : le fichier reste sur ton appareil.",
+    "action": "Ouvrir la console"
+  }
 }

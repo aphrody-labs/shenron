@@ -83,3 +83,6 @@ scripts/inventaires/*.log
 /public/brand/dragonballfr-logo-*.png
 /public/brand/home-beerus-goku.png
 /public/brand/home-palette.json
+
+# Gecko browser build: hosted on the CDN (scripts/ops/prepare-gecko-wasm.ts), not tracked.
+/public/wasm/gecko/
