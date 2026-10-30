@@ -30,7 +30,7 @@ const PRODUCTION_PRIVATE_CANDIDATES = [
   join(homedir(), ".aphrody", "private", "shenron", "hosts", "dbfr"),
   join(homedir(), ".aphrody", "private", "shenron", "hosts", "vps"),
   join(homedir(), ".aphrody", "private", "shenron", "env"),
-  "/etc/rose-griffon",
+  process.env.SHENRON_ENV_DIR ?? "/etc/rose-griffon",
   "/etc/aphrody",
 ];
 

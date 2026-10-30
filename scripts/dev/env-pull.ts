@@ -25,7 +25,7 @@ import { join, resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dir, "../..");
 const STORE = join(homedir(), ".aphrody", "private", "shenron", "env");
-const REMOTE_DIR = "/etc/rose-griffon";
+const REMOTE_DIR = process.env.SHENRON_ENV_DIR ?? "/etc/rose-griffon";
 const REMOTE_WORKSPACE = "shenron-dev";
 const DEV_PORT = Number(process.env.SHENRON_DEV_PORT ?? 3000);
 /** Production loopback services the dev env points at; the tunnel mirrors them on the same ports. */

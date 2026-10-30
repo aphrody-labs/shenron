@@ -37,28 +37,31 @@ une opération explicite du compte dans son espace isolé.
 Lues par `scripts/deploy/release.sh [--build-only | --ship-only] [revision]` sur l'hôte de
 build Linux x64 ; toutes facultatives. Les en-têtes des scripts font foi.
 
-| Variable                     | Défaut                                 | Contrat                                                                                                   |
-| ---------------------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `SHENRON_SOURCE_REPO`        | dépôt du script                        | Checkout Git d'où la révision est extraite.                                                               |
-| `SHENRON_BUILD_REPO`         | `$HOME/build/shenron`                  | Worktree de build réutilisé (garde `target/`, `node_modules` et le cache Turbopack).                      |
-| `SHENRON_BUILD_LOCK`         | `<worktree>.lock`                      | Fichier `flock` qui sérialise les builds d'un worktree.                                                   |
-| `SHENRON_BUILD_REVISION`     | `origin/main`                          | Révision construite quand aucun argument n'est donné.                                                     |
-| `SHENRON_VFS_SOURCE`         | `dist/vfs/shenron-vfs.public.sqlite`   | VFS public : fichier local, URL http(s) ou `hôte:chemin` scp.                                             |
-| `SHENRON_CONTAINER`          | `docker`, sinon `podman`               | Moteur de conteneurs.                                                                                     |
-| `SHENRON_IMAGE`              | `localhost/shenron`                    | Nom de l'image, étiquetée par le SHA.                                                                     |
-| `SHENRON_COMPILE_BUN`        | `bun` du `PATH`                        | Bun qui compile les binaires de release.                                                                  |
-| `SHENRON_CARGO_JOBS`         | tous les CPU                           | Jobs Cargo.                                                                                               |
-| `SHENRON_FORCE_<LANE>`       | `0`                                    | `1` reconstruit la lane SITE, BOT ou RUST même si son empreinte est inchangée.                                    |
-| `SHENRON_NEXT_BUILD_CACHE`   | `1`                                    | Conserve le cache de build Turbopack entre builds.                                                        |
-| `SHENRON_SITE_BUILD_CPUS`    | `6`                                    | CPU du build du site, qui chevauche les lanes Rust, VFS et bot.                                           |
-| `SHENRON_SITE_BUILD_MIN_GIB` | `20`                                   | Mémoire disponible attendue avant le build du site (évite le SIGTERM d'un tueur OOM, sortie 143).         |
-| `SHENRON_PAYLOAD_ZSTD_LEVEL` | `6`                                    | Niveau zstd du payload embarqué.                                                                          |
-| `SHENRON_KEEP_IMAGES`        | `3`                                    | Images conservées localement.                                                                             |
-| `SHENRON_DEPLOY_TARGET`      | `ssh:dbfr`                             | `ssh:<hôte>` (image diffusée en zstd), `registry:<dépôt>` (push) ou `local` (Compose de `deploy/docker`). |
-| `SHENRON_DEPLOY_COMMAND`     | `bash ~/deploy-shenron-image.sh` (ssh) | Commande d'activation lancée avec `<sha> <image>` ; en ssh, l'entrée Infra de DBFR.                       |
-| `SHENRON_ACTIVE_COMMAND`     | basename de `/srv/shenron/current`     | Affiche la release active (garde de rollback) ; vide désactive le garde.                                  |
-| `SHENRON_ALLOW_ROLLBACK`     | `0`                                    | `1` autorise un commit qui ne descend pas de la release active.                                           |
-| `SHENRON_COMPOSE_FILE`       | `deploy/docker/compose.yaml`           | Fichier Compose de la cible `local`.                                                                      |
+| Variable                       | Défaut                                  | Contrat                                                                                                                                               |
+| ------------------------------ | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SHENRON_SOURCE_REPO`          | dépôt du script                         | Checkout Git d'où la révision est extraite.                                                                                                           |
+| `SHENRON_BUILD_REPO`           | `$HOME/build/shenron`                   | Worktree de build réutilisé (garde `target/`, `node_modules` et le cache Turbopack).                                                                  |
+| `SHENRON_BUILD_LOCK`           | `<worktree>.lock`                       | Fichier `flock` qui sérialise les builds d'un worktree.                                                                                               |
+| `SHENRON_BUILD_REVISION`       | `origin/main`                           | Révision construite quand aucun argument n'est donné.                                                                                                 |
+| `SHENRON_VFS_SOURCE`           | `dist/vfs/shenron-vfs.public.sqlite`    | VFS public : fichier local, URL http(s) ou `hôte:chemin` scp.                                                                                         |
+| `SHENRON_CONTAINER`            | `docker`, sinon `podman`                | Moteur de conteneurs.                                                                                                                                 |
+| `SHENRON_IMAGE`                | `localhost/shenron`                     | Nom de l'image, étiquetée par le SHA.                                                                                                                 |
+| `SHENRON_COMPILE_BUN`          | `bun` du `PATH`                         | Bun qui compile les binaires de release.                                                                                                              |
+| `SHENRON_CARGO_JOBS`           | tous les CPU                            | Jobs Cargo.                                                                                                                                           |
+| `SHENRON_FORCE_<LANE>`         | `0`                                     | `1` reconstruit la lane SITE, BOT ou RUST même si son empreinte est inchangée.                                                                        |
+| `SHENRON_ENV_DIR`              | `/etc/rose-griffon`                     | Répertoire des fichiers d'environnement Infra (`shenron-{site,bot}.env`) ; lu par le compose, `env-pull`, `container-secrets` et `admin-access-host`. |
+| `SHENRON_MEDIA_STAGING_DIR`    | `~/.local/share/aphrody/media-staging`  | Racine de mise en scène des médias (`deploy/cloudflare/cli/stage-file.ts`).                                                                           |
+| `SHENRON_STAGING_RECEIPTS_DIR` | `~/.aphrody/private/shenron/…/receipts` | Reçus de mise en scène (`stage-file.ts`).                                                                                                             |
+| `SHENRON_NEXT_BUILD_CACHE`     | `1`                                     | Conserve le cache de build Turbopack entre builds.                                                                                                    |
+| `SHENRON_SITE_BUILD_CPUS`      | `6`                                     | CPU du build du site, qui chevauche les lanes Rust, VFS et bot.                                                                                       |
+| `SHENRON_SITE_BUILD_MIN_GIB`   | `20`                                    | Mémoire disponible attendue avant le build du site (évite le SIGTERM d'un tueur OOM, sortie 143).                                                     |
+| `SHENRON_PAYLOAD_ZSTD_LEVEL`   | `6`                                     | Niveau zstd du payload embarqué.                                                                                                                      |
+| `SHENRON_KEEP_IMAGES`          | `3`                                     | Images conservées localement.                                                                                                                         |
+| `SHENRON_DEPLOY_TARGET`        | `ssh:dbfr`                              | `ssh:<hôte>` (image diffusée en zstd), `registry:<dépôt>` (push) ou `local` (Compose de `deploy/docker`).                                             |
+| `SHENRON_DEPLOY_COMMAND`       | `bash ~/deploy-shenron-image.sh` (ssh)  | Commande d'activation lancée avec `<sha> <image>` ; en ssh, l'entrée Infra de DBFR.                                                                   |
+| `SHENRON_ACTIVE_COMMAND`       | basename de `/srv/shenron/current`      | Affiche la release active (garde de rollback) ; vide désactive le garde.                                                                              |
+| `SHENRON_ALLOW_ROLLBACK`       | `0`                                     | `1` autorise un commit qui ne descend pas de la release active.                                                                                       |
+| `SHENRON_COMPOSE_FILE`         | `deploy/docker/compose.yaml`            | Fichier Compose de la cible `local`.                                                                                                                  |
 
 ## Décisions Jev — `@aphrody/shenron-config/jev`
 

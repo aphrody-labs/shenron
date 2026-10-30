@@ -12,7 +12,7 @@ services:
     entrypoint: ["/usr/local/bin/shenron-server"]
     command: ["serve", "--host", "127.0.0.1", "--port", "5011"]
     env_file:
-      - ${SHENRON_SITE_ENV_FILE:-/etc/rose-griffon/shenron-site.env}
+      - ${SHENRON_SITE_ENV_FILE:-${SHENRON_ENV_DIR:-/etc/rose-griffon}/shenron-site.env}
       - ${SHENRON_COMPUTE_CLIENT_ENV_FILE:-/etc/aphrody/shenron-compute-client.env}
     environment:
       SHENRON_HOME: /var/lib/shenron
@@ -54,7 +54,7 @@ services:
     image: localhost/shenron:${SHENRON_IMAGE_TAG:-local}
     entrypoint: ["/usr/local/bin/shenron-bot"]
     env_file:
-      - ${SHENRON_BOT_ENV_FILE:-/etc/rose-griffon/shenron-bot.env}
+      - ${SHENRON_BOT_ENV_FILE:-${SHENRON_ENV_DIR:-/etc/rose-griffon}/shenron-bot.env}
       - ${SHENRON_COMPUTE_CLIENT_ENV_FILE:-/etc/aphrody/shenron-compute-client.env}
     environment:
       API_HOST: 127.0.0.1

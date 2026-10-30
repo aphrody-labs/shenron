@@ -21,7 +21,7 @@ dans le catalogue `aphrody-infra`. Frontière et historique des suppressions :
 
 ## Contenu restant
 
-| Chemin | Rôle | Statut |
-| --- | --- | --- |
-| `deploy/privoxy/shenron-media.conf` | Configuration Privoxy installée en `/etc/privoxy/config`. | Idem. |
-| `deploy/privoxy/shenron-media-proxy.env` | URL locale du pont média lue par le bot (`SHENRON_MEDIA_PROXIES`), sans secret. | Idem. |
+| Chemin                                   | Rôle                                                                            | Statut |
+| ---------------------------------------- | ------------------------------------------------------------------------------- | ------ |
+| `deploy/privoxy/shenron-media.conf`      | Configuration Privoxy installée en `/etc/privoxy/config`.                       | Idem.  |
+| `deploy/privoxy/shenron-media-proxy.env` | URL locale du pont média lue par le bot (`SHENRON_MEDIA_PROXIES`), sans secret. | Idem.  |
