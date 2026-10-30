@@ -176,8 +176,8 @@ chemin absolu n'est codé : tout se règle par variables d'environnement (table 
 1. Build (`build-image.sh`) : worktree réutilisé `SHENRON_BUILD_REPO` (défaut
    `$HOME/build/shenron`), sérialisé par `flock` ; VFS public depuis `SHENRON_VFS_SOURCE`
    (fichier, URL ou `hôte:chemin`). Le build du site chevauche les lanes Rust, VFS et bot ;
-   Cargo est sauté quand l'empreinte des entrées Rust est inchangée (`SHENRON_FORCE_RUST=1`
-   pour forcer) ; le cache Turbopack est conservé (`SHENRON_NEXT_BUILD_CACHE=1`) ; le payload
+   chaque lane (site, bot, Rust) est sautée tant que l'arbre Git de ses entrées et sa chaîne
+   d'outils sont inchangés (`SHENRON_FORCE_SITE|BOT|RUST=1` pour forcer) ; le cache Turbopack est conservé (`SHENRON_NEXT_BUILD_CACHE=1`) ; le payload
    est en zstd 6 (`SHENRON_PAYLOAD_ZSTD_LEVEL`) ; le site attend `SHENRON_SITE_BUILD_MIN_GIB`
    de mémoire disponible. L'image `localhost/shenron:<sha>` est vérifiée (`version`, bot
    `--smoke`) avant tout envoi ; chaque phase est horodatée (`== <phase> (+Ns)`).

@@ -48,7 +48,7 @@ build Linux x64 ; toutes facultatives. Les en-têtes des scripts font foi.
 | `SHENRON_IMAGE`              | `localhost/shenron`                    | Nom de l'image, étiquetée par le SHA.                                                                     |
 | `SHENRON_COMPILE_BUN`        | `bun` du `PATH`                        | Bun qui compile les binaires de release.                                                                  |
 | `SHENRON_CARGO_JOBS`         | tous les CPU                           | Jobs Cargo.                                                                                               |
-| `SHENRON_FORCE_RUST`         | `0`                                    | `1` recompile Rust même si l'empreinte des entrées Rust est inchangée.                                    |
+| `SHENRON_FORCE_<LANE>`       | `0`                                    | `1` reconstruit la lane SITE, BOT ou RUST même si son empreinte est inchangée.                                    |
 | `SHENRON_NEXT_BUILD_CACHE`   | `1`                                    | Conserve le cache de build Turbopack entre builds.                                                        |
 | `SHENRON_SITE_BUILD_CPUS`    | `6`                                    | CPU du build du site, qui chevauche les lanes Rust, VFS et bot.                                           |
 | `SHENRON_SITE_BUILD_MIN_GIB` | `20`                                   | Mémoire disponible attendue avant le build du site (évite le SIGTERM d'un tueur OOM, sortie 143).         |

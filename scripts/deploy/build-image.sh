@@ -17,7 +17,9 @@
 #   SHENRON_COMPILE_BUN   Bun used to compile the release binaries (default: bun on PATH)
 #   SHENRON_CARGO_JOBS    Cargo jobs (default: all CPUs)
 #   SHENRON_SITE_BUILD_CPUS, SHENRON_SITE_BUILD_MIN_GIB, SHENRON_PAYLOAD_ZSTD_LEVEL,
-#   SHENRON_NEXT_BUILD_CACHE (1), SHENRON_FORCE_RUST (0), SHENRON_KEEP_IMAGES (3)
+#   SHENRON_NEXT_BUILD_CACHE (1), SHENRON_KEEP_IMAGES (3)
+#   SHENRON_FORCE_SITE / SHENRON_FORCE_BOT / SHENRON_FORCE_RUST (0): rebuild a lane whose inputs
+#                         are unchanged (stamps in <worktree>/.cache/shenron-build-stamps)
 set -euo pipefail
 export PATH="$HOME/.bun/bin:$HOME/.cargo/bin:$PATH"
 HERE=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
@@ -56,19 +58,35 @@ echo "== commit $SHA"
 phase "bun install"
 bun install --frozen-lockfile
 
-# Rust lane: skipped when every Rust input (workspace, toolchain, crates and the data files they
-# embed with include_str!) matches the stamp of the binaries already in target/release.
-RUST_OUTPUTS=(target/release/shenron-mcp target/release/libshenron_ffi.so target/release/koharu-sdk)
-RUST_STAMP=target/release/.shenron-rust-inputs
-RUST_KEY=$({
-  git ls-tree HEAD -- Cargo.toml Cargo.lock .cargo rust-toolchain.toml crates data/lexique-db-canonique.json data/lexicon
-  rustc -V
-} | sha256sum | cut -d' ' -f1)
-rust_fresh() {
-  [ "$(cat "$RUST_STAMP" 2>/dev/null)" = "$RUST_KEY" ] || return 1
-  local output
-  for output in "${RUST_OUTPUTS[@]}"; do [ -s "$output" ] || return 1; done
+# Incremental lanes: each lane records the Git tree of its inputs plus its toolchain and is
+# skipped while both are unchanged and its outputs exist, so a commit that only touches the bot,
+# the docs or the crates rebuilds only what depends on it. SHENRON_FORCE_<LANE>=1 forces a lane.
+STAMPS=.cache/shenron-build-stamps
+mkdir -p "$STAMPS"
+lane_key() { # toolchain paths...
+  local toolchain=$1
+  shift
+  { git ls-tree HEAD -- "$@"; echo "$toolchain"; } | sha256sum | cut -d' ' -f1
 }
+lane_fresh() { # lane key outputs...
+  local lane=$1 key=$2 force output
+  shift 2
+  force=SHENRON_FORCE_${lane^^}
+  [ "${!force:-0}" != 1 ] || return 1
+  [ "$(cat "$STAMPS/$lane" 2>/dev/null)" = "$key" ] || return 1
+  for output in "$@"; do [ -s "$output" ] || return 1; done
+}
+lane_done() { echo "$2" > "$STAMPS/$1"; }
+BUN_ID="bun $("$SHENRON_COMPILE_BUN" --revision)"
+JS_INPUTS=(package.json bun.lock bunfig.toml tsconfig.json packages data scripts/build scripts/lib)
+SITE_KEY=$(lane_key "$BUN_ID" "${JS_INPUTS[@]}" apps/site docs/reference)
+SITE_OUTPUTS=(apps/site/.next-standalone/standalone/apps/site/server.js)
+BOT_KEY=$(lane_key "$BUN_ID" "${JS_INPUTS[@]}" apps/bot assets scripts/ops/bun-source-pipeline.ts)
+BOT_OUTPUTS=(dist/bot/linux-x64/shenron-bot dist/bot/linux-x64/pipeline.mjs)
+# The crates also embed data files with include_str!.
+RUST_KEY=$(lane_key "$(rustc -V)" Cargo.toml Cargo.lock .cargo rust-toolchain.toml crates \
+  data/lexique-db-canonique.json data/lexicon)
+RUST_OUTPUTS=(target/release/shenron-mcp target/release/libshenron_ffi.so target/release/koharu-sdk)
 
 fetch_vfs() {
   local out=dist/vfs/shenron-vfs.public.sqlite source=${SHENRON_VFS_SOURCE:-}
@@ -83,6 +101,11 @@ fetch_vfs() {
 }
 
 build_site() {
+  if lane_fresh site "$SITE_KEY" "${SITE_OUTPUTS[@]}"; then
+    echo "== site: inputs unchanged, reusing the standalone build"
+    return
+  fi
+  rm -f "$STAMPS/site"
   bun packages/koharu/scripts/build-wasm.ts &
   local canvas=$!
   bun packages/pipeline/scripts/build-re-wasm.ts &
@@ -106,20 +129,32 @@ build_site() {
   SHENRON_NEXT_BUILD_CACHE=${SHENRON_NEXT_BUILD_CACHE:-1} \
     BUILD_CPUS=${SHENRON_SITE_BUILD_CPUS:-6} \
     bun scripts/build/server.ts --site-only --flavor production --target linux-x64
+  lane_done site "$SITE_KEY"
   phase "site done"
 }
 
 build_rust() {
-  if [ "${SHENRON_FORCE_RUST:-0}" != 1 ] && rust_fresh; then
+  if lane_fresh rust "$RUST_KEY" "${RUST_OUTPUTS[@]}"; then
     echo "== cargo: Rust inputs unchanged, reusing target/release"
     return
   fi
-  rm -f "$RUST_STAMP"
+  rm -f "$STAMPS/rust"
   local jobs=${SHENRON_CARGO_JOBS:-$(nproc)}
   cargo build --release --locked -j "$jobs" -p shenron-mcp -p shenron-ffi
   cargo build --release --locked -j "$jobs" -p koharu-library --bin koharu-sdk
-  printf '%s\n' "$RUST_KEY" > "$RUST_STAMP"
+  lane_done rust "$RUST_KEY"
   phase "cargo done"
+}
+
+build_bot() {
+  if lane_fresh bot "$BOT_KEY" "${BOT_OUTPUTS[@]}"; then
+    echo "== bot: inputs unchanged, reusing dist/bot"
+    return
+  fi
+  rm -f "$STAMPS/bot"
+  bun scripts/build/bot.ts --target linux-x64
+  lane_done bot "$BOT_KEY"
+  phase "bot done"
 }
 
 phase "parallel: cargo | wasm then site | vfs | bot"
@@ -127,7 +162,7 @@ pids=()
 build_rust & pids+=($!)
 build_site & pids+=($!)
 fetch_vfs & pids+=($!)
-{ bun scripts/build/bot.ts --target linux-x64 && phase "bot done"; } & pids+=($!)
+build_bot & pids+=($!)
 status=0
 for pid in "${pids[@]}"; do wait "$pid" || status=$?; done
 ((status == 0)) || { echo "A parallel build lane failed (exit $status)" >&2; exit "$status"; }

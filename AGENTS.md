@@ -236,8 +236,9 @@ défaut `ssh:dbfr`), `SHENRON_DEPLOY_COMMAND`, `SHENRON_ACTIVE_COMMAND`, `SHENRO
 `SHENRON_SITE_BUILD_MIN_GIB`…
 
 - Build : un `flock` par worktree sérialise les builds ; le build du site chevauche les lanes
-  Rust, VFS et bot ; Cargo est sauté quand l'empreinte des entrées Rust est inchangée
-  (`SHENRON_FORCE_RUST=1` pour forcer) ; le cache Turbopack est conservé ; payload zstd 6 ;
+  Rust, VFS et bot ; chaque lane (site, bot, Rust) est sautée tant que l'arbre Git de ses
+  entrées et sa chaîne d'outils sont inchangés (`SHENRON_FORCE_SITE|BOT|RUST=1` pour forcer) :
+  un commit de doc ou du seul bot ne relance pas Next ; le cache Turbopack est conservé ; payload zstd 6 ;
   chaque phase est horodatée (`== <phase> (+Ns)`). L'image est vérifiée (`version`, bot
   `--smoke`) avant tout envoi. Une sortie 143 du site vient d'un tueur OOM : le build attend
   `SHENRON_SITE_BUILD_MIN_GIB` (20 par défaut) de mémoire disponible.
