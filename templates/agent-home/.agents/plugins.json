@@ -1,0 +1,8 @@
+{
+  "entries": [
+    {
+      "path": "plugin",
+      "include_only": ["shenron"]
+    }
+  ]
+}
