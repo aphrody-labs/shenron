@@ -8,7 +8,7 @@ import { db, schema } from "@/lib/db";
 import { getCurrentUser, requireAdmin, revisionActorOf } from "@/lib/session";
 import { recordRevisionStrict } from "@/lib/wiki-revisions";
 
-const MAX_IMPORT_BYTES = 1_000_000;
+const MAX_IMPORT_BYTES = 800_000;
 const MAX_IMPORT_ROWS = 500;
 
 const cardImportRow = z
@@ -32,6 +32,7 @@ const cardImportRow = z
 
 type ImportIssueCode =
   | "invalid-json"
+  | "empty-import"
   | "too-many-rows"
   | "invalid-row"
   | "duplicate-file-row"
@@ -114,6 +115,13 @@ async function parseImport(formData: FormData) {
     return {
       rows: [] as ValidRow[],
       issues: [{ row: 0, code: "invalid-json" as const }],
+      total: 0,
+    };
+  }
+  if (parsed.length === 0) {
+    return {
+      rows: [] as ValidRow[],
+      issues: [{ row: 0, code: "empty-import" as const }],
       total: 0,
     };
   }

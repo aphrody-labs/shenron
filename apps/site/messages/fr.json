@@ -70,6 +70,7 @@
     },
     "importIssue": {
       "invalid-json": "Le fichier doit contenir un tableau JSON valide.",
+      "empty-import": "Le fichier ne contient aucune carte.",
       "too-many-rows": "Le fichier dépasse la limite de 500 lignes.",
       "invalid-row": "Champ requis, URL, date ou longueur de champ invalide.",
       "duplicate-file-row": "Cette clé de carte apparaît plusieurs fois dans le fichier.",

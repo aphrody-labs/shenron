@@ -70,6 +70,7 @@
     },
     "importIssue": {
       "invalid-json": "有効なJSON配列を含むファイルを指定してください。",
+      "empty-import": "ファイルにカード行がありません。",
       "too-many-rows": "ファイルが500行の上限を超えています。",
       "invalid-row": "必須項目、URL、日付、または項目の長さが正しくありません。",
       "duplicate-file-row": "同じカードキーがファイル内に複数あります。",

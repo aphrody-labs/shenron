@@ -70,6 +70,7 @@
     },
     "importIssue": {
       "invalid-json": "The file must be valid JSON containing an array.",
+      "empty-import": "The file contains no card rows.",
       "too-many-rows": "The file exceeds the 500 row limit.",
       "invalid-row": "Required fields, URL, date, or field lengths are invalid.",
       "duplicate-file-row": "This card key appears more than once in the file.",
