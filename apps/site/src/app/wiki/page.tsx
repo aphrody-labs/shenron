@@ -219,7 +219,7 @@ async function WikiIndexContent() {
             {battlesList.slice(0, 10).map((b) => (
               <Link
                 key={b.slug}
-                href="/wiki/events"
+                href={`/wiki/events?type=battles#event-battle-${b.slug}`}
                 className="group/card relative block w-[240px] sm:w-[280px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-red-500/50 hover:shadow-lg hover:shadow-red-950/20"
               >
                 <div className="flex items-center justify-between gap-2 text-[10px] uppercase font-bold tracking-wider text-red-400">
@@ -296,7 +296,7 @@ async function WikiIndexContent() {
             {tournamentsList.slice(0, 6).map((t) => (
               <Link
                 key={t.slug}
-                href="/wiki/events"
+                href={`/wiki/events?type=tournaments#event-tournament-${t.slug}`}
                 className="group/card relative block w-[220px] sm:w-[260px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-orange-500/50 hover:shadow-lg hover:shadow-orange-950/20"
               >
                 <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-orange-400">
@@ -334,7 +334,7 @@ async function WikiIndexContent() {
             {dragonsList.map((d) => (
               <Link
                 key={d.slug}
-                href="/wiki/characters#dragons-personnages"
+                href={`/wiki/characters#dragon-${d.slug}`}
                 className="group/card relative block w-[200px] sm:w-[240px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-orange-500/50 hover:shadow-lg hover:shadow-orange-950/20"
               >
                 <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-orange-400">
@@ -408,7 +408,7 @@ async function WikiIndexContent() {
             {soundtracksList.slice(0, 8).map((ost) => (
               <Link
                 key={ost.slug}
-                href={`/wiki/music`}
+                href={`/wiki/music#${ost.slug}`}
                 className="group/card relative block w-[220px] sm:w-[260px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-950/20"
               >
                 <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-blue-400">

@@ -17,6 +17,7 @@
  * de l'éditeur). Ne pas ajouter "use client" ici.
  */
 import { assetUrl } from "@/lib/assets";
+import { publicLegacyRedirect } from "@/lib/legacy-routes";
 import { ZoomableImage } from "./ZoomableImage";
 import ReactMarkdown from "react-markdown";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
@@ -39,6 +40,15 @@ import remarkGfm from "remark-gfm";
  * filtrés par rehype-sanitize via `protocols`). Le CSS inline (`style`) n'est
  * PAS exécutable (les navigateurs bloquent `javascript:`/`expression()` en CSS).
  */
+/** Rewrites an internal legacy path to its canonical route, keeping query and fragment. */
+export function canonicalHref(href: string): string {
+  if (!href.startsWith("/") || href.startsWith("//")) return href;
+  const cut = href.search(/[?#]/);
+  const path = cut < 0 ? href : href.slice(0, cut);
+  const renamed = publicLegacyRedirect(path);
+  return renamed ? renamed + (cut < 0 ? "" : href.slice(cut)) : href;
+}
+
 export const wikiSanitizeSchema = {
   ...defaultSchema,
   // rehype-sanitize préfixe les `id` en `user-content-` par défaut (anti DOM
@@ -175,6 +185,16 @@ export function WikiMarkdown({ body }: { body: string }) {
         // niveau, ses sous-titres restent ce qu'ils sont.
         h1: ({ node: _node, ...props }) => (
           <h2 {...(props as React.HTMLAttributes<HTMLHeadingElement>)} />
+        ),
+        // Article bodies still carry legacy French paths (`/wiki/personnages/…`): link the
+        // canonical English route directly instead of a 308 hop.
+        a: ({ href, children, node: _node, ...props }) => (
+          <a
+            {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+            href={typeof href === "string" ? canonicalHref(href) : href}
+          >
+            {children}
+          </a>
         ),
         img: ({ src, alt, node: _node, ...props }) => (
           <ZoomableImage

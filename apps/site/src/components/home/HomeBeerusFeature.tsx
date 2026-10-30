@@ -20,9 +20,13 @@ export interface BeerusFeature {
   latest: BeerusEpisodeSummary | null;
   episodes?: BeerusEpisodeSummary[];
 }
+/** Episodes shown in the hero rail: the most recent aired ones, oldest first. */
+const RAIL_EPISODES = 3;
+
 export function HomeBeerusFeature({ beerus }: { beerus: BeerusFeature }) {
-  const episodes = (beerus.episodes ?? []).filter((ep) => ep.id === 875 || ep.id === 876);
-  const latest = episodes.at(-1);
+  const aired = beerus.episodes ?? [];
+  const latest = aired.at(-1) ?? beerus.latest ?? undefined;
+  const episodes = aired.slice(-RAIL_EPISODES);
   return (
     <div className={styles.feature}>
       <div className={styles.featureMain}>
@@ -53,12 +57,14 @@ export function HomeBeerusFeature({ beerus }: { beerus: BeerusFeature }) {
       {episodes.length > 0 && (
         <div className={styles.episodeRail}>
           {episodes.map((ep) => {
-            const frame = HOME_HERO_FRAMES.find((item) => item.episodeId === ep.id);
+            const thumbnail =
+              HOME_HERO_FRAMES.find((item) => item.episodeId === ep.id)?.src ??
+              (ep.image && !ep.image.startsWith("/banners/") ? ep.image : null);
             return (
               <Link key={ep.id} href={`/wiki/episodes/${ep.id}`} className={styles.episode}>
-                {frame && (
+                {thumbnail && (
                   <CadreCase largeur={80} className={styles.thumbnail}>
-                    <img src={frame.src} alt="" width={80} height={45} loading="lazy" />
+                    <img src={thumbnail} alt="" width={80} height={45} loading="lazy" />
                   </CadreCase>
                 )}
                 <span className={styles.episodeCopy}>

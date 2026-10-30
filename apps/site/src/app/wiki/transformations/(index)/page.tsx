@@ -143,7 +143,7 @@ export default async function TransformationsPage() {
                 ? `/wiki/transformations/${g.ficheId}`
                 : g.members[0]
                   ? `/wiki/characters/${g.members[0].slug}`
-                  : "/wiki/characters";
+                  : `/wiki/search?q=${encodeURIComponent(g.name)}`;
             const avatars = g.members.filter((m) => m.image).slice(0, 4);
             return (
               <Link

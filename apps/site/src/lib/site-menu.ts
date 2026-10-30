@@ -25,11 +25,11 @@ export const MOBILE_PRIMARY_DESTINATIONS = [
   { href: "/wiki/movies", label: "Films" },
 ] as const;
 
-/** Parcours présentés dans la feuille « Plus », dans cet ordre. */
+/** Parcours présentés dans la feuille « Plus », dans l'ordre de la barre latérale (`SIDEBAR_JOURNEYS`). */
 const MORE_JOURNEYS: readonly Journey[] = [
   "encyclopedie",
-  "archives",
   "oeuvres",
+  "archives",
   "communaute",
   "participer",
   "espace",

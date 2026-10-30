@@ -126,7 +126,6 @@ async function getBeerusFeature(): Promise<BeerusFeature | null> {
       .filter(
         (episode) =>
           (!episode.air_date || episode.air_date * 1000 <= Date.now()) &&
-          (episode.id === 875 || episode.id === 876) &&
           episode.players?.some((player) => {
             if (!URL.canParse(player.embedUrl)) return false;
             const url = new URL(player.embedUrl);
