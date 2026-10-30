@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { siteDonations } from "@/db/schema";
 import { headers } from "next/headers";
 import { betterAuth } from "better-auth";
-import { authDatabaseConfig, buildAuthOptions } from "@/lib/auth";
+import { buildAuthOptions } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { purgeAccountData } from "@/lib/account-data";
 import { invalidateCurrentUser } from "@/lib/current-user-cache";
@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const recentDonations = await db.query.siteDonations.findMany({
       where: (donations, { eq }) => eq(donations.status, "succeeded"),

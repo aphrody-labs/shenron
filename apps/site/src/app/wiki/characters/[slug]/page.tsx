@@ -5,8 +5,6 @@ import { TrackView } from "@/components/TrackView";
 import { ViewTransition } from "@aphrody/shenron-ui/layout/ViewTransition";
 import { WikiSources } from "@/components/wiki/WikiArticle";
 import { WikiRelatedCharacters } from "@/components/wiki/WikiRelatedCharacters";
-import { CategorizedAffiliates } from "@/components/wiki/CategorizedAffiliates";
-import { getShenronCharacterRelations } from "@/lib/shenron";
 import { CharacterSagaVariants } from "@/components/wiki/CharacterSagaVariants";
 import { WikiSectionsReader, type ReaderPanel } from "@/components/wiki/WikiSectionsReader";
 import { WikiEditBar } from "@/components/wiki/WikiEditBar";

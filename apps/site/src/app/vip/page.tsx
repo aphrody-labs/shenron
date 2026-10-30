@@ -7,11 +7,7 @@ export const metadata: Metadata = {
     "Accédez à une lecture manga sans publicité, en haute résolution avec des avant-premières exclusives.",
 };
 
-export default function VipPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ success?: string; canceled?: string }>;
-}) {
+export default function VipPage() {
   return (
     <div className="min-h-screen bg-black text-white selection:bg-amber-500 selection:text-black">
       {/* Background Toriyama Dragon Aura */}

@@ -18,6 +18,10 @@ const allowed = (rel: string): boolean =>
   /^lib[\\/]dbxv2[^\\/]*\.ts$/.test(rel) ||
   rel === join("components", "games", "Dbxv2CpkExplorer.tsx") ||
   rel === join("app", "games", "xenoverse-2", "Xenoverse2Explorer.tsx") ||
+  // The game host may only reach the read-only CPK relay (GET/HEAD), nothing else under /api.
+  rel === join("lib", "game-host.ts") ||
+  // Shared GPU viewer, imported only by the admin DBXV2 explorer and immersion pages.
+  rel === join("components", "games", "Dbxv2GpuModelViewer.tsx") ||
   // Both navigation surfaces are mounted exclusively behind the admin layout guard.
   rel === join("components", "admin", "AdminSidebar.tsx") ||
   rel === join("components", "admin", "AdminWorkspace.tsx");
@@ -44,6 +48,16 @@ describe("pages publiques", () => {
     },
     { timeout: 30_000 },
   );
+
+  test("le visualiseur GPU DBXV2 n'est monté que par l'administration", () => {
+    const importers: string[] = [];
+    for (const file of walk(SRC)) {
+      if (/Dbxv2GpuModelViewer["']/.test(readFileSync(file, "utf8")))
+        importers.push(relative(SRC, file));
+    }
+    expect(importers.length).toBeGreaterThan(0);
+    for (const rel of importers) expect(rel.startsWith(`app${sep}admin${sep}`)).toBe(true);
+  });
 
   test("les dictionnaires publics ne contiennent aucune clé ni valeur dbxv2", () => {
     for (const locale of ["fr", "en", "ja"]) {

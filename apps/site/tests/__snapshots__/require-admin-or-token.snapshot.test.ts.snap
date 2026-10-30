@@ -5007,7 +5007,7 @@ exports[`15 routes admin-ou-jeton : instantané statut/corps wiki-launch (GET, P
     "body": {
       "error": "Forbidden",
     },
-    "cacheControl": null,
+    "cacheControl": "private, no-store",
     "status": 403,
   },
   "GET sessionAdmin": {
@@ -5016,7 +5016,7 @@ exports[`15 routes admin-ou-jeton : instantané statut/corps wiki-launch (GET, P
       "openKeys": [],
       "order": [],
     },
-    "cacheControl": null,
+    "cacheControl": "private, no-store",
     "status": 200,
   },
   "GET validBearer": {
@@ -5025,42 +5025,42 @@ exports[`15 routes admin-ou-jeton : instantané statut/corps wiki-launch (GET, P
       "openKeys": [],
       "order": [],
     },
-    "cacheControl": null,
+    "cacheControl": "private, no-store",
     "status": 200,
   },
   "GET wrongBearer": {
     "body": {
       "error": "Forbidden",
     },
-    "cacheControl": null,
+    "cacheControl": "private, no-store",
     "status": 403,
   },
   "PUT anonymous": {
     "body": {
       "error": "Forbidden",
     },
-    "cacheControl": null,
+    "cacheControl": "private, no-store",
     "status": 403,
   },
   "PUT sessionAdmin": {
     "body": {
       "error": "openKeys[], order[] ou access{} attendu",
     },
-    "cacheControl": null,
+    "cacheControl": "private, no-store",
     "status": 400,
   },
   "PUT validBearer": {
     "body": {
       "error": "openKeys[], order[] ou access{} attendu",
     },
-    "cacheControl": null,
+    "cacheControl": "private, no-store",
     "status": 400,
   },
   "PUT wrongBearer": {
     "body": {
       "error": "Forbidden",
     },
-    "cacheControl": null,
+    "cacheControl": "private, no-store",
     "status": 403,
   },
 }

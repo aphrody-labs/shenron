@@ -5,7 +5,10 @@ import { summarizeEpisodeSources } from "@/lib/episode-source-coverage";
 test("counts episodes once when several original-audio sources are listed", () => {
   const coverage = summarizeEpisodeSources([
     {
-      players: [{ lang: "vostfr" }, { lang: "vost" }],
+      players: [
+        { lang: "vostfr", embedUrl: "https://player.example.com/episode-1-vostfr" },
+        { lang: "vost", embedUrl: "https://player.example.com/episode-1-vost" },
+      ],
       availability: [
         {
           provider: "ADN",
@@ -19,7 +22,12 @@ test("counts episodes once when several original-audio sources are listed", () =
       ],
     },
     {
-      players: [{ lang: "vf" }],
+      players: [
+        { lang: "vf", embedUrl: "https://player.example.com/episode-2-vf" },
+        // Players only count once they carry a verified HTTPS link (51f771b5).
+        { lang: "vostfr" },
+        { lang: "vost", embedUrl: "http://player.example.com/episode-2-vost" },
+      ],
       availability: [
         {
           provider: "Crunchyroll",

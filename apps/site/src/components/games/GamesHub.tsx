@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { DEFAULT_DISCORD_INVITE } from "@aphrody/shenron-config/public-urls";
 import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
+import { ClientGatedWrap } from "@/components/GatedClientLink";
+import type { AccessSnapshot } from "@/lib/wiki-launch";
 import { useLangue } from "@/lib/i18n/client";
 import fr from "../../../messages/games-hub/fr.json";
 import en from "../../../messages/games-hub/en.json";
@@ -34,7 +36,8 @@ const explorers = [
   { id: "xenoverse", href: "/games/xenoverse-2", icon: ScanLine },
   { id: "bt3", href: "/games/budokai-tenkaichi-3", icon: MonitorPlay },
 ] as const;
-export function GamesHub() {
+/** `access` comes from the launch configuration read by the page; the wiki catalogue is gatable. */
+export function GamesHub({ access = null }: { access?: AccessSnapshot | null } = {}) {
   const { locale } = useLangue();
   const t = dictionaries[locale];
   return (
@@ -81,10 +84,10 @@ export function GamesHub() {
           <h2>{t.catalogueTitle}</h2>
           <p>{t.catalogueDescription}</p>
         </div>
-        <Link href="/wiki/games" className={styles.textLink}>
+        <ClientGatedWrap access={access} href="/wiki/games" className={styles.textLink}>
           {t.catalogueAction}
           <ArrowRight size={18} aria-hidden="true" />
-        </Link>
+        </ClientGatedWrap>
       </aside>
       <section id="browser-games" aria-labelledby="browser-heading" className={styles.section}>
         <div className={styles.sectionHeading}>

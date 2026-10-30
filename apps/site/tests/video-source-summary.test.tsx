@@ -35,10 +35,12 @@ test("empty resources distinguish untracked data from a verified missing source"
 test("real subtitle resources do not imply players or versions", () => {
   for (const locale of ["fr", "en", "ja"] as const) {
     const html = render({ players: [], subtitles: 2 }, locale);
-    expect(html).toContain({ fr, en, ja }[locale].mediaPlayback.captions);
-    expect(html).toContain({ fr, en, ja }[locale].mediaPlayback.sourceCoverage);
-    expect(html).toContain({ fr, en, ja }[locale].mediaPlayback.captions);
-    expect(html).not.toContain("—");
+    const messages = { fr, en, ja }[locale].mediaPlayback;
+    expect(html).toContain(messages.captions);
+    expect(html).toContain(messages.sourceCoverage);
+    // The original-audio label carries its own dash ("VO — audio original"); no other
+    // dash may stand in for a missing player or version.
+    expect(html.replaceAll(messages.vo, "")).not.toContain("—");
   }
 });
 

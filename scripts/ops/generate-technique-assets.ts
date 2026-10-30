@@ -1,4 +1,3 @@
-import { runRemoteSql } from "./remote-sql";
 import * as fs from "fs";
 
 interface Technique {

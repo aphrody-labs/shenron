@@ -1,5 +1,6 @@
 /**
- * Public heroes use the quality selector; streaming uses its catalogue-owned feature.
+ * Public heroes use the quality selector; streaming and the techniques catalogue own their
+ * composition.
  */
 import { describe, expect, test } from "bun:test";
 import { PAGE_HERO_KEYS } from "../src/lib/page-banners";
@@ -35,6 +36,13 @@ describe("bannières configurées dans l'administration", () => {
       if (key === "episodes") {
         expect(source).toContain("@/components/streaming/StreamingCatalogue");
         expect(source).not.toContain("<Billboard");
+        continue;
+      }
+      if (key === "techniques") {
+        // Since 740f7ffe the catalogue lives in the compact wiki shell with its own heading.
+        expect(source).toContain("@/components/wiki/WikiPageShell");
+        expect(source).toContain("<TechniqueCatalogueHeading");
+        expect(source).not.toContain("<PageHero");
         continue;
       }
       expect(source).toContain('from "@/lib/banner-config"');

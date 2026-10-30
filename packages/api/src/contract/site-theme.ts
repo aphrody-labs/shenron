@@ -12,6 +12,12 @@ export const SiteThemeSchema = z
     fontScale: z.number().min(0.875).max(1.25),
     contentWidth: z.number().min(960).max(1920),
     density: z.enum(["compact", "comfortable", "spacious"]),
+    buttonShape: z.enum(["rounded", "pill", "square"]),
+    buttonSize: z.enum(["compact", "comfortable", "spacious"]),
+    buttonLabelCase: z.enum(["uppercase", "normal"]),
+    homeActionLayout: z.enum(["row", "stacked"]),
+    homeActionAlignment: z.enum(["start", "center", "end"]),
+    panelStyle: z.enum(["comic", "soft", "flat"]),
   })
   .meta({ id: "SiteTheme" });
 export const SiteThemeResponse = z

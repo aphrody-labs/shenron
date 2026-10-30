@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe, STRIPE_PLANS } from "@/lib/stripe";
-import { authDatabaseConfig, buildAuthOptions } from "@/lib/auth";
+import { buildAuthOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
 import { purgeAccountData } from "@/lib/account-data";
