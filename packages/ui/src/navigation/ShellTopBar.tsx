@@ -33,6 +33,7 @@ export function ShellTopBar({
   onSearch,
   onSearchIntent,
   actions,
+  navigation,
   mobileAccount,
   desktopAccount,
   siteStyle,
@@ -47,6 +48,8 @@ export function ShellTopBar({
   onSearch?: () => void;
   onSearchIntent?: () => void;
   actions?: ReactNode;
+  /** Site variant: the horizontal navigation shares the bar with the brand and the actions. */
+  navigation?: ReactNode;
   mobileAccount?: ReactNode;
   desktopAccount?: ReactNode;
   siteStyle?: boolean;
@@ -138,6 +141,8 @@ export function ShellTopBar({
             <path d="M9 4v16" />
           </svg>
         </button>
+
+        {siteStyle && navigation}
 
         {/* Titre courant (mobile) / fil complet (desktop). */}
         <div data-tauri-drag-region data-shell-title className="min-w-0 flex-1 px-1">

@@ -371,8 +371,25 @@ export function AppShell({
     [pathname, navSections, tabs, contextNav],
   );
 
+  const shellSidebar = (
+    <ShellSidebar
+      brand={brand}
+      sections={navSections}
+      contextNav={contextNav}
+      activeHref={activeHref}
+      collapsed={collapsed}
+      onToggle={toggleSidebar}
+      onExpand={expandSidebar}
+      account={account}
+      siteStyle={siteStyle}
+      labels={labels}
+      linkComponent={linkComponent}
+    />
+  );
+
   const shellTopBar = (
     <ShellTopBar
+      navigation={siteStyle ? shellSidebar : undefined}
       brand={brand}
       trail={trail}
       collapsed={collapsed}
@@ -397,19 +414,7 @@ export function AppShell({
         className="relative flex min-h-dvh w-full flex-1"
       >
         {siteStyle && shellTopBar}
-        <ShellSidebar
-          brand={brand}
-          sections={navSections}
-          contextNav={contextNav}
-          activeHref={activeHref}
-          collapsed={collapsed}
-          onToggle={toggleSidebar}
-          onExpand={expandSidebar}
-          account={account}
-          siteStyle={siteStyle}
-          labels={labels}
-          linkComponent={linkComponent}
-        />
+        {!siteStyle && shellSidebar}
         <div data-shell-content className="flex min-w-0 flex-1 flex-col">
           {!siteStyle && shellTopBar}
           <main id="contenu" tabIndex={-1} className="relative z-10 flex w-full flex-1 flex-col">
