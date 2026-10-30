@@ -21,6 +21,8 @@ use wgpu::util::DeviceExt;
 
 /// Canvas base formats are non-sRGB in WebGPU. Register a compatible view so linear
 /// shader output receives hardware sRGB encoding; already encoded vector art keeps Unorm.
+/// Only the browser (wasm32) canvases use it; native builds compile it for the tests alone.
+#[cfg(any(target_arch = "wasm32", test))]
 pub(crate) fn canvas_view_format(
     surface_format: wgpu::TextureFormat,
     view_formats: &mut Vec<wgpu::TextureFormat>,
@@ -807,7 +809,7 @@ mod tests {
             queue.submit([encoder.finish()]);
             readback.slice(..).map_async(wgpu::MapMode::Read, |result| result.unwrap());
             device.poll(wgpu::PollType::wait_indefinitely()).unwrap();
-            let actual = readback.slice(..).get_mapped_range()[..4].to_vec();
+            let actual = readback.slice(..).get_mapped_range().unwrap()[..4].to_vec();
             readback.unmap();
             for channel in 0..3 {
                 assert!(
