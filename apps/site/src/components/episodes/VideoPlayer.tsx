@@ -134,7 +134,7 @@ export function VideoPlayer({
     const controller = new AbortController();
     setPreviewMetadata(null);
     setHoverPreview(null);
-    if (episodeId === 875 || episodeId === 876 || episodeId === "875" || episodeId === "876") {
+    if (/^(875|876|877)$/.test(String(episodeId))) {
       void fetch(`/api/episodes/${episodeId}/timeline`, { signal: controller.signal })
         .then(async (response) => {
           if (!response.ok) return null;

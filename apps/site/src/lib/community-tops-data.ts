@@ -94,7 +94,13 @@ async function buildEpisodeBoard(
       image: botEpisodes.image,
     })
     .from(botEpisodes)
-    .where(and(inArray(botEpisodes.id, numIds), inArray(botEpisodes.series, [...def.series])));
+    .where(
+      and(
+        inArray(botEpisodes.id, numIds),
+        inArray(botEpisodes.series, [...def.series]),
+        eq(botEpisodes.visible, true),
+      ),
+    );
 
   let totalVotes = 0;
   const candidates: Omit<CommunityTopEntry, "rank">[] = [];
@@ -140,7 +146,7 @@ async function buildMovieBoard(
       poster: botMovies.poster,
     })
     .from(botMovies)
-    .where(inArray(botMovies.id, ids.map(Number)));
+    .where(and(inArray(botMovies.id, ids.map(Number)), eq(botMovies.visible, true)));
 
   let totalVotes = 0;
   const candidates: Omit<CommunityTopEntry, "rank">[] = [];
@@ -186,7 +192,7 @@ async function buildGameBoard(
       platforms: botGames.platforms,
     })
     .from(botGames)
-    .where(inArray(botGames.id, ids.map(Number)));
+    .where(and(inArray(botGames.id, ids.map(Number)), eq(botGames.visible, true)));
 
   let totalVotes = 0;
   const candidates: Omit<CommunityTopEntry, "rank">[] = [];
@@ -232,7 +238,7 @@ async function buildArcBoard(
       orderIdx: botArcs.orderIdx,
     })
     .from(botArcs)
-    .where(inArray(botArcs.id, ids.map(Number)));
+    .where(and(inArray(botArcs.id, ids.map(Number)), eq(botArcs.visible, true)));
 
   let totalVotes = 0;
   const candidates: Omit<CommunityTopEntry, "rank">[] = [];

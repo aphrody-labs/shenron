@@ -7,7 +7,9 @@ import { isAdminIp } from "@/lib/admin-ip";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { findEntry, resolveAccess } from "@/lib/wiki-launch";
 import { getMemberRoleIds } from "@/lib/member-roles";
-import { SITE_URL } from "@/lib/config";
+import { SITE_URL, GAME_URL } from "@/lib/config";
+import { env } from "@/lib/env";
+import { gameHostRoute } from "@/lib/game-host";
 import { isWorkshopStaffPath } from "@/lib/library";
 import { publicLegacyRedirect, staffLegacyRedirect } from "@/lib/legacy-routes";
 
@@ -92,6 +94,21 @@ function permanentTo(request: NextRequest, target: string) {
 
 export async function proxy(request: NextRequest) {
   const host = request.headers.get("host") || "";
+  if (env.SHENRON_SITE_SURFACE === "game") {
+    const gameHost = new URL(GAME_URL).host;
+    if (host !== gameHost && !/^(?:localhost|127\.0\.0\.1)(?::\d+)?$/.test(host)) {
+      const canonical = new URL(GAME_URL);
+      canonical.search = request.nextUrl.search;
+      return NextResponse.redirect(canonical, 308);
+    }
+    const route = gameHostRoute(new URL(request.url), GAME_URL, SITE_URL, request.method);
+    if (route.kind === "deny") return new NextResponse(null, { status: 404 });
+    if (route.kind === "rewrite") return NextResponse.rewrite(route.url);
+    if (route.kind === "redirect") return NextResponse.redirect(route.url, 308);
+    return NextResponse.next();
+  }
+  // Existing API handlers retain their own guards; only the isolated game profile narrows them.
+  if (request.nextUrl.pathname.startsWith("/api/")) return NextResponse.next();
 
   // Rediriger vers le domaine unique canonique si la requête provient d'un autre hôte,
   // tout en autorisant localhost en local. S2 (docs/architecture/STACK.md §2.2) : les hôtes de
@@ -244,10 +261,10 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    "/api/:path*",
     /*
      * Appliquer le proxy sur toutes les routes sauf :
-     * - api (les routes API peuvent être interrogées directement ou recevoir des webhooks ;
-     *   exclure /api garantit aussi zéro boucle sur le fetch admin /api/me)
+     * - api (selected separately above: unchanged site fast path, narrowed game profile)
      * - _next/static (fichiers statiques Next.js)
      * - _next/image (optimisation d'images)
      * - favicon.ico, sitemap.xml, robots.txt (métadonnées)

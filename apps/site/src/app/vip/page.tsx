@@ -3,7 +3,8 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "DBFR VIP Club — Abonnement & Soutien",
-  description: "Accédez à une lecture manga sans publicité, en haute résolution avec des avant-premières exclusives.",
+  description:
+    "Accédez à une lecture manga sans publicité, en haute résolution avec des avant-premières exclusives.",
 };
 
 export default function VipPage({

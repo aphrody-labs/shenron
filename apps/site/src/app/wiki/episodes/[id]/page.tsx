@@ -166,7 +166,6 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
     ep.number_in_series === null
       ? `${seriesLabel} · ${ep.title}`
       : `${seriesLabel} · épisode ${ep.number_in_series}`;
-  const cdnOnly = ep.id === 875 || ep.id === 876;
   const capabilities = await readPlaybackCapabilities();
   const playback = episodePlayback(ep, capabilities);
   const cdnSource = [
@@ -182,6 +181,9 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
         (ep.id === 875 && url.pathname.includes("/episodes/beerus-01/")))
     );
   });
+
+  // Episodes with a qualified Shenron CDN source play it exclusively.
+  const cdnOnly = ep.id === 875 || ep.id === 876 || cdnSource !== undefined;
 
   // Priorité aux lecteurs voir-anime (VF/VOSTFR, sources réelles maintenues à
   // jour) : ils priment sur `video_url`/`stream_url` qui pouvaient contenir des

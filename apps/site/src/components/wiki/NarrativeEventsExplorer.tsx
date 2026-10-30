@@ -130,7 +130,7 @@ export function NarrativeEventsExplorer({
   arcs?: Array<{ id: number; slug: string; name: string }>;
   fallbackImage?: string;
 }) {
-  const listUi = useTranslations("wikiUi.list");
+  const listUi = useTranslations("wikiExplorer.list");
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -219,7 +219,7 @@ export function NarrativeEventsExplorer({
         canon: b.canon,
         timeline,
         timelineLabel,
-        href: "/wiki/events",
+        href: `#event-battle-${b.slug}`,
         sagaSlug: saga?.slug,
         sagaName: saga?.name,
         arcSlug: arc?.slug,
@@ -263,7 +263,7 @@ export function NarrativeEventsExplorer({
         canon: t.canon,
         timeline,
         timelineLabel,
-        href: "/wiki/events",
+        href: `#event-tournament-${t.slug}`,
         sagaSlug,
         sagaName,
       });
@@ -592,7 +592,8 @@ export function NarrativeEventsExplorer({
               return (
                 <article
                   key={`battle-${ev.id}`}
-                  className={`group flex flex-col justify-between rounded-2xl border p-5 backdrop-blur-md transition-all duration-300 hover:shadow-xl ${
+                  id={ev.href.slice(1)}
+                  className={`scroll-mt-24 group flex flex-col justify-between rounded-2xl border p-5 backdrop-blur-md transition-all duration-300 hover:shadow-xl ${
                     isXv
                       ? "border-purple-500/40 bg-gradient-to-b from-purple-950/30 to-black/60 hover:border-purple-500/70 hover:shadow-purple-950/30 ring-1 ring-purple-500/20"
                       : "border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.01] hover:border-orange-500/40 hover:shadow-orange-950/20"
@@ -719,7 +720,8 @@ export function NarrativeEventsExplorer({
               return (
                 <article
                   key={`tourn-${ev.id}`}
-                  className={`group flex flex-col justify-between rounded-2xl border p-5 backdrop-blur-md transition-all duration-300 hover:shadow-xl ${
+                  id={ev.href.slice(1)}
+                  className={`scroll-mt-24 group flex flex-col justify-between rounded-2xl border p-5 backdrop-blur-md transition-all duration-300 hover:shadow-xl ${
                     isTournXv
                       ? "border-purple-500/40 bg-gradient-to-b from-purple-950/30 to-black/60 hover:border-purple-500/70 hover:shadow-purple-950/30 ring-1 ring-purple-500/20"
                       : "border-amber-500/20 bg-gradient-to-b from-amber-950/20 to-black/40 hover:border-amber-500/50 hover:shadow-amber-950/30"

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import "server-only";
+import { withVerifiedImages } from "@/lib/wikimedia-images";
 import { and, asc, count, eq, getTableColumns, ilike, or, sql, type SQL } from "drizzle-orm";
 import type { PgColumn, PgTable } from "drizzle-orm/pg-core";
 import { WIKI_REGISTRY } from "@aphrody/shenron-db/wiki-registry";
@@ -390,14 +391,16 @@ export async function readCatalogPage(
     total,
     page,
     pageSize: CATALOG_PAGE_SIZE,
-    items: rows.map((row) => {
-      const item = card(category, row);
-      if (sourceCategory(category)) {
-        item.description = item.description.slice(0, 280);
-        item.source = { host: catalogSourceHost(row.url), kind: String(row.kind ?? "") };
-      }
-      return item;
-    }),
+    items: await withVerifiedImages(
+      rows.map((row) => {
+        const item = card(category, row);
+        if (sourceCategory(category)) {
+          item.description = item.description.slice(0, 280);
+          item.source = { host: catalogSourceHost(row.url), kind: String(row.kind ?? "") };
+        }
+        return item;
+      }),
+    ),
     observedAt: new Date().toISOString(),
   };
 }
@@ -474,10 +477,11 @@ export async function readCatalogDetail(
       }
     }
   }
-  const image = card(category, row).image;
+  const [base] = await withVerifiedImages([card(category, row)]);
+  const image = base!.image;
   const child = category === "sources" ? "sources" : extra[category]?.child;
   return {
-    ...card(category, row),
+    ...base!,
     fields: fields.flatMap((key) => {
       const value = row[key];
       return typeof value === "string" || typeof value === "number" || value instanceof Date

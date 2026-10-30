@@ -331,7 +331,6 @@ export const siteAdSlots = pgTable("site_ad_slots", {
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
 });
-
 // --- Dragon Ball official card catalog -------------------------------------
 // Editorial records are entered manually with provenance. No vendor catalog
 // crawler or card image mirror is implied by these tables.
@@ -362,7 +361,6 @@ export const cardCatalogSeries = pgTable(
   },
   (t) => [index("CardCatalogSeries_status_idx").on(t.status, t.name)],
 );
-
 export const cardCatalogSets = pgTable(
   "CardCatalogSet",
   {

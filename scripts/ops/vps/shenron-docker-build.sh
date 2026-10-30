@@ -50,7 +50,14 @@ pids=()
 (
   bun packages/koharu/scripts/build-wasm.ts & canvas_pid=$!
   bun packages/pipeline/scripts/build-re-wasm.ts & re_pid=$!
-  bun packages/engine/scripts/build-wasm.ts & engine_pid=$!
+  if bun wasm --help >/dev/null 2>&1; then
+    bun packages/engine/scripts/build-wasm.ts & engine_pid=$!
+  else
+    # Upstream Bun has no `wasm` subcommand (Aphrody fork only): the engine module is tracked in Git.
+    test -s packages/engine/src/wasm/shenron_engine_bg.wasm || { echo "engine wasm missing and bun has no wasm subcommand" >&2; exit 1; }
+    echo "== engine wasm: builder bun has no wasm subcommand, using the tracked module"
+    true & engine_pid=$!
+  fi
   status=0
   wait "$canvas_pid" || status=$?
   wait "$re_pid" || status=$?

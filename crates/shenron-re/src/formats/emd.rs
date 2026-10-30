@@ -13,8 +13,8 @@
 //! f32 scale_v`.
 //!
 //! Vertex attributes, in order, according to `vertex_flags`: position (3 × f32), normal,
-//! tangent, uv, uv2, color (4 × u8), blend indices (4 × u8) and weights. When
-//! [`FLAG_COMPRESSED`] is set, normals and tangents are 4 × f16, uvs 2 × f16 and weights
+//! uv, uv2, tangent, color (4 × u8), blend indices (4 × u8) and weights. When
+//! [`FLAG_COMPRESSED`] is set, normals and tangents are 3 × f16 plus two padding bytes, uvs 2 × f16 and weights
 //! 4 × f16; otherwise 3 × f32, 3 × f32, 2 × f32 and 3 × f32. Only three weights are stored:
 //! the fourth is `1 - (w0 + w1 + w2)`. Blend indices address the triangle list's bone names.
 
@@ -170,11 +170,8 @@ fn read_vertex(buffer: &[u8], at: usize, flags: u32) -> Result<EmdVertex> {
         vertex.position = [p[0], p[1], p[2]];
     }
     if flags & FLAG_NORMAL != 0 {
-        let n = floats(if compressed { 4 } else { 3 }, compressed)?;
+        let n = floats(3, compressed)?;
         vertex.normal = [n[0], n[1], n[2]];
-    }
-    if flags & FLAG_TANGENT != 0 {
-        vertex.tangent = Some(floats(if compressed { 4 } else { 3 }, compressed)?);
     }
     if flags & FLAG_UV != 0 {
         let uv = floats(2, compressed)?;
@@ -182,6 +179,9 @@ fn read_vertex(buffer: &[u8], at: usize, flags: u32) -> Result<EmdVertex> {
     }
     if flags & FLAG_UV2 != 0 {
         floats(2, compressed)?;
+    }
+    if flags & FLAG_TANGENT != 0 {
+        vertex.tangent = Some(floats(3, compressed)?);
     }
     let bytes4 = |at: usize| -> Result<[u8; 4]> {
         buffer
@@ -454,6 +454,107 @@ mod tests {
     fn vertex_sizes_match_game_layouts() {
         assert_eq!(vertex_size(0x8207), 36);
         assert_eq!(vertex_size(FLAG_POSITION | FLAG_NORMAL | FLAG_UV | FLAG_BLEND), 48);
+    }
+
+    #[test]
+    fn uv_sets_precede_tangents_and_compressed_padding_is_not_an_attribute() {
+        let flags = FLAG_POSITION
+            | FLAG_NORMAL
+            | FLAG_UV
+            | FLAG_UV2
+            | FLAG_TANGENT
+            | FLAG_COLOR
+            | FLAG_BLEND;
+        let mut compressed = Vec::new();
+        for value in [1.0f32, 2.0, 3.0] {
+            compressed.extend(value.to_le_bytes());
+        }
+        // Actual EMD order; 0xfc00 padding occurs in the real failing Conton vertices.
+        for value in [0x3c00u16, 0, 0, 0xfc00, 0x3800, 0xb400, 0x3400, 0x3800, 0, 0x3c00, 0, 0xfc00]
+        {
+            compressed.extend(value.to_le_bytes());
+        }
+        compressed.extend([12, 34, 56, 255, 1, 2, 3, 4]);
+        for value in [0x3800u16, 0x3400, 0x3000, 0xfc00] {
+            compressed.extend(value.to_le_bytes());
+        }
+        assert_eq!(compressed.len(), vertex_size(flags | FLAG_COMPRESSED));
+        let vertex = read_vertex(&compressed, 0, flags | FLAG_COMPRESSED).unwrap();
+        assert_eq!(vertex.position, [1.0, 2.0, 3.0]);
+        assert_eq!(vertex.normal, [1.0, 0.0, 0.0]);
+        assert_eq!(vertex.uv, [0.5, -0.25]);
+        assert_eq!(vertex.tangent, Some([0.0, 1.0, 0.0, 0.0]));
+        assert_eq!(vertex.bone_indices, Some([1, 2, 3, 4]));
+        assert_eq!(vertex.bone_weights, Some([0.5, 0.25, 0.125, 0.125]));
+        let mut plain = Vec::new();
+        for value in [1.0f32, 2.0, 3.0, 0.0, 1.0, 0.0, 0.5, -0.25, 0.25, 0.5, 1.0, 0.0, 0.0] {
+            plain.extend(value.to_le_bytes());
+        }
+        plain.extend([12, 34, 56, 255, 1, 2, 3, 4]);
+        for value in [0.5f32, 0.25, 0.125] {
+            plain.extend(value.to_le_bytes());
+        }
+        assert_eq!(plain.len(), vertex_size(flags));
+        let vertex = read_vertex(&plain, 0, flags).unwrap();
+        assert_eq!(vertex.uv, [0.5, -0.25]);
+        assert_eq!(vertex.tangent, Some([1.0, 0.0, 0.0, 0.0]));
+        assert_eq!(vertex.bone_indices, Some([1, 2, 3, 4]));
+        assert_eq!(vertex.bone_weights, Some([0.5, 0.25, 0.125, 0.125]));
+    }
+
+    /// Original LOD0 NSK dependencies, geometry only; no GPU or DDS decode is needed.
+    #[test]
+    fn real_conton_lod0_geometry_has_finite_attributes_when_provided() {
+        let (Ok(root), Ok(map)) =
+            (std::env::var("SHENRON_REAL_STAGE_NSK_ROOT"), std::env::var("SHENRON_REAL_BFLBN_FMP"))
+        else {
+            return;
+        };
+        let layout = crate::formats::fmp::FmpFile::parse(&std::fs::read(map).unwrap()).unwrap();
+        let indices: std::collections::BTreeSet<usize> = layout
+            .objects
+            .iter()
+            .flat_map(|object| &object.entities)
+            .filter_map(|entity| entity.lods.first().and_then(|lod| lod.nsk))
+            .collect();
+        assert_eq!(indices.len(), 56);
+        let mut primitives = 0;
+        for index in indices {
+            let name = layout.resources.nsk[index].replace('\\', "/");
+            let path = std::path::Path::new(&root).join(&name);
+            let nsk = crate::formats::nsk::NskFile::parse(&std::fs::read(&path).unwrap()).unwrap();
+            let model = crate::formats::AssembledCharacterModel::assemble_nsk_primitives(
+                &nsk.model,
+                &nsk.skeleton,
+                0,
+            )
+            .unwrap();
+            for primitive in model {
+                primitives += 1;
+                for (vertex, position) in primitive.positions.iter().enumerate() {
+                    assert!(
+                        position.iter().all(|value| value.is_finite()),
+                        "{name} {} position {vertex}: {position:?}",
+                        primitive.name
+                    );
+                }
+                for (vertex, normal) in primitive.normals.iter().enumerate() {
+                    assert!(
+                        normal.iter().all(|value| value.is_finite()),
+                        "{name} {} normal {vertex}: {normal:?}",
+                        primitive.name
+                    );
+                }
+                for (vertex, uv) in primitive.uv.iter().enumerate() {
+                    assert!(
+                        uv.iter().all(|value| value.is_finite()),
+                        "{name} {} uv {vertex}: {uv:?}",
+                        primitive.name
+                    );
+                }
+            }
+        }
+        assert_eq!(primitives, 899);
     }
 
     #[test]

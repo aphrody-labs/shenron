@@ -29,6 +29,16 @@ import {
   resolveSiteUrl,
 } from "@aphrody/shenron-config/public-urls";
 import { resolveBotApiServerUrl } from "@aphrody/shenron-config/services";
+import { resolveGameUrl, resolveGameApiUrl } from "@aphrody/shenron-config/game";
+
+const GAME_ENV = {
+  NEXT_PUBLIC_GAME_URL: process.env.NEXT_PUBLIC_GAME_URL,
+  NEXT_PUBLIC_GAME_API_URL: process.env.NEXT_PUBLIC_GAME_API_URL,
+  SHENRON_PUBLIC_GAME_URL: process.env.SHENRON_PUBLIC_GAME_URL,
+  SHENRON_PUBLIC_GAME_API_URL: process.env.SHENRON_PUBLIC_GAME_API_URL,
+};
+export const GAME_URL = resolveGameUrl(GAME_ENV);
+export const GAME_API_URL = resolveGameApiUrl(GAME_ENV);
 
 /**
  * Accès littéraux (Next n'inline `NEXT_PUBLIC_*` que sous cette forme) ; la

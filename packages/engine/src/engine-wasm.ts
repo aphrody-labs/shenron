@@ -16,6 +16,76 @@ export interface GlbSceneRenderer extends EngineRenderer {
   camera(azimuth: number, elevation: number, zoom: number): void;
 }
 
+/** One original stage piece from a DBXV2 CPK, with its matching textures/materials. */
+export interface Xv2WorldPartBytes {
+  nsk: Uint8Array;
+  emb?: Uint8Array;
+  emm?: Uint8Array;
+  /** Original layout placements: affine mat4 values, 16 floats in column-major order. Defaults to identity. */
+  instances?: Float32Array[];
+}
+
+/** Static CPK stage geometry viewed with a free camera; no collision simulation. */
+export interface Xv2WorldRenderer {
+  /** CPU measurements and issued present requests; GPU completion/display FPS are not inferred. */
+  frameStats(): Xv2WorldFrameStats;
+  /** Exact authored DDS mip choices used to fit the device and decoded texture budget. */
+  textureProfile(): Xv2WorldTextureProfile;
+  /** Original geometry extent: minX, minY, minZ, maxX, maxY, maxZ. */
+  bounds(): Float32Array;
+  /** World-space camera. Yaw 0 faces -Z; positive pitch looks upward. */
+  camera(x: number, y: number, z: number, yaw: number, pitch: number): void;
+  /** Host one real character on this world's device and depth buffer. Clip names are exact EAN names. */
+  setActor(
+    files: Xv2FighterBytes,
+    idleName: string,
+    walkName: string | undefined,
+    speed: number,
+  ): void;
+  actorPlace(x: number, y: number, z: number, yaw: number): boolean;
+  actorInput(forward: number, strafe: number, yaw: number): boolean;
+  actorPosition(): Float32Array;
+  actorActions(): Uint32Array;
+  actorAttack(id: number): boolean;
+  actorCanWalk(): boolean;
+  clearActor(): void;
+  frame(time: number): boolean;
+  resize(width: number, height: number): void;
+  free(): void;
+}
+
+export interface Xv2WorldFrameStats {
+  frameCalls: number;
+  actorUpdates: number;
+  presentRequests: number;
+  lastFrameSubmitted: boolean;
+  lastFrameAccepted: boolean;
+  frameCpuMs: number | null;
+  actorStepCpuMs: number | null;
+  actorSkinUploadCpuMs: number | null;
+  renderSubmitCpuMs: number | null;
+  inputIntervalMs: number | null;
+  gpuTimeMs: null;
+  gpuTimingAvailable: false;
+  surfaceFormat: string;
+  viewFormat: string;
+  staticDrawCalls: number;
+  staticInstanceDraws: number;
+  staticTriangles: number;
+  actorDrawCalls: number;
+  actorVertices: number;
+  actorUploadBytesPerUpdate: number;
+}
+
+export interface Xv2WorldTextureProfile {
+  budgetBytes: number;
+  originalBytes: number;
+  decodedBytes: number;
+  textureCount: number;
+  reducedTextureCount: number;
+  choices: { bank: number; texture: number; mip: number; width: number; height: number }[];
+}
+
 export interface Xv2CharacterRenderer {
   /** Animation names, in the slot order accepted by `play`. */
   animations(): string[];
@@ -64,12 +134,21 @@ export interface MangaSceneHandle extends EngineRenderer {
 }
 
 export interface EngineGlue {
+  inspectXv2StageLayout(bytes: Uint8Array, lodIndex?: number): Xv2StageLayoutInfo;
+  inspectXv2Animations(bytes: Uint8Array): Xv2AnimationInfo[];
   createGlbModel(canvas: HTMLCanvasElement, bytes: Uint8Array): Promise<GlbSceneRenderer>;
+  createXv2World(canvas: HTMLCanvasElement, parts: Xv2WorldPartBytes[]): Promise<Xv2WorldRenderer>;
   createXv2Character(
     canvas: HTMLCanvasElement,
     esk: Uint8Array,
     ean: Uint8Array,
-    parts: { emd: Uint8Array; emb?: Uint8Array; emm?: Uint8Array; dyt?: Uint8Array }[],
+    parts: {
+      emd: Uint8Array;
+      emb?: Uint8Array;
+      emm?: Uint8Array;
+      dyt?: Uint8Array;
+      esk?: Uint8Array;
+    }[],
   ): Promise<Xv2CharacterRenderer>;
   createXv2Duel(
     canvas: HTMLCanvasElement,
@@ -91,11 +170,30 @@ export interface EngineGlue {
   ): Promise<MangaSceneHandle>;
 }
 
+export interface Xv2AnimationInfo {
+  index: number;
+  name: string;
+  frameCount: number;
+}
+
+export interface Xv2StageLayoutInfo {
+  resources: { nsk: string[]; emb: string[]; emm: string[]; ema: string[] };
+  instances: { nsk: number; emb?: number; emm?: number; matrix: number[] }[];
+  spawns: { name: string; matrix: number[] }[];
+  lodIndex: number;
+}
+
 /** One fighter's files: skeleton, animations, parts, and optional actions and damage. */
 export interface Xv2FighterBytes {
   esk: Uint8Array;
   ean: Uint8Array;
-  parts: { emd: Uint8Array; emb?: Uint8Array; emm?: Uint8Array; dyt?: Uint8Array }[];
+  parts: {
+    emd: Uint8Array;
+    emb?: Uint8Array;
+    emm?: Uint8Array;
+    dyt?: Uint8Array;
+    esk?: Uint8Array;
+  }[];
   bac?: Uint8Array;
   bdm?: Uint8Array;
 }

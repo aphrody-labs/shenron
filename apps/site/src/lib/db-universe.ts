@@ -24,6 +24,7 @@ import { foldText } from "@aphrody/shenron-config/slug";
 import { escapeLike } from "@aphrody/shenron-db/repos/wiki";
 import { db } from "@/lib/db";
 import { API_URL } from "@/lib/config";
+import { verifyWikimediaImages, withVerifiedImages } from "@/lib/wikimedia-images";
 import { chatAphrodyRag, searchAphrodyRag, usesAphrodyRag } from "@/lib/site-rag";
 import {
   botArcs,
@@ -2932,19 +2933,21 @@ export const dbUniverse = {
         .from(botVoiceActors)
         .where(and(...conditions))
         .orderBy(asc(botVoiceActors.id));
-      return rows.map((r) => ({
-        id: r.id,
-        slug: r.slug,
-        name: r.name,
-        name_ja: r.nameJa,
-        nationality: r.nationality,
-        birth_date: r.birthDate,
-        roles: r.roles,
-        biography: r.biography,
-        image: r.image,
-        article: r.article ?? null,
-        article_sources: r.articleSources ?? null,
-      }));
+      return withVerifiedImages(
+        rows.map((r) => ({
+          id: r.id,
+          slug: r.slug,
+          name: r.name,
+          name_ja: r.nameJa,
+          nationality: r.nationality,
+          birth_date: r.birthDate,
+          roles: r.roles,
+          biography: r.biography,
+          image: r.image,
+          article: r.article ?? null,
+          article_sources: r.articleSources ?? null,
+        })),
+      );
     }),
 
   voiceActorBySlug: (slug: string) =>
@@ -2955,6 +2958,9 @@ export const dbUniverse = {
         .where(and(eq(botVoiceActors.slug, slug), eq(botVoiceActors.visible, true)))
         .limit(1);
       if (!r) return null;
+      const image = r.image
+        ? ((await verifyWikimediaImages([r.image])).get(r.image) ?? null)
+        : null;
       return {
         id: r.id,
         slug: r.slug,
@@ -2964,7 +2970,7 @@ export const dbUniverse = {
         birth_date: r.birthDate,
         roles: r.roles,
         biography: r.biography,
-        image: r.image,
+        image,
         article: r.article ?? null,
         article_sources: r.articleSources ?? null,
       };
@@ -3041,19 +3047,21 @@ export const dbUniverse = {
         .where(and(...conditions))
         .orderBy(asc(botContributors.spotlightRank), asc(botContributors.name));
 
-      return rows.map((r) => ({
-        id: Number(r.id),
-        slug: r.slug,
-        name: r.name,
-        name_ja: r.nameJa,
-        name_romaji: r.nameRomaji,
-        category: r.category,
-        birth_date: r.birthDate,
-        death_date: r.deathDate,
-        biography_fr: r.biographyFr,
-        image: r.image,
-        spotlight_rank: r.spotlightRank,
-      }));
+      return withVerifiedImages(
+        rows.map((r) => ({
+          id: Number(r.id),
+          slug: r.slug,
+          name: r.name,
+          name_ja: r.nameJa,
+          name_romaji: r.nameRomaji,
+          category: r.category,
+          birth_date: r.birthDate,
+          death_date: r.deathDate,
+          biography_fr: r.biographyFr,
+          image: r.image,
+          spotlight_rank: r.spotlightRank,
+        })),
+      );
     }),
 
   contributorBySlug: (slug: string) =>
@@ -3064,6 +3072,9 @@ export const dbUniverse = {
         .where(and(eq(botContributors.slug, slug), eq(botContributors.visible, true)))
         .limit(1);
       if (!r) return null;
+      const image = r.image
+        ? ((await verifyWikimediaImages([r.image])).get(r.image) ?? null)
+        : null;
 
       const credits = await db
         .select()
@@ -3085,7 +3096,7 @@ export const dbUniverse = {
         birth_date: r.birthDate,
         death_date: r.deathDate,
         biography_fr: r.biographyFr,
-        image: r.image,
+        image,
         spotlight_rank: r.spotlightRank,
         credits: credits.map((c) => ({
           id: Number(c.id),

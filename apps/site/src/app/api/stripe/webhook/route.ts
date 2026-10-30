@@ -44,10 +44,7 @@ export async function POST(req: NextRequest) {
           const stripeSubscriptionId = session.subscription as string;
 
           if (userId && userId !== "guest" && stripeCustomerId) {
-            await db
-              .update(baUser)
-              .set({ stripeCustomerId })
-              .where(eq(baUser.id, userId));
+            await db.update(baUser).set({ stripeCustomerId }).where(eq(baUser.id, userId));
           }
 
           if (stripeSubscriptionId) {
@@ -93,9 +90,7 @@ export async function POST(req: NextRequest) {
         const periodStart = sub.current_period_start
           ? new Date(sub.current_period_start * 1000)
           : null;
-        const periodEnd = sub.current_period_end
-          ? new Date(sub.current_period_end * 1000)
-          : null;
+        const periodEnd = sub.current_period_end ? new Date(sub.current_period_end * 1000) : null;
 
         await db
           .update(baSubscription)

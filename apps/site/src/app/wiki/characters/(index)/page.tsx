@@ -130,7 +130,8 @@ export default async function PersonnagesPage() {
             {dragonsShown.map((dragon) => (
               <li
                 key={dragon.id}
-                className="flex items-center gap-4 rounded-xl border border-white/[0.08] bg-dbz-card/70 p-4"
+                id={dragon.slug ? `dragon-${dragon.slug}` : undefined}
+                className="scroll-mt-24 flex items-center gap-4 rounded-xl border border-white/[0.08] bg-dbz-card/70 p-4"
               >
                 {/* `image` est un chemin d'asset brut de la base (`./assets/wiki/…`) :
                     `WikiImg` le résout vers l'hôte d'assets et retombe sur un repère

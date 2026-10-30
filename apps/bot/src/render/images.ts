@@ -97,8 +97,8 @@ export async function avatarImage(
   return source.avatar(url).catch(() => null);
 }
 
-/** The DB Super style wordmark of the site: own asset first, then the UI source file. */
-export const WORDMARK_REFS = [RENDER_ASSET_FILES[0], "ui:brand/dragon-ball-wordmark.svg"] as const;
+/** The DRAGONBALL.FR logo of the site: own asset first, then the UI source file. */
+export const WORDMARK_REFS = [RENDER_ASSET_FILES[0], "ui:brand/dragonballfr-logo.svg"] as const;
 
 export const loadWordmark = (source: ImageSource): Promise<Image | null> =>
   firstImage(source, WORDMARK_REFS);

@@ -54,5 +54,11 @@
   },
   "catalogueTitle": "Looking for the official games?",
   "catalogueDescription": "Sparking! ZERO, Kakarot, Xenoverse, Legends… Discover their entries in the encyclopedia.",
-  "catalogueAction": "Browse the game catalogue"
+  "catalogueAction": "Browse the game catalogue",
+  "bt3": {
+    "name": "Dragon Ball Z: Budokai Tenkaichi 3",
+    "category": "Fighting · Experimental",
+    "description": "Run Budokai Tenkaichi 3 in your browser with your own disc image. The file stays on your device and is never uploaded.",
+    "action": "Launch Budokai Tenkaichi 3"
+  }
 }

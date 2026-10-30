@@ -47,9 +47,7 @@ export function DonationsClientView() {
 
       {/* Paliers visuels */}
       <div className="mt-16">
-        <h3 className="text-center font-bold text-lg text-white mb-6">
-          Les Paliers d'Énergie
-        </h3>
+        <h3 className="text-center font-bold text-lg text-white mb-6">Les Paliers d'Énergie</h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {DONATION_TIERS.map((tier) => (
             <div
@@ -90,7 +88,9 @@ export function DonationsClientView() {
         </div>
 
         {loading ? (
-          <div className="py-8 text-center text-xs text-neutral-500">Chargement des donateurs...</div>
+          <div className="py-8 text-center text-xs text-neutral-500">
+            Chargement des donateurs...
+          </div>
         ) : donations.length === 0 ? (
           <div className="py-8 text-center text-xs text-neutral-500">
             Soyez le premier à offrir votre énergie pour inaugurer le mur !

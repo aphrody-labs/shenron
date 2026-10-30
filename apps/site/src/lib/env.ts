@@ -1,6 +1,7 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
+import { DEFAULT_SITE_SURFACE } from "@aphrody/shenron-config/game";
 
 /**
  * Env typé site (Next 16). Validation au boot, échec rapide en prod.
@@ -9,6 +10,7 @@ import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
  */
 export const env = createEnv({
   server: {
+    SHENRON_SITE_SURFACE: z.enum(["site", "game"]).default(DEFAULT_SITE_SURFACE),
     SHENRON_HOME: z.string().trim().min(1).optional(),
     SHENRON_CANON_YOLO_ENABLED: z.enum(["0", "1"]).default("0"),
     SHENRON_CANON_YOLO_MODEL: z.string().trim().min(1).max(256).optional(),
@@ -65,6 +67,8 @@ export const env = createEnv({
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   },
   client: {
+    NEXT_PUBLIC_GAME_URL: z.string().url().optional(),
+    NEXT_PUBLIC_GAME_API_URL: z.string().url().optional(),
     NEXT_PUBLIC_SHENRON_ASSETS_URL: z.string().url().optional(),
     // Base publique de l'API bot (assets self-hostés) — utilisable côté client
     // (ex. assetUrl dans le jeu 2048). Distincte de SHENRON_API_URL (server-only).
@@ -87,6 +91,8 @@ export const env = createEnv({
     NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION: z.string().optional(),
   },
   experimental__runtimeEnv: {
+    NEXT_PUBLIC_GAME_URL: process.env.NEXT_PUBLIC_GAME_URL,
+    NEXT_PUBLIC_GAME_API_URL: process.env.NEXT_PUBLIC_GAME_API_URL,
     NEXT_PUBLIC_SHENRON_ASSETS_URL: process.env.NEXT_PUBLIC_SHENRON_ASSETS_URL,
     NEXT_PUBLIC_SHENRON_API_URL: process.env.NEXT_PUBLIC_SHENRON_API_URL,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,

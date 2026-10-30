@@ -1332,6 +1332,25 @@
         "board": "Tic-tac-toe board, arrow keys move between squares",
         "cell": "Row {row}, column {col}: {state}",
         "empty": "empty square"
+      },
+      "bt3": {
+        "cardDescription": "Budokai Tenkaichi 3 in your browser: load your own disc image, it stays on your device.",
+        "title": "Dragon Ball Z: Budokai Tenkaichi 3",
+        "lead": "Play Budokai Tenkaichi 3 in your browser, with WebAssembly and WebGPU. Pick your disc image (.rvz, .iso): it is read locally and never uploaded.",
+        "pick": "Choose my disc",
+        "none": "No file",
+        "formats": "Formats: .rvz, .iso",
+        "start": "Start the game",
+        "reading": "Reading locally: {done} / {total} GB",
+        "initialising": "Starting Budokai Tenkaichi 3…",
+        "running": "Running. Reload the page to change disc.",
+        "error": "Cannot start this disc: {error}",
+        "noWebgpu": "WebGPU is not available in this browser. Use a recent Chrome or Edge.",
+        "experimental": "Experimental: the game runs without just-in-time compilation in the browser, far below normal speed, and may show a black screen at startup. The optimised port is in progress.",
+        "legal": "You must supply your own legal copy of the game. This site distributes neither the game nor any BIOS.",
+        "memory": "A multi-gigabyte disc image needs a lot of browser memory.",
+        "source": "Gecko emulation engine, GPL-3.0 licence: source code",
+        "screen": "Game screen"
       }
     },
     "classements": {

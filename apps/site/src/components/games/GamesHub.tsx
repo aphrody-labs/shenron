@@ -7,6 +7,7 @@ import {
   Grid2X2,
   Hand,
   MessageCircle,
+  MonitorPlay,
   Radar,
   ScanLine,
   Sparkles,
@@ -31,6 +32,7 @@ const games = [
 const explorers = [
   { id: "pixel", href: "/games/dragon-pixel", icon: Gamepad2 },
   { id: "xenoverse", href: "/games/xenoverse-2", icon: ScanLine },
+  { id: "bt3", href: "/games/budokai-tenkaichi-3", icon: MonitorPlay },
 ] as const;
 export function GamesHub() {
   const { locale } = useLangue();
@@ -66,7 +68,7 @@ export function GamesHub() {
         </a>
         <a href="#explorers">
           {t.explorersTitle}
-          <span>02</span>
+          <span>03</span>
         </a>
         <a href="#discord-games">
           {t.discordTitle}

@@ -11,6 +11,7 @@
  */
 import { createHash } from "node:crypto";
 import { readdirSync, statSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join, relative } from "node:path";
 import { livePrefix, mintClient, publishItems, type CdnItem } from "./web-engine-cdn";
 
@@ -60,7 +61,8 @@ const entries = Object.fromEntries(
     },
   ]),
 );
-const entriesFile = "/tmp/cdn-wasm-entries.json";
+// The local file lives in the OS temp dir (a literal /tmp does not exist on Windows); the remote path stays /tmp.
+const entriesFile = join(tmpdir(), "cdn-wasm-entries.json");
 await Bun.write(entriesFile, JSON.stringify(entries));
 const run = async (cmd: string[]) => {
   const p = Bun.spawn(cmd, { stdout: "inherit", stderr: "inherit" });

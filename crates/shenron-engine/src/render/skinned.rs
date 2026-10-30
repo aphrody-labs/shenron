@@ -10,7 +10,8 @@
 use super::model_serve::ModelVertex;
 use glam::{Mat4, Quat, Vec3};
 use shenron_re::formats::{
-    EanAnimation, EanChannel, EanFile, EmbRgbaTexture, EmdFile, EmmFile, EskBone, LocalPose,
+    EanAnimation, EanChannel, EanFile, EmbRgbaTexture, EmdFile, EmmFile, EmmMaterial, EskBone,
+    LocalPose,
 };
 
 /// One `.emd` model of a character with its `.emb` textures, optional `.emm` materials and
@@ -43,6 +44,8 @@ pub struct SkinnedPart {
     pub texture: Option<usize>,
     /// Dye ramp texture (index into [`SkinnedCharacter::textures`]) and its line.
     pub dye: Option<(usize, u32)>,
+    /// Original named material, retained for the verified STAIN shader parameters.
+    pub material: Option<EmmMaterial>,
 }
 
 /// A character ready to pose: skeleton, rest inverses, parts and decoded textures.
@@ -105,6 +108,93 @@ fn rest_pose(bones: &[EskBone]) -> Vec<LocalPose> {
         .collect()
 }
 
+#[derive(Debug, thiserror::Error, PartialEq)]
+pub enum SkeletonMergeError {
+    #[error("Ambiguous skeleton bone: {0}")]
+    Ambiguous(String),
+    #[error("Secondary bone has no existing attachment: {0}")]
+    Unattached(String),
+    #[error("Invalid secondary skeleton hierarchy or transform: {0}")]
+    Invalid(String),
+    #[error("Character skeleton exceeds 65535 bones")]
+    TooManyBones,
+}
+
+/// Attach required secondary bones to exact shared names in the main skeleton.
+/// Shared bones are attachment markers, not replacements for the main character rig.
+/// New descendants retain their original local rest transforms; no SCD physics is inferred.
+/// Validation is atomic: an incompatible part leaves the caller's skeleton unchanged.
+pub fn merge_secondary_skeleton(
+    bones: &mut Vec<EskBone>,
+    secondary: &[EskBone],
+    required: &[String],
+) -> Result<(), SkeletonMergeError> {
+    use std::collections::{HashMap, HashSet};
+    let mut names = HashMap::new();
+    for (index, bone) in bones.iter().enumerate() {
+        if names.insert(bone.name.clone(), index).is_some() {
+            return Err(SkeletonMergeError::Ambiguous(bone.name.clone()));
+        }
+    }
+    let mut source_names = HashMap::new();
+    for (index, bone) in secondary.iter().enumerate() {
+        if source_names.insert(bone.name.as_str(), index).is_some() {
+            return Err(SkeletonMergeError::Ambiguous(bone.name.clone()));
+        }
+    }
+    fn attach(
+        index: usize,
+        source: &[EskBone],
+        merged: &mut Vec<EskBone>,
+        names: &mut HashMap<String, usize>,
+        visiting: &mut HashSet<usize>,
+    ) -> Result<usize, SkeletonMergeError> {
+        let bone =
+            source.get(index).ok_or_else(|| SkeletonMergeError::Invalid(index.to_string()))?;
+        if let Some(&target) = names.get(&bone.name) {
+            return Ok(target);
+        }
+        if !visiting.insert(index) || visiting.len() > 256 {
+            return Err(SkeletonMergeError::Invalid(bone.name.clone()));
+        }
+        let pose =
+            LocalPose { translation: bone.translation, rotation: bone.rotation, scale: bone.scale };
+        if !bone.translation.iter().chain(&bone.rotation).chain(&bone.scale).all(|v| v.is_finite())
+            || Quat::from_array(bone.rotation).length_squared() <= f32::EPSILON
+            || bone.scale.iter().any(|v| v.abs() <= f32::EPSILON)
+            || !local_matrix(&pose).is_finite()
+        {
+            return Err(SkeletonMergeError::Invalid(bone.name.clone()));
+        }
+        let parent =
+            bone.parent_index.ok_or_else(|| SkeletonMergeError::Unattached(bone.name.clone()))?;
+        let parent = attach(parent, source, merged, names, visiting)?;
+        if merged.len() >= u16::MAX as usize {
+            return Err(SkeletonMergeError::TooManyBones);
+        }
+        visiting.remove(&index);
+        let index = merged.len();
+        let mut appended = bone.clone();
+        appended.index = index;
+        appended.parent_index = Some(parent);
+        merged.push(appended);
+        names.insert(bone.name.clone(), index);
+        Ok(index)
+    }
+    let mut merged = bones.clone();
+    for name in required {
+        if names.contains_key(name) {
+            continue;
+        }
+        let index = source_names
+            .get(name.as_str())
+            .ok_or_else(|| SkeletonMergeError::Unattached(name.clone()))?;
+        attach(*index, secondary, &mut merged, &mut names, &mut HashSet::new())?;
+    }
+    *bones = merged;
+    Ok(())
+}
+
 impl SkinnedCharacter {
     /// Builds a character from its skeleton and parts. Every submesh samples the part's
     /// texture named by its first sampler, and the dye line of its same-named material.
@@ -148,6 +238,7 @@ impl SkinnedCharacter {
                             .and_then(|m| m.find(&sub.material_name))
                             .and_then(|m| m.dye_line()),
                     ),
+                    material: materials.as_ref().and_then(|m| m.find(&sub.material_name)).cloned(),
                 };
                 for v in &sub.vertices {
                     part.positions.push(Vec3::from_array(v.position));
@@ -267,27 +358,81 @@ pub type ToonUniforms = super::ModelUniforms;
 pub struct ToonMaterial {
     pub dye_v: f32,
     pub has_dye: f32,
-    pub _pad: [f32; 2],
+    pub stain_count: f32,
+    pub edge_scale: f32,
+    pub stain0: [f32; 4],
+    pub stain1: [f32; 4],
+    pub stain2: [f32; 4],
+    pub stain_weights: [f32; 4],
 }
-
-/// Rows per dye line in a `.dyt.emb` ramp; the lit ramp is the line's first rows.
-pub const DYE_LINE_ROWS: u32 = 16;
 
 impl ToonMaterial {
     pub fn for_line(line: Option<u32>, dye_height: u32) -> Self {
         match line {
             Some(l) if dye_height > 0 => Self {
-                dye_v: ((l * DYE_LINE_ROWS) as f32 + 1.5) / dye_height as f32,
+                // Original TOON_UNIF_STAIN2_DFD pixel shader: line * 0.125 + 0.015625.
+                // Normalized addressing is independent of the DDS raster dimensions.
+                dye_v: l as f32 * 0.125 + 0.015625,
                 has_dye: 1.0,
-                _pad: [0.0; 2],
+                stain_count: 0.0,
+                edge_scale: 0.0,
+                stain0: [0.0; 4],
+                stain1: [0.0; 4],
+                stain2: [0.0; 4],
+                stain_weights: [0.0; 4],
             },
-            _ => Self { dye_v: 0.0, has_dye: 0.0, _pad: [0.0; 2] },
+            _ => Self {
+                dye_v: 0.0,
+                has_dye: 0.0,
+                stain_count: 0.0,
+                edge_scale: 0.0,
+                stain0: [0.0; 4],
+                stain1: [0.0; 4],
+                stain2: [0.0; 4],
+                stain_weights: [0.0; 4],
+            },
         }
+    }
+
+    /// Only the three original STAIN1/2/3_DFD programs inspected in the CPK are supported.
+    /// Other programs keep their palette without an invented ink or stain multiplier.
+    pub fn for_material(
+        line: Option<u32>,
+        dye_height: u32,
+        material: Option<&EmmMaterial>,
+    ) -> Self {
+        let mut uniforms = Self::for_line(line, dye_height);
+        let Some(material) = material else { return uniforms };
+        uniforms.stain_count = match material.shader_program.as_str() {
+            "TOON_UNIF_STAIN1_DFD" => 1.0,
+            "TOON_UNIF_STAIN2_DFD" => 2.0,
+            "TOON_UNIF_STAIN3_DFD" => 3.0,
+            _ => return uniforms,
+        };
+        let color = |index| {
+            [
+                material.parameter(&format!("MatCol{index}R")).unwrap_or(0.0),
+                material.parameter(&format!("MatCol{index}G")).unwrap_or(0.0),
+                material.parameter(&format!("MatCol{index}B")).unwrap_or(0.0),
+                material.parameter(&format!("MatCol{index}A")).unwrap_or(1.0),
+            ]
+        };
+        uniforms.stain0 = color(0);
+        uniforms.stain1 = color(1);
+        uniforms.stain2 = color(2);
+        uniforms.stain_weights = [
+            material.parameter("MatCol3R").unwrap_or(0.0),
+            material.parameter("MatCol3G").unwrap_or(0.0),
+            0.0,
+            0.0,
+        ];
+        uniforms.edge_scale = material.parameter("MatScale1W").unwrap_or(1.0);
+        uniforms
     }
 }
 
-/// XV2 toon shading: a two-tone lambert term indexes the bright half of the material's dye
-/// ramp, the line map's alpha draws ink lines and its red channel darkens stains.
+/// The original STAIN2 diffuse ramp maps the full clamped half-Lambert term to DYT U.
+/// The source mask is sampled as data; its channels must not receive sRGB decoding.
 pub const XV2_TOON_WGSL: &str = r#"
 struct Uniforms {
     view_proj: mat4x4<f32>,
@@ -297,7 +442,10 @@ struct Uniforms {
     ambient: vec4<f32>,
     rim_color: vec4<f32>,
 };
-struct Material { dye_v: f32, has_dye: f32, pad: vec2<f32> };
+struct Material {
+    dye_v: f32, has_dye: f32, stain_count: f32, edge_scale: f32,
+    stain0: vec4<f32>, stain1: vec4<f32>, stain2: vec4<f32>, stain_weights: vec4<f32>,
+};
 
 @group(0) @binding(0) var<uniform> u: Uniforms;
 @group(1) @binding(0) var t_line: texture_2d<f32>;
@@ -314,6 +462,7 @@ struct VertexOutput {
     @builtin(position) clip_position: vec4<f32>,
     @location(0) world_normal: vec3<f32>,
     @location(1) uv: vec2<f32>,
+    @location(2) clip_w: f32,
 };
 
 @vertex
@@ -321,6 +470,7 @@ fn vs_main(in: VertexInput) -> VertexOutput {
     var out: VertexOutput;
     let world = u.model * vec4<f32>(in.position, 1.0);
     out.clip_position = u.view_proj * world;
+    out.clip_w = out.clip_position.w;
     out.world_normal = normalize((u.model * vec4<f32>(in.normal, 0.0)).xyz);
     out.uv = in.uv;
     return out;
@@ -330,18 +480,27 @@ fn vs_main(in: VertexInput) -> VertexOutput {
 fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
     let line = textureSampleLevel(t_line, s_linear, in.uv, 0.0);
     let n_dot_l = dot(normalize(in.world_normal), normalize(u.light_dir));
-    // Two-tone toon: lit faces read the bright end of the dye ramp, shadowed faces its
-    // middle; stains (line map red) pull toward the shadow tone.
-    let toon = smoothstep(-0.1, 0.2, n_dot_l) * (1.0 - 0.4 * line.r);
     var color: vec3<f32>;
     if (m.has_dye > 0.5) {
-        let ramp_u = mix(0.6, 0.96, toon);
+        let ramp_u = clamp((n_dot_l + 1.0) * 0.5, 0.0, 1.0);
         color = textureSampleLevel(t_dye, s_linear, vec2<f32>(ramp_u, m.dye_v), 0.0).rgb;
+        if (m.stain_count > 0.5) {
+            // Original STAIN pixel shader with unit-scale character transforms.
+            // XenoKit's g_vParam7 = (0, 23.2558, 0.04587, 0) controls the detail threshold.
+            let detail = 0.04587 * (1.0 - smoothstep(0.0, 23.2558, in.clip_w)) * m.edge_scale;
+            var stain = mix(vec3<f32>(1.0), m.stain0.rgb, step(0.5 + detail, line.a));
+            if (m.stain_count > 1.5) {
+                stain = mix(stain, m.stain1.rgb, line.r * m.stain_weights.x);
+            }
+            if (m.stain_count > 2.5) {
+                stain = mix(stain, m.stain2.rgb, line.g * m.stain_weights.y);
+            }
+            color *= stain;
+        }
     } else {
         color = line.rgb * (u.ambient.rgb + vec3<f32>(select(0.55, 1.0, n_dot_l > 0.15)));
     }
-    let ink = smoothstep(0.55, 0.8, line.a) * m.has_dye;
-    return vec4<f32>(color * (1.0 - 0.9 * ink), 1.0);
+    return vec4<f32>(color, 1.0);
 }
 "#;
 
@@ -460,6 +619,7 @@ impl Xv2ToonPipeline {
             rim_power: 3.5,
             ambient_color: [0.25, 0.25, 0.28, 1.0],
             rim_color: [1.0, 0.88, 0.6, 1.0],
+            camera_position: camera.eye_position().extend(1.0).to_array(),
         };
         queue.write_buffer(&self.uniform_buffer, 0, bytemuck::cast_slice(&[uniforms]));
     }
@@ -489,23 +649,29 @@ impl SkinnedGpuCharacter {
             ..Default::default()
         });
         let texture = |width: u32, height: u32, rgba: &[u8]| {
-            device
-                .create_texture_with_data(
-                    queue,
-                    &wgpu::TextureDescriptor {
-                        label: Some("xv2 texture"),
-                        size: wgpu::Extent3d { width, height, depth_or_array_layers: 1 },
-                        mip_level_count: 1,
-                        sample_count: 1,
-                        dimension: wgpu::TextureDimension::D2,
-                        format: wgpu::TextureFormat::Rgba8UnormSrgb,
-                        usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
-                        view_formats: &[],
-                    },
-                    wgpu::util::TextureDataOrder::LayerMajor,
-                    rgba,
-                )
-                .create_view(&wgpu::TextureViewDescriptor::default())
+            let texture = device.create_texture_with_data(
+                queue,
+                &wgpu::TextureDescriptor {
+                    label: Some("xv2 texture"),
+                    size: wgpu::Extent3d { width, height, depth_or_array_layers: 1 },
+                    mip_level_count: 1,
+                    sample_count: 1,
+                    dimension: wgpu::TextureDimension::D2,
+                    format: wgpu::TextureFormat::Rgba8Unorm,
+                    usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
+                    view_formats: &[wgpu::TextureFormat::Rgba8UnormSrgb],
+                },
+                wgpu::util::TextureDataOrder::LayerMajor,
+                rgba,
+            );
+            // One upload, two compatible views: masks are data, diffuse/DYT are sRGB colors.
+            (
+                texture.create_view(&wgpu::TextureViewDescriptor::default()),
+                texture.create_view(&wgpu::TextureViewDescriptor {
+                    format: Some(wgpu::TextureFormat::Rgba8UnormSrgb),
+                    ..Default::default()
+                }),
+            )
         };
         let fallback = texture(1, 1, &[200, 200, 200, 0]);
         let views: Vec<_> =
@@ -529,10 +695,15 @@ impl SkinnedGpuCharacter {
                     usage: wgpu::BufferUsages::INDEX,
                 });
                 let line = part.texture.and_then(|t| views.get(t)).unwrap_or(&fallback);
-                let dye = part.dye.and_then(|(t, _)| views.get(t)).unwrap_or(&fallback);
+                let line = if part.dye.is_some() { &line.0 } else { &line.1 };
+                let dye = &part.dye.and_then(|(t, _)| views.get(t)).unwrap_or(&fallback).1;
                 let dye_height =
                     part.dye.and_then(|(t, _)| character.textures.get(t)).map_or(0, |t| t.height);
-                let material = ToonMaterial::for_line(part.dye.map(|(_, l)| l), dye_height);
+                let material = ToonMaterial::for_material(
+                    part.dye.map(|(_, l)| l),
+                    dye_height,
+                    part.material.as_ref(),
+                );
                 let material = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
                     label: Some("xv2 material"),
                     contents: bytemuck::cast_slice(&[material]),
@@ -586,6 +757,7 @@ impl SkinnedGpuCharacter {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use shenron_re::formats::EskFile;
     use shenron_re::formats::emd::encode_emd;
 
     fn bones() -> Vec<EskBone> {
@@ -599,6 +771,233 @@ mod tests {
                 ..Default::default()
             },
         ]
+    }
+
+    #[test]
+    fn toon_shader_validates_and_material_uniform_layout_matches_wgsl() {
+        let module =
+            naga::front::wgsl::parse_str(XV2_TOON_WGSL).expect("parse original-ramp shader");
+        naga::valid::Validator::new(
+            naga::valid::ValidationFlags::all(),
+            naga::valid::Capabilities::empty(),
+        )
+        .validate(&module)
+        .expect("validate original-ramp shader");
+        let material =
+            module.types.iter().find(|(_, ty)| ty.name.as_deref() == Some("Material")).unwrap().1;
+        let naga::TypeInner::Struct { members, span } = &material.inner else {
+            panic!("material must be a struct")
+        };
+        assert_eq!(*span as usize, std::mem::size_of::<ToonMaterial>());
+        assert_eq!(
+            members.iter().map(|member| member.offset).collect::<Vec<_>>(),
+            [0, 4, 8, 12, 16, 32, 48, 64]
+        );
+        for line in 0..8 {
+            let expected = line as f32 / 8.0 + 1.0 / 64.0;
+            assert_eq!(ToonMaterial::for_line(Some(line), 128).dye_v, expected);
+            assert_eq!(ToonMaterial::for_line(Some(line), 256).dye_v, expected);
+        }
+        assert_eq!(ToonMaterial::for_line(None, 128).has_dye, 0.0);
+        assert_eq!(ToonMaterial::for_line(Some(0), 0).has_dye, 0.0);
+    }
+
+    #[test]
+    fn original_goku_material_rows_select_orange_gi_and_blue_boots_when_provided() {
+        use shenron_re::formats::{EmbFile, EmmFile};
+        let Ok(dir) = std::env::var("SHENRON_REAL_GOK_MATERIALS") else { return };
+        for (part, name, normal_dot_light, expected) in [
+            ("Bust", "dougi_syatu", 0.6875f32, [224u8, 53, 0]),
+            ("Boots", "boots_A", 0.90625, [55, 79, 109]),
+        ] {
+            let read = |extension: &str| {
+                std::fs::read(format!("{dir}/GOK_000_{part}.{extension}")).unwrap()
+            };
+            let materials = EmmFile::parse(&read("emm")).unwrap();
+            let material = materials.find(name).unwrap();
+            let palette = EmbFile::parse(&read("dyt.emb")).unwrap().decode_rgba(0).unwrap();
+            let uniforms =
+                ToonMaterial::for_material(material.dye_line(), palette.height, Some(material));
+            assert_eq!(uniforms.stain_count, 2.0);
+            assert_eq!(uniforms.stain0, [0.0, 0.0, 0.0, 1.0]);
+            assert_eq!(uniforms.stain1, [0.0, 0.0, 0.0, 1.0]);
+            assert_eq!(uniforms.stain_weights[0], 0.0);
+            assert_eq!(uniforms.edge_scale, 1.0);
+            // Original DXBC add +1, mul_sat *0.5, then sample t4 at the material row.
+            let u = ((normal_dot_light + 1.0) * 0.5).clamp(0.0, 1.0);
+            let x = (u * palette.width as f32).floor() as usize;
+            let y = (uniforms.dye_v * palette.height as f32).floor() as usize;
+            let pixel = &palette.rgba[(y * palette.width as usize + x) * 4..][..3];
+            for (&actual, expected) in pixel.iter().zip(expected) {
+                assert!(actual.abs_diff(expected) <= 2, "{part}/{name}: {pixel:?}");
+            }
+        }
+    }
+
+    #[test]
+    fn stains_are_selected_by_verified_shader_and_keep_authored_colors_and_weights() {
+        use shenron_re::formats::emm::encode_emm;
+        let materials = EmmFile::parse(&encode_emm(&[
+            (
+                "skin",
+                "TOON_UNIF_STAIN3_DFD",
+                &[
+                    ("MatScale1X", 3.0),
+                    ("MatCol0R", 0.1),
+                    ("MatCol1G", 0.25),
+                    ("MatCol2B", 0.75),
+                    ("MatCol3R", 0.0),
+                    ("MatCol3G", 0.5),
+                    ("MatScale1W", 0.8),
+                ],
+            ),
+            ("unverified", "TOON_UNIF_STAIN3_UNKNOWN", &[("MatScale1X", 0.0)]),
+        ]))
+        .unwrap();
+        let skin = materials.find("skin").unwrap();
+        let material = ToonMaterial::for_material(skin.dye_line(), 128, Some(skin));
+        assert_eq!(material.stain_count, 3.0);
+        assert_eq!(material.stain0[0], 0.1);
+        assert_eq!(material.stain1[1], 0.25);
+        assert_eq!(material.stain2[2], 0.75);
+        assert_eq!(material.stain_weights, [0.0, 0.5, 0.0, 0.0]);
+        assert_eq!(material.edge_scale, 0.8);
+        let unknown = materials.find("unverified").unwrap();
+        assert_eq!(
+            ToonMaterial::for_material(unknown.dye_line(), 128, Some(unknown)).stain_count,
+            0.0
+        );
+    }
+
+    #[test]
+    fn secondary_bones_follow_the_real_attachment_and_preserve_rest_vertices() {
+        let mut main = bones();
+        let secondary = vec![
+            EskBone { name: "arm".into(), ..Default::default() },
+            EskBone {
+                index: 1,
+                name: "hair".into(),
+                parent_index: Some(0),
+                translation: [0.0, 0.5, 0.0],
+                ..Default::default()
+            },
+        ];
+        merge_secondary_skeleton(&mut main, &secondary, &["hair".into()]).unwrap();
+        assert_eq!(main.len(), 3);
+        assert_eq!(main[1].translation, [1.0, 0.0, 0.0]);
+        assert_eq!(main[2].parent_index, Some(1));
+        assert_eq!(main[2].translation, [0.0, 0.5, 0.0]);
+        let model =
+            EmdFile::parse(&encode_emd("hair", &[[1.0, 0.5, 0.0]; 3], &[0, 1, 2], &["hair"]))
+                .unwrap();
+        let mut character =
+            SkinnedCharacter::new(main, vec![CharacterPart::new(model, Vec::new())]);
+        let mut output = Vec::new();
+        character.skin(&character.parts[0], &character.skin_matrices(None, 0.0), &mut output);
+        assert!((Vec3::from_array(output[0].position) - Vec3::new(1.0, 0.5, 0.0)).length() < 1e-5);
+        character.bones[1].rotation = Quat::from_rotation_z(std::f32::consts::FRAC_PI_2).to_array();
+        character.skin(&character.parts[0], &character.skin_matrices(None, 0.0), &mut output);
+        assert!((Vec3::from_array(output[0].position) - Vec3::new(0.5, 0.0, 0.0)).length() < 1e-5);
+    }
+
+    #[test]
+    fn secondary_merge_rejects_ambiguous_unattached_cyclic_and_invalid_rigs_atomically() {
+        let mut main = bones();
+        let before = main.len();
+        let mut secondary = vec![
+            EskBone { name: "arm".into(), ..Default::default() },
+            EskBone { index: 1, name: "hair".into(), parent_index: Some(0), ..Default::default() },
+        ];
+        assert!(merge_secondary_skeleton(&mut main, &secondary, &["missing".into()]).is_err());
+        secondary[1].parent_index = Some(1);
+        assert!(merge_secondary_skeleton(&mut main, &secondary, &["hair".into()]).is_err());
+        secondary[1].parent_index = None;
+        assert!(merge_secondary_skeleton(&mut main, &secondary, &["hair".into()]).is_err());
+        secondary[1].parent_index = Some(0);
+        secondary[1].translation[0] = f32::NAN;
+        assert!(merge_secondary_skeleton(&mut main, &secondary, &["hair".into()]).is_err());
+        secondary[1].translation[0] = 0.0;
+        secondary.push(secondary[1].clone());
+        assert!(merge_secondary_skeleton(&mut main, &secondary, &["hair".into()]).is_err());
+        assert_eq!(main.len(), before);
+    }
+
+    #[test]
+    fn merges_real_goku_hair_when_provided() {
+        let Ok(dir) = std::env::var("SHENRON_REAL_GOK_HAIR") else { return };
+        let read = |name: &str| std::fs::read(format!("{dir}/{name}")).unwrap();
+        let mut main = EskFile::parse(&read("GOK_000.esk")).unwrap().bones;
+        let original_len = main.len();
+        let secondary = EskFile::parse(&read("GOK_000_hair_scd.esk")).unwrap();
+        let model = EmdFile::parse(&read("GOK_000_hair_scd.emd")).unwrap();
+        let required: Vec<String> =
+            model.submeshes().flat_map(|sub| sub.bone_names.clone()).collect();
+        merge_secondary_skeleton(&mut main, &secondary.bones, &required).unwrap();
+        assert_eq!(main.len(), original_len + 10);
+        for name in &required {
+            assert!(main.iter().any(|bone| &bone.name == name));
+        }
+        let head = main.iter().position(|bone| bone.name == "b_C_Head").unwrap();
+        let character = SkinnedCharacter::new(main, vec![CharacterPart::new(model, Vec::new())]);
+        let ean = EanFile::parse(&read("GOK.ean")).unwrap();
+        let animation = character.bind(&ean, ean.find("GOK_BAS_WALK").unwrap());
+        assert!(animation.bone_map.iter().flatten().all(|index| *index < original_len));
+        let rest_locals: Vec<Mat4> = rest_pose(&character.bones).iter().map(local_matrix).collect();
+        let rest_world = world_matrices(&character.bones, &rest_locals);
+        let source_head = secondary.bones.iter().position(|bone| bone.name == "b_C_Head").unwrap();
+        let mut relative_rest = Vec::new();
+        for (source_index, source) in secondary.bones.iter().enumerate() {
+            if !source.name.starts_with("SCD_Hair_") {
+                continue;
+            }
+            let mut cursor = source_index;
+            let mut relative = Mat4::IDENTITY;
+            while cursor != source_head {
+                let bone = &secondary.bones[cursor];
+                let pose = LocalPose {
+                    translation: bone.translation,
+                    rotation: bone.rotation,
+                    scale: bone.scale,
+                };
+                relative = local_matrix(&pose) * relative;
+                cursor = bone.parent_index.expect("hair chain must reach original head marker");
+            }
+            let target = character.bones.iter().position(|bone| bone.name == source.name).unwrap();
+            relative_rest.push((target, relative));
+        }
+        assert_eq!(relative_rest.len(), 10);
+        let mut output = Vec::new();
+        let mut initial_head: Option<Vec3> = None;
+        let mut moved_head = false;
+        for frame in [0.0, 10.0, 35.0, 69.0] {
+            let matrices = character.skin_matrices(Some(&animation), frame);
+            assert!(matrices[head].is_finite());
+            let head_world = matrices[head] * rest_world[head];
+            let head_position = head_world.transform_point3(Vec3::ZERO);
+            if let Some(initial) = initial_head {
+                moved_head |= (head_position - initial).length() > 1e-5;
+            } else {
+                initial_head = Some(head_position);
+            }
+            for (target, relative) in &relative_rest {
+                let expected = head_world * *relative;
+                let actual = matrices[*target] * rest_world[*target];
+                let error = actual
+                    .to_cols_array()
+                    .iter()
+                    .zip(expected.to_cols_array())
+                    .map(|(a, b)| (a - b).abs())
+                    .fold(0.0f32, f32::max);
+                assert!(error < 1e-4, "{} frame {frame}: {error}", character.bones[*target].name);
+            }
+            for part in &character.parts {
+                assert!(part.joints.iter().all(|joints| joints.iter().all(|joint| *joint != 0)));
+                character.skin(part, &matrices, &mut output);
+                assert!(!output.is_empty());
+                assert!(output.iter().all(|v| Vec3::from_array(v.position).is_finite()));
+            }
+        }
+        assert!(moved_head, "the original walk animation must actually move the attachment");
     }
 
     #[test]

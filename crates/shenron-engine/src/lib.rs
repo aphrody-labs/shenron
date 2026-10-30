@@ -33,6 +33,7 @@ pub mod game;
 pub mod render;
 pub mod wasm;
 pub mod wasm_xv2;
+pub mod world_actor;
 pub mod xv2_battle;
 pub mod xv2_fighter;
 

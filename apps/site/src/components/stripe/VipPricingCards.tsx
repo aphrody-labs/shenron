@@ -48,8 +48,8 @@ export function VipPricingCards() {
           Rejoignez l'Élite des Guerriers Z
         </h2>
         <p className="mx-auto mt-3 max-w-2xl text-sm sm:text-base text-neutral-400">
-          Profitez d'une expérience de lecture manga pure, sans interruption, avec des scans
-          en résolution originale et un accès exclusif aux archives inédites.
+          Profitez d'une expérience de lecture manga pure, sans interruption, avec des scans en
+          résolution originale et un accès exclusif aux archives inédites.
         </p>
 
         {/* Interval Switcher */}
@@ -105,7 +105,9 @@ export function VipPricingCards() {
               <h3 className="font-bold text-lg text-white">Pass Mensuel</h3>
               <span className="text-xl">🌙</span>
             </div>
-            <p className="mt-1 text-xs text-neutral-400">Flexibilité totale, annulable en 1 clic.</p>
+            <p className="mt-1 text-xs text-neutral-400">
+              Flexibilité totale, annulable en 1 clic.
+            </p>
 
             <div className="mt-5 flex items-baseline gap-1">
               <span className="text-4xl font-black text-amber-400">4,99 €</span>
@@ -149,7 +151,9 @@ export function VipPricingCards() {
               <h3 className="font-bold text-lg text-white">Pass Annuel Shenron</h3>
               <span className="text-xl">🌟</span>
             </div>
-            <p className="mt-1 text-xs text-neutral-400">Le choix des vrais passionnés de Dragon Ball.</p>
+            <p className="mt-1 text-xs text-neutral-400">
+              Le choix des vrais passionnés de Dragon Ball.
+            </p>
 
             <div className="mt-5 flex items-baseline gap-1">
               <span className="text-4xl font-black text-amber-400">49,90 €</span>

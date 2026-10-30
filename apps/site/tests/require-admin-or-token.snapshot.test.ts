@@ -18,6 +18,7 @@ import { EventEmitter } from "node:events";
 import * as realFs from "node:fs/promises";
 import * as realNet from "node:net";
 import { NextRequest } from "next/server";
+import { DEFAULT_GAME_ORIGINS } from "@aphrody/shenron-config/game";
 
 const ADMIN_DISCORD_ID = "123456789012345678";
 
@@ -38,6 +39,7 @@ mock.module("@/lib/config", () => ({
   API_URL: "http://bot.test",
   botApiBaseUrl: () => "http://bot.test",
   SITE_URL: "https://dragonballfr.com",
+  GAME_URL: DEFAULT_GAME_ORIGINS.play,
 }));
 mock.module("@/lib/env", () => ({ env: { SHENRON_ADMIN_TOKEN: "test-admin-token" } }));
 mock.module("@/lib/db", () => ({ db: { execute: async () => [{ ok: 1 }] } }));

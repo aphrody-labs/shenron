@@ -6,12 +6,7 @@
     "sha256": "4ce9d37895bdbbbe864b7747bc5e27ca27af825f22507e8b40bfb9bd6a872a41",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      0,
-      0,
-      1662,
-      1373
-    ],
+    "crop": [0, 0, 1662, 1373],
     "edition": "DBFC",
     "chapter": 14,
     "chapterPage": 13,
@@ -30,12 +25,7 @@
     "sha256": "7ad5ca9599c0da70dd4210d162c78bb87a96e4510711650374541e26916e8cb1",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      97,
-      1454,
-      980,
-      1106
-    ],
+    "crop": [97, 1454, 980, 1106],
     "edition": "DBFC",
     "chapter": 212,
     "chapterPage": 4,
@@ -54,12 +44,7 @@
     "sha256": "84691a2b9dff6bd61ff9a22e31711e4336ea2cd16f962e3461d17f9f32cc3226",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      91,
-      0,
-      922,
-      837
-    ],
+    "crop": [91, 0, 922, 837],
     "edition": "DBFC",
     "chapter": 221,
     "chapterPage": 9,
@@ -78,12 +63,7 @@
     "sha256": "d882a131d51d68c3baa44916fc29e495c499ddc10cceec242f06536b906e3ce6",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      104,
-      195,
-      1454,
-      1620
-    ],
+    "crop": [104, 195, 1454, 1620],
     "edition": "DBFC",
     "chapter": 202,
     "chapterPage": 3,
@@ -102,12 +82,7 @@
     "sha256": "dfb8e89831a504a3c3aef99cbcd15b044db063f19520ba2261b6c5d386948921",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      104,
-      0,
-      1454,
-      2389
-    ],
+    "crop": [104, 0, 1454, 2389],
     "edition": "DBFC",
     "chapter": 384,
     "chapterPage": 11,
@@ -126,12 +101,7 @@
     "sha256": "0d4edeca3d4838948782a04c91bfa0d077bdc54bdd76937ae39a15a5c1c76523",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      0,
-      662,
-      1558,
-      831
-    ],
+    "crop": [0, 662, 1558, 831],
     "edition": "DBFC",
     "chapter": 373,
     "chapterPage": 13,
@@ -150,12 +120,7 @@
     "sha256": "c63b7972066d9205ef8e59c6ed6b94b52c82baca15e8afb6f804bc698d3a5923",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      119,
-      208,
-      1454,
-      1493
-    ],
+    "crop": [119, 208, 1454, 1493],
     "edition": "DBFC",
     "chapter": 124,
     "chapterPage": 6,
@@ -174,12 +139,7 @@
     "sha256": "5f2cf58107f71f67df4432fcbc00cb68c0946c8e9d214d2b76900c72af919573",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      0,
-      792,
-      1558,
-      1766
-    ],
+    "crop": [0, 792, 1558, 1766],
     "edition": "DBFC",
     "chapter": 344,
     "chapterPage": 13,
@@ -198,12 +158,7 @@
     "sha256": "acca42c4688109a739afae61d37d8134243af260b6be5b5ef023de22d3123dc0",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      110,
-      208,
-      1448,
-      1409
-    ],
+    "crop": [110, 208, 1448, 1409],
     "edition": "DBFC",
     "chapter": 133,
     "chapterPage": 5,
@@ -222,12 +177,7 @@
     "sha256": "73ae1ebb771e3c968cc4ee77035b48bcb2c3ac0d6fbcb63b79479275152c2701",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      104,
-      1402,
-      1558,
-      1158
-    ],
+    "crop": [104, 1402, 1558, 1158],
     "edition": "DBFC",
     "chapter": 146,
     "chapterPage": 8,
@@ -246,12 +196,7 @@
     "sha256": "12db822e831ff0fd958ea3d42875e4c2e1ac8e788168da814e10d7dd43b92a3d",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      97,
-      1136,
-      1136,
-      720
-    ],
+    "crop": [97, 1136, 1136, 720],
     "edition": "DBFC",
     "chapter": 121,
     "chapterPage": 3,
@@ -270,12 +215,7 @@
     "sha256": "95ffb2049368a9bd612774cddd69ff4e3c0ca7d719e5a019507e94fbfc83dbd7",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      104,
-      188,
-      1454,
-      837
-    ],
+    "crop": [104, 188, 1454, 837],
     "edition": "DBFC",
     "chapter": 226,
     "chapterPage": 13,
@@ -294,12 +234,7 @@
     "sha256": "bb201e2b84320b43a4a73d94b16b90b6e98f7f2b9fae578b7b0b55f304d4b017",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      604,
-      1506,
-      526,
-      889
-    ],
+    "crop": [604, 1506, 526, 889],
     "edition": "DBFC",
     "chapter": 336,
     "chapterPage": 4,
@@ -318,12 +253,7 @@
     "sha256": "37c964329ea37646c79e996b04a380fe8a0ce37f17eb216a3b50705fe8cdebc7",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      104,
-      201,
-      1454,
-      1733
-    ],
+    "crop": [104, 201, 1454, 1733],
     "edition": "DBFC",
     "chapter": 231,
     "chapterPage": 10,
@@ -342,12 +272,7 @@
     "sha256": "a4a9dbee3c206b392b4f9514540a58f4c58cd11d3645fa04f6d47e190ff8e664",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      0,
-      1272,
-      1558,
-      1288
-    ],
+    "crop": [0, 1272, 1558, 1288],
     "edition": "DBFC",
     "chapter": 223,
     "chapterPage": 9,
@@ -366,12 +291,7 @@
     "sha256": "8bedb4195da3c90acc76539fcd19290f3e0d0f19e94298228aa4d12a84a8cb2e",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      110,
-      195,
-      1454,
-      1253
-    ],
+    "crop": [110, 195, 1454, 1253],
     "edition": "DBFC",
     "chapter": 490,
     "chapterPage": 7,
@@ -390,12 +310,7 @@
     "sha256": "511540aaa3a3113563ef9a831f18bca20fff63c3f6513f6511acd33dda9b9cc8",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      513,
-      831,
-      1045,
-      1558
-    ],
+    "crop": [513, 831, 1045, 1558],
     "edition": "DBFC",
     "chapter": 401,
     "chapterPage": 4,
@@ -414,12 +329,7 @@
     "sha256": "50d5f6925cc4d7f83406d3304be8442c6a0bfa5f5086305117d83fb5d071a2b9",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      110,
-      863,
-      1448,
-      1525
-    ],
+    "crop": [110, 863, 1448, 1525],
     "edition": "DBFC",
     "chapter": 185,
     "chapterPage": 1,
@@ -438,12 +348,7 @@
     "sha256": "2e39c84065832db5ac9f4661edf005d350752ea117e341884d20c99b69900441",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      857,
-      0,
-      708,
-      1129
-    ],
+    "crop": [857, 0, 708, 1129],
     "edition": "DBFC",
     "chapter": 175,
     "chapterPage": 9,
@@ -462,12 +367,7 @@
     "sha256": "fab93b5715cfab473d32f12ddf294e7e7e8f4fac3bfb2e3d6beb4bcec7c45989",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      857,
-      935,
-      701,
-      1454
-    ],
+    "crop": [857, 935, 701, 1454],
     "edition": "DBFC",
     "chapter": 129,
     "chapterPage": 3,
@@ -486,12 +386,7 @@
     "sha256": "596473166200651d2a395fd3c8fb8cd03f08616ce1c82abc3b3827ff4a02abdc",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      545,
-      0,
-      1013,
-      987
-    ],
+    "crop": [545, 0, 1013, 987],
     "edition": "DBFC",
     "chapter": 10,
     "chapterPage": 11,
@@ -510,12 +405,7 @@
     "sha256": "d769fb8bbec709b94a7c3c0fd11fb8b90dc31e7bda26cfd780febe59b67056b4",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      857,
-      195,
-      701,
-      584
-    ],
+    "crop": [857, 195, 701, 584],
     "edition": "DBFC",
     "chapter": 48,
     "chapterPage": 6,
@@ -534,12 +424,7 @@
     "sha256": "2820543873babcf95449587904729684ef3582a753e38fb1bf885a55fd610d6b",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      1065,
-      852,
-      493,
-      636
-    ],
+    "crop": [1065, 852, 493, 636],
     "edition": "DBFC",
     "chapter": 491,
     "chapterPage": 2,
@@ -558,12 +443,7 @@
     "sha256": "e0b822dc7616474a963aa808bfe2896e88898e0494185206a351bb97191d1fbb",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      0,
-      0,
-      1571,
-      2560
-    ],
+    "crop": [0, 0, 1571, 2560],
     "edition": "DBFC",
     "chapter": 467,
     "chapterPage": 11,
@@ -582,12 +462,7 @@
     "sha256": "5e9e93b8bacfd6c3b9328bae7075e77346938e88c547d94a7dfe54d1379a080e",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      0,
-      0,
-      1558,
-      1194
-    ],
+    "crop": [0, 0, 1558, 1194],
     "edition": "DBFC",
     "chapter": 367,
     "chapterPage": 11,
@@ -606,12 +481,7 @@
     "sha256": "8c112879ca67e4bb809a5a3ebf671cb9c6672a0fc448addcad825c9794f51cb2",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      104,
-      857,
-      1454,
-      1532
-    ],
+    "crop": [104, 857, 1454, 1532],
     "edition": "DBFC",
     "chapter": 416,
     "chapterPage": 7,
@@ -630,12 +500,7 @@
     "sha256": "d382ee19d650477304e750c6071b6e5149f0a2b1e4f519fad3dad0a3fe0424dd",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      941,
-      896,
-      610,
-      1493
-    ],
+    "crop": [941, 896, 610, 1493],
     "edition": "DBFC",
     "chapter": 316,
     "chapterPage": 5,
@@ -654,12 +519,7 @@
     "sha256": "e054ab8c02a418524dcfc60c52ee748358a66626803f8c95ee4844a7dd28d27b",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      104,
-      940,
-      1454,
-      1450
-    ],
+    "crop": [104, 940, 1454, 1450],
     "edition": "DBFC",
     "chapter": 378,
     "chapterPage": 15,
@@ -678,12 +538,7 @@
     "sha256": "3b00992fbb08f0fc6b01d28eee9788a352fe26e64434902682440f31a584261c",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      104,
-      1168,
-      1065,
-      1392
-    ],
+    "crop": [104, 1168, 1065, 1392],
     "edition": "DBFC",
     "chapter": 319,
     "chapterPage": 10,
@@ -702,12 +557,7 @@
     "sha256": "62df052ddf9c81a0acd31686a7ed65a86644fac5826616360197cc2864ccf918",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      649,
-      0,
-      909,
-      2389
-    ],
+    "crop": [649, 0, 909, 2389],
     "edition": "DBFC",
     "chapter": 408,
     "chapterPage": 2,
@@ -726,12 +576,7 @@
     "sha256": "89c6cfd3637133d6659f1a5a5f3fbb31a1a7c334d83f6157f0b6be4097e875ef",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      774,
-      213,
-      792,
-      883
-    ],
+    "crop": [774, 213, 792, 883],
     "edition": "DBFC",
     "chapter": 509,
     "chapterPage": 13,
@@ -750,12 +595,7 @@
     "sha256": "25ecb6d4ae6c1a875a66f707697f4385d5aa54c62d519c0f0743e15426528b97",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      75,
-      750,
-      1485,
-      610
-    ],
+    "crop": [75, 750, 1485, 610],
     "edition": "DBFC",
     "chapter": 1,
     "chapterPage": 32,
@@ -774,12 +614,7 @@
     "sha256": "6cee0af4c1b75da2e89236e771a31c3e4dbd34a8127cd3418a5ce948df13b46a",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      100,
-      970,
-      1460,
-      520
-    ],
+    "crop": [100, 970, 1460, 520],
     "edition": "DBFC",
     "chapter": 210,
     "chapterPage": 4,
@@ -798,12 +633,7 @@
     "sha256": "e9321b834556e5704a68aad9314c1cfc9ef95aac82b00878ddc98bab41b84427",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      810,
-      190,
-      750,
-      570
-    ],
+    "crop": [810, 190, 750, 570],
     "edition": "DBFC",
     "chapter": 286,
     "chapterPage": 15,
@@ -822,12 +652,7 @@
     "sha256": "a61c8708881afb297df84e0fc5df730b531bf9995a6a21c14966a2941709144a",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      860,
-      1130,
-      800,
-      850
-    ],
+    "crop": [860, 1130, 800, 850],
     "edition": "DBFC",
     "chapter": 514,
     "chapterPage": 13,
@@ -846,12 +671,7 @@
     "sha256": "13c5079dc8b930c3c319db1a52a632c883e3f56e45538874476e4e06b0b5929d",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      0,
-      0,
-      1662,
-      2560
-    ],
+    "crop": [0, 0, 1662, 2560],
     "edition": "DBFC",
     "chapter": 231,
     "chapterPage": 16,
@@ -870,12 +690,7 @@
     "sha256": "75c49067582204581c5f5b84513cda1bda320b7ea2d72f017961ee876c74bed7",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      0,
-      0,
-      1662,
-      2560
-    ],
+    "crop": [0, 0, 1662, 2560],
     "edition": "DBFC",
     "chapter": 313,
     "chapterPage": 13,
@@ -894,12 +709,7 @@
     "sha256": "0c83b2e879c92c5a4925004193924f5dd8c3272336c24f6c6499f2113191e745",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      0,
-      1200,
-      1662,
-      1360
-    ],
+    "crop": [0, 1200, 1662, 1360],
     "edition": "DBFC",
     "chapter": 217,
     "chapterPage": 13,
@@ -918,12 +728,7 @@
     "sha256": "58a47f18c59b66a5e3035aa91982be8de8bf372f3456784f218198f5e10fcee0",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      0,
-      840,
-      1662,
-      1720
-    ],
+    "crop": [0, 840, 1662, 1720],
     "edition": "DBFC",
     "chapter": 186,
     "chapterPage": 12,
@@ -942,12 +747,7 @@
     "sha256": "499d8e444314a6feeebe775e74b2b1938c7c46e817ca94dcb660783cf975748f",
     "width": 1662,
     "height": 2560,
-    "crop": [
-      100,
-      205,
-      1470,
-      900
-    ],
+    "crop": [100, 205, 1470, 900],
     "edition": "DBFC",
     "chapter": 396,
     "chapterPage": 13,

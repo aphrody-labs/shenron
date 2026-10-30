@@ -178,8 +178,16 @@ export function SiteShellClient({
         href: desktop ? "/desktop" : "/",
         label: dico.shell.brandLabel,
         mark: <KintoUn hauteur={22} decorative />,
-        name: "Dragon Ball",
-        tagline: "France",
+        // DRAGONBALL.FR logo (`packages/ui/assets/brand`); the link carries the accessible name.
+        name: (
+          <img
+            src="/brand/dragonballfr-logo.svg"
+            alt=""
+            width={118}
+            height={30}
+            className="block h-[30px] w-auto"
+          />
+        ),
       }}
       sections={sections}
       tabs={tabs}

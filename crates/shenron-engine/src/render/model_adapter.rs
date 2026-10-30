@@ -128,6 +128,7 @@ pub fn model_from_json(
             positions: p.positions,
             indices: p.indices,
             texture_index,
+            sampler: None,
         });
     }
 
