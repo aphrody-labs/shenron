@@ -272,6 +272,14 @@
     transition: none;
   }
 }
+/* DRAGONBALL.FR logo (packages/ui/assets/brand/dragonballfr-logo.svg), ratio 2006 x 509. */
+.siteLogo {
+  display: block;
+  width: min(26rem, 100%);
+  height: auto;
+  aspect-ratio: 2006 / 509;
+  filter: drop-shadow(0 0.35rem 1rem rgb(0 0 0 / 0.45));
+}
 .lede {
   font-size: 0.85rem;
   max-width: 45ch;

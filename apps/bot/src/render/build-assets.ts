@@ -15,7 +15,7 @@ import { uiAssetsDir } from "~/lib/asset-files";
 const SOURCE = join(
   uiAssetsDir(join(import.meta.dir, "..", "..")),
   "brand",
-  "dragon-ball-wordmark.svg",
+  "dragonballfr-logo.svg",
 );
 export const WORDMARK_PNG = join(import.meta.dir, "..", "..", "assets", "render", "wordmark.png");
 /** Twice the widest use on a card (190 px logical at 2x), with margin. */

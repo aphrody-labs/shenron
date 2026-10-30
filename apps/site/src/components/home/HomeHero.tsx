@@ -33,6 +33,14 @@ export function HomeHero({
         <h1 className="sr-only">
           <T k="accueil.hero.title" />
         </h1>
+        <img
+          src="/brand/dragonballfr-logo.svg"
+          alt=""
+          width={416}
+          height={106}
+          fetchPriority="high"
+          className={styles.siteLogo}
+        />
         {hero.lede.trim() && <p className={styles.lede}>{hero.lede.trim()}</p>}
         {beerus?.latest && <HomeBeerusFeature beerus={beerus} />}
         {hero.ctaLabel.trim() && hero.ctaHref.trim() && (

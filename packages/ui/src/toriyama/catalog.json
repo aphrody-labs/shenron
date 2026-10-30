@@ -96,6 +96,22 @@
       "kind": "svg"
     },
     {
+      "path": "brand/dragonballfr-logo.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "brand/dragonballfr-logo-512.png",
+      "kind": "image"
+    },
+    {
+      "path": "brand/dragonballfr-logo-1024.png",
+      "kind": "image"
+    },
+    {
+      "path": "brand/dragonballfr-logo-2048.png",
+      "kind": "image"
+    },
+    {
       "path": "brand/home-beerus-goku.png",
       "kind": "image"
     },
@@ -210,6 +226,326 @@
     {
       "path": "assets/manga/dragon-pixel/chapter-516/provenance.json",
       "kind": "palette"
+    },
+    {
+      "path": "techniques/kamehameha.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/kamehameha.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/genkidama.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/genkidama.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/kienzan.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/kienzan.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/makankosappo.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/makankosappo.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/final-flash.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/final-flash.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/shin-kikoho.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/shin-kikoho.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/morsure-du-soleil.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/morsure-du-soleil.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/big-bang.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/big-bang.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/kikoho.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/kikoho.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/mafuba.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/mafuba.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/dodompa.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/dodompa.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/kaioken.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/kaioken.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/teleportation.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/teleportation.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/canon-garric.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/canon-garric.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/masenko.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/masenko.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/beignets-galactiques.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/beignets-galactiques.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/kamehameha-teleporte.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/kamehameha-teleporte.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/super-kamehameha.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/super-kamehameha.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/sokidan.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/sokidan.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/attaque-volley-ball.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/attaque-volley-ball.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/technique-du-loup.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/technique-du-loup.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/image-remanente.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/image-remanente.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/super-fantomes-kamikazes.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/super-fantomes-kamikazes.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/explosion-finale.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/explosion-finale.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/grenade-infernale.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/grenade-infernale.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/kamehameha-pere-fils.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/kamehameha-pere-fils.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/boule-de-la-mort.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/boule-de-la-mort.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/super-vegeta.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/super-vegeta.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/super-saiyen.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/super-saiyen.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/super-saiyen-2.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/super-saiyen-2.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/super-saiyen-3.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/super-saiyen-3.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/baton-magique.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/baton-magique.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/rayon-oculaire.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/rayon-oculaire.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/echange-des-corps.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/echange-des-corps.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/super-genkidama.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/super-genkidama.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/kaioken-kamehameha-x4.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/kaioken-kamehameha-x4.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/kaioken-kamehameha-x20.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/kaioken-kamehameha-x20.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/autodestruction.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/autodestruction.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/geant.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/geant.svg",
+      "kind": "svg"
+    },
+    {
+      "path": "techniques/dynamite-kick.webp",
+      "kind": "image"
+    },
+    {
+      "path": "techniques/dynamite-kick.svg",
+      "kind": "svg"
     }
   ],
   "glyphs": [

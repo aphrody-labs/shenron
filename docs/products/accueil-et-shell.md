@@ -7,7 +7,11 @@ ci-dessous évitent que cela se reproduise. Système graphique : [`reference/DES
 
 ## Accueil
 
-- Le hero garde le logo Dragon Ball au style Dragon Ball Super et le nuage Kinto'un animé.
+- Le hero garde le logo du site et le nuage Kinto'un animé. Depuis le 2026-10-30, le logo est
+  « DRAGONBALL.FR » (`packages/ui/assets/brand/dragonballfr-logo.svg`, tracé depuis la référence du
+  propriétaire par `scripts/design/trace-dragonballfr-logo.ts`, rendus PNG sans perte à côté) ; il
+  remplace aussi le texte de la barre du shell, l'image OpenGraph et le wordmark des cartes du bot.
+  Le Kinto'un reste le pictogramme, le favicon et la mascotte.
 - Les sections éditoriales gardent leur contenu et leur ordre de configuration sur des
   surfaces sobres. Les anciens fonds `section.scene` ne sont plus montés, même si leur
   configuration est encore présente ; les portraits et vignettes éditoriales restent visibles.
