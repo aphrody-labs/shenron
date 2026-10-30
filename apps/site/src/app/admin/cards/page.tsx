@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/session";
 import { getCardCatalogAdminData } from "@/lib/card-catalog";
 import { archiveCardCatalogEntry, saveCardCatalogEntry } from "./_actions";
 import { CardCatalogImportForm } from "./CardCatalogImportForm";
+import { CardCatalogImageField } from "./CardCatalogImageField";
 
 export const dynamic = "force-dynamic";
 
@@ -446,7 +447,11 @@ function EntryForm({
           </div>
           <Textarea name="description" label={t("descriptionField")} value={cardRow?.description} />
           <div className="grid gap-3 sm:grid-cols-2">
-            <Input name="frontImageUrl" label={t("frontImageUrl")} value={cardRow?.frontImageUrl} />
+            <CardCatalogImageField
+              name="frontImageUrl"
+              label={t("frontImageUrl")}
+              value={cardRow?.frontImageUrl}
+            />
             <Input
               name="frontImageSourceUrl"
               label={t("frontImageSourceUrl")}
@@ -457,7 +462,11 @@ function EntryForm({
               label={t("frontImageRights")}
               value={cardRow?.frontImageRights}
             />
-            <Input name="backImageUrl" label={t("backImageUrl")} value={cardRow?.backImageUrl} />
+            <CardCatalogImageField
+              name="backImageUrl"
+              label={t("backImageUrl")}
+              value={cardRow?.backImageUrl}
+            />
             <Input
               name="backImageSourceUrl"
               label={t("backImageSourceUrl")}
