@@ -130,7 +130,7 @@ export function NarrativeEventsExplorer({
   arcs?: Array<{ id: number; slug: string; name: string }>;
   fallbackImage?: string;
 }) {
-  const listUi = useTranslations("wikiUi.list");
+  const listUi = useTranslations("wikiExplorer.list");
   const pathname = usePathname();
   const searchParams = useSearchParams();
 

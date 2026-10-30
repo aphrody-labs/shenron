@@ -23,7 +23,7 @@ export function PowerLevelsTable({
   powers: PowerLevel[];
   access?: AccessSnapshot | null;
 }) {
-  const t = useTranslations("wikiUi.list");
+  const t = useTranslations("wikiExplorer.list");
   const ouvert = (href: string) => !access || isPathPublic(href, access);
   const [query, setQuery] = useState("");
   const [sourceFilter, setSourceFilter] = useState("ALL");

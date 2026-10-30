@@ -33,3 +33,19 @@ environ 5 s), émulation à environ 2 à 12 % de la vitesse native, écran noir 
 goulot est l'interpréteur PowerPC en WASM : le JIT Cranelift de Gecko est natif uniquement. Régler wgpu
 n'y change presque rien ; la voie est un recompilateur dynamique qui émet du WebAssembly, chantier à part.
 La page l'annonce comme expérimentale ; les petits homebrews (`.dol`) sont la cible réaliste.
+
+## Cause de l'écran noir de BT3 (2026-10-30, analyse locale de la copie du propriétaire)
+
+Le jeu ne tourne pas lentement : il s'arrête lui-même. `main.dol` (entrée `0x8000403C`, 9 216 fonctions
+reconnues par Ghidra) se fige dans la boucle d'arrêt `FUN_80207050` (`0x80207050` : `sync ; nop ; li r3,0 ;
+nop ; b`), appelée par `OSPanic` (`FUN_8020a400`, qui affiche « in %s on line %d » puis la pile). Le
+gestionnaire d'erreur disque `wii_diskerror.c` (`FUN_8020649c`) y mène par l'un de ses deux contrôles :
+
+- ligne 541, « Ins. memory to load ROM font » : le tas du jeu ne peut pas contenir la police ;
+- ligne 545, « ROM font is available in boot ROM only » : la police ROM de l'IPL est introuvable.
+
+Le jeu exige donc la police ROM de l'IPL au démarrage. Gecko lui en fournit une de repli (Dolphin, Apache-2.0,
+`crates/gecko/src/flipper/exi/macronix.rs`), correctif en cours dans le checkout de Gecko ; un build qui l'inclut
+(`gecko-wasm-reports/20261030T032810Z`) restait noir à 8 FPS d'interface le 2026-10-30. Reste à lire les arguments
+de `OSPanic` dans Gecko pour savoir lequel des deux contrôles échoue. Les valeurs de la mémoire basse
+(`0x3184`, `0x3194`) ont aussi été alignées sur Dolphin.
