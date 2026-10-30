@@ -145,8 +145,8 @@ impl AssembledCharacterModel {
                                 std::array::from_fn(|axis| position[axis] * bone.scale[axis]),
                                 bone.rotation,
                             );
-                            for axis in 0..3 {
-                                position[axis] += bone.translation[axis];
+                            for (component, offset) in position.iter_mut().zip(bone.translation) {
+                                *component += offset;
                             }
                         }
                         // Inverse transpose of each TRS linear part, including nonuniform scale.

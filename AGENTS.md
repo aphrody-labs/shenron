@@ -316,7 +316,7 @@ défaut `ssh:dbfr`), `SHENRON_DEPLOY_COMMAND`, `SHENRON_ACTIVE_COMMAND`, `SHENRO
 - **Application de bureau** : **Shenron Studio** (`crates/shenron-desktop`, Tauri 3) est le
   seul binaire graphique, un identifiant, un dossier de données (`SHENRON_HOME`), un installeur
   (`scripts/build/desktop.ts`). Elle lance `shenron-server` en sidecar (avec `shenron-mcp` et
-  `koharu-sdk` à côté) et ouvre `/desktop` ; le moteur de l'éditeur (`koharu-library`,
+  `koharu-sdk` à côté) et ouvre `/studio` (le site local complet, `/desktop` et `/desktop/control` en sont l’accueil et le pilotage) ; le moteur de l’éditeur (`koharu-library`,
   propriétaire unique de l'état) tourne dans son processus derrière `koharu-app`, simple
   bibliothèque de commandes Specta (`docs/products/koharu/README.md`).
 - **Natif** : `@aphrody/shenron-native` (`bun:ffi` vers `crates/shenron-ffi`, `SHENRON_FFI_LIB`) ;
