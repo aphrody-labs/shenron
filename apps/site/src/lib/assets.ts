@@ -20,14 +20,16 @@ import { API_URL, ASSET_BASE, SITE_URL } from "@/lib/config";
 export function assetUrl(path: string | null | undefined): string {
   const value = path?.trim();
   if (!value) return "";
-  // Runtime uploads live in the bot's persistent data volume, outside the sealed CDN inventory.
+  // Runtime wiki uploads are served by the site origin (gateway CDN → origin → server
+  // fallback for `/assets/*`). The bot host answers 404 for them (measured 2026-10-30:
+  // 352/352 on the site origin, 0/352 on the bot host).
   const uploaded = value.replace(/^\.\//, "/").replace(/^assets\//, "/assets/");
   if (
     /^\/assets\/wiki\/[a-z0-9-]{1,32}\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\.(?:png|jpg|webp|gif)$/.test(
       uploaded,
     )
   ) {
-    return `${API_URL}${uploaded}`;
+    return `${SITE_URL}${uploaded}`;
   }
   const legacyCdn = canonicalLegacyCdnAssetUrl(value);
   if (legacyCdn) return legacyCdn;

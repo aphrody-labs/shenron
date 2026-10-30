@@ -10,6 +10,7 @@ import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { DomainBar, ContributeRail } from "@/components/kit";
 import { UnifiedStaffExplorer, type StaffTier } from "@/components/wiki/UnifiedStaffExplorer";
 import { buildUnifiedStaffCatalog } from "@/lib/unified-staff-catalog";
+import { withVerifiedImages } from "@/lib/wikimedia-images";
 import { dbUniverse } from "@/lib/db-universe";
 import { ogMeta } from "@/lib/og";
 import { Sparkles, Award, ArrowRight } from "lucide-react";
@@ -53,7 +54,7 @@ export default async function StaffHubPage({
   else if (initialTierParam === "production") initialTier = "production";
 
   // Chaque contributeur du hub staff relie vers sa fiche dédiée `/wiki/contributors/${c.slug}`
-  const unifiedCatalog = buildUnifiedStaffCatalog(dbContribs, dbVAs);
+  const unifiedCatalog = await withVerifiedImages(buildUnifiedStaffCatalog(dbContribs, dbVAs));
 
   return (
     <div>
