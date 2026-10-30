@@ -113,13 +113,13 @@ export function rebuildMangaIndex(
     ) {
       throw new Error("Source snapshot differs from the reviewed authoritative corpus");
     }
-    db.exec(`
-      DROP TABLE IF EXISTS manga_pages_fts;
-      CREATE VIRTUAL TABLE manga_pages_fts USING fts5(
-        text, series UNINDEXED, tome UNINDEXED, planche UNINDEXED, lang UNINDEXED,
-        tokenize='unicode61 remove_diacritics 2'
-      );
-    `);
+    // One statement per exec: a failure of the second statement of a multi-statement exec
+    // (SQLITE_FULL while creating the FTS shadow tables) is not reported by every runtime.
+    db.exec("DROP TABLE IF EXISTS manga_pages_fts");
+    db.exec(`CREATE VIRTUAL TABLE manga_pages_fts USING fts5(
+      text, series UNINDEXED, tome UNINDEXED, planche UNINDEXED, lang UNINDEXED,
+      tokenize='unicode61 remove_diacritics 2'
+    )`);
     db.query(`INSERT INTO manga_pages_fts(rowid, text, series, tome, planche, lang)
       SELECT id, text, series, tome, planche, lang FROM db_manga_pages
       WHERE (?1 IS NULL OR id IN (SELECT value FROM json_each(?1)))`).run(

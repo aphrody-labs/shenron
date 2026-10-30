@@ -27,6 +27,8 @@ mock.module("../../../src/koharu/components/editor/RightSidebar", () => ({
 const { Editor } = await import("../../../src/koharu/components/editor/Editor");
 afterEach(cleanup);
 
+// Failing jest-dom matchers serialize the whole happy-dom node, which blocks the event loop for
+// several seconds while a dialog is still closing; polling a plain boolean keeps waitFor responsive.
 test("compact workspace keeps one canvas while pages and tools open, and restores the chosen tool", async () => {
   Object.defineProperty(window, "matchMedia", {
     configurable: true,
@@ -44,17 +46,19 @@ test("compact workspace keeps one canvas while pages and tools open, and restore
   expect(await screen.findByRole("dialog", { name: "Pages" })).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Select current project page" })).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Close" }));
-  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  await waitFor(() => expect(screen.queryByRole("dialog") === null).toBe(true));
   fireEvent.click(screen.getByRole("button", { name: "Tools" }));
   fireEvent.click(await screen.findByRole("button", { name: "properties" }));
   expect(screen.getByRole("button", { name: "shenron" })).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Close" }));
-  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  await waitFor(() => expect(screen.queryByRole("dialog") === null).toBe(true));
   fireEvent.click(screen.getByRole("button", { name: "Tools" }));
   expect(await screen.findByRole("button", { name: "shenron" })).toBeInTheDocument();
   expect(document.querySelectorAll("canvas")).toHaveLength(1);
   // Dispatch the complete keyboard sequence from the focused control, as a user would.
   await userEvent.keyboard("{Escape}");
-  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-  await waitFor(() => expect(screen.getByRole("button", { name: "Tools" })).toHaveFocus());
+  await waitFor(() => expect(screen.queryByRole("dialog") === null).toBe(true));
+  await waitFor(() =>
+    expect(document.activeElement === screen.getByRole("button", { name: "Tools" })).toBe(true),
+  );
 }, 15000);
