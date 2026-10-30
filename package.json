@@ -174,12 +174,9 @@
     "test:live:ai": "cd apps/site && SHENRON_LIVE=1 bun test --isolate tests/ai-layer-gemini.live.test.ts",
     "test:integration": "bun scripts/testing/integration/run.ts",
     "dev:remote": "bun scripts/dev/remote-dev.ts up",
-    "remote:build": "bun scripts/ops/remote-build.ts build",
-    "remote:release": "bun scripts/ops/remote-build.ts release",
-    "remote:doctor": "bun scripts/ops/remote-build.ts doctor",
     "dev:env": "bun scripts/dev/env-pull.ts",
     "gates:remote": "bun scripts/dev/remote-dev.ts gates",
-    "ship": "bun scripts/ops/ship.ts",
+    "ship": "bash scripts/deploy/release.sh",
     "check": "bun check",
     "fmt": "bun fmt apps packages scripts"
   },

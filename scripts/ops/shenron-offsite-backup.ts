@@ -13,11 +13,12 @@
 // Fails when the newest DBFR snapshot is older than 36 h (stalled producer). Runs daily on the VPS
 // (tools/config/host/systemd/shenron/shenron-offsite-backup.{service,timer}).
 //
-// Environment: SHENRON_OFFSITE_DIR (default /home/ubuntu/archive/dbfr/backups/shenron), SHENRON_OFFSITE_HOST (SSH alias,
+// Environment: SHENRON_OFFSITE_DIR (default ~/archive/dbfr/backups/shenron), SHENRON_OFFSITE_HOST (SSH alias,
 // default dbfr), SHENRON_REMOTE_HOME (default: the remote $HOME).
 // oxlint-disable no-await-in-loop -- one SSH transfer at a time bounds DBFR load and local disk writes.
 import { Database } from "bun:sqlite";
 import { appendFileSync, existsSync, mkdirSync, readdirSync, renameSync, rmSync } from "node:fs";
+import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
 export type Verified = { files: Record<string, string> };
@@ -266,7 +267,7 @@ export async function main(argv = Bun.argv.slice(2)): Promise<number> {
   const dest =
     (at >= 0 ? argv[at + 1] : undefined) ??
     process.env.SHENRON_OFFSITE_DIR ??
-    "/home/ubuntu/archive/dbfr/backups/shenron";
+    join(homedir(), "archive/dbfr/backups/shenron");
   const host = process.env.SHENRON_OFFSITE_HOST ?? "dbfr";
   const remoteHome =
     process.env.SHENRON_REMOTE_HOME ?? (await ssh(host, 'printf %s "$HOME"')).trim();

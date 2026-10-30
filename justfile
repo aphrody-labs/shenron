@@ -9,7 +9,7 @@
 set shell := ["bun", "exec"]
 set windows-shell := ["bun", "exec"]
 
-# Cargo, serialized through APHRODY_CARGO_SERIAL when it is set.
+# Cargo through the shared wrapper (scripts/build/rust/cargo.ts).
 cargo := "bun scripts/build/rust/cargo.ts"
 
 alias check-rust := rust-check
@@ -204,16 +204,6 @@ deps-check:
 [group('rust')]
 align-check:
     bun scripts/build/rust/align-crates.ts --check
-
-# Build against a local Aphrody checkout, ~/aphrody by default (.cargo/local.toml, untracked)
-[group('rust')]
-aphrody-local *checkout:
-    bun scripts/build/rust/local-aphrody-patch.ts {{ checkout }} --fetch
-
-# Back to the pinned Aphrody revision (removes .cargo/local.toml)
-[group('rust')]
-aphrody-pinned:
-    bun scripts/build/rust/local-aphrody-patch.ts --remove
 
 # Container stack: prepare secrets and environment files (--prod|--dev)
 [group('container')]

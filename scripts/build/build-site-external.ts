@@ -129,30 +129,30 @@ delete buildEnv.ALL_PROXY;
 
 // Match the existing immutable RG compiler boundary: Node 22 compiles Next;
 // Bun owns installs, package preparation, packaging and the final site runtime.
-// Usine de build déclarée par l'Infra (config/build-factory.json, absente hors usine) : défauts sinon.
-const factoryPath = join(repo, "config/build-factory.json");
-const factory = existsSync(factoryPath) ? await Bun.file(factoryPath).json() : {};
+// Limits of the bounded Next compiler: SHENRON_NEXT_{MAX_OLD_SPACE_MIB,MEMORY_MIB,CPUS}, defaults otherwise.
+const intEnv = (name: string, fallback: number) => {
+  const value = process.env[name]?.trim();
+  return value ? Number(value) : fallback;
+};
 // `SHENRON_NEXT_IMAGE` : image du compilateur choisie par l'appelant (la release prend
 // l'image de build Ubuntu pour le runtime Bun, dont la glibc dépasse celle de bookworm).
-const nodeImage = process.env.SHENRON_NEXT_IMAGE ?? factory.next?.image ?? "node:22-bookworm-slim";
-const memoryMiB = factory.next?.maxOldSpaceSizeMiB ?? 8192;
-const containerMemoryMiB = factory.next?.memoryMiB ?? 16384;
-const cpus = factory.next?.cpus ?? 6;
+const nodeImage = process.env.SHENRON_NEXT_IMAGE ?? "node:22-bookworm-slim";
+const memoryMiB = intEnv("SHENRON_NEXT_MAX_OLD_SPACE_MIB", 8192);
+const containerMemoryMiB = intEnv("SHENRON_NEXT_MEMORY_MIB", 16384);
+const cpus = intEnv("SHENRON_NEXT_CPUS", 6);
 if (typeof nodeImage !== "string" || !/^[a-z0-9][a-zA-Z0-9._/:@-]*$/.test(nodeImage))
-  throw new Error("Invalid factory Next compiler image");
+  throw new Error("Invalid Next compiler image");
 if (!Number.isSafeInteger(memoryMiB) || memoryMiB < 512 || memoryMiB > 65536)
-  throw new Error("Invalid factory Next compiler memory limit");
+  throw new Error("Invalid Next compiler memory limit");
 if (
   !Number.isSafeInteger(containerMemoryMiB) ||
   containerMemoryMiB < 1024 ||
   containerMemoryMiB > 32768 ||
   memoryMiB >= containerMemoryMiB
 )
-  throw new Error("Invalid factory Next container memory limit");
+  throw new Error("Invalid Next container memory limit");
 if (!Number.isSafeInteger(cpus) || cpus < 1 || cpus > 6)
-  throw new Error("Invalid factory Next compiler CPU limit");
-if (factory.next?.pull && factory.next.pull !== "never")
-  throw new Error("Next compiler requires an already cached immutable image");
+  throw new Error("Invalid Next compiler CPU limit");
 const inspect = Bun.spawnSync(["docker", "image", "inspect", "--format", "{{.Id}}", nodeImage], {
   cwd: repo,
   stdout: "pipe",
@@ -172,9 +172,9 @@ await mkdir(home, { recursive: true, mode: 0o700 });
 await mkdir(temporary, { recursive: true, mode: 0o700 });
 // Compilateur de Next : `node22` (défaut, image Node 22) ou `bun` (le binaire Bun de l'hôte
 // monté en lecture seule dans la même image bornée, `bun --bun next build`), choisi par
-// `SHENRON_NEXT_RUNTIME` ou `next.runtime` de l'usine. Mesure avant d'en changer le défaut
+// `SHENRON_NEXT_RUNTIME`. Mesure avant d'en changer le défaut
 // (var/reports/turbopack-swc-bun-2026-10-05.md, §8).
-const runtime = (process.env.SHENRON_NEXT_RUNTIME ?? factory.next?.runtime ?? "node22") as string;
+const runtime = (process.env.SHENRON_NEXT_RUNTIME ?? "node22") as string;
 if (runtime !== "node22" && runtime !== "bun")
   throw new Error("SHENRON_NEXT_RUNTIME : node22 | bun");
 const compilerEnvironment = {
@@ -199,8 +199,7 @@ const dockerEnvironment = Object.keys(compilerEnvironment).flatMap((name) =>
 );
 const uid = process.getuid?.();
 const gid = process.getgid?.();
-if (uid === undefined || gid === undefined)
-  throw new Error("Next factory compiler requires a Linux owner");
+if (uid === undefined || gid === undefined) throw new Error("Next compiler requires a Linux owner");
 console.log(`▶ Cached Next compiler: ${nodeImage} ${imageId} (${runtime})`);
 const buildProc = Bun.spawn(
   [

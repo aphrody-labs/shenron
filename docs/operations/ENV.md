@@ -26,13 +26,39 @@ Studio personnel ne donne pas ce rôle.
 | `SHENRON_STUDIO_SDK_BIN`  | Serveur / image scellée   | Chemin absolu du `koharu-sdk` qualifié et livré dans l'image. Sans binaire, la capacité reste indisponible.                                                                                                                                                           |
 | `SHENRON_STUDIO_HOME`     | Infra / volume protégé    | Racine privée des espaces de travail ; chaque identité reçoit un sous-dossier nommé par son SHA-256, créé en mode 0700.                                                                                                                                               |
 | `KOHARU_SECRET_NAMESPACE` | Runtime Studio uniquement | SHA-256 de l'identité, transmis au processus enfant pour isoler ses identifiants. Sur Linux hébergé : fichiers privés dans `SHENRON_HOME/.credentials` (0700/0600), sans Keyutils ; le nom du foyer doit correspondre au namespace. Non modifiable par le navigateur. |
-| `APHRODY_CARGO_SERIAL`    | Fabrique                  | Surcharge explicite du chemin du propriétaire Cargo pour le helper d'image. Le verrou lourd réel doit être hérité.                                                                                                                                                    |
-| `APHRODY_SOURCE_REPO`     | Fabrique                  | Checkout Aphrody contenant ce propriétaire ; résolu par configuration, sinon voisin du checkout source Shenron de la fabrique.                                                                                                                                        |
 
 L'environnement des processus Studio est reconstruit depuis une liste limitée :
 aucune clé de fournisseur, base de données ou session d'opérateur n'est héritée.
 Les modèles ne sont pas embarqués par le build de ce moteur ; leur activation reste
 une opération explicite du compte dans son espace isolé.
+
+## Release — `scripts/deploy` (`build-image.sh`, `ship-image.sh`, `release.sh`)
+
+Lues par `scripts/deploy/release.sh [--build-only | --ship-only] [revision]` sur l'hôte de
+build Linux x64 ; toutes facultatives. Les en-têtes des scripts font foi.
+
+| Variable                     | Défaut                                 | Contrat                                                                                                   |
+| ---------------------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `SHENRON_SOURCE_REPO`        | dépôt du script                        | Checkout Git d'où la révision est extraite.                                                               |
+| `SHENRON_BUILD_REPO`         | `$HOME/build/shenron`                  | Worktree de build réutilisé (garde `target/`, `node_modules` et le cache Turbopack).                      |
+| `SHENRON_BUILD_LOCK`         | `<worktree>.lock`                      | Fichier `flock` qui sérialise les builds d'un worktree.                                                   |
+| `SHENRON_BUILD_REVISION`     | `origin/main`                          | Révision construite quand aucun argument n'est donné.                                                     |
+| `SHENRON_VFS_SOURCE`         | `dist/vfs/shenron-vfs.public.sqlite`   | VFS public : fichier local, URL http(s) ou `hôte:chemin` scp.                                             |
+| `SHENRON_CONTAINER`          | `docker`, sinon `podman`               | Moteur de conteneurs.                                                                                     |
+| `SHENRON_IMAGE`              | `localhost/shenron`                    | Nom de l'image, étiquetée par le SHA.                                                                     |
+| `SHENRON_COMPILE_BUN`        | `bun` du `PATH`                        | Bun qui compile les binaires de release.                                                                  |
+| `SHENRON_CARGO_JOBS`         | tous les CPU                           | Jobs Cargo.                                                                                               |
+| `SHENRON_FORCE_RUST`         | `0`                                    | `1` recompile Rust même si l'empreinte des entrées Rust est inchangée.                                    |
+| `SHENRON_NEXT_BUILD_CACHE`   | `1`                                    | Conserve le cache de build Turbopack entre builds.                                                        |
+| `SHENRON_SITE_BUILD_CPUS`    | `6`                                    | CPU du build du site, qui chevauche les lanes Rust, VFS et bot.                                           |
+| `SHENRON_SITE_BUILD_MIN_GIB` | `20`                                   | Mémoire disponible attendue avant le build du site (évite le SIGTERM d'un tueur OOM, sortie 143).         |
+| `SHENRON_PAYLOAD_ZSTD_LEVEL` | `6`                                    | Niveau zstd du payload embarqué.                                                                          |
+| `SHENRON_KEEP_IMAGES`        | `3`                                    | Images conservées localement.                                                                             |
+| `SHENRON_DEPLOY_TARGET`      | `ssh:dbfr`                             | `ssh:<hôte>` (image diffusée en zstd), `registry:<dépôt>` (push) ou `local` (Compose de `deploy/docker`). |
+| `SHENRON_DEPLOY_COMMAND`     | `bash ~/deploy-shenron-image.sh` (ssh) | Commande d'activation lancée avec `<sha> <image>` ; en ssh, l'entrée Infra de DBFR.                       |
+| `SHENRON_ACTIVE_COMMAND`     | basename de `/srv/shenron/current`     | Affiche la release active (garde de rollback) ; vide désactive le garde.                                  |
+| `SHENRON_ALLOW_ROLLBACK`     | `0`                                    | `1` autorise un commit qui ne descend pas de la release active.                                           |
+| `SHENRON_COMPOSE_FILE`       | `deploy/docker/compose.yaml`           | Fichier Compose de la cible `local`.                                                                      |
 
 ## Décisions Jev — `@aphrody/shenron-config/jev`
 

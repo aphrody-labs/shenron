@@ -1,5 +1,24 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## 2026-10-30 — Release par `scripts/deploy`, checkout Aphrody local retiré
+
+- Le checkout Aphrody local (`~/aphrody`, `~/src/aphrody`) et tout ce qui en dépendait sont
+  retirés des règles et de la documentation : wrapper Cargo sérialisé, variables
+  `APHRODY_CARGO_*`/`APHRODY_SOURCE_REPO`/`APHRODY_FACTORY_*`, bail et nettoyage de fabrique,
+  verrou lourd partagé, `local-aphrody-patch.ts`, minuteurs d'auto-déploiement. L'ancien chemin
+  de release (`scripts/ops/release.ts`, `release-host.ts`, `remote-build.ts`, `ship.ts`,
+  `scripts/ops/vps/*.sh`, recettes tmux/`EXIT_CODE`, helpers extraits) et les noms d'hôte datés
+  ne font plus référence.
+- Entrée unique : `scripts/deploy/release.sh [--build-only | --ship-only] [revision]` sur tout
+  hôte Linux x64 (Git, Bun, Rust, docker ou podman), réglé par variables `SHENRON_*`
+  (`docs/operations/ENV.md`, § Release) ; cible par défaut `ssh:dbfr`, qui lance
+  `~/deploy-shenron-image.sh <sha> <tar>`, l'entrée d'activation Infra de DBFR.
+- La production était bloquée sur `a2671e1e` depuis le 2026-10-27 : 233 fichiers copiés à la
+  main, hors manifeste, dans `public/assets` de cette release empêchaient toute activation
+  (l'adaptateur revérifie la release précédente comme cible de rollback). Ils sont déplacés vers
+  `/srv/shenron/deploy-backups/unsealed-a2671e1e-public-assets-20261030`, identiques à
+  `shared/bot/assets`. Ne jamais modifier une release scellée.
+
 ## 2026-10-20 — VFS derrière NGINX et état persistant Steam
 
 - L’API publique de production répond 200 sur `/api/v1/vfs` et `/api/v1/vfs/list?path=/` ; le

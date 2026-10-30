@@ -64,8 +64,8 @@ Les APIs Bun vidéo disponibles et leurs gaps natifs sont consignés dans les re
 
 ## Livraison et entraînement
 
-Les builds lourds tournent sur la fabrique VPS ; DBFR reçoit des artefacts scellés via
-Aphrody Infra. Les médias publics passent par un intake propriétaire avec empreinte,
+Les builds lourds tournent sur un hôte de build Linux x64 (`scripts/deploy/release.sh`) ; DBFR
+reçoit l'image et l'active via son entrée Infra. Les médias publics passent par un intake propriétaire avec empreinte,
 provenance et droits relus ; PostgreSQL utilise les writers éditoriaux et Redis une invalidation ciblée.
 Conserver les anciennes URLs, chunks et rollback à chaque delta R2.
 

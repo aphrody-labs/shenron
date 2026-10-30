@@ -2,7 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Capture only the publisher's anonymous trial through its normal browser renderer. */
 import { chmod, lstat, mkdir, realpath } from "node:fs/promises";
+import { homedir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
+
+/** Native Aphrody Web binary (APHRODY_WEB_BIN, default ~/.local/bin/aphrody-web). */
+const APHRODY_WEB = process.env.APHRODY_WEB_BIN ?? join(homedir(), ".local/bin/aphrody-web");
 
 interface SourcePage {
   type: string;
@@ -62,7 +66,7 @@ export async function capturePublicReaderTrial(job: string, sourceUrl: string, m
   const crawlPath = join(job, "robots.json");
   const crawler = Bun.spawn(
     [
-      "/home/ubuntu/.local/bin/aphrody-web",
+      APHRODY_WEB,
       "crawl",
       url.href,
       "--max-depth",

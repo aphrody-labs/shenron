@@ -3,7 +3,7 @@ import { afterEach, expect, test } from "bun:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join, resolve, sep } from "node:path";
-import { prepareNativeNoteImport } from "./agent-home-native-note";
+import { defaultRemoteHome, prepareNativeNoteImport } from "./agent-home-native-note";
 import { sha256 } from "./agent-home-notes";
 
 const roots: string[] = [];
@@ -65,7 +65,10 @@ async function fixture() {
 
 test("a verified note produces only a private one-note native plan and no store or remote effects", async () => {
   const input = await fixture();
-  const plan = await prepareNativeNoteImport(input);
+  const plan = await prepareNativeNoteImport({
+    ...input,
+    remoteHome: "/srv/owner/.aphrody/workspaces/dbfr",
+  });
   expect(plan.mode).toBe("prepared-only");
   expect(plan.remoteMutationExecuted).toBe(false);
   expect(plan.visibility).toBe("private");
@@ -80,7 +83,7 @@ test("a verified note produces only a private one-note native plan and no store 
     "index",
     "--label",
     `wiki-reviewed-note-${input.id}`,
-    `/home/ubuntu/.aphrody/workspaces/dbfr/notes/native-index-input/${input.id}`,
+    `/srv/owner/.aphrody/workspaces/dbfr/notes/native-index-input/${input.id}`,
   ]);
   expect(plan.retrieval.semanticHybridQualified).toBe(false);
   expect(await Bun.file(join(input.home, "memory", `${input.id}.md`)).text()).toBe(input.source);
@@ -123,4 +126,9 @@ test("the CLI refuses --apply before any file lookup or native invocation", asyn
   expect(await child.exited).not.toBe(0);
   expect(stderr).toContain("Remote mutation is not implemented");
   expect(stderr).not.toContain("ENOENT");
+});
+
+test("the remote workspace follows SHENRON_DBFR_WORKSPACE, else the home directory", () => {
+  expect(defaultRemoteHome({ SHENRON_DBFR_WORKSPACE: "/w/dbfr" })).toBe("/w/dbfr");
+  expect(defaultRemoteHome({ HOME: "/home/owner" })).toBe("/home/owner/.aphrody/workspaces/dbfr");
 });

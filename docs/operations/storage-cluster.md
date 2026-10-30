@@ -55,7 +55,7 @@ de sa release. Le wrapper privé `~/.local/bin/wrangler-aphrody.ps1` utilise le
 jeton Cloudflare du store protégé sans le recopier et `whoami` confirme un compte.
 Les alias SSH `vps` et `dbfr` ont été testés avec `BatchMode yes`,
 `ConnectTimeout 15` et la vérification stricte des clés d'hôtes ; les hôtes
-renvoient respectivement `vps-203bea89` et `vps-6732365f`.
+renvoient leurs noms d'hôte attendus.
 Sur les deux hôtes, Supabase CLI 2.120.0 et Neon CLI 8.4.3 sont installées
 dans les dossiers utilisateur et répondent à `--version` ; l'archive Linux
 Supabase a passé son SHA-256 officiel. Sur DBFR, un wrapper local exécute la
@@ -87,7 +87,7 @@ arrêtés. La copie partielle privée sur le VPS n'est pas un corpus vérifié.
 Le transfert média a livré une archive privée contenant la vidéo source de
 681 525 411 octets et les distributions complètes de `@aphrody/bun-video` et
 `@aphrody/bun-runtime-sdk`, directement vers DBFR par rsync reprenable. Son
-chemin cible est `/home/ubuntu/.aphrody/profiles/dbfr/video-handoff/beerus-01/beerus-video-sdk.tar`.
+chemin cible est `~/.aphrody/profiles/dbfr/video-handoff/beerus-01/beerus-video-sdk.tar`.
 Son SHA-256 distant `a91d9f4bb97fab834cc65883617b1507c2a91645112f18fa57049f2ba129af1e`
 égale celui de l'archive locale ; les trois contenus ont aussi passé leurs
 vérifications. Le manifeste historique indique encore

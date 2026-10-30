@@ -14,7 +14,7 @@
  *
  * Usage: bun scripts/build/rust/workspace-deps.ts [--aphrody <checkout>] [--rev <sha>] [--check]
  * The Aphrody repository is only read through `git show <rev>:Cargo.toml`: `--aphrody`, else
- * ~/aphrody, else the git database Cargo keeps after fetching the pinned revision
+ * the git database Cargo keeps after fetching the pinned revision
  * ($CARGO_HOME/git/db/aphrody-*; enough in CI, where no checkout exists).
  */
 import { $ } from "bun";
@@ -44,7 +44,7 @@ function aphrodyRepositories(): string[] {
   const fetched = existsSync(db)
     ? [...new Bun.Glob("aphrody-*").scanSync({ cwd: db, onlyFiles: false })].toSorted()
     : [];
-  return [join(homedir(), "aphrody"), ...fetched.map((name) => join(db, name))];
+  return [...fetched.map((name) => join(db, name))];
 }
 
 async function upstreamManifest(): Promise<string> {

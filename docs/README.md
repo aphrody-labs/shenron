@@ -23,6 +23,7 @@ the root `AGENTS.md`.
 | Rust development (crates, gates, CI)                             | [`development/rust.md`](development/rust.md)                                                                                                        |
 | Développement distant (VPS, VS Code, WSL propre, sauvegarde)     | [`development/remote-dev.md`](development/remote-dev.md)                                                                                            |
 | Bun dependencies                                                 | [`operations/BUN-PACKAGE-MANAGER.md`](operations/BUN-PACKAGE-MANAGER.md)                                                                            |
+| Release: build, ship, activate (`scripts/deploy`)                | [`operations/CONTAINER-COMPLET.md`](operations/CONTAINER-COMPLET.md)                                                                                |
 | Operations (delegated to `aphrody-infra`)                        | [`operations/INFRA-DELEGATION.md`](operations/INFRA-DELEGATION.md)                                                                                  |
 | Content enrichment session                                       | [`operations/content-session-pipeline.md`](operations/content-session-pipeline.md)                                                                  |
 | Bun agent persona                                                | [`operations/agent-home-bun.md`](operations/agent-home-bun.md)                                                                                      |

@@ -2,15 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Cargo runner for `cargo tauri build --runner` and scripts/build/desktop.ts: forwards
- * `build …` to cargo, through cargo-xwin for an MSVC target built on Linux, and through the
- * serialized build wrapper named by APHRODY_CARGO_SERIAL when set (shared build lock, bounded
- * jobs, sccache).
+ * `build …` to cargo, through cargo-xwin for an MSVC target built on Linux.
  *
  * Heavy Cargo never runs in WSL: there (or with SHENRON_CARGO_REMOTE=vps) the build goes
  * through Aphrody's VPS tunnel (`vps-cargo.ts run --repo shenron`, the exact worktree built on
  * the VPS) and the produced binaries and cdylibs come back into the local target directory, where
  * the Tauri bundler and the packaging scripts expect them. SHENRON_CARGO_REMOTE=off builds here.
- * The Aphrody checkout is APHRODY_ROOT (default ~/aphrody).
+ * The tunnel needs an explicit Aphrody checkout in APHRODY_ROOT; without it Cargo runs here.
  */
 import { copyFileSync, existsSync, mkdirSync } from "node:fs";
 import { homedir } from "node:os";
@@ -25,15 +23,14 @@ const option = (name: string) => {
 const target = option("--target") ?? "";
 const crossMsvc = process.platform !== "win32" && target.endsWith("-pc-windows-msvc");
 
-const aphrody = resolve(process.env.APHRODY_ROOT ?? join(homedir(), "aphrody"));
-const vpsCargo = join(aphrody, "scripts/build/rust/vps-cargo.ts");
+const aphrodyRoot = process.env.APHRODY_ROOT?.trim();
+const aphrody = aphrodyRoot ? resolve(aphrodyRoot) : "";
+const vpsCargo = aphrody ? join(aphrody, "scripts/build/rust/vps-cargo.ts") : "";
 const remoteMode = process.env.SHENRON_CARGO_REMOTE?.trim();
 const remote =
-  remoteMode === "vps" ||
-  (remoteMode !== "off" &&
-    !process.env.APHRODY_CARGO_SERIAL &&
-    Boolean(process.env.WSL_DISTRO_NAME) &&
-    existsSync(vpsCargo));
+  Boolean(vpsCargo) &&
+  (remoteMode === "vps" ||
+    (remoteMode !== "off" && Boolean(process.env.WSL_DISTRO_NAME) && existsSync(vpsCargo)));
 
 type Metadata = {
   packages: {
@@ -205,12 +202,8 @@ if (import.meta.main) {
   if (remote) {
     process.exit(await runRemote());
   }
-  const serial = process.env.APHRODY_CARGO_SERIAL?.trim();
-  const command = serial
-    ? [serial, ...(crossMsvc ? ["xwin"] : []), ...args]
-    : crossMsvc
-      ? ["cargo-xwin", ...args]
-      : ["cargo", ...args];
+  if (remoteMode === "vps") throw new Error("SHENRON_CARGO_REMOTE=vps needs APHRODY_ROOT");
+  const command = crossMsvc ? ["cargo-xwin", ...args] : ["cargo", ...args];
   if (crossMsvc) command.push(...msvcCrossConfig(process.env.CFLAGS));
   const child = Bun.spawn(command, { stdio: ["inherit", "inherit", "inherit"], env: process.env });
   process.exit(await child.exited);

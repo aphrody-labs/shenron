@@ -2,7 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Private, bounded browser evidence. Run inside the already qualified Tokyo namespace. */
 import { mkdir, chmod, readlink, realpath } from "node:fs/promises";
+import { homedir } from "node:os";
 import { isAbsolute, join } from "node:path";
+
+/** Native Aphrody Web binary (APHRODY_WEB_BIN, default ~/.local/bin/aphrody-web). */
+const APHRODY_WEB = process.env.APHRODY_WEB_BIN ?? join(homedir(), ".local/bin/aphrody-web");
 
 const targets = [
   ["https://books.shueisha.co.jp/items/contents.html?isbn=978-4-08-111166-4"],
@@ -49,7 +53,7 @@ export async function inspectBrowserSources(job: string, slot: number, urls: str
   const native: string = "bun:obscura";
   const obscura = await import(native);
   // Each runtime revision discovers its own browser owner through its declared setting.
-  process.env.BUN_OBSCURA_PATH ??= "/home/ubuntu/.local/bin/aphrody-web";
+  process.env.BUN_OBSCURA_PATH ??= APHRODY_WEB;
   process.env.BUN_CHROMIUM_PATH ??= "/opt/google/chrome/chrome";
   const executable = obscura.findExecutable();
   if (!executable) throw new Error("The runtime's native browser owner is unavailable");
@@ -123,7 +127,7 @@ export async function inspectBrowserSources(job: string, slot: number, urls: str
         const file = join(directory, `robots-${observations.length}.json`);
         const crawler = Bun.spawn(
           [
-            "/home/ubuntu/.local/bin/aphrody-web",
+            APHRODY_WEB,
             "crawl",
             url,
             "--max-depth",

@@ -24,41 +24,29 @@ async function assertNoEscape(base: string, path: string): Promise<void> {
   return assertNoEscape(base, parent);
 }
 
-/** Factory stores stay outside sources; legacy callers keep relative outputs. */
+/**
+ * External artifact store, opt-in by SHENRON_ARTIFACT_ROOT (or the older APHRODY_ARTIFACT_ROOT):
+ * an absolute, canonical directory outside the checkout, namespaced by the full source revision.
+ * Without it, outputs stay relative to the checkout.
+ */
 export async function artifactStore(
   repo: string,
   env: Record<string, string | undefined> = process.env,
   revision?: string,
 ): Promise<string> {
-  const requested = env.APHRODY_ARTIFACT_ROOT?.trim();
-  if (env.APHRODY_BUILD_HOST !== "vps") {
-    if (requested) throw new Error("external artifact stores require the declared VPS factory");
-    return resolve(repo);
-  }
-  const config = await Bun.file(resolve(repo, "config/build-factory.json")).json();
-  if (
-    config.enabled !== true ||
-    config.target !== "vps" ||
-    !isAbsolute(config.artifactRoot ?? "")
-  ) {
-    throw new Error("missing declared factory artifact store");
-  }
-  const declared = resolve(config.artifactRoot);
-  let store = requested ? resolve(requested) : declared;
-  if (store === declared) {
-    if (!revision || !/^[a-f0-9]{40}$/.test(revision))
-      throw new Error("factory artifact namespace requires a full source revision");
-    store = resolve(declared, `shenron-${revision}`);
-  }
-  if (requested && !isAbsolute(requested))
-    throw new Error("factory artifact root must be absolute");
-  assertContained(declared, store);
-  // The configured root is provisioned by Infra before execution.
-  if ((await realpath(declared)) !== declared)
-    throw new Error("declared artifact root is not canonical");
-  await assertNoEscape(declared, store);
+  const requested = (env.SHENRON_ARTIFACT_ROOT ?? env.APHRODY_ARTIFACT_ROOT)?.trim();
+  if (!requested) return resolve(repo);
+  if (!isAbsolute(requested)) throw new Error("artifact root must be absolute");
+  if (!revision || !/^[a-f0-9]{40}$/.test(revision))
+    throw new Error("artifact namespace requires a full source revision");
+  const root = resolve(requested);
+  const store = resolve(root, `shenron-${revision}`);
+  assertContained(root, store);
+  // The root is provisioned before execution.
+  if ((await realpath(root)) !== root) throw new Error("artifact root is not canonical");
+  await assertNoEscape(root, store);
   if (!relative(resolve(repo), store).startsWith("../")) {
-    throw new Error("factory artifacts must stay outside the source checkout");
+    throw new Error("external artifacts must stay outside the source checkout");
   }
   await mkdir(store, { recursive: true });
   return store;

@@ -1,7 +1,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 # CLI Cloudflare et persistance DBFR
 
-Les scripts de [deploy/cloudflare/cli](../../deploy/cloudflare/cli) s'installent via Infra SSH. Le runtime Bun et Wrangler restent ceux installés sous /home/ubuntu/.local/share/aphrody/cloudflare-cli ; aucune dépendance globale supplémentaire. Le wrapper cloudflare-ops est dans ~/.local/bin. Installer depuis un stage vérifié avec sh install-cli.sh ; cela ne remplace ni manifest réel ni credentials.
+Les scripts de [deploy/cloudflare/cli](../../deploy/cloudflare/cli) s'installent via Infra SSH. Le runtime Bun et Wrangler restent ceux installés sous ~/.local/share/aphrody/cloudflare-cli ; aucune dépendance globale supplémentaire. Le wrapper cloudflare-ops est dans ~/.local/bin. Installer depuis un stage vérifié avec sh install-cli.sh ; cela ne remplace ni manifest réel ni credentials.
 
 ## Contrat des commandes
 
@@ -17,7 +17,7 @@ La CLI reçoit le credential seulement par CLOUDFLARE_API_TOKEN_FILE, fichier pr
 
 ## Services propriétaires
 
-Catalogue canonique DBFR : /home/ubuntu/src/aphrody/tools/config/service-catalog.json ; scheduler-policy.json et production-topology.json. register-infra.ts prépare sans --apply les ajouts, sauvegarde les catalogues avant, refuse les contrats déjà divergents ; --apply est réservé au lot Infra sous claims. Il conserve toutes les entrées étrangères. Le modèle de boot dérive le tunnel et déclare le timer ; la oneshot est retenue car le timer possède son exécution.
+Catalogue canonique DBFR : catalogue de services d'Aphrody Infra (service-catalog.json, scheduler-policy.json et production-topology.json), lu par `aphrody infra`. register-infra.ts prépare sans --apply les ajouts, sauvegarde les catalogues avant, refuse les contrats déjà divergents ; --apply est réservé au lot Infra sous claims. Il conserve toutes les entrées étrangères. Le modèle de boot dérive le tunnel et déclare le timer ; la oneshot est retenue car le timer possède son exécution.
 
 shenron-cloudflared.service : User ubuntu, Restart on-failure, token root:root0400 /etc/aphrody/cloudflare/tunnel-token copié par Infra depuis le store privé existant, LoadCredential et cloudflared --token-file. Métriques 127.0.0.1:20243 uniquement. Aucun hostname ou DNS créé par cette unit.
 

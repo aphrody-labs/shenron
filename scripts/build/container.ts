@@ -11,7 +11,7 @@
  * the caller's uid plus the shared build group (1500), named cache volumes
  * aphrody-build-{cargo,sccache,bun,xwin,xdg}, bounded CPU/memory (APHRODY_BUILD_CPUS ≤ 6, default 6;
  * APHRODY_BUILD_MEMORY, default 16g, no swap) so the llama-server services keep their memory, and the
- * factory heavy lock when the host has one. Secrets pass by environment NAME only, never as values.
+ * optional build lock named by SHENRON_BUILD_LOCK. Secrets pass by environment NAME only, never as values.
  *
  * Dépendances Git privées (aphrody-labs/aphrody épinglé par révision) : l'aide d'identification Git
  * de l'image répond pour github.com avec `APHRODY_GIT_TOKEN`, résolu ici depuis l'appelant
@@ -22,7 +22,13 @@ import { join, resolve } from "node:path";
 
 export const IMAGE = "aphrody-build";
 export const BUILD_GID = 1500;
-export const HEAVY_LOCK = "/srv/aphrody-build/locks/heavy.lock";
+/** Optional build lock shared with other heavy jobs (SHENRON_BUILD_LOCK, an existing file); none by default. */
+export function buildLock(
+  env: Record<string, string | undefined> = process.env,
+): string | undefined {
+  const lock = env.SHENRON_BUILD_LOCK?.trim();
+  return lock && existsSync(lock) ? lock : undefined;
+}
 const CACHES = ["cargo", "sccache", "xwin", "xdg"] as const;
 const ROOT = resolve(import.meta.dir, "../..");
 
@@ -39,7 +45,7 @@ export type ContainerOptions = {
   memory?: string;
 };
 
-/** The `docker run` invocation (prefixed by `flock` on the factory heavy lock unless disabled). */
+/** The `docker run` invocation (prefixed by `flock` on SHENRON_BUILD_LOCK when set, unless disabled). */
 export function containerArgs(o: ContainerOptions): string[] {
   if (!o.repo.startsWith("/")) throw new Error("checkout : chemin absolu requis");
   if (o.command.length === 0) throw new Error("commande manquante après --");
@@ -101,9 +107,8 @@ export function containerArgs(o: ContainerOptions): string[] {
     `${IMAGE}:latest`,
     ...o.command,
   ];
-  return o.lock === false || !existsSync(HEAVY_LOCK)
-    ? docker
-    : ["flock", "--close", HEAVY_LOCK, ...docker];
+  const lock = o.lock === false ? undefined : buildLock();
+  return lock ? ["flock", "--close", lock, ...docker] : docker;
 }
 
 /** Jeton pour l'aide d'identification github.com de l'image (environnement de l'appelant, sinon `gh`). */

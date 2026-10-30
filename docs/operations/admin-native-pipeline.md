@@ -125,7 +125,7 @@ réels. Aucun `db:push` ni publication implicite de corpus privé n’est introd
 Au contrôle du 2026-10-10, les CLI installées sur Windows, VPS et dans le conteneur
 compute DBFR refusent `rag` et `train` faute de features. Les commandes Infra de
 catalogue échouent aussi sans la racine/configuration qualifiée. Avec
-`APHRODY_INFRA_ROOT` résolu vers le checkout Aphrody courant de DBFR, la sonde
+la configuration Infra qualifiée de DBFR, la sonde
 `service status --id shenron-bot --target dbfr --json` identifie réellement
 `docker:aphrody-bot-1` comme `running/healthy`. Aucun plan de
 mutation n’a été installé pour contourner ces erreurs. Le panneau affiche ces

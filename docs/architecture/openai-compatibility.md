@@ -33,9 +33,9 @@ réponses ou notifications. MCP ne remplace ni Responses ni app-server.
 
 ## Réutilisation des propriétaires Aphrody
 
-Inventaire établi dans le checkout Aphrody courant ; une crate présente sur
-disque n'est pas nécessairement disponible au commit Aphrody consommé par
-Shenron. Les dépendances doivent conserver une révision immuable et passer les
+Inventaire établi sur le dépôt Aphrody (`aphrody-labs/aphrody`) ; une crate
+présente sur sa branche n'est pas nécessairement disponible à la révision
+`# aphrody-rev:` consommée par Shenron. Les dépendances doivent conserver une révision immuable et passer les
 portes de leur propriétaire avant intégration.
 
 | Capacité              | Propriétaire existant                                         | Réutilisation et limite mesurée                                                                                                                                                                         |

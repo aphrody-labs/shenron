@@ -114,7 +114,7 @@ simulent par défaut et n'écrivent qu'avec `APPLY=1`.
 
 ```sh
 # XP et zénis de paliers : rejoue le journal XP_GAIN depuis FROM et plafonne chaque gain
-DB=/home/ubuntu/apps/shenron/shared/bot/data/bot.db FROM=2026-10-22T21:59:00Z \
+DB=<shared>/bot/data/bot.db FROM=2026-10-22T21:59:00Z \
   bun apps/bot/scripts/rollback-xp-inflation.ts
 # Seconde passe sur les gains postérieurs : FROM_ID = toId du passage précédent + 1
 

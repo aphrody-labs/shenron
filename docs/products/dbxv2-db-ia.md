@@ -46,7 +46,7 @@ fiches de fichiers, les index par format et CPK, les entrées MSG et les personn
 `dbxv2:active` bascule après l’écriture complète. Le service Redis dédié écoute uniquement sur
 loopback et persiste sous `/games/private/shenron-dbxv2/redis/`; les octets des CPK ne sont pas copiés.
 
-L'embedding utilise `aphrody-embed serve` local, sous `flock ~/build/locks/heavy.lock`, dans tmux. Jamais `rag:build` sur le bot de production.
+L'embedding utilise `aphrody-embed serve` local, dans une session détachée (sous `flock $SHENRON_BUILD_LOCK` si ce verrou est posé). Jamais `rag:build` sur le bot de production.
 
 Procédure exacte (qualifiée le 2026-10-18, 15578 chunks en environ 51 min) :
 
@@ -54,7 +54,7 @@ Procédure exacte (qualifiée le 2026-10-18, 15578 chunks en environ 51 min) :
 # 1. serveur : --model-dir obligatoire (modèle e5 dans ~/var/models), attendre ~25 s
 aphrody-embed serve --port 18795 --model-dir $HOME/var/models &
 # 2. embedding : lots de 16 au plus (au-delà, le serveur répond 400), défaut du script
-flock ~/build/locks/heavy.lock bun scripts/data/build-dbxv2-db.ts embed --batch 16   --embed-url http://127.0.0.1:18795/v1 > ~/var/dbxv2-db/embed.log 2>&1
+bun scripts/data/build-dbxv2-db.ts embed --batch 16   --embed-url http://127.0.0.1:18795/v1 > ~/var/dbxv2-db/embed.log 2>&1
 ```
 
 `--batch` vaut 16 par défaut ; `plan` imprime la commande tmux complète. La reprise est idempotente (`pendingChunks`).

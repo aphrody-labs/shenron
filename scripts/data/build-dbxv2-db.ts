@@ -113,7 +113,7 @@ if (command === "build") {
   db.close();
   console.log(JSON.stringify({ embedded: done, seconds: (Date.now() - t0) / 1000 }));
 } else if (command === "plan") {
-  const lock = join(HOME, "build/locks/heavy.lock");
+  const lock = process.env.SHENRON_BUILD_LOCK?.trim();
   const lines: string[] = [];
   if (existsSync(dbPath)) {
     const db = openDbxv2Db(dbPath);
@@ -122,8 +122,8 @@ if (command === "build") {
     db.close();
   } else lines.push(`no database at ${dbPath}`);
   lines.push(
-    "# tmux (fabrique), verrou lourd, journal durable :",
-    `tmux new-session -d -s dbxv2-embed 'aphrody-embed serve --port 18795 --model-dir $HOME/var/models & sleep 25; flock ${lock} bun scripts/data/build-dbxv2-db.ts embed --batch 16 > ~/var/dbxv2-db/embed.log 2>&1; echo EXIT_CODE=$? >> ~/var/dbxv2-db/embed.log'`,
+    `# tmux, ${lock ? "verrou SHENRON_BUILD_LOCK, " : ""}journal durable :`,
+    `tmux new-session -d -s dbxv2-embed 'aphrody-embed serve --port 18795 --model-dir $HOME/var/models & sleep 25; ${lock ? `flock ${lock} ` : ""}bun scripts/data/build-dbxv2-db.ts embed --batch 16 > ~/var/dbxv2-db/embed.log 2>&1; echo EXIT_CODE=$? >> ~/var/dbxv2-db/embed.log'`,
   );
   console.log(lines.join("\n"));
 } else {
