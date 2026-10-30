@@ -1,16 +1,14 @@
 // Keep the index loader scoped to the catalogue, not streamed detail routes.
 // SPDX-License-Identifier: Apache-2.0
-import { ContributeRail } from "@/components/kit";
 import { GatedLink } from "@/components/GatedLink";
 import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
 import { Shenron } from "@aphrody/shenron-ui/icones";
-import { WikiPageShell } from "@/components/wiki/WikiPageShell";
+import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
 import { WikiImg } from "@/components/wiki/WikiImg";
 import { CharacterGrid } from "@/components/wiki/CharacterGrid";
 import { countVariantCards, getShenronCharacterCards } from "@/lib/shenron";
 import { dbUniverse } from "@/lib/db-universe";
 import { SectionUnavailable } from "@/components/wiki/SectionUnavailable";
-import { PageBanner } from "@/components/media/PageBanner";
 import { pageHero } from "@/lib/banner-config";
 import type { Metadata } from "next";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
@@ -97,14 +95,16 @@ export default async function PersonnagesPage() {
   const heroImage = await pageHero("personnages");
 
   return (
-    <WikiPageShell
-      crumbs={[{ label: "Wiki", href: "/wiki" }, { label: "Personnages" }]}
-      adminBar
-      category="characters"
+    <WikiIndexPage
+      eyebrow="Encyclopédie"
       title="Personnages"
       lead={`${allowedCharacters.length} fiches, des héros du récit aux figures d'un seul chapitre.`}
+      image={heroImage}
+      imageAlt="Personnages Dragon Ball"
+      crumbs={[{ label: "Personnages" }]}
+      category="characters"
+      contributeKey="kit.contribute.what.character"
     >
-      <PageBanner src={heroImage} alt="Personnages Dragon Ball" position="top" />
       <CharacterGrid
         access={access}
         characters={cartes}
@@ -161,7 +161,6 @@ export default async function PersonnagesPage() {
           </ul>
         </section>
       )}
-      <ContributeRail quoiKey="kit.contribute.what.character" />
-    </WikiPageShell>
+    </WikiIndexPage>
   );
 }

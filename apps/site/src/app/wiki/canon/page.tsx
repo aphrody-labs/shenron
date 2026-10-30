@@ -1,5 +1,6 @@
 /* oxlint-disable jsx-a11y/prefer-tag-over-role -- legacy UI kept as-is (behavior-preserving lint pass) */
 import { PageShell } from "@/components/kit";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -86,9 +87,12 @@ export default async function CanonPage({
 
   return (
     <PageShell width="default" rhythm="tight" wikiDecorative>
-      <Link href="/wiki" className="text-xs text-white/60 hover:text-white">
-        ← <T k="nav.wiki" />
-      </Link>
+      <Breadcrumbs
+        items={[
+          { label: "Wiki", display: <T k="wiki.breadcrumb" />, href: "/wiki" },
+          { label: "Canon", display: <T k="categories.canon.label" /> },
+        ]}
+      />
       <CanonExplorer key={q} initialQuery={q} />
       {q ? (
         <>

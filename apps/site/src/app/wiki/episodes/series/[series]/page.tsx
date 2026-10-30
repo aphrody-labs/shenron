@@ -2,7 +2,8 @@ import { hasEditorialDatabase } from "@/lib/prerender";
 import { SectionUnavailable } from "@/components/wiki/SectionUnavailable";
 import { EpisodeSeriesGrid } from "./EpisodeSeriesGrid";
 import Link from "next/link";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { WikiPageShell } from "@/components/wiki/WikiPageShell";
+import { ContributeRail } from "@/components/kit";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ogMeta } from "@/lib/og";
@@ -115,18 +116,17 @@ export default async function EpisodeSeriePage({
         secondaryHref="/wiki/timeline"
         secondaryLabel={<T k="episodeSeries.timeline" />}
       />
-      <div className="wiki-container">
-        <Breadcrumbs
-          className="mb-8"
-          items={[
-            {
-              label: getDictionary().episodeSeries.episodes,
-              display: <T k="episodeSeries.episodes" />,
-              href: "/wiki/episodes",
-            },
-            { label: SERIES_LABELS[series] ?? series },
-          ]}
-        />
+      <WikiPageShell
+        adminBar
+        crumbs={[
+          {
+            label: getDictionary().episodeSeries.episodes,
+            display: <T k="episodeSeries.episodes" />,
+            href: "/wiki/episodes",
+          },
+          { label: SERIES_LABELS[series] ?? series },
+        ]}
+      >
         <nav className="mb-8 flex flex-wrap gap-2">
           <Link
             href="/wiki/episodes"
@@ -186,7 +186,8 @@ export default async function EpisodeSeriePage({
             playerCount: ep.players?.length ?? 0,
           }))}
         />
-      </div>
+        <ContributeRail quoiKey="kit.contribute.what.episode" />
+      </WikiPageShell>
     </>
   );
 }
@@ -208,18 +209,17 @@ async function OfficialBeerusEpisodeSeries() {
         secondaryHref="/wiki/episodes/series/DBS"
         secondaryLabel={<T k="dbsBeerus.originalCatalogue" />}
       />
-      <div className="wiki-container">
-        <Breadcrumbs
-          className="mb-8"
-          items={[
-            {
-              label: getDictionary().episodeSeries.episodes,
-              display: <T k="episodeSeries.episodes" />,
-              href: "/wiki/episodes",
-            },
-            { label: SERIES_LABELS[DBS_BEERUS_SERIES_CODE] },
-          ]}
-        />
+      <WikiPageShell
+        adminBar
+        crumbs={[
+          {
+            label: getDictionary().episodeSeries.episodes,
+            display: <T k="episodeSeries.episodes" />,
+            href: "/wiki/episodes",
+          },
+          { label: SERIES_LABELS[DBS_BEERUS_SERIES_CODE] },
+        ]}
+      >
         <section className="mb-8 rounded-xl border border-dbz-orange/20 bg-white/[0.03] p-5 text-sm leading-relaxed text-white/70">
           <T k="dbsBeerus.episodeContinuity" />{" "}
           <Link
@@ -246,7 +246,8 @@ async function OfficialBeerusEpisodeSeries() {
             },
           ]}
         />
-      </div>
+        <ContributeRail quoiKey="kit.contribute.what.episode" />
+      </WikiPageShell>
     </>
   );
 }

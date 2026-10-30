@@ -3,12 +3,11 @@ import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
 import { WikiArticle } from "@/components/wiki/WikiArticle";
 import { WikiEntitySections } from "@/components/wiki/WikiEntitySections";
-import { WikiEditBar } from "@/components/wiki/WikiEditBar";
 import { WikiFicheVide } from "@/components/wiki/WikiFicheVide";
 import { getShenronRace, getShenronRaces } from "@/lib/shenron";
 import { assetUrl } from "@/lib/db-universe";
 import { notFound } from "next/navigation";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { WikiDetailPage, WikiEntityHeader } from "@/components/wiki/WikiDetailPage";
 import { GatedWrap } from "@/components/GatedLink";
 import type { Metadata } from "next";
 import { ogMeta } from "@/lib/og";
@@ -164,138 +163,115 @@ export default async function RaceDetailPage({ params }: { params: Promise<{ slu
   const theme = colorThemes[slug] || defaultTheme;
 
   return (
-    <div className="wiki-container">
-      <Breadcrumbs
-        className="mb-6"
-        items={[{ label: "Races & peuples", href: "/wiki/races" }, { label: race.name }]}
-      />
-
-      <div className="mb-4">
-        <WikiEditBar table="db_races" id={race.id} indexHref="/wiki/races" label={race.name} />
-      </div>
-
-      <div className="space-y-16">
-        {/* Centered Hero Header - Toriyama Style */}
-        <header className="flex flex-col items-center justify-center text-center space-y-4 py-8">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-dbz-orange/15 border-2 border-black shadow-[2px_2px_0px_#000]">
-            <span className="w-2 h-2 rounded-full bg-dbz-orange animate-pulse" />
+    <WikiDetailPage
+      entity={race.name}
+      source="db_races"
+      crumbs={[{ label: "Races & peuples", href: "/wiki/races" }, { label: race.name }]}
+      edit={{ table: "db_races", id: race.id, indexHref: "/wiki/races", label: race.name }}
+      header={
+        <WikiEntityHeader
+          name={race.name}
+          nameJa={race.nameJa}
+          chips={
             <span className={`font-saiyan text-xs tracking-[0.2em] uppercase ${theme.text}`}>
               CLASSIFICATION BIOLOGIQUE
             </span>
-          </div>
-
-          <h1 className="font-saiyan text-4xl sm:text-6xl lg:text-7xl font-bold tracking-wide text-white drop-shadow-[0_4px_20px_rgba(255,107,0,0.35)] [overflow-wrap:anywhere]">
-            {race.name}
-          </h1>
-
-          {race.nameJa && (
-            <p className="font-jp text-2xl sm:text-3xl font-bold text-dbz-orange/90 tracking-wide drop-shadow">
-              {race.nameJa}
+          }
+        />
+      }
+      aside={
+        race.homePlanet ? (
+          <div
+            className={`dbz-panel p-6 border ${theme.border} ${theme.glow} flex flex-col items-center text-center space-y-4`}
+          >
+            <p className={`text-xs font-bold ${theme.text} tracking-[0.18em] uppercase`}>
+              Monde d&apos;Origine
             </p>
-          )}
-        </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          {/* Main Description / Article */}
-          <div className="lg:col-span-2 space-y-8">
-            {race.article ? (
-              <WikiArticle article={race.article} sources={race.articleSources} heading="Article" />
-            ) : !race.description ? (
-              <WikiFicheVide
-                table="db_races"
-                rowId={race.id}
-                label={race.name}
-                quoi="ses traits, son monde d'origine et ce que les sources en établissent"
-              />
-            ) : (
-              <div
-                className={`dbz-panel relative overflow-hidden p-5 sm:p-8 ${theme.border} ${theme.glow}`}
-              >
-                <div className={`absolute top-0 left-0 w-1.5 h-full ${theme.barre}`} />
-                <div className="prose prose-invert max-w-none wiki-content">
-                  <WikiMarkdown body={race.description} />
-                </div>
+            {race.homePlanet.image && (
+              <div className="relative w-28 h-28 overflow-hidden bg-black/40 rounded-full flex items-center justify-center p-3 border border-white/5">
+                <img
+                  src={assetUrl(race.homePlanet.image)}
+                  alt={race.homePlanet.name}
+                  className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+                />
               </div>
             )}
+
+            <h3 className="text-2xl font-saiyan tracking-widest text-white">
+              <GatedWrap href="/wiki/locations" className={`${theme.survol} transition-colors`}>
+                {race.homePlanet.name}
+              </GatedWrap>
+            </h3>
+
+            {race.homePlanet.description && (
+              <p className="text-sm leading-relaxed text-white/70">{race.homePlanet.description}</p>
+            )}
+          </div>
+        ) : undefined
+      }
+    >
+      {race.article ? (
+        <WikiArticle article={race.article} sources={race.articleSources} heading="Article" />
+      ) : !race.description ? (
+        <WikiFicheVide
+          table="db_races"
+          rowId={race.id}
+          label={race.name}
+          quoi="ses traits, son monde d'origine et ce que les sources en établissent"
+        />
+      ) : (
+        <div
+          className={`dbz-panel relative overflow-hidden p-5 sm:p-8 ${theme.border} ${theme.glow}`}
+        >
+          <div className={`absolute top-0 left-0 w-1.5 h-full ${theme.barre}`} />
+          <div className="prose prose-invert max-w-none wiki-content">
+            <WikiMarkdown body={race.description} />
+          </div>
+        </div>
+      )}
+      {race.characters && race.characters.length > 0 && (
+        <section className="space-y-10">
+          <div className="flex items-center gap-6">
+            <h2 className="font-saiyan text-2xl sm:text-4xl text-white uppercase tracking-widest">
+              Représentants Connus ({race.characters.length})
+            </h2>
+            <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
           </div>
 
-          {/* Origin Planet Sidebar */}
-          {race.homePlanet && (
-            <div
-              className={`dbz-panel p-6 border ${theme.border} ${theme.glow} flex flex-col items-center text-center space-y-4`}
-            >
-              <p className={`text-xs font-bold ${theme.text} tracking-[0.18em] uppercase`}>
-                Monde d&apos;Origine
-              </p>
-
-              {race.homePlanet.image && (
-                <div className="relative w-28 h-28 overflow-hidden bg-black/40 rounded-full flex items-center justify-center p-3 border border-white/5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            {race.characters.map((char, idx) => (
+              <GatedWrap
+                key={char.id}
+                href={`/wiki/characters/${char.slug || char.id}`}
+                className="group dbz-panel min-h-11 overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:border-dbz-orange focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange motion-reduce:transition-none motion-reduce:hover:scale-100"
+                style={{ animationDelay: `${0.1 + idx * 0.03}s` }}
+              >
+                <div className="relative aspect-[3/4] bg-dbz-bg overflow-hidden">
+                  <div className="absolute inset-0 halftone opacity-10 z-10 pointer-events-none" />
                   <img
-                    src={assetUrl(race.homePlanet.image)}
-                    alt={race.homePlanet.name}
-                    className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+                    src={assetUrl(char.image)}
+                    alt={char.name}
+                    width={320}
+                    height={420}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover object-top opacity-100 transition-transform duration-700 group-hover:scale-110 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                   />
-                </div>
-              )}
-
-              <h3 className="text-2xl font-saiyan tracking-widest text-white">
-                <GatedWrap href="/wiki/locations" className={`${theme.survol} transition-colors`}>
-                  {race.homePlanet.name}
-                </GatedWrap>
-              </h3>
-
-              {race.homePlanet.description && (
-                <p className="text-sm leading-relaxed text-white/70">
-                  {race.homePlanet.description}
-                </p>
-              )}
-            </div>
-          )}
-        </div>
-
-        {race.characters && race.characters.length > 0 && (
-          <section className="space-y-10">
-            <div className="flex items-center gap-6">
-              <h2 className="font-saiyan text-2xl sm:text-4xl text-white uppercase tracking-widest">
-                Représentants Connus ({race.characters.length})
-              </h2>
-              <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-              {race.characters.map((char, idx) => (
-                <GatedWrap
-                  key={char.id}
-                  href={`/wiki/characters/${char.slug || char.id}`}
-                  className="group dbz-panel min-h-11 overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:border-dbz-orange focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange motion-reduce:transition-none motion-reduce:hover:scale-100"
-                  style={{ animationDelay: `${0.1 + idx * 0.03}s` }}
-                >
-                  <div className="relative aspect-[3/4] bg-dbz-bg overflow-hidden">
-                    <div className="absolute inset-0 halftone opacity-10 z-10 pointer-events-none" />
-                    <img
-                      src={assetUrl(char.image)}
-                      alt={char.name}
-                      width={320}
-                      height={420}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-full w-full object-cover object-top opacity-100 transition-transform duration-700 group-hover:scale-110 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent z-20" />
-                    <div className="absolute inset-x-0 bottom-0 p-4 z-30">
-                      <p className="font-display font-bold text-sm text-white group-hover:text-dbz-orange transition-colors">
-                        {char.name}
-                      </p>
-                    </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent z-20" />
+                  <div className="absolute inset-x-0 bottom-0 p-4 z-30">
+                    <p className="font-display font-bold text-sm text-white group-hover:text-dbz-orange transition-colors">
+                      {char.name}
+                    </p>
                   </div>
-                </GatedWrap>
-              ))}
-            </div>
-          </section>
-        )}
+                </div>
+              </GatedWrap>
+            ))}
+          </div>
+        </section>
+      )}
 
-        <WikiEntitySections entityType="race" entityId={race.id} />
-      </div>
+      <WikiEntitySections entityType="race" entityId={race.id} />
       <EntityParticipation
         kind="wiki"
         table="db_races"
@@ -303,6 +279,6 @@ export default async function RaceDetailPage({ params }: { params: Promise<{ slu
         path={`/wiki/races/${slug}`}
         label={race.name}
       />
-    </div>
+    </WikiDetailPage>
   );
 }

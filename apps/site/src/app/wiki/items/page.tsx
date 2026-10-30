@@ -1,9 +1,6 @@
-import { PageHero } from "@/components/PageHero";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { DomainBar, ContributeRail } from "@/components/kit";
 import { dbUniverse } from "@/lib/db-universe";
 import { ItemsGrid } from "@/components/wiki/ItemsGrid";
-import { WikiPageShell } from "@/components/wiki/WikiPageShell";
+import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
 import { ogMeta } from "@/lib/og";
 import { pageHero } from "@/lib/banner-config";
 import type { Metadata } from "next";
@@ -28,29 +25,24 @@ export default async function ObjetsPage() {
   const heroImage = await pageHero("objets");
 
   return (
-    <div>
-      <PageHero
-        eyebrow="Encyclopédie & Archives"
-        title="Objets & Technologies"
-        lead={`${items.length} créations, reliques magiques et technologies répertoriées — des capsules révolutionnaires de Capsule Corp aux artefacts divins des Kaïōshins.`}
-        image={heroImage}
-        imageAlt="Son Goku enfant et Shenron"
-      />
-
-      <WikiPageShell>
-        <DomainBar domain="wiki" />
-        <Breadcrumbs items={[{ label: "Objets & Technologies" }]} />
-
-        <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4 text-xs leading-relaxed text-amber-200/80">
+    <WikiIndexPage
+      eyebrow="Encyclopédie & Archives"
+      title="Objets & Technologies"
+      lead={`${items.length} créations, reliques magiques et technologies répertoriées — des capsules révolutionnaires de Capsule Corp aux artefacts divins des Kaïōshins.`}
+      image={heroImage}
+      imageAlt="Son Goku enfant et Shenron"
+      crumbs={[{ label: "Objets & Technologies" }]}
+      note={
+        <>
           <strong>Note d'archive Capsule Corp :</strong> Chaque invention, vaisseau spatial ou
           relique mystique est catalogué avec son créateur officiel (Dr Brief, Bulma, Maître Karin,
           Kami-sama, Kaïōshins), son fonctionnement et son premier chapitre d'apparition dans le
           manga original.
-        </div>
-
-        <ItemsGrid items={items} fallbackImage={heroImage} />
-        <ContributeRail quoiKey="kit.contribute.what.object" />
-      </WikiPageShell>
-    </div>
+        </>
+      }
+      contributeKey="kit.contribute.what.object"
+    >
+      <ItemsGrid items={items} fallbackImage={heroImage} />
+    </WikiIndexPage>
   );
 }

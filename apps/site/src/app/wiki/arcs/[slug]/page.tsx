@@ -3,13 +3,11 @@ import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
 import { WikiArticle } from "@/components/wiki/WikiArticle";
 import { WikiEntitySections } from "@/components/wiki/WikiEntitySections";
-import { WikiEditBar } from "@/components/wiki/WikiEditBar";
 import { EntityRating, EntityRatingSummary } from "@/components/ratings/EntityRating";
 import { CommunityRankBadge } from "@/components/ratings/CommunityRankBadge";
 import { dbUniverse, assetUrl } from "@/lib/db-universe";
 import Link from "next/link";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { DomainBar } from "@/components/kit";
+import { WikiDetailPage, WikiEntityHeader } from "@/components/wiki/WikiDetailPage";
 import { GatedLink } from "@/components/GatedLink";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -68,53 +66,40 @@ export default async function ArcPage({ params }: { params: Promise<{ slug: stri
     (sagaVolumes.length > 0 || sagaEpisodes.length > 0);
 
   return (
-    <div className="wiki-container">
-      <DomainBar domain="wiki" />
-      <Breadcrumbs
-        items={[
-          { label: "Sagas & arcs", href: "/wiki/sagas" },
-          { label: "Arcs", href: "/wiki/arcs" },
-          { label: arc.name },
-        ]}
-      />
-
-      <div className="mb-4">
-        <WikiEditBar table="db_arcs" id={arc.id} indexHref="/wiki/sagas" label={arc.name} />
-      </div>
-
-      {/* Centered Hero Header - Toriyama Style */}
-      <header className="flex flex-col items-center justify-center text-center space-y-4 py-8">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-dbz-orange/15 border-2 border-black shadow-[2px_2px_0px_#000]">
-          <span className="w-2 h-2 rounded-full bg-dbz-orange animate-pulse" />
-          <span className="font-saiyan text-xs tracking-[0.2em] uppercase text-dbz-orange">
-            ARC NARRATIF {arc.order_idx}
-          </span>
-        </div>
-
-        <h1 className="font-saiyan text-5xl sm:text-7xl md:text-8xl font-bold tracking-wider text-white drop-shadow-[0_4px_20px_rgba(255,107,0,0.35)]">
-          {arc.name}
-        </h1>
-
-        {arc.name_ja && (
-          <p className="font-jp text-2xl sm:text-3xl font-bold text-dbz-orange/90 tracking-wide drop-shadow">
-            {arc.name_ja}
-          </p>
-        )}
-
-        <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
-          <EntityRatingSummary targetType="arc" targetId={arc.id} />
-          <CommunityRankBadge kind="arc" targetId={arc.id} />
-        </div>
-
-        {arc.description && (
-          <div className="wiki-content-card max-w-4xl text-left mt-6">
-            <div className="prose prose-invert max-w-none wiki-content">
-              <WikiMarkdown body={arc.description} />
-            </div>
+    <WikiDetailPage
+      entity={arc.name}
+      source="db_arcs"
+      crumbs={[
+        { label: "Sagas & arcs", href: "/wiki/sagas" },
+        { label: "Arcs", href: "/wiki/arcs" },
+        { label: arc.name },
+      ]}
+      edit={{ table: "db_arcs", id: arc.id, indexHref: "/wiki/sagas", label: arc.name }}
+      header={
+        <WikiEntityHeader
+          name={arc.name}
+          nameJa={arc.name_ja}
+          chips={
+            <span className="font-saiyan text-xs tracking-[0.2em] uppercase text-dbz-orange">
+              ARC NARRATIF {arc.order_idx}
+            </span>
+          }
+        >
+          <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
+            <EntityRatingSummary targetType="arc" targetId={arc.id} />
+            <CommunityRankBadge kind="arc" targetId={arc.id} />
           </div>
-        )}
-      </header>
 
+          {arc.description && (
+            <div className="wiki-content-card max-w-4xl text-left mt-6">
+              <div className="prose prose-invert max-w-none wiki-content">
+                <WikiMarkdown body={arc.description} />
+              </div>
+            </div>
+          )}
+        </WikiEntityHeader>
+      }
+    >
       {arc.article && (
         <div className="wiki-content-card mb-16">
           <WikiArticle article={arc.article} sources={arc.article_sources} heading="Article" />
@@ -272,6 +257,6 @@ export default async function ArcPage({ params }: { params: Promise<{ slug: stri
         path={`/wiki/arcs/${slug}`}
         label={arc.name}
       />
-    </div>
+    </WikiDetailPage>
   );
 }

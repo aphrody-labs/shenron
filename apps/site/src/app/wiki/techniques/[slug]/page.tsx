@@ -1,6 +1,6 @@
 import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
-import { WikiEditBar } from "@/components/wiki/WikiEditBar";
+import { WikiDetailPage, WikiEntityHeader } from "@/components/wiki/WikiDetailPage";
 import { WikiFicheVide } from "@/components/wiki/WikiFicheVide";
 import { WikiSectionsReader } from "@/components/wiki/WikiSectionsReader";
 import { WikiSources } from "@/components/wiki/WikiArticle";
@@ -10,15 +10,12 @@ import { assetUrl } from "@/lib/db-universe";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { GatedWrap } from "@/components/GatedLink";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { DomainBar } from "@/components/kit";
 import type { Metadata } from "next";
 import {
   NOTE_PROVENANCE,
   estTypeDeJeu,
   libelleType,
 } from "@aphrody/shenron-config/techniques-types";
-import { JsonLd } from "@/components/JsonLd";
 import type { DefinedTerm, WithContext } from "schema-dts";
 import { SITE_URL } from "@/lib/config";
 import { ogMeta } from "@/lib/og";
@@ -135,65 +132,52 @@ export default async function TechniqueDetailPage({
     inDefinedTermSet: `${SITE_URL}/wiki/techniques`,
   };
   return (
-    <article
-      data-entity={tech.name}
-      data-source-id="db_techniques"
-      data-lang="fr"
-      className="wiki-container"
-    >
-      <JsonLd data={jsonLdData} />
-      <DomainBar domain="wiki" />
-      <Breadcrumbs
-        items={[{ label: "Techniques", href: "/wiki/techniques" }, { label: tech.name }]}
-      />
-      <div className="mb-4">
-        <WikiEditBar
-          sansArticle
-          table="db_techniques"
-          id={tech.id}
-          indexHref="/wiki/techniques"
-          label={tech.name}
-        />
-      </div>
-
-      {/* Centered Hero Header - Toriyama Style */}
-      <header className="flex flex-col items-center justify-center text-center space-y-4 py-6">
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <span className="font-scouter text-xs uppercase tracking-widest px-3 py-1 rounded bg-black/60 border border-dbz-blue/40 text-dbz-blue-light shadow-[2px_2px_0px_#000]">
-            TECH #{tech.id}
-          </span>
-          <span className="font-saiyan text-xs uppercase tracking-widest px-3 py-1 rounded bg-dbz-orange/20 border border-dbz-orange/50 text-dbz-orange shadow-[2px_2px_0px_#000]">
-            {libelleType(tech.type)}
-          </span>
-        </div>
-
-        <h1 className="font-saiyan text-4xl sm:text-6xl md:text-7xl font-bold tracking-widest text-white drop-shadow-[0_4px_18px_rgba(255,107,0,0.35)]">
-          {tech.name}
-        </h1>
-
-        {tech.creatorName && (
-          <p className="text-base sm:text-lg text-white/80 font-medium">
-            Créateur / utilisateur :{" "}
-            <Link
-              href={
-                tech.creatorSlug
-                  ? `/wiki/characters/${tech.creatorSlug}`
-                  : tech.creatorId
-                    ? `/wiki/characters/${tech.creatorId}`
-                    : "#"
-              }
-              className="text-dbz-orange font-semibold underline-offset-4 hover:underline hover:text-dbz-yellow transition-colors"
-            >
-              {tech.creatorName}
-            </Link>
-          </p>
-        )}
-      </header>
-
-      {/* 2-Column Fandom-Style Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Fandom Toriyama Infobox */}
-        <aside className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
+    <WikiDetailPage
+      entity={tech.name}
+      source="db_techniques"
+      jsonLd={jsonLdData}
+      crumbs={[{ label: "Techniques", href: "/wiki/techniques" }, { label: tech.name }]}
+      edit={{
+        table: "db_techniques",
+        id: tech.id,
+        indexHref: "/wiki/techniques",
+        label: tech.name,
+      }}
+      header={
+        <WikiEntityHeader
+          name={tech.name}
+          chips={
+            <>
+              <span className="font-scouter text-xs uppercase tracking-widest px-3 py-1 rounded bg-black/60 border border-dbz-blue/40 text-dbz-blue-light shadow-[2px_2px_0px_#000]">
+                TECH #{tech.id}
+              </span>
+              <span className="font-saiyan text-xs uppercase tracking-widest px-3 py-1 rounded bg-dbz-orange/20 border border-dbz-orange/50 text-dbz-orange shadow-[2px_2px_0px_#000]">
+                {libelleType(tech.type)}
+              </span>
+            </>
+          }
+        >
+          {tech.creatorName && (
+            <p className="text-base sm:text-lg text-white/80 font-medium">
+              Créateur / utilisateur :{" "}
+              <Link
+                href={
+                  tech.creatorSlug
+                    ? `/wiki/characters/${tech.creatorSlug}`
+                    : tech.creatorId
+                      ? `/wiki/characters/${tech.creatorId}`
+                      : "#"
+                }
+                className="text-dbz-orange font-semibold underline-offset-4 hover:underline hover:text-dbz-yellow transition-colors"
+              >
+                {tech.creatorName}
+              </Link>
+            </p>
+          )}
+        </WikiEntityHeader>
+      }
+      aside={
+        <>
           <div className="wiki-infobox">
             <div className="wiki-infobox-header">FICHE TECHNIQUE</div>
             <TechniqueArtworkPanel name={tech.name} artwork={artwork} />
@@ -244,40 +228,30 @@ export default async function TechniqueDetailPage({
               <p>{NOTE_PROVENANCE}</p>
             </div>
           )}
-        </aside>
-
-        {/* Main Article Content Card */}
-        <main className="lg:col-span-8 space-y-8 min-w-0">
-          {contentPanels.length > 1 ? (
-            <div className="space-y-8">
-              <WikiSectionsReader panels={contentPanels} />
-              <WikiSources sources={tech.articleSources} />
-            </div>
-          ) : contentPanels.length === 1 ? (
-            <div className="space-y-8">
-              <div className="wiki-content-card">{contentPanels[0]!.node}</div>
-              <WikiSources sources={tech.articleSources} />
-            </div>
-          ) : (
-            <div className="wiki-content-card">
-              <WikiFicheVide
-                table="db_techniques"
-                rowId={tech.id}
-                label={tech.name}
-                quoi="qui l'emploie, comment elle fonctionne et dans quelle planche elle apparaît"
-              />
-            </div>
-          )}
-        </main>
-      </div>
-      <EntityParticipation
-        kind="wiki"
-        table="db_techniques"
-        id={tech.id}
-        path={`/wiki/techniques/${slug}`}
-        label={tech.name}
-      />
-    </article>
+        </>
+      }
+    >
+      {contentPanels.length > 1 ? (
+        <div className="space-y-8">
+          <WikiSectionsReader panels={contentPanels} />
+          <WikiSources sources={tech.articleSources} />
+        </div>
+      ) : contentPanels.length === 1 ? (
+        <div className="space-y-8">
+          <div className="wiki-content-card">{contentPanels[0]!.node}</div>
+          <WikiSources sources={tech.articleSources} />
+        </div>
+      ) : (
+        <div className="wiki-content-card">
+          <WikiFicheVide
+            table="db_techniques"
+            rowId={tech.id}
+            label={tech.name}
+            quoi="qui l'emploie, comment elle fonctionne et dans quelle planche elle apparaît"
+          />
+        </div>
+      )}
+    </WikiDetailPage>
   );
 }
 

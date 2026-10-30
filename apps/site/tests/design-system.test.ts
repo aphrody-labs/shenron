@@ -138,14 +138,14 @@ describe("système de design — un seul vocabulaire", () => {
   test("les index encyclopédiques d'expansion partagent leur coque wiki", () => {
     for (const page of ["dragons", "locations", "music", "items", "power-levels"]) {
       const src = readFileSync(join(APP_DIR, "wiki", page, "page.tsx"), "utf8");
-      expect(src, `wiki/${page}`).toContain("WikiPageShell");
+      expect(src, `wiki/${page}`).toMatch(/WikiPageShell|WikiIndexPage/);
     }
   });
 
   test("les fiches d'expansion partagent la coque de leur index", () => {
     for (const page of ["locations", "items"]) {
       const src = readFileSync(join(APP_DIR, "wiki", page, "[slug]", "page.tsx"), "utf8");
-      expect(src, `wiki/${page}/[slug]`).toContain("WikiPageShell");
+      expect(src, `wiki/${page}/[slug]`).toMatch(/WikiPageShell|WikiDetailPage/);
     }
   });
 
@@ -155,14 +155,16 @@ describe("système de design — un seul vocabulaire", () => {
       ["items", "db_items"],
     ]) {
       const src = readFileSync(join(APP_DIR, "wiki", page, "[slug]", "page.tsx"), "utf8");
-      expect(src, `wiki/${page}/[slug]`).toMatch(new RegExp(`<WikiEditBar\\s+table="${table}"`));
+      expect(src, `wiki/${page}/[slug]`).toMatch(
+        new RegExp(`<WikiEditBar\\s+table="${table}"|edit=\\{\\{\\s*table: "${table}"`),
+      );
     }
   });
 
   test("les index d'expansion exposent une invitation contributive", () => {
     for (const page of ["dragons", "locations", "music", "items", "power-levels"]) {
       const src = readFileSync(join(APP_DIR, "wiki", page, "page.tsx"), "utf8");
-      expect(src, `wiki/${page}`).toContain("ContributeRail");
+      expect(src, `wiki/${page}`).toMatch(/ContributeRail|contributeKey=/);
     }
   });
 

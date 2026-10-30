@@ -3,17 +3,15 @@ import { Xenoverse2Runtime } from "@/components/games/Xenoverse2Runtime";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
 import { GameMediaGallery } from "@/components/wiki/GameMediaGallery";
-import { WikiEditBar } from "@/components/wiki/WikiEditBar";
 import { EntityRating, EntityRatingSummary } from "@/components/ratings/EntityRating";
 import { CommunityRankBadge } from "@/components/ratings/CommunityRankBadge";
 import { dbUniverse, assetUrl } from "@/lib/db-universe";
 import { ogMeta } from "@/lib/og";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { WikiDetailPage, WikiEntityHeader } from "@/components/wiki/WikiDetailPage";
 import { GatedWrap } from "@/components/GatedLink";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { JsonLd } from "@/components/JsonLd";
 import type { VideoGame, WithContext } from "schema-dts";
 
 export const revalidate = 3600;
@@ -72,98 +70,95 @@ export default async function GamePage({ params }: { params: Promise<{ slug: str
   };
 
   return (
-    <div className="wiki-container">
-      <JsonLd data={jsonLdData} />
-      <Breadcrumbs
-        className="mb-4"
-        items={[{ label: "Jeux vidéo", href: "/wiki/games" }, { label: g.title }]}
-      />
-
-      <div className="mb-8">
-        <WikiEditBar table="db_games" id={g.id} indexHref="/wiki/games" label={g.title} />
-      </div>
-
-      <header className="mb-12 flex flex-col sm:flex-row gap-8 items-start">
-        {g.cover && (
-          <div className="relative w-40 sm:w-48 shrink-0 aspect-[3/4] rounded-xl overflow-hidden border border-white/10 bg-black">
-            <Image
-              src={assetUrl(g.cover)}
-              alt={g.title}
-              fill
-              sizes="192px"
-              className="object-cover"
-              priority
-            />
-          </div>
-        )}
-        <div>
-          <p className="font-display font-semibold text-[12px] tracking-[0.18em] uppercase text-dbz-orange mb-3">
-            Bandai Namco Entertainment
-          </p>
-          <h1 className="font-display font-bold text-[40px] md:text-[56px] leading-[1.05] tracking-[-0.01em] text-white mb-3">
-            {g.title}
-          </h1>
-          {g.title_ja && (
-            <p className="font-jp text-[20px] text-dbz-orange/85 mb-3">{g.title_ja}</p>
-          )}
-          <div className="flex flex-wrap items-center gap-2">
+    <WikiDetailPage
+      entity={g.title}
+      source="db_games"
+      jsonLd={jsonLdData}
+      crumbs={[{ label: "Jeux vidéo", href: "/wiki/games" }, { label: g.title }]}
+      edit={{ table: "db_games", id: g.id, indexHref: "/wiki/games", label: g.title }}
+      header={
+        <WikiEntityHeader
+          name={g.title}
+          nameJa={g.title_ja}
+          chips={
+            <span className="font-display font-semibold text-[12px] tracking-[0.18em] uppercase text-dbz-orange">
+              Bandai Namco Entertainment
+            </span>
+          }
+        >
+          <div className="flex flex-wrap items-center justify-center gap-2">
             <EntityRatingSummary targetType="game" targetId={g.id} />
             <CommunityRankBadge kind="game" targetId={g.id} />
           </div>
-        </div>
-      </header>
-
+        </WikiEntityHeader>
+      }
+      aside={
+        <>
+          {g.cover && (
+            <div className="relative mx-auto w-40 sm:w-48 aspect-[3/4] rounded-xl overflow-hidden border border-white/10 bg-black">
+              <Image
+                src={assetUrl(g.cover)}
+                alt={g.title}
+                fill
+                sizes="192px"
+                className="object-cover"
+                priority
+              />
+            </div>
+          )}
+          <dl className="grid gap-6 p-6 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+            {g.release_date && (
+              <div>
+                <dt className="font-display font-semibold text-[11px] tracking-[0.16em] uppercase text-white/50 mb-1.5">
+                  Date de sortie
+                </dt>
+                <dd className="text-white text-[15px]">
+                  {new Date(g.release_date * 1000).toLocaleDateString("fr-FR", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </dd>
+              </div>
+            )}
+            {g.developer && (
+              <div>
+                <dt className="font-display font-semibold text-[11px] tracking-[0.16em] uppercase text-white/50 mb-1.5">
+                  Développeur
+                </dt>
+                <dd className="text-white text-[15px]">{g.developer}</dd>
+              </div>
+            )}
+            {g.publisher && (
+              <div>
+                <dt className="font-display font-semibold text-[11px] tracking-[0.16em] uppercase text-white/50 mb-1.5">
+                  Éditeur
+                </dt>
+                <dd className="text-white text-[15px]">{g.publisher}</dd>
+              </div>
+            )}
+            {platforms.length > 0 && (
+              <div>
+                <dt className="font-display font-semibold text-[11px] tracking-[0.16em] uppercase text-white/50 mb-1.5">
+                  Plateformes
+                </dt>
+                <dd className="flex flex-wrap gap-1.5">
+                  {platforms.map((p) => (
+                    <span
+                      key={p}
+                      className="text-[11px] font-display font-semibold tracking-[0.10em] uppercase px-2.5 py-1 rounded-full bg-dbz-orange/15 text-dbz-orange"
+                    >
+                      {p}
+                    </span>
+                  ))}
+                </dd>
+              </div>
+            )}
+          </dl>
+        </>
+      }
+    >
       {slug === "xenoverse-2" && <Xenoverse2Runtime wiki />}
-
-      <dl className="grid sm:grid-cols-2 gap-6 mb-12 p-6 rounded-xl bg-white/[0.04] border border-white/[0.06]">
-        {g.release_date && (
-          <div>
-            <dt className="font-display font-semibold text-[11px] tracking-[0.16em] uppercase text-white/50 mb-1.5">
-              Date de sortie
-            </dt>
-            <dd className="text-white text-[15px]">
-              {new Date(g.release_date * 1000).toLocaleDateString("fr-FR", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
-            </dd>
-          </div>
-        )}
-        {g.developer && (
-          <div>
-            <dt className="font-display font-semibold text-[11px] tracking-[0.16em] uppercase text-white/50 mb-1.5">
-              Développeur
-            </dt>
-            <dd className="text-white text-[15px]">{g.developer}</dd>
-          </div>
-        )}
-        {g.publisher && (
-          <div>
-            <dt className="font-display font-semibold text-[11px] tracking-[0.16em] uppercase text-white/50 mb-1.5">
-              Éditeur
-            </dt>
-            <dd className="text-white text-[15px]">{g.publisher}</dd>
-          </div>
-        )}
-        {platforms.length > 0 && (
-          <div>
-            <dt className="font-display font-semibold text-[11px] tracking-[0.16em] uppercase text-white/50 mb-1.5">
-              Plateformes
-            </dt>
-            <dd className="flex flex-wrap gap-1.5">
-              {platforms.map((p) => (
-                <span
-                  key={p}
-                  className="text-[11px] font-display font-semibold tracking-[0.10em] uppercase px-2.5 py-1 rounded-full bg-dbz-orange/15 text-dbz-orange"
-                >
-                  {p}
-                </span>
-              ))}
-            </dd>
-          </div>
-        )}
-      </dl>
 
       {g.description && (
         <section className="mb-12">
@@ -237,6 +232,6 @@ export default async function GamePage({ params }: { params: Promise<{ slug: str
         path={`/wiki/games/${slug}`}
         label={g.title}
       />
-    </div>
+    </WikiDetailPage>
   );
 }

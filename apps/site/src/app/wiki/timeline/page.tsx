@@ -1,6 +1,6 @@
 import { DomainBar, PageShell } from "@/components/kit";
+import { WikiPageShell } from "@/components/wiki/WikiPageShell";
 import Link from "next/link";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
 import type { Metadata } from "next";
 import { pageHero } from "@/lib/banner-config";
 import {
@@ -107,10 +107,11 @@ export default async function ChronologiePage() {
         arcs={atlas.arcs}
         databooks={atlas.databooks}
       />
-      <div id="frise" className="wiki-container scroll-mt-24">
-        <DomainBar domain="timeline" className="mb-6" />
-        <Breadcrumbs items={[{ label: "Chronologie" }]} />
-        <ChronologieTabs mediaItems={items} ageEvents={ageEvents ?? []} />
+      <div id="frise" className="scroll-mt-24">
+        <WikiPageShell crumbs={[{ label: "Chronologie" }]}>
+          <DomainBar domain="timeline" />
+          <ChronologieTabs mediaItems={items} ageEvents={ageEvents ?? []} />
+        </WikiPageShell>
       </div>
     </>
   );

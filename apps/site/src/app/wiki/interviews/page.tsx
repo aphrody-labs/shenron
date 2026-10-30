@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { WikiPageShell } from "@/components/wiki/WikiPageShell";
+import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
 import { listToriyamaWords } from "@/lib/toriyama-words";
 import { ogMeta } from "@/lib/og";
 import { T } from "@/components/T";
@@ -37,13 +37,14 @@ export default async function InterviewsPage() {
   const groups = mergeInterviewGallery(authorGroups, catalogue?.items ?? []);
 
   return (
-    <WikiPageShell
+    <WikiIndexPage
+      eyebrow={<T k="wiki.interviews.eyebrow" />}
       title={<InterviewUIText name="pageTitle" />}
       lead={<InterviewUIText name="pageLead" />}
       crumbs={[
         { label: interviewMessages.pageTitle, display: <InterviewUIText name="pageTitle" /> },
       ]}
-      adminBar
+      contributeKey="kit.contribute.what.interview"
     >
       <InterviewsExplorer groups={groups} access={access} ragResults={rag?.results ?? []} />
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -91,6 +92,6 @@ export default async function InterviewsPage() {
           <T k="wiki.editorialNav.catalogue" />
         </GatedLink>
       </nav>
-    </WikiPageShell>
+    </WikiIndexPage>
   );
 }

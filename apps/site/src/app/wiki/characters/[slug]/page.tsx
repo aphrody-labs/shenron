@@ -1,13 +1,11 @@
 import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
-import { JsonLd } from "@/components/JsonLd";
 import { TrackView } from "@/components/TrackView";
 import { ViewTransition } from "@aphrody/shenron-ui/layout/ViewTransition";
 import { WikiSources } from "@/components/wiki/WikiArticle";
 import { WikiRelatedCharacters } from "@/components/wiki/WikiRelatedCharacters";
 import { CharacterSagaVariants } from "@/components/wiki/CharacterSagaVariants";
 import { WikiSectionsReader, type ReaderPanel } from "@/components/wiki/WikiSectionsReader";
-import { WikiEditBar } from "@/components/wiki/WikiEditBar";
 import { WikiImg } from "@/components/wiki/WikiImg";
 import { CharacterPowerScaling } from "@/components/wiki/CharacterPowerScaling";
 import { DEFAULT_POWER_SCALING_CONFIG } from "@/lib/canon-engine";
@@ -22,8 +20,7 @@ import { assetUrl } from "@/lib/db-universe";
 import type { Metadata } from "next";
 import { ogMeta } from "@/lib/og";
 import { notFound, permanentRedirect } from "next/navigation";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { DomainBar } from "@/components/kit";
+import { WikiDetailPage, WikiEntityHeader } from "@/components/wiki/WikiDetailPage";
 import { GatedWrap } from "@/components/GatedLink";
 import { cache, type ReactNode } from "react";
 import type { Person, WithContext } from "schema-dts";
@@ -395,76 +392,162 @@ export default async function CharacterPage({ params }: { params: Promise<{ slug
     });
   }
 
-  return (
-    <article
-      data-entity={character.name}
-      data-source-id="db_characters"
-      data-lang="fr"
-      className="wiki-container reveal-up"
-    >
-      <JsonLd data={personSchema} />
-      <TrackView
-        entityType="character"
-        entityId={character.id}
-        entityName={character.name}
-        image={character.image}
-      />
-      <DomainBar domain="wiki" />
-      <Breadcrumbs
-        items={[{ label: "L'Univers", href: "/wiki/characters" }, { label: character.name }]}
-      />
-      <WikiEditBar
-        sansArticle
-        table="db_characters"
-        id={character.id}
-        indexHref="/wiki/characters"
-        label={character.name}
-      />
+  const infobox = (
+    <div className="wiki-infobox">
+      <div className="wiki-infobox-header">DONNÉES OFFICIELLES //</div>
 
-      {/* En-tête de fiche centré & dynamique façon Fandom officiel */}
-      <header className="text-center max-w-4xl mx-auto space-y-4 mb-8">
-        <h1
-          className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-sans font-black text-white uppercase tracking-tight leading-none break-words"
-          style={{ textShadow: "0 4px 20px rgba(0,0,0,0.9), 0 0 30px rgba(231,130,32,0.3)" }}
-        >
-          {character.name}
-        </h1>
-        {(character.nameJa || character.nameRomaji) && (
-          <div className="flex items-center justify-center flex-wrap gap-4 text-gray-300">
-            {character.nameJa && (
-              <span
-                lang="ja"
-                className="font-jp text-2xl sm:text-3xl font-bold tracking-widest text-dbz-orange drop-shadow-[0_2px_6px_#000]"
-              >
-                {character.nameJa}
-              </span>
-            )}
-            {character.nameRomaji && (
-              <span className="text-sm font-extrabold italic uppercase tracking-[0.2em] text-white/80">
-                {character.nameRomaji}
-              </span>
-            )}
+      {/* Portrait principal */}
+      <div className="p-4 bg-[#0a0a0c] border-b-2 border-black flex justify-center items-center relative overflow-hidden group">
+        <div className="absolute inset-0 halftone opacity-10" />
+        <ViewTransition name={`character-img-${character.id}`} share="morph">
+          {/* Meilleure résolution existante en premier (image éditoriale,
+								    portrait XV2 ou copie plus grande de la même image, mesurées
+								    par l'inventaire) ; l'autre reste en repli. */}
+          <WikiImg
+            src={heroImage}
+            fallback={heroImage === character.image ? character.portraitXv2 : character.image}
+            alt={character.name}
+            loading="eager"
+            className="max-h-[380px] w-auto object-contain relative z-10 drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-500"
+            placeholderClassName="relative z-10 w-full aspect-[3/4] flex items-center justify-center bg-dbz-card overflow-hidden rounded"
+          />
+        </ViewTransition>
+      </div>
+
+      {/* Attributs structurés */}
+      <div className="divide-y divide-white/[0.08]">
+        <div className="wiki-infobox-row">
+          <span className="wiki-infobox-label">Nom officiel</span>
+          <span className="wiki-infobox-value">{character.name}</span>
+        </div>
+        {character.nameJa && (
+          <div className="wiki-infobox-row">
+            <span className="wiki-infobox-label">Japonais</span>
+            <span lang="ja" className="wiki-infobox-value font-jp text-dbz-orange">
+              {character.nameJa}
+            </span>
           </div>
         )}
-        <div className="flex justify-center flex-wrap gap-3 pt-2">
-          {character.race && (
-            <span className="toriyama-badge bg-dbz-orange text-black px-3.5 py-1 text-xs font-black">
-              <span>{character.race}</span>
+        {character.nameRomaji && (
+          <div className="wiki-infobox-row">
+            <span className="wiki-infobox-label">Romaji</span>
+            <span className="wiki-infobox-value italic">{character.nameRomaji}</span>
+          </div>
+        )}
+        {character.race && (
+          <div className="wiki-infobox-row">
+            <span className="wiki-infobox-label">Race</span>
+            <span className="wiki-infobox-value text-dbz-yellow">{character.race}</span>
+          </div>
+        )}
+        {character.affiliation && (
+          <div className="wiki-infobox-row">
+            <span className="wiki-infobox-label">Affiliation</span>
+            <span className="wiki-infobox-value">{character.affiliation}</span>
+          </div>
+        )}
+        {character.originPlanet && (
+          <div className="wiki-infobox-row">
+            <span className="wiki-infobox-label">Planète</span>
+            <span className="wiki-infobox-value text-dbz-cyan">{character.originPlanet.name}</span>
+          </div>
+        )}
+        {character.voiceActors?.map((va) => (
+          <div key={va.id} className="wiki-infobox-row">
+            <span className="wiki-infobox-label">
+              {va.nationality === "ja"
+                ? "Seiyū (Japonais)"
+                : va.nationality === "fr"
+                  ? "Voix Française"
+                  : `Voix (${va.nationality.toUpperCase()})`}
             </span>
-          )}
-          {character.affiliation && (
-            <span className="toriyama-badge bg-white text-black px-3.5 py-1 text-xs font-black">
-              <span>{character.affiliation}</span>
+            <span className="wiki-infobox-value text-dbz-orange">
+              <GatedWrap href="/wiki/staff?tier=voice" className="hover:underline">
+                {va.name}{" "}
+                {va.nameJa && (
+                  <span lang="ja" className="font-jp text-xs opacity-75">
+                    ({va.nameJa})
+                  </span>
+                )}
+              </GatedWrap>
+              {va.roleNotes && (
+                <span className="block text-[10px] text-white/40 font-normal mt-0.5">
+                  {va.roleNotes}
+                </span>
+              )}
             </span>
-          )}
-          {character.originPlanet && (
-            <span className="toriyama-badge bg-[#141416] text-dbz-cyan border-2 border-dbz-cyan px-3.5 py-1 text-xs font-black">
-              <span>{character.originPlanet.name}</span>
-            </span>
-          )}
-        </div>
-      </header>
+          </div>
+        ))}
+        {character.ki && (
+          <div className="wiki-infobox-row">
+            <span className="wiki-infobox-label">Ki de base</span>
+            <span className="wiki-infobox-value font-mono text-dbz-orange">{character.ki}</span>
+          </div>
+        )}
+        {character.maxKi && (
+          <div className="wiki-infobox-row">
+            <span className="wiki-infobox-label">Ki maximum</span>
+            <span className="wiki-infobox-value font-mono text-dbz-red">{character.maxKi}</span>
+          </div>
+        )}
+        {character.stats?.map((st) => (
+          <div key={st.label} className="wiki-infobox-row">
+            <span className="wiki-infobox-label">{st.label}</span>
+            <span className="wiki-infobox-value font-mono text-dbz-yellow">{st.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
+  return (
+    <WikiDetailPage
+      entity={character.name}
+      source="db_characters"
+      jsonLd={personSchema}
+      tracker={
+        <TrackView
+          entityType="character"
+          entityId={character.id}
+          entityName={character.name}
+          image={character.image}
+        />
+      }
+      crumbs={[{ label: "L'Univers", href: "/wiki/characters" }, { label: character.name }]}
+      edit={{
+        table: "db_characters",
+        id: character.id,
+        indexHref: "/wiki/characters",
+        label: character.name,
+      }}
+      header={
+        <WikiEntityHeader
+          name={character.name}
+          nameJa={character.nameJa}
+          nameRomaji={character.nameRomaji}
+          badges={
+            <>
+              {character.race && (
+                <span className="toriyama-badge bg-dbz-orange text-black px-3.5 py-1 text-xs font-black">
+                  <span>{character.race}</span>
+                </span>
+              )}
+              {character.affiliation && (
+                <span className="toriyama-badge bg-white text-black px-3.5 py-1 text-xs font-black">
+                  <span>{character.affiliation}</span>
+                </span>
+              )}
+              {character.originPlanet && (
+                <span className="toriyama-badge bg-[#141416] text-dbz-cyan border-2 border-dbz-cyan px-3.5 py-1 text-xs font-black">
+                  <span>{character.originPlanet.name}</span>
+                </span>
+              )}
+            </>
+          }
+        />
+      }
+      aside={infobox}
+    >
       <div className="my-8 scroll-mt-24" id="versions-du-personnage">
         <CharacterSagaVariants
           variants={variants}
@@ -596,133 +679,8 @@ export default async function CharacterPage({ params }: { params: Promise<{ slug
             );
           })}
         >
-          {/* Grille principale : Infobox Fandom à gauche, Contenu & Onglets à droite */}
-          <div className="flex flex-col lg:flex-row gap-8 xl:gap-12 items-start">
-            {/* Infobox Fandom standardisée avec finitions Toriyama */}
-            <aside className="w-full lg:w-[360px] xl:w-[400px] shrink-0 lg:sticky lg:top-24 space-y-6">
-              <div className="wiki-infobox">
-                <div className="wiki-infobox-header">DONNÉES OFFICIELLES //</div>
-
-                {/* Portrait principal */}
-                <div className="p-4 bg-[#0a0a0c] border-b-2 border-black flex justify-center items-center relative overflow-hidden group">
-                  <div className="absolute inset-0 halftone opacity-10" />
-                  <ViewTransition name={`character-img-${character.id}`} share="morph">
-                    {/* Meilleure résolution existante en premier (image éditoriale,
-								    portrait XV2 ou copie plus grande de la même image, mesurées
-								    par l'inventaire) ; l'autre reste en repli. */}
-                    <WikiImg
-                      src={heroImage}
-                      fallback={
-                        heroImage === character.image ? character.portraitXv2 : character.image
-                      }
-                      alt={character.name}
-                      loading="eager"
-                      className="max-h-[380px] w-auto object-contain relative z-10 drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-500"
-                      placeholderClassName="relative z-10 w-full aspect-[3/4] flex items-center justify-center bg-dbz-card overflow-hidden rounded"
-                    />
-                  </ViewTransition>
-                </div>
-
-                {/* Attributs structurés */}
-                <div className="divide-y divide-white/[0.08]">
-                  <div className="wiki-infobox-row">
-                    <span className="wiki-infobox-label">Nom officiel</span>
-                    <span className="wiki-infobox-value">{character.name}</span>
-                  </div>
-                  {character.nameJa && (
-                    <div className="wiki-infobox-row">
-                      <span className="wiki-infobox-label">Japonais</span>
-                      <span lang="ja" className="wiki-infobox-value font-jp text-dbz-orange">
-                        {character.nameJa}
-                      </span>
-                    </div>
-                  )}
-                  {character.nameRomaji && (
-                    <div className="wiki-infobox-row">
-                      <span className="wiki-infobox-label">Romaji</span>
-                      <span className="wiki-infobox-value italic">{character.nameRomaji}</span>
-                    </div>
-                  )}
-                  {character.race && (
-                    <div className="wiki-infobox-row">
-                      <span className="wiki-infobox-label">Race</span>
-                      <span className="wiki-infobox-value text-dbz-yellow">{character.race}</span>
-                    </div>
-                  )}
-                  {character.affiliation && (
-                    <div className="wiki-infobox-row">
-                      <span className="wiki-infobox-label">Affiliation</span>
-                      <span className="wiki-infobox-value">{character.affiliation}</span>
-                    </div>
-                  )}
-                  {character.originPlanet && (
-                    <div className="wiki-infobox-row">
-                      <span className="wiki-infobox-label">Planète</span>
-                      <span className="wiki-infobox-value text-dbz-cyan">
-                        {character.originPlanet.name}
-                      </span>
-                    </div>
-                  )}
-                  {character.voiceActors?.map((va) => (
-                    <div key={va.id} className="wiki-infobox-row">
-                      <span className="wiki-infobox-label">
-                        {va.nationality === "ja"
-                          ? "Seiyū (Japonais)"
-                          : va.nationality === "fr"
-                            ? "Voix Française"
-                            : `Voix (${va.nationality.toUpperCase()})`}
-                      </span>
-                      <span className="wiki-infobox-value text-dbz-orange">
-                        <GatedWrap href="/wiki/staff?tier=voice" className="hover:underline">
-                          {va.name}{" "}
-                          {va.nameJa && (
-                            <span lang="ja" className="font-jp text-xs opacity-75">
-                              ({va.nameJa})
-                            </span>
-                          )}
-                        </GatedWrap>
-                        {va.roleNotes && (
-                          <span className="block text-[10px] text-white/40 font-normal mt-0.5">
-                            {va.roleNotes}
-                          </span>
-                        )}
-                      </span>
-                    </div>
-                  ))}
-                  {character.ki && (
-                    <div className="wiki-infobox-row">
-                      <span className="wiki-infobox-label">Ki de base</span>
-                      <span className="wiki-infobox-value font-mono text-dbz-orange">
-                        {character.ki}
-                      </span>
-                    </div>
-                  )}
-                  {character.maxKi && (
-                    <div className="wiki-infobox-row">
-                      <span className="wiki-infobox-label">Ki maximum</span>
-                      <span className="wiki-infobox-value font-mono text-dbz-red">
-                        {character.maxKi}
-                      </span>
-                    </div>
-                  )}
-                  {character.stats?.map((st) => (
-                    <div key={st.label} className="wiki-infobox-row">
-                      <span className="wiki-infobox-label">{st.label}</span>
-                      <span className="wiki-infobox-value font-mono text-dbz-yellow">
-                        {st.value}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </aside>
-
-            {/* Colonne de contenu principale : Sections, Biographie, Powerscaling */}
-            <main className="flex-1 min-w-0 w-full space-y-10">
-              <WikiSectionsReader panels={panels} />
-              <WikiSources sources={character.articleSources} />
-            </main>
-          </div>
+          <WikiSectionsReader panels={panels} />
+          <WikiSources sources={character.articleSources} />
           <EntityParticipation
             kind="wiki"
             table="db_characters"
@@ -732,6 +690,6 @@ export default async function CharacterPage({ params }: { params: Promise<{ slug
           />
         </CharacterSagaVariants>
       </div>
-    </article>
+    </WikiDetailPage>
   );
 }

@@ -5,7 +5,6 @@ import { Suspense } from "react";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
 import { WikiArticle } from "@/components/wiki/WikiArticle";
 import { WikiEntitySections } from "@/components/wiki/WikiEntitySections";
-import { WikiEditBar } from "@/components/wiki/WikiEditBar";
 import WikiRagArchives from "@/components/wiki/WikiRagArchives";
 import { AggregateRatingBanner } from "@/components/ratings/EntityRating";
 import { dbUniverse, assetUrl } from "@/lib/db-universe";
@@ -15,11 +14,10 @@ import { WikiImg } from "@/components/wiki/WikiImg";
 import { ogMeta } from "@/lib/og";
 import { markdownToPlainText } from "@/lib/markdown-plain";
 import Link from "next/link";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { WikiDetailPage, WikiEntityHeader } from "@/components/wiki/WikiDetailPage";
 import { GatedLink, GatedWrap } from "@/components/GatedLink";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { JsonLd } from "@/components/JsonLd";
 import type { CreativeWork, WithContext } from "schema-dts";
 import { bannerForSeries } from "@/lib/banner-config";
 import { BackgroundImage } from "@/components/media/BackgroundImage";
@@ -118,62 +116,51 @@ export default async function SagaPage({ params }: { params: Promise<{ slug: str
   };
 
   return (
-    <div className="wiki-container">
-      <JsonLd data={jsonLdData} />
-      <Breadcrumbs
-        className="mb-6"
-        items={[{ label: "Sagas & arcs", href: "/wiki/sagas" }, { label: saga.name }]}
-      />
+    <WikiDetailPage
+      entity={saga.name}
+      source="db_sagas"
+      jsonLd={jsonLdData}
+      crumbs={[{ label: "Sagas & arcs", href: "/wiki/sagas" }, { label: saga.name }]}
+      edit={{ table: "db_sagas", id: saga.id, indexHref: "/wiki/sagas", label: saga.name }}
+      header={
+        <WikiEntityHeader
+          name={saga.name}
+          nameJa={saga.name_ja}
+          chips={
+            <span className="font-saiyan text-xs tracking-[0.2em] uppercase text-dbz-orange">
+              {seriesLabel} · SAGA {saga.order_idx}
+            </span>
+          }
+        >
+          <div className="relative isolate space-y-6 pt-2">
+            {heroFrame ? (
+              <div className="absolute inset-x-0 top-0 -z-10 h-48 overflow-hidden rounded-lg">
+                <BackgroundImage src={heroFrame} overlay="full" priority />
+              </div>
+            ) : null}
+            {saga.description && (
+              <div className="wiki-content-card max-w-4xl text-left mt-6">
+                <div className="prose prose-invert max-w-none wiki-content">
+                  <WikiMarkdown body={saga.description} />
+                </div>
+              </div>
+            )}
 
-      <div className="mb-4">
-        <WikiEditBar table="db_sagas" id={saga.id} indexHref="/wiki/sagas" label={saga.name} />
-      </div>
-
-      {/* Centered Hero Header - Toriyama Style */}
-      <header className="relative isolate flex flex-col items-center justify-center text-center space-y-3 py-5">
-        {heroFrame ? (
-          <div className="absolute inset-x-0 top-0 -z-10 h-48 overflow-hidden rounded-lg">
-            <BackgroundImage src={heroFrame} overlay="full" priority />
-          </div>
-        ) : null}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-dbz-orange/15 border-2 border-black shadow-[2px_2px_0px_#000]">
-          <span className="w-2 h-2 rounded-full bg-dbz-orange animate-pulse" />
-          <span className="font-saiyan text-xs tracking-[0.2em] uppercase text-dbz-orange">
-            {seriesLabel} · SAGA {saga.order_idx}
-          </span>
-        </div>
-
-        <h1 className="font-saiyan text-2xl sm:text-3xl md:text-4xl font-bold tracking-wider text-white">
-          {saga.name}
-        </h1>
-
-        {saga.name_ja && (
-          <p className="font-jp text-2xl sm:text-3xl font-bold text-dbz-orange/90 tracking-wide drop-shadow">
-            {saga.name_ja}
-          </p>
-        )}
-
-        {saga.description && (
-          <div className="wiki-content-card max-w-4xl text-left mt-6">
-            <div className="prose prose-invert max-w-none wiki-content">
-              <WikiMarkdown body={saga.description} />
+            <div className="mt-6 w-full max-w-xl">
+              <AggregateRatingBanner
+                average={sagaAvg.average}
+                count={sagaAvg.count}
+                subtitle={
+                  sagaAvg.count > 0
+                    ? `${sagaAvg.count} note${sagaAvg.count > 1 ? "s" : ""} cumulées sur les arcs`
+                    : "Note les arcs pour faire remonter la moyenne de la saga"
+                }
+              />
             </div>
           </div>
-        )}
-
-        <div className="mt-6 w-full max-w-xl">
-          <AggregateRatingBanner
-            average={sagaAvg.average}
-            count={sagaAvg.count}
-            subtitle={
-              sagaAvg.count > 0
-                ? `${sagaAvg.count} note${sagaAvg.count > 1 ? "s" : ""} cumulées sur les arcs`
-                : "Note les arcs pour faire remonter la moyenne de la saga"
-            }
-          />
-        </div>
-      </header>
-
+        </WikiEntityHeader>
+      }
+    >
       {saga.article && (
         <div className="wiki-content-card mb-16">
           <WikiArticle article={saga.article} sources={saga.article_sources} heading="Article" />
@@ -381,6 +368,6 @@ export default async function SagaPage({ params }: { params: Promise<{ slug: str
         path={`/wiki/sagas/${slug}`}
         label={saga.name}
       />
-    </div>
+    </WikiDetailPage>
   );
 }

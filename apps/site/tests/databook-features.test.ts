@@ -149,7 +149,8 @@ describe("source features shipped", () => {
       new URL("../src/app/wiki/games/[slug]/page.tsx", import.meta.url),
     ).text();
     expect(src).toContain("GameMediaGallery");
-    expect(src).toMatch(/Wiki(Edit|Admin)Bar/);
+    expect(src).toMatch(/Wiki(Edit|Admin)Bar|WikiDetailPage/);
+    expect(src).toContain("edit={{");
     expect(src).toContain("g.media");
   });
 

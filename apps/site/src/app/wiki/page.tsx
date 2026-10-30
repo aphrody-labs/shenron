@@ -4,7 +4,7 @@ import IndexLoading from "./IndexLoading";
 import { GatedWrap } from "@/components/GatedLink";
 import { getShenronCharacterCards, getShenronMovies } from "@/lib/shenron";
 import { dbUniverse } from "@/lib/db-universe";
-import { PageHero } from "@/components/PageHero";
+import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
 import { StreamRow } from "@/components/stream/StreamRow";
 import { PosterCard } from "@/components/stream/PosterCard";
 import { EpisodeCard } from "@/components/stream/EpisodeCard";
@@ -170,350 +170,347 @@ async function WikiIndexContent() {
   const itemsList = itemsData ?? [];
 
   return (
-    <div>
-      <PageHero
-        eyebrow="Encyclopédie"
-        title="L'univers Dragon Ball"
-        lead={`${nf.format(total)} entrées écrites sur les tomes du manga et les planches des databooks — personnages, mondes, récits et supports.`}
+    <WikiIndexPage
+      eyebrow="Encyclopédie"
+      title="L'univers Dragon Ball"
+      lead={`${nf.format(total)} entrées écrites sur les tomes du manga et les planches des databooks — personnages, mondes, récits et supports.`}
+      crumbs={[{ label: "L'univers Dragon Ball" }]}
+    >
+      {/* Avant les rubriques : quelqu'un qui revient cherche d'abord où il
+				    s'était arrêté. L'îlot ne rend rien s'il n'a rien à proposer. */}
+      <RepriseLecture />
+      <Rubriques titre="L'univers" items={encyclopedie} />
+      <Rubriques titre="Les supports" items={supports} />
+      <ContentCoverage
+        databooks={{
+          label: "Databooks & interviews",
+          availableHref: "/wiki/databooks?state=available",
+          missingHref: "/wiki/databooks?state=incomplete",
+          available: databooksWithContent,
+          total: databooks.length,
+          unit: "ouvrages",
+        }}
+        manga={{
+          label: "Manga",
+          availableHref: "/wiki/manga?state=available",
+          missingHref: "/wiki/manga?state=incomplete",
+          available: readableVolumeIds.size,
+          total: volumes.length,
+          unit: "tomes",
+        }}
+        canon={{
+          label: <T k="corpusStats.metrics.canonReferences" />,
+          availableHref: "/wiki/canon",
+          available: corpusCounts.canonReferences,
+          total: null,
+          unit: <T k="corpusStats.references" />,
+          badge: <T k="corpusStats.indexedRecords" />,
+          referenceOnly: true,
+        }}
+        rag={{
+          label: <T k="corpusStats.metrics.ragChunks" />,
+          availableHref: "/wiki/search",
+          available: corpusCounts.ragChunks,
+          total: null,
+          unit: <T k="corpusStats.references" />,
+          badge: <T k="corpusStats.indexedRecords" />,
+          referenceOnly: true,
+        }}
       />
 
-      <div className="wiki-container">
-        {/* Avant les rubriques : quelqu'un qui revient cherche d'abord où il
-				    s'était arrêté. L'îlot ne rend rien s'il n'a rien à proposer. */}
-        <RepriseLecture />
-        <Rubriques titre="L'univers" items={encyclopedie} />
-        <Rubriques titre="Les supports" items={supports} />
-        <ContentCoverage
-          databooks={{
-            label: "Databooks & interviews",
-            availableHref: "/wiki/databooks?state=available",
-            missingHref: "/wiki/databooks?state=incomplete",
-            available: databooksWithContent,
-            total: databooks.length,
-            unit: "ouvrages",
-          }}
-          manga={{
-            label: "Manga",
-            availableHref: "/wiki/manga?state=available",
-            missingHref: "/wiki/manga?state=incomplete",
-            available: readableVolumeIds.size,
-            total: volumes.length,
-            unit: "tomes",
-          }}
-          canon={{
-            label: <T k="corpusStats.metrics.canonReferences" />,
-            availableHref: "/wiki/canon",
-            available: corpusCounts.canonReferences,
-            total: null,
-            unit: <T k="corpusStats.references" />,
-            badge: <T k="corpusStats.indexedRecords" />,
-            referenceOnly: true,
-          }}
-          rag={{
-            label: <T k="corpusStats.metrics.ragChunks" />,
-            availableHref: "/wiki/search",
-            available: corpusCounts.ragChunks,
-            total: null,
-            unit: <T k="corpusStats.references" />,
-            badge: <T k="corpusStats.indexedRecords" />,
-            referenceOnly: true,
-          }}
-        />
+      {vedettes.length > 0 && (
+        <StreamRow
+          title="Personnages"
+          count={c.characters}
+          seeAllHref={ouvert("/wiki/characters") ? "/wiki/characters" : undefined}
+        >
+          {vedettes.map((ch) => (
+            <CharacterPosterCard
+              key={ch.id}
+              href={`/wiki/characters/${ch.id}`}
+              name={ch.name}
+              race={ch.race}
+              image={ch.image}
+            />
+          ))}
+        </StreamRow>
+      )}
 
-        {vedettes.length > 0 && (
-          <StreamRow
-            title="Personnages"
-            count={c.characters}
-            seeAllHref={ouvert("/wiki/characters") ? "/wiki/characters" : undefined}
-          >
-            {vedettes.map((ch) => (
-              <CharacterPosterCard
-                key={ch.id}
-                href={`/wiki/characters/${ch.id}`}
-                name={ch.name}
-                race={ch.race}
-                image={ch.image}
-              />
-            ))}
-          </StreamRow>
-        )}
-
-        {battlesList.length > 0 && (
-          <StreamRow
-            title="Combats Légendaires"
-            count={c.battles}
-            seeAllHref={ouvert("/wiki/events") ? "/wiki/events" : undefined}
-          >
-            {battlesList.slice(0, 10).map((b) => (
-              <Link
-                key={b.slug}
-                href={`/wiki/events?type=battles#event-battle-${b.slug}`}
-                className="group/card relative block w-[240px] sm:w-[280px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-red-500/50 hover:shadow-lg hover:shadow-red-950/20"
-              >
-                <div className="flex items-center justify-between gap-2 text-[10px] uppercase font-bold tracking-wider text-red-400">
-                  <span>⚔️ {b.series}</span>
-                  <span className="text-white/40">{b.location || b.series}</span>
-                </div>
-                <h3 className="mt-2 text-sm font-bold text-white transition-colors group-hover/card:text-red-400 line-clamp-1">
-                  {b.title}
-                </h3>
-                {b.title_ja && (
-                  <p className="font-jp text-[10px] text-white/40 truncate">{b.title_ja}</p>
-                )}
-                {b.climax_summary && (
-                  <p className="mt-2 text-xs text-white/60 line-clamp-2 leading-relaxed">
-                    {b.climax_summary}
-                  </p>
-                )}
-                <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-[11px] text-white/40">
-                  <span>
-                    Vainqueur :{" "}
-                    <strong className="text-white/80">{b.winner_name || "Match nul"}</strong>
-                  </span>
-                  <span className="text-red-400 font-semibold group-hover/card:translate-x-0.5 transition-transform">
-                    →
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </StreamRow>
-        )}
-
-        {locationsList.length > 0 && (
-          <StreamRow
-            title="Lieux & Sanctuaires"
-            count={c.locations}
-            seeAllHref={ouvert("/wiki/locations") ? "/wiki/locations" : undefined}
-          >
-            {locationsList.slice(0, 10).map((loc) => (
-              <Link
-                key={loc.slug}
-                href={`/wiki/locations/${loc.slug}`}
-                className="group/card relative block w-[220px] sm:w-[260px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/50 hover:shadow-lg hover:shadow-emerald-950/20"
-              >
-                <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-emerald-400">
-                  <span>🏛️ {loc.realm_type}</span>
-                  {loc.planet && <span className="text-white/40">{loc.planet}</span>}
-                </div>
-                <h3 className="mt-2 text-sm font-bold text-white transition-colors group-hover/card:text-emerald-400 line-clamp-1">
-                  {loc.name}
-                </h3>
-                {loc.name_ja && (
-                  <p className="font-jp text-[10px] text-white/40 truncate">{loc.name_ja}</p>
-                )}
+      {battlesList.length > 0 && (
+        <StreamRow
+          title="Combats Légendaires"
+          count={c.battles}
+          seeAllHref={ouvert("/wiki/events") ? "/wiki/events" : undefined}
+        >
+          {battlesList.slice(0, 10).map((b) => (
+            <Link
+              key={b.slug}
+              href={`/wiki/events?type=battles#event-battle-${b.slug}`}
+              className="group/card relative block w-[240px] sm:w-[280px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-red-500/50 hover:shadow-lg hover:shadow-red-950/20"
+            >
+              <div className="flex items-center justify-between gap-2 text-[10px] uppercase font-bold tracking-wider text-red-400">
+                <span>⚔️ {b.series}</span>
+                <span className="text-white/40">{b.location || b.series}</span>
+              </div>
+              <h3 className="mt-2 text-sm font-bold text-white transition-colors group-hover/card:text-red-400 line-clamp-1">
+                {b.title}
+              </h3>
+              {b.title_ja && (
+                <p className="font-jp text-[10px] text-white/40 truncate">{b.title_ja}</p>
+              )}
+              {b.climax_summary && (
                 <p className="mt-2 text-xs text-white/60 line-clamp-2 leading-relaxed">
-                  {loc.description}
+                  {b.climax_summary}
                 </p>
-                <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-[11px] text-emerald-400 font-semibold">
-                  <span>
-                    <T k="wiki.index.exploreSanctuary" />
-                  </span>
-                  <span className="group-hover/card:translate-x-0.5 transition-transform">→</span>
-                </div>
-              </Link>
-            ))}
-          </StreamRow>
-        )}
+              )}
+              <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-[11px] text-white/40">
+                <span>
+                  Vainqueur :{" "}
+                  <strong className="text-white/80">{b.winner_name || "Match nul"}</strong>
+                </span>
+                <span className="text-red-400 font-semibold group-hover/card:translate-x-0.5 transition-transform">
+                  →
+                </span>
+              </div>
+            </Link>
+          ))}
+        </StreamRow>
+      )}
 
-        {tournamentsList.length > 0 && (
-          <StreamRow
-            title="Tournois d'Arts Martiaux"
-            count={c.tournaments}
-            seeAllHref={ouvert("/wiki/events") ? "/wiki/events" : undefined}
-          >
-            {tournamentsList.slice(0, 6).map((t) => (
-              <Link
-                key={t.slug}
-                href={`/wiki/events?type=tournaments#event-tournament-${t.slug}`}
-                className="group/card relative block w-[220px] sm:w-[260px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-orange-500/50 hover:shadow-lg hover:shadow-orange-950/20"
-              >
-                <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-orange-400">
-                  <span>🏆 {t.tournament_type}</span>
-                  <span className="text-white/40">{t.saga}</span>
-                </div>
-                <h3 className="mt-2 text-sm font-bold text-white transition-colors group-hover/card:text-orange-400 line-clamp-1">
-                  {t.name}
-                </h3>
-                {t.winner_name && (
-                  <p className="mt-1 text-xs text-white/80">
-                    Champion : <strong className="text-orange-300">{t.winner_name}</strong>
-                  </p>
+      {locationsList.length > 0 && (
+        <StreamRow
+          title="Lieux & Sanctuaires"
+          count={c.locations}
+          seeAllHref={ouvert("/wiki/locations") ? "/wiki/locations" : undefined}
+        >
+          {locationsList.slice(0, 10).map((loc) => (
+            <Link
+              key={loc.slug}
+              href={`/wiki/locations/${loc.slug}`}
+              className="group/card relative block w-[220px] sm:w-[260px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/50 hover:shadow-lg hover:shadow-emerald-950/20"
+            >
+              <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-emerald-400">
+                <span>🏛️ {loc.realm_type}</span>
+                {loc.planet && <span className="text-white/40">{loc.planet}</span>}
+              </div>
+              <h3 className="mt-2 text-sm font-bold text-white transition-colors group-hover/card:text-emerald-400 line-clamp-1">
+                {loc.name}
+              </h3>
+              {loc.name_ja && (
+                <p className="font-jp text-[10px] text-white/40 truncate">{loc.name_ja}</p>
+              )}
+              <p className="mt-2 text-xs text-white/60 line-clamp-2 leading-relaxed">
+                {loc.description}
+              </p>
+              <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-[11px] text-emerald-400 font-semibold">
+                <span>
+                  <T k="wiki.index.exploreSanctuary" />
+                </span>
+                <span className="group-hover/card:translate-x-0.5 transition-transform">→</span>
+              </div>
+            </Link>
+          ))}
+        </StreamRow>
+      )}
+
+      {tournamentsList.length > 0 && (
+        <StreamRow
+          title="Tournois d'Arts Martiaux"
+          count={c.tournaments}
+          seeAllHref={ouvert("/wiki/events") ? "/wiki/events" : undefined}
+        >
+          {tournamentsList.slice(0, 6).map((t) => (
+            <Link
+              key={t.slug}
+              href={`/wiki/events?type=tournaments#event-tournament-${t.slug}`}
+              className="group/card relative block w-[220px] sm:w-[260px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-orange-500/50 hover:shadow-lg hover:shadow-orange-950/20"
+            >
+              <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-orange-400">
+                <span>🏆 {t.tournament_type}</span>
+                <span className="text-white/40">{t.saga}</span>
+              </div>
+              <h3 className="mt-2 text-sm font-bold text-white transition-colors group-hover/card:text-orange-400 line-clamp-1">
+                {t.name}
+              </h3>
+              {t.winner_name && (
+                <p className="mt-1 text-xs text-white/80">
+                  Champion : <strong className="text-orange-300">{t.winner_name}</strong>
+                </p>
+              )}
+              <p className="mt-2 text-xs text-white/60 line-clamp-2 leading-relaxed">
+                {t.rules_summary}
+              </p>
+              <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-[11px] text-orange-400 font-semibold">
+                <span>Tableau & Matchs</span>
+                <span className="group-hover/card:translate-x-0.5 transition-transform">→</span>
+              </div>
+            </Link>
+          ))}
+        </StreamRow>
+      )}
+
+      {dragonsList.length > 0 && (
+        <StreamRow
+          title="Dragons Sacrés & Vœux"
+          count={c.dragons}
+          seeAllHref={
+            ouvert("/wiki/characters") ? "/wiki/characters#dragons-personnages" : undefined
+          }
+        >
+          {dragonsList.map((d) => (
+            <Link
+              key={d.slug}
+              href={`/wiki/characters#dragon-${d.slug}`}
+              className="group/card relative block w-[200px] sm:w-[240px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-orange-500/50 hover:shadow-lg hover:shadow-orange-950/20"
+            >
+              <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-orange-400">
+                <span>🐉 {d.balls_count} Boules</span>
+                <span className="text-white/40">
+                  {d.wishes_count} vœu{d.wishes_count > 1 ? "x" : ""}
+                </span>
+              </div>
+              <h3 className="mt-2 text-sm font-bold text-white transition-colors group-hover/card:text-orange-400 line-clamp-1">
+                {d.name}
+              </h3>
+              {d.creator && <p className="text-xs text-white/60">Créé par {d.creator}</p>}
+              {d.summon_phrase && (
+                <p className="mt-2 text-xs italic text-orange-200/80 line-clamp-2">
+                  « {d.summon_phrase} »
+                </p>
+              )}
+              <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-[11px] text-orange-400 font-semibold">
+                <span>Vœux & Règles</span>
+                <span className="group-hover/card:translate-x-0.5 transition-transform">→</span>
+              </div>
+            </Link>
+          ))}
+        </StreamRow>
+      )}
+
+      {itemsList.length > 0 && (
+        <StreamRow
+          title="Objets & Technologies"
+          count={c.items}
+          seeAllHref={ouvert("/wiki/items") ? "/wiki/items" : undefined}
+        >
+          {itemsList.slice(0, 8).map((it) => (
+            <Link
+              key={it.slug}
+              href={`/wiki/items/${it.slug}`}
+              className="group/card relative block w-[220px] sm:w-[260px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-amber-500/50 hover:shadow-lg hover:shadow-amber-950/20"
+            >
+              <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-amber-400">
+                <span>⚡ {it.category}</span>
+                {it.creator && (
+                  <span className="text-white/40 truncate max-w-[120px]">{it.creator}</span>
                 )}
-                <p className="mt-2 text-xs text-white/60 line-clamp-2 leading-relaxed">
-                  {t.rules_summary}
-                </p>
-                <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-[11px] text-orange-400 font-semibold">
-                  <span>Tableau & Matchs</span>
-                  <span className="group-hover/card:translate-x-0.5 transition-transform">→</span>
-                </div>
-              </Link>
-            ))}
-          </StreamRow>
-        )}
+              </div>
+              <h3 className="mt-2 text-sm font-bold text-white transition-colors group-hover/card:text-amber-400 line-clamp-1">
+                {it.name}
+              </h3>
+              {it.name_ja && (
+                <p className="font-jp text-[10px] text-white/40 truncate">{it.name_ja}</p>
+              )}
+              <p className="mt-2 text-xs text-white/60 line-clamp-2 leading-relaxed">
+                {it.description}
+              </p>
+              <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-[11px] text-amber-400 font-semibold">
+                <span>
+                  <T k="wiki.index.properties" />
+                </span>
+                <span className="group-hover/card:translate-x-0.5 transition-transform">→</span>
+              </div>
+            </Link>
+          ))}
+        </StreamRow>
+      )}
 
-        {dragonsList.length > 0 && (
-          <StreamRow
-            title="Dragons Sacrés & Vœux"
-            count={c.dragons}
-            seeAllHref={
-              ouvert("/wiki/characters") ? "/wiki/characters#dragons-personnages" : undefined
-            }
-          >
-            {dragonsList.map((d) => (
-              <Link
-                key={d.slug}
-                href={`/wiki/characters#dragon-${d.slug}`}
-                className="group/card relative block w-[200px] sm:w-[240px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-orange-500/50 hover:shadow-lg hover:shadow-orange-950/20"
-              >
-                <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-orange-400">
-                  <span>🐉 {d.balls_count} Boules</span>
-                  <span className="text-white/40">
-                    {d.wishes_count} vœu{d.wishes_count > 1 ? "x" : ""}
-                  </span>
-                </div>
-                <h3 className="mt-2 text-sm font-bold text-white transition-colors group-hover/card:text-orange-400 line-clamp-1">
-                  {d.name}
-                </h3>
-                {d.creator && <p className="text-xs text-white/60">Créé par {d.creator}</p>}
-                {d.summon_phrase && (
-                  <p className="mt-2 text-xs italic text-orange-200/80 line-clamp-2">
-                    « {d.summon_phrase} »
-                  </p>
-                )}
-                <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-[11px] text-orange-400 font-semibold">
-                  <span>Vœux & Règles</span>
-                  <span className="group-hover/card:translate-x-0.5 transition-transform">→</span>
-                </div>
-              </Link>
-            ))}
-          </StreamRow>
-        )}
+      {soundtracksList.length > 0 && (
+        <StreamRow
+          title="Musiques & Bandes Originales"
+          count={c.soundtracks}
+          seeAllHref={ouvert("/wiki/music") ? "/wiki/music" : undefined}
+        >
+          {soundtracksList.slice(0, 8).map((ost) => (
+            <Link
+              key={ost.slug}
+              href={`/wiki/music#${ost.slug}`}
+              className="group/card relative block w-[220px] sm:w-[260px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-950/20"
+            >
+              <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-blue-400">
+                <span>🎵 {ost.series}</span>
+                <span className="text-white/40">{ost.release_year}</span>
+              </div>
+              <h3 className="mt-2 text-sm font-bold text-white transition-colors group-hover/card:text-blue-400 line-clamp-1">
+                {ost.title}
+              </h3>
+              <p className="text-xs text-white/70 truncate">{ost.artist}</p>
+              <p className="mt-2 text-xs text-white/50 line-clamp-2 leading-relaxed">
+                {ost.description}
+              </p>
+              <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-[11px] text-blue-400 font-semibold">
+                <span>Écouter & Analyser</span>
+                <span className="group-hover/card:translate-x-0.5 transition-transform">→</span>
+              </div>
+            </Link>
+          ))}
+        </StreamRow>
+      )}
 
-        {itemsList.length > 0 && (
-          <StreamRow
-            title="Objets & Technologies"
-            count={c.items}
-            seeAllHref={ouvert("/wiki/items") ? "/wiki/items" : undefined}
-          >
-            {itemsList.slice(0, 8).map((it) => (
-              <Link
-                key={it.slug}
-                href={`/wiki/items/${it.slug}`}
-                className="group/card relative block w-[220px] sm:w-[260px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-amber-500/50 hover:shadow-lg hover:shadow-amber-950/20"
-              >
-                <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-amber-400">
-                  <span>⚡ {it.category}</span>
-                  {it.creator && (
-                    <span className="text-white/40 truncate max-w-[120px]">{it.creator}</span>
-                  )}
-                </div>
-                <h3 className="mt-2 text-sm font-bold text-white transition-colors group-hover/card:text-amber-400 line-clamp-1">
-                  {it.name}
-                </h3>
-                {it.name_ja && (
-                  <p className="font-jp text-[10px] text-white/40 truncate">{it.name_ja}</p>
-                )}
-                <p className="mt-2 text-xs text-white/60 line-clamp-2 leading-relaxed">
-                  {it.description}
-                </p>
-                <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-[11px] text-amber-400 font-semibold">
-                  <span>
-                    <T k="wiki.index.properties" />
-                  </span>
-                  <span className="group-hover/card:translate-x-0.5 transition-transform">→</span>
-                </div>
-              </Link>
-            ))}
-          </StreamRow>
-        )}
+      {films.length > 0 && (
+        <StreamRow
+          title="Films"
+          count={c.movies}
+          seeAllHref={ouvert("/wiki/movies") ? "/wiki/movies" : undefined}
+        >
+          {films.map((m) => (
+            <PosterCard
+              key={m.id}
+              href={`/wiki/movies/${m.slug}`}
+              title={m.title}
+              poster={m.poster}
+              badge="Film"
+            />
+          ))}
+        </StreamRow>
+      )}
 
-        {soundtracksList.length > 0 && (
-          <StreamRow
-            title="Musiques & Bandes Originales"
-            count={c.soundtracks}
-            seeAllHref={ouvert("/wiki/music") ? "/wiki/music" : undefined}
-          >
-            {soundtracksList.slice(0, 8).map((ost) => (
-              <Link
-                key={ost.slug}
-                href={`/wiki/music#${ost.slug}`}
-                className="group/card relative block w-[220px] sm:w-[260px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-950/20"
-              >
-                <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-blue-400">
-                  <span>🎵 {ost.series}</span>
-                  <span className="text-white/40">{ost.release_year}</span>
-                </div>
-                <h3 className="mt-2 text-sm font-bold text-white transition-colors group-hover/card:text-blue-400 line-clamp-1">
-                  {ost.title}
-                </h3>
-                <p className="text-xs text-white/70 truncate">{ost.artist}</p>
-                <p className="mt-2 text-xs text-white/50 line-clamp-2 leading-relaxed">
-                  {ost.description}
-                </p>
-                <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-[11px] text-blue-400 font-semibold">
-                  <span>Écouter & Analyser</span>
-                  <span className="group-hover/card:translate-x-0.5 transition-transform">→</span>
-                </div>
-              </Link>
-            ))}
-          </StreamRow>
-        )}
+      {episodes.length > 0 && (
+        <StreamRow
+          title="Épisodes"
+          count={c.episodes}
+          seeAllHref={ouvert("/wiki/episodes") ? "/wiki/episodes" : undefined}
+        >
+          {episodes.map((ep) => (
+            <EpisodeCard
+              key={ep.id}
+              href={`/wiki/episodes/${ep.id}`}
+              number={ep.number_in_series}
+              title={ep.title}
+              image={ep.image}
+            />
+          ))}
+        </StreamRow>
+      )}
 
-        {films.length > 0 && (
-          <StreamRow
-            title="Films"
-            count={c.movies}
-            seeAllHref={ouvert("/wiki/movies") ? "/wiki/movies" : undefined}
-          >
-            {films.map((m) => (
-              <PosterCard
-                key={m.id}
-                href={`/wiki/movies/${m.slug}`}
-                title={m.title}
-                poster={m.poster}
-                badge="Film"
-              />
-            ))}
-          </StreamRow>
-        )}
-
-        {episodes.length > 0 && (
-          <StreamRow
-            title="Épisodes"
-            count={c.episodes}
-            seeAllHref={ouvert("/wiki/episodes") ? "/wiki/episodes" : undefined}
-          >
-            {episodes.map((ep) => (
-              <EpisodeCard
-                key={ep.id}
-                href={`/wiki/episodes/${ep.id}`}
-                number={ep.number_in_series}
-                title={ep.title}
-                image={ep.image}
-              />
-            ))}
-          </StreamRow>
-        )}
-
-        <section className="rounded-xl border border-white/[0.08] p-8 lg:p-10">
-          <h2 className="font-title text-[26px] text-white">Ce wiki n'est pas fini</h2>
-          {/* Le circuit interne (« vous modifiez le texte, un relecteur publie,
+      <section className="rounded-xl border border-white/[0.08] p-8 lg:p-10">
+        <h2 className="font-title text-[26px] text-white">Ce wiki n'est pas fini</h2>
+        {/* Le circuit interne (« vous modifiez le texte, un relecteur publie,
 					    la modification garde votre nom ») a été retiré le 2026-09-12 : ce
 					    qu'un lecteur a besoin de savoir, c'est d'où vient le contenu et où
 					    cliquer. */}
-          <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-white/60">
-            Il est écrit sur les tomes du manga et les planches des databooks, jamais recopié
-            d'ailleurs. Chaque fiche porte un bouton «&nbsp;Proposer une correction&nbsp;».
-          </p>
-          <Link
-            href="/wiki/contribute"
-            className="mt-6 inline-flex h-11 items-center rounded-full border border-white/15 px-6 font-display text-[14px] font-semibold text-white transition-colors hover:border-dbz-orange/60 hover:text-dbz-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
-          >
-            Contribuer au wiki
-          </Link>
-        </section>
-      </div>
-    </div>
+        <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-white/60">
+          Il est écrit sur les tomes du manga et les planches des databooks, jamais recopié
+          d'ailleurs. Chaque fiche porte un bouton «&nbsp;Proposer une correction&nbsp;».
+        </p>
+        <Link
+          href="/wiki/contribute"
+          className="mt-6 inline-flex h-11 items-center rounded-full border border-white/15 px-6 font-display text-[14px] font-semibold text-white transition-colors hover:border-dbz-orange/60 hover:text-dbz-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
+        >
+          Contribuer au wiki
+        </Link>
+      </section>
+    </WikiIndexPage>
   );
 }
 

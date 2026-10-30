@@ -1,3 +1,5 @@
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { T } from "@/components/T";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
 import { db } from "@/lib/db";
 import { isCurrentUserAdmin } from "@/lib/session";
@@ -74,19 +76,14 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
 
   return (
     <div className="wiki-container">
-      <nav className="flex gap-2 text-xs text-gray-400 mb-8 uppercase tracking-widest font-saiyan">
-        <Link href="/wiki" className="hover:text-dbz-orange transition-colors">
-          WIKI
-        </Link>
-        <span>/</span>
-        {page.category.parent && (
-          <>
-            <span>{page.category.parent.name}</span>
-            <span>/</span>
-          </>
-        )}
-        <span className="text-dbz-orange">{page.category.name}</span>
-      </nav>
+      <Breadcrumbs
+        className="mb-8"
+        items={[
+          { label: "Wiki", display: <T k="wiki.breadcrumb" />, href: "/wiki" },
+          ...(page.category.parent ? [{ label: page.category.parent.name }] : []),
+          { label: page.category.name },
+        ]}
+      />
       <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 overflow-hidden">
         <Image
           src="/dbz/kinto-un.svg"

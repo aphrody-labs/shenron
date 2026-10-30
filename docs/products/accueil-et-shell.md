@@ -80,6 +80,23 @@ répète pas :
   et `landmark-unique` (plusieurs `<nav>` de même nom). Voir
   [l'audit UI/UX](../development/uiux-audit.md).
 
+## Wiki : deux gabarits communs (2026-10-31)
+
+Toutes les pages du wiki partagent le même ordre, défini une fois dans `apps/site/src/components/wiki/` :
+
+- **Catalogue** (`WikiIndexPage`) : hero (`PageHero`, image seulement si elle parle de la page) → barre staff →
+  fil d'Ariane (porté par le shell) → onglets des rubriques sœurs (`category`) → note d'archive → catalogue →
+  rail de contribution (`contributeKey`). Les héros spéciaux (`Billboard` des films, séries, chronologie,
+  jeux) utilisent `WikiPageShell` directement, dans le même ordre.
+- **Fiche** (`WikiDetailPage` + `WikiEntityHeader`) : barre staff → fil d'Ariane → barre de contribution →
+  en-tête centré (puces, nom, noms ja/romaji, badges) → grille de fiche (contenu à gauche, infobox collante à
+  droite, infobox en tête sur mobile) → rail de contribution. Les sections du corps restent celles de la page.
+- **Lecteurs** (manga, databooks, épisodes, films) gardent leur corps mais suivent la même enveloppe : barre
+  staff, fil d'Ariane, contenu. Aucun `loading.tsx` sur une page de détail : un 404 doit précéder le premier
+  octet (`tests/soft-404.test.ts`).
+
+Navigation, recherche et logo viennent du shell : une page wiki n'ajoute ni menu, ni tiroir, ni lien « retour ».
+
 ## Shell
 
 - On garde le shell unique (`packages/ui/src/navigation` : barre latérale en variante `app`,
