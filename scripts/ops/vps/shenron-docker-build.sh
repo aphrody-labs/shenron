@@ -43,10 +43,35 @@ else
 fi
 git -C "$W" submodule update --init --recursive --force
 cd "$W"; SHA=$(git rev-parse HEAD); echo "== commit $SHA"
-echo "== bun install"; bun install --frozen-lockfile
-echo "== parallel: cargo | wasm | vfs | bot"
+STARTED=$SECONDS
+phase() { echo "== $1 (+$((SECONDS - STARTED))s)"; }
+phase "bun install"; bun install --frozen-lockfile
+# Rust lane: skipped when every Rust input (workspace, toolchain, crates and the data files they
+# embed with include_str!) matches the stamp of the binaries already in target/release.
+RUST_OUTPUTS=(target/release/shenron-mcp target/release/libshenron_ffi.so target/release/koharu-sdk)
+RUST_STAMP=target/release/.shenron-rust-inputs
+RUST_KEY=$({
+  git ls-tree HEAD -- Cargo.toml Cargo.lock .cargo rust-toolchain.toml crates data/lexique-db-canonique.json data/lexicon
+  rustc -V
+  sha256sum "$CARGO_SERIAL" | cut -d' ' -f1
+} | sha256sum | cut -d' ' -f1)
+rust_fresh() {
+  [ "$(cat "$RUST_STAMP" 2>/dev/null)" = "$RUST_KEY" ] || return 1
+  for output in "${RUST_OUTPUTS[@]}"; do [ -s "$output" ] || return 1; done
+}
+phase "parallel: cargo | wasm then site | vfs | bot"
 pids=()
-( bash "$CARGO_SERIAL" build --release --locked -p shenron-mcp -p shenron-ffi && bash "$CARGO_SERIAL" build --release --locked -p koharu-library --bin koharu-sdk ) & pids+=($!)
+(
+  if [ "${SHENRON_FORCE_RUST:-0}" != 1 ] && rust_fresh; then
+    echo "== cargo: Rust inputs unchanged ($RUST_KEY), reusing target/release"
+    exit 0
+  fi
+  rm -f "$RUST_STAMP"
+  bash "$CARGO_SERIAL" build --release --locked -p shenron-mcp -p shenron-ffi
+  bash "$CARGO_SERIAL" build --release --locked -p koharu-library --bin koharu-sdk
+  printf '%s\n' "$RUST_KEY" > "$RUST_STAMP"
+  phase "cargo done"
+) & pids+=($!)
 (
   bun packages/koharu/scripts/build-wasm.ts & canvas_pid=$!
   bun packages/pipeline/scripts/build-re-wasm.ts & re_pid=$!
@@ -62,27 +87,32 @@ pids=()
   wait "$canvas_pid" || status=$?
   wait "$re_pid" || status=$?
   wait "$engine_pid" || status=$?
-  exit "$status"
+  ((status == 0)) || exit "$status"
+  phase "wasm done"
+  # The Next build only needs the installed workspace and the wasm modules, so it overlaps the
+  # Rust, VFS and bot lanes. It peaks near 14 GiB RSS; earlyoom SIGTERMs below 15 % available
+  # memory while other factory jobs run, so start it only with enough headroom.
+  SITE_MIN_KIB=$(( ${SHENRON_SITE_BUILD_MIN_GIB:-20} * 1024 * 1024 ))
+  until [ "$(awk '/MemAvailable/ {print $2}' /proc/meminfo)" -ge "$SITE_MIN_KIB" ]; do
+    echo "== site waits for ${SHENRON_SITE_BUILD_MIN_GIB:-20} GiB available memory"; sleep 15
+  done
+  SHENRON_NEXT_BUILD_CACHE=${SHENRON_NEXT_BUILD_CACHE:-1} BUILD_CPUS=${SHENRON_SITE_BUILD_CPUS:-6} \n    bun scripts/build/server.ts --site-only --flavor production --target linux-x64
+  phase "site done"
 ) & pids+=($!)
 ( mkdir -p dist/vfs; scp -q dbfr:/home/ubuntu/apps/shenron/shared/server/data/7b26187/shenron-vfs.public.sqlite dist/vfs/shenron-vfs.public.sqlite ) & pids+=($!)
-( bun scripts/build/bot.ts --target linux-x64 ) & pids+=($!)
+( bun scripts/build/bot.ts --target linux-x64 && phase "bot done" ) & pids+=($!)
 build_status=0
 for p in "${pids[@]}"; do wait "$p" || build_status=$?; done
 if ((build_status != 0)); then
   echo "A parallel build lane failed (exit $build_status)" >&2
   exit "$build_status"
 fi
-# The Next standalone build peaks near 27 GiB; earlyoom SIGTERMs it below 15 % available
-# memory while other factory jobs run. Start it only with enough headroom.
-SITE_MIN_KIB=$(( ${SHENRON_SITE_BUILD_MIN_GIB:-30} * 1024 * 1024 ))
-until [ "$(awk '/MemAvailable/ {print $2}' /proc/meminfo)" -ge "$SITE_MIN_KIB" ]; do
-  echo "== server waits for ${SHENRON_SITE_BUILD_MIN_GIB:-30} GiB available memory"; sleep 30
-done
-echo "== server"; bun scripts/build/server.ts --flavor production --target linux-x64
+phase "server package"
+SHENRON_PAYLOAD_ZSTD_LEVEL=${SHENRON_PAYLOAD_ZSTD_LEVEL:-6} \n  bun scripts/build/server.ts --skip-site --flavor production --target linux-x64
 install -D -m 0755 target/release/shenron-mcp dist/mcp/linux-x64/shenron-mcp
 install -D -m 0755 target/release/libshenron_ffi.so dist/server/linux-x64/native/libshenron_ffi.so
 install -D -m 0755 target/release/koharu-sdk dist/server/linux-x64/native/koharu-sdk
-echo "== image"; docker build -q -f deploy/docker/Dockerfile --build-arg SHENRON_REVISION="$SHA" -t "localhost/shenron:$SHA" -t localhost/shenron:local .
+phase "image"; docker build -q -f deploy/docker/Dockerfile --build-arg SHENRON_REVISION="$SHA" -t "localhost/shenron:$SHA" -t localhost/shenron:local .
 timeout 60 docker run --rm "localhost/shenron:$SHA" version
 timeout 60 docker run --rm --entrypoint /usr/local/bin/shenron-bot "localhost/shenron:$SHA" --smoke
 timeout 60 docker run --rm --entrypoint /usr/local/bin/koharu-sdk "localhost/shenron:$SHA" --help
@@ -91,4 +121,5 @@ docker image ls --format '{{.Repository}}:{{.Tag}}' 'localhost/shenron:*' \
   | grep -v -F -e "localhost/shenron:$SHA" -e 'localhost/shenron:local' \
   | sed -n '4,$p' \
   | xargs -r -n1 docker image rm >/dev/null 2>&1 || true
+phase "image verified"
 echo "{\"commit\":\"$SHA\",\"image\":\"$(docker image inspect -f '{{.Id}}' localhost/shenron:$SHA)\"}"

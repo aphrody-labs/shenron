@@ -264,7 +264,13 @@ d'autres agents et retarder sur `origin/main` ; ses helpers anciens prennent eux
 helpers d'`origin/main` extraits par `git -C ~/src/shenron show origin/main:<chemin>` vers
 `~/build/helpers/`, avec `SHENRON_BUILD_REVISION=<sha>`. Une sortie 143 du build du site vient
 d'`earlyoom` (SIGTERM sous 15 % de mémoire disponible, le build Next culmine vers 27 Gio) :
-le helper attend désormais `SHENRON_SITE_BUILD_MIN_GIB` (30 par défaut) avant cette étape.
+le helper attend `SHENRON_SITE_BUILD_MIN_GIB` (20 par défaut ; pic mesuré à 14 Gio) avant cette étape.
+Depuis le 2026-10-30, le helper chevauche le build du site (`server.ts --site-only`, cache Turbopack
+conservé par `SHENRON_NEXT_BUILD_CACHE=1`) avec les lanes Cargo, VFS et bot, saute Cargo quand
+l'empreinte des entrées Rust (`target/release/.shenron-rust-inputs`) est inchangée
+(`SHENRON_FORCE_RUST=1` pour forcer), emballe le payload en zstd 6 et horodate chaque phase
+(`== <phase> (+Ns)`). Une release active modifiée à la main après scellement (fichiers hors
+manifeste) bloque toute activation : l'adaptateur la revérifie comme cible de rollback.
 
 ## Architecture
 
