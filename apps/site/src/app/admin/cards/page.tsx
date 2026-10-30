@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { requireAdmin } from "@/lib/session";
 import { getCardCatalogAdminData } from "@/lib/card-catalog";
 import { archiveCardCatalogEntry, saveCardCatalogEntry } from "./_actions";
+import { CardCatalogImportForm } from "./CardCatalogImportForm";
 
 export const dynamic = "force-dynamic";
 
@@ -51,6 +52,8 @@ export default async function AdminCardCatalogPage({
           </p>
         )}
       </header>
+
+      <CardCatalogImportForm />
 
       <section aria-labelledby="series-title" className="space-y-4">
         <h2 id="series-title" className="text-xl font-semibold">
