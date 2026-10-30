@@ -26,7 +26,7 @@ timed() { # label command...
   local label=$1 start=$SECONDS
   shift
   "$@" > "$LOG.$label" 2>&1 || { echo "$label FAILED" | tee -a "$LOG"; return 1; }
-  echo "$label $((SECONDS - start))s" | tee -a "$LOG"
+  echo "$label $((SECONDS - start))s (load $(cut -d' ' -f1 /proc/loadavg))" | tee -a "$LOG"
 }
 old() {
   local cache="$W/apps/site/.next-standalone/cache"
@@ -37,6 +37,8 @@ old() {
   [ ! -d "$W/.bench-turbopack-cache" ] || mv "$W/.bench-turbopack-cache" "$cache"
 }
 git -C "$W" checkout -q -f --detach "$BASE"
+# Warm start: every lane stamped at BASE, so the measured runs only pay for what their commit changes.
+timed warmup bash "$HERE/build-image.sh" "$BASE"
 C1=$(touch_commit apps/site/src/proxy.ts "bench: site file")
 C2=$(touch_commit crates/shenron-cli/src/shenron_cmd.rs "bench: rust crate A")
 C3=$(touch_commit crates/shenron-cli/src/shenron_cmd.rs "bench: rust crate B")
