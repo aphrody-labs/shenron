@@ -87,7 +87,8 @@ test("a fresh remote snapshot restores its config workspace from the gitlink", (
   expect(git(join(checkout, "packages/config"), ["rev-parse", "HEAD"])).toBe(
     git(config, ["rev-parse", "HEAD"]),
   );
-});
+  // About a dozen Git processes: 3 s on a quiet Windows machine, so the 5 s default is too tight.
+}, 60_000);
 
 describe("vitalTarArgs", () => {
   test("archives existing vital paths relative to / and excludes models", () => {
