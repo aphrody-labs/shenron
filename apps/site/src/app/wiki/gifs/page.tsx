@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { PageShell } from "@/components/kit";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { T } from "@/components/T";
 import { GifLibrary } from "@/components/gifs/GifLibrary";
 import { readGifCatalog } from "@/lib/gif-catalog";
@@ -30,6 +31,7 @@ export default async function GifIndexPage({
   }
   return (
     <PageShell rhythm="loose">
+      <Breadcrumbs items={[{ label: "GIFs", display: <T k="gifLibrary.title" /> }]} />
       <h1 className="font-display text-3xl text-dbz-gold">
         <T k="gifLibrary.title" />
       </h1>

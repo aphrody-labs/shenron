@@ -11,13 +11,17 @@ backups, timers, rétention) est portée par le dépôt frère `aphrody-infra` :
 - topologie et hôtes : `aphrody-infra/docs/SHENRON-MIGRATION.md`,
   `aphrody-infra/docs/PRODUCTION-ALLOCATION.md`.
 
+Ce dépôt construit et livre l'image : `scripts/deploy/release.sh` (voir
+[`../docs/operations/CONTAINER-COMPLET.md`](../docs/operations/CONTAINER-COMPLET.md)) ;
+l'activation sur l'hôte reste celle d'`aphrody-infra`.
+
 Aucune adresse, aucun hôte ni port de production n'est décrit ici : les lire
 dans le catalogue `aphrody-infra`. Frontière et historique des suppressions :
 [`../docs/operations/INFRA-DELEGATION.md`](../docs/operations/INFRA-DELEGATION.md).
 
 ## Contenu restant
 
-| Chemin | Rôle | Statut |
-| --- | --- | --- |
-| `deploy/privoxy/shenron-media.conf` | Configuration Privoxy installée en `/etc/privoxy/config`. | Idem. |
-| `deploy/privoxy/shenron-media-proxy.env` | URL locale du pont média lue par le bot (`SHENRON_MEDIA_PROXIES`), sans secret. | Idem. |
+| Chemin                                   | Rôle                                                                            | Statut |
+| ---------------------------------------- | ------------------------------------------------------------------------------- | ------ |
+| `deploy/privoxy/shenron-media.conf`      | Configuration Privoxy installée en `/etc/privoxy/config`.                       | Idem.  |
+| `deploy/privoxy/shenron-media-proxy.env` | URL locale du pont média lue par le bot (`SHENRON_MEDIA_PROXIES`), sans secret. | Idem.  |

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { mkdir, rename, rmdir, stat } from "node:fs/promises";
-import { resolve, dirname } from "node:path";
+import { homedir } from "node:os";
+import { resolve, dirname, join } from "node:path";
 
 type Json = Record<string, unknown>;
 export interface Manifest {
@@ -216,7 +217,7 @@ export async function run(argv: string[]): Promise<number> {
             await checkedFile(m.workerEntry, m.workerEntrySha256, dirname(manifestPath));
             await command(
               [
-                process.env.CLOUDFLARE_WRANGLER ?? "/home/ubuntu/.local/bin/wrangler",
+                process.env.CLOUDFLARE_WRANGLER ?? join(homedir(), ".local/bin/wrangler"),
                 "deploy",
                 "--config",
                 config,

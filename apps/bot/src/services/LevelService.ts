@@ -6,7 +6,7 @@ import { DatabaseService } from "~/db/index";
 import { users, levelRewards, actionLogs, fusions } from "~/db/schema";
 import { ZENI_PER_LEVEL, FUSION_XP_BONUS_RATIO } from "~/lib/constants";
 import { XP_MAX, getLevelThresholds, levelFromXp, sanitizeXp } from "~/lib/xp";
-import { applyZeniRace, hasZenkai, type RaceId } from "~/lib/races";
+import { applyZeniRace, hasZenkai, type RaceId } from "@aphrody/shenron-config/races";
 import {
   DEFAULT_XP_BOOST_CONFIG,
   XpRateWindow,

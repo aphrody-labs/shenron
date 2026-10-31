@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { importCardCatalogBatch, type CardCatalogImportState } from "./_import-actions";
+import { CARD_IMPORT_MAX_ROWS } from "./import-limits";
 
 const initialState: CardCatalogImportState = {
   status: "idle",
@@ -30,7 +31,7 @@ export function CardCatalogImportForm() {
           {t("importTitle")}
         </h2>
         <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-          {t("importDescription")}
+          {t("importDescription", { max: CARD_IMPORT_MAX_ROWS })}
         </p>
         <details className="max-w-3xl text-sm text-muted-foreground">
           <summary className="cursor-pointer font-medium">{t("importFormat")}</summary>
@@ -106,7 +107,7 @@ export function CardCatalogImportForm() {
               {state.issues.map((issue) => (
                 <li key={`${issue.row}-${issue.code}`}>
                   {issue.row > 0 ? t("importIssueRow", { row: issue.row }) : t("importIssueFile")} —{" "}
-                  {t(`importIssue.${issue.code}`)}
+                  {t(`importIssue.${issue.code}`, { max: CARD_IMPORT_MAX_ROWS })}
                 </li>
               ))}
             </ul>

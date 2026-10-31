@@ -25,7 +25,7 @@ const FAIL2BAN = "/etc/fail2ban/jail.d/90-shenron-admin.local";
 const PG_DIR = "/etc/postgresql/18/main";
 const PG_LISTEN = `${PG_DIR}/conf.d/90-shenron-admin.conf`;
 const PG_HBA = `${PG_DIR}/pg_hba.conf`;
-const ENV_DIR = "/etc/rose-griffon";
+const ENV_DIR = process.env.SHENRON_ENV_DIR ?? "/etc/rose-griffon";
 
 interface Input {
   ips: string[];

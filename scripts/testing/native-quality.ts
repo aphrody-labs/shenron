@@ -41,7 +41,7 @@ async function run(): Promise<number> {
             cwd: root,
             args: [
               mode!,
-              ...(mode === "lint" ? ["--no-n2b", "-c", ".oxlintrc.json"] : []),
+              ...(mode === "lint" ? ["-c", ".oxlintrc.json"] : []),
               ...(mode === "fmt" ? ["-c", ".oxfmtrc.json"] : []),
               ...formatterIgnores.flatMap((pattern) => ["--ignore-pattern", pattern]),
               ...supplied,

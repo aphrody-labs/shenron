@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { DONATION_TIERS } from "@/lib/stripe";
 
 export function DonationModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -11,6 +11,7 @@ export function DonationModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
   const [isAnonymous, setIsAnonymous] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const fieldId = useId();
 
   if (!isOpen) return null;
 
@@ -129,12 +130,15 @@ export function DonationModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
           >
             <div className="flex items-center gap-2">
               <span className="text-xl">✨</span>
-              <span className="font-semibold text-xs text-neutral-200">Montant personnalisé</span>
+              <span id={`${fieldId}-amount`} className="font-semibold text-xs text-neutral-200">
+                Montant personnalisé
+              </span>
             </div>
             {selectedTier === "custom" && (
               <div className="flex items-center gap-1.5">
                 <input
                   type="number"
+                  aria-labelledby={`${fieldId}-amount`}
                   min="1"
                   step="1"
                   placeholder="ex: 20"
@@ -152,10 +156,14 @@ export function DonationModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
         {/* Détails du donateur */}
         <div className="mt-4 space-y-3">
           <div>
-            <label className="block text-[11px] font-medium text-neutral-400 uppercase tracking-wider mb-1">
+            <label
+              htmlFor={`${fieldId}-name`}
+              className="block text-[11px] font-medium text-neutral-400 uppercase tracking-wider mb-1"
+            >
               Votre Nom ou Pseudo
             </label>
             <input
+              id={`${fieldId}-name`}
               type="text"
               disabled={isAnonymous}
               placeholder={isAnonymous ? "Anonyme" : "ex: Son Goku, Krilin..."}
@@ -166,10 +174,14 @@ export function DonationModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-neutral-400 uppercase tracking-wider mb-1">
+            <label
+              htmlFor={`${fieldId}-message`}
+              className="block text-[11px] font-medium text-neutral-400 uppercase tracking-wider mb-1"
+            >
               Message d'encouragement (Optionnel)
             </label>
             <input
+              id={`${fieldId}-message`}
               type="text"
               maxLength={150}
               placeholder="Un mot pour le staff et la commu..."

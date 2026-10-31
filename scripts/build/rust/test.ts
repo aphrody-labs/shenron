@@ -10,7 +10,7 @@
  *   bun scripts/build/rust/test.ts --cargo-test -- --nocapture
  *   bun scripts/build/rust/test.ts --list      # print the crates and exit
  *
- * Cargo runs through APHRODY_CARGO_SERIAL when it is set (scripts/build/rust/cargo.ts).
+ * Cargo runs directly (scripts/build/rust/cargo.ts).
  */
 import { cargoCommand, runCargo } from "./cargo.ts";
 

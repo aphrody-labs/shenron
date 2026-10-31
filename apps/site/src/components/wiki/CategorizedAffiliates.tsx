@@ -1,7 +1,7 @@
 "use client";
 
 import { CharacterCardGrid, CharacterPosterCard } from "@/components/wiki/CharacterPosterCard";
-import type { AccessSnapshot } from "@/lib/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import type { CharacterRelationItem } from "@/lib/shenron";
 import type { ReactNode } from "react";
 

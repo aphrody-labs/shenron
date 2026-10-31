@@ -25,7 +25,7 @@ import {
   withdrawContribution,
 } from "@/lib/wiki-contributions";
 import { canContribute, scopeOf } from "@/lib/contribution-rights";
-import { sanitizeInternalPath } from "@/lib/internal-path";
+import { sanitizeInternalPath } from "@aphrody/shenron-config/favorites";
 import { createMemoryRateLimiter } from "@/lib/memory-rate-limit";
 
 export const runtime = "nodejs";

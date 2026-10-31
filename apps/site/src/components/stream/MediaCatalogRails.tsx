@@ -4,7 +4,7 @@ import { PosterCard } from "@/components/stream/PosterCard";
 import { StreamRow } from "@/components/stream/StreamRow";
 import { yearOf } from "@/lib/epoch";
 import type { readMediaCatalog } from "@/lib/media-catalog";
-import { isPathPublic, type AccessSnapshot } from "@/lib/wiki-launch";
+import { isPathPublic, type AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 
 export type MediaCatalog = Awaited<ReturnType<typeof readMediaCatalog>>;
 

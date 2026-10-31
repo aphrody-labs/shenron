@@ -31,6 +31,11 @@ bouton « Plus » sur mobile. Les captures et résultats locaux sont dans
 `var/reports/shell-navigation/`, ignorés par Git. Le navigateur MCP a refusé
 l'adresse locale de la fixture ; Chromium a couvert cette limite.
 
+Le site public monte la variante `site` du shell (`data-shell-variant="site"`) : la navigation
+est horizontale et la barre latérale n'existe que dans la variante `app`. Les réserves de place
+que la barre latérale impose aux boutons flottants (`.fab-secondary`) et au Kinto'un ne
+s'appliquent donc qu'à `app` (`barre-nav.css`, `site.css`).
+
 Ces vérifications ne qualifient pas l'ensemble des pages produit ni un
 appareil mobile ou une fenêtre Tauri physiques. L'audit de toutes les pertes
 des grandes refontes et la fidélité graphique de l'ensemble de l'UI restent

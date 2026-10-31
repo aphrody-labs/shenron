@@ -1,47 +1,54 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
+import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { inspectStreamTracks, extractVideoFrame } from "../src/mediabunny-pipeline";
 
 const Video = (Bun as typeof Bun & { Video?: { readonly available: boolean } }).Video;
-const nativeTest = test.skipIf(!Video?.available);
+const demoVideoPath = fileURLToPath(
+  new URL("../../../vendor/mediabunny/test/public/demo.mp4", import.meta.url),
+);
+const multiAudioPath = fileURLToPath(
+  new URL("../../../vendor/mediabunny/test/public/multiple-aac-tracks.mp4", import.meta.url),
+);
+// The real media fixtures come from the optional `vendor/mediabunny` checkout; without it the
+// media tests are skipped rather than reported as decoder failures.
+const hasFixtures = existsSync(demoVideoPath) && existsSync(multiAudioPath);
+const fixtureTest = test.skipIf(!hasFixtures);
+const nativeTest = test.skipIf(!hasFixtures || !Video?.available);
 
 describe("mediabunny-pipeline", () => {
-  const demoVideoPath = fileURLToPath(
-    new URL("../../../vendor/mediabunny/test/public/demo.mp4", import.meta.url),
+  fixtureTest(
+    "inspectStreamTracks returns complete stream, track, and ladder metadata",
+    async () => {
+      const result = await inspectStreamTracks(demoVideoPath);
+
+      expect(result.source).toBe(demoVideoPath);
+      expect(result.format).toBe("Mp4InputFormat");
+      expect(result.durationSeconds).toBe(5);
+
+      expect(result.videoTracks.length).toBeGreaterThan(0);
+      const video = result.videoTracks[0]!;
+      expect(video.type).toBe("video");
+      expect(video.codec).toBe("avc");
+      expect(video.codecString).toMatch(/^avc1/);
+      expect(video.width).toBe(640);
+      expect(video.height).toBe(360);
+      expect(video.durationSeconds).toBe(5);
+
+      expect(result.audioTracks.length).toBeGreaterThan(0);
+      const audio = result.audioTracks[0]!;
+      expect(audio.type).toBe("audio");
+      expect(audio.codec).toBe("aac");
+      expect(audio.sampleRate).toBe(48000);
+
+      expect(result.bitrateLadder.length).toBe(result.videoTracks.length);
+      expect(result.bitrateLadder[0]!.width).toBe(640);
+      expect(result.bitrateLadder[0]!.codec).toBe("avc");
+    },
   );
-  const multiAudioPath = fileURLToPath(
-    new URL("../../../vendor/mediabunny/test/public/multiple-aac-tracks.mp4", import.meta.url),
-  );
 
-  test("inspectStreamTracks returns complete stream, track, and ladder metadata", async () => {
-    const result = await inspectStreamTracks(demoVideoPath);
-
-    expect(result.source).toBe(demoVideoPath);
-    expect(result.format).toBe("Mp4InputFormat");
-    expect(result.durationSeconds).toBe(5);
-
-    expect(result.videoTracks.length).toBeGreaterThan(0);
-    const video = result.videoTracks[0]!;
-    expect(video.type).toBe("video");
-    expect(video.codec).toBe("avc");
-    expect(video.codecString).toMatch(/^avc1/);
-    expect(video.width).toBe(640);
-    expect(video.height).toBe(360);
-    expect(video.durationSeconds).toBe(5);
-
-    expect(result.audioTracks.length).toBeGreaterThan(0);
-    const audio = result.audioTracks[0]!;
-    expect(audio.type).toBe("audio");
-    expect(audio.codec).toBe("aac");
-    expect(audio.sampleRate).toBe(48000);
-
-    expect(result.bitrateLadder.length).toBe(result.videoTracks.length);
-    expect(result.bitrateLadder[0]!.width).toBe(640);
-    expect(result.bitrateLadder[0]!.codec).toBe("avc");
-  });
-
-  test("inspectStreamTracks handles multiple audio tracks correctly", async () => {
+  fixtureTest("inspectStreamTracks handles multiple audio tracks correctly", async () => {
     const result = await inspectStreamTracks(multiAudioPath);
 
     expect(result.audioTracks.length).toBe(2);
@@ -50,7 +57,7 @@ describe("mediabunny-pipeline", () => {
     expect(result.audioTracks[0]!.channels).toBe(6);
   });
 
-  test.skipIf(Boolean(Video?.available))(
+  test.skipIf(!hasFixtures || Boolean(Video?.available))(
     "unavailable native decoding rejects explicitly",
     async () => {
       await expect(extractVideoFrame(demoVideoPath, 1)).rejects.toThrow(

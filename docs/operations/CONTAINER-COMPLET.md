@@ -155,47 +155,58 @@ bun scripts/dev/env-pull.ts tunnel --host vps
 
 ---
 
-### Build sur le VPS : image `aphrody-build`
+### Image de build `aphrody-build` (CI et runner self-hosted)
 
-Les étapes Rust, WASM, `bun install` et bot de la release (`scripts/ops/release-host.ts`) et du runner
-self-hosted (`server-artifact.yml`) tournent dans l'image de build d'Aphrody (`aphrody-build:latest`), par
-`scripts/build/container.ts` : toolchain épinglée (Rust de `rust-toolchain.toml`, Bun de `packageManager`,
-`wasm-bindgen` de `Cargo.lock`), caches partagés en volumes (`aphrody-build-{cargo,sccache,bun,xwin,xdg}`),
-6 CPU et 16 Gio sans swap au plus, verrou lourd de l'usine. `bun scripts/build/container.ts --check` compare
-l'image au checkout. Le runner `release-host.ts` construit dans `~/shenron-release`.
-Le script Docker versionné construit sous `~/build/transient/shenron-docker` avec
-`~/build/locks/heavy.lock`, jamais dans `~/src/shenron`. Contrat et mesures :
-`docs/operations/container/CONTAINER.md` et
-`docs/operations/infra/SHENRON-DOCKER.md` d'Aphrody.
+Le workflow manuel `server-artifact.yml` construit et vérifie l'image par
+`scripts/deploy/build-image.sh` (build seul, runner self-hosted). Hors release, on peut exécuter les étapes Rust, WASM, `bun install`
+et bot dans l'image de build d'Aphrody (`aphrody-build:latest`), par `scripts/build/container.ts` :
+toolchain épinglée (Rust de `rust-toolchain.toml`, Bun de `packageManager`, `wasm-bindgen` de
+`Cargo.lock`), caches partagés en volumes (`aphrody-build-{cargo,sccache,bun,xwin,xdg}`), 6 CPU
+et 16 Gio sans swap au plus, verrou facultatif nommé par `SHENRON_BUILD_LOCK`.
+`bun scripts/build/container.ts --check` compare l'image au checkout.
 
-### Release Docker unifiée
+### Release : `scripts/deploy`
 
-`scripts/ops/vps/release-shenron.sh` est l'unique entrée pour pinner une révision, construire,
-qualifier puis livrer l'image Shenron. Le propriétaire choisit le builder ; le défaut reste `vps`.
-La production `dbfr` ne compile jamais. Chaque builder alternatif doit être déclaré par Aphrody
-Infra, posséder le toolchain demandé et obtenir son bail de fabrique. Le workflow ne contourne
-ni le verrou partagé ni le nettoyage propriétaire de la fabrique.
+`scripts/deploy/release.sh [--build-only | --ship-only] [revision]` est l'unique entrée pour
+construire, qualifier puis livrer une révision (défaut `origin/main`, figée en SHA). Il enchaîne
+`build-image.sh` puis `ship-image.sh`, dont les en-têtes font foi, et tourne sur tout hôte Linux
+x64 doté de Git, Bun, Rust (rustup) et docker ou podman. Aucun checkout Aphrody, nom d'hôte ni
+chemin absolu n'est codé : tout se règle par variables d'environnement (table « Release » de
+[`ENV.md`](ENV.md)). La production `dbfr` ne compile jamais.
 
-1. Choisir explicitement l'hôte builder et son identifiant Infra, puis lancer le run durable
-   dans tmux sur ce builder. Le wrapper fige `origin/main` en SHA avant le build ; toutes les
-   voies parallèles sont attendues et leur statut d'échec est conservé. `APHRODY_CARGO_JOBS=auto`
-   reste borné par les cœurs disponibles et le maximum de la fabrique :
+1. Build (`build-image.sh`) : worktree réutilisé `SHENRON_BUILD_REPO` (défaut
+   `$HOME/build/shenron`), sérialisé par `flock` ; VFS public depuis `SHENRON_VFS_SOURCE`
+   (fichier, URL ou `hôte:chemin`). Le build du site chevauche les lanes Rust, VFS et bot ;
+   chaque lane (site, bot, Rust) est sautée tant que l'arbre Git de ses entrées et sa chaîne
+   d'outils sont inchangés (`SHENRON_FORCE_SITE|BOT|RUST=1` pour forcer) ; le cache Turbopack est conservé (`SHENRON_NEXT_BUILD_CACHE=1`) ; le payload
+   est en zstd 6 (`SHENRON_PAYLOAD_ZSTD_LEVEL`) ; le site attend `SHENRON_SITE_BUILD_MIN_GIB`
+   de mémoire disponible. L'image `localhost/shenron:<sha>` est vérifiée (`version`, bot
+   `--smoke`) avant tout envoi ; chaque phase est horodatée (`== <phase> (+Ns)`).
 
    ```sh
-   tmux new-session -d -s shenron-release 'bash ~/src/shenron/scripts/ops/vps/release-shenron.sh > ~/shenron-release.log 2>&1; code=$?; printf "EXIT_CODE=%s\n" "$code" >> ~/shenron-release.log'
+   SHENRON_VFS_SOURCE=<fichier|URL|hôte:chemin> scripts/deploy/release.sh   # build + livraison
+   scripts/deploy/release.sh --build-only <sha>                              # build seul
+   scripts/deploy/release.sh --ship-only <sha>                               # livraison seule
    ```
 
-   `--build-only`, `--ship-only` et `--revision <sha>` reprennent une phase sans déplacer le
-   worktree épinglé. `SHENRON_SOURCE_REPO`, `SHENRON_BUILD_REPO`, `SHENRON_BUILD_LOCK`,
-   `SHENRON_DEPLOY_HOST`, `APHRODY_FACTORY_CONFIG`, `APHRODY_BUILD_HOST` et
-   `APHRODY_CARGO_JOBS` règlent les chemins, cible, configuration/identité de fabrique et
-   concurrence Cargo. Le VPS est le défaut historique ; le propriétaire choisit toute autre
-   cible explicitement dans le catalogue Infra.
-2. Le `ship-shenron.sh` actuel transfère l'image à DBFR et appelle
-   `~/deploy-shenron-image.sh`. Ce helper historique prépare puis active le candidat avec
-   l'adaptateur conteneur ; il réutilise les vhosts déjà présents dans la release active et
-   n'assemble pas les sources NGINX d'un checkout Infra choisi. Il ne suffit donc pas pour
-   publier un nouveau bundle NGINX.
+   Lancer un build long dans une session détachée avec journal durable, puis sonder ce journal
+   par extraits bornés.
+
+2. Livraison (`ship-image.sh`) selon `SHENRON_DEPLOY_TARGET` : `ssh:<hôte>` (défaut `ssh:dbfr`)
+   diffuse l'image en zstd et lance `SHENRON_DEPLOY_COMMAND <sha> <tar>` sur la cible, par défaut
+   `~/deploy-shenron-image.sh`, l'entrée d'activation Infra de DBFR ; `registry:<dépôt>` pousse
+   l'image ; `local` démarre `deploy/docker/compose.yaml`. Le garde de rollback lit la release
+   active (`SHENRON_ACTIVE_COMMAND`) et refuse un commit qui n'en descend pas, sauf
+   `SHENRON_ALLOW_ROLLBACK=1`. Les mutations de production restent celles d'Aphrody Infra sur la
+   cible.
+
+   `~/deploy-shenron-image.sh` prépare puis active le candidat avec l'adaptateur conteneur ; il
+   réutilise les vhosts déjà présents dans la release active et n'assemble pas les sources NGINX
+   d'un checkout Infra choisi. Il ne suffit donc pas pour publier un nouveau bundle NGINX.
+
+   **Release scellée** : une release modifiée à la main après scellement (fichiers hors
+   manifeste) bloque toute activation, car l'adaptateur revérifie la release précédente comme
+   cible de rollback. Ne jamais copier de fichiers dans `/srv/shenron/releases/*`.
 
    L'entrée canonique d'activation d'un candidat déjà assemblé et scellé est :
 
@@ -214,6 +225,7 @@ ni le verrou partagé ni le nettoyage propriétaire de la fabrique.
    workflow ne doit pas substituer un autre builder ni déduire la révision Infra. Le nom de
    release étant déterminé par le SHA Shenron, ne jamais réutiliser un candidat existant pour un
    autre SHA Infra. Conserver le résultat et le chemin de rollback retournés par Infra.
+
 3. Sondes après activation : pages, `/api/health`, `/api/public/rag/search`, `tools/list`
    anonyme de `/mcp`, `bot.` et `cdn.`.
 

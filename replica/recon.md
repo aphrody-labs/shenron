@@ -157,3 +157,14 @@ identifiants publics manga/databook et page → aperçu → import explicite dan
 nouveau projet Studio hébergé autorisé. Les empreintes et candidats restent séparés
 des writers éditoriaux. L'atlas est associé à la vraie page ouverte par SHA-256 et
 dimensions ; le consommateur Canvas est injecté par l'application dans l'UI partagée.
+
+## 14. Doublons d'interface et état des fonctions (2026-10-30)
+
+Lecture de ce rapport, de `replica/features.csv` et de l'audit UI/UX contre l'accueil et le wiki
+livrés. Cinq fonctions du tableau passent à « clone = yes » après contrôle du code (menu mobile,
+langue, hero à frames, partage, consentement). Le motif repris de Daima et Bandai (navigation
+unique, sélecteur de langue explicite) a un corollaire : le clone ne doit montrer chaque élément
+du shell qu'une fois. Logo d'en-tête sous le wordmark du héros, recherche du héros, menu « Explorer
+le Wiki » et barre d'exploration du wiki dupliquaient le shell ; ils sont retirés
+([invariants](../docs/products/accueil-et-shell.md)). Restent hors périmètre : newsletter,
+wishlist, carrousel d'actus à cinq plateformes et diffusion par région, non construits.

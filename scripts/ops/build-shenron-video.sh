@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
-# Factory-only artifact build. Cargo serialization and target cache belong to Infra.
+# Artifact build with plain cargo; the target cache is the caller's CARGO_TARGET_DIR.
 set -euo pipefail
 usage() {
   printf '%s\n' 'Usage: build-shenron-video.sh [--local-owner <Bun OS checkout>] [--out <new absolute artifact directory>]' \
-    'Requires APHRODY_CARGO_SERIAL and CARGO_TARGET_DIR from the qualified factory environment.' \
+    'Requires cargo on PATH and an absolute CARGO_TARGET_DIR.' \
     'Default: exact Git dependencies pinned in Cargo.toml. Local override is explicit and recorded.' \
     'Builds and qualifies an artifact; never activates or installs it globally.'
 }
@@ -20,9 +20,8 @@ while [ "$#" -gt 0 ]; do
     *) usage >&2; exit 2 ;;
   esac
 done
-: "${APHRODY_CARGO_SERIAL:?Set the owner-qualified Cargo serialization wrapper}"
-: "${CARGO_TARGET_DIR:?Set the owner-qualified Cargo target cache}"
-[ -x "$APHRODY_CARGO_SERIAL" ] || { printf '%s\n' 'Cargo serialization wrapper is not executable' >&2; exit 1; }
+: "${CARGO_TARGET_DIR:?Set the Cargo target cache}"
+command -v cargo >/dev/null || { printf '%s\n' 'cargo is not on PATH' >&2; exit 1; }
 case "$CARGO_TARGET_DIR" in /*) ;; *) printf '%s\n' 'CARGO_TARGET_DIR must be absolute' >&2; exit 1 ;; esac
 command -v bun >/dev/null
 SRC="$(cd "$(dirname "$0")/../../crates/shenron-video" && pwd -P)"
@@ -72,9 +71,9 @@ fi
 export RAYON_NUM_THREADS=1
 LOCKED=()
 if [ -f "$WORK/Cargo.lock" ]; then LOCKED=(--locked); fi
-"$APHRODY_CARGO_SERIAL" test --release --manifest-path "$WORK/Cargo.toml" "${LOCKED[@]}" > "$OUT/test.log" 2>&1
-"$APHRODY_CARGO_SERIAL" clippy --release --manifest-path "$WORK/Cargo.toml" --locked -- -D warnings > "$OUT/clippy.log" 2>&1
-"$APHRODY_CARGO_SERIAL" build --release --manifest-path "$WORK/Cargo.toml" --locked > "$OUT/build.log" 2>&1
+cargo test --release --manifest-path "$WORK/Cargo.toml" "${LOCKED[@]}" > "$OUT/test.log" 2>&1
+cargo clippy --release --manifest-path "$WORK/Cargo.toml" --locked -- -D warnings > "$OUT/clippy.log" 2>&1
+cargo build --release --manifest-path "$WORK/Cargo.toml" --locked > "$OUT/build.log" 2>&1
 cp "$CARGO_TARGET_DIR/release/shenron-video" "$OUT/shenron-video"
 chmod 0755 "$OUT/shenron-video"
 cp "$WORK/Cargo.toml" "$WORK/Cargo.lock" "$OUT/"

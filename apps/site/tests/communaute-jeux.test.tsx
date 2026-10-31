@@ -6,20 +6,20 @@
  * classes de point de rupture, vérifiées ici). Les commandes elles-mêmes sont
  * des fonctions pures, testées sans DOM.
  */
-import { describe, expect, test } from "bun:test";
+import { describe, expect, mock, test } from "bun:test";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import DragonBall2048 from "../src/app/games/2048/DragonBall2048";
 import Page2048 from "../src/app/games/2048/page";
-import JeuxPage from "../src/app/games/page";
 import {
   SWIPE_THRESHOLD,
   directionFromKey,
   directionFromSwipe,
 } from "../src/app/games/2048/controls";
 import { nextGridIndex } from "../src/components/games/grid-nav";
+import { DEFAULT_LAUNCH_CONFIG } from "@aphrody/shenron-config/wiki-launch-config";
 
 const SRC = join(import.meta.dir, "..", "src");
 
@@ -92,22 +92,39 @@ describe("2048 — rendu", () => {
   });
 });
 
+// The page reads the launch configuration server-side; the static render uses the defaults.
+mock.module("@/lib/wiki-launch-config", () => ({
+  getLaunchConfig: async () => structuredClone(DEFAULT_LAUNCH_CONFIG),
+}));
+const { default: JeuxPage } = await import("../src/app/games/page");
+const jeuxHtml = renderToStaticMarkup(await JeuxPage());
+
 describe("index /games", () => {
-  const html = renderToStaticMarkup(JeuxPage());
+  const html = jeuxHtml;
+  // The hub is styled by its CSS module since the accessible catalogue rebuild
+  // (6b753f9f): breakpoints and touch targets live in the stylesheet.
+  const css = readFileSync(join(SRC, "components/games/games-hub.module.css"), "utf8");
 
   test("une colonne au téléphone, grille ensuite", () => {
-    expect(html).toContain("grid-cols-1");
-    expect(html).toContain("sm:grid-cols-2");
-    expect(html).toContain("xl:grid-cols-3");
-    expectNoOwnChrome(html);
+    expect(css).toMatch(
+      /@media \(max-width: 640px\)[\s\S]*?\.grid,\s*\.explorerGrid,[\s\S]*?grid-template-columns: minmax\(0, 1fr\);/,
+    );
+    expect(css).toMatch(/\.grid,\s*\.explorerGrid \{[^}]*repeat\(2, minmax\(0, 1fr\)\)/);
+    expect(css).toMatch(
+      /@media \(min-width: 1280px\) \{\s*\.grid \{\s*grid-template-columns: repeat\(4, minmax\(0, 1fr\)\);/,
+    );
+    // The only <nav> is the in-page section shortcut list, not site chrome.
+    expectNoOwnChrome(html.replace(/<nav aria-label="[^"]*">[\s\S]*?<\/nav>/, ""));
   });
 
   test("liens de jeu en casse normale et cibles de 44 px", () => {
     expect(html).not.toContain("JOUER");
     const liens = html.match(/<a[^>]*href="\/games\/[a-z0-9-]+"[^>]*>/g) ?? [];
-    expect(liens.length).toBe(6);
+    // Four browser games plus three explorers (Dragon Pixel, Xenoverse 2, Budokai Tenkaichi 3).
+    expect(liens.length).toBe(7);
     expect(html).toContain('href="/games/dragon-pixel"');
-    for (const lien of liens) expect(lien).toContain("min-h-11");
+    expect(html).toContain('href="/games/budokai-tenkaichi-3"');
+    expect(css).toMatch(/\.cardLink,\s*\.textLink,[^{]*\{[^}]*min-height: 44px;/);
   });
 
   test("aucune information réservée au survol", () => {

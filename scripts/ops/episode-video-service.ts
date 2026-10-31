@@ -1,5 +1,7 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
+import { homedir } from "node:os";
+import { join } from "node:path";
 import { createEpisodeTimelineHandler } from "../../apps/site/src/lib/episode-video-generation";
 import { isShenronEpisodeVideoURL } from "../../apps/site/src/lib/episode-video-source";
 
@@ -7,7 +9,10 @@ export const episodeVideoSource = Object.freeze({
   id: 877,
   sha256: "d34399a0b71922d663667cdb2075659ae0b259bf56ecda9fef64ca1578173114",
   url: "https://cdn.dragonballfr.com/media/episodes/877/d34399a0b71922d663667cdb2075659ae0b259bf56ecda9fef64ca1578173114/source.mp4",
-  file: "/home/ubuntu/reports/shenron/beerus-episode3/intake/mugiwara-20261025/source.mp4",
+  /** Local qualified copy: SHENRON_EPISODE_VIDEO_FILE, else under ~/reports. */
+  file:
+    process.env.SHENRON_EPISODE_VIDEO_FILE ??
+    join(homedir(), "reports/shenron/beerus-episode3/intake/mugiwara-20261025/source.mp4"),
 });
 
 type TimelineDependencies = Omit<

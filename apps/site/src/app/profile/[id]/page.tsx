@@ -15,10 +15,10 @@ import { getMemberContributions, type MemberContributions } from "@/lib/contribu
 import { MemberLedger } from "@/components/contest/MemberLedger";
 import { getProfileCardUrl } from "@/lib/assets";
 import { Avatar } from "@/components/Avatar";
-import { discordDefaultAvatarUrl } from "@/lib/discord-avatar";
+import { discordDefaultAvatarUrl } from "@aphrody/shenron-config/public-urls";
 import { getShenronUserResult, xpProgressPercent } from "@/lib/shenron";
 import { getSessionUser } from "@/lib/session";
-import { formatZeni } from "@/lib/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 import { ProfileCardCustomizer } from "@/components/profile/ProfileCardCustomizer";
 
 export const dynamic = "force-dynamic";

@@ -19,7 +19,7 @@ import { PageShell, SectionHeading, Stack } from "@/components/kit";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { buildSiteMap } from "@/lib/site-map";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
-import { isPathPublic, type AccessSnapshot } from "@/lib/wiki-launch";
+import { isPathPublic, type AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 
 export const revalidate = 3600;
 

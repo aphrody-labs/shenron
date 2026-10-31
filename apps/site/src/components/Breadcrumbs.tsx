@@ -3,7 +3,7 @@ import type { BreadcrumbList, WithContext } from "schema-dts";
 import { ShellTrail } from "@aphrody/shenron-ui/navigation/AppShell";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/config";
-import { isPathPublic } from "@/lib/wiki-launch";
+import { isPathPublic } from "@aphrody/shenron-config/wiki-launch";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 
 /**

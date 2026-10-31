@@ -15,7 +15,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { GROUP_LABEL, matchAction, type EditorAction, type EditorDialogs } from "../commands";
-import { cn } from "@/lib/utils";
+import { cn } from "@aphrody/shenron-ui/lib/utils";
 
 export type SlashState = {
   items: EditorAction[];

@@ -21,7 +21,7 @@ test("an unavailable RAG source returns 503 instead of an empty draft", async ()
   const response = await POST(request());
 
   expect(response.status).toBe(503);
-  expect(response.headers.get("Cache-Control")).toBe("no-store");
+  expect(response.headers.get("Cache-Control")).toBe("private, no-store");
   expect(response.headers.get("Retry-After")).toBe("30");
   expect(await response.json()).toEqual({ error: "rag_unavailable" });
 });
@@ -36,7 +36,7 @@ test("unexpected RAG failures return a safe retryable response", async () => {
     const body = await response.json();
 
     expect(response.status).toBe(503);
-    expect(response.headers.get("Cache-Control")).toBe("no-store");
+    expect(response.headers.get("Cache-Control")).toBe("private, no-store");
     expect(body.error).toBe("rag_unavailable");
     expect(JSON.stringify(body)).not.toContain("private search index detail");
   } finally {

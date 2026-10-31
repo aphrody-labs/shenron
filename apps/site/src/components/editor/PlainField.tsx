@@ -16,7 +16,7 @@
  */
 import { useEffect, useId, useRef, useState } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@aphrody/shenron-ui/lib/utils";
 
 export type PlainFieldProps = {
   value?: string;

@@ -7,7 +7,7 @@ import { createElement, type ComponentProps, type ComponentType } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { NextIntlClientProvider } from "next-intl";
 import fr from "../messages/fr.json";
-import { DEFAULT_HOME_CONFIG } from "../src/lib/home-scenes";
+import { DEFAULT_HOME_CONFIG } from "@aphrody/shenron-config/home";
 import { DEFAULT_CANON_CONFIG } from "../src/lib/canon-engine";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
@@ -122,7 +122,7 @@ describe("no placeholder data on the home", () => {
     expect(html).not.toContain('id="beerus"');
     expect(html).not.toContain('href="#hero"');
     expect(html).not.toContain("dbsBeerus.openLocalEpisode");
-    expect(html).toContain('href="/wiki/gifs"');
+    expect(html).not.toContain('href="/wiki/gifs"');
     expect(source("../src/components/home/HomeView.tsx")).not.toContain("ContinueRail");
     expect(source("../src/app/page.tsx")).not.toContain("getWikiCounts");
     const covered = coveredDestinations(config, new Set(["personnages"]));

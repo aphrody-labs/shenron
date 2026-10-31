@@ -16,7 +16,7 @@ import {
 } from "@/components/wiki/WikiListLayout";
 import { assetUrl } from "@/lib/assets";
 import { useTechniqueText } from "@/lib/technique-ui-text";
-import type { AccessSnapshot } from "@/lib/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 
 export type TechniqueCard = {
   id: number;

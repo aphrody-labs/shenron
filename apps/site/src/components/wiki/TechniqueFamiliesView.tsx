@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
 import { Layers, ChevronDown, ChevronUp } from "lucide-react";
 import type { TechniqueCard } from "./TechniqueGrid";
-import type { AccessSnapshot } from "@/lib/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 
 interface TechniqueFamily {
   id: string;

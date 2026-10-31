@@ -62,11 +62,12 @@ describe("history revert freeze", () => {
     expect(revalidations).toBe(0);
     expect(rowReads).toBe(0);
   });
-  test("database failures retain the generic 500 response", async () => {
+  test("database failures return a private retryable 503 without driver details", async () => {
     revertError = Object.assign(new Error("database internals"), { code: "23505" });
     const response = await revert();
-    expect(response.status).toBe(500);
-    expect(await response.json()).toEqual({ error: "Écriture refusée par la base." });
+    expect(response.status).toBe(503);
+    expect(response.headers.get("Cache-Control")).toBe("private, no-store");
+    expect(await response.json()).toEqual({ error: "wiki_history_unavailable" });
     expect(revalidations).toBe(0);
     expect(rowReads).toBe(0);
   });

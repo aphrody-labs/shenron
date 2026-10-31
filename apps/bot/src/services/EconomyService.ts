@@ -5,7 +5,7 @@ import { DatabaseService } from "~/db/index";
 import { users, inventory, shopItems, fusions, achievements, actionLogs } from "~/db/schema";
 import { FUSION_XP_BONUS_RATIO, FUSION_ZENI_BONUS_RATIO } from "~/lib/constants";
 import { logger } from "~/lib/logger";
-import { applyZeniRace } from "~/lib/races";
+import { applyZeniRace } from "@aphrody/shenron-config/races";
 import { SettingsService } from "~/services/SettingsService";
 import { AntiCheatService, type ZeniSource } from "~/services/AntiCheatService";
 import { InflationService } from "~/services/InflationService";

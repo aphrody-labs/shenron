@@ -37,7 +37,7 @@ import { EconomyService, type CosmeticType } from "~/services/EconomyService";
 import { FusionService } from "~/services/FusionService";
 import { FusionRoleService } from "~/services/FusionRoleService";
 import { fusionBonusLabel, fusionName } from "~/lib/fusion-names";
-import { formatZeni } from "~/lib/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 import { COLORS, SHENRON_THEME, SHENRON_SEPARATORS } from "~/lib/embeds";
 
 const BRAND_ICON = "https://dragonballfr.com/favicon.ico";

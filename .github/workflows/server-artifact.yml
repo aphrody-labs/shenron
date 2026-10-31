@@ -1,18 +1,17 @@
-name: Production server artifact (no deploy)
+name: Production image build (no deploy)
 
-# Build the production server and CDN assets on the actual VPS factory, inside Aphrody's
-# build image (`aphrody-build:latest`, scripts/build/container.ts): pinned Rust/Bun toolchain,
-# shared cargo/sccache/Bun caches, bounded CPU and memory next to the host's model servers.
-# Production promotion, host units and TLS routes belong to Aphrody Infra.
+# Build and verify the Shenron container image of this commit on a trusted self-hosted runner,
+# through the release path's build step (scripts/deploy/build-image.sh). Shipping stays a
+# separate, manual `scripts/deploy/release.sh --ship-only <sha>` on the build host.
 # Manual trusted execution only; never schedule pull-request code on this host.
 
 on:
   workflow_dispatch:
     inputs:
       vfs:
-        description: Public VFS on the factory host (public profile, checked by server.ts)
-        required: true
-        default: /home/shenron-build/data/shenron-vfs.public.sqlite
+        description: Public VFS (local path, http(s) URL or scp host:path); empty reuses the build worktree's
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -23,52 +22,25 @@ concurrency:
 
 jobs:
   build:
-    name: Build shenron-server (linux-x64, production)
-    runs-on: [self-hosted, Linux, X64, shenron-factory, vps]
-    timeout-minutes: 45
+    name: Build and verify the Shenron image (linux-x64)
+    runs-on: [self-hosted, Linux, X64, shenron-factory]
+    timeout-minutes: 120
     env:
-      VFS: ${{ inputs.vfs }}
-      # Private aphrody-labs/aphrody Git dependencies: passed to the image by name only.
-      APHRODY_GIT_TOKEN: ${{ secrets.APHRODY_GIT_TOKEN }}
+      SHENRON_VFS_SOURCE: ${{ inputs.vfs }}
+      # build-image.sh builds from a reusable worktree of this checkout (fetch + submodules).
+      SHENRON_SOURCE_REPO: ${{ github.workspace }}
+      SHENRON_BUILD_REPO: ${{ vars.SHENRON_BUILD_REPO }}
     steps:
       - uses: actions/checkout@v7
         with:
-          persist-credentials: false
+          fetch-depth: 0
 
-      # Bootstrap into RUNNER_TEMP; the host's installed runtime is not a release qualification.
       - uses: ./.github/actions/setup-bun
 
-      # The host Bun only launches the container; the toolchain lives in the image.
-      - name: Check the build image against this checkout
-        run: bun scripts/build/container.ts --check
-
-      # server.ts reads the public VFS from its default path inside the checkout.
-      - name: Stage the public VFS
-        run: install -D -m 0644 "$VFS" dist/vfs/shenron-vfs.public.sqlite
-
-      - name: Install exact dependencies
-        run: bun scripts/build/container.ts --target-volume shenron-ci -- bun ci
-
-      # Koharu WASM is tracked in Git and checked by rust.yml; the site needs no Rust build.
-      - name: Build shenron-server and the CDN tree
-        run: >-
-          bun scripts/build/container.ts --target-volume shenron-ci --
-          bun scripts/build/server.ts --target linux-x64 --flavor production
-
-      - name: Package with checksums
+      - name: Build and verify the image (build only, never ship)
+        shell: bash
         run: |
-          mkdir -p artifacts
-          cp dist/server/linux-x64/shenron-server artifacts/shenron-server-linux-x64
-          tar -C dist -czf artifacts/shenron-cdn.tar.gz cdn
-          cd artifacts
-          sha256sum shenron-server-linux-x64 shenron-cdn.tar.gz > SHA256SUMS
-          sha256sum --check SHA256SUMS
-
-      - name: Upload artifact only (never deploy)
-        uses: actions/upload-artifact@v7
-        with:
-          name: shenron-server-${{ github.sha }}
-          path: artifacts/*
-          if-no-files-found: error
-          retention-days: 7
-          compression-level: 0
+          set -euo pipefail
+          if [ -z "$SHENRON_BUILD_REPO" ]; then unset SHENRON_BUILD_REPO; fi
+          if [ -z "$SHENRON_VFS_SOURCE" ]; then unset SHENRON_VFS_SOURCE; fi
+          bash scripts/deploy/build-image.sh "$GITHUB_SHA"

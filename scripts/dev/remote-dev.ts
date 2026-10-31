@@ -35,8 +35,6 @@ export type RemoteDevConfig = {
   snapshotRef: string;
   /** Remote the host fetches `main` from before each push (it has GitHub access). */
   seedRemote: string;
-  /** Serialized Cargo wrapper on the host (shared build lock). */
-  cargoSerial: string;
   devSession: string;
   remoteDevPort: number;
   localDevPort: number;
@@ -49,7 +47,6 @@ export const DEFAULT_CONFIG: RemoteDevConfig = {
   workspace: "shenron-dev",
   snapshotRef: "refs/dev/snapshot",
   seedRemote: "git@github.com:aphrody-labs/shenron.git",
-  cargoSerial: "/srv/aphrody-build/workspaces/aphrody-wsl/scripts/build/rust/cargo-serial.sh",
   devSession: "shenron-dev",
   remoteDevPort: 3310,
   localDevPort: Number(process.env.SHENRON_DEV_PORT ?? 3000),
@@ -114,7 +111,6 @@ export function remoteScript(config: RemoteDevConfig, command: string): string {
   return [
     "set -euo pipefail",
     'export PATH="$HOME/.bun/bin:$HOME/.cargo/bin:$PATH"',
-    `export APHRODY_CARGO_SERIAL=${shellQuote(config.cargoSerial)}`,
     "export NEXT_TELEMETRY_DISABLED=1",
     `cd "$HOME/${config.workspace}"`,
     `nice -n 10 bash -c ${shellQuote(command)}`,
@@ -283,7 +279,6 @@ async function doctor(config: RemoteDevConfig): Promise<number> {
       'export PATH="$HOME/.bun/bin:$HOME/.cargo/bin:$PATH"',
       'echo "host: $(hostname) cores=$(nproc) load=$(cut -d" " -f1-3 /proc/loadavg)"',
       'echo "bun: $(bun --version 2>/dev/null || echo absent)  cargo: $(cargo --version 2>/dev/null || echo absent)"',
-      `echo "cargo-serial: $([ -x ${shellQuote(config.cargoSerial)} ] && echo present || echo absent)"`,
       'df -h "$HOME" | tail -1',
       `cd "$HOME/${config.workspace}" 2>/dev/null && echo "workspace: $(git rev-parse --short HEAD 2>/dev/null || echo empty)" || echo "workspace: absent (run sync)"`,
       `tmux has-session -t ${config.devSession} 2>/dev/null && echo "dev server: running" || echo "dev server: stopped"`,

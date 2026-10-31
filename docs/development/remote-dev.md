@@ -24,7 +24,7 @@ L'arbre de travail exact (HEAD, modifications et fichiers non suivis, `.gitignor
 figé dans un commit hors index, poussé par SSH vers `~/shenron-dev` du VPS (`refs/dev/snapshot`)
 puis extrait ; le VPS récupère d'abord `main` depuis GitHub (`refs/seed/main`) pour que seul le delta local voyage. Les sorties ignorées (`node_modules`,
 `target`, `.next-dev`) restent chaudes d'une synchro à l'autre. Les commandes distantes tournent en
-`nice 10` ; Cargo passe par `cargo-serial.sh` (verrou de build partagé). Hôte : `--host <alias>` ou
+`nice 10` ; Cargo y tourne tel quel. Hôte : `--host <alias>` ou
 `SHENRON_DEV_HOST` ; port local : `SHENRON_DEV_PORT`.
 
 ## WSL propre

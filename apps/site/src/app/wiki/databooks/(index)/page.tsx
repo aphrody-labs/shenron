@@ -83,6 +83,16 @@ export default async function DatabooksIndexPage() {
 
   return (
     <PageShell rhythm="tight">
+      {/* Pont staff → pilotage des campagnes de traduction, sans repasser par la sidebar
+          d’administration. Invisible pour les visiteurs. */}
+      <DomainBar
+        domain="databooks"
+        className="mb-6"
+        actions={[
+          { href: "/workshop/transcription", label: "Transcription & arbitrage" },
+          { href: "/workshop/translation", label: "Traduction & campagnes" },
+        ]}
+      />
       <Breadcrumbs
         className="mb-4"
         items={[{ label: "Databooks", display: <T k="wiki.databooks.breadcrumb" /> }]}
@@ -107,17 +117,6 @@ export default async function DatabooksIndexPage() {
       <LibraryNav className="mb-3" />
       <EditorialTabs active="/wiki/databooks" className="mb-6" />
       <PageBanner src={heroImage} alt="Databooks Dragon Ball" />
-
-      {/* Pont staff → pilotage des campagnes de traduction, sans repasser par la sidebar
-          d’administration. Invisible pour les visiteurs. */}
-      <DomainBar
-        domain="databooks"
-        className="mb-6"
-        actions={[
-          { href: "/workshop/transcription", label: "Transcription & arbitrage" },
-          { href: "/workshop/translation", label: "Traduction & campagnes" },
-        ]}
-      />
 
       {/* Couverture réelle de la transcription : elle dit au lecteur ce qu’il peut espérer
           trouver — et ce qui reste à faire. Mesurée, jamais arrondie à la hausse. */}

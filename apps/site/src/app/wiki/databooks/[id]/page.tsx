@@ -1,7 +1,6 @@
 import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { DomainBar } from "@/components/kit";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
@@ -257,12 +256,9 @@ export default async function DatabookDetailPage({ params }: { params: Promise<{
         caption={`${category}${filledPages.length ? ` · ${filledPages.length} pages` : ""}`}
       />
       <DomainBar domain="wiki" />
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-        <Breadcrumbs
-          items={[{ label: "Databooks", href: "/wiki/databooks" }, { label: book.title }]}
-        />
-        <WikiDrawer />
-      </div>
+      <Breadcrumbs
+        items={[{ label: "Databooks", href: "/wiki/databooks" }, { label: book.title }]}
+      />
 
       <div className="mb-10">
         <WikiEditBar

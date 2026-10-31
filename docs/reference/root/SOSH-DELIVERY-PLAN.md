@@ -162,8 +162,8 @@ couverture ne fait croire à un tome complet ; aucune régression du tome 1.
 
 ### 6. Livraison progressive et réception
 
-Livrer le code depuis un SHA épinglé, construire sur la fabrique sous le verrou
-lourd, transférer l’artefact scellé vers DBFR et activer via Aphrody Infra. Un
+Livrer le code depuis un SHA épinglé, construire et livrer par
+`scripts/deploy/release.sh` (image vérifiée, activation via l’entrée Infra de DBFR). Un
 seul propriétaire de build/ship ; ne pas déplacer ses entrées pendant le lot.
 Vérifier version/image/release active, santé, CDN et chemin de rollback.
 

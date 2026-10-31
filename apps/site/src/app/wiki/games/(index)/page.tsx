@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 import { ContributeRail, DomainBar } from "@/components/kit";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { WikiPageShell } from "@/components/wiki/WikiPageShell";
 import { dbUniverse } from "@/lib/db-universe";
 import { getRatingSummaries } from "@/lib/ratings";
 import { GamesExplorer } from "@/components/wiki/GamesExplorer";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import type { Metadata } from "next";
 import { pageHero } from "@/lib/banner-config";
 export const revalidate = 3600;
@@ -24,17 +25,21 @@ export default async function GamesPage() {
     : new Map<string, { average: number; count: number }>();
   return (
     <>
-      <DomainBar domain="wiki" />
       <GamesExplorer
+        navigation={
+          <>
+            <DomainBar domain="wiki" className="mb-6" />
+            <Breadcrumbs items={[{ label: "Jeux" }]} />
+          </>
+        }
         games={games}
         ratings={Object.fromEntries(ratings)}
         heroImage={games.length ? await pageHero("jeux") : undefined}
         unavailable={!games.length}
-        navigation={<WikiDrawer />}
       />
-      <div className="wiki-container">
-        <ContributeRail className="my-10" quoiKey="kit.contribute.what.game" />
-      </div>
+      <WikiPageShell>
+        <ContributeRail quoiKey="kit.contribute.what.game" />
+      </WikiPageShell>
     </>
   );
 }

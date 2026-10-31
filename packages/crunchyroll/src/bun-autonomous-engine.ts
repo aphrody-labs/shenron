@@ -39,8 +39,12 @@ export class BunVideoAutonomousEngine {
   async probeDns(host: string): Promise<{ ipv4: string[]; ipv6: string[] }> {
     try {
       Bun.dns.prefetch(host);
-      const ipv4 = await Bun.dns.resolve(host, "A").catch(() => []);
-      const ipv6 = await Bun.dns.resolve(host, "AAAA").catch(() => []);
+      const lookup = (family: 4 | 6) =>
+        Bun.dns
+          .lookup(host, { family })
+          .then((entries) => entries.map((entry) => entry.address))
+          .catch((): string[] => []);
+      const [ipv4, ipv6] = await Promise.all([lookup(4), lookup(6)]);
       return { ipv4, ipv6 };
     } catch {
       return { ipv4: [], ipv6: [] };
@@ -53,18 +57,26 @@ export class BunVideoAutonomousEngine {
   async probeTcp(hostname: string, port = 443, timeoutMs = 3000): Promise<VideoEndpointHealth> {
     const started = performance.now();
     try {
-      const socket = await Bun.connect({
-        hostname,
-        port,
-        socket: {
-          data() {},
-          open(s) {
-            s.end();
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const socket = await Promise.race([
+        Bun.connect({
+          hostname,
+          port,
+          socket: {
+            data() {},
+            open(s) {
+              s.end();
+            },
+            error() {},
           },
-          error() {},
-        },
-        timeout: timeoutMs,
-      });
+        }),
+        new Promise<never>((_, reject) => {
+          timer = setTimeout(
+            () => reject(new Error(`TCP probe timed out after ${timeoutMs} ms`)),
+            timeoutMs,
+          );
+        }),
+      ]).finally(() => clearTimeout(timer));
       const latencyMs = Math.round(performance.now() - started);
       const ip = socket.remoteAddress ?? null;
       socket.end();

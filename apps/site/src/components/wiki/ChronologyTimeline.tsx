@@ -38,7 +38,7 @@ import {
   type Era,
   type SortMode,
   type ResolvedTimelineItem,
-} from "@/lib/chronology";
+} from "@aphrody/shenron-config/chronology";
 
 const yearOf = (sec: number | null) => (sec ? new Date(sec * 1000).getFullYear() : null);
 

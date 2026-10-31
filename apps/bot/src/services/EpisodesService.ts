@@ -3,7 +3,7 @@ import { inject, singleton } from "tsyringe";
 import { PgService } from "~/db/pg";
 import { logger } from "~/lib/logger";
 import { latestOfficialCrunchyrollWatchOffer } from "@aphrody/shenron-api/contract";
-import type { ShenronEpisodeRow } from "../../../../packages/media/src/crunchyroll-mapping";
+import type { ShenronEpisodeRow } from "@aphrody/shenron-media/crunchyroll-mapping";
 
 /**
  * Épisodes — lecture des lecteurs VF/VOSTFR, côté PostgreSQL du site.

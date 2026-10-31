@@ -113,7 +113,11 @@ await run(
 // 1. Sidecar: the autonomous server binary of the same target (it embeds the fresh shenron-ffi).
 const server = join(ROOT, "dist/server", target, `shenron-server${SPEC.exe}`);
 if (withServer || !existsSync(server)) {
-  await run([process.execPath, join(ROOT, "scripts/build/server.ts"), "--target", target], ROOT);
+  // Same incremental settings as the container release: the Turbopack cache survives between
+  // installer builds of one checkout (SHENRON_NEXT_BUILD_CACHE=0 opts out).
+  await run([process.execPath, join(ROOT, "scripts/build/server.ts"), "--target", target], ROOT, {
+    SHENRON_NEXT_BUILD_CACHE: process.env.SHENRON_NEXT_BUILD_CACHE ?? "1",
+  });
 }
 const shenronCli = join(release, `shenron${SPEC.exe}`);
 const koharuTranslator = join(release, `translate${SPEC.exe}`);

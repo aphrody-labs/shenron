@@ -1,7 +1,11 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
 import { mkdir, chmod, lstat, realpath } from "node:fs/promises";
+import { homedir } from "node:os";
 import { join, resolve, isAbsolute } from "node:path";
+
+/** Native Aphrody Web binary (APHRODY_WEB_BIN, default ~/.local/bin/aphrody-web). */
+const APHRODY_WEB = process.env.APHRODY_WEB_BIN ?? join(homedir(), ".local/bin/aphrody-web");
 type Rect = { x: number; y: number; width: number; height: number; right: number; bottom: number };
 type Image = { src: string; w: number; h: number; rect: Rect };
 export function previewIdentity(source: string) {
@@ -84,7 +88,7 @@ export async function captureShueishaPreview(
   const robots = join(job, "robots.json");
   const crawler = Bun.spawn(
     [
-      "/home/ubuntu/.local/bin/aphrody-web",
+      APHRODY_WEB,
       "crawl",
       source,
       "--max-depth",

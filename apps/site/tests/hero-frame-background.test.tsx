@@ -2,9 +2,13 @@ import { expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { NextIntlClientProvider } from "next-intl";
 import fr from "../messages/fr.json";
-import { DEFAULT_HOME_CONFIG } from "../src/lib/home-scenes";
+import { DEFAULT_HOME_CONFIG } from "@aphrody/shenron-config/home";
 import { HomeHero } from "../src/components/home/HomeHero";
 import { Billboard } from "../src/components/stream/Billboard";
+
+// The DRAGONBALL.FR brand logo (93cdf44f) is the only non-frame image of the hero.
+const BRAND_LOGO = /<img [^>]*src="\/brand\/dragonballfr-logo\.svg"[^>]*>/g;
+const frameImages = (html: string) => html.replace(BRAND_LOGO, "").match(/<img /g);
 
 test("the home uses a single supplied frame instead of static legacy backgrounds", () => {
   const frame = "https://cdn.dragonballfr.com/media/episodes/875/source/frame.webp";
@@ -13,7 +17,8 @@ test("the home uses a single supplied frame instead of static legacy backgrounds
       <HomeHero hero={{ ...DEFAULT_HOME_CONFIG.hero, scenes: [] }} heroFrame={frame} />
     </NextIntlClientProvider>,
   );
-  expect(html.match(/<img /g)).toHaveLength(1);
+  expect(html.match(BRAND_LOGO)).toHaveLength(1);
+  expect(frameImages(html)).toHaveLength(1);
   expect(html).toContain(`src="${frame}"`);
   expect(html).not.toContain("goku_normal");
   expect(html).not.toContain("dbs-beerus-2026.jpg");
@@ -29,7 +34,7 @@ test("the hero bounds its real frame mix and provides explicit motion controls",
       <HomeHero hero={DEFAULT_HOME_CONFIG.hero} frames={frames} />
     </NextIntlClientProvider>,
   );
-  expect(html.match(/<img /g)).toHaveLength(4);
+  expect(frameImages(html)).toHaveLength(4);
   expect(html).toContain(fr.accueil.hero.pauseFrames);
   expect(html).toContain('aria-pressed="false"');
   expect(html).not.toContain("<video");

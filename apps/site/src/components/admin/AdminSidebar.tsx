@@ -316,6 +316,13 @@ const ADMIN_LINKS: AdminLink[] = [
     section: "encyclopedie",
   },
   {
+    href: "/admin/cards",
+    label: "Catalogue de cartes",
+    description: "Séries, sorties, fiches de cartes et historique de valeur",
+    icon: <Layers className="h-4 w-4" />,
+    section: "encyclopedie",
+  },
+  {
     href: "/admin/dbxv2",
     label: "Ressources DBXV2",
     description: "Explorateur des textures, modèles et médias DBXV2",

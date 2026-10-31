@@ -48,7 +48,7 @@
     "kicker": "編集管理",
     "description": "シリーズ、発売セット、カードを作成・編集します。情報と価格の出典を記録し、画像には出典と権利根拠を記載してください。",
     "importTitle": "カード情報を一括インポート",
-    "importDescription": "最大500件のカードを含むJSON配列をアップロードします。各行に既存セットのスラッグと主な出典が必要です。画像や長い説明文はコピーしません。まずプレビューを確認してから書き込んでください。",
+    "importDescription": "最大{max}件のカードを含むJSON配列をアップロードします。各行に既存セットのスラッグと主な出典が必要です。画像や長い説明文はコピーしません。まずプレビューを確認してから書き込んでください。",
     "importFormat": "必須項目と例",
     "importFields": "必須: setSlug、cardNumber、name、language、region、sourceLabel、sourceUrl、sourceAccessedAt。任意: rarity、releaseDate (YYYY-MM-DD)、status (draft または published)。",
     "importExample": "[{\n  \"setSlug\": \"existing-release-slug\",\n  \"cardNumber\": \"FB01-001\",\n  \"name\": \"カードに印刷された名前\",\n  \"language\": \"ja\",\n  \"region\": \"JP\",\n  \"rarity\": \"R\",\n  \"sourceLabel\": \"フュージョンワールド公式カードリスト\",\n  \"sourceUrl\": \"https://www.dbs-cardgame.com/fw/en/cardlist/\",\n  \"sourceAccessedAt\": \"2026-10-30\"\n}]",
@@ -71,7 +71,7 @@
     "importIssue": {
       "invalid-json": "有効なJSON配列を含むファイルを指定してください。",
       "empty-import": "ファイルにカード行がありません。",
-      "too-many-rows": "ファイルが500行の上限を超えています。",
+      "too-many-rows": "ファイルが{max}行の上限を超えています。",
       "invalid-row": "必須項目、URL、日付、または項目の長さが正しくありません。",
       "duplicate-file-row": "同じカードキーがファイル内に複数あります。",
       "missing-set": "セットのスラッグが既存セットと一致しません。",
@@ -2201,8 +2201,6 @@
     "wikiDescription": "Wiki、サーガ、映画、ゲーム",
     "cards": "カードカタログ",
     "cardsDescription": "シリーズ、発売情報、カード、価格履歴を管理します。",
-    "designDescription": "配色、書体、背景、ボタンをカスタマイズします。",
-    "homeLayoutDescription": "セクション、シーン、リンクの順序と表示を設定します。",
     "levels": "メンバーとレベル",
     "levelsDescription": "メンバーの進行と活動",
     "moderation": "モデレーション",
@@ -2452,6 +2450,10 @@
     "contentWidth": "最大幅",
     "density": "左右の余白",
     "homeLayout": "ホームを並べ替える",
+    "designDescription": "配色、書体、背景、ボタンをカスタマイズします。",
+    "homeLayoutDescription": "セクション、シーン、リンクの順序と表示を設定します。",
+    "panelStyle": "パネルのスタイル",
+    "panelStyles": { "comic": "コミック", "soft": "ソフト", "flat": "フラット" },
     "homeActionLayout": "ヒーローボタンの配置",
     "homeActionAlignment": "ヒーローボタンの整列",
     "homeActionLayouts": { "row": "横並び", "stacked": "縦並び" },
@@ -2999,5 +3001,9 @@
       "facetSearchLabel": "{title}内を検索",
       "noOption": "選択肢がありません。"
     }
+  },
+  "studioVideo": {
+    "auraIntensity": "紫のオーラの強さ",
+    "timelinePosition": "タイムライン位置"
   }
 }

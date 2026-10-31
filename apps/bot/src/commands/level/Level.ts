@@ -24,7 +24,7 @@ import { LeaderboardService, type LeaderboardEntry } from "~/services/Leaderboar
 import { logger } from "~/lib/logger";
 import { levelForXP, xpProgress, formatXP } from "~/lib/xp";
 import { DEFAULT_LEVEL_RACE, memberRaceId, tierEntitlement } from "~/lib/race-levels";
-import { formatZeni } from "~/lib/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 import { fusionBonusLabel } from "~/lib/fusion-names";
 import { SHENRON_THEME, SHENRON_SEPARATORS, renderProgressBar } from "~/lib/embeds";
 import { SettingsService } from "~/services/SettingsService";

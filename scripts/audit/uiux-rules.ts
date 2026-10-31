@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // uiux-rules.ts — static UI/UX Pro Max rules applied to one server-rendered HTML document.
-// Rule ids follow .claude/skills/ui-ux-pro-max/SKILL.md (accessibility, layout, performance, forms).
-// The rendered checks (overflow, touch targets, focus) live in uiux-render.ts.
+// Rule ids follow the global ui-ux-pro-max skill (accessibility, layout, performance, forms), plus
+// the duplicate-UI rules born from the 2026-10-30 home and wiki cleanup (docs/development/uiux-audit.md).
+// The rendered checks (overflow, touch targets, focus) live in uiux-audit.ts (--render).
 
 export type Severity = "critical" | "high" | "medium";
 export type UiuxIssue = { rule: string; severity: Severity; detail: string };
@@ -22,6 +23,8 @@ const SEVERITY: Record<string, Severity> = {
   "tabindex-positive": "high",
   "image-dimensions": "high",
   "focus-states": "critical",
+  "duplicate-search": "medium",
+  "landmark-unique": "medium",
 };
 
 const issue = (rule: string, detail: string): UiuxIssue => ({
@@ -41,6 +44,8 @@ export async function auditHtml(html: string): Promise<UiuxIssue[]> {
   let linkIndex = 0;
   const headings: number[] = [];
   const counts = { missingAlt: 0, unsized: 0, unnamed: 0, unlabeled: 0, tabindex: 0, noOutline: 0 };
+  let searchLandmarks = 0;
+  const navLabels: string[] = [];
   const labelledIds = new Set<string>();
   const controls: { id: string | null; named: boolean }[] = [];
   let open: { named: boolean; text: string } | null = null;
@@ -69,6 +74,19 @@ export async function auditHtml(html: string): Promise<UiuxIssue[]> {
     .on("main, [role=main]", {
       element() {
         hasMain = true;
+      },
+    })
+    // One search entry per page: a second bar beside the shell search button repeats it.
+    .on("search, [role=search]", {
+      element() {
+        searchLandmarks++;
+      },
+    })
+    .on("nav, [role=navigation]", {
+      element(el) {
+        navLabels.push(
+          (el.getAttribute("aria-label") ?? el.getAttribute("aria-labelledby") ?? "").trim(),
+        );
       },
     })
     .on("h1, h2, h3, h4, h5, h6", {
@@ -191,6 +209,16 @@ export async function auditHtml(html: string): Promise<UiuxIssue[]> {
       break;
     }
   }
+  if (searchLandmarks > 1)
+    issues.push(issue("duplicate-search", `${searchLandmarks} search landmarks on one page`));
+  const repeatedNav = navLabels.filter((label, i) => navLabels.indexOf(label) !== i);
+  if (repeatedNav.length)
+    issues.push(
+      issue(
+        "landmark-unique",
+        `${repeatedNav.length} <nav> landmarks share a label (${repeatedNav[0] || "unlabelled"})`,
+      ),
+    );
   if (!hasMain) issues.push(issue("landmark-main", "no <main> landmark"));
   if (!skipLink) issues.push(issue("skip-links", "no skip-to-content link among the first links"));
   if (counts.missingAlt) issues.push(issue("alt-text", `${counts.missingAlt} <img> without alt`));

@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { PowerLevel } from "@/lib/db-universe";
 import { CHARACTER_CANONICAL_SLUGS } from "@/lib/wiki-slugs";
-import { isPathPublic, type AccessSnapshot } from "@/lib/wiki-launch";
+import { isPathPublic, type AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 /* oxlint-disable jsx-a11y/no-noninteractive-tabindex -- the table scroller is focusable for horizontal keyboard scrolling */
 
 const SOURCE_LABELS: Record<string, string> = {

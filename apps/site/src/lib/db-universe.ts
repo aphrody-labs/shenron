@@ -528,7 +528,7 @@ export type SearchResults = {
     slug: string;
     name: string;
     name_ja: string | null;
-    saga: string;
+    saga: string | null;
   }>;
   voiceActors: Array<{
     id: number;

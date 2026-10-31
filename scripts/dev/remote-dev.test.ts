@@ -87,7 +87,8 @@ test("a fresh remote snapshot restores its config workspace from the gitlink", (
   expect(git(join(checkout, "packages/config"), ["rev-parse", "HEAD"])).toBe(
     git(config, ["rev-parse", "HEAD"]),
   );
-});
+  // About a dozen Git processes: 3 s on a quiet Windows machine, so the 5 s default is too tight.
+}, 60_000);
 
 describe("vitalTarArgs", () => {
   test("archives existing vital paths relative to / and excludes models", () => {
@@ -105,10 +106,10 @@ describe("vitalTarArgs", () => {
 });
 
 describe("remoteScript", () => {
-  test("runs inside the checkout with the toolchains and the serialized Cargo wrapper", () => {
+  test("runs inside the checkout with the toolchains and plain Cargo", () => {
     const script = remoteScript(DEFAULT_CONFIG, "bun run lint && echo 'ok'");
     expect(script).toContain(`cd "$HOME/${DEFAULT_CONFIG.workspace}"`);
-    expect(script).toContain(`APHRODY_CARGO_SERIAL=${DEFAULT_CONFIG.cargoSerial}`);
+    expect(script).not.toContain("APHRODY_CARGO_SERIAL");
     expect(script).toContain(`nice -n 10 bash -c 'bun run lint && echo '\\''ok'\\'''`);
   });
 

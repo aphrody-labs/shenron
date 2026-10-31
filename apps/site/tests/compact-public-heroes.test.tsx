@@ -2,11 +2,11 @@ import { expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { NextIntlClientProvider } from "next-intl";
 import fr from "../messages/fr.json";
-import { DEFAULT_HOME_CONFIG } from "../src/lib/home-scenes";
+import { DEFAULT_HOME_CONFIG } from "@aphrody/shenron-config/home";
 import { HomeHero } from "../src/components/home/HomeHero";
 import { Billboard } from "../src/components/stream/Billboard";
 
-test("home hero keeps accessible identity and search without a duplicate wordmark", () => {
+test("home hero keeps accessible identity without a duplicate wordmark or search bar", () => {
   const html = renderToStaticMarkup(
     <NextIntlClientProvider locale="fr" messages={fr} timeZone="UTC">
       <HomeHero hero={DEFAULT_HOME_CONFIG.hero} />
@@ -15,7 +15,7 @@ test("home hero keeps accessible identity and search without a duplicate wordmar
   expect(html).not.toContain("home-wordmark");
   expect(html).toMatch(/class="kt-volant__nuage"[^>]*><svg\b/);
   expect(html).toContain(fr.home.kintoun.trick);
-  expect(html).toContain('name="q"');
+  expect(html).not.toContain('name="q"');
   expect(html).not.toContain("48svh");
   expect(html).not.toMatch(/<video(?:\s|>)/);
   expect(html).not.toMatch(/\.(?:mp4|webm)(?:[?"\s]|$)/);

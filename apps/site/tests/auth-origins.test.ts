@@ -10,11 +10,13 @@ import { describe, expect, mock, test } from "bun:test";
 import { NextRequest } from "next/server";
 import { siteAllowedHosts, siteTrustedOrigins } from "@aphrody/shenron-auth/origins";
 
+// proxy.ts reads the site surface from the validated environment (site profile here).
+mock.module("@/lib/env", () => ({ env: {} }));
 mock.module("@/lib/proxy-admin", () => ({
   resolveVisitor: async () => ({ kind: "anonymous" }),
 }));
 mock.module("@/lib/wiki-launch-config", () => ({ getLaunchConfig: async () => null }));
-mock.module("@/lib/wiki-launch", () => ({
+mock.module("@aphrody/shenron-config/wiki-launch", () => ({
   findEntry: () => null,
   resolveAccess: () => ({ allowed: true }),
 }));

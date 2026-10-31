@@ -1,7 +1,6 @@
 import { dbUniverse } from "@/lib/db-universe";
-import { PageHero } from "@/components/PageHero";
+import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
 import { pageHero } from "@/lib/banner-config";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { SectionUnavailable } from "@/components/wiki/SectionUnavailable";
 import type { Metadata } from "next";
 import { nowMs } from "@/lib/clock";
@@ -71,86 +70,80 @@ export default async function ToolsPage() {
   };
 
   return (
-    <div>
-      <PageHero
-        eyebrow="Communauté"
-        title="Outils & Modding"
-        image={await pageHero("tools")}
-        imageAlt="Outils communautaires Dragon Ball"
-      />
+    <WikiIndexPage
+      eyebrow="Communauté"
+      title="Outils & Modding"
+      image={await pageHero("tools")}
+      imageAlt="Outils communautaires Dragon Ball"
+      crumbs={[{ label: "Outils & Modding" }]}
+    >
+      {Object.entries(categories).map(([key, label]) => {
+        const catTools = tools.filter((t) => t.category === key);
+        if (catTools.length === 0) return null;
 
-      <div className="wiki-container space-y-16">
-        <Breadcrumbs items={[{ label: "Outils & Modding" }]} />
-        {Object.entries(categories).map(([key, label]) => {
-          const catTools = tools.filter((t) => t.category === key);
-          if (catTools.length === 0) return null;
+        return (
+          <section key={key} className="reveal-up">
+            <div className="flex items-center gap-6 mb-10">
+              <h2 className="font-saiyan text-3xl text-white uppercase tracking-widest">{label}</h2>
+              <span className="scouter-text shrink-0 text-sm text-dbz-orange/70">
+                {catTools.length}
+              </span>
+              <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
+            </div>
 
-          return (
-            <section key={key} className="reveal-up">
-              <div className="flex items-center gap-6 mb-10">
-                <h2 className="font-saiyan text-3xl text-white uppercase tracking-widest">
-                  {label}
-                </h2>
-                <span className="scouter-text shrink-0 text-sm text-dbz-orange/70">
-                  {catTools.length}
-                </span>
-                <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {catTools.map((tool) => (
-                  <a
-                    key={tool.id}
-                    href={tool.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="dbz-panel p-6 hover:border-dbz-orange transition-all group flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="mb-4 flex items-start justify-between gap-3">
-                        {/* `min-w-0` + `break-words` : un nom de dépôt sans espace
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {catTools.map((tool) => (
+                <a
+                  key={tool.id}
+                  href={tool.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="dbz-panel p-6 hover:border-dbz-orange transition-all group flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="mb-4 flex items-start justify-between gap-3">
+                      {/* `min-w-0` + `break-words` : un nom de dépôt sans espace
 												    (« DragonBallXenoverse2-ModTools ») imposait sa largeur à
 												    la carte, et le badge d'étoiles sortait de l'écran à
 												    320 px. `shrink-0` sur le badge pour qu'il ne se fasse
 												    pas écraser en retour. */}
-                        <h3 className="min-w-0 break-words text-xl font-bold text-white transition-colors group-hover:text-dbz-orange">
-                          {tool.name.split("/")[1] || tool.name}
-                        </h3>
-                        <span className="scouter-text shrink-0 text-xs text-dbz-orange">
-                          ⭐ {tool.stars}
-                        </span>
-                      </div>
-                      <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-3">
-                        Auteur : {tool.author}
-                        {langue(tool.language) ? ` · ${langue(tool.language)}` : ""}
-                      </p>
-                      {etat(tool) && (
-                        <p
-                          title={etat(tool)?.titre}
-                          className="mb-3 inline-block rounded border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-amber-300/90"
-                        >
-                          {etat(tool)?.texte}
-                        </p>
-                      )}
-                      <p className="text-gray-400 text-sm font-sans leading-relaxed line-clamp-3">
-                        {tool.description}
-                      </p>
-                    </div>
-                    <div className="mt-6 pt-4 border-t border-white/5 flex justify-between items-center">
-                      <span className="text-[9px] font-bold text-dbz-orange/60 uppercase tracking-widest">
-                        {CATEGORY_SHORT[tool.category ?? ""] ?? tool.category}
-                      </span>
-                      <span className="text-dbz-orange group-hover:translate-x-1 transition-transform">
-                        VOIR SUR GITHUB →
+                      <h3 className="min-w-0 break-words text-xl font-bold text-white transition-colors group-hover:text-dbz-orange">
+                        {tool.name.split("/")[1] || tool.name}
+                      </h3>
+                      <span className="scouter-text shrink-0 text-xs text-dbz-orange">
+                        ⭐ {tool.stars}
                       </span>
                     </div>
-                  </a>
-                ))}
-              </div>
-            </section>
-          );
-        })}
-      </div>
-    </div>
+                    <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-3">
+                      Auteur : {tool.author}
+                      {langue(tool.language) ? ` · ${langue(tool.language)}` : ""}
+                    </p>
+                    {etat(tool) && (
+                      <p
+                        title={etat(tool)?.titre}
+                        className="mb-3 inline-block rounded border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-amber-300/90"
+                      >
+                        {etat(tool)?.texte}
+                      </p>
+                    )}
+                    <p className="text-gray-400 text-sm font-sans leading-relaxed line-clamp-3">
+                      {tool.description}
+                    </p>
+                  </div>
+                  <div className="mt-6 pt-4 border-t border-white/5 flex justify-between items-center">
+                    <span className="text-[9px] font-bold text-dbz-orange/60 uppercase tracking-widest">
+                      {CATEGORY_SHORT[tool.category ?? ""] ?? tool.category}
+                    </span>
+                    <span className="text-dbz-orange group-hover:translate-x-1 transition-transform">
+                      VOIR SUR GITHUB →
+                    </span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </section>
+        );
+      })}
+    </WikiIndexPage>
   );
 }

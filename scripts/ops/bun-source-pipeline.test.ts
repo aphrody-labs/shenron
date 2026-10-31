@@ -16,7 +16,7 @@ import {
   type SourcePipelineConfig,
 } from "./bun-source-pipeline";
 import type { ObjectStore } from "../../deploy/cloudflare/cli/transfer";
-import type { ExternalCrawlRecord } from "../../packages/pipeline/src/dragon-ball/crawl-ingest";
+import type { ExternalCrawlRecord } from "@aphrody/shenron-pipeline/dragon-ball/crawl-ingest";
 const roots: string[] = [];
 afterEach(async () => {
   await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true })));

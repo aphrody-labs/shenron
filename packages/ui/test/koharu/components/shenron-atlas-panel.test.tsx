@@ -57,6 +57,8 @@ test("opens only an atlas matching the native active page and releases it when t
   await screen.findByText("Source verified: Page 1");
   expect(getHash).toHaveBeenCalledWith("open-page");
   expect(renderer).toHaveBeenCalledTimes(1);
+  // The initial frame is painted by a passive effect; wait for it so it cannot overwrite the next frame.
+  await waitFor(() => expect(clip.draw).toHaveBeenCalledWith(expect.any(HTMLCanvasElement), 0));
   fireEvent.click(screen.getByRole("button", { name: "Next frame" }));
   expect(screen.getByRole("img", { name: "Frame 2 of 2" })).toBeInTheDocument();
   expect(clip.draw).toHaveBeenLastCalledWith(expect.any(HTMLCanvasElement), 500);

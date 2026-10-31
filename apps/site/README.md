@@ -19,8 +19,6 @@ and site-specific commands are defined in this package's `package.json`.
 ## Build and release
 
 `bun run build:server` (root) compiles the site into the autonomous `shenron-server`
-binary. `bun scripts/build/build-site-external.ts` builds and seals the `.next-build`
-artifact consumed by the `aphrody-infra` release pipeline; the `server-artifact` workflow
-builds the production `shenron-server` in CI. Release promotion, service units, Nginx routes, health
-probes, and rollback are owned by `aphrody-infra`; this repository does not deploy
-directly.
+binary. A production release is built, verified and shipped as a container image by
+`scripts/deploy/release.sh` (`build-image.sh` then `ship-image.sh`); the manual
+`server-artifact` workflow runs the build step only on a self-hosted runner.

@@ -3,8 +3,7 @@
 # machine: the compiler cache (RUSTC_WRAPPER=sccache), the job count and the WSL build lock stay
 # in the developer's environment or in ~/.cargo/config.toml. See docs/development/rust.md.
 
-# Untracked local overrides, merged over this file: the Aphrody patch written by
-# `bun scripts/build/rust/local-aphrody-patch.ts`, or any personal setting.
+# Untracked local overrides (any personal setting), merged over this file.
 include = [{ path = "local.toml", optional = true }]
 
 [alias]

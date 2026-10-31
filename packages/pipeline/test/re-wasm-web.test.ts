@@ -79,18 +79,23 @@ test("the browser loader rejects untrusted responses, retries, and initializes t
       mode: "cors",
     });
     // A minimal format fixture exercises the actual pinned Rust parser, not a game runtime.
-    const pup = new Uint8Array(80);
+    // Real layout (crates/shenron-re/src/formats/pup.rs): 16-byte header, 152-byte entries.
+    const pup = new Uint8Array(16 + 152);
     pup.set(new TextEncoder().encode("#PUP"));
     const view = new DataView(pup.buffer);
+    view.setUint16(4, 0xfffe, true);
+    view.setUint16(6, 16, true);
     view.setUint32(8, 1, true);
-    view.setUint32(12, 16, true);
-    view.setUint32(16, 300, true);
-    view.setFloat32(20, 1.25, true);
+    view.setInt32(16, 300, true);
+    for (const offset of [20, 24, 28]) view.setInt32(offset, -1, true);
+    view.setFloat32(16 + 16, 1.25, true);
+    view.setFloat32(16 + 100, 800, true);
     expect(parseGameDataFile("pup", pup)).toMatchObject({
       format: "pup",
       recordCount: 1,
-      preview: [{ id: 300, basic_attack_mult: 1.25 }],
+      preview: [{ id: 300, cmn_effect_id: -1, health: 1.25, duration: 800 }],
     });
+    expect(() => parseGameDataFile("pup", pup.subarray(0, 80))).toThrow();
     expect(() => parseGameDataFile("pup", new Uint8Array())).toThrow();
     const lines = [
       "",

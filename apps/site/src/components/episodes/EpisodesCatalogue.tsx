@@ -10,7 +10,7 @@ import { SectionUnavailable } from "@/components/wiki/SectionUnavailable";
 import { WikiPageShell } from "@/components/wiki/WikiPageShell";
 import { dbUniverse, type Episode, type Saga } from "@/lib/db-universe";
 import { assetUrl } from "@/lib/assets";
-import { ERA_ACCENT, eraOf } from "@/lib/chronology";
+import { ERA_ACCENT, eraOf } from "@aphrody/shenron-config/chronology";
 import {
   getEpisodeSeriesCached,
   getEpisodesCached,

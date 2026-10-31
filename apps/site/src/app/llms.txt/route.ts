@@ -20,7 +20,7 @@ import { SITE_URL } from "@/lib/config";
 import { mcpUpstream } from "@/lib/ai-access";
 import { buildSiteMap } from "@/lib/site-map";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
-import { isPathPublic, type AccessSnapshot } from "@/lib/wiki-launch";
+import { isPathPublic, type AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import type { Journey } from "@/lib/site-map";
 
 /**

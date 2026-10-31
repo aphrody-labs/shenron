@@ -26,7 +26,7 @@ import { DatabaseService } from "~/db/index";
 import { actionLogs, levelRewards } from "~/db/schema";
 import { xpRequiredForLevel } from "~/lib/xp";
 import { DEFAULT_XP_BOOST_CONFIG, roleBoostLimit } from "~/lib/xp-boosts";
-import { formatZeni } from "~/lib/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 import { logger } from "~/lib/logger";
 import {
   brandedEmbed,

@@ -7,7 +7,7 @@
 // depuis le Postgres `bot.*`, cf. `home-bestof-data.ts`). Zéro import
 // server-only : types + constantes consommés par le RSC (assemblage des
 // view-models) ET par le composant client `SagaBestOf`.
-import { ERA_ACCENT, type Era } from "@/lib/home-scenes";
+import { ERA_ACCENT, type Era } from "@aphrody/shenron-config/home";
 
 /** Libellés/années des séries — dupliqués de `wiki/episodes/_shared.ts` qui est
  *  server-only (il importe dbUniverse) et ne peut donc pas être importé ici. */

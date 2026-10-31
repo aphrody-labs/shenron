@@ -4,12 +4,13 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Play, Pause, Scissors, Sparkles, Layers, Sliders, Film, ArrowLeft } from "lucide-react";
 
 export function StudioVideoWorkspace() {
+  const t = useTranslations("studioVideo");
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSeconds, setCurrentSeconds] = useState(350);
-  const [selectedTrack, setSelectedTrack] = useState<"video" | "aura" | "sfx">("video");
   const [auraIntensity, setAuraIntensity] = useState(85);
   const [activePreset, setActivePreset] = useState("Beerus Awakening");
 
@@ -113,6 +114,7 @@ export function StudioVideoWorkspace() {
                   min="0"
                   max="100"
                   value={auraIntensity}
+                  aria-label={t("auraIntensity")}
                   onChange={(e) => setAuraIntensity(Number(e.target.value))}
                   className="w-full accent-purple-500 cursor-pointer"
                 />
@@ -128,6 +130,7 @@ export function StudioVideoWorkspace() {
                   min="0"
                   max="1397"
                   value={currentSeconds}
+                  aria-label={t("timelinePosition")}
                   onChange={(e) => setCurrentSeconds(Number(e.target.value))}
                   className="w-full accent-purple-500 cursor-pointer"
                 />

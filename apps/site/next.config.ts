@@ -124,11 +124,10 @@ const nextConfig: NextConfig = {
     ...(process.env.BUILD_STATIC_CONCURRENCY
       ? { staticGenerationMaxConcurrency: Number(process.env.BUILD_STATIC_CONCURRENCY) }
       : { staticGenerationMaxConcurrency: 2 }),
-    // Le déploiement repart volontairement d'un `.next-build` vide et le purge
-    // après publication. La documentation Next 16.4 recommande de couper le
-    // cache filesystem quand `.next/cache` n'est jamais restauré : l'écrire ne
-    // ferait qu'ajouter des E/S et du disque sans accélérer le build suivant.
-    turbopackFileSystemCacheForBuild: false,
+    // Off by default: a build that never restores `<distDir>/cache` only pays the
+    // writes. The factory reuses one worktree and keeps that cache
+    // (`SHENRON_NEXT_BUILD_CACHE=1`, scripts/build/server.ts), so warm builds reuse it.
+    turbopackFileSystemCacheForBuild: process.env.SHENRON_NEXT_BUILD_CACHE === "1",
     // Source maps serveur : 101,6 Mio sur 184,4 Mio de `.next-build`. Coupées par défaut ;
     // `SHENRON_SERVER_SOURCEMAPS=1` les rallume pour un build de diagnostic.
     serverSourceMaps: process.env.SHENRON_SERVER_SOURCEMAPS === "1",

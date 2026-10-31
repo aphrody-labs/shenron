@@ -18,7 +18,7 @@ import {
   POINTE_ICONE,
   TRAIT_ICONE,
   type GeometrieIcone,
-} from "../../../../packages/ui/src/icones/geometries";
+} from "@aphrody/shenron-ui/icones/geometries";
 
 export const GENERATED_PATH = join(import.meta.dir, "icons.generated.ts");
 

@@ -1,10 +1,6 @@
-import { PageHero } from "@/components/PageHero";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
-import { DomainBar, ContributeRail } from "@/components/kit";
 import { dbUniverse } from "@/lib/db-universe";
 import { PowerLevelsTable } from "@/components/wiki/PowerLevelsTable";
-import { WikiPageShell } from "@/components/wiki/WikiPageShell";
+import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
 import { ogMeta } from "@/lib/og";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { pageHero } from "@/lib/banner-config";
@@ -34,33 +30,25 @@ export default async function PuissancesPage() {
   const access = launch ? { openKeys: launch.openKeys, access: launch.access } : null;
 
   return (
-    <div>
-      <PageHero
-        eyebrow="Encyclopédie & Archives"
-        title="Niveaux de Puissance (Battle Power)"
-        lead={`${powers.length} mesures officielles répertoriées d'après les relevés des Scouters dans le manga et le grand dictionnaire Daizenshuu 7 — sans estimations fantaisistes ni fanon.`}
-        image={await pageHero("puissances")}
-        imageAlt="Goku Super Saiyan face à Freezer sur Namek"
-      />
+    <WikiIndexPage
+      eyebrow="Encyclopédie & Archives"
+      title="Niveaux de Puissance (Battle Power)"
+      lead={`${powers.length} mesures officielles répertoriées d'après les relevés des Scouters dans le manga et le grand dictionnaire Daizenshuu 7 — sans estimations fantaisistes ni fanon.`}
+      image={await pageHero("puissances")}
+      imageAlt="Goku Super Saiyan face à Freezer sur Namek"
+      crumbs={[{ label: "Puissances & Scouter" }]}
+      category="power-levels"
+      contributeKey="kit.contribute.what.power"
+    >
+      <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4 text-xs leading-relaxed text-amber-200/80">
+        <strong>Doctrine de Shenron sur le Power Scaling :</strong> Seuls les chiffres explicitement
+        énoncés dans le manga d'Akira Toriyama ou arrêtés dans les guides officiels{" "}
+        <em>Daizenshuu 7</em> et <em>Chōzenshū</em> sont retenus ici. Les niveaux au-delà de la saga
+        Freezer n'étant plus chiffrés par l'auteur, aucune invention éditoriale n'est tolérée sur
+        notre plateforme.
+      </div>
 
-      <WikiPageShell>
-        <DomainBar domain="wiki" />
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <Breadcrumbs items={[{ label: "Puissances & Scouter" }]} />
-          <WikiDrawer />
-        </div>
-
-        <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4 text-xs leading-relaxed text-amber-200/80">
-          <strong>Doctrine de Shenron sur le Power Scaling :</strong> Seuls les chiffres
-          explicitement énoncés dans le manga d'Akira Toriyama ou arrêtés dans les guides officiels{" "}
-          <em>Daizenshuu 7</em> et <em>Chōzenshū</em> sont retenus ici. Les niveaux au-delà de la
-          saga Freezer n'étant plus chiffrés par l'auteur, aucune invention éditoriale n'est tolérée
-          sur notre plateforme.
-        </div>
-
-        <PowerLevelsTable powers={powers} access={access} />
-        <ContributeRail quoiKey="kit.contribute.what.power" />
-      </WikiPageShell>
-    </div>
+      <PowerLevelsTable powers={powers} access={access} />
+    </WikiIndexPage>
   );
 }

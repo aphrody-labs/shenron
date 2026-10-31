@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink } from "@aphrody/shenron-ui/navigation/external";
+import { ExternalLink } from "@aphrody/shenron-ui/external";
 import Link from "next/link";
 import Image from "next/image";
 import { assetUrl } from "@/lib/assets";

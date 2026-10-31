@@ -1,7 +1,6 @@
 import { DomainBar, PageShell } from "@/components/kit";
+import { WikiPageShell } from "@/components/wiki/WikiPageShell";
 import Link from "next/link";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import type { Metadata } from "next";
 import { pageHero } from "@/lib/banner-config";
 import {
@@ -10,7 +9,7 @@ import {
   getTimelineEvents,
   getTimelineAtlas,
 } from "@/lib/chronology-config";
-import { applyChronology } from "@/lib/chronology";
+import { applyChronology } from "@aphrody/shenron-config/chronology";
 import { Billboard } from "@/components/stream/Billboard";
 import { ChronologieTabs } from "@/components/wiki/ChronologieTabs";
 import { ChronologyAtlas } from "@/components/wiki/ChronologyAtlas";
@@ -108,13 +107,11 @@ export default async function ChronologiePage() {
         arcs={atlas.arcs}
         databooks={atlas.databooks}
       />
-      <div id="frise" className="wiki-container scroll-mt-24">
-        <DomainBar domain="timeline" className="mb-6" />
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <Breadcrumbs items={[{ label: "Chronologie" }]} />
-          <WikiDrawer />
-        </div>
-        <ChronologieTabs mediaItems={items} ageEvents={ageEvents ?? []} />
+      <div id="frise" className="scroll-mt-24">
+        <WikiPageShell crumbs={[{ label: "Chronologie" }]}>
+          <DomainBar domain="timeline" />
+          <ChronologieTabs mediaItems={items} ageEvents={ageEvents ?? []} />
+        </WikiPageShell>
       </div>
     </>
   );

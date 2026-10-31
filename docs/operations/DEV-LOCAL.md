@@ -11,8 +11,7 @@ bun install --frozen-lockfile          # ou bun ci
 
 Bun 1.4.2 (`packageManager`), linker isolé ; règles de dépendances dans
 [`BUN-PACKAGE-MANAGER.md`](BUN-PACKAGE-MANAGER.md). Rust suit
-`rust-toolchain.toml` ; sur les machines Aphrody, compiler par
-`~/aphrody/scripts/build/rust/cargo-serial.sh`.
+`rust-toolchain.toml` ; `cargo` s'utilise tel quel, sans wrapper.
 
 ## Configurer
 
@@ -27,8 +26,7 @@ Bun 1.4.2 (`packageManager`), linker isolé ; règles de dépendances dans
   seulement, jamais de `rag:build`.
 - `just env` (`bun scripts/dev/env-pull.ts pull`) lit `/etc/rose-griffon/shenron-{site,bot}.env`
   du `vps` par SSH, en garde la copie privée dans `~/.aphrody/private/shenron/env`, la vérifie
-  par `aphrody-infra secrets check` (contrat `config/secrets-contract.json` des outils
-  d'Aphrody) et en dérive `apps/site/.env.local` et `apps/bot/.env` : origines
+  par `aphrody-infra secrets check` (contrat de secrets d'Infra) et en dérive `apps/site/.env.local` et `apps/bot/.env` : origines
   `localhost`, sans analytique ni jeton de passerelle Discord de production (jeton de dev par
   `SHENRON_BOT_DEV_TOKEN`). `just env remote` écrit les mêmes fichiers dans `~/shenron-dev` du
   VPS ; `just env tunnel` relaie PostgreSQL (15433) et le chat IA (8799) en local ;
@@ -72,8 +70,8 @@ bun run clippy:rust && bun run test:rust
 
 - **Windows natif** : utiliser le runtime Aphrody Bun et les outils Windows du poste ;
   ne pas démarrer WSL pour ce workflow. Si Turbopack exige un processus `node`,
-  installer uniquement le runtime/outillage natif requis ou utiliser le build Linux
-  qualifié sur la fabrique VPS, sans détourner le poste vers WSL.
+  installer uniquement le runtime/outillage natif requis ou construire sur un hôte Linux x64
+  (`scripts/deploy/build-image.sh`), sans détourner le poste vers WSL.
 - **`next dev` réécrit `apps/site/tsconfig.json`** : restaurer le fichier avant
   de committer.
 - Autres faits mesurés : [`pieges.md`](../guides/pieges.md).

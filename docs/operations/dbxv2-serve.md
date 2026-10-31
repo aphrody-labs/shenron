@@ -92,9 +92,9 @@ aspirés dans le navigateur en bloc.
 - Journal : `MÉTHODE chemin statut durée`, sans jeton ni paramètres de requête.
 - Erreurs : 404 (inconnu), 500 (échec natif, détail dans le journal seul), 503 (file pleine), 504 (délai).
 
-## Service permanent (fabrique VPS)
+## Service permanent (hôte de service)
 
-Unité systemd utilisateur (même mécanisme que `bun-os-lancache`, `shenron-sync`; linger actif) :
+Unité systemd utilisateur (même mécanisme que `bun-os-lancache` ; linger actif) :
 `~/.config/systemd/user/dbxv2-serve.service`.
 
 ```ini
@@ -133,7 +133,8 @@ Récupération :
 - Rotation du jeton : régénérer la ligne `DBXV2_TOKEN` du fichier d'environnement (`chmod 600`), puis `restart`.
   Communiquer le nouveau jeton hors Git.
 - Cache : supprimer `~/.cache/shenron/dbxv2-serve` est sûr (il se reconstruit à la demande).
-- Mise à jour : `shenron-sync` tient le checkout à jour ; `systemctl --user restart dbxv2-serve` applique.
+- Mise à jour : mettre à jour le checkout du service (`git -C <checkout> pull --ff-only`), puis
+  `systemctl --user restart dbxv2-serve` applique.
 
 ## Tests
 

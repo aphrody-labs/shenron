@@ -36,7 +36,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src",
+    "lint": "bun lint -c ../../.oxlintrc.json src",
     "test": "bun test",
     "typecheck": "bun check"
   },
@@ -52,8 +52,8 @@
     "react": "catalog:"
   },
   "peerDependencies": {
-    "better-auth": "1.7.6",
-    "next": "16.5.0-canary.5",
+    "better-auth": "catalog:",
+    "next": "catalog:",
     "react": "catalog:"
   },
   "peerDependenciesMeta": {

@@ -2,7 +2,7 @@
 import {
   buildVectorSidecar,
   type VectorGeneration,
-} from "../../../../packages/pipeline/src/ai/vector-sidecar";
+} from "@aphrody/shenron-pipeline/ai/vector-sidecar";
 declare const self: Worker;
 const controller = new AbortController();
 let started = false,

@@ -16,7 +16,7 @@ import { COMMUNITY_TOP_BOARDS } from "@/lib/community-tops";
 import { getShenronLeaderboard, type LeaderboardEntry } from "@/lib/shenron";
 import { getTopRaters, type ContributorRow } from "@/lib/contributors";
 import { ogMeta } from "@/lib/og";
-import { formatZeni } from "@/lib/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 
 export const revalidate = 60;
 

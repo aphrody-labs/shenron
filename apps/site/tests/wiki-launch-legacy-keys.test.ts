@@ -10,7 +10,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 let stored: unknown = null;
 
 const { ALL_ENTRIES, LEGACY_ENTRY_KEYS, currentEntryKey, entryByKey } =
-  await import("../src/lib/wiki-launch");
+  await import("@aphrody/shenron-config/wiki-launch");
 
 /** Chaque lecture repart d'un module neuf : le cache TTL de 30 s ne doit pas fausser le test. */
 async function readConfig() {

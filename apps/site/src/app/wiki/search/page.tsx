@@ -2,14 +2,13 @@
 import { T } from "@/components/T";
 import { dbUniverse, type SearchResults } from "@/lib/db-universe";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
-import { isPathPublic, type AccessSnapshot } from "@/lib/wiki-launch";
+import { isPathPublic, type AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import Link from "next/link";
 import Image from "next/image";
 import { assetUrl } from "@/lib/db-universe";
 import { searchExternalSources } from "@/lib/external-source-catalog";
 import { DomainBar } from "@/components/kit";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
@@ -142,10 +141,7 @@ export default async function SearchPage({
   return (
     <div className="wiki-container space-y-8">
       <DomainBar domain="wiki" />
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <Breadcrumbs items={[{ label: "Recherche & Scouter" }]} />
-        <WikiDrawer />
-      </div>
+      <Breadcrumbs items={[{ label: "Recherche & Scouter" }]} />
 
       <header className="relative mb-16 overflow-hidden">
         <Image

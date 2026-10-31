@@ -16,7 +16,6 @@ import { db } from "@/lib/db";
 import { contributionRights } from "@/db/schema";
 import {
   CONTRIBUTION_SCOPES,
-  DEFAULT_CONTRIBUTION_RIGHTS,
   DEFAULT_SCOPE_RULE,
   decideContribution,
   scopeOf,

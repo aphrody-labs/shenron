@@ -27,6 +27,7 @@ const RUNTIME: Record<string, string> = {
   "./chat": "bun",
   "./host": "bun",
   "./desktop-link": "server",
+  "./admin-lab": "server",
   "./plugin": "server",
   "./openapi.json": "json",
 };

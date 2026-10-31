@@ -275,7 +275,7 @@ export default function DragonWorld({ standalone = false }: { standalone?: boole
             }
             frame = requestAnimationFrame(draw);
           } catch (error) {
-            if (process.env.NODE_ENV === "development") console.warn("DBXV2 frame failed", error);
+            if (process.env.NODE_ENV === "development") console.warn("Stage frame failed", error);
             clear();
             release();
             setPhase("error");
@@ -285,8 +285,7 @@ export default function DragonWorld({ standalone = false }: { standalone?: boole
       } catch (error) {
         if (!controller.signal.aborted) {
           release();
-          if (process.env.NODE_ENV === "development")
-            console.warn("DBXV2 stage load failed", error);
+          if (process.env.NODE_ENV === "development") console.warn("Stage load failed", error);
           setOversized(
             error instanceof StageResourceError && ["parts", "bytes"].includes(error.reason),
           );

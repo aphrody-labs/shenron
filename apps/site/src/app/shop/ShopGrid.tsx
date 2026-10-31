@@ -23,7 +23,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Cadenas, Chargement, Coche, Piece, Sac } from "@aphrody/shenron-ui/icones";
 import { onTablistKeyDown } from "@/lib/tablist-keys";
 import type { CanonPrice, ShopEconomy } from "@/lib/shenron";
-import { formatZeni } from "@/lib/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 
 interface ShopItem {
   key: string;

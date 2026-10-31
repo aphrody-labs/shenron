@@ -1,7 +1,7 @@
 import { PageShell } from "@/components/kit";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PageHeader } from "@/components/PageHeader";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import { MyTierlistManager } from "@/components/tierlist/MyTierlistManager";
 import { listTierlistsByAuthor } from "@/lib/tierlists";
 import { requireUser } from "@/lib/session";

@@ -15,11 +15,17 @@ import { DatabaseService } from "~/db/index";
 import { users } from "~/db/schema";
 import { env } from "~/lib/env";
 import { PERSONA_IDS, type PersonaId } from "~/lib/personas";
-import { isRaceId, RACE_IDS, RACE_ROLE_IDS, RACES, type RaceId } from "~/lib/races";
+import {
+  isRaceId,
+  RACE_IDS,
+  RACE_ROLE_IDS,
+  RACES,
+  type RaceId,
+} from "@aphrody/shenron-config/races";
 import { levelForXP } from "~/lib/xp";
 import { EconomyService } from "~/services/EconomyService";
 import { LevelService } from "~/services/LevelService";
-import { formatZeni } from "~/lib/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 
 type ConsoleFieldType = "user" | "text" | "number" | "select" | "role" | "channel" | "persona";
 

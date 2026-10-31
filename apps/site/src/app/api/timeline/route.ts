@@ -22,7 +22,12 @@ import { NextResponse } from "next/server";
 import { SITE_URL } from "@/lib/config";
 import { dbUniverse } from "@/lib/db-universe";
 import { getChronologyConfig } from "@/lib/chronology-config";
-import { applyChronology, ERA_LABELS, type Era, type TimelineKind } from "@/lib/chronology";
+import {
+  applyChronology,
+  ERA_LABELS,
+  type Era,
+  type TimelineKind,
+} from "@aphrody/shenron-config/chronology";
 import { CORS_MANGA } from "@/lib/manga-cors";
 
 export const runtime = "nodejs";

@@ -513,6 +513,14 @@ export const botEpisodes = bot.table("db_episodes", {
   // Scènes d'épisode : frames extraites (jsonb) + montage MP4 preview animé.
   // Colonnes posées sur Neon ; alimentées par le pipeline bot (extraction +
   // montage). Le reverse-sync Neon→SQLite les ignore (intersection de colonnes).
+  // Santé des lecteurs et des flux (ajoutées par la migration d'exécution du bot, présentes sur PG).
+  playersCheckedAt: bigint("players_checked_at", { mode: "number" }),
+  playersRepairFailures: integer("players_repair_failures").notNull().default(0),
+  playersRepairAfter: bigint("players_repair_after", { mode: "number" }),
+  streamCheckedAt: bigint("stream_checked_at", { mode: "number" }),
+  streamResolveFailures: integer("stream_resolve_failures").notNull().default(0),
+  streamRetryAfter: bigint("stream_retry_after", { mode: "number" }),
+  officialMetadata: jsonb("official_metadata"),
   frames: jsonb("frames").$type<EpisodeFrame[]>(),
   scenePreview: text("scene_preview"),
   ...visibleCol,
@@ -564,6 +572,13 @@ export const botMovies = bot.table("db_movies", {
       >
     >
   >(),
+  // Santé des lecteurs et des flux (ajoutées par la migration d'exécution du bot, présentes sur PG).
+  playersCheckedAt: bigint("players_checked_at", { mode: "number" }),
+  playersRepairFailures: integer("players_repair_failures").notNull().default(0),
+  playersRepairAfter: bigint("players_repair_after", { mode: "number" }),
+  streamCheckedAt: bigint("stream_checked_at", { mode: "number" }),
+  streamResolveFailures: integer("stream_resolve_failures").notNull().default(0),
+  streamRetryAfter: bigint("stream_retry_after", { mode: "number" }),
   ...visibleCol,
 });
 
@@ -1060,6 +1075,7 @@ export const botTimelineEvents = bot.table("db_timeline_events", {
   sourceRef: text("source_ref"),
   canon: boolean("canon").notNull().default(true),
   orderIdx: int("order_idx").notNull().default(0),
+  ...articleCols,
   ...visibleCol,
 });
 
@@ -1078,6 +1094,7 @@ export const botPowerLevels = bot.table("db_power_levels", {
   sourcePage: text("source_page"),
   canon: boolean("canon").notNull().default(true),
   notes: text("notes"),
+  ...articleCols,
   ...visibleCol,
 });
 
@@ -1131,6 +1148,7 @@ export const botWishes = bot.table("db_wishes", {
   wishText: text("wish_text").notNull(),
   granted: boolean("granted").notNull().default(true),
   canon: boolean("canon").notNull().default(true),
+  ...articleCols,
   ...visibleCol,
 });
 
@@ -1175,7 +1193,7 @@ export const botTournaments = bot.table("db_tournaments", {
   name: text("name").notNull(),
   nameJa: text("name_ja"),
   tournamentType: text("tournament_type").notNull(),
-  saga: text("saga").notNull(),
+  saga: text("saga"),
   location: text("location"),
   winnerName: text("winner_name"),
   runnerUpName: text("runner_up_name"),
@@ -1203,7 +1221,7 @@ export const botVoiceActors = bot.table("db_voice_actors", {
   nationality: text("nationality").notNull(),
   birthDate: text("birth_date"),
   roles: jsonb("roles").$type<VoiceActorRole[]>().notNull(),
-  biography: text("biography").notNull(),
+  biography: text("biography"),
   image: text("image"),
   ...articleCols,
   ...visibleCol,

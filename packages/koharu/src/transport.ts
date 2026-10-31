@@ -56,7 +56,7 @@ function sessionId(): string {
 function errorMessage(body: unknown, status: number): string {
   if (body && typeof body === "object" && "error" in body && typeof body.error === "string")
     return body.error;
-  return `Koharu local engine: HTTP ${status}`;
+  return `Shenron Studio local engine: HTTP ${status}`;
 }
 
 /** Client of the `/api/local/koharu` bridge: one session, its event stream and channels. */

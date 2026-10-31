@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 "use client";
 import { useEffect, useState } from "react";
-import { PageHeader } from "@/components/PageHeader";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import { API_URL } from "@/lib/config";
 import { getProfileCardUrl } from "@/lib/assets";
 import { isCanvasMemberId } from "@/lib/canvas-preview";

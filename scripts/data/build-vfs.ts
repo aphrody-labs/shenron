@@ -27,8 +27,8 @@ import { existsSync, mkdirSync, rmSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { redactText } from "../../packages/db/src/conversations/redact";
-import { SqliteConversationStore } from "../../packages/db/src/conversations/sqlite";
+import { redactText } from "@aphrody/shenron-db/conversations/redact";
+import { SqliteConversationStore } from "@aphrody/shenron-db/conversations/sqlite";
 import {
   createRagWriter,
   exportRag,
@@ -37,15 +37,15 @@ import {
   readOnlySql,
   renderEntryModule,
   type VectorMode,
-} from "../../packages/db/src/vfs/build";
+} from "@aphrody/shenron-db/vfs/build";
 import {
   applyVfsSchema,
   cdnOrigins,
   createE5Embedder,
   sha256Hex,
   ShenronVfs,
-} from "../../packages/db/src/vfs/index";
-import { exportPublicWikiRag } from "../../packages/db/src/vfs/public-wiki-rag";
+} from "@aphrody/shenron-db/vfs";
+import { exportPublicWikiRag } from "@aphrody/shenron-db/vfs/public-wiki-rag";
 import { shenronRagChunk } from "../../packages/native/src/engine";
 
 const ROOT = resolve(import.meta.dir, "../..");

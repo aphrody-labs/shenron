@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { bxc, type DbcnCatalogCategory } from "@/lib/bxc";
+import { bxc, type DbcnCatalogCategory } from "@aphrody/shenron-pipeline/bxc/server";
 
 export const dynamic = "force-dynamic";
 

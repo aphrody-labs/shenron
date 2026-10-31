@@ -4,7 +4,7 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { TechniqueGrid, type TechniqueCard } from "../src/components/wiki/TechniqueGrid";
-import type { AccessSnapshot } from "../src/lib/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 
 const techniques: TechniqueCard[] = [
   {

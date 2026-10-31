@@ -4,7 +4,7 @@
  * hand-written hex: a role is a token, a mix of tokens or a caller override.
  */
 import { hexToRgb } from "~/lib/canvas-kit";
-import { RACES, type RaceId } from "~/lib/races";
+import { RACES, type RaceId } from "@aphrody/shenron-config/races";
 import { UI_COLORS, UI_EMBER } from "./tokens.generated";
 
 export type PaletteToken = keyof typeof UI_COLORS | "ember";

@@ -1,9 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
-import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
+import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
 import { getPublicCardCatalog, getPublishedCardCount } from "@/lib/card-catalog";
 
 export const revalidate = 3600;
@@ -83,14 +81,12 @@ export default async function CardCatalogPage({ searchParams }: { searchParams: 
   if (data?.nextCursor) next.set("after", data.nextCursor);
 
   return (
-    <PageShell rhythm="tight">
-      <Breadcrumbs className="mb-4" items={[{ label: t("title") }]} />
-      <PageHeader
-        className="mb-6"
-        eyebrow={t("series")}
-        title={t("title")}
-        subtitle={t("description")}
-      />
+    <WikiIndexPage
+      eyebrow={t("series")}
+      title={t("title")}
+      lead={t("description")}
+      crumbs={[{ label: t("title") }]}
+    >
       {publishedCount > 0 && data && (
         <p className="mb-5 text-sm text-muted-foreground">
           {t("results", {
@@ -263,6 +259,6 @@ export default async function CardCatalogPage({ searchParams }: { searchParams: 
           )}
         </>
       )}
-    </PageShell>
+    </WikiIndexPage>
   );
 }

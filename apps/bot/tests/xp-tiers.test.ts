@@ -22,7 +22,7 @@ import {
   raceLevelRoleIds,
   tierEntitlement,
 } from "~/lib/race-levels";
-import { RACES } from "~/lib/races";
+import { RACES } from "@aphrody/shenron-config/races";
 import { bestRoleMultiplier } from "~/lib/xp-boosts";
 import { setLevelThresholds } from "~/lib/xp";
 

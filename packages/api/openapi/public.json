@@ -7285,6 +7285,52 @@
               "comfortable",
               "spacious"
             ]
+          },
+          "buttonShape": {
+            "type": "string",
+            "enum": [
+              "rounded",
+              "pill",
+              "square"
+            ]
+          },
+          "buttonSize": {
+            "type": "string",
+            "enum": [
+              "compact",
+              "comfortable",
+              "spacious"
+            ]
+          },
+          "buttonLabelCase": {
+            "type": "string",
+            "enum": [
+              "uppercase",
+              "normal"
+            ]
+          },
+          "homeActionLayout": {
+            "type": "string",
+            "enum": [
+              "row",
+              "stacked"
+            ]
+          },
+          "homeActionAlignment": {
+            "type": "string",
+            "enum": [
+              "start",
+              "center",
+              "end"
+            ]
+          },
+          "panelStyle": {
+            "type": "string",
+            "enum": [
+              "comic",
+              "soft",
+              "flat"
+            ]
           }
         },
         "required": [
@@ -7294,7 +7340,13 @@
           "fontFamily",
           "fontScale",
           "contentWidth",
-          "density"
+          "density",
+          "buttonShape",
+          "buttonSize",
+          "buttonLabelCase",
+          "homeActionLayout",
+          "homeActionAlignment",
+          "panelStyle"
         ],
         "additionalProperties": false
       },

@@ -2,7 +2,7 @@
 import { CrunchyrollClient } from "./client";
 import { join } from "node:path";
 import { homedir } from "node:os";
-import { CRUNCHYROLL_SERIES_BY_SHENRON } from "../../media/src/crunchyroll-mapping";
+import { CRUNCHYROLL_SERIES_BY_SHENRON } from "@aphrody/shenron-media/crunchyroll-mapping";
 import { importedCatalogue } from "./import-runtime";
 
 export class CrunchyrollService {

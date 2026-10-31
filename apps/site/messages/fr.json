@@ -48,7 +48,7 @@
     "kicker": "Gestion éditoriale",
     "description": "Créez et modifiez les séries, sorties et cartes. Les données et valeurs doivent citer leurs sources; les images nécessitent une provenance et une base de droits.",
     "importTitle": "Importer des cartes en lot",
-    "importDescription": "Importez un tableau JSON de 500 cartes maximum. Chaque ligne doit indiquer le slug d’une sortie existante et une source principale. L’import ne copie ni image ni longue description. Prévisualisez les données avant de confirmer l’écriture.",
+    "importDescription": "Importez un tableau JSON de {max} cartes maximum. Chaque ligne doit indiquer le slug d’une sortie existante et une source principale. L’import ne copie ni image ni longue description. Prévisualisez les données avant de confirmer l’écriture.",
     "importFormat": "Champs requis et exemple",
     "importFields": "Requis : setSlug, cardNumber, name, language, region, sourceLabel, sourceUrl, sourceAccessedAt. Facultatifs : rarity, releaseDate (AAAA-MM-JJ), status (draft ou published).",
     "importExample": "[{\n  \"setSlug\": \"slug-sortie-existante\",\n  \"cardNumber\": \"FB01-001\",\n  \"name\": \"Nom imprimé sur la carte\",\n  \"language\": \"ja\",\n  \"region\": \"JP\",\n  \"rarity\": \"R\",\n  \"sourceLabel\": \"Base officielle Fusion World\",\n  \"sourceUrl\": \"https://www.dbs-cardgame.com/fw/en/cardlist/\",\n  \"sourceAccessedAt\": \"2026-10-30\"\n}]",
@@ -71,7 +71,7 @@
     "importIssue": {
       "invalid-json": "Le fichier doit contenir un tableau JSON valide.",
       "empty-import": "Le fichier ne contient aucune carte.",
-      "too-many-rows": "Le fichier dépasse la limite de 500 lignes.",
+      "too-many-rows": "Le fichier dépasse la limite de {max} lignes.",
       "invalid-row": "Champ requis, URL, date ou longueur de champ invalide.",
       "duplicate-file-row": "Cette clé de carte apparaît plusieurs fois dans le fichier.",
       "missing-set": "Le slug de sortie ne correspond à aucune sortie existante.",
@@ -2198,8 +2198,6 @@
     "online": "En ligne",
     "offline": "Hors ligne",
     "wiki": "Encyclopédie Dragon Ball",
-    "designDescription": "Personnaliser les couleurs, la typographie, les panneaux et les boutons.",
-    "homeLayoutDescription": "Régler l’ordre et la visibilité des sections, scènes et destinations.",
     "wikiDescription": "Wiki, sagas, films et jeux",
     "cards": "Catalogue de cartes",
     "cardsDescription": "Gérer les séries, les sorties, les fiches de cartes et l’historique de valeur.",
@@ -2452,6 +2450,10 @@
     "contentWidth": "Largeur maximale",
     "density": "Espacement latéral",
     "homeLayout": "Réorganiser l’accueil",
+    "designDescription": "Personnaliser les couleurs, la typographie, les panneaux et les boutons.",
+    "homeLayoutDescription": "Régler l’ordre et la visibilité des sections, scènes et destinations.",
+    "panelStyle": "Style des panneaux",
+    "panelStyles": { "comic": "Bande dessinée", "soft": "Doux", "flat": "Plat" },
     "homeActionLayout": "Disposition des boutons du hero",
     "homeActionAlignment": "Alignement des boutons du hero",
     "homeActionLayouts": { "row": "Sur une ligne", "stacked": "Empilés" },
@@ -2999,5 +3001,9 @@
       "facetSearchLabel": "Rechercher dans {title}",
       "noOption": "Aucune option."
     }
+  },
+  "studioVideo": {
+    "auraIntensity": "Intensité de l’aura pourpre",
+    "timelinePosition": "Position temporelle"
   }
 }

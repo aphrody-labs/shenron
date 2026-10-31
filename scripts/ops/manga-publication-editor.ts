@@ -2,7 +2,7 @@
 /** Publication consumes the canonical importer; generic wiki PATCH never writes reader assets. */
 import { chmod, link, lstat, mkdir, realpath, unlink } from "node:fs/promises";
 import { isAbsolute, join, resolve } from "node:path";
-import { mangaBundleSchema } from "../../packages/pipeline/src/dragon-ball/manga-publication-contract";
+import { mangaBundleSchema } from "@aphrody/shenron-pipeline/dragon-ball/manga-publication-contract";
 import { wikiUpdateSnapshotHash } from "../../apps/site/src/lib/wiki-update-precondition";
 import { mangaVolumeBibliographicRecord } from "../../apps/site/src/lib/manga-source-registry";
 import { mangaVolumeEdition } from "../../apps/site/src/lib/manga-volume-edition";

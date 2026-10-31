@@ -41,8 +41,8 @@ fournit les PNG (endpoint `/png`) à l'exécution ; les tests génèrent des mot
   alpha droit/prémultiplié, adaptateur.
 
 ```sh
-# fabrique uniquement (build lourd)
-flock ~/build/locks/heavy.lock cargo nextest run -p shenron-engine
+# build lourd : sur un hôte de build Linux x64
+cargo nextest run -p shenron-engine
 ```
 
 ## Limites

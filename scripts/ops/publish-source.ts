@@ -11,7 +11,7 @@ import {
   projectNativeCrawl,
   crawlIngestPolicySchema,
   type CrawlRegistryPort,
-} from "../../packages/pipeline/src/dragon-ball/crawl-ingest";
+} from "@aphrody/shenron-pipeline/dragon-ball/crawl-ingest";
 
 export const digest = (body: string | Uint8Array) =>
   new Bun.CryptoHasher("sha256").update(body).digest("hex");

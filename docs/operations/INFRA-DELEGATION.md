@@ -47,10 +47,10 @@ Sans ces services, le bot et le site démarrent et dégradent explicitement.
   commande qui modifie un hôte.
 - Une documentation ou un commit ne prouve pas un déploiement : seule la
   release active, sondée par `aphrody-infra`, fait foi.
-- Mise en production outillée : `bun scripts/ops/release.ts` construit et assemble la
-  release sur le `vps` (`release-host.ts build`, détaché), l'active par `aphrody-infra deploy
-  --apply`, publie `public/` et `.next-build/static` sur le CDN (`release-host.ts cdn`) puis
-  sonde le site ; `--cdn-only` republie la release active.
+- Mise en production outillée : `scripts/deploy/release.sh [revision]` construit et vérifie
+  l'image sur un hôte de build Linux x64, puis la livre à la cible (`SHENRON_DEPLOY_TARGET`,
+  défaut `ssh:dbfr`) où l'entrée d'activation Infra (`~/deploy-shenron-image.sh`) assemble,
+  scelle, vérifie et active la release (voir `CONTAINER-COMPLET.md`).
 - Exception voulue par le propriétaire : `scripts/ops/admin-access.ts` tient la liste
   des postes d'administration (IP publique du poste, VPS, WireGuard, comptes désignés)
   sur `vps` et `dbfr` par `aphrody-infra ssh exec` — ufw, fail2ban, PostgreSQL

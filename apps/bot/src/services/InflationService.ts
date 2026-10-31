@@ -12,8 +12,8 @@
 import { singleton, inject } from "tsyringe";
 import { DatabaseService } from "~/db/index";
 import { SettingsService } from "~/services/SettingsService";
-import { CANON_INFLATION_FACTOR } from "~/lib/economy-canon";
-import { changePercent, computeIndex, indexedPrice } from "~/lib/inflation-rules";
+import { CANON_INFLATION_FACTOR } from "@aphrody/shenron-config/economy-canon";
+import { changePercent, computeIndex, indexedPrice } from "@aphrody/shenron-config/inflation-rules";
 import { logger } from "~/lib/logger";
 
 export type IndexPoint = {

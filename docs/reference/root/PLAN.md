@@ -138,8 +138,8 @@ Bun.Video relues le 18 octobre ; ce décompte ne prouve pas leur publication.
 5. Relier la timeline paginée au lecteur et à la sélection de plage GIF ; afficher
    progression, état vide et erreurs en français, anglais et japonais. Vérifier
    timecodes fractionnaires, extrémités, seek lointain, cache et concurrence sur
-   les médias réels, puis lecture et export en 390/1280 après livraison scellée
-   par la fabrique et activation Infra.
+   les médias réels, puis lecture et export en 390/1280 après livraison par
+   `scripts/deploy/release.sh` et activation Infra.
 
 Qualification locale du lot `b6aaa492` : 26 tests passent, quatre tests DOM sont
 ignorés ; types, lint et formatage ciblés passent. Sur le MP4 réel 876 : 33 512 frames,
@@ -214,7 +214,7 @@ inventaire des corpus. La priorité et les onze lots ouverts sont dans
   `aphrody` ; crates.io conserve ses noms globaux et requiert des ownerships prouvés.
 - Sources publiques, notices et allowlists auditées avant publication ; secrets, corpus,
   bases et assets protégés exclus. Migrations historiques immuables.
-- Fabrique VPS→artefact scellé→Infra DBFR, puis sondes réelles et delta R2 du payload actif.
+- `scripts/deploy/release.sh` (build Linux x64 → image vérifiée → activation Infra DBFR), puis sondes réelles et delta R2 du payload actif.
   Worker en lecture seule, anciens chunks conservés ; DNSSEC/DS/TTL et délégation restent
   des portes externes avant bascule CDN.
 - Générateurs plugin et relevé registry automatisés selon
@@ -324,7 +324,8 @@ Absorption du plan technique de migration DBXV2 et des outils d'extraction d'ass
   bun packages/pipeline/scripts/ai/check-contracts.ts
   ```
 - **Déploiement en production** :
-  - Délégué à `aphrody-infra` via `bun scripts/ops/release.ts` (tout build sur le vps).
+  - `scripts/deploy/release.sh` construit l'image sur un hôte Linux x64 et la livre ; l'activation
+    sur la cible reste celle d'Aphrody Infra (`~/deploy-shenron-image.sh` sur DBFR).
   - Sondes de santé après bascule : `/api/health`, `/api/canon`, `/.well-known/agent-card.json`.
 
 ## 6. Revalidation locale du 8 octobre 2026

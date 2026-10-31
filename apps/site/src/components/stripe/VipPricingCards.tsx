@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { STRIPE_PLANS } from "@/lib/stripe";
 
 export function VipPricingCards() {
+  const tCommon = useTranslations("common");
   const [billingInterval, setBillingInterval] = useState<"month" | "year">("month");
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -130,7 +132,7 @@ export function VipPricingCards() {
             onClick={() => handleSubscribe("vip_monthly")}
             className="mt-8 w-full rounded-xl border border-amber-500/30 bg-amber-500/10 py-3 text-xs font-bold text-amber-300 transition-all hover:bg-amber-500 hover:text-black active:scale-98 disabled:opacity-50"
           >
-            {loadingPlan === "vip_monthly" ? "Chargement..." : "Choisir le Pass Mensuel"}
+            {loadingPlan === "vip_monthly" ? tCommon("loading") : "Choisir le Pass Mensuel"}
           </button>
         </div>
 
@@ -177,7 +179,7 @@ export function VipPricingCards() {
             onClick={() => handleSubscribe("vip_annual")}
             className="mt-8 w-full rounded-xl bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 py-3 text-xs font-black text-black shadow-lg shadow-amber-500/25 transition-all hover:brightness-110 active:scale-98 disabled:opacity-50"
           >
-            {loadingPlan === "vip_annual" ? "Chargement..." : "Débloquer l'Accès Annuel ⚡"}
+            {loadingPlan === "vip_annual" ? tCommon("loading") : "Débloquer l'Accès Annuel ⚡"}
           </button>
         </div>
       </div>

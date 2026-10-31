@@ -1,3 +1,4 @@
+import { discordFetch } from "~/lib/discord-rest";
 import { botStaffPolicy, env } from "~/lib/env";
 
 /**
@@ -14,9 +15,10 @@ import { botStaffPolicy, env } from "~/lib/env";
  */
 
 const DISCORD_AUTHORIZE = "https://discord.com/oauth2/authorize";
+// Token exchange, refresh and revoke stay on raw fetch: Discord wants a form-encoded body with
+// the client credentials there, and discordFetch only sends JSON with a Bot/Bearer header.
 const DISCORD_TOKEN = "https://discord.com/api/oauth2/token";
 const DISCORD_REVOKE = "https://discord.com/api/oauth2/token/revoke";
-const DISCORD_USER = "https://discord.com/api/users/@me";
 // identify : profil ; email : adresse + verified ; guilds : /users/@me/guilds ;
 // guilds.members.read : membership/roles dans une guild sans privileged intent.
 const SCOPES = ["identify", "email", "guilds", "guilds.members.read"];
@@ -138,11 +140,11 @@ export interface DiscordUser {
 }
 
 export async function fetchUser(accessToken: string): Promise<DiscordUser> {
-  const res = await fetch(DISCORD_USER, {
-    headers: { Authorization: `Bearer ${accessToken}` },
+  const { data } = await discordFetch<DiscordUser>("/users/@me", {
+    mode: "Bearer",
+    token: accessToken,
   });
-  if (!res.ok) throw new Error(`/users/@me ${res.status}`);
-  return (await res.json()) as DiscordUser;
+  return data;
 }
 
 export function isUserAllowed(userId: string): boolean {

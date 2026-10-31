@@ -107,7 +107,7 @@ tests a duré 3 min 41 s, leur exécution 2,376 s. Le contrôle Windows MSVC
 L’essai Windows initial échoue dans l’environnement : le volume `/srv` est
 plein lors du téléchargement CEF, et cargo-xwin remplace les CFLAGS de cible
 sans SSE4.1. Le nouvel essai `afa22061c8c9` utilise, par overrides Cargo du
-job, le cache `/home/ubuntu/shenron-build/cache/cef` sur le volume libre et
+job, un cache CEF sur le volume libre et
 `env.CFLAGS.value="-msse4.1"` avec `force=true`. Aucun cache partagé n’est supprimé.
 
 La bibliothèque FFI debug du VPS se charge sous Bun local : ABI 4. Les

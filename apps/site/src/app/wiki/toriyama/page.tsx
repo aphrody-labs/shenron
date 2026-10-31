@@ -14,7 +14,6 @@ import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { SITE_URL } from "@/lib/config";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import {
   Chip,
   ChipRow,
@@ -33,7 +32,7 @@ import {
 } from "@/lib/toriyama-words";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { GatedLink } from "@/components/GatedLink";
-import { isPathPublic } from "@/lib/wiki-launch";
+import { isPathPublic } from "@aphrody/shenron-config/wiki-launch";
 import { ogMeta } from "@/lib/og";
 import { T } from "@/components/T";
 import { assetUrl } from "@/lib/assets";
@@ -199,15 +198,12 @@ export default async function ToriyamaPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }}
       />
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-        <Breadcrumbs
-          items={[
-            { label: "Wiki", display: <T k="wiki.breadcrumb" />, href: "/wiki" },
-            { label: "Akira Toriyama", display: <T k="wiki.toriyama.breadcrumb" /> },
-          ]}
-        />
-        <WikiDrawer />
-      </div>
+      <Breadcrumbs
+        items={[
+          { label: "Wiki", display: <T k="wiki.breadcrumb" />, href: "/wiki" },
+          { label: "Akira Toriyama", display: <T k="wiki.toriyama.breadcrumb" /> },
+        ]}
+      />
       <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-400/20 bg-emerald-400/5 px-4 py-3 text-sm text-white/70">
         <span>
           Archives InLife, Caramel Mama et Wikipédia JA : provenance affichée, statut non canonique.

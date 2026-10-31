@@ -45,7 +45,7 @@ mock.module("@/lib/db", () => {
   };
 });
 
-mock.module("@/lib/bxc", () => ({
+mock.module("@aphrody/shenron-pipeline/bxc/server", () => ({
   bxc: {
     frames: {
       vector: async () => ({

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { bxc } from "@/lib/bxc";
+import { bxc } from "@aphrody/shenron-pipeline/bxc/server";
 
 export const dynamic = "force-dynamic";
 

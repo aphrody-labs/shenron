@@ -7,9 +7,10 @@ import { z } from "zod";
 import { db, schema } from "@/lib/db";
 import { getCurrentUser, requireAdmin, revisionActorOf } from "@/lib/session";
 import { recordRevisionStrict } from "@/lib/wiki-revisions";
-
-const MAX_IMPORT_BYTES = 800_000;
-const MAX_IMPORT_ROWS = 500;
+import {
+  CARD_IMPORT_MAX_BYTES as MAX_IMPORT_BYTES,
+  CARD_IMPORT_MAX_ROWS as MAX_IMPORT_ROWS,
+} from "./import-limits";
 
 const cardImportRow = z
   .object({

@@ -2,13 +2,15 @@
 
 # Qualité JavaScript et TypeScript native
 
-Les portes utilisent le fork Aphrody Bun 1.4.4 ou supérieur : `bun check`,
-`bun lint` et `bun fmt`. Elles ne lancent ni ESLint, ni `tsc`, ni une distribution
-OXC externe. Les règles OXC sont exécutées par le propriétaire natif Bun.
+Les portes utilisent Bun canary amont non modifié (1.4.4-canary ou supérieur, le runtime
+de Bun OS) : `bun check`, `bun lint` et `bun fmt`. Elles ne lancent ni ESLint, ni `tsc`,
+ni une distribution OXC externe. Les règles OXC sont exécutées par le propriétaire natif
+Bun. Les ajouts de l'ancien fork Aphrody (dont `--no-n2b`, `bun n2b`) n'existent plus ;
+les capacités de Bun OS se chargent par le preload `@aphrody/bun-os-plugins`.
 
 ```sh
 bun check
-bun lint --no-n2b -c .oxlintrc.json apps packages scripts
+bun lint -c .oxlintrc.json apps packages scripts
 bun run format:check
 ```
 

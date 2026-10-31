@@ -118,34 +118,21 @@ Next exclues.
   dépôt en `path`, celles d'Aphrody en `git` à la révision `# aphrody-rev:`, le reste copié du
   workspace d'Aphrody (mêmes versions, mêmes features). Monter la révision :
   `just deps --rev <sha>`, puis `just rust-check`. La CI vérifie le bloc (`--check`).
-- Le script lit `Cargo.toml` d'Aphrody à cette révision dans `--aphrody <dépôt>`, sinon
-  `~/aphrody`, sinon la base git que Cargo a remplie (`$CARGO_HOME/git/db/aphrody-*`).
+- Le script lit `Cargo.toml` d'Aphrody à cette révision dans `--aphrody <dépôt>` s'il est
+  fourni, sinon dans la base git que Cargo a remplie (`$CARGO_HOME/git/db/aphrody-*`, suffisante
+  en CI) ; aucun checkout Aphrody local n'est requis.
 - `[patch.crates-io]` épingle `hf-hub` à la révision qu'attend `aphrody-models`.
-- **Compiler contre un checkout local d'Aphrody** (travail non commité compris) :
-  `just aphrody-local [~/aphrody]` écrit `.cargo/local.toml` (ignoré par Git, inclus par
-  `.cargo/config.toml`) qui remplace chaque dépendance git d'Aphrody par son chemin local ;
-  `just aphrody-pinned` revient à la révision épinglée. `.cargo/local.toml` reçoit aussi tout
-  réglage personnel ; `.cargo/config.toml`, suivi par Git, ne porte rien de propre à une machine.
+- `.cargo/local.toml` (ignoré par Git, inclus par `.cargo/config.toml`) reçoit tout réglage
+  personnel ; `.cargo/config.toml`, suivi par Git, ne porte rien de propre à une machine.
   Un ancien `.cargo/config.toml` généré (avant son suivi par Git) se supprime avant de tirer.
 
-## WSL et machines Aphrody
+## Compilation et machines
 
-- `~/aphrody/scripts/build/rust/cargo-serial.sh` sérialise les compilations entre agents et
-  terminaux (verrou, `APHRODY_CARGO_JOBS` ≤ 6, sccache). Exporter
-  `APHRODY_CARGO_SERIAL=~/aphrody/scripts/build/rust/cargo-serial.sh` : `bun run *:rust`, `just`
-  et le runner de `cargo tauri build` (`scripts/build/rust/cargo-runner.ts`) passent alors par lui
-  (`scripts/build/rust/cargo.ts`).
-- Sous WSL, ce wrapper refuse les commandes lourdes (build, test, clippy…). Le Rust lourd de
-  Shenron passe par le tunnel Cargo d'Aphrody (`vps-cargo.ts run --repo shenron`, dans
-  `~/aphrody/scripts/build/rust/`), qui compile l'arbre de travail exact sur les deux VPS de
-  build déclarés dans `~/aphrody/tools/config/host/vps-cargo.json`. Le runner de `cargo tauri build`
-  (`scripts/build/rust/cargo-runner.ts`) choisit le dépôt du tunnel qui correspond à l'arbre
-  de travail. Répartir les jobs indépendants sur les deux hôtes (une cible par hôte). Le second
-  hôte porte la base de production : ses builds tournent sous cgroup (`MemoryMax=7G`,
-  `CPUQuota=450%`), sans accès GitHub (les dépendances git d'Aphrody passent par le tunnel).
-  WSL ne fait que le Bun (installation, tests, typecheck, `build:server`).
-  `APHRODY_LOCAL_CARGO=1` force une compilation locale, réservée aux crates légères à cache
-  chaud.
+- `bun run *:rust`, `just` et le runner de `cargo tauri build` lancent `cargo` tel quel
+  (`scripts/build/rust/cargo.ts`, `scripts/build/rust/cargo-runner.ts`) ; aucun wrapper ni
+  verrou externe. Une release de production se construit par `scripts/deploy/release.sh`
+  (voir `docs/operations/CONTAINER-COMPLET.md`), qui sérialise ses builds par un `flock` propre
+  à son worktree et règle les jobs par `SHENRON_CARGO_JOBS`.
 - sccache reste un réglage local (`RUSTC_WRAPPER=sccache` ou `build.rustc-wrapper` dans
   `~/.cargo/config.toml`), comme le nombre de jobs (`CARGO_BUILD_JOBS`).
 - nextest se limite à 6 processus par défaut (`-j` ou `NEXTEST_TEST_THREADS` pour changer).

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { lstat, realpath, readdir, mkdir, writeFile, unlink } from "node:fs/promises";
+import { homedir } from "node:os";
 import { resolve, join, basename } from "node:path";
 import { parseArgs } from "node:util";
 import { digest } from "./cloudflare-ops";
@@ -241,8 +242,13 @@ export async function run(args: string[]) {
     JSON.stringify(
       await stageOwnedFile(
         input,
-        "/home/ubuntu/.local/share/aphrody/media-staging/" + episodeSourceSha256,
-        "/home/ubuntu/.aphrody/private/shenron/bun-video-875-staging-20261013/receipts",
+        join(
+          process.env.SHENRON_MEDIA_STAGING_DIR ??
+            join(homedir(), ".local/share/aphrody/media-staging"),
+          episodeSourceSha256,
+        ),
+        process.env.SHENRON_STAGING_RECEIPTS_DIR ??
+          join(homedir(), ".aphrody/private/shenron/bun-video-875-staging-20261013/receipts"),
         store,
         async (key) => {
           const fresh = await Bun.file(config.profile).json();

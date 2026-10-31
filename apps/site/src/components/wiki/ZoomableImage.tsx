@@ -3,7 +3,7 @@
 
 import { useCallback, useRef, useState, type ImgHTMLAttributes } from "react";
 import { createPortal } from "react-dom";
-import { useFocusTrap } from "@/lib/use-focus-trap";
+import { useFocusTrap } from "@aphrody/shenron-ui/use-focus-trap";
 
 /**
  * Image de contenu wiki cliquable → ouvre une lightbox plein écran (zoom).

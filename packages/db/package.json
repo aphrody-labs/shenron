@@ -23,11 +23,9 @@
     "./full-schema": "./src/full-schema.ts",
     "./constants": "./src/constants.ts",
     "./config": "./src/config.ts",
-    "./types": "./src/types.ts",
     "./sql": "./src/sql.ts",
     "./postgres-js": "./src/postgres-js.ts",
     "./bun-sql": "./src/bun-sql.ts",
-    "./bun": "./src/bun.ts",
     "./env": "./src/env.ts",
     "./wiki-registry": "./src/wiki-registry.ts",
     "./repos/wiki": "./src/repos/wiki.ts",
@@ -50,16 +48,23 @@
     "./repos/home": "./src/repos/home.ts",
     "./repos/page-banners": "./src/repos/page-banners.ts",
     "./repos/chronology": "./src/repos/chronology.ts",
-    "./repos/wiki-launch": "./src/repos/wiki-launch.ts"
+    "./repos/wiki-launch": "./src/repos/wiki-launch.ts",
+    "./vfs/rag": "./src/vfs/rag.ts",
+    "./vfs/schema": "./src/vfs/schema.ts",
+    "./vfs/public-wiki-rag": "./src/vfs/public-wiki-rag.ts",
+    "./agent-homes/dir": "./src/agent-homes/dir.ts",
+    "./agent-homes/template": "./src/agent-homes/template.ts",
+    "./conversations/sqlite": "./src/conversations/sqlite.ts"
   },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json",
+    "lint": "bun lint -c ../../.oxlintrc.json",
     "test": "bun test",
     "audit:migrations": "bun scripts/migration-audit.ts --check",
+    "audit:schema": "bun scripts/schema-parity.ts",
     "typecheck": "bun check --project tsconfig.json",
     "check:agent-home-template": "bun scripts/agent-home-template.ts --check"
   },
@@ -81,11 +86,9 @@
       "./full-schema": "pure",
       "./constants": "pure",
       "./config": "pure",
-      "./types": "pure",
       "./sql": "server",
       "./postgres-js": "server",
       "./bun-sql": "bun",
-      "./bun": "bun",
       "./env": "server",
       "./wiki-registry": "pure",
       "./repos/wiki": "pure",
@@ -108,7 +111,13 @@
       "./repos/home": "server",
       "./repos/page-banners": "server",
       "./repos/chronology": "server",
-      "./repos/wiki-launch": "server"
+      "./repos/wiki-launch": "server",
+      "./vfs/rag": "bun",
+      "./vfs/schema": "bun",
+      "./vfs/public-wiki-rag": "bun",
+      "./agent-homes/dir": "server",
+      "./agent-homes/template": "bun",
+      "./conversations/sqlite": "bun"
     }
   }
 }

@@ -8,12 +8,13 @@ import {
   readFileSync,
   rmSync,
   statSync,
+  utimesSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { extract, pack, publicVfsProblems } from "../src/payload";
+import { extract, pack, prunePayloadCache, publicVfsProblems } from "../src/payload";
 import { writeTestVfs } from "./support";
 
 const root = mkdtempSync(join(tmpdir(), "shenron-payload-"));
@@ -96,6 +97,33 @@ describe("payload", () => {
     const cache = join(root, "cache-unsafe");
     await expect(extract(file, cache)).rejects.toThrow("unsafe payload path");
     expect(existsSync(join(root, "evil"))).toBe(false);
+  });
+
+  test("a fresh extraction prunes older payloads but keeps the current and the newest other one", () => {
+    const cache = join(root, "cache-prune");
+    const make = (name: string, ageSeconds: number) => {
+      const dir = join(cache, name);
+      mkdirSync(dir, { recursive: true });
+      writeFileSync(join(dir, ".complete"), "done");
+      const when = new Date(Date.now() - ageSeconds * 1000);
+      utimesSync(dir, when, when);
+      return dir;
+    };
+    make("payload-oldest", 400);
+    make("payload-older", 300);
+    make("payload-previous", 100);
+    make("payload-aaaa.tmp-123", 50);
+    const current = make("payload-current", 0);
+    writeFileSync(join(cache, "payload-stamp.json"), "{}");
+    mkdirSync(join(cache, "episode-video"));
+    prunePayloadCache(cache, current);
+    expect(existsSync(current)).toBe(true);
+    expect(existsSync(join(cache, "payload-previous"))).toBe(true);
+    expect(existsSync(join(cache, "payload-older"))).toBe(false);
+    expect(existsSync(join(cache, "payload-oldest"))).toBe(false);
+    expect(existsSync(join(cache, "payload-aaaa.tmp-123"))).toBe(false);
+    expect(existsSync(join(cache, "payload-stamp.json"))).toBe(true);
+    expect(existsSync(join(cache, "episode-video"))).toBe(true);
   });
 });
 

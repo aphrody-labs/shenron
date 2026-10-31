@@ -48,7 +48,7 @@
     "kicker": "Editorial management",
     "description": "Create and edit series, releases, and cards. Cite sources for data and estimates; images need provenance and a documented rights basis.",
     "importTitle": "Import card data in bulk",
-    "importDescription": "Upload a JSON array of up to 500 card records. Each row must include an existing release slug and a primary source. Imports never copy card images or long descriptions. Preview first, then confirm the write.",
+    "importDescription": "Upload a JSON array of up to {max} card records. Each row must include an existing release slug and a primary source. Imports never copy card images or long descriptions. Preview first, then confirm the write.",
     "importFormat": "Required fields and example",
     "importFields": "Required: setSlug, cardNumber, name, language, region, sourceLabel, sourceUrl, sourceAccessedAt. Optional: rarity, releaseDate (YYYY-MM-DD), status (draft or published).",
     "importExample": "[{\n  \"setSlug\": \"existing-release-slug\",\n  \"cardNumber\": \"FB01-001\",\n  \"name\": \"Printed card name\",\n  \"language\": \"ja\",\n  \"region\": \"JP\",\n  \"rarity\": \"R\",\n  \"sourceLabel\": \"Official Fusion World card list\",\n  \"sourceUrl\": \"https://www.dbs-cardgame.com/fw/en/cardlist/\",\n  \"sourceAccessedAt\": \"2026-10-30\"\n}]",
@@ -71,7 +71,7 @@
     "importIssue": {
       "invalid-json": "The file must be valid JSON containing an array.",
       "empty-import": "The file contains no card rows.",
-      "too-many-rows": "The file exceeds the 500 row limit.",
+      "too-many-rows": "The file exceeds the {max}-row limit.",
       "invalid-row": "Required fields, URL, date, or field lengths are invalid.",
       "duplicate-file-row": "This card key appears more than once in the file.",
       "missing-set": "The release slug does not match an existing release.",
@@ -2201,8 +2201,6 @@
     "wikiDescription": "Wiki, sagas, films and games",
     "cards": "Card catalog",
     "cardsDescription": "Manage series, releases, card records, and value history.",
-    "designDescription": "Customize colors, typography, surfaces, and buttons.",
-    "homeLayoutDescription": "Set the order and visibility of sections, scenes, and destinations.",
     "levels": "Members and levels",
     "levelsDescription": "Member progress and activity",
     "moderation": "Moderation",
@@ -2452,6 +2450,10 @@
     "contentWidth": "Maximum width",
     "density": "Horizontal spacing",
     "homeLayout": "Rearrange homepage",
+    "designDescription": "Customize colors, typography, surfaces, and buttons.",
+    "homeLayoutDescription": "Set the order and visibility of sections, scenes, and destinations.",
+    "panelStyle": "Panel style",
+    "panelStyles": { "comic": "Comic", "soft": "Soft", "flat": "Flat" },
     "homeActionLayout": "Hero button layout",
     "homeActionAlignment": "Hero button alignment",
     "homeActionLayouts": { "row": "In a row", "stacked": "Stacked" },
@@ -2999,5 +3001,9 @@
       "facetSearchLabel": "Search in {title}",
       "noOption": "No options."
     }
+  },
+  "studioVideo": {
+    "auraIntensity": "Purple aura intensity",
+    "timelinePosition": "Timeline position"
   }
 }

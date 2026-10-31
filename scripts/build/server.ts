@@ -4,7 +4,7 @@
  * Build the autonomous `shenron-server` binary (front app + local APIs) and its CDN tree.
  *
  *   bun scripts/build/server.ts [--target linux-x64|linux-x64-musl|windows-x64] [--flavor desktop|production]
- *                               [--skip-site] [--no-embed] [--vfs FILE | --no-vfs]
+ *                               [--skip-site | --site-only] [--no-embed] [--vfs FILE | --no-vfs]
  *
  * Flavors: `desktop` (default; the desktop app and the public release) loads every asset from
  * the binary, offline. `production` bakes NEXT_PUBLIC_CDN_URL = NEXT_PUBLIC_SHENRON_ASSETS_URL =
@@ -30,6 +30,11 @@
  * 5. dist/cdn/: what the nginx CDN adds (additively, never --delete) to /srv/shenron-cdn:
  *    _next/static/ and site/ (public/ of the site).
  *
+ * `--site-only` runs step 1 alone so a factory can overlap it with the native lanes, then package
+ * with `--skip-site`. `SHENRON_NEXT_BUILD_CACHE=1` keeps Turbopack's filesystem cache
+ * (`<distDir>/cache`) between builds of one reusable worktree; `SHENRON_PAYLOAD_ZSTD_LEVEL`
+ * (default 12) trades payload size for packaging time.
+ *
  * Every step is measured (scripts/build/measure.ts JSONL in dist/server/measures.jsonl).
  */
 import {
@@ -53,8 +58,8 @@ import { requireProductionVfs } from "./server-vfs-policy";
 import { ensureKoharuWasm } from "./koharu-wasm.ts";
 import { findDbxv2Leaks } from "../../packages/dbxv2/src/guard.ts";
 import { privateFiles, stagePublicData } from "./server-data.ts";
-import { templateProblems } from "../../packages/db/src/agent-homes/template";
-import { AGENT_HOME_DOCUMENTS } from "../../packages/db/src/agent-homes/types";
+import { templateProblems } from "@aphrody/shenron-db/agent-homes/template";
+import { AGENT_HOME_DOCUMENTS } from "@aphrody/shenron-db/agent-homes/types";
 import { syncUiAssets } from "../../packages/ui/scripts/sync-assets";
 
 const ROOT = resolve(import.meta.dir, "../..");
@@ -89,7 +94,10 @@ type Target = keyof typeof TARGETS;
 const flavor = option("--flavor", "desktop");
 if (flavor !== "desktop" && flavor !== "production") throw new Error("--flavor desktop|production");
 const vfsSource = resolve(option("--vfs", join(ROOT, "dist/vfs/shenron-vfs.public.sqlite")));
-if (flavor === "production") requireProductionVfs(vfsSource, flag("--no-vfs"));
+const siteOnly = flag("--site-only");
+if (siteOnly && flag("--skip-site"))
+  throw new Error("--site-only and --skip-site exclude each other");
+if (flavor === "production" && !siteOnly) requireProductionVfs(vfsSource, flag("--no-vfs"));
 const CDN_URL = "https://cdn.dragonballfr.com";
 const target = option(
   "--target",
@@ -140,7 +148,7 @@ async function measured(
 await syncUiAssets(join(SITE, "public"));
 if (!flag("--skip-site")) {
   ensureKoharuWasm();
-  rmSync(join(SITE, DIST_DIR), { recursive: true, force: true });
+  resetDistDir(join(SITE, DIST_DIR), process.env.SHENRON_NEXT_BUILD_CACHE === "1");
   // next-bun: Next and its Turbopack workers on this Bun (`node` on PATH is Bun).
   const siteBuild = nextCommand(
     ["build", "--turbopack", "--experimental-build-mode=compile"],
@@ -154,11 +162,13 @@ if (!flag("--skip-site")) {
     NEXT_TELEMETRY_DISABLED: "1",
     SHENRON_IMAGES_UNOPTIMIZED: "1",
     BUILD_CPUS: process.env.BUILD_CPUS ?? "4",
+    SHENRON_NEXT_BUILD_CACHE: process.env.SHENRON_NEXT_BUILD_CACHE ?? "",
     ...(flavor === "production"
       ? { NEXT_PUBLIC_CDN_URL: CDN_URL, NEXT_PUBLIC_SHENRON_ASSETS_URL: CDN_URL }
       : { NEXT_PUBLIC_CDN_URL: "", NEXT_PUBLIC_SHENRON_ASSETS_URL: "" }),
   });
 }
+if (siteOnly) process.exit(0);
 const standalone = join(SITE, DIST_DIR, "standalone");
 if (!existsSync(join(standalone, "apps/site/server.js")))
   throw new Error(`no standalone build in ${standalone}`);
@@ -270,14 +280,17 @@ mkdirSync(buildDir, { recursive: true });
 const embed = !flag("--no-embed");
 if (embed) {
   const started = performance.now();
-  const payload = pack({
-    site: siteOut,
-    ...(libCandidate ? { native: nativeOut } : {}),
-    ...(vfsShipped ? { vfs: vfsOut } : {}),
-    home: homeOut,
-    data: dataOut,
-    plugin: pluginOut,
-  });
+  const payload = pack(
+    {
+      site: siteOut,
+      ...(libCandidate ? { native: nativeOut } : {}),
+      ...(vfsShipped ? { vfs: vfsOut } : {}),
+      home: homeOut,
+      data: dataOut,
+      plugin: pluginOut,
+    },
+    payloadLevel(),
+  );
   writeFileSync(join(buildDir, "payload.pak.zst"), payload);
   writeFileSync(
     join(buildDir, "entry.ts"),
@@ -342,3 +355,21 @@ console.log(
     cdn,
   }),
 );
+
+/** Empty the Next dist dir, keeping only its Turbopack filesystem cache when asked to. */
+function resetDistDir(dir: string, keepCache: boolean) {
+  if (!keepCache || !existsSync(dir)) {
+    rmSync(dir, { recursive: true, force: true });
+    return;
+  }
+  for (const entry of readdirSync(dir)) {
+    if (entry !== "cache") rmSync(join(dir, entry), { recursive: true, force: true });
+  }
+}
+
+function payloadLevel(): number {
+  const level = Number(process.env.SHENRON_PAYLOAD_ZSTD_LEVEL ?? 12);
+  if (!Number.isInteger(level) || level < 1 || level > 22)
+    throw new Error("SHENRON_PAYLOAD_ZSTD_LEVEL must be an integer from 1 to 22");
+  return level;
+}

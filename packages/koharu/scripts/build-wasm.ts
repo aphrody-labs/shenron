@@ -242,7 +242,10 @@ export async function stampStatus(
     return {
       fresh: false,
       reason: "toolchain",
-      detail: `outillage changé (wasm-bindgen ${stamp.wasmBindgen} → ${toolchain.wasmBindgen})`,
+      detail:
+        stamp.rustc !== toolchain.rustc
+          ? `outillage changé (${stamp.rustc} → ${toolchain.rustc})`
+          : `outillage changé (wasm-bindgen ${stamp.wasmBindgen} → ${toolchain.wasmBindgen})`,
     };
   if (stamp.inputs !== (await inputDigest(root, toolchain)))
     return { fresh: false, reason: "inputs", detail: "sources, manifestes ou Cargo.lock modifiés" };

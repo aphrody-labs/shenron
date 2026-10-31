@@ -26,7 +26,7 @@ import {
   resolveAccess,
   type AccessMode,
   type AccessRule,
-} from "@/lib/wiki-launch";
+} from "@aphrody/shenron-config/wiki-launch";
 import { RoleBadge, RoleSelect } from "@/components/admin/RoleSelect";
 
 const MODES: { value: AccessMode; label: string; hint: string; tone: string }[] = [

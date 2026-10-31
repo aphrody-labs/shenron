@@ -29,7 +29,7 @@
   "scripts": {
     "generate": "bun scripts/generate.ts",
     "generate:check": "bun scripts/generate.ts --check",
-    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src test scripts",
+    "lint": "bun lint -c ../../.oxlintrc.json src test scripts",
     "test": "bun test",
     "typecheck": "bun check --project tsconfig.json"
   },

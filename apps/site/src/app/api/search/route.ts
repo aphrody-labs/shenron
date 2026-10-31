@@ -10,7 +10,7 @@
  */
 import { dbUniverse, type SearchResults } from "@/lib/db-universe";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
-import { isPathPublic } from "@/lib/wiki-launch";
+import { isPathPublic } from "@aphrody/shenron-config/wiki-launch";
 import { searchExternalSources, type ExternalSourceRecord } from "@/lib/external-source-catalog";
 import { NextResponse, type NextRequest } from "next/server";
 

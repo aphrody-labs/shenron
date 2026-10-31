@@ -85,4 +85,22 @@ describe("uiux static rules", () => {
       expect.arrayContaining(["tabindex-positive", "focus-states", "image-dimensions"]),
     );
   });
+
+  test("reports a second search bar and navigation landmarks sharing a label", async () => {
+    const dup = GOOD.replace(
+      "</main>",
+      '<search><input aria-label="Chercher"></search><search><input aria-label="Rechercher"></search><nav aria-label="Menu"></nav><nav aria-label="Menu"></nav></main>',
+    );
+    const found = await rules(dup);
+    expect(found).toContain("duplicate-search");
+    expect(found).toContain("landmark-unique");
+    expect(
+      await rules(
+        GOOD.replace(
+          "</main>",
+          '<search><input aria-label="Chercher"></search><nav aria-label="A"></nav><nav aria-label="B"></nav></main>',
+        ),
+      ),
+    ).toEqual([]);
+  });
 });

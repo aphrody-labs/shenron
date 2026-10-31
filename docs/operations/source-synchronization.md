@@ -77,7 +77,7 @@ un verrou exclusif et conserve chaque exécution dans un dossier daté unique. E
 
 ```sh
 bun scripts/data/sync-beerus-site.ts \
-  --out /home/ubuntu/.aphrody/profiles/dbfr/corpus/beerus-sync \
+  --out "$HOME/.aphrody/profiles/dbfr/corpus/beerus-sync" \
   --interval-seconds 900 --iterations 96 \
   --previous /chemin/prive/capture/manifest.json
 ```

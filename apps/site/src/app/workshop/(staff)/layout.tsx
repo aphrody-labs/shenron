@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { QueryProvider } from "@/components/admin/QueryProvider";
+import { QueryProvider } from "@aphrody/shenron-ui/admin/QueryProvider";
 import { requireAdmin } from "@/lib/session";
 
 /**

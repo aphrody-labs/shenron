@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
-import { isPathPublic } from "@/lib/wiki-launch";
+import { isPathPublic } from "@aphrody/shenron-config/wiki-launch";
 
 /**
  * Lien qui **refuse de mener à une impasse**.

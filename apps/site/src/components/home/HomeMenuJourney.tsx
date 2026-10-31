@@ -2,8 +2,8 @@
 import Image from "next/image";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
 import { assetUrl } from "@/lib/assets";
-import type { HomeJourneyConfig } from "@/lib/home-scenes";
-import type { AccessSnapshot } from "@/lib/wiki-launch";
+import type { HomeJourneyConfig } from "@aphrody/shenron-config/home";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import { HomeSection } from "./HomeSection";
 
 /**

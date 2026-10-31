@@ -10,8 +10,8 @@
   "packages/config/src/aphrody-corpus.ts",
   "packages/config/src/economy-canon.ts"
  ],
- "revision": "aa6240b0",
- "date": "2026-10-15",
+ "revision": "54be171b",
+ "date": "2026-10-26",
  "statut": "Chaque enregistrement est établi par la source qu'il cite (instantané) ; un thème de non_embarque est non établi hors ligne.",
  "donnees": {
   "hierarchie_sources": {

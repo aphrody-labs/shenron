@@ -1,15 +1,14 @@
 // Keep the index loader scoped to the catalogue, not streamed detail routes.
 import { ContributeRail } from "@/components/kit";
+import { WikiPageShell } from "@/components/wiki/WikiPageShell";
 import { SectionUnavailable } from "@/components/wiki/SectionUnavailable";
 import { dbUniverse } from "@/lib/db-universe";
 import Link from "next/link";
 import { T } from "@/components/T";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import { ContinueRail } from "@/components/history/ContinueRail";
 import type { Metadata } from "next";
 import { pageHero } from "@/lib/banner-config";
-import { eraOf, ERA_ACCENT } from "@/lib/chronology";
+import { eraOf, ERA_ACCENT } from "@aphrody/shenron-config/chronology";
 import { Billboard } from "@/components/stream/Billboard";
 import { StreamRow } from "@/components/stream/StreamRow";
 import { PosterCard } from "@/components/stream/PosterCard";
@@ -138,11 +137,10 @@ export default async function FilmsPage() {
         secondaryLabel={<T k="categories.chronologie.label" />}
       />
 
-      <div className="wiki-container">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <Breadcrumbs items={[{ label: "Films", display: <T k="categories.films.label" /> }]} />
-          <WikiDrawer />
-        </div>
+      <WikiPageShell
+        adminBar
+        crumbs={[{ label: "Films", display: <T k="categories.films.label" /> }]}
+      >
         <div
           className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4"
           aria-label="Couverture du catalogue vidéo"
@@ -226,8 +224,8 @@ export default async function FilmsPage() {
             →
           </span>
         </Link>
-        <ContributeRail className="mt-14" quoiKey="kit.contribute.what.movie" />
-      </div>
+        <ContributeRail quoiKey="kit.contribute.what.movie" />
+      </WikiPageShell>
     </>
   );
 }

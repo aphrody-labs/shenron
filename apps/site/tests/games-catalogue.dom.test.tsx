@@ -1,13 +1,17 @@
 // SPDX-License-Identifier: Apache-2.0
+import "./dom-preload";
 import { expect, test } from "bun:test";
 import { act } from "react";
-import { createRoot } from "react-dom/client";
-import { renderToStaticMarkup } from "react-dom/server";
-import { GamesExplorer } from "../src/components/wiki/GamesExplorer";
 import type { Game } from "../src/lib/db-universe";
 import fr from "../messages/games-catalogue/fr.json";
 import en from "../messages/games-catalogue/en.json";
 import ja from "../messages/games-catalogue/ja.json";
+
+// React DOM must load after the DOM globals exist: its event system probes `window` once at
+// module evaluation, and static CommonJS imports are evaluated before this file's preload.
+const { createRoot } = await import("react-dom/client");
+const { renderToStaticMarkup } = await import("react-dom/server");
+const { GamesExplorer } = await import("../src/components/wiki/GamesExplorer");
 
 const games: Game[] = Array.from({ length: 49 }, (_, index) => ({
   id: index + 1,
@@ -182,8 +186,9 @@ test("failed cover and hero images fall back while Xbox Series X|S remains one c
   );
 });
 
-test("retries missing editable covers from the public CDN before showing the fallback icon", async () => {
-  const cover = "./assets/wiki/games/00000000-0000-4000-8000-000000000001.webp";
+test("retries missing bot-hosted editable covers from the public CDN before showing the fallback icon", async () => {
+  // Editable legacy file (not a runtime upload): served by the bot host, mirrored on the CDN.
+  const cover = "./assets/wiki/games/budokai-tenkaichi-3.webp";
   await withImageState(false, async () =>
     mounted(
       "/wiki/games",
@@ -194,6 +199,27 @@ test("retries missing editable covers from the public CDN before showing the fal
         await act(async () => image.dispatchEvent(new Event("error")));
         expect(new URL(article.querySelector("img")!.src).hostname).toBe("cdn.dragonballfr.com");
         await act(async () => article.querySelector("img")!.dispatchEvent(new Event("error")));
+        expect(article.querySelector("img")).toBeNull();
+        expect(article.querySelector("svg")).not.toBeNull();
+        expect(article.textContent).toContain(fr.noCover);
+      },
+      { games: [{ ...games[0]!, cover }] },
+    ),
+  );
+});
+
+test("runtime wiki uploads load from the site origin, which already falls back to the CDN", async () => {
+  // Since 4fca0525 uploads (`/assets/wiki/<kind>/<uuid>`) are served by the site origin:
+  // the bot host answered 404 for every one of them, so no bot/CDN swap is attempted.
+  const cover = "./assets/wiki/games/00000000-0000-4000-8000-000000000001.webp";
+  await withImageState(false, async () =>
+    mounted(
+      "/wiki/games",
+      async (container) => {
+        const article = container.querySelector("article")!;
+        const image = article.querySelector("img")!;
+        expect(new URL(image.src).hostname).toBe("dragonballfr.com");
+        await act(async () => image.dispatchEvent(new Event("error")));
         expect(article.querySelector("img")).toBeNull();
         expect(article.querySelector("svg")).not.toBeNull();
         expect(article.textContent).toContain(fr.noCover);

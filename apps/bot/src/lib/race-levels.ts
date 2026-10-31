@@ -1,5 +1,5 @@
 import type { GuildMember } from "discord.js";
-import { RACE_IDS, RACES, isRaceId, type RaceId } from "~/lib/races";
+import { RACE_IDS, RACES, isRaceId, type RaceId } from "@aphrody/shenron-config/races";
 import type { DB } from "~/db/index";
 import { raceLevelRoles } from "~/db/schema";
 import { logger } from "~/lib/logger";

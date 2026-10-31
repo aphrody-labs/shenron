@@ -12,7 +12,7 @@ import {
   normaliser as norm,
   type FacetOption,
 } from "@/components/wiki/WikiListLayout";
-import type { AccessSnapshot } from "@/lib/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import { comparerRichesse } from "@/lib/character-richesse";
 
 // Grille personnages filtrable (client). Importe `@/lib/assets` (client-safe),

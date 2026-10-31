@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
+import { homedir } from "node:os";
 import { resolve, join } from "node:path";
 import { validateNote, sha256 } from "./agent-home-notes";
 
@@ -8,6 +9,15 @@ export interface NativeNotePlanInput {
   manifestPath: string;
   expectedSourceSha256: string;
   expectedManifestSha256: string;
+  /** Native dbfr workspace on the owner host (default SHENRON_DBFR_WORKSPACE, else ~/.aphrody/workspaces/dbfr). */
+  remoteHome?: string;
+}
+
+export function defaultRemoteHome(env: Record<string, string | undefined> = process.env): string {
+  return (
+    env.SHENRON_DBFR_WORKSPACE?.trim() ||
+    `${(env.HOME ?? homedir()).replaceAll("\\", "/")}/.aphrody/workspaces/dbfr`
+  );
 }
 /** Prepare a verifiable native-owner invocation; never connect, stage remotely or mutate a store. */
 export async function prepareNativeNoteImport(input: NativeNotePlanInput) {
@@ -46,7 +56,7 @@ export async function prepareNativeNoteImport(input: NativeNotePlanInput) {
       kind: reference.kind ?? "reference",
     });
   }
-  const remoteHome = "/home/ubuntu/.aphrody/workspaces/dbfr";
+  const remoteHome = input.remoteHome ?? defaultRemoteHome();
   const label = `wiki-reviewed-note-${note.id}`;
   const indexRoot = `${remoteHome}/notes/native-index-input/${note.id}`;
   return {
@@ -130,6 +140,7 @@ if (import.meta.main) {
     manifestPath: value("--manifest"),
     expectedSourceSha256: value("--expected-source-sha"),
     expectedManifestSha256: value("--expected-manifest-sha"),
+    ...(args.includes("--remote-home") ? { remoteHome: value("--remote-home") } : {}),
   });
   await Bun.write(value("--out"), `${JSON.stringify(plan, null, 2)}\n`);
   console.log(

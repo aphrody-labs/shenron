@@ -121,9 +121,9 @@ propriétaire courante interdit les nouveaux contrôles de lecture sur média sy
 qualifier un média réel autorisé, sans extraire de flux protégé ni contourner DRM.
 Les preuves historiques restent datées. Un build Bun plus récent ne prouve pas une accélération vidéo.
 
-Bun (`bun`, `bun -e`, Bun Shell, `bun test`, `bun build --compile`) et Rust (`cargo`, via
-`~/aphrody/scripts/build/rust/cargo-serial.sh` sur les machines Aphrody). Recherche : `rg`,
-`fd`. Pas de node/npm/npx/bunx ni d'utilitaires GNU pour le travail d'agent ; qualité par
+Bun (`bun`, `bun -e`, Bun Shell, `bun test`, `bun build --compile`) et Rust (`cargo`).
+Recherche : `rg`, `fd`. Pas de node/npm/npx/bunx ni d'utilitaires GNU pour le travail d'agent ;
+qualité par
 `bun check`, `bun lint`, `bun fmt` natifs (ni tsc, tsgo, oxlint, oxfmt, eslint).
 Rust : `just` (tâches Bun et Rust, `just --list`), alias Cargo de `.cargo/config.toml`
 (`cargo ck|lint|t|koharu|wasm`), cargo-nextest, cargo-deny ; référence `docs/development/rust.md`.
@@ -157,8 +157,7 @@ régénère `packages/api/openapi/public.json`, à commiter), `bun packages/ui/s
 Rust : `bun run check:rust`, `bun run clippy:rust` (`-D warnings`), `bun run test:rust`
 (nextest sur les crates de `cargo metadata`), `cargo nextest run -p shenron-rag <filtre>`. Le bloc généré de
 `[workspace.dependencies]` se régénère par `bun scripts/build/rust/workspace-deps.ts [--check]`
-(Aphrody en `git` à une `rev`) ; pour compiler contre un checkout local :
-`bun scripts/build/rust/local-aphrody-patch.ts ~/aphrody --fetch`.
+(Aphrody en `git` à une `rev`).
 
 Lancer et construire :
 
@@ -223,48 +222,40 @@ de réutiliser les chemins distants ; cette date ne garantit pas leur disponibil
   Fermer page et moteur en `finally`. Auth admin par session autorisée, cookies limités au
   domaine et supprimés après contrôle ; aucun en-tête secret global vers les iframes externes.
 
-### Fabrique VPS → image scellée → DBFR
+### Release : build, image scellée, activation (`scripts/deploy`)
 
-1. Vérifier les rôles avec `aphrody infra ssh exec --host vps -c 'hostname'` et l'équivalent
-   `--host dbfr`. Au contrôle du 2026-10-10 : fabrique `vps-203bea89`, production `vps-6732365f`.
-   `scripts/ops/release.ts` utilise un ancien contexte : inspecter son routage avant usage.
-2. Sur la fabrique, inspecter les helpers versionnés `scripts/ops/vps/shenron-docker-build.sh` et
-   `scripts/ops/vps/ship-shenron.sh`, le checkout et le verrou de build. Lancer le build dans tmux,
-   journal durable avec statut terminal explicite, puis attendre son succès. Le helper
-   utilise actuellement `~/build/transient/shenron-docker` et sérialise Cargo par le verrou lourd.
-3. Vérifier le SHA du worktree, l'image correspondante, `version` et le bot `--smoke`.
-   Lancer ensuite `scripts/ops/vps/ship-shenron.sh` dans tmux et attendre son succès : il capture le SHA
-   du worktree au lancement. Ne pas lancer un nouveau build qui déplace ce HEAD pendant
-   la livraison. DBFR charge l'image, assemble/scelle/vérifie puis active via Infra.
-4. Vérifier la release active (`readlink -f /srv/shenron/current`), les conteneurs, la santé
-   publique et les lecteurs réellement rendus. Conserver le chemin de rollback fourni.
-   Une modification de documentation seule ne nécessite aucun déploiement.
+Point d'entrée unique : `scripts/deploy/release.sh [--build-only | --ship-only] [revision]`
+(défaut `origin/main`), qui enchaîne `build-image.sh` puis `ship-image.sh` ; leurs en-têtes
+font foi. Il tourne sur tout hôte Linux x64 doté de Git, Bun, Rust (rustup) et docker ou
+podman, sans checkout Aphrody local ni nom d'hôte figé. Tout se règle par variables
+d'environnement (`docs/operations/ENV.md`) : `SHENRON_BUILD_REPO` (worktree de build réutilisé,
+défaut `$HOME/build/shenron`), `SHENRON_VFS_SOURCE` (fichier, URL ou `hôte:chemin`),
+`SHENRON_CONTAINER`, `SHENRON_DEPLOY_TARGET` (`ssh:<hôte>` | `registry:<dépôt>` | `local`,
+défaut `ssh:dbfr`), `SHENRON_DEPLOY_COMMAND`, `SHENRON_ACTIVE_COMMAND`, `SHENRON_ALLOW_ROLLBACK`,
+`SHENRON_FORCE_RUST`, `SHENRON_NEXT_BUILD_CACHE`, `SHENRON_PAYLOAD_ZSTD_LEVEL`,
+`SHENRON_SITE_BUILD_MIN_GIB`…
 
-Après inspection des helpers, commandes à exécuter dans le shell Bash de la fabrique
-(attendre `EXIT_CODE=0` du build avant de lancer la livraison) :
-
-```bash
-tmux new-session -d -s shenron-build 'bash "$HOME/src/shenron/scripts/ops/vps/shenron-docker-build.sh" > "$HOME/shenron-build.log" 2>&1; code=$?; printf "EXIT_CODE=%s\n" "$code" >> "$HOME/shenron-build.log"'
-tmux new-session -d -s shenron-ship 'bash "$HOME/src/shenron/scripts/ops/vps/ship-shenron.sh" > "$HOME/shenron-ship.log" 2>&1; code=$?; printf "EXIT_CODE=%s\n" "$code" >> "$HOME/shenron-ship.log"'
-```
-
-En cas d'échec, lire la dernière étape et le code de sortie avant de relancer. Pour `ENOSPC`,
-inventorier l'espace de `/`, `/tmp` et du disque de build ; ne jamais purger les volumes Docker
-ou les données protégées. Si le SHA et le standalone Next déjà construit sont inchangés,
-reprendre avec `bun scripts/build/server.ts --flavor production --target linux-x64 --skip-site`
-et un `TMPDIR` propre au job sur le disque qualifié, puis terminer les contrôles de l'image.
-Conserver les wrappers/verrous Cargo. Les scripts `.sh` transférés depuis Windows doivent être
-en LF : un CR final peut invalider une référence Docker. Les contrôles navigateur longs vont
-aussi dans tmux : le timeout SSH peut perdre la sortie partielle. Sonder les logs par extraits
-bornés plutôt que relancer le travail.
-
-Constaté le 2026-10-22 : le checkout `~/src/shenron` de la fabrique peut porter du travail
-d'autres agents et retarder sur `origin/main` ; ses helpers anciens prennent eux-mêmes
-`heavy.lock` et s'interbloquent avec le wrapper Cargo. Sans toucher ce checkout, exécuter les
-helpers d'`origin/main` extraits par `git -C ~/src/shenron show origin/main:<chemin>` vers
-`~/build/helpers/`, avec `SHENRON_BUILD_REVISION=<sha>`. Une sortie 143 du build du site vient
-d'`earlyoom` (SIGTERM sous 15 % de mémoire disponible, le build Next culmine vers 27 Gio) :
-le helper attend désormais `SHENRON_SITE_BUILD_MIN_GIB` (30 par défaut) avant cette étape.
+- Build : un `flock` par worktree sérialise les builds ; le build du site chevauche les lanes
+  Rust, VFS et bot ; chaque lane (site, bot, Rust) est sautée tant que l'arbre Git de ses
+  entrées et sa chaîne d'outils sont inchangés (`SHENRON_FORCE_SITE|BOT|RUST=1` pour forcer) :
+  un commit de doc ou du seul bot ne relance pas Next ; le cache Turbopack est conservé ; payload zstd 6 ;
+  chaque phase est horodatée (`== <phase> (+Ns)`). L'image est vérifiée (`version`, bot
+  `--smoke`) avant tout envoi. Une sortie 143 du site vient d'un tueur OOM : le build attend
+  `SHENRON_SITE_BUILD_MIN_GIB` (20 par défaut) de mémoire disponible.
+- Livraison : la cible `ssh:dbfr` diffuse l'image (zstd) et lance
+  `~/deploy-shenron-image.sh <sha> <tar>`, l'entrée d'activation Infra de DBFR, qui charge, assemble, scelle, vérifie puis
+  active. Les mutations de production restent celles d'Aphrody Infra sur la cible. Le garde de
+  rollback refuse un commit qui ne descend pas de la release active, sauf
+  `SHENRON_ALLOW_ROLLBACK=1`.
+- Une release modifiée à la main après scellement (fichiers hors manifeste) bloque toute
+  activation : l'adaptateur revérifie la release précédente comme cible de rollback. Ne jamais
+  copier de fichiers dans une release scellée.
+- Lancer le build long dans une session détachée avec journal durable, puis sonder ce journal
+  par extraits bornés plutôt que relancer. Après livraison, vérifier la release active
+  (`readlink -f /srv/shenron/current`), les conteneurs, `/api/health` et les lecteurs
+  réellement rendus. Pour `ENOSPC`, inventorier l'espace sans jamais purger les volumes Docker
+  ni les données protégées. Les scripts `.sh` doivent rester en LF.
+- Une modification de documentation seule ne nécessite aucun déploiement.
 
 ## Architecture
 
@@ -325,7 +316,7 @@ le helper attend désormais `SHENRON_SITE_BUILD_MIN_GIB` (30 par défaut) avant 
 - **Application de bureau** : **Shenron Studio** (`crates/shenron-desktop`, Tauri 3) est le
   seul binaire graphique, un identifiant, un dossier de données (`SHENRON_HOME`), un installeur
   (`scripts/build/desktop.ts`). Elle lance `shenron-server` en sidecar (avec `shenron-mcp` et
-  `koharu-sdk` à côté) et ouvre `/desktop` ; le moteur de l'éditeur (`koharu-library`,
+  `koharu-sdk` à côté) et ouvre `/studio` (le site local complet, `/desktop` et `/desktop/control` en sont l’accueil et le pilotage) ; le moteur de l’éditeur (`koharu-library`,
   propriétaire unique de l'état) tourne dans son processus derrière `koharu-app`, simple
   bibliothèque de commandes Specta (`docs/products/koharu/README.md`).
 - **Natif** : `@aphrody/shenron-native` (`bun:ffi` vers `crates/shenron-ffi`, `SHENRON_FFI_LIB`) ;

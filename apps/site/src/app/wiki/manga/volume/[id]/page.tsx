@@ -8,7 +8,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
-import { ExternalLink } from "@aphrody/shenron-ui/navigation/external";
+import { ExternalLink } from "@aphrody/shenron-ui/external";
 import { MediaFacts } from "@/components/media/MediaFacts";
 import { MediaPager } from "@/components/media/MediaPager";
 import { MediaTitle } from "@/components/media/MediaTitle";

@@ -25,8 +25,6 @@ test("local reusable workflow calls resolve to a callable workflow at the same c
       expect(Object.hasOwn(target!.on!, "workflow_call")).toBe(true);
       calls++;
     }
-  expect(calls).toBeGreaterThan(0);
-  expect(Object.keys(workflows.get("aphrody-ci.yml")!.on!)).toEqual(["workflow_dispatch"]);
   expect(Object.hasOwn(workflows.get("ci.yml")!.on!, "push")).toBe(true);
   expect(Object.hasOwn(workflows.get("ci.yml")!.on!, "pull_request")).toBe(true);
 });

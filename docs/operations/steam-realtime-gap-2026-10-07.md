@@ -32,7 +32,7 @@ privés. L'inventaire local existant reste en lecture seule.
 
 ## Vérification du checkout
 
-Le 7 octobre 2026, `cargo-serial.sh test -p shenron-re --features wasm
+Le 7 octobre 2026, `cargo test -p shenron-re --features wasm
 --locked` a réussi les 39 tests unitaires et 4 des 5 tests CLI. Le test
 `emb_cli_extracts_entries_to_a_new_directory_without_overwriting` échoue :
 le manifeste JSON compte zéro fichier extrait au lieu d'un. Ce défaut est

@@ -11,7 +11,7 @@
  * colours are projected; a token that aliases another (`ember`) is skipped.
  */
 import { join } from "node:path";
-import { tokens } from "../../../../packages/ui/src/tokens";
+import { tokens } from "@aphrody/shenron-ui/tokens";
 
 export const GENERATED_PATH = join(import.meta.dir, "tokens.generated.ts");
 

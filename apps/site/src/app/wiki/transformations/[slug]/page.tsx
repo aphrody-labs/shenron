@@ -2,13 +2,10 @@ import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { WikiDetailPage, WikiEntityHeader } from "@/components/wiki/WikiDetailPage";
 import { GatedWrap } from "@/components/GatedLink";
 import { TrackView } from "@/components/TrackView";
 import { WikiArticle, WikiSources } from "@/components/wiki/WikiArticle";
-import { WikiEditBar } from "@/components/wiki/WikiEditBar";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
-import { DomainBar } from "@/components/kit";
 import { assetUrl } from "@/lib/db-universe";
 import { getShenronTransformation, getTransformationsAvecArticle } from "@/lib/shenron";
 import { ogMeta } from "@/lib/og";
@@ -64,55 +61,48 @@ export default async function TransformationPage({
   }
 
   return (
-    <article className="wiki-container">
-      <TrackView entityType="transformation" entityId={t.id} entityName={t.name} image={t.image} />
-      <DomainBar domain="wiki" />
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <Breadcrumbs
-          items={[{ label: "Transformations", href: "/wiki/transformations" }, { label: t.name }]}
+    <WikiDetailPage
+      entity={t.name}
+      source="db_transformations"
+      tracker={
+        <TrackView
+          entityType="transformation"
+          entityId={t.id}
+          entityName={t.name}
+          image={t.image}
         />
-        <WikiDrawer />
-      </div>
-
-      <div className="mb-4">
-        <WikiEditBar
-          table="db_transformations"
-          id={t.id}
-          indexHref="/wiki/transformations"
-          label={t.name}
-        />
-      </div>
-
-      {/* Centered Hero Header - Toriyama Style */}
-      <header className="flex flex-col items-center justify-center text-center space-y-4 py-6">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-dbz-orange/15 border-2 border-black shadow-[2px_2px_0px_#000]">
-          <span className="w-2 h-2 rounded-full bg-dbz-orange animate-pulse" />
-          <span className="font-saiyan text-xs tracking-[0.2em] uppercase text-dbz-orange">
-            TRANSFORMATION CANON
-          </span>
-        </div>
-
-        <h1 className="font-saiyan text-4xl sm:text-6xl md:text-7xl font-bold tracking-wider text-white drop-shadow-[0_4px_16px_rgba(255,107,0,0.35)]">
-          {t.name}
-        </h1>
-
-        {t.character && (
-          <p className="text-base sm:text-lg text-white/80 font-medium">
-            Forme de{" "}
-            <GatedWrap
-              href={`/wiki/characters/${t.character.slug}`}
-              className="text-dbz-orange font-semibold underline-offset-4 hover:underline hover:text-dbz-yellow transition-colors"
-            >
-              {t.character.name}
-            </GatedWrap>
-          </p>
-        )}
-      </header>
-
-      {/* 2-Column Fandom-Style Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Fandom Toriyama Infobox */}
-        <aside className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
+      }
+      crumbs={[{ label: "Transformations", href: "/wiki/transformations" }, { label: t.name }]}
+      edit={{
+        table: "db_transformations",
+        id: t.id,
+        indexHref: "/wiki/transformations",
+        label: t.name,
+      }}
+      header={
+        <WikiEntityHeader
+          name={t.name}
+          chips={
+            <span className="font-saiyan text-xs tracking-[0.2em] uppercase text-dbz-orange">
+              TRANSFORMATION CANON
+            </span>
+          }
+        >
+          {t.character && (
+            <p className="text-base sm:text-lg text-white/80 font-medium">
+              Forme de{" "}
+              <GatedWrap
+                href={`/wiki/characters/${t.character.slug}`}
+                className="text-dbz-orange font-semibold underline-offset-4 hover:underline hover:text-dbz-yellow transition-colors"
+              >
+                {t.character.name}
+              </GatedWrap>
+            </p>
+          )}
+        </WikiEntityHeader>
+      }
+      aside={
+        <>
           <div className="wiki-infobox">
             <div className="wiki-infobox-header">FICHE TECHNIQUE</div>
             {t.image && (
@@ -188,23 +178,20 @@ export default async function TransformationPage({
               </ul>
             </div>
           )}
-        </aside>
+        </>
+      }
+    >
+      {t.article && t.article.trim() ? (
+        <div className="wiki-content-card">
+          <WikiArticle article={t.article} heading="Description" accent="orange" />
+        </div>
+      ) : (
+        <div className="wiki-content-card text-center py-12 text-sm italic text-white/50">
+          Cette transformation n&apos;a pas encore d&apos;article encyclopédique rédigé.
+        </div>
+      )}
 
-        {/* Main Article Content Card */}
-        <main className="lg:col-span-8 space-y-8 min-w-0">
-          {t.article && t.article.trim() ? (
-            <div className="wiki-content-card">
-              <WikiArticle article={t.article} heading="Description" accent="orange" />
-            </div>
-          ) : (
-            <div className="wiki-content-card text-center py-12 text-sm italic text-white/50">
-              Cette transformation n&apos;a pas encore d&apos;article encyclopédique rédigé.
-            </div>
-          )}
-
-          <WikiSources sources={t.articleSources as never} />
-        </main>
-      </div>
+      <WikiSources sources={t.articleSources as never} />
       <EntityParticipation
         kind="wiki"
         table="db_transformations"
@@ -212,6 +199,6 @@ export default async function TransformationPage({
         path={`/wiki/transformations/${slug}`}
         label={t.name}
       />
-    </article>
+    </WikiDetailPage>
   );
 }

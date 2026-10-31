@@ -50,7 +50,7 @@ import {
   type ChronologyConfig,
   type TimelineItem,
   type ResolvedTimelineItem,
-} from "@/lib/chronology";
+} from "@aphrody/shenron-config/chronology";
 import { PlainField } from "@/components/editor/PlainField";
 
 interface LoadResponse {

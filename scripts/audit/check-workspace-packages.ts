@@ -35,7 +35,7 @@ import {
   RUNTIME_CLASSES,
   stripNonCode,
   type Offence,
-} from "../../packages/config/src/guards";
+} from "@aphrody/shenron-config/guards";
 
 const ROOT = resolve(import.meta.dir, "../..");
 const BASELINE_FILE = join(import.meta.dir, "check-workspace-packages.baseline.json");

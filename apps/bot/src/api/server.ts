@@ -10,7 +10,13 @@ import {
 } from "./wiki-image-storage";
 import { movieStreamCandidates } from "./movie-stream-selection";
 import { declarePlaybackCapabilities } from "./playback-capabilities";
-import { resolveApiUrl, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
+import {
+  discordDefaultAvatar as defaultAvatar,
+  discordGuildIcon as guildIcon,
+  discordUserAvatar as userAvatar,
+  resolveApiUrl,
+  resolveSiteUrl,
+} from "@aphrody/shenron-config/public-urls";
 import { adminPipeline } from "./admin-pipeline";
 import { createActivityRoutes } from "./activity";
 import { describeSpawnError, episodeResolver } from "~/lib/episode-resolver";
@@ -63,7 +69,6 @@ import {
   type UpstreamReply,
 } from "./a2a-proxy";
 import { discordFetch, DiscordRESTError } from "~/lib/discord-rest";
-import { userAvatar, defaultAvatar, guildIcon } from "~/lib/discord-cdn";
 import { fetchDiscordUserCached } from "~/lib/discord-profiles";
 import { urlNueDe, urlSignee } from "~/lib/scans-couleur";
 import {
@@ -142,15 +147,19 @@ import { AdminReportGoalService } from "~/services/AdminReportGoalService";
 import { TrainingService } from "~/services/TrainingService";
 import { buildCommandCatalog, execCommand } from "~/api/command-exec";
 import { DatabaseService } from "~/db/index";
-import { RACE_IDS, isRaceId } from "~/lib/races";
+import { RACE_IDS, isRaceId } from "@aphrody/shenron-config/races";
 import { findLadderConflict, reloadRaceLevelRoles } from "~/lib/race-levels";
 import { buildXpBuckets } from "~/lib/xp";
 import { MessageTemplateService } from "~/services/MessageTemplateService";
 import { EconomyService } from "~/services/EconomyService";
 import { InflationService } from "~/services/InflationService";
 import { UrsafService } from "~/services/UrsafService";
-import { CANON_PRICES, CANON_INFLATION_FACTOR, ZENI_YEN_PARITY } from "~/lib/economy-canon";
-import { indexedPrice } from "~/lib/inflation-rules";
+import {
+  CANON_PRICES,
+  CANON_INFLATION_FACTOR,
+  ZENI_YEN_PARITY,
+} from "@aphrody/shenron-config/economy-canon";
+import { indexedPrice } from "@aphrody/shenron-config/inflation-rules";
 import { CardService } from "~/services/CardService";
 import { CommandPermissionsService } from "~/services/CommandPermissionsService";
 import { GaugeService } from "~/services/GaugeService";
@@ -185,7 +194,7 @@ import {
   crunchyrollSeriesSummary,
   resolveCrunchyroll,
   type ShenronEpisodeRow,
-} from "../../../../packages/media/src/crunchyroll-mapping";
+} from "@aphrody/shenron-media/crunchyroll-mapping";
 import {
   botConversationStore,
   createBotShenronApi,

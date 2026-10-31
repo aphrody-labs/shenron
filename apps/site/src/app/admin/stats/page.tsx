@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Bulle, Eclair, Tendance, Trophee } from "@aphrody/shenron-ui/icones";
 import { api } from "@/lib/admin-api";
 import { fmtNum } from "@/lib/admin-format";
-import { formatZeni } from "@/lib/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 
 interface User {
   id: string;

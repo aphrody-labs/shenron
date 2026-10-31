@@ -27,7 +27,7 @@ import {
 import { GuildOnly } from "~/guards/GuildOnly";
 import { AdminOnly } from "~/guards/AdminOnly";
 import { EconomyService } from "~/services/EconomyService";
-import { formatZeni } from "~/lib/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 
 import { SHENRON_THEME, SHENRON_SEPARATORS } from "~/lib/embeds";
 

@@ -20,9 +20,7 @@
     "./remote-ocr": "./src/remote-ocr.ts",
     "./sha256": "./src/sha256.ts",
     "./video-plan": "./src/video-plan.ts",
-    "./episode-video-delivery": "./src/episode-video-delivery.ts",
     "./crunchyroll-mapping": "./src/crunchyroll-mapping.ts",
-    "./episode-video-artifacts": "./src/episode-video-artifacts.ts",
     "./episode-playback": "./src/episode-playback.ts"
   },
   "publishConfig": {
@@ -32,7 +30,7 @@
   "scripts": {
     "typecheck": "bun check --project tsconfig.json",
     "test": "bun test",
-    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src"
+    "lint": "bun lint -c ../../.oxlintrc.json src"
   },
   "dependencies": {
     "@aphrody/http": "catalog:",
@@ -51,9 +49,7 @@
       "./remote-ocr": "pure",
       "./sha256": "pure",
       "./video-plan": "pure",
-      "./episode-video-delivery": "pure",
       "./crunchyroll-mapping": "pure",
-      "./episode-video-artifacts": "bun",
       "./episode-playback": "pure"
     }
   }

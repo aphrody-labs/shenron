@@ -17,7 +17,7 @@
 import { describe, expect, test } from "bun:test";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { GATEABLE_CATEGORIES } from "../src/lib/wiki-launch";
+import { GATEABLE_CATEGORIES } from "@aphrody/shenron-config/wiki-launch";
 
 const SRC = join(import.meta.dir, "..", "src");
 const APP = join(SRC, "app");

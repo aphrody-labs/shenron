@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { Dragon, Wish } from "@/lib/db-universe";
 import { resolveCharacterSlugByName } from "@/lib/wiki-slugs";
-import { isPathPublic, type AccessSnapshot } from "@/lib/wiki-launch";
+import { isPathPublic, type AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import { useT } from "@/components/T";
 import { assetUrl } from "@/lib/assets";
 

@@ -14,6 +14,7 @@ the root `AGENTS.md`.
 | SVG pipeline                                                     | [`architecture/pipeline-svg.md`](architecture/pipeline-svg.md)                                                                                      |
 | Lecteur HLS et génération vidéo                                  | [`video/README.md`](video/README.md)                                                                                                                |
 | Environment variables                                            | [`operations/ENV.md`](operations/ENV.md)                                                                                                            |
+| Database parity (PostgreSQL, SQLite)                             | [`operations/database-parity.md`](operations/database-parity.md)                                                                                    |
 | RAG and LLM compute (compute host, databases, tunnels)           | [`operations/compute-rag.md`](operations/compute-rag.md)                                                                                            |
 | Pilotage admin natif (FFI, WASM, jobs et services Docker)        | [`operations/admin-native-pipeline.md`](operations/admin-native-pipeline.md)                                                                        |
 | SSH WireGuard (VPS, dbfr, Windows, compte Omar)                  | [`operations/ssh-wireguard.md`](operations/ssh-wireguard.md)                                                                                        |
@@ -23,6 +24,7 @@ the root `AGENTS.md`.
 | Rust development (crates, gates, CI)                             | [`development/rust.md`](development/rust.md)                                                                                                        |
 | Développement distant (VPS, VS Code, WSL propre, sauvegarde)     | [`development/remote-dev.md`](development/remote-dev.md)                                                                                            |
 | Bun dependencies                                                 | [`operations/BUN-PACKAGE-MANAGER.md`](operations/BUN-PACKAGE-MANAGER.md)                                                                            |
+| Release: build, ship, activate (`scripts/deploy`)                | [`operations/CONTAINER-COMPLET.md`](operations/CONTAINER-COMPLET.md)                                                                                |
 | Operations (delegated to `aphrody-infra`)                        | [`operations/INFRA-DELEGATION.md`](operations/INFRA-DELEGATION.md)                                                                                  |
 | Content enrichment session                                       | [`operations/content-session-pipeline.md`](operations/content-session-pipeline.md)                                                                  |
 | Bun agent persona                                                | [`operations/agent-home-bun.md`](operations/agent-home-bun.md)                                                                                      |
@@ -38,7 +40,7 @@ the root `AGENTS.md`.
 | OpenAI compatibility, MCP, A2A, skills, and plugin               | [`architecture/openai-compatibility.md`](architecture/openai-compatibility.md)                                                                      |
 | Website home and shell invariants                                | [`products/accueil-et-shell.md`](products/accueil-et-shell.md)                                                                                      |
 | Participatory site and agent API                                 | [`products/site-participatif.md`](products/site-participatif.md)                                                                                    |
-| TB3 wish list: scoping and roadmap (no implementation) | [`products/tb3-feuille-de-route.md`](products/tb3-feuille-de-route.md) |
+| TB3 wish list: scoping and roadmap (no implementation)           | [`products/tb3-feuille-de-route.md`](products/tb3-feuille-de-route.md)                                                                              |
 | Shenron Studio                                                   | [`products/koharu/README.md`](products/koharu/README.md), with archived upstream docs in [`reference/koharu/upstream/`](reference/koharu/upstream/) |
 | Databooks: policy                                                | [`reference/databooks-doctrine.md`](reference/databooks-doctrine.md)                                                                                |
 | Databooks: export, OCR, API                                      | [`guides/databooks-transcription.md`](guides/databooks-transcription.md)                                                                            |

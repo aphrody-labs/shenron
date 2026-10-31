@@ -22,7 +22,7 @@ import { WikiImg } from "@/components/wiki/WikiImg";
 // fait échouer le rendu (`Module not found: dns/net/tls`). L'instantané d'accès
 // est résolu par la page et descend en props.
 import { ClientGatedWrap } from "@/components/GatedClientLink";
-import type { AccessSnapshot } from "@/lib/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import type { CharacterVariant } from "@/lib/shenron";
 import type { CharacterSagaMessages } from "@/lib/wiki-character-version-messages";
 import { verifiedCharacterVariantImage } from "@/lib/wiki-image-evidence";

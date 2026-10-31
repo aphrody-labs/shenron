@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { GamesHub } from "@/components/games/GamesHub";
 import { ogMeta } from "@/lib/og";
+import { getLaunchConfig } from "@/lib/wiki-launch-config";
 export const metadata: Metadata = {
   title: "Jeux Dragon Ball",
   description:
@@ -12,6 +13,6 @@ export const metadata: Metadata = {
     canonical: "/games",
   }),
 };
-export default function GamesPage() {
-  return <GamesHub />;
+export default async function GamesPage() {
+  return <GamesHub access={await getLaunchConfig()} />;
 }

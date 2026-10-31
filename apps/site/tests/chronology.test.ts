@@ -15,7 +15,7 @@ import {
   resolveChronologyConfig,
   timelineKey,
   type TimelineItem,
-} from "../src/lib/chronology";
+} from "@aphrody/shenron-config/chronology";
 
 const ep = (id: number, over: Partial<TimelineItem> = {}): TimelineItem => ({
   kind: "episode",

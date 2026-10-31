@@ -22,7 +22,7 @@ import {
 import { useState } from "react";
 import { api } from "@/lib/admin-api";
 import { fmtNum } from "@/lib/admin-format";
-import { formatZeni } from "@/lib/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 
 interface EconomyStats {
   zeni: {

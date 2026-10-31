@@ -4,7 +4,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { startEngine } from "@aphrody/agent-browser/engine";
 import { TestPage } from "@aphrody/web-test";
-import { SectionNavigation } from "../../../../packages/ui/src/public/SectionNavigation";
+import { SectionNavigation } from "@aphrody/shenron-ui/public/SectionNavigation";
 
 test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
   "shared section navigation scrolls before hydration in native desktop and mobile viewports",

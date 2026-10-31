@@ -8,7 +8,7 @@ import { WikiImg } from "@/components/wiki/WikiImg";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
 import { StreamRail } from "@/components/stream/StreamRail";
 import type { StreamingEpisode, StreamingGroup } from "@/lib/streaming-catalogue";
-import type { AccessSnapshot } from "@/lib/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import { useStreamingText } from "@/lib/streaming-text";
 import { StreamingSaveButton } from "./StreamingSaveButton";
 import styles from "./StreamingBrowser.module.css";

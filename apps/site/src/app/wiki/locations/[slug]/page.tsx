@@ -1,13 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { GatedWrap } from "@/components/GatedLink";
 import { dbUniverse } from "@/lib/db-universe";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiPageShell } from "@/components/wiki/WikiPageShell";
-import { WikiEditBar } from "@/components/wiki/WikiEditBar";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
-import { DomainBar } from "@/components/kit";
+import { WikiDetailPage, WikiEntityHeader } from "@/components/wiki/WikiDetailPage";
 import { ogMeta } from "@/lib/og";
 
 export const revalidate = 3600;
@@ -51,25 +46,22 @@ export default async function LocationDetailPage({
   });
 
   return (
-    <WikiPageShell>
-      <DomainBar domain="wiki" />
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <Breadcrumbs
-          items={[
-            { label: "Encyclopédie", href: "/wiki" },
-            { label: "Lieux & Sanctuaires", href: "/wiki/locations" },
-            { label: loc.name, href: `/wiki/locations/${loc.slug}` },
-          ]}
-        />
-        <WikiDrawer />
-      </div>
-      <WikiEditBar table="db_locations" id={loc.id} indexHref="/wiki/locations" label={loc.name} />
-
-      {/* Fiche d'en-tête */}
-      <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.08] to-white/[0.02] p-6 sm:p-8 backdrop-blur-md space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
+    <WikiDetailPage
+      entity={loc.name}
+      source="db_locations"
+      crumbs={[
+        { label: "Encyclopédie", href: "/wiki" },
+        { label: "Lieux & Sanctuaires", href: "/wiki/locations" },
+        { label: loc.name, href: `/wiki/locations/${loc.slug}` },
+      ]}
+      edit={{ table: "db_locations", id: loc.id, indexHref: "/wiki/locations", label: loc.name }}
+      header={
+        <WikiEntityHeader
+          name={loc.name}
+          nameJa={loc.name_ja}
+          nameRomaji={loc.name_romaji}
+          chips={
+            <>
               <span className="rounded-md bg-orange-500/20 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-orange-400">
                 {loc.realm_type}
               </span>
@@ -78,43 +70,34 @@ export default async function LocationDetailPage({
                   🪐 {loc.planet}
                 </span>
               )}
-            </div>
-            <h1 className="text-3xl font-black text-white sm:text-4xl">{loc.name}</h1>
-            {loc.name_ja && (
-              <div className="text-sm font-medium text-white/50">
-                {loc.name_ja} {loc.name_romaji ? `— ${loc.name_romaji}` : ""}
-              </div>
-            )}
-          </div>
+            </>
+          }
+        />
+      }
+      aside={
+        <div className="wiki-infobox">
+          <div className="wiki-infobox-header">{loc.name}</div>
+          <table className="w-full text-left text-xs sm:text-sm">
+            <tbody>
+              <tr className="wiki-infobox-row">
+                <th className="wiki-infobox-label">Domaine</th>
+                <td className="wiki-infobox-value font-semibold text-white">{loc.realm_type}</td>
+              </tr>
+              <tr className="wiki-infobox-row">
+                <th className="wiki-infobox-label">Première apparition Manga</th>
+                <td className="wiki-infobox-value">{loc.debut_chapter ?? "Non renseigné"}</td>
+              </tr>
+              <tr className="wiki-infobox-row">
+                <th className="wiki-infobox-label">Première apparition Anime</th>
+                <td className="wiki-infobox-value">{loc.debut_episode ?? "Non renseigné"}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-
-        <div className="rounded-2xl border border-white/10 bg-black/30 p-5 leading-relaxed text-sm text-white/80">
-          {loc.description}
-        </div>
-
-        {/* Métadonnées canoniques */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-white/10 pt-6">
-          <div className="rounded-xl bg-white/5 p-4">
-            <div className="text-[11px] uppercase font-bold text-white/40">Domaine</div>
-            <div className="mt-1 text-sm font-semibold text-white">{loc.realm_type}</div>
-          </div>
-          <div className="rounded-xl bg-white/5 p-4">
-            <div className="text-[11px] uppercase font-bold text-white/40">
-              Première apparition Manga
-            </div>
-            <div className="mt-1 text-sm font-semibold text-white">
-              {loc.debut_chapter ?? "Non renseigné"}
-            </div>
-          </div>
-          <div className="rounded-xl bg-white/5 p-4">
-            <div className="text-[11px] uppercase font-bold text-white/40">
-              Première apparition Anime
-            </div>
-            <div className="mt-1 text-sm font-semibold text-white">
-              {loc.debut_episode ?? "Non renseigné"}
-            </div>
-          </div>
-        </div>
+      }
+    >
+      <div className="rounded-2xl border border-white/10 bg-black/30 p-5 leading-relaxed text-sm text-white/80">
+        {loc.description}
       </div>
 
       {/* Événements marquants */}
@@ -170,16 +153,6 @@ export default async function LocationDetailPage({
           </div>
         </div>
       )}
-
-      {/* Retour navigation */}
-      <div className="pt-4 border-t border-white/10 flex justify-between">
-        <Link
-          href="/wiki/locations"
-          className="text-xs font-semibold text-orange-400 hover:text-orange-300 transition-colors"
-        >
-          ← Retour à la liste des lieux
-        </Link>
-      </div>
-    </WikiPageShell>
+    </WikiDetailPage>
   );
 }

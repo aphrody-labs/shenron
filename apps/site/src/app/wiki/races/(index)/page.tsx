@@ -1,11 +1,8 @@
 // Keep the index loader scoped to the catalogue, not streamed detail routes.
-import { ContributeRail, DomainBar } from "@/components/kit";
 import { getShenronRaces, getShenronCharacterCards } from "@/lib/shenron";
-import { slugDeRace } from "@/lib/races-alias";
+import { slugDeRace } from "@aphrody/shenron-config/races-alias";
 import Link from "next/link";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
-import { PageHero } from "@/components/PageHero";
+import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
 import { pageHero } from "@/lib/banner-config";
 import { assetUrl } from "@/lib/db-universe";
 import type { Metadata } from "next";
@@ -142,135 +139,126 @@ export default async function RacesPage() {
   }
 
   return (
-    <div className="reveal-up min-h-screen">
-      <PageHero
-        eyebrow="Encyclopédie"
-        title="Races & Peuples"
-        lead={`${races.length} races répertoriées dans l'univers Dragon Ball. Découvrez leurs planètes d'origine, leurs particularités et leurs principaux représentants.`}
-        image={heroImage}
-        imageAlt="Races Dragon Ball"
-      />
+    <WikiIndexPage
+      eyebrow="Encyclopédie"
+      title="Races & Peuples"
+      lead={`${races.length} races répertoriées dans l'univers Dragon Ball. Découvrez leurs planètes d'origine, leurs particularités et leurs principaux représentants.`}
+      image={heroImage}
+      imageAlt="Races Dragon Ball"
+      crumbs={[{ label: "Races & peuples" }]}
+      category="races"
+      contributeKey="kit.contribute.what.race"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {races.map((race, idx) => {
+          const theme = colorThemes[race.slug] || defaultTheme;
 
-      <div className="wiki-container space-y-8">
-        <DomainBar domain="wiki" />
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <Breadcrumbs items={[{ label: "Races & peuples" }]} />
-          <WikiDrawer />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {races.map((race, idx) => {
-            const theme = colorThemes[race.slug] || defaultTheme;
+          const raceChars = parRace.get(race.slug) ?? [];
+          const charAvatars = raceChars.filter((c) => !!c.image).slice(0, 4);
 
-            const raceChars = parRace.get(race.slug) ?? [];
-            const charAvatars = raceChars.filter((c) => !!c.image).slice(0, 4);
+          return (
+            <Link
+              key={race.id}
+              href={`/wiki/races/${race.slug}`}
+              className={`group relative flex min-h-[20rem] h-full flex-col justify-between overflow-hidden rounded-xl border bg-zinc-950/40 p-6 sm:p-8 transition-all duration-500 hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-dbz-orange motion-reduce:transition-none motion-reduce:hover:scale-100 ${theme.border} ${theme.hoverBorder} ${theme.glow} reveal-up`}
+              style={{ animationDelay: `${0.1 + idx * 0.05}s` }}
+            >
+              {heroImage && (
+                <div className="pointer-events-none absolute inset-0 opacity-10">
+                  <img
+                    src={heroImage}
+                    alt=""
+                    loading="lazy"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              )}
+              {/* Glowing background gradient */}
+              <div
+                className={`absolute inset-0 bg-gradient-to-br ${theme.bgGrad} opacity-40 transition-opacity group-hover:opacity-60 pointer-events-none`}
+              />
 
-            return (
-              <Link
-                key={race.id}
-                href={`/wiki/races/${race.slug}`}
-                className={`group relative flex min-h-[20rem] h-full flex-col justify-between overflow-hidden rounded-xl border bg-zinc-950/40 p-6 sm:p-8 transition-all duration-500 hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-dbz-orange motion-reduce:transition-none motion-reduce:hover:scale-100 ${theme.border} ${theme.hoverBorder} ${theme.glow} reveal-up`}
-                style={{ animationDelay: `${0.1 + idx * 0.05}s` }}
-              >
-                {heroImage && (
-                  <div className="pointer-events-none absolute inset-0 opacity-10">
-                    <img
-                      src={heroImage}
-                      alt=""
-                      loading="lazy"
-                      className="h-full w-full object-cover"
-                    />
+              {/* Watermark Japanese Characters */}
+              {race.nameJa && (
+                <div className="absolute right-[-20px] bottom-[-20px] font-jp text-[130px] font-bold text-white/[0.02] group-hover:text-white/[0.04] transition-colors duration-500 select-none pointer-events-none z-0">
+                  {race.nameJa}
+                </div>
+              )}
+
+              <div className="relative z-10 space-y-4">
+                <header className="flex justify-between items-start">
+                  <div className="min-w-0">
+                    <h2
+                      className={`break-words text-2xl sm:text-3xl font-saiyan tracking-wider leading-tight ${theme.text} mb-2`}
+                    >
+                      {race.name}
+                    </h2>
+                    {race.nameJa && (
+                      <p className="font-jp text-xs text-white/50 tracking-wider">{race.nameJa}</p>
+                    )}
                   </div>
-                )}
-                {/* Glowing background gradient */}
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${theme.bgGrad} opacity-40 transition-opacity group-hover:opacity-60 pointer-events-none`}
-                />
+                  <span
+                    className={`inline-flex min-h-8 items-center rounded border px-2.5 py-1 text-xs font-bold uppercase tracking-wider ${theme.badge}`}
+                  >
+                    {raceChars.length} Guerrier{raceChars.length > 1 ? "s" : ""}
+                  </span>
+                </header>
 
-                {/* Watermark Japanese Characters */}
-                {race.nameJa && (
-                  <div className="absolute right-[-20px] bottom-[-20px] font-jp text-[130px] font-bold text-white/[0.02] group-hover:text-white/[0.04] transition-colors duration-500 select-none pointer-events-none z-0">
-                    {race.nameJa}
-                  </div>
+                {race.description && (
+                  <p className="text-gray-400 line-clamp-4 font-sans leading-relaxed text-sm">
+                    {race.description}
+                  </p>
                 )}
+              </div>
 
-                <div className="relative z-10 space-y-4">
-                  <header className="flex justify-between items-start">
-                    <div className="min-w-0">
-                      <h2
-                        className={`break-words text-2xl sm:text-3xl font-saiyan tracking-wider leading-tight ${theme.text} mb-2`}
-                      >
-                        {race.name}
-                      </h2>
-                      {race.nameJa && (
-                        <p className="font-jp text-xs text-white/50 tracking-wider">
-                          {race.nameJa}
-                        </p>
+              {/* Representatives / Card Footer */}
+              <div className="relative z-10 flex items-center justify-between mt-auto pt-6 border-t border-white/5">
+                {charAvatars.length > 0 ? (
+                  <div className="flex items-center gap-3">
+                    <div className="flex -space-x-3">
+                      {charAvatars.map((c) => (
+                        <div
+                          key={c.id}
+                          className="relative w-8 h-8 rounded-full border border-zinc-900 overflow-hidden bg-zinc-800"
+                          title={c.name}
+                        >
+                          <img
+                            src={assetUrl(c.image)}
+                            alt={c.name}
+                            width={32}
+                            height={32}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover object-top"
+                          />
+                        </div>
+                      ))}
+                      {raceChars.length > 4 && (
+                        <div className="w-8 h-8 rounded-full border border-zinc-900 bg-zinc-900 flex items-center justify-center text-[10px] font-bold text-white">
+                          +{raceChars.length - 4}
+                        </div>
                       )}
                     </div>
-                    <span
-                      className={`inline-flex min-h-8 items-center rounded border px-2.5 py-1 text-xs font-bold uppercase tracking-wider ${theme.badge}`}
-                    >
-                      {raceChars.length} Guerrier{raceChars.length > 1 ? "s" : ""}
+                    <span className="text-xs font-bold text-white/55 group-hover:text-white/70 transition-colors uppercase tracking-wider font-sans">
+                      Membres
                     </span>
-                  </header>
-
-                  {race.description && (
-                    <p className="text-gray-400 line-clamp-4 font-sans leading-relaxed text-sm">
-                      {race.description}
-                    </p>
-                  )}
-                </div>
-
-                {/* Representatives / Card Footer */}
-                <div className="relative z-10 flex items-center justify-between mt-auto pt-6 border-t border-white/5">
-                  {charAvatars.length > 0 ? (
-                    <div className="flex items-center gap-3">
-                      <div className="flex -space-x-3">
-                        {charAvatars.map((c) => (
-                          <div
-                            key={c.id}
-                            className="relative w-8 h-8 rounded-full border border-zinc-900 overflow-hidden bg-zinc-800"
-                            title={c.name}
-                          >
-                            <img
-                              src={assetUrl(c.image)}
-                              alt={c.name}
-                              width={32}
-                              height={32}
-                              loading="lazy"
-                              decoding="async"
-                              className="w-full h-full object-cover object-top"
-                            />
-                          </div>
-                        ))}
-                        {raceChars.length > 4 && (
-                          <div className="w-8 h-8 rounded-full border border-zinc-900 bg-zinc-900 flex items-center justify-center text-[10px] font-bold text-white">
-                            +{raceChars.length - 4}
-                          </div>
-                        )}
-                      </div>
-                      <span className="text-xs font-bold text-white/55 group-hover:text-white/70 transition-colors uppercase tracking-wider font-sans">
-                        Membres
-                      </span>
-                    </div>
-                  ) : (
-                    <span className="text-xs font-bold text-white/55 uppercase tracking-wider font-sans">
-                      Aucun membre répertorié
-                    </span>
-                  )}
-                  <span
-                    aria-hidden="true"
-                    className={`text-xl ${theme.text} translate-x-[-5px] opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 transition-all duration-300 motion-reduce:transition-none`}
-                  >
-                    →
+                  </div>
+                ) : (
+                  <span className="text-xs font-bold text-white/55 uppercase tracking-wider font-sans">
+                    Aucun membre répertorié
                   </span>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-        <ContributeRail className="mt-14" quoiKey="kit.contribute.what.race" />
+                )}
+                <span
+                  aria-hidden="true"
+                  className={`text-xl ${theme.text} translate-x-[-5px] opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 transition-all duration-300 motion-reduce:transition-none`}
+                >
+                  →
+                </span>
+              </div>
+            </Link>
+          );
+        })}
       </div>
-    </div>
+    </WikiIndexPage>
   );
 }
