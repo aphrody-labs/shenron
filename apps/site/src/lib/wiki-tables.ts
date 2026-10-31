@@ -369,6 +369,11 @@ export const WIKI_TABLE_SPECS: Record<string, WikiTableSpec> = {
     pk: ["character_id", "version_character_id"],
     mutableColumns: ["characterId", "versionCharacterId", "label", "sortOrder", "visible"],
   },
+  db_character_variant_battles: {
+    name: "db_character_variant_battles",
+    pk: "id",
+    mutableColumns: ["variantId", "battleId", "sortOrder", "visible"],
+  },
   db_wiki_sections: {
     name: "db_wiki_sections",
     pk: "id",

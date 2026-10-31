@@ -1061,6 +1061,25 @@ export const botBattles = bot.table("db_battles", {
   ...visibleCol,
 });
 
+/** Editorial assignment of a battle to one character version in one saga. */
+export const botCharacterVariantBattles = bot.table(
+  "db_character_variant_battles",
+  {
+    id: int("id").primaryKey().generatedAlwaysAsIdentity(),
+    variantId: int("variant_id").notNull(),
+    battleId: int("battle_id").notNull(),
+    sortOrder: int("sort_order").notNull().default(0),
+    visible: boolean("visible").notNull().default(true),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.variantId],
+      foreignColumns: [botCharacterVariants.id],
+    }).onDelete("cascade"),
+    foreignKey({ columns: [table.battleId], foreignColumns: [botBattles.id] }).onDelete("cascade"),
+  ],
+);
+
 /** Événement de la chronologie universelle par Âge diégétique (Daizenshuu 7 / Chōzenshū). */
 export const botTimelineEvents = bot.table("db_timeline_events", {
   id: int("id").primaryKey(),

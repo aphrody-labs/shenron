@@ -84,6 +84,7 @@ const FK_TARGET: Record<string, { table: string; pk: string }> = {
   debutSagaId: { table: "db_sagas", pk: "id" },
   targetGameId: { table: "db_games", pk: "id" },
   techniqueId: { table: "db_techniques", pk: "id" },
+  battleId: { table: "db_battles", pk: "id" },
   gameId: { table: "db_games", pk: "id" },
   sourceId: { table: "db_sources", pk: "id" },
   licenseKey: { table: "db_licenses", pk: "key" },

@@ -8,6 +8,7 @@ import {
   botCharacterContinuities,
   botCharacterTechniques,
   botCharacterVariants,
+  botCharacterVariantBattles,
   botBattles,
   botEpisodes,
   botVoiceActors,
@@ -340,7 +341,7 @@ export async function getShenronCharacterContinuities(
   }
 }
 
-interface CharacterBattle {
+export interface CharacterBattle {
   id: number;
   slug: string;
   title: string;
@@ -349,6 +350,50 @@ interface CharacterBattle {
   winnerName: string | null;
   climaxSummary: string | null;
   location: string | null;
+}
+
+/** Combats explicitement rattachés à une version, déjà ordonnés dans la saga. */
+export async function getShenronCharacterVariantBattles(
+  variantId: number,
+): Promise<CharacterBattle[]> {
+  try {
+    const rows = await db
+      .select({ battle: botBattles })
+      .from(botCharacterVariantBattles)
+      .innerJoin(
+        botCharacterVariants,
+        eq(botCharacterVariantBattles.variantId, botCharacterVariants.id),
+      )
+      .innerJoin(botBattles, eq(botCharacterVariantBattles.battleId, botBattles.id))
+      .where(
+        and(
+          eq(botCharacterVariantBattles.variantId, variantId),
+          eq(botCharacterVariantBattles.visible, true),
+          eq(botCharacterVariants.visible, true),
+          eq(botBattles.visible, true),
+          eq(botCharacterVariants.sagaId, botBattles.sagaId),
+        ),
+      )
+      .orderBy(
+        sql`COALESCE(${botBattles.mangaChapterStart}, ${botBattles.episodeStart}, ${botBattles.mangaVolumeStart})`,
+        asc(botCharacterVariantBattles.sortOrder),
+        asc(botBattles.id),
+      )
+      .limit(60);
+    return rows.map(({ battle }) => ({
+      id: battle.id,
+      slug: battle.slug,
+      title: battle.title,
+      titleJa: battle.titleJa,
+      series: battle.series,
+      winnerName: battle.winnerName,
+      climaxSummary: battle.climaxSummary,
+      location: battle.location,
+    }));
+  } catch (error) {
+    console.error("[shenron] getShenronCharacterVariantBattles a échoué:", error);
+    return [];
+  }
 }
 
 interface CharacterVoiceActor {
@@ -863,7 +908,20 @@ export async function getShenronCharacterVariants(
           eq(botCharacterVariants.visible, true),
         ),
       )
-      .orderBy(asc(botSagas.series), asc(botSagas.orderIdx), asc(botCharacterVariants.sortOrder));
+      .orderBy(
+        sql`CASE ${botSagas.series}
+          WHEN 'DB' THEN 0
+          WHEN 'DBZ' THEN 1
+          WHEN 'DB_DAIMA' THEN 2
+          WHEN 'DBS' THEN 3
+          WHEN 'DBS_MANGA' THEN 4
+          WHEN 'DBS_MOVIE' THEN 5
+          WHEN 'DBGT' THEN 6
+          ELSE 7
+        END`,
+        asc(botSagas.orderIdx),
+        asc(botCharacterVariants.sortOrder),
+      );
     return rows.map(({ v, s }) => ({
       id: v.id,
       slug: v.slug,

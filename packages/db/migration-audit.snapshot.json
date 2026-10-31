@@ -1,7 +1,7 @@
 {
 	"journal": {
-		"entries": 20,
-		"files": 32,
+		"entries": 21,
+		"files": 33,
 		"journaled": [
 			"0000_dark_johnny_blaze",
 			"0001_natural_switch",
@@ -22,7 +22,8 @@
 			"0024_legacy_wiki_visibility",
 			"0030_character_relations_admin",
 			"0031_character_continuities",
-			"0032_character_variant_content"
+			"0032_character_variant_content",
+			"0033_character_variant_battles"
 		],
 		"unjournaled": [
 			"0007_post_cms",
@@ -159,6 +160,12 @@
 				"tag": "0032_character_variant_content",
 				"when": 1793462000000,
 				"breakpoints": true
+			},
+			{
+				"idx": 20,
+				"tag": "0033_character_variant_battles",
+				"when": 1793463000000,
+				"breakpoints": true
 			}
 		]
 	},
@@ -205,7 +212,8 @@
 		"0027_schema_parity_repairs",
 		"0030_character_relations_admin",
 		"0031_character_continuities",
-		"0032_character_variant_content"
+		"0032_character_variant_content",
+		"0033_character_variant_battles"
 	],
 	"hashes": {
 		"0000_dark_johnny_blaze": "4acfbb67d895cfc6d575f03198d0f353e688c5c918bc7c1f29e82de7707b5636",
@@ -239,6 +247,7 @@
 		"0028_type_and_nullability_parity": "6d2db74b108976010f3d58fd9145a18e300096d3a08e530e526fd2658c449710",
 		"0030_character_relations_admin": "a605f1dde37724ef6a3825577ef3808dee9f209f590f32e873915f976c0748cc",
 		"0031_character_continuities": "927452de40aa9afae34babfcf9fa65b6e142b6b9d7eb046c9ffdef777dc1bea1",
-		"0032_character_variant_content": "328ff407ebdb80add599954e8dcf658bcad12ebc5718880752e051f56d461fe0"
+		"0032_character_variant_content": "328ff407ebdb80add599954e8dcf658bcad12ebc5718880752e051f56d461fe0",
+		"0033_character_variant_battles": "8af7884a900b138b03bf7c86a01d9cc66323b2fc2b3421a7f277d9806bc89899"
 	}
 }

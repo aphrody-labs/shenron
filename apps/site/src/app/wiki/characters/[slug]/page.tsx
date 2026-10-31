@@ -19,6 +19,7 @@ import {
   getShenronCharacterContinuities,
   getShenronCharacterIds,
   getShenronCharacterVariants,
+  getShenronCharacterVariantBattles,
 } from "@/lib/shenron";
 import { assetUrl } from "@/lib/db-universe";
 import type { Metadata } from "next";
@@ -37,8 +38,10 @@ import { getWikiCharacterVersionText } from "@/lib/wiki-character-version-messag
 import { verifiedCharacterVariantImage } from "@/lib/wiki-image-evidence";
 import {
   createGokuPreviewVariants,
-  filterGokuVariantsForSeries,
+  getGokuPreviewTimelines,
   getGokuPreviewRelationSlugs,
+  getGokuPreviewBattles,
+  resolveGokuPreviewTimeline,
 } from "@/lib/goku-character-preview";
 import { CHARACTER_CANONICAL_SLUGS, resolveCharacterParam } from "@/lib/wiki-slugs";
 
@@ -127,13 +130,6 @@ function plainText(md: string, max = 160): string {
   return t.length > max ? `${t.slice(0, max - 1).trimEnd()}…` : t;
 }
 
-const GOKU_SERIES_VERSIONS = [
-  { series: "DB", message: "gokuDb" },
-  { series: "DBZ", message: "gokuDbz" },
-  { series: "DBS", message: "gokuDbs" },
-  { series: "DBGT", message: "gokuGt" },
-] as const;
-
 export async function generateMetadata({
   params,
 }: {
@@ -169,12 +165,16 @@ export default async function CharacterPage({
   preview = false,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams?: Promise<{ saga?: string | string[]; series?: string | string[] }>;
+  searchParams?: Promise<{
+    saga?: string | string[];
+    timeline?: string | string[];
+  }>;
   preview?: boolean;
 }) {
   const [{ slug }, query] = await Promise.all([
     params,
-    searchParams ?? Promise.resolve({} as { saga?: string | string[]; series?: string | string[] }),
+    searchParams ??
+      Promise.resolve({} as { saga?: string | string[]; timeline?: string | string[] }),
   ]);
   const resolved = resolveCharacterParam(slug);
   const character = await getChar(resolved.canonicalSlug ?? resolved.id ?? slug);
@@ -193,7 +193,7 @@ export default async function CharacterPage({
   // `access` : la frise est un composant client et ne peut pas lire la
   // configuration de lancement ; on la résout ici et on la lui passe.
   const [loadedVariants, access, previewCharacterCards, continuities] = await Promise.all([
-    getShenronCharacterVariants(character.id),
+    preview ? Promise.resolve([]) : getShenronCharacterVariants(character.id),
     getLaunchConfig().catch(() => null),
     preview ? getShenronCharacterCards().catch(() => []) : Promise.resolve([]),
     preview ? Promise.resolve([]) : getShenronCharacterContinuities(character.id),
@@ -201,21 +201,31 @@ export default async function CharacterPage({
   const locale = await getLocale();
   const versionT = getWikiCharacterVersionText(locale);
   const isGokuMainCharacter = normalizeVersionLabel(character.name) === "songoku";
+  const requestedTimeline = Array.isArray(query.timeline) ? query.timeline[0] : query.timeline;
+  const previewTimeline = resolveGokuPreviewTimeline(requestedTimeline);
+  const previewChoices = isGokuMainCharacter
+    ? getGokuPreviewTimelines(versionT, character.name)
+    : [];
   const variants =
-    preview && isGokuMainCharacter && loadedVariants.length === 0
-      ? createGokuPreviewVariants(character.id, versionT)
+    preview && isGokuMainCharacter
+      ? createGokuPreviewVariants(
+          character.id,
+          previewTimeline,
+          character.transformations.map(({ id, name }) => ({ id, name })),
+          character.techniques.map(({ technique: { id, name } }) => ({ technique: { id, name } })),
+          versionT,
+        )
       : loadedVariants;
-  const requestedSeries = Array.isArray(query.series) ? query.series[0] : query.series;
-  const activeSeries = isGokuMainCharacter
-    ? (GOKU_SERIES_VERSIONS.find((choice) => choice.series === requestedSeries) ?? null)
-    : null;
-  const sagaVariants = activeSeries
-    ? filterGokuVariantsForSeries(variants, activeSeries.series)
-    : variants;
+  const sagaVariants = variants;
   const requestedSaga = Array.isArray(query.saga) ? query.saga[0] : query.saga;
   const activeVariant =
     sagaVariants.find((variant) => variant.slug === requestedSaga) ?? sagaVariants[0] ?? null;
-  const activeVariantIndex = activeVariant ? sagaVariants.indexOf(activeVariant) : 0;
+  const variantBattles = activeVariant
+    ? preview
+      ? getGokuPreviewBattles(activeVariant.slug)
+      : await getShenronCharacterVariantBattles(activeVariant.id)
+    : (character.battles ?? []);
+  const activeSagaVariants = activeVariant ? [activeVariant] : [];
   const relationRows = preview
     ? []
     : await getShenronCharacterRelations(character.id, activeVariant?.id);
@@ -232,29 +242,14 @@ export default async function CharacterPage({
     : null;
   const heroImage =
     sagaImage ?? pickBestImage([character.image, character.portraitXv2]) ?? character.image;
-  const pageCharacterName = activeSeries
-    ? versionT(activeSeries.message)
-    : (activeVariant?.displayName ?? character.name);
+  const pageCharacterName =
+    (preview && isGokuMainCharacter
+      ? previewChoices.find((choice) => choice.slug === previewTimeline)?.name
+      : null) ??
+    activeVariant?.displayName ??
+    character.name;
   const pageCharacterNameJa = activeVariant?.nameJa ?? character.nameJa;
-  const pageAffiliation = activeVariant?.affiliation ?? character.affiliation;
-  const seriesChoices = isGokuMainCharacter
-    ? GOKU_SERIES_VERSIONS.map((choice, index) => ({
-        id: -10 - index,
-        name: versionT(choice.message),
-        slug: `series:${choice.series}`,
-        series: choice.series,
-      }))
-    : [];
-  const previewChoices = isGokuMainCharacter
-    ? [
-        { id: -1, name: character.name, slug: "goku-main", isMain: true },
-        ...seriesChoices,
-        { id: -20, name: versionT("xenoGoku"), slug: "goku-xeno" },
-        { id: -21, name: versionT("gokuCc"), slug: "goku-cc" },
-        { id: -22, name: versionT("goku4d"), slug: "goku-4d" },
-        { id: -23, name: versionT("gokuJumpForce"), slug: "goku-jumpforce" },
-      ]
-    : [];
+  const pageAffiliation = activeVariant ? activeVariant.affiliation : character.affiliation;
 
   const personSchema: WithContext<Person> = {
     "@context": "https://schema.org",
@@ -283,9 +278,12 @@ export default async function CharacterPage({
   const contentPanels = await buildWikiContentPanels({
     entityType: "character",
     entityId: character.id,
-    article: activeVariant?.article?.trim() ? activeVariant.article : character.article,
-    description: character.description,
-    preferArticle: Boolean(activeVariant?.article?.trim()),
+    article: activeVariant
+      ? activeVariant.article?.trim() ||
+        `## ${versionT("sagaHistoryHeading")}\n\n${versionT("sagaHistoryMissing")}`
+      : character.article,
+    description: activeVariant ? activeVariant.summary : character.description,
+    preferArticle: Boolean(activeVariant),
     articleTarget: activeVariant
       ? { table: "db_character_variants", rowId: activeVariant.id }
       : undefined,
@@ -446,12 +444,12 @@ export default async function CharacterPage({
   if (relationItems.length > 0) {
     panels.push({
       key: "relations",
-      label: versionT("relationsTitle", { name: character.name }),
+      label: versionT("relationsTitle", { name: pageCharacterName }),
       accent: "cyan",
       node: (
         <CategorizedAffiliates
           relations={relationItems}
-          characterName={character.name}
+          characterName={pageCharacterName}
           access={preview ? null : access}
           familyContent={preview ? undefined : familyContent}
           labels={{
@@ -524,13 +522,13 @@ export default async function CharacterPage({
         <div className="scroll-mt-24" id="versions-du-personnage">
           <CharacterSagaVariants
             key={activeVariant?.id ?? "character-variants"}
-            variants={sagaVariants}
-            characterName={character.name}
+            variants={activeSagaVariants}
+            characterName={pageCharacterName}
             access={access}
-            activeVariantIndex={activeVariantIndex}
+            activeVariantIndex={0}
             showPortrait={false}
             messages={{
-              intro: versionT("intro", { count: sagaVariants.length }),
+              intro: versionT("intro", { count: activeSagaVariants.length }),
               overview: versionT("overview"),
               form: versionT("form"),
               age: versionT("age"),
@@ -570,7 +568,7 @@ export default async function CharacterPage({
               episodesRange: versionT("episodesRange", { range: "{range}" }),
               episodeSingle: versionT("episodeSingle", { number: "{number}" }),
             }}
-            powerScalingNodes={sagaVariants.map((variant) => {
+            powerScalingNodes={activeSagaVariants.map((variant) => {
               const versionSaga = normalizeVersionLabel(variant.sagaName);
               const readings = DEFAULT_POWER_SCALING_CONFIG.officialBps.filter((reading) => {
                 const belongsToCharacter =
@@ -611,7 +609,7 @@ export default async function CharacterPage({
                 </div>
               );
             })}
-            transformationNodes={sagaVariants.map((variant) => {
+            transformationNodes={activeSagaVariants.map((variant) => {
               const items = character.transformations.filter((item) =>
                 variant.transformationIds?.includes(item.id),
               );
@@ -632,7 +630,7 @@ export default async function CharacterPage({
                 </p>
               );
             })}
-            techniqueNodes={sagaVariants.map((variant) => {
+            techniqueNodes={activeSagaVariants.map((variant) => {
               const items = character.techniques.filter(({ technique }) =>
                 variant.techniqueIds?.includes(technique.id),
               );
@@ -699,19 +697,23 @@ export default async function CharacterPage({
     });
   }
 
-  // Panneau Power Scaling officiel canonique (BP, Daizenshuu 7, SEG, Kiri)
-  panels.push({
-    key: "power-scaling",
-    label: "Power Scaling (BP & Kiri)",
-    accent: "orange",
-    node: <CharacterPowerScaling characterName={character.name} characterId={character.id} />,
-  });
+  // Saga-specific power readings are already rendered with the selected variant.
+  // Keep the cross-saga panel only when there is no saga record to scope it to.
+  if (!activeVariant) {
+    panels.push({
+      key: "power-scaling",
+      label: "Power Scaling (BP & Kiri)",
+      group: versionT("powersAndForms"),
+      accent: "orange",
+      node: <CharacterPowerScaling characterName={pageCharacterName} characterId={character.id} />,
+    });
+  }
 
   // Panneau Combats Légendaires issus de bot.db_battles
-  if (character.battles && character.battles.length > 0) {
+  if (variantBattles.length > 0) {
     panels.push({
       key: "combats",
-      label: `Combats (${character.battles.length})`,
+      label: `Combats (${variantBattles.length})`,
       accent: "red",
       node: (
         <section className="space-y-8">
@@ -726,7 +728,7 @@ export default async function CharacterPage({
             l&apos;histoire canonique.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {character.battles.map((b) => (
+            {variantBattles.map((b) => (
               <GatedWrap
                 key={b.id}
                 href="/wiki/events"
@@ -770,132 +772,127 @@ export default async function CharacterPage({
 
   const infobox = (
     <div className="wiki-infobox">
-            <div className="wiki-infobox-header">DONNÉES OFFICIELLES //</div>
+      <div className="wiki-infobox-header">DONNÉES OFFICIELLES //</div>
 
-            {/* Portrait principal */}
-            <div className="p-4 bg-[#0a0a0c] border-b-2 border-black flex justify-center items-center relative overflow-hidden group">
-              <div className="absolute inset-0 halftone opacity-10" />
-              <ViewTransition name={`character-img-${character.id}`} share="morph">
-                {/* Meilleure résolution existante en premier (image éditoriale,
+      {/* Portrait principal */}
+      <div className="p-4 bg-[#0a0a0c] border-b-2 border-black flex justify-center items-center relative overflow-hidden group">
+        <div className="absolute inset-0 halftone opacity-10" />
+        <ViewTransition name={`character-img-${character.id}`} share="morph">
+          {/* Meilleure résolution existante en premier (image éditoriale,
 								    portrait XV2 ou copie plus grande de la même image, mesurées
 								    par l'inventaire) ; l'autre reste en repli. */}
-                <WikiImg
-                  src={heroImage}
-                  fallback={heroImage === character.image ? character.portraitXv2 : character.image}
-                  alt={pageCharacterName}
-                  loading="eager"
-                  className="max-h-[380px] w-auto object-contain relative z-10 drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-500"
-                  placeholderClassName="relative z-10 w-full aspect-[3/4] flex items-center justify-center bg-dbz-card overflow-hidden rounded"
-                />
-              </ViewTransition>
-            </div>
+          <WikiImg
+            src={heroImage}
+            fallback={heroImage === character.image ? character.portraitXv2 : character.image}
+            alt={pageCharacterName}
+            loading="eager"
+            className="max-h-[320px] w-auto object-contain relative z-10 drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)] transition-transform duration-500 group-hover:scale-105 sm:max-h-[380px]"
+            placeholderClassName="relative z-10 w-full aspect-[3/4] flex items-center justify-center bg-dbz-card overflow-hidden rounded"
+          />
+        </ViewTransition>
+      </div>
 
-            <CharacterPageSelectors
-              character={{ id: character.id, name: character.name, slug: character.slug }}
-              versions={
-                continuities.length > 0
-                  ? continuities.map(({ id, name, slug, label, isMain }) => ({
-                      id,
-                      name,
-                      slug,
-                      label,
-                      isMain,
-                    }))
-                  : character.versions.map(({ id, name, slug }) => ({ id, name, slug }))
-              }
-              seriesChoices={seriesChoices}
-              previewChoices={previewChoices}
-              variants={sagaVariants}
-              selectedSagaSlug={activeVariant?.slug ?? null}
-              selectedSeries={activeSeries?.series ?? null}
-              preview={preview}
-              labels={{
-                version: versionT("versionLabel"),
-                saga: versionT("sagaLabel"),
-                main: versionT("mainTimeline"),
-                choose: versionT("chooseSaga"),
-                previewContentNotLinked: versionT("previewContentNotLinked"),
-              }}
-            />
+      <CharacterPageSelectors
+        character={{ id: character.id, name: character.name, slug: character.slug }}
+        versions={
+          continuities.length > 0
+            ? continuities.map(({ id, name, slug, label, isMain }) => ({
+                id,
+                name,
+                slug,
+                label,
+                isMain,
+              }))
+            : character.versions.map(({ id, name, slug }) => ({ id, name, slug }))
+        }
+        previewChoices={previewChoices}
+        variants={sagaVariants}
+        selectedTimelineSlug={preview ? previewTimeline : character.slug}
+        selectedSagaSlug={activeVariant?.slug ?? null}
+        preview={preview}
+        labels={{
+          version: versionT("versionLabel"),
+          saga: versionT("sagaLabel"),
+          main: versionT("mainTimeline"),
+        }}
+      />
 
-            {/* Attributs structurés */}
-            <div className="divide-y divide-white/[0.08]">
-              <div className="wiki-infobox-row">
-                <span className="wiki-infobox-label">Nom officiel</span>
-                <span className="wiki-infobox-value">{pageCharacterName}</span>
-              </div>
-              {pageCharacterNameJa && (
-                <div className="wiki-infobox-row">
-                  <span className="wiki-infobox-label">Japonais</span>
-                  <span lang="ja" className="wiki-infobox-value font-jp text-dbz-orange">
-                    {pageCharacterNameJa}
-                  </span>
-                </div>
-              )}
-              {character.nameRomaji && (
-                <div className="wiki-infobox-row">
-                  <span className="wiki-infobox-label">Romaji</span>
-                  <span className="wiki-infobox-value italic">{character.nameRomaji}</span>
-                </div>
-              )}
-              {character.race && (
-                <div className="wiki-infobox-row">
-                  <span className="wiki-infobox-label">Race</span>
-                  <span className="wiki-infobox-value text-dbz-yellow">{character.race}</span>
-                </div>
-              )}
-              {pageAffiliation && (
-                <div className="wiki-infobox-row">
-                  <span className="wiki-infobox-label">Affiliation</span>
-                  <span className="wiki-infobox-value">{pageAffiliation}</span>
-                </div>
-              )}
-              {activeVariant?.form && (
-                <div className="wiki-infobox-row">
-                  <span className="wiki-infobox-label">{versionT("form")}</span>
-                  <span className="wiki-infobox-value text-dbz-orange">{activeVariant.form}</span>
-                </div>
-              )}
-              {activeVariant?.age != null && (
-                <div className="wiki-infobox-row">
-                  <span className="wiki-infobox-label">{versionT("age")}</span>
-                  <span className="wiki-infobox-value">
-                    {activeVariant.age} {versionT("years")}
-                  </span>
-                </div>
-              )}
-              {character.originPlanet && (
-                <div className="wiki-infobox-row">
-                  <span className="wiki-infobox-label">Planète</span>
-                  <span className="wiki-infobox-value text-dbz-cyan">
-                    {character.originPlanet.name}
-                  </span>
-                </div>
-              )}
-              {(activeVariant?.ki ?? character.ki) && (
-                <div className="wiki-infobox-row">
-                  <span className="wiki-infobox-label">Ki de base</span>
-                  <span className="wiki-infobox-value font-mono text-dbz-orange">
-                    {activeVariant?.ki ?? character.ki}
-                  </span>
-                </div>
-              )}
-              {(activeVariant?.maxKi ?? character.maxKi) && (
-                <div className="wiki-infobox-row">
-                  <span className="wiki-infobox-label">Ki maximum</span>
-                  <span className="wiki-infobox-value font-mono text-dbz-red">
-                    {activeVariant?.maxKi ?? character.maxKi}
-                  </span>
-                </div>
-              )}
-              {!activeVariant &&
-                character.stats?.map((st) => (
-                  <div key={st.label} className="wiki-infobox-row">
-                    <span className="wiki-infobox-label">{st.label}</span>
-                    <span className="wiki-infobox-value font-mono text-dbz-yellow">{st.value}</span>
-                  </div>
-                ))}
+      {/* Attributs structurés */}
+      <div className="divide-y divide-white/[0.08]">
+        <div className="wiki-infobox-row">
+          <span className="wiki-infobox-label">Nom officiel</span>
+          <span className="wiki-infobox-value">{pageCharacterName}</span>
+        </div>
+        {pageCharacterNameJa && (
+          <div className="wiki-infobox-row">
+            <span className="wiki-infobox-label">Japonais</span>
+            <span lang="ja" className="wiki-infobox-value font-jp text-dbz-orange">
+              {pageCharacterNameJa}
+            </span>
+          </div>
+        )}
+        {character.nameRomaji && (
+          <div className="wiki-infobox-row">
+            <span className="wiki-infobox-label">Romaji</span>
+            <span className="wiki-infobox-value italic">{character.nameRomaji}</span>
+          </div>
+        )}
+        {character.race && (
+          <div className="wiki-infobox-row">
+            <span className="wiki-infobox-label">Race</span>
+            <span className="wiki-infobox-value text-dbz-yellow">{character.race}</span>
+          </div>
+        )}
+        {pageAffiliation && (
+          <div className="wiki-infobox-row">
+            <span className="wiki-infobox-label">Affiliation</span>
+            <span className="wiki-infobox-value">{pageAffiliation}</span>
+          </div>
+        )}
+        {activeVariant?.form && (
+          <div className="wiki-infobox-row">
+            <span className="wiki-infobox-label">{versionT("form")}</span>
+            <span className="wiki-infobox-value text-dbz-orange">{activeVariant.form}</span>
+          </div>
+        )}
+        {activeVariant?.age != null && (
+          <div className="wiki-infobox-row">
+            <span className="wiki-infobox-label">{versionT("age")}</span>
+            <span className="wiki-infobox-value">
+              {activeVariant.age} {versionT("years")}
+            </span>
+          </div>
+        )}
+        {character.originPlanet && (
+          <div className="wiki-infobox-row">
+            <span className="wiki-infobox-label">Planète</span>
+            <span className="wiki-infobox-value text-dbz-cyan">{character.originPlanet.name}</span>
+          </div>
+        )}
+        {(activeVariant?.ki ?? character.ki) && (
+          <div className="wiki-infobox-row">
+            <span className="wiki-infobox-label">Ki de base</span>
+            <span className="wiki-infobox-value font-mono text-dbz-orange">
+              {activeVariant?.ki ?? character.ki}
+            </span>
+          </div>
+        )}
+        {(activeVariant?.maxKi ?? character.maxKi) && (
+          <div className="wiki-infobox-row">
+            <span className="wiki-infobox-label">Ki maximum</span>
+            <span className="wiki-infobox-value font-mono text-dbz-red">
+              {activeVariant?.maxKi ?? character.maxKi}
+            </span>
+          </div>
+        )}
+        {!activeVariant &&
+          character.stats?.map((st) => (
+            <div key={st.label} className="wiki-infobox-row">
+              <span className="wiki-infobox-label">{st.label}</span>
+              <span className="wiki-infobox-value font-mono text-dbz-yellow">{st.value}</span>
             </div>
+          ))}
+      </div>
     </div>
   );
 

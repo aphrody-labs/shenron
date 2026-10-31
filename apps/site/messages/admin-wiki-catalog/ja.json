@@ -5,6 +5,8 @@
   "tables": {
     "db_character_variants": "サーガ別バージョン",
     "db_character_relations": "キャラクターの関係",
-    "db_character_continuities": "キャラクターのタイムライン"
+    "db_character_continuities": "キャラクターのタイムライン",
+    "db_character_variant_battles": "バージョン別の戦闘",
+    "db_battles": "戦闘"
   }
 }
