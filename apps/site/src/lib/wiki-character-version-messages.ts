@@ -84,6 +84,15 @@ export interface CharacterVersionMessages {
   techniquesAria: string;
   techniques: string;
   noTechniques: string;
+  techniqueUsesMissing: string;
+  knownButUnusedTechniques: string;
+  lastTechniqueUse: string;
+  lastTechniqueUseMissing: string;
+  techniqueSourceManga: string;
+  techniqueSourceAnime: string;
+  techniqueSourceMovie: string;
+  techniqueSourceGame: string;
+  techniqueSourceOther: string;
   episodesNamed: string;
   volumesRange: string;
   volumeSingle: string;

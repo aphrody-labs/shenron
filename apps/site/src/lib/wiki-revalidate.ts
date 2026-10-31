@@ -15,6 +15,7 @@ import { publicEntityUrl, tableForSectionEntity } from "@/lib/wiki-entity-model"
 const WIKI_LIST_PATHS: Record<string, string[]> = {
   db_characters: ["/wiki/characters"],
   db_character_variants: ["/wiki/characters", "/wiki/sagas"],
+  db_character_variant_technique_uses: ["/wiki/characters"],
   db_planets: ["/wiki/locations"],
   db_sagas: ["/wiki/sagas"],
   db_arcs: ["/wiki/sagas"],
@@ -57,6 +58,9 @@ export function revalidateWikiEntity(table: string, row?: Record<string, unknown
       }
       // Saga character lists also consume variant roles and character images.
       if (table !== "db_sagas") revalidatePath("/wiki/sagas/[slug]", "page");
+    }
+    if (table === "db_character_variant_technique_uses") {
+      revalidatePath("/wiki/characters/[slug]", "page");
     }
     if (table === "db_manga_volumes") {
       revalidatePath("/api/manga");

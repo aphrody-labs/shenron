@@ -8,10 +8,27 @@
     "db_character_relations": "Character relationships",
     "db_character_continuities": "Character timelines",
     "db_character_variant_battles": "Battles by version",
+    "db_character_variant_technique_uses": "Technique uses",
     "db_battles": "Battles"
   },
   "descriptions": {
     "db_sagas": "Create or edit a saga here, then link it to a character version.",
-    "db_character_variants": "Add one row per character, version, and saga. Linked sagas appear in the second selector on the character wiki page."
+    "db_character_variants": "Add one row per character, version, and saga. Linked sagas appear in the second selector on the character wiki page.",
+    "db_character_variant_technique_uses": "Add one row for each cited use of a technique in a saga. The precise source and chronology appear on the character page."
+  },
+  "sourceTypes": {
+    "manga": "Manga",
+    "anime": "Anime",
+    "movie": "Movie",
+    "game": "Video game",
+    "other": "Other"
+  },
+  "fields": {
+    "variantId": "Character version and saga",
+    "techniqueId": "Technique",
+    "sourceType": "Source type",
+    "sourceLabel": "Precise reference",
+    "sourceUrl": "Source URL",
+    "note": "Usage detail"
   }
 }

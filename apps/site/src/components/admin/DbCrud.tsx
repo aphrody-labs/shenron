@@ -19,6 +19,7 @@ import { colLabel } from "@/lib/db-labels";
 import { buildSubmitBody, isStudioTable } from "@/lib/wiki-fields";
 import { WIKI_TABLE_SPECS, crudBase, isWikiTable } from "@/lib/wiki-tables";
 import { browserWikiSnapshotHash } from "@/lib/wiki-snapshot";
+import { useAdminCatalogText } from "@/lib/admin-catalog-text";
 
 interface TableSpec {
   name: string;
@@ -27,6 +28,14 @@ interface TableSpec {
   mutableColumns: string[];
   description: string | null;
 }
+
+type AdminTechniqueUseFieldKey =
+  | "fields.variantId"
+  | "fields.techniqueId"
+  | "fields.sourceType"
+  | "fields.sourceLabel"
+  | "fields.sourceUrl"
+  | "fields.note";
 
 /**
  * Client + chemin CRUD pour une table :
@@ -309,6 +318,7 @@ function FieldModal({
   saving: boolean;
   loading?: boolean;
 }) {
+  const adminCatalogText = useAdminCatalogText();
   const [draft, setDraft] = useState<Record<string, string>>({});
 
   // Réhydrate quand la ligne canonique arrive (édition).
@@ -349,7 +359,9 @@ function FieldModal({
             {columns.map((c) => (
               <div key={c}>
                 <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-dbz-blue-light">
-                  {colLabel(c)}
+                  {table === "db_character_variant_technique_uses"
+                    ? adminCatalogText(`fields.${c}` as AdminTechniqueUseFieldKey)
+                    : colLabel(c)}
                   <span className="ml-2 font-mono text-white/25 normal-case font-normal">{c}</span>
                 </label>
                 <SmartField

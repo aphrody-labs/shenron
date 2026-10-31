@@ -9,6 +9,7 @@ import {
   botCharacterTechniques,
   botCharacterVariants,
   botCharacterVariantBattles,
+  botCharacterVariantTechniqueUses,
   botBattles,
   botEpisodes,
   botVoiceActors,
@@ -961,6 +962,68 @@ export async function getShenronCharacterVariants(
     }));
   } catch (e) {
     console.error("[shenron] getShenronCharacterVariants a échoué:", e);
+    return [];
+  }
+}
+
+export interface CharacterVariantTechniqueUse {
+  id: number;
+  variantId: number;
+  techniqueId: number;
+  sourceType: string;
+  sourceLabel: string;
+  sourceUrl: string | null;
+  note: string | null;
+  sortOrder: number;
+  sagaName: string;
+  sagaSeries: string | null;
+  variantSlug: string;
+}
+
+/** Cited technique appearances, ordered by saga chronology and occurrence order. */
+export async function getShenronCharacterVariantTechniqueUses(
+  characterId: number,
+): Promise<CharacterVariantTechniqueUse[]> {
+  try {
+    const rows = await db
+      .select({
+        use: botCharacterVariantTechniqueUses,
+        variant: botCharacterVariants,
+        saga: botSagas,
+      })
+      .from(botCharacterVariantTechniqueUses)
+      .innerJoin(
+        botCharacterVariants,
+        eq(botCharacterVariantTechniqueUses.variantId, botCharacterVariants.id),
+      )
+      .innerJoin(botSagas, eq(botCharacterVariants.sagaId, botSagas.id))
+      .where(
+        and(
+          eq(botCharacterVariants.characterId, characterId),
+          eq(botCharacterVariants.visible, true),
+          eq(botCharacterVariantTechniqueUses.visible, true),
+        ),
+      )
+      .orderBy(
+        asc(botSagas.orderIdx),
+        asc(botCharacterVariantTechniqueUses.sortOrder),
+        asc(botCharacterVariantTechniqueUses.id),
+      );
+    return rows.map(({ use, variant, saga }) => ({
+      id: use.id,
+      variantId: variant.id,
+      techniqueId: use.techniqueId,
+      sourceType: use.sourceType,
+      sourceLabel: use.sourceLabel,
+      sourceUrl: use.sourceUrl,
+      note: use.note,
+      sortOrder: use.sortOrder,
+      sagaName: saga.name,
+      sagaSeries: saga.series,
+      variantSlug: variant.slug,
+    }));
+  } catch (error) {
+    console.error("[shenron] getShenronCharacterVariantTechniqueUses a échoué:", error);
     return [];
   }
 }

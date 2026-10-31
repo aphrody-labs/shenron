@@ -301,7 +301,7 @@ export function CharacterSagaVariantsTabs({
               </section>
 
               {(transformationNodes[variantIndex] || techniqueNodes[variantIndex]) && (
-                <div className="grid gap-4 border-t border-white/10 pt-4 sm:grid-cols-2">
+                <div className="space-y-8 border-t border-white/10 pt-6">
                   {transformationNodes[variantIndex] && (
                     <section
                       aria-label={messages.transformationsAria

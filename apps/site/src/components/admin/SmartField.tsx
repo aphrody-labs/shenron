@@ -32,6 +32,7 @@ import {
   uploadSubdir,
 } from "@/lib/wiki-fields";
 import { PlainField } from "@/components/editor/PlainField";
+import { useAdminCatalogText } from "@/lib/admin-catalog-text";
 
 interface Props {
   table: string;
@@ -60,6 +61,7 @@ function dateInputToEpoch(dateStr: string, original: string): string {
 
 export function SmartField({ table, col, value, onChange, original, onUploadStateChange }: Props) {
   const t = useT();
+  const catalogText = useAdminCatalogText();
   if (
     table === "db_character_variants" &&
     (col === "transformationIds" || col === "techniqueIds")
@@ -97,6 +99,23 @@ export function SmartField({ table, col, value, onChange, original, onUploadStat
       >
         {on ? "Oui / Activé" : "Non / Désactivé"}
       </button>
+    );
+  }
+
+  if (table === "db_character_variant_technique_uses" && col === "sourceType") {
+    const sourceTypes = ["manga", "anime", "movie", "game", "other"] as const;
+    return (
+      <select className="input" value={value} onChange={(event) => onChange(event.target.value)}>
+        <option value="">—</option>
+        {value && !sourceTypes.includes(value as (typeof sourceTypes)[number]) && (
+          <option value={value}>{value}</option>
+        )}
+        {sourceTypes.map((sourceType) => (
+          <option key={sourceType} value={sourceType}>
+            {catalogText(`sourceTypes.${sourceType}`)}
+          </option>
+        ))}
+      </select>
     );
   }
 

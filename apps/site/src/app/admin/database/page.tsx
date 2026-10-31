@@ -52,6 +52,10 @@ const TABLE_LABELS: Record<string, { label: string; group: string }> = {
   db_character_relations: { label: "Relations des personnages", group: "Encyclopédie" },
   db_character_continuities: { label: "Timelines des personnages", group: "Encyclopédie" },
   db_character_variant_battles: { label: "Combats par version", group: "Encyclopédie" },
+  db_character_variant_technique_uses: {
+    label: "Utilisations des techniques",
+    group: "Encyclopédie",
+  },
   db_battles: { label: "Combats", group: "Encyclopédie" },
   db_tools: { label: "Outils communautaires", group: "Encyclopédie" },
   db_news: { label: "Actualités", group: "Encyclopédie" },
@@ -77,11 +81,15 @@ export default function DatabasePage() {
     db_character_relations: translate("tables.db_character_relations"),
     db_character_continuities: translate("tables.db_character_continuities"),
     db_character_variant_battles: translate("tables.db_character_variant_battles"),
+    db_character_variant_technique_uses: translate("tables.db_character_variant_technique_uses"),
     db_battles: translate("tables.db_battles"),
   };
   const localizedWikiDescriptions: Record<string, string> = {
     db_sagas: translate("descriptions.db_sagas"),
     db_character_variants: translate("descriptions.db_character_variants"),
+    db_character_variant_technique_uses: translate(
+      "descriptions.db_character_variant_technique_uses",
+    ),
   };
 
   // Regrouper par catégorie

@@ -20,6 +20,7 @@ import {
   getShenronCharacterIds,
   getShenronCharacterVariants,
   getShenronCharacterVariantBattles,
+  getShenronCharacterVariantTechniqueUses,
 } from "@/lib/shenron";
 import { assetUrl } from "@/lib/db-universe";
 import type { Metadata } from "next";
@@ -50,6 +51,17 @@ export const revalidate = 3600;
 
 /** Fiches prérendues au build ; l'ISR sert toutes les autres à la demande. */
 const PRERENDU = 100;
+
+function techniqueSourceHref(value: string | null): string | null {
+  if (!value) return null;
+  if (value.startsWith("/") && !value.startsWith("//") && !value.includes("\\")) return value;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && !url.username && !url.password ? url.href : null;
+  } catch {
+    return null;
+  }
+}
 
 const GOKU_RELATION_PREVIEW: Array<
   Omit<
@@ -193,12 +205,14 @@ export default async function CharacterPage({
   // aller-retour conditionnel de plus dans le rendu.
   // `access` : la frise est un composant client et ne peut pas lire la
   // configuration de lancement ; on la résout ici et on la lui passe.
-  const [loadedVariants, access, previewCharacterCards, continuities] = await Promise.all([
-    preview ? Promise.resolve([]) : getShenronCharacterVariants(character.id),
-    getLaunchConfig().catch(() => null),
-    preview ? getShenronCharacterCards().catch(() => []) : Promise.resolve([]),
-    preview ? Promise.resolve([]) : getShenronCharacterContinuities(character.id),
-  ]);
+  const [loadedVariants, access, previewCharacterCards, continuities, techniqueUses] =
+    await Promise.all([
+      preview ? Promise.resolve([]) : getShenronCharacterVariants(character.id),
+      getLaunchConfig().catch(() => null),
+      preview ? getShenronCharacterCards().catch(() => []) : Promise.resolve([]),
+      preview ? Promise.resolve([]) : getShenronCharacterContinuities(character.id),
+      preview ? Promise.resolve([]) : getShenronCharacterVariantTechniqueUses(character.id),
+    ]);
   const locale = await getLocale();
   const versionT = getWikiCharacterVersionText(locale);
   const isGokuMainCharacter = normalizeVersionLabel(character.name) === "songoku";
@@ -246,6 +260,43 @@ export default async function CharacterPage({
   const requestedSaga = Array.isArray(query.saga) ? query.saga[0] : query.saga;
   const activeVariant =
     sagaVariants.find((variant) => variant.slug === requestedSaga) ?? sagaVariants[0] ?? null;
+  const activeVariantIndex = activeVariant
+    ? Math.max(
+        0,
+        sagaVariants.findIndex((variant) => variant.id === activeVariant.id),
+      )
+    : -1;
+  const earlierVariantIds = new Set(sagaVariants.slice(0, activeVariantIndex).map(({ id }) => id));
+  const currentTechniqueUses = techniqueUses.filter((use) => use.variantId === activeVariant?.id);
+  const currentTechniqueIds = new Set([
+    ...(activeVariant?.techniqueIds ?? []),
+    ...currentTechniqueUses.map(({ techniqueId }) => techniqueId),
+  ]);
+  const earlierTechniqueIds = new Set(
+    sagaVariants.slice(0, activeVariantIndex).flatMap((variant) => variant.techniqueIds ?? []),
+  );
+  const variantPositions = new Map(sagaVariants.map((variant, index) => [variant.id, index]));
+  const earlierTechniqueUses = techniqueUses
+    .filter((use) => earlierVariantIds.has(use.variantId))
+    .sort(
+      (a, b) =>
+        (variantPositions.get(a.variantId) ?? -1) - (variantPositions.get(b.variantId) ?? -1) ||
+        a.sortOrder - b.sortOrder ||
+        a.id - b.id,
+    );
+  const lastUseByTechnique = new Map<number, (typeof earlierTechniqueUses)[number]>();
+  for (const use of earlierTechniqueUses) lastUseByTechnique.set(use.techniqueId, use);
+  const techniquesInArc = character.techniques
+    .filter(({ technique }) => currentTechniqueIds.has(technique.id))
+    .sort(
+      (a, b) =>
+        currentTechniqueUses.filter((use) => use.techniqueId === b.technique.id).length -
+        currentTechniqueUses.filter((use) => use.techniqueId === a.technique.id).length,
+    );
+  const knownButUnusedTechniques = character.techniques.filter(
+    ({ technique }) =>
+      earlierTechniqueIds.has(technique.id) && !currentTechniqueIds.has(technique.id),
+  );
   const summaryTimelines =
     isSummaryVersion && !preview
       ? await Promise.all(
@@ -687,24 +738,137 @@ export default async function CharacterPage({
               );
             })}
             techniqueNodes={activeSagaVariants.map((variant) => {
-              const items = character.techniques.filter(({ technique }) =>
-                variant.techniqueIds?.includes(technique.id),
-              );
-              return items.length ? (
-                <ul key={`techniques-${variant.id}`} className="flex flex-wrap gap-2">
-                  {items.map(({ technique }) => (
-                    <li
-                      key={technique.id}
-                      className="rounded-lg border border-dbz-border px-3 py-2 text-sm text-white/85"
-                    >
-                      {technique.name}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p key={`techniques-${variant.id}`} className="text-sm text-white/55">
-                  {versionT("noTechniques")}
-                </p>
+              const sourceTypeLabel = (sourceType: string) => {
+                switch (sourceType) {
+                  case "manga":
+                    return versionT("techniqueSourceManga");
+                  case "anime":
+                    return versionT("techniqueSourceAnime");
+                  case "movie":
+                    return versionT("techniqueSourceMovie");
+                  case "game":
+                    return versionT("techniqueSourceGame");
+                  default:
+                    return versionT("techniqueSourceOther");
+                }
+              };
+              return (
+                <div key={`techniques-${variant.id}`} className="space-y-7">
+                  {techniquesInArc.length > 0 ? (
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {techniquesInArc.map(({ technique }) => {
+                        const uses = currentTechniqueUses.filter(
+                          (use) => use.techniqueId === technique.id,
+                        );
+                        return (
+                          <article key={technique.id} className="dbz-panel space-y-3 p-4">
+                            <h4 className="font-bold text-white">
+                              <GatedWrap
+                                href={`/wiki/techniques/${technique.slug}`}
+                                className="transition-colors hover:text-dbz-orange"
+                              >
+                                {technique.name}
+                              </GatedWrap>
+                            </h4>
+                            {uses.length > 0 ? (
+                              <ol className="space-y-2 border-t border-white/10 pt-3">
+                                {uses.map((use, index) => {
+                                  const href = techniqueSourceHref(use.sourceUrl);
+                                  return (
+                                    <li
+                                      key={use.id}
+                                      className="flex gap-3 text-sm leading-relaxed text-white/75"
+                                    >
+                                      <span className="shrink-0 font-mono text-xs text-dbz-orange">
+                                        {index + 1}.
+                                      </span>
+                                      <div>
+                                        <span className="mr-2 text-[10px] font-bold uppercase tracking-wider text-white/45">
+                                          {sourceTypeLabel(use.sourceType)}
+                                        </span>
+                                        {href ? (
+                                          <a
+                                            href={href}
+                                            target={href.startsWith("/") ? undefined : "_blank"}
+                                            rel={href.startsWith("/") ? undefined : "noreferrer"}
+                                            className="font-semibold text-white underline decoration-dbz-orange/40 underline-offset-4 hover:text-dbz-orange"
+                                          >
+                                            {use.sourceLabel}
+                                          </a>
+                                        ) : (
+                                          <span className="font-semibold text-white">
+                                            {use.sourceLabel}
+                                          </span>
+                                        )}
+                                        {use.note && (
+                                          <p className="mt-1 text-xs text-white/55">{use.note}</p>
+                                        )}
+                                      </div>
+                                    </li>
+                                  );
+                                })}
+                              </ol>
+                            ) : (
+                              <p className="border-t border-white/10 pt-3 text-xs text-white/50">
+                                {versionT("techniqueUsesMissing")}
+                              </p>
+                            )}
+                          </article>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-white/55">{versionT("noTechniques")}</p>
+                  )}
+                  {knownButUnusedTechniques.length > 0 && (
+                    <section className="space-y-3 border-t border-white/10 pt-5">
+                      <h4 className="text-sm font-bold text-white/65">
+                        {versionT("knownButUnusedTechniques")}
+                      </h4>
+                      <ul className="grid gap-2 sm:grid-cols-2">
+                        {knownButUnusedTechniques.map(({ technique }) => {
+                          const lastUse = lastUseByTechnique.get(technique.id);
+                          const href = techniqueSourceHref(lastUse?.sourceUrl ?? null);
+                          return (
+                            <li
+                              key={technique.id}
+                              className="rounded-lg border border-white/10 bg-black/15 px-4 py-3"
+                            >
+                              <GatedWrap
+                                href={`/wiki/techniques/${technique.slug}`}
+                                className="font-semibold text-white/80 hover:text-dbz-orange"
+                              >
+                                {technique.name}
+                              </GatedWrap>
+                              <p className="mt-1 text-xs leading-relaxed text-white/50">
+                                {lastUse ? (
+                                  <>
+                                    {versionT("lastTechniqueUse")} ·{" "}
+                                    {sourceTypeLabel(lastUse.sourceType)}:{" "}
+                                    {href ? (
+                                      <a
+                                        href={href}
+                                        target={href.startsWith("/") ? undefined : "_blank"}
+                                        rel={href.startsWith("/") ? undefined : "noreferrer"}
+                                        className="underline underline-offset-2 hover:text-white"
+                                      >
+                                        {lastUse.sourceLabel}
+                                      </a>
+                                    ) : (
+                                      lastUse.sourceLabel
+                                    )}
+                                  </>
+                                ) : (
+                                  versionT("lastTechniqueUseMissing")
+                                )}
+                              </p>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </section>
+                  )}
+                </div>
               );
             })}
           />

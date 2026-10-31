@@ -8,10 +8,27 @@
     "db_character_relations": "キャラクターの関係",
     "db_character_continuities": "キャラクターのタイムライン",
     "db_character_variant_battles": "バージョン別の戦闘",
+    "db_character_variant_technique_uses": "技の使用記録",
     "db_battles": "戦闘"
   },
   "descriptions": {
     "db_sagas": "ここでサーガを作成・編集し、キャラクターバージョンに紐付けます。",
-    "db_character_variants": "キャラクター・バージョン・サーガごとに1行追加します。紐付けたサーガはWikiページの2番目の選択欄に表示されます。"
+    "db_character_variants": "キャラクター・バージョン・サーガごとに1行追加します。紐付けたサーガはWikiページの2番目の選択欄に表示されます。",
+    "db_character_variant_technique_uses": "サーガ内で確認できる技の使用ごとに1行追加します。正確な出典と順序はキャラクターページに表示されます。"
+  },
+  "sourceTypes": {
+    "manga": "漫画",
+    "anime": "アニメ",
+    "movie": "映画",
+    "game": "ゲーム",
+    "other": "その他"
+  },
+  "fields": {
+    "variantId": "キャラクターバージョンとサーガ",
+    "techniqueId": "技",
+    "sourceType": "出典の種類",
+    "sourceLabel": "具体的な参照箇所",
+    "sourceUrl": "出典URL",
+    "note": "使用の詳細"
   }
 }

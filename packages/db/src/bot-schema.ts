@@ -1080,6 +1080,31 @@ export const botCharacterVariantBattles = bot.table(
   ],
 );
 
+/** One cited use of a technique within a character's saga-specific variant. */
+export const botCharacterVariantTechniqueUses = bot.table(
+  "db_character_variant_technique_uses",
+  {
+    id: int("id").primaryKey().generatedAlwaysAsIdentity(),
+    variantId: int("variant_id").notNull(),
+    techniqueId: int("technique_id").notNull(),
+    sourceType: text("source_type").notNull(),
+    sourceLabel: text("source_label").notNull(),
+    sourceUrl: text("source_url"),
+    note: text("note"),
+    sortOrder: int("sort_order").notNull().default(0),
+    visible: boolean("visible").notNull().default(true),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.variantId],
+      foreignColumns: [botCharacterVariants.id],
+    }).onDelete("cascade"),
+    foreignKey({ columns: [table.techniqueId], foreignColumns: [botTechniques.id] }).onDelete(
+      "cascade",
+    ),
+  ],
+);
+
 /** Événement de la chronologie universelle par Âge diégétique (Daizenshuu 7 / Chōzenshū). */
 export const botTimelineEvents = bot.table("db_timeline_events", {
   id: int("id").primaryKey(),

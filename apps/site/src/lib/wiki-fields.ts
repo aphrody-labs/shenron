@@ -29,7 +29,7 @@ export function uploadSubdir(table: string): string {
 
 /** Colonnes au contenu long → rendu en <textarea> (markdown). */
 export function isLongTextColumn(col: string): boolean {
-  return /desc|synops|^body$|^article$|summary|bio|overview|attribution|content/i.test(col);
+  return /desc|synops|^body$|^article$|summary|bio|overview|attribution|content|^note$/i.test(col);
 }
 
 /**
@@ -99,6 +99,10 @@ export function fkTarget(col: string): { table: string; pk: string } | null {
  * valeurs peuvent apparaître). Valeurs réelles relevées dans Neon.
  */
 const ENUM_OPTIONS: Record<string, { options: string[]; strict?: boolean }> = {
+  "db_character_variant_technique_uses.sourceType": {
+    options: ["manga", "anime", "movie", "game", "other"],
+    strict: true,
+  },
   "db_character_relations.category": {
     options: ["family", "friend", "enemy"],
     strict: true,

@@ -22,6 +22,7 @@ import { assetUrl } from "@/lib/assets";
 import { TABLE_LABELS, colLabel } from "@/lib/db-labels";
 import { WIKI_TABLE_SPECS, crudBase, isWikiTable } from "@/lib/wiki-tables";
 import { buildSubmitBody, IMAGE_COL_RE, isImageColumn, isStudioTable } from "@/lib/wiki-fields";
+import { useAdminCatalogText } from "@/lib/admin-catalog-text";
 import {
   normalizeWikiListQuery,
   wikiCollectionSearch,
@@ -38,6 +39,7 @@ interface TableSpec {
 
 export default function TablePage() {
   const common = useTranslations("common");
+  const adminCatalogText = useAdminCatalogText();
   const { table } = useParams<{ table: string }>();
   const router = useRouter();
   // `?q=` pré-remplit la recherche : la worklist /admin/wiki/todo ouvre ainsi
@@ -59,6 +61,10 @@ export default function TablePage() {
     msg: string;
   } | null>(null);
   const limit = 25;
+  const fieldLabel = (column: string) =>
+    table === "db_character_variant_technique_uses"
+      ? adminCatalogText(`fields.${column}` as AdminTechniqueUseFieldKey)
+      : colLabel(column);
   const offset = page * limit;
   const listQuery = normalizeWikiListQuery({ limit, offset, q: debouncedSearch });
   const qc = useQueryClient();
@@ -170,7 +176,10 @@ export default function TablePage() {
     },
   });
 
-  const humanLabel = TABLE_LABELS[table] ?? table;
+  const humanLabel =
+    table === "db_character_variant_technique_uses"
+      ? adminCatalogText("tables.db_character_variant_technique_uses")
+      : (TABLE_LABELS[table] ?? table);
   const cols = rows.data?.rows[0] ? Object.keys(rows.data.rows[0]) : [];
   const total = rows.data?.total ?? 0;
   const pagination = wikiPageWindow(total, listQuery);
@@ -281,7 +290,7 @@ export default function TablePage() {
                     className="px-3 py-2 text-left text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light whitespace-nowrap"
                     title={c}
                   >
-                    {colLabel(c)}
+                    {fieldLabel(c)}
                   </th>
                 ))}
                 <th className="w-20 px-3 py-2" />
@@ -451,7 +460,16 @@ interface EditProps {
   mode: "create" | "edit";
 }
 
+type AdminTechniqueUseFieldKey =
+  | "fields.variantId"
+  | "fields.techniqueId"
+  | "fields.sourceType"
+  | "fields.sourceLabel"
+  | "fields.sourceUrl"
+  | "fields.note";
+
 function EditModal({ row, rowId, spec, onClose, onSave, saving, mode }: EditProps) {
+  const adminCatalogText = useAdminCatalogText();
   const [draft, setDraft] = useState<Record<string, string>>(() =>
     Object.fromEntries(spec.mutableColumns.map((c) => [c, row[c] != null ? String(row[c]) : ""])),
   );
@@ -486,7 +504,9 @@ function EditModal({ row, rowId, spec, onClose, onSave, saving, mode }: EditProp
           {spec.mutableColumns.map((c) => (
             <div key={c}>
               <label className="mb-1 block text-xs font-semibold text-dbz-blue-light uppercase tracking-wider">
-                {colLabel(c)}
+                {spec.name === "db_character_variant_technique_uses"
+                  ? adminCatalogText(`fields.${c}` as AdminTechniqueUseFieldKey)
+                  : colLabel(c)}
                 <span className="ml-2 text-white/25 font-mono normal-case font-normal">{c}</span>
               </label>
               <SmartField
