@@ -15,22 +15,17 @@
  * pendant trois tomes. Le bandeau de provenance le dit mot pour mot plutôt que
  * de laisser la frise se faire passer pour une biographie vérifiée.
  */
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { WikiImg } from "@/components/wiki/WikiImg";
 // `ClientGatedWrap` et NON `GatedWrap` : ce dernier lit la configuration de
 // lancement côté serveur, donc tire `postgres` — dans un composant client, cela
 // fait échouer le rendu (`Module not found: dns/net/tls`). L'instantané d'accès
 // est résolu par la page et descend en props.
 import { ClientGatedWrap } from "@/components/GatedClientLink";
-import { onTablistKeyDown } from "@/lib/tablist-keys";
 import type { AccessSnapshot } from "@/lib/wiki-launch";
 import type { CharacterVariant } from "@/lib/shenron";
-import type { CharacterVersionMessages } from "@/lib/wiki-character-version-messages";
-
-/** Libellé court pour la pilule : « Saga Majin Boo » → « Majin Boo ». */
-function courte(label: string): string {
-  return label.replace(/^saga\s+(de\s+l['’]|de\s+la\s+|de\s+|du\s+|des\s+)?/i, "").trim() || label;
-}
+import type { CharacterSagaMessages } from "@/lib/wiki-character-version-messages";
+import { verifiedCharacterVariantImage } from "@/lib/wiki-image-evidence";
 
 const WIKI_ARTWORK_HOSTS = new Set([
   "cdn.dragonballfr.com",
@@ -96,6 +91,8 @@ export function CharacterSagaVariantsTabs({
   transformationNodes,
   techniqueNodes,
   messages,
+  activeVariantIndex,
+  showPortrait = true,
 }: {
   variants: Omit<CharacterVariant, "summary">[];
   overviewNode: ReactNode;
@@ -106,67 +103,13 @@ export function CharacterSagaVariantsTabs({
   access?: AccessSnapshot | null;
   transformationNodes: ReactNode[];
   techniqueNodes: ReactNode[];
-  messages: CharacterVersionMessages;
+  messages: CharacterSagaMessages;
+  activeVariantIndex: number;
+  showPortrait?: boolean;
 }) {
-  const [actif, setActif] = useState(-1);
-  /**
-   * Le motif ARIA « onglets » n'était qu'à moitié posé : les pilules portaient
-   * `role="tab"` sans jamais dire quel panneau elles commandent, et le panneau
-   * n'était pas un `tabpanel`. Un lecteur d'écran annonçait « onglet 3 sur 14 »
-   * puis laissait le lecteur chercher lui-même ce qui avait changé. Un seul
-   * panneau vit dans le DOM (celui de la saga active) : tous les onglets
-   * désignent donc le même identifiant, stable d'un rendu à l'autre.
-   */
-  const panneauId = useId();
-
-  /**
-   * Ouverture sur une version précise via `#saga-<id>`.
-   *
-   * La grille des personnages lie désormais chaque version (« Goku (Saga
-   * Namek) ») vers cette fiche. Sans ce relais, le lien retombait sur la
-   * première version de la liste : les versions sont un jeu d'onglets client,
-   * pas des ancres — le navigateur n'avait rien à viser.
-   */
-  const ancre = useRef<HTMLElement | null>(null);
-  useEffect(() => {
-    const applyHash = () => {
-      const m = /^#saga-(\d+)$/.exec(window.location.hash);
-      if (!m) {
-        if (!window.location.hash) setActif(-1);
-        return;
-      }
-      const cible = Number(m[1]);
-      const i = variants.findIndex((x) => x.sagaId === cible);
-      if (i < 0) return;
-      setActif(i);
-      // Le défilement attend la peinture : viser un élément qui n'a pas encore
-      // sa hauteur définitive amène à côté.
-      requestAnimationFrame(() =>
-        ancre.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
-      );
-    };
-
-    applyHash();
-    window.addEventListener("hashchange", applyHash);
-    return () => window.removeEventListener("hashchange", applyHash);
-  }, [variants]);
-
-  function selectVariant(index: number, sagaId?: number) {
-    setActif(index);
-    if (typeof window !== "undefined" && window.history?.replaceState && sagaId != null) {
-      window.history.replaceState(null, "", `#saga-${sagaId}`);
-    }
-  }
-
-  function selectOverview() {
-    setActif(-1);
-    if (typeof window !== "undefined" && window.history?.replaceState) {
-      const url = new URL(window.location.href);
-      url.hash = "";
-      window.history.replaceState(null, "", `${url.pathname}${url.search}`);
-    }
-  }
-
+  const actif = activeVariantIndex;
+  // The page-level selector controls saga state in the URL so the hero, article,
+  // affiliations, relationships, powers and transformations share one selection.
   if (!variants.length) return null;
   const isOverview = actif < 0;
   const variantIndex = Math.max(actif, 0);
@@ -190,7 +133,7 @@ export function CharacterSagaVariantsTabs({
   );
   // Fail closed: an image needs both an approved source URL and an explicit
   // editorial reference that attests to the image field.
-  const displayImage = imageReferences.length > 0 ? safePrimaryUrl(v.image ?? "") : null;
+  const displayImage = verifiedCharacterVariantImage(v.image, v.evidence);
   const tomes =
     v.firstVolume != null && v.lastVolume != null
       ? v.firstVolume === v.lastVolume
@@ -210,133 +153,72 @@ export function CharacterSagaVariantsTabs({
   const mesuree = v.origin != null && v.origin !== "editorial";
 
   return (
-    <section className="space-y-8" ref={ancre}>
-      <p className="max-w-3xl text-sm leading-relaxed text-white/70">
-        {messages.intro.replace("{count}", String(variants.length))}
-      </p>
-
-      <div className="rounded-xl border-2 border-dbz-orange/70 bg-dbz-orange/10 p-4 sm:p-5">
-        <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-dbz-orange">
-          {messages.chooseVersion}
+    <section className="space-y-8">
+      {showPortrait && (
+        <p className="max-w-3xl text-sm leading-relaxed text-white/70">
+          {messages.intro.replace("{count}", String(variants.length))}
         </p>
+      )}
 
-        {/* Rail défilant sur mobile : quatorze sagas ne tiennent pas sur une
-			    ligne d'écran de téléphone, et les empiler pousserait le contenu
-			    hors de vue avant qu'on ait lu la première. */}
-        <div
-          className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-1 scrollbar-thin sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
-          role="tablist"
-          aria-label={messages.tabsLabel.replace("{name}", characterName)}
-          tabIndex={-1}
-          // Le rôle `tablist` promet les flèches ←/→ et Début/Fin ; sans ce
-          // gestionnaire, la promesse n'était pas tenue et la frise ne se
-          // parcourait qu'onglet par onglet à la tabulation.
-          onKeyDown={onTablistKeyDown}
-        >
-          <button
-            type="button"
-            role="tab"
-            id={`${panneauId}-onglet-overview`}
-            aria-controls={panneauId}
-            aria-selected={isOverview}
-            tabIndex={isOverview ? 0 : -1}
-            onClick={selectOverview}
-            className={`inline-flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
-              isOverview
-                ? "border-dbz-orange bg-dbz-orange/10 text-white"
-                : "border-dbz-border text-white/60 hover:border-dbz-orange/40 hover:text-white"
-            } focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange`}
-          >
-            {messages.overview}
-          </button>
-          {variants.map((x, i) => {
-            const on = i === actif;
-            return (
-              <button
-                key={x.id}
-                type="button"
-                role="tab"
-                id={`${panneauId}-onglet-${x.id}`}
-                aria-controls={panneauId}
-                aria-selected={on}
-                // `tabIndex` tournant : le jeu d'onglets = UN arrêt de tabulation.
-                tabIndex={on ? 0 : -1}
-                onClick={() => selectVariant(i, x.sagaId)}
-                className={`inline-flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
-                  on
-                    ? "border-dbz-orange bg-dbz-orange/10 text-white"
-                    : "border-dbz-border text-white/60 hover:border-dbz-orange/40 hover:text-white"
-                } focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange`}
-              >
-                {courte(x.label)}
-                {x.form && <span className="text-[10px] text-dbz-yellow/80">{x.form}</span>}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div
-        role="tabpanel"
+      <section
         aria-live="polite"
-        id={panneauId}
-        aria-labelledby={
-          isOverview ? `${panneauId}-onglet-overview` : `${panneauId}-onglet-${v.id}`
-        }
+        aria-label={isOverview ? messages.overview : `${characterName} — ${v.label}`}
       >
         {isOverview ? (
           overviewNode
         ) : (
           <div className="dbz-panel flex flex-col gap-6 p-6 sm:flex-row">
-            <div className="w-full shrink-0 sm:w-56">
-              {/* `aspect-[3/4]` obligatoire : passer `sizes` à WikiImg bascule le
+            {showPortrait && (
+              <div className="w-full shrink-0 sm:w-56">
+                {/* `aspect-[3/4]` obligatoire : passer `sizes` à WikiImg bascule le
 					    rendu sur next/image en mode `fill`, qui se positionne en absolu
 					    et ne donne AUCUNE hauteur à son parent. Sans ratio ici, la
 					    colonne s'effondrait à une bande de vingt pixels. */}
-              <div className="relative aspect-[3/4] overflow-hidden rounded-lg border border-dbz-border bg-dbz-bg">
-                <div aria-hidden className="halftone absolute inset-0 z-10 opacity-10" />
-                {displayImage ? (
-                  <WikiImg
-                    src={displayImage}
-                    alt={v.displayName ?? `${characterName} — ${v.label}`}
-                    sizes="(min-width: 640px) 224px, 100vw"
-                    loading="lazy"
-                    className="object-contain p-2"
-                    placeholderClassName="absolute inset-0 flex items-center justify-center rounded"
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent p-5 text-center">
-                    <span aria-hidden="true" className="font-saiyan text-5xl text-white/25">
-                      ?
-                    </span>
-                    <span className="text-xs leading-relaxed text-white/60">
-                      {messages.noImage}
-                    </span>
+                <div className="relative aspect-[3/4] overflow-hidden rounded-lg border border-dbz-border bg-dbz-bg">
+                  <div aria-hidden className="halftone absolute inset-0 z-10 opacity-10" />
+                  {displayImage ? (
+                    <WikiImg
+                      src={displayImage}
+                      alt={v.displayName ?? `${characterName} — ${v.label}`}
+                      sizes="(min-width: 640px) 224px, 100vw"
+                      loading="lazy"
+                      className="object-contain p-2"
+                      placeholderClassName="absolute inset-0 flex items-center justify-center rounded"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent p-5 text-center">
+                      <span aria-hidden="true" className="font-saiyan text-5xl text-white/25">
+                        ?
+                      </span>
+                      <span className="text-xs leading-relaxed text-white/60">
+                        {messages.noImage}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {imageReferences.length > 0 && (
+                  <div className="mt-2 space-y-1 text-xs leading-relaxed text-white/60">
+                    <p className="font-semibold text-white/75">{messages.imageReference}</p>
+                    <ul className="space-y-1">
+                      {imageReferences.map((reference) => (
+                        <li key={`${reference.url}:${reference.locator}`}>
+                          <a
+                            href={reference.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label={`${messages.imageReference}: ${reference.title}, ${reference.locator}`}
+                            className="font-semibold text-dbz-orange underline underline-offset-2 hover:text-white"
+                          >
+                            {reference.title}{" "}
+                            <span className="font-normal">· {reference.locator}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 )}
               </div>
-              {imageReferences.length > 0 && (
-                <div className="mt-2 space-y-1 text-xs leading-relaxed text-white/60">
-                  <p className="font-semibold text-white/75">{messages.imageReference}</p>
-                  <ul className="space-y-1">
-                    {imageReferences.map((reference) => (
-                      <li key={`${reference.url}:${reference.locator}`}>
-                        <a
-                          href={reference.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          aria-label={`${messages.imageReference}: ${reference.title}, ${reference.locator}`}
-                          className="font-semibold text-dbz-orange underline underline-offset-2 hover:text-white"
-                        >
-                          {reference.title}{" "}
-                          <span className="font-normal">· {reference.locator}</span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+            )}
 
             <div className="min-w-0 flex-1 space-y-4">
               <div>
@@ -346,7 +228,7 @@ export function CharacterSagaVariantsTabs({
 						    `h1` du personnage, et la fiche n'avait aucun `h2` quand la
 						    frise était sa seule rubrique. */}
                 <h2 className="font-saiyan text-2xl uppercase tracking-widest text-white sm:text-3xl">
-                  {v.displayName ?? `${characterName} — ${v.label}`}
+                  {showPortrait ? (v.displayName ?? `${characterName} — ${v.label}`) : v.sagaName}
                 </h2>
                 <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
                   <ClientGatedWrap
@@ -499,7 +381,7 @@ export function CharacterSagaVariantsTabs({
             </div>
           </div>
         )}
-      </div>
+      </section>
     </section>
   );
 }

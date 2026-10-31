@@ -5,6 +5,7 @@ import { escapeLike } from "@aphrody/shenron-db/repos/wiki";
 import { db } from "@/lib/db";
 import {
   botCharacters,
+  botCharacterContinuities,
   botCharacterTechniques,
   botCharacterVariants,
   botBattles,
@@ -266,6 +267,77 @@ export interface RelatedCharacter {
   name: string;
   image: string | null;
   race: string | null;
+}
+
+export type CharacterContinuityChoice = RelatedCharacter & {
+  label: string | null;
+  isMain: boolean;
+};
+
+/** Explicit timeline choices curated from the character editor. */
+export async function getShenronCharacterContinuities(
+  characterId: number,
+): Promise<CharacterContinuityChoice[]> {
+  try {
+    const [membership] = await db
+      .select({ characterId: botCharacterContinuities.characterId })
+      .from(botCharacterContinuities)
+      .where(
+        and(
+          eq(botCharacterContinuities.versionCharacterId, characterId),
+          eq(botCharacterContinuities.visible, true),
+        ),
+      )
+      .limit(1);
+    const rootId = membership?.characterId ?? characterId;
+    const [root] = await db
+      .select({
+        id: botCharacters.id,
+        name: botCharacters.name,
+        nameJa: botCharacters.nameJa,
+        nameRomaji: botCharacters.nameRomaji,
+        image: botCharacters.image,
+        race: botCharacters.race,
+      })
+      .from(botCharacters)
+      .where(and(eq(botCharacters.id, rootId), eq(botCharacters.visible, true)))
+      .limit(1);
+    if (!root) return [];
+
+    const children = await db
+      .select({
+        id: botCharacters.id,
+        name: botCharacters.name,
+        nameJa: botCharacters.nameJa,
+        nameRomaji: botCharacters.nameRomaji,
+        image: botCharacters.image,
+        race: botCharacters.race,
+        label: botCharacterContinuities.label,
+      })
+      .from(botCharacterContinuities)
+      .innerJoin(botCharacters, eq(botCharacterContinuities.versionCharacterId, botCharacters.id))
+      .where(
+        and(
+          eq(botCharacterContinuities.characterId, rootId),
+          eq(botCharacterContinuities.visible, true),
+          eq(botCharacters.visible, true),
+        ),
+      )
+      .orderBy(asc(botCharacterContinuities.sortOrder), asc(botCharacters.id));
+
+    return [{ ...root, label: null }, ...children].map((choice) => ({
+      id: choice.id,
+      name: choice.name,
+      slug: formatCharacterSlug(choice),
+      image: choice.image,
+      race: choice.race,
+      label: choice.label,
+      isMain: choice.id === root.id,
+    }));
+  } catch (error) {
+    console.error("[shenron] getShenronCharacterContinuities a échoué:", error);
+    return [];
+  }
 }
 
 interface CharacterBattle {
@@ -683,6 +755,7 @@ export interface CharacterVariant {
   role: string | null;
   affiliation: string | null;
   summary: string | null;
+  article: string | null;
   highlights: string[] | null;
   firstVolume: number | null;
   lastVolume: number | null;
@@ -715,6 +788,7 @@ export interface CharacterVariant {
 export interface CharacterRelationItem {
   id: number;
   characterId: number;
+  variantId: number | null;
   relatedCharacterId: number | null;
   category: "family" | "friend" | "enemy";
   relationType: string | null;
@@ -728,12 +802,18 @@ export interface CharacterRelationItem {
 
 export async function getShenronCharacterRelations(
   characterId: number,
+  variantId?: number,
 ): Promise<CharacterRelationItem[]> {
   try {
+    const variantFilter =
+      variantId == null
+        ? sql`variant_id IS NULL`
+        : sql`(variant_id IS NULL OR variant_id = ${variantId})`;
     const rows = await db.execute<{
       id: number;
       character_id: number;
       related_character_id: number | null;
+      variant_id: number | null;
       category: string;
       relation_type: string | null;
       name: string;
@@ -743,14 +823,16 @@ export async function getShenronCharacterRelations(
       description: string | null;
       sort_order: number;
     }>(
-      sql`SELECT id, character_id, related_character_id, category, relation_type, name, name_ja, image, slug, description, sort_order
+      sql`SELECT id, character_id, variant_id, related_character_id, category, relation_type, name, name_ja, image, slug, description, sort_order
           FROM bot.db_character_relations
           WHERE character_id = ${characterId} AND visible = true
+            AND ${variantFilter}
           ORDER BY sort_order ASC, id ASC`,
     );
     return rows.map((r) => ({
       id: Number(r.id),
       characterId: Number(r.character_id),
+      variantId: r.variant_id == null ? null : Number(r.variant_id),
       relatedCharacterId: r.related_character_id ? Number(r.related_character_id) : null,
       category: (r.category as "family" | "friend" | "enemy") || "friend",
       relationType: r.relation_type,
@@ -797,6 +879,7 @@ export async function getShenronCharacterVariants(
       role: v.role,
       affiliation: v.affiliation,
       summary: v.summary,
+      article: v.article ?? null,
       highlights: v.highlights ?? null,
       firstVolume: v.firstVolume,
       lastVolume: v.lastVolume,

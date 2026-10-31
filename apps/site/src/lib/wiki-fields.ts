@@ -45,6 +45,7 @@ export function isRichTextColumn(table: string, col: string): boolean {
 /** Colonnes booléennes connues → rendu en interrupteur. */
 const BOOL_COLS = new Set([
   "isDestroyed",
+  "visible",
   "enabled",
   "active",
   "ended",
@@ -70,6 +71,9 @@ const FK_TARGET: Record<string, { table: string; pk: string }> = {
   originPlanetId: { table: "db_planets", pk: "id" },
   homePlanetId: { table: "db_planets", pk: "id" },
   characterId: { table: "db_characters", pk: "id" },
+  relatedCharacterId: { table: "db_characters", pk: "id" },
+  variantId: { table: "db_character_variants", pk: "id" },
+  versionCharacterId: { table: "db_characters", pk: "id" },
   creatorId: { table: "db_characters", pk: "id" },
   sagaId: { table: "db_sagas", pk: "id" },
   arcId: { table: "db_arcs", pk: "id" },
@@ -94,6 +98,10 @@ export function fkTarget(col: string): { table: string; pk: string } | null {
  * valeurs peuvent apparaître). Valeurs réelles relevées dans Neon.
  */
 const ENUM_OPTIONS: Record<string, { options: string[]; strict?: boolean }> = {
+  "db_character_relations.category": {
+    options: ["family", "friend", "enemy"],
+    strict: true,
+  },
   "db_characters.gender": { options: ["Male", "Female"], strict: true },
   // Historical game slots are suggestions, never the complete editorial taxonomy.
   "db_techniques.type": { options: ["super", "ultimate", "evasive", "awoken"] },
@@ -142,12 +150,25 @@ export function buildSubmitBody(
   draft: Record<string, string>,
   original: Record<string, unknown> | null,
   cols: string[],
-  opts: { mode: "create" | "edit" },
+  opts: { mode: "create" | "edit"; table?: string },
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {};
   for (const c of cols) {
     const o = original?.[c];
-    // jsonb : non éditable ici → ne jamais écrire (sinon corruption en string scalaire).
+    if (
+      opts.table === "db_character_variants" &&
+      (c === "transformationIds" || c === "techniqueIds")
+    ) {
+      const ids = (draft[c] ?? "")
+        .split(/[ ,]+/)
+        .map((id) => id.trim())
+        .filter(Boolean)
+        .map(Number);
+      if (ids.every(Number.isSafeInteger) && ids.every((id) => id > 0)) body[c] = ids;
+      else if (ids.length === 0) body[c] = [];
+      continue;
+    }
+    // Les autres jsonb restent non éditables ici → ne jamais écrire en scalaire.
     if (o !== null && typeof o === "object") continue;
     const v = draft[c] ?? "";
     if (v === "") {
@@ -265,6 +286,14 @@ export interface RelationSpec {
 }
 const ENTITY_RELATIONS: Record<string, RelationSpec[]> = {
   db_characters: [
+    {
+      label: "Versions / timelines",
+      joinTable: "db_character_continuities",
+      selfCol: "characterId",
+      targetCol: "versionCharacterId",
+      targetTable: "db_characters",
+      pkOrder: ["characterId", "versionCharacterId"],
+    },
     {
       label: "Techniques",
       joinTable: "db_character_techniques",

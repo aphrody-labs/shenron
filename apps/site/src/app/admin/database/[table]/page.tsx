@@ -457,7 +457,7 @@ function EditModal({ row, rowId, spec, onClose, onSave, saving, mode }: EditProp
   );
 
   const submit = () => {
-    onSave(buildSubmitBody(draft, row, spec.mutableColumns, { mode }));
+    onSave(buildSubmitBody(draft, row, spec.mutableColumns, { mode, table: spec.name }));
   };
 
   return (

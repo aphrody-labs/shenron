@@ -1,5 +1,10 @@
 {
   "loading": "Chargement des tables du bot… Les tables éditoriales du site sont disponibles.",
   "unavailable": "Le bot est injoignable. Les tables éditoriales du site restent disponibles.",
-  "intro": "Le wiki est édité par les API du site. Les autres tables dépendent du bot ; les tables en lecture seule ne sont pas modifiables."
+  "intro": "Le wiki est édité par les API du site. Les autres tables dépendent du bot ; les tables en lecture seule ne sont pas modifiables.",
+  "tables": {
+    "db_character_variants": "Versions par saga",
+    "db_character_relations": "Relations des personnages",
+    "db_character_continuities": "Timelines des personnages"
+  }
 }

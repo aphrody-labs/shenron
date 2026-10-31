@@ -147,17 +147,21 @@ export async function buildWikiContentPanels({
   entityId,
   article,
   description,
+  preferArticle = false,
+  articleTarget,
   fallbackHeading = "Histoire",
 }: {
   entityType: string;
   entityId: number;
   article?: string | null;
   description?: string | null;
+  preferArticle?: boolean;
+  articleTarget?: { table: string; rowId: number };
   fallbackHeading?: string;
 }): Promise<ContentPanel[]> {
   // Source de vérité : sections DB si présentes (éditables/masquables/ordonnées
   // au studio), sinon l'article éclaté, sinon la description.
-  const dbSections = await getWikiSections(entityType, entityId);
+  const dbSections = preferArticle ? [] : await getWikiSections(entityType, entityId);
   let raw: RawSection[];
   if (dbSections.length > 0) {
     raw = normalizeWikiSectionGroups(
@@ -219,8 +223,8 @@ export async function buildWikiContentPanels({
       origine === "db" && s.sectionId != null
         ? { table: "db_wiki_sections", rowId: s.sectionId, column: "body" }
         : {
-            table: tableForSectionEntity(entityType) ?? undefined,
-            rowId: entityId,
+            table: articleTarget?.table ?? tableForSectionEntity(entityType) ?? undefined,
+            rowId: articleTarget?.rowId ?? entityId,
             column: "article",
           };
 

@@ -319,7 +319,7 @@ function FieldModal({
   }, [columns, initial]);
 
   const submit = () => {
-    onSave(buildSubmitBody(draft, initial, columns, { mode }));
+    onSave(buildSubmitBody(draft, initial, columns, { mode, table }));
   };
 
   return (

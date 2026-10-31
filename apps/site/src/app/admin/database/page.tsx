@@ -49,6 +49,8 @@ const TABLE_LABELS: Record<string, { label: string; group: string }> = {
   db_databooks: { label: "Databooks & interviews", group: "Encyclopédie" },
   db_wiki_sections: { label: "Sections wiki", group: "Encyclopédie" },
   db_character_variants: { label: "Versions par saga", group: "Encyclopédie" },
+  db_character_relations: { label: "Relations des personnages", group: "Encyclopédie" },
+  db_character_continuities: { label: "Timelines des personnages", group: "Encyclopédie" },
   db_tools: { label: "Outils communautaires", group: "Encyclopédie" },
   db_news: { label: "Actualités", group: "Encyclopédie" },
   db_sources: { label: "Sources & attributions", group: "Médias" },
@@ -67,6 +69,11 @@ export default function DatabasePage() {
   });
 
   const tables = mergeAdminTableCatalog(data?.tables);
+  const localizedWikiTables: Record<string, string> = {
+    db_character_variants: translate("tables.db_character_variants"),
+    db_character_relations: translate("tables.db_character_relations"),
+    db_character_continuities: translate("tables.db_character_continuities"),
+  };
 
   // Regrouper par catégorie
   const groups: Record<string, TableSpec[]> = {};
@@ -107,7 +114,7 @@ export default function DatabasePage() {
             <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
               {groups[groupName].map((t) => {
                 const meta = TABLE_LABELS[t.name];
-                const label = meta?.label ?? t.name;
+                const label = localizedWikiTables[t.name] ?? meta?.label ?? t.name;
                 return (
                   <button
                     key={t.name}

@@ -24,6 +24,7 @@ function variant(id: number, label: string, summary: string): CharacterVariant {
     role: null,
     affiliation: null,
     summary,
+    article: null,
     highlights: null,
     firstVolume: null,
     lastVolume: null,
@@ -133,6 +134,7 @@ function serverResult(
     access,
     children: <div>General article text</div>,
     messages,
+    activeVariantIndex: 0,
     powerScalingNodes: [<span key="first">Saiyan BP</span>, <span key="second">Namek BP</span>],
     transformationNodes: [<span key="first">Oozaru</span>, <span key="second">Super Saiyan</span>],
     techniqueNodes: [
@@ -158,6 +160,7 @@ test("server summaries retain formatted links and sanitization", () => {
       variants: [],
       characterName: "Goku",
       messages,
+      activeVariantIndex: 0,
       powerScalingNodes: [],
       transformationNodes: [],
       techniqueNodes: [],

@@ -15,6 +15,7 @@
  *   - sinon            → champ texte
  */
 import { useT } from "@/components/T";
+import { LoadingText } from "@/components/LoadingText";
 import { useQuery } from "@tanstack/react-query";
 import { ImageField } from "@/components/admin/ImageField";
 import { MarkdownField } from "@/components/admin/MarkdownField";
@@ -59,6 +60,18 @@ function dateInputToEpoch(dateStr: string, original: string): string {
 
 export function SmartField({ table, col, value, onChange, original, onUploadStateChange }: Props) {
   const t = useT();
+  if (
+    table === "db_character_variants" &&
+    (col === "transformationIds" || col === "techniqueIds")
+  ) {
+    return (
+      <JsonIdArrayPicker
+        targetTable={col === "transformationIds" ? "db_transformations" : "db_techniques"}
+        value={value}
+        onChange={onChange}
+      />
+    );
+  }
   if (isImageColumn(table, col)) {
     return (
       <ImageField
@@ -169,6 +182,71 @@ export function SmartField({ table, col, value, onChange, original, onUploadStat
       value={value}
       onChange={(e) => onChange(e.target.value)}
     />
+  );
+}
+
+function JsonIdArrayPicker({
+  targetTable,
+  value,
+  onChange,
+}: {
+  targetTable: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["fk-options", targetTable],
+    queryFn: () =>
+      apiAt(crudBase(targetTable)).get<{ options: { value: string; label: string }[] }>(
+        `/${targetTable}?as=options`,
+      ),
+    staleTime: 5 * 60_000,
+  });
+  const selected = value
+    .split(/[ ,]+/)
+    .map((id) => id.trim())
+    .filter((id) => /^\d+$/.test(id));
+  const selectedSet = new Set(selected);
+  const options = data?.options ?? [];
+  const missing = selected
+    .filter((id) => !options.some((option) => option.value === id))
+    .map((id) => ({ value: id, label: `#${id}` }));
+
+  if (isError) {
+    return (
+      <input
+        className="input font-mono text-sm"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder="IDs séparés par des virgules"
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-1">
+      <p className="text-[10px] text-white/50">
+        {isLoading ? <LoadingText /> : `${selected.length} sélectionné(s)`}
+      </p>
+      <div className="max-h-56 space-y-1 overflow-y-auto rounded border border-dbz-border/50 p-2">
+        {[...missing, ...options].map((option) => (
+          <label key={option.value} className="flex cursor-pointer items-center gap-2 text-xs">
+            <input
+              type="checkbox"
+              checked={selectedSet.has(option.value)}
+              disabled={isLoading}
+              onChange={(event) => {
+                const next = new Set(selectedSet);
+                if (event.target.checked) next.add(option.value);
+                else next.delete(option.value);
+                onChange([...next].join(","));
+              }}
+            />
+            <span className="text-white/80">{option.label}</span>
+          </label>
+        ))}
+      </div>
+    </div>
   );
 }
 

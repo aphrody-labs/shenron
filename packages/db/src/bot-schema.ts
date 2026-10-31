@@ -11,7 +11,8 @@
  * Le site lit le wiki **directement ici via Drizzle** (plus de fetch sur l'API
  * REST du bot pour les pages publiques /wiki) → découplé de la dispo du process
  * bot. Toutes les colonnes int SQLite arrivent en `bigint` Postgres, les autres
- * en `text` — on type donc à l'identique. Lecture seule : aucune écriture site.
+ * en `text` — on type donc à l'identique. Les écritures éditoriales restent
+ * limitées aux routes serveur protégées du back-office.
  *
  * ── INDEX : voir `apps/site/src/db/bot-indexes.sql` ─────────────────────────
  * Les index de ce schéma ne sont volontairement PAS déclarés ici. Ce fichier
@@ -31,7 +32,9 @@
 import {
   bigint,
   boolean,
+  check,
   doublePrecision,
+  foreignKey,
   integer,
   jsonb,
   numeric,
@@ -40,7 +43,7 @@ import {
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
-import { getTableName } from "drizzle-orm";
+import { getTableName, sql } from "drizzle-orm";
 
 export const bot = pgSchema("bot");
 
@@ -343,6 +346,8 @@ export const botCharacterVariants = bot.table("db_character_variants", {
   affiliation: text("affiliation"),
   /** Ce que devient le personnage pendant la saga (markdown). */
   summary: text("summary"),
+  /** Saga-specific character article; overrides the character-wide article. */
+  article: text("article"),
   /** Faits marquants, un par puce. */
   highlights: jsonb("highlights").$type<string[]>(),
   /** Transformations disponibles à cette période (ids `db_transformations`). */
@@ -369,6 +374,58 @@ export const botCharacterVariants = bot.table("db_character_variants", {
   sortOrder: int("sort_order").notNull().default(0),
   visible: boolean("visible").notNull().default(true),
 });
+
+/** Curated family, friend and enemy cards for a character page. */
+export const botCharacterRelations = bot.table(
+  "db_character_relations",
+  {
+    id: int("id").primaryKey().generatedAlwaysAsIdentity(),
+    characterId: int("character_id").notNull(),
+    /** Optional saga-scoped variant; NULL keeps a continuity-wide relationship. */
+    variantId: int("variant_id"),
+    relatedCharacterId: int("related_character_id"),
+    category: text("category").notNull(),
+    relationType: text("relation_type"),
+    name: text("name").notNull(),
+    nameJa: text("name_ja"),
+    image: text("image"),
+    slug: text("slug"),
+    description: text("description"),
+    sortOrder: int("sort_order").notNull().default(0),
+    visible: boolean("visible").notNull().default(true),
+  },
+  (table) => [
+    foreignKey({ columns: [table.variantId], foreignColumns: [botCharacterVariants.id] }).onDelete(
+      "cascade",
+    ),
+  ],
+);
+
+/** Explicitly groups character records that belong to alternate continuities. */
+export const botCharacterContinuities = bot.table(
+  "db_character_continuities",
+  {
+    characterId: int("character_id").notNull(),
+    versionCharacterId: int("version_character_id").notNull(),
+    label: text("label"),
+    sortOrder: int("sort_order").notNull().default(0),
+    visible: boolean("visible").notNull().default(true),
+  },
+  (table) => [
+    primaryKey({ columns: [table.characterId, table.versionCharacterId] }),
+    check(
+      "db_character_continuities_not_self",
+      sql`${table.characterId} <> ${table.versionCharacterId}`,
+    ),
+    foreignKey({ columns: [table.characterId], foreignColumns: [botCharacters.id] }).onDelete(
+      "cascade",
+    ),
+    foreignKey({
+      columns: [table.versionCharacterId],
+      foreignColumns: [botCharacters.id],
+    }).onDelete("cascade"),
+  ],
+);
 
 /**
  * « Où regarder légalement, et dans quelle langue » — une entrée par offre.
