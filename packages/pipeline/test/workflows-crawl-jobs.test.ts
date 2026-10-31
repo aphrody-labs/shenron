@@ -1,0 +1,96 @@
+// SPDX-License-Identifier: Apache-2.0
+import { describe, expect, test } from "bun:test";
+import { createCrawlJobArgs, createCrawlJobIntent } from "../src/workflows";
+
+describe("createCrawlJobArgs", () => {
+  test("maps catalogued Shenron sources to the native Dragon Ball worker", () => {
+    expect(createCrawlJobArgs({ source: "official" })).toEqual([
+      "dragon-ball",
+      "crawl",
+      "--profile",
+      "shenron",
+      "--source",
+      "official",
+      "--max-requests",
+      "500",
+      "--json",
+      "--index",
+    ]);
+    expect(createCrawlJobArgs({ source: "databooks", maxRequests: 80, depth: 1 })).toEqual([
+      "dragon-ball",
+      "crawl",
+      "--profile",
+      "shenron",
+      "--source",
+      "kanzentai,neoseeker-databooks,databook-other",
+      "--max-requests",
+      "80",
+      "--max-depth",
+      "1",
+      "--json",
+      "--index",
+    ]);
+  });
+
+  test("leaves the universal catalog selection to Aphrody Web", () => {
+    const args = createCrawlJobArgs({ source: "universal", maxRequests: 12 });
+    expect(args).not.toContain("--source");
+    expect(args).toContain("12");
+    expect(args[0]).toBe("dragon-ball");
+  });
+
+  test("creates a one-attempt idempotent intent for AphrodyWebJobs", () => {
+    expect(createCrawlJobIntent("catalog-official-20261101", { source: "official" })).toEqual({
+      key: "catalog-official-20261101",
+      args: createCrawlJobArgs({ source: "official" }),
+      maxAttempts: 1,
+    });
+  });
+
+  test("creates a stable, per-seed crawl-index job for a custom host", () => {
+    const first = createCrawlJobArgs({
+      source: "custom",
+      url: "https://example.org/news/",
+      maxRequests: 7,
+      depth: 1,
+    });
+    const second = createCrawlJobArgs({
+      source: "custom",
+      url: "https://example.org/news/",
+      maxRequests: 7,
+      depth: 1,
+    });
+    expect(first).toEqual(second);
+    expect(first).toEqual([
+      "crawl-index",
+      "https://example.org/news/",
+      "--label",
+      expect.stringMatching(/^shenron-custom-example-org-[a-f0-9]{12}$/),
+      "--profile",
+      "shenron",
+      "--max-requests",
+      "7",
+      "--max-depth",
+      "1",
+    ]);
+  });
+
+  test("rejects invalid seeds, Fandom, local output paths, and unbounded budgets", () => {
+    expect(() => createCrawlJobArgs({ source: "custom" })).toThrow("requires a URL");
+    expect(() =>
+      createCrawlJobArgs({ source: "custom", url: "https://fandom.com/wiki/Dragon_Ball" }),
+    ).toThrow("Fandom is not an allowed");
+    expect(() =>
+      createCrawlJobArgs({ source: "custom", url: "https://user:pass@example.org/" }),
+    ).toThrow("without credentials");
+    expect(() =>
+      createCrawlJobArgs({ source: "custom", url: "https://example.org/", outDir: "C:/tmp" }),
+    ).toThrow("owned by the worker host");
+    expect(() => createCrawlJobArgs({ source: "official", maxRequests: 0 })).toThrow(
+      "maxRequests must be positive",
+    );
+    expect(() => createCrawlJobArgs({ source: "official", depth: Number.NaN })).toThrow(
+      "Crawl budgets must be non-negative safe integers",
+    );
+  });
+});

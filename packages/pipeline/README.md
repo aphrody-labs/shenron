@@ -12,12 +12,28 @@ Le serveur MCP Shenron n'est plus dans ce dépôt : il est porté par
 bun run pipeline <ocr|rag|ia|translation|crawl> [options]
 ```
 
-`bun run pipeline unify` synchronizes BXC JSONL exports to the Aphrody RAG API
-through `rag-sync-aphrody.ts`. Aphrody owns embedding, indexing, storage and
-retirement; the synchronization manifest is stored under
+`bun run pipeline unify` indexes the Dragon Ball corpus owned by Aphrody Web
+into the Aphrody RAG profile. Aphrody owns embedding, indexing, storage and
+retirement; the index is stored under
 `~/.aphrody/workspaces/dbfr/indexes`. The local Rust command
 `aphrody rag ingest-shenron` remains available for offline/local corpus work,
 but is not the product pipeline's default storage path.
+
+## Workers de crawl
+
+`pipeline crawl <source>` reste l'exécution directe, bornée, des sources déclarées
+par `CrawlTarget`. Pour placer une collecte sur un worker Aphrody Jobs, le site,
+le bot ou un orchestrateur passe `createCrawlJobIntent(key, target)` à
+`AphrodyWebJobs.submit`. Les arguments natifs commencent par
+`dragon-ball` (catalogue Dragon Ball) ou `crawl-index` (source personnalisée),
+conformément au contrat du worker `web-pipeline`.
+
+Les budgets de requêtes/profondeur sont inclus dans la tâche. Les chemins de sortie
+et d'état restent propres à l'hôte worker : `outDir` est refusé pour une tâche
+distante. Les sources personnalisées exigent une URL HTTP(S) sans identifiants,
+refusent Fandom et reçoivent un label persistant dérivé de l'URL. Les workers
+doivent rester `workerReady=false` tant que leur MCP authentifié et leur file locale
+n'ont pas passé les sondes Infra ; leurs bases SQLite ne se partagent pas entre hôtes.
 
 Pour obtenir des candidats OCR Koharu depuis un projet natif, utiliser
 `bun run pipeline koharu-native-candidate <manga|databook> <manifest.json>

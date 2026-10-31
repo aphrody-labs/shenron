@@ -2,7 +2,7 @@
   "name": "@aphrody/shenron-pipeline",
   "version": "1.4.7",
   "private": false,
-  "description": "Shenron compute clients and Dragon Ball data pipeline: AI, Aphrody services, BXC and OCR/RAG workflows",
+  "description": "Shenron compute clients and Dragon Ball data pipeline: AI, Aphrody services, crawl, OCR and RAG workflows",
   "homepage": "https://dragonballfr.com",
   "license": "Apache-2.0",
   "repository": {

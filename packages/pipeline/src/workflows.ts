@@ -15,6 +15,7 @@ import {
 import { withHomePersona, type HomePersona } from "@aphrody/shenron-pipeline/ai/prompts";
 import { loadShenronHomePersona, type AgentEnv } from "./agent-home";
 import { executeCommand, type CommandRunner, type PipelineExecution } from "./execution";
+import type { WebJobIntent } from "./aphrody/jobs";
 
 export { getToriyamaPersona } from "./agent-home";
 
@@ -247,6 +248,74 @@ export interface CrawlTarget {
   runner?: CommandRunner;
 }
 
+/** Canonical Aphrody Web campaign identifiers selected by Shenron's source catalog. */
+export const CRAWL_SOURCE_IDS: Readonly<
+  Partial<Record<Exclude<CrawlTarget["source"], "custom" | "universal">, string>>
+> = Object.freeze({
+  dragonballcn: "dragonballcn",
+  kanzenshuu: "kanzenshuu",
+  official: "official",
+  databooks: "kanzentai,neoseeker-databooks,databook-other",
+  guides: "guides",
+});
+
+/**
+ * Builds the native web-pipeline arguments for a remote Aphrody Jobs worker.
+ * Output/state paths stay on the worker host; callers pass only catalogued sources,
+ * URL seeds and bounded request parameters through the authenticated queue.
+ */
+export function createCrawlJobArgs(target: CrawlTarget): string[] {
+  if (target.outDir !== undefined)
+    throw new Error("Remote crawl output and state paths are owned by the worker host");
+  if (target.url && target.source !== "custom")
+    throw new Error("A seed URL requires the custom crawl source");
+  for (const value of [target.depth, target.maxRequests])
+    if (value !== undefined && (!Number.isSafeInteger(value) || value < 0))
+      throw new RangeError("Crawl budgets must be non-negative safe integers");
+  if (target.maxRequests === 0) throw new RangeError("maxRequests must be positive");
+
+  if (target.source === "custom") {
+    if (!target.url) throw new Error("crawl custom requires a URL");
+    const url = new URL(target.url);
+    if (!/^https?:$/.test(url.protocol) || url.username || url.password)
+      throw new Error("crawl custom requires an HTTP(S) URL without credentials");
+    if (url.hostname === "fandom.com" || url.hostname.endsWith(".fandom.com"))
+      throw new Error("Fandom is not an allowed Dragon Ball source");
+    const slug = url.hostname
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 32);
+    const digest = new Bun.CryptoHasher("sha256").update(url.href).digest("hex").slice(0, 12);
+    const args = [
+      "crawl-index",
+      url.href,
+      "--label",
+      `shenron-custom-${slug}-${digest}`,
+      "--profile",
+      "shenron",
+    ];
+    args.push("--max-requests", String(target.maxRequests ?? 500));
+    args.push("--max-depth", String(target.depth ?? 2));
+    return args;
+  }
+
+  if (target.source !== "universal" && !Object.hasOwn(CRAWL_SOURCE_IDS, target.source))
+    throw new Error(`Unknown Dragon Ball crawl source: ${target.source}`);
+  const args = ["dragon-ball", "crawl", "--profile", "shenron"];
+  if (target.source !== "universal")
+    args.push("--source", CRAWL_SOURCE_IDS[target.source as keyof typeof CRAWL_SOURCE_IDS]!);
+  args.push("--max-requests", String(target.maxRequests ?? 500));
+  if (target.depth !== undefined) args.push("--max-depth", String(target.depth));
+  args.push("--json", "--index");
+  return args;
+}
+
+/** Creates the idempotent queue intent consumed by `AphrodyWebJobs.submit`. */
+export function createCrawlJobIntent(key: string, target: CrawlTarget): WebJobIntent {
+  return { key, args: createCrawlJobArgs(target), maxAttempts: 1 };
+}
+
 /**
  * Aphrody-owned Dragon Ball crawl and RAG locations for the Shenron profile.
  */
@@ -290,13 +359,7 @@ export async function runCrawl(target: CrawlTarget): Promise<PipelineExecution> 
     throw new Error("A seed URL requires the custom crawl source");
   if (target.outDir !== undefined && !target.outDir.trim())
     throw new Error("The crawl output directory must not be empty");
-  const sources: Record<Exclude<CrawlTarget["source"], "custom" | "universal">, string> = {
-    dragonballcn: "dragonballcn",
-    kanzenshuu: "kanzenshuu",
-    official: "official",
-    databooks: "kanzentai,neoseeker-databooks,databook-other",
-    guides: "guides",
-  };
+  const sources = CRAWL_SOURCE_IDS;
   let command: string[];
   if (target.source === "custom") {
     if (!target.url) throw new Error("crawl custom exige une URL");
@@ -331,7 +394,8 @@ export async function runCrawl(target: CrawlTarget): Promise<PipelineExecution> 
       "--json",
       "--index",
     ];
-    if (target.source !== "universal") command.push("--source", sources[target.source]);
+    if (target.source !== "universal")
+      command.push("--source", sources[target.source as keyof typeof sources]!);
     if (process.env.APHRODY_CORPUS_CRAWL_CONFIG?.trim())
       command.push("--config", process.env.APHRODY_CORPUS_CRAWL_CONFIG.trim());
   }
