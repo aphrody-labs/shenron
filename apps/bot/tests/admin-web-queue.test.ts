@@ -41,6 +41,7 @@ test("native web placement survives a lost ACK and process restart, with private
           "80",
           "--max-depth",
           "1",
+          "--render",
           "--json",
           "--index",
         ],

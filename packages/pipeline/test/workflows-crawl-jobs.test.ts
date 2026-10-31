@@ -13,6 +13,7 @@ describe("createCrawlJobArgs", () => {
       "official",
       "--max-requests",
       "500",
+      "--render",
       "--json",
       "--index",
     ]);
@@ -27,6 +28,7 @@ describe("createCrawlJobArgs", () => {
       "80",
       "--max-depth",
       "1",
+      "--render",
       "--json",
       "--index",
     ]);
@@ -35,6 +37,7 @@ describe("createCrawlJobArgs", () => {
   test("leaves the universal catalog selection to Aphrody Web", () => {
     const args = createCrawlJobArgs({ source: "universal", maxRequests: 12 });
     expect(args).not.toContain("--source");
+    expect(args).toContain("--render");
     expect(args).toContain("12");
     expect(args[0]).toBe("dragon-ball");
   });
@@ -73,6 +76,7 @@ describe("createCrawlJobArgs", () => {
       "--max-depth",
       "1",
     ]);
+    expect(first).not.toContain("--render");
   });
 
   test("rejects invalid seeds, Fandom, local output paths, and unbounded budgets", () => {

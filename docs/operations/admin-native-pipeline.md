@@ -99,14 +99,23 @@ Il déclare les hôtes déjà qualifiés et les seuls workflows proposés à l�
     { "id": "vps", "config": "/private/vps-mcp.json", "slots": 2, "workerReady": true },
     { "id": "dbfr", "config": "/private/dbfr-mcp.json", "slots": 2, "workerReady": true }
   ],
-  "actions": [{ "id": "web-index", "args": ["crawl-index", "--help"], "maxAttempts": 1 }]
+  "actions": [{ "id": "web-official", "source": "official", "maxRequests": 100, "depth": 2 }]
 }
 ```
 
-L’exemple teste l’aide ; remplacer les arguments par un workflow qualifié avant
-une acquisition réelle. `workerReady` constate une qualification préalable et
-n’installe aucun worker. Le panneau sonde la file native par MCP avant de proposer
-les actions. Les secrets restent dans les fichiers MCP du propriétaire.
+Les sources acceptées sont `official`, `kanzenshuu`, `databooks`, `guides`,
+`dragonballcn`, `universal`. Les budgets sont limités à 1–2000 requêtes et une
+profondeur de 0–5. Le pipeline construit l’intent natif `dragon-ball crawl` et
+ajoute `--render` pour les campagnes cataloguées : les pages qui le nécessitent
+utilisent Obscura sur l’hôte worker. Aphrody Web récupère et vérifie toujours
+`robots.txt` en HTTP natif, sans navigateur. `crawl-index` personnalisé garde
+son chemin distinct et ne reçoit pas `--render`.
+
+Avant de déclarer `workerReady: true`, qualifier sur chaque hôte le MCP
+authentifié, la file native et le rendu Obscura local. Ce marqueur constate une
+qualification préalable ; il n’installe aucun worker. Le panneau sonde la file
+native par MCP avant de proposer les actions. Les secrets restent dans les
+fichiers MCP du propriétaire.
 
 Le contrôleur réutilise `AphrodyWebJobs` : files et leases Aphrody, placement selon
 les slots et la charge, réservation durable avant soumission, même clé sur le même
