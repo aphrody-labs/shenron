@@ -9,6 +9,7 @@ import { CharacterSagaVariants } from "@/components/wiki/CharacterSagaVariants";
 import { CharacterPageSelectors } from "@/components/wiki/CharacterPageSelectors";
 import { WikiSectionsReader, type ReaderPanel } from "@/components/wiki/WikiSectionsReader";
 import { WikiImg } from "@/components/wiki/WikiImg";
+import { CharacterPortraitWithTransformations } from "@/components/wiki/CharacterPortraitWithTransformations";
 import { CharacterPowerScaling } from "@/components/wiki/CharacterPowerScaling";
 import { DEFAULT_POWER_SCALING_CONFIG } from "@/lib/canon-engine";
 import { buildWikiContentPanels } from "@/lib/wiki-panels";
@@ -743,7 +744,6 @@ export default async function CharacterPage({
                 </p>
               );
             })}
-            portraitTransformations={activePortraitTransformations}
             techniqueNodes={activeSagaVariants.map((variant) => {
               const sourceTypeLabel = (sourceType: string) => {
                 switch (sourceType) {
@@ -1008,13 +1008,13 @@ export default async function CharacterPage({
           {/* Meilleure résolution existante en premier (image éditoriale,
 								    portrait XV2 ou copie plus grande de la même image, mesurées
 								    par l'inventaire) ; l'autre reste en repli. */}
-          <WikiImg
+          <CharacterPortraitWithTransformations
             src={heroImage}
             fallback={heroImage === character.image ? character.portraitXv2 : character.image}
             alt={pageCharacterName}
-            loading="eager"
-            className="max-h-[260px] max-w-full w-auto object-contain relative z-10 drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)] transition-transform duration-500 group-hover:scale-105"
-            placeholderClassName="relative z-10 w-full aspect-[3/4] flex items-center justify-center bg-dbz-card overflow-hidden rounded"
+            transformations={activePortraitTransformations}
+            appearanceLabel={versionT("appearance")}
+            sagaLabel={versionT("sagaAppearance")}
           />
         </ViewTransition>
       </div>

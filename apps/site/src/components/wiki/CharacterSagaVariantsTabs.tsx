@@ -15,7 +15,7 @@
  * pendant trois tomes. Le bandeau de provenance le dit mot pour mot plutôt que
  * de laisser la frise se faire passer pour une biographie vérifiée.
  */
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { WikiImg } from "@/components/wiki/WikiImg";
 // `ClientGatedWrap` et NON `GatedWrap` : ce dernier lit la configuration de
 // lancement côté serveur, donc tire `postgres` — dans un composant client, cela
@@ -89,7 +89,6 @@ export function CharacterSagaVariantsTabs({
   summaryNodes,
   powerScalingNodes,
   transformationNodes,
-  portraitTransformations = [],
   techniqueNodes,
   messages,
   activeVariantIndex,
@@ -103,14 +102,12 @@ export function CharacterSagaVariantsTabs({
   /** Instantané de la configuration de lancement, résolu côté serveur. */
   access?: AccessSnapshot | null;
   transformationNodes: ReactNode[];
-  portraitTransformations?: Array<{ id: number; name: string; image: string }>;
   techniqueNodes: ReactNode[];
   messages: CharacterSagaMessages;
   activeVariantIndex: number;
   showPortrait?: boolean;
 }) {
   const actif = activeVariantIndex;
-  const [selectedTransformationId, setSelectedTransformationId] = useState<number | null>(null);
   // The page-level selector controls saga state in the URL so the hero, article,
   // affiliations, relationships, powers and transformations share one selection.
   if (!variants.length) return null;
@@ -137,11 +134,6 @@ export function CharacterSagaVariantsTabs({
   // Fail closed: an image needs both an approved source URL and an explicit
   // editorial reference that attests to the image field.
   const displayImage = verifiedCharacterVariantImage(v.image, v.evidence);
-  const selectedTransformation = portraitTransformations.find(
-    (transformation) => transformation.id === selectedTransformationId,
-  );
-  const sagaAppearanceSelected = selectedTransformation == null;
-  const portraitImage = selectedTransformation?.image ?? displayImage;
   const tomes =
     v.firstVolume != null && v.lastVolume != null
       ? v.firstVolume === v.lastVolume
@@ -184,14 +176,10 @@ export function CharacterSagaVariantsTabs({
 					    colonne s'effondrait à une bande de vingt pixels. */}
                 <div className="relative aspect-[3/4] overflow-hidden rounded-lg border border-dbz-border bg-dbz-bg">
                   <div aria-hidden className="halftone absolute inset-0 z-10 opacity-10" />
-                  {portraitImage ? (
+                  {displayImage ? (
                     <WikiImg
-                      src={portraitImage}
-                      alt={
-                        selectedTransformation
-                          ? `${characterName} — ${selectedTransformation.name}`
-                          : (v.displayName ?? `${characterName} — ${v.label}`)
-                      }
+                      src={displayImage}
+                      alt={v.displayName ?? `${characterName} — ${v.label}`}
                       sizes="(min-width: 640px) 224px, 100vw"
                       loading="lazy"
                       className="object-contain p-2"
@@ -207,37 +195,8 @@ export function CharacterSagaVariantsTabs({
                       </span>
                     </div>
                   )}
-                  {portraitTransformations.length > 0 && (
-                    <div
-                      role="group"
-                      aria-label={messages.appearance}
-                      className="absolute inset-y-2 right-1 z-20 flex w-[36%] max-w-20 flex-col gap-1 overflow-y-auto rounded-md bg-gradient-to-l from-black/90 via-black/75 to-black/20 p-1"
-                    >
-                      <button
-                        type="button"
-                        aria-pressed={sagaAppearanceSelected}
-                        onClick={() => setSelectedTransformationId(null)}
-                        className={`min-h-8 w-full shrink-0 rounded border px-1 py-1 text-[9px] font-semibold leading-3 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-yellow ${sagaAppearanceSelected ? "border-dbz-orange bg-black/90 text-dbz-orange" : "border-white/20 bg-black/65 text-white hover:border-white/50"}`}
-                      >
-                        {messages.sagaAppearance}
-                      </button>
-                      {portraitTransformations.map((transformation) => (
-                        <button
-                          key={transformation.id}
-                          type="button"
-                          aria-pressed={selectedTransformationId === transformation.id}
-                          aria-label={`${messages.appearance} — ${transformation.name}`}
-                          title={transformation.name}
-                          onClick={() => setSelectedTransformationId(transformation.id)}
-                          className={`min-h-8 w-full shrink-0 rounded border px-1 py-1 text-[9px] font-semibold leading-3 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-yellow ${selectedTransformationId === transformation.id ? "border-dbz-orange bg-black/90 text-dbz-orange" : "border-white/20 bg-black/65 text-white hover:border-white/50"}`}
-                        >
-                          {transformation.name}
-                        </button>
-                      ))}
-                    </div>
-                  )}
                 </div>
-                {!selectedTransformation && imageReferences.length > 0 && (
+                {imageReferences.length > 0 && (
                   <div className="mt-2 space-y-1 text-xs leading-relaxed text-white/60">
                     <p className="font-semibold text-white/75">{messages.imageReference}</p>
                     <ul className="space-y-1">
