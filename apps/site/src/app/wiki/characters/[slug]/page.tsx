@@ -260,6 +260,10 @@ export default async function CharacterPage({
   const requestedSaga = Array.isArray(query.saga) ? query.saga[0] : query.saga;
   const activeVariant =
     sagaVariants.find((variant) => variant.slug === requestedSaga) ?? sagaVariants[0] ?? null;
+  const activePortraitTransformations = character.transformations
+    .filter((transformation) => activeVariant?.transformationIds?.includes(transformation.id))
+    .filter((transformation) => transformation.image.trim().length > 0)
+    .map(({ id, name, image }) => ({ id, name, image }));
   const activeVariantIndex = activeVariant
     ? Math.max(
         0,
@@ -669,6 +673,8 @@ export default async function CharacterPage({
               }),
               transformations: versionT("transformations"),
               noTransformations: versionT("noTransformations"),
+              appearance: versionT("appearance"),
+              sagaAppearance: versionT("sagaAppearance"),
               techniquesAria: versionT("techniquesAria", {
                 name: "{name}",
                 version: "{version}",
@@ -737,6 +743,7 @@ export default async function CharacterPage({
                 </p>
               );
             })}
+            portraitTransformations={activePortraitTransformations}
             techniqueNodes={activeSagaVariants.map((variant) => {
               const sourceTypeLabel = (sourceType: string) => {
                 switch (sourceType) {
@@ -1060,12 +1067,6 @@ export default async function CharacterPage({
           <div className="wiki-infobox-row">
             <span className="wiki-infobox-label">Affiliation</span>
             <span className="wiki-infobox-value">{pageAffiliation}</span>
-          </div>
-        )}
-        {activeVariant?.form && (
-          <div className="wiki-infobox-row">
-            <span className="wiki-infobox-label">{versionT("form")}</span>
-            <span className="wiki-infobox-value text-dbz-orange">{activeVariant.form}</span>
           </div>
         )}
         {activeVariant?.age != null && (

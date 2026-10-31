@@ -81,6 +81,8 @@ export interface CharacterVersionMessages {
   transformationsAria: string;
   transformations: string;
   noTransformations: string;
+  appearance: string;
+  sagaAppearance: string;
   techniquesAria: string;
   techniques: string;
   noTechniques: string;
@@ -131,6 +133,8 @@ export type CharacterSagaMessages = Pick<
   | "transformationsAria"
   | "transformations"
   | "noTransformations"
+  | "appearance"
+  | "sagaAppearance"
   | "techniquesAria"
   | "techniques"
   | "noTechniques"

@@ -11,6 +11,7 @@ export function CharacterSagaVariants({
   variants,
   powerScalingNodes,
   transformationNodes,
+  portraitTransformations,
   techniqueNodes,
   messages,
   children,
@@ -23,6 +24,7 @@ export function CharacterSagaVariants({
   access?: AccessSnapshot | null;
   powerScalingNodes: ReactNode[];
   transformationNodes: ReactNode[];
+  portraitTransformations?: Array<{ id: number; name: string; image: string }>;
   techniqueNodes: ReactNode[];
   messages: CharacterSagaMessages;
   children?: ReactNode;
@@ -41,6 +43,7 @@ export function CharacterSagaVariants({
         variant.summary ? <WikiMarkdown key={variant.id} body={variant.summary} /> : null,
       )}
       transformationNodes={transformationNodes}
+      portraitTransformations={portraitTransformations}
       techniqueNodes={techniqueNodes}
       messages={messages}
       powerScalingNodes={powerScalingNodes}
