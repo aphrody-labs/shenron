@@ -208,31 +208,32 @@ export function CharacterSagaVariantsTabs({
                     </div>
                   )}
                   {portraitTransformations.length > 0 && (
-                    <div className="absolute inset-x-1.5 bottom-1.5 z-20 rounded-md border border-white/15 bg-black/85 p-2 backdrop-blur-sm">
-                      <p className="mb-1.5 text-center text-[10px] font-bold uppercase tracking-wider text-white/70">
-                        {messages.appearance}
-                      </p>
-                      <div className="grid grid-cols-2 gap-1.5">
+                    <div
+                      role="group"
+                      aria-label={messages.appearance}
+                      className="absolute inset-y-2 right-1 z-20 flex w-[36%] max-w-20 flex-col gap-1 overflow-y-auto rounded-md bg-gradient-to-l from-black/90 via-black/75 to-black/20 p-1"
+                    >
+                      <button
+                        type="button"
+                        aria-pressed={sagaAppearanceSelected}
+                        onClick={() => setSelectedTransformationId(null)}
+                        className={`min-h-8 w-full shrink-0 rounded border px-1 py-1 text-[9px] font-semibold leading-3 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-yellow ${sagaAppearanceSelected ? "border-dbz-orange bg-black/90 text-dbz-orange" : "border-white/20 bg-black/65 text-white hover:border-white/50"}`}
+                      >
+                        {messages.sagaAppearance}
+                      </button>
+                      {portraitTransformations.map((transformation) => (
                         <button
+                          key={transformation.id}
                           type="button"
-                          aria-pressed={sagaAppearanceSelected}
-                          onClick={() => setSelectedTransformationId(null)}
-                          className={`min-h-10 rounded border px-1.5 text-[11px] font-semibold leading-tight transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-yellow ${sagaAppearanceSelected ? "border-dbz-orange bg-dbz-orange/20 text-dbz-orange" : "border-white/15 bg-white/5 text-white/80 hover:border-white/40"}`}
+                          aria-pressed={selectedTransformationId === transformation.id}
+                          aria-label={`${messages.appearance} — ${transformation.name}`}
+                          title={transformation.name}
+                          onClick={() => setSelectedTransformationId(transformation.id)}
+                          className={`min-h-8 w-full shrink-0 rounded border px-1 py-1 text-[9px] font-semibold leading-3 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-yellow ${selectedTransformationId === transformation.id ? "border-dbz-orange bg-black/90 text-dbz-orange" : "border-white/20 bg-black/65 text-white hover:border-white/50"}`}
                         >
-                          {messages.sagaAppearance}
+                          {transformation.name}
                         </button>
-                        {portraitTransformations.map((transformation) => (
-                          <button
-                            key={transformation.id}
-                            type="button"
-                            aria-pressed={selectedTransformationId === transformation.id}
-                            onClick={() => setSelectedTransformationId(transformation.id)}
-                            className={`min-h-10 rounded border px-1.5 text-[11px] font-semibold leading-tight transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-yellow ${selectedTransformationId === transformation.id ? "border-dbz-orange bg-dbz-orange/20 text-dbz-orange" : "border-white/15 bg-white/5 text-white/80 hover:border-white/40"}`}
-                          >
-                            {transformation.name}
-                          </button>
-                        ))}
-                      </div>
+                      ))}
                     </div>
                   )}
                 </div>
