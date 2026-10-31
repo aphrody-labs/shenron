@@ -1,8 +1,18 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Native crawl exports enter the existing source registry without canon promotion. */
 import { createHash } from "node:crypto";
-import { lstat, realpath } from "node:fs/promises";
-import { isAbsolute } from "node:path";
+import {
+  copyFile,
+  lstat,
+  mkdtemp,
+  readdir,
+  realpath,
+  rename,
+  rm,
+  stat,
+  writeFile,
+} from "node:fs/promises";
+import { basename, dirname, isAbsolute, join, resolve } from "node:path";
 import type postgres from "postgres";
 import { z } from "zod";
 
@@ -116,6 +126,184 @@ export interface CrawlRegistryPort {
   upsert(record: ExternalCrawlRecord): Promise<"applied" | "protected">;
 }
 const digest = (value: string) => createHash("sha256").update(value).digest("hex");
+const MAX_ARTIFACT_BYTES = 512 * 1024 * 1024;
+const MAX_ARTIFACT_DOCUMENTS = 10000;
+const MANIFEST_NAME = "manifest.json";
+const ARTIFACT_NAME = "shenron-documents.jsonl";
+const crawlArtifactManifestSchema = z
+  .object({
+    schema: z.literal("shenron-native-crawl-artifact"),
+    version: z.literal(1),
+    job: z
+      .object({ id: z.string().regex(/^[A-Za-z0-9._:-]{1,128}$/), status: z.literal("succeeded") })
+      .strict(),
+    sourcePolicySha256: hash,
+    artifact: z
+      .object({
+        file: z.literal(ARTIFACT_NAME),
+        sizeBytes: z.number().int().min(1).max(MAX_ARTIFACT_BYTES),
+        sha256: hash,
+        documents: z.number().int().min(1).max(MAX_ARTIFACT_DOCUMENTS),
+      })
+      .strict(),
+    createdAt: z.string().datetime({ offset: true }),
+  })
+  .strict();
+export type CrawlArtifactManifest = z.infer<typeof crawlArtifactManifestSchema>;
+
+function stableJson(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(stableJson).join(",")}]`;
+  if (value && typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    return `{${Object.keys(record)
+      .sort()
+      .map((key) => `${JSON.stringify(key)}:${stableJson(record[key])}`)
+      .join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
+async function fileSha256(path: string, maxBytes = MAX_ARTIFACT_BYTES) {
+  const info = await lstat(path);
+  if (!info.isFile() || info.isSymbolicLink() || info.size < 1 || info.size > maxBytes)
+    throw new Error("Crawl artifact must be a bounded regular file");
+  const hashState = createHash("sha256");
+  const reader = Bun.file(path).stream().getReader();
+  let bytes = 0;
+  try {
+    while (true) {
+      const next = await reader.read();
+      if (next.done) break;
+      bytes += next.value.byteLength;
+      if (bytes > maxBytes) throw new Error("Crawl artifact exceeds byte limit");
+      hashState.update(next.value);
+    }
+  } finally {
+    await reader.cancel();
+    reader.releaseLock();
+  }
+  const after = await stat(path);
+  if (bytes !== info.size || after.size !== info.size || after.mtimeMs !== info.mtimeMs)
+    throw new Error("Crawl artifact changed while being hashed");
+  return { sizeBytes: bytes, sha256: hashState.digest("hex") };
+}
+
+/** Package a completed crawl as a closed, immutable two-file artifact directory. */
+export async function exportNativeCrawlArtifact(options: {
+  inputPath: string;
+  outputDir: string;
+  jobId: string;
+  jobStatus: string;
+  policy: unknown;
+}) {
+  if (options.jobStatus !== "succeeded")
+    throw new Error("Only succeeded crawl jobs can be exported");
+  if (!/^[A-Za-z0-9._:-]{1,128}$/.test(options.jobId)) throw new Error("Invalid crawl job ID");
+  if (!isAbsolute(options.inputPath) || !isAbsolute(options.outputDir))
+    throw new Error("Crawl artifact paths must be absolute");
+  const policy = crawlIngestPolicySchema.parse(options.policy);
+  const source = resolve(options.inputPath);
+  const sourceInfo = await lstat(source);
+  if (!sourceInfo.isFile() || sourceInfo.isSymbolicLink() || sourceInfo.size > MAX_ARTIFACT_BYTES)
+    throw new Error("Crawl source must be a bounded regular file");
+  let documentsCount = 0;
+  for await (const document of documents(source)) {
+    projectNativeCrawl(document, policy);
+    documentsCount++;
+    if (documentsCount > MAX_ARTIFACT_DOCUMENTS)
+      throw new Error("Crawl artifact exceeds document limit");
+  }
+  if (!documentsCount) throw new Error("Empty crawl exports cannot be published");
+  const sourceHash = await fileSha256(source);
+  const sourceAfter = await stat(source);
+  if (sourceAfter.size !== sourceInfo.size || sourceAfter.mtimeMs !== sourceInfo.mtimeMs)
+    throw new Error("Crawl source changed during export");
+  const output = resolve(options.outputDir);
+  const parentInfo = await lstat(dirname(output));
+  if (!parentInfo.isDirectory() || parentInfo.isSymbolicLink())
+    throw new Error("Crawl artifact parent must be a real directory");
+  try {
+    await lstat(output);
+    throw new Error("Crawl artifact output already exists");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  const temp = await mkdtemp(join(dirname(output), ".shenron-crawl-artifact-"));
+  try {
+    await copyFile(source, join(temp, ARTIFACT_NAME));
+    const copied = await fileSha256(join(temp, ARTIFACT_NAME));
+    if (copied.sha256 !== sourceHash.sha256 || copied.sizeBytes !== sourceHash.sizeBytes)
+      throw new Error("Copied crawl artifact does not match its source");
+    const manifest = crawlArtifactManifestSchema.parse({
+      schema: "shenron-native-crawl-artifact",
+      version: 1,
+      job: { id: options.jobId, status: "succeeded" },
+      sourcePolicySha256: digest(stableJson(policy)),
+      artifact: { file: ARTIFACT_NAME, ...copied, documents: documentsCount },
+      createdAt: new Date().toISOString(),
+    });
+    await writeFile(join(temp, MANIFEST_NAME), `${JSON.stringify(manifest, null, 2)}\n`, {
+      flag: "wx",
+      mode: 0o600,
+    });
+    await rename(temp, output);
+    return manifest;
+  } catch (error) {
+    await rm(temp, { recursive: true, force: true });
+    throw error;
+  }
+}
+
+/** Verify the exact artifact directory before any DB connection or mutation. */
+export async function verifyNativeCrawlArtifact(options: {
+  inputPath: string;
+  manifestPath: string;
+  policy: unknown;
+  maxDocuments?: number;
+}) {
+  const policy = crawlIngestPolicySchema.parse(options.policy);
+  const inputPath = resolve(options.inputPath);
+  const manifestPath = resolve(options.manifestPath);
+  if (basename(manifestPath) !== MANIFEST_NAME || dirname(manifestPath) !== dirname(inputPath))
+    throw new Error("Manifest and crawl payload must share the immutable artifact directory");
+  const directory = dirname(manifestPath);
+  const dirInfo = await lstat(directory);
+  if (!dirInfo.isDirectory() || dirInfo.isSymbolicLink())
+    throw new Error("Invalid artifact directory");
+  const names = (await readdir(directory)).toSorted();
+  if (names.length !== 2 || !names.includes(ARTIFACT_NAME) || !names.includes(MANIFEST_NAME))
+    throw new Error("Crawl artifact directory contains missing or unexpected files");
+  for (const path of [inputPath, manifestPath]) {
+    const info = await lstat(path);
+    if (!info.isFile() || info.isSymbolicLink())
+      throw new Error("Artifact files must be regular files");
+  }
+  if ((await lstat(manifestPath)).size > 64 * 1024)
+    throw new Error("Crawl manifest exceeds size limit");
+  const manifest = crawlArtifactManifestSchema.parse(await Bun.file(manifestPath).json());
+  if (manifest.sourcePolicySha256 !== digest(stableJson(policy)))
+    throw new Error("Crawl source policy mismatch");
+  const file = await fileSha256(inputPath);
+  if (file.sizeBytes !== manifest.artifact.sizeBytes || file.sha256 !== manifest.artifact.sha256)
+    throw new Error("Crawl artifact size or SHA-256 mismatch");
+  const maxDocuments = options.maxDocuments ?? MAX_ARTIFACT_DOCUMENTS;
+  if (
+    !Number.isSafeInteger(maxDocuments) ||
+    maxDocuments < 1 ||
+    maxDocuments > MAX_ARTIFACT_DOCUMENTS
+  )
+    throw new Error(`maxDocuments must be 1..${MAX_ARTIFACT_DOCUMENTS}`);
+  if (manifest.artifact.documents > maxDocuments)
+    throw new Error("Crawl artifact exceeds document limit");
+  let count = 0;
+  for await (const document of documents(inputPath)) {
+    projectNativeCrawl(document, policy);
+    if (++count > MAX_ARTIFACT_DOCUMENTS) throw new Error("Crawl artifact exceeds document limit");
+  }
+  if (count !== manifest.artifact.documents)
+    throw new Error("Crawl artifact document count mismatch");
+  return manifest;
+}
 const text = (value: string, limit: number) => value.replaceAll("\0", "").trim().slice(0, limit);
 
 export function projectNativeCrawl(
@@ -227,6 +415,7 @@ export async function ingestNativeCrawl(
     policy: unknown;
     apply?: boolean;
     maxDocuments?: number;
+    manifestPath?: string;
     signal?: AbortSignal;
   },
   port?: CrawlRegistryPort,
@@ -235,6 +424,18 @@ export async function ingestNativeCrawl(
   const maxDocuments = options.maxDocuments ?? 10000;
   if (!Number.isSafeInteger(maxDocuments) || maxDocuments < 1 || maxDocuments > 100000)
     throw new Error("maxDocuments must be 1..100000");
+  if (options.apply && !options.manifestPath)
+    throw new Error("Applying crawl imports requires a verified --manifest");
+  if (options.manifestPath) {
+    const manifest = await verifyNativeCrawlArtifact({
+      inputPath: options.inputPath,
+      manifestPath: options.manifestPath,
+      policy,
+      maxDocuments,
+    });
+    if (manifest.job.status !== "succeeded")
+      throw new Error("Incomplete crawl jobs cannot be ingested");
+  }
   if (options.apply) {
     if (!port) throw new Error("A DBFR registry owner is required for apply");
     await port.assertReady();

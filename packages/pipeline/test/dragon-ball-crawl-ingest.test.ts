@@ -8,7 +8,9 @@ import {
   crawlIngestPolicySchema,
   auditNativeCrawlMedia,
   ingestNativeCrawl,
+  exportNativeCrawlArtifact,
   projectNativeCrawl,
+  verifyNativeCrawlArtifact,
   type CrawlRegistryPort,
   type ExternalCrawlRecord,
   createBunSqlCrawlRegistry,
@@ -172,6 +174,24 @@ async function exportFile(lines: unknown[]) {
   return path;
 }
 
+async function sealedArtifact(lines: unknown[], artifactPolicy = policy) {
+  const inputPath = await exportFile(lines);
+  const root = await mkdtemp(join(tmpdir(), "shenron-crawl-sealed-"));
+  roots.push(root);
+  const outputDir = join(root, "sealed");
+  await exportNativeCrawlArtifact({
+    inputPath,
+    outputDir,
+    jobId: "job-fixture",
+    jobStatus: "succeeded",
+    policy: artifactPolicy,
+  });
+  return {
+    inputPath: join(outputDir, "shenron-documents.jsonl"),
+    manifestPath: join(outputDir, "manifest.json"),
+  };
+}
+
 test("native sources keep reviewed classification and never promote canon or linked media health", () => {
   const records = projectNativeCrawl(document(), policy);
   expect(records).toHaveLength(2);
@@ -228,8 +248,9 @@ test("reference intake preserves denied RAG, training and public image rights wi
     expect(record.provenance.canonicalEligible).toBe(false);
   }
   const deposited: ExternalCrawlRecord[] = [];
+  const artifact = await sealedArtifact([document()], denied);
   const report = await ingestNativeCrawl(
-    { inputPath: await exportFile([document()]), policy: denied, apply: true },
+    { ...artifact, policy: denied, apply: true },
     {
       assertReady: async () => {},
       upsert: async (record) => {
@@ -350,8 +371,74 @@ test("plan streams metadata only without contacting PostgreSQL and reports bound
   });
 });
 
-test("restart replays stable URLs and preserves curated entries through the existing registry owner", async () => {
+test("closed crawl artifacts bind bytes, document count, job completion and reviewed policy", async () => {
   const inputPath = await exportFile([document()]);
+  const root = await mkdtemp(join(tmpdir(), "shenron-crawl-artifact-"));
+  roots.push(root);
+  const artifactDir = join(root, "run-1");
+  await expect(
+    exportNativeCrawlArtifact({
+      inputPath,
+      outputDir: artifactDir,
+      jobId: "job-1",
+      jobStatus: "partial",
+      policy,
+    }),
+  ).rejects.toThrow(/succeeded/);
+  const manifest = await exportNativeCrawlArtifact({
+    inputPath,
+    outputDir: artifactDir,
+    jobId: "job-1",
+    jobStatus: "succeeded",
+    policy,
+  });
+  expect(manifest).toMatchObject({
+    schema: "shenron-native-crawl-artifact",
+    version: 1,
+    job: { id: "job-1", status: "succeeded" },
+    artifact: { file: "shenron-documents.jsonl", documents: 1 },
+  });
+  const payloadPath = join(artifactDir, "shenron-documents.jsonl");
+  const manifestPath = join(artifactDir, "manifest.json");
+  expect(await verifyNativeCrawlArtifact({ inputPath: payloadPath, manifestPath, policy })).toEqual(
+    manifest,
+  );
+  const wrongPolicy = crawlIngestPolicySchema.parse({
+    ...policy,
+    sources: [source("different.example")],
+  });
+  await expect(
+    verifyNativeCrawlArtifact({ inputPath: payloadPath, manifestPath, policy: wrongPolicy }),
+  ).rejects.toThrow(/policy mismatch/);
+  await Bun.write(payloadPath, `${JSON.stringify({ ...document(), crawl_id: "tampered" })}\n`);
+  await expect(
+    verifyNativeCrawlArtifact({ inputPath: payloadPath, manifestPath, policy }),
+  ).rejects.toThrow(/SHA-256 mismatch/);
+  await Bun.write(payloadPath, `${JSON.stringify(document())}\n`);
+  await Bun.write(join(artifactDir, "unexpected.txt"), "extra");
+  await expect(
+    verifyNativeCrawlArtifact({ inputPath: payloadPath, manifestPath, policy }),
+  ).rejects.toThrow(/unexpected files/);
+});
+
+test("apply refuses an unmanifested artifact before opening the registry", async () => {
+  let ready = false;
+  await expect(
+    ingestNativeCrawl(
+      { inputPath: await exportFile([document()]), policy, apply: true },
+      {
+        assertReady: async () => {
+          ready = true;
+        },
+        upsert: async () => "applied",
+      },
+    ),
+  ).rejects.toThrow(/requires a verified --manifest/);
+  expect(ready).toBe(false);
+});
+
+test("restart replays stable URLs and preserves curated entries through the existing registry owner", async () => {
+  const artifact = await sealedArtifact([document()]);
   const records = new Map<string, ExternalCrawlRecord>();
   const port: CrawlRegistryPort = {
     assertReady: async () => {},
@@ -362,7 +449,7 @@ test("restart replays stable URLs and preserves curated entries through the exis
     },
   };
   for (let i = 0; i < 2; i++) {
-    expect(await ingestNativeCrawl({ inputPath, policy, apply: true }, port)).toMatchObject({
+    expect(await ingestNativeCrawl({ ...artifact, policy, apply: true }, port)).toMatchObject({
       applied: 1,
       protected: 1,
       canonicalPromotions: 0,
@@ -370,7 +457,7 @@ test("restart replays stable URLs and preserves curated entries through the exis
     });
   }
   expect(records.size).toBe(1);
-  await expect(ingestNativeCrawl({ inputPath, policy, apply: true })).rejects.toThrow();
+  await expect(ingestNativeCrawl({ ...artifact, policy, apply: true })).rejects.toThrow();
 });
 
 test("missing migrated registry and cancellation stop all deposits", async () => {

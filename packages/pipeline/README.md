@@ -33,6 +33,26 @@ refusent Fandom et reçoivent un label persistant dérivé de l'URL. Les workers
 doivent rester `workerReady=false` tant que leur MCP authentifié et leur file locale
 n'ont pas passé les sondes Infra ; leurs bases SQLite ne se partagent pas entre hôtes.
 
+Après succès du job, le worker peut sceller le JSONL fermé dans un dossier d'artefact de deux
+fichiers (`shenron-documents.jsonl` et `manifest.json`) : taille, SHA-256 octet par octet,
+nombre de documents, ID/statut du job et empreinte de la politique sont liés au manifeste.
+L'export refuse les jobs autre que `succeeded`, les fichiers symboliques, les exports vides,
+les captures invalides et les limites dépassées (512 Mio, 10 000 documents). Le manifeste
+n'est pas un mécanisme de transport : son transfert VPS→DBFR reste à la charge d'Aphrody Infra.
+Ne transférer que ce dossier scellé, jamais la base SQLite/frontière, les fichiers WAL/SHM ou
+les sessions du worker.
+
+```sh
+bun packages/pipeline/src/cli.ts dragon-ball export-crawl \
+  --input /chemin/prive/shenron-documents.jsonl --output /chemin/prive/job-123 \
+  --policy /chemin/prive/policy.json --job-id job-123 --job-status succeeded
+```
+
+À réception, `ingest-crawl --manifest /chemin/prive/job-123/manifest.json` vérifie le dossier
+exact (aucun fichier additionnel), les empreintes, la taille, le compte de lignes, le statut et
+l'empreinte de politique avant toute connexion DB. `--apply` exige ce manifeste. Le dossier est
+à conserver privé et immuable pendant le transfert ; aucun secret n'est inclus dans le manifeste.
+
 Pour obtenir des candidats OCR Koharu depuis un projet natif, utiliser
 `bun run pipeline koharu-native-candidate <manga|databook> <manifest.json>
 <project-root> <project-name> <candidates.jsonl> [--sdk <koharu-sdk>]`.

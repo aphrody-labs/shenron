@@ -195,9 +195,20 @@ déjà ouvert dans la session a été conservé.
 
 ## Export natif, registre PostgreSQL et audit des médias
 
-`dragon-ball ingest-crawl` consomme directement `shenron-documents.jsonl` du
-propriétaire Aphrody Web. Le mode par défaut planifie sans ouvrir PostgreSQL.
-`--apply` utilise le `DATABASE_URL` protégé du domaine DBFR et les tables déjà
+`dragon-ball export-crawl` scelle le JSONL fermé après un job réussi dans un
+dossier privé contenant uniquement `shenron-documents.jsonl` et `manifest.json`.
+Le manifeste lie le statut/ID du job, l'empreinte de la politique, le nombre de
+documents, la taille et le SHA-256 exact des octets. La limite est 512 Mio et
+10 000 documents. Les jobs partiels/échoués, captures invalides, liens symboliques,
+exports vides et dossiers avec fichiers supplémentaires sont refusés. Aucun SQLite,
+fichier WAL/SHM ou état de session ne doit être transféré.
+
+Le transfert VPS→DBFR de cet artefact relève d'Aphrody Infra. Le pipeline ne fournit
+pas de transport inter-hôte et ne revendique pas l'automatiser. Une fois le dossier
+reçu dans un emplacement privé DBFR, `dragon-ball ingest-crawl --manifest` vérifie
+l'intégralité du manifeste et des octets avant toute connexion DB. Le mode par défaut
+planifie sans ouvrir PostgreSQL ; `--apply` exige un manifeste vérifié, utilise le
+`DATABASE_URL` protégé du domaine DBFR et les tables déjà
 migrées `public.external_source_records` et `public.external_source_provenance`.
 Il ne crée aucune table. Une source et sa provenance s’écrivent dans la même
 transaction ; reprendre le fichier réutilise l’URL comme clé. Une source déjà
@@ -207,8 +218,9 @@ traduction ou planche de databook.
 
 ```sh
 bun packages/pipeline/src/cli.ts dragon-ball ingest-crawl \
-  --input /chemin/prive/corpus/shenron-documents.jsonl \
-  --policy /chemin/prive/corpus/policy.json --max-documents 10000
+  --input /chemin/prive/job-123/shenron-documents.jsonl \
+  --manifest /chemin/prive/job-123/manifest.json \
+  --policy /chemin/prive/policy.json --max-documents 10000
 ```
 
 La politique privée déclare chaque domaine exact, sa classe, la preuve de

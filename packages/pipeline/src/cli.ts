@@ -41,7 +41,38 @@ const positional = args.filter((arg) => !arg.startsWith("--"));
 
 async function main() {
   if (command === "dragon-ball") {
-    if (args[0] === "coverage") {
+    if (args[0] === "export-crawl") {
+      const { values } = parseArgs({
+        args: args.slice(1),
+        strict: true,
+        options: {
+          input: { type: "string" },
+          output: { type: "string" },
+          policy: { type: "string" },
+          "job-id": { type: "string" },
+          "job-status": { type: "string" },
+        },
+      });
+      if (
+        !values.input ||
+        !values.output ||
+        !values.policy ||
+        !values["job-id"] ||
+        !values["job-status"]
+      )
+        throw new Error(
+          "export-crawl requires --input, --output, --policy, --job-id and --job-status",
+        );
+      const { exportNativeCrawlArtifact } = await import("./dragon-ball/crawl-ingest");
+      const manifest = await exportNativeCrawlArtifact({
+        inputPath: resolve(values.input),
+        outputDir: resolve(values.output),
+        policy: await Bun.file(values.policy).json(),
+        jobId: values["job-id"],
+        jobStatus: values["job-status"],
+      });
+      console.log(JSON.stringify(manifest, null, 2));
+    } else if (args[0] === "coverage") {
       const { values } = parseArgs({
         args: args.slice(1),
         strict: true,
@@ -96,22 +127,31 @@ async function main() {
         strict: true,
         options: {
           input: { type: "string" },
+          manifest: { type: "string" },
           policy: { type: "string" },
           "max-documents": { type: "string", default: "10000" },
           apply: { type: "boolean", default: false },
         },
       });
-      if (!values.input || !values.policy)
-        throw new Error("ingest-crawl requires --input and --policy");
-      const { ingestNativeCrawl, createPostgresCrawlRegistry } =
+      if (!values.input || !values.policy || (values.apply && !values.manifest))
+        throw new Error("ingest-crawl requires --input, --policy and --manifest for --apply");
+      const { ingestNativeCrawl, createPostgresCrawlRegistry, verifyNativeCrawlArtifact } =
         await import("./dragon-ball/crawl-ingest");
       const policy = await Bun.file(values.policy).json();
       const options = {
         inputPath: resolve(values.input),
+        manifestPath: values.manifest ? resolve(values.manifest) : undefined,
         policy,
         apply: values.apply,
         maxDocuments: Number(values["max-documents"]),
       };
+      if (options.manifestPath)
+        await verifyNativeCrawlArtifact({
+          inputPath: options.inputPath,
+          manifestPath: options.manifestPath,
+          policy,
+          maxDocuments: options.maxDocuments,
+        });
       if (!values.apply) {
         const report = await ingestNativeCrawl(options);
         console.log(JSON.stringify(report, null, 2));
