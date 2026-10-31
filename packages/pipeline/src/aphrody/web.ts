@@ -89,6 +89,8 @@ export async function scrapeWithAphrody(
 
 export interface AphrodyWebCrawlRequest {
   urls: string[];
+  /** Render JavaScript pages through Playwright connected to the host's Obscura CDP engine. */
+  browser?: "native" | "playwright";
   allowedDomains?: string[];
   maxDepth?: number;
   maxRequests?: number;
@@ -198,6 +200,8 @@ export async function aphrodyWebCrawl(
   for (const key of ["obeyRobots", "sitemaps", "revisit"] as const)
     if (request[key] !== undefined && typeof request[key] !== "boolean")
       throw new TypeError(`${key} must be boolean`);
+  if (request.browser !== undefined && !["native", "playwright"].includes(request.browser))
+    throw new TypeError("browser must be native or playwright");
   const allowedDomains =
     request.allowedDomains === undefined ? [...seedDomains] : request.allowedDomains;
   if (!Array.isArray(allowedDomains) || !allowedDomains.length)
@@ -263,6 +267,7 @@ export async function aphrodyWebCrawl(
     "--json",
   ];
   args.push("--allowed-domains", [...new Set(allowedDomains)].join(","));
+  if (request.browser) args.push("--browser", request.browser);
   if (request.obeyRobots !== false) args.push("--obey-robots");
   if (request.sitemaps) args.push("--sitemaps");
   if (maxSitemaps !== undefined) args.push("--max-sitemaps", String(maxSitemaps));
