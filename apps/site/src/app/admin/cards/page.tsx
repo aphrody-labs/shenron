@@ -32,35 +32,96 @@ export default async function AdminCardCatalogPage({
   const [t, params] = await Promise.all([getTranslations("adminCardCatalog"), searchParams]);
   const data = await getCardCatalogAdminData({ search: params.search, after: params.after });
   const liveSeries = data.series.filter((row) => row.status !== "archived");
-  const liveSets = data.sets.filter((row) => row.set.status !== "archived");
+  const liveSets = data.sets.filter(
+    (row) => row.set.status !== "archived" && row.seriesStatus !== "archived",
+  );
   const nextPageQuery = new URLSearchParams();
   if (params.search) nextPageQuery.set("search", params.search);
   if (data.nextCardCursor) nextPageQuery.set("after", data.nextCardCursor);
   return (
     <main className="mx-auto max-w-7xl space-y-8 px-4 py-8">
-      <header className="space-y-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-          {t("kicker")}
-        </p>
-        <h1 className="text-3xl font-bold text-foreground">{t("title")}</h1>
-        <p className="max-w-3xl text-sm leading-6 text-muted-foreground">{t("description")}</p>
+      <header className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="border-b border-border bg-muted/30 px-5 py-6 sm:px-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+            {t("kicker")}
+          </p>
+          <h1 className="mt-2 text-3xl font-bold text-foreground">{t("title")}</h1>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">
+            {t("description")}
+          </p>
+        </div>
+        <dl className="grid grid-cols-3 divide-x divide-border">
+          {[
+            [t("series"), data.series.length],
+            [t("sets"), data.sets.length],
+            [t("cards"), data.cardCount],
+          ].map(([label, value]) => (
+            <div key={label} className="px-4 py-4 text-center sm:px-6 sm:py-5">
+              <dt className="text-xs font-medium text-muted-foreground sm:text-sm">{label}</dt>
+              <dd className="mt-1 text-2xl font-bold tabular-nums text-foreground">{value}</dd>
+            </div>
+          ))}
+        </dl>
         {params.status === "saved" && (
-          <output className="block text-sm text-emerald-400">{t("saved")}</output>
+          <output
+            aria-live="polite"
+            className="block border-t border-border bg-emerald-500/10 px-5 py-3 text-sm font-medium text-emerald-700 dark:text-emerald-300 sm:px-8"
+          >
+            {t("saved")}
+          </output>
         )}
         {params.status === "invalid" && (
-          <p role="alert" className="text-sm text-destructive">
+          <p
+            role="alert"
+            className="border-t border-border bg-destructive/10 px-5 py-3 text-sm font-medium text-destructive sm:px-8"
+          >
             {t("invalid")}
           </p>
         )}
       </header>
 
-      <CardCatalogImportForm />
+      <nav
+        aria-label={t("title")}
+        className="flex flex-wrap gap-2 rounded-xl border border-border bg-card p-3"
+      >
+        {[
+          ["import", t("importTitle")],
+          ["series", t("series")],
+          ["sets", t("sets")],
+          ["cards", t("cards")],
+        ].map(([id, label]) => (
+          <a
+            key={id}
+            href={`#${id}`}
+            className="inline-flex min-h-11 items-center rounded-lg px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            {label}
+          </a>
+        ))}
+      </nav>
 
-      <section aria-labelledby="series-title" className="space-y-4">
-        <h2 id="series-title" className="text-xl font-semibold">
+      <div id="import" className="scroll-mt-6">
+        <CardCatalogImportForm />
+      </div>
+
+      <section id="series" aria-labelledby="series-title" className="scroll-mt-6 space-y-4">
+        <h2 id="series-title" className="flex items-center gap-3 text-xl font-semibold">
           {t("series")}
+          <span className="rounded-full bg-muted px-2.5 py-1 text-sm tabular-nums text-muted-foreground">
+            {data.series.length}
+          </span>
         </h2>
-        <EntryForm kind="series" t={t} />
+        <details className="rounded-xl border border-dashed border-border bg-card">
+          <summary className="flex min-h-12 cursor-pointer items-center justify-between gap-3 px-4 font-semibold text-primary">
+            {t("createSeries")}
+            <span aria-hidden="true" className="text-lg">
+              +
+            </span>
+          </summary>
+          <div className="border-t border-border p-4">
+            <EntryForm kind="series" t={t} />
+          </div>
+        </details>
         {data.series.length === 0 ? (
           <Empty t={t} />
         ) : (
@@ -78,14 +139,27 @@ export default async function AdminCardCatalogPage({
         )}
       </section>
 
-      <section aria-labelledby="sets-title" className="space-y-4">
-        <h2 id="sets-title" className="text-xl font-semibold">
+      <section id="sets" aria-labelledby="sets-title" className="scroll-mt-6 space-y-4">
+        <h2 id="sets-title" className="flex items-center gap-3 text-xl font-semibold">
           {t("sets")}
+          <span className="rounded-full bg-muted px-2.5 py-1 text-sm tabular-nums text-muted-foreground">
+            {data.sets.length}
+          </span>
         </h2>
         {liveSeries.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("noSeries")}</p>
         ) : (
-          <EntryForm kind="set" t={t} seriesOptions={liveSeries} />
+          <details className="rounded-xl border border-dashed border-border bg-card">
+            <summary className="flex min-h-12 cursor-pointer items-center justify-between gap-3 px-4 font-semibold text-primary">
+              {t("createSet")}
+              <span aria-hidden="true" className="text-lg">
+                +
+              </span>
+            </summary>
+            <div className="border-t border-border p-4">
+              <EntryForm kind="set" t={t} seriesOptions={liveSeries} />
+            </div>
+          </details>
         )}
         {data.sets.length === 0 ? (
           <Empty t={t} />
@@ -96,7 +170,7 @@ export default async function AdminCardCatalogPage({
                 {seriesName} · {set.name} · {t(set.status)}
               </summary>
               <div className="mt-4">
-                <EntryForm kind="set" t={t} setRow={set} seriesOptions={liveSeries} />
+                <EntryForm kind="set" t={t} setRow={set} seriesOptions={data.series} />
               </div>
               <ArchiveForm kind="set" id={set.id} t={t} />
             </details>
@@ -104,9 +178,12 @@ export default async function AdminCardCatalogPage({
         )}
       </section>
 
-      <section aria-labelledby="cards-title" className="space-y-4">
-        <h2 id="cards-title" className="text-xl font-semibold">
+      <section id="cards" aria-labelledby="cards-title" className="scroll-mt-6 space-y-4">
+        <h2 id="cards-title" className="flex items-center gap-3 text-xl font-semibold">
           {t("cards")}
+          <span className="rounded-full bg-muted px-2.5 py-1 text-sm tabular-nums text-muted-foreground">
+            {data.cardCount}
+          </span>
         </h2>
         <form
           method="get"
@@ -127,10 +204,25 @@ export default async function AdminCardCatalogPage({
             {t("searchAction")}
           </button>
         </form>
+        {params.search && (
+          <p className="text-sm text-muted-foreground">
+            {data.cards.length} / {data.filteredCardCount}
+          </p>
+        )}
         {liveSets.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("noSets")}</p>
         ) : (
-          <EntryForm kind="card" t={t} setOptions={liveSets} />
+          <details className="rounded-xl border border-dashed border-border bg-card">
+            <summary className="flex min-h-12 cursor-pointer items-center justify-between gap-3 px-4 font-semibold text-primary">
+              {t("createCard")}
+              <span aria-hidden="true" className="text-lg">
+                +
+              </span>
+            </summary>
+            <div className="border-t border-border p-4">
+              <EntryForm kind="card" t={t} setOptions={liveSets} />
+            </div>
+          </details>
         )}
         {data.cards.length === 0 ? (
           <Empty t={t} />
@@ -141,11 +233,13 @@ export default async function AdminCardCatalogPage({
                 {seriesName} · {setName} · {card.cardNumber} — {card.name} · {t(card.status)}
               </summary>
               <div className="mt-4 space-y-4">
-                <EntryForm kind="card" t={t} cardRow={card} setOptions={liveSets} />
+                <EntryForm kind="card" t={t} cardRow={card} setOptions={data.sets} />
                 <ArchiveForm kind="card" id={card.id} t={t} />
                 <div className="border-t border-border pt-4">
                   <h3 className="mb-3 font-semibold">{t("valuationHistory")}</h3>
-                  <EntryForm kind="valuation" t={t} cardOptions={data.cards} cardId={card.id} />
+                  {card.status !== "archived" && (
+                    <EntryForm kind="valuation" t={t} cardOptions={data.cards} cardId={card.id} />
+                  )}
                   {data.valuations
                     .filter((row) => row.valuation.cardId === card.id)
                     .map((row) => (
@@ -174,7 +268,13 @@ export default async function AdminCardCatalogPage({
           ))
         )}
         {data.nextCardCursor && (
-          <nav aria-label={t("pagination")} className="flex justify-center">
+          <nav
+            aria-label={t("pagination")}
+            className="flex flex-wrap items-center justify-center gap-3"
+          >
+            <p className="text-sm text-muted-foreground">
+              {data.cards.length} / {data.filteredCardCount}
+            </p>
             <Link
               href={`/admin/cards?${nextPageQuery.toString()}`}
               className="inline-flex min-h-11 items-center rounded-md border border-border px-5 font-medium"
@@ -184,9 +284,10 @@ export default async function AdminCardCatalogPage({
           </nav>
         )}
       </section>
-      <p className="text-xs leading-5 text-muted-foreground">
-        {t("valueHint")} {t("mediaHint")}
-      </p>
+      <aside className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-6 text-muted-foreground">
+        <p>{t("valueHint")}</p>
+        <p className="mt-2">{t("mediaHint")}</p>
+      </aside>
     </main>
   );
 }
@@ -215,6 +316,7 @@ function Input({
   type = "text",
   required = false,
   step,
+  min,
 }: {
   name: string;
   label: string;
@@ -222,6 +324,7 @@ function Input({
   type?: string;
   required?: boolean;
   step?: string;
+  min?: string;
 }) {
   return (
     <Field label={label}>
@@ -231,7 +334,8 @@ function Input({
         defaultValue={value ?? ""}
         required={required}
         step={step}
-        className="min-h-10 rounded-md border border-border bg-background px-3 text-foreground"
+        min={min}
+        className="min-h-11 rounded-md border border-border bg-background px-3 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       />
     </Field>
   );
@@ -256,7 +360,7 @@ function Select({
         name={name}
         defaultValue={value}
         required={required}
-        className="min-h-10 rounded-md border border-border bg-background px-3 text-foreground"
+        className="min-h-11 rounded-md border border-border bg-background px-3 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -275,7 +379,7 @@ function Textarea({ name, label, value }: { name: string; label: string; value?:
         name={name}
         defaultValue={value ?? ""}
         rows={3}
-        className="rounded-md border border-border bg-background px-3 py-2 text-foreground"
+        className="min-h-24 rounded-md border border-border bg-background px-3 py-2 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       />
     </Field>
   );
@@ -302,7 +406,7 @@ function SourceFields({
   return (
     <div className="grid gap-3 sm:grid-cols-3">
       <Input name="sourceLabel" label={t("sourceLabel")} value={row?.sourceLabel} required />
-      <Input name="sourceUrl" label={t("sourceUrl")} value={row?.sourceUrl} required />
+      <Input name="sourceUrl" label={t("sourceUrl")} value={row?.sourceUrl} type="url" required />
       <Input
         name="sourceAccessedAt"
         label={t("sourceAccessedAt")}
@@ -381,7 +485,10 @@ function EntryForm({
             name="seriesId"
             label={t("seriesSelect")}
             value={setRow?.seriesId ?? activeSeries?.id}
-            options={seriesOptions.map((entry) => ({ value: entry.id, label: entry.name }))}
+            options={seriesOptions.map((entry) => ({
+              value: entry.id,
+              label: `${entry.name} · ${t(entry.status)}`,
+            }))}
           />
           <div className="grid gap-3 sm:grid-cols-2">
             <Input name="name" label={t("name")} value={setRow?.name} required />
@@ -428,7 +535,7 @@ function EntryForm({
             value={cardRow?.setId ?? activeSet?.id}
             options={setOptions.map((row) => ({
               value: row.set.id,
-              label: `${row.seriesName} · ${row.set.name}`,
+              label: `${row.seriesName} · ${t(row.seriesStatus)} · ${row.set.name} · ${t(row.set.status)}`,
             }))}
           />
           <div className="grid gap-3 sm:grid-cols-2">
@@ -456,6 +563,7 @@ function EntryForm({
               name="frontImageSourceUrl"
               label={t("frontImageSourceUrl")}
               value={cardRow?.frontImageSourceUrl}
+              type="url"
             />
             <Input
               name="frontImageRights"
@@ -471,6 +579,7 @@ function EntryForm({
               name="backImageSourceUrl"
               label={t("backImageSourceUrl")}
               value={cardRow?.backImageSourceUrl}
+              type="url"
             />
             <Input
               name="backImageRights"
@@ -490,9 +599,14 @@ function EntryForm({
             value={selectedCardId}
             options={cardOptions
               .filter((row) => row.card.status !== "archived")
+              .concat(
+                cardOptions.filter(
+                  (row) => row.card.id === selectedCardId && row.card.status === "archived",
+                ),
+              )
               .map((row) => ({
                 value: row.card.id,
-                label: `${row.seriesName} · ${row.setName} · ${row.card.cardNumber} — ${row.card.name}`,
+                label: `${row.seriesName} · ${row.setName} · ${row.card.cardNumber} — ${row.card.name} · ${t(row.card.status)}`,
               }))}
           />
           <div className="grid gap-3 sm:grid-cols-2">
@@ -500,6 +614,8 @@ function EntryForm({
               name="valueMin"
               label={t("valueMin")}
               value={valuation?.valueMin}
+              type="number"
+              min="0"
               required
               step="0.0001"
             />
@@ -507,6 +623,8 @@ function EntryForm({
               name="valueMax"
               label={t("valueMax")}
               value={valuation?.valueMax}
+              type="number"
+              min="0"
               required
               step="0.0001"
             />
@@ -541,6 +659,7 @@ function EntryForm({
               name="sourceUrl"
               label={t("valueSourceUrl")}
               value={valuation?.sourceUrl}
+              type="url"
               required
             />
           </div>
@@ -548,7 +667,7 @@ function EntryForm({
       )}
       <button
         type="submit"
-        className="inline-flex min-h-11 items-center rounded-md bg-primary px-4 font-semibold text-primary-foreground"
+        className="inline-flex min-h-11 items-center rounded-md bg-primary px-4 font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       >
         {edit
           ? t("save")
@@ -578,7 +697,7 @@ function ArchiveForm({
       <input type="hidden" name="kind" value={kind} />
       <input type="hidden" name="id" value={id} />
       <button
-        className="min-h-11 rounded-md border border-destructive/50 px-4 text-sm text-destructive"
+        className="min-h-11 rounded-md border border-destructive/50 px-4 text-sm text-destructive transition-colors hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-2"
         type="submit"
       >
         {t("archive")}

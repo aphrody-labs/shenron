@@ -127,9 +127,14 @@ export async function saveCardCatalogEntry(form: FormData) {
           .from(schema.cardCatalogSeries)
           .where(eq(schema.cardCatalogSeries.id, seriesId))
           .limit(1);
-        if (!series || series.status === "archived") throw new Error("Parent series not found");
+        if (!series || (series.status === "archived" && before?.seriesId !== seriesId))
+          throw new Error("Parent series not found");
         const nextStatus = status(text(form, "status"));
-        if (nextStatus === "published" && series.status !== "published")
+        const retainingPublishedSet =
+          before?.seriesId === seriesId &&
+          before.status === "published" &&
+          series.status === "archived";
+        if (nextStatus === "published" && series.status !== "published" && !retainingPublishedSet)
           throw new Error("Publish series first");
         const releaseDate = date(optional(form, "releaseDate"), true);
         const precision = optional(form, "releaseDatePrecision");
@@ -194,12 +199,21 @@ export async function saveCardCatalogEntry(form: FormData) {
           )
           .where(eq(schema.cardCatalogSets.id, setId))
           .limit(1);
-        if (!parent || parent.set.status === "archived" || parent.seriesStatus === "archived")
+        if (
+          !parent ||
+          ((parent.set.status === "archived" || parent.seriesStatus === "archived") &&
+            before?.setId !== setId)
+        )
           throw new Error("Parent set not found");
         const nextStatus = status(text(form, "status"));
+        const retainingPublishedCard =
+          before?.setId === setId &&
+          before.status === "published" &&
+          (parent.set.status === "archived" || parent.seriesStatus === "archived");
         if (
           nextStatus === "published" &&
-          (parent.set.status !== "published" || parent.seriesStatus !== "published")
+          (parent.set.status !== "published" || parent.seriesStatus !== "published") &&
+          !retainingPublishedCard
         )
           throw new Error("Publish series and set first");
         const frontImageUrl = url(optional(form, "frontImageUrl"), true);
@@ -280,7 +294,8 @@ export async function saveCardCatalogEntry(form: FormData) {
           .from(schema.cardCatalogCards)
           .where(eq(schema.cardCatalogCards.id, cardId))
           .limit(1);
-        if (!card || card.status === "archived") throw new Error("Card not found");
+        if (!card || (card.status === "archived" && before?.cardId !== cardId))
+          throw new Error("Card not found");
         const valueMin = amount(required(form, "valueMin"));
         const valueMax = amount(required(form, "valueMax"));
         if (Number(valueMax) < Number(valueMin)) throw new Error("Invalid range");

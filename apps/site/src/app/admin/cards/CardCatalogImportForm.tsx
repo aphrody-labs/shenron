@@ -42,28 +42,35 @@ export function CardCatalogImportForm() {
         </details>
       </div>
       <form action={formAction} className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
-        <input
-          name="file"
-          type="file"
-          accept="application/json,.json"
-          required
-          aria-label={t("importFile")}
-          className="min-h-11 rounded-md border border-border bg-background px-3 py-2 text-sm"
-        />
+        <label className="grid gap-1.5 text-sm text-muted-foreground">
+          <span>{t("importFile")}</span>
+          <input
+            name="file"
+            type="file"
+            accept="application/json,.json"
+            required
+            className="min-h-11 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          />
+        </label>
         <div className="flex flex-wrap gap-2 sm:col-span-2">
           <label className="flex min-h-11 items-center gap-2 text-sm">
             <span>{t("importDuplicates")}</span>
             <select
               name="duplicateStrategy"
               defaultValue="skip"
-              className="rounded-md border border-border bg-background px-3 py-2"
+              className="min-h-11 rounded-md border border-border bg-background px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <option value="skip">{t("importSkip")}</option>
               <option value="update">{t("importUpdate")}</option>
             </select>
           </label>
           <label className="flex min-h-11 items-center gap-2 text-sm">
-            <input type="checkbox" name="confirmCommit" value="yes" />
+            <input
+              type="checkbox"
+              name="confirmCommit"
+              value="yes"
+              className="size-4 accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            />
             <span>{t("importConfirm")}</span>
           </label>
         </div>
@@ -73,7 +80,7 @@ export function CardCatalogImportForm() {
             name="intent"
             value="preview"
             disabled={pending}
-            className="min-h-11 rounded-md border border-border px-4 text-sm font-semibold disabled:opacity-60"
+            className="min-h-11 rounded-md border border-border px-4 text-sm font-semibold transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-60"
           >
             {t("importPreview")}
           </button>
@@ -82,7 +89,7 @@ export function CardCatalogImportForm() {
             name="intent"
             value="commit"
             disabled={pending}
-            className="min-h-11 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground disabled:opacity-60"
+            className="min-h-11 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-60"
           >
             {pending ? t("importWorking") : t("importCommit")}
           </button>

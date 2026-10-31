@@ -68,7 +68,7 @@ export default async function OfficialCardPage({ params }: { params: Promise<{ s
             <>
               <Link
                 href={`/wiki/cards?series=${encodeURIComponent(entry.series.id)}`}
-                className="inline-flex min-h-11 items-center text-sm text-primary hover:underline"
+                className="inline-flex min-h-11 items-center text-sm text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 {entry.series.name}
               </Link>
@@ -104,17 +104,28 @@ export default async function OfficialCardPage({ params }: { params: Promise<{ s
           </dl>
           <div className="mt-5 border-t border-border pt-4">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">{t("sources")}</p>
-            <a
-              href={entry.card.sourceUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-2 inline-flex min-h-11 items-center text-sm text-primary underline"
-            >
-              {entry.card.sourceLabel}
-            </a>
-            <p className="text-xs text-muted-foreground">
-              {t("sourceAccessed", { date: entry.card.sourceAccessedAt })}
-            </p>
+            <ul className="mt-2 space-y-3">
+              {[
+                { id: "series", owner: entry.series },
+                { id: "set", owner: entry.set },
+                { id: "card", owner: entry.card },
+              ].map(({ id, owner }) => (
+                <li key={id} className="rounded-lg border border-border/70 bg-background/60 p-3">
+                  <p className="text-xs font-medium text-muted-foreground">{owner.name}</p>
+                  <a
+                    href={owner.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-1 inline-flex min-h-11 items-center text-sm text-primary underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  >
+                    {owner.sourceLabel}
+                  </a>
+                  <p className="text-xs text-muted-foreground">
+                    {t("sourceAccessed", { date: owner.sourceAccessedAt })}
+                  </p>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       }
@@ -126,7 +137,8 @@ export default async function OfficialCardPage({ params }: { params: Promise<{ s
               <img
                 src={entry.card.frontImageUrl}
                 alt={`${entry.card.name} — ${t("front")}`}
-                className="mx-auto max-h-[680px] w-full rounded-xl border border-border bg-card object-contain"
+                decoding="async"
+                className="mx-auto max-h-[680px] w-full rounded-xl border border-border bg-card p-2 object-contain"
               />
               <figcaption className="text-sm text-muted-foreground">
                 {t("front")} · {entry.card.frontImageRights} ·{" "}
@@ -146,7 +158,8 @@ export default async function OfficialCardPage({ params }: { params: Promise<{ s
               <img
                 src={entry.card.backImageUrl}
                 alt={`${entry.card.name} — ${t("back")}`}
-                className="mx-auto max-h-[680px] w-full rounded-xl border border-border bg-card object-contain"
+                decoding="async"
+                className="mx-auto max-h-[680px] w-full rounded-xl border border-border bg-card p-2 object-contain"
               />
               <figcaption className="text-sm text-muted-foreground">
                 {t("back")} · {entry.card.backImageRights} ·{" "}

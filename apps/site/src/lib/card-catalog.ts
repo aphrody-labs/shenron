@@ -186,11 +186,10 @@ export async function getPublishedCardBySlug(slug: string) {
 
 export async function getCardCatalogAdminData(filters: { search?: string; after?: string } = {}) {
   const term = filters.search?.trim().slice(0, 80);
-  const cardConditions = [];
-  if (filters.after) cardConditions.push(gt(schema.cardCatalogCards.slug, filters.after));
+  const cardFilterConditions = [];
   if (term) {
     const pattern = `%${term.replace(/[\\%_]/g, (part) => `\\${part}`)}%`;
-    cardConditions.push(
+    cardFilterConditions.push(
       or(
         ilike(schema.cardCatalogCards.name, pattern),
         ilike(schema.cardCatalogCards.cardNumber, pattern),
@@ -199,17 +198,22 @@ export async function getCardCatalogAdminData(filters: { search?: string; after?
       )!,
     );
   }
-  const [series, sets, cards] = await Promise.all([
+  const cardConditions = [...cardFilterConditions];
+  if (filters.after) cardConditions.push(gt(schema.cardCatalogCards.slug, filters.after));
+  const [series, sets, cards, cardCountRow, filteredCardCountRow] = await Promise.all([
     db.select().from(schema.cardCatalogSeries).orderBy(asc(schema.cardCatalogSeries.name)),
     db
-      .select({ set: schema.cardCatalogSets, seriesName: schema.cardCatalogSeries.name })
+      .select({
+        set: schema.cardCatalogSets,
+        seriesName: schema.cardCatalogSeries.name,
+        seriesStatus: schema.cardCatalogSeries.status,
+      })
       .from(schema.cardCatalogSets)
       .innerJoin(
         schema.cardCatalogSeries,
         eq(schema.cardCatalogSets.seriesId, schema.cardCatalogSeries.id),
       )
-      .orderBy(asc(schema.cardCatalogSeries.name), asc(schema.cardCatalogSets.name))
-      .limit(1000),
+      .orderBy(asc(schema.cardCatalogSeries.name), asc(schema.cardCatalogSets.name)),
     db
       .select({
         card: schema.cardCatalogCards,
@@ -228,6 +232,19 @@ export async function getCardCatalogAdminData(filters: { search?: string; after?
       .where(and(...cardConditions))
       .orderBy(asc(schema.cardCatalogCards.slug))
       .limit(CARD_CATALOG_ADMIN_PAGE_SIZE + 1),
+    db.select({ value: count() }).from(schema.cardCatalogCards),
+    db
+      .select({ value: count() })
+      .from(schema.cardCatalogCards)
+      .innerJoin(
+        schema.cardCatalogSets,
+        eq(schema.cardCatalogCards.setId, schema.cardCatalogSets.id),
+      )
+      .innerJoin(
+        schema.cardCatalogSeries,
+        eq(schema.cardCatalogSets.seriesId, schema.cardCatalogSeries.id),
+      )
+      .where(and(...cardFilterConditions)),
   ]);
   const hasMoreCards = cards.length > CARD_CATALOG_ADMIN_PAGE_SIZE;
   const visibleCards = hasMoreCards ? cards.slice(0, CARD_CATALOG_ADMIN_PAGE_SIZE) : cards;
@@ -251,6 +268,8 @@ export async function getCardCatalogAdminData(filters: { search?: string; after?
     series,
     sets,
     cards: visibleCards,
+    cardCount: Number(cardCountRow[0]?.value ?? 0),
+    filteredCardCount: Number(filteredCardCountRow[0]?.value ?? 0),
     valuations,
     hasMoreCards,
     nextCardCursor: hasMoreCards ? (visibleCards.at(-1)?.card.slug ?? null) : null,
