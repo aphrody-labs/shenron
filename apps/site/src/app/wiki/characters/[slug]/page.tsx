@@ -853,7 +853,7 @@ export default async function CharacterPage({
             fallback={heroImage === character.image ? character.portraitXv2 : character.image}
             alt={pageCharacterName}
             loading="eager"
-            className="max-h-[320px] w-auto object-contain relative z-10 drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)] transition-transform duration-500 group-hover:scale-105 sm:max-h-[380px]"
+            className="max-h-[260px] max-w-full w-auto object-contain relative z-10 drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)] transition-transform duration-500 group-hover:scale-105"
             placeholderClassName="relative z-10 w-full aspect-[3/4] flex items-center justify-center bg-dbz-card overflow-hidden rounded"
           />
         </ViewTransition>
