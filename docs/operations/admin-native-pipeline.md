@@ -117,6 +117,17 @@ qualification préalable ; il n’installe aucun worker. Le panneau sonde la fil
 native par MCP avant de proposer les actions. Les secrets restent dans les
 fichiers MCP du propriétaire.
 
+Dans le Compose de production, le bot reçoit le dossier privé
+`/etc/aphrody/shenron-web-crawl` en lecture seule à `/run/aphrody/web-crawl`.
+`web.json` doit utiliser le chemin conteneur `/run/aphrody/web-crawl/vps-mcp.toml`.
+Le fichier d'environnement privé `/etc/aphrody/shenron-web-crawl.env` fournit
+`SHENRON_ADMIN_WEB_CONFIG=/run/aphrody/web-crawl/web.json` et le bearer
+`APHRODY_VPS_MCP_HTTP_TOKEN` après qualification uniquement. Avant cela, garder le
+fichier d'environnement vide ou sans `SHENRON_ADMIN_WEB_CONFIG` afin que la file
+reste désactivée. L'index local du contrôleur vit dans
+`/app/data/admin-web-pipeline`, persistant sous le volume `bot/data`; il ne doit
+pas être partagé avec la base SQLite de la file VPS.
+
 Le contrôleur réutilise `AphrodyWebJobs` : files et leases Aphrody, placement selon
 les slots et la charge, réservation durable avant soumission, même clé sur le même
 hôte après perte d’accusé de réception. Les actions `web-*` peuvent être lancées

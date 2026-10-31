@@ -63,6 +63,8 @@ build Linux x64 ; toutes facultatives. Les en-têtes des scripts font foi.
 | `SHENRON_ACTIVE_COMMAND`       | basename de `/srv/shenron/current`      | Affiche la release active (garde de rollback) ; vide désactive le garde.                                                                              |
 | `SHENRON_ALLOW_ROLLBACK`       | `0`                                     | `1` autorise un commit qui ne descend pas de la release active.                                                                                       |
 | `SHENRON_COMPOSE_FILE`         | `deploy/docker/compose.yaml`            | Fichier Compose de la cible `local`.                                                                                                                  |
+| `SHENRON_WEB_CRAWL_ENV_FILE`   | `/etc/aphrody/shenron-web-crawl.env`    | Fichier privé fourni au conteneur du bot ; il peut définir `SHENRON_ADMIN_WEB_CONFIG` et `APHRODY_VPS_MCP_HTTP_TOKEN`. Vide ou absent, la file distribuée reste désactivée. |
+| `SHENRON_WEB_CRAWL_CONFIG_DIR` | `/etc/aphrody/shenron-web-crawl`       | Dossier privé monté en lecture seule sur `/run/aphrody/web-crawl` ; contient le JSON web et les configurations MCP privées.                               |
 
 ## Décisions Jev — `@aphrody/shenron-config/jev`
 
@@ -472,6 +474,22 @@ Validées par zod ; un identifiant absent désactive la fonctionnalité concern�
   `SHENRON_FRAME_CACHE_DIR` : copie disque des frames d'épisodes servant de fonds (défaut :
   `shenron-frames` dans le dossier temporaire du système), partagée par les workers et gardée
   entre deux redémarrages.
+
+## File Web distribuée — `apps/bot/src/api/admin-web-queue.ts`
+
+Le Compose de production fixe `SHENRON_ADMIN_PIPELINE_HOME=/app/data/admin-web-pipeline`, dans
+le volume persistant du bot (`/srv/shenron/shared/bot/data`). Le fichier privé
+`SHENRON_WEB_CRAWL_ENV_FILE` fournit `SHENRON_ADMIN_WEB_CONFIG=/run/aphrody/web-crawl/web.json`
+et `APHRODY_VPS_MCP_HTTP_TOKEN` uniquement après la qualification du worker. Le fichier
+`web.json` référence `/run/aphrody/web-crawl/vps-mcp.toml`; ces fichiers proviennent du dossier
+`SHENRON_WEB_CRAWL_CONFIG_DIR`, monté en lecture seule.
+
+Le fichier d'environnement peut rester vide avant la qualification : sans
+`SHENRON_ADMIN_WEB_CONFIG`, le bot ne construit pas la file distribuée. Ne jamais mettre le
+bearer, le JSON web ou la configuration MCP dans Git ou dans l'image. Le host doit garder les
+fichiers privés et fournir le bearer au conteneur sans l'imprimer dans les journaux. Seul un
+`workerReady: true` après sonde MCP authentifiée et vérification du rendu rend une action
+disponible.
 
 ## Activité « Arène Shenron » — `@aphrody/shenron-config/env` (`ACTIVITY_ENV`), `apps/bot/src/api/activity.ts`
 

@@ -56,11 +56,13 @@ services:
     env_file:
       - ${SHENRON_BOT_ENV_FILE:-${SHENRON_ENV_DIR:-/etc/rose-griffon}/shenron-bot.env}
       - ${SHENRON_COMPUTE_CLIENT_ENV_FILE:-/etc/aphrody/shenron-compute-client.env}
+      - ${SHENRON_WEB_CRAWL_ENV_FILE:-/etc/aphrody/shenron-web-crawl.env}
     environment:
       API_HOST: 127.0.0.1
       API_PORT: "5006"
       DATABASE_PATH: /app/data/bot.db
       SHENRON_FFI_LIB: /usr/local/lib/libshenron_ffi.so
+      SHENRON_ADMIN_PIPELINE_HOME: /app/data/admin-web-pipeline
     network_mode: host
     user: "${SHENRON_UID:-1000}:${SHENRON_GID:-1000}"
     init: true
@@ -76,6 +78,10 @@ services:
       - type: bind
         source: ${SHENRON_SHARED_ROOT:-/srv/shenron/shared}/bot/assets
         target: /app/assets
+        read_only: true
+      - type: bind
+        source: ${SHENRON_WEB_CRAWL_CONFIG_DIR:-/etc/aphrody/shenron-web-crawl}
+        target: /run/aphrody/web-crawl
         read_only: true
     healthcheck:
       test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:5006/health"]
