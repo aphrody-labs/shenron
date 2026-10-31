@@ -114,7 +114,7 @@ export function CharacterPageSelectors({
           {labels.previewContentNotLinked.replace("{version}", selectedChoice?.name ?? "")}
         </p>
       )}
-      {variants.length > 1 && (
+      {variants.length > 0 && (
         <label className="block space-y-1.5">
           <span className="wiki-infobox-label">{labels.saga}</span>
           <select
