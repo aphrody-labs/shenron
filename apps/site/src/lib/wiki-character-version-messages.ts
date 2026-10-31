@@ -35,6 +35,7 @@ export interface CharacterVersionMessages {
   sagaHistoryMissing?: string;
   summaryIntro: string;
   summarySagasHeading: string;
+  loadingVersion: string;
   previewSagaSummary?: string;
   previewSagaStory?: string;
   previewPilafStory?: string;

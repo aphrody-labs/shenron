@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import type { CharacterVariant } from "@/lib/shenron";
 
 type CharacterChoice = {
@@ -33,6 +34,7 @@ export function CharacterPageSelectors({
     version: string;
     saga: string;
     main: string;
+    loading: string;
   };
   selectedTimelineSlug: string;
   selectedSagaSlug: string | null;
@@ -40,6 +42,14 @@ export function CharacterPageSelectors({
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const [pendingTimelineSlug, setPendingTimelineSlug] = useState<string | null>(null);
+  useEffect(() => {
+    if (pendingTimelineSlug && pendingTimelineSlug === selectedTimelineSlug) {
+      setPendingTimelineSlug(null);
+    }
+  }, [pendingTimelineSlug, selectedTimelineSlug]);
+  const timelineTransitionPending =
+    preview && pendingTimelineSlug !== null && pendingTimelineSlug !== selectedTimelineSlug;
   const choiceSet = preview ? previewChoices : [character, ...versions];
   const choices = [...new Map(choiceSet.map((choice) => [choice.id, choice])).values()];
   const mainName = character.name.replace(/\s+\([^()]*\)\s*$/, "");
@@ -60,7 +70,10 @@ export function CharacterPageSelectors({
       <label className="block space-y-1.5">
         <span className="wiki-infobox-label">{labels.version}</span>
         <select
-          value={selectedTimelineSlug || (preview ? previewMain.slug : character.slug)}
+          value={
+            pendingTimelineSlug ??
+            (selectedTimelineSlug || (preview ? previewMain.slug : character.slug))
+          }
           aria-label={labels.version}
           onChange={(event) => {
             const target = orderedChoices.find(
@@ -68,8 +81,10 @@ export function CharacterPageSelectors({
             );
             if (!target) return;
             if (target.slug === SUMMARY_VERSION_SLUG) {
+              if (preview) setPendingTimelineSlug(target.slug);
               router.replace(`${pathname}?timeline=${SUMMARY_VERSION_SLUG}`, { scroll: false });
             } else if (preview) {
+              setPendingTimelineSlug(target.slug);
               const query = new URLSearchParams({ timeline: target.slug });
               router.replace(`${pathname}?${query}`, { scroll: false });
             } else if (target.slug !== selectedTimelineSlug) {
@@ -89,10 +104,19 @@ export function CharacterPageSelectors({
       </label>
       {variants.length > 0 && (
         <label className="block space-y-1.5">
-          <span className="wiki-infobox-label">{labels.saga}</span>
+          <span className="wiki-infobox-label flex items-center justify-between gap-2">
+            {labels.saga}
+            {timelineTransitionPending && (
+              <span role="status" className="text-[10px] normal-case tracking-normal text-white/50">
+                {labels.loading}
+              </span>
+            )}
+          </span>
           <select
             value={selectedSagaSlug ?? defaultSagaSlug}
             aria-label={labels.saga}
+            disabled={timelineTransitionPending}
+            aria-busy={timelineTransitionPending}
             onChange={(event) => {
               const next = event.currentTarget.value;
               const query = new URLSearchParams();

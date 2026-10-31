@@ -32,6 +32,7 @@
     "sagaHistoryMissing": "このサーガ固有の物語はまだ登録されていません。",
     "summaryIntro": "悟空の各タイムラインと、登録済みのサーガおよびあらすじの概要です。",
     "summarySagasHeading": "登録済みサーガ",
+    "loadingVersion": "サーガを読み込み中…",
     "previewSagaSummary": "表示確認用のデモデータ · {timeline} · {saga}。",
     "previewSagaStory": "{timeline}の{saga}編のプレビューです。",
     "previewPilafStory": "幼い悟空はブルマとともに山を出て、ドラゴンボールを探す旅に出ます。ピラフ一味との出会いを通じて、故郷の外に広がる世界を知っていきます。",

@@ -873,6 +873,7 @@ export default async function CharacterPage({
           version: versionT("versionLabel"),
           saga: versionT("sagaLabel"),
           main: versionT("mainTimeline"),
+          loading: versionT("loadingVersion"),
         }}
       />
 

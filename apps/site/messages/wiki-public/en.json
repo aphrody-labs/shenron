@@ -32,6 +32,7 @@
     "sagaHistoryMissing": "No story specific to this saga has been recorded yet.",
     "summaryIntro": "An overview of Goku’s timelines, with their available sagas and summaries.",
     "summarySagasHeading": "Listed sagas",
+    "loadingVersion": "Loading sagas…",
     "previewSagaSummary": "Demo data for visual review · {timeline} · {saga}.",
     "previewSagaStory": "Preview of {timeline} in {saga}.",
     "previewPilafStory": "Still a child, Goku leaves his mountain with Bulma to find the Dragon Balls. Their journey brings him face to face with Pilaf and introduces him to a world far beyond his valley.",
