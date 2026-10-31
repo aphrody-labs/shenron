@@ -128,6 +128,12 @@ reste désactivée. L'index local du contrôleur vit dans
 `/app/data/admin-web-pipeline`, persistant sous le volume `bot/data`; il ne doit
 pas être partagé avec la base SQLite de la file VPS.
 
+L'entrée `env_file` est facultative pour permettre les releases avant le provisionnement
+des secrets. Compose crée le dossier de montage absent comme répertoire hôte vide ; il reste
+sans effet tant que `SHENRON_ADMIN_WEB_CONFIG` manque. Lors du provisionnement, Infra doit
+fixer le propriétaire et les permissions privés du dossier et des fichiers avant d'y écrire
+la configuration qualifiée.
+
 Le contrôleur réutilise `AphrodyWebJobs` : files et leases Aphrody, placement selon
 les slots et la charge, réservation durable avant soumission, même clé sur le même
 hôte après perte d’accusé de réception. Les actions `web-*` peuvent être lancées
