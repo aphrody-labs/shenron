@@ -15,7 +15,7 @@ import {
 import { withHomePersona, type HomePersona } from "@aphrody/shenron-pipeline/ai/prompts";
 import { loadShenronHomePersona, type AgentEnv } from "./agent-home";
 import { executeCommand, type CommandRunner, type PipelineExecution } from "./execution";
-import type { WebJobIntent } from "./aphrody/jobs";
+import { crawlJobOutputDirectory, type WebJobIntent } from "./aphrody/jobs";
 
 export { getToriyamaPersona } from "./agent-home";
 
@@ -313,7 +313,12 @@ export function createCrawlJobArgs(target: CrawlTarget): string[] {
 
 /** Creates the idempotent queue intent consumed by `AphrodyWebJobs.submit`. */
 export function createCrawlJobIntent(key: string, target: CrawlTarget): WebJobIntent {
-  return { key, args: createCrawlJobArgs(target), maxAttempts: 1 };
+  const args = createCrawlJobArgs(target);
+  if (target.source !== "custom") {
+    const budgetIndex = args.indexOf("--max-requests");
+    args.splice(budgetIndex, 0, "--output", crawlJobOutputDirectory(key));
+  }
+  return { key, args, maxAttempts: 1 };
 }
 
 /**

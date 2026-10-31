@@ -32,8 +32,15 @@ distante. Les sources personnalisées exigent une URL HTTP(S) sans identifiants,
 refusent Fandom et reçoivent un label persistant dérivé de l'URL. Les workers
 doivent rester `workerReady=false` tant que leur MCP authentifié et leur file locale
 n'ont pas passé les sondes Infra ; leurs bases SQLite ne se partagent pas entre hôtes.
+Chaque intent de campagne cataloguée passe le `--output` officiel du crawl vers un
+dossier isolé sous `/home/ubuntu/.aphrody/workspaces/dbfr/crawl/campaigns/<sha256-clé>`.
+Les unités worker VPS et DBFR déclarent actuellement ce même `APHRODY_HOME`; le reçu
+`AphrodyWebJobs` expose `crawlOutputDir` uniquement après l'état `succeeded` et seulement
+si le chemin correspond à la clé de l'intent. Les tâches personnalisées `crawl-index`
+conservent leur sortie native distincte. Cette attribution donne un chemin récupérable,
+elle ne transfère pas les fichiers et ne produit pas le manifeste d'import à elle seule.
 
-Après succès du job, le worker peut sceller le JSONL fermé dans un dossier d'artefact de deux
+Après succès du job, l'orchestrateur peut sceller le JSONL fermé dans un dossier d'artefact de deux
 fichiers (`shenron-documents.jsonl` et `manifest.json`) : taille, SHA-256 octet par octet,
 nombre de documents, ID/statut du job et empreinte de la politique sont liés au manifeste.
 L'export refuse les jobs autre que `succeeded`, les fichiers symboliques, les exports vides,

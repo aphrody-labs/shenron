@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
   AphrodyWebJobs,
+  crawlJobOutputDirectory,
   type NativeMcpTransport,
   type AphrodyJobHost,
 } from "../../src/aphrody/jobs";
@@ -16,6 +17,52 @@ const hosts: AphrodyJobHost[] = [
   { id: "vps", config: "/private/vps.toml", slots: 4, workerReady: true },
   { id: "dbfr", config: "/private/dbfr.toml", slots: 2, workerReady: true },
 ];
+
+test("successful catalog crawl receipts expose only the deterministic per-job output directory", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "shenron-jobs-output-"));
+  const key = "catalog-output-1";
+  const outputDir = crawlJobOutputDirectory(key);
+  const args = [
+    "dragon-ball",
+    "crawl",
+    "--profile",
+    "shenron",
+    "--output",
+    outputDir,
+    "--max-requests",
+    "10",
+    "--render",
+    "--json",
+    "--index",
+  ];
+  const transport: NativeMcpTransport = async (request) => {
+    if (request.tool === "aphrody_job_status" && !request.arguments.id)
+      return envelope({ queue: { queued: 0, running: 0 } });
+    if (request.tool === "aphrody_job_submit")
+      return envelope({ id: "remote-output-1", state: "queued" });
+    return envelope({
+      job: { id: "remote-output-1", state: "succeeded", result: { complete: true } },
+    });
+  };
+  try {
+    const jobs = new AphrodyWebJobs(join(directory, "ledger.sqlite"), [hosts[0]!], transport);
+    try {
+      const queued = await jobs.submit({ key, args });
+      expect(queued.crawlOutputDir).toBeUndefined();
+      const receipt = await jobs.refresh(key);
+      expect(receipt).toMatchObject({
+        state: "succeeded",
+        host: "vps",
+        remoteId: "remote-output-1",
+        crawlOutputDir: outputDir,
+      });
+    } finally {
+      jobs.close();
+    }
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
 
 test("lost submission ACK survives restart and never moves to a different host", async () => {
   const directory = await mkdtemp(join(tmpdir(), "shenron-jobs-"));

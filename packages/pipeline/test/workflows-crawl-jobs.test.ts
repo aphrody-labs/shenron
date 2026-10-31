@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
+import { crawlJobOutputDirectory } from "../src/aphrody/jobs";
 import { createCrawlJobArgs, createCrawlJobIntent } from "../src/workflows";
 
 describe("createCrawlJobArgs", () => {
@@ -43,11 +44,33 @@ describe("createCrawlJobArgs", () => {
   });
 
   test("creates a one-attempt idempotent intent for AphrodyWebJobs", () => {
-    expect(createCrawlJobIntent("catalog-official-20261101", { source: "official" })).toEqual({
-      key: "catalog-official-20261101",
-      args: createCrawlJobArgs({ source: "official" }),
+    const key = "catalog-official-20261101";
+    const intent = createCrawlJobIntent(key, { source: "official" });
+    expect(intent).toEqual({
+      key,
+      args: [
+        ...createCrawlJobArgs({ source: "official" }).slice(0, 6),
+        "--output",
+        crawlJobOutputDirectory(key),
+        ...createCrawlJobArgs({ source: "official" }).slice(6),
+      ],
       maxAttempts: 1,
     });
+    expect(intent.args).toContain("--render");
+  });
+
+  test("catalogue campaigns get job-scoped output while custom crawl-index stays separate", () => {
+    const catalog = createCrawlJobIntent("campaign-alpha", { source: "universal" });
+    expect(catalog.args).toContain("--output");
+    expect(catalog.args[catalog.args.indexOf("--output") + 1]).toBe(
+      crawlJobOutputDirectory("campaign-alpha"),
+    );
+    const custom = createCrawlJobIntent("custom-alpha", {
+      source: "custom",
+      url: "https://example.org/",
+    });
+    expect(custom.args[0]).toBe("crawl-index");
+    expect(custom.args).not.toContain("--output");
   });
 
   test("creates a stable, per-seed crawl-index job for a custom host", () => {

@@ -26,6 +26,8 @@ export interface WebJobReceipt {
   state: NativeJobState | "submitting";
   result: unknown;
   error: string | null;
+  /** Per-campaign native output; present only after a successful catalogued crawl. */
+  crawlOutputDir?: string;
 }
 export type NativeMcpTransport = (
   request: { config: string; server: string; tool: string; arguments: Record<string, unknown> },
@@ -49,6 +51,35 @@ interface IntentRow {
 }
 const states = new Set(["queued", "running", "succeeded", "failed", "cancelled"]);
 const terminal = (state: string) => ["succeeded", "failed", "cancelled"].includes(state);
+const crawlOutputRoot = "/home/ubuntu/.aphrody/workspaces/dbfr/crawl/campaigns";
+
+/** The VPS and DBFR Aphrody worker units share this Infra-owned APHRODY_HOME. */
+export function crawlJobOutputDirectory(key: string): string {
+  if (!key.trim() || key.length > 256)
+    throw new Error("Crawl job key must contain 1..256 characters");
+  const digest = new Bun.CryptoHasher("sha256").update(key).digest("hex");
+  return `${crawlOutputRoot}/${digest}`;
+}
+
+function successfulCrawlOutput(row: IntentRow): string | undefined {
+  if (row.state !== "succeeded" || !row.remote_id) return;
+  try {
+    const request = JSON.parse(row.request) as { kind?: unknown; payload?: { args?: unknown } };
+    const args = request.payload?.args;
+    if (
+      request.kind !== "web-pipeline" ||
+      !Array.isArray(args) ||
+      args[0] !== "dragon-ball" ||
+      args[1] !== "crawl"
+    )
+      return;
+    const outputIndex = args.indexOf("--output");
+    if (outputIndex < 0 || args[outputIndex + 1] !== crawlJobOutputDirectory(row.key)) return;
+    return args[outputIndex + 1] as string;
+  } catch {
+    return;
+  }
+}
 function object(value: unknown): Record<string, unknown> {
   if (value === null || typeof value !== "object" || Array.isArray(value))
     throw new Error("Native jobs returned an invalid object");
@@ -73,6 +104,7 @@ function decode(envelope: unknown): Record<string, unknown> {
   return data;
 }
 function receipt(row: IntentRow): WebJobReceipt {
+  const crawlOutputDir = successfulCrawlOutput(row);
   return {
     key: row.key,
     host: row.host,
@@ -80,6 +112,7 @@ function receipt(row: IntentRow): WebJobReceipt {
     state: row.state,
     result: row.result === null ? null : JSON.parse(row.result),
     error: row.error,
+    ...(crawlOutputDir ? { crawlOutputDir } : {}),
   };
 }
 
