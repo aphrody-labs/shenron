@@ -9,7 +9,11 @@ export default async function CharacterVisualPreview({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ saga?: string | string[]; timeline?: string | string[] }>;
+  searchParams: Promise<{
+    saga?: string | string[];
+    timeline?: string | string[];
+    demoAppearances?: string | string[];
+  }>;
 }) {
   return CharacterPage({ params, searchParams, preview: true });
 }

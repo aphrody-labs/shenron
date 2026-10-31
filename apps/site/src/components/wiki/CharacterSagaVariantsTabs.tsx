@@ -21,11 +21,10 @@ import { WikiImg } from "@/components/wiki/WikiImg";
 // lancement côté serveur, donc tire `postgres` — dans un composant client, cela
 // fait échouer le rendu (`Module not found: dns/net/tls`). L'instantané d'accès
 // est résolu par la page et descend en props.
-import { ClientGatedWrap } from "@/components/GatedClientLink";
-import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import type { CharacterVariant } from "@/lib/shenron";
 import type { CharacterSagaMessages } from "@/lib/wiki-character-version-messages";
 import { verifiedCharacterVariantImage } from "@/lib/wiki-image-evidence";
+import { Gauge, Sparkles, Zap } from "lucide-react";
 
 const WIKI_ARTWORK_HOSTS = new Set([
   "cdn.dragonballfr.com",
@@ -72,21 +71,10 @@ function safePrimaryUrl(value: string): string | null {
   }
 }
 
-function Champ({ titre, valeur }: { titre: string; valeur: string }) {
-  return (
-    <div className="dbz-panel border-l-4 border-l-dbz-blue-light p-4">
-      <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.3em] text-white/50">{titre}</p>
-      <p className="scouter-text text-xl text-dbz-blue-light">{valeur}</p>
-    </div>
-  );
-}
-
 export function CharacterSagaVariantsTabs({
   variants,
   overviewNode,
   characterName,
-  access,
-  summaryNodes,
   powerScalingNodes,
   transformationNodes,
   techniqueNodes,
@@ -96,11 +84,8 @@ export function CharacterSagaVariantsTabs({
 }: {
   variants: Omit<CharacterVariant, "summary">[];
   overviewNode: ReactNode;
-  summaryNodes: ReactNode[];
   powerScalingNodes: ReactNode[];
   characterName: string;
-  /** Instantané de la configuration de lancement, résolu côté serveur. */
-  access?: AccessSnapshot | null;
   transformationNodes: ReactNode[];
   techniqueNodes: ReactNode[];
   messages: CharacterSagaMessages;
@@ -134,22 +119,6 @@ export function CharacterSagaVariantsTabs({
   // Fail closed: an image needs both an approved source URL and an explicit
   // editorial reference that attests to the image field.
   const displayImage = verifiedCharacterVariantImage(v.image, v.evidence);
-  const tomes =
-    v.firstVolume != null && v.lastVolume != null
-      ? v.firstVolume === v.lastVolume
-        ? messages.volumeSingle.replace("{number}", String(v.firstVolume))
-        : messages.volumesRange.replace("{range}", `${v.firstVolume}–${v.lastVolume}`)
-      : null;
-  const episodes =
-    v.firstEpisode != null && v.lastEpisode != null
-      ? // La série est indispensable : les épisodes 1 à 20 de Daima n'ont rien
-        // à voir avec les épisodes 1 à 20 de Z.
-        `${v.episodeSeries ?? ""} ${
-          v.firstEpisode === v.lastEpisode
-            ? messages.episodeSingle.replace("{number}", String(v.firstEpisode))
-            : messages.episodesRange.replace("{range}", `${v.firstEpisode}–${v.lastEpisode}`)
-        }`.trim()
-      : null;
   const mesuree = v.origin != null && v.origin !== "editorial";
 
   return (
@@ -167,7 +136,9 @@ export function CharacterSagaVariantsTabs({
         {isOverview ? (
           overviewNode
         ) : (
-          <div className="dbz-panel flex flex-col gap-6 p-6 sm:flex-row">
+          <div
+            className={showPortrait ? "dbz-panel flex flex-col gap-6 p-6 sm:flex-row" : "w-full"}
+          >
             {showPortrait && (
               <div className="w-full shrink-0 sm:w-56">
                 {/* `aspect-[3/4]` obligatoire : passer `sizes` à WikiImg bascule le
@@ -220,140 +191,124 @@ export function CharacterSagaVariantsTabs({
               </div>
             )}
 
-            <div className="min-w-0 flex-1 space-y-4">
-              <div>
-                {/* `h2` et non `h3` : cette frise est une rubrique de la fiche au
-						    même titre que « Transformations » ou « Personnages affiliés »,
-						    qui titrent toutes en `h2`. Elle sautait donc un niveau sous le
-						    `h1` du personnage, et la fiche n'avait aucun `h2` quand la
-						    frise était sa seule rubrique. */}
-                <h2 className="font-saiyan text-2xl uppercase tracking-widest text-white sm:text-3xl">
-                  {showPortrait ? (v.displayName ?? `${characterName} — ${v.label}`) : v.sagaName}
-                </h2>
-                <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
-                  <ClientGatedWrap
-                    access={access}
-                    href={`/wiki/sagas/${v.sagaSlug}`}
-                    className="font-bold uppercase tracking-widest text-dbz-orange hover:text-white"
-                  >
-                    {v.sagaName} →
-                  </ClientGatedWrap>
-                  {v.sagaSeries && (
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">
-                      {v.sagaSeries}
-                    </span>
-                  )}
-                  {v.role && (
-                    <span className="border border-white/20 bg-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/80">
-                      {v.role}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {v.form && <Champ titre={messages.form} valeur={v.form} />}
-                {v.age != null && (
-                  <Champ titre={messages.age} valeur={`${v.age} ${messages.years}`} />
-                )}
-                {v.affiliation && <Champ titre={messages.affiliation} valeur={v.affiliation} />}
-                {/* Les deux seules valeurs qu'on tienne d'une mesure et non d'une
-						    rédaction : elles occupent le bloc tant que le reste n'est pas
-						    écrit, et elles restent vraies après. */}
-                {tomes && <Champ titre={messages.manga} valeur={tomes} />}
-                {episodes && <Champ titre={messages.animatedSeries} valeur={episodes} />}
-                {!!v.evidence?.planches && (
-                  <Champ titre={messages.mangaPages} valeur={String(v.evidence.planches)} />
-                )}
-                {!!v.evidence?.synopsis && (
-                  <Champ titre={messages.episodeSynopses} valeur={String(v.evidence.synopsis)} />
-                )}
-              </div>
-
-              {summaryNodes[Math.min(variantIndex, variants.length - 1)] ? (
-                <div className="prose-invert max-w-none text-sm">
-                  {summaryNodes[Math.min(variantIndex, variants.length - 1)]}
-                </div>
-              ) : (
-                <p className="text-sm leading-relaxed text-white/55">{messages.noSummary}</p>
-              )}
-
+            <div className={showPortrait ? "min-w-0 flex-1 space-y-4" : "min-w-0 w-full"}>
               <section
                 aria-label={messages.powerAria
                   .replace("{name}", characterName)
                   .replace("{version}", v.label)}
-                className="space-y-3 border-t border-white/10 pt-4"
+                className={`relative isolate ${showPortrait ? "mt-7" : ""} overflow-hidden rounded-3xl border border-dbz-purple/25 bg-gradient-to-br from-dbz-purple/[0.08] via-dbz-card/80 to-black/40 p-4 sm:p-6`}
               >
-                <h3 className="text-xs font-bold uppercase tracking-wider text-dbz-yellow">
-                  {messages.powerHeading.replace("{version}", v.label)}
-                </h3>
-                <div className="grid gap-3 sm:grid-cols-3">
-                  {v.powerLevel ? (
-                    <Champ titre={messages.powerLevel} valeur={v.powerLevel} />
-                  ) : null}
-                  {v.ki ? <Champ titre={messages.ki} valeur={v.ki} /> : null}
-                  {v.maxKi ? <Champ titre={messages.maxKi} valeur={v.maxKi} /> : null}
-                  {powerScalingNodes[variantIndex]}
-                </div>
-                {!v.powerLevel && !v.ki && !v.maxKi && !powerScalingNodes[variantIndex] && (
-                  <p className="text-sm text-white/55">{messages.noPower}</p>
-                )}
-              </section>
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -right-24 -top-24 -z-10 size-72 rounded-full bg-dbz-purple/[0.08] blur-3xl"
+                />
+                <header className="mb-6 flex items-start gap-3 sm:gap-4">
+                  <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-dbz-purple/30 bg-dbz-purple/10 text-dbz-purple sm:size-12">
+                    <Sparkles className="size-5" aria-hidden="true" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-dbz-purple">
+                      {v.sagaName}
+                    </p>
+                    <h3 className="mt-1 font-saiyan text-xl uppercase tracking-wide text-white sm:text-2xl">
+                      {messages.powersAndForms}
+                    </h3>
+                    <p className="mt-1 max-w-3xl text-sm leading-relaxed text-white/55">
+                      {messages.abilitiesIntro}
+                    </p>
+                  </div>
+                </header>
 
-              {(transformationNodes[variantIndex] || techniqueNodes[variantIndex]) && (
-                <div className="space-y-8 border-t border-white/10 pt-6">
-                  {transformationNodes[variantIndex] && (
-                    <section
-                      aria-label={messages.transformationsAria
-                        .replace("{name}", characterName)
-                        .replace("{version}", v.label)}
-                    >
-                      <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-dbz-orange">
+                {transformationNodes[variantIndex] && (
+                  <section
+                    aria-label={messages.transformationsAria
+                      .replace("{name}", characterName)
+                      .replace("{version}", v.label)}
+                    className="space-y-3"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="size-4 text-dbz-purple" aria-hidden="true" />
+                      <h4 className="text-xs font-bold uppercase tracking-[0.16em] text-white/85">
                         {messages.transformations}
-                      </h3>
-                      {transformationNodes[variantIndex]}
-                    </section>
-                  )}
-                  {techniqueNodes[variantIndex] && (
-                    <section
-                      aria-label={messages.techniquesAria
-                        .replace("{name}", characterName)
-                        .replace("{version}", v.label)}
-                    >
-                      <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-dbz-blue-light">
-                        {messages.techniques}
-                      </h3>
-                      {techniqueNodes[variantIndex]}
-                    </section>
-                  )}
-                </div>
-              )}
+                      </h4>
+                      <span className="h-px flex-1 bg-gradient-to-r from-dbz-purple/30 to-transparent" />
+                    </div>
+                    {transformationNodes[variantIndex]}
+                  </section>
+                )}
 
-              {/* Épisodes dont le TITRE nomme le personnage : ni un résumé ni une
-					    interprétation, la liste de ce que la série a mis à son nom
-					    pendant la saga. C'est le seul contenu de la variante qu'on
-					    tienne d'une mesure et pas d'une rédaction. */}
-              {v.keyEpisodes && v.keyEpisodes.length > 0 && (
-                <div>
-                  <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/50">
-                    {messages.episodesNamed}
-                  </p>
-                  <ul className="flex flex-wrap gap-2">
-                    {v.keyEpisodes.map((e) => (
-                      <li key={e.id}>
-                        <ClientGatedWrap
-                          access={access}
-                          href={`/wiki/episodes/${e.id}`}
-                          className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-dbz-border px-3 py-1.5 text-xs text-white/75 transition-colors hover:border-dbz-orange/50 hover:text-white"
-                        >
-                          <span className="tabular-nums text-dbz-orange/80">#{e.num}</span>
-                          {e.title}
-                        </ClientGatedWrap>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="mt-6 grid items-start gap-4 border-t border-white/10 pt-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(15rem,0.75fr)] lg:gap-5">
+                  <section
+                    aria-label={messages.techniquesAria
+                      .replace("{name}", characterName)
+                      .replace("{version}", v.label)}
+                    className="min-w-0 space-y-3"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Zap className="size-4 text-dbz-blue-light" aria-hidden="true" />
+                      <h4 className="text-xs font-bold uppercase tracking-[0.16em] text-white/85">
+                        {messages.techniques}
+                      </h4>
+                      <span className="h-px flex-1 bg-gradient-to-r from-dbz-blue-light/30 to-transparent" />
+                    </div>
+                    {techniqueNodes[variantIndex] ?? (
+                      <p className="rounded-xl border border-white/10 bg-black/20 p-4 text-sm text-white/55">
+                        {messages.noTechniques}
+                      </p>
+                    )}
+                  </section>
+
+                  <aside
+                    aria-label={messages.powerHeading.replace("{version}", v.label)}
+                    className="min-w-0 rounded-2xl border border-dbz-yellow/15 bg-black/20 p-4"
+                  >
+                    <div className="mb-3 flex items-center gap-2">
+                      <Gauge className="size-4 text-dbz-yellow" aria-hidden="true" />
+                      <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-white/80">
+                        {messages.powerHeading.replace("{version}", v.label)}
+                      </h4>
+                    </div>
+                    <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+                      {v.powerLevel ? (
+                        <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+                          <p className="text-[10px] font-semibold uppercase tracking-wider text-white/45">
+                            {messages.powerLevel}
+                          </p>
+                          <p className="mt-1 break-words font-mono text-sm font-bold text-dbz-yellow">
+                            {v.powerLevel}
+                          </p>
+                        </div>
+                      ) : null}
+                      {v.ki && (
+                        <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+                          <p className="text-[10px] font-semibold uppercase tracking-wider text-white/45">
+                            {messages.ki}
+                          </p>
+                          <p className="mt-1 break-words font-mono text-sm font-bold text-dbz-yellow">
+                            {v.ki}
+                          </p>
+                        </div>
+                      )}
+                      {v.maxKi && (
+                        <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+                          <p className="text-[10px] font-semibold uppercase tracking-wider text-white/45">
+                            {messages.maxKi}
+                          </p>
+                          <p className="mt-1 break-words font-mono text-sm font-bold text-dbz-yellow">
+                            {v.maxKi}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    {powerScalingNodes[variantIndex] ??
+                      (!v.powerLevel && !v.ki && !v.maxKi ? (
+                        <p className="mt-3 text-sm leading-relaxed text-white/50">
+                          {messages.noPower}
+                        </p>
+                      ) : null)}
+                  </aside>
                 </div>
-              )}
+              </section>
 
               {v.highlights && v.highlights.length > 0 && (
                 <ul className="space-y-2 text-sm text-white/75">

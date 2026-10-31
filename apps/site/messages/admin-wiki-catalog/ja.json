@@ -9,12 +9,18 @@
     "db_character_continuities": "キャラクターのタイムライン",
     "db_character_variant_battles": "バージョン別の戦闘",
     "db_character_variant_technique_uses": "技の使用記録",
+    "db_character_variant_appearances": "バージョン・サーガ別写真",
+    "db_character_variant_staff_credits": "サーガ別アニメスタッフ",
+    "db_character_variant_voice_actors": "サーガ別声優",
     "db_battles": "戦闘"
   },
   "descriptions": {
     "db_sagas": "ここでサーガを作成・編集し、キャラクターバージョンに紐付けます。",
     "db_character_variants": "キャラクター・バージョン・サーガごとに1行追加します。紐付けたサーガはWikiページの2番目の選択欄に表示されます。",
-    "db_character_variant_technique_uses": "サーガ内で確認できる技の使用ごとに1行追加します。正確な出典と順序はキャラクターページに表示されます。"
+    "db_character_variant_technique_uses": "サーガ内で確認できる技の使用ごとに1行追加します。正確な出典と順序はキャラクターページに表示されます。",
+    "db_character_variant_appearances": "追加写真ごとに1行追加します。選択したバージョンとサーガのポートレートに正方形のプレビューが表示されます。変身との関連付けは任意です。写真、代替テキスト、出典、順序をここで編集できます。",
+    "db_character_variant_staff_credits": "話数ごとにカードを登録します。紹介する場面、作画監督、原画スタッフ、イラスト、出典を編集できます。",
+    "db_character_variant_voice_actors": "このサーガの出演者を登録します。写真、名前、プロフィールは声優カタログで編集します。"
   },
   "sourceTypes": {
     "manga": "漫画",
@@ -26,9 +32,101 @@
   "fields": {
     "variantId": "キャラクターバージョンとサーガ",
     "techniqueId": "技",
+    "transformationId": "関連する変身（任意）",
     "sourceType": "出典の種類",
     "sourceLabel": "具体的な参照箇所",
     "sourceUrl": "出典URL",
-    "note": "使用の詳細"
+    "note": "使用の詳細",
+    "image": "追加写真",
+    "altText": "写真の代替テキスト",
+    "sortOrder": "プレビュー順",
+    "visible": "ポートレートに表示",
+    "voiceActorId": "カタログの出演者",
+    "roleNotes": "役名・補足",
+    "episodeNumber": "話数",
+    "sceneTitle": "紹介する戦闘・場面",
+    "animationSupervisor": "作画監督",
+    "supervisorSlug": "DBFRプロフィールのslug",
+    "keyAnimators": "原画スタッフ・スタジオ",
+    "episodeUrl": "エピソードページ",
+    "episodeImage": "エピソードの画像"
+  },
+  "characterEditor": {
+    "eyebrow": "Wiki編集ガイド",
+    "title": "キャラクターページを編集",
+    "intro": "手順に沿ってキャラクターとバージョンを選び、サーガを指定してから、その内容を編集できます。",
+    "stepsLabel": "キャラクター編集の手順",
+    "steps": {
+      "chooseVersion": "1 · キャラクターとバージョン",
+      "chooseSaga": "2 · サーガ",
+      "editContent": "3 · 編集する内容"
+    },
+    "stepCounter": "ステップ {current} / {total}",
+    "character": "メインキャラクター",
+    "version": "バージョン / 継続作品",
+    "saga": "このバージョンのサーガ",
+    "selectCharacter": "キャラクターを選択…",
+    "selectSaga": "サーガを選択…",
+    "mainVersion": "メインページ",
+    "versionHelp": "選択したバージョンに応じて、サーガや関係、編集内容が切り替わります。",
+    "manageVersions": "関連バージョンを管理",
+    "loadVersionsError": "関連バージョンを読み込めませんでした。",
+    "selectedVersion": "選択中のバージョン: {version}",
+    "noSagas": "このバージョンにはまだサーガがありません。下から追加してください。",
+    "loadSagasError": "このバージョンのサーガを読み込めませんでした。",
+    "createSaga": "サーガ一覧を管理",
+    "addSagaToVersion": "サーガをこのバージョンに関連付ける",
+    "hidden": "非表示",
+    "continue": "続ける",
+    "back": "戻る",
+    "changeSaga": "サーガを変更",
+    "chooseSagaFirst": "内容を編集する前にサーガを選んでください。",
+    "backToSaga": "サーガを選択",
+    "editSection": "ステップ {number} を開く",
+    "generalProfileHelp": "キャラクターの基本情報はすべてのサーガで共通です。",
+    "editGeneralProfile": "基本ページを編集",
+    "workflowContext": "編集中の選択内容",
+    "selectedSaga": "選択中のサーガ",
+    "returnToSteps": "編集ガイドへ戻る",
+    "sections": {
+      "story": {
+        "title": "物語・姿・公式データ",
+        "description": "形態、衣装、年齢、役割、所属、戦闘力、要約、主な出来事、サーガごとの画像。"
+      },
+      "relations": {
+        "title": "家族・友人・敵",
+        "description": "このバージョンとサーガの関係、カテゴリ、説明、表示順を編集します。"
+      },
+      "formsAndTechniques": {
+        "title": "使用可能な変身と技",
+        "description": "物語のこの時点で習得している形態と技を選びます。"
+      },
+      "techniqueUses": {
+        "title": "技の使用履歴と出典",
+        "description": "サーガ内で実際に使われた技、順序、詳しい出典を記録します。"
+      },
+      "battles": {
+        "title": "時系列順の戦闘",
+        "description": "サーガの戦闘を関連付け、キャラクターページでの表示順を設定します。"
+      },
+      "appearances": {
+        "title": "写真と別の姿",
+        "description": "変身のサムネイルを追加します。表示中の写真はサーガのポートレートにボタンを作ります。"
+      },
+      "additionalInformation": {
+        "title": "豆知識・名前の由来・制作裏話",
+        "description": "サーガ専用のMarkdown記事に補足情報を記入します。見出しレベル2が節になり、文章、画像、出典、内部リンクを追加できます。",
+        "articleField": "このサーガのMarkdown記事",
+        "articleHelp": "項目ごとに ## 見出しを付けます（豆知識、名前の由来など）。![説明](URL)で画像を追加し、出典とDBFRページへのリンクを記載できます。"
+      },
+      "voiceActors": {
+        "title": "このサーガの声優",
+        "description": "カタログから出演者を選び、役の補足、順序、表示設定を編集します。写真とプロフィールは声優カタログで編集します。"
+      },
+      "animationCredits": {
+        "title": "戦闘シーンのアニメスタッフ",
+        "description": "話数ごとにカードを追加します。場面、DBFRプロフィールへのリンク、作画チーム、画像、出典を編集できます。"
+      }
+    }
   }
 }

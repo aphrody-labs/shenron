@@ -11,6 +11,7 @@ the root `AGENTS.md`.
 | Website languages                                                | [`architecture/i18n.md`](architecture/i18n.md)                                                                                                      |
 | Bot RAG and reconstruction                                       | [`architecture/rag-enrichment.md`](architecture/rag-enrichment.md)                                                                                  |
 | Wiki redesign (media, timelines, contributors)                   | [`architecture/architecture-refonte-wiki-dragon-ball.md`](architecture/architecture-refonte-wiki-dragon-ball.md)                                    |
+| Character page model and admin editing workflow                  | [`products/character-page-template.md`](products/character-page-template.md)                                                                        |
 | SVG pipeline                                                     | [`architecture/pipeline-svg.md`](architecture/pipeline-svg.md)                                                                                      |
 | Lecteur HLS et génération vidéo                                  | [`video/README.md`](video/README.md)                                                                                                                |
 | Environment variables                                            | [`operations/ENV.md`](operations/ENV.md)                                                                                                            |

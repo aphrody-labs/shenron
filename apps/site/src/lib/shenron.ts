@@ -9,6 +9,9 @@ import {
   botCharacterTechniques,
   botCharacterVariants,
   botCharacterVariantBattles,
+  botCharacterVariantStaffCredits,
+  botCharacterVariantVoiceActors,
+  botCharacterVariantAppearances,
   botCharacterVariantTechniqueUses,
   botBattles,
   botEpisodes,
@@ -218,6 +221,7 @@ interface DBTransformation {
   id: number;
   slug: string;
   name: string;
+  nameJa?: string | null;
   image: string;
   ki: string | null;
   characterId: number;
@@ -401,6 +405,166 @@ export async function getShenronCharacterVariantBattles(
   }
 }
 
+export interface CharacterVariantAppearance {
+  id: number;
+  variantId: number;
+  transformationId: number | null;
+  transformationName: string | null;
+  image: string;
+  altText: string;
+  sourceUrl: string | null;
+  sortOrder: number;
+}
+
+export interface CharacterVariantStaffCredit {
+  id: number;
+  variantId: number;
+  episodeNumber: string;
+  sceneTitle: string;
+  animationSupervisor: string;
+  supervisorSlug: string | null;
+  keyAnimators: string | null;
+  image: string | null;
+  altText: string;
+  sourceUrl: string | null;
+  episodeUrl: string | null;
+  sortOrder: number;
+}
+
+export interface CharacterVariantVoiceActor {
+  id: number;
+  variantId: number;
+  voiceActorId: number;
+  slug: string;
+  name: string;
+  nameJa: string | null;
+  nationality: string;
+  image: string | null;
+  roleNotes: string | null;
+  sortOrder: number;
+}
+
+export async function getShenronCharacterVariantStaffCredits(
+  characterId: number,
+): Promise<CharacterVariantStaffCredit[]> {
+  try {
+    const rows = await db
+      .select({ credit: botCharacterVariantStaffCredits })
+      .from(botCharacterVariantStaffCredits)
+      .innerJoin(
+        botCharacterVariants,
+        eq(botCharacterVariantStaffCredits.variantId, botCharacterVariants.id),
+      )
+      .where(
+        and(
+          eq(botCharacterVariants.characterId, characterId),
+          eq(botCharacterVariants.visible, true),
+          eq(botCharacterVariantStaffCredits.visible, true),
+        ),
+      )
+      .orderBy(
+        asc(botCharacterVariantStaffCredits.variantId),
+        asc(botCharacterVariantStaffCredits.sortOrder),
+        asc(botCharacterVariantStaffCredits.id),
+      );
+    return rows.map(({ credit }) => ({ ...credit }));
+  } catch (error) {
+    console.error("[shenron] getShenronCharacterVariantStaffCredits failed:", error);
+    return [];
+  }
+}
+
+export async function getShenronCharacterVariantVoiceActors(
+  characterId: number,
+): Promise<CharacterVariantVoiceActor[]> {
+  try {
+    const rows = await db
+      .select({ assignment: botCharacterVariantVoiceActors, actor: botVoiceActors })
+      .from(botCharacterVariantVoiceActors)
+      .innerJoin(
+        botCharacterVariants,
+        eq(botCharacterVariantVoiceActors.variantId, botCharacterVariants.id),
+      )
+      .innerJoin(botVoiceActors, eq(botCharacterVariantVoiceActors.voiceActorId, botVoiceActors.id))
+      .where(
+        and(
+          eq(botCharacterVariants.characterId, characterId),
+          eq(botCharacterVariants.visible, true),
+          eq(botCharacterVariantVoiceActors.visible, true),
+          eq(botVoiceActors.visible, true),
+        ),
+      )
+      .orderBy(
+        asc(botCharacterVariantVoiceActors.variantId),
+        asc(botCharacterVariantVoiceActors.sortOrder),
+        asc(botCharacterVariantVoiceActors.id),
+      );
+    return rows.map(({ assignment, actor }) => ({
+      id: assignment.id,
+      variantId: assignment.variantId,
+      voiceActorId: assignment.voiceActorId,
+      slug: actor.slug,
+      name: actor.name,
+      nameJa: actor.nameJa,
+      nationality: actor.nationality,
+      image: actor.image,
+      roleNotes: assignment.roleNotes,
+      sortOrder: assignment.sortOrder,
+    }));
+  } catch (error) {
+    console.error("[shenron] getShenronCharacterVariantVoiceActors failed:", error);
+    return [];
+  }
+}
+
+/** Additional portrait photos explicitly added by an editor for a saga version. */
+export async function getShenronCharacterVariantAppearances(
+  characterId: number,
+): Promise<CharacterVariantAppearance[]> {
+  try {
+    const rows = await db
+      .select({
+        appearance: botCharacterVariantAppearances,
+        transformationName: botTransformations.name,
+      })
+      .from(botCharacterVariantAppearances)
+      .innerJoin(
+        botCharacterVariants,
+        eq(botCharacterVariantAppearances.variantId, botCharacterVariants.id),
+      )
+      .leftJoin(
+        botTransformations,
+        eq(botCharacterVariantAppearances.transformationId, botTransformations.id),
+      )
+      .where(
+        and(
+          eq(botCharacterVariants.characterId, characterId),
+          eq(botCharacterVariants.visible, true),
+          eq(botCharacterVariantAppearances.visible, true),
+          ne(botCharacterVariantAppearances.image, ""),
+        ),
+      )
+      .orderBy(
+        asc(botCharacterVariantAppearances.variantId),
+        asc(botCharacterVariantAppearances.sortOrder),
+        asc(botCharacterVariantAppearances.id),
+      );
+    return rows.map(({ appearance, transformationName }) => ({
+      id: appearance.id,
+      variantId: appearance.variantId,
+      transformationId: appearance.transformationId,
+      transformationName,
+      image: appearance.image,
+      altText: appearance.altText,
+      sourceUrl: appearance.sourceUrl,
+      sortOrder: appearance.sortOrder,
+    }));
+  } catch (error) {
+    console.error("[shenron] getShenronCharacterVariantAppearances failed:", error);
+    return [];
+  }
+}
+
 interface CharacterVoiceActor {
   id: number;
   slug: string;
@@ -408,6 +572,7 @@ interface CharacterVoiceActor {
   nameJa: string | null;
   nationality: string;
   roleNotes: string | null;
+  image: string | null;
 }
 
 export interface CharacterWithRelations extends DBCharacter {
@@ -1351,6 +1516,7 @@ export async function getShenronCharacter(
           name: botVoiceActors.name,
           nameJa: botVoiceActors.nameJa,
           nationality: botVoiceActors.nationality,
+          image: botVoiceActors.image,
           roles: botVoiceActors.roles,
         })
         .from(botVoiceActors)
@@ -1417,6 +1583,7 @@ export async function getShenronCharacter(
           name: va.name,
           nameJa: va.nameJa,
           nationality: va.nationality,
+          image: va.image ?? null,
           roleNotes: matchingRole.series || matchingRole.notes || null,
         },
       ];

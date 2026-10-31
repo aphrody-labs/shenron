@@ -1080,6 +1080,56 @@ export const botCharacterVariantBattles = bot.table(
   ],
 );
 
+/** Additional, saga-specific appearance images shown as portrait thumbnails. */
+export const botCharacterVariantAppearances = bot.table(
+  "db_character_variant_appearances",
+  {
+    id: int("id").primaryKey().generatedAlwaysAsIdentity(),
+    variantId: int("variant_id").notNull(),
+    transformationId: int("transformation_id"),
+    image: text("image").notNull(),
+    altText: text("alt_text").notNull().default(""),
+    sourceUrl: text("source_url"),
+    sortOrder: int("sort_order").notNull().default(0),
+    visible: boolean("visible").notNull().default(true),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.variantId],
+      foreignColumns: [botCharacterVariants.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [table.transformationId],
+      foreignColumns: [botTransformations.id],
+    }).onDelete("set null"),
+  ],
+);
+
+/** Episode-level animation staff cards attached to a specific character saga. */
+export const botCharacterVariantStaffCredits = bot.table(
+  "db_character_variant_staff_credits",
+  {
+    id: int("id").primaryKey().generatedAlwaysAsIdentity(),
+    variantId: int("variant_id").notNull(),
+    episodeNumber: text("episode_number").notNull(),
+    sceneTitle: text("scene_title").notNull(),
+    animationSupervisor: text("animation_supervisor").notNull(),
+    supervisorSlug: text("supervisor_slug"),
+    keyAnimators: text("key_animators"),
+    image: text("image"),
+    altText: text("alt_text").notNull().default(""),
+    sourceUrl: text("source_url"),
+    episodeUrl: text("episode_url"),
+    sortOrder: int("sort_order").notNull().default(0),
+    visible: boolean("visible").notNull().default(true),
+  },
+  (table) => [
+    foreignKey({ columns: [table.variantId], foreignColumns: [botCharacterVariants.id] }).onDelete(
+      "cascade",
+    ),
+  ],
+);
+
 /** One cited use of a technique within a character's saga-specific variant. */
 export const botCharacterVariantTechniqueUses = bot.table(
   "db_character_variant_technique_uses",
@@ -1270,6 +1320,27 @@ export const botVoiceActors = bot.table("db_voice_actors", {
   ...articleCols,
   ...visibleCol,
 });
+
+/** Voice actors explicitly credited for a character in a particular saga. */
+export const botCharacterVariantVoiceActors = bot.table(
+  "db_character_variant_voice_actors",
+  {
+    id: int("id").primaryKey().generatedAlwaysAsIdentity(),
+    variantId: int("variant_id").notNull(),
+    voiceActorId: int("voice_actor_id").notNull(),
+    roleNotes: text("role_notes"),
+    sortOrder: int("sort_order").notNull().default(0),
+    visible: boolean("visible").notNull().default(true),
+  },
+  (table) => [
+    foreignKey({ columns: [table.variantId], foreignColumns: [botCharacterVariants.id] }).onDelete(
+      "cascade",
+    ),
+    foreignKey({ columns: [table.voiceActorId], foreignColumns: [botVoiceActors.id] }).onDelete(
+      "cascade",
+    ),
+  ],
+);
 
 /** Bandes originales, génériques et musiques cultes de Dragon Ball. */
 export const botSoundtracks = bot.table("db_soundtracks", {

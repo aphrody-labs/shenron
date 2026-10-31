@@ -13,7 +13,8 @@ import {
   Plus,
   Recherche,
 } from "@aphrody/shenron-ui/icones";
-import { useState, type ReactNode, useEffect } from "react";
+import { useState, type ReactNode, useEffect, useMemo, useRef } from "react";
+import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { SmartField } from "@/components/admin/SmartField";
@@ -22,6 +23,7 @@ import { assetUrl } from "@/lib/assets";
 import { TABLE_LABELS, colLabel } from "@/lib/db-labels";
 import { WIKI_TABLE_SPECS, crudBase, isWikiTable } from "@/lib/wiki-tables";
 import { buildSubmitBody, IMAGE_COL_RE, isImageColumn, isStudioTable } from "@/lib/wiki-fields";
+import { browserWikiSnapshotHash } from "@/lib/wiki-snapshot";
 import { useAdminCatalogText } from "@/lib/admin-catalog-text";
 import {
   normalizeWikiListQuery,
@@ -45,6 +47,28 @@ export default function TablePage() {
   // `?q=` pré-remplit la recherche : la worklist /admin/wiki/todo ouvre ainsi
   // directement la fiche à compléter des tables sans studio.
   const initialSearch = useSearchParams().get("q")?.trim() ?? "";
+  const searchParams = useSearchParams();
+  const workflow = searchParams.get("workflow") === "character";
+  const characterId = searchParams.get("characterId") ?? "";
+  const versionId = searchParams.get("versionId") ?? "";
+  const variantId = searchParams.get("variantId") ?? "";
+  const parentId = searchParams.get("parentId") ?? "";
+  const workflowStep = searchParams.get("workflowStep") ?? "content";
+  const parentColumn =
+    table === "db_character_variants" || table === "db_character_continuities"
+      ? "characterId"
+      : table === "db_character_relations" ||
+          table === "db_character_variant_battles" ||
+          table === "db_character_variant_staff_credits" ||
+          table === "db_character_variant_voice_actors" ||
+          table === "db_character_variant_appearances" ||
+          table === "db_character_variant_technique_uses"
+        ? "variantId"
+        : null;
+  const parentFilter =
+    workflow && parentColumn && /^\d+$/.test(parentId)
+      ? { column: parentColumn, id: parentId }
+      : null;
   const wiki = isWikiTable(table);
   const studio = isStudioTable(table);
   const client = wiki ? apiAt(crudBase(table)) : api;
@@ -56,17 +80,27 @@ export default function TablePage() {
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<Record<string, unknown> | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Record<string, unknown> | null>(null);
+  const autoEditHandled = useRef<string | null>(null);
+  const autoCreateHandled = useRef(false);
   const [toast, setToast] = useState<{
     type: "success" | "error";
     msg: string;
   } | null>(null);
   const limit = 25;
   const fieldLabel = (column: string) =>
-    table === "db_character_variant_technique_uses"
-      ? adminCatalogText(`fields.${column}` as AdminTechniqueUseFieldKey)
-      : colLabel(column);
+    table === "db_character_variant_staff_credits" && column === "image"
+      ? adminCatalogText("fields.episodeImage")
+      : table === "db_character_variant_technique_uses" ||
+          table === "db_character_variant_appearances" ||
+          table === "db_character_variant_staff_credits" ||
+          table === "db_character_variant_voice_actors"
+        ? adminCatalogText(`fields.${column}` as AdminWikiFieldKey)
+        : colLabel(column);
   const offset = page * limit;
   const listQuery = normalizeWikiListQuery({ limit, offset, q: debouncedSearch });
+  const collectionQuery = parentFilter
+    ? wikiCollectionSearch({ kind: "byParent", col: parentFilter.column, id: parentFilter.id })
+    : wikiCollectionSearch(listQuery);
   const qc = useQueryClient();
 
   // Auto-dismiss toast
@@ -130,13 +164,39 @@ export default function TablePage() {
   }, [search]);
 
   const rows = useQuery({
-    queryKey: ["db", table, listQuery],
+    queryKey: ["db", table, parentFilter?.column, parentFilter?.id, listQuery],
     queryFn: () =>
       client.get<{ rows: Record<string, unknown>[]; total: number }>(
-        `${collection}?${wikiCollectionSearch(listQuery)}`,
+        `${collection}?${collectionQuery}`,
       ),
     enabled: !!table,
   });
+
+  const editId = workflow ? searchParams.get("editId") : null;
+  const createRequested = workflow && searchParams.get("create") === "1";
+  useEffect(() => {
+    if (!editId || !rows.data || autoEditHandled.current === editId) return;
+    const target = rows.data.rows.find((row) => rowId(row) === editId);
+    if (target) {
+      autoEditHandled.current = editId;
+      setEditing(target);
+    }
+  }, [editId, rows.data]);
+  useEffect(() => {
+    if (createRequested && !autoCreateHandled.current) {
+      autoCreateHandled.current = true;
+      setCreating(true);
+    }
+  }, [createRequested]);
+
+  const creationDefaults = useMemo(() => {
+    if (!parentFilter) return {};
+    const defaults: Record<string, unknown> = { [parentFilter.column]: Number(parentFilter.id) };
+    if (table === "db_character_relations" && /^\d+$/.test(characterId)) {
+      defaults.characterId = Number(characterId);
+    }
+    return defaults;
+  }, [characterId, parentFilter, table]);
 
   const create = useMutation({
     mutationFn: (body: Record<string, unknown>) => client.post(collection, body),
@@ -151,8 +211,18 @@ export default function TablePage() {
   });
 
   const update = useMutation({
-    mutationFn: (data: { id: unknown; body: Record<string, unknown> }) =>
-      client.put(rowPath(data.id), data.body),
+    mutationFn: async (data: { id: unknown; body: Record<string, unknown> }) => {
+      if (table !== "db_character_variants") return client.put(rowPath(data.id), data.body);
+      if (!editing || rowId(editing) !== String(data.id)) {
+        throw new Error("La fiche sélectionnée a changé. Rouvrez-la avant d’enregistrer.");
+      }
+      const expected = structuredClone(editing);
+      return client.put(rowPath(data.id), {
+        ...data.body,
+        expected,
+        expectedSha256: await browserWikiSnapshotHash(expected),
+      });
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["db", table] });
       setEditing(null);
@@ -179,7 +249,29 @@ export default function TablePage() {
   const humanLabel =
     table === "db_character_variant_technique_uses"
       ? adminCatalogText("tables.db_character_variant_technique_uses")
-      : (TABLE_LABELS[table] ?? table);
+      : table === "db_character_variant_appearances"
+        ? adminCatalogText("tables.db_character_variant_appearances")
+        : table === "db_character_variant_staff_credits"
+          ? adminCatalogText("tables.db_character_variant_staff_credits")
+          : table === "db_character_variant_voice_actors"
+            ? adminCatalogText("tables.db_character_variant_voice_actors")
+            : (TABLE_LABELS[table] ?? table);
+  const workflowReturnParams = new URLSearchParams();
+  if (characterId) workflowReturnParams.set("characterId", characterId);
+  if (versionId) workflowReturnParams.set("versionId", versionId);
+  if (variantId) workflowReturnParams.set("variantId", variantId);
+  workflowReturnParams.set(
+    "step",
+    ["content", "additionalInformation", "voiceActors", "animationCredits"].includes(workflowStep)
+      ? "3"
+      : "2",
+  );
+  const workflowReturnHref = `/admin/wiki/characters?${workflowReturnParams.toString()}`;
+  const workflowContext = [
+    searchParams.get("characterLabel"),
+    searchParams.get("versionLabel"),
+    searchParams.get("sagaLabel"),
+  ].filter(Boolean);
   const cols = rows.data?.rows[0] ? Object.keys(rows.data.rows[0]) : [];
   const total = rows.data?.total ?? 0;
   const pagination = wikiPageWindow(total, listQuery);
@@ -239,8 +331,26 @@ export default function TablePage() {
         )}
       </div>
 
+      {workflow && (
+        <div className="dbz-panel flex flex-wrap items-center justify-between gap-3 p-3">
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light">
+              {adminCatalogText("characterEditor.workflowContext")}
+            </p>
+            <p className="mt-1 truncate text-sm text-white/85">
+              {workflowContext.join("  /  ") || adminCatalogText("characterEditor.selectedSaga")}
+            </p>
+          </div>
+          <Link href={workflowReturnHref} className="btn btn-ghost min-h-11">
+            <FlecheGauche className="h-4 w-4" />
+            {adminCatalogText("characterEditor.returnToSteps")}
+          </Link>
+        </div>
+      )}
+
       {/* Recherche (tables wiki disposant d'une colonne libellé) */}
-      {wiki &&
+      {!parentFilter &&
+        wiki &&
         spec?.mutableColumns.some((c) =>
           ["name", "title", "slug", "nameJa", "titleJa"].includes(c),
         ) && (
@@ -363,7 +473,7 @@ export default function TablePage() {
       {creating && spec && (
         <EditModal
           mode="create"
-          row={{}}
+          row={creationDefaults}
           spec={spec}
           onClose={() => setCreating(false)}
           onSave={(body) => create.mutate(body)}
@@ -377,7 +487,13 @@ export default function TablePage() {
           mode="edit"
           row={editing}
           rowId={rowId(editing)}
-          spec={spec}
+          spec={
+            workflow &&
+            workflowStep === "additionalInformation" &&
+            table === "db_character_variants"
+              ? { ...spec, mutableColumns: ["article"] }
+              : spec
+          }
           onClose={() => setEditing(null)}
           onSave={(body) => update.mutate({ id: rowId(editing), body })}
           saving={update.isPending}
@@ -460,16 +576,34 @@ interface EditProps {
   mode: "create" | "edit";
 }
 
-type AdminTechniqueUseFieldKey =
+type AdminWikiFieldKey =
   | "fields.variantId"
   | "fields.techniqueId"
+  | "fields.transformationId"
   | "fields.sourceType"
   | "fields.sourceLabel"
   | "fields.sourceUrl"
-  | "fields.note";
+  | "fields.note"
+  | "fields.image"
+  | "fields.altText"
+  | "fields.sortOrder"
+  | "fields.visible"
+  | "fields.voiceActorId"
+  | "fields.roleNotes"
+  | "fields.episodeNumber"
+  | "fields.sceneTitle"
+  | "fields.animationSupervisor"
+  | "fields.supervisorSlug"
+  | "fields.keyAnimators"
+  | "fields.episodeUrl"
+  | "fields.episodeImage";
 
 function EditModal({ row, rowId, spec, onClose, onSave, saving, mode }: EditProps) {
   const adminCatalogText = useAdminCatalogText();
+  const supplementaryArticle =
+    spec.name === "db_character_variants" &&
+    spec.mutableColumns.length === 1 &&
+    spec.mutableColumns[0] === "article";
   const [draft, setDraft] = useState<Record<string, string>>(() =>
     Object.fromEntries(spec.mutableColumns.map((c) => [c, row[c] != null ? String(row[c]) : ""])),
   );
@@ -504,9 +638,18 @@ function EditModal({ row, rowId, spec, onClose, onSave, saving, mode }: EditProp
           {spec.mutableColumns.map((c) => (
             <div key={c}>
               <label className="mb-1 block text-xs font-semibold text-dbz-blue-light uppercase tracking-wider">
-                {spec.name === "db_character_variant_technique_uses"
-                  ? adminCatalogText(`fields.${c}` as AdminTechniqueUseFieldKey)
-                  : colLabel(c)}
+                {spec.name === "db_character_variant_staff_credits" && c === "image"
+                  ? adminCatalogText("fields.episodeImage")
+                  : supplementaryArticle
+                    ? adminCatalogText(
+                        "characterEditor.sections.additionalInformation.articleField",
+                      )
+                    : spec.name === "db_character_variant_technique_uses" ||
+                        spec.name === "db_character_variant_appearances" ||
+                        spec.name === "db_character_variant_staff_credits" ||
+                        spec.name === "db_character_variant_voice_actors"
+                      ? adminCatalogText(`fields.${c}` as AdminWikiFieldKey)
+                      : colLabel(c)}
                 <span className="ml-2 text-white/25 font-mono normal-case font-normal">{c}</span>
               </label>
               <SmartField
@@ -516,6 +659,11 @@ function EditModal({ row, rowId, spec, onClose, onSave, saving, mode }: EditProp
                 original={row[c]}
                 onChange={(v) => setDraft((d) => ({ ...d, [c]: v }))}
               />
+              {supplementaryArticle && (
+                <p className="mt-2 text-xs leading-5 text-white/60">
+                  {adminCatalogText("characterEditor.sections.additionalInformation.articleHelp")}
+                </p>
+              )}
             </div>
           ))}
         </div>

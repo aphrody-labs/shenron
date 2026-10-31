@@ -81,6 +81,15 @@ export function SmartField({ table, col, value, onChange, original, onUploadStat
         onChange={onChange}
         subdir={uploadSubdir(table)}
         column={col}
+        cropAspect={
+          (table === "db_characters" && col === "image") ||
+          (table === "db_character_variants" && col === "image") ||
+          (table === "db_character_variant_appearances" && col === "image")
+            ? "portrait"
+            : table === "db_character_variant_staff_credits" && col === "image"
+              ? "wide"
+              : undefined
+        }
         onUploadStateChange={onUploadStateChange}
       />
     );

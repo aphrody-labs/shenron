@@ -56,6 +56,10 @@ const TABLE_LABELS: Record<string, { label: string; group: string }> = {
     label: "Utilisations des techniques",
     group: "Encyclopédie",
   },
+  db_character_variant_appearances: {
+    label: "Photos par version et saga",
+    group: "Encyclopédie",
+  },
   db_battles: { label: "Combats", group: "Encyclopédie" },
   db_tools: { label: "Outils communautaires", group: "Encyclopédie" },
   db_news: { label: "Actualités", group: "Encyclopédie" },
@@ -82,6 +86,7 @@ export default function DatabasePage() {
     db_character_continuities: translate("tables.db_character_continuities"),
     db_character_variant_battles: translate("tables.db_character_variant_battles"),
     db_character_variant_technique_uses: translate("tables.db_character_variant_technique_uses"),
+    db_character_variant_appearances: translate("tables.db_character_variant_appearances"),
     db_battles: translate("tables.db_battles"),
   };
   const localizedWikiDescriptions: Record<string, string> = {
@@ -90,6 +95,7 @@ export default function DatabasePage() {
     db_character_variant_technique_uses: translate(
       "descriptions.db_character_variant_technique_uses",
     ),
+    db_character_variant_appearances: translate("descriptions.db_character_variant_appearances"),
   };
 
   // Regrouper par catégorie

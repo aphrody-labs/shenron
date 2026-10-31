@@ -102,6 +102,9 @@ const TABLE_OBJECTS: Record<string, AnyTable> = {
   db_character_relations: botSchema.botCharacterRelations,
   db_character_continuities: botSchema.botCharacterContinuities,
   db_character_variant_battles: botSchema.botCharacterVariantBattles,
+  db_character_variant_staff_credits: botSchema.botCharacterVariantStaffCredits,
+  db_character_variant_voice_actors: botSchema.botCharacterVariantVoiceActors,
+  db_character_variant_appearances: botSchema.botCharacterVariantAppearances,
   db_character_variant_technique_uses: botSchema.botCharacterVariantTechniqueUses,
   db_sagas: botSchema.botSagas,
   db_arcs: botSchema.botArcs,
@@ -362,11 +365,15 @@ export async function listWikiByParent(
   const spec = getSpec(table);
   if (!spec) throw new Error(`Table inconnue: ${table}`);
   const plan = planWikiRelation(spec.columns, col, id);
+  const orderColumns = [
+    ...(spec.columns.includes("sortOrder") ? ["sortOrder"] : []),
+    ...pkCamelKeys(spec).filter((key) => key !== "sortOrder"),
+  ];
   const rows = (await db
     .select()
     .from(spec.table)
     .where(eq(spec.table[plan.col], coerceValue(spec, plan.col, plan.id) as never))
-    .orderBy(...pkCamelKeys(spec).map((key) => asc(spec.table[key])))) as Row[];
+    .orderBy(...orderColumns.map((key) => asc(spec.table[key])))) as Row[];
   return { rows, total: rows.length };
 }
 
@@ -424,6 +431,9 @@ const DB_AUTOGEN_PK = new Set<string>([
   "db_character_variants",
   "db_character_relations",
   "db_character_variant_battles",
+  "db_character_variant_staff_credits",
+  "db_character_variant_voice_actors",
+  "db_character_variant_appearances",
   "db_character_variant_technique_uses",
   "media_works",
   "media_editions",

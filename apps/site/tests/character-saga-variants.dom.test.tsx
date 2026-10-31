@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, spyOn, test } from "bun:test";
-import { act, isValidElement, type ReactElement, type ReactNode } from "react";
+import { act, isValidElement, type ReactElement } from "react";
 import { createRoot } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { CharacterSagaVariants } from "../src/components/wiki/CharacterSagaVariants";
 import { CharacterSagaVariantsTabs } from "../src/components/wiki/CharacterSagaVariantsTabs";
 import type { CharacterVariant } from "../src/lib/shenron";
-import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 
 function variant(id: number, label: string, summary: string): CharacterVariant {
   return {
@@ -86,6 +85,7 @@ const variants: CharacterVariant[] = [
 const messages = {
   intro: "{count} versions",
   overview: "Overview",
+  sagaHistoryHeading: "Saga history",
   chooseVersion: "Choose a version",
   tabsLabel: "Versions of {name}",
   form: "Form",
@@ -107,6 +107,11 @@ const messages = {
   noPower: "No power reading",
   transformationsAria: "Transformations for {name} — {version}",
   transformations: "Transformations",
+  firstObtainedIn: "First obtained in {saga}",
+  powersAndForms: "Powers and forms",
+  abilitiesIntro: "Forms and techniques known in this saga",
+  introducedThisSaga: "Introduced in this saga",
+  knownFromEarlierSaga: "Known from an earlier saga",
   noTransformations: "No transformations recorded",
   techniquesAria: "Techniques for {name} — {version}",
   techniques: "Techniques",
@@ -125,13 +130,10 @@ const messages = {
   autoBoth: "Automatically detected in manga pages and episode synopses",
 };
 
-function serverResult(
-  access?: AccessSnapshot,
-): ReactElement<React.ComponentProps<typeof CharacterSagaVariantsTabs>> {
+function serverResult(): ReactElement<React.ComponentProps<typeof CharacterSagaVariantsTabs>> {
   const result = CharacterSagaVariants({
     variants,
     characterName: "Goku",
-    access,
     children: <div>General article text</div>,
     messages,
     activeVariantIndex: 0,
@@ -146,15 +148,12 @@ function serverResult(
   return result as ReactElement<React.ComponentProps<typeof CharacterSagaVariantsTabs>>;
 }
 
-test("server summaries retain formatted links and sanitization", () => {
-  const { summaryNodes } = serverResult().props;
-  const first = renderToStaticMarkup(summaryNodes[0]);
-  const second = renderToStaticMarkup(summaryNodes[1]);
-  expect(first).toContain("<strong>First era</strong>");
-  expect(first).toContain('href="https://dragonballfr.com/wiki/characters/goku"');
-  expect(second).toContain("<strong>Second era</strong>");
-  expect(second).not.toContain("<script");
-  expect(second).not.toContain("alert(1)");
+test("saga tabs keep the shared overview without duplicating saga story text", () => {
+  const props = serverResult().props;
+  expect(props.variants).toHaveLength(2);
+  expect(renderToStaticMarkup(props.overviewNode)).toContain("General article text");
+  expect("summaryNodes" in props).toBe(false);
+  expect(renderToStaticMarkup(serverResult())).not.toContain("<script");
   expect(
     CharacterSagaVariants({
       variants: [],
@@ -170,10 +169,7 @@ test("server summaries retain formatted links and sanitization", () => {
 
 const domTest = test.skipIf(typeof document === "undefined");
 
-async function withTabs(
-  access: AccessSnapshot | undefined,
-  run: (container: HTMLDivElement) => Promise<void>,
-) {
+async function withTabs(run: (container: HTMLDivElement) => Promise<void>) {
   const globals = globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean };
   const originalAct = globals.IS_REACT_ACT_ENVIRONMENT;
   const previousURL = window.location.href;
@@ -192,14 +188,8 @@ async function withTabs(
   const root = createRoot(container);
   try {
     // Flight delivers already rendered server slots, never the Markdown parser.
-    const result = serverResult(access);
-    const summaryNodes = result.props.summaryNodes.map((node: ReactNode, index: number) => (
-      // oxlint-disable-next-line react/no-array-index-key -- static list without stable ids
-      <div key={index} dangerouslySetInnerHTML={{ __html: renderToStaticMarkup(node) }} />
-    ));
-    await act(async () =>
-      root.render(<CharacterSagaVariantsTabs {...result.props} summaryNodes={summaryNodes} />),
-    );
+    const result = serverResult();
+    await act(async () => root.render(<CharacterSagaVariantsTabs {...result.props} />));
     await run(container);
   } finally {
     await act(async () => root.unmount());
@@ -218,7 +208,7 @@ domTest(
   "overview and saga tabs replace the full article content and share one keyboard stop",
   async () => {
     window.location.href = "https://variants.test/";
-    await withTabs(undefined, async (container) => {
+    await withTabs(async (container) => {
       const tabs = [...container.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
       const panel = container.querySelector('[role="tabpanel"]')!;
       const tablist = container.querySelector('[role="tablist"]')!;
@@ -235,7 +225,7 @@ domTest(
       expect(document.activeElement).toBe(tabs[1]);
       expect(tabs[1]!.getAttribute("aria-selected")).toBe("true");
       expect(panel.getAttribute("aria-labelledby")).toBe(tabs[1]!.id);
-      expect(panel.textContent).toContain("First era");
+      expect(panel.textContent).toContain("Power readings — Saga Saiyan");
       expect(panel.textContent).not.toContain("General article text");
       expect(panel.textContent).toContain("Oozaru");
       expect(panel.textContent).toContain("Kamehameha");
@@ -251,8 +241,8 @@ domTest(
       expect(document.activeElement).toBe(tabs[2]);
       expect(tabs[2]!.getAttribute("aria-selected")).toBe("true");
       expect(panel.getAttribute("aria-labelledby")).toBe(tabs[2]!.id);
-      expect(panel.textContent).toContain("Second era");
-      expect(panel.textContent).not.toContain("First era");
+      expect(panel.textContent).toContain("Power readings — Saga Namek");
+      expect(panel.textContent).not.toContain("Power readings — Saga Saiyan");
       expect(panel.textContent).toContain("Super Saiyan");
       expect(panel.textContent).not.toContain("Oozaru");
       expect(panel.textContent).toContain("Special Beam Cannon");
@@ -277,30 +267,22 @@ domTest(
   },
 );
 
-domTest(
-  "deep hashes activate known sagas, unknown hashes preserve selection, access stays gated",
-  async () => {
-    window.location.href = "https://variants.test/#saga-2";
-    expect(window.location.hash).toBe("#saga-2");
-    await withTabs(
-      { openKeys: [], access: { sagas: { mode: "admin", roleIds: [] } } },
-      async (container) => {
-        const panel = container.querySelector('[role="tabpanel"]')!;
-        expect(panel.textContent).toContain("Second era");
-        expect(panel.querySelector('a[href="/wiki/sagas/saga-2"]')).toBeNull();
-        expect(panel.querySelector('[aria-disabled="true"]')).not.toBeNull();
-        await act(async () => {
-          window.location.hash = "#saga-999999";
-          window.dispatchEvent(new Event("hashchange"));
-        });
-        expect(panel.textContent).toContain("Second era");
-        await act(async () => {
-          window.location.hash = "#saga-1";
-          window.dispatchEvent(new Event("hashchange"));
-        });
-        expect(panel.textContent).toContain("First era");
-        expect(panel.textContent).not.toContain("Relevé automatique");
-      },
-    );
-  },
-);
+domTest("deep hashes activate known sagas and unknown hashes preserve selection", async () => {
+  window.location.href = "https://variants.test/#saga-2";
+  expect(window.location.hash).toBe("#saga-2");
+  await withTabs(async (container) => {
+    const panel = container.querySelector('[role="tabpanel"]')!;
+    expect(panel.textContent).toContain("Power readings — Saga Namek");
+    await act(async () => {
+      window.location.hash = "#saga-999999";
+      window.dispatchEvent(new Event("hashchange"));
+    });
+    expect(panel.textContent).toContain("Power readings — Saga Namek");
+    await act(async () => {
+      window.location.hash = "#saga-1";
+      window.dispatchEvent(new Event("hashchange"));
+    });
+    expect(panel.textContent).toContain("Power readings — Saga Saiyan");
+    expect(panel.textContent).not.toContain("Relevé automatique");
+  });
+});

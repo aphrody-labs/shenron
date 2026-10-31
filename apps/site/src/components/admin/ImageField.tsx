@@ -15,6 +15,7 @@ import { api } from "@/lib/admin-api";
 import { assetUrl } from "@/lib/assets";
 import { ADMIN_IMAGE_ACCEPT, adminImageUploadError } from "@/lib/admin-image-upload";
 import { useAdminImageText } from "@/lib/admin-image-text";
+import { ImageCropDialog } from "@/components/admin/ImageCropDialog";
 
 interface Props {
   /** Valeur courante (chemin DB `./assets/...`, `/wiki/...` ou URL http). */
@@ -25,6 +26,7 @@ interface Props {
   /** Nom de colonne (pour l'a11y / placeholder). */
   column?: string;
   onUploadStateChange?: (uploading: boolean) => void;
+  cropAspect?: "square" | "portrait" | "landscape" | "wide";
 }
 
 interface GalleryFile {
@@ -46,6 +48,7 @@ export function ImageField({
   subdir = "uploads",
   column,
   onUploadStateChange,
+  cropAspect = "square",
 }: Props) {
   const t = useAdminImageText();
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -55,6 +58,7 @@ export function ImageField({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [galleryOpen, setGalleryOpen] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
   const preview = value ? assetUrl(value) : "";
 
   const upload = useCallback(
@@ -94,6 +98,19 @@ export function ImageField({
     [onChange, subdir, onUploadStateChange, t],
   );
 
+  const chooseImage = useCallback(
+    async (file: File) => {
+      const invalid = await adminImageUploadError(file);
+      if (invalid) {
+        setError(t(invalid));
+        return;
+      }
+      setError(null);
+      setPendingFile(file);
+    },
+    [t],
+  );
+
   const onDrop = useCallback(
     (e: DragEvent<HTMLDivElement>) => {
       e.preventDefault();
@@ -101,7 +118,7 @@ export function ImageField({
       if (busyRef.current) return;
       const file = e.dataTransfer.files?.[0];
       if (file) {
-        void upload(file);
+        void chooseImage(file);
         return;
       }
       // Un visuel peut aussi arriver depuis un navigateur, un DAM ou un tableur :
@@ -118,7 +135,7 @@ export function ImageField({
       }
       setError(t("dropError"));
     },
-    [onChange, upload, t],
+    [onChange, chooseImage, t],
   );
 
   const onPaste = useCallback(
@@ -127,7 +144,7 @@ export function ImageField({
       const file = Array.from(e.clipboardData.files).find((f) => f.type.startsWith("image/"));
       if (file) {
         e.preventDefault();
-        void upload(file);
+        void chooseImage(file);
         return;
       }
       const url =
@@ -139,11 +156,14 @@ export function ImageField({
         setError(null);
       }
     },
-    [onChange, upload],
+    [onChange, chooseImage],
   );
 
   return (
     <div className="space-y-2">
+      {cropAspect === "portrait" && (
+        <p className="text-xs leading-5 text-white/55">{t("portraitBaseHint")}</p>
+      )}
       {/* Zone glisser-déposer / coller / parcourir */}
       <div
         role="button"
@@ -214,7 +234,7 @@ export function ImageField({
           className="hidden"
           onChange={(e) => {
             const file = e.target.files?.[0];
-            if (file) void upload(file);
+            if (file) void chooseImage(file);
             e.target.value = "";
           }}
         />
@@ -279,6 +299,18 @@ export function ImageField({
             onChange(path);
             setError(null);
             setGalleryOpen(false);
+          }}
+        />
+      )}
+
+      {pendingFile && (
+        <ImageCropDialog
+          file={pendingFile}
+          defaultAspect={cropAspect}
+          onCancel={() => setPendingFile(null)}
+          onConfirm={(cropped) => {
+            setPendingFile(null);
+            void upload(cropped);
           }}
         />
       )}

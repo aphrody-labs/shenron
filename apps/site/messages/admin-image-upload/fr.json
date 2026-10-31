@@ -20,5 +20,23 @@
   "close": "Fermer",
   "none": "Aucune image trouvée.",
   "count": "{count} image(s).",
-  "filteredCount": "{shown} sur {total} affichées — affinez le filtre."
+  "filteredCount": "{shown} sur {total} affichées — affinez le filtre.",
+  "cropTitle": "Recadrer l’image",
+  "cropHelp": "Choisissez le format du cadre, puis déplacez et zoomez l’image pour ajuster son aperçu.",
+  "cropAspect": "Format du cadre",
+  "cropPreview": "Aperçu du recadrage",
+  "cropDragHint": "Faites glisser l’image dans le cadre pour choisir la zone visible.",
+  "cropGifNote": "Le GIF sera converti en image fixe WebP après le recadrage.",
+  "cropFailed": "Impossible de préparer cette image. Essayez un autre fichier.",
+  "cropAndUpload": "Recadrer et envoyer",
+  "portraitBaseHint": "Portrait principal en forme de base. Les images de transformation se gèrent séparément ; les cartes personnages utilisent le format 3:4.",
+  "zoom": "Zoom",
+  "cancel": "Annuler",
+  "aspect": {
+    "square": "Carré · 1:1",
+    "portrait": "Portrait · 3:4",
+    "landscape": "Paysage · 4:3",
+    "wide": "Bandeau · 16:9",
+    "original": "Original"
+  }
 }

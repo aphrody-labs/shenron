@@ -9,12 +9,18 @@
     "db_character_continuities": "Character timelines",
     "db_character_variant_battles": "Battles by version",
     "db_character_variant_technique_uses": "Technique uses",
+    "db_character_variant_appearances": "Version and saga photos",
+    "db_character_variant_staff_credits": "Saga animation credits",
+    "db_character_variant_voice_actors": "Saga voice cast",
     "db_battles": "Battles"
   },
   "descriptions": {
     "db_sagas": "Create or edit a saga here, then link it to a character version.",
     "db_character_variants": "Add one row per character, version, and saga. Linked sagas appear in the second selector on the character wiki page.",
-    "db_character_variant_technique_uses": "Add one row for each cited use of a technique in a saga. The precise source and chronology appear on the character page."
+    "db_character_variant_technique_uses": "Add one row for each cited use of a technique in a saga. The precise source and chronology appear on the character page.",
+    "db_character_variant_appearances": "Add one row per supplementary photo. Each row creates a square preview button on the portrait for the selected version and saga. A transformation link is optional; the photo, alternative text, source and order remain editable here.",
+    "db_character_variant_staff_credits": "One card per episode: featured scene, animation supervisor, credited animators, illustration, and sources.",
+    "db_character_variant_voice_actors": "Link performers to this saga. Portraits, names, and profiles are edited in the voice cast catalog."
   },
   "sourceTypes": {
     "manga": "Manga",
@@ -26,9 +32,101 @@
   "fields": {
     "variantId": "Character version and saga",
     "techniqueId": "Technique",
+    "transformationId": "Related transformation (optional)",
     "sourceType": "Source type",
     "sourceLabel": "Precise reference",
     "sourceUrl": "Source URL",
-    "note": "Usage detail"
+    "note": "Usage detail",
+    "image": "Supplementary photo",
+    "altText": "Photo alternative text",
+    "sortOrder": "Preview order",
+    "visible": "Show on portrait",
+    "voiceActorId": "Performer from catalog",
+    "roleNotes": "Role or dubbing note",
+    "episodeNumber": "Episode number",
+    "sceneTitle": "Featured fight or scene",
+    "animationSupervisor": "Animation supervisor",
+    "supervisorSlug": "DBFR profile slug",
+    "keyAnimators": "Credited animators and studios",
+    "episodeUrl": "Episode page",
+    "episodeImage": "Episode illustration"
+  },
+  "characterEditor": {
+    "eyebrow": "Wiki editing guide",
+    "title": "Edit a character page",
+    "intro": "Follow the steps: choose a character and version, select a saga, then edit its content without losing your place.",
+    "stepsLabel": "Character editing steps",
+    "steps": {
+      "chooseVersion": "1 · Character and version",
+      "chooseSaga": "2 · Saga",
+      "editContent": "3 · Content to edit"
+    },
+    "stepCounter": "Step {current} of {total}",
+    "character": "Main character",
+    "version": "Version / continuity",
+    "saga": "Saga for this version",
+    "selectCharacter": "Choose a character…",
+    "selectSaga": "Choose a saga…",
+    "mainVersion": "main page",
+    "versionHelp": "The version determines which sagas, relationships, and content are shown next.",
+    "manageVersions": "Manage linked versions",
+    "loadVersionsError": "Linked versions could not be loaded.",
+    "selectedVersion": "Selected version: {version}",
+    "noSagas": "No saga is linked to this version yet. Add one below first.",
+    "loadSagasError": "Sagas for this version could not be loaded.",
+    "createSaga": "Manage the saga catalog",
+    "addSagaToVersion": "Link a saga to this version",
+    "hidden": "hidden",
+    "continue": "Continue",
+    "back": "Back",
+    "changeSaga": "Change saga",
+    "chooseSagaFirst": "Choose a saga before opening its content.",
+    "backToSaga": "Choose a saga",
+    "editSection": "Open step {number}",
+    "generalProfileHelp": "General character details are shared across sagas.",
+    "editGeneralProfile": "Edit general page",
+    "workflowContext": "Context kept while editing",
+    "selectedSaga": "Selected saga",
+    "returnToSteps": "Back to the guide",
+    "sections": {
+      "story": {
+        "title": "Story, appearance, and official data",
+        "description": "Form, outfit, age, role, affiliation, power, summary, highlights, and the main image for this saga."
+      },
+      "relations": {
+        "title": "Family, friends, and enemies",
+        "description": "Edit relationships for this version and saga, including category, description, and order."
+      },
+      "formsAndTechniques": {
+        "title": "Available transformations and techniques",
+        "description": "Choose the forms and techniques the character has reached at this point in the story."
+      },
+      "techniqueUses": {
+        "title": "Technique uses and sources",
+        "description": "Record techniques used in this saga, their order, and their precise sources."
+      },
+      "battles": {
+        "title": "Battles in chronological order",
+        "description": "Assign battles to this saga and set their order on the character page."
+      },
+      "appearances": {
+        "title": "Photos and alternate appearances",
+        "description": "Add transformation thumbnails. Each visible photo creates a button on this saga’s portrait."
+      },
+      "additionalInformation": {
+        "title": "Anecdotes, name origin, and behind the scenes",
+        "description": "Write saga-specific additional information in the Markdown article. Level-two headings become sections, supporting text, images, sources, and internal links.",
+        "articleField": "Markdown article for this saga",
+        "articleHelp": "Use one ## heading per section (Anecdotes, Name origin, and so on). Add images with ![description](URL), source links, and links to DBFR pages."
+      },
+      "voiceActors": {
+        "title": "Voice cast for this saga",
+        "description": "Link performers from the catalog, add a role note, then set order and visibility. Edit portraits and biographies in the voice cast catalog."
+      },
+      "animationCredits": {
+        "title": "Fight scene animation credits",
+        "description": "Add one card per episode: scene, supervisor with DBFR profile link, animation team, crop-ready illustration, and source links."
+      }
+    }
   }
 }

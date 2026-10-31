@@ -9,12 +9,18 @@
     "db_character_continuities": "Timelines des personnages",
     "db_character_variant_battles": "Combats par version",
     "db_character_variant_technique_uses": "Utilisations des techniques",
+    "db_character_variant_appearances": "Photos des versions et sagas",
+    "db_character_variant_staff_credits": "Crédits d’animation par saga",
+    "db_character_variant_voice_actors": "Interprètes par saga",
     "db_battles": "Combats"
   },
   "descriptions": {
     "db_sagas": "Créez ou modifiez une saga. Elle pourra ensuite être associée à une version de personnage.",
     "db_character_variants": "Ajoutez une ligne par personnage, version et saga. Les sagas choisies alimentent le second menu de la fiche wiki.",
-    "db_character_variant_technique_uses": "Ajoutez une ligne par utilisation attestée d'une technique dans une saga. La source précise et sa chronologie alimentent la fiche personnage."
+    "db_character_variant_technique_uses": "Ajoutez une ligne par utilisation attestée d'une technique dans une saga. La source précise et sa chronologie alimentent la fiche personnage.",
+    "db_character_variant_appearances": "Ajoutez une ligne par photo supplémentaire. Elle crée un bouton aperçu carré sur le portrait de la version et de la saga choisies. La transformation est facultative; chaque image, son texte alternatif, sa source et son ordre restent modifiables ici.",
+    "db_character_variant_staff_credits": "Une carte par épisode : scène mise en avant, supervision, animateurs crédités, illustration et sources.",
+    "db_character_variant_voice_actors": "Associez les interprètes à cette saga. Les portraits, noms et fiches se modifient dans le catalogue du casting vocal."
   },
   "sourceTypes": {
     "manga": "Manga",
@@ -26,9 +32,101 @@
   "fields": {
     "variantId": "Version et saga",
     "techniqueId": "Technique",
+    "transformationId": "Transformation associée (facultative)",
     "sourceType": "Type de source",
     "sourceLabel": "Référence précise",
     "sourceUrl": "URL de la source",
-    "note": "Détail de l'utilisation"
+    "note": "Détail de l'utilisation",
+    "image": "Photo supplémentaire",
+    "altText": "Texte alternatif de la photo",
+    "sortOrder": "Ordre des aperçus",
+    "visible": "Afficher sur le portrait",
+    "voiceActorId": "Interprète du catalogue",
+    "roleNotes": "Rôle ou précision du doublage",
+    "episodeNumber": "Numéro d’épisode",
+    "sceneTitle": "Combat ou scène illustrée",
+    "animationSupervisor": "Superviseur de l’animation",
+    "supervisorSlug": "Slug de sa fiche DBFR",
+    "keyAnimators": "Animateurs et studios crédités",
+    "episodeUrl": "Fiche de l’épisode",
+    "episodeImage": "Illustration de l’épisode"
+  },
+  "characterEditor": {
+    "eyebrow": "Assistant d’édition du wiki",
+    "title": "Modifier une fiche personnage",
+    "intro": "Avancez dans l’ordre : choisissez le personnage et sa version, sélectionnez une saga, puis éditez ses informations sans perdre ce contexte.",
+    "stepsLabel": "Étapes de l’édition personnage",
+    "steps": {
+      "chooseVersion": "1 · Personnage et version",
+      "chooseSaga": "2 · Saga",
+      "editContent": "3 · Contenus à éditer"
+    },
+    "stepCounter": "Étape {current} sur {total}",
+    "character": "Personnage principal",
+    "version": "Version / continuité",
+    "saga": "Saga de cette version",
+    "selectCharacter": "Choisir un personnage…",
+    "selectSaga": "Choisir une saga…",
+    "mainVersion": "fiche principale",
+    "versionHelp": "La version détermine les sagas, les relations et les contenus proposés ensuite.",
+    "manageVersions": "Gérer les versions liées",
+    "loadVersionsError": "Les versions liées n’ont pas pu être chargées.",
+    "selectedVersion": "Version sélectionnée : {version}",
+    "noSagas": "Aucune saga n’est encore associée à cette version. Ajoutez d’abord une saga ci-dessous.",
+    "loadSagasError": "Les sagas de cette version n’ont pas pu être chargées.",
+    "createSaga": "Gérer le catalogue des sagas",
+    "addSagaToVersion": "Associer une saga à cette version",
+    "hidden": "masquée",
+    "continue": "Continuer",
+    "back": "Retour",
+    "changeSaga": "Changer de saga",
+    "chooseSagaFirst": "Choisissez une saga avant d’ouvrir ses contenus.",
+    "backToSaga": "Choisir une saga",
+    "editSection": "Ouvrir l’étape {number}",
+    "generalProfileHelp": "Les données générales du personnage sont communes à ses sagas.",
+    "editGeneralProfile": "Éditer la fiche générale",
+    "workflowContext": "Contexte conservé pendant l’édition",
+    "selectedSaga": "Saga sélectionnée",
+    "returnToSteps": "Retour au parcours",
+    "sections": {
+      "story": {
+        "title": "Histoire, apparence et données officielles",
+        "description": "Forme, tenue, âge, rôle, affiliation, puissance, résumé, faits marquants et image principale de cette saga."
+      },
+      "relations": {
+        "title": "Famille, amis et ennemis",
+        "description": "Gérez les relations propres à cette version et cette saga, leur catégorie, leur description et leur ordre."
+      },
+      "formsAndTechniques": {
+        "title": "Transformations et techniques disponibles",
+        "description": "Choisissez les formes et techniques que le personnage possède à cette étape de son parcours."
+      },
+      "techniqueUses": {
+        "title": "Utilisation des techniques et sources",
+        "description": "Précisez les techniques réellement utilisées dans la saga, leur ordre et leur source exacte."
+      },
+      "battles": {
+        "title": "Combats dans l’ordre chronologique",
+        "description": "Associez les combats à cette saga et réglez leur ordre d’apparition sur la fiche."
+      },
+      "appearances": {
+        "title": "Photos et apparences alternatives",
+        "description": "Ajoutez les vignettes de transformation. Chaque photo visible crée un bouton sur le portrait de cette saga."
+      },
+      "additionalInformation": {
+        "title": "Anecdotes, origine du nom et coulisses",
+        "description": "Rédigez les informations complémentaires dans l’article Markdown propre à cette saga. Les titres de niveau 2 deviennent des rubriques, avec texte, images, sources et liens internes.",
+        "articleField": "Article Markdown de cette saga",
+        "articleHelp": "Utilisez un titre ## par rubrique (Anecdotes, Origine du nom, etc.). Ajoutez des images avec ![description](URL), des sources et des liens vers les fiches DBFR."
+      },
+      "voiceActors": {
+        "title": "Doubleurs et seiyū de cette saga",
+        "description": "Associez les interprètes depuis le catalogue, ajoutez une précision de rôle, puis réglez l’ordre et la visibilité. Les images et biographies se modifient dans le catalogue du casting vocal."
+      },
+      "animationCredits": {
+        "title": "Crédits des scènes de combat",
+        "description": "Ajoutez une carte par épisode : scène, superviseur avec lien DBFR, équipe d’animation, illustration recadrable et liens vers les sources."
+      }
+    }
   }
 }

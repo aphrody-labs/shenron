@@ -1,7 +1,7 @@
 {
   "journal": {
-    "entries": 22,
-    "files": 34,
+    "entries": 24,
+    "files": 36,
     "journaled": [
       "0000_dark_johnny_blaze",
       "0001_natural_switch",
@@ -24,7 +24,9 @@
       "0031_character_continuities",
       "0032_character_variant_content",
       "0033_character_variant_battles",
-      "0034_character_variant_technique_uses"
+      "0034_character_variant_technique_uses",
+      "0035_character_variant_appearances",
+      "0036_character_variant_supplements"
     ],
     "unjournaled": [
       "0007_post_cms",
@@ -173,6 +175,18 @@
         "tag": "0034_character_variant_technique_uses",
         "when": 1793464000000,
         "breakpoints": true
+      },
+      {
+        "idx": 22,
+        "tag": "0035_character_variant_appearances",
+        "when": 1793465000000,
+        "breakpoints": true
+      },
+      {
+        "idx": 23,
+        "tag": "0036_character_variant_supplements",
+        "when": 1793481706354,
+        "breakpoints": true
       }
     ]
   },
@@ -221,7 +235,9 @@
     "0031_character_continuities",
     "0032_character_variant_content",
     "0033_character_variant_battles",
-    "0034_character_variant_technique_uses"
+    "0034_character_variant_technique_uses",
+    "0035_character_variant_appearances",
+    "0036_character_variant_supplements"
   ],
   "hashes": {
     "0000_dark_johnny_blaze": "4acfbb67d895cfc6d575f03198d0f353e688c5c918bc7c1f29e82de7707b5636",
@@ -257,6 +273,8 @@
     "0031_character_continuities": "927452de40aa9afae34babfcf9fa65b6e142b6b9d7eb046c9ffdef777dc1bea1",
     "0032_character_variant_content": "328ff407ebdb80add599954e8dcf658bcad12ebc5718880752e051f56d461fe0",
     "0033_character_variant_battles": "8af7884a900b138b03bf7c86a01d9cc66323b2fc2b3421a7f277d9806bc89899",
-    "0034_character_variant_technique_uses": "2c99df95ff303e186a7402b7ff98219ab2c526814dd6cc0480e6c3bc2c40939b"
+    "0034_character_variant_technique_uses": "2c99df95ff303e186a7402b7ff98219ab2c526814dd6cc0480e6c3bc2c40939b",
+    "0035_character_variant_appearances": "ea9e5704adaff6b2d455679706156db4d6f8de068461b4a8cb6c59030d1bcacc",
+    "0036_character_variant_supplements": "ffa83d37ba0b0a4f410893ab8502ce2986343ade616dea998ad0b7968d450225"
   }
 }

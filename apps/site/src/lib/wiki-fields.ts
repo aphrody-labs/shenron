@@ -29,7 +29,9 @@ export function uploadSubdir(table: string): string {
 
 /** Colonnes au contenu long → rendu en <textarea> (markdown). */
 export function isLongTextColumn(col: string): boolean {
-  return /desc|synops|^body$|^article$|summary|bio|overview|attribution|content|^note$/i.test(col);
+  return /desc|synops|^body$|^article$|summary|bio|overview|attribution|content|^note$|keyAnimators|animationSupervisor|sceneTitle/i.test(
+    col,
+  );
 }
 
 /**
@@ -73,6 +75,8 @@ const FK_TARGET: Record<string, { table: string; pk: string }> = {
   characterId: { table: "db_characters", pk: "id" },
   relatedCharacterId: { table: "db_characters", pk: "id" },
   variantId: { table: "db_character_variants", pk: "id" },
+  voiceActorId: { table: "db_voice_actors", pk: "id" },
+  transformationId: { table: "db_transformations", pk: "id" },
   versionCharacterId: { table: "db_characters", pk: "id" },
   creatorId: { table: "db_characters", pk: "id" },
   sagaId: { table: "db_sagas", pk: "id" },

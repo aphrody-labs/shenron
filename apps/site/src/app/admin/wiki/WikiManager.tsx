@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useWikiAdminText as useT } from "@/lib/wiki-admin-text";
 import { useLangue } from "@/lib/i18n/client";
+import { useAdminCatalogText } from "@/lib/admin-catalog-text";
 import { filterWikiBranches, wikiSearchMatches } from "@/lib/wiki-manager-explorer";
 import {
   Document,
@@ -239,6 +240,7 @@ export function WikiManager({
   recent?: RevisionLite[];
 }) {
   const t = useT();
+  const catalogText = useAdminCatalogText();
   const { locale } = useLangue();
   const [q, setQ] = useState("");
 
@@ -277,6 +279,13 @@ export function WikiManager({
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
+          <Link
+            href="/admin/wiki/characters"
+            className="dbz-button inline-flex min-h-11 min-w-11 items-center gap-2 px-3"
+          >
+            <Document className="h-4 w-4" />
+            {catalogText("characterEditor.title")}
+          </Link>
           <Link
             href="/admin/wiki/todo"
             className="dbz-button-ghost inline-flex min-h-11 min-w-11 items-center gap-2 px-2"

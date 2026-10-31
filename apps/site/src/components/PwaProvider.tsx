@@ -74,6 +74,18 @@ export function PwaProvider({ children }: { children: ReactNode }) {
       setState((current) => ({ ...current, installed: true }));
       return;
     }
+    // The offline worker can serve stale App Router chunks during local HMR and
+    // make Next replace a page repeatedly. Keep PWA caching out of development
+    // and remove any worker previously registered on this local origin.
+    if (process.env.NODE_ENV === "development") {
+      if ("serviceWorker" in navigator) {
+        void navigator.serviceWorker
+          .getRegistrations()
+          .then((registrations) => Promise.all(registrations.map((item) => item.unregister())))
+          .catch(() => {});
+      }
+      return;
+    }
     if (!window.isSecureContext || !("serviceWorker" in navigator)) return;
     let disposed = false;
     let registration: ServiceWorkerRegistration | undefined;

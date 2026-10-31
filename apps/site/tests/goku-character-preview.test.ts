@@ -60,6 +60,7 @@ describe("Goku visual preview", () => {
       "gokuCc",
       "goku4d",
       "gokuJumpForce",
+      "gokuSummary",
     ]);
     expect(choices.map(({ slug }) => slug)).toEqual([
       "goku-db",
@@ -70,6 +71,7 @@ describe("Goku visual preview", () => {
       "goku-cc",
       "goku-4d",
       "goku-jumpforce",
+      "goku-summary",
     ]);
     expect(resolveGokuPreviewTimeline("unknown")).toBe("goku-db");
   });
@@ -112,6 +114,5 @@ describe("Goku visual preview", () => {
     expect(getGokuPreviewRelationSlugs(xenoArc.slug)).not.toEqual(
       getGokuPreviewRelationSlugs(majinBuu.slug),
     );
-
   });
 });

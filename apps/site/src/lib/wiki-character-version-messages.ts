@@ -23,6 +23,8 @@ export interface CharacterVersionMessages {
   previewPilaf?: string;
   previewPiccoloJunior?: string;
   previewSaiyan?: string;
+  previewFreezer?: string;
+  previewCell?: string;
   previewMajinBuu?: string;
   previewBattleOfGods?: string;
   previewTournamentOfPower?: string;
@@ -42,6 +44,36 @@ export interface CharacterVersionMessages {
   previewPiccoloJuniorStory?: string;
   previewSaiyanStory?: string;
   previewMajinBuuStory?: string;
+  previewBuuStoryBeforeYakon?: string;
+  previewBuuStoryAfterYakon?: string;
+  previewBuuStoryAfterVegeta?: string;
+  previewBuuStoryBeforeKidBuu?: string;
+  previewBuuStoryAfterKidBuu?: string;
+  previewBuuAnecdoteOneTitle?: string;
+  previewBuuAnecdoteOne?: string;
+  previewBuuAnecdoteTwoTitle?: string;
+  previewBuuAnecdoteTwo?: string;
+  previewBuuAnecdoteThreeTitle?: string;
+  previewBuuAnecdoteThree?: string;
+  previewBuuNameOriginTitle?: string;
+  previewBuuNameOrigin?: string;
+  previewNameOriginSource?: string;
+  previewAnimationCredits?: string;
+  previewCreditsScope?: string;
+  previewCreditYakon?: string;
+  previewCreditVegeta?: string;
+  previewCreditBuu?: string;
+  previewCreditGenkiDama?: string;
+  previewEpisodeLabel?: string;
+  previewAnimationSupervisor?: string;
+  previewKeyAnimation?: string;
+  previewCreditArtAlt?: string;
+  previewOfficialEpisodeSource?: string;
+  previewCreditsSource?: string;
+  previewBuuDemoNotice?: string;
+  previewBattleLocation?: string;
+  previewBattleOutcome?: string;
+  previewBattleImageAlt?: string;
   previewBattleOfGodsStory?: string;
   previewTournamentOfPowerStory?: string;
   previewBabyStory?: string;
@@ -59,7 +91,11 @@ export interface CharacterVersionMessages {
   frenchVoice: string;
   japaneseVoice: string;
   powersAndForms: string;
+  abilitiesIntro: string;
+  officialData: string;
   anecdotes: string;
+  additionalInformation: string;
+  additionalInformationIntro: string;
   tabsLabel: string;
   form: string;
   age: string;
@@ -81,10 +117,13 @@ export interface CharacterVersionMessages {
   transformationsAria: string;
   transformations: string;
   noTransformations: string;
+  firstObtainedIn: string;
   appearance: string;
   sagaAppearance: string;
   techniquesAria: string;
   techniques: string;
+  introducedThisSaga: string;
+  knownFromEarlierSaga: string;
   noTechniques: string;
   techniqueUsesMissing: string;
   knownButUnusedTechniques: string;
@@ -113,6 +152,7 @@ export type CharacterSagaMessages = Pick<
   CharacterVersionMessages,
   | "intro"
   | "overview"
+  | "sagaHistoryHeading"
   | "form"
   | "age"
   | "years"
@@ -133,8 +173,7 @@ export type CharacterSagaMessages = Pick<
   | "transformationsAria"
   | "transformations"
   | "noTransformations"
-  | "appearance"
-  | "sagaAppearance"
+  | "firstObtainedIn"
   | "techniquesAria"
   | "techniques"
   | "noTechniques"
@@ -146,6 +185,10 @@ export type CharacterSagaMessages = Pick<
   | "autoSynopsis"
   | "autoManga"
   | "autoBoth"
+  | "powersAndForms"
+  | "abilitiesIntro"
+  | "introducedThisSaga"
+  | "knownFromEarlierSaga"
 >;
 
 const dictionaries = {

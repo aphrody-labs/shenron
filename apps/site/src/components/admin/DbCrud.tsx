@@ -29,13 +29,27 @@ interface TableSpec {
   description: string | null;
 }
 
-type AdminTechniqueUseFieldKey =
+type AdminWikiFieldKey =
   | "fields.variantId"
   | "fields.techniqueId"
+  | "fields.transformationId"
   | "fields.sourceType"
   | "fields.sourceLabel"
   | "fields.sourceUrl"
-  | "fields.note";
+  | "fields.note"
+  | "fields.image"
+  | "fields.altText"
+  | "fields.sortOrder"
+  | "fields.visible"
+  | "fields.voiceActorId"
+  | "fields.roleNotes"
+  | "fields.episodeNumber"
+  | "fields.sceneTitle"
+  | "fields.animationSupervisor"
+  | "fields.supervisorSlug"
+  | "fields.keyAnimators"
+  | "fields.episodeUrl"
+  | "fields.episodeImage";
 
 /**
  * Client + chemin CRUD pour une table :
@@ -359,9 +373,14 @@ function FieldModal({
             {columns.map((c) => (
               <div key={c}>
                 <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-dbz-blue-light">
-                  {table === "db_character_variant_technique_uses"
-                    ? adminCatalogText(`fields.${c}` as AdminTechniqueUseFieldKey)
-                    : colLabel(c)}
+                  {table === "db_character_variant_staff_credits" && c === "image"
+                    ? adminCatalogText("fields.episodeImage")
+                    : table === "db_character_variant_technique_uses" ||
+                        table === "db_character_variant_appearances" ||
+                        table === "db_character_variant_staff_credits" ||
+                        table === "db_character_variant_voice_actors"
+                      ? adminCatalogText(`fields.${c}` as AdminWikiFieldKey)
+                      : colLabel(c)}
                   <span className="ml-2 font-mono text-white/25 normal-case font-normal">{c}</span>
                 </label>
                 <SmartField

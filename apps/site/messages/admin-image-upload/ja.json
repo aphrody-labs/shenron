@@ -20,5 +20,23 @@
   "close": "閉じる",
   "none": "画像が見つかりません。",
   "count": "画像{count}件。",
-  "filteredCount": "{total}件中{shown}件を表示。条件を絞り込んでください。"
+  "filteredCount": "{total}件中{shown}件を表示。条件を絞り込んでください。",
+  "cropTitle": "画像をトリミング",
+  "cropHelp": "フレームの形を選び、画像を移動・拡大して表示範囲を調整してください。",
+  "cropAspect": "フレームの形",
+  "cropPreview": "トリミングのプレビュー",
+  "cropDragHint": "フレーム内で画像をドラッグして表示範囲を選択します。",
+  "cropGifNote": "トリミング後、GIFは静止WebP画像に変換されます。",
+  "cropFailed": "画像を準備できませんでした。別のファイルをお試しください。",
+  "cropAndUpload": "トリミングしてアップロード",
+  "portraitBaseHint": "基本形態のメイン画像です。変身画像は別に管理します。キャラクターカードの比率は3:4です。",
+  "zoom": "ズーム",
+  "cancel": "キャンセル",
+  "aspect": {
+    "square": "正方形 · 1:1",
+    "portrait": "縦 · 3:4",
+    "landscape": "横 · 4:3",
+    "wide": "バナー · 16:9",
+    "original": "元の比率"
+  }
 }
