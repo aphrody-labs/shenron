@@ -3,10 +3,15 @@
   "unavailable": "The bot is unreachable. The site’s editorial tables remain available.",
   "intro": "Wiki content is edited through the site APIs. Other tables depend on the bot; read-only tables cannot be edited.",
   "tables": {
-    "db_character_variants": "Saga versions",
+    "db_sagas": "Wiki sagas",
+    "db_character_variants": "Character version sagas",
     "db_character_relations": "Character relationships",
     "db_character_continuities": "Character timelines",
     "db_character_variant_battles": "Battles by version",
     "db_battles": "Battles"
+  },
+  "descriptions": {
+    "db_sagas": "Create or edit a saga here, then link it to a character version.",
+    "db_character_variants": "Add one row per character, version, and saga. Linked sagas appear in the second selector on the character wiki page."
   }
 }

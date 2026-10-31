@@ -3,10 +3,15 @@
   "unavailable": "ボットに接続できません。サイトの編集テーブルは引き続き利用できます。",
   "intro": "WikiはサイトのAPIで編集します。他のテーブルはボットを利用します。読み取り専用テーブルは編集できません。",
   "tables": {
-    "db_character_variants": "サーガ別バージョン",
+    "db_sagas": "Wikiサーガ",
+    "db_character_variants": "キャラクターバージョン別サーガ",
     "db_character_relations": "キャラクターの関係",
     "db_character_continuities": "キャラクターのタイムライン",
     "db_character_variant_battles": "バージョン別の戦闘",
     "db_battles": "戦闘"
+  },
+  "descriptions": {
+    "db_sagas": "ここでサーガを作成・編集し、キャラクターバージョンに紐付けます。",
+    "db_character_variants": "キャラクター・バージョン・サーガごとに1行追加します。紐付けたサーガはWikiページの2番目の選択欄に表示されます。"
   }
 }

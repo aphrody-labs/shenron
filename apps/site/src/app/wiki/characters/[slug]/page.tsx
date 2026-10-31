@@ -41,6 +41,7 @@ import {
   getGokuPreviewTimelines,
   getGokuPreviewRelationSlugs,
   getGokuPreviewBattles,
+  getGokuPreviewSummaryArticle,
   resolveGokuPreviewTimeline,
 } from "@/lib/goku-character-preview";
 import { CHARACTER_CANONICAL_SLUGS, resolveCharacterParam } from "@/lib/wiki-slugs";
@@ -206,6 +207,31 @@ export default async function CharacterPage({
   const previewChoices = isGokuMainCharacter
     ? getGokuPreviewTimelines(versionT, character.name)
     : [];
+  const liveTimelineChoices =
+    continuities.length > 0
+      ? continuities.map(({ id, name, slug, label, isMain }) => ({
+          id,
+          name,
+          slug,
+          label,
+          isMain,
+        }))
+      : character.versions.map(({ id, name, slug }) => ({ id, name, slug }));
+  const versionChoices = isGokuMainCharacter
+    ? [
+        ...liveTimelineChoices,
+        {
+          id: -9000,
+          name: versionT("gokuSummary"),
+          label: versionT("gokuSummary"),
+          slug: "goku-summary",
+          isMain: false,
+        },
+      ]
+    : liveTimelineChoices;
+  const isSummaryVersion =
+    isGokuMainCharacter &&
+    (preview ? previewTimeline === "goku-summary" : requestedTimeline === "goku-summary");
   const variants =
     preview && isGokuMainCharacter
       ? createGokuPreviewVariants(
@@ -216,15 +242,47 @@ export default async function CharacterPage({
           versionT,
         )
       : loadedVariants;
-  const sagaVariants = variants;
+  const sagaVariants = isSummaryVersion ? [] : variants;
   const requestedSaga = Array.isArray(query.saga) ? query.saga[0] : query.saga;
   const activeVariant =
     sagaVariants.find((variant) => variant.slug === requestedSaga) ?? sagaVariants[0] ?? null;
-  const variantBattles = activeVariant
+  const summaryTimelines =
+    isSummaryVersion && !preview
+      ? await Promise.all(
+          continuities.map(async (continuity) => ({
+            ...continuity,
+            sagas: await getShenronCharacterVariants(continuity.id),
+          })),
+        )
+      : [];
+  const summaryArticle = isSummaryVersion
     ? preview
-      ? getGokuPreviewBattles(activeVariant.slug)
-      : await getShenronCharacterVariantBattles(activeVariant.id)
-    : (character.battles ?? []);
+      ? getGokuPreviewSummaryArticle(versionT)
+      : [
+          `## ${versionT("sagaHistoryHeading")}`,
+          versionT("summaryIntro"),
+          ...summaryTimelines.map((timeline) => {
+            const heading = `### ${timeline.label || timeline.name}`;
+            const description = timeline.description?.trim() ?? "";
+            const sagaRows = timeline.sagas.map((saga) => {
+              const url = `/wiki/characters/${timeline.slug}?saga=${encodeURIComponent(saga.slug)}`;
+              const title = `${saga.sagaSeries ? `${saga.sagaSeries} · ` : ""}${saga.sagaName}`;
+              return `- [${title}](${url})${saga.summary ? ` — ${saga.summary.replace(/\s+/g, " ").trim()}` : ""}`;
+            });
+            return [heading, description, `#### ${versionT("summarySagasHeading")}`, ...sagaRows]
+              .filter(Boolean)
+              .join("\n\n");
+          }),
+        ].join("\n\n")
+    : null;
+  const variantBattles =
+    isSummaryVersion && preview
+      ? getGokuPreviewBattles("goku-summary")
+      : activeVariant
+        ? preview
+          ? getGokuPreviewBattles(activeVariant.slug)
+          : await getShenronCharacterVariantBattles(activeVariant.id)
+        : (character.battles ?? []);
   const activeSagaVariants = activeVariant ? [activeVariant] : [];
   const relationRows = preview
     ? []
@@ -243,9 +301,11 @@ export default async function CharacterPage({
   const heroImage =
     sagaImage ?? pickBestImage([character.image, character.portraitXv2]) ?? character.image;
   const pageCharacterName =
-    (preview && isGokuMainCharacter
-      ? previewChoices.find((choice) => choice.slug === previewTimeline)?.name
-      : null) ??
+    (isSummaryVersion
+      ? versionT("gokuSummary")
+      : preview && isGokuMainCharacter
+        ? previewChoices.find((choice) => choice.slug === previewTimeline)?.name
+        : null) ??
     activeVariant?.displayName ??
     character.name;
   const pageCharacterNameJa = activeVariant?.nameJa ?? character.nameJa;
@@ -278,15 +338,22 @@ export default async function CharacterPage({
   const contentPanels = await buildWikiContentPanels({
     entityType: "character",
     entityId: character.id,
-    article: activeVariant
-      ? activeVariant.article?.trim() ||
-        `## ${versionT("sagaHistoryHeading")}\n\n${versionT("sagaHistoryMissing")}`
-      : character.article,
-    description: activeVariant ? activeVariant.summary : character.description,
-    preferArticle: Boolean(activeVariant),
-    articleTarget: activeVariant
-      ? { table: "db_character_variants", rowId: activeVariant.id }
-      : undefined,
+    article: isSummaryVersion
+      ? (summaryArticle ?? character.article)
+      : activeVariant
+        ? activeVariant.article?.trim() ||
+          `## ${versionT("sagaHistoryHeading")}\n\n${versionT("sagaHistoryMissing")}`
+        : character.article,
+    description: isSummaryVersion
+      ? null
+      : activeVariant
+        ? activeVariant.summary
+        : character.description,
+    preferArticle: isSummaryVersion || Boolean(activeVariant),
+    articleTarget:
+      !isSummaryVersion && activeVariant
+        ? { table: "db_character_variants", rowId: activeVariant.id }
+        : undefined,
   });
 
   // Galeries relationnelles (vignettes de transformations, fiches techniques).
@@ -794,20 +861,12 @@ export default async function CharacterPage({
 
       <CharacterPageSelectors
         character={{ id: character.id, name: character.name, slug: character.slug }}
-        versions={
-          continuities.length > 0
-            ? continuities.map(({ id, name, slug, label, isMain }) => ({
-                id,
-                name,
-                slug,
-                label,
-                isMain,
-              }))
-            : character.versions.map(({ id, name, slug }) => ({ id, name, slug }))
-        }
+        versions={versionChoices}
         previewChoices={previewChoices}
         variants={sagaVariants}
-        selectedTimelineSlug={preview ? previewTimeline : character.slug}
+        selectedTimelineSlug={
+          isSummaryVersion ? "goku-summary" : preview ? previewTimeline : character.slug
+        }
         selectedSagaSlug={activeVariant?.slug ?? null}
         preview={preview}
         labels={{

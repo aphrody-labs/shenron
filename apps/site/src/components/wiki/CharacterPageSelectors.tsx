@@ -12,6 +12,8 @@ type CharacterChoice = {
   series?: string;
 };
 
+const SUMMARY_VERSION_SLUG = "goku-summary";
+
 /** Selects a character timeline, then a saga-specific state in that timeline. */
 export function CharacterPageSelectors({
   character,
@@ -65,7 +67,9 @@ export function CharacterPageSelectors({
               (version) => version.slug === event.currentTarget.value,
             );
             if (!target) return;
-            if (preview) {
+            if (target.slug === SUMMARY_VERSION_SLUG) {
+              router.replace(`${pathname}?timeline=${SUMMARY_VERSION_SLUG}`, { scroll: false });
+            } else if (preview) {
               const query = new URLSearchParams({ timeline: target.slug });
               router.replace(`${pathname}?${query}`, { scroll: false });
             } else if (target.slug !== selectedTimelineSlug) {

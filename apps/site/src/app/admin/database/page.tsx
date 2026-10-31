@@ -72,11 +72,16 @@ export default function DatabasePage() {
 
   const tables = mergeAdminTableCatalog(data?.tables);
   const localizedWikiTables: Record<string, string> = {
+    db_sagas: translate("tables.db_sagas"),
     db_character_variants: translate("tables.db_character_variants"),
     db_character_relations: translate("tables.db_character_relations"),
     db_character_continuities: translate("tables.db_character_continuities"),
     db_character_variant_battles: translate("tables.db_character_variant_battles"),
     db_battles: translate("tables.db_battles"),
+  };
+  const localizedWikiDescriptions: Record<string, string> = {
+    db_sagas: translate("descriptions.db_sagas"),
+    db_character_variants: translate("descriptions.db_character_variants"),
   };
 
   // Regrouper par catégorie
@@ -119,6 +124,7 @@ export default function DatabasePage() {
               {groups[groupName].map((t) => {
                 const meta = TABLE_LABELS[t.name];
                 const label = localizedWikiTables[t.name] ?? meta?.label ?? t.name;
+                const description = localizedWikiDescriptions[t.name] ?? t.description;
                 return (
                   <button
                     key={t.name}
@@ -139,7 +145,7 @@ export default function DatabasePage() {
                         </span>
                       )}
                     </div>
-                    {t.description && <p className="text-xs text-white/50 mb-2">{t.description}</p>}
+                    {description && <p className="text-xs text-white/50 mb-2">{description}</p>}
                     <div className="flex flex-wrap gap-2 text-[10px]">
                       <span className="badge border-dbz-border/60 text-white/50">
                         <code className="font-mono">{t.name}</code>

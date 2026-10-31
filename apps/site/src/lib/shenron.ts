@@ -273,6 +273,7 @@ export interface RelatedCharacter {
 export type CharacterContinuityChoice = RelatedCharacter & {
   label: string | null;
   isMain: boolean;
+  description: string | null;
 };
 
 /** Explicit timeline choices curated from the character editor. */
@@ -299,6 +300,7 @@ export async function getShenronCharacterContinuities(
         nameRomaji: botCharacters.nameRomaji,
         image: botCharacters.image,
         race: botCharacters.race,
+        description: botCharacters.description,
       })
       .from(botCharacters)
       .where(and(eq(botCharacters.id, rootId), eq(botCharacters.visible, true)))
@@ -313,6 +315,7 @@ export async function getShenronCharacterContinuities(
         nameRomaji: botCharacters.nameRomaji,
         image: botCharacters.image,
         race: botCharacters.race,
+        description: botCharacters.description,
         label: botCharacterContinuities.label,
       })
       .from(botCharacterContinuities)
@@ -332,6 +335,7 @@ export async function getShenronCharacterContinuities(
       slug: formatCharacterSlug(choice),
       image: choice.image,
       race: choice.race,
+      description: choice.description,
       label: choice.label,
       isMain: choice.id === root.id,
     }));

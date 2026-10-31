@@ -17,6 +17,7 @@ export interface CharacterVersionMessages {
   gokuCc?: string;
   goku4d?: string;
   gokuJumpForce?: string;
+  gokuSummary: string;
   chooseSaga: string;
   previewContentNotLinked?: string;
   previewPilaf?: string;
@@ -32,6 +33,8 @@ export interface CharacterVersionMessages {
   previewHistoryHeading?: string;
   sagaHistoryHeading?: string;
   sagaHistoryMissing?: string;
+  summaryIntro: string;
+  summarySagasHeading: string;
   previewSagaSummary?: string;
   previewSagaStory?: string;
   previewPilafStory?: string;

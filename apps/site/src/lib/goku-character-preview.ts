@@ -10,6 +10,7 @@ export const GOKU_PREVIEW_TIMELINES = [
   { slug: "goku-cc", message: "gokuCc", isMain: false },
   { slug: "goku-4d", message: "goku4d", isMain: false },
   { slug: "goku-jumpforce", message: "gokuJumpForce", isMain: false },
+  { slug: "goku-summary", message: "gokuSummary", isMain: false },
 ] as const;
 
 type TimelineSlug = (typeof GOKU_PREVIEW_TIMELINES)[number]["slug"];
@@ -293,6 +294,7 @@ export function createGokuPreviewVariants(
     values?: Record<string, string | number>,
   ) => string,
 ): CharacterVariant[] {
+  if (timeline === "goku-summary") return [];
   const timelineName = translate(
     GOKU_PREVIEW_TIMELINES.find((choice) => choice.slug === timeline)!.message,
   );
@@ -588,5 +590,28 @@ const PREVIEW_BATTLES: Record<string, CharacterBattle[]> = {
 };
 
 export function getGokuPreviewBattles(variantSlug: string | null | undefined): CharacterBattle[] {
+  if (variantSlug === "goku-summary") return Object.values(PREVIEW_BATTLES).flat();
   return variantSlug ? (PREVIEW_BATTLES[variantSlug] ?? []) : [];
+}
+
+export function getGokuPreviewSummaryArticle(
+  translate: (
+    key: keyof CharacterVersionMessages,
+    values?: Record<string, string | number>,
+  ) => string,
+): string {
+  const sections = GOKU_PREVIEW_TIMELINES.filter(
+    (timeline) => timeline.slug !== "goku-summary",
+  ).map((timeline) => {
+    const sagas = PREVIEW_SAGAS.filter((saga) => saga.timeline === timeline.slug);
+    const rows = sagas.map(
+      (saga) =>
+        `- **${translate(saga.sagaNameKey)}** — ${translate(saga.storyKey, {
+          saga: translate(saga.sagaNameKey),
+          timeline: translate(timeline.message),
+        })}`,
+    );
+    return `### ${translate(timeline.message)}\n\n${rows.join("\n")}`;
+  });
+  return `## ${translate("sagaHistoryHeading")}\n\n${translate("summaryIntro")}\n\n${sections.join("\n\n")}`;
 }
