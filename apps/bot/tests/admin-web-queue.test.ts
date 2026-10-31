@@ -16,7 +16,7 @@ test("native web placement survives a lost ACK and process restart, with private
     path,
     JSON.stringify({
       hosts: [{ id: "dbfr", config: mcp, slots: 2, workerReady: true }],
-      actions: [{ id: "web-index", args: ["crawl-index", "--help"] }],
+      actions: [{ id: "web-official", source: "official", maxRequests: 80, depth: 1 }],
     }),
   );
   chmodSync(path, 0o600);
@@ -29,6 +29,22 @@ test("native web placement survives a lost ACK and process restart, with private
     if (request.tool === "aphrody_job_submit") {
       submissions++;
       expect(request.arguments.idempotency_key).toBe("web-job-001");
+      expect(request.arguments.payload).toEqual({
+        args: [
+          "dragon-ball",
+          "crawl",
+          "--profile",
+          "shenron",
+          "--source",
+          "official",
+          "--max-requests",
+          "80",
+          "--max-depth",
+          "1",
+          "--json",
+          "--index",
+        ],
+      });
       if (ackLost) {
         ackLost = false;
         throw new Error("lost ACK private token");
@@ -45,7 +61,7 @@ test("native web placement survives a lost ACK and process restart, with private
   };
   let queue = new AdminWebQueue(env, transport);
   try {
-    await expect(queue.submit("web-index", "web-job-001")).rejects.toThrow("lost ACK");
+    await expect(queue.submit("web-official", "web-job-001")).rejects.toThrow("lost ACK");
     queue.close();
     queue = new AdminWebQueue(env, transport);
     const snapshot = await queue.status();
@@ -58,12 +74,54 @@ test("native web placement survives a lost ACK and process restart, with private
     });
     expect(JSON.stringify(snapshot)).not.toContain("private");
     await expect(queue.submit("web-other", "web-job-001")).rejects.toThrow("Unknown");
+    expect(snapshot.actions).toEqual([
+      expect.objectContaining({ id: "web-official", available: true }),
+    ]);
     expect((await queue.cancel("web-job-001")).state).toBe("cancelled");
     const jobs = await queue.jobs();
     expect(jobs[0]?.finishedAt).not.toBeNull();
     expect(JSON.stringify(jobs)).not.toContain("secret");
   } finally {
     queue.close();
+    rmSync(home, { recursive: true, force: true });
+  }
+});
+
+test("admin crawl actions reject arbitrary commands, unlisted sources, and excessive budgets", async () => {
+  const home = mkdtempSync(join(tmpdir(), "shenron-web-config-"));
+  const configPath = join(home, "plans.json");
+  const mcpPath = join(home, "mcp.json");
+  await Bun.write(mcpPath, "{}");
+  chmodSync(mcpPath, 0o600);
+  const env = { SHENRON_ADMIN_PIPELINE_HOME: home, SHENRON_ADMIN_WEB_CONFIG: configPath };
+  const transport: NativeMcpTransport = async () => ({
+    result: { structuredContent: { queue: { queued: 0, running: 0 } } },
+  });
+  const cases = [
+    { id: "web-shell", args: ["dragon-ball", "crawl"], maxAttempts: 1 },
+    { id: "web-custom", source: "custom", url: "https://example.org/" },
+    { id: "web-large", source: "official", maxRequests: 2001 },
+    { id: "web-deep", source: "official", depth: 6 },
+  ];
+
+  try {
+    for (const action of cases) {
+      await Bun.write(
+        configPath,
+        JSON.stringify({
+          hosts: [{ id: "dbfr", config: mcpPath, slots: 1, workerReady: true }],
+          actions: [action],
+        }),
+      );
+      chmodSync(configPath, 0o600);
+      const queue = new AdminWebQueue(env, transport);
+      try {
+        await expect(queue.status()).rejects.toThrow();
+      } finally {
+        queue.close();
+      }
+    }
+  } finally {
     rmSync(home, { recursive: true, force: true });
   }
 });

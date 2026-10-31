@@ -4,8 +4,17 @@ import { chmodSync, mkdirSync, readFileSync, statSync } from "node:fs";
 import { isAbsolute, join } from "node:path";
 import { Database } from "bun:sqlite";
 import { z } from "zod";
+import { createCrawlJobIntent } from "@aphrody/shenron-pipeline";
 import { AphrodyWebJobs, type NativeMcpTransport } from "@aphrody/shenron-pipeline/aphrody/jobs";
 
+const CrawlSource = z.enum([
+  "official",
+  "kanzenshuu",
+  "databooks",
+  "guides",
+  "dragonballcn",
+  "universal",
+]);
 const Config = z
   .object({
     hosts: z
@@ -27,17 +36,9 @@ const Config = z
         z
           .object({
             id: z.string().regex(/^web-[a-z0-9-]{1,59}$/),
-            args: z
-              .array(
-                z
-                  .string()
-                  .min(1)
-                  .max(4096)
-                  .refine((value) => !value.includes("\0")),
-              )
-              .min(1)
-              .max(64),
-            maxAttempts: z.number().int().min(1).max(16).default(1),
+            source: CrawlSource,
+            maxRequests: z.number().int().min(1).max(2000).default(100),
+            depth: z.number().int().min(0).max(5).default(2),
           })
           .strict(),
       )
@@ -79,9 +80,6 @@ export class AdminWebQueue {
     const config = Config.parse(JSON.parse(readFileSync(path, "utf8")));
     if (new Set(config.actions.map((action) => action.id)).size !== config.actions.length)
       throw new Error("Duplicate web action");
-    for (const action of config.actions)
-      if (!["dragon-ball", "crawl-index"].includes(action.args[0]!))
-        throw new Error("Web actions require the native workflow owner");
     for (const host of config.hosts) {
       if (!isAbsolute(host.config)) throw new Error("Private MCP configuration must be absolute");
       const file = statSync(host.config);
@@ -128,7 +126,12 @@ export class AdminWebQueue {
     );
     // Lost acknowledgements retain the exact placement and key; never replay elsewhere.
     try {
-      await queue.submit({ key: id, args: plan.args, maxAttempts: plan.maxAttempts });
+      const intent = createCrawlJobIntent(id, {
+        source: plan.source,
+        maxRequests: plan.maxRequests,
+        depth: plan.depth,
+      });
+      await queue.submit(intent);
     } catch (error) {
       if (!queue.get(id)) this.db!.query("DELETE FROM admin_web_jobs WHERE id=?").run(id);
       throw error;
