@@ -96,8 +96,8 @@ Il déclare les hôtes déjà qualifiés et les seuls workflows proposés à l�
 ```json
 {
   "hosts": [
-    { "id": "vps", "config": "/private/vps-mcp.json", "slots": 2, "workerReady": true },
-    { "id": "dbfr", "config": "/private/dbfr-mcp.json", "slots": 2, "workerReady": true }
+    { "id": "vps", "config": "/private/vps-mcp.json", "slots": 2, "workerReady": false },
+    { "id": "dbfr", "config": "/private/dbfr-mcp.json", "slots": 2, "workerReady": false }
   ],
   "actions": [{ "id": "web-official", "source": "official", "maxRequests": 100, "depth": 2 }]
 }
@@ -111,20 +111,27 @@ utilisent Obscura sur l’hôte worker. Aphrody Web récupère et vérifie toujo
 `robots.txt` en HTTP natif, sans navigateur. `crawl-index` personnalisé garde
 son chemin distinct et ne reçoit pas `--render`.
 
-Avant de déclarer `workerReady: true`, qualifier sur chaque hôte le MCP
-authentifié, la file native et le rendu Obscura local. Ce marqueur constate une
-qualification préalable ; il n’installe aucun worker. Le panneau sonde la file
-native par MCP avant de proposer les actions. Les secrets restent dans les
-fichiers MCP du propriétaire.
+Infra prépare le fichier avec `workerReady: false`. Après déploiement, il vérifie
+que le conteneur bot correspondant exactement à la nouvelle révision est `healthy`
+dans Docker, puis remplace atomiquement `web.json` avec l’hôte qualifié à
+`workerReady: true`. Le bot relit ce fichier à chaque requête de statut et de
+soumission ; un changement reconstruit le placement sans redémarrage. Une config
+malformée ou partiellement écrite échoue en mode fermé. Seuls les hôtes prêts sont
+sondés et éligibles, et une action n’est disponible qu’après réponse de la sonde
+MCP authentifiée de statut de file d’au moins un hôte prêt. Qualifier le MCP,
+la file native et le rendu Obscura local avant activation. Le marqueur n’installe
+aucun worker. Les secrets restent dans les fichiers MCP du propriétaire.
 
 Dans le Compose de production, le bot reçoit le dossier privé
 `/etc/aphrody/shenron-web-crawl` en lecture seule à `/run/aphrody/web-crawl`.
 `web.json` doit utiliser le chemin conteneur `/run/aphrody/web-crawl/vps-mcp.toml`.
 Le fichier d'environnement privé `/etc/aphrody/shenron-web-crawl.env` fournit
 `SHENRON_ADMIN_WEB_CONFIG=/run/aphrody/web-crawl/web.json` et le bearer
-`APHRODY_VPS_MCP_HTTP_TOKEN` après qualification uniquement. Avant cela, garder le
-fichier d'environnement vide ou sans `SHENRON_ADMIN_WEB_CONFIG` afin que la file
-reste désactivée. L'index local du contrôleur vit dans
+`APHRODY_VPS_MCP_HTTP_TOKEN` dans le déploiement préparé. Garder tous les hôtes à
+`workerReady: false` jusqu’à ce que le conteneur exact soit sain, puis basculer
+atomiquement l’hôte qualifié à true. Avant provisionnement, garder le fichier
+d'environnement vide ou sans `SHENRON_ADMIN_WEB_CONFIG` afin que la file reste
+désactivée. L'index local du contrôleur vit dans
 `/app/data/admin-web-pipeline`, persistant sous le volume `bot/data`; il ne doit
 pas être partagé avec la base SQLite de la file VPS.
 

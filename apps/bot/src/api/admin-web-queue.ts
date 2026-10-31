@@ -24,7 +24,7 @@ const Config = z
             id: z.enum(["vps", "dbfr"]),
             config: z.string(),
             slots: z.number().int().min(1).max(64),
-            workerReady: z.literal(true),
+            workerReady: z.boolean(),
             server: z.literal("aphrody").optional(),
           })
           .strict(),
@@ -57,6 +57,7 @@ export class AdminWebQueue {
   private db?: Database;
   private queue?: AphrodyWebJobs;
   private config?: z.infer<typeof Config>;
+  private configText?: string;
   constructor(
     private readonly env: NodeJS.ProcessEnv,
     private readonly transport?: NativeMcpTransport,
@@ -65,7 +66,6 @@ export class AdminWebQueue {
     return Boolean(this.env.SHENRON_ADMIN_WEB_CONFIG);
   }
   private open() {
-    if (this.queue) return this.queue;
     const path = this.env.SHENRON_ADMIN_WEB_CONFIG;
     const home = this.env.SHENRON_ADMIN_PIPELINE_HOME;
     if (!path || !isAbsolute(path) || !home || !isAbsolute(home))
@@ -77,7 +77,11 @@ export class AdminWebQueue {
       (process.platform !== "win32" && (info.mode & 0o077) !== 0)
     )
       throw new Error("Web queue configuration must be a private regular file");
-    const config = Config.parse(JSON.parse(readFileSync(path, "utf8")));
+    // Infra atomically flips workerReady after the new bot container is healthy.
+    // Re-read every operation; malformed replacements fail closed.
+    const configText = readFileSync(path, "utf8");
+    if (this.queue && this.configText === configText) return this.queue;
+    const config = Config.parse(JSON.parse(configText));
     if (new Set(config.actions.map((action) => action.id)).size !== config.actions.length)
       throw new Error("Duplicate web action");
     for (const host of config.hosts) {
@@ -93,13 +97,18 @@ export class AdminWebQueue {
       this.transport,
     );
     try {
-      const ledger = join(home, "admin-web.sqlite");
-      this.db = new Database(ledger, { create: true });
-      chmodSync(ledger, 0o600);
-      this.db.exec(
-        "PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS admin_web_jobs(id TEXT PRIMARY KEY,action TEXT NOT NULL,startedAt TEXT NOT NULL,finishedAt TEXT)",
-      );
+      this.queue?.close();
+      this.queue = undefined;
+      if (!this.db) {
+        const ledger = join(home, "admin-web.sqlite");
+        this.db = new Database(ledger, { create: true });
+        chmodSync(ledger, 0o600);
+        this.db.exec(
+          "PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS admin_web_jobs(id TEXT PRIMARY KEY,action TEXT NOT NULL,startedAt TEXT NOT NULL,finishedAt TEXT)",
+        );
+      }
       this.config = config;
+      this.configText = configText;
       this.queue = queue;
       return queue;
     } catch (error) {
@@ -112,6 +121,8 @@ export class AdminWebQueue {
   async submit(action: string, id: string) {
     if (!/^[a-zA-Z0-9-]{8,80}$/.test(id)) throw new Error("Invalid idempotency key");
     const queue = this.open();
+    if (!this.config!.hosts.some((host) => host.workerReady))
+      throw new Error("No web worker is ready");
     const plan = this.config!.actions.find((item) => item.id === action);
     if (!plan) throw new Error("Unknown installed web action");
     const existing = this.db!.query<Row, [string]>("SELECT * FROM admin_web_jobs WHERE id=?").get(
@@ -185,7 +196,7 @@ export class AdminWebQueue {
         return owner.mcpTool(request, options);
       }) satisfies NativeMcpTransport);
     const probes = await Promise.allSettled(
-      this.config!.hosts.map(async (host) => {
+      this.config!.hosts.filter((host) => host.workerReady).map(async (host) => {
         const raw = await transport(
           {
             config: host.config,
@@ -248,5 +259,6 @@ export class AdminWebQueue {
     this.queue = undefined;
     this.db = undefined;
     this.config = undefined;
+    this.configText = undefined;
   }
 }
