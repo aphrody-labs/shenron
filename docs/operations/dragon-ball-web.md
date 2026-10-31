@@ -3,10 +3,9 @@
 # Dragon Ball dans Aphrody Web
 
 Le code produit Shenron s’exécute nativement en Bun et appelle par FFI le
-module Dragon Ball d’Aphrody Web. La collecte, la
-frontière persistante, les parseurs bibliographiques et les exports historiques
-BXC appartiennent à Aphrody ; la décision éditoriale et les écritures PostgreSQL
-restent dans Shenron.
+module Dragon Ball d’Aphrody Web. Aphrody Web possède la collecte et ses
+frontières persistantes ; Shenron possède le catalogue produit, la décision
+éditoriale et les écritures PostgreSQL.
 
 Le point d’entrée produit existant est conservé :
 
@@ -17,7 +16,6 @@ bun run --filter @aphrody/shenron-pipeline pipeline crawl databooks --max-reques
 bun run --filter @aphrody/shenron-pipeline pipeline crawl guides --max-requests 5
 bun run --filter @aphrody/shenron-pipeline pipeline crawl dragonballcn --max-requests 100
 bun run --filter @aphrody/shenron-pipeline pipeline crawl universal --max-requests 500
-bun run --filter @aphrody/shenron-pipeline pipeline unify
 bun run --filter @aphrody/shenron-pipeline pipeline dragon-ball sources
 bun run --filter @aphrody/shenron-pipeline pipeline dragon-ball catalogue-enrich --catalogue /chemin/prive/catalogue.json
 ```
@@ -35,6 +33,7 @@ consulter le plan et l’état d’une campagne. `crawl custom URL` appelle
 | guides         | guides                                       |
 | dragonballcn   | dragonballcn                                 |
 | universal      | Sources activées dans le plan du module      |
+| custom         | URL HTTP(S) explicite, via `crawl-index`     |
 
 La frontière `@aphrody/shenron-native/web/pipeline` consomme
 `@aphrody/bun/web/pipeline`, qui charge la bibliothèque native vérifiée ;
@@ -44,10 +43,8 @@ du pin installé par le lien canonique `~/.local/bin/aphrody`. Le manifeste,
 le SHA-256, l’ABI et la provenance restent vérifiés avant chargement ; aucun
 processus n’est lancé pour cette résolution.
 Les descriptions de commandes conservent la syntaxe `aphrody web`, mais la liaison
-produit n’exécute aucun binaire CLI. Les anciens binaires BXC ne sont pas lancés.
-Le module peut lire leurs bases
-SQLite avec `aphrody web dragon-ball export-bxc` ; ces bases sont ouvertes en
-lecture seule et restent dans leurs stores protégés.
+produit appelle directement le module natif vérifié ; elle ne dépend pas d’un
+binaire CLI externe.
 
 Les exports sont déposés dans
 `$APHRODY_CORPUS_CRAWL_DIR/corpus`, sinon
@@ -72,13 +69,16 @@ ne sont pas écrasés. `catalogue-enrich` prépare un résultat par défaut ; `-
 exige le gel levé et un `--output` distinct du snapshot natif.
 
 `@aphrody/shenron-pipeline/aphrody/jobs` conserve les intentions et les résultats dans un
-SQLite privé local. Il appelle les outils natifs MCP de soumission, suivi et
-annulation via le client HTTP natif et sa configuration authentifiée. Chaque
+SQLite privé local. `createCrawlJobIntent(key, target)` convertit une entrée du
+catalogue produit en commande native `web-pipeline`, puis le client appelle les outils
+MCP authentifiés de soumission, suivi et annulation via le transport natif. Chaque
 hôte garde sa propre file SQLite. Le placement estime la charge à partir des
 statistiques distantes et des accusés de réception locaux reçus pendant leur
 lecture. Les intentions sans accusé restent réservées. Les slots déclarés
 pondèrent ce calcul ; seuls les workers explicitement qualifiés sont candidats.
 Après une réponse perdue, la même clé idempotente retourne au même hôte.
+Les chemins d’état et de sortie restent sur l’hôte exécutant le worker ; aucune
+base SQLite n’est partagée par le tunnel privé.
 
 Les parseurs portables partagent leur propriétaire Rust avec la cible WASM.
 La qualification des artefacts FFI/WASM et le déploiement restent distincts des

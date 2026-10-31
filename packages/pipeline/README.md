@@ -12,12 +12,10 @@ Le serveur MCP Shenron n'est plus dans ce dépôt : il est porté par
 bun run pipeline <ocr|rag|ia|translation|crawl> [options]
 ```
 
-`bun run pipeline unify` indexes the Dragon Ball corpus owned by Aphrody Web
-into the Aphrody RAG profile. Aphrody owns embedding, indexing, storage and
-retirement; the index is stored under
-`~/.aphrody/workspaces/dbfr/indexes`. The local Rust command
-`aphrody rag ingest-shenron` remains available for offline/local corpus work,
-but is not the product pipeline's default storage path.
+The `crawl` command asks Aphrody Web to index the selected campaign in the
+`shenron` profile. Aphrody owns embedding, indexing and storage; the local Rust
+command `aphrody rag ingest-shenron` remains available for offline/local corpus
+work, but is not the product pipeline's default storage path.
 
 ## Workers de crawl
 
@@ -80,7 +78,7 @@ Pour les règles de bascule et les preuves de production, voir
 La commande `pipeline translation` délègue la traduction à
 `apps/site/scripts/traduction-boucle.ts`, qui consomme le propriétaire
 Rust `aphrody-translate` pour le moteur et conserve les règles de validation et
-de dépôt propres aux databooks. L'ancien démon Google/BXC du processus Shenron
+de dépôt propres aux databooks. L'ancien démon Google du processus Shenron
 n'est plus utilisé par ce flux. Voir
 [`docs/guides/TRADUCTION-DATABOOKS.md`](../../docs/guides/TRADUCTION-DATABOOKS.md) pour les
 compteurs et le protocole d'arrêt/reprise.
