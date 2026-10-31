@@ -8,6 +8,11 @@ import { ContributeRail } from "@/components/kit/ContributeRail";
 import { WikiEditBar } from "@/components/wiki/WikiEditBar";
 import { FICHE_ASIDE, FICHE_GRID, FICHE_MAIN } from "@/components/wiki/fiche-layout";
 
+const FICHE_GRID_ASIDE_LEFT =
+  "grid items-start gap-8 lg:grid-cols-[minmax(18rem,22rem)_minmax(0,1fr)] lg:gap-10";
+const FICHE_ASIDE_LEFT = `space-y-4 lg:sticky top-[var(--shell-header-h,4rem)] lg:col-start-1 lg:row-start-1 lg:max-h-[calc(100dvh-var(--shell-header-h,4rem)-1.5rem)] lg:overflow-y-auto lg:pt-2 lg:[scrollbar-width:thin]`;
+const FICHE_MAIN_RIGHT = "min-w-0 space-y-10 lg:col-start-2 lg:row-start-1";
+
 type EditTarget = {
   table: string;
   id: number;
@@ -35,6 +40,7 @@ export function WikiDetailPage({
   lead,
   header,
   aside,
+  asidePosition = "right",
   contributeKey,
   tracker,
   children,
@@ -53,6 +59,8 @@ export function WikiDetailPage({
   header: ReactNode;
   /** Infobox column; omit for a single column. */
   aside?: ReactNode;
+  /** Desktop position of the infobox; it stays first on mobile. */
+  asidePosition?: "left" | "right";
   /** `kit.contribute.what.*` dictionary key; omit for no contribution rail. */
   contributeKey?: string;
   /** View tracker (client island) mounted with the page. */
@@ -82,9 +90,11 @@ export function WikiDetailPage({
       {lead}
       {header}
       {aside ? (
-        <div className={FICHE_GRID}>
-          <aside className={FICHE_ASIDE}>{aside}</aside>
-          <div className={FICHE_MAIN}>{children}</div>
+        <div className={asidePosition === "left" ? FICHE_GRID_ASIDE_LEFT : FICHE_GRID}>
+          <aside className={asidePosition === "left" ? FICHE_ASIDE_LEFT : FICHE_ASIDE}>
+            {aside}
+          </aside>
+          <div className={asidePosition === "left" ? FICHE_MAIN_RIGHT : FICHE_MAIN}>{children}</div>
         </div>
       ) : (
         <div className="min-w-0 space-y-10">{children}</div>

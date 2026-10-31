@@ -1003,6 +1003,7 @@ export default async function CharacterPage({
         />
       }
       aside={infobox}
+      asidePosition="left"
     >
       <div className="space-y-10">
         <WikiSectionsReader panels={panels} />
