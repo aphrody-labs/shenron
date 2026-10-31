@@ -77,7 +77,7 @@ jobs:
         run: bun check
 
       - name: Native lint
-        run: bun lint --no-n2b -c .oxlintrc.json apps packages scripts
+        run: bun lint -c .oxlintrc.json apps packages scripts
 
       - name: Native format check
         run: bun run format:check

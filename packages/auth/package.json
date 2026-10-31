@@ -36,7 +36,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src",
+    "lint": "bun lint -c ../../.oxlintrc.json src",
     "test": "bun test",
     "typecheck": "bun check"
   },

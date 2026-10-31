@@ -152,7 +152,7 @@
     "typecheck:scripts": "bun check -p scripts",
     "i18n:contract": "bun scripts/i18n/complete-contract.ts",
     "test": "bun scripts/testing/workspace-gates.ts test",
-    "lint": "bun lint --no-n2b -c .oxlintrc.json apps packages scripts",
+    "lint": "bun lint -c .oxlintrc.json apps packages scripts",
     "format:check": "bun fmt --check --ignore-pattern \"**/examples/**\" --ignore-pattern \"**/*.min.js\" --ignore-pattern \"**/packages/koharu/src/wasm/**\" --ignore-pattern \"**/packages/engine/src/wasm/**\" --ignore-pattern \"**/packages/pipeline/src/wasm/**\" --ignore-pattern \"**/packages/koharu/src/protocol.ts\" --ignore-pattern \"**/packages/native/src/generated/**\" --ignore-pattern \"**/plugin/references/**\" --ignore-pattern \"**/packages/ui/src/tokens.ts\" --ignore-pattern \"**/packages/lexicon/src/terms.generated.ts\" --ignore-pattern \"**/packages/api/openapi/public.json\" --ignore-pattern \"**/apps/site/src/app/fonts.css\" --ignore-pattern \"**/apps/site/scripts/fonts.lock.json\" apps packages scripts",
     "build": "bun scripts/build/server.ts && bun scripts/build/bot.ts",
     "build:server": "bun scripts/build/server.ts",

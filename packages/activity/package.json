@@ -17,7 +17,7 @@
     "./testing": "./src/testing.ts"
   },
   "scripts": {
-    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json",
+    "lint": "bun lint -c ../../.oxlintrc.json",
     "test": "bun test",
     "typecheck": "bun check --project tsconfig.json"
   },

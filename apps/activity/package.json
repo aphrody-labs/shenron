@@ -12,7 +12,7 @@
     "start": "bun src/main.ts",
     "compile": "bun scripts/compile.ts",
     "test": "bun test --path-ignore-patterns='**/*.live.test.ts' test/",
-    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src client scripts test",
+    "lint": "bun lint -c ../../.oxlintrc.json src client scripts test",
     "typecheck": "bun check --project tsconfig.json"
   },
   "dependencies": {

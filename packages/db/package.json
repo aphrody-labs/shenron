@@ -61,7 +61,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json",
+    "lint": "bun lint -c ../../.oxlintrc.json",
     "test": "bun test",
     "audit:migrations": "bun scripts/migration-audit.ts --check",
     "audit:schema": "bun scripts/schema-parity.ts",

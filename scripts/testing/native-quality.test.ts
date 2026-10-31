@@ -91,12 +91,7 @@ test("native lint and fmt reject real violations despite same-named package scri
     await Bun.write(join(root, ".oxlintrc.json"), Bun.file(join(repository, ".oxlintrc.json")));
     await Bun.write(join(root, ".oxfmtrc.json"), Bun.file(join(repository, ".oxfmtrc.json")));
     await Bun.write(join(root, "invalid.ts"), "debugger;\n");
-    const lint = await nativeCommand(root, "lint", [
-      "--no-n2b",
-      "-c",
-      ".oxlintrc.json",
-      "invalid.ts",
-    ]);
+    const lint = await nativeCommand(root, "lint", ["-c", ".oxlintrc.json", "invalid.ts"]);
     expect(lint.exitCode, lint.output).toBe(1);
     expect(lint.output).toContain("debugger");
     await Bun.write(join(root, "invalid.ts"), "export const value={a:1,b:2}\n");

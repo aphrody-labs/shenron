@@ -34,7 +34,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json",
+    "lint": "bun lint -c ../../.oxlintrc.json",
     "test": "bun test --path-ignore-patterns='**/*.live.test.ts'",
     "openapi": "bun scripts/openapi.ts",
     "openapi:check": "bun scripts/openapi.ts --check",

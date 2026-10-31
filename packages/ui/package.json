@@ -80,7 +80,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src",
+    "lint": "bun lint -c ../../.oxlintrc.json src",
     "test": "bun test --path-ignore-patterns='test/koharu/**' --path-ignore-patterns='test/dom/**' && bun test/koharu/run.ts && bun test --preload @aphrody/bun-test-dom ./test/dom",
     "tokens": "bun scripts/generate-tokens.ts",
     "tokens:check": "bun scripts/generate-tokens.ts --check",

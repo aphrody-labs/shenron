@@ -30,7 +30,7 @@
   "scripts": {
     "typecheck": "bun check --project tsconfig.json",
     "test": "bun test",
-    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src"
+    "lint": "bun lint -c ../../.oxlintrc.json src"
   },
   "dependencies": {
     "@aphrody/http": "catalog:",

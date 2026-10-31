@@ -30,7 +30,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "lint": "bun lint --no-n2b src test --ignore-pattern src/wasm",
+    "lint": "bun lint src test --ignore-pattern src/wasm",
     "test": "bun test",
     "typecheck": "bun check --project tsconfig.json",
     "build:wasm": "bun scripts/build-wasm.ts"

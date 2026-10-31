@@ -40,7 +40,7 @@ jobs:
           bun packages/pipeline/scripts/ai/check-contracts.ts
           bun scripts/plugin/sync.ts --check
           bun check
-          bun lint --no-n2b -c .oxlintrc.json apps packages scripts
+          bun lint -c .oxlintrc.json apps packages scripts
           bun fmt --check apps packages scripts
           bun run test
           bun run test:scripts

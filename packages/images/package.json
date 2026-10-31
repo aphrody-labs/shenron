@@ -41,7 +41,7 @@
   "scripts": {
     "test": "bun test",
     "typecheck": "bun check --project tsconfig.json",
-    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src"
+    "lint": "bun lint -c ../../.oxlintrc.json src"
   },
   "dependencies": {
     "sharp": "catalog:"

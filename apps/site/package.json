@@ -13,7 +13,7 @@
     "prebuild": "bun ../../scripts/dev/check-node-modules.ts && bun ../../packages/ui/scripts/sync-assets.ts --to public",
     "build": "NEXT_DIST_DIR=.next-build next-bun build",
     "start": "next-bun start",
-    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src",
+    "lint": "bun lint -c ../../.oxlintrc.json src",
     "test": "bun test --isolate --path-ignore-patterns='**/*.live.test.ts' tests/",
     "test:dom": "bun test --isolate --preload ./tests/dom-preload.ts tests/video-player.dom.test.tsx tests/video-select.dom.test.tsx",
     "type-check:tests": "bun check -p tsconfig.tests.json",

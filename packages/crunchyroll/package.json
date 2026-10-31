@@ -20,7 +20,7 @@
   "scripts": {
     "test": "bun test",
     "typecheck": "bun check --project tsconfig.json",
-    "lint": "bun lint --no-n2b -c ../../.oxlintrc.json src",
+    "lint": "bun lint -c ../../.oxlintrc.json src",
     "cli": "bun src/cli.ts",
     "build": "bun build src/cli.ts --compile --outfile bin/crunchyroll-cli",
     "mcp": "bun src/mcp.ts"
