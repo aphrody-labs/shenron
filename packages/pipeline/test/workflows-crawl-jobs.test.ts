@@ -12,6 +12,8 @@ describe("createCrawlJobArgs", () => {
       "shenron",
       "--source",
       "official",
+      "--browser",
+      "playwright",
       "--max-requests",
       "500",
       "--render",
@@ -25,6 +27,8 @@ describe("createCrawlJobArgs", () => {
       "shenron",
       "--source",
       "kanzentai,neoseeker-databooks,databook-other",
+      "--browser",
+      "playwright",
       "--max-requests",
       "80",
       "--max-depth",
@@ -38,6 +42,19 @@ describe("createCrawlJobArgs", () => {
   test("leaves the universal catalog selection to Aphrody Web", () => {
     const args = createCrawlJobArgs({ source: "universal", maxRequests: 12 });
     expect(args).not.toContain("--source");
+    expect(args).toEqual([
+      "dragon-ball",
+      "crawl",
+      "--profile",
+      "shenron",
+      "--browser",
+      "playwright",
+      "--max-requests",
+      "12",
+      "--render",
+      "--json",
+      "--index",
+    ]);
     expect(args).toContain("--render");
     expect(args).toContain("12");
     expect(args[0]).toBe("dragon-ball");
@@ -46,16 +63,24 @@ describe("createCrawlJobArgs", () => {
   test("creates a one-attempt idempotent intent for AphrodyWebJobs", () => {
     const key = "catalog-official-20261101";
     const intent = createCrawlJobIntent(key, { source: "official" });
+    const expectedArgs = createCrawlJobArgs({ source: "official" });
+    const budgetIndex = expectedArgs.indexOf("--max-requests");
+    expectedArgs.splice(budgetIndex, 0, "--output", crawlJobOutputDirectory(key));
     expect(intent).toEqual({
       key,
-      args: [
-        ...createCrawlJobArgs({ source: "official" }).slice(0, 6),
-        "--output",
-        crawlJobOutputDirectory(key),
-        ...createCrawlJobArgs({ source: "official" }).slice(6),
-      ],
+      args: expectedArgs,
       maxAttempts: 1,
     });
+    expect(intent.args.slice(4, 12)).toEqual([
+      "--source",
+      "official",
+      "--browser",
+      "playwright",
+      "--output",
+      crawlJobOutputDirectory(key),
+      "--max-requests",
+      "500",
+    ]);
     expect(intent.args).toContain("--render");
   });
 
@@ -100,6 +125,7 @@ describe("createCrawlJobArgs", () => {
       "1",
     ]);
     expect(first).not.toContain("--render");
+    expect(first).not.toContain("--browser");
   });
 
   test("rejects invalid seeds, Fandom, local output paths, and unbounded budgets", () => {

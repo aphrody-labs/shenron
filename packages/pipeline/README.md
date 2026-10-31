@@ -26,6 +26,11 @@ le bot ou un orchestrateur passe `createCrawlJobIntent(key, target)` à
 `dragon-ball` (catalogue Dragon Ball) ou `crawl-index` (source personnalisée),
 conformément au contrat du worker `web-pipeline`.
 
+Les intents catalogués demandent `--browser playwright` pour utiliser le bridge
+Obscura loopback configuré sur le worker ; les requêtes HTTP restent soumises aux
+contrôles robots et au scope/budget du crawl. Le navigateur est explicite pour le
+catalogue seulement : `crawl-index` personnalisé conserve son transport distinct.
+
 Les budgets de requêtes/profondeur sont inclus dans la tâche. Les chemins de sortie
 et d'état restent propres à l'hôte worker : `outDir` est refusé pour une tâche
 distante. Les sources personnalisées exigent une URL HTTP(S) sans identifiants,

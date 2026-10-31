@@ -305,6 +305,7 @@ export function createCrawlJobArgs(target: CrawlTarget): string[] {
   const args = ["dragon-ball", "crawl", "--profile", "shenron"];
   if (target.source !== "universal")
     args.push("--source", CRAWL_SOURCE_IDS[target.source as keyof typeof CRAWL_SOURCE_IDS]!);
+  args.push("--browser", "playwright");
   args.push("--max-requests", String(target.maxRequests ?? 500));
   if (target.depth !== undefined) args.push("--max-depth", String(target.depth));
   args.push("--render", "--json", "--index");
