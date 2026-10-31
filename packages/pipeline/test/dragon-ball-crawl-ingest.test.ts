@@ -182,8 +182,14 @@ async function sealedArtifact(lines: unknown[], artifactPolicy = policy) {
   await exportNativeCrawlArtifact({
     inputPath,
     outputDir,
-    jobId: "job-fixture",
-    jobStatus: "succeeded",
+    jobReceipt: {
+      key: "intent-fixture",
+      host: "worker-vps",
+      remoteId: "job-fixture",
+      state: "succeeded",
+      result: {},
+      error: null,
+    },
     policy: artifactPolicy,
   });
   return {
@@ -376,26 +382,32 @@ test("closed crawl artifacts bind bytes, document count, job completion and revi
   const root = await mkdtemp(join(tmpdir(), "shenron-crawl-artifact-"));
   roots.push(root);
   const artifactDir = join(root, "run-1");
+  const receipt = {
+    key: "intent-1",
+    host: "worker-vps",
+    remoteId: "job-1",
+    state: "partial",
+    result: {},
+    error: null,
+  };
   await expect(
     exportNativeCrawlArtifact({
       inputPath,
       outputDir: artifactDir,
-      jobId: "job-1",
-      jobStatus: "partial",
+      jobReceipt: receipt,
       policy,
     }),
-  ).rejects.toThrow(/succeeded/);
+  ).rejects.toThrow();
   const manifest = await exportNativeCrawlArtifact({
     inputPath,
     outputDir: artifactDir,
-    jobId: "job-1",
-    jobStatus: "succeeded",
+    jobReceipt: { ...receipt, state: "succeeded" },
     policy,
   });
   expect(manifest).toMatchObject({
     schema: "shenron-native-crawl-artifact",
     version: 1,
-    job: { id: "job-1", status: "succeeded" },
+    job: { key: "intent-1", host: "worker-vps", remoteId: "job-1", status: "succeeded" },
     artifact: { file: "shenron-documents.jsonl", documents: 1 },
   });
   const payloadPath = join(artifactDir, "shenron-documents.jsonl");

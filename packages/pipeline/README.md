@@ -45,8 +45,12 @@ les sessions du worker.
 ```sh
 bun packages/pipeline/src/cli.ts dragon-ball export-crawl \
   --input /chemin/prive/shenron-documents.jsonl --output /chemin/prive/job-123 \
-  --policy /chemin/prive/policy.json --job-id job-123 --job-status succeeded
+  --policy /chemin/prive/policy.json --job-receipt /chemin/prive/job-123-receipt.json
 ```
+
+`--job-receipt` est le reçu terminal `AphrodyWebJobs` conservé par l'orchestrateur ; seuls
+les reçus `state=succeeded` avec hôte et ID distant sont acceptés. Ne pas fabriquer ce reçu
+à partir d'un statut saisi à la main.
 
 À réception, `ingest-crawl --manifest /chemin/prive/job-123/manifest.json` vérifie le dossier
 exact (aucun fichier additionnel), les empreintes, la taille, le compte de lignes, le statut et

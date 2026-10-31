@@ -49,27 +49,17 @@ async function main() {
           input: { type: "string" },
           output: { type: "string" },
           policy: { type: "string" },
-          "job-id": { type: "string" },
-          "job-status": { type: "string" },
+          "job-receipt": { type: "string" },
         },
       });
-      if (
-        !values.input ||
-        !values.output ||
-        !values.policy ||
-        !values["job-id"] ||
-        !values["job-status"]
-      )
-        throw new Error(
-          "export-crawl requires --input, --output, --policy, --job-id and --job-status",
-        );
+      if (!values.input || !values.output || !values.policy || !values["job-receipt"])
+        throw new Error("export-crawl requires --input, --output, --policy and --job-receipt");
       const { exportNativeCrawlArtifact } = await import("./dragon-ball/crawl-ingest");
       const manifest = await exportNativeCrawlArtifact({
         inputPath: resolve(values.input),
         outputDir: resolve(values.output),
         policy: await Bun.file(values.policy).json(),
-        jobId: values["job-id"],
-        jobStatus: values["job-status"],
+        jobReceipt: await Bun.file(values["job-receipt"]).json(),
       });
       console.log(JSON.stringify(manifest, null, 2));
     } else if (args[0] === "coverage") {

@@ -195,7 +195,8 @@ déjà ouvert dans la session a été conservé.
 
 ## Export natif, registre PostgreSQL et audit des médias
 
-`dragon-ball export-crawl` scelle le JSONL fermé après un job réussi dans un
+`dragon-ball export-crawl` scelle le JSONL fermé après un job réussi et son reçu
+terminal `AphrodyWebJobs` (`state=succeeded`, hôte et ID distant) dans un
 dossier privé contenant uniquement `shenron-documents.jsonl` et `manifest.json`.
 Le manifeste lie le statut/ID du job, l'empreinte de la politique, le nombre de
 documents, la taille et le SHA-256 exact des octets. La limite est 512 Mio et

@@ -130,12 +130,27 @@ const MAX_ARTIFACT_BYTES = 512 * 1024 * 1024;
 const MAX_ARTIFACT_DOCUMENTS = 10000;
 const MANIFEST_NAME = "manifest.json";
 const ARTIFACT_NAME = "shenron-documents.jsonl";
+const jobReceiptSchema = z
+  .object({
+    key: z.string().min(1).max(256),
+    host: z.string().regex(/^[A-Za-z0-9._:-]{1,128}$/),
+    remoteId: z.string().regex(/^[A-Za-z0-9._:-]{1,128}$/),
+    state: z.literal("succeeded"),
+    result: z.unknown(),
+    error: z.null(),
+  })
+  .passthrough();
 const crawlArtifactManifestSchema = z
   .object({
     schema: z.literal("shenron-native-crawl-artifact"),
     version: z.literal(1),
     job: z
-      .object({ id: z.string().regex(/^[A-Za-z0-9._:-]{1,128}$/), status: z.literal("succeeded") })
+      .object({
+        key: z.string().min(1).max(256),
+        host: z.string().regex(/^[A-Za-z0-9._:-]{1,128}$/),
+        remoteId: z.string().regex(/^[A-Za-z0-9._:-]{1,128}$/),
+        status: z.literal("succeeded"),
+      })
       .strict(),
     sourcePolicySha256: hash,
     artifact: z
@@ -192,13 +207,10 @@ async function fileSha256(path: string, maxBytes = MAX_ARTIFACT_BYTES) {
 export async function exportNativeCrawlArtifact(options: {
   inputPath: string;
   outputDir: string;
-  jobId: string;
-  jobStatus: string;
+  jobReceipt: unknown;
   policy: unknown;
 }) {
-  if (options.jobStatus !== "succeeded")
-    throw new Error("Only succeeded crawl jobs can be exported");
-  if (!/^[A-Za-z0-9._:-]{1,128}$/.test(options.jobId)) throw new Error("Invalid crawl job ID");
+  const job = jobReceiptSchema.parse(options.jobReceipt);
   if (!isAbsolute(options.inputPath) || !isAbsolute(options.outputDir))
     throw new Error("Crawl artifact paths must be absolute");
   const policy = crawlIngestPolicySchema.parse(options.policy);
@@ -237,7 +249,7 @@ export async function exportNativeCrawlArtifact(options: {
     const manifest = crawlArtifactManifestSchema.parse({
       schema: "shenron-native-crawl-artifact",
       version: 1,
-      job: { id: options.jobId, status: "succeeded" },
+      job: { key: job.key, host: job.host, remoteId: job.remoteId, status: "succeeded" },
       sourcePolicySha256: digest(stableJson(policy)),
       artifact: { file: ARTIFACT_NAME, ...copied, documents: documentsCount },
       createdAt: new Date().toISOString(),
