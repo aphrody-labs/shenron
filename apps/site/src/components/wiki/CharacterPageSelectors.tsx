@@ -102,7 +102,19 @@ export function CharacterPageSelectors({
           ))}
         </select>
       </label>
-      {variants.length > 0 && (
+      {variants.length === 1 && (
+        <div className="space-y-1.5" aria-live="polite">
+          <span className="wiki-infobox-label">{labels.saga}</span>
+          <p className="min-h-11 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-3 text-sm text-white/80">
+            {timelineTransitionPending
+              ? labels.loading
+              : variants[0]!.sagaSeries
+                ? `${variants[0]!.sagaSeries} · ${variants[0]!.sagaName}`
+                : variants[0]!.sagaName}
+          </p>
+        </div>
+      )}
+      {variants.length > 1 && (
         <label className="block space-y-1.5">
           <span className="wiki-infobox-label flex items-center justify-between gap-2">
             {labels.saga}

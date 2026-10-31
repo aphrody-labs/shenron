@@ -359,6 +359,32 @@ export default async function CharacterPage({
   // Galeries relationnelles (vignettes de transformations, fiches techniques).
   // `withHeading=false` quand on les fusionne dans une catégorie de l'article
   // qui porte déjà son titre (évite un double bandeau).
+  const transformationCards = (transformations: typeof character.transformations, key?: string) => (
+    <div key={key} className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
+      {transformations.map((transfo) => (
+        <div
+          key={transfo.id}
+          className="dbz-panel group flex flex-col items-center p-4 transition-transform duration-300 hover:scale-105"
+        >
+          <div className="relative mb-4 aspect-square w-full overflow-hidden rounded-lg border border-dbz-border bg-dbz-bg p-2">
+            <div className="absolute inset-0 halftone opacity-10" />
+            <WikiImg
+              src={transfo.image}
+              alt={transfo.name}
+              loading="lazy"
+              className="relative z-10 h-full w-full object-contain transition-transform duration-700 group-hover:scale-110"
+              placeholderClassName="relative z-10 flex h-full w-full items-center justify-center rounded"
+            />
+          </div>
+          <h3 className="text-center text-xs font-bold uppercase leading-tight tracking-widest text-white transition-colors group-hover:text-dbz-orange">
+            {transfo.name}
+          </h3>
+          {transfo.ki && <span className="scouter-text mt-2 text-[10px]">KI: {transfo.ki}</span>}
+        </div>
+      ))}
+    </div>
+  );
+
   const transfoGrid = (withHeading: boolean): ReactNode => (
     <section className="space-y-8">
       {withHeading && (
@@ -369,35 +395,7 @@ export default async function CharacterPage({
           <div className="h-px flex-1 bg-gradient-to-r from-dbz-orange/50 to-transparent" />
         </div>
       )}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-6">
-        {character.transformations.map((transfo) => (
-          <div
-            key={transfo.id}
-            className="dbz-panel p-4 flex flex-col items-center group hover:scale-105 transition-transform duration-300"
-          >
-            <div className="aspect-square w-full bg-dbz-bg border border-dbz-border p-2 mb-4 overflow-hidden relative rounded-lg">
-              <div className="absolute inset-0 halftone opacity-10" />
-              {/* `WikiImg` et non `<img>` : `mapTransfo` remplace une image
-							    absente par une chaîne VIDE, et `assetUrl("")` rend "". Le
-							    navigateur résout alors `src=""` en l'URL de la PAGE : il la
-							    retélécharge en entier pour dessiner une vignette cassée. Le
-							    repli du composant montre un repère neutre, et l'image
-							    existante devient paresseuse (ces vignettes sont en bas de
-							    fiche, derrière le sélecteur de catégories). */}
-              <WikiImg
-                src={transfo.image}
-                alt={transfo.name}
-                className="w-full h-full object-contain relative z-10 group-hover:scale-110 transition-transform duration-700"
-                placeholderClassName="relative z-10 flex h-full w-full items-center justify-center rounded"
-              />
-            </div>
-            <h3 className="text-xs font-bold text-white uppercase text-center group-hover:text-dbz-orange transition-colors leading-tight tracking-widest">
-              {transfo.name}
-            </h3>
-            {transfo.ki && <span className="scouter-text text-[10px] mt-2">KI: {transfo.ki}</span>}
-          </div>
-        ))}
-      </div>
+      {transformationCards(character.transformations)}
     </section>
   );
 
@@ -681,16 +679,7 @@ export default async function CharacterPage({
                 variant.transformationIds?.includes(item.id),
               );
               return items.length ? (
-                <ul key={`transformations-${variant.id}`} className="flex flex-wrap gap-2">
-                  {items.map((item) => (
-                    <li
-                      key={item.id}
-                      className="rounded-lg border border-dbz-border px-3 py-2 text-sm text-white/85"
-                    >
-                      {item.name}
-                    </li>
-                  ))}
-                </ul>
+                transformationCards(items, `transformations-${variant.id}`)
               ) : (
                 <p key={`transformations-${variant.id}`} className="text-sm text-white/55">
                   {versionT("noTransformations")}
