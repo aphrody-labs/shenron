@@ -9,7 +9,7 @@ import { WikiEditBar } from "@/components/wiki/WikiEditBar";
 import { FICHE_ASIDE, FICHE_GRID, FICHE_MAIN } from "@/components/wiki/fiche-layout";
 
 const FICHE_GRID_ASIDE_LEFT =
-  "grid items-start gap-8 lg:grid-cols-[minmax(18rem,22rem)_minmax(0,1fr)] lg:gap-10";
+  "grid items-start gap-8 lg:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)] lg:gap-10";
 const FICHE_ASIDE_LEFT = `space-y-4 lg:sticky top-[var(--shell-header-h,4rem)] lg:col-start-1 lg:row-start-1 lg:max-h-[calc(100dvh-var(--shell-header-h,4rem)-1.5rem)] lg:overflow-y-auto lg:pt-2 lg:[scrollbar-width:thin]`;
 const FICHE_MAIN_RIGHT = "min-w-0 space-y-10 lg:col-start-2 lg:row-start-1";
 
