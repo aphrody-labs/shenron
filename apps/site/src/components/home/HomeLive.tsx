@@ -218,7 +218,7 @@ export function HomePantheon({
         </h2>
         <Link
           href="/leaderboard"
-          className={`inline-flex min-h-11 items-center rounded-md text-sm font-semibold text-dbz-orange transition-colors hover:text-gi-clair ${focusRing}`}
+          className={`cursor-pointer inline-flex min-h-11 items-center rounded-md px-2 text-sm font-semibold text-dbz-orange transition-[color,scale] duration-150 hover:text-gi-clair active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100 ${focusRing}`}
         >
           {t("home.pantheon.allRanking")}
         </Link>
@@ -232,7 +232,11 @@ export function HomePantheon({
           {topMembers.slice(0, limit).map((m) => (
             <li key={m.discordId} className="flex min-h-12 items-center gap-3 py-1.5">
               <span
-                className={`w-6 shrink-0 text-center text-sm tabular-nums ${m.rank <= 3 ? "font-bold text-os" : "text-os/60"}`}
+                className={`grid size-6 shrink-0 place-items-center rounded-md text-xs tabular-nums ${
+                  m.rank <= 3
+                    ? "border border-dbz-orange/35 bg-dbz-orange/15 font-bold text-dbz-orange"
+                    : "text-os/60"
+                }`}
               >
                 {m.rank}
               </span>

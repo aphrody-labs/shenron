@@ -31,6 +31,7 @@ export function HomeBeerusFeature({ beerus }: { beerus: BeerusFeature }) {
     <div className={styles.feature}>
       <div className={styles.featureMain}>
         <p className={styles.eyebrow}>
+          <span className={styles.eyebrowDot} aria-hidden="true" />
           <T k="accueil.hero.featureEyebrow" />
         </p>
         <h2 className="sr-only">
@@ -71,9 +72,9 @@ export function HomeBeerusFeature({ beerus }: { beerus: BeerusFeature }) {
                   <span className={styles.episodeNumber}>
                     <T k="accueil.hero.episodeNumber" values={{ number: ep.number ?? "" }} />
                   </span>
-                  <span>{ep.title}</span>
+                  <span className={styles.episodeName}>{ep.title}</span>
                 </span>
-                <ArrowRight size={17} aria-hidden="true" />
+                <ArrowRight size={17} aria-hidden="true" className={styles.episodeArrow} />
               </Link>
             );
           })}

@@ -44,7 +44,7 @@ export function HomeMenuJourney({
             <ClientGatedWrap
               access={access}
               href={destination.href}
-              className="group flex h-full items-center gap-3 overflow-hidden rounded-xl border border-white/[0.08] bg-dbz-card/80 p-2 transition-colors hover:border-dbz-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange sm:flex-col sm:items-stretch sm:p-0"
+              className="group flex h-full cursor-pointer items-center gap-3 overflow-hidden rounded-xl border border-white/[0.08] bg-dbz-card/80 p-2 transition-[border-color,background-color,scale,translate] duration-150 ease-out hover:-translate-y-0.5 hover:border-dbz-gold active:scale-[0.98] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:active:scale-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange sm:flex-col sm:items-stretch sm:p-0"
             >
               <span className="relative size-20 shrink-0 overflow-hidden rounded-lg bg-dbz-bg sm:aspect-video sm:size-auto sm:w-full sm:rounded-none">
                 <Image
@@ -53,7 +53,7 @@ export function HomeMenuJourney({
                   fill
                   sizes="(min-width: 1280px) 22vw, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, 80px"
                   quality={70}
-                  className="object-cover object-[center_25%]"
+                  className="object-cover object-[center_25%] transition-transform duration-300 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                 />
               </span>
               <span className="flex min-w-0 flex-col gap-1 sm:p-4">

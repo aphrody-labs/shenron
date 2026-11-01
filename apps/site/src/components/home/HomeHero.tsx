@@ -32,15 +32,17 @@ export function HomeHero({
         <h1 className="sr-only">
           <T k="accueil.hero.title" />
         </h1>
-        <img
-          src="/brand/dragonballfr-logo.svg"
-          alt=""
-          width={416}
-          height={106}
-          fetchPriority="high"
-          className={styles.siteLogo}
-        />
-        {hero.lede.trim() && <p className={styles.lede}>{hero.lede.trim()}</p>}
+        <div className={styles.heroBrandRow}>
+          <img
+            src="/brand/dragonballfr-logo.svg"
+            alt=""
+            width={416}
+            height={106}
+            fetchPriority="high"
+            className={styles.siteLogo}
+          />
+          {hero.lede.trim() && <p className={styles.lede}>{hero.lede.trim()}</p>}
+        </div>
         {beerus?.latest && <HomeBeerusFeature beerus={beerus} />}
         {/* The episode block already carries the hero actions; the editorial link would repeat them. */}
         {!beerus?.latest && hero.ctaLabel.trim() && hero.ctaHref.trim() && (

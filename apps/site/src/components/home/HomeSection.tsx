@@ -1,16 +1,12 @@
 /**
- * Cadre commun des blocs de l'accueil : un titre, une phrase facultative, un
- * lien « tout voir » aligné à droite, puis le contenu.
- *
- * Un seul gabarit pour tous les blocs : l'accueil est une page d'application,
- * les blocs se lisent comme les panneaux d'un même écran, pas comme des
- * chapitres d'un magazine — pas de sur-titre, pas de numérotation, pas de
- * capitales espacées.
+ * Cadre commun des blocs de l'accueil : un titre souligné d'un repère d'accent,
+ * une phrase facultative, un lien « tout voir » aligné à droite avec retour au
+ * clic, puis le contenu.
  */
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { FlecheDroite } from "@aphrody/shenron-ui/icones";
-import { blockTitle, focusRing } from "./ui";
+import { blockTitle, focusRing, tactilePress } from "./ui";
 
 export function HomeSection({
   id,
@@ -37,24 +33,27 @@ export function HomeSection({
           <div
             className={`flex min-h-11 items-center gap-3 text-foreground ${moreHref && moreLabel ? "pr-14" : ""}`}
           >
+            <span aria-hidden="true" className="h-5 w-1 shrink-0 rounded-full bg-primary" />
             <h2 id={titleId} className={`min-w-0 flex-1 ${blockTitle}`}>
               {title}
             </h2>
           </div>
           {subtitle ? (
-            <p className="mt-1 max-w-[72ch] text-sm leading-relaxed text-muted-foreground">
+            <p className="mt-1.5 max-w-[72ch] pl-4 text-sm leading-relaxed text-muted-foreground">
               {subtitle}
             </p>
           ) : null}
-          <div className="pt-3">{children}</div>
+          <div className="pt-4">{children}</div>
         </div>
         {moreHref && moreLabel ? (
           <Link
             href={moreHref}
             aria-describedby={titleId}
-            className={`absolute right-0 top-0 grid h-11 w-11 shrink-0 place-items-center rounded-xl text-primary transition-colors hover:bg-secondary hover:text-secondary-foreground ${focusRing}`}
+            className={`group absolute right-0 top-0 grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-os/14 bg-dbz-card/80 text-primary ${tactilePress} hover:border-dbz-gold hover:bg-secondary hover:text-secondary-foreground active:scale-90 ${focusRing}`}
           >
-            <FlecheDroite size={22} />
+            <span className="transition-transform duration-150 group-hover:translate-x-0.5 motion-reduce:transition-none">
+              <FlecheDroite size={22} />
+            </span>
             <span className="sr-only">{moreLabel}</span>
           </Link>
         ) : null}
