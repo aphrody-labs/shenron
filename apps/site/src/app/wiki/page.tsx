@@ -637,24 +637,20 @@ async function WikiIndexContent() {
         </StreamRow>
       )}
 
-      <section className="relative overflow-hidden rounded-2xl border border-white/[0.1] bg-gradient-to-br from-white/[0.05] via-dbz-card/80 to-dbz-orange/[0.06] p-8 lg:p-10">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-dbz-orange/60 to-transparent"
-        />
+      <section className="rounded-xl border border-white/[0.08] p-8 lg:p-10">
         <h2 className="font-title text-[26px] text-white">{p("unfinishedTitle")}</h2>
         {/* Le circuit interne (« vous modifiez le texte, un relecteur publie,
 					    la modification garde votre nom ») a été retiré le 2026-09-12 : ce
 					    qu'un lecteur a besoin de savoir, c'est d'où vient le contenu et où
 					    cliquer. */}
-        <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-white/65">
+        <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-white/60">
           {p("unfinishedBody")}
         </p>
         <Link
           href="/wiki/contribute"
-          className="mt-6 inline-flex h-11 items-center rounded-full border border-dbz-orange/50 bg-dbz-orange/15 px-6 font-display text-[14px] font-semibold text-white transition-all hover:border-dbz-orange hover:bg-dbz-orange hover:text-encre active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
+          className="mt-6 inline-flex h-11 items-center rounded-full border border-white/15 px-6 font-display text-[14px] font-semibold text-white transition-colors hover:border-dbz-orange/60 hover:text-dbz-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
         >
-          {p("unfinishedCta")} →
+          {p("unfinishedCta")}
         </Link>
       </section>
     </WikiIndexPage>
@@ -674,52 +670,37 @@ async function WikiIndexContent() {
 function Rubriques({
   titre,
   items,
-  entriesUnit,
 }: {
   titre: string;
   items: Array<{ key: string; label: string; href: string; count: number; blurb: string | null }>;
-  entriesUnit: string;
+  entriesUnit?: string;
 }) {
   if (items.length === 0) return null;
   return (
     <section>
-      <div className="mb-5 flex items-center justify-between gap-4">
-        <h2 className="font-scouter text-[11px] uppercase tracking-[0.18em] text-white/55">
-          {titre}
-        </h2>
-        <span
-          className="h-px flex-1 bg-gradient-to-r from-white/[0.1] to-transparent"
-          aria-hidden
-        />
-      </div>
+      <h2 className="mb-5 font-scouter text-[11px] uppercase tracking-[0.18em] text-white/45">
+        {titre}
+      </h2>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((r) => (
           <GatedWrap
             key={r.key}
             href={r.href}
-            className="group relative flex h-full flex-col justify-between overflow-hidden rounded-xl border border-white/[0.09] bg-dbz-card/85 p-5 shadow-[0_10px_28px_-16px_rgba(0,0,0,0.65)] transition-all duration-150 hover:-translate-y-0.5 hover:border-dbz-orange/70 hover:bg-dbz-card active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
+            className="group flex h-full flex-col border border-white/[0.08] bg-dbz-card/80 p-4 transition-transform duration-150 hover:-translate-y-0.5 hover:border-dbz-orange hover:focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
           >
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent transition-colors group-hover:via-dbz-orange/70"
-            />
-            <div>
-              <span className="flex items-baseline justify-between gap-3">
-                <span className="font-display text-[16px] font-bold text-white transition-colors group-hover:text-dbz-orange">
-                  {r.label}
-                </span>
-                {r.count > 0 && (
-                  <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-0.5 font-scouter text-[11px] tabular-nums text-white/60 transition-colors group-hover:border-dbz-orange/35 group-hover:text-dbz-orange">
-                    {nf.format(r.count)} {entriesUnit}
-                  </span>
-                )}
+            <span className="flex items-baseline justify-between gap-3">
+              <span className="font-display text-[15px] font-bold text-white transition-colors group-hover:text-dbz-orange">
+                {r.label}
               </span>
-              {r.blurb && (
-                <span className="mt-2 block text-[13px] leading-relaxed text-white/60">
-                  {r.blurb}
+              {r.count > 0 && (
+                <span className="font-scouter text-[11px] tabular-nums text-white/40">
+                  {nf.format(r.count)}
                 </span>
               )}
-            </div>
+            </span>
+            {r.blurb && (
+              <span className="mt-1.5 text-[13px] leading-relaxed text-white/55">{r.blurb}</span>
+            )}
           </GatedWrap>
         ))}
       </div>

@@ -426,48 +426,36 @@ main:focus {
 
   /** High-readability solid wiki article card with crisp ink contour */
   .wiki-content-card {
-    @apply bg-dbz-card/95 border border-dbz-border rounded-xl p-6 sm:p-8 lg:p-10 relative min-w-0 overflow-hidden;
-    box-shadow:
-      0 14px 36px -16px rgba(0, 0, 0, 0.65),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    @apply bg-dbz-card border border-dbz-border rounded-xl p-6 sm:p-8 lg:p-10 relative min-w-0 overflow-hidden;
+    box-shadow: none;
   }
 
   /** Standardized Fandom / Databook Infobox */
   .wiki-infobox {
-    @apply border border-dbz-border bg-dbz-card/95 rounded-xl min-w-0 overflow-hidden relative select-none;
-    box-shadow:
-      0 16px 40px -16px rgba(0, 0, 0, 0.7),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    @apply border border-dbz-border bg-dbz-card rounded-xl min-w-0 overflow-hidden relative select-none;
+    box-shadow: none;
   }
 
   .wiki-infobox-header {
-    @apply bg-dbz-orange text-encre p-3.5 text-center font-sans font-black uppercase tracking-wider text-sm border-b border-encre;
-    background-image: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.16) 0%,
-      transparent 55%,
-      rgba(0, 0, 0, 0.12) 100%
-    );
+    @apply bg-dbz-orange text-encre p-3 text-center font-sans font-black uppercase tracking-wider text-sm border-b border-encre;
   }
 
   .wiki-infobox-row {
-    @apply flex justify-between items-baseline gap-3 py-2.5 px-3.5 border-b border-white/[0.08] text-sm transition-colors hover:bg-white/[0.03];
+    @apply flex justify-between items-center py-2.5 px-3.5 border-b border-white/[0.08] text-sm transition-colors hover:bg-white/[0.02];
   }
 
   .wiki-infobox-label {
-    @apply font-bold text-white/60 uppercase tracking-wide text-[11px] shrink-0 mr-3 font-mono;
+    @apply font-bold text-white/60 uppercase tracking-wide text-xs shrink-0 mr-3;
   }
 
   .wiki-infobox-value {
-    @apply font-extrabold text-white text-right break-words tabular-nums;
+    @apply font-extrabold text-white text-right break-words;
   }
 
   /** Table of contents / Quick Navigation */
   .wiki-toc {
-    @apply border border-dbz-border bg-dbz-card/90 rounded-xl p-4 space-y-2 backdrop-blur-md;
-    box-shadow:
-      0 10px 28px -14px rgba(0, 0, 0, 0.55),
-      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    @apply border border-dbz-border bg-dbz-card rounded-xl p-4 space-y-2;
+    box-shadow: none;
   }
 }
 

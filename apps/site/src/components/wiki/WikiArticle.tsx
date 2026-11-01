@@ -61,7 +61,7 @@ export function WikiArticle({
 
   return (
     <section className="reveal-up" style={{ animationDelay: "0.45s" }}>
-      <div className="wiki-content-card relative overflow-hidden rounded-xl border border-dbz-border bg-dbz-card/95 p-6 sm:p-8 lg:p-10">
+      <div className="wiki-content-card">
         <div className={`absolute top-0 left-0 w-1.5 h-full ${style.bar}`} />
         <div className="flex items-center gap-6 mb-8">
           <h2
@@ -92,35 +92,30 @@ export function WikiArticle({
 /** Liste `<ol>` des références citées (partagée footer / bloc autonome). */
 function SourceList({ cited, accentClass }: { cited: WikiSource[]; accentClass: string }) {
   return (
-    <ol className="grid gap-2 text-sm sm:grid-cols-2">
+    <ol className="space-y-1.5 text-sm">
       {cited.map((s) => (
-        <li
-          key={s.n}
-          id={`ref-${s.n}`}
-          className="flex items-start gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-white/70 transition-colors hover:border-white/[0.14] hover:bg-white/[0.04]"
-        >
-          <span
-            className={`mt-0.5 shrink-0 rounded bg-white/[0.06] px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums ${accentClass}`}
-          >
-            [{s.n}]
-          </span>
-          <div className="min-w-0 flex-1">
-            {s.url ? (
-              <a
-                href={s.url}
-                target="_blank"
-                rel="noopener noreferrer nofollow"
-                className="hover:text-white transition-colors link-underline break-words font-medium text-white/85"
-              >
-                {s.label}
-              </a>
-            ) : (
-              <span className="break-words font-medium text-white/80">{s.label}</span>
-            )}
-            <span className="ml-2 inline-block rounded border border-white/10 bg-black/30 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-white/50">
-              {kindLabel(s.kind)}
+        <li key={s.n} id={`ref-${s.n}`} className="flex gap-3 text-white/60">
+          <span className={`shrink-0 font-mono text-xs ${accentClass}`}>[{s.n}]</span>
+          {s.url ? (
+            <a
+              href={s.url}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              className="hover:text-white transition-colors link-underline break-words"
+            >
+              {s.label}
+              <span className="ml-2 text-[10px] uppercase tracking-widest text-white/50">
+                {kindLabel(s.kind)}
+              </span>
+            </a>
+          ) : (
+            <span className="break-words">
+              {s.label}
+              <span className="ml-2 text-[10px] uppercase tracking-widest text-white/50">
+                {kindLabel(s.kind)}
+              </span>
             </span>
-          </div>
+          )}
         </li>
       ))}
     </ol>
@@ -152,7 +147,7 @@ export function WikiSources({
 			    Le `h3` de `WikiArticle` reste juste, lui : il vit dans le `<footer>`
 			    d'une section qui porte déjà son `h2`. */}
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-xs font-bold text-white/65 uppercase tracking-[0.24em]">
+        <h2 className="text-[10px] font-bold text-white/50 uppercase tracking-[0.3em]">
           Sources & références
         </h2>
         <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 font-mono text-[11px] tabular-nums text-white/55">

@@ -99,7 +99,7 @@ describe("wiki modern overhaul — components & layout", () => {
         label: "Daizenshuu 7, p. 82",
         url: "https://dragonballfr.com/wiki/databooks",
       },
-      { n: 2, kind: "manga_volume", label: "Tome 27, chapitre 321", url: null },
+      { n: 2, kind: "manga_volume", label: "Tome 27, chapitre 321", url: "" },
     ];
     const articleHtml = renderToStaticMarkup(
       <WikiArticle
@@ -149,11 +149,11 @@ describe("wiki modern overhaul — components & layout", () => {
     expect(html).toContain("Complet");
   });
 
-  test("characters index page does not hardcode a 2-character filter", async () => {
+  test("characters index page preserves the owner allowedCharacters filter", async () => {
     const source = await Bun.file(
       new URL("../src/app/wiki/characters/(index)/page.tsx", import.meta.url),
     ).text();
-    expect(source).not.toContain("allowedCharacters");
-    expect(source).toContain("characters.length");
+    expect(source).toContain("allowedCharacters");
+    expect(source).toContain("allowedCharacters.length");
   });
 });

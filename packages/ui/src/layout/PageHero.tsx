@@ -94,18 +94,11 @@ export function PageHero({
          * fiable. On garde néanmoins un repère visuel DBFR, issu des assets
          * locaux, sans faire passer une image générique pour le sujet de la fiche.
          */
-        <>
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_65%_85%_at_18%_0%,rgba(231,130,32,0.11),transparent_70%)]"
-          />
-          <div aria-hidden className="pointer-events-none absolute inset-0 screentone opacity-40" />
-          <KintoUn
-            decorative
-            hauteur={170}
-            className="pointer-events-none absolute right-[-2rem] top-1/2 hidden -translate-y-1/2 opacity-[0.16] saturate-[0.8] md:block"
-          />
-        </>
+        <KintoUn
+          decorative
+          hauteur={170}
+          className="pointer-events-none absolute right-[-2rem] top-1/2 hidden -translate-y-1/2 opacity-[0.16] saturate-[0.8] md:block"
+        />
       )}
 
       <div
