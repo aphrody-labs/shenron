@@ -15,6 +15,7 @@ the root `AGENTS.md`.
 | SVG pipeline                                                     | [`architecture/pipeline-svg.md`](architecture/pipeline-svg.md)                                                                                      |
 | Lecteur HLS et génération vidéo                                  | [`video/README.md`](video/README.md)                                                                                                                |
 | Environment variables                                            | [`operations/ENV.md`](operations/ENV.md)                                                                                                            |
+| Dragon Ball web crawler, collecte, indexation et services VPS | [operations/dragon-ball-web.md](operations/dragon-ball-web.md) |
 | Database parity (PostgreSQL, SQLite)                             | [`operations/database-parity.md`](operations/database-parity.md)                                                                                    |
 | RAG and LLM compute (compute host, databases, tunnels)           | [`operations/compute-rag.md`](operations/compute-rag.md)                                                                                            |
 | Pilotage admin natif (FFI, WASM, jobs et services Docker)        | [`operations/admin-native-pipeline.md`](operations/admin-native-pipeline.md)                                                                        |
