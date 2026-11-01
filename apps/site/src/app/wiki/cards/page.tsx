@@ -194,7 +194,7 @@ export default async function CardCatalogPage({ searchParams }: { searchParams: 
         </p>
       ) : (
         <>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
             {data.rows.map(({ card, set, series }) => {
               const valuation = data.latestValuations.get(card.id);
               const releaseDate = dateLabel(
