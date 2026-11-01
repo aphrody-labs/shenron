@@ -27,9 +27,40 @@ const cardImportRow = z
     sourceLabel: z.string().trim().min(1).max(180),
     sourceUrl: z.string().url().max(2048),
     sourceAccessedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    frontImageUrl: z.string().url().max(2048).optional(),
+    frontImageSourceUrl: z.string().url().max(2048).optional(),
+    frontImageRights: z.string().trim().max(500).optional(),
     status: z.enum(["draft", "published"]).optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((row, context) => {
+    const imageFields = [row.frontImageUrl, row.frontImageSourceUrl, row.frontImageRights];
+    if (imageFields.some(Boolean) && !imageFields.every(Boolean)) {
+      context.addIssue({
+        code: "custom",
+        message: "Image URL, source and rights must be provided together",
+        path: ["frontImageUrl"],
+      });
+      return;
+    }
+    if (row.frontImageUrl) {
+      const imageUrl = new URL(row.frontImageUrl);
+      const sourceUrl = new URL(row.frontImageSourceUrl!);
+      if (
+        imageUrl.protocol !== "https:" ||
+        imageUrl.hostname !== "cdn.dragonballfr.com" ||
+        !/^\/publications\/[a-z0-9-]+\/objects\/[a-f0-9]{64}\.[a-z0-9]+$/.test(imageUrl.pathname) ||
+        sourceUrl.protocol !== "https:"
+      ) {
+        context.addIssue({
+          code: "custom",
+          message:
+            "Imported card images must use a content-addressed DBFR CDN URL and HTTPS source",
+          path: ["frontImageUrl"],
+        });
+      }
+    }
+  });
 
 type ImportIssueCode =
   | "invalid-json"
@@ -282,9 +313,9 @@ export async function importCardCatalogBatch(
           rarity: row.rarity || null,
           releaseDate: row.releaseDate ?? null,
           description: before?.description ?? null,
-          frontImageUrl: before?.frontImageUrl ?? null,
-          frontImageSourceUrl: before?.frontImageSourceUrl ?? null,
-          frontImageRights: before?.frontImageRights ?? null,
+          frontImageUrl: row.frontImageUrl ?? before?.frontImageUrl ?? null,
+          frontImageSourceUrl: row.frontImageSourceUrl ?? before?.frontImageSourceUrl ?? null,
+          frontImageRights: row.frontImageRights ?? before?.frontImageRights ?? null,
           backImageUrl: before?.backImageUrl ?? null,
           backImageSourceUrl: before?.backImageSourceUrl ?? null,
           backImageRights: before?.backImageRights ?? null,
