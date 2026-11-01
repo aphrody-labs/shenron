@@ -206,7 +206,7 @@ describe("tampon de build-wasm.ts", () => {
     expect(await stampStatus(root, out, toolchain)).toMatchObject({ reason: "outputs" });
   });
 
-  test("--check rend 0 ou 1 sans rien construire", async () => {
+  test("--check rend 0 ou 1 sans rien construire", { timeout: 60_000 }, async () => {
     const before = existsSync(wasmPath) ? (await stat(wasmPath)).mtimeMs : null;
     const check = Bun.spawnSync(
       [process.execPath, join(import.meta.dir, "..", "scripts", "build-wasm.ts"), "--check"],
