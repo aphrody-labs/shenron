@@ -11,7 +11,6 @@ const framedRoutes = [
   "../src/app/wiki/sagas/[slug]/page.tsx",
   "../src/app/wiki/items/[slug]/page.tsx",
   "../src/app/wiki/games/[slug]/page.tsx",
-  "../src/app/wiki/cards/[slug]/page.tsx",
   "../src/app/wiki/contributors/[slug]/page.tsx",
 ];
 

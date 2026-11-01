@@ -1,5 +1,7 @@
 import { VipPricingCards } from "@/components/stripe/VipPricingCards";
 import { Metadata } from "next";
+import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "DBFR VIP Club — Abonnement & Soutien",
@@ -7,7 +9,8 @@ export const metadata: Metadata = {
     "Accédez à une lecture manga sans publicité, en haute résolution avec des avant-premières exclusives.",
 };
 
-export default function VipPage() {
+export default async function VipPage() {
+  const tBilling = await getTranslations("billing");
   return (
     <div className="min-h-screen bg-black text-white selection:bg-amber-500 selection:text-black">
       {/* Background Toriyama Dragon Aura */}
@@ -18,6 +21,14 @@ export default function VipPage() {
 
       <div className="relative z-10 pt-16 pb-24">
         <VipPricingCards />
+        <p className="mt-3 text-center text-sm text-white/55">
+          <Link
+            href="/account/billing"
+            className="underline underline-offset-4 hover:text-amber-300"
+          >
+            {tBilling("accountBillingLink")}
+          </Link>
+        </p>
       </div>
     </div>
   );

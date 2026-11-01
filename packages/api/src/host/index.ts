@@ -18,13 +18,13 @@
  * module load. Variables are listed in docs/architecture/STACK.md §3.6.
  */
 import { createPublicRagPort } from "./rag";
+export { sendSmtpEmail } from "./smtp-email";
 import { createHostFavorites } from "./favorites";
 import type { Database } from "bun:sqlite";
 import { existsSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, normalize, resolve, sep } from "node:path";
 import { verifyActingUser } from "@aphrody/shenron-auth/acting-user";
-import { AUTH_BASE_PATH } from "@aphrody/shenron-auth";
 import { hmacSha256Hex, parseBearer, timingSafeEqualString } from "@aphrody/shenron-auth/crypto";
 import {
   ENV_ALIASES,
@@ -84,6 +84,7 @@ import {
   type ShenronApiService,
   type VfsPort,
   type WebPort,
+  isBetterAuthPath,
 } from "../server";
 
 /** Owner headers of a signed site session user or desktop account. */
@@ -646,10 +647,8 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
         ? { port: options.betterAuth }
         : { reason: "authentification désactivée" };
   const betterAuthPort = "port" in authBuilt ? authBuilt.port : null;
-  const isAuthPath = (pathname: string) =>
-    pathname === AUTH_BASE_PATH || pathname.startsWith(`${AUTH_BASE_PATH}/`);
   const unavailableAuth = (request: Request) =>
-    !betterAuthPort && isAuthPath(new URL(request.url).pathname)
+    !betterAuthPort && isBetterAuthPath(new URL(request.url).pathname)
       ? Response.json(
           { error: "auth_unavailable" },
           {
@@ -765,7 +764,10 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     conversations,
     groups,
     handles: (pathname) =>
-      isAuthPath(pathname) || isDesktopLink(pathname) || isAsset(pathname) || api.handles(pathname),
+      isBetterAuthPath(pathname) ||
+      isDesktopLink(pathname) ||
+      isAsset(pathname) ||
+      api.handles(pathname),
     async fetch(request, server) {
       mark(request, server);
       const authUnavailable = unavailableAuth(request);

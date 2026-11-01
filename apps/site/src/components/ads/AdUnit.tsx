@@ -35,7 +35,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useLangue } from "@/lib/i18n/client";
+import { useT } from "@/components/T";
 import { AD_PLACEMENTS, ADSENSE_CLIENT, getAdPlacement, type AdPlacement } from "@/lib/ads";
+import { useAdsEligibility } from "@/lib/ads-eligibility";
 
 declare global {
   interface Window {
@@ -65,16 +68,109 @@ interface AdUnitProps {
  */
 const DELAI_REPLI_MS = 4000;
 
-export function AdUnit({ placement, className = "", label = "Publicité" }: AdUnitProps) {
+export function AdUnit({ placement, className = "", label }: AdUnitProps) {
+  const t = useT();
+  const labelText = label === undefined ? t("ads.label") : label;
   const spec = getAdPlacement(placement);
+  const directPlacement = process.env.NODE_ENV === "development" ? null : placement;
   const pathname = usePathname();
+  const { locale } = useLangue();
+  const eligible = useAdsEligibility(pathname);
   const hostRef = useRef<HTMLDivElement | null>(null);
   // `sans-reponse` : réservation relâchée, bloc toujours monté (une annonce
   // tardive reste affichable) — à distinguer d'un invendu, qui replie tout.
   const [state, setState] = useState<"pending" | "filled" | "unfilled" | "sans-reponse">("pending");
+  const [directAd, setDirectAd] = useState<{
+    campaignId: string;
+    creativeId: string;
+    format: "banner" | "native" | "rectangle";
+    headline: string;
+    body: string | null;
+    imageUrl: string | null;
+    destinationUrl: string;
+  } | null>(null);
 
   useEffect(() => {
-    if (!spec) return;
+    let active = true;
+    if (!eligible || !pathname || !directPlacement) {
+      // oxlint-disable-next-line react/set-state-in-effect -- clear an already rendered ad as soon as the page becomes ineligible.
+      setDirectAd(null);
+      return () => {
+        active = false;
+      };
+    }
+    const params = new URLSearchParams({
+      placement: directPlacement,
+      path: pathname,
+      locale: locale === "en" || locale === "ja" ? locale : "fr",
+    });
+    void fetch(`/api/ads/campaigns?${params}`, { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) return null;
+        const payload: unknown = await response.json();
+        if (!payload || typeof payload !== "object" || !("ads" in payload)) return null;
+        const ads = payload.ads;
+        if (!Array.isArray(ads) || !ads.length) return null;
+        const candidates = ads.filter(
+          (ad): ad is Record<string, unknown> => !!ad && typeof ad === "object",
+        );
+        for (const candidate of candidates) {
+          if (
+            typeof candidate.creativeId !== "string" ||
+            typeof candidate.headline !== "string" ||
+            typeof candidate.campaignId !== "string" ||
+            !["banner", "native", "rectangle"].includes(String(candidate.format))
+          ) {
+            continue;
+          }
+          const impressionParams = new URLSearchParams({
+            placement: directPlacement,
+            path: pathname,
+            locale: locale === "en" || locale === "ja" ? locale : "fr",
+            campaign: candidate.campaignId,
+            creative: candidate.creativeId,
+          });
+          const impression = await fetch(`/api/ads/impression?${impressionParams}`, {
+            cache: "no-store",
+          });
+          if (!impression.ok) continue;
+          const receipt: unknown = await impression.json();
+          if (!receipt || typeof receipt !== "object" || !("ad" in receipt)) continue;
+          const rendered = receipt.ad;
+          if (
+            !rendered ||
+            typeof rendered !== "object" ||
+            !("destinationUrl" in rendered) ||
+            typeof rendered.destinationUrl !== "string"
+          ) {
+            continue;
+          }
+          return {
+            campaignId: candidate.campaignId as string,
+            creativeId: candidate.creativeId,
+            format: candidate.format as "banner" | "native" | "rectangle",
+            headline: candidate.headline,
+            body: typeof candidate.body === "string" ? candidate.body : null,
+            imageUrl: typeof candidate.imageUrl === "string" ? candidate.imageUrl : null,
+            destinationUrl: rendered.destinationUrl,
+          };
+        }
+        return null;
+      })
+      .then((ad) => {
+        if (active) setDirectAd(ad);
+        return ad;
+      })
+      .catch(() => {
+        if (active) setDirectAd(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [directPlacement, eligible, locale, pathname, placement]);
+
+  useEffect(() => {
+    if (!spec || !eligible) return;
     const host = hostRef.current;
     const ins = host?.querySelector<HTMLElement>("ins.adsbygoogle");
     if (!host || !ins) return;
@@ -122,7 +218,7 @@ export function AdUnit({ placement, className = "", label = "Publicité" }: AdUn
       observer.disconnect();
       window.clearTimeout(repli);
     };
-  }, [spec, pathname]);
+  }, [spec, pathname, eligible]);
 
   // En développement, aucun `<ins>` réel n'est poussé (charger de vraies
   // annonces hors production est un motif de suspension du compte AdSense) :
@@ -134,8 +230,47 @@ export function AdUnit({ placement, className = "", label = "Publicité" }: AdUn
         className={`ed-no-print print:hidden grid w-full place-items-center rounded-sm border border-dashed border-white/15 bg-white/[0.02] text-[11px] uppercase tracking-[0.18em] text-white/50 ${className}`}
         style={{ minHeight: shape.minHeight }}
       >
-        Emplacement pub · {placement} · {shape.format}
+        {t("ads.developmentPlacement", { placement, format: shape.format })}
       </div>
+    );
+  }
+
+  if (process.env.NODE_ENV !== "development" && !eligible) return null;
+
+  if (directAd) {
+    return (
+      <aside
+        className={`rounded-xl border border-white/12 bg-white/[0.035] p-4 ${className}`}
+        aria-label={t("ads.sponsored")}
+      >
+        <p className="mb-2 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-white/50">
+          {t("ads.sponsored")}
+        </p>
+        <a
+          className="flex items-center gap-4 text-inherit no-underline"
+          href={directAd.destinationUrl}
+          target="_blank"
+          rel="sponsored nofollow noopener noreferrer"
+          data-ad-creative={directAd.creativeId}
+        >
+          {directAd.imageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              className="max-h-28 max-w-40 rounded-lg object-contain"
+              src={directAd.imageUrl}
+              alt=""
+              loading="lazy"
+              referrerPolicy="no-referrer"
+            />
+          )}
+          <span className="min-w-0">
+            <strong className="block">{directAd.headline}</strong>
+            {directAd.body && (
+              <span className="mt-1 block text-sm text-white/70">{directAd.body}</span>
+            )}
+          </span>
+        </a>
+      </aside>
     );
   }
 
@@ -154,9 +289,9 @@ export function AdUnit({ placement, className = "", label = "Publicité" }: AdUn
       style={state === "pending" ? { minHeight: spec.minHeight } : undefined}
       aria-hidden={state === "unfilled"}
     >
-      {label && state !== "unfilled" && state !== "sans-reponse" && (
+      {labelText && state !== "unfilled" && state !== "sans-reponse" && (
         <p className="mb-1.5 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-white/50">
-          {label}
+          {labelText}
         </p>
       )}
       <ins

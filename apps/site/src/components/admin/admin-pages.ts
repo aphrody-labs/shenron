@@ -33,6 +33,7 @@ export const ADMIN_PAGES = {
   postNew: { family: "site", route: "/admin/posts/new" },
   postEdit: { family: "site", route: "/admin/posts/[id]" },
   banners: { family: "site", route: "/admin/banners" },
+  monetization: { family: "site", route: "/admin/monetization" },
 
   logs: { family: "systeme", route: "/admin/logs" },
   settings: { family: "systeme", route: "/admin/settings" },

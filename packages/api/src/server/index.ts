@@ -142,6 +142,18 @@ export interface BetterAuthPort {
 /** Base path of {@link BetterAuthPort}. */
 export const BETTER_AUTH_PATH = "/api/auth";
 
+/** Root-level OAuth/MCP metadata aliases defined by the Better Auth plugins. */
+const AUTH_WELL_KNOWN_PATHS = new Set([
+  "/.well-known/oauth-protected-resource",
+  "/.well-known/oauth-protected-resource/mcp",
+  "/.well-known/oauth-authorization-server/api/auth",
+]);
+
+export const isBetterAuthPath = (pathname: string) =>
+  pathname === BETTER_AUTH_PATH ||
+  pathname.startsWith(`${BETTER_AUTH_PATH}/`) ||
+  AUTH_WELL_KNOWN_PATHS.has(pathname);
+
 export interface AuthPort {
   /** Conversation owner of the request (site session, signed bot user, desktop user), or null. */
   owner(request: Request): Promise<string | null>;
@@ -1142,11 +1154,8 @@ export function createShenronApi(
   const mcpPrefix = "/mcp";
 
   const betterAuth = ports.betterAuth ?? null;
-  const isAuthPath = (pathname: string) =>
-    pathname === BETTER_AUTH_PATH || pathname.startsWith(`${BETTER_AUTH_PATH}/`);
-
   const handles = (pathname: string): boolean =>
-    (betterAuth !== null && isAuthPath(pathname)) ||
+    (betterAuth !== null && isBetterAuthPath(pathname)) ||
     router.match(pathname).length > 0 ||
     (mcp !== null && (pathname === mcpPrefix || pathname.startsWith(`${mcpPrefix}/`)));
 
@@ -1205,7 +1214,7 @@ export function createShenronApi(
       });
       return response;
     };
-    if (betterAuth && isAuthPath(path)) {
+    if (betterAuth && isBetterAuthPath(path)) {
       try {
         return finish(await betterAuth.handler(request));
       } catch (error) {
@@ -1419,6 +1428,9 @@ export function createShenronApi(
       POST: handler,
       OPTIONS: handler,
     };
+    for (const path of AUTH_WELL_KNOWN_PATHS) {
+      routes[path] = { GET: handler, HEAD: handler, OPTIONS: handler };
+    }
   }
   if (mcp) {
     const proxy: RouteFn = (request, server) => dispatch(request, server);

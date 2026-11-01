@@ -1,7 +1,7 @@
 {
   "journal": {
-    "entries": 24,
-    "files": 36,
+    "entries": 32,
+    "files": 44,
     "journaled": [
       "0000_dark_johnny_blaze",
       "0001_natural_switch",
@@ -26,7 +26,15 @@
       "0033_character_variant_battles",
       "0034_character_variant_technique_uses",
       "0035_character_variant_appearances",
-      "0036_character_variant_supplements"
+      "0036_character_variant_supplements",
+      "0037_site_billing_webhook_events",
+      "0038_paypal_subscriptions",
+      "0039_direct_advertising",
+      "0040_better_auth_features_oauth",
+      "0041_ad_campaign_placements",
+      "0042_site_email_outbox",
+      "0043_site_subscription_checkout_reservations",
+      "0044_site_donation_refund_state"
     ],
     "unjournaled": [
       "0007_post_cms",
@@ -187,6 +195,54 @@
         "tag": "0036_character_variant_supplements",
         "when": 1793481706354,
         "breakpoints": true
+      },
+      {
+        "idx": 24,
+        "tag": "0037_site_billing_webhook_events",
+        "when": 1793495700000,
+        "breakpoints": true
+      },
+      {
+        "idx": 25,
+        "tag": "0038_paypal_subscriptions",
+        "when": 1793495701000,
+        "breakpoints": true
+      },
+      {
+        "idx": 26,
+        "tag": "0039_direct_advertising",
+        "when": 1793495702000,
+        "breakpoints": true
+      },
+      {
+        "idx": 27,
+        "tag": "0040_better_auth_features_oauth",
+        "when": 1793495703000,
+        "breakpoints": true
+      },
+      {
+        "idx": 28,
+        "tag": "0041_ad_campaign_placements",
+        "when": 1793495704000,
+        "breakpoints": true
+      },
+      {
+        "idx": 29,
+        "tag": "0042_site_email_outbox",
+        "when": 1793495705000,
+        "breakpoints": true
+      },
+      {
+        "idx": 30,
+        "tag": "0043_site_subscription_checkout_reservations",
+        "when": 1793495706000,
+        "breakpoints": true
+      },
+      {
+        "idx": 31,
+        "tag": "0044_site_donation_refund_state",
+        "when": 1793495707000,
+        "breakpoints": true
       }
     ]
   },
@@ -199,12 +255,15 @@
     "0005_snapshot.json"
   ],
   "tablesFilter": {
-    "filtered": 21,
-    "schemaTables": 40,
+    "filtered": 39,
+    "schemaTables": 61,
     "uncovered": [
       "ba_subscription",
+      "site_subscription_checkout_reservations",
+      "site_email_outbox",
       "site_donations",
       "site_ad_slots",
+      "site_ad_campaign_placements",
       "ContributionRights",
       "CanonConfig",
       "WikiLaunch",
@@ -275,6 +334,14 @@
     "0033_character_variant_battles": "8af7884a900b138b03bf7c86a01d9cc66323b2fc2b3421a7f277d9806bc89899",
     "0034_character_variant_technique_uses": "2c99df95ff303e186a7402b7ff98219ab2c526814dd6cc0480e6c3bc2c40939b",
     "0035_character_variant_appearances": "ea9e5704adaff6b2d455679706156db4d6f8de068461b4a8cb6c59030d1bcacc",
-    "0036_character_variant_supplements": "ffa83d37ba0b0a4f410893ab8502ce2986343ade616dea998ad0b7968d450225"
+    "0036_character_variant_supplements": "ffa83d37ba0b0a4f410893ab8502ce2986343ade616dea998ad0b7968d450225",
+    "0037_site_billing_webhook_events": "745c86a2f60c7093bb5cc190b2d010d44d97a502d05f804a7b2caeb351f9a124",
+    "0038_paypal_subscriptions": "d926c6e21f78c5592b1a05b74d57a9872c2f6f447a92a68fead604e60b0e7750",
+    "0039_direct_advertising": "0d9261302776864e5149613423255b554182928b26e62f03f3550e30d40ac17a",
+    "0040_better_auth_features_oauth": "caba440bf8ea94ad749bd1e3fd9bc7a358144612b0e06b633b28b9cf062c7d6e",
+    "0041_ad_campaign_placements": "6f239a2ebdfee0b6bb6d2d89a0168463c15d043d817215c0609363310eb14489",
+    "0042_site_email_outbox": "3e164d8432c5eada403c552227a38f851019cf9811b6b65006f50d840fb70a62",
+    "0043_site_subscription_checkout_reservations": "9225bfb997dab629f43a026f7d77a05c514da2ec92983ca3ce042064fce1aee4",
+    "0044_site_donation_refund_state": "cd11b308f77f9c37d2bf2c9f459ce701a120bcd88487e09b2bc2d4525375137b"
   }
 }

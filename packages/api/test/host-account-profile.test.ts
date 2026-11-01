@@ -11,6 +11,16 @@ test("Better Auth synchronizes after Discord linking and valid HTTP profile writ
     account: [],
     session: [],
     verification: [],
+    twoFactor: [],
+    passkey: [],
+    jwks: [],
+    oauthClient: [],
+    oauthResource: [],
+    oauthClientResource: [],
+    oauthRefreshToken: [],
+    oauthAccessToken: [],
+    oauthConsent: [],
+    oauthClientAssertion: [],
   };
   const synchronized: { name: unknown; image: unknown }[] = [];
   const hooks = accountProfileHooks({

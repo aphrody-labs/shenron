@@ -1,7 +1,8 @@
 "use client";
 
 import { useId, useState } from "react";
-import { DONATION_TIERS } from "@/lib/stripe";
+import { useTranslations } from "next-intl";
+import { DONATION_TIERS } from "@/lib/billing-catalog";
 
 export function DonationModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [selectedTier, setSelectedTier] = useState<string>("dragon_ball");
@@ -11,6 +12,8 @@ export function DonationModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
   const [isAnonymous, setIsAnonymous] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [provider, setProvider] = useState<"stripe" | "paypal">("stripe");
+  const tBilling = useTranslations("billing");
   const fieldId = useId();
 
   if (!isOpen) return null;
@@ -24,13 +27,13 @@ export function DonationModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
       setLoading(true);
       setError(null);
 
-      if (!finalAmount || isNaN(finalAmount) || finalAmount < 100) {
+      if (!Number.isSafeInteger(finalAmount) || finalAmount < 100 || finalAmount > 500_000) {
         setError("Le montant minimum est de 1,00 €.");
         setLoading(false);
         return;
       }
 
-      const res = await fetch("/api/stripe/donate", {
+      const res = await fetch(`/api/${provider}/donate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -210,19 +213,37 @@ export function DonationModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
               {(finalAmount / 100).toFixed(2)} €
             </span>
           </div>
+        </div>
+        <div className="mt-3 grid grid-cols-2 gap-2">
           <button
             type="button"
-            disabled={loading}
-            onClick={handleDonate}
-            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 px-5 py-2.5 text-xs font-bold text-black shadow-lg shadow-amber-500/25 transition-all hover:brightness-110 active:scale-98 disabled:opacity-50"
+            aria-pressed={provider === "stripe"}
+            onClick={() => setProvider("stripe")}
+            className={`rounded-lg border px-3 py-2 text-xs font-semibold ${provider === "stripe" ? "border-amber-400 bg-amber-400/10 text-amber-200" : "border-neutral-800 text-neutral-400"}`}
           >
-            {loading ? (
-              <span className="inline-block h-3.5 w-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <span>⚡ Envoyer mon Énergie</span>
-            )}
+            {tBilling("cardPayment")}
+          </button>
+          <button
+            type="button"
+            aria-pressed={provider === "paypal"}
+            onClick={() => setProvider("paypal")}
+            className={`rounded-lg border px-3 py-2 text-xs font-semibold ${provider === "paypal" ? "border-amber-400 bg-amber-400/10 text-amber-200" : "border-neutral-800 text-neutral-400"}`}
+          >
+            PayPal
           </button>
         </div>
+        <button
+          type="button"
+          disabled={loading}
+          onClick={handleDonate}
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 px-5 py-2.5 text-xs font-bold text-black shadow-lg shadow-amber-500/25 transition-all hover:brightness-110 active:scale-98 disabled:opacity-50"
+        >
+          {loading ? (
+            <span className="inline-block h-3.5 w-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <span>⚡ Envoyer mon Énergie</span>
+          )}
+        </button>
       </div>
     </div>
   );
