@@ -44,6 +44,11 @@ git -C "$SOURCE" fetch -q origin
 REVISION=$(git -C "$SOURCE" rev-parse --verify "${1:-${SHENRON_BUILD_REVISION:-origin/main}}^{commit}")
 git -C "$SOURCE" worktree prune
 if [ -e "$W/.git" ]; then
+  # The reusable worktree may belong to a persistent repository while SOURCE is an ephemeral
+  # CI checkout. Copy the exact target commit into the worktree's object database before checkout.
+  if ! git -C "$W" cat-file -e "$REVISION^{commit}" 2>/dev/null; then
+    git -C "$W" fetch -q --no-tags "$SOURCE" "$REVISION"
+  fi
   git -C "$W" checkout -q -f --detach "$REVISION"
   git -C "$W" clean -ffdq -e target -e node_modules -e '.next*' -e .cache -e dist/vfs
 else
