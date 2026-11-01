@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { canvasModuleIsCrossOrigin, preloadCanvasModule } from "../src/canvas.ts";
+import { canvasModuleIsCrossOrigin } from "../src/canvas.ts";
 
 describe("canvasModuleIsCrossOrigin", () => {
   test("le WASM du bundle (file:, origine opaque) reste celui d'une page HTTPS", () => {
@@ -20,6 +20,9 @@ describe("preloadCanvasModule({ sameOriginOnly })", () => {
       value: { origin: "https://dragonballfr.com" },
     });
     let fetched = 0;
+    const { preloadCanvasModule } = await import(
+      new URL("../src/canvas.ts?canvas-origin-test", import.meta.url).href
+    );
     globalThis.fetch = Object.assign(
       (input: RequestInfo | URL): Promise<Response> => {
         fetched += 1;

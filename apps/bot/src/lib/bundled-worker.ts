@@ -1,5 +1,5 @@
 import { isCompiledBinary } from "@aphrody/discord-kit";
-import { dirname } from "node:path";
+import { dirname, win32 } from "node:path";
 
 /**
  * Bun Workers of the bot, source tree and `bun build --compile` binary alike.
@@ -22,7 +22,13 @@ export function bundledWorkerSpecifier(
   file: string,
   { compiled = isCompiledBinary(), main = Bun.main }: Runtime = {},
 ): string {
-  if (compiled) return `${dirname(main).replaceAll("\\", "/")}/${COMPILED_WORKER_DIR}/${file}`;
+  if (compiled) {
+    const directory = (main.includes("\\") ? win32.dirname(main) : dirname(main)).replaceAll(
+      "\\",
+      "/",
+    );
+    return `${directory}/${COMPILED_WORKER_DIR}/${file}`;
+  }
   return new URL(`../workers/${file}`, import.meta.url).href;
 }
 
