@@ -4,7 +4,6 @@ import { and, asc, count, desc, eq, gt, ilike, inArray, or } from "drizzle-orm";
 import { cache } from "react";
 import { db, schema } from "@/lib/db";
 
-export const CARD_CATALOG_PAGE_SIZE = 36;
 export const CARD_CATALOG_ADMIN_PAGE_SIZE = 50;
 
 const publishedCatalogWhere = and(
@@ -32,7 +31,6 @@ export async function getPublicCardCatalog(
     seriesId?: string;
     language?: string;
     region?: string;
-    after?: string;
   } = {},
 ) {
   const conditions = [publishedCatalogWhere];
@@ -52,8 +50,6 @@ export async function getPublicCardCatalog(
     );
   }
 
-  const pageConditions = [...conditions];
-  if (filters.after) pageConditions.push(gt(schema.cardCatalogCards.slug, filters.after));
   const [rows, totalRows] = await Promise.all([
     db
       .select({
@@ -70,9 +66,8 @@ export async function getPublicCardCatalog(
         schema.cardCatalogSeries,
         eq(schema.cardCatalogSets.seriesId, schema.cardCatalogSeries.id),
       )
-      .where(and(...pageConditions))
-      .orderBy(asc(schema.cardCatalogCards.slug))
-      .limit(CARD_CATALOG_PAGE_SIZE + 1),
+      .where(and(...conditions))
+      .orderBy(asc(schema.cardCatalogCards.slug)),
     db
       .select({ value: count() })
       .from(schema.cardCatalogCards)
@@ -87,8 +82,7 @@ export async function getPublicCardCatalog(
       .where(and(...conditions)),
   ]);
 
-  const hasMore = rows.length > CARD_CATALOG_PAGE_SIZE;
-  const visibleRows = hasMore ? rows.slice(0, CARD_CATALOG_PAGE_SIZE) : rows;
+  const visibleRows = rows;
   const [series, languages, regions] = await Promise.all([
     db
       .selectDistinct({ id: schema.cardCatalogSeries.id, name: schema.cardCatalogSeries.name })
@@ -150,7 +144,6 @@ export async function getPublicCardCatalog(
     rows: visibleRows,
     latestValuations: latest,
     total: Number(totalRows[0]?.value ?? 0),
-    nextCursor: hasMore ? (visibleRows.at(-1)?.card.slug ?? null) : null,
     series,
     languages: languages.map((row) => row.value),
     regions: regions.map((row) => row.value),
