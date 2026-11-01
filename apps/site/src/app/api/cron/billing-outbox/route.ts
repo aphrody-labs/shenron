@@ -1,5 +1,6 @@
 import { and, asc, eq, inArray, lte, lt, or, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+import "server-only";
 import { sendSmtpEmail } from "@aphrody/shenron-api/host";
 import { siteEmailOutbox } from "@/db/schema";
 import { db } from "@/lib/db";
