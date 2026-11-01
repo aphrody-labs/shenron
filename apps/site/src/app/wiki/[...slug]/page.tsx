@@ -1,12 +1,15 @@
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { DomainBar } from "@/components/kit/DomainBar";
 import { T } from "@/components/T";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
+import { getWikiReaderMessages, type WikiLocale } from "@/lib/wiki-character-version-messages";
 import { db } from "@/lib/db";
 import { isCurrentUserAdmin } from "@/lib/session";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Image from "next/image";
+import { getLocale } from "next-intl/server";
 
 /** Extrait lisible du corps markdown, pour la balise description. */
 function extrait(body: string, max = 160): string {
@@ -72,19 +75,39 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
   )
     notFound();
 
-  const isAdmin = await isCurrentUserAdmin();
+  const [isAdmin, rawLocale] = await Promise.all([
+    isCurrentUserAdmin(),
+    getLocale().catch(() => "fr"),
+  ]);
+  const locale: WikiLocale = rawLocale === "en" || rawLocale === "ja" ? rawLocale : "fr";
+  const r = getWikiReaderMessages(locale);
+  const dateLocale = locale === "ja" ? "ja-JP" : locale === "en" ? "en-US" : "fr-FR";
 
   return (
-    <div className="wiki-container">
-      <Breadcrumbs
-        className="mb-8"
-        items={[
-          { label: "Wiki", display: <T k="wiki.breadcrumb" />, href: "/wiki" },
-          ...(page.category.parent ? [{ label: page.category.parent.name }] : []),
-          { label: page.category.name },
-        ]}
-      />
-      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 overflow-hidden">
+    <article className="wiki-container reveal-up">
+      <DomainBar domain="wiki" />
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.08] pb-4">
+        <Breadcrumbs
+          items={[
+            { label: "Wiki", display: <T k="wiki.breadcrumb" />, href: "/wiki" },
+            ...(page.category.parent ? [{ label: page.category.parent.name }] : []),
+            { label: page.category.name },
+          ]}
+        />
+        {isAdmin && (
+          <Link
+            href={`/admin/wiki/page/${page.id}`}
+            className="shrink-0 inline-flex min-h-11 items-center gap-2 rounded-xl border border-dbz-orange/40 bg-dbz-orange/15 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-dbz-orange transition-all hover:bg-dbz-orange hover:text-encre active:scale-[0.98]"
+          >
+            {r("editPage")}
+          </Link>
+        )}
+      </div>
+      <header className="relative overflow-hidden rounded-2xl border border-white/[0.09] bg-gradient-to-b from-white/[0.045] via-dbz-card/70 to-dbz-card/30 px-6 py-7 sm:px-10 sm:py-9">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-dbz-orange/60 to-transparent"
+        />
         <Image
           src="/dbz/kinto-un.svg"
           alt=""
@@ -93,27 +116,24 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
           height={135}
           className="pointer-events-none absolute right-0 top-1/2 hidden -translate-y-1/2 opacity-[0.1] md:block"
         />
-        <h1 className="font-saiyan text-4xl sm:text-5xl md:text-6xl font-bold tracking-wider text-white drop-shadow-[0_4px_16px_rgba(255,107,0,0.35)]">
+        <p className="font-scouter text-[11px] uppercase tracking-[0.18em] text-dbz-orange">
+          {page.category.parent
+            ? `${page.category.parent.name} · ${page.category.name}`
+            : page.category.name}
+        </p>
+        <h1 className="mt-2 font-saiyan text-4xl sm:text-5xl md:text-6xl font-bold tracking-wider text-white drop-shadow-[0_4px_16px_rgba(255,107,0,0.35)]">
           {page.title}
         </h1>
-        {isAdmin && (
-          <Link
-            href={`/admin/wiki/page/${page.id}`}
-            className="shrink-0 inline-flex items-center gap-2 rounded border-2 border-black bg-dbz-orange/20 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-dbz-orange shadow-[2px_2px_0px_#000] hover:bg-dbz-orange hover:text-black transition-all"
-          >
-            Éditer cette page
-          </Link>
-        )}
-      </div>
+      </header>
       <div className="wiki-content-card">
         <div className="prose prose-invert max-w-none wiki-content">
           <WikiMarkdown body={page.body} />
         </div>
       </div>
-      <div className="mt-16 pt-8 border-t border-dbz-border text-xs text-gray-500">
-        Dernière mise à jour le {new Date(page.updatedAt).toLocaleDateString("fr-FR")}
-      </div>
-    </div>
+      <footer className="pt-4 border-t border-dbz-border font-mono text-xs text-white/50">
+        {r("lastUpdated", { date: new Date(page.updatedAt).toLocaleDateString(dateLocale) })}
+      </footer>
+    </article>
   );
 }
 

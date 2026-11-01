@@ -18,6 +18,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { SectionAccent } from "@/lib/wiki-section-accents";
 import { normalizeWikiSectionGroups } from "@/lib/wiki-section-groups";
 import { useT } from "@/components/T";
+import { useWikiReaderText } from "@/components/wiki/WikiPublicText";
 import { FICHE_ASIDE, FICHE_GRID, FICHE_MAIN, STICKY_TOP } from "@/components/wiki/fiche-layout";
 
 export interface ReaderPanel {
@@ -43,10 +44,10 @@ function Pastille({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`inline-flex min-h-11 shrink-0 snap-start items-center whitespace-nowrap rounded-full border px-4 text-[13px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere ${
+      className={`inline-flex min-h-11 shrink-0 snap-start items-center gap-1.5 whitespace-nowrap rounded-full border px-4 text-[13px] font-semibold transition-all duration-150 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere ${
         active
-          ? "border-dbz-orange bg-dbz-orange text-encre"
-          : "border-os/12 text-os/80 hover:border-dbz-orange/70 hover:text-os"
+          ? "border-dbz-orange bg-dbz-orange text-encre shadow-[0_0_16px_rgba(231,130,32,0.3)]"
+          : "border-os/12 bg-white/[0.02] text-os/80 hover:border-dbz-orange/70 hover:bg-white/[0.05] hover:text-os"
       }`}
     >
       {children}
@@ -101,6 +102,7 @@ export function WikiSectionsReader({
   children?: ReactNode;
 }) {
   const t = useT();
+  const readerText = useWikiReaderText();
   const tout = allLabel ?? t("wiki.reader.all");
   const titreSommaire = t("wiki.reader.toc");
   const [active, setActive] = useState<string>("all");
@@ -189,16 +191,40 @@ export function WikiSectionsReader({
     return p.key === active;
   }
 
-  // Rangée de pastilles : mobile toujours, desktop seulement sans colonne latérale.
+  // Rangée de pastilles : mobile toujours, desktop seulement sans colonne latérale interne.
   const rangee = avecSommaire && (
     <div
-      className={`sticky ${STICKY_TOP} z-20 -mx-[var(--wiki-shell-pad,var(--shell-pad,1.25rem))] border-b border-os/12 bg-dbz-bg ${
+      className={`sticky ${STICKY_TOP} z-20 rounded-xl border border-os/12 bg-dbz-bg/95 backdrop-blur-md shadow-[0_12px_32px_-12px_rgba(0,0,0,0.75)] ${
         aside ? "lg:hidden" : ""
       }`}
     >
+      <div className="flex items-center justify-between gap-3 border-b border-os/[0.08] px-3.5 py-2">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span className="h-2 w-2 shrink-0 rounded-full bg-dbz-orange" aria-hidden />
+          <span className="font-display text-xs font-bold uppercase tracking-wider text-os/90 truncate">
+            {titreSommaire}
+          </span>
+          <span className="rounded-full border border-os/15 bg-white/[0.04] px-2 py-0.5 font-mono text-[11px] tabular-nums text-os/65">
+            {readerText("sectionsCount", { count: items.length })}
+          </span>
+        </div>
+        {active !== "all" ? (
+          <button
+            type="button"
+            onClick={() => selectTop("all")}
+            className="shrink-0 rounded-lg border border-dbz-orange/40 bg-dbz-orange/10 px-2.5 py-1 font-display text-[11px] font-bold text-dbz-orange transition-colors hover:bg-dbz-orange hover:text-encre"
+          >
+            {readerText("showAll")}
+          </button>
+        ) : (
+          <span className="hidden font-mono text-[11px] uppercase tracking-wider text-os/45 sm:inline">
+            {readerText("readingModeAll")}
+          </span>
+        )}
+      </div>
       <nav
         aria-label={titreSommaire}
-        className="flex snap-x gap-2 overflow-x-auto px-[var(--wiki-shell-pad,var(--shell-pad,1.25rem))] py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex snap-x gap-2 overflow-x-auto px-3.5 py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <Pastille active={active === "all"} onClick={() => selectTop("all")}>
           {tout}
@@ -211,13 +237,16 @@ export function WikiSectionsReader({
         {groupOrder.map((g) => (
           <Pastille key={`g:${g}`} active={activeGroup === g} onClick={() => selectTop(`g:${g}`)}>
             {g}
+            <span className="ml-0.5 rounded-full bg-black/20 px-1.5 py-0.2 text-[10px] tabular-nums opacity-75">
+              {groupPanels(g).length}
+            </span>
           </Pastille>
         ))}
       </nav>
       {activeGroup && activeChildren.length > 0 && (
         <nav
           aria-label={`${titreSommaire} — ${activeGroup}`}
-          className="flex snap-x gap-2 overflow-x-auto border-t border-os/[0.08] px-[var(--wiki-shell-pad,var(--shell-pad,1.25rem))] py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x gap-2 overflow-x-auto border-t border-os/[0.08] px-3.5 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           <Pastille active={subActive === "all"} onClick={() => selectSub("all")}>
             {tout}

@@ -205,3 +205,38 @@ export function getWikiCharacterVersionText(locale: string) {
       values && name in values ? String(values[name]) : whole,
     );
 }
+
+export type WikiLocale = "fr" | "en" | "ja";
+export type WikiPortalKey = keyof typeof fr.portal;
+export type WikiReaderKey = keyof typeof fr.reader;
+
+const portalDictionaries = {
+  fr: fr.portal,
+  en: en.portal,
+  ja: ja.portal,
+} as const;
+
+const readerDictionaries = {
+  fr: fr.reader,
+  en: en.reader,
+  ja: ja.reader,
+} as const;
+
+function interpolate(template: string, values?: Record<string, string | number>): string {
+  if (!values) return template;
+  return template.replace(/\{(\w+)\}/g, (whole, key: string) =>
+    key in values ? String(values[key]) : whole,
+  );
+}
+
+export function getWikiPortalMessages(locale: string = "fr") {
+  const dict = portalDictionaries[locale as WikiLocale] ?? portalDictionaries.fr;
+  return (key: WikiPortalKey, values?: Record<string, string | number>) =>
+    interpolate(dict[key], values);
+}
+
+export function getWikiReaderMessages(locale: string = "fr") {
+  const dict = readerDictionaries[locale as WikiLocale] ?? readerDictionaries.fr;
+  return (key: WikiReaderKey, values?: Record<string, string | number>) =>
+    interpolate(dict[key], values);
+}

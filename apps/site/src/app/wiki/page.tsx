@@ -10,7 +10,7 @@ import { PosterCard } from "@/components/stream/PosterCard";
 import { EpisodeCard } from "@/components/stream/EpisodeCard";
 import { CharacterPosterCard } from "@/components/wiki/CharacterPosterCard";
 import { RepriseLecture } from "@/components/wiki/RepriseLecture";
-import { WIKI_CATEGORIES } from "@/lib/wiki-categories";
+import { resolveWikiCategoryBlurb, WIKI_CATEGORIES } from "@/lib/wiki-categories";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { entryByKey, isPathPublic } from "@aphrody/shenron-config/wiki-launch";
 import { pickBestImage } from "@/lib/image-variants";
@@ -19,7 +19,8 @@ import type { Metadata } from "next";
 import { T } from "@/components/T";
 import { getPublicCorpusStats } from "@/lib/public-corpus-stats";
 import { getPublishedCardCount } from "@/lib/card-catalog";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
+import { getWikiPortalMessages, type WikiLocale } from "@/lib/wiki-character-version-messages";
 
 export const revalidate = 3600;
 
@@ -74,6 +75,7 @@ async function WikiIndexContent() {
     corpusCounts,
     cardCatalogCards,
     categoryT,
+    rawLocale,
   ] = await Promise.all([
     getShenronCharacterCards(),
     getShenronMovies(),
@@ -92,7 +94,11 @@ async function WikiIndexContent() {
     getPublicCorpusStats(),
     getPublishedCardCount().catch(() => 0),
     getTranslations("wikiExplorer.categories"),
+    getLocale().catch(() => "fr"),
   ]);
+
+  const locale: WikiLocale = rawLocale === "en" || rawLocale === "ja" ? rawLocale : "fr";
+  const p = getWikiPortalMessages(locale);
 
   const c: Record<string, number> = {
     ...((counts ?? {}) as Record<string, number>),
@@ -135,7 +141,7 @@ async function WikiIndexContent() {
           | "cards",
       ),
       count: c[cat.countKey] ?? 0,
-      blurb: entryByKey(cat.key)?.blurb ?? null,
+      blurb: resolveWikiCategoryBlurb(cat, entryByKey(cat.key)?.blurb),
     }),
   );
   const encyclopedie = rubriques.filter((r) => r.group === "encyclopedia");
@@ -169,18 +175,156 @@ async function WikiIndexContent() {
   const dragonsList = dragonsData ?? [];
   const itemsList = itemsData ?? [];
 
+  const quickLinks = [
+    {
+      href: "/wiki/search",
+      badge: "⌘K",
+      title: p("quickSearchTitle"),
+      desc: p("quickSearchDesc"),
+    },
+    {
+      href: "/wiki/canon",
+      badge: "CANON",
+      title: p("quickCanonTitle"),
+      desc: p("quickCanonDesc"),
+    },
+    {
+      href: "/wiki/timeline",
+      badge: "AGE",
+      title: p("quickTimelineTitle"),
+      desc: p("quickTimelineDesc"),
+    },
+    {
+      href: "/wiki/toriyama",
+      badge: "AUTHOR",
+      title: p("quickToriyamaTitle"),
+      desc: p("quickToriyamaDesc"),
+    },
+    {
+      href: "/wiki/random",
+      badge: "RNG",
+      title: p("quickRandomTitle"),
+      desc: p("quickRandomDesc"),
+    },
+    {
+      href: "/wiki/contribute",
+      badge: "EDIT",
+      title: p("quickContributeTitle"),
+      desc: p("quickContributeDesc"),
+    },
+  ];
+
+  const pillars = [
+    {
+      href: "/wiki/canon",
+      badge: p("pillarCanonBadge"),
+      title: p("pillarCanonTitle"),
+      desc: p("pillarCanonDesc"),
+    },
+    {
+      href: "/wiki/power-levels",
+      badge: p("pillarPowerBadge"),
+      title: p("pillarPowerTitle"),
+      desc: p("pillarPowerDesc"),
+    },
+    {
+      href: "/wiki/toriyama",
+      badge: p("pillarToriyamaBadge"),
+      title: p("pillarToriyamaTitle"),
+      desc: p("pillarToriyamaDesc"),
+    },
+    {
+      href: "/wiki/staff",
+      badge: p("pillarStaffBadge"),
+      title: p("pillarStaffTitle"),
+      desc: p("pillarStaffDesc"),
+    },
+  ];
+
   return (
     <WikiIndexPage
-      eyebrow="Encyclopédie"
-      title="L'univers Dragon Ball"
-      lead={`${nf.format(total)} entrées écrites sur les tomes du manga et les planches des databooks — personnages, mondes, récits et supports.`}
-      crumbs={[{ label: "L'univers Dragon Ball" }]}
+      eyebrow={p("eyebrow")}
+      title={p("title")}
+      lead={p("lead", { total: nf.format(total) })}
+      crumbs={[{ label: p("title") }]}
     >
+      {/* Barre d'accès rapide aux outils et piliers de l'encyclopédie */}
+      <section aria-label={p("quickAccessLabel")} className="space-y-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {quickLinks.map((item) => (
+            <GatedWrap
+              key={item.href}
+              href={item.href}
+              className="group relative flex items-start justify-between gap-3 overflow-hidden rounded-xl border border-white/[0.09] bg-gradient-to-b from-white/[0.05] to-white/[0.015] p-4 transition-all duration-150 hover:-translate-y-0.5 hover:border-dbz-orange/60 hover:bg-white/[0.06] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
+            >
+              <div className="min-w-0 space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="rounded border border-dbz-orange/30 bg-dbz-orange/10 px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-dbz-orange">
+                    {item.badge}
+                  </span>
+                  <span className="font-display text-sm font-bold text-white transition-colors group-hover:text-dbz-orange truncate">
+                    {item.title}
+                  </span>
+                </div>
+                <p className="text-xs leading-relaxed text-white/55 line-clamp-2">{item.desc}</p>
+              </div>
+              <span
+                aria-hidden
+                className="mt-0.5 shrink-0 font-mono text-xs text-white/35 transition-transform group-hover:translate-x-0.5 group-hover:text-dbz-orange"
+              >
+                →
+              </span>
+            </GatedWrap>
+          ))}
+        </div>
+      </section>
+
       {/* Avant les rubriques : quelqu'un qui revient cherche d'abord où il
 				    s'était arrêté. L'îlot ne rend rien s'il n'a rien à proposer. */}
       <RepriseLecture />
-      <Rubriques titre="L'univers" items={encyclopedie} />
-      <Rubriques titre="Les supports" items={supports} />
+      <Rubriques titre={p("sectionUniverse")} items={encyclopedie} entriesUnit={p("entriesUnit")} />
+      <Rubriques titre={p("sectionMedia")} items={supports} entriesUnit={p("entriesUnit")} />
+
+      {/* Dossiers & Piliers Éditoriaux */}
+      <section aria-labelledby="wiki-pillars-heading" className="space-y-4">
+        <div>
+          <h2
+            id="wiki-pillars-heading"
+            className="font-scouter text-[11px] uppercase tracking-[0.18em] text-dbz-orange"
+          >
+            {p("pillarsHeading")}
+          </h2>
+          <p className="mt-1 text-sm text-white/55">{p("pillarsSubtitle")}</p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {pillars.map((pillar) => (
+            <GatedWrap
+              key={pillar.href}
+              href={pillar.href}
+              className="group relative flex h-full flex-col justify-between overflow-hidden rounded-xl border border-white/[0.09] bg-dbz-card/85 p-5 transition-all duration-150 hover:-translate-y-0.5 hover:border-dbz-orange/60 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
+            >
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-dbz-orange/70 via-dbz-yellow/40 to-transparent opacity-75 transition-opacity group-hover:opacity-100"
+              />
+              <div>
+                <span className="inline-block rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-dbz-orange">
+                  {pillar.badge}
+                </span>
+                <h3 className="mt-3 font-display text-[15px] font-bold text-white transition-colors group-hover:text-dbz-orange">
+                  {pillar.title}
+                </h3>
+                <p className="mt-2 text-xs leading-relaxed text-white/60">{pillar.desc}</p>
+              </div>
+              <div className="mt-4 flex items-center justify-between border-t border-white/[0.06] pt-3 text-[11px] font-semibold text-white/55 group-hover:text-dbz-orange">
+                <span>{p("openSection")}</span>
+                <span className="transition-transform group-hover:translate-x-0.5">→</span>
+              </div>
+            </GatedWrap>
+          ))}
+        </div>
+      </section>
+
       <ContentCoverage
         databooks={{
           label: "Databooks & interviews",
@@ -493,21 +637,24 @@ async function WikiIndexContent() {
         </StreamRow>
       )}
 
-      <section className="rounded-xl border border-white/[0.08] p-8 lg:p-10">
-        <h2 className="font-title text-[26px] text-white">Ce wiki n'est pas fini</h2>
+      <section className="relative overflow-hidden rounded-2xl border border-white/[0.1] bg-gradient-to-br from-white/[0.05] via-dbz-card/80 to-dbz-orange/[0.06] p-8 lg:p-10">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-dbz-orange/60 to-transparent"
+        />
+        <h2 className="font-title text-[26px] text-white">{p("unfinishedTitle")}</h2>
         {/* Le circuit interne (« vous modifiez le texte, un relecteur publie,
 					    la modification garde votre nom ») a été retiré le 2026-09-12 : ce
 					    qu'un lecteur a besoin de savoir, c'est d'où vient le contenu et où
 					    cliquer. */}
-        <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-white/60">
-          Il est écrit sur les tomes du manga et les planches des databooks, jamais recopié
-          d'ailleurs. Chaque fiche porte un bouton «&nbsp;Proposer une correction&nbsp;».
+        <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-white/65">
+          {p("unfinishedBody")}
         </p>
         <Link
           href="/wiki/contribute"
-          className="mt-6 inline-flex h-11 items-center rounded-full border border-white/15 px-6 font-display text-[14px] font-semibold text-white transition-colors hover:border-dbz-orange/60 hover:text-dbz-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
+          className="mt-6 inline-flex h-11 items-center rounded-full border border-dbz-orange/50 bg-dbz-orange/15 px-6 font-display text-[14px] font-semibold text-white transition-all hover:border-dbz-orange hover:bg-dbz-orange hover:text-encre active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
         >
-          Contribuer au wiki
+          {p("unfinishedCta")} →
         </Link>
       </section>
     </WikiIndexPage>
@@ -527,36 +674,52 @@ async function WikiIndexContent() {
 function Rubriques({
   titre,
   items,
+  entriesUnit,
 }: {
   titre: string;
   items: Array<{ key: string; label: string; href: string; count: number; blurb: string | null }>;
+  entriesUnit: string;
 }) {
   if (items.length === 0) return null;
   return (
     <section>
-      <h2 className="mb-5 font-scouter text-[11px] uppercase tracking-[0.18em] text-white/45">
-        {titre}
-      </h2>
+      <div className="mb-5 flex items-center justify-between gap-4">
+        <h2 className="font-scouter text-[11px] uppercase tracking-[0.18em] text-white/55">
+          {titre}
+        </h2>
+        <span
+          className="h-px flex-1 bg-gradient-to-r from-white/[0.1] to-transparent"
+          aria-hidden
+        />
+      </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((r) => (
           <GatedWrap
             key={r.key}
             href={r.href}
-            className="group flex h-full flex-col border border-white/[0.08] bg-dbz-card/80 p-4 transition-transform duration-150 hover:-translate-y-0.5 hover:border-dbz-orange hover:focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
+            className="group relative flex h-full flex-col justify-between overflow-hidden rounded-xl border border-white/[0.09] bg-dbz-card/85 p-5 shadow-[0_10px_28px_-16px_rgba(0,0,0,0.65)] transition-all duration-150 hover:-translate-y-0.5 hover:border-dbz-orange/70 hover:bg-dbz-card active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
           >
-            <span className="flex items-baseline justify-between gap-3">
-              <span className="font-display text-[15px] font-bold text-white transition-colors group-hover:text-dbz-orange">
-                {r.label}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent transition-colors group-hover:via-dbz-orange/70"
+            />
+            <div>
+              <span className="flex items-baseline justify-between gap-3">
+                <span className="font-display text-[16px] font-bold text-white transition-colors group-hover:text-dbz-orange">
+                  {r.label}
+                </span>
+                {r.count > 0 && (
+                  <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-0.5 font-scouter text-[11px] tabular-nums text-white/60 transition-colors group-hover:border-dbz-orange/35 group-hover:text-dbz-orange">
+                    {nf.format(r.count)} {entriesUnit}
+                  </span>
+                )}
               </span>
-              {r.count > 0 && (
-                <span className="font-scouter text-[11px] tabular-nums text-white/40">
-                  {nf.format(r.count)}
+              {r.blurb && (
+                <span className="mt-2 block text-[13px] leading-relaxed text-white/60">
+                  {r.blurb}
                 </span>
               )}
-            </span>
-            {r.blurb && (
-              <span className="mt-1.5 text-[13px] leading-relaxed text-white/55">{r.blurb}</span>
-            )}
+            </div>
           </GatedWrap>
         ))}
       </div>

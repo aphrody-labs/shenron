@@ -72,11 +72,7 @@ export default async function PersonnagesPage() {
   // 1 307 fiches dans l'ordre d'insertion de l'ingest : le visiteur tombait sur
   // des figures d'un seul chapitre avant Goku. La note est mesurée
   // (cf. `@/lib/character-richesse`), pas saisie à la main.
-  // Restriction stricte demandée : Son Goku (1) et Kid Buu (90) uniquement
-  const allowedCharacters = characters.filter(
-    (c) => c.id === 1 || c.id === 90 || c.slug === "son-goku" || c.slug === "kid-buu",
-  );
-  const cartes = allowedCharacters
+  const cartes = characters
     .map((c) => ({
       id: c.id,
       name: c.name,
@@ -98,7 +94,7 @@ export default async function PersonnagesPage() {
     <WikiIndexPage
       eyebrow="Encyclopédie"
       title="Personnages"
-      lead={`${allowedCharacters.length} fiches, des héros du récit aux figures d'un seul chapitre.`}
+      lead={`${characters.length} fiches, des héros du récit aux figures d'un seul chapitre.`}
       image={heroImage}
       imageAlt="Personnages Dragon Ball"
       crumbs={[{ label: "Personnages" }]}

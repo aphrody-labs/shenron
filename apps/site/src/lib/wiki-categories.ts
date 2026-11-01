@@ -20,6 +20,7 @@ export type WikiCategory = {
   href: string;
   countKey: string;
   group: "encyclopedia" | "media";
+  blurb?: string;
 };
 
 export const WIKI_CATEGORIES: WikiCategory[] = [
@@ -29,6 +30,7 @@ export const WIKI_CATEGORIES: WikiCategory[] = [
     href: "/wiki/characters",
     countKey: "characters",
     group: "encyclopedia",
+    blurb: "Guerriers, divinités, alliés et antagonistes du récit",
   },
   { key: "races", label: "Races", href: "/wiki/races", countKey: "races", group: "encyclopedia" },
   {
@@ -109,3 +111,12 @@ export const WIKI_CATEGORIES: WikiCategory[] = [
 
 /** Catégories à surfacer dans la nav du wiki (hors navbar → pas de doublon). */
 export const ENCYCLOPEDIA_CATEGORIES = WIKI_CATEGORIES.filter((c) => c.group === "encyclopedia");
+
+/** Résout la phrase de description d'une rubrique wiki (registre launch ou repli de catégorie). */
+export function resolveWikiCategoryBlurb(
+  category: WikiCategory,
+  launchBlurb?: string | null,
+): string | null {
+  const candidate = launchBlurb?.trim() || category.blurb?.trim();
+  return candidate ? candidate : null;
+}
