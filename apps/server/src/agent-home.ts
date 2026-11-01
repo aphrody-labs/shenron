@@ -117,7 +117,17 @@ export function systemOpener(url: string): void {
 function writeJsonAtomic(path: string, value: unknown): void {
   const tmp = `${path}.${process.pid}.tmp`;
   writeFileSync(tmp, `${JSON.stringify(value, null, 2)}\n`, { mode: 0o600 });
-  renameSync(tmp, path);
+  const retryable = new Set(["EPERM", "EBUSY", "EACCES"]);
+  for (let attempt = 0; ; attempt++) {
+    try {
+      renameSync(tmp, path);
+      return;
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException)?.code;
+      if (attempt >= 5 || !code || !retryable.has(code)) throw error;
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 20 * (attempt + 1));
+    }
+  }
 }
 
 const json = (body: unknown, status = 200) =>

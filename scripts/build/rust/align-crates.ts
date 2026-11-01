@@ -139,13 +139,19 @@ async function main() {
   const write = args.includes("--write");
   const only = new Set(args.filter((arg) => !arg.startsWith("--")));
   const root = Bun.TOML.parse(await Bun.file(join(ROOT, "Cargo.toml")).text()) as {
-    workspace: { package: { version: string } };
+    workspace: { package: { version: string }; exclude?: string[] };
   };
   const version = root.workspace.package.version;
+  const excluded = new Set(
+    (root.workspace.exclude ?? []).map((p) => p.replaceAll("\\", "/").replace(/\/$/, "")),
+  );
   let drift = false;
   let failed = false;
   let versionChanged = false;
-  const files = [...new Bun.Glob("crates/*/Cargo.toml").scanSync(ROOT)].sort();
+  const files = [...new Bun.Glob("crates/*/Cargo.toml").scanSync(ROOT)]
+    .map((f) => f.replaceAll("\\", "/"))
+    .filter((f) => !excluded.has(f.replace(/\/Cargo\.toml$/, "")))
+    .toSorted();
   const seen = new Set<string>();
   for (const file of files) {
     const path = join(ROOT, file);

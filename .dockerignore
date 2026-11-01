@@ -13,6 +13,8 @@
 !dist/bot/linux-x64/pipeline.mjs
 !dist/bot/linux-x64/pipeline-build-receipt.json
 !dist/bot/linux-x64/skia.linux-x64-gnu.node
+!dist/bot/linux-x64/share/
+!dist/bot/linux-x64/share/**
 !dist/bot/linux-x64/src/
 !dist/bot/linux-x64/src/db/
 !dist/bot/linux-x64/src/db/migrations/

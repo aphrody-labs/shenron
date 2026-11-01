@@ -10,13 +10,19 @@
  * restarted and checked through its attestation endpoint; any failure restores the previous config and restarts.
  */
 import { createHash } from "node:crypto";
-import { copyFileSync, renameSync, writeFileSync, chmodSync } from "node:fs";
+import { copyFileSync, existsSync, renameSync, writeFileSync, chmodSync } from "node:fs";
 import { dirname, join } from "node:path";
 
 const sha = (bytes: Uint8Array | string) => createHash("sha256").update(bytes).digest("hex");
 const [entriesPath, ...rest] = process.argv.slice(2);
 if (!entriesPath) throw new Error("usage: cdn-origin-add.ts <entries.json> [--config path]");
-const configPath = rest[rest.indexOf("--config") + 1] ?? "/etc/aphrody/cloudflare/origin-cdn.json";
+const defaultConfigPath = existsSync("/srv/shenron/config/cloudflare/origin-cdn.json")
+  ? "/srv/shenron/config/cloudflare/origin-cdn.json"
+  : "/etc/aphrody/cloudflare/origin-cdn.json";
+const configPath =
+  rest.includes("--config") && rest[rest.indexOf("--config") + 1]
+    ? rest[rest.indexOf("--config") + 1]!
+    : defaultConfigPath;
 const service = "shenron-cdn-origin.service";
 
 const config = await Bun.file(configPath).json();

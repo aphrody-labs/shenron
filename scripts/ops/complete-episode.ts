@@ -33,6 +33,7 @@ const apply = process.argv.includes("--apply");
 const BOT = process.env.SHENRON_BOT_URL ?? "https://bot.dragonballfr.com";
 const SITE = "https://dragonballfr.com";
 const CDN = "https://cdn.dragonballfr.com";
+const SSH_HOST = process.env.SHENRON_SSH_HOST ?? "prod";
 const sha256 = (bytes: Uint8Array | string) => createHash("sha256").update(bytes).digest("hex");
 mkdirSync(join(dir, "frames"), { recursive: true });
 
@@ -378,12 +379,12 @@ await run([
   "-q",
   join(dir, "cdn-entries.json"),
   join(import.meta.dir, "cdn-origin-add.ts"),
-  "dbfr:/tmp/",
+  `${SSH_HOST}:/tmp/`,
 ]);
 await run([
   "ssh",
-  "dbfr",
-  'sudo -n "$(command -v bun || echo $HOME/.bun/bin/bun)" /tmp/cdn-origin-add.ts /tmp/cdn-entries.json',
+  SSH_HOST,
+  'sudo -n "$(command -v bun || echo /srv/shenron/config/cloudflare/runtime/bun)" /tmp/cdn-origin-add.ts /tmp/cdn-entries.json',
 ]);
 
 // 8. Database: back up the row, then update it in one transaction.
@@ -412,7 +413,7 @@ await Bun.write(join(dir, "update.sql"), sql);
 await run(
   [
     "ssh",
-    "dbfr",
+    SSH_HOST,
     "sudo -n docker exec -i shenron-postgres psql -U postgres -d shenron_site -v ON_ERROR_STOP=1",
   ],
   sql,

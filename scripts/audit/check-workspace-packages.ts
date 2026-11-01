@@ -42,8 +42,7 @@ const BASELINE_FILE = join(import.meta.dir, "check-workspace-packages.baseline.j
 
 /**
  * Workspace packages checked against docs/architecture/STACK.md, all with every check: the
- * framework packages (§3.1–3.7) and the consumer packages (§3.8). `@aphrody/shenron-images` has no
- * runtime class map yet.
+ * framework packages (§3.1–3.7) and the consumer packages (§3.8).
  */
 const PACKAGES: Readonly<Record<string, string>> = {
   "@aphrody/shenron-config": "packages/config",
@@ -55,6 +54,7 @@ const PACKAGES: Readonly<Record<string, string>> = {
   "@aphrody/shenron-ui": "packages/ui",
 
   "@aphrody/shenron-activity": "packages/activity",
+  "@aphrody/shenron-images": "packages/images",
   "@aphrody/shenron-koharu": "packages/koharu",
   "@aphrody/shenron-lexicon": "packages/lexicon",
   "@aphrody/shenron-media": "packages/media",
@@ -101,6 +101,7 @@ const ALLOWED_EDGES: Readonly<
 
   // Discord activity rules and protocol: pure, reads only the lexicon.
   "@aphrody/shenron-activity": { runtime: ["@aphrody/shenron-lexicon"], dev: [] },
+  "@aphrody/shenron-images": { runtime: [], dev: [] },
   // Leaves: the Koharu client, the media helpers and the shenron-ffi binding.
   "@aphrody/shenron-koharu": { runtime: [], dev: [] },
   // The one ja/fr/en lexicon (data embedded, no I/O): a leaf every layer may read.
@@ -728,7 +729,7 @@ function checkApps(): void {
 // ── Run ──────────────────────────────────────────────────────────────────────
 
 const selected = ONLY ? { [ONLY]: PACKAGES[ONLY] as string } : PACKAGES;
-for (const [name, relDir] of Object.entries(selected)) await checkPackage(name, relDir);
+await Promise.all(Object.entries(selected).map(([name, relDir]) => checkPackage(name, relDir)));
 if (!ONLY) {
   checkCycles();
   checkApps();

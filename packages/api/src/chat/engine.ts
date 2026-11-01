@@ -271,6 +271,11 @@ export function createChatEngine(deps: ChatEngineDeps) {
     }
   }
 
+  let cachedEmbedderStatus: {
+    expiresAt: number;
+    value: ModelsResponse["embedder"];
+  } | null = null;
+
   async function models(): Promise<ModelsResponse> {
     const backends = await Promise.all(
       deps.backends.map(async (b) => ({ id: b.id, ...(await b.status()) })),
@@ -281,15 +286,24 @@ export function createChatEngine(deps: ChatEngineDeps) {
       model: deps.embedderModel ?? "none",
     };
     if (deps.embed) {
-      try {
-        await deps.embed("Son Goku");
-        embedder = { available: true, model: deps.embedderModel ?? "Xenova/multilingual-e5-small" };
-      } catch (error) {
-        embedder = {
-          available: false,
-          model: deps.embedderModel ?? "Xenova/multilingual-e5-small",
-          detail: error instanceof Error ? error.message : String(error),
-        };
+      const now = Date.now();
+      if (cachedEmbedderStatus && cachedEmbedderStatus.expiresAt > now) {
+        embedder = cachedEmbedderStatus.value;
+      } else {
+        try {
+          await deps.embed("Son Goku");
+          embedder = {
+            available: true,
+            model: deps.embedderModel ?? "Xenova/multilingual-e5-small",
+          };
+        } catch (error) {
+          embedder = {
+            available: false,
+            model: deps.embedderModel ?? "Xenova/multilingual-e5-small",
+            detail: error instanceof Error ? error.message : String(error),
+          };
+        }
+        cachedEmbedderStatus = { expiresAt: now + 60_000, value: embedder };
       }
     }
     return {
@@ -346,6 +360,16 @@ export function createChatEngine(deps: ChatEngineDeps) {
     const query = [request.message, ...ocrTexts.map((o) => o.text.slice(0, 300))]
       .join("\n")
       .slice(0, 1200);
+    let queryEmbeddingPromise: Promise<Float32Array> | null = null;
+    const memoizedEmbed = deps.embed
+      ? (text: string) => {
+          if (text === query) {
+            queryEmbeddingPromise ??= deps.embed!(text);
+            return queryEmbeddingPromise;
+          }
+          return deps.embed!(text);
+        }
+      : null;
     let mode: "hybrid" | "lexical" | "none" = "none";
     let hits: GroundingHit[] = [];
     let embedError: string | undefined;
@@ -355,7 +379,7 @@ export function createChatEngine(deps: ChatEngineDeps) {
             limit: request.topK,
             ...(request.kinds?.length ? { kinds: request.kinds } : {}),
           })
-        : await deps.rag!.searchWith(query, deps.embed ?? null, {
+        : await deps.rag!.searchWith(query, memoizedEmbed, {
             limit: request.topK,
             ...(request.kinds?.length ? { kinds: request.kinds } : {}),
             publicOnly: deps.publicOnly === true,
@@ -375,7 +399,7 @@ export function createChatEngine(deps: ChatEngineDeps) {
           deps.publicOnly === true
             ? hits
             : (
-                await deps.rag!.searchWith(query, deps.embed ?? null, {
+                await deps.rag!.searchWith(query, memoizedEmbed, {
                   limit: request.topK,
                   ...(request.kinds?.length ? { kinds: request.kinds } : {}),
                   publicOnly: true,

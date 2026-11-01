@@ -27,7 +27,7 @@ crate-type = ["cdylib", "rlib"]
 futures-channel = { workspace = true }
 js-sys = { workspace = true }
 # The viewport prepares nothing: skip the rasterizer `native` feature (image, rayon, pollster).
-koharu-rasterizer = { path = "../koharu-rasterizer", version = "1.4.4", default-features = false }
+koharu-rasterizer = { workspace = true, default-features = false }
 serde = { workspace = true }
 serde-wasm-bindgen = { workspace = true }
 vello = { workspace = true }

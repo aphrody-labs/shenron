@@ -1,28 +1,39 @@
-name: Production image build (no deploy)
+name: Production image build and auto-deploy
 
-# Build and verify the Shenron container image of this commit on a trusted self-hosted runner,
-# through the release path's build step (scripts/deploy/build-image.sh). Shipping stays a
-# separate, manual `scripts/deploy/release.sh --ship-only <sha>` on the build host.
-# Manual trusted execution only; never schedule pull-request code on this host.
+# Build, verify and automatically ship the Shenron container image of main commits on the
+# trusted self-hosted runner through scripts/deploy/release.sh (build-image.sh + ship-image.sh).
+# Never schedule pull-request code on this host.
 
 on:
+  push:
+    branches: ["main"]
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+      - "var/**"
+      - ".coord/**"
   workflow_dispatch:
     inputs:
       vfs:
         description: Public VFS (local path, http(s) URL or scp host:path); empty reuses the build worktree's
         required: false
         default: ""
+      build_only:
+        description: Build and verify only without shipping to production
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
 concurrency:
-  group: server-artifact-${{ github.sha }}
+  group: shenron-production-deploy
   cancel-in-progress: false
 
 jobs:
   build:
-    name: Build and verify the Shenron image (linux-x64)
+    name: Build, verify and deploy Shenron image (linux-x64 -> prod)
     runs-on: [self-hosted, Linux, X64, shenron-factory]
     timeout-minutes: 120
     env:
@@ -30,6 +41,7 @@ jobs:
       # build-image.sh builds from a reusable worktree of this checkout (fetch + submodules).
       SHENRON_SOURCE_REPO: ${{ github.workspace }}
       SHENRON_BUILD_REPO: ${{ vars.SHENRON_BUILD_REPO }}
+      SHENRON_DEPLOY_TARGET: ${{ vars.SHENRON_DEPLOY_TARGET || 'ssh:prod' }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -37,10 +49,14 @@ jobs:
 
       - uses: ./.github/actions/setup-bun
 
-      - name: Build and verify the image (build only, never ship)
+      - name: Build, verify and deploy the image
         shell: bash
         run: |
           set -euo pipefail
           if [ -z "$SHENRON_BUILD_REPO" ]; then unset SHENRON_BUILD_REPO; fi
           if [ -z "$SHENRON_VFS_SOURCE" ]; then unset SHENRON_VFS_SOURCE; fi
-          bash scripts/deploy/build-image.sh "$GITHUB_SHA"
+          if [ "${{ inputs.build_only }}" = "true" ]; then
+            bash scripts/deploy/release.sh --build-only "$GITHUB_SHA"
+          else
+            bash scripts/deploy/release.sh "$GITHUB_SHA"
+          fi

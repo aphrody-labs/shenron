@@ -310,7 +310,8 @@ export function bindgenRoot(version: string): string {
 }
 
 function ensureWasmBindgen(version: string): string {
-  const pinned = join(bindgenRoot(version), "bin", "wasm-bindgen");
+  const binName = process.platform === "win32" ? "wasm-bindgen.exe" : "wasm-bindgen";
+  const pinned = join(bindgenRoot(version), "bin", binName);
   for (const candidate of [process.env.WASM_BINDGEN, Bun.which("wasm-bindgen"), pinned]) {
     if (candidate && existsSync(candidate) && bindgenVersion(candidate) === version)
       return candidate;

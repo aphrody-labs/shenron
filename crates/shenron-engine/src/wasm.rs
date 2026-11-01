@@ -337,7 +337,7 @@ impl MangaSceneWasm {
     }
 }
 
-/// A real indexed, textured GLB mesh rendered through the shared cel-shading pipeline.
+/// A real indexed, textured GLB mesh rendered through the shared cel-shading pipeline.
 #[cfg(all(feature = "wasm", target_arch = "wasm32"))]
 #[wasm_bindgen]
 pub struct GlbModelWasm {

@@ -162,7 +162,7 @@ export function prunePayloadCache(cacheDir: string, current: string, keepPreviou
     const abandoned = names.filter((name) => name.includes(".tmp-"));
     const previous = names
       .filter((name) => !name.includes(".tmp-"))
-      .sort((a, b) => modified(b) - modified(a));
+      .toSorted((a, b) => modified(b) - modified(a));
     const doomed = [...abandoned, ...previous.slice(keepPrevious)];
     for (const name of doomed)
       rmSync(join(cacheDir, name), { recursive: true, force: true, maxRetries: 3, retryDelay: 50 });

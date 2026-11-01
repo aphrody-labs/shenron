@@ -23,13 +23,13 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { alignAphrodyPins } from "./aphrody-pins.ts";
 
-const ROOT = `${join(import.meta.dir, "../../..")}/`;
+const ROOT = join(import.meta.dir, "../../..");
 const args = process.argv.slice(2);
 const flag = (name: string) => {
   const i = args.indexOf(name);
   return i >= 0 ? args[i + 1] : undefined;
 };
-const manifestPath = `${ROOT}Cargo.toml`;
+const manifestPath = join(ROOT, "Cargo.toml");
 const manifest = await Bun.file(manifestPath).text();
 const currentRev = manifest.match(/^# aphrody-rev: ([0-9a-f]{40})$/m)?.[1];
 const REV = flag("--rev") ?? currentRev;
@@ -75,12 +75,21 @@ const handWritten = Bun.TOML.parse(
 const owned = new Set(Object.keys(handWritten.workspace.dependencies ?? {}));
 const local = new Map<string, { path: string; version: string }>();
 const wanted = new Set<string>();
-const ws = handWritten as unknown as { workspace: { package: { version: string } } };
-for await (const file of new Bun.Glob("crates/*/Cargo.toml").scan(ROOT)) {
-  const crate = Bun.TOML.parse(await Bun.file(ROOT + file).text()) as Record<string, any>;
+const ws = handWritten as unknown as {
+  workspace: { package: { version: string }; exclude?: string[] };
+};
+const excluded = new Set(
+  (ws.workspace.exclude ?? []).map((p) => p.replaceAll("\\", "/").replace(/\/$/, "")),
+);
+for await (const rawFile of new Bun.Glob("crates/*/Cargo.toml").scan(ROOT)) {
+  const file = rawFile.replaceAll("\\", "/");
+  const crateDir = file.replace(/\/Cargo\.toml$/, "");
+  if (excluded.has(crateDir)) continue;
+  const crate = Bun.TOML.parse(await Bun.file(join(ROOT, file)).text()) as Record<string, any>;
+  if (!crate.package) continue;
   const pkg = crate.package as { name: string; version: string | { workspace: true } };
   const version = typeof pkg.version === "string" ? pkg.version : ws.workspace.package.version;
-  local.set(pkg.name, { path: file.replaceAll("\\", "/").replace(/\/Cargo\.toml$/, ""), version });
+  local.set(pkg.name, { path: crateDir, version });
   const tables: Record<string, Spec>[] = [];
   for (const key of ["dependencies", "dev-dependencies", "build-dependencies"]) {
     if (crate[key]) tables.push(crate[key]);

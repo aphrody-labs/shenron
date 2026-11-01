@@ -34,7 +34,9 @@ test("only the matching immutable public episode source is accepted", () => {
   expect(episodeTimelineSource(877, [{ embedUrl: episode3 }])?.href).toBe(episode3);
   expect(episodeTimelineSource(876, [{ embedUrl: episode3 }])).toBeNull();
   expect(episodeTimelineSource(877, [{ embedUrl: episode3 + "?token=private" }])).toBeNull();
-  expect(episodeTimelineSource(878, [{ embedUrl: episode3.replace("/877/", "/878/") }])).toBeNull();
+  const episode4 = episode3.replace("/877/", "/878/");
+  expect(episodeTimelineSource(878, [{ embedUrl: episode4 }])?.href).toBe(episode4);
+  expect(episodeTimelineSource(879, [{ embedUrl: episode3.replace("/877/", "/879/") }])).toBeNull();
 });
 
 test("query and frame bounds reject invalid work without decoding", async () => {

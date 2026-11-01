@@ -58,26 +58,82 @@ export function workspaceCommands(root: string, gate: Gate): GateCommand[] {
 export async function runWorkspaceGate(root: string, gate: Gate): Promise<number> {
   let result = 0;
   const runtime = nativeRuntime(process.env.SHENRON_BUN_EXECUTABLE);
-  for (const command of workspaceCommands(root, gate)) {
-    console.log(`[${command.packageName}] ${command.args.join(" ")}`);
-    const [, ...args] = command.args;
-    const cmd = [runtime, ...args];
-    try {
-      const child = Bun.spawn(cmd, {
-        cwd: command.cwd,
-        env: nativeEnvironment(runtime, args[0]!),
-        stdin: "inherit",
-        stdout: "inherit",
-        stderr: "inherit",
-      });
-      const code = await child.exited;
-      if (code !== 0) result = code || 1;
-    } catch (error) {
-      console.error(
-        `[${command.packageName}] ${error instanceof Error ? error.message : String(error)}`,
-      );
-      result = 1;
+  const commands = workspaceCommands(root, gate);
+  const defaultConcurrency = gate === "typecheck" ? 6 : 1;
+  const concurrency = Math.max(
+    1,
+    Number(process.env.SHENRON_GATE_CONCURRENCY ?? defaultConcurrency) || defaultConcurrency,
+  );
+  if (concurrency === 1) {
+    for (const command of commands) {
+      console.log(`[${command.packageName}] ${command.args.join(" ")}`);
+      const [, ...args] = command.args;
+      const cmd = [runtime, ...args];
+      try {
+        const child = Bun.spawn(cmd, {
+          cwd: command.cwd,
+          env: nativeEnvironment(runtime, args[0]!),
+          stdin: "inherit",
+          stdout: "inherit",
+          stderr: "inherit",
+        });
+        const code = await child.exited;
+        if (code !== 0) result = code || 1;
+      } catch (error) {
+        console.error(
+          `[${command.packageName}] ${error instanceof Error ? error.message : String(error)}`,
+        );
+        result = 1;
+      }
     }
+    return result;
+  }
+
+  const outputs = Array.from<
+    { header: string; stdout: string; stderr: string; code: number } | undefined
+  >({
+    length: commands.length,
+  });
+  let nextIndex = 0;
+  const workers = Array.from({ length: Math.min(concurrency, commands.length) }, async () => {
+    for (;;) {
+      const index = nextIndex++;
+      if (index >= commands.length) break;
+      const command = commands[index]!;
+      const header = `[${command.packageName}] ${command.args.join(" ")}`;
+      const [, ...args] = command.args;
+      const cmd = [runtime, ...args];
+      try {
+        const child = Bun.spawn(cmd, {
+          cwd: command.cwd,
+          env: nativeEnvironment(runtime, args[0]!),
+          stdin: "ignore",
+          stdout: "pipe",
+          stderr: "pipe",
+        });
+        const [stdout, stderr, code] = await Promise.all([
+          new Response(child.stdout).text(),
+          new Response(child.stderr).text(),
+          child.exited,
+        ]);
+        outputs[index] = { header, stdout, stderr, code };
+      } catch (error) {
+        outputs[index] = {
+          header,
+          stdout: "",
+          stderr: `${error instanceof Error ? error.message : String(error)}\n`,
+          code: 1,
+        };
+      }
+    }
+  });
+  await Promise.all(workers);
+  for (const out of outputs) {
+    if (!out) continue;
+    console.log(out.header);
+    if (out.stdout) process.stdout.write(out.stdout);
+    if (out.stderr) process.stderr.write(out.stderr);
+    if (out.code !== 0) result = out.code || 1;
   }
   return result;
 }

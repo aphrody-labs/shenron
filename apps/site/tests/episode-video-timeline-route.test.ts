@@ -32,8 +32,8 @@ beforeEach(() => {
   delegated.length = 0;
   fail = false;
 });
-test("all three supported Beerus episode routes reach the native timeline owner", async () => {
-  for (const id of [875, 876, 877]) {
+test("all supported Beerus episode routes reach the native timeline owner", async () => {
+  for (const id of [875, 876, 877, 878]) {
     const response = await GET(
       new Request(`https://dragonballfr.com/api/episodes/${id}/timeline`),
       {
@@ -44,10 +44,10 @@ test("all three supported Beerus episode routes reach the native timeline owner"
     expect(await response.json()).toEqual({ id });
     expect(delegated.at(-1)).toMatchObject({ id });
   }
-  expect(lookups).toEqual([875, 876, 877]);
+  expect(lookups).toEqual([875, 876, 877, 878]);
 });
 test("unapproved or noncanonical IDs never query the catalogue", async () => {
-  for (const id of ["878", "0877", "877suffix", "-877"]) {
+  for (const id of ["879", "0877", "877suffix", "-877"]) {
     const response = await GET(
       new Request("https://dragonballfr.com/api/episodes/invalid/timeline"),
       {

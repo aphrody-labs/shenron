@@ -12,7 +12,7 @@
 #                locally with `<sha> <repository>:<sha>` when it is set
 #   local        Compose on this host: deploy/docker/compose.yaml with SHENRON_IMAGE_TAG=<sha>
 #                (override with SHENRON_COMPOSE_FILE), or SHENRON_DEPLOY_COMMAND when set
-# Default target: ssh:dbfr.
+# Default target: ssh:prod.
 #
 # Rollback guard (ssh targets): SHENRON_ACTIVE_COMMAND prints the active release; the first
 # 40-hex commit in its output must be an ancestor of the shipped commit unless
@@ -22,7 +22,7 @@ HERE=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 W=${SHENRON_BUILD_REPO:-$HOME/build/shenron}
 IMAGE=${SHENRON_IMAGE:-localhost/shenron}
 ENGINE=${SHENRON_CONTAINER:-$(command -v docker >/dev/null 2>&1 && echo docker || echo podman)}
-TARGET=${SHENRON_DEPLOY_TARGET:-ssh:${SHENRON_DEPLOY_HOST:-dbfr}}
+TARGET=${SHENRON_DEPLOY_TARGET:-ssh:${SHENRON_DEPLOY_HOST:-prod}}
 SHA=$(git -C "$W" rev-parse --verify "${1:-HEAD}^{commit}")
 "$ENGINE" image inspect "$IMAGE:$SHA" >/dev/null
 SSH=(ssh -o ConnectTimeout=15 -o BatchMode=yes)
@@ -54,9 +54,9 @@ case "$TARGET" in
     # Keep the newest SHENRON_REMOTE_KEEP_IMAGES revisions (rollback targets); an image in use
     # is never removed (no --force). Each image is about 1.8 GiB on the target root disk.
     keep=${SHENRON_REMOTE_KEEP_IMAGES:-4}
-    [ "$keep" = 0 ] || "${SSH[@]}" "$host" "sudo -n docker image ls --format '{{.Repository}}:{{.Tag}}' localhost/shenron \
+    [ "$keep" = 0 ] || "${SSH[@]}" "$host" "DOCKER=\$([ \"\$(id -u)\" = 0 ] && echo docker || echo 'sudo -n docker'); \$DOCKER image ls --format '{{.Repository}}:{{.Tag}}' localhost/shenron \
       | grep -vE ':(local|active)\$' | sed -n '$((keep + 1)),\$p' \
-      | xargs -r -n1 sudo -n docker image rm >/dev/null 2>&1 || true"
+      | xargs -r -n1 \$DOCKER image rm >/dev/null 2>&1 || true"
     ;;
   registry:*)
     repository=${TARGET#registry:}
